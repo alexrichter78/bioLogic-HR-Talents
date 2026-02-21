@@ -31,12 +31,7 @@ function Header() {
 function HeroSection() {
   return (
     <div className="relative flex flex-col items-center justify-center py-16 px-6 text-center" data-testid="hero-section">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[80%] rounded-full bg-gradient-to-br from-pink-200/40 via-rose-100/30 to-transparent blur-3xl" />
-        <div className="absolute top-[-10%] right-[-5%] w-[50%] h-[70%] rounded-full bg-gradient-to-bl from-blue-200/40 via-sky-100/30 to-transparent blur-3xl" />
-        <div className="absolute bottom-[-10%] left-[20%] w-[40%] h-[60%] rounded-full bg-gradient-to-tr from-green-100/30 via-emerald-50/20 to-transparent blur-3xl" />
-        <div className="absolute top-[10%] left-[30%] w-[30%] h-[50%] rounded-full bg-gradient-to-b from-amber-100/20 via-yellow-50/10 to-transparent blur-3xl" />
-      </div>
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true" />
       <div className="relative z-10">
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground/90 mb-3" data-testid="text-title">
           Strukturanalyse
@@ -128,11 +123,11 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-background/95 relative">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-0 w-full h-[500px]">
-          <div className="absolute top-[-5%] left-[-5%] w-[45%] h-[90%] rounded-full bg-gradient-to-br from-pink-100/50 via-rose-50/30 to-transparent blur-[80px]" />
-          <div className="absolute top-[-10%] right-[-5%] w-[45%] h-[80%] rounded-full bg-gradient-to-bl from-blue-100/50 via-indigo-50/20 to-transparent blur-[80px]" />
-          <div className="absolute bottom-0 left-[15%] w-[35%] h-[60%] rounded-full bg-gradient-to-tr from-green-100/40 via-teal-50/20 to-transparent blur-[80px]" />
-          <div className="absolute top-[20%] left-[25%] w-[25%] h-[40%] rounded-full bg-gradient-to-b from-amber-50/30 to-transparent blur-[60px]" />
+        <div className="absolute top-0 left-0 w-full h-[600px]">
+          <div className="absolute top-[-10%] left-[-10%] w-[55%] h-[100%] rounded-full bg-gradient-to-br from-pink-300/60 via-rose-200/50 to-transparent blur-[100px]" />
+          <div className="absolute top-[-15%] right-[-10%] w-[55%] h-[90%] rounded-full bg-gradient-to-bl from-blue-300/55 via-sky-200/45 to-transparent blur-[100px]" />
+          <div className="absolute bottom-[-5%] left-[10%] w-[45%] h-[70%] rounded-full bg-gradient-to-tr from-green-200/50 via-emerald-100/35 to-transparent blur-[90px]" />
+          <div className="absolute top-[15%] left-[20%] w-[35%] h-[50%] rounded-full bg-gradient-to-b from-amber-100/40 via-yellow-50/25 to-transparent blur-[70px]" />
         </div>
       </div>
 
