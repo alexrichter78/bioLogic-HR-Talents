@@ -92,11 +92,11 @@ const features = [
 
 function FeatureCards() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto w-full" data-testid="feature-cards">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto w-full auto-rows-fr" data-testid="feature-cards">
       {features.map((feature, index) => (
         <Card
           key={feature.title}
-          className="p-5 bg-white/50 dark:bg-card/50 backdrop-blur-sm border-card-border hover-elevate cursor-pointer transition-all duration-200"
+          className="p-5 bg-white/50 dark:bg-card/50 backdrop-blur-sm border-card-border hover-elevate cursor-pointer transition-all duration-200 h-full"
           data-testid={`card-feature-${index}`}
         >
           <div className="flex items-start gap-3">
