@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dna, Target, GitCompareArrows, Users, Sparkles, ShieldCheck, PlusCircle, FolderOpen } from "lucide-react";
+import { useLocation } from "wouter";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 function Header() {
@@ -86,6 +87,7 @@ const features = [
 ];
 
 function FeatureCards() {
+  const [, setLocation] = useLocation();
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto w-full auto-rows-fr" data-testid="feature-cards">
       {features.map((feature, index) => {
@@ -98,6 +100,7 @@ function FeatureCards() {
                 ? "bg-white/50 dark:bg-card/50 hover-elevate cursor-pointer"
                 : "bg-muted/40 dark:bg-muted/20 opacity-50 cursor-not-allowed select-none"
             }`}
+            onClick={isActive ? () => setLocation("/rollen-dna") : undefined}
             data-testid={`card-feature-${index}`}
           >
             <div className="flex items-start gap-3">
