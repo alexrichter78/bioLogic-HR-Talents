@@ -7,7 +7,6 @@ function Header() {
   return (
     <header className="flex items-center justify-start gap-2 flex-wrap px-6 py-4" data-testid="header">
       <img src={logoSrc} alt="bioLogic Logo" className="h-8 w-auto" data-testid="logo" />
-      <span className="text-sm text-muted-foreground font-light">RoleDynamics</span>
     </header>
   );
 }
