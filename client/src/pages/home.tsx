@@ -45,7 +45,7 @@ function ProfileCard() {
           <Button className="min-w-[180px]" data-testid="button-analyse-starten">
             Neue Rollen-DNA erstellen
           </Button>
-          <Button className="min-w-[180px]" variant="outline" data-testid="button-analyse-oeffnen">
+          <Button className="min-w-[180px]" data-testid="button-analyse-oeffnen">
             Bestehende Analyse öffnen
           </Button>
         </div>
