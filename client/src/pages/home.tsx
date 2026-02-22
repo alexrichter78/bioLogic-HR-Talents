@@ -1,26 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Briefcase, Target, GitCompareArrows, Users, UserCircle } from "lucide-react";
-import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
-
-function Header() {
-  return (
-    <header className="flex items-center justify-between gap-4 px-6 py-4" data-testid="header">
-      <div className="flex items-center gap-2 flex-wrap" data-testid="logo">
-        <img src={logoSrc} alt="bioLogic Logo" className="h-8 w-auto" />
-        <span className="text-sm text-muted-foreground font-light">RoleDynamics</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" data-testid="button-laden">
-          Laden
-        </Button>
-        <Button variant="outline" size="sm" data-testid="button-speichern">
-          Speichern
-        </Button>
-      </div>
-    </header>
-  );
-}
 
 function HeroSection() {
   return (
@@ -28,7 +8,7 @@ function HeroSection() {
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true" />
       <div className="relative z-10">
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground/90 mb-3" data-testid="text-title">
-          Strukturanalyse
+          bioLogic - RoleFit+
         </h1>
         <p className="text-muted-foreground text-base" data-testid="text-subtitle">
           Präzision in Besetzung und Teamstruktur
@@ -49,9 +29,14 @@ function ProfileCard() {
         <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-profile-desc">
           Laden Sie ein bestehendes Profil oder starten Sie eine neue Analyse.
         </p>
-        <Button className="mt-2 px-6" data-testid="button-neue-analyse">
-          Neue Analyse starten
-        </Button>
+        <div className="flex items-center gap-3 mt-2 flex-wrap">
+          <Button data-testid="button-neues-profil">
+            Neues Profil anlegen
+          </Button>
+          <Button variant="outline" data-testid="button-profil-laden">
+            Profil laden
+          </Button>
+        </div>
       </div>
     </Card>
   );
@@ -126,8 +111,6 @@ export default function Home() {
       </div>
 
       <div className="relative z-10">
-        <Header />
-
         <HeroSection />
 
         <div className="px-6 pb-12 flex flex-col gap-8">
