@@ -16,11 +16,14 @@ function HeroSection() {
     <div className="relative flex flex-col items-center justify-center py-16 px-6 text-center" data-testid="hero-section">
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true" />
       <div className="relative z-10">
-        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground/90 mb-3" data-testid="text-title">
-          bioLogic - RoleFit+
+        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground/90 mb-1" data-testid="text-title">
+          RoleDNA
         </h1>
+        <p className="text-xs text-muted-foreground/60 mb-4" data-testid="text-by-biologic">
+          by bioLogic
+        </p>
         <p className="text-muted-foreground text-base" data-testid="text-subtitle">
-          Präzision in Besetzung und Teamstruktur
+          Strukturelle Passung statt Bauchgefühl.
         </p>
       </div>
     </div>
