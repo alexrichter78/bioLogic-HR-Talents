@@ -23,7 +23,7 @@ function HeroSection() {
           by bioLogic
         </p>
         <p className="text-muted-foreground text-base" data-testid="text-subtitle">
-          Strukturelle Entscheidungen für Rolle, Persönlichkeit und Team.
+          Strukturelle Entscheidungen für Rolle, Persönlichkeit und Team(s).
         </p>
       </div>
     </div>
