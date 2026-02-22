@@ -54,7 +54,7 @@ function ProfileCard() {
         <div className="flex items-center gap-1.5 mt-3">
           <ShieldCheck className="w-3.5 h-3.5 text-muted-foreground/40" strokeWidth={1.5} />
           <p className="text-[11px] text-muted-foreground/50" data-testid="text-trust">
-            Wissenschaftlich fundierte Methodik
+            Wissenschaftlich fundierte Methodik mit nachvollziehbarer Ergebnislogik
           </p>
         </div>
       </div>
