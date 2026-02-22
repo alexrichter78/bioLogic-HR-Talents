@@ -39,7 +39,7 @@ function ProfileCard() {
           Starten Sie eine neue Analyse
         </h2>
         <p className="text-sm text-muted-foreground leading-relaxed max-w-md" data-testid="text-profile-desc">
-          Erstellen Sie eine Rollen-DNA, prüfen Sie Passung & Entwicklungspotenzial und erhalten Sie konkrete Handlungsempfehlungen.
+          Erstellen Sie eine Rollen-DNA und analysieren Sie strukturelle Passung sowie Entwicklungspotenzial auf Basis klarer Handlungsempfehlungen.
         </p>
         <div className="flex items-center gap-3 mt-2">
           <Button className="flex-1 min-w-[180px] gap-2" data-testid="button-analyse-starten">
