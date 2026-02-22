@@ -32,20 +32,20 @@ function HeroSection() {
 
 function ProfileCard() {
   return (
-    <Card className="mx-auto max-w-md w-full p-6 text-center bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border" data-testid="card-profile">
+    <Card className="mx-auto max-w-2xl w-full p-6 text-center bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border" data-testid="card-profile">
       <div className="flex flex-col items-center gap-3">
         <Sparkles className="w-10 h-10 text-muted-foreground/50" strokeWidth={1.5} />
         <h2 className="text-lg font-semibold text-foreground/90" data-testid="text-no-profile">
           Starten Sie eine neue Analyse
         </h2>
-        <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-profile-desc">
+        <p className="text-sm text-muted-foreground leading-relaxed max-w-md" data-testid="text-profile-desc">
           Erstellen Sie eine Rollen-DNA, prüfen Sie Passung & Entwicklungspotenzial und erhalten Sie konkrete Handlungsempfehlungen.
         </p>
-        <div className="flex items-center gap-3 mt-2 flex-wrap">
-          <Button className="min-w-[180px]" data-testid="button-analyse-starten">
+        <div className="flex items-center gap-3 mt-2">
+          <Button className="flex-1 min-w-[180px]" data-testid="button-analyse-starten">
             Neue Rollen-DNA erstellen
           </Button>
-          <Button className="min-w-[180px]" data-testid="button-analyse-oeffnen">
+          <Button className="flex-1 min-w-[180px]" data-testid="button-analyse-oeffnen">
             Bestehende Analyse öffnen
           </Button>
         </div>
