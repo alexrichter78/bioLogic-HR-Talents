@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dna, Target, GitCompareArrows, Users, Sparkles, ShieldCheck } from "lucide-react";
+import { Dna, Target, GitCompareArrows, Users, Sparkles, ShieldCheck, PlusCircle, FolderOpen } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 function Header() {
@@ -42,10 +42,12 @@ function ProfileCard() {
           Erstellen Sie eine Rollen-DNA, prüfen Sie Passung & Entwicklungspotenzial und erhalten Sie konkrete Handlungsempfehlungen.
         </p>
         <div className="flex items-center gap-3 mt-2">
-          <Button className="flex-1 min-w-[180px]" data-testid="button-analyse-starten">
+          <Button className="flex-1 min-w-[180px] gap-2" data-testid="button-analyse-starten">
+            <PlusCircle className="w-4 h-4" />
             Neue Rollen-DNA erstellen
           </Button>
-          <Button className="flex-1 min-w-[180px]" data-testid="button-analyse-oeffnen">
+          <Button className="flex-1 min-w-[180px] gap-2" data-testid="button-analyse-oeffnen">
+            <FolderOpen className="w-4 h-4" />
             Bestehende Analyse öffnen
           </Button>
         </div>
