@@ -1,6 +1,16 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Briefcase, Target, GitCompareArrows, Users, UserCircle } from "lucide-react";
+import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
+
+function Header() {
+  return (
+    <header className="flex items-center justify-start gap-2 flex-wrap px-6 py-4" data-testid="header">
+      <img src={logoSrc} alt="bioLogic Logo" className="h-8 w-auto" data-testid="logo" />
+      <span className="text-sm text-muted-foreground font-light">RoleDynamics</span>
+    </header>
+  );
+}
 
 function HeroSection() {
   return (
@@ -33,7 +43,7 @@ function ProfileCard() {
           <Button data-testid="button-neues-profil">
             Neues Profil anlegen
           </Button>
-          <Button variant="outline" data-testid="button-profil-laden">
+          <Button data-testid="button-profil-laden">
             Profil laden
           </Button>
         </div>
@@ -111,6 +121,8 @@ export default function Home() {
       </div>
 
       <div className="relative z-10">
+        <Header />
+
         <HeroSection />
 
         <div className="px-6 pb-12 flex flex-col gap-8">
