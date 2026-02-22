@@ -1,0 +1,91 @@
+Ziel
+
+Die Startansicht (Dashboard nach Login) soll weniger “Dateiverwaltung” und mehr “Analyse-/Entscheidungsinstrument” ausstrahlen. Fokus: Handlungsorientierung, klare CTA, methodische Sprache, Premium-Feeling.
+
+1) Copy & Microcopy Anpassungen (ohne Logik-Änderung)
+1.1 Headline / Subheadline
+
+Ist:
+
+Title: “RoleDNA by bioLogic”
+
+Subline: “Strukturelle Passung statt Bauchgefühl.”
+
+Soll (Variante A – DACH seriös):
+
+Subline ersetzen durch: „Strukturelle Entscheidungen für Rolle, Persönlichkeit und Team.“
+
+Soll (Variante B – stärker performance-getrieben):
+
+Subline ersetzen durch: „Objektive Passung. Klare Handlungsempfehlungen.“
+
+Hinweis: Title bleibt, nur Subline ändern.
+
+1.2 Empty State Text (Kachel in der Mitte)
+
+Ist: „Kein Profil geladen“ + „Laden Sie ein bestehendes Profil oder starten Sie eine neue Analyse.“
+
+Soll:
+
+Titel: „Starten Sie eine neue Analyse“
+
+Beschreibung: „Erstellen Sie eine Rollen-DNA, prüfen Sie Passung & Entwicklungspotenzial und erhalten Sie konkrete Handlungsempfehlungen.“
+
+Ziel: Kein „leer“-Gefühl, sondern aktiver Start.
+
+1.3 Button Labels
+
+Ist:
+
+„Neues Profil anlegen“
+
+„Profil laden“
+
+Soll:
+
+Primary (links): „Analyse starten“
+
+Secondary (rechts): „Analyse öffnen“
+
+Optional (wenn ihr DNA-Begriffe stärker reinziehen wollt):
+
+Primary: „Neue Rollen-DNA erstellen“
+
+Secondary: „Bestehende Analyse öffnen“
+
+2) Modul-Kacheln (unten) – Umbenennung + kurze Outcome-Beschreibung
+
+Ziel: Nicht wie Menüpunktliste wirken, sondern wie Ergebnis-Module.
+
+Modul 1 (bisher JobCheck)
+
+Titel: „Rollen-DNA definieren“
+Beschreibung: „Tätigkeiten, Kompetenzen und Erfolgsfaktoren strukturiert erfassen.“
+
+Modul 2 (bisher Sollprofil)
+
+Titel: „Zielprofil festlegen“
+Beschreibung: „Persönlichkeitsstruktur bestimmen, die in dieser Rolle performt.“
+
+Modul 3 (bisher Soll-Ist Vergleich)
+
+Titel: „Passung objektiv messen“
+Beschreibung: „Abweichungen, Potenziale und Entwicklungsfelder sichtbar machen.“
+
+Modul 4 (bisher Teamanalyse)
+
+Titel: „Team-Dynamik analysieren“
+Beschreibung: „Strukturelle Balance, Reibung und Ergänzungen im Team erkennen.“
+
+Wichtig: Funktionalität bleibt gleich. Nur Labels/Texte ändern.
+
+3) Optional: “Premium-Trust” Hinweise (klein, unaufdringlich)
+
+Unterhalb der Subline oder im Empty-State-Card Footer ein kleiner Hinweis (nicht marketing-lastig):
+
+„Wissenschaftlich fundierte Methodik“
+oder
+
+„Objektive Analysebasis mit Handlungsempfehlungen“
+
+Ziel: Vertrauen + Methodik sichtbar machen.

@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Briefcase, Target, GitCompareArrows, Users, UserCircle } from "lucide-react";
+import { Dna, Target, GitCompareArrows, Users, Sparkles, ShieldCheck } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 function Header() {
@@ -23,7 +23,7 @@ function HeroSection() {
           by bioLogic
         </p>
         <p className="text-muted-foreground text-base" data-testid="text-subtitle">
-          Strukturelle Passung statt Bauchgefühl.
+          Strukturelle Entscheidungen für Rolle, Persönlichkeit und Team.
         </p>
       </div>
     </div>
@@ -34,20 +34,26 @@ function ProfileCard() {
   return (
     <Card className="mx-auto max-w-md w-full p-6 text-center bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border" data-testid="card-profile">
       <div className="flex flex-col items-center gap-3">
-        <UserCircle className="w-10 h-10 text-muted-foreground/50" strokeWidth={1.5} />
+        <Sparkles className="w-10 h-10 text-muted-foreground/50" strokeWidth={1.5} />
         <h2 className="text-lg font-semibold text-foreground/90" data-testid="text-no-profile">
-          Kein Profil geladen
+          Starten Sie eine neue Analyse
         </h2>
         <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-profile-desc">
-          Laden Sie ein bestehendes Profil oder starten Sie eine neue Analyse.
+          Erstellen Sie eine Rollen-DNA, prüfen Sie Passung & Entwicklungspotenzial und erhalten Sie konkrete Handlungsempfehlungen.
         </p>
         <div className="flex items-center gap-3 mt-2 flex-wrap">
-          <Button className="min-w-[180px]" data-testid="button-neues-profil">
-            Neues Profil anlegen
+          <Button className="min-w-[180px]" data-testid="button-analyse-starten">
+            Neue Rollen-DNA erstellen
           </Button>
-          <Button className="min-w-[180px]" data-testid="button-profil-laden">
-            Profil laden
+          <Button className="min-w-[180px]" variant="outline" data-testid="button-analyse-oeffnen">
+            Bestehende Analyse öffnen
           </Button>
+        </div>
+        <div className="flex items-center gap-1.5 mt-3">
+          <ShieldCheck className="w-3.5 h-3.5 text-muted-foreground/40" strokeWidth={1.5} />
+          <p className="text-[11px] text-muted-foreground/50" data-testid="text-trust">
+            Wissenschaftlich fundierte Methodik
+          </p>
         </div>
       </div>
     </Card>
@@ -56,28 +62,24 @@ function ProfileCard() {
 
 const features = [
   {
-    icon: Briefcase,
-    title: "JobCheck",
-    description: "Tätigkeiten und Kompetenzen definieren",
-    detail: "Rolle strukturell erfassen",
+    icon: Dna,
+    title: "Rollen-DNA definieren",
+    description: "Tätigkeiten, Kompetenzen und Erfolgsfaktoren strukturiert erfassen.",
   },
   {
     icon: Target,
-    title: "Sollprofil",
-    description: "Zielstruktur der Rolle festlegen",
-    detail: "Strategische Ausrichtung bestimmen",
+    title: "Zielprofil festlegen",
+    description: "Persönlichkeitsstruktur bestimmen, die in dieser Rolle performt.",
   },
   {
     icon: GitCompareArrows,
-    title: "Soll - Ist Vergleich",
-    description: "Strukturanalyse mit der besetzten Person abgleichen",
-    detail: "Überschneidungen erkennen\n→ Abweichungen erkennen",
+    title: "Passung objektiv messen",
+    description: "Abweichungen, Potenziale und Entwicklungsfelder sichtbar machen.",
   },
   {
     icon: Users,
-    title: "Teamanalyse",
-    description: "Strukturelle Diversität und Dynamik im Team analysieren",
-    detail: "Stärken und Balance identifizieren",
+    title: "Team-Dynamik analysieren",
+    description: "Strukturelle Balance, Reibung und Ergänzungen im Team erkennen.",
   },
 ];
 
@@ -96,11 +98,8 @@ function FeatureCards() {
               <h3 className="text-sm font-semibold text-foreground/90" data-testid={`text-feature-title-${index}`}>
                 {feature.title}
               </h3>
-              <p className="text-xs text-muted-foreground leading-relaxed italic">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 {feature.description}
-              </p>
-              <p className="text-xs text-muted-foreground/70 leading-relaxed whitespace-pre-line">
-                → {feature.detail}
               </p>
             </div>
           </div>
