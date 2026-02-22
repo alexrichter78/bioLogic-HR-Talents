@@ -32,6 +32,7 @@ function HeroSection() {
 }
 
 function ProfileCard() {
+  const [, setLocation] = useLocation();
   return (
     <Card className="mx-auto max-w-2xl w-full p-6 text-center bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border" data-testid="card-profile">
       <div className="flex flex-col items-center gap-3">
@@ -43,7 +44,7 @@ function ProfileCard() {
           Erstellen Sie eine Rollen-DNA und analysieren Sie strukturelle Passung sowie Entwicklungspotenzial auf Basis klarer Handlungsempfehlungen.
         </p>
         <div className="flex items-center gap-3 mt-2">
-          <Button className="flex-1 min-w-[180px] gap-2" data-testid="button-analyse-starten">
+          <Button className="flex-1 min-w-[180px] gap-2" data-testid="button-analyse-starten" onClick={() => setLocation("/rollen-dna")}>
             <PlusCircle className="w-4 h-4" />
             Neue Rollen-DNA erstellen
           </Button>
