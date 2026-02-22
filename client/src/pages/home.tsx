@@ -40,10 +40,10 @@ function ProfileCard() {
           Laden Sie ein bestehendes Profil oder starten Sie eine neue Analyse.
         </p>
         <div className="flex items-center gap-3 mt-2 flex-wrap">
-          <Button data-testid="button-neues-profil">
+          <Button className="min-w-[180px]" data-testid="button-neues-profil">
             Neues Profil anlegen
           </Button>
-          <Button data-testid="button-profil-laden">
+          <Button className="min-w-[180px]" data-testid="button-profil-laden">
             Profil laden
           </Button>
         </div>
