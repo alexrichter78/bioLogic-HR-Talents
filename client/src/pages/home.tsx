@@ -88,25 +88,32 @@ const features = [
 function FeatureCards() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto w-full auto-rows-fr" data-testid="feature-cards">
-      {features.map((feature, index) => (
-        <Card
-          key={feature.title}
-          className="p-5 bg-white/50 dark:bg-card/50 backdrop-blur-sm border-card-border hover-elevate cursor-pointer transition-all duration-200 h-full"
-          data-testid={`card-feature-${index}`}
-        >
-          <div className="flex items-start gap-3">
-            <feature.icon className="w-5 h-5 text-muted-foreground/60 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
-            <div className="flex flex-col gap-1.5">
-              <h3 className="text-sm font-semibold text-foreground/90" data-testid={`text-feature-title-${index}`}>
-                {feature.title}
-              </h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                {feature.description}
-              </p>
+      {features.map((feature, index) => {
+        const isActive = index === 0;
+        return (
+          <Card
+            key={feature.title}
+            className={`p-5 backdrop-blur-sm border-card-border transition-all duration-200 h-full ${
+              isActive
+                ? "bg-white/50 dark:bg-card/50 hover-elevate cursor-pointer"
+                : "bg-muted/40 dark:bg-muted/20 opacity-50 cursor-not-allowed select-none"
+            }`}
+            data-testid={`card-feature-${index}`}
+          >
+            <div className="flex items-start gap-3">
+              <feature.icon className={`w-5 h-5 mt-0.5 flex-shrink-0 ${isActive ? "text-muted-foreground/60" : "text-muted-foreground/30"}`} strokeWidth={1.5} />
+              <div className="flex flex-col gap-1.5">
+                <h3 className={`text-sm font-semibold ${isActive ? "text-foreground/90" : "text-foreground/40"}`} data-testid={`text-feature-title-${index}`}>
+                  {feature.title}
+                </h3>
+                <p className={`text-xs leading-relaxed ${isActive ? "text-muted-foreground" : "text-muted-foreground/40"}`}>
+                  {feature.description}
+                </p>
+              </div>
             </div>
-          </div>
-        </Card>
-      ))}
+          </Card>
+        );
+      })}
     </div>
   );
 }
