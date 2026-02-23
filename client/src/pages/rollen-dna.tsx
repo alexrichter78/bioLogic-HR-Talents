@@ -150,9 +150,7 @@ function PillGroup({
   wrap?: boolean;
 }) {
   return (
-    <div className={`flex items-stretch gap-2 rounded-3xl p-1.5 ${wrap ? "flex-wrap" : ""}`}
-      style={{ background: "rgba(0,0,0,0.03)" }}
-    >
+    <div className={`flex items-stretch gap-2 p-1.5 ${wrap ? "flex-wrap" : ""}`}>
       {options.map((opt, idx) => {
         const isSelected = selected.includes(opt);
         return (
@@ -210,9 +208,7 @@ function PillGroupIndexed({
   indexOffset?: number;
 }) {
   return (
-    <div className="flex items-stretch gap-2 rounded-3xl p-1.5"
-      style={{ background: "rgba(0,0,0,0.03)" }}
-    >
+    <div className="flex items-stretch gap-2 p-1.5">
       {options.map((opt, idx) => {
         const globalIdx = indexOffset + idx;
         const isSelected = selectedIndices.includes(globalIdx);
