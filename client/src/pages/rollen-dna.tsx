@@ -710,6 +710,13 @@ export default function RollenDNA() {
                                       </div>
                                     ))}
                                   </div>
+                                  <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+                                    <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", lineHeight: 1.6 }}>
+                                      Im Zweifel orientieren Sie sich bitte an folgender Leitfrage:<br />
+                                      Hat die Rolle formale Zielvereinbarungs- und Beurteilungsverantwortung für Mitarbeitende?<br />
+                                      Wenn ja, liegt in der Regel disziplinarische Führung vor.
+                                    </p>
+                                  </div>
                                 </div>
                               </>
                             )}
@@ -723,13 +730,7 @@ export default function RollenDNA() {
                             options={["Keine", "Projekt-/Teamkoordination", "Fachliche Führung", "Disziplinarische Führung mit Ergebnisverantwortung"]}
                             selected={[fuehrung]}
                             onSelect={handleFuehrung}
-                            wrap
                           />
-                          <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", lineHeight: 1.6, marginTop: 20, paddingLeft: 8 }}>
-                            Im Zweifel orientieren Sie sich bitte an folgender Leitfrage:<br />
-                            Hat die Rolle formale Zielvereinbarungs- und Beurteilungsverantwortung für Mitarbeitende?<br />
-                            Wenn ja, liegt in der Regel disziplinarische Führung vor.
-                          </p>
                         </div>
                       </div>
                     </FadeInSection>
