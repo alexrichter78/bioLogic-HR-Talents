@@ -627,7 +627,7 @@ export default function RollenDNA() {
   if (currentStep > 2) completedSteps.push(2);
 
   const generateKompetenzen = async () => {
-    if (taetigkeiten.length > 0 || !beruf) return;
+    if (!beruf) return;
     setIsGenerating(true);
     try {
       const erfolgsfokusText = erfolgsfokusIndices
@@ -663,7 +663,7 @@ export default function RollenDNA() {
 
   const goToStep = (step: number) => {
     setCurrentStep(step);
-    if (step === 3 && taetigkeiten.length === 0) {
+    if (step === 3 && currentStep === 2) {
       generateKompetenzen();
     }
   };
