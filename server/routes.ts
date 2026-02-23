@@ -69,6 +69,8 @@ Beispiele: Vertriebsziele trotz Marktdruck erreichen, Projekte gegen Widerständ
 ## WICHTIGE KONTEXTREGELN
 
 - KRITISCH: Systematische Tätigkeiten in IT-Systemen (ERP, CRM, SAP, etc.) sind IMMER "Analytisch" – z.B. Bestellungen auslösen, Buchungen durchführen, Stammdaten pflegen, Liefertermine überwachen, Wareneingänge buchen, Reports erstellen
+- KRITISCH: Wenn "Konflikte" oder "klären" im Zusammenhang mit TECHNISCHEN oder FACHLICHEN Entscheidungen steht, ist das "Analytisch" – denn es geht um sachliche Bewertung, Argumentation und fachliche Abwägung, NICHT um Beziehungspflege. Beispiele: "Konflikte zu technischen Entscheidungen klären" → Analytisch, "Technische Unstimmigkeiten lösen" → Analytisch, "Fachliche Meinungsverschiedenheiten klären" → Analytisch
+- KRITISCH: "Intuitiv" bei Konflikten NUR wenn es um zwischenmenschliche/emotionale Konflikte geht (z.B. Teamkonflikte zwischen Personen, Mobbing, persönliche Spannungen)
 - "Kommunikationsstärke" bei einem Ingenieur in der Robotik, der Fachwissen vermittelt → "Analytisch" (Wissen aufbereiten und erklären)
 - "Kommunikationsstärke" bei einem HR-Manager, der Mitarbeitergespräche führt → "Intuitiv" (Beziehungsebene, Empathie)
 - "Kommunikationsstärke" bei einem Vertriebsleiter, der Deals abschließt → "Impulsiv" (Überzeugung, Abschluss erzielen)
