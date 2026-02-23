@@ -92,7 +92,21 @@ function ProfileCard() {
           </p>
           <div className="flex items-center gap-3 mt-4">
             <button
-              onClick={() => setShowResetConfirm(true)}
+              onClick={() => {
+                const raw = localStorage.getItem("rollenDnaState");
+                let hasData = false;
+                if (raw) {
+                  try {
+                    const state = JSON.parse(raw);
+                    hasData = !!(state.beruf || state.fuehrung || (state.erfolgsfokusIndices && state.erfolgsfokusIndices.length > 0) || (state.taetigkeiten && state.taetigkeiten.length > 0));
+                  } catch {}
+                }
+                if (hasData) {
+                  setShowResetConfirm(true);
+                } else {
+                  setLocation("/rollen-dna");
+                }
+              }}
               style={{
                 height: 52,
                 paddingLeft: 28,
