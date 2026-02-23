@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
-type KompetenzTyp = "Impulsiv" | "Intuitiv" | "Analytisch" | "Mittel";
+type KompetenzTyp = "Impulsiv" | "Intuitiv" | "Analytisch";
 type Niveau = "Niedrig" | "Mittel" | "Hoch";
 type TaetigkeitKategorie = "haupt" | "neben" | "fuehrung";
 
@@ -14,7 +14,7 @@ interface Taetigkeit {
   id: number;
   name: string;
   kategorie: TaetigkeitKategorie;
-  kompetenzen: KompetenzTyp[];
+  kompetenz: KompetenzTyp;
   niveau: Niveau;
 }
 
@@ -22,8 +22,10 @@ const KOMPETENZ_COLORS: Record<KompetenzTyp, string> = {
   Impulsiv: "#FF6B6B",
   Intuitiv: "#FBBF24",
   Analytisch: "#60A5FA",
-  Mittel: "#A78BFA",
 };
+
+const KOMPETENZ_OPTIONS: KompetenzTyp[] = ["Impulsiv", "Intuitiv", "Analytisch"];
+const NIVEAU_OPTIONS: Niveau[] = ["Niedrig", "Mittel", "Hoch"];
 
 const ERFOLGSFOKUS_LABELS = [
   "Ergebnis-/Umsatzdruck",
@@ -416,23 +418,29 @@ export default function RollenDNA() {
 
   const [activeTab, setActiveTab] = useState<TaetigkeitKategorie>("haupt");
   const [taetigkeiten, setTaetigkeiten] = useState<Taetigkeit[]>([
-    { id: 1, name: "Entscheidungen treffen", kategorie: "haupt", kompetenzen: ["Impulsiv", "Intuitiv", "Analytisch"], niveau: "Hoch" },
-    { id: 2, name: "SiLo-Team koordinieren", kategorie: "haupt", kompetenzen: ["Impulsiv", "Intuitiv", "Mittel"], niveau: "Mittel" },
-    { id: 3, name: "Strategien entwickeln", kategorie: "haupt", kompetenzen: ["Intuitiv", "Intuitiv", "Analytisch"], niveau: "Hoch" },
-    { id: 4, name: "Datenanalysen erstellen", kategorie: "haupt", kompetenzen: ["Analytisch", "Mittel", "Analytisch"], niveau: "Mittel" },
-    { id: 5, name: "Berichte verfassen", kategorie: "neben", kompetenzen: ["Analytisch", "Intuitiv"], niveau: "Niedrig" },
-    { id: 6, name: "Meetings moderieren", kategorie: "neben", kompetenzen: ["Impulsiv", "Intuitiv"], niveau: "Mittel" },
-    { id: 7, name: "Mitarbeiter entwickeln", kategorie: "fuehrung", kompetenzen: ["Intuitiv", "Analytisch"], niveau: "Hoch" },
+    { id: 1, name: "Kundenberatung und persönliche Bedarfsanalyse, um maßgeschneiderte Lösungen vorzuschlagen", kategorie: "haupt", kompetenz: "Intuitiv", niveau: "Mittel" },
+    { id: 2, name: "Unabhängige Bewertung und Vergleich von Produkten verschiedener Anbieter für Kunden", kategorie: "haupt", kompetenz: "Analytisch", niveau: "Mittel" },
+    { id: 3, name: "Erstellung detaillierter Angebote und Erläuterung der Konditionen und Leistungen", kategorie: "haupt", kompetenz: "Analytisch", niveau: "Mittel" },
+    { id: 4, name: "Unterstützung von Kunden bei Vertragsabschlüssen und Dokumentation aller relevanten Daten", kategorie: "haupt", kompetenz: "Analytisch", niveau: "Mittel" },
+    { id: 5, name: "Regelmäßige Überprüfung bestehender Verträge und Anpassung an veränderte Lebensumstände", kategorie: "haupt", kompetenz: "Analytisch", niveau: "Mittel" },
+    { id: 6, name: "Beratung zu Schadensfällen und Hilfestellung bei der Schadensabwicklung", kategorie: "neben", kompetenz: "Intuitiv", niveau: "Mittel" },
+    { id: 7, name: "Schulung und Aufklärung von Kunden über Risiken und notwendige Absicherungen", kategorie: "neben", kompetenz: "Intuitiv", niveau: "Mittel" },
+    { id: 8, name: "Mitarbeiter entwickeln und fördern", kategorie: "fuehrung", kompetenz: "Intuitiv", niveau: "Hoch" },
   ]);
-  const [nextId, setNextId] = useState(8);
+  const [nextId, setNextId] = useState(9);
 
   const filteredTaetigkeiten = taetigkeiten.filter(t => t.kategorie === activeTab);
   const hauptCount = taetigkeiten.filter(t => t.kategorie === "haupt").length;
   const nebenCount = taetigkeiten.filter(t => t.kategorie === "neben").length;
   const fuehrungCount = taetigkeiten.filter(t => t.kategorie === "fuehrung").length;
+  const highCount = taetigkeiten.filter(t => t.niveau === "Hoch").length;
 
   const handleNiveauChange = (id: number, niveau: Niveau) => {
     setTaetigkeiten(prev => prev.map(t => t.id === id ? { ...t, niveau } : t));
+  };
+
+  const handleKompetenzChange = (id: number, kompetenz: KompetenzTyp) => {
+    setTaetigkeiten(prev => prev.map(t => t.id === id ? { ...t, kompetenz } : t));
   };
 
   const handleRemoveTaetigkeit = (id: number) => {
@@ -444,7 +452,7 @@ export default function RollenDNA() {
       id: nextId,
       name: "Neue Tätigkeit",
       kategorie: activeTab,
-      kompetenzen: ["Analytisch"],
+      kompetenz: "Analytisch",
       niveau: "Mittel",
     };
     setTaetigkeiten(prev => [...prev, newT]);
@@ -834,112 +842,144 @@ export default function RollenDNA() {
                     ))}
                   </div>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div>
                     {filteredTaetigkeiten.length === 0 ? (
-                      <div className="text-center py-8">
+                      <div className="text-center py-12">
                         <p style={{ fontSize: 15, color: "#8E8E93" }}>
                           Noch keine {activeTab === "haupt" ? "Haupttätigkeiten" : activeTab === "neben" ? "Nebentätigkeiten" : "Führungskompetenzen"} hinzugefügt.
                         </p>
                       </div>
                     ) : (
-                      filteredTaetigkeiten.map(t => (
-                        <div
-                          key={t.id}
-                          style={{
-                            background: "rgba(255,255,255,0.8)",
-                            borderRadius: 16,
-                            padding: "20px 24px",
-                            border: "1px solid rgba(0,0,0,0.05)",
-                            transition: "all 200ms ease",
-                          }}
-                          data-testid={`taetigkeit-${t.id}`}
-                        >
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-3 flex-wrap">
-                                {t.kompetenzen.map((k, ki) => (
-                                  <span
-                                    key={ki}
-                                    style={{
-                                      display: "inline-flex",
-                                      alignItems: "center",
-                                      gap: 4,
-                                      height: 24,
-                                      paddingLeft: 8,
-                                      paddingRight: 8,
-                                      borderRadius: 999,
-                                      fontSize: 11,
-                                      fontWeight: 600,
-                                      color: "#FFFFFF",
-                                      background: KOMPETENZ_COLORS[k],
-                                    }}
-                                    data-testid={`kompetenz-tag-${t.id}-${ki}`}
-                                  >
-                                    <span style={{ width: 6, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.5)" }} />
-                                    {k}
-                                  </span>
-                                ))}
-                              </div>
-                              <h4 style={{ fontSize: 16, fontWeight: 600, color: "#1D1D1F", marginBottom: 12 }}>
+                      filteredTaetigkeiten.map((t, idx) => (
+                        <div key={t.id} data-testid={`taetigkeit-${t.id}`}>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "flex-start",
+                              gap: 16,
+                              padding: "20px 0",
+                            }}
+                          >
+                            <span style={{
+                              fontSize: 14,
+                              fontWeight: 500,
+                              color: "#AEAEB2",
+                              minWidth: 24,
+                              paddingTop: 2,
+                            }}>
+                              {idx + 1}.
+                            </span>
+
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <p style={{
+                                fontSize: 15,
+                                fontWeight: 400,
+                                color: "#1D1D1F",
+                                lineHeight: 1.5,
+                              }}>
                                 {t.name}
-                              </h4>
-                              <div className="flex items-center gap-2">
-                                {(["Niedrig", "Mittel", "Hoch"] as Niveau[]).map(n => (
-                                  <button
-                                    key={n}
-                                    onClick={() => handleNiveauChange(t.id, n)}
-                                    style={{
-                                      height: 32,
-                                      paddingLeft: 14,
-                                      paddingRight: 14,
-                                      fontSize: 13,
-                                      fontWeight: 500,
-                                      borderRadius: 999,
-                                      border: t.niveau === n ? "none" : "1px solid rgba(0,0,0,0.1)",
-                                      cursor: "pointer",
-                                      transition: "all 150ms ease",
-                                      background: t.niveau === n ? "linear-gradient(135deg, #0071E3, #34AADC)" : "transparent",
-                                      color: t.niveau === n ? "#FFFFFF" : "#8E8E93",
-                                      display: "flex",
-                                      alignItems: "center",
-                                      gap: 4,
-                                    }}
-                                    data-testid={`niveau-${t.id}-${n.toLowerCase()}`}
-                                  >
-                                    {t.niveau === n && <Check style={{ width: 12, height: 12 }} />}
-                                    {n}
-                                  </button>
-                                ))}
-                              </div>
+                              </p>
                             </div>
-                            <button
-                              onClick={() => handleRemoveTaetigkeit(t.id)}
-                              style={{
-                                width: 32,
-                                height: 32,
-                                borderRadius: 8,
-                                border: "none",
-                                background: "transparent",
-                                cursor: "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                color: "#8E8E93",
-                                transition: "all 150ms ease",
-                              }}
-                              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.05)"; }}
-                              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
-                              data-testid={`remove-taetigkeit-${t.id}`}
-                            >
-                              <MoreHorizontal style={{ width: 16, height: 16 }} />
-                            </button>
+
+                            <div style={{ display: "flex", alignItems: "flex-start", gap: 12, flexShrink: 0 }}>
+                              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
+                                <select
+                                  value={t.niveau}
+                                  onChange={(e) => handleNiveauChange(t.id, e.target.value as Niveau)}
+                                  style={{
+                                    appearance: "none",
+                                    WebkitAppearance: "none",
+                                    background: "transparent",
+                                    border: "none",
+                                    fontSize: 14,
+                                    fontWeight: 500,
+                                    color: "#1D1D1F",
+                                    cursor: "pointer",
+                                    padding: "2px 16px 2px 0",
+                                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238E8E93' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
+                                    backgroundRepeat: "no-repeat",
+                                    backgroundPosition: "right center",
+                                  }}
+                                  data-testid={`select-niveau-${t.id}`}
+                                >
+                                  {NIVEAU_OPTIONS.map(n => (
+                                    <option key={n} value={n}>{n}</option>
+                                  ))}
+                                </select>
+
+                                <select
+                                  value={t.kompetenz}
+                                  onChange={(e) => handleKompetenzChange(t.id, e.target.value as KompetenzTyp)}
+                                  style={{
+                                    appearance: "none",
+                                    WebkitAppearance: "none",
+                                    background: "transparent",
+                                    border: "none",
+                                    fontSize: 13,
+                                    fontWeight: 600,
+                                    color: KOMPETENZ_COLORS[t.kompetenz],
+                                    cursor: "pointer",
+                                    padding: "2px 16px 2px 0",
+                                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238E8E93' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
+                                    backgroundRepeat: "no-repeat",
+                                    backgroundPosition: "right center",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 6,
+                                  }}
+                                  data-testid={`select-kompetenz-${t.id}`}
+                                >
+                                  {KOMPETENZ_OPTIONS.map(k => (
+                                    <option key={k} value={k} style={{ color: KOMPETENZ_COLORS[k] }}>● {k}</option>
+                                  ))}
+                                </select>
+                              </div>
+
+                              <button
+                                onClick={() => handleRemoveTaetigkeit(t.id)}
+                                style={{
+                                  width: 28,
+                                  height: 28,
+                                  borderRadius: 6,
+                                  border: "none",
+                                  background: "transparent",
+                                  cursor: "pointer",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  color: "#AEAEB2",
+                                  transition: "all 150ms ease",
+                                  marginTop: 2,
+                                }}
+                                onMouseEnter={(e) => {
+                                  (e.currentTarget as HTMLButtonElement).style.color = "#FF3B30";
+                                  (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,59,48,0.06)";
+                                }}
+                                onMouseLeave={(e) => {
+                                  (e.currentTarget as HTMLButtonElement).style.color = "#AEAEB2";
+                                  (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+                                }}
+                                data-testid={`remove-taetigkeit-${t.id}`}
+                              >
+                                <X style={{ width: 14, height: 14 }} />
+                              </button>
+                            </div>
                           </div>
+                          {idx < filteredTaetigkeiten.length - 1 && (
+                            <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)" }} />
+                          )}
                         </div>
                       ))
                     )}
                   </div>
 
-                  <div style={{ marginTop: 24, display: "flex", justifyContent: "center" }}>
+                  <div style={{
+                    marginTop: 24,
+                    paddingTop: 24,
+                    borderTop: "1px dashed rgba(0,0,0,0.08)",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}>
                     <button
                       onClick={handleAddTaetigkeit}
                       style={{
@@ -972,7 +1012,7 @@ export default function RollenDNA() {
                   </div>
 
                   <p style={{ fontSize: 12, color: "#AEAEB2", textAlign: "center", marginTop: 16 }}>
-                    Maximal 15 Haupttätigkeiten definiert
+                    Maximal 15 {activeTab === "haupt" ? "Haupttätigkeiten" : activeTab === "neben" ? "Nebentätigkeiten" : "Führungskompetenzen"} definiert
                   </p>
                 </div>
 
