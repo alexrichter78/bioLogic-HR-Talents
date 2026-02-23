@@ -19,9 +19,9 @@ interface Taetigkeit {
 }
 
 const KOMPETENZ_COLORS: Record<KompetenzTyp, string> = {
-  Impulsiv: "#FF6B6B",
-  Intuitiv: "#FBBF24",
-  Analytisch: "#60A5FA",
+  Impulsiv: "#C41E3A",
+  Intuitiv: "#F39200",
+  Analytisch: "#1A5DAB",
 };
 
 const KOMPETENZ_OPTIONS: KompetenzTyp[] = ["Impulsiv", "Intuitiv", "Analytisch"];
@@ -969,12 +969,6 @@ export default function RollenDNA() {
                                         }}
                                         data-testid={`kompetenz-${t.id}-${k.toLowerCase()}`}
                                       >
-                                        <span style={{
-                                          width: 6,
-                                          height: 6,
-                                          borderRadius: 3,
-                                          background: t.kompetenz === k ? "rgba(255,255,255,0.5)" : KOMPETENZ_COLORS[k],
-                                        }} />
                                         {k}
                                       </button>
                                     ))}
