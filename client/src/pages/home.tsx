@@ -282,16 +282,28 @@ function ConfirmResetModal({ onConfirm, onCancel }: { onConfirm: () => void; onC
 function FeatureCards() {
   const [, setLocation] = useLocation();
   const [dnaCompleted, setDnaCompleted] = useState(false);
+  const [hasProfileData, setHasProfileData] = useState(false);
   useEffect(() => {
-    setDnaCompleted(localStorage.getItem("rollenDnaCompleted") === "true");
-    const handleStorage = () => setDnaCompleted(localStorage.getItem("rollenDnaCompleted") === "true");
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
+    const checkState = () => {
+      setDnaCompleted(localStorage.getItem("rollenDnaCompleted") === "true");
+      const raw = localStorage.getItem("rollenDnaState");
+      if (raw) {
+        try {
+          const state = JSON.parse(raw);
+          setHasProfileData(!!(state.beruf || state.fuehrung || (state.erfolgsfokusIndices && state.erfolgsfokusIndices.length > 0) || (state.taetigkeiten && state.taetigkeiten.length > 0)));
+        } catch { setHasProfileData(false); }
+      } else {
+        setHasProfileData(false);
+      }
+    };
+    checkState();
+    window.addEventListener("storage", checkState);
+    return () => window.removeEventListener("storage", checkState);
   }, []);
 
   const resolvedFeatures = features.map((f, i) => ({
     ...f,
-    active: i === 0 ? true : dnaCompleted,
+    active: i === 0 ? hasProfileData : dnaCompleted,
   }));
 
   return (
