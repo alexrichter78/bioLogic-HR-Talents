@@ -505,11 +505,22 @@ export default function RollenDNA() {
                     <Button
                       disabled={!step1Valid}
                       onClick={() => goToStep(2)}
-                      className="gap-2 rounded-lg px-6"
+                      className="gap-2"
+                      style={{
+                        height: 52,
+                        paddingLeft: 32,
+                        paddingRight: 32,
+                        fontSize: 16,
+                        fontWeight: 600,
+                        borderRadius: 14,
+                        background: step1Valid ? "linear-gradient(135deg, #0071E3, #34AADC)" : undefined,
+                        border: "none",
+                        boxShadow: step1Valid ? "0 4px 16px rgba(0,113,227,0.3)" : undefined,
+                      }}
                       data-testid="button-step-1-weiter"
                     >
                       Weiter
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-5 h-5" />
                     </Button>
                   </div>
                 </div>
@@ -721,10 +732,21 @@ export default function RollenDNA() {
                       Noch keine Tätigkeiten hinzugefügt.
                     </p>
                     <Button
-                      className="gap-1.5 rounded-lg px-6"
+                      className="gap-2"
+                      style={{
+                        height: 52,
+                        paddingLeft: 32,
+                        paddingRight: 32,
+                        fontSize: 16,
+                        fontWeight: 600,
+                        borderRadius: 14,
+                        background: "linear-gradient(135deg, #0071E3, #34AADC)",
+                        border: "none",
+                        boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
+                      }}
                       data-testid="button-taetigkeit-hinzufuegen"
                     >
-                      <Plus className="w-4 h-4" />
+                      <Plus className="w-5 h-5" />
                       Tätigkeit hinzufügen
                     </Button>
                   </div>
