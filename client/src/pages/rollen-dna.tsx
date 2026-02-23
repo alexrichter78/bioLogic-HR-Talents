@@ -876,10 +876,10 @@ export default function RollenDNA() {
 
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div className="flex items-start justify-between gap-3">
-                                <input
-                                  type="text"
+                                <textarea
                                   value={t.name}
                                   onChange={(e) => handleRenameTaetigkeit(t.id, e.target.value)}
+                                  rows={2}
                                   style={{
                                     fontSize: 15,
                                     fontWeight: 400,
@@ -893,6 +893,8 @@ export default function RollenDNA() {
                                     borderBottom: "1px solid transparent",
                                     transition: "border-color 150ms ease",
                                     width: "100%",
+                                    resize: "none",
+                                    fontFamily: "inherit",
                                   }}
                                   onFocus={(e) => { e.currentTarget.style.borderBottomColor = "rgba(0,113,227,0.3)"; }}
                                   onBlur={(e) => { e.currentTarget.style.borderBottomColor = "transparent"; }}
