@@ -929,7 +929,7 @@ export default function RollenDNA() {
                                           border: t.niveau === n ? "1.5px solid transparent" : "1px solid rgba(0,0,0,0.1)",
                                           cursor: "pointer",
                                           transition: "all 150ms ease",
-                                          background: t.niveau === n ? "linear-gradient(135deg, #0071E3, #34AADC)" : "transparent",
+                                          background: t.niveau === n ? "linear-gradient(135deg, #6B7280, #9CA3AF)" : "transparent",
                                           color: t.niveau === n ? "#FFFFFF" : "#8E8E93",
                                           display: "flex",
                                           alignItems: "center",
