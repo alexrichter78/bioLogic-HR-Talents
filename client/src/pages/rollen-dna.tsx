@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight } from "lucide-react";
+import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 const ERFOLGSFOKUS_LABELS = [
@@ -368,22 +368,35 @@ export default function RollenDNA() {
             )}
 
             {currentStep === 2 ? (
-              <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-2">
-                <div className="p-8">
-                  <div className="flex items-center gap-3 mb-1">
-                    <span className="text-xs font-medium text-primary uppercase tracking-wider">Schritt 2</span>
-                  </div>
-                  <h2 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90 mb-2" data-testid="text-step-2-title">
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-2">
+                <div className="mb-6">
+                  <span className="text-xs font-medium text-primary uppercase tracking-wider">Schritt 2</span>
+                  <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} className="dark:text-foreground/90 mt-1" data-testid="text-step-2-title">
                     Rahmenbedingungen der Rolle
                   </h2>
+                </div>
 
-                  <div className="space-y-20 mt-10">
+                <div
+                  style={{
+                    background: "#FAFAFA",
+                    borderRadius: 24,
+                    padding: "48px",
+                    boxShadow: "0 8px 30px rgba(0,0,0,0.04)",
+                  }}
+                  className="dark:bg-card/40"
+                >
 
-                    <div data-testid="section-fuehrung">
-                      <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
-                        Führungsverantwortung
-                      </h3>
-                      <div className="mt-6">
+                  <div style={{ display: "flex", flexDirection: "column", gap: 64 }}>
+
+                    <div data-testid="section-fuehrung" className="relative">
+                      <div style={{ position: "absolute", top: -16, right: 0, fontSize: 96, fontWeight: 800, color: "rgba(0,0,0,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>01</div>
+                      <div className="flex items-center gap-3">
+                        <Users style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
+                        <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
+                          Führungsverantwortung
+                        </h3>
+                      </div>
+                      <div style={{ marginTop: 28 }}>
                         <PillGroup
                           options={["Keine", "Koordination", "Führung"]}
                           selected={[fuehrung]}
@@ -392,11 +405,15 @@ export default function RollenDNA() {
                       </div>
                     </div>
 
-                    <div data-testid="section-erfolgsfokus">
-                      <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
-                        Erfolgsfokus
-                      </h3>
-                      <div className="mt-6 flex flex-col gap-2">
+                    <div data-testid="section-erfolgsfokus" className="relative">
+                      <div style={{ position: "absolute", top: -16, right: 0, fontSize: 96, fontWeight: 800, color: "rgba(0,0,0,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>02</div>
+                      <div className="flex items-center gap-3">
+                        <Target style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
+                        <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
+                          Erfolgsfokus
+                        </h3>
+                      </div>
+                      <div style={{ marginTop: 28 }} className="flex flex-col gap-2">
                         <PillGroupIndexed
                           options={ERFOLGSFOKUS_LABELS.slice(0, 3)}
                           selectedIndices={erfolgsfokusIndices}
@@ -412,14 +429,18 @@ export default function RollenDNA() {
                       </div>
                     </div>
 
-                    <div data-testid="section-aufgabencharakter">
-                      <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
-                        Aufgabencharakter
-                      </h3>
-                      <p style={{ fontSize: 15, color: "#6E6E73" }} className="mt-2">
+                    <div data-testid="section-aufgabencharakter" className="relative">
+                      <div style={{ position: "absolute", top: -16, right: 0, fontSize: 96, fontWeight: 800, color: "rgba(0,0,0,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>03</div>
+                      <div className="flex items-center gap-3">
+                        <Layers style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
+                        <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
+                          Aufgabencharakter
+                        </h3>
+                      </div>
+                      <p style={{ fontSize: 15, color: "#6E6E73", marginTop: 8, paddingLeft: 32 }}>
                         Das Profil die konkrete Stelle besser trifft, beantworten Sie 4 kurze Fragen.
                       </p>
-                      <div className="mt-6">
+                      <div style={{ marginTop: 28 }}>
                         <PillGroup
                           options={["Überwiegend operativ", "Gemischt", "Überwiegend strategisch"]}
                           selected={[aufgabencharakter]}
@@ -428,11 +449,15 @@ export default function RollenDNA() {
                       </div>
                     </div>
 
-                    <div data-testid="section-arbeitslogik">
-                      <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
-                        Arbeitslogik
-                      </h3>
-                      <div className="mt-6">
+                    <div data-testid="section-arbeitslogik" className="relative">
+                      <div style={{ position: "absolute", top: -16, right: 0, fontSize: 96, fontWeight: 800, color: "rgba(0,0,0,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>04</div>
+                      <div className="flex items-center gap-3">
+                        <Activity style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
+                        <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
+                          Arbeitslogik
+                        </h3>
+                      </div>
+                      <div style={{ marginTop: 28 }}>
                         <PillGroup
                           options={["Menschenorientiert", "Daten-/prozessorientiert", "Umsetzungsorientiert"]}
                           selected={[arbeitslogik]}
@@ -443,19 +468,20 @@ export default function RollenDNA() {
 
                   </div>
 
-                  <div className="flex justify-end pt-10">
+                  <div className="flex justify-end" style={{ marginTop: 48 }}>
                     <Button
                       disabled={!step2Valid}
                       onClick={() => goToStep(3)}
-                      className="gap-2 rounded-lg px-6"
+                      style={{ height: 52, paddingLeft: 32, paddingRight: 32, fontSize: 16, fontWeight: 600, borderRadius: 14 }}
+                      className="gap-2"
                       data-testid="button-step-2-weiter"
                     >
                       Weiter
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-5 h-5" />
                     </Button>
                   </div>
                 </div>
-              </Card>
+              </div>
             ) : currentStep > 2 ? (
               <CollapsedStep
                 step={2}

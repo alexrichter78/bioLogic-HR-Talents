@@ -1,0 +1,172 @@
+Hier ist, was konkret fehlt – und wie du es hochwertig lösen kannst.
+
+1️⃣ Das eigentliche Problem
+
+Die Seite wirkt kahl, weil:
+
+Alle Elemente dieselbe visuelle Gewichtung haben
+
+Keine klare vertikale Dramaturgie existiert
+
+Zwischen den Gruppen kein Rhythmus entsteht
+
+Die Section wirkt wie eine große weiße Fläche
+
+Es fehlen:
+
+visuelle Anker
+
+Strukturtrenner
+
+leichte Hierarchie-Verstärker
+
+Nicht unbedingt „mehr Inhalt“.
+
+2️⃣ Keine klassischen Trenner-Linien verwenden
+
+Bitte keine:
+
+border-top: 1px solid #eee;
+
+Das macht es sofort wieder nach Formular.
+
+Apple trennt durch:
+
+Abstand
+
+Typografie
+
+Sekundärfarbe
+
+Section-Header
+
+3️⃣ Was du konkret hinzufügen solltest
+A) Section-Icons – aber sehr subtil
+
+Nicht große Icons.
+Nur 20px Outline-Icons links vom Titel.
+
+Beispiel:
+
+Führungsverantwortung
+→ kleines Outline-Icon „Users“
+
+Erfolgsfokus
+→ kleines „Target“-Icon
+
+Aufgabencharakter
+→ kleines „Layers“-Icon
+
+Arbeitslogik
+→ kleines „Activity“-Icon
+
+Regeln:
+
+1px Stroke
+
+Farbe: #6E6E73
+
+20px Größe
+
+12px Abstand zum Text
+
+Nur links vom Titel.
+Nicht bei jedem Button.
+
+B) Visuelle Step-Karte
+
+Aktuell ist alles in einer großen Fläche.
+
+Besser:
+
+Der gesamte „Rahmenbedingungen“-Block bekommt:
+
+Border radius 24px
+
+Hintergrund #FAFAFA
+
+Innenabstand 48px
+
+Sehr subtiler Shadow:
+0 8px 30px rgba(0,0,0,0.04)
+
+Dann wirkt es wie ein „Modul“.
+
+C) Mehr vertikaler Rhythmus
+
+Aktuell sind deine Gruppen zu dicht.
+
+Empfehlung:
+
+Zwischen Hauptgruppen:
+
+80px Abstand
+
+Zwischen Titel und Button-Gruppe:
+
+28px
+
+Zwischen Gruppen:
+
+64px
+
+Das macht extrem viel aus.
+
+D) Subtile Nummern-Markierung
+
+Statt kleine Ziffern links:
+
+Große, transparente Section-Zahl im Hintergrund.
+
+Zum Beispiel hinter „Führungsverantwortung“:
+
+01 (sehr hell, 8% opacity)
+
+Das gibt Struktur, ohne laut zu sein.
+
+E) Call-to-Action stärker verankern
+
+Der „Weiter“-Button wirkt aktuell verloren.
+
+Mach ihn:
+
+größer
+
+rechts unten im Modul
+
+mit mehr Abstand oben
+
+evtl. leicht sticky im Modul
+
+4️⃣ Was du NICHT tun solltest
+
+❌ Keine bunten Icons
+❌ Keine farbigen Section-Hintergründe
+❌ Keine grauen Kastenunterteilungen
+❌ Keine dicke Linien
+
+Das würde dein cleanes Niveau zerstören.
+
+5️⃣ Wenn du es hochwertig wirken lassen willst
+
+Die richtige Kombination wäre:
+
+✔ Subtile Outline-Icons bei Section-Titeln
+✔ Mehr Weißraum
+✔ Eine modulare Karte statt freischwebender Fläche
+✔ Größere Section-Typografie
+✔ Leichte Schattenebene
+
+6️⃣ Warum Apple nie kahl wirkt
+
+Weil:
+
+Typografie größer ist
+
+Weißraum bewusst ist
+
+Section-Struktur klar ist
+
+Elemente nicht aneinanderkleben
+
+Nicht wegen Icons.
