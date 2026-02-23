@@ -412,28 +412,48 @@ function SummaryBar({ fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik }:
   );
 }
 
-export default function RollenDNA() {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [allCollapsed, setAllCollapsed] = useState(false);
-  const [beruf, setBeruf] = useState("");
-  const [fuehrung, setFuehrung] = useState("Fachliche Führung");
-  const [erfolgsfokusIndices, setErfolgsfokusIndices] = useState<number[]>([0, 1]);
-  const [showFuehrungInfo, setShowFuehrungInfo] = useState(false);
-  const [aufgabencharakter, setAufgabencharakter] = useState("Gemischt");
-  const [arbeitslogik, setArbeitslogik] = useState("Daten-/prozessorientiert");
+const DEFAULT_TAETIGKEITEN: Taetigkeit[] = [
+  { id: 1, name: "Kundenberatung und persönliche Bedarfsanalyse, um maßgeschneiderte Lösungen vorzuschlagen", kategorie: "haupt", kompetenz: "Intuitiv", niveau: "Mittel" },
+  { id: 2, name: "Unabhängige Bewertung und Vergleich von Produkten verschiedener Anbieter für Kunden", kategorie: "haupt", kompetenz: "Analytisch", niveau: "Mittel" },
+  { id: 3, name: "Erstellung detaillierter Angebote und Erläuterung der Konditionen und Leistungen", kategorie: "haupt", kompetenz: "Analytisch", niveau: "Mittel" },
+  { id: 4, name: "Unterstützung von Kunden bei Vertragsabschlüssen und Dokumentation aller relevanten Daten", kategorie: "haupt", kompetenz: "Analytisch", niveau: "Mittel" },
+  { id: 5, name: "Regelmäßige Überprüfung bestehender Verträge und Anpassung an veränderte Lebensumstände", kategorie: "haupt", kompetenz: "Analytisch", niveau: "Mittel" },
+  { id: 6, name: "Beratung zu Schadensfällen und Hilfestellung bei der Schadensabwicklung", kategorie: "neben", kompetenz: "Intuitiv", niveau: "Mittel" },
+  { id: 7, name: "Schulung und Aufklärung von Kunden über Risiken und notwendige Absicherungen", kategorie: "neben", kompetenz: "Intuitiv", niveau: "Mittel" },
+  { id: 8, name: "Mitarbeiter entwickeln und fördern", kategorie: "fuehrung", kompetenz: "Intuitiv", niveau: "Hoch" },
+];
 
-  const [activeTab, setActiveTab] = useState<TaetigkeitKategorie>("haupt");
-  const [taetigkeiten, setTaetigkeiten] = useState<Taetigkeit[]>([
-    { id: 1, name: "Kundenberatung und persönliche Bedarfsanalyse, um maßgeschneiderte Lösungen vorzuschlagen", kategorie: "haupt", kompetenz: "Intuitiv", niveau: "Mittel" },
-    { id: 2, name: "Unabhängige Bewertung und Vergleich von Produkten verschiedener Anbieter für Kunden", kategorie: "haupt", kompetenz: "Analytisch", niveau: "Mittel" },
-    { id: 3, name: "Erstellung detaillierter Angebote und Erläuterung der Konditionen und Leistungen", kategorie: "haupt", kompetenz: "Analytisch", niveau: "Mittel" },
-    { id: 4, name: "Unterstützung von Kunden bei Vertragsabschlüssen und Dokumentation aller relevanten Daten", kategorie: "haupt", kompetenz: "Analytisch", niveau: "Mittel" },
-    { id: 5, name: "Regelmäßige Überprüfung bestehender Verträge und Anpassung an veränderte Lebensumstände", kategorie: "haupt", kompetenz: "Analytisch", niveau: "Mittel" },
-    { id: 6, name: "Beratung zu Schadensfällen und Hilfestellung bei der Schadensabwicklung", kategorie: "neben", kompetenz: "Intuitiv", niveau: "Mittel" },
-    { id: 7, name: "Schulung und Aufklärung von Kunden über Risiken und notwendige Absicherungen", kategorie: "neben", kompetenz: "Intuitiv", niveau: "Mittel" },
-    { id: 8, name: "Mitarbeiter entwickeln und fördern", kategorie: "fuehrung", kompetenz: "Intuitiv", niveau: "Hoch" },
-  ]);
-  const [nextId, setNextId] = useState(9);
+function loadSavedState() {
+  try {
+    const raw = localStorage.getItem("rollenDnaState");
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return null;
+}
+
+export default function RollenDNA() {
+  const saved = useRef(loadSavedState());
+
+  const [currentStep, setCurrentStep] = useState(saved.current?.currentStep ?? 1);
+  const [allCollapsed, setAllCollapsed] = useState(saved.current?.allCollapsed ?? false);
+  const [beruf, setBeruf] = useState(saved.current?.beruf ?? "");
+  const [fuehrung, setFuehrung] = useState(saved.current?.fuehrung ?? "Fachliche Führung");
+  const [erfolgsfokusIndices, setErfolgsfokusIndices] = useState<number[]>(saved.current?.erfolgsfokusIndices ?? [0, 1]);
+  const [showFuehrungInfo, setShowFuehrungInfo] = useState(false);
+  const [aufgabencharakter, setAufgabencharakter] = useState(saved.current?.aufgabencharakter ?? "Gemischt");
+  const [arbeitslogik, setArbeitslogik] = useState(saved.current?.arbeitslogik ?? "Daten-/prozessorientiert");
+
+  const [activeTab, setActiveTab] = useState<TaetigkeitKategorie>(saved.current?.activeTab ?? "haupt");
+  const [taetigkeiten, setTaetigkeiten] = useState<Taetigkeit[]>(saved.current?.taetigkeiten ?? DEFAULT_TAETIGKEITEN);
+  const [nextId, setNextId] = useState(saved.current?.nextId ?? 9);
+
+  useEffect(() => {
+    const state = {
+      currentStep, allCollapsed, beruf, fuehrung, erfolgsfokusIndices,
+      aufgabencharakter, arbeitslogik, activeTab, taetigkeiten, nextId,
+    };
+    localStorage.setItem("rollenDnaState", JSON.stringify(state));
+  }, [currentStep, allCollapsed, beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, arbeitslogik, activeTab, taetigkeiten, nextId]);
 
   const filteredTaetigkeiten = taetigkeiten.filter(t => t.kategorie === activeTab);
   const hauptCount = taetigkeiten.filter(t => t.kategorie === "haupt").length;
