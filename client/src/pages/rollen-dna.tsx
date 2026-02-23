@@ -3,8 +3,7 @@ import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Search, Plus, ArrowLeft, Save, FolderOpen, ArrowDown } from "lucide-react";
+import { Search, Plus, ArrowLeft, Save, FolderOpen, ArrowRight, Check } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 const ERFOLGSFOKUS_LABELS = [
@@ -45,9 +44,113 @@ function Header() {
   );
 }
 
+function StepIndicator({ active }: { active: number }) {
+  const steps = [
+    { num: 1, label: "Rolle auswählen" },
+    { num: 2, label: "Struktureller Rahmen" },
+  ];
+  return (
+    <div className="flex items-center justify-center gap-3" data-testid="step-indicator">
+      {steps.map((step, idx) => (
+        <div key={step.num} className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold ${
+              step.num === active
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted/60 text-muted-foreground"
+            }`} data-testid={`step-num-${step.num}`}>
+              {step.num}
+            </span>
+            <span className={`text-sm ${
+              step.num === active ? "font-semibold text-foreground/90" : "text-muted-foreground"
+            }`} data-testid={`step-label-${step.num}`}>
+              {step.label}
+            </span>
+          </div>
+          {idx < steps.length - 1 && (
+            <ArrowRight className="w-3.5 h-3.5 text-muted-foreground/40" />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function SectionNumber({ num }: { num: number }) {
   return (
     <span className="text-sm font-semibold text-foreground/40 tabular-nums w-5 flex-shrink-0">{num}</span>
+  );
+}
+
+function PillSelector({
+  options,
+  selected,
+  onToggle,
+  max,
+}: {
+  options: string[];
+  selected: string[];
+  onToggle: (val: string) => void;
+  max?: number;
+}) {
+  return (
+    <div className="flex items-center gap-2 flex-wrap">
+      {options.map((opt) => {
+        const isSelected = selected.includes(opt);
+        return (
+          <button
+            key={opt}
+            onClick={() => onToggle(opt)}
+            className={`px-4 py-1.5 rounded-lg text-sm transition-all duration-200 border ${
+              isSelected
+                ? "bg-foreground/5 dark:bg-foreground/10 border-foreground/20 text-foreground font-medium"
+                : "bg-transparent border-transparent text-muted-foreground hover:text-foreground/80"
+            }`}
+            data-testid={`pill-${opt.toLowerCase().replace(/\s+/g, "-")}`}
+          >
+            {opt}
+          </button>
+        );
+      })}
+      {max && (
+        <span className="text-xs text-muted-foreground/50 ml-1">(max. {max} auswählbar)</span>
+      )}
+    </div>
+  );
+}
+
+function CheckboxGrid({
+  options,
+  selected,
+  onToggle,
+}: {
+  options: string[];
+  selected: string[];
+  onToggle: (val: string) => void;
+}) {
+  return (
+    <div className="grid grid-cols-3 gap-x-4 gap-y-2.5">
+      {options.map((label, idx) => {
+        const isChecked = selected.includes(label);
+        return (
+          <button
+            key={`${label}-${idx}`}
+            onClick={() => onToggle(label)}
+            className="flex items-center gap-2 text-sm text-foreground/80 hover:text-foreground transition-colors group text-left"
+            data-testid={`checkbox-${label.toLowerCase().replace(/[\s\/&]+/g, "-")}-${idx}`}
+          >
+            <span className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0 transition-colors ${
+              isChecked
+                ? "text-primary"
+                : "text-transparent group-hover:text-muted-foreground/20"
+            }`}>
+              <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
+            </span>
+            <span className={isChecked ? "text-foreground/90" : "text-muted-foreground"}>{label}</span>
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -61,56 +164,22 @@ function SegmentedControl({
   onSelect: (val: string) => void;
 }) {
   return (
-    <div className="flex items-stretch gap-1 rounded-2xl bg-muted/40 dark:bg-muted/30 p-1 w-full">
+    <div className="flex items-stretch gap-0 w-full">
       {options.map((opt, idx) => {
         const isSelected = selected === opt;
         return (
           <button
             key={`${opt}-${idx}`}
             onClick={() => onSelect(opt)}
-            className={`flex-1 px-2 py-2 rounded-xl text-sm transition-all duration-200 text-center break-words min-w-0 ${
+            className={`flex-1 px-3 py-2 text-sm transition-all duration-200 text-center break-words min-w-0 ${
               isSelected
-                ? "bg-primary/15 dark:bg-primary/25 text-primary font-medium shadow-sm"
+                ? "bg-primary/15 dark:bg-primary/25 text-primary font-medium rounded-lg shadow-sm"
                 : "text-muted-foreground hover:text-foreground/70"
             }`}
             data-testid={`segment-${opt.toLowerCase().replace(/[\s\/-]+/g, "-")}`}
           >
+            {isSelected && <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary mr-1.5 align-middle" />}
             {opt}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-function TabBar({
-  tabs,
-  active,
-  onSelect,
-}: {
-  tabs: { label: string; count?: string }[];
-  active: string;
-  onSelect: (label: string) => void;
-}) {
-  return (
-    <div className="flex items-center gap-1 border-b border-border/50">
-      {tabs.map((tab) => {
-        const isActive = active === tab.label;
-        return (
-          <button
-            key={tab.label}
-            onClick={() => onSelect(tab.label)}
-            className={`px-4 py-2.5 text-sm transition-all duration-200 border-b-2 -mb-px ${
-              isActive
-                ? "border-foreground text-foreground font-medium"
-                : "border-transparent text-muted-foreground hover:text-foreground/70"
-            }`}
-            data-testid={`tab-${tab.label.toLowerCase().replace(/[\s\/]+/g, "-")}`}
-          >
-            {tab.label}
-            {tab.count && (
-              <span className="ml-1.5 text-xs text-muted-foreground/50">{tab.count}</span>
-            )}
           </button>
         );
       })}
@@ -120,18 +189,30 @@ function TabBar({
 
 export default function RollenDNA() {
   const [beruf, setBeruf] = useState("");
-  const [fuehrung, setFuehrung] = useState("Führung");
-  const [erfolgsfokus, setErfolgsfokus] = useState("Ergebnis-/Umsatzdruck");
+  const [fuehrung, setFuehrung] = useState<string[]>(["Führung"]);
+  const [erfolgsfokus, setErfolgsfokus] = useState<string[]>([
+    "Ergebnis-/Umsatzdruck",
+    "Beziehungsaufbau",
+    "Prozessqualität & Struktur",
+  ]);
   const [aufgabencharakter, setAufgabencharakter] = useState("Gemischt");
   const [arbeitslogik, setArbeitslogik] = useState("Daten-/prozessorientiert");
-  const [hinweise, setHinweise] = useState("");
-  const [activeTab, setActiveTab] = useState("Haupttätigkeiten");
 
-  const tabs = [
-    { label: "Haupttätigkeiten" },
-    { label: "Nebentätigkeiten", count: "0/15" },
-    { label: "Humankompetenzen", count: "0/10" },
-  ];
+  const toggleFuehrung = (val: string) => {
+    setFuehrung((prev) => {
+      if (prev.includes(val)) return prev.filter((v) => v !== val);
+      if (prev.length >= 2) return [...prev.slice(1), val];
+      return [...prev, val];
+    });
+  };
+
+  const toggleErfolgsfokus = (val: string) => {
+    setErfolgsfokus((prev) => {
+      if (prev.includes(val)) return prev.filter((v) => v !== val);
+      if (prev.length >= 2) return [...prev.slice(1), val];
+      return [...prev, val];
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-background/95 relative">
@@ -149,7 +230,7 @@ export default function RollenDNA() {
         <Header />
 
         <main className="flex-1 w-full max-w-2xl mx-auto px-6 pb-16">
-          <div className="text-center mt-8 mb-10">
+          <div className="text-center mt-8 mb-8">
             <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground/90 mb-2" data-testid="text-rollen-dna-title">
               Rollen-DNA
             </h1>
@@ -158,8 +239,12 @@ export default function RollenDNA() {
             </p>
           </div>
 
+          <div className="mb-8">
+            <StepIndicator active={1} />
+          </div>
+
           <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border overflow-hidden" data-testid="card-rollen-dna-form">
-            <div className="p-6 space-y-8">
+            <div className="p-6 space-y-7">
 
               <div className="relative" data-testid="input-beruf-wrapper">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
@@ -175,16 +260,17 @@ export default function RollenDNA() {
 
               <div className="border-t border-border/30" />
 
-              <div className="space-y-6">
+              <div className="space-y-5">
 
                 <div className="flex items-start gap-3" data-testid="section-fuehrung">
                   <SectionNumber num={1} />
                   <div className="flex-1 space-y-3">
                     <h3 className="text-sm font-semibold text-foreground/90">Führungsverantwortung</h3>
-                    <SegmentedControl
+                    <PillSelector
                       options={["Keine", "Koordination", "Führung"]}
                       selected={fuehrung}
-                      onSelect={setFuehrung}
+                      onToggle={toggleFuehrung}
+                      max={2}
                     />
                   </div>
                 </div>
@@ -194,19 +280,15 @@ export default function RollenDNA() {
                 <div className="flex items-start gap-3" data-testid="section-erfolgsfokus">
                   <SectionNumber num={2} />
                   <div className="flex-1 space-y-3">
-                    <h3 className="text-sm font-semibold text-foreground/90">Erfolgsfokus</h3>
-                    <div className="flex flex-col gap-1.5">
-                      <SegmentedControl
-                        options={ERFOLGSFOKUS_LABELS.slice(0, 3)}
-                        selected={erfolgsfokus}
-                        onSelect={setErfolgsfokus}
-                      />
-                      <SegmentedControl
-                        options={ERFOLGSFOKUS_LABELS.slice(3, 6)}
-                        selected={erfolgsfokus}
-                        onSelect={setErfolgsfokus}
-                      />
+                    <div className="flex items-baseline gap-2">
+                      <h3 className="text-sm font-semibold text-foreground/90">Erfolgsfokus</h3>
+                      <span className="text-xs text-muted-foreground/50">(max. 2 auswählbar)</span>
                     </div>
+                    <CheckboxGrid
+                      options={ERFOLGSFOKUS_LABELS}
+                      selected={erfolgsfokus}
+                      onToggle={toggleErfolgsfokus}
+                    />
                   </div>
                 </div>
 
@@ -240,52 +322,32 @@ export default function RollenDNA() {
                     />
                   </div>
                 </div>
-
-                <div className="border-t border-border/20" />
-
-                <div className="flex items-start gap-3" data-testid="section-hinweise">
-                  <SectionNumber num={5} />
-                  <div className="flex-1 space-y-3">
-                    <h3 className="text-sm font-semibold text-foreground/90">Hinweise zur Stelle</h3>
-                    <Textarea
-                      placeholder="Freitext hier eingeben ..."
-                      value={hinweise}
-                      onChange={(e) => setHinweise(e.target.value)}
-                      className="bg-muted/20 dark:bg-muted/15 border-border/30 focus:border-primary/40 min-h-[80px] text-sm resize-none"
-                      data-testid="textarea-hinweise"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="border-t border-border/30" />
-
-              <div className="space-y-4" data-testid="section-taetigkeiten">
-                <TabBar tabs={tabs} active={activeTab} onSelect={setActiveTab} />
-
-                <div className="flex flex-col items-center gap-4 py-8">
-                  <p className="text-sm text-muted-foreground/50" data-testid="text-no-taetigkeiten">
-                    Noch keine Tätigkeiten hinzugefügt.
-                  </p>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="gap-1.5 rounded-full px-5"
-                    data-testid="button-taetigkeit-hinzufuegen"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    Tätigkeit hinzufügen
-                  </Button>
-                </div>
               </div>
             </div>
           </Card>
 
-          <div className="flex justify-end mt-6">
-            <button className="w-10 h-10 rounded-full bg-foreground/5 dark:bg-foreground/10 border border-border/40 flex items-center justify-center text-muted-foreground/60 hover:text-foreground/80 transition-colors" data-testid="button-scroll-down">
-              <ArrowDown className="w-4 h-4" />
-            </button>
-          </div>
+          <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border overflow-hidden mt-6" data-testid="card-taetigkeiten">
+            <div className="p-6">
+              <div className="flex items-start gap-3 mb-6">
+                <SectionNumber num={5} />
+                <h3 className="text-sm font-semibold text-foreground/90">Tätigkeiten & Kompetenzen</h3>
+              </div>
+
+              <div className="flex flex-col items-center gap-4 py-6">
+                <p className="text-sm text-muted-foreground/50" data-testid="text-no-taetigkeiten">
+                  Noch keine Tätigkeiten hinzugefügt.
+                </p>
+                <Button
+                  className="gap-1.5 rounded-lg px-6"
+                  data-testid="button-taetigkeit-hinzufuegen"
+                >
+                  <Plus className="w-4 h-4" />
+                  Tätigkeit hinzufügen
+                </Button>
+              </div>
+            </div>
+          </Card>
+
         </main>
       </div>
     </div>
