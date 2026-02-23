@@ -57,8 +57,48 @@ function HeroSection() {
 function ProfileCard() {
   const [, setLocation] = useLocation();
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileLoad = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target?.result as string);
+        const state = {
+          currentStep: 1,
+          allCollapsed: false,
+          beruf: data.beruf ?? "",
+          fuehrung: data.fuehrung ?? "",
+          erfolgsfokusIndices: data.erfolgsfokusIndices ?? [],
+          aufgabencharakter: data.aufgabencharakter ?? "",
+          arbeitslogik: data.arbeitslogik ?? "",
+          activeTab: "haupt",
+          taetigkeiten: data.taetigkeiten ?? [],
+          nextId: data.nextId ?? 1,
+        };
+        localStorage.setItem("rollenDnaState", JSON.stringify(state));
+        localStorage.removeItem("rollenDnaCompleted");
+        setLocation("/rollen-dna");
+      } catch {
+        alert("Die Datei konnte nicht gelesen werden.");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
   return (
     <FadeIn delay={300}>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".json"
+        style={{ display: "none" }}
+        onChange={handleFileLoad}
+        data-testid="input-file-home-load"
+      />
       <div
         className="mx-auto max-w-2xl w-full text-center"
         style={{
@@ -163,6 +203,7 @@ function ProfileCard() {
                 (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
               }}
               data-testid="button-analyse-oeffnen"
+              onClick={() => fileInputRef.current?.click()}
             >
               <FolderOpen style={{ width: 18, height: 18 }} />
               Bestehende Analyse öffnen
