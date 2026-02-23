@@ -440,7 +440,25 @@ export default function RollenDNA() {
   const fuehrungCount = taetigkeiten.filter(t => t.kategorie === "fuehrung").length;
   const highCount = taetigkeiten.filter(t => t.niveau === "Hoch").length;
 
+  const MAX_ITEMS: Record<TaetigkeitKategorie, number> = { haupt: 15, neben: 10, fuehrung: 10 };
+  const currentTabCount = filteredTaetigkeiten.length;
+  const currentTabMax = MAX_ITEMS[activeTab];
+  const canAddMore = currentTabCount < currentTabMax;
+
+  const hauptHighCount = taetigkeiten.filter(t => t.kategorie === "haupt" && t.niveau === "Hoch").length;
+  const nebenHighCount = taetigkeiten.filter(t => t.kategorie === "neben" && t.niveau === "Hoch").length;
+  const fuehrungHighCount = taetigkeiten.filter(t => t.kategorie === "fuehrung" && t.niveau === "Hoch").length;
+  const MAX_HIGH = 5;
+  const currentTabHighCount = activeTab === "haupt" ? hauptHighCount : activeTab === "neben" ? nebenHighCount : fuehrungHighCount;
+
   const handleNiveauChange = (id: number, niveau: Niveau) => {
+    if (niveau === "Hoch") {
+      const item = taetigkeiten.find(t => t.id === id);
+      if (item && item.niveau !== "Hoch") {
+        const catHighCount = taetigkeiten.filter(t => t.kategorie === item.kategorie && t.niveau === "Hoch").length;
+        if (catHighCount >= MAX_HIGH) return;
+      }
+    }
     setTaetigkeiten(prev => prev.map(t => t.id === id ? { ...t, niveau } : t));
   };
 
@@ -892,7 +910,7 @@ export default function RollenDNA() {
                   </div>
                   <div style={{ textAlign: "right", fontSize: 12, color: "#8E8E93", lineHeight: 1.8 }}>
                     <div>Tätigkeiten <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{hauptCount} / 15</span></div>
-                    <div>Humankompetenzen <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{nebenCount} / 15</span></div>
+                    <div>Humankompetenzen <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{nebenCount} / 10</span></div>
                     {fuehrung !== "Keine" && (
                       <div>Führungskompetenzen <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{fuehrungCount} / 10</span></div>
                     )}
@@ -1029,10 +1047,13 @@ export default function RollenDNA() {
                                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                                   <span style={{ fontSize: 11, fontWeight: 500, color: "#AEAEB2", minWidth: 52, textTransform: "uppercase", letterSpacing: "0.5px" }}>Niveau</span>
                                   <div style={{ display: "flex", gap: 6 }}>
-                                    {NIVEAU_OPTIONS.map(n => (
+                                    {NIVEAU_OPTIONS.map(n => {
+                                      const catHighCount = taetigkeiten.filter(tt => tt.kategorie === t.kategorie && tt.niveau === "Hoch").length;
+                                      const isHighDisabled = n === "Hoch" && t.niveau !== "Hoch" && catHighCount >= MAX_HIGH;
+                                      return (
                                       <button
                                         key={n}
-                                        onClick={() => handleNiveauChange(t.id, n)}
+                                        onClick={() => !isHighDisabled && handleNiveauChange(t.id, n)}
                                         style={{
                                           height: 28,
                                           paddingLeft: 10,
@@ -1041,10 +1062,11 @@ export default function RollenDNA() {
                                           fontWeight: 500,
                                           borderRadius: 999,
                                           border: t.niveau === n ? "1.5px solid transparent" : "1px solid rgba(0,0,0,0.1)",
-                                          cursor: "pointer",
+                                          cursor: isHighDisabled ? "not-allowed" : "pointer",
                                           transition: "all 150ms ease",
                                           background: t.niveau === n ? "linear-gradient(135deg, #6B7280, #9CA3AF)" : "transparent",
-                                          color: t.niveau === n ? "#FFFFFF" : "#8E8E93",
+                                          color: t.niveau === n ? "#FFFFFF" : isHighDisabled ? "#D1D1D6" : "#8E8E93",
+                                          opacity: isHighDisabled ? 0.5 : 1,
                                           display: "flex",
                                           alignItems: "center",
                                           gap: 4,
@@ -1054,7 +1076,8 @@ export default function RollenDNA() {
                                         {t.niveau === n && <Check style={{ width: 10, height: 10 }} />}
                                         {n}
                                       </button>
-                                    ))}
+                                      );
+                                    })}
                                   </div>
                                 </div>
 
@@ -1099,46 +1122,52 @@ export default function RollenDNA() {
                     )}
                   </div>
 
-                  <div style={{
-                    marginTop: 24,
-                    paddingTop: 24,
-                    borderTop: "1px dashed rgba(0,0,0,0.08)",
-                    display: "flex",
-                    justifyContent: "center",
-                  }}>
-                    <button
-                      onClick={handleAddTaetigkeit}
-                      style={{
-                        height: 44,
-                        paddingLeft: 24,
-                        paddingRight: 24,
-                        fontSize: 14,
-                        fontWeight: 600,
-                        borderRadius: 999,
-                        border: "1.5px solid rgba(0,113,227,0.3)",
-                        cursor: "pointer",
-                        background: "transparent",
-                        color: "#0071E3",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 6,
-                        transition: "all 200ms ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,113,227,0.06)";
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLButtonElement).style.background = "transparent";
-                      }}
-                      data-testid="button-taetigkeit-hinzufuegen"
-                    >
-                      <Plus style={{ width: 16, height: 16 }} />
-                      Neue Tätigkeit hinzufügen
-                    </button>
-                  </div>
+                  {canAddMore ? (
+                    <div style={{
+                      marginTop: 24,
+                      paddingTop: 24,
+                      borderTop: "1px dashed rgba(0,0,0,0.08)",
+                      display: "flex",
+                      justifyContent: "center",
+                    }}>
+                      <button
+                        onClick={handleAddTaetigkeit}
+                        style={{
+                          height: 44,
+                          paddingLeft: 24,
+                          paddingRight: 24,
+                          fontSize: 14,
+                          fontWeight: 600,
+                          borderRadius: 999,
+                          border: "1.5px solid rgba(0,113,227,0.3)",
+                          cursor: "pointer",
+                          background: "transparent",
+                          color: "#0071E3",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 6,
+                          transition: "all 200ms ease",
+                        }}
+                        onMouseEnter={(e) => {
+                          (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,113,227,0.06)";
+                        }}
+                        onMouseLeave={(e) => {
+                          (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+                        }}
+                        data-testid="button-taetigkeit-hinzufuegen"
+                      >
+                        <Plus style={{ width: 16, height: 16 }} />
+                        Neue Tätigkeit hinzufügen
+                      </button>
+                    </div>
+                  ) : null}
 
                   <p style={{ fontSize: 12, color: "#AEAEB2", textAlign: "center", marginTop: 16 }}>
-                    Maximal 15 {activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"} definiert
+                    {currentTabCount >= currentTabMax
+                      ? `Maximum von ${currentTabMax} erreicht`
+                      : `Maximal ${currentTabMax} ${activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"}`
+                    }
+                    {currentTabHighCount > 0 && ` · Hoch: ${currentTabHighCount} / ${MAX_HIGH}`}
                   </p>
                 </div>
 
