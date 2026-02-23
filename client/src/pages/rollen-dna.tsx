@@ -621,10 +621,10 @@ export default function RollenDNA() {
         <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20">
           <div className="text-center mt-8 mb-10">
             <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground/90 mb-2" data-testid="text-rollen-dna-title">
-              Rollen-DNA
+              Rollenprofil ermitteln
             </h1>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto" data-testid="text-rollen-dna-subtitle">
-              Analysieren und definieren Sie präzise die Anforderungen für eine spezifische Rolle.
+              Erforderliche Rollenstruktur aus der definierten Logik ableiten.
             </p>
           </div>
 
