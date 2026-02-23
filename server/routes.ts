@@ -15,28 +15,64 @@ export async function registerRoutes(
 
   app.post("/api/generate-kompetenzen", async (req, res) => {
     try {
-      const { beruf, fuehrung } = req.body;
+      const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik } = req.body;
       if (!beruf) {
         return res.status(400).json({ error: "Beruf ist erforderlich" });
       }
 
       const hasFuehrung = fuehrung && fuehrung !== "Keine" && fuehrung !== "";
 
-      const prompt = `Du bist ein Experte für Berufsprofile und Kompetenzanalyse im deutschsprachigen Raum.
+      const prompt = `Du bist ein Experte für Berufsprofile und Kompetenzanalyse im deutschsprachigen Raum. Du ordnest Tätigkeiten und Kompetenzen IMMER im Gesamtkontext der Rolle zu – nicht isoliert nach dem Namen, sondern danach, WIE und WOZU sie in dieser spezifischen Rolle eingesetzt werden.
 
-Für die Rolle/den Beruf "${beruf}" mit Führungsverantwortung: "${fuehrung || "Keine"}", erstelle bitte:
+## ROLLENPROFIL – GESAMTKONTEXT
 
-1. **Haupttätigkeiten**: Genau 10 typische Haupttätigkeiten für diese Rolle. Jede Tätigkeit soll eine präzise, praxisnahe Beschreibung sein (max. 2 Zeilen).
+**Rolle/Beruf:** ${beruf}
+**Führungsverantwortung:** ${fuehrung || "Keine"}
+**Erfolgsfokus:** ${erfolgsfokus || "Nicht angegeben"}
+**Aufgabencharakter:** ${aufgabencharakter || "Nicht angegeben"}
+**Arbeitslogik:** ${arbeitslogik || "Nicht angegeben"}
 
-2. **Humankompetenzen**: Genau 10 relevante Humankompetenzen (Soft Skills) für diese Rolle.
+## ZUORDNUNGSREGELN FÜR KOMPETENZBEREICHE
 
-${hasFuehrung ? `3. **Führungskompetenzen**: Genau 10 relevante Führungskompetenzen passend zur Führungsebene "${fuehrung}".` : ""}
+Ordne jede Tätigkeit/Kompetenz einem Bereich zu. Die Zuordnung hängt NICHT vom Namen ab, sondern davon, WAS die Tätigkeit in dieser konkreten Rolle erfordert:
 
-Für jede Tätigkeit/Kompetenz gib auch an:
-- **kompetenz**: Welcher Kompetenzbereich passt am besten? Einer von: "Impulsiv" (= Handlungs-/Umsetzungskompetenz), "Intuitiv" (= Sozial-/Beziehungskompetenz), "Analytisch" (= Fach-/Methodenkompetenz)
-- **niveau**: Wie hoch ist das typische Anforderungsniveau? Einer von: "Niedrig", "Mittel", "Hoch" (maximal 5x "Hoch" pro Kategorie)
+### "Analytisch" (= Fach-/Methodenkompetenz, Denken & Verstehen)
+Zuordnen wenn die Tätigkeit primär erfordert: Analysieren, Bewerten, Strukturieren, Planen, Fachwissen anwenden, Daten interpretieren, Konzepte entwickeln, Strategien ausarbeiten, Qualität prüfen, Komplexes durchdringen, Wissen vermitteln, Sachverhalte aufbereiten.
+Beispiele: Marktanalysen erstellen, Budgets kalkulieren, Prozesse optimieren, Fachliche Beratung, Komplexe Sachverhalte erklären, Strategien entwickeln, Reporting.
 
-Antworte ausschließlich als JSON-Objekt in folgendem Format:
+### "Intuitiv" (= Sozial-/Beziehungskompetenz, Fühlen & Verbinden)
+Zuordnen wenn die Tätigkeit primär erfordert: Beziehungen aufbauen/pflegen, Empathie zeigen, Konflikte moderieren, Teams zusammenhalten, Vertrauen schaffen, Netzwerken, Emotionale Intelligenz, Zuhören, Bedürfnisse erkennen, Motivation spüren, Stimmungen wahrnehmen.
+Beispiele: Mitarbeitergespräche führen, Kundenbeziehungen pflegen, Teamkonflikte lösen, Netzwerk aufbauen, Verhandeln auf Beziehungsebene.
+
+### "Impulsiv" (= Handlungs-/Umsetzungskompetenz, Machen & Durchsetzen)
+Zuordnen wenn die Tätigkeit primär erfordert: Entscheidungen treffen, Ergebnisse liefern, Durchsetzen, Tempo machen, Umsetzen, Risiken eingehen, Hands-on arbeiten, Verantwortung übernehmen, Ziele verfolgen, Pragmatisch handeln, Druck standhalten.
+Beispiele: Vertriebsziele erreichen, Projekte zum Abschluss bringen, Schnelle Entscheidungen treffen, Maßnahmen umsetzen, Verhandeln auf Ergebnisebene.
+
+## WICHTIGE KONTEXTREGELN
+
+- "Kommunikationsstärke" bei einem Ingenieur in der Robotik, der Fachwissen vermittelt → "Analytisch" (Wissen aufbereiten und erklären)
+- "Kommunikationsstärke" bei einem HR-Manager, der Mitarbeitergespräche führt → "Intuitiv" (Beziehungsebene, Empathie)
+- "Kommunikationsstärke" bei einem Vertriebsleiter, der Deals abschließt → "Impulsiv" (Überzeugung, Abschluss erzielen)
+- Berücksichtige den Aufgabencharakter: Bei "Überwiegend strategisch" sind mehr Tätigkeiten "Analytisch", bei "Überwiegend operativ" mehr "Impulsiv"
+- Berücksichtige die Arbeitslogik: "Menschenorientiert" → mehr "Intuitiv", "Daten-/prozessorientiert" → mehr "Analytisch", "Umsetzungsorientiert" → mehr "Impulsiv"
+- Berücksichtige den Erfolgsfokus für die Gewichtung
+
+## AUFGABE
+
+Erstelle für die Rolle "${beruf}" im oben beschriebenen Gesamtkontext:
+
+1. **Haupttätigkeiten (haupt)**: Genau 10 typische Haupttätigkeiten. Jede Tätigkeit ist eine präzise, praxisnahe Beschreibung (max. 60 Zeichen).
+
+2. **Humankompetenzen (neben)**: Genau 10 relevante Humankompetenzen (Soft Skills), die im Kontext dieser Rolle wichtig sind.
+
+${hasFuehrung ? `3. **Führungskompetenzen (fuehrung)**: Genau 10 relevante Führungskompetenzen passend zur Führungsebene "${fuehrung}" im Kontext dieser Branche/Rolle.` : ""}
+
+## NIVEAU-REGELN
+- "Hoch": Diese Tätigkeit/Kompetenz ist erfolgskritisch für die Rolle (max. 4 pro Kategorie)
+- "Mittel": Wichtig, aber nicht das Kernprofil
+- "Niedrig": Wird benötigt, ist aber nicht zentral
+
+Antworte ausschließlich als JSON:
 {
   "haupt": [{"name": "...", "kompetenz": "Impulsiv|Intuitiv|Analytisch", "niveau": "Niedrig|Mittel|Hoch"}],
   "neben": [{"name": "...", "kompetenz": "Impulsiv|Intuitiv|Analytisch", "niveau": "Niedrig|Mittel|Hoch"}]${hasFuehrung ? `,
@@ -74,13 +110,24 @@ Antworte ausschließlich als JSON-Objekt in folgendem Format:
         `- ${t.name} (${t.kompetenz}, ${t.niveau})`
       ).join("\n");
 
-      const prompt = `Du bist ein Experte für Rollenanalyse und Kompetenzprofile. Analysiere das folgende Rollenprofil und erstelle drei Analysebereiche.
+      const prompt = `Du bist ein Experte für Rollenanalyse und Kompetenzprofile. Analysiere das folgende Rollenprofil im GESAMTKONTEXT und erstelle drei Analysebereiche.
+
+## ROLLENPROFIL – GESAMTKONTEXT
 
 **Rolle:** ${beruf}
 **Führungsverantwortung:** ${fuehrung || "Keine"}
 **Erfolgsfokus:** ${erfolgsfokus || "Nicht angegeben"}
 **Aufgabencharakter:** ${aufgabencharakter || "Nicht angegeben"}
 **Arbeitslogik:** ${arbeitslogik || "Nicht angegeben"}
+
+## KOMPETENZBEREICHE (zur Einordnung)
+- "Analytisch" = Fach-/Methodenkompetenz (Denken, Verstehen, Strukturieren, Fachwissen anwenden)
+- "Intuitiv" = Sozial-/Beziehungskompetenz (Fühlen, Verbinden, Empathie, Beziehungen pflegen)
+- "Impulsiv" = Handlungs-/Umsetzungskompetenz (Machen, Durchsetzen, Entscheiden, Ergebnisse liefern)
+
+Die Zuordnung hängt vom Kontext ab: "Kommunikationsstärke" kann je nach Rolle Analytisch (Fachwissen vermitteln), Intuitiv (Beziehungen pflegen) oder Impulsiv (Deals abschließen) sein.
+
+## PROFILDATEN
 
 **Haupttätigkeiten:**
 ${formatItems(haupt)}
@@ -90,16 +137,18 @@ ${formatItems(neben)}
 
 ${fuehrungItems.length > 0 ? `**Führungskompetenzen:**\n${formatItems(fuehrungItems)}` : ""}
 
-Erstelle eine detaillierte Analyse in drei Bereichen:
+## ANALYSE-AUFTRAG
+
+Erstelle eine kontextbezogene Analyse. Prüfe dabei, ob die Zuordnungen der Kompetenzbereiche im Kontext der Rolle stimmig sind. Weise auf Unstimmigkeiten hin.
 
 **Bereich 1 - Kompetenzverteilung & Rollenprofil:**
-Analysiere die Verteilung der drei Kompetenzbereiche (Impulsiv = Handlungs-/Umsetzungskompetenz, Intuitiv = Sozial-/Beziehungskompetenz, Analytisch = Fach-/Methodenkompetenz). Welcher Bereich dominiert? Was bedeutet das für den Rollentyp? Wie hoch ist das Gesamtniveau?
+Analysiere die Verteilung der drei Kompetenzbereiche. Welcher dominiert? Passt diese Verteilung zum Aufgabencharakter (${aufgabencharakter || "k.A."}) und zur Arbeitslogik (${arbeitslogik || "k.A."})? Was sagt das über den Rollentyp? Wie hoch ist das Gesamtanforderungsniveau?
 
 **Bereich 2 - Tätigkeitsanalyse & Anforderungsprofil:**
-Welche Tätigkeiten erfordern das höchste Niveau? Wo liegen die kritischen Anforderungen? Wie passt das zum Aufgabencharakter und der Arbeitslogik? Welche Kompetenzkombinationen sind besonders wichtig?
+Welche Tätigkeiten/Kompetenzen erfordern das höchste Niveau und warum? Wo liegen die kritischen Anforderungen im Kontext des Erfolgsfokus (${erfolgsfokus || "k.A."})? Welche Kompetenzkombinationen sind für diese Rolle besonders wichtig?
 
 **Bereich 3 - Empfehlungen & Entwicklungspotenziale:**
-Welche Kompetenzen sollten gestärkt werden? Wo gibt es potenzielle Lücken? Empfehlungen für die Besetzung dieser Rolle und mögliche Entwicklungspfade.
+Welche Kompetenzen sollten bei einer Besetzung besonders geprüft werden? Wo könnten Lücken entstehen? Empfehlungen für die Besetzung und mögliche Entwicklungspfade.
 
 Antworte als JSON:
 {

@@ -630,10 +630,14 @@ export default function RollenDNA() {
     if (taetigkeiten.length > 0 || !beruf) return;
     setIsGenerating(true);
     try {
+      const erfolgsfokusText = erfolgsfokusIndices
+        .map(i => ERFOLGSFOKUS_LABELS[i]?.replace(/\n/g, " "))
+        .filter(Boolean)
+        .join(", ");
       const resp = await fetch("/api/generate-kompetenzen", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ beruf, fuehrung }),
+        body: JSON.stringify({ beruf, fuehrung, erfolgsfokus: erfolgsfokusText, aufgabencharakter, arbeitslogik }),
       });
       if (!resp.ok) throw new Error("Fehler bei der Generierung");
       const data = await resp.json();
