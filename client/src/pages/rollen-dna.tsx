@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, ArrowLeft, Save, FolderOpen, Check } from "lucide-react";
+import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 const ERFOLGSFOKUS_LABELS = [
@@ -44,7 +44,7 @@ function Header() {
   );
 }
 
-function StepProgress({ completedSteps }: { completedSteps: number[] }) {
+function StepProgress({ currentStep, completedSteps }: { currentStep: number; completedSteps: number[] }) {
   const steps = [
     { num: 1, label: "Rolle auswählen" },
     { num: 2, label: "Rahmenbedingungen" },
@@ -54,32 +54,82 @@ function StepProgress({ completedSteps }: { completedSteps: number[] }) {
     <div className="flex items-center justify-center gap-0 w-full max-w-lg mx-auto" data-testid="step-progress">
       {steps.map((step, idx) => {
         const isDone = completedSteps.includes(step.num);
+        const isCurrent = step.num === currentStep;
         return (
           <div key={step.num} className="flex items-center flex-1 last:flex-none">
             <div className="flex flex-col items-center gap-1.5">
-              <span className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-300 ${
+              <span className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-500 ${
                 isDone
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted/60 dark:bg-muted/40 text-muted-foreground"
+                  ? "bg-green-500 text-white"
+                  : isCurrent
+                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/25"
+                    : "bg-muted/50 dark:bg-muted/30 text-muted-foreground/40"
               }`} data-testid={`step-num-${step.num}`}>
                 {isDone ? <Check className="w-4 h-4" strokeWidth={2.5} /> : step.num}
               </span>
               <span className={`text-xs transition-colors duration-300 whitespace-nowrap ${
-                isDone ? "font-medium text-foreground/80" : "text-muted-foreground/60"
+                isDone
+                  ? "font-medium text-green-600 dark:text-green-400"
+                  : isCurrent
+                    ? "font-semibold text-foreground/90"
+                    : "text-muted-foreground/40"
               }`} data-testid={`step-label-${step.num}`}>
                 {step.label}
               </span>
             </div>
             {idx < steps.length - 1 && (
-              <div className="flex-1 h-px mx-3 mt-[-18px]">
-                <div className={`h-full transition-all duration-500 rounded-full ${
-                  completedSteps.includes(step.num) ? "bg-primary/40" : "bg-border/50"
+              <div className="flex-1 h-0.5 mx-3 mt-[-18px] rounded-full overflow-hidden bg-muted/30">
+                <div className={`h-full transition-all duration-700 rounded-full ${
+                  isDone ? "bg-green-400 w-full" : "bg-transparent w-0"
                 }`} />
               </div>
             )}
           </div>
         );
       })}
+    </div>
+  );
+}
+
+function CollapsedStep({
+  step,
+  title,
+  summary,
+  onEdit,
+}: {
+  step: number;
+  title: string;
+  summary: string;
+  onEdit: () => void;
+}) {
+  return (
+    <div
+      className="flex items-center gap-4 px-5 py-4 rounded-xl bg-white/40 dark:bg-card/40 backdrop-blur-sm border border-card-border cursor-pointer hover:bg-white/60 dark:hover:bg-card/50 transition-all duration-200"
+      onClick={onEdit}
+      data-testid={`collapsed-step-${step}`}
+    >
+      <span className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center flex-shrink-0">
+        <Check className="w-4 h-4" strokeWidth={2.5} />
+      </span>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-foreground/80">{title}</p>
+        <p className="text-xs text-muted-foreground truncate">{summary}</p>
+      </div>
+      <ChevronDown className="w-4 h-4 text-muted-foreground/40 flex-shrink-0" />
+    </div>
+  );
+}
+
+function LockedStep({ step, title }: { step: number; title: string }) {
+  return (
+    <div
+      className="flex items-center gap-4 px-5 py-4 rounded-xl bg-muted/20 dark:bg-muted/10 border border-border/20 opacity-50"
+      data-testid={`locked-step-${step}`}
+    >
+      <span className="w-8 h-8 rounded-full bg-muted/50 dark:bg-muted/30 text-muted-foreground/40 flex items-center justify-center flex-shrink-0 text-xs font-semibold">
+        {step}
+      </span>
+      <p className="text-sm font-medium text-muted-foreground/40">{title}</p>
     </div>
   );
 }
@@ -195,18 +245,8 @@ function SegmentedControl({
   );
 }
 
-function StepLabel({ step, title }: { step: number; title: string }) {
-  return (
-    <div className="flex items-center gap-3 mb-2">
-      <span className="text-xs font-medium text-muted-foreground/50 uppercase tracking-wider">
-        Schritt {step}
-      </span>
-      <div className="flex-1 h-px bg-border/30" />
-    </div>
-  );
-}
-
 export default function RollenDNA() {
+  const [currentStep, setCurrentStep] = useState(1);
   const [beruf, setBeruf] = useState("");
   const [fuehrung, setFuehrung] = useState<string[]>(["Führung"]);
   const [erfolgsfokus, setErfolgsfokus] = useState<string[]>([
@@ -233,11 +273,14 @@ export default function RollenDNA() {
     });
   };
 
-  const step1Done = beruf.trim().length > 0;
-  const step2Done = fuehrung.length > 0 || erfolgsfokus.length > 0;
+  const step1Valid = beruf.trim().length > 0;
+  const step2Valid = fuehrung.length > 0;
+
   const completedSteps: number[] = [];
-  if (step1Done) completedSteps.push(1);
-  if (step2Done) completedSteps.push(2);
+  if (currentStep > 1) completedSteps.push(1);
+  if (currentStep > 2) completedSteps.push(2);
+
+  const goToStep = (step: number) => setCurrentStep(step);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-background/95 relative">
@@ -264,20 +307,23 @@ export default function RollenDNA() {
             </p>
           </div>
 
-          <div className="mb-14">
-            <StepProgress completedSteps={completedSteps} />
+          <div className="mb-12">
+            <StepProgress currentStep={currentStep} completedSteps={completedSteps} />
           </div>
 
-          <div className="space-y-14">
+          <div className="space-y-5">
 
-            <div data-testid="block-step-1">
-              <StepLabel step={1} title="Rolle auswählen" />
-              <h2 className="text-lg font-semibold text-foreground/90 mb-4" data-testid="text-step-1-title">
-                Rolle auswählen
-              </h2>
-              <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border" data-testid="card-step-1">
+            {currentStep === 1 ? (
+              <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-1">
                 <div className="p-6">
-                  <div className="relative" data-testid="input-beruf-wrapper">
+                  <div className="flex items-center gap-3 mb-1">
+                    <span className="text-xs font-medium text-primary uppercase tracking-wider">Schritt 1</span>
+                  </div>
+                  <h2 className="text-lg font-semibold text-foreground/90 mb-5" data-testid="text-step-1-title">
+                    Rolle auswählen
+                  </h2>
+
+                  <div className="relative mb-6" data-testid="input-beruf-wrapper">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
                     <Input
                       type="search"
@@ -288,90 +334,138 @@ export default function RollenDNA() {
                       data-testid="input-beruf"
                     />
                   </div>
+
+                  <div className="flex justify-end">
+                    <Button
+                      disabled={!step1Valid}
+                      onClick={() => goToStep(2)}
+                      className="gap-2 rounded-lg px-6"
+                      data-testid="button-step-1-weiter"
+                    >
+                      Weiter
+                      <ArrowRight className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </Card>
-            </div>
+            ) : (
+              <CollapsedStep
+                step={1}
+                title="Rolle auswählen"
+                summary={beruf}
+                onEdit={() => goToStep(1)}
+              />
+            )}
 
-            <div data-testid="block-step-2">
-              <StepLabel step={2} title="Rahmenbedingungen der Rolle" />
-              <h2 className="text-lg font-semibold text-foreground/90 mb-4" data-testid="text-step-2-title">
-                Rahmenbedingungen der Rolle
-              </h2>
-              <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border" data-testid="card-step-2">
+            {currentStep === 2 ? (
+              <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-2">
                 <div className="p-6 space-y-6">
-
-                  <div className="flex items-start gap-3" data-testid="section-fuehrung">
-                    <SectionNumber num={1} />
-                    <div className="flex-1 space-y-3">
-                      <h3 className="text-sm font-semibold text-foreground/90">Führungsverantwortung</h3>
-                      <PillSelector
-                        options={["Keine", "Koordination", "Führung"]}
-                        selected={fuehrung}
-                        onToggle={toggleFuehrung}
-                        max={2}
-                      />
+                  <div>
+                    <div className="flex items-center gap-3 mb-1">
+                      <span className="text-xs font-medium text-primary uppercase tracking-wider">Schritt 2</span>
                     </div>
+                    <h2 className="text-lg font-semibold text-foreground/90" data-testid="text-step-2-title">
+                      Rahmenbedingungen der Rolle
+                    </h2>
                   </div>
 
-                  <div className="border-t border-border/20" />
-
-                  <div className="flex items-start gap-3" data-testid="section-erfolgsfokus">
-                    <SectionNumber num={2} />
-                    <div className="flex-1 space-y-3">
-                      <div className="flex items-baseline gap-2">
-                        <h3 className="text-sm font-semibold text-foreground/90">Erfolgsfokus</h3>
-                        <span className="text-xs text-muted-foreground/50">(max. 2 auswählbar)</span>
+                  <div className="space-y-5">
+                    <div className="flex items-start gap-3" data-testid="section-fuehrung">
+                      <SectionNumber num={1} />
+                      <div className="flex-1 space-y-3">
+                        <h3 className="text-sm font-semibold text-foreground/90">Führungsverantwortung</h3>
+                        <PillSelector
+                          options={["Keine", "Koordination", "Führung"]}
+                          selected={fuehrung}
+                          onToggle={toggleFuehrung}
+                          max={2}
+                        />
                       </div>
-                      <CheckboxGrid
-                        options={ERFOLGSFOKUS_LABELS}
-                        selected={erfolgsfokus}
-                        onToggle={toggleErfolgsfokus}
-                      />
+                    </div>
+
+                    <div className="border-t border-border/20" />
+
+                    <div className="flex items-start gap-3" data-testid="section-erfolgsfokus">
+                      <SectionNumber num={2} />
+                      <div className="flex-1 space-y-3">
+                        <div className="flex items-baseline gap-2">
+                          <h3 className="text-sm font-semibold text-foreground/90">Erfolgsfokus</h3>
+                          <span className="text-xs text-muted-foreground/50">(max. 2 auswählbar)</span>
+                        </div>
+                        <CheckboxGrid
+                          options={ERFOLGSFOKUS_LABELS}
+                          selected={erfolgsfokus}
+                          onToggle={toggleErfolgsfokus}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="border-t border-border/20" />
+
+                    <div className="flex items-start gap-3" data-testid="section-aufgabencharakter">
+                      <SectionNumber num={3} />
+                      <div className="flex-1 space-y-3">
+                        <h3 className="text-sm font-semibold text-foreground/90">Aufgabencharakter</h3>
+                        <p className="text-xs text-muted-foreground/60">
+                          Das Profil die konkrete Stelle besser trifft, beantworten Sie 4 kurze Fragen.
+                        </p>
+                        <SegmentedControl
+                          options={["Überwiegend operativ", "Gemischt", "Überwiegend strategisch"]}
+                          selected={aufgabencharakter}
+                          onSelect={setAufgabencharakter}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="border-t border-border/20" />
+
+                    <div className="flex items-start gap-3" data-testid="section-arbeitslogik">
+                      <SectionNumber num={4} />
+                      <div className="flex-1 space-y-3">
+                        <h3 className="text-sm font-semibold text-foreground/90">Arbeitslogik</h3>
+                        <SegmentedControl
+                          options={["Menschenorientiert", "Daten-/prozessorientiert", "Umsetzungsorientiert"]}
+                          selected={arbeitslogik}
+                          onSelect={setArbeitslogik}
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  <div className="border-t border-border/20" />
-
-                  <div className="flex items-start gap-3" data-testid="section-aufgabencharakter">
-                    <SectionNumber num={3} />
-                    <div className="flex-1 space-y-3">
-                      <h3 className="text-sm font-semibold text-foreground/90">Aufgabencharakter</h3>
-                      <p className="text-xs text-muted-foreground/60">
-                        Das Profil die konkrete Stelle besser trifft, beantworten Sie 4 kurze Fragen.
-                      </p>
-                      <SegmentedControl
-                        options={["Überwiegend operativ", "Gemischt", "Überwiegend strategisch"]}
-                        selected={aufgabencharakter}
-                        onSelect={setAufgabencharakter}
-                      />
-                    </div>
+                  <div className="flex justify-end pt-2">
+                    <Button
+                      disabled={!step2Valid}
+                      onClick={() => goToStep(3)}
+                      className="gap-2 rounded-lg px-6"
+                      data-testid="button-step-2-weiter"
+                    >
+                      Weiter
+                      <ArrowRight className="w-4 h-4" />
+                    </Button>
                   </div>
-
-                  <div className="border-t border-border/20" />
-
-                  <div className="flex items-start gap-3" data-testid="section-arbeitslogik">
-                    <SectionNumber num={4} />
-                    <div className="flex-1 space-y-3">
-                      <h3 className="text-sm font-semibold text-foreground/90">Arbeitslogik</h3>
-                      <SegmentedControl
-                        options={["Menschenorientiert", "Daten-/prozessorientiert", "Umsetzungsorientiert"]}
-                        selected={arbeitslogik}
-                        onSelect={setArbeitslogik}
-                      />
-                    </div>
-                  </div>
-
                 </div>
               </Card>
-            </div>
+            ) : currentStep > 2 ? (
+              <CollapsedStep
+                step={2}
+                title="Rahmenbedingungen der Rolle"
+                summary={`${fuehrung.join(", ")} · ${erfolgsfokus.length} Erfolgsfaktoren · ${aufgabencharakter} · ${arbeitslogik}`}
+                onEdit={() => goToStep(2)}
+              />
+            ) : (
+              <LockedStep step={2} title="Rahmenbedingungen der Rolle" />
+            )}
 
-            <div data-testid="block-step-3">
-              <StepLabel step={3} title="Tätigkeiten & Kompetenzen" />
-              <h2 className="text-lg font-semibold text-foreground/90 mb-4" data-testid="text-step-3-title">
-                Tätigkeiten & Kompetenzen
-              </h2>
-              <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border" data-testid="card-step-3">
+            {currentStep === 3 ? (
+              <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-3">
                 <div className="p-6">
+                  <div className="flex items-center gap-3 mb-1">
+                    <span className="text-xs font-medium text-primary uppercase tracking-wider">Schritt 3</span>
+                  </div>
+                  <h2 className="text-lg font-semibold text-foreground/90 mb-6" data-testid="text-step-3-title">
+                    Tätigkeiten & Kompetenzen
+                  </h2>
+
                   <div className="flex flex-col items-center gap-4 py-8">
                     <p className="text-sm text-muted-foreground/50" data-testid="text-no-taetigkeiten">
                       Noch keine Tätigkeiten hinzugefügt.
@@ -386,7 +480,9 @@ export default function RollenDNA() {
                   </div>
                 </div>
               </Card>
-            </div>
+            ) : (
+              <LockedStep step={3} title="Tätigkeiten & Kompetenzen" />
+            )}
 
           </div>
         </main>
