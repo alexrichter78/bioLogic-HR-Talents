@@ -871,98 +871,108 @@ export default function RollenDNA() {
                             </span>
 
                             <div style={{ flex: 1, minWidth: 0 }}>
-                              <p style={{
-                                fontSize: 15,
-                                fontWeight: 400,
-                                color: "#1D1D1F",
-                                lineHeight: 1.5,
-                              }}>
-                                {t.name}
-                              </p>
-                            </div>
-
-                            <div style={{ display: "flex", alignItems: "flex-start", gap: 12, flexShrink: 0 }}>
-                              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
-                                <select
-                                  value={t.niveau}
-                                  onChange={(e) => handleNiveauChange(t.id, e.target.value as Niveau)}
+                              <div className="flex items-start justify-between gap-3">
+                                <p style={{
+                                  fontSize: 15,
+                                  fontWeight: 400,
+                                  color: "#1D1D1F",
+                                  lineHeight: 1.5,
+                                  flex: 1,
+                                }}>
+                                  {t.name}
+                                </p>
+                                <button
+                                  onClick={() => handleRemoveTaetigkeit(t.id)}
                                   style={{
-                                    appearance: "none",
-                                    WebkitAppearance: "none",
-                                    background: "transparent",
+                                    width: 28,
+                                    height: 28,
+                                    borderRadius: 6,
                                     border: "none",
-                                    fontSize: 14,
-                                    fontWeight: 500,
-                                    color: "#1D1D1F",
-                                    cursor: "pointer",
-                                    padding: "2px 16px 2px 0",
-                                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238E8E93' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
-                                    backgroundRepeat: "no-repeat",
-                                    backgroundPosition: "right center",
-                                  }}
-                                  data-testid={`select-niveau-${t.id}`}
-                                >
-                                  {NIVEAU_OPTIONS.map(n => (
-                                    <option key={n} value={n}>{n}</option>
-                                  ))}
-                                </select>
-
-                                <select
-                                  value={t.kompetenz}
-                                  onChange={(e) => handleKompetenzChange(t.id, e.target.value as KompetenzTyp)}
-                                  style={{
-                                    appearance: "none",
-                                    WebkitAppearance: "none",
                                     background: "transparent",
-                                    border: "none",
-                                    fontSize: 13,
-                                    fontWeight: 600,
-                                    color: KOMPETENZ_COLORS[t.kompetenz],
                                     cursor: "pointer",
-                                    padding: "2px 16px 2px 0",
-                                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238E8E93' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
-                                    backgroundRepeat: "no-repeat",
-                                    backgroundPosition: "right center",
                                     display: "flex",
                                     alignItems: "center",
-                                    gap: 6,
+                                    justifyContent: "center",
+                                    color: "#AEAEB2",
+                                    transition: "all 150ms ease",
+                                    flexShrink: 0,
                                   }}
-                                  data-testid={`select-kompetenz-${t.id}`}
+                                  onMouseEnter={(e) => {
+                                    (e.currentTarget as HTMLButtonElement).style.color = "#FF3B30";
+                                    (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,59,48,0.06)";
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    (e.currentTarget as HTMLButtonElement).style.color = "#AEAEB2";
+                                    (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+                                  }}
+                                  data-testid={`remove-taetigkeit-${t.id}`}
                                 >
-                                  {KOMPETENZ_OPTIONS.map(k => (
-                                    <option key={k} value={k} style={{ color: KOMPETENZ_COLORS[k] }}>● {k}</option>
-                                  ))}
-                                </select>
+                                  <X style={{ width: 14, height: 14 }} />
+                                </button>
                               </div>
 
-                              <button
-                                onClick={() => handleRemoveTaetigkeit(t.id)}
-                                style={{
-                                  width: 28,
-                                  height: 28,
-                                  borderRadius: 6,
-                                  border: "none",
-                                  background: "transparent",
-                                  cursor: "pointer",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  color: "#AEAEB2",
-                                  transition: "all 150ms ease",
-                                  marginTop: 2,
-                                }}
-                                onMouseEnter={(e) => {
-                                  (e.currentTarget as HTMLButtonElement).style.color = "#FF3B30";
-                                  (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,59,48,0.06)";
-                                }}
-                                onMouseLeave={(e) => {
-                                  (e.currentTarget as HTMLButtonElement).style.color = "#AEAEB2";
-                                  (e.currentTarget as HTMLButtonElement).style.background = "transparent";
-                                }}
-                                data-testid={`remove-taetigkeit-${t.id}`}
-                              >
-                                <X style={{ width: 14, height: 14 }} />
-                              </button>
+                              <div style={{ marginTop: 12, display: "flex", flexWrap: "wrap", gap: 8 }}>
+                                {NIVEAU_OPTIONS.map(n => (
+                                  <button
+                                    key={n}
+                                    onClick={() => handleNiveauChange(t.id, n)}
+                                    style={{
+                                      height: 30,
+                                      paddingLeft: 12,
+                                      paddingRight: 12,
+                                      fontSize: 12,
+                                      fontWeight: 500,
+                                      borderRadius: 999,
+                                      border: t.niveau === n ? "1.5px solid transparent" : "1px solid rgba(0,0,0,0.1)",
+                                      cursor: "pointer",
+                                      transition: "all 150ms ease",
+                                      background: t.niveau === n ? "linear-gradient(135deg, #0071E3, #34AADC)" : "transparent",
+                                      color: t.niveau === n ? "#FFFFFF" : "#8E8E93",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: 4,
+                                    }}
+                                    data-testid={`niveau-${t.id}-${n.toLowerCase()}`}
+                                  >
+                                    {t.niveau === n && <Check style={{ width: 10, height: 10 }} />}
+                                    {n}
+                                  </button>
+                                ))}
+
+                                <span style={{ width: 1, height: 20, background: "rgba(0,0,0,0.08)", alignSelf: "center", margin: "0 4px" }} />
+
+                                {KOMPETENZ_OPTIONS.map(k => (
+                                  <button
+                                    key={k}
+                                    onClick={() => handleKompetenzChange(t.id, k)}
+                                    style={{
+                                      height: 30,
+                                      paddingLeft: 12,
+                                      paddingRight: 12,
+                                      fontSize: 12,
+                                      fontWeight: 600,
+                                      borderRadius: 999,
+                                      border: t.kompetenz === k ? "1.5px solid transparent" : "1px solid rgba(0,0,0,0.1)",
+                                      cursor: "pointer",
+                                      transition: "all 150ms ease",
+                                      background: t.kompetenz === k ? KOMPETENZ_COLORS[k] : "transparent",
+                                      color: t.kompetenz === k ? "#FFFFFF" : KOMPETENZ_COLORS[k],
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: 4,
+                                    }}
+                                    data-testid={`kompetenz-${t.id}-${k.toLowerCase()}`}
+                                  >
+                                    <span style={{
+                                      width: 6,
+                                      height: 6,
+                                      borderRadius: 3,
+                                      background: t.kompetenz === k ? "rgba(255,255,255,0.5)" : KOMPETENZ_COLORS[k],
+                                    }} />
+                                    {k}
+                                  </button>
+                                ))}
+                              </div>
                             </div>
                           </div>
                           {idx < filteredTaetigkeiten.length - 1 && (
