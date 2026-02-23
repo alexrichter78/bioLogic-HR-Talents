@@ -665,21 +665,22 @@ export default function RollenDNA() {
                             {showFuehrungInfo && (
                               <>
                                 <div
-                                  style={{ position: "fixed", inset: 0, zIndex: 9998 }}
+                                  style={{ position: "fixed", inset: 0, zIndex: 9998, background: "rgba(0,0,0,0.15)" }}
                                   onClick={() => setShowFuehrungInfo(false)}
                                 />
                                 <div
                                   style={{
-                                    position: "absolute",
-                                    top: 32,
-                                    left: -120,
-                                    width: 420,
-                                    background: "rgba(255,255,255,0.98)",
-                                    backdropFilter: "blur(20px)",
-                                    WebkitBackdropFilter: "blur(20px)",
-                                    borderRadius: 16,
-                                    padding: "24px",
-                                    boxShadow: "0 12px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.08)",
+                                    position: "fixed",
+                                    top: "50%",
+                                    left: "50%",
+                                    transform: "translate(-50%, -50%)",
+                                    width: 440,
+                                    maxHeight: "80vh",
+                                    overflowY: "auto",
+                                    background: "#FFFFFF",
+                                    borderRadius: 20,
+                                    padding: "28px",
+                                    boxShadow: "0 24px 60px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.06)",
                                     zIndex: 9999,
                                   }}
                                   data-testid="popup-fuehrung-info"
