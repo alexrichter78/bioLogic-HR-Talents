@@ -414,6 +414,7 @@ function SummaryBar({ fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik }:
 
 export default function RollenDNA() {
   const [currentStep, setCurrentStep] = useState(1);
+  const [allCollapsed, setAllCollapsed] = useState(false);
   const [beruf, setBeruf] = useState("");
   const [fuehrung, setFuehrung] = useState("Fachliche Führung");
   const [erfolgsfokusIndices, setErfolgsfokusIndices] = useState<number[]>([0, 1]);
@@ -627,13 +628,15 @@ export default function RollenDNA() {
             </p>
           </div>
 
+          {!allCollapsed && (
           <div className="mb-12">
             <StepProgress currentStep={currentStep} completedSteps={completedSteps} />
           </div>
+          )}
 
           <div className="space-y-5">
 
-            {currentStep === 1 ? (
+            {allCollapsed ? null : currentStep === 1 ? (
               <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-1">
                 <div className="p-6">
                   <div className="flex items-center gap-3 mb-1">
@@ -688,7 +691,7 @@ export default function RollenDNA() {
               />
             )}
 
-            {currentStep === 2 ? (
+            {allCollapsed ? null : currentStep === 2 ? (
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-2">
                 <div className="mb-6">
                   <span className="text-xs font-medium text-primary uppercase tracking-wider">Schritt 2</span>
@@ -885,7 +888,7 @@ export default function RollenDNA() {
                   </div>
                 </div>
               </div>
-            ) : currentStep > 2 ? (
+            ) : !allCollapsed && currentStep > 2 ? (
               <CollapsedStep
                 step={2}
                 title="Rahmenbedingungen der Rolle"
@@ -896,7 +899,7 @@ export default function RollenDNA() {
               <LockedStep step={2} title="Rahmenbedingungen der Rolle" />
             )}
 
-            {currentStep === 3 ? (
+            {allCollapsed ? null : currentStep === 3 ? (
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-3">
                 <div className="flex items-center justify-between mb-6">
                   <div>
@@ -1186,6 +1189,7 @@ export default function RollenDNA() {
                       boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
                     }}
                     data-testid="button-step-3-fertig"
+                    onClick={() => setAllCollapsed(true)}
                   >
                     Datenerfassung abgeschlossen
                     <ChevronRight className="w-5 h-5" />
@@ -1194,6 +1198,54 @@ export default function RollenDNA() {
               </div>
             ) : (
               <LockedStep step={3} title="Tätigkeiten & Kompetenzen" />
+            )}
+
+            {allCollapsed && (
+              <div
+                style={{
+                  background: "rgba(255,255,255,0.65)",
+                  backdropFilter: "blur(24px)",
+                  WebkitBackdropFilter: "blur(24px)",
+                  borderRadius: 24,
+                  padding: "32px 40px",
+                  boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+                  border: "1px solid rgba(0,0,0,0.04)",
+                  marginTop: 24,
+                }}
+                className="dark:bg-card/40"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 style={{ width: 24, height: 24, color: "#34C759" }} />
+                    <h3 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>Datenerfassung abgeschlossen</h3>
+                  </div>
+                  <button
+                    onClick={() => setAllCollapsed(false)}
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 500,
+                      color: "#0071E3",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                    data-testid="button-reopen-steps"
+                  >
+                    Bearbeiten
+                  </button>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 14, color: "#6E6E73" }}>
+                  <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Rolle:</span> {beruf}</div>
+                  <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Führung:</span> {fuehrung}</div>
+                  <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Erfolgsfokus:</span> {erfolgsfokusIndices.map(i => ERFOLGSFOKUS_LABELS[i].replace(/\n/g, " ")).join(", ")}</div>
+                  <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Aufgabencharakter:</span> {aufgabencharakter}</div>
+                  <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Arbeitslogik:</span> {arbeitslogik}</div>
+                  <div style={{ marginTop: 4 }}>
+                    <span style={{ fontWeight: 600, color: "#1D1D1F" }}>Tätigkeiten:</span> {hauptCount} · <span style={{ fontWeight: 600, color: "#1D1D1F" }}>Humankompetenzen:</span> {nebenCount}
+                    {fuehrung !== "Keine" && <> · <span style={{ fontWeight: 600, color: "#1D1D1F" }}>Führungskompetenzen:</span> {fuehrungCount}</>}
+                  </div>
+                </div>
+              </div>
             )}
 
           </div>
