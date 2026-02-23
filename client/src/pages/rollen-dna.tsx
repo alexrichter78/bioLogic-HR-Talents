@@ -61,14 +61,14 @@ function SegmentedControl({
   onSelect: (val: string) => void;
 }) {
   return (
-    <div className="flex items-center gap-1 rounded-2xl bg-muted/40 dark:bg-muted/30 p-1 w-full">
+    <div className="flex items-stretch gap-1 rounded-2xl bg-muted/40 dark:bg-muted/30 p-1 w-full">
       {options.map((opt, idx) => {
         const isSelected = selected === opt;
         return (
           <button
             key={`${opt}-${idx}`}
             onClick={() => onSelect(opt)}
-            className={`flex-1 px-2 py-1.5 rounded-xl text-sm transition-all duration-200 text-center ${
+            className={`flex-1 px-2 py-2 rounded-xl text-sm transition-all duration-200 text-center break-words min-w-0 ${
               isSelected
                 ? "bg-primary/15 dark:bg-primary/25 text-primary font-medium shadow-sm"
                 : "text-muted-foreground hover:text-foreground/70"
