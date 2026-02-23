@@ -626,8 +626,33 @@ export default function RollenDNA() {
   if (currentStep > 1) completedSteps.push(1);
   if (currentStep > 2) completedSteps.push(2);
 
-  const generateKompetenzen = async () => {
+  const buildCacheKey = () => {
+    const erfolgsfokusText = erfolgsfokusIndices
+      .map(i => ERFOLGSFOKUS_LABELS[i]?.replace(/\n/g, " "))
+      .filter(Boolean)
+      .join(", ");
+    return JSON.stringify({ beruf, fuehrung, erfolgsfokus: erfolgsfokusText, aufgabencharakter, arbeitslogik });
+  };
+
+  const generateKompetenzen = async (forceRegenerate = false) => {
     if (!beruf) return;
+
+    const cacheKey = buildCacheKey();
+
+    if (!forceRegenerate) {
+      try {
+        const cached = localStorage.getItem("kompetenzenCache");
+        if (cached) {
+          const cacheData = JSON.parse(cached);
+          if (cacheData.key === cacheKey && cacheData.taetigkeiten && cacheData.taetigkeiten.length > 0) {
+            setTaetigkeiten(cacheData.taetigkeiten);
+            setNextId(Math.max(...cacheData.taetigkeiten.map((t: Taetigkeit) => t.id)) + 1);
+            return;
+          }
+        }
+      } catch {}
+    }
+
     setIsGenerating(true);
     try {
       const erfolgsfokusText = erfolgsfokusIndices
@@ -660,6 +685,8 @@ export default function RollenDNA() {
       }
       setTaetigkeiten(generated);
       setNextId(id);
+
+      localStorage.setItem("kompetenzenCache", JSON.stringify({ key: cacheKey, taetigkeiten: generated }));
     } catch (err) {
       console.error("KI-Generierung fehlgeschlagen:", err);
     } finally {
