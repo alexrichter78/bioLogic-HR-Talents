@@ -131,7 +131,7 @@ Antworte ausschließlich als JSON:
 }`;
 
       const response = await openai.chat.completions.create({
-        model: "gpt-5.2",
+        model: "gpt-4.1",
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
         temperature: 0.7,
@@ -209,7 +209,7 @@ Antworte als JSON:
 }`;
 
       const response = await openai.chat.completions.create({
-        model: "gpt-5.2",
+        model: "gpt-4.1",
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
         temperature: 0.7,
