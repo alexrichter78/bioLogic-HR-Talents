@@ -39,7 +39,7 @@ export async function registerRoutes(
         }
       }
 
-      const prompt = `Du bist ein Experte für Berufsprofile und Kompetenzanalyse im deutschsprachigen Raum. Du ordnest Tätigkeiten und Kompetenzen IMMER im Gesamtkontext der Rolle zu – nicht isoliert nach dem Namen, sondern danach, WIE und WOZU sie in dieser spezifischen Rolle eingesetzt werden.
+      const prompt = `Du bist ein Experte für Berufsprofile und Kompetenzanalyse im deutschsprachigen Raum.
 ${analyseKontext}
 ## ROLLENPROFIL – GESAMTKONTEXT
 
@@ -49,48 +49,78 @@ ${analyseKontext}
 **Aufgabencharakter:** ${aufgabencharakter || "Nicht angegeben"}
 **Arbeitslogik:** ${arbeitslogik || "Nicht angegeben"}
 
-## ZUORDNUNGSREGELN FÜR KOMPETENZBEREICHE
+## BEWERTUNGSMETHODIK – SACHVERHALT VOR EINZELWORT
 
-Ordne jede Tätigkeit/Kompetenz einem Bereich zu. Die Zuordnung hängt NICHT vom Namen ab, sondern davon, WAS die Tätigkeit in dieser konkreten Rolle erfordert:
+NIEMALS einzelne Wörter aus einer Tätigkeit isoliert bewerten. IMMER den GESAMTEN Sachverhalt analysieren:
 
-### "Analytisch" (= Fach-/Methodenkompetenz, Denken & Verstehen)
-Zuordnen wenn die Tätigkeit primär erfordert: Analysieren, Bewerten, Strukturieren, Planen, Fachwissen anwenden, Daten interpretieren, Konzepte entwickeln, Strategien ausarbeiten, Qualität prüfen, Komplexes durchdringen, Wissen vermitteln, Sachverhalte aufbereiten, systematisches Arbeiten in IT-Systemen/ERP/Software, Daten pflegen, Dokumentation, Monitoring, Überwachung, Buchungen, Stammdatenpflege, Terminverfolgung, Berichtswesen.
-Beispiele: Marktanalysen erstellen, Budgets kalkulieren, Prozesse optimieren, Fachliche Beratung, Komplexe Sachverhalte erklären, Strategien entwickeln, Reporting, ERP-Buchungen durchführen, Bestellungen im System auslösen, Liefertermine überwachen, Wareneingänge buchen, Stammdaten pflegen, Kennzahlen auswerten.
+**Schritt 1 – Gesamtaussage erfassen:** Was beschreibt die Tätigkeit INSGESAMT? Was ist das ERGEBNIS dieser Tätigkeit?
+**Schritt 2 – Kernkompetenz identifizieren:** Welche PRIMÄRE Fähigkeit braucht jemand, um diese Tätigkeit erfolgreich auszuführen? Denken/Wissen? Fühlen/Beziehung? Handeln/Durchsetzen?
+**Schritt 3 – Rollenkontext anwenden:** WIE wird diese Tätigkeit in der konkreten Rolle "${beruf}" mit ${aufgabencharakter || "gemischtem"} Aufgabencharakter und ${arbeitslogik || "nicht spezifizierter"} Arbeitslogik ausgeführt?
 
-### "Intuitiv" (= Sozial-/Beziehungskompetenz, Fühlen & Verbinden)
-Zuordnen wenn die Tätigkeit primär erfordert: Beziehungen aufbauen/pflegen, Empathie zeigen, Konflikte moderieren, Teams zusammenhalten, Vertrauen schaffen, Netzwerken, Emotionale Intelligenz, Zuhören, Bedürfnisse erkennen, Motivation spüren, Stimmungen wahrnehmen.
-Beispiele: Mitarbeitergespräche führen, Kundenbeziehungen pflegen, Teamkonflikte lösen, Netzwerk aufbauen, Verhandeln auf Beziehungsebene.
+## DREI KOMPETENZBEREICHE
 
-### "Impulsiv" (= Handlungs-/Umsetzungskompetenz, Machen & Durchsetzen)
-Zuordnen wenn die Tätigkeit primär erfordert: Entscheidungen unter Druck treffen, Ergebnisse gegen Widerstände liefern, Durchsetzen, Tempo machen, Risiken eingehen, Verantwortung für Resultate übernehmen, Ziele trotz Hindernissen verfolgen, Druck standhalten, Krisen managen.
-WICHTIG: Rein administrative, systematische oder prozessgebundene Tätigkeiten sind NICHT "Impulsiv". "Impulsiv" erfordert IMMER ein Element von Durchsetzungskraft, Risikobereitschaft oder Ergebniswillen gegen Widerstände.
-Beispiele: Vertriebsziele trotz Marktdruck erreichen, Projekte gegen Widerstände zum Abschluss bringen, Schnelle Entscheidungen unter Unsicherheit treffen, Krisensituationen managen.
+### "Analytisch" (= Fach-/Methodenkompetenz – DENKEN & VERSTEHEN)
+Die Kernfrage: Braucht diese Tätigkeit primär KOPFARBEIT – Wissen anwenden, Daten verarbeiten, Systeme bedienen, Sachverhalte durchdringen, fachlich bewerten?
 
-## WICHTIGE KONTEXTREGELN
+Typische Sachverhalte (Analytisch):
+- Jede Tätigkeit, die SYSTEMATISCHES ARBEITEN in Systemen erfordert (ERP, CRM, SAP, Software, Datenbanken)
+- Jede Tätigkeit, die FACHLICHES BEWERTEN oder SACHLICHES ABWÄGEN erfordert – auch wenn das Wort "Konflikt" oder "klären" vorkommt
+- Jede Tätigkeit, die DATEN, ZAHLEN, TERMINE, PROZESSE betrifft
+- Jede Tätigkeit, die DOKUMENTATION, REPORTING, MONITORING umfasst
+- Jede Tätigkeit, die FACHWISSEN VERMITTELN oder ERKLÄREN erfordert
 
-- KRITISCH: Systematische Tätigkeiten in IT-Systemen (ERP, CRM, SAP, etc.) sind IMMER "Analytisch" – z.B. Bestellungen auslösen, Buchungen durchführen, Stammdaten pflegen, Liefertermine überwachen, Wareneingänge buchen, Reports erstellen
-- KRITISCH: Wenn "Konflikte" oder "klären" im Zusammenhang mit TECHNISCHEN oder FACHLICHEN Entscheidungen steht, ist das "Analytisch" – denn es geht um sachliche Bewertung, Argumentation und fachliche Abwägung, NICHT um Beziehungspflege. Beispiele: "Konflikte zu technischen Entscheidungen klären" → Analytisch, "Technische Unstimmigkeiten lösen" → Analytisch, "Fachliche Meinungsverschiedenheiten klären" → Analytisch
-- KRITISCH: "Intuitiv" bei Konflikten NUR wenn es um zwischenmenschliche/emotionale Konflikte geht (z.B. Teamkonflikte zwischen Personen, Mobbing, persönliche Spannungen)
-- "Kommunikationsstärke" bei einem Ingenieur in der Robotik, der Fachwissen vermittelt → "Analytisch" (Wissen aufbereiten und erklären)
-- "Kommunikationsstärke" bei einem HR-Manager, der Mitarbeitergespräche führt → "Intuitiv" (Beziehungsebene, Empathie)
-- "Kommunikationsstärke" bei einem Vertriebsleiter, der Deals abschließt → "Impulsiv" (Überzeugung, Abschluss erzielen)
-- Berücksichtige den Aufgabencharakter: Bei "Überwiegend strategisch" sind mehr Tätigkeiten "Analytisch", bei "Überwiegend operativ" mehr "Impulsiv"
-- Berücksichtige die Arbeitslogik: "Menschenorientiert" → mehr "Intuitiv", "Daten-/prozessorientiert" → mehr "Analytisch", "Umsetzungsorientiert" → mehr "Impulsiv"
-- Berücksichtige den Erfolgsfokus für die Gewichtung
+### "Intuitiv" (= Sozial-/Beziehungskompetenz – FÜHLEN & VERBINDEN)
+Die Kernfrage: Braucht diese Tätigkeit primär EMOTIONALE INTELLIGENZ – Menschen lesen, Beziehungen gestalten, Vertrauen aufbauen, Stimmungen wahrnehmen?
+
+Typische Sachverhalte (Intuitiv):
+- Jede Tätigkeit, bei der das ZWISCHENMENSCHLICHE im Vordergrund steht
+- Jede Tätigkeit, die EMPATHIE, ZUHÖREN, VERSTÄNDNIS für den MENSCHEN erfordert
+- Jede Tätigkeit, bei der es um das WIE der Beziehung geht, nicht um das WAS des Inhalts
+
+### "Impulsiv" (= Handlungs-/Umsetzungskompetenz – MACHEN & DURCHSETZEN)
+Die Kernfrage: Braucht diese Tätigkeit primär DURCHSETZUNGSKRAFT – Entscheidungen unter Unsicherheit, Ergebnisse gegen Widerstände, Tempo und Pragmatismus?
+
+Typische Sachverhalte (Impulsiv):
+- Jede Tätigkeit, die ENTSCHEIDUNGEN UNTER DRUCK oder UNSICHERHEIT erfordert
+- Jede Tätigkeit, die ERGEBNISSE GEGEN WIDERSTÄNDE liefern muss
+- Jede Tätigkeit, die RISIKOBEREITSCHAFT und VERANTWORTUNGSÜBERNAHME braucht
+- NICHT: Routine-Tätigkeiten, administrative Prozesse, systematische Abläufe – auch wenn sie "operativ" sind
+
+## SACHVERHALT-BEWERTUNG – BEISPIELE
+
+Gleiche Wörter, unterschiedliche Sachverhalte:
+- "Konflikte zu technischen Entscheidungen klären" → Sachverhalt: FACHLICHE Bewertung von Alternativen → **Analytisch**
+- "Konflikte im Team moderieren" → Sachverhalt: ZWISCHENMENSCHLICHE Spannungen lösen → **Intuitiv**
+- "Konflikte mit Auftraggeber zur Deadline eskalieren" → Sachverhalt: DURCHSETZEN unter Druck → **Impulsiv**
+
+- "Bestellungen im ERP auslösen" → Sachverhalt: SYSTEMATISCHES Arbeiten im System → **Analytisch**
+- "Liefertermine überwachen und nachfassen" → Sachverhalt: MONITORING und Prozesssteuerung → **Analytisch**
+- "Wareneingänge buchen und klären" → Sachverhalt: DATENVERARBEITUNG im System → **Analytisch**
+- "Stammdaten im ERP pflegen" → Sachverhalt: SYSTEMATISCHE Datenpflege → **Analytisch**
+
+- "Kundenanforderungen fachlich analysieren" → Sachverhalt: FACHBEWERTUNG → **Analytisch**
+- "Kundenbeziehungen langfristig pflegen" → Sachverhalt: BEZIEHUNGSAUFBAU → **Intuitiv**
+- "Kundenreklamationen sofort entscheiden" → Sachverhalt: ENTSCHEIDUNG unter Druck → **Impulsiv**
+
+## KONTEXTGEWICHTUNG
+
+- Aufgabencharakter "${aufgabencharakter || "Nicht angegeben"}": Beeinflusst die Verteilung, aber NICHT die Sachverhalt-Bewertung. Eine ERP-Buchung bleibt Analytisch, auch bei operativem Charakter.
+- Arbeitslogik "${arbeitslogik || "Nicht angegeben"}": Gibt Tendenz vor, überschreibt aber NIE die Sachverhalt-Analyse.
+- Erfolgsfokus "${erfolgsfokus || "Nicht angegeben"}": Beeinflusst die Niveau-Bewertung (Hoch/Mittel/Niedrig).
 
 ## AUFGABE
 
 Erstelle für die Rolle "${beruf}" im oben beschriebenen Gesamtkontext:
 
-1. **Haupttätigkeiten (haupt)**: Genau 15 typische Haupttätigkeiten. Jede Tätigkeit ist eine präzise, praxisnahe Beschreibung (max. 60 Zeichen).
+1. **Haupttätigkeiten (haupt)**: Genau 15 typische Haupttätigkeiten. Jede Tätigkeit ist eine präzise, praxisnahe Beschreibung (max. 60 Zeichen). Bewerte JEDE einzeln nach der Sachverhalt-Methodik.
 
-2. **Humankompetenzen (neben)**: Genau 10 relevante Humankompetenzen (Soft Skills), die im Kontext dieser Rolle wichtig sind.
+2. **Humankompetenzen (neben)**: Genau 10 relevante Humankompetenzen (Soft Skills). Bewerte JEDE im Kontext dieser spezifischen Rolle.
 
-${hasFuehrung ? `3. **Führungskompetenzen (fuehrung)**: Genau 10 relevante Führungskompetenzen passend zur Führungsebene "${fuehrung}" im Kontext dieser Branche/Rolle.` : ""}
+${hasFuehrung ? `3. **Führungskompetenzen (fuehrung)**: Genau 10 relevante Führungskompetenzen passend zur Führungsebene "${fuehrung}". Bewerte JEDE im Kontext dieser Branche/Rolle.` : ""}
 
 ## NIVEAU-REGELN
-- "Hoch": Diese Tätigkeit/Kompetenz ist erfolgskritisch für die Rolle (max. 6 bei Haupttätigkeiten, max. 4 bei anderen)
-- "Mittel": Wichtig, aber nicht das Kernprofil
+- "Hoch": Erfolgskritisch für die Rolle (max. 6 bei Haupttätigkeiten, max. 4 bei anderen)
+- "Mittel": Wichtig, aber nicht Kernprofil
 - "Niedrig": Wird benötigt, ist aber nicht zentral
 
 Antworte ausschließlich als JSON:
