@@ -196,11 +196,18 @@ export default function RollenDNA() {
                   <SectionNumber num={2} />
                   <div className="flex-1 space-y-3">
                     <h3 className="text-sm font-semibold text-foreground/90">Erfolgsfokus</h3>
-                    <SegmentedControl
-                      options={ERFOLGSFOKUS_LABELS}
-                      selected={erfolgsfokus}
-                      onSelect={setErfolgsfokus}
-                    />
+                    <div className="flex flex-col gap-1.5">
+                      <SegmentedControl
+                        options={ERFOLGSFOKUS_LABELS.slice(0, 3)}
+                        selected={erfolgsfokus}
+                        onSelect={setErfolgsfokus}
+                      />
+                      <SegmentedControl
+                        options={ERFOLGSFOKUS_LABELS.slice(3, 6)}
+                        selected={erfolgsfokus}
+                        onSelect={setErfolgsfokus}
+                      />
+                    </div>
                   </div>
                 </div>
 
