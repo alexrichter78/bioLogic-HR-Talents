@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, Plus, ArrowLeft, Save, FolderOpen, ArrowDown, Check } from "lucide-react";
+import { Search, Plus, ArrowLeft, Save, FolderOpen, ArrowDown } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 const ERFOLGSFOKUS_LABELS = [
@@ -51,70 +51,6 @@ function SectionNumber({ num }: { num: number }) {
   );
 }
 
-function PillSelector({
-  options,
-  selected,
-  onToggle,
-  max,
-}: {
-  options: string[];
-  selected: string[];
-  onToggle: (val: string) => void;
-  max?: number;
-}) {
-  return (
-    <div className="flex items-center gap-2 flex-wrap">
-      {options.map((opt) => {
-        const isSelected = selected.includes(opt);
-        return (
-          <button
-            key={opt}
-            onClick={() => onToggle(opt)}
-            className={`px-4 py-1.5 rounded-full text-sm transition-all duration-200 border ${
-              isSelected
-                ? "bg-foreground/5 dark:bg-foreground/10 border-foreground/20 text-foreground font-medium"
-                : "bg-transparent border-border/60 text-muted-foreground hover:border-foreground/20 hover:text-foreground/80"
-            }`}
-            data-testid={`pill-${opt.toLowerCase().replace(/\s+/g, "-")}`}
-          >
-            {opt}
-          </button>
-        );
-      })}
-      {max && (
-        <span className="text-xs text-muted-foreground/50 ml-1">(max. {max} auswählbar)</span>
-      )}
-    </div>
-  );
-}
-
-function CheckboxOption({
-  label,
-  checked,
-  onChange,
-}: {
-  label: string;
-  checked: boolean;
-  onChange: () => void;
-}) {
-  return (
-    <button
-      onClick={onChange}
-      className="flex items-center gap-2 text-sm text-foreground/80 hover:text-foreground transition-colors group"
-      data-testid={`checkbox-${label.toLowerCase().replace(/[\s\/&]+/g, "-")}`}
-    >
-      <span className={`w-4 h-4 rounded-sm flex items-center justify-center transition-colors ${
-        checked
-          ? "text-primary"
-          : "text-muted-foreground/30 group-hover:text-muted-foreground/50"
-      }`}>
-        <Check className="w-3.5 h-3.5" strokeWidth={checked ? 2.5 : 1.5} />
-      </span>
-      <span className={checked ? "font-medium" : ""}>{label}</span>
-    </button>
-  );
-}
-
 function SegmentedControl({
   options,
   selected,
@@ -125,14 +61,14 @@ function SegmentedControl({
   onSelect: (val: string) => void;
 }) {
   return (
-    <div className="inline-flex items-center gap-1 rounded-full bg-muted/40 dark:bg-muted/30 p-1">
-      {options.map((opt) => {
+    <div className="inline-flex items-center gap-1 flex-wrap rounded-2xl bg-muted/40 dark:bg-muted/30 p-1">
+      {options.map((opt, idx) => {
         const isSelected = selected === opt;
         return (
           <button
-            key={opt}
+            key={`${opt}-${idx}`}
             onClick={() => onSelect(opt)}
-            className={`px-4 py-1.5 rounded-full text-sm transition-all duration-200 whitespace-nowrap ${
+            className={`px-4 py-1.5 rounded-xl text-sm transition-all duration-200 whitespace-nowrap ${
               isSelected
                 ? "bg-primary/15 dark:bg-primary/25 text-primary font-medium shadow-sm"
                 : "text-muted-foreground hover:text-foreground/70"
@@ -185,34 +121,12 @@ function TabBar({
 
 export default function RollenDNA() {
   const [beruf, setBeruf] = useState("");
-  const [fuehrung, setFuehrung] = useState<string[]>(["Führung"]);
-  const [erfolgsfokus, setErfolgsfokus] = useState<string[]>([
-    "Ergebnis-/Umsatzdruck",
-    "Beziehungsaufbau",
-    "Innovations-/Entwicklungsfokus",
-    "Prozessqualität & Struktur",
-    "Fachliche Präzision",
-  ]);
+  const [fuehrung, setFuehrung] = useState("Führung");
+  const [erfolgsfokus, setErfolgsfokus] = useState("Ergebnis-/Umsatzdruck");
   const [aufgabencharakter, setAufgabencharakter] = useState("Gemischt");
   const [arbeitslogik, setArbeitslogik] = useState("Daten-/prozessorientiert");
   const [hinweise, setHinweise] = useState("");
   const [activeTab, setActiveTab] = useState("Haupttätigkeiten");
-
-  const toggleFuehrung = (val: string) => {
-    setFuehrung((prev) => {
-      if (prev.includes(val)) return prev.filter((v) => v !== val);
-      if (prev.length >= 2) return [...prev.slice(1), val];
-      return [...prev, val];
-    });
-  };
-
-  const toggleErfolgsfokus = (val: string) => {
-    setErfolgsfokus((prev) => {
-      if (prev.includes(val)) return prev.filter((v) => v !== val);
-      if (prev.length >= 2) return [...prev.slice(1), val];
-      return [...prev, val];
-    });
-  };
 
   const tabs = [
     { label: "Haupttätigkeiten" },
@@ -268,11 +182,10 @@ export default function RollenDNA() {
                   <SectionNumber num={1} />
                   <div className="flex-1 space-y-3">
                     <h3 className="text-sm font-semibold text-foreground/90">Führungsverantwortung</h3>
-                    <PillSelector
+                    <SegmentedControl
                       options={["Keine", "Koordination", "Führung"]}
                       selected={fuehrung}
-                      onToggle={toggleFuehrung}
-                      max={2}
+                      onSelect={setFuehrung}
                     />
                   </div>
                 </div>
@@ -282,20 +195,12 @@ export default function RollenDNA() {
                 <div className="flex items-start gap-3" data-testid="section-erfolgsfokus">
                   <SectionNumber num={2} />
                   <div className="flex-1 space-y-3">
-                    <div className="flex items-baseline gap-2">
-                      <h3 className="text-sm font-semibold text-foreground/90">Erfolgsfokus</h3>
-                      <span className="text-xs text-muted-foreground/50">(max. 2 auswählbar)</span>
-                    </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2.5">
-                      {ERFOLGSFOKUS_LABELS.map((label, idx) => (
-                        <CheckboxOption
-                          key={`${label}-${idx}`}
-                          label={label}
-                          checked={erfolgsfokus.includes(label)}
-                          onChange={() => toggleErfolgsfokus(label)}
-                        />
-                      ))}
-                    </div>
+                    <h3 className="text-sm font-semibold text-foreground/90">Erfolgsfokus</h3>
+                    <SegmentedControl
+                      options={ERFOLGSFOKUS_LABELS}
+                      selected={erfolgsfokus}
+                      onSelect={setErfolgsfokus}
+                    />
                   </div>
                 </div>
 
