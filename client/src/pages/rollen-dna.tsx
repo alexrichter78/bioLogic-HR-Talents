@@ -61,21 +61,21 @@ function SegmentedControl({
   onSelect: (val: string) => void;
 }) {
   return (
-    <div className="inline-flex items-center gap-1 flex-wrap rounded-2xl bg-muted/40 dark:bg-muted/30 p-1">
+    <div className="flex items-center gap-1 rounded-2xl bg-muted/40 dark:bg-muted/30 p-1 w-full">
       {options.map((opt, idx) => {
         const isSelected = selected === opt;
         return (
           <button
             key={`${opt}-${idx}`}
             onClick={() => onSelect(opt)}
-            className={`px-4 py-1.5 rounded-xl text-sm transition-all duration-200 whitespace-nowrap ${
+            className={`flex-1 px-2 py-1.5 rounded-xl text-sm transition-all duration-200 text-center ${
               isSelected
                 ? "bg-primary/15 dark:bg-primary/25 text-primary font-medium shadow-sm"
                 : "text-muted-foreground hover:text-foreground/70"
             }`}
             data-testid={`segment-${opt.toLowerCase().replace(/[\s\/-]+/g, "-")}`}
           >
-            {isSelected && <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary mr-2 align-middle" />}
+            {isSelected && <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary mr-1.5 align-middle" />}
             {opt}
           </button>
         );
