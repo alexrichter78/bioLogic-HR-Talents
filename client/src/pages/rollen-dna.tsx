@@ -634,10 +634,16 @@ export default function RollenDNA() {
         .map(i => ERFOLGSFOKUS_LABELS[i]?.replace(/\n/g, " "))
         .filter(Boolean)
         .join(", ");
+      let analyseTexte: { bereich1?: string; bereich2?: string; bereich3?: string } = {};
+      try {
+        const raw = localStorage.getItem("analyseTexte");
+        if (raw) analyseTexte = JSON.parse(raw);
+      } catch {}
+
       const resp = await fetch("/api/generate-kompetenzen", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ beruf, fuehrung, erfolgsfokus: erfolgsfokusText, aufgabencharakter, arbeitslogik }),
+        body: JSON.stringify({ beruf, fuehrung, erfolgsfokus: erfolgsfokusText, aufgabencharakter, arbeitslogik, analyseTexte }),
       });
       if (!resp.ok) throw new Error("Fehler bei der Generierung");
       const data = await resp.json();

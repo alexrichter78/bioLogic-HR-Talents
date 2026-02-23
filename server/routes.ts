@@ -15,15 +15,32 @@ export async function registerRoutes(
 
   app.post("/api/generate-kompetenzen", async (req, res) => {
     try {
-      const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik } = req.body;
+      const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik, analyseTexte } = req.body;
       if (!beruf) {
         return res.status(400).json({ error: "Beruf ist erforderlich" });
       }
 
       const hasFuehrung = fuehrung && fuehrung !== "Keine" && fuehrung !== "";
 
-      const prompt = `Du bist ein Experte für Berufsprofile und Kompetenzanalyse im deutschsprachigen Raum. Du ordnest Tätigkeiten und Kompetenzen IMMER im Gesamtkontext der Rolle zu – nicht isoliert nach dem Namen, sondern danach, WIE und WOZU sie in dieser spezifischen Rolle eingesetzt werden.
+      let analyseKontext = "";
+      if (analyseTexte) {
+        const parts: string[] = [];
+        if (analyseTexte.bereich1 && !analyseTexte.bereich1.startsWith("Noch keine Analyse")) {
+          parts.push(`### Kompetenzverteilung & Rollenprofil (Referenzwissen)\n${analyseTexte.bereich1}`);
+        }
+        if (analyseTexte.bereich2 && !analyseTexte.bereich2.startsWith("Noch keine Analyse")) {
+          parts.push(`### Tätigkeitsanalyse & Anforderungsprofil (Referenzwissen)\n${analyseTexte.bereich2}`);
+        }
+        if (analyseTexte.bereich3 && !analyseTexte.bereich3.startsWith("Noch keine Analyse")) {
+          parts.push(`### Empfehlungen & Entwicklungspotenziale (Referenzwissen)\n${analyseTexte.bereich3}`);
+        }
+        if (parts.length > 0) {
+          analyseKontext = `\n## ANALYSE-REFERENZWISSEN (HÖCHSTE PRIORITÄT)\n\nDie folgenden Texte enthalten verbindliche Definitionen, Zuordnungsregeln und Beispiele. Diese haben VORRANG vor allgemeinen Regeln. Wende sie konsequent auf alle Tätigkeiten und Kompetenzen an:\n\n${parts.join("\n\n")}\n`;
+        }
+      }
 
+      const prompt = `Du bist ein Experte für Berufsprofile und Kompetenzanalyse im deutschsprachigen Raum. Du ordnest Tätigkeiten und Kompetenzen IMMER im Gesamtkontext der Rolle zu – nicht isoliert nach dem Namen, sondern danach, WIE und WOZU sie in dieser spezifischen Rolle eingesetzt werden.
+${analyseKontext}
 ## ROLLENPROFIL – GESAMTKONTEXT
 
 **Rolle/Beruf:** ${beruf}
@@ -37,19 +54,21 @@ export async function registerRoutes(
 Ordne jede Tätigkeit/Kompetenz einem Bereich zu. Die Zuordnung hängt NICHT vom Namen ab, sondern davon, WAS die Tätigkeit in dieser konkreten Rolle erfordert:
 
 ### "Analytisch" (= Fach-/Methodenkompetenz, Denken & Verstehen)
-Zuordnen wenn die Tätigkeit primär erfordert: Analysieren, Bewerten, Strukturieren, Planen, Fachwissen anwenden, Daten interpretieren, Konzepte entwickeln, Strategien ausarbeiten, Qualität prüfen, Komplexes durchdringen, Wissen vermitteln, Sachverhalte aufbereiten.
-Beispiele: Marktanalysen erstellen, Budgets kalkulieren, Prozesse optimieren, Fachliche Beratung, Komplexe Sachverhalte erklären, Strategien entwickeln, Reporting.
+Zuordnen wenn die Tätigkeit primär erfordert: Analysieren, Bewerten, Strukturieren, Planen, Fachwissen anwenden, Daten interpretieren, Konzepte entwickeln, Strategien ausarbeiten, Qualität prüfen, Komplexes durchdringen, Wissen vermitteln, Sachverhalte aufbereiten, systematisches Arbeiten in IT-Systemen/ERP/Software, Daten pflegen, Dokumentation, Monitoring, Überwachung, Buchungen, Stammdatenpflege, Terminverfolgung, Berichtswesen.
+Beispiele: Marktanalysen erstellen, Budgets kalkulieren, Prozesse optimieren, Fachliche Beratung, Komplexe Sachverhalte erklären, Strategien entwickeln, Reporting, ERP-Buchungen durchführen, Bestellungen im System auslösen, Liefertermine überwachen, Wareneingänge buchen, Stammdaten pflegen, Kennzahlen auswerten.
 
 ### "Intuitiv" (= Sozial-/Beziehungskompetenz, Fühlen & Verbinden)
 Zuordnen wenn die Tätigkeit primär erfordert: Beziehungen aufbauen/pflegen, Empathie zeigen, Konflikte moderieren, Teams zusammenhalten, Vertrauen schaffen, Netzwerken, Emotionale Intelligenz, Zuhören, Bedürfnisse erkennen, Motivation spüren, Stimmungen wahrnehmen.
 Beispiele: Mitarbeitergespräche führen, Kundenbeziehungen pflegen, Teamkonflikte lösen, Netzwerk aufbauen, Verhandeln auf Beziehungsebene.
 
 ### "Impulsiv" (= Handlungs-/Umsetzungskompetenz, Machen & Durchsetzen)
-Zuordnen wenn die Tätigkeit primär erfordert: Entscheidungen treffen, Ergebnisse liefern, Durchsetzen, Tempo machen, Umsetzen, Risiken eingehen, Hands-on arbeiten, Verantwortung übernehmen, Ziele verfolgen, Pragmatisch handeln, Druck standhalten.
-Beispiele: Vertriebsziele erreichen, Projekte zum Abschluss bringen, Schnelle Entscheidungen treffen, Maßnahmen umsetzen, Verhandeln auf Ergebnisebene.
+Zuordnen wenn die Tätigkeit primär erfordert: Entscheidungen unter Druck treffen, Ergebnisse gegen Widerstände liefern, Durchsetzen, Tempo machen, Risiken eingehen, Verantwortung für Resultate übernehmen, Ziele trotz Hindernissen verfolgen, Druck standhalten, Krisen managen.
+WICHTIG: Rein administrative, systematische oder prozessgebundene Tätigkeiten sind NICHT "Impulsiv". "Impulsiv" erfordert IMMER ein Element von Durchsetzungskraft, Risikobereitschaft oder Ergebniswillen gegen Widerstände.
+Beispiele: Vertriebsziele trotz Marktdruck erreichen, Projekte gegen Widerstände zum Abschluss bringen, Schnelle Entscheidungen unter Unsicherheit treffen, Krisensituationen managen.
 
 ## WICHTIGE KONTEXTREGELN
 
+- KRITISCH: Systematische Tätigkeiten in IT-Systemen (ERP, CRM, SAP, etc.) sind IMMER "Analytisch" – z.B. Bestellungen auslösen, Buchungen durchführen, Stammdaten pflegen, Liefertermine überwachen, Wareneingänge buchen, Reports erstellen
 - "Kommunikationsstärke" bei einem Ingenieur in der Robotik, der Fachwissen vermittelt → "Analytisch" (Wissen aufbereiten und erklären)
 - "Kommunikationsstärke" bei einem HR-Manager, der Mitarbeitergespräche führt → "Intuitiv" (Beziehungsebene, Empathie)
 - "Kommunikationsstärke" bei einem Vertriebsleiter, der Deals abschließt → "Impulsiv" (Überzeugung, Abschluss erzielen)
