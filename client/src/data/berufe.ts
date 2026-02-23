@@ -1702,11 +1702,92 @@ const ROLLEN_MIT_SPEZ: string[] = [
   "Werkstattleiter",
 ];
 
+const MEISTER_FORMEN: string[] = [
+  "Optikermeister",
+  "Augenoptikermeister",
+  "Bäckermeister",
+  "Dachdeckermeister",
+  "Elektrikermeister",
+  "Elektromeister",
+  "Elektroinstallateurmeister",
+  "Estrichlegermeister",
+  "Fleischermeister",
+  "Fliesenlegermeister",
+  "Friseurmeister",
+  "Gärtnermeister",
+  "Gärtnermeister Garten- und Landschaftsbau",
+  "Gärtnermeister Zierpflanzenbau",
+  "Galvaniseurmeister",
+  "Gebäudereinigermeister",
+  "Gerüstbauermeister",
+  "Glasermeister",
+  "Goldschmiedemeister",
+  "Graveurmeister",
+  "Heizungsbauermeister",
+  "Hörakustikermeister",
+  "Informationstechnikermeister",
+  "Installateurmeister",
+  "Karosseriebaumeister",
+  "Klempnermeister",
+  "Konditormeister",
+  "Kraftfahrzeugtechnikermeister",
+  "Küchenmeister",
+  "Lackierermeister",
+  "Landmaschinenmechanikermeister",
+  "Maler- und Lackierermeister",
+  "Malermeister",
+  "Maurermeister",
+  "Mechanikermeister",
+  "Metallbauermeister",
+  "Orthopädietechnikermeister",
+  "Parkettlegermeister",
+  "Raumausstattermeister",
+  "Rollladen- und Sonnenschutztechnikermeister",
+  "Sattlermeister",
+  "Schlossermeister",
+  "Schmiedemeister",
+  "Schneidermeister",
+  "Schornsteinfegermeister",
+  "Schreinermeister",
+  "Schuhmachermeister",
+  "Seilermeister",
+  "Steinmetzmeister",
+  "Stuckateurmeister",
+  "Tischlermeister",
+  "Uhrmachermeister",
+  "Vulkaniseurmeister",
+  "Wärme-, Kälte- und Schallschutzisolierermeister",
+  "Zahntechnikermeister",
+  "Zimmermeister",
+  "Zimmerermeister",
+  "Zweiradmechanikermeister",
+  "Bootsbaumeister",
+  "Brunnenbaumeister",
+  "Buchbindermeister",
+  "Druckermeister",
+  "Fotografenmeister",
+  "Textilreinigermeister",
+  "Weinküfermeister",
+  "Chirurgiemechanikermeister",
+  "Feinmechanikermeister",
+  "Werkzeugmachermeister",
+  "Drehermeister",
+  "Fräsermeister",
+  "Schweißermeister",
+  "Kfz-Meister",
+  "SHK-Meister",
+  "HKLS-Meister",
+];
+
 function generateBerufe(): string[] {
   const set = new Set<string>();
 
   for (const b of BASIS_BERUFE) {
     set.add(b);
+  }
+
+  for (const m of MEISTER_FORMEN) {
+    set.add(m);
   }
 
   for (const rolle of ROLLEN_MIT_BRANCHEN) {
