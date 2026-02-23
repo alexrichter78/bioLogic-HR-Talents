@@ -371,7 +371,7 @@ function FeatureCards() {
 
   const resolvedFeatures = features.map((f, i) => ({
     ...f,
-    active: i === 0 ? hasProfileData : dnaCompleted,
+    active: i === 0 ? (hasProfileData || dnaCompleted) : dnaCompleted,
   }));
 
   return (
