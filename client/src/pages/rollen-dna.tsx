@@ -492,8 +492,8 @@ export default function RollenDNA() {
         if (data.arbeitslogik !== undefined) setArbeitslogik(data.arbeitslogik);
         if (data.taetigkeiten !== undefined) setTaetigkeiten(data.taetigkeiten);
         if (data.nextId !== undefined) setNextId(data.nextId);
-        setCurrentStep(1);
-        setAllCollapsed(false);
+        setCurrentStep(3);
+        setAllCollapsed(true);
       } catch {
         alert("Die Datei konnte nicht gelesen werden.");
       }

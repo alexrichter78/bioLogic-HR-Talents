@@ -67,8 +67,8 @@ function ProfileCard() {
       try {
         const data = JSON.parse(ev.target?.result as string);
         const state = {
-          currentStep: 1,
-          allCollapsed: false,
+          currentStep: 3,
+          allCollapsed: true,
           beruf: data.beruf ?? "",
           fuehrung: data.fuehrung ?? "",
           erfolgsfokusIndices: data.erfolgsfokusIndices ?? [],
