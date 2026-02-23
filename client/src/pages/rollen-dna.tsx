@@ -449,6 +449,7 @@ export default function RollenDNA() {
   const [nextId, setNextId] = useState(saved.current?.nextId ?? 1);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleSave = () => {
     const exportData = {
@@ -605,7 +606,43 @@ export default function RollenDNA() {
   if (currentStep > 1) completedSteps.push(1);
   if (currentStep > 2) completedSteps.push(2);
 
-  const goToStep = (step: number) => setCurrentStep(step);
+  const generateKompetenzen = async () => {
+    if (taetigkeiten.length > 0 || !beruf) return;
+    setIsGenerating(true);
+    try {
+      const resp = await fetch("/api/generate-kompetenzen", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ beruf, fuehrung }),
+      });
+      if (!resp.ok) throw new Error("Fehler bei der Generierung");
+      const data = await resp.json();
+      let id = nextId;
+      const generated: Taetigkeit[] = [];
+      for (const item of data.haupt || []) {
+        generated.push({ id: id++, name: item.name, kategorie: "haupt", kompetenz: item.kompetenz, niveau: item.niveau });
+      }
+      for (const item of data.neben || []) {
+        generated.push({ id: id++, name: item.name, kategorie: "neben", kompetenz: item.kompetenz, niveau: item.niveau });
+      }
+      for (const item of data.fuehrung || []) {
+        generated.push({ id: id++, name: item.name, kategorie: "fuehrung", kompetenz: item.kompetenz, niveau: item.niveau });
+      }
+      setTaetigkeiten(generated);
+      setNextId(id);
+    } catch (err) {
+      console.error("KI-Generierung fehlgeschlagen:", err);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const goToStep = (step: number) => {
+    setCurrentStep(step);
+    if (step === 3 && taetigkeiten.length === 0) {
+      generateKompetenzen();
+    }
+  };
 
   const sectionsFilled = [
     fuehrung.length > 0,
@@ -1059,7 +1096,26 @@ export default function RollenDNA() {
                   </div>
 
                   <div>
-                    {filteredTaetigkeiten.length === 0 ? (
+                    {isGenerating ? (
+                      <div className="text-center py-16" data-testid="loading-ki">
+                        <div style={{
+                          width: 40,
+                          height: 40,
+                          border: "3px solid rgba(0,113,227,0.15)",
+                          borderTopColor: "#0071E3",
+                          borderRadius: "50%",
+                          animation: "spin 0.8s linear infinite",
+                          margin: "0 auto 16px",
+                        }} />
+                        <p style={{ fontSize: 15, color: "#0071E3", fontWeight: 500 }}>
+                          KI generiert Kompetenzen für „{beruf}"...
+                        </p>
+                        <p style={{ fontSize: 13, color: "#8E8E93", marginTop: 4 }}>
+                          Das kann einige Sekunden dauern.
+                        </p>
+                        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                      </div>
+                    ) : filteredTaetigkeiten.length === 0 ? (
                       <div className="text-center py-12">
                         <p style={{ fontSize: 15, color: "#8E8E93" }}>
                           Noch keine {activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"} hinzugefügt.
