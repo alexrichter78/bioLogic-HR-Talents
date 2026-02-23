@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, ArrowLeft, Save, FolderOpen, ArrowRight, Check } from "lucide-react";
+import { Search, Plus, ArrowLeft, Save, FolderOpen, Check } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 const ERFOLGSFOKUS_LABELS = [
@@ -44,34 +44,42 @@ function Header() {
   );
 }
 
-function StepIndicator({ active }: { active: number }) {
+function StepProgress({ completedSteps }: { completedSteps: number[] }) {
   const steps = [
     { num: 1, label: "Rolle auswählen" },
-    { num: 2, label: "Struktureller Rahmen" },
+    { num: 2, label: "Rahmenbedingungen" },
+    { num: 3, label: "Tätigkeiten" },
   ];
   return (
-    <div className="flex items-center justify-center gap-3" data-testid="step-indicator">
-      {steps.map((step, idx) => (
-        <div key={step.num} className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold ${
-              step.num === active
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted/60 text-muted-foreground"
-            }`} data-testid={`step-num-${step.num}`}>
-              {step.num}
-            </span>
-            <span className={`text-sm ${
-              step.num === active ? "font-semibold text-foreground/90" : "text-muted-foreground"
-            }`} data-testid={`step-label-${step.num}`}>
-              {step.label}
-            </span>
+    <div className="flex items-center justify-center gap-0 w-full max-w-lg mx-auto" data-testid="step-progress">
+      {steps.map((step, idx) => {
+        const isDone = completedSteps.includes(step.num);
+        return (
+          <div key={step.num} className="flex items-center flex-1 last:flex-none">
+            <div className="flex flex-col items-center gap-1.5">
+              <span className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-300 ${
+                isDone
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted/60 dark:bg-muted/40 text-muted-foreground"
+              }`} data-testid={`step-num-${step.num}`}>
+                {isDone ? <Check className="w-4 h-4" strokeWidth={2.5} /> : step.num}
+              </span>
+              <span className={`text-xs transition-colors duration-300 whitespace-nowrap ${
+                isDone ? "font-medium text-foreground/80" : "text-muted-foreground/60"
+              }`} data-testid={`step-label-${step.num}`}>
+                {step.label}
+              </span>
+            </div>
+            {idx < steps.length - 1 && (
+              <div className="flex-1 h-px mx-3 mt-[-18px]">
+                <div className={`h-full transition-all duration-500 rounded-full ${
+                  completedSteps.includes(step.num) ? "bg-primary/40" : "bg-border/50"
+                }`} />
+              </div>
+            )}
           </div>
-          {idx < steps.length - 1 && (
-            <ArrowRight className="w-3.5 h-3.5 text-muted-foreground/40" />
-          )}
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -187,6 +195,17 @@ function SegmentedControl({
   );
 }
 
+function StepLabel({ step, title }: { step: number; title: string }) {
+  return (
+    <div className="flex items-center gap-3 mb-2">
+      <span className="text-xs font-medium text-muted-foreground/50 uppercase tracking-wider">
+        Schritt {step}
+      </span>
+      <div className="flex-1 h-px bg-border/30" />
+    </div>
+  );
+}
+
 export default function RollenDNA() {
   const [beruf, setBeruf] = useState("");
   const [fuehrung, setFuehrung] = useState<string[]>(["Führung"]);
@@ -214,6 +233,12 @@ export default function RollenDNA() {
     });
   };
 
+  const step1Done = beruf.trim().length > 0;
+  const step2Done = fuehrung.length > 0 || erfolgsfokus.length > 0;
+  const completedSteps: number[] = [];
+  if (step1Done) completedSteps.push(1);
+  if (step2Done) completedSteps.push(2);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-background/95 relative">
       <div
@@ -229,8 +254,8 @@ export default function RollenDNA() {
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header />
 
-        <main className="flex-1 w-full max-w-2xl mx-auto px-6 pb-16">
-          <div className="text-center mt-8 mb-8">
+        <main className="flex-1 w-full max-w-2xl mx-auto px-6 pb-20">
+          <div className="text-center mt-8 mb-10">
             <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground/90 mb-2" data-testid="text-rollen-dna-title">
               Rollen-DNA
             </h1>
@@ -239,115 +264,131 @@ export default function RollenDNA() {
             </p>
           </div>
 
-          <div className="mb-8">
-            <StepIndicator active={1} />
+          <div className="mb-14">
+            <StepProgress completedSteps={completedSteps} />
           </div>
 
-          <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border overflow-hidden" data-testid="card-rollen-dna-form">
-            <div className="p-6 space-y-7">
+          <div className="space-y-14">
 
-              <div className="relative" data-testid="input-beruf-wrapper">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
-                <Input
-                  type="search"
-                  placeholder="Beruf eingeben"
-                  value={beruf}
-                  onChange={(e) => setBeruf(e.target.value)}
-                  className="pl-10 bg-muted/30 dark:bg-muted/20 border-border/40 focus:border-primary/40 h-11 text-sm"
-                  data-testid="input-beruf"
-                />
-              </div>
-
-              <div className="border-t border-border/30" />
-
-              <div className="space-y-5">
-
-                <div className="flex items-start gap-3" data-testid="section-fuehrung">
-                  <SectionNumber num={1} />
-                  <div className="flex-1 space-y-3">
-                    <h3 className="text-sm font-semibold text-foreground/90">Führungsverantwortung</h3>
-                    <PillSelector
-                      options={["Keine", "Koordination", "Führung"]}
-                      selected={fuehrung}
-                      onToggle={toggleFuehrung}
-                      max={2}
+            <div data-testid="block-step-1">
+              <StepLabel step={1} title="Rolle auswählen" />
+              <h2 className="text-lg font-semibold text-foreground/90 mb-4" data-testid="text-step-1-title">
+                Rolle auswählen
+              </h2>
+              <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border" data-testid="card-step-1">
+                <div className="p-6">
+                  <div className="relative" data-testid="input-beruf-wrapper">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
+                    <Input
+                      type="search"
+                      placeholder="Beruf eingeben"
+                      value={beruf}
+                      onChange={(e) => setBeruf(e.target.value)}
+                      className="pl-10 bg-muted/30 dark:bg-muted/20 border-border/40 focus:border-primary/40 h-11 text-sm"
+                      data-testid="input-beruf"
                     />
                   </div>
                 </div>
+              </Card>
+            </div>
 
-                <div className="border-t border-border/20" />
+            <div data-testid="block-step-2">
+              <StepLabel step={2} title="Rahmenbedingungen der Rolle" />
+              <h2 className="text-lg font-semibold text-foreground/90 mb-4" data-testid="text-step-2-title">
+                Rahmenbedingungen der Rolle
+              </h2>
+              <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border" data-testid="card-step-2">
+                <div className="p-6 space-y-6">
 
-                <div className="flex items-start gap-3" data-testid="section-erfolgsfokus">
-                  <SectionNumber num={2} />
-                  <div className="flex-1 space-y-3">
-                    <div className="flex items-baseline gap-2">
-                      <h3 className="text-sm font-semibold text-foreground/90">Erfolgsfokus</h3>
-                      <span className="text-xs text-muted-foreground/50">(max. 2 auswählbar)</span>
+                  <div className="flex items-start gap-3" data-testid="section-fuehrung">
+                    <SectionNumber num={1} />
+                    <div className="flex-1 space-y-3">
+                      <h3 className="text-sm font-semibold text-foreground/90">Führungsverantwortung</h3>
+                      <PillSelector
+                        options={["Keine", "Koordination", "Führung"]}
+                        selected={fuehrung}
+                        onToggle={toggleFuehrung}
+                        max={2}
+                      />
                     </div>
-                    <CheckboxGrid
-                      options={ERFOLGSFOKUS_LABELS}
-                      selected={erfolgsfokus}
-                      onToggle={toggleErfolgsfokus}
-                    />
                   </div>
+
+                  <div className="border-t border-border/20" />
+
+                  <div className="flex items-start gap-3" data-testid="section-erfolgsfokus">
+                    <SectionNumber num={2} />
+                    <div className="flex-1 space-y-3">
+                      <div className="flex items-baseline gap-2">
+                        <h3 className="text-sm font-semibold text-foreground/90">Erfolgsfokus</h3>
+                        <span className="text-xs text-muted-foreground/50">(max. 2 auswählbar)</span>
+                      </div>
+                      <CheckboxGrid
+                        options={ERFOLGSFOKUS_LABELS}
+                        selected={erfolgsfokus}
+                        onToggle={toggleErfolgsfokus}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="border-t border-border/20" />
+
+                  <div className="flex items-start gap-3" data-testid="section-aufgabencharakter">
+                    <SectionNumber num={3} />
+                    <div className="flex-1 space-y-3">
+                      <h3 className="text-sm font-semibold text-foreground/90">Aufgabencharakter</h3>
+                      <p className="text-xs text-muted-foreground/60">
+                        Das Profil die konkrete Stelle besser trifft, beantworten Sie 4 kurze Fragen.
+                      </p>
+                      <SegmentedControl
+                        options={["Überwiegend operativ", "Gemischt", "Überwiegend strategisch"]}
+                        selected={aufgabencharakter}
+                        onSelect={setAufgabencharakter}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="border-t border-border/20" />
+
+                  <div className="flex items-start gap-3" data-testid="section-arbeitslogik">
+                    <SectionNumber num={4} />
+                    <div className="flex-1 space-y-3">
+                      <h3 className="text-sm font-semibold text-foreground/90">Arbeitslogik</h3>
+                      <SegmentedControl
+                        options={["Menschenorientiert", "Daten-/prozessorientiert", "Umsetzungsorientiert"]}
+                        selected={arbeitslogik}
+                        onSelect={setArbeitslogik}
+                      />
+                    </div>
+                  </div>
+
                 </div>
+              </Card>
+            </div>
 
-                <div className="border-t border-border/20" />
-
-                <div className="flex items-start gap-3" data-testid="section-aufgabencharakter">
-                  <SectionNumber num={3} />
-                  <div className="flex-1 space-y-3">
-                    <h3 className="text-sm font-semibold text-foreground/90">Aufgabencharakter</h3>
-                    <p className="text-xs text-muted-foreground/60">
-                      Das Profil die konkrete Stelle besser trifft, beantworten Sie 4 kurze Fragen.
+            <div data-testid="block-step-3">
+              <StepLabel step={3} title="Tätigkeiten & Kompetenzen" />
+              <h2 className="text-lg font-semibold text-foreground/90 mb-4" data-testid="text-step-3-title">
+                Tätigkeiten & Kompetenzen
+              </h2>
+              <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border" data-testid="card-step-3">
+                <div className="p-6">
+                  <div className="flex flex-col items-center gap-4 py-8">
+                    <p className="text-sm text-muted-foreground/50" data-testid="text-no-taetigkeiten">
+                      Noch keine Tätigkeiten hinzugefügt.
                     </p>
-                    <SegmentedControl
-                      options={["Überwiegend operativ", "Gemischt", "Überwiegend strategisch"]}
-                      selected={aufgabencharakter}
-                      onSelect={setAufgabencharakter}
-                    />
+                    <Button
+                      className="gap-1.5 rounded-lg px-6"
+                      data-testid="button-taetigkeit-hinzufuegen"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Tätigkeit hinzufügen
+                    </Button>
                   </div>
                 </div>
-
-                <div className="border-t border-border/20" />
-
-                <div className="flex items-start gap-3" data-testid="section-arbeitslogik">
-                  <SectionNumber num={4} />
-                  <div className="flex-1 space-y-3">
-                    <h3 className="text-sm font-semibold text-foreground/90">Arbeitslogik</h3>
-                    <SegmentedControl
-                      options={["Menschenorientiert", "Daten-/prozessorientiert", "Umsetzungsorientiert"]}
-                      selected={arbeitslogik}
-                      onSelect={setArbeitslogik}
-                    />
-                  </div>
-                </div>
-              </div>
+              </Card>
             </div>
-          </Card>
 
-          <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border overflow-hidden mt-6" data-testid="card-taetigkeiten">
-            <div className="p-6">
-              <div className="flex items-start gap-3 mb-6">
-                <SectionNumber num={5} />
-                <h3 className="text-sm font-semibold text-foreground/90">Tätigkeiten & Kompetenzen</h3>
-              </div>
-
-              <div className="flex flex-col items-center gap-4 py-6">
-                <p className="text-sm text-muted-foreground/50" data-testid="text-no-taetigkeiten">
-                  Noch keine Tätigkeiten hinzugefügt.
-                </p>
-                <Button
-                  className="gap-1.5 rounded-lg px-6"
-                  data-testid="button-taetigkeit-hinzufuegen"
-                >
-                  <Plus className="w-4 h-4" />
-                  Tätigkeit hinzufügen
-                </Button>
-              </div>
-            </div>
-          </Card>
-
+          </div>
         </main>
       </div>
     </div>
