@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight, Info } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
+import { BERUFE } from "@/data/berufe";
 
 type KompetenzTyp = "Impulsiv" | "Intuitiv" | "Analytisch";
 type Niveau = "Niedrig" | "Mittel" | "Hoch";
@@ -450,6 +451,25 @@ export default function RollenDNA() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const filteredBerufe = beruf.trim().length > 0
+    ? BERUFE.filter(b => b.toLowerCase().includes(beruf.toLowerCase())).slice(0, 8)
+    : [];
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node) &&
+          inputRef.current && !inputRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSave = () => {
     const exportData = {
@@ -780,15 +800,92 @@ export default function RollenDNA() {
                   </h2>
 
                   <div className="relative mb-6" data-testid="input-beruf-wrapper">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 z-10" />
                     <Input
-                      type="search"
+                      ref={inputRef}
+                      type="text"
+                      autoComplete="off"
                       placeholder="Beruf eingeben"
                       value={beruf}
-                      onChange={(e) => setBeruf(e.target.value)}
+                      onChange={(e) => {
+                        setBeruf(e.target.value);
+                        setShowSuggestions(true);
+                        setHighlightedIndex(-1);
+                      }}
+                      onFocus={() => { if (beruf.trim().length > 0) setShowSuggestions(true); }}
+                      onKeyDown={(e) => {
+                        if (!showSuggestions || filteredBerufe.length === 0) return;
+                        if (e.key === "ArrowDown") {
+                          e.preventDefault();
+                          setHighlightedIndex(prev => Math.min(prev + 1, filteredBerufe.length - 1));
+                        } else if (e.key === "ArrowUp") {
+                          e.preventDefault();
+                          setHighlightedIndex(prev => Math.max(prev - 1, 0));
+                        } else if (e.key === "Enter" && highlightedIndex >= 0) {
+                          e.preventDefault();
+                          setBeruf(filteredBerufe[highlightedIndex]);
+                          setShowSuggestions(false);
+                          setHighlightedIndex(-1);
+                        } else if (e.key === "Escape") {
+                          setShowSuggestions(false);
+                        }
+                      }}
                       className="pl-10 bg-muted/30 dark:bg-muted/20 border-border/40 focus:border-primary/40 h-11 text-sm"
                       data-testid="input-beruf"
                     />
+                    {showSuggestions && filteredBerufe.length > 0 && (
+                      <div
+                        ref={suggestionsRef}
+                        data-testid="beruf-suggestions"
+                        style={{
+                          position: "absolute",
+                          top: "calc(100% + 4px)",
+                          left: 0,
+                          right: 0,
+                          zIndex: 50,
+                          background: "rgba(255,255,255,0.95)",
+                          backdropFilter: "blur(20px)",
+                          WebkitBackdropFilter: "blur(20px)",
+                          borderRadius: 12,
+                          border: "1px solid rgba(0,0,0,0.08)",
+                          boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+                          overflow: "hidden",
+                        }}
+                      >
+                        {filteredBerufe.map((b, idx) => {
+                          const matchStart = b.toLowerCase().indexOf(beruf.toLowerCase());
+                          const matchEnd = matchStart + beruf.length;
+                          return (
+                            <div
+                              key={b}
+                              data-testid={`suggestion-${idx}`}
+                              onClick={() => {
+                                setBeruf(b);
+                                setShowSuggestions(false);
+                                setHighlightedIndex(-1);
+                              }}
+                              onMouseEnter={() => setHighlightedIndex(idx)}
+                              style={{
+                                padding: "10px 14px",
+                                fontSize: 14,
+                                cursor: "pointer",
+                                background: idx === highlightedIndex ? "rgba(0,113,227,0.08)" : "transparent",
+                                borderBottom: idx < filteredBerufe.length - 1 ? "1px solid rgba(0,0,0,0.04)" : "none",
+                                transition: "background 0.15s",
+                              }}
+                            >
+                              {matchStart >= 0 ? (
+                                <>
+                                  {b.slice(0, matchStart)}
+                                  <span style={{ fontWeight: 600, color: "#0071E3" }}>{b.slice(matchStart, matchEnd)}</span>
+                                  {b.slice(matchEnd)}
+                                </>
+                              ) : b}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex justify-end">
