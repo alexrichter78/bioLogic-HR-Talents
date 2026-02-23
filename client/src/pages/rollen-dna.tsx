@@ -75,7 +75,6 @@ function SegmentedControl({
             }`}
             data-testid={`segment-${opt.toLowerCase().replace(/[\s\/-]+/g, "-")}`}
           >
-            {isSelected && <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary mr-1.5 align-middle" />}
             {opt}
           </button>
         );
