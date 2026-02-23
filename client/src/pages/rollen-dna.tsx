@@ -432,6 +432,7 @@ function loadSavedState() {
 }
 
 export default function RollenDNA() {
+  const [, setLocation] = useLocation();
   const saved = useRef(loadSavedState());
 
   const [currentStep, setCurrentStep] = useState(saved.current?.currentStep ?? 1);
@@ -1345,6 +1346,112 @@ export default function RollenDNA() {
                     <span style={{ fontWeight: 600, color: "#1D1D1F" }}>Tätigkeiten:</span> {hauptCount} · <span style={{ fontWeight: 600, color: "#1D1D1F" }}>Humankompetenzen:</span> {nebenCount}
                     {fuehrung !== "Keine" && <> · <span style={{ fontWeight: 600, color: "#1D1D1F" }}>Führungskompetenzen:</span> {fuehrungCount}</>}
                   </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center gap-3 mt-8">
+                  <button
+                    onClick={handleSave}
+                    style={{
+                      height: 48,
+                      paddingLeft: 24,
+                      paddingRight: 24,
+                      fontSize: 14,
+                      fontWeight: 600,
+                      borderRadius: 14,
+                      border: "none",
+                      cursor: "pointer",
+                      background: "linear-gradient(135deg, #0071E3, #34AADC)",
+                      color: "#FFFFFF",
+                      boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
+                      transition: "all 200ms ease",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      flex: 1,
+                      justifyContent: "center",
+                      width: "100%",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
+                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
+                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)";
+                    }}
+                    data-testid="button-profil-speichern"
+                  >
+                    <Save className="w-4 h-4" />
+                    Profil speichern
+                  </button>
+                  <button
+                    onClick={() => setLocation("/")}
+                    style={{
+                      height: 48,
+                      paddingLeft: 24,
+                      paddingRight: 24,
+                      fontSize: 14,
+                      fontWeight: 600,
+                      borderRadius: 14,
+                      border: "1.5px solid rgba(0,0,0,0.12)",
+                      cursor: "pointer",
+                      background: "rgba(255,255,255,0.8)",
+                      color: "#1D1D1F",
+                      transition: "all 200ms ease",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      flex: 1,
+                      justifyContent: "center",
+                      width: "100%",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.04)";
+                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.8)";
+                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
+                    }}
+                    data-testid="button-zurueck-uebersicht"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Zurück zur Übersicht
+                  </button>
+                  <button
+                    onClick={() => {}}
+                    style={{
+                      height: 48,
+                      paddingLeft: 24,
+                      paddingRight: 24,
+                      fontSize: 14,
+                      fontWeight: 600,
+                      borderRadius: 14,
+                      border: "1.5px solid rgba(0,0,0,0.12)",
+                      cursor: "pointer",
+                      background: "rgba(255,255,255,0.8)",
+                      color: "#1D1D1F",
+                      transition: "all 200ms ease",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      flex: 1,
+                      justifyContent: "center",
+                      width: "100%",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.04)";
+                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.8)";
+                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
+                    }}
+                    data-testid="button-rollenprofil-ermitteln"
+                  >
+                    <Target className="w-4 h-4" />
+                    Rollenprofil ermitteln
+                  </button>
                 </div>
               </div>
             )}
