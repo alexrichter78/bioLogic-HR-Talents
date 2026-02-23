@@ -28,12 +28,12 @@ const KOMPETENZ_OPTIONS: KompetenzTyp[] = ["Impulsiv", "Intuitiv", "Analytisch"]
 const NIVEAU_OPTIONS: Niveau[] = ["Niedrig", "Mittel", "Hoch"];
 
 const ERFOLGSFOKUS_LABELS = [
-  "Ergebnis-/Umsatzdruck",
-  "Beziehungsaufbau",
-  "Innovations-/\nEntwicklungsfokus",
-  "Prozessqualität & Struktur",
-  "Fachliche Präzision",
-  "Fachliche Präzision",
+  "Ergebnis-/\nUmsatzwirkung",
+  "Beziehungs- und\nNetzwerkstabilität",
+  "Innovations- und\nVeränderungsleistung",
+  "Prozess- und\nEffizienzqualität",
+  "Fachliche Exzellenz /\nExpertise",
+  "Strategische Wirkung /\nPositionierung",
 ];
 
 const SECTION_SUBTITLES: Record<string, string> = {
