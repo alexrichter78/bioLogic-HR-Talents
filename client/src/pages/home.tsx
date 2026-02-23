@@ -101,9 +101,9 @@ function ProfileCard() {
                 borderRadius: 14,
                 border: "none",
                 cursor: "pointer",
-                background: "linear-gradient(135deg, #0071E3, #34AADC)",
+                background: "linear-gradient(135deg, #1D1D1F, #3A3A3C)",
                 color: "#FFFFFF",
-                boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
+                boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
                 transition: "all 200ms ease",
                 display: "flex",
                 alignItems: "center",
@@ -111,11 +111,11 @@ function ProfileCard() {
               }}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
-                (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)";
+                (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,0,0,0.25)";
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
-                (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)";
+                (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,0,0,0.2)";
               }}
               data-testid="button-analyse-starten"
             >
