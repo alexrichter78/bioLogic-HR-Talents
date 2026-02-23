@@ -56,6 +56,7 @@ function HeroSection() {
 
 function ProfileCard() {
   const [, setLocation] = useLocation();
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   return (
     <FadeIn delay={300}>
       <div
@@ -91,7 +92,7 @@ function ProfileCard() {
           </p>
           <div className="flex items-center gap-3 mt-4">
             <button
-              onClick={() => setLocation("/rollen-dna")}
+              onClick={() => setShowResetConfirm(true)}
               style={{
                 height: 52,
                 paddingLeft: 28,
@@ -161,6 +162,17 @@ function ProfileCard() {
           </div>
         </div>
       </div>
+      {showResetConfirm && (
+        <ConfirmResetModal
+          onCancel={() => setShowResetConfirm(false)}
+          onConfirm={() => {
+            localStorage.removeItem("rollenDnaState");
+            localStorage.removeItem("rollenDnaCompleted");
+            setShowResetConfirm(false);
+            setLocation("/rollen-dna");
+          }}
+        />
+      )}
     </FadeIn>
   );
 }
@@ -191,6 +203,81 @@ const features = [
     active: false,
   },
 ];
+
+function ConfirmResetModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: () => void }) {
+  return (
+    <>
+      <div
+        style={{ position: "fixed", inset: 0, zIndex: 9998, background: "rgba(0,0,0,0.15)" }}
+        onClick={onCancel}
+      />
+      <div
+        style={{
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: 420,
+          background: "#FFFFFF",
+          borderRadius: 20,
+          padding: "28px",
+          boxShadow: "0 24px 60px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.06)",
+          zIndex: 9999,
+          textAlign: "center",
+        }}
+        data-testid="modal-confirm-reset"
+      >
+        <h3 style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", marginBottom: 12 }}>
+          Sind Sie sich sicher?
+        </h3>
+        <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.6, marginBottom: 24 }}>
+          Alle eingegebenen Daten werden gelöscht.
+        </p>
+        <div className="flex items-center justify-center gap-3">
+          <button
+            onClick={onCancel}
+            style={{
+              height: 44,
+              paddingLeft: 24,
+              paddingRight: 24,
+              fontSize: 14,
+              fontWeight: 600,
+              borderRadius: 12,
+              border: "1.5px solid rgba(0,0,0,0.12)",
+              background: "transparent",
+              color: "#1D1D1F",
+              cursor: "pointer",
+              transition: "all 150ms ease",
+            }}
+            data-testid="button-cancel-reset"
+          >
+            Abbrechen
+          </button>
+          <button
+            onClick={onConfirm}
+            style={{
+              height: 44,
+              paddingLeft: 24,
+              paddingRight: 24,
+              fontSize: 14,
+              fontWeight: 600,
+              borderRadius: 12,
+              border: "none",
+              background: "linear-gradient(135deg, #0071E3, #34AADC)",
+              color: "#FFFFFF",
+              cursor: "pointer",
+              boxShadow: "0 4px 12px rgba(0,113,227,0.3)",
+              transition: "all 150ms ease",
+            }}
+            data-testid="button-confirm-reset"
+          >
+            Weiter
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
 
 function FeatureCards() {
   const [, setLocation] = useLocation();
