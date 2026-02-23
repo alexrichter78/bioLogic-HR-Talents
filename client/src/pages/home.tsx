@@ -86,7 +86,6 @@ function ProfileCard() {
           localStorage.removeItem("rollenDnaCompleted");
         }
         window.dispatchEvent(new Event("rollenDnaUpdated"));
-        setLocation("/rollen-dna");
       } catch {
         alert("Die Datei konnte nicht gelesen werden.");
       }
