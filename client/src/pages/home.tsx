@@ -174,8 +174,8 @@ const features = [
   },
   {
     icon: Target,
-    title: "Zielprofil festlegen",
-    description: "Persönlichkeitsstruktur bestimmen, die in dieser Rolle performt.",
+    title: "Rollenprofil ermitteln",
+    description: "Erforderliche Rollenstruktur aus der definierten Logik ableiten.",
     active: false,
   },
   {
