@@ -150,7 +150,7 @@ function PillGroup({
   wrap?: boolean;
 }) {
   return (
-    <div className={`inline-flex items-center gap-2 rounded-full p-1.5 ${wrap ? "flex-wrap" : ""}`}
+    <div className={`flex items-center gap-2 rounded-full p-1.5 ${wrap ? "flex-wrap" : ""}`}
       style={{ background: "rgba(0,0,0,0.03)" }}
     >
       {options.map((opt, idx) => {
@@ -159,7 +159,7 @@ function PillGroup({
           <button
             key={`${opt}-${idx}`}
             onClick={() => onSelect(opt)}
-            className="rounded-full font-medium leading-none select-none whitespace-nowrap"
+            className="flex-1 rounded-full font-medium leading-none select-none whitespace-nowrap text-center"
             style={{
               height: 48,
               paddingLeft: 28,
@@ -190,9 +190,6 @@ function PillGroup({
           </button>
         );
       })}
-      {multi && max && (
-        <span className="text-xs text-[#6E6E73]/60 ml-1 pr-2 whitespace-nowrap">(max. {max})</span>
-      )}
     </div>
   );
 }
@@ -338,12 +335,9 @@ export default function RollenDNA() {
                     </div>
 
                     <div data-testid="section-erfolgsfokus">
-                      <div className="flex items-baseline gap-3">
-                        <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
-                          Erfolgsfokus
-                        </h3>
-                        <span style={{ fontSize: 15, color: "#6E6E73" }}>(max. 2 auswählbar)</span>
-                      </div>
+                      <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
+                        Erfolgsfokus
+                      </h3>
                       <div className="mt-6 flex flex-col gap-2">
                         <PillGroup
                           options={ERFOLGSFOKUS_LABELS.slice(0, 3)}
