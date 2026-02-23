@@ -1,13 +1,74 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
+
+const DEFAULT_BEREICH1 = `Hier steht der Standardtext für Bereich 1.
+Dieser Text wird verwendet, wenn noch keine gespeicherten Daten vorhanden sind.`;
+
+const DEFAULT_BEREICH2 = `Hier steht der Standardtext für Bereich 2.
+Dieser Text wird verwendet, wenn noch keine gespeicherten Daten vorhanden sind.`;
+
+const DEFAULT_BEREICH3 = `Hier steht der Standardtext für Bereich 3.
+Dieser Text wird verwendet, wenn noch keine gespeicherten Daten vorhanden sind.`;
+
+function loadSaved() {
+  try {
+    const raw = localStorage.getItem("analyseTexte");
+    if (raw) {
+      const data = JSON.parse(raw);
+      return {
+        bereich1: data.bereich1 ?? DEFAULT_BEREICH1,
+        bereich2: data.bereich2 ?? DEFAULT_BEREICH2,
+        bereich3: data.bereich3 ?? DEFAULT_BEREICH3,
+      };
+    }
+  } catch {}
+  return { bereich1: DEFAULT_BEREICH1, bereich2: DEFAULT_BEREICH2, bereich3: DEFAULT_BEREICH3 };
+}
 
 export default function Analyse() {
   const [, setLocation] = useLocation();
-  const [bereich1, setBereich1] = useState("");
-  const [bereich2, setBereich2] = useState("");
-  const [bereich3, setBereich3] = useState("");
+  const initial = loadSaved();
+  const [bereich1, setBereich1] = useState(initial.bereich1);
+  const [bereich2, setBereich2] = useState(initial.bereich2);
+  const [bereich3, setBereich3] = useState(initial.bereich3);
+  const [saved, setSaved] = useState(true);
+
+  const handleChange = (setter: (v: string) => void) => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setter(e.target.value);
+    setSaved(false);
+  };
+
+  const handleSave = () => {
+    localStorage.setItem("analyseTexte", JSON.stringify({ bereich1, bereich2, bereich3 }));
+    setSaved(true);
+  };
+
+  const textareaStyle: React.CSSProperties = {
+    width: "100%",
+    borderRadius: 12,
+    border: "1.5px solid rgba(0,0,0,0.08)",
+    padding: "12px 14px",
+    fontSize: 14,
+    fontFamily: "Inter, sans-serif",
+    color: "#1D1D1F",
+    background: "rgba(255,255,255,0.6)",
+    resize: "vertical",
+    outline: "none",
+    transition: "border-color 200ms ease",
+  };
+
+  const cardStyle: React.CSSProperties = {
+    background: "rgba(255,255,255,0.65)",
+    backdropFilter: "blur(24px)",
+    WebkitBackdropFilter: "blur(24px)",
+    borderRadius: 20,
+    padding: "24px",
+    boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+    border: "1px solid rgba(0,0,0,0.04)",
+  };
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -34,6 +95,22 @@ export default function Analyse() {
             <img src={logoSrc} alt="bioLogic Logo" className="h-7 w-auto" data-testid="logo-analyse" />
             <span className="text-sm text-muted-foreground/70 font-light tracking-wide hidden sm:inline">Analyse</span>
           </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1.5"
+              style={{
+                color: saved ? "#8E8E93" : "#0071E3",
+                fontWeight: saved ? 400 : 600,
+              }}
+              onClick={handleSave}
+              data-testid="button-analyse-speichern"
+            >
+              <Save className="w-3.5 h-3.5" />
+              {saved ? "Gespeichert" : "Speichern"}
+            </Button>
+          </div>
         </header>
 
         <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20">
@@ -50,114 +127,45 @@ export default function Analyse() {
           </div>
 
           <div className="flex flex-col gap-6">
-            <div
-              style={{
-                background: "rgba(255,255,255,0.65)",
-                backdropFilter: "blur(24px)",
-                WebkitBackdropFilter: "blur(24px)",
-                borderRadius: 20,
-                padding: "24px",
-                boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
-                border: "1px solid rgba(0,0,0,0.04)",
-              }}
-            >
+            <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-bereich1">
                 Bereich 1
               </label>
               <textarea
                 value={bereich1}
-                onChange={(e) => setBereich1(e.target.value)}
-                placeholder="Text eingeben..."
+                onChange={handleChange(setBereich1)}
                 rows={6}
-                style={{
-                  width: "100%",
-                  borderRadius: 12,
-                  border: "1.5px solid rgba(0,0,0,0.08)",
-                  padding: "12px 14px",
-                  fontSize: 14,
-                  fontFamily: "Inter, sans-serif",
-                  color: "#1D1D1F",
-                  background: "rgba(255,255,255,0.6)",
-                  resize: "vertical",
-                  outline: "none",
-                  transition: "border-color 200ms ease",
-                }}
+                style={textareaStyle}
                 onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(0,113,227,0.4)"; }}
                 onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; }}
                 data-testid="textarea-bereich1"
               />
             </div>
 
-            <div
-              style={{
-                background: "rgba(255,255,255,0.65)",
-                backdropFilter: "blur(24px)",
-                WebkitBackdropFilter: "blur(24px)",
-                borderRadius: 20,
-                padding: "24px",
-                boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
-                border: "1px solid rgba(0,0,0,0.04)",
-              }}
-            >
+            <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-bereich2">
                 Bereich 2
               </label>
               <textarea
                 value={bereich2}
-                onChange={(e) => setBereich2(e.target.value)}
-                placeholder="Text eingeben..."
+                onChange={handleChange(setBereich2)}
                 rows={6}
-                style={{
-                  width: "100%",
-                  borderRadius: 12,
-                  border: "1.5px solid rgba(0,0,0,0.08)",
-                  padding: "12px 14px",
-                  fontSize: 14,
-                  fontFamily: "Inter, sans-serif",
-                  color: "#1D1D1F",
-                  background: "rgba(255,255,255,0.6)",
-                  resize: "vertical",
-                  outline: "none",
-                  transition: "border-color 200ms ease",
-                }}
+                style={textareaStyle}
                 onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(0,113,227,0.4)"; }}
                 onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; }}
                 data-testid="textarea-bereich2"
               />
             </div>
 
-            <div
-              style={{
-                background: "rgba(255,255,255,0.65)",
-                backdropFilter: "blur(24px)",
-                WebkitBackdropFilter: "blur(24px)",
-                borderRadius: 20,
-                padding: "24px",
-                boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
-                border: "1px solid rgba(0,0,0,0.04)",
-              }}
-            >
+            <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-bereich3">
                 Bereich 3
               </label>
               <textarea
                 value={bereich3}
-                onChange={(e) => setBereich3(e.target.value)}
-                placeholder="Text eingeben..."
+                onChange={handleChange(setBereich3)}
                 rows={6}
-                style={{
-                  width: "100%",
-                  borderRadius: 12,
-                  border: "1.5px solid rgba(0,0,0,0.08)",
-                  padding: "12px 14px",
-                  fontSize: 14,
-                  fontFamily: "Inter, sans-serif",
-                  color: "#1D1D1F",
-                  background: "rgba(255,255,255,0.6)",
-                  resize: "vertical",
-                  outline: "none",
-                  transition: "border-color 200ms ease",
-                }}
+                style={textareaStyle}
                 onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(0,113,227,0.4)"; }}
                 onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; }}
                 data-testid="textarea-bereich3"
