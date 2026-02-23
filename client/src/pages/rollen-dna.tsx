@@ -447,6 +447,10 @@ export default function RollenDNA() {
     setTaetigkeiten(prev => prev.filter(t => t.id !== id));
   };
 
+  const handleRenameTaetigkeit = (id: number, newName: string) => {
+    setTaetigkeiten(prev => prev.map(t => t.id === id ? { ...t, name: newName } : t));
+  };
+
   const handleAddTaetigkeit = () => {
     const newT: Taetigkeit = {
       id: nextId,
@@ -872,15 +876,28 @@ export default function RollenDNA() {
 
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div className="flex items-start justify-between gap-3">
-                                <p style={{
-                                  fontSize: 15,
-                                  fontWeight: 400,
-                                  color: "#1D1D1F",
-                                  lineHeight: 1.5,
-                                  flex: 1,
-                                }}>
-                                  {t.name}
-                                </p>
+                                <input
+                                  type="text"
+                                  value={t.name}
+                                  onChange={(e) => handleRenameTaetigkeit(t.id, e.target.value)}
+                                  style={{
+                                    fontSize: 15,
+                                    fontWeight: 400,
+                                    color: "#1D1D1F",
+                                    lineHeight: 1.5,
+                                    flex: 1,
+                                    background: "transparent",
+                                    border: "none",
+                                    outline: "none",
+                                    padding: 0,
+                                    borderBottom: "1px solid transparent",
+                                    transition: "border-color 150ms ease",
+                                    width: "100%",
+                                  }}
+                                  onFocus={(e) => { e.currentTarget.style.borderBottomColor = "rgba(0,113,227,0.3)"; }}
+                                  onBlur={(e) => { e.currentTarget.style.borderBottomColor = "transparent"; }}
+                                  data-testid={`input-taetigkeit-name-${t.id}`}
+                                />
                                 <button
                                   onClick={() => handleRemoveTaetigkeit(t.id)}
                                   style={{
