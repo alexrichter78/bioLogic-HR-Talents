@@ -85,6 +85,7 @@ function ProfileCard() {
         } else {
           localStorage.removeItem("rollenDnaCompleted");
         }
+        window.dispatchEvent(new Event("rollenDnaUpdated"));
         setLocation("/rollen-dna");
       } catch {
         alert("Die Datei konnte nicht gelesen werden.");
@@ -360,10 +361,12 @@ function FeatureCards() {
     window.addEventListener("storage", checkState);
     window.addEventListener("focus", checkState);
     window.addEventListener("popstate", checkState);
+    window.addEventListener("rollenDnaUpdated", checkState);
     return () => {
       window.removeEventListener("storage", checkState);
       window.removeEventListener("focus", checkState);
       window.removeEventListener("popstate", checkState);
+      window.removeEventListener("rollenDnaUpdated", checkState);
     };
   }, []);
 
