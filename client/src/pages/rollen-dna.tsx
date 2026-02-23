@@ -528,6 +528,21 @@ export default function RollenDNA() {
         } else {
           localStorage.removeItem("rollenDnaCompleted");
         }
+
+        if (loadedTaetigkeiten.length > 0) {
+          const erfText = loadedErfolgsfokus
+            .map((i: number) => ERFOLGSFOKUS_LABELS[i]?.replace(/\n/g, " "))
+            .filter(Boolean)
+            .join(", ");
+          const cacheKey = JSON.stringify({
+            beruf: loadedBeruf,
+            fuehrung: loadedFuehrung,
+            erfolgsfokus: erfText,
+            aufgabencharakter: loadedAufgaben,
+            arbeitslogik: loadedArbeits,
+          });
+          localStorage.setItem("kompetenzenCache", JSON.stringify({ key: cacheKey, taetigkeiten: loadedTaetigkeiten }));
+        }
       } catch {
         alert("Die Datei konnte nicht gelesen werden.");
       }
