@@ -725,6 +725,11 @@ export default function RollenDNA() {
                             onSelect={handleFuehrung}
                             wrap
                           />
+                          <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", lineHeight: 1.6, marginTop: 20, paddingLeft: 8 }}>
+                            Im Zweifel orientieren Sie sich bitte an folgender Leitfrage:<br />
+                            Hat die Rolle formale Zielvereinbarungs- und Beurteilungsverantwortung für Mitarbeitende?<br />
+                            Wenn ja, liegt in der Regel disziplinarische Führung vor.
+                          </p>
                         </div>
                       </div>
                     </FadeInSection>
