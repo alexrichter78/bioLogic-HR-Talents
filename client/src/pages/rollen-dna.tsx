@@ -159,12 +159,12 @@ function PillGroup({
           <button
             key={`${opt}-${idx}`}
             onClick={() => onSelect(opt)}
-            className="flex-1 rounded-full font-medium leading-none select-none whitespace-nowrap text-center"
+            className="flex-1 rounded-full font-medium leading-none select-none text-center min-w-0"
             style={{
               height: 48,
-              paddingLeft: 28,
-              paddingRight: 28,
-              fontSize: 16,
+              paddingLeft: 16,
+              paddingRight: 16,
+              fontSize: 15,
               fontWeight: 500,
               border: "none",
               cursor: "pointer",
@@ -249,7 +249,7 @@ export default function RollenDNA() {
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header />
 
-        <main className="flex-1 w-full max-w-2xl mx-auto px-6 pb-20">
+        <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20">
           <div className="text-center mt-8 mb-10">
             <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground/90 mb-2" data-testid="text-rollen-dna-title">
               Rollen-DNA
