@@ -1,17 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
-const DEFAULT_BEREICH1 = `Hier steht der Standardtext für Bereich 1.
-Dieser Text wird verwendet, wenn noch keine gespeicherten Daten vorhanden sind.`;
+const DEFAULT_BEREICH1 = `Noch keine Analyse vorhanden. Erstelle zuerst ein vollständiges Rollenprofil, um die KI-Analyse zu starten.`;
+const DEFAULT_BEREICH2 = `Noch keine Analyse vorhanden. Erstelle zuerst ein vollständiges Rollenprofil, um die KI-Analyse zu starten.`;
+const DEFAULT_BEREICH3 = `Noch keine Analyse vorhanden. Erstelle zuerst ein vollständiges Rollenprofil, um die KI-Analyse zu starten.`;
 
-const DEFAULT_BEREICH2 = `Hier steht der Standardtext für Bereich 2.
-Dieser Text wird verwendet, wenn noch keine gespeicherten Daten vorhanden sind.`;
-
-const DEFAULT_BEREICH3 = `Hier steht der Standardtext für Bereich 3.
-Dieser Text wird verwendet, wenn noch keine gespeicherten Daten vorhanden sind.`;
+const ERFOLGSFOKUS_LABELS = [
+  "Ergebnis-/Umsatzwirkung",
+  "Beziehungs- und Netzwerkstabilität",
+  "Qualitäts- und Prozesssicherheit",
+  "Innovations- und Zukunftsfähigkeit",
+];
 
 function loadSaved() {
   try {
@@ -28,6 +30,14 @@ function loadSaved() {
   return { bereich1: DEFAULT_BEREICH1, bereich2: DEFAULT_BEREICH2, bereich3: DEFAULT_BEREICH3 };
 }
 
+function loadRollenDna() {
+  try {
+    const raw = localStorage.getItem("rollenDnaState");
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return null;
+}
+
 export default function Analyse() {
   const [, setLocation] = useLocation();
   const initial = loadSaved();
@@ -35,6 +45,7 @@ export default function Analyse() {
   const [bereich2, setBereich2] = useState(initial.bereich2);
   const [bereich3, setBereich3] = useState(initial.bereich3);
   const [saved, setSaved] = useState(true);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleChange = (setter: (v: string) => void) => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setter(e.target.value);
@@ -45,6 +56,59 @@ export default function Analyse() {
     localStorage.setItem("analyseTexte", JSON.stringify({ bereich1, bereich2, bereich3 }));
     setSaved(true);
   };
+
+  const runAnalyse = async () => {
+    const dna = loadRollenDna();
+    if (!dna || !dna.beruf || !dna.taetigkeiten || dna.taetigkeiten.length === 0) return;
+
+    setIsAnalyzing(true);
+    try {
+      const erfolgsfokusText = (dna.erfolgsfokusIndices || [])
+        .map((i: number) => ERFOLGSFOKUS_LABELS[i])
+        .filter(Boolean)
+        .join(", ");
+
+      const resp = await fetch("/api/generate-analyse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          beruf: dna.beruf,
+          fuehrung: dna.fuehrung,
+          erfolgsfokus: erfolgsfokusText,
+          aufgabencharakter: dna.aufgabencharakter,
+          arbeitslogik: dna.arbeitslogik,
+          taetigkeiten: dna.taetigkeiten,
+        }),
+      });
+
+      if (!resp.ok) throw new Error("Analyse-Fehler");
+      const data = await resp.json();
+
+      if (data.bereich1) { setBereich1(data.bereich1); }
+      if (data.bereich2) { setBereich2(data.bereich2); }
+      if (data.bereich3) { setBereich3(data.bereich3); }
+
+      localStorage.setItem("analyseTexte", JSON.stringify({
+        bereich1: data.bereich1 || bereich1,
+        bereich2: data.bereich2 || bereich2,
+        bereich3: data.bereich3 || bereich3,
+      }));
+      setSaved(true);
+    } catch (err) {
+      console.error("Analyse-Generierung fehlgeschlagen:", err);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  useEffect(() => {
+    const dna = loadRollenDna();
+    const hasProfile = dna && dna.beruf && dna.taetigkeiten && dna.taetigkeiten.length > 0;
+    const hasDefaultTexts = bereich1 === DEFAULT_BEREICH1 && bereich2 === DEFAULT_BEREICH2;
+    if (hasProfile && hasDefaultTexts) {
+      runAnalyse();
+    }
+  }, []);
 
   const textareaStyle: React.CSSProperties = {
     width: "100%",
@@ -69,6 +133,9 @@ export default function Analyse() {
     boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
     border: "1px solid rgba(0,0,0,0.04)",
   };
+
+  const dna = loadRollenDna();
+  const hasProfile = dna && dna.beruf && dna.taetigkeiten && dna.taetigkeiten.length > 0;
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -96,6 +163,20 @@ export default function Analyse() {
             <span className="text-sm text-muted-foreground/70 font-light tracking-wide hidden sm:inline">Analyse</span>
           </div>
           <div className="flex items-center gap-2">
+            {hasProfile && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-1.5"
+                style={{ color: "#0071E3", fontWeight: 500 }}
+                onClick={runAnalyse}
+                disabled={isAnalyzing}
+                data-testid="button-analyse-neu-berechnen"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isAnalyzing ? "animate-spin" : ""}`} />
+                {isAnalyzing ? "Berechne..." : "Neu berechnen"}
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="sm"
@@ -122,14 +203,35 @@ export default function Analyse() {
               Analyse
             </h1>
             <p className="text-sm text-muted-foreground" data-testid="text-analyse-subtitle">
-              Interne Analysebereiche
+              {hasProfile ? `Rollenanalyse für „${dna.beruf}"` : "Interne Analysebereiche"}
             </p>
           </div>
 
-          <div className="flex flex-col gap-6">
+          {isAnalyzing && (
+            <div className="text-center py-8 mb-6" data-testid="loading-analyse">
+              <div style={{
+                width: 40,
+                height: 40,
+                border: "3px solid rgba(0,113,227,0.15)",
+                borderTopColor: "#0071E3",
+                borderRadius: "50%",
+                animation: "spin 0.8s linear infinite",
+                margin: "0 auto 16px",
+              }} />
+              <p style={{ fontSize: 15, color: "#0071E3", fontWeight: 500 }}>
+                KI analysiert das Rollenprofil...
+              </p>
+              <p style={{ fontSize: 13, color: "#8E8E93", marginTop: 4 }}>
+                Das kann einige Sekunden dauern.
+              </p>
+              <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            </div>
+          )}
+
+          <div className="flex flex-col gap-6" style={{ opacity: isAnalyzing ? 0.4 : 1, transition: "opacity 300ms" }}>
             <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-bereich1">
-                Bereich 1
+                Kompetenzverteilung & Rollenprofil
               </label>
               <textarea
                 value={bereich1}
@@ -144,7 +246,7 @@ export default function Analyse() {
 
             <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-bereich2">
-                Bereich 2
+                Tätigkeitsanalyse & Anforderungsprofil
               </label>
               <textarea
                 value={bereich2}
@@ -159,7 +261,7 @@ export default function Analyse() {
 
             <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-bereich3">
-                Bereich 3
+                Empfehlungen & Entwicklungspotenziale
               </label>
               <textarea
                 value={bereich3}
