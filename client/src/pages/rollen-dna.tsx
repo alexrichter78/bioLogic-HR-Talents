@@ -389,7 +389,7 @@ export default function RollenDNA() {
                   <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
 
                     <div data-testid="section-fuehrung" className="relative">
-                      <div style={{ position: "absolute", top: -16, right: 0, fontSize: 96, fontWeight: 800, color: "rgba(0,0,0,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>01</div>
+                      <div style={{ position: "absolute", top: -8, right: 8, fontSize: 64, fontWeight: 800, color: "rgba(0,0,0,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>1</div>
                       <div className="flex items-center gap-3">
                         <Users style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
                         <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
@@ -410,7 +410,7 @@ export default function RollenDNA() {
                     </div>
 
                     <div data-testid="section-erfolgsfokus" className="relative">
-                      <div style={{ position: "absolute", top: -16, right: 0, fontSize: 96, fontWeight: 800, color: "rgba(0,0,0,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>02</div>
+                      <div style={{ position: "absolute", top: -8, right: 8, fontSize: 64, fontWeight: 800, color: "rgba(0,0,0,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>2</div>
                       <div className="flex items-center gap-3">
                         <Target style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
                         <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
@@ -438,7 +438,7 @@ export default function RollenDNA() {
                     </div>
 
                     <div data-testid="section-aufgabencharakter" className="relative">
-                      <div style={{ position: "absolute", top: -16, right: 0, fontSize: 96, fontWeight: 800, color: "rgba(0,0,0,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>03</div>
+                      <div style={{ position: "absolute", top: -8, right: 8, fontSize: 64, fontWeight: 800, color: "rgba(0,0,0,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>3</div>
                       <div className="flex items-center gap-3">
                         <Layers style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
                         <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
@@ -462,7 +462,7 @@ export default function RollenDNA() {
                     </div>
 
                     <div data-testid="section-arbeitslogik" className="relative">
-                      <div style={{ position: "absolute", top: -16, right: 0, fontSize: 96, fontWeight: 800, color: "rgba(0,0,0,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>04</div>
+                      <div style={{ position: "absolute", top: -8, right: 8, fontSize: 64, fontWeight: 800, color: "rgba(0,0,0,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>4</div>
                       <div className="flex items-center gap-3">
                         <Activity style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
                         <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
