@@ -911,67 +911,75 @@ export default function RollenDNA() {
                                 </button>
                               </div>
 
-                              <div style={{ marginTop: 12, display: "flex", flexWrap: "wrap", gap: 8 }}>
-                                {NIVEAU_OPTIONS.map(n => (
-                                  <button
-                                    key={n}
-                                    onClick={() => handleNiveauChange(t.id, n)}
-                                    style={{
-                                      height: 30,
-                                      paddingLeft: 12,
-                                      paddingRight: 12,
-                                      fontSize: 12,
-                                      fontWeight: 500,
-                                      borderRadius: 999,
-                                      border: t.niveau === n ? "1.5px solid transparent" : "1px solid rgba(0,0,0,0.1)",
-                                      cursor: "pointer",
-                                      transition: "all 150ms ease",
-                                      background: t.niveau === n ? "linear-gradient(135deg, #0071E3, #34AADC)" : "transparent",
-                                      color: t.niveau === n ? "#FFFFFF" : "#8E8E93",
-                                      display: "flex",
-                                      alignItems: "center",
-                                      gap: 4,
-                                    }}
-                                    data-testid={`niveau-${t.id}-${n.toLowerCase()}`}
-                                  >
-                                    {t.niveau === n && <Check style={{ width: 10, height: 10 }} />}
-                                    {n}
-                                  </button>
-                                ))}
+                              <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  <span style={{ fontSize: 11, fontWeight: 500, color: "#AEAEB2", minWidth: 52, textTransform: "uppercase", letterSpacing: "0.5px" }}>Niveau</span>
+                                  <div style={{ display: "flex", gap: 6 }}>
+                                    {NIVEAU_OPTIONS.map(n => (
+                                      <button
+                                        key={n}
+                                        onClick={() => handleNiveauChange(t.id, n)}
+                                        style={{
+                                          height: 28,
+                                          paddingLeft: 10,
+                                          paddingRight: 10,
+                                          fontSize: 12,
+                                          fontWeight: 500,
+                                          borderRadius: 999,
+                                          border: t.niveau === n ? "1.5px solid transparent" : "1px solid rgba(0,0,0,0.1)",
+                                          cursor: "pointer",
+                                          transition: "all 150ms ease",
+                                          background: t.niveau === n ? "linear-gradient(135deg, #0071E3, #34AADC)" : "transparent",
+                                          color: t.niveau === n ? "#FFFFFF" : "#8E8E93",
+                                          display: "flex",
+                                          alignItems: "center",
+                                          gap: 4,
+                                        }}
+                                        data-testid={`niveau-${t.id}-${n.toLowerCase()}`}
+                                      >
+                                        {t.niveau === n && <Check style={{ width: 10, height: 10 }} />}
+                                        {n}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
 
-                                <span style={{ width: 1, height: 20, background: "rgba(0,0,0,0.08)", alignSelf: "center", margin: "0 4px" }} />
-
-                                {KOMPETENZ_OPTIONS.map(k => (
-                                  <button
-                                    key={k}
-                                    onClick={() => handleKompetenzChange(t.id, k)}
-                                    style={{
-                                      height: 30,
-                                      paddingLeft: 12,
-                                      paddingRight: 12,
-                                      fontSize: 12,
-                                      fontWeight: 600,
-                                      borderRadius: 999,
-                                      border: t.kompetenz === k ? "1.5px solid transparent" : "1px solid rgba(0,0,0,0.1)",
-                                      cursor: "pointer",
-                                      transition: "all 150ms ease",
-                                      background: t.kompetenz === k ? KOMPETENZ_COLORS[k] : "transparent",
-                                      color: t.kompetenz === k ? "#FFFFFF" : KOMPETENZ_COLORS[k],
-                                      display: "flex",
-                                      alignItems: "center",
-                                      gap: 4,
-                                    }}
-                                    data-testid={`kompetenz-${t.id}-${k.toLowerCase()}`}
-                                  >
-                                    <span style={{
-                                      width: 6,
-                                      height: 6,
-                                      borderRadius: 3,
-                                      background: t.kompetenz === k ? "rgba(255,255,255,0.5)" : KOMPETENZ_COLORS[k],
-                                    }} />
-                                    {k}
-                                  </button>
-                                ))}
+                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  <span style={{ fontSize: 11, fontWeight: 500, color: "#AEAEB2", minWidth: 52, textTransform: "uppercase", letterSpacing: "0.5px" }}>Bereich</span>
+                                  <div style={{ display: "flex", gap: 6 }}>
+                                    {KOMPETENZ_OPTIONS.map(k => (
+                                      <button
+                                        key={k}
+                                        onClick={() => handleKompetenzChange(t.id, k)}
+                                        style={{
+                                          height: 28,
+                                          paddingLeft: 10,
+                                          paddingRight: 10,
+                                          fontSize: 12,
+                                          fontWeight: 600,
+                                          borderRadius: 999,
+                                          border: t.kompetenz === k ? "1.5px solid transparent" : "1px solid rgba(0,0,0,0.1)",
+                                          cursor: "pointer",
+                                          transition: "all 150ms ease",
+                                          background: t.kompetenz === k ? KOMPETENZ_COLORS[k] : "transparent",
+                                          color: t.kompetenz === k ? "#FFFFFF" : KOMPETENZ_COLORS[k],
+                                          display: "flex",
+                                          alignItems: "center",
+                                          gap: 4,
+                                        }}
+                                        data-testid={`kompetenz-${t.id}-${k.toLowerCase()}`}
+                                      >
+                                        <span style={{
+                                          width: 6,
+                                          height: 6,
+                                          borderRadius: 3,
+                                          background: t.kompetenz === k ? "rgba(255,255,255,0.5)" : KOMPETENZ_COLORS[k],
+                                        }} />
+                                        {k}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
