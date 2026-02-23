@@ -513,9 +513,9 @@ export default function RollenDNA() {
                         fontSize: 16,
                         fontWeight: 600,
                         borderRadius: 14,
-                        background: step1Valid ? "linear-gradient(135deg, #1D1D1F, #48484A, #1D1D1F)" : undefined,
+                        background: step1Valid ? "linear-gradient(135deg, #0071E3, #34AADC)" : undefined,
                         border: "none",
-                        boxShadow: step1Valid ? "0 4px 16px rgba(0,0,0,0.25)" : undefined,
+                        boxShadow: step1Valid ? "0 4px 16px rgba(0,113,227,0.3)" : undefined,
                       }}
                       data-testid="button-step-1-weiter"
                     >
@@ -693,9 +693,9 @@ export default function RollenDNA() {
                         fontSize: 16,
                         fontWeight: 600,
                         borderRadius: 14,
-                        background: step2Valid ? "linear-gradient(135deg, #1D1D1F, #48484A, #1D1D1F)" : undefined,
+                        background: step2Valid ? "linear-gradient(135deg, #0071E3, #34AADC)" : undefined,
                         border: "none",
-                        boxShadow: step2Valid ? "0 4px 16px rgba(0,0,0,0.25)" : undefined,
+                        boxShadow: step2Valid ? "0 4px 16px rgba(0,113,227,0.3)" : undefined,
                       }}
                       className="gap-2"
                       data-testid="button-step-2-weiter"
@@ -740,9 +740,9 @@ export default function RollenDNA() {
                         fontSize: 16,
                         fontWeight: 600,
                         borderRadius: 14,
-                        background: "linear-gradient(135deg, #1D1D1F, #48484A, #1D1D1F)",
+                        background: "linear-gradient(135deg, #0071E3, #34AADC)",
                         border: "none",
-                        boxShadow: "0 4px 16px rgba(0,0,0,0.25)",
+                        boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
                       }}
                       data-testid="button-taetigkeit-hinzufuegen"
                     >
