@@ -1187,7 +1187,7 @@ export default function RollenDNA() {
                     }}
                     data-testid="button-step-3-fertig"
                   >
-                    Analyse abschließen
+                    Datenerfassung abgeschlossen
                     <ChevronRight className="w-5 h-5" />
                   </Button>
                 </div>
