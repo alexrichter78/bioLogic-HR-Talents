@@ -209,18 +209,18 @@ function PillGroup({
   wrap?: boolean;
 }) {
   return (
-    <div className={`flex items-stretch gap-2 p-1.5 ${wrap ? "flex-wrap" : ""}`}>
+    <div className={`flex ${wrap ? "flex-col gap-3" : "items-stretch gap-2"} p-1.5`}>
       {options.map((opt, idx) => {
         const isSelected = selected.includes(opt);
         return (
           <button
             key={`${opt}-${idx}`}
             onClick={() => onSelect(opt)}
-            className={`${wrap ? "" : "flex-1"} rounded-full font-medium select-none text-center min-w-0`}
+            className={`${wrap ? "" : "flex-1"} rounded-full font-medium select-none ${wrap ? "text-left" : "text-center"} min-w-0`}
             style={{
               minHeight: 48,
-              paddingLeft: 16,
-              paddingRight: 16,
+              paddingLeft: wrap ? 20 : 16,
+              paddingRight: wrap ? 20 : 16,
               paddingTop: 10,
               paddingBottom: 10,
               fontSize: wrap ? 14 : 15,
