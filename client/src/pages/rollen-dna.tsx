@@ -216,14 +216,14 @@ function PillGroup({
           <button
             key={`${opt}-${idx}`}
             onClick={() => onSelect(opt)}
-            className="flex-1 rounded-full font-medium select-none text-center min-w-0"
+            className={`${wrap ? "" : "flex-1"} rounded-full font-medium select-none text-center min-w-0`}
             style={{
               minHeight: 48,
               paddingLeft: 16,
               paddingRight: 16,
               paddingTop: 10,
               paddingBottom: 10,
-              fontSize: 15,
+              fontSize: wrap ? 14 : 15,
               lineHeight: 1.3,
               whiteSpace: "pre-line",
               fontWeight: 500,
@@ -647,6 +647,7 @@ export default function RollenDNA() {
                             options={["Keine", "Projekt-/Teamkoordination", "Fachliche Führung", "Disziplinarische Führung mit Ergebnisverantwortung"]}
                             selected={[fuehrung]}
                             onSelect={handleFuehrung}
+                            wrap
                           />
                         </div>
                       </div>
