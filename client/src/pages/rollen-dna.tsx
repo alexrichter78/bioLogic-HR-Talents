@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight } from "lucide-react";
+import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight, Info } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 type KompetenzTyp = "Impulsiv" | "Intuitiv" | "Analytisch";
@@ -413,6 +413,7 @@ export default function RollenDNA() {
   const [beruf, setBeruf] = useState("");
   const [fuehrung, setFuehrung] = useState("Fachliche Führung");
   const [erfolgsfokusIndices, setErfolgsfokusIndices] = useState<number[]>([0, 1]);
+  const [showFuehrungInfo, setShowFuehrungInfo] = useState(false);
   const [aufgabencharakter, setAufgabencharakter] = useState("Gemischt");
   const [arbeitslogik, setArbeitslogik] = useState("Daten-/prozessorientiert");
 
@@ -638,6 +639,81 @@ export default function RollenDNA() {
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
                             Führungsverantwortung
                           </h3>
+                          <div style={{ position: "relative" }}>
+                            <button
+                              onClick={() => setShowFuehrungInfo(prev => !prev)}
+                              style={{
+                                width: 22,
+                                height: 22,
+                                borderRadius: "50%",
+                                border: "1.5px solid rgba(0,113,227,0.4)",
+                                background: "transparent",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                color: "#0071E3",
+                                transition: "all 150ms ease",
+                                padding: 0,
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,113,227,0.08)"; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                              data-testid="button-fuehrung-info"
+                            >
+                              <Info style={{ width: 13, height: 13 }} />
+                            </button>
+                            {showFuehrungInfo && (
+                              <>
+                                <div
+                                  style={{ position: "fixed", inset: 0, zIndex: 40 }}
+                                  onClick={() => setShowFuehrungInfo(false)}
+                                />
+                                <div
+                                  style={{
+                                    position: "absolute",
+                                    top: 32,
+                                    left: -120,
+                                    width: 420,
+                                    background: "rgba(255,255,255,0.95)",
+                                    backdropFilter: "blur(20px)",
+                                    WebkitBackdropFilter: "blur(20px)",
+                                    borderRadius: 16,
+                                    padding: "24px",
+                                    boxShadow: "0 12px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06)",
+                                    zIndex: 50,
+                                  }}
+                                  data-testid="popup-fuehrung-info"
+                                >
+                                  <div className="flex items-center justify-between mb-4">
+                                    <h4 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>Definition Führungsverantwortung</h4>
+                                    <button
+                                      onClick={() => setShowFuehrungInfo(false)}
+                                      style={{ background: "none", border: "none", cursor: "pointer", color: "#8E8E93", padding: 2 }}
+                                      data-testid="button-close-fuehrung-info"
+                                    >
+                                      <X style={{ width: 16, height: 16 }} />
+                                    </button>
+                                  </div>
+                                  <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6, marginBottom: 16 }}>
+                                    Bitte ordnen Sie die Rolle nach der tatsächlichen Weisungs- und Personalverantwortung ein – nicht nach dem Jobtitel. Entscheidend ist, welche formale Entscheidungsmacht und Ergebnisverantwortung mit der Rolle verbunden sind.
+                                  </p>
+                                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                                    {[
+                                      { label: "Keine", desc: "Keine Weisungs- oder Steuerungsverantwortung." },
+                                      { label: "Koordination", desc: "Steuert Zusammenarbeit, aber ohne formale Weisungs- oder Personalverantwortung." },
+                                      { label: "Fachliche Führung", desc: "Führt fachlich (Qualität, Standards, Prioritäten), aber ohne Personalentscheidungen." },
+                                      { label: "Disziplinarische Führung", desc: "Personalverantwortung inkl. Ziele, Entwicklung, Entscheidungen und Ergebnis-KPIs." },
+                                    ].map(item => (
+                                      <div key={item.label}>
+                                        <span style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F" }}>{item.label}: </span>
+                                        <span style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.5 }}>{item.desc}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              </>
+                            )}
+                          </div>
                         </div>
                         <p style={{ fontSize: 14, color: "#8E8E93", marginTop: 6, paddingLeft: 32 }}>
                           {SECTION_SUBTITLES.fuehrung}
