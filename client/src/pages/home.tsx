@@ -358,7 +358,13 @@ function FeatureCards() {
     };
     checkState();
     window.addEventListener("storage", checkState);
-    return () => window.removeEventListener("storage", checkState);
+    window.addEventListener("focus", checkState);
+    window.addEventListener("popstate", checkState);
+    return () => {
+      window.removeEventListener("storage", checkState);
+      window.removeEventListener("focus", checkState);
+      window.removeEventListener("popstate", checkState);
+    };
   }, []);
 
   const resolvedFeatures = features.map((f, i) => ({
