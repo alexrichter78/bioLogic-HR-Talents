@@ -437,15 +437,15 @@ export default function RollenDNA() {
   const [currentStep, setCurrentStep] = useState(saved.current?.currentStep ?? 1);
   const [allCollapsed, setAllCollapsed] = useState(saved.current?.allCollapsed ?? false);
   const [beruf, setBeruf] = useState(saved.current?.beruf ?? "");
-  const [fuehrung, setFuehrung] = useState(saved.current?.fuehrung ?? "Fachliche Führung");
-  const [erfolgsfokusIndices, setErfolgsfokusIndices] = useState<number[]>(saved.current?.erfolgsfokusIndices ?? [0, 1]);
+  const [fuehrung, setFuehrung] = useState(saved.current?.fuehrung ?? "");
+  const [erfolgsfokusIndices, setErfolgsfokusIndices] = useState<number[]>(saved.current?.erfolgsfokusIndices ?? []);
   const [showFuehrungInfo, setShowFuehrungInfo] = useState(false);
-  const [aufgabencharakter, setAufgabencharakter] = useState(saved.current?.aufgabencharakter ?? "Gemischt");
-  const [arbeitslogik, setArbeitslogik] = useState(saved.current?.arbeitslogik ?? "Daten-/prozessorientiert");
+  const [aufgabencharakter, setAufgabencharakter] = useState(saved.current?.aufgabencharakter ?? "");
+  const [arbeitslogik, setArbeitslogik] = useState(saved.current?.arbeitslogik ?? "");
 
   const [activeTab, setActiveTab] = useState<TaetigkeitKategorie>(saved.current?.activeTab ?? "haupt");
-  const [taetigkeiten, setTaetigkeiten] = useState<Taetigkeit[]>(saved.current?.taetigkeiten ?? DEFAULT_TAETIGKEITEN);
-  const [nextId, setNextId] = useState(saved.current?.nextId ?? 9);
+  const [taetigkeiten, setTaetigkeiten] = useState<Taetigkeit[]>(saved.current?.taetigkeiten ?? []);
+  const [nextId, setNextId] = useState(saved.current?.nextId ?? 1);
 
   useEffect(() => {
     const state = {
