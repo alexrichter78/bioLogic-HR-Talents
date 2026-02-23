@@ -3,8 +3,27 @@ import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2 } from "lucide-react";
+import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
+
+type KompetenzTyp = "Impulsiv" | "Intuitiv" | "Analytisch" | "Mittel";
+type Niveau = "Niedrig" | "Mittel" | "Hoch";
+type TaetigkeitKategorie = "haupt" | "neben" | "fuehrung";
+
+interface Taetigkeit {
+  id: number;
+  name: string;
+  kategorie: TaetigkeitKategorie;
+  kompetenzen: KompetenzTyp[];
+  niveau: Niveau;
+}
+
+const KOMPETENZ_COLORS: Record<KompetenzTyp, string> = {
+  Impulsiv: "#FF6B6B",
+  Intuitiv: "#FBBF24",
+  Analytisch: "#60A5FA",
+  Mittel: "#A78BFA",
+};
 
 const ERFOLGSFOKUS_LABELS = [
   "Ergebnis-/Umsatzdruck",
@@ -395,6 +414,43 @@ export default function RollenDNA() {
   const [aufgabencharakter, setAufgabencharakter] = useState("Gemischt");
   const [arbeitslogik, setArbeitslogik] = useState("Daten-/prozessorientiert");
 
+  const [activeTab, setActiveTab] = useState<TaetigkeitKategorie>("haupt");
+  const [taetigkeiten, setTaetigkeiten] = useState<Taetigkeit[]>([
+    { id: 1, name: "Entscheidungen treffen", kategorie: "haupt", kompetenzen: ["Impulsiv", "Intuitiv", "Analytisch"], niveau: "Hoch" },
+    { id: 2, name: "SiLo-Team koordinieren", kategorie: "haupt", kompetenzen: ["Impulsiv", "Intuitiv", "Mittel"], niveau: "Mittel" },
+    { id: 3, name: "Strategien entwickeln", kategorie: "haupt", kompetenzen: ["Intuitiv", "Intuitiv", "Analytisch"], niveau: "Hoch" },
+    { id: 4, name: "Datenanalysen erstellen", kategorie: "haupt", kompetenzen: ["Analytisch", "Mittel", "Analytisch"], niveau: "Mittel" },
+    { id: 5, name: "Berichte verfassen", kategorie: "neben", kompetenzen: ["Analytisch", "Intuitiv"], niveau: "Niedrig" },
+    { id: 6, name: "Meetings moderieren", kategorie: "neben", kompetenzen: ["Impulsiv", "Intuitiv"], niveau: "Mittel" },
+    { id: 7, name: "Mitarbeiter entwickeln", kategorie: "fuehrung", kompetenzen: ["Intuitiv", "Analytisch"], niveau: "Hoch" },
+  ]);
+  const [nextId, setNextId] = useState(8);
+
+  const filteredTaetigkeiten = taetigkeiten.filter(t => t.kategorie === activeTab);
+  const hauptCount = taetigkeiten.filter(t => t.kategorie === "haupt").length;
+  const nebenCount = taetigkeiten.filter(t => t.kategorie === "neben").length;
+  const fuehrungCount = taetigkeiten.filter(t => t.kategorie === "fuehrung").length;
+
+  const handleNiveauChange = (id: number, niveau: Niveau) => {
+    setTaetigkeiten(prev => prev.map(t => t.id === id ? { ...t, niveau } : t));
+  };
+
+  const handleRemoveTaetigkeit = (id: number) => {
+    setTaetigkeiten(prev => prev.filter(t => t.id !== id));
+  };
+
+  const handleAddTaetigkeit = () => {
+    const newT: Taetigkeit = {
+      id: nextId,
+      name: "Neue Tätigkeit",
+      kategorie: activeTab,
+      kompetenzen: ["Analytisch"],
+      niveau: "Mittel",
+    };
+    setTaetigkeiten(prev => [...prev, newT]);
+    setNextId(prev => prev + 1);
+  };
+
   const handleFuehrung = (val: string) => {
     setFuehrung(val);
   };
@@ -718,40 +774,229 @@ export default function RollenDNA() {
             )}
 
             {currentStep === 3 ? (
-              <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-3">
-                <div className="p-8">
-                  <div className="flex items-center gap-3 mb-1">
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-3">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
                     <span className="text-xs font-medium text-primary uppercase tracking-wider">Schritt 3</span>
-                  </div>
-                  <h2 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90 mb-8" data-testid="text-step-3-title">
-                    Tätigkeiten & Kompetenzen
-                  </h2>
-
-                  <div className="flex flex-col items-center gap-4 py-8">
-                    <p style={{ fontSize: 15, color: "#6E6E73" }} data-testid="text-no-taetigkeiten">
-                      Noch keine Tätigkeiten hinzugefügt.
+                    <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} className="dark:text-foreground/90 mt-1" data-testid="text-step-3-title">
+                      Tätigkeiten & Kompetenzen
+                    </h2>
+                    <p style={{ fontSize: 14, color: "#8E8E93", marginTop: 4 }}>
+                      Formen Sie die konkrete Struktur dieser Rolle.
                     </p>
-                    <Button
-                      className="gap-2"
+                  </div>
+                  <div style={{ textAlign: "right", fontSize: 12, color: "#8E8E93", lineHeight: 1.8 }}>
+                    <div>Haupttätigkeiten <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{hauptCount} / 15</span></div>
+                    <div>Nebentätigkeiten <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{nebenCount} / 15</span></div>
+                    <div>Führungskompetenzen <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{fuehrungCount} / 10</span></div>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    background: "rgba(255,255,255,0.65)",
+                    backdropFilter: "blur(24px)",
+                    WebkitBackdropFilter: "blur(24px)",
+                    borderRadius: 24,
+                    padding: "32px",
+                    boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+                    border: "1px solid rgba(0,0,0,0.04)",
+                  }}
+                  className="dark:bg-card/40"
+                >
+                  <div className="flex items-center gap-2 mb-8" data-testid="tabs-taetigkeiten">
+                    {([
+                      { key: "haupt" as TaetigkeitKategorie, label: "Haupttätigkeiten" },
+                      { key: "neben" as TaetigkeitKategorie, label: "Nebentätigkeiten" },
+                      { key: "fuehrung" as TaetigkeitKategorie, label: "Führungskompetenzen" },
+                    ]).map(tab => (
+                      <button
+                        key={tab.key}
+                        onClick={() => setActiveTab(tab.key)}
+                        style={{
+                          height: 40,
+                          paddingLeft: 20,
+                          paddingRight: 20,
+                          fontSize: 14,
+                          fontWeight: 600,
+                          borderRadius: 999,
+                          border: "none",
+                          cursor: "pointer",
+                          transition: "all 200ms ease",
+                          background: activeTab === tab.key ? "linear-gradient(135deg, #0071E3, #34AADC)" : "transparent",
+                          color: activeTab === tab.key ? "#FFFFFF" : "#6E6E73",
+                          boxShadow: activeTab === tab.key ? "0 2px 8px rgba(0,113,227,0.2)" : "none",
+                        }}
+                        data-testid={`tab-${tab.key}`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {filteredTaetigkeiten.length === 0 ? (
+                      <div className="text-center py-8">
+                        <p style={{ fontSize: 15, color: "#8E8E93" }}>
+                          Noch keine {activeTab === "haupt" ? "Haupttätigkeiten" : activeTab === "neben" ? "Nebentätigkeiten" : "Führungskompetenzen"} hinzugefügt.
+                        </p>
+                      </div>
+                    ) : (
+                      filteredTaetigkeiten.map(t => (
+                        <div
+                          key={t.id}
+                          style={{
+                            background: "rgba(255,255,255,0.8)",
+                            borderRadius: 16,
+                            padding: "20px 24px",
+                            border: "1px solid rgba(0,0,0,0.05)",
+                            transition: "all 200ms ease",
+                          }}
+                          data-testid={`taetigkeit-${t.id}`}
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-3 flex-wrap">
+                                {t.kompetenzen.map((k, ki) => (
+                                  <span
+                                    key={ki}
+                                    style={{
+                                      display: "inline-flex",
+                                      alignItems: "center",
+                                      gap: 4,
+                                      height: 24,
+                                      paddingLeft: 8,
+                                      paddingRight: 8,
+                                      borderRadius: 999,
+                                      fontSize: 11,
+                                      fontWeight: 600,
+                                      color: "#FFFFFF",
+                                      background: KOMPETENZ_COLORS[k],
+                                    }}
+                                    data-testid={`kompetenz-tag-${t.id}-${ki}`}
+                                  >
+                                    <span style={{ width: 6, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.5)" }} />
+                                    {k}
+                                  </span>
+                                ))}
+                              </div>
+                              <h4 style={{ fontSize: 16, fontWeight: 600, color: "#1D1D1F", marginBottom: 12 }}>
+                                {t.name}
+                              </h4>
+                              <div className="flex items-center gap-2">
+                                {(["Niedrig", "Mittel", "Hoch"] as Niveau[]).map(n => (
+                                  <button
+                                    key={n}
+                                    onClick={() => handleNiveauChange(t.id, n)}
+                                    style={{
+                                      height: 32,
+                                      paddingLeft: 14,
+                                      paddingRight: 14,
+                                      fontSize: 13,
+                                      fontWeight: 500,
+                                      borderRadius: 999,
+                                      border: t.niveau === n ? "none" : "1px solid rgba(0,0,0,0.1)",
+                                      cursor: "pointer",
+                                      transition: "all 150ms ease",
+                                      background: t.niveau === n ? "linear-gradient(135deg, #0071E3, #34AADC)" : "transparent",
+                                      color: t.niveau === n ? "#FFFFFF" : "#8E8E93",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: 4,
+                                    }}
+                                    data-testid={`niveau-${t.id}-${n.toLowerCase()}`}
+                                  >
+                                    {t.niveau === n && <Check style={{ width: 12, height: 12 }} />}
+                                    {n}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => handleRemoveTaetigkeit(t.id)}
+                              style={{
+                                width: 32,
+                                height: 32,
+                                borderRadius: 8,
+                                border: "none",
+                                background: "transparent",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                color: "#8E8E93",
+                                transition: "all 150ms ease",
+                              }}
+                              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.05)"; }}
+                              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+                              data-testid={`remove-taetigkeit-${t.id}`}
+                            >
+                              <MoreHorizontal style={{ width: 16, height: 16 }} />
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  <div style={{ marginTop: 24, display: "flex", justifyContent: "center" }}>
+                    <button
+                      onClick={handleAddTaetigkeit}
                       style={{
-                        height: 52,
-                        paddingLeft: 32,
-                        paddingRight: 32,
-                        fontSize: 16,
+                        height: 44,
+                        paddingLeft: 24,
+                        paddingRight: 24,
+                        fontSize: 14,
                         fontWeight: 600,
-                        borderRadius: 14,
-                        background: "linear-gradient(135deg, #0071E3, #34AADC)",
-                        border: "none",
-                        boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
+                        borderRadius: 999,
+                        border: "1.5px solid rgba(0,113,227,0.3)",
+                        cursor: "pointer",
+                        background: "transparent",
+                        color: "#0071E3",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 6,
+                        transition: "all 200ms ease",
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,113,227,0.06)";
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLButtonElement).style.background = "transparent";
                       }}
                       data-testid="button-taetigkeit-hinzufuegen"
                     >
-                      <Plus className="w-5 h-5" />
-                      Tätigkeit hinzufügen
-                    </Button>
+                      <Plus style={{ width: 16, height: 16 }} />
+                      Neue Tätigkeit hinzufügen
+                    </button>
                   </div>
+
+                  <p style={{ fontSize: 12, color: "#AEAEB2", textAlign: "center", marginTop: 16 }}>
+                    Maximal 15 Haupttätigkeiten definiert
+                  </p>
                 </div>
-              </Card>
+
+                <div className="flex justify-end" style={{ marginTop: 24 }}>
+                  <Button
+                    className="gap-2"
+                    style={{
+                      height: 52,
+                      paddingLeft: 32,
+                      paddingRight: 32,
+                      fontSize: 16,
+                      fontWeight: 600,
+                      borderRadius: 14,
+                      background: "linear-gradient(135deg, #0071E3, #34AADC)",
+                      border: "none",
+                      boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
+                    }}
+                    data-testid="button-step-3-fertig"
+                  >
+                    Analyse abschließen
+                    <ChevronRight className="w-5 h-5" />
+                  </Button>
+                </div>
+              </div>
             ) : (
               <LockedStep step={3} title="Tätigkeiten & Kompetenzen" />
             )}
