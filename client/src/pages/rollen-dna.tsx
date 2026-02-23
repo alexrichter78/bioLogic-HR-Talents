@@ -9,7 +9,7 @@ import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 const ERFOLGSFOKUS_LABELS = [
   "Ergebnis-/Umsatzdruck",
   "Beziehungsaufbau",
-  "Innovations-/Entwicklungsfokus",
+  "Innovations-/\nEntwicklungsfokus",
   "Prozessqualität & Struktur",
   "Fachliche Präzision",
   "Fachliche Präzision",
@@ -150,7 +150,7 @@ function PillGroup({
   wrap?: boolean;
 }) {
   return (
-    <div className={`flex items-center gap-2 rounded-full p-1.5 ${wrap ? "flex-wrap" : ""}`}
+    <div className={`flex items-stretch gap-2 rounded-3xl p-1.5 ${wrap ? "flex-wrap" : ""}`}
       style={{ background: "rgba(0,0,0,0.03)" }}
     >
       {options.map((opt, idx) => {
@@ -159,12 +159,16 @@ function PillGroup({
           <button
             key={`${opt}-${idx}`}
             onClick={() => onSelect(opt)}
-            className="flex-1 rounded-full font-medium leading-none select-none text-center min-w-0"
+            className="flex-1 rounded-full font-medium select-none text-center min-w-0"
             style={{
-              height: 48,
+              minHeight: 48,
               paddingLeft: 16,
               paddingRight: 16,
+              paddingTop: 10,
+              paddingBottom: 10,
               fontSize: 15,
+              lineHeight: 1.3,
+              whiteSpace: "pre-line",
               fontWeight: 500,
               border: "none",
               cursor: "pointer",
