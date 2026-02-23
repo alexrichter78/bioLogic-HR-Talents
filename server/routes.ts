@@ -61,14 +61,14 @@ Beispiele: Vertriebsziele erreichen, Projekte zum Abschluss bringen, Schnelle En
 
 Erstelle für die Rolle "${beruf}" im oben beschriebenen Gesamtkontext:
 
-1. **Haupttätigkeiten (haupt)**: Genau 10 typische Haupttätigkeiten. Jede Tätigkeit ist eine präzise, praxisnahe Beschreibung (max. 60 Zeichen).
+1. **Haupttätigkeiten (haupt)**: Genau 15 typische Haupttätigkeiten. Jede Tätigkeit ist eine präzise, praxisnahe Beschreibung (max. 60 Zeichen).
 
 2. **Humankompetenzen (neben)**: Genau 10 relevante Humankompetenzen (Soft Skills), die im Kontext dieser Rolle wichtig sind.
 
 ${hasFuehrung ? `3. **Führungskompetenzen (fuehrung)**: Genau 10 relevante Führungskompetenzen passend zur Führungsebene "${fuehrung}" im Kontext dieser Branche/Rolle.` : ""}
 
 ## NIVEAU-REGELN
-- "Hoch": Diese Tätigkeit/Kompetenz ist erfolgskritisch für die Rolle (max. 4 pro Kategorie)
+- "Hoch": Diese Tätigkeit/Kompetenz ist erfolgskritisch für die Rolle (max. 6 bei Haupttätigkeiten, max. 4 bei anderen)
 - "Mittel": Wichtig, aber nicht das Kernprofil
 - "Niedrig": Wird benötigt, ist aber nicht zentral
 
