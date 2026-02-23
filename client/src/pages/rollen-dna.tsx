@@ -200,6 +200,7 @@ function PillGroup({
   multi = false,
   max,
   wrap = false,
+  columns,
 }: {
   options: string[];
   selected: string[];
@@ -207,9 +208,12 @@ function PillGroup({
   multi?: boolean;
   max?: number;
   wrap?: boolean;
+  columns?: number;
 }) {
   return (
-    <div className={`flex ${wrap ? "flex-col gap-3" : "items-stretch gap-2"} p-1.5`}>
+    <div className={columns ? "" : `flex ${wrap ? "flex-col gap-3" : "items-stretch gap-2"} p-1.5`}
+      style={columns ? { display: "grid", gridTemplateColumns: `repeat(${columns}, 1fr)`, gap: 10, padding: 6 } : undefined}
+    >
       {options.map((opt, idx) => {
         const isSelected = selected.includes(opt);
         return (
@@ -732,6 +736,7 @@ export default function RollenDNA() {
                             options={["Keine", "Projekt-/Teamkoordination", "Fachliche Führung", "Disziplinarische Führung mit Ergebnisverantwortung"]}
                             selected={[fuehrung]}
                             onSelect={handleFuehrung}
+                            columns={2}
                           />
                         </div>
                       </div>
