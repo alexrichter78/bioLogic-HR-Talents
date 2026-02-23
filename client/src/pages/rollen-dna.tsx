@@ -386,7 +386,7 @@ export default function RollenDNA() {
                   className="dark:bg-card/40"
                 >
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: 64 }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
 
                     <div data-testid="section-fuehrung" className="relative">
                       <div style={{ position: "absolute", top: -16, right: 0, fontSize: 96, fontWeight: 800, color: "rgba(0,0,0,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>01</div>
@@ -403,6 +403,10 @@ export default function RollenDNA() {
                           onSelect={handleFuehrung}
                         />
                       </div>
+                    </div>
+
+                    <div style={{ paddingTop: 48, paddingBottom: 48, display: "flex", justifyContent: "center" }}>
+                      <div style={{ width: "40%", height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent)" }} />
                     </div>
 
                     <div data-testid="section-erfolgsfokus" className="relative">
@@ -429,6 +433,10 @@ export default function RollenDNA() {
                       </div>
                     </div>
 
+                    <div style={{ paddingTop: 48, paddingBottom: 48, display: "flex", justifyContent: "center" }}>
+                      <div style={{ width: "40%", height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent)" }} />
+                    </div>
+
                     <div data-testid="section-aufgabencharakter" className="relative">
                       <div style={{ position: "absolute", top: -16, right: 0, fontSize: 96, fontWeight: 800, color: "rgba(0,0,0,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>03</div>
                       <div className="flex items-center gap-3">
@@ -447,6 +455,10 @@ export default function RollenDNA() {
                           onSelect={handleAufgabencharakter}
                         />
                       </div>
+                    </div>
+
+                    <div style={{ paddingTop: 48, paddingBottom: 48, display: "flex", justifyContent: "center" }}>
+                      <div style={{ width: "40%", height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent)" }} />
                     </div>
 
                     <div data-testid="section-arbeitslogik" className="relative">
