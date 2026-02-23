@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity } from "lucide-react";
+import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2 } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 const ERFOLGSFOKUS_LABELS = [
@@ -14,6 +14,13 @@ const ERFOLGSFOKUS_LABELS = [
   "Fachliche Präzision",
   "Fachliche Präzision",
 ];
+
+const SECTION_SUBTITLES: Record<string, string> = {
+  fuehrung: "Wie viel Führung hat diese Rolle?",
+  erfolgsfokus: "Woran wird der Erfolg dieser Rolle gemessen?",
+  aufgabencharakter: "Ist die Rolle eher operativ oder strategisch?",
+  arbeitslogik: "Was treibt die tägliche Arbeit an?",
+};
 
 function Header() {
   const [, setLocation] = useLocation();
@@ -134,6 +141,37 @@ function LockedStep({ step, title }: { step: number; title: string }) {
   );
 }
 
+function FadeInSection({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), delay);
+    return () => clearTimeout(timer);
+  }, [delay]);
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? "translateY(0)" : "translateY(12px)",
+        transition: "opacity 600ms cubic-bezier(0.4, 0, 0.2, 1), transform 600ms cubic-bezier(0.4, 0, 0.2, 1)",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function SectionDivider() {
+  return (
+    <div style={{ paddingTop: 48, paddingBottom: 48, display: "flex", justifyContent: "center" }}>
+      <div style={{ width: "40%", height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent)" }} />
+    </div>
+  );
+}
+
 function PillGroup({
   options,
   selected,
@@ -174,7 +212,7 @@ function PillGroup({
               background: isSelected ? "#0071E3" : "transparent",
               color: isSelected ? "#FFFFFF" : "#6E6E73",
               transform: isSelected ? "scale(1.02)" : "scale(1)",
-              boxShadow: isSelected ? "inset 0 0 0 1px rgba(0,0,0,0.04)" : "none",
+              boxShadow: isSelected ? "0 4px 12px rgba(0,113,227,0.25)" : "none",
             }}
             onMouseEnter={(e) => {
               if (!isSelected) {
@@ -233,7 +271,7 @@ function PillGroupIndexed({
               background: isSelected ? "#0071E3" : "transparent",
               color: isSelected ? "#FFFFFF" : "#6E6E73",
               transform: isSelected ? "scale(1.02)" : "scale(1)",
-              boxShadow: isSelected ? "inset 0 0 0 1px rgba(0,0,0,0.04)" : "none",
+              boxShadow: isSelected ? "0 4px 12px rgba(0,113,227,0.25)" : "none",
             }}
             onMouseEnter={(e) => {
               if (!isSelected) {
@@ -251,6 +289,100 @@ function PillGroupIndexed({
           </button>
         );
       })}
+    </div>
+  );
+}
+
+function SectionNumber({ num, isComplete }: { num: number; isComplete: boolean }) {
+  return (
+    <div style={{
+      position: "absolute",
+      top: -8,
+      right: 8,
+      fontSize: 64,
+      fontWeight: 800,
+      lineHeight: 1,
+      pointerEvents: "none",
+      userSelect: "none",
+      transition: "color 500ms ease",
+      color: isComplete ? "rgba(0,113,227,0.06)" : "rgba(0,0,0,0.03)",
+    }}>
+      {num}
+    </div>
+  );
+}
+
+function MiniProgressBar({ filled, total }: { filled: number; total: number }) {
+  const pct = (filled / total) * 100;
+  return (
+    <div data-testid="mini-progress" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
+      <div style={{
+        flex: 1,
+        height: 3,
+        borderRadius: 2,
+        background: "rgba(0,0,0,0.06)",
+        overflow: "hidden",
+      }}>
+        <div style={{
+          width: `${pct}%`,
+          height: "100%",
+          borderRadius: 2,
+          background: "linear-gradient(90deg, #0071E3, #34AADC)",
+          transition: "width 500ms cubic-bezier(0.4, 0, 0.2, 1)",
+        }} />
+      </div>
+      <span style={{ fontSize: 12, fontWeight: 500, color: "#6E6E73", whiteSpace: "nowrap" }}>
+        {filled} von {total}
+      </span>
+    </div>
+  );
+}
+
+function SummaryBar({ fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik }: {
+  fuehrung: string;
+  erfolgsfokus: string[];
+  aufgabencharakter: string;
+  arbeitslogik: string;
+}) {
+  const items = [
+    { label: "Führung", value: fuehrung },
+    { label: "Fokus", value: erfolgsfokus.join(", ") },
+    { label: "Aufgaben", value: aufgabencharakter },
+    { label: "Logik", value: arbeitslogik },
+  ];
+
+  return (
+    <div
+      data-testid="summary-bar"
+      style={{
+        background: "rgba(255,255,255,0.8)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderRadius: 16,
+        padding: "16px 24px",
+        marginTop: 32,
+        border: "1px solid rgba(0,0,0,0.06)",
+        boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+        <CheckCircle2 style={{ width: 14, height: 14, color: "#34C759" }} />
+        <span style={{ fontSize: 12, fontWeight: 600, color: "#34C759", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+          Zusammenfassung
+        </span>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 24px" }}>
+        {items.map((item) => (
+          <div key={item.label}>
+            <span style={{ fontSize: 11, fontWeight: 500, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+              {item.label}
+            </span>
+            <p style={{ fontSize: 14, fontWeight: 500, color: "#1D1D1F", marginTop: 2, lineHeight: 1.3 }}>
+              {item.value}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -292,8 +424,17 @@ export default function RollenDNA() {
 
   const goToStep = (step: number) => setCurrentStep(step);
 
+  const sectionsFilled = [
+    fuehrung.length > 0,
+    erfolgsfokusIndices.length > 0,
+    aufgabencharakter.length > 0,
+    arbeitslogik.length > 0,
+  ].filter(Boolean).length;
+
+  const allSectionsFilled = sectionsFilled === 4;
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-background/95 relative">
+    <div className="min-h-screen relative overflow-hidden">
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -301,8 +442,23 @@ export default function RollenDNA() {
             "radial-gradient(ellipse 120% 80% at 20% 60%, rgba(252,205,210,0.35) 0%, transparent 50%), " +
             "radial-gradient(ellipse 100% 70% at 80% 30%, rgba(186,220,248,0.35) 0%, transparent 50%), " +
             "radial-gradient(ellipse 80% 60% at 50% 80%, rgba(200,235,210,0.3) 0%, transparent 50%)",
+          animation: "gradientShift 20s ease-in-out infinite alternate",
         }}
       />
+
+      <style>{`
+        @keyframes gradientShift {
+          0% { transform: scale(1) translate(0, 0); }
+          33% { transform: scale(1.05) translate(-1%, 1%); }
+          66% { transform: scale(1.02) translate(1%, -1%); }
+          100% { transform: scale(1) translate(0, 0); }
+        }
+        @keyframes pulseGlow {
+          0% { box-shadow: 0 4px 12px rgba(0,113,227,0.25); }
+          50% { box-shadow: 0 4px 20px rgba(0,113,227,0.4); }
+          100% { box-shadow: 0 4px 12px rgba(0,113,227,0.25); }
+        }
+      `}</style>
 
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header />
@@ -378,113 +534,158 @@ export default function RollenDNA() {
 
                 <div
                   style={{
-                    background: "#FAFAFA",
+                    background: "rgba(255,255,255,0.65)",
+                    backdropFilter: "blur(24px)",
+                    WebkitBackdropFilter: "blur(24px)",
                     borderRadius: 24,
                     padding: "48px",
-                    boxShadow: "0 8px 30px rgba(0,0,0,0.04)",
+                    boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+                    border: "1px solid rgba(0,0,0,0.04)",
                   }}
                   className="dark:bg-card/40"
                 >
+                  <MiniProgressBar filled={sectionsFilled} total={4} />
 
                   <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
 
-                    <div data-testid="section-fuehrung" className="relative">
-                      <div style={{ position: "absolute", top: -8, right: 8, fontSize: 64, fontWeight: 800, color: "rgba(0,0,0,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>1</div>
-                      <div className="flex items-center gap-3">
-                        <Users style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
-                        <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
-                          Führungsverantwortung
-                        </h3>
+                    <FadeInSection delay={0}>
+                      <div data-testid="section-fuehrung" className="relative">
+                        <SectionNumber num={1} isComplete={fuehrung.length > 0} />
+                        <div className="flex items-center gap-3">
+                          <Users style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
+                          <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
+                            Führungsverantwortung
+                          </h3>
+                        </div>
+                        <p style={{ fontSize: 14, color: "#8E8E93", marginTop: 6, paddingLeft: 32 }}>
+                          {SECTION_SUBTITLES.fuehrung}
+                        </p>
+                        <div style={{ marginTop: 28 }}>
+                          <PillGroup
+                            options={["Keine", "Koordination", "Führung"]}
+                            selected={[fuehrung]}
+                            onSelect={handleFuehrung}
+                          />
+                        </div>
                       </div>
-                      <div style={{ marginTop: 28 }}>
-                        <PillGroup
-                          options={["Keine", "Koordination", "Führung"]}
-                          selected={[fuehrung]}
-                          onSelect={handleFuehrung}
-                        />
-                      </div>
-                    </div>
+                    </FadeInSection>
 
-                    <div style={{ paddingTop: 48, paddingBottom: 48, display: "flex", justifyContent: "center" }}>
-                      <div style={{ width: "40%", height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent)" }} />
-                    </div>
+                    <SectionDivider />
 
-                    <div data-testid="section-erfolgsfokus" className="relative">
-                      <div style={{ position: "absolute", top: -8, right: 8, fontSize: 64, fontWeight: 800, color: "rgba(0,0,0,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>2</div>
-                      <div className="flex items-center gap-3">
-                        <Target style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
-                        <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
-                          Erfolgsfokus
-                        </h3>
+                    <FadeInSection delay={100}>
+                      <div data-testid="section-erfolgsfokus" className="relative">
+                        <SectionNumber num={2} isComplete={erfolgsfokusIndices.length > 0} />
+                        <div className="flex items-center gap-3">
+                          <Target style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
+                          <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
+                            Erfolgsfokus
+                          </h3>
+                        </div>
+                        <p style={{ fontSize: 14, color: "#8E8E93", marginTop: 6, paddingLeft: 32 }}>
+                          {SECTION_SUBTITLES.erfolgsfokus}
+                        </p>
+                        <div style={{ marginTop: 28 }} className="flex flex-col gap-2">
+                          <PillGroupIndexed
+                            options={ERFOLGSFOKUS_LABELS.slice(0, 3)}
+                            selectedIndices={erfolgsfokusIndices}
+                            onSelectIndex={handleErfolgsfokus}
+                            indexOffset={0}
+                          />
+                          <PillGroupIndexed
+                            options={ERFOLGSFOKUS_LABELS.slice(3, 6)}
+                            selectedIndices={erfolgsfokusIndices}
+                            onSelectIndex={handleErfolgsfokus}
+                            indexOffset={3}
+                          />
+                        </div>
                       </div>
-                      <div style={{ marginTop: 28 }} className="flex flex-col gap-2">
-                        <PillGroupIndexed
-                          options={ERFOLGSFOKUS_LABELS.slice(0, 3)}
-                          selectedIndices={erfolgsfokusIndices}
-                          onSelectIndex={handleErfolgsfokus}
-                          indexOffset={0}
-                        />
-                        <PillGroupIndexed
-                          options={ERFOLGSFOKUS_LABELS.slice(3, 6)}
-                          selectedIndices={erfolgsfokusIndices}
-                          onSelectIndex={handleErfolgsfokus}
-                          indexOffset={3}
-                        />
-                      </div>
-                    </div>
+                    </FadeInSection>
 
-                    <div style={{ paddingTop: 48, paddingBottom: 48, display: "flex", justifyContent: "center" }}>
-                      <div style={{ width: "40%", height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent)" }} />
-                    </div>
+                    <SectionDivider />
 
-                    <div data-testid="section-aufgabencharakter" className="relative">
-                      <div style={{ position: "absolute", top: -8, right: 8, fontSize: 64, fontWeight: 800, color: "rgba(0,0,0,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>3</div>
-                      <div className="flex items-center gap-3">
-                        <Layers style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
-                        <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
-                          Aufgabencharakter
-                        </h3>
+                    <FadeInSection delay={200}>
+                      <div data-testid="section-aufgabencharakter" className="relative">
+                        <SectionNumber num={3} isComplete={aufgabencharakter.length > 0} />
+                        <div className="flex items-center gap-3">
+                          <Layers style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
+                          <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
+                            Aufgabencharakter
+                          </h3>
+                        </div>
+                        <p style={{ fontSize: 14, color: "#8E8E93", marginTop: 6, paddingLeft: 32 }}>
+                          {SECTION_SUBTITLES.aufgabencharakter}
+                        </p>
+                        <div style={{ marginTop: 28 }}>
+                          <PillGroup
+                            options={["Überwiegend operativ", "Gemischt", "Überwiegend strategisch"]}
+                            selected={[aufgabencharakter]}
+                            onSelect={handleAufgabencharakter}
+                          />
+                        </div>
                       </div>
-                      <p style={{ fontSize: 15, color: "#6E6E73", marginTop: 8, paddingLeft: 32 }}>
-                        Das Profil die konkrete Stelle besser trifft, beantworten Sie 4 kurze Fragen.
-                      </p>
-                      <div style={{ marginTop: 28 }}>
-                        <PillGroup
-                          options={["Überwiegend operativ", "Gemischt", "Überwiegend strategisch"]}
-                          selected={[aufgabencharakter]}
-                          onSelect={handleAufgabencharakter}
-                        />
-                      </div>
-                    </div>
+                    </FadeInSection>
 
-                    <div style={{ paddingTop: 48, paddingBottom: 48, display: "flex", justifyContent: "center" }}>
-                      <div style={{ width: "40%", height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent)" }} />
-                    </div>
+                    <SectionDivider />
 
-                    <div data-testid="section-arbeitslogik" className="relative">
-                      <div style={{ position: "absolute", top: -8, right: 8, fontSize: 64, fontWeight: 800, color: "rgba(0,0,0,0.03)", lineHeight: 1, pointerEvents: "none", userSelect: "none" }}>4</div>
-                      <div className="flex items-center gap-3">
-                        <Activity style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
-                        <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
-                          Arbeitslogik
-                        </h3>
+                    <FadeInSection delay={300}>
+                      <div data-testid="section-arbeitslogik" className="relative">
+                        <SectionNumber num={4} isComplete={arbeitslogik.length > 0} />
+                        <div className="flex items-center gap-3">
+                          <Activity style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
+                          <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
+                            Arbeitslogik
+                          </h3>
+                        </div>
+                        <p style={{ fontSize: 14, color: "#8E8E93", marginTop: 6, paddingLeft: 32 }}>
+                          {SECTION_SUBTITLES.arbeitslogik}
+                        </p>
+                        <div style={{ marginTop: 28 }}>
+                          <PillGroup
+                            options={["Menschenorientiert", "Daten-/prozessorientiert", "Umsetzungsorientiert"]}
+                            selected={[arbeitslogik]}
+                            onSelect={handleArbeitslogik}
+                          />
+                        </div>
                       </div>
-                      <div style={{ marginTop: 28 }}>
-                        <PillGroup
-                          options={["Menschenorientiert", "Daten-/prozessorientiert", "Umsetzungsorientiert"]}
-                          selected={[arbeitslogik]}
-                          onSelect={handleArbeitslogik}
-                        />
-                      </div>
-                    </div>
+                    </FadeInSection>
 
                   </div>
 
-                  <div className="flex justify-end" style={{ marginTop: 48 }}>
+                  {allSectionsFilled && (
+                    <div style={{
+                      opacity: 1,
+                      animation: "fadeSlideUp 400ms ease-out",
+                    }}>
+                      <style>{`
+                        @keyframes fadeSlideUp {
+                          from { opacity: 0; transform: translateY(8px); }
+                          to { opacity: 1; transform: translateY(0); }
+                        }
+                      `}</style>
+                      <SummaryBar
+                        fuehrung={fuehrung}
+                        erfolgsfokus={erfolgsfokusIndices.map(i => ERFOLGSFOKUS_LABELS[i].replace(/\n/g, ""))}
+                        aufgabencharakter={aufgabencharakter}
+                        arbeitslogik={arbeitslogik}
+                      />
+                    </div>
+                  )}
+
+                  <div className="flex justify-end" style={{ marginTop: 40 }}>
                     <Button
                       disabled={!step2Valid}
                       onClick={() => goToStep(3)}
-                      style={{ height: 52, paddingLeft: 32, paddingRight: 32, fontSize: 16, fontWeight: 600, borderRadius: 14 }}
+                      style={{
+                        height: 52,
+                        paddingLeft: 32,
+                        paddingRight: 32,
+                        fontSize: 16,
+                        fontWeight: 600,
+                        borderRadius: 14,
+                        background: step2Valid ? "linear-gradient(135deg, #0071E3, #34AADC)" : undefined,
+                        border: "none",
+                        boxShadow: step2Valid ? "0 4px 16px rgba(0,113,227,0.3)" : undefined,
+                      }}
                       className="gap-2"
                       data-testid="button-step-2-weiter"
                     >
