@@ -79,7 +79,7 @@ function StepProgress({ currentStep, completedSteps }: { currentStep: number; co
             </div>
             {idx < steps.length - 1 && (
               <div className="flex-1 h-0.5 mx-3 mt-[-18px] rounded-full overflow-hidden bg-muted/30">
-                <div className={`h-full transition-all duration-700 rounded-full ${
+                <div className={`h-full rounded-full transition-all duration-700 ${
                   isDone ? "bg-green-400 w-full" : "bg-transparent w-0"
                 }`} />
               </div>
@@ -134,113 +134,65 @@ function LockedStep({ step, title }: { step: number; title: string }) {
   );
 }
 
-function SectionNumber({ num }: { num: number }) {
-  return (
-    <span className="text-sm font-semibold text-foreground/40 tabular-nums w-5 flex-shrink-0">{num}</span>
-  );
-}
-
-function PillSelector({
-  options,
-  selected,
-  onToggle,
-  max,
-}: {
-  options: string[];
-  selected: string[];
-  onToggle: (val: string) => void;
-  max?: number;
-}) {
-  return (
-    <div className="flex items-center gap-2 flex-wrap">
-      {options.map((opt) => {
-        const isSelected = selected.includes(opt);
-        return (
-          <button
-            key={opt}
-            onClick={() => onToggle(opt)}
-            className={`px-4 py-1.5 rounded-lg text-sm transition-all duration-200 border ${
-              isSelected
-                ? "bg-foreground/5 dark:bg-foreground/10 border-foreground/20 text-foreground font-medium"
-                : "bg-transparent border-transparent text-muted-foreground hover:text-foreground/80"
-            }`}
-            data-testid={`pill-${opt.toLowerCase().replace(/\s+/g, "-")}`}
-          >
-            {opt}
-          </button>
-        );
-      })}
-      {max && (
-        <span className="text-xs text-muted-foreground/50 ml-1">(max. {max} auswählbar)</span>
-      )}
-    </div>
-  );
-}
-
-function CheckboxGrid({
-  options,
-  selected,
-  onToggle,
-}: {
-  options: string[];
-  selected: string[];
-  onToggle: (val: string) => void;
-}) {
-  return (
-    <div className="grid grid-cols-3 gap-x-4 gap-y-2.5">
-      {options.map((label, idx) => {
-        const isChecked = selected.includes(label);
-        return (
-          <button
-            key={`${label}-${idx}`}
-            onClick={() => onToggle(label)}
-            className="flex items-center gap-2 text-sm text-foreground/80 hover:text-foreground transition-colors group text-left"
-            data-testid={`checkbox-${label.toLowerCase().replace(/[\s\/&]+/g, "-")}-${idx}`}
-          >
-            <span className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0 transition-colors ${
-              isChecked
-                ? "text-primary"
-                : "text-transparent group-hover:text-muted-foreground/20"
-            }`}>
-              <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
-            </span>
-            <span className={isChecked ? "text-foreground/90" : "text-muted-foreground"}>{label}</span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-function SegmentedControl({
+function PillGroup({
   options,
   selected,
   onSelect,
+  multi = false,
+  max,
+  wrap = false,
 }: {
   options: string[];
-  selected: string;
+  selected: string[];
   onSelect: (val: string) => void;
+  multi?: boolean;
+  max?: number;
+  wrap?: boolean;
 }) {
   return (
-    <div className="flex items-stretch gap-0 w-full">
+    <div className={`inline-flex items-center gap-2 rounded-full p-1.5 ${wrap ? "flex-wrap" : ""}`}
+      style={{ background: "rgba(0,0,0,0.03)" }}
+    >
       {options.map((opt, idx) => {
-        const isSelected = selected === opt;
+        const isSelected = selected.includes(opt);
         return (
           <button
             key={`${opt}-${idx}`}
             onClick={() => onSelect(opt)}
-            className={`flex-1 px-3 py-2 text-sm transition-all duration-200 text-center break-words min-w-0 ${
-              isSelected
-                ? "bg-primary/15 dark:bg-primary/25 text-primary font-medium rounded-lg shadow-sm"
-                : "text-muted-foreground hover:text-foreground/70"
-            }`}
-            data-testid={`segment-${opt.toLowerCase().replace(/[\s\/-]+/g, "-")}`}
+            className="rounded-full font-medium leading-none select-none whitespace-nowrap"
+            style={{
+              height: 48,
+              paddingLeft: 28,
+              paddingRight: 28,
+              fontSize: 16,
+              fontWeight: 500,
+              border: "none",
+              cursor: "pointer",
+              transition: "all 180ms cubic-bezier(0.4, 0, 0.2, 1)",
+              background: isSelected ? "#0071E3" : "transparent",
+              color: isSelected ? "#FFFFFF" : "#6E6E73",
+              transform: isSelected ? "scale(1.02)" : "scale(1)",
+              boxShadow: isSelected ? "inset 0 0 0 1px rgba(0,0,0,0.04)" : "none",
+            }}
+            onMouseEnter={(e) => {
+              if (!isSelected) {
+                (e.target as HTMLButtonElement).style.background = "rgba(0,0,0,0.04)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isSelected) {
+                (e.target as HTMLButtonElement).style.background = "transparent";
+              }
+            }}
+            data-testid={`pill-${opt.toLowerCase().replace(/[\s\/-]+/g, "-")}-${idx}`}
           >
-            {isSelected && <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary mr-1.5 align-middle" />}
             {opt}
           </button>
         );
       })}
+      {multi && max && (
+        <span className="text-xs text-[#6E6E73]/60 ml-1 pr-2 whitespace-nowrap">(max. {max})</span>
+      )}
     </div>
   );
 }
@@ -248,29 +200,32 @@ function SegmentedControl({
 export default function RollenDNA() {
   const [currentStep, setCurrentStep] = useState(1);
   const [beruf, setBeruf] = useState("");
-  const [fuehrung, setFuehrung] = useState<string[]>(["Führung"]);
+  const [fuehrung, setFuehrung] = useState("Führung");
   const [erfolgsfokus, setErfolgsfokus] = useState<string[]>([
     "Ergebnis-/Umsatzdruck",
     "Beziehungsaufbau",
-    "Prozessqualität & Struktur",
   ]);
   const [aufgabencharakter, setAufgabencharakter] = useState("Gemischt");
   const [arbeitslogik, setArbeitslogik] = useState("Daten-/prozessorientiert");
 
-  const toggleFuehrung = (val: string) => {
-    setFuehrung((prev) => {
+  const handleFuehrung = (val: string) => {
+    setFuehrung(val);
+  };
+
+  const handleErfolgsfokus = (val: string) => {
+    setErfolgsfokus((prev) => {
       if (prev.includes(val)) return prev.filter((v) => v !== val);
       if (prev.length >= 2) return [...prev.slice(1), val];
       return [...prev, val];
     });
   };
 
-  const toggleErfolgsfokus = (val: string) => {
-    setErfolgsfokus((prev) => {
-      if (prev.includes(val)) return prev.filter((v) => v !== val);
-      if (prev.length >= 2) return [...prev.slice(1), val];
-      return [...prev, val];
-    });
+  const handleAufgabencharakter = (val: string) => {
+    setAufgabencharakter(val);
+  };
+
+  const handleArbeitslogik = (val: string) => {
+    setArbeitslogik(val);
   };
 
   const step1Valid = beruf.trim().length > 0;
@@ -359,80 +314,85 @@ export default function RollenDNA() {
 
             {currentStep === 2 ? (
               <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-2">
-                <div className="p-6 space-y-6">
-                  <div>
-                    <div className="flex items-center gap-3 mb-1">
-                      <span className="text-xs font-medium text-primary uppercase tracking-wider">Schritt 2</span>
-                    </div>
-                    <h2 className="text-lg font-semibold text-foreground/90" data-testid="text-step-2-title">
-                      Rahmenbedingungen der Rolle
-                    </h2>
+                <div className="p-8">
+                  <div className="flex items-center gap-3 mb-1">
+                    <span className="text-xs font-medium text-primary uppercase tracking-wider">Schritt 2</span>
                   </div>
+                  <h2 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90 mb-2" data-testid="text-step-2-title">
+                    Rahmenbedingungen der Rolle
+                  </h2>
 
-                  <div className="space-y-5">
-                    <div className="flex items-start gap-3" data-testid="section-fuehrung">
-                      <SectionNumber num={1} />
-                      <div className="flex-1 space-y-3">
-                        <h3 className="text-sm font-semibold text-foreground/90">Führungsverantwortung</h3>
-                        <PillSelector
+                  <div className="space-y-20 mt-10">
+
+                    <div data-testid="section-fuehrung">
+                      <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
+                        Führungsverantwortung
+                      </h3>
+                      <div className="mt-6">
+                        <PillGroup
                           options={["Keine", "Koordination", "Führung"]}
-                          selected={fuehrung}
-                          onToggle={toggleFuehrung}
+                          selected={[fuehrung]}
+                          onSelect={handleFuehrung}
+                        />
+                      </div>
+                    </div>
+
+                    <div data-testid="section-erfolgsfokus">
+                      <div className="flex items-baseline gap-3">
+                        <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
+                          Erfolgsfokus
+                        </h3>
+                        <span style={{ fontSize: 15, color: "#6E6E73" }}>(max. 2 auswählbar)</span>
+                      </div>
+                      <div className="mt-6 flex flex-col gap-2">
+                        <PillGroup
+                          options={ERFOLGSFOKUS_LABELS.slice(0, 3)}
+                          selected={erfolgsfokus}
+                          onSelect={handleErfolgsfokus}
+                          multi
                           max={2}
                         />
-                      </div>
-                    </div>
-
-                    <div className="border-t border-border/20" />
-
-                    <div className="flex items-start gap-3" data-testid="section-erfolgsfokus">
-                      <SectionNumber num={2} />
-                      <div className="flex-1 space-y-3">
-                        <div className="flex items-baseline gap-2">
-                          <h3 className="text-sm font-semibold text-foreground/90">Erfolgsfokus</h3>
-                          <span className="text-xs text-muted-foreground/50">(max. 2 auswählbar)</span>
-                        </div>
-                        <CheckboxGrid
-                          options={ERFOLGSFOKUS_LABELS}
+                        <PillGroup
+                          options={ERFOLGSFOKUS_LABELS.slice(3, 6)}
                           selected={erfolgsfokus}
-                          onToggle={toggleErfolgsfokus}
+                          onSelect={handleErfolgsfokus}
+                          multi
                         />
                       </div>
                     </div>
 
-                    <div className="border-t border-border/20" />
-
-                    <div className="flex items-start gap-3" data-testid="section-aufgabencharakter">
-                      <SectionNumber num={3} />
-                      <div className="flex-1 space-y-3">
-                        <h3 className="text-sm font-semibold text-foreground/90">Aufgabencharakter</h3>
-                        <p className="text-xs text-muted-foreground/60">
-                          Das Profil die konkrete Stelle besser trifft, beantworten Sie 4 kurze Fragen.
-                        </p>
-                        <SegmentedControl
+                    <div data-testid="section-aufgabencharakter">
+                      <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
+                        Aufgabencharakter
+                      </h3>
+                      <p style={{ fontSize: 15, color: "#6E6E73" }} className="mt-2">
+                        Das Profil die konkrete Stelle besser trifft, beantworten Sie 4 kurze Fragen.
+                      </p>
+                      <div className="mt-6">
+                        <PillGroup
                           options={["Überwiegend operativ", "Gemischt", "Überwiegend strategisch"]}
-                          selected={aufgabencharakter}
-                          onSelect={setAufgabencharakter}
+                          selected={[aufgabencharakter]}
+                          onSelect={handleAufgabencharakter}
                         />
                       </div>
                     </div>
 
-                    <div className="border-t border-border/20" />
-
-                    <div className="flex items-start gap-3" data-testid="section-arbeitslogik">
-                      <SectionNumber num={4} />
-                      <div className="flex-1 space-y-3">
-                        <h3 className="text-sm font-semibold text-foreground/90">Arbeitslogik</h3>
-                        <SegmentedControl
+                    <div data-testid="section-arbeitslogik">
+                      <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
+                        Arbeitslogik
+                      </h3>
+                      <div className="mt-6">
+                        <PillGroup
                           options={["Menschenorientiert", "Daten-/prozessorientiert", "Umsetzungsorientiert"]}
-                          selected={arbeitslogik}
-                          onSelect={setArbeitslogik}
+                          selected={[arbeitslogik]}
+                          onSelect={handleArbeitslogik}
                         />
                       </div>
                     </div>
+
                   </div>
 
-                  <div className="flex justify-end pt-2">
+                  <div className="flex justify-end pt-10">
                     <Button
                       disabled={!step2Valid}
                       onClick={() => goToStep(3)}
@@ -449,7 +409,7 @@ export default function RollenDNA() {
               <CollapsedStep
                 step={2}
                 title="Rahmenbedingungen der Rolle"
-                summary={`${fuehrung.join(", ")} · ${erfolgsfokus.length} Erfolgsfaktoren · ${aufgabencharakter} · ${arbeitslogik}`}
+                summary={`${fuehrung} · ${erfolgsfokus.join(", ")} · ${aufgabencharakter} · ${arbeitslogik}`}
                 onEdit={() => goToStep(2)}
               />
             ) : (
@@ -458,16 +418,16 @@ export default function RollenDNA() {
 
             {currentStep === 3 ? (
               <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-3">
-                <div className="p-6">
+                <div className="p-8">
                   <div className="flex items-center gap-3 mb-1">
                     <span className="text-xs font-medium text-primary uppercase tracking-wider">Schritt 3</span>
                   </div>
-                  <h2 className="text-lg font-semibold text-foreground/90 mb-6" data-testid="text-step-3-title">
+                  <h2 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90 mb-8" data-testid="text-step-3-title">
                     Tätigkeiten & Kompetenzen
                   </h2>
 
                   <div className="flex flex-col items-center gap-4 py-8">
-                    <p className="text-sm text-muted-foreground/50" data-testid="text-no-taetigkeiten">
+                    <p style={{ fontSize: 15, color: "#6E6E73" }} data-testid="text-no-taetigkeiten">
                       Noch keine Tätigkeiten hinzugefügt.
                     </p>
                     <Button
