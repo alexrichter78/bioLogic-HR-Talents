@@ -1189,7 +1189,10 @@ export default function RollenDNA() {
                       boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
                     }}
                     data-testid="button-step-3-fertig"
-                    onClick={() => setAllCollapsed(true)}
+                    onClick={() => {
+                      setAllCollapsed(true);
+                      localStorage.setItem("rollenDnaCompleted", "true");
+                    }}
                   >
                     Datenerfassung abgeschlossen
                     <ChevronRight className="w-5 h-5" />
@@ -1220,7 +1223,10 @@ export default function RollenDNA() {
                     <h3 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>Datenerfassung abgeschlossen</h3>
                   </div>
                   <button
-                    onClick={() => setAllCollapsed(false)}
+                    onClick={() => {
+                      setAllCollapsed(false);
+                      localStorage.removeItem("rollenDnaCompleted");
+                    }}
                     style={{
                       fontSize: 14,
                       fontWeight: 500,

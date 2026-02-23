@@ -194,13 +194,26 @@ const features = [
 
 function FeatureCards() {
   const [, setLocation] = useLocation();
+  const [dnaCompleted, setDnaCompleted] = useState(false);
+  useEffect(() => {
+    setDnaCompleted(localStorage.getItem("rollenDnaCompleted") === "true");
+    const handleStorage = () => setDnaCompleted(localStorage.getItem("rollenDnaCompleted") === "true");
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  const resolvedFeatures = features.map((f, i) => ({
+    ...f,
+    active: i === 0 ? true : dnaCompleted,
+  }));
+
   return (
     <FadeIn delay={500}>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto w-full" data-testid="feature-cards">
-        {features.map((feature, index) => (
+        {resolvedFeatures.map((feature, index) => (
           <div
             key={feature.title}
-            onClick={feature.active ? () => setLocation("/rollen-dna") : undefined}
+            onClick={feature.active ? () => setLocation(index === 0 ? "/rollen-dna" : "/rollen-dna") : undefined}
             style={{
               background: feature.active ? "rgba(255,255,255,0.65)" : "rgba(255,255,255,0.3)",
               backdropFilter: feature.active ? "blur(16px)" : "none",
