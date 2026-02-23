@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dna, Target, GitCompareArrows, Users, Sparkles, ShieldCheck, PlusCircle, FolderOpen, ArrowRight } from "lucide-react";
+import { Dna, Target, GitCompareArrows, Users, Sparkles, ShieldCheck, PlusCircle, FolderOpen, ArrowRight, DoorOpen } from "lucide-react";
 import { useLocation } from "wouter";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
@@ -450,6 +450,7 @@ function FeatureCards() {
 }
 
 export default function Home() {
+  const [, setLocation] = useLocation();
   return (
     <div className="min-h-screen relative overflow-hidden">
       <div
@@ -480,6 +481,32 @@ export default function Home() {
           <FeatureCards />
         </div>
       </div>
+
+      <button
+        onClick={() => setLocation("/analyse")}
+        style={{
+          position: "fixed",
+          bottom: 16,
+          left: 16,
+          width: 32,
+          height: 32,
+          borderRadius: 8,
+          border: "none",
+          background: "transparent",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          opacity: 0.15,
+          transition: "opacity 200ms ease",
+          zIndex: 50,
+        }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.4"; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.15"; }}
+        data-testid="button-hidden-analyse"
+      >
+        <DoorOpen style={{ width: 16, height: 16, color: "#8E8E93" }} />
+      </button>
     </div>
   );
 }
