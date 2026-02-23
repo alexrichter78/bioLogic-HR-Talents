@@ -43,7 +43,7 @@ const SECTION_SUBTITLES: Record<string, string> = {
   arbeitslogik: "Was treibt die tägliche Arbeit an?",
 };
 
-function Header() {
+function Header({ onSave, onLoad }: { onSave: () => void; onLoad: () => void }) {
   const [, setLocation] = useLocation();
   return (
     <header className="flex items-center justify-between gap-4 px-6 py-4" data-testid="header-rollen-dna">
@@ -59,11 +59,11 @@ function Header() {
         <span className="text-sm text-muted-foreground/70 font-light tracking-wide hidden sm:inline">RoleDynamics</span>
       </div>
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5" data-testid="button-laden">
+        <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5" data-testid="button-laden" onClick={onLoad}>
           <FolderOpen className="w-3.5 h-3.5" />
           Laden
         </Button>
-        <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5" data-testid="button-speichern">
+        <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5" data-testid="button-speichern" onClick={onSave}>
           <Save className="w-3.5 h-3.5" />
           Speichern
         </Button>
@@ -447,6 +447,61 @@ export default function RollenDNA() {
   const [taetigkeiten, setTaetigkeiten] = useState<Taetigkeit[]>(saved.current?.taetigkeiten ?? []);
   const [nextId, setNextId] = useState(saved.current?.nextId ?? 1);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleSave = () => {
+    const exportData = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      beruf,
+      fuehrung,
+      erfolgsfokus: erfolgsfokusIndices.map(i => ERFOLGSFOKUS_LABELS[i].replace(/\n/g, " ")),
+      erfolgsfokusIndices,
+      aufgabencharakter,
+      arbeitslogik,
+      taetigkeiten,
+      nextId,
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    const safeName = beruf ? beruf.replace(/[^a-zA-Z0-9äöüÄÖÜß\-_ ]/g, "").trim().replace(/\s+/g, "_") : "Rollenprofil";
+    a.download = `${safeName}_RollenDNA.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleLoad = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target?.result as string);
+        if (data.beruf !== undefined) setBeruf(data.beruf);
+        if (data.fuehrung !== undefined) setFuehrung(data.fuehrung);
+        if (data.erfolgsfokusIndices !== undefined) setErfolgsfokusIndices(data.erfolgsfokusIndices);
+        if (data.aufgabencharakter !== undefined) setAufgabencharakter(data.aufgabencharakter);
+        if (data.arbeitslogik !== undefined) setArbeitslogik(data.arbeitslogik);
+        if (data.taetigkeiten !== undefined) setTaetigkeiten(data.taetigkeiten);
+        if (data.nextId !== undefined) setNextId(data.nextId);
+        setCurrentStep(1);
+        setAllCollapsed(false);
+      } catch {
+        alert("Die Datei konnte nicht gelesen werden.");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
   useEffect(() => {
     const state = {
       currentStep, allCollapsed, beruf, fuehrung, erfolgsfokusIndices,
@@ -636,7 +691,15 @@ export default function RollenDNA() {
       `}</style>
 
       <div className="relative z-10 flex flex-col min-h-screen">
-        <Header />
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json"
+          style={{ display: "none" }}
+          onChange={handleFileChange}
+          data-testid="input-file-load"
+        />
+        <Header onSave={handleSave} onLoad={handleLoad} />
 
         <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20">
           <div className="text-center mt-8 mb-10">
