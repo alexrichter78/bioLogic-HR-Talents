@@ -506,6 +506,66 @@ export default function RollenDNA() {
   const allSectionsFilled = sectionsFilled === 4;
 
   return (
+    <>
+    {showFuehrungInfo && (
+      <>
+        <div
+          style={{ position: "fixed", inset: 0, zIndex: 9998, background: "rgba(0,0,0,0.15)" }}
+          onClick={() => setShowFuehrungInfo(false)}
+        />
+        <div
+          style={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 440,
+            maxHeight: "80vh",
+            overflowY: "auto",
+            background: "#FFFFFF",
+            borderRadius: 20,
+            padding: "28px",
+            boxShadow: "0 24px 60px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.06)",
+            zIndex: 9999,
+          }}
+          data-testid="popup-fuehrung-info"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h4 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>Definition Führungsverantwortung</h4>
+            <button
+              onClick={() => setShowFuehrungInfo(false)}
+              style={{ background: "none", border: "none", cursor: "pointer", color: "#8E8E93", padding: 2 }}
+              data-testid="button-close-fuehrung-info"
+            >
+              <X style={{ width: 16, height: 16 }} />
+            </button>
+          </div>
+          <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6, marginBottom: 16 }}>
+            Bitte ordnen Sie die Rolle nach der tatsächlichen Weisungs- und Personalverantwortung ein – nicht nach dem Jobtitel. Entscheidend ist, welche formale Entscheidungsmacht und Ergebnisverantwortung mit der Rolle verbunden sind.
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {[
+              { label: "Keine", desc: "Keine Weisungs- oder Steuerungsverantwortung." },
+              { label: "Koordination", desc: "Steuert Zusammenarbeit, aber ohne formale Weisungs- oder Personalverantwortung." },
+              { label: "Fachliche Führung", desc: "Führt fachlich (Qualität, Standards, Prioritäten), aber ohne Personalentscheidungen." },
+              { label: "Disziplinarische Führung", desc: "Personalverantwortung inkl. Ziele, Entwicklung, Entscheidungen und Ergebnis-KPIs." },
+            ].map(item => (
+              <div key={item.label}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F" }}>{item.label}: </span>
+                <span style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.5 }}>{item.desc}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+            <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", lineHeight: 1.6 }}>
+              Im Zweifel orientieren Sie sich bitte an folgender Leitfrage:<br />
+              Hat die Rolle formale Zielvereinbarungs- und Beurteilungsverantwortung für Mitarbeitende?<br />
+              Wenn ja, liegt in der Regel disziplinarische Führung vor.
+            </p>
+          </div>
+        </div>
+      </>
+    )}
     <div className="min-h-screen relative overflow-hidden">
       <div
         className="absolute inset-0 pointer-events-none"
@@ -662,65 +722,6 @@ export default function RollenDNA() {
                             >
                               <Info style={{ width: 13, height: 13 }} />
                             </button>
-                            {showFuehrungInfo && (
-                              <>
-                                <div
-                                  style={{ position: "fixed", inset: 0, zIndex: 9998, background: "rgba(0,0,0,0.15)" }}
-                                  onClick={() => setShowFuehrungInfo(false)}
-                                />
-                                <div
-                                  style={{
-                                    position: "fixed",
-                                    top: "50%",
-                                    left: "50%",
-                                    transform: "translate(-50%, -50%)",
-                                    width: 440,
-                                    maxHeight: "80vh",
-                                    overflowY: "auto",
-                                    background: "#FFFFFF",
-                                    borderRadius: 20,
-                                    padding: "28px",
-                                    boxShadow: "0 24px 60px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.06)",
-                                    zIndex: 9999,
-                                  }}
-                                  data-testid="popup-fuehrung-info"
-                                >
-                                  <div className="flex items-center justify-between mb-4">
-                                    <h4 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>Definition Führungsverantwortung</h4>
-                                    <button
-                                      onClick={() => setShowFuehrungInfo(false)}
-                                      style={{ background: "none", border: "none", cursor: "pointer", color: "#8E8E93", padding: 2 }}
-                                      data-testid="button-close-fuehrung-info"
-                                    >
-                                      <X style={{ width: 16, height: 16 }} />
-                                    </button>
-                                  </div>
-                                  <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6, marginBottom: 16 }}>
-                                    Bitte ordnen Sie die Rolle nach der tatsächlichen Weisungs- und Personalverantwortung ein – nicht nach dem Jobtitel. Entscheidend ist, welche formale Entscheidungsmacht und Ergebnisverantwortung mit der Rolle verbunden sind.
-                                  </p>
-                                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                                    {[
-                                      { label: "Keine", desc: "Keine Weisungs- oder Steuerungsverantwortung." },
-                                      { label: "Koordination", desc: "Steuert Zusammenarbeit, aber ohne formale Weisungs- oder Personalverantwortung." },
-                                      { label: "Fachliche Führung", desc: "Führt fachlich (Qualität, Standards, Prioritäten), aber ohne Personalentscheidungen." },
-                                      { label: "Disziplinarische Führung", desc: "Personalverantwortung inkl. Ziele, Entwicklung, Entscheidungen und Ergebnis-KPIs." },
-                                    ].map(item => (
-                                      <div key={item.label}>
-                                        <span style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F" }}>{item.label}: </span>
-                                        <span style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.5 }}>{item.desc}</span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                  <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
-                                    <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", lineHeight: 1.6 }}>
-                                      Im Zweifel orientieren Sie sich bitte an folgender Leitfrage:<br />
-                                      Hat die Rolle formale Zielvereinbarungs- und Beurteilungsverantwortung für Mitarbeitende?<br />
-                                      Wenn ja, liegt in der Regel disziplinarische Führung vor.
-                                    </p>
-                                  </div>
-                                </div>
-                              </>
-                            )}
                           </div>
                         </div>
                         <p style={{ fontSize: 14, color: "#8E8E93", marginTop: 6, paddingLeft: 32 }}>
@@ -1165,5 +1166,6 @@ export default function RollenDNA() {
         </main>
       </div>
     </div>
+    </>
   );
 }
