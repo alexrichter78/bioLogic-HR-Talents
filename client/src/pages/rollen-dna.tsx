@@ -411,7 +411,7 @@ function SummaryBar({ fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik }:
 export default function RollenDNA() {
   const [currentStep, setCurrentStep] = useState(1);
   const [beruf, setBeruf] = useState("");
-  const [fuehrung, setFuehrung] = useState("Führung");
+  const [fuehrung, setFuehrung] = useState("Fachliche Führung");
   const [erfolgsfokusIndices, setErfolgsfokusIndices] = useState<number[]>([0, 1]);
   const [aufgabencharakter, setAufgabencharakter] = useState("Gemischt");
   const [arbeitslogik, setArbeitslogik] = useState("Daten-/prozessorientiert");
@@ -465,6 +465,9 @@ export default function RollenDNA() {
 
   const handleFuehrung = (val: string) => {
     setFuehrung(val);
+    if (val === "Keine" && activeTab === "fuehrung") {
+      setActiveTab("haupt");
+    }
   };
 
   const handleErfolgsfokus = (globalIdx: number) => {
@@ -641,7 +644,7 @@ export default function RollenDNA() {
                         </p>
                         <div style={{ marginTop: 28 }}>
                           <PillGroup
-                            options={["Keine", "Koordination", "Führung"]}
+                            options={["Keine", "Projekt-/Teamkoordination", "Fachliche Führung", "Disziplinarische Führung mit Ergebnisverantwortung"]}
                             selected={[fuehrung]}
                             onSelect={handleFuehrung}
                           />
@@ -798,9 +801,11 @@ export default function RollenDNA() {
                     </p>
                   </div>
                   <div style={{ textAlign: "right", fontSize: 12, color: "#8E8E93", lineHeight: 1.8 }}>
-                    <div>Haupttätigkeiten <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{hauptCount} / 15</span></div>
-                    <div>Nebentätigkeiten <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{nebenCount} / 15</span></div>
-                    <div>Führungskompetenzen <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{fuehrungCount} / 10</span></div>
+                    <div>Tätigkeiten <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{hauptCount} / 15</span></div>
+                    <div>Humankompetenzen <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{nebenCount} / 15</span></div>
+                    {fuehrung !== "Keine" && (
+                      <div>Führungskompetenzen <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{fuehrungCount} / 10</span></div>
+                    )}
                   </div>
                 </div>
 
@@ -818,9 +823,9 @@ export default function RollenDNA() {
                 >
                   <div className="flex items-center gap-2 mb-8" data-testid="tabs-taetigkeiten">
                     {([
-                      { key: "haupt" as TaetigkeitKategorie, label: "Haupttätigkeiten" },
-                      { key: "neben" as TaetigkeitKategorie, label: "Nebentätigkeiten" },
-                      { key: "fuehrung" as TaetigkeitKategorie, label: "Führungskompetenzen" },
+                      { key: "haupt" as TaetigkeitKategorie, label: "Tätigkeiten" },
+                      { key: "neben" as TaetigkeitKategorie, label: "Humankompetenzen" },
+                      ...(fuehrung !== "Keine" ? [{ key: "fuehrung" as TaetigkeitKategorie, label: "Führungskompetenzen" }] : []),
                     ]).map(tab => (
                       <button
                         key={tab.key}
@@ -850,7 +855,7 @@ export default function RollenDNA() {
                     {filteredTaetigkeiten.length === 0 ? (
                       <div className="text-center py-12">
                         <p style={{ fontSize: 15, color: "#8E8E93" }}>
-                          Noch keine {activeTab === "haupt" ? "Haupttätigkeiten" : activeTab === "neben" ? "Nebentätigkeiten" : "Führungskompetenzen"} hinzugefügt.
+                          Noch keine {activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"} hinzugefügt.
                         </p>
                       </div>
                     ) : (
@@ -1043,7 +1048,7 @@ export default function RollenDNA() {
                   </div>
 
                   <p style={{ fontSize: 12, color: "#AEAEB2", textAlign: "center", marginTop: 16 }}>
-                    Maximal 15 {activeTab === "haupt" ? "Haupttätigkeiten" : activeTab === "neben" ? "Nebentätigkeiten" : "Führungskompetenzen"} definiert
+                    Maximal 15 {activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"} definiert
                   </p>
                 </div>
 
