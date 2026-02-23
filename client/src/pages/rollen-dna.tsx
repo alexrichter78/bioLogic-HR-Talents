@@ -494,6 +494,18 @@ export default function RollenDNA() {
         if (data.nextId !== undefined) setNextId(data.nextId);
         setCurrentStep(3);
         setAllCollapsed(true);
+        const loadedBeruf = data.beruf ?? beruf;
+        const loadedFuehrung = data.fuehrung ?? fuehrung;
+        const loadedErfolgsfokus = data.erfolgsfokusIndices ?? erfolgsfokusIndices;
+        const loadedAufgaben = data.aufgabencharakter ?? aufgabencharakter;
+        const loadedArbeits = data.arbeitslogik ?? arbeitslogik;
+        const loadedTaetigkeiten = data.taetigkeiten ?? taetigkeiten;
+        const isComplete = !!(loadedBeruf && loadedFuehrung && loadedErfolgsfokus.length > 0 && loadedAufgaben && loadedArbeits && loadedTaetigkeiten.length > 0);
+        if (isComplete) {
+          localStorage.setItem("rollenDnaCompleted", "true");
+        } else {
+          localStorage.removeItem("rollenDnaCompleted");
+        }
       } catch {
         alert("Die Datei konnte nicht gelesen werden.");
       }

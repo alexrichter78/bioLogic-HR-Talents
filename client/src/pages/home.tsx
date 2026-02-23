@@ -79,7 +79,12 @@ function ProfileCard() {
           nextId: data.nextId ?? 1,
         };
         localStorage.setItem("rollenDnaState", JSON.stringify(state));
-        localStorage.removeItem("rollenDnaCompleted");
+        const isComplete = !!(state.beruf && state.fuehrung && state.erfolgsfokusIndices.length > 0 && state.aufgabencharakter && state.arbeitslogik && state.taetigkeiten.length > 0);
+        if (isComplete) {
+          localStorage.setItem("rollenDnaCompleted", "true");
+        } else {
+          localStorage.removeItem("rollenDnaCompleted");
+        }
         setLocation("/rollen-dna");
       } catch {
         alert("Die Datei konnte nicht gelesen werden.");
