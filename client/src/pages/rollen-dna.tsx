@@ -198,14 +198,72 @@ function PillGroup({
   );
 }
 
+function PillGroupIndexed({
+  options,
+  selectedIndices,
+  onSelectIndex,
+  indexOffset = 0,
+}: {
+  options: string[];
+  selectedIndices: number[];
+  onSelectIndex: (globalIdx: number) => void;
+  indexOffset?: number;
+}) {
+  return (
+    <div className="flex items-stretch gap-2 rounded-3xl p-1.5"
+      style={{ background: "rgba(0,0,0,0.03)" }}
+    >
+      {options.map((opt, idx) => {
+        const globalIdx = indexOffset + idx;
+        const isSelected = selectedIndices.includes(globalIdx);
+        return (
+          <button
+            key={`${opt}-${globalIdx}`}
+            onClick={() => onSelectIndex(globalIdx)}
+            className="flex-1 rounded-full font-medium select-none text-center min-w-0"
+            style={{
+              minHeight: 48,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 10,
+              paddingBottom: 10,
+              fontSize: 15,
+              lineHeight: 1.3,
+              whiteSpace: "pre-line",
+              fontWeight: 500,
+              border: "none",
+              cursor: "pointer",
+              transition: "all 180ms cubic-bezier(0.4, 0, 0.2, 1)",
+              background: isSelected ? "#0071E3" : "transparent",
+              color: isSelected ? "#FFFFFF" : "#6E6E73",
+              transform: isSelected ? "scale(1.02)" : "scale(1)",
+              boxShadow: isSelected ? "inset 0 0 0 1px rgba(0,0,0,0.04)" : "none",
+            }}
+            onMouseEnter={(e) => {
+              if (!isSelected) {
+                (e.target as HTMLButtonElement).style.background = "rgba(0,0,0,0.04)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isSelected) {
+                (e.target as HTMLButtonElement).style.background = "transparent";
+              }
+            }}
+            data-testid={`pill-erfolgsfokus-${globalIdx}`}
+          >
+            {opt}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function RollenDNA() {
   const [currentStep, setCurrentStep] = useState(1);
   const [beruf, setBeruf] = useState("");
   const [fuehrung, setFuehrung] = useState("Führung");
-  const [erfolgsfokus, setErfolgsfokus] = useState<string[]>([
-    "Ergebnis-/Umsatzdruck",
-    "Beziehungsaufbau",
-  ]);
+  const [erfolgsfokusIndices, setErfolgsfokusIndices] = useState<number[]>([0, 1]);
   const [aufgabencharakter, setAufgabencharakter] = useState("Gemischt");
   const [arbeitslogik, setArbeitslogik] = useState("Daten-/prozessorientiert");
 
@@ -213,11 +271,11 @@ export default function RollenDNA() {
     setFuehrung(val);
   };
 
-  const handleErfolgsfokus = (val: string) => {
-    setErfolgsfokus((prev) => {
-      if (prev.includes(val)) return prev.filter((v) => v !== val);
-      if (prev.length >= 2) return [...prev.slice(1), val];
-      return [...prev, val];
+  const handleErfolgsfokus = (globalIdx: number) => {
+    setErfolgsfokusIndices((prev) => {
+      if (prev.includes(globalIdx)) return prev.filter((i) => i !== globalIdx);
+      if (prev.length >= 2) return [...prev.slice(1), globalIdx];
+      return [...prev, globalIdx];
     });
   };
 
@@ -343,18 +401,17 @@ export default function RollenDNA() {
                         Erfolgsfokus
                       </h3>
                       <div className="mt-6 flex flex-col gap-2">
-                        <PillGroup
+                        <PillGroupIndexed
                           options={ERFOLGSFOKUS_LABELS.slice(0, 3)}
-                          selected={erfolgsfokus}
-                          onSelect={handleErfolgsfokus}
-                          multi
-                          max={2}
+                          selectedIndices={erfolgsfokusIndices}
+                          onSelectIndex={handleErfolgsfokus}
+                          indexOffset={0}
                         />
-                        <PillGroup
+                        <PillGroupIndexed
                           options={ERFOLGSFOKUS_LABELS.slice(3, 6)}
-                          selected={erfolgsfokus}
-                          onSelect={handleErfolgsfokus}
-                          multi
+                          selectedIndices={erfolgsfokusIndices}
+                          onSelectIndex={handleErfolgsfokus}
+                          indexOffset={3}
                         />
                       </div>
                     </div>
@@ -407,7 +464,7 @@ export default function RollenDNA() {
               <CollapsedStep
                 step={2}
                 title="Rahmenbedingungen der Rolle"
-                summary={`${fuehrung} · ${erfolgsfokus.join(", ")} · ${aufgabencharakter} · ${arbeitslogik}`}
+                summary={`${fuehrung} · ${erfolgsfokusIndices.map(i => ERFOLGSFOKUS_LABELS[i]).join(", ")} · ${aufgabencharakter} · ${arbeitslogik}`}
                 onEdit={() => goToStep(2)}
               />
             ) : (
