@@ -30,7 +30,7 @@ const NIVEAU_OPTIONS: Niveau[] = ["Niedrig", "Mittel", "Hoch"];
 const ERFOLGSFOKUS_LABELS = [
   "Ergebnis-/\nUmsatzwirkung",
   "Beziehungs- und\nNetzwerkstabilität",
-  "Innovations- und\nVeränderungsleistung",
+  "Innovations- &\nTransformationsleistung",
   "Prozess- und\nEffizienzqualität",
   "Fachliche Exzellenz /\nExpertise",
   "Strategische Wirkung /\nPositionierung",
