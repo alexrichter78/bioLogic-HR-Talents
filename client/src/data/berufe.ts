@@ -4849,26 +4849,34 @@ function getKategorie(name: string): string {
   return "Allgemein > Sonstige";
 }
 
-function generateBerufe(): { name: string; kategorie: string }[] {
-  const set = new Set<string>();
+export type BerufLand = "DE" | "CH" | "AT";
+
+function detectLand(name: string): BerufLand {
+  if (name.includes("(CH)") || name.includes(" EFZ") || name.endsWith(" EFZ") || name.includes(" EBA") || name.endsWith(" EBA") || name.includes("eidg.")) return "CH";
+  if (name.includes("(AT)")) return "AT";
+  return "DE";
+}
+
+function generateBerufe(): { name: string; kategorie: string; land: BerufLand }[] {
+  const map = new Map<string, BerufLand>();
 
   for (const b of BASIS_BERUFE) {
-    set.add(b);
+    map.set(b, detectLand(b));
   }
 
   for (const m of MEISTER_FORMEN) {
-    set.add(m);
+    map.set(m, "DE");
   }
 
   for (const [de, ch, at] of DE_CH_AT_MAPPING) {
-    set.add(de);
-    if (ch) set.add(ch);
-    if (at) set.add(at);
+    map.set(de, "DE");
+    if (ch) map.set(ch, "CH");
+    if (at) map.set(at, "AT");
   }
 
   for (const rolle of ROLLEN_MIT_BRANCHEN) {
     for (const branche of BRANCHEN) {
-      set.add(`${rolle} ${branche}`);
+      map.set(`${rolle} ${branche}`, "DE");
     }
   }
 
@@ -4876,44 +4884,44 @@ function generateBerufe(): { name: string; kategorie: string }[] {
 
   for (const rolle of ADDITIONAL_ROLLEN_MIT_BRANCHEN) {
     for (const branche of allBranchen) {
-      set.add(`${rolle} ${branche}`);
+      map.set(`${rolle} ${branche}`, "DE");
     }
   }
 
   for (const rolle of ROLLEN_MIT_SPEZ) {
     for (const spez of SPEZIALISIERUNGEN) {
-      set.add(`${rolle} ${spez}`);
+      map.set(`${rolle} ${spez}`, "DE");
     }
   }
 
   for (const rolle of ROLLEN_MIT_SPEZ) {
     for (const branche of BRANCHEN.slice(0, 40)) {
       for (const spez of ["B2B", "B2C", "International", "Digital", "Senior"]) {
-        set.add(`${rolle} ${spez} ${branche}`);
+        map.set(`${rolle} ${spez} ${branche}`, "DE");
       }
     }
   }
 
   for (const rolle of [...ROLLEN_MIT_BRANCHEN, ...ADDITIONAL_ROLLEN_MIT_BRANCHEN]) {
     for (const branche of ADDITIONAL_BRANCHEN) {
-      set.add(`${rolle} ${branche}`);
+      map.set(`${rolle} ${branche}`, "DE");
     }
   }
 
   for (const rolle of CH_ROLLEN_MIT_BRANCHEN) {
     for (const branche of allBranchen) {
-      set.add(`${rolle} ${branche}`);
+      map.set(`${rolle} ${branche}`, "CH");
     }
   }
 
   for (const rolle of AT_ROLLEN_MIT_BRANCHEN) {
     for (const branche of allBranchen) {
-      set.add(`${rolle} ${branche}`);
+      map.set(`${rolle} ${branche}`, "AT");
     }
   }
 
-  const result = Array.from(set).sort((a, b) => a.localeCompare(b, "de"));
-  return result.map(name => ({ name, kategorie: getKategorie(name) }));
+  const entries = Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0], "de"));
+  return entries.map(([name, land]) => ({ name, kategorie: getKategorie(name), land }));
 }
 
-export const BERUFE: { name: string; kategorie: string }[] = generateBerufe();
+export const BERUFE: { name: string; kategorie: string; land: BerufLand }[] = generateBerufe();

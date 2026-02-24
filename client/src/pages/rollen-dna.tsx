@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight, Info } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
-import { BERUFE } from "@/data/berufe";
+import { BERUFE, type BerufLand } from "@/data/berufe";
 
 type KompetenzTyp = "Impulsiv" | "Intuitiv" | "Analytisch";
 type Niveau = "Niedrig" | "Mittel" | "Hoch";
@@ -454,13 +454,27 @@ export default function RollenDNA() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [selectedLaender, setSelectedLaender] = useState<Set<BerufLand>>(new Set(["DE", "CH", "AT"]));
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const toggleLand = (land: BerufLand) => {
+    setSelectedLaender(prev => {
+      const next = new Set(prev);
+      if (next.has(land)) {
+        if (next.size > 1) next.delete(land);
+      } else {
+        next.add(land);
+      }
+      return next;
+    });
+    setHighlightedIndex(-1);
+  };
 
   const filteredBerufe = (() => {
     const q = beruf.trim().toLowerCase();
     if (q.length === 0) return [];
-    const matches = BERUFE.filter(b => b.name.toLowerCase().includes(q));
+    const matches = BERUFE.filter(b => b.name.toLowerCase().includes(q) && selectedLaender.has(b.land));
     matches.sort((a, b) => {
       const aLower = a.name.toLowerCase();
       const bLower = b.name.toLowerCase();
@@ -903,19 +917,45 @@ export default function RollenDNA() {
                       className="pl-10 bg-muted/30 dark:bg-muted/20 border-border/40 focus:border-primary/40 h-11 text-sm"
                       data-testid="input-beruf"
                     />
+
+                    <div className="flex items-center gap-2 mt-2" data-testid="land-filter">
+                      {([
+                        { land: "DE" as BerufLand, label: "DE" },
+                        { land: "CH" as BerufLand, label: "CH" },
+                        { land: "AT" as BerufLand, label: "AT" },
+                      ]).map(({ land, label }) => {
+                        const active = selectedLaender.has(land);
+                        return (
+                          <button
+                            key={land}
+                            type="button"
+                            data-testid={`filter-${land.toLowerCase()}`}
+                            onClick={() => toggleLand(land)}
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer transition-all duration-200 ${
+                              active
+                                ? "border-[1.5px] border-primary/40 bg-primary/8 text-primary"
+                                : "border-[1.5px] border-border/30 bg-muted/20 text-muted-foreground/40"
+                            }`}
+                          >
+                            <Check className={`w-3 h-3 transition-opacity ${active ? "opacity-100" : "opacity-0"}`} />
+                            <span>{label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
                     {showSuggestions && filteredBerufe.length > 0 && (
                       <div
                         ref={suggestionsRef}
                         data-testid="beruf-suggestions"
+                        className="bg-white dark:bg-card border border-border/30"
                         style={{
                           position: "absolute",
                           top: "calc(100% + 4px)",
                           left: 0,
                           right: 0,
                           zIndex: 9999,
-                          background: "#FFFFFF",
                           borderRadius: 12,
-                          border: "1px solid rgba(0,0,0,0.08)",
                           boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
                           overflow: "auto",
                           maxHeight: 400,
@@ -946,12 +986,9 @@ export default function RollenDNA() {
                                 gap: 10,
                               }}
                             >
-                              <div style={{ color: "rgba(0,0,0,0.25)", flexShrink: 0, display: "flex", alignItems: "center" }}>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-                                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-                                </svg>
-                              </div>
+                              <span className="flex-shrink-0 w-6 h-5 rounded text-[10px] font-semibold flex items-center justify-center bg-muted/40 text-muted-foreground/50">
+                                {b.land}
+                              </span>
                               <div style={{ flex: 1, minWidth: 0 }}>
                                 <div style={{ fontWeight: 500, lineHeight: 1.3 }}>
                                   {matchStart >= 0 ? (
