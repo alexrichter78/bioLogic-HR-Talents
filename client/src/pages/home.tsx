@@ -40,7 +40,7 @@ function HeroSection() {
             className="dark:text-foreground/90 mb-2"
             data-testid="text-title"
           >
-            RoleDNA
+            Rollen-DNA
           </h1>
           <p style={{ fontSize: 13, color: "#8E8E93", fontWeight: 400, letterSpacing: "0.02em" }} className="mb-5" data-testid="text-by-biologic">
             by bioLogic
