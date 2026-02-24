@@ -682,6 +682,17 @@ export default function RollenDNA() {
     return { imp, int, ana } as BioGram;
   })();
 
+  const bioGramGesamt = (() => {
+    const all = [bioGramHaupt, bioGramNeben, bioGramFuehrung, bioGramRahmen];
+    const avg = {
+      imp: all.reduce((s, g) => s + g.imp, 0) / all.length,
+      int: all.reduce((s, g) => s + g.int, 0) / all.length,
+      ana: all.reduce((s, g) => s + g.ana, 0) / all.length,
+    };
+    const [imp, int, ana] = roundPercentages(avg.imp, avg.int, avg.ana);
+    return { imp, int, ana } as BioGram;
+  })();
+
   const MAX_ITEMS: Record<TaetigkeitKategorie, number> = { haupt: 15, neben: 10, fuehrung: 10 };
   const currentTabCount = filteredTaetigkeiten.length;
   const currentTabMax = MAX_ITEMS[activeTab];
@@ -1945,6 +1956,69 @@ export default function RollenDNA() {
                         </div>
                       ))}
                     </div>
+
+                    <div
+                      style={{
+                        background: "rgba(0,0,0,0.02)",
+                        borderRadius: 14,
+                        padding: "16px 18px",
+                        border: "1px solid rgba(0,0,0,0.04)",
+                        marginTop: 16,
+                      }}
+                      data-testid="biocheck-section-gesamt"
+                    >
+                      <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>
+                        Gesamtprofil der Stellenanforderung
+                      </p>
+                      {[
+                        { label: "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
+                        { label: "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
+                        { label: "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
+                      ].map((bar) => (
+                        <div
+                          key={bar.label}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 10,
+                            marginBottom: 10,
+                          }}
+                        >
+                          <span style={{ fontSize: 12, color: "#6E6E73", width: 62, flexShrink: 0 }}>
+                            {bar.label}
+                          </span>
+                          <div style={{
+                            flex: 1,
+                            height: 28,
+                            borderRadius: 6,
+                            background: "rgba(0,0,0,0.04)",
+                            overflow: "hidden",
+                            position: "relative",
+                          }}>
+                            <div style={{
+                              width: `${Math.max(bar.value, 2)}%`,
+                              height: "100%",
+                              borderRadius: 6,
+                              background: bar.color,
+                              transition: "width 600ms ease",
+                              display: "flex",
+                              alignItems: "center",
+                              paddingLeft: 8,
+                              minWidth: 40,
+                            }}>
+                              <span style={{
+                                fontSize: 12,
+                                fontWeight: 700,
+                                color: "#FFFFFF",
+                                whiteSpace: "nowrap",
+                              }}>
+                                {bar.value % 1 === 0 ? bar.value : bar.value.toFixed(1)}%
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
               </div>
@@ -2266,6 +2340,69 @@ export default function RollenDNA() {
                               </div>
                             </div>
                           ))}
+                        </div>
+                      ))}
+                    </div>
+
+                    <div
+                      style={{
+                        background: "rgba(0,0,0,0.02)",
+                        borderRadius: 14,
+                        padding: "16px 18px",
+                        border: "1px solid rgba(0,0,0,0.04)",
+                        marginTop: 16,
+                      }}
+                      data-testid="biocheck-collapsed-gesamt"
+                    >
+                      <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>
+                        Gesamtprofil der Stellenanforderung
+                      </p>
+                      {[
+                        { label: "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
+                        { label: "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
+                        { label: "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
+                      ].map((bar) => (
+                        <div
+                          key={bar.label}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 10,
+                            marginBottom: 10,
+                          }}
+                        >
+                          <span style={{ fontSize: 12, color: "#6E6E73", width: 62, flexShrink: 0 }}>
+                            {bar.label}
+                          </span>
+                          <div style={{
+                            flex: 1,
+                            height: 28,
+                            borderRadius: 6,
+                            background: "rgba(0,0,0,0.04)",
+                            overflow: "hidden",
+                            position: "relative",
+                          }}>
+                            <div style={{
+                              width: `${Math.max(bar.value, 2)}%`,
+                              height: "100%",
+                              borderRadius: 6,
+                              background: bar.color,
+                              transition: "width 600ms ease",
+                              display: "flex",
+                              alignItems: "center",
+                              paddingLeft: 8,
+                              minWidth: 40,
+                            }}>
+                              <span style={{
+                                fontSize: 12,
+                                fontWeight: 700,
+                                color: "#FFFFFF",
+                                whiteSpace: "nowrap",
+                              }}>
+                                {bar.value % 1 === 0 ? bar.value : bar.value.toFixed(1)}%
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>
