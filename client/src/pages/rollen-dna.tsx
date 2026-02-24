@@ -1688,7 +1688,6 @@ export default function RollenDNA() {
                       ? `Maximum von ${currentTabMax} erreicht`
                       : `Maximal ${currentTabMax} ${activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"}`
                     }
-                    {currentTabHighCount > 0 && ` · Hoch: ${currentTabHighCount} / ${MAX_HIGH}`}
                   </p>
                 </div>
 
