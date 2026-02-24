@@ -975,7 +975,7 @@ export default function RollenDNA() {
         </div>
       </>
     )}
-    <div className="min-h-screen relative overflow-x-hidden">
+    <div className="min-h-screen relative">
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -1010,7 +1010,7 @@ export default function RollenDNA() {
           onChange={handleFileChange}
           data-testid="input-file-load"
         />
-        <div style={{ position: "sticky", top: 0, zIndex: 200 }}>
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 200 }}>
           <div style={{ backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", background: "rgba(255,255,255,0.82)" }} className="dark:!bg-background/90 pb-4">
             <Header onSave={handleSave} onLoad={handleLoad} />
 
@@ -1033,7 +1033,7 @@ export default function RollenDNA() {
           </div>
         </div>
 
-        <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20 pt-6">
+        <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20" style={{ paddingTop: allCollapsed ? 140 : 220 }}>
           <div className="space-y-5">
 
             {allCollapsed ? null : currentStep === 1 ? (
