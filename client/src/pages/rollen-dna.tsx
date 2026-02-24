@@ -2300,10 +2300,10 @@ export default function RollenDNA() {
                   <div style={{ marginTop: 20 }}>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                       {[
-                        { title: "Haupttätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt },
-                        { title: "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben },
-                        { title: "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramRahmen },
-                        { title: "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung },
+                        { title: "Tätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
+                        { title: "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben, icon: Heart },
+                        { title: "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramRahmen, icon: Settings },
+                        { title: "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung, icon: Shield },
                       ].map((section) => (
                         <div
                           key={section.key}
@@ -2315,9 +2315,12 @@ export default function RollenDNA() {
                           }}
                           data-testid={`biocheck-collapsed-${section.key}`}
                         >
-                          <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>
-                            {section.title}
-                          </p>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                            <section.icon style={{ width: 15, height: 15, color: "#6E6E73", strokeWidth: 1.8 }} />
+                            <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
+                              {section.title}
+                            </p>
+                          </div>
                           {[
                             { label: "Impulsiv", color: "#C41E3A", value: section.data.imp },
                             { label: "Intuitiv", color: "#F39200", value: section.data.int },
