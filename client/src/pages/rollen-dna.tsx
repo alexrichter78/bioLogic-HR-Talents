@@ -457,6 +457,7 @@ export default function RollenDNA() {
   const [generatingStep, setGeneratingStep] = useState(0);
   const [isReclassifying, setIsReclassifying] = useState(false);
   const [bioCheckOpen, setBioCheckOpen] = useState(false);
+  const [summaryOpen, setSummaryOpen] = useState(true);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [selectedLaender, setSelectedLaender] = useState<Set<BerufLand>>(new Set(["DE", "CH", "AT"]));
@@ -1884,29 +1885,54 @@ export default function RollenDNA() {
                 }}
                 className="dark:bg-card/40"
               >
-                <div className="flex items-center justify-between mb-4">
+                <button
+                  onClick={() => setSummaryOpen(!summaryOpen)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: 0,
+                    marginBottom: summaryOpen ? 16 : 0,
+                  }}
+                  data-testid="button-summary-toggle"
+                >
                   <div className="flex items-center gap-3">
                     <CheckCircle2 style={{ width: 24, height: 24, color: "#34C759" }} />
-                    <h3 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>Datenerfassung abgeschlossen</h3>
+                    <h3 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Datenerfassung abgeschlossen</h3>
                   </div>
-                  <button
-                    onClick={() => {
-                      setAllCollapsed(false);
-                      localStorage.removeItem("rollenDnaCompleted");
-                    }}
-                    style={{
-                      fontSize: 14,
-                      fontWeight: 500,
-                      color: "#0071E3",
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                    }}
-                    data-testid="button-reopen-steps"
-                  >
-                    Bearbeiten
-                  </button>
-                </div>
+                  <div className="flex items-center gap-3">
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setAllCollapsed(false);
+                        localStorage.removeItem("rollenDnaCompleted");
+                      }}
+                      style={{
+                        fontSize: 14,
+                        fontWeight: 500,
+                        color: "#0071E3",
+                        cursor: "pointer",
+                      }}
+                      data-testid="button-reopen-steps"
+                    >
+                      Bearbeiten
+                    </span>
+                    <ChevronDown style={{
+                      width: 18,
+                      height: 18,
+                      color: "#8E8E93",
+                      transform: summaryOpen ? "rotate(180deg)" : "rotate(0deg)",
+                      transition: "transform 300ms ease",
+                    }} />
+                  </div>
+                </button>
+
+                {summaryOpen && (
+                  <>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 14, color: "#6E6E73" }}>
                   <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Rolle:</span> {beruf}</div>
                   <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Führung:</span> {fuehrung}</div>
@@ -2024,6 +2050,8 @@ export default function RollenDNA() {
                     Rollenprofil ermitteln
                   </button>
                 </div>
+                  </>
+                )}
               </div>
 
               <div
