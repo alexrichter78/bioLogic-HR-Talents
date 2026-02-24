@@ -15,7 +15,7 @@ export async function registerRoutes(
 
   app.post("/api/generate-kompetenzen", async (req, res) => {
     try {
-      const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik, analyseTexte } = req.body;
+      const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik, zusatzInfo, analyseTexte } = req.body;
       if (!beruf) {
         return res.status(400).json({ error: "Beruf ist erforderlich" });
       }
@@ -48,6 +48,7 @@ ${analyseKontext}
 **Erfolgsfokus:** ${erfolgsfokus || "Nicht angegeben"}
 **Aufgabencharakter:** ${aufgabencharakter || "Nicht angegeben"}
 **Arbeitslogik:** ${arbeitslogik || "Nicht angegeben"}
+${zusatzInfo ? `**Zusätzlicher Kontext zur Rolle:** ${zusatzInfo}\n\nBERÜCKSICHTIGE diesen zusätzlichen Kontext bei der Erstellung der Tätigkeiten und Kompetenzen. Die Tätigkeiten sollen spezifisch auf diese Rollenausprägung zugeschnitten sein.` : ""}
 
 ## BEWERTUNGSMETHODIK – SACHVERHALT VOR EINZELWORT
 

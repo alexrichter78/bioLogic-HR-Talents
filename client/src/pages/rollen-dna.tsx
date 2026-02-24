@@ -445,6 +445,7 @@ export default function RollenDNA() {
   const [showFuehrungInfo, setShowFuehrungInfo] = useState(false);
   const [aufgabencharakter, setAufgabencharakter] = useState(saved.current?.aufgabencharakter ?? "");
   const [arbeitslogik, setArbeitslogik] = useState(saved.current?.arbeitslogik ?? "");
+  const [zusatzInfo, setZusatzInfo] = useState(saved.current?.zusatzInfo ?? "");
 
   const [activeTab, setActiveTab] = useState<TaetigkeitKategorie>(saved.current?.activeTab ?? "haupt");
   const [taetigkeiten, setTaetigkeiten] = useState<Taetigkeit[]>(saved.current?.taetigkeiten ?? []);
@@ -513,6 +514,7 @@ export default function RollenDNA() {
       erfolgsfokusIndices,
       aufgabencharakter,
       arbeitslogik,
+      zusatzInfo,
       taetigkeiten,
       nextId,
     };
@@ -544,6 +546,7 @@ export default function RollenDNA() {
         if (data.erfolgsfokusIndices !== undefined) setErfolgsfokusIndices(data.erfolgsfokusIndices);
         if (data.aufgabencharakter !== undefined) setAufgabencharakter(data.aufgabencharakter);
         if (data.arbeitslogik !== undefined) setArbeitslogik(data.arbeitslogik);
+        if (data.zusatzInfo !== undefined) setZusatzInfo(data.zusatzInfo);
         if (data.taetigkeiten !== undefined) setTaetigkeiten(data.taetigkeiten);
         if (data.nextId !== undefined) setNextId(data.nextId);
         setCurrentStep(3);
@@ -553,6 +556,7 @@ export default function RollenDNA() {
         const loadedErfolgsfokus = data.erfolgsfokusIndices ?? erfolgsfokusIndices;
         const loadedAufgaben = data.aufgabencharakter ?? aufgabencharakter;
         const loadedArbeits = data.arbeitslogik ?? arbeitslogik;
+        const loadedZusatz = data.zusatzInfo ?? "";
         const loadedTaetigkeiten = data.taetigkeiten ?? taetigkeiten;
         const isComplete = !!(loadedBeruf && loadedFuehrung && loadedErfolgsfokus.length > 0 && loadedAufgaben && loadedArbeits && loadedTaetigkeiten.length > 0);
         if (isComplete) {
@@ -572,6 +576,7 @@ export default function RollenDNA() {
             erfolgsfokus: erfText,
             aufgabencharakter: loadedAufgaben,
             arbeitslogik: loadedArbeits,
+            zusatzInfo: loadedZusatz,
           });
           localStorage.setItem("kompetenzenCache", JSON.stringify({ key: cacheKey, taetigkeiten: loadedTaetigkeiten }));
         }
@@ -586,10 +591,10 @@ export default function RollenDNA() {
   useEffect(() => {
     const state = {
       currentStep, allCollapsed, beruf, fuehrung, erfolgsfokusIndices,
-      aufgabencharakter, arbeitslogik, activeTab, taetigkeiten, nextId,
+      aufgabencharakter, arbeitslogik, zusatzInfo, activeTab, taetigkeiten, nextId,
     };
     localStorage.setItem("rollenDnaState", JSON.stringify(state));
-  }, [currentStep, allCollapsed, beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, arbeitslogik, activeTab, taetigkeiten, nextId]);
+  }, [currentStep, allCollapsed, beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, arbeitslogik, zusatzInfo, activeTab, taetigkeiten, nextId]);
 
   const filteredTaetigkeiten = taetigkeiten.filter(t => t.kategorie === activeTab);
   const hauptCount = taetigkeiten.filter(t => t.kategorie === "haupt").length;
@@ -671,7 +676,7 @@ export default function RollenDNA() {
       .map(i => ERFOLGSFOKUS_LABELS[i]?.replace(/\n/g, " "))
       .filter(Boolean)
       .join(", ");
-    return JSON.stringify({ beruf, fuehrung, erfolgsfokus: erfolgsfokusText, aufgabencharakter, arbeitslogik });
+    return JSON.stringify({ beruf, fuehrung, erfolgsfokus: erfolgsfokusText, aufgabencharakter, arbeitslogik, zusatzInfo });
   };
 
   const generateKompetenzen = async (forceRegenerate = false) => {
@@ -708,7 +713,7 @@ export default function RollenDNA() {
       const resp = await fetch("/api/generate-kompetenzen", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ beruf, fuehrung, erfolgsfokus: erfolgsfokusText, aufgabencharakter, arbeitslogik, analyseTexte }),
+        body: JSON.stringify({ beruf, fuehrung, erfolgsfokus: erfolgsfokusText, aufgabencharakter, arbeitslogik, zusatzInfo, analyseTexte }),
       });
       if (!resp.ok) throw new Error("Fehler bei der Generierung");
       const data = await resp.json();
@@ -913,10 +918,10 @@ export default function RollenDNA() {
 
                     <div className="flex items-center gap-2 mt-2" data-testid="land-filter">
                       {([
-                        { land: "DE" as BerufLand, label: "DE" },
-                        { land: "CH" as BerufLand, label: "CH" },
-                        { land: "AT" as BerufLand, label: "AT" },
-                      ]).map(({ land, label }) => {
+                        { land: "DE" as BerufLand, label: "DE", flag: (<svg viewBox="0 0 20 14" className="w-4 h-3 rounded-[2px] overflow-hidden"><rect y="0" width="20" height="4.67" fill="#000"/><rect y="4.67" width="20" height="4.67" fill="#D00"/><rect y="9.33" width="20" height="4.67" fill="#FFCE00"/></svg>) },
+                        { land: "CH" as BerufLand, label: "CH", flag: (<svg viewBox="0 0 20 14" className="w-4 h-3 rounded-[2px] overflow-hidden"><rect width="20" height="14" fill="#D52B1E"/><rect x="8" y="2.5" width="4" height="9" fill="#FFF"/><rect x="5.5" y="5" width="9" height="4" fill="#FFF"/></svg>) },
+                        { land: "AT" as BerufLand, label: "AT", flag: (<svg viewBox="0 0 20 14" className="w-4 h-3 rounded-[2px] overflow-hidden"><rect y="0" width="20" height="4.67" fill="#ED2939"/><rect y="4.67" width="20" height="4.67" fill="#FFF"/><rect y="9.33" width="20" height="4.67" fill="#ED2939"/></svg>) },
+                      ]).map(({ land, label, flag }) => {
                         const active = selectedLaender.has(land);
                         return (
                           <button
@@ -930,11 +935,22 @@ export default function RollenDNA() {
                                 : "border-[1.5px] border-border/30 bg-muted/20 text-muted-foreground/40"
                             }`}
                           >
-                            <Check className={`w-3 h-3 transition-opacity ${active ? "opacity-100" : "opacity-0"}`} />
+                            <span className={`transition-opacity ${active ? "opacity-100" : "opacity-40"}`}>{flag}</span>
                             <span>{label}</span>
                           </button>
                         );
                       })}
+                    </div>
+
+                    <div className="mt-3">
+                      <textarea
+                        value={zusatzInfo}
+                        onChange={(e) => setZusatzInfo(e.target.value)}
+                        placeholder="Zusatzinformationen zur Rolle, z.B. Franchisepartner, Schwerpunkt Finanzwirtschaft, Branche XY..."
+                        className="w-full bg-muted/30 dark:bg-muted/20 border border-border/40 focus:border-primary/40 rounded-lg px-3 py-2 text-sm resize-none placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all"
+                        rows={2}
+                        data-testid="input-zusatzinfo"
+                      />
                     </div>
 
                     {showSuggestions && filteredBerufe.length > 0 && (
