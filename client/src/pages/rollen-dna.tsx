@@ -75,49 +75,94 @@ function generateBioCheckText(bg: BioGram, isLeadership: boolean): string {
   const max = vals[0], second = vals[1], third = vals[2];
   const gap = max.value - second.value;
 
-  const coreDominant: Record<string, Record<string, string>> = {
-    noLead: {
-      imp: "konsequente Umsetzung, Tempo und Ergebnisorientierung",
-      int: "situationsgerechtes Handeln, Abstimmung und tragfähige Zusammenarbeit",
-      ana: "strukturiertes Vorgehen, Planungssicherheit und fachliche Präzision",
+  const dominantTexts: Record<string, { line1: string; line2: string }> = isLeadership ? {
+    imp: {
+      line1: "Die Rolle ist klar steuernd ausgerichtet.",
+      line2: "Sie verlangt Zielklarheit, Entscheidungsstärke und konsequente Ergebnisverantwortung im Team.",
     },
-    lead: {
-      imp: "klare Zielsteuerung, schnelle Entscheidungen und konsequente Ergebnisverantwortung",
-      int: "verbindende Führung, stabile Zusammenarbeit und situatives Steuern im Alltag",
-      ana: "strukturbildende Führung, klare Planung und verlässliche Qualitäts- und Prozesslogik",
+    int: {
+      line1: "Die Rolle ist integrativ geprägt.",
+      line2: "Sie verlangt verbindende Kommunikation, Stabilität im Miteinander und situative Führungskompetenz.",
     },
-  };
-
-  const coreHybrid: Record<string, Record<string, string>> = {
-    noLead: {
-      imp_ana: "klare Struktur mit konsequenter Umsetzung",
-      ana_imp: "klare Struktur mit konsequenter Umsetzung",
-      ana_int: "strukturelle Klarheit mit stimmiger Abstimmung im Arbeitsumfeld",
-      int_ana: "strukturelle Klarheit mit stimmiger Abstimmung im Arbeitsumfeld",
-      imp_int: "Umsetzungskraft mit situativem Gespür und Zusammenarbeit",
-      int_imp: "Umsetzungskraft mit situativem Gespür und Zusammenarbeit",
+    ana: {
+      line1: "Die Rolle ist strukturbildend angelegt.",
+      line2: "Sie erfordert strategische Klarheit, transparente Prozesse und nachvollziehbare Orientierung für Mitarbeitende.",
     },
-    lead: {
-      imp_ana: "Ausrichtung und Umsetzung in klarer Ergebnisverantwortung",
-      ana_imp: "Ausrichtung und Umsetzung in klarer Ergebnisverantwortung",
-      ana_int: "Orientierung durch Struktur und Stabilität durch Zusammenarbeit",
-      int_ana: "Orientierung durch Struktur und Stabilität durch Zusammenarbeit",
-      imp_int: "Zielorientierung mit integrativer Teamführung",
-      int_imp: "Zielorientierung mit integrativer Teamführung",
+  } : {
+    imp: {
+      line1: "Diese Rolle ist klar handlungs- und ergebnisorientiert.",
+      line2: "Sie verlangt eigenständige Entscheidungen, konsequente Umsetzung und Verantwortungsübernahme im operativen Alltag.",
+    },
+    int: {
+      line1: "Diese Rolle ist kontext- und abstimmungsorientiert.",
+      line2: "Sie verlangt ein sicheres Gespür für Situationen, tragfähige Zusammenarbeit und angemessenes Handeln im jeweiligen Umfeld.",
+    },
+    ana: {
+      line1: "Diese Rolle ist strukturell geprägt.",
+      line2: "Sie erfordert planvolles Vorgehen, fachliche Präzision und eine verlässliche, systematische Arbeitsweise.",
     },
   };
 
-  const role = isLeadership ? "Führungsrolle" : "Rolle";
-  const ctx = isLeadership ? "lead" : "noLead";
+  const hybridTexts: Record<string, { line1: string; line2: string }> = isLeadership ? {
+    imp_ana: {
+      line1: "Diese Rolle verbindet strategische Struktur mit klarer Steuerung.",
+      line2: "Ausrichtung und Umsetzung werden gleichermaßen verantwortet.",
+    },
+    ana_imp: {
+      line1: "Diese Rolle verbindet strategische Struktur mit klarer Steuerung.",
+      line2: "Ausrichtung und Umsetzung werden gleichermaßen verantwortet.",
+    },
+    ana_int: {
+      line1: "Diese Rolle verbindet strukturierte Führung mit sensibler Abstimmung im Team.",
+      line2: "Klarheit und Zusammenarbeit stehen gleichwertig im Vordergrund.",
+    },
+    int_ana: {
+      line1: "Diese Rolle verbindet strukturierte Führung mit sensibler Abstimmung im Team.",
+      line2: "Klarheit und Zusammenarbeit stehen gleichwertig im Vordergrund.",
+    },
+    imp_int: {
+      line1: "Diese Rolle verbindet Zielorientierung mit integrativer Führung.",
+      line2: "Ergebnisverantwortung und Teamstabilität greifen ineinander.",
+    },
+    int_imp: {
+      line1: "Diese Rolle verbindet Zielorientierung mit integrativer Führung.",
+      line2: "Ergebnisverantwortung und Teamstabilität greifen ineinander.",
+    },
+  } : {
+    imp_ana: {
+      line1: "Diese Rolle verbindet klare Struktur mit konsequenter Umsetzung.",
+      line2: "Planung und Handlung greifen eng ineinander.",
+    },
+    ana_imp: {
+      line1: "Diese Rolle verbindet klare Struktur mit konsequenter Umsetzung.",
+      line2: "Planung und Handlung greifen eng ineinander.",
+    },
+    ana_int: {
+      line1: "Diese Rolle verbindet strukturelle Klarheit mit sensibler Abstimmung im Arbeitsumfeld.",
+      line2: "Systematik und Zusammenarbeit stehen gleichwertig im Vordergrund.",
+    },
+    int_ana: {
+      line1: "Diese Rolle verbindet strukturelle Klarheit mit sensibler Abstimmung im Arbeitsumfeld.",
+      line2: "Systematik und Zusammenarbeit stehen gleichwertig im Vordergrund.",
+    },
+    imp_int: {
+      line1: "Diese Rolle verbindet Umsetzungskraft mit situativem Gespür.",
+      line2: "Handlungsfähigkeit und Zusammenarbeit wirken parallel.",
+    },
+    int_imp: {
+      line1: "Diese Rolle verbindet Umsetzungskraft mit situativem Gespür.",
+      line2: "Handlungsfähigkeit und Zusammenarbeit wirken parallel.",
+    },
+  };
 
-  if (max.value >= 55 && gap >= 12) {
-    return `Diese ${role} ist mit sehr deutlicher ${max.label}er Prägung (${Math.round(max.value)}%).\nSie verlangt ${coreDominant[ctx][max.key]}${isLeadership ? " und schafft Orientierung durch klare Entscheidungen und nachvollziehbare Prioritäten." : ". Entscheidungen werden eigenständig getroffen und nachvollziehbar begründet."}`;
-  }
-  if (max.value >= 48 && gap >= 8) {
-    return `Diese ${role} ist mit deutlicher ${max.label}er Prägung (${Math.round(max.value)}%).\nSie verlangt ${coreDominant[ctx][max.key]}${isLeadership ? " und schafft Orientierung durch klare Entscheidungen und nachvollziehbare Prioritäten." : ". Entscheidungen werden eigenständig getroffen und nachvollziehbar begründet."}`;
-  }
-  if (gap >= 5) {
-    return `Diese ${role} ist mit leichter ${max.label}er Prägung (${Math.round(max.value)}%).\nSie verlangt ${coreDominant[ctx][max.key]}${isLeadership ? " und schafft Orientierung durch klare Entscheidungen und nachvollziehbare Prioritäten." : ". Entscheidungen werden eigenständig getroffen und nachvollziehbar begründet."}`;
+  let intensityLabel = "";
+  if (max.value >= 55 && gap >= 12) intensityLabel = "mit sehr deutlicher";
+  else if (max.value >= 48 && gap >= 8) intensityLabel = "mit deutlicher";
+  else if (gap >= 5) intensityLabel = "mit leichter";
+
+  if (intensityLabel) {
+    const dt = dominantTexts[max.key];
+    return `${dt.line1} (${intensityLabel} ${max.label}er Prägung, ${Math.round(max.value)}%)\n${dt.line2}`;
   }
 
   const topDiff = Math.abs(max.value - second.value);
@@ -126,10 +171,14 @@ function generateBioCheckText(bg: BioGram, isLeadership: boolean): string {
   if (bottomGap >= 5) {
     const hybridPhrase = topDiff <= 2 ? "gleich stark" : "nahezu gleich stark";
     const pairKey = `${max.key}_${second.key}`;
-    return `Diese ${role} ist ${hybridPhrase} ${max.label} und ${second.label} geprägt (${Math.round(max.value)}% / ${Math.round(second.value)}%).\nSie verbindet ${coreHybrid[ctx][pairKey]}.`;
+    const ht = hybridTexts[pairKey];
+    return `${ht.line1} (${hybridPhrase}, ${Math.round(max.value)}% / ${Math.round(second.value)}%)\n${ht.line2}`;
   }
 
-  return `Diese ${role} ist ausgewogen zwischen Impulsiv, Intuitiv und Analytisch (${Math.round(bg.imp)}% / ${Math.round(bg.int)}% / ${Math.round(bg.ana)}%).\nSie verlangt ${isLeadership ? "Balance zwischen Zielsteuerung, Zusammenarbeit und struktureller Orientierung." : "sowohl verlässliche Umsetzung als auch stimmige Zusammenarbeit und strukturiertes Vorgehen."}`;
+  if (isLeadership) {
+    return `Diese Führungsrolle integriert Steuerung, Zusammenarbeit und strukturelle Orientierung in vergleichbarer Intensität (${Math.round(bg.imp)}% / ${Math.round(bg.int)}% / ${Math.round(bg.ana)}%).\nSie verlangt situative Balance zwischen Klarheit, Ergebnisfokus und Teamführung.`;
+  }
+  return `Diese Rolle integriert operative, kontextbezogene und strukturelle Anforderungen in vergleichbarer Intensität (${Math.round(bg.imp)}% / ${Math.round(bg.int)}% / ${Math.round(bg.ana)}%).\nSie verlangt Flexibilität im Handeln sowie Klarheit in Planung und Zusammenarbeit.`;
 }
 
 const ERFOLGSFOKUS_LABELS = [
