@@ -2041,38 +2041,38 @@ export default function RollenDNA() {
                     }} />
                   </button>
 
-                  {bioCheckIntroOverride ? (
-                    <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.8, marginTop: 14, whiteSpace: "pre-line" }} data-testid="text-biocheck-intro">
-                      {bioCheckIntroOverride}
-                    </p>
-                  ) : (
-                    <div style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.8, marginTop: 14 }} data-testid="text-biocheck-intro">
-                      <p style={{ marginBottom: 0 }}>Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Dimensionen <span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span>, <span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> und <span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> zugeordnet. So wird erkennbar, welche Form von Wirksamkeit die Rolle bestimmt.</p>
-                      <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", margin: "14px 0" }} />
-                      <p style={{ marginBottom: 8 }}><span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span> steht für Umsetzung, Entscheidung und Ergebnisverantwortung.</p>
-                      <p style={{ marginBottom: 8 }}><span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> beschreibt die Qualität der Zusammenarbeit und das Handeln im jeweiligen Kontext.</p>
-                      <p style={{ marginBottom: 8 }}><span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> kennzeichnet Struktur, Planung und fachliche Präzision.</p>
-                      <p>Das Gesamtprofil zeigt, wo der Schwerpunkt liegt und wie die drei Dimensionen zueinander gewichtet sind.</p>
-                    </div>
-                  )}
-
-                  <div style={{
-                    marginTop: 18,
-                    padding: "14px 16px",
-                    borderRadius: 12,
-                    background: "rgba(0,113,227,0.04)",
-                    border: "1px solid rgba(0,113,227,0.12)",
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: 12,
-                  }} data-testid="box-biocheck-description">
-                    <Lightbulb size={18} style={{ color: "#0071E3", flexShrink: 0, marginTop: 2 }} />
-                    <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, fontWeight: 500, whiteSpace: "pre-line", margin: 0 }} data-testid="text-biocheck-description">
-                      {bioCheckText}
-                    </p>
-                  </div>
-
                   {bioCheckOpen && (<>
+                    {bioCheckIntroOverride ? (
+                      <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.8, marginTop: 14, whiteSpace: "pre-line" }} data-testid="text-biocheck-intro">
+                        {bioCheckIntroOverride}
+                      </p>
+                    ) : (
+                      <div style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.8, marginTop: 14 }} data-testid="text-biocheck-intro">
+                        <p style={{ marginBottom: 0 }}>Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Dimensionen <span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span>, <span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> und <span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> zugeordnet. So wird erkennbar, welche Form von Wirksamkeit die Rolle bestimmt.</p>
+                        <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", margin: "14px 0" }} />
+                        <p style={{ marginBottom: 8 }}><span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span> steht für Umsetzung, Entscheidung und Ergebnisverantwortung.</p>
+                        <p style={{ marginBottom: 8 }}><span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> beschreibt die Qualität der Zusammenarbeit und das Handeln im jeweiligen Kontext.</p>
+                        <p style={{ marginBottom: 8 }}><span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> kennzeichnet Struktur, Planung und fachliche Präzision.</p>
+                        <p>Das Gesamtprofil zeigt, wo der Schwerpunkt liegt und wie die drei Dimensionen zueinander gewichtet sind.</p>
+                      </div>
+                    )}
+
+                    <div style={{
+                      marginTop: 18,
+                      padding: "14px 16px",
+                      borderRadius: 12,
+                      background: "rgba(0,113,227,0.04)",
+                      border: "1px solid rgba(0,113,227,0.12)",
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: 12,
+                    }} data-testid="box-biocheck-description">
+                      <Lightbulb size={18} style={{ color: "#0071E3", flexShrink: 0, marginTop: 2 }} />
+                      <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, fontWeight: 500, whiteSpace: "pre-line", margin: 0 }} data-testid="text-biocheck-description">
+                        {bioCheckText}
+                      </p>
+                    </div>
+
                     <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                       {[
                         { title: "Tätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
@@ -2464,38 +2464,38 @@ export default function RollenDNA() {
                   }} />
                 </button>
 
-                {bioCheckIntroOverride ? (
-                  <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.8, marginTop: 14, whiteSpace: "pre-line" }} data-testid="text-biocheck-intro-collapsed">
-                    {bioCheckIntroOverride}
-                  </p>
-                ) : (
-                  <div style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.8, marginTop: 14 }} data-testid="text-biocheck-intro-collapsed">
-                    <p style={{ marginBottom: 0 }}>Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Dimensionen <span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span>, <span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> und <span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> zugeordnet. So wird erkennbar, welche Form von Wirksamkeit die Rolle bestimmt.</p>
-                    <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", margin: "14px 0" }} />
-                    <p style={{ marginBottom: 8 }}><span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span> steht für Umsetzung, Entscheidung und Ergebnisverantwortung.</p>
-                    <p style={{ marginBottom: 8 }}><span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> beschreibt die Qualität der Zusammenarbeit und das Handeln im jeweiligen Kontext.</p>
-                    <p style={{ marginBottom: 8 }}><span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> kennzeichnet Struktur, Planung und fachliche Präzision.</p>
-                    <p>Das Gesamtprofil zeigt, wo der Schwerpunkt liegt und wie die drei Dimensionen zueinander gewichtet sind.</p>
+                {bioCheckOpen && (<>
+                  {bioCheckIntroOverride ? (
+                    <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.8, marginTop: 14, whiteSpace: "pre-line" }} data-testid="text-biocheck-intro-collapsed">
+                      {bioCheckIntroOverride}
+                    </p>
+                  ) : (
+                    <div style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.8, marginTop: 14 }} data-testid="text-biocheck-intro-collapsed">
+                      <p style={{ marginBottom: 0 }}>Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Dimensionen <span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span>, <span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> und <span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> zugeordnet. So wird erkennbar, welche Form von Wirksamkeit die Rolle bestimmt.</p>
+                      <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", margin: "14px 0" }} />
+                      <p style={{ marginBottom: 8 }}><span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span> steht für Umsetzung, Entscheidung und Ergebnisverantwortung.</p>
+                      <p style={{ marginBottom: 8 }}><span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> beschreibt die Qualität der Zusammenarbeit und das Handeln im jeweiligen Kontext.</p>
+                      <p style={{ marginBottom: 8 }}><span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> kennzeichnet Struktur, Planung und fachliche Präzision.</p>
+                      <p>Das Gesamtprofil zeigt, wo der Schwerpunkt liegt und wie die drei Dimensionen zueinander gewichtet sind.</p>
+                    </div>
+                  )}
+
+                  <div style={{
+                    marginTop: 18,
+                    padding: "14px 16px",
+                    borderRadius: 12,
+                    background: "rgba(0,113,227,0.04)",
+                    border: "1px solid rgba(0,113,227,0.12)",
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 12,
+                  }} data-testid="box-biocheck-description-collapsed">
+                    <Lightbulb size={18} style={{ color: "#0071E3", flexShrink: 0, marginTop: 2 }} />
+                    <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, fontWeight: 500, whiteSpace: "pre-line", margin: 0 }} data-testid="text-biocheck-description-collapsed">
+                      {bioCheckText}
+                    </p>
                   </div>
-                )}
 
-                <div style={{
-                  marginTop: 18,
-                  padding: "14px 16px",
-                  borderRadius: 12,
-                  background: "rgba(0,113,227,0.04)",
-                  border: "1px solid rgba(0,113,227,0.12)",
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: 12,
-                }} data-testid="box-biocheck-description-collapsed">
-                  <Lightbulb size={18} style={{ color: "#0071E3", flexShrink: 0, marginTop: 2 }} />
-                  <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, fontWeight: 500, whiteSpace: "pre-line", margin: 0 }} data-testid="text-biocheck-description-collapsed">
-                    {bioCheckText}
-                  </p>
-                </div>
-
-                {bioCheckOpen && (
                   <div style={{ marginTop: 16 }}>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                       {[
@@ -2644,7 +2644,7 @@ export default function RollenDNA() {
                     </div>
 
                   </div>
-                )}
+                </>)}
               </div>
               </>
             )}
