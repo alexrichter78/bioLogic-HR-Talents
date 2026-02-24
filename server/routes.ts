@@ -147,6 +147,68 @@ Antworte ausschließlich als JSON:
     }
   });
 
+  app.post("/api/reclassify-kompetenzen", async (req, res) => {
+    try {
+      const { beruf, fuehrung, aufgabencharakter, arbeitslogik, items } = req.body;
+      if (!items || items.length === 0) {
+        return res.status(400).json({ error: "Keine Einträge zum Neubewerten" });
+      }
+
+      const itemsList = items.map((item: any, i: number) =>
+        `${i + 1}. "${item.name}" (Kategorie: ${item.kategorie})`
+      ).join("\n");
+
+      const prompt = `Du bist ein Experte für Kompetenzanalyse. Bewerte die folgenden Tätigkeits-/Kompetenzbeschreibungen NEU nach der Sachverhalt-Methodik.
+
+## ROLLENKONTEXT
+**Rolle/Beruf:** ${beruf || "Nicht angegeben"}
+**Führungsverantwortung:** ${fuehrung || "Keine"}
+**Aufgabencharakter:** ${aufgabencharakter || "Nicht angegeben"}
+**Arbeitslogik:** ${arbeitslogik || "Nicht angegeben"}
+
+## DREI KOMPETENZBEREICHE
+
+### "Analytisch" (= Fach-/Methodenkompetenz – DENKEN & VERSTEHEN)
+Braucht diese Tätigkeit primär KOPFARBEIT – Wissen anwenden, Daten verarbeiten, Systeme bedienen, Sachverhalte durchdringen, fachlich bewerten?
+
+### "Intuitiv" (= Sozial-/Beziehungskompetenz – FÜHLEN & VERBINDEN)
+Braucht diese Tätigkeit primär EMOTIONALE INTELLIGENZ – Menschen lesen, Beziehungen gestalten, Vertrauen aufbauen?
+
+### "Impulsiv" (= Handlungs-/Umsetzungskompetenz – MACHEN & DURCHSETZEN)
+Braucht diese Tätigkeit primär DURCHSETZUNGSKRAFT – Entscheidungen unter Unsicherheit, Ergebnisse gegen Widerstände?
+
+## BEWERTUNGSMETHODIK
+1. Gesamtaussage der Tätigkeit erfassen
+2. Kernkompetenz identifizieren: Denken? Fühlen? Handeln?
+3. Rollenkontext "${beruf}" anwenden
+
+## ZU BEWERTENDE EINTRÄGE
+${itemsList}
+
+Antworte als JSON-Objekt mit einem "results" Array mit exakt ${items.length} Einträgen in der gleichen Reihenfolge:
+{"results": [{"kompetenz": "Impulsiv|Intuitiv|Analytisch"}]}`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4.1",
+        messages: [{ role: "user", content: prompt }],
+        response_format: { type: "json_object" },
+        temperature: 0.3,
+      });
+
+      const content = response.choices[0]?.message?.content || "{}";
+      const data = JSON.parse(content);
+      let results = data.results || data.items || data.classifications || [];
+      if (!Array.isArray(results)) {
+        const firstArray = Object.values(data).find(v => Array.isArray(v));
+        results = firstArray || [];
+      }
+      res.json({ results });
+    } catch (error) {
+      console.error("Error reclassifying:", error);
+      res.status(500).json({ error: "Fehler bei der Neubewertung" });
+    }
+  });
+
   app.post("/api/generate-analyse", async (req, res) => {
     try {
       const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik, taetigkeiten } = req.body;

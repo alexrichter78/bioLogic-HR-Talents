@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight, Info } from "lucide-react";
+import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight, Info, RefreshCw } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import { BERUFE, type BerufLand } from "@/data/berufe";
 
@@ -452,12 +452,20 @@ export default function RollenDNA() {
   const [nextId, setNextId] = useState(saved.current?.nextId ?? 1);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const originalNames = useRef<Map<number, string>>(new Map());
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isReclassifying, setIsReclassifying] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [selectedLaender, setSelectedLaender] = useState<Set<BerufLand>>(new Set(["DE", "CH", "AT"]));
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (taetigkeiten.length > 0 && originalNames.current.size === 0) {
+      originalNames.current = new Map(taetigkeiten.map(t => [t.id, t.name]));
+    }
+  }, []);
 
   const toggleLand = (land: BerufLand) => {
     setSelectedLaender(prev => {
@@ -558,6 +566,7 @@ export default function RollenDNA() {
         const loadedArbeits = data.arbeitslogik ?? arbeitslogik;
         const loadedZusatz = data.zusatzInfo ?? "";
         const loadedTaetigkeiten = data.taetigkeiten ?? taetigkeiten;
+        originalNames.current = new Map(loadedTaetigkeiten.map((t: Taetigkeit) => [t.id, t.name]));
         const isComplete = !!(loadedBeruf && loadedFuehrung && loadedErfolgsfokus.length > 0 && loadedAufgaben && loadedArbeits && loadedTaetigkeiten.length > 0);
         if (isComplete) {
           localStorage.setItem("rollenDnaCompleted", "true");
@@ -629,6 +638,51 @@ export default function RollenDNA() {
     setTaetigkeiten(prev => prev.map(t => t.id === id ? { ...t, name: newName } : t));
   };
 
+  const changedIds = taetigkeiten.filter(t => {
+    const orig = originalNames.current.get(t.id);
+    return orig !== undefined && orig !== t.name;
+  }).map(t => t.id);
+
+  const handleReclassify = async () => {
+    const changed = taetigkeiten.filter(t => changedIds.includes(t.id));
+    if (changed.length === 0) return;
+    setIsReclassifying(true);
+    try {
+      const resp = await fetch("/api/reclassify-kompetenzen", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          beruf,
+          fuehrung,
+          aufgabencharakter,
+          arbeitslogik,
+          items: changed.map(t => ({ name: t.name, kategorie: t.kategorie })),
+        }),
+      });
+      if (!resp.ok) throw new Error("Reclassify failed");
+      const data = await resp.json();
+      const results: { kompetenz?: KompetenzTyp }[] = data.results || [];
+      setTaetigkeiten(prev => {
+        const updated = [...prev];
+        changed.forEach((t, i) => {
+          const newKompetenz = results[i]?.kompetenz;
+          if (newKompetenz && ["Impulsiv", "Intuitiv", "Analytisch"].includes(newKompetenz)) {
+            const idx = updated.findIndex(u => u.id === t.id);
+            if (idx !== -1) {
+              updated[idx] = { ...updated[idx], kompetenz: newKompetenz as KompetenzTyp };
+            }
+            originalNames.current.set(t.id, t.name);
+          }
+        });
+        return updated;
+      });
+    } catch (err) {
+      console.error("Neubewertung fehlgeschlagen:", err);
+    } finally {
+      setIsReclassifying(false);
+    }
+  };
+
   const handleAddTaetigkeit = () => {
     const newT: Taetigkeit = {
       id: nextId,
@@ -637,6 +691,7 @@ export default function RollenDNA() {
       kompetenz: "Analytisch",
       niveau: "Mittel",
     };
+    originalNames.current.set(nextId, "Neue Tätigkeit");
     setTaetigkeiten(prev => [...prev, newT]);
     setNextId(prev => prev + 1);
   };
@@ -692,6 +747,7 @@ export default function RollenDNA() {
           if (cacheData.key === cacheKey && cacheData.taetigkeiten && cacheData.taetigkeiten.length > 0) {
             setTaetigkeiten(cacheData.taetigkeiten);
             setNextId(Math.max(...cacheData.taetigkeiten.map((t: Taetigkeit) => t.id)) + 1);
+            originalNames.current = new Map(cacheData.taetigkeiten.map((t: Taetigkeit) => [t.id, t.name]));
             return;
           }
         }
@@ -730,6 +786,7 @@ export default function RollenDNA() {
       }
       setTaetigkeiten(generated);
       setNextId(id);
+      originalNames.current = new Map(generated.map(t => [t.id, t.name]));
 
       localStorage.setItem("kompetenzenCache", JSON.stringify({ key: cacheKey, taetigkeiten: generated }));
     } catch (err) {
@@ -1368,7 +1425,7 @@ export default function RollenDNA() {
                             <span style={{
                               fontSize: 14,
                               fontWeight: 500,
-                              color: "#AEAEB2",
+                              color: changedIds.includes(t.id) ? "#D97706" : "#AEAEB2",
                               minWidth: 24,
                               paddingTop: 2,
                             }}>
@@ -1555,7 +1612,34 @@ export default function RollenDNA() {
                   </p>
                 </div>
 
-                <div className="flex justify-end" style={{ marginTop: 24 }}>
+                <div className="flex items-center justify-between" style={{ marginTop: 24 }}>
+                  <div>
+                    {changedIds.length > 0 && (
+                      <button
+                        onClick={handleReclassify}
+                        disabled={isReclassifying}
+                        className="flex items-center gap-2 text-sm font-medium transition-all"
+                        style={{
+                          height: 44,
+                          paddingLeft: 20,
+                          paddingRight: 20,
+                          borderRadius: 12,
+                          border: "1.5px solid rgba(243,146,0,0.4)",
+                          background: "rgba(243,146,0,0.06)",
+                          color: "#D97706",
+                          cursor: isReclassifying ? "wait" : "pointer",
+                          opacity: isReclassifying ? 0.7 : 1,
+                        }}
+                        data-testid="button-reclassify"
+                      >
+                        <RefreshCw className={`w-4 h-4 ${isReclassifying ? "animate-spin" : ""}`} />
+                        {isReclassifying
+                          ? "Wird bewertet..."
+                          : `Bereiche neu bewerten (${changedIds.length})`
+                        }
+                      </button>
+                    )}
+                  </div>
                   <Button
                     className="gap-2"
                     style={{
