@@ -1,0 +1,60 @@
+{
+  "phrases": {
+    "intensity": {
+      "very": "mit sehr deutlicher",
+      "clear": "mit deutlicher",
+      "slight": "mit leichter"
+    },
+    "hybrid": {
+      "equal": "gleich stark",
+      "near": "nahezu gleich stark"
+    },
+    "adj": {
+      "imp": "impulsiv",
+      "int": "intuitiv",
+      "ana": "analytisch"
+    }
+  },
+  "noLeadership": {
+    "dominant": {
+      "template": "Diese Rolle ist {{intensity}} {{adj}} geprägt ({{max}}%).\nSie verlangt {{core}}. Entscheidungen werden eigenständig getroffen und nachvollziehbar begründet.",
+      "core": {
+        "imp": "konsequente Umsetzung, Tempo und Ergebnisorientierung",
+        "int": "situationsgerechtes Handeln, Abstimmung und tragfähige Zusammenarbeit",
+        "ana": "strukturiertes Vorgehen, Planungssicherheit und fachliche Präzision"
+      }
+    },
+    "hybrid": {
+      "template": "Diese Rolle ist {{hybridPhrase}} {{adj1}} und {{adj2}} geprägt ({{v1}}% / {{v2}}%).\nSie verbindet {{core}}.",
+      "core": {
+        "imp_ana": "klare Struktur mit konsequenter Umsetzung",
+        "ana_int": "strukturelle Klarheit mit stimmiger Abstimmung im Arbeitsumfeld",
+        "imp_int": "Umsetzungskraft mit situativem Gespür und Zusammenarbeit"
+      }
+    },
+    "balanced": {
+      "template": "Diese Rolle ist ausgewogen zwischen Impulsiv, Intuitiv und Analytisch ({{imp}}% / {{int}}% / {{ana}}%).\nSie verlangt sowohl verlässliche Umsetzung als auch stimmige Zusammenarbeit und strukturiertes Vorgehen."
+    }
+  },
+  "leadership": {
+    "dominant": {
+      "template": "Diese Führungsrolle ist {{intensity}} {{adj}} geprägt ({{max}}%).\nSie verlangt {{core}} und schafft Orientierung durch klare Entscheidungen und nachvollziehbare Prioritäten.",
+      "core": {
+        "imp": "klare Zielsteuerung, schnelle Entscheidungen und konsequente Ergebnisverantwortung",
+        "int": "verbindende Führung, stabile Zusammenarbeit und situatives Steuern im Alltag",
+        "ana": "strukturbildende Führung, klare Planung und verlässliche Qualitäts- und Prozesslogik"
+      }
+    },
+    "hybrid": {
+      "template": "Diese Führungsrolle ist {{hybridPhrase}} {{adj1}} und {{adj2}} geprägt ({{v1}}% / {{v2}}%).\nSie verbindet {{core}}.",
+      "core": {
+        "imp_ana": "Ausrichtung und Umsetzung in klarer Ergebnisverantwortung",
+        "ana_int": "Orientierung durch Struktur und Stabilität durch Zusammenarbeit",
+        "imp_int": "Zielorientierung mit integrativer Teamführung"
+      }
+    },
+    "balanced": {
+      "template": "Diese Führungsrolle ist ausgewogen zwischen Impulsiv, Intuitiv und Analytisch ({{imp}}% / {{int}}% / {{ana}}%).\nSie verlangt Balance zwischen Zielsteuerung, Zusammenarbeit und struktureller Orientierung."
+    }
+  }
+}
