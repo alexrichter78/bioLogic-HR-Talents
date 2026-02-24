@@ -1635,7 +1635,7 @@ export default function RollenDNA() {
                         <RefreshCw className={`w-4 h-4 ${isReclassifying ? "animate-spin" : ""}`} />
                         {isReclassifying
                           ? "Wird bewertet..."
-                          : `Bereiche neu bewerten (${changedIds.length})`
+                          : `Änderungen neu bewerten (${changedIds.length})`
                         }
                       </button>
                     )}
