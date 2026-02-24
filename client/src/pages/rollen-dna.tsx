@@ -2078,7 +2078,7 @@ export default function RollenDNA() {
                         { title: "Tätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
                         { title: "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben, icon: Heart },
                         { title: "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramRahmen, icon: Settings },
-                        { title: "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung, icon: Shield },
+                        ...(isLeadershipRole ? [{ title: "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung, icon: Shield }] : []),
                       ].map((section) => (
                         <div
                           key={section.key}
@@ -2502,7 +2502,7 @@ export default function RollenDNA() {
                         { title: "Tätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
                         { title: "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben, icon: Heart },
                         { title: "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramRahmen, icon: Settings },
-                        { title: "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung, icon: Shield },
+                        ...(isLeadershipRole ? [{ title: "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung, icon: Shield }] : []),
                       ].map((section) => (
                         <div
                           key={section.key}
