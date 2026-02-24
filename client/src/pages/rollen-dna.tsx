@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight, Info, RefreshCw } from "lucide-react";
+import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight, Info, RefreshCw, Briefcase, Heart, Settings, Shield, BarChart3 } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import { BERUFE, type BerufLand } from "@/data/berufe";
 
@@ -1907,10 +1907,10 @@ export default function RollenDNA() {
                   {bioCheckOpen && (<>
                     <div style={{ marginTop: 20, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                       {[
-                        { title: "Haupttätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt },
-                        { title: "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben },
-                        { title: "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramRahmen },
-                        { title: "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung },
+                        { title: "Tätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
+                        { title: "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben, icon: Heart },
+                        { title: "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramRahmen, icon: Settings },
+                        { title: "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung, icon: Shield },
                       ].map((section) => (
                         <div
                           key={section.key}
@@ -1922,9 +1922,12 @@ export default function RollenDNA() {
                           }}
                           data-testid={`biocheck-section-${section.key}`}
                         >
-                          <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>
-                            {section.title}
-                          </p>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                            <section.icon style={{ width: 15, height: 15, color: "#6E6E73", strokeWidth: 1.8 }} />
+                            <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
+                              {section.title}
+                            </p>
+                          </div>
                           {[
                             { label: "Impulsiv", color: "#C41E3A", value: section.data.imp },
                             { label: "Intuitiv", color: "#F39200", value: section.data.int },
@@ -1992,9 +1995,12 @@ export default function RollenDNA() {
                       }}
                       data-testid="biocheck-section-gesamt"
                     >
-                      <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>
-                        Gesamtprofil der Stellenanforderung
-                      </p>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                        <BarChart3 style={{ width: 16, height: 16, color: "#6E6E73", strokeWidth: 1.8 }} />
+                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
+                          Gesamtprofil der Stellenanforderung
+                        </p>
+                      </div>
                       {[
                         { label: "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
                         { label: "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
@@ -2379,9 +2385,12 @@ export default function RollenDNA() {
                       }}
                       data-testid="biocheck-collapsed-gesamt"
                     >
-                      <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>
-                        Gesamtprofil der Stellenanforderung
-                      </p>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                        <BarChart3 style={{ width: 16, height: 16, color: "#6E6E73", strokeWidth: 1.8 }} />
+                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
+                          Gesamtprofil der Stellenanforderung
+                        </p>
+                      </div>
                       {[
                         { label: "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
                         { label: "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
