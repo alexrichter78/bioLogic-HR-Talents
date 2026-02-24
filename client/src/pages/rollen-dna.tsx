@@ -609,13 +609,6 @@ export default function RollenDNA() {
   const currentTabHighCount = activeTab === "haupt" ? hauptHighCount : activeTab === "neben" ? nebenHighCount : fuehrungHighCount;
 
   const handleNiveauChange = (id: number, niveau: Niveau) => {
-    if (niveau === "Hoch") {
-      const item = taetigkeiten.find(t => t.id === id);
-      if (item && item.niveau !== "Hoch") {
-        const catHighCount = taetigkeiten.filter(t => t.kategorie === item.kategorie && t.niveau === "Hoch").length;
-        if (catHighCount >= MAX_HIGH) return;
-      }
-    }
     setTaetigkeiten(prev => prev.map(t => t.id === id ? { ...t, niveau } : t));
   };
 
@@ -1426,13 +1419,10 @@ export default function RollenDNA() {
                                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                                   <span style={{ fontSize: 11, fontWeight: 500, color: "#AEAEB2", minWidth: 52, textTransform: "uppercase", letterSpacing: "0.5px" }}>Niveau</span>
                                   <div style={{ display: "flex", gap: 6 }}>
-                                    {NIVEAU_OPTIONS.map(n => {
-                                      const catHighCount = taetigkeiten.filter(tt => tt.kategorie === t.kategorie && tt.niveau === "Hoch").length;
-                                      const isHighDisabled = n === "Hoch" && t.niveau !== "Hoch" && catHighCount >= MAX_HIGH;
-                                      return (
+                                    {NIVEAU_OPTIONS.map(n => (
                                       <button
                                         key={n}
-                                        onClick={() => !isHighDisabled && handleNiveauChange(t.id, n)}
+                                        onClick={() => handleNiveauChange(t.id, n)}
                                         style={{
                                           height: 28,
                                           paddingLeft: 10,
@@ -1441,23 +1431,21 @@ export default function RollenDNA() {
                                           fontWeight: 500,
                                           borderRadius: 999,
                                           border: t.niveau === n ? "1.5px solid transparent" : "1px solid rgba(0,0,0,0.15)",
-                                          cursor: isHighDisabled ? "not-allowed" : "pointer",
+                                          cursor: "pointer",
                                           transition: "all 150ms ease",
                                           background: t.niveau === n ? "linear-gradient(135deg, #6B7280, #9CA3AF)" : "rgba(0,0,0,0.03)",
-                                          color: t.niveau === n ? "#FFFFFF" : isHighDisabled ? "#D1D1D6" : "#3A3A3C",
-                                          opacity: isHighDisabled ? 0.5 : 1,
+                                          color: t.niveau === n ? "#FFFFFF" : "#3A3A3C",
                                           display: "flex",
                                           alignItems: "center",
                                           gap: 4,
                                         }}
-                                        className={t.niveau !== n && !isHighDisabled ? "hover:bg-muted/40" : ""}
+                                        className={t.niveau !== n ? "hover:bg-muted/40" : ""}
                                         data-testid={`niveau-${t.id}-${n.toLowerCase()}`}
                                       >
                                         {t.niveau === n && <Check style={{ width: 10, height: 10 }} />}
                                         {n}
                                       </button>
-                                      );
-                                    })}
+                                    ))}
                                   </div>
                                 </div>
 
