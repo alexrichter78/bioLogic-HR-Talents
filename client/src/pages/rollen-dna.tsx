@@ -654,7 +654,33 @@ export default function RollenDNA() {
   const bioGramHaupt = calcBioGram(taetigkeiten.filter(t => t.kategorie === "haupt"));
   const bioGramNeben = calcBioGram(taetigkeiten.filter(t => t.kategorie === "neben"));
   const bioGramFuehrung = calcBioGram(taetigkeiten.filter(t => t.kategorie === "fuehrung"));
-  const bioGramGesamt = calcBioGram(taetigkeiten);
+
+  const bioGramRahmen = (() => {
+    let sImp = 0, sInt = 0, sAna = 0;
+
+    if (fuehrung === "Fachliche Führung") sAna += 1.0;
+    else if (fuehrung === "Projekt-/Teamkoordination") sInt += 1.0;
+    else if (fuehrung.startsWith("Disziplinarische")) sImp += 1.0;
+
+    for (const idx of erfolgsfokusIndices) {
+      if (idx === 0 || idx === 2) sImp += 1.0;
+      else if (idx === 1 || idx === 5) sInt += 1.0;
+      else if (idx === 3 || idx === 4) sAna += 1.0;
+    }
+
+    if (aufgabencharakter === "Überwiegend operativ") sImp += 1.0;
+    else if (aufgabencharakter === "Systemisch") sInt += 1.0;
+    else if (aufgabencharakter === "Überwiegend strategisch") sAna += 1.0;
+
+    if (arbeitslogik === "Umsetzungsorientiert") sImp += 1.0;
+    else if (arbeitslogik === "Menschenorientiert") sInt += 1.0;
+    else if (arbeitslogik === "Daten-/prozessorientiert") sAna += 1.0;
+
+    const total = sImp + sInt + sAna;
+    if (total <= 0) return { imp: 33.3, int: 33.3, ana: 33.4 } as BioGram;
+    const [imp, int, ana] = roundPercentages((sImp / total) * 100, (sInt / total) * 100, (sAna / total) * 100);
+    return { imp, int, ana } as BioGram;
+  })();
 
   const MAX_ITEMS: Record<TaetigkeitKategorie, number> = { haupt: 15, neben: 10, fuehrung: 10 };
   const currentTabCount = filteredTaetigkeiten.length;
@@ -1298,7 +1324,7 @@ export default function RollenDNA() {
                         </p>
                         <div style={{ marginTop: 28 }}>
                           <PillGroup
-                            options={["Überwiegend operativ", "Gemischt", "Überwiegend strategisch"]}
+                            options={["Überwiegend operativ", "Systemisch", "Gemischt", "Überwiegend strategisch"]}
                             selected={[aufgabencharakter]}
                             onSelect={handleAufgabencharakter}
                           />
@@ -1847,7 +1873,7 @@ export default function RollenDNA() {
                       {[
                         { title: "Haupttätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt },
                         { title: "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben },
-                        { title: "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramGesamt },
+                        { title: "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramRahmen },
                         { title: "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung },
                       ].map((section) => (
                         <div
@@ -2171,7 +2197,7 @@ export default function RollenDNA() {
                       {[
                         { title: "Haupttätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt },
                         { title: "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben },
-                        { title: "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramGesamt },
+                        { title: "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramRahmen },
                         { title: "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung },
                       ].map((section) => (
                         <div
