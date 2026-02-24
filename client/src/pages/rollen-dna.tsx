@@ -1771,11 +1771,8 @@ export default function RollenDNA() {
                         <circle cx="8" cy="8" r="2.5" fill="white" />
                       </svg>
                     </div>
-                    <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>
-                      bio<span style={{ fontWeight: 400 }}>Check</span>
-                    </span>
-                    <span style={{ fontSize: 17, fontWeight: 400, color: "#1D1D1F" }}>
-                      der Stellenanforderung
+                    <span style={{ fontSize: 17, color: "#1D1D1F" }}>
+                      <span style={{ fontWeight: 700 }}>bio</span><span style={{ fontWeight: 400 }}>Check</span>{" "}der Stellenanforderung
                     </span>
                   </div>
 
@@ -2031,11 +2028,8 @@ export default function RollenDNA() {
                       <circle cx="8" cy="8" r="2.5" fill="white" />
                     </svg>
                   </div>
-                  <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>
-                    bio<span style={{ fontWeight: 400 }}>Check</span>
-                  </span>
-                  <span style={{ fontSize: 17, fontWeight: 400, color: "#1D1D1F" }}>
-                    der Stellenanforderung
+                  <span style={{ fontSize: 17, color: "#1D1D1F" }}>
+                    <span style={{ fontWeight: 700 }}>bio</span><span style={{ fontWeight: 400 }}>Check</span>{" "}der Stellenanforderung
                   </span>
                 </div>
 
