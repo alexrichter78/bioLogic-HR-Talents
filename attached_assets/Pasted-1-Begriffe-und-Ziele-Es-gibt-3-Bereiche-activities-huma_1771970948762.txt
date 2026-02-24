@@ -1,0 +1,177 @@
+1) Begriffe und Ziele
+
+Es gibt 3 Bereiche: activities, human, leadership
+
+Pro Bereich gibt es n Themen (n variabel)
+
+Jedes Thema hat:
+
+category ∈ {IMPULSIV, INTUITIV, ANALYTISCH}
+
+level ∈ {LOW, MED, HIGH} (Default: MED)
+
+Ergebnis pro Bereich: bioGram = {imp, int, ana} als Prozentwerte (Summe = 100)
+
+Ziel: stabile, vergleichbare Balken unabhängig von n, und Level verstärkt die Kategorie sichtbar.
+
+2) Level-Mapping
+
+Empfohlen (spürbarer “High”-Boost):
+
+LOW  = 0.6
+MED  = 1.0
+HIGH = 1.8
+
+Alternativ (sanfter):
+
+LOW=0.5, MED=1.0, HIGH=1.5
+3) Datenstruktur (Beispiel)
+{
+  "areas": {
+    "activities": [
+      {"id":"a1","category":"ANALYTISCH","level":"MED"},
+      {"id":"a2","category":"INTUITIV","level":"HIGH"}
+    ],
+    "human": [
+      {"id":"h1","category":"IMPULSIV","level":"MED"}
+    ],
+    "leadership": []
+  }
+}
+4) Kernberechnung pro Bereich
+4.1 Rohscores
+
+Für jedes Thema t:
+
+w = levelMultiplier(t.level)
+
+addiere w in die passende Kategorie-Summe
+
+function calcRaw(areaTopics):
+    S = {imp:0, int:0, ana:0}
+    for t in areaTopics:
+        w = mult(t.level) // 0.6 / 1.0 / 1.8
+        if t.category == IMPULSIV:   S.imp += w
+        if t.category == INTUITIV:   S.int += w
+        if t.category == ANALYTISCH: S.ana += w
+    return S
+4.2 Normalisierung auf Prozent (n-unabhängig)
+function normalizeToPercent(S):
+    total = S.imp + S.int + S.ana
+
+    if total <= 0:
+        // Edge-Case: keine Themen oder alles 0
+        return {imp:33.33, int:33.33, ana:33.34} // oder 0/0/0 je nach UI
+
+    Pimp = (S.imp / total) * 100
+    Pint = (S.int / total) * 100
+    Pana = (S.ana / total) * 100
+
+    return roundPercentages(Pimp, Pint, Pana) // siehe Rundung unten
+5) Rundung (wichtig für “Summe = 100”)
+
+Wenn du auf 1 Dezimalstelle rundest, bekommst du sonst oft 99.9 oder 100.1.
+
+Sauberer Ansatz: Largest Remainder
+
+Rechne in “Zehntel-Prozent” (= 10 bei 1 Dezimalstelle)
+
+floore alle Werte
+
+verteile die fehlenden Einheiten nach größtem Rest
+
+function roundPercentages(p1, p2, p3, decimals=1):
+    factor = 10^decimals
+
+    raw = [p1*factor, p2*factor, p3*factor]
+    flo = [floor(raw[0]), floor(raw[1]), floor(raw[2])]
+    rest = [raw[0]-flo[0], raw[1]-flo[1], raw[2]-flo[2]]
+
+    targetSum = 100 * factor
+    currentSum = flo[0]+flo[1]+flo[2]
+    missing = targetSum - currentSum
+
+    while missing > 0:
+        i = indexOfMax(rest)   // bei Gleichstand fixe Reihenfolge imp,int,ana
+        flo[i] += 1
+        rest[i] = 0            // damit nicht zweimal gewinnt
+        missing -= 1
+
+    return [flo[0]/factor, flo[1]/factor, flo[2]/factor]
+
+Empfehlung: decimals=1 oder 0 (je nach UI).
+
+6) UI-Interaktion (Kategorie klicken, Level ändern)
+6.1 Kategorie klicken
+
+Wenn User bei Thema t “Analytisch” klickt:
+
+t.category = ANALYTISCH
+
+Level bleibt unverändert (Default MED, falls nie gesetzt)
+
+onCategoryClick(area, topicId, newCategory):
+    t = findTopic(area, topicId)
+    t.category = newCategory
+    // recompute
+    updateBioGram(area)
+6.2 Level ändern (Low/Med/High)
+onLevelChange(area, topicId, newLevel):
+    t = findTopic(area, topicId)
+    t.level = newLevel
+    updateBioGram(area)
+6.3 “Standard ist Mittel”
+
+Beim Anlegen eines Themas:
+
+if t.level is null: t.level = MED
+if t.category is null: t.category = INTUITIV // oder “unassigned” je nach Produkt
+7) Optional: UX-Overlay “Basis vs. Aktuell”
+
+Damit es sich so anfühlt wie “andere bleiben gleich”, zeigst du 2 Werte:
+
+Basis: alle Themen auf MED gerechnet (ignoriert echte Level)
+
+Aktuell: echte Level
+
+function calcBaseline(areaTopics):
+    baselineTopics = copy(areaTopics)
+    for t in baselineTopics:
+        t.level = MED
+    Sbase = calcRaw(baselineTopics)
+    return normalizeToPercent(Sbase)
+
+UI:
+
+grauer Balken = baseline
+
+farbiger Balken = current (liegt drüber)
+
+8) Edge-Cases / Regeln
+
+0 Themen in einem Bereich
+
+entweder 33/33/34 (neutral)
+
+oder 0/0/0 und UI zeigt “Keine Daten”
+→ Ich empfehle neutral (wirkt weniger “kaputt”).
+
+Alle Themen in einer Kategorie
+→ Ergebnis 100/0/0 etc. korrekt.
+
+Minimum Balkenbreite (nur UI)
+Wenn ein Anteil z.B. 0.2% ist, ist er kaum sichtbar.
+UI kann min-width z.B. 2px erzwingen, aber Werte nicht verfälschen.
+
+Stabilität bei n
+Durch Normalisierung immer gewährleistet.
+
+9) Output pro Bereich + Gesamtscore (optional)
+
+Pro Bereich:
+
+{
+  "activities": {"imp":27.8,"int":27.8,"ana":44.4},
+  "human":      {"imp":40.0,"int":30.0,"ana":30.0},
+  "leadership": {"imp":33.3,"int":33.3,"ana":33.4}
+}

@@ -28,6 +28,43 @@ const KOMPETENZ_COLORS: Record<KompetenzTyp, string> = {
 const KOMPETENZ_OPTIONS: KompetenzTyp[] = ["Impulsiv", "Intuitiv", "Analytisch"];
 const NIVEAU_OPTIONS: Niveau[] = ["Niedrig", "Mittel", "Hoch"];
 
+const LEVEL_MULTIPLIER: Record<Niveau, number> = { Niedrig: 0.6, Mittel: 1.0, Hoch: 1.8 };
+
+interface BioGram { imp: number; int: number; ana: number; }
+
+function roundPercentages(p1: number, p2: number, p3: number): [number, number, number] {
+  const factor = 10;
+  const raw = [p1 * factor, p2 * factor, p3 * factor];
+  const flo = [Math.floor(raw[0]), Math.floor(raw[1]), Math.floor(raw[2])];
+  const rest = [raw[0] - flo[0], raw[1] - flo[1], raw[2] - flo[2]];
+  const targetSum = 100 * factor;
+  let missing = targetSum - (flo[0] + flo[1] + flo[2]);
+  while (missing > 0) {
+    let maxIdx = 0;
+    if (rest[1] > rest[maxIdx]) maxIdx = 1;
+    if (rest[2] > rest[maxIdx]) maxIdx = 2;
+    flo[maxIdx] += 1;
+    rest[maxIdx] = 0;
+    missing -= 1;
+  }
+  return [flo[0] / factor, flo[1] / factor, flo[2] / factor];
+}
+
+function calcBioGram(items: Taetigkeit[]): BioGram {
+  if (items.length === 0) return { imp: 33.3, int: 33.3, ana: 33.4 };
+  let sImp = 0, sInt = 0, sAna = 0;
+  for (const t of items) {
+    const w = LEVEL_MULTIPLIER[t.niveau] ?? 1.0;
+    if (t.kompetenz === "Impulsiv") sImp += w;
+    else if (t.kompetenz === "Intuitiv") sInt += w;
+    else if (t.kompetenz === "Analytisch") sAna += w;
+  }
+  const total = sImp + sInt + sAna;
+  if (total <= 0) return { imp: 33.3, int: 33.3, ana: 33.4 };
+  const [imp, int, ana] = roundPercentages((sImp / total) * 100, (sInt / total) * 100, (sAna / total) * 100);
+  return { imp, int, ana };
+}
+
 const ERFOLGSFOKUS_LABELS = [
   "Ergebnis-/\nUmsatzwirkung",
   "Beziehungs- und\nNetzwerkstabilität",
@@ -613,6 +650,10 @@ export default function RollenDNA() {
   const nebenCount = taetigkeiten.filter(t => t.kategorie === "neben").length;
   const fuehrungCount = taetigkeiten.filter(t => t.kategorie === "fuehrung").length;
   const highCount = taetigkeiten.filter(t => t.niveau === "Hoch").length;
+
+  const bioGramHaupt = calcBioGram(taetigkeiten.filter(t => t.kategorie === "haupt"));
+  const bioGramNeben = calcBioGram(taetigkeiten.filter(t => t.kategorie === "neben"));
+  const bioGramFuehrung = calcBioGram(taetigkeiten.filter(t => t.kategorie === "fuehrung"));
 
   const MAX_ITEMS: Record<TaetigkeitKategorie, number> = { haupt: 15, neben: 10, fuehrung: 10 };
   const currentTabCount = filteredTaetigkeiten.length;
@@ -1803,18 +1844,18 @@ export default function RollenDNA() {
                   {bioCheckOpen && (
                     <div style={{ marginTop: 20 }}>
                       {[
-                        { title: "Tätigkeitsstruktur", key: "taetigkeitsstruktur" },
-                        { title: "Führungskompetenzen", key: "fuehrungskompetenzen" },
-                        { title: "Humankompetenzen", key: "humankompetenzen" },
+                        { title: "Tätigkeitsstruktur", key: "taetigkeitsstruktur", data: bioGramHaupt },
+                        { title: "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung },
+                        { title: "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben },
                       ].map((section, sIdx) => (
                         <div key={section.key} style={{ marginBottom: sIdx < 2 ? 24 : 0 }} data-testid={`biocheck-section-${section.key}`}>
                           <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", marginBottom: 12 }}>
                             {section.title}
                           </p>
                           {[
-                            { label: "Impulsiv", color: "#C41E3A", value: 33.3 },
-                            { label: "Intuitiv", color: "#F39200", value: 33.3 },
-                            { label: "Analytisch", color: "#1A5DAB", value: 33.3 },
+                            { label: "Impulsiv", color: "#C41E3A", value: section.data.imp },
+                            { label: "Intuitiv", color: "#F39200", value: section.data.int },
+                            { label: "Analytisch", color: "#1A5DAB", value: section.data.ana },
                           ].map((bar) => (
                             <div
                               key={bar.label}
@@ -1856,7 +1897,7 @@ export default function RollenDNA() {
                                 textAlign: "right",
                                 flexShrink: 0,
                               }}>
-                                {Math.round(bar.value)}%
+                                {bar.value % 1 === 0 ? bar.value : bar.value.toFixed(1)}%
                               </span>
                             </div>
                           ))}
@@ -2112,18 +2153,18 @@ export default function RollenDNA() {
                 {bioCheckOpen && (
                   <div style={{ marginTop: 20 }}>
                     {[
-                      { title: "Tätigkeitsstruktur", key: "taetigkeitsstruktur" },
-                      { title: "Führungskompetenzen", key: "fuehrungskompetenzen" },
-                      { title: "Humankompetenzen", key: "humankompetenzen" },
+                      { title: "Tätigkeitsstruktur", key: "taetigkeitsstruktur", data: bioGramHaupt },
+                      { title: "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung },
+                      { title: "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben },
                     ].map((section, sIdx) => (
                       <div key={section.key} style={{ marginBottom: sIdx < 2 ? 24 : 0 }} data-testid={`biocheck-collapsed-${section.key}`}>
                         <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", marginBottom: 12 }}>
                           {section.title}
                         </p>
                         {[
-                          { label: "Impulsiv", color: "#C41E3A", value: 33.3 },
-                          { label: "Intuitiv", color: "#F39200", value: 33.3 },
-                          { label: "Analytisch", color: "#1A5DAB", value: 33.3 },
+                          { label: "Impulsiv", color: "#C41E3A", value: section.data.imp },
+                          { label: "Intuitiv", color: "#F39200", value: section.data.int },
+                          { label: "Analytisch", color: "#1A5DAB", value: section.data.ana },
                         ].map((bar) => (
                           <div
                             key={bar.label}
@@ -2165,7 +2206,7 @@ export default function RollenDNA() {
                               textAlign: "right",
                               flexShrink: 0,
                             }}>
-                              {Math.round(bar.value)}%
+                              {bar.value % 1 === 0 ? bar.value : bar.value.toFixed(1)}%
                             </span>
                           </div>
                         ))}
