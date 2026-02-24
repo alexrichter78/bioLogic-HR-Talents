@@ -1011,7 +1011,7 @@ export default function RollenDNA() {
           data-testid="input-file-load"
         />
         <div style={{ position: "sticky", top: 0, zIndex: 200 }}>
-          <div style={{ backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", background: "rgba(245,247,250,0.85)" }} className="dark:!bg-background/90 pb-4">
+          <div style={{ backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", background: "rgba(255,255,255,0.82)" }} className="dark:!bg-background/90 pb-4">
             <Header onSave={handleSave} onLoad={handleLoad} />
 
             <div className="w-full max-w-3xl mx-auto px-6">
