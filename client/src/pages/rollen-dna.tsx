@@ -654,6 +654,7 @@ export default function RollenDNA() {
   const bioGramHaupt = calcBioGram(taetigkeiten.filter(t => t.kategorie === "haupt"));
   const bioGramNeben = calcBioGram(taetigkeiten.filter(t => t.kategorie === "neben"));
   const bioGramFuehrung = calcBioGram(taetigkeiten.filter(t => t.kategorie === "fuehrung"));
+  const bioGramGesamt = calcBioGram(taetigkeiten);
 
   const MAX_ITEMS: Record<TaetigkeitKategorie, number> = { haupt: 15, neben: 10, fuehrung: 10 };
   const currentTabCount = filteredTaetigkeiten.length;
@@ -1842,14 +1843,24 @@ export default function RollenDNA() {
                   </button>
 
                   {bioCheckOpen && (
-                    <div style={{ marginTop: 20 }}>
+                    <div style={{ marginTop: 20, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                       {[
-                        { title: "Tätigkeitsstruktur", key: "taetigkeitsstruktur", data: bioGramHaupt },
-                        { title: "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung },
+                        { title: "Haupttätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt },
                         { title: "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben },
-                      ].map((section, sIdx) => (
-                        <div key={section.key} style={{ marginBottom: sIdx < 2 ? 24 : 0 }} data-testid={`biocheck-section-${section.key}`}>
-                          <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", marginBottom: 12 }}>
+                        { title: "Gesamtprofil", key: "gesamtprofil", data: bioGramGesamt },
+                        { title: "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung },
+                      ].map((section) => (
+                        <div
+                          key={section.key}
+                          style={{
+                            background: "rgba(0,0,0,0.02)",
+                            borderRadius: 14,
+                            padding: "16px 18px",
+                            border: "1px solid rgba(0,0,0,0.04)",
+                          }}
+                          data-testid={`biocheck-section-${section.key}`}
+                        >
+                          <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>
                             {section.title}
                           </p>
                           {[
@@ -1862,43 +1873,47 @@ export default function RollenDNA() {
                               style={{
                                 display: "flex",
                                 alignItems: "center",
-                                gap: 12,
-                                marginBottom: 8,
+                                gap: 10,
+                                marginBottom: 10,
                               }}
                             >
                               <span style={{
-                                fontSize: 13,
+                                fontSize: 12,
                                 color: "#6E6E73",
-                                width: 72,
+                                width: 62,
                                 flexShrink: 0,
                               }}>
                                 {bar.label}
                               </span>
                               <div style={{
                                 flex: 1,
-                                height: 10,
-                                borderRadius: 5,
+                                height: 24,
+                                borderRadius: 6,
                                 background: "rgba(0,0,0,0.04)",
                                 overflow: "hidden",
+                                position: "relative",
                               }}>
                                 <div style={{
-                                  width: `${bar.value}%`,
+                                  width: `${Math.max(bar.value, 2)}%`,
                                   height: "100%",
-                                  borderRadius: 5,
-                                  background: `linear-gradient(90deg, ${bar.color}CC, ${bar.color}88)`,
+                                  borderRadius: 6,
+                                  background: bar.color,
                                   transition: "width 600ms ease",
-                                }} />
+                                  display: "flex",
+                                  alignItems: "center",
+                                  paddingLeft: 8,
+                                  minWidth: 40,
+                                }}>
+                                  <span style={{
+                                    fontSize: 11,
+                                    fontWeight: 700,
+                                    color: "#FFFFFF",
+                                    whiteSpace: "nowrap",
+                                  }}>
+                                    {bar.value % 1 === 0 ? bar.value : bar.value.toFixed(1)}%
+                                  </span>
+                                </div>
                               </div>
-                              <span style={{
-                                fontSize: 13,
-                                fontWeight: 500,
-                                color: "#3A3A3C",
-                                width: 36,
-                                textAlign: "right",
-                                flexShrink: 0,
-                              }}>
-                                {bar.value % 1 === 0 ? bar.value : bar.value.toFixed(1)}%
-                              </span>
                             </div>
                           ))}
                         </div>
@@ -2152,66 +2167,82 @@ export default function RollenDNA() {
 
                 {bioCheckOpen && (
                   <div style={{ marginTop: 20 }}>
-                    {[
-                      { title: "Tätigkeitsstruktur", key: "taetigkeitsstruktur", data: bioGramHaupt },
-                      { title: "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung },
-                      { title: "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben },
-                    ].map((section, sIdx) => (
-                      <div key={section.key} style={{ marginBottom: sIdx < 2 ? 24 : 0 }} data-testid={`biocheck-collapsed-${section.key}`}>
-                        <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", marginBottom: 12 }}>
-                          {section.title}
-                        </p>
-                        {[
-                          { label: "Impulsiv", color: "#C41E3A", value: section.data.imp },
-                          { label: "Intuitiv", color: "#F39200", value: section.data.int },
-                          { label: "Analytisch", color: "#1A5DAB", value: section.data.ana },
-                        ].map((bar) => (
-                          <div
-                            key={bar.label}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 12,
-                              marginBottom: 8,
-                            }}
-                          >
-                            <span style={{
-                              fontSize: 13,
-                              color: "#6E6E73",
-                              width: 72,
-                              flexShrink: 0,
-                            }}>
-                              {bar.label}
-                            </span>
-                            <div style={{
-                              flex: 1,
-                              height: 10,
-                              borderRadius: 5,
-                              background: "rgba(0,0,0,0.04)",
-                              overflow: "hidden",
-                            }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                      {[
+                        { title: "Haupttätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt },
+                        { title: "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben },
+                        { title: "Gesamtprofil", key: "gesamtprofil", data: bioGramGesamt },
+                        { title: "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung },
+                      ].map((section) => (
+                        <div
+                          key={section.key}
+                          style={{
+                            background: "rgba(0,0,0,0.02)",
+                            borderRadius: 14,
+                            padding: "16px 18px",
+                            border: "1px solid rgba(0,0,0,0.04)",
+                          }}
+                          data-testid={`biocheck-collapsed-${section.key}`}
+                        >
+                          <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>
+                            {section.title}
+                          </p>
+                          {[
+                            { label: "Impulsiv", color: "#C41E3A", value: section.data.imp },
+                            { label: "Intuitiv", color: "#F39200", value: section.data.int },
+                            { label: "Analytisch", color: "#1A5DAB", value: section.data.ana },
+                          ].map((bar) => (
+                            <div
+                              key={bar.label}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 10,
+                                marginBottom: 10,
+                              }}
+                            >
+                              <span style={{
+                                fontSize: 12,
+                                color: "#6E6E73",
+                                width: 62,
+                                flexShrink: 0,
+                              }}>
+                                {bar.label}
+                              </span>
                               <div style={{
-                                width: `${bar.value}%`,
-                                height: "100%",
-                                borderRadius: 5,
-                                background: `linear-gradient(90deg, ${bar.color}CC, ${bar.color}88)`,
-                                transition: "width 600ms ease",
-                              }} />
+                                flex: 1,
+                                height: 24,
+                                borderRadius: 6,
+                                background: "rgba(0,0,0,0.04)",
+                                overflow: "hidden",
+                                position: "relative",
+                              }}>
+                                <div style={{
+                                  width: `${Math.max(bar.value, 2)}%`,
+                                  height: "100%",
+                                  borderRadius: 6,
+                                  background: bar.color,
+                                  transition: "width 600ms ease",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  paddingLeft: 8,
+                                  minWidth: 40,
+                                }}>
+                                  <span style={{
+                                    fontSize: 11,
+                                    fontWeight: 700,
+                                    color: "#FFFFFF",
+                                    whiteSpace: "nowrap",
+                                  }}>
+                                    {bar.value % 1 === 0 ? bar.value : bar.value.toFixed(1)}%
+                                  </span>
+                                </div>
+                              </div>
                             </div>
-                            <span style={{
-                              fontSize: 13,
-                              fontWeight: 500,
-                              color: "#3A3A3C",
-                              width: 36,
-                              textAlign: "right",
-                              flexShrink: 0,
-                            }}>
-                              {bar.value % 1 === 0 ? bar.value : bar.value.toFixed(1)}%
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    ))}
+                          ))}
+                        </div>
+                      ))}
+                    </div>
 
                     <div style={{
                       marginTop: 28,
