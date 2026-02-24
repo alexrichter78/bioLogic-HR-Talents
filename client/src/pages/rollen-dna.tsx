@@ -153,6 +153,7 @@ function LockedStep({ step, title }: { step: number; title: string }) {
   return (
     <div
       className="flex items-center gap-4 px-5 py-4 rounded-xl bg-muted/20 dark:bg-muted/10 border border-border/20 opacity-50"
+      style={{ position: "relative", zIndex: 1 }}
       data-testid={`locked-step-${step}`}
     >
       <span className="w-8 h-8 rounded-full bg-muted/50 dark:bg-muted/30 text-muted-foreground/40 flex items-center justify-center flex-shrink-0 text-xs font-semibold">
@@ -842,8 +843,8 @@ export default function RollenDNA() {
           <div className="space-y-5">
 
             {allCollapsed ? null : currentStep === 1 ? (
-              <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-1">
-                <div className="p-6">
+              <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border animate-in fade-in slide-in-from-bottom-2 duration-400" style={{ overflow: "visible", position: "relative", zIndex: 100 }} data-testid="card-step-1">
+                <div className="p-6" style={{ overflow: "visible" }}>
                   <div className="flex items-center gap-3 mb-1">
                     <span className="text-xs font-medium text-primary uppercase tracking-wider">Schritt 1</span>
                   </div>
@@ -851,7 +852,7 @@ export default function RollenDNA() {
                     Rolle auswählen
                   </h2>
 
-                  <div className="relative mb-6" data-testid="input-beruf-wrapper">
+                  <div className="relative mb-6" style={{ zIndex: 100 }} data-testid="input-beruf-wrapper">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 z-10" />
                     <Input
                       ref={inputRef}
@@ -894,10 +895,8 @@ export default function RollenDNA() {
                           top: "calc(100% + 4px)",
                           left: 0,
                           right: 0,
-                          zIndex: 50,
-                          background: "rgba(255,255,255,0.95)",
-                          backdropFilter: "blur(20px)",
-                          WebkitBackdropFilter: "blur(20px)",
+                          zIndex: 9999,
+                          background: "#FFFFFF",
                           borderRadius: 12,
                           border: "1px solid rgba(0,0,0,0.08)",
                           boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
