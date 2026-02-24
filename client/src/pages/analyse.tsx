@@ -160,7 +160,7 @@ export default function Analyse() {
               <ArrowLeft className="w-4 h-4" />
             </button>
             <img src={logoSrc} alt="bioLogic Logo" className="h-7 w-auto" data-testid="logo-analyse" />
-            <span className="text-sm text-muted-foreground/70 font-light tracking-wide hidden sm:inline">Analyse</span>
+            <span className="text-sm text-muted-foreground/70 font-light tracking-wide hidden sm:inline">Stammdaten</span>
           </div>
           <div className="flex items-center gap-2">
             {hasProfile && (
@@ -200,11 +200,8 @@ export default function Analyse() {
               className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground/90 mb-2"
               data-testid="text-analyse-title"
             >
-              Analyse
+              Stammdaten (Analysehilfe)
             </h1>
-            <p className="text-sm text-muted-foreground" data-testid="text-analyse-subtitle">
-              {hasProfile ? `Rollenanalyse für „${dna.beruf}"` : "Interne Analysebereiche"}
-            </p>
           </div>
 
           {isAnalyzing && (
@@ -231,7 +228,7 @@ export default function Analyse() {
           <div className="flex flex-col gap-6" style={{ opacity: isAnalyzing ? 0.4 : 1, transition: "opacity 300ms" }}>
             <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-bereich1">
-                Kompetenzverteilung & Rollenprofil
+                Impulsive Daten
               </label>
               <textarea
                 value={bereich1}
@@ -246,7 +243,7 @@ export default function Analyse() {
 
             <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-bereich2">
-                Tätigkeitsanalyse & Anforderungsprofil
+                Intuitive Daten
               </label>
               <textarea
                 value={bereich2}
@@ -261,7 +258,7 @@ export default function Analyse() {
 
             <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-bereich3">
-                Empfehlungen & Entwicklungspotenziale
+                Analytische Daten
               </label>
               <textarea
                 value={bereich3}
