@@ -1884,6 +1884,7 @@ export default function RollenDNA() {
             )}
 
             {allCollapsed && (
+              <>
               <div
                 style={{
                   background: "rgba(255,255,255,0.65)",
@@ -2038,6 +2039,143 @@ export default function RollenDNA() {
                   </button>
                 </div>
               </div>
+
+              <div
+                style={{
+                  background: "rgba(255,255,255,0.65)",
+                  backdropFilter: "blur(24px)",
+                  WebkitBackdropFilter: "blur(24px)",
+                  borderRadius: 20,
+                  padding: "28px 32px",
+                  boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+                  border: "1px solid rgba(0,0,0,0.04)",
+                  marginTop: 24,
+                }}
+                data-testid="card-biocheck-collapsed"
+              >
+                <div className="flex items-center gap-2.5 mb-6">
+                  <div style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: "50%",
+                    background: "linear-gradient(135deg, #0071E3, #34AADC)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}>
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                      <circle cx="8" cy="8" r="6" stroke="white" strokeWidth="1.5" />
+                      <circle cx="8" cy="8" r="2.5" fill="white" />
+                    </svg>
+                  </div>
+                  <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>
+                    bio<span style={{ fontWeight: 400 }}>Check</span>
+                  </span>
+                  <span style={{ fontSize: 17, fontWeight: 400, color: "#1D1D1F" }}>
+                    der Stellenanforderung
+                  </span>
+                </div>
+
+                {[
+                  { title: "Tätigkeitsstruktur", key: "taetigkeitsstruktur" },
+                  { title: "Führungskompetenzen", key: "fuehrungskompetenzen" },
+                  { title: "Humankompetenzen", key: "humankompetenzen" },
+                ].map((section, sIdx) => (
+                  <div key={section.key} style={{ marginBottom: sIdx < 2 ? 24 : 0 }} data-testid={`biocheck-collapsed-${section.key}`}>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", marginBottom: 12 }}>
+                      {section.title}
+                    </p>
+                    {[
+                      { label: "Impulsiv", color: "#C41E3A", value: 33.3 },
+                      { label: "Intuitiv", color: "#F39200", value: 33.3 },
+                      { label: "Analytisch", color: "#1A5DAB", value: 33.3 },
+                    ].map((bar) => (
+                      <div
+                        key={bar.label}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 12,
+                          marginBottom: 8,
+                        }}
+                      >
+                        <span style={{
+                          fontSize: 13,
+                          color: "#6E6E73",
+                          width: 72,
+                          flexShrink: 0,
+                        }}>
+                          {bar.label}
+                        </span>
+                        <div style={{
+                          flex: 1,
+                          height: 10,
+                          borderRadius: 5,
+                          background: "rgba(0,0,0,0.04)",
+                          overflow: "hidden",
+                        }}>
+                          <div style={{
+                            width: `${bar.value}%`,
+                            height: "100%",
+                            borderRadius: 5,
+                            background: `linear-gradient(90deg, ${bar.color}CC, ${bar.color}88)`,
+                            transition: "width 600ms ease",
+                          }} />
+                        </div>
+                        <span style={{
+                          fontSize: 13,
+                          fontWeight: 500,
+                          color: "#3A3A3C",
+                          width: 36,
+                          textAlign: "right",
+                          flexShrink: 0,
+                        }}>
+                          {Math.round(bar.value)}%
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+
+                <div style={{
+                  marginTop: 28,
+                  borderTop: "1px solid rgba(0,0,0,0.06)",
+                  paddingTop: 24,
+                }}>
+                  <h4 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", marginBottom: 10 }}>
+                    Strukturelles Anforderungsprofil
+                  </h4>
+                  <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6 }}>
+                    Die Berechnung des strukturellen Anforderungsprofils wird nach Abschluss der Datenerfassung erstellt.
+                  </p>
+                </div>
+
+                <div style={{ marginTop: 24, textAlign: "center" }}>
+                  <button
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      height: 48,
+                      paddingLeft: 28,
+                      paddingRight: 28,
+                      fontSize: 15,
+                      fontWeight: 600,
+                      borderRadius: 14,
+                      background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.08))",
+                      border: "1.5px solid rgba(0,113,227,0.25)",
+                      color: "#0071E3",
+                      cursor: "pointer",
+                      transition: "all 200ms ease",
+                    }}
+                    data-testid="button-kandidatenprofile-collapsed"
+                  >
+                    Kandidatenprofile prüfen
+                    <ArrowRight style={{ width: 16, height: 16 }} />
+                  </button>
+                </div>
+              </div>
+              </>
             )}
 
           </div>
