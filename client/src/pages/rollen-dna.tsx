@@ -1959,7 +1959,7 @@ export default function RollenDNA() {
                                 position: "relative",
                               }}>
                                 <div style={{
-                                  width: `${Math.max(bar.value, 2)}%`,
+                                  width: bar.value === 0 ? "0%" : `${Math.max(bar.value, 2)}%`,
                                   height: "100%",
                                   borderRadius: 6,
                                   background: bar.color,
@@ -1967,7 +1967,7 @@ export default function RollenDNA() {
                                   display: "flex",
                                   alignItems: "center",
                                   paddingLeft: 8,
-                                  minWidth: 40,
+                                  minWidth: bar.value === 0 ? 0 : 40,
                                 }}>
                                   <span style={{
                                     fontSize: 11,
@@ -2027,7 +2027,7 @@ export default function RollenDNA() {
                             position: "relative",
                           }}>
                             <div style={{
-                              width: `${Math.max(bar.value, 2)}%`,
+                              width: bar.value === 0 ? "0%" : `${Math.max(bar.value, 2)}%`,
                               height: "100%",
                               borderRadius: 6,
                               background: bar.color,
@@ -2035,7 +2035,7 @@ export default function RollenDNA() {
                               display: "flex",
                               alignItems: "center",
                               paddingLeft: 8,
-                              minWidth: 40,
+                              minWidth: bar.value === 0 ? 0 : 40,
                             }}>
                               <span style={{
                                 fontSize: 12,
@@ -2352,7 +2352,7 @@ export default function RollenDNA() {
                                 position: "relative",
                               }}>
                                 <div style={{
-                                  width: `${Math.max(bar.value, 2)}%`,
+                                  width: bar.value === 0 ? "0%" : `${Math.max(bar.value, 2)}%`,
                                   height: "100%",
                                   borderRadius: 6,
                                   background: bar.color,
@@ -2360,7 +2360,7 @@ export default function RollenDNA() {
                                   display: "flex",
                                   alignItems: "center",
                                   paddingLeft: 8,
-                                  minWidth: 40,
+                                  minWidth: bar.value === 0 ? 0 : 40,
                                 }}>
                                   <span style={{
                                     fontSize: 11,
@@ -2420,7 +2420,7 @@ export default function RollenDNA() {
                             position: "relative",
                           }}>
                             <div style={{
-                              width: `${Math.max(bar.value, 2)}%`,
+                              width: bar.value === 0 ? "0%" : `${Math.max(bar.value, 2)}%`,
                               height: "100%",
                               borderRadius: 6,
                               background: bar.color,
@@ -2428,7 +2428,7 @@ export default function RollenDNA() {
                               display: "flex",
                               alignItems: "center",
                               paddingLeft: 8,
-                              minWidth: 40,
+                              minWidth: bar.value === 0 ? 0 : 40,
                             }}>
                               <span style={{
                                 fontSize: 12,
