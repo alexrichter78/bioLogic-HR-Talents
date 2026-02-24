@@ -1419,7 +1419,7 @@ export default function RollenDNA() {
                           margin: "0 auto 16px",
                         }} />
                         <p style={{ fontSize: 15, color: "#0071E3", fontWeight: 500 }}>
-                          KI generiert Kompetenzen für „{beruf}"...
+                          KI generiert Kompetenzen für die Stelle
                         </p>
                         <p style={{ fontSize: 13, color: "#8E8E93", marginTop: 4, marginBottom: 20 }}>
                           Das kann einige Sekunden dauern.
