@@ -668,9 +668,9 @@ export default function RollenDNA() {
       else if (idx === 3 || idx === 4) sAna += 1.0;
     }
 
-    if (aufgabencharakter === "Überwiegend operativ") sImp += 1.0;
-    else if (aufgabencharakter === "Systemisch") sInt += 1.0;
-    else if (aufgabencharakter === "Überwiegend strategisch") sAna += 1.0;
+    if (aufgabencharakter === "überwiegend operativ") sImp += 1.0;
+    else if (aufgabencharakter === "überwiegend systemisch") sInt += 1.0;
+    else if (aufgabencharakter === "überwiegend strategisch") sAna += 1.0;
 
     if (arbeitslogik === "Umsetzungsorientiert") sImp += 1.0;
     else if (arbeitslogik === "Menschenorientiert") sInt += 1.0;
@@ -1335,7 +1335,7 @@ export default function RollenDNA() {
                         </p>
                         <div style={{ marginTop: 28 }}>
                           <PillGroup
-                            options={["Überwiegend operativ", "Systemisch", "Gemischt", "Überwiegend strategisch"]}
+                            options={["überwiegend operativ", "überwiegend systemisch", "überwiegend strategisch", "Gemischt"]}
                             selected={[aufgabencharakter]}
                             onSelect={handleAufgabencharakter}
                           />
