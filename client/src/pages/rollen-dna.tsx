@@ -1847,7 +1847,7 @@ export default function RollenDNA() {
                       {[
                         { title: "Haupttätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt },
                         { title: "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben },
-                        { title: "Gesamtprofil", key: "gesamtprofil", data: bioGramGesamt },
+                        { title: "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramGesamt },
                         { title: "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung },
                       ].map((section) => (
                         <div
@@ -2171,7 +2171,7 @@ export default function RollenDNA() {
                       {[
                         { title: "Haupttätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt },
                         { title: "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben },
-                        { title: "Gesamtprofil", key: "gesamtprofil", data: bioGramGesamt },
+                        { title: "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramGesamt },
                         { title: "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung },
                       ].map((section) => (
                         <div
