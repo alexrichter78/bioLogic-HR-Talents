@@ -163,34 +163,6 @@ export default function Analyse() {
             <span className="text-sm text-muted-foreground/70 font-light tracking-wide hidden sm:inline">Stammdaten</span>
           </div>
           <div className="flex items-center gap-2">
-            {hasProfile && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="gap-1.5"
-                style={{ color: "#0071E3", fontWeight: 500 }}
-                onClick={runAnalyse}
-                disabled={isAnalyzing}
-                data-testid="button-analyse-neu-berechnen"
-              >
-                <RefreshCw className={`w-3.5 h-3.5 ${isAnalyzing ? "animate-spin" : ""}`} />
-                {isAnalyzing ? "Berechne..." : "Neu berechnen"}
-              </Button>
-            )}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="gap-1.5"
-              style={{
-                color: saved ? "#8E8E93" : "#0071E3",
-                fontWeight: saved ? 400 : 600,
-              }}
-              onClick={handleSave}
-              data-testid="button-analyse-speichern"
-            >
-              <Save className="w-3.5 h-3.5" />
-              {saved ? "Gespeichert" : "Speichern"}
-            </Button>
           </div>
         </header>
 
