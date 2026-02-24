@@ -1440,16 +1440,17 @@ export default function RollenDNA() {
                                           fontSize: 12,
                                           fontWeight: 500,
                                           borderRadius: 999,
-                                          border: t.niveau === n ? "1.5px solid transparent" : "1px solid rgba(0,0,0,0.1)",
+                                          border: t.niveau === n ? "1.5px solid transparent" : "1px solid rgba(0,0,0,0.15)",
                                           cursor: isHighDisabled ? "not-allowed" : "pointer",
                                           transition: "all 150ms ease",
-                                          background: t.niveau === n ? "linear-gradient(135deg, #6B7280, #9CA3AF)" : "transparent",
-                                          color: t.niveau === n ? "#FFFFFF" : isHighDisabled ? "#D1D1D6" : "#8E8E93",
+                                          background: t.niveau === n ? "linear-gradient(135deg, #6B7280, #9CA3AF)" : "rgba(0,0,0,0.03)",
+                                          color: t.niveau === n ? "#FFFFFF" : isHighDisabled ? "#D1D1D6" : "#3A3A3C",
                                           opacity: isHighDisabled ? 0.5 : 1,
                                           display: "flex",
                                           alignItems: "center",
                                           gap: 4,
                                         }}
+                                        className={t.niveau !== n && !isHighDisabled ? "hover:bg-muted/40" : ""}
                                         data-testid={`niveau-${t.id}-${n.toLowerCase()}`}
                                       >
                                         {t.niveau === n && <Check style={{ width: 10, height: 10 }} />}
