@@ -975,7 +975,7 @@ export default function RollenDNA() {
         </div>
       </>
     )}
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-x-hidden">
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -1010,8 +1010,8 @@ export default function RollenDNA() {
           onChange={handleFileChange}
           data-testid="input-file-load"
         />
-        <div style={{ position: "sticky", top: 0, zIndex: 200, background: "inherit" }}>
-          <div style={{ background: "linear-gradient(135deg, rgba(245,247,250,0.97), rgba(240,242,248,0.97))" }} className="dark:!bg-background/95 backdrop-blur-md">
+        <div style={{ position: "sticky", top: 0, zIndex: 200 }}>
+          <div style={{ backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", background: "rgba(245,247,250,0.85)" }} className="dark:!bg-background/90 pb-4">
             <Header onSave={handleSave} onLoad={handleLoad} />
 
             <div className="w-full max-w-3xl mx-auto px-6">
@@ -1025,13 +1025,12 @@ export default function RollenDNA() {
               </div>
 
               {!allCollapsed && (
-              <div className="mb-6">
+              <div className="mb-2">
                 <StepProgress currentStep={currentStep} completedSteps={completedSteps} />
               </div>
               )}
             </div>
           </div>
-          <div style={{ height: 20, background: "linear-gradient(to bottom, rgba(0,0,0,0.04), transparent)" }} />
         </div>
 
         <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20 pt-6">
