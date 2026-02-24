@@ -8,6 +8,16 @@ const DEFAULT_BEREICH1 = `Noch keine Analyse vorhanden. Erstelle zuerst ein voll
 const DEFAULT_BEREICH2 = `Noch keine Analyse vorhanden. Erstelle zuerst ein vollständiges Rollenprofil, um die KI-Analyse zu starten.`;
 const DEFAULT_BEREICH3 = `Noch keine Analyse vorhanden. Erstelle zuerst ein vollständiges Rollenprofil, um die KI-Analyse zu starten.`;
 
+const DEFAULT_BIOCHECK_INTRO = `Diese Auswertung beschreibt die strukturelle Logik einer Rolle. Die Anforderungen werden drei Dimensionen zugeordnet: Impulsiv, Intuitiv und Analytisch. Dadurch wird sichtbar, welche Art von Wirksamkeit in dieser Rolle im Vordergrund steht.
+
+Impulsiv steht für Umsetzung und Ergebnisverantwortung. Entscheidungen werden getroffen, Aufgaben konsequent vorangetrieben.
+
+Intuitiv zeigt sich in der Art der Zusammenarbeit. Es geht um situationsgerechtes Handeln und darum, im jeweiligen Kontext stimmig zu agieren.
+
+Analytisch beschreibt die strukturelle Qualität der Rolle. Planung, Klarheit und fachliche Präzision prägen diese Dimension.
+
+Das Gesamtprofil macht deutlich, welche dieser Logiken den Schwerpunkt bildet und wie sie zueinander gewichtet sind.`;
+
 function loadBioCheckText(): { generated: string; override: string | null } {
   try {
     const gen = localStorage.getItem("bioCheckTextGenerated");
@@ -62,6 +72,14 @@ export default function Analyse() {
   const [bioCheckText, setBioCheckText] = useState(bioCheckData.override ?? bioCheckData.generated);
   const [bioCheckEdited, setBioCheckEdited] = useState(false);
 
+  const [bioCheckIntro, setBioCheckIntro] = useState(() => {
+    try {
+      const saved = localStorage.getItem("bioCheckIntroOverride");
+      return saved ? JSON.parse(saved) : DEFAULT_BIOCHECK_INTRO;
+    } catch { return DEFAULT_BIOCHECK_INTRO; }
+  });
+  const [bioCheckIntroEdited, setBioCheckIntroEdited] = useState(false);
+
   const handleChange = (setter: (v: string) => void) => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setter(e.target.value);
     setSaved(false);
@@ -81,6 +99,17 @@ export default function Analyse() {
     localStorage.removeItem("bioCheckTextOverride");
     setBioCheckText(bioCheckData.generated);
     setBioCheckEdited(false);
+  };
+
+  const handleBioCheckIntroSave = () => {
+    localStorage.setItem("bioCheckIntroOverride", JSON.stringify(bioCheckIntro));
+    setBioCheckIntroEdited(false);
+  };
+
+  const handleBioCheckIntroReset = () => {
+    localStorage.removeItem("bioCheckIntroOverride");
+    setBioCheckIntro(DEFAULT_BIOCHECK_INTRO);
+    setBioCheckIntroEdited(false);
   };
 
   const runAnalyse = async () => {
@@ -224,6 +253,58 @@ export default function Analyse() {
           )}
 
           <div className="flex flex-col gap-6" style={{ opacity: isAnalyzing ? 0.4 : 1, transition: "opacity 300ms" }}>
+            <div style={cardStyle}>
+              <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-biocheck-intro">
+                bioCheck-Einleitungstext (statisch)
+              </label>
+              <textarea
+                value={bioCheckIntro}
+                onChange={(e) => { setBioCheckIntro(e.target.value); setBioCheckIntroEdited(true); }}
+                rows={8}
+                style={textareaStyle}
+                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(0,113,227,0.4)"; }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; }}
+                data-testid="textarea-biocheck-intro"
+              />
+              <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+                <button
+                  onClick={handleBioCheckIntroSave}
+                  disabled={!bioCheckIntroEdited}
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 600,
+                    padding: "6px 16px",
+                    borderRadius: 8,
+                    border: "none",
+                    background: bioCheckIntroEdited ? "#0071E3" : "rgba(0,0,0,0.06)",
+                    color: bioCheckIntroEdited ? "#fff" : "#8E8E93",
+                    cursor: bioCheckIntroEdited ? "pointer" : "default",
+                    transition: "all 200ms ease",
+                  }}
+                  data-testid="button-biocheck-intro-save"
+                >
+                  Übernehmen
+                </button>
+                <button
+                  onClick={handleBioCheckIntroReset}
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 500,
+                    padding: "6px 16px",
+                    borderRadius: 8,
+                    border: "1px solid rgba(0,0,0,0.1)",
+                    background: "transparent",
+                    color: "#6E6E73",
+                    cursor: "pointer",
+                    transition: "all 200ms ease",
+                  }}
+                  data-testid="button-biocheck-intro-reset"
+                >
+                  Zurücksetzen
+                </button>
+              </div>
+            </div>
+
             <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-biocheck-text">
                 bioCheck-Text der Stellenanforderung
