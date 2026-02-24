@@ -454,6 +454,7 @@ export default function RollenDNA() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const originalNames = useRef<Map<number, string>>(new Map());
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generatingStep, setGeneratingStep] = useState(0);
   const [isReclassifying, setIsReclassifying] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -763,6 +764,7 @@ export default function RollenDNA() {
     }
 
     setIsGenerating(true);
+    setGeneratingStep(0);
     try {
       const erfolgsfokusText = erfolgsfokusIndices
         .map(i => ERFOLGSFOKUS_LABELS[i]?.replace(/\n/g, " "))
@@ -774,6 +776,9 @@ export default function RollenDNA() {
         if (raw) analyseTexte = JSON.parse(raw);
       } catch {}
 
+      const stepTimer1 = setTimeout(() => setGeneratingStep(1), 2500);
+      const stepTimer2 = setTimeout(() => setGeneratingStep(2), 5500);
+
       const resp = await fetch("/api/generate-kompetenzen", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -781,6 +786,13 @@ export default function RollenDNA() {
       });
       if (!resp.ok) throw new Error("Fehler bei der Generierung");
       const data = await resp.json();
+
+      clearTimeout(stepTimer1);
+      clearTimeout(stepTimer2);
+      setGeneratingStep(3);
+
+      await new Promise(resolve => setTimeout(resolve, 600));
+
       let id = nextId;
       const generated: Taetigkeit[] = [];
       for (const item of data.haupt || []) {
@@ -801,6 +813,7 @@ export default function RollenDNA() {
       console.error("KI-Generierung fehlgeschlagen:", err);
     } finally {
       setIsGenerating(false);
+      setGeneratingStep(0);
     }
   };
 
@@ -1408,9 +1421,68 @@ export default function RollenDNA() {
                         <p style={{ fontSize: 15, color: "#0071E3", fontWeight: 500 }}>
                           KI generiert Kompetenzen für „{beruf}"...
                         </p>
-                        <p style={{ fontSize: 13, color: "#8E8E93", marginTop: 4 }}>
+                        <p style={{ fontSize: 13, color: "#8E8E93", marginTop: 4, marginBottom: 20 }}>
                           Das kann einige Sekunden dauern.
                         </p>
+                        <div style={{ display: "inline-flex", flexDirection: "column", gap: 10, textAlign: "left" }}>
+                          {[
+                            { label: "generiere Tätigkeiten", step: 0 },
+                            { label: "arbeite an Humankompetenzen", step: 1 },
+                            { label: "arbeite an Führungskompetenzen", step: 2 },
+                          ].map((item) => {
+                            const done = generatingStep > item.step;
+                            const active = generatingStep === item.step;
+                            return (
+                              <div
+                                key={item.step}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 10,
+                                  opacity: active || done ? 1 : 0.35,
+                                  transition: "opacity 400ms ease",
+                                }}
+                                data-testid={`loading-step-${item.step}`}
+                              >
+                                <div style={{
+                                  width: 22,
+                                  height: 22,
+                                  borderRadius: "50%",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  background: done ? "#34C759" : "transparent",
+                                  border: done ? "none" : active ? "2px solid #0071E3" : "2px solid #D1D1D6",
+                                  transition: "all 300ms ease",
+                                  flexShrink: 0,
+                                }}>
+                                  {done ? (
+                                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                                      <path d="M3 8.5L6.5 12L13 4" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                  ) : active ? (
+                                    <div style={{
+                                      width: 8,
+                                      height: 8,
+                                      borderRadius: "50%",
+                                      border: "2px solid #0071E3",
+                                      borderTopColor: "transparent",
+                                      animation: "spin 0.7s linear infinite",
+                                    }} />
+                                  ) : null}
+                                </div>
+                                <span style={{
+                                  fontSize: 14,
+                                  fontWeight: active ? 500 : 400,
+                                  color: done ? "#34C759" : active ? "#1D1D1F" : "#8E8E93",
+                                  transition: "color 300ms ease",
+                                }}>
+                                  {item.label}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
                         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
                       </div>
                     ) : filteredTaetigkeiten.length === 0 ? (
