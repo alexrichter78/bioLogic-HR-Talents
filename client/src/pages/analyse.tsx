@@ -8,15 +8,15 @@ const DEFAULT_BEREICH1 = `Noch keine Analyse vorhanden. Erstelle zuerst ein voll
 const DEFAULT_BEREICH2 = `Noch keine Analyse vorhanden. Erstelle zuerst ein vollständiges Rollenprofil, um die KI-Analyse zu starten.`;
 const DEFAULT_BEREICH3 = `Noch keine Analyse vorhanden. Erstelle zuerst ein vollständiges Rollenprofil, um die KI-Analyse zu starten.`;
 
-const DEFAULT_BIOCHECK_INTRO = `Diese Auswertung beschreibt die strukturelle Logik einer Rolle. Die Anforderungen werden drei Dimensionen zugeordnet: Impulsiv, Intuitiv und Analytisch. Dadurch wird sichtbar, welche Art von Wirksamkeit in dieser Rolle im Vordergrund steht.
+const DEFAULT_BIOCHECK_INTRO = `Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Dimensionen Impulsiv, Intuitiv und Analytisch zugeordnet. So wird erkennbar, welche Form von Wirksamkeit die Rolle bestimmt.
 
-Impulsiv steht für Umsetzung und Ergebnisverantwortung. Entscheidungen werden getroffen, Aufgaben konsequent vorangetrieben.
+Impulsiv steht für Umsetzung, Entscheidung und Ergebnisverantwortung.
 
-Intuitiv zeigt sich in der Art der Zusammenarbeit. Es geht um situationsgerechtes Handeln und darum, im jeweiligen Kontext stimmig zu agieren.
+Intuitiv beschreibt die Qualität der Zusammenarbeit und das Handeln im jeweiligen Kontext.
 
-Analytisch beschreibt die strukturelle Qualität der Rolle. Planung, Klarheit und fachliche Präzision prägen diese Dimension.
+Analytisch kennzeichnet Struktur, Planung und fachliche Präzision.
 
-Das Gesamtprofil macht deutlich, welche dieser Logiken den Schwerpunkt bildet und wie sie zueinander gewichtet sind.`;
+Das Gesamtprofil zeigt, wo der Schwerpunkt liegt und wie die drei Dimensionen zueinander gewichtet sind.`;
 
 function loadBioCheckText(): { generated: string; override: string | null } {
   try {

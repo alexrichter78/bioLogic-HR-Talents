@@ -2047,11 +2047,11 @@ export default function RollenDNA() {
                     </p>
                   ) : (
                     <div style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.8, marginTop: 14 }} data-testid="text-biocheck-intro">
-                      <p style={{ marginBottom: 12 }}>Diese Auswertung beschreibt die strukturelle Logik einer Rolle. Die Anforderungen werden drei Dimensionen zugeordnet: <span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span>, <span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> und <span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span>. Dadurch wird sichtbar, welche Art von Wirksamkeit in dieser Rolle im Vordergrund steht.</p>
-                      <p style={{ marginBottom: 8 }}><span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span> steht für Umsetzung und Ergebnisverantwortung. Entscheidungen werden getroffen, Aufgaben konsequent vorangetrieben.</p>
-                      <p style={{ marginBottom: 8 }}><span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> zeigt sich in der Art der Zusammenarbeit. Es geht um situationsgerechtes Handeln und darum, im jeweiligen Kontext stimmig zu agieren.</p>
-                      <p style={{ marginBottom: 8 }}><span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> beschreibt die strukturelle Qualität der Rolle. Planung, Klarheit und fachliche Präzision prägen diese Dimension.</p>
-                      <p>Das Gesamtprofil macht deutlich, welche dieser Logiken den Schwerpunkt bildet und wie sie zueinander gewichtet sind.</p>
+                      <p style={{ marginBottom: 12 }}>Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Dimensionen <span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span>, <span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> und <span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> zugeordnet. So wird erkennbar, welche Form von Wirksamkeit die Rolle bestimmt.</p>
+                      <p style={{ marginBottom: 8 }}><span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span> steht für Umsetzung, Entscheidung und Ergebnisverantwortung.</p>
+                      <p style={{ marginBottom: 8 }}><span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> beschreibt die Qualität der Zusammenarbeit und das Handeln im jeweiligen Kontext.</p>
+                      <p style={{ marginBottom: 8 }}><span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> kennzeichnet Struktur, Planung und fachliche Präzision.</p>
+                      <p>Das Gesamtprofil zeigt, wo der Schwerpunkt liegt und wie die drei Dimensionen zueinander gewichtet sind.</p>
                     </div>
                   )}
 
@@ -2457,11 +2457,11 @@ export default function RollenDNA() {
                   </p>
                 ) : (
                   <div style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.8, marginTop: 14 }} data-testid="text-biocheck-intro-collapsed">
-                    <p style={{ marginBottom: 12 }}>Diese Auswertung beschreibt die strukturelle Logik einer Rolle. Die Anforderungen werden drei Dimensionen zugeordnet: <span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span>, <span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> und <span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span>. Dadurch wird sichtbar, welche Art von Wirksamkeit in dieser Rolle im Vordergrund steht.</p>
-                    <p style={{ marginBottom: 8 }}><span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span> steht für Umsetzung und Ergebnisverantwortung. Entscheidungen werden getroffen, Aufgaben konsequent vorangetrieben.</p>
-                    <p style={{ marginBottom: 8 }}><span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> zeigt sich in der Art der Zusammenarbeit. Es geht um situationsgerechtes Handeln und darum, im jeweiligen Kontext stimmig zu agieren.</p>
-                    <p style={{ marginBottom: 8 }}><span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> beschreibt die strukturelle Qualität der Rolle. Planung, Klarheit und fachliche Präzision prägen diese Dimension.</p>
-                    <p>Das Gesamtprofil macht deutlich, welche dieser Logiken den Schwerpunkt bildet und wie sie zueinander gewichtet sind.</p>
+                    <p style={{ marginBottom: 12 }}>Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Dimensionen <span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span>, <span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> und <span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> zugeordnet. So wird erkennbar, welche Form von Wirksamkeit die Rolle bestimmt.</p>
+                    <p style={{ marginBottom: 8 }}><span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span> steht für Umsetzung, Entscheidung und Ergebnisverantwortung.</p>
+                    <p style={{ marginBottom: 8 }}><span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> beschreibt die Qualität der Zusammenarbeit und das Handeln im jeweiligen Kontext.</p>
+                    <p style={{ marginBottom: 8 }}><span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> kennzeichnet Struktur, Planung und fachliche Präzision.</p>
+                    <p>Das Gesamtprofil zeigt, wo der Schwerpunkt liegt und wie die drei Dimensionen zueinander gewichtet sind.</p>
                   </div>
                 )}
 
