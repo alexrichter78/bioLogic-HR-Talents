@@ -1972,7 +1972,7 @@ export default function RollenDNA() {
                                     color: "#FFFFFF",
                                     whiteSpace: "nowrap",
                                   }}>
-                                    {bar.value % 1 === 0 ? bar.value : bar.value.toFixed(1)}%
+                                    {Math.round(bar.value)}%
                                   </span>
                                 </div>
                               </div>
@@ -2037,7 +2037,7 @@ export default function RollenDNA() {
                                 color: "#FFFFFF",
                                 whiteSpace: "nowrap",
                               }}>
-                                {bar.value % 1 === 0 ? bar.value : bar.value.toFixed(1)}%
+                                {Math.round(bar.value)}%
                               </span>
                             </div>
                           </div>
@@ -2359,7 +2359,7 @@ export default function RollenDNA() {
                                     color: "#FFFFFF",
                                     whiteSpace: "nowrap",
                                   }}>
-                                    {bar.value % 1 === 0 ? bar.value : bar.value.toFixed(1)}%
+                                    {Math.round(bar.value)}%
                                   </span>
                                 </div>
                               </div>
@@ -2424,7 +2424,7 @@ export default function RollenDNA() {
                                 color: "#FFFFFF",
                                 whiteSpace: "nowrap",
                               }}>
-                                {bar.value % 1 === 0 ? bar.value : bar.value.toFixed(1)}%
+                                {Math.round(bar.value)}%
                               </span>
                             </div>
                           </div>
