@@ -162,7 +162,8 @@ function generateBioCheckText(bg: BioGram, isLeadership: boolean): string {
 
   if (intensityLabel) {
     const dt = dominantTexts[max.key];
-    return `${dt.line1} (${intensityLabel} ${max.label}er Prägung, ${Math.round(max.value)}%)\n${dt.line2}`;
+    const prefix = isLeadership ? "Die Rolle ist" : "Diese Rolle ist";
+    return `${prefix} ${intensityLabel} ${max.label}er Prägung (${Math.round(max.value)}%) geprägt.\n${dt.line2}`;
   }
 
   const topDiff = Math.abs(max.value - second.value);
