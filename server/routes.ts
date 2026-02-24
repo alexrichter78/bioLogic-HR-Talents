@@ -112,7 +112,7 @@ Gleiche Wörter, unterschiedliche Sachverhalte:
 
 Erstelle für die Rolle "${beruf}" im oben beschriebenen Gesamtkontext:
 
-1. **Haupttätigkeiten (haupt)**: Genau 15 typische Haupttätigkeiten. Jede Tätigkeit ist eine präzise, praxisnahe Beschreibung (max. 60 Zeichen). Bewerte JEDE einzeln nach der Sachverhalt-Methodik.
+1. **Haupttätigkeiten (haupt)**: Genau 15 typische Haupttätigkeiten für genau diesen Beruf "${beruf}". Jede Tätigkeit als ausformulierter, berufsspezifischer Satz (80-120 Zeichen), der die konkrete Handlung UND deren Zweck/Kontext beschreibt. Beispielformat: "Zubereitung von Speisen nach Rezepten und kreativen Eigenkreationen in hoher Qualität." oder "Bestellung und Kontrolle von Waren sowie Überwachung des Wareneinsatzes und der Kosten." — NICHT generische Stichworte wie "Planung" oder "Kontrolle", sondern konkrete berufstypische Tätigkeiten mit Fachbezug. Bewerte JEDE einzeln nach der Sachverhalt-Methodik.
 
 2. **Humankompetenzen (neben)**: Genau 10 relevante Humankompetenzen (Soft Skills). Bewerte JEDE im Kontext dieser spezifischen Rolle.
 
