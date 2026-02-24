@@ -1879,7 +1879,7 @@ export default function RollenDNA() {
                     }} />
                   </button>
 
-                  {bioCheckOpen && (
+                  {bioCheckOpen && (<>
                     <div style={{ marginTop: 20, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                       {[
                         { title: "Haupttätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt },
@@ -2019,7 +2019,7 @@ export default function RollenDNA() {
                         </div>
                       ))}
                     </div>
-                  )}
+                  </>)}
                 </div>
               </div>
             ) : (
