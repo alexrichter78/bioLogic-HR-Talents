@@ -664,12 +664,20 @@ export default function RollenDNA() {
       const results: { kompetenz?: KompetenzTyp }[] = data.results || [];
       setTaetigkeiten(prev => {
         const updated = [...prev];
+        const validValues = ["Impulsiv", "Intuitiv", "Analytisch"];
         changed.forEach((t, i) => {
-          const newKompetenz = results[i]?.kompetenz;
-          if (newKompetenz && ["Impulsiv", "Intuitiv", "Analytisch"].includes(newKompetenz)) {
+          let raw = results[i]?.kompetenz;
+          if (!raw) return;
+          let resolved: string | undefined;
+          if (validValues.includes(raw)) {
+            resolved = raw;
+          } else if (raw.includes("|")) {
+            resolved = raw.split("|").map((s: string) => s.trim()).find((s: string) => validValues.includes(s));
+          }
+          if (resolved) {
             const idx = updated.findIndex(u => u.id === t.id);
             if (idx !== -1) {
-              updated[idx] = { ...updated[idx], kompetenz: newKompetenz as KompetenzTyp };
+              updated[idx] = { ...updated[idx], kompetenz: resolved as KompetenzTyp };
             }
             originalNames.current.set(t.id, t.name);
           }

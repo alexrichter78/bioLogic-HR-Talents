@@ -185,8 +185,11 @@ Braucht diese Tätigkeit primär DURCHSETZUNGSKRAFT – Entscheidungen unter Uns
 ## ZU BEWERTENDE EINTRÄGE
 ${itemsList}
 
-Antworte als JSON-Objekt mit einem "results" Array mit exakt ${items.length} Einträgen in der gleichen Reihenfolge:
-{"results": [{"kompetenz": "Impulsiv|Intuitiv|Analytisch"}]}`;
+Antworte als JSON-Objekt mit einem "results" Array mit exakt ${items.length} Einträgen in der gleichen Reihenfolge.
+Jeder Eintrag hat GENAU EINEN Wert für "kompetenz" - entweder "Impulsiv" ODER "Intuitiv" ODER "Analytisch". Niemals mehrere Werte kombinieren!
+
+Beispiel für 3 Einträge:
+{"results": [{"kompetenz": "Analytisch"}, {"kompetenz": "Impulsiv"}, {"kompetenz": "Intuitiv"}]}`;
 
       const response = await openai.chat.completions.create({
         model: "gpt-4.1",
