@@ -457,9 +457,26 @@ export default function RollenDNA() {
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const filteredBerufe = beruf.trim().length > 0
-    ? BERUFE.filter(b => b.name.toLowerCase().includes(beruf.toLowerCase())).slice(0, 20)
-    : [];
+  const filteredBerufe = (() => {
+    const q = beruf.trim().toLowerCase();
+    if (q.length === 0) return [];
+    const matches = BERUFE.filter(b => b.name.toLowerCase().includes(q));
+    matches.sort((a, b) => {
+      const aLower = a.name.toLowerCase();
+      const bLower = b.name.toLowerCase();
+      const aExact = aLower === q;
+      const bExact = bLower === q;
+      if (aExact !== bExact) return aExact ? -1 : 1;
+      const aStarts = aLower.startsWith(q);
+      const bStarts = bLower.startsWith(q);
+      if (aStarts !== bStarts) return aStarts ? -1 : 1;
+      const aIdx = aLower.indexOf(q);
+      const bIdx = bLower.indexOf(q);
+      if (aIdx !== bIdx) return aIdx - bIdx;
+      return a.name.length - b.name.length;
+    });
+    return matches.slice(0, 20);
+  })();
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
