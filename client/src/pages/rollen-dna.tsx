@@ -457,7 +457,7 @@ export default function RollenDNA() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const filteredBerufe = beruf.trim().length > 0
-    ? BERUFE.filter(b => b.toLowerCase().includes(beruf.toLowerCase())).slice(0, 8)
+    ? BERUFE.filter(b => b.name.toLowerCase().includes(beruf.toLowerCase())).slice(0, 20)
     : [];
 
   useEffect(() => {
@@ -875,7 +875,7 @@ export default function RollenDNA() {
                           setHighlightedIndex(prev => Math.max(prev - 1, 0));
                         } else if (e.key === "Enter" && highlightedIndex >= 0) {
                           e.preventDefault();
-                          setBeruf(filteredBerufe[highlightedIndex]);
+                          setBeruf(filteredBerufe[highlightedIndex].name);
                           setShowSuggestions(false);
                           setHighlightedIndex(-1);
                         } else if (e.key === "Escape") {
@@ -901,18 +901,19 @@ export default function RollenDNA() {
                           borderRadius: 12,
                           border: "1px solid rgba(0,0,0,0.08)",
                           boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
-                          overflow: "hidden",
+                          overflow: "auto",
+                          maxHeight: 400,
                         }}
                       >
                         {filteredBerufe.map((b, idx) => {
-                          const matchStart = b.toLowerCase().indexOf(beruf.toLowerCase());
+                          const matchStart = b.name.toLowerCase().indexOf(beruf.toLowerCase());
                           const matchEnd = matchStart + beruf.length;
                           return (
                             <div
-                              key={b}
+                              key={b.name}
                               data-testid={`suggestion-${idx}`}
                               onClick={() => {
-                                setBeruf(b);
+                                setBeruf(b.name);
                                 setShowSuggestions(false);
                                 setHighlightedIndex(-1);
                               }}
@@ -924,15 +925,36 @@ export default function RollenDNA() {
                                 background: idx === highlightedIndex ? "rgba(0,113,227,0.08)" : "transparent",
                                 borderBottom: idx < filteredBerufe.length - 1 ? "1px solid rgba(0,0,0,0.04)" : "none",
                                 transition: "background 0.15s",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 10,
                               }}
                             >
-                              {matchStart >= 0 ? (
-                                <>
-                                  {b.slice(0, matchStart)}
-                                  <span style={{ fontWeight: 600, color: "#0071E3" }}>{b.slice(matchStart, matchEnd)}</span>
-                                  {b.slice(matchEnd)}
-                                </>
-                              ) : b}
+                              <div style={{ color: "rgba(0,0,0,0.25)", flexShrink: 0, display: "flex", alignItems: "center" }}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                                </svg>
+                              </div>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontWeight: 500, lineHeight: 1.3 }}>
+                                  {matchStart >= 0 ? (
+                                    <>
+                                      {b.name.slice(0, matchStart)}
+                                      <span style={{ fontWeight: 600, color: "#0071E3" }}>{b.name.slice(matchStart, matchEnd)}</span>
+                                      {b.name.slice(matchEnd)}
+                                    </>
+                                  ) : b.name}
+                                </div>
+                                <div style={{ fontSize: 11, color: "rgba(0,0,0,0.4)", marginTop: 1, lineHeight: 1.2 }}>
+                                  {b.kategorie}
+                                </div>
+                              </div>
+                              <div style={{ color: "rgba(0,0,0,0.15)", flexShrink: 0 }}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <polyline points="9 18 15 12 9 6"/>
+                                </svg>
+                              </div>
                             </div>
                           );
                         })}
