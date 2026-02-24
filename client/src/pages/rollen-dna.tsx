@@ -2444,43 +2444,6 @@ export default function RollenDNA() {
                       ))}
                     </div>
 
-                    <div style={{
-                      marginTop: 28,
-                      borderTop: "1px solid rgba(0,0,0,0.06)",
-                      paddingTop: 24,
-                    }}>
-                      <h4 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", marginBottom: 10 }}>
-                        Strukturelles Anforderungsprofil
-                      </h4>
-                      <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6 }}>
-                        Die Berechnung des strukturellen Anforderungsprofils wird nach Abschluss der Datenerfassung erstellt.
-                      </p>
-                    </div>
-
-                    <div style={{ marginTop: 24, textAlign: "center" }}>
-                      <button
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 8,
-                          height: 48,
-                          paddingLeft: 28,
-                          paddingRight: 28,
-                          fontSize: 15,
-                          fontWeight: 600,
-                          borderRadius: 14,
-                          background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.08))",
-                          border: "1.5px solid rgba(0,113,227,0.25)",
-                          color: "#0071E3",
-                          cursor: "pointer",
-                          transition: "all 200ms ease",
-                        }}
-                        data-testid="button-kandidatenprofile-collapsed"
-                      >
-                        Kandidatenprofile prüfen
-                        <ArrowRight style={{ width: 16, height: 16 }} />
-                      </button>
-                    </div>
                   </div>
                 )}
               </div>
