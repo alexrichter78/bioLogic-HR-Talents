@@ -1010,24 +1010,31 @@ export default function RollenDNA() {
           onChange={handleFileChange}
           data-testid="input-file-load"
         />
-        <Header onSave={handleSave} onLoad={handleLoad} />
+        <div style={{ position: "sticky", top: 0, zIndex: 200, background: "inherit" }}>
+          <div style={{ background: "linear-gradient(135deg, rgba(245,247,250,0.97), rgba(240,242,248,0.97))" }} className="dark:!bg-background/95 backdrop-blur-md">
+            <Header onSave={handleSave} onLoad={handleLoad} />
 
-        <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20">
-          <div className="text-center mt-8 mb-10">
-            <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground/90 mb-2" data-testid="text-rollen-dna-title">
-              Rollenprofil ermitteln
-            </h1>
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto" data-testid="text-rollen-dna-subtitle">
-              Erforderliche Rollenstruktur aus der definierten Logik ableiten.
-            </p>
+            <div className="w-full max-w-3xl mx-auto px-6">
+              <div className="text-center mt-6 mb-6">
+                <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground/90 mb-2" data-testid="text-rollen-dna-title">
+                  Rollenprofil ermitteln
+                </h1>
+                <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto" data-testid="text-rollen-dna-subtitle">
+                  Erforderliche Rollenstruktur aus der definierten Logik ableiten.
+                </p>
+              </div>
+
+              {!allCollapsed && (
+              <div className="mb-6">
+                <StepProgress currentStep={currentStep} completedSteps={completedSteps} />
+              </div>
+              )}
+            </div>
           </div>
+          <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
+        </div>
 
-          {!allCollapsed && (
-          <div className="mb-12">
-            <StepProgress currentStep={currentStep} completedSteps={completedSteps} />
-          </div>
-          )}
-
+        <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20 pt-6">
           <div className="space-y-5">
 
             {allCollapsed ? null : currentStep === 1 ? (
