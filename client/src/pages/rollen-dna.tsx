@@ -1031,7 +1031,7 @@ export default function RollenDNA() {
               )}
             </div>
           </div>
-          <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
+          <div style={{ height: 20, background: "linear-gradient(to bottom, rgba(0,0,0,0.04), transparent)" }} />
         </div>
 
         <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20 pt-6">
