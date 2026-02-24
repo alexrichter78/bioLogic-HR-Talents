@@ -65,6 +65,73 @@ function calcBioGram(items: Taetigkeit[]): BioGram {
   return { imp, int, ana };
 }
 
+function generateBioCheckText(bg: BioGram, isLeadership: boolean): string {
+  const vals = [
+    { key: "imp" as const, label: "impulsiv", value: bg.imp },
+    { key: "int" as const, label: "intuitiv", value: bg.int },
+    { key: "ana" as const, label: "analytisch", value: bg.ana },
+  ].sort((a, b) => b.value - a.value);
+
+  const max = vals[0], second = vals[1], third = vals[2];
+  const gap = max.value - second.value;
+
+  const coreDominant: Record<string, Record<string, string>> = {
+    noLead: {
+      imp: "konsequente Umsetzung, Tempo und Ergebnisorientierung",
+      int: "situationsgerechtes Handeln, Abstimmung und tragfähige Zusammenarbeit",
+      ana: "strukturiertes Vorgehen, Planungssicherheit und fachliche Präzision",
+    },
+    lead: {
+      imp: "klare Zielsteuerung, schnelle Entscheidungen und konsequente Ergebnisverantwortung",
+      int: "verbindende Führung, stabile Zusammenarbeit und situatives Steuern im Alltag",
+      ana: "strukturbildende Führung, klare Planung und verlässliche Qualitäts- und Prozesslogik",
+    },
+  };
+
+  const coreHybrid: Record<string, Record<string, string>> = {
+    noLead: {
+      imp_ana: "klare Struktur mit konsequenter Umsetzung",
+      ana_imp: "klare Struktur mit konsequenter Umsetzung",
+      ana_int: "strukturelle Klarheit mit stimmiger Abstimmung im Arbeitsumfeld",
+      int_ana: "strukturelle Klarheit mit stimmiger Abstimmung im Arbeitsumfeld",
+      imp_int: "Umsetzungskraft mit situativem Gespür und Zusammenarbeit",
+      int_imp: "Umsetzungskraft mit situativem Gespür und Zusammenarbeit",
+    },
+    lead: {
+      imp_ana: "Ausrichtung und Umsetzung in klarer Ergebnisverantwortung",
+      ana_imp: "Ausrichtung und Umsetzung in klarer Ergebnisverantwortung",
+      ana_int: "Orientierung durch Struktur und Stabilität durch Zusammenarbeit",
+      int_ana: "Orientierung durch Struktur und Stabilität durch Zusammenarbeit",
+      imp_int: "Zielorientierung mit integrativer Teamführung",
+      int_imp: "Zielorientierung mit integrativer Teamführung",
+    },
+  };
+
+  const role = isLeadership ? "Führungsrolle" : "Rolle";
+  const ctx = isLeadership ? "lead" : "noLead";
+
+  if (max.value >= 55 && gap >= 12) {
+    return `Diese ${role} ist mit sehr deutlicher ${max.label}er Prägung (${Math.round(max.value)}%).\nSie verlangt ${coreDominant[ctx][max.key]}${isLeadership ? " und schafft Orientierung durch klare Entscheidungen und nachvollziehbare Prioritäten." : ". Entscheidungen werden eigenständig getroffen und nachvollziehbar begründet."}`;
+  }
+  if (max.value >= 48 && gap >= 8) {
+    return `Diese ${role} ist mit deutlicher ${max.label}er Prägung (${Math.round(max.value)}%).\nSie verlangt ${coreDominant[ctx][max.key]}${isLeadership ? " und schafft Orientierung durch klare Entscheidungen und nachvollziehbare Prioritäten." : ". Entscheidungen werden eigenständig getroffen und nachvollziehbar begründet."}`;
+  }
+  if (gap >= 5) {
+    return `Diese ${role} ist mit leichter ${max.label}er Prägung (${Math.round(max.value)}%).\nSie verlangt ${coreDominant[ctx][max.key]}${isLeadership ? " und schafft Orientierung durch klare Entscheidungen und nachvollziehbare Prioritäten." : ". Entscheidungen werden eigenständig getroffen und nachvollziehbar begründet."}`;
+  }
+
+  const topDiff = Math.abs(max.value - second.value);
+  const bottomGap = second.value - third.value;
+
+  if (bottomGap >= 5) {
+    const hybridPhrase = topDiff <= 2 ? "gleich stark" : "nahezu gleich stark";
+    const pairKey = `${max.key}_${second.key}`;
+    return `Diese ${role} ist ${hybridPhrase} ${max.label} und ${second.label} geprägt (${Math.round(max.value)}% / ${Math.round(second.value)}%).\nSie verbindet ${coreHybrid[ctx][pairKey]}.`;
+  }
+
+  return `Diese ${role} ist ausgewogen zwischen Impulsiv, Intuitiv und Analytisch (${Math.round(bg.imp)}% / ${Math.round(bg.int)}% / ${Math.round(bg.ana)}%).\nSie verlangt ${isLeadership ? "Balance zwischen Zielsteuerung, Zusammenarbeit und struktureller Orientierung." : "sowohl verlässliche Umsetzung als auch stimmige Zusammenarbeit und strukturiertes Vorgehen."}`;
+}
+
 const ERFOLGSFOKUS_LABELS = [
   "Ergebnis-/\nUmsatzwirkung",
   "Beziehungs- und\nNetzwerkstabilität",
@@ -494,6 +561,12 @@ export default function RollenDNA() {
   const [generatingStep, setGeneratingStep] = useState(0);
   const [isReclassifying, setIsReclassifying] = useState(false);
   const [bioCheckOpen, setBioCheckOpen] = useState(false);
+  const [bioCheckTextOverride, setBioCheckTextOverride] = useState<string | null>(() => {
+    try {
+      const raw = localStorage.getItem("bioCheckTextOverride");
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  });
   const [summaryOpen, setSummaryOpen] = useState(true);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -711,6 +784,14 @@ export default function RollenDNA() {
     const [imp, int, ana] = roundPercentages(vals[0], vals[1], vals[2]);
     return { imp, int, ana } as BioGram;
   })();
+
+  const isLeadershipRole = fuehrung !== "Keine";
+  const bioCheckTextGenerated = generateBioCheckText(bioGramGesamt, isLeadershipRole);
+  const bioCheckText = bioCheckTextOverride ?? bioCheckTextGenerated;
+
+  useEffect(() => {
+    localStorage.setItem("bioCheckTextGenerated", JSON.stringify(bioCheckTextGenerated));
+  }, [bioCheckTextGenerated]);
 
   const MAX_ITEMS: Record<TaetigkeitKategorie, number> = { haupt: 15, neben: 10, fuehrung: 10 };
   const currentTabCount = filteredTaetigkeiten.length;
@@ -1904,8 +1985,12 @@ export default function RollenDNA() {
                     }} />
                   </button>
 
+                  <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.7, marginTop: 12, whiteSpace: "pre-line" }} data-testid="text-biocheck-description">
+                    {bioCheckText}
+                  </p>
+
                   {bioCheckOpen && (<>
-                    <div style={{ marginTop: 20, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                    <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                       {[
                         { title: "Tätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
                         { title: "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben, icon: Heart },
@@ -2296,8 +2381,12 @@ export default function RollenDNA() {
                   }} />
                 </button>
 
+                <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.7, marginTop: 12, whiteSpace: "pre-line" }} data-testid="text-biocheck-description-collapsed">
+                  {bioCheckText}
+                </p>
+
                 {bioCheckOpen && (
-                  <div style={{ marginTop: 20 }}>
+                  <div style={{ marginTop: 16 }}>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                       {[
                         { title: "Tätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
