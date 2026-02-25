@@ -1189,7 +1189,7 @@ export default function RollenDNA() {
           </div>
         </div>
 
-        <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20" style={{ paddingTop: allCollapsed ? 150 : 240 }}>
+        <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20" style={{ paddingTop: allCollapsed ? 160 : 270 }}>
           <div className="space-y-5">
 
             {allCollapsed ? null : currentStep === 1 ? (
