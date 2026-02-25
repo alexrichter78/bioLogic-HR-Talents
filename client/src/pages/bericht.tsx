@@ -308,12 +308,85 @@ function EffectCard({ label, color, bullets, text }: OverweightEffect) {
   );
 }
 
+const ERFOLGSFOKUS_LABELS = [
+  "Ergebnis-/ Umsatzwirkung",
+  "Beziehungs- und Netzwerkstabilität",
+  "Innovations- & Transformationsleistung",
+  "Prozess- und Effizienzqualität",
+  "Fachliche Exzellenz / Expertise",
+  "Strategische Wirkung / Positionierung",
+];
+
+function getFuehrungskontextText(fuehrungstyp: string, gesamt: BG): string {
+  const sorted = [
+    { key: "imp", label: "impulsiv-umsetzungsorientiert", value: gesamt.imp },
+    { key: "int", label: "intuitiv-kooperativ", value: gesamt.int },
+    { key: "ana", label: "analytisch-strukturiert", value: gesamt.ana },
+  ].sort((a, b) => b.value - a.value);
+  const top = sorted[0];
+
+  if (fuehrungstyp === "Disziplinarische Führung mit Ergebnisverantwortung") {
+    const base = "Die Rolle umfasst disziplinarische Führungsverantwortung mit direkter Ergebnisverantwortung. Das bedeutet: Die Führungskraft entscheidet über Personalthemen, trägt Budgetverantwortung und wird an messbaren Ergebnissen gemessen.";
+    if (top.key === "imp") return base + " In Verbindung mit der stark umsetzungsorientierten Ausrichtung der Rolle wird erwartet, dass Führung über klare Zielvorgaben, konsequentes Nachhalten und schnelle Eskalation bei Abweichungen erfolgt. Entscheidungen werden top-down getroffen, das Team erhält Richtung über Ergebnisse, nicht über Konsens.";
+    if (top.key === "ana") return base + " In Verbindung mit der strukturorientierten Ausrichtung der Rolle wird erwartet, dass Führung über klare Rahmenbedingungen, definierte Prozesse und nachvollziehbare Entscheidungen erfolgt. Standards werden gesetzt und eingehalten. Verantwortung wird über Transparenz und Qualitätsniveaus gesteuert.";
+    return base + " In Verbindung mit der kooperativen Ausrichtung der Rolle wird erwartet, dass Führung über Einbindung, Abstimmung und tragfähige Entscheidungen erfolgt. Das Team wird aktiv eingebunden, Entscheidungen werden so gestaltet, dass sie getragen werden – ohne dabei die Ergebnisverantwortung aus den Augen zu verlieren.";
+  }
+  if (fuehrungstyp === "Fachliche Führung") {
+    const base = "Die Rolle umfasst fachliche Führungsverantwortung ohne disziplinarische Befugnis. Die Führungskraft steuert über fachliche Expertise, setzt inhaltliche Standards und gibt Richtung über Qualität und Methodik.";
+    if (top.key === "ana") return base + " In Verbindung mit der strukturorientierten Ausrichtung bedeutet dies: Fachliche Führung erfolgt über klare Standards, Dokumentation und systematische Qualitätssicherung. Entscheidungen werden fachlich begründet und nachvollziehbar gemacht. Die Führungskraft ist Referenzpunkt für Genauigkeit und Verlässlichkeit.";
+    if (top.key === "imp") return base + " In Verbindung mit der umsetzungsorientierten Ausrichtung bedeutet dies: Fachliche Führung erfolgt pragmatisch und ergebnisorientiert. Fachliche Standards werden so gesetzt, dass sie die Umsetzung unterstützen, nicht bremsen. Die Führungskraft verbindet Expertise mit Handlungsfähigkeit.";
+    return base + " In Verbindung mit der kooperativen Ausrichtung bedeutet dies: Fachliche Führung erfolgt über Dialog, Wissensweitergabe und gemeinsame Qualitätsstandards. Die Führungskraft teilt Wissen aktiv und stellt sicher, dass fachliche Entscheidungen im Team verstanden und mitgetragen werden.";
+  }
+  if (fuehrungstyp === "Projekt-/Teamkoordination") {
+    const base = "Die Rolle umfasst koordinierende Verantwortung für Projekte oder Teams. Die Führungskraft steuert über Abstimmung, Priorisierung und Schnittstellenmanagement – ohne formale Weisungsbefugnis.";
+    if (top.key === "int") return base + " In Verbindung mit der kooperativen Ausrichtung bedeutet dies: Koordination erfolgt über enge Abstimmung, aktive Kommunikation und situatives Eingreifen. Die Führungskraft hält das Team zusammen und stellt sicher, dass Informationen fließen und Schnittstellen funktionieren.";
+    if (top.key === "imp") return base + " In Verbindung mit der umsetzungsorientierten Ausrichtung bedeutet dies: Koordination erfolgt ergebnisorientiert mit klarem Fokus auf Fortschritt und Abschluss. Die Führungskraft priorisiert pragmatisch und treibt den Prozess aktiv voran.";
+    return base + " In Verbindung mit der strukturorientierten Ausrichtung bedeutet dies: Koordination erfolgt über klare Pläne, definierte Meilensteine und systematische Nachverfolgung. Die Führungskraft sorgt für Ordnung im Prozess und Transparenz über den Projektfortschritt.";
+  }
+  return "";
+}
+
+function getRahmenText(aufgabencharakter: string, arbeitslogik: string, erfolgsfokusIndices: number[]): string {
+  const parts: string[] = [];
+
+  if (aufgabencharakter === "überwiegend operativ") {
+    parts.push("Der Aufgabencharakter ist überwiegend operativ. Im Vordergrund steht die direkte Umsetzung und das Erzielen konkreter Arbeitsergebnisse. Planung und Strategie spielen eine untergeordnete Rolle – gefragt ist Handlungsfähigkeit im Tagesgeschäft.");
+  } else if (aufgabencharakter === "überwiegend strategisch") {
+    parts.push("Der Aufgabencharakter ist überwiegend strategisch. Im Vordergrund stehen Planung, Analyse und die Entwicklung langfristiger Konzepte. Die operative Umsetzung wird delegiert oder erfolgt in nachgeordneten Prozessen.");
+  } else if (aufgabencharakter === "überwiegend systemisch") {
+    parts.push("Der Aufgabencharakter ist überwiegend systemisch. Im Vordergrund stehen die Arbeit an Schnittstellen, die Gestaltung von Zusammenarbeit und die Einordnung in übergeordnete Zusammenhänge. Die Rolle wirkt vernetzend und moderierend.");
+  } else if (aufgabencharakter === "Gemischt") {
+    parts.push("Der Aufgabencharakter ist gemischt. Die Rolle verbindet operative, strategische und systemische Anforderungen. Die Person muss flexibel zwischen unterschiedlichen Arbeitsmodi wechseln können.");
+  }
+
+  if (arbeitslogik === "Umsetzungsorientiert") {
+    parts.push("Die vorherrschende Arbeitslogik ist umsetzungsorientiert. Ergebnisse werden durch direkte Aktion erzielt, Geschwindigkeit und Konsequenz stehen im Vordergrund.");
+  } else if (arbeitslogik === "Menschenorientiert") {
+    parts.push("Die vorherrschende Arbeitslogik ist menschenorientiert. Ergebnisse entstehen über Zusammenarbeit, Abstimmung und tragfähige Beziehungen. Kommunikation und Einbindung sind zentral.");
+  } else if (arbeitslogik === "Daten-/prozessorientiert") {
+    parts.push("Die vorherrschende Arbeitslogik ist daten- und prozessorientiert. Ergebnisse entstehen über systematische Analyse, klare Abläufe und nachvollziehbare Entscheidungen.");
+  }
+
+  if (erfolgsfokusIndices.length > 0) {
+    const labels = erfolgsfokusIndices.map(i => ERFOLGSFOKUS_LABELS[i]).filter(Boolean);
+    if (labels.length > 0) {
+      const fokusText = labels.length === 1
+        ? `Der zentrale Erfolgsfokus liegt auf: ${labels[0]}.`
+        : `Die zentralen Erfolgsfokusse liegen auf: ${labels.join(", ")}.`;
+      parts.push(fokusText + " Diese Ausrichtung beeinflusst, welche Ergebnisse als relevant bewertet werden und welche Prioritäten im Alltag gesetzt werden.");
+    }
+  }
+
+  return parts.join(" ");
+}
+
 export default function Bericht() {
   const [, setLocation] = useLocation();
   const [data, setData] = useState<{
-    beruf: string; isLeadership: boolean;
+    beruf: string; isLeadership: boolean; fuehrungstyp: string;
     gesamt: BG; haupt: BG; neben: BG; fuehrung: BG;
     texts: ReportTexts; intensity: Intensity;
+    rahmenText: string; fuehrungskontextText: string;
   } | null>(null);
 
   useEffect(() => {
@@ -322,7 +395,8 @@ export default function Bericht() {
     try {
       const state = JSON.parse(raw);
       const beruf = state.beruf || "Unbenannte Rolle";
-      const isLeadership = (state.fuehrung || "Keine") !== "Keine";
+      const fuehrungstyp = state.fuehrung || "Keine";
+      const isLeadership = fuehrungstyp !== "Keine";
       const taetigkeiten = state.taetigkeiten || [];
       const haupt = calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "haupt"));
       const neben = calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "neben"));
@@ -331,7 +405,13 @@ export default function Bericht() {
       const gesamt = computeGesamt(haupt, neben, fuehrung, rahmen);
       const { type, intensity } = classifyProfile(gesamt);
       const texts = getReportTexts(beruf, isLeadership, type, intensity);
-      setData({ beruf, isLeadership, gesamt, haupt, neben, fuehrung, texts, intensity });
+      const rahmenText = getRahmenText(
+        state.aufgabencharakter || "",
+        state.arbeitslogik || "",
+        state.erfolgsfokusIndices || []
+      );
+      const fuehrungskontextText = isLeadership ? getFuehrungskontextText(fuehrungstyp, gesamt) : "";
+      setData({ beruf, isLeadership, fuehrungstyp, gesamt, haupt, neben, fuehrung, texts, intensity, rahmenText, fuehrungskontextText });
     } catch {}
   }, []);
 
@@ -355,7 +435,7 @@ export default function Bericht() {
     );
   }
 
-  const { beruf, isLeadership, gesamt, haupt, neben, fuehrung, texts, intensity } = data;
+  const { beruf, isLeadership, fuehrungstyp, gesamt, haupt, neben, fuehrung, texts, intensity, rahmenText, fuehrungskontextText } = data;
 
   const intensityNote = intensity === "strong"
     ? "Der Schwerpunkt ist eindeutig."
@@ -413,6 +493,20 @@ export default function Bericht() {
                 <p style={{ fontSize: 13, color: "#0071E3", fontWeight: 500, marginTop: 10 }}>{intensityNote}</p>
               )}
             </GlassCard>
+
+            {rahmenText && (
+              <GlassCard testId="bericht-rahmenbedingungen">
+                <SectionHeader icon={FileText} title="Rahmenbedingungen der Rolle" color="#6E6E73" />
+                <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.75 }}>{rahmenText}</p>
+              </GlassCard>
+            )}
+
+            {isLeadership && fuehrungskontextText && (
+              <GlassCard testId="bericht-fuehrungskontext">
+                <SectionHeader icon={Shield} title="Führungskontext" color="#1A5DAB" />
+                <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.75 }}>{fuehrungskontextText}</p>
+              </GlassCard>
+            )}
 
             <GlassCard testId="bericht-gesamtprofil">
               <SectionHeader icon={BarChart3} title="Gesamtprofil" />
