@@ -117,7 +117,8 @@ function classifyProfile(bg: BG): { type: ProfileType; intensity: Intensity; top
       "hybrid_int_imp": "hybrid_imp_int",
     };
     const resolved = validHybrids.includes(hybridKey) ? hybridKey : (reverseMap[hybridKey] || "hybrid_imp_ana");
-    return { type: resolved as ProfileType, intensity: "clear", top1: k1, top2: k2 };
+    const hybridIntensity: Intensity = gap23 >= 15 ? "strong" : gap23 >= 8 ? "clear" : "light";
+    return { type: resolved as ProfileType, intensity: hybridIntensity, top1: k1, top2: k2 };
   }
   if (gap12 >= 5) {
     return { type: `light_${max.key}` as ProfileType, intensity: "light", top1: max.key, top2: second.key };
@@ -160,7 +161,7 @@ function resolveIntensityKey(profileType: ProfileType, intensity: Intensity): st
   if (profileType.startsWith("strong_")) return "strong";
   if (profileType.startsWith("dominant_")) return "clear";
   if (profileType.startsWith("light_")) return "light";
-  if (profileType.startsWith("hybrid_")) return "clear";
+  if (profileType.startsWith("hybrid_")) return intensity;
   return intensity;
 }
 
