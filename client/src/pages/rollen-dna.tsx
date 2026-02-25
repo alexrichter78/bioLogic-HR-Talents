@@ -619,6 +619,18 @@ const DEFAULT_TAETIGKEITEN: Taetigkeit[] = [
 
 function loadSavedState() {
   try {
+    if (typeof window !== "undefined" && window.location.search.includes("new=1")) {
+      localStorage.removeItem("rollenDnaState");
+      localStorage.removeItem("rollenDnaCompleted");
+      localStorage.removeItem("kompetenzenCache");
+      localStorage.removeItem("berichtCache");
+      localStorage.removeItem("bioCheckTextOverride");
+      localStorage.removeItem("bioCheckIntroOverride");
+      localStorage.removeItem("bioCheckTextGenerated");
+      localStorage.removeItem("analyseTexte");
+      window.history.replaceState({}, "", "/rollen-dna");
+      return null;
+    }
     const raw = localStorage.getItem("rollenDnaState");
     if (raw) {
       const state = JSON.parse(raw);

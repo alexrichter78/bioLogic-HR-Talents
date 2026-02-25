@@ -144,7 +144,7 @@ function ProfileCard() {
                 if (hasData) {
                   setShowResetConfirm(true);
                 } else {
-                  setLocation("/rollen-dna");
+                  setLocation("/rollen-dna?new=1");
                 }
               }}
               style={{
@@ -230,7 +230,7 @@ function ProfileCard() {
             localStorage.removeItem("bioCheckTextGenerated");
             localStorage.removeItem("analyseTexte");
             setShowResetConfirm(false);
-            setLocation("/rollen-dna");
+            setLocation("/rollen-dna?new=1");
           }}
         />
       )}
