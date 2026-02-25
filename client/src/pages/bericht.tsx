@@ -614,17 +614,14 @@ export default function Bericht() {
                   <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Einleitung</span>
                 </div>
                 {(() => {
-                  const paragraphs = bericht.einleitung.split("\n\n").filter(p => p.trim());
-                  if (paragraphs.length <= 1) {
-                    return <p style={{ fontSize: 14, fontWeight: 400, color: "#48484A", lineHeight: 1.9, margin: 0 }}>{bericht.einleitung}</p>;
-                  }
-                  const first = paragraphs[0];
-                  const rest = paragraphs.slice(1);
+                  const blocks = splitIntoBlocks(bericht.einleitung);
+                  const first = blocks[0];
+                  const rest = blocks.slice(1);
                   return (
                     <>
                       <CalloutBox text={first} color={CHAPTER_COLORS[0]} icon={Lightbulb} />
                       {rest.length > 0 && (
-                        <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+                        <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 14 }}>
                           {rest.map((p, i) => (
                             <p key={i} style={{ fontSize: 13.5, fontWeight: 400, color: "#48484A", lineHeight: 1.9, margin: 0 }}>{p}</p>
                           ))}
