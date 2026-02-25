@@ -1240,40 +1240,112 @@ export default function RollenDNA() {
                     Rolle auswählen
                   </h2>
 
-                  <div className="relative mb-6" style={{ zIndex: 100 }} data-testid="input-beruf-wrapper">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 z-10" />
-                    <Input
-                      ref={inputRef}
-                      type="text"
-                      autoComplete="off"
-                      placeholder="Beruf eingeben"
-                      value={beruf}
-                      onChange={(e) => {
-                        setBeruf(e.target.value);
-                        setShowSuggestions(true);
-                        setHighlightedIndex(-1);
-                      }}
-                      onFocus={() => { if (beruf.trim().length > 0) setShowSuggestions(true); }}
-                      onKeyDown={(e) => {
-                        if (!showSuggestions || filteredBerufe.length === 0) return;
-                        if (e.key === "ArrowDown") {
-                          e.preventDefault();
-                          setHighlightedIndex(prev => Math.min(prev + 1, filteredBerufe.length - 1));
-                        } else if (e.key === "ArrowUp") {
-                          e.preventDefault();
-                          setHighlightedIndex(prev => Math.max(prev - 1, 0));
-                        } else if (e.key === "Enter" && highlightedIndex >= 0) {
-                          e.preventDefault();
-                          setBeruf(filteredBerufe[highlightedIndex].name);
-                          setShowSuggestions(false);
+                  <div className="mb-6" style={{ zIndex: 100 }} data-testid="input-beruf-wrapper">
+                    <div className="relative" style={{ zIndex: 100 }}>
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 z-10" />
+                      <Input
+                        ref={inputRef}
+                        type="text"
+                        autoComplete="off"
+                        placeholder="Beruf eingeben"
+                        value={beruf}
+                        onChange={(e) => {
+                          setBeruf(e.target.value);
+                          setShowSuggestions(true);
                           setHighlightedIndex(-1);
-                        } else if (e.key === "Escape") {
-                          setShowSuggestions(false);
-                        }
-                      }}
-                      className="pl-10 bg-muted/30 dark:bg-muted/20 border-border/40 focus:border-primary/40 h-11 text-sm"
-                      data-testid="input-beruf"
-                    />
+                        }}
+                        onFocus={() => { if (beruf.trim().length > 0) setShowSuggestions(true); }}
+                        onKeyDown={(e) => {
+                          if (!showSuggestions || filteredBerufe.length === 0) return;
+                          if (e.key === "ArrowDown") {
+                            e.preventDefault();
+                            setHighlightedIndex(prev => Math.min(prev + 1, filteredBerufe.length - 1));
+                          } else if (e.key === "ArrowUp") {
+                            e.preventDefault();
+                            setHighlightedIndex(prev => Math.max(prev - 1, 0));
+                          } else if (e.key === "Enter" && highlightedIndex >= 0) {
+                            e.preventDefault();
+                            setBeruf(filteredBerufe[highlightedIndex].name);
+                            setShowSuggestions(false);
+                            setHighlightedIndex(-1);
+                          } else if (e.key === "Escape") {
+                            setShowSuggestions(false);
+                          }
+                        }}
+                        className="pl-10 bg-muted/30 dark:bg-muted/20 border-border/40 focus:border-primary/40 h-11 text-sm"
+                        data-testid="input-beruf"
+                      />
+
+                      {showSuggestions && filteredBerufe.length > 0 && (
+                        <div
+                          ref={suggestionsRef}
+                          data-testid="beruf-suggestions"
+                          className="bg-white dark:bg-card border border-border/30"
+                          style={{
+                            position: "absolute",
+                            top: 48,
+                            left: 0,
+                            right: 0,
+                            zIndex: 9999,
+                            borderRadius: 12,
+                            boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+                            overflow: "auto",
+                            maxHeight: 400,
+                          }}
+                        >
+                          {filteredBerufe.map((b, idx) => {
+                            const matchStart = b.name.toLowerCase().indexOf(beruf.toLowerCase());
+                            const matchEnd = matchStart + beruf.length;
+                            return (
+                              <div
+                                key={b.name}
+                                data-testid={`suggestion-${idx}`}
+                                onClick={() => {
+                                  setBeruf(b.name);
+                                  setShowSuggestions(false);
+                                  setHighlightedIndex(-1);
+                                }}
+                                onMouseEnter={() => setHighlightedIndex(idx)}
+                                style={{
+                                  padding: "10px 14px",
+                                  fontSize: 14,
+                                  cursor: "pointer",
+                                  background: idx === highlightedIndex ? "rgba(0,113,227,0.08)" : "transparent",
+                                  borderBottom: idx < filteredBerufe.length - 1 ? "1px solid rgba(0,0,0,0.04)" : "none",
+                                  transition: "background 0.15s",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 10,
+                                }}
+                              >
+                                <span className="flex-shrink-0 w-6 h-5 rounded text-[10px] font-semibold flex items-center justify-center bg-muted/40 text-muted-foreground/50">
+                                  {b.land}
+                                </span>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ fontWeight: 500, lineHeight: 1.3 }}>
+                                    {matchStart >= 0 ? (
+                                      <>
+                                        {b.name.slice(0, matchStart)}
+                                        <span style={{ fontWeight: 600, color: "#0071E3" }}>{b.name.slice(matchStart, matchEnd)}</span>
+                                        {b.name.slice(matchEnd)}
+                                      </>
+                                    ) : b.name}
+                                  </div>
+                                  <div style={{ fontSize: 11, color: "rgba(0,0,0,0.4)", marginTop: 1, lineHeight: 1.2 }}>
+                                    {b.kategorie}
+                                  </div>
+                                </div>
+                                <div style={{ color: "rgba(0,0,0,0.15)", flexShrink: 0 }}>
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="9 18 15 12 9 6"/>
+                                  </svg>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
 
                     <div className="flex items-center gap-2 mt-2" data-testid="land-filter">
                       {([
@@ -1312,75 +1384,6 @@ export default function RollenDNA() {
                       />
                     </div>
 
-                    {showSuggestions && filteredBerufe.length > 0 && (
-                      <div
-                        ref={suggestionsRef}
-                        data-testid="beruf-suggestions"
-                        className="bg-white dark:bg-card border border-border/30"
-                        style={{
-                          position: "absolute",
-                          top: "calc(100% + 4px)",
-                          left: 0,
-                          right: 0,
-                          zIndex: 9999,
-                          borderRadius: 12,
-                          boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
-                          overflow: "auto",
-                          maxHeight: 400,
-                        }}
-                      >
-                        {filteredBerufe.map((b, idx) => {
-                          const matchStart = b.name.toLowerCase().indexOf(beruf.toLowerCase());
-                          const matchEnd = matchStart + beruf.length;
-                          return (
-                            <div
-                              key={b.name}
-                              data-testid={`suggestion-${idx}`}
-                              onClick={() => {
-                                setBeruf(b.name);
-                                setShowSuggestions(false);
-                                setHighlightedIndex(-1);
-                              }}
-                              onMouseEnter={() => setHighlightedIndex(idx)}
-                              style={{
-                                padding: "10px 14px",
-                                fontSize: 14,
-                                cursor: "pointer",
-                                background: idx === highlightedIndex ? "rgba(0,113,227,0.08)" : "transparent",
-                                borderBottom: idx < filteredBerufe.length - 1 ? "1px solid rgba(0,0,0,0.04)" : "none",
-                                transition: "background 0.15s",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 10,
-                              }}
-                            >
-                              <span className="flex-shrink-0 w-6 h-5 rounded text-[10px] font-semibold flex items-center justify-center bg-muted/40 text-muted-foreground/50">
-                                {b.land}
-                              </span>
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontWeight: 500, lineHeight: 1.3 }}>
-                                  {matchStart >= 0 ? (
-                                    <>
-                                      {b.name.slice(0, matchStart)}
-                                      <span style={{ fontWeight: 600, color: "#0071E3" }}>{b.name.slice(matchStart, matchEnd)}</span>
-                                      {b.name.slice(matchEnd)}
-                                    </>
-                                  ) : b.name}
-                                </div>
-                                <div style={{ fontSize: 11, color: "rgba(0,0,0,0.4)", marginTop: 1, lineHeight: 1.2 }}>
-                                  {b.kategorie}
-                                </div>
-                              </div>
-                              <div style={{ color: "rgba(0,0,0,0.15)", flexShrink: 0 }}>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                  <polyline points="9 18 15 12 9 6"/>
-                                </svg>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
                   </div>
 
                   <div className="flex justify-end">
