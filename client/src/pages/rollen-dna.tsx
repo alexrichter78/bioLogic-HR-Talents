@@ -78,15 +78,15 @@ function generateBioCheckText(bg: BioGram, isLeadership: boolean): string {
   const dominantTexts: Record<string, { line1: string; line2: string }> = isLeadership ? {
     imp: {
       line1: "Die Rolle ist klar steuernd ausgerichtet.",
-      line2: "Sie verlangt Zielklarheit, Entscheidungsstärke und konsequente Ergebnisverantwortung im Team.",
+      line2: "Im Vordergrund stehen Zielklarheit, Entscheidungsstärke und konsequente Ergebnisverantwortung.",
     },
     int: {
       line1: "Die Rolle ist integrativ geprägt.",
-      line2: "Sie verlangt verbindende Kommunikation, Stabilität im Miteinander und situative Führungskompetenz.",
+      line2: "Im Vordergrund stehen Abstimmung, Zusammenarbeit und ein sicheres Gespür für das Miteinander.",
     },
     ana: {
       line1: "Die Rolle ist strukturbildend angelegt.",
-      line2: "Sie erfordert strategische Klarheit, transparente Prozesse und nachvollziehbare Orientierung für Mitarbeitende.",
+      line2: "Im Vordergrund stehen Planung, fachliche Tiefe und eine verlässliche Systematik.",
     },
   } : {
     imp: {
@@ -105,28 +105,28 @@ function generateBioCheckText(bg: BioGram, isLeadership: boolean): string {
 
   const hybridTexts: Record<string, { line1: string; line2: string }> = isLeadership ? {
     imp_ana: {
-      line1: "Diese Rolle verbindet strategische Struktur mit klarer Steuerung.",
-      line2: "Ausrichtung und Umsetzung werden gleichermaßen verantwortet.",
+      line1: "Diese Rolle verbindet Ergebnisorientierung mit systematischer Ausrichtung.",
+      line2: "Zielklarheit und strukturelle Genauigkeit werden gleichermaßen erwartet.",
     },
     ana_imp: {
-      line1: "Diese Rolle verbindet strategische Struktur mit klarer Steuerung.",
-      line2: "Ausrichtung und Umsetzung werden gleichermaßen verantwortet.",
+      line1: "Diese Rolle verbindet systematische Ausrichtung mit Ergebnisorientierung.",
+      line2: "Strukturelle Genauigkeit und Zielklarheit werden gleichermaßen erwartet.",
     },
     ana_int: {
-      line1: "Diese Rolle verbindet strukturierte Führung mit sensibler Abstimmung im Team.",
-      line2: "Klarheit und Zusammenarbeit stehen gleichwertig im Vordergrund.",
+      line1: "Diese Rolle verbindet fachliche Systematik mit dem Blick auf das Miteinander.",
+      line2: "Prozessklarheit und Teamorientierung stehen gleichwertig im Vordergrund.",
     },
     int_ana: {
-      line1: "Diese Rolle verbindet strukturierte Führung mit sensibler Abstimmung im Team.",
-      line2: "Klarheit und Zusammenarbeit stehen gleichwertig im Vordergrund.",
+      line1: "Diese Rolle verbindet den Blick auf das Miteinander mit fachlicher Systematik.",
+      line2: "Teamorientierung und Prozessklarheit stehen gleichwertig im Vordergrund.",
     },
     imp_int: {
-      line1: "Diese Rolle verbindet Zielorientierung mit integrativer Führung.",
+      line1: "Diese Rolle verbindet Umsetzungsstärke mit integrativer Wirkung.",
       line2: "Ergebnisverantwortung und Teamstabilität greifen ineinander.",
     },
     int_imp: {
-      line1: "Diese Rolle verbindet Zielorientierung mit integrativer Führung.",
-      line2: "Ergebnisverantwortung und Teamstabilität greifen ineinander.",
+      line1: "Diese Rolle verbindet integrative Wirkung mit Umsetzungsstärke.",
+      line2: "Teamstabilität und Ergebnisverantwortung greifen ineinander.",
     },
   } : {
     imp_ana: {
@@ -158,14 +158,14 @@ function generateBioCheckText(bg: BioGram, isLeadership: boolean): string {
   const fuehrungsSatz: Record<string, string> = {
     imp: "Die Führung wirkt dabei über Tempo, Konsequenz und direktes Eingreifen.",
     int: "Die Führung lebt dabei von Nähe, Vertrauen und der Fähigkeit, andere mitzunehmen.",
-    ana: "Die Führung stützt sich dabei auf klare Rahmensetzung und systematische Steuerung.",
-    imp_ana: "Die Führung setzt dabei auf Verbindlichkeit und nachvollziehbare Entscheidungen.",
-    ana_imp: "Die Führung setzt dabei auf Verbindlichkeit und nachvollziehbare Entscheidungen.",
-    imp_int: "Die Führung wirkt dabei über Präsenz und situative Ansprache.",
-    int_imp: "Die Führung wirkt dabei über Präsenz und situative Ansprache.",
-    ana_int: "Die Führung setzt dabei auf Orientierung durch Transparenz und Dialog.",
-    int_ana: "Die Führung setzt dabei auf Orientierung durch Transparenz und Dialog.",
-    balanced: "Das Führungsverhalten erfordert situative Balance zwischen Steuerung, Zusammenarbeit und struktureller Orientierung.",
+    ana: "Die Führung stützt sich dabei auf klare Rahmensetzung und verlässliche Orientierung.",
+    imp_ana: "Die Führung zeigt sich dabei in konsequenter Umsetzung auf Basis klarer Vorgaben.",
+    ana_imp: "Die Führung zeigt sich dabei in konsequenter Umsetzung auf Basis klarer Vorgaben.",
+    imp_int: "Die Führung zeigt sich dabei in entschlossenem Handeln mit Blick auf die Beteiligten.",
+    int_imp: "Die Führung zeigt sich dabei in entschlossenem Handeln mit Blick auf die Beteiligten.",
+    ana_int: "Die Führung zeigt sich dabei in durchdachter Steuerung mit Raum für Dialog.",
+    int_ana: "Die Führung zeigt sich dabei in durchdachter Steuerung mit Raum für Dialog.",
+    balanced: "Die Führung erfordert dabei situative Balance zwischen Steuerung, Zusammenarbeit und Struktur.",
   };
 
   let intensityLabel = "";
