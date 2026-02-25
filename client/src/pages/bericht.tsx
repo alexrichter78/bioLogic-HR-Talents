@@ -3,6 +3,8 @@ import { useLocation } from "wouter";
 import { ArrowLeft, BarChart3, Briefcase, Heart, Shield, AlertTriangle, FileText, Lightbulb, CheckCircle2, Check, Users } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import { PROFILE_TEXTS, type VariantTexts } from "@/data/bericht-texte";
+import { BERUFE } from "@/data/berufe";
+import { Settings } from "lucide-react";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 
@@ -212,30 +214,25 @@ function getReportTexts(roleTitle: string, isLeadership: boolean, profileType: P
   };
 }
 
-function BarChart({ data }: { data: { label: string; value: number; color: string }[] }) {
+function BarChart({ data, compact }: { data: { label: string; value: number; color: string }[]; compact?: boolean }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: compact ? 8 : 10 }}>
       {data.map((bar) => (
-        <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, width: 80, flexShrink: 0 }}>
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: bar.color, flexShrink: 0 }} />
-            <span style={{ fontSize: 12, color: "#6E6E73", fontWeight: 500 }}>{bar.label}</span>
-          </div>
-          <div style={{ flex: 1, height: 28, borderRadius: 14, background: "rgba(0,0,0,0.03)", overflow: "hidden", position: "relative" }}>
+        <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontSize: compact ? 11 : 12, color: "#6E6E73", fontWeight: 400, width: compact ? 62 : 70, flexShrink: 0 }}>{bar.label}</span>
+          <div style={{ flex: 1, height: compact ? 26 : 28, borderRadius: 4, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
             <div style={{
-              width: `${Math.max(bar.value, 4)}%`,
+              width: `${Math.max(bar.value, 5)}%`,
               height: "100%",
-              borderRadius: 14,
-              background: `linear-gradient(90deg, ${bar.color}, ${bar.color}CC)`,
-              transition: "width 800ms cubic-bezier(0.4, 0, 0.2, 1)",
+              borderRadius: 4,
+              background: bar.color,
+              transition: "width 600ms ease",
               display: "flex",
               alignItems: "center",
-              justifyContent: "flex-end",
-              paddingRight: 10,
-              minWidth: 44,
-              boxShadow: `0 2px 8px ${bar.color}30`,
+              paddingLeft: 10,
+              minWidth: 42,
             }}>
-              <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap", textShadow: "0 1px 2px rgba(0,0,0,0.15)" }}>
+              <span style={{ fontSize: compact ? 11 : 12, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>
                 {Math.round(bar.value)}%
               </span>
             </div>
@@ -401,12 +398,27 @@ function KeyInsight({ text, color }: { text: string; color?: string }) {
   );
 }
 
-function BarsForProfile(bg: BG) {
-  return <BarChart data={[
+function BarsForProfile(bg: BG, compact?: boolean) {
+  return <BarChart compact={compact} data={[
     { label: "Impulsiv", value: bg.imp, color: COLORS.imp },
     { label: "Intuitiv", value: bg.int, color: COLORS.int },
     { label: "Analytisch", value: bg.ana, color: COLORS.ana },
   ]} />;
+}
+
+function MiniCard({ icon: Icon, title, bg, iconColor }: { icon: typeof BarChart3; title: string; bg: BG; iconColor: string }) {
+  return (
+    <div style={{
+      background: "rgba(0,0,0,0.02)", borderRadius: 16, padding: "18px 20px",
+      border: "1px solid rgba(0,0,0,0.04)",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 14 }}>
+        <Icon style={{ width: 14, height: 14, color: iconColor, strokeWidth: 1.8 }} />
+        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{title}</span>
+      </div>
+      {BarsForProfile(bg, true)}
+    </div>
+  );
 }
 
 function EffectCard({ label, color, bullets, text }: OverweightEffect) {
@@ -657,9 +669,9 @@ function getFazitText(
 export default function Bericht() {
   const [, setLocation] = useLocation();
   const [data, setData] = useState<{
-    beruf: string; isLeadership: boolean;
-    gesamt: BG; haupt: BG; neben: BG; fuehrung: BG;
-    texts: ReportTexts; intensity: Intensity;
+    beruf: string; bereich: string; isLeadership: boolean;
+    gesamt: BG; haupt: BG; neben: BG; fuehrung: BG; rahmen: BG;
+    texts: ReportTexts; intensity: Intensity; profileType: ProfileType;
     rahmenbedingungenText: string; fuehrungskontextText: string;
     fazitParagraphs: string[];
   } | null>(null);
@@ -670,6 +682,8 @@ export default function Bericht() {
     try {
       const state = JSON.parse(raw);
       const beruf = state.beruf || "Unbenannte Rolle";
+      const found = BERUFE.find(b => b.name === beruf);
+      const bereich = found?.kategorie || "";
       const fuehrungstyp = state.fuehrung || "Keine";
       const isLeadership = fuehrungstyp !== "Keine";
       const taetigkeiten = state.taetigkeiten || [];
@@ -680,12 +694,12 @@ export default function Bericht() {
       const fuehrung = calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "fuehrung"));
       const rahmen = computeRahmen(state);
       const gesamt = computeGesamt(haupt, neben, fuehrung, rahmen);
-      const { type, intensity } = classifyProfile(gesamt);
-      const texts = getReportTexts(beruf, isLeadership, type, intensity);
+      const { type: profileType, intensity } = classifyProfile(gesamt);
+      const texts = getReportTexts(beruf, isLeadership, profileType, intensity);
       const rahmenbedingungenText = getRahmenbedingungenText(aufgabencharakter, arbeitslogik, state.erfolgsfokusIndices || [], gesamt);
       const fuehrungskontextText = isLeadership ? getFuehrungskontextText(fuehrungstyp, gesamt, arbeitslogik) : "";
       const fazitParagraphs = getFazitText(texts.conclusion, gesamt, isLeadership, intensity, aufgabencharakter, arbeitslogik, fuehrungstyp);
-      setData({ beruf, isLeadership, gesamt, haupt, neben, fuehrung, texts, intensity, rahmenbedingungenText, fuehrungskontextText, fazitParagraphs });
+      setData({ beruf, bereich, isLeadership, gesamt, haupt, neben, fuehrung, rahmen, texts, intensity, profileType, rahmenbedingungenText, fuehrungskontextText, fazitParagraphs });
     } catch {}
   }, []);
 
@@ -709,7 +723,25 @@ export default function Bericht() {
     );
   }
 
-  const { beruf, isLeadership, gesamt, haupt, neben, fuehrung, texts, intensity, rahmenbedingungenText, fuehrungskontextText, fazitParagraphs } = data;
+  const { beruf, bereich, isLeadership, gesamt, haupt, neben, fuehrung, rahmen, texts, intensity, profileType, rahmenbedingungenText, fuehrungskontextText, fazitParagraphs } = data;
+
+  const rollencharakter = (() => {
+    if (profileType === "balanced_all") return "Balanciert";
+    if (profileType.startsWith("hybrid_")) return "Gemischt";
+    if (profileType.includes("_imp")) return "Umsetzungsorientiert";
+    if (profileType.includes("_ana")) return "Analytisch-Strukturiert";
+    if (profileType.includes("_int")) return "Kooperativ-Intuitiv";
+    return "Gemischt";
+  })();
+
+  const dominanteKomponente = (() => {
+    if (intensity === "strong") return "Eindeutig";
+    if (intensity === "clear") return "Deutlich";
+    if (intensity === "light") return "Leicht";
+    return "Balanciert";
+  })();
+
+  const rollenfunktionText = texts.intro;
 
   const intensityNote = intensity === "strong"
     ? "Der Schwerpunkt ist eindeutig."
@@ -774,24 +806,47 @@ export default function Bericht() {
             <h1 style={{ fontSize: 36, fontWeight: 750, letterSpacing: "-0.035em", color: "#1D1D1F", lineHeight: 1.1 }} data-testid="text-bericht-title">
               Entscheidungsbericht
             </h1>
-            <p style={{ fontSize: 15, color: "#8E8E93", fontWeight: 400, lineHeight: 1.5, marginTop: 10 }}>
-              Strukturelle Anforderungsanalyse
-            </p>
-            <div style={{
-              display: "inline-flex", alignItems: "center", gap: 8, marginTop: 12,
-              background: "rgba(255,255,255,0.7)", borderRadius: 12, padding: "8px 18px",
-              border: "1px solid rgba(0,0,0,0.04)", boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
-            }}>
-              <Briefcase style={{ width: 14, height: 14, color: "#0071E3" }} />
-              <span style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F" }} data-testid="text-bericht-beruf">{beruf}</span>
-            </div>
           </div>
 
           <GlassCard testId="bericht-report" style={{
             padding: 0, borderRadius: 28, overflow: "hidden",
           }}>
 
-            <div style={{ padding: "36px 34px 28px" }} data-testid="bericht-section-intro">
+            <div style={{ padding: "32px 34px 24px" }} data-testid="bericht-header">
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", marginBottom: 6 }} data-testid="text-bericht-beruf">
+                Entscheidungsgrundlage: {beruf}
+              </h2>
+              {bereich && (
+                <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 10 }}>
+                  Bereich: {bereich}
+                </p>
+              )}
+              <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+                <span style={{ fontSize: 13, color: "#48484A" }}>
+                  Rollencharakter: <strong style={{ color: "#1D1D1F" }}>{rollencharakter}</strong>
+                </span>
+                <span style={{ fontSize: 13, color: "#48484A" }}>
+                  Dominante Komponente: <strong style={{ color: "#1D1D1F" }}>{dominanteKomponente}</strong>
+                </span>
+              </div>
+            </div>
+
+            <Divider />
+
+            {rollenfunktionText && (
+              <>
+                <div style={{ padding: "24px 34px" }} data-testid="bericht-section-rollenfunktion">
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                    <Briefcase style={{ width: 15, height: 15, color: "#6E6E73", strokeWidth: 1.8 }} />
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>Rollenfunktion im Unternehmen</span>
+                  </div>
+                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8 }}>{rollenfunktionText}</p>
+                </div>
+                <Divider />
+              </>
+            )}
+
+            <div style={{ padding: "28px 34px 24px" }} data-testid="bericht-section-intro">
               <div style={{ display: "flex", alignItems: "center", marginBottom: 18 }}>
                 {chapterNum(chapter++)}
                 <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>Einleitung</span>
@@ -800,7 +855,7 @@ export default function Bericht() {
                 Fachliche Qualifikation allein sichert keine Leistung. Mitarbeitende, die persönlich zur Stelle passen, arbeiten wirksamer, bleiben länger und stabilisieren ihr Umfeld.
               </p>
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8 }}>
-                Dieser Bericht beschreibt, welche strukturellen Anforderungen die Rolle stellt – unabhängig von Lebenslauf und Zertifikaten. {texts.intro}
+                Dieser Bericht beschreibt, welche strukturellen Anforderungen die Rolle stellt – unabhängig von Lebenslauf und Zertifikaten.
               </p>
               {intensityNote && <KeyInsight text={intensityNote} />}
             </div>
@@ -843,57 +898,34 @@ export default function Bericht() {
                 <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>Kompetenzanalyse</span>
               </div>
 
-              <div style={{ marginBottom: 28 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-                  <BarChart3 style={{ width: 15, height: 15, color: "#0071E3", strokeWidth: 1.8 }} />
-                  <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>Gesamtprofil</span>
-                </div>
-                <div style={{
-                  background: "linear-gradient(135deg, rgba(0,113,227,0.03), rgba(52,170,220,0.02))",
-                  borderRadius: 20, padding: "20px 16px", marginBottom: 16,
-                  border: "1px solid rgba(0,113,227,0.06)",
-                }}>
-                  <ProfileRing bg={gesamt} />
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: isLeadership && texts.leadership_section ? "1fr 1fr" : "1fr 1fr",
+                gap: 14, marginBottom: 20,
+              }}>
+                <MiniCard icon={Briefcase} title="Tätigkeiten" bg={haupt} iconColor="#6E6E73" />
+                <MiniCard icon={Heart} title="Humankompetenzen" bg={neben} iconColor="#6E6E73" />
+                <MiniCard icon={Settings} title="Rahmenbedingungen der Stelle" bg={rahmen} iconColor="#6E6E73" />
+                {isLeadership && texts.leadership_section && (
+                  <MiniCard icon={Shield} title="Führungskompetenzen" bg={fuehrung} iconColor="#6E6E73" />
+                )}
+              </div>
+
+              <div style={{
+                background: "rgba(0,0,0,0.02)", borderRadius: 16, padding: "20px 22px",
+                border: "1px solid rgba(0,0,0,0.04)", marginBottom: 20,
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                  <BarChart3 style={{ width: 15, height: 15, color: "#6E6E73", strokeWidth: 1.8 }} />
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Gesamtprofil der Stellenanforderung</span>
                 </div>
                 {BarsForProfile(gesamt)}
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8, marginTop: 16 }}>{texts.overall}</p>
               </div>
 
-              <div style={{ height: 1, background: "rgba(0,0,0,0.04)", margin: "0 0 28px" }} />
-
-              <div style={{ marginBottom: 28 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-                  <Briefcase style={{ width: 15, height: 15, color: "#F39200", strokeWidth: 1.8 }} />
-                  <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>Tätigkeitsstruktur</span>
-                </div>
-                {BarsForProfile(haupt)}
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8, marginTop: 14 }}>{texts.tasks}</p>
-              </div>
-
-              <div style={{ height: 1, background: "rgba(0,0,0,0.04)", margin: "0 0 28px" }} />
-
-              <div style={{ marginBottom: isLeadership && texts.leadership_section ? 28 : 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-                  <Heart style={{ width: 15, height: 15, color: "#C41E3A", strokeWidth: 1.8 }} />
-                  <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>Humankompetenzen</span>
-                </div>
-                {BarsForProfile(neben)}
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8, marginTop: 14 }}>{texts.human}</p>
-              </div>
-
-              {isLeadership && texts.leadership_section && (
-                <>
-                  <div style={{ height: 1, background: "rgba(0,0,0,0.04)", margin: "0 0 28px" }} />
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-                      <Shield style={{ width: 15, height: 15, color: "#1A5DAB", strokeWidth: 1.8 }} />
-                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>Führungskompetenzen</span>
-                    </div>
-                    {BarsForProfile(fuehrung)}
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8, marginTop: 14 }}>{texts.leadership_section}</p>
-                  </div>
-                </>
-              )}
+              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8 }}>{texts.overall}</p>
+              {texts.tasks && <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8, marginTop: 10 }}>{texts.tasks}</p>}
+              {texts.human && <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8, marginTop: 10 }}>{texts.human}</p>}
+              {isLeadership && texts.leadership_section && <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8, marginTop: 10 }}>{texts.leadership_section}</p>}
             </div>
 
             <Divider />
