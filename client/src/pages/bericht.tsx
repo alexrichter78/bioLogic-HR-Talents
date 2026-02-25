@@ -564,23 +564,30 @@ function getRahmenbedingungenText(aufgabencharakter: string, arbeitslogik: strin
     parts.push(t);
   }
 
+  const hasImpSchwerpunkt = !isBalanced && top.key === "imp";
+  const hasAnaSchwerpunkt = !isBalanced && top.key === "ana";
+  const hasIntSchwerpunkt = !isBalanced && top.key === "int";
+
   if (arbeitslogik === "Umsetzungsorientiert") {
     let t = "Die vorherrschende Arbeitslogik ist umsetzungsorientiert – Ergebnisse werden durch direkte Aktion erzielt, Geschwindigkeit und Konsequenz stehen im Vordergrund.";
-    if (top.key === "imp") t += " Dies korrespondiert mit dem Rahmenprofil und erzeugt eine klare Ergebniserwartung.";
-    else if (top.key === "ana") t += " Das Rahmenprofil fordert jedoch strukturierte Arbeit – Tempo und Ordnung müssen gleichzeitig bedient werden.";
-    else t += " Das Rahmenprofil fordert kooperatives Arbeiten – Ergebnisse müssen im Einklang mit dem Umfeld erzielt werden.";
+    if (isBalanced) t += ` Das Rahmenprofil zeigt jedoch keine eindeutige Umsetzungsdominanz (Impulsiv: ${rahmenBG.imp} %, Analytisch: ${rahmenBG.ana} %) – die geforderte Umsetzungsorientierung muss neben anderen Anforderungen bestehen.`;
+    else if (hasImpSchwerpunkt) t += " Dies korrespondiert mit dem Rahmenprofil und erzeugt eine klare Ergebniserwartung.";
+    else if (hasAnaSchwerpunkt) t += ` Das Rahmenprofil fordert jedoch vorrangig strukturierte Arbeit (Analytisch: ${rahmenBG.ana} %) – Tempo und Ordnung müssen gleichzeitig bedient werden.`;
+    else t += ` Das Rahmenprofil fordert jedoch vorrangig kooperatives Arbeiten (Intuitiv: ${rahmenBG.int} %) – Ergebnisse müssen im Einklang mit dem Umfeld erzielt werden.`;
     parts.push(t);
   } else if (arbeitslogik === "Menschenorientiert") {
     let t = "Die vorherrschende Arbeitslogik ist menschenorientiert – Ergebnisse entstehen über Zusammenarbeit, Abstimmung und tragfähige Beziehungen.";
-    if (top.key === "int") t += " Dies korrespondiert mit dem Rahmenprofil und erzeugt eine klare Erwartung an Kommunikation und Einbindung.";
-    else if (top.key === "imp") t += " Das Rahmenprofil fordert jedoch Umsetzungskompetenz – Tempo und Einbindung müssen gleichzeitig geleistet werden.";
-    else t += " Das Rahmenprofil fordert strukturiertes Arbeiten – Ordnung und Prozesse müssen mit Kommunikation verbunden werden.";
+    if (isBalanced) t += ` Das Rahmenprofil zeigt jedoch keine eindeutige kooperative Dominanz (Intuitiv: ${rahmenBG.int} %) – Kommunikation und Einbindung müssen neben anderen gleichgewichtigen Anforderungen geleistet werden.`;
+    else if (hasIntSchwerpunkt) t += " Dies korrespondiert mit dem Rahmenprofil und erzeugt eine klare Erwartung an Kommunikation und Einbindung.";
+    else if (hasImpSchwerpunkt) t += ` Das Rahmenprofil fordert jedoch vorrangig Umsetzungskompetenz (Impulsiv: ${rahmenBG.imp} %) – Tempo und Einbindung müssen gleichzeitig geleistet werden.`;
+    else t += ` Das Rahmenprofil fordert jedoch vorrangig strukturiertes Arbeiten (Analytisch: ${rahmenBG.ana} %) – Ordnung und Prozesse müssen mit Kommunikation verbunden werden.`;
     parts.push(t);
   } else if (arbeitslogik === "Daten-/prozessorientiert") {
     let t = "Die vorherrschende Arbeitslogik ist daten- und prozessorientiert – Ergebnisse entstehen über systematische Analyse und nachvollziehbare Entscheidungen.";
-    if (top.key === "ana") t += " Dies korrespondiert mit dem Rahmenprofil und erzeugt eine klare Erwartung an Qualität und Nachvollziehbarkeit.";
-    else if (top.key === "imp") t += " Das Rahmenprofil fordert jedoch Umsetzungskompetenz – schnelles Handeln und faktenbasierte Entscheidungen müssen zusammengehen.";
-    else t += " Das Rahmenprofil fordert kooperative Arbeit – Abstimmung und Dialog basieren auf Fakten, nicht auf Meinungen.";
+    if (isBalanced) t += ` Das Rahmenprofil zeigt jedoch keine eindeutige Strukturdominanz (Analytisch: ${rahmenBG.ana} %) – datenbasiertes Arbeiten muss neben anderen gleichgewichtigen Anforderungen bestehen.`;
+    else if (hasAnaSchwerpunkt) t += " Dies korrespondiert mit dem Rahmenprofil und erzeugt eine klare Erwartung an Qualität und Nachvollziehbarkeit.";
+    else if (hasImpSchwerpunkt) t += ` Das Rahmenprofil fordert jedoch vorrangig Umsetzungskompetenz (Impulsiv: ${rahmenBG.imp} %) – schnelles Handeln und faktenbasierte Entscheidungen müssen zusammengehen.`;
+    else t += ` Das Rahmenprofil fordert jedoch vorrangig kooperative Arbeit (Intuitiv: ${rahmenBG.int} %) – Abstimmung und Dialog basieren auf Fakten, nicht auf Meinungen.`;
     parts.push(t);
   }
 
@@ -596,12 +603,21 @@ function getRahmenbedingungenText(aufgabencharakter: string, arbeitslogik: strin
       const hasBeziehung = erfolgsfokusIndices.includes(1);
       const hasProzess = erfolgsfokusIndices.includes(3);
 
-      if (hasErgebnis && top.key === "imp") t += " Das Rahmenprofil unterstützt den Ergebnisfokus direkt – Tempo und Konsequenz treiben das Ergebnis.";
-      else if (hasErgebnis) t += ` Die Rahmenbedingungen zeigen jedoch keinen umsetzungsorientierten Schwerpunkt (Impulsiv: ${rahmenBG.imp} %) – die Person muss den Ergebnisfokus trotz anderer Rahmenanforderungen sicherstellen.`;
-      if (hasBeziehung && top.key === "int") t += " Das Rahmenprofil unterstützt den Beziehungsfokus direkt – tragfähige Beziehungen entstehen natürlich aus kooperativer Arbeit.";
-      else if (hasBeziehung) t += ` Die Rahmenbedingungen zeigen jedoch keinen kooperativen Schwerpunkt (Intuitiv: ${rahmenBG.int} %) – Beziehungspflege muss bewusst zusätzlich geleistet werden.`;
-      if (hasProzess && top.key === "ana") t += " Das Rahmenprofil unterstützt den Prozessfokus direkt – Ordnung und Systematik treiben Prozessqualität.";
-      else if (hasProzess) t += ` Die Rahmenbedingungen zeigen jedoch keinen strukturorientierten Schwerpunkt (Analytisch: ${rahmenBG.ana} %) – Prozessqualität muss gegen andere Anforderungen abgesichert werden.`;
+      if (hasErgebnis) {
+        if (hasImpSchwerpunkt) t += " Das Rahmenprofil unterstützt den Ergebnisfokus direkt – Tempo und Konsequenz treiben das Ergebnis.";
+        else if (isBalanced) t += ` Die Rahmenbedingungen zeigen keinen eindeutigen Umsetzungsschwerpunkt (Impulsiv: ${rahmenBG.imp} %) – der Ergebnisfokus muss trotz mehrerer gleichgewichtiger Anforderungen sichergestellt werden.`;
+        else t += ` Die Rahmenbedingungen zeigen keinen umsetzungsorientierten Schwerpunkt (Impulsiv: ${rahmenBG.imp} %) – die Person muss den Ergebnisfokus trotz anderer Rahmenanforderungen sicherstellen.`;
+      }
+      if (hasBeziehung) {
+        if (hasIntSchwerpunkt) t += " Das Rahmenprofil unterstützt den Beziehungsfokus direkt – tragfähige Beziehungen entstehen natürlich aus kooperativer Arbeit.";
+        else if (isBalanced) t += ` Die Rahmenbedingungen zeigen keinen eindeutigen kooperativen Schwerpunkt (Intuitiv: ${rahmenBG.int} %) – Beziehungspflege muss neben anderen gleichgewichtigen Anforderungen bewusst geleistet werden.`;
+        else t += ` Die Rahmenbedingungen zeigen keinen kooperativen Schwerpunkt (Intuitiv: ${rahmenBG.int} %) – Beziehungspflege muss bewusst zusätzlich geleistet werden.`;
+      }
+      if (hasProzess) {
+        if (hasAnaSchwerpunkt) t += " Das Rahmenprofil unterstützt den Prozessfokus direkt – Ordnung und Systematik treiben Prozessqualität.";
+        else if (isBalanced) t += ` Die Rahmenbedingungen zeigen keinen eindeutigen Strukturschwerpunkt (Analytisch: ${rahmenBG.ana} %) – Prozessqualität muss neben anderen gleichgewichtigen Anforderungen abgesichert werden.`;
+        else t += ` Die Rahmenbedingungen zeigen keinen strukturorientierten Schwerpunkt (Analytisch: ${rahmenBG.ana} %) – Prozessqualität muss gegen andere Anforderungen abgesichert werden.`;
+      }
       parts.push(t);
     }
   }
