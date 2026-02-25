@@ -223,6 +223,12 @@ function ProfileCard() {
           onConfirm={() => {
             localStorage.removeItem("rollenDnaState");
             localStorage.removeItem("rollenDnaCompleted");
+            localStorage.removeItem("kompetenzenCache");
+            localStorage.removeItem("berichtCache");
+            localStorage.removeItem("bioCheckTextOverride");
+            localStorage.removeItem("bioCheckIntroOverride");
+            localStorage.removeItem("bioCheckTextGenerated");
+            localStorage.removeItem("analyseTexte");
             setShowResetConfirm(false);
             setLocation("/rollen-dna");
           }}
