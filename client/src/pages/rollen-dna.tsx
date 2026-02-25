@@ -2067,7 +2067,7 @@ export default function RollenDNA() {
                         </svg>
                       </div>
                       <span style={{ fontSize: 17, color: "#1D1D1F" }}>
-                        <span style={{ fontWeight: 700 }}>bio</span><span style={{ fontWeight: 400 }}>Check</span>{" "}der Stellenanforderung
+                        Anforderungsprofil der Rolle
                       </span>
                     </div>
                     <ChevronDown style={{
@@ -2520,7 +2520,7 @@ export default function RollenDNA() {
                       </svg>
                     </div>
                     <span style={{ fontSize: 17, color: "#1D1D1F" }}>
-                      <span style={{ fontWeight: 700 }}>bio</span><span style={{ fontWeight: 400 }}>Check</span>{" "}der Stellenanforderung
+                      Anforderungsprofil der Rolle
                     </span>
                   </div>
                   <ChevronDown style={{
