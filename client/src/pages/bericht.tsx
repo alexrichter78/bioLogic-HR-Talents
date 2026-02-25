@@ -494,6 +494,75 @@ function getRahmenbedingungenText(aufgabencharakter: string, arbeitslogik: strin
   return parts.join("\n\n");
 }
 
+function getFazitText(
+  conclusionBase: string,
+  gesamt: BG,
+  isLeadership: boolean,
+  intensity: Intensity,
+  aufgabencharakter: string,
+  arbeitslogik: string,
+  fuehrungstyp: string,
+): string[] {
+  const sorted = [
+    { key: "imp", label: "Umsetzungsorientierung", value: gesamt.imp },
+    { key: "int", label: "Kooperationsfähigkeit", value: gesamt.int },
+    { key: "ana", label: "Strukturorientierung", value: gesamt.ana },
+  ].sort((a, b) => b.value - a.value);
+  const top = sorted[0];
+  const low = sorted[2];
+
+  const paragraphs: string[] = [];
+
+  paragraphs.push(conclusionBase);
+
+  let profilSatz = "";
+  if (intensity === "strong") {
+    profilSatz = `Das Anforderungsprofil zeigt eine eindeutige Ausprägung: ${top.label} dominiert mit ${top.value} % und bestimmt den Charakter der Rolle maßgeblich. Wer diese Stelle besetzt, muss diesen Schwerpunkt nicht nur mitbringen, sondern aktiv leben.`;
+  } else if (intensity === "clear") {
+    profilSatz = `Das Anforderungsprofil zeigt eine deutliche Tendenz: ${top.label} bildet mit ${top.value} % den erkennbaren Schwerpunkt. Diese Ausrichtung sollte bei der Besetzung klar berücksichtigt werden, auch wenn weitere Kompetenzen gefordert sind.`;
+  } else if (intensity === "light") {
+    profilSatz = `Das Anforderungsprofil zeigt eine erkennbare, aber nicht exklusive Tendenz. ${top.label} bildet den Schwerpunkt, wird aber durch die anderen Bereiche substantiell ergänzt. Die Rolle verlangt Flexibilität.`;
+  } else {
+    profilSatz = "Das Anforderungsprofil ist ausgeglichen. Alle drei Kompetenzbereiche sind in ähnlichem Maß gefordert. Die Rolle verlangt von der Person Vielseitigkeit und die Fähigkeit, zwischen unterschiedlichen Anforderungen zu wechseln.";
+  }
+  paragraphs.push(profilSatz);
+
+  if (aufgabencharakter && arbeitslogik) {
+    let kontextSatz = `Der ${aufgabencharakter.startsWith("ü") ? aufgabencharakter : aufgabencharakter.toLowerCase()}e Aufgabencharakter in Verbindung mit der ${arbeitslogik === "Daten-/prozessorientiert" ? "daten- und prozessorientierten" : arbeitslogik === "Menschenorientiert" ? "menschenorientierten" : "umsetzungsorientierten"} Arbeitslogik `;
+    if (
+      (top.key === "imp" && arbeitslogik === "Umsetzungsorientiert") ||
+      (top.key === "ana" && arbeitslogik === "Daten-/prozessorientiert") ||
+      (top.key === "int" && arbeitslogik === "Menschenorientiert")
+    ) {
+      kontextSatz += "verstärkt die Grundausrichtung des Profils. Rahmenbedingungen und Kompetenzstruktur zeigen in dieselbe Richtung – die Anforderung ist konsistent und klar.";
+    } else {
+      kontextSatz += "erzeugt ein produktives Spannungsfeld. Die Person muss unterschiedliche Anforderungen gleichzeitig bedienen können, ohne einen Bereich zu vernachlässigen.";
+    }
+    paragraphs.push(kontextSatz);
+  }
+
+  if (isLeadership) {
+    let fuehrungsSatz = "Die Führungsverantwortung erhöht die Anforderung zusätzlich. ";
+    if (fuehrungstyp === "Disziplinarische Führung mit Ergebnisverantwortung") {
+      fuehrungsSatz += "Als disziplinarische Führungskraft mit Ergebnisverantwortung muss die Person nicht nur fachlich passen, sondern auch unter Druck tragfähige Entscheidungen treffen und Verantwortung für Team und Budget übernehmen. Eine strukturelle Fehlbesetzung auf dieser Ebene wirkt sich direkt auf Teamstabilität und Ergebnis aus.";
+    } else if (fuehrungstyp === "Fachliche Führung") {
+      fuehrungsSatz += "Als fachliche Führungskraft muss die Person über Kompetenz und Überzeugung führen – ohne formale Weisungsbefugnis. Eine strukturelle Fehlbesetzung führt hier zu Autoritätsverlust und sinkender Orientierung im Team.";
+    } else {
+      fuehrungsSatz += "In der koordinierenden Funktion muss die Person über Einfluss und Abstimmung wirken. Eine strukturelle Fehlbesetzung führt hier zu Reibungsverlusten an Schnittstellen und stockenden Prozessen.";
+    }
+    paragraphs.push(fuehrungsSatz);
+  }
+
+  let schluss = "Entscheidend für eine erfolgreiche Besetzung ist nicht die fachliche Qualifikation allein, sondern die strukturelle Passung zwischen Person und Rolle. ";
+  if (low.value < 20) {
+    schluss += `Der Bereich ${low.label} ist in dieser Rolle mit ${low.value} % am geringsten gefordert – eine Überbetonung dieses Bereichs durch die Person würde zu Reibung und Ineffizienz führen. `;
+  }
+  schluss += "Dieser Bericht bietet die Grundlage, um Besetzungsentscheidungen nicht nur nach Lebenslauf, sondern nach struktureller Eignung zu treffen.";
+  paragraphs.push(schluss);
+
+  return paragraphs;
+}
+
 export default function Bericht() {
   const [, setLocation] = useLocation();
   const [data, setData] = useState<{
@@ -501,6 +570,7 @@ export default function Bericht() {
     gesamt: BG; haupt: BG; neben: BG; fuehrung: BG;
     texts: ReportTexts; intensity: Intensity;
     rahmenbedingungenText: string; fuehrungskontextText: string;
+    fazitParagraphs: string[];
   } | null>(null);
 
   useEffect(() => {
@@ -513,6 +583,7 @@ export default function Bericht() {
       const isLeadership = fuehrungstyp !== "Keine";
       const taetigkeiten = state.taetigkeiten || [];
       const arbeitslogik = state.arbeitslogik || "";
+      const aufgabencharakter = state.aufgabencharakter || "";
       const haupt = calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "haupt"));
       const neben = calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "neben"));
       const fuehrung = calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "fuehrung"));
@@ -520,9 +591,10 @@ export default function Bericht() {
       const gesamt = computeGesamt(haupt, neben, fuehrung, rahmen);
       const { type, intensity } = classifyProfile(gesamt);
       const texts = getReportTexts(beruf, isLeadership, type, intensity);
-      const rahmenbedingungenText = getRahmenbedingungenText(state.aufgabencharakter || "", arbeitslogik, state.erfolgsfokusIndices || [], gesamt);
+      const rahmenbedingungenText = getRahmenbedingungenText(aufgabencharakter, arbeitslogik, state.erfolgsfokusIndices || [], gesamt);
       const fuehrungskontextText = isLeadership ? getFuehrungskontextText(fuehrungstyp, gesamt, arbeitslogik) : "";
-      setData({ beruf, isLeadership, gesamt, haupt, neben, fuehrung, texts, intensity, rahmenbedingungenText, fuehrungskontextText });
+      const fazitParagraphs = getFazitText(texts.conclusion, gesamt, isLeadership, intensity, aufgabencharakter, arbeitslogik, fuehrungstyp);
+      setData({ beruf, isLeadership, gesamt, haupt, neben, fuehrung, texts, intensity, rahmenbedingungenText, fuehrungskontextText, fazitParagraphs });
     } catch {}
   }, []);
 
@@ -546,7 +618,7 @@ export default function Bericht() {
     );
   }
 
-  const { beruf, isLeadership, gesamt, haupt, neben, fuehrung, texts, intensity, rahmenbedingungenText, fuehrungskontextText } = data;
+  const { beruf, isLeadership, gesamt, haupt, neben, fuehrung, texts, intensity, rahmenbedingungenText, fuehrungskontextText, fazitParagraphs } = data;
 
   const intensityNote = intensity === "strong"
     ? "Der Schwerpunkt ist eindeutig."
@@ -731,13 +803,27 @@ export default function Bericht() {
               background: "linear-gradient(135deg, rgba(0,113,227,0.05), rgba(52,170,220,0.03))",
               borderTop: "1px solid rgba(0,113,227,0.08)",
             }} data-testid="bericht-section-fazit">
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
                 {chapterNum(chapter)}
                 <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>Fazit</span>
               </div>
-              <p style={{ fontSize: 15, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.7 }}>
-                {texts.conclusion}
-              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                {fazitParagraphs.map((p, i) => (
+                  <p key={i} style={{
+                    fontSize: i === 0 ? 15 : 14,
+                    fontWeight: i === 0 ? 600 : 400,
+                    color: i === 0 ? "#1D1D1F" : "#48484A",
+                    lineHeight: 1.75,
+                    margin: 0,
+                    ...(i === 0 ? { paddingBottom: 14, borderBottom: "1px solid rgba(0,113,227,0.08)" } : {}),
+                    ...(i === fazitParagraphs.length - 1 ? {
+                      marginTop: 4, padding: "14px 18px", borderRadius: 14,
+                      background: "rgba(0,113,227,0.04)", borderLeft: "3px solid rgba(0,113,227,0.20)",
+                      fontSize: 13, fontWeight: 500, color: "#1D1D1F",
+                    } : {}),
+                  }}>{p}</p>
+                ))}
+              </div>
             </div>
 
           </GlassCard>
