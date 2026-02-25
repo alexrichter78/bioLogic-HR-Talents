@@ -159,23 +159,24 @@ interface BerichtData {
 
 function SoftBar({ bg }: { bg: BG }) {
   const items = [
-    { label: "Impulsiv", value: bg.imp, color: COLORS.imp, soft: SOFT.imp },
-    { label: "Intuitiv", value: bg.int, color: COLORS.int, soft: SOFT.int },
-    { label: "Analytisch", value: bg.ana, color: COLORS.ana, soft: SOFT.ana },
+    { label: "Impulsiv", value: bg.imp, color: COLORS.imp },
+    { label: "Intuitiv", value: bg.int, color: COLORS.int },
+    { label: "Analytisch", value: bg.ana, color: COLORS.ana },
   ];
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       {items.map(bar => (
         <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 11, color: "#8E8E93", fontWeight: 500, width: 60, flexShrink: 0 }}>{bar.label}</span>
-          <div style={{ flex: 1, height: 22, borderRadius: 11, background: bar.soft, overflow: "hidden" }}>
+          <span style={{ fontSize: 12, color: "#6E6E73", width: 62, flexShrink: 0 }}>{bar.label}</span>
+          <div style={{ flex: 1, height: 24, borderRadius: 6, background: "rgba(0,0,0,0.04)", overflow: "hidden", position: "relative" }}>
             <div style={{
-              width: `${Math.max(bar.value, 8)}%`, height: "100%", borderRadius: 11,
-              background: `linear-gradient(90deg, ${bar.color}CC, ${bar.color})`,
+              width: bar.value === 0 ? "0%" : `${Math.max(bar.value, 2)}%`,
+              height: "100%", borderRadius: 6, background: bar.color,
               transition: "width 600ms ease",
-              display: "flex", alignItems: "center", justifyContent: "flex-end", paddingRight: 8, minWidth: 32,
+              display: "flex", alignItems: "center", paddingLeft: 8,
+              minWidth: bar.value === 0 ? 0 : 40,
             }}>
-              <span style={{ fontSize: 10, fontWeight: 700, color: "#FFF" }}>{Math.round(bar.value)}%</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(bar.value)}%</span>
             </div>
           </div>
         </div>
@@ -184,22 +185,16 @@ function SoftBar({ bg }: { bg: BG }) {
   );
 }
 
-function ChartCard({ icon: Icon, title, bg, accent }: { icon: typeof BarChart3; title: string; bg: BG; accent: string }) {
+function ChartCard({ icon: Icon, title, bg }: { icon: typeof BarChart3; title: string; bg: BG; accent?: string }) {
   return (
     <div style={{
-      background: `linear-gradient(135deg, ${accent}08, ${accent}03)`,
-      borderRadius: 20, padding: "18px 20px",
-      border: `1px solid ${accent}12`,
+      background: "rgba(0,0,0,0.02)",
+      borderRadius: 14, padding: "16px 18px",
+      border: "1px solid rgba(0,0,0,0.04)",
     }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-        <div style={{
-          width: 26, height: 26, borderRadius: 8,
-          background: `linear-gradient(135deg, ${accent}20, ${accent}10)`,
-          display: "flex", alignItems: "center", justifyContent: "center",
-        }}>
-          <Icon style={{ width: 13, height: 13, color: accent, strokeWidth: 2 }} />
-        </div>
-        <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", letterSpacing: "-0.01em" }}>{title}</span>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+        <Icon style={{ width: 15, height: 15, color: "#6E6E73", strokeWidth: 1.8 }} />
+        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{title}</p>
       </div>
       <SoftBar bg={bg} />
     </div>
