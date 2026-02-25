@@ -291,7 +291,7 @@ ${fuehrungItems.length > 0 ? `**Führungskompetenzen:**\n${formatItems(fuehrungI
 
 ## WICHTIGE REGELN
 
-1. Die Prozentwerte sind EXAKT berechnet und dürfen NICHT verändert werden. Verwende sie korrekt im Text.
+1. Verwende KEINE Prozentzahlen in den Texten. Die Prozentwerte werden bereits in den Grafiken angezeigt. Beschreibe stattdessen Verhältnisse qualitativ (z.B. "klar dominierend", "nahezu gleichauf", "deutlich sekundär", "erkennbar nachrangig").
 2. Wenn zwei Werte nah beieinander liegen (Differenz ≤ 6%), beschreibe das als "ausgeglichene/doppelte Struktur" – behaupte NICHT, dass einer dominiert.
 3. Wenn intensity="strong": Verwende Formulierungen wie "klar dominiert", "eindeutig geprägt"
 4. Wenn intensity="light": Verwende "erkennbare Tendenz", "leichte Ausrichtung"
