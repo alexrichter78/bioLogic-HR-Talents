@@ -155,6 +155,19 @@ function generateBioCheckText(bg: BioGram, isLeadership: boolean): string {
     },
   };
 
+  const fuehrungsSatz: Record<string, string> = {
+    imp: "Das Führungsverhalten ist dabei klar steuernd und ergebnisorientiert.",
+    int: "Das Führungsverhalten ist dabei integrativ und auf tragfähige Zusammenarbeit ausgerichtet.",
+    ana: "Das Führungsverhalten ist dabei strukturgebend und auf Transparenz und Nachvollziehbarkeit angelegt.",
+    imp_ana: "Das Führungsverhalten verbindet klare Steuerung mit struktureller Orientierung.",
+    ana_imp: "Das Führungsverhalten verbindet klare Steuerung mit struktureller Orientierung.",
+    imp_int: "Das Führungsverhalten verbindet Ergebnisorientierung mit integrativer Teamführung.",
+    int_imp: "Das Führungsverhalten verbindet Ergebnisorientierung mit integrativer Teamführung.",
+    ana_int: "Das Führungsverhalten verbindet strukturelle Klarheit mit sensibler Abstimmung im Team.",
+    int_ana: "Das Führungsverhalten verbindet strukturelle Klarheit mit sensibler Abstimmung im Team.",
+    balanced: "Das Führungsverhalten erfordert situative Balance zwischen Steuerung, Zusammenarbeit und struktureller Orientierung.",
+  };
+
   let intensityLabel = "";
   if (max.value >= 55 && gap >= 12) intensityLabel = "mit sehr deutlicher";
   else if (max.value >= 48 && gap >= 8) intensityLabel = "mit deutlicher";
@@ -163,23 +176,26 @@ function generateBioCheckText(bg: BioGram, isLeadership: boolean): string {
   if (intensityLabel) {
     const dt = dominantTexts[max.key];
     const prefix = isLeadership ? "Die Rolle ist" : "Diese Rolle ist";
-    return `${prefix} ${intensityLabel} ${max.label}er Prägung (${Math.round(max.value)}%) geprägt.\n${dt.line2}`;
+    let text = `${prefix} ${intensityLabel} ${max.label}er Prägung geprägt.\n${dt.line2}`;
+    if (isLeadership) text += `\n${fuehrungsSatz[max.key]}`;
+    return text;
   }
 
   const topDiff = Math.abs(max.value - second.value);
   const bottomGap = second.value - third.value;
 
   if (bottomGap >= 5) {
-    const hybridPhrase = topDiff <= 2 ? "gleich stark" : "nahezu gleich stark";
     const pairKey = `${max.key}_${second.key}`;
     const ht = hybridTexts[pairKey];
-    return `${ht.line1} (${hybridPhrase}, ${Math.round(max.value)}% / ${Math.round(second.value)}%)\n${ht.line2}`;
+    let text = `${ht.line1}\n${ht.line2}`;
+    if (isLeadership) text += `\n${fuehrungsSatz[pairKey] || fuehrungsSatz.balanced}`;
+    return text;
   }
 
   if (isLeadership) {
-    return `Diese Führungsrolle integriert Steuerung, Zusammenarbeit und strukturelle Orientierung in vergleichbarer Intensität (${Math.round(bg.imp)}% / ${Math.round(bg.int)}% / ${Math.round(bg.ana)}%).\nSie verlangt situative Balance zwischen Klarheit, Ergebnisfokus und Teamführung.`;
+    return `Diese Führungsrolle integriert Steuerung, Zusammenarbeit und strukturelle Orientierung in vergleichbarer Intensität.\n${fuehrungsSatz.balanced}`;
   }
-  return `Diese Rolle integriert operative, kontextbezogene und strukturelle Anforderungen in vergleichbarer Intensität (${Math.round(bg.imp)}% / ${Math.round(bg.int)}% / ${Math.round(bg.ana)}%).\nSie verlangt Flexibilität im Handeln sowie Klarheit in Planung und Zusammenarbeit.`;
+  return `Diese Rolle integriert operative, kontextbezogene und strukturelle Anforderungen in vergleichbarer Intensität.\nSie verlangt Flexibilität im Handeln sowie Klarheit in Planung und Zusammenarbeit.`;
 }
 
 const ERFOLGSFOKUS_LABELS = [
