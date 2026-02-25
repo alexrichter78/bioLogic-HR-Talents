@@ -620,7 +620,26 @@ const DEFAULT_TAETIGKEITEN: Taetigkeit[] = [
 function loadSavedState() {
   try {
     const raw = localStorage.getItem("rollenDnaState");
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const state = JSON.parse(raw);
+      if ((!state.taetigkeiten || state.taetigkeiten.length === 0) && state.beruf) {
+        try {
+          const cached = localStorage.getItem("kompetenzenCache");
+          if (cached) {
+            const cacheData = JSON.parse(cached);
+            if (cacheData.taetigkeiten && cacheData.taetigkeiten.length > 0) {
+              state.taetigkeiten = cacheData.taetigkeiten;
+              state.nextId = Math.max(...cacheData.taetigkeiten.map((t: any) => t.id)) + 1;
+            }
+          }
+        } catch {}
+      }
+      if (state.taetigkeiten && state.taetigkeiten.length > 0) {
+        state.allCollapsed = true;
+        state.currentStep = 3;
+      }
+      return state;
+    }
   } catch {}
   return null;
 }
@@ -644,7 +663,9 @@ export default function RollenDNA() {
   const [nextId, setNextId] = useState(saved.current?.nextId ?? 1);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const originalNames = useRef<Map<number, string>>(new Map());
+  const originalNames = useRef<Map<number, string>>(
+    new Map(saved.current?.taetigkeiten?.map((t: Taetigkeit) => [t.id, t.name]) ?? [])
+  );
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatingStep, setGeneratingStep] = useState(0);
   const [isReclassifying, setIsReclassifying] = useState(false);
