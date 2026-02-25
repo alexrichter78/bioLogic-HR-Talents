@@ -156,9 +156,9 @@ function generateBioCheckText(bg: BioGram, isLeadership: boolean): string {
   };
 
   const fuehrungsSatz: Record<string, string> = {
-    imp: "Das Führungsverhalten ist dabei klar steuernd und ergebnisorientiert.",
-    int: "Das Führungsverhalten ist dabei integrativ und auf tragfähige Zusammenarbeit ausgerichtet.",
-    ana: "Das Führungsverhalten ist dabei strukturgebend und auf Transparenz und Nachvollziehbarkeit angelegt.",
+    imp: "Die Führung wirkt dabei über Tempo, Konsequenz und direktes Eingreifen.",
+    int: "Die Führung lebt dabei von Nähe, Vertrauen und der Fähigkeit, andere mitzunehmen.",
+    ana: "Die Führung stützt sich dabei auf klare Rahmensetzung und systematische Steuerung.",
     imp_ana: "Die Führung setzt dabei auf Verbindlichkeit und nachvollziehbare Entscheidungen.",
     ana_imp: "Die Führung setzt dabei auf Verbindlichkeit und nachvollziehbare Entscheidungen.",
     imp_int: "Die Führung wirkt dabei über Präsenz und situative Ansprache.",
