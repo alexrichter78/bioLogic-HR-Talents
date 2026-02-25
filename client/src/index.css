@@ -286,3 +286,12 @@
     inset: -1px;
   }
 }
+
+[data-bericht] p,
+[data-bericht] span,
+[data-bericht] li {
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  overflow-wrap: break-word;
+  word-break: normal;
+}

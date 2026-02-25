@@ -513,7 +513,7 @@ export default function Bericht() {
   const nextChapter = () => ++chapter;
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden" data-bericht lang="de">
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
