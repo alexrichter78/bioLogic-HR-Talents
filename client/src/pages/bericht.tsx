@@ -583,18 +583,30 @@ export default function Bericht() {
 
               {/* 01 Einleitung */}
               <GlassCard testId="bericht-section-intro" style={{ padding: "30px 28px" }}>
-                <div style={{ display: "flex", alignItems: "center", marginBottom: 18 }}>
+                <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
                   <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[0]} />
                   <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Einleitung</span>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  {bericht.einleitung.split("\n\n").map((p, i) => (
-                    <p key={i} style={{
-                      fontSize: i === 0 ? 15 : 14, fontWeight: i === 0 ? 500 : 400,
-                      color: i === 0 ? "#1D1D1F" : "#48484A", lineHeight: 1.85, margin: 0,
-                    }}>{p}</p>
-                  ))}
-                </div>
+                {(() => {
+                  const paragraphs = bericht.einleitung.split("\n\n").filter(p => p.trim());
+                  if (paragraphs.length <= 1) {
+                    return <p style={{ fontSize: 14, fontWeight: 400, color: "#48484A", lineHeight: 1.9, margin: 0 }}>{bericht.einleitung}</p>;
+                  }
+                  const first = paragraphs[0];
+                  const rest = paragraphs.slice(1);
+                  return (
+                    <>
+                      <CalloutBox text={first} color={CHAPTER_COLORS[0]} icon={Lightbulb} />
+                      {rest.length > 0 && (
+                        <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+                          {rest.map((p, i) => (
+                            <p key={i} style={{ fontSize: 13.5, fontWeight: 400, color: "#48484A", lineHeight: 1.9, margin: 0 }}>{p}</p>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
               </GlassCard>
 
               {/* 02 Gesamtprofil */}
