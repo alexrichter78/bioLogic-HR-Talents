@@ -157,58 +157,6 @@ interface BerichtData {
   fazit: { kernsatz: string; persoenlichkeit: string[]; fehlbesetzung: string; schlusssatz: string };
 }
 
-function ProfileDonut({ bg, size = 120 }: { bg: BG; size?: number }) {
-  const total = bg.imp + bg.int + bg.ana;
-  const r = size * 0.38, cx = size / 2, cy = size / 2, sw = size * 0.1;
-  const circumference = 2 * Math.PI * r;
-  const segments = [
-    { value: bg.imp, color: COLORS.imp, label: "Impulsiv" },
-    { value: bg.int, color: COLORS.int, label: "Intuitiv" },
-    { value: bg.ana, color: COLORS.ana, label: "Analytisch" },
-  ];
-  let offset = -90;
-  const arcs = segments.map(seg => {
-    const pct = seg.value / total;
-    const dashLen = pct * circumference;
-    const gap = circumference - dashLen;
-    const rotation = offset;
-    offset += pct * 360;
-    return { ...seg, dashLen, gap, rotation };
-  });
-  const sorted = [...segments].sort((a, b) => b.value - a.value);
-
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 20, justifyContent: "center", padding: "6px 0" }}>
-      <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-          <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(0,0,0,0.03)" strokeWidth={sw} />
-          {arcs.map((arc, i) => (
-            <circle key={i} cx={cx} cy={cy} r={r} fill="none"
-              stroke={arc.color} strokeWidth={sw} strokeLinecap="round"
-              strokeDasharray={`${arc.dashLen - 2} ${arc.gap + 2}`}
-              transform={`rotate(${arc.rotation} ${cx} ${cy})`}
-              style={{ transition: "stroke-dasharray 800ms ease" }}
-            />
-          ))}
-        </svg>
-        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ fontSize: size * 0.17, fontWeight: 700, color: "#1D1D1F", lineHeight: 1 }}>{Math.round(sorted[0].value)}%</span>
-          <span style={{ fontSize: size * 0.075, color: "#8E8E93", fontWeight: 500, marginTop: 2 }}>{sorted[0].label}</span>
-        </div>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        {sorted.map((seg, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: seg.color, flexShrink: 0 }} />
-            <span style={{ fontSize: 12, color: "#6E6E73", minWidth: 54 }}>{seg.label}</span>
-            <span style={{ fontSize: 12, color: i === 0 ? "#1D1D1F" : "#8E8E93", fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{Math.round(seg.value)}%</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function SoftBar({ bg }: { bg: BG }) {
   const items = [
     { label: "Impulsiv", value: bg.imp, color: COLORS.imp, soft: SOFT.imp },
@@ -655,13 +603,7 @@ export default function Bericht() {
                   <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[1]} />
                   <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Gesamtprofil</span>
                 </div>
-                <div style={{
-                  background: "linear-gradient(135deg, rgba(110,69,183,0.04), rgba(0,113,227,0.03))",
-                  borderRadius: 22, padding: "24px 20px", marginBottom: 18,
-                  border: "1px solid rgba(110,69,183,0.08)",
-                }}>
-                  <ProfileDonut bg={gesamt} size={110} />
-                </div>
+                <ChartCard icon={BarChart3} title="Gesamtprofil" bg={gesamt} accent={CHAPTER_COLORS[1]} />
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85 }}>{bericht.gesamtprofil}</p>
               </GlassCard>
 
