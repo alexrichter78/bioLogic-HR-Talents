@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import RollenDNA from "@/pages/rollen-dna";
 import Analyse from "@/pages/analyse";
+import Bericht from "@/pages/bericht";
 
 function Router() {
   return (
@@ -14,6 +15,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/rollen-dna" component={RollenDNA} />
       <Route path="/analyse" component={Analyse} />
+      <Route path="/bericht" component={Bericht} />
       <Route component={NotFound} />
     </Switch>
   );
