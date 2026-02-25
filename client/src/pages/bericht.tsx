@@ -214,24 +214,29 @@ function getReportTexts(roleTitle: string, isLeadership: boolean, profileType: P
 
 function BarChart({ data }: { data: { label: string; value: number; color: string }[] }) {
   return (
-    <div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       {data.map((bar) => (
-        <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-          <span style={{ fontSize: 12, color: "#6E6E73", width: 72, flexShrink: 0 }}>{bar.label}</span>
-          <div style={{ flex: 1, height: 26, borderRadius: 6, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
+        <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, width: 80, flexShrink: 0 }}>
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: bar.color, flexShrink: 0 }} />
+            <span style={{ fontSize: 12, color: "#6E6E73", fontWeight: 500 }}>{bar.label}</span>
+          </div>
+          <div style={{ flex: 1, height: 28, borderRadius: 14, background: "rgba(0,0,0,0.03)", overflow: "hidden", position: "relative" }}>
             <div style={{
-              width: `${Math.max(bar.value, 2)}%`,
+              width: `${Math.max(bar.value, 4)}%`,
               height: "100%",
-              borderRadius: 6,
-              background: bar.color,
-              transition: "width 600ms ease",
+              borderRadius: 14,
+              background: `linear-gradient(90deg, ${bar.color}, ${bar.color}CC)`,
+              transition: "width 800ms cubic-bezier(0.4, 0, 0.2, 1)",
               display: "flex",
               alignItems: "center",
-              paddingLeft: 8,
-              minWidth: 40,
+              justifyContent: "flex-end",
+              paddingRight: 10,
+              minWidth: 44,
+              boxShadow: `0 2px 8px ${bar.color}30`,
             }}>
-              <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>
-                {Math.round(bar.value)} %
+              <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap", textShadow: "0 1px 2px rgba(0,0,0,0.15)" }}>
+                {Math.round(bar.value)}%
               </span>
             </div>
           </div>
@@ -241,26 +246,94 @@ function BarChart({ data }: { data: { label: string; value: number; color: strin
   );
 }
 
-function GlassCard({ children, style, testId, accentColor }: { children: React.ReactNode; style?: React.CSSProperties; testId?: string; accentColor?: string }) {
+function ProfileRing({ bg }: { bg: BG }) {
+  const total = bg.imp + bg.int + bg.ana;
+  const r = 54, cx = 64, cy = 64, sw = 12;
+  const circumference = 2 * Math.PI * r;
+
+  const segments = [
+    { value: bg.imp, color: COLORS.imp, label: "Impulsiv" },
+    { value: bg.int, color: COLORS.int, label: "Intuitiv" },
+    { value: bg.ana, color: COLORS.ana, label: "Analytisch" },
+  ];
+
+  let offset = -90;
+  const arcs = segments.map(seg => {
+    const pct = seg.value / total;
+    const dashLen = pct * circumference;
+    const gap = circumference - dashLen;
+    const rotation = offset;
+    offset += pct * 360;
+    return { ...seg, dashLen, gap, rotation, pct };
+  });
+
+  const sorted = [...segments].sort((a, b) => b.value - a.value);
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 28, justifyContent: "center", padding: "8px 0" }}>
+      <div style={{ position: "relative", width: 128, height: 128, flexShrink: 0 }}>
+        <svg width="128" height="128" viewBox="0 0 128 128">
+          <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(0,0,0,0.04)" strokeWidth={sw} />
+          {arcs.map((arc, i) => (
+            <circle
+              key={i} cx={cx} cy={cy} r={r} fill="none"
+              stroke={arc.color} strokeWidth={sw} strokeLinecap="round"
+              strokeDasharray={`${arc.dashLen - 2} ${arc.gap + 2}`}
+              transform={`rotate(${arc.rotation} ${cx} ${cy})`}
+              style={{ transition: "stroke-dasharray 800ms ease" }}
+            />
+          ))}
+        </svg>
+        <div style={{
+          position: "absolute", inset: 0, display: "flex", flexDirection: "column",
+          alignItems: "center", justifyContent: "center",
+        }}>
+          <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", lineHeight: 1 }}>{Math.round(sorted[0].value)}%</span>
+          <span style={{ fontSize: 9, color: "#8E8E93", fontWeight: 500, marginTop: 2 }}>{sorted[0].label}</span>
+        </div>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {sorted.map((seg, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ width: 10, height: 10, borderRadius: "50%", background: seg.color, flexShrink: 0, boxShadow: `0 1px 4px ${seg.color}40` }} />
+            <span style={{ fontSize: 13, color: "#3A3A3C", fontWeight: i === 0 ? 600 : 400, minWidth: 60 }}>{seg.label}</span>
+            <span style={{ fontSize: 13, color: i === 0 ? "#1D1D1F" : "#8E8E93", fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{Math.round(seg.value)}%</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function GlassCard({ children, style, testId }: { children: React.ReactNode; style?: React.CSSProperties; testId?: string; accentColor?: string }) {
   return (
     <div
       style={{
-        background: "rgba(255,255,255,0.65)",
-        backdropFilter: "blur(24px)",
-        WebkitBackdropFilter: "blur(24px)",
-        borderRadius: 24,
+        background: "rgba(255,255,255,0.72)",
+        backdropFilter: "blur(28px)",
+        WebkitBackdropFilter: "blur(28px)",
+        borderRadius: 28,
         padding: "32px 30px",
-        boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
-        border: "1px solid rgba(0,0,0,0.04)",
-        borderLeft: accentColor ? `3px solid ${accentColor}` : undefined,
-        transition: "transform 0.2s ease, box-shadow 0.2s ease",
+        boxShadow: "0 4px 24px rgba(0,0,0,0.03), 0 16px 56px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.6)",
+        border: "1px solid rgba(0,0,0,0.03)",
+        transition: "transform 0.3s ease, box-shadow 0.3s ease",
         ...style,
       }}
       data-testid={testId}
-      onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.07), inset 0 0 0 1px rgba(255,255,255,0.5)"; }}
-      onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)"; }}
+      onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.06), 0 24px 64px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(255,255,255,0.7)"; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 24px rgba(0,0,0,0.03), 0 16px 56px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.6)"; }}
     >
       {children}
+    </div>
+  );
+}
+
+function Divider() {
+  return (
+    <div style={{ margin: "0 34px", display: "flex", alignItems: "center", gap: 0 }}>
+      <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06))" }} />
+      <div style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(0,0,0,0.08)", flexShrink: 0, margin: "0 2px" }} />
+      <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, rgba(0,0,0,0.06), transparent)" }} />
     </div>
   );
 }
@@ -312,11 +385,18 @@ function KeyInsight({ text, color }: { text: string; color?: string }) {
   const c = color || "#0071E3";
   return (
     <div style={{
-      marginTop: 16, padding: "14px 18px", borderRadius: 14,
-      background: `linear-gradient(135deg, ${c}08, ${c}04)`,
+      marginTop: 18, padding: "16px 20px", borderRadius: 16,
+      background: `linear-gradient(135deg, ${c}08, ${c}03)`,
       borderLeft: `3px solid ${c}30`,
+      display: "flex", alignItems: "flex-start", gap: 10,
     }}>
-      <p style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.7, margin: 0, fontStyle: "italic" }}>{text}</p>
+      <div style={{
+        width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1,
+        background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        <span style={{ fontSize: 11, color: c }}>i</span>
+      </div>
+      <p style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.7, margin: 0, fontWeight: 450 }}>{text}</p>
     </div>
   );
 }
@@ -331,23 +411,34 @@ function BarsForProfile(bg: BG) {
 
 function EffectCard({ label, color, bullets, text }: OverweightEffect) {
   return (
-    <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 16, padding: "20px 22px", border: `1px solid ${color}12` }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-        <div style={{ width: 24, height: 24, borderRadius: 8, background: `${color}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <AlertTriangle style={{ width: 12, height: 12, color, strokeWidth: 2 }} />
+    <div style={{
+      background: "rgba(255,255,255,0.5)", borderRadius: 18, padding: "22px 24px",
+      border: `1px solid ${color}15`, boxShadow: `0 2px 12px ${color}08`,
+      transition: "transform 0.2s ease, box-shadow 0.2s ease",
+    }}
+      onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = `0 4px 16px ${color}12`; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 2px 12px ${color}08`; }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+        <div style={{
+          width: 28, height: 28, borderRadius: 9,
+          background: `linear-gradient(135deg, ${color}18, ${color}0C)`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <AlertTriangle style={{ width: 13, height: 13, color, strokeWidth: 2 }} />
         </div>
-        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{label}</p>
+        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{label}</p>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 7, paddingLeft: 2 }}>
         {bullets.map((e, i) => (
           <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-            <Check style={{ width: 12, height: 12, color: "#8E8E93", marginTop: 3, flexShrink: 0, strokeWidth: 2 }} />
-            <span style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.6 }}>{e}</span>
+            <div style={{ width: 5, height: 5, borderRadius: "50%", background: color, marginTop: 7, flexShrink: 0, opacity: 0.5 }} />
+            <span style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.65 }}>{e}</span>
           </div>
         ))}
       </div>
-      <div style={{ marginTop: 14, padding: "12px 14px", background: `${color}06`, borderRadius: 10, borderLeft: `3px solid ${color}` }}>
-        <p style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.65, margin: 0 }}>{text}</p>
+      <div style={{ marginTop: 16, padding: "14px 16px", background: `${color}06`, borderRadius: 12, borderLeft: `3px solid ${color}40` }}>
+        <p style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.7, margin: 0, fontStyle: "italic" }}>{text}</p>
       </div>
     </div>
   );
@@ -629,11 +720,18 @@ export default function Bericht() {
         : "";
 
   const chapterNum = (n: number) => (
-    <span style={{
-      fontSize: 11, fontWeight: 700, color: "#0071E3",
-      background: "rgba(0,113,227,0.07)", borderRadius: 6,
-      padding: "2px 8px", marginRight: 8, fontVariantNumeric: "tabular-nums",
-    }}>{String(n).padStart(2, "0")}</span>
+    <div style={{
+      width: 32, height: 32, borderRadius: 10,
+      background: "linear-gradient(135deg, #0071E3, #34AADC)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      marginRight: 12, flexShrink: 0,
+      boxShadow: "0 2px 8px rgba(0,113,227,0.15)",
+    }}>
+      <span style={{
+        fontSize: 13, fontWeight: 700, color: "#FFFFFF",
+        fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em",
+      }}>{String(n).padStart(2, "0")}</span>
+    </div>
   );
 
   let chapter = 1;
@@ -662,21 +760,31 @@ export default function Bericht() {
           </div>
         </div>
 
-        <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20 pt-6">
-          <div className="text-center mb-12">
+        <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20 pt-8">
+          <div className="text-center mb-10">
             <div style={{
-              display: "inline-flex", alignItems: "center", gap: 6,
-              background: "rgba(0,113,227,0.06)", borderRadius: 20, padding: "5px 14px", marginBottom: 14,
+              display: "inline-flex", alignItems: "center", gap: 7,
+              background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.06))",
+              borderRadius: 20, padding: "6px 16px", marginBottom: 16,
+              border: "1px solid rgba(0,113,227,0.08)",
             }}>
-              <FileText style={{ width: 12, height: 12, color: "#0071E3" }} />
-              <span style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.08em" }}>Strukturanalyse</span>
+              <FileText style={{ width: 13, height: 13, color: "#0071E3" }} />
+              <span style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.1em" }}>Strukturanalyse</span>
             </div>
-            <h1 style={{ fontSize: 34, fontWeight: 700, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.1 }} data-testid="text-bericht-title">
+            <h1 style={{ fontSize: 36, fontWeight: 750, letterSpacing: "-0.035em", color: "#1D1D1F", lineHeight: 1.1 }} data-testid="text-bericht-title">
               Entscheidungsbericht
             </h1>
-            <p style={{ fontSize: 16, color: "#6E6E73", fontWeight: 400, lineHeight: 1.5, marginTop: 10 }}>
-              Strukturelle Anforderungsanalyse: <span style={{ fontWeight: 600, color: "#3A3A3C" }}>{beruf}</span>
+            <p style={{ fontSize: 15, color: "#8E8E93", fontWeight: 400, lineHeight: 1.5, marginTop: 10 }}>
+              Strukturelle Anforderungsanalyse
             </p>
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 8, marginTop: 12,
+              background: "rgba(255,255,255,0.7)", borderRadius: 12, padding: "8px 18px",
+              border: "1px solid rgba(0,0,0,0.04)", boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
+            }}>
+              <Briefcase style={{ width: 14, height: 14, color: "#0071E3" }} />
+              <span style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F" }} data-testid="text-bericht-beruf">{beruf}</span>
+            </div>
           </div>
 
           <GlassCard testId="bericht-report" style={{
@@ -697,7 +805,7 @@ export default function Bericht() {
               {intensityNote && <KeyInsight text={intensityNote} />}
             </div>
 
-            <div style={{ margin: "0 34px", height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)" }} />
+            <Divider />
 
             {rahmenbedingungenText && (
               <>
@@ -712,7 +820,7 @@ export default function Bericht() {
                     ))}
                   </div>
                 </div>
-                <div style={{ margin: "0 34px", height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)" }} />
+                <Divider />
               </>
             )}
 
@@ -725,7 +833,7 @@ export default function Bericht() {
                   </div>
                   <ProseBlock text={fuehrungskontextText} accentColor="#1A5DAB" />
                 </div>
-                <div style={{ margin: "0 34px", height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)" }} />
+                <Divider />
               </>
             )}
 
@@ -736,12 +844,19 @@ export default function Bericht() {
               </div>
 
               <div style={{ marginBottom: 28 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
                   <BarChart3 style={{ width: 15, height: 15, color: "#0071E3", strokeWidth: 1.8 }} />
                   <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>Gesamtprofil</span>
                 </div>
+                <div style={{
+                  background: "linear-gradient(135deg, rgba(0,113,227,0.03), rgba(52,170,220,0.02))",
+                  borderRadius: 20, padding: "20px 16px", marginBottom: 16,
+                  border: "1px solid rgba(0,113,227,0.06)",
+                }}>
+                  <ProfileRing bg={gesamt} />
+                </div>
                 {BarsForProfile(gesamt)}
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8, marginTop: 14 }}>{texts.overall}</p>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8, marginTop: 16 }}>{texts.overall}</p>
               </div>
 
               <div style={{ height: 1, background: "rgba(0,0,0,0.04)", margin: "0 0 28px" }} />
@@ -781,7 +896,7 @@ export default function Bericht() {
               )}
             </div>
 
-            <div style={{ margin: "0 34px", height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)" }} />
+            <Divider />
 
             <div style={{ padding: "28px 34px" }} data-testid="bericht-section-risiko">
               <div style={{ display: "flex", alignItems: "center", marginBottom: 18 }}>
@@ -799,30 +914,49 @@ export default function Bericht() {
             </div>
 
             <div style={{
-              padding: "32px 34px",
-              background: "linear-gradient(135deg, rgba(0,113,227,0.05), rgba(52,170,220,0.03))",
-              borderTop: "1px solid rgba(0,113,227,0.08)",
+              padding: "32px 34px 36px",
+              background: "linear-gradient(180deg, rgba(0,113,227,0.04) 0%, rgba(52,170,220,0.02) 100%)",
+              borderTop: "1px solid rgba(0,113,227,0.06)",
+              borderRadius: "0 0 28px 28px",
             }} data-testid="bericht-section-fazit">
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+              <div style={{ display: "flex", alignItems: "center", marginBottom: 22 }}>
                 {chapterNum(chapter)}
                 <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>Fazit</span>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                {fazitParagraphs.map((p, i) => (
-                  <p key={i} style={{
-                    fontSize: i === 0 ? 15 : 14,
-                    fontWeight: i === 0 ? 600 : 400,
-                    color: i === 0 ? "#1D1D1F" : "#48484A",
-                    lineHeight: 1.75,
-                    margin: 0,
-                    ...(i === 0 ? { paddingBottom: 14, borderBottom: "1px solid rgba(0,113,227,0.08)" } : {}),
-                    ...(i === fazitParagraphs.length - 1 ? {
-                      marginTop: 4, padding: "14px 18px", borderRadius: 14,
-                      background: "rgba(0,113,227,0.04)", borderLeft: "3px solid rgba(0,113,227,0.20)",
-                      fontSize: 13, fontWeight: 500, color: "#1D1D1F",
-                    } : {}),
-                  }}>{p}</p>
-                ))}
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                {fazitParagraphs.map((p, i) => {
+                  const isFirst = i === 0;
+                  const isLast = i === fazitParagraphs.length - 1;
+                  if (isFirst) {
+                    return (
+                      <p key={i} style={{
+                        fontSize: 15, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.75, margin: 0,
+                        paddingBottom: 16, borderBottom: "1px solid rgba(0,113,227,0.08)",
+                      }}>{p}</p>
+                    );
+                  }
+                  if (isLast) {
+                    return (
+                      <div key={i} style={{
+                        marginTop: 4, padding: "16px 20px", borderRadius: 16,
+                        background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(52,170,220,0.03))",
+                        borderLeft: "3px solid rgba(0,113,227,0.25)",
+                        display: "flex", alignItems: "flex-start", gap: 10,
+                      }}>
+                        <div style={{
+                          width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1,
+                          background: "rgba(0,113,227,0.10)", display: "flex", alignItems: "center", justifyContent: "center",
+                        }}>
+                          <Check style={{ width: 11, height: 11, color: "#0071E3", strokeWidth: 2.5 }} />
+                        </div>
+                        <p style={{ fontSize: 13, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.75, margin: 0 }}>{p}</p>
+                      </div>
+                    );
+                  }
+                  return (
+                    <p key={i} style={{ fontSize: 14, fontWeight: 400, color: "#48484A", lineHeight: 1.8, margin: 0 }}>{p}</p>
+                  );
+                })}
               </div>
             </div>
 
