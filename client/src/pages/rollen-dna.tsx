@@ -663,6 +663,8 @@ export default function RollenDNA() {
   const [, setLocation] = useLocation();
   const saved = useRef(loadSavedState());
 
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+
   const [currentStep, setCurrentStep] = useState(saved.current?.currentStep ?? 1);
   const [allCollapsed, setAllCollapsed] = useState(saved.current?.allCollapsed ?? false);
   const [beruf, setBeruf] = useState(saved.current?.beruf ?? "");
@@ -1271,7 +1273,7 @@ export default function RollenDNA() {
           </div>
         </div>
 
-        <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20" style={{ paddingTop: allCollapsed ? 180 : 310, transition: "padding-top 300ms ease" }}>
+        <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20" style={{ paddingTop: allCollapsed ? 180 : 340, transition: "padding-top 300ms ease" }}>
           <div className="space-y-5">
 
             {allCollapsed ? null : currentStep === 1 ? (
