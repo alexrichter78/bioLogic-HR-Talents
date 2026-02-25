@@ -515,13 +515,26 @@ export default function Bericht() {
   const nextChapter = () => ++chapter;
 
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 35%, #F5F7FA 70%, #F8FAFC 100%)" }}>
-      <div className="absolute inset-0 pointer-events-none" style={{
-        background:
-          "radial-gradient(ellipse 80% 60% at 15% 20%, rgba(0,113,227,0.06) 0%, transparent 50%), " +
-          "radial-gradient(ellipse 70% 50% at 85% 70%, rgba(52,170,220,0.05) 0%, transparent 50%), " +
-          "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(0,113,227,0.04) 0%, transparent 50%)",
-      }} />
+    <div className="min-h-screen relative overflow-hidden">
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 120% 80% at 20% 60%, rgba(252,205,210,0.35) 0%, transparent 50%), " +
+            "radial-gradient(ellipse 100% 70% at 80% 30%, rgba(186,220,248,0.35) 0%, transparent 50%), " +
+            "radial-gradient(ellipse 80% 60% at 50% 80%, rgba(200,235,210,0.3) 0%, transparent 50%)",
+          animation: "gradientShift 20s ease-in-out infinite alternate",
+        }}
+      />
+
+      <style>{`
+        @keyframes gradientShift {
+          0% { transform: scale(1) translate(0, 0); }
+          33% { transform: scale(1.05) translate(-1%, 1%); }
+          66% { transform: scale(1.02) translate(1%, -1%); }
+          100% { transform: scale(1) translate(0, 0); }
+        }
+      `}</style>
 
       <div className="relative z-10">
         <div style={{ position: "sticky", top: 0, zIndex: 200 }}>
