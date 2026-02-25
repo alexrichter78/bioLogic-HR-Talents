@@ -233,7 +233,75 @@ Beispiel für 3 Einträge:
         `- ${t.name} (${t.kompetenz}, Niveau: ${t.niveau})`
       ).join("\n");
 
+      const formatItemsByNiveau = (items: any[]) => {
+        const hoch = items.filter((t: any) => t.niveau === "Hoch");
+        const mittel = items.filter((t: any) => t.niveau === "Mittel");
+        const gering = items.filter((t: any) => t.niveau === "Gering");
+        let out = "";
+        if (hoch.length > 0) out += `**Niveau HOCH (kritisch für Rollenerfolg, individuelle Eignungsprüfung erforderlich):**\n${hoch.map((t: any) => `- ${t.name} (${t.kompetenz})`).join("\n")}\n\n`;
+        if (mittel.length > 0) out += `**Niveau MITTEL (Standardanforderung, erlernbar):**\n${mittel.map((t: any) => `- ${t.name} (${t.kompetenz})`).join("\n")}\n\n`;
+        if (gering.length > 0) out += `**Niveau GERING (Basisanforderung, wenig differenzierend):**\n${gering.map((t: any) => `- ${t.name} (${t.kompetenz})`).join("\n")}\n`;
+        return out.trim();
+      };
+
       const erfolgsfokusText = (erfolgsfokusLabels || []).join(", ") || "Nicht angegeben";
+
+      const describeGaps = (bg: any, label: string) => {
+        if (!bg) return "";
+        const vals = [
+          { key: "Impulsiv", value: bg.imp || 33 },
+          { key: "Intuitiv", value: bg.int || 33 },
+          { key: "Analytisch", value: bg.ana || 34 },
+        ].sort((a, b) => b.value - a.value);
+        const [first, second, third] = vals;
+        const gap12 = first.value - second.value;
+        const gap23 = second.value - third.value;
+        const gapAll = Math.abs(first.value - third.value);
+
+        let desc = `${label}: ${first.key} (${first.value}%) > ${second.key} (${second.value}%) > ${third.key} (${third.value}%)\n`;
+        if (gapAll <= 6) {
+          desc += `→ GLEICHGEWICHT: Alle drei Kompetenzen nahezu gleichauf (max. Differenz ${gapAll}%). Keine dominiert.\n`;
+        } else if (first.value >= 55) {
+          desc += `→ STARKE DOMINANZ: ${first.key} ist mit ${first.value}% klar überlegen. Vorsprung auf Platz 2: ${gap12} Prozentpunkte.\n`;
+        } else if (gap12 >= 15) {
+          desc += `→ HOHE DOMINANZ: ${first.key} führt mit großem Abstand (${gap12} Pp. vor ${second.key}). ${third.key} ist klar nachrangig.\n`;
+        } else if (gap12 >= 8) {
+          desc += `→ DEUTLICHE DOMINANZ: ${first.key} führt erkennbar (${gap12} Pp. vor ${second.key}). Klare Rangfolge.\n`;
+        } else if (gap12 <= 5 && gap23 > 5) {
+          desc += `→ DOPPELSTRUKTUR: ${first.key} und ${second.key} bilden ein Tandem (nur ${gap12} Pp. Differenz). ${third.key} ist deutlich nachrangig (${gap23} Pp. Abstand).\n`;
+        } else if (gap12 >= 5) {
+          desc += `→ LEICHTE TENDENZ: ${first.key} liegt leicht vorn (${gap12} Pp. Vorsprung). Keine ausgeprägte Dominanz.\n`;
+        } else {
+          desc += `→ AUSGEGLICHEN: Geringe Differenzen zwischen den Kompetenzen.\n`;
+        }
+        return desc;
+      };
+
+      const gapAnalysis = [
+        describeGaps(gesamt, "Gesamtprofil"),
+        describeGaps(haupt, "Tätigkeiten"),
+        describeGaps(neben, "Humankompetenzen"),
+        describeGaps(rahmen, "Rahmenbedingungen"),
+        isLeadership ? describeGaps(fuehrungBG, "Führungskompetenzen") : null,
+      ].filter(Boolean).join("\n");
+
+      const PROFILE_TYPE_DESCRIPTIONS: Record<string, string> = {
+        "balanced_all": "Ausgeglichenes Profil: Alle drei Kompetenzen (Impulsiv, Intuitiv, Analytisch) sind nahezu gleichauf. Die Rolle verlangt Vielseitigkeit ohne klare Spezialisierung. Beschreibe die Rolle als vielfältig und balanciert.",
+        "strong_imp": "Stark Impulsiv-dominiert: Handlungs- und Umsetzungskompetenz dominiert mit großem Vorsprung. Die Rolle verlangt primär Durchsetzung, schnelle Entscheidungen und Ergebnisorientierung. Analytisches und Intuitives sind klar nachrangig.",
+        "strong_ana": "Stark Analytisch-dominiert: Fach- und Methodenkompetenz dominiert mit großem Vorsprung. Die Rolle verlangt primär systematisches Denken, Fachwissen und strukturiertes Vorgehen. Impulsives und Intuitives sind klar nachrangig.",
+        "strong_int": "Stark Intuitiv-dominiert: Sozial- und Beziehungskompetenz dominiert mit großem Vorsprung. Die Rolle verlangt primär Empathie, Beziehungsgestaltung und emotionale Intelligenz. Impulsives und Analytisches sind klar nachrangig.",
+        "dominant_imp": "Impulsiv-dominiert: Handlungskompetenz führt deutlich, aber nicht übermäßig. Die Rolle braucht vor allem Umsetzungsstärke, ergänzt durch die zweitstärkste Kompetenz.",
+        "dominant_ana": "Analytisch-dominiert: Fachkompetenz führt deutlich, aber nicht übermäßig. Die Rolle braucht vor allem methodisches Vorgehen, ergänzt durch die zweitstärkste Kompetenz.",
+        "dominant_int": "Intuitiv-dominiert: Beziehungskompetenz führt deutlich. Die Rolle braucht vor allem soziale Fähigkeiten, ergänzt durch die zweitstärkste Kompetenz.",
+        "light_imp": "Leicht Impulsiv-orientiert: Handlungskompetenz liegt leicht vorn, aber ohne klare Dominanz. Die Rolle tendiert zur Umsetzung, verlangt aber auch Breite in den anderen Kompetenzen.",
+        "light_ana": "Leicht Analytisch-orientiert: Fachkompetenz liegt leicht vorn, aber ohne klare Dominanz. Die Rolle tendiert zur Strukturierung, verlangt aber auch Breite in den anderen Kompetenzen.",
+        "light_int": "Leicht Intuitiv-orientiert: Beziehungskompetenz liegt leicht vorn, aber ohne klare Dominanz. Die Rolle tendiert zur Beziehungsgestaltung, verlangt aber auch Breite in den anderen Kompetenzen.",
+        "hybrid_imp_ana": "Impulsiv-Analytische Doppelstruktur: Handlungs- und Fachkompetenz liegen nah beieinander und bilden ein Tandem. Die Rolle verlangt sowohl Umsetzungsstärke als auch methodisches Denken. Intuitives ist deutlich nachrangig.",
+        "hybrid_ana_int": "Analytisch-Intuitive Doppelstruktur: Fach- und Beziehungskompetenz liegen nah beieinander und bilden ein Tandem. Die Rolle verlangt sowohl fachliche Tiefe als auch soziale Fähigkeiten. Impulsives ist deutlich nachrangig.",
+        "hybrid_imp_int": "Impulsiv-Intuitive Doppelstruktur: Handlungs- und Beziehungskompetenz liegen nah beieinander und bilden ein Tandem. Die Rolle verlangt sowohl Durchsetzung als auch Empathie. Analytisches ist deutlich nachrangig.",
+      };
+
+      const profileDescription = PROFILE_TYPE_DESCRIPTIONS[profileType || "balanced_all"] || PROFILE_TYPE_DESCRIPTIONS["balanced_all"];
 
       const prompt = `Du bist ein Experte für strukturelle Rollenanalyse und Besetzungsentscheidungen im deutschsprachigen Raum.
 
@@ -241,7 +309,7 @@ Beispiel für 3 Einträge:
 
 Erstelle einen vollständigen Entscheidungsbericht (Strukturanalyse) für die Rolle "${beruf}" im Bereich "${bereich || "Nicht angegeben"}".
 
-Der Bericht richtet sich an HR-Entscheider und Geschäftsführer. Er beschreibt die STRUKTURELLEN Anforderungen der Rolle – unabhängig von Lebenslauf, Branchenkenntnis oder bisherigen Erfolgskennzahlen.
+Der Bericht richtet sich an HR-Entscheider und Geschäftsführer. Er beschreibt die STRUKTURELLEN Anforderungen der Rolle, unabhängig von Lebenslauf, Branchenkenntnis oder bisherigen Erfolgskennzahlen.
 
 ## ROLLENPROFIL – GESAMTDATEN
 
@@ -252,6 +320,16 @@ Der Bericht richtet sich an HR-Entscheider und Geschäftsführer. Er beschreibt 
 **Arbeitslogik:** ${arbeitslogik || "Nicht angegeben"}
 **Erfolgsfokus:** ${erfolgsfokusText}
 
+## PROFILKLASSIFIKATION
+
+**Profiltyp:** ${profileType || "balanced_all"}
+**Intensität:** ${intensity || "balanced"}
+**Bedeutung:** ${profileDescription}
+
+## ABSTANDSANALYSE (exakt berechnet, NICHT verändern)
+
+${gapAnalysis}
+
 ## BERECHNETE PROFILWERTE (exakt, NICHT verändern)
 
 Gesamtprofil: Impulsiv ${gesamt?.imp || 33}%, Intuitiv ${gesamt?.int || 33}%, Analytisch ${gesamt?.ana || 34}%
@@ -260,31 +338,37 @@ ${isLeadership ? `Führungskompetenzen: Impulsiv ${fuehrungBG?.imp || 33}%, Intu
 Tätigkeiten: Impulsiv ${haupt?.imp || 33}%, Intuitiv ${haupt?.int || 33}%, Analytisch ${haupt?.ana || 34}%
 Humankompetenzen: Impulsiv ${neben?.imp || 33}%, Intuitiv ${neben?.int || 33}%, Analytisch ${neben?.ana || 34}%
 
-Profiltyp: ${profileType || "balanced_all"}
-Intensität: ${intensity || "balanced"}
-
 ## KOMPETENZBEREICHE (Bedeutung)
 
 - **Impulsiv** = Handlungs-/Umsetzungskompetenz (Machen, Durchsetzen, Entscheiden unter Druck)
 - **Intuitiv** = Sozial-/Beziehungskompetenz (Fühlen, Verbinden, Empathie, Beziehungsgestaltung)
 - **Analytisch** = Fach-/Methodenkompetenz (Denken, Strukturieren, Analysieren, Fachwissen)
 
-## PROFILDATEN AUS DEM WIZARD
+## PROFILDATEN AUS DEM WIZARD – NACH NIVEAU GEORDNET
 
-**Haupttätigkeiten:**
-${formatItems(hauptItems) || "Keine angegeben"}
+### Haupttätigkeiten:
+${formatItemsByNiveau(hauptItems) || "Keine angegeben"}
 
-**Humankompetenzen:**
-${formatItems(nebenItems) || "Keine angegeben"}
+### Humankompetenzen:
+${formatItemsByNiveau(nebenItems) || "Keine angegeben"}
 
-${fuehrungItems.length > 0 ? `**Führungskompetenzen:**\n${formatItems(fuehrungItems)}` : ""}
+${fuehrungItems.length > 0 ? `### Führungskompetenzen:\n${formatItemsByNiveau(fuehrungItems)}` : ""}
+
+## NIVEAU-REGELN (WICHTIG für die Textgenerierung)
+
+Das Niveau einer Tätigkeit beschreibt, wie kritisch sie für den Rollenerfolg ist:
+
+- **Niveau HOCH**: Diese Tätigkeit ist ENTSCHEIDEND für den Rollenerfolg. Sie erfordert individuelle Eignungsprüfung. Im Text: betone diese Tätigkeiten besonders, stelle sie als Kernherausforderungen dar, verknüpfe sie mit Risiken bei Fehlbesetzung.
+- **Niveau MITTEL**: Standardanforderung, die erlernbar ist. Im Text: erwähne diese als erwartbare Kompetenz, aber ohne besondere Dramatik.
+- **Niveau GERING**: Basisanforderung, wenig differenzierend. Im Text: nur am Rande erwähnen oder in Sammelformulierungen einbetten.
+
+Wenn mehrere Tätigkeiten Niveau HOCH haben, beschreibe die KOMBINATION als besondere Herausforderung für die Besetzung. Je mehr Hoch-Niveau-Tätigkeiten, desto anspruchsvoller ist das Anforderungsprofil.
 
 ## STIL UND TON
 
-- Direkt, professionell, nüchtern – kein Marketing, keine Floskeln
+- Direkt, professionell, nüchtern. Kein Marketing, keine Floskeln
 - Rollenspezifisches Vokabular verwenden (z.B. für Vertrieb: Pipeline, Forecast, Abschlussquote; für IT: Architektur, Code-Review, Deployment)
 - Bullet-Listen für Verantwortungsbereiche, Erfolgsmessung, Führungswirkung, geforderte Kompetenzen
-- Konkrete Prozentwerte aus den Profildaten im Text referenzieren
 - Spannungsfelder als "X vs. Y" formulieren
 - Risiko-Szenarien enden IMMER mit "Im Alltag entsteht..." Kernsatz
 - Fazit mit "Entscheidend für die Besetzung ist eine Persönlichkeit, die:" + Bullet-Liste
@@ -293,13 +377,15 @@ ${fuehrungItems.length > 0 ? `**Führungskompetenzen:**\n${formatItems(fuehrungI
 
 1. Verwende KEINE Prozentzahlen in den Texten. Die Prozentwerte werden bereits in den Grafiken angezeigt. Beschreibe stattdessen Verhältnisse qualitativ (z.B. "klar dominierend", "nahezu gleichauf", "deutlich sekundär", "erkennbar nachrangig").
 1b. Verwende KEINE Gedankenstriche (–) in den Texten. Formuliere stattdessen vollständige Sätze oder verwende Punkte/Doppelpunkte.
-2. Wenn zwei Werte nah beieinander liegen (Differenz ≤ 6%), beschreibe das als "ausgeglichene/doppelte Struktur" – behaupte NICHT, dass einer dominiert.
+2. Nutze die ABSTANDSANALYSE oben, um die Verhältnisse KORREKT zu beschreiben. Wenn dort "GLEICHGEWICHT" steht, beschreibe KEIN Dominieren. Wenn dort "STARKE DOMINANZ" steht, betone die klare Überlegenheit. Halte dich exakt an die Rangfolge.
 3. Wenn intensity="strong": Verwende Formulierungen wie "klar dominiert", "eindeutig geprägt"
 4. Wenn intensity="light": Verwende "erkennbare Tendenz", "leichte Ausrichtung"
 5. Wenn intensity="balanced": Beschreibe Vielseitigkeit und Gleichgewicht
-6. Bei Führungsrollen: Unterscheide klar zwischen disziplinarischer Führung, fachlicher Führung und Koordination
-7. Ohne Führung: Beschreibe wie die Rolle OHNE Führungshebel wirkt (über Expertise, Performance, Überzeugungskraft)
-8. Alle Texte müssen SPEZIFISCH für "${beruf}" sein – keine generischen Formulierungen
+6. Wenn intensity="clear": Verwende "deutlich geprägt", "erkennbar führend"
+7. Bei Führungsrollen: Unterscheide klar zwischen disziplinarischer Führung, fachlicher Führung und Koordination
+8. Ohne Führung: Beschreibe wie die Rolle OHNE Führungshebel wirkt (über Expertise, Performance, Überzeugungskraft)
+9. Alle Texte müssen SPEZIFISCH für "${beruf}" sein. Keine generischen Formulierungen
+10. Tätigkeiten mit Niveau HOCH müssen im Text als besonders kritisch hervorgehoben werden. Tätigkeiten mit Niveau GERING sollen nur beiläufig erwähnt werden
 
 ## JSON-AUSGABEFORMAT
 
