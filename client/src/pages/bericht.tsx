@@ -176,13 +176,17 @@ function splitIntoBlocks(text: string): string[] {
 
 function TextBlock({ text, style }: { text: string; style?: React.CSSProperties }) {
   const blocks = splitIntoBlocks(text);
+  const pStyle: React.CSSProperties = { fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", hyphens: "auto", WebkitHyphens: "auto", ...style };
   if (blocks.length <= 1) {
-    return <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, ...style }}>{text}</p>;
+    return <p style={pStyle} lang="de">{text}</p>;
   }
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
       {blocks.map((p, i) => (
-        <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, ...style }}>{p}</p>
+        <div key={i}>
+          {i > 0 && <hr style={{ border: "none", borderTop: "1px solid rgba(0,0,0,0.06)", margin: "14px 0" }} />}
+          <p style={pStyle} lang="de">{p}</p>
+        </div>
       ))}
     </div>
   );
@@ -621,9 +625,12 @@ export default function Bericht() {
                     <>
                       <CalloutBox text={first} color={CHAPTER_COLORS[0]} icon={Lightbulb} />
                       {rest.length > 0 && (
-                        <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 14 }}>
+                        <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 0 }}>
                           {rest.map((p, i) => (
-                            <p key={i} style={{ fontSize: 13.5, fontWeight: 400, color: "#48484A", lineHeight: 1.9, margin: 0 }}>{p}</p>
+                            <div key={i}>
+                              {i > 0 && <hr style={{ border: "none", borderTop: "1px solid rgba(0,0,0,0.06)", margin: "14px 0" }} />}
+                              <p style={{ fontSize: 13.5, fontWeight: 400, color: "#48484A", lineHeight: 1.9, margin: 0, textAlign: "justify", hyphens: "auto", WebkitHyphens: "auto" } as React.CSSProperties} lang="de">{p}</p>
+                            </div>
                           ))}
                         </div>
                       )}
