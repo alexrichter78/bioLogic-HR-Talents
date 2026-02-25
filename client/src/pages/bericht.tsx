@@ -235,8 +235,8 @@ function ChapterBadge({ num, color }: { num: number; color: string }) {
 }
 
 const CHAPTER_COLORS = [
-  "#0071E3", "#6E45B7", "#2DA44E", "#D4880F",
-  "#C41E3A", "#0891B2", "#7C3AED", "#059669",
+  "#0071E3", "#0071E3", "#0071E3", "#0071E3",
+  "#0071E3", "#0071E3", "#0071E3", "#0071E3",
 ];
 
 function BulletList({ items, icon, color }: { items: string[]; icon?: "check" | "dot" | "arrow"; color?: string }) {
@@ -454,7 +454,7 @@ export default function Bericht() {
 
   if (!profileData) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "linear-gradient(160deg, #F8F0FF 0%, #EEF4FF 40%, #F0FFF4 100%)" }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 40%, #F5F7FA 100%)" }}>
         <GlassCard testId="bericht-no-data">
           <div className="text-center" style={{ padding: "24px 44px" }}>
             <div style={{ width: 56, height: 56, borderRadius: 18, background: "linear-gradient(135deg, #E8F0FA, #FDEAED)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
@@ -480,12 +480,12 @@ export default function Bericht() {
   const nextChapter = () => ++chapter;
 
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{ background: "linear-gradient(160deg, #F5F0FA 0%, #EDF3FC 35%, #F0F9F2 70%, #FFF8F0 100%)" }}>
+    <div className="min-h-screen relative overflow-hidden" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 35%, #F5F7FA 70%, #F8FAFC 100%)" }}>
       <div className="absolute inset-0 pointer-events-none" style={{
         background:
-          "radial-gradient(ellipse 80% 60% at 15% 20%, rgba(110,69,183,0.08) 0%, transparent 50%), " +
-          "radial-gradient(ellipse 70% 50% at 85% 70%, rgba(196,30,58,0.05) 0%, transparent 50%), " +
-          "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(0,113,227,0.06) 0%, transparent 50%)",
+          "radial-gradient(ellipse 80% 60% at 15% 20%, rgba(0,113,227,0.06) 0%, transparent 50%), " +
+          "radial-gradient(ellipse 70% 50% at 85% 70%, rgba(52,170,220,0.05) 0%, transparent 50%), " +
+          "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(0,113,227,0.04) 0%, transparent 50%)",
       }} />
 
       <div className="relative z-10">
@@ -518,7 +518,7 @@ export default function Bericht() {
             <div style={{ textAlign: "center", paddingTop: 80 }}>
               <div style={{
                 width: 80, height: 80, borderRadius: 24,
-                background: "linear-gradient(135deg, rgba(0,113,227,0.1), rgba(110,69,183,0.08))",
+                background: "linear-gradient(135deg, rgba(0,113,227,0.1), rgba(52,170,220,0.06))",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 margin: "0 auto 24px", boxShadow: "0 8px 32px rgba(0,113,227,0.1)",
               }}>
@@ -547,16 +547,16 @@ export default function Bericht() {
 
               {/* Hero Header */}
               <GlassCard testId="bericht-header" style={{ padding: "36px 32px 30px", textAlign: "center", position: "relative", overflow: "hidden" }}>
-                <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(110,69,183,0.04))", pointerEvents: "none" }} />
-                <div style={{ position: "absolute", bottom: -20, left: -20, width: 80, height: 80, borderRadius: "50%", background: "linear-gradient(135deg, rgba(196,30,58,0.04), rgba(243,146,0,0.03))", pointerEvents: "none" }} />
+                <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(52,170,220,0.04))", pointerEvents: "none" }} />
+                <div style={{ position: "absolute", bottom: -20, left: -20, width: 80, height: 80, borderRadius: "50%", background: "linear-gradient(135deg, rgba(0,113,227,0.04), rgba(52,170,220,0.03))", pointerEvents: "none" }} />
 
                 <div style={{
                   display: "inline-flex", alignItems: "center", gap: 6,
-                  background: "linear-gradient(135deg, rgba(0,113,227,0.1), rgba(110,69,183,0.08))",
+                  background: "linear-gradient(135deg, rgba(0,113,227,0.1), rgba(52,170,220,0.06))",
                   borderRadius: 20, padding: "5px 14px", marginBottom: 14,
                 }}>
-                  <FileText style={{ width: 12, height: 12, color: "#6E45B7" }} />
-                  <span style={{ fontSize: 10, fontWeight: 700, color: "#6E45B7", textTransform: "uppercase", letterSpacing: "0.12em" }}>Entscheidungsgrundlage</span>
+                  <FileText style={{ width: 12, height: 12, color: "#0071E3" }} />
+                  <span style={{ fontSize: 10, fontWeight: 700, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.12em" }}>Entscheidungsgrundlage</span>
                 </div>
 
                 <h1 style={{ fontSize: 28, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.15, marginBottom: 6 }} data-testid="text-bericht-beruf">
@@ -788,8 +788,8 @@ export default function Bericht() {
               {/* 08 Fazit */}
               <GlassCard testId="bericht-section-fazit" style={{
                 padding: "34px 28px",
-                background: "linear-gradient(160deg, rgba(255,255,255,0.85), rgba(5,150,105,0.04), rgba(255,255,255,0.8))",
-                border: "1px solid rgba(5,150,105,0.12)",
+                background: "linear-gradient(160deg, rgba(255,255,255,0.85), rgba(0,113,227,0.04), rgba(255,255,255,0.8))",
+                border: "1px solid rgba(0,113,227,0.12)",
               }}>
                 <div style={{ display: "flex", alignItems: "center", marginBottom: 22 }}>
                   <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[7]} />
@@ -798,7 +798,7 @@ export default function Bericht() {
 
                 <p style={{
                   fontSize: 16, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.7, margin: 0,
-                  paddingBottom: 18, borderBottom: "1px solid rgba(5,150,105,0.12)",
+                  paddingBottom: 18, borderBottom: "1px solid rgba(0,113,227,0.12)",
                 }}>{bericht.fazit.kernsatz}</p>
 
                 <div style={{ marginTop: 20, marginBottom: 20 }}>
@@ -810,15 +810,15 @@ export default function Bericht() {
 
                 <div style={{
                   padding: "18px 22px", borderRadius: 18,
-                  background: "linear-gradient(135deg, rgba(5,150,105,0.08), rgba(5,150,105,0.03))",
-                  border: "1px solid rgba(5,150,105,0.12)",
+                  background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.03))",
+                  border: "1px solid rgba(0,113,227,0.12)",
                   display: "flex", alignItems: "flex-start", gap: 12,
                 }}>
                   <div style={{
                     width: 24, height: 24, borderRadius: 8, flexShrink: 0,
-                    background: "rgba(5,150,105,0.15)", display: "flex", alignItems: "center", justifyContent: "center",
+                    background: "rgba(0,113,227,0.15)", display: "flex", alignItems: "center", justifyContent: "center",
                   }}>
-                    <Check style={{ width: 13, height: 13, color: CHAPTER_COLORS[7], strokeWidth: 2.5 }} />
+                    <Check style={{ width: 13, height: 13, color: "#0071E3", strokeWidth: 2.5 }} />
                   </div>
                   <p style={{ fontSize: 14, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.75, margin: 0 }}>{bericht.fazit.schlusssatz}</p>
                 </div>
