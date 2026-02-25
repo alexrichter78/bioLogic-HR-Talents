@@ -65,7 +65,7 @@ function calcBioGram(items: Taetigkeit[]): BioGram {
   return { imp, int, ana };
 }
 
-function generateBioCheckText(bg: BioGram, isLeadership: boolean): string {
+function generateBioCheckText(bg: BioGram, isLeadership: boolean, fuehrungsBg?: BioGram): string {
   const vals = [
     { key: "imp" as const, label: "impulsiv", value: bg.imp },
     { key: "int" as const, label: "intuitiv", value: bg.int },
@@ -173,11 +173,29 @@ function generateBioCheckText(bg: BioGram, isLeadership: boolean): string {
   else if (max.value >= 48 && gap >= 8) intensityLabel = "mit deutlicher";
   else if (gap >= 5) intensityLabel = "mit leichter";
 
+  const getFuehrungsSatzKey = (): string => {
+    if (!fuehrungsBg) return max.key;
+    const fVals = [
+      { key: "imp" as const, value: fuehrungsBg.imp },
+      { key: "int" as const, value: fuehrungsBg.int },
+      { key: "ana" as const, value: fuehrungsBg.ana },
+    ].sort((a, b) => b.value - a.value);
+    const fMax = fVals[0], fSecond = fVals[1], fThird = fVals[2];
+    const fGap = fMax.value - fSecond.value;
+    const fBottomGap = fSecond.value - fThird.value;
+    if (fGap >= 5) return fMax.key;
+    if (fBottomGap >= 5) return `${fMax.key}_${fSecond.key}`;
+    return "balanced";
+  };
+
   if (intensityLabel) {
     const dt = dominantTexts[max.key];
     const prefix = isLeadership ? "Die Rolle ist" : "Diese Rolle ist";
     let text = `${prefix} ${intensityLabel} ${max.label}er Prägung geprägt.\n${dt.line2}`;
-    if (isLeadership) text += `\n${fuehrungsSatz[max.key]}`;
+    if (isLeadership) {
+      const fKey = getFuehrungsSatzKey();
+      text += `\n${fuehrungsSatz[fKey] || fuehrungsSatz.balanced}`;
+    }
     return text;
   }
 
@@ -188,12 +206,16 @@ function generateBioCheckText(bg: BioGram, isLeadership: boolean): string {
     const pairKey = `${max.key}_${second.key}`;
     const ht = hybridTexts[pairKey];
     let text = `${ht.line1}\n${ht.line2}`;
-    if (isLeadership) text += `\n${fuehrungsSatz[pairKey] || fuehrungsSatz.balanced}`;
+    if (isLeadership) {
+      const fKey = getFuehrungsSatzKey();
+      text += `\n${fuehrungsSatz[fKey] || fuehrungsSatz.balanced}`;
+    }
     return text;
   }
 
   if (isLeadership) {
-    return `Diese Führungsrolle integriert Steuerung, Zusammenarbeit und strukturelle Orientierung in vergleichbarer Intensität.\n${fuehrungsSatz.balanced}`;
+    const fKey = getFuehrungsSatzKey();
+    return `Diese Führungsrolle integriert Steuerung, Zusammenarbeit und strukturelle Orientierung in vergleichbarer Intensität.\n${fuehrungsSatz[fKey] || fuehrungsSatz.balanced}`;
   }
   return `Diese Rolle integriert operative, kontextbezogene und strukturelle Anforderungen in vergleichbarer Intensität.\nSie verlangt Flexibilität im Handeln sowie Klarheit in Planung und Zusammenarbeit.`;
 }
@@ -858,7 +880,7 @@ export default function RollenDNA() {
   })();
 
   const isLeadershipRole = fuehrung !== "Keine";
-  const bioCheckTextGenerated = generateBioCheckText(bioGramGesamt, isLeadershipRole);
+  const bioCheckTextGenerated = generateBioCheckText(bioGramGesamt, isLeadershipRole, isLeadershipRole ? bioGramFuehrung : undefined);
   const bioCheckText = bioCheckTextOverride ?? bioCheckTextGenerated;
 
   useEffect(() => {
