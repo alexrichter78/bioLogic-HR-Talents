@@ -241,7 +241,7 @@ function BarChart({ data }: { data: { label: string; value: number; color: strin
   );
 }
 
-function GlassCard({ children, style, testId }: { children: React.ReactNode; style?: React.CSSProperties; testId?: string }) {
+function GlassCard({ children, style, testId, accentColor }: { children: React.ReactNode; style?: React.CSSProperties; testId?: string; accentColor?: string }) {
   return (
     <div
       style={{
@@ -249,29 +249,74 @@ function GlassCard({ children, style, testId }: { children: React.ReactNode; sty
         backdropFilter: "blur(24px)",
         WebkitBackdropFilter: "blur(24px)",
         borderRadius: 24,
-        padding: "28px 28px",
+        padding: "32px 30px",
         boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
         border: "1px solid rgba(0,0,0,0.04)",
+        borderLeft: accentColor ? `3px solid ${accentColor}` : undefined,
+        transition: "transform 0.2s ease, box-shadow 0.2s ease",
         ...style,
       }}
       data-testid={testId}
+      onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.07), inset 0 0 0 1px rgba(255,255,255,0.5)"; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)"; }}
     >
       {children}
     </div>
   );
 }
 
-function SectionHeader({ icon: Icon, title, color }: { icon: typeof BarChart3; title: string; color?: string }) {
+function SectionHeader({ icon: Icon, title, color, tag }: { icon: typeof BarChart3; title: string; color?: string; tag?: string }) {
+  const c = color || "#0071E3";
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
       <div style={{
-        width: 32, height: 32, borderRadius: 10,
-        background: color ? `linear-gradient(135deg, ${color}10, ${color}18)` : "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.06))",
+        width: 34, height: 34, borderRadius: 11,
+        background: `linear-gradient(135deg, ${c}14, ${c}0A)`,
         display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
       }}>
-        <Icon style={{ width: 16, height: 16, color: color || "#0071E3", strokeWidth: 1.8 }} />
+        <Icon style={{ width: 16, height: 16, color: c, strokeWidth: 1.8 }} />
       </div>
-      <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{title}</p>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+        <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.01em" }}>{title}</p>
+        {tag && (
+          <span style={{
+            fontSize: 10, fontWeight: 600, color: c, textTransform: "uppercase", letterSpacing: "0.08em",
+            background: `${c}0C`, padding: "3px 8px", borderRadius: 6,
+          }}>{tag}</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ProseBlock({ text, accentColor }: { text: string; accentColor?: string }) {
+  const sentences = text.split(/(?<=[.!?])\s+/).filter(Boolean);
+  if (sentences.length <= 2) {
+    return <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.8 }}>{text}</p>;
+  }
+  const lead = sentences.slice(0, 2).join(" ");
+  const rest = sentences.slice(2).join(" ");
+  return (
+    <div>
+      <p style={{
+        fontSize: 15, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.75,
+        paddingBottom: 12, marginBottom: 12,
+        borderBottom: `1px solid ${accentColor ? accentColor + "18" : "rgba(0,0,0,0.06)"}`,
+      }}>{lead}</p>
+      <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8 }}>{rest}</p>
+    </div>
+  );
+}
+
+function KeyInsight({ text, color }: { text: string; color?: string }) {
+  const c = color || "#0071E3";
+  return (
+    <div style={{
+      marginTop: 16, padding: "14px 18px", borderRadius: 14,
+      background: `linear-gradient(135deg, ${c}08, ${c}04)`,
+      borderLeft: `3px solid ${c}30`,
+    }}>
+      <p style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.7, margin: 0, fontStyle: "italic" }}>{text}</p>
     </div>
   );
 }
@@ -583,95 +628,121 @@ export default function Bericht() {
         </div>
 
         <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20 pt-6">
-          <div className="text-center mb-10">
-            <h1 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.1 }} data-testid="text-bericht-title">
+          <div className="text-center mb-12">
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              background: "rgba(0,113,227,0.06)", borderRadius: 20, padding: "5px 14px", marginBottom: 14,
+            }}>
+              <FileText style={{ width: 12, height: 12, color: "#0071E3" }} />
+              <span style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.08em" }}>Strukturanalyse</span>
+            </div>
+            <h1 style={{ fontSize: 34, fontWeight: 700, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.1 }} data-testid="text-bericht-title">
               Entscheidungsbericht
             </h1>
-            <p style={{ fontSize: 15, color: "#6E6E73", fontWeight: 400, lineHeight: 1.5, marginTop: 8 }}>
-              Strukturelle Anforderungsanalyse: {beruf}
+            <p style={{ fontSize: 16, color: "#6E6E73", fontWeight: 400, lineHeight: 1.5, marginTop: 10 }}>
+              Anforderungsanalyse für die Stelle <span style={{ fontWeight: 600, color: "#3A3A3C" }}>{beruf}</span>
             </p>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
             <GlassCard testId="bericht-intro">
               <SectionHeader icon={Users} title="Warum dieser Bericht" />
-              <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.75 }}>
-                Fachliche Qualifikation allein sichert keine Leistung. Mitarbeitende, die persönlich zur Stelle passen, arbeiten wirksamer, bleiben länger und stabilisieren ihr Umfeld. Dieser Bericht beschreibt, welche strukturellen Anforderungen die Rolle {beruf} stellt – unabhängig von Lebenslauf und Zertifikaten.
+              <p style={{ fontSize: 15, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.75, paddingBottom: 12, marginBottom: 12, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                Fachliche Qualifikation allein sichert keine Leistung. Mitarbeitende, die persönlich zur Stelle passen, arbeiten wirksamer, bleiben länger und stabilisieren ihr Umfeld.
               </p>
-              <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.75, marginTop: 8 }}>
-                {texts.intro}
+              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8 }}>
+                Dieser Bericht beschreibt, welche strukturellen Anforderungen die Rolle {beruf} stellt – unabhängig von Lebenslauf und Zertifikaten. {texts.intro}
               </p>
               {intensityNote && (
-                <p style={{ fontSize: 13, color: "#0071E3", fontWeight: 500, marginTop: 10 }}>{intensityNote}</p>
+                <KeyInsight text={intensityNote} />
               )}
             </GlassCard>
 
+            {(aufgabencharakterText || arbeitslogikText) && (
+              <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "4px 0" }}>
+                <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)" }} />
+                <span style={{ fontSize: 11, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.1em" }}>Rollenkontext</span>
+                <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)" }} />
+              </div>
+            )}
+
             {aufgabencharakterText && (
-              <GlassCard testId="bericht-aufgabencharakter">
-                <SectionHeader icon={Settings} title="Aufgabencharakter" color="#6E6E73" />
-                <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.75 }}>{aufgabencharakterText}</p>
+              <GlassCard testId="bericht-aufgabencharakter" accentColor="#8E8E93">
+                <SectionHeader icon={Settings} title="Aufgabencharakter" color="#6E6E73" tag="Kontext" />
+                <ProseBlock text={aufgabencharakterText} accentColor="#8E8E93" />
               </GlassCard>
             )}
 
             {arbeitslogikText && (
-              <GlassCard testId="bericht-arbeitslogik">
-                <SectionHeader icon={Crosshair} title="Arbeitslogik" color="#6E6E73" />
-                <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.75 }}>{arbeitslogikText}</p>
+              <GlassCard testId="bericht-arbeitslogik" accentColor="#6E6E73">
+                <SectionHeader icon={Crosshair} title="Arbeitslogik" color="#6E6E73" tag="Kontext" />
+                <ProseBlock text={arbeitslogikText} accentColor="#6E6E73" />
               </GlassCard>
             )}
 
             {erfolgsfokusText && (
-              <GlassCard testId="bericht-erfolgsfokus">
-                <SectionHeader icon={Target} title="Erfolgsfokus" color="#34AADC" />
-                <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.75 }}>{erfolgsfokusText}</p>
+              <GlassCard testId="bericht-erfolgsfokus" accentColor="#34AADC">
+                <SectionHeader icon={Target} title="Erfolgsfokus" color="#34AADC" tag="Bewertung" />
+                <ProseBlock text={erfolgsfokusText} accentColor="#34AADC" />
               </GlassCard>
             )}
 
             {isLeadership && fuehrungskontextText && (
-              <GlassCard testId="bericht-fuehrungskontext">
-                <SectionHeader icon={Shield} title="Führungskontext" color="#1A5DAB" />
-                <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.75 }}>{fuehrungskontextText}</p>
+              <GlassCard testId="bericht-fuehrungskontext" accentColor="#1A5DAB">
+                <SectionHeader icon={Shield} title="Führungskontext" color="#1A5DAB" tag="Führung" />
+                <ProseBlock text={fuehrungskontextText} accentColor="#1A5DAB" />
               </GlassCard>
             )}
 
+            <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "4px 0" }}>
+              <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)" }} />
+              <span style={{ fontSize: 11, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.1em" }}>Kompetenzanalyse</span>
+              <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)" }} />
+            </div>
+
             <GlassCard testId="bericht-gesamtprofil">
-              <SectionHeader icon={BarChart3} title="Gesamtprofil" />
+              <SectionHeader icon={BarChart3} title="Gesamtprofil" tag="Übersicht" />
               {BarsForProfile(gesamt)}
-              <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.75, marginTop: 16 }}>{texts.overall}</p>
+              <div style={{ marginTop: 18 }}>
+                <ProseBlock text={texts.overall} accentColor="#0071E3" />
+              </div>
             </GlassCard>
 
-            <GlassCard testId="bericht-taetigkeitsstruktur">
-              <SectionHeader icon={Briefcase} title="Tätigkeitsstruktur" color="#F39200" />
+            <GlassCard testId="bericht-taetigkeitsstruktur" accentColor="#F39200">
+              <SectionHeader icon={Briefcase} title="Tätigkeitsstruktur" color="#F39200" tag="Haupt" />
               {BarsForProfile(haupt)}
-              <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.75, marginTop: 16 }}>{texts.tasks}</p>
+              <div style={{ marginTop: 18 }}>
+                <ProseBlock text={texts.tasks} accentColor="#F39200" />
+              </div>
             </GlassCard>
 
-            <GlassCard testId="bericht-humankompetenzen">
-              <SectionHeader icon={Heart} title="Humankompetenzen" color="#C41E3A" />
+            <GlassCard testId="bericht-humankompetenzen" accentColor="#C41E3A">
+              <SectionHeader icon={Heart} title="Humankompetenzen" color="#C41E3A" tag="Neben" />
               {BarsForProfile(neben)}
-              <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.75, marginTop: 16 }}>{texts.human}</p>
+              <div style={{ marginTop: 18 }}>
+                <ProseBlock text={texts.human} accentColor="#C41E3A" />
+              </div>
             </GlassCard>
 
             {isLeadership && texts.leadership_section && (
-              <GlassCard testId="bericht-fuehrungskompetenzen">
-                <SectionHeader icon={Shield} title="Führungskompetenzen" color="#1A5DAB" />
+              <GlassCard testId="bericht-fuehrungskompetenzen" accentColor="#1A5DAB">
+                <SectionHeader icon={Shield} title="Führungskompetenzen" color="#1A5DAB" tag="Führung" />
                 {BarsForProfile(fuehrung)}
-                <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.75, marginTop: 16 }}>{texts.leadership_section}</p>
+                <div style={{ marginTop: 18 }}>
+                  <ProseBlock text={texts.leadership_section} accentColor="#1A5DAB" />
+                </div>
               </GlassCard>
             )}
 
-            <GlassCard testId="bericht-ueberpraegung" style={{ padding: "32px 28px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-                <div style={{
-                  width: 32, height: 32, borderRadius: 10,
-                  background: "linear-gradient(135deg, rgba(255,149,0,0.10), rgba(255,59,48,0.08))",
-                  display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                }}>
-                  <AlertTriangle style={{ width: 16, height: 16, color: "#FF9500", strokeWidth: 1.8 }} />
-                </div>
-                <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Wirkung bei struktureller Abweichung</p>
-              </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "4px 0" }}>
+              <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, transparent, rgba(255,149,0,0.15), transparent)" }} />
+              <span style={{ fontSize: 11, fontWeight: 600, color: "#FF9500", textTransform: "uppercase", letterSpacing: "0.1em" }}>Risikobewertung</span>
+              <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, transparent, rgba(255,149,0,0.15), transparent)" }} />
+            </div>
+
+            <GlassCard testId="bericht-ueberpraegung" style={{ padding: "32px 30px" }}>
+              <SectionHeader icon={AlertTriangle} title="Wirkung bei struktureller Abweichung" color="#FF9500" />
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 {texts.overweight.map((ow, i) => (
                   <EffectCard key={i} {...ow} />
@@ -682,18 +753,19 @@ export default function Bericht() {
             <GlassCard testId="bericht-fazit" style={{
               background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(52,170,220,0.04), rgba(255,255,255,0.65))",
               border: "1px solid rgba(0,113,227,0.10)",
+              padding: "36px 32px",
             }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
                 <div style={{
-                  width: 32, height: 32, borderRadius: "50%",
-                  background: "linear-gradient(135deg, rgba(0,113,227,0.12), rgba(52,170,220,0.12))",
+                  width: 36, height: 36, borderRadius: "50%",
+                  background: "linear-gradient(135deg, rgba(0,113,227,0.14), rgba(52,170,220,0.14))",
                   display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
                 }}>
-                  <Lightbulb size={16} style={{ color: "#0071E3" }} />
+                  <Lightbulb size={17} style={{ color: "#0071E3" }} />
                 </div>
                 <span style={{ fontSize: 12, fontWeight: 700, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.06em" }}>Fazit</span>
               </div>
-              <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.6 }}>
+              <p style={{ fontSize: 16, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.65 }}>
                 {texts.conclusion}
               </p>
             </GlassCard>
