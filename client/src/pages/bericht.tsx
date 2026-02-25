@@ -157,14 +157,26 @@ interface BerichtData {
   fazit: { kernsatz: string; persoenlichkeit: string[]; fehlbesetzung: string; schlusssatz: string };
 }
 
+function splitIntoBlocks(text: string, maxSentences = 2): string[] {
+  const explicit = text.split(/\n\n+/).filter(p => p.trim());
+  if (explicit.length > 1) return explicit;
+  const sentences = text.match(/[^.!?]+[.!?]+/g);
+  if (!sentences || sentences.length <= maxSentences) return [text];
+  const blocks: string[] = [];
+  for (let i = 0; i < sentences.length; i += maxSentences) {
+    blocks.push(sentences.slice(i, i + maxSentences).join("").trim());
+  }
+  return blocks.filter(b => b.length > 0);
+}
+
 function TextBlock({ text, style }: { text: string; style?: React.CSSProperties }) {
-  const paragraphs = text.split(/\n\n+/).filter(p => p.trim());
-  if (paragraphs.length <= 1) {
+  const blocks = splitIntoBlocks(text);
+  if (blocks.length <= 1) {
     return <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, ...style }}>{text}</p>;
   }
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      {paragraphs.map((p, i) => (
+    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      {blocks.map((p, i) => (
         <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, ...style }}>{p}</p>
       ))}
     </div>
