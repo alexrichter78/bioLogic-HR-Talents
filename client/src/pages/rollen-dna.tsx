@@ -284,7 +284,7 @@ function StepProgress({ currentStep, completedSteps }: { currentStep: number; co
                   ? "bg-green-500 text-white"
                   : isCurrent
                     ? "bg-primary text-primary-foreground shadow-md shadow-primary/25"
-                    : "bg-muted/50 dark:bg-muted/30 text-muted-foreground/40"
+                    : "bg-blue-50 dark:bg-blue-900/20 text-blue-300 dark:text-blue-400/50"
               }`} data-testid={`step-num-${step.num}`}>
                 {isDone ? <Check className="w-4 h-4" strokeWidth={2.5} /> : step.num}
               </span>
@@ -293,7 +293,7 @@ function StepProgress({ currentStep, completedSteps }: { currentStep: number; co
                   ? "font-medium text-green-600 dark:text-green-400"
                   : isCurrent
                     ? "font-semibold text-foreground/90"
-                    : "text-muted-foreground/40"
+                    : "text-blue-300/60 dark:text-blue-400/40"
               }`} data-testid={`step-label-${step.num}`}>
                 {step.label}
               </span>
