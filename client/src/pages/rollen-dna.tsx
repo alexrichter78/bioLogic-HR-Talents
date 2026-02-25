@@ -156,16 +156,16 @@ function generateBioCheckText(bg: BioGram, isLeadership: boolean, fuehrungsBg?: 
   };
 
   const fuehrungsSatz: Record<string, string> = {
-    imp: "Die Rolle erfordert dabei eine Führung, die auf Tempo, Konsequenz und direktes Eingreifen setzt.",
-    int: "Die Rolle erfordert dabei eine Führung, die auf Nähe, Vertrauen und das Mitnehmen anderer setzt.",
-    ana: "Die Rolle erfordert dabei eine Führung, die auf klare Rahmensetzung und verlässliche Orientierung setzt.",
-    imp_ana: "Die Rolle erfordert dabei eine Führung, die konsequente Umsetzung mit klaren Vorgaben verbindet.",
-    ana_imp: "Die Rolle erfordert dabei eine Führung, die konsequente Umsetzung mit klaren Vorgaben verbindet.",
-    imp_int: "Die Rolle erfordert dabei eine Führung, die entschlossenes Handeln mit Blick auf die Beteiligten verbindet.",
-    int_imp: "Die Rolle erfordert dabei eine Führung, die entschlossenes Handeln mit Blick auf die Beteiligten verbindet.",
-    ana_int: "Die Rolle erfordert dabei eine Führung, die durchdachte Steuerung mit Raum für Dialog verbindet.",
-    int_ana: "Die Rolle erfordert dabei eine Führung, die durchdachte Steuerung mit Raum für Dialog verbindet.",
-    balanced: "Die Rolle erfordert dabei eine Führung, die situativ zwischen Steuerung, Zusammenarbeit und Struktur balanciert.",
+    imp: "In der Führungsarbeit setzt das auf Tempo, Konsequenz und direktes Eingreifen.",
+    int: "In der Führungsarbeit setzt das auf Nähe, Vertrauen und das Mitnehmen anderer.",
+    ana: "In der Führungsarbeit setzt das auf klare Rahmensetzung und verlässliche Orientierung.",
+    imp_ana: "In der Führungsarbeit verbindet sich das mit konsequenter Umsetzung auf Basis klarer Vorgaben.",
+    ana_imp: "In der Führungsarbeit verbindet sich das mit konsequenter Umsetzung auf Basis klarer Vorgaben.",
+    imp_int: "In der Führungsarbeit verbindet sich das mit entschlossenem Handeln und Blick auf die Beteiligten.",
+    int_imp: "In der Führungsarbeit verbindet sich das mit entschlossenem Handeln und Blick auf die Beteiligten.",
+    ana_int: "In der Führungsarbeit verbindet sich das mit durchdachter Steuerung und Raum für Dialog.",
+    int_ana: "In der Führungsarbeit verbindet sich das mit durchdachter Steuerung und Raum für Dialog.",
+    balanced: "In der Führungsarbeit erfordert das eine situative Balance zwischen Steuerung, Zusammenarbeit und Struktur.",
   };
 
   let intensityLabel = "";
