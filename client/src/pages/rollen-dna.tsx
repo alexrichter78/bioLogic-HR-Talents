@@ -2439,7 +2439,7 @@ export default function RollenDNA() {
                     Zurück zur Übersicht
                   </button>
                   <button
-                    onClick={() => {}}
+                    onClick={() => setLocation("/bericht")}
                     style={{
                       height: 48,
                       paddingLeft: 24,
