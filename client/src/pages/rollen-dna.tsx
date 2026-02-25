@@ -2085,30 +2085,60 @@ export default function RollenDNA() {
                         {bioCheckIntroOverride}
                       </p>
                     ) : (
-                      <div style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.8, marginTop: 14 }} data-testid="text-biocheck-intro">
-                        <p style={{ marginBottom: 0 }}>Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Dimensionen <span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span>, <span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> und <span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> zugeordnet. So wird erkennbar, welche Form von Wirksamkeit die Rolle bestimmt.</p>
-                        <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", margin: "14px 0" }} />
-                        <p style={{ marginBottom: 8 }}><span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span> steht für Umsetzung, Entscheidung und Ergebnisverantwortung.</p>
-                        <p style={{ marginBottom: 8 }}><span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> beschreibt die Qualität der Zusammenarbeit und das Handeln im jeweiligen Kontext.</p>
-                        <p style={{ marginBottom: 8 }}><span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> kennzeichnet Struktur, Planung und fachliche Präzision.</p>
-                        <p>Das Gesamtprofil zeigt, wo der Schwerpunkt liegt und wie die drei Dimensionen zueinander gewichtet sind.</p>
+                      <div style={{ marginTop: 16 }} data-testid="text-biocheck-intro">
+                        <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.8, margin: "0 0 16px 0" }}>Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Dimensionen <span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span>, <span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> und <span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> zugeordnet. So wird erkennbar, welche Form von Wirksamkeit die Rolle bestimmt.</p>
+
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                          {[
+                            { label: "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: "Umsetzung, Entscheidung und Ergebnisverantwortung" },
+                            { label: "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: "Zusammenarbeit und kontextbezogenes Handeln" },
+                            { label: "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: "Struktur, Planung und fachliche Präzision" },
+                          ].map(d => (
+                            <div key={d.label} style={{
+                              background: d.bg,
+                              border: `1px solid ${d.border}`,
+                              borderRadius: 10,
+                              padding: "10px 12px",
+                            }}>
+                              <p style={{ fontSize: 12, fontWeight: 700, color: d.color, margin: "0 0 4px 0" }}>{d.label}</p>
+                              <p style={{ fontSize: 11, color: "#6E6E73", lineHeight: 1.5, margin: 0 }}>{d.desc}</p>
+                            </div>
+                          ))}
+                        </div>
+
+                        <p style={{ fontSize: 12, color: "#8E8E93", lineHeight: 1.6, margin: "12px 0 0 0" }}>Das Gesamtprofil zeigt, wo der Schwerpunkt liegt und wie die drei Dimensionen zueinander gewichtet sind.</p>
                       </div>
                     )}
 
                     <div style={{
                       marginTop: 18,
-                      padding: "14px 16px",
-                      borderRadius: 12,
-                      background: "rgba(0,113,227,0.04)",
-                      border: "1px solid rgba(0,113,227,0.12)",
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: 12,
+                      padding: "16px 18px",
+                      borderRadius: 14,
+                      background: "linear-gradient(135deg, rgba(0,113,227,0.04), rgba(52,170,220,0.04))",
+                      border: "1px solid rgba(0,113,227,0.10)",
                     }} data-testid="box-biocheck-description">
-                      <Lightbulb size={18} style={{ color: "#0071E3", flexShrink: 0, marginTop: 2 }} />
-                      <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, fontWeight: 500, whiteSpace: "pre-line", margin: 0 }} data-testid="text-biocheck-description">
-                        {bioCheckText}
-                      </p>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                        <div style={{
+                          width: 28, height: 28, borderRadius: "50%",
+                          background: "linear-gradient(135deg, rgba(0,113,227,0.12), rgba(52,170,220,0.12))",
+                          display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                        }}>
+                          <Lightbulb size={14} style={{ color: "#0071E3" }} />
+                        </div>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.04em" }}>Ergebnis der Analyse</span>
+                      </div>
+                      {bioCheckText.split("\n").map((line, i) => (
+                        <p key={i} style={{
+                          fontSize: 14,
+                          color: "#1D1D1F",
+                          lineHeight: 1.7,
+                          fontWeight: i === 0 ? 600 : 400,
+                          margin: i === 0 ? 0 : "6px 0 0 0",
+                          paddingLeft: i > 0 ? 0 : 0,
+                        }} data-testid={`text-biocheck-line-${i}`}>
+                          {line}
+                        </p>
+                      ))}
                     </div>
 
                     <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
@@ -2508,30 +2538,59 @@ export default function RollenDNA() {
                       {bioCheckIntroOverride}
                     </p>
                   ) : (
-                    <div style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.8, marginTop: 14 }} data-testid="text-biocheck-intro-collapsed">
-                      <p style={{ marginBottom: 0 }}>Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Dimensionen <span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span>, <span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> und <span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> zugeordnet. So wird erkennbar, welche Form von Wirksamkeit die Rolle bestimmt.</p>
-                      <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", margin: "14px 0" }} />
-                      <p style={{ marginBottom: 8 }}><span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span> steht für Umsetzung, Entscheidung und Ergebnisverantwortung.</p>
-                      <p style={{ marginBottom: 8 }}><span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> beschreibt die Qualität der Zusammenarbeit und das Handeln im jeweiligen Kontext.</p>
-                      <p style={{ marginBottom: 8 }}><span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> kennzeichnet Struktur, Planung und fachliche Präzision.</p>
-                      <p>Das Gesamtprofil zeigt, wo der Schwerpunkt liegt und wie die drei Dimensionen zueinander gewichtet sind.</p>
+                    <div style={{ marginTop: 16 }} data-testid="text-biocheck-intro-collapsed">
+                      <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.8, margin: "0 0 16px 0" }}>Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Dimensionen <span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span>, <span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> und <span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> zugeordnet. So wird erkennbar, welche Form von Wirksamkeit die Rolle bestimmt.</p>
+
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                        {[
+                          { label: "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: "Umsetzung, Entscheidung und Ergebnisverantwortung" },
+                          { label: "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: "Zusammenarbeit und kontextbezogenes Handeln" },
+                          { label: "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: "Struktur, Planung und fachliche Präzision" },
+                        ].map(d => (
+                          <div key={d.label} style={{
+                            background: d.bg,
+                            border: `1px solid ${d.border}`,
+                            borderRadius: 10,
+                            padding: "10px 12px",
+                          }}>
+                            <p style={{ fontSize: 12, fontWeight: 700, color: d.color, margin: "0 0 4px 0" }}>{d.label}</p>
+                            <p style={{ fontSize: 11, color: "#6E6E73", lineHeight: 1.5, margin: 0 }}>{d.desc}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      <p style={{ fontSize: 12, color: "#8E8E93", lineHeight: 1.6, margin: "12px 0 0 0" }}>Das Gesamtprofil zeigt, wo der Schwerpunkt liegt und wie die drei Dimensionen zueinander gewichtet sind.</p>
                     </div>
                   )}
 
                   <div style={{
                     marginTop: 18,
-                    padding: "14px 16px",
-                    borderRadius: 12,
-                    background: "rgba(0,113,227,0.04)",
-                    border: "1px solid rgba(0,113,227,0.12)",
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: 12,
+                    padding: "16px 18px",
+                    borderRadius: 14,
+                    background: "linear-gradient(135deg, rgba(0,113,227,0.04), rgba(52,170,220,0.04))",
+                    border: "1px solid rgba(0,113,227,0.10)",
                   }} data-testid="box-biocheck-description-collapsed">
-                    <Lightbulb size={18} style={{ color: "#0071E3", flexShrink: 0, marginTop: 2 }} />
-                    <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, fontWeight: 500, whiteSpace: "pre-line", margin: 0 }} data-testid="text-biocheck-description-collapsed">
-                      {bioCheckText}
-                    </p>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                      <div style={{
+                        width: 28, height: 28, borderRadius: "50%",
+                        background: "linear-gradient(135deg, rgba(0,113,227,0.12), rgba(52,170,220,0.12))",
+                        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                      }}>
+                        <Lightbulb size={14} style={{ color: "#0071E3" }} />
+                      </div>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.04em" }}>Ergebnis der Analyse</span>
+                    </div>
+                    {bioCheckText.split("\n").map((line, i) => (
+                      <p key={i} style={{
+                        fontSize: 14,
+                        color: "#1D1D1F",
+                        lineHeight: 1.7,
+                        fontWeight: i === 0 ? 600 : 400,
+                        margin: i === 0 ? 0 : "6px 0 0 0",
+                      }} data-testid={`text-biocheck-collapsed-line-${i}`}>
+                        {line}
+                      </p>
+                    ))}
                   </div>
 
                   <div style={{ marginTop: 16 }}>
