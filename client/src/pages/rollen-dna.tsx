@@ -159,12 +159,12 @@ function generateBioCheckText(bg: BioGram, isLeadership: boolean): string {
     imp: "Das Führungsverhalten ist dabei klar steuernd und ergebnisorientiert.",
     int: "Das Führungsverhalten ist dabei integrativ und auf tragfähige Zusammenarbeit ausgerichtet.",
     ana: "Das Führungsverhalten ist dabei strukturgebend und auf Transparenz und Nachvollziehbarkeit angelegt.",
-    imp_ana: "Das Führungsverhalten verbindet klare Steuerung mit struktureller Orientierung.",
-    ana_imp: "Das Führungsverhalten verbindet klare Steuerung mit struktureller Orientierung.",
-    imp_int: "Das Führungsverhalten verbindet Ergebnisorientierung mit integrativer Teamführung.",
-    int_imp: "Das Führungsverhalten verbindet Ergebnisorientierung mit integrativer Teamführung.",
-    ana_int: "Das Führungsverhalten verbindet strukturelle Klarheit mit sensibler Abstimmung im Team.",
-    int_ana: "Das Führungsverhalten verbindet strukturelle Klarheit mit sensibler Abstimmung im Team.",
+    imp_ana: "Die Führung setzt dabei auf Verbindlichkeit und nachvollziehbare Entscheidungen.",
+    ana_imp: "Die Führung setzt dabei auf Verbindlichkeit und nachvollziehbare Entscheidungen.",
+    imp_int: "Die Führung wirkt dabei über Präsenz und situative Ansprache.",
+    int_imp: "Die Führung wirkt dabei über Präsenz und situative Ansprache.",
+    ana_int: "Die Führung setzt dabei auf Orientierung durch Transparenz und Dialog.",
+    int_ana: "Die Führung setzt dabei auf Orientierung durch Transparenz und Dialog.",
     balanced: "Das Führungsverhalten erfordert situative Balance zwischen Steuerung, Zusammenarbeit und struktureller Orientierung.",
   };
 
