@@ -169,8 +169,8 @@ function generateBioCheckText(bg: BioGram, isLeadership: boolean, fuehrungsBg?: 
   };
 
   let intensityLabel = "";
-  if (max.value >= 50 && gap >= 12) intensityLabel = "mit sehr deutlicher";
-  else if (max.value >= 38 && gap >= 8) intensityLabel = "mit deutlicher";
+  if (max.value >= 50 && gap >= 10) intensityLabel = "mit sehr deutlicher";
+  else if (max.value >= 38 && gap >= 6) intensityLabel = "mit deutlicher";
   else if (gap >= 5) intensityLabel = "mit leichter";
 
   const getFuehrungsSatzKey = (): string => {
