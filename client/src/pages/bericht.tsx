@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { ArrowLeft, BarChart3, Briefcase, Heart, Shield, AlertTriangle, FileText, Check, Users, Settings, RefreshCw, Loader2 } from "lucide-react";
+import { ArrowLeft, BarChart3, Briefcase, Heart, Shield, AlertTriangle, FileText, Check, Settings, RefreshCw, Loader2, Zap, Brain, Users, Target, TrendingUp, Lightbulb } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import { BERUFE } from "@/data/berufe";
 import { apiRequest } from "@/lib/queryClient";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
+const SOFT = { imp: "#FDEAED", int: "#FEF3E2", ana: "#E8F0FA" };
+const MID = { imp: "#F5A3B3", int: "#F9C97A", ana: "#8BB8E8" };
 
 type BG = { imp: number; int: number; ana: number };
 
@@ -99,31 +101,19 @@ function classifyProfile(bg: BG): { type: ProfileType; intensity: Intensity } {
   const abIA = Math.abs(bg.imp - bg.ana);
   const abNA = Math.abs(bg.int - bg.ana);
 
-  if (abII <= 6 && abIA <= 6 && abNA <= 6) {
-    return { type: "balanced_all", intensity: "balanced" };
-  }
-  if (max.value >= 55) {
-    return { type: `strong_${max.key}` as ProfileType, intensity: "strong" };
-  }
-  if (gap12 >= 8) {
-    return { type: `dominant_${max.key}` as ProfileType, intensity: "clear" };
-  }
+  if (abII <= 6 && abIA <= 6 && abNA <= 6) return { type: "balanced_all", intensity: "balanced" };
+  if (max.value >= 55) return { type: `strong_${max.key}` as ProfileType, intensity: "strong" };
+  if (gap12 >= 8) return { type: `dominant_${max.key}` as ProfileType, intensity: "clear" };
   if (gap12 <= 5 && gap23 > 5) {
     const k1 = max.key, k2 = second.key;
     const hybridKey = `hybrid_${k1}_${k2}`;
     const validHybrids = ["hybrid_imp_ana", "hybrid_ana_int", "hybrid_imp_int"];
-    const reverseMap: Record<string, string> = {
-      "hybrid_ana_imp": "hybrid_imp_ana",
-      "hybrid_int_ana": "hybrid_ana_int",
-      "hybrid_int_imp": "hybrid_imp_int",
-    };
+    const reverseMap: Record<string, string> = { "hybrid_ana_imp": "hybrid_imp_ana", "hybrid_int_ana": "hybrid_ana_int", "hybrid_int_imp": "hybrid_imp_int" };
     const resolved = validHybrids.includes(hybridKey) ? hybridKey : (reverseMap[hybridKey] || "hybrid_imp_ana");
     const hybridIntensity: Intensity = gap23 >= 15 ? "strong" : gap23 >= 8 ? "clear" : "light";
     return { type: resolved as ProfileType, intensity: hybridIntensity };
   }
-  if (gap12 >= 5) {
-    return { type: `light_${max.key}` as ProfileType, intensity: "light" };
-  }
+  if (gap12 >= 5) return { type: `light_${max.key}` as ProfileType, intensity: "light" };
   return { type: "balanced_all", intensity: "balanced" };
 }
 
@@ -163,40 +153,81 @@ interface BerichtData {
   };
   spannungsfelder: string[];
   spannungsfelder_schluss: string;
-  risikobewertung: {
-    label: string;
-    bullets: string[];
-    alltagssatz: string;
-  }[];
-  fazit: {
-    kernsatz: string;
-    persoenlichkeit: string[];
-    fehlbesetzung: string;
-    schlusssatz: string;
-  };
+  risikobewertung: { label: string; bullets: string[]; alltagssatz: string }[];
+  fazit: { kernsatz: string; persoenlichkeit: string[]; fehlbesetzung: string; schlusssatz: string };
 }
 
-function BarChart({ data, compact }: { data: { label: string; value: number; color: string }[]; compact?: boolean }) {
+function ProfileDonut({ bg, size = 120 }: { bg: BG; size?: number }) {
+  const total = bg.imp + bg.int + bg.ana;
+  const r = size * 0.38, cx = size / 2, cy = size / 2, sw = size * 0.1;
+  const circumference = 2 * Math.PI * r;
+  const segments = [
+    { value: bg.imp, color: COLORS.imp, label: "Impulsiv" },
+    { value: bg.int, color: COLORS.int, label: "Intuitiv" },
+    { value: bg.ana, color: COLORS.ana, label: "Analytisch" },
+  ];
+  let offset = -90;
+  const arcs = segments.map(seg => {
+    const pct = seg.value / total;
+    const dashLen = pct * circumference;
+    const gap = circumference - dashLen;
+    const rotation = offset;
+    offset += pct * 360;
+    return { ...seg, dashLen, gap, rotation };
+  });
+  const sorted = [...segments].sort((a, b) => b.value - a.value);
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: compact ? 8 : 10 }}>
-      {data.map((bar) => (
+    <div style={{ display: "flex", alignItems: "center", gap: 20, justifyContent: "center", padding: "6px 0" }}>
+      <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+          <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(0,0,0,0.03)" strokeWidth={sw} />
+          {arcs.map((arc, i) => (
+            <circle key={i} cx={cx} cy={cy} r={r} fill="none"
+              stroke={arc.color} strokeWidth={sw} strokeLinecap="round"
+              strokeDasharray={`${arc.dashLen - 2} ${arc.gap + 2}`}
+              transform={`rotate(${arc.rotation} ${cx} ${cy})`}
+              style={{ transition: "stroke-dasharray 800ms ease" }}
+            />
+          ))}
+        </svg>
+        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+          <span style={{ fontSize: size * 0.17, fontWeight: 700, color: "#1D1D1F", lineHeight: 1 }}>{Math.round(sorted[0].value)}%</span>
+          <span style={{ fontSize: size * 0.075, color: "#8E8E93", fontWeight: 500, marginTop: 2 }}>{sorted[0].label}</span>
+        </div>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {sorted.map((seg, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: seg.color, flexShrink: 0 }} />
+            <span style={{ fontSize: 12, color: "#6E6E73", minWidth: 54 }}>{seg.label}</span>
+            <span style={{ fontSize: 12, color: i === 0 ? "#1D1D1F" : "#8E8E93", fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{Math.round(seg.value)}%</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SoftBar({ bg }: { bg: BG }) {
+  const items = [
+    { label: "Impulsiv", value: bg.imp, color: COLORS.imp, soft: SOFT.imp },
+    { label: "Intuitiv", value: bg.int, color: COLORS.int, soft: SOFT.int },
+    { label: "Analytisch", value: bg.ana, color: COLORS.ana, soft: SOFT.ana },
+  ];
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {items.map(bar => (
         <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: compact ? 11 : 12, color: "#6E6E73", fontWeight: 400, width: compact ? 62 : 70, flexShrink: 0 }}>{bar.label}</span>
-          <div style={{ flex: 1, height: compact ? 26 : 28, borderRadius: 4, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
+          <span style={{ fontSize: 11, color: "#8E8E93", fontWeight: 500, width: 60, flexShrink: 0 }}>{bar.label}</span>
+          <div style={{ flex: 1, height: 22, borderRadius: 11, background: bar.soft, overflow: "hidden" }}>
             <div style={{
-              width: `${Math.max(bar.value, 5)}%`,
-              height: "100%",
-              borderRadius: 4,
-              background: bar.color,
+              width: `${Math.max(bar.value, 8)}%`, height: "100%", borderRadius: 11,
+              background: `linear-gradient(90deg, ${bar.color}CC, ${bar.color})`,
               transition: "width 600ms ease",
-              display: "flex",
-              alignItems: "center",
-              paddingLeft: 10,
-              minWidth: 42,
+              display: "flex", alignItems: "center", justifyContent: "flex-end", paddingRight: 8, minWidth: 32,
             }}>
-              <span style={{ fontSize: compact ? 11 : 12, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>
-                {Math.round(bar.value)}%
-              </span>
+              <span style={{ fontSize: 10, fontWeight: 700, color: "#FFF" }}>{Math.round(bar.value)}%</span>
             </div>
           </div>
         </div>
@@ -205,130 +236,105 @@ function BarChart({ data, compact }: { data: { label: string; value: number; col
   );
 }
 
-function ProfileRing({ bg }: { bg: BG }) {
-  const total = bg.imp + bg.int + bg.ana;
-  const r = 54, cx = 64, cy = 64, sw = 12;
-  const circumference = 2 * Math.PI * r;
-
-  const segments = [
-    { value: bg.imp, color: COLORS.imp, label: "Impulsiv" },
-    { value: bg.int, color: COLORS.int, label: "Intuitiv" },
-    { value: bg.ana, color: COLORS.ana, label: "Analytisch" },
-  ];
-
-  let offset = -90;
-  const arcs = segments.map(seg => {
-    const pct = seg.value / total;
-    const dashLen = pct * circumference;
-    const gap = circumference - dashLen;
-    const rotation = offset;
-    offset += pct * 360;
-    return { ...seg, dashLen, gap, rotation, pct };
-  });
-
-  const sorted = [...segments].sort((a, b) => b.value - a.value);
-
+function ChartCard({ icon: Icon, title, bg, accent }: { icon: typeof BarChart3; title: string; bg: BG; accent: string }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 28, justifyContent: "center", padding: "8px 0" }}>
-      <div style={{ position: "relative", width: 128, height: 128, flexShrink: 0 }}>
-        <svg width="128" height="128" viewBox="0 0 128 128">
-          <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(0,0,0,0.04)" strokeWidth={sw} />
-          {arcs.map((arc, i) => (
-            <circle
-              key={i} cx={cx} cy={cy} r={r} fill="none"
-              stroke={arc.color} strokeWidth={sw} strokeLinecap="round"
-              strokeDasharray={`${arc.dashLen - 2} ${arc.gap + 2}`}
-              transform={`rotate(${arc.rotation} ${cx} ${cy})`}
-              style={{ transition: "stroke-dasharray 800ms ease" }}
-            />
-          ))}
-        </svg>
+    <div style={{
+      background: `linear-gradient(135deg, ${accent}08, ${accent}03)`,
+      borderRadius: 20, padding: "18px 20px",
+      border: `1px solid ${accent}12`,
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
         <div style={{
-          position: "absolute", inset: 0, display: "flex", flexDirection: "column",
-          alignItems: "center", justifyContent: "center",
+          width: 26, height: 26, borderRadius: 8,
+          background: `linear-gradient(135deg, ${accent}20, ${accent}10)`,
+          display: "flex", alignItems: "center", justifyContent: "center",
         }}>
-          <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", lineHeight: 1 }}>{Math.round(sorted[0].value)}%</span>
-          <span style={{ fontSize: 9, color: "#8E8E93", fontWeight: 500, marginTop: 2 }}>{sorted[0].label}</span>
+          <Icon style={{ width: 13, height: 13, color: accent, strokeWidth: 2 }} />
         </div>
+        <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", letterSpacing: "-0.01em" }}>{title}</span>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {sorted.map((seg, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 10, height: 10, borderRadius: "50%", background: seg.color, flexShrink: 0, boxShadow: `0 1px 4px ${seg.color}40` }} />
-            <span style={{ fontSize: 13, color: "#3A3A3C", fontWeight: i === 0 ? 600 : 400, minWidth: 60 }}>{seg.label}</span>
-            <span style={{ fontSize: 13, color: i === 0 ? "#1D1D1F" : "#8E8E93", fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{Math.round(seg.value)}%</span>
-          </div>
-        ))}
-      </div>
+      <SoftBar bg={bg} />
     </div>
   );
 }
 
 function GlassCard({ children, style, testId }: { children: React.ReactNode; style?: React.CSSProperties; testId?: string }) {
   return (
-    <div
-      style={{
-        background: "rgba(255,255,255,0.72)",
-        backdropFilter: "blur(28px)",
-        WebkitBackdropFilter: "blur(28px)",
-        borderRadius: 28,
-        padding: "32px 30px",
-        boxShadow: "0 4px 24px rgba(0,0,0,0.03), 0 16px 56px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.6)",
-        border: "1px solid rgba(0,0,0,0.03)",
-        transition: "transform 0.3s ease, box-shadow 0.3s ease",
-        ...style,
-      }}
-      data-testid={testId}
-      onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.06), 0 24px 64px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(255,255,255,0.7)"; }}
-      onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 24px rgba(0,0,0,0.03), 0 16px 56px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.6)"; }}
-    >
-      {children}
-    </div>
+    <div style={{
+      background: "rgba(255,255,255,0.78)",
+      backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
+      borderRadius: 32, padding: "36px 32px",
+      boxShadow: "0 2px 20px rgba(0,0,0,0.03), 0 12px 48px rgba(0,0,0,0.05)",
+      border: "1px solid rgba(255,255,255,0.7)",
+      ...style,
+    }} data-testid={testId}>{children}</div>
   );
 }
 
-function Divider() {
-  return (
-    <div style={{ margin: "0 34px", display: "flex", alignItems: "center", gap: 0 }}>
-      <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06))" }} />
-      <div style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(0,0,0,0.08)", flexShrink: 0, margin: "0 2px" }} />
-      <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, rgba(0,0,0,0.06), transparent)" }} />
-    </div>
-  );
+function SectionDivider() {
+  return <div style={{ height: 1, margin: "0 28px", background: "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.05) 30%, rgba(0,0,0,0.05) 70%, transparent 100%)" }} />;
 }
 
-function BarsForProfile(bg: BG, compact?: boolean) {
-  return <BarChart compact={compact} data={[
-    { label: "Impulsiv", value: bg.imp, color: COLORS.imp },
-    { label: "Intuitiv", value: bg.int, color: COLORS.int },
-    { label: "Analytisch", value: bg.ana, color: COLORS.ana },
-  ]} />;
-}
-
-function MiniCard({ icon: Icon, title, bg, iconColor }: { icon: typeof BarChart3; title: string; bg: BG; iconColor: string }) {
+function ChapterBadge({ num, color }: { num: number; color: string }) {
   return (
     <div style={{
-      background: "rgba(0,0,0,0.02)", borderRadius: 16, padding: "18px 20px",
-      border: "1px solid rgba(0,0,0,0.04)",
+      width: 36, height: 36, borderRadius: 12,
+      background: `linear-gradient(135deg, ${color}, ${color}CC)`,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      marginRight: 14, flexShrink: 0,
+      boxShadow: `0 4px 12px ${color}30`,
     }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 14 }}>
-        <Icon style={{ width: 14, height: 14, color: iconColor, strokeWidth: 1.8 }} />
-        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{title}</span>
-      </div>
-      {BarsForProfile(bg, true)}
+      <span style={{ fontSize: 14, fontWeight: 700, color: "#FFF", fontVariantNumeric: "tabular-nums" }}>
+        {String(num).padStart(2, "0")}
+      </span>
     </div>
   );
 }
 
-function BulletList({ items, color }: { items: string[]; color?: string }) {
+const CHAPTER_COLORS = [
+  "#0071E3", "#6E45B7", "#2DA44E", "#D4880F",
+  "#C41E3A", "#0891B2", "#7C3AED", "#059669",
+];
+
+function BulletList({ items, icon, color }: { items: string[]; icon?: "check" | "dot" | "arrow"; color?: string }) {
+  const c = color || "#6E6E73";
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 7, paddingLeft: 2 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
       {items.map((item, i) => (
-        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-          <div style={{ width: 5, height: 5, borderRadius: "50%", background: color || "#8E8E93", marginTop: 7, flexShrink: 0, opacity: 0.6 }} />
-          <span style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.65 }}>{item}</span>
+        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+          {icon === "check" ? (
+            <div style={{
+              width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1,
+              background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <Check style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
+            </div>
+          ) : (
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: c, marginTop: 7, flexShrink: 0, opacity: 0.5 }} />
+          )}
+          <span style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.7 }}>{item}</span>
         </div>
       ))}
+    </div>
+  );
+}
+
+function CalloutBox({ text, color, icon: Icon }: { text: string; color: string; icon?: typeof Lightbulb }) {
+  const IconComp = Icon || Lightbulb;
+  return (
+    <div style={{
+      padding: "16px 20px", borderRadius: 18,
+      background: `linear-gradient(135deg, ${color}0A, ${color}04)`,
+      border: `1px solid ${color}15`,
+      display: "flex", alignItems: "flex-start", gap: 12,
+    }}>
+      <div style={{
+        width: 28, height: 28, borderRadius: 9, flexShrink: 0,
+        background: `${color}14`, display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        <IconComp style={{ width: 14, height: 14, color, strokeWidth: 2 }} />
+      </div>
+      <p style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.75, margin: 0, fontWeight: 450 }}>{text}</p>
     </div>
   );
 }
@@ -336,26 +342,31 @@ function BulletList({ items, color }: { items: string[]; color?: string }) {
 function RiskCard({ label, color, bullets, alltagssatz }: { label: string; color: string; bullets: string[]; alltagssatz: string }) {
   return (
     <div style={{
-      background: "rgba(255,255,255,0.5)", borderRadius: 18, padding: "22px 24px",
-      border: `1px solid ${color}15`, boxShadow: `0 2px 12px ${color}08`,
-      transition: "transform 0.2s ease, box-shadow 0.2s ease",
+      background: "#FFFFFF", borderRadius: 22, padding: "24px 24px 20px",
+      border: `1px solid ${color}18`,
+      boxShadow: `0 2px 16px ${color}08`,
+      transition: "transform 0.25s ease, box-shadow 0.25s ease",
     }}
-      onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = `0 4px 16px ${color}12`; }}
-      onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 2px 12px ${color}08`; }}
+      onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = `0 8px 28px ${color}15`; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 2px 16px ${color}08`; }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
         <div style={{
-          width: 28, height: 28, borderRadius: 9,
-          background: `linear-gradient(135deg, ${color}18, ${color}0C)`,
+          width: 32, height: 32, borderRadius: 10,
+          background: `linear-gradient(135deg, ${color}20, ${color}0C)`,
           display: "flex", alignItems: "center", justifyContent: "center",
         }}>
-          <AlertTriangle style={{ width: 13, height: 13, color, strokeWidth: 2 }} />
+          <AlertTriangle style={{ width: 15, height: 15, color, strokeWidth: 2 }} />
         </div>
-        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{label}</p>
+        <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{label}</p>
       </div>
       <BulletList items={bullets} color={color} />
-      <div style={{ marginTop: 16, padding: "14px 16px", background: `${color}06`, borderRadius: 12, borderLeft: `3px solid ${color}40` }}>
-        <p style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.7, margin: 0, fontStyle: "italic" }}>{alltagssatz}</p>
+      <div style={{
+        marginTop: 18, padding: "14px 18px", borderRadius: 14,
+        background: `linear-gradient(135deg, ${color}08, ${color}04)`,
+        borderLeft: `4px solid ${color}50`,
+      }}>
+        <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: 0, fontStyle: "italic", fontWeight: 450 }}>{alltagssatz}</p>
       </div>
     </div>
   );
@@ -369,6 +380,34 @@ function getRiskColor(label: string): string {
   return "#6E6E73";
 }
 
+function SpannungsfeldPill({ text }: { text: string }) {
+  const parts = text.split(/\s+vs\.?\s+/i);
+  if (parts.length === 2) {
+    return (
+      <div style={{
+        display: "flex", alignItems: "center", gap: 8,
+        padding: "10px 16px", borderRadius: 14,
+        background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.05)",
+      }}>
+        <span style={{ fontSize: 13, color: "#1D1D1F", fontWeight: 500 }}>{parts[0].trim()}</span>
+        <span style={{
+          fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase",
+          background: "rgba(0,0,0,0.04)", padding: "2px 6px", borderRadius: 4, letterSpacing: "0.05em",
+        }}>vs</span>
+        <span style={{ fontSize: 13, color: "#1D1D1F", fontWeight: 500 }}>{parts[1].trim()}</span>
+      </div>
+    );
+  }
+  return (
+    <div style={{
+      padding: "10px 16px", borderRadius: 14,
+      background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.05)",
+    }}>
+      <span style={{ fontSize: 13, color: "#3A3A3C" }}>{text}</span>
+    </div>
+  );
+}
+
 export default function Bericht() {
   const [, setLocation] = useLocation();
   const [profileData, setProfileData] = useState<{
@@ -378,7 +417,6 @@ export default function Bericht() {
     fuehrungstyp: string; aufgabencharakter: string; arbeitslogik: string;
     erfolgsfokusIndices: number[]; taetigkeiten: any[];
   } | null>(null);
-
   const [bericht, setBericht] = useState<BerichtData | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -403,17 +441,12 @@ export default function Bericht() {
       const rahmen = computeRahmen(state);
       const gesamt = computeGesamt(haupt, neben, fuehrung, rahmen);
       const { type: profileType, intensity } = classifyProfile(gesamt);
-      setProfileData({
-        beruf, bereich, isLeadership, gesamt, haupt, neben, fuehrung, rahmen,
-        intensity, profileType, fuehrungstyp, aufgabencharakter, arbeitslogik,
-        erfolgsfokusIndices, taetigkeiten,
-      });
+      setProfileData({ beruf, bereich, isLeadership, gesamt, haupt, neben, fuehrung, rahmen, intensity, profileType, fuehrungstyp, aufgabencharakter, arbeitslogik, erfolgsfokusIndices, taetigkeiten });
     } catch {}
   }, []);
 
   useEffect(() => {
     if (!profileData) return;
-
     const cached = localStorage.getItem("berichtCache");
     if (cached) {
       try {
@@ -424,7 +457,6 @@ export default function Bericht() {
         }
       } catch {}
     }
-
     generateBericht();
   }, [profileData]);
 
@@ -435,32 +467,20 @@ export default function Bericht() {
     try {
       const erfolgsfokusLabels = profileData.erfolgsfokusIndices.map((i: number) => ERFOLGSFOKUS_LABELS[i]).filter(Boolean);
       const res = await apiRequest("POST", "/api/generate-bericht", {
-        beruf: profileData.beruf,
-        bereich: profileData.bereich,
-        fuehrungstyp: profileData.fuehrungstyp,
-        aufgabencharakter: profileData.aufgabencharakter,
-        arbeitslogik: profileData.arbeitslogik,
-        erfolgsfokusLabels,
-        taetigkeiten: profileData.taetigkeiten,
-        gesamt: profileData.gesamt,
-        haupt: profileData.haupt,
-        neben: profileData.neben,
-        fuehrungBG: profileData.fuehrung,
-        rahmen: profileData.rahmen,
-        profileType: profileData.profileType,
-        intensity: profileData.intensity,
+        beruf: profileData.beruf, bereich: profileData.bereich,
+        fuehrungstyp: profileData.fuehrungstyp, aufgabencharakter: profileData.aufgabencharakter,
+        arbeitslogik: profileData.arbeitslogik, erfolgsfokusLabels,
+        taetigkeiten: profileData.taetigkeiten, gesamt: profileData.gesamt,
+        haupt: profileData.haupt, neben: profileData.neben,
+        fuehrungBG: profileData.fuehrung, rahmen: profileData.rahmen,
+        profileType: profileData.profileType, intensity: profileData.intensity,
         isLeadership: profileData.isLeadership,
       });
       const data = await res.json();
       setBericht(data);
-      localStorage.setItem("berichtCache", JSON.stringify({
-        beruf: profileData.beruf,
-        hash: JSON.stringify(profileData.gesamt),
-        data,
-      }));
+      localStorage.setItem("berichtCache", JSON.stringify({ beruf: profileData.beruf, hash: JSON.stringify(profileData.gesamt), data }));
     } catch (err: any) {
       setError("Der Bericht konnte nicht generiert werden. Bitte versuchen Sie es erneut.");
-      console.error("Bericht generation error:", err);
     } finally {
       setIsGenerating(false);
     }
@@ -468,14 +488,17 @@ export default function Bericht() {
 
   if (!profileData) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "linear-gradient(180deg, #f0f2f5 0%, #e8eaef 100%)" }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "linear-gradient(160deg, #F8F0FF 0%, #EEF4FF 40%, #F0FFF4 100%)" }}>
         <GlassCard testId="bericht-no-data">
-          <div className="text-center" style={{ padding: "20px 40px" }}>
-            <p style={{ fontSize: 16, fontWeight: 600, color: "#1D1D1F", marginBottom: 8 }}>Keine Analyse vorhanden</p>
-            <p style={{ fontSize: 14, color: "#6E6E73", marginBottom: 16 }}>Bitte erfassen Sie zuerst die Rollendaten.</p>
+          <div className="text-center" style={{ padding: "24px 44px" }}>
+            <div style={{ width: 56, height: 56, borderRadius: 18, background: "linear-gradient(135deg, #E8F0FA, #FDEAED)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+              <FileText style={{ width: 24, height: 24, color: "#6E6E73" }} />
+            </div>
+            <p style={{ fontSize: 17, fontWeight: 600, color: "#1D1D1F", marginBottom: 8 }}>Keine Analyse vorhanden</p>
+            <p style={{ fontSize: 14, color: "#8E8E93", marginBottom: 20, maxWidth: 260 }}>Erstelle zuerst ein Rollenprofil, um den Entscheidungsbericht zu generieren.</p>
             <button
               onClick={() => setLocation("/rollen-dna")}
-              style={{ background: "#0071E3", color: "white", border: "none", borderRadius: 12, padding: "10px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer" }}
+              style={{ background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "white", border: "none", borderRadius: 14, padding: "12px 28px", fontSize: 14, fontWeight: 600, cursor: "pointer", boxShadow: "0 4px 12px rgba(0,113,227,0.25)" }}
               data-testid="button-goto-rollen-dna"
             >
               Zur Datenerfassung
@@ -487,52 +510,35 @@ export default function Bericht() {
   }
 
   const { beruf, bereich, isLeadership, gesamt, haupt, neben, fuehrung, rahmen } = profileData;
-
-  const chapterNum = (n: number) => (
-    <div style={{
-      width: 32, height: 32, borderRadius: 10,
-      background: "linear-gradient(135deg, #0071E3, #34AADC)",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      marginRight: 12, flexShrink: 0,
-      boxShadow: "0 2px 8px rgba(0,113,227,0.15)",
-    }}>
-      <span style={{
-        fontSize: 13, fontWeight: 700, color: "#FFFFFF",
-        fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em",
-      }}>{String(n).padStart(2, "0")}</span>
-    </div>
-  );
-
-  let chapter = 1;
+  let chapter = 0;
+  const nextChapter = () => ++chapter;
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden" style={{ background: "linear-gradient(160deg, #F5F0FA 0%, #EDF3FC 35%, #F0F9F2 70%, #FFF8F0 100%)" }}>
       <div className="absolute inset-0 pointer-events-none" style={{
         background:
-          "radial-gradient(ellipse 120% 80% at 20% 60%, rgba(186,220,248,0.35) 0%, transparent 50%), " +
-          "radial-gradient(ellipse 100% 70% at 80% 30%, rgba(252,205,210,0.25) 0%, transparent 50%), " +
-          "radial-gradient(ellipse 80% 60% at 50% 80%, rgba(200,235,210,0.3) 0%, transparent 50%)",
+          "radial-gradient(ellipse 80% 60% at 15% 20%, rgba(110,69,183,0.08) 0%, transparent 50%), " +
+          "radial-gradient(ellipse 70% 50% at 85% 70%, rgba(196,30,58,0.05) 0%, transparent 50%), " +
+          "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(0,113,227,0.06) 0%, transparent 50%)",
       }} />
 
       <div className="relative z-10">
         <div style={{ position: "sticky", top: 0, zIndex: 200 }}>
-          <div style={{ backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", background: "rgba(255,255,255,0.82)" }}>
-            <header className="flex items-center justify-between gap-4 px-6 py-4" data-testid="header-bericht">
+          <div style={{ backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", background: "rgba(255,255,255,0.75)", borderBottom: "1px solid rgba(0,0,0,0.04)" }}>
+            <header className="flex items-center justify-between gap-4 px-6 py-3" data-testid="header-bericht">
               <div className="flex items-center gap-3">
-                <button onClick={() => setLocation("/")} className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors" data-testid="button-back-bericht">
-                  <ArrowLeft className="w-4 h-4" />
+                <button onClick={() => setLocation("/")} style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 34, height: 34, borderRadius: 10, background: "rgba(0,0,0,0.04)", border: "none", cursor: "pointer" }} data-testid="button-back-bericht">
+                  <ArrowLeft style={{ width: 16, height: 16, color: "#6E6E73" }} />
                 </button>
-                <img src={logoSrc} alt="bioLogic Logo" className="h-7 w-auto" data-testid="logo-bericht" />
-                <span className="text-sm text-muted-foreground/70 font-light tracking-wide hidden sm:inline">RoleDynamics</span>
+                <img src={logoSrc} alt="bioLogic Logo" className="h-6 w-auto" data-testid="logo-bericht" />
               </div>
               {bericht && !isGenerating && (
-                <button
-                  onClick={generateBericht}
-                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-                  style={{ fontSize: 13, fontWeight: 500, padding: "6px 14px", borderRadius: 10, background: "rgba(0,0,0,0.04)", border: "none", cursor: "pointer" }}
-                  data-testid="button-regenerate-bericht"
-                >
-                  <RefreshCw className="w-3.5 h-3.5" />
+                <button onClick={generateBericht} style={{
+                  display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 500,
+                  padding: "7px 14px", borderRadius: 10, background: "rgba(0,0,0,0.04)",
+                  border: "none", cursor: "pointer", color: "#6E6E73",
+                }} data-testid="button-regenerate-bericht">
+                  <RefreshCw style={{ width: 12, height: 12 }} />
                   Neu generieren
                 </button>
               )}
@@ -540,319 +546,282 @@ export default function Bericht() {
           </div>
         </div>
 
-        <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20 pt-8">
-          <div className="text-center mb-10">
-            <div style={{
-              display: "inline-flex", alignItems: "center", gap: 7,
-              background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.06))",
-              borderRadius: 20, padding: "6px 16px", marginBottom: 16,
-              border: "1px solid rgba(0,113,227,0.08)",
-            }}>
-              <FileText style={{ width: 13, height: 13, color: "#0071E3" }} />
-              <span style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.1em" }}>Strukturanalyse</span>
-            </div>
-            <h1 style={{ fontSize: 36, fontWeight: 750, letterSpacing: "-0.035em", color: "#1D1D1F", lineHeight: 1.1 }} data-testid="text-bericht-title">
-              Entscheidungsbericht
-            </h1>
-          </div>
+        <main className="flex-1 w-full max-w-2xl mx-auto px-5 pb-24 pt-10">
 
           {isGenerating && (
-            <GlassCard testId="bericht-loading" style={{ padding: "60px 40px", textAlign: "center" }}>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
+            <div style={{ textAlign: "center", paddingTop: 80 }}>
+              <div style={{
+                width: 80, height: 80, borderRadius: 24,
+                background: "linear-gradient(135deg, rgba(0,113,227,0.1), rgba(110,69,183,0.08))",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                margin: "0 auto 24px", boxShadow: "0 8px 32px rgba(0,113,227,0.1)",
+              }}>
                 <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#0071E3" }} />
-                <div>
-                  <p style={{ fontSize: 17, fontWeight: 600, color: "#1D1D1F", marginBottom: 6 }}>Bericht wird generiert...</p>
-                  <p style={{ fontSize: 14, color: "#8E8E93" }}>Die KI erstellt einen rollenspezifischen Entscheidungsbericht. Das kann einen Moment dauern.</p>
-                </div>
               </div>
-            </GlassCard>
+              <p style={{ fontSize: 20, fontWeight: 650, color: "#1D1D1F", marginBottom: 8 }}>Bericht wird erstellt</p>
+              <p style={{ fontSize: 14, color: "#8E8E93", maxWidth: 320, margin: "0 auto" }}>Die KI analysiert das Rollenprofil und erstellt einen individuellen Entscheidungsbericht.</p>
+            </div>
           )}
 
           {error && !isGenerating && (
-            <GlassCard testId="bericht-error" style={{ padding: "40px", textAlign: "center" }}>
-              <p style={{ fontSize: 15, fontWeight: 600, color: "#C41E3A", marginBottom: 12 }}>{error}</p>
-              <button
-                onClick={generateBericht}
-                style={{ background: "#0071E3", color: "white", border: "none", borderRadius: 12, padding: "10px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer" }}
-                data-testid="button-retry-bericht"
-              >
+            <GlassCard testId="bericht-error" style={{ padding: "44px 36px", textAlign: "center" }}>
+              <div style={{ width: 56, height: 56, borderRadius: 18, background: "rgba(196,30,58,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+                <AlertTriangle style={{ width: 24, height: 24, color: "#C41E3A" }} />
+              </div>
+              <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", marginBottom: 6 }}>Generierung fehlgeschlagen</p>
+              <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 20 }}>{error}</p>
+              <button onClick={generateBericht} style={{ background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "white", border: "none", borderRadius: 14, padding: "10px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer" }} data-testid="button-retry-bericht">
                 Erneut versuchen
               </button>
             </GlassCard>
           )}
 
           {bericht && !isGenerating && (
-            <GlassCard testId="bericht-report" style={{ padding: 0, borderRadius: 28, overflow: "hidden" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
-              <div style={{ padding: "32px 34px 24px" }} data-testid="bericht-header">
-                <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", marginBottom: 6 }} data-testid="text-bericht-beruf">
-                  Entscheidungsgrundlage: {beruf}
-                </h2>
-                {bereich && (
-                  <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 10 }}>
-                    Bereich: {bereich}
-                  </p>
-                )}
-                <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
-                  <span style={{ fontSize: 13, color: "#48484A" }}>
-                    Rollencharakter: <strong style={{ color: "#1D1D1F" }}>{bericht.rollencharakter}</strong>
-                  </span>
-                  <span style={{ fontSize: 13, color: "#48484A" }}>
-                    Dominante Komponente: <strong style={{ color: "#1D1D1F" }}>{bericht.dominanteKomponente}</strong>
-                  </span>
+              {/* Hero Header */}
+              <GlassCard testId="bericht-header" style={{ padding: "36px 32px 30px", textAlign: "center", position: "relative", overflow: "hidden" }}>
+                <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(110,69,183,0.04))", pointerEvents: "none" }} />
+                <div style={{ position: "absolute", bottom: -20, left: -20, width: 80, height: 80, borderRadius: "50%", background: "linear-gradient(135deg, rgba(196,30,58,0.04), rgba(243,146,0,0.03))", pointerEvents: "none" }} />
+
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  background: "linear-gradient(135deg, rgba(0,113,227,0.1), rgba(110,69,183,0.08))",
+                  borderRadius: 20, padding: "5px 14px", marginBottom: 14,
+                }}>
+                  <FileText style={{ width: 12, height: 12, color: "#6E45B7" }} />
+                  <span style={{ fontSize: 10, fontWeight: 700, color: "#6E45B7", textTransform: "uppercase", letterSpacing: "0.12em" }}>Entscheidungsgrundlage</span>
                 </div>
-              </div>
 
-              <Divider />
+                <h1 style={{ fontSize: 28, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.15, marginBottom: 6 }} data-testid="text-bericht-beruf">
+                  {beruf}
+                </h1>
+                {bereich && <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 16 }}>{bereich}</p>}
+
+                <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
+                  <span style={{
+                    fontSize: 12, fontWeight: 600, color: "#3A3A3C",
+                    background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10,
+                  }}>{bericht.rollencharakter}</span>
+                  <span style={{
+                    fontSize: 12, fontWeight: 600, color: "#3A3A3C",
+                    background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10,
+                  }}>{bericht.dominanteKomponente}</span>
+                </div>
+              </GlassCard>
 
               {/* 01 Einleitung */}
-              <div style={{ padding: "28px 34px 24px" }} data-testid="bericht-section-intro">
+              <GlassCard testId="bericht-section-intro" style={{ padding: "30px 28px" }}>
                 <div style={{ display: "flex", alignItems: "center", marginBottom: 18 }}>
-                  {chapterNum(chapter++)}
-                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>Einleitung</span>
+                  <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[0]} />
+                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Einleitung</span>
                 </div>
-                {bericht.einleitung.split("\n\n").map((p, i) => (
-                  <p key={i} style={{ fontSize: i === 0 ? 15 : 14, fontWeight: i === 0 ? 500 : 400, color: i === 0 ? "#1D1D1F" : "#48484A", lineHeight: 1.8, marginBottom: 10 }}>{p}</p>
-                ))}
-              </div>
-
-              <Divider />
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {bericht.einleitung.split("\n\n").map((p, i) => (
+                    <p key={i} style={{
+                      fontSize: i === 0 ? 15 : 14, fontWeight: i === 0 ? 500 : 400,
+                      color: i === 0 ? "#1D1D1F" : "#48484A", lineHeight: 1.85, margin: 0,
+                    }}>{p}</p>
+                  ))}
+                </div>
+              </GlassCard>
 
               {/* 02 Gesamtprofil */}
-              <div style={{ padding: "28px 34px" }} data-testid="bericht-section-gesamtprofil">
-                <div style={{ display: "flex", alignItems: "center", marginBottom: 18 }}>
-                  {chapterNum(chapter++)}
-                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>Gesamtprofil der Stellenanforderung</span>
+              <GlassCard testId="bericht-section-gesamtprofil" style={{ padding: "30px 28px" }}>
+                <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
+                  <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[1]} />
+                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Gesamtprofil</span>
                 </div>
-                <div style={{ marginBottom: 18 }}>
-                  <MiniCard icon={BarChart3} title="Gesamtprofil" bg={gesamt} iconColor="#6E6E73" />
+                <div style={{
+                  background: "linear-gradient(135deg, rgba(110,69,183,0.04), rgba(0,113,227,0.03))",
+                  borderRadius: 22, padding: "24px 20px", marginBottom: 18,
+                  border: "1px solid rgba(110,69,183,0.08)",
+                }}>
+                  <ProfileDonut bg={gesamt} size={110} />
                 </div>
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8 }}>{bericht.gesamtprofil}</p>
-              </div>
-
-              <Divider />
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85 }}>{bericht.gesamtprofil}</p>
+              </GlassCard>
 
               {/* 03 Rahmenbedingungen */}
-              <div style={{ padding: "28px 34px" }} data-testid="bericht-section-rahmen">
-                <div style={{ display: "flex", alignItems: "center", marginBottom: 18 }}>
-                  {chapterNum(chapter++)}
-                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>Rahmenbedingungen der Rolle</span>
+              <GlassCard testId="bericht-section-rahmen" style={{ padding: "30px 28px" }}>
+                <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
+                  <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[2]} />
+                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Rahmenbedingungen</span>
                 </div>
-                <div style={{ marginBottom: 18 }}>
-                  <MiniCard icon={Settings} title="Rahmenbedingungen" bg={rahmen} iconColor="#6E6E73" />
-                </div>
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8, marginBottom: 16 }}>{bericht.rahmenbedingungen.beschreibung}</p>
+                <ChartCard icon={Settings} title="Rahmenprofil" bg={rahmen} accent={CHAPTER_COLORS[2]} />
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, marginTop: 18 }}>{bericht.rahmenbedingungen.beschreibung}</p>
 
                 {bericht.rahmenbedingungen.verantwortungsfelder?.length > 0 && (
-                  <div style={{ marginBottom: 16 }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 8 }}>Zentrale Verantwortungsbereiche:</p>
+                  <div style={{ marginTop: 18 }}>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 10 }}>Zentrale Verantwortungsbereiche</p>
                     <BulletList items={bericht.rahmenbedingungen.verantwortungsfelder} />
                   </div>
                 )}
 
                 {bericht.rahmenbedingungen.erfolgsmessung?.length > 0 && (
-                  <div style={{ marginBottom: 16 }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 8 }}>Erfolg wird gemessen an:</p>
-                    <BulletList items={bericht.rahmenbedingungen.erfolgsmessung} />
+                  <div style={{ marginTop: 18 }}>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 10 }}>Erfolg wird gemessen an</p>
+                    <BulletList items={bericht.rahmenbedingungen.erfolgsmessung} icon="check" color={CHAPTER_COLORS[2]} />
                   </div>
                 )}
 
                 {bericht.rahmenbedingungen.spannungsfelder_rahmen?.length > 0 && (
-                  <div style={{
-                    marginTop: 16, padding: "16px 20px", borderRadius: 16,
-                    background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(0,113,227,0.02))",
-                    borderLeft: "3px solid rgba(0,113,227,0.25)",
-                  }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 8 }}>Die Rolle verlangt, Spannungsfelder aktiv zu steuern:</p>
-                    <BulletList items={bericht.rahmenbedingungen.spannungsfelder_rahmen} color="#0071E3" />
+                  <div style={{ marginTop: 20 }}>
+                    <CalloutBox
+                      text={`Die Rolle erfordert die gleichzeitige Steuerung von ${bericht.rahmenbedingungen.spannungsfelder_rahmen.length} Spannungsfeldern.`}
+                      color={CHAPTER_COLORS[2]}
+                      icon={Target}
+                    />
                   </div>
                 )}
-              </div>
-
-              <Divider />
+              </GlassCard>
 
               {/* 04 Führungskontext */}
               {bericht.fuehrungskontext && (
-                <>
-                  <div style={{ padding: "28px 34px" }} data-testid="bericht-section-fuehrung">
-                    <div style={{ display: "flex", alignItems: "center", marginBottom: 18 }}>
-                      {chapterNum(chapter++)}
-                      <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>Führungskontext</span>
-                    </div>
-                    {isLeadership && (
-                      <div style={{ marginBottom: 18 }}>
-                        <MiniCard icon={Shield} title="Führungskompetenzen" bg={fuehrung} iconColor="#6E6E73" />
-                      </div>
-                    )}
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8, marginBottom: 16 }}>{bericht.fuehrungskontext.beschreibung}</p>
-
-                    {bericht.fuehrungskontext.wirkungshebel?.length > 0 && (
-                      <div style={{ marginBottom: 16 }}>
-                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 8 }}>
-                          {isLeadership ? "Führungswirkung entsteht über:" : "Die Rolle wirkt steuernd über:"}
-                        </p>
-                        <BulletList items={bericht.fuehrungskontext.wirkungshebel} />
-                      </div>
-                    )}
-
-                    {bericht.fuehrungskontext.analytische_anforderungen?.length > 0 && (
-                      <div style={{ marginBottom: 16 }}>
-                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 8 }}>Analytische Stabilisierung erfordert:</p>
-                        <BulletList items={bericht.fuehrungskontext.analytische_anforderungen} />
-                      </div>
-                    )}
-
-                    {bericht.fuehrungskontext.schlusssatz && (
-                      <div style={{
-                        marginTop: 16, padding: "14px 18px", borderRadius: 14,
-                        background: "rgba(0,0,0,0.02)", borderLeft: "3px solid rgba(0,0,0,0.08)",
-                      }}>
-                        <p style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.7, margin: 0, fontStyle: "italic" }}>
-                          {bericht.fuehrungskontext.schlusssatz}
-                        </p>
-                      </div>
-                    )}
+                <GlassCard testId="bericht-section-fuehrung" style={{ padding: "30px 28px" }}>
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
+                    <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[3]} />
+                    <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Führungskontext</span>
                   </div>
-                  <Divider />
-                </>
+                  {isLeadership && <ChartCard icon={Shield} title="Führungskompetenzen" bg={fuehrung} accent={CHAPTER_COLORS[3]} />}
+                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, marginTop: isLeadership ? 18 : 0 }}>{bericht.fuehrungskontext.beschreibung}</p>
+
+                  {bericht.fuehrungskontext.wirkungshebel?.length > 0 && (
+                    <div style={{ marginTop: 18 }}>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 10 }}>
+                        {isLeadership ? "Führungswirkung entsteht über" : "Wirkung entsteht über"}
+                      </p>
+                      <BulletList items={bericht.fuehrungskontext.wirkungshebel} icon="check" color={CHAPTER_COLORS[3]} />
+                    </div>
+                  )}
+
+                  {bericht.fuehrungskontext.analytische_anforderungen?.length > 0 && (
+                    <div style={{ marginTop: 18 }}>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 10 }}>Strukturelle Stabilisierung</p>
+                      <BulletList items={bericht.fuehrungskontext.analytische_anforderungen} />
+                    </div>
+                  )}
+
+                  {bericht.fuehrungskontext.schlusssatz && (
+                    <div style={{ marginTop: 18 }}>
+                      <CalloutBox text={bericht.fuehrungskontext.schlusssatz} color={CHAPTER_COLORS[3]} icon={AlertTriangle} />
+                    </div>
+                  )}
+                </GlassCard>
               )}
 
               {/* 05 Kompetenzanalyse */}
-              <div style={{ padding: "28px 34px" }} data-testid="bericht-section-kompetenz">
+              <GlassCard testId="bericht-section-kompetenz" style={{ padding: "30px 28px" }}>
                 <div style={{ display: "flex", alignItems: "center", marginBottom: 22 }}>
-                  {chapterNum(chapter++)}
-                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>Kompetenzanalyse</span>
+                  <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[4]} />
+                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Kompetenzanalyse</span>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 20 }}>
-                  <MiniCard icon={Briefcase} title="Tätigkeiten" bg={haupt} iconColor="#6E6E73" />
-                  <MiniCard icon={Heart} title="Humankompetenzen" bg={neben} iconColor="#6E6E73" />
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 22 }}>
+                  <ChartCard icon={Briefcase} title="Tätigkeiten" bg={haupt} accent={COLORS.imp} />
+                  <ChartCard icon={Heart} title="Humankompetenzen" bg={neben} accent={COLORS.ana} />
                 </div>
 
-                <div style={{ marginBottom: 20 }}>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 6 }}>Tätigkeiten</p>
-                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8, marginBottom: 12 }}>{bericht.kompetenzanalyse.taetigkeiten_text}</p>
+                <div style={{ marginBottom: 24 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                    <Zap style={{ width: 14, height: 14, color: COLORS.imp }} />
+                    <span style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F" }}>Tätigkeiten</span>
+                  </div>
+                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, marginBottom: 14 }}>{bericht.kompetenzanalyse.taetigkeiten_text}</p>
                   {bericht.kompetenzanalyse.taetigkeiten_anforderungen?.length > 0 && (
-                    <div style={{ marginBottom: 10 }}>
-                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 8 }}>Strukturelle Anforderungen:</p>
-                      <BulletList items={bericht.kompetenzanalyse.taetigkeiten_anforderungen} />
-                    </div>
+                    <BulletList items={bericht.kompetenzanalyse.taetigkeiten_anforderungen} />
                   )}
-                  <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, fontStyle: "italic", marginTop: 10 }}>{bericht.kompetenzanalyse.taetigkeiten_schluss}</p>
+                  <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.75, fontStyle: "italic", marginTop: 12 }}>{bericht.kompetenzanalyse.taetigkeiten_schluss}</p>
                 </div>
 
-                <div>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 6 }}>Humankompetenzen</p>
-                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8, marginBottom: 12 }}>{bericht.kompetenzanalyse.human_text}</p>
+                <SectionDivider />
+
+                <div style={{ marginTop: 22 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                    <Brain style={{ width: 14, height: 14, color: COLORS.ana }} />
+                    <span style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F" }}>Humankompetenzen</span>
+                  </div>
+                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, marginBottom: 14 }}>{bericht.kompetenzanalyse.human_text}</p>
                   {bericht.kompetenzanalyse.human_anforderungen?.length > 0 && (
-                    <div style={{ marginBottom: 10 }}>
-                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 8 }}>Gefordert sind:</p>
-                      <BulletList items={bericht.kompetenzanalyse.human_anforderungen} />
-                    </div>
+                    <BulletList items={bericht.kompetenzanalyse.human_anforderungen} />
                   )}
-                  <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, fontStyle: "italic", marginTop: 10 }}>{bericht.kompetenzanalyse.human_schluss}</p>
+                  <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.75, fontStyle: "italic", marginTop: 12 }}>{bericht.kompetenzanalyse.human_schluss}</p>
                 </div>
-              </div>
-
-              <Divider />
+              </GlassCard>
 
               {/* 06 Spannungsfelder */}
               {bericht.spannungsfelder?.length > 0 && (
-                <>
-                  <div style={{ padding: "28px 34px" }} data-testid="bericht-section-spannungsfelder">
-                    <div style={{ display: "flex", alignItems: "center", marginBottom: 18 }}>
-                      {chapterNum(chapter++)}
-                      <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>Typische Spannungsfelder der Rolle</span>
-                    </div>
-                    <BulletList items={bericht.spannungsfelder} color="#0071E3" />
-                    {bericht.spannungsfelder_schluss && (
-                      <div style={{
-                        marginTop: 16, padding: "14px 18px", borderRadius: 14,
-                        background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(0,113,227,0.02))",
-                        borderLeft: "3px solid rgba(0,113,227,0.25)",
-                      }}>
-                        <p style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.7, margin: 0, fontWeight: 500 }}>
-                          {bericht.spannungsfelder_schluss}
-                        </p>
-                      </div>
-                    )}
+                <GlassCard testId="bericht-section-spannungsfelder" style={{ padding: "30px 28px" }}>
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
+                    <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[5]} />
+                    <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Spannungsfelder</span>
                   </div>
-                  <Divider />
-                </>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {bericht.spannungsfelder.map((sf, i) => (
+                      <SpannungsfeldPill key={i} text={sf} />
+                    ))}
+                  </div>
+                  {bericht.spannungsfelder_schluss && (
+                    <div style={{ marginTop: 16 }}>
+                      <CalloutBox text={bericht.spannungsfelder_schluss} color={CHAPTER_COLORS[5]} icon={Target} />
+                    </div>
+                  )}
+                </GlassCard>
               )}
 
               {/* 07 Risikobewertung */}
-              <div style={{ padding: "28px 34px" }} data-testid="bericht-section-risiko">
-                <div style={{ display: "flex", alignItems: "center", marginBottom: 18 }}>
-                  {chapterNum(chapter++)}
-                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>Risikobewertung bei struktureller Fehlpassung</span>
+              <GlassCard testId="bericht-section-risiko" style={{ padding: "30px 28px" }}>
+                <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
+                  <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[6]} />
+                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Risikobewertung</span>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                   {(bericht.risikobewertung || []).map((risk, i) => (
-                    <RiskCard
-                      key={i}
-                      label={risk.label}
-                      color={getRiskColor(risk.label)}
-                      bullets={risk.bullets}
-                      alltagssatz={risk.alltagssatz}
-                    />
+                    <RiskCard key={i} label={risk.label} color={getRiskColor(risk.label)} bullets={risk.bullets} alltagssatz={risk.alltagssatz} />
                   ))}
                 </div>
-              </div>
+              </GlassCard>
 
               {/* 08 Fazit */}
-              <div style={{
-                padding: "32px 34px 36px",
-                background: "linear-gradient(180deg, rgba(0,113,227,0.04) 0%, rgba(52,170,220,0.02) 100%)",
-                borderTop: "1px solid rgba(0,113,227,0.06)",
-                borderRadius: "0 0 28px 28px",
-              }} data-testid="bericht-section-fazit">
+              <GlassCard testId="bericht-section-fazit" style={{
+                padding: "34px 28px",
+                background: "linear-gradient(160deg, rgba(255,255,255,0.85), rgba(5,150,105,0.04), rgba(255,255,255,0.8))",
+                border: "1px solid rgba(5,150,105,0.12)",
+              }}>
                 <div style={{ display: "flex", alignItems: "center", marginBottom: 22 }}>
-                  {chapterNum(chapter)}
-                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>Fazit</span>
+                  <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[7]} />
+                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Fazit</span>
                 </div>
 
                 <p style={{
-                  fontSize: 15, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.75, margin: 0,
-                  paddingBottom: 16, borderBottom: "1px solid rgba(0,113,227,0.08)",
+                  fontSize: 16, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.7, margin: 0,
+                  paddingBottom: 18, borderBottom: "1px solid rgba(5,150,105,0.12)",
                 }}>{bericht.fazit.kernsatz}</p>
 
-                <div style={{ marginTop: 16, marginBottom: 16 }}>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 10 }}>Entscheidend für die Besetzung ist eine Persönlichkeit, die:</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {(bericht.fazit.persoenlichkeit || []).map((item, i) => (
-                      <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                        <div style={{
-                          width: 18, height: 18, borderRadius: 5, flexShrink: 0, marginTop: 1,
-                          background: "rgba(0,113,227,0.08)", display: "flex", alignItems: "center", justifyContent: "center",
-                        }}>
-                          <Check style={{ width: 10, height: 10, color: "#0071E3", strokeWidth: 2.5 }} />
-                        </div>
-                        <span style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.65 }}>{item}</span>
-                      </div>
-                    ))}
-                  </div>
+                <div style={{ marginTop: 20, marginBottom: 20 }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 12 }}>Entscheidend für die Besetzung ist eine Persönlichkeit, die:</p>
+                  <BulletList items={bericht.fazit.persoenlichkeit || []} icon="check" color={CHAPTER_COLORS[7]} />
                 </div>
 
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8, marginBottom: 12 }}>{bericht.fazit.fehlbesetzung}</p>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, marginBottom: 16 }}>{bericht.fazit.fehlbesetzung}</p>
 
                 <div style={{
-                  marginTop: 4, padding: "16px 20px", borderRadius: 16,
-                  background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(52,170,220,0.03))",
-                  borderLeft: "3px solid rgba(0,113,227,0.25)",
-                  display: "flex", alignItems: "flex-start", gap: 10,
+                  padding: "18px 22px", borderRadius: 18,
+                  background: "linear-gradient(135deg, rgba(5,150,105,0.08), rgba(5,150,105,0.03))",
+                  border: "1px solid rgba(5,150,105,0.12)",
+                  display: "flex", alignItems: "flex-start", gap: 12,
                 }}>
                   <div style={{
-                    width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1,
-                    background: "rgba(0,113,227,0.10)", display: "flex", alignItems: "center", justifyContent: "center",
+                    width: 24, height: 24, borderRadius: 8, flexShrink: 0,
+                    background: "rgba(5,150,105,0.15)", display: "flex", alignItems: "center", justifyContent: "center",
                   }}>
-                    <Check style={{ width: 11, height: 11, color: "#0071E3", strokeWidth: 2.5 }} />
+                    <Check style={{ width: 13, height: 13, color: CHAPTER_COLORS[7], strokeWidth: 2.5 }} />
                   </div>
-                  <p style={{ fontSize: 13, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.75, margin: 0 }}>{bericht.fazit.schlusssatz}</p>
+                  <p style={{ fontSize: 14, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.75, margin: 0 }}>{bericht.fazit.schlusssatz}</p>
                 </div>
-              </div>
+              </GlassCard>
 
-            </GlassCard>
+            </div>
           )}
         </main>
       </div>
