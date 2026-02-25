@@ -144,7 +144,8 @@ function ProfileCard() {
                 if (hasData) {
                   setShowResetConfirm(true);
                 } else {
-                  setLocation("/rollen-dna?new=1");
+                  localStorage.setItem("rollenDnaReset", "1");
+                  setLocation("/rollen-dna");
                 }
               }}
               style={{
@@ -229,8 +230,9 @@ function ProfileCard() {
             localStorage.removeItem("bioCheckIntroOverride");
             localStorage.removeItem("bioCheckTextGenerated");
             localStorage.removeItem("analyseTexte");
+            localStorage.setItem("rollenDnaReset", "1");
             setShowResetConfirm(false);
-            setLocation("/rollen-dna?new=1");
+            setLocation("/rollen-dna");
           }}
         />
       )}

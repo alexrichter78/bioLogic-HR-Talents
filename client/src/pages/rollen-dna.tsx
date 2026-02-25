@@ -619,7 +619,9 @@ const DEFAULT_TAETIGKEITEN: Taetigkeit[] = [
 
 function loadSavedState() {
   try {
-    if (typeof window !== "undefined" && window.location.search.includes("new=1")) {
+    const resetFlag = localStorage.getItem("rollenDnaReset");
+    if (resetFlag) {
+      localStorage.removeItem("rollenDnaReset");
       localStorage.removeItem("rollenDnaState");
       localStorage.removeItem("rollenDnaCompleted");
       localStorage.removeItem("kompetenzenCache");
@@ -628,7 +630,6 @@ function loadSavedState() {
       localStorage.removeItem("bioCheckIntroOverride");
       localStorage.removeItem("bioCheckTextGenerated");
       localStorage.removeItem("analyseTexte");
-      window.history.replaceState({}, "", "/rollen-dna");
       return null;
     }
     const raw = localStorage.getItem("rollenDnaState");
@@ -838,14 +839,6 @@ export default function RollenDNA() {
     reader.readAsText(file);
     e.target.value = "";
   };
-
-  const didAutoGenerate = useRef(false);
-  useEffect(() => {
-    if (!didAutoGenerate.current && currentStep === 3 && taetigkeiten.length === 0 && beruf && !isGenerating) {
-      didAutoGenerate.current = true;
-      generateKompetenzen();
-    }
-  });
 
   useEffect(() => {
     const state = {
@@ -1134,6 +1127,14 @@ export default function RollenDNA() {
       setGeneratingStep(0);
     }
   };
+
+  const didAutoGenerate = useRef(false);
+  useEffect(() => {
+    if (!didAutoGenerate.current && currentStep === 3 && taetigkeiten.length === 0 && beruf && !isGenerating) {
+      didAutoGenerate.current = true;
+      generateKompetenzen();
+    }
+  });
 
   const goToStep = (step: number) => {
     setCurrentStep(step);
