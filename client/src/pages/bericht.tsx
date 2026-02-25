@@ -846,6 +846,12 @@ export default function Bericht() {
               </>
             )}
 
+            <div style={{ padding: "24px 34px" }} data-testid="bericht-section-gesamtprofil">
+              <MiniCard icon={BarChart3} title="Gesamtprofil der Stellenanforderung" bg={gesamt} iconColor="#6E6E73" />
+            </div>
+
+            <Divider />
+
             <div style={{ padding: "28px 34px 24px" }} data-testid="bericht-section-intro">
               <div style={{ display: "flex", alignItems: "center", marginBottom: 18 }}>
                 {chapterNum(chapter++)}
@@ -869,6 +875,9 @@ export default function Bericht() {
                     {chapterNum(chapter++)}
                     <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>Rahmenbedingungen</span>
                   </div>
+                  <div style={{ marginBottom: 18 }}>
+                    <MiniCard icon={Settings} title="Rahmenbedingungen der Stelle" bg={rahmen} iconColor="#6E6E73" />
+                  </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                     {rahmenbedingungenText.split("\n\n").map((paragraph, i) => (
                       <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8, margin: 0 }}>{paragraph}</p>
@@ -886,6 +895,9 @@ export default function Bericht() {
                     {chapterNum(chapter++)}
                     <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>Führungskontext</span>
                   </div>
+                  <div style={{ marginBottom: 18 }}>
+                    <MiniCard icon={Shield} title="Führungskompetenzen" bg={fuehrung} iconColor="#6E6E73" />
+                  </div>
                   <ProseBlock text={fuehrungskontextText} accentColor="#1A5DAB" />
                 </div>
                 <Divider />
@@ -898,28 +910,9 @@ export default function Bericht() {
                 <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>Kompetenzanalyse</span>
               </div>
 
-              <div style={{
-                display: "grid",
-                gridTemplateColumns: isLeadership && texts.leadership_section ? "1fr 1fr" : "1fr 1fr",
-                gap: 14, marginBottom: 20,
-              }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 20 }}>
                 <MiniCard icon={Briefcase} title="Tätigkeiten" bg={haupt} iconColor="#6E6E73" />
                 <MiniCard icon={Heart} title="Humankompetenzen" bg={neben} iconColor="#6E6E73" />
-                <MiniCard icon={Settings} title="Rahmenbedingungen der Stelle" bg={rahmen} iconColor="#6E6E73" />
-                {isLeadership && texts.leadership_section && (
-                  <MiniCard icon={Shield} title="Führungskompetenzen" bg={fuehrung} iconColor="#6E6E73" />
-                )}
-              </div>
-
-              <div style={{
-                background: "rgba(0,0,0,0.02)", borderRadius: 16, padding: "20px 22px",
-                border: "1px solid rgba(0,0,0,0.04)", marginBottom: 20,
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-                  <BarChart3 style={{ width: 15, height: 15, color: "#6E6E73", strokeWidth: 1.8 }} />
-                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Gesamtprofil der Stellenanforderung</span>
-                </div>
-                {BarsForProfile(gesamt)}
               </div>
 
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8 }}>{texts.overall}</p>
