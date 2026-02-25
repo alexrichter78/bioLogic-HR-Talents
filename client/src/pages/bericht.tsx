@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { ArrowLeft, BarChart3, Briefcase, Heart, Shield, AlertTriangle, FileText, Lightbulb, CheckCircle2, Check, Users } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
+import { PROFILE_TEXTS, type VariantTexts } from "@/data/bericht-texte";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 
@@ -141,209 +142,50 @@ interface ReportTexts {
   conclusion: string;
 }
 
+function resolveProfileKey(profileType: ProfileType): string {
+  const map: Record<string, string> = {
+    balanced_all: "balanced_all",
+    strong_imp: "imp", dominant_imp: "imp", light_imp: "imp",
+    strong_ana: "ana", dominant_ana: "ana", light_ana: "ana",
+    strong_int: "int", dominant_int: "int", light_int: "int",
+    hybrid_imp_ana: "hybrid_imp_ana",
+    hybrid_ana_int: "hybrid_ana_int",
+    hybrid_imp_int: "hybrid_imp_int",
+  };
+  return map[profileType] || "balanced_all";
+}
+
+function resolveIntensityKey(profileType: ProfileType, intensity: Intensity): string {
+  if (profileType === "balanced_all") return "balanced";
+  if (profileType.startsWith("strong_")) return "strong";
+  if (profileType.startsWith("dominant_")) return "clear";
+  if (profileType.startsWith("light_")) return "light";
+  if (profileType.startsWith("hybrid_")) return "clear";
+  return intensity;
+}
+
 function getReportTexts(roleTitle: string, isLeadership: boolean, profileType: ProfileType, intensity: Intensity): ReportTexts {
-  const r = (s: string) => s.replace(/\{\{roleTitle\}\}/g, roleTitle);
+  const profileKey = resolveProfileKey(profileType);
+  const intensityKey = resolveIntensityKey(profileType, intensity);
 
-  const allTexts: Record<string, { noLeadership: any; leadership: any }> = {
-    balanced_all: {
-      noLeadership: {
-        intro: r("Dieser Bericht beschreibt die Anforderungen der Rolle {{roleTitle}}. Er zeigt, wie Entscheidungen vorbereitet werden, wie Zusammenarbeit stattfindet und wie stark Struktur im Arbeitsalltag gefordert ist."),
-        overall: "Das Rollenbild ist ausgewogen. Die Funktion verlangt sowohl verlässliche Organisation als auch passende Abstimmung im Umfeld. Umsetzung ist notwendig, ohne dass Geschwindigkeit allein zum Treiber wird.",
-        tasks: "Die Aufgaben verbinden geordnete Arbeitsweise mit situationsgerechter Abstimmung. Es geht darum, zuverlässig zu liefern und gleichzeitig anschlussfähig im Arbeitskontext zu bleiben.",
-        human: "Gefordert ist ein ruhiges, strukturiertes Vorgehen mit der Fähigkeit, unterschiedliche Anforderungen einzuordnen und sauber zu priorisieren.",
-        overweight: {
-          structure_over: { bullets: ["Entscheidungen werden stärker geprüft", "Detailtiefe nimmt zu", "Anpassungsfähigkeit sinkt", "Abstimmung tritt in den Hintergrund"], text: "Im Alltag bleibt die Arbeit sauber und korrekt, jedoch sinkt die Beweglichkeit in wechselnden Situationen." },
-          collaboration_over: { bullets: ["Abstimmung wird priorisiert", "Prioritäten werden situativ angepasst", "Verbindlichkeit kann abnehmen", "Struktur verliert an Schärfe"], text: "Im Alltag funktioniert das Miteinander, gleichzeitig kann Klarheit in Planung und Zuständigkeit nachlassen." },
-          speed_over: { bullets: ["Entscheidungen werden beschleunigt", "Prozesse werden verkürzt", "Prioritäten wechseln häufiger", "Absicherung nimmt ab"], text: "Im Alltag steigt die Dynamik, während Ordnung und Abstimmung an Stabilität verlieren können." },
-        },
-        conclusion: "Die Rolle ist auf Balance angelegt. Sie verlangt klare Organisation, saubere Abstimmung und verlässliche Umsetzung im gleichen Maß.",
-      },
-      leadership: {
-        intro: r("Dieser Bericht beschreibt die Anforderungen der Führungsrolle {{roleTitle}}. Er zeigt, wie Ziele gesetzt, Entscheidungen getroffen und Zusammenarbeit im Team gestaltet werden."),
-        overall: "Das Rollenbild ist ausgewogen. Die Führungsaufgabe verlangt Orientierung über Struktur, Stabilität in der Zusammenarbeit und verlässliche Umsetzung im Alltag.",
-        tasks: "Die Aufgaben verbinden Steuerung über klare Abläufe mit ausreichender Anpassungsfähigkeit. Entscheidungen müssen tragfähig sein und zugleich im Umfeld funktionieren.",
-        human: "Gefordert ist ein klarer Kopf unter Druck, saubere Priorisierung und die Fähigkeit, unterschiedliche Erwartungen zu ordnen, ohne an Verbindlichkeit zu verlieren.",
-        leadership_section: "Führung entsteht hier durch Klarheit und Verlässlichkeit. Ziele werden eindeutig, Entscheidungen nachvollziehbar, Verantwortung wird sauber verteilt.",
-        overweight: {
-          speed_over: { bullets: ["Druck im Team steigt", "Abstimmung wird verkürzt", "Prioritäten wechseln häufiger", "Fehlsteuerung nimmt zu"], text: "Im Alltag entsteht Tempo, gleichzeitig sinkt die Stabilität in Richtung und Verantwortlichkeit." },
-          structure_over: { bullets: ["Entscheidungen werden verzögert", "Kontrolle nimmt zu", "Reaktionsgeschwindigkeit sinkt", "Chancen werden später genutzt"], text: "Im Alltag steigt die Absicherung, jedoch verliert die Führung an Dynamik." },
-          collaboration_over: { bullets: ["Konsens wird priorisiert", "Konflikte werden vertagt", "Leistungsorientierung verwässert", "Verbindlichkeit nimmt ab"], text: "Im Alltag bleibt das Klima stabil, jedoch sinkt die Klarheit in Ziel und Konsequenz." },
-        },
-        conclusion: "Die Führungsrolle verlangt Balance. Sie verbindet klare Steuerung, stabile Zusammenarbeit und verlässliche Umsetzung.",
-      },
-    },
-    strong_imp: {
-      noLeadership: {
-        intro: r("Dieser Bericht beschreibt die Anforderungen der Rolle {{roleTitle}}. Im Mittelpunkt steht, wie konsequent umgesetzt wird, wie entschieden wird und wie stark Ziele den Alltag bestimmen."),
-        overall: "Die Rolle ist klar auf Ergebnis und Umsetzung ausgerichtet. Entscheidungen werden getroffen und verfolgt. Struktur unterstützt die Zielerreichung, bleibt aber Mittel zum Zweck. Zusammenarbeit ist vorhanden, jedoch nicht der Haupttreiber der Funktion.",
-        tasks: "Die Aufgaben sind stark handlungsorientiert. Es geht um Tempo, Konsequenz und Nachverfolgung. Planung dient der Steuerung, nicht der Absicherung.",
-        human: "Gefordert sind Entschlossenheit, Verantwortungsübernahme und ein klarer Fokus auf Ergebnisse. Prioritäten werden gesetzt und gehalten.",
-        overweight: {
-          speed_over: { bullets: ["Prozesse werden verkürzt", "Absicherung sinkt", "Prioritäten wechseln häufiger", "Nacharbeit nimmt zu"], text: "Im Alltag steigt die Geschwindigkeit, gleichzeitig sinkt die Verlässlichkeit in Qualität und Abstimmung." },
-          structure_over: { bullets: ["Entscheidungen werden verzögert", "Dynamik sinkt", "Handlungsspielraum wird enger", "Chancen werden später genutzt"], text: "Im Alltag steigt die Ordnung, gleichzeitig verliert die Rolle an Schlagkraft." },
-          collaboration_over: { bullets: ["Abstimmung dominiert", "Konflikte werden moderiert statt entschieden", "Verbindlichkeit nimmt ab", "Zielklarheit verliert Schärfe"], text: "Im Alltag bleibt das Miteinander stabil, jedoch sinkt die Konsequenz in Richtung und Abschluss." },
-        },
-        conclusion: "Die Rolle ist auf konsequente Umsetzung und Ergebnisverantwortung angelegt. Struktur dient der Steuerung, nicht der Verzögerung.",
-      },
-      leadership: {
-        intro: r("Dieser Bericht beschreibt die Anforderungen der Führungsrolle {{roleTitle}}. Im Mittelpunkt stehen Zielklarheit, Konsequenz und Ergebnisverantwortung."),
-        overall: "Die Rolle ist deutlich ergebnis- und steuerungsorientiert. Führung erfolgt über klare Erwartungen, konsequentes Nachhalten und schnelle Entscheidungen. Struktur ist notwendig, um Transparenz zu sichern. Zusammenarbeit ist wichtig, bleibt aber nachgeordnet.",
-        tasks: "Die Aufgaben verlangen klare Steuerung der Aktivitäten. Ergebnisse werden sichtbar gemacht und konsequent eingefordert.",
-        human: "Gefordert sind Durchsetzung, Entscheidungsstärke und die Fähigkeit, Verantwortung eindeutig zuzuordnen.",
-        leadership_section: "Führung entsteht hier über Richtung. Ziele sind messbar, Prioritäten eindeutig, Verantwortlichkeit klar geregelt.",
-        overweight: {
-          speed_over: { bullets: ["Druck im Team steigt", "Abstimmung wird verkürzt", "Fehlentscheidungen nehmen zu", "Fluktuationsrisiko steigt"], text: "Im Alltag entsteht Tempo, gleichzeitig steigt die Reibung im Team und die Fehlerquote." },
-          structure_over: { bullets: ["Tempo sinkt", "Entscheidungen werden abgesichert", "Wirksamkeit wird langsamer sichtbar", "Steuerung wirkt bürokratisch"], text: "Im Alltag steigt die Kontrolle, jedoch sinkt die Dynamik in Abschluss und Umsetzung." },
-          collaboration_over: { bullets: ["Konsens dominiert", "Konsequenz sinkt", "Ergebnisfokus verwässert", "Prioritäten werden verhandelbar"], text: "Im Alltag bleibt das Klima ruhig, jedoch leidet die Klarheit in Ziel und Leistung." },
-        },
-        conclusion: "Die Führungsrolle ist auf Richtung, Ergebnis und konsequente Umsetzung ausgelegt. Struktur sichert Transparenz, ersetzt aber nicht Entscheidung.",
-      },
-    },
-    strong_ana: {
-      noLeadership: {
-        intro: r("Dieser Bericht beschreibt die Anforderungen der Rolle {{roleTitle}}. Im Vordergrund stehen Ordnung, Präzision und planbares Vorgehen."),
-        overall: "Die Rolle ist klar auf Struktur und Genauigkeit ausgerichtet. Entscheidungen werden vorbereitet und nachvollziehbar abgesichert. Umsetzung erfolgt konsequent, jedoch innerhalb klarer Abläufe. Zusammenarbeit unterstützt die Funktion, steht aber nicht im Zentrum.",
-        tasks: "Die Aufgaben verlangen saubere Planung, Dokumentation und Qualitätssicherung. Abweichungen werden erkannt und systematisch bearbeitet.",
-        human: "Gefordert sind Sorgfalt, Verlässlichkeit und ein klares Qualitätsverständnis. Prioritäten werden strukturiert gesetzt und gehalten.",
-        overweight: {
-          structure_over: { bullets: ["Entscheidungen dauern länger", "Detailtiefe steigt", "Reaktionsgeschwindigkeit sinkt", "Absicherung wird dominant"], text: "Im Alltag steigt die Genauigkeit, gleichzeitig sinkt die Beweglichkeit in dynamischen Situationen." },
-          speed_over: { bullets: ["Prozesse werden verkürzt", "Qualitätssicherung sinkt", "Nacharbeit nimmt zu", "Schnittstellenfehler steigen"], text: "Im Alltag steigt das Tempo, jedoch sinkt die Verlässlichkeit in Ordnung und Qualität." },
-          collaboration_over: { bullets: ["Abstimmung dominiert", "Entscheidungen werden situativer", "Verbindlichkeit sinkt", "Struktur verliert an Schärfe"], text: "Im Alltag bleibt das Umfeld eingebunden, jedoch leidet die Klarheit in Prozess und Priorität." },
-        },
-        conclusion: "Die Rolle ist auf klare Abläufe, Präzision und verlässliche Qualität ausgelegt. Entscheidungen sollen nachvollziehbar und stabil sein.",
-      },
-      leadership: {
-        intro: r("Dieser Bericht beschreibt die Anforderungen der Führungsrolle {{roleTitle}}. Im Vordergrund stehen klare Struktur, stabile Prozesse und verlässliche Entscheidungen."),
-        overall: "Führung in dieser Rolle erfolgt über Ordnung, Planung und nachvollziehbare Steuerung. Erwartungen werden klar formuliert und über Transparenz gesichert. Umsetzung ist wichtig, bleibt jedoch an klare Standards gebunden.",
-        tasks: "Die Aufgaben verlangen Prozessklarheit, Qualitätssicherung und strukturierte Steuerung der Ergebnisse.",
-        human: "Gefordert sind Ruhe, Sorgfalt und die Fähigkeit, Komplexität zu ordnen und Entscheidungen zu begründen.",
-        leadership_section: "Führung entsteht durch klare Rahmenbedingungen, definierte Zuständigkeiten und konsequentes Qualitätsniveau.",
-        overweight: {
-          structure_over: { bullets: ["Entscheidungen werden verzögert", "Kontrolle nimmt zu", "Tempo sinkt", "Team wirkt gebremst"], text: "Im Alltag steigt die Sicherheit, jedoch sinkt die Dynamik in Umsetzung und Anpassung." },
-          speed_over: { bullets: ["Standards werden verkürzt", "Fehlerquote steigt", "Nacharbeit nimmt zu", "Planbarkeit sinkt"], text: "Im Alltag steigt die Geschwindigkeit, jedoch sinkt die Stabilität in Qualität und Prozess." },
-          collaboration_over: { bullets: ["Konsens dominiert", "Prioritäten werden verhandelbar", "Verbindlichkeit sinkt", "Struktur wird weich"], text: "Im Alltag bleibt das Klima stabil, jedoch sinkt die Klarheit in Richtung und Standard." },
-        },
-        conclusion: "Die Führungsrolle ist auf Prozessklarheit, stabile Standards und nachvollziehbare Steuerung ausgerichtet.",
-      },
-    },
-    strong_int: {
-      noLeadership: {
-        intro: r("Dieser Bericht beschreibt die Anforderungen der Rolle {{roleTitle}}. Im Vordergrund stehen Zusammenarbeit, Abstimmung und situationsgerechtes Handeln."),
-        overall: "Die Rolle ist klar auf Zusammenarbeit und Kontext ausgerichtet. Entscheidungen sollen anschlussfähig sein und im Umfeld funktionieren. Struktur ist notwendig, bleibt aber nachgeordnet. Umsetzung erfolgt, jedoch weniger über Tempo als über Einbindung.",
-        tasks: "Die Aufgaben verlangen laufende Abstimmung und ein gutes Gespür für Situationen. Schnittstellenarbeit und Kommunikation sind zentral.",
-        human: "Gefordert sind Kommunikationsstärke, Kooperationsfähigkeit und die Fähigkeit, Spannungen früh zu erkennen und sauber zu klären.",
-        overweight: {
-          collaboration_over: { bullets: ["Abstimmung dominiert", "Entscheidungen werden verschoben", "Prioritäten werden situativer", "Verbindlichkeit sinkt"], text: "Im Alltag bleibt das Miteinander stabil, jedoch kann Klarheit in Priorität und Abschluss nachlassen." },
-          speed_over: { bullets: ["Entscheidungen werden beschleunigt", "Abstimmung wird verkürzt", "Konflikte nehmen zu", "Akzeptanz sinkt"], text: "Im Alltag steigt die Dynamik, gleichzeitig steigt die Reibung im Umfeld." },
-          structure_over: { bullets: ["Prozesse werden starrer", "Flexibilität sinkt", "Kontext wird weniger berücksichtigt", "Zusammenarbeit wird funktionaler"], text: "Im Alltag steigt die Ordnung, gleichzeitig sinkt die Anschlussfähigkeit im Umfeld." },
-        },
-        conclusion: "Die Rolle ist auf tragfähige Zusammenarbeit und situationsgerechtes Handeln ausgerichtet. Entscheidungen sollen im Umfeld funktionieren.",
-      },
-      leadership: {
-        intro: r("Dieser Bericht beschreibt die Anforderungen der Führungsrolle {{roleTitle}}. Im Vordergrund stehen Zusammenarbeit, Stabilität im Team und situationsgerechte Steuerung."),
-        overall: "Führung in dieser Rolle entsteht über Einbindung und klare Kommunikation. Entscheidungen werden so getroffen, dass sie getragen werden. Struktur und Ergebnisorientierung sind wichtig, bleiben jedoch nachgeordnet.",
-        tasks: "Die Aufgaben verlangen Teamabstimmung, klare Kommunikation und aktive Arbeit an Schnittstellen.",
-        human: "Gefordert sind Beziehungsstärke, Konfliktklarheit und ein gutes Gespür für Dynamiken im Team.",
-        leadership_section: "Führung entsteht durch Stabilität im Miteinander und saubere Abstimmung, ohne Verbindlichkeit zu verlieren.",
-        overweight: {
-          collaboration_over: { bullets: ["Konsens dominiert", "Leistungsdruck sinkt", "Entscheidungen werden vertagt", "Richtung verliert Schärfe"], text: "Im Alltag bleibt das Klima stabil, jedoch sinkt die Konsequenz in Ziel und Abschluss." },
-          speed_over: { bullets: ["Druck steigt", "Konflikte nehmen zu", "Abstimmung sinkt", "Akzeptanz sinkt"], text: "Im Alltag entsteht Tempo, gleichzeitig sinkt die Stabilität im Team." },
-          structure_over: { bullets: ["Prozesse dominieren", "Flexibilität sinkt", "Kommunikation wird formaler", "Team fühlt sich eingeengt"], text: "Im Alltag steigt die Ordnung, jedoch sinkt die Anschlussfähigkeit im Team." },
-        },
-        conclusion: "Die Führungsrolle ist auf Teamstabilität und situationsgerechte Steuerung ausgerichtet. Entscheidungen sollen tragfähig sein.",
-      },
-    },
-    hybrid_imp_ana: {
-      noLeadership: {
-        intro: r("Dieser Bericht beschreibt die Anforderungen der Rolle {{roleTitle}}. Im Vordergrund stehen konsequente Umsetzung und klare Struktur."),
-        overall: "Die Rolle verbindet Ergebnisorientierung mit planbarer Steuerung. Entscheidungen werden zügig getroffen, aber entlang klarer Prioritäten und Kennzahlen. Umsetzung erfolgt konsequent, ohne dass Ordnung und Nachvollziehbarkeit verloren gehen. Zusammenarbeit unterstützt die Funktion, steht jedoch nicht im Zentrum.",
-        tasks: "Die Aufgaben verlangen Geschwindigkeit in der Umsetzung und gleichzeitig saubere Steuerung über klare Vorgaben und messbare Ziele.",
-        human: "Gefordert sind Entschlossenheit und Struktur. Prioritäten werden klar gesetzt und konsequent eingehalten.",
-        overweight: {
-          speed_over: { bullets: ["Absicherung sinkt", "Abstimmung wird verkürzt", "Fehlerquote steigt", "Nacharbeit nimmt zu"], text: "Im Alltag steigt die Dynamik, gleichzeitig sinkt die Verlässlichkeit der Steuerung." },
-          structure_over: { bullets: ["Tempo sinkt", "Entscheidungen dauern länger", "Chancen werden später genutzt", "Wirksamkeit verzögert sich"], text: "Im Alltag steigt die Ordnung, jedoch verliert die Rolle an Abschlussstärke." },
-          collaboration_over: { bullets: ["Konsens dominiert", "Konsequenz sinkt", "Ziele werden verhandelbar", "Prioritäten wechseln"], text: "Im Alltag bleibt das Umfeld eingebunden, jedoch sinkt Klarheit und Abschluss." },
-        },
-        conclusion: "Die Rolle verbindet konsequente Umsetzung mit klarer Steuerung. Sie ist auf Ergebnis und Struktur im gleichen Maß angelegt.",
-      },
-      leadership: {
-        intro: r("Dieser Bericht beschreibt die Anforderungen der Führungsrolle {{roleTitle}}. Im Vordergrund stehen klare Zielsteuerung und verlässliche Struktur."),
-        overall: "Führung in dieser Rolle verbindet Richtung und Umsetzung mit klaren Vorgaben. Ziele sind eindeutig, Entscheidungen konsequent, Steuerung erfolgt nachvollziehbar über Kennzahlen und Prioritäten. Zusammenarbeit ist wichtig, bleibt jedoch nachgeordnet zur Ergebnislogik.",
-        tasks: "Die Aufgaben verlangen klare Steuerung der Aktivitäten und konsequentes Nachhalten der Ergebnisse.",
-        human: "Gefordert sind Durchsetzung und Struktur. Verantwortung wird klar zugeordnet und konsequent verfolgt.",
-        leadership_section: "Führung entsteht durch klare Ziele, messbare Erwartungen und konsequente Umsetzung innerhalb definierter Regeln.",
-        overweight: {
-          speed_over: { bullets: ["Druck steigt", "Reibung nimmt zu", "Absicherung sinkt", "Fehlsteuerung steigt"], text: "Im Alltag steigt Tempo, während Struktur und Teamstabilität an Verlässlichkeit verlieren." },
-          structure_over: { bullets: ["Tempo sinkt", "Kontrolle steigt", "Entscheidungen verzögern sich", "Team wirkt gebremst"], text: "Im Alltag steigt Ordnung, jedoch sinkt die Abschlussstärke." },
-          collaboration_over: { bullets: ["Konsens dominiert", "Konsequenz sinkt", "Ziele werden verhandelbar", "Prioritäten verlieren Stabilität"], text: "Im Alltag bleibt das Klima stabil, jedoch sinkt die Klarheit in Richtung und Ergebnis." },
-        },
-        conclusion: "Die Führungsrolle verbindet konsequente Ergebnissteuerung mit verlässlicher Struktur und klaren Prioritäten.",
-      },
-    },
-    hybrid_ana_int: {
-      noLeadership: {
-        intro: r("Dieser Bericht beschreibt die Anforderungen der Rolle {{roleTitle}}. Im Vordergrund stehen klare Organisation und tragfähige Abstimmung im Umfeld."),
-        overall: "Die Rolle verbindet Struktur mit Kontextsensibilität. Entscheidungen sollen nachvollziehbar vorbereitet werden und zugleich im Arbeitsumfeld funktionieren. Ordnung und Abstimmung stehen gleichwertig nebeneinander. Umsetzung erfolgt verlässlich, ohne dass Geschwindigkeit zum Haupttreiber wird.",
-        tasks: "Die Aufgaben verlangen saubere Organisation, klare Prozesse und regelmäßige Abstimmung. Anforderungen werden eingeordnet und planbar bearbeitet.",
-        human: "Gefordert sind Genauigkeit und Kommunikationsklarheit. Die Rolle verlangt ein strukturiertes Vorgehen und die Fähigkeit, Erwartungen sauber zu klären.",
-        overweight: {
-          structure_over: { bullets: ["Entscheidungen werden starrer", "Flexibilität sinkt", "Abstimmung tritt zurück", "Anschlussfähigkeit sinkt"], text: "Im Alltag steigt Ordnung, jedoch sinkt die Fähigkeit, Situationen flexibel einzuordnen." },
-          collaboration_over: { bullets: ["Abstimmung dominiert", "Prioritäten werden situativer", "Verbindlichkeit sinkt", "Prozessklarheit nimmt ab"], text: "Im Alltag bleibt das Miteinander stabil, jedoch sinkt die Verlässlichkeit in Planung und Ablauf." },
-          speed_over: { bullets: ["Tempo steigt", "Absicherung sinkt", "Abstimmung wird verkürzt", "Qualität schwankt"], text: "Im Alltag entsteht Dynamik, während Ordnung und Abstimmung an Stabilität verlieren können." },
-        },
-        conclusion: "Die Rolle verbindet klare Organisation mit tragfähiger Abstimmung. Entscheidungen sollen nachvollziehbar und zugleich anschlussfähig sein.",
-      },
-      leadership: {
-        intro: r("Dieser Bericht beschreibt die Anforderungen der Führungsrolle {{roleTitle}}. Im Vordergrund stehen Orientierung über Struktur und Stabilität über Zusammenarbeit."),
-        overall: "Führung in dieser Rolle verbindet klare Rahmenbedingungen mit tragfähiger Abstimmung. Entscheidungen sollen nachvollziehbar sein und im Team funktionieren. Steuerung erfolgt über klare Prioritäten, ergänzt durch stabile Kommunikation.",
-        tasks: "Die Aufgaben verlangen Prozessklarheit, saubere Organisation und regelmäßige Einbindung des Umfelds.",
-        human: "Gefordert sind Struktur und Kommunikationsfähigkeit, mit der Fähigkeit, Erwartungen zu klären und Ordnung zu sichern.",
-        leadership_section: "Führung entsteht durch klare Regeln, saubere Abstimmung und verlässliche Prioritäten.",
-        overweight: {
-          structure_over: { bullets: ["Kontrolle steigt", "Flexibilität sinkt", "Team fühlt sich eingeengt", "Entscheidungen verzögern sich"], text: "Im Alltag steigt Ordnung, jedoch sinkt Beweglichkeit und Anschlussfähigkeit im Team." },
-          collaboration_over: { bullets: ["Konsens dominiert", "Verbindlichkeit sinkt", "Prioritäten werden verhandelbar", "Tempo sinkt"], text: "Im Alltag bleibt das Klima stabil, jedoch sinkt die Klarheit in Ziel und Umsetzung." },
-          speed_over: { bullets: ["Druck steigt", "Abstimmung sinkt", "Fehlsteuerung steigt", "Reibung nimmt zu"], text: "Im Alltag entsteht Tempo, während Ordnung und Teamstabilität nachlassen." },
-        },
-        conclusion: "Die Führungsrolle verbindet Struktur und Zusammenarbeit. Sie verlangt klare Organisation und tragfähige Entscheidungen im Teamkontext.",
-      },
-    },
-    hybrid_imp_int: {
-      noLeadership: {
-        intro: r("Dieser Bericht beschreibt die Anforderungen der Rolle {{roleTitle}}. Im Vordergrund stehen Umsetzung und tragfähige Zusammenarbeit."),
-        overall: "Die Rolle verbindet Handlungsfähigkeit mit enger Abstimmung. Entscheidungen werden getroffen und umgesetzt, müssen jedoch im Umfeld funktionieren. Geschwindigkeit ist wichtig, darf aber nicht zulasten von Anschlussfähigkeit gehen. Struktur unterstützt die Arbeit, steht jedoch nicht im Zentrum.",
-        tasks: "Die Aufgaben verlangen schnelle Umsetzung und gleichzeitig laufende Abstimmung. Schnittstellen und Kommunikation sind zentral.",
-        human: "Gefordert sind Eigeninitiative und Kommunikationsklarheit. Die Rolle verlangt Konsequenz in der Umsetzung und Stabilität in der Zusammenarbeit.",
-        overweight: {
-          speed_over: { bullets: ["Abstimmung sinkt", "Konflikte nehmen zu", "Qualität schwankt", "Nacharbeit steigt"], text: "Im Alltag steigt Tempo, während Zusammenarbeit und Stabilität im Umfeld leiden können." },
-          collaboration_over: { bullets: ["Entscheidungen werden verschoben", "Konsequenz sinkt", "Prioritäten werden situativer", "Abschlussstärke sinkt"], text: "Im Alltag bleibt das Umfeld stabil, jedoch sinkt die Durchsetzung in Richtung und Ergebnis." },
-          structure_over: { bullets: ["Tempo sinkt", "Handlungsspielraum wird enger", "Flexibilität sinkt", "Wirksamkeit verzögert sich"], text: "Im Alltag steigt Ordnung, jedoch sinkt die Dynamik in Umsetzung und Abschluss." },
-        },
-        conclusion: "Die Rolle verbindet konsequente Umsetzung mit tragfähiger Zusammenarbeit. Entscheidungen müssen wirksam und anschlussfähig sein.",
-      },
-      leadership: {
-        intro: r("Dieser Bericht beschreibt die Anforderungen der Führungsrolle {{roleTitle}}. Im Vordergrund stehen klare Umsetzung und stabile Teamarbeit."),
-        overall: "Führung in dieser Rolle verbindet Richtung und Tempo mit Einbindung. Entscheidungen werden getroffen und umgesetzt, müssen jedoch im Team getragen werden. Struktur unterstützt die Steuerung, ohne zum Haupttreiber zu werden.",
-        tasks: "Die Aufgaben verlangen klare Steuerung und konsequentes Nachhalten, ergänzt durch aktive Kommunikation im Team und an Schnittstellen.",
-        human: "Gefordert sind Durchsetzung und Kommunikationsstärke. Die Rolle verlangt Konsequenz in Ziel und Stabilität im Miteinander.",
-        leadership_section: "Führung entsteht durch klare Richtung und verlässliche Zusammenarbeit. Entscheidungen sollen konsequent und zugleich tragfähig sein.",
-        overweight: {
-          speed_over: { bullets: ["Druck steigt", "Konflikte nehmen zu", "Abstimmung sinkt", "Akzeptanz sinkt"], text: "Im Alltag steigt Tempo, während Teamstabilität nachlassen kann." },
-          collaboration_over: { bullets: ["Konsens dominiert", "Konsequenz sinkt", "Ziele werden verhandelbar", "Leistung verliert Schärfe"], text: "Im Alltag bleibt das Klima stabil, jedoch sinkt die Klarheit in Ziel und Ergebnis." },
-          structure_over: { bullets: ["Tempo sinkt", "Kontrolle steigt", "Flexibilität sinkt", "Wirksamkeit verzögert sich"], text: "Im Alltag steigt Ordnung, jedoch sinkt die Dynamik in Umsetzung." },
-        },
-        conclusion: "Die Führungsrolle verbindet Tempo und Konsequenz mit Teamstabilität. Entscheidungen müssen umgesetzt und getragen werden.",
-      },
-    },
-  };
+  const profileData = PROFILE_TEXTS[profileKey] || PROFILE_TEXTS.balanced_all;
+  const side = isLeadership ? profileData.leadership : profileData.noLeadership;
 
-  const inheritMap: Record<string, string> = {
-    dominant_imp: "strong_imp", dominant_ana: "strong_ana", dominant_int: "strong_int",
-    light_imp: "strong_imp", light_ana: "strong_ana", light_int: "strong_int",
-  };
+  let variant: VariantTexts | undefined = side[intensityKey];
+  if (!variant) {
+    const fallbackOrder = ["clear", "strong", "light", "balanced"];
+    for (const fb of fallbackOrder) {
+      if (side[fb]) { variant = side[fb]; break; }
+    }
+  }
+  if (!variant) {
+    const firstKey = Object.keys(side)[0];
+    variant = side[firstKey];
+  }
 
-  const resolvedKey = inheritMap[profileType] || profileType;
-  const textSet = allTexts[resolvedKey] || allTexts.balanced_all;
-  const variant = isLeadership && textSet.leadership ? textSet.leadership : textSet.noLeadership;
+  const introPrefix = isLeadership
+    ? `Dieser Bericht beschreibt die Anforderungen der Führungsrolle ${roleTitle}. `
+    : `Dieser Bericht beschreibt die Anforderungen der Rolle ${roleTitle}. `;
 
   const owLabels: Record<string, { label: string; color: string }> = {
     speed_over: { label: "Wird zu viel Tempo gemacht", color: COLORS.imp },
@@ -351,7 +193,7 @@ function getReportTexts(roleTitle: string, isLeadership: boolean, profileType: P
     collaboration_over: { label: "Wird zu viel Abstimmung priorisiert", color: COLORS.int },
   };
 
-  const overweight: OverweightEffect[] = Object.entries(variant.overweight).map(([key, val]: [string, any]) => ({
+  const overweight: OverweightEffect[] = Object.entries(variant!.overweight).map(([key, val]) => ({
     label: owLabels[key]?.label || key,
     color: owLabels[key]?.color || "#6E6E73",
     bullets: val.bullets,
@@ -359,13 +201,13 @@ function getReportTexts(roleTitle: string, isLeadership: boolean, profileType: P
   }));
 
   return {
-    intro: variant.intro,
-    overall: variant.overall,
-    tasks: variant.tasks,
-    human: variant.human,
-    leadership_section: variant.leadership_section,
+    intro: introPrefix + variant!.intro,
+    overall: variant!.overall,
+    tasks: variant!.tasks,
+    human: variant!.human,
+    leadership_section: variant!.leadership_section,
     overweight,
-    conclusion: variant.conclusion,
+    conclusion: variant!.conclusion,
   };
 }
 
