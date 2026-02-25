@@ -637,6 +637,8 @@ function loadSavedState() {
       if (state.taetigkeiten && state.taetigkeiten.length > 0) {
         state.allCollapsed = true;
         state.currentStep = 3;
+      } else if (state.beruf && state.fuehrung && state.erfolgsfokusIndices?.length > 0 && state.aufgabencharakter && state.arbeitslogik) {
+        state.currentStep = 3;
       }
       return state;
     }
@@ -824,6 +826,14 @@ export default function RollenDNA() {
     reader.readAsText(file);
     e.target.value = "";
   };
+
+  const didAutoGenerate = useRef(false);
+  useEffect(() => {
+    if (!didAutoGenerate.current && currentStep === 3 && taetigkeiten.length === 0 && beruf && !isGenerating) {
+      didAutoGenerate.current = true;
+      generateKompetenzen();
+    }
+  });
 
   useEffect(() => {
     const state = {
