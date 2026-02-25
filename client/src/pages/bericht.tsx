@@ -157,14 +157,19 @@ interface BerichtData {
   fazit: { kernsatz: string; persoenlichkeit: string[]; fehlbesetzung: string; schlusssatz: string };
 }
 
-function splitIntoBlocks(text: string, maxSentences = 2): string[] {
+function splitIntoBlocks(text: string): string[] {
   const explicit = text.split(/\n\n+/).filter(p => p.trim());
   if (explicit.length > 1) return explicit;
   const sentences = text.match(/[^.!?]+[.!?]+/g);
-  if (!sentences || sentences.length <= maxSentences) return [text];
-  const blocks: string[] = [];
-  for (let i = 0; i < sentences.length; i += maxSentences) {
-    blocks.push(sentences.slice(i, i + maxSentences).join("").trim());
+  if (!sentences || sentences.length <= 2) return [text];
+  const blocks: string[] = [sentences[0].trim()];
+  const mid: string[] = [];
+  for (let i = 1; i < sentences.length; i++) {
+    mid.push(sentences[i].trim());
+    if (mid.length === 2 || (i === sentences.length - 1 && mid.length > 0)) {
+      blocks.push(mid.join(" "));
+      mid.length = 0;
+    }
   }
   return blocks.filter(b => b.length > 0);
 }
