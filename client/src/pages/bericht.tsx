@@ -177,14 +177,12 @@ function splitIntoBlocks(text: string): string[] {
 function TextBlock({ text, style }: { text: string; style?: React.CSSProperties }) {
   const blocks = splitIntoBlocks(text);
   const pStyle: React.CSSProperties = { fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", hyphens: "auto", WebkitHyphens: "auto", ...style };
-  if (blocks.length <= 1) {
-    return <p style={pStyle} lang="de">{text}</p>;
-  }
+  const separator = <hr style={{ border: "none", borderTop: "1px solid rgba(0,0,0,0.06)", margin: "14px 0" }} />;
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+    <div>
       {blocks.map((p, i) => (
         <div key={i}>
-          {i > 0 && <hr style={{ border: "none", borderTop: "1px solid rgba(0,0,0,0.06)", margin: "14px 0" }} />}
+          {i > 0 && separator}
           <p style={pStyle} lang="de">{p}</p>
         </div>
       ))}
