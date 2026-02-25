@@ -176,7 +176,7 @@ function splitIntoBlocks(text: string): string[] {
 
 function TextBlock({ text, style }: { text: string; style?: React.CSSProperties }) {
   const blocks = splitIntoBlocks(text);
-  const pStyle: React.CSSProperties = { fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", hyphens: "auto", WebkitHyphens: "auto", ...style };
+  const pStyle: React.CSSProperties = { fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto", overflowWrap: "break-word", wordBreak: "normal", ...style };
   const separator = <hr style={{ border: "none", borderTop: "1px solid rgba(0,0,0,0.06)", margin: "14px 0" }} />;
   return (
     <div>
@@ -310,7 +310,7 @@ function CalloutBox({ text, color, icon: Icon }: { text: string; color: string; 
       }}>
         <IconComp style={{ width: 14, height: 14, color, strokeWidth: 2 }} />
       </div>
-      <p style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.75, margin: 0, fontWeight: 450, textAlign: "justify", hyphens: "auto", WebkitHyphens: "auto" } as React.CSSProperties} lang="de">{text}</p>
+      <p style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.75, margin: 0, fontWeight: 450, textAlign: "justify", textAlignLast: "left", hyphens: "auto", WebkitHyphens: "auto", overflowWrap: "break-word", wordBreak: "normal" } as React.CSSProperties} lang="de">{text}</p>
     </div>
   );
 }
@@ -640,7 +640,7 @@ export default function Bericht() {
                           {rest.map((p, i) => (
                             <div key={i}>
                               {i > 0 && <hr style={{ border: "none", borderTop: "1px solid rgba(0,0,0,0.06)", margin: "14px 0" }} />}
-                              <p style={{ fontSize: 13.5, fontWeight: 400, color: "#48484A", lineHeight: 1.9, margin: 0, textAlign: "justify", hyphens: "auto", WebkitHyphens: "auto" } as React.CSSProperties} lang="de">{p}</p>
+                              <p style={{ fontSize: 13.5, fontWeight: 400, color: "#48484A", lineHeight: 1.9, margin: 0, textAlign: "justify", textAlignLast: "left", hyphens: "auto", WebkitHyphens: "auto", overflowWrap: "break-word", wordBreak: "normal" } as React.CSSProperties} lang="de">{p}</p>
                             </div>
                           ))}
                         </div>
