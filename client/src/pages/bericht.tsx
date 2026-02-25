@@ -157,6 +157,20 @@ interface BerichtData {
   fazit: { kernsatz: string; persoenlichkeit: string[]; fehlbesetzung: string; schlusssatz: string };
 }
 
+function TextBlock({ text, style }: { text: string; style?: React.CSSProperties }) {
+  const paragraphs = text.split(/\n\n+/).filter(p => p.trim());
+  if (paragraphs.length <= 1) {
+    return <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, ...style }}>{text}</p>;
+  }
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      {paragraphs.map((p, i) => (
+        <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, ...style }}>{p}</p>
+      ))}
+    </div>
+  );
+}
+
 function SoftBar({ bg }: { bg: BG }) {
   const items = [
     { label: "Impulsiv", value: bg.imp, color: COLORS.imp },
@@ -611,7 +625,7 @@ export default function Bericht() {
                   <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Gesamtprofil</span>
                 </div>
                 <ChartCard icon={BarChart3} title="Gesamtprofil" bg={gesamt} accent={CHAPTER_COLORS[1]} />
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85 }}>{bericht.gesamtprofil}</p>
+                <div style={{ marginTop: 18 }}><TextBlock text={bericht.gesamtprofil} /></div>
               </GlassCard>
 
               {/* 03 Rahmenbedingungen */}
@@ -621,7 +635,7 @@ export default function Bericht() {
                   <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Rahmenbedingungen</span>
                 </div>
                 <ChartCard icon={Settings} title="Rahmenprofil" bg={rahmen} accent={CHAPTER_COLORS[2]} />
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, marginTop: 18 }}>{bericht.rahmenbedingungen.beschreibung}</p>
+                <div style={{ marginTop: 18 }}><TextBlock text={bericht.rahmenbedingungen.beschreibung} /></div>
 
                 {bericht.rahmenbedingungen.verantwortungsfelder?.length > 0 && (
                   <div style={{ marginTop: 18 }}>
@@ -656,7 +670,7 @@ export default function Bericht() {
                     <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Führungskontext</span>
                   </div>
                   {isLeadership && <ChartCard icon={Shield} title="Führungskompetenzen" bg={fuehrung} accent={CHAPTER_COLORS[3]} />}
-                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, marginTop: isLeadership ? 18 : 0 }}>{bericht.fuehrungskontext.beschreibung}</p>
+                  <div style={{ marginTop: isLeadership ? 18 : 0 }}><TextBlock text={bericht.fuehrungskontext.beschreibung} /></div>
 
                   {bericht.fuehrungskontext.wirkungshebel?.length > 0 && (
                     <div style={{ marginTop: 18 }}>
@@ -730,7 +744,7 @@ export default function Bericht() {
                     <Zap style={{ width: 14, height: 14, color: COLORS.imp }} />
                     <span style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F" }}>Tätigkeiten</span>
                   </div>
-                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, marginBottom: 14 }}>{bericht.kompetenzanalyse.taetigkeiten_text}</p>
+                  <TextBlock text={bericht.kompetenzanalyse.taetigkeiten_text} style={{ marginBottom: 14 }} />
                   {bericht.kompetenzanalyse.taetigkeiten_anforderungen?.length > 0 && (
                     <BulletList items={bericht.kompetenzanalyse.taetigkeiten_anforderungen} />
                   )}
@@ -744,7 +758,7 @@ export default function Bericht() {
                     <Brain style={{ width: 14, height: 14, color: COLORS.ana }} />
                     <span style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F" }}>Humankompetenzen</span>
                   </div>
-                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, marginBottom: 14 }}>{bericht.kompetenzanalyse.human_text}</p>
+                  <TextBlock text={bericht.kompetenzanalyse.human_text} style={{ marginBottom: 14 }} />
                   {bericht.kompetenzanalyse.human_anforderungen?.length > 0 && (
                     <BulletList items={bericht.kompetenzanalyse.human_anforderungen} />
                   )}

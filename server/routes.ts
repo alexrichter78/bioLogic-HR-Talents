@@ -307,29 +307,29 @@ Antworte ausschließlich als JSON mit exakt dieser Struktur:
 {
   "rollencharakter": "Beschreibender Satz, z.B. 'Steuernd-Umsetzungsorientiert' oder 'Strategisch-Analytisch mit umsetzungsorientierter Durchsetzung'",
   "dominanteKomponente": "z.B. 'Impulsiv mit analytischer Stabilisierung' oder 'Analytisch mit impulsiver Ergänzung' oder 'Impulsiv-Analytische Doppelstruktur'",
-  "einleitung": "2-3 Absätze. Erster Absatz: Was entscheidet diese Rolle? Wovon hängt Wirksamkeit ab? Zweiter Absatz: Warum reicht Fachwissen allein nicht? Was ist strukturell entscheidend? Letzter Satz: 'Dieser Bericht beschreibt die strukturellen Anforderungen der Rolle – unabhängig von [rollenspezifisch].'",
-  "gesamtprofil": "Interpretation der Gesamtprofilwerte. Welche Kompetenz dominiert und warum? Was bedeutet das für die Rolle? Welche Funktion haben die sekundären Kompetenzen? Abschluss: 'Wirksamkeit entsteht [primär/über] ...'",
+  "einleitung": "2-3 kurze Absätze, getrennt durch \\n\\n. Jeder Absatz maximal 2-3 Sätze. Erster Absatz: Was entscheidet diese Rolle? Wovon hängt Wirksamkeit ab? Zweiter Absatz: Warum reicht Fachwissen allein nicht? Was ist strukturell entscheidend? Letzter Absatz: 'Dieser Bericht beschreibt die strukturellen Anforderungen der Rolle – unabhängig von [rollenspezifisch].'",
+  "gesamtprofil": "3-4 kurze Absätze, getrennt durch \\n\\n. Jeder Absatz maximal 2-3 Sätze. Erster Absatz: Welche Kompetenz dominiert und warum? Zweiter Absatz: Was bedeutet das für die Rolle? Dritter Absatz: Welche Funktion haben die sekundären Kompetenzen? Letzter Satz: 'Wirksamkeit entsteht [primär/über] ...'",
   "rahmenbedingungen": {
-    "beschreibung": "Fließtext: Aufgabencharakter beschreiben, Arbeitslogik erklären, was die Rolle konkret verlangt",
+    "beschreibung": "2-3 kurze Absätze getrennt durch \\n\\n, je 2-3 Sätze. Aufgabencharakter beschreiben, Arbeitslogik erklären, was die Rolle konkret verlangt",
     "verantwortungsfelder": ["Konkretes Verantwortungsfeld 1", "Verantwortungsfeld 2", "...mindestens 5"],
     "erfolgsmessung": ["Konkreter Erfolgsfaktor 1", "Erfolgsfaktor 2", "...mindestens 4"],
     "spannungsfelder_rahmen": ["Spannung 1 vs. Gegensatz 1", "Spannung 2 vs. Gegensatz 2", "...mindestens 3"]
   },
   "fuehrungskontext": ${isLeadership ? `{
-    "beschreibung": "Fließtext: Welche Art von Führung? Wie entsteht Führungswirkung?",
+    "beschreibung": "2-3 kurze Absätze getrennt durch \\n\\n, je 2-3 Sätze. Welche Art von Führung? Wie entsteht Führungswirkung?",
     "wirkungshebel": ["Konkreter Führungshebel 1", "Hebel 2", "...mindestens 4"],
     "analytische_anforderungen": ["Strukturelle Führungsanforderung 1", "...", "mindestens 3"],
     "schlusssatz": "Was passiert ohne diese Stabilisierung?"
   }` : `{
-    "beschreibung": "Wie wirkt die Rolle OHNE Führungsteam? Über welche Mechanismen entsteht Einfluss?",
+    "beschreibung": "2-3 kurze Absätze getrennt durch \\n\\n, je 2-3 Sätze. Wie wirkt die Rolle OHNE Führungsteam? Über welche Mechanismen entsteht Einfluss?",
     "wirkungshebel": ["Indirekter Wirkungshebel 1", "Hebel 2", "...mindestens 3"],
     "schlusssatz": "Konsequenz: Ohne Führungshebel konzentriert sich..."
   }`},
   "kompetenzanalyse": {
-    "taetigkeiten_text": "Kurzer Fließtext zur Interpretation der Tätigkeitsprofilwerte",
+    "taetigkeiten_text": "2 kurze Absätze getrennt durch \\n\\n, je 2-3 Sätze. Interpretation der Tätigkeitsprofilwerte",
     "taetigkeiten_anforderungen": ["Strukturelle Anforderung 1", "Anforderung 2", "...mindestens 5"],
     "taetigkeiten_schluss": "Abschließender Satz: Was verlangt die Rolle im Kern?",
-    "human_text": "Kurzer Fließtext zur Interpretation der Humankompetenzen-Profilwerte",
+    "human_text": "2 kurze Absätze getrennt durch \\n\\n, je 2-3 Sätze. Interpretation der Humankompetenzen-Profilwerte",
     "human_anforderungen": ["Geforderte Kompetenz 1", "Kompetenz 2", "...mindestens 5"],
     "human_schluss": "Abschließender Satz: Welche Rolle spielt Beziehungsfähigkeit?"
   },
