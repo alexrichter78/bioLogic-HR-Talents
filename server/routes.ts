@@ -212,6 +212,170 @@ Beispiel für 3 Einträge:
     }
   });
 
+  app.post("/api/generate-bericht", async (req, res) => {
+    try {
+      const {
+        beruf, bereich, fuehrungstyp, aufgabencharakter, arbeitslogik,
+        erfolgsfokusLabels, taetigkeiten,
+        gesamt, haupt, neben, fuehrungBG, rahmen,
+        profileType, intensity, isLeadership
+      } = req.body;
+
+      if (!beruf) {
+        return res.status(400).json({ error: "Beruf ist erforderlich" });
+      }
+
+      const hauptItems = (taetigkeiten || []).filter((t: any) => t.kategorie === "haupt");
+      const nebenItems = (taetigkeiten || []).filter((t: any) => t.kategorie === "neben");
+      const fuehrungItems = (taetigkeiten || []).filter((t: any) => t.kategorie === "fuehrung");
+
+      const formatItems = (items: any[]) => items.map((t: any) =>
+        `- ${t.name} (${t.kompetenz}, Niveau: ${t.niveau})`
+      ).join("\n");
+
+      const erfolgsfokusText = (erfolgsfokusLabels || []).join(", ") || "Nicht angegeben";
+
+      const prompt = `Du bist ein Experte für strukturelle Rollenanalyse und Besetzungsentscheidungen im deutschsprachigen Raum.
+
+## AUFGABE
+
+Erstelle einen vollständigen Entscheidungsbericht (Strukturanalyse) für die Rolle "${beruf}" im Bereich "${bereich || "Nicht angegeben"}".
+
+Der Bericht richtet sich an HR-Entscheider und Geschäftsführer. Er beschreibt die STRUKTURELLEN Anforderungen der Rolle – unabhängig von Lebenslauf, Branchenkenntnis oder bisherigen Erfolgskennzahlen.
+
+## ROLLENPROFIL – GESAMTDATEN
+
+**Beruf:** ${beruf}
+**Bereich:** ${bereich || "Nicht angegeben"}
+**Führungsverantwortung:** ${fuehrungstyp || "Keine"}
+**Aufgabencharakter:** ${aufgabencharakter || "Nicht angegeben"}
+**Arbeitslogik:** ${arbeitslogik || "Nicht angegeben"}
+**Erfolgsfokus:** ${erfolgsfokusText}
+
+## BERECHNETE PROFILWERTE (exakt, NICHT verändern)
+
+Gesamtprofil: Impulsiv ${gesamt?.imp || 33}%, Intuitiv ${gesamt?.int || 33}%, Analytisch ${gesamt?.ana || 34}%
+Rahmenbedingungen: Impulsiv ${rahmen?.imp || 33}%, Intuitiv ${rahmen?.int || 33}%, Analytisch ${rahmen?.ana || 34}%
+${isLeadership ? `Führungskompetenzen: Impulsiv ${fuehrungBG?.imp || 33}%, Intuitiv ${fuehrungBG?.int || 33}%, Analytisch ${fuehrungBG?.ana || 34}%` : "Keine Führungsverantwortung"}
+Tätigkeiten: Impulsiv ${haupt?.imp || 33}%, Intuitiv ${haupt?.int || 33}%, Analytisch ${haupt?.ana || 34}%
+Humankompetenzen: Impulsiv ${neben?.imp || 33}%, Intuitiv ${neben?.int || 33}%, Analytisch ${neben?.ana || 34}%
+
+Profiltyp: ${profileType || "balanced_all"}
+Intensität: ${intensity || "balanced"}
+
+## KOMPETENZBEREICHE (Bedeutung)
+
+- **Impulsiv** = Handlungs-/Umsetzungskompetenz (Machen, Durchsetzen, Entscheiden unter Druck)
+- **Intuitiv** = Sozial-/Beziehungskompetenz (Fühlen, Verbinden, Empathie, Beziehungsgestaltung)
+- **Analytisch** = Fach-/Methodenkompetenz (Denken, Strukturieren, Analysieren, Fachwissen)
+
+## PROFILDATEN AUS DEM WIZARD
+
+**Haupttätigkeiten:**
+${formatItems(hauptItems) || "Keine angegeben"}
+
+**Humankompetenzen:**
+${formatItems(nebenItems) || "Keine angegeben"}
+
+${fuehrungItems.length > 0 ? `**Führungskompetenzen:**\n${formatItems(fuehrungItems)}` : ""}
+
+## STIL UND TON
+
+- Direkt, professionell, nüchtern – kein Marketing, keine Floskeln
+- Rollenspezifisches Vokabular verwenden (z.B. für Vertrieb: Pipeline, Forecast, Abschlussquote; für IT: Architektur, Code-Review, Deployment)
+- Bullet-Listen für Verantwortungsbereiche, Erfolgsmessung, Führungswirkung, geforderte Kompetenzen
+- Konkrete Prozentwerte aus den Profildaten im Text referenzieren
+- Spannungsfelder als "X vs. Y" formulieren
+- Risiko-Szenarien enden IMMER mit "Im Alltag entsteht..." Kernsatz
+- Fazit mit "Entscheidend für die Besetzung ist eine Persönlichkeit, die:" + Bullet-Liste
+
+## WICHTIGE REGELN
+
+1. Die Prozentwerte sind EXAKT berechnet und dürfen NICHT verändert werden. Verwende sie korrekt im Text.
+2. Wenn zwei Werte nah beieinander liegen (Differenz ≤ 6%), beschreibe das als "ausgeglichene/doppelte Struktur" – behaupte NICHT, dass einer dominiert.
+3. Wenn intensity="strong": Verwende Formulierungen wie "klar dominiert", "eindeutig geprägt"
+4. Wenn intensity="light": Verwende "erkennbare Tendenz", "leichte Ausrichtung"
+5. Wenn intensity="balanced": Beschreibe Vielseitigkeit und Gleichgewicht
+6. Bei Führungsrollen: Unterscheide klar zwischen disziplinarischer Führung, fachlicher Führung und Koordination
+7. Ohne Führung: Beschreibe wie die Rolle OHNE Führungshebel wirkt (über Expertise, Performance, Überzeugungskraft)
+8. Alle Texte müssen SPEZIFISCH für "${beruf}" sein – keine generischen Formulierungen
+
+## JSON-AUSGABEFORMAT
+
+Antworte ausschließlich als JSON mit exakt dieser Struktur:
+
+{
+  "rollencharakter": "Beschreibender Satz, z.B. 'Steuernd-Umsetzungsorientiert' oder 'Strategisch-Analytisch mit umsetzungsorientierter Durchsetzung'",
+  "dominanteKomponente": "z.B. 'Impulsiv mit analytischer Stabilisierung' oder 'Analytisch mit impulsiver Ergänzung' oder 'Impulsiv-Analytische Doppelstruktur'",
+  "einleitung": "2-3 Absätze. Erster Absatz: Was entscheidet diese Rolle? Wovon hängt Wirksamkeit ab? Zweiter Absatz: Warum reicht Fachwissen allein nicht? Was ist strukturell entscheidend? Letzter Satz: 'Dieser Bericht beschreibt die strukturellen Anforderungen der Rolle – unabhängig von [rollenspezifisch].'",
+  "gesamtprofil": "Interpretation der Gesamtprofilwerte. Welche Kompetenz dominiert und warum? Was bedeutet das für die Rolle? Welche Funktion haben die sekundären Kompetenzen? Abschluss: 'Wirksamkeit entsteht [primär/über] ...'",
+  "rahmenbedingungen": {
+    "beschreibung": "Fließtext: Aufgabencharakter beschreiben, Arbeitslogik erklären, was die Rolle konkret verlangt",
+    "verantwortungsfelder": ["Konkretes Verantwortungsfeld 1", "Verantwortungsfeld 2", "...mindestens 5"],
+    "erfolgsmessung": ["Konkreter Erfolgsfaktor 1", "Erfolgsfaktor 2", "...mindestens 4"],
+    "spannungsfelder_rahmen": ["Spannung 1 vs. Gegensatz 1", "Spannung 2 vs. Gegensatz 2", "...mindestens 3"]
+  },
+  "fuehrungskontext": ${isLeadership ? `{
+    "beschreibung": "Fließtext: Welche Art von Führung? Wie entsteht Führungswirkung?",
+    "wirkungshebel": ["Konkreter Führungshebel 1", "Hebel 2", "...mindestens 4"],
+    "analytische_anforderungen": ["Strukturelle Führungsanforderung 1", "...", "mindestens 3"],
+    "schlusssatz": "Was passiert ohne diese Stabilisierung?"
+  }` : `{
+    "beschreibung": "Wie wirkt die Rolle OHNE Führungsteam? Über welche Mechanismen entsteht Einfluss?",
+    "wirkungshebel": ["Indirekter Wirkungshebel 1", "Hebel 2", "...mindestens 3"],
+    "schlusssatz": "Konsequenz: Ohne Führungshebel konzentriert sich..."
+  }`},
+  "kompetenzanalyse": {
+    "taetigkeiten_text": "Kurzer Fließtext zur Interpretation der Tätigkeitsprofilwerte",
+    "taetigkeiten_anforderungen": ["Strukturelle Anforderung 1", "Anforderung 2", "...mindestens 5"],
+    "taetigkeiten_schluss": "Abschließender Satz: Was verlangt die Rolle im Kern?",
+    "human_text": "Kurzer Fließtext zur Interpretation der Humankompetenzen-Profilwerte",
+    "human_anforderungen": ["Geforderte Kompetenz 1", "Kompetenz 2", "...mindestens 5"],
+    "human_schluss": "Abschließender Satz: Welche Rolle spielt Beziehungsfähigkeit?"
+  },
+  "spannungsfelder": ["Spannung 1 vs. Gegensatz 1", "Spannung 2 vs. Gegensatz 2", "mindestens 4 Einträge"],
+  "spannungsfelder_schluss": "Die Person muss in der Lage sein, diese Spannungsfelder [aktiv zu führen/eigenständig zu regulieren/bewusst zu moderieren] – nicht zu vermeiden.",
+  "risikobewertung": [
+    {
+      "label": "Wird zu viel Struktur eingesetzt",
+      "bullets": ["Konsequenz 1", "Konsequenz 2", "Konsequenz 3", "mindestens 4"],
+      "alltagssatz": "Im Alltag entsteht [rollenspezifische Beschreibung]."
+    },
+    {
+      "label": "Wird zu viel Tempo gemacht",
+      "bullets": ["Konsequenz 1", "Konsequenz 2", "Konsequenz 3", "mindestens 4"],
+      "alltagssatz": "Im Alltag entsteht [rollenspezifische Beschreibung]."
+    },
+    {
+      "label": "Wird zu viel Beziehung priorisiert",
+      "bullets": ["Konsequenz 1", "Konsequenz 2", "Konsequenz 3", "mindestens 4"],
+      "alltagssatz": "Im Alltag entsteht [rollenspezifische Beschreibung]."
+    }
+  ],
+  "fazit": {
+    "kernsatz": "1-2 Sätze: Zusammenfassung des Rollencharakters",
+    "persoenlichkeit": ["Eigenschaft 1, die die Person mitbringen muss", "Eigenschaft 2", "mindestens 5 Einträge"],
+    "fehlbesetzung": "1 Satz: Was passiert bei struktureller Fehlbesetzung?",
+    "schlusssatz": "1 Satz: Wofür dieser Bericht die Grundlage bildet"
+  }
+}`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4.1",
+        messages: [{ role: "user", content: prompt }],
+        response_format: { type: "json_object" },
+        temperature: 0.7,
+      });
+
+      const content = response.choices[0]?.message?.content || "{}";
+      const data = JSON.parse(content);
+      res.json(data);
+    } catch (error) {
+      console.error("Error generating Bericht:", error);
+      res.status(500).json({ error: "Fehler bei der Bericht-Generierung" });
+    }
+  });
+
   app.post("/api/generate-analyse", async (req, res) => {
     try {
       const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik, taetigkeiten } = req.body;
