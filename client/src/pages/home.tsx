@@ -243,7 +243,7 @@ const features = [
     icon: Target,
     title: "Rollenprofil ermitteln",
     description: "Erforderliche Rollenstruktur aus der definierten Logik ableiten.",
-    active: false,
+    active: true,
   },
   {
     icon: GitCompareArrows,
@@ -375,7 +375,7 @@ function FeatureCards() {
         {resolvedFeatures.map((feature, index) => (
           <div
             key={feature.title}
-            onClick={feature.active ? () => setLocation(index === 0 ? "/rollen-dna" : "/rollen-dna") : undefined}
+            onClick={feature.active ? () => setLocation(index === 0 ? "/rollen-dna" : index === 1 ? "/bericht" : "/rollen-dna") : undefined}
             style={{
               background: feature.active ? "rgba(255,255,255,0.65)" : "rgba(255,255,255,0.3)",
               backdropFilter: feature.active ? "blur(16px)" : "none",
