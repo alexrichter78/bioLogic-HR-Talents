@@ -520,58 +520,67 @@ function getFuehrungskontextText(fuehrungstyp: string, gesamt: BG, arbeitslogik:
   return "";
 }
 
-function getRahmenbedingungenText(aufgabencharakter: string, arbeitslogik: string, erfolgsfokusIndices: number[], gesamt: BG): string {
+function getRahmenbedingungenText(aufgabencharakter: string, arbeitslogik: string, erfolgsfokusIndices: number[], rahmenBG: BG): string {
   const sorted = [
-    { key: "imp", value: gesamt.imp },
-    { key: "int", value: gesamt.int },
-    { key: "ana", value: gesamt.ana },
+    { key: "imp", value: rahmenBG.imp },
+    { key: "int", value: rahmenBG.int },
+    { key: "ana", value: rahmenBG.ana },
   ].sort((a, b) => b.value - a.value);
   const top = sorted[0];
+  const second = sorted[1];
+  const isBalanced = Math.abs(top.value - second.value) <= 6;
   const parts: string[] = [];
+
+  if (isBalanced) {
+    const topLabel = top.key === "imp" ? "umsetzungsorientiert" : top.key === "ana" ? "strukturorientiert" : "kooperativ";
+    const secLabel = second.key === "imp" ? "umsetzungsorientierte" : second.key === "ana" ? "strukturorientierte" : "kooperative";
+    parts.push(`Die Rahmenbedingungen dieser Stelle zeigen eine ausgeglichene Verteilung. ${topLabel[0].toUpperCase() + topLabel.slice(1)}e und ${secLabel} Anforderungen sind nahezu gleichgewichtet (${top.value} % und ${second.value} %). Die Person muss beide Bereiche gleichermaßen bedienen können, ohne einen systematisch zu vernachlässigen.`);
+  }
 
   if (aufgabencharakter === "überwiegend operativ") {
     let t = "Der Aufgabencharakter ist überwiegend operativ – im Vordergrund steht die direkte Umsetzung und das Erzielen konkreter Arbeitsergebnisse im Tagesgeschäft.";
-    if (top.key === "imp") t += " Dies passt zur umsetzungsorientierten Grundausrichtung: Ergebnisse entstehen durch direktes Handeln, pragmatisches Arbeiten und konsequentes Abschließen.";
-    else if (top.key === "ana") t += " In Kombination mit der strukturorientierten Grundausrichtung werden operative Aufgaben systematisch und nach klaren Vorgaben bearbeitet.";
-    else t += " In Kombination mit der kooperativen Grundausrichtung werden operative Aufgaben in enger Abstimmung mit dem Umfeld bearbeitet.";
+    if (top.key === "imp" && !isBalanced) t += " Das Rahmenprofil bestätigt diese Ausrichtung: die Rahmenbedingungen fordern überwiegend Umsetzungskompetenz.";
+    else if (top.key === "ana" && !isBalanced) t += " Die Rahmenbedingungen fordern jedoch vorrangig analytisch-strukturierte Arbeit – operative Umsetzung und Strukturanspruch müssen gleichzeitig erfüllt werden.";
+    else if (!isBalanced) t += " Die Rahmenbedingungen zeigen jedoch kooperative Schwerpunkte – operative Ergebnisse müssen in Abstimmung mit dem Umfeld erzielt werden.";
     parts.push(t);
   } else if (aufgabencharakter === "überwiegend strategisch") {
     let t = "Der Aufgabencharakter ist überwiegend strategisch – im Vordergrund stehen Planung, Analyse und die Entwicklung langfristiger Konzepte.";
-    if (top.key === "ana") t += " Dies passt zur strukturorientierten Grundausrichtung: Strategische Arbeit lebt von Analyse, Datengrundlage und systematischer Planung.";
-    else if (top.key === "imp") t += " In Kombination mit der umsetzungsorientierten Grundausrichtung dient strategische Planung der schnelleren und konsequenteren Umsetzung.";
-    else t += " In Kombination mit der kooperativen Grundausrichtung erfolgt strategische Arbeit im Dialog mit Stakeholdern und Schnittstellen.";
+    if (top.key === "ana" && !isBalanced) t += " Das Rahmenprofil bestätigt diese Ausrichtung: die Rahmenbedingungen fordern systematische und analytische Kompetenz.";
+    else if (top.key === "imp" && !isBalanced) t += " Die Rahmenbedingungen fordern jedoch vorrangig Umsetzungskompetenz – strategisches Denken muss in konkrete Ergebnisse überführt werden.";
+    else if (!isBalanced) t += " Die Rahmenbedingungen zeigen jedoch kooperative Schwerpunkte – strategische Arbeit muss im Dialog mit Stakeholdern erfolgen.";
     parts.push(t);
   } else if (aufgabencharakter === "überwiegend systemisch") {
     let t = "Der Aufgabencharakter ist überwiegend systemisch – im Vordergrund stehen die Arbeit an Schnittstellen und die Gestaltung von Zusammenarbeit.";
-    if (top.key === "int") t += " Dies passt zur kooperativen Grundausrichtung: Systemische Arbeit lebt von Beziehungsfähigkeit und situativem Handeln.";
-    else if (top.key === "imp") t += " In Kombination mit der umsetzungsorientierten Grundausrichtung wird systemische Arbeit ergebnisorientiert betrieben.";
-    else t += " In Kombination mit der strukturorientierten Grundausrichtung wird systemische Arbeit methodisch angegangen und Schnittstellen klar definiert.";
+    if (top.key === "int" && !isBalanced) t += " Das Rahmenprofil bestätigt diese Ausrichtung: die Rahmenbedingungen fordern kooperative Fähigkeiten.";
+    else if (top.key === "imp" && !isBalanced) t += " Die Rahmenbedingungen fordern jedoch vorrangig Umsetzungskompetenz – systemische Arbeit muss ergebnisorientiert betrieben werden.";
+    else if (!isBalanced) t += " Die Rahmenbedingungen fordern analytisch-strukturierte Arbeit – Schnittstellen müssen methodisch angegangen werden.";
     parts.push(t);
   } else if (aufgabencharakter === "Gemischt") {
     let t = "Der Aufgabencharakter ist gemischt – die Rolle verbindet operative, strategische und systemische Anforderungen.";
-    if (top.key === "imp") t += " Bei der umsetzungsorientierten Grundausrichtung liegt der Schwerpunkt eher auf operativen Aufgaben.";
-    else if (top.key === "ana") t += " Bei der strukturorientierten Grundausrichtung werden alle Aufgabentypen systematisch und nach klaren Prioritäten bearbeitet.";
-    else t += " Bei der kooperativen Grundausrichtung werden die Aufgabentypen im Dialog mit dem Umfeld bearbeitet.";
+    if (isBalanced) t += " Die Rahmenbedingungen bestätigen dies: keine einzelne Kompetenz dominiert, Vielseitigkeit ist gefragt.";
+    else if (top.key === "imp") t += " Die Rahmenbedingungen setzen dabei einen umsetzungsorientierten Schwerpunkt – operative Aufgaben haben Vorrang.";
+    else if (top.key === "ana") t += " Die Rahmenbedingungen setzen dabei einen strukturorientierten Schwerpunkt – systematisches Arbeiten wird priorisiert.";
+    else t += " Die Rahmenbedingungen setzen dabei einen kooperativen Schwerpunkt – Zusammenarbeit und Abstimmung stehen im Vordergrund.";
     parts.push(t);
   }
 
   if (arbeitslogik === "Umsetzungsorientiert") {
     let t = "Die vorherrschende Arbeitslogik ist umsetzungsorientiert – Ergebnisse werden durch direkte Aktion erzielt, Geschwindigkeit und Konsequenz stehen im Vordergrund.";
-    if (top.key === "imp") t += " Dies korrespondiert direkt mit der Grundausrichtung und erzeugt eine besonders klare Ergebniserwartung.";
-    else if (top.key === "ana") t += " Dies steht in einem produktiven Spannungsfeld zur strukturorientierten Grundausrichtung: Tempo und Ordnung müssen gleichzeitig bedient werden.";
-    else t += " Ergebnisse müssen erzielt werden, aber im Einklang mit dem kooperativen Umfeld.";
+    if (top.key === "imp") t += " Dies korrespondiert mit dem Rahmenprofil und erzeugt eine klare Ergebniserwartung.";
+    else if (top.key === "ana") t += " Das Rahmenprofil fordert jedoch strukturierte Arbeit – Tempo und Ordnung müssen gleichzeitig bedient werden.";
+    else t += " Das Rahmenprofil fordert kooperatives Arbeiten – Ergebnisse müssen im Einklang mit dem Umfeld erzielt werden.";
     parts.push(t);
   } else if (arbeitslogik === "Menschenorientiert") {
     let t = "Die vorherrschende Arbeitslogik ist menschenorientiert – Ergebnisse entstehen über Zusammenarbeit, Abstimmung und tragfähige Beziehungen.";
-    if (top.key === "int") t += " Dies korrespondiert direkt mit der kooperativen Grundausrichtung und erzeugt eine besonders klare Erwartung an Kommunikation und Einbindung.";
-    else if (top.key === "imp") t += " Dies steht in einem Spannungsfeld zur umsetzungsorientierten Grundausrichtung: Tempo und Einbindung müssen gleichzeitig geleistet werden.";
-    else t += " Ordnung und Prozesse allein reichen nicht – die Person muss auch kommunizieren und Erwartungen klären.";
+    if (top.key === "int") t += " Dies korrespondiert mit dem Rahmenprofil und erzeugt eine klare Erwartung an Kommunikation und Einbindung.";
+    else if (top.key === "imp") t += " Das Rahmenprofil fordert jedoch Umsetzungskompetenz – Tempo und Einbindung müssen gleichzeitig geleistet werden.";
+    else t += " Das Rahmenprofil fordert strukturiertes Arbeiten – Ordnung und Prozesse müssen mit Kommunikation verbunden werden.";
     parts.push(t);
   } else if (arbeitslogik === "Daten-/prozessorientiert") {
     let t = "Die vorherrschende Arbeitslogik ist daten- und prozessorientiert – Ergebnisse entstehen über systematische Analyse und nachvollziehbare Entscheidungen.";
-    if (top.key === "ana") t += " Dies korrespondiert direkt mit der strukturorientierten Grundausrichtung und erzeugt eine besonders klare Erwartung an Qualität und Nachvollziehbarkeit.";
-    else if (top.key === "imp") t += " Dies steht in einem Spannungsfeld zur umsetzungsorientierten Grundausrichtung: schnelles Handeln und faktenbasierte Entscheidungen müssen zusammengehen.";
-    else t += " Abstimmung und Dialog basieren auf Fakten, nicht auf Meinungen.";
+    if (top.key === "ana") t += " Dies korrespondiert mit dem Rahmenprofil und erzeugt eine klare Erwartung an Qualität und Nachvollziehbarkeit.";
+    else if (top.key === "imp") t += " Das Rahmenprofil fordert jedoch Umsetzungskompetenz – schnelles Handeln und faktenbasierte Entscheidungen müssen zusammengehen.";
+    else t += " Das Rahmenprofil fordert kooperative Arbeit – Abstimmung und Dialog basieren auf Fakten, nicht auf Meinungen.";
     parts.push(t);
   }
 
@@ -587,9 +596,12 @@ function getRahmenbedingungenText(aufgabencharakter: string, arbeitslogik: strin
       const hasBeziehung = erfolgsfokusIndices.includes(1);
       const hasProzess = erfolgsfokusIndices.includes(3);
 
-      if (hasErgebnis && top.key === "imp") t += " Die umsetzungsorientierte Grundausrichtung unterstützt den Ergebnisfokus direkt – Tempo und Konsequenz treiben das Ergebnis.";
-      if (hasBeziehung && top.key === "int") t += " Die kooperative Grundausrichtung unterstützt den Beziehungsfokus direkt – tragfähige Beziehungen entstehen natürlich aus kooperativer Arbeit.";
-      if (hasProzess && top.key === "ana") t += " Die strukturorientierte Grundausrichtung unterstützt den Prozessfokus direkt – Ordnung und Systematik treiben Prozessqualität.";
+      if (hasErgebnis && top.key === "imp") t += " Das Rahmenprofil unterstützt den Ergebnisfokus direkt – Tempo und Konsequenz treiben das Ergebnis.";
+      else if (hasErgebnis) t += ` Die Rahmenbedingungen zeigen jedoch keinen umsetzungsorientierten Schwerpunkt (Impulsiv: ${rahmenBG.imp} %) – die Person muss den Ergebnisfokus trotz anderer Rahmenanforderungen sicherstellen.`;
+      if (hasBeziehung && top.key === "int") t += " Das Rahmenprofil unterstützt den Beziehungsfokus direkt – tragfähige Beziehungen entstehen natürlich aus kooperativer Arbeit.";
+      else if (hasBeziehung) t += ` Die Rahmenbedingungen zeigen jedoch keinen kooperativen Schwerpunkt (Intuitiv: ${rahmenBG.int} %) – Beziehungspflege muss bewusst zusätzlich geleistet werden.`;
+      if (hasProzess && top.key === "ana") t += " Das Rahmenprofil unterstützt den Prozessfokus direkt – Ordnung und Systematik treiben Prozessqualität.";
+      else if (hasProzess) t += ` Die Rahmenbedingungen zeigen jedoch keinen strukturorientierten Schwerpunkt (Analytisch: ${rahmenBG.ana} %) – Prozessqualität muss gegen andere Anforderungen abgesichert werden.`;
       parts.push(t);
     }
   }
@@ -696,7 +708,7 @@ export default function Bericht() {
       const gesamt = computeGesamt(haupt, neben, fuehrung, rahmen);
       const { type: profileType, intensity } = classifyProfile(gesamt);
       const texts = getReportTexts(beruf, isLeadership, profileType, intensity);
-      const rahmenbedingungenText = getRahmenbedingungenText(aufgabencharakter, arbeitslogik, state.erfolgsfokusIndices || [], gesamt);
+      const rahmenbedingungenText = getRahmenbedingungenText(aufgabencharakter, arbeitslogik, state.erfolgsfokusIndices || [], rahmen);
       const fuehrungskontextText = isLeadership ? getFuehrungskontextText(fuehrungstyp, gesamt, arbeitslogik) : "";
       const fazitParagraphs = getFazitText(texts.conclusion, gesamt, isLeadership, intensity, aufgabencharakter, arbeitslogik, fuehrungstyp);
       setData({ beruf, bereich, isLeadership, gesamt, haupt, neben, fuehrung, rahmen, texts, intensity, profileType, rahmenbedingungenText, fuehrungskontextText, fazitParagraphs });
