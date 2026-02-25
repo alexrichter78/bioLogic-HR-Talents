@@ -2416,10 +2416,10 @@ export default function RollenDNA() {
                       fontSize: 14,
                       fontWeight: 600,
                       borderRadius: 14,
-                      border: "1.5px solid rgba(0,0,0,0.12)",
+                      border: "none",
                       cursor: "pointer",
-                      background: "rgba(255,255,255,0.8)",
-                      color: "#1D1D1F",
+                      background: "linear-gradient(135deg, #0071E3, #34AADC)",
+                      color: "#FFFFFF",
                       transition: "all 200ms ease",
                       display: "flex",
                       alignItems: "center",
@@ -2427,14 +2427,15 @@ export default function RollenDNA() {
                       flex: 1,
                       justifyContent: "center",
                       width: "100%",
+                      boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
                     }}
                     onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.04)";
                       (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
+                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)";
                     }}
                     onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.8)";
                       (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
+                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)";
                     }}
                     data-testid="button-zurueck-uebersicht"
                   >
@@ -2450,10 +2451,10 @@ export default function RollenDNA() {
                       fontSize: 14,
                       fontWeight: 600,
                       borderRadius: 14,
-                      border: "1.5px solid rgba(0,0,0,0.12)",
+                      border: "none",
                       cursor: "pointer",
-                      background: "rgba(255,255,255,0.8)",
-                      color: "#1D1D1F",
+                      background: "linear-gradient(135deg, #0071E3, #34AADC)",
+                      color: "#FFFFFF",
                       transition: "all 200ms ease",
                       display: "flex",
                       alignItems: "center",
@@ -2461,14 +2462,15 @@ export default function RollenDNA() {
                       flex: 1,
                       justifyContent: "center",
                       width: "100%",
+                      boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
                     }}
                     onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.04)";
                       (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
+                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)";
                     }}
                     onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.8)";
                       (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
+                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)";
                     }}
                     data-testid="button-rollenprofil-ermitteln"
                   >
