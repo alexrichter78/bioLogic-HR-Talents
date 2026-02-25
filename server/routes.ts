@@ -292,6 +292,7 @@ ${fuehrungItems.length > 0 ? `**Führungskompetenzen:**\n${formatItems(fuehrungI
 ## WICHTIGE REGELN
 
 1. Verwende KEINE Prozentzahlen in den Texten. Die Prozentwerte werden bereits in den Grafiken angezeigt. Beschreibe stattdessen Verhältnisse qualitativ (z.B. "klar dominierend", "nahezu gleichauf", "deutlich sekundär", "erkennbar nachrangig").
+1b. Verwende KEINE Gedankenstriche (–) in den Texten. Formuliere stattdessen vollständige Sätze oder verwende Punkte/Doppelpunkte.
 2. Wenn zwei Werte nah beieinander liegen (Differenz ≤ 6%), beschreibe das als "ausgeglichene/doppelte Struktur" – behaupte NICHT, dass einer dominiert.
 3. Wenn intensity="strong": Verwende Formulierungen wie "klar dominiert", "eindeutig geprägt"
 4. Wenn intensity="light": Verwende "erkennbare Tendenz", "leichte Ausrichtung"
@@ -307,7 +308,7 @@ Antworte ausschließlich als JSON mit exakt dieser Struktur:
 {
   "rollencharakter": "Beschreibender Satz, z.B. 'Steuernd-Umsetzungsorientiert' oder 'Strategisch-Analytisch mit umsetzungsorientierter Durchsetzung'",
   "dominanteKomponente": "z.B. 'Impulsiv mit analytischer Stabilisierung' oder 'Analytisch mit impulsiver Ergänzung' oder 'Impulsiv-Analytische Doppelstruktur'",
-  "einleitung": "2-3 kurze Absätze, getrennt durch \\n\\n. Jeder Absatz maximal 2-3 Sätze. Erster Absatz: Was entscheidet diese Rolle? Wovon hängt Wirksamkeit ab? Zweiter Absatz: Warum reicht Fachwissen allein nicht? Was ist strukturell entscheidend? Letzter Absatz: 'Dieser Bericht beschreibt die strukturellen Anforderungen der Rolle – unabhängig von [rollenspezifisch].'",
+  "einleitung": "2-3 kurze Absätze, getrennt durch \\n\\n. Jeder Absatz maximal 2-3 Sätze. Erster Absatz: Was entscheidet diese Rolle? Wovon hängt Wirksamkeit ab? Zweiter Absatz: Warum reicht Fachwissen allein nicht? Was ist strukturell entscheidend? Letzter Absatz: 'Dieser Bericht beschreibt die strukturellen Anforderungen der Rolle, unabhängig von [rollenspezifisch].'",
   "gesamtprofil": "3-4 kurze Absätze, getrennt durch \\n\\n. Jeder Absatz maximal 2-3 Sätze. Erster Absatz: Welche Kompetenz dominiert und warum? Zweiter Absatz: Was bedeutet das für die Rolle? Dritter Absatz: Welche Funktion haben die sekundären Kompetenzen? Letzter Satz: 'Wirksamkeit entsteht [primär/über] ...'",
   "rahmenbedingungen": {
     "beschreibung": "2-3 kurze Absätze getrennt durch \\n\\n, je 2-3 Sätze. Aufgabencharakter beschreiben, Arbeitslogik erklären, was die Rolle konkret verlangt",
@@ -334,7 +335,7 @@ Antworte ausschließlich als JSON mit exakt dieser Struktur:
     "human_schluss": "Abschließender Satz: Welche Rolle spielt Beziehungsfähigkeit?"
   },
   "spannungsfelder": ["Spannung 1 vs. Gegensatz 1", "Spannung 2 vs. Gegensatz 2", "mindestens 4 Einträge"],
-  "spannungsfelder_schluss": "Die Person muss in der Lage sein, diese Spannungsfelder [aktiv zu führen/eigenständig zu regulieren/bewusst zu moderieren] – nicht zu vermeiden.",
+  "spannungsfelder_schluss": "Die Person muss in der Lage sein, diese Spannungsfelder [aktiv zu führen/eigenständig zu regulieren/bewusst zu moderieren]. Es geht nicht darum, sie zu vermeiden.",
   "risikobewertung": [
     {
       "label": "Wird zu viel Struktur eingesetzt",

@@ -312,7 +312,7 @@ function CalloutBox({ text, color, icon: Icon }: { text: string; color: string; 
       }}>
         <IconComp style={{ width: 14, height: 14, color, strokeWidth: 2 }} />
       </div>
-      <p style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.75, margin: 0, fontWeight: 450 }}>{text}</p>
+      <p style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.75, margin: 0, fontWeight: 450, textAlign: "justify", hyphens: "auto", WebkitHyphens: "auto" } as React.CSSProperties} lang="de">{text}</p>
     </div>
   );
 }
