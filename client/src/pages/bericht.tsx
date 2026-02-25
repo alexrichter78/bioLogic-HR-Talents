@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { ArrowLeft, BarChart3, Briefcase, Heart, Shield, AlertTriangle, FileText, Check, Settings, RefreshCw, Loader2, Zap, Brain, Users, Target, TrendingUp, Lightbulb } from "lucide-react";
+import { ArrowLeft, BarChart3, Briefcase, Heart, Shield, AlertTriangle, FileText, Check, Settings, RefreshCw, Loader2, Zap, Brain, Users, Target, TrendingUp, Lightbulb, Star } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import { BERUFE } from "@/data/berufe";
 import { apiRequest } from "@/lib/queryClient";
@@ -380,6 +380,29 @@ function getRiskColor(label: string): string {
   return "#6E6E73";
 }
 
+function HighPriorityBadge({ name, kompetenz }: { name: string; kompetenz: string }) {
+  const color = kompetenz === "Impulsiv" ? COLORS.imp : kompetenz === "Intuitiv" ? COLORS.int : COLORS.ana;
+  return (
+    <div style={{
+      display: "flex", alignItems: "flex-start", gap: 10,
+      padding: "12px 16px", borderRadius: 14,
+      background: `linear-gradient(135deg, ${color}08, ${color}03)`,
+      border: `1px solid ${color}12`,
+    }}>
+      <div style={{
+        width: 22, height: 22, borderRadius: 7, flexShrink: 0, marginTop: 1,
+        background: `${color}15`, display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        <Star style={{ width: 11, height: 11, color, strokeWidth: 2, fill: color }} />
+      </div>
+      <div>
+        <span style={{ fontSize: 13, color: "#1D1D1F", lineHeight: 1.6, fontWeight: 500, display: "block" }}>{name}</span>
+        <span style={{ fontSize: 11, color: color, fontWeight: 600, marginTop: 2, display: "inline-block" }}>{kompetenz}</span>
+      </div>
+    </div>
+  );
+}
+
 function SpannungsfeldPill({ text }: { text: string }) {
   const parts = text.split(/\s+vs\.?\s+/i);
   if (parts.length === 2) {
@@ -721,6 +744,37 @@ export default function Bericht() {
                   <ChartCard icon={Briefcase} title="Tätigkeiten" bg={haupt} accent={COLORS.imp} />
                   <ChartCard icon={Heart} title="Humankompetenzen" bg={neben} accent={COLORS.ana} />
                 </div>
+
+                {(() => {
+                  const hochTaetigkeiten = (profileData.taetigkeiten || []).filter((t: any) => t.niveau === "Hoch");
+                  if (hochTaetigkeiten.length === 0) return null;
+                  return (
+                    <div style={{
+                      marginBottom: 24, padding: "22px 22px 20px", borderRadius: 22,
+                      background: "linear-gradient(135deg, rgba(212,136,15,0.06), rgba(243,146,0,0.02))",
+                      border: "1px solid rgba(243,146,0,0.12)",
+                    }} data-testid="bericht-hoch-taetigkeiten">
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                        <div style={{
+                          width: 28, height: 28, borderRadius: 9,
+                          background: "linear-gradient(135deg, rgba(243,146,0,0.18), rgba(212,136,15,0.08))",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                        }}>
+                          <Star style={{ width: 14, height: 14, color: "#D4880F", strokeWidth: 2, fill: "#D4880F" }} />
+                        </div>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>Höchste Priorität</span>
+                      </div>
+                      <p style={{ fontSize: 12, color: "#8E8E93", marginBottom: 14, paddingLeft: 38 }}>
+                        Diese Tätigkeiten wurden in der individuellen Bewertung als besonders wichtig eingestuft und haben den höchsten Einfluss auf die Rollenanforderung.
+                      </p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        {hochTaetigkeiten.map((t: any, i: number) => (
+                          <HighPriorityBadge key={i} name={t.name} kompetenz={t.kompetenz} />
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 <div style={{ marginBottom: 24 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
