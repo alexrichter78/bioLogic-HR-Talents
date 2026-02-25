@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { ArrowLeft, BarChart3, Briefcase, Heart, Shield, AlertTriangle, FileText, Lightbulb, CheckCircle2, Check, Users } from "lucide-react";
+import { ArrowLeft, BarChart3, Briefcase, Heart, Shield, AlertTriangle, FileText, Lightbulb, CheckCircle2, Check, Users, Settings, Target, Crosshair } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import { PROFILE_TEXTS, type VariantTexts } from "@/data/bericht-texte";
 
@@ -317,67 +317,180 @@ const ERFOLGSFOKUS_LABELS = [
   "Strategische Wirkung / Positionierung",
 ];
 
-function getFuehrungskontextText(fuehrungstyp: string, gesamt: BG): string {
+function getFuehrungskontextText(fuehrungstyp: string, gesamt: BG, beruf: string, arbeitslogik: string): string {
   const sorted = [
-    { key: "imp", label: "impulsiv-umsetzungsorientiert", value: gesamt.imp },
-    { key: "int", label: "intuitiv-kooperativ", value: gesamt.int },
-    { key: "ana", label: "analytisch-strukturiert", value: gesamt.ana },
+    { key: "imp", value: gesamt.imp },
+    { key: "int", value: gesamt.int },
+    { key: "ana", value: gesamt.ana },
   ].sort((a, b) => b.value - a.value);
   const top = sorted[0];
 
   if (fuehrungstyp === "Disziplinarische Führung mit Ergebnisverantwortung") {
-    const base = "Die Rolle umfasst disziplinarische Führungsverantwortung mit direkter Ergebnisverantwortung. Das bedeutet: Die Führungskraft entscheidet über Personalthemen, trägt Budgetverantwortung und wird an messbaren Ergebnissen gemessen.";
-    if (top.key === "imp") return base + " In Verbindung mit der stark umsetzungsorientierten Ausrichtung der Rolle wird erwartet, dass Führung über klare Zielvorgaben, konsequentes Nachhalten und schnelle Eskalation bei Abweichungen erfolgt. Entscheidungen werden top-down getroffen, das Team erhält Richtung über Ergebnisse, nicht über Konsens.";
-    if (top.key === "ana") return base + " In Verbindung mit der strukturorientierten Ausrichtung der Rolle wird erwartet, dass Führung über klare Rahmenbedingungen, definierte Prozesse und nachvollziehbare Entscheidungen erfolgt. Standards werden gesetzt und eingehalten. Verantwortung wird über Transparenz und Qualitätsniveaus gesteuert.";
-    return base + " In Verbindung mit der kooperativen Ausrichtung der Rolle wird erwartet, dass Führung über Einbindung, Abstimmung und tragfähige Entscheidungen erfolgt. Das Team wird aktiv eingebunden, Entscheidungen werden so gestaltet, dass sie getragen werden – ohne dabei die Ergebnisverantwortung aus den Augen zu verlieren.";
+    let text = `Die Stelle ${beruf} umfasst disziplinarische Führungsverantwortung mit direkter Ergebnisverantwortung. Das bedeutet: Die Führungskraft entscheidet über Personalthemen, trägt Budgetverantwortung und wird an messbaren Ergebnissen gemessen. Diese Verantwortungstiefe prägt den Arbeitsalltag grundlegend – jede Entscheidung hat direkte Auswirkungen auf Team, Budget und Ergebnis.`;
+    if (top.key === "imp") {
+      text += ` In Verbindung mit der umsetzungsorientierten Ausrichtung der Rolle ${beruf} wird erwartet, dass Führung über klare Zielvorgaben, konsequentes Nachhalten und schnelle Eskalation bei Abweichungen erfolgt. Entscheidungen werden top-down getroffen, das Team erhält Richtung über Ergebnisse, nicht über Konsens. Die Führungskraft muss unter Druck handlungsfähig bleiben und Verantwortung sofort übernehmen. Zögern oder übermäßiges Absichern widerspricht der Grundlogik dieser Besetzung.`;
+      if (arbeitslogik === "Umsetzungsorientiert") text += ` Die umsetzungsorientierte Arbeitslogik verstärkt diese Anforderung: Ergebnisse werden durch direktes Handeln erzielt, nicht durch Planung oder Abstimmung.`;
+    } else if (top.key === "ana") {
+      text += ` In Verbindung mit der strukturorientierten Ausrichtung der Rolle ${beruf} wird erwartet, dass Führung über klare Rahmenbedingungen, definierte Prozesse und nachvollziehbare Entscheidungen erfolgt. Standards werden gesetzt und systematisch eingehalten. Verantwortung wird über Transparenz und Qualitätsniveaus gesteuert. Die Führungskraft schafft Orientierung durch Ordnung und Verlässlichkeit, nicht durch Charisma oder Tempo.`;
+      if (arbeitslogik === "Daten-/prozessorientiert") text += ` Die daten- und prozessorientierte Arbeitslogik verstärkt diese Anforderung: Entscheidungen basieren auf Fakten, Abweichungen werden systematisch analysiert.`;
+    } else {
+      text += ` In Verbindung mit der kooperativen Ausrichtung der Rolle ${beruf} wird erwartet, dass Führung über Einbindung, Abstimmung und tragfähige Entscheidungen erfolgt. Das Team wird aktiv eingebunden, Entscheidungen werden so gestaltet, dass sie getragen werden – ohne dabei die Ergebnisverantwortung aus den Augen zu verlieren. Die Führungskraft muss Beziehungen aufbauen und gleichzeitig Ergebnisse einfordern können.`;
+      if (arbeitslogik === "Menschenorientiert") text += ` Die menschenorientierte Arbeitslogik verstärkt diese Anforderung: Wirksamkeit entsteht über stabile Beziehungen und offene Kommunikation.`;
+    }
+    return text;
   }
+
   if (fuehrungstyp === "Fachliche Führung") {
-    const base = "Die Rolle umfasst fachliche Führungsverantwortung ohne disziplinarische Befugnis. Die Führungskraft steuert über fachliche Expertise, setzt inhaltliche Standards und gibt Richtung über Qualität und Methodik.";
-    if (top.key === "ana") return base + " In Verbindung mit der strukturorientierten Ausrichtung bedeutet dies: Fachliche Führung erfolgt über klare Standards, Dokumentation und systematische Qualitätssicherung. Entscheidungen werden fachlich begründet und nachvollziehbar gemacht. Die Führungskraft ist Referenzpunkt für Genauigkeit und Verlässlichkeit.";
-    if (top.key === "imp") return base + " In Verbindung mit der umsetzungsorientierten Ausrichtung bedeutet dies: Fachliche Führung erfolgt pragmatisch und ergebnisorientiert. Fachliche Standards werden so gesetzt, dass sie die Umsetzung unterstützen, nicht bremsen. Die Führungskraft verbindet Expertise mit Handlungsfähigkeit.";
-    return base + " In Verbindung mit der kooperativen Ausrichtung bedeutet dies: Fachliche Führung erfolgt über Dialog, Wissensweitergabe und gemeinsame Qualitätsstandards. Die Führungskraft teilt Wissen aktiv und stellt sicher, dass fachliche Entscheidungen im Team verstanden und mitgetragen werden.";
+    let text = `Die Stelle ${beruf} umfasst fachliche Führungsverantwortung ohne disziplinarische Befugnis. Die Führungskraft steuert über fachliche Expertise, setzt inhaltliche Standards und gibt Richtung über Qualität und Methodik. Ohne formale Weisungsbefugnis muss die Führungswirkung über Kompetenz und Überzeugung entstehen.`;
+    if (top.key === "ana") {
+      text += ` In Verbindung mit der strukturorientierten Ausrichtung der Rolle ${beruf} bedeutet dies: Fachliche Führung erfolgt über klare Standards, lückenlose Dokumentation und systematische Qualitätssicherung. Entscheidungen werden fachlich begründet und nachvollziehbar gemacht. Die Führungskraft ist Referenzpunkt für Genauigkeit, Verlässlichkeit und methodische Tiefe. Fachliche Autorität entsteht durch nachweisbare Expertise.`;
+      if (arbeitslogik === "Daten-/prozessorientiert") text += ` Die daten- und prozessorientierte Arbeitslogik unterstreicht diese Anforderung: Qualität wird messbar gemacht, Prozesse werden kontinuierlich optimiert.`;
+    } else if (top.key === "imp") {
+      text += ` In Verbindung mit der umsetzungsorientierten Ausrichtung der Rolle ${beruf} bedeutet dies: Fachliche Führung erfolgt pragmatisch und ergebnisorientiert. Fachliche Standards werden so gesetzt, dass sie die Umsetzung unterstützen, nicht bremsen. Die Führungskraft verbindet Expertise mit Handlungsfähigkeit und sorgt dafür, dass fachliche Entscheidungen schnell in Ergebnisse übersetzt werden.`;
+      if (arbeitslogik === "Umsetzungsorientiert") text += ` Die umsetzungsorientierte Arbeitslogik verstärkt diese Anforderung: Fachliche Tiefe dient der Geschwindigkeit, nicht der Absicherung.`;
+    } else {
+      text += ` In Verbindung mit der kooperativen Ausrichtung der Rolle ${beruf} bedeutet dies: Fachliche Führung erfolgt über Dialog, aktive Wissensweitergabe und gemeinsame Qualitätsstandards. Die Führungskraft teilt Wissen offen und stellt sicher, dass fachliche Entscheidungen im Team verstanden und mitgetragen werden. Fachliche Autorität entsteht durch Anschlussfähigkeit, nicht durch Distanz.`;
+      if (arbeitslogik === "Menschenorientiert") text += ` Die menschenorientierte Arbeitslogik verstärkt diese Anforderung: Fachliche Kompetenz wird über Beziehung und Dialog vermittelt.`;
+    }
+    return text;
   }
+
   if (fuehrungstyp === "Projekt-/Teamkoordination") {
-    const base = "Die Rolle umfasst koordinierende Verantwortung für Projekte oder Teams. Die Führungskraft steuert über Abstimmung, Priorisierung und Schnittstellenmanagement – ohne formale Weisungsbefugnis.";
-    if (top.key === "int") return base + " In Verbindung mit der kooperativen Ausrichtung bedeutet dies: Koordination erfolgt über enge Abstimmung, aktive Kommunikation und situatives Eingreifen. Die Führungskraft hält das Team zusammen und stellt sicher, dass Informationen fließen und Schnittstellen funktionieren.";
-    if (top.key === "imp") return base + " In Verbindung mit der umsetzungsorientierten Ausrichtung bedeutet dies: Koordination erfolgt ergebnisorientiert mit klarem Fokus auf Fortschritt und Abschluss. Die Führungskraft priorisiert pragmatisch und treibt den Prozess aktiv voran.";
-    return base + " In Verbindung mit der strukturorientierten Ausrichtung bedeutet dies: Koordination erfolgt über klare Pläne, definierte Meilensteine und systematische Nachverfolgung. Die Führungskraft sorgt für Ordnung im Prozess und Transparenz über den Projektfortschritt.";
+    let text = `Die Stelle ${beruf} umfasst koordinierende Verantwortung für Projekte oder Teams. Die Führungskraft steuert über Abstimmung, Priorisierung und Schnittstellenmanagement – ohne formale Weisungsbefugnis. Wirksamkeit entsteht über Einfluss, nicht über Anordnung.`;
+    if (top.key === "int") {
+      text += ` In Verbindung mit der kooperativen Ausrichtung der Rolle ${beruf} bedeutet dies: Koordination erfolgt über enge Abstimmung, aktive Kommunikation und situatives Eingreifen. Die Führungskraft hält das Team zusammen und stellt sicher, dass Informationen fließen und Schnittstellen reibungslos funktionieren. Konflikte werden früh erkannt und moderiert, bevor sie eskalieren.`;
+      if (arbeitslogik === "Menschenorientiert") text += ` Die menschenorientierte Arbeitslogik verstärkt diese Anforderung: Koordination lebt von Vertrauen, Offenheit und aktivem Zuhören.`;
+    } else if (top.key === "imp") {
+      text += ` In Verbindung mit der umsetzungsorientierten Ausrichtung der Rolle ${beruf} bedeutet dies: Koordination erfolgt ergebnisorientiert mit klarem Fokus auf Fortschritt und Abschluss. Die Führungskraft priorisiert pragmatisch, treibt den Prozess aktiv voran und eskaliert bei Blockaden schnell. Abstimmung dient dem Ergebnis, nicht dem Konsens.`;
+      if (arbeitslogik === "Umsetzungsorientiert") text += ` Die umsetzungsorientierte Arbeitslogik verstärkt diese Anforderung: Koordination bedeutet hier Tempo machen und Hindernisse beseitigen.`;
+    } else {
+      text += ` In Verbindung mit der strukturorientierten Ausrichtung der Rolle ${beruf} bedeutet dies: Koordination erfolgt über klare Pläne, definierte Meilensteine und systematische Nachverfolgung. Die Führungskraft sorgt für Ordnung im Prozess und Transparenz über den Projektfortschritt. Abweichungen werden dokumentiert und systematisch bearbeitet.`;
+      if (arbeitslogik === "Daten-/prozessorientiert") text += ` Die daten- und prozessorientierte Arbeitslogik verstärkt diese Anforderung: Koordination basiert auf Fakten, Plänen und nachvollziehbaren Meilensteinen.`;
+    }
+    return text;
   }
   return "";
 }
 
-function getRahmenText(aufgabencharakter: string, arbeitslogik: string, erfolgsfokusIndices: number[]): string {
-  const parts: string[] = [];
+function getAufgabencharakterText(aufgabencharakter: string, beruf: string, gesamt: BG): string {
+  const sorted = [
+    { key: "imp", value: gesamt.imp },
+    { key: "int", value: gesamt.int },
+    { key: "ana", value: gesamt.ana },
+  ].sort((a, b) => b.value - a.value);
+  const top = sorted[0];
 
   if (aufgabencharakter === "überwiegend operativ") {
-    parts.push("Der Aufgabencharakter ist überwiegend operativ. Im Vordergrund steht die direkte Umsetzung und das Erzielen konkreter Arbeitsergebnisse. Planung und Strategie spielen eine untergeordnete Rolle – gefragt ist Handlungsfähigkeit im Tagesgeschäft.");
-  } else if (aufgabencharakter === "überwiegend strategisch") {
-    parts.push("Der Aufgabencharakter ist überwiegend strategisch. Im Vordergrund stehen Planung, Analyse und die Entwicklung langfristiger Konzepte. Die operative Umsetzung wird delegiert oder erfolgt in nachgeordneten Prozessen.");
-  } else if (aufgabencharakter === "überwiegend systemisch") {
-    parts.push("Der Aufgabencharakter ist überwiegend systemisch. Im Vordergrund stehen die Arbeit an Schnittstellen, die Gestaltung von Zusammenarbeit und die Einordnung in übergeordnete Zusammenhänge. Die Rolle wirkt vernetzend und moderierend.");
-  } else if (aufgabencharakter === "Gemischt") {
-    parts.push("Der Aufgabencharakter ist gemischt. Die Rolle verbindet operative, strategische und systemische Anforderungen. Die Person muss flexibel zwischen unterschiedlichen Arbeitsmodi wechseln können.");
+    let text = `Der Aufgabencharakter der Stelle ${beruf} ist überwiegend operativ. Im Vordergrund steht die direkte Umsetzung und das Erzielen konkreter Arbeitsergebnisse im Tagesgeschäft. Planung und Strategie spielen eine untergeordnete Rolle – gefragt ist Handlungsfähigkeit in laufenden Prozessen.`;
+    if (top.key === "imp") text += ` Dies passt zur umsetzungsorientierten Grundausrichtung der Rolle: Ergebnisse entstehen durch direktes Handeln. Die Person muss pragmatisch arbeiten, schnell reagieren und Aufgaben konsequent abschließen können.`;
+    else if (top.key === "ana") text += ` In Kombination mit der strukturorientierten Grundausrichtung der Rolle bedeutet dies: Operative Aufgaben werden systematisch und nach klaren Vorgaben bearbeitet. Qualitätssicherung und Dokumentation begleiten die tägliche Umsetzung.`;
+    else text += ` In Kombination mit der kooperativen Grundausrichtung der Rolle bedeutet dies: Operative Aufgaben werden in enger Abstimmung mit dem Umfeld bearbeitet. Die Person muss handeln und gleichzeitig kommunizieren, um Schnittstellen sauber zu bedienen.`;
+    return text;
   }
+  if (aufgabencharakter === "überwiegend strategisch") {
+    let text = `Der Aufgabencharakter der Stelle ${beruf} ist überwiegend strategisch. Im Vordergrund stehen Planung, Analyse und die Entwicklung langfristiger Konzepte. Die operative Umsetzung wird delegiert oder erfolgt in nachgeordneten Prozessen. Die Wirkung entsteht über Weitsicht, nicht über Tagesgeschäft.`;
+    if (top.key === "ana") text += ` Dies passt zur strukturorientierten Grundausrichtung der Rolle: Strategische Arbeit lebt von Analyse, Datengrundlage und systematischer Planung. Entscheidungen werden vorbereitet, geprüft und nachvollziehbar dokumentiert.`;
+    else if (top.key === "imp") text += ` In Kombination mit der umsetzungsorientierten Grundausrichtung bedeutet dies: Strategische Planung dient hier nicht dem Selbstzweck, sondern der schnelleren und konsequenteren Umsetzung. Die Person muss strategisch denken und gleichzeitig handlungsorientiert bleiben.`;
+    else text += ` In Kombination mit der kooperativen Grundausrichtung bedeutet dies: Strategische Arbeit erfolgt im Dialog mit Stakeholdern und Schnittstellen. Die Person muss übergeordnete Ziele so kommunizieren, dass sie von anderen verstanden und mitgetragen werden.`;
+    return text;
+  }
+  if (aufgabencharakter === "überwiegend systemisch") {
+    let text = `Der Aufgabencharakter der Stelle ${beruf} ist überwiegend systemisch. Im Vordergrund stehen die Arbeit an Schnittstellen, die Gestaltung von Zusammenarbeit und die Einordnung in übergeordnete Zusammenhänge. Die Rolle wirkt vernetzend und moderierend – Wirksamkeit entsteht über Einfluss, nicht über direkte Umsetzung.`;
+    if (top.key === "int") text += ` Dies passt zur kooperativen Grundausrichtung der Rolle: Systemische Arbeit lebt von Beziehungsfähigkeit, Kontextsensibilität und situativem Handeln. Die Person muss unterschiedliche Perspektiven integrieren und tragfähige Lösungen entwickeln.`;
+    else if (top.key === "imp") text += ` In Kombination mit der umsetzungsorientierten Grundausrichtung bedeutet dies: Systemische Arbeit wird ergebnisorientiert betrieben. Die Person nutzt Netzwerke und Schnittstellen aktiv, um Ergebnisse zu beschleunigen – nicht um Konsens herzustellen.`;
+    else text += ` In Kombination mit der strukturorientierten Grundausrichtung bedeutet dies: Systemische Arbeit wird methodisch angegangen. Schnittstellen werden dokumentiert, Abstimmungsprozesse formalisiert und Verantwortlichkeiten klar definiert.`;
+    return text;
+  }
+  if (aufgabencharakter === "Gemischt") {
+    let text = `Der Aufgabencharakter der Stelle ${beruf} ist gemischt. Die Rolle verbindet operative, strategische und systemische Anforderungen. Die Person muss flexibel zwischen unterschiedlichen Arbeitsmodi wechseln können – vom konkreten Tagesgeschäft bis zur übergeordneten Planung.`;
+    if (top.key === "imp") text += ` Bei der umsetzungsorientierten Grundausrichtung der Rolle liegt der Schwerpunkt im Alltag eher auf operativen Aufgaben. Strategische und systemische Anteile werden pragmatisch und ergebnisorientiert bearbeitet.`;
+    else if (top.key === "ana") text += ` Bei der strukturorientierten Grundausrichtung der Rolle werden alle drei Aufgabentypen systematisch und nach klaren Prioritäten bearbeitet. Die Person muss flexibel sein, ohne dabei Ordnung und Nachvollziehbarkeit zu verlieren.`;
+    else text += ` Bei der kooperativen Grundausrichtung der Rolle werden die unterschiedlichen Aufgabentypen im Dialog mit dem Umfeld bearbeitet. Die Person muss zwischen operativem Handeln, strategischem Denken und systemischer Vernetzung wechseln – und dabei anschlussfähig bleiben.`;
+    return text;
+  }
+  return "";
+}
+
+function getArbeitslogikText(arbeitslogik: string, beruf: string, gesamt: BG): string {
+  const sorted = [
+    { key: "imp", value: gesamt.imp },
+    { key: "int", value: gesamt.int },
+    { key: "ana", value: gesamt.ana },
+  ].sort((a, b) => b.value - a.value);
+  const top = sorted[0];
 
   if (arbeitslogik === "Umsetzungsorientiert") {
-    parts.push("Die vorherrschende Arbeitslogik ist umsetzungsorientiert. Ergebnisse werden durch direkte Aktion erzielt, Geschwindigkeit und Konsequenz stehen im Vordergrund.");
-  } else if (arbeitslogik === "Menschenorientiert") {
-    parts.push("Die vorherrschende Arbeitslogik ist menschenorientiert. Ergebnisse entstehen über Zusammenarbeit, Abstimmung und tragfähige Beziehungen. Kommunikation und Einbindung sind zentral.");
-  } else if (arbeitslogik === "Daten-/prozessorientiert") {
-    parts.push("Die vorherrschende Arbeitslogik ist daten- und prozessorientiert. Ergebnisse entstehen über systematische Analyse, klare Abläufe und nachvollziehbare Entscheidungen.");
+    let text = `Die vorherrschende Arbeitslogik der Stelle ${beruf} ist umsetzungsorientiert. Ergebnisse werden durch direkte Aktion erzielt – Geschwindigkeit, Konsequenz und Abschlussstärke stehen im Vordergrund. Wer in dieser Rolle arbeitet, muss liefern, nicht nur planen.`;
+    if (top.key === "imp") text += ` Die umsetzungsorientierte Arbeitslogik korrespondiert direkt mit der Grundausrichtung der Rolle: Beide verlangen Tempo, Entschlossenheit und die Bereitschaft, auch unter Unsicherheit zu handeln. Diese Kombination erzeugt eine besonders klare Ergebniserwartung.`;
+    else if (top.key === "ana") text += ` Die umsetzungsorientierte Arbeitslogik steht in einem produktiven Spannungsfeld zur strukturorientierten Grundausrichtung: Einerseits wird Tempo erwartet, andererseits Ordnung und Nachvollziehbarkeit. Die Person muss beides können – schnell handeln und sauber dokumentieren.`;
+    else text += ` Die umsetzungsorientierte Arbeitslogik ergänzt die kooperative Grundausrichtung: Ergebnisse müssen erzielt werden, aber im Einklang mit dem Umfeld. Die Person muss handeln und gleichzeitig kommunizieren, um die Zusammenarbeit nicht zu gefährden.`;
+    return text;
+  }
+  if (arbeitslogik === "Menschenorientiert") {
+    let text = `Die vorherrschende Arbeitslogik der Stelle ${beruf} ist menschenorientiert. Ergebnisse entstehen über Zusammenarbeit, Abstimmung und tragfähige Beziehungen. Kommunikation und Einbindung sind nicht optional, sondern zentrale Werkzeuge der täglichen Arbeit.`;
+    if (top.key === "int") text += ` Die menschenorientierte Arbeitslogik korrespondiert direkt mit der kooperativen Grundausrichtung der Rolle: Beide verlangen Dialogfähigkeit, Beziehungsstärke und die Fähigkeit, unterschiedliche Interessen zusammenzuführen. Diese Kombination erzeugt eine besonders klare Erwartung an Kommunikation und Einbindung.`;
+    else if (top.key === "imp") text += ` Die menschenorientierte Arbeitslogik steht in einem Spannungsfeld zur umsetzungsorientierten Grundausrichtung: Einerseits wird Tempo erwartet, andererseits Einbindung und Dialog. Die Person muss konsequent handeln und gleichzeitig Beziehungen pflegen – eine anspruchsvolle Kombination.`;
+    else text += ` Die menschenorientierte Arbeitslogik ergänzt die strukturorientierte Grundausrichtung: Ordnung und Prozesse allein reichen nicht – die Person muss auch kommunizieren, einbinden und Erwartungen klären, um Ergebnisse zu erzielen.`;
+    return text;
+  }
+  if (arbeitslogik === "Daten-/prozessorientiert") {
+    let text = `Die vorherrschende Arbeitslogik der Stelle ${beruf} ist daten- und prozessorientiert. Ergebnisse entstehen über systematische Analyse, klare Abläufe und nachvollziehbare Entscheidungen. Bauchgefühl und Improvisation haben wenig Raum – gefragt sind Fakten und Methodik.`;
+    if (top.key === "ana") text += ` Die daten- und prozessorientierte Arbeitslogik korrespondiert direkt mit der strukturorientierten Grundausrichtung der Rolle: Beide verlangen Genauigkeit, Systematik und die Fähigkeit, Komplexität zu ordnen. Diese Kombination erzeugt eine besonders klare Erwartung an Qualität und Nachvollziehbarkeit.`;
+    else if (top.key === "imp") text += ` Die daten- und prozessorientierte Arbeitslogik steht in einem Spannungsfeld zur umsetzungsorientierten Grundausrichtung: Einerseits wird schnelles Handeln erwartet, andererseits faktenbasierte Entscheidungen. Die Person muss zügig arbeiten und gleichzeitig Qualitätsstandards einhalten.`;
+    else text += ` Die daten- und prozessorientierte Arbeitslogik ergänzt die kooperative Grundausrichtung: Abstimmung und Dialog basieren auf Fakten, nicht auf Meinungen. Die Person muss Daten nutzen, um Entscheidungen zu fundieren, und gleichzeitig anschlussfähig kommunizieren.`;
+    return text;
+  }
+  return "";
+}
+
+function getErfolgsfokusText(erfolgsfokusIndices: number[], beruf: string, gesamt: BG): string {
+  if (erfolgsfokusIndices.length === 0) return "";
+  const labels = erfolgsfokusIndices.map(i => ERFOLGSFOKUS_LABELS[i]).filter(Boolean);
+  if (labels.length === 0) return "";
+
+  const sorted = [
+    { key: "imp", value: gesamt.imp },
+    { key: "int", value: gesamt.int },
+    { key: "ana", value: gesamt.ana },
+  ].sort((a, b) => b.value - a.value);
+  const top = sorted[0];
+
+  const hasErgebnis = erfolgsfokusIndices.includes(0);
+  const hasBeziehung = erfolgsfokusIndices.includes(1);
+  const hasInnovation = erfolgsfokusIndices.includes(2);
+  const hasProzess = erfolgsfokusIndices.includes(3);
+  const hasExpertise = erfolgsfokusIndices.includes(4);
+  const hasStrategie = erfolgsfokusIndices.includes(5);
+
+  const fokusListe = labels.length === 1
+    ? labels[0]
+    : labels.slice(0, -1).join(", ") + " und " + labels[labels.length - 1];
+
+  let text = `Für die Stelle ${beruf} wurde als Erfolgsfokus definiert: ${fokusListe}. Diese Ausrichtung bestimmt, woran die Wirksamkeit der Rolle gemessen wird und welche Prioritäten im Alltag gesetzt werden.`;
+
+  if (hasErgebnis) {
+    text += ` Der Fokus auf Ergebnis- und Umsatzwirkung bedeutet, dass die Person an konkreten, messbaren Ergebnissen gemessen wird. Umsatz, Abschlüsse oder quantifizierbare Leistungen stehen im Zentrum der Bewertung.`;
+    if (top.key === "imp") text += ` Die umsetzungsorientierte Grundausrichtung der Rolle unterstützt diesen Fokus direkt – Tempo und Konsequenz treiben das Ergebnis.`;
+  }
+  if (hasBeziehung) {
+    text += ` Der Fokus auf Beziehungs- und Netzwerkstabilität bedeutet, dass langfristige Partnerschaften, interne Zusammenarbeit und Vertrauen als Erfolgsfaktoren gelten. Kurzfristige Gewinne auf Kosten von Beziehungen sind kontraproduktiv.`;
+    if (top.key === "int") text += ` Die kooperative Grundausrichtung der Rolle unterstützt diesen Fokus direkt – tragfähige Beziehungen sind das natürliche Ergebnis kooperativer Arbeit.`;
+  }
+  if (hasInnovation) {
+    text += ` Der Fokus auf Innovations- und Transformationsleistung bedeutet, dass Veränderungsbereitschaft, kreative Lösungen und die Fähigkeit, Neues zu etablieren, als Erfolgsfaktoren gelten. Routine und Bewahrung allein reichen nicht.`;
+  }
+  if (hasProzess) {
+    text += ` Der Fokus auf Prozess- und Effizienzqualität bedeutet, dass reibungslose Abläufe, Fehlerfreiheit und kontinuierliche Verbesserung als Erfolgsfaktoren gelten. Qualität zeigt sich in der Stabilität der Prozesse, nicht nur im Einzelergebnis.`;
+    if (top.key === "ana") text += ` Die strukturorientierte Grundausrichtung der Rolle unterstützt diesen Fokus direkt – Ordnung und Systematik treiben Prozessqualität.`;
+  }
+  if (hasExpertise) {
+    text += ` Der Fokus auf fachliche Exzellenz bedeutet, dass tiefe Fachkenntnis, methodische Kompetenz und inhaltliche Autorität als Erfolgsfaktoren gelten. Die Person muss Referenzpunkt in ihrem Fachgebiet sein.`;
+  }
+  if (hasStrategie) {
+    text += ` Der Fokus auf strategische Wirkung und Positionierung bedeutet, dass langfristige Ausrichtung, Marktpositionierung und übergeordnete Wirksamkeit als Erfolgsfaktoren gelten. Die Person muss über den Tellerrand hinaus denken und die Organisation strategisch voranbringen.`;
   }
 
-  if (erfolgsfokusIndices.length > 0) {
-    const labels = erfolgsfokusIndices.map(i => ERFOLGSFOKUS_LABELS[i]).filter(Boolean);
-    if (labels.length > 0) {
-      const fokusText = labels.length === 1
-        ? `Der zentrale Erfolgsfokus liegt auf: ${labels[0]}.`
-        : `Die zentralen Erfolgsfokusse liegen auf: ${labels.join(", ")}.`;
-      parts.push(fokusText + " Diese Ausrichtung beeinflusst, welche Ergebnisse als relevant bewertet werden und welche Prioritäten im Alltag gesetzt werden.");
-    }
-  }
-
-  return parts.join(" ");
+  return text;
 }
 
 export default function Bericht() {
@@ -386,7 +499,8 @@ export default function Bericht() {
     beruf: string; isLeadership: boolean; fuehrungstyp: string;
     gesamt: BG; haupt: BG; neben: BG; fuehrung: BG;
     texts: ReportTexts; intensity: Intensity;
-    rahmenText: string; fuehrungskontextText: string;
+    aufgabencharakterText: string; arbeitslogikText: string;
+    erfolgsfokusText: string; fuehrungskontextText: string;
   } | null>(null);
 
   useEffect(() => {
@@ -398,6 +512,7 @@ export default function Bericht() {
       const fuehrungstyp = state.fuehrung || "Keine";
       const isLeadership = fuehrungstyp !== "Keine";
       const taetigkeiten = state.taetigkeiten || [];
+      const arbeitslogik = state.arbeitslogik || "";
       const haupt = calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "haupt"));
       const neben = calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "neben"));
       const fuehrung = calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "fuehrung"));
@@ -405,13 +520,11 @@ export default function Bericht() {
       const gesamt = computeGesamt(haupt, neben, fuehrung, rahmen);
       const { type, intensity } = classifyProfile(gesamt);
       const texts = getReportTexts(beruf, isLeadership, type, intensity);
-      const rahmenText = getRahmenText(
-        state.aufgabencharakter || "",
-        state.arbeitslogik || "",
-        state.erfolgsfokusIndices || []
-      );
-      const fuehrungskontextText = isLeadership ? getFuehrungskontextText(fuehrungstyp, gesamt) : "";
-      setData({ beruf, isLeadership, fuehrungstyp, gesamt, haupt, neben, fuehrung, texts, intensity, rahmenText, fuehrungskontextText });
+      const aufgabencharakterText = getAufgabencharakterText(state.aufgabencharakter || "", beruf, gesamt);
+      const arbeitslogikText = getArbeitslogikText(arbeitslogik, beruf, gesamt);
+      const erfolgsfokusText = getErfolgsfokusText(state.erfolgsfokusIndices || [], beruf, gesamt);
+      const fuehrungskontextText = isLeadership ? getFuehrungskontextText(fuehrungstyp, gesamt, beruf, arbeitslogik) : "";
+      setData({ beruf, isLeadership, fuehrungstyp, gesamt, haupt, neben, fuehrung, texts, intensity, aufgabencharakterText, arbeitslogikText, erfolgsfokusText, fuehrungskontextText });
     } catch {}
   }, []);
 
@@ -435,7 +548,7 @@ export default function Bericht() {
     );
   }
 
-  const { beruf, isLeadership, fuehrungstyp, gesamt, haupt, neben, fuehrung, texts, intensity, rahmenText, fuehrungskontextText } = data;
+  const { beruf, isLeadership, fuehrungstyp, gesamt, haupt, neben, fuehrung, texts, intensity, aufgabencharakterText, arbeitslogikText, erfolgsfokusText, fuehrungskontextText } = data;
 
   const intensityNote = intensity === "strong"
     ? "Der Schwerpunkt ist eindeutig."
@@ -494,10 +607,24 @@ export default function Bericht() {
               )}
             </GlassCard>
 
-            {rahmenText && (
-              <GlassCard testId="bericht-rahmenbedingungen">
-                <SectionHeader icon={FileText} title="Rahmenbedingungen der Rolle" color="#6E6E73" />
-                <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.75 }}>{rahmenText}</p>
+            {aufgabencharakterText && (
+              <GlassCard testId="bericht-aufgabencharakter">
+                <SectionHeader icon={Settings} title="Aufgabencharakter" color="#6E6E73" />
+                <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.75 }}>{aufgabencharakterText}</p>
+              </GlassCard>
+            )}
+
+            {arbeitslogikText && (
+              <GlassCard testId="bericht-arbeitslogik">
+                <SectionHeader icon={Crosshair} title="Arbeitslogik" color="#6E6E73" />
+                <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.75 }}>{arbeitslogikText}</p>
+              </GlassCard>
+            )}
+
+            {erfolgsfokusText && (
+              <GlassCard testId="bericht-erfolgsfokus">
+                <SectionHeader icon={Target} title="Erfolgsfokus" color="#34AADC" />
+                <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.75 }}>{erfolgsfokusText}</p>
               </GlassCard>
             )}
 
