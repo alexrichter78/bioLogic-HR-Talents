@@ -1209,7 +1209,7 @@ export default function RollenDNA() {
             <Header onSave={handleSave} onLoad={handleLoad} />
 
             <div className="w-full max-w-3xl mx-auto px-6">
-              <div className="text-center mt-8 mb-6">
+              <div className="text-center mt-4 mb-4">
                 <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground/90 mb-2" data-testid="text-rollen-dna-title">
                   Rollenprofil ermitteln
                 </h1>
