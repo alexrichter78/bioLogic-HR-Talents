@@ -156,16 +156,16 @@ function generateBioCheckText(bg: BioGram, isLeadership: boolean, fuehrungsBg?: 
   };
 
   const fuehrungsSatz: Record<string, string> = {
-    imp: "Die Führung wirkt dabei über Tempo, Konsequenz und direktes Eingreifen.",
-    int: "Die Führung lebt dabei von Nähe, Vertrauen und der Fähigkeit, andere mitzunehmen.",
-    ana: "Die Führung stützt sich dabei auf klare Rahmensetzung und verlässliche Orientierung.",
-    imp_ana: "Die Führung zeigt sich dabei in konsequenter Umsetzung auf Basis klarer Vorgaben.",
-    ana_imp: "Die Führung zeigt sich dabei in konsequenter Umsetzung auf Basis klarer Vorgaben.",
-    imp_int: "Die Führung zeigt sich dabei in entschlossenem Handeln mit Blick auf die Beteiligten.",
-    int_imp: "Die Führung zeigt sich dabei in entschlossenem Handeln mit Blick auf die Beteiligten.",
-    ana_int: "Die Führung zeigt sich dabei in durchdachter Steuerung mit Raum für Dialog.",
-    int_ana: "Die Führung zeigt sich dabei in durchdachter Steuerung mit Raum für Dialog.",
-    balanced: "Die Führung erfordert dabei situative Balance zwischen Steuerung, Zusammenarbeit und Struktur.",
+    imp: "Die Rolle erfordert dabei eine Führung, die auf Tempo, Konsequenz und direktes Eingreifen setzt.",
+    int: "Die Rolle erfordert dabei eine Führung, die auf Nähe, Vertrauen und das Mitnehmen anderer setzt.",
+    ana: "Die Rolle erfordert dabei eine Führung, die auf klare Rahmensetzung und verlässliche Orientierung setzt.",
+    imp_ana: "Die Rolle erfordert dabei eine Führung, die konsequente Umsetzung mit klaren Vorgaben verbindet.",
+    ana_imp: "Die Rolle erfordert dabei eine Führung, die konsequente Umsetzung mit klaren Vorgaben verbindet.",
+    imp_int: "Die Rolle erfordert dabei eine Führung, die entschlossenes Handeln mit Blick auf die Beteiligten verbindet.",
+    int_imp: "Die Rolle erfordert dabei eine Führung, die entschlossenes Handeln mit Blick auf die Beteiligten verbindet.",
+    ana_int: "Die Rolle erfordert dabei eine Führung, die durchdachte Steuerung mit Raum für Dialog verbindet.",
+    int_ana: "Die Rolle erfordert dabei eine Führung, die durchdachte Steuerung mit Raum für Dialog verbindet.",
+    balanced: "Die Rolle erfordert dabei eine Führung, die situativ zwischen Steuerung, Zusammenarbeit und Struktur balanciert.",
   };
 
   let intensityLabel = "";
