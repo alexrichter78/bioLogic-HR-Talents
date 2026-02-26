@@ -380,7 +380,8 @@ export default function JobCheck() {
   const [candInt, setCandInt] = useState(34);
   const [candAna, setCandAna] = useState(33);
   const [candidateName, setCandidateName] = useState("");
-  const [reportReady, setReportReady] = useState(false);
+  const [reportGenerated, setReportGenerated] = useState(false);
+  const [reportKey, setReportKey] = useState(0);
 
   useEffect(() => {
     const raw = localStorage.getItem("rollenDnaState");
@@ -402,17 +403,23 @@ export default function JobCheck() {
     };
   }, [candImp, candInt, candAna]);
 
+  const [snapshotCand, setSnapshotCand] = useState(normalizedCand);
+  const [snapshotName, setSnapshotName] = useState(candidateName);
+
   const engine: EngineResult | null = useMemo(() => {
-    if (!roleAnalysis || !reportReady) return null;
+    if (!roleAnalysis || !reportGenerated) return null;
     const cand: CandidateInput = {
-      candidate_name: candidateName || "Kandidat",
-      candidate_profile: normalizedCand,
+      candidate_name: snapshotName || "Kandidat",
+      candidate_profile: snapshotCand,
     };
     return runEngine(roleAnalysis, cand);
-  }, [roleAnalysis, normalizedCand, candidateName, reportReady]);
+  }, [roleAnalysis, snapshotCand, snapshotName, reportGenerated, reportKey]);
 
   function handleCreateReport() {
-    setReportReady(true);
+    setSnapshotCand({ ...normalizedCand });
+    setSnapshotName(candidateName);
+    setReportKey(k => k + 1);
+    setReportGenerated(true);
     setAnalyseOpen(false);
     setBerichtOpen(true);
   }
