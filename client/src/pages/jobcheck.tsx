@@ -1,9 +1,124 @@
+import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
-import { ArrowLeft, FileText, AlertTriangle, Check, Shield, TrendingUp, Target, Users, Zap, Brain, Scale, Clock, ChevronRight, CircleAlert, CircleCheck, CircleMinus, BarChart3, Lightbulb, CalendarDays } from "lucide-react";
+import { ArrowLeft, FileText, AlertTriangle, Check, Shield, TrendingUp, Target, Users, Zap, Scale, ChevronRight, ChevronDown, CircleAlert, CircleCheck, CircleMinus, Lightbulb, CalendarDays, ClipboardCheck, BarChart3 } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import { hyphenateText } from "@/lib/hyphenate";
+import { BERUFE } from "@/data/berufe";
+import {
+  type RoleAnalysis, type CandidateInput, type Triad, type FitStatus, type ControlIntensity, type EngineResult, type MatrixRow as EngineMatrixRow,
+  runEngine, normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent, statusLabel, controlLabel,
+} from "@/lib/jobcheck-engine";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
+
+type BG = { imp: number; int: number; ana: number };
+
+function roundBG(a: number, b: number, c: number): BG {
+  const raw = [a, b, c];
+  const floored = raw.map(Math.floor);
+  let remainder = 100 - floored.reduce((s, v) => s + v, 0);
+  const fracs = raw.map((v, i) => ({ i, f: v - floored[i] })).sort((a, b) => b.f - a.f);
+  for (const f of fracs) { if (remainder <= 0) break; floored[f.i]++; remainder--; }
+  return { imp: floored[0], int: floored[1], ana: floored[2] };
+}
+
+function calcBioGram(taetigkeiten: any[]): BG {
+  if (!taetigkeiten.length) return { imp: 33.3, int: 33.3, ana: 33.4 };
+  const weights: Record<string, number> = { Niedrig: 1, Mittel: 2, Hoch: 3 };
+  let sI = 0, sN = 0, sA = 0;
+  for (const t of taetigkeiten) {
+    const w = weights[t.niveau] || 1;
+    if (t.kompetenz === "Impulsiv") sI += w;
+    else if (t.kompetenz === "Intuitiv") sN += w;
+    else sA += w;
+  }
+  const total = sI + sN + sA;
+  if (total <= 0) return { imp: 33.3, int: 33.3, ana: 33.4 };
+  return roundBG((sI / total) * 100, (sN / total) * 100, (sA / total) * 100);
+}
+
+function computeRahmen(state: any): BG {
+  let sI = 0, sN = 0, sA = 0;
+  const f = state.fuehrung || "";
+  if (f === "Fachliche Führung") sA += 1;
+  else if (f === "Projekt-/Teamkoordination") sN += 1;
+  else if (f.startsWith("Disziplinarische")) sI += 1;
+  for (const idx of (state.erfolgsfokusIndices || [])) {
+    if (idx === 0 || idx === 2) sI += 1;
+    else if (idx === 1 || idx === 5) sN += 1;
+    else if (idx === 3 || idx === 4) sA += 1;
+  }
+  if (state.aufgabencharakter === "überwiegend operativ") sI += 1;
+  else if (state.aufgabencharakter === "überwiegend systemisch") sN += 1;
+  else if (state.aufgabencharakter === "überwiegend strategisch") sA += 1;
+  if (state.arbeitslogik === "Umsetzungsorientiert") sI += 1;
+  else if (state.arbeitslogik === "Menschenorientiert") sN += 1;
+  else if (state.arbeitslogik === "Daten-/prozessorientiert") sA += 1;
+  const total = sI + sN + sA;
+  if (total <= 0) return { imp: 33.3, int: 33.3, ana: 33.4 };
+  return roundBG((sI / total) * 100, (sN / total) * 100, (sA / total) * 100);
+}
+
+function computeGesamt(haupt: BG, neben: BG, fuehrung: BG, rahmen: BG): BG {
+  const all = [haupt, neben, fuehrung, rahmen];
+  let vals = [
+    all.reduce((s, g) => s + g.imp, 0) / 4,
+    all.reduce((s, g) => s + g.int, 0) / 4,
+    all.reduce((s, g) => s + g.ana, 0) / 4,
+  ];
+  const CAP = 53;
+  let changed = true;
+  while (changed) {
+    changed = false;
+    const capped: number[] = [], uncapped: number[] = [];
+    vals.forEach((v, i) => { if (v > CAP) capped.push(i); else uncapped.push(i); });
+    if (capped.length > 0 && uncapped.length > 0) {
+      let excess = 0;
+      for (const i of capped) { excess += vals[i] - CAP; vals[i] = CAP; }
+      const uT = uncapped.reduce((s, i) => s + vals[i], 0);
+      if (uT > 0) for (const i of uncapped) vals[i] += excess * (vals[i] / uT);
+      changed = true;
+    }
+  }
+  return roundBG(vals[0], vals[1], vals[2]);
+}
+
+function bgToTriad(bg: BG): Triad {
+  return { impulsiv: Math.round(bg.imp), intuitiv: Math.round(bg.int), analytisch: Math.round(bg.ana) };
+}
+
+function buildRoleAnalysis(state: any): RoleAnalysis | null {
+  try {
+    const beruf = state.beruf || "Unbenannte Rolle";
+    const found = BERUFE.find(b => b.name === beruf);
+    const bereich = found?.kategorie || "";
+    const fuehrungstyp = state.fuehrung || "Keine";
+    const isLeadership = fuehrungstyp !== "Keine";
+    const taetigkeiten = state.taetigkeiten || [];
+
+    const haupt = calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "haupt"));
+    const neben = calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "neben"));
+    const fuehrungBG = calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "fuehrung"));
+    const rahmen = computeRahmen(state);
+    const gesamt = computeGesamt(haupt, neben, fuehrungBG, rahmen);
+
+    return {
+      job_title: beruf,
+      job_family: bereich,
+      role_profile: bgToTriad(gesamt),
+      frame_profile: bgToTriad(rahmen),
+      leadership: {
+        required: isLeadership,
+        profile: isLeadership ? bgToTriad(fuehrungBG) : undefined,
+        type: fuehrungstyp.startsWith("Disziplinarische") ? "disziplinarisch" : fuehrungstyp === "Fachliche Führung" ? "fachlich" : undefined,
+      },
+      tasks_profile: bgToTriad(haupt),
+      human_profile: bgToTriad(neben),
+      success_metrics: [],
+      tension_fields: [],
+    };
+  } catch { return null; }
+}
 
 function GlassCard({ children, style, testId }: { children: React.ReactNode; style?: React.CSSProperties; testId?: string }) {
   return (
@@ -15,6 +130,57 @@ function GlassCard({ children, style, testId }: { children: React.ReactNode; sty
       border: "1px solid rgba(255,255,255,0.7)",
       ...style,
     }} data-testid={testId}>{children}</div>
+  );
+}
+
+function AccordionCard({ title, icon: Icon, open, onToggle, children, testId, badge }: {
+  title: string; icon: typeof ClipboardCheck; open: boolean; onToggle: () => void;
+  children: React.ReactNode; testId?: string; badge?: React.ReactNode;
+}) {
+  return (
+    <div style={{
+      background: "rgba(255,255,255,0.82)",
+      backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
+      borderRadius: 24, overflow: "hidden",
+      boxShadow: "0 2px 20px rgba(0,0,0,0.03), 0 12px 48px rgba(0,0,0,0.05)",
+      border: "1px solid rgba(255,255,255,0.7)",
+    }} data-testid={testId}>
+      <button
+        onClick={onToggle}
+        style={{
+          width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "18px 24px", background: "none", border: "none", cursor: "pointer",
+          gap: 12,
+        }}
+        data-testid={`${testId}-toggle`}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{
+            width: 32, height: 32, borderRadius: 10,
+            background: "linear-gradient(135deg, rgba(0,113,227,0.12), rgba(52,170,220,0.08))",
+            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+          }}>
+            <Icon style={{ width: 16, height: 16, color: "#0071E3", strokeWidth: 2 }} />
+          </div>
+          <span style={{ fontSize: 16, fontWeight: 650, color: "#1D1D1F", letterSpacing: "-0.01em" }}>{title}</span>
+          {badge}
+        </div>
+        <ChevronDown style={{
+          width: 18, height: 18, color: "#8E8E93", strokeWidth: 2,
+          transition: "transform 300ms ease",
+          transform: open ? "rotate(180deg)" : "rotate(0deg)",
+        }} />
+      </button>
+      <div style={{
+        maxHeight: open ? 5000 : 0,
+        overflow: "hidden",
+        transition: "max-height 400ms ease",
+      }}>
+        <div style={{ padding: "0 24px 24px" }}>
+          {children}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -57,7 +223,29 @@ function SoftBar({ items }: { items: { label: string; value: number; color: stri
   );
 }
 
-function BulletList({ items, icon, color }: { items: string[]; icon?: "check" | "dot" | "arrow"; color?: string }) {
+function TriadSlider({ label, value, color, onChange }: { label: string; value: number; color: string; onChange: (v: number) => void }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span style={{ fontSize: 13, fontWeight: 600, color: "#3A3A3C" }}>{label}</span>
+        <span style={{ fontSize: 14, fontWeight: 700, color, fontVariantNumeric: "tabular-nums" }}>{value} %</span>
+      </div>
+      <input
+        type="range" min={0} max={100} value={value}
+        onChange={e => onChange(Number(e.target.value))}
+        data-testid={`slider-${label.toLowerCase()}`}
+        style={{
+          width: "100%", height: 6, borderRadius: 3,
+          appearance: "none", WebkitAppearance: "none",
+          background: `linear-gradient(to right, ${color} ${value}%, rgba(0,0,0,0.06) ${value}%)`,
+          outline: "none", cursor: "pointer",
+        }}
+      />
+    </div>
+  );
+}
+
+function BulletList({ items, icon, color }: { items: string[]; icon?: "check" | "dot"; color?: string }) {
   const c = color || "#6E6E73";
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -119,7 +307,7 @@ function StatusBadge({ status }: { status: "geeignet" | "bedingt" | "kritisch" }
   );
 }
 
-function MatrixRow({ bereich, status, begruendung }: { bereich: string; status: "geeignet" | "bedingt" | "kritisch"; begruendung: string }) {
+function MatrixRowUI({ bereich, status, begruendung }: { bereich: string; status: "geeignet" | "bedingt" | "kritisch"; begruendung: string }) {
   return (
     <div style={{
       padding: "16px 18px", borderRadius: 16,
@@ -134,7 +322,7 @@ function MatrixRow({ bereich, status, begruendung }: { bereich: string; status: 
   );
 }
 
-function TimelinePhase({ phase, title, items, ziel, color }: { phase: string; title: string; items: string[]; ziel: string; color: string }) {
+function TimelinePhase({ phase, title, items, color }: { phase: string; title: string; items: string[]; color: string }) {
   return (
     <div style={{
       position: "relative", paddingLeft: 32,
@@ -155,19 +343,104 @@ function TimelinePhase({ phase, title, items, ziel, color }: { phase: string; ti
       </div>
       <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>{title}</p>
       <BulletList items={items} color={color} />
-      <div style={{
-        marginTop: 14, padding: "12px 16px", borderRadius: 14,
-        background: `linear-gradient(135deg, ${color}08, ${color}04)`,
-        borderLeft: `4px solid ${color}50`,
-      }}>
-        <p style={{ fontSize: 12.5, color: "#48484A", lineHeight: 1.7, margin: 0, fontWeight: 500, fontStyle: "italic" }} lang="de">{hyphenateText(ziel)}</p>
-      </div>
     </div>
   );
 }
 
+function fitToUIStatus(fit: FitStatus): "geeignet" | "bedingt" | "kritisch" {
+  if (fit === "SUITABLE") return "geeignet";
+  if (fit === "CONDITIONAL") return "bedingt";
+  return "kritisch";
+}
+
+function fitColor(fit: FitStatus): string {
+  if (fit === "SUITABLE") return "#34C759";
+  if (fit === "CONDITIONAL") return "#FF9500";
+  return "#C41E3A";
+}
+
+function fitIcon(fit: FitStatus) {
+  if (fit === "SUITABLE") return CircleCheck;
+  if (fit === "CONDITIONAL") return AlertTriangle;
+  return CircleAlert;
+}
+
+function controlColor(c: ControlIntensity): string {
+  if (c === "LOW") return "#34C759";
+  if (c === "MEDIUM") return "#FF9500";
+  return "#C41E3A";
+}
+
 export default function JobCheck() {
   const [, setLocation] = useLocation();
+  const [analyseOpen, setAnalyseOpen] = useState(true);
+  const [berichtOpen, setBerichtOpen] = useState(false);
+  const [roleAnalysis, setRoleAnalysis] = useState<RoleAnalysis | null>(null);
+  const [candImp, setCandImp] = useState(33);
+  const [candInt, setCandInt] = useState(34);
+  const [candAna, setCandAna] = useState(33);
+  const [candidateName, setCandidateName] = useState("");
+  const [reportReady, setReportReady] = useState(false);
+
+  useEffect(() => {
+    const raw = localStorage.getItem("rollenDnaState");
+    if (!raw) return;
+    try {
+      const state = JSON.parse(raw);
+      const role = buildRoleAnalysis(state);
+      if (role) setRoleAnalysis(role);
+    } catch {}
+  }, []);
+
+  const normalizedCand = useMemo(() => {
+    const sum = candImp + candInt + candAna;
+    if (sum === 0) return { impulsiv: 33, intuitiv: 34, analytisch: 33 };
+    return {
+      impulsiv: Math.round((candImp / sum) * 100),
+      intuitiv: Math.round((candInt / sum) * 100),
+      analytisch: Math.round((candAna / sum) * 100),
+    };
+  }, [candImp, candInt, candAna]);
+
+  const engine: EngineResult | null = useMemo(() => {
+    if (!roleAnalysis || !reportReady) return null;
+    const cand: CandidateInput = {
+      candidate_name: candidateName || "Kandidat",
+      candidate_profile: normalizedCand,
+    };
+    return runEngine(roleAnalysis, cand);
+  }, [roleAnalysis, normalizedCand, candidateName, reportReady]);
+
+  function handleCreateReport() {
+    setReportReady(true);
+    setAnalyseOpen(false);
+    setBerichtOpen(true);
+  }
+
+  const roleProfile = roleAnalysis ? normalizeTriad(roleAnalysis.role_profile) : null;
+
+  if (!roleAnalysis) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 40%, #F5F7FA 100%)" }}>
+        <GlassCard testId="jobcheck-no-data">
+          <div className="text-center" style={{ padding: "24px 44px" }}>
+            <div style={{ width: 56, height: 56, borderRadius: 18, background: "linear-gradient(135deg, #E8F0FA, #FDEAED)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+              <FileText style={{ width: 24, height: 24, color: "#6E6E73" }} />
+            </div>
+            <p style={{ fontSize: 17, fontWeight: 600, color: "#1D1D1F", marginBottom: 8 }}>Keine Analyse vorhanden</p>
+            <p style={{ fontSize: 14, color: "#8E8E93", marginBottom: 20, maxWidth: 260 }}>Erstelle zuerst ein Rollenprofil, um den JobCheck durchzuführen.</p>
+            <button
+              onClick={() => setLocation("/rollen-dna")}
+              style={{ background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "white", border: "none", borderRadius: 14, padding: "12px 28px", fontSize: 14, fontWeight: 600, cursor: "pointer", boxShadow: "0 4px 12px rgba(0,113,227,0.25)" }}
+              data-testid="button-goto-rollen-dna"
+            >
+              Zur Datenerfassung
+            </button>
+          </div>
+        </GlassCard>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden" lang="de" data-testid="jobcheck-page">
@@ -181,13 +454,25 @@ export default function JobCheck() {
           animation: "gradientShift 20s ease-in-out infinite alternate",
         }}
       />
-
       <style>{`
         @keyframes gradientShift {
           0% { transform: scale(1) translate(0, 0); }
           33% { transform: scale(1.05) translate(-1%, 1%); }
           66% { transform: scale(1.02) translate(1%, -1%); }
           100% { transform: scale(1) translate(0, 0); }
+        }
+        input[type="range"]::-webkit-slider-thumb {
+          -webkit-appearance: none; appearance: none;
+          width: 20px; height: 20px; border-radius: 50%;
+          background: white; border: 2px solid rgba(0,0,0,0.15);
+          box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+          cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+          width: 20px; height: 20px; border-radius: 50%;
+          background: white; border: 2px solid rgba(0,0,0,0.15);
+          box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+          cursor: pointer;
         }
       `}</style>
 
@@ -210,8 +495,6 @@ export default function JobCheck() {
 
             <GlassCard testId="jobcheck-header" style={{ padding: "36px 32px 30px", textAlign: "center", position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(52,170,220,0.04))", pointerEvents: "none" }} />
-              <div style={{ position: "absolute", bottom: -20, left: -20, width: 80, height: 80, borderRadius: "50%", background: "linear-gradient(135deg, rgba(0,113,227,0.04), rgba(52,170,220,0.03))", pointerEvents: "none" }} />
-
               <div style={{
                 display: "inline-flex", alignItems: "center", gap: 6,
                 background: "linear-gradient(135deg, rgba(0,113,227,0.1), rgba(52,170,220,0.06))",
@@ -220,437 +503,329 @@ export default function JobCheck() {
                 <Shield style={{ width: 12, height: 12, color: "#0071E3" }} />
                 <span style={{ fontSize: 10, fontWeight: 700, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.12em" }}>Recruiting-Entscheidungsgrundlage – Level 2</span>
               </div>
-
               <h1 style={{ fontSize: 28, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.15, marginBottom: 4 }} data-testid="text-jobcheck-title">
                 bioLogic JobCheck
               </h1>
-              <p style={{ fontSize: 15, color: "#6E6E73", marginBottom: 16, fontWeight: 500 }} data-testid="text-jobcheck-position">Vertriebsleiter B2C</p>
-
+              <p style={{ fontSize: 15, color: "#6E6E73", marginBottom: 16, fontWeight: 500 }} data-testid="text-jobcheck-position">{roleAnalysis.job_title}</p>
               <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
                 <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10 }}>
-                  Vertrieb & Marketing › Vertrieb
-                </span>
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10 }}>
-                  Ergebnis-/Umsatzdruck, Führung & Koordination
+                  {roleAnalysis.job_family}
                 </span>
               </div>
-
-              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 14 }}>25.02.2026</p>
             </GlassCard>
 
-            <GlassCard testId="jobcheck-summary" style={{ padding: "30px 28px" }}>
-              <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
-                <ChapterBadge num={1} color="#0071E3" />
-                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Management Summary</span>
-              </div>
-
-              <div style={{
-                display: "flex", alignItems: "center", gap: 12, marginBottom: 18,
-                padding: "16px 20px", borderRadius: 18,
-                background: "linear-gradient(135deg, rgba(255,149,0,0.08), rgba(255,149,0,0.03))",
-                border: "1px solid rgba(255,149,0,0.15)",
-              }}>
-                <div style={{
-                  width: 44, height: 44, borderRadius: 14, flexShrink: 0,
-                  background: "rgba(255,149,0,0.12)", display: "flex", alignItems: "center", justifyContent: "center",
-                }}>
-                  <AlertTriangle style={{ width: 20, height: 20, color: "#FF9500", strokeWidth: 2 }} />
-                </div>
+            <AccordionCard
+              title="Analyse – Soll / Ist Profil"
+              icon={ClipboardCheck}
+              open={analyseOpen}
+              onToggle={() => setAnalyseOpen(!analyseOpen)}
+              testId="accordion-analyse"
+            >
+              <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
                 <div>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#FF9500", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 2px" }}>Gesamteinstufung der strukturellen Passung</p>
-                  <p style={{ fontSize: 18, fontWeight: 750, color: "#1D1D1F", margin: 0 }}>Bedingt geeignet</p>
-                </div>
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <CalloutBox text="Die strukturelle Passung ist grundsätzlich gegeben, jedoch mit klar erkennbarer Dominanzabweichung in der primären Steuerungskomponente." color="#FF9500" icon={Lightbulb} />
-                <p style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left", overflowWrap: "break-word", wordBreak: "normal" } as React.CSSProperties} lang="de">
-                  {hyphenateText("Die Rolle ist impulsiv-dominant geprägt und verlangt Tempo, Durchsetzungskraft und unmittelbare Ergebnisintervention.")}
-                </p>
-                <p style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left", overflowWrap: "break-word", wordBreak: "normal" } as React.CSSProperties} lang="de">
-                  {hyphenateText("Das Kandidatenprofil ist intuitiv-dominant und priorisiert Beziehungsstabilität, Konsens und Teamharmonie.")}
-                </p>
-                <p style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left", overflowWrap: "break-word", wordBreak: "normal" } as React.CSSProperties} lang="de">
-                  {hyphenateText("Eine Besetzung ist möglich, erfordert jedoch klare Steuerungsmechanismen, verbindliche KPI-Führung und ein strukturiertes Integrations-Setup.")}
-                </p>
-              </div>
-            </GlassCard>
-
-            <GlassCard testId="jobcheck-rollen-dna" style={{ padding: "30px 28px" }}>
-              <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
-                <ChapterBadge num={2} color="#0071E3" />
-                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Rollen-DNA (Soll)</span>
-              </div>
-
-              <div style={{ marginBottom: 20 }}>
-                <SoftBar items={[
-                  { label: "Impulsiv", value: 48, color: COLORS.imp },
-                  { label: "Intuitiv", value: 30, color: COLORS.int },
-                  { label: "Analytisch", value: 22, color: COLORS.ana },
-                ]} />
-              </div>
-
-              <CalloutBox text="Die dominante Logik der Rolle ist impulsiv geprägt." color={COLORS.imp} icon={Zap} />
-
-              <p style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.85, margin: "16px 0 0", textAlign: "justify", textAlignLast: "left", overflowWrap: "break-word", wordBreak: "normal" } as React.CSSProperties} lang="de">
-                {hyphenateText("Tempo, Durchsetzungsfähigkeit und klare Richtungsentscheidungen stehen im Zentrum. Die Position wirkt steuernd über:")}
-              </p>
-
-              <div style={{ marginTop: 12 }}>
-                <BulletList items={[
-                  "Entscheidungsstärke",
-                  "Konfliktfähigkeit",
-                  "unmittelbare Umsetzung",
-                ]} icon="check" color={COLORS.imp} />
-              </div>
-
-              <div style={{
-                marginTop: 18, padding: "14px 18px", borderRadius: 14,
-                background: "linear-gradient(135deg, rgba(196,30,58,0.06), rgba(196,30,58,0.02))",
-                borderLeft: `4px solid ${COLORS.imp}50`,
-              }}>
-                <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: 0, fontStyle: "italic", fontWeight: 450, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
-                  {hyphenateText("Risiken der Rolle entstehen typischerweise durch Übersteuerung, Ungeduld oder Regelverkürzung.")}
-                </p>
-              </div>
-            </GlassCard>
-
-            <GlassCard testId="jobcheck-kandidat" style={{ padding: "30px 28px" }}>
-              <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
-                <ChapterBadge num={3} color="#0071E3" />
-                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Kandidatenprofil (Ist)</span>
-              </div>
-
-              <div style={{ marginBottom: 20 }}>
-                <SoftBar items={[
-                  { label: "Impulsiv", value: 35, color: COLORS.imp },
-                  { label: "Intuitiv", value: 37, color: COLORS.int },
-                  { label: "Analytisch", value: 28, color: COLORS.ana },
-                ]} />
-              </div>
-
-              <CalloutBox text="Die dominante Logik des Kandidaten ist intuitiv geprägt." color={COLORS.int} icon={Users} />
-
-              <p style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.85, margin: "16px 0 0", textAlign: "justify", textAlignLast: "left", overflowWrap: "break-word", wordBreak: "normal" } as React.CSSProperties} lang="de">
-                {hyphenateText("Anschlussfähigkeit, Kommunikationsstärke und Teamstabilität stehen im Vordergrund. Das Profil wirkt integrierend über:")}
-              </p>
-
-              <div style={{ marginTop: 12 }}>
-                <BulletList items={[
-                  "Beziehung",
-                  "Moderation",
-                  "situative Wahrnehmung",
-                ]} icon="check" color={COLORS.int} />
-              </div>
-
-              <div style={{
-                marginTop: 18, padding: "14px 18px", borderRadius: 14,
-                background: "linear-gradient(135deg, rgba(243,146,0,0.06), rgba(243,146,0,0.02))",
-                borderLeft: `4px solid ${COLORS.int}50`,
-              }}>
-                <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: 0, fontStyle: "italic", fontWeight: 450, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
-                  {hyphenateText("Risiken entstehen typischerweise durch Konfliktvermeidung, Entscheidungsaufschub oder Unschärfe in Leistungsabgrenzung.")}
-                </p>
-              </div>
-            </GlassCard>
-
-            <GlassCard testId="jobcheck-dominanz" style={{ padding: "30px 28px" }}>
-              <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
-                <ChapterBadge num={4} color="#0071E3" />
-                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Dominanz-Verschiebung</span>
-              </div>
-
-              <div style={{
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 20,
-                padding: "20px 24px", borderRadius: 18,
-                background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)",
-              }}>
-                <div style={{ textAlign: "center" }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Soll</p>
-                  <div style={{
-                    padding: "6px 16px", borderRadius: 10,
-                    background: `${COLORS.imp}12`, border: `1px solid ${COLORS.imp}25`,
-                  }}>
-                    <span style={{ fontSize: 15, fontWeight: 700, color: COLORS.imp }}>Impulsiv</span>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>Sollprofil (Rollen-DNA)</p>
+                  {roleProfile && (
+                    <SoftBar items={[
+                      { label: "Impulsiv", value: roleProfile.impulsiv, color: COLORS.imp },
+                      { label: "Intuitiv", value: roleProfile.intuitiv, color: COLORS.int },
+                      { label: "Analytisch", value: roleProfile.analytisch, color: COLORS.ana },
+                    ]} />
+                  )}
+                  <div style={{ marginTop: 10 }}>
+                    <CalloutBox
+                      text={`Die dominante Logik der Rolle ist ${roleProfile ? labelComponent(dominanceModeOf(roleProfile).top1.key) : ""} geprägt: ${roleProfile ? dominanceLabel(dominanceModeOf(roleProfile)) : ""}.`}
+                      color={roleProfile ? (dominanceModeOf(roleProfile).top1.key === "impulsiv" ? COLORS.imp : dominanceModeOf(roleProfile).top1.key === "intuitiv" ? COLORS.int : COLORS.ana) : "#0071E3"}
+                      icon={Zap}
+                    />
                   </div>
                 </div>
 
-                <ChevronRight style={{ width: 20, height: 20, color: "#8E8E93" }} />
+                <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "0 -4px" }} />
 
-                <div style={{ textAlign: "center" }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Ist</p>
-                  <div style={{
-                    padding: "6px 16px", borderRadius: 10,
-                    background: `${COLORS.int}12`, border: `1px solid ${COLORS.int}25`,
-                  }}>
-                    <span style={{ fontSize: 15, fontWeight: 700, color: COLORS.int }}>Intuitiv</span>
-                  </div>
-                </div>
-              </div>
+                <div>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 6 }}>Istprofil (Kandidat)</p>
+                  <p style={{ fontSize: 12, color: "#8E8E93", marginBottom: 16 }}>Verschieben Sie die Regler, um das Kandidatenprofil einzugeben. Die Werte werden automatisch normalisiert.</p>
 
-              <CalloutBox text="Die dominante Steuerungslogik des Kandidaten unterscheidet sich strukturell von der dominanten Logik der Rolle." color="#FF9500" icon={Scale} />
-
-              <div style={{ marginTop: 20 }}>
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 10 }}>Systemwirkung</p>
-
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                  <div style={{
-                    padding: "16px 18px", borderRadius: 16,
-                    background: "rgba(52,199,89,0.04)", border: "1px solid rgba(52,199,89,0.12)",
-                  }}>
-                    <p style={{ fontSize: 12, fontWeight: 700, color: "#34C759", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>Kurzfristig</p>
-                    <BulletList items={[
-                      "positives Teamklima",
-                      "erhöhte Motivation",
-                      "integrative Führung",
-                    ]} color="#34C759" />
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: "#6E6E73", display: "block", marginBottom: 6 }}>Name des Kandidaten (optional)</label>
+                    <input
+                      type="text"
+                      value={candidateName}
+                      onChange={e => setCandidateName(e.target.value)}
+                      placeholder="z. B. Kandidat A"
+                      data-testid="input-candidate-name"
+                      style={{
+                        width: "100%", padding: "10px 14px", borderRadius: 12,
+                        border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,0,0,0.02)",
+                        fontSize: 14, color: "#1D1D1F", outline: "none",
+                      }}
+                    />
                   </div>
 
-                  <div style={{
-                    padding: "16px 18px", borderRadius: 16,
-                    background: "rgba(196,30,58,0.04)", border: "1px solid rgba(196,30,58,0.12)",
-                  }}>
-                    <p style={{ fontSize: 12, fontWeight: 700, color: COLORS.imp, marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>Langfristig möglich</p>
-                    <BulletList items={[
-                      "reduzierte Zielhärte",
-                      "Entscheidungsaufschub",
-                      "nachlassende Ergebnisdisziplin",
-                    ]} color={COLORS.imp} />
+                  <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "18px 20px", borderRadius: 18, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
+                    <TriadSlider label="Impulsiv" value={candImp} color={COLORS.imp} onChange={setCandImp} />
+                    <TriadSlider label="Intuitiv" value={candInt} color={COLORS.int} onChange={setCandInt} />
+                    <TriadSlider label="Analytisch" value={candAna} color={COLORS.ana} onChange={setCandAna} />
+                  </div>
+
+                  <div style={{ marginTop: 14 }}>
+                    <SoftBar items={[
+                      { label: "Impulsiv", value: normalizedCand.impulsiv, color: COLORS.imp },
+                      { label: "Intuitiv", value: normalizedCand.intuitiv, color: COLORS.int },
+                      { label: "Analytisch", value: normalizedCand.analytisch, color: COLORS.ana },
+                    ]} />
+                    <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Normalisiertes Profil (Summe = 100 %)</p>
                   </div>
                 </div>
+
+                <button
+                  onClick={handleCreateReport}
+                  data-testid="button-create-report"
+                  style={{
+                    width: "100%", padding: "14px 24px", borderRadius: 16,
+                    background: "linear-gradient(135deg, #0071E3, #34AADC)",
+                    color: "white", border: "none", fontSize: 15, fontWeight: 650,
+                    cursor: "pointer", boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                    transition: "transform 150ms ease, box-shadow 150ms ease",
+                  }}
+                >
+                  <BarChart3 style={{ width: 16, height: 16 }} />
+                  Bericht erstellen
+                </button>
               </div>
+            </AccordionCard>
 
-              <div style={{
-                marginTop: 18, padding: "14px 18px", borderRadius: 14,
-                background: "linear-gradient(135deg, rgba(255,149,0,0.06), rgba(255,149,0,0.02))",
-                borderLeft: "4px solid rgba(255,149,0,0.5)",
-              }}>
-                <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: 0, fontStyle: "italic", fontWeight: 450, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
-                  {hyphenateText("Die Position verschiebt sich von Leistungsarchitektur hin zu Beziehungsarchitektur.")}
-                </p>
-              </div>
-            </GlassCard>
-
-            <GlassCard testId="jobcheck-matrix" style={{ padding: "30px 28px" }}>
-              <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
-                <ChapterBadge num={5} color="#0071E3" />
-                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Strukturelle Eignungsmatrix</span>
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                <MatrixRow bereich="Gesamtdominanz" status="bedingt" begruendung="Dominanzverschiebung vorhanden, jedoch Impulsiv-Anteil nicht kritisch niedrig. Steuerbar." />
-                <MatrixRow bereich="Entscheidungslogik" status="bedingt" begruendung="Tendenz zur Absicherung statt Direktintervention. Erfordert klare Entscheidungsregeln." />
-                <MatrixRow bereich="KPI- & Performance-Führung" status="bedingt" begruendung="Analytische Basis vorhanden. Muss strukturell verankert werden." />
-                <MatrixRow bereich="Konfliktfähigkeit" status="kritisch" begruendung="Risiko von Konfliktvermeidung bei Low-Performance." />
-                <MatrixRow bereich="Teamführung & Motivation" status="geeignet" begruendung="Hohe Anschlussfähigkeit und Teamstabilisierung." />
-                <MatrixRow bereich="Wettbewerbsdynamik" status="bedingt" begruendung="Druckaufbau geringer als rollenseitig vorgesehen." />
-                <MatrixRow bereich="Kulturelle Wirkung" status="bedingt" begruendung="Kann Kultur stabilisieren, aber Leistungsarchitektur abschwächen." />
-              </div>
-            </GlassCard>
-
-            <GlassCard testId="jobcheck-kernbefund" style={{ padding: "30px 28px" }}>
-              <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
-                <ChapterBadge num={6} color="#0071E3" />
-                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Entscheidungsrelevanter Kernbefund</span>
-              </div>
-
-              <CalloutBox text="Die dominante Logik des Kandidaten unterscheidet sich von der strukturellen Kernanforderung der Rolle." color="#0071E3" icon={Target} />
-
-              <p style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F", margin: "18px 0 10px" }}>Dadurch verändert sich die Systemwirkung der Position:</p>
-
-              <BulletList items={[
-                "Entscheidungsrhythmen verlängern sich",
-                "Leistungsdifferenzierung wird moderater",
-                "Zielhärte kann nachlassen",
-              ]} color="#0071E3" />
-
-              <div style={{
-                marginTop: 18, padding: "14px 18px", borderRadius: 14,
-                background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(0,113,227,0.02))",
-                borderLeft: "4px solid rgba(0,113,227,0.5)",
-              }}>
-                <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: 0, fontStyle: "italic", fontWeight: 450, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
-                  {hyphenateText("Eine Besetzung ist möglich, jedoch nicht selbststabilisierend.")}
-                </p>
-              </div>
-            </GlassCard>
-
-            <GlassCard testId="jobcheck-risiko" style={{ padding: "30px 28px" }}>
-              <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
-                <ChapterBadge num={7} color="#0071E3" />
-                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Konkrete Risikoausprägung</span>
-              </div>
-
-              <CalloutBox text="Die impulsive Komponente ist niedriger ausgeprägt als rollenseitig erforderlich." color={COLORS.imp} icon={AlertTriangle} />
-
-              <p style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F", margin: "18px 0 10px" }}>Mögliche Effekte:</p>
-
-              <BulletList items={[
-                "Zögern bei Zielabweichungen",
-                "reduzierte Durchsetzung",
-                "ausweichende Konfliktführung",
-                "schwächere Umsetzungsdynamik",
-              ]} color={COLORS.imp} />
-
-              <p style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F", margin: "20px 0 10px" }}>Führung muss stärker über:</p>
-
-              <BulletList items={[
-                "klare Entscheidungsbefugnisse",
-                "verbindliche KPI-Rhythmen",
-                "definierte Eskalationsregeln",
-              ]} icon="check" color="#0071E3" />
-
-              <div style={{
-                marginTop: 18, padding: "14px 18px", borderRadius: 14,
-                background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(0,113,227,0.02))",
-                borderLeft: "4px solid rgba(0,113,227,0.5)",
-              }}>
-                <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: 0, fontStyle: "italic", fontWeight: 450 }}>gesteuert werden.</p>
-              </div>
-            </GlassCard>
-
-            <GlassCard testId="jobcheck-entwicklung" style={{ padding: "30px 28px" }}>
-              <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
-                <ChapterBadge num={8} color="#0071E3" />
-                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Entwicklungsprognose</span>
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
-                <div style={{
-                  padding: "16px 18px", borderRadius: 16,
-                  background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center",
-                }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Entwicklungswahrscheinlichkeit</p>
-                  <p style={{ fontSize: 20, fontWeight: 750, color: "#FF9500", margin: 0 }}>Mittel</p>
+            <AccordionCard
+              title="JobCheck Bericht"
+              icon={BarChart3}
+              open={berichtOpen}
+              onToggle={() => { if (engine) setBerichtOpen(!berichtOpen); }}
+              testId="accordion-bericht"
+              badge={engine ? (
+                <StatusBadge status={fitToUIStatus(engine.overallFit)} />
+              ) : undefined}
+            >
+              {!engine ? (
+                <div style={{ textAlign: "center", padding: "30px 0" }}>
+                  <p style={{ fontSize: 14, color: "#8E8E93" }}>Bitte zuerst das Ist-Profil eingeben und „Bericht erstellen" klicken.</p>
                 </div>
-                <div style={{
-                  padding: "16px 18px", borderRadius: 16,
-                  background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center",
-                }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Anpassungszeitraum</p>
-                  <p style={{ fontSize: 20, fontWeight: 750, color: "#0071E3", margin: 0 }}>6–12 Monate</p>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
+                      <ChapterBadge num={1} color="#0071E3" />
+                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Management Summary</span>
+                    </div>
+                    <div style={{
+                      display: "flex", alignItems: "center", gap: 12, marginBottom: 16,
+                      padding: "16px 20px", borderRadius: 18,
+                      background: `linear-gradient(135deg, ${fitColor(engine.overallFit)}12, ${fitColor(engine.overallFit)}04)`,
+                      border: `1px solid ${fitColor(engine.overallFit)}20`,
+                    }}>
+                      {(() => { const FI = fitIcon(engine.overallFit); return (
+                        <div style={{ width: 44, height: 44, borderRadius: 14, flexShrink: 0, background: `${fitColor(engine.overallFit)}15`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <FI style={{ width: 20, height: 20, color: fitColor(engine.overallFit), strokeWidth: 2 }} />
+                        </div>
+                      ); })()}
+                      <div>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: fitColor(engine.overallFit), textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 2px" }}>Gesamteinstufung</p>
+                        <p style={{ fontSize: 18, fontWeight: 750, color: "#1D1D1F", margin: 0 }}>{statusLabel(engine.overallFit)}</p>
+                      </div>
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+                      <div style={{ padding: "12px 14px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Steuerungsintensität</p>
+                        <p style={{ fontSize: 16, fontWeight: 750, color: controlColor(engine.controlIntensity), margin: 0 }}>{controlLabel(engine.controlIntensity)}</p>
+                      </div>
+                      <div style={{ padding: "12px 14px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Mismatch-Score</p>
+                        <p style={{ fontSize: 16, fontWeight: 750, color: "#1D1D1F", margin: 0 }}>{engine.mismatchScore}{engine.koTriggered ? " · K.O." : ""}</p>
+                      </div>
+                    </div>
+
+                    <CalloutBox text={engine.coreFinding} color={fitColor(engine.overallFit)} icon={Lightbulb} />
+                  </div>
+
+                  <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
+
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
+                      <ChapterBadge num={2} color="#0071E3" />
+                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Dominanz-Verschiebung</span>
+                    </div>
+
+                    <div style={{
+                      display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 16,
+                      padding: "20px 24px", borderRadius: 18,
+                      background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)",
+                    }}>
+                      <div style={{ textAlign: "center" }}>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Soll</p>
+                        {(() => { const k = engine.roleDominance.top1.key; const c = k === "impulsiv" ? COLORS.imp : k === "intuitiv" ? COLORS.int : COLORS.ana; return (
+                          <div style={{ padding: "6px 16px", borderRadius: 10, background: `${c}12`, border: `1px solid ${c}25` }}>
+                            <span style={{ fontSize: 15, fontWeight: 700, color: c }}>{labelComponent(k)}</span>
+                          </div>
+                        ); })()}
+                      </div>
+                      <ChevronRight style={{ width: 20, height: 20, color: "#8E8E93" }} />
+                      <div style={{ textAlign: "center" }}>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Ist</p>
+                        {(() => { const k = engine.candDominance.top1.key; const c = k === "impulsiv" ? COLORS.imp : k === "intuitiv" ? COLORS.int : COLORS.ana; return (
+                          <div style={{ padding: "6px 16px", borderRadius: 10, background: `${c}12`, border: `1px solid ${c}25` }}>
+                            <span style={{ fontSize: 15, fontWeight: 700, color: c }}>{labelComponent(k)}</span>
+                          </div>
+                        ); })()}
+                      </div>
+                    </div>
+
+                    <CalloutBox
+                      text={engine.roleDominance.top1.key === engine.candDominance.top1.key
+                        ? "Die dominanten Strukturprinzipien bleiben stabil. Die Rolle wird in ihrer Kernwirkung voraussichtlich konsistent abgebildet."
+                        : "Die dominante Steuerungslogik des Kandidaten unterscheidet sich strukturell von der dominanten Logik der Rolle."}
+                      color={engine.roleDominance.top1.key === engine.candDominance.top1.key ? "#34C759" : "#FF9500"}
+                      icon={Scale}
+                    />
+                  </div>
+
+                  <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
+
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
+                      <ChapterBadge num={3} color="#0071E3" />
+                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Strukturelle Eignungsmatrix</span>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                      {engine.matrix.map((row: EngineMatrixRow) => (
+                        <MatrixRowUI
+                          key={row.areaId}
+                          bereich={row.areaLabel}
+                          status={fitToUIStatus(row.status)}
+                          begruendung={row.reasoning}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
+
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
+                      <ChapterBadge num={4} color="#0071E3" />
+                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Kernbefund</span>
+                    </div>
+                    <CalloutBox text={engine.keyReason} color="#0071E3" icon={Target} />
+                  </div>
+
+                  <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
+
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
+                      <ChapterBadge num={5} color="#0071E3" />
+                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Risikoprognose</span>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                      {[
+                        { label: "Kurzfristig", items: engine.risks.shortTerm, color: "#34C759" },
+                        { label: "Mittelfristig", items: engine.risks.midTerm, color: "#FF9500" },
+                        { label: "Langfristig", items: engine.risks.longTerm, color: "#C41E3A" },
+                      ].map(risk => (
+                        <div key={risk.label} style={{
+                          padding: "16px 18px", borderRadius: 16,
+                          background: `${risk.color}06`, border: `1px solid ${risk.color}15`,
+                        }}>
+                          <p style={{ fontSize: 12, fontWeight: 700, color: risk.color, marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>{risk.label}</p>
+                          <BulletList items={risk.items} color={risk.color} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
+
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
+                      <ChapterBadge num={6} color="#0071E3" />
+                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Entwicklungsprognose</span>
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+                      <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Wahrscheinlichkeit</p>
+                        <p style={{ fontSize: 18, fontWeight: 750, color: engine.development.likelihood === "hoch" ? "#34C759" : engine.development.likelihood === "mittel" ? "#FF9500" : "#C41E3A", margin: 0 }}>
+                          {engine.development.likelihood.charAt(0).toUpperCase() + engine.development.likelihood.slice(1)}
+                        </p>
+                      </div>
+                      <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Zeitraum</p>
+                        <p style={{ fontSize: 18, fontWeight: 750, color: "#0071E3", margin: 0 }}>{engine.development.timeframe}</p>
+                      </div>
+                    </div>
+                    <CalloutBox text={engine.development.text} color="#FF9500" icon={TrendingUp} />
+                  </div>
+
+                  <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
+
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: 18 }}>
+                      <ChapterBadge num={7} color="#0071E3" />
+                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>90-Tage-Integrationsplan</span>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+                      <TimelinePhase phase="0–30 Tage" title="Strukturierung & Rahmen setzen" items={engine.integrationPlan90.phase_0_30} color="#0071E3" />
+                      <TimelinePhase phase="30–60 Tage" title="Stabilisierung & Steuerung" items={engine.integrationPlan90.phase_30_60} color="#F39200" />
+                      <TimelinePhase phase="60–90 Tage" title="Validierung & Entscheidung" items={engine.integrationPlan90.phase_60_90} color="#34C759" />
+                    </div>
+                  </div>
+
+                  <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
+
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
+                      <ChapterBadge num={8} color="#0071E3" />
+                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Gesamtbewertung</span>
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
+                      <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Grundpassung</p>
+                        <p style={{ fontSize: 15, fontWeight: 700, color: fitColor(engine.overallFit), margin: 0 }}>{statusLabel(engine.overallFit)}</p>
+                      </div>
+                      <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Steuerungsbedarf</p>
+                        <p style={{ fontSize: 15, fontWeight: 700, color: controlColor(engine.controlIntensity), margin: 0 }}>{controlLabel(engine.controlIntensity)}</p>
+                      </div>
+                      <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Kritischer Bereich</p>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{engine.criticalAreaLabel}</p>
+                      </div>
+                      <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Empfehlung</p>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#0071E3", margin: 0 }}>
+                          {engine.overallFit === "SUITABLE" ? "Besetzung strukturell passend" : engine.overallFit === "CONDITIONAL" ? "Besetzung möglich mit Integrations-Setup" : "Für diese Rolle nicht strukturgerecht"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div style={{
+                      padding: "18px 22px", borderRadius: 18,
+                      background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.04))",
+                      border: "1px solid rgba(0,113,227,0.12)",
+                    }}>
+                      <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.85, margin: 0, fontWeight: 500, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
+                        {hyphenateText(engine.overallFit === "SUITABLE"
+                          ? "Die Besetzung ist strukturell passend. Fokus auf saubere Umsetzung und KPI-Routinen."
+                          : engine.overallFit === "CONDITIONAL"
+                            ? "Die Besetzung ist nicht risikofrei, jedoch entwicklungsfähig, sofern klare Leistungsarchitektur etabliert wird."
+                            : "Für diese Rolle nicht strukturgerecht. Hohe Wahrscheinlichkeit systemischer Fehlwirkung."
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
                 </div>
-              </div>
-
-              <CalloutBox text="Eine strukturelle Dominanzverschiebung ist stabiler als kurzfristige Trainingsimpulse." color="#FF9500" icon={TrendingUp} />
-
-              <p style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F", margin: "18px 0 10px" }}>Eine erfolgreiche Integration setzt voraus:</p>
-
-              <BulletList items={[
-                "klare Führungsarchitektur",
-                "regelmäßige Review-Rhythmen",
-                "transparente Leistungsanforderungen",
-              ]} icon="check" color="#0071E3" />
-
-              <div style={{
-                marginTop: 18, padding: "14px 18px", borderRadius: 14,
-                background: "linear-gradient(135deg, rgba(196,30,58,0.06), rgba(196,30,58,0.02))",
-                borderLeft: `4px solid ${COLORS.imp}50`,
-              }}>
-                <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: 0, fontStyle: "italic", fontWeight: 450, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
-                  {hyphenateText("Ohne diese Rahmenbedingungen sinkt die Entwicklungswahrscheinlichkeit.")}
-                </p>
-              </div>
-            </GlassCard>
-
-            <GlassCard testId="jobcheck-90tage" style={{ padding: "30px 28px" }}>
-              <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
-                <ChapterBadge num={9} color="#0071E3" />
-                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Handlungsempfehlung – 90-Tage-Integrationsplan</span>
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-                <TimelinePhase
-                  phase="0–30 Tage"
-                  title="Entscheidungs- und Durchsetzungslogik klären"
-                  color="#0071E3"
-                  items={[
-                    "Schriftliche Definition der Entscheidungsbefugnisse",
-                    "Klare Zieldefinition mit messbaren Ergebniserwartungen",
-                    "Einführung verbindlicher KPI-Reviews",
-                    "Wöchentliches strukturiertes 1:1 mit Fokus auf Entscheidungsverhalten",
-                    "Dokumentation kritischer Entscheidungen",
-                  ]}
-                  ziel="Ziel: Entscheidungsstärke wird bewusst trainiert und reflektiert."
-                />
-
-                <TimelinePhase
-                  phase="30–60 Tage"
-                  title="Übersteuerung vs. Untersteuerung stabilisieren"
-                  color="#F39200"
-                  items={[
-                    "Verbindliche Entscheidungsfristen",
-                    "Sichtbare Verantwortungsübertragung",
-                    "Vorbereitung/Nachbereitung von Konfliktgesprächen",
-                    "Zielklarheit regelmäßig überprüfen",
-                    "Training von Durchsetzungsfähigkeit in realen Situationen",
-                  ]}
-                  ziel="Ziel: Durchsetzung wird reproduzierbar und rollenkonform."
-                />
-
-                <TimelinePhase
-                  phase="60–90 Tage"
-                  title="Strukturelle Stabilisierung"
-                  color="#34C759"
-                  items={[
-                    "Prüfen, ob Entscheidungen eigenständig und regelkonform getroffen werden",
-                    "Ergebnisstabilität bewerten (nicht nur kurzfristige Performance)",
-                    "Führungsintervention schrittweise reduzieren",
-                    "Konfliktqualität beurteilen",
-                    "Entscheidung über dauerhafte Stabilität oder weiteren Entwicklungsbedarf",
-                  ]}
-                  ziel="Ziel: Der Kandidat zeigt rollenkonformes Entscheidungsverhalten ohne permanente Steuerung."
-                />
-              </div>
-            </GlassCard>
-
-            <GlassCard testId="jobcheck-gesamtbewertung" style={{ padding: "30px 28px" }}>
-              <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
-                <ChapterBadge num={10} color="#0071E3" />
-                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Gesamtbewertung</span>
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
-                <div style={{
-                  padding: "14px 18px", borderRadius: 16,
-                  background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)",
-                }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 4px" }}>Strukturelle Grundpassung</p>
-                  <p style={{ fontSize: 16, fontWeight: 700, color: "#FF9500", margin: 0 }}>Mittel</p>
-                </div>
-                <div style={{
-                  padding: "14px 18px", borderRadius: 16,
-                  background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)",
-                }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 4px" }}>Steuerungsbedarf</p>
-                  <p style={{ fontSize: 16, fontWeight: 700, color: COLORS.imp, margin: 0 }}>Hoch</p>
-                </div>
-                <div style={{
-                  padding: "14px 18px", borderRadius: 16,
-                  background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)",
-                }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 4px" }}>Kritischer Bereich</p>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Konflikt- und Durchsetzungsdominanz</p>
-                </div>
-                <div style={{
-                  padding: "14px 18px", borderRadius: 16,
-                  background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)",
-                }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 4px" }}>Empfehlung</p>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: "#0071E3", margin: 0 }}>Besetzung möglich mit Integrations-Setup</p>
-                </div>
-              </div>
-
-              <div style={{
-                padding: "18px 22px", borderRadius: 18,
-                background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.04))",
-                border: "1px solid rgba(0,113,227,0.12)",
-              }}>
-                <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.85, margin: 0, fontWeight: 500, textAlign: "justify", textAlignLast: "left", overflowWrap: "break-word", wordBreak: "normal" } as React.CSSProperties} lang="de">
-                  {hyphenateText("Die Besetzung ist nicht risikofrei, jedoch entwicklungsfähig, sofern klare Leistungsarchitektur etabliert wird.")}
-                </p>
-              </div>
-            </GlassCard>
+              )}
+            </AccordionCard>
 
           </div>
         </main>
