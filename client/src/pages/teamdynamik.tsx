@@ -54,22 +54,25 @@ function SoftBar({ triad }: { triad: Triad }) {
   ];
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      {items.map(bar => (
-        <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 12, color: "#6E6E73", width: 62, flexShrink: 0 }}>{bar.label}</span>
-          <div style={{ flex: 1, height: 24, borderRadius: 6, background: "rgba(0,0,0,0.04)", overflow: "hidden", position: "relative" }}>
-            <div style={{
-              width: bar.value === 0 ? "0%" : `${Math.max(bar.value, 2)}%`,
-              height: "100%", borderRadius: 6, background: bar.color,
-              transition: "width 600ms ease",
-              display: "flex", alignItems: "center", paddingLeft: 8,
-              minWidth: bar.value === 0 ? 0 : 40,
-            }}>
-              <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(bar.value)}%</span>
+      {items.map(bar => {
+        const widthPct = (bar.value / 67) * 100;
+        return (
+          <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 12, color: "#6E6E73", width: 62, flexShrink: 0 }}>{bar.label}</span>
+            <div style={{ flex: 1, height: 24, borderRadius: 6, background: "rgba(0,0,0,0.04)", overflow: "hidden", position: "relative" }}>
+              <div style={{
+                width: bar.value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 3), 100)}%`,
+                height: "100%", borderRadius: 6, background: bar.color,
+                transition: "width 600ms ease",
+                display: "flex", alignItems: "center", paddingLeft: 8,
+                minWidth: bar.value === 0 ? 0 : 40,
+              }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(bar.value)}%</span>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
