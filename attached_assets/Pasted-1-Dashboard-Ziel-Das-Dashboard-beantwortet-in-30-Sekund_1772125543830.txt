@@ -1,0 +1,170 @@
+1) Dashboard-Ziel
+
+Das Dashboard beantwortet in <30 Sekunden drei Fragen:
+
+Wie ist das Team aktuell gebaut? (Dominanz + Balance)
+
+Was passiert, wenn eine neue Person (oder Führung) reinkommt? (Verschiebungstyp + Intensität)
+
+Was muss ich tun, damit es funktioniert? (Hebel + Integrationsplan)
+
+2) Seitenstruktur (1 Screen, 4 Module)
+Modul A — Executive Header (oben, volle Breite)
+
+Links: Teamname / Bereich / Datum
+Mitte: „Systemstatus“ als Ampel
+
+Grün = stabil/ergänzend
+
+Gelb = Reibung/steuerbar
+
+Rot = Spannungs-/Transformationsfall (hoch)
+
+Rechts: 3 KPI-Kacheln (CEO/HR/Lead sofort nutzbar)
+
+Verschiebungstyp (z.B. Spannungsfall)
+
+Intensität (Niedrig/Mittel/Hoch)
+
+Steuerungsbedarf (Niedrig/Mittel/Hoch)
+
+Logik: Ampel = Funktion(Intensität, Führungsrolle, Abweichungsgrad)
+
+Modul B — Teamprofil & Rollenprofil (2-Spalten)
+
+Linke Spalte: Team
+
+Donut oder Balken: Impulsiv / Intuitiv / Analytisch
+
+Dominanzlabel (z.B. „Dominanz: Intuitiv“)
+
+optional: Streuung/Varianz (wenn du Einzelprofile hast)
+
+Rechte Spalte: Neue Person (oder Zielrolle + Ist)
+
+„Rollen-DNA (Soll)“ Balken
+
+„Kandidatenprofil (Ist)“ Balken
+
+Dominanzlabel
+
+Fit-Tag: „Soll=Ist“ / „Abweichung“
+
+Interaktion: Toggle „Neue Person ist Führung: Ja/Nein“ → aktualisiert Achse/Steuerungsbedarf/Risiko
+
+Modul C — Spannungsmatrix (zentral, visuelles Herzstück)
+
+9-Feld-Matrix: Führung (Y) × Team (X)
+
+X-Achse: Teamdominanz (Impulsiv / Intuitiv / Analytisch)
+
+Y-Achse: Führungsdominanz (Impulsiv / Intuitiv / Analytisch)
+
+Aktuelles Feld wird farblich hervorgehoben (z.B. „Logik vs Beziehung“)
+
+Im Feld-Overlay (Kurztext, 2 Zeilen):
+
+Systemlabel: „Logik vs Beziehung“
+
+Erwartete Wirkung: „mehr Struktur / Risiko Distanz“
+
+Interaktion: Hover/Click auf Feld zeigt „Chancen / Risiken / Hebel“ als Side Panel.
+
+Modul D — Maßnahmen & Plan (unten, 3 Tabs)
+
+Tab 1: Chancen (max. 6 Bulletpoints, sauber priorisiert)
+Tab 2: Risiken (max. 6 Bulletpoints, mit Wirkungsformulierung)
+Tab 3: Integrationsplan (30/60/90 oder 30 Tage in 3 Phasen)
+
+Zusatz: „Führungshebel“ als Checkliste (mit Toggle „aktiviert?“)
+
+Entscheidungszeitfenster definiert ✅/❌
+
+80/20-Standard festgelegt ✅/❌
+
+Review-Rhythmus ✅/❌
+
+Beziehungsebene ritualisiert ✅/❌
+
+Logik: Wenn Hebel gesetzt → Intensität sinkt (z.B. Hoch → Mittel), Ampel passt sich an.
+
+3) Datenlogik (für Entwickler)
+A) Dominanz bestimmen
+
+Dominanz = max(Impulsiv, Intuitiv, Analytisch)
+
+„Gleichstand“ → Dominanz = „Gemischt“, Typ = „ohne klare Dominanz“
+
+B) Verschiebungstyp (Baseline)
+
+Ermittelt aus Differenz Teamdominanz ↔ Führungdominanz und Abweichungsgrad:
+
+Verstärkung: gleiche Dominanz + ähnliche Verteilung
+
+Ergänzung: andere Dominanz, aber komplementär (z.B. Team impulsiv, Führung analytisch) bei mittlerer Differenz
+
+Reibung: andere Dominanz + Differenz mittel
+
+Spannung/Transformation: andere Dominanz + Differenz hoch + Führungsrolle = JA
+
+C) Intensität (Score 0–100 → Low/Med/High)
+
+Empfohlene Faktoren:
+
+Dominanzdifferenz (0–40)
+
+Zweitdominanz-Konflikt (0–15)
+
+Führungsrolle Ja/Nein (0–20)
+
+Abweichungsgrad Soll↔Ist (0–25)
+
+Mapping:
+
+0–33 = Niedrig
+
+34–66 = Mittel
+
+67–100 = Hoch
+
+D) Steuerungsbedarf
+
+Steuerung = max(Intensität, Führungsrolle-Faktor)
+
+Hebel reduzieren Steuerung um definierte Punkte (z.B. je Hebel -5)
+
+4) Textlogik im Dashboard (kein Modellwissen nötig)
+
+Jedes Textfeld folgt dem Muster:
+
+„Was ist die Systemlage“ → „Was passiert im Alltag“ → „Was tun“
+
+Beispiel für dein Feld „Analytisch führt / Intuitives Team“:
+
+Systemlage: „Struktur trifft Beziehungslogik“
+
+Alltag: „Entscheidungen werden faktenbasierter, Tempo sinkt kurzfristig, Distanzwahrnehmung möglich“
+
+Tun: „Zeitfenster + 80/20 + Reviews + Beziehung ritualisieren“
+
+5) CEO-/HR-/Teamleiter-Sicht als Umschalter (sehr empfehlenswert)
+
+View Toggle oben rechts: CEO | HR | Teamleitung
+
+CEO-View: nur Ampel + 3 KPIs + 3 Risiken + 3 Hebel
+
+HR-View: Kultur-/Bindungsrisiko, Konfliktmuster, Integrationsplan
+
+Teamleitung-View: konkrete Routinen, Meetingrhythmus, Kommunikationsregeln
+
+Das ist extrem wertvoll, weil du dieselbe Analyse je Zielgruppe anders „ausspielst“, ohne neue Logik zu erfinden.
+
+6) Ergebnis: Was dein Dashboard dann kann
+
+In Sekunden zeigen, wo das Team steht (Profil)
+
+Sichtbar machen, welche Dynamik entsteht (Matrix)
+
+Sofort ableiten, wie man steuert (Hebel + Plan)
+
+Und das Ganze in einer Sprache, die auch ohne bioLogic-Kenntnis funktioniert.

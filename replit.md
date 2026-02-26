@@ -4,7 +4,7 @@
 
 bioLogic RoleDynamics is a German-language web application for structural analysis focused on "Präzision in Besetzung und Teamstruktur" (precision in staffing and team structure). The app follows a full-stack TypeScript architecture with a React frontend and Express backend, using PostgreSQL for data storage via Drizzle ORM.
 
-The app features a multi-step wizard (Rollen-DNA) for capturing role requirements, an AI-powered analysis page, a dynamic "Entscheidungsbericht" (decision report), and a "bioLogic JobCheck" page for candidate-role fit assessment. The Entscheidungsbericht is fully AI-generated using OpenAI, creating role-specific structural analyses with charts, bullet-point lists, tension fields, risk assessments, and hiring recommendations. The JobCheck page (`/jobcheck`) provides a Level 2 recruiting decision foundation comparing Soll (role DNA) vs. Ist (candidate profile) with dominance shift analysis, structural suitability matrix, risk assessments, development prognosis, and a 90-day integration plan.
+The app features a multi-step wizard (Rollen-DNA) for capturing role requirements, an AI-powered analysis page, a dynamic "Entscheidungsbericht" (decision report), a "bioLogic JobCheck" page for candidate-role fit assessment, and a "Teamdynamik" dashboard. The Entscheidungsbericht is fully AI-generated using OpenAI, creating role-specific structural analyses with charts, bullet-point lists, tension fields, risk assessments, and hiring recommendations. The JobCheck page (`/jobcheck`) provides a Level 2 recruiting decision foundation comparing Soll (role DNA) vs. Ist (candidate profile) with dominance shift analysis, structural suitability matrix, risk assessments, development prognosis, and a 90-day integration plan. The Teamdynamik page (`/teamdynamik`) provides a team dynamics dashboard with 4 modules: Executive Header (traffic light + KPIs), Team/Role/Candidate profiles with interactive sliders, a 9-field Tension Matrix, and Actions & Plan with Führungshebel (levers that reduce steering need). It supports CEO/HR/Teamleitung view modes with differentiated content. The engine (`client/src/lib/teamdynamik-engine.ts`) imports and reuses calculation functions from `jobcheck-engine.ts` (normalizeTriad, dominanceModeOf, labelComponent, dominanceLabel) without modifying that file.
 
 ## User Preferences
 
@@ -18,7 +18,7 @@ All pages share a unified GlobalNav component (`client/src/components/global-nav
 - **Rollenprofil**: Navigates to `/bericht` (AI-generated decision report)
 - **Soll-Ist-Vergleich**: Navigates to `/jobcheck` (candidate-role fit comparison)
 
-- **Teamdynamik**: Navigates to `/teamdynamik` (team dynamics - placeholder)
+- **Teamdynamik**: Navigates to `/teamdynamik` (team dynamics dashboard)
 
 The nav supports a `rightSlot` prop for page-specific actions (e.g., Save/Load on rollen-dna, Regenerate on bericht).
 

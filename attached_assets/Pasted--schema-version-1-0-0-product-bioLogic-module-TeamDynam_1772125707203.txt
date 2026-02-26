@@ -1,0 +1,438 @@
+{
+  "schema_version": "1.0.0",
+  "product": "bioLogic",
+  "module": "TeamDynamicsDashboard",
+  "page": {
+    "id": "team-dynamics-dashboard",
+    "title": "Teamanalyse",
+    "layout": {
+      "type": "grid",
+      "columns": 12,
+      "gap": 16,
+      "breakpoints": {
+        "sm": 1,
+        "md": 12,
+        "lg": 12
+      }
+    }
+  },
+  "data_model": {
+    "entities": {
+      "teamProfile": {
+        "fields": {
+          "team_id": "string",
+          "team_name": "string",
+          "impulsiv_pct": "number",
+          "intuitiv_pct": "number",
+          "analytisch_pct": "number",
+          "members_count": "number",
+          "source": "string"
+        }
+      },
+      "roleProfileSoll": {
+        "fields": {
+          "role_id": "string",
+          "role_title": "string",
+          "is_lead_role": "boolean",
+          "impulsiv_pct": "number",
+          "intuitiv_pct": "number",
+          "analytisch_pct": "number"
+        }
+      },
+      "candidateProfileIst": {
+        "fields": {
+          "candidate_id": "string",
+          "label": "string",
+          "impulsiv_pct": "number",
+          "intuitiv_pct": "number",
+          "analytisch_pct": "number"
+        }
+      },
+      "analysisOutput": {
+        "fields": {
+          "dominance_team": "enum:IMPULSIV|INTUITIV|ANALYTISCH|GEMISCHT",
+          "dominance_role_soll": "enum:IMPULSIV|INTUITIV|ANALYTISCH|GEMISCHT",
+          "dominance_candidate_ist": "enum:IMPULSIV|INTUITIV|ANALYTISCH|GEMISCHT",
+          "shift_axis": "enum:IMPULSIV_TO_INTUITIV|IMPULSIV_TO_ANALYTISCH|INTUITIV_TO_IMPULSIV|INTUITIV_TO_ANALYTISCH|ANALYTISCH_TO_IMPULSIV|ANALYTISCH_TO_INTUITIV|NONE",
+          "shift_type": "enum:VERSTAERKUNG|ERGAENZUNG|REIBUNG|SPANNUNG|TRANSFORMATION|UNKLAR",
+          "intensity_score": "number",
+          "intensity_level": "enum:NIEDRIG|MITTEL|HOCH",
+          "steering_need": "enum:NIEDRIG|MITTEL|HOCH",
+          "traffic_light": "enum:GREEN|YELLOW|RED",
+          "headline": "string",
+          "leadership_behavior": {
+            "axis_label": "string",
+            "statement": "string",
+            "possible_perception": "string",
+            "blind_spot": "string"
+          },
+          "system_effect": "string",
+          "chances": "array<string>",
+          "risks": "array<string>",
+          "levers": "array<{id:string,label:string,description:string,enabled:boolean,weight:number}>",
+          "integration_plan": {
+            "format": "enum:30D_3PHASE|30_60_90",
+            "phases": "array<{phase_id:string,title:string,days:string,actions:array<string>}>"
+          }
+        }
+      }
+    }
+  },
+  "state": {
+    "ui": {
+      "view_mode": "enum:CEO|HR|TEAMLEITUNG",
+      "active_tab": "enum:CHANCEN|RISIKEN|INTEGRATIONSPLAN",
+      "selected_matrix_cell": "string",
+      "show_tooltips": "boolean",
+      "compact_mode": "boolean"
+    },
+    "inputs": {
+      "is_new_person_leading": "boolean",
+      "steering_override": "enum:NONE|NIEDRIG|MITTEL|HOCH",
+      "time_plan_format": "enum:30D_3PHASE|30_60_90"
+    }
+  },
+  "computed_logic": {
+    "rules": [
+      {
+        "id": "R01_DOMINANCE",
+        "description": "Dominanz = höchster Prozentwert; bei Gleichstand (> = 2 gleiche Maxima) => GEMISCHT.",
+        "inputs": ["*_pct"],
+        "outputs": ["dominance_*"]
+      },
+      {
+        "id": "R02_SHIFT_AXIS",
+        "description": "Achse = dominance_candidate_ist (oder role_soll bei Soll-Auswertung) gegenüber dominance_team. Wenn gleich oder GEMISCHT => NONE.",
+        "inputs": ["dominance_team", "dominance_candidate_ist"],
+        "outputs": ["shift_axis"]
+      },
+      {
+        "id": "R03_INTENSITY_SCORE",
+        "description": "Score 0..100 aus Differenzen + Führungsfaktor + Soll-Ist-Abweichung + optional Teamgröße.",
+        "formula": {
+          "dominance_diff_points": "abs(max(team_pct) - max(candidate_pct)) * 0.8",
+          "distribution_diff_points": "(abs(team_imp - cand_imp)+abs(team_int - cand_int)+abs(team_ana - cand_ana)) * 0.4",
+          "leadership_factor": "is_new_person_leading ? 18 : 6",
+          "soll_ist_factor": "abs(role_soll_imp - cand_imp)+abs(role_soll_int - cand_int)+abs(role_soll_ana - cand_ana) * 0.25",
+          "team_size_factor": "members_count >= 12 ? 6 : 0",
+          "clamp": "min(100, max(0, sum(all)))"
+        },
+        "inputs": [
+          "teamProfile.*_pct",
+          "candidateProfileIst.*_pct",
+          "roleProfileSoll.*_pct",
+          "inputs.is_new_person_leading",
+          "teamProfile.members_count"
+        ],
+        "outputs": ["analysisOutput.intensity_score"]
+      },
+      {
+        "id": "R04_INTENSITY_LEVEL",
+        "description": "0-33=NIEDRIG, 34-66=MITTEL, 67-100=HOCH",
+        "inputs": ["analysisOutput.intensity_score"],
+        "outputs": ["analysisOutput.intensity_level"]
+      },
+      {
+        "id": "R05_SHIFT_TYPE",
+        "description": "Typologie anhand Dominanzmatch + Intensität + Führungsrolle. HOCH+Führung+Dominanzabweichung => TRANSFORMATION; HOCH ohne Führung => SPANNUNG; MITTEL => REIBUNG; NIEDRIG => ERGAENZUNG/VERSTAERKUNG.",
+        "inputs": [
+          "analysisOutput.dominance_team",
+          "analysisOutput.dominance_candidate_ist",
+          "analysisOutput.intensity_level",
+          "inputs.is_new_person_leading"
+        ],
+        "outputs": ["analysisOutput.shift_type"]
+      },
+      {
+        "id": "R06_STEERING_NEED",
+        "description": "Steuerungsbedarf basiert auf Intensität, kann durch Hebel reduziert werden; optional override möglich.",
+        "inputs": [
+          "analysisOutput.intensity_level",
+          "analysisOutput.levers[].enabled",
+          "analysisOutput.levers[].weight",
+          "inputs.steering_override"
+        ],
+        "outputs": ["analysisOutput.steering_need"]
+      },
+      {
+        "id": "R07_TRAFFIC_LIGHT",
+        "description": "GREEN bei NIEDRIG, YELLOW bei MITTEL, RED bei HOCH oder shift_type=SPANNUNG/TRANSFORMATION.",
+        "inputs": ["analysisOutput.intensity_level", "analysisOutput.shift_type"],
+        "outputs": ["analysisOutput.traffic_light"]
+      },
+      {
+        "id": "R08_VIEW_FILTERING",
+        "description": "CEO zeigt nur Top-KPIs + Top3 Risiken/Hebel; HR zeigt Kultur-/Bindungsrisiken + Plan; TEAMLEITUNG zeigt Routinen/Kommunikationsregeln + Plan.",
+        "inputs": ["state.ui.view_mode", "analysisOutput.*"],
+        "outputs": ["ui.visible_components", "ui.content_slices"]
+      }
+    ]
+  },
+  "ui_components": [
+    {
+      "id": "header_exec",
+      "type": "ExecutiveHeader",
+      "grid": { "colStart": 1, "colSpan": 12, "row": 1 },
+      "props": {
+        "left": { "team_name": "{{teamProfile.team_name}}", "meta": ["{{teamProfile.members_count}} Mitglieder", "{{teamProfile.source}}"] },
+        "center": {
+          "traffic_light": "{{analysisOutput.traffic_light}}",
+          "headline": "{{analysisOutput.headline}}"
+        },
+        "rightKpis": [
+          { "label": "Verschiebungstyp", "value": "{{analysisOutput.shift_type}}" },
+          { "label": "Intensität", "value": "{{analysisOutput.intensity_level}}", "sub": "{{analysisOutput.intensity_score}}" },
+          { "label": "Steuerungsbedarf", "value": "{{analysisOutput.steering_need}}" }
+        ],
+        "controls": {
+          "view_mode_toggle": { "bind": "state.ui.view_mode", "options": ["CEO", "HR", "TEAMLEITUNG"] },
+          "compact_toggle": { "bind": "state.ui.compact_mode" }
+        }
+      },
+      "visibility": { "always": true }
+    },
+    {
+      "id": "profiles_row",
+      "type": "TwoColumnRow",
+      "grid": { "colStart": 1, "colSpan": 12, "row": 2 },
+      "children": [
+        {
+          "id": "card_team_profile",
+          "type": "ProfileCard",
+          "props": {
+            "title": "Teamprofil",
+            "chart": { "type": "stackedBars", "values": { "impulsiv": "{{teamProfile.impulsiv_pct}}", "intuitiv": "{{teamProfile.intuitiv_pct}}", "analytisch": "{{teamProfile.analytisch_pct}}" } },
+            "dominance": "{{analysisOutput.dominance_team}}",
+            "footer": ["Dominanz: {{analysisOutput.dominance_team}}"]
+          },
+          "visibility": { "always": true }
+        },
+        {
+          "id": "card_role_candidate",
+          "type": "RoleCandidateCard",
+          "props": {
+            "title": "Neue Person / Rolle",
+            "toggles": [
+              { "label": "Führend", "bind": "state.inputs.is_new_person_leading" },
+              { "label": "Planformat", "bind": "state.inputs.time_plan_format", "options": ["30D_3PHASE", "30_60_90"] }
+            ],
+            "roleSoll": {
+              "title": "Rollen-DNA (Soll)",
+              "values": { "impulsiv": "{{roleProfileSoll.impulsiv_pct}}", "intuitiv": "{{roleProfileSoll.intuitiv_pct}}", "analytisch": "{{roleProfileSoll.analytisch_pct}}" },
+              "dominance": "{{analysisOutput.dominance_role_soll}}"
+            },
+            "candidateIst": {
+              "title": "Kandidatenprofil (Ist)",
+              "values": { "impulsiv": "{{candidateProfileIst.impulsiv_pct}}", "intuitiv": "{{candidateProfileIst.intuitiv_pct}}", "analytisch": "{{candidateProfileIst.analytisch_pct}}" },
+              "dominance": "{{analysisOutput.dominance_candidate_ist}}"
+            },
+            "fitTag": {
+              "type": "computed",
+              "value": "IF(absDiff(roleSoll, candidateIst) <= 12) THEN 'Soll=Ist' ELSE 'Abweichung'"
+            }
+          },
+          "visibility": { "always": true }
+        }
+      ]
+    },
+    {
+      "id": "matrix_and_insights",
+      "type": "TwoColumnRow",
+      "grid": { "colStart": 1, "colSpan": 12, "row": 3 },
+      "children": [
+        {
+          "id": "card_matrix",
+          "type": "TensionMatrix9",
+          "props": {
+            "title": "Spannungsmatrix",
+            "xAxis": { "label": "Teamdominanz", "values": ["IMPULSIV", "INTUITIV", "ANALYTISCH"] },
+            "yAxis": { "label": "Führungsdominanz", "values": ["IMPULSIV", "INTUITIV", "ANALYTISCH"] },
+            "cells": [
+              { "id": "IMP-IMP", "label": "Verstärkung", "micro": "Tempo-System" },
+              { "id": "IMP-INT", "label": "Dynamik-Konflikt", "micro": "Tempo vs Beziehung" },
+              { "id": "IMP-ANA", "label": "Tempo vs Struktur", "micro": "Schnell vs Absicherung" },
+              { "id": "INT-IMP", "label": "Beziehung vs Tempo", "micro": "Harmonie vs Druck" },
+              { "id": "INT-INT", "label": "Harmonie-System", "micro": "Konsens stabil" },
+              { "id": "INT-ANA", "label": "Konsens vs Kontrolle", "micro": "Abstimmung vs Gate" },
+              { "id": "ANA-IMP", "label": "Struktur vs Tempo", "micro": "Gate vs Speed" },
+              { "id": "ANA-INT", "label": "Logik vs Beziehung", "micro": "Struktur vs Nähe" },
+              { "id": "ANA-ANA", "label": "Stabilitäts-System", "micro": "Qualität & Planbarkeit" }
+            ],
+            "activeCell": {
+              "computed": "mapDominanceToCell(analysisOutput.dominance_candidate_ist, analysisOutput.dominance_team)"
+            },
+            "onCellSelect": { "set": "state.ui.selected_matrix_cell", "value": "{{cell.id}}" }
+          },
+          "visibility": { "always": true }
+        },
+        {
+          "id": "card_insights",
+          "type": "InsightsPanel",
+          "props": {
+            "title": "Systemanalyse",
+            "badges": [
+              { "label": "Verschiebungstyp", "value": "{{analysisOutput.shift_type}}" },
+              { "label": "Achse", "value": "{{analysisOutput.leadership_behavior.axis_label}}" },
+              { "label": "Intensität", "value": "{{analysisOutput.intensity_level}}" }
+            ],
+            "sections": [
+              { "title": "Führungsverhalten", "text": "{{analysisOutput.leadership_behavior.statement}}" },
+              { "title": "Spannungsfeld", "text": "{{analysisOutput.leadership_behavior.possible_perception}}" },
+              { "title": "Blinder Fleck", "text": "{{analysisOutput.leadership_behavior.blind_spot}}" },
+              { "title": "Systemwirkung", "text": "{{analysisOutput.system_effect}}" }
+            ]
+          },
+          "visibility": {
+            "when": "state.ui.view_mode != 'CEO'",
+            "otherwise": "show_minimal"
+          }
+        }
+      ]
+    },
+    {
+      "id": "actions_and_plan",
+      "type": "TabbedCard",
+      "grid": { "colStart": 1, "colSpan": 12, "row": 4 },
+      "props": {
+        "title": "Handlung & Integration",
+        "tabs": [
+          {
+            "id": "CHANCEN",
+            "label": "Chancen",
+            "content": {
+              "type": "Bullets",
+              "max_items": 6,
+              "items": "{{analysisOutput.chances}}"
+            }
+          },
+          {
+            "id": "RISIKEN",
+            "label": "Risiken",
+            "content": {
+              "type": "Bullets",
+              "max_items": 6,
+              "items": "{{analysisOutput.risks}}"
+            }
+          },
+          {
+            "id": "INTEGRATIONSPLAN",
+            "label": "Integrationsplan",
+            "content": {
+              "type": "Phases",
+              "format_bind": "state.inputs.time_plan_format",
+              "phases": "{{analysisOutput.integration_plan.phases}}"
+            }
+          }
+        ],
+        "activeTabBind": "state.ui.active_tab",
+        "rightPanel": {
+          "title": "Führungshebel",
+          "type": "Checklist",
+          "items": "{{analysisOutput.levers}}",
+          "effects": [
+            {
+              "when": "item.enabled == true",
+              "apply": "reduceSteeringNeedByWeight(item.weight)"
+            }
+          ],
+          "note": "Aktivierte Hebel reduzieren Steuerungsbedarf (modelliert)."
+        }
+      },
+      "visibility": { "always": true }
+    },
+    {
+      "id": "ceo_compact_strip",
+      "type": "CompactStrip",
+      "grid": { "colStart": 1, "colSpan": 12, "row": 5 },
+      "props": {
+        "title": "Kurzfazit",
+        "content": {
+          "kpis": [
+            { "label": "Status", "value": "{{analysisOutput.traffic_light}}" },
+            { "label": "Typ", "value": "{{analysisOutput.shift_type}}" },
+            { "label": "Steuerung", "value": "{{analysisOutput.steering_need}}" }
+          ],
+          "topRisks": { "take": 3, "items": "{{analysisOutput.risks}}" },
+          "topLevers": { "take": 3, "items": "{{analysisOutput.levers}}" }
+        }
+      },
+      "visibility": { "when": "state.ui.view_mode == 'CEO'" }
+    }
+  ],
+  "content_generation_contract": {
+    "text_fields": [
+      "analysisOutput.headline",
+      "analysisOutput.leadership_behavior.statement",
+      "analysisOutput.leadership_behavior.possible_perception",
+      "analysisOutput.leadership_behavior.blind_spot",
+      "analysisOutput.system_effect",
+      "analysisOutput.chances[]",
+      "analysisOutput.risks[]",
+      "analysisOutput.integration_plan.phases[].actions[]"
+    ],
+    "style_rules": {
+      "audience": ["Teamleitung", "HR", "CEO"],
+      "avoid_terms": [
+        "Persönlichkeit",
+        "Typ",
+        "Mindset",
+        "Potenzial entfalten",
+        "wertschätzend",
+        "ganzheitlich",
+        "authentisch",
+        "getragen"
+      ],
+      "must_do": [
+        "Keine Modellbegriffe ohne Funktionsbeschreibung",
+        "Jeder Risikopunkt muss eine Alltagswirkung enthalten (Tempo/KPI/Qualität/Team)",
+        "Max. 2 Sätze pro Bullet"
+      ],
+      "tone": "management_sachlich",
+      "length_limits": {
+        "headline": 90,
+        "insight_section_text": 280,
+        "bullet": 140,
+        "phase_action": 160
+      }
+    }
+  },
+  "events": [
+    {
+      "id": "EVT_TOGGLE_LEADERSHIP",
+      "trigger": "state.inputs.is_new_person_leading changed",
+      "actions": ["recompute(analysisOutput.*)", "refresh(matrix.activeCell)", "refresh(header_exec)"]
+    },
+    {
+      "id": "EVT_VIEW_MODE_CHANGE",
+      "trigger": "state.ui.view_mode changed",
+      "actions": ["apply(R08_VIEW_FILTERING)", "toggleVisibility(components)"]
+    },
+    {
+      "id": "EVT_LEVER_TOGGLE",
+      "trigger": "analysisOutput.levers[].enabled changed",
+      "actions": ["recompute(analysisOutput.steering_need)", "recompute(analysisOutput.traffic_light)", "refresh(header_exec)"]
+    },
+    {
+      "id": "EVT_MATRIX_CELL_SELECT",
+      "trigger": "state.ui.selected_matrix_cell changed",
+      "actions": ["loadCellPresetText(selected_cell)", "refresh(card_insights)"]
+    }
+  ],
+  "validation": {
+    "constraints": [
+      { "rule": "teamProfile.impulsiv_pct + teamProfile.intuitiv_pct + teamProfile.analytisch_pct == 100", "severity": "warn" },
+      { "rule": "roleProfileSoll.impulsiv_pct + roleProfileSoll.intuitiv_pct + roleProfileSoll.analytisch_pct == 100", "severity": "warn" },
+      { "rule": "candidateProfileIst.impulsiv_pct + candidateProfileIst.intuitiv_pct + candidateProfileIst.analytisch_pct == 100", "severity": "warn" },
+      { "rule": "all pct values between 0 and 100", "severity": "error" }
+    ]
+  },
+  "implementation_notes": {
+    "recommended_frontend": "React",
+    "charts": ["stackedBars", "donut", "matrix9"],
+    "i18n": "de-DE",
+    "accessibility": {
+      "keyboard_navigation": true,
+      "aria_labels_required": true
+    }
+  }
+}
