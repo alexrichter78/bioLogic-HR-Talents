@@ -843,19 +843,6 @@ export default function RollenDNA() {
     e.target.value = "";
   };
 
-  useEffect(() => {
-    const state = {
-      currentStep, allCollapsed, beruf, fuehrung, erfolgsfokusIndices,
-      aufgabencharakter, arbeitslogik, zusatzInfo, activeTab, taetigkeiten, nextId,
-      bioGramGesamt: { imp: bioGramGesamt.imp, int: bioGramGesamt.int, ana: bioGramGesamt.ana },
-      bioGramHaupt: { imp: bioGramHaupt.imp, int: bioGramHaupt.int, ana: bioGramHaupt.ana },
-      bioGramNeben: { imp: bioGramNeben.imp, int: bioGramNeben.int, ana: bioGramNeben.ana },
-      bioGramFuehrung: { imp: bioGramFuehrung.imp, int: bioGramFuehrung.int, ana: bioGramFuehrung.ana },
-      bioGramRahmen: { imp: bioGramRahmen.imp, int: bioGramRahmen.int, ana: bioGramRahmen.ana },
-    };
-    localStorage.setItem("rollenDnaState", JSON.stringify(state));
-  }, [currentStep, allCollapsed, beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, arbeitslogik, zusatzInfo, activeTab, taetigkeiten, nextId, bioGramGesamt, bioGramHaupt, bioGramNeben, bioGramFuehrung, bioGramRahmen]);
-
   const filteredTaetigkeiten = taetigkeiten.filter(t => t.kategorie === activeTab);
   const hauptCount = taetigkeiten.filter(t => t.kategorie === "haupt").length;
   const nebenCount = taetigkeiten.filter(t => t.kategorie === "neben").length;
@@ -909,6 +896,19 @@ export default function RollenDNA() {
     const [imp, int, ana] = roundPercentages(vals[0], vals[1], vals[2]);
     return { imp, int, ana } as BioGram;
   })();
+
+  useEffect(() => {
+    const state = {
+      currentStep, allCollapsed, beruf, fuehrung, erfolgsfokusIndices,
+      aufgabencharakter, arbeitslogik, zusatzInfo, activeTab, taetigkeiten, nextId,
+      bioGramGesamt: { imp: bioGramGesamt.imp, int: bioGramGesamt.int, ana: bioGramGesamt.ana },
+      bioGramHaupt: { imp: bioGramHaupt.imp, int: bioGramHaupt.int, ana: bioGramHaupt.ana },
+      bioGramNeben: { imp: bioGramNeben.imp, int: bioGramNeben.int, ana: bioGramNeben.ana },
+      bioGramFuehrung: { imp: bioGramFuehrung.imp, int: bioGramFuehrung.int, ana: bioGramFuehrung.ana },
+      bioGramRahmen: { imp: bioGramRahmen.imp, int: bioGramRahmen.int, ana: bioGramRahmen.ana },
+    };
+    localStorage.setItem("rollenDnaState", JSON.stringify(state));
+  }, [currentStep, allCollapsed, beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, arbeitslogik, zusatzInfo, activeTab, taetigkeiten, nextId, bioGramGesamt, bioGramHaupt, bioGramNeben, bioGramFuehrung, bioGramRahmen]);
 
   const isLeadershipRole = fuehrung !== "Keine";
   const bioCheckTextGenerated = generateBioCheckText(bioGramGesamt, isLeadershipRole, isLeadershipRole ? bioGramFuehrung : undefined);
