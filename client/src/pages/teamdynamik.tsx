@@ -439,18 +439,69 @@ export default function Teamdynamik() {
                 <p style={{ fontSize: 11, color: "#8E8E93", margin: "3px 0 0" }} data-testid="text-headline">{hyphenateText(result.headline)}</p>
               </div>
             </div>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <div style={{ flex: 1, minWidth: 90, padding: "8px 10px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                <p style={{ fontSize: 9, fontWeight: 600, color: "#8E8E93", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Bewertung</p>
-                <p style={{ fontSize: 15, fontWeight: 800, color: "#1D1D1F", margin: 0 }}>{SHIFT_LABELS[result.shiftType]}</p>
-                <p style={{ fontSize: 9, color: "#8E8E93", margin: "1px 0 0" }}>{result.shiftAxis}</p>
-              </div>
-              <div style={{ flex: 1, minWidth: 90, padding: "8px 10px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                <p style={{ fontSize: 9, fontWeight: 600, color: "#8E8E93", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Steuerung</p>
-                <p style={{ fontSize: 15, fontWeight: 800, color: "#1D1D1F", margin: 0 }}>{INTENSITY_LABELS[result.steeringNeed]}</p>
-                <p style={{ fontSize: 9, color: "#8E8E93", margin: "1px 0 0" }}>{tl.steering}</p>
-              </div>
-            </div>
+            {(() => {
+              const tlKey = result.trafficLight;
+              const detail = {
+                RED: {
+                  title: "Starke Veränderung im Team",
+                  desc: "Die neue Führung verändert die bisherige Arbeitsweise deutlich.\nEntscheidungen, Prioritäten und Qualitätsmaßstäbe werden anders gesetzt als bisher.",
+                  label: "Was bedeutet das konkret?",
+                  bullets: [
+                    "Gewohnte Abläufe verändern sich spürbar",
+                    "Diskussionen über Prioritäten nehmen zu",
+                    "Widerstand oder Unsicherheit im Team möglich",
+                    "Ohne klare Führung entsteht Instabilität",
+                  ],
+                  recLabel: "Empfehlung:",
+                  rec: "Klare Kommunikation, aktive Steuerung und konsequente Führung ab Tag eins.",
+                },
+                YELLOW: {
+                  title: "Unterschiedliche Arbeitsweisen – aktiv steuern",
+                  desc: "Führung und Team arbeiten nach verschiedenen Logiken.\nMit klarer Abstimmung bleibt das System stabil.",
+                  label: "Was bedeutet das konkret?",
+                  bullets: [
+                    "Mehr Abstimmung notwendig",
+                    "Entscheidungen dauern teilweise länger",
+                    "Prioritäten müssen klar kommuniziert werden",
+                  ],
+                  recLabel: "Empfehlung:",
+                  rec: "Regelmäßige Priorisierung, transparente Entscheidungswege und klare Verantwortlichkeiten.",
+                },
+                GREEN: {
+                  title: "Stabil – keine besondere Anpassung erforderlich",
+                  desc: "Führungsstil und Teamarbeitsweise passen gut zusammen.\nDie Zusammenarbeit läuft weitgehend reibungslos.",
+                  label: "Was bedeutet das konkret?",
+                  bullets: [
+                    "Entscheidungen werden verstanden",
+                    "Prioritäten sind klar",
+                    "Zusammenarbeit ist stabil",
+                  ],
+                  recLabel: "Ausreichend:",
+                  rec: "Normale Führung und regelmäßige Abstimmung.",
+                },
+              }[tlKey];
+              return (
+                <div style={{ padding: "14px 16px", borderRadius: 14, background: tl.bg, border: `1px solid ${tl.fill}20`, marginTop: 12 }} data-testid="detail-block">
+                  <p style={{ fontSize: 14, fontWeight: 700, color: tl.fill, margin: "0 0 6px" }}>{detail.title}</p>
+                  {detail.desc.split("\n").map((line, i) => (
+                    <p key={i} style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 3px", lineHeight: 1.5 }}>{line}</p>
+                  ))}
+                  <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "14px 0 8px" }}>{detail.label}</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 14 }}>
+                    {detail.bullets.map((b, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                        <span style={{ color: tl.fill, fontSize: 10, marginTop: 3, flexShrink: 0 }}>●</span>
+                        <span style={{ fontSize: 12, color: "#3A3A3C", lineHeight: 1.5 }}>{b}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0 }}>
+                    <span style={{ fontWeight: 700 }}>{detail.recLabel} </span>
+                    {detail.rec}
+                  </p>
+                </div>
+              );
+            })()}
           </div>
         </GlassCard>
 
