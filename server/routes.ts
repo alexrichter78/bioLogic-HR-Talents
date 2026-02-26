@@ -541,5 +541,71 @@ Antworte als JSON:
     }
   });
 
+  app.post("/api/generate-team-report", async (req, res) => {
+    try {
+      const { context, profiles, computed, levers } = req.body;
+      if (!profiles?.team || !profiles?.person) {
+        return res.status(400).json({ error: "Team- und Personenprofil erforderlich" });
+      }
+
+      const systemPrompt = `Du erstellst einen einheitlichen Team-Systemreport (bioLogic) als Managementdokument.
+Die Leser kennen das Modell nicht. Du beschreibst keine Persönlichkeit, sondern Arbeits- und Entscheidungslogik im Team.
+Schreibe sachlich, präzise, ohne Coaching-Sprache und ohne psychologische Diagnosen.
+
+Pflichtprinzipien:
+- Keine Modellbegriffe ohne Funktionsübersetzung (Impulsiv/Intuitiv/Analytisch nur als Arbeitslogik erklären).
+- Jede Risikoaussage enthält eine konkrete Auswirkung (Tempo, Qualität, KPI, Teamdynamik, Führungsaufwand).
+- Keine Floskeln, keine Wiederholungen, keine Metaphern.
+- Bulletpoints: max. 2 Sätze, jeweils Beobachtung + Wirkung.
+- Nutze Job-/Aufgabenbezug: bewerte die Wirkung entlang der übergebenen Aufgaben und KPI-Schwerpunkte.
+
+Die berechneten Werte (DG, DC, RG, TS, CI, Intensität, Verschiebungstyp, Steuerungsbedarf) sind bereits deterministisch berechnet und werden als Input übergeben. Übernimm sie exakt, berechne sie NICHT neu.
+
+Output-Format:
+Gib nur den Report aus (keine Erklärungen, kein JSON). Nutze folgende Gliederung exakt:
+
+1. Executive System Summary
+2. Profile im Überblick (Team / Neue Person / Soll optional)
+3. Systemtyp & Verschiebungsachse
+4. Systemwirkung im Alltag (4 Felder: Entscheidungen/Prioritäten, Qualität, Tempo, Zusammenarbeit)
+5. Aufgaben- & KPI-Impact (aus tasks & kpi_focus abgeleitet)
+6. Konflikt- & Druckprognose
+7. Team-Reifegrad (5 Dimensionen)
+8. Chancen (max 6)
+9. Risiken (max 6)
+10. Führungshebel (max 6, konkret)
+11. Integrationsplan (30 Tage, 3 Phasen)
+12. Messpunkte (3–5, objektiv)
+13. Gesamtbewertung (klar, 4–6 Sätze)
+
+Numerische Werte:
+- TS als Zahl 0–100 (gerundet), Intensität (Niedrig/Mittel/Hoch)
+- DG, DC, RG, CI optional als Nebenwerte im Summary (kurz, 1 Zeile)
+
+Verbotene Begriffe:
+Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich, authentisch, getragen.`;
+
+      const userContent = `Erstelle den Team-Systemreport basierend auf folgenden Daten:
+
+${JSON.stringify({ context, profiles, computed, levers }, null, 2)}`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4.1",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userContent },
+        ],
+        temperature: 0.6,
+        max_tokens: 4000,
+      });
+
+      const report = response.choices[0]?.message?.content || "";
+      res.json({ report });
+    } catch (error) {
+      console.error("Error generating team report:", error);
+      res.status(500).json({ error: "Fehler bei der Report-Generierung" });
+    }
+  });
+
   return httpServer;
 }

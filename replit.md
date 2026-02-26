@@ -4,7 +4,7 @@
 
 bioLogic RoleDynamics is a German-language web application for structural analysis focused on "Präzision in Besetzung und Teamstruktur" (precision in staffing and team structure). The app follows a full-stack TypeScript architecture with a React frontend and Express backend, using PostgreSQL for data storage via Drizzle ORM.
 
-The app features a multi-step wizard (Rollen-DNA) for capturing role requirements, an AI-powered analysis page, a dynamic "Entscheidungsbericht" (decision report), a "bioLogic JobCheck" page for candidate-role fit assessment, and a "Teamdynamik" dashboard. The Entscheidungsbericht is fully AI-generated using OpenAI, creating role-specific structural analyses with charts, bullet-point lists, tension fields, risk assessments, and hiring recommendations. The JobCheck page (`/jobcheck`) provides a Level 2 recruiting decision foundation comparing Soll (role DNA) vs. Ist (candidate profile) with dominance shift analysis, structural suitability matrix, risk assessments, development prognosis, and a 90-day integration plan. The Teamdynamik page (`/teamdynamik`) provides a team dynamics dashboard with 4 modules: Executive Header (traffic light + KPIs), Team/Role/Candidate profiles with interactive sliders, a 9-field Tension Matrix, and Actions & Plan with Führungshebel (levers that reduce steering need). It supports CEO/HR/Teamleitung view modes with differentiated content. The engine (`client/src/lib/teamdynamik-engine.ts`) imports and reuses calculation functions from `jobcheck-engine.ts` (normalizeTriad, dominanceModeOf, labelComponent, dominanceLabel) without modifying that file.
+The app features a multi-step wizard (Rollen-DNA) for capturing role requirements, an AI-powered analysis page, a dynamic "Entscheidungsbericht" (decision report), a "bioLogic JobCheck" page for candidate-role fit assessment, a "Teamdynamik" dashboard, and a "KI-Coach" placeholder page. The Entscheidungsbericht is fully AI-generated using OpenAI, creating role-specific structural analyses with charts, bullet-point lists, tension fields, risk assessments, and hiring recommendations. The JobCheck page (`/jobcheck`) provides a Level 2 recruiting decision foundation comparing Soll (role DNA) vs. Ist (candidate profile) with dominance shift analysis, structural suitability matrix, risk assessments, development prognosis, and a 90-day integration plan. The Teamdynamik page (`/teamdynamik`) uses a new deterministic calculation system: DG (Distribution Gap, 0-100), DC (Dominance Clash, 0/50/100), RG (Role Gap, optional), TS (Transformation Score, weighted composite 0-100), CI (Conflict Index). The engine (`client/src/lib/teamdynamik-engine.ts`) imports and reuses calculation functions from `jobcheck-engine.ts` (normalizeTriad, dominanceModeOf, labelComponent, dominanceLabel) without modifying that file. Features: 4 dashboard modules (Executive Header with traffic light + score bars, Team/Person profiles with sliders, 9-field Spannungsmatrix, Actions & Führungshebel), CEO/HR/Teamleitung view modes, 6 levers with level-based steering reduction (2+ enabled = -1 level, 4+ = -2 levels), optional Rollen-DNA (Soll) toggle, task/KPI tag inputs for AI context, and AI-generated Team-Systemreport via `/api/generate-team-report` endpoint.
 
 ## User Preferences
 
@@ -12,13 +12,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Navigation
 
-All pages share a unified GlobalNav component (`client/src/components/global-nav.tsx`) with 4 items:
+All pages share a unified GlobalNav component (`client/src/components/global-nav.tsx`) with 6 items:
 - **Neue Rollen-DNA**: Clears all stored state and navigates to `/rollen-dna` for a fresh wizard
 - **Rollen-DNA Bearbeiten**: Navigates to `/rollen-dna` keeping existing state
 - **Rollenprofil**: Navigates to `/bericht` (AI-generated decision report)
 - **Soll-Ist-Vergleich**: Navigates to `/jobcheck` (candidate-role fit comparison)
-
 - **Teamdynamik**: Navigates to `/teamdynamik` (team dynamics dashboard)
+- **KI-Coach**: Navigates to `/ki-coach` (placeholder page)
 
 The nav supports a `rightSlot` prop for page-specific actions (e.g., Save/Load on rollen-dna, Regenerate on bericht).
 

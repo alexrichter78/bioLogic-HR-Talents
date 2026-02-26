@@ -3,8 +3,9 @@ import {
   normalizeTriad, dominanceModeOf, labelComponent, dominanceLabel,
 } from "./jobcheck-engine";
 
-export type ShiftType = "VERSTAERKUNG" | "ERGAENZUNG" | "REIBUNG" | "SPANNUNG" | "TRANSFORMATION";
+export type DominanceType = "IMPULSIV" | "INTUITIV" | "ANALYTISCH" | "MIX";
 export type IntensityLevel = "NIEDRIG" | "MITTEL" | "HOCH";
+export type ShiftType = "VERSTAERKUNG" | "ERGAENZUNG" | "REIBUNG" | "SPANNUNG" | "TRANSFORMATION" | "HYBRID";
 export type TrafficLight = "GREEN" | "YELLOW" | "RED";
 export type ViewMode = "CEO" | "HR" | "TEAMLEITUNG";
 
@@ -13,7 +14,6 @@ export type Lever = {
   label: string;
   description: string;
   enabled: boolean;
-  weight: number;
 };
 
 export type MatrixCell = {
@@ -29,23 +29,38 @@ export type TeamDynamikInput = {
   teamName: string;
   teamProfile: Triad;
   membersCount: number;
-  roleProfile: Triad;
-  candidateProfile: Triad;
+  personProfile: Triad;
   isLeading: boolean;
+  roleSoll?: { enabled: boolean; profile: Triad };
+  tasks?: string[];
+  kpiFocus?: string[];
+  levers: Lever[];
+  steeringOverride?: string | null;
+};
+
+export type Scores = {
+  DG: number;
+  DC: number;
+  RG: number | null;
+  TS: number;
+  CI: number;
 };
 
 export type TeamDynamikResult = {
-  teamDominance: DominanceResult;
-  roleDominance: DominanceResult;
-  candDominance: DominanceResult;
+  dominanceTeam: DominanceType;
+  dominancePerson: DominanceType;
+  dominanceRoleSoll: DominanceType | null;
+  teamDom: DominanceResult;
+  personDom: DominanceResult;
+  scores: Scores;
+  intensityLevel: IntensityLevel;
   shiftType: ShiftType;
   shiftAxis: string;
-  intensityScore: number;
-  intensityLevel: IntensityLevel;
   steeringNeed: IntensityLevel;
   trafficLight: TrafficLight;
-  headline: string;
+  leverEffects: { enabledCount: number; reductionLevels: number };
   activeMatrixCell: MatrixCell;
+  headline: string;
   leadershipBehavior: {
     axisLabel: string;
     statement: string;
@@ -56,9 +71,16 @@ export type TeamDynamikResult = {
   chances: string[];
   risks: string[];
   integrationPlan: { phaseId: string; title: string; days: string; actions: string[] }[];
-  levers: Lever[];
-  fitTag: string;
 };
+
+const DEFAULT_LEVERS: Lever[] = [
+  { id: "timebox", label: "Entscheidungszeitfenster definiert", description: "Klare Fristen für Entscheidungen verhindern Endlosschleifen und Konsensverschleppung.", enabled: false },
+  { id: "8020", label: "80/20-Qualitätsstandard festgelegt", description: "Definierter Qualitätsstandard verhindert Über-Perfektionierung und hält das Tempo.", enabled: false },
+  { id: "weekly_review", label: "Wöchentlicher Priorisierungsreview", description: "Regelmäßige Überprüfung schafft Steuerungssicherheit und verhindert stille Abweichungen.", enabled: false },
+  { id: "role_boundaries", label: "Entscheidungs- und Verantwortungsgrenzen", description: "Klare Rollen- und Entscheidungsgrenzen reduzieren Konflikte und Doppelarbeit.", enabled: false },
+  { id: "comm_rules", label: "Sach-/Beziehungsebene, Feedbackregeln", description: "Feste Kommunikationsregeln trennen Sachfragen von Beziehungsdynamik.", enabled: false },
+  { id: "pulse_check", label: "Teamtemperatur-Check", description: "Regelmäßiger Pulse-Check macht Stimmung und Belastung messbar.", enabled: false },
+];
 
 const MATRIX_CELLS: MatrixCell[] = [
   { id: "IMP-IMP", label: "Verstärkung", micro: "Tempo-System", systemlage: "Führung und Team teilen dieselbe Umsetzungslogik. Entscheidungen fallen schnell, Ergebnisdruck wird als Normalzustand erlebt.", alltag: "Hohes Tempo, kurze Entscheidungswege, aber Risiko blinder Flecken bei Qualität und Abstimmung. Reflexion wird systematisch vernachlässigt.", tun: "Qualitäts-Gates definieren, Review-Rhythmus einführen, bewusst Verlangsamung bei kritischen Entscheidungen einplanen." },
@@ -72,313 +94,333 @@ const MATRIX_CELLS: MatrixCell[] = [
   { id: "ANA-ANA", label: "Stabilitäts-System", micro: "Qualität & Planbarkeit", systemlage: "Führung und Team teilen dieselbe analytische Logik. Struktur, Qualität und Planbarkeit dominieren.", alltag: "Hohe Prozessstabilität und Qualität, aber Risiko bei Innovationsgeschwindigkeit und Flexibilität. Veränderungen werden systematisch verlangsamt.", tun: "Innovationsimpulse bewusst setzen, Entscheidungstempo für Veränderungen definieren, externe Perspektiven einplanen." },
 ];
 
-function dominanceKey(dom: DominanceResult): ComponentKey {
-  return dom.top1.key;
+function dominanceType(p: Triad): DominanceType {
+  const maxVal = Math.max(p.impulsiv, p.intuitiv, p.analytisch);
+  const winners: DominanceType[] = [];
+  if (p.impulsiv === maxVal) winners.push("IMPULSIV");
+  if (p.intuitiv === maxVal) winners.push("INTUITIV");
+  if (p.analytisch === maxVal) winners.push("ANALYTISCH");
+  if (winners.length >= 2) return "MIX";
+  return winners[0];
 }
 
-function matrixCellId(leadDom: ComponentKey, teamDom: ComponentKey): string {
-  const map: Record<ComponentKey, string> = { impulsiv: "IMP", intuitiv: "INT", analytisch: "ANA" };
-  return `${map[leadDom]}-${map[teamDom]}`;
+function distributionGap(team: Triad, person: Triad): number {
+  const s = Math.abs(team.impulsiv - person.impulsiv)
+    + Math.abs(team.intuitiv - person.intuitiv)
+    + Math.abs(team.analytisch - person.analytisch);
+  return Math.round((s / 2.0) * 10) / 10;
 }
 
-function calcIntensityScore(input: TeamDynamikInput): number {
-  const team = normalizeTriad(input.teamProfile);
-  const cand = normalizeTriad(input.candidateProfile);
-  const role = normalizeTriad(input.roleProfile);
-
-  const teamDom = dominanceModeOf(team);
-  const candDom = dominanceModeOf(cand);
-
-  const dominanceDiff = Math.abs(teamDom.top1.value - candDom.top1.value) * 0.8;
-
-  const distributionDiff = (
-    Math.abs(team.impulsiv - cand.impulsiv) +
-    Math.abs(team.intuitiv - cand.intuitiv) +
-    Math.abs(team.analytisch - cand.analytisch)
-  ) * 0.4;
-
-  const leadershipFactor = input.isLeading ? 18 : 6;
-
-  const sollIstFactor = (
-    Math.abs(role.impulsiv - cand.impulsiv) +
-    Math.abs(role.intuitiv - cand.intuitiv) +
-    Math.abs(role.analytisch - cand.analytisch)
-  ) * 0.25;
-
-  const teamSizeFactor = input.membersCount >= 12 ? 6 : 0;
-
-  const raw = dominanceDiff + distributionDiff + leadershipFactor + sollIstFactor + teamSizeFactor;
-  return Math.min(100, Math.max(0, Math.round(raw)));
+function dominanceClash(domTeam: DominanceType, domPerson: DominanceType): number {
+  if (domTeam === domPerson && domTeam !== "MIX") return 0;
+  if (domTeam === "MIX" || domPerson === "MIX") return 50;
+  return 100;
 }
 
-function calcIntensityLevel(score: number): IntensityLevel {
-  if (score <= 33) return "NIEDRIG";
-  if (score <= 66) return "MITTEL";
+function roleGap(roleSollEnabled: boolean, roleSoll: Triad | null, person: Triad): number | null {
+  if (!roleSollEnabled || !roleSoll) return null;
+  const s = Math.abs(roleSoll.impulsiv - person.impulsiv)
+    + Math.abs(roleSoll.intuitiv - person.intuitiv)
+    + Math.abs(roleSoll.analytisch - person.analytisch);
+  return Math.round((s / 2.0) * 10) / 10;
+}
+
+function leadershipFactor(isLeading: boolean): number {
+  return isLeading ? 15 : 0;
+}
+
+function scaleFactor(n: number): number {
+  if (n < 6) return 0;
+  if (n < 12) return 5;
+  return 10;
+}
+
+function transformationScore(DG: number, DC: number, RG: number | null, isLeading: boolean, n: number): number {
+  const LF = leadershipFactor(isLeading);
+  const SF = scaleFactor(n);
+
+  let TS: number;
+  if (RG !== null) {
+    TS = 0.45 * DG + 0.25 * DC + 0.20 * RG + 0.07 * LF + 0.03 * SF;
+  } else {
+    TS = 0.55 * DG + 0.25 * DC + 0.17 * LF + 0.03 * SF;
+  }
+
+  return Math.round(Math.min(100, Math.max(0, TS)));
+}
+
+function intensityLevel(TS: number): IntensityLevel {
+  if (TS <= 33) return "NIEDRIG";
+  if (TS <= 66) return "MITTEL";
   return "HOCH";
 }
 
-function calcShiftType(
-  teamDom: DominanceResult,
-  candDom: DominanceResult,
-  intensity: IntensityLevel,
-  isLeading: boolean
-): ShiftType {
-  const sameDominance = teamDom.top1.key === candDom.top1.key;
-
-  if (sameDominance && intensity === "NIEDRIG") return "VERSTAERKUNG";
-  if (sameDominance && intensity === "MITTEL") return "VERSTAERKUNG";
-  if (!sameDominance && intensity === "NIEDRIG") return "ERGAENZUNG";
-  if (!sameDominance && intensity === "MITTEL" && !isLeading) return "REIBUNG";
-  if (!sameDominance && intensity === "MITTEL" && isLeading) return "REIBUNG";
-  if (intensity === "HOCH" && isLeading) return "TRANSFORMATION";
-  if (intensity === "HOCH") return "SPANNUNG";
-  return "REIBUNG";
+function conflictIndex(TS: number, DC: number): number {
+  return Math.round(Math.min(100, Math.max(0, 0.6 * TS + 0.4 * DC)));
 }
 
-function calcTrafficLight(intensity: IntensityLevel, shiftType: ShiftType): TrafficLight {
-  if (shiftType === "SPANNUNG" || shiftType === "TRANSFORMATION") return "RED";
-  if (intensity === "HOCH") return "RED";
-  if (intensity === "MITTEL") return "YELLOW";
+function axisLabel(domFrom: DominanceType, domTo: DominanceType): string {
+  if (domFrom === domTo) return "Keine dominante Verschiebung";
+  if (domFrom === "MIX" || domTo === "MIX") return "Hybrid-Verschiebung";
+  const map: Record<DominanceType, string> = {
+    IMPULSIV: "Tempo & Entscheidung",
+    INTUITIV: "Beziehung & Abstimmung",
+    ANALYTISCH: "Struktur & Absicherung",
+    MIX: "Hybrid",
+  };
+  return `${map[domFrom]} → ${map[domTo]}`;
+}
+
+function shiftType(domTeam: DominanceType, domPerson: DominanceType, DG: number, DC: number, TS: number, isLeading: boolean): ShiftType {
+  const level = intensityLevel(TS);
+
+  if (DC === 0) {
+    if (DG < 20) return "VERSTAERKUNG";
+    return "ERGAENZUNG";
+  }
+
+  if (domTeam === "MIX" || domPerson === "MIX") {
+    if (level === "NIEDRIG") return "ERGAENZUNG";
+    if (level === "MITTEL") return "HYBRID";
+    return isLeading ? "TRANSFORMATION" : "SPANNUNG";
+  }
+
+  if (level === "NIEDRIG") return "ERGAENZUNG";
+  if (level === "MITTEL") return "REIBUNG";
+  return isLeading ? "TRANSFORMATION" : "SPANNUNG";
+}
+
+function leverReductionLevels(levers: Lever[]): number {
+  const enabled = levers.filter(l => l.enabled).length;
+  if (enabled >= 4) return 2;
+  if (enabled >= 2) return 1;
+  return 0;
+}
+
+function applyLevelReduction(level: IntensityLevel, reduction: number): IntensityLevel {
+  if (reduction === 0) return level;
+  if (reduction === 1) {
+    if (level === "HOCH") return "MITTEL";
+    return "NIEDRIG";
+  }
+  return "NIEDRIG";
+}
+
+function calcSteeringNeed(level: IntensityLevel, RG: number | null, levers: Lever[], override?: string | null): { final: IntensityLevel; enabledCount: number; reductionLevels: number } {
+  if (override && override !== "NONE") {
+    return { final: override as IntensityLevel, enabledCount: levers.filter(l => l.enabled).length, reductionLevels: 0 };
+  }
+
+  let base = level;
+  if (RG !== null && RG > 50) {
+    if (base === "NIEDRIG") base = "MITTEL";
+    else base = "HOCH";
+  }
+
+  const red = leverReductionLevels(levers);
+  const final = applyLevelReduction(base, red);
+  return { final, enabledCount: levers.filter(l => l.enabled).length, reductionLevels: red };
+}
+
+function trafficLight(st: ShiftType, level: IntensityLevel, steeringNeed: IntensityLevel): TrafficLight {
+  if (st === "TRANSFORMATION" || st === "SPANNUNG") {
+    return steeringNeed === "NIEDRIG" ? "YELLOW" : "RED";
+  }
+  if (steeringNeed === "HOCH" || level === "HOCH") return "RED";
+  if (steeringNeed === "MITTEL" || level === "MITTEL") return "YELLOW";
   return "GREEN";
 }
 
-function calcSteeringNeed(intensity: IntensityLevel, levers: Lever[]): IntensityLevel {
-  const levelMap: Record<IntensityLevel, number> = { NIEDRIG: 20, MITTEL: 50, HOCH: 80 };
-  let score = levelMap[intensity];
-
-  const totalReduction = levers.filter(l => l.enabled).reduce((sum, l) => sum + l.weight, 0);
-  score = Math.max(0, score - totalReduction);
-
-  if (score <= 33) return "NIEDRIG";
-  if (score <= 66) return "MITTEL";
-  return "HOCH";
+function matrixCellId(leadDom: DominanceType, teamDom: DominanceType): string {
+  const map: Record<DominanceType, string> = { IMPULSIV: "IMP", INTUITIV: "INT", ANALYTISCH: "ANA", MIX: "INT" };
+  return `${map[leadDom]}-${map[teamDom]}`;
 }
 
-function buildLevers(): Lever[] {
-  return [
-    { id: "L1", label: "Entscheidungszeitfenster definiert", description: "Klare Fristen für Entscheidungen verhindern Endlosschleifen und Konsensverschleppung.", enabled: false, weight: 5 },
-    { id: "L2", label: "80/20-Standard festgelegt", description: "Definierter Qualitätsstandard verhindert Über-Perfektionierung und hält das Tempo.", enabled: false, weight: 5 },
-    { id: "L3", label: "Review-Rhythmus etabliert", description: "Regelmäßige Überprüfung schafft Steuerungssicherheit und verhindert stille Abweichungen.", enabled: false, weight: 5 },
-    { id: "L4", label: "Beziehungsebene ritualisiert", description: "Feste Formate für Teamaustausch verhindern emotionale Distanzierung.", enabled: false, weight: 5 },
-  ];
-}
-
-function buildHeadline(shiftType: ShiftType, teamDom: DominanceResult, candDom: DominanceResult, isLeading: boolean): string {
-  const tLabel = labelComponent(teamDom.top1.key);
-  const cLabel = labelComponent(candDom.top1.key);
+function buildHeadline(st: ShiftType, domTeam: DominanceType, domPerson: DominanceType, isLeading: boolean): string {
+  const tMap: Record<DominanceType, string> = { IMPULSIV: "umsetzungsorientiertes", INTUITIV: "beziehungsorientiertes", ANALYTISCH: "strukturorientiertes", MIX: "ausgeglichenes" };
+  const cMap: Record<DominanceType, string> = { IMPULSIV: "Umsetzungslogik", INTUITIV: "Beziehungslogik", ANALYTISCH: "Strukturlogik", MIX: "Mischlogik" };
   const role = isLeading ? "Führung" : "Neue Person";
 
-  switch (shiftType) {
-    case "VERSTAERKUNG": return `${role} verstärkt die bestehende ${tLabel}-Dynamik des Teams.`;
-    case "ERGAENZUNG": return `${role} ergänzt das ${tLabel}-Team mit ${cLabel}-Kompetenz. Komplementärer Effekt.`;
-    case "REIBUNG": return `${cLabel}-${role} trifft auf ${tLabel}-Team. Reibung in Steuerungslogik und Priorisierung.`;
-    case "SPANNUNG": return `${cLabel}-Profil im ${tLabel}-Team erzeugt strukturelle Spannung. Steuerung erforderlich.`;
-    case "TRANSFORMATION": return `${cLabel}-Führung transformiert ${tLabel}-Team. Hohe Steuerungsintensität.`;
+  switch (st) {
+    case "VERSTAERKUNG": return `${role} verstärkt die bestehende Dynamik des Teams. Gleichgerichtete Arbeitslogik.`;
+    case "ERGAENZUNG": return `${role} ergänzt das ${tMap[domTeam]} Team mit ${cMap[domPerson]}. Komplementärer Effekt.`;
+    case "REIBUNG": return `${cMap[domPerson]} trifft auf ${tMap[domTeam]} Team. Reibung in Steuerungslogik und Priorisierung.`;
+    case "SPANNUNG": return `Strukturelle Spannung: ${cMap[domPerson]} im ${tMap[domTeam]} Team. Steuerung erforderlich.`;
+    case "TRANSFORMATION": return `${cMap[domPerson]} als Führungslogik transformiert ${tMap[domTeam]} Team. Hohe Steuerungsintensität.`;
+    case "HYBRID": return `Hybride Verschiebung: Mischlogik trifft auf ${tMap[domTeam]} Team.`;
   }
 }
 
-function buildLeadershipBehavior(candDom: DominanceResult, teamDom: DominanceResult, isLeading: boolean) {
-  const cKey = candDom.top1.key;
-  const tKey = teamDom.top1.key;
-  const cLabel = labelComponent(cKey);
-  const tLabel = labelComponent(tKey);
-  const sameDom = cKey === tKey;
+function buildLeadershipBehavior(domPerson: DominanceType, domTeam: DominanceType, isLeading: boolean) {
   const role = isLeading ? "Die Führung" : "Die neue Person";
+  const axis = axisLabel(domTeam, domPerson);
 
-  const axisLabel = sameDom ? `${cLabel} → ${cLabel}` : `${cLabel} → ${tLabel}`;
+  const key = `${domPerson}-${domTeam}`;
+  const texts: Record<string, { s: string; p: string; b: string }> = {
+    "IMPULSIV-INTUITIV": { s: `${role} bringt Umsetzungsdruck in ein beziehungsorientiertes Team. Entscheidungstempo steigt, Abstimmungstiefe sinkt.`, p: "Das Team nimmt Druck und Ungeduld wahr. Beziehungsdynamik wird als zweitrangig empfunden.", b: "Bindungsverlust durch fehlende Beziehungspflege. Stille Demotivation im Team." },
+    "IMPULSIV-ANALYTISCH": { s: `${role} bringt Umsetzungsdruck in ein strukturorientiertes Team. Tempo kollidiert mit Absicherungsbedürfnis.`, p: "Das Team nimmt Hektik und fehlende Struktur wahr. Qualitätsansprüche werden als Bremse interpretiert.", b: "Qualitätsverlust durch überhöhtes Tempo. Prozessabkürzungen werden zur Gewohnheit." },
+    "INTUITIV-IMPULSIV": { s: `${role} bringt Beziehungsorientierung in ein tempogetriebenes Team. Abstimmungsbedarf steigt, Entscheidungstempo sinkt.`, p: "Das Team empfindet Führung als zögerlich und konsensorientiert. Ergebnisorientierung wird vermisst.", b: "Entscheidungsverzögerung durch Konsensbedürfnis. Klare Ansagen bleiben aus." },
+    "INTUITIV-ANALYTISCH": { s: `${role} bringt Beziehungslogik in ein strukturorientiertes Team. Abstimmung und Dialog ersetzen Prozessvorgaben.`, p: "Das Team erwartet klare Vorgaben und bekommt Gesprächsangebote. Prozesseffizienz leidet.", b: "Strukturverlust durch fehlende Standardisierung. Individuelle Absprachen ersetzen systematische Prozesse." },
+    "ANALYTISCH-IMPULSIV": { s: `${role} bringt Struktur und Absicherung in ein tempogetriebenes Team. Prozessqualität steigt, Geschwindigkeit sinkt kurzfristig.`, p: "Das Team empfindet neue Prozesse als Bremse. Kontrolle wird als Misstrauen interpretiert.", b: "Innovationsverlust durch Über-Strukturierung. Handlungsspielräume werden eingeengt." },
+    "ANALYTISCH-INTUITIV": { s: `${role} bringt Struktur und Faktenorientierung in ein beziehungsorientiertes Team. Entscheidungen werden sachlicher, Distanz steigt.`, p: "Das Team nimmt emotionale Distanz wahr. Faktenorientierung wird als Kälte empfunden.", b: "Bindungsverlust durch fehlende emotionale Anschlussfähigkeit. Teamdynamik wird unterschätzt." },
+  };
 
-  let statement: string, possiblePerception: string, blindSpot: string;
-
-  if (sameDom) {
-    statement = `${role} arbeitet in derselben Steuerungslogik wie das Team (${cLabel}). Entscheidungswege und Priorisierung werden verstärkt.`;
-    possiblePerception = `Das Team erlebt Bestätigung der eigenen Arbeitsweise. Bestehende Muster werden stabilisiert.`;
-    blindSpot = `Einseitige Verstärkung: Wenn beide ${cLabel}-geprägt sind, fehlen Korrektive für die nachrangigen Kompetenzen.`;
-  } else {
-    const conflicts: Record<string, { s: string; p: string; b: string }> = {
-      "impulsiv-intuitiv": { s: `${role} bringt Umsetzungsdruck in ein beziehungsorientiertes Team. Entscheidungstempo steigt, Abstimmungstiefe sinkt.`, p: "Das Team nimmt Druck und Ungeduld wahr. Beziehungsdynamik wird als zweitrangig empfunden.", b: "Bindungsverlust durch fehlende Beziehungspflege. Stille Demotivation im Team." },
-      "impulsiv-analytisch": { s: `${role} bringt Umsetzungsdruck in ein strukturorientiertes Team. Tempo kollidiert mit Absicherungsbedürfnis.`, p: "Das Team nimmt Hektik und fehlende Struktur wahr. Qualitätsansprüche werden als Bremse interpretiert.", b: "Qualitätsverlust durch überhöhtes Tempo. Prozessabkürzungen werden zur Gewohnheit." },
-      "intuitiv-impulsiv": { s: `${role} bringt Beziehungsorientierung in ein tempogetriebenes Team. Abstimmungsbedarf steigt, Entscheidungstempo sinkt.`, p: "Das Team empfindet Führung als zögerlich und konsensorientiert. Ergebnisorientierung wird vermisst.", b: "Entscheidungsverzögerung durch Konsensbedürfnis. Klare Ansagen bleiben aus." },
-      "intuitiv-analytisch": { s: `${role} bringt Beziehungslogik in ein strukturorientiertes Team. Abstimmung und Dialog ersetzen Prozessvorgaben.`, p: "Das Team erwartet klare Vorgaben und bekommt Gesprächsangebote. Prozesseffizienz leidet.", b: "Strukturverlust durch fehlende Standardisierung. Individuelle Absprachen ersetzen systematische Prozesse." },
-      "analytisch-impulsiv": { s: `${role} bringt Struktur und Absicherung in ein tempogetriebenes Team. Prozessqualität steigt, Geschwindigkeit sinkt kurzfristig.`, p: "Das Team empfindet neue Prozesse als Bremse. Kontrolle wird als Misstrauen interpretiert.", b: "Innovationsverlust durch Über-Strukturierung. Handlungsspielräume werden eingeengt." },
-      "analytisch-intuitiv": { s: `${role} bringt Struktur und Faktenorientierung in ein beziehungsorientiertes Team. Entscheidungen werden sachlicher, Distanz steigt.`, p: "Das Team nimmt emotionale Distanz wahr. Faktenorientierung wird als Kälte empfunden.", b: "Bindungsverlust durch fehlende emotionale Anschlussfähigkeit. Teamdynamik wird unterschätzt." },
+  if (domPerson === domTeam) {
+    return {
+      axisLabel: axis,
+      statement: `${role} arbeitet in derselben Steuerungslogik wie das Team. Entscheidungswege und Priorisierung werden verstärkt.`,
+      possiblePerception: "Das Team erlebt Bestätigung der eigenen Arbeitsweise. Bestehende Muster werden stabilisiert.",
+      blindSpot: "Einseitige Verstärkung: Fehlende Korrektive für die nachrangigen Kompetenzen.",
     };
-
-    const key = `${cKey}-${tKey}`;
-    const fallback = { s: `${role} (${cLabel}) trifft auf ${tLabel}-Team. Unterschiedliche Steuerungslogiken.`, p: "Unterschiedliche Erwartungen an Arbeitsweise und Entscheidungsfindung.", b: "Gegenseitige Fehlinterpretation von Arbeitsstil und Prioritäten." };
-    const entry = conflicts[key] || fallback;
-    statement = entry.s;
-    possiblePerception = entry.p;
-    blindSpot = entry.b;
   }
 
-  return { axisLabel, statement, possiblePerception, blindSpot };
+  const entry = texts[key] || { s: `${role} bringt eine andere Arbeitslogik ins Team.`, p: "Unterschiedliche Erwartungen an Arbeitsweise und Entscheidungsfindung.", b: "Gegenseitige Fehlinterpretation von Arbeitsstil und Prioritäten." };
+  return { axisLabel: axis, statement: entry.s, possiblePerception: entry.p, blindSpot: entry.b };
 }
 
-function buildSystemEffect(shiftType: ShiftType, candDom: DominanceResult, teamDom: DominanceResult, isLeading: boolean): string {
-  const cLabel = labelComponent(candDom.top1.key);
-  const tLabel = labelComponent(teamDom.top1.key);
+function buildSystemEffect(st: ShiftType, domPerson: DominanceType, domTeam: DominanceType, isLeading: boolean): string {
+  const pMap: Record<DominanceType, string> = { IMPULSIV: "Umsetzungs", INTUITIV: "Beziehungs", ANALYTISCH: "Struktur", MIX: "Misch" };
+  const tMap: Record<DominanceType, string> = { IMPULSIV: "umsetzungsorientierte", INTUITIV: "beziehungsorientierte", ANALYTISCH: "strukturorientierte", MIX: "ausgeglichene" };
   const role = isLeading ? "der Führung" : "der neuen Person";
 
-  switch (shiftType) {
-    case "VERSTAERKUNG": return `Die ${cLabel}-Dynamik wird durch den Eintritt ${role} verstärkt. Bestehende Stärken werden ausgebaut, bestehende Schwächen werden nicht kompensiert. Systemisch: stabil, aber einseitig.`;
-    case "ERGAENZUNG": return `${cLabel}-Kompetenz ergänzt das ${tLabel}-Team. Neue Perspektiven und Arbeitsweisen werden eingebracht. Systemisch: bereichernd, Integrationsaufwand moderat.`;
-    case "REIBUNG": return `${cLabel}-Logik trifft auf ${tLabel}-Team. Unterschiedliche Priorisierung erzeugt Reibung in Entscheidungsfindung und Alltagssteuerung. Systemisch: steuerbar, aber Aufmerksamkeit erforderlich.`;
-    case "SPANNUNG": return `Strukturelle Spannung zwischen ${cLabel}-Profil und ${tLabel}-Team. Arbeitslogik, Kommunikation und Erwartungshaltung weichen deutlich voneinander ab. Systemisch: aktive Steuerung notwendig.`;
-    case "TRANSFORMATION": return `${cLabel}-Führung verändert die ${tLabel}-Teamdynamik grundlegend. Arbeitslogik, Entscheidungskultur und Priorisierung werden transformiert. Systemisch: hohe Steuerungsintensität, aktives Change-Management erforderlich.`;
+  switch (st) {
+    case "VERSTAERKUNG": return `Die ${pMap[domPerson]}logik wird durch den Eintritt ${role} verstärkt. Bestehende Stärken werden ausgebaut, bestehende Schwächen werden nicht kompensiert. Systemisch: stabil, aber einseitig.`;
+    case "ERGAENZUNG": return `${pMap[domPerson]}kompetenz ergänzt das ${tMap[domTeam]} Team. Neue Perspektiven und Arbeitsweisen werden eingebracht. Systemisch: bereichernd, Integrationsaufwand moderat.`;
+    case "REIBUNG": return `${pMap[domPerson]}logik trifft auf ${tMap[domTeam]}s Team. Unterschiedliche Priorisierung erzeugt Reibung in Entscheidungsfindung und Alltagssteuerung. Systemisch: steuerbar, aber Aufmerksamkeit erforderlich.`;
+    case "SPANNUNG": return `Strukturelle Spannung zwischen ${pMap[domPerson]}logik und ${tMap[domTeam]}m Team. Arbeitslogik, Kommunikation und Erwartungshaltung weichen deutlich voneinander ab. Systemisch: aktive Steuerung notwendig.`;
+    case "TRANSFORMATION": return `${pMap[domPerson]}logik als Führungsansatz verändert die ${tMap[domTeam]} Teamdynamik grundlegend. Arbeitslogik, Entscheidungskultur und Priorisierung werden transformiert. Systemisch: hohe Steuerungsintensität, aktives Change-Management erforderlich.`;
+    default: return `Hybride Verschiebung: Die Teamdynamik verändert sich auf mehreren Ebenen gleichzeitig. Gezielte Steuerung erforderlich.`;
   }
 }
 
-function buildChances(shiftType: ShiftType, candDom: DominanceResult, teamDom: DominanceResult): string[] {
-  const cLabel = labelComponent(candDom.top1.key);
-  const tLabel = labelComponent(teamDom.top1.key);
+function buildChances(st: ShiftType, domPerson: DominanceType, domTeam: DominanceType): string[] {
+  const pLabel = { IMPULSIV: "Umsetzungs", INTUITIV: "Beziehungs", ANALYTISCH: "Struktur", MIX: "Misch" }[domPerson];
+  const tLabel = { IMPULSIV: "Umsetzungs", INTUITIV: "Beziehungs", ANALYTISCH: "Struktur", MIX: "Misch" }[domTeam];
 
-  const base: string[] = [];
-  if (shiftType === "VERSTAERKUNG") {
-    base.push(`Verstärkte ${cLabel}-Kompetenz beschleunigt Kernprozesse.`);
-    base.push("Hohe Anschlussfähigkeit reduziert Einarbeitungszeit.");
-    base.push("Teamidentität und Arbeitsrhythmus bleiben stabil.");
-    base.push("Entscheidungslogik wird konsistenter.");
-  } else if (shiftType === "ERGAENZUNG") {
-    base.push(`${cLabel}-Kompetenz ergänzt fehlende ${cLabel}-Perspektive im Team.`);
-    base.push("Neue Impulse für Entscheidungsfindung und Problemlösung.");
-    base.push(`Blinde Flecken der ${tLabel}-Dominanz werden adressiert.`);
-    base.push("Breitere Kompetenzabdeckung im Gesamtteam.");
-  } else {
-    base.push(`${cLabel}-Impulse können ${tLabel}-Routinen aufbrechen.`);
-    base.push("Neue Perspektive erzwingt bewusstere Entscheidungsfindung.");
-    base.push("Potenziell höhere Anpassungsfähigkeit des Teams.");
-    if (shiftType === "TRANSFORMATION") base.push("Chance auf grundlegende Erneuerung von Prozessen und Kultur.");
-    else base.push("Moderate Systemveränderung bei gezielter Steuerung möglich.");
-  }
-  return base.slice(0, 6);
+  if (st === "VERSTAERKUNG") return [
+    `Verstärkte ${pLabel}kompetenz beschleunigt Kernprozesse.`,
+    "Hohe Anschlussfähigkeit reduziert Einarbeitungszeit.",
+    "Teamidentität und Arbeitsrhythmus bleiben stabil.",
+    "Entscheidungslogik wird konsistenter.",
+  ];
+  if (st === "ERGAENZUNG") return [
+    `${pLabel}kompetenz ergänzt fehlende Perspektive im Team.`,
+    "Neue Impulse für Entscheidungsfindung und Problemlösung.",
+    `Blinde Flecken der ${tLabel}dominanz werden adressiert.`,
+    "Breitere Kompetenzabdeckung im Gesamtteam.",
+  ];
+  return [
+    `${pLabel}impulse können bestehende Routinen aufbrechen.`,
+    "Neue Perspektive erzwingt bewusstere Entscheidungsfindung.",
+    "Potenziell höhere Anpassungsfähigkeit des Teams.",
+    st === "TRANSFORMATION" ? "Chance auf grundlegende Erneuerung von Prozessen und Kultur." : "Moderate Systemveränderung bei gezielter Steuerung möglich.",
+    "Qualitätssteigerung durch neue Standards.",
+    "Professionalisierung der Entscheidungswege.",
+  ];
 }
 
-function buildRisks(shiftType: ShiftType, candDom: DominanceResult, teamDom: DominanceResult, isLeading: boolean): string[] {
-  const cLabel = labelComponent(candDom.top1.key);
-  const tLabel = labelComponent(teamDom.top1.key);
+function buildRisks(st: ShiftType, domPerson: DominanceType, domTeam: DominanceType, isLeading: boolean): string[] {
+  const pLabel = { IMPULSIV: "Umsetzungs", INTUITIV: "Beziehungs", ANALYTISCH: "Struktur", MIX: "Misch" }[domPerson];
+  const tLabel = { IMPULSIV: "umsetzungsorientierten", INTUITIV: "beziehungsorientierten", ANALYTISCH: "strukturorientierten", MIX: "ausgeglichenen" }[domTeam];
   const role = isLeading ? "Führung" : "Neue Person";
 
-  const base: string[] = [];
-  if (shiftType === "VERSTAERKUNG") {
-    base.push(`Einseitige ${cLabel}-Verstärkung ohne Korrektiv. Im Alltag: blinde Flecken bei ${cLabel === "Impulsiv" ? "Qualität und Abstimmung" : cLabel === "Intuitiv" ? "Ergebnisorientierung und Tempo" : "Flexibilität und Geschwindigkeit"}.`);
-    base.push("Homogenität erhöht Anfälligkeit bei Systemveränderungen.");
-    base.push("Fehlende Diversität in Entscheidungslogik.");
-  } else if (shiftType === "ERGAENZUNG") {
-    base.push(`Integrationsphase erfordert bewusste Steuerung. Im Alltag: temporäre Reibung bei Priorisierung.`);
-    base.push(`${role} muss Anschlussfähigkeit aktiv herstellen.`);
-    base.push("Unterschiedliche Arbeitsgeschwindigkeit in der Einarbeitung.");
-  } else if (shiftType === "REIBUNG") {
-    base.push(`${cLabel}-${role} und ${tLabel}-Team priorisieren unterschiedlich. Im Alltag: Konflikte bei Entscheidungsgeschwindigkeit und -logik.`);
-    base.push(`Gegenseitige Fehlinterpretation von Arbeitsstil. Im Alltag: stille Frustration und Rückzug.`);
-    base.push("Ohne Steuerung wird Reibung zu chronischem Spannungsfeld.");
-  } else {
-    base.push(`Strukturelle Spannung zwischen ${cLabel} und ${tLabel}. Im Alltag: Kommunikationsbrüche und Erwartungsenttäuschung.`);
-    base.push(`${isLeading ? "Führungsakzeptanz" : "Teamintegration"} gefährdet. Im Alltag: Widerstand und Abgrenzung.`);
-    base.push("Ohne aktives Change-Management: Fluktuation und Leistungseinbruch.");
-    base.push("Kulturelle Transformation braucht 6-12 Monate. Im Alltag: lange Unsicherheitsphase.");
-  }
-  return base.slice(0, 6);
+  if (st === "VERSTAERKUNG") return [
+    `Einseitige Verstärkung ohne Korrektiv. Im Alltag: blinde Flecken bei nachrangigen Kompetenzen.`,
+    "Homogenität erhöht Anfälligkeit bei Systemveränderungen.",
+    "Fehlende Diversität in Entscheidungslogik.",
+  ];
+  if (st === "ERGAENZUNG") return [
+    `Integrationsphase erfordert bewusste Steuerung. Im Alltag: temporäre Reibung bei Priorisierung.`,
+    `${role} muss Anschlussfähigkeit aktiv herstellen.`,
+    "Unterschiedliche Arbeitsgeschwindigkeit in der Einarbeitung.",
+  ];
+  return [
+    `${pLabel}logik der ${role} und ${tLabel}s Team priorisieren unterschiedlich. Im Alltag: Konflikte bei Entscheidungsgeschwindigkeit und -logik.`,
+    `Gegenseitige Fehlinterpretation von Arbeitsstil. Im Alltag: stille Frustration und Rückzug.`,
+    "Ohne Steuerung wird Reibung zu chronischem Spannungsfeld.",
+    st === "TRANSFORMATION" || st === "SPANNUNG" ? `${isLeading ? "Führungsakzeptanz" : "Teamintegration"} gefährdet. Im Alltag: Widerstand und Abgrenzung.` : "Motivationsdelle bei stark betroffenen Teammitgliedern möglich.",
+    st === "TRANSFORMATION" ? "Kulturelle Transformation braucht 6-12 Monate. Im Alltag: lange Unsicherheitsphase." : "Ohne bewusste Steuerung steigt der Konfliktgrad.",
+    "Überstrukturierung oder Kontrollverlust je nach Dynamik.",
+  ];
 }
 
-function buildIntegrationPlan(shiftType: ShiftType, isLeading: boolean): { phaseId: string; title: string; days: string; actions: string[] }[] {
+function buildIntegrationPlan(st: ShiftType, isLeading: boolean): { phaseId: string; title: string; days: string; actions: string[] }[] {
   const role = isLeading ? "Führungskraft" : "Teammitglied";
-
-  if (shiftType === "VERSTAERKUNG" || shiftType === "ERGAENZUNG") {
-    return [
-      { phaseId: "P1", title: "Ankommen & Orientieren", days: "0–30 Tage", actions: [
-        `${role} lernt Teamrhythmus und Entscheidungslogik kennen.`,
-        "Erwartungsgespräch mit Team und Vorgesetztem.",
-        "Erste operative Aufgaben mit direktem Feedback.",
-        "Beziehungsaufbau durch informelle Formate.",
-      ]},
-      { phaseId: "P2", title: "Stabilisieren & Steuern", days: "30–60 Tage", actions: [
-        "Eigene Arbeitslogik wird ins Team integriert.",
-        "Erste Konflikte werden adressiert und geklärt.",
-        "Review-Rhythmus wird etabliert.",
-        "Zielerreichung wird gemeinsam überprüft.",
-      ]},
-      { phaseId: "P3", title: "Validieren & Entscheiden", days: "60–90 Tage", actions: [
-        "Gesamtbewertung der Integration.",
-        "Feedback von Team und Vorgesetztem einholen.",
-        "Entscheidung über dauerhafte Passung.",
-        "Steuerungsmaßnahmen bei Bedarf anpassen.",
-      ]},
-    ];
-  }
-
   return [
-    { phaseId: "P1", title: "Strukturierung & Rahmen setzen", days: "0–30 Tage", actions: [
+    { phaseId: "P1", title: "Architektur klären", days: "0–10 Tage", actions: [
+      "Rollen- und Entscheidungsgrenzen definieren.",
+      "Qualitäts-Gates und Reportingstruktur abstimmen.",
       `${role} definiert Arbeitslogik und Entscheidungswege explizit.`,
-      "Erwartungsgespräche mit jedem Teammitglied einzeln.",
-      "Entscheidungszeitfenster und 80/20-Standards festlegen.",
-      "Beziehungsformate etablieren (wöchentlich).",
-      isLeading ? "Führungsanspruch klar kommunizieren, nicht diskutieren." : "Eigene Rolle im Team klar definieren.",
+      "Erwartungsgespräche mit Team führen.",
     ]},
-    { phaseId: "P2", title: "Stabilisierung & Steuerung", days: "30–60 Tage", actions: [
-      "Spannungsfelder identifizieren und benennen.",
-      "Review-Rhythmus mit konkreten Metriken etablieren.",
+    { phaseId: "P2", title: "Wirkung erzeugen", days: "10–20 Tage", actions: [
+      "Ein priorisiertes Thema strukturiert optimieren.",
+      "Feedback-Loop etablieren.",
       "Erste Erfolge sichtbar machen und kommunizieren.",
-      "Teamdynamik bewusst beobachten und bei Bedarf intervenieren.",
+      "Spannungsfelder identifizieren und benennen.",
     ]},
-    { phaseId: "P3", title: "Validierung & Entscheidung", days: "60–90 Tage", actions: [
-      "Gesamtbewertung: Passt die Dynamik oder braucht es Anpassung?",
-      "360°-Feedback einholen.",
-      "Steuerungsmaßnahmen verstetigen oder verschärfen.",
-      "Entscheidung über langfristige Teamkonfiguration.",
+    { phaseId: "P3", title: "Stabilisieren", days: "20–30 Tage", actions: [
+      "Übersteuerung vermeiden, Kontrollgrad anpassen.",
+      "Belastung und Stimmung evaluieren.",
+      "Steuerungsmaßnahmen verstetigen.",
+      "Gesamtbewertung der Integration.",
     ]},
   ];
 }
 
-export function runTeamDynamik(input: TeamDynamikInput): TeamDynamikResult {
+export function getDefaultLevers(): Lever[] {
+  return DEFAULT_LEVERS.map(l => ({ ...l }));
+}
+
+export function computeTeamDynamics(input: TeamDynamikInput): TeamDynamikResult {
   const team = normalizeTriad(input.teamProfile);
-  const role = normalizeTriad(input.roleProfile);
-  const cand = normalizeTriad(input.candidateProfile);
+  const person = normalizeTriad(input.personProfile);
+  const roleSoll = input.roleSoll?.enabled ? normalizeTriad(input.roleSoll.profile) : null;
+
+  const domT = dominanceType(team);
+  const domP = dominanceType(person);
+  const domS = roleSoll ? dominanceType(roleSoll) : null;
 
   const teamDom = dominanceModeOf(team);
-  const roleDom = dominanceModeOf(role);
-  const candDom = dominanceModeOf(cand);
+  const personDom = dominanceModeOf(person);
 
-  const intensityScore = calcIntensityScore(input);
-  const intensityLevel = calcIntensityLevel(intensityScore);
-  const shiftType = calcShiftType(teamDom, candDom, intensityLevel, input.isLeading);
+  const DG = distributionGap(team, person);
+  const DC = dominanceClash(domT, domP);
+  const RG = roleGap(!!input.roleSoll?.enabled, roleSoll, person);
 
-  const levers = buildLevers();
-  const steeringNeed = calcSteeringNeed(intensityLevel, levers);
-  const trafficLight = calcTrafficLight(intensityLevel, shiftType);
+  const TS = transformationScore(DG, DC, RG, input.isLeading, input.membersCount);
+  const level = intensityLevel(TS);
+  const CI = conflictIndex(TS, DC);
 
-  const leadDomKey = input.isLeading ? candDom.top1.key : teamDom.top1.key;
-  const teamDomKey = teamDom.top1.key;
-  const cellId = input.isLeading ? matrixCellId(candDom.top1.key, teamDomKey) : matrixCellId(teamDomKey, candDom.top1.key);
-  const activeMatrixCell = MATRIX_CELLS.find(c => c.id === cellId) || MATRIX_CELLS[0];
+  const axis = axisLabel(domT, domP);
+  const st = shiftType(domT, domP, DG, DC, TS, input.isLeading);
 
-  const headline = buildHeadline(shiftType, teamDom, candDom, input.isLeading);
-  const leadershipBehavior = buildLeadershipBehavior(candDom, teamDom, input.isLeading);
-  const systemEffect = buildSystemEffect(shiftType, candDom, teamDom, input.isLeading);
+  const steer = calcSteeringNeed(level, RG, input.levers, input.steeringOverride);
+  const tl = trafficLight(st, level, steer.final);
 
-  const shiftAxis = candDom.top1.key === teamDom.top1.key ? "Keine Verschiebung" : `${labelComponent(teamDom.top1.key)} → ${labelComponent(candDom.top1.key)}`;
-
-  const sollIstDiff = Math.abs(role.impulsiv - cand.impulsiv) + Math.abs(role.intuitiv - cand.intuitiv) + Math.abs(role.analytisch - cand.analytisch);
-  const fitTag = sollIstDiff <= 12 ? "Soll ≈ Ist" : "Abweichung";
+  const cellId = input.isLeading ? matrixCellId(domP, domT) : matrixCellId(domT, domP);
+  const activeCell = MATRIX_CELLS.find(c => c.id === cellId) || MATRIX_CELLS[4];
 
   return {
-    teamDominance: teamDom,
-    roleDominance: roleDom,
-    candDominance: candDom,
-    shiftType,
-    shiftAxis,
-    intensityScore,
-    intensityLevel,
-    steeringNeed,
-    trafficLight,
-    headline,
-    activeMatrixCell,
-    leadershipBehavior,
-    systemEffect,
-    chances: buildChances(shiftType, candDom, teamDom),
-    risks: buildRisks(shiftType, candDom, teamDom, input.isLeading),
-    integrationPlan: buildIntegrationPlan(shiftType, input.isLeading),
-    levers,
-    fitTag,
+    dominanceTeam: domT,
+    dominancePerson: domP,
+    dominanceRoleSoll: domS,
+    teamDom,
+    personDom,
+    scores: { DG, DC, RG, TS, CI },
+    intensityLevel: level,
+    shiftType: st,
+    shiftAxis: axis,
+    steeringNeed: steer.final,
+    trafficLight: tl,
+    leverEffects: { enabledCount: steer.enabledCount, reductionLevels: steer.reductionLevels },
+    activeMatrixCell: activeCell,
+    headline: buildHeadline(st, domT, domP, input.isLeading),
+    leadershipBehavior: buildLeadershipBehavior(domP, domT, input.isLeading),
+    systemEffect: buildSystemEffect(st, domP, domT, input.isLeading),
+    chances: buildChances(st, domP, domT),
+    risks: buildRisks(st, domP, domT, input.isLeading),
+    integrationPlan: buildIntegrationPlan(st, input.isLeading),
   };
 }
 
@@ -386,12 +428,10 @@ export function getMatrixCellById(id: string): MatrixCell | undefined {
   return MATRIX_CELLS.find(c => c.id === id);
 }
 
-export function getViewContent(viewMode: ViewMode, result: TeamDynamikResult) {
+export function getViewContent(viewMode: ViewMode, result: TeamDynamikResult, selectedCell: MatrixCell) {
   if (viewMode === "CEO") {
     return {
-      insightSections: [
-        { title: "Systemwirkung", text: result.systemEffect },
-      ],
+      insightSections: [{ title: "Systemwirkung", text: result.systemEffect }],
       risks: result.risks.slice(0, 3),
       chances: result.chances.slice(0, 3),
       showMatrix: false,
@@ -405,8 +445,8 @@ export function getViewContent(viewMode: ViewMode, result: TeamDynamikResult) {
       insightSections: [
         { title: "Führungsverhalten", text: result.leadershipBehavior.statement },
         { title: "Spannungsfeld", text: result.leadershipBehavior.possiblePerception },
-        { title: "Alltagswirkung", text: result.activeMatrixCell.alltag },
-        { title: "Konkrete Maßnahmen", text: result.activeMatrixCell.tun },
+        { title: "Alltagswirkung", text: selectedCell.alltag },
+        { title: "Konkrete Maßnahmen", text: selectedCell.tun },
       ],
       risks: result.risks,
       chances: result.chances,
@@ -429,6 +469,36 @@ export function getViewContent(viewMode: ViewMode, result: TeamDynamikResult) {
     showLevers: true,
     showInsights: true,
     actionTitle: "Kultur & Integration",
+  };
+}
+
+export function buildAIPayload(input: TeamDynamikInput, result: TeamDynamikResult) {
+  return {
+    context: {
+      team_name: input.teamName,
+      members_count: input.membersCount,
+      tasks: input.tasks || [],
+      kpi_focus: input.kpiFocus || [],
+    },
+    profiles: {
+      team: input.teamProfile,
+      person: input.personProfile,
+      role_soll: input.roleSoll?.enabled ? { enabled: true, ...input.roleSoll.profile } : { enabled: false, impulsiv: 0, intuitiv: 0, analytisch: 0 },
+    },
+    computed: {
+      dominance_team: result.dominanceTeam,
+      dominance_person: result.dominancePerson,
+      DG: result.scores.DG,
+      DC: result.scores.DC,
+      RG: result.scores.RG,
+      TS: result.scores.TS,
+      CI: result.scores.CI,
+      intensity_level: result.intensityLevel,
+      shift_type: result.shiftType,
+      shift_axis: result.shiftAxis,
+      steering_need: result.steeringNeed,
+    },
+    levers: input.levers.map(l => ({ id: l.id, enabled: l.enabled })),
   };
 }
 

@@ -1,12 +1,13 @@
 import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
-import { Users, Shield, TrendingUp, AlertTriangle, Check, Lightbulb, ChevronDown, ChevronRight, CalendarDays, CheckCircle2, Circle } from "lucide-react";
+import { Users, Shield, TrendingUp, AlertTriangle, Check, Lightbulb, ChevronDown, ChevronRight, CalendarDays, CheckCircle2, Circle, FileText, Loader2, X } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { hyphenateText } from "@/lib/hyphenate";
 import {
   type Triad, type ComponentKey, type TeamDynamikResult, type ViewMode, type Lever, type MatrixCell,
-  runTeamDynamik, normalizeTriad, dominanceModeOf, labelComponent, dominanceLabel,
-  getMatrixCellById, getViewContent,
+  computeTeamDynamics, getDefaultLevers, normalizeTriad, dominanceModeOf, labelComponent, dominanceLabel,
+  getMatrixCellById, getViewContent, buildAIPayload,
+  type TeamDynamikInput,
 } from "@/lib/teamdynamik-engine";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
@@ -85,7 +86,7 @@ function KpiTile({ label, value, sub, color }: { label: string; value: string; s
   return (
     <div style={{ padding: "12px 14px", borderRadius: 14, background: `${color}08`, border: `1px solid ${color}18`, textAlign: "center", flex: 1, minWidth: 100 }}>
       <p style={{ fontSize: 9, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 4px" }}>{label}</p>
-      <p style={{ fontSize: 15, fontWeight: 750, color, margin: 0 }}>{value}</p>
+      <p style={{ fontSize: 15, fontWeight: 750, color, margin: 0 }} data-testid={`kpi-${label.toLowerCase().replace(/\s+/g, "-")}`}>{value}</p>
       {sub && <p style={{ fontSize: 10, color: "#8E8E93", margin: "2px 0 0" }}>{sub}</p>}
     </div>
   );
@@ -95,7 +96,7 @@ function TrafficLightDot({ light }: { light: "GREEN" | "YELLOW" | "RED" }) {
   const c = light === "GREEN" ? "#34C759" : light === "YELLOW" ? "#FF9500" : "#FF3B30";
   const label = light === "GREEN" ? "Stabil" : light === "YELLOW" ? "Reibung" : "Spannung";
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }} data-testid="traffic-light">
       <div style={{ width: 14, height: 14, borderRadius: "50%", background: c, boxShadow: `0 0 8px ${c}60` }} />
       <span style={{ fontSize: 13, fontWeight: 700, color: c }}>{label}</span>
     </div>
@@ -184,7 +185,7 @@ function LeverChecklist({ levers, onToggle }: { levers: Lever[]; onToggle: (id: 
           </div>
         </button>
       ))}
-      <p style={{ fontSize: 10, color: "#8E8E93", fontStyle: "italic", margin: "4px 0 0" }}>Aktivierte Hebel reduzieren den Steuerungsbedarf.</p>
+      <p style={{ fontSize: 10, color: "#8E8E93", fontStyle: "italic", margin: "4px 0 0" }}>Aktivierte Hebel reduzieren den Steuerungsbedarf stufenweise.</p>
     </div>
   );
 }
@@ -205,6 +206,50 @@ function TimelinePhase({ phase, title, days, items, color }: { phase: string; ti
   );
 }
 
+function ScoreBar({ label, value, max = 100, color }: { label: string; value: number; max?: number; color: string }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <span style={{ fontSize: 10, fontWeight: 600, color: "#6E6E73", width: 24 }}>{label}</span>
+      <div style={{ flex: 1, height: 8, borderRadius: 4, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
+        <div style={{ width: `${Math.min((value / max) * 100, 100)}%`, height: "100%", borderRadius: 4, background: color, transition: "width 400ms ease" }} />
+      </div>
+      <span style={{ fontSize: 11, fontWeight: 700, color, width: 28, textAlign: "right" }}>{value}</span>
+    </div>
+  );
+}
+
+function TagInput({ tags, onAdd, onRemove, placeholder }: { tags: string[]; onAdd: (tag: string) => void; onRemove: (index: number) => void; placeholder: string }) {
+  const [input, setInput] = useState("");
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && input.trim()) {
+      e.preventDefault();
+      onAdd(input.trim());
+      setInput("");
+    }
+  };
+  return (
+    <div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: tags.length > 0 ? 6 : 0 }}>
+        {tags.map((tag, i) => (
+          <span key={i} style={{ fontSize: 10, fontWeight: 600, padding: "3px 8px", borderRadius: 6, background: "rgba(0,113,227,0.08)", color: "#0071E3", display: "flex", alignItems: "center", gap: 4 }}>
+            {tag}
+            <button onClick={() => onRemove(i)} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1 }}>
+              <X style={{ width: 10, height: 10, color: "#0071E3" }} />
+            </button>
+          </span>
+        ))}
+      </div>
+      <input
+        value={input}
+        onChange={e => setInput(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        style={{ fontSize: 11, border: "none", background: "rgba(0,0,0,0.03)", borderRadius: 8, padding: "6px 10px", width: "100%", outline: "none", color: "#1D1D1F" }}
+      />
+    </div>
+  );
+}
+
 export default function Teamdynamik() {
   const [, setLocation] = useLocation();
   const [viewMode, setViewMode] = useState<ViewMode>("HR");
@@ -215,9 +260,14 @@ export default function Teamdynamik() {
   const [isLeading, setIsLeading] = useState(false);
   const [teamProfile, setTeamProfile] = useState<Triad>({ impulsiv: 30, intuitiv: 40, analytisch: 30 });
   const [candProfile, setCandProfile] = useState<Triad>({ impulsiv: 45, intuitiv: 25, analytisch: 30 });
-  const [levers, setLevers] = useState<Lever[]>([]);
-
+  const [levers, setLevers] = useState<Lever[]>(getDefaultLevers());
+  const [roleSollEnabled, setRoleSollEnabled] = useState(false);
   const [roleProfile, setRoleProfile] = useState<Triad>({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
+  const [tasks, setTasks] = useState<string[]>([]);
+  const [kpiFocus, setKpiFocus] = useState<string[]>([]);
+  const [reportText, setReportText] = useState<string | null>(null);
+  const [reportLoading, setReportLoading] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   useEffect(() => {
     const raw = localStorage.getItem("rollenDnaState");
@@ -226,40 +276,26 @@ export default function Teamdynamik() {
         const parsed = JSON.parse(raw);
         if (parsed.gesamt) {
           setRoleProfile({ impulsiv: parsed.gesamt.imp || 33, intuitiv: parsed.gesamt.int || 34, analytisch: parsed.gesamt.ana || 33 });
+          setRoleSollEnabled(true);
         }
       } catch {}
     }
   }, []);
 
-  const result = useMemo(() => {
-    return runTeamDynamik({ teamName, teamProfile, membersCount, roleProfile, candidateProfile: candProfile, isLeading });
-  }, [teamName, teamProfile, membersCount, roleProfile, candProfile, isLeading]);
+  const input: TeamDynamikInput = useMemo(() => ({
+    teamName,
+    teamProfile,
+    membersCount,
+    personProfile: candProfile,
+    isLeading,
+    roleSoll: { enabled: roleSollEnabled, profile: roleProfile },
+    tasks,
+    kpiFocus,
+    levers,
+    steeringOverride: null,
+  }), [teamName, teamProfile, membersCount, candProfile, isLeading, roleSollEnabled, roleProfile, tasks, kpiFocus, levers]);
 
-  useEffect(() => {
-    if (levers.length === 0 && result.levers.length > 0) setLevers(result.levers);
-  }, [result.levers]);
-
-  const recalcWithLevers = useMemo(() => {
-    const r = runTeamDynamik({ teamName, teamProfile, membersCount, roleProfile, candidateProfile: candProfile, isLeading });
-    r.levers = levers.length > 0 ? levers : r.levers;
-    const { steeringNeed, trafficLight } = (() => {
-      const levelMap: Record<string, number> = { NIEDRIG: 20, MITTEL: 50, HOCH: 80 };
-      let score = levelMap[r.intensityLevel] || 50;
-      const totalReduction = r.levers.filter(l => l.enabled).reduce((sum, l) => sum + l.weight, 0);
-      score = Math.max(0, score - totalReduction);
-      const sn = score <= 33 ? "NIEDRIG" as const : score <= 66 ? "MITTEL" as const : "HOCH" as const;
-      const st = r.shiftType;
-      let tl: "GREEN" | "YELLOW" | "RED" = "GREEN";
-      if (st === "SPANNUNG" || st === "TRANSFORMATION") {
-        tl = totalReduction >= 15 ? "YELLOW" : "RED";
-      } else if (sn === "HOCH") tl = "RED";
-      else if (sn === "MITTEL") tl = "YELLOW";
-      return { steeringNeed: sn, trafficLight: tl };
-    })();
-    return { ...r, steeringNeed, trafficLight, levers: r.levers };
-  }, [teamName, teamProfile, membersCount, roleProfile, candProfile, isLeading, levers]);
-
-  const engine = recalcWithLevers;
+  const engine = useMemo(() => computeTeamDynamics(input), [input]);
 
   useEffect(() => {
     if (!selectedCell) setSelectedCell(engine.activeMatrixCell.id);
@@ -271,20 +307,39 @@ export default function Teamdynamik() {
   }, [selectedCell, engine.activeMatrixCell]);
 
   const viewContent = useMemo(() => {
-    const engineWithCell = { ...engine, activeMatrixCell: selectedCellData };
-    return getViewContent(viewMode, engineWithCell);
+    return getViewContent(viewMode, engine, selectedCellData);
   }, [viewMode, engine, selectedCellData]);
 
   const toggleLever = (id: string) => {
     setLevers(prev => prev.map(l => l.id === id ? { ...l, enabled: !l.enabled } : l));
   };
 
-  const shiftTypeLabel: Record<string, string> = {
-    VERSTAERKUNG: "Verstärkung", ERGAENZUNG: "Ergänzung", REIBUNG: "Reibung", SPANNUNG: "Spannung", TRANSFORMATION: "Transformation",
+  const generateReport = async () => {
+    setReportLoading(true);
+    setShowReport(true);
+    try {
+      const payload = buildAIPayload(input, engine);
+      const res = await fetch("/api/generate-team-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error("Report-Generierung fehlgeschlagen");
+      const data = await res.json();
+      setReportText(data.report);
+    } catch (err) {
+      setReportText("Fehler bei der Report-Generierung. Bitte erneut versuchen.");
+    } finally {
+      setReportLoading(false);
+    }
   };
-  const intensityColor = engine.intensityLevel === "NIEDRIG" ? "#34C759" : engine.intensityLevel === "MITTEL" ? "#FF9500" : "#FF3B30";
+
+  const shiftTypeLabel: Record<string, string> = {
+    VERSTAERKUNG: "Verstärkung", ERGAENZUNG: "Ergänzung", REIBUNG: "Reibung", SPANNUNG: "Spannung", TRANSFORMATION: "Transformation", HYBRID: "Hybrid",
+  };
+  const tsColor = engine.intensityLevel === "NIEDRIG" ? "#34C759" : engine.intensityLevel === "MITTEL" ? "#FF9500" : "#FF3B30";
   const steeringColor = engine.steeringNeed === "NIEDRIG" ? "#34C759" : engine.steeringNeed === "MITTEL" ? "#FF9500" : "#FF3B30";
-  const shiftColor = engine.shiftType === "VERSTAERKUNG" || engine.shiftType === "ERGAENZUNG" ? "#34C759" : engine.shiftType === "REIBUNG" ? "#FF9500" : "#FF3B30";
+  const shiftColor = engine.shiftType === "VERSTAERKUNG" || engine.shiftType === "ERGAENZUNG" ? "#34C759" : engine.shiftType === "REIBUNG" || engine.shiftType === "HYBRID" ? "#FF9500" : "#FF3B30";
 
   const matrixCells = [
     { id: "IMP-IMP", label: "Verstärkung", micro: "Tempo-System" },
@@ -306,7 +361,22 @@ export default function Teamdynamik() {
 
   return (
     <div className="min-h-screen" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 40%, #F5F7FA 100%)" }} lang="de">
-      <GlobalNav />
+      <GlobalNav rightSlot={
+        <button
+          onClick={generateReport}
+          disabled={reportLoading}
+          data-testid="button-generate-report"
+          style={{
+            display: "flex", alignItems: "center", gap: 6, padding: "7px 16px", borderRadius: 10,
+            background: reportLoading ? "rgba(0,113,227,0.5)" : "#0071E3",
+            color: "#fff", border: "none", cursor: reportLoading ? "default" : "pointer",
+            fontSize: 12, fontWeight: 600, transition: "all 200ms",
+          }}
+        >
+          {reportLoading ? <Loader2 style={{ width: 14, height: 14, animation: "spin 1s linear infinite" }} /> : <FileText style={{ width: 14, height: 14 }} />}
+          {reportLoading ? "Generiert..." : "Team-Report"}
+        </button>
+      } />
 
       <main style={{ maxWidth: 960, margin: "0 auto", padding: "24px 16px 80px" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -328,14 +398,22 @@ export default function Teamdynamik() {
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", flex: "1 1 320px", justifyContent: "flex-end" }}>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", flex: "1 1 400px", justifyContent: "flex-end" }}>
                 <KpiTile label="Verschiebungstyp" value={shiftTypeLabel[engine.shiftType]} color={shiftColor} />
-                <KpiTile label="Intensität" value={engine.intensityLevel} sub={`${engine.intensityScore}/100`} color={intensityColor} />
-                <KpiTile label="Steuerungsbedarf" value={engine.steeringNeed} color={steeringColor} />
+                <KpiTile label="TS (Transformation)" value={`${engine.scores.TS}`} sub={engine.intensityLevel} color={tsColor} />
+                <KpiTile label="Steuerungsbedarf" value={engine.steeringNeed} sub={engine.leverEffects.enabledCount > 0 ? `${engine.leverEffects.enabledCount} Hebel aktiv` : undefined} color={steeringColor} />
               </div>
             </div>
 
-            <p style={{ fontSize: 13, color: "#48484A", marginTop: 14, lineHeight: 1.6, textAlign: "justify", textAlignLast: "left" as any }} lang="de">{hyphenateText(engine.headline)}</p>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12 }}>
+              <ScoreBar label="DG" value={engine.scores.DG} color="#6E6E73" />
+              <ScoreBar label="DC" value={engine.scores.DC} color="#6E6E73" />
+              {engine.scores.RG !== null && <ScoreBar label="RG" value={engine.scores.RG} color="#6E6E73" />}
+              <ScoreBar label="CI" value={engine.scores.CI} color={engine.scores.CI > 60 ? "#FF3B30" : engine.scores.CI > 30 ? "#FF9500" : "#34C759"} />
+            </div>
+
+            <p style={{ fontSize: 13, color: "#48484A", marginTop: 14, lineHeight: 1.6, textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-headline">{hyphenateText(engine.headline)}</p>
+            <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 4 }} data-testid="text-shift-axis">{engine.shiftAxis}</p>
 
             <div style={{ display: "flex", gap: 4, marginTop: 14, justifyContent: "flex-end" }}>
               {(["CEO", "HR", "TEAMLEITUNG"] as ViewMode[]).map(v => (
@@ -361,7 +439,16 @@ export default function Teamdynamik() {
               <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>Teamprofil</p>
               <TriadSliders triad={teamProfile} onChange={setTeamProfile} label="Teamverteilung" />
               <div style={{ marginTop: 12, padding: "8px 12px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                <p style={{ fontSize: 11, fontWeight: 600, color: "#1D1D1F", margin: 0 }}>Dominanz: <span style={{ color: colorFor(engine.teamDominance.top1.key) }}>{dominanceLabel(engine.teamDominance)}</span></p>
+                <p style={{ fontSize: 11, fontWeight: 600, color: "#1D1D1F", margin: 0 }}>Dominanz: <span style={{ color: colorFor(engine.teamDom.top1.key) }}>{dominanceLabel(engine.teamDom)}</span></p>
+              </div>
+
+              <div style={{ marginTop: 16 }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Aufgaben (Enter zum Hinzufügen)</p>
+                <TagInput tags={tasks} onAdd={t => setTasks([...tasks, t])} onRemove={i => setTasks(tasks.filter((_, j) => j !== i))} placeholder="z.B. Projektmanagement, Reporting..." />
+              </div>
+              <div style={{ marginTop: 10 }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>KPI-Schwerpunkte (Enter zum Hinzufügen)</p>
+                <TagInput tags={kpiFocus} onAdd={t => setKpiFocus([...kpiFocus, t])} onRemove={i => setKpiFocus(kpiFocus.filter((_, j) => j !== i))} placeholder="z.B. Fehlerquote, Durchlaufzeit..." />
               </div>
             </GlassCard>
 
@@ -386,25 +473,49 @@ export default function Teamdynamik() {
                 </button>
               </div>
 
-              <TriadBars triad={roleProfile} label="Rollen-DNA (Soll)" height={16} />
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                <button
+                  onClick={() => setRoleSollEnabled(!roleSollEnabled)}
+                  data-testid="toggle-role-soll"
+                  style={{
+                    display: "flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 8,
+                    background: roleSollEnabled ? "rgba(52,199,89,0.06)" : "rgba(0,0,0,0.04)",
+                    border: `1px solid ${roleSollEnabled ? "rgba(52,199,89,0.2)" : "rgba(0,0,0,0.06)"}`,
+                    cursor: "pointer", fontSize: 11, fontWeight: 600,
+                    color: roleSollEnabled ? "#34C759" : "#6E6E73",
+                  }}
+                >
+                  <div style={{ width: 14, height: 14, borderRadius: 4, background: roleSollEnabled ? "#34C759" : "transparent", border: roleSollEnabled ? "none" : "1.5px solid #C7C7CC", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    {roleSollEnabled && <Check style={{ width: 10, height: 10, color: "#fff", strokeWidth: 3 }} />}
+                  </div>
+                  Rollen-DNA (Soll) einbeziehen
+                </button>
+              </div>
 
-              <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "12px 0" }} />
+              {roleSollEnabled && (
+                <>
+                  <TriadBars triad={roleProfile} label="Rollen-DNA (Soll)" height={16} />
+                  <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "12px 0" }} />
+                </>
+              )}
 
-              <TriadSliders triad={candProfile} onChange={setCandProfile} label="Kandidatenprofil (Ist)" />
+              <TriadSliders triad={candProfile} onChange={setCandProfile} label="Neue Person (Ist)" />
 
               <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
                 <div style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", flex: 1 }}>
-                  <p style={{ fontSize: 10, color: "#8E8E93", margin: "0 0 2px" }}>Dominanz</p>
-                  <p style={{ fontSize: 11, fontWeight: 600, color: colorFor(engine.candDominance.top1.key), margin: 0 }}>{dominanceLabel(engine.candDominance)}</p>
+                  <p style={{ fontSize: 10, color: "#8E8E93", margin: "0 0 2px" }}>Dominanz Person</p>
+                  <p style={{ fontSize: 11, fontWeight: 600, color: colorFor(engine.personDom.top1.key), margin: 0 }}>{dominanceLabel(engine.personDom)}</p>
                 </div>
-                <div style={{
-                  padding: "6px 12px", borderRadius: 8, flex: "0 0 auto",
-                  background: engine.fitTag === "Soll ≈ Ist" ? "rgba(52,199,89,0.06)" : "rgba(255,149,0,0.06)",
-                  border: `1px solid ${engine.fitTag === "Soll ≈ Ist" ? "rgba(52,199,89,0.2)" : "rgba(255,149,0,0.2)"}`,
-                }}>
-                  <p style={{ fontSize: 10, color: "#8E8E93", margin: "0 0 2px" }}>Fit</p>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: engine.fitTag === "Soll ≈ Ist" ? "#34C759" : "#FF9500", margin: 0 }}>{engine.fitTag}</p>
-                </div>
+                {engine.scores.RG !== null && (
+                  <div style={{
+                    padding: "6px 12px", borderRadius: 8, flex: "0 0 auto",
+                    background: engine.scores.RG <= 20 ? "rgba(52,199,89,0.06)" : engine.scores.RG <= 40 ? "rgba(255,149,0,0.06)" : "rgba(255,59,48,0.06)",
+                    border: `1px solid ${engine.scores.RG <= 20 ? "rgba(52,199,89,0.2)" : engine.scores.RG <= 40 ? "rgba(255,149,0,0.2)" : "rgba(255,59,48,0.2)"}`,
+                  }}>
+                    <p style={{ fontSize: 10, color: "#8E8E93", margin: "0 0 2px" }}>Role Gap</p>
+                    <p style={{ fontSize: 11, fontWeight: 700, color: engine.scores.RG <= 20 ? "#34C759" : engine.scores.RG <= 40 ? "#FF9500" : "#FF3B30", margin: 0 }}>{engine.scores.RG}</p>
+                  </div>
+                )}
               </div>
             </GlassCard>
           </div>
@@ -433,7 +544,7 @@ export default function Teamdynamik() {
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>
                   <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: `${shiftColor}10`, color: shiftColor }}>{shiftTypeLabel[engine.shiftType]}</span>
                   <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: "rgba(0,0,0,0.04)", color: "#6E6E73" }}>{engine.leadershipBehavior.axisLabel}</span>
-                  <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: `${intensityColor}10`, color: intensityColor }}>{engine.intensityLevel}</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: `${tsColor}10`, color: tsColor }}>{engine.intensityLevel}</span>
                 </div>
 
                 {viewContent.insightSections.map((section, i) => (
@@ -455,8 +566,8 @@ export default function Teamdynamik() {
                   <BulletList items={engine.risks.slice(0, 3)} color="#FF3B30" />
                 </div>
                 <div>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>Top-Hebel</p>
-                  <BulletList items={engine.levers.slice(0, 3).map(l => l.label)} color="#34C759" />
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>Top-Chancen</p>
+                  <BulletList items={engine.chances.slice(0, 3)} color="#34C759" />
                 </div>
               </div>
             </GlassCard>
@@ -512,14 +623,45 @@ export default function Teamdynamik() {
               {viewContent.showLevers && (
                 <div>
                   <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", marginBottom: 10 }}>Führungshebel</p>
-                  <LeverChecklist levers={levers.length > 0 ? levers : engine.levers} onToggle={toggleLever} />
+                  <LeverChecklist levers={levers} onToggle={toggleLever} />
                 </div>
               )}
             </div>
           </GlassCard>
 
+          {showReport && (
+            <GlassCard testId="module-report">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <div>
+                  <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Team-Systemreport</p>
+                  <p style={{ fontSize: 11, color: "#8E8E93", margin: "2px 0 0" }}>KI-generierter Analysebericht</p>
+                </div>
+                <button onClick={() => setShowReport(false)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }} data-testid="button-close-report">
+                  <X style={{ width: 18, height: 18, color: "#8E8E93" }} />
+                </button>
+              </div>
+              {reportLoading ? (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "40px 0" }}>
+                  <Loader2 style={{ width: 32, height: 32, color: "#0071E3", animation: "spin 1s linear infinite" }} />
+                  <p style={{ fontSize: 13, color: "#8E8E93" }}>Report wird generiert...</p>
+                </div>
+              ) : reportText ? (
+                <div style={{ whiteSpace: "pre-wrap", fontSize: 13, color: "#48484A", lineHeight: 1.7, textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-report-content">
+                  {reportText}
+                </div>
+              ) : null}
+            </GlassCard>
+          )}
+
         </div>
       </main>
+
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }
