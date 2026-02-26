@@ -269,12 +269,12 @@ function buildHeadline(st: ShiftType, domTeam: DominanceType, domPerson: Dominan
   const role = isLeading ? "Die neue Führung" : "Die neue Person";
 
   switch (st) {
-    case "VERSTAERKUNG": return `${role} arbeitet ähnlich wie das Team. Keine besondere Steuerung notwendig.`;
+    case "VERSTAERKUNG": return `Arbeitsweisen passen gut zusammen. Führung und Team verfolgen ähnliche Prioritäten und Entscheidungslogiken.`;
     case "ERGAENZUNG": return `${role} bringt eine ergänzende Arbeitsweise ins ${tMap[domTeam]} Team. Zusammenarbeit stabil.`;
-    case "REIBUNG": return `Unterschiedliche Arbeitsweisen treffen aufeinander. Regelmäßige Abstimmung sinnvoll.`;
-    case "SPANNUNG": return `Deutliche Unterschiede in Arbeitsweise und Entscheidungsfindung. Aktive Steuerung notwendig.`;
-    case "TRANSFORMATION": return `${role} verändert die Arbeitsweise des Teams grundlegend. Klare Steuerung erforderlich.`;
-    case "HYBRID": return `Gemischte Arbeitsweisen treffen auf ${tMap[domTeam]} Team. Gezielte Abstimmung empfehlenswert.`;
+    case "REIBUNG": return `Unterschiedliche Arbeitsweisen treffen aufeinander. ${role} arbeitet anders als das Team es gewohnt ist. Das führt zu mehr Abstimmung und gelegentlichen Spannungen.`;
+    case "SPANNUNG":
+    case "TRANSFORMATION": return `Die neue Führung verändert die bisherige Arbeitsweise deutlich. Entscheidungen, Prioritäten und Qualitätsmaßstäbe werden anders gesetzt als bisher.`;
+    case "HYBRID": return `Unterschiedliche Arbeitsweisen treffen aufeinander. ${role} arbeitet anders als das Team es gewohnt ist. Mehr Abstimmungsbedarf im Alltag.`;
   }
 }
 
@@ -309,12 +309,12 @@ function buildSystemEffect(st: ShiftType, domPerson: DominanceType, domTeam: Dom
   const role = isLeading ? "der neuen Führung" : "der neuen Person";
 
   switch (st) {
-    case "VERSTAERKUNG": return `Führungsstil und Team passen zusammen. Entscheidungen werden verstanden, die Zusammenarbeit ist stabil. Die bestehenden Stärken werden ausgebaut.`;
-    case "ERGAENZUNG": return `Die neue Arbeitsweise ergänzt das Team um fehlende Perspektiven. Braucht es klarere Regeln? Moderate Abstimmung empfehlenswert.`;
-    case "REIBUNG": return `Unterschiedliche Arbeitsweisen treffen aufeinander. Steigt der Abstimmungsbedarf? Dauern Entscheidungen länger? Regelmäßige Abstimmung sinnvoll.`;
-    case "SPANNUNG": return `Deutliche Unterschiede in der Arbeitsweise. Entstehen Konflikte im Alltag? Besteht Leistungsrisiko? Aktive Steuerung ist erforderlich.`;
-    case "TRANSFORMATION": return `Der Eintritt ${role} verändert die Arbeitsweise des Teams grundlegend. Ist kritisches Handeln nötig? Klare Steuerung mit aktiver Begleitung erforderlich.`;
-    default: return `Die Teamdynamik verändert sich auf mehreren Ebenen gleichzeitig. Gezielte Abstimmung und Steuerung erforderlich.`;
+    case "VERSTAERKUNG": return `Arbeitsweisen passen gut zusammen. Entscheidungen werden schnell akzeptiert. Abstimmungen verlaufen reibungslos. Keine besonderen Anpassungen notwendig. Normale Führung ist ausreichend.`;
+    case "ERGAENZUNG": return `Die neue Arbeitsweise ergänzt das Team um fehlende Perspektiven. Moderate Abstimmung empfehlenswert.`;
+    case "REIBUNG": return `Unterschiedliche Arbeitsweisen treffen aufeinander. Entscheidungen dauern teilweise länger. Prioritäten müssen klarer erklärt werden. Mehr Abstimmungsbedarf im Alltag. Mit klaren Regeln bleibt das System stabil.`;
+    case "SPANNUNG":
+    case "TRANSFORMATION": return `Gewohnte Abläufe verändern sich spürbar. Diskussionen über Prioritäten nehmen zu. Widerstand oder Unsicherheit im Team möglich. Ohne klare Führung entsteht Instabilität.`;
+    default: return `Unterschiedliche Arbeitsweisen treffen aufeinander. Mehr Abstimmungsbedarf im Alltag. Mit klaren Regeln bleibt das System stabil.`;
   }
 }
 

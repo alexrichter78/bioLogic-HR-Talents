@@ -18,8 +18,8 @@ const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 function colorFor(k: ComponentKey) { return k === "impulsiv" ? COLORS.imp : k === "intuitiv" ? COLORS.int : COLORS.ana; }
 
 const SHIFT_LABELS: Record<ShiftType, string> = {
-  VERSTAERKUNG: "Verstärkung", ERGAENZUNG: "Ergänzung", REIBUNG: "Reibung",
-  SPANNUNG: "Spannung", TRANSFORMATION: "Transformation", HYBRID: "Hybrid",
+  VERSTAERKUNG: "Passung", ERGAENZUNG: "Ergänzung", REIBUNG: "Anpassung nötig",
+  SPANNUNG: "Starke Veränderung", TRANSFORMATION: "Starke Veränderung", HYBRID: "Anpassung nötig",
 };
 const INTENSITY_LABELS: Record<IntensityLevel, string> = { NIEDRIG: "Niedrig", MITTEL: "Mittel", HOCH: "Hoch" };
 const TL_COLORS: Record<TrafficLight, { bg: string; fill: string; label: string; steering: string }> = {
@@ -458,12 +458,12 @@ export default function Teamdynamik() {
             </div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               <div style={{ flex: 1, minWidth: 90, padding: "8px 10px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                <p style={{ fontSize: 9, fontWeight: 600, color: "#8E8E93", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Transformation</p>
+                <p style={{ fontSize: 9, fontWeight: 600, color: "#8E8E93", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Veränderungsgrad</p>
                 <p style={{ fontSize: 22, fontWeight: 800, color: tl.fill, margin: 0 }}>{result.scores.TS}</p>
                 <p style={{ fontSize: 9, color: "#8E8E93", margin: "1px 0 0" }}>von 100 · {INTENSITY_LABELS[result.intensityLevel]}</p>
               </div>
               <div style={{ flex: 1, minWidth: 90, padding: "8px 10px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                <p style={{ fontSize: 9, fontWeight: 600, color: "#8E8E93", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Verschiebung</p>
+                <p style={{ fontSize: 9, fontWeight: 600, color: "#8E8E93", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Bewertung</p>
                 <p style={{ fontSize: 15, fontWeight: 800, color: "#1D1D1F", margin: 0 }}>{SHIFT_LABELS[result.shiftType]}</p>
                 <p style={{ fontSize: 9, color: "#8E8E93", margin: "1px 0 0" }}>{result.shiftAxis}</p>
               </div>
