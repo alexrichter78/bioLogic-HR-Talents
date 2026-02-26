@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dna, Target, GitCompareArrows, Users, Sparkles, ShieldCheck, PlusCircle, FolderOpen, ArrowRight, DoorOpen } from "lucide-react";
 import { useLocation } from "wouter";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
+import GlobalNav from "@/components/global-nav";
 
 function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   const [visible, setVisible] = useState(false);
@@ -482,7 +483,7 @@ export default function Home() {
       `}</style>
 
       <div className="relative z-10">
-        <Header />
+        <GlobalNav />
         <HeroSection />
         <div className="px-6 pb-16 flex flex-col gap-10">
           <ProfileCard />

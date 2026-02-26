@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
-import { ArrowLeft, FileText, AlertTriangle, Check, Shield, TrendingUp, Users, Zap, Scale, ChevronRight, ChevronDown, CircleAlert, CircleCheck, CircleMinus, Lightbulb, CalendarDays, ClipboardCheck, BarChart3 } from "lucide-react";
+import { FileText, AlertTriangle, Check, Shield, TrendingUp, Users, Zap, Scale, ChevronRight, ChevronDown, CircleAlert, CircleCheck, CircleMinus, Lightbulb, CalendarDays, ClipboardCheck, BarChart3 } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
+import GlobalNav from "@/components/global-nav";
 import { hyphenateText } from "@/lib/hyphenate";
 import { BERUFE } from "@/data/berufe";
 import {
@@ -428,23 +429,26 @@ export default function JobCheck() {
 
   if (!roleAnalysis) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 40%, #F5F7FA 100%)" }}>
-        <GlassCard testId="jobcheck-no-data">
-          <div className="text-center" style={{ padding: "24px 44px" }}>
-            <div style={{ width: 56, height: 56, borderRadius: 18, background: "linear-gradient(135deg, #E8F0FA, #FDEAED)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
-              <FileText style={{ width: 24, height: 24, color: "#6E6E73" }} />
+      <div className="min-h-screen" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 40%, #F5F7FA 100%)" }}>
+        <GlobalNav />
+        <div className="flex items-center justify-center" style={{ minHeight: "calc(100vh - 60px)" }}>
+          <GlassCard testId="jobcheck-no-data">
+            <div className="text-center" style={{ padding: "24px 44px" }}>
+              <div style={{ width: 56, height: 56, borderRadius: 18, background: "linear-gradient(135deg, #E8F0FA, #FDEAED)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+                <FileText style={{ width: 24, height: 24, color: "#6E6E73" }} />
+              </div>
+              <p style={{ fontSize: 17, fontWeight: 600, color: "#1D1D1F", marginBottom: 8 }}>Keine Analyse vorhanden</p>
+              <p style={{ fontSize: 14, color: "#8E8E93", marginBottom: 20, maxWidth: 260 }}>Erstelle zuerst ein Rollenprofil, um den JobCheck durchzuführen.</p>
+              <button
+                onClick={() => setLocation("/rollen-dna")}
+                style={{ background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "white", border: "none", borderRadius: 14, padding: "12px 28px", fontSize: 14, fontWeight: 600, cursor: "pointer", boxShadow: "0 4px 12px rgba(0,113,227,0.25)" }}
+                data-testid="button-goto-rollen-dna"
+              >
+                Zur Datenerfassung
+              </button>
             </div>
-            <p style={{ fontSize: 17, fontWeight: 600, color: "#1D1D1F", marginBottom: 8 }}>Keine Analyse vorhanden</p>
-            <p style={{ fontSize: 14, color: "#8E8E93", marginBottom: 20, maxWidth: 260 }}>Erstelle zuerst ein Rollenprofil, um den JobCheck durchzuführen.</p>
-            <button
-              onClick={() => setLocation("/rollen-dna")}
-              style={{ background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "white", border: "none", borderRadius: 14, padding: "12px 28px", fontSize: 14, fontWeight: 600, cursor: "pointer", boxShadow: "0 4px 12px rgba(0,113,227,0.25)" }}
-              data-testid="button-goto-rollen-dna"
-            >
-              Zur Datenerfassung
-            </button>
-          </div>
-        </GlassCard>
+          </GlassCard>
+        </div>
       </div>
     );
   }
@@ -484,18 +488,7 @@ export default function JobCheck() {
       `}</style>
 
       <div className="relative z-10">
-        <div style={{ position: "sticky", top: 0, zIndex: 200 }}>
-          <div style={{ backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", background: "rgba(255,255,255,0.75)", borderBottom: "1px solid rgba(0,0,0,0.04)" }}>
-            <header className="flex items-center justify-between gap-4 px-6 py-3" data-testid="header-jobcheck">
-              <div className="flex items-center gap-3">
-                <button onClick={() => setLocation("/bericht")} style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 34, height: 34, borderRadius: 10, background: "rgba(0,0,0,0.04)", border: "none", cursor: "pointer" }} data-testid="button-back-jobcheck">
-                  <ArrowLeft style={{ width: 16, height: 16, color: "#6E6E73" }} />
-                </button>
-                <img src={logoSrc} alt="bioLogic Logo" className="h-6 w-auto" data-testid="logo-jobcheck" />
-              </div>
-            </header>
-          </div>
-        </div>
+        <GlobalNav />
 
         <main className="flex-1 w-full max-w-2xl mx-auto px-5 pb-24 pt-10">
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>

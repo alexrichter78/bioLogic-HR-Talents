@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { ArrowLeft, Save, RefreshCw } from "lucide-react";
+import { Save, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
+import GlobalNav from "@/components/global-nav";
 
 const DEFAULT_BEREICH1 = `Noch keine Analyse vorhanden. Erstelle zuerst ein vollständiges Rollenprofil, um die KI-Analyse zu starten.`;
 const DEFAULT_BEREICH2 = `Noch keine Analyse vorhanden. Erstelle zuerst ein vollständiges Rollenprofil, um die KI-Analyse zu starten.`;
@@ -205,21 +206,7 @@ export default function Analyse() {
       />
 
       <div className="relative z-10 flex flex-col min-h-screen">
-        <header className="flex items-center justify-between gap-4 px-6 py-4" data-testid="header-analyse">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setLocation("/")}
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-              data-testid="button-back-analyse"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </button>
-            <img src={logoSrc} alt="bioLogic Logo" className="h-7 w-auto" data-testid="logo-analyse" />
-            <span className="text-sm text-muted-foreground/70 font-light tracking-wide hidden sm:inline">Stammdaten</span>
-          </div>
-          <div className="flex items-center gap-2">
-          </div>
-        </header>
+        <GlobalNav />
 
         <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20">
           <div className="text-center mt-8 mb-10">

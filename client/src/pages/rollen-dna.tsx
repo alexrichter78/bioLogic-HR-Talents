@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight, Info, RefreshCw, Briefcase, Heart, Settings, Shield, BarChart3, Lightbulb } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
+import GlobalNav from "@/components/global-nav";
 import { BERUFE, type BerufLand } from "@/data/berufe";
 
 type KompetenzTyp = "Impulsiv" | "Intuitiv" | "Analytisch";
@@ -1251,8 +1252,19 @@ export default function RollenDNA() {
           data-testid="input-file-load"
         />
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 200 }}>
-          <div style={{ backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", background: "rgba(255,255,255,0.82)" }} className="dark:!bg-background/90 pb-4">
-            <Header onSave={handleSave} onLoad={handleLoad} />
+          <div className="dark:!bg-background/90 pb-4">
+            <GlobalNav rightSlot={
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5" data-testid="button-laden" onClick={handleLoad}>
+                  <FolderOpen className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Laden</span>
+                </Button>
+                <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5" data-testid="button-speichern" onClick={handleSave}>
+                  <Save className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Speichern</span>
+                </Button>
+              </div>
+            } />
 
             <div className="w-full max-w-3xl mx-auto px-6">
               <div className="text-center mt-3 mb-3">
