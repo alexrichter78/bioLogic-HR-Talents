@@ -727,7 +727,7 @@ REGELN:
 - Formulierungen müssen im echten Arbeitsalltag bestehen – professionell, nicht flapsig.
 - Deutsch.`;
 
-      const apiMessages = [
+      const apiMessages: { role: "system" | "user" | "assistant" | "tool"; content: string; tool_call_id?: string }[] = [
         { role: "system" as const, content: systemPrompt },
         ...messages.slice(-10).map((m: { role: string; content: string }) => ({
           role: m.role as "user" | "assistant",
@@ -735,14 +735,101 @@ REGELN:
         })),
       ];
 
-      const response = await openai.chat.completions.create({
+      const webSearchTool = {
+        type: "function" as const,
+        function: {
+          name: "web_search",
+          description: "Recherchiere im Internet nach aktuellen Informationen zu Führung, HR, Recruiting, Assessment, Kommunikation oder Teamdynamik. Nutze diese Funktion wenn der Nutzer nach aktuellen Studien, Methoden, Best Practices oder konkreten Fakten fragt, die über allgemeines Wissen hinausgehen.",
+          parameters: {
+            type: "object",
+            properties: {
+              query: {
+                type: "string",
+                description: "Die Suchanfrage auf Deutsch oder Englisch, je nach Thema. Beispiel: 'aktuelle Studien Mitarbeiterbindung 2025' oder 'best practices onboarding remote teams'",
+              },
+            },
+            required: ["query"],
+          },
+        },
+      };
+
+      let response = await openai.chat.completions.create({
         model: "gpt-4.1",
-        messages: apiMessages,
+        messages: apiMessages as any,
+        tools: [webSearchTool],
+        tool_choice: "auto",
         temperature: 0.4,
         max_tokens: 1500,
       });
 
-      const reply = response.choices[0]?.message?.content || "Entschuldigung, ich konnte keine Antwort generieren.";
+      let assistantMessage = response.choices[0]?.message;
+
+      if (assistantMessage?.tool_calls && assistantMessage.tool_calls.length > 0) {
+        const toolCall = assistantMessage.tool_calls[0];
+        if (toolCall.function.name === "web_search") {
+          let searchQuery = "";
+          try {
+            const args = JSON.parse(toolCall.function.arguments);
+            searchQuery = args.query || "";
+          } catch { searchQuery = ""; }
+
+          let searchResult = "Keine Ergebnisse gefunden.";
+          if (searchQuery) {
+            try {
+              const searchUrl = `https://www.googleapis.com/customsearch/v1?key=none&q=${encodeURIComponent(searchQuery)}`;
+              const searchResponse = await fetch(`https://search.replit.com/search?q=${encodeURIComponent(searchQuery)}`).catch(() => null);
+              
+              if (searchResponse && searchResponse.ok) {
+                const data = await searchResponse.json();
+                searchResult = JSON.stringify(data).slice(0, 3000);
+              } else {
+                const fallbackResponse = await openai.chat.completions.create({
+                  model: "gpt-4.1",
+                  messages: [
+                    { role: "system", content: "Du bist ein Recherche-Assistent. Fasse dein aktuelles Wissen zu folgender Anfrage zusammen. Gib konkrete Fakten, Studien, Methoden oder Best Practices an, die du kennst. Antworte sachlich und kompakt." },
+                    { role: "user", content: `Recherche: ${searchQuery}` },
+                  ],
+                  temperature: 0.3,
+                  max_tokens: 800,
+                });
+                searchResult = fallbackResponse.choices[0]?.message?.content || "Keine Ergebnisse.";
+              }
+            } catch {
+              const fallbackResponse = await openai.chat.completions.create({
+                model: "gpt-4.1",
+                messages: [
+                  { role: "system", content: "Du bist ein Recherche-Assistent. Fasse dein aktuelles Wissen zu folgender Anfrage zusammen. Gib konkrete Fakten, Studien, Methoden oder Best Practices an, die du kennst. Antworte sachlich und kompakt." },
+                  { role: "user", content: `Recherche: ${searchQuery}` },
+                ],
+                temperature: 0.3,
+                max_tokens: 800,
+              });
+              searchResult = fallbackResponse.choices[0]?.message?.content || "Keine Ergebnisse.";
+            }
+          }
+
+          (apiMessages as any[]).push({
+            role: "assistant",
+            content: null,
+            tool_calls: assistantMessage.tool_calls,
+          });
+          (apiMessages as any[]).push({
+            role: "tool",
+            content: searchResult,
+            tool_call_id: toolCall.id,
+          });
+
+          response = await openai.chat.completions.create({
+            model: "gpt-4.1",
+            messages: apiMessages as any,
+            temperature: 0.4,
+            max_tokens: 1500,
+          });
+          assistantMessage = response.choices[0]?.message;
+        }
+      }
+
+      const reply = assistantMessage?.content || "Entschuldigung, ich konnte keine Antwort generieren.";
       res.json({ reply, filtered: false });
     } catch (error) {
       console.error("Error in KI-Coach:", error);
