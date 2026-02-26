@@ -10,6 +10,7 @@ import Analyse from "@/pages/analyse";
 import Bericht from "@/pages/bericht";
 import JobCheck from "@/pages/jobcheck";
 import Teamdynamik from "@/pages/teamdynamik";
+import KICoach from "@/pages/ki-coach";
 
 function Router() {
   return (
@@ -20,6 +21,7 @@ function Router() {
       <Route path="/bericht" component={Bericht} />
       <Route path="/jobcheck" component={JobCheck} />
       <Route path="/teamdynamik" component={Teamdynamik} />
+      <Route path="/ki-coach" component={KICoach} />
       <Route component={NotFound} />
     </Switch>
   );
