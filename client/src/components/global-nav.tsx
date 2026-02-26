@@ -37,8 +37,13 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
   };
 
   const isActive = (item: typeof NAV_ITEMS[0]) => {
-    if (item.isNew) return false;
-    return location === item.path;
+    if (location !== item.path) return false;
+    if (item.path === "/rollen-dna") {
+      const hasState = !!localStorage.getItem("rollenDnaState");
+      if (item.isNew) return !hasState;
+      return hasState;
+    }
+    return true;
   };
 
   return (
