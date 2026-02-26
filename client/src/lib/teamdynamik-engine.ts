@@ -174,6 +174,10 @@ function axisLabel(domFrom: DominanceType, domTo: DominanceType): string {
 function shiftType(domTeam: DominanceType, domPerson: DominanceType, DG: number, DC: number, TS: number, isLeading: boolean): ShiftType {
   const level = intensityLevel(TS);
 
+  if (DC === 100 && DG >= 45) {
+    return isLeading ? "TRANSFORMATION" : "SPANNUNG";
+  }
+
   if (DC === 0) {
     if (DG < 20) return "VERSTAERKUNG";
     return "ERGAENZUNG";
@@ -186,7 +190,10 @@ function shiftType(domTeam: DominanceType, domPerson: DominanceType, DG: number,
   }
 
   if (level === "NIEDRIG") return "ERGAENZUNG";
-  if (level === "MITTEL") return "REIBUNG";
+  if (level === "MITTEL") {
+    if (DC === 100 && DG >= 35) return isLeading ? "SPANNUNG" : "SPANNUNG";
+    return "REIBUNG";
+  }
   return isLeading ? "TRANSFORMATION" : "SPANNUNG";
 }
 
