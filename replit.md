@@ -4,7 +4,7 @@
 
 bioLogic RoleDynamics is a German-language web application for structural analysis focused on "Präzision in Besetzung und Teamstruktur" (precision in staffing and team structure). The app follows a full-stack TypeScript architecture with a React frontend and Express backend, using PostgreSQL for data storage via Drizzle ORM.
 
-The app features a multi-step wizard (Rollen-DNA) for capturing role requirements, an AI-powered analysis page, and a dynamic "Entscheidungsbericht" (decision report) for HR/recruiters. The report is fully AI-generated using OpenAI, creating role-specific structural analyses with charts, bullet-point lists, tension fields, risk assessments, and hiring recommendations.
+The app features a multi-step wizard (Rollen-DNA) for capturing role requirements, an AI-powered analysis page, a dynamic "Entscheidungsbericht" (decision report), and a "bioLogic JobCheck" page for candidate-role fit assessment. The Entscheidungsbericht is fully AI-generated using OpenAI, creating role-specific structural analyses with charts, bullet-point lists, tension fields, risk assessments, and hiring recommendations. The JobCheck page (`/jobcheck`) provides a Level 2 recruiting decision foundation comparing Soll (role DNA) vs. Ist (candidate profile) with dominance shift analysis, structural suitability matrix, risk assessments, development prognosis, and a 90-day integration plan.
 
 ## User Preferences
 

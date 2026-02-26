@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import RollenDNA from "@/pages/rollen-dna";
 import Analyse from "@/pages/analyse";
 import Bericht from "@/pages/bericht";
+import JobCheck from "@/pages/jobcheck";
 
 function Router() {
   return (
@@ -16,6 +17,7 @@ function Router() {
       <Route path="/rollen-dna" component={RollenDNA} />
       <Route path="/analyse" component={Analyse} />
       <Route path="/bericht" component={Bericht} />
+      <Route path="/jobcheck" component={JobCheck} />
       <Route component={NotFound} />
     </Switch>
   );
