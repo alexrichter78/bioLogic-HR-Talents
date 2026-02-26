@@ -204,9 +204,11 @@ function koRuleTriggered(role: RoleAnalysis, cand: CandidateInput): boolean {
   return false;
 }
 
-function overallFitFromScore(mismatch: number): FitStatus {
-  if (mismatch <= 10) return "SUITABLE";
-  if (mismatch <= 18) return "CONDITIONAL";
+function overallFitFromScore(mismatch: number, sameDominance: boolean): FitStatus {
+  const suitableThreshold = sameDominance ? 12 : 10;
+  const conditionalThreshold = sameDominance ? 20 : 18;
+  if (mismatch <= suitableThreshold) return "SUITABLE";
+  if (mismatch <= conditionalThreshold) return "CONDITIONAL";
   return "NOT_SUITABLE";
 }
 
@@ -686,7 +688,8 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   const candDom = dominanceModeOf(cand.candidate_profile);
   const ko = koRuleTriggered(role, cand);
   const mismatch = weightedMismatch(role.role_profile, cand.candidate_profile);
-  const overallFit: FitStatus = ko ? "NOT_SUITABLE" : overallFitFromScore(mismatch);
+  const sameDom = roleDom.top1.key === candDom.top1.key;
+  const overallFit: FitStatus = ko ? "NOT_SUITABLE" : overallFitFromScore(mismatch, sameDom);
   const ctrl = calcControlIntensity(role, cand);
   const matrix = buildMatrix(role, cand);
   const critical = criticalAreaFromMatrix(matrix);
@@ -695,7 +698,6 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   const c = normalizeTriad(cand.candidate_profile);
   const rL = labelComponent(roleDom.top1.key);
   const cL = labelComponent(candDom.top1.key);
-  const sameDom = roleDom.top1.key === candDom.top1.key;
   const mainDiff = Math.abs(r[roleDom.top1.key] - c[roleDom.top1.key]);
 
   const keyReason = (() => {
