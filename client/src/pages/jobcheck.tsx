@@ -658,44 +658,85 @@ export default function JobCheck() {
 
                   <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
 
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
-                      <ChapterBadge num={2} color="#0071E3" />
-                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Dominanz-Verschiebung</span>
-                    </div>
+                  {(() => {
+                    const sameDom = engine.roleDominance.top1.key === engine.candDominance.top1.key;
+                    const roleVal = engine.roleDominance.top1.value;
+                    const candVal = engine.candDominance.top1.value;
+                    const intensityDiff = Math.abs(roleVal - candVal);
+                    const rk = engine.roleDominance.top1.key;
+                    const ck = engine.candDominance.top1.key;
+                    const rc = rk === "impulsiv" ? COLORS.imp : rk === "intuitiv" ? COLORS.int : COLORS.ana;
+                    const cc = ck === "impulsiv" ? COLORS.imp : ck === "intuitiv" ? COLORS.int : COLORS.ana;
 
-                    <div style={{
-                      display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 16,
-                      padding: "20px 24px", borderRadius: 18,
-                      background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)",
-                    }}>
-                      <div style={{ textAlign: "center" }}>
-                        <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Soll</p>
-                        {(() => { const k = engine.roleDominance.top1.key; const c = k === "impulsiv" ? COLORS.imp : k === "intuitiv" ? COLORS.int : COLORS.ana; return (
-                          <div style={{ padding: "6px 16px", borderRadius: 10, background: `${c}12`, border: `1px solid ${c}25` }}>
-                            <span style={{ fontSize: 15, fontWeight: 700, color: c }}>{labelComponent(k)}</span>
-                          </div>
-                        ); })()}
-                      </div>
-                      <ChevronRight style={{ width: 20, height: 20, color: "#8E8E93" }} />
-                      <div style={{ textAlign: "center" }}>
-                        <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Ist</p>
-                        {(() => { const k = engine.candDominance.top1.key; const c = k === "impulsiv" ? COLORS.imp : k === "intuitiv" ? COLORS.int : COLORS.ana; return (
-                          <div style={{ padding: "6px 16px", borderRadius: 10, background: `${c}12`, border: `1px solid ${c}25` }}>
-                            <span style={{ fontSize: 15, fontWeight: 700, color: c }}>{labelComponent(k)}</span>
-                          </div>
-                        ); })()}
-                      </div>
-                    </div>
+                    let calloutText: string;
+                    let calloutColor: string;
 
-                    <CalloutBox
-                      text={engine.roleDominance.top1.key === engine.candDominance.top1.key
-                        ? "Die dominanten Strukturprinzipien bleiben stabil. Die Rolle wird in ihrer Kernwirkung voraussichtlich konsistent abgebildet."
-                        : "Die dominante Steuerungslogik des Kandidaten unterscheidet sich strukturell von der dominanten Logik der Rolle."}
-                      color={engine.roleDominance.top1.key === engine.candDominance.top1.key ? "#34C759" : "#FF9500"}
-                      icon={Scale}
-                    />
-                  </div>
+                    if (sameDom && intensityDiff <= 5) {
+                      calloutText = "Die dominante Steuerungslogik ist identisch und die Ausprägung nahezu deckungsgleich. Die Rolle wird in ihrer Kernwirkung stabil und konsistent abgebildet.";
+                      calloutColor = "#34C759";
+                    } else if (sameDom && intensityDiff <= 15) {
+                      calloutText = `Die dominante Komponente ist identisch (${labelComponent(rk)}), jedoch unterscheidet sich die Intensität um ${intensityDiff} Prozentpunkte (Soll: ${roleVal}% vs. Ist: ${candVal}%). Die Kernlogik bleibt erhalten, die Ausprägungsstärke weicht ab.`;
+                      calloutColor = "#FF9500";
+                    } else if (sameDom) {
+                      calloutText = `Gleiche Dominanz (${labelComponent(rk)}), aber deutlicher Intensitätsunterschied von ${intensityDiff} Prozentpunkten. Die Rolle verlangt eine stärkere Ausprägung als der Kandidat mitbringt.`;
+                      calloutColor = "#FF3B30";
+                    } else {
+                      calloutText = `Die dominante Steuerungslogik verschiebt sich von ${labelComponent(rk)} (Rolle) zu ${labelComponent(ck)} (Kandidat). Das verändert die zentrale Wirkweise der Position.`;
+                      calloutColor = "#FF3B30";
+                    }
+
+                    return (
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
+                          <ChapterBadge num={2} color="#0071E3" />
+                          <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>
+                            {sameDom ? "Dominanz-Vergleich" : "Dominanz-Verschiebung"}
+                          </span>
+                        </div>
+
+                        <div style={{
+                          display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 16,
+                          padding: "20px 24px", borderRadius: 18,
+                          background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)",
+                        }}>
+                          <div style={{ textAlign: "center" }}>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Soll</p>
+                            <div style={{ padding: "6px 16px", borderRadius: 10, background: `${rc}12`, border: `1px solid ${rc}25` }}>
+                              <span style={{ fontSize: 15, fontWeight: 700, color: rc }}>{labelComponent(rk)}</span>
+                              <span style={{ fontSize: 12, fontWeight: 600, color: rc, opacity: 0.7, marginLeft: 4 }}>{roleVal}%</span>
+                            </div>
+                          </div>
+                          {sameDom ? (
+                            <span style={{ fontSize: 20, fontWeight: 700, color: intensityDiff <= 5 ? "#34C759" : "#FF9500" }}>=</span>
+                          ) : (
+                            <ChevronRight style={{ width: 20, height: 20, color: "#FF3B30" }} />
+                          )}
+                          <div style={{ textAlign: "center" }}>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Ist</p>
+                            <div style={{ padding: "6px 16px", borderRadius: 10, background: `${cc}12`, border: `1px solid ${cc}25` }}>
+                              <span style={{ fontSize: 15, fontWeight: 700, color: cc }}>{labelComponent(ck)}</span>
+                              <span style={{ fontSize: 12, fontWeight: 600, color: cc, opacity: 0.7, marginLeft: 4 }}>{candVal}%</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {sameDom && intensityDiff > 0 && (
+                          <div style={{
+                            display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 12,
+                            padding: "8px 16px", borderRadius: 10,
+                            background: intensityDiff <= 5 ? "rgba(52,199,89,0.06)" : intensityDiff <= 15 ? "rgba(255,149,0,0.06)" : "rgba(255,59,48,0.06)",
+                            border: `1px solid ${intensityDiff <= 5 ? "rgba(52,199,89,0.15)" : intensityDiff <= 15 ? "rgba(255,149,0,0.15)" : "rgba(255,59,48,0.15)"}`,
+                          }}>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: intensityDiff <= 5 ? "#34C759" : intensityDiff <= 15 ? "#FF9500" : "#FF3B30" }}>
+                              Δ {intensityDiff} Prozentpunkte Intensitätsunterschied
+                            </span>
+                          </div>
+                        )}
+
+                        <CalloutBox text={calloutText} color={calloutColor} icon={Scale} />
+                      </div>
+                    );
+                  })()}
 
                   <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
 
