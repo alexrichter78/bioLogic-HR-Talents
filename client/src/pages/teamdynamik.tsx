@@ -525,8 +525,7 @@ export default function Teamdynamik() {
                   <p style={{ fontSize: 14, fontWeight: 700, color: tl.fill, margin: "0 0 6px" }}>{detail.title}</p>
                   <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 3px", lineHeight: 1.5 }}>{detail.desc}</p>
                   {variant && (
-                    <div style={{ margin: "12px 0", padding: "10px 14px", borderRadius: 10, background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.05)" }} data-testid="variant-block">
-                      <p style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Systemmuster (Variante {variant.id}/13)</p>
+                    <div style={{ margin: "12px 0" }} data-testid="variant-block">
                       <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>{variant.title}</p>
                       <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{variant.text}</p>
                     </div>
