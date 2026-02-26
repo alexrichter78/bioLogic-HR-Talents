@@ -150,8 +150,8 @@ function transformationScore(DG: number, DC: number, RG: number | null, isLeadin
 }
 
 function intensityLevel(TS: number): IntensityLevel {
-  if (TS <= 33) return "NIEDRIG";
-  if (TS <= 66) return "MITTEL";
+  if (TS <= 25) return "NIEDRIG";
+  if (TS <= 50) return "MITTEL";
   return "HOCH";
 }
 
@@ -174,12 +174,20 @@ function axisLabel(domFrom: DominanceType, domTo: DominanceType): string {
 function shiftType(domTeam: DominanceType, domPerson: DominanceType, DG: number, DC: number, TS: number, isLeading: boolean): ShiftType {
   const level = intensityLevel(TS);
 
-  if (DC === 100 && DG >= 45) {
+  if (DG < 5) {
+    return "VERSTAERKUNG";
+  }
+
+  if (DC === 100 && DG >= 30) {
     return isLeading ? "TRANSFORMATION" : "SPANNUNG";
   }
 
+  if (DC === 100) {
+    return "REIBUNG";
+  }
+
   if (DC === 0) {
-    if (DG < 20) return "VERSTAERKUNG";
+    if (DG < 15) return "VERSTAERKUNG";
     return "ERGAENZUNG";
   }
 
@@ -190,10 +198,7 @@ function shiftType(domTeam: DominanceType, domPerson: DominanceType, DG: number,
   }
 
   if (level === "NIEDRIG") return "ERGAENZUNG";
-  if (level === "MITTEL") {
-    if (DC === 100 && DG >= 35) return isLeading ? "SPANNUNG" : "SPANNUNG";
-    return "REIBUNG";
-  }
+  if (level === "MITTEL") return "REIBUNG";
   return isLeading ? "TRANSFORMATION" : "SPANNUNG";
 }
 
@@ -230,11 +235,10 @@ function calcSteeringNeed(level: IntensityLevel, RG: number | null, levers: Leve
 }
 
 function trafficLight(st: ShiftType, level: IntensityLevel, steeringNeed: IntensityLevel): TrafficLight {
-  if (st === "TRANSFORMATION" || st === "SPANNUNG") {
-    return steeringNeed === "NIEDRIG" ? "YELLOW" : "RED";
-  }
+  if (st === "TRANSFORMATION" || st === "SPANNUNG") return "RED";
+  if (st === "REIBUNG" && level === "HOCH") return "RED";
+  if (st === "REIBUNG" || level === "MITTEL" || steeringNeed === "MITTEL") return "YELLOW";
   if (steeringNeed === "HOCH" || level === "HOCH") return "RED";
-  if (steeringNeed === "MITTEL" || level === "MITTEL") return "YELLOW";
   return "GREEN";
 }
 
