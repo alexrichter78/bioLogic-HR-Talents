@@ -431,11 +431,11 @@ export default function Bericht() {
       const arbeitslogik = state.arbeitslogik || "";
       const aufgabencharakter = state.aufgabencharakter || "";
       const erfolgsfokusIndices = state.erfolgsfokusIndices || [];
-      const haupt = calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "haupt"));
-      const neben = calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "neben"));
-      const fuehrung = calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "fuehrung"));
-      const rahmen = computeRahmen(state);
-      const gesamt = computeGesamt(haupt, neben, fuehrung, rahmen);
+      const haupt = state.bioGramHaupt || calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "haupt"));
+      const neben = state.bioGramNeben || calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "neben"));
+      const fuehrung = state.bioGramFuehrung || calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "fuehrung"));
+      const rahmen = state.bioGramRahmen || computeRahmen(state);
+      const gesamt = state.bioGramGesamt || computeGesamt(haupt, neben, fuehrung, rahmen);
       const { type: profileType, intensity } = classifyProfile(gesamt);
       setProfileData({ beruf, bereich, isLeadership, gesamt, haupt, neben, fuehrung, rahmen, intensity, profileType, fuehrungstyp, aufgabencharakter, arbeitslogik, erfolgsfokusIndices, taetigkeiten });
     } catch {}
