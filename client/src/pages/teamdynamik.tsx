@@ -526,7 +526,6 @@ export default function Teamdynamik() {
                   <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 3px", lineHeight: 1.5 }}>{detail.desc}</p>
                   {variant && (
                     <div style={{ margin: "12px 0" }} data-testid="variant-block">
-                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>{variant.title}</p>
                       <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{variant.text}</p>
                     </div>
                   )}
