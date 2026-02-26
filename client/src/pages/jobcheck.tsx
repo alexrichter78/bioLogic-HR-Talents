@@ -380,9 +380,15 @@ export default function JobCheck() {
   const [analyseOpen, setAnalyseOpen] = useState(true);
   const [berichtOpen, setBerichtOpen] = useState(false);
   const [roleAnalysis, setRoleAnalysis] = useState<RoleAnalysis | null>(null);
-  const [candImp, setCandImp] = useState(33);
-  const [candInt, setCandInt] = useState(34);
-  const [candAna, setCandAna] = useState(33);
+  const [candImp, setCandImp] = useState(() => {
+    try { const s = localStorage.getItem("jobcheckCandProfile"); if (s) { const p = JSON.parse(s); return p.impulsiv ?? 33; } } catch {} return 33;
+  });
+  const [candInt, setCandInt] = useState(() => {
+    try { const s = localStorage.getItem("jobcheckCandProfile"); if (s) { const p = JSON.parse(s); return p.intuitiv ?? 34; } } catch {} return 34;
+  });
+  const [candAna, setCandAna] = useState(() => {
+    try { const s = localStorage.getItem("jobcheckCandProfile"); if (s) { const p = JSON.parse(s); return p.analytisch ?? 33; } } catch {} return 33;
+  });
   const [candidateName, setCandidateName] = useState("");
   const [reportGenerated, setReportGenerated] = useState(false);
   const [reportKey, setReportKey] = useState(0);
