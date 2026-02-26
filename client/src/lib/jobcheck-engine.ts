@@ -530,52 +530,70 @@ function criticalAreaFromMatrix(matrix: MatrixRow[]): { id: MatrixAreaId; label:
   return { id: worst.areaId, label: worst.areaLabel };
 }
 
-function buildRisks(role: RoleAnalysis, engine: { overallFit: FitStatus; control: ControlIntensity; matrix: MatrixRow[] }) {
+function buildRisks(role: RoleAnalysis, cand: CandidateInput, engine: { overallFit: FitStatus; control: ControlIntensity; matrix: MatrixRow[]; mismatch: number }) {
   const tags = role.environment_tags || {};
-  const critical = criticalAreaFromMatrix(engine.matrix).id;
+  const r = normalizeTriad(role.role_profile);
+  const c = normalizeTriad(cand.candidate_profile);
+  const rDom = dominanceModeOf(r);
+  const cDom = dominanceModeOf(c);
+  const critical = criticalAreaFromMatrix(engine.matrix);
+  const rL = labelComponent(rDom.top1.key);
+  const cL = labelComponent(cDom.top1.key);
   const shortTerm: string[] = [];
   const midTerm: string[] = [];
   const longTerm: string[] = [];
 
   if (engine.overallFit === "SUITABLE") {
-    shortTerm.push("Schnelle Wirksamkeit durch hohe strukturelle Passung, geringe Reibung im Start.");
-    midTerm.push("Stabile Ziel- und Entscheidungslogik bei überschaubarem Steuerungsaufwand.");
+    shortTerm.push(`Schnelle Wirksamkeit durch hohe strukturelle Passung (Mismatch: ${engine.mismatch}). ${rL}-Logik der Rolle wird stabil abgebildet.`);
+    midTerm.push(`Stabile Ziel- und Entscheidungslogik bei überschaubarem Steuerungsaufwand (Steuerung: ${controlLabel(engine.control)}).`);
     longTerm.push("Rollenwirkung bleibt konsistent, geringe Gefahr von schleichender Systemverschiebung.");
   } else if (engine.overallFit === "CONDITIONAL") {
-    shortTerm.push("Positive Startwirkung möglich, jedoch mit klarer Abweichung in einem relevanten Strukturfeld.");
-    midTerm.push("Ohne klare Rahmensetzung steigt das Risiko von Unschärfe in Zielhärte und Entscheidungsrhythmus.");
-    longTerm.push("Möglichkeit einer schleichenden Systemverschiebung, wenn Steuerungsmechanismen nicht greifen.");
+    shortTerm.push(`Positive Startwirkung möglich, jedoch Abweichung im Bereich „${critical.label}" (Mismatch: ${engine.mismatch}).`);
+    midTerm.push(`Ohne klare Rahmensetzung steigt das Risiko von Unschärfe – besonders in der ${rL}-Komponente (Soll: ${r[rDom.top1.key]}% / Ist: ${c[rDom.top1.key]}%).`);
+    longTerm.push(`Möglichkeit einer schleichenden Systemverschiebung ${rDom.top1.key !== cDom.top1.key ? `von ${rL} zu ${cL}` : `in der ${rL}-Intensität`}, wenn Steuerungsmechanismen nicht greifen.`);
   } else {
-    shortTerm.push("Reibung im Start wahrscheinlich, da Kernlogik der Rolle nicht abgebildet wird.");
-    midTerm.push("Leistungsarchitektur wird voraussichtlich verschoben.");
-    longTerm.push("Hohe Wahrscheinlichkeit von dauerhafter Fehlwirkung.");
+    shortTerm.push(`Reibung im Start wahrscheinlich – die ${rL}-Kernlogik der Rolle (${r[rDom.top1.key]}%) wird durch den Kandidaten (${c[rDom.top1.key]}%) nicht abgebildet.`);
+    midTerm.push(`Leistungsarchitektur wird voraussichtlich verschoben. Kritischer Bereich: ${critical.label}.`);
+    longTerm.push(`Hohe Wahrscheinlichkeit dauerhafter Fehlwirkung bei einem Mismatch von ${engine.mismatch}.`);
   }
 
-  if (critical === "conflict") {
-    midTerm.push("Zielabweichungen werden eher moderiert als konsequent korrigiert.");
-    longTerm.push("Leistungsdifferenzierung verliert Klarheit.");
+  if (critical.id === "conflict") {
+    midTerm.push(`Konfliktfähigkeit: Rolle verlangt ${r.impulsiv}% Impulsiv, Kandidat bringt ${c.impulsiv}% mit. Zielabweichungen werden eher moderiert als konsequent korrigiert.`);
+    longTerm.push("Leistungsdifferenzierung verliert an Klarheit, wenn Konfliktvermeidung dominiert.");
   }
-  if (critical === "decision_logic") {
-    midTerm.push("Entscheidungsfristen verlängern sich, Abweichungen werden eher abgesichert als entschieden.");
-    longTerm.push("Reaktionsgeschwindigkeit nimmt ab.");
+  if (critical.id === "decision_logic") {
+    midTerm.push(`Entscheidungslogik: ${rL} ${r[rDom.top1.key]}% vs. ${cL} ${c[cDom.top1.key]}%. Entscheidungsfristen verlängern sich, Abweichungen werden eher abgesichert als entschieden.`);
+    longTerm.push("Reaktionsgeschwindigkeit nimmt ab, besonders unter Zieldruck.");
   }
-  if (critical === "kpi_work") {
-    midTerm.push("Reporting- und Prozessdisziplin wird inkonsistent.");
-    longTerm.push("Forecast-/Transparenzqualität sinkt.");
+  if (critical.id === "kpi_work") {
+    midTerm.push(`KPI-Steuerung: Analytisch Soll ${r.analytisch}% vs. Ist ${c.analytisch}%. Reporting- und Prozessdisziplin wird voraussichtlich inkonsistent.`);
+    longTerm.push("Forecast- und Transparenzqualität sinkt ohne engmaschige Steuerung.");
+  }
+  if (critical.id === "leadership_effect") {
+    midTerm.push(`Führungswirkung weicht ab – die geforderte Führungslogik wird nicht vollständig durch das Kandidatenprofil gedeckt.`);
+    longTerm.push("Führungseffektivität bleibt ohne klare Zielarchitektur und Eskalationslogik fragil.");
+  }
+  if (critical.id === "competition") {
+    midTerm.push(`Wettbewerbsdynamik: Impulsiv Soll ${r.impulsiv}% vs. Ist ${c.impulsiv}%. Tempo und Abschlussdruck werden voraussichtlich gedämpft.`);
+    longTerm.push("Marktdynamik wird eher reaktiv als proaktiv gesteuert.");
+  }
+  if (critical.id === "culture") {
+    midTerm.push(`Kulturwirkung: Intuitiv Soll ${r.intuitiv}% vs. Ist ${c.intuitiv}%. Risiko einer Verschiebung in der Teamdynamik.`);
+    longTerm.push("Zielhärte und Leistungsdifferenzierung können langfristig erodieren.");
   }
 
   if (tags.market_pressure === "hoch")
-    longTerm.push("Im Hochdruckmarkt wirkt jede Verzögerung direkt auf Abschlussquote und Umsatzdynamik.");
+    longTerm.push(`Im Hochdruckmarkt (market_pressure: hoch) wirkt jede Verzögerung direkt auf Abschlussquote und Umsatzdynamik – besonders bei ${Math.abs(r.impulsiv - c.impulsiv)} Punkten Impulsiv-Abweichung.`);
   if (tags.regulation === "hoch")
-    longTerm.push("In regulierten Kontexten kann fehlende Präzision zu Qualitäts- oder Audit-Risiken führen.");
+    longTerm.push(`In regulierten Kontexten (regulation: hoch) kann die Analytisch-Lücke von ${Math.abs(r.analytisch - c.analytisch)} Punkten zu Qualitäts- oder Audit-Risiken führen.`);
 
   return { shortTerm, midTerm, longTerm };
 }
 
-function developmentFromControl(control: ControlIntensity) {
-  if (control === "LOW") return { likelihood: "hoch" as const, timeframe: "3–6 Monate", text: "Die Integration ist weitgehend selbsttragend. Entwicklung erfolgt primär über Routine und Rollenpraxis." };
-  if (control === "MEDIUM") return { likelihood: "mittel" as const, timeframe: "6–12 Monate", text: "Entwicklung ist realistisch, erfordert jedoch feste Review-Rhythmen und klare Entscheidungsregeln." };
-  return { likelihood: "gering" as const, timeframe: ">12 Monate", text: "Die Abweichung betrifft Kernlogik. Entwicklung nur mit sehr klarer Rahmenarchitektur und engmaschiger Steuerung möglich." };
+function developmentFromControl(control: ControlIntensity, points: number, criticalLabel: string) {
+  if (control === "LOW") return { likelihood: "hoch" as const, timeframe: "3–6 Monate", text: `Die Integration ist weitgehend selbsttragend (Steuerungspunkte: ${points}). Entwicklung erfolgt primär über Routine und Rollenpraxis.` };
+  if (control === "MEDIUM") return { likelihood: "mittel" as const, timeframe: "6–12 Monate", text: `Entwicklung ist realistisch (Steuerungspunkte: ${points}), erfordert jedoch feste Review-Rhythmen und klare Entscheidungsregeln – besonders im Bereich „${criticalLabel}".` };
+  return { likelihood: "gering" as const, timeframe: ">12 Monate", text: `Die Abweichung betrifft Kernlogik (Steuerungspunkte: ${points}). Entwicklung nur mit klarer Rahmenarchitektur und engmaschiger Steuerung im Bereich „${criticalLabel}" möglich.` };
 }
 
 function integrationPlan(role: RoleAnalysis, criticalArea: MatrixAreaId, control: ControlIntensity) {
@@ -645,36 +663,45 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   const matrix = buildMatrix(role, cand);
   const critical = criticalAreaFromMatrix(matrix);
 
+  const r = normalizeTriad(role.role_profile);
+  const c = normalizeTriad(cand.candidate_profile);
+  const rL = labelComponent(roleDom.top1.key);
+  const cL = labelComponent(candDom.top1.key);
+  const sameDom = roleDom.top1.key === candDom.top1.key;
+  const mainDiff = Math.abs(r[roleDom.top1.key] - c[roleDom.top1.key]);
+
   const keyReason = (() => {
-    const domShift = roleDom.mode.startsWith("DUAL") || candDom.mode.startsWith("DUAL")
-      ? `Dominanzlogik (Rolle: ${dominanceLabel(roleDom)} vs. Kandidat: ${dominanceLabel(candDom)})`
-      : `Dominanzverschiebung ${labelComponent(roleDom.top1.key)} → ${labelComponent(candDom.top1.key)}`;
-    return `${domShift}; kritisch: ${critical.label}; Steuerungsintensität: ${controlLabel(ctrl.level)}`;
+    const domDesc = sameDom
+      ? `Gleiche Dominanz (${rL}), Intensitätsdifferenz: ${mainDiff} Punkte (Soll: ${r[roleDom.top1.key]}% / Ist: ${c[roleDom.top1.key]}%)`
+      : `Dominanzverschiebung ${rL} (${r[roleDom.top1.key]}%) → ${cL} (${c[candDom.top1.key]}%)`;
+    return `${domDesc}; kritisch: ${critical.label}; Mismatch: ${mismatch}; Steuerung: ${controlLabel(ctrl.level)} (${ctrl.points} Pkt.)`;
   })();
 
+  const candName = cand.candidate_name || "Kandidat";
   const execSummary = (() => {
-    const name = cand.candidate_name ? ` (${cand.candidate_name})` : "";
-    const intro = `Rolle: ${role.job_title} | Kandidat${name}`;
-    const fitLine = `Gesamteinstufung: ${statusLabel(overallFit)} · Steuerungsintensität: ${controlLabel(ctrl.level)}`;
-    const domLine = `Rollenlogik: ${dominanceLabel(roleDom)} · Kandidatenlogik: ${dominanceLabel(candDom)}`;
+    const intro = `Rolle: ${role.job_title} | ${candName}`;
+    const fitLine = `Gesamteinstufung: ${statusLabel(overallFit)} (Mismatch: ${mismatch}) · Steuerungsintensität: ${controlLabel(ctrl.level)} (${ctrl.points} Punkte)`;
+    const domLine = sameDom
+      ? `Beide Profile: ${rL}-dominant (Soll: ${r[roleDom.top1.key]}% / Ist: ${c[roleDom.top1.key]}%, Δ ${mainDiff})`
+      : `Rollenlogik: ${dominanceLabel(roleDom)} · Kandidatenlogik: ${dominanceLabel(candDom)}`;
     const reasonLine = overallFit === "SUITABLE"
-      ? `Die Kernlogik der Rolle wird strukturell stabil getroffen. Kritischer Bereich: ${critical.label}.`
+      ? `Die ${rL}-Kernlogik der Rolle wird stabil abgebildet (Δ ${mainDiff} Punkte). Kritischer Bereich: ${critical.label}.`
       : overallFit === "CONDITIONAL"
-        ? `Die Passung ist grundsätzlich vorhanden, jedoch mit relevanter Abweichung. Kritischer Bereich: ${critical.label}.`
-        : `Die Kernlogik der Rolle wird durch das Kandidatenprofil voraussichtlich verschoben. Kritischer Bereich: ${critical.label}.`;
+        ? `Grundpassung vorhanden, aber Abweichung von ${mainDiff} Punkten in der ${rL}-Komponente. Kritischer Bereich: ${critical.label}.`
+        : `Die ${rL}-Kernlogik der Rolle (${r[roleDom.top1.key]}%) wird durch ${candName} (${c[roleDom.top1.key]}%) nicht abgebildet. Kritischer Bereich: ${critical.label}.`;
     return [intro, fitLine, domLine, reasonLine].join("\n");
   })();
 
   const coreFinding = (() => {
     if (overallFit === "SUITABLE")
-      return `Die strukturelle Grundpassung ist hoch. Die dominanten Anforderungen der Rolle werden durch die Persönlichkeitsstruktur des Kandidaten abgebildet.`;
+      return `Die strukturelle Grundpassung ist hoch (Mismatch: ${mismatch}). ${candName} bildet die ${rL}-dominante Anforderung der Rolle (${r[roleDom.top1.key]}%) mit ${c[roleDom.top1.key]}% ab. Die Kernwirkung der Position bleibt stabil.`;
     if (overallFit === "CONDITIONAL")
-      return `Die strukturelle Passung ist grundsätzlich gegeben, jedoch nicht selbststabilisierend. Die Abweichung liegt im Bereich „${critical.label}". Ohne klare Entscheidungsregeln und verbindliche KPI-Führung besteht das Risiko einer schleichenden Verschiebung der Rollenwirkung.`;
-    return `Die strukturelle Passung ist niedrig. Die Abweichung betrifft die Kernlogik der Rolle und zeigt sich besonders im Bereich „${critical.label}". Eine Besetzung würde voraussichtlich die Leistungsarchitektur der Rolle verändern.`;
+      return `Die strukturelle Passung ist grundsätzlich gegeben (Mismatch: ${mismatch}), jedoch nicht selbststabilisierend. ${sameDom ? `Beide Profile sind ${rL}-dominant, aber die Intensität weicht um ${mainDiff} Punkte ab (Soll: ${r[roleDom.top1.key]}% / Ist: ${c[roleDom.top1.key]}%).` : `Die Dominanz verschiebt sich von ${rL} (${r[roleDom.top1.key]}%) zu ${cL} (${c[candDom.top1.key]}%).`} Die Abweichung zeigt sich besonders im Bereich „${critical.label}". Ohne klare Steuerung besteht das Risiko einer schleichenden Verschiebung der Rollenwirkung.`;
+    return `Die strukturelle Passung ist niedrig (Mismatch: ${mismatch}). ${sameDom ? `Die ${rL}-Intensität weicht um ${mainDiff} Punkte ab.` : `Die Dominanz verschiebt sich von ${rL} (${r[roleDom.top1.key]}%) zu ${cL} (${c[candDom.top1.key]}%).`} Die Abweichung betrifft die Kernlogik der Rolle und zeigt sich besonders im Bereich „${critical.label}". Eine Besetzung würde voraussichtlich die Leistungsarchitektur verändern.`;
   })();
 
-  const risks = buildRisks(role, { overallFit, control: ctrl.level, matrix });
-  const dev = developmentFromControl(ctrl.level);
+  const risks = buildRisks(role, cand, { overallFit, control: ctrl.level, matrix, mismatch });
+  const dev = developmentFromControl(ctrl.level, ctrl.points, critical.label);
   const plan = integrationPlan(role, critical.id, ctrl.level);
 
   return {
