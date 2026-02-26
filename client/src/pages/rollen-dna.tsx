@@ -895,24 +895,11 @@ export default function RollenDNA() {
       all.reduce((s, g) => s + g.int, 0) / all.length,
       all.reduce((s, g) => s + g.ana, 0) / all.length,
     ];
-    const CAP = 53;
-    let changed = true;
-    while (changed) {
-      changed = false;
-      const capped: number[] = [];
-      const uncapped: number[] = [];
-      vals.forEach((v, i) => { if (v > CAP) capped.push(i); else uncapped.push(i); });
-      if (capped.length > 0 && uncapped.length > 0) {
-        let excess = 0;
-        for (const i of capped) { excess += vals[i] - CAP; vals[i] = CAP; }
-        const uncappedTotal = uncapped.reduce((s, i) => s + vals[i], 0);
-        if (uncappedTotal > 0) {
-          for (const i of uncapped) {
-            vals[i] += excess * (vals[i] / uncappedTotal);
-          }
-        }
-        changed = capped.length > 0;
-      }
+    const MAX = 67;
+    const peak = Math.max(...vals);
+    if (peak > MAX) {
+      const scale = MAX / peak;
+      vals = vals.map(v => v * scale);
     }
     const [imp, int, ana] = roundPercentages(vals[0], vals[1], vals[2]);
     return { imp, int, ana } as BioGram;
