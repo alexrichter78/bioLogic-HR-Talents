@@ -733,7 +733,8 @@ export default function JobCheck() {
 
                     const candGap = engine.candDominance.gap1;
                     const roleGap = engine.roleDominance.gap1;
-                    const candDualDom = candGap <= 5;
+                    const isEqualDist = engine.equalDistribution;
+                    const candDualDom = !isEqualDist && candGap <= 5;
                     const roleClearDom = roleGap >= 15;
                     const dualConflict = candDualDom && roleClearDom;
 
@@ -741,7 +742,11 @@ export default function JobCheck() {
                     let calloutColor: string;
                     let sectionTitle: string;
 
-                    if (dualConflict) {
+                    if (isEqualDist) {
+                      calloutText = `Gleichverteilung: Das Kandidatenprofil zeigt keine erkennbare Steuerungsrichtung (${engine.candDominance.top1.value}/${engine.candDominance.top2.value}/${engine.candDominance.top3.value}). Die Rolle verlangt klare ${labelComponent(rk)}-Arbeitslogik (Soll: ${roleVal}). Ohne dominantes Steuerungsprofil fehlt die strukturelle Basis für Priorisierung und Entscheidungsarchitektur.`;
+                      calloutColor = "#FF3B30";
+                      sectionTitle = "Gleichverteilung";
+                    } else if (dualConflict) {
                       const c2k = engine.candDominance.top2.key;
                       const c2L = labelComponent(c2k);
                       const roleInDual = ck === rk || c2k === rk;
@@ -792,7 +797,9 @@ export default function JobCheck() {
                               <span style={{ fontSize: 12, fontWeight: 600, color: rc, opacity: 0.7, marginLeft: 4 }}>{roleVal}%</span>
                             </div>
                           </div>
-                          {dualConflict ? (
+                          {isEqualDist ? (
+                            <span style={{ fontSize: 16, fontWeight: 700, color: "#FF3B30" }}>≠</span>
+                          ) : dualConflict ? (
                             <span style={{ fontSize: 16, fontWeight: 700, color: "#FF9500" }}>⇄</span>
                           ) : sameDom ? (
                             <span style={{ fontSize: 20, fontWeight: 700, color: intensityDiff <= 5 ? "#34C759" : "#FF9500" }}>=</span>
@@ -801,7 +808,19 @@ export default function JobCheck() {
                           )}
                           <div style={{ textAlign: "center" }}>
                             <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Ist</p>
-                            {dualConflict ? (
+                            {isEqualDist ? (
+                              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                                {[engine.candDominance.top1, engine.candDominance.top2, engine.candDominance.top3].map((comp) => {
+                                  const compColor = comp.key === "impulsiv" ? COLORS.imp : comp.key === "intuitiv" ? COLORS.int : COLORS.ana;
+                                  return (
+                                    <div key={comp.key} style={{ padding: "4px 12px", borderRadius: 10, background: `${compColor}12`, border: `1px solid ${compColor}25` }}>
+                                      <span style={{ fontSize: 13, fontWeight: 700, color: compColor }}>{labelComponent(comp.key)}</span>
+                                      <span style={{ fontSize: 11, fontWeight: 600, color: compColor, opacity: 0.7, marginLeft: 4 }}>{comp.value}%</span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ) : dualConflict ? (
                               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                                 {[engine.candDominance.top1, engine.candDominance.top2].map((comp) => {
                                   const compColor = comp.key === "impulsiv" ? COLORS.imp : comp.key === "intuitiv" ? COLORS.int : COLORS.ana;

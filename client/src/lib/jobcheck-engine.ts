@@ -252,6 +252,7 @@ export type EngineResult = {
   controlPoints: number;
   criticalArea: MatrixAreaId;
   criticalAreaLabel: string;
+  equalDistribution: boolean;
   keyReason: string;
   executiveSummary: string;
   matrix: MatrixRow[];
@@ -439,7 +440,11 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
   const cDom = dominanceModeOf(c);
   const rows: MatrixRow[] = [];
 
+  const candIsEqualDist = cDom.mode === "BAL_FULL";
+
   const dominanceStatus: FitStatus = (() => {
+    if (candIsEqualDist && rDom.gap1 >= 12) return "NOT_SUITABLE";
+    if (candIsEqualDist) return "CONDITIONAL";
     const sameDominant =
       (rDom.mode.startsWith("DUAL") && cDom.mode.startsWith("DUAL") &&
         [rDom.top1.key, rDom.top2.key].sort().join("|") === [cDom.top1.key, cDom.top2.key].sort().join("|")) ||
@@ -462,13 +467,15 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
     areaId: "dominance", areaLabel: "Dominanzstruktur",
     roleDemand: dominanceLabel(rDom), candidatePattern: dominanceLabel(cDom),
     status: dominanceStatus,
-    reasoning: dominanceStatus === "SUITABLE"
-      ? `Die Arbeitslogik ist identisch: Beide Profile sind ${rLabel}-gesteuert (Abweichung ${domDiff} Punkte). Die Rolle wird in ihrer Kernwirkung stabil abgebildet – Priorisierung, Entscheidungsarchitektur und Steuerungslogik bleiben konsistent.`
-      : dominanceStatus === "CONDITIONAL"
-        ? (sameDominant
-          ? `Gleiche Arbeitslogik (${rLabel}), jedoch weicht die Intensität um ${domDiff} Punkte ab (Soll: ${r[rDom.top1.key]} / Ist: ${c[rDom.top1.key]}). Auswirkung: Priorisierungsverhalten und Umsetzungskonstanz können unter Druck schwächer ausfallen als gefordert. Klare Zielarchitektur und Steuerungsintervalle erforderlich.`
-          : `Dominanzverschiebung von ${rLabel} (${r[rDom.top1.key]}) zu ${cLabel} (${c[cDom.top1.key]}). Die Arbeitslogik verändert sich: Entscheidungswege, Priorisierung und operative Steuerung folgen einer anderen Logik. Abweichung in der Rollenkomponente: ${domDiff} Punkte. Steuerbar mit engmaschiger Zielarchitektur und klaren Entscheidungsfristen.`)
-        : `Fundamentale Dominanzverschiebung von ${rLabel} (${r[rDom.top1.key]}) zu ${cLabel} (${c[cDom.top1.key]}). Die strukturelle Kernlogik der Position ist nicht abgebildet. Auswirkung: Entscheidungsarchitektur, ${t.qualityMetric} und Priorisierungsverhalten weichen grundlegend von der Rollenanforderung ab.`,
+    reasoning: candIsEqualDist
+      ? `Gleichverteilung: Das Kandidatenprofil zeigt keine erkennbare Steuerungsrichtung (${c.impulsiv}/${c.intuitiv}/${c.analytisch}). Die Rolle verlangt ${rLabel}-Arbeitslogik (Soll: ${r[rDom.top1.key]}). Ohne dominantes Steuerungsprofil fehlt die strukturelle Basis für Priorisierung, Entscheidungsarchitektur und ${t.qualityMetric}.`
+      : dominanceStatus === "SUITABLE"
+        ? `Die Arbeitslogik ist identisch: Beide Profile sind ${rLabel}-gesteuert (Abweichung ${domDiff} Punkte). Die Rolle wird in ihrer Kernwirkung stabil abgebildet – Priorisierung, Entscheidungsarchitektur und Steuerungslogik bleiben konsistent.`
+        : dominanceStatus === "CONDITIONAL"
+          ? (sameDominant
+            ? `Gleiche Arbeitslogik (${rLabel}), jedoch weicht die Intensität um ${domDiff} Punkte ab (Soll: ${r[rDom.top1.key]} / Ist: ${c[rDom.top1.key]}). Auswirkung: Priorisierungsverhalten und Umsetzungskonstanz können unter Druck schwächer ausfallen als gefordert. Klare Zielarchitektur und Steuerungsintervalle erforderlich.`
+            : `Dominanzverschiebung von ${rLabel} (${r[rDom.top1.key]}) zu ${cLabel} (${c[cDom.top1.key]}). Die Arbeitslogik verändert sich: Entscheidungswege, Priorisierung und operative Steuerung folgen einer anderen Logik. Abweichung in der Rollenkomponente: ${domDiff} Punkte. Steuerbar mit engmaschiger Zielarchitektur und klaren Entscheidungsfristen.`)
+          : `Fundamentale Dominanzverschiebung von ${rLabel} (${r[rDom.top1.key]}) zu ${cLabel} (${c[cDom.top1.key]}). Die strukturelle Kernlogik der Position ist nicht abgebildet. Auswirkung: Entscheidungsarchitektur, ${t.qualityMetric} und Priorisierungsverhalten weichen grundlegend von der Rollenanforderung ab.`,
   });
 
   const decisionStatus: FitStatus = (() => {
@@ -732,9 +739,11 @@ function buildRisks(role: RoleAnalysis, cand: CandidateInput, engine: { overallF
   const midTerm: string[] = [];
   const longTerm: string[] = [];
 
-  const candDualDominance = cDom.gap1 <= 5;
+  const candEqualDist = cDom.mode === "BAL_FULL";
+  const candDualDominance = !candEqualDist && cDom.gap1 <= 5;
   const roleClearDom = rDom.gap1 >= 15;
   const dualConflict = candDualDominance && roleClearDom;
+  const equalDistConflict = candEqualDist && roleClearDom;
   const roleKeyInDual = dualConflict && (cDom.top1.key === rDom.top1.key || cDom.top2.key === rDom.top1.key);
 
   if (engine.overallFit === "SUITABLE") {
@@ -757,7 +766,11 @@ function buildRisks(role: RoleAnalysis, cand: CandidateInput, engine: { overallF
       longTerm.push(`Ohne aktive Gegensteuerung verändert sich die Rollenlogik von ${jobTitle} über die Zeit. Anforderungen werden anders priorisiert, der Fokus auf ${t.kpiExamples} verschiebt sich – die strukturelle Wirkung der Position erodiert.`);
     }
   } else {
-    if (dualConflict && !roleKeyInDual) {
+    if (equalDistConflict) {
+      shortTerm.push(`Gleichverteilung (${c.impulsiv}/${c.intuitiv}/${c.analytisch}): Es liegt kein erkennbares Steuerungsprofil vor. Die Rolle ${jobTitle} verlangt klare ${rL}-Arbeitslogik – diese fehlt strukturell. Operative Orientierungslosigkeit bereits in der Einarbeitung.`);
+      midTerm.push(`Ohne dominante Steuerungsrichtung fehlt die Basis für konsequente Priorisierung. Die Person reagiert situativ statt systematisch. Auswirkung auf Entscheidungsarchitektur, ${t.qualityMetric} und Prozessstabilität: nicht steuerbar.`);
+      longTerm.push(`Die Gleichverteilung verhindert eine stabile Rollenwirkung. Statt ${rL}-gesteuerter Arbeit entsteht eine undefinierte Dynamik ohne erkennbare Steuerungslogik. Auswirkung auf ${t.kpiExamples}, Tempo und Qualität: strukturelle Inkompatibilität.`);
+    } else if (dualConflict && !roleKeyInDual) {
       const c2L = labelComponent(cDom.top2.key);
       shortTerm.push(`Doppeldominanz ${labelComponent(cDom.top1.key)}/${c2L} – die geforderte ${rL}-Steuerungslogik der Rolle ${jobTitle} ist in keiner der beiden Stärken vertreten. Operative Reibung bereits in der Einarbeitung.`);
       midTerm.push(`Die Arbeitslogik wird von ${labelComponent(cDom.top1.key)} und ${c2L} bestimmt. Auswirkung: Die für die Rolle zentrale ${rL}-Steuerung fehlt strukturell. Entscheidungsarchitektur, ${t.qualityMetric} und Priorisierung folgen einer fundamental anderen Logik.`);
@@ -895,12 +908,16 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   const ko = koRuleTriggered(role, cand);
   const mismatch = weightedMismatch(role.role_profile, cand.candidate_profile);
   const sameDom = roleDom.top1.key === candDom.top1.key;
-  const candDualDominance = candDom.gap1 <= 5;
+  const candEqualDist = candDom.mode === "BAL_FULL";
+  const candDualDominance = !candEqualDist && candDom.gap1 <= 5;
   const roleClearDominance = roleDom.gap1 >= 15;
   const dualConflict = candDualDominance && roleClearDominance;
+  const equalDistConflict = candEqualDist && roleClearDominance;
   const roleKeyInDual = dualConflict && (candDom.top1.key === roleDom.top1.key || candDom.top2.key === roleDom.top1.key);
   let overallFit: FitStatus = ko ? "NOT_SUITABLE" : overallFitFromScore(mismatch, sameDom);
-  if (dualConflict && !ko) {
+  if (equalDistConflict && !ko) {
+    overallFit = "NOT_SUITABLE";
+  } else if (dualConflict && !ko) {
     if (roleKeyInDual) {
       if (overallFit === "SUITABLE") overallFit = "CONDITIONAL";
     } else {
@@ -923,6 +940,9 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   const competingL = dualConflict ? labelComponent(candDom.top1.key === roleDom.top1.key ? candDom.top2.key : candDom.top1.key) : "";
 
   const keyReason = (() => {
+    if (equalDistConflict) {
+      return `${candName} zeigt eine Gleichverteilung aller drei Komponenten (${c.impulsiv}/${c.intuitiv}/${c.analytisch}). Es liegt kein erkennbares Steuerungsprofil vor. Die Rolle ${jobTitle} verlangt eine klare ${rL}-Arbeitslogik (Soll: ${r[roleDom.top1.key]}). Ohne dominante Steuerungsrichtung fehlt die strukturelle Basis für zielgerichtete Priorisierung, Entscheidungsarchitektur und ${t.qualityMetric}.`;
+    }
     if (dualConflict && roleKeyInDual) {
       return `${candName} bringt die geforderte ${rL}-Steuerungslogik grundsätzlich mit, allerdings konkurriert sie mit einer gleich starken ${competingL}-Prägung. Die Rolle ${jobTitle} verlangt eine klare ${rL}-Ausrichtung – diese Eindeutigkeit fehlt. Auswirkung auf Priorisierungsverhalten und ${t.qualityMetric}: instabil.`;
     }
@@ -946,7 +966,9 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
     const fitLine = `Gesamteinstufung: ${statusLabel(overallFit)} · Steuerungsaufwand: ${controlLabel(ctrl.level)}`;
     const profileLine = `Soll-Profil: ${r.impulsiv}/${r.intuitiv}/${r.analytisch} · Ist-Profil: ${c.impulsiv}/${c.intuitiv}/${c.analytisch}`;
     let domLine: string;
-    if (dualConflict) {
+    if (equalDistConflict) {
+      domLine = `Gleichverteilung: ${c.impulsiv}/${c.intuitiv}/${c.analytisch} – kein erkennbares Steuerungsprofil. Die Rolle verlangt klare ${rL}-Arbeitslogik (${r[roleDom.top1.key]}). Strukturelle Basis für Priorisierung und Entscheidungsarchitektur fehlt.`;
+    } else if (dualConflict) {
       domLine = `Doppeldominanz: ${labelComponent(candDom.top1.key)}/${labelComponent(candDom.top2.key)} – die Rolle verlangt klare ${rL}-Steuerungslogik. Auswirkung auf Priorisierung und Entscheidungsarchitektur: instabil.`;
     } else if (sameDom) {
       domLine = `Beide Profile sind ${rL}-geprägt (Δ ${mainDiff} Punkte). Arbeitslogik und Priorisierungsverhalten stimmen in der Grundrichtung überein.`;
@@ -965,6 +987,7 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
     overallFit, mismatchScore: mismatch, koTriggered: ko,
     controlIntensity: ctrl.level, controlPoints: ctrl.points,
     criticalArea: critical.id, criticalAreaLabel: critical.label,
+    equalDistribution: equalDistConflict,
     keyReason, executiveSummary: execSummary,
     matrix, risks, development: dev, integrationPlan90: plan,
   };
