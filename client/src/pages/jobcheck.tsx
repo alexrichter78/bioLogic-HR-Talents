@@ -648,8 +648,8 @@ export default function JobCheck() {
                         <p style={{ fontSize: 16, fontWeight: 750, color: controlColor(engine.controlIntensity), margin: 0 }}>{controlLabel(engine.controlIntensity)}</p>
                       </div>
                       <div style={{ padding: "12px 14px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Mismatch-Score</p>
-                        <p style={{ fontSize: 16, fontWeight: 750, color: "#1D1D1F", margin: 0 }}>{engine.mismatchScore}{engine.koTriggered ? " · K.O." : ""}</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Abweichung</p>
+                        <p style={{ fontSize: 16, fontWeight: 750, color: "#1D1D1F", margin: 0 }}>{engine.mismatchScore <= 8 ? "Gering" : engine.mismatchScore <= 15 ? "Moderat" : "Hoch"}{engine.koTriggered ? " · K.O." : ""}</p>
                       </div>
                     </div>
 
@@ -681,23 +681,29 @@ export default function JobCheck() {
                     if (dualConflict) {
                       const c2k = engine.candDominance.top2.key;
                       const c2L = labelComponent(c2k);
-                      calloutText = `Der Kandidat zeigt eine Doppeldominanz: ${labelComponent(ck)} und ${c2L} sind nahezu gleichauf. Die Rolle verlangt jedoch eine klare ${labelComponent(rk)}-Ausrichtung. Die konkurrierenden Stärken erzeugen Unschärfe – die geforderte Kernwirkung kann nicht konsequent entfaltet werden.`;
-                      calloutColor = "#FF9500";
+                      const roleInDual = ck === rk || c2k === rk;
+                      if (roleInDual) {
+                        calloutText = `Der Kandidat bringt die geforderte ${labelComponent(rk)}-Arbeitsweise mit, aber sie konkurriert mit einer gleich starken ${c2L}-Seite. Die Rolle braucht jemanden, der eindeutig ${labelComponent(rk)}-geprägt arbeitet – diese Klarheit fehlt.`;
+                        calloutColor = "#FF9500";
+                      } else {
+                        calloutText = `Der Kandidat arbeitet vorrangig ${labelComponent(ck)}- und ${c2L}-geprägt. Die für die Rolle entscheidende ${labelComponent(rk)}-Arbeitsweise gehört nicht zu seinen Stärken.`;
+                        calloutColor = "#FF3B30";
+                      }
                       sectionTitle = "Doppeldominanz";
                     } else if (sameDom && intensityDiff <= 5) {
-                      calloutText = "Die dominante Steuerungslogik ist identisch und die Ausprägung nahezu deckungsgleich. Die Rolle wird in ihrer Kernwirkung stabil und konsistent abgebildet.";
+                      calloutText = `Rolle und Kandidat arbeiten beide ${labelComponent(rk)}-geprägt und liegen in der Ausprägung nahezu gleichauf. Die Rolle wird in ihrer Kernwirkung stabil abgebildet.`;
                       calloutColor = "#34C759";
                       sectionTitle = "Dominanz-Vergleich";
                     } else if (sameDom && intensityDiff <= 15) {
-                      calloutText = `Die dominante Komponente ist identisch (${labelComponent(rk)}), jedoch unterscheidet sich die Intensität um ${intensityDiff} Prozentpunkte (Soll: ${roleVal}% vs. Ist: ${candVal}%). Die Kernlogik bleibt erhalten, die Ausprägungsstärke weicht ab.`;
+                      calloutText = `Rolle und Kandidat arbeiten beide ${labelComponent(rk)}-geprägt. Die Grundrichtung stimmt, allerdings ist die Ausprägung beim Kandidaten etwas schwächer als von der Rolle gefordert.`;
                       calloutColor = "#FF9500";
                       sectionTitle = "Dominanz-Vergleich";
                     } else if (sameDom) {
-                      calloutText = `Gleiche Dominanz (${labelComponent(rk)}), aber deutlicher Intensitätsunterschied von ${intensityDiff} Prozentpunkten. Die Rolle verlangt eine stärkere Ausprägung als der Kandidat mitbringt.`;
+                      calloutText = `Beide Profile sind ${labelComponent(rk)}-geprägt, allerdings verlangt die Rolle eine deutlich stärkere Ausprägung, als der Kandidat mitbringt. Die Grundrichtung stimmt, aber die Intensität reicht möglicherweise nicht aus.`;
                       calloutColor = "#FF3B30";
                       sectionTitle = "Dominanz-Vergleich";
                     } else {
-                      calloutText = `Die dominante Steuerungslogik verschiebt sich von ${labelComponent(rk)} (Rolle) zu ${labelComponent(ck)} (Kandidat). Das verändert die zentrale Wirkweise der Position.`;
+                      calloutText = `Die Rolle verlangt eine ${labelComponent(rk)}-geprägte Arbeitsweise, der Kandidat arbeitet aber vorrangig ${labelComponent(ck)}-geprägt. Das verändert die zentrale Wirkung der Position grundlegend.`;
                       calloutColor = "#FF3B30";
                       sectionTitle = "Dominanz-Verschiebung";
                     }
@@ -761,7 +767,7 @@ export default function JobCheck() {
                             border: `1px solid ${intensityDiff <= 5 ? "rgba(52,199,89,0.15)" : intensityDiff <= 15 ? "rgba(255,149,0,0.15)" : "rgba(255,59,48,0.15)"}`,
                           }}>
                             <span style={{ fontSize: 12, fontWeight: 600, color: intensityDiff <= 5 ? "#34C759" : intensityDiff <= 15 ? "#FF9500" : "#FF3B30" }}>
-                              Δ {intensityDiff} Prozentpunkte Intensitätsunterschied
+                              {intensityDiff <= 5 ? "Ausprägung nahezu identisch" : intensityDiff <= 15 ? "Spürbare Abweichung in der Ausprägung" : "Deutliche Abweichung in der Ausprägung"}
                             </span>
                           </div>
                         )}
@@ -885,10 +891,10 @@ export default function JobCheck() {
                     }}>
                       <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.85, margin: 0, fontWeight: 500, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
                         {hyphenateText(engine.overallFit === "SUITABLE"
-                          ? "Die Besetzung ist strukturell passend. Fokus auf saubere Umsetzung und KPI-Routinen."
+                          ? "Die Besetzung passt zur Rolle. Fokus auf saubere Umsetzung und klare Arbeitsroutinen."
                           : engine.overallFit === "CONDITIONAL"
-                            ? "Die Besetzung ist nicht risikofrei, jedoch entwicklungsfähig, sofern klare Leistungsarchitektur etabliert wird."
-                            : "Für diese Rolle nicht strukturgerecht. Hohe Wahrscheinlichkeit systemischer Fehlwirkung."
+                            ? "Die Besetzung ist nicht risikofrei, aber entwicklungsfähig – vorausgesetzt, klare Erwartungen und Rahmenvorgaben werden etabliert."
+                            : "Die Arbeitsweise des Kandidaten passt nicht zur Grundlogik dieser Rolle. Eine erfolgreiche Besetzung ist unwahrscheinlich."
                         )}
                       </p>
                     </div>
