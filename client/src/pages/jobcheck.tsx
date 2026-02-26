@@ -424,6 +424,7 @@ export default function JobCheck() {
     setSnapshotName(candidateName);
     setReportKey(k => k + 1);
     setReportGenerated(true);
+    localStorage.setItem("jobcheckCandProfile", JSON.stringify(normalizedCand));
     setAnalyseOpen(false);
     setBerichtOpen(true);
   }

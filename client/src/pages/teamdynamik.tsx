@@ -299,7 +299,16 @@ function ReportChapter({ section, chapterIndex }: { section: ParsedSection; chap
 export default function Teamdynamik() {
   const [teamName, setTeamName] = useState("Projektteam");
   const [teamProfile, setTeamProfile] = useState<Triad>({ impulsiv: 30, intuitiv: 50, analytisch: 20 });
-  const [personProfile, setPersonProfile] = useState<Triad>({ impulsiv: 34, intuitiv: 23, analytisch: 43 });
+  const [personProfile, setPersonProfile] = useState<Triad>(() => {
+    try {
+      const saved = localStorage.getItem("jobcheckCandProfile");
+      if (saved) {
+        const p = JSON.parse(saved);
+        if (p.impulsiv != null && p.intuitiv != null && p.analytisch != null) return p;
+      }
+    } catch {}
+    return { impulsiv: 33, intuitiv: 34, analytisch: 33 };
+  });
   const [isLeading, setIsLeading] = useState(true);
   const [levers] = useState<Lever[]>(getDefaultLevers());
   const [viewMode, setViewMode] = useState<ViewMode>("HR");
