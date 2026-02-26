@@ -1251,21 +1251,20 @@ export default function RollenDNA() {
           onChange={handleFileChange}
           data-testid="input-file-load"
         />
-        <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 200 }}>
-          <div className="dark:!bg-background/90 pb-4">
-            <GlobalNav rightSlot={
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5" data-testid="button-laden" onClick={handleLoad}>
-                  <FolderOpen className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Laden</span>
-                </Button>
-                <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5" data-testid="button-speichern" onClick={handleSave}>
-                  <Save className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Speichern</span>
-                </Button>
-              </div>
-            } />
-
+        <GlobalNav rightSlot={
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5" data-testid="button-laden" onClick={handleLoad}>
+              <FolderOpen className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Laden</span>
+            </Button>
+            <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5" data-testid="button-speichern" onClick={handleSave}>
+              <Save className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Speichern</span>
+            </Button>
+          </div>
+        } />
+        <div style={{ position: "fixed", top: 48, left: 0, right: 0, zIndex: 8999 }}>
+          <div className="dark:!bg-background/90 pb-4" style={{ backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", background: "rgba(255,255,255,0.82)" }}>
             <div className="w-full max-w-3xl mx-auto px-6">
               <div className="text-center mt-3 mb-3">
                 <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground/90 mb-2" data-testid="text-rollen-dna-title">

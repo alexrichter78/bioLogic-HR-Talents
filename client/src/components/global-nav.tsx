@@ -16,6 +16,8 @@ const RESET_KEYS = [
   "rollenDnaCompleted",
 ];
 
+const NAV_HEIGHT = 48;
+
 export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }) {
   const [location, setLocation] = useLocation();
 
@@ -38,8 +40,9 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
   };
 
   return (
-    <div style={{ position: "sticky", top: 0, zIndex: 200 }}>
+    <>
       <div style={{
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 9000,
         backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
         background: "rgba(255,255,255,0.78)",
         borderBottom: "1px solid rgba(0,0,0,0.06)",
@@ -94,6 +97,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
           </div>
         </div>
       </div>
-    </div>
+      <div style={{ height: NAV_HEIGHT }} />
+    </>
   );
 }
