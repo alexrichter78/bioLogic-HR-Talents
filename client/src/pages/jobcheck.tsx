@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
-import { ArrowLeft, FileText, AlertTriangle, Check, Shield, TrendingUp, Target, Users, Zap, Scale, ChevronRight, ChevronDown, CircleAlert, CircleCheck, CircleMinus, Lightbulb, CalendarDays, ClipboardCheck, BarChart3 } from "lucide-react";
+import { ArrowLeft, FileText, AlertTriangle, Check, Shield, TrendingUp, Users, Zap, Scale, ChevronRight, ChevronDown, CircleAlert, CircleCheck, CircleMinus, Lightbulb, CalendarDays, ClipboardCheck, BarChart3 } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import { hyphenateText } from "@/lib/hyphenate";
 import { BERUFE } from "@/data/berufe";
@@ -653,7 +653,7 @@ export default function JobCheck() {
                       </div>
                     </div>
 
-                    <CalloutBox text={engine.coreFinding} color={fitColor(engine.overallFit)} icon={Lightbulb} />
+                    <CalloutBox text={engine.keyReason} color={fitColor(engine.overallFit)} icon={Lightbulb} />
                   </div>
 
                   <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
@@ -762,16 +762,6 @@ export default function JobCheck() {
                   <div>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
                       <ChapterBadge num={4} color="#0071E3" />
-                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Kernbefund</span>
-                    </div>
-                    <CalloutBox text={engine.keyReason} color="#0071E3" icon={Target} />
-                  </div>
-
-                  <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
-
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
-                      <ChapterBadge num={5} color="#0071E3" />
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Risikoprognose</span>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -795,7 +785,7 @@ export default function JobCheck() {
 
                   <div>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
-                      <ChapterBadge num={6} color="#0071E3" />
+                      <ChapterBadge num={5} color="#0071E3" />
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Entwicklungsprognose</span>
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
@@ -817,7 +807,7 @@ export default function JobCheck() {
 
                   <div>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 18 }}>
-                      <ChapterBadge num={7} color="#0071E3" />
+                      <ChapterBadge num={6} color="#0071E3" />
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>90-Tage-Integrationsplan</span>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
@@ -831,7 +821,7 @@ export default function JobCheck() {
 
                   <div>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
-                      <ChapterBadge num={8} color="#0071E3" />
+                      <ChapterBadge num={7} color="#0071E3" />
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Gesamtbewertung</span>
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
