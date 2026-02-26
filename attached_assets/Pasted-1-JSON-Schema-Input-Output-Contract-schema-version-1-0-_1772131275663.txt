@@ -1,0 +1,313 @@
+1) JSON Schema (Input + Output Contract)
+{
+  "schema_version": "1.0.0",
+  "input": {
+    "team": {
+      "name": "string",
+      "members_count": "number",
+      "profile": { "impulsiv": "number", "intuitiv": "number", "analytisch": "number" }
+    },
+    "new_person": {
+      "label": "string",
+      "is_leading": "boolean",
+      "profile": { "impulsiv": "number", "intuitiv": "number", "analytisch": "number" }
+    },
+    "role_soll": {
+      "enabled": "boolean",
+      "label": "string",
+      "profile": { "impulsiv": "number", "intuitiv": "number", "analytisch": "number" }
+    },
+    "tasks": ["string"],
+    "kpi_focus": ["string"],
+    "levers": [
+      { "id": "string", "enabled": "boolean" }
+    ],
+    "steering_override": "string|null"
+  },
+  "output": {
+    "dominance": {
+      "team": "IMPULSIV|INTUITIV|ANALYTISCH|MIX",
+      "person": "IMPULSIV|INTUITIV|ANALYTISCH|MIX",
+      "role_soll": "IMPULSIV|INTUITIV|ANALYTISCH|MIX|null"
+    },
+    "scores": {
+      "DG": "number",
+      "DC": "number",
+      "RG": "number|null",
+      "TS": "number",
+      "CI": "number"
+    },
+    "labels": {
+      "intensity_level": "NIEDRIG|MITTEL|HOCH",
+      "shift_type": "VERSTAERKUNG|ERGAENZUNG|REIBUNG|SPANNUNG|TRANSFORMATION|HYBRID",
+      "steering_need": "NIEDRIG|MITTEL|HOCH",
+      "traffic_light": "GREEN|YELLOW|RED",
+      "shift_axis": "string"
+    },
+    "lever_effects": {
+      "enabled_count": "number",
+      "steering_reduction_levels": "number"
+    }
+  }
+}
+2) Deterministische Berechnung (Pseudocode, backend-tauglich)
+2.1 Utility: Validation & Normalisierung
+function validateProfile(p):
+  assert 0 <= p.impulsiv <= 100
+  assert 0 <= p.intuitiv <= 100
+  assert 0 <= p.analytisch <= 100
+  sum = p.impulsiv + p.intuitiv + p.analytisch
+  if abs(sum - 100) > 0.5:
+    // Option A: hard fail
+    throw "Profile must sum to 100"
+    // Option B: normalize (if you prefer)
+    // p = {x/sum*100}
+  return p
+2.2 Dominanz mit Gleichstand (MIX)
+function dominance(p):
+  maxVal = max(p.impulsiv, p.intuitiv, p.analytisch)
+  winners = []
+  if p.impulsiv == maxVal: winners.append("IMPULSIV")
+  if p.intuitiv == maxVal: winners.append("INTUITIV")
+  if p.analytisch == maxVal: winners.append("ANALYTISCH")
+  if len(winners) >= 2: return "MIX"
+  return winners[0]
+2.3 Distribution Gap DG (0–100)
+function distributionGap(team, person):
+  // sum abs diffs in % points
+  s = abs(team.impulsiv - person.impulsiv)
+    + abs(team.intuitiv - person.intuitiv)
+    + abs(team.analytisch - person.analytisch)
+  DG = s / 2.0 // normalize from 0..200 to 0..100
+  return round1(DG)
+2.4 Dominance Clash DC (0/50/100)
+function dominanceClash(domTeam, domPerson):
+  if domTeam == domPerson and domTeam != "MIX": return 0
+  if domTeam == "MIX" or domPerson == "MIX": return 50
+  return 100
+2.5 Role Gap RG (0–100) (optional)
+function roleGap(roleSollEnabled, roleSoll, person):
+  if not roleSollEnabled: return null
+  s = abs(roleSoll.impulsiv - person.impulsiv)
+    + abs(roleSoll.intuitiv - person.intuitiv)
+    + abs(roleSoll.analytisch - person.analytisch)
+  RG = s / 2.0
+  return round1(RG)
+2.6 Leadership Factor LF und Scale Factor SF
+function leadershipFactor(isLeading):
+  return isLeading ? 15 : 0
+
+function scaleFactor(n):
+  if n < 6: return 0
+  if n < 12: return 5
+  return 10
+2.7 Transformation Score TS (0–100)
+
+Gewichte:
+
+mit Soll: DG 45%, DC 25%, RG 20%, LF 7%, SF 3%
+
+ohne Soll: DG 55%, DC 25%, LF 17%, SF 3%
+
+function transformationScore(DG, DC, RG, isLeading, n):
+  LF = leadershipFactor(isLeading)
+  SF = scaleFactor(n)
+
+  if RG != null:
+    TS = 0.45*DG + 0.25*DC + 0.20*RG + 0.07*LF + 0.03*SF
+  else:
+    TS = 0.55*DG + 0.25*DC + 0.17*LF + 0.03*SF
+
+  TS = clamp(TS, 0, 100)
+  return round0(TS)
+2.8 Intensität (Niedrig/Mittel/Hoch)
+function intensityLevel(TS):
+  if TS <= 33: return "NIEDRIG"
+  if TS <= 66: return "MITTEL"
+  return "HOCH"
+2.9 Konfliktindex CI (0–100) (optional aber sehr nützlich)
+function conflictIndex(TS, DC):
+  CI = 0.6*TS + 0.4*DC
+  return round0(clamp(CI, 0, 100))
+3) Shift-Axis (für menschliche Verständlichkeit)
+
+Die Achse soll in Alltagssprache sein, nicht „Impulsiv/…“.
+
+function axisLabel(domFrom, domTo):
+  // domFrom = team dominance, domTo = person dominance
+  if domFrom == domTo: return "Keine dominante Verschiebung"
+  if domFrom == "MIX" or domTo == "MIX": return "Hybrid-Verschiebung"
+
+  map = {
+    "IMPULSIV": "Tempo & Entscheidung",
+    "INTUITIV": "Beziehung & Abstimmung",
+    "ANALYTISCH": "Struktur & Absicherung"
+  }
+
+  return map[domFrom] + " → " + map[domTo]
+4) Shift-Type Klassifikation (deterministisch)
+function shiftType(domTeam, domPerson, DG, DC, TS, isLeading):
+  level = intensityLevel(TS)
+
+  // gleiche Dominanz, aber Verteilung kann trotzdem abweichen
+  if DC == 0:
+    if DG < 20: return "VERSTAERKUNG"
+    return "ERGAENZUNG"
+
+  // MIX-Fälle
+  if domTeam == "MIX" or domPerson == "MIX":
+    // je nach Intensität
+    if level == "NIEDRIG": return "ERGAENZUNG"
+    if level == "MITTEL": return "REIBUNG"
+    return isLeading ? "TRANSFORMATION" : "SPANNUNG"
+
+  // harte Dominanzabweichung (DC==100)
+  if level == "NIEDRIG": return "ERGAENZUNG"
+  if level == "MITTEL": return "REIBUNG"
+  // HOCH
+  return isLeading ? "TRANSFORMATION" : "SPANNUNG"
+5) Steuerungsbedarf (inkl. Hebel-Logik)
+
+Hebel reduzieren die Steuerungsintensität um Levels (nicht um Punkte), damit es im UI klar ist.
+
+Standard-Hebel-Set (empfohlen):
+
+timebox (Entscheidungszeitfenster)
+
+8020 (80/20 Qualitätsstandard)
+
+weekly_review (Priorisierungsreview)
+
+role_boundaries (Entscheidungs-/Verantwortungsgrenzen)
+
+comm_rules (Sach-/Beziehungsebene, Feedbackregeln)
+
+optional: pulse_check (Teamtemperatur)
+
+function leverReductionLevels(levers):
+  enabled = count(levers where enabled==true)
+
+  // konservative Stufen:
+  if enabled >= 4: return 2
+  if enabled >= 2: return 1
+  return 0
+
+function applyLevelReduction(level, reduction):
+  // level order: NIEDRIG < MITTEL < HOCH
+  if reduction == 0: return level
+  if reduction == 1:
+    if level == "HOCH": return "MITTEL"
+    if level == "MITTEL": return "NIEDRIG"
+    return "NIEDRIG"
+  if reduction == 2:
+    if level == "HOCH": return "NIEDRIG"
+    return "NIEDRIG"
+
+function steeringNeed(level, RG, levers, override):
+  if override != null and override != "NONE": return override
+
+  base = level
+
+  // Wenn Soll/Ist sehr groß, erhöhe 1 Stufe (optional, weil es plausibel ist)
+  if RG != null and RG > 50:
+    if base == "NIEDRIG": base = "MITTEL"
+    else base = "HOCH"
+
+  red = leverReductionLevels(levers)
+  final = applyLevelReduction(base, red)
+  return { "final": final, "enabled_count": countEnabled(levers), "reduction_levels": red }
+6) Traffic Light (Ampel)
+function trafficLight(shiftType, intensity):
+  if shiftType == "TRANSFORMATION" or shiftType == "SPANNUNG": return "RED"
+  if intensity == "MITTEL": return "YELLOW"
+  return "GREEN"
+7) End-to-End Compute Function (ein Call, ein Output)
+function computeTeamDynamics(input):
+  team = validateProfile(input.team.profile)
+  person = validateProfile(input.new_person.profile)
+  roleSoll = input.role_soll.enabled ? validateProfile(input.role_soll.profile) : null
+
+  domT = dominance(team)
+  domP = dominance(person)
+  domS = roleSoll != null ? dominance(roleSoll) : null
+
+  DG = distributionGap(team, person)
+  DC = dominanceClash(domT, domP)
+  RG = roleGap(input.role_soll.enabled, roleSoll, person)
+
+  TS = transformationScore(DG, DC, RG, input.new_person.is_leading, input.team.members_count)
+  level = intensityLevel(TS)
+
+  CI = conflictIndex(TS, DC)
+
+  axis = axisLabel(domT, domP)
+  type = shiftType(domT, domP, DG, DC, TS, input.new_person.is_leading)
+
+  steer = steeringNeed(level, RG, input.levers, input.steering_override)
+  light = trafficLight(type, level)
+
+  return {
+    "dominance": { "team": domT, "person": domP, "role_soll": domS },
+    "scores": { "DG": DG, "DC": DC, "RG": RG, "TS": TS, "CI": CI },
+    "labels": {
+      "intensity_level": level,
+      "shift_type": type,
+      "steering_need": steer.final,
+      "traffic_light": light,
+      "shift_axis": axis
+    },
+    "lever_effects": {
+      "enabled_count": steer.enabled_count,
+      "steering_reduction_levels": steer.reduction_levels
+    }
+  }
+8) Wie du das in der KI nutzt (Clean Architecture)
+
+Empfehlung:
+
+Backend berechnet alles oben deterministisch.
+
+KI bekommt dann nur noch:
+
+Profile
+
+berechnete Labels/Scores
+
+tasks/kpi_focus
+
+levers enabled
+
+KI schreibt den Report — aber bewertet nicht mehr.
+
+Payload an die KI (minimal, sauber)
+{
+  "context": {
+    "team_name": "Team X",
+    "members_count": 10,
+    "tasks": ["..."],
+    "kpi_focus": ["..."]
+  },
+  "profiles": {
+    "team": { "impulsiv": 30, "intuitiv": 50, "analytisch": 20 },
+    "person": { "impulsiv": 34, "intuitiv": 23, "analytisch": 43 },
+    "role_soll": { "enabled": true, "impulsiv": 34, "intuitiv": 23, "analytisch": 43 }
+  },
+  "computed": {
+    "dominance_team": "INTUITIV",
+    "dominance_person": "ANALYTISCH",
+    "DG": 27.0,
+    "DC": 100,
+    "RG": 0.0,
+    "TS": 71,
+    "CI": 83,
+    "intensity_level": "HOCH",
+    "shift_type": "TRANSFORMATION",
+    "shift_axis": "Beziehung & Abstimmung → Struktur & Absicherung",
+    "steering_need": "MITTEL"
+  },
+  "levers": [
+    { "id": "timebox", "enabled": true },
+    { "id": "8020", "enabled": true },
+    { "id": "role_boundaries", "enabled": true }
+  ]
+}
