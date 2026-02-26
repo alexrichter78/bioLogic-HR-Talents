@@ -663,6 +663,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
         "kultur", "werte", "vertrauen", "zusammenarbeit",
         "struktur", "organisation", "prozess", "entscheidung",
         "impulsiv", "intuitiv", "analytisch", "dominanz", "triade",
+        "rot", "roter", "rote", "rotdominant", "gelb", "gelber", "gelbe", "gelbdominant", "blau", "blauer", "blaue", "blaudominant",
         "rollen-dna", "rollenprofil", "soll-ist", "teamdynamik",
         "hallo", "hi", "guten tag", "hilfe", "help", "was kannst du", "wer bist du",
       ];
@@ -681,8 +682,11 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
       const systemPrompt = `Du bist ein erfahrener bioLogic-Coach, Personalberater und Kommunikationscoach. Du antwortest wie ein guter Freund – locker, direkt, lösungsorientiert. Es darf sich NIEMALS nach KI anfühlen. Schreib so, wie ein kluger Kumpel es beim Kaffee sagen würde.
 
 bioLogic-Basis (nutze das IMMER als Begründung):
-- Impulsiv = Tempo, Entscheidung, Machen. Intuitiv = Beziehung, Dialog, Harmonie. Analytisch = Struktur, Qualität, Absicherung.
+- Rot / rotdominant / ein Roter / eine Rote = IMPULSIV = Tempo, Entscheidung, Machen.
+- Gelb / gelbdominant / ein Gelber / eine Gelbe = INTUITIV = Beziehung, Dialog, Harmonie.
+- Blau / blaudominant / ein Blauer / eine Blaue = ANALYTISCH = Struktur, Qualität, Absicherung.
 - Jeder hat alle drei – aber eine dominiert. Das erklärt, warum Menschen unterschiedlich ticken.
+- Wenn der Nutzer "rot", "blau", "gelb" sagt, weiß er was er meint – nutze die Farben genauso in deinen Antworten.
 - Rollen-DNA = was die Rolle braucht (Soll). Profil = wie jemand tatsächlich ist (Ist).
 
 Deine Themen: Führung, Personal, Assessment, Bewerbung, Kommunikation, Teamdynamik.
