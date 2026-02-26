@@ -447,7 +447,13 @@ export default function Bericht() {
     if (cached) {
       try {
         const parsed = JSON.parse(cached);
-        if (parsed.beruf === profileData.beruf && parsed.hash === JSON.stringify(profileData.gesamt)) {
+        const currentHash = JSON.stringify({
+          gesamt: profileData.gesamt, haupt: profileData.haupt, neben: profileData.neben,
+          fuehrung: profileData.fuehrung, rahmen: profileData.rahmen,
+          fuehrungstyp: profileData.fuehrungstyp, aufgabencharakter: profileData.aufgabencharakter,
+          arbeitslogik: profileData.arbeitslogik, erfolgsfokusIndices: profileData.erfolgsfokusIndices,
+        });
+        if (parsed.beruf === profileData.beruf && parsed.hash === currentHash) {
           setBericht(parsed.data);
           return;
         }
@@ -474,7 +480,13 @@ export default function Bericht() {
       });
       const data = await res.json();
       setBericht(data);
-      localStorage.setItem("berichtCache", JSON.stringify({ beruf: profileData.beruf, hash: JSON.stringify(profileData.gesamt), data }));
+      const saveHash = JSON.stringify({
+        gesamt: profileData.gesamt, haupt: profileData.haupt, neben: profileData.neben,
+        fuehrung: profileData.fuehrung, rahmen: profileData.rahmen,
+        fuehrungstyp: profileData.fuehrungstyp, aufgabencharakter: profileData.aufgabencharakter,
+        arbeitslogik: profileData.arbeitslogik, erfolgsfokusIndices: profileData.erfolgsfokusIndices,
+      });
+      localStorage.setItem("berichtCache", JSON.stringify({ beruf: profileData.beruf, hash: saveHash, data }));
     } catch (err: any) {
       setError("Der Bericht konnte nicht generiert werden. Bitte versuchen Sie es erneut.");
     } finally {
