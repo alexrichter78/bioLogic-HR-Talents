@@ -1,0 +1,88 @@
+1. Executive System Summary  
+Die neue Leitung übernimmt ein Team mit überwiegend beziehungs- und abstimmungsorientierter Arbeitslogik (intuitiv), während sie selbst eine analytische Steuerungslogik priorisiert. Die Führungsübernahme erzeugt eine Verschiebung von informeller Abstimmung hin zu strukturierter Absicherung. Der Systemspannungswert (TS) liegt bei 43 (Mittel), die aktuelle Intensität ist mittel. Dominanz Team: Intuitiv, Dominanz Führung: Analytisch, DG: 27, DC: 100, CI: 66.
+
+2. Profile im Überblick  
+- Team: 30% impulsiv, 50% intuitiv, 20% analytisch  
+- Neue Führung: 34% impulsiv, 23% intuitiv, 43% analytisch  
+- Soll (nicht definiert)
+
+3. Systemtyp & Verschiebungsachse  
+- Systemtyp: Reibung  
+- Verschiebungsachse: Beziehung & Abstimmung → Struktur & Absicherung
+
+4. Systemwirkung im Alltag  
+
+**Entscheidungen/Prioritäten:**  
+- Die neue Leitung setzt auf nachvollziehbare, datenbasierte Entscheidungskriterien. Dies reduziert spontane Anpassungen und erhöht Planbarkeit.  
+- Die Teamdynamik verschiebt sich von flexibler Priorisierung hin zu fester Zielorientierung, was Entscheidungswege verlängern kann.
+
+**Qualität:**  
+- Strukturiertes Vorgehen durch die neue Leitung fördert Fehlerreduktion und Nachvollziehbarkeit.  
+- Die Umstellung kann zu Unsicherheiten im Team führen, was die Ergebnisqualität in der Übergangsphase schwächt.
+
+**Tempo:**  
+- Das Tempo sinkt initial durch Abstimmungsaufwand und Einführung neuer Routinen.  
+- Mittelfristig entstehen Effizienzgewinne durch klare Prozesse und geringere Nachsteuerung.
+
+**Zusammenarbeit:**  
+- Die neue Leitung etabliert verbindliche Strukturen und Zuständigkeiten, wodurch informelle Abstimmung zurückgeht.  
+- Die Teamkohäsion kann kurzfristig abnehmen, da gewohnte Austauschformate reduziert werden.
+
+5. Aufgaben- & KPI-Impact  
+- Aufgaben mit hohem Abstimmungsbedarf werden stärker formalisiert und dokumentiert, was den Aufwand erhöht.  
+- KPI-orientierte Arbeit wird durch die neue Leitung forciert, was Transparenz und Nachvollziehbarkeit verbessert, jedoch zu Überforderung im Team führen kann.
+
+6. Konflikt- & Druckprognose  
+- Widerstände gegen neue Steuerungslogik sind wahrscheinlich, insbesondere bei informellen Entscheidungsträgern.  
+- Der Führungswechsel erhöht kurzfristig den emotionalen und kognitiven Druck im Team, was die Teamdynamik und Zielerreichung beeinträchtigen kann.
+
+7. Team-Reifegrad (5 Dimensionen)  
+- Eigenverantwortung: Mittel – Hohe Bereitschaft, aber Unsicherheit in neuen Strukturen.  
+- Anpassungsfähigkeit: Mittel – Flexibilität vorhanden, jedoch wenig Erfahrung mit formalen Abläufen.  
+- Ergebnisorientierung: Gering – Fokus lag bisher auf Prozess, nicht Ergebnis.  
+- Konfliktfähigkeit: Mittel – Diskussionsbereitschaft vorhanden, aber geringe Erfahrung mit offenen Rollenkonflikten.  
+- Steuerungsakzeptanz: Gering – Akzeptanz für formale Führung muss erst aufgebaut werden.
+
+8. Chancen  
+- Einführung klarer Prozesse erhöht Ergebnisdisziplin.  
+- KPI-basierte Steuerung verbessert Nachvollziehbarkeit von Entscheidungen.  
+- Professionalisierung reduziert Fehlerquellen und Doppelarbeit.  
+- Strategische Klarheit durch Fokussierung auf Zielerreichung.  
+- Rollenschärfung steigert Verantwortungsübernahme.  
+- Transparente Kommunikation fördert Vertrauen in Steuerungsprozesse.
+
+9. Risiken  
+- Akzeptanzverlust durch Abbau informeller Abstimmung, was die Umsetzungsgeschwindigkeit hemmt.  
+- Widerstand gegen neue Strukturen führt zu Reibungsverlusten und erhöhter Fluktuation.  
+- Übersteuerung durch zu starke Formalisierung kann Eigeninitiative dämpfen.  
+- Kulturbruch mit erhöhter Konfliktwahrscheinlichkeit senkt die Teamkohäsion.  
+- Qualitätseinbußen in der Übergangsphase durch Unsicherheiten bei neuen Prozessen.  
+- Führungsaufwand steigt, da Konflikte und Widerstände moderiert werden müssen.
+
+10. Führungshebel  
+- Einführung klarer Rollenbeschreibungen und Zuständigkeiten.  
+- Regelmäßige Statusmeetings zur Überwachung der KPI-Entwicklung.  
+- Dokumentation von Entscheidungswegen und Prozessen.  
+- Einrichtung eines Feedbackformats zur Identifikation von Widerständen.  
+- Stufenweise Einführung neuer Steuerungsinstrumente mit begleitender Kommunikation.  
+- Sichtbare Erfolge frühzeitig kommunizieren, um Akzeptanz zu fördern.
+
+11. Integrationsplan (30 Tage, 3 Phasen)  
+**Phase 1 (Woche 1–2):**  
+- Analyse der bestehenden Abstimmungs- und Entscheidungswege durch die neue Leitung.  
+- Vorstellung des Zielbilds und der geplanten Steuerungslogik.  
+**Phase 2 (Woche 3):**  
+- Einführung erster strukturierter Formate (z.B. Statusmeeting, KPI-Board).  
+- Rollenklarheit herstellen, Verantwortlichkeiten benennen.  
+**Phase 3 (Woche 4):**  
+- Gemeinsame Auswertung erster Erfahrungen und Anpassung der Prozesse.  
+- Feedbackrunde zur Akzeptanz und Identifikation von Unterstützungsbedarf.
+
+12. Messpunkte  
+- Teilnahmequote und Pünktlichkeit bei Regelmeetings.  
+- Vollständigkeit und Aktualität der Dokumentation von Aufgaben und Entscheidungen.  
+- Erreichung von Zwischenzielen gemäß KPI-Planung.  
+- Anzahl und Qualität eingebrachter Feedbacks zu neuen Prozessen.
+
+13. Gesamtbewertung  
+Der Führungswechsel bringt eine deutliche Verschiebung von informeller Abstimmung zu strukturierter Absicherung. Die neue Leitung erhöht die Ergebnisdisziplin und Transparenz, stößt jedoch auf Widerstände im Team. Die Umstellung erfordert erhöhten Führungsaufwand und birgt kurzfristig Risiken für Tempo, Qualität und Teamkohäsion. Mittelfristig bestehen Chancen auf nachhaltige Professionalisierung und Effizienzsteigerung. Eine gezielte Integration und fortlaufende Erfolgsmessung sind notwendig, um Akzeptanz und Leistungsfähigkeit zu sichern.
