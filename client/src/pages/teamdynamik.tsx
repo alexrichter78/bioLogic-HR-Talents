@@ -74,15 +74,24 @@ function SoftBar({ triad }: { triad: Triad }) {
   );
 }
 
-function MiniTriadBar({ triad }: { triad: Triad }) {
+function TriadSlider({ label, value, color, onChange }: { label: string; value: number; color: string; onChange: (v: number) => void }) {
   return (
-    <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
-      {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => (
-        <div key={k} style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <div style={{ width: 20, height: 8, borderRadius: 4, background: colorFor(k) }} />
-          <span style={{ fontSize: 10, fontWeight: 600, color: colorFor(k) }}>{triad[k]}%</span>
-        </div>
-      ))}
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span style={{ fontSize: 13, fontWeight: 600, color: "#3A3A3C" }}>{label}</span>
+        <span style={{ fontSize: 14, fontWeight: 700, color, fontVariantNumeric: "tabular-nums" }}>{value} %</span>
+      </div>
+      <input
+        type="range" min={0} max={80} value={value}
+        onChange={e => onChange(Number(e.target.value))}
+        data-testid={`slider-${label.toLowerCase()}`}
+        style={{
+          width: "100%", height: 6, borderRadius: 3,
+          appearance: "none", WebkitAppearance: "none",
+          background: `linear-gradient(to right, ${color} ${value}%, rgba(0,0,0,0.06) ${value}%)`,
+          outline: "none", cursor: "pointer",
+        }}
+      />
     </div>
   );
 }
@@ -98,19 +107,10 @@ function TriadSliders({ triad, onChange }: { triad: Triad; onChange: (t: Triad) 
     onChange({ ...triad, [key]: rawVal, [others[0]]: v0, [others[1]]: v1 });
   };
   return (
-    <div>
-      {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => (
-        <div key={k} style={{ marginBottom: 8 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 2 }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: colorFor(k) }}>{labelComponent(k)}</span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: colorFor(k) }}>{triad[k]}%</span>
-          </div>
-          <input type="range" min={0} max={80} value={triad[k]}
-            onChange={e => handleChange(k, +e.target.value)}
-            data-testid={`slider-${k}`}
-            style={{ width: "100%", accentColor: colorFor(k), height: 4 }} />
-        </div>
-      ))}
+    <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "18px 20px", borderRadius: 18, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
+      <TriadSlider label="Impulsiv" value={triad.impulsiv} color={COLORS.imp} onChange={v => handleChange("impulsiv", v)} />
+      <TriadSlider label="Intuitiv" value={triad.intuitiv} color={COLORS.int} onChange={v => handleChange("intuitiv", v)} />
+      <TriadSlider label="Analytisch" value={triad.analytisch} color={COLORS.ana} onChange={v => handleChange("analytisch", v)} />
     </div>
   );
 }
@@ -359,24 +359,24 @@ export default function Teamdynamik() {
             <h1 style={{ fontSize: 24, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">Teamanalyse</h1>
           </div>
 
-          <div style={{ display: "flex", gap: 20, marginBottom: 24, flexWrap: "wrap" }}>
-            <div style={{ flex: 1, minWidth: 260 }}>
-              <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 14px" }}>{isLeading ? "Neue Führungskraft" : "Neues Teammitglied"}</p>
-              <SoftBar triad={personProfile} />
-              <MiniTriadBar triad={personProfile} />
+          <div style={{ display: "flex", gap: 24, marginBottom: 24, flexWrap: "wrap" }}>
+            <div style={{ flex: 1, minWidth: 280 }}>
+              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }} data-testid="label-person">{isLeading ? "Neue Führungskraft" : "Neues Teammitglied"}</p>
+              <TriadSliders triad={personProfile} onChange={setPersonProfile} />
               <div style={{ marginTop: 14 }}>
-                <TriadSliders triad={personProfile} onChange={setPersonProfile} />
+                <SoftBar triad={personProfile} />
+                <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Normalisiertes Profil (Summe = 100 %)</p>
               </div>
             </div>
 
-            <div style={{ width: 1, background: "rgba(0,0,0,0.06)", margin: "0 4px", alignSelf: "stretch" }} />
+            <div style={{ width: 1, background: "rgba(0,0,0,0.06)", alignSelf: "stretch" }} />
 
-            <div style={{ flex: 1, minWidth: 260 }}>
-              <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 14px" }}>Teamauswertung</p>
-              <SoftBar triad={teamProfile} />
-              <MiniTriadBar triad={teamProfile} />
+            <div style={{ flex: 1, minWidth: 280 }}>
+              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>Teamauswertung</p>
+              <TriadSliders triad={teamProfile} onChange={setTeamProfile} />
               <div style={{ marginTop: 14 }}>
-                <TriadSliders triad={teamProfile} onChange={setTeamProfile} />
+                <SoftBar triad={teamProfile} />
+                <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Normalisiertes Profil (Summe = 100 %)</p>
               </div>
             </div>
           </div>
@@ -543,11 +543,8 @@ export default function Teamdynamik() {
 
       <style>{`
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        input[type="range"] { -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer; }
-        input[type="range"]::-webkit-slider-track { height: 4px; border-radius: 2px; background: rgba(0,0,0,0.06); }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 2px solid rgba(0,0,0,0.15); box-shadow: 0 1px 4px rgba(0,0,0,0.12); margin-top: -6px; }
-        input[type="range"]::-moz-range-track { height: 4px; border-radius: 2px; background: rgba(0,0,0,0.06); border: none; }
-        input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 2px solid rgba(0,0,0,0.15); box-shadow: 0 1px 4px rgba(0,0,0,0.12); }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid rgba(0,0,0,0.12); box-shadow: 0 1px 6px rgba(0,0,0,0.15); margin-top: -6px; cursor: pointer; }
+        input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid rgba(0,0,0,0.12); box-shadow: 0 1px 6px rgba(0,0,0,0.15); cursor: pointer; }
         @media print {
           nav, [data-testid="tab-analyse"], [data-testid="button-generate-report"] { display: none !important; }
           main { padding: 0 !important; max-width: 100% !important; }
