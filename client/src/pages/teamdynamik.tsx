@@ -441,7 +441,7 @@ export default function Teamdynamik() {
             </div>
             {(() => {
               const tlKey = result.trafficLight;
-              const detail = {
+              const detailFuehrung: Record<TrafficLight, { title: string; desc: string; label: string; bullets: string[]; recLabel: string; rec: string }> = {
                 RED: {
                   title: "Starke Veränderung im Team",
                   desc: "Die neue Führung verändert die bisherige Arbeitsweise deutlich.\nEntscheidungen, Prioritäten und Qualitätsmaßstäbe werden anders gesetzt als bisher.",
@@ -479,7 +479,46 @@ export default function Teamdynamik() {
                   recLabel: "Ausreichend:",
                   rec: "Normale Führung und regelmäßige Abstimmung.",
                 },
-              }[tlKey];
+              };
+              const detailTeammitglied: Record<TrafficLight, { title: string; desc: string; label: string; bullets: string[]; recLabel: string; rec: string }> = {
+                RED: {
+                  title: "Deutliche Spannungen – klare Führung notwendig",
+                  desc: "Arbeitslogiken unterscheiden sich stark.\nOhne Führung entstehen Leistungs- und Konfliktrisiken.",
+                  label: "Was bedeutet das konkret?",
+                  bullets: [
+                    "Kurzfristig mehr Diskussionen über Detailtiefe und Begründungen",
+                    "Das Team testet, ob die neue Arbeitsweise mitläuft oder aktiv einfordert",
+                    "Risiko: stille Abgrenzung, wenn Erwartungen nicht geklärt sind",
+                  ],
+                  recLabel: "Notwendig:",
+                  rec: "Klare Standards, feste Entscheidungsregeln und regelmäßige Reviews.",
+                },
+                YELLOW: {
+                  title: "Unterschiedliche Arbeitsweisen – aktiv steuern",
+                  desc: "Unterschiede sind spürbar.\nMit klaren Regeln bleibt das System stabil steuerbar.",
+                  label: "Was bedeutet das konkret?",
+                  bullets: [
+                    "Mehr Abstimmung notwendig",
+                    "Entscheidungen dauern teilweise länger",
+                    "Prioritäten müssen klar kommuniziert werden",
+                  ],
+                  recLabel: "Empfehlung:",
+                  rec: "Entscheidungswege, Zeitfenster und Prioritäten transparent setzen.",
+                },
+                GREEN: {
+                  title: "Stabil – passt gut zusammen",
+                  desc: "Arbeitsweisen sind kompatibel.\nKeine besonderen Maßnahmen notwendig.",
+                  label: "Was bedeutet das konkret?",
+                  bullets: [
+                    "Entscheidungen werden verstanden",
+                    "Prioritäten sind klar",
+                    "Zusammenarbeit ist stabil",
+                  ],
+                  recLabel: "Ausreichend:",
+                  rec: "Normale Führung und regelmäßige Abstimmung.",
+                },
+              };
+              const detail = (isLeading ? detailFuehrung : detailTeammitglied)[tlKey];
               return (
                 <div style={{ padding: "14px 16px", borderRadius: 14, background: tl.bg, border: `1px solid ${tl.fill}20`, marginTop: 12 }} data-testid="detail-block">
                   <p style={{ fontSize: 14, fontWeight: 700, color: tl.fill, margin: "0 0 6px" }}>{detail.title}</p>

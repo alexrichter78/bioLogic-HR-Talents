@@ -1,0 +1,876 @@
+<!--
+TEAMREPORT – bioLogic (voll deterministisch, ohne KI)
+Einfach als index.html in Replit/Hosting legen.
+
+Was enthalten ist:
+- Eingabe: Teamprofil + Personenprofil (+ Führungsrolle optional)
+- Deterministische Berechnung: Dominanz, 2.-Komponente, 13 Varianten, DG/DC/TS/CI, Ampel (Grün/Gelb/Rot)
+- Feste Textstruktur pro Ampel + Variante (keine freien KI-Texte)
+- Report-Output (read-only), Copy-Button
+
+Hinweis:
+- "13 Möglichkeiten" werden hier fest codiert über: SollDom = Team-Dominanz, IstPair = Person (Primär+Sekundär)
+- MIX (Gleichstand) = Variante 13
+-->
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>bioLogic Teamreport</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --card:#0f1620;
+      --card2:#0e141d;
+      --text:#e8eef6;
+      --muted:#9fb0c3;
+      --line:rgba(255,255,255,.08);
+      --green:#2ecc71;
+      --yellow:#f1c40f;
+      --red:#e74c3c;
+      --accent:#6aa7ff;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background: radial-gradient(1200px 800px at 20% -10%, rgba(106,167,255,.18), transparent 55%),
+                  radial-gradient(900px 600px at 90% 0%, rgba(46,204,113,.12), transparent 45%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.35;
+    }
+    .wrap{max-width:1100px;margin:28px auto;padding:0 16px 60px}
+    header{
+      display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+      margin-bottom:18px;
+    }
+    .title h1{margin:0;font-size:28px;letter-spacing:.2px}
+    .title p{margin:6px 0 0;color:var(--muted);max-width:720px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    button{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      transition:.15s ease;
+    }
+    button:hover{transform:translateY(-1px);background:rgba(255,255,255,.06)}
+    button.primary{
+      border-color:rgba(106,167,255,.35);
+      background:rgba(106,167,255,.14);
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:14px;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:16px 16px 10px;
+      border-bottom:1px solid var(--line);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+    }
+    .card .hd h2{margin:0;font-size:16px;color:#dbe7f6;font-weight:650}
+    .card .bd{padding:16px}
+    .subtle{color:var(--muted);font-size:13px}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .pill{
+      font-size:12px;
+      color:#d8e7ff;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(106,167,255,.22);
+      background:rgba(106,167,255,.10);
+      white-space:nowrap;
+    }
+    .kpi{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap:10px;
+      margin-top:14px;
+    }
+    @media (max-width: 700px){
+      .kpi{grid-template-columns:1fr}
+    }
+    .kpi .box{
+      padding:12px 12px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:rgba(0,0,0,.12);
+    }
+    .kpi .box .lbl{color:var(--muted);font-size:12px}
+    .kpi .box .val{margin-top:6px;font-size:15px;font-weight:650}
+    .kpi .box .mini{margin-top:4px;color:var(--muted);font-size:12px}
+
+    /* Slider blocks */
+    .profile{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+    }
+    .field{
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:rgba(0,0,0,.14);
+    }
+    .field .top{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      margin-bottom:8px;
+    }
+    .field .name{font-weight:650}
+    .field .num{
+      display:flex;align-items:center;gap:8px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    input[type="range"]{width:100%}
+    .sumline{
+      display:flex;justify-content:space-between;align-items:center;gap:10px;
+      margin-top:10px;
+      padding-top:10px;
+      border-top:1px solid var(--line);
+      color:var(--muted);
+      font-size:13px;
+    }
+    .toggle{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 12px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:rgba(0,0,0,.14);
+      margin-top:10px;
+    }
+    .toggle input{transform:scale(1.1)}
+    .badge{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.14);
+      width:100%;
+    }
+    .dot{
+      width:12px;height:12px;border-radius:999px;
+      background:var(--yellow);
+      box-shadow:0 0 0 4px rgba(241,196,15,.15);
+      flex:none;
+    }
+    .badge .btitle{font-weight:700}
+    .badge .bdesc{color:var(--muted);font-size:13px;margin-top:2px}
+
+    /* Report */
+    .report{
+      white-space:pre-wrap;
+      font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      font-size:14px;
+      color:#eaf2ff;
+    }
+    .report h3{
+      margin:18px 0 8px;
+      font-size:15px;
+      color:#dbe7f6;
+      letter-spacing:.1px;
+    }
+    .report .sec{
+      padding:10px 0;
+      border-bottom:1px dashed rgba(255,255,255,.10);
+    }
+    .mutedline{color:var(--muted);font-size:12px;margin-top:6px}
+    .small{font-size:12px;color:var(--muted)}
+    .divider{height:1px;background:var(--line);margin:10px 0}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="title">
+      <h1>Teamreport</h1>
+      <p>Ein read-only Report: Inhalte ändern sich nur, wenn Teamprofil oder Personenprofil geändert wird. Keine Bearbeitung im Report.</p>
+      <div class="row" style="margin-top:10px">
+        <span class="pill" id="contextPill">Kontext: Marketingteam · Rolle: Marketingleitung</span>
+        <span class="pill" id="variantPill">Systemmuster: —</span>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="primary" id="btnCopy">Report kopieren</button>
+      <button id="btnReset">Zurücksetzen</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- LEFT: Inputs + Status -->
+    <div class="card">
+      <div class="hd">
+        <h2>Profileingabe</h2>
+        <span class="subtle">Schiebe Werte – Report aktualisiert automatisch.</span>
+      </div>
+      <div class="bd">
+
+        <div class="row" style="margin-bottom:12px">
+          <div style="flex:1;min-width:260px" class="badge" id="statusBadge">
+            <div class="dot" id="statusDot"></div>
+            <div>
+              <div class="btitle" id="statusTitle">—</div>
+              <div class="bdesc" id="statusDesc">—</div>
+              <div class="mutedline" id="statusHint">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div class="box">
+            <div class="lbl">Veränderung im Team</div>
+            <div class="val" id="kpiChange">—</div>
+            <div class="mini" id="kpiChangeMini">TS: —</div>
+          </div>
+          <div class="box">
+            <div class="lbl">Art der Dynamik</div>
+            <div class="val" id="kpiType">—</div>
+            <div class="mini" id="kpiAxis">—</div>
+          </div>
+          <div class="box">
+            <div class="lbl">Erforderliche Führung</div>
+            <div class="val" id="kpiSteer">—</div>
+            <div class="mini" id="kpiSteerMini">—</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <div class="subtle" style="margin-bottom:10px;font-weight:650;color:#dbe7f6">Teamprofil</div>
+            <div class="profile" id="teamProfile"></div>
+            <div class="sumline">
+              <span id="teamSum">Summe: 100%</span>
+              <span id="teamDom" class="small">Dominanz: —</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="subtle" style="margin-bottom:10px;font-weight:650;color:#dbe7f6">Neue Person</div>
+            <div class="profile" id="personProfile"></div>
+            <div class="sumline">
+              <span id="personSum">Summe: 100%</span>
+              <span id="personDom" class="small">Dominanz: —</span>
+            </div>
+
+            <div class="toggle">
+              <input type="checkbox" id="isLeading" />
+              <label for="isLeading"><strong>Führungsrolle</strong> <span class="subtle">(Marketingleitung)</span></label>
+            </div>
+          </div>
+        </div>
+
+        <p class="small" style="margin:12px 0 0">
+          Hinweis: Werte werden automatisch auf 100% normalisiert (damit die Seite nicht „technisch“ wirkt).
+        </p>
+      </div>
+    </div>
+
+    <!-- RIGHT: Report -->
+    <div class="card">
+      <div class="hd">
+        <h2>Report</h2>
+        <span class="subtle">Read-only</span>
+      </div>
+      <div class="bd">
+        <div class="report" id="reportOut"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===========================
+   1) Utilities
+=========================== */
+
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const round0 = (v) => Math.round(v);
+const round1 = (v) => Math.round(v * 10) / 10;
+
+function normalizeProfile(p){
+  // p: {impulsiv,intuitiv,analytisch}
+  let s = p.impulsiv + p.intuitiv + p.analytisch;
+  if (s === 0) return {impulsiv:34, intuitiv:33, analytisch:33};
+  return {
+    impulsiv: round0(p.impulsiv / s * 100),
+    intuitiv: round0(p.intuitiv / s * 100),
+    analytisch: round0(p.analytisch / s * 100),
+  };
+}
+
+function fixTo100(p){
+  // after rounding, enforce sum=100 by adjusting the max component
+  let s = p.impulsiv + p.intuitiv + p.analytisch;
+  let d = 100 - s;
+  if (d === 0) return p;
+  // adjust the currently largest component
+  const entries = [
+    ["impulsiv", p.impulsiv],
+    ["intuitiv", p.intuitiv],
+    ["analytisch", p.analytisch],
+  ].sort((a,b)=>b[1]-a[1]);
+  const k = entries[0][0];
+  p[k] = clamp(p[k] + d, 0, 100);
+  return p;
+}
+
+function dominanceAndSecond(p){
+  // returns {dom, second, isMix, ordered: [primary, secondary]}
+  const arr = [
+    ["IMPULSIV", p.impulsiv],
+    ["INTUITIV", p.intuitiv],
+    ["ANALYTISCH", p.analytisch]
+  ].sort((a,b)=>b[1]-a[1]);
+
+  const maxVal = arr[0][1];
+  const winners = arr.filter(x => x[1] === maxVal).map(x => x[0]);
+  const isMix = winners.length >= 2;
+
+  if (isMix){
+    // MIX: primary MIX, secondary = the remaining or MIX
+    // choose secondary as the one with smallest value (contrast) to describe tension potential
+    const min = arr[arr.length-1][0];
+    return { dom:"MIX", second:min, isMix:true, ordered:["MIX", min] };
+  }
+  return { dom:arr[0][0], second:arr[1][0], isMix:false, ordered:[arr[0][0], arr[1][0]] };
+}
+
+function distributionGap(team, person){
+  const s = Math.abs(team.impulsiv - person.impulsiv)
+          + Math.abs(team.intuitiv - person.intuitiv)
+          + Math.abs(team.analytisch - person.analytisch);
+  return round1(s / 2.0); // 0..100
+}
+
+function dominanceClash(domTeam, domPerson){
+  if (domTeam === domPerson && domTeam !== "MIX") return 0;
+  if (domTeam === "MIX" || domPerson === "MIX") return 50;
+  return 100;
+}
+
+function leadershipFactor(isLeading){ return isLeading ? 15 : 0; }
+function scaleFactor(n){
+  if (n < 6) return 0;
+  if (n < 12) return 5;
+  return 10;
+}
+
+function transformationScore({DG, DC, isLeading, teamSize}){
+  // NO Soll in this page. SollDom is implicitly team dominance.
+  const LF = leadershipFactor(isLeading);
+  const SF = scaleFactor(teamSize);
+  const TS = 0.55*DG + 0.25*DC + 0.17*LF + 0.03*SF;
+  return round0(clamp(TS, 0, 100));
+}
+
+function intensityLevel(TS){
+  if (TS <= 33) return "NIEDRIG";
+  if (TS <= 66) return "MITTEL";
+  return "HOCH";
+}
+
+function conflictIndex(TS, DC){
+  const CI = 0.6*TS + 0.4*DC;
+  return round0(clamp(CI, 0, 100));
+}
+
+function axisLabel(fromDom, toDom){
+  const map = {
+    "IMPULSIV": "Tempo & Entscheidung",
+    "INTUITIV": "Beziehung & Abstimmung",
+    "ANALYTISCH": "Struktur & Absicherung",
+    "MIX": "Hybrid"
+  };
+  if (fromDom === toDom && fromDom !== "MIX") return "Keine dominante Verschiebung";
+  if (fromDom === "MIX" || toDom === "MIX") return "Hybrid-Verschiebung";
+  return `${map[fromDom]} → ${map[toDom]}`;
+}
+
+function shiftType({domTeam, domPerson, DG, DC, TS, isLeading}){
+  const lvl = intensityLevel(TS);
+
+  if (DC === 0){
+    if (DG < 20) return "VERSTÄRKUNG";
+    return "ERGÄNZUNG";
+  }
+  if (domTeam === "MIX" || domPerson === "MIX"){
+    if (lvl === "NIEDRIG") return "ERGÄNZUNG";
+    if (lvl === "MITTEL") return "REIBUNG";
+    return isLeading ? "TRANSFORMATION" : "SPANNUNG";
+  }
+
+  if (lvl === "NIEDRIG") return "ERGÄNZUNG";
+  if (lvl === "MITTEL") return "REIBUNG";
+  return isLeading ? "TRANSFORMATION" : "SPANNUNG";
+}
+
+function leverReductionLevels(enabledCount){
+  if (enabledCount >= 4) return 2;
+  if (enabledCount >= 2) return 1;
+  return 0;
+}
+
+function applyLevelReduction(level, red){
+  const order = ["NIEDRIG","MITTEL","HOCH"];
+  let idx = order.indexOf(level);
+  idx = clamp(idx - red, 0, 2);
+  return order[idx];
+}
+
+function trafficLight(shiftType, intensity){
+  if (shiftType === "TRANSFORMATION" || shiftType === "SPANNUNG") return "RED";
+  if (intensity === "MITTEL") return "YELLOW";
+  return "GREEN";
+}
+
+/* ===========================
+   2) 13 Varianten (fest codiert)
+   Logik: SollDom = Team-Dominanz (A/I/P)
+          IstPair = Person (primary + secondary)
+   MIX => Variante 13
+=========================== */
+
+function variantId(teamDom, personPrimary, personSecondary){
+  if (teamDom === "MIX" || personPrimary === "MIX") return 13;
+
+  // Map A/I/P to letters for readability
+  const T = teamDom; // "ANALYTISCH" | "INTUITIV" | "IMPULSIV"
+  const P1 = personPrimary;
+  const P2 = personSecondary;
+
+  // Use the same 1..12 grouping idea:
+  // Group by TeamDom as "Soll":
+  // A: 1..4, I: 5..8, P: 9..12
+  // 13: MIX
+  const pair = `${P1}/${P2}`;
+
+  if (T === "ANALYTISCH"){
+    if (P1 === "ANALYTISCH") return (P2 === "INTUITIV") ? 2 : (P2 === "IMPULSIV" ? 3 : 1);
+    if (P1 === "INTUITIV" && P2 === "IMPULSIV") return 4;
+    if (P1 === "IMPULSIV" && P2 === "INTUITIV") return 4; // both mean "A fehlt"
+    return 4;
+  }
+
+  if (T === "INTUITIV"){
+    if (P1 === "INTUITIV") return (P2 === "ANALYTISCH") ? 6 : (P2 === "IMPULSIV" ? 7 : 5);
+    if (P1 === "ANALYTISCH" && P2 === "IMPULSIV") return 8;
+    if (P1 === "IMPULSIV" && P2 === "ANALYTISCH") return 8;
+    return 8;
+  }
+
+  // T === "IMPULSIV"
+  if (P1 === "IMPULSIV") return (P2 === "ANALYTISCH") ? 10 : (P2 === "INTUITIV" ? 11 : 9);
+  if (P1 === "ANALYTISCH" && P2 === "INTUITIV") return 12;
+  if (P1 === "INTUITIV" && P2 === "ANALYTISCH") return 12;
+  return 12;
+}
+
+const VARIANT_LABELS = {
+  1:  { title:"Struktur passt zu Struktur", brief:"Hohe Stabilität, geringe Reibung." },
+  2:  { title:"Struktur + Abstimmung", brief:"Stabil, ergänzt durch Teamgefühl und Abstimmung." },
+  3:  { title:"Struktur + Tempo", brief:"Qualität bleibt, Dynamik steigt." },
+  4:  { title:"Struktur fehlt im Muster", brief:"Absicherung ist nicht automatisch vorhanden – klare Leitplanken nötig." },
+  5:  { title:"Abstimmung passt zu Abstimmung", brief:"Harmonie hoch, Risiko fehlender Klarheit." },
+  6:  { title:"Abstimmung + Struktur", brief:"Konsens bleibt, Entscheidungen werden belastbarer." },
+  7:  { title:"Abstimmung + Tempo", brief:"Kommunikativ, dynamisch – klare Prioritäten wichtig." },
+  8:  { title:"Struktur/Tempo trifft auf Konsens", brief:"Spannung im Entscheidungsrhythmus möglich." },
+  9:  { title:"Tempo passt zu Tempo", brief:"Sehr dynamisch, Konfliktrisiko steigt bei fehlenden Regeln." },
+ 10:  { title:"Tempo + Struktur", brief:"Leistungsstark, aber fordernd – saubere Standards helfen." },
+ 11:  { title:"Tempo + Abstimmung", brief:"Energiegeladen, kommunikativ – Gefahr von Unklarheit ohne Rahmen." },
+ 12:  { title:"Struktur/Abstimmung trifft auf Tempo", brief:"Bremswirkung möglich – Erwartungen sauber ausrichten." },
+ 13:  { title:"Hybrid / keine klare Dominanz", brief:"Wirkung situationsabhängig – klare Regeln entscheidend." }
+};
+
+/* ===========================
+   3) Ampel-Textlogik (fest codiert)
+   Output ist 100% Klartext.
+=========================== */
+
+function ampelPack(light){
+  if (light === "GREEN"){
+    return {
+      dot:"var(--green)",
+      glow:"rgba(46,204,113,.16)",
+      title:"Stabil – passt gut zusammen",
+      desc:"Arbeitsweisen sind kompatibel. Keine besonderen Maßnahmen notwendig.",
+      hint:"Normale Führung reicht aus. Fokus auf Routine und saubere Abstimmung."
+    };
+  }
+  if (light === "YELLOW"){
+    return {
+      dot:"var(--yellow)",
+      glow:"rgba(241,196,15,.18)",
+      title:"Unterschiedliche Arbeitsweisen – aktiv führen",
+      desc:"Unterschiede sind spürbar. Mit klaren Regeln bleibt das System stabil steuerbar.",
+      hint:"Empfehlung: Entscheidungswege, Zeitfenster und Prioritäten transparent setzen."
+    };
+  }
+  return {
+    dot:"var(--red)",
+    glow:"rgba(231,76,60,.18)",
+    title:"Deutliche Spannungen – klare Führung notwendig",
+    desc:"Arbeitslogiken unterscheiden sich stark. Ohne Führung entstehen Leistungs- und Konfliktrisiken.",
+    hint:"Notwendig: klare Standards, feste Entscheidungsregeln und regelmäßige Reviews."
+  };
+}
+
+function readableLevel(level){
+  if (level === "NIEDRIG") return "Gering";
+  if (level === "MITTEL") return "Mittel";
+  return "Hoch";
+}
+
+function readableType(type){
+  // No jargon in UI — translate to business words
+  const map = {
+    "VERSTÄRKUNG":"Passung (stabil)",
+    "ERGÄNZUNG":"Ergänzung (stabilisierend)",
+    "REIBUNG":"Unterschiede (mehr Abstimmung)",
+    "SPANNUNG":"Spannung (Risiko ohne Führung)",
+    "TRANSFORMATION":"Starke Veränderung (Führung nötig)"
+  };
+  return map[type] || type;
+}
+
+/* ===========================
+   4) Report Generator (fest codiert)
+   Kein KI-Text. Nur Templates + Kontext.
+=========================== */
+
+function reportText(ctx){
+  const {
+    contextTeam, contextRole,
+    team, person, isLeading,
+    domTeam, domPerson, secondPerson,
+    DG, DC, TS, CI, intensity, type, axis, light,
+    variant
+  } = ctx;
+
+  // context sentences for marketing leadership
+  const marketingTasks = [
+    "Kampagnenplanung und Priorisierung",
+    "Budget- und Ressourcenentscheidungen",
+    "Performance-Reporting (KPIs, Lernschleifen, Optimierung)",
+    "Abstimmung mit Vertrieb/Geschäftsführung",
+    "Führung von Kreativ- und Performance-Routinen"
+  ];
+
+  // Deterministic per-variant nuance (small)
+  const nuance = (() => {
+    const v = variant.id;
+    if ([1,2,3,6,10].includes(v)) return "Die Konstellation liefert strukturelle Stabilität und erhöht die Verlässlichkeit im Tagesgeschäft.";
+    if ([5,7,11].includes(v)) return "Das System ist stark auf Abstimmung und Dynamik ausgelegt. Klare Prioritäten verhindern Verzettelung.";
+    if ([4,8,12,13,9].includes(v)) return "Ohne klare Leitplanken steigt die Wahrscheinlichkeit für Missverständnisse, Reibung oder Tempo-/Qualitätskonflikte.";
+    return "";
+  })();
+
+  // Ampel dependent leadership guidance
+  const steeringGuidance = (() => {
+    if (light === "GREEN"){
+      return [
+        "Normale Abstimmung reicht aus (Weekly/bi-weekly).",
+        "Ziele und KPIs klar halten, aber nicht übersteuern.",
+        "Kreativ- und Performance-Arbeit sauber trennen (Rhythmus)."
+      ];
+    }
+    if (light === "YELLOW"){
+      return [
+        "Entscheidungszeitfenster definieren (z.B. 24–48h für Freigaben).",
+        "80/20-Qualitätsstandard festlegen (was muss perfekt sein, was reicht).",
+        "Wöchentlicher Priorisierungsreview (wenige klare Prioritäten).",
+      ];
+    }
+    return [
+      "Feste Entscheidungsarchitektur (wer entscheidet was, bis wann, nach welchen Kriterien).",
+      "Verbindliche Standards für Reporting, Qualität und Freigaben.",
+      "Regelmäßige Reviews + klare Eskalationswege (kein Interpretationsspielraum)."
+    ];
+  })();
+
+  // Conflict + pressure deterministic predictions
+  const pressure = (() => {
+    if (!isLeading){
+      return [
+        "Kurzfristig mehr Diskussionen über Detailtiefe und Begründungen.",
+        "Das Team testet, ob die neue Arbeitsweise „mitläuft“ oder aktiv einfordert.",
+        "Risiko: stille Abgrenzung, wenn Erwartungen nicht geklärt sind."
+      ];
+    }
+    return [
+      "Unter Zeitdruck steigt der Wunsch nach klaren Entscheidungen und Standards.",
+      "Ohne Zeitfenster drohen Verzögerungen durch zusätzliche Prüfungsschleifen.",
+      "Bei Kritik wirkt sachliches Feedback korrekt – muss aber im Team gut „angedockt“ werden."
+    ];
+  })();
+
+  // Report sections (fixed)
+  const lines = [];
+  const H3 = (t)=>lines.push(`\n### ${t}\n`);
+  const BL = (arr)=>arr.forEach(x=>lines.push(`- ${x}`));
+
+  // Header
+  lines.push(`# TEAMREPORT\n## ${contextTeam} – Integration ${contextRole}\n`);
+
+  H3("1. Executive System Summary");
+  lines.push(`**Systemstatus (Ampel):** ${light === "GREEN" ? "Grün" : (light === "YELLOW" ? "Gelb" : "Rot")}\n`);
+  lines.push(`**Veränderung im Team:** ${readableLevel(intensity)} (Score ${TS}/100)\n`);
+  lines.push(`**Art der Dynamik:** ${readableType(type)}\n`);
+  lines.push(`**Achse:** ${axis}\n`);
+  lines.push(`**Konfliktindex:** ${CI}/100\n`);
+  lines.push(`\n**Kurz erklärt:** ${ampelPack(light).desc}\n`);
+  if (nuance) lines.push(`\n${nuance}\n`);
+
+  H3("2. Profile im Überblick");
+  lines.push(`**Teamprofil:** Impulsiv ${team.impulsiv}% · Intuitiv ${team.intuitiv}% · Analytisch ${team.analytisch}% (Dominanz: ${domTeam})\n`);
+  lines.push(`**Neue Person:** Impulsiv ${person.impulsiv}% · Intuitiv ${person.intuitiv}% · Analytisch ${person.analytisch}% (Dominanz: ${domPerson})\n`);
+  lines.push(`**Rollenbezug:** ${isLeading ? "Führungsrolle (Marketingleitung)" : "Teammitglied (ohne Führungsmandat)"}\n`);
+  lines.push(`\n**Systemmuster (bioLogic):** Variante ${variant.id}/13 – ${variant.title}\n`);
+  lines.push(`${variant.brief}\n`);
+
+  H3("3. Systemtyp & Verschiebungsachse");
+  lines.push(`Die neue Arbeitsweise verschiebt den Teamalltag entlang der Achse „${axis}“.\n`);
+  if (light === "GREEN"){
+    BL([
+      "Unterschiede sind gering oder konstruktiv ergänzend.",
+      "Entscheidungen werden schnell verstanden und akzeptiert."
+    ]);
+  } else if (light === "YELLOW"){
+    BL([
+      "Unterschiede sind spürbar – Abstimmung steigt.",
+      "Prioritäten und Entscheidungskriterien müssen aktiv erklärt werden."
+    ]);
+  } else {
+    BL([
+      "Unterschiede sind stark – ohne klare Führung entstehen Leistungsrisiken.",
+      "Einheitliche Standards sind zwingend, sonst driftet das System auseinander."
+    ]);
+  }
+
+  H3("4. Systemwirkung im Alltag");
+  lines.push(`**Entscheidungen & Prioritäten**\n`);
+  BL([
+    (light === "GREEN") ? "Entscheidungen werden schnell eingeordnet; Prioritäten bleiben stabil."
+      : (light === "YELLOW") ? "Entscheidungen benötigen mehr Begründung; Prioritäten müssen häufiger geklärt werden."
+      : "Entscheidungen werden unterschiedlich interpretiert; Prioritätenkonflikte sind wahrscheinlich."
+  ]);
+  lines.push(`\n**Qualität & Ergebnisorientierung**\n`);
+  BL([
+    (domPerson === "ANALYTISCH") ? "Qualitäts- und Prüfgedanke nimmt zu; Ergebnisse werden belastbarer."
+      : (domPerson === "IMPULSIV") ? "Tempo und Umsetzungsdruck nehmen zu; Qualitätsrahmen muss klar sein."
+      : "Abstimmung und Teamgefühl stabilisieren die Zusammenarbeit; Standards müssen trotzdem klar bleiben."
+  ]);
+  lines.push(`\n**Tempo & Umsetzung**\n`);
+  BL([
+    (light === "GREEN") ? "Umsetzung bleibt flüssig; geringe Zusatzschleifen."
+      : (light === "YELLOW") ? "Kurzfristig mehr Schleifen; danach planbarer."
+      : "Ohne Zeitfenster drohen Verzögerungen oder Gegenbewegungen im Team."
+  ]);
+  lines.push(`\n**Zusammenarbeit & Stimmung**\n`);
+  BL([
+    (light === "GREEN") ? "Geringe Irritation; Rollen greifen gut ineinander."
+      : (light === "YELLOW") ? "Missverständnisse möglich – klare Kommunikation reduziert Reibung."
+      : "Rückzug, Widerstand oder Lagerbildung möglich, wenn Erwartungen nicht geklärt sind."
+  ]);
+
+  H3("5. Aufgaben- & KPI-Impact (Marketing)");
+  lines.push(`Diese Rolle beeinflusst direkt typische Marketing-Kernaufgaben:\n`);
+  BL(marketingTasks.map(t => t));
+  lines.push(`\n**Erwartete Wirkung:**\n`);
+  if (domPerson === "ANALYTISCH"){
+    BL([
+      "Reporting wird strukturierter (bessere Lernschleifen, bessere Budgetentscheidungen).",
+      "Freigaben werden nachvollziehbarer – Zeitfenster sind wichtig, damit Tempo nicht leidet.",
+      "Kreative Arbeit braucht klar definierte Räume ohne dauerhafte KPI-Diskussion."
+    ]);
+  } else if (domPerson === "INTUITIV"){
+    BL([
+      "Teamklima und Stakeholder-Abstimmung werden stärker; Zusammenarbeit wird leichter.",
+      "Gefahr: Prioritäten werden zu stark über Stimmung statt über Wirkung gesetzt.",
+      "KPI-Disziplin muss bewusst gesichert werden (wenige klare Kennzahlen)."
+    ]);
+  } else {
+    BL([
+      "Tempo und Entscheidungsfreude steigen; schnelle Kampagnen sind wahrscheinlicher.",
+      "Gefahr: Qualität/Markenkonsistenz leidet ohne klare Standards.",
+      "Reporting muss als Fixpunkt gesetzt werden, sonst entsteht operative Unruhe."
+    ]);
+  }
+
+  H3("6. Konflikt- & Druckprognose");
+  lines.push(`**Wahrscheinliche Spannungszonen:**\n`);
+  BL([
+    "Priorisierung (was ist jetzt wichtiger – kurzfristiger Effekt oder saubere Planung?)",
+    "Freigaben & Qualitätsmaßstab (Detailtiefe vs. 80/20)",
+    "Reporting (Zahlenlogik vs. Bauchgefühl/Erfahrung)",
+    "Schnittstellen (Erwartungen von Vertrieb/GF vs. Teamrealität)"
+  ]);
+  lines.push(`\n**Unter Druck:**\n`);
+  BL(pressure);
+
+  H3("7. Team-Reifegrad (Einschätzung)");
+  BL([
+    "Strukturdisziplin: mittel",
+    "KPI-Orientierung: mittel",
+    "Selbstorganisation: gut",
+    "Konfliktfähigkeit: mittel",
+    "Feedbackkultur: mittel"
+  ]);
+  lines.push(`\nInterpretation: Je klarer Standards und Entscheidungswege definiert sind, desto schneller stabilisiert sich das System.\n`);
+
+  H3("8. Chancen (priorisiert)");
+  BL([
+    "Mehr Klarheit in Prioritäten und Verantwortlichkeiten.",
+    "Bessere Entscheidungsgrundlagen (Planbarkeit, Budgetdisziplin, Reporting).",
+    "Stabilere Umsetzung durch definierte Standards.",
+    "Höhere Ergebnisverbindlichkeit bei Kampagnen.",
+    "Bessere Schnittstellenfähigkeit zur Geschäftsführung.",
+    "Reduktion von Rework durch klarere Qualitätskriterien."
+  ].slice(0,6));
+
+  H3("9. Risiken (priorisiert)");
+  const risksBase = [
+    "Mehr Abstimmungsschleifen – Tempo kann kurzfristig sinken.",
+    "Missverständnisse über Detailtiefe/Qualität – Nacharbeit möglich.",
+    "Frustration bei unklaren Entscheidungskriterien.",
+    "Übersteuerung (zu viel Kontrolle) oder Untersteuerung (zu viel Interpretationsspielraum).",
+    "Rückzug einzelner Teammitglieder bei ungeklärten Erwartungen.",
+    "Kreative Dynamik leidet, wenn kein geschützter Raum definiert wird."
+  ];
+  BL(risksBase.slice(0,6));
+
+  H3("10. Führungshebel (konkret)");
+  BL(steeringGuidance);
+
+  H3("11. Integrationsplan (30 Tage)");
+  lines.push(`**Phase 1: Orientierung (Tag 1–10)**\n`);
+  BL([
+    "Erwartungen und Prioritäten schriftlich klären (Ziele, KPIs, Rollen).",
+    "Entscheidungswege definieren (wer entscheidet was, bis wann).",
+    "Qualitätsstandard 80/20 festlegen (was muss perfekt sein, was reicht)."
+  ]);
+  lines.push(`\n**Phase 2: Wirkung (Tag 11–20)**\n`);
+  BL([
+    "Ein priorisiertes Thema strukturiert umsetzen (z.B. Reporting oder Kampagnenprozess).",
+    "Feedback zur Zusammenarbeit aktiv einholen (kurz, konkret, regelmäßig).",
+    "Wenige verbindliche Routinen setzen (Review, Freigabe, Priorisierung)."
+  ]);
+  lines.push(`\n**Phase 3: Stabilisierung (Tag 21–30)**\n`);
+  BL([
+    "Regeln nachjustieren (Zeitfenster, Detailtiefe, Eskalation).",
+    "Übersteuerung vermeiden: klare Standards, aber keine unnötige Kontrolle.",
+    "Ergebnisse prüfen: Tempo, Qualität, Teamstimmung."
+  ]);
+
+  H3("12. Messpunkte (3–5)");
+  BL([
+    "Durchlaufzeit Freigaben (Ø Tage).",
+    "Rework-Quote (Korrekturschleifen pro Kampagne).",
+    "Reporting-Stabilität (Zahlqualität, Regelmäßigkeit).",
+    "Kampagnenwirkung (z.B. CPL/CPA/ROAS – je nach Setup).",
+    "Team-Pulse (monatlich 3 Fragen: Klarheit, Tempo, Zusammenarbeit)."
+  ].slice(0,5));
+
+  H3("13. Gesamtbewertung");
+  if (light === "GREEN"){
+    lines.push(
+      "Die Konstellation ist stabil. Die neue Person fügt sich in die Teamlogik ein bzw. ergänzt sie konstruktiv. " +
+      "Mit normaler Führung und klaren Routinen bleibt das System leistungsfähig. " +
+      "Wichtig ist, die Stärken des Teams (Kreativität und Abstimmung) nicht durch unnötige Formalisierung zu bremsen.\n"
+    );
+  } else if (light === "YELLOW"){
+    lines.push(
+      "Die Konstellation ist steuerbar, erfordert aber aktive Klarheit. Unterschiede in Arbeitsweise und Entscheidungsrhythmus " +
+      "führen sonst zu mehr Abstimmung und Verzögerungen. Mit Zeitfenstern, 80/20-Standard und klarer Priorisierung entsteht " +
+      "ein stabiles, leistungsfähiges Marketingsystem.\n"
+    );
+  } else {
+    lines.push(
+      "Die Konstellation ist anspruchsvoll. Die Arbeitslogik unterscheidet sich stark vom Teammuster. Ohne klare Standards " +
+      "und konsequente Führung steigen Konflikt- und Leistungsrisiken. Mit fester Entscheidungsarchitektur, regelmäßigen Reviews " +
+      "und klaren Rollen kann die Veränderung gelingen – andernfalls drohen Reibungsverluste und Teamspaltung.\n"
+    );
+  }
+
+  // footer details (collapsed feel: minimal)
+  lines.push(`\n—\nDetails (intern): DG ${DG} | DC ${DC} | TS ${TS} | CI ${CI}\n`);
+
+  return lines.join("");
+}
+
+/* ===========================
+   5) UI Rendering
+=========================== */
+
+const state = {
+  contextTeam: "Marketingteam",
+  contextRole: "Marketingleitung",
+  teamSize: 10,
+  team: { impulsiv: 20, intuitiv: 60, analytisch: 20 },
+  person: { impulsiv: 15, intuitiv: 20, analytisch: 65 },
+  isLeading: true,
+  enabledLeversCount: 3 // fixed (not shown), just for steering reduction if you want later
+};
+
+function mkSlider(container, label, key, objRef){
+  const el = document.createElement("div");
+  el.className = "field";
+  el.innerHTML = `
+    <div class="top">
+      <div class="name">${label}</div>
+      <div class="num"><span id="${container.id}_${key}_val">${objRef[key]}%</span></div>
+    </div>
+    <input type="range" min="0" max="100" step="1" value="${objRef[key]}" id="${container.id}_${key}">
+  `;
+  container.appendChild(el);
+
+  const range = el.querySelector("input");
+  const valEl = el.querySelector(`#${container.id}_${key}_val`);
+
+  range.addEventListener("input", () => {
+    objRef[key] = parseInt(range.value,10);
+    // soft normalize so it never feels technical:
+    const norm = fixTo100(normalizeProfile(objRef));
+    objRef.impulsiv = norm.impulsiv;
+    objRef.intuitiv = norm.intuitiv;
+    objRef.analytisch = norm.analytisch;
+
+    // update all sliders in the same container
+    ["impulsiv","intuitiv","analytisch"].forEach(k=>{
+      const r = document.getElementById(`${container.id}_${k}`);
+      const v = document.getElementById(`${container.id}_${k}_val`);
+      r.value = objRef[k];
+      v.textContent = objRef[k] + "%";
+    });
+
+    computeAndRender();
+  });
+}
+
+function renderSliders(){
+  const teamWrap = document.getElementById("teamProfile");
+  const personWrap = document.getElementById("personProfile");
+  teamWrap.innerHTML = "";
+  personWrap.innerHTML = "";
+
+  mkSlider(teamWrap, "Rot (Tempo & Entscheidung)", "impulsiv", state.team);
+  mkSlider(teamWrap, "Blau (Beziehung & Abstimmung)", "intuitiv", state.team);
+  mkSlider(teamWrap, "Gelb (Struktur & Absicherung)", "

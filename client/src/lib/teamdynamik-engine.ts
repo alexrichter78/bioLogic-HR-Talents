@@ -273,7 +273,9 @@ function buildHeadline(st: ShiftType, domTeam: DominanceType, domPerson: Dominan
     case "ERGAENZUNG": return `${role} bringt eine ergänzende Arbeitsweise ins ${tMap[domTeam]} Team. Zusammenarbeit stabil.`;
     case "REIBUNG": return `Unterschiedliche Arbeitsweisen treffen aufeinander. ${role} arbeitet anders als das Team es gewohnt ist. Das führt zu mehr Abstimmung und gelegentlichen Spannungen.`;
     case "SPANNUNG":
-    case "TRANSFORMATION": return `Die neue Führung verändert die bisherige Arbeitsweise deutlich. Entscheidungen, Prioritäten und Qualitätsmaßstäbe werden anders gesetzt als bisher.`;
+    case "TRANSFORMATION": return isLeading
+      ? `Die neue Führung verändert die bisherige Arbeitsweise deutlich. Entscheidungen, Prioritäten und Qualitätsmaßstäbe werden anders gesetzt als bisher.`
+      : `Arbeitslogiken unterscheiden sich stark. Ohne Führung entstehen Leistungs- und Konfliktrisiken.`;
     case "HYBRID": return `Unterschiedliche Arbeitsweisen treffen aufeinander. ${role} arbeitet anders als das Team es gewohnt ist. Mehr Abstimmungsbedarf im Alltag.`;
   }
 }
