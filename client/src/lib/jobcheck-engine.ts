@@ -253,6 +253,15 @@ export type EngineResult = {
   criticalArea: MatrixAreaId;
   criticalAreaLabel: string;
   equalDistribution: boolean;
+  secondaryTension: {
+    detected: boolean;
+    roleSecondary: ComponentKey;
+    candSecondary: ComponentKey;
+    roleSecondaryValue: number;
+    candSecondaryValue: number;
+    text: string;
+    stressText: string;
+  } | null;
   keyReason: string;
   executiveSummary: string;
   matrix: MatrixRow[];
@@ -978,7 +987,44 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
     return [intro, fitLine, profileLine, domLine].join("\n");
   })();
 
+  const secondaryTension = (() => {
+    if (!sameDom || equalDistConflict || dualConflict) return null;
+    const rSec = roleDom.top2.key;
+    const cSec = candDom.top2.key;
+    if (rSec === cSec) return null;
+    const rSecVal = r[rSec];
+    const cSecVal = c[rSec];
+    const secDiff = Math.abs(rSecVal - cSecVal);
+    if (secDiff < 5) return null;
+
+    const secDescriptions: Record<ComponentKey, { label: string; focus: string; stressBehavior: string }> = {
+      impulsiv: { label: "Impulsiv", focus: "Umsetzungsdruck und Ergebnisverantwortung", stressBehavior: "Durchsetzung und schnelle Entscheidungen" },
+      intuitiv: { label: "Intuitiv", focus: "Beziehungsorientierung und Teamdynamik", stressBehavior: "Abstimmung, Konsens und zwischenmenschliche Klärung" },
+      analytisch: { label: "Analytisch", focus: "Sachbezogenheit und fachliche Präzision", stressBehavior: "Datenprüfung, Absicherung und strukturelle Klärung" },
+    };
+
+    const roleSecDesc = secDescriptions[rSec];
+    const candSecDesc = secDescriptions[cSec];
+
+    const text = `Die Primärdominanz stimmt überein (${rL}). Die Zweitstärke der Rolle ist ${roleSecDesc.label} (${roleSecDesc.focus}, Soll: ${rSecVal}), der Kandidat bringt jedoch ${candSecDesc.label} als Zweitstärke mit (${candSecDesc.focus}, Ist: ${c[cSec]}). Auswirkung: In Standardsituationen unauffällig – unter Druck verlagert sich die Steuerung in Richtung ${candSecDesc.stressBehavior} statt ${roleSecDesc.stressBehavior}.`;
+
+    const stressText = `Spannungsfeld unter Stress: Die Rolle erwartet in kritischen Situationen ${roleSecDesc.stressBehavior}. Der Kandidat wird stattdessen auf ${candSecDesc.stressBehavior} zurückgreifen. Auswirkung auf Teamdynamik und Prozesssteuerung: situativ spürbar.`;
+
+    return {
+      detected: true,
+      roleSecondary: rSec,
+      candSecondary: cSec,
+      roleSecondaryValue: rSecVal,
+      candSecondaryValue: c[cSec],
+      text,
+      stressText,
+    };
+  })();
+
   const risks = buildRisks(role, cand, { overallFit, control: ctrl.level, matrix, mismatch }, t);
+  if (secondaryTension) {
+    risks.midTerm.push(secondaryTension.stressText);
+  }
   const dev = developmentFromControl(ctrl.level, ctrl.points, critical.label, t);
   const plan = integrationPlan(role, critical.id, ctrl.level, t);
 
@@ -988,6 +1034,7 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
     controlIntensity: ctrl.level, controlPoints: ctrl.points,
     criticalArea: critical.id, criticalAreaLabel: critical.label,
     equalDistribution: equalDistConflict,
+    secondaryTension,
     keyReason, executiveSummary: execSummary,
     matrix, risks, development: dev, integrationPlan90: plan,
   };

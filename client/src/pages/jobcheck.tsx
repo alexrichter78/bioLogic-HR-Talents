@@ -860,11 +860,45 @@ export default function JobCheck() {
                     );
                   })()}
 
+                  {engine.secondaryTension && (
+                    <>
+                      <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
+                          <ChapterBadge num={3} color="#FF9500" />
+                          <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Sekundärkomponenten-Spannung</span>
+                        </div>
+                        <div style={{
+                          display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 16,
+                          padding: "18px 22px", borderRadius: 18,
+                          background: "rgba(255,149,0,0.04)", border: "1px solid rgba(255,149,0,0.12)",
+                        }}>
+                          <div style={{ textAlign: "center" }}>
+                            <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Rolle erwartet</p>
+                            <div style={{ padding: "6px 16px", borderRadius: 10, background: `${engine.secondaryTension.roleSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.roleSecondary === "intuitiv" ? COLORS.int : COLORS.ana}12`, border: `1px solid ${engine.secondaryTension.roleSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.roleSecondary === "intuitiv" ? COLORS.int : COLORS.ana}25` }}>
+                              <span style={{ fontSize: 14, fontWeight: 700, color: engine.secondaryTension.roleSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.roleSecondary === "intuitiv" ? COLORS.int : COLORS.ana }}>{labelComponent(engine.secondaryTension.roleSecondary)}</span>
+                              <span style={{ fontSize: 11, fontWeight: 600, color: engine.secondaryTension.roleSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.roleSecondary === "intuitiv" ? COLORS.int : COLORS.ana, opacity: 0.7, marginLeft: 4 }}>{engine.secondaryTension.roleSecondaryValue}%</span>
+                            </div>
+                          </div>
+                          <span style={{ fontSize: 16, fontWeight: 700, color: "#FF9500" }}>⇄</span>
+                          <div style={{ textAlign: "center" }}>
+                            <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Kandidat bringt</p>
+                            <div style={{ padding: "6px 16px", borderRadius: 10, background: `${engine.secondaryTension.candSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.candSecondary === "intuitiv" ? COLORS.int : COLORS.ana}12`, border: `1px solid ${engine.secondaryTension.candSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.candSecondary === "intuitiv" ? COLORS.int : COLORS.ana}25` }}>
+                              <span style={{ fontSize: 14, fontWeight: 700, color: engine.secondaryTension.candSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.candSecondary === "intuitiv" ? COLORS.int : COLORS.ana }}>{labelComponent(engine.secondaryTension.candSecondary)}</span>
+                              <span style={{ fontSize: 11, fontWeight: 600, color: engine.secondaryTension.candSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.candSecondary === "intuitiv" ? COLORS.int : COLORS.ana, opacity: 0.7, marginLeft: 4 }}>{engine.secondaryTension.candSecondaryValue}%</span>
+                            </div>
+                          </div>
+                        </div>
+                        <CalloutBox text={engine.secondaryTension.text} color="#FF9500" icon={AlertTriangle} />
+                      </div>
+                    </>
+                  )}
+
                   <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
 
                   <div>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
-                      <ChapterBadge num={3} color="#0071E3" />
+                      <ChapterBadge num={engine.secondaryTension ? 4 : 3} color="#0071E3" />
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Strukturelle Eignungsmatrix</span>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -883,7 +917,7 @@ export default function JobCheck() {
 
                   <div>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
-                      <ChapterBadge num={4} color="#0071E3" />
+                      <ChapterBadge num={engine.secondaryTension ? 5 : 4} color="#0071E3" />
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Risikoprognose</span>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -907,7 +941,7 @@ export default function JobCheck() {
 
                   <div>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
-                      <ChapterBadge num={5} color="#0071E3" />
+                      <ChapterBadge num={engine.secondaryTension ? 6 : 5} color="#0071E3" />
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Entwicklungsprognose</span>
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
@@ -929,7 +963,7 @@ export default function JobCheck() {
 
                   <div>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 18 }}>
-                      <ChapterBadge num={6} color="#0071E3" />
+                      <ChapterBadge num={engine.secondaryTension ? 7 : 6} color="#0071E3" />
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>90-Tage-Integrationsplan</span>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
@@ -943,7 +977,7 @@ export default function JobCheck() {
 
                   <div>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
-                      <ChapterBadge num={7} color="#0071E3" />
+                      <ChapterBadge num={engine.secondaryTension ? 8 : 7} color="#0071E3" />
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Gesamtbewertung</span>
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
