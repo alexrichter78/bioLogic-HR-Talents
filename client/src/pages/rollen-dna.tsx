@@ -2417,58 +2417,6 @@ export default function RollenDNA() {
                   </div>
                 </div>
 
-                {taetigkeiten.length > 0 && (
-                  <div style={{ marginTop: 16 }} data-testid="summary-taetigkeiten-list">
-                    {[
-                      { label: "Tätigkeiten", items: taetigkeiten.filter(t => t.kategorie === "haupt") },
-                      { label: "Humankompetenzen", items: taetigkeiten.filter(t => t.kategorie === "neben") },
-                      ...(fuehrung !== "Keine" ? [{ label: "Führungskompetenzen", items: taetigkeiten.filter(t => t.kategorie === "fuehrung") }] : []),
-                    ].filter(g => g.items.length > 0).map((group) => (
-                      <div key={group.label} style={{ marginBottom: 12 }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 6 }}>{group.label}</div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                          {group.items.map(t => (
-                            <div
-                              key={t.id}
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                fontSize: 13,
-                                color: "#6E6E73",
-                                padding: "6px 10px",
-                                borderRadius: 8,
-                                background: "rgba(0,0,0,0.02)",
-                              }}
-                              data-testid={`summary-item-${t.id}`}
-                            >
-                              <span style={{ flex: 1 }}>{t.name}</span>
-                              <div style={{ display: "flex", gap: 8, alignItems: "center", flexShrink: 0, marginLeft: 12 }}>
-                                <span style={{
-                                  fontSize: 11,
-                                  fontWeight: 600,
-                                  padding: "2px 8px",
-                                  borderRadius: 6,
-                                  background: t.kompetenz === "Impulsiv" ? "rgba(255,59,48,0.1)" : t.kompetenz === "Analytisch" ? "rgba(0,113,227,0.1)" : "rgba(52,199,89,0.1)",
-                                  color: t.kompetenz === "Impulsiv" ? "#FF3B30" : t.kompetenz === "Analytisch" ? "#0071E3" : "#34C759",
-                                }}>{t.kompetenz}</span>
-                                <span style={{
-                                  fontSize: 11,
-                                  fontWeight: 500,
-                                  padding: "2px 8px",
-                                  borderRadius: 6,
-                                  background: t.niveau === "Hoch" ? "rgba(255,149,0,0.1)" : t.niveau === "Mittel" ? "rgba(0,0,0,0.05)" : "rgba(0,0,0,0.03)",
-                                  color: t.niveau === "Hoch" ? "#FF9500" : "#8E8E93",
-                                }}>{t.niveau}</span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
                 <div className="flex flex-col sm:flex-row items-center gap-3 mt-8">
                   <button
                     onClick={handleSave}
