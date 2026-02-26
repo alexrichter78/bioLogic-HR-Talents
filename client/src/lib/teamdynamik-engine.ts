@@ -238,16 +238,15 @@ function matrixCellId(leadDom: DominanceType, teamDom: DominanceType): string {
 
 function buildHeadline(st: ShiftType, domTeam: DominanceType, domPerson: DominanceType, isLeading: boolean): string {
   const tMap: Record<DominanceType, string> = { IMPULSIV: "umsetzungsorientiertes", INTUITIV: "beziehungsorientiertes", ANALYTISCH: "strukturorientiertes", MIX: "ausgeglichenes" };
-  const cMap: Record<DominanceType, string> = { IMPULSIV: "Umsetzungslogik", INTUITIV: "Beziehungslogik", ANALYTISCH: "Strukturlogik", MIX: "Mischlogik" };
-  const role = isLeading ? "Führung" : "Neue Person";
+  const role = isLeading ? "Die neue Führung" : "Die neue Person";
 
   switch (st) {
-    case "VERSTAERKUNG": return `${role} verstärkt die bestehende Dynamik des Teams. Gleichgerichtete Arbeitslogik.`;
-    case "ERGAENZUNG": return `${role} ergänzt das ${tMap[domTeam]} Team mit ${cMap[domPerson]}. Komplementärer Effekt.`;
-    case "REIBUNG": return `${cMap[domPerson]} trifft auf ${tMap[domTeam]} Team. Reibung in Steuerungslogik und Priorisierung.`;
-    case "SPANNUNG": return `Strukturelle Spannung: ${cMap[domPerson]} im ${tMap[domTeam]} Team. Steuerung erforderlich.`;
-    case "TRANSFORMATION": return `${cMap[domPerson]} als Führungslogik transformiert ${tMap[domTeam]} Team. Hohe Steuerungsintensität.`;
-    case "HYBRID": return `Hybride Verschiebung: Mischlogik trifft auf ${tMap[domTeam]} Team.`;
+    case "VERSTAERKUNG": return `${role} arbeitet ähnlich wie das Team. Keine besondere Steuerung notwendig.`;
+    case "ERGAENZUNG": return `${role} bringt eine ergänzende Arbeitsweise ins ${tMap[domTeam]} Team. Zusammenarbeit stabil.`;
+    case "REIBUNG": return `Unterschiedliche Arbeitsweisen treffen aufeinander. Regelmäßige Abstimmung sinnvoll.`;
+    case "SPANNUNG": return `Deutliche Unterschiede in Arbeitsweise und Entscheidungsfindung. Aktive Steuerung notwendig.`;
+    case "TRANSFORMATION": return `${role} verändert die Arbeitsweise des Teams grundlegend. Klare Steuerung erforderlich.`;
+    case "HYBRID": return `Gemischte Arbeitsweisen treffen auf ${tMap[domTeam]} Team. Gezielte Abstimmung empfehlenswert.`;
   }
 }
 
@@ -279,17 +278,15 @@ function buildLeadershipBehavior(domPerson: DominanceType, domTeam: DominanceTyp
 }
 
 function buildSystemEffect(st: ShiftType, domPerson: DominanceType, domTeam: DominanceType, isLeading: boolean): string {
-  const pMap: Record<DominanceType, string> = { IMPULSIV: "Umsetzungs", INTUITIV: "Beziehungs", ANALYTISCH: "Struktur", MIX: "Misch" };
-  const tMap: Record<DominanceType, string> = { IMPULSIV: "umsetzungsorientierte", INTUITIV: "beziehungsorientierte", ANALYTISCH: "strukturorientierte", MIX: "ausgeglichene" };
-  const role = isLeading ? "der Führung" : "der neuen Person";
+  const role = isLeading ? "der neuen Führung" : "der neuen Person";
 
   switch (st) {
-    case "VERSTAERKUNG": return `Die ${pMap[domPerson]}logik wird durch den Eintritt ${role} verstärkt. Bestehende Stärken werden ausgebaut, bestehende Schwächen werden nicht kompensiert. Systemisch: stabil, aber einseitig.`;
-    case "ERGAENZUNG": return `${pMap[domPerson]}kompetenz ergänzt das ${tMap[domTeam]} Team. Neue Perspektiven und Arbeitsweisen werden eingebracht. Systemisch: bereichernd, Integrationsaufwand moderat.`;
-    case "REIBUNG": return `${pMap[domPerson]}logik trifft auf ${tMap[domTeam]}s Team. Unterschiedliche Priorisierung erzeugt Reibung in Entscheidungsfindung und Alltagssteuerung. Systemisch: steuerbar, aber Aufmerksamkeit erforderlich.`;
-    case "SPANNUNG": return `Strukturelle Spannung zwischen ${pMap[domPerson]}logik und ${tMap[domTeam]}m Team. Arbeitslogik, Kommunikation und Erwartungshaltung weichen deutlich voneinander ab. Systemisch: aktive Steuerung notwendig.`;
-    case "TRANSFORMATION": return `${pMap[domPerson]}logik als Führungsansatz verändert die ${tMap[domTeam]} Teamdynamik grundlegend. Arbeitslogik, Entscheidungskultur und Priorisierung werden transformiert. Systemisch: hohe Steuerungsintensität, aktives Change-Management erforderlich.`;
-    default: return `Hybride Verschiebung: Die Teamdynamik verändert sich auf mehreren Ebenen gleichzeitig. Gezielte Steuerung erforderlich.`;
+    case "VERSTAERKUNG": return `Führungsstil und Team passen zusammen. Entscheidungen werden verstanden, die Zusammenarbeit ist stabil. Die bestehenden Stärken werden ausgebaut.`;
+    case "ERGAENZUNG": return `Die neue Arbeitsweise ergänzt das Team um fehlende Perspektiven. Braucht es klarere Regeln? Moderate Abstimmung empfehlenswert.`;
+    case "REIBUNG": return `Unterschiedliche Arbeitsweisen treffen aufeinander. Steigt der Abstimmungsbedarf? Dauern Entscheidungen länger? Regelmäßige Abstimmung sinnvoll.`;
+    case "SPANNUNG": return `Deutliche Unterschiede in der Arbeitsweise. Entstehen Konflikte im Alltag? Besteht Leistungsrisiko? Aktive Steuerung ist erforderlich.`;
+    case "TRANSFORMATION": return `Der Eintritt ${role} verändert die Arbeitsweise des Teams grundlegend. Ist kritisches Handeln nötig? Klare Steuerung mit aktiver Begleitung erforderlich.`;
+    default: return `Die Teamdynamik verändert sich auf mehreren Ebenen gleichzeitig. Gezielte Abstimmung und Steuerung erforderlich.`;
   }
 }
 

@@ -22,10 +22,10 @@ const SHIFT_LABELS: Record<ShiftType, string> = {
   SPANNUNG: "Spannung", TRANSFORMATION: "Transformation", HYBRID: "Hybrid",
 };
 const INTENSITY_LABELS: Record<IntensityLevel, string> = { NIEDRIG: "Niedrig", MITTEL: "Mittel", HOCH: "Hoch" };
-const TL_COLORS: Record<TrafficLight, { bg: string; fill: string; label: string }> = {
-  GREEN: { bg: "rgba(52,199,89,0.08)", fill: "#34C759", label: "Stabil" },
-  YELLOW: { bg: "rgba(255,149,0,0.08)", fill: "#FF9500", label: "Aufmerksamkeit" },
-  RED: { bg: "rgba(255,59,48,0.08)", fill: "#FF3B30", label: "Handlungsbedarf" },
+const TL_COLORS: Record<TrafficLight, { bg: string; fill: string; label: string; steering: string }> = {
+  GREEN: { bg: "rgba(52,199,89,0.08)", fill: "#34C759", label: "Stabil", steering: "Normale Steuerung ausreichend" },
+  YELLOW: { bg: "rgba(255,149,0,0.08)", fill: "#FF9500", label: "Steuerbar", steering: "Situative Steuerung empfehlenswert" },
+  RED: { bg: "rgba(255,59,48,0.08)", fill: "#FF3B30", label: "Spannungsfeld", steering: "Aktive Steuerung erforderlich" },
 };
 const VIEW_LABELS: Record<ViewMode, { icon: typeof Users; label: string }> = {
   CEO: { icon: Briefcase, label: "CEO" },
@@ -458,7 +458,7 @@ export default function Teamdynamik() {
               <div style={{ flex: 1, minWidth: 90, padding: "8px 10px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
                 <p style={{ fontSize: 9, fontWeight: 600, color: "#8E8E93", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Steuerung</p>
                 <p style={{ fontSize: 15, fontWeight: 800, color: "#1D1D1F", margin: 0 }}>{INTENSITY_LABELS[result.steeringNeed]}</p>
-                <p style={{ fontSize: 9, color: "#8E8E93", margin: "1px 0 0" }}>{result.leverEffects.enabledCount} Hebel aktiv</p>
+                <p style={{ fontSize: 9, color: "#8E8E93", margin: "1px 0 0" }}>{tl.steering}</p>
               </div>
             </div>
           </div>
