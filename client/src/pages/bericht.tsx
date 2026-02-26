@@ -44,19 +44,11 @@ function computeGesamt(haupt: BG, neben: BG, fuehrung: BG, rahmen: BG): BG {
     all.reduce((s, g) => s + g.int, 0) / 4,
     all.reduce((s, g) => s + g.ana, 0) / 4,
   ];
-  const CAP = 53;
-  let changed = true;
-  while (changed) {
-    changed = false;
-    const capped: number[] = [], uncapped: number[] = [];
-    vals.forEach((v, i) => { if (v > CAP) capped.push(i); else uncapped.push(i); });
-    if (capped.length > 0 && uncapped.length > 0) {
-      let excess = 0;
-      for (const i of capped) { excess += vals[i] - CAP; vals[i] = CAP; }
-      const uT = uncapped.reduce((s, i) => s + vals[i], 0);
-      if (uT > 0) for (const i of uncapped) vals[i] += excess * (vals[i] / uT);
-      changed = true;
-    }
+  const MAX = 67;
+  const peak = Math.max(...vals);
+  if (peak > MAX) {
+    const scale = MAX / peak;
+    vals = vals.map(v => v * scale);
   }
   return roundBG(vals[0], vals[1], vals[2]);
 }
@@ -200,22 +192,25 @@ function SoftBar({ bg }: { bg: BG }) {
   ];
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      {items.map(bar => (
-        <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 12, color: "#6E6E73", width: 62, flexShrink: 0 }}>{bar.label}</span>
-          <div style={{ flex: 1, height: 24, borderRadius: 6, background: "rgba(0,0,0,0.04)", overflow: "hidden", position: "relative" }}>
-            <div style={{
-              width: bar.value === 0 ? "0%" : `${Math.max(bar.value, 2)}%`,
-              height: "100%", borderRadius: 6, background: bar.color,
-              transition: "width 600ms ease",
-              display: "flex", alignItems: "center", paddingLeft: 8,
-              minWidth: bar.value === 0 ? 0 : 40,
-            }}>
-              <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(bar.value)}%</span>
+      {items.map(bar => {
+        const widthPct = (bar.value / 67) * 100;
+        return (
+          <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 12, color: "#6E6E73", width: 62, flexShrink: 0 }}>{bar.label}</span>
+            <div style={{ flex: 1, height: 24, borderRadius: 6, background: "rgba(0,0,0,0.04)", overflow: "hidden", position: "relative" }}>
+              <div style={{
+                width: bar.value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 3), 100)}%`,
+                height: "100%", borderRadius: 6, background: bar.color,
+                transition: "width 600ms ease",
+                display: "flex", alignItems: "center", paddingLeft: 8,
+                minWidth: bar.value === 0 ? 0 : 40,
+              }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(bar.value)}%</span>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
