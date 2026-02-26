@@ -993,9 +993,8 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
     const cSec = candDom.top2.key;
     if (rSec === cSec) return null;
     const rSecVal = r[rSec];
-    const cSecVal = c[rSec];
-    const secDiff = Math.abs(rSecVal - cSecVal);
-    if (secDiff < 5) return null;
+    const cSecDiff = Math.abs(c[cSec] - c[rSec]);
+    if (cSecDiff < 3) return null;
 
     const secDescriptions: Record<ComponentKey, { label: string; focus: string; stressBehavior: string }> = {
       impulsiv: { label: "Impulsiv", focus: "Umsetzungsdruck und Ergebnisverantwortung", stressBehavior: "Durchsetzung und schnelle Entscheidungen" },
