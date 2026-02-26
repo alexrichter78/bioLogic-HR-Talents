@@ -2060,28 +2060,36 @@ export default function RollenDNA() {
                       </button>
                     )}
                   </div>
-                  <Button
-                    className="gap-2"
-                    style={{
-                      height: 52,
-                      paddingLeft: 32,
-                      paddingRight: 32,
-                      fontSize: 16,
-                      fontWeight: 600,
-                      borderRadius: 14,
-                      background: "linear-gradient(135deg, #0071E3, #34AADC)",
-                      border: "none",
-                      boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
-                    }}
-                    data-testid="button-step-3-fertig"
-                    onClick={() => {
-                      setAllCollapsed(true);
-                      localStorage.setItem("rollenDnaCompleted", "true");
-                    }}
-                  >
-                    Datenerfassung abgeschlossen
-                    <ChevronRight className="w-5 h-5" />
-                  </Button>
+                  {(() => {
+                    const isIncomplete = !beruf || !fuehrung || erfolgsfokusIndices.length === 0 || !aufgabencharakter || !arbeitslogik || taetigkeiten.length === 0;
+                    return (
+                      <Button
+                        className="gap-2"
+                        disabled={isIncomplete}
+                        style={{
+                          height: 52,
+                          paddingLeft: 32,
+                          paddingRight: 32,
+                          fontSize: 16,
+                          fontWeight: 600,
+                          borderRadius: 14,
+                          background: isIncomplete ? "rgba(0,0,0,0.08)" : "linear-gradient(135deg, #0071E3, #34AADC)",
+                          border: "none",
+                          boxShadow: isIncomplete ? "none" : "0 4px 16px rgba(0,113,227,0.3)",
+                          color: isIncomplete ? "rgba(0,0,0,0.25)" : "#fff",
+                          cursor: isIncomplete ? "not-allowed" : "pointer",
+                        }}
+                        data-testid="button-step-3-fertig"
+                        onClick={() => {
+                          setAllCollapsed(true);
+                          localStorage.setItem("rollenDnaCompleted", "true");
+                        }}
+                      >
+                        Datenerfassung abgeschlossen
+                        <ChevronRight className="w-5 h-5" />
+                      </Button>
+                    );
+                  })()}
                 </div>
 
                 <div
