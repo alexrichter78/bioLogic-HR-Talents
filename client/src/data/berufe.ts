@@ -5002,7 +5002,6 @@ const BERUF_KATEGORIE: Record<string, string> = {
   "Parkettleger/-in": "Bau & Handwerk > Bodenbau",
   "Personalassistent/-in": "Personal & HR > Personalmanagement",
   "Pflegedienstleiter/-in": "Gesundheit & Soziales > Pflege",
-  "Pflegefachkraft": "Gesundheit & Soziales > Pflege",
   "Pflegehelfer/-in": "Gesundheit & Soziales > Pflege",
   "Pharmalaborant/-in": "Medizintechnik & Pharma > Pharmazie",
   "Pharmazeutisch-technische/-r Assistent/-in (PTA)": "Medizintechnik & Pharma > Pharmazie",
