@@ -1,0 +1,1255 @@
+"use client";
+
+import React, { useMemo, useState } from "react";
+
+/** =========================
+ *  Types
+ *  ========================= */
+
+type ComponentKey = "impulsiv" | "intuitiv" | "analytisch";
+type FitStatus = "SUITABLE" | "CONDITIONAL" | "NOT_SUITABLE";
+type ControlIntensity = "LOW" | "MEDIUM" | "HIGH";
+type LeadershipType = "disziplinarisch" | "fachlich" | "none";
+
+type Triad = Record<ComponentKey, number>;
+
+type RoleAnalysis = {
+  job_title: string;
+  job_family: string;
+
+  role_profile: Triad;
+  frame_profile: Triad;
+
+  leadership: {
+    required: boolean;
+    profile?: Triad;
+    type?: LeadershipType;
+  };
+
+  tasks_profile: Triad;
+  human_profile: Triad;
+
+  success_metrics: string[];
+  tension_fields: string[];
+
+  // Optional, but recommended for "job feel"
+  top_items?: Array<{
+    type: "task" | "human";
+    text: string;
+    category: ComponentKey;
+    priority: "hoch" | "mittel" | "niedrig";
+  }>;
+
+  environment_tags?: {
+    market_pressure?: "niedrig" | "mittel" | "hoch";
+    regulation?: "niedrig" | "mittel" | "hoch";
+    change_rate?: "niedrig" | "mittel" | "hoch";
+    sales_cycle?: "kurz" | "mittel" | "lang";
+    customer_type?: "B2C" | "B2B" | "mixed";
+    volume?: "niedrig" | "mittel" | "hoch";
+  };
+};
+
+type CandidateInput = {
+  candidate_name?: string;
+  candidate_profile: Triad;
+  leadership_profile?: Triad;
+  notes?: string;
+};
+
+type DominanceMode =
+  | "EXTREME_I"
+  | "EXTREME_N"
+  | "EXTREME_A"
+  | "DOM_I"
+  | "DOM_N"
+  | "DOM_A"
+  | "DUAL_I_A"
+  | "DUAL_I_N"
+  | "DUAL_N_A"
+  | "BAL_I"
+  | "BAL_N"
+  | "BAL_A"
+  | "BAL_FULL";
+
+type DominanceResult = {
+  mode: DominanceMode;
+  top1: { key: ComponentKey; value: number };
+  top2: { key: ComponentKey; value: number };
+  top3: { key: ComponentKey; value: number };
+  gap1: number;
+  gap2: number;
+};
+
+type MatrixAreaId =
+  | "dominance"
+  | "decision_logic"
+  | "kpi_work"
+  | "leadership_effect"
+  | "conflict"
+  | "competition"
+  | "culture"
+  | "strategy_complexity"
+  | "regulatory_precision"
+  | "customer_orientation";
+
+type MatrixRow = {
+  areaId: MatrixAreaId;
+  areaLabel: string;
+  roleDemand: string;
+  candidatePattern: string;
+  status: FitStatus;
+  reasoning: string;
+};
+
+type EngineResult = {
+  roleDominance: DominanceResult;
+  candDominance: DominanceResult;
+  overallFit: FitStatus;
+  mismatchScore: number;
+  koTriggered: boolean;
+  controlIntensity: ControlIntensity;
+  controlPoints: number;
+  criticalArea: MatrixAreaId;
+  criticalAreaLabel: string;
+  keyReason: string;
+  matrix: MatrixRow[];
+  executiveSummary: string;
+  coreFinding: string;
+  risks: {
+    shortTerm: string[];
+    midTerm: string[];
+    longTerm: string[];
+  };
+  development: {
+    likelihood: "hoch" | "mittel" | "gering";
+    timeframe: "3–6 Monate" | "6–12 Monate" | ">12 Monate";
+    text: string;
+  };
+  integrationPlan90: {
+    phase_0_30: string[];
+    phase_30_60: string[];
+    phase_60_90: string[];
+  };
+};
+
+/** =========================
+ *  Helpers: Validation & Math
+ *  ========================= */
+
+function clamp(n: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, n));
+}
+
+function triadSum(t: Triad) {
+  return t.impulsiv + t.intuitiv + t.analytisch;
+}
+
+function normalizeTriad(t: Triad): Triad {
+  const sum = triadSum(t);
+  if (sum === 0) return { impulsiv: 0, intuitiv: 0, analytisch: 0 };
+  // If already ~100, keep. Otherwise normalize.
+  if (Math.abs(sum - 100) <= 1) return t;
+  return {
+    impulsiv: Math.round((t.impulsiv / sum) * 100),
+    intuitiv: Math.round((t.intuitiv / sum) * 100),
+    analytisch: Math.round((t.analytisch / sum) * 100),
+  };
+}
+
+function sortTriadDesc(t: Triad) {
+  const arr = (Object.keys(t) as ComponentKey[]).map((k) => ({
+    key: k,
+    value: t[k],
+  }));
+  arr.sort((a, b) => b.value - a.value);
+  return arr;
+}
+
+function dominanceModeOf(tIn: Triad): DominanceResult {
+  const t = normalizeTriad(tIn);
+  const sorted = sortTriadDesc(t);
+  const top1 = sorted[0];
+  const top2 = sorted[1];
+  const top3 = sorted[2];
+
+  const gap1 = top1.value - top2.value;
+  const gap2 = top2.value - top3.value;
+
+  // Classification thresholds (as specified)
+  const isExtreme = top1.value >= 60 || gap1 >= 18;
+  const isClear = gap1 >= 8;
+  const isDual = gap1 <= 4 && gap2 >= 6;
+  const isFullBal = gap1 <= 5 && gap2 <= 5;
+  const isBalancedTendency = gap1 <= 7 && gap2 <= 7 && top1.value > top2.value;
+
+  const k = top1.key;
+  const k2 = top2.key;
+
+  let mode: DominanceMode;
+
+  if (isExtreme) {
+    mode = k === "impulsiv" ? "EXTREME_I" : k === "intuitiv" ? "EXTREME_N" : "EXTREME_A";
+  } else if (isDual) {
+    const pair = [k, k2].sort().join("_");
+    if (pair === ["analytisch", "impulsiv"].sort().join("_")) mode = "DUAL_I_A";
+    else if (pair === ["impulsiv", "intuitiv"].sort().join("_")) mode = "DUAL_I_N";
+    else mode = "DUAL_N_A";
+  } else if (isClear) {
+    mode = k === "impulsiv" ? "DOM_I" : k === "intuitiv" ? "DOM_N" : "DOM_A";
+  } else if (isFullBal) {
+    mode = "BAL_FULL";
+  } else if (isBalancedTendency) {
+    mode = k === "impulsiv" ? "BAL_I" : k === "intuitiv" ? "BAL_N" : "BAL_A";
+  } else {
+    // fallback
+    mode = "BAL_FULL";
+  }
+
+  return { mode, top1, top2, top3, gap1, gap2 };
+}
+
+function labelComponent(k: ComponentKey) {
+  if (k === "impulsiv") return "Impulsiv";
+  if (k === "intuitiv") return "Intuitiv";
+  return "Analytisch";
+}
+
+function dominanceLabel(dom: DominanceResult) {
+  // Human-friendly label used in report
+  const { mode, top1, top2 } = dom;
+  const k1 = labelComponent(top1.key);
+  const k2 = labelComponent(top2.key);
+
+  switch (mode) {
+    case "EXTREME_I":
+    case "EXTREME_N":
+    case "EXTREME_A":
+      return `${k1} extrem dominant`;
+    case "DOM_I":
+    case "DOM_N":
+    case "DOM_A":
+      return `${k1} dominant`;
+    case "DUAL_I_A":
+      return `Doppel-Schwerpunkt: Impulsiv–Analytisch`;
+    case "DUAL_I_N":
+      return `Doppel-Schwerpunkt: Impulsiv–Intuitiv`;
+    case "DUAL_N_A":
+      return `Doppel-Schwerpunkt: Intuitiv–Analytisch`;
+    case "BAL_I":
+    case "BAL_N":
+    case "BAL_A":
+      return `Ausgeglichen mit ${k1}-Tendenz`;
+    case "BAL_FULL":
+      return `Voll ausgeglichen`;
+    default:
+      return `${k1} / ${k2}`;
+  }
+}
+
+function weightedMismatch(role: Triad, cand: Triad) {
+  const r = normalizeTriad(role);
+  const c = normalizeTriad(cand);
+
+  const wI = r.impulsiv / 100;
+  const wN = r.intuitiv / 100;
+  const wA = r.analytisch / 100;
+
+  const dI = Math.abs(r.impulsiv - c.impulsiv);
+  const dN = Math.abs(r.intuitiv - c.intuitiv);
+  const dA = Math.abs(r.analytisch - c.analytisch);
+
+  const mismatch = wI * dI + wN * dN + wA * dA;
+  return +mismatch.toFixed(2);
+}
+
+/** =========================
+ *  K.O. rules & Fit thresholds
+ *  ========================= */
+
+function koRuleTriggered(role: RoleAnalysis, cand: CandidateInput): boolean {
+  const r = normalizeTriad(role.role_profile);
+  const c = normalizeTriad(cand.candidate_profile);
+
+  // Extreme single dominance KO
+  const roleDom = dominanceModeOf(r);
+  if (
+    (roleDom.mode === "EXTREME_I" && c.impulsiv <= 35 && r.impulsiv >= 65) ||
+    (roleDom.mode === "EXTREME_N" && c.intuitiv <= 30 && r.intuitiv >= 55) ||
+    (roleDom.mode === "EXTREME_A" && c.analytisch <= 35 && r.analytisch >= 65)
+  ) {
+    return true;
+  }
+
+  // Dual dominance KO: candidate must reach at least 75% of role value in BOTH components
+  if (roleDom.mode.startsWith("DUAL")) {
+    const domKeys: ComponentKey[] = [roleDom.top1.key, roleDom.top2.key];
+    for (const k of domKeys) {
+      if (c[k] < r[k] * 0.75) return true;
+    }
+  }
+
+  // Leadership KO (if performance-driven leadership)
+  if (role.leadership?.required) {
+    const lp = role.leadership.profile ? normalizeTriad(role.leadership.profile) : null;
+    // If leadership profile exists and is strongly impulsiv
+    if (lp && lp.impulsiv >= 60 && c.impulsiv <= 35) return true;
+  }
+
+  return false;
+}
+
+function overallFitFromScore(mismatch: number): FitStatus {
+  if (mismatch <= 10) return "SUITABLE";
+  if (mismatch <= 18) return "CONDITIONAL";
+  return "NOT_SUITABLE";
+}
+
+/** =========================
+ *  Control intensity scoring
+ *  ========================= */
+
+function controlIntensity(role: RoleAnalysis, cand: CandidateInput): { points: number; level: ControlIntensity } {
+  const r = normalizeTriad(role.role_profile);
+  const c = normalizeTriad(cand.candidate_profile);
+
+  const rDom = dominanceModeOf(r);
+  const cDom = dominanceModeOf(c);
+
+  let points = 0;
+
+  // A) Dominance shift
+  if (rDom.top1.key !== cDom.top1.key || rDom.mode.startsWith("DUAL") !== cDom.mode.startsWith("DUAL")) points += 2;
+  if (rDom.mode.startsWith("EXTREME")) points += 1;
+  if (rDom.gap1 >= 12) points += 1;
+
+  // B) deviation in role main component value
+  const roleMainKey = rDom.top1.key;
+  const mainDiff = Math.abs(r[roleMainKey] - c[roleMainKey]);
+  if (mainDiff >= 25) points += 3;
+  else if (mainDiff >= 15) points += 2;
+
+  // C) leadership deviation (if required)
+  if (role.leadership?.required) {
+    const lp = role.leadership.profile ? normalizeTriad(role.leadership.profile) : null;
+    if (lp) {
+      const lDom = dominanceModeOf(lp);
+      const lKey = lDom.top1.key;
+      const leadDiff = Math.abs(lp[lKey] - c[lKey]);
+      if (leadDiff >= 15) points += 2;
+    } else {
+      points += 1;
+    }
+  }
+
+  // D) frame extreme
+  const f = normalizeTriad(role.frame_profile);
+  const fDom = dominanceModeOf(f);
+  if (fDom.top1.value >= 75) {
+    // counter-direction: if candidate's dominant is not the same as frame dominant
+    if (cDom.top1.key !== fDom.top1.key) points += 2;
+  } else if (fDom.top1.value >= 65) {
+    if (cDom.top1.key !== fDom.top1.key) points += 1;
+  }
+
+  // E) environment tags modulation
+  const tags = role.environment_tags || {};
+  if (tags.market_pressure === "hoch" && r.impulsiv - c.impulsiv >= 15) points += 1;
+  if (tags.regulation === "hoch" && r.analytisch - c.analytisch >= 15) points += 1;
+  if (tags.change_rate === "hoch" && c.analytisch - r.analytisch >= 15) points += 1;
+
+  let level: ControlIntensity = "LOW";
+  if (points >= 6) level = "HIGH";
+  else if (points >= 3) level = "MEDIUM";
+
+  return { points, level };
+}
+
+/** =========================
+ *  Matrix reasoning helpers
+ *  ========================= */
+
+function statusLabel(s: FitStatus) {
+  if (s === "SUITABLE") return "Geeignet";
+  if (s === "CONDITIONAL") return "Bedingt geeignet";
+  return "Nicht geeignet";
+}
+
+function statusBadgeClasses(s: FitStatus) {
+  if (s === "SUITABLE") return "bg-green-100 text-green-800 border-green-200";
+  if (s === "CONDITIONAL") return "bg-yellow-100 text-yellow-800 border-yellow-200";
+  return "bg-red-100 text-red-800 border-red-200";
+}
+
+function fitToTopLevelHeadline(f: FitStatus) {
+  if (f === "SUITABLE") return "✅ Geeignet";
+  if (f === "CONDITIONAL") return "⚠️ Bedingt geeignet";
+  return "❌ Nicht geeignet";
+}
+
+function controlLabel(c: ControlIntensity) {
+  if (c === "LOW") return "Niedrig";
+  if (c === "MEDIUM") return "Mittel";
+  return "Hoch";
+}
+
+/** =========================
+ *  Generate Matrix (7 standard + optional)
+ *  ========================= */
+
+function buildMatrix(role: RoleAnalysis, cand: CandidateInput): MatrixRow[] {
+  const r = normalizeTriad(role.role_profile);
+  const c = normalizeTriad(cand.candidate_profile);
+
+  const rDom = dominanceModeOf(r);
+  const cDom = dominanceModeOf(c);
+
+  const rows: MatrixRow[] = [];
+
+  // 1) Dominanzstruktur
+  const dominanceStatus: FitStatus = (() => {
+    const sameDominant =
+      (rDom.mode.startsWith("DUAL") && cDom.mode.startsWith("DUAL") &&
+        new Set([rDom.top1.key, rDom.top2.key]).size === 2 &&
+        new Set([cDom.top1.key, cDom.top2.key]).size === 2 &&
+        [rDom.top1.key, rDom.top2.key].sort().join("|") === [cDom.top1.key, cDom.top2.key].sort().join("|")) ||
+      (!rDom.mode.startsWith("DUAL") && !cDom.mode.startsWith("DUAL") && rDom.top1.key === cDom.top1.key);
+
+    const mainKey = rDom.top1.key;
+    const diff = Math.abs(r[mainKey] - c[mainKey]);
+
+    if (sameDominant && diff <= 10) return "SUITABLE";
+    if (sameDominant && diff <= 20) return "CONDITIONAL";
+    if (!sameDominant && rDom.gap1 >= 12) return "NOT_SUITABLE";
+    return "CONDITIONAL";
+  })();
+
+  rows.push({
+    areaId: "dominance",
+    areaLabel: "Dominanzstruktur",
+    roleDemand: dominanceLabel(rDom),
+    candidatePattern: dominanceLabel(cDom),
+    status: dominanceStatus,
+    reasoning:
+      dominanceStatus === "SUITABLE"
+        ? "Die dominante Steuerungslogik ist kompatibel. Die Rolle wird in ihrer Kernwirkung stabil abgebildet."
+        : dominanceStatus === "CONDITIONAL"
+          ? "Es gibt eine erkennbare Verschiebung bzw. Abweichung in der Dominanzlogik. Die Passung ist möglich, erfordert jedoch klare Rahmensetzung und Monitoring."
+          : "Die dominante Kernlogik der Rolle wird durch die Kandidatenstruktur strukturell verschoben. Das betrifft die zentrale Wirkweise der Position.",
+  });
+
+  // 2) Entscheidungslogik
+  const decisionStatus: FitStatus = (() => {
+    // role dominant vs candidate dominant: if role is impulsiv and candidate intuitiv -> hard mismatch
+    const roleDomKey = rDom.top1.key;
+    const candDomKey = cDom.top1.key;
+
+    if (roleDomKey === "impulsiv" && candDomKey === "intuitiv" && r.impulsiv >= 50) return "NOT_SUITABLE";
+    if (roleDomKey === "analytisch" && candDomKey === "impulsiv" && r.analytisch >= 50) return "CONDITIONAL";
+    if (roleDomKey === candDomKey) return "SUITABLE";
+    return "CONDITIONAL";
+  })();
+
+  rows.push({
+    areaId: "decision_logic",
+    areaLabel: "Entscheidungslogik",
+    roleDemand:
+      rDom.top1.key === "impulsiv"
+        ? "Schnell, verbindlich, interventionsstark"
+        : rDom.top1.key === "analytisch"
+          ? "Sorgfältig, standardorientiert, risikobewusst"
+          : "Abstimmungsorientiert, beziehungsstabilisierend",
+    candidatePattern:
+      cDom.top1.key === "impulsiv"
+        ? "Direkt, tempoorientiert, entscheidungsfreudig"
+        : cDom.top1.key === "analytisch"
+          ? "Abwägend, absichernd, strukturorientiert"
+          : "Konsensorientiert, teambezogen, moderierend",
+    status: decisionStatus,
+    reasoning:
+      decisionStatus === "SUITABLE"
+        ? "Die Entscheidungslogik des Kandidaten trifft die Kernanforderung der Rolle. Entscheidungen werden voraussichtlich im passenden Rhythmus getroffen."
+        : decisionStatus === "CONDITIONAL"
+          ? "Die Entscheidungslogik weicht in Teilen ab. Entscheidend ist, ob Entscheidungsfristen, Eskalationsregeln und Verbindlichkeit klar gesetzt werden."
+          : "Die Rolle verlangt schnelle Durchsetzung bei Zielabweichung. Das Profil priorisiert Stabilität/Abstimmung, wodurch Interventionen verzögert werden können.",
+  });
+
+  // 3) KPI-/Arbeitssteuerung
+  const kpiStatus: FitStatus = (() => {
+    const needsAnalytics = r.analytisch >= 20; // role needs monitoring base
+    if (!needsAnalytics) return "SUITABLE";
+    if (c.analytisch >= r.analytisch - 5) return "SUITABLE";
+    if (c.analytisch >= r.analytisch - 15) return "CONDITIONAL";
+    return "CONDITIONAL";
+  })();
+
+  rows.push({
+    areaId: "kpi_work",
+    areaLabel: "KPI-/Arbeitssteuerung",
+    roleDemand: "Kennzahlen als Steuerungsinstrument, klare Reporting-Rhythmen",
+    candidatePattern:
+      c.analytisch >= 30
+        ? "Zahlen-/Strukturorientierung gut anschlussfähig"
+        : "Kennzahlen eher als Orientierung, weniger als konsequenter Steuerungshebel",
+    status: kpiStatus,
+    reasoning:
+      kpiStatus === "SUITABLE"
+        ? "Die notwendige analytische Basis ist vorhanden. KPI-Führung und Prozessdisziplin sind stabil aufsetzbar."
+        : "KPI-Disziplin ist umsetzbar, aber nicht zwingend aus der natürlichen Dominanz. Erfordert feste Routinen, klare Standards und konsequentes Nachhalten.",
+  });
+
+  // 4) Führungswirkung (nur wenn required)
+  if (role.leadership?.required) {
+    const lp = role.leadership.profile ? normalizeTriad(role.leadership.profile) : null;
+    const leadershipStatus: FitStatus = (() => {
+      // if role leadership heavily impulsiv and candidate impulsiv low => not
+      if (lp && lp.impulsiv >= 60 && c.impulsiv <= 35) return "NOT_SUITABLE";
+      // if candidate is intuitiv-dominant in performance-driven context => conditional
+      if (lp && lp.impulsiv >= 55 && cDom.top1.key === "intuitiv") return "CONDITIONAL";
+      return "CONDITIONAL";
+    })();
+
+    rows.push({
+      areaId: "leadership_effect",
+      areaLabel: "Führungswirkung",
+      roleDemand: lp
+        ? `${lp.impulsiv}% Impulsiv / ${lp.intuitiv}% Intuitiv / ${lp.analytisch}% Analytisch (Führungskontext)`
+        : "Führung erforderlich (Profil nicht hinterlegt)",
+      candidatePattern: `${c.impulsiv}% Impulsiv / ${c.intuitiv}% Intuitiv / ${c.analytisch}% Analytisch`,
+      status: leadershipStatus,
+      reasoning:
+        leadershipStatus === "NOT_SUITABLE"
+          ? "Die Rolle verlangt klare Ergebnisdominanz in der Führung. Das Profil ist hierfür strukturell zu wenig interventionsstark."
+          : "Führung ist möglich, jedoch nur stabil, wenn Erwartungshaltung, Zielarchitektur und Eskalationslogik eindeutig gesetzt sind.",
+    });
+  }
+
+  // 5) Konfliktfähigkeit / Durchsetzung
+  const conflictStatus: FitStatus = (() => {
+    if (r.impulsiv >= 50 && c.impulsiv <= 35) return "NOT_SUITABLE";
+    if (r.impulsiv >= 45 && c.impulsiv <= 40) return "CONDITIONAL";
+    return "CONDITIONAL";
+  })();
+
+  rows.push({
+    areaId: "conflict",
+    areaLabel: "Konfliktfähigkeit",
+    roleDemand: r.impulsiv >= 50 ? "Direkt, klar, leistungs- und zielorientiert" : "Situativ konfliktfähig",
+    candidatePattern: c.impulsiv >= 45 ? "Konflikte werden eher direkt geführt" : "Konflikte werden eher moderiert/abgesichert",
+    status: conflictStatus,
+    reasoning:
+      conflictStatus === "NOT_SUITABLE"
+        ? "Unter Zielabweichung wird wahrscheinlich zu viel moderiert statt konsequent entschieden. Low-Performance kann zu lange im System bleiben."
+        : "Konfliktfähigkeit ist grundsätzlich vorhanden, muss aber in Performance-Situationen konsequent aktiviert werden (Eskalationsregeln, klare Fristen, Review-Routinen).",
+  });
+
+  // 6) Wettbewerbsdynamik / Tempo
+  const tags = role.environment_tags || {};
+  const competitionStatus: FitStatus = (() => {
+    if (tags.market_pressure === "hoch" && r.impulsiv - c.impulsiv >= 15) return "NOT_SUITABLE";
+    if (r.impulsiv - c.impulsiv >= 10) return "CONDITIONAL";
+    return "CONDITIONAL";
+  })();
+
+  rows.push({
+    areaId: "competition",
+    areaLabel: "Wettbewerbsdynamik",
+    roleDemand: tags.market_pressure === "hoch" ? "Hoher Marktdruck: Tempo & Abschlussdominanz" : "Normale Marktdynamik",
+    candidatePattern:
+      c.impulsiv >= 45 ? "Tempo-/Abschlussorientierung gut" : "Tempo eher zugunsten Stabilität/Abstimmung reduziert",
+    status: competitionStatus,
+    reasoning:
+      competitionStatus === "NOT_SUITABLE"
+        ? "In einem Hochdruckumfeld ist eine impulsive Interventionslogik zentral. Das Profil verschiebt die Dynamik in Richtung Stabilisierung."
+        : "Die Dynamik ist steuerbar, wenn Prioritäten, Zielhärte und schnelle Maßnahmenwege klar etabliert sind.",
+  });
+
+  // 7) Kulturwirkung
+  const cultureStatus: FitStatus = (() => {
+    if (r.impulsiv >= 60 && c.intuitiv >= 50) return "CONDITIONAL"; // cultural shift risk
+    if (c.intuitiv >= 45) return "SUITABLE"; // positive team impact
+    return "CONDITIONAL";
+  })();
+
+  rows.push({
+    areaId: "culture",
+    areaLabel: "Kulturwirkung",
+    roleDemand: r.impulsiv >= 55 ? "Performance-/Ergebnisfokus" : "Ausgewogene Kultur",
+    candidatePattern: c.intuitiv >= 45 ? "Beziehungsstabilisierend, motivationsorientiert" : "Eher sach-/zielorientiert",
+    status: cultureStatus,
+    reasoning:
+      cultureStatus === "SUITABLE"
+        ? "Das Profil kann Teamstabilität, Motivation und Bindung stärken – ohne die Rollenlogik zwingend zu gefährden."
+        : "Es besteht ein Risiko der Kulturverschiebung (Zielhärte/Leistungsdifferenzierung). Das ist nur tragfähig, wenn Leistungsarchitektur klar bleibt.",
+  });
+
+  // Optional areas (based on environment tags)
+  if ((role.environment_tags?.sales_cycle || "mittel") === "lang") {
+    rows.push({
+      areaId: "strategy_complexity",
+      areaLabel: "Strategische Komplexität",
+      roleDemand: "Langer Zyklus: Priorisierung, Geduld, strukturierte Marktbearbeitung",
+      candidatePattern:
+        c.analytisch >= 30 ? "Struktur und Planung anschlussfähig" : "Mehr situativ als systematisch",
+      status: c.analytisch >= 25 ? "CONDITIONAL" : "CONDITIONAL",
+      reasoning:
+        "Bei langen Zyklen wird Struktur wichtiger. Entscheidend ist, ob der Kandidat systematisch arbeitet (Pipeline-Qualität, Prozessdisziplin, klare Meilensteine).",
+    });
+  }
+
+  if (role.environment_tags?.regulation === "hoch") {
+    rows.push({
+      areaId: "regulatory_precision",
+      areaLabel: "Regulatorische Präzision",
+      roleDemand: "Hohe Regel-/Standardtreue erforderlich",
+      candidatePattern: c.analytisch >= 35 ? "Sorgfalt/Präzision gut" : "Präzision muss stark gerahmt werden",
+      status: c.analytisch >= 35 ? "CONDITIONAL" : "CONDITIONAL",
+      reasoning:
+        "In regulierten Umfeldern muss Präzision stabil sein. Falls analytische Disziplin nicht natürlich ist, braucht es klare Standards, Freigabeprozesse und Kontrollen.",
+    });
+  }
+
+  if (role.environment_tags?.customer_type) {
+    rows.push({
+      areaId: "customer_orientation",
+      areaLabel: "Kundenorientierung",
+      roleDemand: role.environment_tags.customer_type === "B2C"
+        ? "Hohe Frequenz, klare Abschlussorientierung, schnelle Reaktion"
+        : role.environment_tags.customer_type === "B2B"
+          ? "Beziehungsstabilität + wirtschaftliche Steuerung"
+          : "Situativ",
+      candidatePattern:
+        c.intuitiv >= 45 ? "Beziehungsaufbau stark" : "Eher transaktional",
+      status: "CONDITIONAL",
+      reasoning:
+        "Kundenorientierung ist grundsätzlich vorhanden; entscheidend ist die Balance aus Beziehungsfähigkeit und Abschluss-/Ergebnislogik im geforderten Setting.",
+    });
+  }
+
+  return rows;
+}
+
+/** =========================
+ *  Determine critical area (worst severity)
+ *  ========================= */
+
+function criticalAreaFromMatrix(matrix: MatrixRow[]): { id: MatrixAreaId; label: string } {
+  // Priority: NOT_SUITABLE > CONDITIONAL > SUITABLE
+  const score = (s: FitStatus) => (s === "NOT_SUITABLE" ? 2 : s === "CONDITIONAL" ? 1 : 0);
+
+  let worst = matrix[0];
+  for (const row of matrix) {
+    if (score(row.status) > score(worst.status)) worst = row;
+  }
+  return { id: worst.areaId, label: worst.areaLabel };
+}
+
+/** =========================
+ *  Risks & Development & Integration Plan
+ *  ========================= */
+
+function buildRisks(role: RoleAnalysis, engine: { overallFit: FitStatus; control: ControlIntensity; matrix: MatrixRow[] }) {
+  const tags = role.environment_tags || {};
+  const critical = criticalAreaFromMatrix(engine.matrix).id;
+
+  const shortTerm: string[] = [];
+  const midTerm: string[] = [];
+  const longTerm: string[] = [];
+
+  // Base by fit
+  if (engine.overallFit === "SUITABLE") {
+    shortTerm.push("Schnelle Wirksamkeit durch hohe strukturelle Passung, geringe Reibung im Start.");
+    midTerm.push("Stabile Ziel- und Entscheidungslogik bei überschaubarem Steuerungsaufwand.");
+    longTerm.push("Rollenwirkung bleibt konsistent, geringe Gefahr von schleichender Systemverschiebung.");
+  } else if (engine.overallFit === "CONDITIONAL") {
+    shortTerm.push("Positive Startwirkung möglich, jedoch mit klarer Abweichung in einem relevanten Strukturfeld.");
+    midTerm.push("Ohne klare Rahmensetzung steigt das Risiko von Unschärfe in Zielhärte und Entscheidungsrhythmus.");
+    longTerm.push("Möglichkeit einer schleichenden Systemverschiebung, wenn Steuerungsmechanismen nicht greifen.");
+  } else {
+    shortTerm.push("Reibung im Start wahrscheinlich, da Kernlogik der Rolle nicht abgebildet wird.");
+    midTerm.push("Leistungsarchitektur wird voraussichtlich verschoben (Tempo, Zielhärte, Intervention).");
+    longTerm.push("Hohe Wahrscheinlichkeit von dauerhafter Fehlwirkung (Umsatz-/Qualitätsrisiko je nach Umfeld).");
+  }
+
+  // Critical area amplification
+  if (critical === "conflict") {
+    midTerm.push("Zielabweichungen werden eher moderiert als konsequent korrigiert; Low-Performance kann zu lange bestehen bleiben.");
+    longTerm.push("Leistungsdifferenzierung verliert Klarheit; Wettbewerbsspannung im Team sinkt.");
+  }
+  if (critical === "decision_logic") {
+    midTerm.push("Entscheidungsfristen verlängern sich, Abweichungen werden eher abgesichert als entschieden.");
+    longTerm.push("Reaktionsgeschwindigkeit nimmt ab; Marktchancen werden später oder inkonsistent genutzt.");
+  }
+  if (critical === "kpi_work") {
+    midTerm.push("Reporting- und Prozessdisziplin wird inkonsistent, wenn sie nicht strukturell eingefordert wird.");
+    longTerm.push("Forecast-/Transparenzqualität sinkt; Nacharbeit und Korrekturschleifen steigen.");
+  }
+
+  // Environment modulation
+  if (tags.market_pressure === "hoch") {
+    longTerm.push("Im Hochdruckmarkt wirkt jede Verzögerung direkt auf Abschlussquote und Umsatzdynamik.");
+  }
+  if (tags.regulation === "hoch") {
+    longTerm.push("In regulierten Kontexten kann fehlende Präzision zu Qualitäts-, Haftungs- oder Audit-Risiken führen.");
+  }
+
+  return { shortTerm, midTerm, longTerm };
+}
+
+function developmentFromControl(control: ControlIntensity) {
+  if (control === "LOW") {
+    return {
+      likelihood: "hoch" as const,
+      timeframe: "3–6 Monate" as const,
+      text: "Die Integration ist weitgehend selbsttragend. Entwicklung erfolgt primär über Routine und Rollenpraxis, nicht über engmaschige Steuerung."
+    };
+  }
+  if (control === "MEDIUM") {
+    return {
+      likelihood: "mittel" as const,
+      timeframe: "6–12 Monate" as const,
+      text: "Entwicklung ist realistisch, erfordert jedoch feste Review-Rhythmen, klare Entscheidungsregeln und konsequentes Nachhalten der Rollenlogik."
+    };
+  }
+  return {
+    likelihood: "gering" as const,
+    timeframe: ">12 Monate" as const,
+    text: "Die Abweichung betrifft Kernlogik. Entwicklung ist nur mit sehr klarer Rahmenarchitektur, engmaschiger Steuerung und konsequenter Validierung möglich."
+  };
+}
+
+function integrationPlan(role: RoleAnalysis, criticalArea: MatrixAreaId, control: ControlIntensity) {
+  const tags = role.environment_tags || {};
+  const phase_0_30: string[] = [];
+  const phase_30_60: string[] = [];
+  const phase_60_90: string[] = [];
+
+  // Always include baseline
+  phase_0_30.push("Entscheidungsbefugnisse, Zielarchitektur und Verantwortungsgrenzen schriftlich klären.");
+  phase_0_30.push("Fixe KPI-/Review-Rhythmen setzen (z.B. wöchentlich Pipeline/Performance, monatlich Forecast).");
+  phase_0_30.push("Top-3 Spannungsfelder der Rolle offen benennen und als Steuerungsfokus definieren.");
+
+  // Critical-area focus
+  if (criticalArea === "conflict") {
+    phase_0_30.push("Eskalationsregeln definieren: ab welcher Abweichung wird wie interveniert (Frist, Maßnahme, Konsequenz).");
+    phase_30_60.push("Konfliktführung in realen Fällen strukturieren: Vorbereitung, Gesprächsleitfaden, Nachhalten der Vereinbarungen.");
+    phase_60_90.push("Validierung: Werden Low-Performance-Themen zeitnah adressiert? Bleibt Zielhärte stabil?");
+  } else if (criticalArea === "decision_logic") {
+    phase_0_30.push("Entscheidungsfristen festlegen (z.B. 48h bei Zielabweichung, 7 Tage bei strukturellen Änderungen).");
+    phase_30_60.push("Entscheidungsqualität prüfen: Geschwindigkeit vs. Absicherung, Klarheit der Prioritäten, Konsequenz der Umsetzung.");
+    phase_60_90.push("Validierung: Bleibt der Entscheidungsrhythmus marktkonform? Sinkt Abstimmungs-Overhead?");
+  } else if (criticalArea === "kpi_work") {
+    phase_0_30.push("Reporting-Standard definieren (CRM-Disziplin, Pipeline-Definition, Forecast-Regeln).");
+    phase_30_60.push("KPI-Nachhalten auditieren: Vollständigkeit, Aktualität, Konsequenz der Maßnahmenableitung.");
+    phase_60_90.push("Validierung: Stabilität der Transparenz und Forecast-Güte (nicht nur Aktivität).");
+  } else {
+    phase_30_60.push("Spannungsfelder aktiv steuern: Priorisierung, Maßnahmenlogik, klare Review-Entscheidungen.");
+    phase_60_90.push("Validierung: Systemwirkung prüfen (Tempo, Zielhärte, Prozessqualität, Teamdynamik).");
+  }
+
+  // Environment modulation
+  if (tags.market_pressure === "hoch") {
+    phase_0_30.push("Schnelle Maßnahmenwege definieren (Aktionen, Angebots-/Preisfreigaben, Eskalationspfade).");
+    phase_30_60.push("Reaktionsgeschwindigkeit messen: Zeit von Abweichung → Entscheidung → Maßnahme.");
+  }
+  if (tags.regulation === "hoch") {
+    phase_0_30.push("Compliance-/Qualitätsstandards als Muss-Kriterien dokumentieren (Checks, Freigaben, Dokumentation).");
+    phase_30_60.push("Qualitätsprüfungen in Routine überführen (Stichproben, 4-Augen-Prinzip, Audit-Readiness).");
+  }
+
+  // Control intensity wording
+  if (control === "HIGH") {
+    phase_0_30.push("Management-Sponsoring festlegen: wöchentliches Steering im ersten Monat.");
+    phase_30_60.push("Enges Coaching auf kritischem Verhalten (Entscheidung, Konflikt, KPI-Disziplin).");
+    phase_60_90.push("Go/No-Go-Kriterien definieren (z.B. Zielhärte, Entscheidungsfristen, KPI-Stabilität).");
+  }
+
+  return { phase_0_30, phase_30_60, phase_60_90 };
+}
+
+/** =========================
+ *  Assemble Report Engine
+ *  ========================= */
+
+function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResult {
+  const roleDom = dominanceModeOf(role.role_profile);
+  const candDom = dominanceModeOf(cand.candidate_profile);
+
+  const ko = koRuleTriggered(role, cand);
+  const mismatch = weightedMismatch(role.role_profile, cand.candidate_profile);
+
+  const overallFit: FitStatus = ko ? "NOT_SUITABLE" : overallFitFromScore(mismatch);
+
+  const ctrl = controlIntensity(role, cand);
+
+  const matrix = buildMatrix(role, cand);
+  const critical = criticalAreaFromMatrix(matrix);
+
+  // key reason (short)
+  const keyReason = (() => {
+    const domShift =
+      roleDom.mode.startsWith("DUAL") || candDom.mode.startsWith("DUAL")
+        ? `Dominanzlogik (Rolle: ${dominanceLabel(roleDom)} vs. Kandidat: ${dominanceLabel(candDom)})`
+        : `Dominanzverschiebung ${labelComponent(roleDom.top1.key)} → ${labelComponent(candDom.top1.key)}`;
+
+    return `${domShift}; kritisch: ${critical.label}; Steuerungsintensität: ${controlLabel(ctrl.level)}`;
+  })();
+
+  const execSummary = (() => {
+    const name = cand.candidate_name ? ` (${cand.candidate_name})` : "";
+    const intro = `Rolle: ${role.job_title} | Kandidat${name}`;
+    const fitLine = `Gesamteinstufung: ${fitToTopLevelHeadline(overallFit)} · Steuerungsintensität: ${controlLabel(ctrl.level)}`;
+    const domLine = `Rollenlogik: ${dominanceLabel(roleDom)} · Kandidatenlogik: ${dominanceLabel(candDom)}`;
+    const reasonLine =
+      overallFit === "SUITABLE"
+        ? `Die Kernlogik der Rolle wird strukturell stabil getroffen. Kritischer Bereich: ${critical.label}.`
+        : overallFit === "CONDITIONAL"
+          ? `Die Passung ist grundsätzlich vorhanden, jedoch mit relevanter Abweichung. Kritischer Bereich: ${critical.label}.`
+          : `Die Kernlogik der Rolle wird durch das Kandidatenprofil voraussichtlich verschoben. Kritischer Bereich: ${critical.label}.`;
+    return [intro, fitLine, domLine, reasonLine].join("\n");
+  })();
+
+  const coreFinding = (() => {
+    if (overallFit === "SUITABLE") {
+      return `Die strukturelle Grundpassung ist hoch. Die dominanten Anforderungen der Rolle werden durch die Persönlichkeitsstruktur des Kandidaten abgebildet. Entscheidend ist primär die saubere operative Umsetzung (KPI-Rhythmus, Priorisierung, Spannungsfelder) – nicht eine grundlegende Kompensation.`;
+    }
+    if (overallFit === "CONDITIONAL") {
+      return `Die strukturelle Passung ist grundsätzlich gegeben, jedoch nicht selbststabilisierend. Die Abweichung liegt im Bereich „${critical.label}“. Ohne klare Entscheidungsregeln, verbindliche KPI-Führung und definierte Eskalationspfade besteht das Risiko einer schleichenden Verschiebung der Rollenwirkung.`;
+    }
+    return `Die strukturelle Passung ist niedrig. Die Abweichung betrifft die Kernlogik der Rolle und zeigt sich besonders im Bereich „${critical.label}“. Das Risiko ist nicht primär trainingsbedingt, sondern strukturell. Eine Besetzung würde voraussichtlich die Leistungsarchitektur der Rolle verändern.`;
+  })();
+
+  const risks = buildRisks(role, { overallFit, control: ctrl.level, matrix });
+  const dev = developmentFromControl(ctrl.level);
+  const plan = integrationPlan(role, critical.id, ctrl.level);
+
+  return {
+    roleDominance: roleDom,
+    candDominance: candDom,
+    overallFit,
+    mismatchScore: mismatch,
+    koTriggered: ko,
+    controlIntensity: ctrl.level,
+    controlPoints: ctrl.points,
+    criticalArea: critical.id,
+    criticalAreaLabel: critical.label,
+    keyReason,
+    executiveSummary: execSummary,
+    coreFinding,
+    matrix,
+    risks,
+    development: dev,
+    integrationPlan90: plan,
+  };
+}
+
+/** =========================
+ *  UI Components
+ *  ========================= */
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+      <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+      <div className="mt-3 text-sm leading-6 text-gray-800">{children}</div>
+    </section>
+  );
+}
+
+function CodeBox({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <textarea
+      className="h-80 w-full rounded-xl border border-gray-200 bg-gray-50 p-3 font-mono text-xs text-gray-900 outline-none focus:ring-2 focus:ring-gray-200"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      spellCheck={false}
+    />
+  );
+}
+
+function Badge({ status }: { status: FitStatus }) {
+  return (
+    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium ${statusBadgeClasses(status)}`}>
+      {statusLabel(status)}
+    </span>
+  );
+}
+
+/** =========================
+ *  Page
+ *  ========================= */
+
+const DEFAULT_ROLE: RoleAnalysis = {
+  job_title: "Vertriebsleiter B2C",
+  job_family: "Vertrieb & Marketing > Vertrieb",
+  role_profile: { impulsiv: 53, intuitiv: 20, analytisch: 27 },
+  frame_profile: { impulsiv: 80, intuitiv: 0, analytisch: 20 },
+  leadership: {
+    required: true,
+    profile: { impulsiv: 74, intuitiv: 17, analytisch: 9 },
+    type: "disziplinarisch",
+  },
+  tasks_profile: { impulsiv: 50, intuitiv: 18, analytisch: 32 },
+  human_profile: { impulsiv: 75, intuitiv: 17, analytisch: 8 },
+  success_metrics: ["Umsatzentwicklung", "Abschlussquote", "Teamzielerreichung", "Prozessqualität"],
+  tension_fields: [
+    "Umsatzdruck vs. nachhaltiger Kundenbindung",
+    "Schnelle Abschlussorientierung vs. Prozessqualität",
+    "Direkte Steuerung vs. Förderung von Eigenverantwortung im Team",
+  ],
+  environment_tags: {
+    market_pressure: "hoch",
+    sales_cycle: "kurz",
+    regulation: "niedrig",
+    change_rate: "hoch",
+    customer_type: "B2C",
+  },
+  top_items: [
+    { type: "task", text: "Aktive Akquise von Neukunden (Ansprache, Abschluss)", category: "impulsiv", priority: "hoch" },
+    { type: "task", text: "Führen und Entwickeln des Vertriebsteams (Zielsteuerung)", category: "impulsiv", priority: "hoch" },
+    { type: "task", text: "Analyse von Kennzahlen und Ableitung umsetzbarer Maßnahmen", category: "analytisch", priority: "hoch" },
+    { type: "human", text: "Hohe Eigenmotivation und Zielorientierung", category: "impulsiv", priority: "hoch" },
+    { type: "human", text: "Kommunikationsstärke für klare Ansprache und Verhandlung", category: "impulsiv", priority: "hoch" },
+  ],
+};
+
+const DEFAULT_CAND: CandidateInput = {
+  candidate_name: "Kandidat Y",
+  candidate_profile: { impulsiv: 28, intuitiv: 54, analytisch: 18 },
+};
+
+export default function ReportPage() {
+  const [roleJson, setRoleJson] = useState<string>(JSON.stringify(DEFAULT_ROLE, null, 2));
+  const [candJson, setCandJson] = useState<string>(JSON.stringify(DEFAULT_CAND, null, 2));
+  const [error, setError] = useState<string | null>(null);
+
+  const parsed = useMemo(() => {
+    setError(null);
+    try {
+      const role: RoleAnalysis = JSON.parse(roleJson);
+      const cand: CandidateInput = JSON.parse(candJson);
+
+      // minimal sanity checks
+      const rSum = triadSum(role.role_profile);
+      const cSum = triadSum(cand.candidate_profile);
+      if (rSum <= 0 || cSum <= 0) throw new Error("Profile dürfen nicht 0 sein.");
+      return { role, cand };
+    } catch (e: any) {
+      setError(e?.message || "Ungültiges JSON");
+      return null;
+    }
+  }, [roleJson, candJson]);
+
+  const engine = useMemo(() => {
+    if (!parsed) return null;
+    return runEngine(parsed.role, parsed.cand);
+  }, [parsed]);
+
+  return (
+    <main className="min-h-screen bg-gray-50 p-6">
+      <div className="mx-auto max-w-6xl space-y-6">
+        <header className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+          <h1 className="text-xl font-semibold text-gray-900">bioLogic Report – Generator (Masterstruktur v1.0)</h1>
+          <p className="mt-1 text-sm text-gray-600">
+            JSON rein → Report raus (13 Dominanz-Modi, Fit-Logik, Steuerungsintensität, Matrix, 90-Tage-Plan).
+          </p>
+        </header>
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <Section title="Input: Rollen-Analyse (JSON)">
+            <CodeBox value={roleJson} onChange={setRoleJson} />
+          </Section>
+
+          <Section title="Input: Kandidat (JSON)">
+            <CodeBox value={candJson} onChange={setCandJson} />
+          </Section>
+        </div>
+
+        {error && (
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+            JSON-Fehler: {error}
+          </div>
+        )}
+
+        {engine && parsed && (
+          <div className="space-y-6">
+            {/* Executive Summary */}
+            <Section title="1. Executive Summary">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-base font-semibold text-gray-900">{fitToTopLevelHeadline(engine.overallFit)}</span>
+                <Badge status={engine.overallFit} />
+                <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-800">
+                  Steuerungsintensität: {controlLabel(engine.controlIntensity)} (Punkte: {engine.controlPoints})
+                </span>
+                <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-800">
+                  Mismatch: {engine.mismatchScore}{engine.koTriggered ? " · K.O. aktiv" : ""}
+                </span>
+              </div>
+
+              <pre className="mt-3 whitespace-pre-wrap rounded-xl border border-gray-200 bg-gray-50 p-3 text-xs text-gray-900">
+                {engine.executiveSummary}
+              </pre>
+
+              <div className="mt-3 text-sm">
+                <span className="font-semibold">Kritischer Bereich:</span> {engine.criticalAreaLabel}
+              </div>
+              <div className="mt-1 text-sm text-gray-700">
+                <span className="font-semibold">Kurzbegründung:</span> {engine.keyReason}
+              </div>
+            </Section>
+
+            {/* Role DNA */}
+            <Section title="2. Rollen-DNA (Soll)">
+              <div className="text-sm">
+                <div className="font-semibold">{parsed.role.job_title}</div>
+                <div className="text-gray-600">{parsed.role.job_family}</div>
+              </div>
+
+              <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-3">
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                  <div className="text-xs text-gray-600">Gesamtprofil</div>
+                  <div className="mt-1 text-sm">
+                    Impulsiv: <b>{normalizeTriad(parsed.role.role_profile).impulsiv}%</b><br />
+                    Intuitiv: <b>{normalizeTriad(parsed.role.role_profile).intuitiv}%</b><br />
+                    Analytisch: <b>{normalizeTriad(parsed.role.role_profile).analytisch}%</b>
+                  </div>
+                  <div className="mt-2 text-xs text-gray-700">{dominanceLabel(engine.roleDominance)}</div>
+                </div>
+
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                  <div className="text-xs text-gray-600">Rahmenprofil</div>
+                  <div className="mt-1 text-sm">
+                    Impulsiv: <b>{normalizeTriad(parsed.role.frame_profile).impulsiv}%</b><br />
+                    Intuitiv: <b>{normalizeTriad(parsed.role.frame_profile).intuitiv}%</b><br />
+                    Analytisch: <b>{normalizeTriad(parsed.role.frame_profile).analytisch}%</b>
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                  <div className="text-xs text-gray-600">Führung</div>
+                  <div className="mt-1 text-sm">
+                    Erforderlich: <b>{parsed.role.leadership.required ? "Ja" : "Nein"}</b>
+                    {parsed.role.leadership.required && parsed.role.leadership.profile ? (
+                      <>
+                        <br />
+                        Impulsiv: <b>{normalizeTriad(parsed.role.leadership.profile).impulsiv}%</b><br />
+                        Intuitiv: <b>{normalizeTriad(parsed.role.leadership.profile).intuitiv}%</b><br />
+                        Analytisch: <b>{normalizeTriad(parsed.role.leadership.profile).analytisch}%</b>
+                      </>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <div className="font-semibold">Erfolg wird gemessen an</div>
+                <ul className="mt-2 list-disc pl-5">
+                  {parsed.role.success_metrics.map((m, idx) => (
+                    <li key={idx}>{m}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="mt-4">
+                <div className="font-semibold">Spannungsfelder der Rolle</div>
+                <ul className="mt-2 list-disc pl-5">
+                  {parsed.role.tension_fields.map((t, idx) => (
+                    <li key={idx}>{t}</li>
+                  ))}
+                </ul>
+              </div>
+
+              {parsed.role.top_items?.length ? (
+                <div className="mt-4">
+                  <div className="font-semibold">Höchste Priorität (Aus Analyse)</div>
+                  <ul className="mt-2 list-disc pl-5">
+                    {parsed.role.top_items
+                      .filter((x) => x.priority === "hoch")
+                      .slice(0, 8)
+                      .map((x, idx) => (
+                        <li key={idx}>
+                          {x.text} <span className="text-xs text-gray-500">· {labelComponent(x.category)}</span>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              ) : null}
+            </Section>
+
+            {/* Candidate DNA */}
+            <Section title="3. Kandidaten-DNA (Ist)">
+              <div className="text-sm">
+                <div className="font-semibold">{parsed.cand.candidate_name || "Kandidat"}</div>
+              </div>
+
+              <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-3">
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                  <div className="text-xs text-gray-600">Gesamtprofil</div>
+                  <div className="mt-1 text-sm">
+                    Impulsiv: <b>{normalizeTriad(parsed.cand.candidate_profile).impulsiv}%</b><br />
+                    Intuitiv: <b>{normalizeTriad(parsed.cand.candidate_profile).intuitiv}%</b><br />
+                    Analytisch: <b>{normalizeTriad(parsed.cand.candidate_profile).analytisch}%</b>
+                  </div>
+                  <div className="mt-2 text-xs text-gray-700">{dominanceLabel(engine.candDominance)}</div>
+                </div>
+
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                  <div className="text-xs text-gray-600">Interpretation</div>
+                  <div className="mt-1 text-sm text-gray-800">
+                    {engine.candDominance.top1.key === "intuitiv"
+                      ? "Beziehungs- und Abstimmungslogik steht im Vordergrund. Entscheidungen werden eher stabilisiert und kommunikativ abgesichert."
+                      : engine.candDominance.top1.key === "impulsiv"
+                        ? "Tempo- und Ergebnislogik steht im Vordergrund. Entscheidungen werden eher schnell und direkt getroffen."
+                        : "Struktur- und Absicherungslogik steht im Vordergrund. Entscheidungen werden eher sorgfältig und standardorientiert getroffen."}
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                  <div className="text-xs text-gray-600">Notizen (optional)</div>
+                  <div className="mt-1 text-sm text-gray-800">
+                    {parsed.cand.notes ? parsed.cand.notes : <span className="text-gray-500">—</span>}
+                  </div>
+                </div>
+              </div>
+            </Section>
+
+            {/* Dominance shift */}
+            <Section title="4. Dominanz-Verschiebung">
+              <div className="text-sm">
+                <div>
+                  <span className="font-semibold">Rolle:</span> {dominanceLabel(engine.roleDominance)}
+                </div>
+                <div className="mt-1">
+                  <span className="font-semibold">Kandidat:</span> {dominanceLabel(engine.candDominance)}
+                </div>
+
+                <div className="mt-3 text-gray-800">
+                  {engine.overallFit === "SUITABLE" ? (
+                    <>Die dominanten Strukturprinzipien bleiben stabil. Die Rolle wird in ihrer Kernwirkung voraussichtlich konsistent abgebildet.</>
+                  ) : engine.overallFit === "CONDITIONAL" ? (
+                    <>Es besteht eine strukturelle Verschiebung bzw. Teilabweichung. Entscheidend ist, ob die Rollenlogik über klare Steuerungsmechanismen stabilisiert wird.</>
+                  ) : (
+                    <>Die dominante Steuerungslogik der Rolle wird durch das Kandidatenprofil voraussichtlich verschoben. Die Kernwirkung der Position verändert sich systemisch.</>
+                  )}
+                </div>
+              </div>
+            </Section>
+
+            {/* Matrix */}
+            <Section title="5. Strukturelle Eignungsmatrix">
+              <div className="overflow-x-auto">
+                <table className="min-w-full border-collapse text-sm">
+                  <thead>
+                    <tr className="bg-gray-50 text-left">
+                      <th className="border border-gray-200 px-3 py-2">Bewertungsbereich</th>
+                      <th className="border border-gray-200 px-3 py-2">Rollenanforderung</th>
+                      <th className="border border-gray-200 px-3 py-2">Kandidatenstruktur</th>
+                      <th className="border border-gray-200 px-3 py-2">Eignung</th>
+                      <th className="border border-gray-200 px-3 py-2">Begründung & Systemwirkung</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {engine.matrix.map((row) => (
+                      <tr key={row.areaId} className="align-top">
+                        <td className="border border-gray-200 px-3 py-2 font-medium">{row.areaLabel}</td>
+                        <td className="border border-gray-200 px-3 py-2 text-gray-800">{row.roleDemand}</td>
+                        <td className="border border-gray-200 px-3 py-2 text-gray-800">{row.candidatePattern}</td>
+                        <td className="border border-gray-200 px-3 py-2">
+                          <span className={`inline-flex items-center rounded-full border px-2 py-1 text-xs font-medium ${statusBadgeClasses(row.status)}`}>
+                            {statusLabel(row.status)}
+                          </span>
+                        </td>
+                        <td className="border border-gray-200 px-3 py-2 text-gray-800">{row.reasoning}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Section>
+
+            {/* Core finding */}
+            <Section title="6. Entscheidungsrelevanter Kernbefund">
+              <div className="text-sm text-gray-800">{engine.coreFinding}</div>
+            </Section>
+
+            {/* Risks */}
+            <Section title="7. Systemische Risikoprognose">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                  <div className="text-sm font-semibold">Kurzfristig</div>
+                  <ul className="mt-2 list-disc pl-5 text-sm">
+                    {engine.risks.shortTerm.map((x, i) => <li key={i}>{x}</li>)}
+                  </ul>
+                </div>
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                  <div className="text-sm font-semibold">Mittelfristig</div>
+                  <ul className="mt-2 list-disc pl-5 text-sm">
+                    {engine.risks.midTerm.map((x, i) => <li key={i}>{x}</li>)}
+                  </ul>
+                </div>
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                  <div className="text-sm font-semibold">Langfristig</div>
+                  <ul className="mt-2 list-disc pl-5 text-sm">
+                    {engine.risks.longTerm.map((x, i) => <li key={i}>{x}</li>)}
+                  </ul>
+                </div>
+              </div>
+            </Section>
+
+            {/* Development */}
+            <Section title="8. Entwicklungs- & Kompensationsfähigkeit">
+              <div className="text-sm">
+                <div>
+                  <span className="font-semibold">Entwicklungswahrscheinlichkeit:</span> {engine.development.likelihood}
+                </div>
+                <div className="mt-1">
+                  <span className="font-semibold">Zeitraum:</span> {engine.development.timeframe}
+                </div>
+                <div className="mt-3 text-gray-800">{engine.development.text}</div>
+              </div>
+            </Section>
+
+            {/* 90 day plan */}
+            <Section title="9. 90-Tage-Integrationsarchitektur">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                  <div className="text-sm font-semibold">0–30 Tage</div>
+                  <ul className="mt-2 list-disc pl-5 text-sm">
+                    {engine.integrationPlan90.phase_0_30.map((x, i) => <li key={i}>{x}</li>)}
+                  </ul>
+                </div>
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                  <div className="text-sm font-semibold">30–60 Tage</div>
+                  <ul className="mt-2 list-disc pl-5 text-sm">
+                    {engine.integrationPlan90.phase_30_60.map((x, i) => <li key={i}>{x}</li>)}
+                  </ul>
+                </div>
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                  <div className="text-sm font-semibold">60–90 Tage</div>
+                  <ul className="mt-2 list-disc pl-5 text-sm">
+                    {engine.integrationPlan90.phase_60_90.map((x, i) => <li key={i}>{x}</li>)}
+                  </ul>
+                </div>
+              </div>
+            </Section>
+
+            {/* Final */}
+            <Section title="10. Schlussbewertung">
+              <ul className="list-disc pl-5 text-sm text-gray-800">
+                <li><b>Grundpassung:</b> {statusLabel(engine.overallFit)} (Mismatch {engine.mismatchScore}{engine.koTriggered ? ", K.O. aktiv" : ""})</li>
+                <li><b>Kritischer Bereich:</b> {engine.criticalAreaLabel}</li>
+                <li><b>Steuerungsintensität:</b> {controlLabel(engine.controlIntensity)} (Punkte {engine.controlPoints})</li>
+                <li><b>Dominanzlogik:</b> Rolle {dominanceLabel(engine.roleDominance)} · Kandidat {dominanceLabel(engine.candDominance)}</li>
+                <li><b>Empfehlung:</b> {engine.overallFit === "SUITABLE"
+                  ? "Besetzung strukturell passend. Fokus auf saubere Umsetzung & KPI-Routinen."
+                  : engine.overallFit === "CONDITIONAL"
+                    ? "Besetzung möglich mit klarer Integrationsarchitektur und verbindlicher Steuerung."
+                    : "Für diese Rolle nicht strukturgerecht; hohe Wahrscheinlichkeit systemischer Fehlwirkung."}</li>
+              </ul>
+            </Section>
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
