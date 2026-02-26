@@ -683,27 +683,27 @@ export default function JobCheck() {
                       const c2L = labelComponent(c2k);
                       const roleInDual = ck === rk || c2k === rk;
                       if (roleInDual) {
-                        calloutText = `Der Kandidat bringt die geforderte ${labelComponent(rk)}-Arbeitsweise mit, aber sie konkurriert mit einer gleich starken ${c2L}-Seite. Die Rolle braucht jemanden, der eindeutig ${labelComponent(rk)}-geprägt arbeitet – diese Klarheit fehlt.`;
+                        calloutText = `Doppeldominanz: ${labelComponent(rk)}-Steuerungslogik ist vorhanden, konkurriert aber mit gleich starker ${c2L}-Prägung. Die Rolle verlangt eindeutige ${labelComponent(rk)}-Ausrichtung – Priorisierungsverhalten und KPI-Disziplin sind instabil.`;
                         calloutColor = "#FF9500";
                       } else {
-                        calloutText = `Der Kandidat arbeitet vorrangig ${labelComponent(ck)}- und ${c2L}-geprägt. Die für die Rolle entscheidende ${labelComponent(rk)}-Arbeitsweise gehört nicht zu seinen Stärken.`;
+                        calloutText = `Der Kandidat arbeitet ${labelComponent(ck)}-/${c2L}-geprägt. Die für die Rolle entscheidende ${labelComponent(rk)}-Steuerungslogik fehlt strukturell. Auswirkung auf Entscheidungsarchitektur und Priorisierung: kritisch.`;
                         calloutColor = "#FF3B30";
                       }
                       sectionTitle = "Doppeldominanz";
                     } else if (sameDom && intensityDiff <= 5) {
-                      calloutText = `Rolle und Kandidat arbeiten beide ${labelComponent(rk)}-geprägt und liegen in der Ausprägung nahezu gleichauf. Die Rolle wird in ihrer Kernwirkung stabil abgebildet.`;
+                      calloutText = `Soll: ${roleVal} / Ist: ${candVal}. Beide Profile ${labelComponent(rk)}-geprägt, Ausprägung nahezu gleichauf (Δ ${intensityDiff} Punkte). Arbeitslogik und Priorisierungsverhalten bilden die Rollenanforderung stabil ab.`;
                       calloutColor = "#34C759";
                       sectionTitle = "Dominanz-Vergleich";
                     } else if (sameDom && intensityDiff <= 15) {
-                      calloutText = `Rolle und Kandidat arbeiten beide ${labelComponent(rk)}-geprägt. Die Grundrichtung stimmt, allerdings ist die Ausprägung beim Kandidaten etwas schwächer als von der Rolle gefordert.`;
+                      calloutText = `Soll: ${roleVal} / Ist: ${candVal} (Δ ${intensityDiff} Punkte). Beide Profile ${labelComponent(rk)}-geprägt. Die Grundrichtung stimmt, die Intensität liegt unter der Rollenanforderung. Auswirkung auf Prozessstabilität: steuerbar.`;
                       calloutColor = "#FF9500";
                       sectionTitle = "Dominanz-Vergleich";
                     } else if (sameDom) {
-                      calloutText = `Beide Profile sind ${labelComponent(rk)}-geprägt, allerdings verlangt die Rolle eine deutlich stärkere Ausprägung, als der Kandidat mitbringt. Die Grundrichtung stimmt, aber die Intensität reicht möglicherweise nicht aus.`;
+                      calloutText = `Soll: ${roleVal} / Ist: ${candVal} (Δ ${intensityDiff} Punkte). Beide Profile ${labelComponent(rk)}-geprägt, aber die geforderte Intensität fehlt deutlich. Auswirkung auf KPI-Stabilität und Prozessqualität: Steuerungslücke.`;
                       calloutColor = "#FF3B30";
                       sectionTitle = "Dominanz-Vergleich";
                     } else {
-                      calloutText = `Die Rolle verlangt eine ${labelComponent(rk)}-geprägte Arbeitsweise, der Kandidat arbeitet aber vorrangig ${labelComponent(ck)}-geprägt. Das verändert die zentrale Wirkung der Position grundlegend.`;
+                      calloutText = `Rolle verlangt ${labelComponent(rk)}-Steuerungslogik (${roleVal}), Kandidat arbeitet ${labelComponent(ck)}-geprägt (${candVal}). Auswirkung: Die zentrale Arbeitslogik der Position wird grundlegend verschoben.`;
                       calloutColor = "#FF3B30";
                       sectionTitle = "Dominanz-Verschiebung";
                     }
@@ -767,7 +767,7 @@ export default function JobCheck() {
                             border: `1px solid ${intensityDiff <= 5 ? "rgba(52,199,89,0.15)" : intensityDiff <= 15 ? "rgba(255,149,0,0.15)" : "rgba(255,59,48,0.15)"}`,
                           }}>
                             <span style={{ fontSize: 12, fontWeight: 600, color: intensityDiff <= 5 ? "#34C759" : intensityDiff <= 15 ? "#FF9500" : "#FF3B30" }}>
-                              {intensityDiff <= 5 ? "Ausprägung nahezu identisch" : intensityDiff <= 15 ? "Spürbare Abweichung in der Ausprägung" : "Deutliche Abweichung in der Ausprägung"}
+                              {intensityDiff <= 5 ? `Δ ${intensityDiff} Punkte – Ausprägung nahezu identisch` : intensityDiff <= 15 ? `Δ ${intensityDiff} Punkte – spürbare Abweichung` : `Δ ${intensityDiff} Punkte – deutliche Abweichung`}
                             </span>
                           </div>
                         )}

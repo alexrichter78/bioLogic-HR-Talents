@@ -284,12 +284,12 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput): MatrixRow[] {
     roleDemand: dominanceLabel(rDom), candidatePattern: dominanceLabel(cDom),
     status: dominanceStatus,
     reasoning: dominanceStatus === "SUITABLE"
-      ? `Rolle und Kandidat arbeiten beide ${rLabel}-geprägt. Die Grundausrichtung stimmt überein, die Rolle wird in ihrer Kernwirkung stabil abgebildet.`
+      ? `Die Arbeitslogik ist identisch: Beide Profile sind ${rLabel}-gesteuert (Abweichung ${domDiff} Punkte). Die Rolle wird in ihrer Kernwirkung stabil abgebildet – Priorisierung, Entscheidungsarchitektur und Steuerungslogik bleiben konsistent.`
       : dominanceStatus === "CONDITIONAL"
         ? (sameDominant
-          ? `Beide Profile sind ${rLabel}-geprägt, allerdings ist die Ausprägung beim Kandidaten schwächer als von der Rolle gefordert. Die Grundrichtung stimmt, die Intensität weicht ab.`
-          : `Die Rolle verlangt eine ${rLabel}-geprägte Arbeitsweise, der Kandidat arbeitet eher ${cLabel}-geprägt. Eine Passung ist möglich, erfordert aber klare Rahmenvorgaben.`)
-        : `Die Rolle verlangt klar ${rLabel}-geprägtes Arbeiten, der Kandidat ist ${cLabel}-geprägt. Die Grundlogik der Position wird durch dieses Profil nicht abgebildet.`,
+          ? `Gleiche Arbeitslogik (${rLabel}), jedoch weicht die Intensität um ${domDiff} Punkte ab (Soll: ${r[rDom.top1.key]} / Ist: ${c[rDom.top1.key]}). Auswirkung: Priorisierungsverhalten und Umsetzungskonstanz können unter Druck schwächer ausfallen als gefordert. Klare Zielarchitektur und Steuerungsintervalle erforderlich.`
+          : `Dominanzverschiebung von ${rLabel} (${r[rDom.top1.key]}) zu ${cLabel} (${c[cDom.top1.key]}). Die Arbeitslogik verändert sich: Entscheidungswege, Priorisierung und operative Steuerung folgen einer anderen Logik. Abweichung in der Rollenkomponente: ${domDiff} Punkte. Steuerbar mit engmaschiger Zielarchitektur und klaren Entscheidungsfristen.`)
+        : `Fundamentale Dominanzverschiebung von ${rLabel} (${r[rDom.top1.key]}) zu ${cLabel} (${c[cDom.top1.key]}). Die strukturelle Kernlogik der Position ist nicht abgebildet. Auswirkung: Entscheidungsarchitektur, KPI-Stabilität und Priorisierungsverhalten weichen grundlegend von der Rollenanforderung ab.`,
   });
 
   const decisionStatus: FitStatus = (() => {
@@ -320,12 +320,12 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput): MatrixRow[] {
       : "Konsensorientiert, teambezogen, moderierend",
     status: decisionStatus,
     reasoning: decisionStatus === "SUITABLE"
-      ? `Die Rolle verlangt ${decRoleDesc} – der Kandidat entscheidet ${decCandDesc}. Die Entscheidungslogik passt zur Anforderung der Position.`
+      ? `Die Entscheidungsarchitektur passt: Die Rolle verlangt ${decRoleDesc}, der Kandidat entscheidet ${decCandDesc}. Entscheidungswege, Eskalationslogik und Priorisierung bleiben konsistent. Auswirkung auf Tempo und Prozessstabilität: stabil.`
       : decisionStatus === "CONDITIONAL"
         ? (sameDominant
-          ? `Der Kandidat entscheidet grundsätzlich in der richtigen Logik, allerdings weniger konsequent als die Rolle es verlangt. Klare Entscheidungsfristen und Eskalationsregeln empfohlen.`
-          : `Die Rolle verlangt ${decRoleDesc}, der Kandidat entscheidet eher ${decCandDesc}. Die Abweichung ist steuerbar, wenn Entscheidungsfristen und Eskalationsregeln klar gesetzt werden.`)
-        : `Die Rolle verlangt ${decRoleDesc}, der Kandidat ist ${decCandDesc}. Die Entscheidungslogik passt nicht zusammen – Interventionen werden voraussichtlich verzögert oder anders priorisiert.`,
+          ? `Gleiche Entscheidungslogik (${rLabel}), jedoch weicht die Intensität um ${decMainDiff} Punkte ab (Soll: ${r[rDom.top1.key]} / Ist: ${c[rDom.top1.key]}). Auswirkung: Entscheidungen fallen tendenziell weicher oder langsamer. Steuerbar durch klare Entscheidungsfristen, Eskalationsregeln und verbindliche Priorisierung.`
+          : `Die Rolle verlangt ${decRoleDesc} (${rLabel} ${r[rDom.top1.key]}), der Kandidat entscheidet ${decCandDesc} (${cLabel} ${c[cDom.top1.key]}). Abweichung: ${decMainDiff} Punkte. Auswirkung: Entscheidungswege verschieben sich, Priorisierung folgt einer anderen Logik. Steuerbar mit klaren Entscheidungsfristen und Eskalationsregeln.`)
+        : `Die Rolle verlangt ${decRoleDesc} (${rLabel} ${r[rDom.top1.key]}), der Kandidat ist ${decCandDesc} (${cLabel} ${c[cDom.top1.key]}). Abweichung: ${decMainDiff} Punkte. Auswirkung: Interventionen werden strukturell verzögert oder anders priorisiert. Tempo, Forecast-Qualität und operative Steuerung sind betroffen.`,
   });
 
   const kpiStatus: FitStatus = (() => {
@@ -338,15 +338,15 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput): MatrixRow[] {
   const kpiDiff = r.analytisch - c.analytisch;
 
   rows.push({
-    areaId: "kpi_work", areaLabel: "Kennzahlen und Arbeitssteuerung",
-    roleDemand: r.analytisch >= 40 ? "Stark kennzahlengesteuert, hohe Anforderung an Berichte und Nachverfolgung" : r.analytisch >= 25 ? "Kennzahlen als Steuerungsinstrument erwartet" : "Geringe Anforderung an zahlenbasiertes Arbeiten",
-    candidatePattern: c.analytisch >= 30 ? "Zahlen- und strukturorientiert, anschlussfähig" : c.analytisch >= 20 ? "Kennzahlen eher als Orientierung, nicht als Steuerungsinstrument" : "Geringe zahlenbasierte Steuerungsbasis",
+    areaId: "kpi_work", areaLabel: "KPI- und Arbeitssteuerung",
+    roleDemand: `Analytisch ${r.analytisch} – ${r.analytisch >= 40 ? "stark kennzahlengesteuert, hohe Reporting-Anforderung" : r.analytisch >= 25 ? "Kennzahlen als Steuerungsinstrument" : "geringe KPI-Anforderung"}`,
+    candidatePattern: `Analytisch ${c.analytisch} – ${c.analytisch >= 30 ? "Strukturdisziplin und Zahlenorientierung anschlussfähig" : c.analytisch >= 20 ? "Kennzahlen als Orientierung, nicht als Steuerungsinstrument" : "geringe analytische Steuerungsbasis"}`,
     status: kpiStatus,
     reasoning: kpiStatus === "SUITABLE"
-      ? "Der Kandidat arbeitet ausreichend zahlen- und strukturorientiert. Kennzahlenbasierte Steuerung und regelmäßige Berichte können stabil aufgesetzt werden."
+      ? `Analytisch Soll: ${r.analytisch} / Ist: ${c.analytisch}. Die analytische Basis ist vorhanden. KPI-Steuerung, Reporting und Prozessdisziplin sind stabil aufsetzbar. Auswirkung auf Forecast-Qualität und Zielerreichung: stabil.`
       : kpiStatus === "CONDITIONAL"
-        ? "Der Kandidat bringt Grundlagen für zahlenbasiertes Arbeiten mit, allerdings schwächer als die Rolle es verlangt. Feste Routinen, klare Standards und konsequentes Nachhalten sind nötig."
-        : "Die Rolle verlangt ein stark zahlenorientiertes Profil – der Kandidat arbeitet deutlich weniger strukturiert. Die Qualität von Berichten und Arbeitsabläufen wird ohne engmaschige Steuerung voraussichtlich instabil.",
+        ? `Analytisch Soll: ${r.analytisch} / Ist: ${c.analytisch} (Δ ${kpiDiff} Punkte). Auswirkung: KPI-Disziplin und Reporting-Qualität erfordern feste Routinen, klare Standards und konsequentes Nachhalten. Ohne Steuerung sinkt die Forecast-Genauigkeit.`
+        : `Analytisch Soll: ${r.analytisch} / Ist: ${c.analytisch} (Δ ${kpiDiff} Punkte). Auswirkung: Reporting wird interpretationsabhängig, Strukturdisziplin muss durchgängig geführt werden. Kennzahlen verlieren ohne engmaschige Steuerung ihre Steuerungswirkung. Forecast- und Prozessqualität instabil.`,
   });
 
   if (role.leadership?.required) {
@@ -371,14 +371,14 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput): MatrixRow[] {
 
     rows.push({
       areaId: "leadership_effect", areaLabel: "Führungswirkung",
-      roleDemand: lp ? `${lLabel}-geprägte Führung erwartet` : "Führung erforderlich",
-      candidatePattern: `${labelComponent(cDom.top1.key)}-geprägte Führungswirkung`,
+      roleDemand: lp ? `${lLabel}-geprägt (${lp.impulsiv}/${lp.intuitiv}/${lp.analytisch})` : "Führung erforderlich (Profil nicht hinterlegt)",
+      candidatePattern: `${labelComponent(cDom.top1.key)}-geprägt (${c.impulsiv}/${c.intuitiv}/${c.analytisch})`,
       status: leadershipStatus,
       reasoning: leadershipStatus === "SUITABLE"
-        ? `Der Kandidat bringt die geforderte ${lLabel}-geprägte Führungsweise mit. Die Führungswirkung wird voraussichtlich stabil entfaltet.`
+        ? `Die Führungsanforderung ist ${lLabel}-geprägt${lDom ? ` (${lp![lDom.top1.key]})` : ""} – der Kandidat bringt ${c[lDom?.top1.key || rDom.top1.key]} mit. Zielklarheit, Delegationslogik und Durchsetzungsfähigkeit passen zur Rollenanforderung. Auswirkung auf Teamdynamik und Führungsaufwand: stabil.`
         : leadershipStatus === "NOT_SUITABLE"
-          ? `Die Rolle verlangt eine klar ${lLabel}-geprägte Führung – der Kandidat bringt diese Führungsqualität nicht ausreichend mit. Das Profil ist für diese Führungsanforderung zu schwach aufgestellt.`
-          : `Die Führungsanforderung ist ${lLabel}-geprägt, der Kandidat bringt eine andere Schwerpunktsetzung mit. Führung ist möglich, wenn Zielarchitektur und Erwartungen klar definiert werden.`,
+          ? `Die Rolle verlangt ${lLabel}-dominante Führung${lDom ? ` (${lp![lDom.top1.key]})` : ""}, der Kandidat liegt bei ${c[lDom?.top1.key || rDom.top1.key]} (Δ ${leadDiffVal} Punkte). Auswirkung: Zielarchitektur, Konfliktfähigkeit und Durchsetzung unter Druck sind strukturell zu schwach. Führungsaufwand für die nächste Ebene steigt erheblich.`
+          : `Die Führungsanforderung ist ${lLabel}-geprägt${lDom ? ` (${lp![lDom.top1.key]})` : ""}, der Kandidat bringt ${c[lDom?.top1.key || rDom.top1.key]} mit (Δ ${leadDiffVal} Punkte). Auswirkung: Führungswirkung ist steuerbar, wenn Zielarchitektur, Eskalationslogik und KPI-Review-Zyklen klar definiert werden.`,
     });
   }
 
@@ -397,14 +397,14 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput): MatrixRow[] {
 
   rows.push({
     areaId: "conflict", areaLabel: "Konfliktfähigkeit",
-    roleDemand: r.impulsiv >= 50 ? "Direkte, klare Konfliktführung erwartet" : r.impulsiv >= 35 ? "Situative Konfliktfähigkeit erwartet" : "Eher moderierende Konfliktbearbeitung",
-    candidatePattern: c.impulsiv >= 45 ? "Direkt und durchsetzungsstark" : c.impulsiv >= 30 ? "Situativ adressierend" : "Eher moderierend und vermeidend",
+    roleDemand: `Impulsiv ${r.impulsiv} – ${r.impulsiv >= 50 ? "direkt, durchsetzungsstark, leistungsorientiert" : r.impulsiv >= 35 ? "situativ konfliktfähig" : "eher moderierend"}`,
+    candidatePattern: `Impulsiv ${c.impulsiv} – ${c.impulsiv >= 45 ? "direkt und durchsetzungsstark" : c.impulsiv >= 30 ? "situativ adressierend" : "eher moderierend/vermeidend"}`,
     status: conflictStatus,
     reasoning: conflictStatus === "SUITABLE"
-      ? "Die Konfliktfähigkeit des Kandidaten passt zur Rollenanforderung. Durchsetzungsstärke und Interventionsbereitschaft sind anschlussfähig."
+      ? `Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv} (Δ ${conflictImpDiff} Punkte). Durchsetzungsfähigkeit und Interventionsbereitschaft passen zur Rollenanforderung. Auswirkung: Konflikte werden zeitnah adressiert, Leistungsdifferenzierung im Team bleibt stabil.`
       : conflictStatus === "NOT_SUITABLE"
-        ? "Die Rolle braucht jemanden, der Konflikte direkt anspricht und Leistungsprobleme klar benennt. Der Kandidat neigt dazu, eher zu moderieren als konsequent durchzugreifen."
-        : "Grundlegende Konfliktfähigkeit ist vorhanden, reicht aber nicht vollständig an die Rollenanforderung heran. In Performance-Situationen müssen klare Eskalationsregeln und Fristen helfen.",
+        ? `Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv} (Δ ${conflictImpDiff} Punkte). Auswirkung: Unter Zielabweichung wird voraussichtlich moderiert statt interveniert. Leistungsunterschiede im Team werden nicht konsequent adressiert – Qualität und Tempo sinken.`
+        : `Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv} (Δ ${conflictImpDiff} Punkte). Auswirkung: Konfliktfähigkeit ist vorhanden, muss aber in Performance-Situationen konsequent aktiviert werden. Steuerbar durch klare Eskalationsregeln, Entscheidungsfristen und verbindliche Zielarchitektur.`,
   });
 
   const tags = role.environment_tags || {};
@@ -422,14 +422,14 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput): MatrixRow[] {
 
   rows.push({
     areaId: "competition", areaLabel: "Wettbewerbsdynamik",
-    roleDemand: compMarket ? "Hoher Marktdruck – schnelle Reaktion und Abschlussstärke gefordert" : "Marktübliche Dynamik – Tempo und Zielorientierung erwartet",
-    candidatePattern: c.impulsiv >= 45 ? "Hohes Tempo, abschlussorientiert" : c.impulsiv >= 30 ? "Solides Tempo, anschlussfähig" : "Eher abwägend, reduziertes Tempo",
+    roleDemand: compMarket ? `Hoher Marktdruck – Impulsiv ${r.impulsiv} gefordert` : `Marktübliche Dynamik – Impulsiv ${r.impulsiv}`,
+    candidatePattern: `Impulsiv ${c.impulsiv} – ${c.impulsiv >= 45 ? "Tempo-/Abschlussorientierung stark" : c.impulsiv >= 30 ? "Tempo anschlussfähig" : "Tempo reduziert"}`,
     status: competitionStatus,
     reasoning: competitionStatus === "SUITABLE"
-      ? `Tempo und Marktreaktion des Kandidaten passen zur Rollenanforderung${compMarket ? " – auch unter hohem Marktdruck" : ""}.`
+      ? `Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv}${compMarket ? " bei hohem Marktdruck" : ""} (Δ ${Math.abs(compImpGap)} Punkte). Tempo und Marktreaktion passen zur Rollenlogik. Auswirkung auf Abschlussquoten und Wettbewerbsdynamik: stabil.`
       : competitionStatus === "NOT_SUITABLE"
-        ? `${compMarket ? "Bei hohem Marktdruck: " : ""}Die Rolle braucht jemanden, der schnell reagiert und Abschlüsse aktiv vorantreibt. Der Kandidat arbeitet deutlich abwägender – das Tempo reicht für diese Anforderung nicht aus.`
-        : "Der Kandidat bringt ein solides Grundtempo mit, bleibt aber hinter der Anforderung der Rolle zurück. Mit klaren Prioritäten und Zielvorgaben ist die Dynamik steuerbar.",
+        ? `${compMarket ? "Hoher Marktdruck: " : ""}Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv} (Δ ${Math.abs(compImpGap)} Punkte). Auswirkung: Die impulsive Interventionslogik fehlt – Tempo sinkt, Chancen werden stärker geprüft als genutzt. Abschlussquoten und Wettbewerbsfähigkeit werden strukturell geschwächt.`
+        : `Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv} (Δ ${Math.abs(compImpGap)} Punkte). Auswirkung: Markttempo und Durchsetzungsdynamik sind steuerbar, wenn Prioritäten, Entscheidungsfristen und Zielhärte klar etabliert sind. Ohne Steuerung verschiebt sich die Dynamik in Richtung Absicherung.`,
   });
 
   const cultureStatus: FitStatus = (() => {
@@ -446,28 +446,28 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput): MatrixRow[] {
 
   rows.push({
     areaId: "culture", areaLabel: "Kulturwirkung",
-    roleDemand: r.impulsiv >= 55 ? "Leistungs- und ergebnisorientierte Teamkultur" : r.intuitiv >= 40 ? "Beziehungs- und teamorientierte Kultur" : "Ausgewogene Teamkultur",
-    candidatePattern: c.intuitiv >= 45 ? "Beziehungsstabilisierend, teamverbindend" : c.impulsiv >= 45 ? "Leistungsorientiert, ergebnisfokussiert" : "Sach- und strukturorientiert",
+    roleDemand: `${r.impulsiv >= 55 ? "Performance-/Ergebnisfokus" : r.intuitiv >= 40 ? "Beziehungs- und Teamorientierung" : "Ausgewogene Kultur"} (I:${r.impulsiv}/N:${r.intuitiv}/A:${r.analytisch})`,
+    candidatePattern: `${c.intuitiv >= 45 ? "Beziehungsstabilisierend" : c.impulsiv >= 45 ? "Leistungsorientiert" : "Sach-/strukturorientiert"} (I:${c.impulsiv}/N:${c.intuitiv}/A:${c.analytisch})`,
     status: cultureStatus,
     reasoning: cultureStatus === "SUITABLE"
-      ? "Der Kandidat kann Teamstabilität, Motivation und Bindung stärken – ohne die Rollenlogik zu gefährden. Die Kulturwirkung passt zur Erwartung."
+      ? `Intuitiv Soll: ${r.intuitiv} / Ist: ${c.intuitiv} (Δ ${cultIntDiff} Punkte). Die Kulturwirkung passt zur Rollenanforderung. Auswirkung auf Teamdynamik: Teamstabilität, Motivation und Bindung bleiben stabil, ohne die Rollenlogik zu gefährden.`
       : cultureStatus === "NOT_SUITABLE"
-        ? "Die Rolle braucht eine klar leistungsorientierte Wirkung im Team. Der Kandidat arbeitet deutlich beziehungsorientierter – Zielhärte und Leistungsdifferenzierung werden geschwächt."
-        : "Der Kandidat bringt eine etwas andere Kulturwirkung mit als die Rolle verlangt. Eine Kulturverschiebung ist möglich, bleibt aber tragfähig, wenn Leistungserwartungen klar definiert werden.",
+        ? `Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv}. Die Kulturwirkung verschiebt sich deutlich. Auswirkung auf Teamdynamik: Zielhärte und Leistungsdifferenzierung werden strukturell geschwächt. Die Rolle verlangt Performance-Orientierung, der Kandidat wirkt beziehungsstabilisierend.`
+        : `Intuitiv Soll: ${r.intuitiv} / Ist: ${c.intuitiv} (Δ ${cultIntDiff} Punkte). Auswirkung: Es besteht ein Risiko der Kulturverschiebung. Steuerbar, wenn Zielarchitektur, Leistungsdifferenzierung und Zielhärte klar definiert und durchgesetzt werden.`,
   });
 
   if (tags.sales_cycle === "lang") {
     const stratStatus: FitStatus = c.analytisch >= 35 ? "SUITABLE" : c.analytisch >= 25 ? "CONDITIONAL" : "NOT_SUITABLE";
     rows.push({
       areaId: "strategy_complexity", areaLabel: "Strategische Komplexität",
-      roleDemand: "Langer Zyklus – hohe Anforderung an Planung und Prozessdisziplin",
-      candidatePattern: c.analytisch >= 35 ? "Stark strukturiert, strategiefähig" : c.analytisch >= 25 ? "Grundlegende Strukturfähigkeit vorhanden" : "Geringe strategische Planungsbasis",
+      roleDemand: `Langer Zyklus – Analytisch ${r.analytisch} gefordert`,
+      candidatePattern: `Analytisch ${c.analytisch} – ${c.analytisch >= 35 ? "stark anschlussfähig" : c.analytisch >= 25 ? "vorhanden" : "gering"}`,
       status: stratStatus,
       reasoning: stratStatus === "SUITABLE"
-        ? "Der Kandidat arbeitet ausreichend strukturiert und planungsorientiert. Bei langen Zyklen kann die Qualität der Vertriebsarbeit und Planungsdisziplin stabil gehalten werden."
+        ? `Analytisch ${c.analytisch} – bei langen Zyklen ist die analytische Basis für Pipeline-Qualität, Forecast-Disziplin und Prozesssteuerung ausreichend. Auswirkung auf Umsetzungskonstanz: stabil.`
         : stratStatus === "CONDITIONAL"
-          ? "Der Kandidat bringt Grundlagen für strategisches Arbeiten mit. Bei langen Zyklen muss systematische Arbeitsweise aber aktiv gesteuert und eingefordert werden."
-          : "Für lange strategische Zyklen fehlt die nötige Planungs- und Strukturbasis. Ohne engmaschige Steuerung drohen Schwankungen in der Vertriebsplanung und Umsatzprognose.",
+          ? `Analytisch ${c.analytisch}. Auswirkung: Bei langen strategischen Zyklen muss Strukturdisziplin aktiv gesteuert werden. Pipeline-Qualität und Forecast-Genauigkeit erfordern systematische Arbeitsweise, die nicht selbstständig aufrechterhalten wird.`
+          : `Analytisch ${c.analytisch}. Auswirkung: Für lange strategische Zyklen fehlt die analytische Grundbasis. Pipeline-Konsistenz, Forecast-Qualität und Prozessdisziplin sind ohne engmaschige Steuerung instabil.`,
     });
   }
 
@@ -475,14 +475,14 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput): MatrixRow[] {
     const regStatus: FitStatus = c.analytisch >= 40 ? "SUITABLE" : c.analytisch >= 25 ? "CONDITIONAL" : "NOT_SUITABLE";
     rows.push({
       areaId: "regulatory_precision", areaLabel: "Regulatorische Präzision",
-      roleDemand: "Hohe Regel- und Standardtreue gefordert",
-      candidatePattern: c.analytisch >= 40 ? "Hohe Sorgfalt und Präzision" : c.analytisch >= 25 ? "Grundlegende Präzision vorhanden" : "Deutlich unter Anforderung",
+      roleDemand: `Hohe Regel-/Standardtreue – Analytisch ${r.analytisch}`,
+      candidatePattern: `Analytisch ${c.analytisch} – ${c.analytisch >= 40 ? "Sorgfalt/Präzision stark" : c.analytisch >= 25 ? "vorhanden" : "deutlich unter Anforderung"}`,
       status: regStatus,
       reasoning: regStatus === "SUITABLE"
-        ? "Der Kandidat arbeitet ausreichend sorgfältig und präzise. Regelkonformität und Prüfsicherheit können stabil aufgesetzt werden."
+        ? `Analytisch ${c.analytisch}. Die Präzision reicht für regulierte Umfelder aus. Auswirkung: Compliance, Audit-Readiness und Prozessqualität sind stabil aufsetzbar.`
         : regStatus === "CONDITIONAL"
-          ? "Der Kandidat bringt Grundlagen für sorgfältiges Arbeiten mit. In regulierten Umfeldern müssen aber klare Standards, Freigabeprozesse und regelmäßige Kontrollen ergänzend sichergestellt werden."
-          : "Die Sorgfalt und Präzision des Kandidaten reicht für ein stark reguliertes Umfeld nicht aus. Es drohen Qualitäts-, Haftungs- oder Prüfungsrisiken.",
+          ? `Analytisch Soll: ${r.analytisch} / Ist: ${c.analytisch}. Auswirkung: In regulierten Umfeldern muss Strukturdisziplin durchgängig sichergestellt werden – klare Standards, Freigabeprozesse und regelmäßige Kontrollen erforderlich. Ohne Steuerung steigt das Risiko für Prozessabweichungen.`
+          : `Analytisch Soll: ${r.analytisch} / Ist: ${c.analytisch}. Auswirkung: In regulierten Kontexten kann diese Lücke zu Qualitäts-, Haftungs- oder Audit-Risiken führen. Prozessdisziplin und Standardtreue sind ohne intensive Steuerung nicht gewährleistet.`,
     });
   }
 
@@ -504,27 +504,27 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput): MatrixRow[] {
     rows.push({
       areaId: "customer_orientation", areaLabel: "Kundenorientierung",
       roleDemand: ct === "B2C"
-        ? "B2C – hohe Abschlussorientierung und schnelles Tempo gefordert"
+        ? `B2C – Abschlussorientierung, Impulsiv ${r.impulsiv}`
         : ct === "B2B"
-          ? "B2B – Beziehungsaufbau und langfristige Kundenbindung gefordert"
-          : "Gemischtes Kundenumfeld",
+          ? `B2B – Beziehungsstabilität, Intuitiv ${r.intuitiv}`
+          : "Mixed",
       candidatePattern: ct === "B2C"
-        ? (c.impulsiv >= 40 ? "Abschlussstark und tempoorientiert" : "Abschlussorientierung muss gesteuert werden")
-        : (c.intuitiv >= 35 ? "Beziehungsorientiert, guter Kundenaufbau" : "Eher transaktional, weniger beziehungsorientiert"),
+        ? `Impulsiv ${c.impulsiv} – ${c.impulsiv >= 40 ? "Abschluss stark" : "muss gesteuert werden"}`
+        : `Intuitiv ${c.intuitiv} / Analytisch ${c.analytisch} – ${c.intuitiv >= 35 ? "Beziehungsaufbau stark" : "eher transaktional"}`,
       status: custStatus,
       reasoning: custStatus === "SUITABLE"
         ? (ct === "B2C"
-          ? "Der Kandidat arbeitet abschlussorientiert und mit hohem Tempo – das passt zum B2C-Umfeld."
+          ? `Im B2C-Kontext: Impulsiv ${c.impulsiv}. Abschlussorientierung und Tempo passen zur geforderten Marktdynamik. Auswirkung auf Abschlussquoten: stabil.`
           : ct === "B2B"
-            ? "Der Kandidat bringt Beziehungsfähigkeit und wirtschaftliches Verständnis mit – beides wichtig im B2B-Kontext."
+            ? `Im B2B-Kontext: Intuitiv ${c.intuitiv} / Analytisch ${c.analytisch}. Beziehungsfähigkeit und wirtschaftliche Steuerung sind anschlussfähig. Auswirkung auf Kundenbindung und Pipeline-Qualität: stabil.`
             : "Die Kundenorientierung passt zur geforderten Dynamik.")
         : custStatus === "CONDITIONAL"
           ? (ct === "B2C"
-            ? "Im B2C-Umfeld ist grundlegende Abschlussorientierung vorhanden, reicht aber nicht vollständig an die Anforderung heran. Klare Ziele und Taktung helfen."
-            : "Der Kandidat kann Beziehungen aufbauen, aber die Balance aus Beziehungspflege und Ergebnisorientierung muss aktiv gehalten werden.")
+            ? `Im B2C-Kontext: Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv}. Auswirkung: Die Abschlussorientierung ist vorhanden, muss aber durch klare Ziele, Frequenz und Steuerung aktiviert werden. Ohne Steuerung sinkt die Abschlussquote.`
+            : `Im B2B-Kontext: Intuitiv Soll: ${r.intuitiv} / Ist: ${c.intuitiv}. Auswirkung: Beziehungsfähigkeit ist vorhanden, aber die Balance aus Beziehungsstabilität und Ergebnislogik muss aktiv gehalten werden. Pipeline-Qualität erfordert Steuerung.`)
           : (ct === "B2C"
-            ? "Im B2C-Umfeld fehlt dem Kandidaten die nötige Abschlussorientierung. Tempo und Abschlussquote werden voraussichtlich unter den Erwartungen liegen."
-            : "Im B2B-Kontext fehlen dem Kandidaten die nötige Beziehungstiefe und wirtschaftliche Steuerungsfähigkeit."),
+            ? `Im B2C-Kontext: Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv}. Auswirkung: Tempo und Abschlussquote werden voraussichtlich unter dem Rollenbedarf liegen. Die impulsive Marktdynamik fehlt strukturell.`
+            : `Im B2B-Kontext: Intuitiv ${c.intuitiv} / Analytisch ${c.analytisch}. Auswirkung: Beziehungstiefe und wirtschaftliche Steuerung fehlen strukturell. Pipeline-Aufbau und Kundenbindung sind instabil.`),
     });
   }
 
@@ -559,74 +559,74 @@ function buildRisks(role: RoleAnalysis, cand: CandidateInput, engine: { overallF
   const roleKeyInDual = dualConflict && (cDom.top1.key === rDom.top1.key || cDom.top2.key === rDom.top1.key);
 
   if (engine.overallFit === "SUITABLE") {
-    shortTerm.push(`Die Person kann sich schnell in der Rolle ${jobTitle} wirksam zeigen, weil die Arbeitsweise gut zur geforderten Struktur passt.`);
-    midTerm.push("Der Steuerungsaufwand für die Führungskraft bleibt überschaubar. Die Person arbeitet weitgehend selbstständig im erwarteten Korridor.");
-    longTerm.push("Die Rollenwirkung bleibt voraussichtlich stabil. Es ist nicht davon auszugehen, dass sich die Arbeitsweise der Person schleichend von den Anforderungen entfernt.");
+    shortTerm.push(`Die Arbeitslogik passt zur Rollenanforderung ${jobTitle}. Die Person kann sich operativ schnell wirksam zeigen. Auswirkung auf KPI-Stabilität und Prozessqualität: positiv.`);
+    midTerm.push("Der Steuerungsaufwand für die Führungskraft bleibt überschaubar. Priorisierungsverhalten und Entscheidungsarchitektur liegen im erwarteten Korridor – Selbststeuerung ist stabil.");
+    longTerm.push("Die Rollenwirkung bleibt voraussichtlich konsistent. Es ist nicht davon auszugehen, dass sich Arbeitslogik oder Priorisierungsverhalten schleichend von den Anforderungen entfernen.");
   } else if (engine.overallFit === "CONDITIONAL") {
     if (dualConflict) {
       const c2L = labelComponent(cDom.top2.key);
-      shortTerm.push(`Die Person zeigt eine Doppeldominanz: ${labelComponent(cDom.top1.key)} und ${c2L} sind nahezu gleich stark ausgeprägt. Die Rolle ${jobTitle} verlangt jedoch eine klare ${rL}-Ausrichtung.`);
-      midTerm.push(`Die beiden konkurrierenden Stärken führen dazu, dass die ${rL}-Aufgaben der Rolle nicht mit voller Konsequenz bearbeitet werden. Die Person wird situativ zwischen ${labelComponent(cDom.top1.key)}- und ${c2L}-Logik wechseln.`);
-      longTerm.push(`Ohne klare Steuerung entsteht eine zunehmende Unschärfe in der Rollenausübung – die geforderte ${rL}-Wirkung wird verwässert.`);
+      shortTerm.push(`Die Person zeigt eine Doppeldominanz: ${labelComponent(cDom.top1.key)} und ${c2L} sind nahezu gleich stark ausgeprägt. Die Rolle ${jobTitle} verlangt jedoch eine klare ${rL}-Steuerungslogik. Operative Irritation ist wahrscheinlich.`);
+      midTerm.push(`Die konkurrierenden Arbeitslogiken führen dazu, dass ${rL}-Aufgaben nicht mit voller Konsequenz bearbeitet werden. Auswirkung: Die Person wechselt situativ zwischen ${labelComponent(cDom.top1.key)}- und ${c2L}-Priorisierung – Umsetzungskonstanz und KPI-Disziplin schwanken.`);
+      longTerm.push(`Ohne klare Steuerung entsteht eine zunehmende Unschärfe in der Rollenausübung. Die geforderte ${rL}-Wirkung wird verwässert – Entscheidungsarchitektur und Prozessstabilität verschieben sich schleichend.`);
     } else {
-      shortTerm.push(`Ein positiver Start ist möglich, allerdings zeigt sich im Bereich „${critical.label}" eine spürbare Abweichung zwischen dem, was die Rolle erfordert, und dem, was die Person mitbringt.`);
+      shortTerm.push(`Operative Reibung im Bereich „${critical.label}": Die Abweichung zwischen Rollenanforderung und Arbeitslogik der Person zeigt sich hier am deutlichsten. Ein positiver Start ist möglich, erfordert aber klare Steuerung.`);
       if (sameDom) {
-        midTerm.push(`Die grundlegende Arbeitsweise stimmt, jedoch fehlt es an der nötigen Ausprägung. Ohne klare Rahmenvorgaben kann die Person die Anforderungen der Rolle ${jobTitle} zunehmend weicher auslegen.`);
+        midTerm.push(`Die Arbeitslogik stimmt, jedoch fehlt es an der geforderten Intensität. Auswirkung: Ohne klare Zielarchitektur und Steuerungsintervalle werden Priorisierung und Umsetzungskonstanz zunehmend weicher – Prozessstabilität sinkt.`);
       } else {
-        midTerm.push(`Die Arbeitsweise der Person unterscheidet sich von dem, was die Rolle verlangt. Ohne klare Rahmenvorgaben besteht das Risiko, dass die Person die Position nach eigener Logik interpretiert, statt der geforderten.`);
+        midTerm.push(`Die Arbeitslogik der Person weicht von der Rollenanforderung ab. Auswirkung: Ohne klare Zielarchitektur besteht das Risiko, dass Entscheidungswege, Priorisierung und operative Steuerung nach eigener Logik interpretiert werden. Prozessverschiebung ist wahrscheinlich.`);
       }
-      longTerm.push(`Wenn die Führungskraft nicht aktiv gegensteuert, kann sich die Wirkung der Rolle ${jobTitle} über die Zeit verändern – Anforderungen werden zunehmend anders priorisiert als ursprünglich vorgesehen.`);
+      longTerm.push(`Ohne aktive Gegensteuerung verändert sich die Rollenlogik von ${jobTitle} über die Zeit. Anforderungen werden anders priorisiert, KPI-Fokus verschiebt sich – die strukturelle Wirkung der Position erodiert.`);
     }
   } else {
     if (dualConflict && !roleKeyInDual) {
       const c2L = labelComponent(cDom.top2.key);
-      shortTerm.push(`Die Person zeigt eine Doppeldominanz aus ${labelComponent(cDom.top1.key)} und ${c2L} – die geforderte ${rL}-Komponente der Rolle ${jobTitle} ist in keiner der beiden Stärken vertreten.`);
-      midTerm.push(`Die Arbeitslogik der Person wird von ${labelComponent(cDom.top1.key)} und ${c2L} bestimmt. Die für die Rolle zentrale ${rL}-Steuerung fehlt strukturell – das lässt sich durch Einarbeitung nicht kompensieren.`);
-      longTerm.push(`Die Besetzung würde die Grundlogik der Position verändern. Statt ${rL}-gesteuerter Arbeit entsteht eine ${labelComponent(cDom.top1.key)}/${c2L}-geprägte Dynamik, die den Anforderungen der Rolle widerspricht.`);
+      shortTerm.push(`Doppeldominanz ${labelComponent(cDom.top1.key)}/${c2L} – die geforderte ${rL}-Steuerungslogik der Rolle ${jobTitle} ist in keiner der beiden Stärken vertreten. Operative Reibung bereits in der Einarbeitung.`);
+      midTerm.push(`Die Arbeitslogik wird von ${labelComponent(cDom.top1.key)} und ${c2L} bestimmt. Auswirkung: Die für die Rolle zentrale ${rL}-Steuerung fehlt strukturell. Entscheidungsarchitektur, KPI-Disziplin und Priorisierung folgen einer fundamental anderen Logik.`);
+      longTerm.push(`Die Besetzung verändert die Grundlogik der Position. Statt ${rL}-gesteuerter Arbeit entsteht eine ${labelComponent(cDom.top1.key)}/${c2L}-geprägte Dynamik. Auswirkung auf Prozessstabilität, Tempo und Qualität: strukturelle Inkompatibilität.`);
     } else {
-      shortTerm.push(`Bereits in der Einarbeitung ist mit Reibung zu rechnen, weil die Arbeitsweise der Person nicht zu dem passt, was die Position ${jobTitle} grundlegend erfordert.`);
-      midTerm.push(`Die Leistungsstruktur der Rolle wird voraussichtlich verschoben. Die Person wird Aufgaben anders gewichten und Entscheidungen anders treffen, als es die Rolle verlangt.`);
-      longTerm.push("Es besteht ein hohes Risiko, dass die Besetzung dauerhaft nicht die gewünschte Wirkung entfaltet. Die Abweichung betrifft nicht einzelne Aufgaben, sondern die Grundlogik der Rolle.");
+      shortTerm.push(`Bereits in der Einarbeitung ist mit operativer Reibung zu rechnen. Die Arbeitslogik der Person passt nicht zu dem, was die Position ${jobTitle} strukturell erfordert.`);
+      midTerm.push(`Die Leistungsstruktur der Rolle wird voraussichtlich verschoben. Auswirkung: Priorisierung, Entscheidungsarchitektur und Steuerungsfähigkeit folgen einer anderen Logik. KPI-Stabilität und Prozessqualität sind gefährdet.`);
+      longTerm.push("Die Abweichung betrifft die Kernlogik der Position. Auswirkung: Tempo, Qualität, Forecast-Stabilität und Führungswirkung werden dauerhaft nicht die geforderte Wirkung entfalten.");
     }
   }
 
   if (critical.id === "conflict") {
-    midTerm.push("Die Person wird bei Zielabweichungen eher moderieren und vermitteln, statt Probleme konsequent anzusprechen und zu korrigieren.");
-    longTerm.push("Leistungsunterschiede im Team werden nicht klar benannt – die Differenzierung zwischen Stark- und Schwachleistern verliert an Kontur.");
+    midTerm.push("Auswirkung auf Qualität und Teamdynamik: Die Person wird bei Zielabweichungen eher moderieren statt konsequent intervenieren. Leistungsunterschiede im Team werden nicht klar adressiert.");
+    longTerm.push("Die Differenzierung zwischen Stark- und Schwachleistern verliert an Kontur. Prozessstabilität und Ergebnisqualität sinken, weil Korrekturen nicht zeitnah erfolgen.");
   }
   if (critical.id === "decision_logic") {
-    midTerm.push("Entscheidungen werden tendenziell langsamer getroffen. Die Person neigt dazu, stärker abzusichern, statt zügig zu handeln.");
-    longTerm.push("Unter Zeitdruck oder bei Zielkonflikten kann die Reaktionsgeschwindigkeit deutlich nachlassen.");
+    midTerm.push("Auswirkung auf Tempo: Entscheidungen werden tendenziell langsamer getroffen. Die Person sichert stärker ab, statt zügig zu handeln. Operative Prozesse verlangsamen sich.");
+    longTerm.push("Unter Zeitdruck oder bei Zielkonflikten sinkt die Reaktionsgeschwindigkeit deutlich. Auswirkung auf Forecast und Prozessstabilität: Verzögerungen kumulieren sich.");
   }
   if (critical.id === "kpi_work") {
-    midTerm.push("Die Disziplin bei Berichten, Prognosen und zahlenbasierter Steuerung ist voraussichtlich inkonsistent.");
-    longTerm.push("Ohne engmaschige Nachsteuerung sinkt die Transparenz über Zielerreichung und Vertriebsqualität.");
+    midTerm.push("Auswirkung auf Forecast und Reporting: Die Disziplin bei Reporting, Forecasting und datenbasierter Steuerung ist voraussichtlich inkonsistent. Steuerungswirkung der Kennzahlen sinkt.");
+    longTerm.push("Ohne engmaschige Nachsteuerung sinkt die Transparenz über Zielerreichung und Pipeline-Qualität. Auswirkung auf Prozessstabilität: Steuerungslücken werden erst spät sichtbar.");
   }
   if (critical.id === "leadership_effect") {
-    midTerm.push("Die Führungswirkung weicht vom Anforderungsprofil ab – das Team bekommt nicht die Steuerungsimpulse, die die Rolle verlangt.");
-    longTerm.push("Ohne klare Eskalationslogik und Zielarchitektur bleibt die Führungseffektivität fragil.");
+    midTerm.push("Auswirkung auf Teamdynamik: Die Führungswirkung weicht vom Anforderungsprofil ab. Das Team bekommt nicht die Steuerungsimpulse, die die Rolle verlangt. Führungsaufwand für die nächste Ebene steigt.");
+    longTerm.push("Ohne klare Eskalationslogik und Zielarchitektur bleibt die Führungseffektivität fragil. Auswirkung auf Prozessstabilität und KPI-Disziplin: Delegation und Zielhärte erodieren.");
   }
   if (critical.id === "competition") {
-    midTerm.push("Tempo und Abschlussdruck werden voraussichtlich gedämpft. Die Person agiert eher abwägend als durchsetzungsorientiert.");
-    longTerm.push("In einem dynamischen Marktumfeld besteht das Risiko, dass Chancen reaktiv statt proaktiv bearbeitet werden.");
+    midTerm.push("Auswirkung auf Tempo und Abschlussquoten: Tempo und Abschlussdruck werden voraussichtlich gedämpft. Priorisierung verschiebt sich in Richtung Absicherung statt Durchsetzung.");
+    longTerm.push("In einem dynamischen Marktumfeld besteht das Risiko, dass Chancen reaktiv statt proaktiv bearbeitet werden. Auswirkung auf Wettbewerbsfähigkeit: Marktanteile können sich verschieben.");
   }
   if (critical.id === "culture") {
-    midTerm.push("Die kulturelle Wirkung der Person im Team unterscheidet sich von dem, was die Rolle vorsieht. Es besteht das Risiko einer Verschiebung in der Teamdynamik.");
-    longTerm.push("Langfristig können Zielhärte und klare Leistungsdifferenzierung erodieren, wenn die kulturelle Passung nicht nachgesteuert wird.");
+    midTerm.push("Auswirkung auf Teamdynamik: Die kulturelle Wirkung der Person unterscheidet sich von der Rollenanforderung. Priorisierung und Zielhärte im Team verschieben sich.");
+    longTerm.push("Langfristig können Leistungsdifferenzierung und Ergebnisorientierung erodieren. Auswirkung auf KPI-Stabilität: Die Teamkultur verschiebt sich in eine nicht gesteuerte Richtung.");
   }
 
   if (tags.market_pressure === "hoch")
-    longTerm.push("In einem Hochdruckmarkt wirkt jede Verzögerung direkt auf Abschlussquoten und Umsatzdynamik. Die beschriebenen Abweichungen verstärken sich unter Marktdruck.");
+    longTerm.push("In einem Hochdruckmarkt wirkt jede Verzögerung direkt auf Abschlussquoten und Umsatzdynamik. Die beschriebenen Abweichungen in Arbeitslogik und Priorisierungsverhalten verstärken sich unter Marktdruck.");
   if (tags.regulation === "hoch")
-    longTerm.push("In einem regulierten Umfeld können die beschriebenen Abweichungen in der Prozessdisziplin zu Qualitäts- oder Prüfungsrisiken führen.");
+    longTerm.push("In einem regulierten Umfeld können die beschriebenen Abweichungen in der Prozessdisziplin zu Qualitäts-, Haftungs- oder Audit-Risiken führen. Strukturdisziplin muss durchgängig sichergestellt werden.");
 
   return { shortTerm, midTerm, longTerm };
 }
 
 function developmentFromControl(control: ControlIntensity, points: number, criticalLabel: string) {
-  if (control === "LOW") return { likelihood: "hoch" as const, timeframe: "3–6 Monate", text: "Die Person kann sich voraussichtlich gut selbst in die Rolle einarbeiten. Der Steuerungsaufwand für die Führungskraft ist gering – es reichen regelmäßige Check-ins und normale Feedbackrunden." };
-  if (control === "MEDIUM") return { likelihood: "mittel" as const, timeframe: "6–12 Monate", text: `Eine erfolgreiche Entwicklung ist realistisch, erfordert aber feste Review-Gespräche und klare Spielregeln – besonders im Bereich „${criticalLabel}". Die Führungskraft muss aktiv begleiten.` };
-  return { likelihood: "gering" as const, timeframe: ">12 Monate", text: `Die Abweichung betrifft die Grundlogik der Rolle. Eine Entwicklung in die richtige Richtung ist nur mit intensiver Führungsarbeit und engmaschiger Begleitung möglich – besonders im Bereich „${criticalLabel}".` };
+  if (control === "LOW") return { likelihood: "hoch" as const, timeframe: "3–6 Monate", text: "Steuerungsaufwand für die Führungskraft: gering. Die Arbeitslogik passt zur Rollenanforderung – reguläre Review-Zyklen und Standard-Feedback reichen aus. Auswirkung auf KPI-Stabilität und Prozessqualität: positiv." };
+  if (control === "MEDIUM") return { likelihood: "mittel" as const, timeframe: "6–12 Monate", text: `Steuerungsaufwand: mittel. Gezielte Review-Gespräche und klare Zielarchitektur erforderlich – besonders im Bereich „${criticalLabel}". Ohne aktive Steuerung verschiebt sich das Priorisierungsverhalten. Auswirkung auf Prozessstabilität: steuerbar, aber nicht selbsttragend.` };
+  return { likelihood: "gering" as const, timeframe: ">12 Monate", text: `Steuerungsaufwand: hoch. Die Abweichung betrifft die operative Kernlogik der Rolle. Entwicklung erfordert intensive Führungsarbeit und engmaschige Steuerung – besonders im Bereich „${criticalLabel}". Auswirkung auf KPI-Stabilität und Prozessqualität: nur mit dauerhaft hohem Führungsaufwand erreichbar.` };
 }
 
 function integrationPlan(role: RoleAnalysis, criticalArea: MatrixAreaId, control: ControlIntensity) {
@@ -637,37 +637,37 @@ function integrationPlan(role: RoleAnalysis, criticalArea: MatrixAreaId, control
   const phase_30_60: string[] = [];
   const phase_60_90: string[] = [];
 
-  phase_0_30.push(`Onboarding-Gespräch für ${jobTitle}: Verantwortungsbereich, Entscheidungsbefugnisse und Erwartungen an die Rolle schriftlich klären.`);
-  phase_0_30.push(`Konkrete Zielvereinbarung für die ersten 90 Tage als ${jobTitle} festlegen – messbar, terminiert, mit klaren Prioritäten.`);
-  phase_0_30.push(`Die drei wichtigsten Spannungsfelder dieser Position offen benennen und gemeinsam Lösungsansätze definieren.`);
+  phase_0_30.push(`Onboarding ${jobTitle}: Verantwortungsbereich, Entscheidungsbefugnisse, Eskalationslogik und KPI-Erwartungen schriftlich definieren.`);
+  phase_0_30.push(`Zielvereinbarung für die ersten 90 Tage: messbar, terminiert, mit klaren Prioritäten und Steuerungsintervallen.`);
+  phase_0_30.push(`Die drei operativ kritischsten Spannungsfelder der Position identifizieren und Steuerungslogik gemeinsam festlegen.`);
 
   if (criticalArea === "conflict") {
-    phase_0_30.push(`Für ${jobTitle} klare Eskalationsregeln vereinbaren: Ab welcher Abweichung wird wie und durch wen interveniert.`);
-    phase_30_60.push("Schwierige Gespräche im Tagesgeschäft begleiten – Vorbereitung, Gesprächsführung und Nachverfolgung gemeinsam strukturieren.");
-    phase_60_90.push("Prüfen: Werden Leistungsprobleme im Team eigenständig und zeitnah angesprochen?");
+    phase_0_30.push(`Eskalationsregeln für ${jobTitle} definieren: Ab welcher Zielabweichung wird wie und durch wen interveniert. Verbindlich dokumentieren.`);
+    phase_30_60.push("Steuerung Konfliktfähigkeit: Leistungsabweichungen im Tagesgeschäft begleiten – Interventionslogik, Gesprächsführung und Nachverfolgung strukturieren.");
+    phase_60_90.push("KPI-Prüfung: Werden Leistungsprobleme im Team eigenständig, zeitnah und mit konkreter Auswirkung auf Zielerreichung adressiert?");
   } else if (criticalArea === "decision_logic") {
-    phase_0_30.push(`Entscheidungsfristen für typische Situationen als ${jobTitle} festlegen – z.\u00ADB. 48 Stunden bei Zielabweichungen, 24 Stunden bei Kundeneskalationen.`);
-    phase_30_60.push("Im Tagesgeschäft beobachten: Trifft die Person Entscheidungen zügig oder sichert sie übermäßig ab?");
-    phase_60_90.push("Prüfen: Hält der Entscheidungsrhythmus dem Markttempo stand?");
+    phase_0_30.push(`Entscheidungsfristen für ${jobTitle} definieren: z.\u00ADB. 48h bei Zielabweichungen, 24h bei Kundeneskalationen. Prozess schriftlich fixieren.`);
+    phase_30_60.push("Steuerung Entscheidungstempo: Werden Entscheidungen im geforderten Rhythmus getroffen oder wird übermäßig abgesichert? Auswirkung auf Prozessgeschwindigkeit messen.");
+    phase_60_90.push("KPI-Prüfung: Hält der Entscheidungsrhythmus dem Markttempo und der Forecast-Anforderung stand?");
   } else if (criticalArea === "kpi_work") {
-    phase_0_30.push(`Berichtsstandards für ${jobTitle} definieren: Welche Zahlen werden wann in welcher Qualität erwartet (z.\u00ADB. Vertriebsberichte, Umsatzprognosen, Datenpflege).`);
-    phase_30_60.push("Berichtsdisziplin prüfen: Werden Zahlen vollständig, aktuell und ohne Nachfragen geliefert?");
-    phase_60_90.push("Prüfen: Ist die Transparenz über Zielerreichung stabil und verlässlich?");
+    phase_0_30.push(`Reporting-Standards für ${jobTitle} definieren: Welche KPIs, in welchem Zyklus, in welcher Qualität. Forecast-Disziplin und Datenpflege als Anforderung dokumentieren.`);
+    phase_30_60.push("Steuerung Reporting-Disziplin: Werden KPIs vollständig, termingerecht und ohne Nachfragen geliefert? Forecast-Qualität prüfen.");
+    phase_60_90.push("KPI-Prüfung: Ist die Transparenz über Zielerreichung, Pipeline-Qualität und Prozesssteuerung stabil und verlässlich?");
   } else if (criticalArea === "leadership_effect") {
-    phase_0_30.push(`Erwartungen an die Führungsrolle als ${jobTitle} klar formulieren: Wie soll geführt werden, welche Impulse erwartet das Team.`);
-    phase_30_60.push("Führungswirkung im Alltag beobachten: Setzt die Person die richtigen Prioritäten, gibt sie klare Rückmeldungen?");
-    phase_60_90.push("Prüfen: Hat das Team eine klare Richtung und fühlt sich geführt?");
+    phase_0_30.push(`Führungsanforderung für ${jobTitle} dokumentieren: Zielarchitektur, Delegationslogik, Eskalationsverhalten und KPI-Review-Zyklen definieren.`);
+    phase_30_60.push("Steuerung Führungswirkung: Setzt die Person die richtigen Prioritäten? Gibt sie klare, ergebnisorientierte Rückmeldungen? Auswirkung auf Teamdynamik beobachten.");
+    phase_60_90.push("KPI-Prüfung: Hat das Team klare Richtung, stabile Priorisierung und messbare Zielarchitektur?");
   } else if (criticalArea === "competition") {
-    phase_0_30.push(`Wettbewerbsrelevante Ziele für ${jobTitle} festlegen: Marktanteile, Abschlussquoten, Reaktionszeiten auf Ausschreibungen.`);
-    phase_30_60.push("Tempo und Durchsetzungsstärke im Tagesgeschäft beobachten: Werden Chancen aktiv genutzt oder abwartend bearbeitet?");
-    phase_60_90.push("Prüfen: Agiert die Person proaktiv am Markt oder eher reaktiv?");
+    phase_0_30.push(`Wettbewerbsziele für ${jobTitle} festlegen: Marktanteile, Abschlussquoten, Reaktionszeiten. KPI-basiert und terminiert.`);
+    phase_30_60.push("Steuerung Wettbewerbsdynamik: Werden Chancen proaktiv genutzt oder abwartend bearbeitet? Abschlussquoten und Tempo messen.");
+    phase_60_90.push("KPI-Prüfung: Agiert die Person proaktiv am Markt? Sind Abschlussquoten und Pipeline-Qualität im Zielkorridor?");
   } else if (criticalArea === "culture") {
-    phase_0_30.push(`Kulturelle Erwartungen an ${jobTitle} klar machen: Welche Haltung, welcher Umgang im Team wird erwartet.`);
-    phase_30_60.push("Teamdynamik beobachten: Passt die Wirkung der Person zur gewünschten Kultur?");
-    phase_60_90.push("Prüfen: Bleibt die Teamkultur stabil oder verschiebt sie sich in eine ungewollte Richtung?");
+    phase_0_30.push(`Kultur-Erwartungen an ${jobTitle} definieren: Welche Leistungsorientierung, welche Teamdynamik, welche Ergebnisorientierung wird erwartet.`);
+    phase_30_60.push("Steuerung Kulturwirkung: Passt die Wirkung der Person zur geforderten Leistungs- und Ergebniskultur? Teamdynamik beobachten.");
+    phase_60_90.push("KPI-Prüfung: Bleibt die Leistungskultur stabil oder verschiebt sich die Teamdynamik in eine nicht gesteuerte Richtung?");
   } else {
-    phase_30_60.push(`Spannungsfelder der Position ${jobTitle} aktiv steuern: Klare Priorisierung und regelmäßige Review-Gespräche.`);
-    phase_60_90.push("Prüfen: Zeigt die Person die gewünschte Wirkung in Tempo, Zielhärte, Prozessqualität und Teamführung?");
+    phase_30_60.push(`Operative Spannungsfelder der Position ${jobTitle} aktiv steuern: Klare Priorisierung, Zielarchitektur und regelmäßige Review-Zyklen.`);
+    phase_60_90.push("KPI-Prüfung: Zeigt die Person die geforderte Wirkung in Tempo, Zielhärte, Prozessqualität und Führungswirkung?");
   }
 
   if (tags.market_pressure === "hoch") {
@@ -680,12 +680,12 @@ function integrationPlan(role: RoleAnalysis, criticalArea: MatrixAreaId, control
   }
 
   if (control === "HIGH") {
-    phase_0_30.push(`Wöchentliches Steuerungsgespräch zwischen ${jobTitle} und direkter Führungskraft im ersten Monat einplanen.`);
-    phase_30_60.push("Gezieltes Coaching auf dem kritischen Verhalten: Entscheidungsverhalten, Konfliktfähigkeit oder Berichtsdisziplin – je nach Schwachstelle.");
-    phase_60_90.push("Klare Go/No-Go-Entscheidung treffen: Erfüllt die Person die Kernanforderungen der Position oder nicht?");
+    phase_0_30.push(`Wöchentliches Steuerungsgespräch zwischen ${jobTitle} und direkter Führungskraft. KPI-Review und Zielabgleich als fester Prozess.`);
+    phase_30_60.push("Gezielte operative Steuerung auf dem kritischen Verhalten: Entscheidungsarchitektur, Interventionslogik oder Reporting-Disziplin – je nach Schwachstelle. Fortschritt KPI-basiert messen.");
+    phase_60_90.push("Klare Go/No-Go-Entscheidung: Erfüllt die Person die Kernanforderungen der Position? Ergebnis anhand messbarer KPIs bewerten.");
   }
 
-  phase_60_90.push(`Abschließendes 90-Tage-Review: Passt die Person nachweislich zur Rolle ${jobTitle}? Ergebnis dokumentieren und weitere Schritte festlegen.`);
+  phase_60_90.push(`90-Tage-Review: Strukturelle Passung zur Rolle ${jobTitle} bewerten. Ergebnis dokumentieren – KPI-Stabilität, Prozessqualität und Führungswirkung als Entscheidungsbasis.`);
 
   return { phase_0_30, phase_30_60, phase_60_90 };
 }
@@ -736,35 +736,36 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
 
   const keyReason = (() => {
     if (dualConflict && roleKeyInDual) {
-      return `${candName} bringt die geforderte ${rL}-Arbeitsweise grundsätzlich mit, allerdings konkurriert sie mit einer gleich starken ${competingL}-Ausprägung. Die Rolle ${jobTitle} verlangt eine klare ${rL}-Ausrichtung – diese Eindeutigkeit ist beim Kandidaten nicht gegeben.`;
+      return `${candName} bringt die geforderte ${rL}-Steuerungslogik grundsätzlich mit, allerdings konkurriert sie mit einer gleich starken ${competingL}-Prägung. Die Rolle ${jobTitle} verlangt eine klare ${rL}-Ausrichtung – diese Eindeutigkeit fehlt. Auswirkung auf Priorisierungsverhalten und KPI-Disziplin: instabil.`;
     }
     if (dualConflict && !roleKeyInDual) {
-      return `${candName} arbeitet vorrangig ${labelComponent(candDom.top1.key)} und ${labelComponent(candDom.top2.key)} geprägt. Die für ${jobTitle} entscheidende ${rL}-Arbeitsweise ist nicht als Stärke vorhanden.`;
+      return `${candName} arbeitet vorrangig ${labelComponent(candDom.top1.key)}-/${labelComponent(candDom.top2.key)}-geprägt. Die für ${jobTitle} entscheidende ${rL}-Steuerungslogik fehlt strukturell. Auswirkung auf Entscheidungsarchitektur, Priorisierung und Prozessstabilität: kritisch.`;
     }
     if (overallFit === "SUITABLE") {
-      return `${candName} passt gut zur Rolle ${jobTitle}. Die geforderte ${rL}-Arbeitsweise wird stabil abgebildet. Der kritischste Bereich ist „${critical.label}", dort ist die Passung am engsten.`;
+      return `${candName} passt zur Rollenanforderung ${jobTitle}. Die geforderte ${rL}-Arbeitslogik wird stabil abgebildet (Soll: ${r[roleDom.top1.key]} / Ist: ${c[roleDom.top1.key]}). Kritischster Bereich: „${critical.label}" – dort ist die Passung am engsten.`;
     }
     if (sameDom && overallFit === "CONDITIONAL") {
-      return `${candName} arbeitet grundsätzlich ${rL}-orientiert, wie es die Rolle ${jobTitle} verlangt. Allerdings ist die Ausprägung schwächer als gefordert. Besonders im Bereich „${critical.label}" zeigt sich die Abweichung.`;
+      return `${candName} arbeitet grundsätzlich ${rL}-orientiert (Soll: ${r[roleDom.top1.key]} / Ist: ${c[roleDom.top1.key]}, Δ ${mainDiff} Punkte). Die Intensität liegt unter der Rollenanforderung – besonders im Bereich „${critical.label}". Auswirkung auf Prozessstabilität: steuerbar, aber nicht selbsttragend.`;
     }
     if (overallFit === "CONDITIONAL") {
-      return `${candName} bringt eine andere Schwerpunktsetzung mit als die Rolle ${jobTitle} erfordert. Eine Besetzung ist möglich, erfordert aber klare Steuerung – besonders im Bereich „${critical.label}".`;
+      return `${candName} bringt eine andere Steuerungslogik mit als ${jobTitle} erfordert (Rolle: ${rL} / Kandidat: ${cL}). Eine Besetzung ist möglich, erfordert aber klare Zielarchitektur und Steuerung – besonders im Bereich „${critical.label}".`;
     }
-    return `${candName} passt nicht zur Grundstruktur der Rolle ${jobTitle}. Die geforderte ${rL}-Arbeitsweise wird nicht abgebildet. Besonders kritisch: „${critical.label}".`;
+    return `${candName} passt nicht zur Kernlogik der Rolle ${jobTitle}. Die geforderte ${rL}-Arbeitslogik wird nicht abgebildet (Soll: ${r[roleDom.top1.key]} / Ist: ${c[roleDom.top1.key]}, Δ ${mainDiff} Punkte). Besonders kritisch: „${critical.label}".`;
   })();
 
   const execSummary = (() => {
     const intro = `Rolle: ${jobTitle} | ${candName}`;
     const fitLine = `Gesamteinstufung: ${statusLabel(overallFit)} · Steuerungsaufwand: ${controlLabel(ctrl.level)}`;
+    const profileLine = `Soll-Profil: ${r.impulsiv}/${r.intuitiv}/${r.analytisch} · Ist-Profil: ${c.impulsiv}/${c.intuitiv}/${c.analytisch}`;
     let domLine: string;
     if (dualConflict) {
-      domLine = `${candName} zeigt zwei gleich starke Arbeitsweisen (${labelComponent(candDom.top1.key)} und ${labelComponent(candDom.top2.key)}). Die Rolle verlangt eine klare ${rL}-Ausrichtung.`;
+      domLine = `Doppeldominanz: ${labelComponent(candDom.top1.key)}/${labelComponent(candDom.top2.key)} – die Rolle verlangt klare ${rL}-Steuerungslogik. Auswirkung auf Priorisierung und Entscheidungsarchitektur: instabil.`;
     } else if (sameDom) {
-      domLine = `Beide Profile sind ${rL}-geprägt. Die Grundrichtung stimmt überein.`;
+      domLine = `Beide Profile sind ${rL}-geprägt (Δ ${mainDiff} Punkte). Arbeitslogik und Priorisierungsverhalten stimmen in der Grundrichtung überein.`;
     } else {
-      domLine = `Die Rolle erfordert ${rL}-geprägtes Arbeiten. ${candName} arbeitet eher ${cL}-geprägt.`;
+      domLine = `Die Rolle erfordert ${rL}-gesteuerte Arbeitslogik. ${candName} arbeitet ${cL}-geprägt. Auswirkung auf Entscheidungsarchitektur und Priorisierung: Steuerung erforderlich.`;
     }
-    return [intro, fitLine, domLine].join("\n");
+    return [intro, fitLine, profileLine, domLine].join("\n");
   })();
 
   const risks = buildRisks(role, cand, { overallFit, control: ctrl.level, matrix, mismatch });
