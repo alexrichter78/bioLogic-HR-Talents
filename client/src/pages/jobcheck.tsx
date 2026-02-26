@@ -5,7 +5,7 @@ import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import { hyphenateText } from "@/lib/hyphenate";
 import { BERUFE } from "@/data/berufe";
 import {
-  type RoleAnalysis, type CandidateInput, type Triad, type FitStatus, type ControlIntensity, type EngineResult, type MatrixRow as EngineMatrixRow,
+  type RoleAnalysis, type CandidateInput, type Triad, type FitStatus, type ControlIntensity, type EngineResult, type MatrixRow as EngineMatrixRow, type ComponentKey,
   runEngine, normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent, statusLabel, controlLabel,
 } from "@/lib/jobcheck-engine";
 
@@ -658,6 +658,69 @@ export default function JobCheck() {
 
                   <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
 
+                  <div>
+                    <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.6, marginBottom: 16, hyphens: "auto", textAlign: "justify" } as React.CSSProperties} lang="de">
+                      Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Dimensionen{" "}
+                      <span style={{ fontWeight: 700, color: COLORS.imp }}>Impulsiv</span>,{" "}
+                      <span style={{ fontWeight: 700, color: COLORS.int }}>Intuitiv</span> und{" "}
+                      <span style={{ fontWeight: 700, color: COLORS.ana }}>Analytisch</span> zugeordnet.
+                      So wird erkennbar, welche Form von Wirksamkeit die Rolle bestimmt.
+                    </p>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 20 }}>
+                      {[
+                        { label: "Impulsiv", color: COLORS.imp, desc: "Umsetzung, Entscheidung und Ergebnisverantwortung" },
+                        { label: "Intuitiv", color: COLORS.int, desc: "Zusammenarbeit und kontextbezogenes Handeln" },
+                        { label: "Analytisch", color: COLORS.ana, desc: "Struktur, Planung und fachliche Präzision" },
+                      ].map(d => (
+                        <div key={d.label} style={{ padding: "14px 16px", borderRadius: 16, background: `${d.color}08`, border: `1px solid ${d.color}15` }}>
+                          <p style={{ fontSize: 13, fontWeight: 700, color: d.color, margin: "0 0 4px" }}>{d.label}</p>
+                          <p style={{ fontSize: 12, color: "#6E6E73", margin: 0, lineHeight: 1.4 }}>{d.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    {roleProfile && (() => {
+                      const r = roleProfile;
+                      const c = snapshotCand;
+                      const dims: { key: ComponentKey; label: string; color: string }[] = [
+                        { key: "impulsiv", label: "Impulsiv", color: COLORS.imp },
+                        { key: "intuitiv", label: "Intuitiv", color: COLORS.int },
+                        { key: "analytisch", label: "Analytisch", color: COLORS.ana },
+                      ];
+                      return (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                          {dims.map(d => {
+                            const sollVal = r[d.key];
+                            const istVal = c[d.key];
+                            const delta = istVal - sollVal;
+                            return (
+                              <div key={d.key}>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                                  <span style={{ fontSize: 13, fontWeight: 700, color: d.color }}>{d.label}</span>
+                                  <span style={{ fontSize: 12, fontWeight: 600, color: delta === 0 ? "#34C759" : Math.abs(delta) <= 5 ? "#8E8E93" : Math.abs(delta) <= 15 ? "#FF9500" : "#FF3B30" }}>
+                                    Δ {delta > 0 ? "+" : ""}{delta}
+                                  </span>
+                                </div>
+                                <div style={{ position: "relative", height: 28, borderRadius: 8, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
+                                  <div style={{ position: "absolute", top: 0, left: 0, height: "50%", width: `${Math.min(sollVal, 100)}%`, background: `${d.color}40`, borderRadius: "8px 8px 0 0", transition: "width 0.4s ease" }} />
+                                  <div style={{ position: "absolute", bottom: 0, left: 0, height: "50%", width: `${Math.min(istVal, 100)}%`, background: d.color, borderRadius: "0 0 8px 8px", transition: "width 0.4s ease" }} />
+                                  <div style={{ position: "absolute", top: 0, left: 8, height: "50%", display: "flex", alignItems: "center" }}>
+                                    <span style={{ fontSize: 10, fontWeight: 700, color: "#1D1D1F" }}>Soll {sollVal}%</span>
+                                  </div>
+                                  <div style={{ position: "absolute", bottom: 0, left: 8, height: "50%", display: "flex", alignItems: "center" }}>
+                                    <span style={{ fontSize: 10, fontWeight: 700, color: "#fff" }}>Ist {istVal}%</span>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
+
                   {(() => {
                     const sameDom = engine.roleDominance.top1.key === engine.candDominance.top1.key;
                     const roleVal = engine.roleDominance.top1.value;
@@ -683,7 +746,7 @@ export default function JobCheck() {
                       const c2L = labelComponent(c2k);
                       const roleInDual = ck === rk || c2k === rk;
                       if (roleInDual) {
-                        calloutText = `Doppeldominanz: ${labelComponent(rk)}-Steuerungslogik ist vorhanden, konkurriert aber mit gleich starker ${c2L}-Prägung. Die Rolle verlangt eindeutige ${labelComponent(rk)}-Ausrichtung – Priorisierungsverhalten und KPI-Disziplin sind instabil.`;
+                        calloutText = `Doppeldominanz: ${labelComponent(rk)}-Steuerungslogik ist vorhanden, konkurriert aber mit gleich starker ${c2L}-Prägung. Die Rolle verlangt eindeutige ${labelComponent(rk)}-Ausrichtung – Priorisierungsverhalten und Steuerungsdisziplin sind instabil.`;
                         calloutColor = "#FF9500";
                       } else {
                         calloutText = `Der Kandidat arbeitet ${labelComponent(ck)}-/${c2L}-geprägt. Die für die Rolle entscheidende ${labelComponent(rk)}-Steuerungslogik fehlt strukturell. Auswirkung auf Entscheidungsarchitektur und Priorisierung: kritisch.`;
@@ -699,7 +762,7 @@ export default function JobCheck() {
                       calloutColor = "#FF9500";
                       sectionTitle = "Dominanz-Vergleich";
                     } else if (sameDom) {
-                      calloutText = `Soll: ${roleVal} / Ist: ${candVal} (Δ ${intensityDiff} Punkte). Beide Profile ${labelComponent(rk)}-geprägt, aber die geforderte Intensität fehlt deutlich. Auswirkung auf KPI-Stabilität und Prozessqualität: Steuerungslücke.`;
+                      calloutText = `Soll: ${roleVal} / Ist: ${candVal} (Δ ${intensityDiff} Punkte). Beide Profile ${labelComponent(rk)}-geprägt, aber die geforderte Intensität fehlt deutlich. Auswirkung auf Prozessqualität und Steuerungsstabilität: Steuerungslücke.`;
                       calloutColor = "#FF3B30";
                       sectionTitle = "Dominanz-Vergleich";
                     } else {
