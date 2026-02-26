@@ -642,5 +642,82 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
     }
   });
 
+  app.post("/api/ki-coach", async (req, res) => {
+    try {
+      const { messages } = req.body;
+      if (!Array.isArray(messages) || messages.length === 0) {
+        return res.status(400).json({ error: "Keine Nachrichten" });
+      }
+
+      const lastMsg = messages[messages.length - 1]?.content?.toLowerCase() || "";
+
+      const ALLOWED_TOPICS = [
+        "führung", "fuehrung", "leitung", "leadership", "management",
+        "gespräch", "gespraech", "kommunikation", "feedback", "dialog", "mitarbeitergespräch", "konflikt",
+        "assessment", "beurteilung", "bewertung", "potenzial", "kompetenz", "entwicklung", "stärke", "schwäche",
+        "bewerbung", "recruiting", "kandidat", "einstellung", "onboarding", "vorstellung", "interview",
+        "mitarbeiter", "team", "personal", "hr", "besetzung", "rolle", "profil", "biologic", "biogram",
+        "coaching", "beratung", "mentor", "sparring",
+        "kündigung", "kuendigung", "trennung", "offboarding", "austritt",
+        "motivation", "leistung", "ziel", "delegation", "verantwortung",
+        "kultur", "werte", "vertrauen", "zusammenarbeit",
+        "struktur", "organisation", "prozess", "entscheidung",
+        "impulsiv", "intuitiv", "analytisch", "dominanz", "triade",
+        "rollen-dna", "rollenprofil", "soll-ist", "teamdynamik",
+        "hallo", "hi", "guten tag", "hilfe", "help", "was kannst du", "wer bist du",
+      ];
+
+      const isAllowed = ALLOWED_TOPICS.some(t => lastMsg.includes(t)) ||
+        messages.length <= 1 ||
+        lastMsg.length < 15;
+
+      if (!isAllowed) {
+        return res.json({
+          reply: "Ich bin spezialisiert auf Führung, Personalentscheidungen, Assessment, Bewerbungsgespräche und Kommunikation im beruflichen Kontext. Bitte stelle mir eine Frage zu diesen Themen.",
+          filtered: true,
+        });
+      }
+
+      const systemPrompt = `Du bist ein erfahrener bioLogic-Coach, Personaldienstleister, Personalberater und Kommunikationscoach.
+
+Deine Expertise umfasst:
+- Führung & Leadership: Führungsstile, Entscheidungsverhalten, Delegation, Mitarbeiterentwicklung
+- Personalentscheidungen: Besetzung, Assessment, Potenzialanalyse, Rollenprofile
+- Bewerbung & Recruiting: Interviews, Kandidatenauswahl, Onboarding, Gesprächsführung
+- Kommunikation: Mitarbeitergespräche, Feedbackgespräche, Konfliktgespräche, schwierige Gespräche
+- bioLogic-System: Impulsiv/Intuitiv/Analytisch-Triade, Rollen-DNA, Soll-Ist-Vergleich, Teamdynamik
+
+Regeln:
+- Antworte ausschließlich auf Deutsch in professioneller Management-Sprache.
+- Sei konkret, praxisnah und handlungsorientiert.
+- Gib klare Empfehlungen statt vager Ratschläge.
+- Strukturiere längere Antworten mit Aufzählungen und Absätzen.
+- Halte Antworten prägnant (max. 300 Wörter), es sei denn der Nutzer bittet um mehr Detail.
+- Beziehe dich wenn passend auf das bioLogic-System (Impulsiv/Intuitiv/Analytisch).
+- Vermeide Coaching-Jargon, nutze klare Business-Sprache.`;
+
+      const apiMessages = [
+        { role: "system" as const, content: systemPrompt },
+        ...messages.slice(-10).map((m: { role: string; content: string }) => ({
+          role: m.role as "user" | "assistant",
+          content: m.content,
+        })),
+      ];
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4.1",
+        messages: apiMessages,
+        temperature: 0.6,
+        max_tokens: 1500,
+      });
+
+      const reply = response.choices[0]?.message?.content || "Entschuldigung, ich konnte keine Antwort generieren.";
+      res.json({ reply, filtered: false });
+    } catch (error) {
+      console.error("Error in KI-Coach:", error);
+      res.status(500).json({ error: "Fehler bei der Verarbeitung" });
+    }
+  });
+
   return httpServer;
 }
