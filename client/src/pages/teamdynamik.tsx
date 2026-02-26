@@ -438,30 +438,8 @@ export default function Teamdynamik() {
                 </div>
                 <p style={{ fontSize: 11, color: "#8E8E93", margin: "3px 0 0" }} data-testid="text-headline">{hyphenateText(result.headline)}</p>
               </div>
-              <div style={{ display: "flex", gap: 6 }}>
-                {(Object.keys(VIEW_LABELS) as ViewMode[]).map(v => {
-                  const V = VIEW_LABELS[v];
-                  const active = viewMode === v;
-                  return (
-                    <button key={v} onClick={() => setViewMode(v)} data-testid={`button-view-${v.toLowerCase()}`} style={{
-                      display: "flex", alignItems: "center", gap: 4, padding: "5px 12px", borderRadius: 8,
-                      background: active ? "rgba(0,113,227,0.08)" : "transparent",
-                      border: active ? "1px solid rgba(0,113,227,0.15)" : "1px solid transparent",
-                      cursor: "pointer", fontSize: 11, fontWeight: active ? 700 : 500,
-                      color: active ? "#0071E3" : "#8E8E93",
-                    }}>
-                      <V.icon style={{ width: 12, height: 12 }} /> {V.label}
-                    </button>
-                  );
-                })}
-              </div>
             </div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <div style={{ flex: 1, minWidth: 90, padding: "8px 10px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                <p style={{ fontSize: 9, fontWeight: 600, color: "#8E8E93", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Veränderungsgrad</p>
-                <p style={{ fontSize: 22, fontWeight: 800, color: tl.fill, margin: 0 }}>{result.scores.TS}</p>
-                <p style={{ fontSize: 9, color: "#8E8E93", margin: "1px 0 0" }}>von 100 · {INTENSITY_LABELS[result.intensityLevel]}</p>
-              </div>
               <div style={{ flex: 1, minWidth: 90, padding: "8px 10px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
                 <p style={{ fontSize: 9, fontWeight: 600, color: "#8E8E93", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Bewertung</p>
                 <p style={{ fontSize: 15, fontWeight: 800, color: "#1D1D1F", margin: 0 }}>{SHIFT_LABELS[result.shiftType]}</p>
