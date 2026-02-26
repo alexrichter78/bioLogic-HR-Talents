@@ -410,8 +410,10 @@ export default function Teamdynamik() {
           </div>
 
           <div style={{
-            background: "rgba(30,30,32,0.94)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-            borderRadius: 20, padding: "18px 22px", color: "#fff",
+            background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+            borderRadius: 20, padding: "18px 22px",
+            border: "1px solid rgba(0,0,0,0.06)",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
           }} data-testid="executive-header">
             <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", marginBottom: 12 }}>
               <TrafficLightAmpel tl={result.trafficLight} />
@@ -419,10 +421,10 @@ export default function Teamdynamik() {
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   <input type="text" value={teamName} onChange={e => setTeamName(e.target.value)}
                     data-testid="input-team-name"
-                    style={{ fontSize: 18, fontWeight: 700, color: "#fff", background: "none", border: "none", outline: "none", padding: 0, letterSpacing: "-0.02em", width: "auto", maxWidth: 220 }} />
+                    style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", background: "none", border: "none", outline: "none", padding: 0, letterSpacing: "-0.02em", width: "auto", maxWidth: 220 }} />
                   <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: tl.bg, color: tl.fill }} data-testid="badge-status">{tl.label}</span>
                 </div>
-                <p style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", margin: "3px 0 0" }} data-testid="text-headline">{hyphenateText(result.headline)}</p>
+                <p style={{ fontSize: 11, color: "#8E8E93", margin: "3px 0 0" }} data-testid="text-headline">{hyphenateText(result.headline)}</p>
               </div>
               <div style={{ display: "flex", gap: 6 }}>
                 {(Object.keys(VIEW_LABELS) as ViewMode[]).map(v => {
@@ -431,10 +433,10 @@ export default function Teamdynamik() {
                   return (
                     <button key={v} onClick={() => setViewMode(v)} data-testid={`button-view-${v.toLowerCase()}`} style={{
                       display: "flex", alignItems: "center", gap: 4, padding: "5px 12px", borderRadius: 8,
-                      background: active ? "rgba(255,255,255,0.12)" : "transparent",
-                      border: active ? "1px solid rgba(255,255,255,0.15)" : "1px solid transparent",
+                      background: active ? "rgba(0,113,227,0.08)" : "transparent",
+                      border: active ? "1px solid rgba(0,113,227,0.15)" : "1px solid transparent",
                       cursor: "pointer", fontSize: 11, fontWeight: active ? 700 : 500,
-                      color: active ? "#fff" : "rgba(255,255,255,0.45)",
+                      color: active ? "#0071E3" : "#8E8E93",
                     }}>
                       <V.icon style={{ width: 12, height: 12 }} /> {V.label}
                     </button>
@@ -443,20 +445,20 @@ export default function Teamdynamik() {
               </div>
             </div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <div style={{ flex: 1, minWidth: 90, padding: "8px 10px", borderRadius: 12, background: "rgba(255,255,255,0.06)" }}>
-                <p style={{ fontSize: 9, fontWeight: 600, color: "rgba(255,255,255,0.4)", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Transformation</p>
+              <div style={{ flex: 1, minWidth: 90, padding: "8px 10px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
+                <p style={{ fontSize: 9, fontWeight: 600, color: "#8E8E93", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Transformation</p>
                 <p style={{ fontSize: 22, fontWeight: 800, color: tl.fill, margin: 0 }}>{result.scores.TS}</p>
-                <p style={{ fontSize: 9, color: "rgba(255,255,255,0.35)", margin: "1px 0 0" }}>von 100 · {INTENSITY_LABELS[result.intensityLevel]}</p>
+                <p style={{ fontSize: 9, color: "#8E8E93", margin: "1px 0 0" }}>von 100 · {INTENSITY_LABELS[result.intensityLevel]}</p>
               </div>
-              <div style={{ flex: 1, minWidth: 90, padding: "8px 10px", borderRadius: 12, background: "rgba(255,255,255,0.06)" }}>
-                <p style={{ fontSize: 9, fontWeight: 600, color: "rgba(255,255,255,0.4)", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Verschiebung</p>
-                <p style={{ fontSize: 15, fontWeight: 800, color: "#fff", margin: 0 }}>{SHIFT_LABELS[result.shiftType]}</p>
-                <p style={{ fontSize: 9, color: "rgba(255,255,255,0.35)", margin: "1px 0 0" }}>{result.shiftAxis}</p>
+              <div style={{ flex: 1, minWidth: 90, padding: "8px 10px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
+                <p style={{ fontSize: 9, fontWeight: 600, color: "#8E8E93", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Verschiebung</p>
+                <p style={{ fontSize: 15, fontWeight: 800, color: "#1D1D1F", margin: 0 }}>{SHIFT_LABELS[result.shiftType]}</p>
+                <p style={{ fontSize: 9, color: "#8E8E93", margin: "1px 0 0" }}>{result.shiftAxis}</p>
               </div>
-              <div style={{ flex: 1, minWidth: 90, padding: "8px 10px", borderRadius: 12, background: "rgba(255,255,255,0.06)" }}>
-                <p style={{ fontSize: 9, fontWeight: 600, color: "rgba(255,255,255,0.4)", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Steuerung</p>
-                <p style={{ fontSize: 15, fontWeight: 800, color: "#fff", margin: 0 }}>{INTENSITY_LABELS[result.steeringNeed]}</p>
-                <p style={{ fontSize: 9, color: "rgba(255,255,255,0.35)", margin: "1px 0 0" }}>{result.leverEffects.enabledCount} Hebel aktiv</p>
+              <div style={{ flex: 1, minWidth: 90, padding: "8px 10px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
+                <p style={{ fontSize: 9, fontWeight: 600, color: "#8E8E93", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Steuerung</p>
+                <p style={{ fontSize: 15, fontWeight: 800, color: "#1D1D1F", margin: 0 }}>{INTENSITY_LABELS[result.steeringNeed]}</p>
+                <p style={{ fontSize: 9, color: "#8E8E93", margin: "1px 0 0" }}>{result.leverEffects.enabledCount} Hebel aktiv</p>
               </div>
             </div>
           </div>
