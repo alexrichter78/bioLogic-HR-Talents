@@ -4,6 +4,185 @@ export type ControlIntensity = "LOW" | "MEDIUM" | "HIGH";
 
 export type Triad = Record<ComponentKey, number>;
 
+type RoleTerms = {
+  kpiExamples: string;
+  forecastTerm: string;
+  reportingDesc: string;
+  qualityMetric: string;
+  pipelineTerm: string;
+  escalationExample: string;
+  competitionMetrics: string;
+  resultMetric: string;
+  targetTerm: string;
+  tempoContext: string;
+};
+
+type RoleCategory = "vertrieb" | "bildung" | "technik" | "produktion" | "pflege" | "finanzen" | "hr" | "marketing" | "fuehrung" | "verwaltung" | "generic";
+
+function detectRoleCategory(jobFamily: string, jobTitle: string): RoleCategory {
+  const text = `${jobFamily} ${jobTitle}`.toLowerCase();
+  if (/vertrieb|sales|verkauf|akquise|business.?development|account|key.?account/.test(text)) return "vertrieb";
+  if (/bildung|ausbildung|lehre|training|pädagog|berufsbildung|dozent|lehrer|schul|erzieh|coach|seminar|kurs|lernbegleit/.test(text)) return "bildung";
+  if (/technik|it\b|software|engineering|entwickl|informatik|system|devops|architekt|programm/.test(text)) return "technik";
+  if (/produktion|fertigung|manufacturing|logistik|lager|supply.?chain|montage|werkstatt/.test(text)) return "produktion";
+  if (/pflege|gesundheit|medizin|therapeut|klinik|spital|praxis|patient|ärzt|apothek/.test(text)) return "pflege";
+  if (/finanz|controlling|buchhaltung|rechnungswesen|treuhänd|revision|audit|steuer(?!ung)/.test(text)) return "finanzen";
+  if (/personal|hr\b|human.?resources|recruiting|talent/.test(text)) return "hr";
+  if (/marketing|kommunikation|werbung|content|brand|kampagne|digital.?market/.test(text)) return "marketing";
+  if (/geschäftsführ|direktor|leitung|ceo|coo|cfo|managing|vorstand/.test(text)) return "fuehrung";
+  if (/verwaltung|administration|sachbearbeit|sekretariat|empfang|office/.test(text)) return "verwaltung";
+  return "generic";
+}
+
+function resolveRoleTerms(role: RoleAnalysis): RoleTerms {
+  const cat = detectRoleCategory(role.job_family, role.job_title);
+  switch (cat) {
+    case "vertrieb":
+      return {
+        kpiExamples: "Abschlussquoten, Pipeline-Volumen, Umsatz",
+        forecastTerm: "Umsatz-Forecast",
+        reportingDesc: "Vertriebsberichte, Umsatzprognosen, Pipeline-Pflege",
+        qualityMetric: "Vertriebsqualität",
+        pipelineTerm: "Pipeline-Qualität",
+        escalationExample: "bei Kundeneskalationen",
+        competitionMetrics: "Marktanteile, Abschlussquoten, Reaktionszeiten",
+        resultMetric: "Abschlussquoten und Umsatzdynamik",
+        targetTerm: "Umsatzziele",
+        tempoContext: "Markttempo",
+      };
+    case "bildung":
+      return {
+        kpiExamples: "Ausbildungsqualität, Lernfortschritt, Prüfungserfolgsquote",
+        forecastTerm: "Ausbildungsplanung",
+        reportingDesc: "Ausbildungsberichte, Lernstandserhebungen, Bildungsdokumentation",
+        qualityMetric: "Ausbildungsqualität",
+        pipelineTerm: "Lernfortschritt und Ausbildungsstand",
+        escalationExample: "bei Lernrückständen oder Ausbildungsabbruch",
+        competitionMetrics: "Ausbildungsqualität, Betreuungsschlüssel, Prüfungserfolgsquote",
+        resultMetric: "Lernerfolg und Ausbildungsqualität",
+        targetTerm: "Ausbildungsziele",
+        tempoContext: "Ausbildungstempo",
+      };
+    case "technik":
+      return {
+        kpiExamples: "Projektqualität, Liefertreue, Fehlerquoten",
+        forecastTerm: "Projekt-Forecast",
+        reportingDesc: "Projektberichte, Statusupdates, Qualitätskennzahlen",
+        qualityMetric: "Projektqualität",
+        pipelineTerm: "Projektfortschritt und Lieferqualität",
+        escalationExample: "bei technischen Eskalationen oder Lieferverzug",
+        competitionMetrics: "Innovationsgeschwindigkeit, Liefertreue, Qualitätsstandards",
+        resultMetric: "Projektqualität und Liefertreue",
+        targetTerm: "Projektziele",
+        tempoContext: "Projekttempo",
+      };
+    case "produktion":
+      return {
+        kpiExamples: "Produktionsqualität, Durchlaufzeiten, Ausschussquote",
+        forecastTerm: "Produktionsplanung",
+        reportingDesc: "Produktionsberichte, Qualitätsprotokolle, Auslastungskennzahlen",
+        qualityMetric: "Produktionsqualität",
+        pipelineTerm: "Produktionsfluss und Liefertreue",
+        escalationExample: "bei Produktionsstörungen oder Qualitätsabweichungen",
+        competitionMetrics: "Durchlaufzeiten, Ausschussquote, Liefertreue",
+        resultMetric: "Produktionsleistung und Liefertreue",
+        targetTerm: "Produktionsziele",
+        tempoContext: "Produktionstempo",
+      };
+    case "pflege":
+      return {
+        kpiExamples: "Versorgungsqualität, Betreuungsschlüssel, Dokumentationsqualität",
+        forecastTerm: "Einsatzplanung",
+        reportingDesc: "Pflegeberichte, Dokumentation, Qualitätskennzahlen",
+        qualityMetric: "Versorgungsqualität",
+        pipelineTerm: "Versorgungskontinuität und Betreuungsqualität",
+        escalationExample: "bei Versorgungsengpässen oder kritischen Situationen",
+        competitionMetrics: "Versorgungsqualität, Patientenzufriedenheit, Dokumentationsstandards",
+        resultMetric: "Versorgungsqualität und Patientensicherheit",
+        targetTerm: "Versorgungsziele",
+        tempoContext: "Versorgungstempo",
+      };
+    case "finanzen":
+      return {
+        kpiExamples: "Berichtsqualität, Forecast-Genauigkeit, Budgetdisziplin",
+        forecastTerm: "Finanz-Forecast",
+        reportingDesc: "Finanzberichte, Abschlüsse, Budgetübersichten",
+        qualityMetric: "Berichtsqualität",
+        pipelineTerm: "Abschlussqualität und Reporting-Konsistenz",
+        escalationExample: "bei Budgetabweichungen oder Prüfungsanfragen",
+        competitionMetrics: "Abschlussqualität, Termintreue, Prüfungssicherheit",
+        resultMetric: "Berichtsqualität und Forecast-Genauigkeit",
+        targetTerm: "Finanzziele",
+        tempoContext: "Abschlusstempo",
+      };
+    case "hr":
+      return {
+        kpiExamples: "Time-to-Hire, Besetzungsqualität, Mitarbeiterbindung",
+        forecastTerm: "Personalplanung",
+        reportingDesc: "Personalberichte, Fluktuationskennzahlen, Besetzungsstand",
+        qualityMetric: "Besetzungsqualität",
+        pipelineTerm: "Kandidaten-Pipeline und Besetzungsstand",
+        escalationExample: "bei Vakanzen oder Personalengpässen",
+        competitionMetrics: "Time-to-Hire, Besetzungsqualität, Fluktuation",
+        resultMetric: "Besetzungsqualität und Mitarbeiterbindung",
+        targetTerm: "Personalziele",
+        tempoContext: "Besetzungstempo",
+      };
+    case "marketing":
+      return {
+        kpiExamples: "Kampagnen-Performance, Reichweite, Conversion-Rate",
+        forecastTerm: "Kampagnenplanung",
+        reportingDesc: "Kampagnenberichte, Performance-Analysen, ROI-Kennzahlen",
+        qualityMetric: "Kampagnenqualität",
+        pipelineTerm: "Kampagnen-Pipeline und Content-Qualität",
+        escalationExample: "bei Kampagnenabweichungen oder Budgetüberschreitung",
+        competitionMetrics: "Reichweite, Conversion, Markenbekanntheit",
+        resultMetric: "Kampagnen-Performance und Markenpositionierung",
+        targetTerm: "Marketingziele",
+        tempoContext: "Kampagnentempo",
+      };
+    case "fuehrung":
+      return {
+        kpiExamples: "Teamperformance, Zielerreichung, Mitarbeiterbindung",
+        forecastTerm: "Geschäfts-Forecast",
+        reportingDesc: "Management-Reports, Zielvereinbarungen, Performance-Übersichten",
+        qualityMetric: "Führungsqualität",
+        pipelineTerm: "Zielerreichung und Teamperformance",
+        escalationExample: "bei Zielabweichungen oder Führungskonflikten",
+        competitionMetrics: "Zielerreichung, Teamstabilität, Marktpositionierung",
+        resultMetric: "Geschäftsergebnisse und Teamperformance",
+        targetTerm: "Geschäftsziele",
+        tempoContext: "Umsetzungstempo",
+      };
+    case "verwaltung":
+      return {
+        kpiExamples: "Durchlaufzeiten, Fehlerquoten, Termintreue",
+        forecastTerm: "Arbeitsplanung",
+        reportingDesc: "Statusberichte, Prozessübersichten, Qualitätskennzahlen",
+        qualityMetric: "Prozessqualität",
+        pipelineTerm: "Vorgangsbearbeitung und Prozessqualität",
+        escalationExample: "bei Terminverzug oder Prozessabweichungen",
+        competitionMetrics: "Durchlaufzeiten, Fehlerquoten, Termintreue",
+        resultMetric: "Prozessqualität und Termintreue",
+        targetTerm: "Prozessziele",
+        tempoContext: "Bearbeitungstempo",
+      };
+    default:
+      return {
+        kpiExamples: "Zielerreichung, Ergebnisqualität, Prozessstabilität",
+        forecastTerm: "Ergebnisprognose",
+        reportingDesc: "Statusberichte, Kennzahlenübersichten, Ergebnisprotokolle",
+        qualityMetric: "Ergebnisqualität",
+        pipelineTerm: "Arbeitsfortschritt und Ergebnisqualität",
+        escalationExample: "bei Zielabweichungen oder Qualitätsproblemen",
+        competitionMetrics: "Ergebnisqualität, Zielerreichung, Reaktionsgeschwindigkeit",
+        resultMetric: "Ergebnisqualität und Zielerreichung",
+        targetTerm: "Leistungsziele",
+        tempoContext: "Arbeitstempo",
+      };
+  }
+}
+
 export type RoleAnalysis = {
   job_title: string;
   job_family: string;
@@ -253,7 +432,7 @@ function calcControlIntensity(role: RoleAnalysis, cand: CandidateInput): { point
   return { points, level };
 }
 
-function buildMatrix(role: RoleAnalysis, cand: CandidateInput): MatrixRow[] {
+function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): MatrixRow[] {
   const r = normalizeTriad(role.role_profile);
   const c = normalizeTriad(cand.candidate_profile);
   const rDom = dominanceModeOf(r);
@@ -325,7 +504,7 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput): MatrixRow[] {
         ? (sameDominant
           ? `Gleiche Entscheidungslogik (${rLabel}), jedoch weicht die Intensität um ${decMainDiff} Punkte ab (Soll: ${r[rDom.top1.key]} / Ist: ${c[rDom.top1.key]}). Auswirkung: Entscheidungen fallen tendenziell weicher oder langsamer. Steuerbar durch klare Entscheidungsfristen, Eskalationsregeln und verbindliche Priorisierung.`
           : `Die Rolle verlangt ${decRoleDesc} (${rLabel} ${r[rDom.top1.key]}), der Kandidat entscheidet ${decCandDesc} (${cLabel} ${c[cDom.top1.key]}). Abweichung: ${decMainDiff} Punkte. Auswirkung: Entscheidungswege verschieben sich, Priorisierung folgt einer anderen Logik. Steuerbar mit klaren Entscheidungsfristen und Eskalationsregeln.`)
-        : `Die Rolle verlangt ${decRoleDesc} (${rLabel} ${r[rDom.top1.key]}), der Kandidat ist ${decCandDesc} (${cLabel} ${c[cDom.top1.key]}). Abweichung: ${decMainDiff} Punkte. Auswirkung: Interventionen werden strukturell verzögert oder anders priorisiert. Tempo, Forecast-Qualität und operative Steuerung sind betroffen.`,
+        : `Die Rolle verlangt ${decRoleDesc} (${rLabel} ${r[rDom.top1.key]}), der Kandidat ist ${decCandDesc} (${cLabel} ${c[cDom.top1.key]}). Abweichung: ${decMainDiff} Punkte. Auswirkung: Interventionen werden strukturell verzögert oder anders priorisiert. ${t.tempoContext}, ${t.qualityMetric} und operative Steuerung sind betroffen.`,
   });
 
   const kpiStatus: FitStatus = (() => {
@@ -343,10 +522,10 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput): MatrixRow[] {
     candidatePattern: `Analytisch ${c.analytisch} – ${c.analytisch >= 30 ? "Strukturdisziplin und Zahlenorientierung anschlussfähig" : c.analytisch >= 20 ? "Kennzahlen als Orientierung, nicht als Steuerungsinstrument" : "geringe analytische Steuerungsbasis"}`,
     status: kpiStatus,
     reasoning: kpiStatus === "SUITABLE"
-      ? `Analytisch Soll: ${r.analytisch} / Ist: ${c.analytisch}. Die analytische Basis ist vorhanden. KPI-Steuerung, Reporting und Prozessdisziplin sind stabil aufsetzbar. Auswirkung auf Forecast-Qualität und Zielerreichung: stabil.`
+      ? `Analytisch Soll: ${r.analytisch} / Ist: ${c.analytisch}. Die analytische Basis ist vorhanden. Steuerung über ${t.kpiExamples} und ${t.reportingDesc} ist stabil aufsetzbar. Auswirkung auf ${t.forecastTerm} und Zielerreichung: stabil.`
       : kpiStatus === "CONDITIONAL"
-        ? `Analytisch Soll: ${r.analytisch} / Ist: ${c.analytisch} (Δ ${kpiDiff} Punkte). Auswirkung: KPI-Disziplin und Reporting-Qualität erfordern feste Routinen, klare Standards und konsequentes Nachhalten. Ohne Steuerung sinkt die Forecast-Genauigkeit.`
-        : `Analytisch Soll: ${r.analytisch} / Ist: ${c.analytisch} (Δ ${kpiDiff} Punkte). Auswirkung: Reporting wird interpretationsabhängig, Strukturdisziplin muss durchgängig geführt werden. Kennzahlen verlieren ohne engmaschige Steuerung ihre Steuerungswirkung. Forecast- und Prozessqualität instabil.`,
+        ? `Analytisch Soll: ${r.analytisch} / Ist: ${c.analytisch} (Δ ${kpiDiff} Punkte). Auswirkung: Disziplin bei ${t.reportingDesc} erfordert feste Routinen, klare Standards und konsequentes Nachhalten. Ohne Steuerung sinkt die Qualität von ${t.forecastTerm} und ${t.qualityMetric}.`
+        : `Analytisch Soll: ${r.analytisch} / Ist: ${c.analytisch} (Δ ${kpiDiff} Punkte). Auswirkung: ${t.reportingDesc} wird interpretationsabhängig, Strukturdisziplin muss durchgängig geführt werden. Kennzahlen (${t.kpiExamples}) verlieren ohne engmaschige Steuerung ihre Steuerungswirkung. ${t.forecastTerm} und ${t.qualityMetric} instabil.`,
   });
 
   if (role.leadership?.required) {
@@ -426,10 +605,10 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput): MatrixRow[] {
     candidatePattern: `Impulsiv ${c.impulsiv} – ${c.impulsiv >= 45 ? "Tempo-/Abschlussorientierung stark" : c.impulsiv >= 30 ? "Tempo anschlussfähig" : "Tempo reduziert"}`,
     status: competitionStatus,
     reasoning: competitionStatus === "SUITABLE"
-      ? `Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv}${compMarket ? " bei hohem Marktdruck" : ""} (Δ ${Math.abs(compImpGap)} Punkte). Tempo und Marktreaktion passen zur Rollenlogik. Auswirkung auf Abschlussquoten und Wettbewerbsdynamik: stabil.`
+      ? `Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv}${compMarket ? " bei hohem Marktdruck" : ""} (Δ ${Math.abs(compImpGap)} Punkte). Tempo und Reaktionsfähigkeit passen zur Rollenlogik. Auswirkung auf ${t.resultMetric}: stabil.`
       : competitionStatus === "NOT_SUITABLE"
-        ? `${compMarket ? "Hoher Marktdruck: " : ""}Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv} (Δ ${Math.abs(compImpGap)} Punkte). Auswirkung: Die impulsive Interventionslogik fehlt – Tempo sinkt, Chancen werden stärker geprüft als genutzt. Abschlussquoten und Wettbewerbsfähigkeit werden strukturell geschwächt.`
-        : `Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv} (Δ ${Math.abs(compImpGap)} Punkte). Auswirkung: Markttempo und Durchsetzungsdynamik sind steuerbar, wenn Prioritäten, Entscheidungsfristen und Zielhärte klar etabliert sind. Ohne Steuerung verschiebt sich die Dynamik in Richtung Absicherung.`,
+        ? `${compMarket ? "Hoher Marktdruck: " : ""}Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv} (Δ ${Math.abs(compImpGap)} Punkte). Auswirkung: Die impulsive Interventionslogik fehlt – Tempo sinkt, Aufgaben werden stärker geprüft als zügig umgesetzt. ${t.resultMetric} werden strukturell geschwächt.`
+        : `Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv} (Δ ${Math.abs(compImpGap)} Punkte). Auswirkung: ${t.tempoContext} und Durchsetzungsdynamik sind steuerbar, wenn Prioritäten, Entscheidungsfristen und Zielhärte klar etabliert sind. Ohne Steuerung verschiebt sich die Dynamik in Richtung Absicherung.`,
   });
 
   const cultureStatus: FitStatus = (() => {
@@ -464,10 +643,10 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput): MatrixRow[] {
       candidatePattern: `Analytisch ${c.analytisch} – ${c.analytisch >= 35 ? "stark anschlussfähig" : c.analytisch >= 25 ? "vorhanden" : "gering"}`,
       status: stratStatus,
       reasoning: stratStatus === "SUITABLE"
-        ? `Analytisch ${c.analytisch} – bei langen Zyklen ist die analytische Basis für Pipeline-Qualität, Forecast-Disziplin und Prozesssteuerung ausreichend. Auswirkung auf Umsetzungskonstanz: stabil.`
+        ? `Analytisch ${c.analytisch} – bei langen Zyklen ist die analytische Basis für ${t.pipelineTerm}, ${t.forecastTerm} und Prozesssteuerung ausreichend. Auswirkung auf Umsetzungskonstanz: stabil.`
         : stratStatus === "CONDITIONAL"
-          ? `Analytisch ${c.analytisch}. Auswirkung: Bei langen strategischen Zyklen muss Strukturdisziplin aktiv gesteuert werden. Pipeline-Qualität und Forecast-Genauigkeit erfordern systematische Arbeitsweise, die nicht selbstständig aufrechterhalten wird.`
-          : `Analytisch ${c.analytisch}. Auswirkung: Für lange strategische Zyklen fehlt die analytische Grundbasis. Pipeline-Konsistenz, Forecast-Qualität und Prozessdisziplin sind ohne engmaschige Steuerung instabil.`,
+          ? `Analytisch ${c.analytisch}. Auswirkung: Bei langen strategischen Zyklen muss Strukturdisziplin aktiv gesteuert werden. ${t.pipelineTerm} und ${t.forecastTerm} erfordern systematische Arbeitsweise, die nicht selbstständig aufrechterhalten wird.`
+          : `Analytisch ${c.analytisch}. Auswirkung: Für lange strategische Zyklen fehlt die analytische Grundbasis. ${t.pipelineTerm}, ${t.forecastTerm} und Prozessdisziplin sind ohne engmaschige Steuerung instabil.`,
     });
   }
 
@@ -516,15 +695,15 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput): MatrixRow[] {
         ? (ct === "B2C"
           ? `Im B2C-Kontext: Impulsiv ${c.impulsiv}. Abschlussorientierung und Tempo passen zur geforderten Marktdynamik. Auswirkung auf Abschlussquoten: stabil.`
           : ct === "B2B"
-            ? `Im B2B-Kontext: Intuitiv ${c.intuitiv} / Analytisch ${c.analytisch}. Beziehungsfähigkeit und wirtschaftliche Steuerung sind anschlussfähig. Auswirkung auf Kundenbindung und Pipeline-Qualität: stabil.`
+            ? `Im B2B-Kontext: Intuitiv ${c.intuitiv} / Analytisch ${c.analytisch}. Beziehungsfähigkeit und wirtschaftliche Steuerung sind anschlussfähig. Auswirkung auf Kundenbindung und ${t.pipelineTerm}: stabil.`
             : "Die Kundenorientierung passt zur geforderten Dynamik.")
         : custStatus === "CONDITIONAL"
           ? (ct === "B2C"
             ? `Im B2C-Kontext: Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv}. Auswirkung: Die Abschlussorientierung ist vorhanden, muss aber durch klare Ziele, Frequenz und Steuerung aktiviert werden. Ohne Steuerung sinkt die Abschlussquote.`
-            : `Im B2B-Kontext: Intuitiv Soll: ${r.intuitiv} / Ist: ${c.intuitiv}. Auswirkung: Beziehungsfähigkeit ist vorhanden, aber die Balance aus Beziehungsstabilität und Ergebnislogik muss aktiv gehalten werden. Pipeline-Qualität erfordert Steuerung.`)
+            : `Im B2B-Kontext: Intuitiv Soll: ${r.intuitiv} / Ist: ${c.intuitiv}. Auswirkung: Beziehungsfähigkeit ist vorhanden, aber die Balance aus Beziehungsstabilität und Ergebnislogik muss aktiv gehalten werden. ${t.pipelineTerm} erfordert Steuerung.`)
           : (ct === "B2C"
             ? `Im B2C-Kontext: Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv}. Auswirkung: Tempo und Abschlussquote werden voraussichtlich unter dem Rollenbedarf liegen. Die impulsive Marktdynamik fehlt strukturell.`
-            : `Im B2B-Kontext: Intuitiv ${c.intuitiv} / Analytisch ${c.analytisch}. Auswirkung: Beziehungstiefe und wirtschaftliche Steuerung fehlen strukturell. Pipeline-Aufbau und Kundenbindung sind instabil.`),
+            : `Im B2B-Kontext: Intuitiv ${c.intuitiv} / Analytisch ${c.analytisch}. Auswirkung: Beziehungstiefe und wirtschaftliche Steuerung fehlen strukturell. ${t.pipelineTerm} und Kundenbindung sind instabil.`),
     });
   }
 
@@ -538,7 +717,7 @@ function criticalAreaFromMatrix(matrix: MatrixRow[]): { id: MatrixAreaId; label:
   return { id: worst.areaId, label: worst.areaLabel };
 }
 
-function buildRisks(role: RoleAnalysis, cand: CandidateInput, engine: { overallFit: FitStatus; control: ControlIntensity; matrix: MatrixRow[]; mismatch: number }) {
+function buildRisks(role: RoleAnalysis, cand: CandidateInput, engine: { overallFit: FitStatus; control: ControlIntensity; matrix: MatrixRow[]; mismatch: number }, t: RoleTerms) {
   const tags = role.environment_tags || {};
   const r = normalizeTriad(role.role_profile);
   const c = normalizeTriad(cand.candidate_profile);
@@ -586,7 +765,7 @@ function buildRisks(role: RoleAnalysis, cand: CandidateInput, engine: { overallF
     } else {
       shortTerm.push(`Bereits in der Einarbeitung ist mit operativer Reibung zu rechnen. Die Arbeitslogik der Person passt nicht zu dem, was die Position ${jobTitle} strukturell erfordert.`);
       midTerm.push(`Die Leistungsstruktur der Rolle wird voraussichtlich verschoben. Auswirkung: Priorisierung, Entscheidungsarchitektur und Steuerungsfähigkeit folgen einer anderen Logik. KPI-Stabilität und Prozessqualität sind gefährdet.`);
-      longTerm.push("Die Abweichung betrifft die Kernlogik der Position. Auswirkung: Tempo, Qualität, Forecast-Stabilität und Führungswirkung werden dauerhaft nicht die geforderte Wirkung entfalten.");
+      longTerm.push(`Die Abweichung betrifft die Kernlogik der Position. Auswirkung: Tempo, ${t.qualityMetric}, ${t.forecastTerm} und Führungswirkung werden dauerhaft nicht die geforderte Wirkung entfalten.`);
     }
   }
 
@@ -596,19 +775,19 @@ function buildRisks(role: RoleAnalysis, cand: CandidateInput, engine: { overallF
   }
   if (critical.id === "decision_logic") {
     midTerm.push("Auswirkung auf Tempo: Entscheidungen werden tendenziell langsamer getroffen. Die Person sichert stärker ab, statt zügig zu handeln. Operative Prozesse verlangsamen sich.");
-    longTerm.push("Unter Zeitdruck oder bei Zielkonflikten sinkt die Reaktionsgeschwindigkeit deutlich. Auswirkung auf Forecast und Prozessstabilität: Verzögerungen kumulieren sich.");
+    longTerm.push(`Unter Zeitdruck oder bei Zielkonflikten sinkt die Reaktionsgeschwindigkeit deutlich. Auswirkung auf ${t.forecastTerm} und Prozessstabilität: Verzögerungen kumulieren sich.`);
   }
   if (critical.id === "kpi_work") {
-    midTerm.push("Auswirkung auf Forecast und Reporting: Die Disziplin bei Reporting, Forecasting und datenbasierter Steuerung ist voraussichtlich inkonsistent. Steuerungswirkung der Kennzahlen sinkt.");
-    longTerm.push("Ohne engmaschige Nachsteuerung sinkt die Transparenz über Zielerreichung und Pipeline-Qualität. Auswirkung auf Prozessstabilität: Steuerungslücken werden erst spät sichtbar.");
+    midTerm.push(`Auswirkung auf ${t.forecastTerm} und Reporting: Die Disziplin bei ${t.reportingDesc} ist voraussichtlich inkonsistent. Steuerungswirkung der Kennzahlen sinkt.`);
+    longTerm.push(`Ohne engmaschige Nachsteuerung sinkt die Transparenz über Zielerreichung und ${t.pipelineTerm}. Auswirkung auf Prozessstabilität: Steuerungslücken werden erst spät sichtbar.`);
   }
   if (critical.id === "leadership_effect") {
     midTerm.push("Auswirkung auf Teamdynamik: Die Führungswirkung weicht vom Anforderungsprofil ab. Das Team bekommt nicht die Steuerungsimpulse, die die Rolle verlangt. Führungsaufwand für die nächste Ebene steigt.");
     longTerm.push("Ohne klare Eskalationslogik und Zielarchitektur bleibt die Führungseffektivität fragil. Auswirkung auf Prozessstabilität und KPI-Disziplin: Delegation und Zielhärte erodieren.");
   }
   if (critical.id === "competition") {
-    midTerm.push("Auswirkung auf Tempo und Abschlussquoten: Tempo und Abschlussdruck werden voraussichtlich gedämpft. Priorisierung verschiebt sich in Richtung Absicherung statt Durchsetzung.");
-    longTerm.push("In einem dynamischen Marktumfeld besteht das Risiko, dass Chancen reaktiv statt proaktiv bearbeitet werden. Auswirkung auf Wettbewerbsfähigkeit: Marktanteile können sich verschieben.");
+    midTerm.push(`Auswirkung auf Tempo und ${t.resultMetric}: Tempo und Durchsetzungsdruck werden voraussichtlich gedämpft. Priorisierung verschiebt sich in Richtung Absicherung statt Durchsetzung.`);
+    longTerm.push(`In einem dynamischen Umfeld besteht das Risiko, dass Aufgaben reaktiv statt proaktiv bearbeitet werden. Auswirkung auf ${t.resultMetric}: ${t.qualityMetric} kann sich verschlechtern.`);
   }
   if (critical.id === "culture") {
     midTerm.push("Auswirkung auf Teamdynamik: Die kulturelle Wirkung der Person unterscheidet sich von der Rollenanforderung. Priorisierung und Zielhärte im Team verschieben sich.");
@@ -616,7 +795,7 @@ function buildRisks(role: RoleAnalysis, cand: CandidateInput, engine: { overallF
   }
 
   if (tags.market_pressure === "hoch")
-    longTerm.push("In einem Hochdruckmarkt wirkt jede Verzögerung direkt auf Abschlussquoten und Umsatzdynamik. Die beschriebenen Abweichungen in Arbeitslogik und Priorisierungsverhalten verstärken sich unter Marktdruck.");
+    longTerm.push(`In einem Hochdruckumfeld wirkt jede Verzögerung direkt auf ${t.resultMetric}. Die beschriebenen Abweichungen in Arbeitslogik und Priorisierungsverhalten verstärken sich unter Druck.`);
   if (tags.regulation === "hoch")
     longTerm.push("In einem regulierten Umfeld können die beschriebenen Abweichungen in der Prozessdisziplin zu Qualitäts-, Haftungs- oder Audit-Risiken führen. Strukturdisziplin muss durchgängig sichergestellt werden.");
 
@@ -629,7 +808,7 @@ function developmentFromControl(control: ControlIntensity, points: number, criti
   return { likelihood: "gering" as const, timeframe: ">12 Monate", text: `Steuerungsaufwand: hoch. Die Abweichung betrifft die operative Kernlogik der Rolle. Entwicklung erfordert intensive Führungsarbeit und engmaschige Steuerung – besonders im Bereich „${criticalLabel}". Auswirkung auf KPI-Stabilität und Prozessqualität: nur mit dauerhaft hohem Führungsaufwand erreichbar.` };
 }
 
-function integrationPlan(role: RoleAnalysis, criticalArea: MatrixAreaId, control: ControlIntensity) {
+function integrationPlan(role: RoleAnalysis, criticalArea: MatrixAreaId, control: ControlIntensity, t: RoleTerms) {
   const tags = role.environment_tags || {};
   const jobTitle = role.job_title || "diese Position";
   const jobFamily = role.job_family || "";
@@ -637,8 +816,8 @@ function integrationPlan(role: RoleAnalysis, criticalArea: MatrixAreaId, control
   const phase_30_60: string[] = [];
   const phase_60_90: string[] = [];
 
-  phase_0_30.push(`Onboarding ${jobTitle}: Verantwortungsbereich, Entscheidungsbefugnisse, Eskalationslogik und KPI-Erwartungen schriftlich definieren.`);
-  phase_0_30.push(`Zielvereinbarung für die ersten 90 Tage: messbar, terminiert, mit klaren Prioritäten und Steuerungsintervallen.`);
+  phase_0_30.push(`Onboarding ${jobTitle}: Verantwortungsbereich, Entscheidungsbefugnisse, Eskalationslogik und zentrale Kennzahlen (${t.kpiExamples}) schriftlich definieren.`);
+  phase_0_30.push(`${t.targetTerm} für die ersten 90 Tage: messbar, terminiert, mit klaren Prioritäten und Steuerungsintervallen.`);
   phase_0_30.push(`Die drei operativ kritischsten Spannungsfelder der Position identifizieren und Steuerungslogik gemeinsam festlegen.`);
 
   if (criticalArea === "conflict") {
@@ -646,21 +825,21 @@ function integrationPlan(role: RoleAnalysis, criticalArea: MatrixAreaId, control
     phase_30_60.push("Steuerung Konfliktfähigkeit: Leistungsabweichungen im Tagesgeschäft begleiten – Interventionslogik, Gesprächsführung und Nachverfolgung strukturieren.");
     phase_60_90.push("KPI-Prüfung: Werden Leistungsprobleme im Team eigenständig, zeitnah und mit konkreter Auswirkung auf Zielerreichung adressiert?");
   } else if (criticalArea === "decision_logic") {
-    phase_0_30.push(`Entscheidungsfristen für ${jobTitle} definieren: z.\u00ADB. 48h bei Zielabweichungen, 24h bei Kundeneskalationen. Prozess schriftlich fixieren.`);
-    phase_30_60.push("Steuerung Entscheidungstempo: Werden Entscheidungen im geforderten Rhythmus getroffen oder wird übermäßig abgesichert? Auswirkung auf Prozessgeschwindigkeit messen.");
-    phase_60_90.push("KPI-Prüfung: Hält der Entscheidungsrhythmus dem Markttempo und der Forecast-Anforderung stand?");
+    phase_0_30.push(`Entscheidungsfristen für ${jobTitle} definieren: z.\u00ADB. 48h bei Zielabweichungen, 24h ${t.escalationExample}. Prozess schriftlich fixieren.`);
+    phase_30_60.push(`Steuerung Entscheidungstempo: Werden Entscheidungen im geforderten Rhythmus getroffen oder wird übermäßig abgesichert? Auswirkung auf ${t.tempoContext} messen.`);
+    phase_60_90.push(`Prüfung: Hält der Entscheidungsrhythmus dem ${t.tempoContext} und der Anforderung an ${t.forecastTerm} stand?`);
   } else if (criticalArea === "kpi_work") {
-    phase_0_30.push(`Reporting-Standards für ${jobTitle} definieren: Welche KPIs, in welchem Zyklus, in welcher Qualität. Forecast-Disziplin und Datenpflege als Anforderung dokumentieren.`);
-    phase_30_60.push("Steuerung Reporting-Disziplin: Werden KPIs vollständig, termingerecht und ohne Nachfragen geliefert? Forecast-Qualität prüfen.");
-    phase_60_90.push("KPI-Prüfung: Ist die Transparenz über Zielerreichung, Pipeline-Qualität und Prozesssteuerung stabil und verlässlich?");
+    phase_0_30.push(`Reporting-Standards für ${jobTitle} definieren: Welche Kennzahlen (${t.kpiExamples}), in welchem Zyklus, in welcher Qualität. ${t.forecastTerm} und Datenpflege als Anforderung dokumentieren.`);
+    phase_30_60.push(`Steuerung Reporting-Disziplin: Werden Kennzahlen (${t.kpiExamples}) vollständig, termingerecht und ohne Nachfragen geliefert? ${t.forecastTerm} prüfen.`);
+    phase_60_90.push(`Prüfung: Ist die Transparenz über Zielerreichung, ${t.pipelineTerm} und Prozesssteuerung stabil und verlässlich?`);
   } else if (criticalArea === "leadership_effect") {
     phase_0_30.push(`Führungsanforderung für ${jobTitle} dokumentieren: Zielarchitektur, Delegationslogik, Eskalationsverhalten und KPI-Review-Zyklen definieren.`);
     phase_30_60.push("Steuerung Führungswirkung: Setzt die Person die richtigen Prioritäten? Gibt sie klare, ergebnisorientierte Rückmeldungen? Auswirkung auf Teamdynamik beobachten.");
     phase_60_90.push("KPI-Prüfung: Hat das Team klare Richtung, stabile Priorisierung und messbare Zielarchitektur?");
   } else if (criticalArea === "competition") {
-    phase_0_30.push(`Wettbewerbsziele für ${jobTitle} festlegen: Marktanteile, Abschlussquoten, Reaktionszeiten. KPI-basiert und terminiert.`);
-    phase_30_60.push("Steuerung Wettbewerbsdynamik: Werden Chancen proaktiv genutzt oder abwartend bearbeitet? Abschlussquoten und Tempo messen.");
-    phase_60_90.push("KPI-Prüfung: Agiert die Person proaktiv am Markt? Sind Abschlussquoten und Pipeline-Qualität im Zielkorridor?");
+    phase_0_30.push(`${t.targetTerm} für ${jobTitle} festlegen: ${t.competitionMetrics}. Messbar und terminiert.`);
+    phase_30_60.push(`Steuerung Wettbewerbsdynamik: Werden Aufgaben proaktiv angegangen oder abwartend bearbeitet? ${t.resultMetric} und Tempo messen.`);
+    phase_60_90.push(`Prüfung: Agiert die Person proaktiv? Sind ${t.resultMetric} und ${t.pipelineTerm} im Zielkorridor?`);
   } else if (criticalArea === "culture") {
     phase_0_30.push(`Kultur-Erwartungen an ${jobTitle} definieren: Welche Leistungsorientierung, welche Teamdynamik, welche Ergebnisorientierung wird erwartet.`);
     phase_30_60.push("Steuerung Kulturwirkung: Passt die Wirkung der Person zur geforderten Leistungs- und Ergebniskultur? Teamdynamik beobachten.");
@@ -685,7 +864,7 @@ function integrationPlan(role: RoleAnalysis, criticalArea: MatrixAreaId, control
     phase_60_90.push("Klare Go/No-Go-Entscheidung: Erfüllt die Person die Kernanforderungen der Position? Ergebnis anhand messbarer KPIs bewerten.");
   }
 
-  phase_60_90.push(`90-Tage-Review: Strukturelle Passung zur Rolle ${jobTitle} bewerten. Ergebnis dokumentieren – KPI-Stabilität, Prozessqualität und Führungswirkung als Entscheidungsbasis.`);
+  phase_60_90.push(`90-Tage-Review: Strukturelle Passung zur Rolle ${jobTitle} bewerten. Ergebnis dokumentieren – ${t.kpiExamples}, Prozessqualität und Führungswirkung als Entscheidungsbasis.`);
 
   return { phase_0_30, phase_30_60, phase_60_90 };
 }
@@ -720,8 +899,9 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
       overallFit = "NOT_SUITABLE";
     }
   }
+  const t = resolveRoleTerms(role);
   const ctrl = calcControlIntensity(role, cand);
-  const matrix = buildMatrix(role, cand);
+  const matrix = buildMatrix(role, cand, t);
   const critical = criticalAreaFromMatrix(matrix);
 
   const r = normalizeTriad(role.role_profile);
@@ -768,9 +948,9 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
     return [intro, fitLine, profileLine, domLine].join("\n");
   })();
 
-  const risks = buildRisks(role, cand, { overallFit, control: ctrl.level, matrix, mismatch });
+  const risks = buildRisks(role, cand, { overallFit, control: ctrl.level, matrix, mismatch }, t);
   const dev = developmentFromControl(ctrl.level, ctrl.points, critical.label);
-  const plan = integrationPlan(role, critical.id, ctrl.level);
+  const plan = integrationPlan(role, critical.id, ctrl.level, t);
 
   return {
     roleDominance: roleDom, candDominance: candDom,
