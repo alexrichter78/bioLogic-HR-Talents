@@ -1,0 +1,195 @@
+Seite: Teamreport (bioLogic) – UI-Spezifikation ohne Technik-Look
+Prinzip
+
+Nur Eingabe ändern → Report wird automatisch neu berechnet und neu dargestellt.
+
+Im Report selbst nichts editierbar.
+
+Oberfläche wirkt wie ein hochwertiger „Report Viewer“, nicht wie ein Konfigurator.
+
+1) Seitenaufbau (ein Screen, klar geführt)
+A) Header (oben)
+
+Titel: Teamreport
+
+Subline (klein): „Systemdynamik & Integrationsprognose“
+
+rechts oben: Buttons
+
+PDF exportieren
+
+Kopieren
+
+(optional) Neu starten
+
+Wichtig: Keine Scores/Formeln hier. Nur reportartige Anmutung.
+
+B) Eingabebereich (sehr kompakt, wie „Profilkarten“)
+
+Zwei nebeneinanderliegende Karten (oder untereinander auf Mobile):
+
+Karte 1: Teamprofil
+
+Überschrift: Teamprofil
+
+3 Slider oder 3 große Zahlfelder (mit minimalem UI):
+
+Impulsiv
+
+Intuitiv
+
+Analytisch
+
+Darunter klein:
+
+„Summe: 100%“ (Auto-Anzeige)
+
+„Dominanz: …“ (z.B. „Intuitiv“)
+
+Design-Note: Slider fühlen sich weniger „technisch“ an als Inputs. Dazu ein dezentes Balkenmini-Chart in der Karte.
+
+Karte 2: Personenprofil (neue Person)
+
+Überschrift: Neue Person
+
+gleiche 3 Slider/Inputs
+
+darunter:
+
+„Dominanz: …“
+
+Optional (wenn es bei dir immer relevant ist):
+
+Toggle: „Führungsrolle“ (Ja/Nein)
+Wenn du das nicht möchtest: weglassen. Dann ist Führung immer gleich gesetzt.
+
+C) Ergebnis-Kopf (1 kompakte Summary-Zeile)
+
+Direkt unter den Profilkarten: eine elegante „Statusleiste“ (wie in einem Report):
+
+Systemlage: „Stabil / Reibung / Spannung / Transformation“
+
+Intensität: „Niedrig / Mittel / Hoch“
+
+Achse: in Alltagssprache: „Beziehung → Struktur“ etc.
+
+Wichtig: Keine Ampelgrafik wie in Tools.
+Stattdessen: ein dezentes Status-Badge (z.B. „Spannung – hoch“).
+
+D) „Variante“-Hinweis (13-Logik sichtbar, aber elegant)
+
+Ein kleines Report-Element, nicht wie eine technische ID:
+
+„Systemmuster (bioLogic): Variante X von 13“
+Darunter 1 Satz, z.B.:
+„Analytische Führungslogik trifft auf intuitives Team – Struktur gewinnt, Beziehung muss bewusst geführt werden.“
+
+Keine Codes wie „A/I“. Keine Matrix. Nur Klartext.
+
+E) Report-Body (statisch, hochwertig)
+
+Der Report ist eine feste, scrollbare Darstellung mit klarer Typografie.
+
+Linke Seite (optional): Inhaltsverzeichnis mit Sprungmarken (Kapitel 1–13)
+Rechts: Reporttext.
+
+Kapitelstruktur (fix):
+
+Executive System Summary
+
+Profile im Überblick
+
+Systemtyp & Verschiebungsachse
+
+Systemwirkung im Alltag (4 Blöcke)
+
+Konflikt- & Druckprognose
+
+Team-Reifegrad
+
+Chancen
+
+Risiken
+
+Führungshebel
+
+Integrationsplan (30 Tage)
+
+Messpunkte
+
+Gesamtbewertung
+
+Hinweis: Du kannst 13 Kapitel behalten, aber optisch wirken 12 meist „cleaner“. Wenn du 13 brauchst, ok – dann „Aufgaben-/KPI-Impact“ als eigenes Kapitel rein.
+
+2) Interaktion (ohne „technische“ Controls)
+Live-Update-Logik
+
+Wenn Nutzer Slider bewegt → Report aktualisiert
+
+Aber nicht „ruckartig“:
+
+300–600 ms Debounce
+
+Kurz „Aktualisiert“ Badge (unauffällig)
+
+Validierung
+
+Wenn Summe ≠ 100:
+
+UI passt automatisch an (Auto-Normalisierung) oder
+
+kleine Inline-Info: „Bitte auf 100% bringen“ (ohne Error-Look)
+
+Empfehlung fürs „nicht-technisch“-Feeling:
+✅ Auto-Normalisierung (die Nutzer spüren keine Mathematik)
+
+3) Typografie & Stil (damit es wie ein Report wirkt)
+
+Große Überschriften, viel Weißraum
+
+Absätze kurz, Bulletpoints maximal 6 pro Block
+
+Dezente Divider-Lines zwischen Kapiteln
+
+Kleine Icons nur als Orientierung (nicht „UI-lastig“)
+
+Keine Tabellenoptik
+
+Keine „Parameter-/Score-Listen“ im Vordergrund
+
+4) Was NICHT angezeigt wird (wichtig fürs Design)
+
+Um „nicht technisch“ zu bleiben:
+
+DG/DC/RG/TS/CI nicht prominent zeigen
+
+keine Formeln
+
+keine „Berechnungsdetails“
+
+keine Entwicklerbegriffe wie „Dominance Clash“
+
+Wenn du Scores brauchst:
+➡️ in einem kleinen „Details aufklappen“-Bereich am Ende (optional), default geschlossen.
+
+5) Funktionalität (für Entwickler, aber UI-neutral)
+
+Inputs: Teamprofil + Personenprofil (+ optional Führung)
+
+On change:
+
+Backend/Frontend berechnet: Dominanzen, Variante (1–13), Systemlage, Intensität, Achse, Textbausteine
+
+Output:
+
+renderReport(reportSections[])
+
+Report ist read-only.
+
+6) Copy/Export
+
+Oben im Header:
+
+„Kopieren“ kopiert den gesamten Reporttext
+
+„PDF exportieren“ exportiert exakt die Reportansicht
