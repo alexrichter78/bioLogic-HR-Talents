@@ -407,6 +407,10 @@ export default function JobCheck() {
     };
   }, [candImp, candInt, candAna]);
 
+  useEffect(() => {
+    localStorage.setItem("jobcheckCandProfile", JSON.stringify(normalizedCand));
+  }, [normalizedCand]);
+
   const [snapshotCand, setSnapshotCand] = useState(normalizedCand);
   const [snapshotName, setSnapshotName] = useState(candidateName);
 
@@ -424,7 +428,6 @@ export default function JobCheck() {
     setSnapshotName(candidateName);
     setReportKey(k => k + 1);
     setReportGenerated(true);
-    localStorage.setItem("jobcheckCandProfile", JSON.stringify(normalizedCand));
     setAnalyseOpen(false);
     setBerichtOpen(true);
   }
