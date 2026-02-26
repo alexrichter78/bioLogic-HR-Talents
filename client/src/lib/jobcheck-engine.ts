@@ -205,8 +205,8 @@ function koRuleTriggered(role: RoleAnalysis, cand: CandidateInput): boolean {
 }
 
 function overallFitFromScore(mismatch: number): FitStatus {
-  if (mismatch <= 8) return "SUITABLE";
-  if (mismatch <= 15) return "CONDITIONAL";
+  if (mismatch <= 10) return "SUITABLE";
+  if (mismatch <= 18) return "CONDITIONAL";
   return "NOT_SUITABLE";
 }
 
