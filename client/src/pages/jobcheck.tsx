@@ -204,22 +204,25 @@ function ChapterBadge({ num, color }: { num: number; color: string }) {
 function SoftBar({ items }: { items: { label: string; value: number; color: string }[] }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      {items.map(bar => (
-        <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 12, color: "#6E6E73", width: 62, flexShrink: 0 }}>{bar.label}</span>
-          <div style={{ flex: 1, height: 24, borderRadius: 6, background: "rgba(0,0,0,0.04)", overflow: "hidden", position: "relative" }}>
-            <div style={{
-              width: `${Math.max(bar.value, 2)}%`,
-              height: "100%", borderRadius: 6, background: bar.color,
-              transition: "width 600ms ease",
-              display: "flex", alignItems: "center", paddingLeft: 8,
-              minWidth: 40,
-            }}>
-              <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{bar.value} %</span>
+      {items.map(bar => {
+        const widthPct = (bar.value / 67) * 100;
+        return (
+          <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 12, color: "#6E6E73", width: 62, flexShrink: 0 }}>{bar.label}</span>
+            <div style={{ flex: 1, height: 24, borderRadius: 6, background: "rgba(0,0,0,0.04)", overflow: "hidden", position: "relative" }}>
+              <div style={{
+                width: `${Math.min(Math.max(widthPct, 3), 100)}%`,
+                height: "100%", borderRadius: 6, background: bar.color,
+                transition: "width 600ms ease",
+                display: "flex", alignItems: "center", paddingLeft: 8,
+                minWidth: 40,
+              }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{bar.value} %</span>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -545,22 +548,6 @@ export default function JobCheck() {
                 <div>
                   <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 6 }}>Istprofil (Kandidat)</p>
                   <p style={{ fontSize: 12, color: "#8E8E93", marginBottom: 16 }}>Verschieben Sie die Regler, um das Kandidatenprofil einzugeben. Die Werte werden automatisch normalisiert.</p>
-
-                  <div style={{ marginBottom: 16 }}>
-                    <label style={{ fontSize: 12, fontWeight: 600, color: "#6E6E73", display: "block", marginBottom: 6 }}>Name des Kandidaten (optional)</label>
-                    <input
-                      type="text"
-                      value={candidateName}
-                      onChange={e => setCandidateName(e.target.value)}
-                      placeholder="z. B. Kandidat A"
-                      data-testid="input-candidate-name"
-                      style={{
-                        width: "100%", padding: "10px 14px", borderRadius: 12,
-                        border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,0,0,0.02)",
-                        fontSize: 14, color: "#1D1D1F", outline: "none",
-                      }}
-                    />
-                  </div>
 
                   <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "18px 20px", borderRadius: 18, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
                     <TriadSlider label="Impulsiv" value={candImp} color={COLORS.imp} onChange={setCandImp} />
