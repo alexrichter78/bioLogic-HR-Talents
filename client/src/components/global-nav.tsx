@@ -1,5 +1,5 @@
 import { useLocation } from "wouter";
-import { PlusCircle, Pencil, FileText, GitCompareArrows } from "lucide-react";
+import { PlusCircle, Pencil, FileText, GitCompareArrows, Users } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 const NAV_ITEMS = [
@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { label: "Rollen-DNA Bearbeiten", path: "/rollen-dna", icon: Pencil, isNew: false },
   { label: "Rollenprofil", path: "/bericht", icon: FileText, isNew: false },
   { label: "Soll-Ist-Vergleich", path: "/jobcheck", icon: GitCompareArrows, isNew: false },
+  { label: "Teamdynamik", path: "/teamdynamik", icon: Users, isNew: false },
 ];
 
 const RESET_KEYS = [

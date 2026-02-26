@@ -18,6 +18,8 @@ All pages share a unified GlobalNav component (`client/src/components/global-nav
 - **Rollenprofil**: Navigates to `/bericht` (AI-generated decision report)
 - **Soll-Ist-Vergleich**: Navigates to `/jobcheck` (candidate-role fit comparison)
 
+- **Teamdynamik**: Navigates to `/teamdynamik` (team dynamics - placeholder)
+
 The nav supports a `rightSlot` prop for page-specific actions (e.g., Save/Load on rollen-dna, Regenerate on bericht).
 
 ## System Architecture
