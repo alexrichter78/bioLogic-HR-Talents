@@ -1,0 +1,135 @@
+1) Ampeltexte (selbsterklärend, fix)
+🟢 GRÜN – Stabil
+
+Titel: Stabil – passt gut zusammen
+Kurzsatz: Arbeitsweisen sind kompatibel. Keine besonderen Maßnahmen notwendig.
+Was bedeutet das konkret?
+
+Entscheidungen werden schnell verstanden und akzeptiert.
+
+Abstimmungen laufen reibungslos.
+
+Tempo und Qualität bleiben stabil.
+Was ist zu tun?
+Normale Führung und regelmäßige Abstimmung reichen aus.
+
+🟡 GELB – Aktiv steuern
+
+Titel: Unterschiedliche Arbeitsweisen – aktiv steuern
+Kurzsatz: Unterschiede sind spürbar. Mit klaren Regeln bleibt das System stabil steuerbar.
+Was bedeutet das konkret?
+
+Entscheidungen dauern teilweise länger.
+
+Prioritäten müssen häufiger erklärt werden.
+
+Abstimmungsaufwand steigt im Alltag.
+Was ist zu tun?
+Entscheidungswege, Zeitfenster und Verantwortlichkeiten müssen klar gesetzt werden.
+
+🔴 ROT – Klare Führung notwendig
+
+Titel: Deutliche Spannungen – klare Führung notwendig
+Kurzsatz: Arbeitslogiken unterscheiden sich stark. Ohne Führung entstehen Leistungs- und Konfliktrisiken.
+Was bedeutet das konkret?
+
+Prioritäten werden unterschiedlich interpretiert.
+
+Tempo oder Qualität geraten unter Druck.
+
+Widerstand, Rückzug oder Lagerbildung sind möglich.
+Was ist zu tun?
+Klare Standards, feste Entscheidungsregeln und regelmäßige Reviews sind zwingend.
+
+2) 13 Varianten – feste „Systemmuster“-Texte (neutral, ohne Ampel)
+
+Hinweis: Diese Texte erklären die Konstellation.
+Die Ampel entscheidet nur, wie stark das im Alltag spürbar wird.
+
+Variante 1/13
+
+Titel: Struktur passt zu Struktur
+Text: Das System ist stark auf Klarheit, Planung und Absicherung ausgerichtet. Entscheidungen sind nachvollziehbar, Standards werden eingehalten, Qualität ist stabil.
+
+Variante 2/13
+
+Titel: Struktur mit Abstimmung
+Text: Struktur und Qualitätsdenken sind dominant, werden aber durch Abstimmung und Teamfokus ergänzt. Das System ist stabil, wirkt weniger hart und bleibt anschlussfähig für Zusammenarbeit.
+
+Variante 3/13
+
+Titel: Struktur mit Tempo
+Text: Struktur und Absicherung bilden die Basis, zusätzlich ist Umsetzungsdruck vorhanden. Entscheidungen sind grundsätzlich sauber, gleichzeitig steigt Geschwindigkeit und Durchsetzungsstärke.
+
+Variante 4/13
+
+Titel: Struktur fehlt im Muster
+Text: Das System ist weniger über Absicherung und Standards geprägt, stärker über Abstimmung und Tempo. Ohne klare Leitplanken steigt das Risiko für Unschärfe bei Qualität, Prioritäten und Reporting.
+
+Variante 5/13
+
+Titel: Abstimmung passt zu Abstimmung
+Text: Zusammenarbeit, Harmonie und Abstimmung sind der zentrale Treiber. Entscheidungen entstehen im Dialog. Risiko: fehlende Klarheit, wenn Standards und Prioritäten nicht sauber gesetzt werden.
+
+Variante 6/13
+
+Titel: Abstimmung mit Struktur
+Text: Beziehung und Zusammenarbeit bleiben stark, werden aber durch Struktur und Qualitätsorientierung ergänzt. Entscheidungen werden belastbarer, ohne dass Teamanschluss verloren geht.
+
+Variante 7/13
+
+Titel: Abstimmung mit Tempo
+Text: Das System ist kontakt- und dialogorientiert, gleichzeitig dynamisch in der Umsetzung. Es kann schnell werden, wenn Prioritäten klar sind – ohne Rahmen droht Verzettelung.
+
+Variante 8/13
+
+Titel: Struktur/Tempo trifft auf Konsenslogik
+Text: Hier treffen unterschiedliche Entscheidungsrhythmen aufeinander: schnell und faktenorientiert versus abstimmungsorientiert. Ohne klare Entscheidungsregeln entstehen Reibung und Priorisierungskonflikte.
+
+Variante 9/13
+
+Titel: Tempo passt zu Tempo
+Text: Schnelle Entscheidungen und Umsetzungsdruck dominieren. Das erzeugt Dynamik, aber auch Konfliktpotenzial, wenn Standards, Rollen und Prioritäten nicht klar geregelt sind.
+
+Variante 10/13
+
+Titel: Tempo mit Struktur
+Text: Hohe Umsetzungskraft trifft auf klare Standards. Das System kann leistungsstark sein, aber fordernd: Tempo bleibt hoch, Qualität muss über klare Regeln abgesichert werden.
+
+Variante 11/13
+
+Titel: Tempo mit Abstimmung
+Text: Dynamik und Durchsetzung treffen auf starke Kommunikation und Teamfokus. Das wirkt energievoll, kann aber instabil werden, wenn Entscheidungen zu stark situativ statt nach Kriterien getroffen werden.
+
+Variante 12/13
+
+Titel: Struktur/Abstimmung trifft auf Tempo-System
+Text: Ein System mit stärkerer Absicherung und Abstimmung trifft auf eine dynamische, schnelle Logik. Das kann Tempo bremsen oder Qualität stabilisieren – je nach Klarheit der Erwartungen.
+
+Variante 13/13
+
+Titel: Hybrid / keine klare Dominanz
+Text: Es gibt keine eindeutige Hauptlogik. Wirkung und Verhalten wechseln stärker je nach Situation. Das erhöht Anpassungsfähigkeit, aber erschwert Verlässlichkeit ohne klare Regeln.
+
+3) Kombinationsregel: Ampel + Variante (fixer Textaufbau)
+
+So setzt du die Texte zusammen (ohne KI):
+
+Block A: Ampel (Titel + Kurzsatz)
+→ Immer anzeigen
+
+Block B: Systemmuster (Variante Titel + Text)
+→ Immer anzeigen
+
+Block C: „Was heißt das konkret?“
+→ Nimm die Bulletpoints aus der Ampel (Grün/Gelb/Rot)
+
+Block D: „Was ist zu tun?“
+→ Nimm die Ampel-Handlungszeile
+
+Das ergibt für jede Kombination:
+
+3 Ampeln × 13 Varianten = 39 Fälle
+aber du musst nur:
+
+3 Ampeltexte + 13 Varianten pflegen.

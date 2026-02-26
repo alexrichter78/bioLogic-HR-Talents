@@ -451,6 +451,56 @@ export function computeTeamDynamics(input: TeamDynamikInput): TeamDynamikResult 
   };
 }
 
+export type SystemVariant = { id: number; title: string; text: string };
+
+const VARIANT_DATA: Record<number, { title: string; text: string }> = {
+  1:  { title: "Struktur passt zu Struktur", text: "Das System ist stark auf Klarheit, Planung und Absicherung ausgerichtet. Entscheidungen sind nachvollziehbar, Standards werden eingehalten, Qualität ist stabil." },
+  2:  { title: "Struktur mit Abstimmung", text: "Struktur und Qualitätsdenken sind dominant, werden aber durch Abstimmung und Teamfokus ergänzt. Das System ist stabil, wirkt weniger hart und bleibt anschlussfähig für Zusammenarbeit." },
+  3:  { title: "Struktur mit Tempo", text: "Struktur und Absicherung bilden die Basis, zusätzlich ist Umsetzungsdruck vorhanden. Entscheidungen sind grundsätzlich sauber, gleichzeitig steigt Geschwindigkeit und Durchsetzungsstärke." },
+  4:  { title: "Struktur fehlt im Muster", text: "Das System ist weniger über Absicherung und Standards geprägt, stärker über Abstimmung und Tempo. Ohne klare Leitplanken steigt das Risiko für Unschärfe bei Qualität, Prioritäten und Reporting." },
+  5:  { title: "Abstimmung passt zu Abstimmung", text: "Zusammenarbeit, Harmonie und Abstimmung sind der zentrale Treiber. Entscheidungen entstehen im Dialog. Risiko: fehlende Klarheit, wenn Standards und Prioritäten nicht sauber gesetzt werden." },
+  6:  { title: "Abstimmung mit Struktur", text: "Beziehung und Zusammenarbeit bleiben stark, werden aber durch Struktur und Qualitätsorientierung ergänzt. Entscheidungen werden belastbarer, ohne dass Teamanschluss verloren geht." },
+  7:  { title: "Abstimmung mit Tempo", text: "Das System ist kontakt- und dialogorientiert, gleichzeitig dynamisch in der Umsetzung. Es kann schnell werden, wenn Prioritäten klar sind – ohne Rahmen droht Verzettelung." },
+  8:  { title: "Struktur/Tempo trifft auf Konsenslogik", text: "Hier treffen unterschiedliche Entscheidungsrhythmen aufeinander: schnell und faktenorientiert versus abstimmungsorientiert. Ohne klare Entscheidungsregeln entstehen Reibung und Priorisierungskonflikte." },
+  9:  { title: "Tempo passt zu Tempo", text: "Schnelle Entscheidungen und Umsetzungsdruck dominieren. Das erzeugt Dynamik, aber auch Konfliktpotenzial, wenn Standards, Rollen und Prioritäten nicht klar geregelt sind." },
+  10: { title: "Tempo mit Struktur", text: "Hohe Umsetzungskraft trifft auf klare Standards. Das System kann leistungsstark sein, aber fordernd: Tempo bleibt hoch, Qualität muss über klare Regeln abgesichert werden." },
+  11: { title: "Tempo mit Abstimmung", text: "Dynamik und Durchsetzung treffen auf starke Kommunikation und Teamfokus. Das wirkt energievoll, kann aber instabil werden, wenn Entscheidungen zu stark situativ statt nach Kriterien getroffen werden." },
+  12: { title: "Struktur/Abstimmung trifft auf Tempo-System", text: "Ein System mit stärkerer Absicherung und Abstimmung trifft auf eine dynamische, schnelle Logik. Das kann Tempo bremsen oder Qualität stabilisieren – je nach Klarheit der Erwartungen." },
+  13: { title: "Hybrid / keine klare Dominanz", text: "Es gibt keine eindeutige Hauptlogik. Wirkung und Verhalten wechseln stärker je nach Situation. Das erhöht Anpassungsfähigkeit, aber erschwert Verlässlichkeit ohne klare Regeln." },
+};
+
+function secondDominance(triad: Triad): DominanceType {
+  const arr: [DominanceType, number][] = [
+    ["IMPULSIV", triad.impulsiv],
+    ["INTUITIV", triad.intuitiv],
+    ["ANALYTISCH", triad.analytisch],
+  ];
+  arr.sort((a, b) => b[1] - a[1]);
+  return arr[1][0];
+}
+
+export function computeVariantId(teamDom: DominanceType, personPrimary: DominanceType, personSecondary: DominanceType): number {
+  if (teamDom === "MIX" || personPrimary === "MIX") return 13;
+
+  if (teamDom === "ANALYTISCH") {
+    if (personPrimary === "ANALYTISCH") return personSecondary === "INTUITIV" ? 2 : personSecondary === "IMPULSIV" ? 3 : 1;
+    return 4;
+  }
+  if (teamDom === "INTUITIV") {
+    if (personPrimary === "INTUITIV") return personSecondary === "ANALYTISCH" ? 6 : personSecondary === "IMPULSIV" ? 7 : 5;
+    return 8;
+  }
+  if (personPrimary === "IMPULSIV") return personSecondary === "ANALYTISCH" ? 10 : personSecondary === "INTUITIV" ? 11 : 9;
+  return 12;
+}
+
+export function getSystemVariant(teamProfile: Triad, personProfile: Triad, teamDom: DominanceType, personDom: DominanceType): SystemVariant {
+  const personSecond = secondDominance(personProfile);
+  const vid = computeVariantId(teamDom, personDom, personSecond);
+  const data = VARIANT_DATA[vid] || VARIANT_DATA[13];
+  return { id: vid, title: data.title, text: data.text };
+}
+
 export function getMatrixCellById(id: string): MatrixCell | undefined {
   return MATRIX_CELLS.find(c => c.id === id);
 }

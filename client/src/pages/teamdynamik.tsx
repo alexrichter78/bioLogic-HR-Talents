@@ -9,7 +9,7 @@ import { hyphenateText } from "@/lib/hyphenate";
 import {
   type Triad, type ComponentKey,
   computeTeamDynamics, getDefaultLevers, getMatrixCellById, getViewContent,
-  labelComponent, buildAIPayload,
+  labelComponent, buildAIPayload, getSystemVariant,
   type TeamDynamikInput, type TeamDynamikResult, type ShiftType, type IntensityLevel,
   type TrafficLight, type ViewMode, type Lever,
 } from "@/lib/teamdynamik-engine";
@@ -483,48 +483,54 @@ export default function Teamdynamik() {
               const detailTeammitglied: Record<TrafficLight, { title: string; desc: string; label: string; bullets: string[]; recLabel: string; rec: string }> = {
                 RED: {
                   title: "Deutliche Spannungen – klare Führung notwendig",
-                  desc: "Arbeitslogiken unterscheiden sich stark.\nOhne Führung entstehen Leistungs- und Konfliktrisiken.",
+                  desc: "Arbeitslogiken unterscheiden sich stark. Ohne Führung entstehen Leistungs- und Konfliktrisiken.",
                   label: "Was bedeutet das konkret?",
                   bullets: [
-                    "Kurzfristig mehr Diskussionen über Detailtiefe und Begründungen",
-                    "Das Team testet, ob die neue Arbeitsweise mitläuft oder aktiv einfordert",
-                    "Risiko: stille Abgrenzung, wenn Erwartungen nicht geklärt sind",
+                    "Prioritäten werden unterschiedlich interpretiert.",
+                    "Tempo oder Qualität geraten unter Druck.",
+                    "Widerstand, Rückzug oder Lagerbildung sind möglich.",
                   ],
-                  recLabel: "Notwendig:",
-                  rec: "Klare Standards, feste Entscheidungsregeln und regelmäßige Reviews.",
+                  recLabel: "Was ist zu tun?",
+                  rec: "Klare Standards, feste Entscheidungsregeln und regelmäßige Reviews sind zwingend.",
                 },
                 YELLOW: {
                   title: "Unterschiedliche Arbeitsweisen – aktiv steuern",
-                  desc: "Unterschiede sind spürbar.\nMit klaren Regeln bleibt das System stabil steuerbar.",
+                  desc: "Unterschiede sind spürbar. Mit klaren Regeln bleibt das System stabil steuerbar.",
                   label: "Was bedeutet das konkret?",
                   bullets: [
-                    "Mehr Abstimmung notwendig",
-                    "Entscheidungen dauern teilweise länger",
-                    "Prioritäten müssen klar kommuniziert werden",
+                    "Entscheidungen dauern teilweise länger.",
+                    "Prioritäten müssen häufiger erklärt werden.",
+                    "Abstimmungsaufwand steigt im Alltag.",
                   ],
-                  recLabel: "Empfehlung:",
-                  rec: "Entscheidungswege, Zeitfenster und Prioritäten transparent setzen.",
+                  recLabel: "Was ist zu tun?",
+                  rec: "Entscheidungswege, Zeitfenster und Verantwortlichkeiten müssen klar gesetzt werden.",
                 },
                 GREEN: {
                   title: "Stabil – passt gut zusammen",
-                  desc: "Arbeitsweisen sind kompatibel.\nKeine besonderen Maßnahmen notwendig.",
+                  desc: "Arbeitsweisen sind kompatibel. Keine besonderen Maßnahmen notwendig.",
                   label: "Was bedeutet das konkret?",
                   bullets: [
-                    "Entscheidungen werden verstanden",
-                    "Prioritäten sind klar",
-                    "Zusammenarbeit ist stabil",
+                    "Entscheidungen werden schnell verstanden und akzeptiert.",
+                    "Abstimmungen laufen reibungslos.",
+                    "Tempo und Qualität bleiben stabil.",
                   ],
-                  recLabel: "Ausreichend:",
-                  rec: "Normale Führung und regelmäßige Abstimmung.",
+                  recLabel: "Was ist zu tun?",
+                  rec: "Normale Führung und regelmäßige Abstimmung reichen aus.",
                 },
               };
               const detail = (isLeading ? detailFuehrung : detailTeammitglied)[tlKey];
+              const variant = !isLeading ? getSystemVariant(teamProfile, personProfile, result.dominanceTeam, result.dominancePerson) : null;
               return (
                 <div style={{ padding: "14px 16px", borderRadius: 14, background: tl.bg, border: `1px solid ${tl.fill}20`, marginTop: 12 }} data-testid="detail-block">
                   <p style={{ fontSize: 14, fontWeight: 700, color: tl.fill, margin: "0 0 6px" }}>{detail.title}</p>
-                  {detail.desc.split("\n").map((line, i) => (
-                    <p key={i} style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 3px", lineHeight: 1.5 }}>{line}</p>
-                  ))}
+                  <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 3px", lineHeight: 1.5 }}>{detail.desc}</p>
+                  {variant && (
+                    <div style={{ margin: "12px 0", padding: "10px 14px", borderRadius: 10, background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.05)" }} data-testid="variant-block">
+                      <p style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Systemmuster (Variante {variant.id}/13)</p>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>{variant.title}</p>
+                      <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{variant.text}</p>
+                    </div>
+                  )}
                   <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "14px 0 8px" }}>{detail.label}</p>
                   <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 14 }}>
                     {detail.bullets.map((b, i) => (
