@@ -552,19 +552,16 @@ export default function Teamdynamik() {
 
         {/* ═══ BUTTON: KI-REPORT GENERIEREN ═══ */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
-          <button onClick={generateReport} disabled={reportLoading} data-testid="button-generate-report" style={{
+          <button disabled data-testid="button-generate-report" style={{
             display: "flex", alignItems: "center", gap: 8, padding: "14px 36px", borderRadius: 16,
-            background: "linear-gradient(135deg, #0071E3, #34AADC)", border: "none",
-            color: "#fff", fontSize: 15, fontWeight: 700, cursor: reportLoading ? "default" : "pointer",
-            opacity: reportLoading ? 0.7 : 1,
-            boxShadow: "0 4px 20px rgba(0,113,227,0.25), 0 8px 32px rgba(0,113,227,0.15)",
+            background: "linear-gradient(135deg, #8E8E93, #A1A1A6)", border: "none",
+            color: "#fff", fontSize: 15, fontWeight: 700, cursor: "default",
+            opacity: 0.5,
+            boxShadow: "none",
             transition: "all 200ms ease", letterSpacing: "-0.01em",
           }}>
-            {reportLoading
-              ? <Loader2 style={{ width: 18, height: 18, animation: "spin 1s linear infinite" }} />
-              : <FileText style={{ width: 18, height: 18 }} />
-            }
-            {reportLoading ? "Report wird erstellt..." : "KI-Report generieren"}
+            <FileText style={{ width: 18, height: 18 }} />
+            KI-Report generieren
           </button>
         </div>
 
