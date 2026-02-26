@@ -82,7 +82,7 @@ function TriadSlider({ label, value, color, onChange }: { label: string; value: 
         <span style={{ fontSize: 14, fontWeight: 700, color, fontVariantNumeric: "tabular-nums" }}>{value} %</span>
       </div>
       <input
-        type="range" min={0} max={80} value={value}
+        type="range" min={0} max={100} value={value}
         onChange={e => onChange(Number(e.target.value))}
         data-testid={`slider-${label.toLowerCase()}`}
         style={{
