@@ -668,21 +668,38 @@ export default function JobCheck() {
                     const rc = rk === "impulsiv" ? COLORS.imp : rk === "intuitiv" ? COLORS.int : COLORS.ana;
                     const cc = ck === "impulsiv" ? COLORS.imp : ck === "intuitiv" ? COLORS.int : COLORS.ana;
 
+                    const candGap = engine.candDominance.gap1;
+                    const roleGap = engine.roleDominance.gap1;
+                    const candDualDom = candGap <= 5;
+                    const roleClearDom = roleGap >= 15;
+                    const dualConflict = candDualDom && roleClearDom;
+
                     let calloutText: string;
                     let calloutColor: string;
+                    let sectionTitle: string;
 
-                    if (sameDom && intensityDiff <= 5) {
+                    if (dualConflict) {
+                      const c2k = engine.candDominance.top2.key;
+                      const c2L = labelComponent(c2k);
+                      calloutText = `Der Kandidat zeigt eine Doppeldominanz: ${labelComponent(ck)} und ${c2L} sind nahezu gleichauf. Die Rolle verlangt jedoch eine klare ${labelComponent(rk)}-Ausrichtung. Die konkurrierenden Stärken erzeugen Unschärfe – die geforderte Kernwirkung kann nicht konsequent entfaltet werden.`;
+                      calloutColor = "#FF9500";
+                      sectionTitle = "Doppeldominanz";
+                    } else if (sameDom && intensityDiff <= 5) {
                       calloutText = "Die dominante Steuerungslogik ist identisch und die Ausprägung nahezu deckungsgleich. Die Rolle wird in ihrer Kernwirkung stabil und konsistent abgebildet.";
                       calloutColor = "#34C759";
+                      sectionTitle = "Dominanz-Vergleich";
                     } else if (sameDom && intensityDiff <= 15) {
                       calloutText = `Die dominante Komponente ist identisch (${labelComponent(rk)}), jedoch unterscheidet sich die Intensität um ${intensityDiff} Prozentpunkte (Soll: ${roleVal}% vs. Ist: ${candVal}%). Die Kernlogik bleibt erhalten, die Ausprägungsstärke weicht ab.`;
                       calloutColor = "#FF9500";
+                      sectionTitle = "Dominanz-Vergleich";
                     } else if (sameDom) {
                       calloutText = `Gleiche Dominanz (${labelComponent(rk)}), aber deutlicher Intensitätsunterschied von ${intensityDiff} Prozentpunkten. Die Rolle verlangt eine stärkere Ausprägung als der Kandidat mitbringt.`;
                       calloutColor = "#FF3B30";
+                      sectionTitle = "Dominanz-Vergleich";
                     } else {
                       calloutText = `Die dominante Steuerungslogik verschiebt sich von ${labelComponent(rk)} (Rolle) zu ${labelComponent(ck)} (Kandidat). Das verändert die zentrale Wirkweise der Position.`;
                       calloutColor = "#FF3B30";
+                      sectionTitle = "Dominanz-Verschiebung";
                     }
 
                     return (
@@ -690,7 +707,7 @@ export default function JobCheck() {
                         <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
                           <ChapterBadge num={2} color="#0071E3" />
                           <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>
-                            {sameDom ? "Dominanz-Vergleich" : "Dominanz-Verschiebung"}
+                            {sectionTitle}
                           </span>
                         </div>
 
@@ -706,17 +723,33 @@ export default function JobCheck() {
                               <span style={{ fontSize: 12, fontWeight: 600, color: rc, opacity: 0.7, marginLeft: 4 }}>{roleVal}%</span>
                             </div>
                           </div>
-                          {sameDom ? (
+                          {dualConflict ? (
+                            <span style={{ fontSize: 16, fontWeight: 700, color: "#FF9500" }}>⇄</span>
+                          ) : sameDom ? (
                             <span style={{ fontSize: 20, fontWeight: 700, color: intensityDiff <= 5 ? "#34C759" : "#FF9500" }}>=</span>
                           ) : (
                             <ChevronRight style={{ width: 20, height: 20, color: "#FF3B30" }} />
                           )}
                           <div style={{ textAlign: "center" }}>
                             <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Ist</p>
-                            <div style={{ padding: "6px 16px", borderRadius: 10, background: `${cc}12`, border: `1px solid ${cc}25` }}>
-                              <span style={{ fontSize: 15, fontWeight: 700, color: cc }}>{labelComponent(ck)}</span>
-                              <span style={{ fontSize: 12, fontWeight: 600, color: cc, opacity: 0.7, marginLeft: 4 }}>{candVal}%</span>
-                            </div>
+                            {dualConflict ? (
+                              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                                {[engine.candDominance.top1, engine.candDominance.top2].map((comp) => {
+                                  const compColor = comp.key === "impulsiv" ? COLORS.imp : comp.key === "intuitiv" ? COLORS.int : COLORS.ana;
+                                  return (
+                                    <div key={comp.key} style={{ padding: "6px 16px", borderRadius: 10, background: `${compColor}12`, border: `1px solid ${compColor}25` }}>
+                                      <span style={{ fontSize: 15, fontWeight: 700, color: compColor }}>{labelComponent(comp.key)}</span>
+                                      <span style={{ fontSize: 12, fontWeight: 600, color: compColor, opacity: 0.7, marginLeft: 4 }}>{comp.value}%</span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                              <div style={{ padding: "6px 16px", borderRadius: 10, background: `${cc}12`, border: `1px solid ${cc}25` }}>
+                                <span style={{ fontSize: 15, fontWeight: 700, color: cc }}>{labelComponent(ck)}</span>
+                                <span style={{ fontSize: 12, fontWeight: 600, color: cc, opacity: 0.7, marginLeft: 4 }}>{candVal}%</span>
+                              </div>
+                            )}
                           </div>
                         </div>
 

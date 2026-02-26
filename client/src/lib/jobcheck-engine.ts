@@ -553,18 +553,29 @@ function buildRisks(role: RoleAnalysis, cand: CandidateInput, engine: { overallF
   const midTerm: string[] = [];
   const longTerm: string[] = [];
 
+  const candDualDominance = cDom.gap1 <= 5;
+  const roleClearDom = rDom.gap1 >= 15;
+  const dualConflict = candDualDominance && roleClearDom;
+
   if (engine.overallFit === "SUITABLE") {
     shortTerm.push(`Die Person kann sich schnell in der Rolle ${jobTitle} wirksam zeigen, weil die Arbeitsweise gut zur geforderten Struktur passt.`);
     midTerm.push("Der Steuerungsaufwand für die Führungskraft bleibt überschaubar. Die Person arbeitet weitgehend selbstständig im erwarteten Korridor.");
     longTerm.push("Die Rollenwirkung bleibt voraussichtlich stabil. Es ist nicht davon auszugehen, dass sich die Arbeitsweise der Person schleichend von den Anforderungen entfernt.");
   } else if (engine.overallFit === "CONDITIONAL") {
-    shortTerm.push(`Ein positiver Start ist möglich, allerdings zeigt sich im Bereich „${critical.label}" eine spürbare Abweichung zwischen dem, was die Rolle erfordert, und dem, was die Person mitbringt.`);
-    if (sameDom) {
-      midTerm.push(`Die grundlegende Arbeitsweise stimmt, jedoch fehlt es an der nötigen Ausprägung. Ohne klare Rahmenvorgaben kann die Person die Anforderungen der Rolle ${jobTitle} zunehmend weicher auslegen.`);
+    if (dualConflict) {
+      const c2L = labelComponent(cDom.top2.key);
+      shortTerm.push(`Die Person zeigt eine Doppeldominanz: ${labelComponent(cDom.top1.key)} und ${c2L} sind nahezu gleich stark ausgeprägt. Die Rolle ${jobTitle} verlangt jedoch eine klare ${rL}-Ausrichtung.`);
+      midTerm.push(`Die beiden konkurrierenden Stärken führen dazu, dass die ${rL}-Aufgaben der Rolle nicht mit voller Konsequenz bearbeitet werden. Die Person wird situativ zwischen ${labelComponent(cDom.top1.key)}- und ${c2L}-Logik wechseln.`);
+      longTerm.push(`Ohne klare Steuerung entsteht eine zunehmende Unschärfe in der Rollenausübung – die geforderte ${rL}-Wirkung wird verwässert.`);
     } else {
-      midTerm.push(`Die Arbeitsweise der Person unterscheidet sich von dem, was die Rolle verlangt. Ohne klare Rahmenvorgaben besteht das Risiko, dass die Person die Position nach eigener Logik interpretiert, statt der geforderten.`);
+      shortTerm.push(`Ein positiver Start ist möglich, allerdings zeigt sich im Bereich „${critical.label}" eine spürbare Abweichung zwischen dem, was die Rolle erfordert, und dem, was die Person mitbringt.`);
+      if (sameDom) {
+        midTerm.push(`Die grundlegende Arbeitsweise stimmt, jedoch fehlt es an der nötigen Ausprägung. Ohne klare Rahmenvorgaben kann die Person die Anforderungen der Rolle ${jobTitle} zunehmend weicher auslegen.`);
+      } else {
+        midTerm.push(`Die Arbeitsweise der Person unterscheidet sich von dem, was die Rolle verlangt. Ohne klare Rahmenvorgaben besteht das Risiko, dass die Person die Position nach eigener Logik interpretiert, statt der geforderten.`);
+      }
+      longTerm.push(`Wenn die Führungskraft nicht aktiv gegensteuert, kann sich die Wirkung der Rolle ${jobTitle} über die Zeit verändern – Anforderungen werden zunehmend anders priorisiert als ursprünglich vorgesehen.`);
     }
-    longTerm.push(`Wenn die Führungskraft nicht aktiv gegensteuert, kann sich die Wirkung der Rolle ${jobTitle} über die Zeit verändern – Anforderungen werden zunehmend anders priorisiert als ursprünglich vorgesehen.`);
   } else {
     shortTerm.push(`Bereits in der Einarbeitung ist mit Reibung zu rechnen, weil die Arbeitsweise der Person nicht zu dem passt, was die Position ${jobTitle} grundlegend erfordert.`);
     midTerm.push(`Die Leistungsstruktur der Rolle wird voraussichtlich verschoben. Die Person wird Aufgaben anders gewichten und Entscheidungen anders treffen, als es die Rolle verlangt.`);
@@ -689,7 +700,13 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   const ko = koRuleTriggered(role, cand);
   const mismatch = weightedMismatch(role.role_profile, cand.candidate_profile);
   const sameDom = roleDom.top1.key === candDom.top1.key;
-  const overallFit: FitStatus = ko ? "NOT_SUITABLE" : overallFitFromScore(mismatch, sameDom);
+  const candDualDominance = candDom.gap1 <= 5;
+  const roleClearDominance = roleDom.gap1 >= 15;
+  const dualConflict = candDualDominance && roleClearDominance;
+  let overallFit: FitStatus = ko ? "NOT_SUITABLE" : overallFitFromScore(mismatch, sameDom);
+  if (dualConflict && overallFit === "SUITABLE") {
+    overallFit = "CONDITIONAL";
+  }
   const ctrl = calcControlIntensity(role, cand);
   const matrix = buildMatrix(role, cand);
   const critical = criticalAreaFromMatrix(matrix);
@@ -701,9 +718,15 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   const mainDiff = Math.abs(r[roleDom.top1.key] - c[roleDom.top1.key]);
 
   const keyReason = (() => {
-    const domDesc = sameDom
-      ? `Gleiche Dominanz (${rL}), Intensitätsdifferenz: ${mainDiff} Punkte (Soll: ${r[roleDom.top1.key]}% / Ist: ${c[roleDom.top1.key]}%)`
-      : `Dominanzverschiebung ${rL} (${r[roleDom.top1.key]}%) → ${cL} (${c[candDom.top1.key]}%)`;
+    let domDesc: string;
+    if (dualConflict) {
+      const c2L = labelComponent(candDom.top2.key);
+      domDesc = `Doppeldominanz beim Kandidaten: ${labelComponent(candDom.top1.key)} (${c[candDom.top1.key]}%) und ${c2L} (${c[candDom.top2.key]}%) konkurrieren – die Rolle verlangt klare ${rL}-Dominanz (${r[roleDom.top1.key]}%)`;
+    } else if (sameDom) {
+      domDesc = `Gleiche Dominanz (${rL}), Intensitätsdifferenz: ${mainDiff} Punkte (Soll: ${r[roleDom.top1.key]}% / Ist: ${c[roleDom.top1.key]}%)`;
+    } else {
+      domDesc = `Dominanzverschiebung ${rL} (${r[roleDom.top1.key]}%) → ${cL} (${c[candDom.top1.key]}%)`;
+    }
     return `${domDesc}; kritisch: ${critical.label}; Mismatch: ${mismatch}; Steuerung: ${controlLabel(ctrl.level)} (${ctrl.points} Pkt.)`;
   })();
 
@@ -711,14 +734,24 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   const execSummary = (() => {
     const intro = `Rolle: ${role.job_title} | ${candName}`;
     const fitLine = `Gesamteinstufung: ${statusLabel(overallFit)} (Mismatch: ${mismatch}) · Steuerungsintensität: ${controlLabel(ctrl.level)} (${ctrl.points} Punkte)`;
-    const domLine = sameDom
-      ? `Beide Profile: ${rL}-dominant (Soll: ${r[roleDom.top1.key]}% / Ist: ${c[roleDom.top1.key]}%, Δ ${mainDiff})`
-      : `Rollenlogik: ${dominanceLabel(roleDom)} · Kandidatenlogik: ${dominanceLabel(candDom)}`;
-    const reasonLine = overallFit === "SUITABLE"
-      ? `Die ${rL}-Kernlogik der Rolle wird stabil abgebildet (Δ ${mainDiff} Punkte). Kritischer Bereich: ${critical.label}.`
-      : overallFit === "CONDITIONAL"
-        ? `Grundpassung vorhanden, aber Abweichung von ${mainDiff} Punkten in der ${rL}-Komponente. Kritischer Bereich: ${critical.label}.`
-        : `Die ${rL}-Kernlogik der Rolle (${r[roleDom.top1.key]}%) wird durch ${candName} (${c[roleDom.top1.key]}%) nicht abgebildet. Kritischer Bereich: ${critical.label}.`;
+    let domLine: string;
+    if (dualConflict) {
+      domLine = `Kandidat: Doppeldominanz ${labelComponent(candDom.top1.key)}/${labelComponent(candDom.top2.key)} · Rolle: klare ${rL}-Dominanz (${r[roleDom.top1.key]}%)`;
+    } else if (sameDom) {
+      domLine = `Beide Profile: ${rL}-dominant (Soll: ${r[roleDom.top1.key]}% / Ist: ${c[roleDom.top1.key]}%, Δ ${mainDiff})`;
+    } else {
+      domLine = `Rollenlogik: ${dominanceLabel(roleDom)} · Kandidatenlogik: ${dominanceLabel(candDom)}`;
+    }
+    let reasonLine: string;
+    if (overallFit === "SUITABLE") {
+      reasonLine = `Die ${rL}-Kernlogik der Rolle wird stabil abgebildet (Δ ${mainDiff} Punkte). Kritischer Bereich: ${critical.label}.`;
+    } else if (dualConflict) {
+      reasonLine = `Die Doppeldominanz des Kandidaten verhindert eine klare ${rL}-Wirkung. Die konkurrierenden Stärken erzeugen Unschärfe in der Aufgabenlogik. Kritischer Bereich: ${critical.label}.`;
+    } else if (overallFit === "CONDITIONAL") {
+      reasonLine = `Grundpassung vorhanden, aber Abweichung von ${mainDiff} Punkten in der ${rL}-Komponente. Kritischer Bereich: ${critical.label}.`;
+    } else {
+      reasonLine = `Die ${rL}-Kernlogik der Rolle (${r[roleDom.top1.key]}%) wird durch ${candName} (${c[roleDom.top1.key]}%) nicht abgebildet. Kritischer Bereich: ${critical.label}.`;
+    }
     return [intro, fitLine, domLine, reasonLine].join("\n");
   })();
 
