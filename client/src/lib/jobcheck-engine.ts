@@ -180,10 +180,17 @@ function koRuleTriggered(role: RoleAnalysis, cand: CandidateInput): boolean {
   const r = normalizeTriad(role.role_profile);
   const c = normalizeTriad(cand.candidate_profile);
   const roleDom = dominanceModeOf(r);
+  const candDom = dominanceModeOf(c);
 
   if ((roleDom.mode === "EXTREME_I" && c.impulsiv <= 35 && r.impulsiv >= 65) ||
       (roleDom.mode === "EXTREME_N" && c.intuitiv <= 30 && r.intuitiv >= 55) ||
       (roleDom.mode === "EXTREME_A" && c.analytisch <= 35 && r.analytisch >= 65)) return true;
+
+  if (roleDom.top1.key !== candDom.top1.key) {
+    const mainDiff = Math.abs(r[roleDom.top1.key] - c[roleDom.top1.key]);
+    if (mainDiff >= 18) return true;
+    if (roleDom.gap1 >= 20 && mainDiff >= 15) return true;
+  }
 
   if (roleDom.mode.startsWith("DUAL")) {
     const domKeys: ComponentKey[] = [roleDom.top1.key, roleDom.top2.key];
@@ -199,8 +206,8 @@ function koRuleTriggered(role: RoleAnalysis, cand: CandidateInput): boolean {
 }
 
 function overallFitFromScore(mismatch: number): FitStatus {
-  if (mismatch <= 10) return "SUITABLE";
-  if (mismatch <= 18) return "CONDITIONAL";
+  if (mismatch <= 8) return "SUITABLE";
+  if (mismatch <= 15) return "CONDITIONAL";
   return "NOT_SUITABLE";
 }
 
