@@ -517,7 +517,7 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
   const kpiDiff = r.analytisch - c.analytisch;
 
   rows.push({
-    areaId: "kpi_work", areaLabel: "KPI- und Arbeitssteuerung",
+    areaId: "kpi_work", areaLabel: "Arbeitssteuerung und Dokumentation",
     roleDemand: `Analytisch ${r.analytisch} – ${r.analytisch >= 40 ? `stark kennzahlengesteuert, hohe Anforderung an ${t.reportingDesc}` : r.analytisch >= 25 ? "Kennzahlen als Steuerungsinstrument" : `geringe Anforderung an ${t.reportingDesc}`}`,
     candidatePattern: `Analytisch ${c.analytisch} – ${c.analytisch >= 30 ? "Strukturdisziplin und Zahlenorientierung anschlussfähig" : c.analytisch >= 20 ? "Kennzahlen als Orientierung, nicht als Steuerungsinstrument" : "geringe analytische Steuerungsbasis"}`,
     status: kpiStatus,
@@ -765,7 +765,11 @@ function buildRisks(role: RoleAnalysis, cand: CandidateInput, engine: { overallF
     } else {
       shortTerm.push(`Bereits in der Einarbeitung ist mit operativer Reibung zu rechnen. Die Arbeitslogik der Person passt nicht zu dem, was die Position ${jobTitle} strukturell erfordert.`);
       midTerm.push(`Die Leistungsstruktur der Rolle wird voraussichtlich verschoben. Auswirkung: Priorisierung, Entscheidungsarchitektur und Steuerungsfähigkeit folgen einer anderen Logik. ${t.qualityMetric} und Prozessstabilität sind gefährdet.`);
-      longTerm.push(`Die Abweichung betrifft die Kernlogik der Position. Auswirkung: Tempo, ${t.qualityMetric}, ${t.forecastTerm} und Führungswirkung werden dauerhaft nicht die geforderte Wirkung entfalten.`);
+      longTerm.push(
+        role.leadership?.required
+          ? `Die Abweichung betrifft die Kernlogik der Position. Auswirkung: Tempo, ${t.qualityMetric}, ${t.forecastTerm} und Führungswirkung werden dauerhaft nicht die geforderte Wirkung entfalten.`
+          : `Die Abweichung betrifft die Kernlogik der Position. Auswirkung: Tempo, ${t.qualityMetric} und ${t.forecastTerm} werden dauerhaft nicht die geforderte Wirkung entfalten.`
+      );
     }
   }
 
@@ -846,7 +850,7 @@ function integrationPlan(role: RoleAnalysis, criticalArea: MatrixAreaId, control
     phase_60_90.push(`Prüfung ${t.qualityMetric}: Bleibt die Leistungskultur stabil oder verschiebt sich die Teamdynamik in eine nicht gesteuerte Richtung?`);
   } else {
     phase_30_60.push(`Operative Spannungsfelder der Position ${jobTitle} aktiv steuern: Klare Priorisierung, Zielarchitektur und regelmäßige Review-Zyklen.`);
-    phase_60_90.push(`Prüfung ${t.qualityMetric}: Zeigt die Person die geforderte Wirkung in Tempo, Zielhärte, ${t.qualityMetric} und Führungswirkung?`);
+    phase_60_90.push(`Prüfung ${t.qualityMetric}: Zeigt die Person die geforderte Wirkung in Tempo, Zielhärte und ${t.qualityMetric}?`);
   }
 
   if (tags.market_pressure === "hoch") {
@@ -864,7 +868,11 @@ function integrationPlan(role: RoleAnalysis, criticalArea: MatrixAreaId, control
     phase_60_90.push(`Klare Go/No-Go-Entscheidung: Erfüllt die Person die Kernanforderungen der Position? Ergebnis anhand messbarer Kriterien (${t.kpiExamples}) bewerten.`);
   }
 
-  phase_60_90.push(`90-Tage-Review: Strukturelle Passung zur Rolle ${jobTitle} bewerten. Ergebnis dokumentieren – ${t.kpiExamples}, Prozessqualität und Führungswirkung als Entscheidungsbasis.`);
+  phase_60_90.push(
+    role.leadership?.required
+      ? `90-Tage-Review: Strukturelle Passung zur Rolle ${jobTitle} bewerten. Ergebnis dokumentieren – ${t.kpiExamples}, Prozessqualität und Führungswirkung als Entscheidungsbasis.`
+      : `90-Tage-Review: Strukturelle Passung zur Rolle ${jobTitle} bewerten. Ergebnis dokumentieren – ${t.kpiExamples} und Prozessqualität als Entscheidungsbasis.`
+  );
 
   return { phase_0_30, phase_30_60, phase_60_90 };
 }
