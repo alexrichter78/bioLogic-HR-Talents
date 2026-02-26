@@ -171,8 +171,13 @@ function axisLabel(domFrom: DominanceType, domTo: DominanceType): string {
   return `${map[domFrom]} → ${map[domTo]}`;
 }
 
-function shiftType(domTeam: DominanceType, domPerson: DominanceType, DG: number, DC: number, TS: number, isLeading: boolean): ShiftType {
+function profileExtremity(p: Triad): number {
+  return Math.max(p.impulsiv, p.intuitiv, p.analytisch);
+}
+
+function shiftType(domTeam: DominanceType, domPerson: DominanceType, DG: number, DC: number, TS: number, isLeading: boolean, personProfile?: Triad): ShiftType {
   const level = intensityLevel(TS);
+  const extP = personProfile ? profileExtremity(personProfile) : 0;
 
   if (DG < 5) {
     return "VERSTAERKUNG";
@@ -183,6 +188,18 @@ function shiftType(domTeam: DominanceType, domPerson: DominanceType, DG: number,
   }
 
   if (DC === 100) {
+    return "REIBUNG";
+  }
+
+  if (DC === 0 && DG >= 40) {
+    return isLeading ? "TRANSFORMATION" : "SPANNUNG";
+  }
+
+  if (DC === 0 && DG >= 25) {
+    return "REIBUNG";
+  }
+
+  if (DC === 0 && extP >= 75 && DG >= 20) {
     return "REIBUNG";
   }
 
@@ -401,7 +418,7 @@ export function computeTeamDynamics(input: TeamDynamikInput): TeamDynamikResult 
   const CI = conflictIndex(TS, DC);
 
   const axis = axisLabel(domT, domP);
-  const st = shiftType(domT, domP, DG, DC, TS, input.isLeading);
+  const st = shiftType(domT, domP, DG, DC, TS, input.isLeading, input.personProfile);
 
   const steer = calcSteeringNeed(level, RG, input.levers, input.steeringOverride);
   const tl = trafficLight(st, level, steer.final);
