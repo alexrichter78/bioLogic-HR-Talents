@@ -560,9 +560,34 @@ Antworte als JSON:
         return res.status(400).json({ error: "Payload zu groß" });
       }
 
+      const isLeading = context?.is_leading === true;
+      const personRole = isLeading ? "Führungskraft" : "Teammitglied";
+
       const systemPrompt = `Du erstellst einen einheitlichen Team-Systemreport (bioLogic) als Managementdokument.
 Die Leser kennen das Modell nicht. Du beschreibst keine Persönlichkeit, sondern Arbeits- und Entscheidungslogik im Team.
 Schreibe sachlich, präzise, ohne Coaching-Sprache und ohne psychologische Diagnosen.
+
+WICHTIG – Rollenunterscheidung:
+Die neue Person ist eine ${personRole}. Das verändert die gesamte Analyse grundlegend:
+
+${isLeading ? `FÜHRUNGSKRAFT-MODUS:
+- Die neue Person übernimmt die Führung des Teams. Sie bestimmt Entscheidungslogik, Priorisierung und Steuerung.
+- Analysiere, wie die Führungslogik der neuen Person die bestehende Teamdynamik verändert.
+- Beschreibe die Verschiebung als "Führungswechsel": Wie verändert sich Entscheidungskultur, Priorisierung und Arbeitsrhythmus?
+- Formuliere Risiken aus Führungsperspektive: Akzeptanzverlust, Widerstand, Kulturbruch, Übersteueurung.
+- Formuliere Chancen aus Führungsperspektive: Professionalisierung, Ergebnisdisziplin, strategische Klarheit.
+- Führungshebel sind Maßnahmen, die die Führungskraft selbst umsetzen kann.
+- Im Integrationsplan: Die Führungskraft gestaltet aktiv, das Team reagiert.
+- Verwende durchgängig "die neue Führung" oder "die neue Leitung" statt "die neue Person".` :
+`TEAMMITGLIED-MODUS:
+- Die neue Person wird Teil des bestehenden Teams, nicht in Führungsrolle.
+- Analysiere, wie das neue Teammitglied die bestehende Teamdynamik beeinflusst (ohne Steuerungsautorität).
+- Beschreibe die Verschiebung als "Teamergänzung": Wie verändert sich die Zusammenarbeit, der Arbeitsrhythmus und die Teambalance?
+- Risiken: Integrationsschwierigkeiten, Reibung mit bestehendem Team, stille Isolation, Anpassungsdruck.
+- Chancen: Neue Perspektiven, Kompetenzergänzung, breitere Abdeckung, frische Impulse.
+- Führungshebel sind Maßnahmen, die die bestehende Führung umsetzen sollte, um die Integration zu steuern.
+- Im Integrationsplan: Das bestehende Team und die Führung steuern die Integration, das neue Mitglied wird eingebunden.
+- Verwende durchgängig "das neue Teammitglied" oder "die neue Person" statt "die neue Führung".`}
 
 Pflichtprinzipien:
 - Keine Modellbegriffe ohne Funktionsübersetzung (Impulsiv/Intuitiv/Analytisch nur als Arbeitslogik erklären).
@@ -577,7 +602,7 @@ Output-Format:
 Gib nur den Report aus (keine Erklärungen, kein JSON). Nutze folgende Gliederung exakt:
 
 1. Executive System Summary
-2. Profile im Überblick (Team / Neue Person / Soll optional)
+2. Profile im Überblick (Team / ${isLeading ? "Neue Führungskraft" : "Neues Teammitglied"} / Soll optional)
 3. Systemtyp & Verschiebungsachse
 4. Systemwirkung im Alltag (4 Felder: Entscheidungen/Prioritäten, Qualität, Tempo, Zusammenarbeit)
 5. Aufgaben- & KPI-Impact (aus tasks & kpi_focus abgeleitet)

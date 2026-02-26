@@ -477,6 +477,8 @@ export function buildAIPayload(input: TeamDynamikInput, result: TeamDynamikResul
     context: {
       team_name: input.teamName,
       members_count: input.membersCount,
+      is_leading: input.isLeading,
+      person_role: input.isLeading ? "Führungskraft" : "Teammitglied",
       tasks: input.tasks || [],
       kpi_focus: input.kpiFocus || [],
     },

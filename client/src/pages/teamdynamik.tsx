@@ -322,16 +322,29 @@ export default function Teamdynamik() {
           </GlassCard>
 
           <GlassCard style={{ flex: 1, minWidth: 280 }} data-testid="module-person-profile">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-              <SectionTitle icon={Activity}>{isLeading ? "Neue Führungskraft" : "Neue Person"}</SectionTitle>
-              <button onClick={() => setIsLeading(!isLeading)} data-testid="toggle-leading" style={{
-                display: "flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 8,
-                background: isLeading ? "rgba(0,113,227,0.06)" : "rgba(0,0,0,0.03)",
-                border: `1px solid ${isLeading ? "rgba(0,113,227,0.12)" : "rgba(0,0,0,0.05)"}`,
-                cursor: "pointer", fontSize: 10, fontWeight: 600,
+            <SectionTitle icon={Activity}>{isLeading ? "Neue Führungskraft" : "Neues Teammitglied"}</SectionTitle>
+            <div style={{ display: "flex", gap: 4, marginBottom: 14, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3 }}>
+              <button onClick={() => setIsLeading(true)} data-testid="toggle-leading-yes" style={{
+                flex: 1, padding: "6px 8px", borderRadius: 8, fontSize: 11, fontWeight: isLeading ? 700 : 500,
+                background: isLeading ? "#fff" : "transparent",
+                boxShadow: isLeading ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                border: "none", cursor: "pointer",
                 color: isLeading ? "#0071E3" : "#8E8E93",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
+                transition: "all 200ms ease",
               }}>
-                Führend {isLeading ? "✓" : ""}
+                <Briefcase style={{ width: 11, height: 11 }} /> Führungskraft
+              </button>
+              <button onClick={() => setIsLeading(false)} data-testid="toggle-leading-no" style={{
+                flex: 1, padding: "6px 8px", borderRadius: 8, fontSize: 11, fontWeight: !isLeading ? 700 : 500,
+                background: !isLeading ? "#fff" : "transparent",
+                boxShadow: !isLeading ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                border: "none", cursor: "pointer",
+                color: !isLeading ? "#0071E3" : "#8E8E93",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
+                transition: "all 200ms ease",
+              }}>
+                <Users style={{ width: 11, height: 11 }} /> Teammitglied
               </button>
             </div>
             <TriadSliders triad={personProfile} onChange={setPersonProfile} />
