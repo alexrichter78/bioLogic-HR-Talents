@@ -7,6 +7,7 @@ import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRig
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE, type BerufLand } from "@/data/berufe";
+import { reclassifyItems } from "@/lib/reclassify-engine";
 
 type KompetenzTyp = "Impulsiv" | "Intuitiv" | "Analytisch";
 type Niveau = "Niedrig" | "Mittel" | "Hoch";
@@ -950,41 +951,20 @@ export default function RollenDNA() {
     return orig !== undefined && orig !== t.name;
   }).map(t => t.id);
 
-  const handleReclassify = async () => {
+  const handleReclassify = () => {
     const changed = taetigkeiten.filter(t => changedIds.includes(t.id));
     if (changed.length === 0) return;
     setIsReclassifying(true);
     try {
-      const resp = await fetch("/api/reclassify-kompetenzen", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          beruf,
-          fuehrung,
-          aufgabencharakter,
-          arbeitslogik,
-          items: changed.map(t => ({ name: t.name, kategorie: t.kategorie })),
-        }),
-      });
-      if (!resp.ok) throw new Error("Reclassify failed");
-      const data = await resp.json();
-      const results: { kompetenz?: KompetenzTyp }[] = data.results || [];
+      const results = reclassifyItems(changed.map(t => ({ name: t.name, kategorie: t.kategorie })));
       setTaetigkeiten(prev => {
         const updated = [...prev];
-        const validValues = ["Impulsiv", "Intuitiv", "Analytisch"];
         changed.forEach((t, i) => {
-          let raw = results[i]?.kompetenz;
-          if (!raw) return;
-          let resolved: string | undefined;
-          if (validValues.includes(raw)) {
-            resolved = raw;
-          } else if (raw.includes("|")) {
-            resolved = raw.split("|").map((s: string) => s.trim()).find((s: string) => validValues.includes(s));
-          }
-          if (resolved) {
+          const kompetenz = results[i]?.kompetenz;
+          if (kompetenz) {
             const idx = updated.findIndex(u => u.id === t.id);
             if (idx !== -1) {
-              updated[idx] = { ...updated[idx], kompetenz: resolved as KompetenzTyp };
+              updated[idx] = { ...updated[idx], kompetenz: kompetenz as KompetenzTyp };
             }
             originalNames.current.set(t.id, t.name);
           }

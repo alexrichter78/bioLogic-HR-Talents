@@ -4,6 +4,7 @@ import { Save, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import GlobalNav from "@/components/global-nav";
+import { generateAnalyseLocal } from "@/lib/analyse-engine";
 
 const DEFAULT_BEREICH1 = `Noch keine Analyse vorhanden. Erstelle zuerst ein vollständiges Rollenprofil, um die KI-Analyse zu starten.`;
 const DEFAULT_BEREICH2 = `Noch keine Analyse vorhanden. Erstelle zuerst ein vollständiges Rollenprofil, um die KI-Analyse zu starten.`;
@@ -113,7 +114,7 @@ export default function Analyse() {
     setBioCheckIntroEdited(false);
   };
 
-  const runAnalyse = async () => {
+  const runAnalyse = () => {
     const dna = loadRollenDna();
     if (!dna || !dna.beruf || !dna.taetigkeiten || dna.taetigkeiten.length === 0) return;
 
@@ -124,21 +125,14 @@ export default function Analyse() {
         .filter(Boolean)
         .join(", ");
 
-      const resp = await fetch("/api/generate-analyse", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          beruf: dna.beruf,
-          fuehrung: dna.fuehrung,
-          erfolgsfokus: erfolgsfokusText,
-          aufgabencharakter: dna.aufgabencharakter,
-          arbeitslogik: dna.arbeitslogik,
-          taetigkeiten: dna.taetigkeiten,
-        }),
+      const data = generateAnalyseLocal({
+        beruf: dna.beruf,
+        fuehrung: dna.fuehrung,
+        erfolgsfokus: erfolgsfokusText,
+        aufgabencharakter: dna.aufgabencharakter,
+        arbeitslogik: dna.arbeitslogik,
+        taetigkeiten: dna.taetigkeiten,
       });
-
-      if (!resp.ok) throw new Error("Analyse-Fehler");
-      const data = await resp.json();
 
       if (data.bereich1) { setBereich1(data.bereich1); }
       if (data.bereich2) { setBereich2(data.bereich2); }
