@@ -8,6 +8,7 @@ import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE, type BerufLand } from "@/data/berufe";
 import { reclassifyItems } from "@/lib/reclassify-engine";
+import { generateKompetenzenLokal } from "@/lib/kompetenzen-engine";
 
 type KompetenzTyp = "Impulsiv" | "Intuitiv" | "Analytisch";
 type Niveau = "Niedrig" | "Mittel" | "Hoch";
@@ -1052,32 +1053,59 @@ export default function RollenDNA() {
     setIsGenerating(true);
     setGeneratingStep(0);
     try {
-      const erfolgsfokusText = erfolgsfokusIndices
-        .map(i => ERFOLGSFOKUS_LABELS[i]?.replace(/\n/g, " "))
-        .filter(Boolean)
-        .join(", ");
-      let analyseTexte: { bereich1?: string; bereich2?: string; bereich3?: string } = {};
+      const hasCustomContext = zusatzInfo && zusatzInfo.trim().length > 0;
+      let hasAnalyseTexte = false;
       try {
         const raw = localStorage.getItem("analyseTexte");
-        if (raw) analyseTexte = JSON.parse(raw);
+        if (raw) {
+          const at = JSON.parse(raw);
+          hasAnalyseTexte = !!(
+            (at.bereich1 && !at.bereich1.startsWith("Noch keine Analyse")) ||
+            (at.bereich2 && !at.bereich2.startsWith("Noch keine Analyse")) ||
+            (at.bereich3 && !at.bereich3.startsWith("Noch keine Analyse"))
+          );
+        }
       } catch {}
+      let data: any = null;
 
-      const stepTimer1 = setTimeout(() => setGeneratingStep(1), 2500);
-      const stepTimer2 = setTimeout(() => setGeneratingStep(2), 5500);
+      if (!hasCustomContext && !hasAnalyseTexte) {
+        const lokalResult = generateKompetenzenLokal(beruf, fuehrung);
+        if (lokalResult) {
+          console.log(`[Lokal-Engine] Treffer für "${beruf}"`);
+          data = lokalResult;
+          setGeneratingStep(3);
+          await new Promise(resolve => setTimeout(resolve, 400));
+        }
+      }
 
-      const resp = await fetch("/api/generate-kompetenzen", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ beruf, fuehrung, erfolgsfokus: erfolgsfokusText, aufgabencharakter, arbeitslogik, zusatzInfo, analyseTexte }),
-      });
-      if (!resp.ok) throw new Error("Fehler bei der Generierung");
-      const data = await resp.json();
+      if (!data) {
+        const erfolgsfokusText = erfolgsfokusIndices
+          .map(i => ERFOLGSFOKUS_LABELS[i]?.replace(/\n/g, " "))
+          .filter(Boolean)
+          .join(", ");
+        let analyseTexte: { bereich1?: string; bereich2?: string; bereich3?: string } = {};
+        try {
+          const raw = localStorage.getItem("analyseTexte");
+          if (raw) analyseTexte = JSON.parse(raw);
+        } catch {}
 
-      clearTimeout(stepTimer1);
-      clearTimeout(stepTimer2);
-      setGeneratingStep(3);
+        const stepTimer1 = setTimeout(() => setGeneratingStep(1), 2500);
+        const stepTimer2 = setTimeout(() => setGeneratingStep(2), 5500);
 
-      await new Promise(resolve => setTimeout(resolve, 600));
+        const resp = await fetch("/api/generate-kompetenzen", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ beruf, fuehrung, erfolgsfokus: erfolgsfokusText, aufgabencharakter, arbeitslogik, zusatzInfo, analyseTexte }),
+        });
+        if (!resp.ok) throw new Error("Fehler bei der Generierung");
+        data = await resp.json();
+
+        clearTimeout(stepTimer1);
+        clearTimeout(stepTimer2);
+        setGeneratingStep(3);
+
+        await new Promise(resolve => setTimeout(resolve, 600));
+      }
 
       let id = nextId;
       const generated: Taetigkeit[] = [];

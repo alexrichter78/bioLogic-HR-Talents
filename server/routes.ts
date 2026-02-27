@@ -29,20 +29,30 @@ export async function registerRoutes(
       }
 
       const fKey = fuehrung && fuehrung !== "Keine" && fuehrung !== "" ? fuehrung : "Keine";
-      try {
-        const cached = await db.select().from(berufTemplates)
-          .where(and(
-            sql`LOWER(${berufTemplates.berufName}) = LOWER(${beruf})`,
-            eq(berufTemplates.fuehrung, fKey)
-          ))
-          .limit(1);
+      const hasZusatzInfo = zusatzInfo && zusatzInfo.trim().length > 0;
+      const hasAnalyseTexte = analyseTexte && (
+        (analyseTexte.bereich1 && !analyseTexte.bereich1.startsWith("Noch keine Analyse")) ||
+        (analyseTexte.bereich2 && !analyseTexte.bereich2.startsWith("Noch keine Analyse")) ||
+        (analyseTexte.bereich3 && !analyseTexte.bereich3.startsWith("Noch keine Analyse"))
+      );
+      const useCache = !hasZusatzInfo && !hasAnalyseTexte;
 
-        if (cached.length > 0 && cached[0].taetigkeiten) {
-          console.log(`[DB-Cache] Treffer für "${beruf}" (${fKey})`);
-          return res.json(cached[0].taetigkeiten as any);
+      if (useCache) {
+        try {
+          const cached = await db.select().from(berufTemplates)
+            .where(and(
+              sql`LOWER(${berufTemplates.berufName}) = LOWER(${beruf})`,
+              eq(berufTemplates.fuehrung, fKey)
+            ))
+            .limit(1);
+
+          if (cached.length > 0 && cached[0].taetigkeiten) {
+            console.log(`[DB-Cache] Treffer für "${beruf}" (${fKey})`);
+            return res.json(cached[0].taetigkeiten as any);
+          }
+        } catch (dbErr) {
+          console.error("[DB-Cache] Lookup-Fehler, weiter zu OpenAI:", dbErr);
         }
-      } catch (dbErr) {
-        console.error("[DB-Cache] Lookup-Fehler, Fallback auf OpenAI:", dbErr);
       }
 
       const hasFuehrung = fuehrung && fuehrung !== "Keine" && fuehrung !== "";
@@ -165,6 +175,25 @@ Antworte ausschließlich als JSON:
 
       const content = response.choices[0]?.message?.content || "{}";
       const data = JSON.parse(content);
+
+      if (useCache) {
+        try {
+          await db.insert(berufTemplates).values({
+            berufName: beruf,
+            fuehrung: fKey,
+            taetigkeiten: data,
+            generatedAt: new Date(),
+            source: "openai",
+          }).onConflictDoUpdate({
+            target: [berufTemplates.berufName, berufTemplates.fuehrung],
+            set: { taetigkeiten: data, generatedAt: new Date(), source: "openai" },
+          });
+          console.log(`[DB-Cache] Gespeichert: "${beruf}" (${fKey})`);
+        } catch (writeErr) {
+          console.error("[DB-Cache] Schreibfehler (nicht kritisch):", writeErr);
+        }
+      }
+
       res.json(data);
     } catch (error) {
       console.error("Error generating Kompetenzen:", error);
