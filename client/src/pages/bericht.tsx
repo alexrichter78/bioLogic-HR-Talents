@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { BarChart3, Briefcase, Heart, Shield, AlertTriangle, FileText, Check, Settings, RefreshCw, Loader2, Zap, Brain, Users, Target, TrendingUp, Lightbulb, Star } from "lucide-react";
+import { BarChart3, Briefcase, Heart, Shield, AlertTriangle, FileText, Check, Settings, Zap, Brain, Target, Lightbulb, Star } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE } from "@/data/berufe";
-import { apiRequest } from "@/lib/queryClient";
 import { hyphenateText } from "@/lib/hyphenate";
+import { generateBerichtLocal } from "@/lib/bericht-engine";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 const SOFT = { imp: "#FDEAED", int: "#FEF3E2", ana: "#E8F0FA" };
@@ -414,7 +414,6 @@ export default function Bericht() {
     erfolgsfokusIndices: number[]; taetigkeiten: any[];
   } | null>(null);
   const [bericht, setBericht] = useState<BerichtData | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -443,54 +442,16 @@ export default function Bericht() {
 
   useEffect(() => {
     if (!profileData) return;
-    const cached = localStorage.getItem("berichtCache");
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached);
-        const currentHash = JSON.stringify({
-          gesamt: profileData.gesamt, haupt: profileData.haupt, neben: profileData.neben,
-          fuehrung: profileData.fuehrung, rahmen: profileData.rahmen,
-          fuehrungstyp: profileData.fuehrungstyp, aufgabencharakter: profileData.aufgabencharakter,
-          arbeitslogik: profileData.arbeitslogik, erfolgsfokusIndices: profileData.erfolgsfokusIndices,
-        });
-        if (parsed.beruf === profileData.beruf && parsed.hash === currentHash) {
-          setBericht(parsed.data);
-          return;
-        }
-      } catch {}
-    }
     generateBericht();
   }, [profileData]);
 
-  async function generateBericht() {
+  function generateBericht() {
     if (!profileData) return;
-    setIsGenerating(true);
-    setError(null);
     try {
-      const erfolgsfokusLabels = profileData.erfolgsfokusIndices.map((i: number) => ERFOLGSFOKUS_LABELS[i]).filter(Boolean);
-      const res = await apiRequest("POST", "/api/generate-bericht", {
-        beruf: profileData.beruf, bereich: profileData.bereich,
-        fuehrungstyp: profileData.fuehrungstyp, aufgabencharakter: profileData.aufgabencharakter,
-        arbeitslogik: profileData.arbeitslogik, erfolgsfokusLabels,
-        taetigkeiten: profileData.taetigkeiten, gesamt: profileData.gesamt,
-        haupt: profileData.haupt, neben: profileData.neben,
-        fuehrungBG: profileData.fuehrung, rahmen: profileData.rahmen,
-        profileType: profileData.profileType, intensity: profileData.intensity,
-        isLeadership: profileData.isLeadership,
-      });
-      const data = await res.json();
+      const data = generateBerichtLocal(profileData);
       setBericht(data);
-      const saveHash = JSON.stringify({
-        gesamt: profileData.gesamt, haupt: profileData.haupt, neben: profileData.neben,
-        fuehrung: profileData.fuehrung, rahmen: profileData.rahmen,
-        fuehrungstyp: profileData.fuehrungstyp, aufgabencharakter: profileData.aufgabencharakter,
-        arbeitslogik: profileData.arbeitslogik, erfolgsfokusIndices: profileData.erfolgsfokusIndices,
-      });
-      localStorage.setItem("berichtCache", JSON.stringify({ beruf: profileData.beruf, hash: saveHash, data }));
-    } catch (err: any) {
-      setError("Der Bericht konnte nicht generiert werden. Bitte versuchen Sie es erneut.");
-    } finally {
-      setIsGenerating(false);
+    } catch {
+      setError("Der Bericht konnte nicht erstellt werden.");
     }
   }
 
@@ -547,37 +508,11 @@ export default function Bericht() {
       `}</style>
 
       <div className="relative z-10">
-        <GlobalNav rightSlot={
-          bericht && !isGenerating ? (
-            <button onClick={generateBericht} style={{
-              display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 500,
-              padding: "7px 14px", borderRadius: 10, background: "rgba(0,0,0,0.04)",
-              border: "none", cursor: "pointer", color: "#6E6E73",
-            }} data-testid="button-regenerate-bericht">
-              <RefreshCw style={{ width: 12, height: 12 }} />
-              Neu generieren
-            </button>
-          ) : undefined
-        } />
+        <GlobalNav />
 
         <main className="flex-1 w-full max-w-2xl mx-auto px-5 pb-24 pt-10">
 
-          {isGenerating && (
-            <div style={{ textAlign: "center", paddingTop: 80 }}>
-              <div style={{
-                width: 80, height: 80, borderRadius: 24,
-                background: "linear-gradient(135deg, rgba(0,113,227,0.1), rgba(52,170,220,0.06))",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                margin: "0 auto 24px", boxShadow: "0 8px 32px rgba(0,113,227,0.1)",
-              }}>
-                <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#0071E3" }} />
-              </div>
-              <p style={{ fontSize: 20, fontWeight: 650, color: "#1D1D1F", marginBottom: 8 }}>Bericht wird erstellt</p>
-              <p style={{ fontSize: 14, color: "#8E8E93", maxWidth: 320, margin: "0 auto" }}>Die KI analysiert das Rollenprofil und erstellt einen individuellen Entscheidungsbericht.</p>
-            </div>
-          )}
-
-          {error && !isGenerating && (
+          {error && (
             <GlassCard testId="bericht-error" style={{ padding: "44px 36px", textAlign: "center" }}>
               <div style={{ width: 56, height: 56, borderRadius: 18, background: "rgba(196,30,58,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
                 <AlertTriangle style={{ width: 24, height: 24, color: "#C41E3A" }} />
@@ -590,7 +525,7 @@ export default function Bericht() {
             </GlassCard>
           )}
 
-          {bericht && !isGenerating && (
+          {bericht && !error && (
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
               {/* Hero Header */}
