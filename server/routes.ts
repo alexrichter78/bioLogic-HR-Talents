@@ -671,9 +671,12 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
         "hallo", "hi", "guten tag", "hilfe", "help", "was kannst du", "wer bist du",
       ];
 
-      const isAllowed = ALLOWED_TOPICS.some(t => lastMsg.includes(t)) ||
-        messages.length <= 1 ||
-        lastMsg.length < 15;
+      const hasTopicKeyword = ALLOWED_TOPICS.some(t => lastMsg.includes(t));
+      const isFirstMessage = messages.length <= 1;
+      const isShortMessage = lastMsg.length < 15;
+      const isOngoingConversation = messages.length >= 3;
+
+      const isAllowed = hasTopicKeyword || isFirstMessage || isShortMessage || isOngoingConversation;
 
       if (!isAllowed) {
         return res.json({
