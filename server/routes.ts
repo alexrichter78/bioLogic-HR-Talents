@@ -2,11 +2,19 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import OpenAI from "openai";
+import pg from "pg";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { eq, and, sql } from "drizzle-orm";
+import { berufTemplates } from "@shared/schema";
+import { generateSeedProfessions } from "./beruf-seed";
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
   baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
 });
+
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+const db = drizzle(pool);
 
 export async function registerRoutes(
   httpServer: Server,
@@ -18,6 +26,23 @@ export async function registerRoutes(
       const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik, zusatzInfo, analyseTexte } = req.body;
       if (!beruf) {
         return res.status(400).json({ error: "Beruf ist erforderlich" });
+      }
+
+      const fKey = fuehrung && fuehrung !== "Keine" && fuehrung !== "" ? fuehrung : "Keine";
+      try {
+        const cached = await db.select().from(berufTemplates)
+          .where(and(
+            sql`LOWER(${berufTemplates.berufName}) = LOWER(${beruf})`,
+            eq(berufTemplates.fuehrung, fKey)
+          ))
+          .limit(1);
+
+        if (cached.length > 0 && cached[0].taetigkeiten) {
+          console.log(`[DB-Cache] Treffer für "${beruf}" (${fKey})`);
+          return res.json(cached[0].taetigkeiten as any);
+        }
+      } catch (dbErr) {
+        console.error("[DB-Cache] Lookup-Fehler, Fallback auf OpenAI:", dbErr);
       }
 
       const hasFuehrung = fuehrung && fuehrung !== "Keine" && fuehrung !== "";
