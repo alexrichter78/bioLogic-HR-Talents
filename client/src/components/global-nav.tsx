@@ -63,7 +63,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
             style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}
             data-testid="nav-logo"
           >
-            <img src={logoSrc} alt="bioLogic Logo" style={{ height: 26, width: "auto" }} />
+            <img src={logoSrc} alt="bioLogic Logo" style={{ height: 26, width: "auto", objectFit: "contain" }} />
           </button>
 
           <nav style={{ display: "flex", alignItems: "center", gap: 2 }} data-testid="global-nav">
