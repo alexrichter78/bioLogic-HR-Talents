@@ -644,7 +644,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
 
   app.post("/api/ki-coach", async (req, res) => {
     try {
-      const { messages } = req.body;
+      const { messages, stammdaten } = req.body;
       if (!Array.isArray(messages) || messages.length === 0) {
         return res.status(400).json({ error: "Keine Nachrichten" });
       }
@@ -738,8 +738,22 @@ REGELN:
 - Auch bei Verkauf, Verhandlung oder privaten Situationen: bioLogic anwenden. Die Prinzipien sind universell.
 - Deutsch.`;
 
+      let fullSystemPrompt = systemPrompt;
+      if (stammdaten && typeof stammdaten === "object" && Object.keys(stammdaten).length > 0) {
+        let contextBlock = "\n\nWISSENSBASIS (Stammdaten aus der bioLogic-Analyse – nutze dieses Wissen, um deine Antworten präziser und fundierter zu machen. Zitiere nicht wörtlich, sondern nutze die Inhalte als Hintergrundwissen für deine bioLogic-Begründungen):";
+        if (stammdaten.bioCheckIntro) contextBlock += `\n\nbioLogic-Grundlagen:\n${stammdaten.bioCheckIntro}`;
+        if (stammdaten.bioCheckText) contextBlock += `\n\nbioCheck-Stellenanforderung:\n${stammdaten.bioCheckText}`;
+        if (stammdaten.impulsiveDaten) contextBlock += `\n\nImpulsive Dimension (Rot) – Details:\n${stammdaten.impulsiveDaten}`;
+        if (stammdaten.intuitiveDaten) contextBlock += `\n\nIntuitive Dimension (Gelb) – Details:\n${stammdaten.intuitiveDaten}`;
+        if (stammdaten.analytischeDaten) contextBlock += `\n\nAnalytische Dimension (Blau) – Details:\n${stammdaten.analytischeDaten}`;
+        if (stammdaten.beruf) contextBlock += `\n\nAktuelle Rolle: ${stammdaten.beruf}`;
+        if (stammdaten.fuehrung) contextBlock += `\nFührungsverantwortung: ${stammdaten.fuehrung}`;
+        if (stammdaten.taetigkeiten) contextBlock += `\nKerntätigkeiten: ${stammdaten.taetigkeiten}`;
+        fullSystemPrompt += contextBlock;
+      }
+
       const apiMessages: { role: "system" | "user" | "assistant" | "tool"; content: string; tool_call_id?: string }[] = [
-        { role: "system" as const, content: systemPrompt },
+        { role: "system" as const, content: fullSystemPrompt },
         ...messages.slice(-10).map((m: { role: string; content: string }) => ({
           role: m.role as "user" | "assistant",
           content: m.content,
