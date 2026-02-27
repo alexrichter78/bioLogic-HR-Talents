@@ -46,6 +46,10 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
     return true;
   };
 
+  const hasRollenDna = !!localStorage.getItem("rollenDnaState");
+
+  const REQUIRES_DNA = ["Rollen-DNA Bearbeiten", "Rollenprofil", "Soll-Ist-Vergleich", "Teamdynamik"];
+
   return (
     <>
       <div style={{
@@ -70,26 +74,30 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
             {NAV_ITEMS.map((item) => {
               const active = isActive(item);
               const Icon = item.icon;
+              const disabled = !hasRollenDna && REQUIRES_DNA.includes(item.label);
               return (
                 <button
                   key={item.label}
-                  onClick={() => handleNav(item)}
+                  onClick={() => !disabled && handleNav(item)}
                   data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
                   style={{
                     display: "flex", alignItems: "center", gap: 5,
                     padding: "6px 12px", borderRadius: 10,
                     background: active ? "rgba(0,113,227,0.08)" : "transparent",
-                    border: "none", cursor: "pointer",
+                    border: "none",
+                    cursor: disabled ? "default" : "pointer",
                     fontSize: 12, fontWeight: active ? 600 : 500,
-                    color: active ? "#0071E3" : "#6E6E73",
+                    color: disabled ? "#C7C7CC" : active ? "#0071E3" : "#6E6E73",
+                    opacity: disabled ? 0.6 : 1,
                     transition: "all 200ms ease",
                     whiteSpace: "nowrap",
+                    pointerEvents: disabled ? "none" : "auto",
                   }}
                   onMouseEnter={(e) => {
-                    if (!active) e.currentTarget.style.background = "rgba(0,0,0,0.04)";
+                    if (!active && !disabled) e.currentTarget.style.background = "rgba(0,0,0,0.04)";
                   }}
                   onMouseLeave={(e) => {
-                    if (!active) e.currentTarget.style.background = "transparent";
+                    if (!active && !disabled) e.currentTarget.style.background = "transparent";
                   }}
                 >
                   <Icon style={{ width: 13, height: 13, strokeWidth: 2 }} />
