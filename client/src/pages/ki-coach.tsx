@@ -85,34 +85,10 @@ export default function KICoach() {
     try {
       const chatHistory = newMessages.filter(m => m !== WELCOME_MSG);
 
-      let stammdaten: Record<string, string> = {};
-      try {
-        const analyseRaw = localStorage.getItem("analyseTexte");
-        if (analyseRaw) {
-          const a = JSON.parse(analyseRaw);
-          if (a.bereich1) stammdaten.impulsiveDaten = a.bereich1;
-          if (a.bereich2) stammdaten.intuitiveDaten = a.bereich2;
-          if (a.bereich3) stammdaten.analytischeDaten = a.bereich3;
-        }
-        const bioCheckIntro = localStorage.getItem("bioCheckIntroOverride");
-        if (bioCheckIntro) stammdaten.bioCheckIntro = JSON.parse(bioCheckIntro);
-        const bioCheckText = localStorage.getItem("bioCheckTextOverride") || localStorage.getItem("bioCheckTextGenerated");
-        if (bioCheckText) stammdaten.bioCheckText = JSON.parse(bioCheckText);
-        const rollenDna = localStorage.getItem("rollenDnaState");
-        if (rollenDna) {
-          const dna = JSON.parse(rollenDna);
-          if (dna.beruf) stammdaten.beruf = dna.beruf;
-          if (dna.fuehrung) stammdaten.fuehrung = dna.fuehrung;
-          if (dna.taetigkeiten) stammdaten.taetigkeiten = dna.taetigkeiten.join(", ");
-        }
-      } catch {}
-
-      const hasStammdaten = Object.keys(stammdaten).length > 0;
-
       const res = await fetch("/api/ki-coach", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: chatHistory, ...(hasStammdaten ? { stammdaten } : {}) }),
+        body: JSON.stringify({ messages: chatHistory }),
       });
 
       if (!res.ok) throw new Error("Fehler");

@@ -644,7 +644,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
 
   app.post("/api/ki-coach", async (req, res) => {
     try {
-      const { messages, stammdaten } = req.body;
+      const { messages } = req.body;
       if (!Array.isArray(messages) || messages.length === 0) {
         return res.status(400).json({ error: "Keine Nachrichten" });
       }
