@@ -179,21 +179,41 @@ function shiftType(domTeam: DominanceType, domPerson: DominanceType, DG: number,
   const level = intensityLevel(TS);
   const extP = personProfile ? profileExtremity(personProfile) : 0;
 
-  if (DG < 5) return "VERSTAERKUNG";
-  if (DC === 100 && DG >= 30) return isLeading ? "TRANSFORMATION" : "SPANNUNG";
-  if (DC === 100) return "REIBUNG";
-  if (DC === 0 && DG >= 40) return isLeading ? "TRANSFORMATION" : "SPANNUNG";
-  if (DC === 0 && DG >= 25) return "REIBUNG";
-  if (DC === 0 && extP >= 75 && DG >= 20) return "REIBUNG";
+  if (DG < 5) {
+    return "VERSTAERKUNG";
+  }
+
+  if (DC === 100 && DG >= 30) {
+    return isLeading ? "TRANSFORMATION" : "SPANNUNG";
+  }
+
+  if (DC === 100) {
+    return "REIBUNG";
+  }
+
+  if (DC === 0 && DG >= 40) {
+    return isLeading ? "TRANSFORMATION" : "SPANNUNG";
+  }
+
+  if (DC === 0 && DG >= 25) {
+    return "REIBUNG";
+  }
+
+  if (DC === 0 && extP >= 75 && DG >= 20) {
+    return "REIBUNG";
+  }
+
   if (DC === 0) {
     if (DG < 15) return "VERSTAERKUNG";
     return "ERGAENZUNG";
   }
+
   if (domTeam === "MIX" || domPerson === "MIX") {
     if (level === "NIEDRIG") return "ERGAENZUNG";
     if (level === "MITTEL") return "HYBRID";
     return isLeading ? "TRANSFORMATION" : "SPANNUNG";
   }
+
   if (level === "NIEDRIG") return "ERGAENZUNG";
   if (level === "MITTEL") return "REIBUNG";
   return isLeading ? "TRANSFORMATION" : "SPANNUNG";
@@ -249,13 +269,13 @@ function buildHeadline(st: ShiftType, domTeam: DominanceType, domPerson: Dominan
   const role = isLeading ? "Die neue Führung" : "Die neue Person";
 
   switch (st) {
-    case "VERSTAERKUNG": return "Arbeitsweisen passen gut zusammen. Führung und Team verfolgen ähnliche Prioritäten und Entscheidungslogiken.";
+    case "VERSTAERKUNG": return `Arbeitsweisen passen gut zusammen. Führung und Team verfolgen ähnliche Prioritäten und Entscheidungslogiken.`;
     case "ERGAENZUNG": return `${role} bringt eine ergänzende Arbeitsweise ins ${tMap[domTeam]} Team. Zusammenarbeit stabil.`;
     case "REIBUNG": return `Unterschiedliche Arbeitsweisen treffen aufeinander. ${role} arbeitet anders als das Team es gewohnt ist. Das führt zu mehr Abstimmung und gelegentlichen Spannungen.`;
     case "SPANNUNG":
     case "TRANSFORMATION": return isLeading
-      ? "Die neue Führung verändert die bisherige Arbeitsweise deutlich. Entscheidungen, Prioritäten und Qualitätsmaßstäbe werden anders gesetzt als bisher."
-      : "Arbeitslogiken unterscheiden sich stark. Ohne Führung entstehen Leistungs- und Konfliktrisiken.";
+      ? `Die neue Führung verändert die bisherige Arbeitsweise deutlich. Entscheidungen, Prioritäten und Qualitätsmaßstäbe werden anders gesetzt als bisher.`
+      : `Arbeitslogiken unterscheiden sich stark. Ohne Führung entstehen Leistungs- und Konfliktrisiken.`;
     case "HYBRID": return `Unterschiedliche Arbeitsweisen treffen aufeinander. ${role} arbeitet anders als das Team es gewohnt ist. Mehr Abstimmungsbedarf im Alltag.`;
   }
 }
@@ -288,13 +308,15 @@ function buildLeadershipBehavior(domPerson: DominanceType, domTeam: DominanceTyp
 }
 
 function buildSystemEffect(st: ShiftType, domPerson: DominanceType, domTeam: DominanceType, isLeading: boolean): string {
+  const role = isLeading ? "der neuen Führung" : "der neuen Person";
+
   switch (st) {
-    case "VERSTAERKUNG": return "Arbeitsweisen passen gut zusammen. Entscheidungen werden schnell akzeptiert. Abstimmungen verlaufen reibungslos. Keine besonderen Anpassungen notwendig. Normale Führung ist ausreichend.";
-    case "ERGAENZUNG": return "Die neue Arbeitsweise ergänzt das Team um fehlende Perspektiven. Moderate Abstimmung empfehlenswert.";
-    case "REIBUNG": return "Unterschiedliche Arbeitsweisen treffen aufeinander. Entscheidungen dauern teilweise länger. Prioritäten müssen klarer erklärt werden. Mehr Abstimmungsbedarf im Alltag. Mit klaren Regeln bleibt das System stabil.";
+    case "VERSTAERKUNG": return `Arbeitsweisen passen gut zusammen. Entscheidungen werden schnell akzeptiert. Abstimmungen verlaufen reibungslos. Keine besonderen Anpassungen notwendig. Normale Führung ist ausreichend.`;
+    case "ERGAENZUNG": return `Die neue Arbeitsweise ergänzt das Team um fehlende Perspektiven. Moderate Abstimmung empfehlenswert.`;
+    case "REIBUNG": return `Unterschiedliche Arbeitsweisen treffen aufeinander. Entscheidungen dauern teilweise länger. Prioritäten müssen klarer erklärt werden. Mehr Abstimmungsbedarf im Alltag. Mit klaren Regeln bleibt das System stabil.`;
     case "SPANNUNG":
-    case "TRANSFORMATION": return "Gewohnte Abläufe verändern sich spürbar. Diskussionen über Prioritäten nehmen zu. Widerstand oder Unsicherheit im Team möglich. Ohne klare Führung entsteht Instabilität.";
-    default: return "Unterschiedliche Arbeitsweisen treffen aufeinander. Mehr Abstimmungsbedarf im Alltag. Mit klaren Regeln bleibt das System stabil.";
+    case "TRANSFORMATION": return `Gewohnte Abläufe verändern sich spürbar. Diskussionen über Prioritäten nehmen zu. Widerstand oder Unsicherheit im Team möglich. Ohne klare Führung entsteht Instabilität.`;
+    default: return `Unterschiedliche Arbeitsweisen treffen aufeinander. Mehr Abstimmungsbedarf im Alltag. Mit klaren Regeln bleibt das System stabil.`;
   }
 }
 
@@ -330,18 +352,18 @@ function buildRisks(st: ShiftType, domPerson: DominanceType, domTeam: DominanceT
   const role = isLeading ? "Führung" : "Neue Person";
 
   if (st === "VERSTAERKUNG") return [
-    "Einseitige Verstärkung ohne Korrektiv. Im Alltag: blinde Flecken bei nachrangigen Kompetenzen.",
+    `Einseitige Verstärkung ohne Korrektiv. Im Alltag: blinde Flecken bei nachrangigen Kompetenzen.`,
     "Homogenität erhöht Anfälligkeit bei Systemveränderungen.",
     "Fehlende Diversität in Entscheidungslogik.",
   ];
   if (st === "ERGAENZUNG") return [
-    "Integrationsphase erfordert bewusste Steuerung. Im Alltag: temporäre Reibung bei Priorisierung.",
+    `Integrationsphase erfordert bewusste Steuerung. Im Alltag: temporäre Reibung bei Priorisierung.`,
     `${role} muss Anschlussfähigkeit aktiv herstellen.`,
     "Unterschiedliche Arbeitsgeschwindigkeit in der Einarbeitung.",
   ];
   return [
     `${pLabel}logik der ${role} und ${tLabel}s Team priorisieren unterschiedlich. Im Alltag: Konflikte bei Entscheidungsgeschwindigkeit und -logik.`,
-    "Gegenseitige Fehlinterpretation von Arbeitsstil. Im Alltag: stille Frustration und Rückzug.",
+    `Gegenseitige Fehlinterpretation von Arbeitsstil. Im Alltag: stille Frustration und Rückzug.`,
     "Ohne Steuerung wird Reibung zu chronischem Spannungsfeld.",
     st === "TRANSFORMATION" || st === "SPANNUNG" ? `${isLeading ? "Führungsakzeptanz" : "Teamintegration"} gefährdet. Im Alltag: Widerstand und Abgrenzung.` : "Motivationsdelle bei stark betroffenen Teammitgliedern möglich.",
     st === "TRANSFORMATION" ? "Kulturelle Transformation braucht 6-12 Monate. Im Alltag: lange Unsicherheitsphase." : "Ohne bewusste Steuerung steigt der Konfliktgrad.",
