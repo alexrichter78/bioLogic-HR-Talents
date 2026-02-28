@@ -718,8 +718,12 @@ PROFILTYPEN:
 - Dominante Profile (>50%): stark ausgeprägte Spezialisierung.
 - Starke Profile (42-50%): klare Tendenz mit Nebenstärken.
 - Leichte Profile (38-42%): erkennbare, aber moderate Tendenz.
-- Hybrid-Profile: Macher+Struktur, Macher+Mensch, Struktur+Mensch.
-- Balanced: alle drei Bereiche nahezu gleich.
+- Hybrid-Profile (Doppeldominanzen): Wenn zwei Farben nahezu gleich stark sind (Differenz <5%), entsteht eine Doppeldominanz. Es gibt drei Varianten:
+  * Rot-Blau (Impulsiv-Analytisch / "Macher+Struktur"): Handlungs- und Fachkompetenz bilden ein Tandem. Diese Menschen sind umsetzungsstark UND methodisch. Sie treffen schnelle Entscheidungen, aber auf Datenbasis. Schwäche: Beziehungsebene kommt oft zu kurz. Typisch für technische Führungskräfte, Projektleiter, Ingenieure in Leitungsfunktion.
+  * Rot-Gelb (Impulsiv-Intuitiv / "Macher+Mensch"): Handlungs- und Beziehungskompetenz bilden ein Tandem. Diese Menschen sind durchsetzungsstark UND empathisch. Sie können begeistern und gleichzeitig Ergebnisse einfordern. Schwäche: Detailarbeit und Dokumentation. Typisch für Vertriebsleiter, Change Manager, charismatische Führungskräfte.
+  * Gelb-Blau (Intuitiv-Analytisch / "Mensch+Struktur"): Beziehungs- und Fachkompetenz bilden ein Tandem. Diese Menschen sind empathisch UND strukturiert. Sie können komplexe Sachverhalte menschlich vermitteln. Schwäche: Tempo und schnelle Entscheidungen. Typisch für HR-Leiter, Berater, Trainer, Qualitätsmanager.
+- Bei Doppeldominanzen: Die dritte (schwache) Farbe zeigt die größte Entwicklungslücke. Führungsempfehlungen sollten diese Lücke adressieren.
+- Balanced: alle drei Bereiche nahezu gleich (Differenz <3%). Vielseitig einsetzbar, aber ohne klares Profil. Risiko: "kann alles ein bisschen, aber nichts richtig gut". Stärke: Brückenbauer zwischen verschiedenen Typen.
 
 SOLL-IST-VERGLEICH (JobCheck):
 - Vergleicht Rollen-DNA (Soll) mit Kandidatenprofil (Ist).
