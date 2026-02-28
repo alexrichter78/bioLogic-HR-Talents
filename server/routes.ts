@@ -2,19 +2,11 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import OpenAI from "openai";
-import pg from "pg";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { eq, and, sql } from "drizzle-orm";
-import { berufTemplates } from "@shared/schema";
-import { generateSeedProfessions } from "./beruf-seed";
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
   baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
 });
-
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
-const db = drizzle(pool);
 
 export async function registerRoutes(
   httpServer: Server,
@@ -26,33 +18,6 @@ export async function registerRoutes(
       const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik, zusatzInfo, analyseTexte } = req.body;
       if (!beruf) {
         return res.status(400).json({ error: "Beruf ist erforderlich" });
-      }
-
-      const fKey = fuehrung && fuehrung !== "Keine" && fuehrung !== "" ? fuehrung : "Keine";
-      const hasZusatzInfo = zusatzInfo && zusatzInfo.trim().length > 0;
-      const hasAnalyseTexte = analyseTexte && (
-        (analyseTexte.bereich1 && !analyseTexte.bereich1.startsWith("Noch keine Analyse")) ||
-        (analyseTexte.bereich2 && !analyseTexte.bereich2.startsWith("Noch keine Analyse")) ||
-        (analyseTexte.bereich3 && !analyseTexte.bereich3.startsWith("Noch keine Analyse"))
-      );
-      const useCache = !hasZusatzInfo && !hasAnalyseTexte;
-
-      if (useCache) {
-        try {
-          const cached = await db.select().from(berufTemplates)
-            .where(and(
-              sql`LOWER(${berufTemplates.berufName}) = LOWER(${beruf})`,
-              eq(berufTemplates.fuehrung, fKey)
-            ))
-            .limit(1);
-
-          if (cached.length > 0 && cached[0].taetigkeiten) {
-            console.log(`[DB-Cache] Treffer für "${beruf}" (${fKey})`);
-            return res.json(cached[0].taetigkeiten as any);
-          }
-        } catch (dbErr) {
-          console.error("[DB-Cache] Lookup-Fehler, weiter zu OpenAI:", dbErr);
-        }
       }
 
       const hasFuehrung = fuehrung && fuehrung !== "Keine" && fuehrung !== "";
@@ -175,25 +140,6 @@ Antworte ausschließlich als JSON:
 
       const content = response.choices[0]?.message?.content || "{}";
       const data = JSON.parse(content);
-
-      if (useCache) {
-        try {
-          await db.insert(berufTemplates).values({
-            berufName: beruf,
-            fuehrung: fKey,
-            taetigkeiten: data,
-            generatedAt: new Date(),
-            source: "openai",
-          }).onConflictDoUpdate({
-            target: [berufTemplates.berufName, berufTemplates.fuehrung],
-            set: { taetigkeiten: data, generatedAt: new Date(), source: "openai" },
-          });
-          console.log(`[DB-Cache] Gespeichert: "${beruf}" (${fKey})`);
-        } catch (writeErr) {
-          console.error("[DB-Cache] Schreibfehler (nicht kritisch):", writeErr);
-        }
-      }
-
       res.json(data);
     } catch (error) {
       console.error("Error generating Kompetenzen:", error);
@@ -698,7 +644,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
 
   app.post("/api/ki-coach", async (req, res) => {
     try {
-      const { messages, stammdaten } = req.body;
+      const { messages } = req.body;
       if (!Array.isArray(messages) || messages.length === 0) {
         return res.status(400).json({ error: "Keine Nachrichten" });
       }
@@ -716,21 +662,15 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
         "motivation", "leistung", "ziel", "delegation", "verantwortung",
         "kultur", "werte", "vertrauen", "zusammenarbeit",
         "struktur", "organisation", "prozess", "entscheidung",
-        "verkauf", "verkaufen", "verhandlung", "verhandeln", "abschluss", "angebot", "preis", "kunde", "käufer", "kaeufer",
-        "angst", "unsicher", "unsicherheit", "überwindung", "ueberwindung", "hemmung", "blockade", "trau", "traue",
-        "selbstführung", "selbstfuehrung", "selbstmanagement",
         "impulsiv", "intuitiv", "analytisch", "dominanz", "triade",
         "rot", "roter", "rote", "rotdominant", "gelb", "gelber", "gelbe", "gelbdominant", "blau", "blauer", "blaue", "blaudominant",
         "rollen-dna", "rollenprofil", "soll-ist", "teamdynamik",
         "hallo", "hi", "guten tag", "hilfe", "help", "was kannst du", "wer bist du",
       ];
 
-      const hasTopicKeyword = ALLOWED_TOPICS.some(t => lastMsg.includes(t));
-      const isFirstMessage = messages.length <= 1;
-      const isShortMessage = lastMsg.length < 15;
-      const isOngoingConversation = messages.length >= 3;
-
-      const isAllowed = hasTopicKeyword || isFirstMessage || isShortMessage || isOngoingConversation;
+      const isAllowed = ALLOWED_TOPICS.some(t => lastMsg.includes(t)) ||
+        messages.length <= 1 ||
+        lastMsg.length < 15;
 
       if (!isAllowed) {
         return res.json({
@@ -739,197 +679,45 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
         });
       }
 
-      const systemPrompt = `Du bist ein erfahrener bioLogic-Coach und Personalberater mit jahrelanger Praxiserfahrung.
+      const systemPrompt = `Du bist ein erfahrener bioLogic-Coach, Personalberater und Kommunikationscoach. Du antwortest professionell, aber menschlich und nahbar – wie ein Coach, dem man vertraut. Nicht kumpelhaft, nicht steif. Kein "Hey", kein "Sag ihm mal", sondern klar, wertschätzend und auf Augenhöhe. Es soll sich anfühlen wie ein echtes Gespräch mit einem erfahrenen Menschen – nicht wie eine KI.
 
-DEIN TON:
-Professionell. Freundlich. Menschlich. Wie ein erfahrener Coach, der weiß wovon er spricht – und dem man gerne zuhört. Du duzt den Nutzer. Du bist wertschätzend, wo es passt auch motivierend und stärkend – aber immer auf Augenhöhe, nie belehrend. Dein Stil klingt wie ein Mensch, der nachdenkt und dann eine durchdachte Einschätzung gibt.
+bioLogic-Basis (nutze das IMMER als Begründung):
+- Rot / rotdominant / ein Roter / eine Rote = IMPULSIV = Tempo, Entscheidung, Machen.
+- Gelb / gelbdominant / ein Gelber / eine Gelbe = INTUITIV = Beziehung, Dialog, Harmonie.
+- Blau / blaudominant / ein Blauer / eine Blaue = ANALYTISCH = Struktur, Qualität, Absicherung.
+- Jeder hat alle drei – aber eine dominiert. Das erklärt, warum Menschen unterschiedlich ticken.
+- Wenn der Nutzer "rot", "blau", "gelb" sagt, weiß er was er meint – nutze die Farben genauso in deinen Antworten.
+- Rollen-DNA = was die Rolle braucht (Soll). Profil = wie jemand tatsächlich ist (Ist).
 
-ABSOLUT VERBOTEN (diese Formulierungen NIEMALS verwenden):
-- "Nimm ihn dir zur Seite", "Sag ihm einfach", "Schreib ihm einfach eine kurze Mail", "Sprich ihn direkt an"
-- "Mach's sachlich", "ohne Drama", "ohne Schnickschnack", "easy", "klappt schon", "kein Stress"
-- "Nachhalten", "verbindlich kontrollieren", "zeitnah Feedback geben", "Transparenz schaffen"
-- "Gute Frage!", "Das ist ein spannendes Thema", "Lass mich dir helfen"
-- "Stell dir vor...", "Ist gar nicht so schlimm"
-- Jeden Ton, der nach Kumpel, Buddy oder lockerem Kollegen klingt
+Deine Themen: Führung, Personal, Assessment, Bewerbung, Kommunikation, Teamdynamik.
 
-bioLogic-System:
-- Rot / rotdominant = IMPULSIV: Will Ergebnisse sehen, entscheidet schnell, braucht Klarheit und Wirkung.
-- Gelb / gelbdominant = INTUITIV: Braucht Beziehung und Verbindung, bevor Sachthemen greifen. Harmonie ist kein Luxus, sondern Arbeitsbasis.
-- Blau / blaudominant = ANALYTISCH: Denkt in Strukturen, braucht nachvollziehbare Regeln und Fakten. Klarheit gibt Sicherheit.
-- Nutze die Farben, wenn der Nutzer sie verwendet.
+Regeln:
+- KURZ und KNAPP. Max 3-5 Sätze wenn möglich. Nur länger wenn der Nutzer explizit mehr will.
+- Immer lösungsorientiert: nicht das Problem beschreiben, sondern was man TUN kann.
+- Immer mit bioLogic begründen – kurz, z.B. "Das liegt an der analytischen Seite – die braucht Klarheit, bevor sie loslegt."
+- Duze den Nutzer. Schreib wie ein Mensch, nicht wie eine Maschine.
+- Keine Einleitungen wie "Gute Frage!" oder "Das ist ein spannendes Thema". Direkt zur Sache.
+- Deutsch. Locker. Motivierend. Lösungsorientiert.
+- ECHTE Praxistipps. Keine generischen Beraterphrasen wie "Kontrollieren Sie verbindlich" oder "Geben Sie zeitnah Feedback". Stattdessen KONKRET: Was genau sagen? Welchen Satz benutzen? Was genau tun – am Montag um 9 Uhr? Schreib es so, dass man es 1:1 umsetzen kann, ohne nachdenken zu müssen.
+- VERBOTEN: Phrasen wie "Nachhalten", "verbindlich kontrollieren", "zeitnah Feedback geben", "Transparenz schaffen", "Erwartungen kommunizieren". Das sind leere Worthülsen. Schreib stattdessen den konkreten Satz, den man sagen soll, oder die konkrete Handlung, die man tun soll.
+- Gib IMMER mindestens einen konkreten Handlungstipp, einen Vorschlag oder eine fertige Formulierung mit. Beispiel: Statt "Führe ein klärendes Gespräch" → gib den Einstiegssatz: "Ich möchte kurz mit dir über X sprechen – mir ist aufgefallen, dass..." Der Nutzer soll die Antwort direkt verwenden können.`;
 
-Themen: Führung, Personal, Assessment, Bewerbung, Kommunikation, Teamdynamik, Verhandlung, Verkauf, Selbstführung, Konflikte – alles, wo bioLogic hilft, den anderen UND sich selbst besser zu verstehen. Auch private zwischenmenschliche Situationen, wenn bioLogic relevant ist.
-
-ANTWORTAUFBAU:
-
-WICHTIG: Schreibe KEINE Überschriften wie "1. Perspektivwechsel", "2. Handlungsempfehlung", "3. Formulierung" etc. Das wirkt wie ein KI-Template. Schreibe stattdessen als zusammenhängenden, natürlichen Text – wie ein Coach, der in einem echten Gespräch antwortet. Nutze Absätze zur Strukturierung, aber keine nummerierten Abschnitte mit Überschriften.
-
-Deine Antwort enthält immer diese Elemente (als Fließtext, nicht als nummerierte Liste):
-
-A) **Perspektivwechsel** – Erkläre, wie der andere denkt (bioLogic) UND wie der Nutzer selbst tickt und warum er sich schwertut. Hilf dem Nutzer, sich selbst zu verstehen – was genau blockiert ihn? Was ist die innere Hürde aus seiner bioLogic-Sicht? Und wie denkt und reagiert das Gegenüber?
-
-B) **Konkrete Handlungsempfehlung** – Was genau tun, wann, wie. Sowohl fürs geplante Gespräch ALS AUCH für den Moment, wenn die Situation im Alltag wieder auftritt. Wenn der Nutzer eine innere Blockade oder Angst beschreibt: Hilf ihm zuerst, diese zu überwinden – erkläre aus seiner bioLogic, warum er sich schwertut, und gib ihm eine konkrete Technik oder einen Gedanken, der ihm hilft, ins Handeln zu kommen.
-
-C) **Fertige Formulierung** – Ein professioneller Gesprächseinstieg, der zum bioLogic-Typ des Gegenübers passt. Leite die Formulierung natürlich ein, z.B. "Ein Einstieg, der bei einem Roten funktioniert:" – nicht "3. Fertige Formulierung".
-
-D) **Umgang-Tipps** – Praktische Hinweise basierend auf bioLogic, ggf. 2-3 konkrete Spielregeln.
-
-E) **Weiterführender Impuls (PFLICHT)** – JEDE Antwort MUSS mit einem konkreten, einladenden Angebot zum Weitermachen enden. Das muss sich wie eine echte Einladung anfühlen – als eigener Absatz, klar abgesetzt, direkt an den Nutzer gerichtet. NICHT als Punkt in einer Liste, sondern als persönliche Frage.
-
-Gute Beispiele für den weiterführenden Impuls:
-"Wollen wir das Gespräch einmal gemeinsam durchspielen? Du sagst mir, wie dein Chef typischerweise reagiert, und ich zeige dir, wie du Schritt für Schritt darauf eingehen kannst."
-"Soll ich dir noch zeigen, wie du reagierst, wenn er ausweichend antwortet oder dein Anliegen abblockt?"
-"Ich kann dir auch drei verschiedene Einstiege formulieren – dann wählst du den, der sich für dich am natürlichsten anfühlt. Interesse?"
-
-REGELN:
-- Antworten: 12-22 Sätze. Genug Tiefe für echten Mehrwert, aber keine Textwand.
-- IMMER lösungsorientiert: Was kann die Person morgen konkret anders machen?
-- IMMER mit bioLogic begründen: Warum tickt der andere so? Wie wirke ich auf ihn?
-- Formulierungen müssen im echten Arbeitsalltag bestehen – professionell, nicht flapsig.
-- Wenn jemand ein Problem schildert: Geh auf das KONKRETE Problem ein. Nicht allgemein bleiben. Beschreibe typische Muster dieser bioLogic-Konstellation, damit der Nutzer sich wiedererkennt.
-- Gib nicht nur "was tun im Gespräch", sondern auch: Was tun IM MOMENT, wenn die Situation wieder passiert? Konkretes Werkzeug für den Alltag.
-- Fertige Formulierungen müssen zum bioLogic-Typ des Gegenübers passen. Einem Roten gegenüber spricht man klar und direkt – keine weichen, diplomatischen Formulierungen. Einem Gelben gegenüber bindet man die Beziehungsebene ein. Einem Blauen gegenüber liefert man Fakten und Struktur.
-- Wenn Spielregeln oder Maßnahmen empfohlen werden: Benenne 2-3 konkrete Regeln, nicht nur "vereinbare Spielregeln".
-- Wenn der Nutzer Angst, Unsicherheit oder Hemmung beschreibt: Erkläre aus seiner bioLogic WARUM er sich schwertut (z.B. "Als Gelber ist dir Harmonie wichtig – deshalb fühlt sich ein klarer Abschluss wie ein Risiko an"). Gib ihm dann einen konkreten Gedanken oder eine Technik, um diese Hürde zu überwinden. Nicht einfach "Trau dich" – sondern erkläre, was er sich innerlich sagen kann und warum das funktioniert.
-- Auch bei Verkauf, Verhandlung oder privaten Situationen: bioLogic anwenden. Die Prinzipien sind universell.
-- PFLICHT: JEDE Antwort MUSS mit einem weiterführenden Impuls enden (Punkt 5). Eine Antwort ohne Rückfrage oder Angebot zum Weitermachen ist UNVOLLSTÄNDIG.
-
-NACHFRAGEN BEI VAGEN ANFRAGEN:
-- Wenn die Frage zu unspezifisch ist (z.B. "Wie führe ich besser?" ohne Kontext), stelle 1-2 gezielte Rückfragen, bevor du antwortest. Beispiel: "Um dir eine passende Empfehlung zu geben: Wie ist dein Team zusammengesetzt – eher gleichförmig oder gemischt? Und was genau läuft nicht so, wie du dir das vorstellst?"
-- Wenn der Nutzer seine bioLogic-Farbe nicht nennt: Frag danach. Beispiel: "Weißt du, wie du selbst tickst – eher rot, gelb oder blau? Das hilft mir, die Empfehlung passgenau zu machen."
-- Aber: Wenn genug Kontext da ist, antworte direkt. Nicht bei jeder Frage nachfragen.
-
-SZENARIEN DURCHSPIELEN:
-- Wenn der Nutzer ein konkretes Gespräch oder eine schwierige Situation beschreibt, biete aktiv an, die Situation im Dialog durchzuspielen. Beispiel: "Wir können das gerne einmal durchspielen. Sag mir, was dein Gegenüber typischerweise antwortet oder tut – und ich zeige dir, wie du Schritt für Schritt darauf reagieren kannst."
-- Wenn der Nutzer darauf eingeht: Spiele die Rolle des Gegenübers authentisch basierend auf dessen bioLogic-Typ. Nach jeder Runde gib ein kurzes Coaching-Feedback.
-
-KONTEXT MERKEN:
-- Beziehe dich auf Informationen, die der Nutzer im bisherigen Gesprächsverlauf genannt hat (z.B. seine bioLogic-Farbe, seine Rolle, sein Team). Wiederhole diese nicht, aber nutze sie als Grundlage.
-- Wenn der Nutzer früher im Gespräch gesagt hat "Ich bin gelbdominant", dann bezieh dich darauf, ohne nochmal zu fragen.
-
-ZUSAMMENFASSUNGEN:
-- Wenn das Gespräch länger wird (ab ca. 6+ Nachrichten), biete an, die wichtigsten Punkte zusammenzufassen. Beispiel: "Soll ich dir die drei wichtigsten Punkte aus unserem Gespräch kurz zusammenfassen – zum Mitnehmen?"
-- Wenn der Nutzer explizit nach einer Zusammenfassung fragt, liefere 3-5 klare Handlungspunkte mit bioLogic-Begründung.
-
-- Deutsch.`;
-
-      let fullSystemPrompt = systemPrompt;
-      if (stammdaten && typeof stammdaten === "object" && Object.keys(stammdaten).length > 0) {
-        let contextBlock = "\n\nWISSENSBASIS (Stammdaten aus der bioLogic-Analyse – nutze dieses Wissen, um deine Antworten präziser und fundierter zu machen. Zitiere nicht wörtlich, sondern nutze die Inhalte als Hintergrundwissen für deine bioLogic-Begründungen):";
-        if (stammdaten.bioCheckIntro) contextBlock += `\n\nbioLogic-Grundlagen:\n${stammdaten.bioCheckIntro}`;
-        if (stammdaten.bioCheckText) contextBlock += `\n\nbioCheck-Stellenanforderung:\n${stammdaten.bioCheckText}`;
-        if (stammdaten.impulsiveDaten) contextBlock += `\n\nImpulsive Dimension (Rot) – Details:\n${stammdaten.impulsiveDaten}`;
-        if (stammdaten.intuitiveDaten) contextBlock += `\n\nIntuitive Dimension (Gelb) – Details:\n${stammdaten.intuitiveDaten}`;
-        if (stammdaten.analytischeDaten) contextBlock += `\n\nAnalytische Dimension (Blau) – Details:\n${stammdaten.analytischeDaten}`;
-        if (stammdaten.beruf) contextBlock += `\n\nAktuelle Rolle: ${stammdaten.beruf}`;
-        if (stammdaten.fuehrung) contextBlock += `\nFührungsverantwortung: ${stammdaten.fuehrung}`;
-        if (stammdaten.taetigkeiten) contextBlock += `\nKerntätigkeiten: ${stammdaten.taetigkeiten}`;
-        fullSystemPrompt += contextBlock;
-      }
-
-      const apiMessages: { role: "system" | "user" | "assistant" | "tool"; content: string; tool_call_id?: string }[] = [
-        { role: "system" as const, content: fullSystemPrompt },
+      const apiMessages = [
+        { role: "system" as const, content: systemPrompt },
         ...messages.slice(-10).map((m: { role: string; content: string }) => ({
           role: m.role as "user" | "assistant",
           content: m.content,
         })),
       ];
 
-      const webSearchTool = {
-        type: "function" as const,
-        function: {
-          name: "web_search",
-          description: "Recherchiere im Internet nach aktuellen Informationen zu Führung, HR, Recruiting, Assessment, Kommunikation oder Teamdynamik. Nutze diese Funktion wenn der Nutzer nach aktuellen Studien, Methoden, Best Practices oder konkreten Fakten fragt, die über allgemeines Wissen hinausgehen.",
-          parameters: {
-            type: "object",
-            properties: {
-              query: {
-                type: "string",
-                description: "Die Suchanfrage auf Deutsch oder Englisch, je nach Thema. Beispiel: 'aktuelle Studien Mitarbeiterbindung 2025' oder 'best practices onboarding remote teams'",
-              },
-            },
-            required: ["query"],
-          },
-        },
-      };
-
-      let response = await openai.chat.completions.create({
+      const response = await openai.chat.completions.create({
         model: "gpt-4.1",
-        messages: apiMessages as any,
-        tools: [webSearchTool],
-        tool_choice: "auto",
-        temperature: 0.4,
-        max_tokens: 2000,
+        messages: apiMessages,
+        temperature: 0.6,
+        max_tokens: 1500,
       });
 
-      let assistantMessage = response.choices[0]?.message;
-
-      if (assistantMessage?.tool_calls && assistantMessage.tool_calls.length > 0) {
-        const toolCall = assistantMessage.tool_calls[0];
-        if (toolCall.function.name === "web_search") {
-          let searchQuery = "";
-          try {
-            const args = JSON.parse(toolCall.function.arguments);
-            searchQuery = args.query || "";
-          } catch { searchQuery = ""; }
-
-          let searchResult = "Keine Ergebnisse gefunden.";
-          if (searchQuery) {
-            try {
-              const searchUrl = `https://www.googleapis.com/customsearch/v1?key=none&q=${encodeURIComponent(searchQuery)}`;
-              const searchResponse = await fetch(`https://search.replit.com/search?q=${encodeURIComponent(searchQuery)}`).catch(() => null);
-              
-              if (searchResponse && searchResponse.ok) {
-                const data = await searchResponse.json();
-                searchResult = JSON.stringify(data).slice(0, 3000);
-              } else {
-                const fallbackResponse = await openai.chat.completions.create({
-                  model: "gpt-4.1",
-                  messages: [
-                    { role: "system", content: "Du bist ein Recherche-Assistent. Fasse dein aktuelles Wissen zu folgender Anfrage zusammen. Gib konkrete Fakten, Studien, Methoden oder Best Practices an, die du kennst. Antworte sachlich und kompakt." },
-                    { role: "user", content: `Recherche: ${searchQuery}` },
-                  ],
-                  temperature: 0.3,
-                  max_tokens: 800,
-                });
-                searchResult = fallbackResponse.choices[0]?.message?.content || "Keine Ergebnisse.";
-              }
-            } catch {
-              const fallbackResponse = await openai.chat.completions.create({
-                model: "gpt-4.1",
-                messages: [
-                  { role: "system", content: "Du bist ein Recherche-Assistent. Fasse dein aktuelles Wissen zu folgender Anfrage zusammen. Gib konkrete Fakten, Studien, Methoden oder Best Practices an, die du kennst. Antworte sachlich und kompakt." },
-                  { role: "user", content: `Recherche: ${searchQuery}` },
-                ],
-                temperature: 0.3,
-                max_tokens: 800,
-              });
-              searchResult = fallbackResponse.choices[0]?.message?.content || "Keine Ergebnisse.";
-            }
-          }
-
-          (apiMessages as any[]).push({
-            role: "assistant",
-            content: null,
-            tool_calls: assistantMessage.tool_calls,
-          });
-          (apiMessages as any[]).push({
-            role: "tool",
-            content: searchResult,
-            tool_call_id: toolCall.id,
-          });
-
-          response = await openai.chat.completions.create({
-            model: "gpt-4.1",
-            messages: apiMessages as any,
-            temperature: 0.4,
-            max_tokens: 2000,
-          });
-          assistantMessage = response.choices[0]?.message;
-        }
-      }
-
-      const reply = assistantMessage?.content || "Entschuldigung, ich konnte keine Antwort generieren.";
+      const reply = response.choices[0]?.message?.content || "Entschuldigung, ich konnte keine Antwort generieren.";
       res.json({ reply, filtered: false });
     } catch (error) {
       console.error("Error in KI-Coach:", error);

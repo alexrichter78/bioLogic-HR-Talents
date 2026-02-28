@@ -2,18 +2,17 @@ import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import {
   Users, AlertTriangle, CheckCircle, TrendingUp, Loader2, Copy, Download,
   Briefcase, Shield, Activity, BarChart3, Check, Lightbulb, Target,
-  CalendarDays, Zap, FileText, ChevronRight, Info,
+  CalendarDays, Zap, FileText,
 } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { hyphenateText } from "@/lib/hyphenate";
 import {
   type Triad, type ComponentKey,
   computeTeamDynamics, getDefaultLevers, getMatrixCellById, getViewContent,
-  labelComponent, buildAIPayload, getSystemVariant, getAllMatrixCells,
+  labelComponent, buildAIPayload, getSystemVariant,
   type TeamDynamikInput, type TeamDynamikResult, type ShiftType, type IntensityLevel,
-  type TrafficLight, type ViewMode, type Lever, type MatrixCell,
+  type TrafficLight, type ViewMode, type Lever,
 } from "@/lib/teamdynamik-engine";
-import { generateTeamReportLocal } from "@/lib/team-report-engine";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 function colorFor(k: ComponentKey) { return k === "impulsiv" ? COLORS.imp : k === "intuitiv" ? COLORS.int : COLORS.ana; }
@@ -35,8 +34,6 @@ const VIEW_LABELS: Record<ViewMode, { icon: typeof Users; label: string }> = {
 };
 
 const CHAPTER_COLORS = ["#0071E3", "#0071E3", "#0071E3", "#0071E3", "#0071E3", "#0071E3", "#0071E3", "#0071E3", "#0071E3", "#0071E3", "#0071E3", "#0071E3", "#0071E3"];
-
-const DOM_SHORT: Record<string, string> = { IMPULSIV: "IMP", INTUITIV: "INT", ANALYTISCH: "ANA", MIX: "MIX" };
 
 function GlassCard({ children, style, ...props }: { children: React.ReactNode; style?: React.CSSProperties; [k: string]: any }) {
   return (
@@ -299,83 +296,6 @@ function ReportChapter({ section, chapterIndex }: { section: ParsedSection; chap
   );
 }
 
-function TensionMatrix({ activeId, onSelect }: { activeId: string; onSelect: (id: string) => void }) {
-  const cells = getAllMatrixCells();
-  const axes = ["IMP", "INT", "ANA"];
-  const axisLabels: Record<string, string> = { IMP: "Impulsiv", INT: "Intuitiv", ANA: "Analytisch" };
-  const axisColors: Record<string, string> = { IMP: COLORS.imp, INT: COLORS.int, ANA: COLORS.ana };
-
-  return (
-    <div data-testid="tension-matrix">
-      <div style={{ display: "grid", gridTemplateColumns: "20px 60px 1fr 1fr 1fr", gridTemplateRows: "auto 32px repeat(3, 1fr)", gap: 0 }}>
-        <div />
-        <div />
-        <div style={{ gridColumn: "3 / 6", textAlign: "center", padding: "0 0 6px" }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em" }}>Team-Dominanz</span>
-        </div>
-        <div style={{ gridRow: "2 / 6", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", writingMode: "vertical-rl", transform: "rotate(180deg)" }}>Person</span>
-        </div>
-        <div />
-        {axes.map(a => (
-          <div key={a} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ fontSize: 11, fontWeight: 700, color: axisColors[a] }}>{axisLabels[a]}</span>
-          </div>
-        ))}
-        {axes.flatMap((personAxis, row) => [
-          <div key={`label-${personAxis}`} style={{
-            display: "flex", alignItems: "center", justifyContent: "center",
-            ...(row === 0 ? { borderTopLeftRadius: 12 } : row === 2 ? { borderBottomLeftRadius: 12 } : {}),
-          }}>
-            <span style={{ fontSize: 11, fontWeight: 700, color: axisColors[personAxis], writingMode: "vertical-rl", transform: "rotate(180deg)" }}>{axisLabels[personAxis]}</span>
-          </div>,
-          ...axes.map((teamAxis) => {
-            const cellId = `${personAxis}-${teamAxis}`;
-            const cell = cells.find(c => c.id === cellId);
-            if (!cell) return null;
-            const isActive = activeId === cellId;
-            return (
-              <button
-                key={cellId}
-                onClick={() => onSelect(cellId)}
-                data-testid={`matrix-cell-${cellId}`}
-                style={{
-                  padding: "10px 8px", margin: 2, borderRadius: 14, border: "none", cursor: "pointer",
-                  background: isActive ? "rgba(0,113,227,0.08)" : "rgba(0,0,0,0.02)",
-                  outline: isActive ? "2px solid #0071E3" : "1px solid rgba(0,0,0,0.06)",
-                  outlineOffset: -1,
-                  transition: "all 200ms ease",
-                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2,
-                  minHeight: 72,
-                }}
-              >
-                <span style={{ fontSize: 11, fontWeight: 700, color: isActive ? "#0071E3" : "#1D1D1F", textAlign: "center" }}>{cell.label}</span>
-                <span style={{ fontSize: 9, color: isActive ? "#0071E3" : "#8E8E93", textAlign: "center" }}>{cell.micro}</span>
-              </button>
-            );
-          }),
-        ])}
-      </div>
-      
-    </div>
-  );
-}
-
-function TabButton({ active, label, onClick, testId }: { active: boolean; label: string; onClick: () => void; testId: string }) {
-  return (
-    <button onClick={onClick} data-testid={testId} style={{
-      padding: "8px 18px", borderRadius: 10, fontSize: 12, fontWeight: active ? 700 : 500,
-      background: active ? "#fff" : "transparent",
-      boxShadow: active ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
-      border: "none", cursor: "pointer",
-      color: active ? "#0071E3" : "#8E8E93",
-      transition: "all 200ms ease",
-    }}>
-      {label}
-    </button>
-  );
-}
-
 export default function Teamdynamik() {
   const [teamName, setTeamName] = useState("Projektteam");
   const [teamProfile, setTeamProfile] = useState<Triad>({ impulsiv: 30, intuitiv: 50, analytisch: 20 });
@@ -390,14 +310,14 @@ export default function Teamdynamik() {
     return { impulsiv: 33, intuitiv: 34, analytisch: 33 };
   });
   const [isLeading, setIsLeading] = useState(true);
-  const [levers, setLevers] = useState<Lever[]>(getDefaultLevers());
+  const [levers] = useState<Lever[]>(getDefaultLevers());
   const [viewMode, setViewMode] = useState<ViewMode>("HR");
   const [reportText, setReportText] = useState<string | null>(null);
+  const [reportLoading, setReportLoading] = useState(false);
+  const [reportError, setReportError] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
-  const [selectedMatrixId, setSelectedMatrixId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"chancen" | "risiken" | "plan">("chancen");
 
   const input: TeamDynamikInput = useMemo(() => ({
     teamName, teamProfile, membersCount: 8, personProfile, isLeading, levers, steeringOverride: null,
@@ -406,14 +326,27 @@ export default function Teamdynamik() {
   const result = useMemo(() => computeTeamDynamics(input), [input]);
   const tl = TL_COLORS[result.trafficLight];
 
-  const matrixId = selectedMatrixId || result.activeMatrixCell.id;
-  const selectedCell = useMemo(() => getMatrixCellById(matrixId) || result.activeMatrixCell, [matrixId, result]);
-  const viewContent = useMemo(() => getViewContent(viewMode, result, selectedCell), [viewMode, result, selectedCell]);
-
-  const generateReport = useCallback(() => {
-    const text = generateTeamReportLocal(input, result);
-    setReportText(text);
-    setReportOpen(true);
+  const generateReport = useCallback(async () => {
+    setReportLoading(true);
+    setReportError(false);
+    try {
+      const payload = buildAIPayload(input, result);
+      const res = await fetch("/api/generate-team-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error("Fehler");
+      const data = await res.json();
+      if (!data.report || data.report.length < 50) throw new Error("Leer");
+      setReportText(data.report);
+      setReportOpen(true);
+    } catch {
+      setReportError(true);
+      setReportOpen(true);
+    } finally {
+      setReportLoading(false);
+    }
   }, [input, result]);
 
   const copyReport = async () => {
@@ -425,203 +358,26 @@ export default function Teamdynamik() {
 
   const parsedSections = useMemo(() => reportText ? parseReport(reportText) : [], [reportText]);
 
-  const toggleLever = (id: string) => {
-    setLevers(prev => prev.map(l => l.id === id ? { ...l, enabled: !l.enabled } : l));
-  };
-
   return (
     <div className="min-h-screen" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 40%, #F5F7FA 100%)" }} lang="de">
       <GlobalNav />
 
       <main style={{ maxWidth: 820, margin: "0 auto", padding: "24px 16px 80px" }}>
 
-        {/* ═══ VIEW MODE TOGGLE ═══ */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
-          <div style={{ display: "flex", gap: 4, background: "rgba(255,255,255,0.7)", backdropFilter: "blur(20px)", borderRadius: 12, padding: 3, border: "1px solid rgba(0,0,0,0.06)" }}>
-            {(["CEO", "HR", "TEAMLEITUNG"] as ViewMode[]).map(vm => {
-              const { icon: Icon, label } = VIEW_LABELS[vm];
-              const active = viewMode === vm;
-              return (
-                <button key={vm} onClick={() => setViewMode(vm)} data-testid={`view-${vm.toLowerCase()}`} style={{
-                  display: "flex", alignItems: "center", gap: 5, padding: "7px 16px", borderRadius: 9,
-                  fontSize: 12, fontWeight: active ? 700 : 500, border: "none", cursor: "pointer",
-                  background: active ? "#fff" : "transparent",
-                  boxShadow: active ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
-                  color: active ? "#0071E3" : "#8E8E93",
-                  transition: "all 200ms ease",
-                }}>
-                  <Icon style={{ width: 13, height: 13 }} /> {label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* ═══ MODULE A: EXECUTIVE HEADER ═══ */}
-        <GlassCard style={{ marginBottom: 20 }} data-testid="module-executive">
+        {/* ═══ TAB 1: ANALYSE ═══ */}
+        <GlassCard style={{ marginBottom: 20 }} data-testid="tab-analyse">
           <div style={{ textAlign: "center", marginBottom: 28 }}>
             <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 4px" }}>bioLogic TeamCheck</p>
             <h1 style={{ fontSize: 24, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">Teamanalyse</h1>
           </div>
 
-          <div style={{
-            background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-            borderRadius: 20, padding: "18px 22px",
-            border: "1px solid rgba(0,0,0,0.06)",
-            boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
-          }} data-testid="executive-header">
-            <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", marginBottom: 12 }}>
-              <TrafficLightAmpel tl={result.trafficLight} />
-              <div style={{ flex: 1, minWidth: 140 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <input type="text" value={teamName} onChange={e => setTeamName(e.target.value)}
-                    data-testid="input-team-name"
-                    style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", background: "none", border: "none", outline: "none", padding: 0, letterSpacing: "-0.02em", width: "auto", maxWidth: 220 }} />
-                  <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: tl.bg, color: tl.fill }} data-testid="badge-status">{tl.label}</span>
-                </div>
-                <p style={{ fontSize: 11, color: "#8E8E93", margin: "3px 0 0" }} data-testid="text-headline">{hyphenateText(result.headline)}</p>
-              </div>
-            </div>
-
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
-              <KPITile label="TS" value={Math.round(result.scores.TS)} sub="Transformationsscore" color={result.scores.TS > 60 ? "#FF3B30" : result.scores.TS > 35 ? "#FF9500" : "#34C759"} />
-              <KPITile label="DG" value={Math.round(result.scores.DG)} sub="Distribution Gap" />
-              <KPITile label="DC" value={Math.round(result.scores.DC)} sub="Dominance Clash" />
-              <KPITile label="CI" value={Math.round(result.scores.CI)} sub="Conflict Index" />
-            </div>
-
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <div style={{ flex: 1, minWidth: 120, padding: "8px 12px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                <span style={{ fontSize: 9, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase" }}>Verschiebungstyp</span>
-                <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "2px 0 0" }}>{SHIFT_LABELS[result.shiftType]}</p>
-              </div>
-              <div style={{ flex: 1, minWidth: 120, padding: "8px 12px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                <span style={{ fontSize: 9, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase" }}>Intensität</span>
-                <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "2px 0 0" }}>{INTENSITY_LABELS[result.intensityLevel]}</p>
-              </div>
-              <div style={{ flex: 1, minWidth: 120, padding: "8px 12px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                <span style={{ fontSize: 9, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase" }}>Steuerungsbedarf</span>
-                <p style={{ fontSize: 13, fontWeight: 700, color: tl.fill, margin: "2px 0 0" }}>{tl.steering}</p>
-              </div>
-            </div>
-          </div>
-
-          {(() => {
-            const tlKey = result.trafficLight;
-            const detailFuehrung: Record<TrafficLight, { title: string; desc: string; label: string; bullets: string[]; recLabel: string; rec: string }> = {
-              RED: {
-                title: "Starke Veränderung im Team",
-                desc: "Die neue Führung verändert die bisherige Arbeitsweise deutlich.\nEntscheidungen, Prioritäten und Qualitätsmaßstäbe werden anders gesetzt als bisher.",
-                label: "Was bedeutet das konkret?",
-                bullets: [
-                  "Gewohnte Abläufe verändern sich spürbar",
-                  "Diskussionen über Prioritäten nehmen zu",
-                  "Widerstand oder Unsicherheit im Team möglich",
-                  "Ohne klare Führung entsteht Instabilität",
-                ],
-                recLabel: "Empfehlung:",
-                rec: "Klare Kommunikation, aktive Steuerung und konsequente Führung ab Tag eins.",
-              },
-              YELLOW: {
-                title: "Unterschiedliche Arbeitsweisen – aktiv steuern",
-                desc: "Führung und Team arbeiten nach verschiedenen Logiken.\nMit klarer Abstimmung bleibt das System stabil.",
-                label: "Was bedeutet das konkret?",
-                bullets: [
-                  "Mehr Abstimmung notwendig",
-                  "Entscheidungen dauern teilweise länger",
-                  "Prioritäten müssen klar kommuniziert werden",
-                ],
-                recLabel: "Empfehlung:",
-                rec: "Regelmäßige Priorisierung, transparente Entscheidungswege und klare Verantwortlichkeiten.",
-              },
-              GREEN: {
-                title: "Stabil – keine besondere Anpassung erforderlich",
-                desc: "Führungsstil und Teamarbeitsweise passen gut zusammen.\nDie Zusammenarbeit läuft weitgehend reibungslos.",
-                label: "Was bedeutet das konkret?",
-                bullets: [
-                  "Entscheidungen werden verstanden",
-                  "Prioritäten sind klar",
-                  "Zusammenarbeit ist stabil",
-                ],
-                recLabel: "Ausreichend:",
-                rec: "Normale Führung und regelmäßige Abstimmung.",
-              },
-            };
-            const detailTeammitglied: Record<TrafficLight, { title: string; desc: string; label: string; bullets: string[]; recLabel: string; rec: string }> = {
-              RED: {
-                title: "Deutliche Spannungen – klare Führung notwendig",
-                desc: "Arbeitslogiken unterscheiden sich stark. Ohne Führung entstehen Leistungs- und Konfliktrisiken.",
-                label: "Was bedeutet das konkret?",
-                bullets: [
-                  "Prioritäten werden unterschiedlich interpretiert.",
-                  "Tempo oder Qualität geraten unter Druck.",
-                  "Widerstand, Rückzug oder Lagerbildung sind möglich.",
-                ],
-                recLabel: "Was ist zu tun?",
-                rec: "Klare Standards, feste Entscheidungsregeln und regelmäßige Reviews sind zwingend.",
-              },
-              YELLOW: {
-                title: "Unterschiedliche Arbeitsweisen – aktiv steuern",
-                desc: "Unterschiede sind spürbar. Mit klaren Regeln bleibt das System stabil steuerbar.",
-                label: "Was bedeutet das konkret?",
-                bullets: [
-                  "Entscheidungen dauern teilweise länger.",
-                  "Prioritäten müssen häufiger erklärt werden.",
-                  "Abstimmungsaufwand steigt im Alltag.",
-                ],
-                recLabel: "Was ist zu tun?",
-                rec: "Entscheidungswege, Zeitfenster und Verantwortlichkeiten müssen klar gesetzt werden.",
-              },
-              GREEN: {
-                title: "Stabil – passt gut zusammen",
-                desc: "Arbeitsweisen sind kompatibel. Keine besonderen Maßnahmen notwendig.",
-                label: "Was bedeutet das konkret?",
-                bullets: [
-                  "Entscheidungen werden schnell verstanden und akzeptiert.",
-                  "Abstimmungen laufen reibungslos.",
-                  "Tempo und Qualität bleiben stabil.",
-                ],
-                recLabel: "Was ist zu tun?",
-                rec: "Normale Führung und regelmäßige Abstimmung reichen aus.",
-              },
-            };
-            const detail = (isLeading ? detailFuehrung : detailTeammitglied)[tlKey];
-            const variant = !isLeading ? getSystemVariant(teamProfile, personProfile, result.dominanceTeam, result.dominancePerson) : null;
-            return (
-              <div style={{ padding: "14px 16px", borderRadius: 14, background: tl.bg, border: `1px solid ${tl.fill}20`, marginTop: 12 }} data-testid="detail-block">
-                <p style={{ fontSize: 14, fontWeight: 700, color: tl.fill, margin: "0 0 6px" }}>{detail.title}</p>
-                <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 3px", lineHeight: 1.5 }}>{detail.desc}</p>
-                {variant && (
-                  <div style={{ margin: "12px 0" }} data-testid="variant-block">
-                    <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{variant.text}</p>
-                  </div>
-                )}
-                <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "14px 0 8px" }}>{detail.label}</p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 14 }}>
-                  {detail.bullets.map((b, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                      <span style={{ color: tl.fill, fontSize: 10, marginTop: 3, flexShrink: 0 }}>●</span>
-                      <span style={{ fontSize: 12, color: "#3A3A3C", lineHeight: 1.5 }}>{b}</span>
-                    </div>
-                  ))}
-                </div>
-                <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0 }}>
-                  <span style={{ fontWeight: 700 }}>{detail.recLabel} </span>
-                  {detail.rec}
-                </p>
-              </div>
-            );
-          })()}
-        </GlassCard>
-
-        {/* ═══ MODULE B: PROFILES ═══ */}
-        <GlassCard style={{ marginBottom: 20 }} data-testid="module-profiles">
           <div style={{ display: "flex", gap: 24, marginBottom: 24, flexWrap: "wrap" }}>
             <div style={{ flex: 1, minWidth: 280 }}>
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }} data-testid="label-person">{isLeading ? "Neue Führungskraft" : "Neues Teammitglied"}</p>
               <TriadSliders triad={personProfile} onChange={setPersonProfile} />
               <div style={{ marginTop: 14 }}>
                 <SoftBar triad={personProfile} />
+                <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Normalisiertes Profil (Summe = 100 %)</p>
               </div>
             </div>
 
@@ -632,11 +388,12 @@ export default function Teamdynamik() {
               <TriadSliders triad={teamProfile} onChange={setTeamProfile} />
               <div style={{ marginTop: 14 }}>
                 <SoftBar triad={teamProfile} />
+                <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Normalisiertes Profil (Summe = 100 %)</p>
               </div>
             </div>
           </div>
 
-          <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 18 }}>
+          <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 18, marginBottom: 20 }}>
             <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Rolle der neuen Person</p>
             <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, maxWidth: 340 }}>
               <button onClick={() => setIsLeading(true)} data-testid="toggle-leading-yes" style={{
@@ -663,170 +420,151 @@ export default function Teamdynamik() {
               </button>
             </div>
           </div>
+
+          <div style={{
+            background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+            borderRadius: 20, padding: "18px 22px",
+            border: "1px solid rgba(0,0,0,0.06)",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+          }} data-testid="executive-header">
+            <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", marginBottom: 12 }}>
+              <TrafficLightAmpel tl={result.trafficLight} />
+              <div style={{ flex: 1, minWidth: 140 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <input type="text" value={teamName} onChange={e => setTeamName(e.target.value)}
+                    data-testid="input-team-name"
+                    style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", background: "none", border: "none", outline: "none", padding: 0, letterSpacing: "-0.02em", width: "auto", maxWidth: 220 }} />
+                  <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: tl.bg, color: tl.fill }} data-testid="badge-status">{tl.label}</span>
+                </div>
+                <p style={{ fontSize: 11, color: "#8E8E93", margin: "3px 0 0" }} data-testid="text-headline">{hyphenateText(result.headline)}</p>
+              </div>
+            </div>
+            {(() => {
+              const tlKey = result.trafficLight;
+              const detailFuehrung: Record<TrafficLight, { title: string; desc: string; label: string; bullets: string[]; recLabel: string; rec: string }> = {
+                RED: {
+                  title: "Starke Veränderung im Team",
+                  desc: "Die neue Führung verändert die bisherige Arbeitsweise deutlich.\nEntscheidungen, Prioritäten und Qualitätsmaßstäbe werden anders gesetzt als bisher.",
+                  label: "Was bedeutet das konkret?",
+                  bullets: [
+                    "Gewohnte Abläufe verändern sich spürbar",
+                    "Diskussionen über Prioritäten nehmen zu",
+                    "Widerstand oder Unsicherheit im Team möglich",
+                    "Ohne klare Führung entsteht Instabilität",
+                  ],
+                  recLabel: "Empfehlung:",
+                  rec: "Klare Kommunikation, aktive Steuerung und konsequente Führung ab Tag eins.",
+                },
+                YELLOW: {
+                  title: "Unterschiedliche Arbeitsweisen – aktiv steuern",
+                  desc: "Führung und Team arbeiten nach verschiedenen Logiken.\nMit klarer Abstimmung bleibt das System stabil.",
+                  label: "Was bedeutet das konkret?",
+                  bullets: [
+                    "Mehr Abstimmung notwendig",
+                    "Entscheidungen dauern teilweise länger",
+                    "Prioritäten müssen klar kommuniziert werden",
+                  ],
+                  recLabel: "Empfehlung:",
+                  rec: "Regelmäßige Priorisierung, transparente Entscheidungswege und klare Verantwortlichkeiten.",
+                },
+                GREEN: {
+                  title: "Stabil – keine besondere Anpassung erforderlich",
+                  desc: "Führungsstil und Teamarbeitsweise passen gut zusammen.\nDie Zusammenarbeit läuft weitgehend reibungslos.",
+                  label: "Was bedeutet das konkret?",
+                  bullets: [
+                    "Entscheidungen werden verstanden",
+                    "Prioritäten sind klar",
+                    "Zusammenarbeit ist stabil",
+                  ],
+                  recLabel: "Ausreichend:",
+                  rec: "Normale Führung und regelmäßige Abstimmung.",
+                },
+              };
+              const detailTeammitglied: Record<TrafficLight, { title: string; desc: string; label: string; bullets: string[]; recLabel: string; rec: string }> = {
+                RED: {
+                  title: "Deutliche Spannungen – klare Führung notwendig",
+                  desc: "Arbeitslogiken unterscheiden sich stark. Ohne Führung entstehen Leistungs- und Konfliktrisiken.",
+                  label: "Was bedeutet das konkret?",
+                  bullets: [
+                    "Prioritäten werden unterschiedlich interpretiert.",
+                    "Tempo oder Qualität geraten unter Druck.",
+                    "Widerstand, Rückzug oder Lagerbildung sind möglich.",
+                  ],
+                  recLabel: "Was ist zu tun?",
+                  rec: "Klare Standards, feste Entscheidungsregeln und regelmäßige Reviews sind zwingend.",
+                },
+                YELLOW: {
+                  title: "Unterschiedliche Arbeitsweisen – aktiv steuern",
+                  desc: "Unterschiede sind spürbar. Mit klaren Regeln bleibt das System stabil steuerbar.",
+                  label: "Was bedeutet das konkret?",
+                  bullets: [
+                    "Entscheidungen dauern teilweise länger.",
+                    "Prioritäten müssen häufiger erklärt werden.",
+                    "Abstimmungsaufwand steigt im Alltag.",
+                  ],
+                  recLabel: "Was ist zu tun?",
+                  rec: "Entscheidungswege, Zeitfenster und Verantwortlichkeiten müssen klar gesetzt werden.",
+                },
+                GREEN: {
+                  title: "Stabil – passt gut zusammen",
+                  desc: "Arbeitsweisen sind kompatibel. Keine besonderen Maßnahmen notwendig.",
+                  label: "Was bedeutet das konkret?",
+                  bullets: [
+                    "Entscheidungen werden schnell verstanden und akzeptiert.",
+                    "Abstimmungen laufen reibungslos.",
+                    "Tempo und Qualität bleiben stabil.",
+                  ],
+                  recLabel: "Was ist zu tun?",
+                  rec: "Normale Führung und regelmäßige Abstimmung reichen aus.",
+                },
+              };
+              const detail = (isLeading ? detailFuehrung : detailTeammitglied)[tlKey];
+              const variant = !isLeading ? getSystemVariant(teamProfile, personProfile, result.dominanceTeam, result.dominancePerson) : null;
+              return (
+                <div style={{ padding: "14px 16px", borderRadius: 14, background: tl.bg, border: `1px solid ${tl.fill}20`, marginTop: 12 }} data-testid="detail-block">
+                  <p style={{ fontSize: 14, fontWeight: 700, color: tl.fill, margin: "0 0 6px" }}>{detail.title}</p>
+                  <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 3px", lineHeight: 1.5 }}>{detail.desc}</p>
+                  {variant && (
+                    <div style={{ margin: "12px 0" }} data-testid="variant-block">
+                      <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{variant.text}</p>
+                    </div>
+                  )}
+                  <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "14px 0 8px" }}>{detail.label}</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 14 }}>
+                    {detail.bullets.map((b, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                        <span style={{ color: tl.fill, fontSize: 10, marginTop: 3, flexShrink: 0 }}>●</span>
+                        <span style={{ fontSize: 12, color: "#3A3A3C", lineHeight: 1.5 }}>{b}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0 }}>
+                    <span style={{ fontWeight: 700 }}>{detail.recLabel} </span>
+                    {detail.rec}
+                  </p>
+                </div>
+              );
+            })()}
+          </div>
         </GlassCard>
 
-        {/* ═══ MODULE C: TENSION MATRIX (HR + Teamleitung only) ═══ */}
-        {viewContent.showMatrix && (
-          <GlassCard style={{ marginBottom: 20 }} data-testid="module-matrix">
-            <div style={{ textAlign: "center", marginBottom: 20 }}>
-              <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 4px" }}>Spannungsfeld</p>
-              <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>9-Feld-Matrix</h2>
-            </div>
-
-            <div style={{ position: "relative" }}>
-              <div style={{ position: "absolute", left: -2, top: "50%", transform: "translateY(-50%) rotate(-90deg)", transformOrigin: "center" }}>
-                <span style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>Person</span>
-              </div>
-              <div style={{ paddingLeft: 16 }}>
-                <TensionMatrix activeId={matrixId} onSelect={setSelectedMatrixId} />
-              </div>
-            </div>
-
-            {selectedCell && (
-              <div style={{ marginTop: 20, padding: "18px 20px", borderRadius: 18, background: "rgba(0,113,227,0.04)", border: "1px solid rgba(0,113,227,0.1)" }} data-testid="matrix-insight">
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                  <Info style={{ width: 14, height: 14, color: "#0071E3" }} />
-                  <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{selectedCell.label} — {selectedCell.micro}</span>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  <div>
-                    <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Systemlage</p>
-                    <p style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(selectedCell.systemlage)}</p>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Im Alltag</p>
-                    <p style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(selectedCell.alltag)}</p>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Was zu tun ist</p>
-                    <p style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(selectedCell.tun)}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {viewContent.showInsights && viewContent.insightSections.length > 0 && (
-              <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
-                {viewContent.insightSections.map((sec, i) => (
-                  <div key={i} style={{ padding: "14px 18px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                    <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{sec.title}</p>
-                    <p style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(sec.text)}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </GlassCard>
-        )}
-
-        {/* ═══ MODULE D: ACTIONS & PLAN ═══ */}
-        <GlassCard style={{ marginBottom: 20 }} data-testid="module-actions">
-          <div style={{ textAlign: "center", marginBottom: 20 }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 4px" }}>{viewContent.actionTitle}</p>
-            <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>Bewertung & Maßnahmen</h2>
-          </div>
-
-          <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, marginBottom: 20 }}>
-            <TabButton active={activeTab === "chancen"} label="Chancen" onClick={() => setActiveTab("chancen")} testId="tab-chancen" />
-            <TabButton active={activeTab === "risiken"} label="Risiken" onClick={() => setActiveTab("risiken")} testId="tab-risiken" />
-            <TabButton active={activeTab === "plan"} label="Integrationsplan" onClick={() => setActiveTab("plan")} testId="tab-plan" />
-          </div>
-
-          {activeTab === "chancen" && viewContent.chances.length > 0 && (
-            <div data-testid="content-chancen">
-              <BulletList items={viewContent.chances} icon="check" color="#34C759" />
-            </div>
-          )}
-
-          {activeTab === "risiken" && viewContent.risks.length > 0 && (
-            <div data-testid="content-risiken">
-              <BulletList items={viewContent.risks} color="#FF3B30" />
-            </div>
-          )}
-
-          {activeTab === "plan" && result.integrationPlan.length > 0 && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }} data-testid="content-plan">
-              {result.integrationPlan.map((phase, i) => (
-                <div key={i} style={{ padding: "16px 20px", borderRadius: 16, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                    <div style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(0,113,227,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <CalendarDays style={{ width: 14, height: 14, color: "#0071E3" }} />
-                    </div>
-                    <div>
-                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{phase.title}</p>
-                      <p style={{ fontSize: 10, color: "#8E8E93", margin: "1px 0 0" }}>{phase.days}</p>
-                    </div>
-                  </div>
-                  <BulletList items={phase.actions} icon="check" color="#0071E3" />
-                </div>
-              ))}
-            </div>
-          )}
-        </GlassCard>
-
-        {/* ═══ FÜHRUNGSHEBEL (HR + Teamleitung only) ═══ */}
-        {viewContent.showLevers && (
-          <GlassCard style={{ marginBottom: 20 }} data-testid="module-levers">
-            <div style={{ textAlign: "center", marginBottom: 20 }}>
-              <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 4px" }}>Steuerung</p>
-              <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>Führungshebel</h2>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {levers.map(lever => (
-                <button
-                  key={lever.id}
-                  onClick={() => toggleLever(lever.id)}
-                  data-testid={`lever-${lever.id}`}
-                  style={{
-                    display: "flex", alignItems: "flex-start", gap: 12, padding: "14px 18px",
-                    borderRadius: 16, border: "none", cursor: "pointer", textAlign: "left",
-                    background: lever.enabled ? "rgba(0,113,227,0.06)" : "rgba(0,0,0,0.02)",
-                    outline: lever.enabled ? "1px solid rgba(0,113,227,0.15)" : "1px solid rgba(0,0,0,0.04)",
-                    transition: "all 200ms ease",
-                  }}
-                >
-                  <div style={{
-                    width: 22, height: 22, borderRadius: 7, flexShrink: 0, marginTop: 1,
-                    background: lever.enabled ? "#0071E3" : "rgba(0,0,0,0.06)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    transition: "all 200ms ease",
-                  }}>
-                    {lever.enabled && <Check style={{ width: 13, height: 13, color: "#fff", strokeWidth: 2.5 }} />}
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <p style={{ fontSize: 13, fontWeight: 600, color: lever.enabled ? "#0071E3" : "#1D1D1F", margin: "0 0 3px" }}>{lever.label}</p>
-                    <p style={{ fontSize: 11, color: "#8E8E93", margin: 0, lineHeight: 1.5 }}>{lever.description}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            {result.leverEffects.enabledCount > 0 && (
-              <div style={{ marginTop: 14, padding: "12px 16px", borderRadius: 12, background: "rgba(52,199,89,0.06)", border: "1px solid rgba(52,199,89,0.12)" }}>
-                <p style={{ fontSize: 12, color: "#34C759", fontWeight: 600, margin: 0 }}>
-                  {result.leverEffects.enabledCount} Hebel aktiv — Steuerungsbedarf reduziert um {result.leverEffects.reductionLevels} {result.leverEffects.reductionLevels === 1 ? "Stufe" : "Stufen"}
-                </p>
-              </div>
-            )}
-          </GlassCard>
-        )}
-
-        {/* ═══ BUTTON: REPORT GENERIEREN ═══ */}
+        {/* ═══ BUTTON: KI-REPORT GENERIEREN ═══ */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
-          <button onClick={generateReport} data-testid="button-generate-report" style={{
+          <button disabled data-testid="button-generate-report" style={{
             display: "flex", alignItems: "center", gap: 8, padding: "14px 36px", borderRadius: 16,
-            background: "linear-gradient(135deg, #0071E3, #0077ED)", border: "none",
-            color: "#fff", fontSize: 15, fontWeight: 700, cursor: "pointer",
-            boxShadow: "0 4px 16px rgba(0,113,227,0.25)",
+            background: "linear-gradient(135deg, #8E8E93, #A1A1A6)", border: "none",
+            color: "#fff", fontSize: 15, fontWeight: 700, cursor: "default",
+            opacity: 0.5,
+            boxShadow: "none",
             transition: "all 200ms ease", letterSpacing: "-0.01em",
           }}>
             <FileText style={{ width: 18, height: 18 }} />
-            Team-Systemreport erstellen
+            KI-Report generieren
           </button>
         </div>
 
-        {/* ═══ REPORT ═══ */}
-        {reportOpen && reportText && (
+        {/* ═══ TAB 2: KI-REPORT ═══ */}
+        {(reportOpen || reportLoading) && (
           <GlassCard style={{ marginBottom: 20 }} data-testid="tab-report">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
               <div>
@@ -854,7 +592,20 @@ export default function Teamdynamik() {
 
             <SectionDivider />
 
-            {parsedSections.length > 0 ? (
+            {reportLoading ? (
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14, padding: "60px 0" }}>
+                <Loader2 style={{ width: 28, height: 28, color: "#0071E3", animation: "spin 1s linear infinite" }} />
+                <p style={{ fontSize: 13, color: "#8E8E93" }}>Report wird erstellt...</p>
+              </div>
+            ) : reportError ? (
+              <div style={{ textAlign: "center", padding: "40px 0" }}>
+                <p style={{ fontSize: 14, color: "#FF3B30", marginBottom: 12 }}>Report konnte nicht erstellt werden.</p>
+                <button onClick={generateReport} style={{
+                  padding: "8px 20px", borderRadius: 10, background: "#0071E3", color: "#fff",
+                  border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600,
+                }} data-testid="button-retry">Erneut versuchen</button>
+              </div>
+            ) : reportText && parsedSections.length > 0 ? (
               <div ref={reportRef}>
                 {parsedSections.map((section, i) => (
                   <div key={i}>
@@ -863,11 +614,11 @@ export default function Teamdynamik() {
                   </div>
                 ))}
               </div>
-            ) : (
+            ) : reportText ? (
               <div ref={reportRef} style={{ padding: "20px 0", fontSize: 14, color: "#48484A", lineHeight: 1.85, whiteSpace: "pre-wrap" }} lang="de">
                 {reportText}
               </div>
-            )}
+            ) : null}
           </GlassCard>
         )}
 
@@ -878,7 +629,7 @@ export default function Teamdynamik() {
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid rgba(0,0,0,0.12); box-shadow: 0 1px 6px rgba(0,0,0,0.15); margin-top: -6px; cursor: pointer; }
         input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid rgba(0,0,0,0.12); box-shadow: 0 1px 6px rgba(0,0,0,0.15); cursor: pointer; }
         @media print {
-          nav, [data-testid="module-profiles"], [data-testid="button-generate-report"], [data-testid="module-levers"] { display: none !important; }
+          nav, [data-testid="tab-analyse"], [data-testid="button-generate-report"] { display: none !important; }
           main { padding: 0 !important; max-width: 100% !important; }
           [data-testid="tab-report"] { box-shadow: none !important; border: none !important; }
         }

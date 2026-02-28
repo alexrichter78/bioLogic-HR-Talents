@@ -581,9 +581,5 @@ export function buildAIPayload(input: TeamDynamikInput, result: TeamDynamikResul
   };
 }
 
-export function getAllMatrixCells(): MatrixCell[] {
-  return MATRIX_CELLS;
-}
-
 export { normalizeTriad, dominanceModeOf, labelComponent, dominanceLabel };
 export type { ComponentKey, Triad, DominanceResult };

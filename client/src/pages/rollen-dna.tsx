@@ -7,8 +7,6 @@ import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRig
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE, type BerufLand } from "@/data/berufe";
-import { reclassifyItems } from "@/lib/reclassify-engine";
-import { generateKompetenzenLokal } from "@/lib/kompetenzen-engine";
 
 type KompetenzTyp = "Impulsiv" | "Intuitiv" | "Analytisch";
 type Niveau = "Niedrig" | "Mittel" | "Hoch";
@@ -952,20 +950,41 @@ export default function RollenDNA() {
     return orig !== undefined && orig !== t.name;
   }).map(t => t.id);
 
-  const handleReclassify = () => {
+  const handleReclassify = async () => {
     const changed = taetigkeiten.filter(t => changedIds.includes(t.id));
     if (changed.length === 0) return;
     setIsReclassifying(true);
     try {
-      const results = reclassifyItems(changed.map(t => ({ name: t.name, kategorie: t.kategorie })));
+      const resp = await fetch("/api/reclassify-kompetenzen", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          beruf,
+          fuehrung,
+          aufgabencharakter,
+          arbeitslogik,
+          items: changed.map(t => ({ name: t.name, kategorie: t.kategorie })),
+        }),
+      });
+      if (!resp.ok) throw new Error("Reclassify failed");
+      const data = await resp.json();
+      const results: { kompetenz?: KompetenzTyp }[] = data.results || [];
       setTaetigkeiten(prev => {
         const updated = [...prev];
+        const validValues = ["Impulsiv", "Intuitiv", "Analytisch"];
         changed.forEach((t, i) => {
-          const kompetenz = results[i]?.kompetenz;
-          if (kompetenz) {
+          let raw = results[i]?.kompetenz;
+          if (!raw) return;
+          let resolved: string | undefined;
+          if (validValues.includes(raw)) {
+            resolved = raw;
+          } else if (raw.includes("|")) {
+            resolved = raw.split("|").map((s: string) => s.trim()).find((s: string) => validValues.includes(s));
+          }
+          if (resolved) {
             const idx = updated.findIndex(u => u.id === t.id);
             if (idx !== -1) {
-              updated[idx] = { ...updated[idx], kompetenz: kompetenz as KompetenzTyp };
+              updated[idx] = { ...updated[idx], kompetenz: resolved as KompetenzTyp };
             }
             originalNames.current.set(t.id, t.name);
           }
@@ -1053,59 +1072,32 @@ export default function RollenDNA() {
     setIsGenerating(true);
     setGeneratingStep(0);
     try {
-      const hasCustomContext = zusatzInfo && zusatzInfo.trim().length > 0;
-      let hasAnalyseTexte = false;
+      const erfolgsfokusText = erfolgsfokusIndices
+        .map(i => ERFOLGSFOKUS_LABELS[i]?.replace(/\n/g, " "))
+        .filter(Boolean)
+        .join(", ");
+      let analyseTexte: { bereich1?: string; bereich2?: string; bereich3?: string } = {};
       try {
         const raw = localStorage.getItem("analyseTexte");
-        if (raw) {
-          const at = JSON.parse(raw);
-          hasAnalyseTexte = !!(
-            (at.bereich1 && !at.bereich1.startsWith("Noch keine Analyse")) ||
-            (at.bereich2 && !at.bereich2.startsWith("Noch keine Analyse")) ||
-            (at.bereich3 && !at.bereich3.startsWith("Noch keine Analyse"))
-          );
-        }
+        if (raw) analyseTexte = JSON.parse(raw);
       } catch {}
-      let data: any = null;
 
-      if (!hasCustomContext && !hasAnalyseTexte) {
-        const lokalResult = generateKompetenzenLokal(beruf, fuehrung);
-        if (lokalResult) {
-          console.log(`[Lokal-Engine] Treffer für "${beruf}"`);
-          data = lokalResult;
-          setGeneratingStep(3);
-          await new Promise(resolve => setTimeout(resolve, 400));
-        }
-      }
+      const stepTimer1 = setTimeout(() => setGeneratingStep(1), 2500);
+      const stepTimer2 = setTimeout(() => setGeneratingStep(2), 5500);
 
-      if (!data) {
-        const erfolgsfokusText = erfolgsfokusIndices
-          .map(i => ERFOLGSFOKUS_LABELS[i]?.replace(/\n/g, " "))
-          .filter(Boolean)
-          .join(", ");
-        let analyseTexte: { bereich1?: string; bereich2?: string; bereich3?: string } = {};
-        try {
-          const raw = localStorage.getItem("analyseTexte");
-          if (raw) analyseTexte = JSON.parse(raw);
-        } catch {}
+      const resp = await fetch("/api/generate-kompetenzen", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ beruf, fuehrung, erfolgsfokus: erfolgsfokusText, aufgabencharakter, arbeitslogik, zusatzInfo, analyseTexte }),
+      });
+      if (!resp.ok) throw new Error("Fehler bei der Generierung");
+      const data = await resp.json();
 
-        const stepTimer1 = setTimeout(() => setGeneratingStep(1), 2500);
-        const stepTimer2 = setTimeout(() => setGeneratingStep(2), 5500);
+      clearTimeout(stepTimer1);
+      clearTimeout(stepTimer2);
+      setGeneratingStep(3);
 
-        const resp = await fetch("/api/generate-kompetenzen", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ beruf, fuehrung, erfolgsfokus: erfolgsfokusText, aufgabencharakter, arbeitslogik, zusatzInfo, analyseTexte }),
-        });
-        if (!resp.ok) throw new Error("Fehler bei der Generierung");
-        data = await resp.json();
-
-        clearTimeout(stepTimer1);
-        clearTimeout(stepTimer2);
-        setGeneratingStep(3);
-
-        await new Promise(resolve => setTimeout(resolve, 600));
-      }
+      await new Promise(resolve => setTimeout(resolve, 600));
 
       let id = nextId;
       const generated: Taetigkeit[] = [];
