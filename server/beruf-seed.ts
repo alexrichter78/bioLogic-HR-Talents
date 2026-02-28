@@ -295,23 +295,6 @@ const EXTRA_INTERNATIONAL: string[] = [
   "Ergonomist","Kinesiologist",
 ];
 
-const SPEZIALISIERUNGEN: string[] = [
-  "B2B","B2C","International","DACH","Digital","Senior","Inhouse","Interim","Strategisch","Operativ","Technisch","Kaufmännisch",
-];
-
-const ZUSATZ_ROLLEN: string[] = [
-  "Arzt","Architekt","Apotheker","Bankkaufmann","Bauingenieur","Bauleiter",
-  "Betriebswirt","Biologe","Chemiker","Data Analyst","Data Scientist",
-  "Elektroingenieur","Erzieher","Fachinformatiker","Forscher","Grafiker",
-  "Immobilienmakler","Industriekaufmann","Journalist","Jurist","Koch",
-  "Krankenpfleger","Laborant","Lehrer","Maschinenbauingenieur","Mechatroniker",
-  "Mediengestalter","Notar","Pädagoge","Pharmazeut","Physiotherapeut",
-  "Polizist","Psychologe","Rechtsanwalt","Redakteur","Sozialarbeiter",
-  "Steuerberater","Tierarzt","Übersetzer","Webentwickler","Wirtschaftsinformatiker",
-  "Wirtschaftsingenieur","Zahnarzt","Zerspanungsmechaniker","Elektriker",
-  "Tischler","Zimmermann","Maurer","Dachdecker","Klempner","Maler",
-];
-
 export function generateSeedProfessions(targetCount: number = 7500): string[] {
   const set = new Set<string>();
 
@@ -320,26 +303,8 @@ export function generateSeedProfessions(targetCount: number = 7500): string[] {
   for (const b of AT_BERUFE) set.add(b);
   for (const b of EXTRA_INTERNATIONAL) set.add(b);
 
-  for (const rolle of ROLLEN_MIT_BRANCHEN) {
-    if (set.size >= targetCount) break;
-    for (const branche of TOP_BRANCHEN) {
-      if (set.size >= targetCount) break;
-      set.add(`${rolle} ${branche}`);
-    }
-  }
-
   if (set.size < targetCount) {
     for (const rolle of ROLLEN_MIT_BRANCHEN) {
-      if (set.size >= targetCount) break;
-      for (const spez of SPEZIALISIERUNGEN) {
-        if (set.size >= targetCount) break;
-        set.add(`${rolle} (${spez})`);
-      }
-    }
-  }
-
-  if (set.size < targetCount) {
-    for (const rolle of ZUSATZ_ROLLEN) {
       if (set.size >= targetCount) break;
       for (const branche of TOP_BRANCHEN) {
         if (set.size >= targetCount) break;

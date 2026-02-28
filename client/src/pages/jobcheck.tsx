@@ -25,10 +25,10 @@ function roundBG(a: number, b: number, c: number): BG {
 
 function calcBioGram(taetigkeiten: any[]): BG {
   if (!taetigkeiten.length) return { imp: 33.3, int: 33.3, ana: 33.4 };
-  const weights: Record<string, number> = { Niedrig: 0.6, Mittel: 1.0, Hoch: 1.8 };
+  const weights: Record<string, number> = { Niedrig: 1, Mittel: 2, Hoch: 3 };
   let sI = 0, sN = 0, sA = 0;
   for (const t of taetigkeiten) {
-    const w = weights[t.niveau] || 1.0;
+    const w = weights[t.niveau] || 1;
     if (t.kompetenz === "Impulsiv") sI += w;
     else if (t.kompetenz === "Intuitiv") sN += w;
     else sA += w;

@@ -7,7 +7,6 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { eq, and, sql } from "drizzle-orm";
 import { berufTemplates } from "@shared/schema";
 import { generateSeedProfessions } from "./beruf-seed";
-import { generateGenericKompetenzen } from "./kompetenzen-generic";
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
@@ -199,62 +198,6 @@ Antworte ausschließlich als JSON:
     } catch (error) {
       console.error("Error generating Kompetenzen:", error);
       res.status(500).json({ error: "Fehler bei der KI-Generierung" });
-    }
-  });
-
-  app.post("/api/seed-berufe", async (req, res) => {
-    try {
-      const existing = await db.select({ count: sql<number>`COUNT(*)` }).from(berufTemplates);
-      const existingCount = Number(existing[0]?.count || 0);
-      if (existingCount >= 7000) {
-        return res.json({ message: `Datenbank bereits gefüllt (${existingCount} Einträge)`, inserted: 0, total: existingCount });
-      }
-
-      const professions = generateSeedProfessions(7500);
-      let inserted = 0;
-      const batchSize = 100;
-
-      for (let i = 0; i < professions.length; i += batchSize) {
-        const batch = professions.slice(i, i + batchSize);
-        const values = batch.map(berufName => {
-          const data = generateGenericKompetenzen(berufName);
-          return {
-            berufName,
-            fuehrung: "Keine",
-            taetigkeiten: data as any,
-            generatedAt: new Date(),
-            source: "seed",
-          };
-        });
-
-        try {
-          await db.insert(berufTemplates).values(values).onConflictDoNothing();
-          inserted += values.length;
-        } catch (batchErr) {
-          console.error(`[Seed] Batch-Fehler bei Index ${i}:`, batchErr);
-        }
-      }
-
-      const finalCount = await db.select({ count: sql<number>`COUNT(*)` }).from(berufTemplates);
-      const total = Number(finalCount[0]?.count || 0);
-      console.log(`[Seed] ${inserted} Berufe verarbeitet, ${total} Einträge gesamt in DB`);
-      res.json({ message: `Seeding abgeschlossen`, inserted, total });
-    } catch (error) {
-      console.error("[Seed] Fehler:", error);
-      res.status(500).json({ error: "Seeding fehlgeschlagen" });
-    }
-  });
-
-  app.get("/api/berufe-stats", async (_req, res) => {
-    try {
-      const result = await db.select({ count: sql<number>`COUNT(*)` }).from(berufTemplates);
-      const bySource = await db.select({
-        source: berufTemplates.source,
-        count: sql<number>`COUNT(*)`,
-      }).from(berufTemplates).groupBy(berufTemplates.source);
-      res.json({ total: Number(result[0]?.count || 0), bySource });
-    } catch (error) {
-      res.status(500).json({ error: "Abfrage fehlgeschlagen" });
     }
   });
 
