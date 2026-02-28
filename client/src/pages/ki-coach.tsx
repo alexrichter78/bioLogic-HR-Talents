@@ -170,7 +170,7 @@ export default function KICoach() {
     setLoading(true);
 
     if (inputRef.current) {
-      inputRef.current.style.height = "24px";
+      inputRef.current.style.height = "48px";
     }
 
     try {
@@ -376,12 +376,12 @@ export default function KICoach() {
                 style={{
                   flex: 1, border: "none", outline: "none", background: "none",
                   fontSize: 14, color: "#1D1D1F", resize: "none",
-                  lineHeight: 1.5, maxHeight: 120, minHeight: 24,
+                  lineHeight: 1.5, maxHeight: 120, minHeight: 48,
                   fontFamily: "inherit",
                 }}
                 onInput={e => {
                   const t = e.currentTarget;
-                  t.style.height = "24px";
+                  t.style.height = "48px";
                   t.style.height = Math.min(t.scrollHeight, 120) + "px";
                 }}
               />
@@ -410,15 +410,15 @@ export default function KICoach() {
                 onClick={() => { setShowPrompts(v => !v); if (showPrompts) setExpandedCategory(null); }}
                 data-testid="button-example-prompts"
                 style={{
-                  display: "flex", alignItems: "center", gap: 6,
-                  background: showPrompts ? "rgba(0,113,227,0.08)" : "none",
-                  border: showPrompts ? "1px solid rgba(0,113,227,0.15)" : "1px solid rgba(0,0,0,0.08)",
-                  borderRadius: 12, padding: "6px 14px",
-                  cursor: "pointer", fontSize: 12, color: showPrompts ? "#0071E3" : "#8E8E93",
-                  fontWeight: 500, transition: "all 200ms ease",
+                  display: "flex", alignItems: "center", gap: 7,
+                  background: showPrompts ? "rgba(220,53,69,0.1)" : "rgba(220,53,69,0.06)",
+                  border: showPrompts ? "1px solid rgba(220,53,69,0.3)" : "1px solid rgba(220,53,69,0.2)",
+                  borderRadius: 12, padding: "8px 18px",
+                  cursor: "pointer", fontSize: 14, color: "#DC3545",
+                  fontWeight: 600, transition: "all 200ms ease",
                 }}
               >
-                <Lightbulb style={{ width: 13, height: 13 }} />
+                <Lightbulb style={{ width: 15, height: 15 }} />
                 Musterprompts
                 {showPrompts
                   ? <ChevronUp style={{ width: 12, height: 12 }} />
