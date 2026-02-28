@@ -1,15 +1,14 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import {
-  Users, AlertTriangle, CheckCircle, TrendingUp, Loader2, Copy, Download,
-  Briefcase, Shield, Activity, BarChart3, Check, Lightbulb, Target,
-  CalendarDays, Zap, FileText, ChevronRight, Info,
+  Users, Briefcase, Shield, Check, Lightbulb, Target,
+  CalendarDays, FileText, Copy, Download, Info, ChevronDown,
 } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { hyphenateText } from "@/lib/hyphenate";
 import {
   type Triad, type ComponentKey,
   computeTeamDynamics, getDefaultLevers, getMatrixCellById, getViewContent,
-  labelComponent, buildAIPayload, getSystemVariant, getAllMatrixCells,
+  labelComponent, getSystemVariant, getAllMatrixCells,
   type TeamDynamikInput, type TeamDynamikResult, type ShiftType, type IntensityLevel,
   type TrafficLight, type ViewMode, type Lever, type MatrixCell,
 } from "@/lib/teamdynamik-engine";
@@ -28,15 +27,6 @@ const TL_COLORS: Record<TrafficLight, { bg: string; fill: string; label: string;
   YELLOW: { bg: "rgba(255,149,0,0.08)", fill: "#FF9500", label: "Steuerbar", steering: "Situative Steuerung empfehlenswert" },
   RED: { bg: "rgba(255,59,48,0.08)", fill: "#FF3B30", label: "Spannungsfeld", steering: "Aktive Steuerung erforderlich" },
 };
-const VIEW_LABELS: Record<ViewMode, { icon: typeof Users; label: string }> = {
-  CEO: { icon: Briefcase, label: "CEO" },
-  HR: { icon: Users, label: "HR" },
-  TEAMLEITUNG: { icon: Shield, label: "Teamleitung" },
-};
-
-const CHAPTER_COLORS = ["#0071E3", "#0071E3", "#0071E3", "#0071E3", "#0071E3", "#0071E3", "#0071E3", "#0071E3", "#0071E3", "#0071E3", "#0071E3", "#0071E3", "#0071E3"];
-
-const DOM_SHORT: Record<string, string> = { IMPULSIV: "IMP", INTUITIV: "INT", ANALYTISCH: "ANA", MIX: "MIX" };
 
 function GlassCard({ children, style, ...props }: { children: React.ReactNode; style?: React.CSSProperties; [k: string]: any }) {
   return (
@@ -80,7 +70,7 @@ function SoftBar({ triad }: { triad: Triad }) {
   );
 }
 
-function TriadSlider({ label, value, color, onChange }: { label: string; value: number; color: string; onChange: (v: number) => void }) {
+function TriadSlider({ label, value, color, onChange, testId }: { label: string; value: number; color: string; onChange: (v: number) => void; testId: string }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -90,7 +80,7 @@ function TriadSlider({ label, value, color, onChange }: { label: string; value: 
       <input
         type="range" min={0} max={100} value={value}
         onChange={e => onChange(Number(e.target.value))}
-        data-testid={`slider-${label.toLowerCase()}`}
+        data-testid={testId}
         style={{
           width: "100%", height: 6, borderRadius: 3,
           appearance: "none", WebkitAppearance: "none",
@@ -102,7 +92,7 @@ function TriadSlider({ label, value, color, onChange }: { label: string; value: 
   );
 }
 
-function TriadSliders({ triad, onChange }: { triad: Triad; onChange: (t: Triad) => void }) {
+function TriadSliders({ triad, onChange, prefix }: { triad: Triad; onChange: (t: Triad) => void; prefix: string }) {
   const handleChange = (key: ComponentKey, rawVal: number) => {
     const others = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== key);
     const remaining = 100 - rawVal;
@@ -114,9 +104,9 @@ function TriadSliders({ triad, onChange }: { triad: Triad; onChange: (t: Triad) 
   };
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "18px 20px", borderRadius: 18, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-      <TriadSlider label="Impulsiv" value={triad.impulsiv} color={COLORS.imp} onChange={v => handleChange("impulsiv", v)} />
-      <TriadSlider label="Intuitiv" value={triad.intuitiv} color={COLORS.int} onChange={v => handleChange("intuitiv", v)} />
-      <TriadSlider label="Analytisch" value={triad.analytisch} color={COLORS.ana} onChange={v => handleChange("analytisch", v)} />
+      <TriadSlider label="Impulsiv" value={triad.impulsiv} color={COLORS.imp} onChange={v => handleChange("impulsiv", v)} testId={`${prefix}-slider-impulsiv`} />
+      <TriadSlider label="Intuitiv" value={triad.intuitiv} color={COLORS.int} onChange={v => handleChange("intuitiv", v)} testId={`${prefix}-slider-intuitiv`} />
+      <TriadSlider label="Analytisch" value={triad.analytisch} color={COLORS.ana} onChange={v => handleChange("analytisch", v)} testId={`${prefix}-slider-analytisch`} />
     </div>
   );
 }
@@ -147,52 +137,6 @@ function KPITile({ label, value, sub, color }: { label: string; value: string | 
   );
 }
 
-function ChapterBadge({ num, color }: { num: number; color: string }) {
-  return (
-    <div style={{
-      width: 36, height: 36, borderRadius: 12,
-      background: `linear-gradient(135deg, ${color}, ${color}CC)`,
-      display: "flex", alignItems: "center", justifyContent: "center",
-      marginRight: 14, flexShrink: 0,
-      boxShadow: `0 4px 12px ${color}30`,
-    }}>
-      <span style={{ fontSize: 14, fontWeight: 700, color: "#FFF", fontVariantNumeric: "tabular-nums" }}>{String(num).padStart(2, "0")}</span>
-    </div>
-  );
-}
-
-function SectionDivider() {
-  return <div style={{ height: 1, margin: "0 28px", background: "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.05) 30%, rgba(0,0,0,0.05) 70%, transparent 100%)" }} />;
-}
-
-function splitIntoBlocks(text: string): string[] {
-  const explicit = text.split(/\n\n+/).filter(p => p.trim());
-  if (explicit.length > 1) return explicit;
-  const sentences = text.match(/[^.!?]+[.!?]+/g);
-  if (!sentences || sentences.length <= 2) return [text];
-  const blocks: string[] = [sentences[0].trim()];
-  const mid: string[] = [];
-  for (let i = 1; i < sentences.length; i++) {
-    mid.push(sentences[i].trim());
-    if (mid.length === 2 || (i === sentences.length - 1 && mid.length > 0)) { blocks.push(mid.join(" ")); mid.length = 0; }
-  }
-  return blocks.filter(b => b.length > 0);
-}
-
-function TextBlock({ text }: { text: string }) {
-  const blocks = splitIntoBlocks(text);
-  return (
-    <div>
-      {blocks.map((p, i) => (
-        <div key={i}>
-          {i > 0 && <hr style={{ border: "none", borderTop: "1px solid rgba(0,0,0,0.06)", margin: "14px 0" }} />}
-          <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, overflowWrap: "break-word", wordBreak: "normal" }} lang="de">{hyphenateText(p)}</p>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function BulletList({ items, icon, color }: { items: string[]; icon?: "check" | "dot"; color?: string }) {
   const c = color || "#6E6E73";
   return (
@@ -213,19 +157,85 @@ function BulletList({ items, icon, color }: { items: string[]; icon?: "check" | 
   );
 }
 
-function CalloutBox({ text, color, icon: Icon }: { text: string; color: string; icon?: typeof Lightbulb }) {
-  const IconComp = Icon || Lightbulb;
+function TabButton({ active, label, onClick, testId }: { active: boolean; label: string; onClick: () => void; testId: string }) {
+  return (
+    <button onClick={onClick} data-testid={testId} style={{
+      padding: "8px 18px", borderRadius: 10, fontSize: 12, fontWeight: active ? 700 : 500,
+      background: active ? "#fff" : "transparent",
+      boxShadow: active ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+      border: "none", cursor: "pointer",
+      color: active ? "#0071E3" : "#8E8E93",
+      transition: "all 200ms ease",
+    }}>
+      {label}
+    </button>
+  );
+}
+
+function TensionMatrix({ activeId, onSelect }: { activeId: string; onSelect: (id: string) => void }) {
+  const cells = getAllMatrixCells();
+  const axes = ["IMP", "INT", "ANA"];
+  const axisLabels: Record<string, string> = { IMP: "Impulsiv", INT: "Intuitiv", ANA: "Analytisch" };
+  const axisColors: Record<string, string> = { IMP: COLORS.imp, INT: COLORS.int, ANA: COLORS.ana };
+
+  return (
+    <div data-testid="tension-matrix">
+      <div style={{ display: "grid", gridTemplateColumns: "60px 1fr 1fr 1fr", gridTemplateRows: "32px repeat(3, 1fr)", gap: 0 }}>
+        <div />
+        {axes.map(a => (
+          <div key={a} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: axisColors[a] }}>{axisLabels[a]}</span>
+          </div>
+        ))}
+        {axes.flatMap((personAxis, row) => [
+          <div key={`label-${personAxis}`} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: axisColors[personAxis] }}>{axisLabels[personAxis]}</span>
+          </div>,
+          ...axes.map((teamAxis) => {
+            const cellId = `${personAxis}-${teamAxis}`;
+            const cell = cells.find(c => c.id === cellId);
+            if (!cell) return null;
+            const isActive = activeId === cellId;
+            return (
+              <button
+                key={cellId}
+                onClick={() => onSelect(cellId)}
+                data-testid={`matrix-cell-${cellId}`}
+                style={{
+                  padding: "10px 8px", margin: 2, borderRadius: 14, border: "none", cursor: "pointer",
+                  background: isActive ? "rgba(0,113,227,0.08)" : "rgba(0,0,0,0.02)",
+                  outline: isActive ? "2px solid #0071E3" : "1px solid rgba(0,0,0,0.06)",
+                  outlineOffset: -1,
+                  transition: "all 200ms ease",
+                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2,
+                  minHeight: 72,
+                }}
+              >
+                <span style={{ fontSize: 11, fontWeight: 700, color: isActive ? "#0071E3" : "#1D1D1F", textAlign: "center" }}>{cell.label}</span>
+                <span style={{ fontSize: 9, color: isActive ? "#0071E3" : "#8E8E93", textAlign: "center" }}>{cell.micro}</span>
+              </button>
+            );
+          }),
+        ])}
+      </div>
+    </div>
+  );
+}
+
+function SectionDivider() {
+  return <div style={{ height: 1, margin: "0 28px", background: "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.05) 30%, rgba(0,0,0,0.05) 70%, transparent 100%)" }} />;
+}
+
+function ChapterBadge({ num, color }: { num: number; color: string }) {
   return (
     <div style={{
-      padding: "16px 20px", borderRadius: 18,
-      background: `linear-gradient(135deg, ${color}0A, ${color}04)`,
-      border: `1px solid ${color}15`,
-      display: "flex", alignItems: "flex-start", gap: 12,
+      width: 36, height: 36, borderRadius: 12,
+      background: `linear-gradient(135deg, ${color}, ${color}CC)`,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      marginRight: 14, flexShrink: 0,
+      boxShadow: `0 4px 12px ${color}30`,
     }}>
-      <div style={{ width: 28, height: 28, borderRadius: 9, flexShrink: 0, background: `${color}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <IconComp style={{ width: 14, height: 14, color, strokeWidth: 2 }} />
-      </div>
-      <p style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.75, margin: 0, fontWeight: 450, textAlign: "justify", textAlignLast: "left", overflowWrap: "break-word", wordBreak: "normal" } as React.CSSProperties} lang="de">{hyphenateText(text)}</p>
+      <span style={{ fontSize: 14, fontWeight: 700, color: "#FFF", fontVariantNumeric: "tabular-nums" }}>{String(num).padStart(2, "0")}</span>
     </div>
   );
 }
@@ -249,7 +259,7 @@ function parseReport(text: string): ParsedSection[] {
 }
 
 function ReportChapter({ section, chapterIndex }: { section: ParsedSection; chapterIndex: number }) {
-  const color = CHAPTER_COLORS[chapterIndex % CHAPTER_COLORS.length];
+  const color = "#0071E3";
   const bullets: string[] = [];
   const paragraphs: string[] = [];
   let subSections: { heading: string; content: string[] }[] = [];
@@ -279,7 +289,7 @@ function ReportChapter({ section, chapterIndex }: { section: ParsedSection; chap
         <h3 style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.01em" }}>{section.title}</h3>
       </div>
       <div style={{ paddingLeft: 50 }}>
-        {paragraphs.length > 0 && <TextBlock text={paragraphs.join(" ")} />}
+        {paragraphs.length > 0 && <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }} lang="de">{hyphenateText(paragraphs.join(" "))}</p>}
         {bullets.length > 0 && (
           <div style={{ marginTop: paragraphs.length > 0 ? 16 : 0 }}>
             <BulletList items={bullets} color={color} />
@@ -288,10 +298,11 @@ function ReportChapter({ section, chapterIndex }: { section: ParsedSection; chap
         {subSections.map((sub, i) => (
           <div key={i} style={{ marginTop: 16 }}>
             <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>{sub.heading}</p>
-            {sub.content.length > 0 && sub.content.some(c => c.startsWith("- ") || c.startsWith("• "))
-              ? <BulletList items={sub.content.map(c => c.replace(/^[-•]\s*/, ""))} color={color} />
-              : <TextBlock text={sub.content.join(" ")} />
-            }
+            {sub.content.length > 0 && (
+              sub.content.some(c => c.startsWith("- ") || c.startsWith("• "))
+                ? <BulletList items={sub.content.map(c => c.replace(/^[-•]\s*/, ""))} color={color} />
+                : <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }} lang="de">{hyphenateText(sub.content.join(" "))}</p>
+            )}
           </div>
         ))}
       </div>
@@ -299,96 +310,37 @@ function ReportChapter({ section, chapterIndex }: { section: ParsedSection; chap
   );
 }
 
-function TensionMatrix({ activeId, onSelect }: { activeId: string; onSelect: (id: string) => void }) {
-  const cells = getAllMatrixCells();
-  const axes = ["IMP", "INT", "ANA"];
-  const axisLabels: Record<string, string> = { IMP: "Impulsiv", INT: "Intuitiv", ANA: "Analytisch" };
-  const axisColors: Record<string, string> = { IMP: COLORS.imp, INT: COLORS.int, ANA: COLORS.ana };
-
-  return (
-    <div data-testid="tension-matrix">
-      <div style={{ display: "grid", gridTemplateColumns: "20px 60px 1fr 1fr 1fr", gridTemplateRows: "auto 32px repeat(3, 1fr)", gap: 0 }}>
-        <div />
-        <div />
-        <div style={{ gridColumn: "3 / 6", textAlign: "center", padding: "0 0 6px" }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em" }}>Team-Dominanz</span>
-        </div>
-        <div style={{ gridRow: "2 / 6", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", writingMode: "vertical-rl", transform: "rotate(180deg)" }}>Person</span>
-        </div>
-        <div />
-        {axes.map(a => (
-          <div key={a} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ fontSize: 11, fontWeight: 700, color: axisColors[a] }}>{axisLabels[a]}</span>
-          </div>
-        ))}
-        {axes.flatMap((personAxis, row) => [
-          <div key={`label-${personAxis}`} style={{
-            display: "flex", alignItems: "center", justifyContent: "center",
-            ...(row === 0 ? { borderTopLeftRadius: 12 } : row === 2 ? { borderBottomLeftRadius: 12 } : {}),
-          }}>
-            <span style={{ fontSize: 11, fontWeight: 700, color: axisColors[personAxis], writingMode: "vertical-rl", transform: "rotate(180deg)" }}>{axisLabels[personAxis]}</span>
-          </div>,
-          ...axes.map((teamAxis) => {
-            const cellId = `${personAxis}-${teamAxis}`;
-            const cell = cells.find(c => c.id === cellId);
-            if (!cell) return null;
-            const isActive = activeId === cellId;
-            return (
-              <button
-                key={cellId}
-                onClick={() => onSelect(cellId)}
-                data-testid={`matrix-cell-${cellId}`}
-                style={{
-                  padding: "10px 8px", margin: 2, borderRadius: 14, border: "none", cursor: "pointer",
-                  background: isActive ? "rgba(0,113,227,0.08)" : "rgba(0,0,0,0.02)",
-                  outline: isActive ? "2px solid #0071E3" : "1px solid rgba(0,0,0,0.06)",
-                  outlineOffset: -1,
-                  transition: "all 200ms ease",
-                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2,
-                  minHeight: 72,
-                }}
-              >
-                <span style={{ fontSize: 11, fontWeight: 700, color: isActive ? "#0071E3" : "#1D1D1F", textAlign: "center" }}>{cell.label}</span>
-                <span style={{ fontSize: 9, color: isActive ? "#0071E3" : "#8E8E93", textAlign: "center" }}>{cell.micro}</span>
-              </button>
-            );
-          }),
-        ])}
-      </div>
-      
-    </div>
-  );
+function loadRollenDnaSoll(): Triad | null {
+  try {
+    const raw = localStorage.getItem("rollenDnaState");
+    if (!raw) return null;
+    const state = JSON.parse(raw);
+    if (state.bioGramGesamt && typeof state.bioGramGesamt.imp === "number") {
+      return {
+        impulsiv: state.bioGramGesamt.imp,
+        intuitiv: state.bioGramGesamt.int,
+        analytisch: state.bioGramGesamt.ana,
+      };
+    }
+  } catch {}
+  return null;
 }
 
-function TabButton({ active, label, onClick, testId }: { active: boolean; label: string; onClick: () => void; testId: string }) {
-  return (
-    <button onClick={onClick} data-testid={testId} style={{
-      padding: "8px 18px", borderRadius: 10, fontSize: 12, fontWeight: active ? 700 : 500,
-      background: active ? "#fff" : "transparent",
-      boxShadow: active ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
-      border: "none", cursor: "pointer",
-      color: active ? "#0071E3" : "#8E8E93",
-      transition: "all 200ms ease",
-    }}>
-      {label}
-    </button>
-  );
+function loadCandidateProfile(): Triad {
+  try {
+    const saved = localStorage.getItem("jobcheckCandProfile");
+    if (saved) {
+      const p = JSON.parse(saved);
+      if (p.impulsiv != null && p.intuitiv != null && p.analytisch != null) return p;
+    }
+  } catch {}
+  return { impulsiv: 33, intuitiv: 34, analytisch: 33 };
 }
 
 export default function Teamdynamik() {
   const [teamName, setTeamName] = useState("Projektteam");
   const [teamProfile, setTeamProfile] = useState<Triad>({ impulsiv: 30, intuitiv: 50, analytisch: 20 });
-  const [personProfile, setPersonProfile] = useState<Triad>(() => {
-    try {
-      const saved = localStorage.getItem("jobcheckCandProfile");
-      if (saved) {
-        const p = JSON.parse(saved);
-        if (p.impulsiv != null && p.intuitiv != null && p.analytisch != null) return p;
-      }
-    } catch {}
-    return { impulsiv: 33, intuitiv: 34, analytisch: 33 };
-  });
+  const [personProfile, setPersonProfile] = useState<Triad>(loadCandidateProfile);
   const [isLeading, setIsLeading] = useState(true);
   const [levers, setLevers] = useState<Lever[]>(getDefaultLevers());
   const [viewMode, setViewMode] = useState<ViewMode>("HR");
@@ -399,9 +351,14 @@ export default function Teamdynamik() {
   const [selectedMatrixId, setSelectedMatrixId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"chancen" | "risiken" | "plan">("chancen");
 
+  const savedSoll = useMemo(loadRollenDnaSoll, []);
+  const [sollEnabled, setSollEnabled] = useState(!!savedSoll);
+  const [sollProfile, setSollProfile] = useState<Triad>(savedSoll || { impulsiv: 33, intuitiv: 34, analytisch: 33 });
+
   const input: TeamDynamikInput = useMemo(() => ({
     teamName, teamProfile, membersCount: 8, personProfile, isLeading, levers, steeringOverride: null,
-  }), [teamName, teamProfile, personProfile, isLeading, levers]);
+    roleSoll: { enabled: sollEnabled, profile: sollProfile },
+  }), [teamName, teamProfile, personProfile, isLeading, levers, sollEnabled, sollProfile]);
 
   const result = useMemo(() => computeTeamDynamics(input), [input]);
   const tl = TL_COLORS[result.trafficLight];
@@ -435,11 +392,12 @@ export default function Teamdynamik() {
 
       <main style={{ maxWidth: 820, margin: "0 auto", padding: "24px 16px 80px" }}>
 
-        {/* ═══ VIEW MODE TOGGLE ═══ */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
           <div style={{ display: "flex", gap: 4, background: "rgba(255,255,255,0.7)", backdropFilter: "blur(20px)", borderRadius: 12, padding: 3, border: "1px solid rgba(0,0,0,0.06)" }}>
             {(["CEO", "HR", "TEAMLEITUNG"] as ViewMode[]).map(vm => {
-              const { icon: Icon, label } = VIEW_LABELS[vm];
+              const icons: Record<ViewMode, typeof Users> = { CEO: Briefcase, HR: Users, TEAMLEITUNG: Shield };
+              const labels: Record<ViewMode, string> = { CEO: "CEO", HR: "HR", TEAMLEITUNG: "Teamleitung" };
+              const Icon = icons[vm];
               const active = viewMode === vm;
               return (
                 <button key={vm} onClick={() => setViewMode(vm)} data-testid={`view-${vm.toLowerCase()}`} style={{
@@ -450,14 +408,14 @@ export default function Teamdynamik() {
                   color: active ? "#0071E3" : "#8E8E93",
                   transition: "all 200ms ease",
                 }}>
-                  <Icon style={{ width: 13, height: 13 }} /> {label}
+                  <Icon style={{ width: 13, height: 13 }} /> {labels[vm]}
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* ═══ MODULE A: EXECUTIVE HEADER ═══ */}
+        {/* MODULE A: EXECUTIVE HEADER */}
         <GlassCard style={{ marginBottom: 20 }} data-testid="module-executive">
           <div style={{ textAlign: "center", marginBottom: 28 }}>
             <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 4px" }}>bioLogic TeamCheck</p>
@@ -465,7 +423,7 @@ export default function Teamdynamik() {
           </div>
 
           <div style={{
-            background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+            background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)",
             borderRadius: 20, padding: "18px 22px",
             border: "1px solid rgba(0,0,0,0.06)",
             boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
@@ -488,6 +446,9 @@ export default function Teamdynamik() {
               <KPITile label="DG" value={Math.round(result.scores.DG)} sub="Distribution Gap" />
               <KPITile label="DC" value={Math.round(result.scores.DC)} sub="Dominance Clash" />
               <KPITile label="CI" value={Math.round(result.scores.CI)} sub="Conflict Index" />
+              {result.scores.RG !== null && (
+                <KPITile label="RG" value={Math.round(result.scores.RG)} sub="Role Gap" color={result.scores.RG > 40 ? "#FF3B30" : result.scores.RG > 20 ? "#FF9500" : "#34C759"} />
+              )}
             </div>
 
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -513,38 +474,22 @@ export default function Teamdynamik() {
                 title: "Starke Veränderung im Team",
                 desc: "Die neue Führung verändert die bisherige Arbeitsweise deutlich.\nEntscheidungen, Prioritäten und Qualitätsmaßstäbe werden anders gesetzt als bisher.",
                 label: "Was bedeutet das konkret?",
-                bullets: [
-                  "Gewohnte Abläufe verändern sich spürbar",
-                  "Diskussionen über Prioritäten nehmen zu",
-                  "Widerstand oder Unsicherheit im Team möglich",
-                  "Ohne klare Führung entsteht Instabilität",
-                ],
-                recLabel: "Empfehlung:",
-                rec: "Klare Kommunikation, aktive Steuerung und konsequente Führung ab Tag eins.",
+                bullets: ["Gewohnte Abläufe verändern sich spürbar", "Diskussionen über Prioritäten nehmen zu", "Widerstand oder Unsicherheit im Team möglich", "Ohne klare Führung entsteht Instabilität"],
+                recLabel: "Empfehlung:", rec: "Klare Kommunikation, aktive Steuerung und konsequente Führung ab Tag eins.",
               },
               YELLOW: {
                 title: "Unterschiedliche Arbeitsweisen – aktiv steuern",
                 desc: "Führung und Team arbeiten nach verschiedenen Logiken.\nMit klarer Abstimmung bleibt das System stabil.",
                 label: "Was bedeutet das konkret?",
-                bullets: [
-                  "Mehr Abstimmung notwendig",
-                  "Entscheidungen dauern teilweise länger",
-                  "Prioritäten müssen klar kommuniziert werden",
-                ],
-                recLabel: "Empfehlung:",
-                rec: "Regelmäßige Priorisierung, transparente Entscheidungswege und klare Verantwortlichkeiten.",
+                bullets: ["Mehr Abstimmung notwendig", "Entscheidungen dauern teilweise länger", "Prioritäten müssen klar kommuniziert werden"],
+                recLabel: "Empfehlung:", rec: "Regelmäßige Priorisierung, transparente Entscheidungswege und klare Verantwortlichkeiten.",
               },
               GREEN: {
                 title: "Stabil – keine besondere Anpassung erforderlich",
                 desc: "Führungsstil und Teamarbeitsweise passen gut zusammen.\nDie Zusammenarbeit läuft weitgehend reibungslos.",
                 label: "Was bedeutet das konkret?",
-                bullets: [
-                  "Entscheidungen werden verstanden",
-                  "Prioritäten sind klar",
-                  "Zusammenarbeit ist stabil",
-                ],
-                recLabel: "Ausreichend:",
-                rec: "Normale Führung und regelmäßige Abstimmung.",
+                bullets: ["Entscheidungen werden verstanden", "Prioritäten sind klar", "Zusammenarbeit ist stabil"],
+                recLabel: "Ausreichend:", rec: "Normale Führung und regelmäßige Abstimmung.",
               },
             };
             const detailTeammitglied: Record<TrafficLight, { title: string; desc: string; label: string; bullets: string[]; recLabel: string; rec: string }> = {
@@ -552,37 +497,22 @@ export default function Teamdynamik() {
                 title: "Deutliche Spannungen – klare Führung notwendig",
                 desc: "Arbeitslogiken unterscheiden sich stark. Ohne Führung entstehen Leistungs- und Konfliktrisiken.",
                 label: "Was bedeutet das konkret?",
-                bullets: [
-                  "Prioritäten werden unterschiedlich interpretiert.",
-                  "Tempo oder Qualität geraten unter Druck.",
-                  "Widerstand, Rückzug oder Lagerbildung sind möglich.",
-                ],
-                recLabel: "Was ist zu tun?",
-                rec: "Klare Standards, feste Entscheidungsregeln und regelmäßige Reviews sind zwingend.",
+                bullets: ["Prioritäten werden unterschiedlich interpretiert.", "Tempo oder Qualität geraten unter Druck.", "Widerstand, Rückzug oder Lagerbildung sind möglich."],
+                recLabel: "Was ist zu tun?", rec: "Klare Standards, feste Entscheidungsregeln und regelmäßige Reviews sind zwingend.",
               },
               YELLOW: {
                 title: "Unterschiedliche Arbeitsweisen – aktiv steuern",
                 desc: "Unterschiede sind spürbar. Mit klaren Regeln bleibt das System stabil steuerbar.",
                 label: "Was bedeutet das konkret?",
-                bullets: [
-                  "Entscheidungen dauern teilweise länger.",
-                  "Prioritäten müssen häufiger erklärt werden.",
-                  "Abstimmungsaufwand steigt im Alltag.",
-                ],
-                recLabel: "Was ist zu tun?",
-                rec: "Entscheidungswege, Zeitfenster und Verantwortlichkeiten müssen klar gesetzt werden.",
+                bullets: ["Entscheidungen dauern teilweise länger.", "Prioritäten müssen häufiger erklärt werden.", "Abstimmungsaufwand steigt im Alltag."],
+                recLabel: "Was ist zu tun?", rec: "Entscheidungswege, Zeitfenster und Verantwortlichkeiten müssen klar gesetzt werden.",
               },
               GREEN: {
                 title: "Stabil – passt gut zusammen",
                 desc: "Arbeitsweisen sind kompatibel. Keine besonderen Maßnahmen notwendig.",
                 label: "Was bedeutet das konkret?",
-                bullets: [
-                  "Entscheidungen werden schnell verstanden und akzeptiert.",
-                  "Abstimmungen laufen reibungslos.",
-                  "Tempo und Qualität bleiben stabil.",
-                ],
-                recLabel: "Was ist zu tun?",
-                rec: "Normale Führung und regelmäßige Abstimmung reichen aus.",
+                bullets: ["Entscheidungen werden schnell verstanden und akzeptiert.", "Abstimmungen laufen reibungslos.", "Tempo und Qualität bleiben stabil."],
+                recLabel: "Was ist zu tun?", rec: "Normale Führung und regelmäßige Abstimmung reichen aus.",
               },
             };
             const detail = (isLeading ? detailFuehrung : detailTeammitglied)[tlKey];
@@ -606,20 +536,19 @@ export default function Teamdynamik() {
                   ))}
                 </div>
                 <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0 }}>
-                  <span style={{ fontWeight: 700 }}>{detail.recLabel} </span>
-                  {detail.rec}
+                  <span style={{ fontWeight: 700 }}>{detail.recLabel} </span>{detail.rec}
                 </p>
               </div>
             );
           })()}
         </GlassCard>
 
-        {/* ═══ MODULE B: PROFILES ═══ */}
+        {/* MODULE B: PROFILES */}
         <GlassCard style={{ marginBottom: 20 }} data-testid="module-profiles">
           <div style={{ display: "flex", gap: 24, marginBottom: 24, flexWrap: "wrap" }}>
             <div style={{ flex: 1, minWidth: 280 }}>
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }} data-testid="label-person">{isLeading ? "Neue Führungskraft" : "Neues Teammitglied"}</p>
-              <TriadSliders triad={personProfile} onChange={setPersonProfile} />
+              <TriadSliders triad={personProfile} onChange={setPersonProfile} prefix="person" />
               <div style={{ marginTop: 14 }}>
                 <SoftBar triad={personProfile} />
               </div>
@@ -629,7 +558,7 @@ export default function Teamdynamik() {
 
             <div style={{ flex: 1, minWidth: 280 }}>
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>Teamauswertung</p>
-              <TriadSliders triad={teamProfile} onChange={setTeamProfile} />
+              <TriadSliders triad={teamProfile} onChange={setTeamProfile} prefix="team" />
               <div style={{ marginTop: 14 }}>
                 <SoftBar triad={teamProfile} />
               </div>
@@ -637,35 +566,75 @@ export default function Teamdynamik() {
           </div>
 
           <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 18 }}>
-            <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Rolle der neuen Person</p>
-            <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, maxWidth: 340 }}>
-              <button onClick={() => setIsLeading(true)} data-testid="toggle-leading-yes" style={{
-                flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: isLeading ? 700 : 500,
-                background: isLeading ? "#fff" : "transparent",
-                boxShadow: isLeading ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
-                border: "none", cursor: "pointer",
-                color: isLeading ? "#0071E3" : "#8E8E93",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
-                transition: "all 200ms ease",
-              }}>
-                <Briefcase style={{ width: 12, height: 12 }} /> Führung
-              </button>
-              <button onClick={() => setIsLeading(false)} data-testid="toggle-leading-no" style={{
-                flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: !isLeading ? 700 : 500,
-                background: !isLeading ? "#fff" : "transparent",
-                boxShadow: !isLeading ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
-                border: "none", cursor: "pointer",
-                color: !isLeading ? "#0071E3" : "#8E8E93",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
-                transition: "all 200ms ease",
-              }}>
-                <Users style={{ width: 12, height: 12 }} /> Teammitglied
-              </button>
+            <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-start" }}>
+              <div style={{ flex: 1, minWidth: 200 }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Rolle der neuen Person</p>
+                <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, maxWidth: 340 }}>
+                  <button onClick={() => setIsLeading(true)} data-testid="toggle-leading-yes" style={{
+                    flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: isLeading ? 700 : 500,
+                    background: isLeading ? "#fff" : "transparent",
+                    boxShadow: isLeading ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                    border: "none", cursor: "pointer",
+                    color: isLeading ? "#0071E3" : "#8E8E93",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+                    transition: "all 200ms ease",
+                  }}>
+                    <Briefcase style={{ width: 12, height: 12 }} /> Führung
+                  </button>
+                  <button onClick={() => setIsLeading(false)} data-testid="toggle-leading-no" style={{
+                    flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: !isLeading ? 700 : 500,
+                    background: !isLeading ? "#fff" : "transparent",
+                    boxShadow: !isLeading ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                    border: "none", cursor: "pointer",
+                    color: !isLeading ? "#0071E3" : "#8E8E93",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+                    transition: "all 200ms ease",
+                  }}>
+                    <Users style={{ width: 12, height: 12 }} /> Teammitglied
+                  </button>
+                </div>
+              </div>
+
+              <div style={{ flex: 1, minWidth: 200 }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Rollen-DNA (Soll-Profil)</p>
+                <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, maxWidth: 340 }}>
+                  <button onClick={() => setSollEnabled(true)} data-testid="toggle-soll-yes" style={{
+                    flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: sollEnabled ? 700 : 500,
+                    background: sollEnabled ? "#fff" : "transparent",
+                    boxShadow: sollEnabled ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                    border: "none", cursor: "pointer",
+                    color: sollEnabled ? "#0071E3" : "#8E8E93",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+                    transition: "all 200ms ease",
+                  }}>
+                    <Target style={{ width: 12, height: 12 }} /> Aktiv
+                  </button>
+                  <button onClick={() => setSollEnabled(false)} data-testid="toggle-soll-no" style={{
+                    flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: !sollEnabled ? 700 : 500,
+                    background: !sollEnabled ? "#fff" : "transparent",
+                    boxShadow: !sollEnabled ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                    border: "none", cursor: "pointer",
+                    color: !sollEnabled ? "#0071E3" : "#8E8E93",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+                    transition: "all 200ms ease",
+                  }}>
+                    Deaktiviert
+                  </button>
+                </div>
+                {sollEnabled && (
+                  <div style={{ marginTop: 14 }}>
+                    <SoftBar triad={sollProfile} />
+                    {savedSoll && (
+                      <p style={{ fontSize: 10, color: "#8E8E93", marginTop: 8 }}>Aus Rollen-DNA geladen</p>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </GlassCard>
 
-        {/* ═══ MODULE C: TENSION MATRIX (HR + Teamleitung only) ═══ */}
+        {/* MODULE C: TENSION MATRIX (HR + Teamleitung only) */}
         {viewContent.showMatrix && (
           <GlassCard style={{ marginBottom: 20 }} data-testid="module-matrix">
             <div style={{ textAlign: "center", marginBottom: 20 }}>
@@ -673,12 +642,17 @@ export default function Teamdynamik() {
               <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>9-Feld-Matrix</h2>
             </div>
 
-            <div style={{ position: "relative" }}>
-              <div style={{ position: "absolute", left: -2, top: "50%", transform: "translateY(-50%) rotate(-90deg)", transformOrigin: "center" }}>
-                <span style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>Person</span>
-              </div>
-              <div style={{ paddingLeft: 16 }}>
-                <TensionMatrix activeId={matrixId} onSelect={setSelectedMatrixId} />
+            <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+              <div style={{ position: "relative", flex: "0 0 auto" }}>
+                <div style={{ position: "absolute", left: -2, top: "50%", transform: "translateY(-50%) rotate(-90deg)", transformOrigin: "center" }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>Person</span>
+                </div>
+                <div style={{ paddingLeft: 16 }}>
+                  <div style={{ textAlign: "center", marginBottom: 4 }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em" }}>Team-Dominanz</span>
+                  </div>
+                  <TensionMatrix activeId={matrixId} onSelect={setSelectedMatrixId} />
+                </div>
               </div>
             </div>
 
@@ -718,7 +692,7 @@ export default function Teamdynamik() {
           </GlassCard>
         )}
 
-        {/* ═══ MODULE D: ACTIONS & PLAN ═══ */}
+        {/* MODULE D: ACTIONS & PLAN */}
         <GlassCard style={{ marginBottom: 20 }} data-testid="module-actions">
           <div style={{ textAlign: "center", marginBottom: 20 }}>
             <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 4px" }}>{viewContent.actionTitle}</p>
@@ -763,7 +737,7 @@ export default function Teamdynamik() {
           )}
         </GlassCard>
 
-        {/* ═══ FÜHRUNGSHEBEL (HR + Teamleitung only) ═══ */}
+        {/* FÜHRUNGSHEBEL (HR + Teamleitung only) */}
         {viewContent.showLevers && (
           <GlassCard style={{ marginBottom: 20 }} data-testid="module-levers">
             <div style={{ textAlign: "center", marginBottom: 20 }}>
@@ -811,7 +785,7 @@ export default function Teamdynamik() {
           </GlassCard>
         )}
 
-        {/* ═══ BUTTON: REPORT GENERIEREN ═══ */}
+        {/* REPORT BUTTON */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
           <button onClick={generateReport} data-testid="button-generate-report" style={{
             display: "flex", alignItems: "center", gap: 8, padding: "14px 36px", borderRadius: 16,
@@ -825,7 +799,7 @@ export default function Teamdynamik() {
           </button>
         </div>
 
-        {/* ═══ REPORT ═══ */}
+        {/* REPORT DISPLAY */}
         {reportOpen && reportText && (
           <GlassCard style={{ marginBottom: 20 }} data-testid="tab-report">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
@@ -877,11 +851,6 @@ export default function Teamdynamik() {
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid rgba(0,0,0,0.12); box-shadow: 0 1px 6px rgba(0,0,0,0.15); margin-top: -6px; cursor: pointer; }
         input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid rgba(0,0,0,0.12); box-shadow: 0 1px 6px rgba(0,0,0,0.15); cursor: pointer; }
-        @media print {
-          nav, [data-testid="module-profiles"], [data-testid="button-generate-report"], [data-testid="module-levers"] { display: none !important; }
-          main { padding: 0 !important; max-width: 100% !important; }
-          [data-testid="tab-report"] { box-shadow: none !important; border: none !important; }
-        }
       `}</style>
     </div>
   );
