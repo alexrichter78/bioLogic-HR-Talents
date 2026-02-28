@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Bot, User, Loader2 } from "lucide-react";
+import { Send, Bot, User, Loader2, Download } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 
 type Message = {
@@ -84,10 +84,35 @@ export default function KICoach() {
 
     try {
       const chatHistory = newMessages.filter(m => m !== WELCOME_MSG);
+
+      let stammdaten: Record<string, string> = {};
+      try {
+        const analyseRaw = localStorage.getItem("analyseTexte");
+        if (analyseRaw) {
+          const a = JSON.parse(analyseRaw);
+          if (a.bereich1) stammdaten.impulsiveDaten = a.bereich1;
+          if (a.bereich2) stammdaten.intuitiveDaten = a.bereich2;
+          if (a.bereich3) stammdaten.analytischeDaten = a.bereich3;
+        }
+        const bioCheckIntro = localStorage.getItem("bioCheckIntroOverride");
+        if (bioCheckIntro) stammdaten.bioCheckIntro = JSON.parse(bioCheckIntro);
+        const bioCheckText = localStorage.getItem("bioCheckTextOverride") || localStorage.getItem("bioCheckTextGenerated");
+        if (bioCheckText) stammdaten.bioCheckText = JSON.parse(bioCheckText);
+        const rollenDna = localStorage.getItem("rollenDnaState");
+        if (rollenDna) {
+          const dna = JSON.parse(rollenDna);
+          if (dna.beruf) stammdaten.beruf = dna.beruf;
+          if (dna.fuehrung) stammdaten.fuehrung = dna.fuehrung;
+          if (dna.taetigkeiten) stammdaten.taetigkeiten = dna.taetigkeiten.join(", ");
+        }
+      } catch {}
+
+      const hasStammdaten = Object.keys(stammdaten).length > 0;
+
       const res = await fetch("/api/ki-coach", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: chatHistory }),
+        body: JSON.stringify({ messages: chatHistory, ...(hasStammdaten ? { stammdaten } : {}) }),
       });
 
       if (!res.ok) throw new Error("Fehler");
@@ -109,6 +134,28 @@ export default function KICoach() {
       e.preventDefault();
       sendMessage();
     }
+  };
+
+  const exportChat = () => {
+    const chatMessages = messages.filter(m => m !== WELCOME_MSG);
+    if (chatMessages.length === 0) return;
+    const now = new Date();
+    const dateStr = now.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
+    const timeStr = now.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+    let text = `bioLogic KI-Coach – Gesprächsprotokoll\n`;
+    text += `Exportiert am ${dateStr} um ${timeStr}\n`;
+    text += `${"─".repeat(50)}\n\n`;
+    for (const msg of chatMessages) {
+      const label = msg.role === "user" ? "Frage" : "Coach";
+      text += `${label}:\n${msg.content}\n\n`;
+    }
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `bioLogic-Coach_${now.toISOString().slice(0, 10)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -135,10 +182,28 @@ export default function KICoach() {
             }}>
               <Bot style={{ width: 20, height: 20, color: "#0071E3" }} />
             </div>
-            <div>
+            <div style={{ flex: 1 }}>
               <h1 style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">bioLogic KI-Coach</h1>
               <p style={{ fontSize: 11, color: "#8E8E93", margin: "2px 0 0" }}>Führung · Personal · Assessment · Kommunikation</p>
             </div>
+            <button
+              onClick={exportChat}
+              disabled={messages.filter(m => m !== WELCOME_MSG).length === 0}
+              data-testid="button-export-chat"
+              title="Gespräch als TXT exportieren"
+              style={{
+                width: 36, height: 36, borderRadius: 10, border: "none",
+                background: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "rgba(0,113,227,0.08)" : "rgba(0,0,0,0.03)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "pointer" : "default",
+                transition: "all 200ms ease", flexShrink: 0,
+              }}
+            >
+              <Download style={{
+                width: 16, height: 16,
+                color: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "#0071E3" : "#C7C7CC",
+              }} />
+            </button>
           </div>
 
           <div style={{
