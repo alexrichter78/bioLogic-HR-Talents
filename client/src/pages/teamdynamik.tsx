@@ -77,7 +77,10 @@ function SoftBar({ triad }: { triad: Triad }) {
   );
 }
 
+const MAX_BIO = 67;
+
 function TriadSlider({ label, value, color, onChange }: { label: string; value: number; color: string; onChange: (v: number) => void }) {
+  const pct = (value / MAX_BIO) * 100;
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -85,13 +88,13 @@ function TriadSlider({ label, value, color, onChange }: { label: string; value: 
         <span style={{ fontSize: 14, fontWeight: 700, color, fontVariantNumeric: "tabular-nums" }}>{value} %</span>
       </div>
       <input
-        type="range" min={0} max={100} value={value}
+        type="range" min={0} max={MAX_BIO} value={value}
         onChange={e => onChange(Number(e.target.value))}
         data-testid={`slider-${label.toLowerCase()}`}
         style={{
           width: "100%", height: 6, borderRadius: 3,
           appearance: "none", WebkitAppearance: "none",
-          background: `linear-gradient(to right, ${color} ${value}%, rgba(0,0,0,0.06) ${value}%)`,
+          background: `linear-gradient(to right, ${color} ${pct}%, rgba(0,0,0,0.06) ${pct}%)`,
           outline: "none", cursor: "pointer",
         }}
       />
@@ -101,13 +104,7 @@ function TriadSlider({ label, value, color, onChange }: { label: string; value: 
 
 function TriadSliders({ triad, onChange }: { triad: Triad; onChange: (t: Triad) => void }) {
   const handleChange = (key: ComponentKey, rawVal: number) => {
-    const others = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== key);
-    const remaining = 100 - rawVal;
-    const otherSum = triad[others[0]] + triad[others[1]];
-    let v0: number, v1: number;
-    if (otherSum === 0) { v0 = Math.round(remaining / 2); v1 = remaining - v0; }
-    else { v0 = Math.round((triad[others[0]] / otherSum) * remaining); v1 = remaining - v0; }
-    onChange({ ...triad, [key]: rawVal, [others[0]]: v0, [others[1]]: v1 });
+    onChange({ ...triad, [key]: Math.min(rawVal, MAX_BIO) });
   };
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "18px 20px", borderRadius: 18, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
@@ -377,7 +374,7 @@ export default function Teamdynamik() {
               <TriadSliders triad={personProfile} onChange={setPersonProfile} />
               <div style={{ marginTop: 14 }}>
                 <SoftBar triad={personProfile} />
-                <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Normalisiertes Profil (Summe = 100 %)</p>
+                <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Profil (max. 67 % pro Komponente)</p>
               </div>
             </div>
 
@@ -388,7 +385,7 @@ export default function Teamdynamik() {
               <TriadSliders triad={teamProfile} onChange={setTeamProfile} />
               <div style={{ marginTop: 14 }}>
                 <SoftBar triad={teamProfile} />
-                <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Normalisiertes Profil (Summe = 100 %)</p>
+                <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Profil (max. 67 % pro Komponente)</p>
               </div>
             </div>
           </div>
