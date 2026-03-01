@@ -46,71 +46,50 @@ function GlassCard({ children, style, ...props }: { children: React.ReactNode; s
   );
 }
 
-function SoftBar({ triad }: { triad: Triad }) {
-  const items = [
-    { label: "Impulsiv", value: triad.impulsiv, color: COLORS.imp },
-    { label: "Intuitiv", value: triad.intuitiv, color: COLORS.int },
-    { label: "Analytisch", value: triad.analytisch, color: COLORS.ana },
-  ];
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      {items.map(bar => {
-        const widthPct = (bar.value / 67) * 100;
-        return (
-          <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 12, color: "#6E6E73", width: 62, flexShrink: 0 }}>{bar.label}</span>
-            <div style={{ flex: 1, height: 24, borderRadius: 6, background: "rgba(0,0,0,0.04)", overflow: "hidden", position: "relative" }}>
-              <div style={{
-                width: bar.value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 3), 100)}%`,
-                height: "100%", borderRadius: 6, background: bar.color,
-                transition: "width 600ms ease",
-                display: "flex", alignItems: "center", paddingLeft: 8,
-                minWidth: bar.value === 0 ? 0 : 40,
-              }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(bar.value)}%</span>
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 const MAX_BIO = 67;
 
-function TriadSlider({ label, value, color, onChange }: { label: string; value: number; color: string; onChange: (v: number) => void }) {
-  const pct = (value / MAX_BIO) * 100;
+function BarSlider({ label, value, color, onChange }: { label: string; value: number; color: string; onChange: (v: number) => void }) {
+  const widthPct = (value / MAX_BIO) * 100;
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: 13, fontWeight: 600, color: "#3A3A3C" }}>{label}</span>
-        <span style={{ fontSize: 14, fontWeight: 700, color, fontVariantNumeric: "tabular-nums" }}>{value} %</span>
+    <div style={{ display: "flex", alignItems: "center", gap: 10, position: "relative" }}>
+      <span style={{ fontSize: 12, color: "#6E6E73", width: 62, flexShrink: 0 }}>{label}</span>
+      <div style={{ flex: 1, position: "relative", height: 24 }}>
+        <div style={{ position: "absolute", inset: 0, borderRadius: 6, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
+          <div style={{
+            width: value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 5), 100)}%`,
+            height: "100%", borderRadius: 6, background: color,
+            transition: "width 150ms ease",
+            display: "flex", alignItems: "center", paddingLeft: 8,
+            minWidth: value === 0 ? 0 : 40,
+          }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>
+          </div>
+        </div>
+        <input
+          type="range" min={0} max={MAX_BIO} value={value}
+          onChange={e => onChange(Number(e.target.value))}
+          data-testid={`slider-${label.toLowerCase()}`}
+          style={{
+            position: "absolute", inset: 0, width: "100%", height: "100%",
+            appearance: "none", WebkitAppearance: "none",
+            background: "transparent", outline: "none", cursor: "pointer",
+            margin: 0, zIndex: 2,
+          }}
+        />
       </div>
-      <input
-        type="range" min={0} max={MAX_BIO} value={value}
-        onChange={e => onChange(Number(e.target.value))}
-        data-testid={`slider-${label.toLowerCase()}`}
-        style={{
-          width: "100%", height: 6, borderRadius: 3,
-          appearance: "none", WebkitAppearance: "none",
-          background: `linear-gradient(to right, ${color} ${pct}%, rgba(0,0,0,0.06) ${pct}%)`,
-          outline: "none", cursor: "pointer",
-        }}
-      />
     </div>
   );
 }
 
-function TriadSliders({ triad, onChange }: { triad: Triad; onChange: (t: Triad) => void }) {
+function BarSliders({ triad, onChange }: { triad: Triad; onChange: (t: Triad) => void }) {
   const handleChange = (key: ComponentKey, rawVal: number) => {
     onChange({ ...triad, [key]: Math.min(rawVal, MAX_BIO) });
   };
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "18px 20px", borderRadius: 18, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-      <TriadSlider label="Impulsiv" value={triad.impulsiv} color={COLORS.imp} onChange={v => handleChange("impulsiv", v)} />
-      <TriadSlider label="Intuitiv" value={triad.intuitiv} color={COLORS.int} onChange={v => handleChange("intuitiv", v)} />
-      <TriadSlider label="Analytisch" value={triad.analytisch} color={COLORS.ana} onChange={v => handleChange("analytisch", v)} />
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <BarSlider label="Impulsiv" value={triad.impulsiv} color={COLORS.imp} onChange={v => handleChange("impulsiv", v)} />
+      <BarSlider label="Intuitiv" value={triad.intuitiv} color={COLORS.int} onChange={v => handleChange("intuitiv", v)} />
+      <BarSlider label="Analytisch" value={triad.analytisch} color={COLORS.ana} onChange={v => handleChange("analytisch", v)} />
     </div>
   );
 }
@@ -371,22 +350,16 @@ export default function Teamdynamik() {
           <div style={{ display: "flex", gap: 24, marginBottom: 24, flexWrap: "wrap" }}>
             <div style={{ flex: 1, minWidth: 280 }}>
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }} data-testid="label-person">{isLeading ? "Neue Führungskraft" : "Neues Teammitglied"}</p>
-              <TriadSliders triad={personProfile} onChange={setPersonProfile} />
-              <div style={{ marginTop: 14 }}>
-                <SoftBar triad={personProfile} />
-                <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Istprofil aus Soll-Ist-Vergleich</p>
-              </div>
+              <BarSliders triad={personProfile} onChange={setPersonProfile} />
+              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Istprofil aus Soll-Ist-Vergleich</p>
             </div>
 
             <div style={{ width: 1, background: "rgba(0,0,0,0.06)", alignSelf: "stretch" }} />
 
             <div style={{ flex: 1, minWidth: 280 }}>
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>Teamauswertung</p>
-              <TriadSliders triad={teamProfile} onChange={setTeamProfile} />
-              <div style={{ marginTop: 14 }}>
-                <SoftBar triad={teamProfile} />
-                <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Profil (max. 67 % pro Komponente)</p>
-              </div>
+              <BarSliders triad={teamProfile} onChange={setTeamProfile} />
+              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Profil (max. 67 % pro Komponente)</p>
             </div>
           </div>
 
@@ -623,8 +596,10 @@ export default function Teamdynamik() {
 
       <style>{`
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid rgba(0,0,0,0.12); box-shadow: 0 1px 6px rgba(0,0,0,0.15); margin-top: -6px; cursor: pointer; }
-        input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid rgba(0,0,0,0.12); box-shadow: 0 1px 6px rgba(0,0,0,0.15); cursor: pointer; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 6px; height: 24px; border-radius: 3px; background: rgba(255,255,255,0.85); border: none; box-shadow: 0 0 4px rgba(0,0,0,0.2); cursor: ew-resize; }
+        input[type="range"]::-moz-range-thumb { width: 6px; height: 24px; border-radius: 3px; background: rgba(255,255,255,0.85); border: none; box-shadow: 0 0 4px rgba(0,0,0,0.2); cursor: ew-resize; }
+        input[type="range"]::-webkit-slider-runnable-track { height: 24px; cursor: ew-resize; }
+        input[type="range"]::-moz-range-track { height: 24px; cursor: ew-resize; background: transparent; }
         @media print {
           nav, [data-testid="tab-analyse"], [data-testid="button-generate-report"] { display: none !important; }
           main { padding: 0 !important; max-width: 100% !important; }
