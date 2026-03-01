@@ -489,25 +489,37 @@ export default function Teamdynamik() {
                       ))}
                     </div>
 
-                    {m.normal.evaluation.flags.intuitiveBreakRisk && (
-                      <p style={{ fontSize: 11, color: "#FF3B30", margin: "0 0 10px", lineHeight: 1.5 }}>
-                        ⚠ Das Team ist stark intuitiv geprägt, die Führungskraft dort sehr niedrig – Risiko für Beziehungsabriss.
-                      </p>
+                    {m.normal.evaluation.flags.leadershipRules.length > 0 && (
+                      <div style={{ marginBottom: 10 }}>
+                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Führungsregeln</p>
+                        {m.normal.evaluation.flags.leadershipRules.map((rule, ri) => (
+                          <div key={ri} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 6 }}>
+                            <span style={{ fontSize: 10, color: rule.minRating === "Nicht passend" ? "#FF3B30" : "#FF9500", marginTop: 2, flexShrink: 0, fontWeight: 700 }}>{rule.code}</span>
+                            <span style={{ fontSize: 11, color: "#3A3A3C", lineHeight: 1.5 }}>
+                              <span style={{ fontWeight: 600 }}>{rule.title}:</span> {rule.message}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     )}
-                    {m.normal.evaluation.flags.dominanceRisk && (
+
+                    {m.normal.evaluation.flags.leaderSecondaryCompetition?.active && (
                       <p style={{ fontSize: 11, color: "#FF9500", margin: "0 0 10px", lineHeight: 1.5 }}>
-                        ⚠ Sehr hohe Dominanz in einer Komponente – unter Druck Übersteuerungsrisiko.
-                      </p>
-                    )}
-                    {m.normal.evaluation.flags.dualLeader && m.normal.evaluation.flags.clearTeam && (
-                      <p style={{ fontSize: 11, color: "#FF9500", margin: "0 0 10px", lineHeight: 1.5 }}>
-                        ⚠ Führungskraft mit Doppeldominanz trifft auf Team mit klarer Dominanz – Reibungsrisiko ohne Entscheidungsregeln.
+                        ⚠ Sekundär-Konkurrenz: 2. und 3. Komponente der Führung sind nahezu gleich stark – unter Stress konkurrieren sie.
                       </p>
                     )}
 
                     <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 10px" }}>
                       <span style={{ fontWeight: 700 }}>Team-Fit-Score: </span>
-                      {Math.round(m.normal.evaluation.indices.TFS * 100)} %
+                      {(() => {
+                        const tfs = Math.round(m.normal.evaluation.indices.TFS * 100);
+                        const tfsBefore = m.normal.evaluation.indices.TFS_beforeLeadershipRules !== undefined
+                          ? Math.round(m.normal.evaluation.indices.TFS_beforeLeadershipRules * 100) : null;
+                        if (tfsBefore !== null && tfsBefore !== tfs) {
+                          return <>{tfsBefore} % <span style={{ color: "#8E8E93" }}>→</span> {tfs} % <span style={{ fontSize: 10, color: "#8E8E93" }}>(nach Führungsregeln)</span></>;
+                        }
+                        return <>{tfs} %</>;
+                      })()}
                     </p>
 
                     <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "14px 0" }} />
@@ -525,16 +537,21 @@ export default function Teamdynamik() {
                       <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Unkontrollierter Stress</p>
                       <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 5, background: `${ratingColor[ur.rating] || "#8E8E93"}15`, color: ratingColor[ur.rating] || "#8E8E93" }} data-testid="badge-uncontrolled-rating">{ur.rating}</span>
                     </div>
-                    <p style={{ fontSize: 11, color: "#6E6E73", margin: "0 0 4px", lineHeight: 1.5, fontStyle: "italic" }}>Die zweitstärkste Komponente wird sichtbarer und kann die Führungslinie verschieben.</p>
+                    <p style={{ fontSize: 11, color: "#6E6E73", margin: "0 0 4px", lineHeight: 1.5, fontStyle: "italic" }}>
+                      {m.uncontrolledStress.evaluation.flags.leaderSecondaryCompetition?.active
+                        ? "Top2 und Top3 konkurrieren – Verhalten wirkt wechselhafter."
+                        : "Die zweitstärkste Komponente wird sichtbarer und kann die Führungslinie verschieben."}
+                    </p>
                     <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 3px", lineHeight: 1.5 }}>{ur.ratingHeadline}</p>
-
-                    {sc.flags.worsensAny && (
-                      <>
-                        <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "14px 0" }} />
-                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Stressvergleich</p>
-                        <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{sc.summary}</p>
-                      </>
+                    {m.uncontrolledStress.evaluation.flags.leadershipRules.some(r => r.code === "F6") && (
+                      <p style={{ fontSize: 11, color: "#FF9500", margin: "6px 0 0", lineHeight: 1.5 }}>
+                        ⚠ Sekundär-Konkurrenz unter Stress: Führungsstil wird inkonsistenter.
+                      </p>
                     )}
+
+                    <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "14px 0" }} />
+                    <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Stressvergleich</p>
+                    <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{sc.summary}</p>
                   </div>
                 );
               }

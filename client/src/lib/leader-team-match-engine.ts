@@ -3,13 +3,47 @@ import type { Triad, ComponentKey } from "./jobcheck-engine";
 const MAX = 67;
 const COMPONENTS: ComponentKey[] = ["impulsiv", "intuitiv", "analytisch"];
 
+const SECONDARY_COMP_GAP_MAX = 5;
+const DOMINANT_TOP1_MIN_GAP = 10;
+
+const F1_MIN_STEERING_IMP = 18;
+const F1_MIN_STEERING_ANA = 18;
+const F2_TEAM_INT_HIGH = 40;
+const F2_LEADER_INT_LOW = 18;
+const F2_LEADER_ANA_HIGH = 45;
+const F3_LEADER_IMP_OVERDRIVE = 58;
+const F3_TEAM_IMP_LOW = 25;
+const F4_TEAM_ANA_HIGH = 35;
+const F4_LEADER_ANA_LOW = 15;
+const F5_LEADERSHIP_CLARITY_LOW_GAP = 2;
+const F5_TEAM_CLEAR_GAP = 15;
+const F6_SECONDARY_COMP_PENALTY_BASE = 0.05;
+
 type DiffCategory = "A" | "B" | "C";
 type Rating = "Passend" | "Bedingt passend" | "Nicht passend";
+type StateKey = "normal" | "controlledStress" | "uncontrolledStress";
+
+export type LeadershipRule = {
+  code: string;
+  title: string;
+  message: string;
+  minRating: Rating | null;
+  tfsPenalty: number;
+};
+
+export type SecondaryCompetition = {
+  active: boolean;
+  top1: ComponentKey;
+  top2: ComponentKey;
+  top3: ComponentKey;
+  gap12: number;
+  gap23: number;
+};
 
 export type MatchEvaluation = {
   differences: Record<ComponentKey, number>;
   categories: Record<ComponentKey, DiffCategory>;
-  indices: { TFS: number };
+  indices: { TFS: number; TFS_beforeLeadershipRules?: number };
   flags: {
     dominanceRisk: boolean;
     intuitiveBreakRisk: boolean;
@@ -17,8 +51,13 @@ export type MatchEvaluation = {
     clearTeam: boolean;
     gapLeader: number;
     gapTeam: number;
+    leaderSecondaryCompetition: SecondaryCompetition;
+    teamSecondaryCompetition: SecondaryCompetition;
+    leadershipRules: LeadershipRule[];
+    leadershipRuleFlags: Record<string, boolean>;
   };
   rating: Rating;
+  rating_beforeLeadershipRules?: Rating;
 };
 
 export type MatchTexts = {
@@ -55,6 +94,10 @@ function clamp(x: number, min = 0, max = MAX): number {
   return Math.max(min, Math.min(max, x));
 }
 
+function clamp01(x: number): number {
+  return Math.max(0, Math.min(1, x));
+}
+
 function sortKeysByValueDesc(p: Triad): ComponentKey[] {
   return [...COMPONENTS].sort((a, b) => p[b] - p[a]);
 }
@@ -81,12 +124,27 @@ function ratingOrder(rating: Rating): number {
   return 0;
 }
 
+function enforceMinRating(currentRating: Rating, minRating: Rating): Rating {
+  const cur = ratingOrder(currentRating);
+  const min = ratingOrder(minRating);
+  if (cur > min) return minRating;
+  return currentRating;
+}
+
 function componentLabel(key: ComponentKey): string {
   switch (key) {
     case "impulsiv": return "Impulsiv (Tempo/Entscheidung/Durchsetzung)";
     case "intuitiv": return "Intuitiv (Beziehung/Teamgefühl/Kommunikation)";
     case "analytisch": return "Analytisch (Struktur/Planung/Absicherung)";
   }
+}
+
+function detectSecondaryCompetition(profile: Triad): SecondaryCompetition {
+  const keys = sortKeysByValueDesc(profile);
+  const gap12 = profile[keys[0]] - profile[keys[1]];
+  const gap23 = profile[keys[1]] - profile[keys[2]];
+  const active = gap12 >= DOMINANT_TOP1_MIN_GAP && gap23 <= SECONDARY_COMP_GAP_MAX;
+  return { active, top1: keys[0], top2: keys[1], top3: keys[2], gap12, gap23 };
 }
 
 function balanceIndex(p: Triad): number {
@@ -98,30 +156,71 @@ function estimateStressIntensity(leader: Triad, team: Triad): number {
   const biL = balanceIndex(leader);
   const biT = balanceIndex(team);
   const unbalance = (1 - biL + 1 - biT) / 2;
-  return clamp(unbalance, 0, 1);
+  return clamp01(unbalance);
 }
 
 function applyControlledStress(profile: Triad, intensity: number, k = 10, midDecay = 0.15): Triad {
   const p = { ...profile };
+  const i = clamp01(intensity);
   const keys = sortKeysByValueDesc(p);
-  const delta = k * clamp(intensity, 0, 1);
+  const delta = k * i;
+
   p[keys[0]] = clamp(p[keys[0]] + delta);
   p[keys[2]] = clamp(p[keys[2]] - delta);
   p[keys[1]] = clamp(p[keys[1]] - midDecay * delta);
+
+  const comp = detectSecondaryCompetition(profile);
+  if (comp.active) {
+    const noise = 0.25 * delta;
+    p[comp.top2] = clamp(p[comp.top2] + noise);
+    p[comp.top3] = clamp(p[comp.top3] - noise);
+  }
+
   return p;
 }
 
-function applyUncontrolledStress(profile: Triad, intensity: number, k = 10, top1Loss = 0.6, lowLoss = 0.2): Triad {
+function applyUncontrolledStress(profile: Triad, intensity: number, k = 10): Triad {
   const p = { ...profile };
-  const keys = sortKeysByValueDesc(p);
-  const delta = k * clamp(intensity, 0, 1);
-  p[keys[1]] = clamp(p[keys[1]] + delta);
-  p[keys[0]] = clamp(p[keys[0]] - top1Loss * delta);
-  p[keys[2]] = clamp(p[keys[2]] - lowLoss * delta);
+  const i = clamp01(intensity);
+  const delta = k * i;
+  const keys = sortKeysByValueDesc(profile);
+  const comp = detectSecondaryCompetition(profile);
+
+  if (!comp.active) {
+    const top1Loss = 0.6 * delta;
+    const lowLoss = 0.2 * delta;
+    p[keys[1]] = clamp(p[keys[1]] + delta);
+    p[keys[0]] = clamp(p[keys[0]] - top1Loss);
+    p[keys[2]] = clamp(p[keys[2]] - lowLoss);
+    return p;
+  }
+
+  const secGain = 0.8 * delta;
+  const top1Loss = 0.9 * delta;
+  p[comp.top2] = clamp(p[comp.top2] + secGain);
+  p[comp.top3] = clamp(p[comp.top3] + secGain);
+  p[comp.top1] = clamp(p[comp.top1] - top1Loss);
   return p;
 }
 
-function teamFit(leader: Triad, team: Triad): MatchEvaluation {
+type BaseEval = {
+  differences: Record<ComponentKey, number>;
+  categories: Record<ComponentKey, DiffCategory>;
+  indices: { TFS: number };
+  flags: {
+    dominanceRisk: boolean;
+    intuitiveBreakRisk: boolean;
+    dualLeader: boolean;
+    clearTeam: boolean;
+    gapLeader: number;
+    gapTeam: number;
+    leaderSecondaryCompetition: SecondaryCompetition;
+    teamSecondaryCompetition: SecondaryCompetition;
+  };
+  rating: Rating;
+};
+
+function teamFitBase(leader: Triad, team: Triad): BaseEval {
   const tfsPass = 0.65;
   const tfsBorder = 0.50;
   const dominanceLeaderHigh = 60;
@@ -140,7 +239,6 @@ function teamFit(leader: Triad, team: Triad): MatchEvaluation {
   const fitR = 1 - dR / MAX;
   const fitY = 1 - dY / MAX;
   const fitB = 1 - dB / MAX;
-
   const TFS = wY * fitY + wR * fitR + wB * fitB;
 
   const cR = classifyDiff(dR);
@@ -155,12 +253,13 @@ function teamFit(leader: Triad, team: Triad): MatchEvaluation {
 
   const leaderKeys = sortKeysByValueDesc(leader);
   const teamKeys = sortKeysByValueDesc(team);
-
   const gapLeader = leader[leaderKeys[0]] - leader[leaderKeys[1]];
   const gapTeam = team[teamKeys[0]] - team[teamKeys[1]];
-
   const dualLeader = gapLeader <= dualGapMax;
   const clearTeam = gapTeam >= clearGapMin;
+
+  const leaderSecondaryCompetition = detectSecondaryCompetition(leader);
+  const teamSecondaryCompetition = detectSecondaryCompetition(team);
 
   const nonFit = countC >= 2 || (dominanceRisk && countC >= 1) || TFS < tfsBorder;
   const conditionalFit = countC === 1 || countB >= 2 || intuitiveBreakRisk || (dualLeader && clearTeam) || (TFS >= tfsBorder && TFS < tfsPass);
@@ -173,13 +272,90 @@ function teamFit(leader: Triad, team: Triad): MatchEvaluation {
     differences: { impulsiv: dR, intuitiv: dY, analytisch: dB },
     categories: { impulsiv: cR, intuitiv: cY, analytisch: cB },
     indices: { TFS },
-    flags: { dominanceRisk, intuitiveBreakRisk, dualLeader, clearTeam, gapLeader, gapTeam },
+    flags: { dominanceRisk, intuitiveBreakRisk, dualLeader, clearTeam, gapLeader, gapTeam, leaderSecondaryCompetition, teamSecondaryCompetition },
     rating,
   };
 }
 
-function buildTexts(stateName: string, leader: Triad, team: Triad, evalResult: MatchEvaluation): MatchTexts {
-  const { differences, categories, indices, flags, rating } = evalResult;
+function applyLeadershipRules(stateKey: StateKey, baseEval: BaseEval, leader: Triad, team: Triad, intensity: number): MatchEvaluation {
+  const eval2: MatchEvaluation = JSON.parse(JSON.stringify(baseEval));
+  eval2.flags.leadershipRules = [];
+  eval2.flags.leadershipRuleFlags = {};
+
+  let tfs = eval2.indices.TFS;
+  let rating = eval2.rating;
+
+  function addRule(code: string, title: string, message: string, minRating: Rating | null = null, tfsPenalty = 0) {
+    eval2.flags.leadershipRules.push({ code, title, message, minRating, tfsPenalty });
+    eval2.flags.leadershipRuleFlags[code] = true;
+    if (tfsPenalty > 0) {
+      tfs = clamp01(tfs - tfsPenalty);
+    }
+    if (minRating) {
+      rating = enforceMinRating(rating, minRating);
+    }
+  }
+
+  if (leader.impulsiv < F1_MIN_STEERING_IMP && leader.analytisch < F1_MIN_STEERING_ANA) {
+    addRule("F1", "Steuerungsminimum fehlt",
+      "Impulsiv und Analytisch sind gleichzeitig sehr niedrig. Das reduziert Entscheidungs- und Steuerungsfähigkeit. Führung wird schnell als unklar erlebt.",
+      "Bedingt passend", 0);
+  }
+
+  if (team.intuitiv >= F2_TEAM_INT_HIGH && leader.intuitiv <= F2_LEADER_INT_LOW && leader.analytisch >= F2_LEADER_ANA_HIGH) {
+    addRule("F2", "Kältebruch-Risiko",
+      "Das Team braucht Nähe und Abstimmung (Intuitiv hoch). Die Führung ist intuitiv niedrig, aber analytisch sehr hoch. Das kann als sachlich-distanziert erlebt werden.",
+      "Bedingt passend", 0.03);
+  }
+
+  if (leader.impulsiv >= F3_LEADER_IMP_OVERDRIVE && team.impulsiv <= F3_TEAM_IMP_LOW) {
+    const hasAnyC = Object.values(eval2.categories).some(c => c === "C");
+    addRule("F3", "Overdrive-Risiko",
+      "Die Führung taktet deutlich schneller als das Team. Risiko: Überfahren, Widerstand, Reibung im Alltag.",
+      hasAnyC ? "Nicht passend" : "Bedingt passend", 0.04);
+  }
+
+  if (team.analytisch >= F4_TEAM_ANA_HIGH && leader.analytisch <= F4_LEADER_ANA_LOW) {
+    const hasAnyC = Object.values(eval2.categories).some(c => c === "C");
+    addRule("F4", "Strukturlücke",
+      "Das Team erwartet Struktur und Standards (Analytisch hoch). Die Führung ist dort sehr niedrig. Risiko: fehlende Prozesse, Unklarheit, Nacharbeit.",
+      hasAnyC ? "Nicht passend" : "Bedingt passend", 0.04);
+  }
+
+  const leaderKeys = sortKeysByValueDesc(leader);
+  const teamKeys = sortKeysByValueDesc(team);
+  const gapLeader = leader[leaderKeys[0]] - leader[leaderKeys[1]];
+  const gapTeam = team[teamKeys[0]] - team[teamKeys[1]];
+
+  if (gapLeader <= F5_LEADERSHIP_CLARITY_LOW_GAP) {
+    if (gapTeam >= F5_TEAM_CLEAR_GAP) {
+      addRule("F5", "Leitklarheit niedrig",
+        "Die Führung hat sehr geringe Leitklarheit. Das Team ist klar dominant und erwartet eine klare Linie. Ohne Entscheidungsregeln entsteht schnell Reibung.",
+        "Bedingt passend", 0.02);
+    } else {
+      addRule("F5", "Leitklarheit niedrig",
+        "Die Führung hat sehr geringe Leitklarheit. Das kann zu wechselnder Steuerungslogik führen, besonders bei Zeitdruck.",
+        null, 0.01);
+    }
+  }
+
+  if (stateKey === "uncontrolledStress" && eval2.flags.leaderSecondaryCompetition?.active) {
+    const penalty = F6_SECONDARY_COMP_PENALTY_BASE * clamp01(intensity);
+    addRule("F6", "Sekundär-Konkurrenz unter Stress",
+      "Bei unkontrolliertem Stress konkurrieren die 2. und 3. Komponente der Führung. Dadurch wirkt der Führungsstil inkonsistenter.",
+      "Bedingt passend", penalty);
+  }
+
+  eval2.indices.TFS_beforeLeadershipRules = baseEval.indices.TFS;
+  eval2.indices.TFS = tfs;
+  eval2.rating_beforeLeadershipRules = baseEval.rating;
+  eval2.rating = rating;
+
+  return eval2;
+}
+
+function buildStateTexts(stateName: string, leader: Triad, team: Triad, evaluation: MatchEvaluation, stateKey: StateKey, intensity: number): MatchTexts {
+  const { differences, categories, indices, flags, rating } = evaluation;
 
   const ratingHeadline =
     rating === "Passend"
@@ -201,29 +377,55 @@ function buildTexts(stateName: string, leader: Triad, team: Triad, evalResult: M
   }
   if (bKeys.length >= 1) {
     reasons.push(
-      `Zusätzlich ${bKeys.length > 1 ? "liegen" : "liegt"} ${bKeys.length} moderate Verschiebung${bKeys.length > 1 ? "en" : ""} vor: ` +
+      `${bKeys.length > 1 ? "Es liegen" : "Es liegt"} ${bKeys.length} moderate Verschiebung${bKeys.length > 1 ? "en" : ""} vor: ` +
       `${bKeys.map(k => `${componentLabel(k)} (Δ ${differences[k]})`).join(", ")}.`
     );
   }
 
   if (flags.intuitiveBreakRisk) {
-    reasons.push(
-      "Das Team ist stark intuitiv geprägt, die Führungskraft ist dort sehr niedrig. Das erhöht das Risiko für Beziehungsabriss."
-    );
+    reasons.push("Team ist stark intuitiv, Führung ist dort sehr niedrig – Risiko: Beziehungsabriss.");
   }
   if (flags.dominanceRisk) {
-    reasons.push(
-      "Die Führungskraft zeigt eine sehr hohe Dominanz in mindestens einer Komponente. In Kombination mit Abweichungen kann das unter Druck zu Übersteuerung führen."
-    );
+    reasons.push("Führung zeigt sehr hohe Dominanz – Risiko: Übersteuerung unter Druck.");
   }
   if (flags.dualLeader && flags.clearTeam) {
+    reasons.push("Führung hat Doppeldominanz, Team ist klar dominant – Team erwartet klare Führungs-Handschrift.");
+  }
+
+  if (flags.leaderSecondaryCompetition?.active) {
+    const sc = flags.leaderSecondaryCompetition;
     reasons.push(
-      "Die Führungskraft hat eine Doppeldominanz, das Team hat eine klare Dominanz. Ohne Entscheidungsregeln entsteht Reibung."
+      `Sekundär-Konkurrenz (Führung): ${componentLabel(sc.top2)} und ${componentLabel(sc.top3)} sind nahezu gleich stark (Δ ${sc.gap23}). Unter Stress können diese beiden Steuerungsachsen konkurrieren.`
+    );
+  }
+
+  if (flags.leadershipRules?.length) {
+    reasons.push(
+      "Führungsregeln: " +
+      flags.leadershipRules.map(r => `${r.code}: ${r.title} – ${r.message}`).join(" ")
     );
   }
 
   const tfsPct = Math.round(indices.TFS * 100);
-  reasons.push(`Team-Fit-Score: ${tfsPct} %`);
+  const tfsPctBefore = indices.TFS_beforeLeadershipRules !== undefined
+    ? Math.round(indices.TFS_beforeLeadershipRules * 100)
+    : null;
+
+  if (tfsPctBefore !== null && tfsPctBefore !== tfsPct) {
+    reasons.push(`Team-Fit-Score durch Führungsregeln angepasst: ${tfsPctBefore} % → ${tfsPct} %.`);
+  } else {
+    reasons.push(`Team-Fit-Score: ${tfsPct} %`);
+  }
+
+  if (stateKey === "controlledStress") {
+    reasons.push(
+      `Stresslogik (kontrolliert, Intensität ${Math.round(intensity * 100)} %): Die stärkste Komponente wird dominanter.`
+    );
+  } else if (stateKey === "uncontrolledStress") {
+    reasons.push(
+      `Stresslogik (unkontrolliert, Intensität ${Math.round(intensity * 100)} %): Die zweitstärkste Komponente wird sichtbarer. Bei Top2 ≈ Top3 konkurrieren beide.`
+    );
+  }
 
   const compLines = COMPONENTS.map(k => {
     const cat = categories[k];
@@ -242,7 +444,7 @@ function buildTexts(stateName: string, leader: Triad, team: Triad, evalResult: M
   };
 }
 
-function buildStressComparison(normalEval: MatchEvaluation, controlledEval: MatchEvaluation, uncontrolledEval: MatchEvaluation): StressComparison {
+function buildStressComparison(normalEval: MatchEvaluation, controlledEval: MatchEvaluation, uncontrolledEval: MatchEvaluation, intensity: number): StressComparison {
   const n = ratingOrder(normalEval.rating);
   const c = ratingOrder(controlledEval.rating);
   const u = ratingOrder(uncontrolledEval.rating);
@@ -260,12 +462,14 @@ function buildStressComparison(normalEval: MatchEvaluation, controlledEval: Matc
   }
 
   const summary =
+    `Stressvergleich (Intensität: ${Math.round(intensity * 100)} %): ` +
     `Unter kontrolliertem Stress ${deltaText(controlledDelta)} die Passung (${normalEval.rating} → ${controlledEval.rating}). ` +
     `Unter unkontrolliertem Stress ${deltaText(uncontrolledDelta)} die Passung (${normalEval.rating} → ${uncontrolledEval.rating}).`;
 
   const guidance = [
-    "Kontrollierter Stress: Die stärkste Komponente wird dominanter – mehr Klarheit, aber auch Tunnelblick-Risiko.",
-    "Unkontrollierter Stress: Die zweitstärkste Komponente wird sichtbarer und kann die Führungslinie verschieben.",
+    "Kontrollierter Stress: Die stärkste Komponente wird dominanter – mehr Klarheit, aber Tunnelblick-Risiko.",
+    "Unkontrollierter Stress: Die zweitstärkste Komponente wird sichtbarer; bei Top2 ≈ Top3 konkurrieren beide – Verhalten wirkt wechselhafter.",
+    "Wenn die Passung unter unkontrolliertem Stress kippt, braucht es klare Entscheidungsregeln, Kommunikationsrhythmus und Eskalationslogik.",
   ].join("\n");
 
   return {
@@ -294,22 +498,25 @@ export function leaderTeamMatchFull(input: {
   if (typeof intensity !== "number") {
     intensity = estimateStressIntensity(leader, team);
   }
-  intensity = clamp(intensity, 0, 1);
+  intensity = clamp01(intensity);
 
-  const normalEval = teamFit(leader, team);
-  const normalTexts = buildTexts("Normalzustand", leader, team, normalEval);
+  const normalBase = teamFitBase(leader, team);
+  const normalEval = applyLeadershipRules("normal", normalBase, leader, team, intensity);
+  const normalTexts = buildStateTexts("Normalzustand", leader, team, normalEval, "normal", intensity);
 
   const leaderControlled = applyControlledStress(leader, intensity, k);
   const teamControlled = applyControlledStress(team, intensity, k);
-  const controlledEval = teamFit(leaderControlled, teamControlled);
-  const controlledTexts = buildTexts("Kontrollierter Stress", leaderControlled, teamControlled, controlledEval);
+  const controlledBase = teamFitBase(leaderControlled, teamControlled);
+  const controlledEval = applyLeadershipRules("controlledStress", controlledBase, leaderControlled, teamControlled, intensity);
+  const controlledTexts = buildStateTexts("Kontrollierter Stress", leaderControlled, teamControlled, controlledEval, "controlledStress", intensity);
 
   const leaderUncontrolled = applyUncontrolledStress(leader, intensity, k);
   const teamUncontrolled = applyUncontrolledStress(team, intensity, k);
-  const uncontrolledEval = teamFit(leaderUncontrolled, teamUncontrolled);
-  const uncontrolledTexts = buildTexts("Unkontrollierter Stress", leaderUncontrolled, teamUncontrolled, uncontrolledEval);
+  const uncontrolledBase = teamFitBase(leaderUncontrolled, teamUncontrolled);
+  const uncontrolledEval = applyLeadershipRules("uncontrolledStress", uncontrolledBase, leaderUncontrolled, teamUncontrolled, intensity);
+  const uncontrolledTexts = buildStateTexts("Unkontrollierter Stress", leaderUncontrolled, teamUncontrolled, uncontrolledEval, "uncontrolledStress", intensity);
 
-  const comparison = buildStressComparison(normalEval, controlledEval, uncontrolledEval);
+  const comparison = buildStressComparison(normalEval, controlledEval, uncontrolledEval, intensity);
 
   return {
     input: { leader, team, stress: { intensity, k } },
