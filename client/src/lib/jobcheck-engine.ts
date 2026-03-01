@@ -442,6 +442,22 @@ function calcControlIntensity(role: RoleAnalysis, cand: CandidateInput): { point
   return { points, level };
 }
 
+function gapDesc(diff: number): string {
+  if (diff <= 3) return "nahezu identisch";
+  if (diff <= 8) return "eine kleine Abweichung";
+  if (diff <= 15) return "eine spürbare Abweichung";
+  if (diff <= 25) return "eine deutliche Abweichung";
+  return "eine große Diskrepanz";
+}
+
+function gapAdj(diff: number): string {
+  if (diff <= 3) return "nahezu identisch";
+  if (diff <= 8) return "leicht abweichend";
+  if (diff <= 15) return "spürbar abweichend";
+  if (diff <= 25) return "deutlich abweichend";
+  return "stark abweichend";
+}
+
 function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): MatrixRow[] {
   const r = normalizeTriad(role.role_profile);
   const c = normalizeTriad(cand.candidate_profile);
@@ -477,14 +493,14 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
     roleDemand: dominanceLabel(rDom), candidatePattern: dominanceLabel(cDom),
     status: dominanceStatus,
     reasoning: candIsEqualDist
-      ? `Gleichverteilung: Der Kandidat zeigt keine klare Arbeitsweise (${c.impulsiv}/${c.intuitiv}/${c.analytisch}). Die Rolle braucht eine deutliche ${rLabel}-Ausrichtung (Soll: ${r[rDom.top1.key]}). Ohne einen klaren Schwerpunkt fehlt die Grundlage, um Aufgaben gezielt zu priorisieren und Entscheidungen konsequent zu treffen.`
+      ? `Gleichverteilung: Der Kandidat zeigt keine klare Arbeitsweise. Die Rolle braucht eine deutliche ${rLabel}-Ausrichtung. Ohne einen klaren Schwerpunkt fehlt die Grundlage, um Aufgaben gezielt zu priorisieren und Entscheidungen konsequent zu treffen.`
       : dominanceStatus === "SUITABLE"
-        ? `Die Arbeitsweise passt: Beide Profile sind ${rLabel}-geprägt (Abweichung ${domDiff} Punkte). Die Rolle wird in ihren Kernanforderungen gut abgebildet – Entscheidungen, Prioritäten und Arbeitsweise bleiben konsistent.`
+        ? `Die Arbeitsweise passt: Beide Profile sind ${rLabel}-geprägt und ${gapAdj(domDiff)}. Die Rolle wird in ihren Kernanforderungen gut abgebildet – Entscheidungen, Prioritäten und Arbeitsweise bleiben konsistent.`
         : dominanceStatus === "CONDITIONAL"
           ? (sameDominant
-            ? `Gleiche Arbeitsweise (${rLabel}), aber die Ausprägung weicht um ${domDiff} Punkte ab (Soll: ${r[rDom.top1.key]} / Ist: ${c[rDom.top1.key]}). In Drucksituationen kann die Umsetzung schwächer ausfallen als gefordert. Klare Ziele und regelmäßige Abstimmungen helfen hier.`
-            : `Verschiebung von ${rLabel} (${r[rDom.top1.key]}) zu ${cLabel} (${c[cDom.top1.key]}). Die Arbeitsweise verändert sich: Entscheidungen und Prioritäten folgen einer anderen Logik (Abweichung ${domDiff} Punkte). Mit klaren Zielvorgaben und festen Entscheidungsfristen lässt sich das steuern.`)
-          : `Deutliche Verschiebung von ${rLabel} (${r[rDom.top1.key]}) zu ${cLabel} (${c[cDom.top1.key]}). Die zentrale Arbeitsweise der Position wird nicht abgebildet. Die Art, wie Entscheidungen getroffen und Prioritäten gesetzt werden, weicht grundlegend von dem ab, was die Rolle verlangt.`,
+            ? `Gleiche Arbeitsweise (${rLabel}), aber es gibt ${gapDesc(domDiff)} in der Ausprägung. In Drucksituationen kann die Umsetzung schwächer ausfallen als gefordert. Klare Ziele und regelmäßige Abstimmungen helfen hier.`
+            : `Verschiebung von ${rLabel} zu ${cLabel}: Die Arbeitsweise verändert sich. Entscheidungen und Prioritäten folgen einer anderen Logik. Mit klaren Zielvorgaben und festen Entscheidungsfristen lässt sich das steuern.`)
+          : `Deutliche Verschiebung von ${rLabel} zu ${cLabel}. Die zentrale Arbeitsweise der Position wird nicht abgebildet. Die Art, wie Entscheidungen getroffen und Prioritäten gesetzt werden, weicht grundlegend von dem ab, was die Rolle verlangt.`,
   });
 
   const decisionStatus: FitStatus = (() => {
@@ -518,9 +534,9 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
       ? `Passt: Die Rolle braucht ${decRoleDesc}, der Kandidat entscheidet ${decCandDesc}. Die Art, wie Entscheidungen getroffen und Prioritäten gesetzt werden, stimmt überein. Tempo und Abläufe bleiben stabil.`
       : decisionStatus === "CONDITIONAL"
         ? (sameDominant
-          ? `Gleiche Entscheidungsweise (${rLabel}), aber die Ausprägung weicht um ${decMainDiff} Punkte ab (Soll: ${r[rDom.top1.key]} / Ist: ${c[rDom.top1.key]}). Entscheidungen können weicher oder langsamer ausfallen. Klare Fristen und feste Regeln für Eskalationen helfen.`
-          : `Die Rolle braucht ${decRoleDesc} (${rLabel} ${r[rDom.top1.key]}), der Kandidat entscheidet ${decCandDesc} (${cLabel} ${c[cDom.top1.key]}). Abweichung: ${decMainDiff} Punkte. Entscheidungen werden anders getroffen als die Rolle es verlangt. Klare Fristen und Eskalationswege können das ausgleichen.`)
-        : `Die Rolle braucht ${decRoleDesc} (${rLabel} ${r[rDom.top1.key]}), der Kandidat ist ${decCandDesc} (${cLabel} ${c[cDom.top1.key]}). Abweichung: ${decMainDiff} Punkte. Eingriffe werden verzögert oder anders priorisiert. ${t.tempoContext}, ${t.qualityMetric} und die operative Führung sind betroffen.`,
+          ? `Gleiche Entscheidungsweise (${rLabel}), aber es gibt ${gapDesc(decMainDiff)} in der Ausprägung. Entscheidungen können weicher oder langsamer ausfallen. Klare Fristen und feste Regeln für Eskalationen helfen.`
+          : `Die Rolle braucht ${decRoleDesc}, der Kandidat entscheidet ${decCandDesc}. Es gibt ${gapDesc(decMainDiff)} zwischen Anforderung und Kandidat. Entscheidungen werden anders getroffen als die Rolle es verlangt. Klare Fristen und Eskalationswege können das ausgleichen.`)
+        : `Die Rolle braucht ${decRoleDesc}, der Kandidat ist ${decCandDesc}. Es gibt ${gapDesc(decMainDiff)} zwischen Anforderung und Kandidat. Eingriffe werden verzögert oder anders priorisiert. ${t.tempoContext}, ${t.qualityMetric} und die operative Führung sind betroffen.`,
   });
 
   const kpiStatus: FitStatus = (() => {
@@ -534,14 +550,14 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
 
   rows.push({
     areaId: "kpi_work", areaLabel: "Arbeitssteuerung und Dokumentation",
-    roleDemand: `Analytisch ${r.analytisch} – ${r.analytisch >= 40 ? `stark kennzahlengesteuert, hohe Anforderung an ${t.reportingDesc}` : r.analytisch >= 25 ? "Kennzahlen als Steuerungsinstrument" : `geringe Anforderung an ${t.reportingDesc}`}`,
-    candidatePattern: `Analytisch ${c.analytisch} – ${c.analytisch >= 30 ? "Strukturdisziplin und Zahlenorientierung anschlussfähig" : c.analytisch >= 20 ? "Kennzahlen als Orientierung, nicht als Steuerungsinstrument" : "geringe analytische Steuerungsbasis"}`,
+    roleDemand: r.analytisch >= 40 ? `Stark kennzahlengesteuert, hohe Anforderung an ${t.reportingDesc}` : r.analytisch >= 25 ? "Kennzahlen als Steuerungsinstrument" : `Geringe Anforderung an ${t.reportingDesc}`,
+    candidatePattern: c.analytisch >= 30 ? "Zahlenorientierung und Strukturdisziplin gut ausgeprägt" : c.analytisch >= 20 ? "Kennzahlen als Orientierung, nicht als zentrales Werkzeug" : "Wenig analytische Grundlage",
     status: kpiStatus,
     reasoning: kpiStatus === "SUITABLE"
-      ? `Analytisch Soll: ${r.analytisch} / Ist: ${c.analytisch}. Die analytische Grundlage ist vorhanden. Der Umgang mit ${t.kpiExamples} und ${t.reportingDesc} kann stabil aufgesetzt werden. ${t.forecastTerm} und Zielerreichung bleiben verlässlich.`
+      ? `Die analytische Grundlage ist vorhanden. Der Umgang mit ${t.kpiExamples} und ${t.reportingDesc} kann stabil aufgesetzt werden. ${t.forecastTerm} und Zielerreichung bleiben verlässlich.`
       : kpiStatus === "CONDITIONAL"
-        ? `Analytisch Soll: ${r.analytisch} / Ist: ${c.analytisch} (Δ ${kpiDiff} Punkte). Für ${t.reportingDesc} braucht es feste Routinen, klare Standards und konsequentes Nachhalten. Ohne diese Struktur sinkt die Qualität von ${t.forecastTerm} und ${t.qualityMetric}.`
-        : `Analytisch Soll: ${r.analytisch} / Ist: ${c.analytisch} (Δ ${kpiDiff} Punkte). ${t.reportingDesc} wird unzuverlässig und braucht durchgehende Begleitung. Kennzahlen wie ${t.kpiExamples} verlieren ohne enge Führung ihre Wirkung. ${t.forecastTerm} und ${t.qualityMetric} werden instabil.`,
+        ? `Es gibt ${gapDesc(kpiDiff)} zwischen Anforderung und Kandidat im analytischen Bereich. Für ${t.reportingDesc} braucht es feste Routinen, klare Standards und konsequentes Nachhalten. Ohne diese Struktur sinkt die Qualität von ${t.forecastTerm} und ${t.qualityMetric}.`
+        : `Die analytische Anforderung wird ${gapAdj(kpiDiff)} verfehlt. ${t.reportingDesc} wird unzuverlässig und braucht durchgehende Begleitung. Kennzahlen wie ${t.kpiExamples} verlieren ohne enge Führung ihre Wirkung. ${t.forecastTerm} und ${t.qualityMetric} werden instabil.`,
   });
 
   if (role.leadership?.required) {
@@ -570,10 +586,10 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
       candidatePattern: `${labelComponent(cDom.top1.key)}-geprägt (${c.impulsiv}/${c.intuitiv}/${c.analytisch})`,
       status: leadershipStatus,
       reasoning: leadershipStatus === "SUITABLE"
-        ? `Die Führungsanforderung ist ${lLabel}-geprägt${lDom ? ` (${lp![lDom.top1.key]})` : ""} – der Kandidat bringt ${c[lDom?.top1.key || rDom.top1.key]} mit. Zielklarheit, Delegation und Durchsetzungsfähigkeit passen zur Rolle. Das Team bekommt die Führung, die es braucht.`
+        ? `Die Führungsanforderung ist ${lLabel}-geprägt – der Kandidat bringt eine passende Ausprägung mit. Zielklarheit, Delegation und Durchsetzungsfähigkeit passen zur Rolle. Das Team bekommt die Führung, die es braucht.`
         : leadershipStatus === "NOT_SUITABLE"
-          ? `Die Rolle braucht ${lLabel}-betonte Führung${lDom ? ` (${lp![lDom.top1.key]})` : ""}, der Kandidat liegt bei ${c[lDom?.top1.key || rDom.top1.key]} (Δ ${leadDiffVal} Punkte). Klare Zielsetzung, Konfliktfähigkeit und Durchsetzung unter Druck sind zu schwach ausgeprägt. Der Führungsaufwand für die nächste Ebene steigt erheblich.`
-          : `Die Führungsanforderung ist ${lLabel}-geprägt${lDom ? ` (${lp![lDom.top1.key]})` : ""}, der Kandidat bringt ${c[lDom?.top1.key || rDom.top1.key]} mit (Δ ${leadDiffVal} Punkte). Führungswirkung ist machbar, wenn klare Ziele, Eskalationswege und regelmäßige Reviews für ${t.kpiExamples} definiert werden.`,
+          ? `Die Rolle braucht ${lLabel}-betonte Führung. Es gibt ${gapDesc(leadDiffVal)} zwischen Anforderung und Kandidat. Klare Zielsetzung, Konfliktfähigkeit und Durchsetzung unter Druck sind zu schwach ausgeprägt. Der Führungsaufwand für die nächste Ebene steigt erheblich.`
+          : `Die Führungsanforderung ist ${lLabel}-geprägt. Es gibt ${gapDesc(leadDiffVal)} zwischen Anforderung und Kandidat. Führungswirkung ist machbar, wenn klare Ziele, Eskalationswege und regelmäßige Reviews für ${t.kpiExamples} definiert werden.`,
     });
   }
 
@@ -592,14 +608,14 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
 
   rows.push({
     areaId: "conflict", areaLabel: "Konfliktfähigkeit",
-    roleDemand: `Impulsiv ${r.impulsiv} – ${r.impulsiv >= 50 ? "direkt, durchsetzungsstark, leistungsorientiert" : r.impulsiv >= 35 ? "situativ konfliktfähig" : "eher moderierend"}`,
-    candidatePattern: `Impulsiv ${c.impulsiv} – ${c.impulsiv >= 45 ? "direkt und durchsetzungsstark" : c.impulsiv >= 30 ? "situativ adressierend" : "eher moderierend/vermeidend"}`,
+    roleDemand: r.impulsiv >= 50 ? "Direkt, durchsetzungsstark, leistungsorientiert" : r.impulsiv >= 35 ? "Situativ konfliktfähig" : "Eher moderierend",
+    candidatePattern: c.impulsiv >= 45 ? "Direkt und durchsetzungsstark" : c.impulsiv >= 30 ? "Situativ adressierend" : "Eher moderierend/vermeidend",
     status: conflictStatus,
     reasoning: conflictStatus === "SUITABLE"
-      ? `Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv} (Δ ${conflictImpDiff} Punkte). Durchsetzungsfähigkeit und Bereitschaft, Probleme direkt anzusprechen, passen zur Rolle. Konflikte werden zeitnah angegangen, Leistungsunterschiede im Team bleiben sichtbar.`
+      ? `Durchsetzungsfähigkeit und Bereitschaft, Probleme direkt anzusprechen, passen zur Rolle. Konflikte werden zeitnah angegangen, Leistungsunterschiede im Team bleiben sichtbar.`
       : conflictStatus === "NOT_SUITABLE"
-        ? `Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv} (Δ ${conflictImpDiff} Punkte). Bei Abweichungen von Zielen wird der Kandidat eher vermitteln statt klar einzugreifen. Leistungsunterschiede im Team werden nicht konsequent angesprochen – Qualität und Tempo leiden.`
-        : `Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv} (Δ ${conflictImpDiff} Punkte). Konfliktfähigkeit ist vorhanden, muss aber in schwierigen Leistungssituationen konsequent eingesetzt werden. Klare Eskalationswege, feste Fristen und verbindliche Ziele helfen dabei.`,
+        ? `Es gibt ${gapDesc(conflictImpDiff)} bei der Konfliktfähigkeit. Bei Abweichungen von Zielen wird der Kandidat eher vermitteln statt klar einzugreifen. Leistungsunterschiede im Team werden nicht konsequent angesprochen – Qualität und Tempo leiden.`
+        : `Es gibt ${gapDesc(conflictImpDiff)} bei der Konfliktfähigkeit. Sie ist vorhanden, muss aber in schwierigen Leistungssituationen konsequent eingesetzt werden. Klare Eskalationswege, feste Fristen und verbindliche Ziele helfen dabei.`,
   });
 
   const tags = role.environment_tags || {};
@@ -617,14 +633,14 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
 
   rows.push({
     areaId: "competition", areaLabel: "Wettbewerbsdynamik",
-    roleDemand: compMarket ? `Hoher Marktdruck – Impulsiv ${r.impulsiv} gefordert` : `Marktübliche Dynamik – Impulsiv ${r.impulsiv}`,
-    candidatePattern: `Impulsiv ${c.impulsiv} – ${c.impulsiv >= 45 ? "Tempo-/Abschlussorientierung stark" : c.impulsiv >= 30 ? "Tempo anschlussfähig" : "Tempo reduziert"}`,
+    roleDemand: compMarket ? "Hoher Marktdruck – starkes Tempo gefordert" : "Marktübliche Dynamik",
+    candidatePattern: c.impulsiv >= 45 ? "Tempo- und Abschlussorientierung stark" : c.impulsiv >= 30 ? "Tempo anschlussfähig" : "Tempo reduziert",
     status: competitionStatus,
     reasoning: competitionStatus === "SUITABLE"
-      ? `Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv}${compMarket ? " bei hohem Marktdruck" : ""} (Δ ${Math.abs(compImpGap)} Punkte). Tempo und Reaktionsfähigkeit passen zur Rolle. ${t.resultMetric} bleiben stabil.`
+      ? `Tempo und Reaktionsfähigkeit passen zur Rolle${compMarket ? " – auch unter hohem Marktdruck" : ""}. ${t.resultMetric} bleiben stabil.`
       : competitionStatus === "NOT_SUITABLE"
-        ? `${compMarket ? "Hoher Marktdruck: " : ""}Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv} (Δ ${Math.abs(compImpGap)} Punkte). Der nötige Antrieb fehlt – das Tempo sinkt, Aufgaben werden eher geprüft als zügig umgesetzt. ${t.resultMetric} werden spürbar geschwächt.`
-        : `Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv} (Δ ${Math.abs(compImpGap)} Punkte). ${t.tempoContext} und Durchsetzungskraft sind machbar, wenn Prioritäten, Fristen und klare Zielvorgaben fest stehen. Ohne diese Struktur verschiebt sich die Dynamik Richtung Absicherung statt Handlung.`,
+        ? `${compMarket ? "Hoher Marktdruck: " : ""}Es gibt ${gapDesc(Math.abs(compImpGap))} beim Tempo. Der nötige Antrieb fehlt – Aufgaben werden eher geprüft als zügig umgesetzt. ${t.resultMetric} werden spürbar geschwächt.`
+        : `Es gibt ${gapDesc(Math.abs(compImpGap))} beim Tempo. ${t.tempoContext} und Durchsetzungskraft sind machbar, wenn Prioritäten, Fristen und klare Zielvorgaben fest stehen. Ohne diese Struktur verschiebt sich die Dynamik Richtung Absicherung statt Handlung.`,
   });
 
   const cultureStatus: FitStatus = (() => {
@@ -641,28 +657,28 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
 
   rows.push({
     areaId: "culture", areaLabel: "Kulturwirkung",
-    roleDemand: `${r.impulsiv >= 55 ? "Performance-/Ergebnisfokus" : r.intuitiv >= 40 ? "Beziehungs- und Teamorientierung" : "Ausgewogene Kultur"} (I:${r.impulsiv}/N:${r.intuitiv}/A:${r.analytisch})`,
-    candidatePattern: `${c.intuitiv >= 45 ? "Beziehungsstabilisierend" : c.impulsiv >= 45 ? "Leistungsorientiert" : "Sach-/strukturorientiert"} (I:${c.impulsiv}/N:${c.intuitiv}/A:${c.analytisch})`,
+    roleDemand: r.impulsiv >= 55 ? "Leistungs- und Ergebnisfokus" : r.intuitiv >= 40 ? "Beziehungs- und Teamorientierung" : "Ausgewogene Kultur",
+    candidatePattern: c.intuitiv >= 45 ? "Beziehungsstabilisierend" : c.impulsiv >= 45 ? "Leistungsorientiert" : "Sach-/strukturorientiert",
     status: cultureStatus,
     reasoning: cultureStatus === "SUITABLE"
-      ? `Intuitiv Soll: ${r.intuitiv} / Ist: ${c.intuitiv} (Δ ${cultIntDiff} Punkte). Die kulturelle Wirkung passt zur Rolle. Teamzusammenhalt, Motivation und Bindung bleiben stabil, ohne die Rollenanforderungen zu beeinträchtigen.`
+      ? `Die kulturelle Wirkung passt zur Rolle. Teamzusammenhalt, Motivation und Bindung bleiben stabil, ohne die Rollenanforderungen zu beeinträchtigen.`
       : cultureStatus === "NOT_SUITABLE"
-        ? `Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv}. Die kulturelle Wirkung verschiebt sich deutlich. Ergebnisorientierung und klare Leistungsunterschiede werden geschwächt. Die Rolle verlangt Leistungsfokus, der Kandidat setzt eher auf Beziehungspflege.`
-        : `Intuitiv Soll: ${r.intuitiv} / Ist: ${c.intuitiv} (Δ ${cultIntDiff} Punkte). Es besteht das Risiko einer Kulturverschiebung. Machbar, wenn klare Ziele, Leistungserwartungen und Ergebnisorientierung fest verankert werden.`,
+        ? `Die kulturelle Wirkung verschiebt sich deutlich. Ergebnisorientierung und klare Leistungsunterschiede werden geschwächt. Die Rolle verlangt Leistungsfokus, der Kandidat setzt eher auf Beziehungspflege.`
+        : `Es gibt ${gapDesc(cultIntDiff)} in der kulturellen Wirkung. Es besteht das Risiko einer Kulturverschiebung. Machbar, wenn klare Ziele, Leistungserwartungen und Ergebnisorientierung fest verankert werden.`,
   });
 
   if (tags.sales_cycle === "lang") {
     const stratStatus: FitStatus = c.analytisch >= 35 ? "SUITABLE" : c.analytisch >= 25 ? "CONDITIONAL" : "NOT_SUITABLE";
     rows.push({
       areaId: "strategy_complexity", areaLabel: "Strategische Komplexität",
-      roleDemand: `Langer Zyklus – Analytisch ${r.analytisch} gefordert`,
-      candidatePattern: `Analytisch ${c.analytisch} – ${c.analytisch >= 35 ? "stark anschlussfähig" : c.analytisch >= 25 ? "vorhanden" : "gering"}`,
+      roleDemand: "Langer Zyklus – analytisches Denken gefordert",
+      candidatePattern: c.analytisch >= 35 ? "Stark anschlussfähig" : c.analytisch >= 25 ? "Vorhanden" : "Gering",
       status: stratStatus,
       reasoning: stratStatus === "SUITABLE"
-        ? `Analytisch ${c.analytisch} – bei langen Zyklen ist die analytische Grundlage für ${t.pipelineTerm}, ${t.forecastTerm} und geordnete Abläufe ausreichend. Die Umsetzung bleibt stabil.`
+        ? `Bei langen Zyklen ist die analytische Grundlage für ${t.pipelineTerm}, ${t.forecastTerm} und geordnete Abläufe ausreichend. Die Umsetzung bleibt stabil.`
         : stratStatus === "CONDITIONAL"
-          ? `Analytisch ${c.analytisch}. Bei langen strategischen Zyklen braucht es aktive Begleitung, um Struktur und Disziplin aufrechtzuerhalten. ${t.pipelineTerm} und ${t.forecastTerm} erfordern eine systematische Arbeitsweise, die nicht von selbst stabil bleibt.`
-          : `Analytisch ${c.analytisch}. Für lange strategische Zyklen fehlt die analytische Grundlage. ${t.pipelineTerm}, ${t.forecastTerm} und geordnete Abläufe sind ohne enge Begleitung nicht verlässlich.`,
+          ? `Bei langen strategischen Zyklen braucht es aktive Begleitung, um Struktur und Disziplin aufrechtzuerhalten. ${t.pipelineTerm} und ${t.forecastTerm} erfordern eine systematische Arbeitsweise, die nicht von selbst stabil bleibt.`
+          : `Für lange strategische Zyklen fehlt die analytische Grundlage. ${t.pipelineTerm}, ${t.forecastTerm} und geordnete Abläufe sind ohne enge Begleitung nicht verlässlich.`,
     });
   }
 
@@ -670,14 +686,14 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
     const regStatus: FitStatus = c.analytisch >= 40 ? "SUITABLE" : c.analytisch >= 25 ? "CONDITIONAL" : "NOT_SUITABLE";
     rows.push({
       areaId: "regulatory_precision", areaLabel: "Regulatorische Präzision",
-      roleDemand: `Hohe Regel-/Standardtreue – Analytisch ${r.analytisch}`,
-      candidatePattern: `Analytisch ${c.analytisch} – ${c.analytisch >= 40 ? "Sorgfalt/Präzision stark" : c.analytisch >= 25 ? "vorhanden" : "deutlich unter Anforderung"}`,
+      roleDemand: "Hohe Regel- und Standardtreue gefordert",
+      candidatePattern: c.analytisch >= 40 ? "Sorgfalt und Präzision stark" : c.analytisch >= 25 ? "Vorhanden" : "Deutlich unter der Anforderung",
       status: regStatus,
       reasoning: regStatus === "SUITABLE"
-        ? `Analytisch ${c.analytisch}. Die Genauigkeit reicht für regulierte Umfelder aus. Compliance, Auditfähigkeit und Prozessqualität lassen sich stabil aufsetzen.`
+        ? `Die Genauigkeit reicht für regulierte Umfelder aus. Compliance, Auditfähigkeit und Prozessqualität lassen sich stabil aufsetzen.`
         : regStatus === "CONDITIONAL"
-          ? `Analytisch Soll: ${r.analytisch} / Ist: ${c.analytisch}. In regulierten Umfeldern braucht es durchgehend klare Standards, Freigabeprozesse und regelmäßige Kontrollen. Ohne diese Struktur steigt das Risiko für Abweichungen.`
-          : `Analytisch Soll: ${r.analytisch} / Ist: ${c.analytisch}. In regulierten Bereichen kann diese Lücke zu Qualitäts-, Haftungs- oder Auditproblemen führen. Sorgfalt und Regeltreue sind ohne intensive Begleitung nicht gewährleistet.`,
+          ? `In regulierten Umfeldern braucht es durchgehend klare Standards, Freigabeprozesse und regelmäßige Kontrollen. Ohne diese Struktur steigt das Risiko für Abweichungen.`
+          : `In regulierten Bereichen kann diese Lücke zu Qualitäts-, Haftungs- oder Auditproblemen führen. Sorgfalt und Regeltreue sind ohne intensive Begleitung nicht gewährleistet.`,
     });
   }
 
@@ -699,27 +715,27 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
     rows.push({
       areaId: "customer_orientation", areaLabel: "Kundenorientierung",
       roleDemand: ct === "B2C"
-        ? `B2C – Abschlussorientierung, Impulsiv ${r.impulsiv}`
+        ? "B2C – Abschlussorientierung gefordert"
         : ct === "B2B"
-          ? `B2B – Beziehungsstabilität, Intuitiv ${r.intuitiv}`
+          ? "B2B – Beziehungsstabilität gefordert"
           : "Mixed",
       candidatePattern: ct === "B2C"
-        ? `Impulsiv ${c.impulsiv} – ${c.impulsiv >= 40 ? "Abschluss stark" : "muss gesteuert werden"}`
-        : `Intuitiv ${c.intuitiv} / Analytisch ${c.analytisch} – ${c.intuitiv >= 35 ? "Beziehungsaufbau stark" : "eher transaktional"}`,
+        ? (c.impulsiv >= 40 ? "Abschlussstärke gut ausgeprägt" : "Abschlussstärke muss gesteuert werden")
+        : (c.intuitiv >= 35 ? "Beziehungsaufbau stark" : "Eher transaktional"),
       status: custStatus,
       reasoning: custStatus === "SUITABLE"
         ? (ct === "B2C"
-          ? `Im B2C-Umfeld: Impulsiv ${c.impulsiv}. Abschlussstärke und Tempo passen zur geforderten Dynamik. Abschlussquoten bleiben stabil.`
+          ? `Im B2C-Umfeld: Abschlussstärke und Tempo passen zur geforderten Dynamik. Abschlussquoten bleiben stabil.`
           : ct === "B2B"
-            ? `Im B2B-Umfeld: Intuitiv ${c.intuitiv} / Analytisch ${c.analytisch}. Beziehungsaufbau und wirtschaftliches Verständnis passen zusammen. Kundenbindung und ${t.pipelineTerm} bleiben stabil.`
+            ? `Im B2B-Umfeld: Beziehungsaufbau und wirtschaftliches Verständnis passen zusammen. Kundenbindung und ${t.pipelineTerm} bleiben stabil.`
             : "Die Kundenorientierung passt zur geforderten Dynamik.")
         : custStatus === "CONDITIONAL"
           ? (ct === "B2C"
-            ? `Im B2C-Umfeld: Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv}. Die Abschlussstärke ist vorhanden, braucht aber klare Ziele und regelmäßige Steuerung, um wirksam zu werden. Ohne das sinkt die Abschlussquote.`
-            : `Im B2B-Umfeld: Intuitiv Soll: ${r.intuitiv} / Ist: ${c.intuitiv}. Beziehungsfähigkeit ist vorhanden, aber die Balance zwischen Beziehungspflege und Ergebnisorientierung muss aktiv gehalten werden. ${t.pipelineTerm} braucht Steuerung.`)
+            ? `Im B2C-Umfeld: Die Abschlussstärke ist vorhanden, braucht aber klare Ziele und regelmäßige Führung, um wirksam zu werden. Ohne das sinkt die Abschlussquote.`
+            : `Im B2B-Umfeld: Beziehungsfähigkeit ist vorhanden, aber die Balance zwischen Beziehungspflege und Ergebnisorientierung muss aktiv gehalten werden. ${t.pipelineTerm} braucht Führung.`)
           : (ct === "B2C"
-            ? `Im B2C-Umfeld: Impulsiv Soll: ${r.impulsiv} / Ist: ${c.impulsiv}. Tempo und Abschlussquote werden voraussichtlich unter dem liegen, was die Rolle braucht. Der nötige Antrieb für schnelle Abschlüsse fehlt.`
-            : `Im B2B-Umfeld: Intuitiv ${c.intuitiv} / Analytisch ${c.analytisch}. Beziehungstiefe und wirtschaftliches Verständnis fehlen. ${t.pipelineTerm} und Kundenbindung sind instabil.`),
+            ? `Im B2C-Umfeld: Tempo und Abschlussquote werden voraussichtlich unter dem liegen, was die Rolle braucht. Der nötige Antrieb für schnelle Abschlüsse fehlt.`
+            : `Im B2B-Umfeld: Beziehungstiefe und wirtschaftliches Verständnis fehlen. ${t.pipelineTerm} und Kundenbindung sind instabil.`),
     });
   }
 
@@ -950,7 +966,7 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
 
   const keyReason = (() => {
     if (equalDistConflict) {
-      return `${candName} zeigt eine Gleichverteilung aller drei Komponenten (${c.impulsiv}/${c.intuitiv}/${c.analytisch}). Es gibt keinen erkennbaren Schwerpunkt. Die Rolle ${jobTitle} braucht eine klare ${rL}-Ausrichtung (Soll: ${r[roleDom.top1.key]}). Ohne klaren Schwerpunkt fehlt die Grundlage, um gezielt Prioritäten zu setzen und konsequent zu entscheiden.`;
+      return `${candName} zeigt eine Gleichverteilung aller drei Komponenten – es gibt keinen erkennbaren Schwerpunkt. Die Rolle ${jobTitle} braucht eine klare ${rL}-Ausrichtung. Ohne klaren Schwerpunkt fehlt die Grundlage, um gezielt Prioritäten zu setzen und konsequent zu entscheiden.`;
     }
     if (dualConflict && roleKeyInDual) {
       return `${candName} bringt die geforderte ${rL}-Arbeitsweise grundsätzlich mit, allerdings konkurriert sie mit einer gleich starken ${competingL}-Prägung. Die Rolle ${jobTitle} braucht eine klare ${rL}-Ausrichtung – diese Eindeutigkeit fehlt. Prioritäten und ${t.qualityMetric} werden instabil.`;
@@ -959,32 +975,31 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
       return `${candName} arbeitet vorrangig ${labelComponent(candDom.top1.key)}-/${labelComponent(candDom.top2.key)}-geprägt. Die für ${jobTitle} entscheidende ${rL}-Arbeitsweise fehlt. Entscheidungen, Prioritäten und stabile Abläufe sind kritisch betroffen.`;
     }
     if (overallFit === "SUITABLE") {
-      return `${candName} passt zur Rolle ${jobTitle}. Die geforderte ${rL}-Arbeitsweise wird stabil abgebildet (Soll: ${r[roleDom.top1.key]} / Ist: ${c[roleDom.top1.key]}). Kritischster Bereich: „${critical.label}" – dort ist die Passung am engsten.`;
+      return `${candName} passt zur Rolle ${jobTitle}. Die geforderte ${rL}-Arbeitsweise wird stabil abgebildet. Kritischster Bereich: „${critical.label}" – dort ist die Passung am engsten.`;
     }
     if (sameDom && overallFit === "CONDITIONAL") {
-      return `${candName} arbeitet grundsätzlich ${rL}-orientiert (Soll: ${r[roleDom.top1.key]} / Ist: ${c[roleDom.top1.key]}, Δ ${mainDiff} Punkte). Die Ausprägung liegt unter dem, was die Rolle braucht – besonders im Bereich „${critical.label}". Mit Führung steuerbar, aber nicht selbsttragend.`;
+      return `${candName} arbeitet grundsätzlich ${rL}-orientiert, aber die Ausprägung liegt unter dem, was die Rolle braucht. Es gibt ${gapDesc(mainDiff)} – besonders im Bereich „${critical.label}". Mit Führung steuerbar, aber nicht selbsttragend.`;
     }
     if (overallFit === "CONDITIONAL") {
-      return `${candName} bringt eine andere Arbeitsweise mit als ${jobTitle} braucht (Rolle: ${rL} / Kandidat: ${cL}). Eine Besetzung ist möglich, braucht aber klare Ziele und Führung – besonders im Bereich „${critical.label}".`;
+      return `${candName} bringt eine andere Arbeitsweise mit als ${jobTitle} braucht (Rolle: ${rL}, Kandidat: ${cL}). Eine Besetzung ist möglich, braucht aber klare Ziele und Führung – besonders im Bereich „${critical.label}".`;
     }
-    return `${candName} passt nicht zu den Kernanforderungen der Rolle ${jobTitle}. Die geforderte ${rL}-Arbeitsweise wird nicht abgebildet (Soll: ${r[roleDom.top1.key]} / Ist: ${c[roleDom.top1.key]}, Δ ${mainDiff} Punkte). Besonders kritisch: „${critical.label}".`;
+    return `${candName} passt nicht zu den Kernanforderungen der Rolle ${jobTitle}. Die geforderte ${rL}-Arbeitsweise wird nicht abgebildet – es gibt ${gapDesc(mainDiff)}. Besonders kritisch: „${critical.label}".`;
   })();
 
   const execSummary = (() => {
     const intro = `Rolle: ${jobTitle} | ${candName}`;
     const fitLine = `Gesamteinstufung: ${statusLabel(overallFit)} · Führungsaufwand: ${controlLabel(ctrl.level)}`;
-    const profileLine = `Soll-Profil: ${r.impulsiv}/${r.intuitiv}/${r.analytisch} · Ist-Profil: ${c.impulsiv}/${c.intuitiv}/${c.analytisch}`;
     let domLine: string;
     if (equalDistConflict) {
-      domLine = `Gleichverteilung: ${c.impulsiv}/${c.intuitiv}/${c.analytisch} – kein erkennbarer Schwerpunkt. Die Rolle braucht eine klare ${rL}-Ausrichtung (${r[roleDom.top1.key]}). Die Grundlage für gezielte Prioritäten und konsequente Entscheidungen fehlt.`;
+      domLine = `Gleichverteilung – kein erkennbarer Schwerpunkt. Die Rolle braucht eine klare ${rL}-Ausrichtung. Die Grundlage für gezielte Prioritäten und konsequente Entscheidungen fehlt.`;
     } else if (dualConflict) {
-      domLine = `Doppeldominanz: ${labelComponent(candDom.top1.key)}/${labelComponent(candDom.top2.key)} – die Rolle braucht eine klare ${rL}-Ausrichtung. Prioritäten und Entscheidungen werden instabil.`;
+      domLine = `Doppeldominanz: ${labelComponent(candDom.top1.key)} und ${labelComponent(candDom.top2.key)} konkurrieren – die Rolle braucht eine klare ${rL}-Ausrichtung. Prioritäten und Entscheidungen werden instabil.`;
     } else if (sameDom) {
-      domLine = `Beide Profile sind ${rL}-geprägt (Δ ${mainDiff} Punkte). Arbeitsweise und Prioritäten stimmen in der Grundrichtung überein.`;
+      domLine = `Beide Profile sind ${rL}-geprägt und ${gapAdj(mainDiff)}. Arbeitsweise und Prioritäten stimmen in der Grundrichtung überein.`;
     } else {
       domLine = `Die Rolle braucht eine ${rL}-geprägte Arbeitsweise. ${candName} arbeitet ${cL}-geprägt. Entscheidungen und Prioritäten brauchen Führung.`;
     }
-    return [intro, fitLine, profileLine, domLine].join("\n");
+    return [intro, fitLine, domLine].join("\n");
   })();
 
   const secondaryTension = (() => {
@@ -1005,7 +1020,7 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
     const roleSecDesc = secDescriptions[rSec];
     const candSecDesc = secDescriptions[cSec];
 
-    const text = `Die Hauptausrichtung stimmt überein (${rL}). Die Zweitstärke der Rolle ist ${roleSecDesc.label} (${roleSecDesc.focus}, Soll: ${rSecVal}), der Kandidat bringt jedoch ${candSecDesc.label} als Zweitstärke mit (${candSecDesc.focus}, Ist: ${c[cSec]}). Im Alltag unauffällig – unter Druck reagiert die Person eher mit ${candSecDesc.stressBehavior} statt mit ${roleSecDesc.stressBehavior}.`;
+    const text = `Die Hauptausrichtung stimmt überein (${rL}). Die Zweitstärke der Rolle ist ${roleSecDesc.label} (${roleSecDesc.focus}), der Kandidat bringt jedoch ${candSecDesc.label} als Zweitstärke mit (${candSecDesc.focus}). Im Alltag unauffällig – unter Druck reagiert die Person eher mit ${candSecDesc.stressBehavior} statt mit ${roleSecDesc.stressBehavior}.`;
 
     const stressText = `Unter Stress: Die Rolle erwartet in kritischen Situationen ${roleSecDesc.stressBehavior}. Der Kandidat wird stattdessen auf ${candSecDesc.stressBehavior} zurückgreifen. Im Team und in den Abläufen ist das situativ spürbar.`;
 
