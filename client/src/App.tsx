@@ -11,6 +11,7 @@ import Bericht from "@/pages/bericht";
 import JobCheck from "@/pages/jobcheck";
 import Teamdynamik from "@/pages/teamdynamik";
 import KICoach from "@/pages/ki-coach";
+import AvatarPage from "@/pages/avatar";
 
 function Router() {
   return (
@@ -22,6 +23,7 @@ function Router() {
       <Route path="/jobcheck" component={JobCheck} />
       <Route path="/teamdynamik" component={Teamdynamik} />
       <Route path="/ki-coach" component={KICoach} />
+      <Route path="/avatar" component={AvatarPage} />
       <Route component={NotFound} />
     </Switch>
   );
