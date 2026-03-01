@@ -87,7 +87,7 @@ export default function Avatar() {
       });
 
       await avatar.createStartAvatar({
-        quality: AvatarQuality.Medium,
+        quality: AvatarQuality.Low,
         avatarName: AVATAR_ID,
         language: "de",
         voice: { voiceId: "", rate: 1.0, emotion: VoiceEmotion.FRIENDLY },
@@ -95,7 +95,14 @@ export default function Avatar() {
       });
     } catch (err: any) {
       console.error("Avatar start error:", err);
-      setError(err.message || "Verbindung fehlgeschlagen");
+      const responseText = err?.responseText || "";
+      let userMessage = err.message || "Verbindung fehlgeschlagen";
+      if (responseText.includes("quota not enough") || responseText.includes("10008")) {
+        userMessage = "HeyGen Streaming-Kontingent aufgebraucht. Bitte im HeyGen-Account prüfen oder Plan upgraden.";
+      } else if (err?.status === 400) {
+        userMessage = "Avatar-Sitzung konnte nicht gestartet werden. Bitte versuche es später erneut.";
+      }
+      setError(userMessage);
       setIsLoading(false);
       setStatusText("Fehler bei der Verbindung");
     }
