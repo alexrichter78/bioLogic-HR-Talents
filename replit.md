@@ -12,14 +12,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Navigation
 
-All pages share a unified GlobalNav component (`client/src/components/global-nav.tsx`) with 7 items:
+All pages share a unified GlobalNav component (`client/src/components/global-nav.tsx`) with 6 items:
 - **Neue Rollen-DNA**: Clears all stored state and navigates to `/rollen-dna` for a fresh wizard
 - **Rollen-DNA Bearbeiten**: Navigates to `/rollen-dna` keeping existing state
 - **Rollenprofil**: Navigates to `/bericht` (AI-generated decision report)
 - **Soll-Ist-Vergleich**: Navigates to `/jobcheck` (candidate-role fit comparison)
 - **Teamdynamik**: Navigates to `/teamdynamik` (team dynamics dashboard)
 - **KI-Coach**: Navigates to `/ki-coach` (AI coaching chat with bioLogic expertise)
-- **Avatar**: Navigates to `/avatar` (HeyGen interactive streaming avatar trainer)
 
 The nav supports a `rightSlot` prop for page-specific actions (e.g., Save/Load on rollen-dna, Regenerate on bericht).
 

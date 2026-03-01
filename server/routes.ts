@@ -953,28 +953,5 @@ ZUSAMMENFASSUNGEN:
     }
   });
 
-  app.post("/api/heygen-token", async (_req, res) => {
-    try {
-      const apiKey = process.env.HEYGEN_API_KEY;
-      if (!apiKey) {
-        return res.status(500).json({ error: "HeyGen API key not configured" });
-      }
-      const resp = await fetch("https://api.heygen.com/v1/streaming.create_token", {
-        method: "POST",
-        headers: { "x-api-key": apiKey, "Content-Type": "application/json" },
-      });
-      if (!resp.ok) {
-        const err = await resp.text();
-        console.error("HeyGen token error:", err);
-        return res.status(resp.status).json({ error: "Failed to create token" });
-      }
-      const data = await resp.json();
-      res.json({ token: data.data?.token });
-    } catch (error) {
-      console.error("HeyGen token error:", error);
-      res.status(500).json({ error: "Token creation failed" });
-    }
-  });
-
   return httpServer;
 }
