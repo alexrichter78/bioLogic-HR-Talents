@@ -14,28 +14,38 @@ const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 
 type BG = { imp: number; int: number; ana: number };
 
-function roundBG(a: number, b: number, c: number): BG {
-  const raw = [a, b, c];
-  const floored = raw.map(Math.floor);
-  let remainder = 100 - floored.reduce((s, v) => s + v, 0);
-  const fracs = raw.map((v, i) => ({ i, f: v - floored[i] })).sort((a, b) => b.f - a.f);
-  for (const f of fracs) { if (remainder <= 0) break; floored[f.i]++; remainder--; }
-  return { imp: floored[0], int: floored[1], ana: floored[2] };
+function roundPercentages(p1: number, p2: number, p3: number): [number, number, number] {
+  const factor = 10;
+  const raw = [p1 * factor, p2 * factor, p3 * factor];
+  const flo = [Math.floor(raw[0]), Math.floor(raw[1]), Math.floor(raw[2])];
+  const rest = [raw[0] - flo[0], raw[1] - flo[1], raw[2] - flo[2]];
+  const targetSum = 100 * factor;
+  let missing = targetSum - (flo[0] + flo[1] + flo[2]);
+  while (missing > 0) {
+    let maxIdx = 0;
+    if (rest[1] > rest[maxIdx]) maxIdx = 1;
+    if (rest[2] > rest[maxIdx]) maxIdx = 2;
+    flo[maxIdx] += 1;
+    rest[maxIdx] = 0;
+    missing -= 1;
+  }
+  return [flo[0] / factor, flo[1] / factor, flo[2] / factor];
 }
 
 function calcBioGram(taetigkeiten: any[]): BG {
   if (!taetigkeiten.length) return { imp: 33.3, int: 33.3, ana: 33.4 };
-  const weights: Record<string, number> = { Niedrig: 1, Mittel: 2, Hoch: 3 };
+  const weights: Record<string, number> = { Niedrig: 0.6, Mittel: 1.0, Hoch: 1.8 };
   let sI = 0, sN = 0, sA = 0;
   for (const t of taetigkeiten) {
-    const w = weights[t.niveau] || 1;
+    const w = weights[t.niveau] || 1.0;
     if (t.kompetenz === "Impulsiv") sI += w;
     else if (t.kompetenz === "Intuitiv") sN += w;
     else sA += w;
   }
   const total = sI + sN + sA;
   if (total <= 0) return { imp: 33.3, int: 33.3, ana: 33.4 };
-  return roundBG((sI / total) * 100, (sN / total) * 100, (sA / total) * 100);
+  const [imp, int, ana] = roundPercentages((sI / total) * 100, (sN / total) * 100, (sA / total) * 100);
+  return { imp, int, ana };
 }
 
 function computeRahmen(state: any): BG {
@@ -57,7 +67,8 @@ function computeRahmen(state: any): BG {
   else if (state.arbeitslogik === "Daten-/prozessorientiert") sA += 1;
   const total = sI + sN + sA;
   if (total <= 0) return { imp: 33.3, int: 33.3, ana: 33.4 };
-  return roundBG((sI / total) * 100, (sN / total) * 100, (sA / total) * 100);
+  const [imp, int, ana] = roundPercentages((sI / total) * 100, (sN / total) * 100, (sA / total) * 100);
+  return { imp, int, ana };
 }
 
 function computeGesamt(haupt: BG, neben: BG, fuehrung: BG, rahmen: BG): BG {
@@ -67,21 +78,14 @@ function computeGesamt(haupt: BG, neben: BG, fuehrung: BG, rahmen: BG): BG {
     all.reduce((s, g) => s + g.int, 0) / 4,
     all.reduce((s, g) => s + g.ana, 0) / 4,
   ];
-  const CAP = 53;
-  let changed = true;
-  while (changed) {
-    changed = false;
-    const capped: number[] = [], uncapped: number[] = [];
-    vals.forEach((v, i) => { if (v > CAP) capped.push(i); else uncapped.push(i); });
-    if (capped.length > 0 && uncapped.length > 0) {
-      let excess = 0;
-      for (const i of capped) { excess += vals[i] - CAP; vals[i] = CAP; }
-      const uT = uncapped.reduce((s, i) => s + vals[i], 0);
-      if (uT > 0) for (const i of uncapped) vals[i] += excess * (vals[i] / uT);
-      changed = true;
-    }
+  const MAX = 67;
+  const peak = Math.max(...vals);
+  if (peak > MAX) {
+    const scale = MAX / peak;
+    vals = vals.map(v => v * scale);
   }
-  return roundBG(vals[0], vals[1], vals[2]);
+  const [imp, int, ana] = roundPercentages(vals[0], vals[1], vals[2]);
+  return { imp, int, ana };
 }
 
 function bgToTriad(bg: BG): Triad {
@@ -97,11 +101,11 @@ function buildRoleAnalysis(state: any): RoleAnalysis | null {
     const isLeadership = fuehrungstyp !== "Keine";
     const taetigkeiten = state.taetigkeiten || [];
 
-    const haupt = calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "haupt"));
-    const neben = calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "neben"));
-    const fuehrungBG = calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "fuehrung"));
-    const rahmen = computeRahmen(state);
-    const gesamt = computeGesamt(haupt, neben, fuehrungBG, rahmen);
+    const haupt = state.bioGramHaupt || calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "haupt"));
+    const neben = state.bioGramNeben || calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "neben"));
+    const fuehrungBG = state.bioGramFuehrung || calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "fuehrung"));
+    const rahmen = state.bioGramRahmen || computeRahmen(state);
+    const gesamt = state.bioGramGesamt || computeGesamt(haupt, neben, fuehrungBG, rahmen);
 
     return {
       job_title: beruf,
