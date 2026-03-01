@@ -231,24 +231,35 @@ function SoftBar({ items }: { items: { label: string; value: number; color: stri
   );
 }
 
-function TriadSlider({ label, value, color, onChange }: { label: string; value: number; color: string; onChange: (v: number) => void }) {
+function BarSlider({ label, value, color, onChange }: { label: string; value: number; color: string; onChange: (v: number) => void }) {
+  const widthPct = (value / 67) * 100;
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: 13, fontWeight: 600, color: "#3A3A3C" }}>{label}</span>
-        <span style={{ fontSize: 14, fontWeight: 700, color, fontVariantNumeric: "tabular-nums" }}>{value} %</span>
+    <div style={{ display: "flex", alignItems: "center", gap: 10, position: "relative" }}>
+      <span style={{ fontSize: 12, color: "#6E6E73", width: 62, flexShrink: 0 }}>{label}</span>
+      <div style={{ flex: 1, position: "relative", height: 24 }}>
+        <div style={{ position: "absolute", inset: 0, borderRadius: 6, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
+          <div style={{
+            width: value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 5), 100)}%`,
+            height: "100%", borderRadius: 6, background: color,
+            transition: "width 150ms ease",
+            display: "flex", alignItems: "center", paddingLeft: 8,
+            minWidth: value === 0 ? 0 : 40,
+          }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>
+          </div>
+        </div>
+        <input
+          type="range" min={0} max={67} value={value}
+          onChange={e => onChange(Number(e.target.value))}
+          data-testid={`slider-${label.toLowerCase()}`}
+          style={{
+            position: "absolute", inset: 0, width: "100%", height: "100%",
+            appearance: "none", WebkitAppearance: "none",
+            background: "transparent", outline: "none", cursor: "pointer",
+            margin: 0, zIndex: 2,
+          }}
+        />
       </div>
-      <input
-        type="range" min={0} max={100} value={value}
-        onChange={e => onChange(Number(e.target.value))}
-        data-testid={`slider-${label.toLowerCase()}`}
-        style={{
-          width: "100%", height: 6, borderRadius: 3,
-          appearance: "none", WebkitAppearance: "none",
-          background: `linear-gradient(to right, ${color} ${value}%, rgba(0,0,0,0.06) ${value}%)`,
-          outline: "none", cursor: "pointer",
-        }}
-      />
     </div>
   );
 }
@@ -491,17 +502,19 @@ export default function JobCheck() {
         }
         input[type="range"]::-webkit-slider-thumb {
           -webkit-appearance: none; appearance: none;
-          width: 20px; height: 20px; border-radius: 50%;
-          background: white; border: 2px solid rgba(0,0,0,0.15);
-          box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-          cursor: pointer;
+          width: 6px; height: 24px; border-radius: 3px;
+          background: rgba(255,255,255,0.85); border: none;
+          box-shadow: 0 0 4px rgba(0,0,0,0.2);
+          cursor: ew-resize;
         }
         input[type="range"]::-moz-range-thumb {
-          width: 20px; height: 20px; border-radius: 50%;
-          background: white; border: 2px solid rgba(0,0,0,0.15);
-          box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-          cursor: pointer;
+          width: 6px; height: 24px; border-radius: 3px;
+          background: rgba(255,255,255,0.85); border: none;
+          box-shadow: 0 0 4px rgba(0,0,0,0.2);
+          cursor: ew-resize;
         }
+        input[type="range"]::-webkit-slider-runnable-track { height: 24px; cursor: ew-resize; }
+        input[type="range"]::-moz-range-track { height: 24px; cursor: ew-resize; background: transparent; }
       `}</style>
 
       <div className="relative z-10">
@@ -563,20 +576,12 @@ export default function JobCheck() {
                   <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 6 }}>Istprofil (Kandidat)</p>
                   <p style={{ fontSize: 12, color: "#8E8E93", marginBottom: 16 }}>Verschieben Sie die Regler, um das Kandidatenprofil einzugeben. Die Werte werden automatisch normalisiert.</p>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "18px 20px", borderRadius: 18, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                    <TriadSlider label="Impulsiv" value={candImp} color={COLORS.imp} onChange={setCandImp} />
-                    <TriadSlider label="Intuitiv" value={candInt} color={COLORS.int} onChange={setCandInt} />
-                    <TriadSlider label="Analytisch" value={candAna} color={COLORS.ana} onChange={setCandAna} />
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    <BarSlider label="Impulsiv" value={candImp} color={COLORS.imp} onChange={setCandImp} />
+                    <BarSlider label="Intuitiv" value={candInt} color={COLORS.int} onChange={setCandInt} />
+                    <BarSlider label="Analytisch" value={candAna} color={COLORS.ana} onChange={setCandAna} />
                   </div>
-
-                  <div style={{ marginTop: 14 }}>
-                    <SoftBar items={[
-                      { label: "Impulsiv", value: normalizedCand.impulsiv, color: COLORS.imp },
-                      { label: "Intuitiv", value: normalizedCand.intuitiv, color: COLORS.int },
-                      { label: "Analytisch", value: normalizedCand.analytisch, color: COLORS.ana },
-                    ]} />
-                    <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Normalisiertes Profil (Summe = 100 %)</p>
-                  </div>
+                  <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Normalisiertes Profil (max. 67 % pro Komponente)</p>
                 </div>
 
                 <button
