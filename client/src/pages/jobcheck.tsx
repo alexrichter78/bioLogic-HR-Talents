@@ -756,7 +756,7 @@ export default function JobCheck() {
                     let sectionTitle: string;
 
                     if (isEqualDist) {
-                      calloutText = `Gleichverteilung: Das Kandidatenprofil zeigt keine erkennbare Steuerungsrichtung (${engine.candDominance.top1.value}/${engine.candDominance.top2.value}/${engine.candDominance.top3.value}). Die Rolle verlangt klare ${labelComponent(rk)}-Arbeitslogik (Soll: ${roleVal}). Ohne dominantes Steuerungsprofil fehlt die strukturelle Basis für Priorisierung und Entscheidungsarchitektur.`;
+                      calloutText = `Gleichverteilung: Der Kandidat zeigt keinen erkennbaren Schwerpunkt (${engine.candDominance.top1.value}/${engine.candDominance.top2.value}/${engine.candDominance.top3.value}). Die Rolle braucht eine klare ${labelComponent(rk)}-Ausrichtung (Soll: ${roleVal}). Ohne klaren Schwerpunkt fehlt die Grundlage, um Prioritäten gezielt zu setzen und konsequent zu entscheiden.`;
                       calloutColor = "#FF3B30";
                       sectionTitle = "Gleichverteilung";
                     } else if (dualConflict) {
@@ -764,27 +764,27 @@ export default function JobCheck() {
                       const c2L = labelComponent(c2k);
                       const roleInDual = ck === rk || c2k === rk;
                       if (roleInDual) {
-                        calloutText = `Doppeldominanz: ${labelComponent(rk)}-Steuerungslogik ist vorhanden, konkurriert aber mit gleich starker ${c2L}-Prägung. Die Rolle verlangt eindeutige ${labelComponent(rk)}-Ausrichtung – Priorisierungsverhalten und Steuerungsdisziplin sind instabil.`;
+                        calloutText = `Doppeldominanz: Die ${labelComponent(rk)}-Arbeitsweise ist vorhanden, konkurriert aber mit einer gleich starken ${c2L}-Prägung. Die Rolle braucht eine eindeutige ${labelComponent(rk)}-Ausrichtung – Prioritäten und konsequentes Handeln werden instabil.`;
                         calloutColor = "#FF9500";
                       } else {
-                        calloutText = `Der Kandidat arbeitet ${labelComponent(ck)}-/${c2L}-geprägt. Die für die Rolle entscheidende ${labelComponent(rk)}-Steuerungslogik fehlt strukturell. Auswirkung auf Entscheidungsarchitektur und Priorisierung: kritisch.`;
+                        calloutText = `Der Kandidat arbeitet ${labelComponent(ck)}-/${c2L}-geprägt. Die für die Rolle entscheidende ${labelComponent(rk)}-Arbeitsweise fehlt. Entscheidungen und Prioritäten sind kritisch betroffen.`;
                         calloutColor = "#FF3B30";
                       }
                       sectionTitle = "Doppeldominanz";
                     } else if (sameDom && intensityDiff <= 5) {
-                      calloutText = `Soll: ${roleVal} / Ist: ${candVal}. Beide Profile ${labelComponent(rk)}-geprägt, Ausprägung nahezu gleichauf (Δ ${intensityDiff} Punkte). Arbeitslogik und Priorisierungsverhalten bilden die Rollenanforderung stabil ab.`;
+                      calloutText = `Soll: ${roleVal} / Ist: ${candVal}. Beide Profile ${labelComponent(rk)}-geprägt, Ausprägung nahezu gleichauf (Δ ${intensityDiff} Punkte). Arbeitsweise und Prioritäten bilden die Rollenanforderung stabil ab.`;
                       calloutColor = "#34C759";
                       sectionTitle = "Dominanz-Vergleich";
                     } else if (sameDom && intensityDiff <= 15) {
-                      calloutText = `Soll: ${roleVal} / Ist: ${candVal} (Δ ${intensityDiff} Punkte). Beide Profile ${labelComponent(rk)}-geprägt. Die Grundrichtung stimmt, die Intensität liegt unter der Rollenanforderung. Auswirkung auf Prozessstabilität: steuerbar.`;
+                      calloutText = `Soll: ${roleVal} / Ist: ${candVal} (Δ ${intensityDiff} Punkte). Beide Profile ${labelComponent(rk)}-geprägt. Die Grundrichtung stimmt, die Ausprägung liegt unter dem, was die Rolle braucht. Mit Führung steuerbar.`;
                       calloutColor = "#FF9500";
                       sectionTitle = "Dominanz-Vergleich";
                     } else if (sameDom) {
-                      calloutText = `Soll: ${roleVal} / Ist: ${candVal} (Δ ${intensityDiff} Punkte). Beide Profile ${labelComponent(rk)}-geprägt, aber die geforderte Intensität fehlt deutlich. Auswirkung auf Prozessqualität und Steuerungsstabilität: Steuerungslücke.`;
+                      calloutText = `Soll: ${roleVal} / Ist: ${candVal} (Δ ${intensityDiff} Punkte). Beide Profile ${labelComponent(rk)}-geprägt, aber die geforderte Ausprägung fehlt deutlich. Qualität und stabile Abläufe sind gefährdet.`;
                       calloutColor = "#FF3B30";
                       sectionTitle = "Dominanz-Vergleich";
                     } else {
-                      calloutText = `Rolle verlangt ${labelComponent(rk)}-Steuerungslogik (${roleVal}), Kandidat arbeitet ${labelComponent(ck)}-geprägt (${candVal}). Auswirkung: Die zentrale Arbeitslogik der Position wird grundlegend verschoben.`;
+                      calloutText = `Rolle braucht ${labelComponent(rk)}-Arbeitsweise (${roleVal}), Kandidat arbeitet ${labelComponent(ck)}-geprägt (${candVal}). Die zentrale Arbeitsweise der Position wird grundlegend verschoben.`;
                       calloutColor = "#FF3B30";
                       sectionTitle = "Dominanz-Verschiebung";
                     }
