@@ -1,0 +1,542 @@
+/**
+ * bioLogic Leader–Team Match Engine (Normal + Controlled Stress + Uncontrolled Stress)
+ * ==================================================================================
+ * NEW RULE IMPLEMENTED:
+ * --------------------
+ * If Top1 is clearly dominant AND Top2 and Top3 are almost equal (<= 5 points gap),
+ * then under stress Top2 and Top3 "compete" (secondary competition).
+ *
+ * Definitions (raw points 0..67):
+ * - Secondary competition condition:
+ *     (Top1 - Top2) >= DOMINANT_TOP1_MIN_GAP
+ *     AND
+ *     (Top2 - Top3) <= SECONDARY_COMP_GAP_MAX
+ *
+ * Controlled stress:
+ * - Top1 becomes more dominant.
+ * - If secondary competition is active: Top2 and Top3 drift slightly apart (instable support),
+ *   but without flipping leadership axis.
+ *
+ * Uncontrolled stress:
+ * - "Quality of 2nd component becomes visible" is still true.
+ * - If secondary competition is active: BOTH Top2 and Top3 rise (compete), Top1 loses dominance/clarity.
+ *
+ * OUTPUT includes full texts for UI/report.
+ */
+
+"use strict";
+
+const MAX = 67;
+const COMPONENTS = ["impulsiv", "intuitiv", "analytisch"];
+
+// Stress rule thresholds (raw points)
+const SECONDARY_COMP_GAP_MAX = 5;          // Top2 ~ Top3
+const DOMINANT_TOP1_MIN_GAP = 10;          // Top1 clearly ahead of Top2
+
+// ------------------------------------------------------------
+// HELPERS
+// ------------------------------------------------------------
+function clamp(x, min = 0, max = MAX) {
+  return Math.max(min, Math.min(max, x));
+}
+
+function validateProfile(p, name = "profile") {
+  for (const k of COMPONENTS) {
+    const v = p?.[k];
+    if (typeof v !== "number" || Number.isNaN(v)) {
+      throw new Error(`${name}.${k} must be a number`);
+    }
+    if (v < 0 || v > MAX) {
+      throw new Error(`${name}.${k} out of range: ${v} (expected 0..${MAX})`);
+    }
+  }
+}
+
+function sortKeysByValueDesc(p) {
+  return [...COMPONENTS].sort((a, b) => p[b] - p[a]);
+}
+
+function mean3(a, b, c) {
+  return (a + b + c) / 3;
+}
+
+function stdDev3(a, b, c) {
+  const m = mean3(a, b, c);
+  const v = ((a - m) ** 2 + (b - m) ** 2 + (c - m) ** 2) / 3;
+  return Math.sqrt(v);
+}
+
+function classifyDiff(d) {
+  if (d <= 10) return "A";
+  if (d <= 20) return "B";
+  return "C";
+}
+
+function ratingOrder(rating) {
+  if (rating === "Passend") return 2;
+  if (rating === "Bedingt passend") return 1;
+  if (rating === "Nicht passend") return 0;
+  return -1;
+}
+
+function componentLabel(key) {
+  switch (key) {
+    case "impulsiv": return "Impulsiv (Tempo/Entscheidung/Durchsetzung)";
+    case "intuitiv": return "Intuitiv (Beziehung/Teamgefühl/Kommunikation)";
+    case "analytisch": return "Analytisch (Struktur/Planung/Absicherung)";
+    default: return key;
+  }
+}
+
+// ------------------------------------------------------------
+// SECONDARY COMPETITION DETECTION (Top2 ~ Top3 under dominant Top1)
+// ------------------------------------------------------------
+function detectSecondaryCompetition(profile) {
+  const keys = sortKeysByValueDesc(profile);
+  const top1 = keys[0];
+  const top2 = keys[1];
+  const top3 = keys[2];
+
+  const gap12 = profile[top1] - profile[top2];
+  const gap23 = profile[top2] - profile[top3]; // >= 0
+
+  const active = (gap12 >= DOMINANT_TOP1_MIN_GAP) && (gap23 <= SECONDARY_COMP_GAP_MAX);
+
+  return {
+    active,
+    top1,
+    top2,
+    top3,
+    gap12,
+    gap23,
+  };
+}
+
+// ------------------------------------------------------------
+// STRESS INTENSITY (optional auto estimate)
+// ------------------------------------------------------------
+function balanceIndex(p) {
+  const sd = stdDev3(p.impulsiv, p.intuitiv, p.analytisch);
+  return 1 - sd / MAX;
+}
+
+function estimateStressIntensity(leader, team) {
+  const biL = balanceIndex(leader);
+  const biT = balanceIndex(team);
+  const unbalance = (1 - biL + 1 - biT) / 2;
+  return clamp(unbalance, 0, 1);
+}
+
+// ------------------------------------------------------------
+// STRESS TRANSFORMS
+// ------------------------------------------------------------
+
+/**
+ * Controlled stress:
+ * - Top1 becomes MORE dominant (autopilot)
+ * - Low reduces, Mid slightly reduces
+ * - If secondary competition active (Top2 ~ Top3):
+ *     introduce "support instability": Top2 and Top3 drift slightly apart
+ *     (represents inner competition of secondary modes), but Top1 remains axis.
+ */
+function applyControlledStress(profile, intensity, k = 10, midDecay = 0.15) {
+  const p = { ...profile };
+  const i = clamp(intensity, 0, 1);
+
+  const keys = sortKeysByValueDesc(p);
+  const top = keys[0];
+  const mid = keys[1];
+  const low = keys[2];
+
+  const delta = k * i;
+
+  // base controlled stress
+  p[top] = clamp(p[top] + delta);
+  p[low] = clamp(p[low] - delta);
+  p[mid] = clamp(p[mid] - midDecay * delta);
+
+  // secondary competition handling
+  const comp = detectSecondaryCompetition(profile); // use ORIGINAL ordering for logic
+  if (comp.active) {
+    // Create a small divergence between top2/top3 ("competition noise")
+    // Deterministic: push the originally higher of (top2) slightly up, (top3) slightly down.
+    // This does not flip leadership axis; it makes secondary behavior less consistent.
+    const noise = 0.25 * delta; // small effect vs. main tunnel
+    p[comp.top2] = clamp(p[comp.top2] + noise);
+    p[comp.top3] = clamp(p[comp.top3] - noise);
+  }
+
+  return p;
+}
+
+/**
+ * Uncontrolled stress:
+ * - Requirement: "quality of 2nd component becomes more visible"
+ * - Base model:
+ *     Top2 rises strongly
+ *     Top1 loses dominance/clarity
+ *     Low drops slightly
+ * - If secondary competition active (Top2 ~ Top3):
+ *     BOTH Top2 and Top3 rise (they compete for control),
+ *     Top1 loses more clarity (higher inconsistency),
+ *     Low-loss is not applied as "low" is part of competition pair.
+ */
+function applyUncontrolledStress(profile, intensity, k = 10) {
+  const p = { ...profile };
+  const i = clamp(intensity, 0, 1);
+
+  const keys = sortKeysByValueDesc(profile); // ORIGINAL ranking
+  const top1 = keys[0];
+  const top2 = keys[1];
+  const top3 = keys[2];
+
+  const delta = k * i;
+
+  const comp = detectSecondaryCompetition(profile);
+
+  if (!comp.active) {
+    // Standard uncontrolled stress (top2 becomes visible)
+    const top1Loss = 0.6 * delta;
+    const lowLoss = 0.2 * delta;
+
+    p[top2] = clamp(p[top2] + delta);
+    p[top1] = clamp(p[top1] - top1Loss);
+    p[top3] = clamp(p[top3] - lowLoss);
+
+    return p;
+  }
+
+  // Secondary competition active:
+  // Top2 and Top3 both rise (compete), Top1 loses clarity.
+  // Deterministic split:
+  // - Each secondary gets +0.8*delta (strong visibility)
+  // - Top1 loses 0.9*delta (clarity drops)
+  // Net effect: secondary pair becomes prominent and can overtake behaviorally.
+  const secGain = 0.8 * delta;
+  const top1Loss = 0.9 * delta;
+
+  p[comp.top2] = clamp(p[comp.top2] + secGain);
+  p[comp.top3] = clamp(p[comp.top3] + secGain);
+  p[comp.top1] = clamp(p[comp.top1] - top1Loss);
+
+  return p;
+}
+
+// ------------------------------------------------------------
+// CORE TEAM-FIT (single state)
+// ------------------------------------------------------------
+function teamFit(leader, team, config = {}) {
+  const cfg = {
+    // TFS thresholds
+    tfsPass: 0.65,
+    tfsBorder: 0.50,
+
+    // dominance leader flag
+    dominanceLeaderHigh: 60,
+
+    // intuitive break rule
+    teamIntuitiveHigh: 35,
+    leaderIntuitiveLow: 15,
+
+    // dual leader + clear team
+    dualGapMax: 5,
+    clearGapMin: 15,
+
+    // TFS weights
+    wY: 0.35,
+    wR: 0.35,
+    wB: 0.30,
+
+    ...config,
+  };
+
+  validateProfile(leader, "leader");
+  validateProfile(team, "team");
+
+  const dR = Math.abs(leader.impulsiv - team.impulsiv);
+  const dY = Math.abs(leader.intuitiv - team.intuitiv);
+  const dB = Math.abs(leader.analytisch - team.analytisch);
+
+  const fitR = 1 - dR / MAX;
+  const fitY = 1 - dY / MAX;
+  const fitB = 1 - dB / MAX;
+
+  const TFS = cfg.wY * fitY + cfg.wR * fitR + cfg.wB * fitB;
+
+  const cR = classifyDiff(dR);
+  const cY = classifyDiff(dY);
+  const cB = classifyDiff(dB);
+
+  const countC = [dR, dY, dB].filter((d) => d > 20).length;
+  const countB = [dR, dY, dB].filter((d) => d > 10 && d <= 20).length;
+
+  const dominanceRisk = Math.max(leader.impulsiv, leader.intuitiv, leader.analytisch) >= cfg.dominanceLeaderHigh;
+  const intuitiveBreakRisk = team.intuitiv >= cfg.teamIntuitiveHigh && leader.intuitiv <= cfg.leaderIntuitiveLow;
+
+  const leaderKeys = sortKeysByValueDesc(leader);
+  const teamKeys = sortKeysByValueDesc(team);
+
+  const gapLeader = leader[leaderKeys[0]] - leader[leaderKeys[1]];
+  const gapTeam = team[teamKeys[0]] - team[teamKeys[1]];
+
+  const dualLeader = gapLeader <= cfg.dualGapMax;
+  const clearTeam = gapTeam >= cfg.clearGapMin;
+
+  // Secondary competition flags (for texts)
+  const leaderSecondaryComp = detectSecondaryCompetition(leader);
+  const teamSecondaryComp = detectSecondaryCompetition(team);
+
+  let rating = "Passend";
+
+  const nonFit =
+    countC >= 2 ||
+    (dominanceRisk && countC >= 1) ||
+    TFS < cfg.tfsBorder;
+
+  const conditionalFit =
+    countC === 1 ||
+    countB >= 2 ||
+    intuitiveBreakRisk ||
+    (dualLeader && clearTeam) ||
+    (TFS >= cfg.tfsBorder && TFS < cfg.tfsPass);
+
+  if (nonFit) rating = "Nicht passend";
+  else if (conditionalFit) rating = "Bedingt passend";
+  else rating = "Passend";
+
+  return {
+    differences: { impulsiv: dR, intuitiv: dY, analytisch: dB },
+    categories: { impulsiv: cR, intuitiv: cY, analytisch: cB },
+    indices: { TFS },
+    flags: {
+      dominanceRisk,
+      intuitiveBreakRisk,
+      dualLeader,
+      clearTeam,
+      gapLeader,
+      gapTeam,
+      leaderSecondaryCompetition: leaderSecondaryComp,
+      teamSecondaryCompetition: teamSecondaryComp,
+    },
+    rating,
+  };
+}
+
+// ------------------------------------------------------------
+// TEXT GENERATION
+// ------------------------------------------------------------
+function buildTexts(stateName, leader, team, evalResult) {
+  const { differences, categories, indices, flags, rating } = evalResult;
+
+  const ratingHeadline =
+    rating === "Passend"
+      ? "Passung ist stabil: Führungsstil und Team-DNA greifen gut ineinander."
+      : rating === "Bedingt passend"
+      ? "Passung ist möglich, aber es gibt erkennbare Reibungsfelder, die aktiv geführt werden müssen."
+      : "Passung ist kritisch: Es besteht ein hohes Risiko, dass Führung und Teamstruktur gegeneinander arbeiten.";
+
+  const reasons = [];
+
+  const cKeys = COMPONENTS.filter((k) => categories[k] === "C");
+  const bKeys = COMPONENTS.filter((k) => categories[k] === "B");
+
+  if (cKeys.length >= 1) {
+    reasons.push(
+      `Es gibt ${cKeys.length} starken Strukturbruch${cKeys.length > 1 ? "e" : ""} (Kategorie C): ` +
+      `${cKeys.map((k) => `${componentLabel(k)} (Δ ${differences[k]})`).join(", ")}.`
+    );
+  }
+  if (bKeys.length >= 1) {
+    reasons.push(
+      `Es liegen ${bKeys.length} moderate Verschiebung${bKeys.length > 1 ? "en" : ""} (Kategorie B) vor: ` +
+      `${bKeys.map((k) => `${componentLabel(k)} (Δ ${differences[k]})`).join(", ")}.`
+    );
+  }
+
+  if (flags.intuitiveBreakRisk) {
+    reasons.push(
+      `Sonderregel: Team ist stark intuitiv, Führung ist dort sehr niedrig. Risiko: Beziehungsabriss (Kommunikation/Anschlussfähigkeit).`
+    );
+  }
+  if (flags.dominanceRisk) {
+    reasons.push(
+      `Sonderregel: Führung hat eine sehr hohe Dominanz in mindestens einer Komponente. Unter Druck kann das zur Übersteuerung führen.`
+    );
+  }
+  if (flags.dualLeader && flags.clearTeam) {
+    reasons.push(
+      `Sonderregel: Führung zeigt Doppeldominanz (geringe Leitklarheit), Team ist klar dominant. Ohne klare Entscheidungsregeln entsteht Reibung.`
+    );
+  }
+
+  // Secondary competition text
+  if (flags.leaderSecondaryCompetition?.active) {
+    const sc = flags.leaderSecondaryCompetition;
+    reasons.push(
+      `Sekundär-Konkurrenz (Führung): ${componentLabel(sc.top2)} und ${componentLabel(sc.top3)} sind nahezu gleich stark (Δ ${sc.gap23}). ` +
+      `Bei Stress konkurrieren diese beiden Steuerungsachsen im Hintergrund – das kann die Konsistenz im Führungsstil reduzieren.`
+    );
+  }
+  if (flags.teamSecondaryCompetition?.active) {
+    const sc = flags.teamSecondaryCompetition;
+    reasons.push(
+      `Sekundär-Konkurrenz (Team): ${componentLabel(sc.top2)} und ${componentLabel(sc.top3)} sind nahezu gleich stark (Δ ${sc.gap23}). ` +
+      `Unter Stress kann das Team zwischen zwei Erwartungshaltungen pendeln.`
+    );
+  }
+
+  const tfsPct = Math.round(indices.TFS * 100);
+  reasons.push(`Team-Fit-Score (TFS): ${tfsPct}% (0% = sehr unpassend, 100% = sehr passend).`);
+
+  const compLines = COMPONENTS.map((k) => {
+    const cat = categories[k];
+    const d = differences[k];
+    const fit = Math.round((1 - d / MAX) * 100);
+    const catText =
+      cat === "A" ? "harmonisch (A)" : cat === "B" ? "moderate Verschiebung (B)" : "starker Strukturbruch (C)";
+    return `- ${componentLabel(k)}: Δ ${d} → ${catText} | Teil-Fit: ${fit}%`;
+  });
+
+  return {
+    title: `${stateName}: Leader–Team-Match`,
+    rating,
+    ratingHeadline,
+    summary: [ratingHeadline, ...reasons].join(" "),
+    componentBreakdown: compLines.join("\n"),
+  };
+}
+
+function buildStressComparisonTexts(normalEval, controlledEval, uncontrolledEval, intensity) {
+  const n = ratingOrder(normalEval.rating);
+  const c = ratingOrder(controlledEval.rating);
+  const u = ratingOrder(uncontrolledEval.rating);
+
+  const controlledDelta = c - n;
+  const uncontrolledDelta = u - n;
+
+  function deltaText(delta) {
+    if (delta === 0) return "bleibt gleich";
+    if (delta === -1) return "verschlechtert sich um eine Stufe";
+    if (delta <= -2) return "kippt deutlich (verschlechtert sich stark)";
+    if (delta === 1) return "verbessert sich um eine Stufe";
+    if (delta >= 2) return "verbessert sich deutlich";
+    return "ändert sich";
+  }
+
+  const summary =
+    `Stressvergleich (Intensität: ${Math.round(intensity * 100)}%): ` +
+    `Unter kontrolliertem Stress ${deltaText(controlledDelta)} die Passung (Normal: ${normalEval.rating} → kontrolliert: ${controlledEval.rating}). ` +
+    `Unter unkontrolliertem Stress ${deltaText(uncontrolledDelta)} die Passung (Normal: ${normalEval.rating} → unkontrolliert: ${uncontrolledEval.rating}).`;
+
+  const guidance = [
+    `Interpretation der Stresslogik:`,
+    `- Kontrollierter Stress: Top1 (stärkste Komponente) wird dominanter. Vorteil: Klarheit/Handlungsfähigkeit. Risiko: Tunnelblick.`,
+    `- Unkontrollierter Stress: Top2 wird sichtbarer (sekundäre Qualität). Wenn Top2≈Top3, werden BEIDE sichtbar und konkurrieren – Entscheidungen wirken dann schneller wechselhaft.`,
+  ].join("\n");
+
+  const flags = {
+    worsensControlled: controlledDelta < 0,
+    worsensUncontrolled: uncontrolledDelta < 0,
+    worsensAny: controlledDelta < 0 || uncontrolledDelta < 0,
+    worsensByTwoOrMoreControlled: controlledDelta <= -2,
+    worsensByTwoOrMoreUncontrolled: uncontrolledDelta <= -2,
+  };
+
+  return { summary, guidance, flags };
+}
+
+// ------------------------------------------------------------
+// MAIN API
+// ------------------------------------------------------------
+function leaderTeamMatchFull(input) {
+  const leader = input?.leader;
+  const team = input?.team;
+
+  validateProfile(leader, "leader");
+  validateProfile(team, "team");
+
+  const k = typeof input?.stress?.k === "number" ? input.stress.k : 10;
+
+  // intensity
+  let intensity = input?.stress?.intensity;
+  if (typeof intensity !== "number") {
+    intensity = estimateStressIntensity(leader, team);
+  }
+  intensity = clamp(intensity, 0, 1);
+
+  // NORMAL
+  const normalEval = teamFit(leader, team);
+  const normalTexts = buildTexts("Normalzustand", leader, team, normalEval);
+
+  // CONTROLLED STRESS (Top1 more dominant, plus optional secondary competition drift)
+  const leaderControlled = applyControlledStress(leader, intensity, k);
+  const teamControlled = applyControlledStress(team, intensity, k);
+  const controlledEval = teamFit(leaderControlled, teamControlled);
+  const controlledTexts = buildTexts("Stresszustand (kontrolliert)", leaderControlled, teamControlled, controlledEval);
+
+  // UNCONTROLLED STRESS (Top2 visible; if Top2≈Top3 => both compete)
+  const leaderUncontrolled = applyUncontrolledStress(leader, intensity, k);
+  const teamUncontrolled = applyUncontrolledStress(team, intensity, k);
+  const uncontrolledEval = teamFit(leaderUncontrolled, teamUncontrolled);
+  const uncontrolledTexts = buildTexts("Stresszustand (unkontrolliert)", leaderUncontrolled, teamUncontrolled, uncontrolledEval);
+
+  // comparison texts
+  const comparison = buildStressComparisonTexts(normalEval, controlledEval, uncontrolledEval, intensity);
+
+  return {
+    input: {
+      leader,
+      team,
+      stress: { intensity, k },
+    },
+    normal: {
+      leader,
+      team,
+      evaluation: normalEval,
+      texts: normalTexts,
+    },
+    controlledStress: {
+      leader: leaderControlled,
+      team: teamControlled,
+      evaluation: controlledEval,
+      texts: controlledTexts,
+    },
+    uncontrolledStress: {
+      leader: leaderUncontrolled,
+      team: teamUncontrolled,
+      evaluation: uncontrolledEval,
+      texts: uncontrolledTexts,
+    },
+    stressComparison: comparison,
+  };
+}
+
+// ------------------------------------------------------------
+// EXPORTS
+// ------------------------------------------------------------
+module.exports = {
+  leaderTeamMatchFull,
+  teamFit,
+  applyControlledStress,
+  applyUncontrolledStress,
+  detectSecondaryCompetition,
+  estimateStressIntensity,
+  balanceIndex,
+};
+
+/**
+ * OPTIONAL QUICK TEST (Node.js)
+ * ------------------------------------------------------------
+ * Uncomment to test locally:
+ *
+ * const res = leaderTeamMatchFull({
+ *   leader: { impulsiv: 60, intuitiv: 30, analytisch: 28 }, // Top1 impulsiv, Top2~Top3 (Δ2)
+ *   team:   { impulsiv: 35, intuitiv: 35, analytisch: 25 },
+ *   stress: { intensity: 0.8 }
+ * });
+ *
+ * console.log(res.normal.texts.summary);
+ * console.log(res.controlledStress.texts.summary);
+ * console.log(res.uncontrolledStress.texts.summary);
+ * console.log(res.stressComparison.summary);
+ */

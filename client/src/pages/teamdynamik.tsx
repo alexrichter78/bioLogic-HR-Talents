@@ -13,6 +13,7 @@ import {
   type TeamDynamikInput, type TeamDynamikResult, type ShiftType, type IntensityLevel,
   type TrafficLight, type ViewMode, type Lever,
 } from "@/lib/teamdynamik-engine";
+import { leaderTeamMatchFull } from "@/lib/leader-team-match-engine";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 function colorFor(k: ComponentKey) { return k === "impulsiv" ? COLORS.imp : k === "intuitiv" ? COLORS.int : COLORS.ana; }
@@ -302,6 +303,11 @@ export default function Teamdynamik() {
   const result = useMemo(() => computeTeamDynamics(input), [input]);
   const tl = TL_COLORS[result.trafficLight];
 
+  const leaderMatch = useMemo(() => {
+    if (!isLeading) return null;
+    return leaderTeamMatchFull({ leader: personProfile, team: teamProfile });
+  }, [isLeading, personProfile, teamProfile]);
+
   const generateReport = useCallback(async () => {
     setReportLoading(true);
     setReportError(false);
@@ -411,45 +417,6 @@ export default function Teamdynamik() {
             </div>
             {(() => {
               const tlKey = result.trafficLight;
-              const detailFuehrung: Record<TrafficLight, { title: string; desc: string; label: string; bullets: string[]; recLabel: string; rec: string }> = {
-                RED: {
-                  title: "Starke Veränderung im Team",
-                  desc: "Die neue Führung verändert die bisherige Arbeitsweise deutlich.\nEntscheidungen, Prioritäten und Qualitätsmaßstäbe werden anders gesetzt als bisher.",
-                  label: "Was bedeutet das konkret?",
-                  bullets: [
-                    "Gewohnte Abläufe verändern sich spürbar",
-                    "Diskussionen über Prioritäten nehmen zu",
-                    "Widerstand oder Unsicherheit im Team möglich",
-                    "Ohne klare Führung entsteht Instabilität",
-                  ],
-                  recLabel: "Empfehlung:",
-                  rec: "Klare Kommunikation, aktive Steuerung und konsequente Führung ab Tag eins.",
-                },
-                YELLOW: {
-                  title: "Unterschiedliche Arbeitsweisen – aktiv steuern",
-                  desc: "Führung und Team arbeiten nach verschiedenen Logiken.\nMit klarer Abstimmung bleibt das System stabil.",
-                  label: "Was bedeutet das konkret?",
-                  bullets: [
-                    "Mehr Abstimmung notwendig",
-                    "Entscheidungen dauern teilweise länger",
-                    "Prioritäten müssen klar kommuniziert werden",
-                  ],
-                  recLabel: "Empfehlung:",
-                  rec: "Regelmäßige Priorisierung, transparente Entscheidungswege und klare Verantwortlichkeiten.",
-                },
-                GREEN: {
-                  title: "Stabil – keine besondere Anpassung erforderlich",
-                  desc: "Führungsstil und Teamarbeitsweise passen gut zusammen.\nDie Zusammenarbeit läuft weitgehend reibungslos.",
-                  label: "Was bedeutet das konkret?",
-                  bullets: [
-                    "Entscheidungen werden verstanden",
-                    "Prioritäten sind klar",
-                    "Zusammenarbeit ist stabil",
-                  ],
-                  recLabel: "Ausreichend:",
-                  rec: "Normale Führung und regelmäßige Abstimmung.",
-                },
-              };
               const detailTeammitglied: Record<TrafficLight, { title: string; desc: string; label: string; bullets: string[]; recLabel: string; rec: string }> = {
                 RED: {
                   title: "Deutliche Spannungen – klare Führung notwendig",
@@ -488,17 +455,99 @@ export default function Teamdynamik() {
                   rec: "Normale Führung und regelmäßige Abstimmung reichen aus.",
                 },
               };
-              const detail = (isLeading ? detailFuehrung : detailTeammitglied)[tlKey];
-              const variant = !isLeading ? getSystemVariant(teamProfile, personProfile, result.dominanceTeam, result.dominancePerson) : null;
+
+              if (isLeading && leaderMatch) {
+                const m = leaderMatch;
+                const nr = m.normal.texts;
+                const cr = m.controlledStress.texts;
+                const ur = m.uncontrolledStress.texts;
+                const sc = m.stressComparison;
+
+                const ratingColor: Record<string, string> = {
+                  "Passend": "#34C759",
+                  "Bedingt passend": "#FF9500",
+                  "Nicht passend": "#FF3B30",
+                };
+
+                const normalBullets = nr.componentBreakdown.split("\n");
+
+                return (
+                  <div style={{ padding: "14px 16px", borderRadius: 14, background: tl.bg, border: `1px solid ${tl.fill}20`, marginTop: 12 }} data-testid="detail-block">
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                      <p style={{ fontSize: 14, fontWeight: 700, color: tl.fill, margin: 0 }}>Normalzustand</p>
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 5, background: `${ratingColor[nr.rating] || tl.fill}15`, color: ratingColor[nr.rating] || tl.fill }} data-testid="badge-normal-rating">{nr.rating}</span>
+                    </div>
+                    <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 3px", lineHeight: 1.5 }}>{nr.ratingHeadline}</p>
+
+                    <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "14px 0 8px" }}>Komponentenanalyse</p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 14 }}>
+                      {normalBullets.map((b, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                          <span style={{ color: tl.fill, fontSize: 10, marginTop: 3, flexShrink: 0 }}>●</span>
+                          <span style={{ fontSize: 12, color: "#3A3A3C", lineHeight: 1.5 }}>{b}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {m.normal.evaluation.flags.intuitiveBreakRisk && (
+                      <p style={{ fontSize: 11, color: "#FF3B30", margin: "0 0 10px", lineHeight: 1.5 }}>
+                        ⚠ Das Team ist stark intuitiv geprägt, die Führungskraft dort sehr niedrig – Risiko für Beziehungsabriss.
+                      </p>
+                    )}
+                    {m.normal.evaluation.flags.dominanceRisk && (
+                      <p style={{ fontSize: 11, color: "#FF9500", margin: "0 0 10px", lineHeight: 1.5 }}>
+                        ⚠ Sehr hohe Dominanz in einer Komponente – unter Druck Übersteuerungsrisiko.
+                      </p>
+                    )}
+                    {m.normal.evaluation.flags.dualLeader && m.normal.evaluation.flags.clearTeam && (
+                      <p style={{ fontSize: 11, color: "#FF9500", margin: "0 0 10px", lineHeight: 1.5 }}>
+                        ⚠ Führungskraft mit Doppeldominanz trifft auf Team mit klarer Dominanz – Reibungsrisiko ohne Entscheidungsregeln.
+                      </p>
+                    )}
+
+                    <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 10px" }}>
+                      <span style={{ fontWeight: 700 }}>Team-Fit-Score: </span>
+                      {Math.round(m.normal.evaluation.indices.TFS * 100)} %
+                    </p>
+
+                    <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "14px 0" }} />
+
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Kontrollierter Stress</p>
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 5, background: `${ratingColor[cr.rating] || "#8E8E93"}15`, color: ratingColor[cr.rating] || "#8E8E93" }} data-testid="badge-controlled-rating">{cr.rating}</span>
+                    </div>
+                    <p style={{ fontSize: 11, color: "#6E6E73", margin: "0 0 4px", lineHeight: 1.5, fontStyle: "italic" }}>Die stärkste Komponente wird dominanter – mehr Klarheit, aber auch Tunnelblick-Risiko.</p>
+                    <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 3px", lineHeight: 1.5 }}>{cr.ratingHeadline}</p>
+
+                    <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "14px 0" }} />
+
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Unkontrollierter Stress</p>
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 5, background: `${ratingColor[ur.rating] || "#8E8E93"}15`, color: ratingColor[ur.rating] || "#8E8E93" }} data-testid="badge-uncontrolled-rating">{ur.rating}</span>
+                    </div>
+                    <p style={{ fontSize: 11, color: "#6E6E73", margin: "0 0 4px", lineHeight: 1.5, fontStyle: "italic" }}>Die zweitstärkste Komponente wird sichtbarer und kann die Führungslinie verschieben.</p>
+                    <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 3px", lineHeight: 1.5 }}>{ur.ratingHeadline}</p>
+
+                    {sc.flags.worsensAny && (
+                      <>
+                        <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "14px 0" }} />
+                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Stressvergleich</p>
+                        <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{sc.summary}</p>
+                      </>
+                    )}
+                  </div>
+                );
+              }
+
+              const detail = detailTeammitglied[tlKey];
+              const variant = getSystemVariant(teamProfile, personProfile, result.dominanceTeam, result.dominancePerson);
               return (
                 <div style={{ padding: "14px 16px", borderRadius: 14, background: tl.bg, border: `1px solid ${tl.fill}20`, marginTop: 12 }} data-testid="detail-block">
                   <p style={{ fontSize: 14, fontWeight: 700, color: tl.fill, margin: "0 0 6px" }}>{detail.title}</p>
                   <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 3px", lineHeight: 1.5 }}>{detail.desc}</p>
-                  {variant && (
-                    <div style={{ margin: "12px 0" }} data-testid="variant-block">
-                      <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{variant.text}</p>
-                    </div>
-                  )}
+                  <div style={{ margin: "12px 0" }} data-testid="variant-block">
+                    <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{variant.text}</p>
+                  </div>
                   <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "14px 0 8px" }}>{detail.label}</p>
                   <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 14 }}>
                     {detail.bullets.map((b, i) => (

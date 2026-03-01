@@ -1,0 +1,493 @@
+/**
+ * bioLogic Leader–Team Match Engine (Normal + Controlled Stress + Uncontrolled Stress)
+ * ==================================================================================
+ * PURPOSE
+ * -------
+ * Deterministic scoring & text output for the match between:
+ *   - Leader profile (impulsiv, intuitiv, analytisch)
+ *   - Team profile   (impulsiv, intuitiv, analytisch)
+ *
+ * Each component range: 0..67 (independent scales; NOT summing to 100).
+ *
+ * OUTPUT
+ * ------
+ * - Normal state evaluation
+ * - Controlled-stress evaluation:
+ *     Under controlled stress, the 1st (strongest) component becomes MORE dominant
+ *     ("Autopilot / tunnel focus").
+ * - Uncontrolled-stress evaluation:
+ *     Under uncontrolled stress, the 2nd (second-strongest) component becomes MORE visible
+ *     ("secondary quality takes over"), while the 1st loses some dominance/clarity.
+ * - Complete texts for:
+ *     - overall rating explanation
+ *     - component-by-component explanation
+ *     - stress comparison (does fit worsen under stress)
+ *
+ * HOW TO USE
+ * ----------
+ * 1) Copy this file into your project (Node.js backend or frontend).
+ * 2) Call:
+ *      const result = leaderTeamMatchFull({
+ *        leader: { impulsiv: 36, intuitiv: 59, analytisch: 5 },
+ *        team:   { impulsiv: 30, intuitiv: 50, analytisch: 20 },
+ *        stress: { intensity: 0.7 }  // optional (0..1). If missing, auto-estimated.
+ *      });
+ * 3) Render result.texts.* in your UI / PDF / report.
+ */
+
+"use strict";
+
+// ------------------------------------------------------------
+// CONSTANTS
+// ------------------------------------------------------------
+const MAX = 67;
+const COMPONENTS = ["impulsiv", "intuitiv", "analytisch"];
+
+// ------------------------------------------------------------
+// HELPERS
+// ------------------------------------------------------------
+function clamp(x, min = 0, max = MAX) {
+  return Math.max(min, Math.min(max, x));
+}
+
+function round2(x) {
+  return Math.round(x * 100) / 100;
+}
+
+function validateProfile(p, name = "profile") {
+  for (const k of COMPONENTS) {
+    const v = p?.[k];
+    if (typeof v !== "number" || Number.isNaN(v)) {
+      throw new Error(`${name}.${k} must be a number`);
+    }
+    if (v < 0 || v > MAX) {
+      throw new Error(`${name}.${k} out of range: ${v} (expected 0..${MAX})`);
+    }
+  }
+}
+
+function sortKeysByValueDesc(p) {
+  return [...COMPONENTS].sort((a, b) => p[b] - p[a]);
+}
+
+function mean3(a, b, c) {
+  return (a + b + c) / 3;
+}
+
+function stdDev3(a, b, c) {
+  const m = mean3(a, b, c);
+  const v = ((a - m) ** 2 + (b - m) ** 2 + (c - m) ** 2) / 3;
+  return Math.sqrt(v);
+}
+
+function classifyDiff(d) {
+  // A/B/C thresholds (raw points, 0..67)
+  if (d <= 10) return "A";     // harmonisch
+  if (d <= 20) return "B";     // moderate Verschiebung
+  return "C";                  // Dominanzbruch
+}
+
+function ratingOrder(rating) {
+  // Higher is better
+  if (rating === "Passend") return 2;
+  if (rating === "Bedingt passend") return 1;
+  if (rating === "Nicht passend") return 0;
+  return -1;
+}
+
+function componentLabel(key) {
+  switch (key) {
+    case "impulsiv": return "Impulsiv (Tempo/Entscheidung/Durchsetzung)";
+    case "intuitiv": return "Intuitiv (Beziehung/Teamgefühl/Kommunikation)";
+    case "analytisch": return "Analytisch (Struktur/Planung/Absicherung)";
+    default: return key;
+  }
+}
+
+// ------------------------------------------------------------
+// STRESS INTENSITY (optional auto estimate)
+// ------------------------------------------------------------
+function balanceIndex(p) {
+  // 0..1, higher = more balanced
+  const sd = stdDev3(p.impulsiv, p.intuitiv, p.analytisch);
+  return 1 - sd / MAX;
+}
+
+function estimateStressIntensity(leader, team) {
+  // Derive intensity from average "unbalance" (0..1)
+  const biL = balanceIndex(leader);
+  const biT = balanceIndex(team);
+  const unbalance = (1 - biL + 1 - biT) / 2;
+  return clamp(unbalance, 0, 1);
+}
+
+// ------------------------------------------------------------
+// STRESS TRANSFORMS
+// ------------------------------------------------------------
+/**
+ * Controlled stress:
+ * - top1 gets stronger (dominance increases)
+ * - low gets weaker
+ * - mid slightly weaker (tunnel focus) - optional
+ */
+function applyControlledStress(profile, intensity, k = 10, midDecay = 0.15) {
+  const p = { ...profile };
+  const keys = sortKeysByValueDesc(p);
+  const top = keys[0];
+  const mid = keys[1];
+  const low = keys[2];
+
+  const delta = k * clamp(intensity, 0, 1);
+
+  p[top] = clamp(p[top] + delta);
+  p[low] = clamp(p[low] - delta);
+  p[mid] = clamp(p[mid] - midDecay * delta);
+
+  return p;
+}
+
+/**
+ * Uncontrolled stress:
+ * Requirement:
+ *   "Qualität der 2. Komponente kommt mehr zum Vorschein"
+ *
+ * Implementation:
+ * - top2 rises strongly (becomes more visible; can overtake top1)
+ * - top1 loses some dominance/clarity
+ * - low decreases slightly (bandwidth drop)
+ */
+function applyUncontrolledStress(profile, intensity, k = 10, top1Loss = 0.6, lowLoss = 0.2) {
+  const p = { ...profile };
+  const keys = sortKeysByValueDesc(p);
+  const top1 = keys[0];
+  const top2 = keys[1];
+  const low = keys[2];
+
+  const delta = k * clamp(intensity, 0, 1);
+
+  p[top2] = clamp(p[top2] + delta);
+  p[top1] = clamp(p[top1] - top1Loss * delta);
+  p[low]  = clamp(p[low]  - lowLoss  * delta);
+
+  return p;
+}
+
+// ------------------------------------------------------------
+// CORE TEAM-FIT EVALUATION (single state)
+// ------------------------------------------------------------
+function teamFit(leader, team, config = {}) {
+  const cfg = {
+    // TFS thresholds
+    tfsPass: 0.65,
+    tfsBorder: 0.50,
+
+    // dominance flag (leader)
+    dominanceLeaderHigh: 60,
+
+    // intuitive break (team expects relationship leadership)
+    teamIntuitiveHigh: 35,
+    leaderIntuitiveLow: 15,
+
+    // dual leader + clear team
+    dualGapMax: 5,
+    clearGapMin: 15,
+
+    // TFS weights
+    wY: 0.35,
+    wR: 0.35,
+    wB: 0.30,
+
+    ...config,
+  };
+
+  validateProfile(leader, "leader");
+  validateProfile(team, "team");
+
+  // Raw diffs
+  const dR = Math.abs(leader.impulsiv - team.impulsiv);
+  const dY = Math.abs(leader.intuitiv - team.intuitiv);
+  const dB = Math.abs(leader.analytisch - team.analytisch);
+
+  // Fit per comp (0..1)
+  const fitR = 1 - dR / MAX;
+  const fitY = 1 - dY / MAX;
+  const fitB = 1 - dB / MAX;
+
+  // Team Fit Score (0..1)
+  const TFS = cfg.wY * fitY + cfg.wR * fitR + cfg.wB * fitB;
+
+  // categories
+  const cR = classifyDiff(dR);
+  const cY = classifyDiff(dY);
+  const cB = classifyDiff(dB);
+
+  const countC = [dR, dY, dB].filter((d) => d > 20).length;
+  const countB = [dR, dY, dB].filter((d) => d > 10 && d <= 20).length;
+
+  // flags
+  const dominanceRisk = Math.max(leader.impulsiv, leader.intuitiv, leader.analytisch) >= cfg.dominanceLeaderHigh;
+  const intuitiveBreakRisk = team.intuitiv >= cfg.teamIntuitiveHigh && leader.intuitiv <= cfg.leaderIntuitiveLow;
+
+  const leaderKeys = sortKeysByValueDesc(leader);
+  const teamKeys = sortKeysByValueDesc(team);
+
+  const gapLeader = leader[leaderKeys[0]] - leader[leaderKeys[1]];
+  const gapTeam = team[teamKeys[0]] - team[teamKeys[1]];
+
+  const dualLeader = gapLeader <= cfg.dualGapMax;
+  const clearTeam = gapTeam >= cfg.clearGapMin;
+
+  // rating
+  let rating = "Passend";
+
+  const nonFit =
+    countC >= 2 ||
+    (dominanceRisk && countC >= 1) ||
+    TFS < cfg.tfsBorder;
+
+  const conditionalFit =
+    countC === 1 ||
+    countB >= 2 ||
+    intuitiveBreakRisk ||
+    (dualLeader && clearTeam) ||
+    (TFS >= cfg.tfsBorder && TFS < cfg.tfsPass);
+
+  if (nonFit) rating = "Nicht passend";
+  else if (conditionalFit) rating = "Bedingt passend";
+  else rating = "Passend";
+
+  return {
+    differences: { impulsiv: dR, intuitiv: dY, analytisch: dB },
+    categories: { impulsiv: cR, intuitiv: cY, analytisch: cB },
+    indices: { TFS },
+    flags: { dominanceRisk, intuitiveBreakRisk, dualLeader, clearTeam, gapLeader, gapTeam },
+    rating,
+  };
+}
+
+// ------------------------------------------------------------
+// TEXT GENERATION (complete texts usable in reports)
+// ------------------------------------------------------------
+function buildTexts(stateName, leader, team, evalResult) {
+  const { differences, categories, indices, flags, rating } = evalResult;
+
+  // headline text by rating
+  const ratingHeadline =
+    rating === "Passend"
+      ? "Passung ist stabil: Führungsstil und Team-DNA greifen gut ineinander."
+      : rating === "Bedingt passend"
+      ? "Passung ist möglich, aber es gibt erkennbare Reibungsfelder, die aktiv geführt werden müssen."
+      : "Passung ist kritisch: Es besteht ein hohes Risiko, dass Führung und Teamstruktur gegeneinander arbeiten.";
+
+  // reason text (human-readable)
+  const reasons = [];
+
+  // C-diffs explanation
+  const cKeys = COMPONENTS.filter((k) => categories[k] === "C");
+  const bKeys = COMPONENTS.filter((k) => categories[k] === "B");
+
+  if (cKeys.length >= 1) {
+    reasons.push(
+      `Es gibt ${cKeys.length} starken Strukturbruch${cKeys.length > 1 ? "e" : ""} (Kategorie C) zwischen Führung und Team: ` +
+      `${cKeys.map((k) => `${componentLabel(k)} (Δ ${differences[k]})`).join(", ")}.`
+    );
+  }
+  if (bKeys.length >= 1) {
+    reasons.push(
+      `Zusätzlich liegen ${bKeys.length} moderate Verschiebung${bKeys.length > 1 ? "en" : ""} (Kategorie B) vor: ` +
+      `${bKeys.map((k) => `${componentLabel(k)} (Δ ${differences[k]})`).join(", ")}.`
+    );
+  }
+
+  // special flags
+  if (flags.intuitiveBreakRisk) {
+    reasons.push(
+      `Sonderregel: Das Team ist stark intuitiv geprägt, die Führungskraft ist dort sehr niedrig. Das erhöht das Risiko für Beziehungsabriss (fehlende Anschlussfähigkeit in Kommunikation/Teamgefühl).`
+    );
+  }
+  if (flags.dominanceRisk) {
+    reasons.push(
+      `Sonderregel: Die Führungskraft zeigt eine sehr hohe Dominanz in mindestens einer Komponente. In Kombination mit Abweichungen kann das unter Druck zu Übersteuerung führen.`
+    );
+  }
+  if (flags.dualLeader && flags.clearTeam) {
+    reasons.push(
+      `Sonderregel: Die Führungskraft hat eine Doppeldominanz (geringe Leitklarheit), das Team hat dagegen eine klare Dominanz. Das Team erwartet eine klare Führungs-Handschrift; ohne Entscheidungsregeln entsteht Reibung.`
+    );
+  }
+
+  // TFS explanation
+  const tfsPct = Math.round(indices.TFS * 100);
+  reasons.push(`Team-Fit-Score (TFS): ${tfsPct}%. (0% = sehr unpassend, 100% = sehr passend)`);
+
+  // component breakdown texts
+  const compLines = COMPONENTS.map((k) => {
+    const cat = categories[k];
+    const d = differences[k];
+    const fit = Math.round((1 - d / MAX) * 100);
+    const catText =
+      cat === "A" ? "harmonisch (A)" : cat === "B" ? "moderate Verschiebung (B)" : "starker Strukturbruch (C)";
+    return `- ${componentLabel(k)}: Differenz Δ ${d} → ${catText} | Teil-Fit: ${fit}%`;
+  });
+
+  return {
+    title: `${stateName}: Leader–Team-Match`,
+    rating,
+    ratingHeadline,
+    summary: [
+      ratingHeadline,
+      ...reasons,
+    ].join(" "),
+    componentBreakdown: compLines.join("\n"),
+  };
+}
+
+function buildStressComparisonTexts(normalEval, controlledEval, uncontrolledEval) {
+  const n = ratingOrder(normalEval.rating);
+  const c = ratingOrder(controlledEval.rating);
+  const u = ratingOrder(uncontrolledEval.rating);
+
+  const controlledDelta = c - n;
+  const uncontrolledDelta = u - n;
+
+  function deltaText(delta) {
+    if (delta === 0) return "bleibt gleich";
+    if (delta === -1) return "verschlechtert sich um eine Stufe";
+    if (delta <= -2) return "kippt deutlich (verschlechtert sich stark)";
+    if (delta === 1) return "verbessert sich um eine Stufe";
+    if (delta >= 2) return "verbessert sich deutlich";
+    return "ändert sich";
+  }
+
+  const summary =
+    `Stressvergleich: ` +
+    `Unter kontrolliertem Stress ${deltaText(controlledDelta)} die Passung (Normal: ${normalEval.rating} → Kontrollierter Stress: ${controlledEval.rating}). ` +
+    `Unter unkontrolliertem Stress ${deltaText(uncontrolledDelta)} die Passung (Normal: ${normalEval.rating} → Unkontrollierter Stress: ${uncontrolledEval.rating}).`;
+
+  const guidance = [
+    `Interpretation der Stresslogik:`,
+    `- Kontrollierter Stress: Die stärkste (1.) Komponente der jeweiligen Struktur wird dominanter. Dadurch entsteht mehr Klarheit, aber auch Tunnelblick-Risiko.`,
+    `- Unkontrollierter Stress: Die zweitstärkste (2.) Komponente wird stärker sichtbar und kann die Führungslinie verschieben. Dadurch wirken Entscheidungen häufiger wechselhaft (Push/Pull) und das Team reagiert sensibler.`,
+  ].join("\n");
+
+  const flags = {
+    worsensControlled: controlledDelta < 0,
+    worsensUncontrolled: uncontrolledDelta < 0,
+    worsensAny: controlledDelta < 0 || uncontrolledDelta < 0,
+    worsensByTwoOrMoreControlled: controlledDelta <= -2,
+    worsensByTwoOrMoreUncontrolled: uncontrolledDelta <= -2,
+  };
+
+  return { summary, guidance, flags };
+}
+
+// ------------------------------------------------------------
+// MAIN API
+// ------------------------------------------------------------
+/**
+ * leaderTeamMatchFull(input)
+ *
+ * input = {
+ *   leader: { impulsiv, intuitiv, analytisch }, // 0..67
+ *   team:   { impulsiv, intuitiv, analytisch }, // 0..67
+ *   stress: {
+ *     intensity?: 0..1,   // optional. if missing -> auto estimated
+ *     k?: number         // optional. default 10
+ *   }
+ * }
+ */
+function leaderTeamMatchFull(input) {
+  const leader = input?.leader;
+  const team = input?.team;
+
+  validateProfile(leader, "leader");
+  validateProfile(team, "team");
+
+  const k = typeof input?.stress?.k === "number" ? input.stress.k : 10;
+
+  // intensity
+  let intensity = input?.stress?.intensity;
+  if (typeof intensity !== "number") {
+    intensity = estimateStressIntensity(leader, team);
+  }
+  intensity = clamp(intensity, 0, 1);
+
+  // NORMAL
+  const normalEval = teamFit(leader, team);
+  const normalTexts = buildTexts("Normalzustand", leader, team, normalEval);
+
+  // CONTROLLED STRESS
+  const leaderControlled = applyControlledStress(leader, intensity, k);
+  const teamControlled = applyControlledStress(team, intensity, k);
+  const controlledEval = teamFit(leaderControlled, teamControlled);
+  const controlledTexts = buildTexts("Stresszustand (kontrolliert)", leaderControlled, teamControlled, controlledEval);
+
+  // UNCONTROLLED STRESS
+  const leaderUncontrolled = applyUncontrolledStress(leader, intensity, k);
+  const teamUncontrolled = applyUncontrolledStress(team, intensity, k);
+  const uncontrolledEval = teamFit(leaderUncontrolled, teamUncontrolled);
+  const uncontrolledTexts = buildTexts("Stresszustand (unkontrolliert)", leaderUncontrolled, teamUncontrolled, uncontrolledEval);
+
+  // STRESS COMPARISON TEXTS + FLAGS
+  const comparison = buildStressComparisonTexts(normalEval, controlledEval, uncontrolledEval);
+
+  return {
+    input: {
+      leader,
+      team,
+      stress: { intensity, k },
+    },
+    normal: {
+      leader,
+      team,
+      evaluation: normalEval,
+      texts: normalTexts,
+    },
+    controlledStress: {
+      leader: leaderControlled,
+      team: teamControlled,
+      evaluation: controlledEval,
+      texts: controlledTexts,
+    },
+    uncontrolledStress: {
+      leader: leaderUncontrolled,
+      team: teamUncontrolled,
+      evaluation: uncontrolledEval,
+      texts: uncontrolledTexts,
+    },
+    stressComparison: comparison,
+  };
+}
+
+// ------------------------------------------------------------
+// EXPORTS (Node.js + Browser compatible)
+// ------------------------------------------------------------
+module.exports = {
+  leaderTeamMatchFull,
+  // exporting internals can help testing
+  teamFit,
+  applyControlledStress,
+  applyUncontrolledStress,
+  estimateStressIntensity,
+  balanceIndex,
+};
+
+/* ------------------------------------------------------------------
+ * OPTIONAL: QUICK LOCAL TEST (uncomment for Node)
+ *
+ * const res = leaderTeamMatchFull({
+ *   leader: { impulsiv: 36, intuitiv: 59, analytisch: 5 },
+ *   team:   { impulsiv: 30, intuitiv: 50, analytisch: 20 },
+ *   stress: { intensity: 0.7 }
+ * });
+ *
+ * console.log(res.normal.texts.title);
+ * console.log(res.normal.texts.summary);
+ * console.log(res.normal.texts.componentBreakdown);
+ * console.log("\n---\n");
+ * console.log(res.controlledStress.texts.summary);
+ * console.log(res.uncontrolledStress.texts.summary);
+ * console.log("\n---\n");
+ * console.log(res.stressComparison.summary);
+ * console.log(res.stressComparison.guidance);
+ * ------------------------------------------------------------------ */
