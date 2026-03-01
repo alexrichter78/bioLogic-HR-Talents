@@ -371,11 +371,8 @@ export default function Teamdynamik() {
           <div style={{ display: "flex", gap: 24, marginBottom: 24, flexWrap: "wrap" }}>
             <div style={{ flex: 1, minWidth: 280 }}>
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }} data-testid="label-person">{isLeading ? "Neue Führungskraft" : "Neues Teammitglied"}</p>
-              <TriadSliders triad={personProfile} onChange={setPersonProfile} />
-              <div style={{ marginTop: 14 }}>
-                <SoftBar triad={personProfile} />
-                <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Profil (max. 67 % pro Komponente)</p>
-              </div>
+              <SoftBar triad={personProfile} />
+              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Istprofil aus Soll-Ist-Vergleich</p>
             </div>
 
             <div style={{ width: 1, background: "rgba(0,0,0,0.06)", alignSelf: "stretch" }} />
