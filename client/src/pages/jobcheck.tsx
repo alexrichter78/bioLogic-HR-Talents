@@ -582,6 +582,16 @@ export default function JobCheck() {
                     <BarSlider label="Analytisch" value={candAna} color={COLORS.ana} onChange={setCandAna} />
                   </div>
                   <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Normalisiertes Profil (max. 67 % pro Komponente)</p>
+                  {(() => {
+                    const candDom = dominanceModeOf(normalizedCand);
+                    return (
+                      <div style={{ marginTop: 10, padding: "10px 14px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
+                        <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }} lang="de" data-testid="text-cand-dominance">
+                          Die do\u00ADmi\u00ADnan\u00ADte Logik des Kan\u00ADdi\u00ADda\u00ADten ist {labelComponent(candDom.top1.key)} ge\u00ADpräg\u00ADt: {dominanceLabel(candDom)}.
+                        </p>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 <button
