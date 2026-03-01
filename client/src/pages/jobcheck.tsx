@@ -702,8 +702,8 @@ export default function JobCheck() {
                                   </span>
                                 </div>
                                 <div style={{ position: "relative", height: 28, borderRadius: 8, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
-                                  <div style={{ position: "absolute", top: 0, left: 0, height: "50%", width: `${Math.min(sollVal, 100)}%`, background: `${d.color}40`, borderRadius: "8px 8px 0 0", transition: "width 0.4s ease" }} />
-                                  <div style={{ position: "absolute", bottom: 0, left: 0, height: "50%", width: `${Math.min(istVal, 100)}%`, background: d.color, borderRadius: "0 0 8px 8px", transition: "width 0.4s ease" }} />
+                                  <div style={{ position: "absolute", top: 0, left: 0, height: "50%", width: `${(Math.min(sollVal, 67) / 67) * 100}%`, background: `${d.color}40`, borderRadius: "8px 8px 0 0", transition: "width 0.4s ease" }} />
+                                  <div style={{ position: "absolute", bottom: 0, left: 0, height: "50%", width: `${(Math.min(istVal, 67) / 67) * 100}%`, background: d.color, borderRadius: "0 0 8px 8px", transition: "width 0.4s ease" }} />
                                   <div style={{ position: "absolute", top: 0, left: 8, height: "50%", display: "flex", alignItems: "center" }}>
                                     <span style={{ fontSize: 10, fontWeight: 700, color: "#1D1D1F" }}>Soll {sollVal}%</span>
                                   </div>
