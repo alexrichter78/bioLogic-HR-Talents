@@ -93,7 +93,7 @@ export function generateDiagnoseSummary(kandidat: Triad, team: Triad, isLeading:
   const domK = dominanceType(kandidat);
   const domT = dominanceType(team);
   const same = domK === domT;
-  const rolle = isLeading ? "Führungskraft" : "Person";
+  const rolle = isLeading ? "Die Führungskraft" : "Das Teammitglied";
 
   const labelMap: Record<DominanceType, string> = {
     IMPULSIV: "Ergebnis- und Umsetzungsorientierung",
@@ -106,18 +106,18 @@ export function generateDiagnoseSummary(kandidat: Triad, team: Triad, isLeading:
     "INTUITIV-INTUITIV": "Die Besetzung verstärkt die bestehende Beziehungs- und Konsensorientierung. Bindung steigt, Entscheidungstempo bleibt kritisch.",
     "ANALYTISCH-ANALYTISCH": "Die Besetzung verstärkt die bestehende Struktur- und Prüfungsorientierung. Qualität steigt, Entscheidungsgeschwindigkeit bleibt kritisch.",
     "MIX-MIX": "Die Besetzung verstärkt die bestehende Breite. Flexibilität steigt, klare Leitstruktur bleibt kritisch.",
-    "IMPULSIV-INTUITIV": `Die ${rolle} bringt Ergebnisdruck in ein beziehungsorientiertes System. Umsetzungstempo steigt, Teamklima kann unter Druck geraten.`,
-    "IMPULSIV-ANALYTISCH": `Die ${rolle} bringt Handlungsdynamik in ein strukturorientiertes System. Entscheidungen werden schneller, Prüftiefe kann sinken.`,
-    "IMPULSIV-MIX": `Die ${rolle} bringt klare Ergebnisorientierung in ein breit aufgestelltes System. Richtung entsteht, Flexibilität kann eingeschränkt werden.`,
-    "INTUITIV-IMPULSIV": `Die ${rolle} bringt Konsensorientierung in ein ergebnisorientiertes System. Zusammenhalt steigt, Entscheidungstempo kann sinken.`,
-    "INTUITIV-ANALYTISCH": `Die ${rolle} bringt Beziehungsfokus in ein strukturorientiertes System. Dialog steigt, Entscheidungsklarheit kann leiden.`,
-    "INTUITIV-MIX": `Die ${rolle} bringt Beziehungsstärke in ein breit aufgestelltes System. Teamkultur wird gestärkt, klare Ergebnisorientierung kann fehlen.`,
-    "ANALYTISCH-IMPULSIV": `Die ${rolle} bringt Strukturtiefe in ein ergebnisorientiertes System. Qualität steigt, Geschwindigkeit kann sinken.`,
-    "ANALYTISCH-INTUITIV": `Die ${rolle} bringt Prüflogik in ein beziehungsorientiertes System. Nachvollziehbarkeit steigt, Konsenskultur kann unter Druck geraten.`,
-    "ANALYTISCH-MIX": `Die ${rolle} bringt klare Standards in ein breit aufgestelltes System. Struktur entsteht, Anpassungsfähigkeit kann sinken.`,
-    "MIX-IMPULSIV": `Die ${rolle} bringt situative Breite in ein ergebnisorientiertes System. Flexibilität steigt, klare Richtung kann fehlen.`,
-    "MIX-INTUITIV": `Die ${rolle} bringt situative Breite in ein beziehungsorientiertes System. Anpassungsfähigkeit steigt, Konsistenz kann sinken.`,
-    "MIX-ANALYTISCH": `Die ${rolle} bringt situative Breite in ein strukturorientiertes System. Flexibilität steigt, Standards können verwässern.`,
+    "IMPULSIV-INTUITIV": `${rolle} bringt Ergebnisdruck in ein beziehungsorientiertes System. Umsetzungstempo steigt, Teamklima kann unter Druck geraten.`,
+    "IMPULSIV-ANALYTISCH": `${rolle} bringt Handlungsdynamik in ein strukturorientiertes System. Entscheidungen werden schneller, Prüftiefe kann sinken.`,
+    "IMPULSIV-MIX": `${rolle} bringt klare Ergebnisorientierung in ein breit aufgestelltes System. Richtung entsteht, Flexibilität kann eingeschränkt werden.`,
+    "INTUITIV-IMPULSIV": `${rolle} bringt Konsensorientierung in ein ergebnisorientiertes System. Zusammenhalt steigt, Entscheidungstempo kann sinken.`,
+    "INTUITIV-ANALYTISCH": `${rolle} bringt Beziehungsfokus in ein strukturorientiertes System. Dialog steigt, Entscheidungsklarheit kann leiden.`,
+    "INTUITIV-MIX": `${rolle} bringt Beziehungsstärke in ein breit aufgestelltes System. Teamkultur wird gestärkt, klare Ergebnisorientierung kann fehlen.`,
+    "ANALYTISCH-IMPULSIV": `${rolle} bringt Strukturtiefe in ein ergebnisorientiertes System. Qualität steigt, Geschwindigkeit kann sinken.`,
+    "ANALYTISCH-INTUITIV": `${rolle} bringt Prüflogik in ein beziehungsorientiertes System. Nachvollziehbarkeit steigt, Konsenskultur kann unter Druck geraten.`,
+    "ANALYTISCH-MIX": `${rolle} bringt klare Standards in ein breit aufgestelltes System. Struktur entsteht, Anpassungsfähigkeit kann sinken.`,
+    "MIX-IMPULSIV": `${rolle} bringt situative Breite in ein ergebnisorientiertes System. Flexibilität steigt, klare Richtung kann fehlen.`,
+    "MIX-INTUITIV": `${rolle} bringt situative Breite in ein beziehungsorientiertes System. Anpassungsfähigkeit steigt, Konsistenz kann sinken.`,
+    "MIX-ANALYTISCH": `${rolle} bringt situative Breite in ein strukturorientiertes System. Flexibilität steigt, Standards können verwässern.`,
   };
   return effectMap[`${domK}-${domT}`] || "Die Besetzung verändert die bestehende Systemdynamik.";
 }
@@ -199,91 +199,108 @@ const SYSTEMWIRKUNG_HEADLINES: Record<string, string> = {
   "MIX-MIX": "Beide Seiten haben kein klares Profil. Entscheidungslogik und Prioritäten wechseln situativ.",
 };
 
-function buildEntscheidungslogik(domK: DominanceType, domT: DominanceType): { bisher: string; mitNeu: string; fuerFK: string } {
+function buildEntscheidungslogik(domK: DominanceType, domT: DominanceType, isLeading: boolean): { bisher: string; mitNeu: string; fuerFK: string } {
   const key = domPair(domK, domT);
-  const catalog: Record<string, { bisher: string; mitNeu: string; fuerFK: string }> = {
+  const catalog: Record<string, { bisher: string; mitNeu: string; fuerFKLead: string; fuerFKTeam: string }> = {
     "ANALYTISCH-IMPULSIV": {
       bisher: "Schnell, intuitiv, direkt entscheidend.",
       mitNeu: "Entscheidungen werden stärker geprüft, Argumente systematischer gewichtet, Risiken bewusster bewertet. Das führt zu mehr Stabilität – gleichzeitig kann das Entscheidungstempo moderat sinken.",
-      fuerFK: "Sie muss aktiv definieren, wann Geschwindigkeit Vorrang hat und wann vertiefte Prüfung notwendig ist.",
+      fuerFKLead: "Die Führungskraft muss aktiv definieren, wann Geschwindigkeit Vorrang hat und wann vertiefte Prüfung notwendig ist.",
+      fuerFKTeam: "Das Teammitglied sollte lernen, wann Geschwindigkeit Vorrang hat und wann vertiefte Prüfung notwendig ist.",
     },
     "IMPULSIV-ANALYTISCH": {
       bisher: "Strukturiert, abgesichert, faktenbasiert.",
       mitNeu: "Entscheidungen werden beschleunigt, Risikobewertung tritt in den Hintergrund. Tempo steigt, aber Absicherung sinkt.",
-      fuerFK: "Sie muss definieren, wo Tempo Vorrang hat und wo Absicherung unverzichtbar bleibt.",
+      fuerFKLead: "Die Führungskraft muss definieren, wo Tempo Vorrang hat und wo Absicherung unverzichtbar bleibt.",
+      fuerFKTeam: "Das Teammitglied sollte sich bewusst machen, wo Tempo erwartet wird und wo Absicherung im Team Priorität hat.",
     },
     "IMPULSIV-INTUITIV": {
       bisher: "Konsensorientiert, beziehungsgetrieben, dialogreich.",
       mitNeu: "Entscheidungen werden direkter, ergebnisorientierter. Abstimmungsrunden werden kürzer, aber Beziehungsebene kann leiden.",
-      fuerFK: "Sie muss Balance finden zwischen Tempo und Beziehungspflege. Direkte Entscheidungen klar kommunizieren.",
+      fuerFKLead: "Die Führungskraft muss Balance finden zwischen Tempo und Beziehungspflege. Direkte Entscheidungen klar kommunizieren.",
+      fuerFKTeam: "Das Teammitglied sollte beachten, dass das Team Abstimmung und Dialog schätzt. Direkte Vorgehen vorher kommunizieren.",
     },
     "INTUITIV-IMPULSIV": {
       bisher: "Schnell, direkt, ergebnisorientiert.",
       mitNeu: "Entscheidungen werden stärker abgestimmt, Konsens gewinnt an Bedeutung. Das Team erlebt mehr Dialog, aber potenziell langsamere Umsetzung.",
-      fuerFK: "Sie muss klar kommunizieren, wo Konsens wichtig ist und wo Geschwindigkeit Vorrang hat.",
+      fuerFKLead: "Die Führungskraft muss klar kommunizieren, wo Konsens wichtig ist und wo Geschwindigkeit Vorrang hat.",
+      fuerFKTeam: "Das Teammitglied sollte sich bewusst machen, dass das Team Geschwindigkeit erwartet. Abstimmungsbedarf offen ansprechen.",
     },
     "INTUITIV-ANALYTISCH": {
       bisher: "Strukturiert, prozessorientiert, faktenbasiert.",
       mitNeu: "Entscheidungen werden dialogischer, Beziehungsaspekte gewinnen an Gewicht. Prozesseffizienz kann unter Abstimmungsschleifen leiden.",
-      fuerFK: "Sie muss definieren, wann Dialog notwendig ist und wann Prozessstandards gelten.",
+      fuerFKLead: "Die Führungskraft muss definieren, wann Dialog notwendig ist und wann Prozessstandards gelten.",
+      fuerFKTeam: "Das Teammitglied sollte verstehen, dass das Team klare Prozesse erwartet. Dialogbedarf gezielt einbringen.",
     },
     "ANALYTISCH-INTUITIV": {
       bisher: "Konsensorientiert, beziehungsgetrieben, empathisch.",
       mitNeu: "Entscheidungen werden faktenbasierter, emotionale Argumente verlieren an Gewicht. Transparenz steigt, aber das Team kann Distanz empfinden.",
-      fuerFK: "Sie muss aktiv Beziehungspflege in ihre strukturierte Arbeitsweise integrieren.",
+      fuerFKLead: "Die Führungskraft muss aktiv Beziehungspflege in ihre strukturierte Arbeitsweise integrieren.",
+      fuerFKTeam: "Das Teammitglied sollte aktiv den Kontakt zum Team suchen und die eigene Arbeitsweise erklären.",
     },
     "IMPULSIV-IMPULSIV": {
       bisher: "Schnell, direkt, umsetzungsorientiert.",
       mitNeu: "Das bestehende Tempo wird verstärkt. Entscheidungen fallen noch schneller, aber Reflexionsphasen werden systematisch übersprungen.",
-      fuerFK: "Sie muss bewusst Qualitäts-Gates einbauen und Reflexionsmomente institutionalisieren.",
+      fuerFKLead: "Die Führungskraft muss bewusst Qualitäts-Gates einbauen und Reflexionsmomente institutionalisieren.",
+      fuerFKTeam: "Das Teammitglied sollte bewusst Qualitätsmomente einplanen und nicht nur auf Geschwindigkeit setzen.",
     },
     "INTUITIV-INTUITIV": {
       bisher: "Konsensgetrieben, beziehungsorientiert, dialogreich.",
       mitNeu: "Die Konsensorientierung verstärkt sich. Bindung und Teamgefühl steigen, aber schwierige Entscheidungen werden aufgeschoben.",
-      fuerFK: "Sie muss Entscheidungsfristen setzen und Konfliktroutinen etablieren.",
+      fuerFKLead: "Die Führungskraft muss Entscheidungsfristen setzen und Konfliktroutinen etablieren.",
+      fuerFKTeam: "Das Teammitglied sollte darauf achten, klare Entscheidungen nicht aufzuschieben und Konflikte offen anzusprechen.",
     },
     "ANALYTISCH-ANALYTISCH": {
       bisher: "Strukturiert, qualitätsorientiert, prozessgetrieben.",
       mitNeu: "Die Strukturorientierung verstärkt sich. Qualität und Planbarkeit steigen, aber Innovationsgeschwindigkeit und Flexibilität sinken.",
-      fuerFK: "Sie muss Innovationsimpulse bewusst setzen und Veränderungsgeschwindigkeit aktiv steuern.",
+      fuerFKLead: "Die Führungskraft muss Innovationsimpulse bewusst setzen und Veränderungsgeschwindigkeit aktiv steuern.",
+      fuerFKTeam: "Das Teammitglied sollte offen für neue Ansätze bleiben und eigene Impulse für Veränderung einbringen.",
     },
     "MIX-IMPULSIV": {
       bisher: "Schnell, direkt, ergebnisorientiert.",
       mitNeu: "Die fehlende klare Handschrift erzeugt wechselnde Impulse. Das Team erwartet klare Richtung, erhält aber situative Entscheidungen.",
-      fuerFK: "Sie muss eine dominante Arbeitsweise als Standard definieren und konsequent beibehalten.",
+      fuerFKLead: "Die Führungskraft muss eine dominante Arbeitsweise als Standard definieren und konsequent beibehalten.",
+      fuerFKTeam: "Das Teammitglied sollte sich an das Tempo des Teams anpassen und konsistentes Verhalten zeigen.",
     },
     "MIX-INTUITIV": {
       bisher: "Konsensorientiert, beziehungsgetrieben, empathisch.",
-      mitNeu: "Wechselnde Prioritäten erzeugen Verunsicherung im Team. Die fehlende klare Linie wird als Führungsschwäche wahrgenommen.",
-      fuerFK: "Sie muss Beziehungspflege ritualisieren und Verlässlichkeit durch feste Routinen herstellen.",
+      mitNeu: "Wechselnde Prioritäten erzeugen Verunsicherung im Team. Die fehlende klare Linie kann irritierend wirken.",
+      fuerFKLead: "Die Führungskraft muss Beziehungspflege ritualisieren und Verlässlichkeit durch feste Routinen herstellen.",
+      fuerFKTeam: "Das Teammitglied sollte feste Routinen aufbauen und verlässliches Verhalten zeigen, um Vertrauen zu stärken.",
     },
     "MIX-ANALYTISCH": {
       bisher: "Strukturiert, prozessorientiert, absicherungsorientiert.",
       mitNeu: "Situative Entscheidungen kollidieren mit dem Bedürfnis nach klaren Standards. Inkonsistenz wird als Qualitätsmangel erlebt.",
-      fuerFK: "Sie muss Standards und Qualitäts-Gates klar definieren und Prozessrahmen vor Flexibilität stellen.",
+      fuerFKLead: "Die Führungskraft muss Standards und Qualitäts-Gates klar definieren und Prozessrahmen vor Flexibilität stellen.",
+      fuerFKTeam: "Das Teammitglied sollte sich an bestehende Standards halten und Änderungen transparent abstimmen.",
     },
     "IMPULSIV-MIX": {
       bisher: "Situativ, ohne klare dominante Logik.",
       mitNeu: "Umsetzungsdruck trifft auf ein Team ohne stabilen Gegenpol. Teile folgen, andere reagieren mit Rückzug.",
-      fuerFK: "Sie muss Teamstruktur klären und Rollen explizit machen.",
+      fuerFKLead: "Die Führungskraft muss Teamstruktur klären und Rollen explizit machen.",
+      fuerFKTeam: "Das Teammitglied sollte das eigene Tempo bewusst anpassen und Rollen im Team klären.",
     },
     "INTUITIV-MIX": {
       bisher: "Situativ, ohne klare dominante Logik.",
       mitNeu: "Konsenssuche trifft auf fehlende Teamstruktur. Abstimmungsrunden dauern länger, Entscheidungen werden aufgeschoben.",
-      fuerFK: "Sie muss Entscheidungsfristen setzen und Ergebnisorientierung stärken.",
+      fuerFKLead: "Die Führungskraft muss Entscheidungsfristen setzen und Ergebnisorientierung stärken.",
+      fuerFKTeam: "Das Teammitglied sollte klare Absprachen treffen und Ergebnisse sichtbar machen.",
     },
     "ANALYTISCH-MIX": {
       bisher: "Situativ, ohne klare dominante Logik.",
       mitNeu: "Strukturanforderungen treffen auf ein flexibles Team. Teile akzeptieren Vorgaben, andere empfinden sie als Einengung.",
-      fuerFK: "Sie muss den Strukturrahmen klar, aber flexibel gestalten.",
+      fuerFKLead: "Die Führungskraft muss den Strukturrahmen klar, aber flexibel gestalten.",
+      fuerFKTeam: "Das Teammitglied sollte eigene Strukturvorschläge einbringen, ohne das Team einzuengen.",
     },
     "MIX-MIX": {
       bisher: "Situativ, ohne klare dominante Logik.",
       mitNeu: "Beide Seiten haben kein klares Profil. Richtungswechsel sind häufig, Vorhersagbarkeit ist gering.",
-      fuerFK: "Sie muss feste Entscheidungsregeln und Standards definieren.",
+      fuerFKLead: "Die Führungskraft muss feste Entscheidungsregeln und Standards definieren.",
+      fuerFKTeam: "Das Teammitglied sollte eigene Arbeitsstandards etablieren und verlässlich einhalten.",
     },
   };
-  return catalog[key];
+  const entry = catalog[key];
+  return { bisher: entry.bisher, mitNeu: entry.mitNeu, fuerFK: isLeading ? entry.fuerFKLead : entry.fuerFKTeam };
 }
 
 function buildProzessWirkung(domK: DominanceType, domT: DominanceType): { positiv: string[]; negativ: string[] } {
@@ -861,7 +878,11 @@ export function generateDetailReport(input: TeamCheckInput, result: TeamCheckRes
   const domT = dominanceType(input.team);
   const delta = computeDelta(input.kandidat, input.team);
   const intensity = computeIntensitaet(delta);
-  const rolleLabel = input.isLeading ? "Führungskraft" : "neuen Person";
+  const rolleNom = input.isLeading ? "die Führungskraft" : "das neue Teammitglied";
+  const rolleGen = input.isLeading ? "der Führungskraft" : "des neuen Teammitglieds";
+  const rolleDat = input.isLeading ? "der Führungskraft" : "dem neuen Teammitglied";
+  const rolleAkk = input.isLeading ? "die Führungskraft" : "das neue Teammitglied";
+  const rolleLabel = input.isLeading ? "Führungskraft" : "neues Teammitglied";
   const rolleAdj = input.isLeading ? "Führungsposition" : "Position";
   const beruf = input.beruf || "die offene Rolle";
   const kLabel = plainLabel(domK);
@@ -884,7 +905,7 @@ export function generateDetailReport(input: TeamCheckInput, result: TeamCheckRes
       "Welche Spannungen entstehen?",
       "Wo liegen Chancen?",
       "Wie steuerbar ist die Konstellation?",
-      `Was bedeutet das konkret für die ${rolleLabel} im Alltag?`,
+      `Was bedeutet das konkret für ${rolleAkk} im Alltag?`,
     ],
   });
 
@@ -897,17 +918,22 @@ export function generateDetailReport(input: TeamCheckInput, result: TeamCheckRes
         paragraphs: [
           `Die Rolle „${beruf}" verlangt:`,
         ],
-        bullets: [
+        bullets: input.isLeading ? [
           "klare Ergebnisverantwortung",
           "operative Steuerung",
           "strukturierte Entscheidungsfindung",
-          `Führung eines leistungsorientierten Teams`,
+          "Führung eines leistungsorientierten Teams",
+        ] : [
+          "klare Ergebnisverantwortung",
+          "operative Mitarbeit",
+          "strukturierte Zusammenarbeit",
+          "verlässlichen Beitrag zum Teamergebnis",
         ],
       },
       {
-        title: `Profil der ${rolleLabel}`,
+        title: `Profil ${rolleGen}`,
         paragraphs: [
-          `Die ${rolleLabel} ist stark ${kLabel}.`,
+          `${rolleNom.charAt(0).toUpperCase() + rolleNom.slice(1)} ist stark ${kLabel}.`,
           "Das bedeutet:",
         ],
         bullets: domK === "ANALYTISCH" ? [
@@ -971,7 +997,7 @@ export function generateDetailReport(input: TeamCheckInput, result: TeamCheckRes
     num: 3,
     title: "Zentrale Verschiebung",
     paragraphs: [
-      `Mit der neuen ${rolleLabel} trifft eine ${plainAdj(domK)}e Arbeitsweise auf ein ${plainAdj(domT)}es System.`,
+      `Mit ${rolleDat} trifft eine ${plainAdj(domK)}e Arbeitsweise auf ein ${plainAdj(domT)}es System.`,
       "Diese Konstellation erzeugt eine " + (domK === domT ? "Verstärkung der bestehenden Dynamik." : `deutliche Verschiebung im Entscheidungs- und Arbeitsrhythmus.`),
       `Die Intensität dieser Verschiebung ist ${intensityLabel}.`,
     ],
@@ -979,7 +1005,9 @@ export function generateDetailReport(input: TeamCheckInput, result: TeamCheckRes
       title: "",
       highlight: domK === domT
         ? "Das ist eine Verstärkung, kein Spannungsfall. Es bedeutet jedoch, dass Gegengewichte bewusst gesetzt werden müssen."
-        : "Das ist kein grundsätzliches Problem. Es bedeutet jedoch, dass Führung aktiv gestaltet werden muss.",
+        : input.isLeading
+          ? "Das ist kein grundsätzliches Problem. Es bedeutet jedoch, dass Führung aktiv gestaltet werden muss."
+          : "Das ist kein grundsätzliches Problem. Es bedeutet jedoch, dass die Integration aktiv begleitet werden muss.",
     }],
   });
 
@@ -991,7 +1019,7 @@ export function generateDetailReport(input: TeamCheckInput, result: TeamCheckRes
         title: "Veränderung der Entscheidungslogik",
         paragraphs: [
           `Bisher: ${result.systemwirkung.entscheidungslogik.bisher}`,
-          `Mit der neuen ${rolleLabel}: ${result.systemwirkung.entscheidungslogik.mitNeu}`,
+          `Mit ${rolleDat}: ${result.systemwirkung.entscheidungslogik.mitNeu}`,
         ],
         bullets: [
           ...result.systemwirkung.prozessWirkung.positiv.map(p => `✓ ${p}`),
@@ -1002,7 +1030,7 @@ export function generateDetailReport(input: TeamCheckInput, result: TeamCheckRes
         title: "Veränderung von Prioritäten",
         paragraphs: [
           `Das Team priorisiert bisher: ${tShort}.`,
-          `Die neue Führung priorisiert: ${kShort}.`,
+          `${rolleNom.charAt(0).toUpperCase() + rolleNom.slice(1)} priorisiert: ${kShort}.`,
           domK === domT
             ? "Das verstärkt bestehende Stärken, aber auch bestehende blinde Flecken."
             : "Das verändert die Reihenfolge von Aufgaben, die Tiefe der Vorbereitung und den Umgang mit Unsicherheit.",
@@ -1033,7 +1061,7 @@ export function generateDetailReport(input: TeamCheckInput, result: TeamCheckRes
       title: "",
       paragraphs: [
         result.stressprofil.zweitKomponente,
-        `Für die ${rolleLabel} bedeutet das:`,
+        `Für ${rolleAkk} bedeutet das:`,
       ],
       highlight: result.stressprofil.steuerung,
     }],
@@ -1069,23 +1097,27 @@ export function generateDetailReport(input: TeamCheckInput, result: TeamCheckRes
 
   sections.push({
     num: 9,
-    title: "Führungsverantwortung",
+    title: input.isLeading ? "Führungsverantwortung" : "Verantwortung im Team",
     paragraphs: [
-      `Die neue ${rolleLabel} trägt eine klare Verantwortung:`,
+      `${rolleNom.charAt(0).toUpperCase() + rolleNom.slice(1)} trägt eine klare Verantwortung${input.isLeading ? "" : " im Team"}:`,
     ],
     bullets: result.handlungsempfehlungen.topHebel,
     subsections: [{
       title: "",
-      highlight: domK === domT
-        ? "Führung bedeutet hier: Gegengewichte setzen, ohne die eigene Stärke zu verlieren."
-        : "Führung bedeutet hier: Struktur geben, ohne Dynamik zu ersticken.",
+      highlight: input.isLeading
+        ? (domK === domT
+          ? "Führung bedeutet hier: Gegengewichte setzen, ohne die eigene Stärke zu verlieren."
+          : "Führung bedeutet hier: Struktur geben, ohne Dynamik zu ersticken.")
+        : (domK === domT
+          ? "Integration bedeutet hier: eigene Stärken einbringen, ohne die Teambalance zu gefährden."
+          : "Integration bedeutet hier: die eigene Arbeitsweise mit dem Team abstimmen, ohne sich zu verlieren."),
     }],
   });
 
   sections.push({
     num: 10,
     title: "90-Tage-Integrationsplan",
-    subsections: [
+    subsections: input.isLeading ? [
       {
         title: "Phase 1 – Orientierung (Tag 1–30)",
         paragraphs: ["Ziel: Das System verstehen und klare Spielregeln definieren."],
@@ -1134,6 +1166,47 @@ export function generateDetailReport(input: TeamCheckInput, result: TeamCheckRes
           "Persönliche Selbstreflexion der Führungskraft",
         ],
       },
+    ] : [
+      {
+        title: "Phase 1 – Ankommen (Tag 1–30)",
+        paragraphs: ["Ziel: Das Team kennenlernen und die eigene Rolle klären."],
+        bullets: [
+          "Kennenlerngespräche mit allen Teammitgliedern",
+          "Bestehende Arbeitsweisen beobachten und verstehen",
+          "Eigene Aufgaben und Verantwortlichkeiten klären",
+          "Absprachen zu Zusammenarbeit und Erreichbarkeit treffen",
+          "Einarbeitung in laufende Prozesse",
+          "Dokumentation eigener Beobachtungen",
+          "Rückfragen aktiv stellen",
+          "Eigene Stärken sichtbar einbringen",
+        ],
+      },
+      {
+        title: "Phase 2 – Beitragen (Tag 31–60)",
+        paragraphs: ["Ziel: Sichtbar zum Teamergebnis beitragen."],
+        bullets: [
+          "Übernahme eines eigenen Verantwortungsbereichs",
+          "Aktive Beteiligung an Teamentscheidungen",
+          "Feedback einholen zur eigenen Wirkung",
+          "Zusammenarbeit mit Kernkollegen vertiefen",
+          "Qualität der eigenen Arbeit sicherstellen",
+          "Verbesserungsvorschläge einbringen",
+          "Eigene Arbeitsweise an das Team anpassen",
+        ],
+      },
+      {
+        title: "Phase 3 – Etablieren (Tag 61–90)",
+        paragraphs: ["Ziel: Fester Bestandteil des Teams werden."],
+        bullets: [
+          "Eigenständige Arbeitsweise zeigen",
+          "Ergebnisse sichtbar machen",
+          "Teamzufriedenheit reflektieren",
+          "Langfristige Zusammenarbeit klären",
+          "Offenes Feedback geben und nehmen",
+          "Eigene Entwicklungsfelder identifizieren",
+          "Verlässlichkeit im Alltag zeigen",
+        ],
+      },
     ],
   });
 
@@ -1143,12 +1216,16 @@ export function generateDetailReport(input: TeamCheckInput, result: TeamCheckRes
     paragraphs: [
       result.gesamturteil.einschaetzung,
       `Die Konstellation ist ${intensity === "HOCH" ? "anspruchsvoll" : "gut handhabbar"}, aber ${intensity === "NIEDRIG" ? "unkritisch" : "steuerbar"}.`,
-      `Voraussetzung ist eine ${rolleLabel}, die:`,
+      input.isLeading
+        ? "Voraussetzung ist eine Führungskraft, die:"
+        : "Voraussetzung ist ein Teammitglied, das:",
     ],
     bullets: result.handlungsempfehlungen.topHebel,
     subsections: [{
       title: "",
-      highlight: "Mit aktiver Führung entsteht ein leistungsstarkes, stabiles System.",
+      highlight: input.isLeading
+        ? "Mit aktiver Führung entsteht ein leistungsstarkes, stabiles System."
+        : "Mit guter Integration entsteht ein leistungsstarkes, stabiles Team.",
     }],
   });
 
@@ -1166,7 +1243,8 @@ export function generateExecutiveReport(input: TeamCheckInput, result: TeamCheck
   const domT = dominanceType(input.team);
   const delta = computeDelta(input.kandidat, input.team);
   const intensity = computeIntensitaet(delta);
-  const rolleLabel = input.isLeading ? "Führungskraft" : "neuen Person";
+  const rolleNom = input.isLeading ? "die neue Führungskraft" : "das neue Teammitglied";
+  const rolleDat = input.isLeading ? "der neuen Führungskraft" : "dem neuen Teammitglied";
   const beruf = input.beruf || "die offene Rolle";
   const kLabel = plainLabel(domK);
   const tLabel = plainLabel(domT);
@@ -1178,7 +1256,7 @@ export function generateExecutiveReport(input: TeamCheckInput, result: TeamCheck
       {
         title: "Ausgangslage",
         paragraphs: [
-          `Die neue ${rolleLabel} ist stark ${kLabel}.`,
+          `${rolleNom.charAt(0).toUpperCase() + rolleNom.slice(1)} ist stark ${kLabel}.`,
           `Das bestehende Team arbeitet überwiegend ${tLabel}.`,
           domK === domT
             ? "Es entsteht eine Verstärkung der bestehenden Arbeitslogik."
@@ -1227,7 +1305,7 @@ export function generateExecutiveReport(input: TeamCheckInput, result: TeamCheck
 
   const page2: ExecutivePage = {
     pageNum: 2,
-    title: "Steuerbarkeit, Prognose und 90-Tage-Führungsauftrag",
+    title: input.isLeading ? "Steuerbarkeit, Prognose und 90-Tage-Führungsauftrag" : "Steuerbarkeit, Prognose und 90-Tage-Integrationsplan",
     sections: [
       {
         title: "Prognose",
@@ -1248,22 +1326,30 @@ export function generateExecutiveReport(input: TeamCheckInput, result: TeamCheck
         ],
       },
       {
-        title: "Führungsauftrag",
-        paragraphs: [`Die neue ${rolleLabel} muss:`],
+        title: input.isLeading ? "Führungsauftrag" : "Integrationsauftrag",
+        paragraphs: [`${rolleNom.charAt(0).toUpperCase() + rolleNom.slice(1)} muss:`],
         bullets: result.handlungsempfehlungen.topHebel,
       },
       {
         title: "90-Tage-Plan (kompakt)",
         paragraphs: [
-          "Phase 1 – Orientierung (Tag 1–30): Entscheidungswege analysieren, Verantwortlichkeiten klären, Zeitfenster definieren, Führungsprinzipien transparent machen.",
-          "Phase 2 – Wirksamkeit (Tag 31–60): Einen Kernprozess strukturieren, Qualitäts-Gates einführen, Entscheidungsdauer messen, Feedback einholen.",
-          "Phase 3 – Stabilisierung (Tag 61–90): KPI-Review, Kontrolltiefe anpassen, Tempo-Qualitäts-Balance justieren, Teamfeedback integrieren.",
+          ...(input.isLeading ? [
+            "Phase 1 – Orientierung (Tag 1–30): Entscheidungswege analysieren, Verantwortlichkeiten klären, Zeitfenster definieren, Führungsprinzipien transparent machen.",
+            "Phase 2 – Wirksamkeit (Tag 31–60): Einen Kernprozess strukturieren, Qualitäts-Gates einführen, Entscheidungsdauer messen, Feedback einholen.",
+            "Phase 3 – Stabilisierung (Tag 61–90): KPI-Review, Kontrolltiefe anpassen, Tempo-Qualitäts-Balance justieren, Teamfeedback integrieren.",
+          ] : [
+            "Phase 1 – Ankommen (Tag 1–30): Team kennenlernen, Arbeitsweisen beobachten, eigene Rolle klären, Absprachen treffen.",
+            "Phase 2 – Beitragen (Tag 31–60): Eigenen Verantwortungsbereich übernehmen, Feedback einholen, Zusammenarbeit vertiefen.",
+            "Phase 3 – Etablieren (Tag 61–90): Eigenständigkeit zeigen, Ergebnisse sichtbar machen, langfristige Zusammenarbeit klären.",
+          ]),
         ],
       },
       {
         title: "Abschließendes Urteil",
         paragraphs: [result.gesamturteil.einschaetzung],
-        highlight: "Bei aktiver Führung entsteht ein leistungsfähigeres, strukturierteres System. Ohne klare Rahmensetzung entsteht Spannungsdynamik.",
+        highlight: input.isLeading
+          ? "Bei aktiver Führung entsteht ein leistungsfähigeres, strukturierteres System. Ohne klare Rahmensetzung entsteht Spannungsdynamik."
+          : "Bei guter Integration entsteht ein stärkeres, stabileres Team. Ohne aktive Einbindung entsteht Reibung.",
       },
     ],
   };
@@ -1295,7 +1381,7 @@ export function computeTeamCheck(input: TeamCheckInput): TeamCheckResult {
 
   const systemwirkung: SystemwirkungResult = {
     headline,
-    entscheidungslogik: buildEntscheidungslogik(domK, domT),
+    entscheidungslogik: buildEntscheidungslogik(domK, domT, input.isLeading),
     prozessWirkung: buildProzessWirkung(domK, domT),
     qualitaetsWirkung: buildQualitaetsWirkung(domK, domT),
   };

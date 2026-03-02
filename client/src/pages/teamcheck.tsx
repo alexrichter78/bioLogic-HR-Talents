@@ -372,7 +372,7 @@ export default function TeamCheck() {
                           background: "rgba(255,255,255,0.7)", borderRadius: 22, padding: "20px 22px",
                           border: "1px solid rgba(0,0,0,0.05)",
                         }}>
-                          {renderProfileBars(isLeading ? "Führungskraft" : "Kandidat", kandidat, "#F39200")}
+                          {renderProfileBars(isLeading ? "Führungskraft" : "Teammitglied", kandidat, "#F39200")}
                           <div style={{ width: 1, background: "rgba(0,0,0,0.06)", margin: "0 4px", alignSelf: "stretch" }} />
                           {renderProfileBars("Team", team, "#34C759")}
                         </div>
@@ -383,7 +383,7 @@ export default function TeamCheck() {
                           display: "flex", gap: 12, marginBottom: 18, flexWrap: "wrap",
                         }}>
                           {[
-                            { label: isLeading ? "Führungskraft" : "Kandidat", value: result.diagnose.kandidatDominanz, color: "#F39200" },
+                            { label: isLeading ? "Führungskraft" : "Teammitglied", value: result.diagnose.kandidatDominanz, color: "#F39200" },
                             { label: "Verschiebung", value: result.diagnose.kandidatDominanz === result.diagnose.teamDominanz ? "Verstärkung" : "Strukturwechsel", color: result.diagnose.kandidatDominanz === result.diagnose.teamDominanz ? "#34C759" : "#FF9500" },
                             { label: "Team", value: result.diagnose.teamDominanz, color: "#34C759" },
                           ].map((item, i) => (
@@ -886,19 +886,6 @@ export default function TeamCheck() {
           <Briefcase style={{ width: 13, height: 13, strokeWidth: 2.5 }} />
           Executive
         </button>
-        <button
-          data-testid="btn-export-pdf"
-          onClick={() => window.print()}
-          style={{
-            display: "flex", alignItems: "center", gap: 6,
-            padding: "7px 16px", borderRadius: 10,
-            background: "rgba(0,0,0,0.04)", border: "none", cursor: "pointer",
-            fontSize: 12, fontWeight: 600, color: "#6E6E73",
-          }}
-        >
-          <FileDown style={{ width: 13, height: 13, strokeWidth: 2 }} />
-          PDF
-        </button>
       </div>
 
       <div style={{ maxWidth: 860, margin: "0 auto", padding: "32px 20px 80px" }}>
@@ -946,7 +933,7 @@ export default function TeamCheck() {
             </div>
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
-              <ProfileCard title="Rollen-DNA (Soll)" num={1} triad={soll} dominanz={result.diagnose.sollDominanz} color="#0071E3" onChange={setSoll} testIdPrefix="slider-soll" />
+              <ProfileCard title="Rollen-DNA (Soll)" num={1} triad={soll} dominanz={result.diagnose.sollDominanz} color="#0071E3" />
               <ProfileCard title="Kandidatenprofil (Ist)" num={2} triad={kandidat} dominanz={result.diagnose.kandidatDominanz} color="#F39200" onChange={setKandidat} testIdPrefix="slider-kand" />
               <ProfileCard title="Teamprofil (Ist)" num={3} triad={team} dominanz={result.diagnose.teamDominanz} color="#34C759" onChange={setTeam} testIdPrefix="slider-team" />
             </div>
@@ -1090,9 +1077,9 @@ export default function TeamCheck() {
                     <div style={{ flex: 1, minWidth: 200 }}>
                       <p style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 6px", letterSpacing: "0.04em" }}>Bisher</p>
                       <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(result.systemwirkung.entscheidungslogik.bisher)}</p>
-                      <p style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", margin: "14px 0 6px", letterSpacing: "0.04em" }}>Mit der neuen {isLeading ? "Führungskraft" : "Person"}</p>
+                      <p style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", margin: "14px 0 6px", letterSpacing: "0.04em" }}>Mit {isLeading ? "der neuen Führungskraft" : "dem neuen Teammitglied"}</p>
                       <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(result.systemwirkung.entscheidungslogik.mitNeu)}</p>
-                      <p style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", margin: "14px 0 6px", letterSpacing: "0.04em" }}>Für die {isLeading ? "Führungskraft" : "Person"}</p>
+                      <p style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", margin: "14px 0 6px", letterSpacing: "0.04em" }}>Für {isLeading ? "die Führungskraft" : "das Teammitglied"}</p>
                       <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(result.systemwirkung.entscheidungslogik.fuerFK)}</p>
                     </div>
                   </div>
@@ -1320,7 +1307,10 @@ export default function TeamCheck() {
                   }}>
                     <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", margin: "0 0 6px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Fazit</p>
                     <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">
-                      {hyphenateText("Die Konstellation ist kein strukturelles No-Go, sondern ein klarer Entwicklungs- und Führungsfall. Entscheidend ist, ob die Steuerungsbereitschaft vorhanden ist und die ersten 90 Tage aktiv gestaltet werden.")}
+                      {hyphenateText(isLeading
+                        ? "Die Konstellation ist kein strukturelles No-Go, sondern ein klarer Entwicklungs- und Führungsfall. Entscheidend ist, ob die Steuerungsbereitschaft vorhanden ist und die ersten 90 Tage aktiv gestaltet werden."
+                        : "Die Konstellation ist kein strukturelles No-Go, sondern ein klarer Integrations- und Entwicklungsfall. Entscheidend ist, ob die Einbindung aktiv gestaltet wird und die ersten 90 Tage bewusst begleitet werden."
+                      )}
                     </p>
                   </div>
                 </div>
