@@ -111,9 +111,6 @@ function ProfileCard({ title, num, triad, dominanz, color, onChange, testIdPrefi
           </div>
         );
       })}
-      <div style={{ marginTop: 12, fontSize: 12, color: "#48484A" }}>
-        Dominanz: <strong style={{ color }}>{dominanz}</strong>
-      </div>
     </div>
   );
 }
