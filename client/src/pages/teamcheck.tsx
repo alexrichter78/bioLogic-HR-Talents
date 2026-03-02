@@ -1202,6 +1202,46 @@ export default function TeamCheck() {
             </GlassCard>
           )}
 
+          {/* ═══ FÜHRUNGSHEBEL ═══ */}
+          {isLeading && tdResult.leadershipContext && tdResult.leadershipContext.leadershipLevers.length > 0 && (
+            <GlassCard data-testid="section-fuehrungshebel">
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(255,149,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Zap style={{ width: 14, height: 14, color: "#FF9500" }} />
+                </div>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.01em" }}>Führungshebel</p>
+              </div>
+              <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 18px", fontWeight: 500 }}>Konkrete Steuerungsmaßnahmen für diese Führungskraft-Team-Kombination</p>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {tdResult.leadershipContext.leadershipLevers.map((lever, i) => {
+                  const prioColor = lever.priority === "hoch" ? "#FF3B30" : lever.priority === "mittel" ? "#FF9500" : "#34C759";
+                  const prioLabel = lever.priority.toUpperCase();
+                  return (
+                    <div key={i} data-testid={`lever-item-${i}`} style={{
+                      display: "flex", borderRadius: 14, overflow: "hidden",
+                      background: "#fff", border: "1px solid rgba(0,0,0,0.06)",
+                      boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+                    }}>
+                      <div style={{ width: 4, flexShrink: 0, background: prioColor }} />
+                      <div style={{ flex: 1, padding: "14px 16px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                          <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{lever.title}</p>
+                          <span style={{
+                            fontSize: 9, fontWeight: 800, padding: "2px 8px", borderRadius: 5,
+                            background: `${prioColor}12`, color: prioColor,
+                            letterSpacing: "0.06em",
+                          }}>{prioLabel}</span>
+                        </div>
+                        <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{lever.description}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </GlassCard>
+          )}
+
           {/* SECTIONS 2–6: Tabbed Detail Card */}
           <GlassCard data-testid="section-detail-tabs">
             <div style={{ display: "flex", gap: 3, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, marginBottom: 26 }}>
