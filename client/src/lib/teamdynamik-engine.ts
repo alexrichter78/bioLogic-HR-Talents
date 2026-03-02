@@ -9,6 +9,88 @@ export type ShiftType = "VERSTAERKUNG" | "ERGAENZUNG" | "REIBUNG" | "SPANNUNG" |
 export type TrafficLight = "GREEN" | "YELLOW" | "RED";
 export type ViewMode = "CEO" | "HR" | "TEAMLEITUNG";
 
+export type DepartmentType =
+  | "VERTRIEB"
+  | "ENTWICKLUNG"
+  | "HR"
+  | "FINANZEN"
+  | "MARKETING"
+  | "OPERATIONS"
+  | "KUNDENSERVICE"
+  | "STRATEGIE"
+  | "ALLGEMEIN";
+
+export type DepartmentWeight = {
+  impulsiv: number;
+  intuitiv: number;
+  analytisch: number;
+};
+
+export type DepartmentInfo = {
+  id: DepartmentType;
+  label: string;
+  focus: string;
+  weight: DepartmentWeight;
+  criticalComponent: ComponentKey;
+  criticalLabel: string;
+};
+
+const DEPARTMENT_CATALOG: Record<DepartmentType, DepartmentInfo> = {
+  VERTRIEB: {
+    id: "VERTRIEB", label: "Vertrieb / Sales", focus: "Abschlussstärke, Tempo, Durchsetzung",
+    weight: { impulsiv: 0.50, intuitiv: 0.30, analytisch: 0.20 },
+    criticalComponent: "impulsiv", criticalLabel: "Abschlussstärke und Tempo",
+  },
+  ENTWICKLUNG: {
+    id: "ENTWICKLUNG", label: "Entwicklung / Engineering", focus: "Struktur, Planung, Qualitätssicherung",
+    weight: { impulsiv: 0.15, intuitiv: 0.25, analytisch: 0.60 },
+    criticalComponent: "analytisch", criticalLabel: "Systematik und Prozessqualität",
+  },
+  HR: {
+    id: "HR", label: "HR / People & Culture", focus: "Beziehungsaufbau, Kommunikation, Teamgefühl",
+    weight: { impulsiv: 0.15, intuitiv: 0.55, analytisch: 0.30 },
+    criticalComponent: "intuitiv", criticalLabel: "Beziehungsfähigkeit und Kommunikation",
+  },
+  FINANZEN: {
+    id: "FINANZEN", label: "Finanzen / Controlling", focus: "Absicherung, Prozesse, Genauigkeit",
+    weight: { impulsiv: 0.10, intuitiv: 0.20, analytisch: 0.70 },
+    criticalComponent: "analytisch", criticalLabel: "Absicherung und Genauigkeit",
+  },
+  MARKETING: {
+    id: "MARKETING", label: "Marketing / Kreativ", focus: "Gespür für Trends, schnelle Umsetzung",
+    weight: { impulsiv: 0.35, intuitiv: 0.40, analytisch: 0.25 },
+    criticalComponent: "intuitiv", criticalLabel: "Gespür und Kreativität",
+  },
+  OPERATIONS: {
+    id: "OPERATIONS", label: "Operations / Produktion", focus: "Effizienz, Geschwindigkeit, Prozesse",
+    weight: { impulsiv: 0.35, intuitiv: 0.15, analytisch: 0.50 },
+    criticalComponent: "analytisch", criticalLabel: "Effizienz und Prozessstabilität",
+  },
+  KUNDENSERVICE: {
+    id: "KUNDENSERVICE", label: "Kundenservice / Support", focus: "Empathie, Geduld, Lösungsorientierung",
+    weight: { impulsiv: 0.20, intuitiv: 0.50, analytisch: 0.30 },
+    criticalComponent: "intuitiv", criticalLabel: "Empathie und Lösungsorientierung",
+  },
+  STRATEGIE: {
+    id: "STRATEGIE", label: "Strategie / Geschäftsführung", focus: "Entscheidungskraft, Weitblick, Steuerung",
+    weight: { impulsiv: 0.40, intuitiv: 0.25, analytisch: 0.35 },
+    criticalComponent: "impulsiv", criticalLabel: "Entscheidungskraft und Steuerung",
+  },
+  ALLGEMEIN: {
+    id: "ALLGEMEIN", label: "Allgemein / Kein Fokus", focus: "Gleichgewichtige Anforderung",
+    weight: { impulsiv: 0.33, intuitiv: 0.34, analytisch: 0.33 },
+    criticalComponent: "intuitiv", criticalLabel: "Ausgeglichene Anforderung",
+  },
+};
+
+export function getDepartmentCatalog(): DepartmentInfo[] {
+  return Object.values(DEPARTMENT_CATALOG);
+}
+
+export function getDepartmentInfo(type: DepartmentType): DepartmentInfo {
+  return DEPARTMENT_CATALOG[type] || DEPARTMENT_CATALOG.ALLGEMEIN;
+}
+
 export type Lever = {
   id: string;
   label: string;
@@ -31,6 +113,7 @@ export type TeamDynamikInput = {
   membersCount: number;
   personProfile: Triad;
   isLeading: boolean;
+  departmentType: DepartmentType;
   roleSoll?: { enabled: boolean; profile: Triad };
   tasks?: string[];
   kpiFocus?: string[];
@@ -44,6 +127,18 @@ export type Scores = {
   RG: number | null;
   TS: number;
   CI: number;
+};
+
+export type DepartmentFit = {
+  department: DepartmentInfo;
+  teamFitScore: number;
+  personFitScore: number;
+  teamGapComponent: ComponentKey | null;
+  teamGapAmount: number;
+  personGapComponent: ComponentKey | null;
+  personGapAmount: number;
+  warnings: string[];
+  contextNote: string;
 };
 
 export type TeamDynamikResult = {
@@ -71,6 +166,7 @@ export type TeamDynamikResult = {
   chances: string[];
   risks: string[];
   integrationPlan: { phaseId: string; title: string; days: string; actions: string[] }[];
+  departmentFit: DepartmentFit | null;
 };
 
 const DEFAULT_LEVERS: Lever[] = [
@@ -395,6 +491,94 @@ function buildIntegrationPlan(st: ShiftType, isLeading: boolean): { phaseId: str
   ];
 }
 
+function computeDepartmentFit(teamProfile: Triad, personProfile: Triad, deptType: DepartmentType, isLeading: boolean): DepartmentFit | null {
+  if (deptType === "ALLGEMEIN") return null;
+
+  const dept = getDepartmentInfo(deptType);
+  const w = dept.weight;
+  const MAX = 67;
+
+  const compKeys: ComponentKey[] = ["impulsiv", "intuitiv", "analytisch"];
+
+  function weightedFit(profile: Triad): number {
+    let score = 0;
+    for (const k of compKeys) {
+      const normalized = profile[k] / MAX;
+      score += w[k] * normalized;
+    }
+    return Math.round(score * 100);
+  }
+
+  function findGap(profile: Triad): { component: ComponentKey | null; amount: number } {
+    const crit = dept.criticalComponent;
+    const critValue = profile[crit];
+    const critWeight = w[crit];
+
+    if (critWeight >= 0.40 && critValue < 25) {
+      return { component: crit, amount: Math.round(25 - critValue) };
+    }
+    if (critWeight >= 0.30 && critValue < 18) {
+      return { component: crit, amount: Math.round(18 - critValue) };
+    }
+    return { component: null, amount: 0 };
+  }
+
+  const teamFit = weightedFit(teamProfile);
+  const personFit = weightedFit(personProfile);
+  const teamGap = findGap(teamProfile);
+  const personGap = findGap(personProfile);
+
+  const warnings: string[] = [];
+  const compLabel: Record<ComponentKey, string> = { impulsiv: "Impulsiv", intuitiv: "Intuitiv", analytisch: "Analytisch" };
+
+  if (teamGap.component) {
+    warnings.push(`Team: ${compLabel[teamGap.component]} ist für ${dept.label} zu niedrig (fehlen ${teamGap.amount} Punkte). ${dept.criticalLabel} könnte leiden.`);
+  }
+  if (personGap.component) {
+    const role = isLeading ? "Führungskraft" : "Neue Person";
+    warnings.push(`${role}: ${compLabel[personGap.component]} ist für ${dept.label} zu niedrig (fehlen ${personGap.amount} Punkte). ${dept.criticalLabel} wird nicht ausreichend abgedeckt.`);
+  }
+
+  const teamDom = dominanceType(teamProfile);
+  const personDom = dominanceType(personProfile);
+  const critDom = dept.criticalComponent === "impulsiv" ? "IMPULSIV" : dept.criticalComponent === "intuitiv" ? "INTUITIV" : "ANALYTISCH";
+
+  if (teamDom !== critDom && teamDom !== "MIX" && w[dept.criticalComponent] >= 0.40) {
+    warnings.push(`Abteilungsziel erfordert ${dept.criticalLabel}, aber das Team ist ${compLabel[teamProfile.impulsiv >= teamProfile.intuitiv && teamProfile.impulsiv >= teamProfile.analytisch ? "impulsiv" : teamProfile.intuitiv >= teamProfile.analytisch ? "intuitiv" : "analytisch"]}-geprägt. Es fehlt strukturell an der nötigen Kernkompetenz.`);
+  }
+
+  let contextNote = "";
+  if (deptType === "VERTRIEB") {
+    contextNote = "Im Vertrieb sind Abschlussstärke und Entscheidungsgeschwindigkeit zentral. Ein zu stark analytisches oder intuitives Profil bremst den Umsetzungsdruck.";
+  } else if (deptType === "ENTWICKLUNG") {
+    contextNote = "In der Entwicklung stehen Systematik und Prozessqualität im Vordergrund. Zu viel Impulsivität kann Qualitätsstandards gefährden.";
+  } else if (deptType === "HR") {
+    contextNote = "Im HR-Bereich ist Beziehungsfähigkeit und Kommunikationsklarheit entscheidend. Ein zu stark impulsives oder analytisches Profil kann Distanz erzeugen.";
+  } else if (deptType === "FINANZEN") {
+    contextNote = "In Finanzen und Controlling stehen Absicherung und Genauigkeit im Mittelpunkt. Tempo ohne Struktur erzeugt hier Fehlerrisiken.";
+  } else if (deptType === "MARKETING") {
+    contextNote = "Im Marketing braucht es Gespür für Trends und kreative Impulse. Reine Strukturorientierung kann Innovationskraft bremsen.";
+  } else if (deptType === "OPERATIONS") {
+    contextNote = "In Operations zählen Effizienz und Prozessstabilität. Zu starke Beziehungsorientierung kann Tempo und Standards verwässern.";
+  } else if (deptType === "KUNDENSERVICE") {
+    contextNote = "Im Kundenservice sind Empathie und Lösungsorientierung entscheidend. Zu viel Tempo ohne Einfühlungsvermögen wirkt abweisend.";
+  } else if (deptType === "STRATEGIE") {
+    contextNote = "In der Strategieebene braucht es Entscheidungskraft und Weitblick. Zu starke Konsenorientierung verlangsamt notwendige Kursänderungen.";
+  }
+
+  return {
+    department: dept,
+    teamFitScore: teamFit,
+    personFitScore: personFit,
+    teamGapComponent: teamGap.component,
+    teamGapAmount: teamGap.amount,
+    personGapComponent: personGap.component,
+    personGapAmount: personGap.amount,
+    warnings,
+    contextNote,
+  };
+}
+
 export function getDefaultLevers(): Lever[] {
   return DEFAULT_LEVERS.map(l => ({ ...l }));
 }
@@ -428,6 +612,8 @@ export function computeTeamDynamics(input: TeamDynamikInput): TeamDynamikResult 
   const cellId = input.isLeading ? matrixCellId(domP, domT) : matrixCellId(domT, domP);
   const activeCell = MATRIX_CELLS.find(c => c.id === cellId) || MATRIX_CELLS[4];
 
+  const deptFit = computeDepartmentFit(input.teamProfile, input.personProfile, input.departmentType, input.isLeading);
+
   return {
     dominanceTeam: domT,
     dominancePerson: domP,
@@ -448,6 +634,7 @@ export function computeTeamDynamics(input: TeamDynamikInput): TeamDynamikResult 
     chances: buildChances(st, domP, domT),
     risks: buildRisks(st, domP, domT, input.isLeading),
     integrationPlan: buildIntegrationPlan(st, input.isLeading),
+    departmentFit: deptFit,
   };
 }
 
@@ -550,12 +737,15 @@ export function getViewContent(viewMode: ViewMode, result: TeamDynamikResult, se
 }
 
 export function buildAIPayload(input: TeamDynamikInput, result: TeamDynamikResult) {
+  const dept = getDepartmentInfo(input.departmentType);
+  const deptPayload = input.departmentType !== "ALLGEMEIN" ? { type: input.departmentType, label: dept.label, focus: dept.focus } : null;
   return {
     context: {
       team_name: input.teamName,
       members_count: input.membersCount,
       is_leading: input.isLeading,
       person_role: input.isLeading ? "Führungskraft" : "Teammitglied",
+      ...(deptPayload ? { department: deptPayload } : {}),
       tasks: input.tasks || [],
       kpi_focus: input.kpiFocus || [],
     },

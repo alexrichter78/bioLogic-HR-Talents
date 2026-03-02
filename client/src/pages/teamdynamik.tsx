@@ -9,9 +9,9 @@ import { hyphenateText } from "@/lib/hyphenate";
 import {
   type Triad, type ComponentKey,
   computeTeamDynamics, getDefaultLevers, getMatrixCellById, getViewContent,
-  labelComponent, buildAIPayload, getSystemVariant,
+  labelComponent, buildAIPayload, getSystemVariant, getDepartmentCatalog, getDepartmentInfo,
   type TeamDynamikInput, type TeamDynamikResult, type ShiftType, type IntensityLevel,
-  type TrafficLight, type ViewMode, type Lever,
+  type TrafficLight, type ViewMode, type Lever, type DepartmentType, type DepartmentFit,
 } from "@/lib/teamdynamik-engine";
 import { leaderTeamMatchFull } from "@/lib/leader-team-match-engine";
 
@@ -287,6 +287,7 @@ export default function Teamdynamik() {
     return { impulsiv: 33, intuitiv: 34, analytisch: 33 };
   });
   const [isLeading, setIsLeading] = useState(true);
+  const [departmentType, setDepartmentType] = useState<DepartmentType>("ALLGEMEIN");
   const [levers] = useState<Lever[]>(getDefaultLevers());
   const [viewMode, setViewMode] = useState<ViewMode>("HR");
   const [reportText, setReportText] = useState<string | null>(null);
@@ -296,9 +297,11 @@ export default function Teamdynamik() {
   const [copied, setCopied] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
 
+  const departmentCatalog = useMemo(() => getDepartmentCatalog(), []);
+
   const input: TeamDynamikInput = useMemo(() => ({
-    teamName, teamProfile, membersCount: 8, personProfile, isLeading, levers, steeringOverride: null,
-  }), [teamName, teamProfile, personProfile, isLeading, levers]);
+    teamName, teamProfile, membersCount: 8, personProfile, isLeading, departmentType, levers, steeringOverride: null,
+  }), [teamName, teamProfile, personProfile, isLeading, departmentType, levers]);
 
   const result = useMemo(() => computeTeamDynamics(input), [input]);
   const tl = TL_COLORS[result.trafficLight];
@@ -397,6 +400,36 @@ export default function Teamdynamik() {
             </div>
           </div>
 
+          <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 18, marginBottom: 20 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Abteilung / Funktionsbereich</p>
+            <div style={{ position: "relative" }}>
+              <select
+                value={departmentType}
+                onChange={e => setDepartmentType(e.target.value as DepartmentType)}
+                data-testid="select-department"
+                style={{
+                  width: "100%", maxWidth: 340, padding: "10px 36px 10px 14px",
+                  borderRadius: 10, border: "1px solid rgba(0,0,0,0.08)",
+                  background: "rgba(0,0,0,0.02)", fontSize: 13, fontWeight: 500,
+                  color: "#1D1D1F", appearance: "none", cursor: "pointer",
+                  outline: "none",
+                }}
+              >
+                {departmentCatalog.map(d => (
+                  <option key={d.id} value={d.id}>{d.label}</option>
+                ))}
+              </select>
+              <div style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5L6 7.5L9 4.5" stroke="#8E8E93" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </div>
+            </div>
+            {departmentType !== "ALLGEMEIN" && (
+              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 6, maxWidth: 340 }}>
+                Fokus: {getDepartmentInfo(departmentType).focus}
+              </p>
+            )}
+          </div>
+
           <div style={{
             background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
             borderRadius: 20, padding: "18px 22px",
@@ -411,6 +444,11 @@ export default function Teamdynamik() {
                     data-testid="input-team-name"
                     style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", background: "none", border: "none", outline: "none", padding: 0, letterSpacing: "-0.02em", width: "auto", maxWidth: 220 }} />
                   <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: tl.bg, color: tl.fill }} data-testid="badge-status">{tl.label}</span>
+                  {departmentType !== "ALLGEMEIN" && (
+                    <span style={{ fontSize: 10, fontWeight: 600, padding: "3px 10px", borderRadius: 6, background: "rgba(0,113,227,0.08)", color: "#0071E3" }} data-testid="badge-department">
+                      {getDepartmentInfo(departmentType).label}
+                    </span>
+                  )}
                 </div>
                 <p style={{ fontSize: 11, color: "#8E8E93", margin: "3px 0 0" }} data-testid="text-headline">{hyphenateText(result.headline)}</p>
               </div>
@@ -583,6 +621,54 @@ export default function Teamdynamik() {
             })()}
           </div>
         </GlassCard>
+
+        {/* ═══ DEPARTMENT FIT ═══ */}
+        {result.departmentFit && (
+          <GlassCard style={{ marginBottom: 20 }} data-testid="department-fit-section">
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(0,113,227,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L12.5 4V10L7 13L1.5 10V4L7 1Z" stroke="#0071E3" strokeWidth="1.3" strokeLinejoin="round"/><path d="M7 5V9M5 7H9" stroke="#0071E3" strokeWidth="1.3" strokeLinecap="round"/></svg>
+              </div>
+              <div>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.01em" }}>Abteilungs-Fit: {result.departmentFit.department.label}</p>
+                <p style={{ fontSize: 11, color: "#8E8E93", margin: "2px 0 0" }}>{result.departmentFit.department.focus}</p>
+              </div>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+              {[
+                { label: "Team-Fit", score: result.departmentFit.teamFitScore },
+                { label: isLeading ? "Führungskraft-Fit" : "Person-Fit", score: result.departmentFit.personFitScore },
+              ].map((item, idx) => (
+                <div key={idx} style={{ background: "rgba(0,0,0,0.02)", borderRadius: 12, padding: "12px 14px", border: "1px solid rgba(0,0,0,0.04)" }} data-testid={`dept-fit-${idx === 0 ? "team" : "person"}`}>
+                  <p style={{ fontSize: 11, color: "#8E8E93", margin: "0 0 6px", fontWeight: 600 }}>{item.label}</p>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
+                    <span style={{ fontSize: 24, fontWeight: 800, color: item.score >= 55 ? "#34C759" : item.score >= 35 ? "#FF9500" : "#FF3B30", letterSpacing: "-0.02em" }}>{item.score}</span>
+                    <span style={{ fontSize: 11, color: "#8E8E93" }}>/ 100</span>
+                  </div>
+                  <div style={{ height: 4, borderRadius: 2, background: "rgba(0,0,0,0.06)", marginTop: 8 }}>
+                    <div style={{ height: 4, borderRadius: 2, width: `${item.score}%`, background: item.score >= 55 ? "#34C759" : item.score >= 35 ? "#FF9500" : "#FF3B30", transition: "width 300ms ease" }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {result.departmentFit.warnings.length > 0 && (
+              <div style={{ background: "rgba(255,149,0,0.06)", border: "1px solid rgba(255,149,0,0.15)", borderRadius: 12, padding: "12px 14px", marginBottom: 14 }} data-testid="dept-warnings">
+                <p style={{ fontSize: 12, fontWeight: 700, color: "#CC7700", margin: "0 0 8px" }}>⚠ Hinweise</p>
+                {result.departmentFit.warnings.map((w, i) => (
+                  <p key={i} style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 4px", lineHeight: 1.5 }}>• {w}</p>
+                ))}
+              </div>
+            )}
+
+            {result.departmentFit.contextNote && (
+              <div style={{ background: "rgba(0,113,227,0.04)", borderRadius: 10, padding: "10px 14px" }}>
+                <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.6, fontStyle: "italic" }}>{result.departmentFit.contextNote}</p>
+              </div>
+            )}
+          </GlassCard>
+        )}
 
         {/* ═══ BUTTON: KI-REPORT GENERIEREN ═══ */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
