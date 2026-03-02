@@ -404,49 +404,55 @@ export default function TeamCheck() {
 
   return (
     <div style={{ minHeight: "100vh", background: "linear-gradient(180deg, #F5F5F7 0%, #FBFBFD 40%, #F5F5F7 100%)" }}>
-      <GlobalNav rightSlot={
-        <div style={{ display: "flex", gap: 6 }}>
-          <button
-            data-testid="btn-detail-report"
-            onClick={() => setReportView("detail")}
-            style={{
-              display: "flex", alignItems: "center", gap: 5,
-              padding: "6px 12px", borderRadius: 10,
-              background: "rgba(0,113,227,0.08)", border: "none", cursor: "pointer",
-              fontSize: 11, fontWeight: 600, color: "#0071E3",
-            }}
-          >
-            <FileText style={{ width: 12, height: 12, strokeWidth: 2.5 }} />
-            Detailanalyse
-          </button>
-          <button
-            data-testid="btn-exec-report"
-            onClick={() => setReportView("executive")}
-            style={{
-              display: "flex", alignItems: "center", gap: 5,
-              padding: "6px 12px", borderRadius: 10,
-              background: "rgba(52,199,89,0.08)", border: "none", cursor: "pointer",
-              fontSize: 11, fontWeight: 600, color: "#34C759",
-            }}
-          >
-            <Briefcase style={{ width: 12, height: 12, strokeWidth: 2.5 }} />
-            Executive
-          </button>
-          <button
-            data-testid="btn-export-pdf"
-            onClick={() => window.print()}
-            style={{
-              display: "flex", alignItems: "center", gap: 5,
-              padding: "6px 12px", borderRadius: 10,
-              background: "rgba(0,0,0,0.04)", border: "none", cursor: "pointer",
-              fontSize: 11, fontWeight: 600, color: "#6E6E73",
-            }}
-          >
-            <FileDown style={{ width: 12, height: 12, strokeWidth: 2 }} />
-            PDF
-          </button>
-        </div>
-      } />
+      <GlobalNav />
+
+      <div style={{
+        position: "sticky", top: 48, zIndex: 90,
+        background: "rgba(255,255,255,0.82)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+        borderBottom: "1px solid rgba(0,0,0,0.06)",
+        padding: "8px 20px",
+        display: "flex", justifyContent: "center", gap: 8,
+      }}>
+        <button
+          data-testid="btn-detail-report"
+          onClick={() => setReportView("detail")}
+          style={{
+            display: "flex", alignItems: "center", gap: 6,
+            padding: "7px 16px", borderRadius: 10,
+            background: "rgba(0,113,227,0.08)", border: "none", cursor: "pointer",
+            fontSize: 12, fontWeight: 600, color: "#0071E3",
+          }}
+        >
+          <FileText style={{ width: 13, height: 13, strokeWidth: 2.5 }} />
+          Detailanalyse
+        </button>
+        <button
+          data-testid="btn-exec-report"
+          onClick={() => setReportView("executive")}
+          style={{
+            display: "flex", alignItems: "center", gap: 6,
+            padding: "7px 16px", borderRadius: 10,
+            background: "rgba(52,199,89,0.08)", border: "none", cursor: "pointer",
+            fontSize: 12, fontWeight: 600, color: "#34C759",
+          }}
+        >
+          <Briefcase style={{ width: 13, height: 13, strokeWidth: 2.5 }} />
+          Executive
+        </button>
+        <button
+          data-testid="btn-export-pdf"
+          onClick={() => window.print()}
+          style={{
+            display: "flex", alignItems: "center", gap: 6,
+            padding: "7px 16px", borderRadius: 10,
+            background: "rgba(0,0,0,0.04)", border: "none", cursor: "pointer",
+            fontSize: 12, fontWeight: 600, color: "#6E6E73",
+          }}
+        >
+          <FileDown style={{ width: 13, height: 13, strokeWidth: 2 }} />
+          PDF
+        </button>
+      </div>
 
       <div style={{ maxWidth: 860, margin: "0 auto", padding: "32px 20px 80px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
