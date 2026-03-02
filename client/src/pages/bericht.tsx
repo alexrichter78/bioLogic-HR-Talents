@@ -517,16 +517,19 @@ export default function Bericht() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const completed = localStorage.getItem("rollenDnaCompleted");
+    if (completed !== "true") return;
     const raw = localStorage.getItem("rollenDnaState");
     if (!raw) return;
     try {
       const state = JSON.parse(raw);
-      const beruf = state.beruf || "Unbenannte Rolle";
+      const taetigkeiten = state.taetigkeiten || [];
+      if (!state.beruf || taetigkeiten.length === 0) return;
+      const beruf = state.beruf;
       const found = BERUFE.find(b => b.name === beruf);
       const bereich = found?.kategorie || "";
       const fuehrungstyp = state.fuehrung || "Keine";
       const isLeadership = fuehrungstyp !== "Keine";
-      const taetigkeiten = state.taetigkeiten || [];
       const arbeitslogik = state.arbeitslogik || "";
       const aufgabencharakter = state.aufgabencharakter || "";
       const erfolgsfokusIndices = state.erfolgsfokusIndices || [];
