@@ -14,7 +14,7 @@ import {
 } from "@/lib/teamcheck-engine";
 import {
   computeTeamDynamics, getDefaultLevers,
-  type TrafficLight, type TeamDynamikInput,
+  type TrafficLight, type TeamDynamikInput, type TeamSize,
 } from "@/lib/teamdynamik-engine";
 import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
 
@@ -167,6 +167,7 @@ export default function TeamCheck() {
   const [aufgabencharakter, setAufgabencharakter] = useState("");
   const [erfolgsfokusLabels, setErfolgsfokusLabels] = useState<string[]>([]);
   const [isLeading, setIsLeading] = useState(true);
+  const [teamSize, setTeamSize] = useState<TeamSize>("MITTEL");
   const [detailTab, setDetailTab] = useState<"system" | "stress" | "prognose" | "empfehlung" | "urteil">("system");
   const [reportView, setReportView] = useState<"none" | "detail" | "executive">("none");
   const reportRef = useRef<HTMLDivElement>(null);
@@ -223,14 +224,14 @@ export default function TeamCheck() {
   const tdInput: TeamDynamikInput = useMemo(() => ({
     teamName: beruf || "Team",
     teamProfile: team,
-    teamSize: "MITTEL" as const,
+    teamSize,
     personProfile: kandidat,
     isLeading,
     departmentType: "ALLGEMEIN" as const,
     levers: getDefaultLevers(),
     steeringOverride: null,
     rollenDna: null,
-  }), [team, kandidat, isLeading, beruf]);
+  }), [team, kandidat, isLeading, beruf, teamSize]);
 
   const tdResult = useMemo(() => computeTeamDynamics(tdInput), [tdInput]);
   const tl = TL_COLORS[tdResult.trafficLight];
@@ -985,6 +986,30 @@ export default function TeamCheck() {
                   >{val ? "Führung" : "Teammitglied"}</button>
                 ))}
               </div>
+            </div>
+
+            {/* Teamgröße */}
+            <div style={{ marginBottom: 20 }}>
+              <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Teamgröße</p>
+              <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, marginBottom: 6 }}>
+                {(["KLEIN", "MITTEL", "GROSS"] as TeamSize[]).map(size => {
+                  const labels: Record<TeamSize, string> = { KLEIN: "Klein (2–5)", MITTEL: "Mittel (6–12)", GROSS: "Groß (13+)" };
+                  const active = teamSize === size;
+                  return (
+                    <button key={size} onClick={() => setTeamSize(size)} data-testid={`toggle-size-${size.toLowerCase()}`} style={{
+                      flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: active ? 700 : 500,
+                      background: active ? "#fff" : "transparent",
+                      boxShadow: active ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                      border: "none", cursor: "pointer",
+                      color: active ? "#0071E3" : "#8E8E93",
+                      transition: "all 200ms ease",
+                    }}>{labels[size]}</button>
+                  );
+                })}
+              </div>
+              <p style={{ fontSize: 12, color: "#8E8E93", margin: 0 }}>
+                {teamSize === "KLEIN" ? "Kleine Teams: Jede Person hat hohen Einfluss auf die Dynamik." : teamSize === "GROSS" ? "Große Teams: Einzelpersonen verändern die Gesamtdynamik weniger stark." : "Mittlere Teams: Spürbarer, aber begrenzter Einfluss pro Person."}
+              </p>
             </div>
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
