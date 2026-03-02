@@ -18,6 +18,9 @@ const F4_LEADER_ANA_LOW = 15;
 const F5_LEADERSHIP_CLARITY_LOW_GAP = 2;
 const F5_TEAM_CLEAR_GAP = 15;
 const F6_SECONDARY_COMP_PENALTY_BASE = 0.05;
+const F7_FULL_SYMM_TOLERANCE = 5;
+const F7_FULL_SYMM_PENALTY_NORMAL = 0.02;
+const F7_FULL_SYMM_PENALTY_UNCONTROLLED = 0.05;
 
 type DiffCategory = "A" | "B" | "C";
 type Rating = "Passend" | "Bedingt passend" | "Nicht passend";
@@ -51,6 +54,8 @@ export type MatchEvaluation = {
     clearTeam: boolean;
     gapLeader: number;
     gapTeam: number;
+    leaderFullSymmetry: boolean;
+    teamFullSymmetry: boolean;
     leaderSecondaryCompetition: SecondaryCompetition;
     teamSecondaryCompetition: SecondaryCompetition;
     leadershipRules: LeadershipRule[];
@@ -147,6 +152,11 @@ function detectSecondaryCompetition(profile: Triad): SecondaryCompetition {
   return { active, top1: keys[0], top2: keys[1], top3: keys[2], gap12, gap23 };
 }
 
+function detectFullSymmetry(profile: Triad): boolean {
+  const vals = [profile.impulsiv, profile.intuitiv, profile.analytisch];
+  return (Math.max(...vals) - Math.min(...vals)) <= F7_FULL_SYMM_TOLERANCE;
+}
+
 function balanceIndex(p: Triad): number {
   const sd = stdDev3(p.impulsiv, p.intuitiv, p.analytisch);
   return 1 - sd / MAX;
@@ -214,6 +224,8 @@ type BaseEval = {
     clearTeam: boolean;
     gapLeader: number;
     gapTeam: number;
+    leaderFullSymmetry: boolean;
+    teamFullSymmetry: boolean;
     leaderSecondaryCompetition: SecondaryCompetition;
     teamSecondaryCompetition: SecondaryCompetition;
   };
@@ -260,6 +272,8 @@ function teamFitBase(leader: Triad, team: Triad): BaseEval {
 
   const leaderSecondaryCompetition = detectSecondaryCompetition(leader);
   const teamSecondaryCompetition = detectSecondaryCompetition(team);
+  const leaderFullSymmetry = detectFullSymmetry(leader);
+  const teamFullSymmetry = detectFullSymmetry(team);
 
   const nonFit = countC >= 2 || (dominanceRisk && countC >= 1) || TFS < tfsBorder;
   const conditionalFit = countC === 1 || countB >= 2 || intuitiveBreakRisk || (dualLeader && clearTeam) || (TFS >= tfsBorder && TFS < tfsPass);
@@ -272,7 +286,7 @@ function teamFitBase(leader: Triad, team: Triad): BaseEval {
     differences: { impulsiv: dR, intuitiv: dY, analytisch: dB },
     categories: { impulsiv: cR, intuitiv: cY, analytisch: cB },
     indices: { TFS },
-    flags: { dominanceRisk, intuitiveBreakRisk, dualLeader, clearTeam, gapLeader, gapTeam, leaderSecondaryCompetition, teamSecondaryCompetition },
+    flags: { dominanceRisk, intuitiveBreakRisk, dualLeader, clearTeam, gapLeader, gapTeam, leaderFullSymmetry, teamFullSymmetry, leaderSecondaryCompetition, teamSecondaryCompetition },
     rating,
   };
 }
@@ -344,6 +358,16 @@ function applyLeadershipRules(stateKey: StateKey, baseEval: BaseEval, leader: Tr
     addRule("F6", "Sekundär-Konkurrenz unter Stress",
       "Bei unkontrolliertem Stress konkurrieren die 2. und 3. Komponente der Führung. Dadurch wirkt der Führungsstil inkonsistenter.",
       "Bedingt passend", penalty);
+  }
+
+  if (eval2.flags.leaderFullSymmetry) {
+    const penalty = stateKey === "uncontrolledStress" ? F7_FULL_SYMM_PENALTY_UNCONTROLLED : F7_FULL_SYMM_PENALTY_NORMAL;
+    const stressNote = stateKey === "uncontrolledStress"
+      ? " Unter unkontrolliertem Stress wird dieses Risiko deutlich stärker: Ohne klare Leitstruktur fehlt der Rückfallmechanismus – Führungsverhalten wird sprunghaft und unberechenbar."
+      : "";
+    addRule("F7", "Vollsymmetrie – fehlende Leitstruktur",
+      `Das Führungsprofil zeigt keine klare Leitkomponente (alle Werte innerhalb von ${F7_FULL_SYMM_TOLERANCE} Punkten). Es fehlt eine stabile Steuerungslogik. Die Führung wechselt situativ zwischen den Arbeitsweisen – das Team erlebt keine klare Linie.${stressNote}`,
+      stateKey === "uncontrolledStress" ? "Bedingt passend" : null, penalty);
   }
 
   eval2.indices.TFS_beforeLeadershipRules = baseEval.indices.TFS;

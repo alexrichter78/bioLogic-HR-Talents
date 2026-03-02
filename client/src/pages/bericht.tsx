@@ -134,6 +134,7 @@ type StructuralInsight = {
   gap23: number;
   hasDualDominance: boolean;
   hasSecondaryCompetition: boolean;
+  hasFullSymmetry: boolean;
   stressControlled: string;
   stressUncontrolled: string;
   structureType: string;
@@ -160,10 +161,15 @@ function analyzeProfileStructure(bg: BG): StructuralInsight {
   const secondLabel = COMP_LABELS[mid.key];
   const thirdLabel = COMP_LABELS[low.key];
 
+  const hasFullSymmetry = rawGap12 <= 5 && rawGap23 <= 5;
+
   let structureType = "";
   let structureDescription = "";
 
-  if (hasDualDominance) {
+  if (hasFullSymmetry) {
+    structureType = "Vollsymmetrie";
+    structureDescription = `Alle drei Komponenten liegen innerhalb von ${Math.max(gap12, gap23)} Punkten. Es gibt keine klare Leitstruktur – die Rolle erfordert ständiges situatives Umschalten. Das bedeutet: Keine dominante Steuerungslogik gibt die Richtung vor. In Rollen mit klarem Fokus (z.B. Vertrieb, Controlling) kann das zum Risiko werden.`;
+  } else if (hasDualDominance) {
     structureType = "Doppeldominanz";
     structureDescription = `${dominantLabel} und ${secondLabel} sind nahezu gleich stark ausgeprägt (Δ ${gap12}). Die Rolle fordert gleichzeitig zwei Steuerungslogiken. Das kann Stärke sein – aber auch zu wechselndem Verhalten führen, weil keine klare Leitlinie dominiert.`;
   } else if (hasSecondaryCompetition) {
@@ -178,14 +184,18 @@ function analyzeProfileStructure(bg: BG): StructuralInsight {
   }
 
   let stressControlled = "";
-  if (hasDualDominance) {
+  if (hasFullSymmetry) {
+    stressControlled = `Bei kontrolliertem Stress fehlt ein klarer Verstärkungsmechanismus. Es gibt keine dominante Komponente, die sich durchsetzen kann. Stattdessen wird die Reaktion kontextabhängig – mal ${dominantLabel}, mal ${secondLabel}. Das Verhalten bleibt unvorhersagbar, auch unter moderatem Druck.`;
+  } else if (hasDualDominance) {
     stressControlled = `Bei kontrolliertem Stress wird sich eine der beiden starken Komponenten (${dominantLabel} oder ${secondLabel}) durchsetzen – welche, hängt vom Kontext ab. Das kann kurzfristig Klarheit schaffen, aber die zweite Seite wird unterdrückt.`;
   } else {
     stressControlled = `Bei kontrolliertem Stress verstärkt sich ${dominantLabel} (Tunneleffekt). Die Person fokussiert sich auf ihre stärkste Qualität – ${secondLabel} und ${thirdLabel} treten in den Hintergrund. Das bringt kurzfristig Entscheidungskraft, kann aber blind machen für Nebenwirkungen.`;
   }
 
   let stressUncontrolled = "";
-  if (hasSecondaryCompetition) {
+  if (hasFullSymmetry) {
+    stressUncontrolled = `Bei unkontrolliertem Stress fehlt der Rückfallmechanismus komplett. Ohne klare Leitstruktur springt das Verhalten zwischen allen drei Logiken – ${dominantLabel}, ${secondLabel} und ${thirdLabel} konkurrieren gleichzeitig. Entscheidungen werden sprunghaft, widersprüchlich oder bleiben ganz aus. Das Umfeld erlebt maximale Unberechenbarkeit.`;
+  } else if (hasSecondaryCompetition) {
     stressUncontrolled = `Bei unkontrolliertem Stress beginnen ${secondLabel} und ${thirdLabel} zu konkurrieren. Die klare ${dominantLabel}-Führung bricht ein, das Verhalten wird wechselhaft. Die Person schwankt zwischen zwei Steuerungslogiken, ohne sich für eine zu entscheiden.`;
   } else if (hasDualDominance) {
     stressUncontrolled = `Bei unkontrolliertem Stress geraten ${dominantLabel} und ${secondLabel} in einen internen Konflikt. Beide Seiten wollen gleichzeitig steuern – das erzeugt Widersprüche im Verhalten. Entscheidungen werden zögerlich oder sprunghaft.`;
@@ -195,7 +205,7 @@ function analyzeProfileStructure(bg: BG): StructuralInsight {
 
   return {
     dominantLabel, dominantKey: top.key, secondLabel, secondKey: mid.key, thirdLabel, thirdKey: low.key,
-    gap12, gap23, hasDualDominance, hasSecondaryCompetition,
+    gap12, gap23, hasDualDominance, hasSecondaryCompetition, hasFullSymmetry,
     stressControlled, stressUncontrolled, structureType, structureDescription,
   };
 }
@@ -792,20 +802,36 @@ export default function Bericht() {
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <span style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", width: 52, flexShrink: 0 }}>Δ 1–2</span>
                         <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
-                          <div style={{ width: `${Math.min((sa.gap12 / 30) * 100, 100)}%`, height: "100%", borderRadius: 3, background: sa.hasDualDominance ? "#FF9500" : "#34C759", transition: "width 600ms" }} />
+                          <div style={{ width: `${Math.min((sa.gap12 / 30) * 100, 100)}%`, height: "100%", borderRadius: 3, background: sa.hasFullSymmetry ? "#FF3B30" : sa.hasDualDominance ? "#FF9500" : "#34C759", transition: "width 600ms" }} />
                         </div>
                         <span style={{ fontSize: 11, fontWeight: 600, color: "#3A3A3C", width: 32, textAlign: "right" }}>{sa.gap12}</span>
                       </div>
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <span style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", width: 52, flexShrink: 0 }}>Δ 2–3</span>
                         <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
-                          <div style={{ width: `${Math.min((sa.gap23 / 30) * 100, 100)}%`, height: "100%", borderRadius: 3, background: sa.hasSecondaryCompetition ? "#FF9500" : "#34C759", transition: "width 600ms" }} />
+                          <div style={{ width: `${Math.min((sa.gap23 / 30) * 100, 100)}%`, height: "100%", borderRadius: 3, background: sa.hasFullSymmetry ? "#FF3B30" : sa.hasSecondaryCompetition ? "#FF9500" : "#34C759", transition: "width 600ms" }} />
                         </div>
                         <span style={{ fontSize: 11, fontWeight: 600, color: "#3A3A3C", width: 32, textAlign: "right" }}>{sa.gap23}</span>
                       </div>
                     </div>
 
-                    {sa.hasDualDominance && (
+                    {sa.hasFullSymmetry && (
+                      <div style={{
+                        padding: "14px 18px", borderRadius: 14, marginBottom: 14,
+                        background: "rgba(255,59,48,0.06)", border: "1px solid rgba(255,59,48,0.12)",
+                        display: "flex", alignItems: "flex-start", gap: 10,
+                      }} data-testid="warning-full-symmetry">
+                        <AlertTriangle style={{ width: 14, height: 14, color: "#FF3B30", marginTop: 2, flexShrink: 0 }} />
+                        <div>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", display: "block", marginBottom: 2 }}>Vollsymmetrie – keine Leitstruktur</span>
+                          <span style={{ fontSize: 12.5, color: "#48484A", lineHeight: 1.7 }}>
+                            Alle drei Komponenten liegen innerhalb von {Math.max(sa.gap12, sa.gap23)} Punkten. Es gibt keine dominante Steuerungslogik. Das Profil wechselt situativ zwischen allen Arbeitsweisen – unter Stress fehlt ein Rückfallmechanismus. In Rollen mit klarem Fokus ist das ein erhebliches Risiko.
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {sa.hasDualDominance && !sa.hasFullSymmetry && (
                       <div style={{
                         padding: "14px 18px", borderRadius: 14, marginBottom: 14,
                         background: "rgba(255,149,0,0.06)", border: "1px solid rgba(255,149,0,0.12)",

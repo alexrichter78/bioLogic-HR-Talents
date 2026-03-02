@@ -836,6 +836,11 @@ function buildRisks(role: RoleAnalysis, cand: CandidateInput, engine: { overallF
     longTerm.push(`Langfristig können Leistungsunterschiede und Ergebnisorientierung nachlassen. ${t.qualityMetric} leidet, weil die Teamkultur in eine unkontrollierte Richtung driftet.`);
   }
 
+  if (candEqualDist) {
+    midTerm.push(`Vollsymmetrie-Risiko: Ohne klare Leitstruktur fehlt unter Stress der Rückfallmechanismus. Das Verhalten wird sprunghaft – die Person wechselt unkontrolliert zwischen allen drei Arbeitsweisen. Entscheidungen werden widersprüchlich oder bleiben aus.`);
+    longTerm.push(`Die fehlende Leitstruktur verhindert eine stabile Stressreaktion. Während Personen mit klarem Schwerpunkt unter Druck vorhersagbar reagieren, bleibt bei Vollsymmetrie offen, welche Steuerungslogik sich durchsetzt. Das macht langfristige Führung und Entwicklung deutlich schwieriger.`);
+  }
+
   if (tags.market_pressure === "hoch")
     longTerm.push(`In einem Hochdruckumfeld wirkt jede Verzögerung direkt auf ${t.resultMetric}. Die beschriebenen Abweichungen verstärken sich unter Druck.`);
   if (tags.regulation === "hoch")
