@@ -788,6 +788,456 @@ function buildGesamturteil(domK: DominanceType, domT: DominanceType, intensity: 
   return { badges, einschaetzung, eskalationsrisiko, risikoindikator, empfehlung };
 }
 
+function plainLabel(d: DominanceType): string {
+  switch (d) {
+    case "IMPULSIV": return "ergebnis- und umsetzungsorientiert";
+    case "INTUITIV": return "beziehungs- und konsensorientiert";
+    case "ANALYTISCH": return "struktur- und prüfungsorientiert";
+    case "MIX": return "breit aufgestellt, ohne klare Einzeldominanz";
+  }
+}
+
+function plainShort(d: DominanceType): string {
+  switch (d) {
+    case "IMPULSIV": return "Umsetzungsfokus";
+    case "INTUITIV": return "Beziehungsfokus";
+    case "ANALYTISCH": return "Strukturfokus";
+    case "MIX": return "Situativer Fokus";
+  }
+}
+
+function plainAdj(d: DominanceType): string {
+  switch (d) {
+    case "IMPULSIV": return "umsetzungsorientiert";
+    case "INTUITIV": return "beziehungsorientiert";
+    case "ANALYTISCH": return "strukturorientiert";
+    case "MIX": return "situativ anpassend";
+  }
+}
+
+export type ReportSection = {
+  num: number;
+  title: string;
+  paragraphs?: string[];
+  bullets?: string[];
+  subsections?: { title: string; paragraphs?: string[]; bullets?: string[]; highlight?: string }[];
+};
+
+export function generateDetailReport(input: TeamCheckInput, result: TeamCheckResult): ReportSection[] {
+  const domK = dominanceType(input.kandidat);
+  const domT = dominanceType(input.team);
+  const delta = computeDelta(input.kandidat, input.team);
+  const intensity = computeIntensitaet(delta);
+  const rolleLabel = input.isLeading ? "Führungskraft" : "neuen Person";
+  const rolleAdj = input.isLeading ? "Führungsposition" : "Position";
+  const beruf = input.beruf || "die offene Rolle";
+  const kLabel = plainLabel(domK);
+  const tLabel = plainLabel(domT);
+  const kShort = plainShort(domK);
+  const tShort = plainShort(domT);
+  const intensityLabel = intensity === "HOCH" ? "hoch" : intensity === "MITTEL" ? "mittel" : "gering";
+
+  const sections: ReportSection[] = [];
+
+  sections.push({
+    num: 1,
+    title: "Ziel dieses Berichts",
+    paragraphs: [
+      `Dieser Bericht bewertet, wie sich die Besetzung der ${rolleAdj} „${beruf}" auf das bestehende Team auswirken wird.`,
+      "Im Mittelpunkt steht nicht die Persönlichkeit, sondern die Frage:",
+    ],
+    bullets: [
+      "Wie verändert sich das System?",
+      "Welche Spannungen entstehen?",
+      "Wo liegen Chancen?",
+      "Wie steuerbar ist die Konstellation?",
+      `Was bedeutet das konkret für die ${rolleLabel} im Alltag?`,
+    ],
+  });
+
+  sections.push({
+    num: 2,
+    title: "Ausgangslage",
+    subsections: [
+      {
+        title: "Rollenanforderung",
+        paragraphs: [
+          `Die Rolle „${beruf}" verlangt:`,
+        ],
+        bullets: [
+          "klare Ergebnisverantwortung",
+          "operative Steuerung",
+          "strukturierte Entscheidungsfindung",
+          `Führung eines leistungsorientierten Teams`,
+        ],
+      },
+      {
+        title: `Profil der ${rolleLabel}`,
+        paragraphs: [
+          `Die ${rolleLabel} ist stark ${kLabel}.`,
+          "Das bedeutet:",
+        ],
+        bullets: domK === "ANALYTISCH" ? [
+          "Entscheidungen werden sorgfältig geprüft",
+          "Risiken werden bewusst abgewogen",
+          "Prozesse sollen nachvollziehbar und stabil sein",
+          "Qualität hat hohen Stellenwert",
+          "Tempo entsteht nicht aus Impuls, sondern aus Klarheit.",
+        ] : domK === "IMPULSIV" ? [
+          "Entscheidungen werden schnell und direkt getroffen",
+          "Umsetzung steht im Vordergrund",
+          "Geschwindigkeit ist wichtiger als Perfektion",
+          "Ergebnisse zählen mehr als Prozesse",
+          "Tempo entsteht aus Handlungsdrang und Zielorientierung.",
+        ] : domK === "INTUITIV" ? [
+          "Entscheidungen werden im Dialog entwickelt",
+          "Beziehungen und Zusammenarbeit stehen im Vordergrund",
+          "Konsens wird aktiv angestrebt",
+          "Teamstimmung hat hohen Stellenwert",
+          "Tempo entsteht aus gemeinsamer Überzeugung.",
+        ] : [
+          "Entscheidungen werden situativ getroffen",
+          "Keine einzelne Arbeitslogik dominiert dauerhaft",
+          "Flexibilität steht im Vordergrund",
+          "Anpassungsfähigkeit ist eine Stärke, kann aber als Unberechenbarkeit wirken.",
+        ],
+      },
+      {
+        title: "Profil des bestehenden Teams",
+        paragraphs: [
+          `Das Team ist überwiegend ${tLabel}.`,
+          "Das bedeutet:",
+        ],
+        bullets: domT === "IMPULSIV" ? [
+          "Entscheidungen werden schnell getroffen",
+          "Umsetzung steht im Vordergrund",
+          "Pragmatismus ist wichtiger als Perfektion",
+          "Dynamik wird geschätzt",
+          "Das Team arbeitet direkt und handlungsorientiert.",
+        ] : domT === "ANALYTISCH" ? [
+          "Entscheidungen werden sorgfältig geprüft",
+          "Struktur und Qualität stehen im Vordergrund",
+          "Prozesse müssen nachvollziehbar sein",
+          "Absicherung hat Vorrang vor Geschwindigkeit",
+          "Das Team arbeitet planvoll und qualitätsbewusst.",
+        ] : domT === "INTUITIV" ? [
+          "Entscheidungen werden im Konsens getroffen",
+          "Teamzusammenhalt und Beziehungen stehen im Vordergrund",
+          "Dialog und Abstimmung sind wichtiger als schnelle Ergebnisse",
+          "Das Team arbeitet kooperativ und empathisch.",
+        ] : [
+          "Das Team hat keine klare dominante Arbeitsweise",
+          "Entscheidungen werden situativ getroffen",
+          "Flexibilität, aber auch Orientierungsbedarf prägen den Alltag.",
+        ],
+      },
+    ],
+  });
+
+  sections.push({
+    num: 3,
+    title: "Zentrale Verschiebung",
+    paragraphs: [
+      `Mit der neuen ${rolleLabel} trifft eine ${plainAdj(domK)}e Arbeitsweise auf ein ${plainAdj(domT)}es System.`,
+      "Diese Konstellation erzeugt eine " + (domK === domT ? "Verstärkung der bestehenden Dynamik." : `deutliche Verschiebung im Entscheidungs- und Arbeitsrhythmus.`),
+      `Die Intensität dieser Verschiebung ist ${intensityLabel}.`,
+    ],
+    subsections: [{
+      title: "",
+      highlight: domK === domT
+        ? "Das ist eine Verstärkung, kein Spannungsfall. Es bedeutet jedoch, dass Gegengewichte bewusst gesetzt werden müssen."
+        : "Das ist kein grundsätzliches Problem. Es bedeutet jedoch, dass Führung aktiv gestaltet werden muss.",
+    }],
+  });
+
+  sections.push({
+    num: 4,
+    title: "Systemwirkung",
+    subsections: [
+      {
+        title: "Veränderung der Entscheidungslogik",
+        paragraphs: [
+          `Bisher: ${result.systemwirkung.entscheidungslogik.bisher}`,
+          `Mit der neuen ${rolleLabel}: ${result.systemwirkung.entscheidungslogik.mitNeu}`,
+        ],
+        bullets: [
+          ...result.systemwirkung.prozessWirkung.positiv.map(p => `✓ ${p}`),
+          ...result.systemwirkung.prozessWirkung.negativ.map(n => `⚠ ${n}`),
+        ],
+      },
+      {
+        title: "Veränderung von Prioritäten",
+        paragraphs: [
+          `Das Team priorisiert bisher: ${tShort}.`,
+          `Die neue Führung priorisiert: ${kShort}.`,
+          domK === domT
+            ? "Das verstärkt bestehende Stärken, aber auch bestehende blinde Flecken."
+            : "Das verändert die Reihenfolge von Aufgaben, die Tiefe der Vorbereitung und den Umgang mit Unsicherheit.",
+          "Wenn diese Prioritäten nicht klar kommuniziert werden, entsteht Frustration.",
+        ],
+      },
+      {
+        title: "Prozess- und Qualitätsauswirkungen",
+        paragraphs: ["Positive Effekte:"],
+        bullets: [
+          ...result.systemwirkung.qualitaetsWirkung.positiv.map(p => `✓ ${p}`),
+          ...result.systemwirkung.qualitaetsWirkung.negativ.map(n => `⚠ ${n}`),
+        ],
+      },
+    ],
+  });
+
+  sections.push({
+    num: 5,
+    title: "Verhalten unter Druck",
+    paragraphs: [
+      result.stressprofil.normalState,
+      "Wenn Stress jedoch nicht mehr kontrollierbar wird — etwa bei starkem Zeitdruck oder hohem Zielstress — verändert sich das Verhalten spürbar.",
+      "Typische Reaktionen können sein:",
+    ],
+    bullets: result.stressprofil.unkontrolliert,
+    subsections: [{
+      title: "",
+      paragraphs: [
+        result.stressprofil.zweitKomponente,
+        `Für die ${rolleLabel} bedeutet das:`,
+      ],
+      highlight: result.stressprofil.steuerung,
+    }],
+  });
+
+  sections.push({
+    num: 6,
+    title: "Entwicklung in den ersten 90 Tagen",
+    subsections: result.prognose.phases.map((phase, i) => ({
+      title: phase.label,
+      paragraphs: [phase.description],
+      bullets: phase.bullets,
+    })),
+  });
+
+  sections.push({
+    num: 7,
+    title: "Zentrale Chancen",
+    bullets: result.handlungsempfehlungen.kernchancen,
+    paragraphs: [
+      "Diese Konstellation kann das Team langfristig stärker machen.",
+    ],
+  });
+
+  sections.push({
+    num: 8,
+    title: "Zentrale Risiken",
+    bullets: result.handlungsempfehlungen.kernrisiken,
+    paragraphs: [
+      "Diese Risiken sind steuerbar — aber nicht von selbst.",
+    ],
+  });
+
+  sections.push({
+    num: 9,
+    title: "Führungsverantwortung",
+    paragraphs: [
+      `Die neue ${rolleLabel} trägt eine klare Verantwortung:`,
+    ],
+    bullets: result.handlungsempfehlungen.topHebel,
+    subsections: [{
+      title: "",
+      highlight: domK === domT
+        ? "Führung bedeutet hier: Gegengewichte setzen, ohne die eigene Stärke zu verlieren."
+        : "Führung bedeutet hier: Struktur geben, ohne Dynamik zu ersticken.",
+    }],
+  });
+
+  sections.push({
+    num: 10,
+    title: "90-Tage-Integrationsplan",
+    subsections: [
+      {
+        title: "Phase 1 – Orientierung (Tag 1–30)",
+        paragraphs: ["Ziel: Das System verstehen und klare Spielregeln definieren."],
+        bullets: [
+          "Einzelgespräche mit allen Teammitgliedern",
+          "Analyse der bestehenden Entscheidungswege",
+          "Klärung operativer Kernprozesse",
+          "Definition klarer Entscheidungszeitfenster",
+          "Einführung eines einfachen Entscheidungsmodells",
+          "Festlegung von Verantwortlichkeiten",
+          "Definition von Qualitätsstandards",
+          "Transparente Kommunikation der eigenen Führungslogik",
+          "Einführung eines regelmäßigen Priorisierungsformats",
+          "Dokumentation aller vereinbarten Regeln",
+        ],
+      },
+      {
+        title: "Phase 2 – Wirkung (Tag 31–60)",
+        paragraphs: ["Ziel: Struktur sichtbar wirksam machen."],
+        bullets: [
+          "Auswahl eines priorisierten Kernprojekts",
+          "Strukturierte Analyse dieses Projekts",
+          "Einführung klarer Qualitäts-Gates",
+          "Reduktion unnötiger Prüfschleifen",
+          "Messung von Entscheidungsdauer",
+          "Definition klarer Eskalationsregeln",
+          "Feedbackgespräche zur Wahrnehmung der Führung",
+          "Anpassung der Kontrolltiefe",
+          "Sichtbare Kommunikation erster Verbesserungen",
+          "Klare Priorisierung laufender Themen",
+        ],
+      },
+      {
+        title: "Phase 3 – Stabilisierung (Tag 61–90)",
+        paragraphs: ["Ziel: Balance zwischen Tempo und Qualität herstellen."],
+        bullets: [
+          "KPI-Review",
+          "Analyse von Durchlaufzeiten",
+          "Analyse von Fehlerquoten",
+          "Bewertung der Teamzufriedenheit",
+          "Reduktion überflüssiger Kontrollen",
+          "Feinjustierung der Entscheidungslogik",
+          "Verstetigung des Review-Rhythmus",
+          "Offene Feedbackrunde",
+          "Klare Definition langfristiger Prioritäten",
+          "Persönliche Selbstreflexion der Führungskraft",
+        ],
+      },
+    ],
+  });
+
+  sections.push({
+    num: 11,
+    title: "Gesamtbewertung",
+    paragraphs: [
+      result.gesamturteil.einschaetzung,
+      `Die Konstellation ist ${intensity === "HOCH" ? "anspruchsvoll" : "gut handhabbar"}, aber ${intensity === "NIEDRIG" ? "unkritisch" : "steuerbar"}.`,
+      `Voraussetzung ist eine ${rolleLabel}, die:`,
+    ],
+    bullets: result.handlungsempfehlungen.topHebel,
+    subsections: [{
+      title: "",
+      highlight: "Mit aktiver Führung entsteht ein leistungsstarkes, stabiles System.",
+    }],
+  });
+
+  return sections;
+}
+
+export type ExecutivePage = {
+  pageNum: number;
+  title: string;
+  sections: { title: string; paragraphs?: string[]; bullets?: string[]; highlight?: string }[];
+};
+
+export function generateExecutiveReport(input: TeamCheckInput, result: TeamCheckResult): ExecutivePage[] {
+  const domK = dominanceType(input.kandidat);
+  const domT = dominanceType(input.team);
+  const delta = computeDelta(input.kandidat, input.team);
+  const intensity = computeIntensitaet(delta);
+  const rolleLabel = input.isLeading ? "Führungskraft" : "neuen Person";
+  const beruf = input.beruf || "die offene Rolle";
+  const kLabel = plainLabel(domK);
+  const tLabel = plainLabel(domT);
+
+  const page1: ExecutivePage = {
+    pageNum: 1,
+    title: `Executive Summary – ${beruf}`,
+    sections: [
+      {
+        title: "Ausgangslage",
+        paragraphs: [
+          `Die neue ${rolleLabel} ist stark ${kLabel}.`,
+          `Das bestehende Team arbeitet überwiegend ${tLabel}.`,
+          domK === domT
+            ? "Es entsteht eine Verstärkung der bestehenden Arbeitslogik."
+            : `Es entsteht eine deutliche strukturelle Verschiebung: Von ${plainShort(domT)} hin zu ${plainShort(domK)}.`,
+        ],
+      },
+      {
+        title: "Zentrale Wirkung",
+        paragraphs: [
+          `Entscheidungen werden ${domK === "ANALYTISCH" ? "strukturierter, stärker geprüft und dokumentiert" : domK === "IMPULSIV" ? "schneller, direkter und ergebnisorientierter" : domK === "INTUITIV" ? "dialogischer, konsensorientierter und stärker abgestimmt" : "situativer und weniger vorhersagbar"}.`,
+          domK === domT
+            ? "Bestehende Stärken werden verstärkt, aber auch bestehende Schwächen."
+            : `Das System verschiebt sich von „${plainShort(domT)}" zu „${plainShort(domK)}".`,
+        ],
+        bullets: [
+          ...result.systemwirkung.prozessWirkung.positiv.slice(0, 3).map(p => `✓ ${p}`),
+          ...result.systemwirkung.prozessWirkung.negativ.slice(0, 2).map(n => `⚠ ${n}`),
+        ],
+      },
+      {
+        title: "Verhalten unter Druck",
+        paragraphs: [
+          "Solange Belastung kontrollierbar ist, ergänzt die neue Arbeitsweise das System sinnvoll.",
+          "Wenn Stress jedoch hoch wird (Zieldruck, Zeitdruck, Konflikte):",
+        ],
+        bullets: result.stressprofil.unkontrolliert.slice(0, 3),
+      },
+      {
+        title: "Chancen",
+        bullets: result.handlungsempfehlungen.kernchancen,
+      },
+      {
+        title: "Risiken",
+        bullets: result.handlungsempfehlungen.kernrisiken,
+        paragraphs: ["Diese Risiken sind steuerbar – aber nicht automatisch."],
+      },
+      {
+        title: "Gesamtbewertung",
+        paragraphs: [
+          `Die Konstellation ist ${intensity === "HOCH" ? "anspruchsvoll" : "gut handhabbar"}, aber strategisch sinnvoll.`,
+        ],
+        highlight: `Voraussetzung: ${result.handlungsempfehlungen.topHebel.slice(0, 2).join(" und ")}.`,
+      },
+    ],
+  };
+
+  const page2: ExecutivePage = {
+    pageNum: 2,
+    title: "Steuerbarkeit, Prognose und 90-Tage-Führungsauftrag",
+    sections: [
+      {
+        title: "Prognose",
+        paragraphs: [
+          `0–30 Tage: ${result.prognose.phases[0]?.description || "Anpassungsphase."}`,
+          `30–90 Tage: ${result.prognose.phases[1]?.description || "Stabilisierungsphase."}`,
+          `Nach 90 Tagen: ${result.prognose.phases[2]?.description || "Reifephase."}`,
+        ],
+      },
+      {
+        title: "Messbare Steuerungsindikatoren",
+        paragraphs: ["Zur objektiven Bewertung:"],
+        bullets: [
+          "Durchschnittliche Entscheidungsdauer",
+          "Fehlerquote / Reklamationen",
+          "Anzahl Eskalationen",
+          "Einhaltung definierter Zeitfenster",
+        ],
+      },
+      {
+        title: "Führungsauftrag",
+        paragraphs: [`Die neue ${rolleLabel} muss:`],
+        bullets: result.handlungsempfehlungen.topHebel,
+      },
+      {
+        title: "90-Tage-Plan (kompakt)",
+        paragraphs: [
+          "Phase 1 – Orientierung (Tag 1–30): Entscheidungswege analysieren, Verantwortlichkeiten klären, Zeitfenster definieren, Führungsprinzipien transparent machen.",
+          "Phase 2 – Wirksamkeit (Tag 31–60): Einen Kernprozess strukturieren, Qualitäts-Gates einführen, Entscheidungsdauer messen, Feedback einholen.",
+          "Phase 3 – Stabilisierung (Tag 61–90): KPI-Review, Kontrolltiefe anpassen, Tempo-Qualitäts-Balance justieren, Teamfeedback integrieren.",
+        ],
+      },
+      {
+        title: "Abschließendes Urteil",
+        paragraphs: [result.gesamturteil.einschaetzung],
+        highlight: "Bei aktiver Führung entsteht ein leistungsfähigeres, strukturierteres System. Ohne klare Rahmensetzung entsteht Spannungsdynamik.",
+      },
+    ],
+  };
+
+  return [page1, page2];
+}
+
 export function computeTeamCheck(input: TeamCheckInput): TeamCheckResult {
   const domK = dominanceType(input.kandidat);
   const domT = dominanceType(input.team);

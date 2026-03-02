@@ -1,13 +1,15 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
   CheckCircle, AlertTriangle, Shield, TrendingUp, Clock, Target,
-  Zap, BarChart3, FileDown, ChevronRight,
+  Zap, BarChart3, FileDown, ChevronRight, X, FileText, Briefcase,
+  ArrowLeft, Lightbulb,
 } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { hyphenateText } from "@/lib/hyphenate";
 import {
   type TeamCheckInput, type TeamCheckResult, type UrteilBadge,
-  computeTeamCheck,
+  type ReportSection, type ExecutivePage,
+  computeTeamCheck, generateDetailReport, generateExecutiveReport,
 } from "@/lib/teamcheck-engine";
 import {
   computeTeamDynamics, getDefaultLevers,
@@ -158,6 +160,8 @@ export default function TeamCheck() {
   const [fuehrungstyp, setFuehrungstyp] = useState("Keine");
   const [isLeading, setIsLeading] = useState(true);
   const [detailTab, setDetailTab] = useState<"system" | "stress" | "prognose" | "empfehlung" | "urteil">("system");
+  const [reportView, setReportView] = useState<"none" | "detail" | "executive">("none");
+  const reportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     try {
@@ -214,22 +218,234 @@ export default function TeamCheck() {
 
   const rolleLabel = isLeading ? "Neue Führungskraft" : "Neues Teammitglied";
 
+  const detailReport = useMemo(() => generateDetailReport(input, result), [input, result]);
+  const execReport = useMemo(() => generateExecutiveReport(input, result), [input, result]);
+
+  if (reportView !== "none") {
+    return (
+      <div style={{ minHeight: "100vh", background: "linear-gradient(180deg, #F5F5F7 0%, #FBFBFD 40%, #F5F5F7 100%)" }}>
+        <div style={{
+          position: "sticky", top: 0, zIndex: 100,
+          background: "rgba(255,255,255,0.85)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+          borderBottom: "1px solid rgba(0,0,0,0.06)",
+          padding: "12px 20px",
+          display: "flex", alignItems: "center", gap: 12,
+        }}>
+          <button onClick={() => setReportView("none")} data-testid="btn-back-report" style={{
+            display: "flex", alignItems: "center", gap: 5,
+            padding: "6px 12px", borderRadius: 8, background: "rgba(0,0,0,0.04)", border: "none", cursor: "pointer",
+            fontSize: 12, fontWeight: 600, color: "#1D1D1F",
+          }}>
+            <ArrowLeft style={{ width: 14, height: 14, strokeWidth: 2.5 }} />
+            Zurück
+          </button>
+          <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: "#1D1D1F", textAlign: "center" }}>
+            {reportView === "detail" ? "Detailbericht" : "Executive Summary"}
+          </span>
+          <button onClick={() => window.print()} data-testid="btn-print-report" style={{
+            display: "flex", alignItems: "center", gap: 5,
+            padding: "6px 12px", borderRadius: 8, background: "rgba(0,113,227,0.08)", border: "none", cursor: "pointer",
+            fontSize: 12, fontWeight: 600, color: "#0071E3",
+          }}>
+            <FileDown style={{ width: 13, height: 13, strokeWidth: 2 }} />
+            Drucken / PDF
+          </button>
+        </div>
+
+        <div ref={reportRef} style={{ maxWidth: 780, margin: "0 auto", padding: "40px 24px 80px" }}>
+          {reportView === "detail" ? (
+            <>
+              <div style={{ textAlign: "center", marginBottom: 40 }}>
+                <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 6px" }}>bioLogic Systemanalyse</p>
+                <h1 style={{ fontSize: 26, fontWeight: 800, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.03em" }}>DETAILBERICHT</h1>
+                <p style={{ fontSize: 14, color: "#6E6E73", margin: 0 }}>Systemische Analyse zur Besetzung – {beruf}</p>
+              </div>
+
+              {detailReport.map((sec) => (
+                <div key={sec.num} style={{ marginBottom: 36 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                    <div style={{
+                      width: 30, height: 30, borderRadius: 10,
+                      background: "linear-gradient(135deg, rgba(0,113,227,0.12), rgba(0,113,227,0.04))",
+                      display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                    }}>
+                      <span style={{ fontSize: 12, fontWeight: 800, color: "#0071E3" }}>{sec.num}</span>
+                    </div>
+                    <h2 style={{ fontSize: 18, fontWeight: 800, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>{sec.title}</h2>
+                  </div>
+
+                  {sec.paragraphs?.map((p, i) => (
+                    <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: "0 0 10px" }} lang="de">{hyphenateText(p)}</p>
+                  ))}
+                  {sec.bullets && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12, paddingLeft: 4 }}>
+                      {sec.bullets.map((b, i) => {
+                        const isPos = b.startsWith("✓ ");
+                        const isWarn = b.startsWith("⚠ ");
+                        const text = (isPos || isWarn) ? b.slice(2) : b;
+                        const color = isPos ? "#34C759" : isWarn ? "#FF9500" : "#8E8E93";
+                        return (
+                          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                            {isPos ? <CheckCircle style={{ width: 14, height: 14, color, flexShrink: 0, marginTop: 3, strokeWidth: 2.5 }} />
+                              : isWarn ? <AlertTriangle style={{ width: 14, height: 14, color, flexShrink: 0, marginTop: 3, strokeWidth: 2.5 }} />
+                              : <div style={{ width: 5, height: 5, borderRadius: "50%", background: color, marginTop: 8, flexShrink: 0 }} />
+                            }
+                            <span style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.65 }} lang="de">{hyphenateText(text)}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {sec.subsections?.map((sub, si) => (
+                    <div key={si} style={{ marginTop: sub.title ? 20 : 12, marginBottom: 12 }}>
+                      {sub.title && (
+                        <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>{sub.title}</h3>
+                      )}
+                      {sub.paragraphs?.map((p, pi) => (
+                        <p key={pi} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: "0 0 10px" }} lang="de">{hyphenateText(p)}</p>
+                      ))}
+                      {sub.bullets && (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 10, paddingLeft: 4 }}>
+                          {sub.bullets.map((b, bi) => {
+                            const isPos = b.startsWith("✓ ");
+                            const isWarn = b.startsWith("⚠ ");
+                            const text = (isPos || isWarn) ? b.slice(2) : b;
+                            const color = isPos ? "#34C759" : isWarn ? "#FF9500" : "#8E8E93";
+                            return (
+                              <div key={bi} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                {isPos ? <CheckCircle style={{ width: 14, height: 14, color, flexShrink: 0, marginTop: 3, strokeWidth: 2.5 }} />
+                                  : isWarn ? <AlertTriangle style={{ width: 14, height: 14, color, flexShrink: 0, marginTop: 3, strokeWidth: 2.5 }} />
+                                  : <div style={{ width: 5, height: 5, borderRadius: "50%", background: color, marginTop: 8, flexShrink: 0 }} />
+                                }
+                                <span style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.65 }} lang="de">{hyphenateText(text)}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                      {sub.highlight && (
+                        <div style={{
+                          padding: "14px 18px", borderRadius: 14, marginTop: 10,
+                          background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(52,199,89,0.04))",
+                          borderLeft: "4px solid #0071E3",
+                        }}>
+                          <p style={{ fontSize: 13.5, color: "#1D1D1F", lineHeight: 1.7, margin: 0, fontWeight: 550 }} lang="de">{hyphenateText(sub.highlight)}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </>
+          ) : (
+            <>
+              {execReport.map((page) => (
+                <div key={page.pageNum} style={{ marginBottom: 48 }}>
+                  <div style={{
+                    textAlign: "center", marginBottom: 32,
+                    paddingBottom: 20, borderBottom: "2px solid rgba(0,113,227,0.10)",
+                  }}>
+                    {page.pageNum === 1 && (
+                      <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 6px" }}>bioLogic Executive Summary</p>
+                    )}
+                    <h1 style={{ fontSize: 22, fontWeight: 800, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>{page.title}</h1>
+                  </div>
+
+                  {page.sections.map((sec, si) => (
+                    <div key={si} style={{
+                      marginBottom: 24, padding: "18px 22px", borderRadius: 18,
+                      background: "rgba(255,255,255,0.85)", backdropFilter: "blur(20px)",
+                      border: "1px solid rgba(0,0,0,0.05)",
+                      boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
+                    }}>
+                      <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>{sec.title}</h3>
+                      {sec.paragraphs?.map((p, pi) => (
+                        <p key={pi} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, margin: "0 0 8px" }} lang="de">{hyphenateText(p)}</p>
+                      ))}
+                      {sec.bullets && (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
+                          {sec.bullets.map((b, bi) => {
+                            const isPos = b.startsWith("✓ ");
+                            const isWarn = b.startsWith("⚠ ");
+                            const text = (isPos || isWarn) ? b.slice(2) : b;
+                            const color = isPos ? "#34C759" : isWarn ? "#FF9500" : "#6E6E73";
+                            return (
+                              <div key={bi} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                {isPos ? <CheckCircle style={{ width: 13, height: 13, color, flexShrink: 0, marginTop: 3, strokeWidth: 2.5 }} />
+                                  : isWarn ? <AlertTriangle style={{ width: 13, height: 13, color, flexShrink: 0, marginTop: 3, strokeWidth: 2.5 }} />
+                                  : <div style={{ width: 5, height: 5, borderRadius: "50%", background: color, marginTop: 7, flexShrink: 0 }} />
+                                }
+                                <span style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.6 }} lang="de">{hyphenateText(text)}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                      {sec.highlight && (
+                        <div style={{
+                          padding: "12px 16px", borderRadius: 12, marginTop: 12,
+                          background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(52,199,89,0.04))",
+                          borderLeft: "4px solid #0071E3",
+                        }}>
+                          <p style={{ fontSize: 13, color: "#1D1D1F", lineHeight: 1.65, margin: 0, fontWeight: 600 }} lang="de">{hyphenateText(sec.highlight)}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ minHeight: "100vh", background: "linear-gradient(180deg, #F5F5F7 0%, #FBFBFD 40%, #F5F5F7 100%)" }}>
       <GlobalNav rightSlot={
-        <button
-          data-testid="btn-export-pdf"
-          onClick={() => window.print()}
-          style={{
-            display: "flex", alignItems: "center", gap: 5,
-            padding: "6px 14px", borderRadius: 10,
-            background: "rgba(0,113,227,0.08)", border: "none", cursor: "pointer",
-            fontSize: 12, fontWeight: 600, color: "#0071E3",
-          }}
-        >
-          <FileDown style={{ width: 13, height: 13, strokeWidth: 2 }} />
-          Export (PDF)
-        </button>
+        <div style={{ display: "flex", gap: 6 }}>
+          <button
+            data-testid="btn-detail-report"
+            onClick={() => setReportView("detail")}
+            style={{
+              display: "flex", alignItems: "center", gap: 5,
+              padding: "6px 12px", borderRadius: 10,
+              background: "rgba(0,113,227,0.08)", border: "none", cursor: "pointer",
+              fontSize: 11, fontWeight: 600, color: "#0071E3",
+            }}
+          >
+            <FileText style={{ width: 12, height: 12, strokeWidth: 2.5 }} />
+            Detailanalyse
+          </button>
+          <button
+            data-testid="btn-exec-report"
+            onClick={() => setReportView("executive")}
+            style={{
+              display: "flex", alignItems: "center", gap: 5,
+              padding: "6px 12px", borderRadius: 10,
+              background: "rgba(52,199,89,0.08)", border: "none", cursor: "pointer",
+              fontSize: 11, fontWeight: 600, color: "#34C759",
+            }}
+          >
+            <Briefcase style={{ width: 12, height: 12, strokeWidth: 2.5 }} />
+            Executive
+          </button>
+          <button
+            data-testid="btn-export-pdf"
+            onClick={() => window.print()}
+            style={{
+              display: "flex", alignItems: "center", gap: 5,
+              padding: "6px 12px", borderRadius: 10,
+              background: "rgba(0,0,0,0.04)", border: "none", cursor: "pointer",
+              fontSize: 11, fontWeight: 600, color: "#6E6E73",
+            }}
+          >
+            <FileDown style={{ width: 12, height: 12, strokeWidth: 2 }} />
+            PDF
+          </button>
+        </div>
       } />
 
       <div style={{ maxWidth: 860, margin: "0 auto", padding: "32px 20px 80px" }}>
