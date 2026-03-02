@@ -157,6 +157,7 @@ export default function TeamCheck() {
   const [bereich, setBereich] = useState("");
   const [fuehrungstyp, setFuehrungstyp] = useState("Keine");
   const [isLeading, setIsLeading] = useState(true);
+  const [detailTab, setDetailTab] = useState<"system" | "stress" | "prognose" | "empfehlung" | "urteil">("system");
 
   useEffect(() => {
     try {
@@ -367,212 +368,286 @@ export default function TeamCheck() {
             })()}
           </GlassCard>
 
-          {/* SECTION 2: SYSTEMWIRKUNG */}
-          <GlassCard data-testid="section-systemwirkung">
-            <SectionHeader num={2} title="SYSTEMWIRKUNG" icon={Zap} />
-
-            {/* Entscheidungslogik */}
-            <div style={{ marginBottom: 24 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-                <CheckCircle style={{ width: 16, height: 16, color: "#34C759", strokeWidth: 2.5 }} />
-                <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Entscheidungslogik</h3>
-              </div>
-              <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-                <div style={{ flex: 1, minWidth: 200 }}>
-                  <p style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 6px", letterSpacing: "0.04em" }}>Bisher</p>
-                  <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(result.systemwirkung.entscheidungslogik.bisher)}</p>
-                  <p style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", margin: "14px 0 6px", letterSpacing: "0.04em" }}>Mit der neuen {isLeading ? "Führungskraft" : "Person"}</p>
-                  <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(result.systemwirkung.entscheidungslogik.mitNeu)}</p>
-                  <p style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", margin: "14px 0 6px", letterSpacing: "0.04em" }}>Für die {isLeading ? "Führungskraft" : "Person"}</p>
-                  <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(result.systemwirkung.entscheidungslogik.fuerFK)}</p>
-                </div>
-              </div>
-            </div>
-
-            <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "0 0 24px" }} />
-
-            {/* Prozess- und Qualitätswirkung */}
-            <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-              <div style={{ flex: 1, minWidth: 220 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-                  <CheckCircle style={{ width: 16, height: 16, color: "#34C759", strokeWidth: 2.5 }} />
-                  <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Prozesswirkung</h3>
-                </div>
-                <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-                  <div style={{ flex: 1, minWidth: 140 }}>
-                    <BulletList items={result.systemwirkung.prozessWirkung.positiv} color="#34C759" icon="dot" />
-                  </div>
-                  <div style={{ flex: 1, minWidth: 140 }}>
-                    <BulletList items={result.systemwirkung.prozessWirkung.negativ} color="#FF9500" icon="dot" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "24px 0" }} />
-
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-                <CheckCircle style={{ width: 16, height: 16, color: "#34C759", strokeWidth: 2.5 }} />
-                <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Qualitäts- und Fehlerwirkung</h3>
-              </div>
-              <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-                <div style={{ flex: 1, minWidth: 140 }}>
-                  <BulletList items={result.systemwirkung.qualitaetsWirkung.positiv} color="#34C759" icon="dot" />
-                </div>
-                <div style={{ flex: 1, minWidth: 140 }}>
-                  <BulletList items={result.systemwirkung.qualitaetsWirkung.negativ} color="#FF9500" icon="dot" />
-                </div>
-              </div>
-            </div>
-          </GlassCard>
-
-          {/* SECTION 3: STRESSPROFIL */}
-          <GlassCard data-testid="section-stressprofil">
-            <SectionHeader num={3} title="STRESSPROFIL" icon={AlertTriangle} />
-            <p style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.75, margin: "0 0 18px" }} lang="de">
-              {hyphenateText(result.stressprofil.normalState)}
-            </p>
-            <div style={{
-              padding: "16px 20px", borderRadius: 16,
-              background: "rgba(255,59,48,0.04)", border: "1px solid rgba(255,59,48,0.10)",
-              marginBottom: 16,
-            }}>
-              <p style={{ fontSize: 11, fontWeight: 700, color: "#FF3B30", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                Unkontrollierter Stress
-              </p>
-              <BulletList items={result.stressprofil.unkontrolliert} color="#FF3B30" icon="warning" />
-            </div>
-            <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px" }} lang="de">
-              {hyphenateText(result.stressprofil.zweitKomponente)}
-            </p>
-            <div style={{
-              padding: "14px 18px", borderRadius: 14,
-              background: "rgba(0,113,227,0.04)", border: "1px solid rgba(0,113,227,0.10)",
-            }}>
-              <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", margin: "0 0 6px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Steuerung</p>
-              <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">
-                {hyphenateText(result.stressprofil.steuerung)}
-              </p>
-            </div>
-          </GlassCard>
-
-          {/* SECTION 4: PROGNOSE */}
-          <GlassCard data-testid="section-prognose">
-            <SectionHeader num={4} title="PROGNOSE (90-TAGE-PERSPEKTIVE)" icon={Clock} />
-            <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-              {result.prognose.phases.map((phase, i) => (
-                <div key={i} style={{
-                  padding: "18px 20px", borderRadius: 18,
-                  background: i === 0 ? "rgba(255,149,0,0.04)" : i === 1 ? "rgba(0,113,227,0.04)" : "rgba(52,199,89,0.04)",
-                  border: `1px solid ${i === 0 ? "rgba(255,149,0,0.10)" : i === 1 ? "rgba(0,113,227,0.10)" : "rgba(52,199,89,0.10)"}`,
-                }} data-testid={`prognose-phase-${i}`}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                    <div style={{
-                      width: 28, height: 28, borderRadius: 9,
-                      background: i === 0 ? "#FF9500" : i === 1 ? "#0071E3" : "#34C759",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                    }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: "#FFF" }}>P{i + 1}</span>
-                    </div>
-                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{phase.label}</span>
-                  </div>
-                  <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: "0 0 8px" }} lang="de">
-                    {hyphenateText(phase.description)}
-                  </p>
-                  {phase.bullets.length > 0 && (
-                    <BulletList items={phase.bullets} color={i === 0 ? "#FF9500" : i === 1 ? "#0071E3" : "#34C759"} icon="dot" />
-                  )}
-                </div>
-              ))}
-            </div>
-          </GlassCard>
-
-          {/* SECTION 5: HANDLUNGSEMPFEHLUNGEN */}
-          <GlassCard data-testid="section-handlungsempfehlungen">
-            <SectionHeader num={5} title="HANDLUNGSEMPFEHLUNGEN" icon={Target} />
-            <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-              <div style={{
-                flex: 1, minWidth: 180, padding: "18px 16px", borderRadius: 18,
-                background: "rgba(52,199,89,0.04)", border: "1px solid rgba(52,199,89,0.10)",
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                  <CheckCircle style={{ width: 15, height: 15, color: "#34C759", strokeWidth: 2.5 }} />
-                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Kernchancen</span>
-                </div>
-                <BulletList items={result.handlungsempfehlungen.kernchancen} color="#34C759" icon="dot" />
-              </div>
-              <div style={{
-                flex: 1, minWidth: 180, padding: "18px 16px", borderRadius: 18,
-                background: "rgba(255,59,48,0.04)", border: "1px solid rgba(255,59,48,0.10)",
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                  <AlertTriangle style={{ width: 15, height: 15, color: "#FF3B30", strokeWidth: 2.5 }} />
-                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Risiken</span>
-                </div>
-                <BulletList items={result.handlungsempfehlungen.kernrisiken} color="#FF3B30" icon="dot" />
-              </div>
-              <div style={{
-                flex: 1, minWidth: 180, padding: "18px 16px", borderRadius: 18,
-                background: "rgba(0,113,227,0.04)", border: "1px solid rgba(0,113,227,0.10)",
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                  <Zap style={{ width: 15, height: 15, color: "#0071E3", strokeWidth: 2.5 }} />
-                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Top 3 Hebel</span>
-                </div>
-                <BulletList items={result.handlungsempfehlungen.topHebel} color="#0071E3" icon="check" />
-              </div>
-            </div>
-          </GlassCard>
-
-          {/* SECTION 6: GESAMTURTEIL */}
-          <GlassCard data-testid="section-gesamturteil">
-            <SectionHeader num={6} title="GESAMTURTEIL" icon={Shield} />
-
-            {/* Badges */}
-            <div style={{ display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
-              {(["STRATEGISCH_CHANCEN", "ENTWICKLUNGSFAEHIG", "NO_GO"] as UrteilBadge[]).map(badge => {
-                const active = result.gesamturteil.badges.includes(badge);
-                const cfg = BADGE_CONFIG[badge];
+          {/* SECTIONS 2–6: Tabbed Detail Card */}
+          <GlassCard data-testid="section-detail-tabs">
+            <div style={{ display: "flex", gap: 3, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, marginBottom: 26 }}>
+              {([
+                ["system", "Systemwirkung", Zap],
+                ["stress", "Stressprofil", AlertTriangle],
+                ["prognose", "Prognose", Clock],
+                ["empfehlung", "Empfehlungen", Target],
+                ["urteil", "Gesamturteil", Shield],
+              ] as const).map(([key, label, Icon]) => {
+                const active = detailTab === key;
                 return (
-                  <div key={badge} style={{
-                    padding: "8px 18px", borderRadius: 10,
-                    background: active ? cfg.bg : "rgba(0,0,0,0.03)",
-                    border: `1px solid ${active ? cfg.color + "25" : "rgba(0,0,0,0.06)"}`,
-                    display: "flex", alignItems: "center", gap: 6,
-                  }} data-testid={`badge-${badge.toLowerCase()}`}>
-                    <CheckCircle style={{ width: 14, height: 14, color: active ? cfg.color : "#C7C7CC", strokeWidth: 2.5 }} />
-                    <span style={{ fontSize: 13, fontWeight: active ? 700 : 400, color: active ? cfg.color : "#C7C7CC" }}>{cfg.label}</span>
-                  </div>
+                  <button key={key} onClick={() => setDetailTab(key as typeof detailTab)} data-testid={`tab-detail-${key}`} style={{
+                    flex: 1, padding: "9px 6px", borderRadius: 8, fontSize: 11, fontWeight: active ? 700 : 500,
+                    background: active ? "#fff" : "transparent",
+                    boxShadow: active ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                    border: "none", cursor: "pointer",
+                    color: active ? "#1D1D1F" : "#8E8E93",
+                    transition: "all 200ms ease",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
+                    whiteSpace: "nowrap",
+                  }}>
+                    <Icon style={{ width: 12, height: 12, strokeWidth: 2.5 }} />
+                    <span style={{ display: "inline" }}>{label}</span>
+                  </button>
                 );
               })}
             </div>
 
-            {/* Verdict items */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {[
-                { label: "Einschätzung", text: result.gesamturteil.einschaetzung, icon: "✓" },
-                { label: "Eskalationsrisiko", text: result.gesamturteil.eskalationsrisiko, icon: "⚠" },
-                { label: "Risikoindikator", text: result.gesamturteil.risikoindikator, icon: "◉" },
-                { label: "Empfehlung", text: result.gesamturteil.empfehlung, icon: "→" },
-              ].map((item, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                  <span style={{ fontSize: 12, marginTop: 2, flexShrink: 0 }}>{item.icon}</span>
+            <div style={{ minHeight: 380 }}>
+
+              {/* TAB: SYSTEMWIRKUNG */}
+              {detailTab === "system" && (
+                <div data-testid="content-system">
+                  <SectionHeader num={2} title="SYSTEMWIRKUNG" icon={Zap} />
+
+                  <div style={{ marginBottom: 24 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                      <CheckCircle style={{ width: 16, height: 16, color: "#34C759", strokeWidth: 2.5 }} />
+                      <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Entscheidungslogik</h3>
+                    </div>
+                    <div style={{ flex: 1, minWidth: 200 }}>
+                      <p style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 6px", letterSpacing: "0.04em" }}>Bisher</p>
+                      <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(result.systemwirkung.entscheidungslogik.bisher)}</p>
+                      <p style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", margin: "14px 0 6px", letterSpacing: "0.04em" }}>Mit der neuen {isLeading ? "Führungskraft" : "Person"}</p>
+                      <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(result.systemwirkung.entscheidungslogik.mitNeu)}</p>
+                      <p style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", margin: "14px 0 6px", letterSpacing: "0.04em" }}>Für die {isLeading ? "Führungskraft" : "Person"}</p>
+                      <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(result.systemwirkung.entscheidungslogik.fuerFK)}</p>
+                    </div>
+                  </div>
+
+                  <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "0 0 24px" }} />
+
+                  <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+                    <div style={{ flex: 1, minWidth: 220 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                        <CheckCircle style={{ width: 16, height: 16, color: "#34C759", strokeWidth: 2.5 }} />
+                        <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Prozesswirkung</h3>
+                      </div>
+                      <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                        <div style={{ flex: 1, minWidth: 140 }}>
+                          <BulletList items={result.systemwirkung.prozessWirkung.positiv} color="#34C759" icon="dot" />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 140 }}>
+                          <BulletList items={result.systemwirkung.prozessWirkung.negativ} color="#FF9500" icon="dot" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "24px 0" }} />
+
                   <div>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F" }}>{item.label}: </span>
-                    <span style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65 }} lang="de">{hyphenateText(item.text)}</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                      <CheckCircle style={{ width: 16, height: 16, color: "#34C759", strokeWidth: 2.5 }} />
+                      <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Qualitäts- und Fehlerwirkung</h3>
+                    </div>
+                    <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                      <div style={{ flex: 1, minWidth: 140 }}>
+                        <BulletList items={result.systemwirkung.qualitaetsWirkung.positiv} color="#34C759" icon="dot" />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 140 }}>
+                        <BulletList items={result.systemwirkung.qualitaetsWirkung.negativ} color="#FF9500" icon="dot" />
+                      </div>
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
+              )}
 
-            <div style={{
-              marginTop: 20, padding: "14px 18px", borderRadius: 14,
-              background: "rgba(0,113,227,0.04)", border: "1px solid rgba(0,113,227,0.10)",
-            }}>
-              <p style={{ fontSize: 12, color: "#48484A", lineHeight: 1.6, margin: 0 }} lang="de">
-                {hyphenateText("Die Konstellation ist kein strukturelles No-Go, sondern ein klarer Entwicklungs- und Führungsfall.")}
-              </p>
+              {/* TAB: STRESSPROFIL */}
+              {detailTab === "stress" && (
+                <div data-testid="content-stress">
+                  <SectionHeader num={3} title="STRESSPROFIL" icon={AlertTriangle} />
+                  <p style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.75, margin: "0 0 18px" }} lang="de">
+                    {hyphenateText(result.stressprofil.normalState)}
+                  </p>
+                  <div style={{
+                    padding: "16px 20px", borderRadius: 16,
+                    background: "rgba(255,59,48,0.04)", border: "1px solid rgba(255,59,48,0.10)",
+                    marginBottom: 16,
+                  }}>
+                    <p style={{ fontSize: 11, fontWeight: 700, color: "#FF3B30", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                      Unkontrollierter Stress
+                    </p>
+                    <BulletList items={result.stressprofil.unkontrolliert} color="#FF3B30" icon="warning" />
+                  </div>
+                  <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px" }} lang="de">
+                    {hyphenateText(result.stressprofil.zweitKomponente)}
+                  </p>
+                  <div style={{
+                    padding: "14px 18px", borderRadius: 14,
+                    background: "rgba(0,113,227,0.04)", border: "1px solid rgba(0,113,227,0.10)",
+                  }}>
+                    <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", margin: "0 0 6px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Steuerung</p>
+                    <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">
+                      {hyphenateText(result.stressprofil.steuerung)}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB: PROGNOSE */}
+              {detailTab === "prognose" && (
+                <div data-testid="content-prognose">
+                  <SectionHeader num={4} title="PROGNOSE (90-TAGE-PERSPEKTIVE)" icon={Clock} />
+                  <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+                    {result.prognose.phases.map((phase, i) => (
+                      <div key={i} style={{
+                        padding: "18px 20px", borderRadius: 18,
+                        background: i === 0 ? "rgba(255,149,0,0.04)" : i === 1 ? "rgba(0,113,227,0.04)" : "rgba(52,199,89,0.04)",
+                        border: `1px solid ${i === 0 ? "rgba(255,149,0,0.10)" : i === 1 ? "rgba(0,113,227,0.10)" : "rgba(52,199,89,0.10)"}`,
+                      }} data-testid={`prognose-phase-${i}`}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                          <div style={{
+                            width: 28, height: 28, borderRadius: 9,
+                            background: i === 0 ? "#FF9500" : i === 1 ? "#0071E3" : "#34C759",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                          }}>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: "#FFF" }}>P{i + 1}</span>
+                          </div>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{phase.label}</span>
+                        </div>
+                        <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: "0 0 8px" }} lang="de">
+                          {hyphenateText(phase.description)}
+                        </p>
+                        {phase.bullets.length > 0 && (
+                          <BulletList items={phase.bullets} color={i === 0 ? "#FF9500" : i === 1 ? "#0071E3" : "#34C759"} icon="dot" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* TAB: EMPFEHLUNGEN */}
+              {detailTab === "empfehlung" && (
+                <div data-testid="content-empfehlung">
+                  <SectionHeader num={5} title="HANDLUNGSEMPFEHLUNGEN" icon={Target} />
+                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 24 }}>
+                    <div style={{
+                      flex: 1, minWidth: 180, padding: "18px 16px", borderRadius: 18,
+                      background: "rgba(52,199,89,0.04)", border: "1px solid rgba(52,199,89,0.10)",
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                        <CheckCircle style={{ width: 15, height: 15, color: "#34C759", strokeWidth: 2.5 }} />
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Kernchancen</span>
+                      </div>
+                      <BulletList items={result.handlungsempfehlungen.kernchancen} color="#34C759" icon="dot" />
+                    </div>
+                    <div style={{
+                      flex: 1, minWidth: 180, padding: "18px 16px", borderRadius: 18,
+                      background: "rgba(255,59,48,0.04)", border: "1px solid rgba(255,59,48,0.10)",
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                        <AlertTriangle style={{ width: 15, height: 15, color: "#FF3B30", strokeWidth: 2.5 }} />
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Risiken</span>
+                      </div>
+                      <BulletList items={result.handlungsempfehlungen.kernrisiken} color="#FF3B30" icon="dot" />
+                    </div>
+                    <div style={{
+                      flex: 1, minWidth: 180, padding: "18px 16px", borderRadius: 18,
+                      background: "rgba(0,113,227,0.04)", border: "1px solid rgba(0,113,227,0.10)",
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                        <Zap style={{ width: 15, height: 15, color: "#0071E3", strokeWidth: 2.5 }} />
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Top 3 Hebel</span>
+                      </div>
+                      <BulletList items={result.handlungsempfehlungen.topHebel} color="#0071E3" icon="check" />
+                    </div>
+                  </div>
+
+                  <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "0 0 24px" }} />
+
+                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                    <div style={{
+                      flex: 1, minWidth: 220, padding: "16px 18px", borderRadius: 16,
+                      background: "rgba(255,149,0,0.04)", border: "1px solid rgba(255,149,0,0.10)",
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                        <AlertTriangle style={{ width: 15, height: 15, color: "#FF9500", strokeWidth: 2.5 }} />
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Eskalationsrisiko: {result.eskalationsrisiko.level}</span>
+                      </div>
+                      <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: "0 0 10px" }} lang="de">{hyphenateText(result.eskalationsrisiko.description)}</p>
+                      {result.eskalationsrisiko.triggers.length > 0 && (
+                        <BulletList items={result.eskalationsrisiko.triggers} color="#FF9500" icon="warning" />
+                      )}
+                    </div>
+                    <div style={{
+                      flex: 1, minWidth: 220, padding: "16px 18px", borderRadius: 16,
+                      background: "rgba(0,113,227,0.04)", border: "1px solid rgba(0,113,227,0.10)",
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                        <Shield style={{ width: 15, height: 15, color: "#0071E3", strokeWidth: 2.5 }} />
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Steuerbarkeit: {result.steuerbarkeit.bewertung}</span>
+                      </div>
+                      {result.steuerbarkeit.bedingungen.length > 0 && (
+                        <BulletList items={result.steuerbarkeit.bedingungen} color="#0071E3" icon="check" />
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB: GESAMTURTEIL */}
+              {detailTab === "urteil" && (
+                <div data-testid="content-urteil">
+                  <SectionHeader num={6} title="GESAMTURTEIL" icon={Shield} />
+
+                  <div style={{ display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
+                    {(["STRATEGISCH_CHANCEN", "ENTWICKLUNGSFAEHIG", "NO_GO"] as UrteilBadge[]).map(badge => {
+                      const active = result.gesamturteil.badges.includes(badge);
+                      const cfg = BADGE_CONFIG[badge];
+                      return (
+                        <div key={badge} style={{
+                          padding: "8px 18px", borderRadius: 10,
+                          background: active ? cfg.bg : "rgba(0,0,0,0.03)",
+                          border: `1px solid ${active ? cfg.color + "25" : "rgba(0,0,0,0.06)"}`,
+                          display: "flex", alignItems: "center", gap: 6,
+                        }} data-testid={`badge-${badge.toLowerCase()}`}>
+                          <CheckCircle style={{ width: 14, height: 14, color: active ? cfg.color : "#C7C7CC", strokeWidth: 2.5 }} />
+                          <span style={{ fontSize: 13, fontWeight: active ? 700 : 400, color: active ? cfg.color : "#C7C7CC" }}>{cfg.label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 20 }}>
+                    {[
+                      { label: "Einschätzung", text: result.gesamturteil.einschaetzung, icon: "✓", color: "#34C759" },
+                      { label: "Eskalationsrisiko", text: result.gesamturteil.eskalationsrisiko, icon: "⚠", color: "#FF9500" },
+                      { label: "Risikoindikator", text: result.gesamturteil.risikoindikator, icon: "◉", color: "#FF3B30" },
+                      { label: "Empfehlung", text: result.gesamturteil.empfehlung, icon: "→", color: "#0071E3" },
+                    ].map((item, i) => (
+                      <div key={i} style={{
+                        display: "flex", alignItems: "flex-start", gap: 12,
+                        padding: "12px 16px", borderRadius: 14,
+                        background: `${item.color}06`, border: `1px solid ${item.color}12`,
+                      }}>
+                        <span style={{ fontSize: 14, marginTop: 1, flexShrink: 0 }}>{item.icon}</span>
+                        <div>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", display: "block", marginBottom: 3 }}>{item.label}</span>
+                          <span style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65 }} lang="de">{hyphenateText(item.text)}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{
+                    padding: "16px 20px", borderRadius: 16,
+                    background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(52,199,89,0.04))",
+                    border: "1px solid rgba(0,113,227,0.10)",
+                  }}>
+                    <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", margin: "0 0 6px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Fazit</p>
+                    <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">
+                      {hyphenateText("Die Konstellation ist kein strukturelles No-Go, sondern ein klarer Entwicklungs- und Führungsfall. Entscheidend ist, ob die Steuerungsbereitschaft vorhanden ist und die ersten 90 Tage aktiv gestaltet werden.")}
+                    </p>
+                  </div>
+                </div>
+              )}
+
             </div>
           </GlassCard>
 
