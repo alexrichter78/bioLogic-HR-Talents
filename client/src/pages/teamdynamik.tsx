@@ -12,7 +12,7 @@ import {
   labelComponent, buildAIPayload, getSystemVariant, getDepartmentCatalog, getDepartmentInfo,
   type TeamDynamikInput, type TeamDynamikResult, type ShiftType, type IntensityLevel,
   type TrafficLight, type ViewMode, type Lever, type DepartmentType, type DepartmentFit,
-  type TeamSize, type StressShift,
+  type TeamSize, type StressShift, type LeadershipContext,
 } from "@/lib/teamdynamik-engine";
 import { leaderTeamMatchFull } from "@/lib/leader-team-match-engine";
 
@@ -628,6 +628,79 @@ export default function Teamdynamik() {
             })()}
           </div>
         </GlassCard>
+
+        {/* ═══ FÜHRUNGSKONTEXT ═══ */}
+        {result.leadershipContext && (
+          <GlassCard style={{ marginBottom: 20 }} data-testid="leadership-context-section">
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(0,113,227,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Target style={{ width: 14, height: 14, color: "#0071E3" }} />
+              </div>
+              <div>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.01em" }}>Führungskontext</p>
+                <p style={{ fontSize: 11, color: "#8E8E93", margin: "2px 0 0" }}>Kann diese Person das Team wirksam führen?</p>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
+              {(() => {
+                const personDomColor = result.dominancePerson === "IMPULSIV" ? COLORS.imp : result.dominancePerson === "INTUITIV" ? COLORS.int : result.dominancePerson === "ANALYTISCH" ? COLORS.ana : "#8E8E93";
+                const teamDomColor = result.dominanceTeam === "IMPULSIV" ? COLORS.imp : result.dominanceTeam === "INTUITIV" ? COLORS.int : result.dominanceTeam === "ANALYTISCH" ? COLORS.ana : "#8E8E93";
+                return (<>
+                  <div style={{ flex: 1, minWidth: 200, display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+                    <div style={{ width: 4, flexShrink: 0, background: personDomColor }} />
+                    <div style={{ flex: 1, padding: "12px 14px" }}>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Führungskraft</p>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{result.leadershipContext.personLabel}</p>
+                      <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{result.leadershipContext.personStrengths}</p>
+                    </div>
+                  </div>
+                  <div style={{ flex: 1, minWidth: 200, display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+                    <div style={{ width: 4, flexShrink: 0, background: teamDomColor }} />
+                    <div style={{ flex: 1, padding: "12px 14px" }}>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Team</p>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{result.leadershipContext.teamLabel}</p>
+                      <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{result.leadershipContext.teamCharacter}</p>
+                    </div>
+                  </div>
+                </>);
+              })()}
+            </div>
+
+            <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginBottom: 12 }}>
+              <div style={{ width: 4, flexShrink: 0, background: tl.fill }} />
+              <div style={{ flex: 1, padding: "14px 16px" }}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Passung</p>
+                <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.6 }}>{result.leadershipContext.fitSummary}</p>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
+              <div style={{ flex: 1, minWidth: 200, display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+                <div style={{ width: 4, flexShrink: 0, background: "#FF9500" }} />
+                <div style={{ flex: 1, padding: "12px 14px" }}>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Kernrisiko</p>
+                  <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{result.leadershipContext.coreChallenge}</p>
+                </div>
+              </div>
+              <div style={{ flex: 1, minWidth: 200, display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+                <div style={{ width: 4, flexShrink: 0, background: "#34C759" }} />
+                <div style={{ flex: 1, padding: "12px 14px" }}>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Kernchance</p>
+                  <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{result.leadershipContext.coreChance}</p>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+              <div style={{ width: 4, flexShrink: 0, background: "#0071E3" }} />
+              <div style={{ flex: 1, padding: "14px 16px" }}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Handlungsfokus</p>
+                <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.6 }}>{result.leadershipContext.actionFocus}</p>
+              </div>
+            </div>
+          </GlassCard>
+        )}
 
         {/* ═══ STRESS-SIMULATION (hidden) ═══ */}
 

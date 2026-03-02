@@ -157,6 +157,17 @@ export type DepartmentFit = {
   contextNote: string;
 };
 
+export type LeadershipContext = {
+  personLabel: string;
+  personStrengths: string;
+  teamLabel: string;
+  teamCharacter: string;
+  fitSummary: string;
+  coreChallenge: string;
+  coreChance: string;
+  actionFocus: string;
+};
+
 export type TeamDynamikResult = {
   dominanceTeam: DominanceType;
   dominancePerson: DominanceType;
@@ -184,6 +195,7 @@ export type TeamDynamikResult = {
   integrationPlan: { phaseId: string; title: string; days: string; actions: string[] }[];
   departmentFit: DepartmentFit | null;
   stressShift: StressShift;
+  leadershipContext: LeadershipContext | null;
 };
 
 const DEFAULT_LEVERS: Lever[] = [
@@ -515,6 +527,123 @@ function buildIntegrationPlan(st: ShiftType, isLeading: boolean): { phaseId: str
   ];
 }
 
+function buildLeadershipContext(domPerson: DominanceType, domTeam: DominanceType, person: Triad, team: Triad, isLeading: boolean, shiftT: ShiftType): LeadershipContext | null {
+  if (!isLeading) return null;
+
+  const personTraits: Record<DominanceType, { label: string; strengths: string }> = {
+    IMPULSIV: { label: "Impulsiv-dominant", strengths: "Tempo, Entscheidungsstärke, Ergebnisorientierung und Durchsetzungskraft" },
+    INTUITIV: { label: "Intuitiv-dominant", strengths: "Beziehungsfähigkeit, Teamgefühl, Kommunikation und Konsensfindung" },
+    ANALYTISCH: { label: "Analytisch-dominant", strengths: "Struktur, Planung, Qualitätssicherung und systematisches Vorgehen" },
+    MIX: { label: "Ausgeglichen", strengths: "Situative Anpassungsfähigkeit, breites Handlungsspektrum, aber keine klare Leitlinie" },
+  };
+
+  const teamTraits: Record<DominanceType, { label: string; character: string }> = {
+    IMPULSIV: { label: "tempoorientiert", character: "Das Team arbeitet schnell, entscheidet direkt und priorisiert Ergebnisse. Abstimmung passiert kurz und pragmatisch." },
+    INTUITIV: { label: "beziehungsorientiert", character: "Das Team arbeitet über Abstimmung, Dialog und gemeinsame Entscheidungsfindung. Beziehungen sind die Basis der Zusammenarbeit." },
+    ANALYTISCH: { label: "strukturorientiert", character: "Das Team arbeitet prozessorientiert, absichernd und qualitätsbewusst. Standards und Nachvollziehbarkeit stehen im Fokus." },
+    MIX: { label: "ohne klare Dominanz", character: "Das Team hat kein einheitliches Arbeitsmuster. Reaktionen und Prioritäten variieren je nach Situation und Person." },
+  };
+
+  const pT = personTraits[domPerson];
+  const tT = teamTraits[domTeam];
+
+  const sorted = [
+    { k: "impulsiv" as ComponentKey, v: person.impulsiv },
+    { k: "intuitiv" as ComponentKey, v: person.intuitiv },
+    { k: "analytisch" as ComponentKey, v: person.analytisch },
+  ].sort((a, b) => b.v - a.v);
+  const second = sorted[1];
+  const secondLabel: Record<ComponentKey, string> = {
+    impulsiv: "Umsetzungsorientierung",
+    intuitiv: "Beziehungsorientierung",
+    analytisch: "Strukturorientierung",
+  };
+
+  const personStrengths = domPerson === "MIX"
+    ? pT.strengths
+    : `${pT.strengths}. Sekundär: ${secondLabel[second.k]} (${Math.round(second.v)} %)`;
+
+  let fitSummary: string;
+  let coreChallenge: string;
+  let coreChance: string;
+  let actionFocus: string;
+
+  if (domPerson === domTeam && domPerson !== "MIX") {
+    fitSummary = "Führungskraft und Team teilen dieselbe Arbeitslogik. Die Führung wird schnell akzeptiert, weil Prioritäten und Entscheidungsstil übereinstimmen.";
+    coreChallenge = "Einseitige Verstärkung: Blinde Flecken bei den nachrangigen Kompetenzen bleiben unbearbeitet. Fehlende Korrektive können sich langfristig auswirken.";
+    coreChance = "Schnelle Integration, hohe Akzeptanz, stabile Entscheidungswege. Die Führungskraft kann sofort wirksam steuern.";
+    actionFocus = "Bewusst Impulse für die schwächeren Bereiche setzen, um langfristige Einseitigkeit zu vermeiden.";
+  } else if (shiftT === "ERGAENZUNG") {
+    fitSummary = "Die Führungskraft ergänzt das Team um fehlende Perspektiven. Die Zusammenarbeit braucht anfangs mehr Abstimmung, wird aber langfristig breiter aufgestellt.";
+    coreChallenge = "Das Team muss sich auf einen neuen Führungsstil einstellen. Erwartungen an Tempo, Kommunikation oder Struktur können kurzfristig kollidieren.";
+    coreChance = "Neue Impulse für Entscheidungsfindung. Blinde Flecken werden adressiert. Langfristig entsteht ein ausgewogeneres Gesamtsystem.";
+    actionFocus = "Erwartungen früh klären, Kommunikationswege definieren, erste Erfolge sichtbar machen.";
+  } else {
+    const fitPairs: Record<string, { fit: string; challenge: string; chance: string; action: string }> = {
+      "IMPULSIV-INTUITIV": {
+        fit: "Die Führungskraft priorisiert Tempo und Ergebnisse. Das Team arbeitet über Beziehung und Dialog. Diese Kombination erzeugt Spannung zwischen Ergebnisdruck und Abstimmungsbedarf.",
+        challenge: "Das Team empfindet die Führung als zu direkt und druckvoll. Wichtige Beziehungspflege droht unter dem Ergebnisfokus zu leiden.",
+        chance: "Wenn Ergebnisorientierung mit Beziehungspflege kombiniert wird, entsteht ein leistungsstarkes und gleichzeitig stabiles Team.",
+        action: "Beziehungsebene ritualisieren (z.B. wöchentliche Teamrunde), Ergebnisziele klar kommunizieren, Entscheidungszeitfenster setzen.",
+      },
+      "IMPULSIV-ANALYTISCH": {
+        fit: "Die Führungskraft will schnelle Ergebnisse. Das Team braucht Struktur und Absicherung. Tempo trifft auf Qualitätsanspruch.",
+        challenge: "Das Team empfindet die Führung als unstrukturiert. Qualitätsverlust durch überhöhtes Tempo ist ein reales Risiko.",
+        chance: "Wenn Tempo durch klare Standards abgesichert wird, entsteht ein effizientes System mit hoher Umsetzungsgeschwindigkeit und Qualität.",
+        action: "80/20-Qualitätsstandard festlegen, Priorisierungsregeln definieren, Review-Rhythmus mit klarem Zeitlimit einführen.",
+      },
+      "INTUITIV-IMPULSIV": {
+        fit: "Die Führungskraft setzt auf Dialog und Konsens. Das Team arbeitet umsetzungs- und ergebnisorientiert. Das Team erwartet schnelle, klare Ansagen.",
+        challenge: "Das Team empfindet die Führung als zögerlich. Entscheidungsverzögerung durch Konsensbedürfnis bremst die Umsetzung.",
+        chance: "Wenn die Führungskraft klare Entscheidungen mit Beziehungsintelligenz verbindet, steigt sowohl Akzeptanz als auch Bindung im Team.",
+        action: "Entscheidungsfristen verbindlich machen, Ergebnisorientierung sichtbar integrieren, Klarheit über Eskalationswege schaffen.",
+      },
+      "INTUITIV-ANALYTISCH": {
+        fit: "Die Führungskraft priorisiert Beziehung und Abstimmung. Das Team erwartet klare Strukturen und Prozesse. Abstimmungsschleifen kollidieren mit Prozesseffizienz.",
+        challenge: "Das Team erwartet klare Vorgaben und bekommt Gesprächsangebote. Prozesseffizienz leidet unter zu viel Abstimmung.",
+        chance: "Wenn Struktur und Beziehungspflege zusammenwirken, entsteht ein Team mit hoher Verbindlichkeit und gleichzeitig stabiler Qualität.",
+        action: "Prozess-Standards definieren, Entscheidungslogik klären (wann Konsens, wann Vorgabe), Review-Format standardisieren.",
+      },
+      "ANALYTISCH-IMPULSIV": {
+        fit: "Die Führungskraft bringt Struktur und Absicherung. Das Team ist tempoorientiert und ergebnisorientiert. Prozessqualität kollidiert mit Geschwindigkeitserwartung.",
+        challenge: "Das Team empfindet neue Prozesse als Bremse. Kontrolle wird als Misstrauen interpretiert. Innovationsverlust durch Über-Strukturierung.",
+        chance: "Wenn Standards und Tempo ausbalanciert werden, entsteht ein leistungsstarkes System mit klarer Prozessqualität.",
+        action: "80/20-Standard festlegen, Entscheidungszeitfenster definieren, Priorisierungsregeln für Qualität vs. Tempo vereinbaren.",
+      },
+      "ANALYTISCH-INTUITIV": {
+        fit: "Die Führungskraft priorisiert Fakten und Struktur. Das Team lebt über Beziehung und Kommunikation. Sachlichkeit trifft auf Nähe-Bedürfnis.",
+        challenge: "Das Team nimmt emotionale Distanz wahr. Faktenorientierung wird als Kälte empfunden. Bindungsverlust ist ein reales Risiko.",
+        chance: "Wenn Sachlichkeit mit bewusster Beziehungspflege kombiniert wird, entsteht ein professionelles und gleichzeitig menschliches Arbeitsumfeld.",
+        action: "Beziehungsebene ritualisieren, regelmäßiges Feedback einführen, emotionale Anschlussfähigkeit bewusst gestalten.",
+      },
+    };
+
+    const key = `${domPerson}-${domTeam}`;
+    const pair = fitPairs[key] || {
+      fit: "Die Führungskraft und das Team arbeiten in unterschiedlichen Logiken. Das erfordert bewusste Steuerung und klare Kommunikation.",
+      challenge: "Unterschiedliche Erwartungen an Arbeitsweise und Entscheidungsfindung erzeugen Reibungspunkte im Alltag.",
+      chance: "Die unterschiedliche Perspektive kann das System bereichern, wenn die Zusammenarbeit aktiv gestaltet wird.",
+      action: "Klare Rollen, Entscheidungswege und Kommunikationsregeln von Anfang an etablieren.",
+    };
+
+    fitSummary = pair.fit;
+    coreChallenge = pair.challenge;
+    coreChance = pair.chance;
+    actionFocus = pair.action;
+  }
+
+  return {
+    personLabel: pT.label,
+    personStrengths,
+    teamLabel: tT.label,
+    teamCharacter: tT.character,
+    fitSummary,
+    coreChallenge,
+    coreChance,
+    actionFocus,
+  };
+}
+
 function computeDepartmentFit(teamProfile: Triad, personProfile: Triad, deptType: DepartmentType, isLeading: boolean): DepartmentFit | null {
   if (deptType === "ALLGEMEIN") return null;
 
@@ -767,6 +896,7 @@ export function computeTeamDynamics(input: TeamDynamikInput): TeamDynamikResult 
     integrationPlan: buildIntegrationPlan(st, input.isLeading),
     departmentFit: deptFit,
     stressShift,
+    leadershipContext: buildLeadershipContext(domP, domT, person, team, input.isLeading, st),
   };
 }
 
