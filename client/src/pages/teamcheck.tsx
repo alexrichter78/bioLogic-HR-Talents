@@ -2,7 +2,8 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import {
   CheckCircle, AlertTriangle, Shield, TrendingUp, Clock, Target,
   Zap, BarChart3, FileDown, ChevronRight, X, FileText, Briefcase,
-  ArrowLeft, Lightbulb,
+  ArrowLeft, Lightbulb, Activity, Users, Crosshair, Flame,
+  CalendarDays, Award, Gauge, Heart, Brain,
 } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { hyphenateText } from "@/lib/hyphenate";
@@ -279,147 +280,313 @@ export default function TeamCheck() {
                 </div>
               </GlassCard>
 
-              {detailReport.map((sec) => (
-                <GlassCard key={sec.num} style={{ padding: "30px 28px" }} data-testid={`report-section-${sec.num}`}>
-                  <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
-                    <div style={{
-                      width: 36, height: 36, borderRadius: 12,
-                      background: "linear-gradient(135deg, #0071E3, #0071E3CC)",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      marginRight: 14, flexShrink: 0,
-                      boxShadow: "0 4px 12px rgba(0,113,227,0.2)",
-                    }}>
-                      <span style={{ fontSize: 14, fontWeight: 700, color: "#FFF", fontVariantNumeric: "tabular-nums" }}>{String(sec.num).padStart(2, "0")}</span>
-                    </div>
-                    <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>{sec.title}</span>
-                  </div>
+              {(() => {
+                const SECTION_META: Record<number, { icon: typeof Target; color: string }> = {
+                  1: { icon: Target, color: "#0071E3" },
+                  2: { icon: Users, color: "#0071E3" },
+                  3: { icon: Activity, color: "#FF9500" },
+                  4: { icon: Zap, color: "#5856D6" },
+                  5: { icon: Flame, color: "#FF3B30" },
+                  6: { icon: CalendarDays, color: "#34C759" },
+                  7: { icon: TrendingUp, color: "#34C759" },
+                  8: { icon: AlertTriangle, color: "#FF9500" },
+                  9: { icon: Shield, color: "#0071E3" },
+                  10: { icon: CalendarDays, color: "#5856D6" },
+                  11: { icon: Award, color: "#0071E3" },
+                };
 
-                  {sec.num === 2 && (
-                    <div style={{
-                      background: "rgba(255,255,255,0.7)", borderRadius: 22, padding: "20px 22px", marginBottom: 20,
-                      border: "1px solid rgba(0,0,0,0.05)",
-                    }}>
-                      <p style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 14px" }}>Gesamtprofil</p>
-                      {(["impulsiv", "intuitiv", "analytisch"] as const).map(k => {
-                        const val = kandidat[k];
-                        const color = k === "impulsiv" ? "#C41E3A" : k === "intuitiv" ? "#F39200" : "#1A5DAB";
-                        const label = k === "impulsiv" ? "Impulsiv" : k === "intuitiv" ? "Intuitiv" : "Analytisch";
-                        return (
-                          <div key={k} style={{ marginBottom: 10 }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                              <span style={{ fontSize: 12, fontWeight: 500, color: "#6E6E73" }}>{label}</span>
-                              <span style={{ fontSize: 12, fontWeight: 700, color }}>{Math.round(val)}</span>
+                const renderBullets = (bullets: string[]) => (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {bullets.map((b, i) => {
+                      const isPos = b.startsWith("✓ ");
+                      const isWarn = b.startsWith("⚠ ");
+                      const text = (isPos || isWarn) ? b.slice(2) : b;
+                      const c = isPos ? "#34C759" : isWarn ? "#FF9500" : "#6E6E73";
+                      return (
+                        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                          {isPos ? (
+                            <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <CheckCircle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
                             </div>
-                            <div style={{ height: 8, borderRadius: 4, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
-                              <div style={{ height: "100%", borderRadius: 4, background: `linear-gradient(90deg, ${color}, ${color}CC)`, width: `${(val / 67) * 100}%`, transition: "width 0.3s" }} />
+                          ) : isWarn ? (
+                            <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <AlertTriangle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
                             </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  {sec.paragraphs && sec.paragraphs.length > 0 && (() => {
-                    const first = sec.paragraphs[0];
-                    const rest = sec.paragraphs.slice(1);
-                    return (
-                      <>
-                        <div style={{
-                          padding: "16px 20px", borderRadius: 18,
-                          background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(0,113,227,0.02))",
-                          border: "1px solid rgba(0,113,227,0.10)",
-                          display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14,
-                        }}>
-                          <div style={{
-                            width: 28, height: 28, borderRadius: 9, flexShrink: 0,
-                            background: "rgba(0,113,227,0.12)", display: "flex", alignItems: "center", justifyContent: "center",
-                          }}>
-                            <Lightbulb style={{ width: 14, height: 14, color: "#0071E3", strokeWidth: 2 }} />
-                          </div>
-                          <p style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.75, margin: 0, fontWeight: 450 }} lang="de">{hyphenateText(first)}</p>
+                          ) : (
+                            <div style={{ width: 6, height: 6, borderRadius: "50%", background: c, marginTop: 7, flexShrink: 0, opacity: 0.5 }} />
+                          )}
+                          <span style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.7 }} lang="de">{hyphenateText(text)}</span>
                         </div>
-                        {rest.map((p, i) => (
-                          <p key={i} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.9, margin: "0 0 10px" }} lang="de">{hyphenateText(p)}</p>
-                        ))}
-                      </>
-                    );
-                  })()}
+                      );
+                    })}
+                  </div>
+                );
 
-                  {sec.bullets && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 6, marginBottom: 12 }}>
-                      {sec.bullets.map((b, i) => {
-                        const isPos = b.startsWith("✓ ");
-                        const isWarn = b.startsWith("⚠ ");
-                        const text = (isPos || isWarn) ? b.slice(2) : b;
-                        const c = isPos ? "#34C759" : isWarn ? "#FF9500" : "#6E6E73";
-                        return (
-                          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                            {isPos ? (
-                              <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                <CheckCircle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
-                              </div>
-                            ) : isWarn ? (
-                              <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                <AlertTriangle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
-                              </div>
-                            ) : (
-                              <div style={{ width: 6, height: 6, borderRadius: "50%", background: c, marginTop: 7, flexShrink: 0, opacity: 0.5 }} />
-                            )}
-                            <span style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.7 }} lang="de">{hyphenateText(text)}</span>
+                const renderProfileBars = (label: string, triad: Triad, accent: string) => (
+                  <div style={{ flex: 1, minWidth: 200 }}>
+                    <p style={{ fontSize: 11, fontWeight: 700, color: accent, textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 12px" }}>{label}</p>
+                    {(["impulsiv", "intuitiv", "analytisch"] as const).map(k => {
+                      const val = triad[k];
+                      const color = k === "impulsiv" ? "#C41E3A" : k === "intuitiv" ? "#F39200" : "#1A5DAB";
+                      const lbl = k === "impulsiv" ? "Impulsiv" : k === "intuitiv" ? "Intuitiv" : "Analytisch";
+                      return (
+                        <div key={k} style={{ marginBottom: 8 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+                            <span style={{ fontSize: 11, fontWeight: 500, color: "#6E6E73" }}>{lbl}</span>
+                            <span style={{ fontSize: 11, fontWeight: 700, color }}>{Math.round(val)}</span>
                           </div>
-                        );
-                      })}
-                    </div>
-                  )}
+                          <div style={{ height: 7, borderRadius: 4, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
+                            <div style={{ height: "100%", borderRadius: 4, background: `linear-gradient(90deg, ${color}, ${color}BB)`, width: `${(val / 67) * 100}%` }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
 
-                  {sec.subsections?.map((sub, si) => (
-                    <div key={si} style={{ marginTop: sub.title ? 18 : 10 }}>
-                      {sub.title && (
-                        <h3 style={{ fontSize: 15, fontWeight: 650, color: "#1D1D1F", margin: "0 0 10px" }}>{sub.title}</h3>
+                return detailReport.map((sec) => {
+                  const meta = SECTION_META[sec.num] || { icon: Target, color: "#0071E3" };
+                  const Icon = meta.icon;
+
+                  return (
+                    <GlassCard key={sec.num} style={{ padding: "30px 28px" }} data-testid={`report-section-${sec.num}`}>
+                      <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
+                        <div style={{
+                          width: 36, height: 36, borderRadius: 12,
+                          background: `linear-gradient(135deg, ${meta.color}, ${meta.color}CC)`,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          marginRight: 14, flexShrink: 0,
+                          boxShadow: `0 4px 12px ${meta.color}30`,
+                        }}>
+                          <Icon style={{ width: 16, height: 16, color: "#FFF", strokeWidth: 2.2 }} />
+                        </div>
+                        <div>
+                          <span style={{ fontSize: 10, fontWeight: 700, color: meta.color, textTransform: "uppercase", letterSpacing: "0.1em" }}>{String(sec.num).padStart(2, "0")}</span>
+                          <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>{sec.title}</h2>
+                        </div>
+                      </div>
+
+                      {sec.num === 2 && (
+                        <div style={{
+                          display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 20,
+                          background: "rgba(255,255,255,0.7)", borderRadius: 22, padding: "20px 22px",
+                          border: "1px solid rgba(0,0,0,0.05)",
+                        }}>
+                          {renderProfileBars(isLeading ? "Führungskraft" : "Kandidat", kandidat, "#F39200")}
+                          <div style={{ width: 1, background: "rgba(0,0,0,0.06)", margin: "0 4px", alignSelf: "stretch" }} />
+                          {renderProfileBars("Team", team, "#34C759")}
+                        </div>
                       )}
-                      {sub.paragraphs?.map((p, pi) => (
-                        <p key={pi} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.9, margin: "0 0 10px" }} lang="de">{hyphenateText(p)}</p>
-                      ))}
-                      {sub.bullets && (
-                        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 }}>
-                          {sub.bullets.map((b, bi) => {
-                            const isPos = b.startsWith("✓ ");
-                            const isWarn = b.startsWith("⚠ ");
-                            const text = (isPos || isWarn) ? b.slice(2) : b;
-                            const c = isPos ? "#34C759" : isWarn ? "#FF9500" : "#6E6E73";
+
+                      {sec.num === 3 && (
+                        <div style={{
+                          display: "flex", gap: 12, marginBottom: 18, flexWrap: "wrap",
+                        }}>
+                          {[
+                            { label: isLeading ? "Führungskraft" : "Kandidat", value: result.diagnose.kandidatDominanz, color: "#F39200" },
+                            { label: "Verschiebung", value: result.diagnose.kandidatDominanz === result.diagnose.teamDominanz ? "Verstärkung" : "Strukturwechsel", color: result.diagnose.kandidatDominanz === result.diagnose.teamDominanz ? "#34C759" : "#FF9500" },
+                            { label: "Team", value: result.diagnose.teamDominanz, color: "#34C759" },
+                          ].map((item, i) => (
+                            <div key={i} style={{
+                              flex: 1, minWidth: 120, padding: "14px 16px", borderRadius: 16,
+                              background: `linear-gradient(135deg, ${item.color}08, ${item.color}03)`,
+                              border: `1px solid ${item.color}15`,
+                              textAlign: "center",
+                            }}>
+                              <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>{item.label}</p>
+                              <p style={{ fontSize: 15, fontWeight: 700, color: item.color, margin: 0 }}>{item.value}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {sec.num === 5 && (
+                        <div style={{
+                          display: "flex", gap: 8, marginBottom: 18,
+                        }}>
+                          {[
+                            { label: "Normal", icon: CheckCircle, color: "#34C759", bg: "rgba(52,199,89,0.08)" },
+                            { label: "Kontrollierter Stress", icon: Activity, color: "#FF9500", bg: "rgba(255,149,0,0.08)" },
+                            { label: "Unkontrollierter Stress", icon: Flame, color: "#FF3B30", bg: "rgba(255,59,48,0.08)" },
+                          ].map((phase, i) => (
+                            <div key={i} style={{
+                              flex: 1, padding: "10px 12px", borderRadius: 14, background: phase.bg,
+                              display: "flex", alignItems: "center", gap: 8, border: `1px solid ${phase.color}15`,
+                            }}>
+                              <phase.icon style={{ width: 14, height: 14, color: phase.color, strokeWidth: 2.2, flexShrink: 0 }} />
+                              <span style={{ fontSize: 11, fontWeight: 600, color: phase.color }}>{phase.label}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {sec.num === 6 && sec.subsections && (
+                        <div style={{
+                          position: "relative", paddingLeft: 24, marginBottom: 16,
+                          borderLeft: "3px solid linear-gradient(180deg, #34C759, #0071E3, #5856D6)",
+                        }}>
+                          <div style={{ position: "absolute", left: -2, top: 0, bottom: 0, width: 3, borderRadius: 2, background: "linear-gradient(180deg, #34C759, #0071E3, #5856D6)" }} />
+                          {sec.subsections.map((phase, pi) => {
+                            const phaseColors = ["#34C759", "#0071E3", "#5856D6"];
+                            const phaseIcons = [Target, Zap, Award];
+                            const PhIcon = phaseIcons[pi] || Target;
+                            const pColor = phaseColors[pi] || "#0071E3";
                             return (
-                              <div key={bi} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                                {isPos ? (
-                                  <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                    <CheckCircle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
-                                  </div>
-                                ) : isWarn ? (
-                                  <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                    <AlertTriangle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
-                                  </div>
-                                ) : (
-                                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: c, marginTop: 7, flexShrink: 0, opacity: 0.5 }} />
-                                )}
-                                <span style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.7 }} lang="de">{hyphenateText(text)}</span>
+                              <div key={pi} style={{ marginBottom: pi < sec.subsections!.length - 1 ? 20 : 0, position: "relative" }}>
+                                <div style={{
+                                  position: "absolute", left: -33, top: 2,
+                                  width: 20, height: 20, borderRadius: "50%",
+                                  background: pColor, display: "flex", alignItems: "center", justifyContent: "center",
+                                  boxShadow: `0 2px 8px ${pColor}40`,
+                                }}>
+                                  <PhIcon style={{ width: 10, height: 10, color: "#FFF", strokeWidth: 2.5 }} />
+                                </div>
+                                <h4 style={{ fontSize: 14, fontWeight: 700, color: pColor, margin: "0 0 6px" }}>{phase.title}</h4>
+                                {phase.paragraphs?.map((p, ppi) => (
+                                  <p key={ppi} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: "0 0 8px" }} lang="de">{hyphenateText(p)}</p>
+                                ))}
+                                {phase.bullets && renderBullets(phase.bullets)}
                               </div>
                             );
                           })}
                         </div>
                       )}
-                      {sub.highlight && (
+
+                      {(sec.num === 7 || sec.num === 8) && sec.bullets && (
                         <div style={{
-                          padding: "16px 20px", borderRadius: 18, marginTop: 12,
-                          background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(0,113,227,0.02))",
-                          border: "1px solid rgba(0,113,227,0.10)",
-                          borderLeft: "4px solid #0071E3",
+                          background: sec.num === 7 ? "rgba(52,199,89,0.04)" : "rgba(255,149,0,0.04)",
+                          borderRadius: 18, padding: "18px 20px", marginBottom: 12,
+                          border: `1px solid ${sec.num === 7 ? "rgba(52,199,89,0.12)" : "rgba(255,149,0,0.12)"}`,
                         }}>
-                          <p style={{ fontSize: 13.5, color: "#1D1D1F", lineHeight: 1.75, margin: 0, fontWeight: 550 }} lang="de">{hyphenateText(sub.highlight)}</p>
+                          {renderBullets(sec.bullets)}
                         </div>
                       )}
-                    </div>
-                  ))}
-                </GlassCard>
-              ))}
+
+                      {sec.num === 10 && sec.subsections && (
+                        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
+                          {sec.subsections.map((phase, pi) => {
+                            const phaseColors = ["#34C759", "#0071E3", "#5856D6"];
+                            const pColor = phaseColors[pi] || "#0071E3";
+                            return (
+                              <div key={pi} style={{
+                                flex: 1, minWidth: 200, borderRadius: 18, padding: "18px 18px 14px",
+                                background: `linear-gradient(135deg, ${pColor}06, ${pColor}02)`,
+                                border: `1px solid ${pColor}15`,
+                              }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                                  <div style={{
+                                    width: 24, height: 24, borderRadius: 8,
+                                    background: `${pColor}15`, display: "flex", alignItems: "center", justifyContent: "center",
+                                  }}>
+                                    <span style={{ fontSize: 11, fontWeight: 800, color: pColor }}>{pi + 1}</span>
+                                  </div>
+                                  <h4 style={{ fontSize: 13, fontWeight: 700, color: pColor, margin: 0 }}>{phase.title}</h4>
+                                </div>
+                                {phase.paragraphs?.map((p, ppi) => (
+                                  <p key={ppi} style={{ fontSize: 12, color: "#48484A", lineHeight: 1.7, margin: "0 0 6px" }} lang="de">{hyphenateText(p)}</p>
+                                ))}
+                                {phase.bullets && (
+                                  <div style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: 6 }}>
+                                    {phase.bullets.slice(0, 5).map((b, bi) => (
+                                      <div key={bi} style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
+                                        <div style={{ width: 4, height: 4, borderRadius: "50%", background: pColor, marginTop: 6, flexShrink: 0, opacity: 0.5 }} />
+                                        <span style={{ fontSize: 11.5, color: "#3A3A3C", lineHeight: 1.6 }}>{b}</span>
+                                      </div>
+                                    ))}
+                                    {phase.bullets.length > 5 && (
+                                      <span style={{ fontSize: 11, color: "#8E8E93", fontStyle: "italic", paddingLeft: 10 }}>+{phase.bullets.length - 5} weitere</span>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {sec.num === 11 && (
+                        <div style={{
+                          display: "flex", alignItems: "center", gap: 16, padding: "16px 20px",
+                          borderRadius: 18, marginBottom: 16,
+                          background: `linear-gradient(135deg, ${tl.fill}08, ${tl.fill}03)`,
+                          border: `1px solid ${tl.fill}18`,
+                        }}>
+                          <div style={{
+                            width: 48, height: 48, borderRadius: 16,
+                            background: `linear-gradient(135deg, ${tl.fill}20, ${tl.fill}08)`,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            boxShadow: `0 4px 16px ${tl.fill}20`,
+                          }}>
+                            <TrafficLightDot tl={tdResult.trafficLight} />
+                          </div>
+                          <div>
+                            <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 2px" }}>Gesamtbewertung</p>
+                            <p style={{ fontSize: 16, fontWeight: 700, color: tl.fill, margin: 0 }}>{tl.label}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {![6, 7, 8, 10].includes(sec.num) && sec.paragraphs && sec.paragraphs.length > 0 && (() => {
+                        const first = sec.paragraphs[0];
+                        const rest = sec.paragraphs.slice(1);
+                        return (
+                          <>
+                            <div style={{
+                              padding: "16px 20px", borderRadius: 18,
+                              background: `linear-gradient(135deg, ${meta.color}0A, ${meta.color}04)`,
+                              border: `1px solid ${meta.color}15`,
+                              display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14,
+                            }}>
+                              <div style={{
+                                width: 28, height: 28, borderRadius: 9, flexShrink: 0,
+                                background: `${meta.color}14`, display: "flex", alignItems: "center", justifyContent: "center",
+                              }}>
+                                <Lightbulb style={{ width: 14, height: 14, color: meta.color, strokeWidth: 2 }} />
+                              </div>
+                              <p style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.75, margin: 0, fontWeight: 450 }} lang="de">{hyphenateText(first)}</p>
+                            </div>
+                            {rest.map((p, i) => (
+                              <p key={i} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.9, margin: "0 0 10px" }} lang="de">{hyphenateText(p)}</p>
+                            ))}
+                          </>
+                        );
+                      })()}
+
+                      {(sec.num === 7 || sec.num === 8) && sec.paragraphs?.map((p, i) => (
+                        <p key={i} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.9, margin: "0 0 10px" }} lang="de">{hyphenateText(p)}</p>
+                      ))}
+
+                      {![7, 8].includes(sec.num) && sec.bullets && (
+                        <div style={{ marginTop: 6, marginBottom: 12 }}>
+                          {renderBullets(sec.bullets)}
+                        </div>
+                      )}
+
+                      {sec.num !== 6 && sec.num !== 10 && sec.subsections?.map((sub, si) => (
+                        <div key={si} style={{ marginTop: sub.title ? 18 : 10 }}>
+                          {sub.title && (
+                            <h3 style={{ fontSize: 15, fontWeight: 650, color: "#1D1D1F", margin: "0 0 10px" }}>{sub.title}</h3>
+                          )}
+                          {sub.paragraphs?.map((p, pi) => (
+                            <p key={pi} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.9, margin: "0 0 10px" }} lang="de">{hyphenateText(p)}</p>
+                          ))}
+                          {sub.bullets && <div style={{ marginBottom: 10 }}>{renderBullets(sub.bullets)}</div>}
+                          {sub.highlight && (
+                            <div style={{
+                              padding: "16px 20px", borderRadius: 18, marginTop: 12,
+                              background: `linear-gradient(135deg, ${meta.color}08, ${meta.color}03)`,
+                              border: `1px solid ${meta.color}12`,
+                              borderLeft: `4px solid ${meta.color}`,
+                            }}>
+                              <p style={{ fontSize: 13.5, color: "#1D1D1F", lineHeight: 1.75, margin: 0, fontWeight: 550 }} lang="de">{hyphenateText(sub.highlight)}</p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </GlassCard>
+                  );
+                });
+              })()}
             </>
           ) : (
             <>
