@@ -400,36 +400,6 @@ export default function Teamdynamik() {
             </div>
           </div>
 
-          <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 18, marginBottom: 20 }}>
-            <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Abteilung / Funktionsbereich</p>
-            <div style={{ position: "relative" }}>
-              <select
-                value={departmentType}
-                onChange={e => setDepartmentType(e.target.value as DepartmentType)}
-                data-testid="select-department"
-                style={{
-                  width: "100%", maxWidth: 340, padding: "10px 36px 10px 14px",
-                  borderRadius: 10, border: "1px solid rgba(0,0,0,0.08)",
-                  background: "rgba(0,0,0,0.02)", fontSize: 13, fontWeight: 500,
-                  color: "#1D1D1F", appearance: "none", cursor: "pointer",
-                  outline: "none",
-                }}
-              >
-                {departmentCatalog.map(d => (
-                  <option key={d.id} value={d.id}>{d.label}</option>
-                ))}
-              </select>
-              <div style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5L6 7.5L9 4.5" stroke="#8E8E93" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </div>
-            </div>
-            {departmentType !== "ALLGEMEIN" && (
-              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 6, maxWidth: 340 }}>
-                Fokus: {getDepartmentInfo(departmentType).focus}
-              </p>
-            )}
-          </div>
-
           <div style={{
             background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
             borderRadius: 20, padding: "18px 22px",
