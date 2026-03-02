@@ -12,7 +12,7 @@ import {
   labelComponent, buildAIPayload, getSystemVariant, getDepartmentCatalog, getDepartmentInfo,
   type TeamDynamikInput, type TeamDynamikResult, type ShiftType, type IntensityLevel,
   type TrafficLight, type ViewMode, type Lever, type DepartmentType, type DepartmentFit,
-  type TeamSize, type StressShift, type LeadershipContext, type RollenDnaContext,
+  type TeamSize, type StressShift, type LeadershipContext, type RollenDnaContext, type DominanceType,
   type LeadershipLever, type IntegrationPhase, type ComponentChanceRisk,
 } from "@/lib/teamdynamik-engine";
 import { leaderTeamMatchFull } from "@/lib/leader-team-match-engine";
@@ -335,8 +335,9 @@ export default function Teamdynamik() {
   });
   const [teamSize, setTeamSize] = useState<TeamSize>("MITTEL");
   const [departmentType, setDepartmentType] = useState<DepartmentType>("ALLGEMEIN");
-  const [levers] = useState<Lever[]>(getDefaultLevers());
+  const [levers, setLevers] = useState<Lever[]>(getDefaultLevers());
   const [viewMode, setViewMode] = useState<ViewMode>("HR");
+  const [activeTab, setActiveTab] = useState<"chancen" | "risiken" | "integration">("chancen");
   const [reportText, setReportText] = useState<string | null>(null);
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState(false);
@@ -519,6 +520,46 @@ export default function Teamdynamik() {
             </div>
           </div>
 
+          <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 18, marginBottom: 20, display: "flex", gap: 24, flexWrap: "wrap" }}>
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Abteilung / Funktionsbereich</p>
+              <select value={departmentType} onChange={e => setDepartmentType(e.target.value as DepartmentType)} data-testid="select-department" style={{
+                width: "100%", padding: "9px 12px", borderRadius: 10, fontSize: 12, fontWeight: 500,
+                background: "#fff", border: "1px solid rgba(0,0,0,0.08)", color: "#1D1D1F",
+                cursor: "pointer", outline: "none", appearance: "auto",
+              }}>
+                {departmentCatalog.map(d => (
+                  <option key={d.id} value={d.id}>{d.label}</option>
+                ))}
+              </select>
+              {departmentType !== "ALLGEMEIN" && (
+                <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 6 }}>Fokus: {getDepartmentInfo(departmentType).focus}</p>
+              )}
+            </div>
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Perspektive</p>
+              <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3 }}>
+                {(["CEO", "HR", "TEAMLEITUNG"] as ViewMode[]).map(vm => {
+                  const active = viewMode === vm;
+                  const VIcon = VIEW_LABELS[vm].icon;
+                  return (
+                    <button key={vm} onClick={() => setViewMode(vm)} data-testid={`toggle-view-${vm.toLowerCase()}`} style={{
+                      flex: 1, padding: "8px 8px", borderRadius: 8, fontSize: 11, fontWeight: active ? 700 : 500,
+                      background: active ? "#fff" : "transparent",
+                      boxShadow: active ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                      border: "none", cursor: "pointer",
+                      color: active ? "#0071E3" : "#8E8E93",
+                      display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
+                      transition: "all 200ms ease", whiteSpace: "nowrap",
+                    }}>
+                      <VIcon style={{ width: 12, height: 12 }} /> {VIEW_LABELS[vm].label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
           <div style={{
             background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
             borderRadius: 20, padding: "18px 22px",
@@ -541,6 +582,11 @@ export default function Teamdynamik() {
                 </div>
                 <p style={{ fontSize: 11, color: "#8E8E93", margin: "3px 0 0" }} data-testid="text-headline">{hyphenateText(result.headline)}</p>
               </div>
+            </div>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <KPITile label="Transformationsscore" value={result.scores.TS} sub={INTENSITY_LABELS[result.intensityLevel]} color={result.scores.TS > 50 ? "#FF3B30" : result.scores.TS > 25 ? "#FF9500" : "#34C759"} />
+              <KPITile label="Verteilungslücke" value={`${result.scores.DG}`} sub={`DC: ${result.scores.DC}`} />
+              <KPITile label="Konfliktindex" value={result.scores.CI} sub={`Steuerung: ${INTENSITY_LABELS[result.steeringNeed]}`} color={result.scores.CI > 50 ? "#FF3B30" : result.scores.CI > 25 ? "#FF9500" : "#34C759"} />
             </div>
             {(() => {
               const tlKey = result.trafficLight;
@@ -719,6 +765,233 @@ export default function Teamdynamik() {
               );
             })()}
           </div>
+        </GlassCard>
+
+        {/* ═══ SPANNUNGSMATRIX ═══ */}
+        {(() => {
+          const vc = getViewContent(viewMode, result, result.activeMatrixCell);
+          if (!vc.showMatrix && viewMode === "CEO") return null;
+          const domLabels: { key: DominanceType; label: string; short: string; color: string }[] = [
+            { key: "IMPULSIV", label: "Impulsiv", short: "IMP", color: COLORS.imp },
+            { key: "INTUITIV", label: "Intuitiv", short: "INT", color: COLORS.int },
+            { key: "ANALYTISCH", label: "Analytisch", short: "ANA", color: COLORS.ana },
+          ];
+          const personDom = result.dominancePerson;
+          const teamDom = result.dominanceTeam;
+          return (
+            <GlassCard style={{ marginBottom: 20 }} data-testid="spannungsmatrix-section">
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(0,113,227,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Activity style={{ width: 14, height: 14, color: "#0071E3" }} />
+                </div>
+                <div>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.01em" }}>Spannungsmatrix</p>
+                  <p style={{ fontSize: 11, color: "#8E8E93", margin: "2px 0 0" }}>{isLeading ? "Person (Zeile) × Team (Spalte)" : "Team (Zeile) × Person (Spalte)"}</p>
+                </div>
+              </div>
+
+              <div style={{ overflowX: "auto" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "64px 1fr 1fr 1fr", gridTemplateRows: "32px repeat(3, 1fr)", gap: 4, minWidth: 400 }}>
+                  <div />
+                  {domLabels.map(d => (
+                    <div key={d.key} style={{ display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: d.color, padding: "4px 0" }} data-testid={`matrix-col-${d.short.toLowerCase()}`}>
+                      {d.label}
+                    </div>
+                  ))}
+
+                  {domLabels.map(row => (
+                    <>
+                      <div key={`row-${row.key}`} style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", paddingRight: 8, fontSize: 11, fontWeight: 700, color: row.color }}>
+                        {row.label}
+                      </div>
+                      {domLabels.map(col => {
+                        const cellId = isLeading ? `${row.short}-${col.short}` : `${row.short}-${col.short}`;
+                        const cell = getMatrixCellById(cellId);
+                        const isActive = result.activeMatrixCell.id === cellId;
+                        const isRowMatch = (isLeading ? personDom : teamDom) === row.key;
+                        const isColMatch = (isLeading ? teamDom : personDom) === col.key;
+                        return (
+                          <div key={cellId} data-testid={`matrix-cell-${cellId.toLowerCase()}`} style={{
+                            borderRadius: 10, padding: "10px 8px",
+                            background: isActive ? "rgba(0,113,227,0.08)" : (isRowMatch || isColMatch) ? "rgba(0,0,0,0.02)" : "rgba(0,0,0,0.01)",
+                            border: isActive ? "2px solid rgba(0,113,227,0.3)" : "1px solid rgba(0,0,0,0.05)",
+                            cursor: "default", transition: "all 200ms ease",
+                            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, minHeight: 60,
+                          }}>
+                            <span style={{ fontSize: 11, fontWeight: isActive ? 700 : 500, color: isActive ? "#0071E3" : "#3A3A3C", textAlign: "center", lineHeight: 1.3 }}>
+                              {cell?.label || cellId}
+                            </span>
+                            <span style={{ fontSize: 9, color: "#8E8E93", textAlign: "center", lineHeight: 1.2 }}>
+                              {cell?.micro || ""}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ marginTop: 16, display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }} data-testid="matrix-detail">
+                <div style={{ width: 4, flexShrink: 0, background: tl.fill }} />
+                <div style={{ flex: 1, padding: "14px 16px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F" }}>{result.activeMatrixCell.label}</span>
+                    <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 5, background: "rgba(0,113,227,0.08)", color: "#0071E3" }}>{result.activeMatrixCell.id}</span>
+                  </div>
+                  <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 10px", lineHeight: 1.6, fontWeight: 500 }}>{result.activeMatrixCell.systemlage}</p>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>Alltagswirkung</p>
+                  <p style={{ fontSize: 12, color: "#48484A", margin: "0 0 10px", lineHeight: 1.6 }}>{result.activeMatrixCell.alltag}</p>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>Maßnahmen</p>
+                  <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{result.activeMatrixCell.tun}</p>
+                </div>
+              </div>
+
+              {vc.showInsights && vc.insightSections.length > 0 && (
+                <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 8 }} data-testid="insights-panel">
+                  {vc.insightSections.map((s, i) => (
+                    <div key={i} style={{ display: "flex", borderRadius: 12, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.05)" }}>
+                      <div style={{ width: 3, flexShrink: 0, background: "#0071E3" }} />
+                      <div style={{ flex: 1, padding: "10px 14px" }}>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>{s.title}</p>
+                        <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.5 }}>{s.text}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </GlassCard>
+          );
+        })()}
+
+        {/* ═══ CHANCEN / RISIKEN / INTEGRATION ═══ */}
+        <GlassCard style={{ marginBottom: 20 }} data-testid="actions-section">
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+            <div style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(0,113,227,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Lightbulb style={{ width: 14, height: 14, color: "#0071E3" }} />
+            </div>
+            <div>
+              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Chancen, Risiken & Integrationsplan</p>
+              <p style={{ fontSize: 11, color: "#8E8E93", margin: "2px 0 0" }}>Abgeleitet aus der aktuellen Dynamik-Analyse</p>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, marginBottom: 16 }}>
+            {([
+              { key: "chancen" as const, label: "Chancen", icon: TrendingUp },
+              { key: "risiken" as const, label: "Risiken", icon: AlertTriangle },
+              { key: "integration" as const, label: "Integrationsplan", icon: CalendarDays },
+            ]).map(tab => {
+              const active = activeTab === tab.key;
+              const TIcon = tab.icon;
+              return (
+                <button key={tab.key} onClick={() => setActiveTab(tab.key)} data-testid={`tab-${tab.key}`} style={{
+                  flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: active ? 700 : 500,
+                  background: active ? "#fff" : "transparent",
+                  boxShadow: active ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                  border: "none", cursor: "pointer",
+                  color: active ? "#0071E3" : "#8E8E93",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+                  transition: "all 200ms ease",
+                }}>
+                  <TIcon style={{ width: 12, height: 12 }} /> {tab.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {activeTab === "chancen" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }} data-testid="chancen-list">
+              {result.chances.map((c, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 14px", borderRadius: 12, background: "rgba(52,199,89,0.04)", border: "1px solid rgba(52,199,89,0.1)" }}>
+                  <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: "rgba(52,199,89,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Check style={{ width: 11, height: 11, color: "#34C759", strokeWidth: 2.5 }} />
+                  </div>
+                  <span style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.6 }}>{c}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {activeTab === "risiken" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }} data-testid="risiken-list">
+              {result.risks.map((r, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 14px", borderRadius: 12, background: "rgba(255,59,48,0.04)", border: "1px solid rgba(255,59,48,0.1)" }}>
+                  <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: "rgba(255,59,48,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <AlertTriangle style={{ width: 11, height: 11, color: "#FF3B30", strokeWidth: 2.5 }} />
+                  </div>
+                  <span style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.6 }}>{r}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {activeTab === "integration" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }} data-testid="integration-plan-list">
+              {result.integrationPlan.map((phase, i) => {
+                const phaseColors = ["#0071E3", "#5856D6", "#34C759", "#FF9500"];
+                return (
+                  <div key={i} style={{ borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }} data-testid={`integration-phase-${i}`}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderBottom: "1px solid rgba(0,0,0,0.04)", background: `${phaseColors[i % phaseColors.length]}08` }}>
+                      <div style={{ width: 22, height: 22, borderRadius: 11, background: phaseColors[i % phaseColors.length], display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <span style={{ fontSize: 10, fontWeight: 800, color: "#fff" }}>{phase.phaseId}</span>
+                      </div>
+                      <div>
+                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{phase.title}</p>
+                        <p style={{ fontSize: 10, color: "#8E8E93", margin: "1px 0 0", fontWeight: 600 }}>{phase.days}</p>
+                      </div>
+                    </div>
+                    <div style={{ padding: "8px 14px" }}>
+                      {phase.actions.map((a, j) => (
+                        <div key={j} style={{ display: "flex", gap: 8, marginBottom: 4 }}>
+                          <div style={{ width: 5, height: 5, borderRadius: 3, background: phaseColors[i % phaseColors.length], marginTop: 5, flexShrink: 0 }} />
+                          <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{a}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {(() => {
+            const vc = getViewContent(viewMode, result, result.activeMatrixCell);
+            if (!vc.showLevers) return null;
+            return (
+              <>
+                <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "18px 0" }} />
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                  <Shield style={{ width: 14, height: 14, color: "#5856D6" }} />
+                  <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Führungshebel</p>
+                  {result.leverEffects.enabledCount > 0 && (
+                    <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 5, background: "rgba(52,199,89,0.08)", color: "#34C759" }}>
+                      {result.leverEffects.enabledCount} aktiv → -{result.leverEffects.reductionLevels} Stufe{result.leverEffects.reductionLevels !== 1 ? "n" : ""}
+                    </span>
+                  )}
+                </div>
+                <p style={{ fontSize: 11, color: "#8E8E93", margin: "-6px 0 12px", lineHeight: 1.4 }}>Aktive Hebel reduzieren den Steuerungsbedarf (2+ = -1 Stufe, 4+ = -2 Stufen)</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }} data-testid="levers-checklist">
+                  {levers.map((lever, i) => (
+                    <label key={lever.id} style={{
+                      display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 14px", borderRadius: 12,
+                      background: lever.enabled ? "rgba(52,199,89,0.04)" : "rgba(0,0,0,0.02)",
+                      border: `1px solid ${lever.enabled ? "rgba(52,199,89,0.15)" : "rgba(0,0,0,0.04)"}`,
+                      cursor: "pointer", transition: "all 200ms ease",
+                    }} data-testid={`lever-check-${lever.id}`}>
+                      <input type="checkbox" checked={lever.enabled} onChange={() => {
+                        setLevers(prev => prev.map((l, li) => li === i ? { ...l, enabled: !l.enabled } : l));
+                      }} style={{ marginTop: 2, accentColor: "#34C759" }} />
+                      <div>
+                        <p style={{ fontSize: 12, fontWeight: 600, color: "#1D1D1F", margin: "0 0 2px" }}>{lever.label}</p>
+                        <p style={{ fontSize: 11, color: "#6E6E73", margin: 0, lineHeight: 1.4 }}>{lever.description}</p>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </>
+            );
+          })()}
         </GlassCard>
 
         {/* ═══ FÜHRUNGSKONTEXT ═══ */}
@@ -1028,16 +1301,17 @@ export default function Teamdynamik() {
 
         {/* ═══ BUTTON: KI-REPORT GENERIEREN ═══ */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
-          <button disabled data-testid="button-generate-report" style={{
+          <button onClick={generateReport} disabled={reportLoading} data-testid="button-generate-report" style={{
             display: "flex", alignItems: "center", gap: 8, padding: "14px 36px", borderRadius: 16,
-            background: "linear-gradient(135deg, #8E8E93, #A1A1A6)", border: "none",
-            color: "#fff", fontSize: 15, fontWeight: 700, cursor: "default",
-            opacity: 0.5,
-            boxShadow: "none",
+            background: reportLoading ? "linear-gradient(135deg, #8E8E93, #A1A1A6)" : "linear-gradient(135deg, #0071E3, #0077ED)",
+            border: "none",
+            color: "#fff", fontSize: 15, fontWeight: 700, cursor: reportLoading ? "default" : "pointer",
+            opacity: reportLoading ? 0.6 : 1,
+            boxShadow: reportLoading ? "none" : "0 4px 16px rgba(0,113,227,0.25)",
             transition: "all 200ms ease", letterSpacing: "-0.01em",
           }}>
-            <FileText style={{ width: 18, height: 18 }} />
-            KI-Report generieren
+            {reportLoading ? <Loader2 style={{ width: 18, height: 18, animation: "spin 1s linear infinite" }} /> : <FileText style={{ width: 18, height: 18 }} />}
+            {reportLoading ? "Report wird erstellt..." : "KI-Report generieren"}
           </button>
         </div>
 

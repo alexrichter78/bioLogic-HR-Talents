@@ -658,6 +658,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
         "bewerbung", "recruiting", "kandidat", "einstellung", "onboarding", "vorstellung", "interview",
         "mitarbeiter", "team", "personal", "hr", "besetzung", "rolle", "profil", "biologic", "biogram",
         "coaching", "beratung", "mentor", "sparring",
+        "stellenanzeige", "anzeige", "jobinserat", "wortsprache", "bildsprache", "marketingrelevant", "recruiting-marketing", "zielgruppe", "ansprache", "formulierung",
         "kündigung", "kuendigung", "trennung", "offboarding", "austritt",
         "motivation", "leistung", "ziel", "delegation", "verantwortung",
         "kultur", "werte", "vertrauen", "zusammenarbeit",
@@ -801,6 +802,43 @@ ONBOARDING-BEGLEITUNG:
   3. 30-90 Tage: Woran erkennt man, ob die Integration gelingt? Welche Warnsignale gibt es je nach Typ?
   4. Gib 2-3 konkrete Maßnahmen pro Phase, die auf die Farbkonstellation zugeschnitten sind.
 - Beispiel: "Ein Roter kommt in ein blaues Team" → "In der ersten Woche wird er Tempo machen wollen, während das Team Prozesse einhalten will. Gib ihm sofort eine Aufgabe mit sichtbarem Ergebnis, aber erkläre ihm vorher die 2-3 wichtigsten Spielregeln des Teams – kurz und direkt, nicht als 20-seitiges Handbuch."
+
+STELLENANZEIGEN & RECRUITING-MARKETING (bioLogic-basierte Anzeigengestaltung):
+- Stellenanzeigen sollten persönlichkeitsorientiert formuliert werden, um die richtigen Kandidaten anzusprechen.
+- Wort- und Bildsprache müssen zum gewünschten bioLogic-Profil passen:
+
+IMPULSIVE (ROTE) KANDIDATEN ANSPRECHEN:
+- Wortsprache: Direkt, ergebnisorientiert, aktionsgeladen. Verben wie "durchsetzen", "umsetzen", "entscheiden", "vorantreiben", "gestalten", "verantworten".
+- Formulierungen: "Sie übernehmen Verantwortung", "Sie treiben Ergebnisse", "Sie entscheiden selbstständig", "Wirkung zeigen", "Tempo machen".
+- Bildsprache: Dynamisch, kraftvoll, klare Kontraste. Einzelperson in Aktion, Zielerreichung, Wettbewerb, Herausforderung.
+- Tonalität: Kurz, prägnant, auf den Punkt. Keine langen Beschreibungen. Bullet Points statt Fließtext.
+- Was vermeiden: Zu viel Harmonie-Sprache, zu detaillierte Prozessbeschreibungen, weiche Formulierungen wie "wir würden uns freuen".
+
+INTUITIVE (GELBE) KANDIDATEN ANSPRECHEN:
+- Wortsprache: Beziehungsorientiert, wertschätzend, teamfokussiert. Worte wie "gemeinsam", "zusammen", "Team", "Austausch", "gestalten", "entwickeln", "begleiten".
+- Formulierungen: "Sie arbeiten in einem engagierten Team", "Zusammenarbeit auf Augenhöhe", "Wir schätzen Ihre Ideen", "Teil von etwas Größerem", "Menschen begeistern".
+- Bildsprache: Teambilder, lachende Menschen, Zusammenarbeit, warme Farben, offene Atmosphäre, gemeinsame Aktivitäten.
+- Tonalität: Einladend, persönlich, emotional ansprechend. Unternehmenskultur und Teamgeist hervorheben.
+- Was vermeiden: Rein sachliche Aufzählungen, kalte Fakten ohne menschlichen Bezug, zu hierarchische Sprache.
+
+ANALYTISCHE (BLAUE) KANDIDATEN ANSPRECHEN:
+- Wortsprache: Sachlich, strukturiert, faktenbezogen. Worte wie "analysieren", "optimieren", "Qualität", "Präzision", "Expertise", "Standard", "Methode", "Prozess".
+- Formulierungen: "Klar definierte Verantwortungsbereiche", "strukturiertes Arbeitsumfeld", "nachvollziehbare Prozesse", "fundierte Entscheidungsgrundlagen", "fachliche Exzellenz".
+- Bildsprache: Ordnung, Struktur, Daten, Grafiken, aufgeräumte Arbeitsplätze, professionelle Settings, klare Linienführung.
+- Tonalität: Nüchtern, professionell, detailliert. Aufgaben, Anforderungen und Benefits klar auflisten.
+- Was vermeiden: Zu emotionale Sprache, vage Beschreibungen, Übertreibungen, unstrukturierte Fließtexte.
+
+STELLENANZEIGEN-AUFBAU nach bioLogic:
+1. Stellenanalyse durchführen: Welches bioLogic-Profil braucht die Rolle tatsächlich? (aus der Rollen-DNA)
+2. Zielgruppen-Ansprache: Wort- und Bildsprache auf das gewünschte Profil abstimmen.
+3. Authentizität: Die Anzeige muss zur tatsächlichen Rolle und Unternehmenskultur passen – keine Versprechen, die nicht eingehalten werden.
+4. Kanäle: Unterschiedliche Persönlichkeitstypen nutzen unterschiedliche Plattformen und reagieren auf unterschiedliche Formate.
+5. Fehlbesetzungen vermeiden: Eine persönlichkeitsorientierte Anzeige filtert bereits vor – es bewerben sich verstärkt Kandidaten, die zur Rolle passen.
+
+KOMMUNIKATIONSEMPFEHLUNGEN FÜR BEWERBUNGSGESPRÄCHE:
+- Impulsive (Rote) Kandidaten: Kurze, direkte Fragen. Fokus auf Ergebnisse und Erfolge. Nicht zu viele Details abfragen. Entscheidungskompetenz testen.
+- Intuitive (Gelbe) Kandidaten: Beziehung aufbauen vor Sachfragen. Nach Teamarbeit und Zusammenarbeitserfahrungen fragen. Wohlfühlatmosphäre schaffen.
+- Analytische (Blaue) Kandidaten: Strukturiertes Interview mit klarem Ablauf. Fachfragen in der Tiefe. Zeit zum Nachdenken geben. Fakten und Zahlen als Gesprächsbasis.
 
 KONFLIKTMUSTER ERKENNEN:
 - Wenn der Nutzer einen wiederkehrenden Konflikt beschreibt, identifiziere das bioLogic-Muster dahinter:

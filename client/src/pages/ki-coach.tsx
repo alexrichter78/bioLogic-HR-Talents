@@ -84,6 +84,16 @@ const EXAMPLE_PROMPTS: { category: string; prompts: string[] }[] = [
     ],
   },
   {
+    category: "Stellenanzeigen & Recruiting-Marketing",
+    prompts: [
+      "Ich suche einen Vertriebsleiter (rotdominant). Welche Wort- und Bildsprache sollte meine Stellenanzeige verwenden, um genau diesen Typ anzusprechen?",
+      "Unsere Stellenanzeige für einen HR-Business-Partner spricht nur analytische Bewerber an. Wie formuliere ich sie um, damit sich auch gelbdominante Kandidaten angesprochen fühlen?",
+      "Wir suchen einen Qualitätsmanager (blaudominant). Gib mir 5 konkrete Formulierungen für die Stellenanzeige, die diesen Typ anziehen.",
+      "Ich möchte eine Stellenanzeige für eine Projektleitung schreiben, die ein rot-gelbes Profil braucht. Wie kombiniere ich beide Ansprachen?",
+      "Welche typischen Fehler machen Unternehmen in Stellenanzeigen, die dazu führen, dass sich die falschen bioLogic-Typen bewerben?",
+    ],
+  },
+  {
     category: "Stammdaten-Kontext",
     prompts: [
       "Schau dir mein bioLogic-Profil an und sag mir: Wo sind meine blinden Flecken als Führungskraft?",
