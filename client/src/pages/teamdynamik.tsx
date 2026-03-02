@@ -275,6 +275,36 @@ function ReportChapter({ section, chapterIndex }: { section: ParsedSection; chap
   );
 }
 
+function ReadOnlyBars({ triad }: { triad: Triad }) {
+  const bars: { label: string; value: number; color: string }[] = [
+    { label: "Impulsiv", value: triad.impulsiv, color: COLORS.imp },
+    { label: "Intuitiv", value: triad.intuitiv, color: COLORS.int },
+    { label: "Analytisch", value: triad.analytisch, color: COLORS.ana },
+  ];
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      {bars.map(b => {
+        const widthPct = (b.value / MAX_BIO) * 100;
+        return (
+          <div key={b.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 12, color: "#6E6E73", width: 62, flexShrink: 0 }}>{b.label}</span>
+            <div style={{ flex: 1, height: 24, borderRadius: 6, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
+              <div style={{
+                width: b.value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 5), 100)}%`,
+                height: "100%", borderRadius: 6, background: b.color,
+                display: "flex", alignItems: "center", paddingLeft: 8,
+                minWidth: b.value === 0 ? 0 : 40,
+              }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(b.value)} %</span>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function Teamdynamik() {
   const [teamName, setTeamName] = useState("Projektteam");
   const [teamProfile, setTeamProfile] = useState<Triad>({ impulsiv: 30, intuitiv: 50, analytisch: 20 });
@@ -288,6 +318,7 @@ export default function Teamdynamik() {
     } catch {}
     return { impulsiv: 33, intuitiv: 34, analytisch: 33 };
   });
+  const [sollProfile, setSollProfile] = useState<Triad | null>(null);
   const [isLeading, setIsLeading] = useState(() => {
     try {
       const completed = localStorage.getItem("rollenDnaCompleted");
@@ -322,6 +353,10 @@ export default function Teamdynamik() {
       const raw = localStorage.getItem("rollenDnaState");
       if (!raw) return;
       const state = JSON.parse(raw);
+      const p = state.profil || state.profile;
+      if (p && p.impulsiv != null && p.intuitiv != null && p.analytisch != null) {
+        setSollProfile({ impulsiv: p.impulsiv, intuitiv: p.intuitiv, analytisch: p.analytisch });
+      }
       if (!state.beruf) return;
       const taetigkeiten = (state.taetigkeiten || []).map((t: any) => t.name || t.label || "").filter((n: string) => n);
       const ERFOLGSFOKUS_LABELS = [
@@ -403,6 +438,17 @@ export default function Teamdynamik() {
             <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 4px" }}>bioLogic TeamCheck</p>
             <h1 style={{ fontSize: 24, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">Teamanalyse</h1>
           </div>
+
+          {sollProfile && (
+            <div style={{ marginBottom: 20, padding: "16px 20px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }} data-testid="soll-profile-card">
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                <BarChart3 style={{ width: 16, height: 16, color: "#6E6E73" }} />
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Gesamtprofil der Stellenanforderung</p>
+              </div>
+              <ReadOnlyBars triad={sollProfile} />
+              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Soll-Profil aus Rollen-DNA (nicht editierbar)</p>
+            </div>
+          )}
 
           <div style={{ display: "flex", gap: 24, marginBottom: 24, flexWrap: "wrap" }}>
             <div style={{ flex: 1, minWidth: 280 }}>
