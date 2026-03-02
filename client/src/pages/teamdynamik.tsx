@@ -12,6 +12,7 @@ import {
   labelComponent, buildAIPayload, getSystemVariant, getDepartmentCatalog, getDepartmentInfo,
   type TeamDynamikInput, type TeamDynamikResult, type ShiftType, type IntensityLevel,
   type TrafficLight, type ViewMode, type Lever, type DepartmentType, type DepartmentFit,
+  type TeamSize, type StressShift,
 } from "@/lib/teamdynamik-engine";
 import { leaderTeamMatchFull } from "@/lib/leader-team-match-engine";
 
@@ -287,6 +288,7 @@ export default function Teamdynamik() {
     return { impulsiv: 33, intuitiv: 34, analytisch: 33 };
   });
   const [isLeading, setIsLeading] = useState(true);
+  const [teamSize, setTeamSize] = useState<TeamSize>("MITTEL");
   const [departmentType, setDepartmentType] = useState<DepartmentType>("ALLGEMEIN");
   const [levers] = useState<Lever[]>(getDefaultLevers());
   const [viewMode, setViewMode] = useState<ViewMode>("HR");
@@ -300,8 +302,8 @@ export default function Teamdynamik() {
   const departmentCatalog = useMemo(() => getDepartmentCatalog(), []);
 
   const input: TeamDynamikInput = useMemo(() => ({
-    teamName, teamProfile, membersCount: 8, personProfile, isLeading, departmentType, levers, steeringOverride: null,
-  }), [teamName, teamProfile, personProfile, isLeading, departmentType, levers]);
+    teamName, teamProfile, teamSize, personProfile, isLeading, departmentType, levers, steeringOverride: null,
+  }), [teamName, teamProfile, teamSize, personProfile, isLeading, departmentType, levers]);
 
   const result = useMemo(() => computeTeamDynamics(input), [input]);
   const tl = TL_COLORS[result.trafficLight];
@@ -398,6 +400,27 @@ export default function Teamdynamik() {
                 <Users style={{ width: 12, height: 12 }} /> Teammitglied
               </button>
             </div>
+
+            <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "18px 0 10px" }}>Teamgröße</p>
+            <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, maxWidth: 340 }}>
+              {(["KLEIN", "MITTEL", "GROSS"] as TeamSize[]).map(size => {
+                const labels: Record<TeamSize, string> = { KLEIN: "Klein (2–5)", MITTEL: "Mittel (6–12)", GROSS: "Groß (13+)" };
+                const active = teamSize === size;
+                return (
+                  <button key={size} onClick={() => setTeamSize(size)} data-testid={`toggle-size-${size.toLowerCase()}`} style={{
+                    flex: 1, padding: "8px 8px", borderRadius: 8, fontSize: 11, fontWeight: active ? 700 : 500,
+                    background: active ? "#fff" : "transparent",
+                    boxShadow: active ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                    border: "none", cursor: "pointer",
+                    color: active ? "#0071E3" : "#8E8E93",
+                    transition: "all 200ms ease", whiteSpace: "nowrap",
+                  }}>{labels[size]}</button>
+                );
+              })}
+            </div>
+            <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 6, maxWidth: 340 }}>
+              {teamSize === "KLEIN" ? "Kleine Teams: Jede Person hat hohen Einfluss auf die Dynamik." : teamSize === "GROSS" ? "Große Teams: Einzelpersonen verändern die Gesamtdynamik weniger stark." : "Mittlere Teams: Spürbarer, aber begrenzter Einfluss pro Person."}
+            </p>
           </div>
 
           <div style={{
@@ -589,6 +612,58 @@ export default function Teamdynamik() {
                 </div>
               );
             })()}
+          </div>
+        </GlassCard>
+
+        {/* ═══ STRESS-SIMULATION ═══ */}
+        <GlassCard style={{ marginBottom: 20 }} data-testid="stress-section">
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <div style={{ width: 28, height: 28, borderRadius: 8, background: result.stressShift.stabilityRating === "STABIL" ? "rgba(52,199,89,0.08)" : result.stressShift.stabilityRating === "LABIL" ? "rgba(255,149,0,0.08)" : "rgba(255,59,48,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Activity style={{ width: 14, height: 14, color: result.stressShift.stabilityRating === "STABIL" ? "#34C759" : result.stressShift.stabilityRating === "LABIL" ? "#FF9500" : "#FF3B30" }} />
+            </div>
+            <div>
+              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.01em" }}>Stressverhalten der Konstellation</p>
+              <p style={{ fontSize: 11, color: "#8E8E93", margin: "2px 0 0" }}>Wie verändert sich die Dynamik unter Druck?</p>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+            <span style={{
+              fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 6,
+              background: result.stressShift.stabilityRating === "STABIL" ? "rgba(52,199,89,0.1)" : result.stressShift.stabilityRating === "LABIL" ? "rgba(255,149,0,0.1)" : "rgba(255,59,48,0.1)",
+              color: result.stressShift.stabilityRating === "STABIL" ? "#34C759" : result.stressShift.stabilityRating === "LABIL" ? "#FF9500" : "#FF3B30",
+            }} data-testid="badge-stress-stability">
+              {result.stressShift.stabilityRating === "STABIL" ? "Stabil unter Stress" : result.stressShift.stabilityRating === "LABIL" ? "Labil unter Stress" : "Kritisch unter Stress"}
+            </span>
+            <span style={{ fontSize: 11, color: "#8E8E93" }}>Intensität: {result.stressShift.stressIntensity} %</span>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+            {[
+              { label: "Kontrollierter Stress", ts: result.stressShift.controlledTS, delta: result.stressShift.tsDeltaControlled },
+              { label: "Unkontrollierter Stress", ts: result.stressShift.uncontrolledTS, delta: result.stressShift.tsDeltaUncontrolled },
+            ].map((item, idx) => {
+              const deltaColor = item.delta > 2 ? "#FF3B30" : item.delta < -2 ? "#34C759" : "#8E8E93";
+              return (
+                <div key={idx} style={{ background: "rgba(0,0,0,0.02)", borderRadius: 12, padding: "12px 14px", border: "1px solid rgba(0,0,0,0.04)" }} data-testid={`stress-${idx === 0 ? "controlled" : "uncontrolled"}`}>
+                  <p style={{ fontSize: 11, color: "#8E8E93", margin: "0 0 6px", fontWeight: 600 }}>{item.label}</p>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+                    <span style={{ fontSize: 11, color: "#8E8E93" }}>TS:</span>
+                    <span style={{ fontSize: 20, fontWeight: 800, color: "#1D1D1F", letterSpacing: "-0.02em" }}>{item.ts}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: deltaColor }}>
+                      ({item.delta > 0 ? "+" : ""}{item.delta})
+                    </span>
+                  </div>
+                  <div style={{ height: 4, borderRadius: 2, background: "rgba(0,0,0,0.06)", marginTop: 8 }}>
+                    <div style={{ height: 4, borderRadius: 2, width: `${Math.min(100, item.ts)}%`, background: item.ts <= 25 ? "#34C759" : item.ts <= 50 ? "#FF9500" : "#FF3B30", transition: "width 300ms ease" }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 12, padding: "12px 14px", border: "1px solid rgba(0,0,0,0.04)" }}>
+            <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.6 }}>{result.stressShift.summary}</p>
           </div>
         </GlassCard>
 

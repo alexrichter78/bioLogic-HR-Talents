@@ -107,10 +107,12 @@ export type MatrixCell = {
   tun: string;
 };
 
+export type TeamSize = "KLEIN" | "MITTEL" | "GROSS";
+
 export type TeamDynamikInput = {
   teamName: string;
   teamProfile: Triad;
-  membersCount: number;
+  teamSize: TeamSize;
   personProfile: Triad;
   isLeading: boolean;
   departmentType: DepartmentType;
@@ -119,6 +121,20 @@ export type TeamDynamikInput = {
   kpiFocus?: string[];
   levers: Lever[];
   steeringOverride?: string | null;
+};
+
+export type StressShift = {
+  controlledTeam: Triad;
+  uncontrolledTeam: Triad;
+  controlledPerson: Triad;
+  uncontrolledPerson: Triad;
+  stressIntensity: number;
+  controlledTS: number;
+  uncontrolledTS: number;
+  tsDeltaControlled: number;
+  tsDeltaUncontrolled: number;
+  stabilityRating: "STABIL" | "LABIL" | "KRITISCH";
+  summary: string;
 };
 
 export type Scores = {
@@ -167,6 +183,7 @@ export type TeamDynamikResult = {
   risks: string[];
   integrationPlan: { phaseId: string; title: string; days: string; actions: string[] }[];
   departmentFit: DepartmentFit | null;
+  stressShift: StressShift;
 };
 
 const DEFAULT_LEVERS: Lever[] = [
@@ -188,6 +205,13 @@ const MATRIX_CELLS: MatrixCell[] = [
   { id: "ANA-IMP", label: "Struktur vs Tempo", micro: "Gate vs Speed", systemlage: "Führung priorisiert Struktur und Absicherung. Das Team arbeitet umsetzungs- und tempoorientiert.", alltag: "Team empfindet Führung als Bremse. Führung empfindet Team als unstrukturiert. Qualitätsansprüche und Geschwindigkeit kollidieren.", tun: "80/20-Standard festlegen, Entscheidungszeitfenster definieren, klare Priorisierungsregeln für Qualität vs. Tempo." },
   { id: "ANA-INT", label: "Logik vs Beziehung", micro: "Struktur vs Nähe", systemlage: "Führung priorisiert Struktur und Fakten. Das Team arbeitet beziehungs- und konsensorientiert.", alltag: "Entscheidungen werden faktenbasierter, Tempo sinkt kurzfristig. Team nimmt Distanz wahr, Führung nimmt emotionale Dynamik als Störung wahr.", tun: "Entscheidungszeitfenster setzen, 80/20-Standard definieren, Reviews einführen, Beziehungsebene ritualisieren." },
   { id: "ANA-ANA", label: "Stabilitäts-System", micro: "Qualität & Planbarkeit", systemlage: "Führung und Team teilen dieselbe analytische Logik. Struktur, Qualität und Planbarkeit dominieren.", alltag: "Hohe Prozessstabilität und Qualität, aber Risiko bei Innovationsgeschwindigkeit und Flexibilität. Veränderungen werden systematisch verlangsamt.", tun: "Innovationsimpulse bewusst setzen, Entscheidungstempo für Veränderungen definieren, externe Perspektiven einplanen." },
+  { id: "MIX-IMP", label: "Hybrid trifft Tempo", micro: "Flexibel vs Druck", systemlage: "Ausgeglichenes Profil trifft auf tempogetriebenes Umfeld. Fehlende Leitstärke kann bei hohem Umsetzungsdruck zum Engpass werden.", alltag: "Entscheidungen werden situativ statt systematisch getroffen. Das Team erwartet klare Richtung, erhält aber wechselnde Impulse.", tun: "Klare Priorisierungslogik definieren, Entscheidungstempo-Regeln setzen, eine dominante Arbeitsweise als Standard festlegen." },
+  { id: "MIX-INT", label: "Hybrid trifft Beziehung", micro: "Flexibel vs Konsens", systemlage: "Ausgeglichenes Profil trifft auf beziehungsorientiertes Umfeld. Die fehlende klare Handschrift kann als Unsicherheit wahrgenommen werden.", alltag: "Das Team erwartet emotionale Führung und Klarheit. Wechselnde Prioritäten erzeugen Verunsicherung statt Stabilität.", tun: "Beziehungspflege ritualisieren, Kommunikationsregeln festlegen, Verlässlichkeit durch feste Routinen herstellen." },
+  { id: "MIX-ANA", label: "Hybrid trifft Struktur", micro: "Flexibel vs Absicherung", systemlage: "Ausgeglichenes Profil trifft auf strukturorientiertes Umfeld. Fehlende Prozessklarheit kollidiert mit dem Absicherungsbedürfnis des Teams.", alltag: "Das Team erwartet klare Standards und Prozesse. Situative Entscheidungen werden als inkonsequent erlebt.", tun: "Standards und Qualitäts-Gates klar definieren, Entscheidungskriterien festlegen, Prozessrahmen vor Flexibilität stellen." },
+  { id: "IMP-MIX", label: "Tempo trifft Hybrid", micro: "Druck vs Flexibel", systemlage: "Tempo und Durchsetzung treffen auf ein ausgeglichenes Team ohne klare Dominanz. Umsetzungsdruck fehlt ein stabiler Gegenpol.", alltag: "Führungsdruck wird unterschiedlich aufgenommen. Teile des Teams folgen, andere reagieren mit Rückzug oder Widerstand.", tun: "Teamstruktur klären, Rollen und Verantwortungen explizit machen, Entscheidungslogik vereinheitlichen." },
+  { id: "INT-MIX", label: "Beziehung trifft Hybrid", micro: "Konsens vs Flexibel", systemlage: "Beziehungsorientierung trifft auf ein ausgeglichenes Team. Konsenssuche kann bei fehlender Teamstruktur zu Endlosschleifen führen.", alltag: "Abstimmungsrunden dauern länger, weil kein klarer Gegenpol existiert. Entscheidungen werden aufgeschoben.", tun: "Entscheidungsfristen setzen, klare Verantwortlichkeiten definieren, Ergebnisorientierung stärken." },
+  { id: "ANA-MIX", label: "Struktur trifft Hybrid", micro: "Absicherung vs Flexibel", systemlage: "Strukturorientierung trifft auf ein ausgeglichenes Team. Prozessanforderungen können als Übersteuerung wahrgenommen werden.", alltag: "Teile des Teams akzeptieren Strukturvorgaben, andere empfinden sie als Einengung. Inkonsistente Reaktion auf Standards.", tun: "Strukturrahmen klar, aber flexibel gestalten. Entscheidungsautonomie in definierten Grenzen ermöglichen." },
+  { id: "MIX-MIX", label: "Doppelte Hybridlage", micro: "Flexibel trifft Flexibel", systemlage: "Beide Seiten haben kein klares Profil. Entscheidungslogik und Prioritäten wechseln situativ – Vorhersagbarkeit ist gering.", alltag: "Hohe Anpassungsfähigkeit, aber keine stabile Arbeitsweise. Richtungswechsel sind häufig, klare Leitplanken fehlen.", tun: "Feste Entscheidungsregeln und Standards definieren. Prioritäten regelmäßig reviewen. Klare Verantwortungsstrukturen setzen." },
 ];
 
 function dominanceType(p: Triad): DominanceType {
@@ -225,21 +249,21 @@ function leadershipFactor(isLeading: boolean): number {
   return isLeading ? 15 : 0;
 }
 
-function scaleFactor(n: number): number {
-  if (n < 6) return 0;
-  if (n < 12) return 5;
-  return 10;
+function sizeAmplifier(size: TeamSize): number {
+  if (size === "KLEIN") return 1.20;
+  if (size === "MITTEL") return 1.00;
+  return 0.85;
 }
 
-function transformationScore(DG: number, DC: number, RG: number | null, isLeading: boolean, n: number): number {
+function transformationScore(DG: number, DC: number, RG: number | null, isLeading: boolean, teamSize: TeamSize): number {
   const LF = leadershipFactor(isLeading);
-  const SF = scaleFactor(n);
+  const amp = sizeAmplifier(teamSize);
 
   let TS: number;
   if (RG !== null) {
-    TS = 0.45 * DG + 0.25 * DC + 0.20 * RG + 0.07 * LF + 0.03 * SF;
+    TS = amp * (0.45 * DG + 0.25 * DC + 0.20 * RG) + 0.07 * LF;
   } else {
-    TS = 0.55 * DG + 0.25 * DC + 0.17 * LF + 0.03 * SF;
+    TS = amp * (0.55 * DG + 0.25 * DC) + 0.17 * LF;
   }
 
   return Math.round(Math.min(100, Math.max(0, TS)));
@@ -356,7 +380,7 @@ function trafficLight(st: ShiftType, level: IntensityLevel, steeringNeed: Intens
 }
 
 function matrixCellId(leadDom: DominanceType, teamDom: DominanceType): string {
-  const map: Record<DominanceType, string> = { IMPULSIV: "IMP", INTUITIV: "INT", ANALYTISCH: "ANA", MIX: "INT" };
+  const map: Record<DominanceType, string> = { IMPULSIV: "IMP", INTUITIV: "INT", ANALYTISCH: "ANA", MIX: "MIX" };
   return `${map[leadDom]}-${map[teamDom]}`;
 }
 
@@ -583,6 +607,111 @@ export function getDefaultLevers(): Lever[] {
   return DEFAULT_LEVERS.map(l => ({ ...l }));
 }
 
+const STRESS_K = 8;
+const MAX_BIO = 67;
+
+function clamp(x: number, min = 0, max = MAX_BIO): number {
+  return Math.max(min, Math.min(max, x));
+}
+
+function clamp01(x: number): number {
+  return Math.max(0, Math.min(1, x));
+}
+
+function sortKeysByValueDesc(p: Triad): ComponentKey[] {
+  const keys: ComponentKey[] = ["impulsiv", "intuitiv", "analytisch"];
+  return [...keys].sort((a, b) => p[b] - p[a]);
+}
+
+function stdDev3(a: number, b: number, c: number): number {
+  const m = (a + b + c) / 3;
+  const v = ((a - m) ** 2 + (b - m) ** 2 + (c - m) ** 2) / 3;
+  return Math.sqrt(v);
+}
+
+function estimateStressIntensity(team: Triad, person: Triad): number {
+  const biL = 1 - stdDev3(person.impulsiv, person.intuitiv, person.analytisch) / MAX_BIO;
+  const biT = 1 - stdDev3(team.impulsiv, team.intuitiv, team.analytisch) / MAX_BIO;
+  const unbalance = ((1 - biL) + (1 - biT)) / 2;
+  return clamp01(unbalance);
+}
+
+function applyControlledStressLocal(profile: Triad, intensity: number): Triad {
+  const p = { ...profile };
+  const i = clamp01(intensity);
+  const keys = sortKeysByValueDesc(p);
+  const delta = STRESS_K * i;
+  p[keys[0]] = clamp(p[keys[0]] + delta);
+  p[keys[2]] = clamp(p[keys[2]] - delta);
+  p[keys[1]] = clamp(p[keys[1]] - 0.15 * delta);
+  return p;
+}
+
+function applyUncontrolledStressLocal(profile: Triad, intensity: number): Triad {
+  const p = { ...profile };
+  const i = clamp01(intensity);
+  const delta = STRESS_K * i;
+  const keys = sortKeysByValueDesc(profile);
+  const top1Loss = 0.6 * delta;
+  const lowLoss = 0.2 * delta;
+  p[keys[1]] = clamp(p[keys[1]] + delta);
+  p[keys[0]] = clamp(p[keys[0]] - top1Loss);
+  p[keys[2]] = clamp(p[keys[2]] - lowLoss);
+  return p;
+}
+
+function computeStressShift(team: Triad, person: Triad, normalTS: number, isLeading: boolean, teamSize: TeamSize, roleSollEnabled: boolean, roleSoll: Triad | null): StressShift {
+  const intensity = estimateStressIntensity(team, person);
+
+  const cTeam = applyControlledStressLocal(team, intensity);
+  const cPerson = applyControlledStressLocal(person, intensity);
+  const uTeam = applyUncontrolledStressLocal(team, intensity);
+  const uPerson = applyUncontrolledStressLocal(person, intensity);
+
+  const cDG = distributionGap(cTeam, cPerson);
+  const cDC = dominanceClash(dominanceType(cTeam), dominanceType(cPerson));
+  const cRG = roleGap(roleSollEnabled, roleSoll, cPerson);
+  const controlledTS = transformationScore(cDG, cDC, cRG, isLeading, teamSize);
+
+  const uDG = distributionGap(uTeam, uPerson);
+  const uDC = dominanceClash(dominanceType(uTeam), dominanceType(uPerson));
+  const uRG = roleGap(roleSollEnabled, roleSoll, uPerson);
+  const uncontrolledTS = transformationScore(uDG, uDC, uRG, isLeading, teamSize);
+
+  const deltaC = controlledTS - normalTS;
+  const deltaU = uncontrolledTS - normalTS;
+
+  let stabilityRating: StressShift["stabilityRating"];
+  if (Math.abs(deltaC) <= 5 && Math.abs(deltaU) <= 8) {
+    stabilityRating = "STABIL";
+  } else if (Math.abs(deltaU) > 15 || (deltaU > 0 && uncontrolledTS > 50)) {
+    stabilityRating = "KRITISCH";
+  } else {
+    stabilityRating = "LABIL";
+  }
+
+  const directionC = deltaC > 2 ? "steigt" : deltaC < -2 ? "sinkt" : "bleibt stabil";
+  const directionU = deltaU > 2 ? "steigt" : deltaU < -2 ? "sinkt" : "bleibt stabil";
+
+  let summary: string;
+  if (stabilityRating === "STABIL") {
+    summary = `Unter Stress bleibt die Konstellation stabil. Kontrolliert: TS ${directionC} (${deltaC > 0 ? "+" : ""}${deltaC}), unkontrolliert: TS ${directionU} (${deltaU > 0 ? "+" : ""}${deltaU}).`;
+  } else if (stabilityRating === "KRITISCH") {
+    summary = `Unter unkontrolliertem Stress verschlechtert sich die Dynamik deutlich. TS ${directionU} um ${Math.abs(deltaU)} Punkte auf ${uncontrolledTS}. Klare Eskalationsregeln und Stressmonitoring sind zwingend erforderlich.`;
+  } else {
+    summary = `Unter Stress verändert sich die Dynamik spürbar. Kontrolliert: TS ${directionC} (${deltaC > 0 ? "+" : ""}${deltaC}), unkontrolliert: TS ${directionU} (${deltaU > 0 ? "+" : ""}${deltaU}). Proaktive Steuerung empfohlen.`;
+  }
+
+  return {
+    controlledTeam: cTeam, uncontrolledTeam: uTeam,
+    controlledPerson: cPerson, uncontrolledPerson: uPerson,
+    stressIntensity: Math.round(intensity * 100),
+    controlledTS, uncontrolledTS,
+    tsDeltaControlled: deltaC, tsDeltaUncontrolled: deltaU,
+    stabilityRating, summary,
+  };
+}
+
 export function computeTeamDynamics(input: TeamDynamikInput): TeamDynamikResult {
   const team = normalizeTriad(input.teamProfile);
   const person = normalizeTriad(input.personProfile);
@@ -599,7 +728,7 @@ export function computeTeamDynamics(input: TeamDynamikInput): TeamDynamikResult 
   const DC = dominanceClash(domT, domP);
   const RG = roleGap(!!input.roleSoll?.enabled, roleSoll, person);
 
-  const TS = transformationScore(DG, DC, RG, input.isLeading, input.membersCount);
+  const TS = transformationScore(DG, DC, RG, input.isLeading, input.teamSize);
   const level = intensityLevel(TS);
   const CI = conflictIndex(TS, DC);
 
@@ -613,6 +742,8 @@ export function computeTeamDynamics(input: TeamDynamikInput): TeamDynamikResult 
   const activeCell = MATRIX_CELLS.find(c => c.id === cellId) || MATRIX_CELLS[4];
 
   const deptFit = computeDepartmentFit(input.teamProfile, input.personProfile, input.departmentType, input.isLeading);
+
+  const stressShift = computeStressShift(team, person, TS, input.isLeading, input.teamSize, !!input.roleSoll?.enabled, roleSoll);
 
   return {
     dominanceTeam: domT,
@@ -635,6 +766,7 @@ export function computeTeamDynamics(input: TeamDynamikInput): TeamDynamikResult 
     risks: buildRisks(st, domP, domT, input.isLeading),
     integrationPlan: buildIntegrationPlan(st, input.isLeading),
     departmentFit: deptFit,
+    stressShift,
   };
 }
 
@@ -742,7 +874,7 @@ export function buildAIPayload(input: TeamDynamikInput, result: TeamDynamikResul
   return {
     context: {
       team_name: input.teamName,
-      members_count: input.membersCount,
+      team_size: input.teamSize,
       is_leading: input.isLeading,
       person_role: input.isLeading ? "Führungskraft" : "Teammitglied",
       ...(deptPayload ? { department: deptPayload } : {}),
