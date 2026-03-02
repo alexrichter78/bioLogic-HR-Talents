@@ -168,6 +168,29 @@ export type DepartmentFit = {
   contextNote: string;
 };
 
+export type LeadershipLever = {
+  title: string;
+  description: string;
+  priority: "hoch" | "mittel" | "niedrig";
+};
+
+export type IntegrationPhase = {
+  phaseId: string;
+  title: string;
+  days: string;
+  focus: string;
+  actions: string[];
+};
+
+export type ComponentChanceRisk = {
+  component: string;
+  personValue: number;
+  teamValue: number;
+  delta: number;
+  chance: string;
+  risk: string;
+};
+
 export type LeadershipContext = {
   personLabel: string;
   personStrengths: string;
@@ -177,6 +200,9 @@ export type LeadershipContext = {
   coreChallenge: string;
   coreChance: string;
   actionFocus: string;
+  leadershipLevers: LeadershipLever[];
+  integrationPlan30: IntegrationPhase[];
+  componentChancesRisks: ComponentChanceRisk[];
   roleContext: {
     beruf: string;
     bereich: string;
@@ -554,6 +580,186 @@ function buildIntegrationPlan(st: ShiftType, isLeading: boolean): { phaseId: str
   ];
 }
 
+function buildLeadershipLevers(domPerson: DominanceType, domTeam: DominanceType, shiftT: ShiftType): LeadershipLever[] {
+  const levers: LeadershipLever[] = [];
+
+  const comboLevers: Record<string, LeadershipLever[]> = {
+    "IMPULSIV-INTUITIV": [
+      { title: "Beziehungsrituale einführen", description: "Wöchentliche Teamrunde mit persönlichem Check-in. Das Team braucht Beziehungszeit, die die Führungskraft von sich aus nicht priorisiert.", priority: "hoch" },
+      { title: "Entscheidungstempo regulieren", description: "Für Kernentscheidungen bewusst 24h Reflexionszeit einplanen. Das Team muss Tempo akzeptieren, aber die Führungskraft muss Dialog zulassen.", priority: "hoch" },
+      { title: "Delegationsklarheit schaffen", description: "Entscheidungsbefugnisse schriftlich definieren: Was entscheidet die Führungskraft allein, was im Team? Reduziert stille Frustration.", priority: "mittel" },
+      { title: "Feedback-Asymmetrie ausgleichen", description: "Aktiv nach emotionaler Stimmung fragen, nicht nur nach Ergebnissen. Das Team kommuniziert Belastung über Beziehungssignale.", priority: "mittel" },
+    ],
+    "IMPULSIV-ANALYTISCH": [
+      { title: "80/20-Qualitätsstandard definieren", description: "Gemeinsam festlegen, welche Prozesse 100% Qualität brauchen und wo 80% reichen. Verhindert Überkontrolle und Tempoverlust.", priority: "hoch" },
+      { title: "Entscheidungszeitfenster setzen", description: "Maximale Entscheidungsdauer pro Thema definieren. Das Team braucht Analysezeit, die Führungskraft will Geschwindigkeit.", priority: "hoch" },
+      { title: "Priorisierung visualisieren", description: "Kanban oder ähnliches Tool einführen: Das Team sieht Prioritäten, die Führungskraft sieht Fortschritt. Reduziert Nachfragen.", priority: "mittel" },
+      { title: "Review-Rhythmus mit Zeitlimit", description: "Feste Review-Termine mit klarem Zeitrahmen. Das Team bekommt Qualitätsraum, die Führungskraft behält das Tempo.", priority: "mittel" },
+    ],
+    "INTUITIV-IMPULSIV": [
+      { title: "Entscheidungsfristen verbindlich machen", description: "Das Team erwartet schnelle Ansagen. Konsenssuche als Führungsstil wird als Zögern interpretiert. Klare Deadlines setzen.", priority: "hoch" },
+      { title: "Ergebnisorientierung sichtbar integrieren", description: "Jedes Meeting mit konkretem Ergebnis beenden. Das Team misst Führung an Output, nicht an Prozessqualität.", priority: "hoch" },
+      { title: "Eskalationswege definieren", description: "Wann wird diskutiert, wann entscheidet die Führungskraft allein? Klare Regeln verhindern Blockaden und Frust.", priority: "mittel" },
+      { title: "Erfolge sichtbar machen", description: "Quick Wins dokumentieren und kommunizieren. Stärkt die Akzeptanz der Führungskraft im ergebnisorientierten Team.", priority: "mittel" },
+    ],
+    "INTUITIV-ANALYTISCH": [
+      { title: "Prozess-Standards definieren", description: "Das Team erwartet klare Vorgaben, nicht Gesprächsangebote. Verbindliche Prozesse für Kernthemen etablieren.", priority: "hoch" },
+      { title: "Entscheidungslogik klären", description: "Wann wird im Konsens entschieden, wann per Vorgabe? Das Team braucht Vorhersehbarkeit, die Führungskraft Flexibilität.", priority: "hoch" },
+      { title: "Review-Format standardisieren", description: "Feste Struktur für Rückmeldungen: Kennzahlen + Feedback. Das Team will Daten, die Führungskraft will Dialog.", priority: "mittel" },
+      { title: "Beziehung über Kompetenz aufbauen", description: "Im analytischen Team entsteht Vertrauen über fachliche Qualität. Beziehungsangebote erst nach bewiesener Kompetenz.", priority: "mittel" },
+    ],
+    "ANALYTISCH-IMPULSIV": [
+      { title: "Tempo-Standards balancieren", description: "Nicht alles absichern – klare Bereiche definieren, wo Geschwindigkeit vor Qualität geht. Das Team erwartet Bewegung.", priority: "hoch" },
+      { title: "Kontrollmechanismen reduzieren", description: "Mikromanagement wird als Misstrauen gewertet. Ergebniskontrolle statt Prozesskontrolle einführen.", priority: "hoch" },
+      { title: "Entscheidungsgeschwindigkeit erhöhen", description: "Bei 80% Datenlage entscheiden. Das Team verliert Respekt bei zu langer Analyse. Nachsteuern ist erlaubt.", priority: "mittel" },
+      { title: "Innovation zulassen", description: "Strukturierte Freiräume für Experimente schaffen. Das Team braucht Raum für schnelle Tests ohne Genehmigungsschleifen.", priority: "mittel" },
+    ],
+    "ANALYTISCH-INTUITIV": [
+      { title: "Beziehungsebene ritualisieren", description: "Wöchentliches persönliches Gespräch, nicht nur Sachthemen. Das Team braucht emotionale Anschlussfähigkeit.", priority: "hoch" },
+      { title: "Feedback mit Wärme verbinden", description: "Sachliche Rückmeldung wird als Kälte empfunden. Feedback immer mit persönlicher Wertschätzung rahmen.", priority: "hoch" },
+      { title: "Emotionale Signale lesen lernen", description: "Das Team kommuniziert Probleme über Stimmungsschwankungen, nicht über Berichte. Achtsame Beobachtung schulen.", priority: "mittel" },
+      { title: "Teamevents nicht streichen", description: "Informelle Teamzeit ist kein Luxus, sondern Arbeitsinfrastruktur in beziehungsorientierten Teams.", priority: "mittel" },
+    ],
+  };
+
+  const key = `${domPerson}-${domTeam}`;
+  const specific = comboLevers[key];
+
+  if (specific) {
+    levers.push(...specific);
+  } else if (domPerson === domTeam) {
+    levers.push(
+      { title: "Diversität bewusst einbauen", description: "Gleiche Dominanz verstärkt sich. Bewusst Gegenperspektiven einholen, z.B. durch externe Sparringspartner oder Rollen-Rotation.", priority: "hoch" },
+      { title: "Blinde Flecken identifizieren", description: "Gemeinsam benennen, welche Kompetenzen im System fehlen. Entwicklungsmaßnahmen gezielt auf schwächere Bereiche ausrichten.", priority: "hoch" },
+      { title: "Korrektiv-Rolle definieren", description: "Eine Person im Team als bewusstes Korrektiv benennen, die andere Perspektiven einbringt.", priority: "mittel" },
+      { title: "Regelmäßige Systemreflexion", description: "Quartalsweise prüfen, ob einseitige Verstärkung zu Fehlentwicklungen führt.", priority: "niedrig" },
+    );
+  } else {
+    levers.push(
+      { title: "Erwartungen explizit klären", description: "Unterschiedliche Arbeitslogiken brauchen explizite Kommunikation über Prioritäten und Entscheidungswege.", priority: "hoch" },
+      { title: "Erste 30 Tage strukturieren", description: "Klare Meilensteine für die Integration definieren. Ohne Struktur entsteht Unsicherheit auf beiden Seiten.", priority: "hoch" },
+      { title: "Kommunikationsrhythmus festlegen", description: "Feste Formate für Update, Feedback und Eskalation vereinbaren.", priority: "mittel" },
+      { title: "Erfolgsmetriken gemeinsam definieren", description: "Was bedeutet Erfolg für die Führungskraft und was für das Team? Alignment herstellen.", priority: "mittel" },
+    );
+  }
+
+  if (shiftT === "TRANSFORMATION" || shiftT === "SPANNUNG") {
+    levers.push({ title: "Change-Kommunikation etablieren", description: "Bei hoher Systemveränderung: Regelmäßig den Stand kommunizieren, Unsicherheiten adressieren, Widerstände ernst nehmen.", priority: "hoch" });
+  }
+
+  return levers;
+}
+
+function buildIntegrationPlan30(domPerson: DominanceType, domTeam: DominanceType, shiftT: ShiftType): IntegrationPhase[] {
+  const pLabel: Record<DominanceType, string> = {
+    IMPULSIV: "ergebnisorientiert",
+    INTUITIV: "beziehungsorientiert",
+    ANALYTISCH: "strukturorientiert",
+    MIX: "situativ",
+  };
+  const tLabel: Record<DominanceType, string> = {
+    IMPULSIV: "tempoorientierten",
+    INTUITIV: "beziehungsorientierten",
+    ANALYTISCH: "strukturorientierten",
+    MIX: "heterogenen",
+  };
+
+  const needsIntensiveSteering = shiftT === "SPANNUNG" || shiftT === "TRANSFORMATION";
+
+  const phase1Actions: string[] = [
+    "Einzelgespräche mit jedem Teammitglied führen – Erwartungen, Sorgen, aktuelle Prioritäten erfassen.",
+    `Eigenen Führungsstil (${pLabel[domPerson]}) transparent machen: „So arbeite ich, das erwarte ich, das biete ich."`,
+    `Teamlogik (${tLabel[domTeam]}) verstehen: Wie werden Entscheidungen bisher getroffen? Was funktioniert, was nicht?`,
+    "Entscheidungswege und Eskalationsregeln definieren und kommunizieren.",
+  ];
+  if (needsIntensiveSteering) {
+    phase1Actions.push("Veränderungsbereitschaft im Team einschätzen – Widerstände früh identifizieren, nicht ignorieren.");
+  }
+
+  const phase2Actions: string[] = [
+    "Ein priorisiertes Thema auswählen und sichtbar voranbringen – nicht alles gleichzeitig verändern.",
+    "Ersten Feedback-Loop etablieren: Kurzes wöchentliches Teamformat (max. 30 Min).",
+    "Eigene Stärken gezielt einsetzen, um schnelle Wirkung zu zeigen.",
+  ];
+  if (domPerson !== domTeam) {
+    phase2Actions.push(`Brücke bauen: Bewusst Elemente der ${tLabel[domTeam]} Teamlogik in die eigene Führung integrieren.`);
+  }
+  phase2Actions.push("Erste Erfolge dokumentieren und kommunizieren – Akzeptanz entsteht über Wirkung.");
+  if (needsIntensiveSteering) {
+    phase2Actions.push("Widerstände adressieren: Nicht umgehen, sondern ansprechen. Klarheit schafft Vertrauen.");
+  }
+
+  const phase3Actions: string[] = [
+    "Reflexion: Was funktioniert, was nicht? Ehrliche Selbsteinschätzung und Team-Feedback einholen.",
+    "Übersteuerung vermeiden – Kontrollgrad auf das notwendige Maß zurückfahren.",
+    "Teamdynamik evaluieren: Hat sich das Zusammenspiel stabilisiert oder gibt es weiterhin Reibung?",
+    "Steuerungsmaßnahmen aus Phase 1-2 verstetigen oder anpassen.",
+    "30-Tage-Bilanz ziehen: Integration bewertet, nächste Quartals-Ziele definieren.",
+  ];
+  if (needsIntensiveSteering) {
+    phase3Actions.push("Transformationsfortschritt bewerten: Ist die Richtung klar? Braucht es externe Unterstützung?");
+  }
+
+  return [
+    { phaseId: "P1", title: "Ankommen & Verstehen", days: "Tag 1–10", focus: "Die Führungskraft lernt das System kennen, baut erste Beziehungen auf und klärt Erwartungen.", actions: phase1Actions },
+    { phaseId: "P2", title: "Wirken & Steuern", days: "Tag 11–20", focus: "Erste sichtbare Wirkung erzeugen, Führungslogik etablieren, Konflikte proaktiv adressieren.", actions: phase2Actions },
+    { phaseId: "P3", title: "Stabilisieren & Justieren", days: "Tag 21–30", focus: "Ergebnisse sichern, Steuerung anpassen, Integration bewerten.", actions: phase3Actions },
+  ];
+}
+
+function buildComponentChancesRisks(person: Triad, team: Triad): ComponentChanceRisk[] {
+  const components: { key: ComponentKey; label: string }[] = [
+    { key: "impulsiv", label: "Impulsiv (Umsetzung)" },
+    { key: "intuitiv", label: "Intuitiv (Beziehung)" },
+    { key: "analytisch", label: "Analytisch (Struktur)" },
+  ];
+
+  return components.map(({ key, label }) => {
+    const pv = Math.round(person[key]);
+    const tv = Math.round(team[key]);
+    const delta = pv - tv;
+    const absDelta = Math.abs(delta);
+
+    let chance: string;
+    let risk: string;
+
+    if (absDelta <= 5) {
+      chance = `Gleichlauf: Führungskraft und Team teilen die ${label.split(" ")[0]}-Ausprägung. Schnelle Anschlussfähigkeit in diesem Bereich.`;
+      risk = `Kein Korrektiv: Wenn beide Seiten gleich stark (oder schwach) ausgeprägt sind, fehlt die gegenseitige Ergänzung.`;
+    } else if (delta > 5) {
+      if (key === "impulsiv") {
+        chance = `Die Führungskraft bringt mehr Umsetzungsdruck als das Team. Das kann Tempo und Ergebnisorientierung steigern.`;
+        risk = `Das Team empfindet den höheren Umsetzungsdruck als Stress. Ohne Dosierung entstehen Überforderung und Widerstand.`;
+      } else if (key === "intuitiv") {
+        chance = `Die Führungskraft bringt stärkere Beziehungskompetenz als das Team. Das kann Zusammenhalt und Kommunikation verbessern.`;
+        risk = `Das Team erwartet Sachlichkeit und bekommt Beziehungsangebote. Führung wird möglicherweise als „zu weich" wahrgenommen.`;
+      } else {
+        chance = `Die Führungskraft bringt mehr Strukturkompetenz als das Team. Das kann Prozessqualität und Nachvollziehbarkeit erhöhen.`;
+        risk = `Das Team empfindet zusätzliche Struktur als Kontrolle. Innovationsbereitschaft und Eigeninitiative können sinken.`;
+      }
+    } else {
+      if (key === "impulsiv") {
+        chance = `Das Team bringt mehr Umsetzungsstärke mit als die Führungskraft. Die Führungskraft kann sich auf Steuerung und Richtung konzentrieren.`;
+        risk = `Das Team überholt die Führungskraft im Tempo. Entscheidungsautorität wird untergraben, wenn die Führungskraft nicht mithalten kann.`;
+      } else if (key === "intuitiv") {
+        chance = `Das Team hat stärkere Beziehungskompetenz als die Führungskraft. Teamdynamik reguliert sich teilweise selbst.`;
+        risk = `Das Team erwartet emotionale Führung, die die Führungskraft nicht natürlich bietet. Bindungsverlust ist möglich.`;
+      } else {
+        chance = `Das Team bringt mehr Strukturkompetenz mit als die Führungskraft. Prozesse laufen auch ohne starke Kontrolle stabil.`;
+        risk = `Die Führungskraft kann strukturelle Standards des Teams nicht halten. Qualitätserwartungen werden enttäuscht.`;
+      }
+    }
+
+    if (absDelta >= 15) {
+      risk += ` Δ${absDelta} Punkte – kritische Differenz: Gezielte Steuerung in diesem Bereich zwingend notwendig.`;
+    } else if (absDelta >= 10) {
+      risk += ` Δ${absDelta} Punkte – relevante Differenz: Bewusste Steuerung empfehlenswert.`;
+    }
+
+    return { component: label, personValue: pv, teamValue: tv, delta, chance, risk };
+  });
+}
+
 function buildLeadershipContext(domPerson: DominanceType, domTeam: DominanceType, person: Triad, team: Triad, isLeading: boolean, shiftT: ShiftType, rollenDna?: RollenDnaContext | null): LeadershipContext | null {
   if (!isLeading) return null;
 
@@ -783,6 +989,9 @@ function buildLeadershipContext(domPerson: DominanceType, domTeam: DominanceType
     coreChallenge,
     coreChance,
     actionFocus,
+    leadershipLevers: buildLeadershipLevers(domPerson, domTeam, shiftT),
+    integrationPlan30: buildIntegrationPlan30(domPerson, domTeam, shiftT),
+    componentChancesRisks: buildComponentChancesRisks(person, team),
     roleContext: roleCtx,
   };
 }

@@ -13,6 +13,7 @@ import {
   type TeamDynamikInput, type TeamDynamikResult, type ShiftType, type IntensityLevel,
   type TrafficLight, type ViewMode, type Lever, type DepartmentType, type DepartmentFit,
   type TeamSize, type StressShift, type LeadershipContext, type RollenDnaContext,
+  type LeadershipLever, type IntegrationPhase, type ComponentChanceRisk,
 } from "@/lib/teamdynamik-engine";
 import { leaderTeamMatchFull } from "@/lib/leader-team-match-engine";
 
@@ -824,6 +825,107 @@ export default function Teamdynamik() {
                 <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Handlungsfokus</p>
                 <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.6 }}>{result.leadershipContext.actionFocus}</p>
               </div>
+            </div>
+
+            {/* ── Chancen & Risiken der Komponentenstruktur ── */}
+            <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "18px 0" }} />
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+              <BarChart3 style={{ width: 14, height: 14, color: "#5856D6" }} />
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Komponentenstruktur: Chancen & Risiken</p>
+            </div>
+            <p style={{ fontSize: 11, color: "#8E8E93", margin: "-8px 0 12px", lineHeight: 1.4 }}>Vergleich der drei Profilkomponenten zwischen Führungskraft und Team</p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }} data-testid="component-chances-risks">
+              {result.leadershipContext.componentChancesRisks.map((cr, i) => {
+                const compKey = cr.component.includes("Impulsiv") ? "impulsiv" : cr.component.includes("Intuitiv") ? "intuitiv" : "analytisch";
+                const barColor = colorFor(compKey as ComponentKey);
+                const absDelta = Math.abs(cr.delta);
+                return (
+                  <div key={i} style={{ borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }} data-testid={`component-cr-${compKey}`}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", borderBottom: "1px solid rgba(0,0,0,0.04)" }}>
+                      <div style={{ width: 8, height: 8, borderRadius: 4, background: barColor, flexShrink: 0 }} />
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: 0, flex: 1 }}>{cr.component}</p>
+                      <div style={{ display: "flex", gap: 8, fontSize: 11 }}>
+                        <span style={{ color: "#8E8E93" }}>FK: <strong style={{ color: "#1D1D1F" }}>{cr.personValue}</strong></span>
+                        <span style={{ color: "#8E8E93" }}>Team: <strong style={{ color: "#1D1D1F" }}>{cr.teamValue}</strong></span>
+                        <span style={{ fontWeight: 700, color: absDelta >= 15 ? "#FF3B30" : absDelta >= 10 ? "#FF9500" : "#34C759" }}>Δ{absDelta}</span>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex" }}>
+                      <div style={{ flex: 1, padding: "10px 14px", borderRight: "1px solid rgba(0,0,0,0.04)" }}>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#34C759", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Chance</p>
+                        <p style={{ fontSize: 11, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{cr.chance}</p>
+                      </div>
+                      <div style={{ flex: 1, padding: "10px 14px" }}>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#FF3B30", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Risiko</p>
+                        <p style={{ fontSize: 11, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{cr.risk}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* ── Führungshebel ── */}
+            <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "18px 0" }} />
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+              <Zap style={{ width: 14, height: 14, color: "#FF9500" }} />
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Führungshebel</p>
+            </div>
+            <p style={{ fontSize: 11, color: "#8E8E93", margin: "-8px 0 12px", lineHeight: 1.4 }}>Konkrete Steuerungsmaßnahmen für diese Führungskraft-Team-Kombination</p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }} data-testid="leadership-levers-section">
+              {result.leadershipContext.leadershipLevers.map((lever, i) => {
+                const prioColor = lever.priority === "hoch" ? "#FF3B30" : lever.priority === "mittel" ? "#FF9500" : "#34C759";
+                return (
+                  <div key={i} style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }} data-testid={`lever-${i}`}>
+                    <div style={{ width: 4, flexShrink: 0, background: prioColor }} />
+                    <div style={{ flex: 1, padding: "12px 14px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{lever.title}</p>
+                        <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: `${prioColor}15`, color: prioColor, textTransform: "uppercase", letterSpacing: "0.05em" }}>{lever.priority}</span>
+                      </div>
+                      <p style={{ fontSize: 11, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{lever.description}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* ── 30-Tage-Integrationsplan ── */}
+            <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "18px 0" }} />
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+              <CalendarDays style={{ width: 14, height: 14, color: "#0071E3" }} />
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>30-Tage-Integrationsplan</p>
+            </div>
+            <p style={{ fontSize: 11, color: "#8E8E93", margin: "-8px 0 12px", lineHeight: 1.4 }}>Strukturierte Einarbeitung der Führungskraft in das bestehende Team</p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }} data-testid="integration-plan-30">
+              {result.leadershipContext.integrationPlan30.map((phase, i) => {
+                const phaseColors = ["#0071E3", "#5856D6", "#34C759"];
+                return (
+                  <div key={i} style={{ borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }} data-testid={`phase-${phase.phaseId}`}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", borderBottom: "1px solid rgba(0,0,0,0.04)", background: `${phaseColors[i]}08` }}>
+                      <div style={{ width: 24, height: 24, borderRadius: 12, background: phaseColors[i], display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <span style={{ fontSize: 11, fontWeight: 800, color: "#fff" }}>{phase.phaseId}</span>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{phase.title}</p>
+                        <p style={{ fontSize: 10, color: "#8E8E93", margin: "2px 0 0", fontWeight: 600 }}>{phase.days}</p>
+                      </div>
+                    </div>
+                    <div style={{ padding: "10px 14px" }}>
+                      <p style={{ fontSize: 11, color: "#6E6E73", margin: "0 0 8px", lineHeight: 1.5, fontStyle: "italic" }}>{phase.focus}</p>
+                      {phase.actions.map((action, j) => (
+                        <div key={j} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+                          <div style={{ width: 5, height: 5, borderRadius: 3, background: phaseColors[i], marginTop: 5, flexShrink: 0 }} />
+                          <p style={{ fontSize: 11, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{action}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </GlassCard>
         )}
