@@ -157,6 +157,7 @@ export default function TeamCheck() {
   const [bereich, setBereich] = useState("");
   const [fuehrungstyp, setFuehrungstyp] = useState("Keine");
   const [isLeading, setIsLeading] = useState(true);
+  const [diagnoseTab, setDiagnoseTab] = useState<"profil" | "bewertung">("profil");
 
   useEffect(() => {
     try {
@@ -252,37 +253,55 @@ export default function TeamCheck() {
 
         <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
 
-          {/* SECTION 1: DIAGNOSE */}
+          {/* SECTION 1: DIAGNOSE (with tabs) */}
           <GlassCard data-testid="section-diagnose">
             <SectionHeader num={1} title="DIAGNOSE" icon={BarChart3} />
 
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 20 }}>
-              <ProfileCard title="Rollen-DNA (Soll)" num={1} triad={soll} dominanz={result.diagnose.sollDominanz} color="#0071E3" onChange={setSoll} testIdPrefix="slider-soll" />
-              <ProfileCard title="Kandidatenprofil (Ist)" num={2} triad={kandidat} dominanz={result.diagnose.kandidatDominanz} color="#F39200" onChange={setKandidat} testIdPrefix="slider-kand" />
-              <ProfileCard title="Teamprofil (Ist)" num={3} triad={team} dominanz={result.diagnose.teamDominanz} color="#34C759" onChange={setTeam} testIdPrefix="slider-team" />
+            <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, marginBottom: 22 }}>
+              {([["profil", "Profil"], ["bewertung", "Bewertung"]] as const).map(([key, label]) => {
+                const active = diagnoseTab === key;
+                return (
+                  <button key={key} onClick={() => setDiagnoseTab(key)} data-testid={`tab-diagnose-${key}`} style={{
+                    flex: 1, padding: "9px 14px", borderRadius: 8, fontSize: 12, fontWeight: active ? 700 : 500,
+                    background: active ? "#fff" : "transparent",
+                    boxShadow: active ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                    border: "none", cursor: "pointer",
+                    color: active ? "#1D1D1F" : "#8E8E93",
+                    transition: "all 200ms ease",
+                  }}>{label}</button>
+                );
+              })}
             </div>
 
-            {/* Toggle Führung / Teammitglied */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-              <span style={{ fontSize: 12, color: "#6E6E73" }}>Rolle:</span>
-              <div style={{ display: "flex", borderRadius: 10, overflow: "hidden", border: "1px solid rgba(0,0,0,0.08)" }}>
-                {[true, false].map(val => (
-                  <button key={String(val)}
-                    data-testid={val ? "toggle-leading-yes" : "toggle-leading-no"}
-                    onClick={() => setIsLeading(val)}
-                    style={{
-                      padding: "6px 16px", border: "none", cursor: "pointer",
-                      fontSize: 12, fontWeight: isLeading === val ? 600 : 400,
-                      background: isLeading === val ? "#0071E3" : "transparent",
-                      color: isLeading === val ? "#FFF" : "#6E6E73",
-                    }}
-                  >{val ? "Führung" : "Teammitglied"}</button>
-                ))}
-              </div>
-            </div>
+            {diagnoseTab === "profil" && (
+              <>
+                <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 20 }}>
+                  <ProfileCard title="Rollen-DNA (Soll)" num={1} triad={soll} dominanz={result.diagnose.sollDominanz} color="#0071E3" onChange={setSoll} testIdPrefix="slider-soll" />
+                  <ProfileCard title="Kandidatenprofil (Ist)" num={2} triad={kandidat} dominanz={result.diagnose.kandidatDominanz} color="#F39200" onChange={setKandidat} testIdPrefix="slider-kand" />
+                  <ProfileCard title="Teamprofil (Ist)" num={3} triad={team} dominanz={result.diagnose.teamDominanz} color="#34C759" onChange={setTeam} testIdPrefix="slider-team" />
+                </div>
 
-            {/* Executive Header – Ampel + Headline + Detail */}
-            {(() => {
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ fontSize: 12, color: "#6E6E73" }}>Rolle:</span>
+                  <div style={{ display: "flex", borderRadius: 10, overflow: "hidden", border: "1px solid rgba(0,0,0,0.08)" }}>
+                    {[true, false].map(val => (
+                      <button key={String(val)}
+                        data-testid={val ? "toggle-leading-yes" : "toggle-leading-no"}
+                        onClick={() => setIsLeading(val)}
+                        style={{
+                          padding: "6px 16px", border: "none", cursor: "pointer",
+                          fontSize: 12, fontWeight: isLeading === val ? 600 : 400,
+                          background: isLeading === val ? "#0071E3" : "transparent",
+                          color: isLeading === val ? "#FFF" : "#6E6E73",
+                        }}
+                      >{val ? "Führung" : "Teammitglied"}</button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {diagnoseTab === "bewertung" && (() => {
               const tlKey = tdResult.trafficLight;
               const detail: Record<TrafficLight, { title: string; desc: string; bullets: string[]; recLabel: string; rec: string }> = {
                 RED: {
@@ -321,17 +340,12 @@ export default function TeamCheck() {
               };
               const d = detail[tlKey];
               return (
-                <div style={{
-                  padding: "20px 22px", borderRadius: 18,
-                  background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-                  border: "1px solid rgba(0,0,0,0.06)",
-                  boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
-                }} data-testid="executive-header">
-                  <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
+                <div data-testid="executive-header">
+                  <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
                     <TrafficLightDot tl={tlKey} />
                     <div style={{ flex: 1, minWidth: 140 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                        <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} data-testid="text-team-label">{beruf || "Projektteam"}</span>
+                        <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} data-testid="text-team-label">{beruf || "Projektteam"}</span>
                         <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: tl.bg, color: tl.fill }} data-testid="badge-status">{tl.label}</span>
                       </div>
                       <p style={{ fontSize: 12, color: "#8E8E93", margin: "4px 0 0", lineHeight: 1.5 }} data-testid="text-headline" lang="de">
@@ -340,26 +354,26 @@ export default function TeamCheck() {
                     </div>
                   </div>
 
-                  <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 14 }}>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }} data-testid="detail-title">{d.title}</p>
-                    <p style={{ fontSize: 12, color: "#48484A", margin: "0 0 12px", lineHeight: 1.6 }} lang="de" data-testid="detail-desc">{hyphenateText(d.desc)}</p>
+                  <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 16 }}>
+                    <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }} data-testid="detail-title">{d.title}</p>
+                    <p style={{ fontSize: 13, color: "#48484A", margin: "0 0 16px", lineHeight: 1.65 }} lang="de" data-testid="detail-desc">{hyphenateText(d.desc)}</p>
 
-                    <p style={{ fontSize: 11, fontWeight: 600, color: "#8E8E93", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Was bedeutet das konkret?</p>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
+                    <p style={{ fontSize: 11, fontWeight: 600, color: "#8E8E93", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Was bedeutet das konkret?</p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 18 }}>
                       {d.bullets.map((b, i) => (
                         <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                          <span style={{ color: tl.fill, fontSize: 8, marginTop: 4, flexShrink: 0 }}>●</span>
-                          <span style={{ fontSize: 12, color: "#3A3A3C", lineHeight: 1.55 }}>{b}</span>
+                          <span style={{ color: tl.fill, fontSize: 8, marginTop: 5, flexShrink: 0 }}>●</span>
+                          <span style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.6 }}>{b}</span>
                         </div>
                       ))}
                     </div>
 
                     <div style={{
-                      padding: "10px 14px", borderRadius: 10,
+                      padding: "14px 18px", borderRadius: 12,
                       background: `${tl.fill}08`, border: `1px solid ${tl.fill}15`,
                     }}>
-                      <p style={{ fontSize: 11, fontWeight: 600, color: tl.fill, margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.04em" }} data-testid="rec-label">{d.recLabel}</p>
-                      <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.55 }} data-testid="rec-text">{d.rec}</p>
+                      <p style={{ fontSize: 11, fontWeight: 600, color: tl.fill, margin: "0 0 5px", textTransform: "uppercase", letterSpacing: "0.04em" }} data-testid="rec-label">{d.recLabel}</p>
+                      <p style={{ fontSize: 13, color: "#3A3A3C", margin: 0, lineHeight: 1.6 }} data-testid="rec-text">{d.rec}</p>
                     </div>
                   </div>
                 </div>
