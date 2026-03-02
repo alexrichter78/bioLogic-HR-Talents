@@ -1133,6 +1133,72 @@ export default function TeamCheck() {
             })()}
           </GlassCard>
 
+          {/* ═══ FÜHRUNGSKONTEXT ═══ */}
+          {isLeading && tdResult.leadershipContext && (
+            <GlassCard data-testid="leadership-context-section">
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(0,113,227,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Target style={{ width: 14, height: 14, color: "#0071E3" }} />
+                </div>
+                <div>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.01em" }}>Führungskontext</p>
+                  <p style={{ fontSize: 11, color: "#8E8E93", margin: "2px 0 0" }}>Kann diese Person das Team wirksam führen?</p>
+                </div>
+              </div>
+
+              {(() => {
+                const lc = tdResult.leadershipContext;
+                const personDomColor = tdResult.dominancePerson === "IMPULSIV" ? COLORS.imp : tdResult.dominancePerson === "INTUITIV" ? COLORS.int : tdResult.dominancePerson === "ANALYTISCH" ? COLORS.ana : "#8E8E93";
+                const teamDomColor = tdResult.dominanceTeam === "IMPULSIV" ? COLORS.imp : tdResult.dominanceTeam === "INTUITIV" ? COLORS.int : tdResult.dominanceTeam === "ANALYTISCH" ? COLORS.ana : "#8E8E93";
+                return (<>
+                  <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
+                    <div style={{ flex: 1, minWidth: 200, display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+                      <div style={{ width: 4, flexShrink: 0, background: personDomColor }} />
+                      <div style={{ flex: 1, padding: "12px 14px" }}>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Führungskraft</p>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{lc.personLabel}</p>
+                        <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{lc.personStrengths}</p>
+                      </div>
+                    </div>
+                    <div style={{ flex: 1, minWidth: 200, display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+                      <div style={{ width: 4, flexShrink: 0, background: teamDomColor }} />
+                      <div style={{ flex: 1, padding: "12px 14px" }}>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Team</p>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{lc.teamLabel}</p>
+                        <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{lc.teamCharacter}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginBottom: 12 }}>
+                    <div style={{ width: 4, flexShrink: 0, background: tl.fill }} />
+                    <div style={{ flex: 1, padding: "14px 16px" }}>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Passung</p>
+                      <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.6 }}>{lc.fitSummary}</p>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                    <div style={{ flex: 1, minWidth: 200, display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+                      <div style={{ width: 4, flexShrink: 0, background: "#FF9500" }} />
+                      <div style={{ flex: 1, padding: "12px 14px" }}>
+                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Kernrisiko</p>
+                        <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{lc.coreChallenge}</p>
+                      </div>
+                    </div>
+                    <div style={{ flex: 1, minWidth: 200, display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+                      <div style={{ width: 4, flexShrink: 0, background: "#34C759" }} />
+                      <div style={{ flex: 1, padding: "12px 14px" }}>
+                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Kernchance</p>
+                        <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{lc.coreChance}</p>
+                      </div>
+                    </div>
+                  </div>
+                </>);
+              })()}
+            </GlassCard>
+          )}
+
           {/* SECTIONS 2–6: Tabbed Detail Card */}
           <GlassCard data-testid="section-detail-tabs">
             <div style={{ display: "flex", gap: 3, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, marginBottom: 26 }}>
