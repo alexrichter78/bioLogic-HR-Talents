@@ -374,53 +374,57 @@ export default function Teamdynamik() {
             </div>
           </div>
 
-          <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 18, marginBottom: 20 }}>
-            <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Rolle der neuen Person</p>
-            <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, maxWidth: 340 }}>
-              <button onClick={() => setIsLeading(true)} data-testid="toggle-leading-yes" style={{
-                flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: isLeading ? 700 : 500,
-                background: isLeading ? "#fff" : "transparent",
-                boxShadow: isLeading ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
-                border: "none", cursor: "pointer",
-                color: isLeading ? "#0071E3" : "#8E8E93",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
-                transition: "all 200ms ease",
-              }}>
-                <Briefcase style={{ width: 12, height: 12 }} /> Führung
-              </button>
-              <button onClick={() => setIsLeading(false)} data-testid="toggle-leading-no" style={{
-                flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: !isLeading ? 700 : 500,
-                background: !isLeading ? "#fff" : "transparent",
-                boxShadow: !isLeading ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
-                border: "none", cursor: "pointer",
-                color: !isLeading ? "#0071E3" : "#8E8E93",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
-                transition: "all 200ms ease",
-              }}>
-                <Users style={{ width: 12, height: 12 }} /> Teammitglied
-              </button>
+          <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 18, marginBottom: 20, display: "flex", gap: 24, flexWrap: "wrap" }}>
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Rolle der neuen Person</p>
+              <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3 }}>
+                <button onClick={() => setIsLeading(true)} data-testid="toggle-leading-yes" style={{
+                  flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: isLeading ? 700 : 500,
+                  background: isLeading ? "#fff" : "transparent",
+                  boxShadow: isLeading ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                  border: "none", cursor: "pointer",
+                  color: isLeading ? "#0071E3" : "#8E8E93",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+                  transition: "all 200ms ease",
+                }}>
+                  <Briefcase style={{ width: 12, height: 12 }} /> Führung
+                </button>
+                <button onClick={() => setIsLeading(false)} data-testid="toggle-leading-no" style={{
+                  flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: !isLeading ? 700 : 500,
+                  background: !isLeading ? "#fff" : "transparent",
+                  boxShadow: !isLeading ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                  border: "none", cursor: "pointer",
+                  color: !isLeading ? "#0071E3" : "#8E8E93",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+                  transition: "all 200ms ease",
+                }}>
+                  <Users style={{ width: 12, height: 12 }} /> Teammitglied
+                </button>
+              </div>
             </div>
 
-            <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "18px 0 10px" }}>Teamgröße</p>
-            <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, maxWidth: 340 }}>
-              {(["KLEIN", "MITTEL", "GROSS"] as TeamSize[]).map(size => {
-                const labels: Record<TeamSize, string> = { KLEIN: "Klein (2–5)", MITTEL: "Mittel (6–12)", GROSS: "Groß (13+)" };
-                const active = teamSize === size;
-                return (
-                  <button key={size} onClick={() => setTeamSize(size)} data-testid={`toggle-size-${size.toLowerCase()}`} style={{
-                    flex: 1, padding: "8px 8px", borderRadius: 8, fontSize: 11, fontWeight: active ? 700 : 500,
-                    background: active ? "#fff" : "transparent",
-                    boxShadow: active ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
-                    border: "none", cursor: "pointer",
-                    color: active ? "#0071E3" : "#8E8E93",
-                    transition: "all 200ms ease", whiteSpace: "nowrap",
-                  }}>{labels[size]}</button>
-                );
-              })}
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Teamgröße</p>
+              <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3 }}>
+                {(["KLEIN", "MITTEL", "GROSS"] as TeamSize[]).map(size => {
+                  const labels: Record<TeamSize, string> = { KLEIN: "Klein (2–5)", MITTEL: "Mittel (6–12)", GROSS: "Groß (13+)" };
+                  const active = teamSize === size;
+                  return (
+                    <button key={size} onClick={() => setTeamSize(size)} data-testid={`toggle-size-${size.toLowerCase()}`} style={{
+                      flex: 1, padding: "8px 8px", borderRadius: 8, fontSize: 11, fontWeight: active ? 700 : 500,
+                      background: active ? "#fff" : "transparent",
+                      boxShadow: active ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                      border: "none", cursor: "pointer",
+                      color: active ? "#0071E3" : "#8E8E93",
+                      transition: "all 200ms ease", whiteSpace: "nowrap",
+                    }}>{labels[size]}</button>
+                  );
+                })}
+              </div>
+              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 6 }}>
+                {teamSize === "KLEIN" ? "Kleine Teams: Jede Person hat hohen Einfluss auf die Dynamik." : teamSize === "GROSS" ? "Große Teams: Einzelpersonen verändern die Gesamtdynamik weniger stark." : "Mittlere Teams: Spürbarer, aber begrenzter Einfluss pro Person."}
+              </p>
             </div>
-            <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 6, maxWidth: 340 }}>
-              {teamSize === "KLEIN" ? "Kleine Teams: Jede Person hat hohen Einfluss auf die Dynamik." : teamSize === "GROSS" ? "Große Teams: Einzelpersonen verändern die Gesamtdynamik weniger stark." : "Mittlere Teams: Spürbarer, aber begrenzter Einfluss pro Person."}
-            </p>
           </div>
 
           <div style={{
