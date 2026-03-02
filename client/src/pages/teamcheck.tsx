@@ -949,25 +949,6 @@ export default function TeamCheck() {
           </div>
         </div>
 
-        {/* ═══ STATUS BANNER ═══ */}
-        <div style={{
-          padding: "18px 24px", borderRadius: 16, marginBottom: 24,
-          background: `linear-gradient(135deg, ${tl.fill}10, ${tl.fill}04)`,
-          border: `1px solid ${tl.fill}20`,
-          display: "flex", alignItems: "center", gap: 16,
-        }} data-testid="status-banner">
-          <TrafficLightAmpel tl={tdResult.trafficLight} />
-          <div style={{ flex: 1 }}>
-            <p style={{ fontSize: 18, fontWeight: 750, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }} data-testid="banner-role">{beruf}</p>
-            <p style={{ fontSize: 13, color: "#6E6E73", margin: "2px 0 0", fontWeight: 500 }}>{rolleLabel}</p>
-          </div>
-          <div style={{
-            padding: "6px 16px", borderRadius: 10,
-            background: `${tl.fill}12`, border: `1px solid ${tl.fill}25`,
-          }}>
-            <span style={{ fontSize: 14, fontWeight: 700, color: tl.fill }} data-testid="banner-status">{tl.label}</span>
-          </div>
-        </div>
 
         <h1 style={{ fontSize: 28, fontWeight: 800, color: "#1D1D1F", margin: "0 0 8px", letterSpacing: "-0.03em" }} data-testid="page-title">
           Detailanalyse: {rolleLabel} · {beruf}
