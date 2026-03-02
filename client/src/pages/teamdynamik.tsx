@@ -12,7 +12,7 @@ import {
   labelComponent, buildAIPayload, getSystemVariant, getDepartmentCatalog, getDepartmentInfo,
   type TeamDynamikInput, type TeamDynamikResult, type ShiftType, type IntensityLevel,
   type TrafficLight, type ViewMode, type Lever, type DepartmentType, type DepartmentFit,
-  type TeamSize, type StressShift, type LeadershipContext,
+  type TeamSize, type StressShift, type LeadershipContext, type RollenDnaContext,
 } from "@/lib/teamdynamik-engine";
 import { leaderTeamMatchFull } from "@/lib/leader-team-match-engine";
 
@@ -299,11 +299,33 @@ export default function Teamdynamik() {
   const [copied, setCopied] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
 
+  const [rollenDna, setRollenDna] = useState<RollenDnaContext | null>(null);
+
+  useEffect(() => {
+    try {
+      const completed = localStorage.getItem("rollenDnaCompleted");
+      if (completed !== "true") return;
+      const raw = localStorage.getItem("rollenDnaState");
+      if (!raw) return;
+      const state = JSON.parse(raw);
+      if (!state.beruf) return;
+      const taetigkeiten = (state.taetigkeiten || []).map((t: any) => t.name || t.label || "").filter((n: string) => n);
+      setRollenDna({
+        beruf: state.beruf,
+        bereich: state.bereich || "",
+        fuehrungstyp: state.fuehrung || "Keine",
+        aufgabencharakter: state.aufgabencharakter || "",
+        arbeitslogik: state.arbeitslogik || "",
+        taetigkeiten,
+      });
+    } catch {}
+  }, []);
+
   const departmentCatalog = useMemo(() => getDepartmentCatalog(), []);
 
   const input: TeamDynamikInput = useMemo(() => ({
-    teamName, teamProfile, teamSize, personProfile, isLeading, departmentType, levers, steeringOverride: null,
-  }), [teamName, teamProfile, teamSize, personProfile, isLeading, departmentType, levers]);
+    teamName, teamProfile, teamSize, personProfile, isLeading, departmentType, levers, steeringOverride: null, rollenDna,
+  }), [teamName, teamProfile, teamSize, personProfile, isLeading, departmentType, levers, rollenDna]);
 
   const result = useMemo(() => computeTeamDynamics(input), [input]);
   const tl = TL_COLORS[result.trafficLight];
@@ -692,7 +714,50 @@ export default function Teamdynamik() {
               </div>
             </div>
 
-            <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+            {result.leadershipContext.roleContext && (
+              <>
+                <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "16px 0" }} />
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                  <Briefcase style={{ width: 14, height: 14, color: "#0071E3" }} />
+                  <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Rollenkontext: {result.leadershipContext.roleContext.beruf}</p>
+                  {result.leadershipContext.roleContext.bereich && (
+                    <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 5, background: "rgba(0,113,227,0.08)", color: "#0071E3" }}>{result.leadershipContext.roleContext.bereich}</span>
+                  )}
+                </div>
+
+                <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginBottom: 10 }} data-testid="role-fit-card">
+                  <div style={{ width: 4, flexShrink: 0, background: "#0071E3" }} />
+                  <div style={{ flex: 1, padding: "12px 14px" }}>
+                    <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Rollenpassung</p>
+                    <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.6 }}>{result.leadershipContext.roleContext.roleFitStatement}</p>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginBottom: 10 }} data-testid="role-risk-card">
+                  <div style={{ width: 4, flexShrink: 0, background: "#FF9500" }} />
+                  <div style={{ flex: 1, padding: "12px 14px" }}>
+                    <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Rollenspezifisches Risiko</p>
+                    <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{result.leadershipContext.roleContext.roleRisk}</p>
+                  </div>
+                </div>
+
+                {result.leadershipContext.roleContext.keyTasks.length > 0 && (
+                  <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginBottom: 10 }} data-testid="role-tasks-card">
+                    <div style={{ width: 4, flexShrink: 0, background: "#8E8E93" }} />
+                    <div style={{ flex: 1, padding: "12px 14px" }}>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>Kerntätigkeiten der Rolle</p>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                        {result.leadershipContext.roleContext.keyTasks.map((t, i) => (
+                          <span key={i} style={{ fontSize: 11, padding: "4px 10px", borderRadius: 8, background: "rgba(0,0,0,0.04)", color: "#3A3A3C", whiteSpace: "nowrap" }}>{t}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginTop: result.leadershipContext.roleContext ? 2 : 0 }}>
               <div style={{ width: 4, flexShrink: 0, background: "#0071E3" }} />
               <div style={{ flex: 1, padding: "14px 16px" }}>
                 <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Handlungsfokus</p>

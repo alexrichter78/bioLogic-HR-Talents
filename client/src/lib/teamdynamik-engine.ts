@@ -109,6 +109,15 @@ export type MatrixCell = {
 
 export type TeamSize = "KLEIN" | "MITTEL" | "GROSS";
 
+export type RollenDnaContext = {
+  beruf: string;
+  bereich: string;
+  fuehrungstyp: string;
+  aufgabencharakter: string;
+  arbeitslogik: string;
+  taetigkeiten: string[];
+};
+
 export type TeamDynamikInput = {
   teamName: string;
   teamProfile: Triad;
@@ -121,6 +130,7 @@ export type TeamDynamikInput = {
   kpiFocus?: string[];
   levers: Lever[];
   steeringOverride?: string | null;
+  rollenDna?: RollenDnaContext | null;
 };
 
 export type StressShift = {
@@ -166,6 +176,16 @@ export type LeadershipContext = {
   coreChallenge: string;
   coreChance: string;
   actionFocus: string;
+  roleContext: {
+    beruf: string;
+    bereich: string;
+    fuehrungstyp: string;
+    aufgabencharakter: string;
+    arbeitslogik: string;
+    roleFitStatement: string;
+    roleRisk: string;
+    keyTasks: string[];
+  } | null;
 };
 
 export type TeamDynamikResult = {
@@ -527,7 +547,7 @@ function buildIntegrationPlan(st: ShiftType, isLeading: boolean): { phaseId: str
   ];
 }
 
-function buildLeadershipContext(domPerson: DominanceType, domTeam: DominanceType, person: Triad, team: Triad, isLeading: boolean, shiftT: ShiftType): LeadershipContext | null {
+function buildLeadershipContext(domPerson: DominanceType, domTeam: DominanceType, person: Triad, team: Triad, isLeading: boolean, shiftT: ShiftType, rollenDna?: RollenDnaContext | null): LeadershipContext | null {
   if (!isLeading) return null;
 
   const personTraits: Record<DominanceType, { label: string; strengths: string }> = {
@@ -632,6 +652,62 @@ function buildLeadershipContext(domPerson: DominanceType, domTeam: DominanceType
     actionFocus = pair.action;
   }
 
+  let roleCtx: LeadershipContext["roleContext"] = null;
+
+  if (rollenDna && rollenDna.beruf) {
+    const beruf = rollenDna.beruf;
+    const bereich = rollenDna.bereich;
+    const fuehrungstyp = rollenDna.fuehrungstyp;
+    const aufgabencharakter = rollenDna.aufgabencharakter;
+    const arbeitslogik = rollenDna.arbeitslogik;
+    const keyTasks = rollenDna.taetigkeiten.slice(0, 5);
+
+    const arbeitslogikMap: Record<string, string> = {
+      "Ergebnis & Umsetzung": "ergebnisorientiert – Geschwindigkeit, Abschlüsse und messbare Resultate stehen im Fokus",
+      "Beziehung & Zusammenarbeit": "beziehungsorientiert – Kommunikation, Teamdynamik und gemeinsame Entscheidungsfindung stehen im Fokus",
+      "Struktur & Analyse": "strukturorientiert – Planung, Qualitätssicherung und systematisches Vorgehen stehen im Fokus",
+    };
+
+    const aufgabenMap: Record<string, string> = {
+      "Operativ": "operativer Fokus",
+      "Strategisch": "strategischer Fokus",
+      "Beides": "operativer und strategischer Fokus",
+    };
+
+    const logikDesc = arbeitslogikMap[arbeitslogik] || `Arbeitslogik: ${arbeitslogik}`;
+    const aufgabenDesc = aufgabenMap[aufgabencharakter] || aufgabencharakter;
+
+    const roleLogikDom: DominanceType = arbeitslogik === "Ergebnis & Umsetzung" ? "IMPULSIV"
+      : arbeitslogik === "Beziehung & Zusammenarbeit" ? "INTUITIV"
+      : arbeitslogik === "Struktur & Analyse" ? "ANALYTISCH" : "MIX";
+
+    let roleFitStatement: string;
+    let roleRisk: string;
+
+    if (roleLogikDom === domPerson) {
+      roleFitStatement = `Die Rolle „${beruf}" verlangt eine ${logikDesc}. Das Profil der Führungskraft passt direkt zu dieser Anforderung – die Kernkompetenzen decken sich mit dem Rollenfokus.`;
+      if (roleLogikDom !== domTeam) {
+        roleRisk = `Die Rolle passt zur Führungskraft, aber das Team arbeitet in einer anderen Logik. Die Führungskraft muss das Team mitnehmen, ohne den Rollenfokus zu verlieren.`;
+      } else {
+        roleRisk = `Führungskraft, Team und Rolle arbeiten in derselben Logik. Risiko: Einseitige Verstärkung ohne Korrektur der blinden Flecken.`;
+      }
+    } else if (roleLogikDom === domTeam) {
+      roleFitStatement = `Die Rolle „${beruf}" verlangt eine ${logikDesc}. Das Team bringt diese Kompetenz mit, aber die Führungskraft arbeitet in einer anderen Logik. Sie muss die Rollenanforderung aktiv steuern, ohne sie selbst natürlich auszufüllen.`;
+      roleRisk = `Die Führungskraft kann die Rollenanforderung nicht aus dem eigenen Profil heraus bedienen. Ohne bewusste Anpassung entsteht eine Steuerungslücke.`;
+    } else {
+      roleFitStatement = `Die Rolle „${beruf}" verlangt eine ${logikDesc}. Weder Führungskraft noch Team bringen diese Kompetenz als Schwerpunkt mit. Das erfordert bewusste Steuerung und klare Prioritätensetzung.`;
+      roleRisk = `Kernkompetenz der Rolle ist weder bei der Führungskraft noch im Team dominant. Ohne externe Unterstützung oder gezielte Entwicklung droht eine strukturelle Lücke.`;
+    }
+
+    const fuehrungsHint = fuehrungstyp !== "Keine"
+      ? ` Die Rolle ist als ${fuehrungstyp}-Führung definiert (${aufgabenDesc}).`
+      : ` Die Rolle hat ${aufgabenDesc}.`;
+
+    roleFitStatement += fuehrungsHint;
+
+    roleCtx = { beruf, bereich, fuehrungstyp, aufgabencharakter, arbeitslogik, roleFitStatement, roleRisk, keyTasks };
+  }
+
   return {
     personLabel: pT.label,
     personStrengths,
@@ -641,6 +717,7 @@ function buildLeadershipContext(domPerson: DominanceType, domTeam: DominanceType
     coreChallenge,
     coreChance,
     actionFocus,
+    roleContext: roleCtx,
   };
 }
 
@@ -896,7 +973,7 @@ export function computeTeamDynamics(input: TeamDynamikInput): TeamDynamikResult 
     integrationPlan: buildIntegrationPlan(st, input.isLeading),
     departmentFit: deptFit,
     stressShift,
-    leadershipContext: buildLeadershipContext(domP, domT, person, team, input.isLeading, st),
+    leadershipContext: buildLeadershipContext(domP, domT, person, team, input.isLeading, st, input.rollenDna),
   };
 }
 
