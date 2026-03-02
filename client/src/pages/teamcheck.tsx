@@ -9,23 +9,36 @@ import {
   type TeamCheckInput, type TeamCheckResult, type UrteilBadge,
   computeTeamCheck,
 } from "@/lib/teamcheck-engine";
+import {
+  computeTeamDynamics, getDefaultLevers,
+  type TrafficLight, type TeamDynamikInput,
+} from "@/lib/teamdynamik-engine";
 import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 const MAX_BIO = 67;
 
+const TL_COLORS: Record<TrafficLight, { bg: string; fill: string; label: string }> = {
+  GREEN: { bg: "rgba(52,199,89,0.08)", fill: "#34C759", label: "Stabil" },
+  YELLOW: { bg: "rgba(255,149,0,0.08)", fill: "#FF9500", label: "Steuerbar" },
+  RED: { bg: "rgba(255,59,48,0.08)", fill: "#FF3B30", label: "Spannungsfeld" },
+};
+
+function TrafficLightDot({ tl }: { tl: TrafficLight }) {
+  return (
+    <div style={{
+      width: 18, height: 18, borderRadius: "50%",
+      background: TL_COLORS[tl].fill,
+      boxShadow: `0 0 10px ${TL_COLORS[tl].fill}40`,
+      flexShrink: 0,
+    }} data-testid="traffic-light-dot" />
+  );
+}
+
 const BADGE_CONFIG: Record<UrteilBadge, { label: string; color: string; bg: string }> = {
   STRATEGISCH_CHANCEN: { label: "Strategisch Chancen", color: "#34C759", bg: "rgba(52,199,89,0.10)" },
   ENTWICKLUNGSFAEHIG: { label: "Entwicklungsfähig", color: "#FF9500", bg: "rgba(255,149,0,0.10)" },
   NO_GO: { label: "No Go", color: "#FF3B30", bg: "rgba(255,59,48,0.10)" },
-};
-
-const VERSCHIEBUNG_COLORS: Record<string, string> = {
-  VERSTAERKUNG: "#34C759",
-  ERGAENZUNG: "#0071E3",
-  REIBUNG: "#FF9500",
-  SPANNUNG: "#FF6B35",
-  TRANSFORMATION: "#FF3B30",
 };
 
 function GlassCard({ children, style, ...props }: { children: React.ReactNode; style?: React.CSSProperties; [k: string]: any }) {
@@ -183,6 +196,21 @@ export default function TeamCheck() {
 
   const result: TeamCheckResult = useMemo(() => computeTeamCheck(input), [input]);
 
+  const tdInput: TeamDynamikInput = useMemo(() => ({
+    teamName: beruf || "Team",
+    teamProfile: team,
+    teamSize: "MITTEL" as const,
+    personProfile: kandidat,
+    isLeading,
+    departmentType: "ALLGEMEIN" as const,
+    levers: getDefaultLevers(),
+    steeringOverride: null,
+    rollenDna: null,
+  }), [team, kandidat, isLeading, beruf]);
+
+  const tdResult = useMemo(() => computeTeamDynamics(tdInput), [tdInput]);
+  const tl = TL_COLORS[tdResult.trafficLight];
+
   const rolleLabel = isLeading ? "Neue Führungskraft" : "Neues Teammitglied";
 
   return (
@@ -253,61 +281,25 @@ export default function TeamCheck() {
               </div>
             </div>
 
-            {/* Dominanzstruktur + Delta */}
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-              <div style={{
-                flex: 1, minWidth: 200, padding: "14px 18px", borderRadius: 14,
-                background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.05)",
-                display: "flex", alignItems: "center", gap: 12,
-              }}>
-                <div style={{
-                  width: 28, height: 28, borderRadius: 8, background: "rgba(0,113,227,0.08)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                }}>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: "#0071E3" }}>D</span>
-                </div>
-                <div>
-                  <p style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", margin: 0, textTransform: "uppercase", letterSpacing: "0.04em" }}>Dominanzstruktur</p>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "2px 0 0" }} data-testid="dominanzstruktur">{result.diagnose.dominanzstruktur}</p>
-                </div>
-              </div>
-              <div style={{
-                padding: "14px 18px", borderRadius: 14,
-                background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.05)",
-                display: "flex", alignItems: "center", gap: 12,
-              }}>
-                <p style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", margin: 0, textTransform: "uppercase" }}>Δ-Wert</p>
-                <p style={{ fontSize: 18, fontWeight: 800, color: "#1D1D1F", margin: 0 }} data-testid="delta-wert">{result.diagnose.deltaWert} Punkte</p>
-              </div>
-            </div>
-
-            {/* Verschiebung */}
+            {/* Executive Header – Ampel + Headline */}
             <div style={{
-              marginTop: 16, padding: "14px 18px", borderRadius: 14,
-              background: `${VERSCHIEBUNG_COLORS[result.diagnose.verschiebung]}08`,
-              border: `1px solid ${VERSCHIEBUNG_COLORS[result.diagnose.verschiebung]}18`,
-              display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap",
-            }} data-testid="verschiebung-bar">
-              <div style={{
-                display: "flex", alignItems: "center", gap: 6,
-              }}>
-                <div style={{
-                  width: 24, height: 24, borderRadius: 7,
-                  background: VERSCHIEBUNG_COLORS[result.diagnose.verschiebung],
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                }}>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: "#FFF" }}>V</span>
+              padding: "16px 20px", borderRadius: 16,
+              background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+              border: "1px solid rgba(0,0,0,0.06)",
+              boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+            }} data-testid="executive-header">
+              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                <TrafficLightDot tl={tdResult.trafficLight} />
+                <div style={{ flex: 1, minWidth: 140 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} data-testid="text-team-label">{beruf || "Projektteam"}</span>
+                    <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: tl.bg, color: tl.fill }} data-testid="badge-status">{tl.label}</span>
+                  </div>
+                  <p style={{ fontSize: 12, color: "#8E8E93", margin: "4px 0 0", lineHeight: 1.5 }} data-testid="text-headline" lang="de">
+                    {hyphenateText(tdResult.headline)}
+                  </p>
                 </div>
-                <span style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase" }}>Verschiebung</span>
               </div>
-              <span style={{
-                padding: "4px 14px", borderRadius: 8, fontSize: 12, fontWeight: 700,
-                color: "#FFF", background: VERSCHIEBUNG_COLORS[result.diagnose.verschiebung],
-              }} data-testid="verschiebung-badge">{result.diagnose.verschiebungLabel}</span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: "#48484A" }}>{result.diagnose.intensitaet}</span>
-              <p style={{ fontSize: 12, color: "#6E6E73", margin: 0, flex: "1 1 100%", marginTop: 4, lineHeight: 1.5 }} lang="de">
-                {hyphenateText(result.diagnose.verschiebungBeschreibung)}
-              </p>
             </div>
           </GlassCard>
 
