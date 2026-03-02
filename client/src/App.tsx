@@ -9,7 +9,6 @@ import RollenDNA from "@/pages/rollen-dna";
 import Analyse from "@/pages/analyse";
 import Bericht from "@/pages/bericht";
 import JobCheck from "@/pages/jobcheck";
-import Teamdynamik from "@/pages/teamdynamik";
 import KICoach from "@/pages/ki-coach";
 import TeamCheck from "@/pages/teamcheck";
 
@@ -21,7 +20,6 @@ function Router() {
       <Route path="/analyse" component={Analyse} />
       <Route path="/bericht" component={Bericht} />
       <Route path="/jobcheck" component={JobCheck} />
-      <Route path="/teamdynamik" component={Teamdynamik} />
       <Route path="/teamcheck" component={TeamCheck} />
       <Route path="/ki-coach" component={KICoach} />
       <Route component={NotFound} />
