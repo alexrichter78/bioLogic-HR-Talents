@@ -252,45 +252,120 @@ export default function TeamCheck() {
           </button>
         </div>
 
-        <div ref={reportRef} style={{ maxWidth: 780, margin: "0 auto", padding: "40px 24px 80px" }}>
+        <div ref={reportRef} style={{ maxWidth: 780, margin: "0 auto", padding: "40px 24px 80px", display: "flex", flexDirection: "column", gap: 20 }}>
           {reportView === "detail" ? (
             <>
-              <div style={{ textAlign: "center", marginBottom: 40 }}>
-                <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 6px" }}>bioLogic Systemanalyse</p>
-                <h1 style={{ fontSize: 26, fontWeight: 800, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.03em" }}>DETAILBERICHT</h1>
-                <p style={{ fontSize: 14, color: "#6E6E73", margin: 0 }}>Systemische Analyse zur Besetzung – {beruf}</p>
-              </div>
+              {/* Hero Header */}
+              <GlassCard style={{ padding: "36px 32px 30px", textAlign: "center", position: "relative", overflow: "hidden" }} data-testid="report-header">
+                <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(52,170,220,0.04))", pointerEvents: "none" }} />
+                <div style={{ position: "absolute", bottom: -20, left: -20, width: 80, height: 80, borderRadius: "50%", background: "linear-gradient(135deg, rgba(0,113,227,0.04), rgba(52,170,220,0.03))", pointerEvents: "none" }} />
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  background: "linear-gradient(135deg, rgba(0,113,227,0.1), rgba(52,170,220,0.06))",
+                  borderRadius: 20, padding: "5px 14px", marginBottom: 14,
+                }}>
+                  <FileText style={{ width: 12, height: 12, color: "#0071E3" }} />
+                  <span style={{ fontSize: 10, fontWeight: 700, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.12em" }}>Entscheidungsgrundlage</span>
+                </div>
+                <h1 style={{ fontSize: 28, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.15, marginBottom: 6 }}>{beruf}</h1>
+                <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 16 }}>{bereich || "Systemische Analyse zur Besetzung"}</p>
+                <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10 }}>
+                    {isLeading ? "Führungsposition" : "Teammitglied"}
+                  </span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10 }}>
+                    {result.diagnose.kandidatDominanz}
+                  </span>
+                </div>
+              </GlassCard>
 
               {detailReport.map((sec) => (
-                <div key={sec.num} style={{ marginBottom: 36 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                <GlassCard key={sec.num} style={{ padding: "30px 28px" }} data-testid={`report-section-${sec.num}`}>
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
                     <div style={{
-                      width: 30, height: 30, borderRadius: 10,
-                      background: "linear-gradient(135deg, rgba(0,113,227,0.12), rgba(0,113,227,0.04))",
-                      display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                      width: 36, height: 36, borderRadius: 12,
+                      background: "linear-gradient(135deg, #0071E3, #0071E3CC)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      marginRight: 14, flexShrink: 0,
+                      boxShadow: "0 4px 12px rgba(0,113,227,0.2)",
                     }}>
-                      <span style={{ fontSize: 12, fontWeight: 800, color: "#0071E3" }}>{sec.num}</span>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: "#FFF", fontVariantNumeric: "tabular-nums" }}>{String(sec.num).padStart(2, "0")}</span>
                     </div>
-                    <h2 style={{ fontSize: 18, fontWeight: 800, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>{sec.title}</h2>
+                    <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>{sec.title}</span>
                   </div>
 
-                  {sec.paragraphs?.map((p, i) => (
-                    <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: "0 0 10px" }} lang="de">{hyphenateText(p)}</p>
-                  ))}
+                  {sec.num === 2 && (
+                    <div style={{
+                      background: "rgba(255,255,255,0.7)", borderRadius: 22, padding: "20px 22px", marginBottom: 20,
+                      border: "1px solid rgba(0,0,0,0.05)",
+                    }}>
+                      <p style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 14px" }}>Gesamtprofil</p>
+                      {(["impulsiv", "intuitiv", "analytisch"] as const).map(k => {
+                        const val = kandidat[k];
+                        const color = k === "impulsiv" ? "#C41E3A" : k === "intuitiv" ? "#F39200" : "#1A5DAB";
+                        const label = k === "impulsiv" ? "Impulsiv" : k === "intuitiv" ? "Intuitiv" : "Analytisch";
+                        return (
+                          <div key={k} style={{ marginBottom: 10 }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                              <span style={{ fontSize: 12, fontWeight: 500, color: "#6E6E73" }}>{label}</span>
+                              <span style={{ fontSize: 12, fontWeight: 700, color }}>{Math.round(val)}</span>
+                            </div>
+                            <div style={{ height: 8, borderRadius: 4, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
+                              <div style={{ height: "100%", borderRadius: 4, background: `linear-gradient(90deg, ${color}, ${color}CC)`, width: `${(val / 67) * 100}%`, transition: "width 0.3s" }} />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {sec.paragraphs && sec.paragraphs.length > 0 && (() => {
+                    const first = sec.paragraphs[0];
+                    const rest = sec.paragraphs.slice(1);
+                    return (
+                      <>
+                        <div style={{
+                          padding: "16px 20px", borderRadius: 18,
+                          background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(0,113,227,0.02))",
+                          border: "1px solid rgba(0,113,227,0.10)",
+                          display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14,
+                        }}>
+                          <div style={{
+                            width: 28, height: 28, borderRadius: 9, flexShrink: 0,
+                            background: "rgba(0,113,227,0.12)", display: "flex", alignItems: "center", justifyContent: "center",
+                          }}>
+                            <Lightbulb style={{ width: 14, height: 14, color: "#0071E3", strokeWidth: 2 }} />
+                          </div>
+                          <p style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.75, margin: 0, fontWeight: 450 }} lang="de">{hyphenateText(first)}</p>
+                        </div>
+                        {rest.map((p, i) => (
+                          <p key={i} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.9, margin: "0 0 10px" }} lang="de">{hyphenateText(p)}</p>
+                        ))}
+                      </>
+                    );
+                  })()}
+
                   {sec.bullets && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12, paddingLeft: 4 }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 6, marginBottom: 12 }}>
                       {sec.bullets.map((b, i) => {
                         const isPos = b.startsWith("✓ ");
                         const isWarn = b.startsWith("⚠ ");
                         const text = (isPos || isWarn) ? b.slice(2) : b;
-                        const color = isPos ? "#34C759" : isWarn ? "#FF9500" : "#8E8E93";
+                        const c = isPos ? "#34C759" : isWarn ? "#FF9500" : "#6E6E73";
                         return (
-                          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                            {isPos ? <CheckCircle style={{ width: 14, height: 14, color, flexShrink: 0, marginTop: 3, strokeWidth: 2.5 }} />
-                              : isWarn ? <AlertTriangle style={{ width: 14, height: 14, color, flexShrink: 0, marginTop: 3, strokeWidth: 2.5 }} />
-                              : <div style={{ width: 5, height: 5, borderRadius: "50%", background: color, marginTop: 8, flexShrink: 0 }} />
-                            }
-                            <span style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.65 }} lang="de">{hyphenateText(text)}</span>
+                          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                            {isPos ? (
+                              <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <CheckCircle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
+                              </div>
+                            ) : isWarn ? (
+                              <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <AlertTriangle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
+                              </div>
+                            ) : (
+                              <div style={{ width: 6, height: 6, borderRadius: "50%", background: c, marginTop: 7, flexShrink: 0, opacity: 0.5 }} />
+                            )}
+                            <span style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.7 }} lang="de">{hyphenateText(text)}</span>
                           </div>
                         );
                       })}
@@ -298,27 +373,34 @@ export default function TeamCheck() {
                   )}
 
                   {sec.subsections?.map((sub, si) => (
-                    <div key={si} style={{ marginTop: sub.title ? 20 : 12, marginBottom: 12 }}>
+                    <div key={si} style={{ marginTop: sub.title ? 18 : 10 }}>
                       {sub.title && (
-                        <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>{sub.title}</h3>
+                        <h3 style={{ fontSize: 15, fontWeight: 650, color: "#1D1D1F", margin: "0 0 10px" }}>{sub.title}</h3>
                       )}
                       {sub.paragraphs?.map((p, pi) => (
-                        <p key={pi} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: "0 0 10px" }} lang="de">{hyphenateText(p)}</p>
+                        <p key={pi} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.9, margin: "0 0 10px" }} lang="de">{hyphenateText(p)}</p>
                       ))}
                       {sub.bullets && (
-                        <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 10, paddingLeft: 4 }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 }}>
                           {sub.bullets.map((b, bi) => {
                             const isPos = b.startsWith("✓ ");
                             const isWarn = b.startsWith("⚠ ");
                             const text = (isPos || isWarn) ? b.slice(2) : b;
-                            const color = isPos ? "#34C759" : isWarn ? "#FF9500" : "#8E8E93";
+                            const c = isPos ? "#34C759" : isWarn ? "#FF9500" : "#6E6E73";
                             return (
-                              <div key={bi} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                                {isPos ? <CheckCircle style={{ width: 14, height: 14, color, flexShrink: 0, marginTop: 3, strokeWidth: 2.5 }} />
-                                  : isWarn ? <AlertTriangle style={{ width: 14, height: 14, color, flexShrink: 0, marginTop: 3, strokeWidth: 2.5 }} />
-                                  : <div style={{ width: 5, height: 5, borderRadius: "50%", background: color, marginTop: 8, flexShrink: 0 }} />
-                                }
-                                <span style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.65 }} lang="de">{hyphenateText(text)}</span>
+                              <div key={bi} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                                {isPos ? (
+                                  <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <CheckCircle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
+                                  </div>
+                                ) : isWarn ? (
+                                  <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <AlertTriangle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
+                                  </div>
+                                ) : (
+                                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: c, marginTop: 7, flexShrink: 0, opacity: 0.5 }} />
+                                )}
+                                <span style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.7 }} lang="de">{hyphenateText(text)}</span>
                               </div>
                             );
                           })}
@@ -326,57 +408,74 @@ export default function TeamCheck() {
                       )}
                       {sub.highlight && (
                         <div style={{
-                          padding: "14px 18px", borderRadius: 14, marginTop: 10,
-                          background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(52,199,89,0.04))",
+                          padding: "16px 20px", borderRadius: 18, marginTop: 12,
+                          background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(0,113,227,0.02))",
+                          border: "1px solid rgba(0,113,227,0.10)",
                           borderLeft: "4px solid #0071E3",
                         }}>
-                          <p style={{ fontSize: 13.5, color: "#1D1D1F", lineHeight: 1.7, margin: 0, fontWeight: 550 }} lang="de">{hyphenateText(sub.highlight)}</p>
+                          <p style={{ fontSize: 13.5, color: "#1D1D1F", lineHeight: 1.75, margin: 0, fontWeight: 550 }} lang="de">{hyphenateText(sub.highlight)}</p>
                         </div>
                       )}
                     </div>
                   ))}
-                </div>
+                </GlassCard>
               ))}
             </>
           ) : (
             <>
+              {/* Executive Hero */}
+              <GlassCard style={{ padding: "36px 32px 30px", textAlign: "center", position: "relative", overflow: "hidden" }} data-testid="exec-header">
+                <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "linear-gradient(135deg, rgba(52,199,89,0.06), rgba(52,170,220,0.04))", pointerEvents: "none" }} />
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  background: "linear-gradient(135deg, rgba(52,199,89,0.1), rgba(52,199,89,0.05))",
+                  borderRadius: 20, padding: "5px 14px", marginBottom: 14,
+                }}>
+                  <Briefcase style={{ width: 12, height: 12, color: "#34C759" }} />
+                  <span style={{ fontSize: 10, fontWeight: 700, color: "#34C759", textTransform: "uppercase", letterSpacing: "0.12em" }}>Executive Summary</span>
+                </div>
+                <h1 style={{ fontSize: 28, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.15, marginBottom: 6 }}>{beruf}</h1>
+                <p style={{ fontSize: 13, color: "#8E8E93", margin: 0 }}>{bereich || "Systemische Analyse zur Besetzung"}</p>
+              </GlassCard>
+
               {execReport.map((page) => (
-                <div key={page.pageNum} style={{ marginBottom: 48 }}>
-                  <div style={{
-                    textAlign: "center", marginBottom: 32,
-                    paddingBottom: 20, borderBottom: "2px solid rgba(0,113,227,0.10)",
-                  }}>
-                    {page.pageNum === 1 && (
-                      <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 6px" }}>bioLogic Executive Summary</p>
-                    )}
-                    <h1 style={{ fontSize: 22, fontWeight: 800, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>{page.title}</h1>
-                  </div>
+                <div key={page.pageNum} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                  {page.pageNum === 2 && (
+                    <div style={{ height: 1, margin: "8px 28px", background: "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.05) 30%, rgba(0,0,0,0.05) 70%, transparent 100%)" }} />
+                  )}
+                  {page.pageNum === 2 && (
+                    <div style={{ textAlign: "center", padding: "8px 0" }}>
+                      <h2 style={{ fontSize: 20, fontWeight: 750, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>{page.title}</h2>
+                    </div>
+                  )}
 
                   {page.sections.map((sec, si) => (
-                    <div key={si} style={{
-                      marginBottom: 24, padding: "18px 22px", borderRadius: 18,
-                      background: "rgba(255,255,255,0.85)", backdropFilter: "blur(20px)",
-                      border: "1px solid rgba(0,0,0,0.05)",
-                      boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
-                    }}>
-                      <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>{sec.title}</h3>
+                    <GlassCard key={si} style={{ padding: "24px 24px" }} data-testid={`exec-section-${page.pageNum}-${si}`}>
+                      <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>{sec.title}</h3>
                       {sec.paragraphs?.map((p, pi) => (
-                        <p key={pi} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, margin: "0 0 8px" }} lang="de">{hyphenateText(p)}</p>
+                        <p key={pi} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.8, margin: "0 0 8px" }} lang="de">{hyphenateText(p)}</p>
                       ))}
                       {sec.bullets && (
-                        <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
                           {sec.bullets.map((b, bi) => {
                             const isPos = b.startsWith("✓ ");
                             const isWarn = b.startsWith("⚠ ");
                             const text = (isPos || isWarn) ? b.slice(2) : b;
-                            const color = isPos ? "#34C759" : isWarn ? "#FF9500" : "#6E6E73";
+                            const c = isPos ? "#34C759" : isWarn ? "#FF9500" : "#6E6E73";
                             return (
-                              <div key={bi} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                                {isPos ? <CheckCircle style={{ width: 13, height: 13, color, flexShrink: 0, marginTop: 3, strokeWidth: 2.5 }} />
-                                  : isWarn ? <AlertTriangle style={{ width: 13, height: 13, color, flexShrink: 0, marginTop: 3, strokeWidth: 2.5 }} />
-                                  : <div style={{ width: 5, height: 5, borderRadius: "50%", background: color, marginTop: 7, flexShrink: 0 }} />
-                                }
-                                <span style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.6 }} lang="de">{hyphenateText(text)}</span>
+                              <div key={bi} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                                {isPos ? (
+                                  <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <CheckCircle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
+                                  </div>
+                                ) : isWarn ? (
+                                  <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <AlertTriangle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
+                                  </div>
+                                ) : (
+                                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: c, marginTop: 7, flexShrink: 0, opacity: 0.5 }} />
+                                )}
+                                <span style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.7 }} lang="de">{hyphenateText(text)}</span>
                               </div>
                             );
                           })}
@@ -384,14 +483,15 @@ export default function TeamCheck() {
                       )}
                       {sec.highlight && (
                         <div style={{
-                          padding: "12px 16px", borderRadius: 12, marginTop: 12,
-                          background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(52,199,89,0.04))",
+                          padding: "16px 20px", borderRadius: 18, marginTop: 14,
+                          background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(0,113,227,0.02))",
+                          border: "1px solid rgba(0,113,227,0.10)",
                           borderLeft: "4px solid #0071E3",
                         }}>
-                          <p style={{ fontSize: 13, color: "#1D1D1F", lineHeight: 1.65, margin: 0, fontWeight: 600 }} lang="de">{hyphenateText(sec.highlight)}</p>
+                          <p style={{ fontSize: 13.5, color: "#1D1D1F", lineHeight: 1.7, margin: 0, fontWeight: 600 }} lang="de">{hyphenateText(sec.highlight)}</p>
                         </div>
                       )}
-                    </div>
+                    </GlassCard>
                   ))}
                 </div>
               ))}
