@@ -89,6 +89,39 @@ export type TeamCheckResult = {
   gesamturteil: GesamturteilResult;
 };
 
+export function generateDiagnoseSummary(kandidat: Triad, team: Triad, isLeading: boolean): string {
+  const domK = dominanceType(kandidat);
+  const domT = dominanceType(team);
+  const same = domK === domT;
+  const rolle = isLeading ? "Führungskraft" : "Person";
+
+  const labelMap: Record<DominanceType, string> = {
+    IMPULSIV: "Ergebnis- und Umsetzungsorientierung",
+    INTUITIV: "Beziehungs- und Konsensorientierung",
+    ANALYTISCH: "Struktur- und Prüfungsorientierung",
+    MIX: "situative Breite",
+  };
+  const effectMap: Record<string, string> = {
+    "IMPULSIV-IMPULSIV": "Die Besetzung verstärkt die bestehende Ergebnis- und Umsetzungsorientierung. Tempo steigt, Reflexionstiefe bleibt kritisch.",
+    "INTUITIV-INTUITIV": "Die Besetzung verstärkt die bestehende Beziehungs- und Konsensorientierung. Bindung steigt, Entscheidungstempo bleibt kritisch.",
+    "ANALYTISCH-ANALYTISCH": "Die Besetzung verstärkt die bestehende Struktur- und Prüfungsorientierung. Qualität steigt, Entscheidungsgeschwindigkeit bleibt kritisch.",
+    "MIX-MIX": "Die Besetzung verstärkt die bestehende Breite. Flexibilität steigt, klare Leitstruktur bleibt kritisch.",
+    "IMPULSIV-INTUITIV": `Die ${rolle} bringt Ergebnisdruck in ein beziehungsorientiertes System. Umsetzungstempo steigt, Teamklima kann unter Druck geraten.`,
+    "IMPULSIV-ANALYTISCH": `Die ${rolle} bringt Handlungsdynamik in ein strukturorientiertes System. Entscheidungen werden schneller, Prüftiefe kann sinken.`,
+    "IMPULSIV-MIX": `Die ${rolle} bringt klare Ergebnisorientierung in ein breit aufgestelltes System. Richtung entsteht, Flexibilität kann eingeschränkt werden.`,
+    "INTUITIV-IMPULSIV": `Die ${rolle} bringt Konsensorientierung in ein ergebnisorientiertes System. Zusammenhalt steigt, Entscheidungstempo kann sinken.`,
+    "INTUITIV-ANALYTISCH": `Die ${rolle} bringt Beziehungsfokus in ein strukturorientiertes System. Dialog steigt, Entscheidungsklarheit kann leiden.`,
+    "INTUITIV-MIX": `Die ${rolle} bringt Beziehungsstärke in ein breit aufgestelltes System. Teamkultur wird gestärkt, klare Ergebnisorientierung kann fehlen.`,
+    "ANALYTISCH-IMPULSIV": `Die ${rolle} bringt Strukturtiefe in ein ergebnisorientiertes System. Qualität steigt, Geschwindigkeit kann sinken.`,
+    "ANALYTISCH-INTUITIV": `Die ${rolle} bringt Prüflogik in ein beziehungsorientiertes System. Nachvollziehbarkeit steigt, Konsenskultur kann unter Druck geraten.`,
+    "ANALYTISCH-MIX": `Die ${rolle} bringt klare Standards in ein breit aufgestelltes System. Struktur entsteht, Anpassungsfähigkeit kann sinken.`,
+    "MIX-IMPULSIV": `Die ${rolle} bringt situative Breite in ein ergebnisorientiertes System. Flexibilität steigt, klare Richtung kann fehlen.`,
+    "MIX-INTUITIV": `Die ${rolle} bringt situative Breite in ein beziehungsorientiertes System. Anpassungsfähigkeit steigt, Konsistenz kann sinken.`,
+    "MIX-ANALYTISCH": `Die ${rolle} bringt situative Breite in ein strukturorientiertes System. Flexibilität steigt, Standards können verwässern.`,
+  };
+  return effectMap[`${domK}-${domT}`] || "Die Besetzung verändert die bestehende Systemdynamik.";
+}
+
 function dominanceType(p: Triad): DominanceType {
   const maxVal = Math.max(p.impulsiv, p.intuitiv, p.analytisch);
   const winners: DominanceType[] = [];

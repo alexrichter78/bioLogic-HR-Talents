@@ -9,7 +9,7 @@ import { hyphenateText } from "@/lib/hyphenate";
 import {
   type TeamCheckInput, type TeamCheckResult, type UrteilBadge,
   type ReportSection, type ExecutivePage,
-  computeTeamCheck, generateDetailReport, generateExecutiveReport,
+  computeTeamCheck, generateDetailReport, generateExecutiveReport, generateDiagnoseSummary,
 } from "@/lib/teamcheck-engine";
 import {
   computeTeamDynamics, getDefaultLevers,
@@ -473,10 +473,19 @@ export default function TeamCheck() {
           <GlassCard data-testid="section-diagnose">
             <SectionHeader num={1} title="DIAGNOSE" icon={BarChart3} />
 
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 20 }}>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
               <ProfileCard title="Rollen-DNA (Soll)" num={1} triad={soll} dominanz={result.diagnose.sollDominanz} color="#0071E3" onChange={setSoll} testIdPrefix="slider-soll" />
               <ProfileCard title="Kandidatenprofil (Ist)" num={2} triad={kandidat} dominanz={result.diagnose.kandidatDominanz} color="#F39200" onChange={setKandidat} testIdPrefix="slider-kand" />
               <ProfileCard title="Teamprofil (Ist)" num={3} triad={team} dominanz={result.diagnose.teamDominanz} color="#34C759" onChange={setTeam} testIdPrefix="slider-team" />
+            </div>
+
+            <div data-testid="diagnose-summary" style={{
+              padding: "16px 20px", borderRadius: 14, marginBottom: 20,
+              background: "rgba(142,142,147,0.08)",
+            }}>
+              <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: 0, fontWeight: 450 }} lang="de">
+                {hyphenateText(generateDiagnoseSummary(kandidat, team, isLeading))}
+              </p>
             </div>
 
             {/* Toggle Führung / Teammitglied */}
