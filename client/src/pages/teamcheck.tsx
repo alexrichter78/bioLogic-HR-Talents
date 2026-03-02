@@ -168,7 +168,7 @@ export default function TeamCheck() {
   const [erfolgsfokusLabels, setErfolgsfokusLabels] = useState<string[]>([]);
   const [isLeading, setIsLeading] = useState(true);
   const [teamSize, setTeamSize] = useState<TeamSize>("MITTEL");
-  const [detailTab, setDetailTab] = useState<"system" | "stress" | "prognose" | "empfehlung" | "urteil">("system");
+  const [detailTab, setDetailTab] = useState<"system" | "stress" | "hebel" | "prognose" | "empfehlung" | "urteil">("system");
   const [reportView, setReportView] = useState<"none" | "detail" | "executive">("none");
   const reportRef = useRef<HTMLDivElement>(null);
 
@@ -1189,6 +1189,7 @@ export default function TeamCheck() {
               {([
                 ["system", "Systemwirkung", Zap],
                 ["stress", "Stressprofil", AlertTriangle],
+                ["hebel", "Führungshebel", Flame],
                 ["prognose", "Prognose", Clock],
                 ["empfehlung", "Empfehlungen", Target],
                 ["urteil", "Gesamturteil", Shield],
@@ -1301,16 +1302,16 @@ export default function TeamCheck() {
                       {hyphenateText(result.stressprofil.steuerung)}
                     </p>
                   </div>
+                </div>
+              )}
 
-                  {isLeading && tdResult.leadershipContext && tdResult.leadershipContext.leadershipLevers.length > 0 && (<>
-                    <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "24px 0" }} />
+              {/* TAB: FÜHRUNGSHEBEL */}
+              {detailTab === "hebel" && (
+                <div data-testid="content-hebel">
+                  <SectionHeader num={3} title="FÜHRUNGSHEBEL" icon={Flame} />
+                  <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 18px", fontWeight: 500 }}>Konkrete Steuerungsmaßnahmen für diese Führungskraft-Team-Kombination</p>
 
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-                      <Zap style={{ width: 15, height: 15, color: "#FF9500", strokeWidth: 2.5 }} />
-                      <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Führungshebel</p>
-                    </div>
-                    <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 16px", fontWeight: 500 }}>Konkrete Steuerungsmaßnahmen für diese Führungskraft-Team-Kombination</p>
-
+                  {isLeading && tdResult.leadershipContext && tdResult.leadershipContext.leadershipLevers.length > 0 ? (
                     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                       {tdResult.leadershipContext.leadershipLevers.map((lever, i) => {
                         const prioColor = lever.priority === "hoch" ? "#FF3B30" : lever.priority === "mittel" ? "#FF9500" : "#34C759";
@@ -1337,7 +1338,14 @@ export default function TeamCheck() {
                         );
                       })}
                     </div>
-                  </>)}
+                  ) : (
+                    <div style={{
+                      padding: "24px 20px", borderRadius: 16, textAlign: "center",
+                      background: "rgba(142,142,147,0.06)", border: "1px solid rgba(0,0,0,0.04)",
+                    }}>
+                      <p style={{ fontSize: 13, color: "#8E8E93", margin: 0 }}>Führungshebel werden nur im Führungsmodus angezeigt. Bitte „Führung" im Diagnose-Bereich aktivieren.</p>
+                    </div>
+                  )}
                 </div>
               )}
 
