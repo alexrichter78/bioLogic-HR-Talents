@@ -593,10 +593,7 @@ export default function Teamdynamik() {
                       )}
                     </SectionCard>
 
-                    <SectionCard barColor="#8E8E93" testId="section-stress-comparison">
-                      <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Stressvergleich</p>
-                      <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{sc.summary}</p>
-                    </SectionCard>
+
                   </div>
                 );
               }
