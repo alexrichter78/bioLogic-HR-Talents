@@ -58,8 +58,9 @@ function SectionHeader({ num, title, icon: Icon }: { num: number; title: string;
   );
 }
 
-function ProfileCard({ title, num, triad, dominanz, color }: {
+function ProfileCard({ title, num, triad, dominanz, color, onChange, testIdPrefix }: {
   title: string; num: number; triad: Triad; dominanz: string; color: string;
+  onChange?: (t: Triad) => void; testIdPrefix?: string;
 }) {
   return (
     <div style={{
@@ -84,14 +85,27 @@ function ProfileCard({ title, num, triad, dominanz, color }: {
             <span style={{ fontSize: 11, color: "#6E6E73", width: 58, flexShrink: 0 }}>
               {k.charAt(0).toUpperCase() + k.slice(1)}
             </span>
-            <div style={{ flex: 1, height: 18, borderRadius: 5, background: "rgba(0,0,0,0.04)", overflow: "hidden", position: "relative" }}>
+            <div style={{ flex: 1, height: 22, borderRadius: 6, background: "rgba(0,0,0,0.04)", overflow: "hidden", position: "relative" }}>
               <div style={{
                 width: `${Math.min(Math.max(widthPct, 3), 100)}%`, height: "100%",
-                borderRadius: 5, background: barColor, transition: "width 300ms ease",
-                display: "flex", alignItems: "center", justifyContent: "flex-end", paddingRight: 6,
+                borderRadius: 6, background: barColor, transition: "width 150ms ease",
+                display: "flex", alignItems: "center", paddingLeft: 8,
               }}>
-                {val >= 8 && <span style={{ fontSize: 9, fontWeight: 700, color: "#FFF" }}>{Math.round(val)} %</span>}
+                {val >= 8 && <span style={{ fontSize: 9, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(val)} %</span>}
               </div>
+              {onChange && (
+                <input
+                  type="range" min={0} max={MAX_BIO} value={val}
+                  onChange={e => onChange({ ...triad, [k]: Number(e.target.value) })}
+                  data-testid={testIdPrefix ? `${testIdPrefix}-${k}` : undefined}
+                  style={{
+                    position: "absolute", inset: 0, width: "100%", height: "100%",
+                    appearance: "none", WebkitAppearance: "none",
+                    background: "transparent", outline: "none", cursor: "pointer",
+                    margin: 0, zIndex: 2,
+                  }}
+                />
+              )}
             </div>
             {val < 8 && <span style={{ fontSize: 9, fontWeight: 600, color: "#8E8E93" }}>{Math.round(val)} %</span>}
           </div>
@@ -104,38 +118,6 @@ function ProfileCard({ title, num, triad, dominanz, color }: {
   );
 }
 
-function BarSlider({ label, value, color, onChange, testId }: {
-  label: string; value: number; color: string; onChange: (v: number) => void; testId: string;
-}) {
-  const widthPct = (value / MAX_BIO) * 100;
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <span style={{ fontSize: 12, color: "#6E6E73", width: 62, flexShrink: 0 }}>{label}</span>
-      <div style={{ flex: 1, position: "relative", height: 24 }}>
-        <div style={{ position: "absolute", inset: 0, borderRadius: 6, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
-          <div style={{
-            width: value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 5), 100)}%`,
-            height: "100%", borderRadius: 6, background: color, transition: "width 150ms ease",
-            display: "flex", alignItems: "center", paddingLeft: 8,
-          }}>
-            <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>
-          </div>
-        </div>
-        <input
-          type="range" min={0} max={MAX_BIO} value={value}
-          onChange={e => onChange(Number(e.target.value))}
-          data-testid={testId}
-          style={{
-            position: "absolute", inset: 0, width: "100%", height: "100%",
-            appearance: "none", WebkitAppearance: "none",
-            background: "transparent", outline: "none", cursor: "pointer",
-            margin: 0, zIndex: 2,
-          }}
-        />
-      </div>
-    </div>
-  );
-}
 
 function BulletList({ items, color, icon }: { items: string[]; color?: string; icon?: "check" | "dot" | "warning" }) {
   const c = color || "#6E6E73";
@@ -165,8 +147,6 @@ export default function TeamCheck() {
   const [bereich, setBereich] = useState("");
   const [fuehrungstyp, setFuehrungstyp] = useState("Keine");
   const [isLeading, setIsLeading] = useState(true);
-  const [hasSoll, setHasSoll] = useState(false);
-  const [hasKandidat, setHasKandidat] = useState(false);
 
   useEffect(() => {
     try {
@@ -184,7 +164,6 @@ export default function TeamCheck() {
           const p = state.profil || state.profile;
           if (p && p.impulsiv != null) {
             setSoll({ impulsiv: p.impulsiv, intuitiv: p.intuitiv, analytisch: p.analytisch });
-            setHasSoll(true);
           }
         }
       }
@@ -196,7 +175,6 @@ export default function TeamCheck() {
         const p = JSON.parse(saved);
         if (p.impulsiv != null && p.intuitiv != null && p.analytisch != null) {
           setKandidat({ impulsiv: p.impulsiv, intuitiv: p.intuitiv, analytisch: p.analytisch });
-          setHasKandidat(true);
         }
       }
     } catch {}
@@ -254,41 +232,9 @@ export default function TeamCheck() {
             <SectionHeader num={1} title="DIAGNOSE" icon={BarChart3} />
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 20 }}>
-              <ProfileCard title="Rollen-DNA (Soll)" num={1} triad={soll} dominanz={result.diagnose.sollDominanz} color="#0071E3" />
-              <ProfileCard title="Kandidatenprofil (Ist)" num={2} triad={kandidat} dominanz={result.diagnose.kandidatDominanz} color="#F39200" />
-              <ProfileCard title="Teamprofil (Ist)" num={3} triad={team} dominanz={result.diagnose.teamDominanz} color="#34C759" />
-            </div>
-
-            {/* Sliders for input */}
-            {!hasSoll && (
-              <div style={{ marginBottom: 16, padding: "16px 20px", borderRadius: 16, background: "rgba(0,113,227,0.03)", border: "1px solid rgba(0,113,227,0.08)" }}>
-                <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.06em" }}>Rollen-DNA (Soll) anpassen</p>
-                <BarSlider label="Impulsiv" value={soll.impulsiv} color={COLORS.imp} onChange={v => setSoll(s => ({ ...s, impulsiv: v }))} testId="slider-soll-impulsiv" />
-                <div style={{ height: 6 }} />
-                <BarSlider label="Intuitiv" value={soll.intuitiv} color={COLORS.int} onChange={v => setSoll(s => ({ ...s, intuitiv: v }))} testId="slider-soll-intuitiv" />
-                <div style={{ height: 6 }} />
-                <BarSlider label="Analytisch" value={soll.analytisch} color={COLORS.ana} onChange={v => setSoll(s => ({ ...s, analytisch: v }))} testId="slider-soll-analytisch" />
-              </div>
-            )}
-
-            {!hasKandidat && (
-              <div style={{ marginBottom: 16, padding: "16px 20px", borderRadius: 16, background: "rgba(243,146,0,0.03)", border: "1px solid rgba(243,146,0,0.08)" }}>
-                <p style={{ fontSize: 11, fontWeight: 600, color: "#F39200", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.06em" }}>Kandidatenprofil (Ist) anpassen</p>
-                <BarSlider label="Impulsiv" value={kandidat.impulsiv} color={COLORS.imp} onChange={v => setKandidat(s => ({ ...s, impulsiv: v }))} testId="slider-kand-impulsiv" />
-                <div style={{ height: 6 }} />
-                <BarSlider label="Intuitiv" value={kandidat.intuitiv} color={COLORS.int} onChange={v => setKandidat(s => ({ ...s, intuitiv: v }))} testId="slider-kand-intuitiv" />
-                <div style={{ height: 6 }} />
-                <BarSlider label="Analytisch" value={kandidat.analytisch} color={COLORS.ana} onChange={v => setKandidat(s => ({ ...s, analytisch: v }))} testId="slider-kand-analytisch" />
-              </div>
-            )}
-
-            <div style={{ padding: "16px 20px", borderRadius: 16, background: "rgba(52,199,89,0.03)", border: "1px solid rgba(52,199,89,0.08)", marginBottom: 20 }}>
-              <p style={{ fontSize: 11, fontWeight: 600, color: "#34C759", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.06em" }}>Teamprofil (Ist) anpassen</p>
-              <BarSlider label="Impulsiv" value={team.impulsiv} color={COLORS.imp} onChange={v => setTeam(s => ({ ...s, impulsiv: v }))} testId="slider-team-impulsiv" />
-              <div style={{ height: 6 }} />
-              <BarSlider label="Intuitiv" value={team.intuitiv} color={COLORS.int} onChange={v => setTeam(s => ({ ...s, intuitiv: v }))} testId="slider-team-intuitiv" />
-              <div style={{ height: 6 }} />
-              <BarSlider label="Analytisch" value={team.analytisch} color={COLORS.ana} onChange={v => setTeam(s => ({ ...s, analytisch: v }))} testId="slider-team-analytisch" />
+              <ProfileCard title="Rollen-DNA (Soll)" num={1} triad={soll} dominanz={result.diagnose.sollDominanz} color="#0071E3" onChange={setSoll} testIdPrefix="slider-soll" />
+              <ProfileCard title="Kandidatenprofil (Ist)" num={2} triad={kandidat} dominanz={result.diagnose.kandidatDominanz} color="#F39200" onChange={setKandidat} testIdPrefix="slider-kand" />
+              <ProfileCard title="Teamprofil (Ist)" num={3} triad={team} dominanz={result.diagnose.teamDominanz} color="#34C759" onChange={setTeam} testIdPrefix="slider-team" />
             </div>
 
             {/* Toggle Führung / Teammitglied */}
