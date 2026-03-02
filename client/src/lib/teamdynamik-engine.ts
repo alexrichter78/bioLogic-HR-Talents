@@ -8,6 +8,59 @@ export type IntensityLevel = "NIEDRIG" | "MITTEL" | "HOCH";
 export type ShiftType = "VERSTAERKUNG" | "ERGAENZUNG" | "REIBUNG" | "SPANNUNG" | "TRANSFORMATION" | "HYBRID";
 export type TrafficLight = "GREEN" | "YELLOW" | "RED";
 export type ViewMode = "CEO" | "HR" | "TEAMLEITUNG";
+export type PersonRole = "FUEHREND" | "OPERATIV" | "STRATEGISCH";
+
+export function isLeadingRole(role: PersonRole): boolean {
+  return role === "FUEHREND";
+}
+
+export function isStrategicRole(role: PersonRole): boolean {
+  return role === "STRATEGISCH";
+}
+
+export function hasLeadershipView(role: PersonRole): boolean {
+  return role === "FUEHREND" || role === "STRATEGISCH";
+}
+
+export function personRoleLabel(role: PersonRole): string {
+  switch (role) {
+    case "FUEHREND": return "Neue Führungskraft";
+    case "STRATEGISCH": return "Strategische Besetzung";
+    case "OPERATIV": return "Neues Teammitglied";
+  }
+}
+
+function roleNarrative(role: PersonRole): string {
+  switch (role) {
+    case "FUEHREND": return "Die neue Führung";
+    case "STRATEGISCH": return "Die strategische Besetzung";
+    case "OPERATIV": return "Die neue Person";
+  }
+}
+
+function roleNarrativeGenitive(role: PersonRole): string {
+  switch (role) {
+    case "FUEHREND": return "der neuen Führung";
+    case "STRATEGISCH": return "der strategischen Besetzung";
+    case "OPERATIV": return "der neuen Person";
+  }
+}
+
+function roleNarrativeShort(role: PersonRole): string {
+  switch (role) {
+    case "FUEHREND": return "Führung";
+    case "STRATEGISCH": return "Strategie-Rolle";
+    case "OPERATIV": return "Neue Person";
+  }
+}
+
+function roleIntegrationLabel(role: PersonRole): string {
+  switch (role) {
+    case "FUEHREND": return "Führungskraft";
+    case "STRATEGISCH": return "Strategische Rolle";
+    case "OPERATIV": return "Teammitglied";
+  }
+}
 
 export type DepartmentType =
   | "VERTRIEB"
@@ -123,7 +176,7 @@ export type TeamDynamikInput = {
   teamProfile: Triad;
   teamSize: TeamSize;
   personProfile: Triad;
-  isLeading: boolean;
+  personRole: PersonRole;
   departmentType: DepartmentType;
   roleSoll?: { enabled: boolean; profile: Triad };
   tasks?: string[];
@@ -277,8 +330,12 @@ function roleGap(roleSollEnabled: boolean, roleSoll: Triad | null, person: Triad
   return Math.round((s / 2.0) * 10) / 10;
 }
 
-function leadershipFactor(isLeading: boolean): number {
-  return isLeading ? 15 : 0;
+function leadershipFactor(role: PersonRole): number {
+  switch (role) {
+    case "FUEHREND": return 15;
+    case "STRATEGISCH": return 10;
+    case "OPERATIV": return 0;
+  }
 }
 
 function sizeAmplifier(size: TeamSize): number {
@@ -287,8 +344,8 @@ function sizeAmplifier(size: TeamSize): number {
   return 0.85;
 }
 
-function transformationScore(DG: number, DC: number, RG: number | null, isLeading: boolean, teamSize: TeamSize): number {
-  const LF = leadershipFactor(isLeading);
+function transformationScore(DG: number, DC: number, RG: number | null, role: PersonRole, teamSize: TeamSize): number {
+  const LF = leadershipFactor(role);
   const amp = sizeAmplifier(teamSize);
 
   let TS: number;
@@ -327,16 +384,17 @@ function profileExtremity(p: Triad): number {
   return Math.max(p.impulsiv, p.intuitiv, p.analytisch);
 }
 
-function shiftType(domTeam: DominanceType, domPerson: DominanceType, DG: number, DC: number, TS: number, isLeading: boolean, personProfile?: Triad): ShiftType {
+function shiftType(domTeam: DominanceType, domPerson: DominanceType, DG: number, DC: number, TS: number, role: PersonRole, personProfile?: Triad): ShiftType {
   const level = intensityLevel(TS);
   const extP = personProfile ? profileExtremity(personProfile) : 0;
+  const canTransform = hasLeadershipView(role);
 
   if (DG < 5) {
     return "VERSTAERKUNG";
   }
 
   if (DC === 100 && DG >= 30) {
-    return isLeading ? "TRANSFORMATION" : "SPANNUNG";
+    return canTransform ? "TRANSFORMATION" : "SPANNUNG";
   }
 
   if (DC === 100) {
@@ -344,7 +402,7 @@ function shiftType(domTeam: DominanceType, domPerson: DominanceType, DG: number,
   }
 
   if (DC === 0 && DG >= 40) {
-    return isLeading ? "TRANSFORMATION" : "SPANNUNG";
+    return canTransform ? "TRANSFORMATION" : "SPANNUNG";
   }
 
   if (DC === 0 && DG >= 25) {
@@ -363,12 +421,12 @@ function shiftType(domTeam: DominanceType, domPerson: DominanceType, DG: number,
   if (domTeam === "MIX" || domPerson === "MIX") {
     if (level === "NIEDRIG") return "ERGAENZUNG";
     if (level === "MITTEL") return "HYBRID";
-    return isLeading ? "TRANSFORMATION" : "SPANNUNG";
+    return canTransform ? "TRANSFORMATION" : "SPANNUNG";
   }
 
   if (level === "NIEDRIG") return "ERGAENZUNG";
   if (level === "MITTEL") return "REIBUNG";
-  return isLeading ? "TRANSFORMATION" : "SPANNUNG";
+  return canTransform ? "TRANSFORMATION" : "SPANNUNG";
 }
 
 function leverReductionLevels(levers: Lever[]): number {
@@ -416,58 +474,60 @@ function matrixCellId(leadDom: DominanceType, teamDom: DominanceType): string {
   return `${map[leadDom]}-${map[teamDom]}`;
 }
 
-function buildHeadline(st: ShiftType, domTeam: DominanceType, domPerson: DominanceType, isLeading: boolean): string {
+function buildHeadline(st: ShiftType, domTeam: DominanceType, domPerson: DominanceType, role: PersonRole): string {
   const tMap: Record<DominanceType, string> = { IMPULSIV: "umsetzungsorientiertes", INTUITIV: "beziehungsorientiertes", ANALYTISCH: "strukturorientiertes", MIX: "ausgeglichenes" };
-  const role = isLeading ? "Die neue Führung" : "Die neue Person";
+  const rn = roleNarrative(role);
 
   switch (st) {
-    case "VERSTAERKUNG": return `Arbeitsweisen passen gut zusammen. Führung und Team verfolgen ähnliche Prioritäten und Entscheidungslogiken.`;
-    case "ERGAENZUNG": return `${role} bringt eine ergänzende Arbeitsweise ins ${tMap[domTeam]} Team. Zusammenarbeit stabil.`;
-    case "REIBUNG": return `Unterschiedliche Arbeitsweisen treffen aufeinander. ${role} arbeitet anders als das Team es gewohnt ist. Das führt zu mehr Abstimmung und gelegentlichen Spannungen.`;
+    case "VERSTAERKUNG": return `Arbeitsweisen passen gut zusammen. ${rn} und das Team verfolgen ähnliche Prioritäten und Entscheidungslogiken.`;
+    case "ERGAENZUNG": return `${rn} bringt eine ergänzende Arbeitsweise ins ${tMap[domTeam]} Team. Zusammenarbeit stabil.`;
+    case "REIBUNG": return `Unterschiedliche Arbeitsweisen treffen aufeinander. ${rn} arbeitet anders als das Team es gewohnt ist. Das führt zu mehr Abstimmung und gelegentlichen Spannungen.`;
     case "SPANNUNG":
-    case "TRANSFORMATION": return isLeading
-      ? `Die neue Führung verändert die bisherige Arbeitsweise deutlich. Entscheidungen, Prioritäten und Qualitätsmaßstäbe werden anders gesetzt als bisher.`
-      : `Arbeitslogiken unterscheiden sich stark. Ohne Führung entstehen Leistungs- und Konfliktrisiken.`;
-    case "HYBRID": return `Unterschiedliche Arbeitsweisen treffen aufeinander. ${role} arbeitet anders als das Team es gewohnt ist. Mehr Abstimmungsbedarf im Alltag.`;
+    case "TRANSFORMATION":
+      if (role === "FUEHREND") return `Die neue Führung verändert die bisherige Arbeitsweise deutlich. Entscheidungen, Prioritäten und Qualitätsmaßstäbe werden anders gesetzt als bisher.`;
+      if (role === "STRATEGISCH") return `Die strategische Besetzung bringt eine neue Steuerungslogik ins System. Prioritäten und Entscheidungswege verschieben sich nachhaltig.`;
+      return `Arbeitslogiken unterscheiden sich stark. Ohne Führung entstehen Leistungs- und Konfliktrisiken.`;
+    case "HYBRID": return `Unterschiedliche Arbeitsweisen treffen aufeinander. ${rn} arbeitet anders als das Team es gewohnt ist. Mehr Abstimmungsbedarf im Alltag.`;
   }
 }
 
-function buildLeadershipBehavior(domPerson: DominanceType, domTeam: DominanceType, isLeading: boolean) {
-  const role = isLeading ? "Die Führung" : "Die neue Person";
+function buildLeadershipBehavior(domPerson: DominanceType, domTeam: DominanceType, role: PersonRole) {
+  const rn = roleNarrative(role);
   const axis = axisLabel(domTeam, domPerson);
 
   const key = `${domPerson}-${domTeam}`;
   const texts: Record<string, { s: string; p: string; b: string }> = {
-    "IMPULSIV-INTUITIV": { s: `${role} bringt Umsetzungsdruck in ein beziehungsorientiertes Team. Entscheidungstempo steigt, Abstimmungstiefe sinkt.`, p: "Das Team nimmt Druck und Ungeduld wahr. Beziehungsdynamik wird als zweitrangig empfunden.", b: "Bindungsverlust durch fehlende Beziehungspflege. Stille Demotivation im Team." },
-    "IMPULSIV-ANALYTISCH": { s: `${role} bringt Umsetzungsdruck in ein strukturorientiertes Team. Tempo kollidiert mit Absicherungsbedürfnis.`, p: "Das Team nimmt Hektik und fehlende Struktur wahr. Qualitätsansprüche werden als Bremse interpretiert.", b: "Qualitätsverlust durch überhöhtes Tempo. Prozessabkürzungen werden zur Gewohnheit." },
-    "INTUITIV-IMPULSIV": { s: `${role} bringt Beziehungsorientierung in ein tempogetriebenes Team. Abstimmungsbedarf steigt, Entscheidungstempo sinkt.`, p: "Das Team empfindet Führung als zögerlich und konsensorientiert. Ergebnisorientierung wird vermisst.", b: "Entscheidungsverzögerung durch Konsensbedürfnis. Klare Ansagen bleiben aus." },
-    "INTUITIV-ANALYTISCH": { s: `${role} bringt Beziehungslogik in ein strukturorientiertes Team. Abstimmung und Dialog ersetzen Prozessvorgaben.`, p: "Das Team erwartet klare Vorgaben und bekommt Gesprächsangebote. Prozesseffizienz leidet.", b: "Strukturverlust durch fehlende Standardisierung. Individuelle Absprachen ersetzen systematische Prozesse." },
-    "ANALYTISCH-IMPULSIV": { s: `${role} bringt Struktur und Absicherung in ein tempogetriebenes Team. Prozessqualität steigt, Geschwindigkeit sinkt kurzfristig.`, p: "Das Team empfindet neue Prozesse als Bremse. Kontrolle wird als Misstrauen interpretiert.", b: "Innovationsverlust durch Über-Strukturierung. Handlungsspielräume werden eingeengt." },
-    "ANALYTISCH-INTUITIV": { s: `${role} bringt Struktur und Faktenorientierung in ein beziehungsorientiertes Team. Entscheidungen werden sachlicher, Distanz steigt.`, p: "Das Team nimmt emotionale Distanz wahr. Faktenorientierung wird als Kälte empfunden.", b: "Bindungsverlust durch fehlende emotionale Anschlussfähigkeit. Teamdynamik wird unterschätzt." },
+    "IMPULSIV-INTUITIV": { s: `${rn} bringt Umsetzungsdruck in ein beziehungsorientiertes Team. Entscheidungstempo steigt, Abstimmungstiefe sinkt.`, p: "Das Team nimmt Druck und Ungeduld wahr. Beziehungsdynamik wird als zweitrangig empfunden.", b: "Bindungsverlust durch fehlende Beziehungspflege. Stille Demotivation im Team." },
+    "IMPULSIV-ANALYTISCH": { s: `${rn} bringt Umsetzungsdruck in ein strukturorientiertes Team. Tempo kollidiert mit Absicherungsbedürfnis.`, p: "Das Team nimmt Hektik und fehlende Struktur wahr. Qualitätsansprüche werden als Bremse interpretiert.", b: "Qualitätsverlust durch überhöhtes Tempo. Prozessabkürzungen werden zur Gewohnheit." },
+    "INTUITIV-IMPULSIV": { s: `${rn} bringt Beziehungsorientierung in ein tempogetriebenes Team. Abstimmungsbedarf steigt, Entscheidungstempo sinkt.`, p: "Das Team empfindet die Besetzung als zögerlich und konsensorientiert. Ergebnisorientierung wird vermisst.", b: "Entscheidungsverzögerung durch Konsensbedürfnis. Klare Ansagen bleiben aus." },
+    "INTUITIV-ANALYTISCH": { s: `${rn} bringt Beziehungslogik in ein strukturorientiertes Team. Abstimmung und Dialog ersetzen Prozessvorgaben.`, p: "Das Team erwartet klare Vorgaben und bekommt Gesprächsangebote. Prozesseffizienz leidet.", b: "Strukturverlust durch fehlende Standardisierung. Individuelle Absprachen ersetzen systematische Prozesse." },
+    "ANALYTISCH-IMPULSIV": { s: `${rn} bringt Struktur und Absicherung in ein tempogetriebenes Team. Prozessqualität steigt, Geschwindigkeit sinkt kurzfristig.`, p: "Das Team empfindet neue Prozesse als Bremse. Kontrolle wird als Misstrauen interpretiert.", b: "Innovationsverlust durch Über-Strukturierung. Handlungsspielräume werden eingeengt." },
+    "ANALYTISCH-INTUITIV": { s: `${rn} bringt Struktur und Faktenorientierung in ein beziehungsorientiertes Team. Entscheidungen werden sachlicher, Distanz steigt.`, p: "Das Team nimmt emotionale Distanz wahr. Faktenorientierung wird als Kälte empfunden.", b: "Bindungsverlust durch fehlende emotionale Anschlussfähigkeit. Teamdynamik wird unterschätzt." },
   };
 
   if (domPerson === domTeam) {
     return {
       axisLabel: axis,
-      statement: `${role} arbeitet in derselben Steuerungslogik wie das Team. Entscheidungswege und Priorisierung werden verstärkt.`,
+      statement: `${rn} arbeitet in derselben Steuerungslogik wie das Team. Entscheidungswege und Priorisierung werden verstärkt.`,
       possiblePerception: "Das Team erlebt Bestätigung der eigenen Arbeitsweise. Bestehende Muster werden stabilisiert.",
       blindSpot: "Einseitige Verstärkung: Fehlende Korrektive für die nachrangigen Kompetenzen.",
     };
   }
 
-  const entry = texts[key] || { s: `${role} bringt eine andere Arbeitslogik ins Team.`, p: "Unterschiedliche Erwartungen an Arbeitsweise und Entscheidungsfindung.", b: "Gegenseitige Fehlinterpretation von Arbeitsstil und Prioritäten." };
+  const entry = texts[key] || { s: `${rn} bringt eine andere Arbeitslogik ins Team.`, p: "Unterschiedliche Erwartungen an Arbeitsweise und Entscheidungsfindung.", b: "Gegenseitige Fehlinterpretation von Arbeitsstil und Prioritäten." };
   return { axisLabel: axis, statement: entry.s, possiblePerception: entry.p, blindSpot: entry.b };
 }
 
-function buildSystemEffect(st: ShiftType, domPerson: DominanceType, domTeam: DominanceType, isLeading: boolean): string {
-  const role = isLeading ? "der neuen Führung" : "der neuen Person";
+function buildSystemEffect(st: ShiftType, domPerson: DominanceType, domTeam: DominanceType, role: PersonRole): string {
+  const genitive = roleNarrativeGenitive(role);
+  const steeringNote = role === "FUEHREND" ? "Normale Führung ist ausreichend." : role === "STRATEGISCH" ? "Regelmäßige strategische Abstimmung ist ausreichend." : "Normale Teamsteuerung ist ausreichend.";
 
   switch (st) {
-    case "VERSTAERKUNG": return `Arbeitsweisen passen gut zusammen. Entscheidungen werden schnell akzeptiert. Abstimmungen verlaufen reibungslos. Keine besonderen Anpassungen notwendig. Normale Führung ist ausreichend.`;
-    case "ERGAENZUNG": return `Die neue Arbeitsweise ergänzt das Team um fehlende Perspektiven. Moderate Abstimmung empfehlenswert.`;
+    case "VERSTAERKUNG": return `Die veränderte Sach- und Faktenorientierung ergänzt ein beziehungs- und harmonieorientiertes System. Prioritäten, Klarheit und Entscheidungsdisziplin nehmen zu. Emotionale Aspekte werden stärker durch Struktur und Logik gerahmt. ${steeringNote}`;
+    case "ERGAENZUNG": return `Die Arbeitsweise ${genitive} ergänzt das Team um fehlende Perspektiven. Moderate Abstimmung empfehlenswert.`;
     case "REIBUNG": return `Unterschiedliche Arbeitsweisen treffen aufeinander. Entscheidungen dauern teilweise länger. Prioritäten müssen klarer erklärt werden. Mehr Abstimmungsbedarf im Alltag. Mit klaren Regeln bleibt das System stabil.`;
     case "SPANNUNG":
-    case "TRANSFORMATION": return `Gewohnte Abläufe verändern sich spürbar. Diskussionen über Prioritäten nehmen zu. Widerstand oder Unsicherheit im Team möglich. Ohne klare Führung entsteht Instabilität.`;
+    case "TRANSFORMATION": return `Gewohnte Abläufe verändern sich durch den Einfluss ${genitive} spürbar. Diskussionen über Prioritäten nehmen zu. Widerstand oder Unsicherheit im Team möglich. Ohne klare Steuerung entsteht Instabilität.`;
     default: return `Unterschiedliche Arbeitsweisen treffen aufeinander. Mehr Abstimmungsbedarf im Alltag. Mit klaren Regeln bleibt das System stabil.`;
   }
 }
@@ -498,10 +558,11 @@ function buildChances(st: ShiftType, domPerson: DominanceType, domTeam: Dominanc
   ];
 }
 
-function buildRisks(st: ShiftType, domPerson: DominanceType, domTeam: DominanceType, isLeading: boolean): string[] {
+function buildRisks(st: ShiftType, domPerson: DominanceType, domTeam: DominanceType, role: PersonRole): string[] {
   const pLabel = { IMPULSIV: "Umsetzungs", INTUITIV: "Beziehungs", ANALYTISCH: "Struktur", MIX: "Misch" }[domPerson];
   const tLabel = { IMPULSIV: "umsetzungsorientierten", INTUITIV: "beziehungsorientierten", ANALYTISCH: "strukturorientierten", MIX: "ausgeglichenen" }[domTeam];
-  const role = isLeading ? "Führung" : "Neue Person";
+  const rn = roleNarrativeShort(role);
+  const canLead = hasLeadershipView(role);
 
   if (st === "VERSTAERKUNG") return [
     `Einseitige Verstärkung ohne Korrektiv. Im Alltag: blinde Flecken bei nachrangigen Kompetenzen.`,
@@ -510,26 +571,26 @@ function buildRisks(st: ShiftType, domPerson: DominanceType, domTeam: DominanceT
   ];
   if (st === "ERGAENZUNG") return [
     `Integrationsphase erfordert bewusste Steuerung. Im Alltag: temporäre Reibung bei Priorisierung.`,
-    `${role} muss Anschlussfähigkeit aktiv herstellen.`,
+    `${rn} muss Anschlussfähigkeit aktiv herstellen.`,
     "Unterschiedliche Arbeitsgeschwindigkeit in der Einarbeitung.",
   ];
   return [
-    `${pLabel}logik der ${role} und ${tLabel}s Team priorisieren unterschiedlich. Im Alltag: Konflikte bei Entscheidungsgeschwindigkeit und -logik.`,
+    `${pLabel}logik der ${rn} und ${tLabel}s Team priorisieren unterschiedlich. Im Alltag: Konflikte bei Entscheidungsgeschwindigkeit und -logik.`,
     `Gegenseitige Fehlinterpretation von Arbeitsstil. Im Alltag: stille Frustration und Rückzug.`,
     "Ohne Steuerung wird Reibung zu chronischem Spannungsfeld.",
-    st === "TRANSFORMATION" || st === "SPANNUNG" ? `${isLeading ? "Führungsakzeptanz" : "Teamintegration"} gefährdet. Im Alltag: Widerstand und Abgrenzung.` : "Motivationsdelle bei stark betroffenen Teammitgliedern möglich.",
+    st === "TRANSFORMATION" || st === "SPANNUNG" ? `${canLead ? "Akzeptanz der Besetzung" : "Teamintegration"} gefährdet. Im Alltag: Widerstand und Abgrenzung.` : "Motivationsdelle bei stark betroffenen Teammitgliedern möglich.",
     st === "TRANSFORMATION" ? "Kulturelle Transformation braucht 6-12 Monate. Im Alltag: lange Unsicherheitsphase." : "Ohne bewusste Steuerung steigt der Konfliktgrad.",
     "Überstrukturierung oder Kontrollverlust je nach Dynamik.",
   ];
 }
 
-function buildIntegrationPlan(st: ShiftType, isLeading: boolean): { phaseId: string; title: string; days: string; actions: string[] }[] {
-  const role = isLeading ? "Führungskraft" : "Teammitglied";
+function buildIntegrationPlan(st: ShiftType, role: PersonRole): { phaseId: string; title: string; days: string; actions: string[] }[] {
+  const rl = roleIntegrationLabel(role);
   return [
     { phaseId: "P1", title: "Architektur klären", days: "0–10 Tage", actions: [
       "Rollen- und Entscheidungsgrenzen definieren.",
       "Qualitäts-Gates und Reportingstruktur abstimmen.",
-      `${role} definiert Arbeitslogik und Entscheidungswege explizit.`,
+      `${rl} definiert Arbeitslogik und Entscheidungswege explizit.`,
       "Erwartungsgespräche mit Team führen.",
     ]},
     { phaseId: "P2", title: "Wirkung erzeugen", days: "10–20 Tage", actions: [
@@ -547,8 +608,10 @@ function buildIntegrationPlan(st: ShiftType, isLeading: boolean): { phaseId: str
   ];
 }
 
-function buildLeadershipContext(domPerson: DominanceType, domTeam: DominanceType, person: Triad, team: Triad, isLeading: boolean, shiftT: ShiftType, rollenDna?: RollenDnaContext | null): LeadershipContext | null {
-  if (!isLeading) return null;
+function buildLeadershipContext(domPerson: DominanceType, domTeam: DominanceType, person: Triad, team: Triad, role: PersonRole, shiftT: ShiftType, rollenDna?: RollenDnaContext | null): LeadershipContext | null {
+  if (!hasLeadershipView(role)) return null;
+  const isFuehrend = isLeadingRole(role);
+  const roleLabel = isFuehrend ? "Führungskraft" : "Strategische Besetzung";
 
   const personTraits: Record<DominanceType, { label: string; strengths: string }> = {
     IMPULSIV: { label: "Impulsiv-dominant", strengths: "Tempo, Entscheidungsstärke, Ergebnisorientierung und Durchsetzungskraft" },
@@ -589,49 +652,49 @@ function buildLeadershipContext(domPerson: DominanceType, domTeam: DominanceType
   let actionFocus: string;
 
   if (domPerson === domTeam && domPerson !== "MIX") {
-    fitSummary = "Führungskraft und Team teilen dieselbe Arbeitslogik. Die Führung wird schnell akzeptiert, weil Prioritäten und Entscheidungsstil übereinstimmen.";
+    fitSummary = `${roleLabel} und Team teilen dieselbe Arbeitslogik. Die Besetzung wird schnell akzeptiert, weil Prioritäten und Entscheidungsstil übereinstimmen.`;
     coreChallenge = "Einseitige Verstärkung: Blinde Flecken bei den nachrangigen Kompetenzen bleiben unbearbeitet. Fehlende Korrektive können sich langfristig auswirken.";
-    coreChance = "Schnelle Integration, hohe Akzeptanz, stabile Entscheidungswege. Die Führungskraft kann sofort wirksam steuern.";
+    coreChance = `Schnelle Integration, hohe Akzeptanz, stabile Entscheidungswege. ${roleLabel} kann sofort wirksam steuern.`;
     actionFocus = "Bewusst Impulse für die schwächeren Bereiche setzen, um langfristige Einseitigkeit zu vermeiden.";
   } else if (shiftT === "ERGAENZUNG") {
-    fitSummary = "Die Führungskraft ergänzt das Team um fehlende Perspektiven. Die Zusammenarbeit braucht anfangs mehr Abstimmung, wird aber langfristig breiter aufgestellt.";
-    coreChallenge = "Das Team muss sich auf einen neuen Führungsstil einstellen. Erwartungen an Tempo, Kommunikation oder Struktur können kurzfristig kollidieren.";
+    fitSummary = `${roleLabel} ergänzt das Team um fehlende Perspektiven. Die Zusammenarbeit braucht anfangs mehr Abstimmung, wird aber langfristig breiter aufgestellt.`;
+    coreChallenge = `Das Team muss sich auf ${isFuehrend ? "einen neuen Führungsstil" : "eine neue Arbeitslogik"} einstellen. Erwartungen an Tempo, Kommunikation oder Struktur können kurzfristig kollidieren.`;
     coreChance = "Neue Impulse für Entscheidungsfindung. Blinde Flecken werden adressiert. Langfristig entsteht ein ausgewogeneres Gesamtsystem.";
     actionFocus = "Erwartungen früh klären, Kommunikationswege definieren, erste Erfolge sichtbar machen.";
   } else {
     const fitPairs: Record<string, { fit: string; challenge: string; chance: string; action: string }> = {
       "IMPULSIV-INTUITIV": {
-        fit: "Die Führungskraft priorisiert Tempo und Ergebnisse. Das Team arbeitet über Beziehung und Dialog. Diese Kombination erzeugt Spannung zwischen Ergebnisdruck und Abstimmungsbedarf.",
-        challenge: "Das Team empfindet die Führung als zu direkt und druckvoll. Wichtige Beziehungspflege droht unter dem Ergebnisfokus zu leiden.",
+        fit: `${roleLabel} priorisiert Tempo und Ergebnisse. Das Team arbeitet über Beziehung und Dialog. Diese Kombination erzeugt Spannung zwischen Ergebnisdruck und Abstimmungsbedarf.`,
+        challenge: `Das Team empfindet die Besetzung als zu direkt und druckvoll. Wichtige Beziehungspflege droht unter dem Ergebnisfokus zu leiden.`,
         chance: "Wenn Ergebnisorientierung mit Beziehungspflege kombiniert wird, entsteht ein leistungsstarkes und gleichzeitig stabiles Team.",
         action: "Beziehungsebene ritualisieren (z.B. wöchentliche Teamrunde), Ergebnisziele klar kommunizieren, Entscheidungszeitfenster setzen.",
       },
       "IMPULSIV-ANALYTISCH": {
-        fit: "Die Führungskraft will schnelle Ergebnisse. Das Team braucht Struktur und Absicherung. Tempo trifft auf Qualitätsanspruch.",
-        challenge: "Das Team empfindet die Führung als unstrukturiert. Qualitätsverlust durch überhöhtes Tempo ist ein reales Risiko.",
+        fit: `${roleLabel} will schnelle Ergebnisse. Das Team braucht Struktur und Absicherung. Tempo trifft auf Qualitätsanspruch.`,
+        challenge: `Das Team empfindet die Besetzung als unstrukturiert. Qualitätsverlust durch überhöhtes Tempo ist ein reales Risiko.`,
         chance: "Wenn Tempo durch klare Standards abgesichert wird, entsteht ein effizientes System mit hoher Umsetzungsgeschwindigkeit und Qualität.",
         action: "80/20-Qualitätsstandard festlegen, Priorisierungsregeln definieren, Review-Rhythmus mit klarem Zeitlimit einführen.",
       },
       "INTUITIV-IMPULSIV": {
-        fit: "Die Führungskraft setzt auf Dialog und Konsens. Das Team arbeitet umsetzungs- und ergebnisorientiert. Das Team erwartet schnelle, klare Ansagen.",
-        challenge: "Das Team empfindet die Führung als zögerlich. Entscheidungsverzögerung durch Konsensbedürfnis bremst die Umsetzung.",
-        chance: "Wenn die Führungskraft klare Entscheidungen mit Beziehungsintelligenz verbindet, steigt sowohl Akzeptanz als auch Bindung im Team.",
+        fit: `${roleLabel} setzt auf Dialog und Konsens. Das Team arbeitet umsetzungs- und ergebnisorientiert. Das Team erwartet schnelle, klare Ansagen.`,
+        challenge: `Das Team empfindet die Besetzung als zögerlich. Entscheidungsverzögerung durch Konsensbedürfnis bremst die Umsetzung.`,
+        chance: `Wenn ${roleLabel} klare Entscheidungen mit Beziehungsintelligenz verbindet, steigt sowohl Akzeptanz als auch Bindung im Team.`,
         action: "Entscheidungsfristen verbindlich machen, Ergebnisorientierung sichtbar integrieren, Klarheit über Eskalationswege schaffen.",
       },
       "INTUITIV-ANALYTISCH": {
-        fit: "Die Führungskraft priorisiert Beziehung und Abstimmung. Das Team erwartet klare Strukturen und Prozesse. Abstimmungsschleifen kollidieren mit Prozesseffizienz.",
+        fit: `${roleLabel} priorisiert Beziehung und Abstimmung. Das Team erwartet klare Strukturen und Prozesse. Abstimmungsschleifen kollidieren mit Prozesseffizienz.`,
         challenge: "Das Team erwartet klare Vorgaben und bekommt Gesprächsangebote. Prozesseffizienz leidet unter zu viel Abstimmung.",
         chance: "Wenn Struktur und Beziehungspflege zusammenwirken, entsteht ein Team mit hoher Verbindlichkeit und gleichzeitig stabiler Qualität.",
         action: "Prozess-Standards definieren, Entscheidungslogik klären (wann Konsens, wann Vorgabe), Review-Format standardisieren.",
       },
       "ANALYTISCH-IMPULSIV": {
-        fit: "Die Führungskraft bringt Struktur und Absicherung. Das Team ist tempoorientiert und ergebnisorientiert. Prozessqualität kollidiert mit Geschwindigkeitserwartung.",
+        fit: `${roleLabel} bringt Struktur und Absicherung. Das Team ist tempoorientiert und ergebnisorientiert. Prozessqualität kollidiert mit Geschwindigkeitserwartung.`,
         challenge: "Das Team empfindet neue Prozesse als Bremse. Kontrolle wird als Misstrauen interpretiert. Innovationsverlust durch Über-Strukturierung.",
         chance: "Wenn Standards und Tempo ausbalanciert werden, entsteht ein leistungsstarkes System mit klarer Prozessqualität.",
         action: "80/20-Standard festlegen, Entscheidungszeitfenster definieren, Priorisierungsregeln für Qualität vs. Tempo vereinbaren.",
       },
       "ANALYTISCH-INTUITIV": {
-        fit: "Die Führungskraft priorisiert Fakten und Struktur. Das Team lebt über Beziehung und Kommunikation. Sachlichkeit trifft auf Nähe-Bedürfnis.",
+        fit: `${roleLabel} priorisiert Fakten und Struktur. Das Team lebt über Beziehung und Kommunikation. Sachlichkeit trifft auf Nähe-Bedürfnis.`,
         challenge: "Das Team nimmt emotionale Distanz wahr. Faktenorientierung wird als Kälte empfunden. Bindungsverlust ist ein reales Risiko.",
         chance: "Wenn Sachlichkeit mit bewusster Beziehungspflege kombiniert wird, entsteht ein professionelles und gleichzeitig menschliches Arbeitsumfeld.",
         action: "Beziehungsebene ritualisieren, regelmäßiges Feedback einführen, emotionale Anschlussfähigkeit bewusst gestalten.",
@@ -640,7 +703,7 @@ function buildLeadershipContext(domPerson: DominanceType, domTeam: DominanceType
 
     const key = `${domPerson}-${domTeam}`;
     const pair = fitPairs[key] || {
-      fit: "Die Führungskraft und das Team arbeiten in unterschiedlichen Logiken. Das erfordert bewusste Steuerung und klare Kommunikation.",
+      fit: `${roleLabel} und das Team arbeiten in unterschiedlichen Logiken. Das erfordert bewusste Steuerung und klare Kommunikation.`,
       challenge: "Unterschiedliche Erwartungen an Arbeitsweise und Entscheidungsfindung erzeugen Reibungspunkte im Alltag.",
       chance: "Die unterschiedliche Perspektive kann das System bereichern, wenn die Zusammenarbeit aktiv gestaltet wird.",
       action: "Klare Rollen, Entscheidungswege und Kommunikationsregeln von Anfang an etablieren.",
@@ -685,18 +748,18 @@ function buildLeadershipContext(domPerson: DominanceType, domTeam: DominanceType
     let roleRisk: string;
 
     if (roleLogikDom === domPerson) {
-      roleFitStatement = `Die Rolle „${beruf}" verlangt eine ${logikDesc}. Das Profil der Führungskraft passt direkt zu dieser Anforderung – die Kernkompetenzen decken sich mit dem Rollenfokus.`;
+      roleFitStatement = `Die Rolle „${beruf}" verlangt eine ${logikDesc}. Das Profil ${isFuehrend ? "der Führungskraft" : "der strategischen Besetzung"} passt direkt zu dieser Anforderung – die Kernkompetenzen decken sich mit dem Rollenfokus.`;
       if (roleLogikDom !== domTeam) {
-        roleRisk = `Die Rolle passt zur Führungskraft, aber das Team arbeitet in einer anderen Logik. Die Führungskraft muss das Team mitnehmen, ohne den Rollenfokus zu verlieren.`;
+        roleRisk = `Die Rolle passt zur ${roleLabel}, aber das Team arbeitet in einer anderen Logik. ${roleLabel} muss das Team mitnehmen, ohne den Rollenfokus zu verlieren.`;
       } else {
-        roleRisk = `Führungskraft, Team und Rolle arbeiten in derselben Logik. Risiko: Einseitige Verstärkung ohne Korrektur der blinden Flecken.`;
+        roleRisk = `${roleLabel}, Team und Rolle arbeiten in derselben Logik. Risiko: Einseitige Verstärkung ohne Korrektur der blinden Flecken.`;
       }
     } else if (roleLogikDom === domTeam) {
-      roleFitStatement = `Die Rolle „${beruf}" verlangt eine ${logikDesc}. Das Team bringt diese Kompetenz mit, aber die Führungskraft arbeitet in einer anderen Logik. Sie muss die Rollenanforderung aktiv steuern, ohne sie selbst natürlich auszufüllen.`;
-      roleRisk = `Die Führungskraft kann die Rollenanforderung nicht aus dem eigenen Profil heraus bedienen. Ohne bewusste Anpassung entsteht eine Steuerungslücke.`;
+      roleFitStatement = `Die Rolle „${beruf}" verlangt eine ${logikDesc}. Das Team bringt diese Kompetenz mit, aber ${roleLabel} arbeitet in einer anderen Logik. ${isFuehrend ? "Sie" : "Die Person"} muss die Rollenanforderung aktiv steuern, ohne sie selbst natürlich auszufüllen.`;
+      roleRisk = `${roleLabel} kann die Rollenanforderung nicht aus dem eigenen Profil heraus bedienen. Ohne bewusste Anpassung entsteht eine Steuerungslücke.`;
     } else {
-      roleFitStatement = `Die Rolle „${beruf}" verlangt eine ${logikDesc}. Weder Führungskraft noch Team bringen diese Kompetenz als Schwerpunkt mit. Das erfordert bewusste Steuerung und klare Prioritätensetzung.`;
-      roleRisk = `Kernkompetenz der Rolle ist weder bei der Führungskraft noch im Team dominant. Ohne externe Unterstützung oder gezielte Entwicklung droht eine strukturelle Lücke.`;
+      roleFitStatement = `Die Rolle „${beruf}" verlangt eine ${logikDesc}. Weder ${roleLabel} noch Team bringen diese Kompetenz als Schwerpunkt mit. Das erfordert bewusste Steuerung und klare Prioritätensetzung.`;
+      roleRisk = `Kernkompetenz der Rolle ist weder bei ${isFuehrend ? "der Führungskraft" : "der strategischen Besetzung"} noch im Team dominant. Ohne externe Unterstützung oder gezielte Entwicklung droht eine strukturelle Lücke.`;
     }
 
     const fuehrungsHint = fuehrungstyp !== "Keine"
@@ -721,7 +784,7 @@ function buildLeadershipContext(domPerson: DominanceType, domTeam: DominanceType
   };
 }
 
-function computeDepartmentFit(teamProfile: Triad, personProfile: Triad, deptType: DepartmentType, isLeading: boolean): DepartmentFit | null {
+function computeDepartmentFit(teamProfile: Triad, personProfile: Triad, deptType: DepartmentType, role: PersonRole): DepartmentFit | null {
   if (deptType === "ALLGEMEIN") return null;
 
   const dept = getDepartmentInfo(deptType);
@@ -765,8 +828,8 @@ function computeDepartmentFit(teamProfile: Triad, personProfile: Triad, deptType
     warnings.push(`Team: ${compLabel[teamGap.component]} ist für ${dept.label} zu niedrig (fehlen ${teamGap.amount} Punkte). ${dept.criticalLabel} könnte leiden.`);
   }
   if (personGap.component) {
-    const role = isLeading ? "Führungskraft" : "Neue Person";
-    warnings.push(`${role}: ${compLabel[personGap.component]} ist für ${dept.label} zu niedrig (fehlen ${personGap.amount} Punkte). ${dept.criticalLabel} wird nicht ausreichend abgedeckt.`);
+    const rl = personRoleLabel(role);
+    warnings.push(`${rl}: ${compLabel[personGap.component]} ist für ${dept.label} zu niedrig (fehlen ${personGap.amount} Punkte). ${dept.criticalLabel} wird nicht ausreichend abgedeckt.`);
   }
 
   const teamDom = dominanceType(teamProfile);
@@ -866,7 +929,7 @@ function applyUncontrolledStressLocal(profile: Triad, intensity: number): Triad 
   return p;
 }
 
-function computeStressShift(team: Triad, person: Triad, normalTS: number, isLeading: boolean, teamSize: TeamSize, roleSollEnabled: boolean, roleSoll: Triad | null): StressShift {
+function computeStressShift(team: Triad, person: Triad, normalTS: number, role: PersonRole, teamSize: TeamSize, roleSollEnabled: boolean, roleSoll: Triad | null): StressShift {
   const intensity = estimateStressIntensity(team, person);
 
   const cTeam = applyControlledStressLocal(team, intensity);
@@ -877,12 +940,12 @@ function computeStressShift(team: Triad, person: Triad, normalTS: number, isLead
   const cDG = distributionGap(cTeam, cPerson);
   const cDC = dominanceClash(dominanceType(cTeam), dominanceType(cPerson));
   const cRG = roleGap(roleSollEnabled, roleSoll, cPerson);
-  const controlledTS = transformationScore(cDG, cDC, cRG, isLeading, teamSize);
+  const controlledTS = transformationScore(cDG, cDC, cRG, role, teamSize);
 
   const uDG = distributionGap(uTeam, uPerson);
   const uDC = dominanceClash(dominanceType(uTeam), dominanceType(uPerson));
   const uRG = roleGap(roleSollEnabled, roleSoll, uPerson);
-  const uncontrolledTS = transformationScore(uDG, uDC, uRG, isLeading, teamSize);
+  const uncontrolledTS = transformationScore(uDG, uDC, uRG, role, teamSize);
 
   const deltaC = controlledTS - normalTS;
   const deltaU = uncontrolledTS - normalTS;
@@ -934,22 +997,23 @@ export function computeTeamDynamics(input: TeamDynamikInput): TeamDynamikResult 
   const DC = dominanceClash(domT, domP);
   const RG = roleGap(!!input.roleSoll?.enabled, roleSoll, person);
 
-  const TS = transformationScore(DG, DC, RG, input.isLeading, input.teamSize);
+  const TS = transformationScore(DG, DC, RG, input.personRole, input.teamSize);
   const level = intensityLevel(TS);
   const CI = conflictIndex(TS, DC);
 
   const axis = axisLabel(domT, domP);
-  const st = shiftType(domT, domP, DG, DC, TS, input.isLeading, input.personProfile);
+  const st = shiftType(domT, domP, DG, DC, TS, input.personRole, input.personProfile);
 
   const steer = calcSteeringNeed(level, RG, input.levers, input.steeringOverride);
   const tl = trafficLight(st, level, steer.final);
 
-  const cellId = input.isLeading ? matrixCellId(domP, domT) : matrixCellId(domT, domP);
+  const useLeaderMatrix = hasLeadershipView(input.personRole);
+  const cellId = useLeaderMatrix ? matrixCellId(domP, domT) : matrixCellId(domT, domP);
   const activeCell = MATRIX_CELLS.find(c => c.id === cellId) || MATRIX_CELLS[4];
 
-  const deptFit = computeDepartmentFit(input.teamProfile, input.personProfile, input.departmentType, input.isLeading);
+  const deptFit = computeDepartmentFit(input.teamProfile, input.personProfile, input.departmentType, input.personRole);
 
-  const stressShift = computeStressShift(team, person, TS, input.isLeading, input.teamSize, !!input.roleSoll?.enabled, roleSoll);
+  const stressShift = computeStressShift(team, person, TS, input.personRole, input.teamSize, !!input.roleSoll?.enabled, roleSoll);
 
   return {
     dominanceTeam: domT,
@@ -965,15 +1029,15 @@ export function computeTeamDynamics(input: TeamDynamikInput): TeamDynamikResult 
     trafficLight: tl,
     leverEffects: { enabledCount: steer.enabledCount, reductionLevels: steer.reductionLevels },
     activeMatrixCell: activeCell,
-    headline: buildHeadline(st, domT, domP, input.isLeading),
-    leadershipBehavior: buildLeadershipBehavior(domP, domT, input.isLeading),
-    systemEffect: buildSystemEffect(st, domP, domT, input.isLeading),
+    headline: buildHeadline(st, domT, domP, input.personRole),
+    leadershipBehavior: buildLeadershipBehavior(domP, domT, input.personRole),
+    systemEffect: buildSystemEffect(st, domP, domT, input.personRole),
     chances: buildChances(st, domP, domT),
-    risks: buildRisks(st, domP, domT, input.isLeading),
-    integrationPlan: buildIntegrationPlan(st, input.isLeading),
+    risks: buildRisks(st, domP, domT, input.personRole),
+    integrationPlan: buildIntegrationPlan(st, input.personRole),
     departmentFit: deptFit,
     stressShift,
-    leadershipContext: buildLeadershipContext(domP, domT, person, team, input.isLeading, st, input.rollenDna),
+    leadershipContext: buildLeadershipContext(domP, domT, person, team, input.personRole, st, input.rollenDna),
   };
 }
 
@@ -1082,8 +1146,8 @@ export function buildAIPayload(input: TeamDynamikInput, result: TeamDynamikResul
     context: {
       team_name: input.teamName,
       team_size: input.teamSize,
-      is_leading: input.isLeading,
-      person_role: input.isLeading ? "Führungskraft" : "Teammitglied",
+      person_role_type: input.personRole,
+      person_role: personRoleLabel(input.personRole),
       ...(deptPayload ? { department: deptPayload } : {}),
       tasks: input.tasks || [],
       kpi_focus: input.kpiFocus || [],
