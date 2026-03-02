@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { BarChart3, Briefcase, Heart, Shield, AlertTriangle, FileText, Check, Settings, RefreshCw, Loader2, Zap, Brain, Users, Target, TrendingUp, Lightbulb, Star } from "lucide-react";
+import { BarChart3, Briefcase, Heart, Shield, AlertTriangle, FileText, Check, Settings, RefreshCw, Loader2, Zap, Brain, Users, Target, TrendingUp, Lightbulb, Star, Activity } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE } from "@/data/berufe";
@@ -121,6 +121,83 @@ function classifyProfile(bg: BG): { type: ProfileType; intensity: Intensity } {
   }
   if (gap12 >= 5) return { type: `light_${max.key}` as ProfileType, intensity: "light" };
   return { type: "balanced_all", intensity: "balanced" };
+}
+
+type StructuralInsight = {
+  dominantLabel: string;
+  dominantKey: string;
+  secondLabel: string;
+  secondKey: string;
+  thirdLabel: string;
+  thirdKey: string;
+  gap12: number;
+  gap23: number;
+  hasDualDominance: boolean;
+  hasSecondaryCompetition: boolean;
+  stressControlled: string;
+  stressUncontrolled: string;
+  structureType: string;
+  structureDescription: string;
+};
+
+function analyzeProfileStructure(bg: BG): StructuralInsight {
+  const COMP_LABELS: Record<string, string> = { imp: "Impulsiv", int: "Intuitiv", ana: "Analytisch" };
+  const vals = [
+    { key: "imp", value: bg.imp },
+    { key: "int", value: bg.int },
+    { key: "ana", value: bg.ana },
+  ].sort((a, b) => b.value - a.value);
+
+  const [top, mid, low] = vals;
+  const rawGap12 = top.value - mid.value;
+  const rawGap23 = mid.value - low.value;
+  const gap12 = Math.round(rawGap12);
+  const gap23 = Math.round(rawGap23);
+  const hasDualDominance = rawGap12 <= 5;
+  const hasSecondaryCompetition = rawGap12 >= 10 && rawGap23 <= 5;
+
+  const dominantLabel = COMP_LABELS[top.key];
+  const secondLabel = COMP_LABELS[mid.key];
+  const thirdLabel = COMP_LABELS[low.key];
+
+  let structureType = "";
+  let structureDescription = "";
+
+  if (hasDualDominance) {
+    structureType = "Doppeldominanz";
+    structureDescription = `${dominantLabel} und ${secondLabel} sind nahezu gleich stark ausgeprägt (Δ ${gap12}). Die Rolle fordert gleichzeitig zwei Steuerungslogiken. Das kann Stärke sein – aber auch zu wechselndem Verhalten führen, weil keine klare Leitlinie dominiert.`;
+  } else if (hasSecondaryCompetition) {
+    structureType = "Sekundär-Konkurrenz";
+    structureDescription = `${dominantLabel} dominiert klar (Δ ${gap12} zum Zweitplatzierten). Allerdings liegen ${secondLabel} und ${thirdLabel} sehr nah beieinander (Δ ${gap23}). Unter Stress können diese beiden Komponenten miteinander konkurrieren und das Verhalten unberechenbar machen.`;
+  } else if (gap12 <= 6 && gap23 <= 6) {
+    structureType = "Ausgeglichen";
+    structureDescription = "Alle drei Komponenten sind ähnlich stark. Es gibt keine klare Leitstruktur – die Rolle erfordert situatives Umschalten zwischen allen Steuerungslogiken.";
+  } else {
+    structureType = `${dominantLabel}-dominiert`;
+    structureDescription = `${dominantLabel} führt das Profil mit klarem Abstand (Δ ${gap12}). Die Rolle hat eine eindeutige Steuerungslogik. ${secondLabel} unterstützt, ${thirdLabel} spielt eine untergeordnete Rolle.`;
+  }
+
+  let stressControlled = "";
+  if (hasDualDominance) {
+    stressControlled = `Bei kontrolliertem Stress wird sich eine der beiden starken Komponenten (${dominantLabel} oder ${secondLabel}) durchsetzen – welche, hängt vom Kontext ab. Das kann kurzfristig Klarheit schaffen, aber die zweite Seite wird unterdrückt.`;
+  } else {
+    stressControlled = `Bei kontrolliertem Stress verstärkt sich ${dominantLabel} (Tunneleffekt). Die Person fokussiert sich auf ihre stärkste Qualität – ${secondLabel} und ${thirdLabel} treten in den Hintergrund. Das bringt kurzfristig Entscheidungskraft, kann aber blind machen für Nebenwirkungen.`;
+  }
+
+  let stressUncontrolled = "";
+  if (hasSecondaryCompetition) {
+    stressUncontrolled = `Bei unkontrolliertem Stress beginnen ${secondLabel} und ${thirdLabel} zu konkurrieren. Die klare ${dominantLabel}-Führung bricht ein, das Verhalten wird wechselhaft. Die Person schwankt zwischen zwei Steuerungslogiken, ohne sich für eine zu entscheiden.`;
+  } else if (hasDualDominance) {
+    stressUncontrolled = `Bei unkontrolliertem Stress geraten ${dominantLabel} und ${secondLabel} in einen internen Konflikt. Beide Seiten wollen gleichzeitig steuern – das erzeugt Widersprüche im Verhalten. Entscheidungen werden zögerlich oder sprunghaft.`;
+  } else {
+    stressUncontrolled = `Bei unkontrolliertem Stress wird ${secondLabel} sichtbarer und drängt ${dominantLabel} zurück. Die ursprüngliche Stärke verliert an Durchschlagskraft. Das Verhalten verschiebt sich – oft überraschend für das Umfeld.`;
+  }
+
+  return {
+    dominantLabel, dominantKey: top.key, secondLabel, secondKey: mid.key, thirdLabel, thirdKey: low.key,
+    gap12, gap23, hasDualDominance, hasSecondaryCompetition,
+    stressControlled, stressUncontrolled, structureType, structureDescription,
+  };
 }
 
 const ERFOLGSFOKUS_LABELS = [
@@ -673,6 +750,123 @@ export default function Bericht() {
                 <ChartCard icon={BarChart3} title="Gesamtprofil" bg={gesamt} accent={CHAPTER_COLORS[1]} />
                 <div style={{ marginTop: 18 }}><TextBlock text={bericht.gesamtprofil} /></div>
               </GlassCard>
+
+              {/* Strukturanalyse (deterministic) */}
+              {(() => {
+                const sa = analyzeProfileStructure(gesamt);
+                const compColor = (key: string) => key === "imp" ? COLORS.imp : key === "int" ? COLORS.int : COLORS.ana;
+                return (
+                  <GlassCard testId="bericht-section-struktur" style={{ padding: "30px 28px" }}>
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
+                      <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[1]} />
+                      <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Strukturanalyse</span>
+                    </div>
+
+                    <div style={{
+                      display: "flex", alignItems: "center", gap: 10,
+                      padding: "12px 18px", borderRadius: 14,
+                      background: `${compColor(sa.dominantKey)}08`,
+                      border: `1px solid ${compColor(sa.dominantKey)}15`,
+                      marginBottom: 18,
+                    }}>
+                      <div style={{
+                        width: 28, height: 28, borderRadius: 9, flexShrink: 0,
+                        background: `${compColor(sa.dominantKey)}15`,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>
+                        <Activity style={{ width: 14, height: 14, color: compColor(sa.dominantKey), strokeWidth: 2 }} />
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{sa.structureType}</span>
+                        <span style={{ fontSize: 12, color: "#8E8E93", marginLeft: 8 }}>
+                          {sa.dominantLabel} {Math.round(gesamt[sa.dominantKey as keyof BG])} · {sa.secondLabel} {Math.round(gesamt[sa.secondKey as keyof BG])} · {sa.thirdLabel} {Math.round(gesamt[sa.thirdKey as keyof BG])}
+                        </span>
+                      </div>
+                    </div>
+
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
+                      {hyphenateText(sa.structureDescription)}
+                    </p>
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", width: 52, flexShrink: 0 }}>Δ 1–2</span>
+                        <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
+                          <div style={{ width: `${Math.min((sa.gap12 / 30) * 100, 100)}%`, height: "100%", borderRadius: 3, background: sa.hasDualDominance ? "#FF9500" : "#34C759", transition: "width 600ms" }} />
+                        </div>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: "#3A3A3C", width: 32, textAlign: "right" }}>{sa.gap12}</span>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", width: 52, flexShrink: 0 }}>Δ 2–3</span>
+                        <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
+                          <div style={{ width: `${Math.min((sa.gap23 / 30) * 100, 100)}%`, height: "100%", borderRadius: 3, background: sa.hasSecondaryCompetition ? "#FF9500" : "#34C759", transition: "width 600ms" }} />
+                        </div>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: "#3A3A3C", width: 32, textAlign: "right" }}>{sa.gap23}</span>
+                      </div>
+                    </div>
+
+                    {sa.hasDualDominance && (
+                      <div style={{
+                        padding: "14px 18px", borderRadius: 14, marginBottom: 14,
+                        background: "rgba(255,149,0,0.06)", border: "1px solid rgba(255,149,0,0.12)",
+                        display: "flex", alignItems: "flex-start", gap: 10,
+                      }}>
+                        <AlertTriangle style={{ width: 14, height: 14, color: "#FF9500", marginTop: 2, flexShrink: 0 }} />
+                        <div>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", display: "block", marginBottom: 2 }}>Doppeldominanz</span>
+                          <span style={{ fontSize: 12.5, color: "#48484A", lineHeight: 1.7 }}>
+                            {sa.dominantLabel} und {sa.secondLabel} liegen nur {sa.gap12} Punkte auseinander. Das Profil hat keine eindeutige Leitkomponente – im Alltag kann das zwischen Flexibilität und Richtungswechsel pendeln.
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {sa.hasSecondaryCompetition && (
+                      <div style={{
+                        padding: "14px 18px", borderRadius: 14, marginBottom: 14,
+                        background: "rgba(255,149,0,0.06)", border: "1px solid rgba(255,149,0,0.12)",
+                        display: "flex", alignItems: "flex-start", gap: 10,
+                      }}>
+                        <AlertTriangle style={{ width: 14, height: 14, color: "#FF9500", marginTop: 2, flexShrink: 0 }} />
+                        <div>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", display: "block", marginBottom: 2 }}>Sekundär-Konkurrenz</span>
+                          <span style={{ fontSize: 12.5, color: "#48484A", lineHeight: 1.7 }}>
+                            {sa.secondLabel} und {sa.thirdLabel} liegen nur {sa.gap23} Punkte auseinander, während {sa.dominantLabel} klar führt. Unter Stress können die beiden ähnlich starken Komponenten gegeneinander arbeiten.
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "18px 0" }} />
+
+                    <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>Stressverhalten</p>
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                      <div style={{
+                        padding: "14px 18px", borderRadius: 14,
+                        background: "rgba(52,199,89,0.05)", border: "1px solid rgba(52,199,89,0.12)",
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#34C759" }} />
+                          <span style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F" }}>Kontrollierter Stress</span>
+                        </div>
+                        <p style={{ fontSize: 12.5, color: "#48484A", lineHeight: 1.7, margin: 0 }}>{sa.stressControlled}</p>
+                      </div>
+
+                      <div style={{
+                        padding: "14px 18px", borderRadius: 14,
+                        background: "rgba(255,59,48,0.05)", border: "1px solid rgba(255,59,48,0.12)",
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#FF3B30" }} />
+                          <span style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F" }}>Unkontrollierter Stress</span>
+                        </div>
+                        <p style={{ fontSize: 12.5, color: "#48484A", lineHeight: 1.7, margin: 0 }}>{sa.stressUncontrolled}</p>
+                      </div>
+                    </div>
+                  </GlassCard>
+                );
+              })()}
 
               {/* 03 Rahmenbedingungen */}
               <GlassCard testId="bericht-section-rahmen" style={{ padding: "30px 28px" }}>
