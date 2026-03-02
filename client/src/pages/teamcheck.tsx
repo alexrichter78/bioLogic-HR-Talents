@@ -989,47 +989,50 @@ export default function TeamCheck() {
           <GlassCard data-testid="section-diagnose">
             <SectionHeader num={1} title="DIAGNOSE" icon={BarChart3} />
 
-            {/* Toggle Führung / Teammitglied */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-              <span style={{ fontSize: 12, color: "#6E6E73" }}>Rolle:</span>
-              <div style={{ display: "flex", borderRadius: 10, overflow: "hidden", border: "1px solid rgba(0,0,0,0.08)" }}>
-                {[true, false].map(val => (
-                  <button key={String(val)}
-                    data-testid={val ? "toggle-leading-yes" : "toggle-leading-no"}
-                    onClick={() => setIsLeading(val)}
-                    style={{
-                      padding: "6px 16px", border: "none", cursor: "pointer",
-                      fontSize: 12, fontWeight: isLeading === val ? 600 : 400,
-                      background: isLeading === val ? "#0071E3" : "transparent",
-                      color: isLeading === val ? "#FFF" : "#6E6E73",
-                    }}
-                  >{val ? "Führung" : "Teammitglied"}</button>
-                ))}
+            {/* Rolle + Teamgröße */}
+            <div style={{ display: "flex", gap: 24, flexWrap: "wrap", marginBottom: 20 }}>
+              <div style={{ flex: 1, minWidth: 200 }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Rolle der neuen Person</p>
+                <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3 }}>
+                  {[true, false].map(val => (
+                    <button key={String(val)}
+                      data-testid={val ? "toggle-leading-yes" : "toggle-leading-no"}
+                      onClick={() => setIsLeading(val)}
+                      style={{
+                        flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: isLeading === val ? 700 : 500,
+                        background: isLeading === val ? "#fff" : "transparent",
+                        boxShadow: isLeading === val ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                        border: "none", cursor: "pointer",
+                        color: isLeading === val ? "#0071E3" : "#8E8E93",
+                        transition: "all 200ms ease",
+                      }}
+                    >{val ? "Führung" : "Teammitglied"}</button>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Teamgröße */}
-            <div style={{ marginBottom: 20 }}>
-              <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Teamgröße</p>
-              <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, marginBottom: 6 }}>
-                {(["KLEIN", "MITTEL", "GROSS"] as TeamSize[]).map(size => {
-                  const labels: Record<TeamSize, string> = { KLEIN: "Klein (2–5)", MITTEL: "Mittel (6–12)", GROSS: "Groß (13+)" };
-                  const active = teamSize === size;
-                  return (
-                    <button key={size} onClick={() => setTeamSize(size)} data-testid={`toggle-size-${size.toLowerCase()}`} style={{
-                      flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: active ? 700 : 500,
-                      background: active ? "#fff" : "transparent",
-                      boxShadow: active ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
-                      border: "none", cursor: "pointer",
-                      color: active ? "#0071E3" : "#8E8E93",
-                      transition: "all 200ms ease",
-                    }}>{labels[size]}</button>
-                  );
-                })}
+              <div style={{ flex: 1, minWidth: 200 }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Teamgröße</p>
+                <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, marginBottom: 6 }}>
+                  {(["KLEIN", "MITTEL", "GROSS"] as TeamSize[]).map(size => {
+                    const labels: Record<TeamSize, string> = { KLEIN: "Klein (2–5)", MITTEL: "Mittel (6–12)", GROSS: "Groß (13+)" };
+                    const active = teamSize === size;
+                    return (
+                      <button key={size} onClick={() => setTeamSize(size)} data-testid={`toggle-size-${size.toLowerCase()}`} style={{
+                        flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: active ? 700 : 500,
+                        background: active ? "#fff" : "transparent",
+                        boxShadow: active ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                        border: "none", cursor: "pointer",
+                        color: active ? "#0071E3" : "#8E8E93",
+                        transition: "all 200ms ease",
+                      }}>{labels[size]}</button>
+                    );
+                  })}
+                </div>
+                <p style={{ fontSize: 12, color: "#8E8E93", margin: 0 }}>
+                  {teamSize === "KLEIN" ? "Kleine Teams: Jede Person hat hohen Einfluss auf die Dynamik." : teamSize === "GROSS" ? "Große Teams: Einzelpersonen verändern die Gesamtdynamik weniger stark." : "Mittlere Teams: Spürbarer, aber begrenzter Einfluss pro Person."}
+                </p>
               </div>
-              <p style={{ fontSize: 12, color: "#8E8E93", margin: 0 }}>
-                {teamSize === "KLEIN" ? "Kleine Teams: Jede Person hat hohen Einfluss auf die Dynamik." : teamSize === "GROSS" ? "Große Teams: Einzelpersonen verändern die Gesamtdynamik weniger stark." : "Mittlere Teams: Spürbarer, aber begrenzter Einfluss pro Person."}
-              </p>
             </div>
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
