@@ -27,14 +27,19 @@ const TL_COLORS: Record<TrafficLight, { bg: string; fill: string; label: string 
   RED: { bg: "rgba(255,59,48,0.08)", fill: "#FF3B30", label: "Spannungsfeld" },
 };
 
-function TrafficLightDot({ tl }: { tl: TrafficLight }) {
+function TrafficLightAmpel({ tl }: { tl: TrafficLight }) {
+  const order: TrafficLight[] = ["RED", "YELLOW", "GREEN"];
   return (
-    <div style={{
-      width: 18, height: 18, borderRadius: "50%",
-      background: TL_COLORS[tl].fill,
-      boxShadow: `0 0 10px ${TL_COLORS[tl].fill}40`,
-      flexShrink: 0,
-    }} data-testid="traffic-light-dot" />
+    <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "center" }} data-testid="traffic-light">
+      {order.map(c => (
+        <div key={c} style={{
+          width: 16, height: 16, borderRadius: "50%",
+          background: c === tl ? TL_COLORS[c].fill : `${TL_COLORS[c].fill}15`,
+          boxShadow: c === tl ? `0 0 12px ${TL_COLORS[c].fill}40` : "none",
+          transition: "all 400ms ease",
+        }} />
+      ))}
+    </div>
   );
 }
 
@@ -517,7 +522,7 @@ export default function TeamCheck() {
                             display: "flex", alignItems: "center", justifyContent: "center",
                             boxShadow: `0 4px 16px ${tl.fill}20`,
                           }}>
-                            <TrafficLightDot tl={tdResult.trafficLight} />
+                            <TrafficLightAmpel tl={tdResult.trafficLight} />
                           </div>
                           <div>
                             <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 2px" }}>Gesamtbewertung</p>
@@ -667,7 +672,7 @@ export default function TeamCheck() {
                       background: `${tl.bg}`,
                       border: `1px solid ${tl.fill}20`,
                     }}>
-                      <TrafficLightDot tl={tdResult.trafficLight} />
+                      <TrafficLightAmpel tl={tdResult.trafficLight} />
                       <span style={{ fontSize: 14, fontWeight: 700, color: tl.fill }}>{tl.label}</span>
                     </div>
                   </GlassCard>
@@ -810,7 +815,7 @@ export default function TeamCheck() {
                                 borderRadius: 16, marginBottom: 12,
                                 background: `${tl.bg}`, border: `1px solid ${tl.fill}18`,
                               }}>
-                                <TrafficLightDot tl={tdResult.trafficLight} />
+                                <TrafficLightAmpel tl={tdResult.trafficLight} />
                                 <span style={{ fontSize: 14, fontWeight: 700, color: tl.fill }}>{tl.label}</span>
                               </div>
                             )}
@@ -994,7 +999,7 @@ export default function TeamCheck() {
                   boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
                 }} data-testid="executive-header">
                   <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
-                    <TrafficLightDot tl={tlKey} />
+                    <TrafficLightAmpel tl={tlKey} />
                     <div style={{ flex: 1, minWidth: 140 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                         <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} data-testid="text-team-label">{beruf || "Projektteam"}</span>
