@@ -281,26 +281,90 @@ export default function TeamCheck() {
               </div>
             </div>
 
-            {/* Executive Header – Ampel + Headline */}
-            <div style={{
-              padding: "16px 20px", borderRadius: 16,
-              background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-              border: "1px solid rgba(0,0,0,0.06)",
-              boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
-            }} data-testid="executive-header">
-              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                <TrafficLightDot tl={tdResult.trafficLight} />
-                <div style={{ flex: 1, minWidth: 140 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                    <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} data-testid="text-team-label">{beruf || "Projektteam"}</span>
-                    <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: tl.bg, color: tl.fill }} data-testid="badge-status">{tl.label}</span>
+            {/* Executive Header – Ampel + Headline + Detail */}
+            {(() => {
+              const tlKey = tdResult.trafficLight;
+              const detail: Record<TrafficLight, { title: string; desc: string; bullets: string[]; recLabel: string; rec: string }> = {
+                RED: {
+                  title: "Deutliche Spannungen – klare Führung notwendig",
+                  desc: "Arbeitslogiken unterscheiden sich stark. Ohne aktive Steuerung entstehen Leistungs- und Konfliktrisiken.",
+                  bullets: [
+                    "Prioritäten werden unterschiedlich interpretiert.",
+                    "Tempo oder Qualität geraten unter Druck.",
+                    "Widerstand, Rückzug oder Lagerbildung sind möglich.",
+                  ],
+                  recLabel: "Was ist zu tun?",
+                  rec: "Klare Standards, feste Entscheidungsregeln und regelmäßige Reviews sind zwingend.",
+                },
+                YELLOW: {
+                  title: "Unterschiedliche Arbeitsweisen – aktiv steuern",
+                  desc: "Unterschiede sind spürbar. Mit klaren Regeln bleibt das System stabil steuerbar.",
+                  bullets: [
+                    "Entscheidungen dauern teilweise länger.",
+                    "Prioritäten müssen häufiger erklärt werden.",
+                    "Abstimmungsaufwand steigt im Alltag.",
+                  ],
+                  recLabel: "Was ist zu tun?",
+                  rec: "Entscheidungswege, Zeitfenster und Verantwortlichkeiten müssen klar gesetzt werden.",
+                },
+                GREEN: {
+                  title: "Stabil – passt gut zusammen",
+                  desc: "Arbeitsweisen sind kompatibel. Keine besonderen Maßnahmen notwendig.",
+                  bullets: [
+                    "Entscheidungen werden schnell verstanden und akzeptiert.",
+                    "Abstimmungen laufen reibungslos.",
+                    "Tempo und Qualität bleiben stabil.",
+                  ],
+                  recLabel: "Was ist zu tun?",
+                  rec: "Normale Führung und regelmäßige Abstimmung reichen aus.",
+                },
+              };
+              const d = detail[tlKey];
+              return (
+                <div style={{
+                  padding: "20px 22px", borderRadius: 18,
+                  background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+                  border: "1px solid rgba(0,0,0,0.06)",
+                  boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+                }} data-testid="executive-header">
+                  <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
+                    <TrafficLightDot tl={tlKey} />
+                    <div style={{ flex: 1, minWidth: 140 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                        <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} data-testid="text-team-label">{beruf || "Projektteam"}</span>
+                        <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: tl.bg, color: tl.fill }} data-testid="badge-status">{tl.label}</span>
+                      </div>
+                      <p style={{ fontSize: 12, color: "#8E8E93", margin: "4px 0 0", lineHeight: 1.5 }} data-testid="text-headline" lang="de">
+                        {hyphenateText(tdResult.headline)}
+                      </p>
+                    </div>
                   </div>
-                  <p style={{ fontSize: 12, color: "#8E8E93", margin: "4px 0 0", lineHeight: 1.5 }} data-testid="text-headline" lang="de">
-                    {hyphenateText(tdResult.headline)}
-                  </p>
+
+                  <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 14 }}>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }} data-testid="detail-title">{d.title}</p>
+                    <p style={{ fontSize: 12, color: "#48484A", margin: "0 0 12px", lineHeight: 1.6 }} lang="de" data-testid="detail-desc">{hyphenateText(d.desc)}</p>
+
+                    <p style={{ fontSize: 11, fontWeight: 600, color: "#8E8E93", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Was bedeutet das konkret?</p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
+                      {d.bullets.map((b, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                          <span style={{ color: tl.fill, fontSize: 8, marginTop: 4, flexShrink: 0 }}>●</span>
+                          <span style={{ fontSize: 12, color: "#3A3A3C", lineHeight: 1.55 }}>{b}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div style={{
+                      padding: "10px 14px", borderRadius: 10,
+                      background: `${tl.fill}08`, border: `1px solid ${tl.fill}15`,
+                    }}>
+                      <p style={{ fontSize: 11, fontWeight: 600, color: tl.fill, margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.04em" }} data-testid="rec-label">{d.recLabel}</p>
+                      <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.55 }} data-testid="rec-text">{d.rec}</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              );
+            })()}
           </GlassCard>
 
           {/* SECTION 2: SYSTEMWIRKUNG */}
