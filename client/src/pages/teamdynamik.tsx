@@ -502,87 +502,97 @@ export default function Teamdynamik() {
 
                 const normalBullets = nr.componentBreakdown.split("\n");
 
+                const SectionCard = ({ barColor, children, testId }: { barColor: string; children: React.ReactNode; testId?: string }) => (
+                  <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }} data-testid={testId}>
+                    <div style={{ width: 4, flexShrink: 0, background: barColor }} />
+                    <div style={{ flex: 1, padding: "14px 16px" }}>{children}</div>
+                  </div>
+                );
+
                 return (
-                  <div style={{ padding: "14px 16px", borderRadius: 14, background: tl.bg, border: `1px solid ${tl.fill}20`, marginTop: 12 }} data-testid="detail-block">
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                      <p style={{ fontSize: 14, fontWeight: 700, color: tl.fill, margin: 0 }}>Normalzustand</p>
-                      <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 5, background: `${ratingColor[nr.rating] || tl.fill}15`, color: ratingColor[nr.rating] || tl.fill }} data-testid="badge-normal-rating">{nr.rating}</span>
-                    </div>
-                    <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 3px", lineHeight: 1.5 }}>{nr.ratingHeadline}</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 12 }} data-testid="detail-block">
+                    <SectionCard barColor={ratingColor[nr.rating] || "#8E8E93"} testId="section-normal">
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Normalzustand</p>
+                        <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 5, background: `${ratingColor[nr.rating] || "#8E8E93"}15`, color: ratingColor[nr.rating] || "#8E8E93" }} data-testid="badge-normal-rating">{nr.rating}</span>
+                      </div>
+                      <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 12px", lineHeight: 1.5 }}>{nr.ratingHeadline}</p>
 
-                    <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "14px 0 8px" }}>Komponentenanalyse</p>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 14 }}>
-                      {normalBullets.map((b, i) => (
-                        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                          <span style={{ color: tl.fill, fontSize: 10, marginTop: 3, flexShrink: 0 }}>●</span>
-                          <span style={{ fontSize: 12, color: "#3A3A3C", lineHeight: 1.5 }}>{b}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {m.normal.evaluation.flags.leadershipRules.length > 0 && (
-                      <div style={{ marginBottom: 10 }}>
-                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Führungsregeln</p>
-                        {m.normal.evaluation.flags.leadershipRules.map((rule, ri) => (
-                          <div key={ri} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 6 }}>
-                            <span style={{ fontSize: 10, color: rule.minRating === "Nicht passend" ? "#FF3B30" : "#FF9500", marginTop: 2, flexShrink: 0, fontWeight: 700 }}>{rule.code}</span>
-                            <span style={{ fontSize: 11, color: "#3A3A3C", lineHeight: 1.5 }}>
-                              <span style={{ fontWeight: 600 }}>{rule.title}:</span> {rule.message}
-                            </span>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>Komponentenanalyse</p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 14 }}>
+                        {normalBullets.map((b, i) => (
+                          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                            <span style={{ color: "#8E8E93", fontSize: 10, marginTop: 3, flexShrink: 0 }}>●</span>
+                            <span style={{ fontSize: 12, color: "#3A3A3C", lineHeight: 1.5 }}>{b}</span>
                           </div>
                         ))}
                       </div>
-                    )}
 
-                    {m.normal.evaluation.flags.leaderSecondaryCompetition?.active && (
-                      <p style={{ fontSize: 11, color: "#FF9500", margin: "0 0 10px", lineHeight: 1.5 }}>
-                        ⚠ Sekundär-Konkurrenz: 2. und 3. Komponente der Führung sind nahezu gleich stark – unter Stress konkurrieren sie.
+                      {m.normal.evaluation.flags.leadershipRules.length > 0 && (
+                        <div style={{ marginBottom: 10 }}>
+                          <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Führungsregeln</p>
+                          {m.normal.evaluation.flags.leadershipRules.map((rule, ri) => (
+                            <div key={ri} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 6 }}>
+                              <span style={{ fontSize: 10, color: rule.minRating === "Nicht passend" ? "#FF3B30" : "#FF9500", marginTop: 2, flexShrink: 0, fontWeight: 700 }}>{rule.code}</span>
+                              <span style={{ fontSize: 11, color: "#3A3A3C", lineHeight: 1.5 }}>
+                                <span style={{ fontWeight: 600 }}>{rule.title}:</span> {rule.message}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {m.normal.evaluation.flags.leaderSecondaryCompetition?.active && (
+                        <p style={{ fontSize: 11, color: "#FF9500", margin: "0 0 10px", lineHeight: 1.5 }}>
+                          ⚠ Sekundär-Konkurrenz: 2. und 3. Komponente der Führung sind nahezu gleich stark – unter Stress konkurrieren sie.
+                        </p>
+                      )}
+
+                      <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0 }}>
+                        <span style={{ fontWeight: 700 }}>Team-Fit-Score: </span>
+                        {(() => {
+                          const tfs = Math.round(m.normal.evaluation.indices.TFS * 100);
+                          const tfsBefore = m.normal.evaluation.indices.TFS_beforeLeadershipRules !== undefined
+                            ? Math.round(m.normal.evaluation.indices.TFS_beforeLeadershipRules * 100) : null;
+                          if (tfsBefore !== null && tfsBefore !== tfs) {
+                            return <>{tfsBefore} % <span style={{ color: "#8E8E93" }}>→</span> {tfs} % <span style={{ fontSize: 10, color: "#8E8E93" }}>(nach Führungsregeln)</span></>;
+                          }
+                          return <>{tfs} %</>;
+                        })()}
                       </p>
-                    )}
+                    </SectionCard>
 
-                    <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 10px" }}>
-                      <span style={{ fontWeight: 700 }}>Team-Fit-Score: </span>
-                      {(() => {
-                        const tfs = Math.round(m.normal.evaluation.indices.TFS * 100);
-                        const tfsBefore = m.normal.evaluation.indices.TFS_beforeLeadershipRules !== undefined
-                          ? Math.round(m.normal.evaluation.indices.TFS_beforeLeadershipRules * 100) : null;
-                        if (tfsBefore !== null && tfsBefore !== tfs) {
-                          return <>{tfsBefore} % <span style={{ color: "#8E8E93" }}>→</span> {tfs} % <span style={{ fontSize: 10, color: "#8E8E93" }}>(nach Führungsregeln)</span></>;
-                        }
-                        return <>{tfs} %</>;
-                      })()}
-                    </p>
+                    <SectionCard barColor={ratingColor[cr.rating] || "#8E8E93"} testId="section-controlled">
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Kontrollierter Stress</p>
+                        <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 5, background: `${ratingColor[cr.rating] || "#8E8E93"}15`, color: ratingColor[cr.rating] || "#8E8E93" }} data-testid="badge-controlled-rating">{cr.rating}</span>
+                      </div>
+                      <p style={{ fontSize: 11, color: "#6E6E73", margin: "0 0 4px", lineHeight: 1.5, fontStyle: "italic" }}>Die stärkste Komponente wird dominanter – mehr Klarheit, aber auch Tunnelblick-Risiko.</p>
+                      <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{cr.ratingHeadline}</p>
+                    </SectionCard>
 
-                    <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "14px 0" }} />
-
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Kontrollierter Stress</p>
-                      <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 5, background: `${ratingColor[cr.rating] || "#8E8E93"}15`, color: ratingColor[cr.rating] || "#8E8E93" }} data-testid="badge-controlled-rating">{cr.rating}</span>
-                    </div>
-                    <p style={{ fontSize: 11, color: "#6E6E73", margin: "0 0 4px", lineHeight: 1.5, fontStyle: "italic" }}>Die stärkste Komponente wird dominanter – mehr Klarheit, aber auch Tunnelblick-Risiko.</p>
-                    <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 3px", lineHeight: 1.5 }}>{cr.ratingHeadline}</p>
-
-                    <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "14px 0" }} />
-
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Unkontrollierter Stress</p>
-                      <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 5, background: `${ratingColor[ur.rating] || "#8E8E93"}15`, color: ratingColor[ur.rating] || "#8E8E93" }} data-testid="badge-uncontrolled-rating">{ur.rating}</span>
-                    </div>
-                    <p style={{ fontSize: 11, color: "#6E6E73", margin: "0 0 4px", lineHeight: 1.5, fontStyle: "italic" }}>
-                      {m.uncontrolledStress.evaluation.flags.leaderSecondaryCompetition?.active
-                        ? "Top2 und Top3 konkurrieren – Verhalten wirkt wechselhafter."
-                        : "Die zweitstärkste Komponente wird sichtbarer und kann die Führungslinie verschieben."}
-                    </p>
-                    <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 3px", lineHeight: 1.5 }}>{ur.ratingHeadline}</p>
-                    {m.uncontrolledStress.evaluation.flags.leadershipRules.some(r => r.code === "F6") && (
-                      <p style={{ fontSize: 11, color: "#FF9500", margin: "6px 0 0", lineHeight: 1.5 }}>
-                        ⚠ Sekundär-Konkurrenz unter Stress: Führungsstil wird inkonsistenter.
+                    <SectionCard barColor={ratingColor[ur.rating] || "#8E8E93"} testId="section-uncontrolled">
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Unkontrollierter Stress</p>
+                        <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 5, background: `${ratingColor[ur.rating] || "#8E8E93"}15`, color: ratingColor[ur.rating] || "#8E8E93" }} data-testid="badge-uncontrolled-rating">{ur.rating}</span>
+                      </div>
+                      <p style={{ fontSize: 11, color: "#6E6E73", margin: "0 0 4px", lineHeight: 1.5, fontStyle: "italic" }}>
+                        {m.uncontrolledStress.evaluation.flags.leaderSecondaryCompetition?.active
+                          ? "Top2 und Top3 konkurrieren – Verhalten wirkt wechselhafter."
+                          : "Die zweitstärkste Komponente wird sichtbarer und kann die Führungslinie verschieben."}
                       </p>
-                    )}
+                      <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{ur.ratingHeadline}</p>
+                      {m.uncontrolledStress.evaluation.flags.leadershipRules.some(r => r.code === "F6") && (
+                        <p style={{ fontSize: 11, color: "#FF9500", margin: "6px 0 0", lineHeight: 1.5 }}>
+                          ⚠ Sekundär-Konkurrenz unter Stress: Führungsstil wird inkonsistenter.
+                        </p>
+                      )}
+                    </SectionCard>
 
-                    <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "14px 0" }} />
-                    <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Stressvergleich</p>
-                    <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{sc.summary}</p>
+                    <SectionCard barColor="#8E8E93" testId="section-stress-comparison">
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Stressvergleich</p>
+                      <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{sc.summary}</p>
+                    </SectionCard>
                   </div>
                 );
               }
@@ -590,25 +600,28 @@ export default function Teamdynamik() {
               const detail = detailTeammitglied[tlKey];
               const variant = getSystemVariant(teamProfile, personProfile, result.dominanceTeam, result.dominancePerson);
               return (
-                <div style={{ padding: "14px 16px", borderRadius: 14, background: tl.bg, border: `1px solid ${tl.fill}20`, marginTop: 12 }} data-testid="detail-block">
-                  <p style={{ fontSize: 14, fontWeight: 700, color: tl.fill, margin: "0 0 6px" }}>{detail.title}</p>
-                  <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 3px", lineHeight: 1.5 }}>{detail.desc}</p>
-                  <div style={{ margin: "12px 0" }} data-testid="variant-block">
-                    <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{variant.text}</p>
+                <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginTop: 12 }} data-testid="detail-block">
+                  <div style={{ width: 4, flexShrink: 0, background: tl.fill }} />
+                  <div style={{ flex: 1, padding: "14px 16px" }}>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{detail.title}</p>
+                    <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 3px", lineHeight: 1.5 }}>{detail.desc}</p>
+                    <div style={{ margin: "12px 0" }} data-testid="variant-block">
+                      <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{variant.text}</p>
+                    </div>
+                    <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "14px 0 8px" }}>{detail.label}</p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 14 }}>
+                      {detail.bullets.map((b, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                          <span style={{ color: "#8E8E93", fontSize: 10, marginTop: 3, flexShrink: 0 }}>●</span>
+                          <span style={{ fontSize: 12, color: "#3A3A3C", lineHeight: 1.5 }}>{b}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0 }}>
+                      <span style={{ fontWeight: 700 }}>{detail.recLabel} </span>
+                      {detail.rec}
+                    </p>
                   </div>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "14px 0 8px" }}>{detail.label}</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 14 }}>
-                    {detail.bullets.map((b, i) => (
-                      <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                        <span style={{ color: tl.fill, fontSize: 10, marginTop: 3, flexShrink: 0 }}>●</span>
-                        <span style={{ fontSize: 12, color: "#3A3A3C", lineHeight: 1.5 }}>{b}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0 }}>
-                    <span style={{ fontWeight: 700 }}>{detail.recLabel} </span>
-                    {detail.rec}
-                  </p>
                 </div>
               );
             })()}
