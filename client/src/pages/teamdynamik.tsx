@@ -10,11 +10,9 @@ import {
   type Triad, type ComponentKey,
   computeTeamDynamics, getDefaultLevers, getMatrixCellById, getViewContent,
   labelComponent, buildAIPayload, getSystemVariant, getDepartmentCatalog, getDepartmentInfo,
-  personRoleLabel, hasLeadershipView, isLeadingRole,
   type TeamDynamikInput, type TeamDynamikResult, type ShiftType, type IntensityLevel,
   type TrafficLight, type ViewMode, type Lever, type DepartmentType, type DepartmentFit,
   type TeamSize, type StressShift, type LeadershipContext, type RollenDnaContext,
-  type PersonRole,
 } from "@/lib/teamdynamik-engine";
 import { leaderTeamMatchFull } from "@/lib/leader-team-match-engine";
 
@@ -289,7 +287,20 @@ export default function Teamdynamik() {
     } catch {}
     return { impulsiv: 33, intuitiv: 34, analytisch: 33 };
   });
-  const [personRole, setPersonRole] = useState<PersonRole>("FUEHREND");
+  const [isLeading, setIsLeading] = useState(() => {
+    try {
+      const completed = localStorage.getItem("rollenDnaCompleted");
+      if (completed === "true") {
+        const raw = localStorage.getItem("rollenDnaState");
+        if (raw) {
+          const state = JSON.parse(raw);
+          const fuehrung = state.fuehrung || "Keine";
+          return fuehrung !== "Keine";
+        }
+      }
+    } catch {}
+    return true;
+  });
   const [teamSize, setTeamSize] = useState<TeamSize>("MITTEL");
   const [departmentType, setDepartmentType] = useState<DepartmentType>("ALLGEMEIN");
   const [levers] = useState<Lever[]>(getDefaultLevers());
@@ -326,16 +337,16 @@ export default function Teamdynamik() {
   const departmentCatalog = useMemo(() => getDepartmentCatalog(), []);
 
   const input: TeamDynamikInput = useMemo(() => ({
-    teamName, teamProfile, teamSize, personProfile, personRole, departmentType, levers, steeringOverride: null, rollenDna,
-  }), [teamName, teamProfile, teamSize, personProfile, personRole, departmentType, levers, rollenDna]);
+    teamName, teamProfile, teamSize, personProfile, isLeading, departmentType, levers, steeringOverride: null, rollenDna,
+  }), [teamName, teamProfile, teamSize, personProfile, isLeading, departmentType, levers, rollenDna]);
 
   const result = useMemo(() => computeTeamDynamics(input), [input]);
   const tl = TL_COLORS[result.trafficLight];
 
   const leaderMatch = useMemo(() => {
-    if (!isLeadingRole(personRole)) return null;
+    if (!isLeading) return null;
     return leaderTeamMatchFull({ leader: personProfile, team: teamProfile });
-  }, [personRole, personProfile, teamProfile]);
+  }, [isLeading, personProfile, teamProfile]);
 
   const generateReport = useCallback(async () => {
     setReportLoading(true);
@@ -384,7 +395,7 @@ export default function Teamdynamik() {
 
           <div style={{ display: "flex", gap: 24, marginBottom: 24, flexWrap: "wrap" }}>
             <div style={{ flex: 1, minWidth: 280 }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }} data-testid="label-person">{personRoleLabel(personRole)}</p>
+              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }} data-testid="label-person">{isLeading ? "Neue Führungskraft" : "Neues Teammitglied"}</p>
               <BarSliders triad={personProfile} onChange={setPersonProfile} />
               <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Istprofil aus Soll-Ist-Vergleich</p>
             </div>
@@ -402,27 +413,28 @@ export default function Teamdynamik() {
             <div style={{ flex: 1, minWidth: 200 }}>
               <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Rolle der neuen Person</p>
               <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3 }}>
-                {([
-                  { key: "FUEHREND" as PersonRole, label: "Führend", icon: Briefcase },
-                  { key: "OPERATIV" as PersonRole, label: "Operativ", icon: Users },
-                  { key: "STRATEGISCH" as PersonRole, label: "Strategisch", icon: Target },
-                ] as const).map(opt => {
-                  const active = personRole === opt.key;
-                  const Icon = opt.icon;
-                  return (
-                    <button key={opt.key} onClick={() => setPersonRole(opt.key)} data-testid={`toggle-role-${opt.key.toLowerCase()}`} style={{
-                      flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: active ? 700 : 500,
-                      background: active ? "#fff" : "transparent",
-                      boxShadow: active ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
-                      border: "none", cursor: "pointer",
-                      color: active ? "#0071E3" : "#8E8E93",
-                      display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
-                      transition: "all 200ms ease",
-                    }}>
-                      <Icon style={{ width: 12, height: 12 }} /> {opt.label}
-                    </button>
-                  );
-                })}
+                <button onClick={() => setIsLeading(true)} data-testid="toggle-leading-yes" style={{
+                  flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: isLeading ? 700 : 500,
+                  background: isLeading ? "#fff" : "transparent",
+                  boxShadow: isLeading ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                  border: "none", cursor: "pointer",
+                  color: isLeading ? "#0071E3" : "#8E8E93",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+                  transition: "all 200ms ease",
+                }}>
+                  <Briefcase style={{ width: 12, height: 12 }} /> Führung
+                </button>
+                <button onClick={() => setIsLeading(false)} data-testid="toggle-leading-no" style={{
+                  flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: !isLeading ? 700 : 500,
+                  background: !isLeading ? "#fff" : "transparent",
+                  boxShadow: !isLeading ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                  border: "none", cursor: "pointer",
+                  color: !isLeading ? "#0071E3" : "#8E8E93",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+                  transition: "all 200ms ease",
+                }}>
+                  <Users style={{ width: 12, height: 12 }} /> Teammitglied
+                </button>
               </div>
             </div>
 
@@ -514,7 +526,7 @@ export default function Teamdynamik() {
                 },
               };
 
-              if (isLeadingRole(personRole) && leaderMatch) {
+              if (isLeading && leaderMatch) {
                 const m = leaderMatch;
                 const nr = m.normal.texts;
                 const cr = m.controlledStress.texts;
@@ -660,8 +672,8 @@ export default function Teamdynamik() {
                 <Target style={{ width: 14, height: 14, color: "#0071E3" }} />
               </div>
               <div>
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.01em" }}>{personRole === "STRATEGISCH" ? "Strategiekontext" : "Führungskontext"}</p>
-                <p style={{ fontSize: 11, color: "#8E8E93", margin: "2px 0 0" }}>{personRole === "STRATEGISCH" ? "Wie wirkt diese Person strategisch auf das Team?" : "Kann diese Person das Team wirksam führen?"}</p>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.01em" }}>Führungskontext</p>
+                <p style={{ fontSize: 11, color: "#8E8E93", margin: "2px 0 0" }}>Kann diese Person das Team wirksam führen?</p>
               </div>
             </div>
 
@@ -673,7 +685,7 @@ export default function Teamdynamik() {
                   <div style={{ flex: 1, minWidth: 200, display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
                     <div style={{ width: 4, flexShrink: 0, background: personDomColor }} />
                     <div style={{ flex: 1, padding: "12px 14px" }}>
-                      <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.04em" }}>{personRoleLabel(personRole)}</p>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Führungskraft</p>
                       <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{result.leadershipContext.personLabel}</p>
                       <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{result.leadershipContext.personStrengths}</p>
                     </div>
@@ -786,7 +798,7 @@ export default function Teamdynamik() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
               {[
                 { label: "Team-Fit", score: result.departmentFit.teamFitScore },
-                { label: isLeadingRole(personRole) ? "Führungskraft-Fit" : personRole === "STRATEGISCH" ? "Strategie-Fit" : "Person-Fit", score: result.departmentFit.personFitScore },
+                { label: isLeading ? "Führungskraft-Fit" : "Person-Fit", score: result.departmentFit.personFitScore },
               ].map((item, idx) => (
                 <div key={idx} style={{ background: "rgba(0,0,0,0.02)", borderRadius: 12, padding: "12px 14px", border: "1px solid rgba(0,0,0,0.04)" }} data-testid={`dept-fit-${idx === 0 ? "team" : "person"}`}>
                   <p style={{ fontSize: 11, color: "#8E8E93", margin: "0 0 6px", fontWeight: 600 }}>{item.label}</p>
