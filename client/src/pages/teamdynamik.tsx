@@ -632,57 +632,7 @@ export default function Teamdynamik() {
           </div>
         </GlassCard>
 
-        {/* ═══ STRESS-SIMULATION ═══ */}
-        <GlassCard style={{ marginBottom: 20 }} data-testid="stress-section">
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-            <div style={{ width: 28, height: 28, borderRadius: 8, background: result.stressShift.stabilityRating === "STABIL" ? "rgba(52,199,89,0.08)" : result.stressShift.stabilityRating === "LABIL" ? "rgba(255,149,0,0.08)" : "rgba(255,59,48,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Activity style={{ width: 14, height: 14, color: result.stressShift.stabilityRating === "STABIL" ? "#34C759" : result.stressShift.stabilityRating === "LABIL" ? "#FF9500" : "#FF3B30" }} />
-            </div>
-            <div>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.01em" }}>Stressverhalten der Konstellation</p>
-              <p style={{ fontSize: 11, color: "#8E8E93", margin: "2px 0 0" }}>Wie verändert sich die Dynamik unter Druck?</p>
-            </div>
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-            <span style={{
-              fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 6,
-              background: result.stressShift.stabilityRating === "STABIL" ? "rgba(52,199,89,0.1)" : result.stressShift.stabilityRating === "LABIL" ? "rgba(255,149,0,0.1)" : "rgba(255,59,48,0.1)",
-              color: result.stressShift.stabilityRating === "STABIL" ? "#34C759" : result.stressShift.stabilityRating === "LABIL" ? "#FF9500" : "#FF3B30",
-            }} data-testid="badge-stress-stability">
-              {result.stressShift.stabilityRating === "STABIL" ? "Stabil unter Stress" : result.stressShift.stabilityRating === "LABIL" ? "Labil unter Stress" : "Kritisch unter Stress"}
-            </span>
-            <span style={{ fontSize: 11, color: "#8E8E93" }}>Intensität: {result.stressShift.stressIntensity} %</span>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
-            {[
-              { label: "Kontrollierter Stress", ts: result.stressShift.controlledTS, delta: result.stressShift.tsDeltaControlled },
-              { label: "Unkontrollierter Stress", ts: result.stressShift.uncontrolledTS, delta: result.stressShift.tsDeltaUncontrolled },
-            ].map((item, idx) => {
-              const deltaColor = item.delta > 2 ? "#FF3B30" : item.delta < -2 ? "#34C759" : "#8E8E93";
-              return (
-                <div key={idx} style={{ background: "rgba(0,0,0,0.02)", borderRadius: 12, padding: "12px 14px", border: "1px solid rgba(0,0,0,0.04)" }} data-testid={`stress-${idx === 0 ? "controlled" : "uncontrolled"}`}>
-                  <p style={{ fontSize: 11, color: "#8E8E93", margin: "0 0 6px", fontWeight: 600 }}>{item.label}</p>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-                    <span style={{ fontSize: 11, color: "#8E8E93" }}>TS:</span>
-                    <span style={{ fontSize: 20, fontWeight: 800, color: "#1D1D1F", letterSpacing: "-0.02em" }}>{item.ts}</span>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: deltaColor }}>
-                      ({item.delta > 0 ? "+" : ""}{item.delta})
-                    </span>
-                  </div>
-                  <div style={{ height: 4, borderRadius: 2, background: "rgba(0,0,0,0.06)", marginTop: 8 }}>
-                    <div style={{ height: 4, borderRadius: 2, width: `${Math.min(100, item.ts)}%`, background: item.ts <= 25 ? "#34C759" : item.ts <= 50 ? "#FF9500" : "#FF3B30", transition: "width 300ms ease" }} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 12, padding: "12px 14px", border: "1px solid rgba(0,0,0,0.04)" }}>
-            <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.6 }}>{result.stressShift.summary}</p>
-          </div>
-        </GlassCard>
+        {/* ═══ STRESS-SIMULATION (hidden) ═══ */}
 
         {/* ═══ DEPARTMENT FIT ═══ */}
         {result.departmentFit && (
