@@ -116,6 +116,7 @@ export type RollenDnaContext = {
   aufgabencharakter: string;
   arbeitslogik: string;
   taetigkeiten: string[];
+  erfolgsfokus: string[];
 };
 
 export type TeamDynamikInput = {
@@ -185,6 +186,12 @@ export type LeadershipContext = {
     roleFitStatement: string;
     roleRisk: string;
     keyTasks: string[];
+    erfolgsfokusContext: {
+      labels: string[];
+      fitStatement: string;
+      teamAlignment: string;
+      steeringHint: string;
+    } | null;
   } | null;
 };
 
@@ -705,7 +712,66 @@ function buildLeadershipContext(domPerson: DominanceType, domTeam: DominanceType
 
     roleFitStatement += fuehrungsHint;
 
-    roleCtx = { beruf, bereich, fuehrungstyp, aufgabencharakter, arbeitslogik, roleFitStatement, roleRisk, keyTasks };
+    let erfolgsfokusCtx: { labels: string[]; fitStatement: string; teamAlignment: string; steeringHint: string } | null = null;
+    const ef = rollenDna.erfolgsfokus;
+    if (ef && ef.length > 0) {
+      const fokusMap: Record<string, { dom: DominanceType; short: string }> = {
+        "Ergebnis-/ Umsatzwirkung": { dom: "IMPULSIV", short: "Ergebnis & Umsatz" },
+        "Beziehungs- und Netzwerkstabilität": { dom: "INTUITIV", short: "Beziehung & Netzwerk" },
+        "Innovations- & Transformationsleistung": { dom: "IMPULSIV", short: "Innovation & Transformation" },
+        "Prozess- und Effizienzqualität": { dom: "ANALYTISCH", short: "Prozess & Effizienz" },
+        "Fachliche Exzellenz / Expertise": { dom: "ANALYTISCH", short: "Fachliche Exzellenz" },
+        "Strategische Wirkung / Positionierung": { dom: "INTUITIV", short: "Strategische Wirkung" },
+      };
+
+      const mapped = ef.map(f => fokusMap[f]).filter((x): x is { dom: DominanceType; short: string } => !!x);
+      const fokusDomsUnique: DominanceType[] = Array.from(new Set(mapped.map(m => m.dom)));
+      const fokusLabels = mapped.map(m => m.short);
+
+      const domLabels: Record<DominanceType, string> = {
+        IMPULSIV: "Umsetzungsstärke und Geschwindigkeit",
+        INTUITIV: "Beziehungskompetenz und Kommunikation",
+        ANALYTISCH: "Struktur, Analyse und Prozessqualität",
+        MIX: "ausgeglichene Kompetenzen",
+      };
+
+      const personCovers = fokusDomsUnique.filter(d => d === domPerson);
+      const teamCovers = fokusDomsUnique.filter(d => d === domTeam);
+
+      let fitStatement: string;
+      let teamAlignment: string;
+      let steeringHint: string;
+
+      if (personCovers.length === fokusDomsUnique.length) {
+        fitStatement = `Der Erfolgsfokus (${fokusLabels.join(", ")}) verlangt ${domLabels[fokusDomsUnique[0]]}. Das Profil der Führungskraft deckt diese Anforderung ab – sie kann den Erfolgsfokus aus eigener Stärke heraus bedienen.`;
+      } else if (personCovers.length > 0) {
+        const missing = fokusDomsUnique.filter(d => d !== domPerson).map(d => domLabels[d]);
+        fitStatement = `Der Erfolgsfokus (${fokusLabels.join(", ")}) erfordert teilweise Kompetenzen außerhalb des Führungsprofils. Die Führungskraft deckt einen Teil ab, aber ${missing.join(" und ")} muss sie aktiv steuern oder delegieren.`;
+      } else {
+        fitStatement = `Der Erfolgsfokus (${fokusLabels.join(", ")}) verlangt ${fokusDomsUnique.map(d => domLabels[d]).join(" und ")}. Die Führungskraft bringt diese Schwerpunkte nicht natürlich mit – sie muss den Erfolg über bewusste Steuerung und Teamressourcen sicherstellen.`;
+      }
+
+      if (teamCovers.length === fokusDomsUnique.length) {
+        teamAlignment = `Das Team ist für den definierten Erfolgsfokus gut aufgestellt – die vorhandenen Kompetenzen passen zur geforderten Leistung.`;
+      } else if (teamCovers.length > 0) {
+        const teamMissing = fokusDomsUnique.filter(d => d !== domTeam).map(d => domLabels[d]);
+        teamAlignment = `Das Team deckt den Erfolgsfokus teilweise ab. ${teamMissing.join(" und ")} ist im Team weniger ausgeprägt und muss gezielt gestärkt werden.`;
+      } else {
+        teamAlignment = `Der Erfolgsfokus liegt außerhalb der natürlichen Teamstärke. Die Führungskraft muss die fehlende Kompetenz entweder selbst einbringen oder durch Strukturmaßnahmen kompensieren.`;
+      }
+
+      if (personCovers.length === fokusDomsUnique.length && teamCovers.length === fokusDomsUnique.length) {
+        steeringHint = `Führungskraft und Team passen beide zum Erfolgsfokus. Steuerungsbedarf ist gering – Fokus auf Richtung halten und Verstärkung nutzen.`;
+      } else if (personCovers.length === 0 && teamCovers.length === 0) {
+        steeringHint = `Weder Führungskraft noch Team passen natürlich zum Erfolgsfokus. Hoher Steuerungsbedarf: Externe Kompetenz, klare Prozesse und enge Zielverfolgung notwendig.`;
+      } else {
+        steeringHint = `Teilweise Abdeckung des Erfolgsfokus vorhanden. Steuerungsbedarf: Lücken gezielt schließen – durch Delegation, Entwicklung oder Prozessanpassung.`;
+      }
+
+      erfolgsfokusCtx = { labels: fokusLabels, fitStatement, teamAlignment, steeringHint };
+    }
+
+    roleCtx = { beruf, bereich, fuehrungstyp, aufgabencharakter, arbeitslogik, roleFitStatement, roleRisk, keyTasks, erfolgsfokusContext: erfolgsfokusCtx };
   }
 
   return {

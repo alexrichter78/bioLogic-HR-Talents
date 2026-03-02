@@ -323,6 +323,15 @@ export default function Teamdynamik() {
       const state = JSON.parse(raw);
       if (!state.beruf) return;
       const taetigkeiten = (state.taetigkeiten || []).map((t: any) => t.name || t.label || "").filter((n: string) => n);
+      const ERFOLGSFOKUS_LABELS = [
+        "Ergebnis-/ Umsatzwirkung",
+        "Beziehungs- und Netzwerkstabilität",
+        "Innovations- & Transformationsleistung",
+        "Prozess- und Effizienzqualität",
+        "Fachliche Exzellenz / Expertise",
+        "Strategische Wirkung / Positionierung",
+      ];
+      const erfolgsfokus = (state.erfolgsfokusIndices || []).map((i: number) => ERFOLGSFOKUS_LABELS[i]).filter(Boolean);
       setRollenDna({
         beruf: state.beruf,
         bereich: state.bereich || "",
@@ -330,6 +339,7 @@ export default function Teamdynamik() {
         aufgabencharakter: state.aufgabencharakter || "",
         arbeitslogik: state.arbeitslogik || "",
         taetigkeiten,
+        erfolgsfokus,
       });
     } catch {}
   }, []);
@@ -766,6 +776,44 @@ export default function Teamdynamik() {
                       </div>
                     </div>
                   </div>
+                )}
+
+                {result.leadershipContext.roleContext.erfolgsfokusContext && (
+                  <>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "16px 0 10px" }}>
+                      <Target style={{ width: 14, height: 14, color: "#FF9500" }} />
+                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Erfolgsfokus</p>
+                      <div style={{ display: "flex", gap: 4 }}>
+                        {result.leadershipContext.roleContext.erfolgsfokusContext.labels.map((l, i) => (
+                          <span key={i} style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 5, background: "rgba(255,149,0,0.1)", color: "#FF9500" }}>{l}</span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginBottom: 10 }} data-testid="erfolgsfokus-fit-card">
+                      <div style={{ width: 4, flexShrink: 0, background: "#FF9500" }} />
+                      <div style={{ flex: 1, padding: "12px 14px" }}>
+                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Führungskraft & Erfolgsfokus</p>
+                        <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.6 }}>{result.leadershipContext.roleContext.erfolgsfokusContext.fitStatement}</p>
+                      </div>
+                    </div>
+
+                    <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginBottom: 10 }} data-testid="erfolgsfokus-team-card">
+                      <div style={{ width: 4, flexShrink: 0, background: "#5856D6" }} />
+                      <div style={{ flex: 1, padding: "12px 14px" }}>
+                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Team & Erfolgsfokus</p>
+                        <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.6 }}>{result.leadershipContext.roleContext.erfolgsfokusContext.teamAlignment}</p>
+                      </div>
+                    </div>
+
+                    <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginBottom: 10 }} data-testid="erfolgsfokus-steering-card">
+                      <div style={{ width: 4, flexShrink: 0, background: "#0071E3" }} />
+                      <div style={{ flex: 1, padding: "12px 14px" }}>
+                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Steuerungshinweis</p>
+                        <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.6 }}>{result.leadershipContext.roleContext.erfolgsfokusContext.steeringHint}</p>
+                      </div>
+                    </div>
+                  </>
                 )}
               </>
             )}
