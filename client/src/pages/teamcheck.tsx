@@ -589,80 +589,260 @@ export default function TeamCheck() {
               })()}
             </>
           ) : (
-            <>
-              {/* Executive Hero */}
-              <GlassCard style={{ padding: "36px 32px 30px", textAlign: "center", position: "relative", overflow: "hidden" }} data-testid="exec-header">
-                <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "linear-gradient(135deg, rgba(52,199,89,0.06), rgba(52,170,220,0.04))", pointerEvents: "none" }} />
-                <div style={{
-                  display: "inline-flex", alignItems: "center", gap: 6,
-                  background: "linear-gradient(135deg, rgba(52,199,89,0.1), rgba(52,199,89,0.05))",
-                  borderRadius: 20, padding: "5px 14px", marginBottom: 14,
-                }}>
-                  <Briefcase style={{ width: 12, height: 12, color: "#34C759" }} />
-                  <span style={{ fontSize: 10, fontWeight: 700, color: "#34C759", textTransform: "uppercase", letterSpacing: "0.12em" }}>Executive Summary</span>
-                </div>
-                <h1 style={{ fontSize: 28, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.15, marginBottom: 6 }}>{beruf}</h1>
-                <p style={{ fontSize: 13, color: "#8E8E93", margin: 0 }}>{bereich || "Systemische Analyse zur Besetzung"}</p>
-              </GlassCard>
+            <>{(() => {
+              const EXEC_SEC_META: { icon: typeof Target; color: string }[][] = [
+                [
+                  { icon: Users, color: "#0071E3" },
+                  { icon: Zap, color: "#5856D6" },
+                  { icon: Flame, color: "#FF3B30" },
+                  { icon: TrendingUp, color: "#34C759" },
+                  { icon: AlertTriangle, color: "#FF9500" },
+                  { icon: Award, color: "#0071E3" },
+                ],
+                [
+                  { icon: CalendarDays, color: "#34C759" },
+                  { icon: Gauge, color: "#5856D6" },
+                  { icon: Shield, color: "#0071E3" },
+                  { icon: Target, color: "#34C759" },
+                  { icon: Award, color: "#0071E3" },
+                ],
+              ];
 
-              {execReport.map((page) => (
-                <div key={page.pageNum} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                  {page.pageNum === 2 && (
-                    <div style={{ height: 1, margin: "8px 28px", background: "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.05) 30%, rgba(0,0,0,0.05) 70%, transparent 100%)" }} />
-                  )}
-                  {page.pageNum === 2 && (
-                    <div style={{ textAlign: "center", padding: "8px 0" }}>
-                      <h2 style={{ fontSize: 20, fontWeight: 750, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>{page.title}</h2>
+              const renderExecBullets = (bullets: string[]) => (
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {bullets.map((b, i) => {
+                    const isPos = b.startsWith("✓ ");
+                    const isWarn = b.startsWith("⚠ ");
+                    const text = (isPos || isWarn) ? b.slice(2) : b;
+                    const c = isPos ? "#34C759" : isWarn ? "#FF9500" : "#6E6E73";
+                    return (
+                      <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                        {isPos ? (
+                          <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <CheckCircle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
+                          </div>
+                        ) : isWarn ? (
+                          <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <AlertTriangle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
+                          </div>
+                        ) : (
+                          <div style={{ width: 6, height: 6, borderRadius: "50%", background: c, marginTop: 7, flexShrink: 0, opacity: 0.5 }} />
+                        )}
+                        <span style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.7 }} lang="de">{hyphenateText(text)}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+
+              return (
+                <>
+                  {/* Executive Hero */}
+                  <GlassCard style={{ padding: "36px 32px 30px", textAlign: "center", position: "relative", overflow: "hidden" }} data-testid="exec-header">
+                    <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "linear-gradient(135deg, rgba(52,199,89,0.06), rgba(52,170,220,0.04))", pointerEvents: "none" }} />
+                    <div style={{ position: "absolute", bottom: -20, left: -20, width: 80, height: 80, borderRadius: "50%", background: "linear-gradient(135deg, rgba(0,113,227,0.04), rgba(52,170,220,0.03))", pointerEvents: "none" }} />
+                    <div style={{
+                      display: "inline-flex", alignItems: "center", gap: 6,
+                      background: "linear-gradient(135deg, rgba(52,199,89,0.1), rgba(52,199,89,0.05))",
+                      borderRadius: 20, padding: "5px 14px", marginBottom: 14,
+                    }}>
+                      <Briefcase style={{ width: 12, height: 12, color: "#34C759" }} />
+                      <span style={{ fontSize: 10, fontWeight: 700, color: "#34C759", textTransform: "uppercase", letterSpacing: "0.12em" }}>Executive Summary</span>
                     </div>
-                  )}
+                    <h1 style={{ fontSize: 28, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.15, marginBottom: 6 }}>{beruf}</h1>
+                    <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 18 }}>{bereich || "Systemische Analyse zur Besetzung"}</p>
 
-                  {page.sections.map((sec, si) => (
-                    <GlassCard key={si} style={{ padding: "24px 24px" }} data-testid={`exec-section-${page.pageNum}-${si}`}>
-                      <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>{sec.title}</h3>
-                      {sec.paragraphs?.map((p, pi) => (
-                        <p key={pi} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.8, margin: "0 0 8px" }} lang="de">{hyphenateText(p)}</p>
-                      ))}
-                      {sec.bullets && (
-                        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
-                          {sec.bullets.map((b, bi) => {
-                            const isPos = b.startsWith("✓ ");
-                            const isWarn = b.startsWith("⚠ ");
-                            const text = (isPos || isWarn) ? b.slice(2) : b;
-                            const c = isPos ? "#34C759" : isWarn ? "#FF9500" : "#6E6E73";
-                            return (
-                              <div key={bi} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                                {isPos ? (
-                                  <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                    <CheckCircle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
-                                  </div>
-                                ) : isWarn ? (
-                                  <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                    <AlertTriangle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
-                                  </div>
-                                ) : (
-                                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: c, marginTop: 7, flexShrink: 0, opacity: 0.5 }} />
-                                )}
-                                <span style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.7 }} lang="de">{hyphenateText(text)}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                      {sec.highlight && (
+                    <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap", marginBottom: 18 }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10 }}>
+                        {isLeading ? "Führungsposition" : "Teammitglied"}
+                      </span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10 }}>
+                        {result.diagnose.kandidatDominanz}
+                      </span>
+                    </div>
+
+                    <div style={{
+                      display: "inline-flex", alignItems: "center", gap: 12,
+                      padding: "10px 20px", borderRadius: 16,
+                      background: `${tl.bg}`,
+                      border: `1px solid ${tl.fill}20`,
+                    }}>
+                      <TrafficLightDot tl={tdResult.trafficLight} />
+                      <span style={{ fontSize: 14, fontWeight: 700, color: tl.fill }}>{tl.label}</span>
+                    </div>
+                  </GlassCard>
+
+                  {/* Quick KPI strip */}
+                  <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                    {[
+                      { label: isLeading ? "Führungskraft" : "Kandidat", value: result.diagnose.kandidatDominanz, color: "#F39200", icon: Users },
+                      { label: "Verschiebung", value: result.diagnose.kandidatDominanz === result.diagnose.teamDominanz ? "Verstärkung" : "Strukturwechsel", color: result.diagnose.kandidatDominanz === result.diagnose.teamDominanz ? "#34C759" : "#FF9500", icon: Activity },
+                      { label: "Team", value: result.diagnose.teamDominanz, color: "#34C759", icon: Users },
+                    ].map((kpi, i) => (
+                      <div key={i} style={{
+                        flex: 1, minWidth: 140,
+                        background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)",
+                        borderRadius: 22, padding: "18px 18px",
+                        boxShadow: "0 2px 16px rgba(0,0,0,0.03)",
+                        border: "1px solid rgba(255,255,255,0.7)",
+                        textAlign: "center",
+                      }}>
                         <div style={{
-                          padding: "16px 20px", borderRadius: 18, marginTop: 14,
-                          background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(0,113,227,0.02))",
-                          border: "1px solid rgba(0,113,227,0.10)",
-                          borderLeft: "4px solid #0071E3",
+                          width: 32, height: 32, borderRadius: 10, margin: "0 auto 8px",
+                          background: `${kpi.color}12`, display: "flex", alignItems: "center", justifyContent: "center",
                         }}>
-                          <p style={{ fontSize: 13.5, color: "#1D1D1F", lineHeight: 1.7, margin: 0, fontWeight: 600 }} lang="de">{hyphenateText(sec.highlight)}</p>
+                          <kpi.icon style={{ width: 15, height: 15, color: kpi.color, strokeWidth: 2.2 }} />
                         </div>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 3px" }}>{kpi.label}</p>
+                        <p style={{ fontSize: 15, fontWeight: 700, color: kpi.color, margin: 0 }}>{kpi.value}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {execReport.map((page) => (
+                    <div key={page.pageNum} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                      {page.pageNum === 2 && (
+                        <div style={{ height: 1, margin: "12px 28px", background: "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.06) 30%, rgba(0,0,0,0.06) 70%, transparent 100%)" }} />
                       )}
-                    </GlassCard>
+                      {page.pageNum === 2 && (
+                        <GlassCard style={{ padding: "20px 28px", textAlign: "center" }}>
+                          <h2 style={{ fontSize: 20, fontWeight: 750, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>{page.title}</h2>
+                        </GlassCard>
+                      )}
+
+                      {page.sections.map((sec, si) => {
+                        const meta = EXEC_SEC_META[page.pageNum - 1]?.[si] || { icon: Target, color: "#0071E3" };
+                        const SIcon = meta.icon;
+                        const isChancen = sec.title === "Chancen";
+                        const isRisiken = sec.title === "Risiken";
+                        const isStress = sec.title === "Verhalten unter Druck";
+                        const isGesamt = sec.title === "Gesamtbewertung" || sec.title === "Abschließendes Urteil";
+                        const isPrognose = sec.title === "Prognose";
+                        const isKPI = sec.title === "Messbare Steuerungsindikatoren";
+
+                        return (
+                          <GlassCard key={si} style={{ padding: "26px 26px" }} data-testid={`exec-section-${page.pageNum}-${si}`}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                              <div style={{
+                                width: 32, height: 32, borderRadius: 10,
+                                background: `linear-gradient(135deg, ${meta.color}, ${meta.color}CC)`,
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                boxShadow: `0 3px 10px ${meta.color}25`, flexShrink: 0,
+                              }}>
+                                <SIcon style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
+                              </div>
+                              <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{sec.title}</h3>
+                            </div>
+
+                            {isStress && (
+                              <div style={{ display: "flex", gap: 6, marginBottom: 14, flexWrap: "wrap" }}>
+                                {[
+                                  { label: "Normal", color: "#34C759", icon: CheckCircle },
+                                  { label: "Kontrolliert", color: "#FF9500", icon: Activity },
+                                  { label: "Unkontrolliert", color: "#FF3B30", icon: Flame },
+                                ].map((ph, pi) => (
+                                  <div key={pi} style={{
+                                    flex: 1, minWidth: 100, padding: "8px 10px", borderRadius: 12,
+                                    background: `${ph.color}08`, border: `1px solid ${ph.color}15`,
+                                    display: "flex", alignItems: "center", gap: 6,
+                                  }}>
+                                    <ph.icon style={{ width: 12, height: 12, color: ph.color, strokeWidth: 2.2, flexShrink: 0 }} />
+                                    <span style={{ fontSize: 10, fontWeight: 600, color: ph.color }}>{ph.label}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {isPrognose && sec.paragraphs && (
+                              <div style={{ position: "relative", paddingLeft: 20, marginBottom: 12 }}>
+                                <div style={{ position: "absolute", left: -1, top: 0, bottom: 0, width: 3, borderRadius: 2, background: "linear-gradient(180deg, #34C759, #0071E3, #5856D6)" }} />
+                                {sec.paragraphs.map((p, pi) => {
+                                  const phColors = ["#34C759", "#0071E3", "#5856D6"];
+                                  const pCol = phColors[pi] || "#0071E3";
+                                  return (
+                                    <div key={pi} style={{ position: "relative", marginBottom: pi < sec.paragraphs!.length - 1 ? 14 : 0 }}>
+                                      <div style={{
+                                        position: "absolute", left: -27, top: 3,
+                                        width: 14, height: 14, borderRadius: "50%",
+                                        background: pCol, boxShadow: `0 2px 6px ${pCol}40`,
+                                      }} />
+                                      <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: 0, fontWeight: 450 }} lang="de">{hyphenateText(p)}</p>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+
+                            {isKPI && sec.bullets && (
+                              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
+                                {sec.bullets.map((b, bi) => (
+                                  <div key={bi} style={{
+                                    flex: "1 1 calc(50% - 5px)", minWidth: 160,
+                                    padding: "12px 14px", borderRadius: 14,
+                                    background: "rgba(88,86,214,0.05)", border: "1px solid rgba(88,86,214,0.10)",
+                                    display: "flex", alignItems: "center", gap: 8,
+                                  }}>
+                                    <div style={{
+                                      width: 20, height: 20, borderRadius: 6,
+                                      background: "rgba(88,86,214,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                                    }}>
+                                      <Gauge style={{ width: 10, height: 10, color: "#5856D6", strokeWidth: 2.5 }} />
+                                    </div>
+                                    <span style={{ fontSize: 12, color: "#3A3A3C", lineHeight: 1.5, fontWeight: 500 }}>{b}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {(isChancen || isRisiken) && sec.bullets && (
+                              <div style={{
+                                background: isChancen ? "rgba(52,199,89,0.04)" : "rgba(255,149,0,0.04)",
+                                borderRadius: 16, padding: "16px 18px", marginBottom: 10,
+                                border: `1px solid ${isChancen ? "rgba(52,199,89,0.12)" : "rgba(255,149,0,0.12)"}`,
+                              }}>
+                                {renderExecBullets(sec.bullets)}
+                              </div>
+                            )}
+
+                            {isGesamt && (
+                              <div style={{
+                                display: "flex", alignItems: "center", gap: 14, padding: "14px 18px",
+                                borderRadius: 16, marginBottom: 12,
+                                background: `${tl.bg}`, border: `1px solid ${tl.fill}18`,
+                              }}>
+                                <TrafficLightDot tl={tdResult.trafficLight} />
+                                <span style={{ fontSize: 14, fontWeight: 700, color: tl.fill }}>{tl.label}</span>
+                              </div>
+                            )}
+
+                            {!isPrognose && !isKPI && sec.paragraphs?.map((p, pi) => (
+                              <p key={pi} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.8, margin: "0 0 8px" }} lang="de">{hyphenateText(p)}</p>
+                            ))}
+
+                            {!isChancen && !isRisiken && !isKPI && sec.bullets && (
+                              <div style={{ marginTop: 8 }}>
+                                {renderExecBullets(sec.bullets)}
+                              </div>
+                            )}
+
+                            {sec.highlight && (
+                              <div style={{
+                                padding: "16px 20px", borderRadius: 18, marginTop: 14,
+                                background: `linear-gradient(135deg, ${meta.color}08, ${meta.color}03)`,
+                                border: `1px solid ${meta.color}12`,
+                                borderLeft: `4px solid ${meta.color}`,
+                              }}>
+                                <p style={{ fontSize: 13.5, color: "#1D1D1F", lineHeight: 1.7, margin: 0, fontWeight: 600 }} lang="de">{hyphenateText(sec.highlight)}</p>
+                              </div>
+                            )}
+                          </GlassCard>
+                        );
+                      })}
+                    </div>
                   ))}
-                </div>
-              ))}
-            </>
+                </>
+              );
+            })()}</>
           )}
         </div>
       </div>
