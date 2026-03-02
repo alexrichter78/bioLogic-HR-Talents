@@ -164,6 +164,8 @@ export default function TeamCheck() {
   const [beruf, setBeruf] = useState("Neue Position");
   const [bereich, setBereich] = useState("");
   const [fuehrungstyp, setFuehrungstyp] = useState("Keine");
+  const [aufgabencharakter, setAufgabencharakter] = useState("");
+  const [erfolgsfokusLabels, setErfolgsfokusLabels] = useState<string[]>([]);
   const [isLeading, setIsLeading] = useState(true);
   const [detailTab, setDetailTab] = useState<"system" | "stress" | "prognose" | "empfehlung" | "urteil">("system");
   const [reportView, setReportView] = useState<"none" | "detail" | "executive">("none");
@@ -181,6 +183,17 @@ export default function TeamCheck() {
           const ft = state.fuehrung || "Keine";
           setFuehrungstyp(ft);
           setIsLeading(ft !== "Keine");
+          if (state.aufgabencharakter) setAufgabencharakter(state.aufgabencharakter);
+          const EF_LABELS = [
+            "Ergebnis-/ Umsatzwirkung",
+            "Beziehungs- und Netzwerkstabilität",
+            "Innovations- & Transformationsleistung",
+            "Prozess- und Effizienzqualität",
+            "Fachliche Exzellenz / Expertise",
+            "Strategische Wirkung / Positionierung",
+          ];
+          const ef = (state.erfolgsfokusIndices || []).map((i: number) => EF_LABELS[i]).filter(Boolean);
+          if (ef.length > 0) setErfolgsfokusLabels(ef);
 
           const p = state.profil || state.profile;
           if (p && p.impulsiv != null) {
@@ -249,12 +262,14 @@ export default function TeamCheck() {
             {reportView === "detail" ? "Detailbericht" : "Executive Summary"}
           </span>
           <button onClick={() => window.print()} data-testid="btn-print-report" style={{
-            display: "flex", alignItems: "center", gap: 5,
-            padding: "6px 12px", borderRadius: 8, background: "rgba(0,113,227,0.08)", border: "none", cursor: "pointer",
-            fontSize: 12, fontWeight: 600, color: "#0071E3",
+            display: "flex", alignItems: "center", gap: 6,
+            padding: "8px 16px", borderRadius: 10,
+            background: "#3A3A3C", border: "none", cursor: "pointer",
+            fontSize: 12, fontWeight: 600, color: "#FFFFFF",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
           }}>
             <FileDown style={{ width: 13, height: 13, strokeWidth: 2 }} />
-            Drucken / PDF
+            Als PDF exportieren
           </button>
         </div>
 
@@ -894,10 +909,45 @@ export default function TeamCheck() {
       </div>
 
       <div style={{ maxWidth: 860, margin: "0 auto", padding: "32px 20px 80px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-          <span style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", letterSpacing: "0.08em", textTransform: "uppercase" }}>bioLogic</span>
-          <span style={{ fontSize: 11, fontWeight: 500, color: "#8E8E93" }}>TeamAnalyse</span>
+
+        {/* ═══ META HEADER ═══ */}
+        <div style={{
+          padding: "28px 32px 24px", borderRadius: 18, marginBottom: 28,
+          background: "linear-gradient(135deg, rgba(0,0,0,0.025), rgba(0,0,0,0.015))",
+          border: "1px solid rgba(0,0,0,0.06)",
+          position: "relative",
+        }} data-testid="meta-header">
+          <button
+            onClick={() => window.print()}
+            data-testid="btn-export-pdf"
+            style={{
+              position: "absolute", top: 20, right: 24,
+              display: "flex", alignItems: "center", gap: 7,
+              padding: "9px 18px", borderRadius: 10,
+              background: "#3A3A3C", border: "none", cursor: "pointer",
+              fontSize: 12, fontWeight: 600, color: "#FFFFFF",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+            }}
+          >
+            <FileDown style={{ width: 14, height: 14, strokeWidth: 2 }} />
+            Als PDF exportieren
+          </button>
+          <h2 style={{ fontSize: 20, fontWeight: 800, color: "#1D1D1F", margin: "0 0 2px", letterSpacing: "-0.02em" }}>bioLogic-TeamCheck</h2>
+          <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 18px", fontWeight: 500 }}>Recruiting-Entscheidungsgrundlage – Level 2</p>
+          <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", rowGap: 6, columnGap: 16, fontSize: 13 }}>
+            <span style={{ color: "#8E8E93", fontWeight: 500 }}>Position:</span>
+            <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-position">{beruf}</span>
+            <span style={{ color: "#8E8E93", fontWeight: 500 }}>Bereich:</span>
+            <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-bereich">{bereich || "–"}</span>
+            <span style={{ color: "#8E8E93", fontWeight: 500 }}>Fokus:</span>
+            <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-fokus">{erfolgsfokusLabels.length > 0 ? erfolgsfokusLabels.join(", ") : "–"}</span>
+            <span style={{ color: "#8E8E93", fontWeight: 500 }}>Rollencharakter:</span>
+            <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-charakter">{aufgabencharakter || "–"}</span>
+            <span style={{ color: "#8E8E93", fontWeight: 500 }}>Datum:</span>
+            <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-datum">{new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}</span>
+          </div>
         </div>
+
         <h1 style={{ fontSize: 28, fontWeight: 800, color: "#1D1D1F", margin: "0 0 8px", letterSpacing: "-0.03em" }} data-testid="page-title">
           Detailanalyse: {rolleLabel} · {beruf}
         </h1>
