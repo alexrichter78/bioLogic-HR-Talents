@@ -1,0 +1,198 @@
+/**
+ * bioLogic Leadership Match Engine
+ * =================================
+ * PURPOSE
+ * -------
+ * This is the exact code for the case:
+ *   "A person IS the leader and will lead a specific team."
+ *
+ * It returns:
+ * - Normal state rating (leader->team)
+ * - Controlled stress rating (Top1 becomes more dominant)
+ * - Uncontrolled stress rating (Top2 becomes more visible; if Top2≈Top3 then both compete)
+ * - Leadership rules (F1..F7) applied to adjust rating + TFS and produce complete texts
+ *
+ * INPUT
+ * -----
+ * leader: { impulsiv: 0..67, intuitiv: 0..67, analytisch: 0..67 }
+ * team:   { impulsiv: 0..67, intuitiv: 0..67, analytisch: 0..67 }
+ * stress: { intensity?: 0..1, k?: number }  // optional, intensity auto-estimated if missing
+ *
+ * OUTPUT
+ * ------
+ * res.normal.texts.summary
+ * res.controlledStress.texts.summary
+ * res.uncontrolledStress.texts.summary
+ * res.stressComparison.summary
+ *
+ * Drop-in Node.js module (also works in browser bundlers).
+ */
+
+"use strict";
+
+// ------------------------------
+// Constants
+// ------------------------------
+const MAX = 67;
+const COMPONENTS = ["impulsiv", "intuitiv", "analytisch"];
+
+const SECONDARY_COMP_GAP_MAX = 5;
+const DOMINANT_TOP1_MIN_GAP = 10;
+const FULL_SYMMETRY_TOLERANCE = 5;
+
+// Leadership rule thresholds (raw points)
+const F1_MIN_STEERING_IMP = 18;
+const F1_MIN_STEERING_ANA = 18;
+
+const F2_TEAM_INT_HIGH = 40;
+const F2_LEADER_INT_LOW = 18;
+const F2_LEADER_ANA_HIGH = 45;
+
+const F3_LEADER_IMP_OVERDRIVE = 58;
+const F3_TEAM_IMP_LOW = 25;
+
+const F4_TEAM_ANA_HIGH = 35;
+const F4_LEADER_ANA_LOW = 15;
+
+const F5_LEADERSHIP_CLARITY_LOW_GAP = 2;
+const F5_TEAM_CLEAR_GAP = 15;
+
+const F6_SECONDARY_COMP_PENALTY_BASE = 0.05;
+const F7_FULL_SYMM_PENALTY_NORMAL = 0.02;
+const F7_FULL_SYMM_PENALTY_UNCONTROLLED = 0.05;
+
+// ------------------------------
+// Helpers
+// ------------------------------
+function clamp(x, min = 0, max = MAX) {
+  return Math.max(min, Math.min(max, x));
+}
+function clamp01(x) {
+  return Math.max(0, Math.min(1, x));
+}
+function validateProfile(p, name = "profile") {
+  for (const k of COMPONENTS) {
+    const v = p?.[k];
+    if (typeof v !== "number" || Number.isNaN(v)) throw new Error(`${name}.${k} must be a number`);
+    if (v < 0 || v > MAX) throw new Error(`${name}.${k} out of range: ${v} (expected 0..${MAX})`);
+  }
+}
+function sortKeysByValueDesc(p) {
+  return [...COMPONENTS].sort((a, b) => p[b] - p[a]);
+}
+function mean3(a, b, c) {
+  return (a + b + c) / 3;
+}
+function stdDev3(a, b, c) {
+  const m = mean3(a, b, c);
+  const v = ((a - m) ** 2 + (b - m) ** 2 + (c - m) ** 2) / 3;
+  return Math.sqrt(v);
+}
+function classifyDiff(d) {
+  if (d <= 10) return "A";
+  if (d <= 20) return "B";
+  return "C";
+}
+function ratingOrder(r) {
+  if (r === "Passend") return 2;
+  if (r === "Bedingt passend") return 1;
+  if (r === "Nicht passend") return 0;
+  return -1;
+}
+function enforceMinRating(currentRating, minRating) {
+  const cur = ratingOrder(currentRating);
+  const min = ratingOrder(minRating);
+  if (cur > min) return minRating;
+  return currentRating;
+}
+function componentLabel(key) {
+  switch (key) {
+    case "impulsiv": return "Impulsiv (Tempo/Entscheidung/Durchsetzung)";
+    case "intuitiv": return "Intuitiv (Beziehung/Teamgefühl/Kommunikation)";
+    case "analytisch": return "Analytisch (Struktur/Planung/Absicherung)";
+    default: return key;
+  }
+}
+
+// ------------------------------
+// Constellation detection
+// ------------------------------
+function detectSecondaryCompetition(profile) {
+  const keys = sortKeysByValueDesc(profile);
+  const top1 = keys[0], top2 = keys[1], top3 = keys[2];
+  const gap12 = profile[top1] - profile[top2];
+  const gap23 = profile[top2] - profile[top3];
+  const active = (gap12 >= DOMINANT_TOP1_MIN_GAP) && (gap23 <= SECONDARY_COMP_GAP_MAX);
+  return { active, top1, top2, top3, gap12, gap23 };
+}
+function detectFullSymmetry(profile, tolerance = FULL_SYMMETRY_TOLERANCE) {
+  const v = [profile.impulsiv, profile.intuitiv, profile.analytisch];
+  const maxV = Math.max(...v);
+  const minV = Math.min(...v);
+  return { active: (maxV - minV) <= tolerance, spread: maxV - minV, maxV, minV, tolerance };
+}
+
+// ------------------------------
+// Stress intensity (optional auto)
+// ------------------------------
+function balanceIndex(p) {
+  const sd = stdDev3(p.impulsiv, p.intuitiv, p.analytisch);
+  return 1 - sd / MAX;
+}
+function estimateStressIntensity(leader, team) {
+  const biL = balanceIndex(leader);
+  const biT = balanceIndex(team);
+  return clamp01(((1 - biL) + (1 - biT)) / 2);
+}
+
+// ------------------------------
+// Stress transforms
+// ------------------------------
+function applyControlledStress(profile, intensity, k = 10, midDecay = 0.15) {
+  const p = { ...profile };
+  const i = clamp01(intensity);
+  const keys = sortKeysByValueDesc(p);
+  const top = keys[0], mid = keys[1], low = keys[2];
+  const delta = k * i;
+
+  p[top] = clamp(p[top] + delta);
+  p[low] = clamp(p[low] - delta);
+  p[mid] = clamp(p[mid] - midDecay * delta);
+
+  // if secondary competition active -> support instability
+  const sc = detectSecondaryCompetition(profile);
+  if (sc.active) {
+    const noise = 0.25 * delta;
+    p[sc.top2] = clamp(p[sc.top2] + noise);
+    p[sc.top3] = clamp(p[sc.top3] - noise);
+  }
+  return p;
+}
+
+function applyUncontrolledStress(profile, intensity, k = 10) {
+  const p = { ...profile };
+  const i = clamp01(intensity);
+  const delta = k * i;
+
+  const keys = sortKeysByValueDesc(profile);
+  const top1 = keys[0], top2 = keys[1], top3 = keys[2];
+
+  const sc = detectSecondaryCompetition(profile);
+
+  if (!sc.active) {
+    // standard: top2 becomes more visible
+    p[top2] = clamp(p[top2] + delta);
+    p[top1] = clamp(p[top1] - 0.6 * delta);
+    p[top3] = clamp(p[top3] - 0.2 * delta);
+    return p;
+  }
+
+  // secondary competition: both secondaries rise, top1 loses more clarity
+  p[sc.top2] = clamp(p[sc.top2] + 0.8 * delta);
+  p[sc.top3] = clamp(p[sc.top3] + 0.8 * delta);
+  p[sc.top1] = clamp(p[sc.top1] - 0.9 * delta);
+  return p;
+}
+
+// ------------------------------
+// Base leader->team fit (single state)
