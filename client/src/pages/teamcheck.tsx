@@ -484,13 +484,13 @@ export default function TeamCheck() {
                       )}
 
                       {sec.num === 10 && sec.subsections && (
-                        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 14 }}>
                           {sec.subsections.map((phase, pi) => {
                             const phaseColors = ["#34C759", "#0071E3", "#5856D6"];
                             const pColor = phaseColors[pi] || "#0071E3";
                             return (
                               <div key={pi} style={{
-                                flex: 1, minWidth: 200, borderRadius: 18, padding: "18px 18px 14px",
+                                borderRadius: 18, padding: "18px 20px 14px",
                                 background: `linear-gradient(135deg, ${pColor}06, ${pColor}02)`,
                                 border: `1px solid ${pColor}15`,
                               }}>
@@ -508,15 +508,12 @@ export default function TeamCheck() {
                                 ))}
                                 {phase.bullets && (
                                   <div style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: 6 }}>
-                                    {phase.bullets.slice(0, 5).map((b, bi) => (
+                                    {phase.bullets.map((b, bi) => (
                                       <div key={bi} style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
                                         <div style={{ width: 4, height: 4, borderRadius: "50%", background: pColor, marginTop: 6, flexShrink: 0, opacity: 0.5 }} />
                                         <span style={{ fontSize: 11.5, color: "#3A3A3C", lineHeight: 1.6 }}>{b}</span>
                                       </div>
                                     ))}
-                                    {phase.bullets.length > 5 && (
-                                      <span style={{ fontSize: 11, color: "#8E8E93", fontStyle: "italic", paddingLeft: 10 }}>+{phase.bullets.length - 5} weitere</span>
-                                    )}
                                   </div>
                                 )}
                               </div>
