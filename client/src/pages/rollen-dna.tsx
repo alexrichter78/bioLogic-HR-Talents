@@ -1393,7 +1393,10 @@ export default function RollenDNA() {
                     </p>
 
                     <div style={{ marginTop: 16 }}>
-                      <p style={{ fontSize: 12.5, fontWeight: 600, color: "#6E6E73", margin: "0 0 8px" }}>Arbeitsmarkt</p>
+                      <p style={{ fontSize: 12.5, fontWeight: 600, color: "#6E6E73", margin: "0 0 2px" }}>Arbeitsmarkt</p>
+                      <p style={{ fontSize: 12, color: "#AEAEB2", margin: "0 0 8px" }}>
+                        Vorschläge werden für die aktiven Länder angezeigt. Zum Ein- oder Ausschalten einfach klicken.
+                      </p>
                       <div className="flex items-center gap-2" data-testid="land-filter">
                         {([
                           { land: "DE" as BerufLand, label: "DE", flag: (<svg viewBox="0 0 20 14" className="w-4 h-3 rounded-[2px] overflow-hidden"><rect y="0" width="20" height="4.67" fill="#000"/><rect y="4.67" width="20" height="4.67" fill="#D00"/><rect y="9.33" width="20" height="4.67" fill="#FFCE00"/></svg>) },
