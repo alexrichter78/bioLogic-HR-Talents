@@ -178,72 +178,74 @@ type ReportData = {
   erfolgsfokusIndices: number[];
 };
 
+function behaviorDesc(k: string): string {
+  if (k === "imp") return "schnelles Handeln und klare Entscheidungen";
+  if (k === "int") return "persönlichen Kontakt und Beziehungsarbeit";
+  return "sorgfältige Analyse und strukturiertes Arbeiten";
+}
+
 function buildStressTexts(bg: BG) {
-  const COMP_LABELS: Record<string, string> = { imp: "Impulsiv", int: "Intuitiv", ana: "Analytisch" };
   const vals = [
     { key: "imp", value: bg.imp },
     { key: "int", value: bg.int },
     { key: "ana", value: bg.ana },
   ].sort((a, b) => b.value - a.value || SORT_PRIORITY[a.key] - SORT_PRIORITY[b.key]);
-  const [top, mid, low] = vals;
+  const [top, mid] = vals;
   const gap12 = Math.round(top.value - mid.value);
-  const gap23 = Math.round(mid.value - low.value);
+  const gap23 = Math.round(mid.value - vals[2].value);
   const hasDualDominance = gap12 <= 5;
   const hasSecondaryCompetition = gap12 >= 10 && gap23 <= 5;
   const hasFullSymmetry = gap12 <= 5 && gap23 <= 5;
-  const dominantLabel = COMP_LABELS[top.key];
-  const secondLabel = COMP_LABELS[mid.key];
-  const thirdLabel = COMP_LABELS[low.key];
 
   let controlled = "";
   if (hasFullSymmetry) {
-    controlled = `Wenn der Arbeitsdruck steigt, fehlt eine klare Richtung. Die Person springt zwischen verschiedenen Herangehensweisen – mal handelt sie schnell, mal sucht sie den Austausch, mal vertieft sie sich in Details. Das kann im Team zu Verunsicherung führen, weil das Verhalten schwer einzuschätzen ist.`;
+    controlled = "Wenn der Arbeitsdruck steigt, fehlt eine klare Richtung. Die Person wechselt zwischen verschiedenen Herangehensweisen. Mal handelt sie schnell, mal sucht sie den Austausch, mal vertieft sie sich in Details. Das kann im Team zu Verunsicherung führen, weil das Verhalten schwer einzuschätzen ist.";
   } else if (hasDualDominance) {
-    controlled = `Wenn der Arbeitsdruck steigt, setzt sich eine der beiden starken Seiten durch (${dominantLabel} oder ${secondLabel}). Das schafft kurzfristig Klarheit: Die Person fokussiert sich und stabilisiert die Situation. Gleichzeitig kommt die andere Seite zu kurz – das kann zu einseitigen Entscheidungen führen.`;
+    controlled = `Wenn der Arbeitsdruck steigt, setzt sich eine der beiden starken Seiten durch. Die Person fokussiert sich entweder auf ${behaviorDesc(top.key)} oder auf ${behaviorDesc(mid.key)}. Das schafft kurzfristig Klarheit und stabilisiert die Situation. Gleichzeitig kann die andere Seite zu kurz kommen.`;
   } else {
-    controlled = `Wenn der Arbeitsdruck steigt, zeigt sich die Stärke der Rolle besonders deutlich. Die Person reagiert dann vor allem über ${kompShort(top.key)}. Das gibt dem Umfeld Sicherheit und Orientierung. Gleichzeitig treten ${secondLabel.toLowerCase()}e und ${thirdLabel.toLowerCase()}e Anteile in den Hintergrund – Entscheidungen werden einseitiger, aber klarer.`;
+    controlled = `Wenn der Arbeitsdruck steigt, zeigt sich die Stärke der Rolle besonders deutlich. Die Person setzt dann vor allem auf ${behaviorDesc(top.key)}. Das gibt dem Umfeld Sicherheit und Orientierung. Andere Anforderungen treten in den Hintergrund.`;
   }
 
   let uncontrolled = "";
   if (hasFullSymmetry) {
-    uncontrolled = `Wenn der Druck sehr hoch wird, fehlt ein klarer Rückfallmechanismus. Das Verhalten wird widersprüchlich – die Person versucht gleichzeitig zu handeln, abzustimmen und zu analysieren. Entscheidungen werden sprunghaft oder bleiben ganz aus.`;
+    uncontrolled = "Wenn der Druck sehr hoch wird, fehlt ein klarer Rückfallmechanismus. Das Verhalten wird widersprüchlich. Die Person versucht gleichzeitig zu handeln, abzustimmen und zu analysieren. Entscheidungen werden sprunghaft oder bleiben ganz aus.";
   } else if (hasSecondaryCompetition) {
-    uncontrolled = `Wenn der Druck sehr hoch wird, beginnen ${secondLabel.toLowerCase()}e und ${thirdLabel.toLowerCase()}e Anteile zu konkurrieren. Die klare Linie geht verloren, das Verhalten wird wechselhaft. Die Person springt zwischen verschiedenen Ansätzen, ohne sich festzulegen.`;
+    uncontrolled = "Wenn der Druck sehr hoch wird, verliert die Person ihre klare Linie. Das Verhalten wird wechselhaft. Sie springt zwischen verschiedenen Ansätzen, ohne sich festzulegen.";
   } else if (hasDualDominance) {
-    uncontrolled = `Wenn der Druck sehr hoch wird, geraten ${dominantLabel} und ${secondLabel} in Konflikt. Beide Seiten wollen gleichzeitig steuern – das erzeugt Widersprüche. Entscheidungen werden zögerlich oder sprunghaft, weil keine klare Linie dominiert.`;
+    uncontrolled = `Wenn der Druck sehr hoch wird, geraten die beiden starken Seiten in Konflikt. ${behaviorDesc(top.key).charAt(0).toUpperCase() + behaviorDesc(top.key).slice(1)} und ${behaviorDesc(mid.key)} stehen sich im Weg. Entscheidungen werden zögerlich oder sprunghaft, weil keine klare Linie dominiert.`;
   } else {
-    uncontrolled = `Wenn der Druck sehr hoch wird, verschiebt sich das Verhalten spürbar. Die Person arbeitet dann stärker über ${kompShort(mid.key)}. Die ursprüngliche Stärke (${dominantLabel.toLowerCase()}) verliert an Durchschlagskraft. Entscheidungen werden ${mid.key === "ana" ? "vorsichtiger und langsamer, Details gewinnen zu viel Gewicht" : mid.key === "int" ? "stärker über Abstimmung und Konsens gesucht, auch wenn schnelles Handeln nötig wäre" : "impulsiver und direkter, teils ohne ausreichende Prüfung"}.`;
+    uncontrolled = `Wenn der Druck sehr hoch wird, verschiebt sich das Verhalten spürbar. Die Person setzt dann stärker auf ${behaviorDesc(mid.key)}. ${mid.key === "ana" ? "Entscheidungen werden vorsichtiger und langsamer. Details gewinnen zu viel Gewicht." : mid.key === "int" ? "Entscheidungen werden stärker über Abstimmung und Konsens gesucht, auch wenn schnelles Handeln nötig wäre." : "Entscheidungen werden direkter und schneller, teils ohne ausreichende Prüfung."}`;
   }
 
   return { controlled, uncontrolled };
 }
 
 function buildTeamwirkung(data: ReportData) {
-  const { isLeadership, dom, sec, wk, beruf, fuehrungstyp } = data;
+  const { isLeadership, dom, fuehrungstyp } = data;
 
   if (isLeadership) {
     if (dom.key === "imp") {
-      return `Die Rolle übernimmt ${fuehrungstyp.toLowerCase()} im Team. Im Alltag bedeutet das: Die Führungskraft gibt das Tempo vor, setzt klare Prioritäten und trifft Entscheidungen verbindlich. Teammitglieder wissen, woran sie sind – auch wenn das manchmal unbequem ist. In Situationen mit hohem Handlungsdruck zeigt diese Führung ihre größte Stärke.`;
+      return `Die Rolle übernimmt ${fuehrungstyp.toLowerCase()} im Team. Die Führungskraft gibt das Tempo vor, setzt klare Prioritäten und trifft Entscheidungen verbindlich. Teammitglieder wissen, woran sie sind. In Situationen mit hohem Handlungsdruck zeigt diese Führung ihre größte Stärke.`;
     } else if (dom.key === "int") {
-      return `Die Rolle übernimmt ${fuehrungstyp.toLowerCase()} im Team. Im Alltag bedeutet das: Die Führungskraft baut Vertrauen auf, bringt unterschiedliche Perspektiven zusammen und sorgt dafür, dass Entscheidungen vom Team getragen werden. Teammitglieder orientieren sich an dieser Person besonders bei schwierigen zwischenmenschlichen Situationen.`;
+      return `Die Rolle übernimmt ${fuehrungstyp.toLowerCase()} im Team. Die Führungskraft baut Vertrauen auf, bringt unterschiedliche Perspektiven zusammen und sorgt dafür, dass Entscheidungen vom Team getragen werden. Teammitglieder orientieren sich an dieser Person besonders bei schwierigen zwischenmenschlichen Situationen.`;
     } else {
-      return `Die Rolle übernimmt ${fuehrungstyp.toLowerCase()} im Team. Im Alltag bedeutet das: Die Führungskraft steuert über fachliche Expertise, klare Standards und nachvollziehbare Prozesse. Teammitglieder vertrauen auf die methodische Sicherheit und die sachliche Herangehensweise dieser Person.`;
+      return `Die Rolle übernimmt ${fuehrungstyp.toLowerCase()} im Team. Die Führungskraft steuert über fachliche Expertise, klare Standards und nachvollziehbare Prozesse. Teammitglieder vertrauen auf die methodische Sicherheit und die sachliche Herangehensweise.`;
     }
   }
-  return `Die Rolle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung vor allem über ${kompShort(dom.key)}. Kolleginnen und Kollegen orientieren sich an der ${kompAdj(dom.key)}en Arbeitsweise, besonders bei ${dom.key === "imp" ? "Umsetzungsfragen und operativen Entscheidungen" : dom.key === "int" ? "zwischenmenschlichen Situationen und Teamabstimmungen" : "fachlichen Fragen und Prozessthemen"}.`;
+
+  if (dom.key === "imp") {
+    return "Die Rolle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung vor allem über schnelle Ergebnisse und klare Priorisierung. Kolleginnen und Kollegen orientieren sich an dieser Arbeitsweise, besonders bei Umsetzungsfragen und operativen Entscheidungen.";
+  } else if (dom.key === "int") {
+    return "Die Rolle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung vor allem über Vertrauen und persönlichen Kontakt. Kolleginnen und Kollegen orientieren sich an dieser Person, besonders bei zwischenmenschlichen Situationen und Teamabstimmungen.";
+  }
+  return "Die Rolle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung vor allem über fachliche Tiefe und verlässliche Arbeitsergebnisse. Kolleginnen und Kollegen orientieren sich an dieser Arbeitsweise, besonders bei fachlichen Fragen und Prozessthemen.";
 }
 
 function buildSpannungsfelder(data: ReportData): string[] {
-  const { dom, sec, wk, isLeadership, profileType, beruf } = data;
+  const { dom, sec, wk, isLeadership, profileType } = data;
   const fields: string[] = [];
 
-  const hauptTaetigkeiten = (data.taetigkeiten || []).filter((t: any) => t.kategorie === "haupt");
-  const hochItems = hauptTaetigkeiten.filter((t: any) => t.niveau === "Hoch");
-
   if (dom.key === "imp") {
-    if (hochItems.some((t: any) => t.kompetenz === "Intuitiv" || t.kompetenz === "Analytisch")) {
-      fields.push(`${kompShort("imp")} vs. ${hochItems.find((t: any) => t.kompetenz !== "Impulsiv")?.name || "ergänzende Anforderungen"}`);
-    }
     fields.push("Tempo und Ergebnisorientierung vs. Sorgfalt und Absicherung");
     if (isLeadership) fields.push("Durchsetzungskraft vs. Mitarbeiterbindung und Teamakzeptanz");
     else fields.push("Eigeninitiative und schnelles Handeln vs. Abstimmung im Team");
@@ -260,12 +262,12 @@ function buildSpannungsfelder(data: ReportData): string[] {
   }
 
   if (profileType.startsWith("hybrid_")) {
-    fields.push(`${dom.label} und ${sec.label} als gleichwertige Anforderungen – Prioritätenkonflikt`);
+    fields.push("Zwei gleichstarke Anforderungen stehen im Wettbewerb um Aufmerksamkeit");
   }
 
   if (wk.key === "imp") fields.push("Reflexion und Gründlichkeit vs. Handlungsdruck");
   else if (wk.key === "int") fields.push("Sachliche Korrektheit vs. Beziehungspflege");
-  else fields.push("Intuition und Gespür vs. Strukturbedarf");
+  else fields.push("Gespür und Erfahrung vs. Strukturbedarf");
 
   return fields;
 }
@@ -300,18 +302,18 @@ function buildRahmenText(data: ReportData): string {
   const parts: string[] = [];
   if (data.aufgabencharakter) {
     const charMap: Record<string, string> = {
-      "überwiegend operativ": "Der Aufgabencharakter ist überwiegend operativ – die Rolle wirkt primär über direkte Umsetzung und konkretes Handeln.",
-      "überwiegend systemisch": "Der Aufgabencharakter ist überwiegend systemisch – die Rolle wirkt über Vernetzung, Koordination und das Zusammenführen verschiedener Perspektiven.",
-      "überwiegend strategisch": "Der Aufgabencharakter ist überwiegend strategisch – die Rolle wirkt über langfristige Planung, Richtungsentscheidungen und Steuerung.",
-      "Gemischt": "Der Aufgabencharakter ist gemischt – die Rolle wechselt situativ zwischen operativer Umsetzung, Koordination und strategischer Steuerung.",
+      "überwiegend operativ": "Der Aufgabencharakter ist überwiegend operativ. Die Rolle wirkt primär über direkte Umsetzung und konkretes Handeln.",
+      "überwiegend systemisch": "Der Aufgabencharakter ist überwiegend systemisch. Die Rolle wirkt über Vernetzung, Koordination und das Zusammenführen verschiedener Perspektiven.",
+      "überwiegend strategisch": "Der Aufgabencharakter ist überwiegend strategisch. Die Rolle wirkt über langfristige Planung, Richtungsentscheidungen und Steuerung.",
+      "Gemischt": "Der Aufgabencharakter ist gemischt. Die Rolle wechselt situativ zwischen operativer Umsetzung, Koordination und strategischer Steuerung.",
     };
     parts.push(charMap[data.aufgabencharakter] || `Der Aufgabencharakter ist ${data.aufgabencharakter.toLowerCase()}.`);
   }
   if (data.arbeitslogik) {
     const logikMap: Record<string, string> = {
-      "Umsetzungsorientiert": "Die Arbeitslogik ist umsetzungsorientiert – Wirkung entsteht durch schnelles Handeln und konkrete Ergebnisse.",
-      "Menschenorientiert": "Die Arbeitslogik ist menschenorientiert – Wirkung entsteht durch Kommunikation, Beziehungsgestaltung und Abstimmung.",
-      "Daten-/prozessorientiert": "Die Arbeitslogik ist daten- und prozessorientiert – Wirkung entsteht durch systematische Analyse und strukturierte Abläufe.",
+      "Umsetzungsorientiert": "Die Arbeitslogik ist umsetzungsorientiert. Wirkung entsteht durch schnelles Handeln und konkrete Ergebnisse.",
+      "Menschenorientiert": "Die Arbeitslogik ist menschenorientiert. Wirkung entsteht durch Kommunikation, Beziehungsgestaltung und Abstimmung.",
+      "Daten-/prozessorientiert": "Die Arbeitslogik ist daten- und prozessorientiert. Wirkung entsteht durch systematische Analyse und strukturierte Abläufe.",
     };
     parts.push(logikMap[data.arbeitslogik] || `Die Arbeitslogik ist ${data.arbeitslogik.toLowerCase()}.`);
   }
@@ -335,21 +337,23 @@ function buildErfolgsfokusText(data: ReportData, labels: string[]): string {
   const unique = [...new Set(needed)];
 
   if (unique.length === 1 && unique[0] === data.dom.key) {
-    return `Der Erfolgsfokus passt zur zentralen Anforderung der Rolle. Die Person wird in ihrem stärksten Bereich gemessen – das erhöht die Wahrscheinlichkeit, dass sie liefern kann.`;
+    return "Der Erfolgsfokus passt zur zentralen Anforderung der Rolle. Die Person wird in ihrem stärksten Bereich gemessen. Das erhöht die Wahrscheinlichkeit, dass sie liefern kann.";
   }
   if (unique.every(u => u === data.dom.key || u === data.sec.key)) {
-    return `Der Erfolgsfokus wird durch die beiden stärksten Anforderungen der Rolle abgedeckt. Die Person kann auf ihre natürlichen Stärken zurückgreifen – das erleichtert die Zielerreichung.`;
+    return "Der Erfolgsfokus wird durch die beiden stärksten Anforderungen der Rolle abgedeckt. Die Person kann auf ihre natürlichen Stärken zurückgreifen. Das erleichtert die Zielerreichung.";
   }
   const missingKey = unique.find(u => u !== data.dom.key && u !== data.sec.key);
   const missingDesc = missingKey === "imp" ? "schnelle Umsetzung und Ergebnisorientierung" : missingKey === "int" ? "Beziehungsarbeit und persönlichen Kontakt" : "systematische Analyse und Prozessqualität";
-  return `Der Erfolgsfokus verlangt unter anderem ${missingDesc}. Diese Anforderung ist im Profil der Rolle nachrangig – hier muss bewusst gesteuert werden, um den Erfolg abzusichern.`;
+  return `Der Erfolgsfokus verlangt unter anderem ${missingDesc}. Diese Anforderung ist im Profil der Rolle nachrangig. Hier muss bewusst gesteuert werden, um den Erfolg abzusichern.`;
 }
 
 function buildProfilkonflikt(data: ReportData): string | null {
   const hauptDom = dominant(data.haupt);
   const { dom } = data;
   if (hauptDom.key === dom.key) return null;
-  return `Hinweis: Die Kerntätigkeiten der Rolle sind geprägt durch ${hauptDom.label} (${kompShort(hauptDom.key)}), während das Gesamtprofil durch ${dom.label} dominiert wird. Diese Abweichung bedeutet: Die Rahmenbedingungen und ergänzenden Anforderungen verschieben das Profil weg von den Kerntätigkeiten. Im Besetzungsprozess sollte geprüft werden, ob die Person primär die Kerntätigkeiten oder das Gesamtpaket abbilden kann.`;
+  const hauptBehavior = hauptDom.key === "imp" ? "schnelles Handeln und Umsetzung" : hauptDom.key === "int" ? "persönlichen Kontakt und Beziehungsarbeit" : "strukturierte Analyse und Sorgfalt";
+  const gesamtBehavior = dom.key === "imp" ? "Entscheidungskraft und Tempo" : dom.key === "int" ? "Beziehungsgestaltung und Kommunikation" : "methodisches Arbeiten und Qualitätssicherung";
+  return `Hinweis: Die Kerntätigkeiten der Rolle verlangen vor allem ${hauptBehavior}. Das Gesamtprofil verschiebt sich jedoch in Richtung ${gesamtBehavior}. Rahmenbedingungen und ergänzende Anforderungen verändern das Anforderungsprofil. Im Besetzungsprozess sollte geprüft werden, ob die Person primär die Kerntätigkeiten oder das Gesamtpaket abbilden kann.`;
 }
 
 function buildKomponentenBedeutung(data: ReportData): { key: string; label: string; color: string; text: string }[] {
@@ -385,7 +389,7 @@ function buildFehlbesetzung(data: ReportData): { label: string; bullets: string[
 
   if (dom.key === "imp" || dom.value >= 45) {
     risks.push({
-      label: `Wenn zu stark ${kompAdj("imp")} gearbeitet wird`,
+      label: "Wenn zu viel Tempo und zu wenig Sorgfalt",
       bullets: [
         dom.key === "int" ? "Beratung wird hektischer, Gesprächsqualität sinkt" : "Entscheidungen werden zu schnell und ohne Absicherung getroffen",
         isLeadership ? "Das Team kann das Tempo nicht mithalten, Frustration entsteht" : "Abstimmung mit Kolleginnen und Kollegen leidet",
@@ -396,7 +400,7 @@ function buildFehlbesetzung(data: ReportData): { label: string; bullets: string[
 
   if (dom.key === "ana" || wk.key === "int") {
     risks.push({
-      label: `Wenn zu stark ${kompAdj("ana")} gearbeitet wird`,
+      label: "Wenn zu viel Kontrolle und zu wenig Nähe",
       bullets: [
         dom.key === "int" ? "Beratung wirkt distanzierter und unpersönlich" : "Überanalyse bremst Entscheidungen und Umsetzung",
         "Zwischenmenschliche Signale werden übersehen oder ignoriert",
@@ -437,9 +441,9 @@ function buildFehlbesetzung(data: ReportData): { label: string; bullets: string[
     risks.push({
       label: "Wenn Kerntätigkeiten und Profil auseinanderfallen",
       bullets: [
-        `Hochprioritäre Tätigkeiten (${namen}) verlangen eine andere Kompetenz als die Profildominanz`,
+        `Hochprioritäre Tätigkeiten wie ${namen} verlangen ein anderes Verhalten als das Rollenprofil`,
         "Die Person wird dauerhaft in einem Bereich gefordert, der nicht ihrer natürlichen Stärke entspricht",
-        "Kompensation ist kurzfristig möglich, langfristig steigen Erschöpfung und Fehlerquote",
+        "Kompensation ist kurzfristig möglich. Langfristig steigen Erschöpfung und Fehlerquote",
       ],
     });
   }
@@ -453,7 +457,7 @@ function buildFazit(data: ReportData): { kernsatz: string; persoenlichkeit: stri
 
   let kernsatz: string;
   if (profileType === "balanced_all") {
-    kernsatz = `Die Rolle ${beruf} passt zu Persönlichkeiten, die vielseitig arbeiten können – schnell handeln, Beziehungen pflegen und analytisch denken. Wichtig ist die Fähigkeit, situativ zwischen diesen Anforderungen zu wechseln.`;
+    kernsatz = `Die Rolle ${beruf} passt zu Persönlichkeiten, die vielseitig arbeiten können: schnell handeln, Beziehungen pflegen und gründlich analysieren. Wichtig ist die Fähigkeit, situativ zwischen diesen Anforderungen zu wechseln.`;
   } else {
     kernsatz = `Die Rolle ${beruf} passt besonders zu Persönlichkeiten, die:`;
   }
@@ -675,23 +679,23 @@ export default function Rollenprofil() {
     : null;
 
   const rollenBeschreibung = (() => {
-    const tRef = taetigkeitenInText ? `Die zentralen Aufgaben – ${taetigkeitenInText} – ` : "Die zentralen Aufgaben ";
+    const tRef = taetigkeitenInText ? `Die zentralen Aufgaben wie ${taetigkeitenInText} ` : "Die zentralen Aufgaben ";
     if (data.dom.key === "int") {
-      return `${tRef}verlangen eine Persönlichkeit, die ${data.isLeadership ? "ein Team führen kann und gleichzeitig " : ""}schnell Vertrauen aufbaut, Bedürfnisse erkennt und im persönlichen Kontakt überzeugt. Entscheidend ist: Die Person muss Menschen gewinnen können. Gleichzeitig braucht die Rolle ${data.sec.key === "ana" ? "eine strukturierte Arbeitsweise, damit Abläufe, Kalkulation und Organisation stabil bleiben" : "Durchsetzungsfähigkeit, um Entscheidungen auch gegen Widerstände umzusetzen"}.`;
+      return `${tRef}verlangen eine Persönlichkeit, die ${data.isLeadership ? "ein Team führen kann und " : ""}schnell Vertrauen aufbaut, Bedürfnisse erkennt und im persönlichen Kontakt überzeugt. Die Person muss Menschen gewinnen können. ${data.sec.key === "ana" ? "Gleichzeitig braucht die Rolle eine strukturierte Arbeitsweise, damit Abläufe und Organisation stabil bleiben." : "Gleichzeitig braucht die Rolle Durchsetzungsfähigkeit, um Entscheidungen auch gegen Widerstände umzusetzen."}`;
     } else if (data.dom.key === "imp") {
-      return `${tRef}erfordern eine Persönlichkeit, die ${data.isLeadership ? "ein Team antreibt und " : ""}schnell entscheidet, klar priorisiert und Ergebnisse konsequent liefert. Entscheidend ist: Die Person muss handlungsfähig bleiben, auch wenn nicht alle Informationen vorliegen. Gleichzeitig braucht die Rolle ${data.sec.key === "int" ? "die Fähigkeit, Beziehungen zu pflegen und das Team mitzunehmen" : "analytische Sorgfalt, damit Qualität und Nachhaltigkeit nicht auf der Strecke bleiben"}.`;
+      return `${tRef}erfordern eine Persönlichkeit, die ${data.isLeadership ? "ein Team antreibt und " : ""}schnell entscheidet, klar priorisiert und Ergebnisse konsequent liefert. Die Person muss handlungsfähig bleiben, auch wenn nicht alle Informationen vorliegen. ${data.sec.key === "int" ? "Gleichzeitig braucht die Rolle die Fähigkeit, Beziehungen zu pflegen und das Team mitzunehmen." : "Gleichzeitig braucht die Rolle Sorgfalt, damit Qualität und Nachhaltigkeit nicht auf der Strecke bleiben."}`;
     } else {
-      return `${tRef}setzen eine Persönlichkeit voraus, die ${data.isLeadership ? "ein Team methodisch führt und " : ""}systematisch arbeitet, Qualität sichert und fundierte Entscheidungsgrundlagen liefert. Entscheidend ist: Die Person muss sorgfältig und präzise arbeiten. Gleichzeitig braucht die Rolle ${data.sec.key === "int" ? "Empathie und Kommunikationsgeschick, um Erkenntnisse verständlich zu vermitteln und im Team zu verankern" : "Handlungsfähigkeit, damit Analysen auch in konkrete Maßnahmen münden"}.`;
+      return `${tRef}setzen eine Persönlichkeit voraus, die ${data.isLeadership ? "ein Team methodisch führt und " : ""}systematisch arbeitet, Qualität sichert und fundierte Entscheidungsgrundlagen liefert. Die Person muss sorgfältig und präzise arbeiten. ${data.sec.key === "int" ? "Gleichzeitig braucht die Rolle Empathie und Kommunikationsgeschick, um Erkenntnisse verständlich zu vermitteln." : "Gleichzeitig braucht die Rolle Handlungsfähigkeit, damit Analysen auch in konkrete Maßnahmen münden."}`;
     }
   })();
 
   const arbeitslogikText = (() => {
     if (data.dom.key === "int") {
-      return `Im Alltag entsteht Wirkung vor allem im direkten Kontakt – ${data.isLeadership ? "mit dem Team, Stakeholdern und Entscheidungsträgern" : "mit Kolleginnen und Kollegen, Kundinnen und Kunden oder Gesprächspartnern"}. Entscheidungen werden häufig situativ und im Gespräch getroffen. Gleichzeitig braucht die Person die Fähigkeit, ${data.sec.key === "ana" ? "Abläufe zu organisieren und Prioritäten klar zu setzen" : "schnell zu handeln und Ergebnisse zu liefern, auch wenn nicht alle einverstanden sind"}.`;
+      return `Im Alltag entsteht Wirkung vor allem im direkten Kontakt, ${data.isLeadership ? "mit dem Team, Stakeholdern und Entscheidungsträgern" : "mit Kolleginnen und Kollegen, Kundinnen und Kunden oder Gesprächspartnern"}. Entscheidungen werden häufig situativ und im Gespräch getroffen. ${data.sec.key === "ana" ? "Gleichzeitig braucht die Person die Fähigkeit, Abläufe zu organisieren und Prioritäten klar zu setzen." : "Gleichzeitig braucht die Person die Fähigkeit, schnell zu handeln und Ergebnisse zu liefern, auch wenn nicht alle einverstanden sind."}`;
     } else if (data.dom.key === "imp") {
-      return `Im Alltag entsteht Wirkung vor allem über schnelles Handeln und klare Priorisierung. ${data.isLeadership ? "Als Führungskraft gibt diese Person das Tempo vor und treibt Ergebnisse aktiv voran." : "Die Person treibt Themen eigenständig voran und wartet nicht auf Anweisungen."} Entscheidungen werden zügig getroffen – ${data.sec.key === "int" ? "dabei darf der Blick für das Team und die Beziehungsebene nicht verloren gehen" : "dabei braucht es gleichzeitig Sorgfalt, damit Qualität und Nachhaltigkeit gesichert bleiben"}.`;
+      return `Im Alltag entsteht Wirkung vor allem über schnelles Handeln und klare Priorisierung. ${data.isLeadership ? "Als Führungskraft gibt diese Person das Tempo vor und treibt Ergebnisse aktiv voran." : "Die Person treibt Themen eigenständig voran und wartet nicht auf Anweisungen."} ${data.sec.key === "int" ? "Dabei darf der Blick für das Team und die Beziehungsebene nicht verloren gehen." : "Dabei braucht es gleichzeitig Sorgfalt, damit Qualität und Nachhaltigkeit gesichert bleiben."}`;
     } else {
-      return `Im Alltag entsteht Wirkung über systematische Analyse, klare Prozesse und fundierte Entscheidungsgrundlagen. ${data.isLeadership ? "Als Führungskraft setzt diese Person auf nachvollziehbare Qualitätsstandards und transparente Steuerung." : "Die Person überzeugt durch fachliche Tiefe und sorgfältige Arbeitsweise."} ${data.sec.key === "int" ? "Gleichzeitig muss sie Erkenntnisse verständlich kommunizieren und im Team verankern können." : "Gleichzeitig müssen Analysen in konkretes Handeln münden – reine Theorie reicht nicht."}`;
+      return `Im Alltag entsteht Wirkung über systematische Analyse, klare Prozesse und fundierte Entscheidungsgrundlagen. ${data.isLeadership ? "Als Führungskraft setzt diese Person auf nachvollziehbare Qualitätsstandards und transparente Steuerung." : "Die Person überzeugt durch fachliche Tiefe und sorgfältige Arbeitsweise."} ${data.sec.key === "int" ? "Gleichzeitig muss sie Erkenntnisse verständlich kommunizieren und im Team verankern." : "Gleichzeitig müssen Analysen in konkretes Handeln münden. Reine Theorie reicht nicht."}`;
     }
   })();
 
@@ -699,30 +703,32 @@ export default function Rollenprofil() {
     const hochNamen = hochItems.slice(0, 3).map((t: any) => t.name);
     const hochRef = hochNamen.length > 0 ? `Besonders kritisch sind dabei ${hochNamen.join(", ")}. ` : "";
     if (data.dom.key === "int") {
-      return `Im normalen Arbeitstag zeigt sich die Stärke dieser Rolle im persönlichen Kontakt. ${data.isLeadership ? "Die Führungskraft" : "Die Person"} baut Vertrauen auf, erkennt Bedürfnisse schnell und schafft ein Umfeld, in dem sich Menschen gehört fühlen. ${hochRef}Damit das funktioniert, braucht die Rolle gleichzeitig ${data.sec.key === "ana" ? "eine klare Organisation – Abläufe, Dokumentation und Standards dürfen nicht zu kurz kommen" : "Tempo und Entscheidungsfähigkeit – nicht alles lässt sich im Konsens lösen"}.`;
+      return `Im normalen Arbeitstag zeigt sich die Stärke dieser Rolle im persönlichen Kontakt. ${data.isLeadership ? "Die Führungskraft" : "Die Person"} baut Vertrauen auf, erkennt Bedürfnisse schnell und schafft ein Umfeld, in dem sich Menschen gehört fühlen. ${hochRef}${data.sec.key === "ana" ? "Damit das funktioniert, braucht die Rolle gleichzeitig klare Organisation. Abläufe, Dokumentation und Standards dürfen nicht zu kurz kommen." : "Damit das funktioniert, braucht die Rolle gleichzeitig Tempo und Entscheidungsfähigkeit. Nicht alles lässt sich im Konsens lösen."}`;
     } else if (data.dom.key === "imp") {
-      return `Im normalen Arbeitstag zeigt sich die Stärke dieser Rolle in klarer Priorisierung und konsequenter Umsetzung. ${data.isLeadership ? "Die Führungskraft" : "Die Person"} treibt Ergebnisse voran und bleibt auch bei Widerständen handlungsfähig. ${hochRef}Damit das funktioniert, braucht die Rolle gleichzeitig ${data.sec.key === "int" ? "Sensibilität für das Team – wer nur Tempo macht, verliert die Leute" : "Sorgfalt bei Analysen und Qualitätssicherung – schnelle Entscheidungen müssen trotzdem fundiert sein"}.`;
+      return `Im normalen Arbeitstag zeigt sich die Stärke dieser Rolle in klarer Priorisierung und konsequenter Umsetzung. ${data.isLeadership ? "Die Führungskraft" : "Die Person"} treibt Ergebnisse voran und bleibt auch bei Widerständen handlungsfähig. ${hochRef}${data.sec.key === "int" ? "Damit das funktioniert, braucht die Rolle gleichzeitig Sensibilität für das Team. Wer nur Tempo macht, verliert die Leute." : "Damit das funktioniert, braucht die Rolle Sorgfalt bei Analysen und Qualitätssicherung. Schnelle Entscheidungen müssen trotzdem fundiert sein."}`;
     } else {
-      return `Im normalen Arbeitstag zeigt sich die Stärke dieser Rolle in methodischer Arbeit, sauberer Dokumentation und hoher Qualität. ${data.isLeadership ? "Die Führungskraft" : "Die Person"} überzeugt durch fachliche Tiefe und nachvollziehbare Ergebnisse. ${hochRef}Damit das funktioniert, braucht die Rolle gleichzeitig ${data.sec.key === "int" ? "Kommunikationsgeschick – fachlich richtige Ergebnisse müssen verständlich vermittelt werden" : "Handlungsbereitschaft – wer nur analysiert, aber nicht entscheidet, blockiert den Fortschritt"}.`;
+      return `Im normalen Arbeitstag zeigt sich die Stärke dieser Rolle in methodischer Arbeit, sauberer Dokumentation und hoher Qualität. ${data.isLeadership ? "Die Führungskraft" : "Die Person"} überzeugt durch fachliche Tiefe und nachvollziehbare Ergebnisse. ${hochRef}${data.sec.key === "int" ? "Damit das funktioniert, braucht die Rolle Kommunikationsgeschick. Fachlich richtige Ergebnisse müssen verständlich vermittelt werden." : "Damit das funktioniert, braucht die Rolle Handlungsbereitschaft. Wer nur analysiert, aber nicht entscheidet, blockiert den Fortschritt."}`;
     }
   })();
 
   const strukturprofilText = (() => {
     if (data.profileType === "balanced_all") {
-      return "Diese Rolle verlangt keine klare Spezialisierung – sie erfordert eine Persönlichkeit, die situativ zwischen schnellem Handeln, persönlichem Kontakt und analytischem Denken wechseln kann. Das macht die Besetzung anspruchsvoll: Die Person muss vielseitig sein, ohne beliebig zu wirken.";
+      return "Diese Rolle verlangt keine klare Spezialisierung. Sie erfordert eine Persönlichkeit, die situativ zwischen schnellem Handeln, persönlichem Kontakt und gründlicher Analyse wechseln kann. Das macht die Besetzung anspruchsvoll. Die Person muss vielseitig sein, ohne beliebig zu wirken.";
     }
     if (data.profileType.startsWith("hybrid_")) {
-      return `Diese Rolle verlangt gleichzeitig ${data.dom.label.toLowerCase()}es und ${data.sec.label.toLowerCase()}es Arbeiten. Beide Anforderungen sind nahezu gleichwertig – die Person muss beides auf hohem Niveau mitbringen. ${data.wk.label} spielt eine ergänzende, aber deutlich nachrangige Rolle.`;
+      const domBehav = data.dom.key === "imp" ? "schnelles Handeln und Umsetzungsstärke" : data.dom.key === "int" ? "persönlichen Kontakt und Beziehungsarbeit" : "methodische Sorgfalt und Qualitätssicherung";
+      const secBehav = data.sec.key === "imp" ? "schnelles Handeln und Umsetzungsstärke" : data.sec.key === "int" ? "persönlichen Kontakt und Beziehungsarbeit" : "methodische Sorgfalt und Qualitätssicherung";
+      return `Diese Rolle verlangt gleichzeitig ${domBehav} und ${secBehav}. Beide Anforderungen sind nahezu gleichwertig. Die Person muss beides auf hohem Niveau mitbringen.`;
     }
-    const adj = data.intensity === "strong" ? "klar" : data.intensity === "clear" ? "deutlich" : "erkennbar";
-    return `Diese Rolle ist ${adj} geprägt durch ${kompShort(data.dom.key)}. Das ist die zentrale Anforderung an die Person. ${data.sec.key === "ana" ? "Eine strukturierte Arbeitsweise sorgt dafür, dass Entscheidungen nachvollziehbar bleiben und Abläufe stabil funktionieren." : data.sec.key === "int" ? "Die Fähigkeit, Beziehungen aufzubauen und Menschen mitzunehmen, sorgt für Akzeptanz und Zusammenhalt." : "Gleichzeitig braucht es Handlungsfähigkeit, damit Ergebnisse auch tatsächlich umgesetzt werden."}`;
+    const domBehav = data.dom.key === "imp" ? "schnelles Handeln und klare Entscheidungen" : data.dom.key === "int" ? "persönlichen Kontakt und die Fähigkeit, Vertrauen aufzubauen" : "sorgfältige Analyse und strukturiertes Arbeiten";
+    return `Das Profil dieser Rolle wird geprägt durch ${domBehav}. Das ist die zentrale Anforderung an die Person. ${data.sec.key === "ana" ? "Strukturierte Arbeitsweise sorgt dafür, dass Entscheidungen nachvollziehbar bleiben und Abläufe stabil funktionieren." : data.sec.key === "int" ? "Die Fähigkeit, Beziehungen aufzubauen und Menschen mitzunehmen, sorgt für Akzeptanz und Zusammenhalt." : "Gleichzeitig braucht es Handlungsfähigkeit, damit Ergebnisse auch tatsächlich umgesetzt werden."}`;
   })();
 
   const abschlussText = (() => {
     const domBenefit = data.dom.key === "int" ? "Beziehungsqualität und Vertrauen" : data.dom.key === "imp" ? "Tempo und Ergebnisorientierung" : "Qualität und Prozesssicherheit";
     const secBenefit = data.sec.key === "ana" ? "stabile Abläufe und Wirtschaftlichkeit" : data.sec.key === "int" ? "Teamzusammenhalt und Akzeptanz" : "schnelle Umsetzung und Verbindlichkeit";
     const riskText = `Fehlt diese Kombination, entstehen ${data.dom.key === "int" ? "entweder Beziehungsdefizite im direkten Kontakt" : data.dom.key === "imp" ? "entweder Tempo- und Umsetzungsprobleme" : "entweder Qualitäts- und Prozessmängel"} oder ${data.sec.key === "ana" ? "Instabilität in Organisation und Wirtschaftlichkeit" : data.sec.key === "int" ? "Akzeptanzprobleme im Team" : "Trägheit bei der Umsetzung"}.`;
-    return `Diese Kombination sichert ${domBenefit} und ${secBenefit}${data.isLeadership ? " – und damit Führungswirksamkeit" : ""}. ${riskText}`;
+    return `Diese Kombination sichert ${domBenefit} und ${secBenefit}${data.isLeadership ? ", und damit Führungswirksamkeit" : ""}. ${riskText}`;
   })();
 
   return (
@@ -769,7 +775,7 @@ export default function Rollenprofil() {
           {/* ── SEITE 1: ROLLEN-DNA ── */}
           <div style={{ marginBottom: 40 }}>
             <h2 style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 20px", paddingBottom: 8, borderBottom: "1px solid rgba(0,0,0,0.08)" }} data-testid="section-1-title">
-              Seite 1 – Rollen-DNA · die Entscheidungsgrundlage
+              Seite 1 · Rollen-DNA · die Entscheidungsgrundlage
             </h2>
 
             <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>Welche Persönlichkeit braucht diese Rolle?</p>
@@ -887,7 +893,7 @@ export default function Rollenprofil() {
           {/* ── SEITE 2: VERHALTEN ── */}
           <div style={{ marginBottom: 40 }}>
             <h2 style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 20px", paddingBottom: 8, borderBottom: "1px solid rgba(0,0,0,0.08)" }} data-testid="section-2-title">
-              Seite 2 – Verhalten der Rolle · Alltag + Stress
+              Seite 2 · Verhalten der Rolle · Alltag und Stress
             </h2>
 
             {/* Verhalten im Alltag */}
@@ -921,7 +927,7 @@ export default function Rollenprofil() {
           {/* ── SEITE 3: TEAMWIRKUNG & RISIKEN ── */}
           <div>
             <h2 style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 20px", paddingBottom: 8, borderBottom: "1px solid rgba(0,0,0,0.08)" }} data-testid="section-3-title">
-              Seite 3 – Teamwirkung und Fehlbesetzungsrisiken
+              Seite 3 · Teamwirkung und Fehlbesetzungsrisiken
             </h2>
 
             {/* Führungswirkung / Teamwirkung */}
@@ -949,7 +955,11 @@ export default function Rollenprofil() {
                 ))}
               </div>
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "12px 0 0", textAlign: "justify", textAlignLast: "left" as any }} lang="de">
-                {`Die Person muss diese Gegensätze situativ ausbalancieren, ohne dabei die Kernstärke – ${kompShort(data.dom.key)} – aus den Augen zu verlieren.`}
+                {data.dom.key === "imp"
+                  ? "Die Person muss diese Gegensätze situativ ausbalancieren, ohne dabei das Tempo und die Umsetzungsstärke zu verlieren."
+                  : data.dom.key === "int"
+                  ? "Die Person muss diese Gegensätze situativ ausbalancieren, ohne dabei den persönlichen Kontakt und das Vertrauen zu verlieren."
+                  : "Die Person muss diese Gegensätze situativ ausbalancieren, ohne dabei die Sorgfalt und Qualitätssicherung zu verlieren."}
               </p>
             </div>
 
