@@ -6,6 +6,8 @@ import { BERUFE } from "@/data/berufe";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 
+const cleanTaskName = (n: string) => n.replace(/\.\s*$/, "").replace(/,\s*$/, "");
+
 type BG = { imp: number; int: number; ana: number };
 type ProfileType = "balanced_all" | "strong_imp" | "strong_ana" | "strong_int" |
   "dominant_imp" | "dominant_ana" | "dominant_int" |
@@ -437,7 +439,7 @@ function buildFehlbesetzung(data: ReportData): { label: string; bullets: string[
     (dom.key === "ana" && t.kompetenz !== "Analytisch")
   );
   if (conflicting.length >= 2 && risks.length < 3) {
-    const namen = conflicting.slice(0, 2).map((t: any) => t.name).join(" und ");
+    const namen = conflicting.slice(0, 2).map((t: any) => cleanTaskName(t.name)).join(" und ");
     risks.push({
       label: "Wenn Kerntätigkeiten und Profil auseinanderfallen",
       bullets: [
@@ -478,7 +480,7 @@ function buildFazit(data: ReportData): { kernsatz: string; persoenlichkeit: stri
   points.push("auch unter Druck ruhig und klar bleiben");
 
   if (hoch.length > 0) {
-    points.push(`die kritischen Anforderungen (${hoch.slice(0, 3).map((t: any) => t.name).join(", ")}) auf hohem Niveau erfüllen`);
+    points.push(`die kritischen Anforderungen (${hoch.slice(0, 3).map((t: any) => cleanTaskName(t.name)).join(", ")}) auf hohem Niveau erfüllen`);
   }
 
   if (isLeadership) {
@@ -673,19 +675,31 @@ export default function Rollenprofil() {
 
   const komponentenBedeutung = buildKomponentenBedeutung(data);
 
-  const topTaetigkeiten = hauptTaetigkeiten.slice(0, 4).map((t: any) => t.name);
-  const taetigkeitenInText = topTaetigkeiten.length > 0
-    ? topTaetigkeiten.join(", ")
-    : null;
+  const topTaetigkeiten = hauptTaetigkeiten.slice(0, 5).map((t: any) => cleanTaskName(t.name));
 
-  const rollenBeschreibung = (() => {
-    const tRef = taetigkeitenInText ? `Die zentralen Aufgaben wie ${taetigkeitenInText} ` : "Die zentralen Aufgaben ";
+  const rollenBeschreibungIntro = (() => {
     if (data.dom.key === "int") {
-      return `${tRef}verlangen eine Persönlichkeit, die ${data.isLeadership ? "ein Team führen kann und " : ""}schnell Vertrauen aufbaut, Bedürfnisse erkennt und im persönlichen Kontakt überzeugt. Die Person muss Menschen gewinnen können. ${data.sec.key === "ana" ? "Gleichzeitig braucht die Rolle eine strukturierte Arbeitsweise, damit Abläufe und Organisation stabil bleiben." : "Gleichzeitig braucht die Rolle Durchsetzungsfähigkeit, um Entscheidungen auch gegen Widerstände umzusetzen."}`;
+      return `Diese Aufgaben verlangen eine Persönlichkeit, die ${data.isLeadership ? "ein Team führen kann und " : ""}schnell Vertrauen aufbaut, Bedürfnisse erkennt und im persönlichen Kontakt überzeugt. Die Person muss Menschen gewinnen können.`;
     } else if (data.dom.key === "imp") {
-      return `${tRef}erfordern eine Persönlichkeit, die ${data.isLeadership ? "ein Team antreibt und " : ""}schnell entscheidet, klar priorisiert und Ergebnisse konsequent liefert. Die Person muss handlungsfähig bleiben, auch wenn nicht alle Informationen vorliegen. ${data.sec.key === "int" ? "Gleichzeitig braucht die Rolle die Fähigkeit, Beziehungen zu pflegen und das Team mitzunehmen." : "Gleichzeitig braucht die Rolle Sorgfalt, damit Qualität und Nachhaltigkeit nicht auf der Strecke bleiben."}`;
+      return `Diese Aufgaben erfordern eine Persönlichkeit, die ${data.isLeadership ? "ein Team antreibt und " : ""}schnell entscheidet, klar priorisiert und Ergebnisse konsequent liefert. Die Person muss handlungsfähig bleiben, auch wenn nicht alle Informationen vorliegen.`;
     } else {
-      return `${tRef}setzen eine Persönlichkeit voraus, die ${data.isLeadership ? "ein Team methodisch führt und " : ""}systematisch arbeitet, Qualität sichert und fundierte Entscheidungsgrundlagen liefert. Die Person muss sorgfältig und präzise arbeiten. ${data.sec.key === "int" ? "Gleichzeitig braucht die Rolle Empathie und Kommunikationsgeschick, um Erkenntnisse verständlich zu vermitteln." : "Gleichzeitig braucht die Rolle Handlungsfähigkeit, damit Analysen auch in konkrete Maßnahmen münden."}`;
+      return `Diese Aufgaben setzen eine Persönlichkeit voraus, die ${data.isLeadership ? "ein Team methodisch führt und " : ""}systematisch arbeitet, Qualität sichert und fundierte Entscheidungsgrundlagen liefert. Die Person muss sorgfältig und präzise arbeiten.`;
+    }
+  })();
+
+  const rollenBeschreibungErgaenzung = (() => {
+    if (data.dom.key === "int") {
+      return data.sec.key === "ana"
+        ? "Gleichzeitig braucht die Rolle eine strukturierte Arbeitsweise, damit Abläufe und Organisation stabil bleiben."
+        : "Gleichzeitig braucht die Rolle Durchsetzungsfähigkeit, um Entscheidungen auch gegen Widerstände umzusetzen.";
+    } else if (data.dom.key === "imp") {
+      return data.sec.key === "int"
+        ? "Gleichzeitig braucht die Rolle die Fähigkeit, Beziehungen zu pflegen und das Team mitzunehmen."
+        : "Gleichzeitig braucht die Rolle Sorgfalt, damit Qualität und Nachhaltigkeit nicht auf der Strecke bleiben.";
+    } else {
+      return data.sec.key === "int"
+        ? "Gleichzeitig braucht die Rolle Empathie und Kommunikationsgeschick, um Erkenntnisse verständlich zu vermitteln."
+        : "Gleichzeitig braucht die Rolle Handlungsfähigkeit, damit Analysen auch in konkrete Maßnahmen münden.";
     }
   })();
 
@@ -700,7 +714,7 @@ export default function Rollenprofil() {
   })();
 
   const alltagsverhalten = (() => {
-    const hochNamen = hochItems.slice(0, 3).map((t: any) => t.name);
+    const hochNamen = hochItems.slice(0, 3).map((t: any) => cleanTaskName(t.name));
     const hochRef = hochNamen.length > 0 ? `Besonders kritisch sind dabei ${hochNamen.join(", ")}. ` : "";
     if (data.dom.key === "int") {
       return `Im normalen Arbeitstag zeigt sich die Stärke dieser Rolle im persönlichen Kontakt. ${data.isLeadership ? "Die Führungskraft" : "Die Person"} baut Vertrauen auf, erkennt Bedürfnisse schnell und schafft ein Umfeld, in dem sich Menschen gehört fühlen. ${hochRef}${data.sec.key === "ana" ? "Damit das funktioniert, braucht die Rolle gleichzeitig klare Organisation. Abläufe, Dokumentation und Standards dürfen nicht zu kurz kommen." : "Damit das funktioniert, braucht die Rolle gleichzeitig Tempo und Entscheidungsfähigkeit. Nicht alles lässt sich im Konsens lösen."}`;
@@ -783,8 +797,25 @@ export default function Rollenprofil() {
             {/* 1. Kurzbeschreibung */}
             <div style={{ marginTop: 24, marginBottom: 28 }}>
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>1. Kurzbeschreibung der Rolle</p>
+
+              {topTaetigkeiten.length > 0 && (
+                <>
+                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 8px" }}>
+                    Die zentralen Aufgaben dieser Rolle:
+                  </p>
+                  <ul style={{ margin: "0 0 14px", paddingLeft: 20, listStyleType: "disc" }}>
+                    {topTaetigkeiten.map((t, i) => (
+                      <li key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, marginBottom: 3 }}>{t}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
+
+              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 8px", textAlign: "justify", textAlignLast: "left" as any }} lang="de">
+                {rollenBeschreibungIntro}
+              </p>
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de">
-                {rollenBeschreibung}
+                {rollenBeschreibungErgaenzung}
               </p>
             </div>
 
