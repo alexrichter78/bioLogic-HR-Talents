@@ -1274,18 +1274,21 @@ export default function RollenDNA() {
                   <div style={{ marginBottom: 4 }}>
                     <span style={{ fontSize: 12, fontWeight: 700, color: "#34C759", letterSpacing: "0.04em" }}>SCHRITT 1 VON 3</span>
                   </div>
-                  <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: "0 0 20px" }} data-testid="text-step-1-title">
-                    Rolle oder Beruf eingeben
+                  <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: "0 0 6px" }} data-testid="text-step-1-title">
+                    Welche Rolle möchten Sie analysieren?
                   </h2>
+                  <p style={{ fontSize: 13, color: "#8E8E93", lineHeight: 1.5, margin: "0 0 20px" }}>
+                    Geben Sie die Berufsbezeichnung oder Stellenbezeichnung ein, z.B. „Vertriebsleiter", „HR Business Partner" oder „Projektmanager IT".
+                  </p>
 
-                  <div className="mb-6" style={{ zIndex: 100 }} data-testid="input-beruf-wrapper">
+                  <div className="mb-0" style={{ zIndex: 100 }} data-testid="input-beruf-wrapper">
                     <div className="relative" style={{ zIndex: 100 }}>
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 z-10" />
                       <Input
                         ref={inputRef}
                         type="text"
                         autoComplete="off"
-                        placeholder="Rolle oder Beruf eingeben"
+                        placeholder="z.B. Key Account Manager, Teamleiter Produktion, ..."
                         value={beruf}
                         onChange={(e) => {
                           setBeruf(e.target.value);
@@ -1385,48 +1388,48 @@ export default function RollenDNA() {
                       )}
                     </div>
 
-                    <p style={{ fontSize: 12.5, color: "#AEAEB2", margin: "6px 0 0", fontStyle: "italic" }}>
-                      Falls kein Vorschlag erscheint, einfach ausschreiben.
+                    <p style={{ fontSize: 12, color: "#AEAEB2", margin: "6px 0 0" }}>
+                      Kein passender Vorschlag? Einfach ausschreiben – wir erkennen die Rolle automatisch.
                     </p>
 
-                    <div className="flex items-center gap-2 mt-4" data-testid="land-filter">
-                      {([
-                        { land: "DE" as BerufLand, label: "DE", flag: (<svg viewBox="0 0 20 14" className="w-4 h-3 rounded-[2px] overflow-hidden"><rect y="0" width="20" height="4.67" fill="#000"/><rect y="4.67" width="20" height="4.67" fill="#D00"/><rect y="9.33" width="20" height="4.67" fill="#FFCE00"/></svg>) },
-                        { land: "CH" as BerufLand, label: "CH", flag: (<svg viewBox="0 0 20 14" className="w-4 h-3 rounded-[2px] overflow-hidden"><rect width="20" height="14" fill="#D52B1E"/><rect x="8" y="2.5" width="4" height="9" fill="#FFF"/><rect x="5.5" y="5" width="9" height="4" fill="#FFF"/></svg>) },
-                        { land: "AT" as BerufLand, label: "AT", flag: (<svg viewBox="0 0 20 14" className="w-4 h-3 rounded-[2px] overflow-hidden"><rect y="0" width="20" height="4.67" fill="#ED2939"/><rect y="4.67" width="20" height="4.67" fill="#FFF"/><rect y="9.33" width="20" height="4.67" fill="#ED2939"/></svg>) },
-                      ]).map(({ land, label, flag }) => {
-                        const active = selectedLaender.has(land);
-                        return (
-                          <button
-                            key={land}
-                            type="button"
-                            data-testid={`filter-${land.toLowerCase()}`}
-                            onClick={() => toggleLand(land)}
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer transition-all duration-200 ${
-                              active
-                                ? "border-[1.5px] border-primary/40 bg-primary/8 text-primary"
-                                : "border-[1.5px] border-border/30 bg-muted/20 text-muted-foreground/40"
-                            }`}
-                          >
-                            <span className={`transition-opacity ${active ? "opacity-100" : "opacity-40"}`}>{flag}</span>
-                            <span>{label}</span>
-                          </button>
-                        );
-                      })}
-                      <span style={{ fontSize: 12, color: "#AEAEB2", marginLeft: 4 }}>
-                        Land auswählen · Für passende Berufsbezeichnungen und Vergleichsdaten
-                      </span>
+                    <div style={{ marginTop: 16 }}>
+                      <p style={{ fontSize: 12.5, fontWeight: 600, color: "#6E6E73", margin: "0 0 8px" }}>Arbeitsmarkt</p>
+                      <div className="flex items-center gap-2" data-testid="land-filter">
+                        {([
+                          { land: "DE" as BerufLand, label: "DE", flag: (<svg viewBox="0 0 20 14" className="w-4 h-3 rounded-[2px] overflow-hidden"><rect y="0" width="20" height="4.67" fill="#000"/><rect y="4.67" width="20" height="4.67" fill="#D00"/><rect y="9.33" width="20" height="4.67" fill="#FFCE00"/></svg>) },
+                          { land: "CH" as BerufLand, label: "CH", flag: (<svg viewBox="0 0 20 14" className="w-4 h-3 rounded-[2px] overflow-hidden"><rect width="20" height="14" fill="#D52B1E"/><rect x="8" y="2.5" width="4" height="9" fill="#FFF"/><rect x="5.5" y="5" width="9" height="4" fill="#FFF"/></svg>) },
+                          { land: "AT" as BerufLand, label: "AT", flag: (<svg viewBox="0 0 20 14" className="w-4 h-3 rounded-[2px] overflow-hidden"><rect y="0" width="20" height="4.67" fill="#ED2939"/><rect y="4.67" width="20" height="4.67" fill="#FFF"/><rect y="9.33" width="20" height="4.67" fill="#ED2939"/></svg>) },
+                        ]).map(({ land, label, flag }) => {
+                          const active = selectedLaender.has(land);
+                          return (
+                            <button
+                              key={land}
+                              type="button"
+                              data-testid={`filter-${land.toLowerCase()}`}
+                              onClick={() => toggleLand(land)}
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer transition-all duration-200 ${
+                                active
+                                  ? "border-[1.5px] border-primary/40 bg-primary/8 text-primary"
+                                  : "border-[1.5px] border-border/30 bg-muted/20 text-muted-foreground/40"
+                              }`}
+                            >
+                              <span className={`transition-opacity ${active ? "opacity-100" : "opacity-40"}`}>{flag}</span>
+                              <span>{label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
 
-                    <div style={{ marginTop: 20 }}>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 6px" }}>Optionale Ergänzungen</p>
-                      <p style={{ fontSize: 12.5, color: "#AEAEB2", margin: "0 0 8px" }}>
-                        Beschreiben Sie kurz Besonderheiten und Vergleichsdaten.
+                    <div style={{ marginTop: 24, borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 20 }}>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 4px" }}>Optionale Ergänzungen</p>
+                      <p style={{ fontSize: 12.5, color: "#AEAEB2", margin: "0 0 10px" }}>
+                        Was macht diese Rolle in Ihrem Unternehmen besonders? Je konkreter, desto genauer die Analyse.
                       </p>
                       <textarea
                         value={zusatzInfo}
                         onChange={(e) => setZusatzInfo(e.target.value)}
-                        placeholder="Beispiele: Schwerpunkt Key Account, viel Reisetätigkeit, Schichtmodell, ..."
+                        placeholder="z.B. Schwerpunkt Key Account, hoher Reiseanteil, Schichtmodell, Branche Pharma, ..."
                         className="w-full bg-muted/30 dark:bg-muted/20 border border-border/40 focus:border-primary/40 rounded-lg px-3 py-2 text-sm resize-none placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all"
                         rows={2}
                         data-testid="input-zusatzinfo"
@@ -1435,16 +1438,16 @@ export default function RollenDNA() {
 
                   </div>
 
-                  <div className="flex justify-end">
+                  <div className="flex justify-end" style={{ marginTop: 8 }}>
                     <Button
                       disabled={!step1Valid}
                       onClick={() => goToStep(2)}
                       className="gap-2"
                       style={{
-                        height: 52,
-                        paddingLeft: 32,
-                        paddingRight: 32,
-                        fontSize: 16,
+                        height: 48,
+                        paddingLeft: 28,
+                        paddingRight: 28,
+                        fontSize: 15,
                         fontWeight: 600,
                         borderRadius: 14,
                         background: step1Valid ? "linear-gradient(135deg, #0071E3, #34AADC)" : undefined,
@@ -1453,8 +1456,8 @@ export default function RollenDNA() {
                       }}
                       data-testid="button-step-1-weiter"
                     >
-                      Weiter
-                      <ArrowRight className="w-5 h-5" />
+                      Rolle analysieren
+                      <ArrowRight className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
@@ -1462,7 +1465,7 @@ export default function RollenDNA() {
             ) : (
               <CollapsedStep
                 step={1}
-                title="Rolle auswählen"
+                title="Rolle"
                 summary={beruf}
                 onEdit={() => goToStep(1)}
               />
