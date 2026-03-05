@@ -715,88 +715,145 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
   aufgabencharakter: string;
   arbeitslogik: string;
 }) {
-  const aufgabenOpt = AUFGABENCHARAKTER_OPTIONS.find(o => o.value === aufgabencharakter);
   const arbeitsOpt = ARBEITSLOGIK_OPTIONS.find(o => o.value === arbeitslogik);
   const fuehrungOpt = FUEHRUNG_OPTIONS.find(o => o.value === fuehrung);
   const fokusLabels = erfolgsfokusIndices.map(i => ERFOLGSFOKUS_DISPLAY[i]?.label).filter(Boolean);
+  const rollenName = beruf || "diese Rolle";
 
-  const aufgabenKurz: Record<string, string> = {
-    "überwiegend operativ": "operative Umsetzung im Tagesgeschäft",
-    "überwiegend systemisch": "strukturierte Umsetzung mit Planungsanteil",
-    "überwiegend strategisch": "strategische Steuerung und Analyse",
-    "Gemischt": "eine Mischung aus operativer Arbeit, Analyse und Abstimmung",
-  };
-  const arbeitsKurz: Record<string, string> = {
-    "Umsetzungsorientiert": "Handlungsorientierung und konkrete Resultate",
-    "Daten-/prozessorientiert": "Daten, Planung und systematisches Vorgehen",
-    "Menschenorientiert": "Abstimmung, Beziehungen und Kommunikation",
-    "Ausgewogen": "eine ausgewogene Mischung verschiedener Arbeitsweisen",
+  const aufgabenSatz: Record<string, string> = {
+    "überwiegend operativ": `verbindet praktische Arbeit mit direkter Umsetzung im Tagesgeschäft`,
+    "überwiegend systemisch": `verbindet praktische Arbeit mit strukturierter Planung und Steuerung`,
+    "überwiegend strategisch": `ist geprägt durch Analyse, Planung und strategische Entscheidungen`,
+    "Gemischt": `verbindet praktische Arbeit mit Analyse und Abstimmung im Team`,
   };
 
-  const rollenName = beruf || "Diese Rolle";
-  const aufgabenText = aufgabenKurz[aufgabencharakter] || aufgabenOpt?.label?.toLowerCase() || "verschiedene Aufgabenbereiche";
-  const arbeitsText = arbeitsKurz[arbeitslogik] || arbeitsOpt?.label?.toLowerCase() || "unterschiedliche Arbeitsweisen";
+  const arbeitsSatz: Record<string, string> = {
+    "Umsetzungsorientiert": `Aufgaben umzusetzen und konkrete Ergebnisse zu erreichen`,
+    "Daten-/prozessorientiert": `Daten auszuwerten, Abläufe zu planen und systematisch vorzugehen`,
+    "Menschenorientiert": `Abstimmung, Zusammenarbeit und Kommunikation im Team`,
+    "Ausgewogen": `eine ausgewogene Verbindung verschiedener Arbeitsweisen`,
+  };
 
-  const fokusText = fokusLabels.length > 0
-    ? `Der Erfolg zeigt sich vor allem in ${fokusLabels.join(" und ").toLowerCase()}.`
-    : "";
+  const arbeitsDetail: Record<string, [string, string]> = {
+    "Umsetzungsorientiert": [
+      "Die Rolle arbeitet stark praktisch und lösungsorientiert.",
+      "Aufgaben werden direkt angegangen und in konkrete Ergebnisse überführt.",
+    ],
+    "Daten-/prozessorientiert": [
+      "Die Arbeit basiert auf Daten, klaren Strukturen und systematischem Vorgehen.",
+      "Entscheidungen werden analytisch vorbereitet und nachvollziehbar umgesetzt.",
+    ],
+    "Menschenorientiert": [
+      "Kommunikation und Beziehungspflege stehen im Mittelpunkt der täglichen Arbeit.",
+      "Ergebnisse entstehen durch Abstimmung, Vertrauen und Zusammenarbeit.",
+    ],
+    "Ausgewogen": [
+      "Die Arbeitsweise verbindet Umsetzung, Analyse und Kommunikation.",
+      "Flexibilität im Vorgehen ist entscheidend für den Erfolg.",
+    ],
+  };
 
-  const introText = `Die Rolle ${rollenName} ist geprägt durch ${aufgabenText}. Im Mittelpunkt der täglichen Arbeit stehen ${arbeitsText}. ${fokusText}`;
+  const fuehrungDetail: Record<string, string> = {
+    "Keine": "Die Rolle arbeitet eigenverantwortlich ohne direkte Führung von Mitarbeitenden.",
+    "Projekt-/Teamkoordination": "Die Rolle koordiniert Aufgaben und Projekte und sorgt für eine reibungslose Zusammenarbeit im Team.",
+    "Fachliche Führung": "Die Rolle übernimmt fachliche Verantwortung im Team und stellt sicher, dass Arbeit und Qualität zuverlässig umgesetzt werden.",
+    "Disziplinarische Führung mit Ergebnisverantwortung": "Die Rolle trägt Verantwortung für Mitarbeitende, deren Entwicklung und die Erreichung konkreter Ergebnisse.",
+  };
+
+  const fokusKurz: Record<string, string> = {
+    "Ergebnisse und Zielerreichung": "konkreten Resultaten und messbarer Leistung",
+    "Zusammenarbeit und Netzwerk": "einer guten Zusammenarbeit und stabilen Beziehungen",
+    "Innovation und Weiterentwicklung": "neuen Ideen und kontinuierlicher Weiterentwicklung",
+    "Prozesse und Effizienz": "stabilen Abläufen und effizienter Arbeit",
+    "Fachliche Qualität und Expertise": "hoher fachlicher Qualität und Expertise",
+    "Strategische Wirkung": "langfristiger Wirkung und strategischer Positionierung",
+  };
+
+  const aufgText = aufgabenSatz[aufgabencharakter] || "verbindet verschiedene Aufgabenbereiche";
+  const arbText = arbeitsSatz[arbeitslogik] || "unterschiedliche Arbeitsweisen";
+  const fokusTeile = fokusLabels.map(l => fokusKurz[l] || l.toLowerCase()).filter(Boolean);
+  let fokusSatz = "";
+  if (fokusTeile.length === 1) fokusSatz = `Der Erfolg dieser Rolle zeigt sich vor allem in ${fokusTeile[0]}.`;
+  else if (fokusTeile.length === 2) fokusSatz = `Der Erfolg dieser Rolle zeigt sich vor allem in ${fokusTeile[0]} und ${fokusTeile[1]}.`;
+  else if (fokusTeile.length > 2) fokusSatz = `Der Erfolg dieser Rolle zeigt sich vor allem in ${fokusTeile.slice(0, -1).join(", ")} und ${fokusTeile[fokusTeile.length - 1]}.`;
+
+  const arbDetail = arbeitsDetail[arbeitslogik] || ["Die Arbeitsweise ist vielseitig und situationsabhängig.", ""];
+  const fuehDetail = fuehrungDetail[fuehrung] || fuehrungOpt?.desc || "";
+
+  const subHeadingIcon = (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
+      <circle cx="8" cy="8" r="8" fill="#34C759" />
+      <path d="M5 8.2L7.2 10.4L11 5.6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
 
   return (
     <div
       data-testid="summary-bar"
       style={{
-        background: "rgba(245,247,250,0.85)",
+        background: "rgba(245,247,250,0.9)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
         borderRadius: 18,
-        padding: "24px 28px",
+        padding: "28px 28px 24px",
         marginTop: 32,
         border: "1px solid rgba(0,0,0,0.05)",
         boxShadow: "0 2px 16px rgba(0,0,0,0.03)",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
         <div style={{
-          width: 26, height: 26, borderRadius: "50%",
+          width: 28, height: 28, borderRadius: "50%",
           background: "linear-gradient(135deg, #34C759, #30B350)",
           display: "flex", alignItems: "center", justifyContent: "center",
           boxShadow: "0 2px 8px rgba(52,199,89,0.3)",
         }}>
-          <CheckCircle2 style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} />
+          <CheckCircle2 style={{ width: 16, height: 16, color: "#fff", strokeWidth: 2.5 }} />
         </div>
-        <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>
+        <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>
           Zusammenfassung
         </span>
       </div>
 
-      <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.65, margin: "0 0 4px" }}>
+      <p style={{ fontSize: 13.5, color: "#8E8E93", lineHeight: 1.6, margin: "0 0 8px" }}>
         So lässt sich die Rolle aktuell beschreiben:
       </p>
-      <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.65, margin: "0 0 20px" }}>
-        {introText}
+      <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "0 0 4px" }}>
+        Die Rolle {rollenName} {aufgText}.
+        {" "}Im Alltag geht es vor allem darum, {arbText}.
       </p>
-
-      {arbeitsOpt && (
-        <>
-          <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 14, marginBottom: 14 }}>
-            <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 3px" }}>Arbeitsweise</p>
-            <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.55, margin: 0 }}>
-              {arbeitsOpt.label}: {arbeitsOpt.desc}
-            </p>
-          </div>
-        </>
+      {fokusSatz && (
+        <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "8px 0 0" }}>
+          {fokusSatz}
+        </p>
       )}
 
-      {fuehrungOpt && (
-        <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 14 }}>
-          <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 3px" }}>Führungsrolle</p>
-          <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.55, margin: 0 }}>
-            {fuehrungOpt.label}: {fuehrungOpt.desc}
-          </p>
+      <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", marginTop: 20, paddingTop: 16, marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+          {subHeadingIcon}
+          <span style={{ fontSize: 15, fontWeight: 650, color: "#1D1D1F" }}>Arbeitsweise</span>
         </div>
-      )}
+        <p style={{ fontSize: 14, fontWeight: 600, color: "#3A3A3C", lineHeight: 1.5, margin: "0 0 4px" }}>
+          {arbeitsOpt?.label}
+        </p>
+        <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.65, margin: 0 }}>
+          {arbDetail[0]}
+          {arbDetail[1] ? <><br />{arbDetail[1]}</> : null}
+        </p>
+      </div>
+
+      <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+          {subHeadingIcon}
+          <span style={{ fontSize: 15, fontWeight: 650, color: "#1D1D1F" }}>Führungsrolle</span>
+        </div>
+        <p style={{ fontSize: 14, fontWeight: 600, color: "#3A3A3C", lineHeight: 1.5, margin: "0 0 4px" }}>
+          {fuehrungOpt?.label}
+        </p>
+        <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.65, margin: 0 }}>
+          {fuehDetail}
+        </p>
+      </div>
     </div>
   );
 }
