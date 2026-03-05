@@ -1407,13 +1407,17 @@ export default function RollenDNA() {
                               type="button"
                               data-testid={`filter-${land.toLowerCase()}`}
                               onClick={() => toggleLand(land)}
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer transition-all duration-200 ${
-                                active
-                                  ? "border-[1.5px] border-primary/40 bg-primary/8 text-primary"
-                                  : "border-[1.5px] border-border/30 bg-muted/20 text-muted-foreground/40"
-                              }`}
+                              style={{
+                                display: "inline-flex", alignItems: "center", gap: 6,
+                                padding: "6px 12px", borderRadius: 10, fontSize: 12, fontWeight: 600,
+                                cursor: "pointer", transition: "all 200ms ease",
+                                border: active ? "2px solid #0071E3" : "1.5px solid rgba(0,0,0,0.08)",
+                                background: active ? "rgba(0,113,227,0.10)" : "rgba(0,0,0,0.02)",
+                                color: active ? "#0071E3" : "#AEAEB2",
+                                boxShadow: active ? "0 2px 8px rgba(0,113,227,0.15)" : "none",
+                              }}
                             >
-                              <span className={`transition-opacity ${active ? "opacity-100" : "opacity-40"}`}>{flag}</span>
+                              <span style={{ opacity: active ? 1 : 0.35, transition: "opacity 200ms ease" }}>{flag}</span>
                               <span>{label}</span>
                             </button>
                           );
