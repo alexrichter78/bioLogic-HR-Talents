@@ -59,14 +59,6 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "0 20px", height: 56, maxWidth: 960, margin: "0 auto",
         }}>
-          <button
-            onClick={() => setLocation("/")}
-            style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}
-            data-testid="nav-logo"
-          >
-            <img src={logoSrc} alt="bioLogic Logo" style={{ height: 28, width: "auto" }} />
-          </button>
-
           <nav style={{ display: "flex", alignItems: "center", gap: 4 }} data-testid="global-nav">
             {NAV_ITEMS.map((item) => {
               const active = isActive(item);
