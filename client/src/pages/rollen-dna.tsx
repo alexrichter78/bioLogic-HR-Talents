@@ -1948,34 +1948,68 @@ export default function RollenDNA() {
                   }}
                   className="dark:bg-card/40"
                 >
-                  <div className="flex items-center gap-2 mb-8" data-testid="tabs-taetigkeiten">
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0,
+                      background: "rgba(0,0,0,0.04)",
+                      borderRadius: 12,
+                      padding: 3,
+                      marginBottom: 28,
+                    }}
+                    data-testid="tabs-taetigkeiten"
+                  >
                     {([
-                      { key: "haupt" as TaetigkeitKategorie, label: "Tätigkeiten" },
-                      { key: "neben" as TaetigkeitKategorie, label: "Humankompetenzen" },
-                      ...(fuehrung !== "Keine" ? [{ key: "fuehrung" as TaetigkeitKategorie, label: "Führungskompetenzen" }] : []),
-                    ]).map(tab => (
-                      <button
-                        key={tab.key}
-                        onClick={() => setActiveTab(tab.key)}
-                        style={{
-                          height: 40,
-                          paddingLeft: 20,
-                          paddingRight: 20,
-                          fontSize: 14,
-                          fontWeight: 600,
-                          borderRadius: 999,
-                          border: "none",
-                          cursor: "pointer",
-                          transition: "all 200ms ease",
-                          background: activeTab === tab.key ? "linear-gradient(135deg, #0071E3, #34AADC)" : "transparent",
-                          color: activeTab === tab.key ? "#FFFFFF" : "#6E6E73",
-                          boxShadow: activeTab === tab.key ? "0 2px 8px rgba(0,113,227,0.2)" : "none",
-                        }}
-                        data-testid={`tab-${tab.key}`}
-                      >
-                        {tab.label}
-                      </button>
-                    ))}
+                      { key: "haupt" as TaetigkeitKategorie, label: "Tätigkeiten", count: hauptCount },
+                      { key: "neben" as TaetigkeitKategorie, label: "Humankompetenzen", count: nebenCount },
+                      ...(fuehrung !== "Keine" ? [{ key: "fuehrung" as TaetigkeitKategorie, label: "Führungskompetenzen", count: fuehrungCount }] : []),
+                    ]).map(tab => {
+                      const isActive = activeTab === tab.key;
+                      return (
+                        <button
+                          key={tab.key}
+                          onClick={() => setActiveTab(tab.key)}
+                          style={{
+                            flex: 1,
+                            height: 38,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: 6,
+                            fontSize: 13,
+                            fontWeight: isActive ? 650 : 500,
+                            borderRadius: 10,
+                            border: "none",
+                            cursor: "pointer",
+                            transition: "background 200ms ease, color 200ms ease, box-shadow 200ms ease",
+                            background: isActive ? "#FFFFFF" : "transparent",
+                            color: isActive ? "#1D1D1F" : "#8E8E93",
+                            boxShadow: isActive ? "0 1px 4px rgba(0,0,0,0.08), 0 0.5px 1px rgba(0,0,0,0.04)" : "none",
+                          }}
+                          data-testid={`tab-${tab.key}`}
+                        >
+                          {tab.label}
+                          {tab.count > 0 && (
+                            <span style={{
+                              fontSize: 11,
+                              fontWeight: 600,
+                              minWidth: 20,
+                              height: 20,
+                              borderRadius: 10,
+                              display: "inline-flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              padding: "0 5px",
+                              background: isActive ? "rgba(0,113,227,0.1)" : "rgba(0,0,0,0.06)",
+                              color: isActive ? "#0071E3" : "#AEAEB2",
+                            }}>
+                              {tab.count}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
 
                   <div>
