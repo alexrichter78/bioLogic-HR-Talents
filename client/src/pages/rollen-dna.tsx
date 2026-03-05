@@ -1270,14 +1270,14 @@ export default function RollenDNA() {
 
             {allCollapsed ? null : currentStep === 1 ? (
               <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border animate-in fade-in slide-in-from-bottom-2 duration-400" style={{ overflow: "visible", position: "relative", zIndex: 100 }} data-testid="card-step-1">
-                <div className="p-6" style={{ overflow: "visible" }}>
-                  <div style={{ marginBottom: 4 }}>
+                <div style={{ padding: "32px 32px 28px", overflow: "visible" }}>
+                  <div style={{ marginBottom: 6 }}>
                     <span style={{ fontSize: 12, fontWeight: 700, color: "#34C759", letterSpacing: "0.04em" }}>SCHRITT 1 VON 3</span>
                   </div>
-                  <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: "0 0 6px" }} data-testid="text-step-1-title">
+                  <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: "0 0 8px" }} data-testid="text-step-1-title">
                     Welche Rolle möchten Sie analysieren?
                   </h2>
-                  <p style={{ fontSize: 13, color: "#8E8E93", lineHeight: 1.5, margin: "0 0 20px" }}>
+                  <p style={{ fontSize: 13, color: "#8E8E93", lineHeight: 1.6, margin: "0 0 28px" }}>
                     Geben Sie die Berufsbezeichnung oder Stellenbezeichnung ein, z.B. „Vertriebsleiter", „HR Business Partner" oder „Projektmanager IT".
                   </p>
 
@@ -1389,11 +1389,11 @@ export default function RollenDNA() {
                       )}
                     </div>
 
-                    <p style={{ fontSize: 12, color: "#AEAEB2", margin: "6px 0 0" }}>
+                    <p style={{ fontSize: 12, color: "#AEAEB2", margin: "8px 0 0" }}>
                       Kein passender Vorschlag? Einfach ausschreiben – wir erkennen die Rolle automatisch.
                     </p>
 
-                    <div style={{ marginTop: 16 }}>
+                    <div style={{ marginTop: 28 }}>
                       <p style={{ fontSize: 12.5, fontWeight: 600, color: "#6E6E73", margin: "0 0 2px" }}>Arbeitsmarkt</p>
                       <p style={{ fontSize: 12, color: "#AEAEB2", margin: "0 0 8px" }}>
                         Vorschläge werden für die aktiven Länder angezeigt. Zum Ein- oder Ausschalten einfach klicken.
@@ -1429,9 +1429,9 @@ export default function RollenDNA() {
                       </div>
                     </div>
 
-                    <div style={{ marginTop: 24, borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 20 }}>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 4px" }}>Optionale Ergänzungen</p>
-                      <p style={{ fontSize: 12.5, color: "#AEAEB2", margin: "0 0 10px" }}>
+                    <div style={{ marginTop: 32, borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 24 }}>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 6px" }}>Optionale Ergänzungen</p>
+                      <p style={{ fontSize: 12.5, color: "#AEAEB2", margin: "0 0 12px" }}>
                         Was macht diese Rolle in Ihrem Unternehmen besonders? Je konkreter, desto genauer die Analyse.
                       </p>
                       <textarea
@@ -1447,7 +1447,7 @@ export default function RollenDNA() {
 
                   </div>
 
-                  <div className="flex justify-end" style={{ marginTop: 8 }}>
+                  <div className="flex justify-end" style={{ marginTop: 24 }}>
                     <Button
                       disabled={!step1Valid}
                       onClick={() => goToStep(2)}
