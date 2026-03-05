@@ -193,6 +193,9 @@ export default function Home() {
                   <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: 0 }} data-testid="text-no-profile">
                     Rollenanalyse
                   </h2>
+                  <p style={{ fontSize: 13, color: "#8E8E93", margin: "3px 0 0", fontWeight: 450 }}>
+                    Präzision in Besetzung und Teamstruktur
+                  </p>
                 </div>
               </div>
 
