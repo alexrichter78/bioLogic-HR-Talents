@@ -1271,12 +1271,15 @@ export default function RollenDNA() {
             {allCollapsed ? null : currentStep === 1 ? (
               <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border animate-in fade-in slide-in-from-bottom-2 duration-400" style={{ overflow: "visible", position: "relative", zIndex: 100 }} data-testid="card-step-1">
                 <div className="p-6" style={{ overflow: "visible" }}>
-                  <div className="flex items-center gap-3 mb-1">
-                    <span className="text-xs font-medium text-primary uppercase tracking-wider">Schritt 1</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#34C759", letterSpacing: "0.04em" }}>SCHRITT 1</span>
                   </div>
-                  <h2 className="text-lg font-semibold text-foreground/90 mb-5" data-testid="text-step-1-title">
-                    Rolle auswählen
+                  <h2 className="text-lg font-semibold text-foreground/90 mb-2" data-testid="text-step-1-title">
+                    Beruf, Tätigkeit, Rolle
                   </h2>
+                  <p style={{ fontSize: 13, color: "#8E8E93", lineHeight: 1.5, margin: "0 0 20px" }}>
+                    Sollte kein Textvorschlag ersichtlich sein, trotzdem alles ausschreiben – wir finden die passende Rolle.
+                  </p>
 
                   <div className="mb-6" style={{ zIndex: 100 }} data-testid="input-beruf-wrapper">
                     <div className="relative" style={{ zIndex: 100 }}>
@@ -1415,7 +1418,7 @@ export default function RollenDNA() {
                       <textarea
                         value={zusatzInfo}
                         onChange={(e) => setZusatzInfo(e.target.value)}
-                        placeholder="Zusatzinformationen zur Rolle, z.B. Franchisepartner, Schwerpunkt Finanzwirtschaft, Branche XY..."
+                        placeholder="Optional: Geben Sie hier die unternehmensspezifischen Tätigkeiten, Anforderungen ein."
                         className="w-full bg-muted/30 dark:bg-muted/20 border border-border/40 focus:border-primary/40 rounded-lg px-3 py-2 text-sm resize-none placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all"
                         rows={2}
                         data-testid="input-zusatzinfo"
@@ -1460,7 +1463,7 @@ export default function RollenDNA() {
             {allCollapsed ? null : currentStep === 2 ? (
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-2">
                 <div className="mb-6">
-                  <span className="text-xs font-medium text-primary uppercase tracking-wider">Schritt 2</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "#34C759", letterSpacing: "0.04em" }}>SCHRITT 2</span>
                   <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} className="dark:text-foreground/90 mt-1" data-testid="text-step-2-title">
                     Rahmenbedingungen der Rolle
                   </h2>
@@ -1669,7 +1672,7 @@ export default function RollenDNA() {
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-3">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <span className="text-xs font-medium text-primary uppercase tracking-wider">Schritt 3</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#34C759", letterSpacing: "0.04em" }}>SCHRITT 3</span>
                     <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} className="dark:text-foreground/90 mt-1" data-testid="text-step-3-title">
                       Tätigkeiten & Kompetenzen
                     </h2>
