@@ -1983,9 +1983,9 @@ export default function RollenDNA() {
                             border: "none",
                             cursor: "pointer",
                             transition: "background 200ms ease, color 200ms ease, box-shadow 200ms ease",
-                            background: isActive ? "#FFFFFF" : "transparent",
-                            color: isActive ? "#1D1D1F" : "#8E8E93",
-                            boxShadow: isActive ? "0 1px 4px rgba(0,0,0,0.08), 0 0.5px 1px rgba(0,0,0,0.04)" : "none",
+                            background: isActive ? "#0071E3" : "transparent",
+                            color: isActive ? "#FFFFFF" : "#8E8E93",
+                            boxShadow: isActive ? "0 2px 8px rgba(0,113,227,0.25)" : "none",
                           }}
                           data-testid={`tab-${tab.key}`}
                         >
@@ -2001,8 +2001,8 @@ export default function RollenDNA() {
                               alignItems: "center",
                               justifyContent: "center",
                               padding: "0 5px",
-                              background: isActive ? "rgba(0,113,227,0.1)" : "rgba(0,0,0,0.06)",
-                              color: isActive ? "#0071E3" : "#AEAEB2",
+                              background: isActive ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.06)",
+                              color: isActive ? "#FFFFFF" : "#AEAEB2",
                             }}>
                               {tab.count}
                             </span>
