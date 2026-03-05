@@ -284,8 +284,8 @@ function StepProgress({ currentStep, completedSteps }: { currentStep: number; co
                 isDone
                   ? "bg-green-500 text-white"
                   : isCurrent
-                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/25"
-                    : "bg-blue-50 dark:bg-blue-900/20 text-blue-300 dark:text-blue-400/50"
+                    ? "bg-green-500 text-white shadow-md shadow-green-500/25"
+                    : "bg-green-50 dark:bg-green-900/20 text-green-300 dark:text-green-400/50"
               }`} data-testid={`step-num-${step.num}`}>
                 {isDone ? <Check className="w-4 h-4" strokeWidth={2.5} /> : step.num}
               </span>
@@ -293,8 +293,8 @@ function StepProgress({ currentStep, completedSteps }: { currentStep: number; co
                 isDone
                   ? "font-medium text-green-600 dark:text-green-400"
                   : isCurrent
-                    ? "font-semibold text-foreground/90"
-                    : "text-blue-300/60 dark:text-blue-400/40"
+                    ? "font-semibold text-green-700 dark:text-green-400"
+                    : "text-green-300/60 dark:text-green-400/40"
               }`} data-testid={`step-label-${step.num}`}>
                 {step.label}
               </span>
@@ -1244,11 +1244,11 @@ export default function RollenDNA() {
           data-testid="input-file-load"
         />
         <GlobalNav />
-        <div style={{ position: "fixed", top: 48, left: 0, right: 0, zIndex: 8999 }}>
-          <div className="dark:!bg-background/90 pb-4" style={{ backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", background: "rgba(255,255,255,0.82)" }}>
+        <div style={{ position: "fixed", top: 56, left: 0, right: 0, zIndex: 8999 }}>
+          <div className="dark:!bg-background/90 pb-3" style={{ backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", background: "rgba(255,255,255,0.82)" }}>
             <div className="w-full max-w-3xl mx-auto px-6">
-              <div className="text-center mt-3 mb-3">
-                <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground/90 mb-2" data-testid="text-rollen-dna-title">
+              <div className="text-center mt-2 mb-2">
+                <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground/90 mb-1" data-testid="text-rollen-dna-title">
                   Rollenprofil ermitteln
                 </h1>
                 <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto" data-testid="text-rollen-dna-subtitle">
@@ -1265,7 +1265,7 @@ export default function RollenDNA() {
           </div>
         </div>
 
-        <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20" style={{ paddingTop: allCollapsed ? 180 : 340, transition: "padding-top 300ms ease" }}>
+        <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20" style={{ paddingTop: allCollapsed ? 150 : 280, transition: "padding-top 300ms ease" }}>
           <div className="space-y-5">
 
             {allCollapsed ? null : currentStep === 1 ? (
