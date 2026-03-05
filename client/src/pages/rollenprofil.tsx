@@ -212,11 +212,11 @@ function buildStressTexts(bg: BG) {
   if (hasFullSymmetry) {
     uncontrolled = "Wenn der Druck sehr hoch wird, fehlt ein klarer Rückfallmechanismus. Das Verhalten wird widersprüchlich. Die Person versucht gleichzeitig zu handeln, abzustimmen und zu analysieren. Entscheidungen werden sprunghaft oder bleiben ganz aus.";
   } else if (hasSecondaryCompetition) {
-    uncontrolled = "Wenn der Druck sehr hoch wird, verliert die Person ihre klare Linie. Das Verhalten wird wechselhaft. Sie springt zwischen verschiedenen Ansätzen, ohne sich festzulegen.";
+    uncontrolled = "Wenn der Druck sehr hoch wird, verliert die Person ihre klare Linie. Die zweit- und drittstärkste Seite konkurrieren um Aufmerksamkeit. Entscheidungen werden verzögert oder widersprüchlich, weil keine der beiden Seiten klar überwiegt.";
   } else if (hasDualDominance) {
-    uncontrolled = `Wenn der Druck sehr hoch wird, geraten die beiden starken Seiten in Konflikt. ${behaviorDesc(top.key).charAt(0).toUpperCase() + behaviorDesc(top.key).slice(1)} und ${behaviorDesc(mid.key)} stehen sich im Weg. Entscheidungen werden zögerlich oder sprunghaft, weil keine klare Linie dominiert.`;
+    uncontrolled = `Wenn der Druck sehr hoch wird, geraten die beiden starken Seiten in Konflikt. ${behaviorDesc(top.key).charAt(0).toUpperCase() + behaviorDesc(top.key).slice(1)} und ${behaviorDesc(mid.key)} stehen sich im Weg. Entscheidungen dauern länger oder fallen widersprüchlich aus, weil die Person zwischen zwei Herangehensweisen wechselt, ohne sich festzulegen.`;
   } else {
-    uncontrolled = `Wenn der Druck sehr hoch wird, verschiebt sich das Verhalten spürbar. Die Person setzt dann stärker auf ${behaviorDesc(mid.key)}. ${mid.key === "ana" ? "Entscheidungen werden vorsichtiger und langsamer. Details gewinnen zu viel Gewicht." : mid.key === "int" ? "Entscheidungen werden stärker über Abstimmung und Konsens gesucht, auch wenn schnelles Handeln nötig wäre." : "Entscheidungen werden direkter und schneller, teils ohne ausreichende Prüfung."}`;
+    uncontrolled = `Wenn der Druck sehr hoch wird, verschiebt sich das Verhalten spürbar. Die Person setzt dann stärker auf ${behaviorDesc(mid.key)}. ${mid.key === "ana" ? "Entscheidungen dauern länger, weil mehr Informationen geprüft werden. Details werden intensiver bewertet, während Tempo und spontane Reaktionen abnehmen." : mid.key === "int" ? "Entscheidungen werden stärker über Gespräche und Rückversicherung gesucht, auch wenn die Situation schnelles Handeln erfordert. Das kann Abläufe bremsen." : "Entscheidungen werden direkter und schneller getroffen, auch ohne Rücksprache. Die Gesprächsbereitschaft sinkt, während der Ergebnisdruck steigt."}`;
   }
 
   return { controlled, uncontrolled };
@@ -363,17 +363,17 @@ function buildKomponentenBedeutung(data: ReportData): { key: string; label: stri
     ana: {
       label: "Analytisch",
       color: COLORS.ana,
-      text: "Analytisch bedeutet in dieser Rolle: strukturierte Priorisierung, saubere Abwägung und verlässliche Entscheidungsgrundlagen im Tagesgeschäft. Diese Komponente stabilisiert Qualität, ohne die Rolle in reines Abarbeiten zu ziehen.",
+      text: "In dieser Rolle heißt das: sauber abwägen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten. Ohne diese Fähigkeit entstehen schnell Fehler bei Planung, Kalkulation und Dokumentation.",
     },
     imp: {
       label: "Impulsiv",
       color: COLORS.imp,
-      text: "Impulsiv bedeutet in dieser Rolle: aktives Priorisieren, zügiges Entscheiden im Tagesgeschäft und die Fähigkeit, Aufgaben konsequent zu Ende zu bringen. Diese Komponente verhindert Aufschub und erhöht Umsetzungsgeschwindigkeit.",
+      text: "In dieser Rolle heißt das: Aufgaben zügig anpacken, Prioritäten setzen und Ergebnisse liefern. Ohne diese Fähigkeit werden Entscheidungen aufgeschoben und Chancen verpasst.",
     },
     int: {
       label: "Intuitiv",
       color: COLORS.int,
-      text: "Intuitiv bedeutet in dieser Rolle: situatives Erfassen von Kontext, passende Kommunikation und reibungsarme Zusammenarbeit. Diese Komponente stabilisiert Teamwirkung, ohne die Rolle von Fakten wegzuziehen.",
+      text: "In dieser Rolle heißt das: erkennen, was Gesprächspartner oder das Team gerade brauchen, und die Kommunikation darauf abstimmen. Ohne diese Fähigkeit leidet die Zusammenarbeit und das Vertrauen sinkt.",
     },
   };
   const sorted = (["imp", "int", "ana"] as const)
@@ -675,7 +675,7 @@ export default function Rollenprofil() {
 
   const komponentenBedeutung = buildKomponentenBedeutung(data);
 
-  const topTaetigkeiten = hauptTaetigkeiten.slice(0, 5).map((t: any) => cleanTaskName(t.name));
+  const topTaetigkeiten = hauptTaetigkeiten.slice(0, 3).map((t: any) => cleanTaskName(t.name));
 
   const rollenBeschreibungIntro = (() => {
     if (data.dom.key === "int") {
@@ -690,16 +690,16 @@ export default function Rollenprofil() {
   const rollenBeschreibungErgaenzung = (() => {
     if (data.dom.key === "int") {
       return data.sec.key === "ana"
-        ? "Gleichzeitig braucht die Rolle eine strukturierte Arbeitsweise, damit Abläufe und Organisation stabil bleiben."
-        : "Gleichzeitig braucht die Rolle Durchsetzungsfähigkeit, um Entscheidungen auch gegen Widerstände umzusetzen.";
+        ? "Ohne strukturierte Arbeitsweise entstehen schnell Fehler bei Organisation, Kalkulation und Dokumentation. Die Person muss beides verbinden: persönlichen Kontakt und verlässliche Abläufe."
+        : "Ohne Durchsetzungsfähigkeit bleiben wichtige Entscheidungen offen oder werden zu lange verhandelt. Die Person muss Nähe und Klarheit verbinden können.";
     } else if (data.dom.key === "imp") {
       return data.sec.key === "int"
-        ? "Gleichzeitig braucht die Rolle die Fähigkeit, Beziehungen zu pflegen und das Team mitzunehmen."
-        : "Gleichzeitig braucht die Rolle Sorgfalt, damit Qualität und Nachhaltigkeit nicht auf der Strecke bleiben.";
+        ? "Ohne die Fähigkeit, Beziehungen zu pflegen, verliert die Person das Team. Wer nur Ergebnisse fordert, ohne Menschen mitzunehmen, erzeugt Widerstand statt Leistung."
+        : "Ohne Sorgfalt entstehen Fehler bei Qualität, Dokumentation und Prozessen. Die Person muss schnell handeln und trotzdem präzise bleiben.";
     } else {
       return data.sec.key === "int"
-        ? "Gleichzeitig braucht die Rolle Empathie und Kommunikationsgeschick, um Erkenntnisse verständlich zu vermitteln."
-        : "Gleichzeitig braucht die Rolle Handlungsfähigkeit, damit Analysen auch in konkrete Maßnahmen münden.";
+        ? "Ohne Kommunikationsgeschick bleiben Analysen im Elfenbeinturm. Die Person muss ihre Ergebnisse verständlich vermitteln und Akzeptanz im Team schaffen."
+        : "Ohne Handlungsfähigkeit führen Analysen nicht zu Ergebnissen. Die Person muss den Punkt erkennen, an dem genug geprüft wurde, und dann umsetzen.";
     }
   })();
 
@@ -739,10 +739,23 @@ export default function Rollenprofil() {
   })();
 
   const abschlussText = (() => {
-    const domBenefit = data.dom.key === "int" ? "Beziehungsqualität und Vertrauen" : data.dom.key === "imp" ? "Tempo und Ergebnisorientierung" : "Qualität und Prozesssicherheit";
-    const secBenefit = data.sec.key === "ana" ? "stabile Abläufe und Wirtschaftlichkeit" : data.sec.key === "int" ? "Teamzusammenhalt und Akzeptanz" : "schnelle Umsetzung und Verbindlichkeit";
-    const riskText = `Fehlt diese Kombination, entstehen ${data.dom.key === "int" ? "entweder Beziehungsdefizite im direkten Kontakt" : data.dom.key === "imp" ? "entweder Tempo- und Umsetzungsprobleme" : "entweder Qualitäts- und Prozessmängel"} oder ${data.sec.key === "ana" ? "Instabilität in Organisation und Wirtschaftlichkeit" : data.sec.key === "int" ? "Akzeptanzprobleme im Team" : "Trägheit bei der Umsetzung"}.`;
-    return `Diese Kombination sichert ${domBenefit} und ${secBenefit}${data.isLeadership ? ", und damit Führungswirksamkeit" : ""}. ${riskText}`;
+    const domRisk = data.dom.key === "int"
+      ? "sinkt die Beziehungsqualität im direkten Kontakt"
+      : data.dom.key === "imp"
+      ? "fehlen Tempo und Umsetzungskraft"
+      : "leidet die Prozessqualität und die Absicherung";
+    const secRisk = data.sec.key === "ana"
+      ? "werden Abläufe instabil und wirtschaftliche Steuerung fehlt"
+      : data.sec.key === "int"
+      ? "verliert das Team Zusammenhalt und Akzeptanz"
+      : "stockt die Umsetzung und Verbindlichkeit geht verloren";
+
+    if (data.dom.key === "int") {
+      return `Diese Kombination sichert Vertrauen im persönlichen Kontakt, ${data.sec.key === "ana" ? "stabile Abläufe und eine wirtschaftlich solide Steuerung" : "Handlungsfähigkeit und verbindliche Umsetzung"}${data.isLeadership ? " als Grundlage wirksamer Führung" : ""}. Ohne sie ${domRisk}. Ohne die ergänzende Seite ${secRisk}.`;
+    } else if (data.dom.key === "imp") {
+      return `Diese Kombination sichert schnelle Umsetzung, klare Priorisierung und ${data.sec.key === "int" ? "tragfähige Beziehungen im Team" : "nachvollziehbare Qualität in Prozessen und Ergebnissen"}${data.isLeadership ? " als Grundlage wirksamer Führung" : ""}. Ohne sie ${domRisk}. Ohne die ergänzende Seite ${secRisk}.`;
+    }
+    return `Diese Kombination sichert fundierte Entscheidungsgrundlagen, stabile Prozesse und ${data.sec.key === "int" ? "eine vertrauensvolle Zusammenarbeit im Team" : "konsequente Umsetzung der Ergebnisse"}${data.isLeadership ? " als Grundlage wirksamer Führung" : ""}. Ohne sie ${domRisk}. Ohne die ergänzende Seite ${secRisk}.`;
   })();
 
   return (

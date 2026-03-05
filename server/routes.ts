@@ -1020,27 +1020,18 @@ ZUSAMMENFASSUNGEN:
         .map((t) => t.name)
         .slice(0, 8);
 
-      const prompt = `Du bist ein erfahrener Personalberater und Recruiter. Erstelle einen kurzen Abschnitt "Typischer Kandidat für diese Rolle" für den Beruf "${safeBeruf}"${safeBereich ? ` (Bereich: ${safeBereich})` : ""}.
+      const prompt = `Du bist ein erfahrener Personalberater. Beschreibe in 2-3 Sätzen, aus welchen Rollen und Arbeitsumfeldern typische Kandidaten für die Position "${safeBeruf}"${safeBereich ? ` (${safeBereich})` : ""} kommen.
 
-Kontext der Rolle:
+Kontext:
 - Kerntätigkeiten: ${alleTaetigkeiten.join(", ") || "nicht spezifiziert"}
-- Hochprioritäre Aufgaben: ${hochTaetigkeiten.join(", ") || "nicht spezifiziert"}
 ${safeFuehrungstyp && safeFuehrungstyp !== "Keine" ? `- Führungsverantwortung: ${safeFuehrungstyp}` : "- Keine Führungsverantwortung"}
-${safeAufgabencharakter ? `- Aufgabencharakter: ${safeAufgabencharakter}` : ""}
-${safeArbeitslogik ? `- Arbeitslogik: ${safeArbeitslogik}` : ""}
 
-Schreibe genau 2-3 Sätze, die beschreiben:
-1. Aus welchen Positionen oder Branchen typische Kandidaten für diese Rolle kommen
-2. Welche berufliche Erfahrung oder welchen Hintergrund sie typischerweise mitbringen
-
-Regeln:
-- Schreibe auf Deutsch, in professioneller aber zugänglicher Sprache
-- Verwende KEINE Gedankenstriche (–). Nutze stattdessen Kommas oder neue Sätze
-- Keine Aufzählungen, nur Fließtext (maximal 3 Sätze)
-- Keine Floskeln wie "idealerweise", "im besten Fall", "in der Regel"
-- Keine typischen KI-Formulierungen wie "zeichnen sich aus", "bringen mit", "verfügen über"
-- Konkrete Branchen, Positionen oder Erfahrungshintergründe nennen
-- Maximal 3 Sätze, nicht mehr`;
+Wichtig:
+- Beschreibe, aus welchen ROLLEN und ARBEITSUMFELDERN die Kandidaten typischerweise kommen (z.B. "Rollen mit intensiver Gästebetreuung und Verantwortung für das Getränkeangebot")
+- NICHT: formale Abschlüsse, Zertifikate oder Ausbildungsbezeichnungen (NICHT "abgeschlossene Ausbildung", "nachgewiesen durch", "zertifiziert als")
+- NICHT: "idealerweise", "im besten Fall", "in der Regel", "zeichnen sich aus", "bringen mit", "verfügen über"
+- Keine Gedankenstriche (–), keine Aufzählungen
+- Kurz, konkret, maximal 3 Sätze`;
 
       const response = await openai.chat.completions.create({
         model: "gpt-4.1",
