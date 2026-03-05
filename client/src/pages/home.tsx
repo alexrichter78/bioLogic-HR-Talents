@@ -180,41 +180,6 @@ export default function Home() {
           </div>
         </FadeIn>
 
-        {/* SYSTEM DIAGRAM */}
-        <FadeIn delay={250}>
-          <div className="flex justify-center px-6 pb-12">
-            <div style={{ position: "relative", width: 260, height: 140 }}>
-              <div style={{
-                position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
-                background: "rgba(255,255,255,0.75)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
-                borderRadius: 12, padding: "8px 20px", border: "1px solid rgba(0,0,0,0.06)",
-                fontSize: 13, fontWeight: 600, color: "#1D1D1F",
-              }} data-testid="diagram-rolle">Rolle</div>
-              <div style={{
-                position: "absolute", bottom: 0, left: 0,
-                background: "rgba(255,255,255,0.75)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
-                borderRadius: 12, padding: "8px 20px", border: "1px solid rgba(0,0,0,0.06)",
-                fontSize: 13, fontWeight: 600, color: "#1D1D1F",
-              }} data-testid="diagram-team1">Team</div>
-              <div style={{
-                position: "absolute", bottom: 0, right: 0,
-                background: "rgba(255,255,255,0.75)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
-                borderRadius: 12, padding: "8px 20px", border: "1px solid rgba(0,0,0,0.06)",
-                fontSize: 13, fontWeight: 600, color: "#1D1D1F",
-              }} data-testid="diagram-team2">Team</div>
-              <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} viewBox="0 0 260 140">
-                <line x1="130" y1="36" x2="50" y2="108" stroke="rgba(0,113,227,0.2)" strokeWidth="1.5" />
-                <line x1="130" y1="36" x2="210" y2="108" stroke="rgba(0,113,227,0.2)" strokeWidth="1.5" />
-                <line x1="50" y1="120" x2="210" y2="120" stroke="rgba(0,113,227,0.2)" strokeWidth="1.5" />
-              </svg>
-              <p style={{
-                position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
-                fontSize: 11, color: "#8E8E93", fontWeight: 500, whiteSpace: "nowrap",
-              }}>Systemwirkung</p>
-            </div>
-          </div>
-        </FadeIn>
-
         {/* MAIN CTA CARD */}
         <FadeIn delay={350}>
           <div className="px-6 pb-10">
