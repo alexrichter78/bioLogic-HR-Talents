@@ -7,11 +7,10 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import RollenDNA from "@/pages/rollen-dna";
 import Analyse from "@/pages/analyse";
-import Bericht from "@/pages/bericht";
+import Rollenprofil from "@/pages/rollenprofil";
 import JobCheck from "@/pages/jobcheck";
 import KICoach from "@/pages/ki-coach";
 import TeamCheck from "@/pages/teamcheck";
-import Rollenprofil from "@/pages/rollenprofil";
 
 function Router() {
   return (
@@ -19,10 +18,9 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/rollen-dna" component={RollenDNA} />
       <Route path="/analyse" component={Analyse} />
-      <Route path="/bericht" component={Bericht} />
+      <Route path="/bericht" component={Rollenprofil} />
       <Route path="/jobcheck" component={JobCheck} />
       <Route path="/teamcheck" component={TeamCheck} />
-      <Route path="/rollenprofil" component={Rollenprofil} />
       <Route path="/ki-coach" component={KICoach} />
       <Route component={NotFound} />
     </Switch>
