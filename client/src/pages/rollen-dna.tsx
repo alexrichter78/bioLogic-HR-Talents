@@ -2039,16 +2039,16 @@ export default function RollenDNA() {
                           margin: "0 auto 16px",
                         }} />
                         <p style={{ fontSize: 15, color: "#0071E3", fontWeight: 500 }}>
-                          KI generiert Kompetenzen für die Stelle „{beruf}“
+                          KI erstellt Kompetenzprofil für „{beruf}“
                         </p>
                         <p style={{ fontSize: 13, color: "#8E8E93", marginTop: 4, marginBottom: 20 }}>
                           Das kann einige Sekunden dauern.
                         </p>
                         <div style={{ display: "inline-flex", flexDirection: "column", gap: 10, textAlign: "left" }}>
                           {[
-                            { label: "generiere Tätigkeiten", step: 0 },
-                            { label: "arbeite an Humankompetenzen", step: 1 },
-                            { label: "arbeite an Führungskompetenzen", step: 2 },
+                            { label: "Tätigkeiten werden erstellt", step: 0 },
+                            { label: "Humankompetenzen werden ermittelt", step: 1 },
+                            { label: "Führungskompetenzen werden analysiert", step: 2 },
                           ].map((item) => {
                             const done = generatingStep > item.step;
                             const active = generatingStep === item.step;
