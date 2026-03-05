@@ -275,15 +275,18 @@ export default function Home() {
                   <h3 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>
                     KI-Coach
                   </h3>
+                  <p style={{ fontSize: 13, color: "#8E8E93", margin: "3px 0 0", fontWeight: 450 }}>
+                    Beratung auf Basis der bioLogic-Systematik
+                  </p>
                 </div>
               </div>
 
               <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.65, margin: "0 0 28px" }}>
-                Beratung auf Basis der bioLogic-Systematik. Nutzen Sie den KI-Coach jederzeit für Recruiting, Teamfragen, Gesprächsvorbereitung oder konkrete Handlungsempfehlungen – auch unabhängig von einer Analyse.
+                Nutzen Sie den KI-Coach jederzeit für Recruiting, Teamfragen, Gesprächsvorbereitung oder konkrete Handlungsempfehlungen – auch unabhängig von einer Analyse.
               </p>
 
               <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 16, marginBottom: 18 }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Typische Einsatzbereiche</p>
+                <p style={{ fontSize: 12.5, fontWeight: 600, color: "#6E6E73", margin: "0 0 10px" }}>Typische Einsatzbereiche</p>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 24px" }}>
                   {[
                     "Recruiting und Stellenanzeigen",
