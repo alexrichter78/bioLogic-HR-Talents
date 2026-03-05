@@ -230,11 +230,43 @@ const ERFOLGSFOKUS_LABELS = [
   "Strategische Wirkung /\nPositionierung",
 ];
 
+const ERFOLGSFOKUS_DISPLAY = [
+  { label: "Ergebnisse und Zielerreichung", desc: "Erfolg zeigt sich vor allem in Resultaten, Umsatz oder messbaren Leistungen." },
+  { label: "Zusammenarbeit und Netzwerk", desc: "Erfolg entsteht durch stabile Beziehungen, Kommunikation und Abstimmung." },
+  { label: "Innovation und Weiterentwicklung", desc: "Erfolg zeigt sich durch neue Ideen, Veränderungen oder Weiterentwicklung." },
+  { label: "Prozesse und Effizienz", desc: "Erfolg wird über stabile Abläufe, Qualität und Effizienz erreicht." },
+  { label: "Fachliche Qualität und Expertise", desc: "Erfolg basiert auf hoher fachlicher Kompetenz und präziser Arbeit." },
+  { label: "Strategische Wirkung", desc: "Erfolg zeigt sich in langfristiger Ausrichtung und Positionierung." },
+];
+
+type DescOption = { value: string; label: string; desc: string };
+
+const AUFGABENCHARAKTER_OPTIONS: DescOption[] = [
+  { value: "überwiegend operativ", label: "Praktische Umsetzung im Tagesgeschäft", desc: "Die Rolle arbeitet überwiegend operativ und setzt Aufgaben direkt um." },
+  { value: "überwiegend systemisch", label: "Umsetzung mit strukturiertem Vorgehen", desc: "Praxis und Planung greifen ineinander. Aufgaben werden umgesetzt und gleichzeitig strukturiert gesteuert." },
+  { value: "überwiegend strategisch", label: "Analyse, Planung und strategische Steuerung", desc: "Entscheidungen entstehen vor allem durch Analyse, Planung und Bewertung." },
+  { value: "Gemischt", label: "Ausgewogene Mischung", desc: "Die Rolle verbindet operative Arbeit, Analyse und Abstimmung." },
+];
+
+const ARBEITSLOGIK_OPTIONS: DescOption[] = [
+  { value: "Umsetzungsorientiert", label: "Umsetzung und Ergebnisse", desc: "Die Rolle ist stark handlungsorientiert und arbeitet auf konkrete Resultate hin." },
+  { value: "Daten-/prozessorientiert", label: "Analyse und Struktur", desc: "Die Arbeit basiert auf Daten, Planung und systematischem Vorgehen." },
+  { value: "Menschenorientiert", label: "Zusammenarbeit und Kommunikation", desc: "Abstimmung, Beziehungen und Kommunikation stehen im Mittelpunkt." },
+  { value: "Ausgewogen", label: "Ausgewogene Mischung", desc: "Keine Arbeitsweise steht klar im Vordergrund." },
+];
+
+const FUEHRUNG_OPTIONS: DescOption[] = [
+  { value: "Keine", label: "Keine Führungsverantwortung", desc: "Die Rolle arbeitet ohne direkte Führung von Mitarbeitenden." },
+  { value: "Projekt-/Teamkoordination", label: "Projekt- oder Teamkoordination", desc: "Die Rolle koordiniert Aufgaben oder Projekte, ohne disziplinarische Verantwortung." },
+  { value: "Fachliche Führung", label: "Fachliche Führung", desc: "Die Rolle steuert fachliche Arbeit und Qualität im Team." },
+  { value: "Disziplinarische Führung mit Ergebnisverantwortung", label: "Disziplinarische Führung", desc: "Die Rolle trägt Verantwortung für Mitarbeitende, Ergebnisse und Entwicklung." },
+];
+
 const SECTION_SUBTITLES: Record<string, string> = {
-  fuehrung: "Wie viel Führung hat diese Rolle?",
-  erfolgsfokus: "Woran wird der Erfolg dieser Rolle gemessen?",
-  aufgabencharakter: "Ist die Rolle eher operativ oder strategisch?",
-  arbeitslogik: "Was treibt die tägliche Arbeit an?",
+  aufgabencharakter: "Welche Art von Aufgaben prägt diese Rolle hauptsächlich?",
+  arbeitslogik: "Was prägt die tägliche Arbeit dieser Rolle am stärksten?",
+  erfolgsfokus: "Woran wird der Erfolg dieser Rolle hauptsächlich gemessen?",
+  fuehrung: "Welche Führungsrolle gehört zu dieser Position?",
 };
 
 function Header({ onSave, onLoad }: { onSave: () => void; onLoad: () => void }) {
@@ -513,6 +545,126 @@ function PillGroupIndexed({
   );
 }
 
+function DescriptiveOptionGroup({
+  options,
+  selectedValue,
+  onSelect,
+}: {
+  options: DescOption[];
+  selectedValue: string;
+  onSelect: (value: string) => void;
+}) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: 4 }}>
+      {options.map((opt, idx) => {
+        const isSelected = selectedValue === opt.value;
+        return (
+          <button
+            key={opt.value}
+            onClick={() => onSelect(opt.value)}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              textAlign: "left",
+              padding: "14px 18px",
+              borderRadius: 14,
+              border: isSelected ? "2px solid #0071E3" : "1.5px solid rgba(0,0,0,0.10)",
+              background: isSelected ? "rgba(0,113,227,0.06)" : "transparent",
+              cursor: "pointer",
+              transition: "all 180ms ease",
+            }}
+            onMouseEnter={(e) => {
+              if (!isSelected) {
+                (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.03)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isSelected) {
+                (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+              }
+            }}
+            data-testid={`option-${opt.value.toLowerCase().replace(/[\s\/-]+/g, "-")}-${idx}`}
+          >
+            <span style={{
+              fontSize: 15,
+              fontWeight: 600,
+              color: isSelected ? "#0071E3" : "#1D1D1F",
+              lineHeight: 1.3,
+            }}>{opt.label}</span>
+            <span style={{
+              fontSize: 13,
+              color: "#8E8E93",
+              lineHeight: 1.5,
+              marginTop: 3,
+            }}>{opt.desc}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function DescriptiveOptionGroupIndexed({
+  options,
+  selectedIndices,
+  onSelectIndex,
+}: {
+  options: { label: string; desc: string }[];
+  selectedIndices: number[];
+  onSelectIndex: (idx: number) => void;
+}) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: 4 }}>
+      {options.map((opt, idx) => {
+        const isSelected = selectedIndices.includes(idx);
+        return (
+          <button
+            key={idx}
+            onClick={() => onSelectIndex(idx)}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              textAlign: "left",
+              padding: "14px 18px",
+              borderRadius: 14,
+              border: isSelected ? "2px solid #0071E3" : "1.5px solid rgba(0,0,0,0.10)",
+              background: isSelected ? "rgba(0,113,227,0.06)" : "transparent",
+              cursor: "pointer",
+              transition: "all 180ms ease",
+            }}
+            onMouseEnter={(e) => {
+              if (!isSelected) {
+                (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.03)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isSelected) {
+                (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+              }
+            }}
+            data-testid={`option-erfolgsfokus-${idx}`}
+          >
+            <span style={{
+              fontSize: 15,
+              fontWeight: 600,
+              color: isSelected ? "#0071E3" : "#1D1D1F",
+              lineHeight: 1.3,
+            }}>{opt.label}</span>
+            <span style={{
+              fontSize: 13,
+              color: "#8E8E93",
+              lineHeight: 1.5,
+              marginTop: 3,
+            }}>{opt.desc}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function SectionNumber({ num, isComplete }: { num: number; isComplete: boolean }) {
   return (
     <div style={{
@@ -558,17 +710,21 @@ function MiniProgressBar({ filled, total }: { filled: number; total: number }) {
   );
 }
 
-function SummaryBar({ fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik }: {
+function SummaryBar({ fuehrung, erfolgsfokusIndices, aufgabencharakter, arbeitslogik }: {
   fuehrung: string;
-  erfolgsfokus: string[];
+  erfolgsfokusIndices: number[];
   aufgabencharakter: string;
   arbeitslogik: string;
 }) {
+  const aufgabenDisplay = AUFGABENCHARAKTER_OPTIONS.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter;
+  const arbeitsDisplay = ARBEITSLOGIK_OPTIONS.find(o => o.value === arbeitslogik)?.label || arbeitslogik;
+  const fuehrungDisplay = FUEHRUNG_OPTIONS.find(o => o.value === fuehrung)?.label || fuehrung;
+  const fokusDisplay = erfolgsfokusIndices.map(i => ERFOLGSFOKUS_DISPLAY[i]?.label || "").filter(Boolean).join(", ");
   const items = [
-    { label: "Führung", value: fuehrung },
-    { label: "Fokus", value: erfolgsfokus.join(", ") },
-    { label: "Aufgaben", value: aufgabencharakter },
-    { label: "Logik", value: arbeitslogik },
+    { label: "Aufgaben", value: aufgabenDisplay },
+    { label: "Arbeitsweise", value: arbeitsDisplay },
+    { label: "Fokus", value: fokusDisplay },
+    { label: "Führung", value: fuehrungDisplay },
   ];
 
   return (
@@ -1487,6 +1643,9 @@ export default function RollenDNA() {
                   <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-2-title">
                     Rahmenbedingungen der Rolle
                   </h2>
+                  <p style={{ fontSize: 14, color: "#8E8E93", marginTop: 6 }}>
+                    Definieren Sie die grundlegenden Merkmale dieser Position. Die Angaben helfen dabei, die strukturelle Rollenlogik zu bestimmen.
+                  </p>
                 </div>
 
                 <div
@@ -1506,47 +1665,22 @@ export default function RollenDNA() {
                   <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
 
                     <FadeInSection delay={0}>
-                      <div data-testid="section-fuehrung" className="relative">
-                        <SectionNumber num={1} isComplete={fuehrung.length > 0} />
+                      <div data-testid="section-aufgabencharakter" className="relative">
+                        <SectionNumber num={1} isComplete={aufgabencharakter.length > 0} />
                         <div className="flex items-center gap-3">
-                          <Users style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
+                          <Layers style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
-                            Führungsverantwortung
+                            Art der Aufgaben
                           </h3>
-                          <div style={{ position: "relative" }}>
-                            <button
-                              onClick={() => setShowFuehrungInfo(prev => !prev)}
-                              style={{
-                                width: 22,
-                                height: 22,
-                                borderRadius: "50%",
-                                border: "1.5px solid rgba(0,113,227,0.4)",
-                                background: "transparent",
-                                cursor: "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                color: "#0071E3",
-                                transition: "all 150ms ease",
-                                padding: 0,
-                              }}
-                              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,113,227,0.08)"; }}
-                              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
-                              data-testid="button-fuehrung-info"
-                            >
-                              <Info style={{ width: 13, height: 13 }} />
-                            </button>
-                          </div>
                         </div>
                         <p style={{ fontSize: 14, color: "#8E8E93", marginTop: 6, paddingLeft: 32 }}>
-                          {SECTION_SUBTITLES.fuehrung}
+                          {SECTION_SUBTITLES.aufgabencharakter}
                         </p>
-                        <div style={{ marginTop: 28 }}>
-                          <PillGroup
-                            options={["Keine", "Projekt-/Teamkoordination", "Fachliche Führung", "Disziplinarische Führung mit Ergebnisverantwortung"]}
-                            selected={[fuehrung]}
-                            onSelect={handleFuehrung}
-                            columns={2}
+                        <div style={{ marginTop: 20 }}>
+                          <DescriptiveOptionGroup
+                            options={AUFGABENCHARAKTER_OPTIONS}
+                            selectedValue={aufgabencharakter}
+                            onSelect={handleAufgabencharakter}
                           />
                         </div>
                       </div>
@@ -1555,8 +1689,32 @@ export default function RollenDNA() {
                     <SectionDivider />
 
                     <FadeInSection delay={100}>
+                      <div data-testid="section-arbeitslogik" className="relative">
+                        <SectionNumber num={2} isComplete={arbeitslogik.length > 0} />
+                        <div className="flex items-center gap-3">
+                          <Activity style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
+                          <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
+                            Arbeitsweise der Rolle
+                          </h3>
+                        </div>
+                        <p style={{ fontSize: 14, color: "#8E8E93", marginTop: 6, paddingLeft: 32 }}>
+                          {SECTION_SUBTITLES.arbeitslogik}
+                        </p>
+                        <div style={{ marginTop: 20 }}>
+                          <DescriptiveOptionGroup
+                            options={ARBEITSLOGIK_OPTIONS}
+                            selectedValue={arbeitslogik}
+                            onSelect={handleArbeitslogik}
+                          />
+                        </div>
+                      </div>
+                    </FadeInSection>
+
+                    <SectionDivider />
+
+                    <FadeInSection delay={200}>
                       <div data-testid="section-erfolgsfokus" className="relative">
-                        <SectionNumber num={2} isComplete={erfolgsfokusIndices.length > 0} />
+                        <SectionNumber num={3} isComplete={erfolgsfokusIndices.length > 0} />
                         <div className="flex items-center gap-3">
                           <Target style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
@@ -1566,42 +1724,11 @@ export default function RollenDNA() {
                         <p style={{ fontSize: 14, color: "#8E8E93", marginTop: 6, paddingLeft: 32 }}>
                           {SECTION_SUBTITLES.erfolgsfokus}
                         </p>
-                        <div style={{ marginTop: 28 }} className="flex flex-col gap-2">
-                          <PillGroupIndexed
-                            options={ERFOLGSFOKUS_LABELS.slice(0, 3)}
+                        <div style={{ marginTop: 20 }}>
+                          <DescriptiveOptionGroupIndexed
+                            options={ERFOLGSFOKUS_DISPLAY}
                             selectedIndices={erfolgsfokusIndices}
                             onSelectIndex={handleErfolgsfokus}
-                            indexOffset={0}
-                          />
-                          <PillGroupIndexed
-                            options={ERFOLGSFOKUS_LABELS.slice(3, 6)}
-                            selectedIndices={erfolgsfokusIndices}
-                            onSelectIndex={handleErfolgsfokus}
-                            indexOffset={3}
-                          />
-                        </div>
-                      </div>
-                    </FadeInSection>
-
-                    <SectionDivider />
-
-                    <FadeInSection delay={200}>
-                      <div data-testid="section-aufgabencharakter" className="relative">
-                        <SectionNumber num={3} isComplete={aufgabencharakter.length > 0} />
-                        <div className="flex items-center gap-3">
-                          <Layers style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
-                          <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
-                            Aufgabencharakter
-                          </h3>
-                        </div>
-                        <p style={{ fontSize: 14, color: "#8E8E93", marginTop: 6, paddingLeft: 32 }}>
-                          {SECTION_SUBTITLES.aufgabencharakter}
-                        </p>
-                        <div style={{ marginTop: 28 }}>
-                          <PillGroup
-                            options={["überwiegend operativ", "überwiegend systemisch", "überwiegend strategisch", "Gemischt"]}
-                            selected={[aufgabencharakter]}
-                            onSelect={handleAufgabencharakter}
                           />
                         </div>
                       </div>
@@ -1610,22 +1737,22 @@ export default function RollenDNA() {
                     <SectionDivider />
 
                     <FadeInSection delay={300}>
-                      <div data-testid="section-arbeitslogik" className="relative">
-                        <SectionNumber num={4} isComplete={arbeitslogik.length > 0} />
+                      <div data-testid="section-fuehrung" className="relative">
+                        <SectionNumber num={4} isComplete={fuehrung.length > 0} />
                         <div className="flex items-center gap-3">
-                          <Activity style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
+                          <Users style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
-                            Arbeitslogik
+                            Führungsverantwortung
                           </h3>
                         </div>
                         <p style={{ fontSize: 14, color: "#8E8E93", marginTop: 6, paddingLeft: 32 }}>
-                          {SECTION_SUBTITLES.arbeitslogik}
+                          {SECTION_SUBTITLES.fuehrung}
                         </p>
-                        <div style={{ marginTop: 28 }}>
-                          <PillGroup
-                            options={["Menschenorientiert", "Daten-/prozessorientiert", "Umsetzungsorientiert"]}
-                            selected={[arbeitslogik]}
-                            onSelect={handleArbeitslogik}
+                        <div style={{ marginTop: 20 }}>
+                          <DescriptiveOptionGroup
+                            options={FUEHRUNG_OPTIONS}
+                            selectedValue={fuehrung}
+                            onSelect={handleFuehrung}
                           />
                         </div>
                       </div>
@@ -1646,7 +1773,7 @@ export default function RollenDNA() {
                       `}</style>
                       <SummaryBar
                         fuehrung={fuehrung}
-                        erfolgsfokus={erfolgsfokusIndices.map(i => ERFOLGSFOKUS_LABELS[i].replace(/\n/g, ""))}
+                        erfolgsfokusIndices={erfolgsfokusIndices}
                         aufgabencharakter={aufgabencharakter}
                         arbeitslogik={arbeitslogik}
                       />
@@ -1681,7 +1808,7 @@ export default function RollenDNA() {
               <CollapsedStep
                 step={2}
                 title="Rahmenbedingungen der Rolle"
-                summary={`${fuehrung} · ${erfolgsfokusIndices.map(i => ERFOLGSFOKUS_LABELS[i]).join(", ")} · ${aufgabencharakter} · ${arbeitslogik}`}
+                summary={`${AUFGABENCHARAKTER_OPTIONS.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter} · ${ARBEITSLOGIK_OPTIONS.find(o => o.value === arbeitslogik)?.label || arbeitslogik} · ${erfolgsfokusIndices.map(i => ERFOLGSFOKUS_DISPLAY[i]?.label).filter(Boolean).join(", ")} · ${FUEHRUNG_OPTIONS.find(o => o.value === fuehrung)?.label || fuehrung}`}
                 onEdit={() => goToStep(2)}
               />
             ) : (
@@ -2440,10 +2567,10 @@ export default function RollenDNA() {
                   <>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 14, color: "#6E6E73" }}>
                   <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Rolle:</span> {beruf}</div>
-                  <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Führung:</span> {fuehrung}</div>
-                  <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Erfolgsfokus:</span> {erfolgsfokusIndices.map(i => ERFOLGSFOKUS_LABELS[i].replace(/\n/g, " ")).join(", ")}</div>
-                  <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Aufgabencharakter:</span> {aufgabencharakter}</div>
-                  <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Arbeitslogik:</span> {arbeitslogik}</div>
+                  <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Art der Aufgaben:</span> {AUFGABENCHARAKTER_OPTIONS.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter}</div>
+                  <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Arbeitsweise:</span> {ARBEITSLOGIK_OPTIONS.find(o => o.value === arbeitslogik)?.label || arbeitslogik}</div>
+                  <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Erfolgsfokus:</span> {erfolgsfokusIndices.map(i => ERFOLGSFOKUS_DISPLAY[i]?.label).filter(Boolean).join(", ")}</div>
+                  <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Führung:</span> {FUEHRUNG_OPTIONS.find(o => o.value === fuehrung)?.label || fuehrung}</div>
                   <div style={{ marginTop: 4 }}>
                     <span style={{ fontWeight: 600, color: "#1D1D1F" }}>Tätigkeiten:</span> {hauptCount} · <span style={{ fontWeight: 600, color: "#1D1D1F" }}>Humankompetenzen:</span> {nebenCount}
                     {fuehrung !== "Keine" && <> · <span style={{ fontWeight: 600, color: "#1D1D1F" }}>Führungskompetenzen:</span> {fuehrungCount}</>}
