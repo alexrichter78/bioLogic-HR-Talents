@@ -991,5 +991,69 @@ ZUSAMMENFASSUNGEN:
     }
   });
 
+  app.post("/api/generate-kandidatenprofil", async (req, res) => {
+    try {
+      const { beruf, bereich, taetigkeiten, fuehrungstyp, aufgabencharakter, arbeitslogik } = req.body;
+      if (!beruf || typeof beruf !== "string") {
+        return res.status(400).json({ error: "Beruf ist erforderlich" });
+      }
+      const safeBeruf = beruf.slice(0, 120);
+      const safeBereich = typeof bereich === "string" ? bereich.slice(0, 120) : "";
+      const safeFuehrungstyp = typeof fuehrungstyp === "string" ? fuehrungstyp.slice(0, 80) : "";
+      const safeAufgabencharakter = typeof aufgabencharakter === "string" ? aufgabencharakter.slice(0, 80) : "";
+      const safeArbeitslogik = typeof arbeitslogik === "string" ? arbeitslogik.slice(0, 80) : "";
+
+      const safeTaetigkeiten = Array.isArray(taetigkeiten)
+        ? taetigkeiten.slice(0, 20).map((t: any) => ({
+            name: typeof t.name === "string" ? t.name.slice(0, 100) : "",
+            kategorie: typeof t.kategorie === "string" ? t.kategorie : "",
+            niveau: typeof t.niveau === "string" ? t.niveau : "",
+          }))
+        : [];
+
+      const hochTaetigkeiten = safeTaetigkeiten
+        .filter((t) => t.niveau === "Hoch")
+        .map((t) => t.name)
+        .slice(0, 5);
+      const alleTaetigkeiten = safeTaetigkeiten
+        .filter((t) => t.kategorie === "haupt")
+        .map((t) => t.name)
+        .slice(0, 8);
+
+      const prompt = `Du bist ein erfahrener Personalberater und Recruiter. Erstelle einen kurzen Abschnitt "Typischer Kandidat für diese Rolle" für den Beruf "${safeBeruf}"${safeBereich ? ` (Bereich: ${safeBereich})` : ""}.
+
+Kontext der Rolle:
+- Kerntätigkeiten: ${alleTaetigkeiten.join(", ") || "nicht spezifiziert"}
+- Hochprioritäre Aufgaben: ${hochTaetigkeiten.join(", ") || "nicht spezifiziert"}
+${safeFuehrungstyp && safeFuehrungstyp !== "Keine" ? `- Führungsverantwortung: ${safeFuehrungstyp}` : "- Keine Führungsverantwortung"}
+${safeAufgabencharakter ? `- Aufgabencharakter: ${safeAufgabencharakter}` : ""}
+${safeArbeitslogik ? `- Arbeitslogik: ${safeArbeitslogik}` : ""}
+
+Schreibe genau 2-3 Sätze, die beschreiben:
+1. Aus welchen Positionen oder Branchen typische Kandidaten für diese Rolle kommen
+2. Welche berufliche Erfahrung oder welchen Hintergrund sie typischerweise mitbringen
+
+Regeln:
+- Schreibe auf Deutsch, in professioneller aber zugänglicher Sprache
+- Keine Aufzählungen, nur Fließtext
+- Keine Floskeln wie "idealerweise" oder "im besten Fall"
+- Konkrete Branchen, Positionen oder Erfahrungshintergründe nennen
+- Maximal 3 Sätze, nicht mehr`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4.1",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.5,
+        max_tokens: 300,
+      });
+
+      const text = response.choices[0]?.message?.content?.trim() || "";
+      res.json({ text });
+    } catch (error) {
+      console.error("Error generating Kandidatenprofil:", error);
+      res.status(500).json({ error: "Fehler bei der Generierung" });
+    }
+  });
+
   return httpServer;
 }

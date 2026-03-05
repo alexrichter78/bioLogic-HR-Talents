@@ -487,6 +487,9 @@ export default function Rollenprofil() {
   const [data, setData] = useState<ReportData | null>(null);
   const reportRef = useRef<HTMLDivElement>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
+  const [kandidatenText, setKandidatenText] = useState<string | null>(null);
+  const [kandidatenLoading, setKandidatenLoading] = useState(false);
+  const [kandidatenError, setKandidatenError] = useState(false);
 
   useEffect(() => {
     const completed = localStorage.getItem("rollenDnaCompleted");
@@ -522,11 +525,47 @@ export default function Rollenprofil() {
       const sec = secondary(gesamt);
       const wk = weakest(gesamt);
 
-      setData({
+      const newData = {
         beruf, bereich, isLeadership, fuehrungstyp, aufgabencharakter, arbeitslogik,
         gesamt, haupt, neben, fuehrung, rahmen, profileType, intensity,
         dom, sec, wk, taetigkeiten, erfolgsfokusIndices,
-      });
+      };
+      setData(newData);
+
+      const hauptNamen = (taetigkeiten || [])
+        .filter((t: any) => t.kategorie === "haupt")
+        .map((t: any) => t.name)
+        .sort()
+        .join(",");
+      const cacheKey = `kandidatenProfil_${beruf}_${bereich}_${fuehrungstyp}_${hauptNamen.slice(0, 200)}`;
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        setKandidatenText(cached);
+      } else {
+        setKandidatenLoading(true);
+        fetch("/api/generate-kandidatenprofil", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            beruf, bereich, taetigkeiten,
+            fuehrungstyp, aufgabencharakter, arbeitslogik,
+          }),
+        })
+          .then(r => {
+            if (!r.ok) throw new Error("API error");
+            return r.json();
+          })
+          .then(json => {
+            if (json.text) {
+              setKandidatenText(json.text);
+              try { localStorage.setItem(cacheKey, json.text); } catch {}
+            } else {
+              setKandidatenError(true);
+            }
+          })
+          .catch(() => setKandidatenError(true))
+          .finally(() => setKandidatenLoading(false));
+      }
     } catch {}
   }, []);
 
@@ -889,6 +928,33 @@ export default function Rollenprofil() {
                 </div>
               ))}
             </div>
+
+            {/* Typischer Kandidat (AI-generiert) */}
+            {(kandidatenText || kandidatenLoading || kandidatenError) && (
+              <div style={{ marginBottom: 28 }} data-testid="section-kandidatenprofil">
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Typischer Kandidat für diese Rolle</p>
+                {kandidatenLoading ? (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <div style={{
+                      width: 14, height: 14, borderRadius: "50%",
+                      border: "2px solid rgba(0,113,227,0.2)",
+                      borderTopColor: "#0071E3",
+                      animation: "spin 0.8s linear infinite",
+                    }} />
+                    <span style={{ fontSize: 13, color: "#8E8E93" }}>Wird generiert...</span>
+                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                  </div>
+                ) : kandidatenError ? (
+                  <p style={{ fontSize: 13, color: "#8E8E93", margin: 0, fontStyle: "italic" }}>
+                    Kandidatenprofil konnte nicht geladen werden.
+                  </p>
+                ) : (
+                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-kandidatenprofil">
+                    {kandidatenText}
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Entscheidungsfazit */}
             <div style={{
