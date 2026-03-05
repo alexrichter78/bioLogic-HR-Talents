@@ -1274,12 +1274,9 @@ export default function RollenDNA() {
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
                     <span style={{ fontSize: 12, fontWeight: 700, color: "#34C759", letterSpacing: "0.04em" }}>SCHRITT 1</span>
                   </div>
-                  <h2 className="text-lg font-semibold text-foreground/90 mb-2" data-testid="text-step-1-title">
+                  <h2 className="text-lg font-semibold text-foreground/90 mb-5" data-testid="text-step-1-title">
                     Beruf, Tätigkeit, Rolle
                   </h2>
-                  <p style={{ fontSize: 13, color: "#8E8E93", lineHeight: 1.5, margin: "0 0 20px" }}>
-                    Sollte kein Textvorschlag ersichtlich sein, trotzdem alles ausschreiben – wir finden die passende Rolle.
-                  </p>
 
                   <div className="mb-6" style={{ zIndex: 100 }} data-testid="input-beruf-wrapper">
                     <div className="relative" style={{ zIndex: 100 }}>
@@ -1288,7 +1285,7 @@ export default function RollenDNA() {
                         ref={inputRef}
                         type="text"
                         autoComplete="off"
-                        placeholder="Beruf eingeben"
+                        placeholder="Beruf eingeben – kein Vorschlag? Trotzdem ausschreiben, wir finden die passende Rolle."
                         value={beruf}
                         onChange={(e) => {
                           setBeruf(e.target.value);
