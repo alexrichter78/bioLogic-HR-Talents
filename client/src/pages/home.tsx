@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { PlusCircle, DoorOpen, Bot, CheckCircle } from "lucide-react";
+import { PlusCircle, DoorOpen, Bot, CheckCircle, Sparkles } from "lucide-react";
 import { useLocation } from "wouter";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import GlobalNav from "@/components/global-nav";
@@ -35,6 +35,7 @@ function ConfirmResetModal({ onConfirm, onCancel }: { onConfirm: () => void; onC
           left: "50%",
           transform: "translate(-50%, -50%)",
           width: 420,
+          maxWidth: "90vw",
           background: "#FFFFFF",
           borderRadius: 20,
           padding: "28px",
@@ -50,7 +51,7 @@ function ConfirmResetModal({ onConfirm, onCancel }: { onConfirm: () => void; onC
         <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.6, marginBottom: 24 }}>
           Alle eingegebenen Daten werden gelöscht.
         </p>
-        <div className="flex items-center justify-center gap-3">
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
           <button
             onClick={onCancel}
             style={{
@@ -133,10 +134,10 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div style={{ minHeight: "100vh", position: "relative", overflow: "hidden" }}>
       <div
-        className="absolute inset-0 pointer-events-none"
         style={{
+          position: "absolute", inset: 0, pointerEvents: "none",
           background:
             "radial-gradient(ellipse 120% 80% at 20% 60%, rgba(252,205,210,0.35) 0%, transparent 50%), " +
             "radial-gradient(ellipse 100% 70% at 80% 30%, rgba(186,220,248,0.35) 0%, transparent 50%), " +
@@ -162,35 +163,48 @@ export default function Home() {
         data-testid="input-file-home-load"
       />
 
-      <div className="relative z-10">
+      <div style={{ position: "relative", zIndex: 10 }}>
         <GlobalNav />
 
-        {/* MAIN CTA CARD */}
-        <FadeIn delay={200}>
-          <div className="px-6 pt-16 pb-10">
+        <div style={{ maxWidth: 640, margin: "0 auto", padding: "48px 24px 80px" }}>
+
+          {/* ROLLENANALYSE CARD */}
+          <FadeIn delay={200}>
             <div
-              className="mx-auto max-w-2xl w-full text-center"
               style={{
                 background: "rgba(255,255,255,0.65)",
                 backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
-                borderRadius: 24, padding: "44px 40px",
+                borderRadius: 24, padding: "40px 36px 36px",
                 boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
                 border: "1px solid rgba(0,0,0,0.04)",
+                marginBottom: 16,
               }}
               data-testid="card-profile"
             >
-              <h2 style={{ fontSize: 22, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", marginBottom: 8 }} data-testid="text-no-profile">
-                Rollenanalyse
-              </h2>
-              <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.65, maxWidth: 440, margin: "0 auto 28px" }} data-testid="text-profile-desc">
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                <div style={{
+                  width: 40, height: 40, borderRadius: 12,
+                  background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.06))",
+                  display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                }}>
+                  <Sparkles style={{ width: 20, height: 20, color: "#0071E3", strokeWidth: 1.5 }} />
+                </div>
+                <div>
+                  <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: 0 }} data-testid="text-no-profile">
+                    Rollenanalyse
+                  </h2>
+                </div>
+              </div>
+
+              <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.65, margin: "0 0 28px" }} data-testid="text-profile-desc">
                 Definieren Sie eine Rolle und analysieren Sie die strukturelle Passung. Sie erhalten klare Handlungsempfehlungen für Besetzung, Führung und Zusammenarbeit.
               </p>
 
-              <div className="flex items-center justify-center gap-3 mb-6">
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, flexWrap: "wrap" }}>
                 <button
                   onClick={handleNewAnalyse}
                   style={{
-                    height: 50, paddingLeft: 26, paddingRight: 26, fontSize: 15, fontWeight: 600,
+                    height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
                     borderRadius: 14, border: "none", cursor: "pointer",
                     background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
                     boxShadow: "0 4px 16px rgba(0,113,227,0.3)", transition: "all 200ms ease",
@@ -200,14 +214,14 @@ export default function Home() {
                   onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)"; }}
                   data-testid="button-analyse-starten"
                 >
-                  <PlusCircle style={{ width: 18, height: 18 }} />
+                  <PlusCircle style={{ width: 17, height: 17 }} />
                   Neue Analyse starten
                 </button>
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   style={{
-                    height: 50, paddingLeft: 26, paddingRight: 26, fontSize: 15, fontWeight: 600,
-                    borderRadius: 14, border: "1.5px solid rgba(0,0,0,0.12)", cursor: "pointer",
+                    height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
+                    borderRadius: 14, border: "1.5px solid rgba(0,0,0,0.10)", cursor: "pointer",
                     background: "rgba(255,255,255,0.8)", color: "#1D1D1F", transition: "all 200ms ease",
                     display: "flex", alignItems: "center", gap: 8,
                   }}
@@ -219,47 +233,45 @@ export default function Home() {
                 </button>
               </div>
 
-              <div style={{ display: "inline-flex", flexDirection: "column", gap: 6, textAlign: "left" }}>
-                {[
-                  "Wissenschaftlich fundierte Methodik",
-                  "Transparente Ergebnislogik",
-                  "Klare Entscheidungsstruktur",
-                ].map((text, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <CheckCircle style={{ width: 13, height: 13, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
-                    <span style={{ fontSize: 12.5, color: "#6E6E73", fontWeight: 450 }}>{text}</span>
-                  </div>
-                ))}
+              <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 20 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 24px" }}>
+                  {[
+                    "Wissenschaftlich fundierte Methodik",
+                    "Transparente Ergebnislogik",
+                    "Klare Entscheidungsstruktur",
+                  ].map((text, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <CheckCircle style={{ width: 13, height: 13, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
+                      <span style={{ fontSize: 12.5, color: "#6E6E73", fontWeight: 450 }}>{text}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        </FadeIn>
+          </FadeIn>
 
-        {/* KI-COACH SECTION */}
-        <FadeIn delay={500}>
-          <div className="px-6 pb-20">
+          {/* KI-COACH CARD */}
+          <FadeIn delay={400}>
             <div
-              className="mx-auto max-w-2xl w-full"
               style={{
                 background: "rgba(255,255,255,0.55)",
                 backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
                 borderRadius: 20, padding: "28px 32px 24px",
                 border: "1px solid rgba(0,0,0,0.04)",
                 boxShadow: "0 4px 16px rgba(0,0,0,0.03)",
-                transition: "all 250ms ease",
               }}
               data-testid="card-ki-coach"
             >
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: 20 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
                 <div style={{
-                  width: 48, height: 48, borderRadius: 14, flexShrink: 0,
+                  width: 40, height: 40, borderRadius: 12, flexShrink: 0,
                   background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.06))",
                   display: "flex", alignItems: "center", justifyContent: "center",
                 }}>
-                  <Bot style={{ width: 24, height: 24, color: "#0071E3", strokeWidth: 1.5 }} />
+                  <Bot style={{ width: 20, height: 20, color: "#0071E3", strokeWidth: 1.5 }} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.01em" }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 5px", letterSpacing: "-0.01em" }}>
                     KI-Coach – Beratung auf Basis der bioLogic-Systematik
                   </h3>
                   <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6, margin: 0 }}>
@@ -268,9 +280,9 @@ export default function Home() {
                 </div>
               </div>
 
-              <div style={{ marginBottom: 20 }}>
-                <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Typische Einsatzbereiche</p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 16, marginBottom: 18 }}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Typische Einsatzbereiche</p>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 24px" }}>
                   {[
                     "Recruiting und Stellenanzeigen",
                     "Gesprächsvorbereitung",
@@ -278,8 +290,8 @@ export default function Home() {
                     "Konfliktmuster erkennen",
                   ].map((text, i) => (
                     <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <CheckCircle style={{ width: 13, height: 13, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
-                      <span style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450 }}>{text}</span>
+                      <CheckCircle style={{ width: 12, height: 12, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
+                      <span style={{ fontSize: 12.5, color: "#6E6E73", fontWeight: 450 }}>{text}</span>
                     </div>
                   ))}
                 </div>
@@ -289,7 +301,7 @@ export default function Home() {
                 <button
                   onClick={() => setLocation("/ki-coach")}
                   style={{
-                    height: 44, paddingLeft: 22, paddingRight: 22, fontSize: 14, fontWeight: 600,
+                    height: 42, paddingLeft: 20, paddingRight: 20, fontSize: 13, fontWeight: 600,
                     borderRadius: 12, border: "none", cursor: "pointer",
                     background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
                     boxShadow: "0 4px 14px rgba(0,113,227,0.25)", transition: "all 200ms ease",
@@ -299,13 +311,13 @@ export default function Home() {
                   onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(0,113,227,0.25)"; }}
                   data-testid="button-ki-coach"
                 >
-                  <Bot style={{ width: 15, height: 15 }} />
+                  <Bot style={{ width: 14, height: 14 }} />
                   KI-Coach öffnen
                 </button>
               </div>
             </div>
-          </div>
-        </FadeIn>
+          </FadeIn>
+        </div>
       </div>
 
       {showResetConfirm && (
