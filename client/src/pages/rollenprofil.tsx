@@ -132,8 +132,8 @@ function weakest(bg: BG) { return sortedTriad(bg)[2]; }
 
 function kompShort(k: string): string {
   if (k === "imp" || k === "Impulsiv") return "Entscheidungskraft und Umsetzung";
-  if (k === "int" || k === "Intuitiv") return "Beziehungsgestaltung und Vertrauen";
-  return "strukturierte Arbeitsweise";
+  if (k === "int" || k === "Intuitiv") return "Vertrauen und Beziehungsgestaltung";
+  return "Strukturierte Arbeitsweise";
 }
 
 function kompLabel(k: string): string {
@@ -201,7 +201,7 @@ function buildStressTexts(bg: BG) {
   } else if (hasDualDominance) {
     controlled = `Wenn der Arbeitsdruck steigt, setzt sich eine der beiden starken Seiten durch (${dominantLabel} oder ${secondLabel}). Das schafft kurzfristig Klarheit: Die Person fokussiert sich und stabilisiert die Situation. Gleichzeitig kommt die andere Seite zu kurz – das kann zu einseitigen Entscheidungen führen.`;
   } else {
-    controlled = `Wenn der Arbeitsdruck steigt, zeigt sich die Stärke der Rolle besonders deutlich. Die Person reagiert dann vor allem über ${kompShort(top.key).toLowerCase()}. Das gibt dem Umfeld Sicherheit und Orientierung. Gleichzeitig treten ${secondLabel.toLowerCase()}e und ${thirdLabel.toLowerCase()}e Anteile in den Hintergrund – Entscheidungen werden einseitiger, aber klarer.`;
+    controlled = `Wenn der Arbeitsdruck steigt, zeigt sich die Stärke der Rolle besonders deutlich. Die Person reagiert dann vor allem über ${kompShort(top.key)}. Das gibt dem Umfeld Sicherheit und Orientierung. Gleichzeitig treten ${secondLabel.toLowerCase()}e und ${thirdLabel.toLowerCase()}e Anteile in den Hintergrund – Entscheidungen werden einseitiger, aber klarer.`;
   }
 
   let uncontrolled = "";
@@ -212,7 +212,7 @@ function buildStressTexts(bg: BG) {
   } else if (hasDualDominance) {
     uncontrolled = `Wenn der Druck sehr hoch wird, geraten ${dominantLabel} und ${secondLabel} in Konflikt. Beide Seiten wollen gleichzeitig steuern – das erzeugt Widersprüche. Entscheidungen werden zögerlich oder sprunghaft, weil keine klare Linie dominiert.`;
   } else {
-    uncontrolled = `Wenn der Druck sehr hoch wird, verschiebt sich das Verhalten spürbar. Die Person arbeitet dann stärker über ${kompShort(mid.key).toLowerCase()} – die ursprüngliche Stärke (${dominantLabel.toLowerCase()}) verliert an Durchschlagskraft. Entscheidungen werden ${mid.key === "ana" ? "vorsichtiger und langsamer, Details gewinnen zu viel Gewicht" : mid.key === "int" ? "stärker über Abstimmung und Konsens gesucht, auch wenn schnelles Handeln nötig wäre" : "impulsiver und direkter, teils ohne ausreichende Prüfung"}.`;
+    uncontrolled = `Wenn der Druck sehr hoch wird, verschiebt sich das Verhalten spürbar. Die Person arbeitet dann stärker über ${kompShort(mid.key)}. Die ursprüngliche Stärke (${dominantLabel.toLowerCase()}) verliert an Durchschlagskraft. Entscheidungen werden ${mid.key === "ana" ? "vorsichtiger und langsamer, Details gewinnen zu viel Gewicht" : mid.key === "int" ? "stärker über Abstimmung und Konsens gesucht, auch wenn schnelles Handeln nötig wäre" : "impulsiver und direkter, teils ohne ausreichende Prüfung"}.`;
   }
 
   return { controlled, uncontrolled };
@@ -230,7 +230,7 @@ function buildTeamwirkung(data: ReportData) {
       return `Die Rolle übernimmt ${fuehrungstyp.toLowerCase()} im Team. Im Alltag bedeutet das: Die Führungskraft steuert über fachliche Expertise, klare Standards und nachvollziehbare Prozesse. Teammitglieder vertrauen auf die methodische Sicherheit und die sachliche Herangehensweise dieser Person.`;
     }
   }
-  return `Die Rolle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung vor allem über ${kompShort(dom.key).toLowerCase()}. Kolleginnen und Kollegen orientieren sich an der ${kompAdj(dom.key)}en Arbeitsweise – besonders bei ${dom.key === "imp" ? "Umsetzungsfragen und operativen Entscheidungen" : dom.key === "int" ? "zwischenmenschlichen Situationen und Teamabstimmungen" : "fachlichen Fragen und Prozessthemen"}.`;
+  return `Die Rolle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung vor allem über ${kompShort(dom.key)}. Kolleginnen und Kollegen orientieren sich an der ${kompAdj(dom.key)}en Arbeitsweise, besonders bei ${dom.key === "imp" ? "Umsetzungsfragen und operativen Entscheidungen" : dom.key === "int" ? "zwischenmenschlichen Situationen und Teamabstimmungen" : "fachlichen Fragen und Prozessthemen"}.`;
 }
 
 function buildSpannungsfelder(data: ReportData): string[] {
@@ -715,7 +715,7 @@ export default function Rollenprofil() {
       return `Diese Rolle verlangt gleichzeitig ${data.dom.label.toLowerCase()}es und ${data.sec.label.toLowerCase()}es Arbeiten. Beide Anforderungen sind nahezu gleichwertig – die Person muss beides auf hohem Niveau mitbringen. ${data.wk.label} spielt eine ergänzende, aber deutlich nachrangige Rolle.`;
     }
     const adj = data.intensity === "strong" ? "klar" : data.intensity === "clear" ? "deutlich" : "erkennbar";
-    return `Diese Rolle ist ${adj} geprägt durch ${kompShort(data.dom.key).toLowerCase()}. Das ist die zentrale Anforderung an die Person. ${data.sec.key === "ana" ? "Eine strukturierte Arbeitsweise sorgt dafür, dass Entscheidungen nachvollziehbar bleiben und Abläufe stabil funktionieren." : data.sec.key === "int" ? "Die Fähigkeit, Beziehungen aufzubauen und Menschen mitzunehmen, sorgt für Akzeptanz und Zusammenhalt." : "Gleichzeitig braucht es Handlungsfähigkeit, damit Ergebnisse auch tatsächlich umgesetzt werden."}`;
+    return `Diese Rolle ist ${adj} geprägt durch ${kompShort(data.dom.key)}. Das ist die zentrale Anforderung an die Person. ${data.sec.key === "ana" ? "Eine strukturierte Arbeitsweise sorgt dafür, dass Entscheidungen nachvollziehbar bleiben und Abläufe stabil funktionieren." : data.sec.key === "int" ? "Die Fähigkeit, Beziehungen aufzubauen und Menschen mitzunehmen, sorgt für Akzeptanz und Zusammenhalt." : "Gleichzeitig braucht es Handlungsfähigkeit, damit Ergebnisse auch tatsächlich umgesetzt werden."}`;
   })();
 
   const abschlussText = (() => {
