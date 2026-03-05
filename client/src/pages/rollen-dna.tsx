@@ -1255,16 +1255,11 @@ export default function RollenDNA() {
                 </p>
               </div>
 
-              <div style={{ maxHeight: allCollapsed ? 0 : 56, opacity: allCollapsed ? 0 : 1, overflow: "hidden", transition: "max-height 300ms ease, opacity 300ms ease" }}>
-                <div className="mb-1 mt-1">
-                  <StepProgress currentStep={currentStep} completedSteps={completedSteps} />
-                </div>
-              </div>
             </div>
           </div>
         </div>
 
-        <main className="flex-1 w-full mx-auto px-6 pb-20" style={{ maxWidth: 1100, paddingTop: allCollapsed ? 105 : 175, transition: "padding-top 300ms ease" }}>
+        <main className="flex-1 w-full mx-auto px-6 pb-20" style={{ maxWidth: 1100, paddingTop: allCollapsed ? 105 : 130, transition: "padding-top 300ms ease" }}>
           <div className="space-y-5">
 
             {allCollapsed ? null : currentStep === 1 ? (
