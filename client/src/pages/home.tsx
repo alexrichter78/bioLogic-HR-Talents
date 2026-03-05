@@ -142,15 +142,14 @@ export default function Home() {
             "radial-gradient(ellipse 120% 80% at 20% 60%, rgba(252,205,210,0.35) 0%, transparent 50%), " +
             "radial-gradient(ellipse 100% 70% at 80% 30%, rgba(186,220,248,0.35) 0%, transparent 50%), " +
             "radial-gradient(ellipse 80% 60% at 50% 80%, rgba(200,235,210,0.3) 0%, transparent 50%)",
-          animation: "homeGradientShift 20s ease-in-out infinite alternate",
+          animation: "homeGradientPulse 12s ease-in-out infinite alternate",
         }}
       />
       <style>{`
-        @keyframes homeGradientShift {
-          0% { transform: scale(1) translate(0, 0); }
-          33% { transform: scale(1.05) translate(-1%, 1%); }
-          66% { transform: scale(1.02) translate(1%, -1%); }
-          100% { transform: scale(1) translate(0, 0); }
+        @keyframes homeGradientPulse {
+          0% { opacity: 0.85; }
+          50% { opacity: 1; }
+          100% { opacity: 0.85; }
         }
       `}</style>
 

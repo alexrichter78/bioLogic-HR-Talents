@@ -641,10 +641,9 @@ export default function Bericht() {
 
       <style>{`
         @keyframes gradientShift {
-          0% { transform: scale(1) translate(0, 0); }
-          33% { transform: scale(1.05) translate(-1%, 1%); }
-          66% { transform: scale(1.02) translate(1%, -1%); }
-          100% { transform: scale(1) translate(0, 0); }
+          0% { opacity: 0.85; }
+          50% { opacity: 1; }
+          100% { opacity: 0.85; }
         }
       `}</style>
 
