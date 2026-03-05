@@ -1313,7 +1313,8 @@ export default function RollenDNA() {
                             setShowSuggestions(false);
                           }
                         }}
-                        className="pl-10 bg-muted/30 dark:bg-muted/20 border-border/40 focus:border-primary/40 h-11 text-sm placeholder:text-muted-foreground/40"
+                        className="pl-10 border-border/40 focus:border-primary/40 h-11 text-sm placeholder:text-muted-foreground/40"
+                        style={{ background: "rgba(255, 248, 225, 0.5)" }}
                         data-testid="input-beruf"
                       />
 
@@ -1437,7 +1438,8 @@ export default function RollenDNA() {
                         value={zusatzInfo}
                         onChange={(e) => setZusatzInfo(e.target.value)}
                         placeholder="z.B. Schwerpunkt Key Account, hoher Reiseanteil, Schichtmodell, Branche Pharma, ..."
-                        className="w-full bg-muted/30 dark:bg-muted/20 border border-border/40 focus:border-primary/40 rounded-lg px-3 py-2 text-sm resize-none placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all"
+                        className="w-full border border-border/40 focus:border-primary/40 rounded-lg px-3 py-2 text-sm resize-none placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all"
+                        style={{ background: "rgba(255, 248, 225, 0.5)" }}
                         rows={2}
                         data-testid="input-zusatzinfo"
                       />
