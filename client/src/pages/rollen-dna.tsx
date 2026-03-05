@@ -1664,7 +1664,7 @@ export default function RollenDNA() {
             ) : (
               <CollapsedStep
                 step={1}
-                title="Rolle"
+                title="Ausgewählte Rolle"
                 summary={beruf}
                 onEdit={() => goToStep(1)}
               />
