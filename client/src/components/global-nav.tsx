@@ -1,8 +1,9 @@
 import { useLocation } from "wouter";
-import { PlusCircle, Pencil, FileText, GitCompareArrows, Bot, ClipboardCheck } from "lucide-react";
+import { Home, PlusCircle, Pencil, FileText, GitCompareArrows, Bot, ClipboardCheck } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 const NAV_ITEMS = [
+  { label: "Home", path: "/", icon: Home, isNew: false },
   { label: "Neue Rolle", path: "/rollen-dna", icon: PlusCircle, isNew: true },
   { label: "Rolle bearbeiten", path: "/rollen-dna", icon: Pencil, isNew: false },
   { label: "Bericht", path: "/bericht", icon: FileText, isNew: false },
