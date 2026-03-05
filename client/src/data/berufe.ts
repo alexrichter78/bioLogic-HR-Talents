@@ -6046,6 +6046,15 @@ const KEYWORD_PATTERNS: [RegExp, string][] = [
   [/Fondsmanag|Portfoliomanag/i, "Versicherung & Finanzdienste > Fondsmanagement"],
 ];
 
+function combineBreadcrumb(roleKat: string, brancheKat: string, branche: string): string {
+  const roleParts = roleKat.split(" > ");
+  const brancheParts = brancheKat.split(" > ");
+  if (roleParts[0] === brancheParts[0]) {
+    return `${roleParts[0]} > ${brancheParts[1] || branche}`;
+  }
+  return `${roleParts[0]} > ${brancheParts[1] || branche}`;
+}
+
 function getKategorie(name: string): string {
   if (BERUF_KATEGORIE[name]) {
     return BERUF_KATEGORIE[name];
@@ -6055,12 +6064,13 @@ function getKategorie(name: string): string {
   for (const branche of allBranchen) {
     if (name.endsWith(` ${branche}`)) {
       const rolePart = name.slice(0, name.length - branche.length - 1);
-      if (BERUF_KATEGORIE[rolePart]) {
-        return BERUF_KATEGORIE[rolePart];
+      const roleKat = BERUF_KATEGORIE[rolePart];
+      const brancheKat = BRANCHE_KATEGORIE[branche];
+      if (roleKat && brancheKat) {
+        return combineBreadcrumb(roleKat, brancheKat, branche);
       }
-      if (BRANCHE_KATEGORIE[branche]) {
-        return BRANCHE_KATEGORIE[branche];
-      }
+      if (roleKat) return roleKat;
+      if (brancheKat) return brancheKat;
     }
   }
 
@@ -6068,7 +6078,9 @@ function getKategorie(name: string): string {
     if (name.endsWith(` ${spez}`)) {
       const rolePart = name.slice(0, name.length - spez.length - 1);
       if (BERUF_KATEGORIE[rolePart]) {
-        return BERUF_KATEGORIE[rolePart];
+        const rk = BERUF_KATEGORIE[rolePart];
+        const rkParts = rk.split(" > ");
+        return `${rkParts[0]} > ${spez}`;
       }
     }
   }
@@ -6078,12 +6090,13 @@ function getKategorie(name: string): string {
       const suffix = ` ${spez} ${branche}`;
       if (name.endsWith(suffix)) {
         const rolePart = name.slice(0, name.length - suffix.length);
-        if (BERUF_KATEGORIE[rolePart]) {
-          return BERUF_KATEGORIE[rolePart];
+        const roleKat = BERUF_KATEGORIE[rolePart];
+        const brancheKat = BRANCHE_KATEGORIE[branche];
+        if (roleKat && brancheKat) {
+          return combineBreadcrumb(roleKat, brancheKat, branche);
         }
-        if (BRANCHE_KATEGORIE[branche]) {
-          return BRANCHE_KATEGORIE[branche];
-        }
+        if (roleKat) return roleKat;
+        if (brancheKat) return brancheKat;
       }
     }
   }
