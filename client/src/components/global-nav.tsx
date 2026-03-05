@@ -86,10 +86,16 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                     whiteSpace: "nowrap",
                   }}
                   onMouseEnter={(e) => {
-                    if (!active) e.currentTarget.style.background = "rgba(0,0,0,0.04)";
+                    if (!active) {
+                      e.currentTarget.style.background = "rgba(0,113,227,0.08)";
+                      e.currentTarget.style.color = "#0071E3";
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    if (!active) e.currentTarget.style.background = "transparent";
+                    if (!active) {
+                      e.currentTarget.style.background = "transparent";
+                      e.currentTarget.style.color = "#1D1D1F";
+                    }
                   }}
                 >
                   <Icon style={{ width: 15, height: 15, strokeWidth: 1.8 }} />
