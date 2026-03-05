@@ -708,55 +708,95 @@ function MiniProgressBar({ filled, total }: { filled: number; total: number }) {
   );
 }
 
-function SummaryBar({ fuehrung, erfolgsfokusIndices, aufgabencharakter, arbeitslogik }: {
+function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, arbeitslogik }: {
+  beruf: string;
   fuehrung: string;
   erfolgsfokusIndices: number[];
   aufgabencharakter: string;
   arbeitslogik: string;
 }) {
-  const aufgabenDisplay = AUFGABENCHARAKTER_OPTIONS.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter;
-  const arbeitsDisplay = ARBEITSLOGIK_OPTIONS.find(o => o.value === arbeitslogik)?.label || arbeitslogik;
-  const fuehrungDisplay = FUEHRUNG_OPTIONS.find(o => o.value === fuehrung)?.label || fuehrung;
-  const fokusDisplay = erfolgsfokusIndices.map(i => ERFOLGSFOKUS_DISPLAY[i]?.label || "").filter(Boolean).join(", ");
-  const items = [
-    { label: "Aufgaben", value: aufgabenDisplay },
-    { label: "Arbeitsweise", value: arbeitsDisplay },
-    { label: "Fokus", value: fokusDisplay },
-    { label: "Führung", value: fuehrungDisplay },
-  ];
+  const aufgabenOpt = AUFGABENCHARAKTER_OPTIONS.find(o => o.value === aufgabencharakter);
+  const arbeitsOpt = ARBEITSLOGIK_OPTIONS.find(o => o.value === arbeitslogik);
+  const fuehrungOpt = FUEHRUNG_OPTIONS.find(o => o.value === fuehrung);
+  const fokusLabels = erfolgsfokusIndices.map(i => ERFOLGSFOKUS_DISPLAY[i]?.label).filter(Boolean);
+
+  const aufgabenKurz: Record<string, string> = {
+    "überwiegend operativ": "operative Umsetzung im Tagesgeschäft",
+    "überwiegend systemisch": "strukturierte Umsetzung mit Planungsanteil",
+    "überwiegend strategisch": "strategische Steuerung und Analyse",
+    "Gemischt": "eine Mischung aus operativer Arbeit, Analyse und Abstimmung",
+  };
+  const arbeitsKurz: Record<string, string> = {
+    "Umsetzungsorientiert": "Handlungsorientierung und konkrete Resultate",
+    "Daten-/prozessorientiert": "Daten, Planung und systematisches Vorgehen",
+    "Menschenorientiert": "Abstimmung, Beziehungen und Kommunikation",
+    "Ausgewogen": "eine ausgewogene Mischung verschiedener Arbeitsweisen",
+  };
+
+  const rollenName = beruf || "Diese Rolle";
+  const aufgabenText = aufgabenKurz[aufgabencharakter] || aufgabenOpt?.label?.toLowerCase() || "verschiedene Aufgabenbereiche";
+  const arbeitsText = arbeitsKurz[arbeitslogik] || arbeitsOpt?.label?.toLowerCase() || "unterschiedliche Arbeitsweisen";
+
+  const fokusText = fokusLabels.length > 0
+    ? `Der Erfolg zeigt sich vor allem in ${fokusLabels.join(" und ").toLowerCase()}.`
+    : "";
+
+  const introText = `Die Rolle ${rollenName} ist geprägt durch ${aufgabenText}. Im Mittelpunkt der täglichen Arbeit stehen ${arbeitsText}. ${fokusText}`;
 
   return (
     <div
       data-testid="summary-bar"
       style={{
-        background: "rgba(255,255,255,0.8)",
+        background: "rgba(245,247,250,0.85)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
-        borderRadius: 16,
-        padding: "16px 24px",
+        borderRadius: 18,
+        padding: "24px 28px",
         marginTop: 32,
-        border: "1px solid rgba(0,0,0,0.06)",
-        boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+        border: "1px solid rgba(0,0,0,0.05)",
+        boxShadow: "0 2px 16px rgba(0,0,0,0.03)",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-        <CheckCircle2 style={{ width: 14, height: 14, color: "#34C759" }} />
-        <span style={{ fontSize: 12, fontWeight: 600, color: "#34C759", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+        <div style={{
+          width: 26, height: 26, borderRadius: "50%",
+          background: "linear-gradient(135deg, #34C759, #30B350)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          boxShadow: "0 2px 8px rgba(52,199,89,0.3)",
+        }}>
+          <CheckCircle2 style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} />
+        </div>
+        <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>
           Zusammenfassung
         </span>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 24px" }}>
-        {items.map((item) => (
-          <div key={item.label}>
-            <span style={{ fontSize: 11, fontWeight: 500, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.04em" }}>
-              {item.label}
-            </span>
-            <p style={{ fontSize: 14, fontWeight: 500, color: "#1D1D1F", marginTop: 2, lineHeight: 1.3 }}>
-              {item.value}
+
+      <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.65, margin: "0 0 4px" }}>
+        So lässt sich die Rolle aktuell beschreiben:
+      </p>
+      <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.65, margin: "0 0 20px" }}>
+        {introText}
+      </p>
+
+      {arbeitsOpt && (
+        <>
+          <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 14, marginBottom: 14 }}>
+            <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 3px" }}>Arbeitsweise</p>
+            <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.55, margin: 0 }}>
+              {arbeitsOpt.label}: {arbeitsOpt.desc}
             </p>
           </div>
-        ))}
-      </div>
+        </>
+      )}
+
+      {fuehrungOpt && (
+        <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 14 }}>
+          <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 3px" }}>Führungsrolle</p>
+          <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.55, margin: 0 }}>
+            {fuehrungOpt.label}: {fuehrungOpt.desc}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
@@ -1770,6 +1810,7 @@ export default function RollenDNA() {
                         }
                       `}</style>
                       <SummaryBar
+                        beruf={beruf}
                         fuehrung={fuehrung}
                         erfolgsfokusIndices={erfolgsfokusIndices}
                         aufgabencharakter={aufgabencharakter}
