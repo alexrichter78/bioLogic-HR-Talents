@@ -4,8 +4,7 @@ import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 const NAV_ITEMS = [
   { label: "Home", path: "/", icon: Home, isNew: false },
-  { label: "Neue Rolle", path: "/rollen-dna", icon: PlusCircle, isNew: true },
-  { label: "Rolle bearbeiten", path: "/rollen-dna", icon: Pencil, isNew: false },
+  { label: "Rolle", path: "/rollen-dna", icon: Pencil, isNew: false },
   { label: "Bericht", path: "/bericht", icon: FileText, isNew: false },
   { label: "JobCheck", path: "/jobcheck", icon: GitCompareArrows, isNew: false },
   { label: "TeamCheck", path: "/teamcheck", icon: ClipboardCheck, isNew: false },
