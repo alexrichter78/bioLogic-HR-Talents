@@ -1266,16 +1266,9 @@ export default function RollenDNA() {
               <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border animate-in fade-in slide-in-from-bottom-2 duration-400" style={{ overflow: "visible", position: "relative", zIndex: 100 }} data-testid="card-step-1">
                 <div style={{ padding: "32px 32px 28px", overflow: "visible" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
-                    {[1, 2, 3].map(n => (
-                      <div key={n} style={{
-                        width: 28, height: 28, borderRadius: "50%",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: 12, fontWeight: 700,
-                        background: n === 1 ? "#34C759" : "rgba(0,0,0,0.06)",
-                        color: n === 1 ? "#fff" : "#AEAEB2",
-                        transition: "all 300ms ease",
-                      }}>{n}</div>
-                    ))}
+                    <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "#34C759", color: "#fff" }}>1</div>
+                    <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>2</div>
+                    <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>3</div>
                   </div>
                   <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: "0 0 8px" }} data-testid="text-step-1-title">
                     Welche Rolle möchten Sie analysieren?
@@ -1487,15 +1480,9 @@ export default function RollenDNA() {
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-2">
                 <div className="mb-6">
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
-                    {[1, 2, 3].map(n => (
-                      <div key={n} style={{
-                        width: 28, height: 28, borderRadius: "50%",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: 12, fontWeight: 700,
-                        background: n <= 2 ? "#34C759" : "rgba(0,0,0,0.06)",
-                        color: n <= 2 ? "#fff" : "#AEAEB2",
-                      }}>{n === 1 ? "✓" : n}</div>
-                    ))}
+                    <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>✓</div>
+                    <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "#34C759", color: "#fff" }}>2</div>
+                    <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>3</div>
                   </div>
                   <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-2-title">
                     Rahmenbedingungen der Rolle
@@ -1706,15 +1693,9 @@ export default function RollenDNA() {
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
-                      {[1, 2, 3].map(n => (
-                        <div key={n} style={{
-                          width: 28, height: 28, borderRadius: "50%",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          fontSize: 12, fontWeight: 700,
-                          background: "#34C759",
-                          color: "#fff",
-                        }}>{n <= 2 ? "✓" : n}</div>
-                      ))}
+                      <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>✓</div>
+                      <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>✓</div>
+                      <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "#34C759", color: "#fff" }}>3</div>
                     </div>
                     <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-3-title">
                       Tätigkeiten & Kompetenzen
