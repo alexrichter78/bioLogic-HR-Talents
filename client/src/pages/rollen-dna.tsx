@@ -1310,7 +1310,7 @@ export default function RollenDNA() {
                             setShowSuggestions(false);
                           }
                         }}
-                        className="pl-10 bg-muted/30 dark:bg-muted/20 border-border/40 focus:border-primary/40 h-11 text-sm"
+                        className="pl-10 bg-muted/30 dark:bg-muted/20 border-border/40 focus:border-primary/40 h-11 text-sm placeholder:text-muted-foreground/40"
                         data-testid="input-beruf"
                       />
 
