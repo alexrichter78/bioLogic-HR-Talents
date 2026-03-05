@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { PlusCircle, FolderOpen, ShieldCheck, DoorOpen, Bot, ArrowRight, CheckCircle } from "lucide-react";
+import { PlusCircle, DoorOpen, Bot, CheckCircle } from "lucide-react";
 import { useLocation } from "wouter";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import GlobalNav from "@/components/global-nav";
@@ -230,10 +230,10 @@ export default function Home() {
               data-testid="card-profile"
             >
               <h2 style={{ fontSize: 22, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", marginBottom: 8 }} data-testid="text-no-profile">
-                Neue Rollen-Analyse
+                Rollenanalyse
               </h2>
               <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.65, maxWidth: 440, margin: "0 auto 28px" }} data-testid="text-profile-desc">
-                Definieren Sie eine Rolle, analysieren Sie die strukturelle Passung und erhalten Sie klare Handlungsempfehlungen für Besetzung, Führung und Zusammenarbeit.
+                Definieren Sie eine Rolle und analysieren Sie die strukturelle Passung. Sie erhalten klare Handlungsempfehlungen für Besetzung, Führung und Zusammenarbeit.
               </p>
 
               <div className="flex items-center justify-center gap-3 mb-6">
@@ -265,7 +265,7 @@ export default function Home() {
                   onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.8)"; e.currentTarget.style.transform = "translateY(0)"; }}
                   data-testid="button-analyse-oeffnen"
                 >
-                  Analyse laden
+                  Analyse öffnen
                 </button>
               </div>
 
@@ -293,38 +293,65 @@ export default function Home() {
               style={{
                 background: "rgba(255,255,255,0.55)",
                 backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-                borderRadius: 20, padding: "28px 32px",
+                borderRadius: 20, padding: "28px 32px 24px",
                 border: "1px solid rgba(0,0,0,0.04)",
                 boxShadow: "0 4px 16px rgba(0,0,0,0.03)",
-                display: "flex", alignItems: "center", gap: 20,
-                cursor: "pointer", transition: "all 250ms ease",
+                transition: "all 250ms ease",
               }}
-              onClick={() => setLocation("/ki-coach")}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.06)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.03)"; }}
               data-testid="card-ki-coach"
             >
-              <div style={{
-                width: 48, height: 48, borderRadius: 14, flexShrink: 0,
-                background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.06))",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
-                <Bot style={{ width: 24, height: 24, color: "#0071E3", strokeWidth: 1.5 }} />
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: 20 }}>
+                <div style={{
+                  width: 48, height: 48, borderRadius: 14, flexShrink: 0,
+                  background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.06))",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  <Bot style={{ width: 24, height: 24, color: "#0071E3", strokeWidth: 1.5 }} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.01em" }}>
+                    KI-Coach – Beratung auf Basis der bioLogic-Systematik
+                  </h3>
+                  <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6, margin: 0 }}>
+                    Nutzen Sie den KI-Coach jederzeit für Recruiting, Teamfragen, Gesprächsvorbereitung oder konkrete Handlungsempfehlungen – auch unabhängig von einer Analyse.
+                  </p>
+                </div>
               </div>
-              <div style={{ flex: 1 }}>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px", letterSpacing: "-0.01em" }}>
-                  KI-Coach – Beratung auf Basis der bioLogic-Systematik
-                </h3>
-                <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.55, margin: 0 }}>
-                  Nutzen Sie den KI-Coach jederzeit für Recruiting, Teamfragen, Gesprächsvorbereitung oder konkrete Handlungsempfehlungen – auch unabhängig von einer Analyse.
-                </p>
+
+              <div style={{ marginBottom: 20 }}>
+                <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Typische Einsatzbereiche</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  {[
+                    "Recruiting und Stellenanzeigen",
+                    "Gesprächsvorbereitung",
+                    "Teamkonstellationen analysieren",
+                    "Konfliktmuster erkennen",
+                  ].map((text, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <CheckCircle style={{ width: 13, height: 13, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
+                      <span style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450 }}>{text}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div style={{
-                width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-                background: "rgba(0,113,227,0.06)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
-                <ArrowRight style={{ width: 16, height: 16, color: "#0071E3" }} />
+
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <button
+                  onClick={() => setLocation("/ki-coach")}
+                  style={{
+                    height: 44, paddingLeft: 22, paddingRight: 22, fontSize: 14, fontWeight: 600,
+                    borderRadius: 12, border: "none", cursor: "pointer",
+                    background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
+                    boxShadow: "0 4px 14px rgba(0,113,227,0.25)", transition: "all 200ms ease",
+                    display: "flex", alignItems: "center", gap: 7,
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 18px rgba(0,113,227,0.3)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(0,113,227,0.25)"; }}
+                  data-testid="button-ki-coach"
+                >
+                  <Bot style={{ width: 15, height: 15 }} />
+                  KI-Coach öffnen
+                </button>
               </div>
             </div>
           </div>
