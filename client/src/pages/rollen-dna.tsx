@@ -458,12 +458,11 @@ function PillGroup({
               lineHeight: 1.3,
               whiteSpace: "pre-line",
               fontWeight: 500,
-              border: isSelected ? "2px solid transparent" : "1.5px solid rgba(0,0,0,0.15)",
+              border: isSelected ? "2px solid transparent" : "2px solid rgba(0,0,0,0.10)",
               cursor: "pointer",
-              transition: "all 180ms cubic-bezier(0.4, 0, 0.2, 1)",
+              transition: "background 180ms ease, color 180ms ease, border-color 180ms ease, box-shadow 180ms ease",
               background: isSelected ? "linear-gradient(135deg, #0071E3, #34AADC)" : "transparent",
               color: isSelected ? "#FFFFFF" : "#6E6E73",
-              transform: isSelected ? "scale(1.02)" : "scale(1)",
               boxShadow: isSelected ? "0 4px 12px rgba(0,113,227,0.25)" : "none",
             }}
             onMouseEnter={(e) => {
@@ -517,12 +516,11 @@ function PillGroupIndexed({
               lineHeight: 1.3,
               whiteSpace: "pre-line",
               fontWeight: 500,
-              border: isSelected ? "2px solid transparent" : "1.5px solid rgba(0,0,0,0.15)",
+              border: isSelected ? "2px solid transparent" : "2px solid rgba(0,0,0,0.10)",
               cursor: "pointer",
-              transition: "all 180ms cubic-bezier(0.4, 0, 0.2, 1)",
+              transition: "background 180ms ease, color 180ms ease, border-color 180ms ease, box-shadow 180ms ease",
               background: isSelected ? "linear-gradient(135deg, #0071E3, #34AADC)" : "transparent",
               color: isSelected ? "#FFFFFF" : "#6E6E73",
-              transform: isSelected ? "scale(1.02)" : "scale(1)",
               boxShadow: isSelected ? "0 4px 12px rgba(0,113,227,0.25)" : "none",
             }}
             onMouseEnter={(e) => {
@@ -569,10 +567,10 @@ function DescriptiveOptionGroup({
               textAlign: "left",
               padding: "14px 18px",
               borderRadius: 14,
-              border: isSelected ? "2px solid #0071E3" : "1.5px solid rgba(0,0,0,0.10)",
+              border: isSelected ? "2px solid #0071E3" : "2px solid rgba(0,0,0,0.08)",
               background: isSelected ? "rgba(0,113,227,0.06)" : "transparent",
               cursor: "pointer",
-              transition: "all 180ms ease",
+              transition: "background 180ms ease, border-color 180ms ease",
             }}
             onMouseEnter={(e) => {
               if (!isSelected) {
@@ -629,10 +627,10 @@ function DescriptiveOptionGroupIndexed({
               textAlign: "left",
               padding: "14px 18px",
               borderRadius: 14,
-              border: isSelected ? "2px solid #0071E3" : "1.5px solid rgba(0,0,0,0.10)",
+              border: isSelected ? "2px solid #0071E3" : "2px solid rgba(0,0,0,0.08)",
               background: isSelected ? "rgba(0,113,227,0.06)" : "transparent",
               cursor: "pointer",
-              transition: "all 180ms ease",
+              transition: "background 180ms ease, border-color 180ms ease",
             }}
             onMouseEnter={(e) => {
               if (!isSelected) {
