@@ -275,9 +275,94 @@ function buildSpannungsfelder(data: ReportData): string[] {
   return fields;
 }
 
+function isNeutralProfile(bg: BG): boolean {
+  const vals = [bg.imp, bg.int, bg.ana];
+  const max = Math.max(...vals);
+  const min = Math.min(...vals);
+  return (max - min) < 2;
+}
+
+function buildProfilherkunft(data: ReportData): { label: string; dom: string; pct: number }[] {
+  const parts: { label: string; dom: string; pct: number }[] = [];
+  const addPart = (label: string, bg: BG) => {
+    if (isNeutralProfile(bg)) {
+      parts.push({ label, dom: "Ausgeglichen", pct: 33 });
+    } else {
+      const d = dominant(bg);
+      parts.push({ label, dom: d.label, pct: Math.round(d.value) });
+    }
+  };
+  addPart("Kerntätigkeiten", data.haupt);
+  addPart("Humankompetenzen", data.neben);
+  if (data.isLeadership) {
+    addPart("Führungskompetenz", data.fuehrung);
+  }
+  addPart("Rahmenbedingungen", data.rahmen);
+  return parts;
+}
+
+function buildRahmenText(data: ReportData): string {
+  const parts: string[] = [];
+  if (data.aufgabencharakter) {
+    const charMap: Record<string, string> = {
+      "überwiegend operativ": "Der Aufgabencharakter ist überwiegend operativ – die Rolle wirkt primär über direkte Umsetzung und konkretes Handeln.",
+      "überwiegend systemisch": "Der Aufgabencharakter ist überwiegend systemisch – die Rolle wirkt über Vernetzung, Koordination und das Zusammenführen verschiedener Perspektiven.",
+      "überwiegend strategisch": "Der Aufgabencharakter ist überwiegend strategisch – die Rolle wirkt über langfristige Planung, Richtungsentscheidungen und Steuerung.",
+      "Gemischt": "Der Aufgabencharakter ist gemischt – die Rolle wechselt situativ zwischen operativer Umsetzung, Koordination und strategischer Steuerung.",
+    };
+    parts.push(charMap[data.aufgabencharakter] || `Der Aufgabencharakter ist ${data.aufgabencharakter.toLowerCase()}.`);
+  }
+  if (data.arbeitslogik) {
+    const logikMap: Record<string, string> = {
+      "Umsetzungsorientiert": "Die Arbeitslogik ist umsetzungsorientiert – Wirkung entsteht durch schnelles Handeln und konkrete Ergebnisse.",
+      "Menschenorientiert": "Die Arbeitslogik ist menschenorientiert – Wirkung entsteht durch Kommunikation, Beziehungsgestaltung und Abstimmung.",
+      "Daten-/prozessorientiert": "Die Arbeitslogik ist daten- und prozessorientiert – Wirkung entsteht durch systematische Analyse und strukturierte Abläufe.",
+    };
+    parts.push(logikMap[data.arbeitslogik] || `Die Arbeitslogik ist ${data.arbeitslogik.toLowerCase()}.`);
+  }
+  if (data.isLeadership && data.fuehrungstyp) {
+    parts.push(`Die Rolle umfasst ${data.fuehrungstyp.toLowerCase()}.`);
+  }
+  return parts.join(" ");
+}
+
+function buildErfolgsfokusText(data: ReportData, labels: string[]): string {
+  if (labels.length === 0) return "";
+  const FOKUS_DOMIN: Record<string, string> = {
+    "Ergebnis-/ Umsatzwirkung": "Umsetzungsstärke",
+    "Beziehungs- und Netzwerkstabilität": "Beziehungsfähigkeit",
+    "Innovations- & Transformationsleistung": "Umsetzungsstärke",
+    "Prozess- und Effizienzqualität": "Strukturkompetenz",
+    "Fachliche Exzellenz / Expertise": "Strukturkompetenz",
+    "Strategische Wirkung / Positionierung": "Beziehungsfähigkeit",
+  };
+  const needed = labels.map(l => FOKUS_DOMIN[l] || "Strukturkompetenz");
+  const unique = [...new Set(needed)];
+  const domKomp = kompShort(data.dom.key);
+
+  if (unique.length === 1 && unique[0] === domKomp) {
+    return `Der Erfolgsfokus (${labels.join(", ")}) passt zur dominanten Kompetenz der Rolle. Die geforderte ${domKomp} ist strukturell abgesichert.`;
+  }
+  if (unique.every(u => u === domKomp || u === kompShort(data.sec.key))) {
+    return `Der Erfolgsfokus (${labels.join(", ")}) wird durch die beiden stärksten Kompetenzen der Rolle abgedeckt: ${domKomp} und ${kompShort(data.sec.key)}.`;
+  }
+  const missing = unique.find(u => u !== domKomp && u !== kompShort(data.sec.key));
+  return `Der Erfolgsfokus (${labels.join(", ")}) verlangt unter anderem ${missing}. Diese Kompetenz ist im Profil der Rolle nachrangig – hier entsteht ein Steuerungsbedarf, um den Erfolg abzusichern.`;
+}
+
+function buildProfilkonflikt(data: ReportData): string | null {
+  const hauptDom = dominant(data.haupt);
+  const { dom } = data;
+  if (hauptDom.key === dom.key) return null;
+  return `Hinweis: Die Kerntätigkeiten der Rolle sind geprägt durch ${hauptDom.label} (${kompShort(hauptDom.key)}), während das Gesamtprofil durch ${dom.label} dominiert wird. Diese Abweichung bedeutet: Die Rahmenbedingungen und ergänzenden Anforderungen verschieben das Profil weg von den Kerntätigkeiten. Im Besetzungsprozess sollte geprüft werden, ob die Person primär die Kerntätigkeiten oder das Gesamtpaket abbilden kann.`;
+}
+
 function buildFehlbesetzung(data: ReportData): { label: string; bullets: string[] }[] {
   const { dom, sec, wk, isLeadership } = data;
   const risks: { label: string; bullets: string[] }[] = [];
+
+  const hauptTaetigkeiten = (data.taetigkeiten || []).filter((t: any) => t.kategorie === "haupt");
+  const hochItems = hauptTaetigkeiten.filter((t: any) => t.niveau === "Hoch");
 
   if (dom.key === "imp" || dom.value >= 45) {
     risks.push({
@@ -319,6 +404,23 @@ function buildFehlbesetzung(data: ReportData): { label: string; bullets: string[
         "Entscheidungen werden aufgeschoben oder zu lange abgewogen",
         "Chancen werden verpasst, weil die Reaktionsgeschwindigkeit fehlt",
         isLeadership ? "Das Team wartet auf klare Ansagen, die ausbleiben" : "Wichtige Aufgaben werden nicht rechtzeitig priorisiert",
+      ],
+    });
+  }
+
+  const conflicting = hochItems.filter((t: any) =>
+    (dom.key === "imp" && t.kompetenz !== "Impulsiv") ||
+    (dom.key === "int" && t.kompetenz !== "Intuitiv") ||
+    (dom.key === "ana" && t.kompetenz !== "Analytisch")
+  );
+  if (conflicting.length >= 2 && risks.length < 3) {
+    const namen = conflicting.slice(0, 2).map((t: any) => t.name).join(" und ");
+    risks.push({
+      label: "Wenn Kerntätigkeiten und Profil auseinanderfallen",
+      bullets: [
+        `Hochprioritäre Tätigkeiten (${namen}) verlangen eine andere Kompetenz als die Profildominanz`,
+        "Die Person wird dauerhaft in einem Bereich gefordert, der nicht ihrer natürlichen Stärke entspricht",
+        "Kompensation ist kurzfristig möglich, langfristig steigen Erschöpfung und Fehlerquote",
       ],
     });
   }
@@ -502,14 +604,24 @@ export default function Rollenprofil() {
   const hauptTaetigkeiten = (data.taetigkeiten || []).filter((t: any) => t.kategorie === "haupt");
   const hochItems = hauptTaetigkeiten.filter((t: any) => t.niveau === "Hoch");
   const erfolgsfokusLabels = data.erfolgsfokusIndices.map(i => ERFOLGSFOKUS_LABELS[i]).filter(Boolean);
+  const profilherkunft = buildProfilherkunft(data);
+  const rahmenText = buildRahmenText(data);
+  const erfolgsfokusText = buildErfolgsfokusText(data, erfolgsfokusLabels);
+  const profilkonflikt = buildProfilkonflikt(data);
+
+  const topTaetigkeiten = hauptTaetigkeiten.slice(0, 4).map((t: any) => t.name);
+  const taetigkeitenInText = topTaetigkeiten.length > 0
+    ? topTaetigkeiten.join(", ")
+    : null;
 
   const rollenBeschreibung = (() => {
+    const tRef = taetigkeitenInText ? ` Die zentralen Aufgaben – ${taetigkeitenInText} – ` : " Die zentralen Aufgaben ";
     if (data.dom.key === "int") {
-      return `Die Rolle wirkt vor allem über ${data.isLeadership ? "Führung durch Beziehungsgestaltung, " : ""}Kommunikation und persönliche Interaktion. Gleichzeitig braucht sie ${data.sec.key === "ana" ? "eine strukturierte Arbeitsweise, um Abläufe und wirtschaftliche Aspekte stabil zu steuern" : "Durchsetzungsfähigkeit, um Entscheidungen konsequent umzusetzen"}.`;
+      return `Die Rolle wirkt vor allem über ${data.isLeadership ? "Führung durch Beziehungsgestaltung, " : ""}Kommunikation und persönliche Interaktion.${tRef}verlangen eine Persönlichkeit, die schnell Vertrauen aufbaut und Bedürfnisse erkennt. Gleichzeitig braucht die Rolle ${data.sec.key === "ana" ? "eine strukturierte Arbeitsweise, um Abläufe und wirtschaftliche Aspekte stabil zu steuern" : "Durchsetzungsfähigkeit, um Entscheidungen konsequent umzusetzen"}.`;
     } else if (data.dom.key === "imp") {
-      return `Die Rolle wirkt vor allem über ${data.isLeadership ? "zielgerichtete Führung, " : ""}schnelle Entscheidungen und konsequente Umsetzung. Gleichzeitig braucht sie ${data.sec.key === "int" ? "die Fähigkeit, Beziehungen aufzubauen und das Team einzubinden" : "analytische Sorgfalt, um Qualität und Nachhaltigkeit sicherzustellen"}.`;
+      return `Die Rolle wirkt vor allem über ${data.isLeadership ? "zielgerichtete Führung, " : ""}schnelle Entscheidungen und konsequente Umsetzung.${tRef}erfordern Handlungsfähigkeit und klare Priorisierung. Gleichzeitig braucht die Rolle ${data.sec.key === "int" ? "die Fähigkeit, Beziehungen aufzubauen und das Team einzubinden" : "analytische Sorgfalt, um Qualität und Nachhaltigkeit sicherzustellen"}.`;
     } else {
-      return `Die Rolle wirkt vor allem über ${data.isLeadership ? "methodische Führung, " : ""}systematisches Arbeiten und fundierte Analysen. Gleichzeitig braucht sie ${data.sec.key === "int" ? "Empathie und Kommunikationsfähigkeit, um Ergebnisse im Team zu verankern" : "Handlungsfähigkeit, um Erkenntnisse in konkrete Maßnahmen umzusetzen"}.`;
+      return `Die Rolle wirkt vor allem über ${data.isLeadership ? "methodische Führung, " : ""}systematisches Arbeiten und fundierte Analysen.${tRef}setzen fachliche Tiefe und strukturiertes Vorgehen voraus. Gleichzeitig braucht die Rolle ${data.sec.key === "int" ? "Empathie und Kommunikationsfähigkeit, um Ergebnisse im Team zu verankern" : "Handlungsfähigkeit, um Erkenntnisse in konkrete Maßnahmen umzusetzen"}.`;
     }
   })();
 
@@ -614,18 +726,77 @@ export default function Rollenprofil() {
                 <div style={{ height: 8 }} />
                 <ProfileBar label="Analytisch" value={data.gesamt.ana} color={COLORS.ana} />
               </div>
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de">
+              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 16px", textAlign: "justify", textAlignLast: "left" as any }} lang="de">
                 {hyphenateText(strukturprofilText)}
               </p>
+
+              <p style={{ fontSize: 12, fontWeight: 600, color: "#6E6E73", margin: "0 0 8px" }}>Profilherkunft</p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {profilherkunft.map((p, i) => {
+                  const c = p.dom === "Impulsiv" ? COLORS.imp : p.dom === "Intuitiv" ? COLORS.int : p.dom === "Analytisch" ? COLORS.ana : "#8E8E93";
+                  return (
+                    <div key={i} style={{
+                      display: "flex", alignItems: "center", gap: 6,
+                      padding: "5px 10px", borderRadius: 8, background: "rgba(0,0,0,0.03)",
+                      fontSize: 12, color: "#48484A",
+                    }} data-testid={`profilherkunft-${i}`}>
+                      <div style={{ width: 8, height: 8, borderRadius: 4, background: c, flexShrink: 0 }} />
+                      <span style={{ fontWeight: 600 }}>{p.label}:</span>
+                      <span>{p.dom} ({p.pct} %)</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {profilkonflikt && (
+                <div style={{
+                  marginTop: 14, padding: "12px 16px", borderRadius: 10,
+                  background: "rgba(255,149,0,0.06)", border: "1px solid rgba(255,149,0,0.15)",
+                }}>
+                  <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, margin: 0, fontWeight: 450 }} data-testid="text-profilkonflikt" lang="de">
+                    {hyphenateText(profilkonflikt)}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* 3. Arbeitslogik */}
-            <div style={{ marginBottom: 0 }}>
+            <div style={{ marginBottom: 28 }}>
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>3. Arbeitslogik der Rolle</p>
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de">
                 {hyphenateText(arbeitslogikText)}
               </p>
             </div>
+
+            {/* 4. Rahmenbedingungen */}
+            {rahmenText && (
+              <div style={{ marginBottom: 28 }}>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>4. Rahmenbedingungen</p>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-rahmenbedingungen">
+                  {hyphenateText(rahmenText)}
+                </p>
+              </div>
+            )}
+
+            {/* 5. Erfolgsfokus */}
+            {erfolgsfokusText && (
+              <div style={{ marginBottom: 0 }}>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>
+                  {rahmenText ? "5." : "4."} Erfolgsfokus
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
+                  {erfolgsfokusLabels.map((l, i) => (
+                    <span key={i} style={{
+                      fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 6,
+                      background: "rgba(0,113,227,0.06)", color: "#0071E3",
+                    }} data-testid={`tag-erfolgsfokus-${i}`}>{l}</span>
+                  ))}
+                </div>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-erfolgsfokus">
+                  {hyphenateText(erfolgsfokusText)}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* ── DIVIDER ── */}

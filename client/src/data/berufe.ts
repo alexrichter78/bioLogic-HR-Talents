@@ -6029,7 +6029,6 @@ const BERUF_KATEGORIE: Record<string, string> = {
   "Medizinische/-r Fachangestellte/-r (MFA)": "Gesundheit & Soziales > Medizinische Assistenz",
   "Medizinisch-technische/-r Laboratoriumsassistent/-in (MTLA)": "Gesundheit & Soziales > Labordiagnostik",
   "Medizinisch-technische/-r Radiologieassistent/-in (MTRA)": "Gesundheit & Soziales > Radiologie",
-  "Netzwerkadministrator/-in": "IT & Technologie > Netzwerktechnik",
   "Niederlassungsleiter/-in": "Management & Führung > Niederlassungsleitung",
   "Notar/-in": "Recht & Verwaltung > Rechtsanwälte & Notare",
   "Notarfachangestellte/-r": "Recht & Verwaltung > Rechtsanwälte & Notare",
