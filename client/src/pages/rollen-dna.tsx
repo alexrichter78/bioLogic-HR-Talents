@@ -1569,69 +1569,78 @@ export default function RollenDNA() {
                         <div
                           ref={suggestionsRef}
                           data-testid="beruf-suggestions"
-                          className="bg-white dark:bg-card border border-border/30"
+                          className="bg-white dark:bg-card border border-border/20"
                           style={{
                             position: "absolute",
-                            top: 48,
+                            top: 52,
                             left: 0,
                             right: 0,
                             zIndex: 9999,
-                            borderRadius: 12,
-                            boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
-                            overflow: "auto",
-                            maxHeight: 400,
+                            borderRadius: 14,
+                            boxShadow: "0 12px 40px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.06)",
+                            overflow: "hidden",
                           }}
                         >
-                          {filteredBerufe.map((b, idx) => {
-                            const matchStart = b.name.toLowerCase().indexOf(beruf.toLowerCase());
-                            const matchEnd = matchStart + beruf.length;
-                            return (
-                              <div
-                                key={b.name}
-                                data-testid={`suggestion-${idx}`}
-                                onClick={() => {
-                                  setBeruf(b.name);
-                                  setShowSuggestions(false);
-                                  setHighlightedIndex(-1);
-                                }}
-                                onMouseEnter={() => setHighlightedIndex(idx)}
-                                style={{
-                                  padding: "10px 14px",
-                                  fontSize: 14,
-                                  cursor: "pointer",
-                                  background: idx === highlightedIndex ? "rgba(0,113,227,0.08)" : "transparent",
-                                  borderBottom: idx < filteredBerufe.length - 1 ? "1px solid rgba(0,0,0,0.04)" : "none",
-                                  transition: "background 0.15s",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: 10,
-                                }}
-                              >
-                                <span className="flex-shrink-0 w-6 h-5 rounded text-[10px] font-semibold flex items-center justify-center bg-muted/40 text-muted-foreground/50">
-                                  {b.land}
-                                </span>
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                  <div style={{ fontWeight: 500, lineHeight: 1.3 }}>
-                                    {matchStart >= 0 ? (
-                                      <>
-                                        {b.name.slice(0, matchStart)}
-                                        <span style={{ fontWeight: 600, color: "#0071E3" }}>{b.name.slice(matchStart, matchEnd)}</span>
-                                        {b.name.slice(matchEnd)}
-                                      </>
-                                    ) : b.name}
+                          <div style={{ maxHeight: 420, overflowY: "auto" }}>
+                            {filteredBerufe.map((b, idx) => {
+                              const matchStart = b.name.toLowerCase().indexOf(beruf.toLowerCase());
+                              const matchEnd = matchStart + beruf.length;
+                              return (
+                                <div
+                                  key={b.name}
+                                  data-testid={`suggestion-${idx}`}
+                                  onClick={() => {
+                                    setBeruf(b.name);
+                                    setShowSuggestions(false);
+                                    setHighlightedIndex(-1);
+                                  }}
+                                  onMouseEnter={() => setHighlightedIndex(idx)}
+                                  style={{
+                                    padding: "14px 18px",
+                                    fontSize: 15,
+                                    cursor: "pointer",
+                                    background: idx === highlightedIndex ? "rgba(0,113,227,0.06)" : "transparent",
+                                    borderBottom: idx < filteredBerufe.length - 1 ? "1px solid rgba(0,0,0,0.05)" : "none",
+                                    transition: "background 0.15s",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 14,
+                                  }}
+                                >
+                                  <div style={{
+                                    width: 36, height: 36, borderRadius: 8,
+                                    background: "rgba(0,0,0,0.04)",
+                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                    flexShrink: 0,
+                                  }}>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                      <polyline points="9 22 9 12 15 12 15 22" />
+                                    </svg>
                                   </div>
-                                  <div style={{ fontSize: 11, color: "rgba(0,0,0,0.4)", marginTop: 1, lineHeight: 1.2 }}>
-                                    {b.kategorie}
+                                  <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ fontWeight: 600, lineHeight: 1.35, color: "#1D1D1F" }}>
+                                      {matchStart >= 0 ? (
+                                        <>
+                                          {b.name.slice(0, matchStart)}
+                                          <span style={{ color: "#0071E3" }}>{b.name.slice(matchStart, matchEnd)}</span>
+                                          {b.name.slice(matchEnd)}
+                                        </>
+                                      ) : b.name}
+                                    </div>
+                                    <div style={{ fontSize: 12.5, color: "#8E8E93", marginTop: 3, lineHeight: 1.3 }}>
+                                      {b.kategorie}
+                                    </div>
+                                  </div>
+                                  <div style={{ color: "rgba(0,0,0,0.18)", flexShrink: 0 }}>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                      <polyline points="9 18 15 12 9 6"/>
+                                    </svg>
                                   </div>
                                 </div>
-                                <div style={{ color: "rgba(0,0,0,0.15)", flexShrink: 0 }}>
-                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="9 18 15 12 9 6"/>
-                                  </svg>
-                                </div>
-                              </div>
-                            );
-                          })}
+                              );
+                            })}
+                          </div>
                         </div>
                       )}
                     </div>
