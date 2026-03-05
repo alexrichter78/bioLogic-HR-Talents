@@ -1,0 +1,153 @@
+1. Hauptheadline
+Aktuell
+
+Strukturelle Klarheit für Personal- und Rollenentscheidungen
+
+Das ist bereits sehr gut.
+Nur minimal optimieren für mehr Fluss.
+
+Empfehlung
+
+Strukturelle Klarheit für Personal- und Rollenentscheidungen
+
+(Bleibt so. Sehr stark.)
+
+2. Subline
+Aktuell
+
+Erkennen Sie in wenigen Minuten, wie gut Rolle, Persönlichkeit und Team wirklich zusammenpassen – inklusive Stressdynamik und Entwicklungspotenzial.
+
+Problem
+
+„wirklich zusammenpassen“ klingt etwas weich.
+
+Optimiert
+
+Erkennen Sie in wenigen Minuten, wie gut Rolle, Persönlichkeit und Team zusammenpassen – inklusive Stressdynamik und Entwicklungspotenzial.
+
+Oder noch klarer:
+
+In wenigen Minuten sehen Sie, wie gut Rolle, Persönlichkeit und Team zusammenpassen – inklusive Stressdynamik und Entwicklungspotenzial.
+
+3. Analyse-Card
+Titel
+
+Aktuell
+Neue Rollen-Analyse starten
+
+Das ist gut.
+
+Optional etwas klarer:
+
+Neue Rollen-Analyse
+
+Beschreibung
+
+Aktuell
+Definieren Sie eine Rolle, analysieren Sie die strukturelle Passung und erhalten Sie präzise Handlungsempfehlungen.
+
+Das ist gut, aber minimal zu technisch.
+
+Optimiert
+
+Definieren Sie eine Rolle, analysieren Sie die strukturelle Passung und erhalten Sie klare Handlungsempfehlungen für Besetzung, Führung und Zusammenarbeit.
+
+Das gibt mehr Kontext.
+
+4. Buttons
+Aktuell
+
+Neue Analyse starten
+Analyse öffnen
+
+Das passt.
+
+Optional minimal klarer:
+
+Neue Analyse starten
+Analyse laden
+
+„Öffnen“ klingt etwas technisch.
+
+5. Trust-Punkte
+Aktuell
+
+Wissenschaftlich fundierte Methodik
+Nachvollziehbare Ergebnislogik
+Klare Entscheidungsstruktur
+
+Das ist sehr gut.
+
+Ich würde nur minimal glätten:
+
+✔ Wissenschaftlich fundierte Methodik
+✔ Transparente Ergebnislogik
+✔ Klare Entscheidungsstruktur
+
+„Transparente“ wirkt etwas natürlicher.
+
+6. KI-Coach Bereich
+Titel
+
+Aktuell
+KI-Coach – bioLogic-basierte Beratung
+
+Das ist gut.
+
+Ich würde nur leicht glätten:
+
+KI-Coach – Beratung auf Basis der bioLogic-Systematik
+
+Wirkt hochwertiger.
+
+7. Beschreibung
+Aktuell
+
+Nutzen Sie den KI-Coach jederzeit für Recruiting, Kommunikationsfragen oder konkrete Handlungsempfehlungen – auch unabhängig von einer Analyse.
+
+Gut – aber etwas generisch.
+
+Optimiert
+
+Nutzen Sie den KI-Coach jederzeit für Recruiting, Teamfragen, Gesprächsvorbereitung oder konkrete Handlungsempfehlungen – auch unabhängig von einer Analyse.
+
+Das ist konkreter.
+
+8. Button
+
+Aktuell
+KI-Coach öffnen
+
+Perfekt.
+Nicht ändern.
+
+9. Finaler Gesamttext (optimierte Version)
+
+Hier einmal komplett zusammenhängend:
+
+Headline
+
+Strukturelle Klarheit für Personal- und Rollenentscheidungen
+
+In wenigen Minuten sehen Sie, wie gut Rolle, Persönlichkeit und Team zusammenpassen – inklusive Stressdynamik und Entwicklungspotenzial.
+
+Rollen-Analyse
+
+Neue Rollen-Analyse
+
+Definieren Sie eine Rolle, analysieren Sie die strukturelle Passung und erhalten Sie klare Handlungsempfehlungen für Besetzung, Führung und Zusammenarbeit.
+
+Neue Analyse starten
+Analyse laden
+
+✔ Wissenschaftlich fundierte Methodik
+✔ Transparente Ergebnislogik
+✔ Klare Entscheidungsstruktur
+
+KI-Coach
+
+KI-Coach – Beratung auf Basis der bioLogic-Systematik
+
+Nutzen Sie den KI-Coach jederzeit für Recruiting, Teamfragen, Gesprächsvorbereitung oder konkrete Handlungsempfehlungen – auch unabhängig von einer Analyse.
+
+KI-Coach öffnen
