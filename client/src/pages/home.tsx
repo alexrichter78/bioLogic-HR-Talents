@@ -165,24 +165,9 @@ export default function Home() {
       <div className="relative z-10">
         <GlobalNav />
 
-        {/* HERO */}
-        <FadeIn delay={100}>
-          <div className="flex flex-col items-center justify-center pt-20 pb-10 px-6 text-center" data-testid="hero-section">
-            <h1
-              style={{ fontSize: 44, fontWeight: 700, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.12, maxWidth: 560 }}
-              data-testid="text-title"
-            >
-              Strukturelle Klarheit für Personal- und Rollenentscheidungen
-            </h1>
-            <p style={{ fontSize: 16, color: "#6E6E73", fontWeight: 400, lineHeight: 1.6, maxWidth: 500, marginTop: 16 }} data-testid="text-subtitle">
-              In wenigen Minuten sehen Sie, wie gut Rolle, Persönlichkeit und Team zusammenpassen – inklusive Stressdynamik und Entwicklungspotenzial.
-            </p>
-          </div>
-        </FadeIn>
-
         {/* MAIN CTA CARD */}
-        <FadeIn delay={350}>
-          <div className="px-6 pb-10">
+        <FadeIn delay={200}>
+          <div className="px-6 pt-16 pb-10">
             <div
               className="mx-auto max-w-2xl w-full text-center"
               style={{
