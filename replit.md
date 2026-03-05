@@ -12,12 +12,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Navigation
 
-All pages share a unified GlobalNav component (`client/src/components/global-nav.tsx`) with 6 items:
-- **Neue Rollen-DNA**: Clears all stored state and navigates to `/rollen-dna` for a fresh wizard
-- **Rollen-DNA Bearbeiten**: Navigates to `/rollen-dna` keeping existing state
-- **Rollenprofil**: Navigates to `/bericht` (AI-generated decision report)
-- **Soll-Ist-Vergleich**: Navigates to `/jobcheck` (candidate-role fit comparison)
+All pages share a unified GlobalNav component (`client/src/components/global-nav.tsx`) with 7 items:
+- **Home**: Landing page at `/`
+- **Rolle**: Navigates to `/rollen-dna` (multi-step wizard)
+- **Bericht**: Navigates to `/bericht` (AI-generated decision report)
+- **JobCheck**: Navigates to `/jobcheck` (candidate-role fit comparison)
 - **TeamCheck**: Navigates to `/teamcheck` (deterministic team analysis combining Soll/Ist/Team profiles)
+- **Profil**: Navigates to `/rollenprofil` (deterministic flowing document report — Rollen-DNA summary with 3 sections: role description/structural profile/work logic, behavior under stress, team impact/risks/decision conclusion)
 - **KI-Coach**: Navigates to `/ki-coach` (AI coaching chat with bioLogic expertise)
 
 The nav supports a `rightSlot` prop for page-specific actions (e.g., Save/Load on rollen-dna, Regenerate on bericht).

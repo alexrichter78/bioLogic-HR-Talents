@@ -11,6 +11,7 @@ import Bericht from "@/pages/bericht";
 import JobCheck from "@/pages/jobcheck";
 import KICoach from "@/pages/ki-coach";
 import TeamCheck from "@/pages/teamcheck";
+import Rollenprofil from "@/pages/rollenprofil";
 
 function Router() {
   return (
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/bericht" component={Bericht} />
       <Route path="/jobcheck" component={JobCheck} />
       <Route path="/teamcheck" component={TeamCheck} />
+      <Route path="/rollenprofil" component={Rollenprofil} />
       <Route path="/ki-coach" component={KICoach} />
       <Route component={NotFound} />
     </Switch>
