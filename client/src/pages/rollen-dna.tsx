@@ -1527,7 +1527,7 @@ export default function RollenDNA() {
                   <p style={{ fontSize: 13, color: "#8E8E93", lineHeight: 1.6, margin: "0 0 28px" }}>
                     Geben Sie die Berufsbezeichnung oder Stellenbezeichnung ein, z.B. „Vertriebsleiter", „HR Business Partner" oder „Projektmanager IT".
                     <br />
-                    <span style={{ fontSize: 12, color: "#AEAEB2" }}>Kein passender Vorschlag? Einfach ausschreiben – wir erkennen die Rolle automatisch.</span>
+                    Kein passender Vorschlag? Einfach ausschreiben – wir erkennen die Rolle automatisch.
                   </p>
 
                   <div className="mb-0" style={{ zIndex: 100 }} data-testid="input-beruf-wrapper">
