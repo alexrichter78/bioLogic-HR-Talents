@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
-import { BarChart3, Briefcase, Heart, Shield, AlertTriangle, FileText, Check, Settings, RefreshCw, Loader2, Zap, Brain, Users, Target, TrendingUp, Lightbulb, Star, Activity } from "lucide-react";
+import { BarChart3, Briefcase, Heart, Shield, AlertTriangle, FileText, Check, Settings, RefreshCw, Loader2, Zap, Brain, Users, Target, TrendingUp, Lightbulb, Star, Activity, Download } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE } from "@/data/berufe";
@@ -515,6 +515,58 @@ export default function Bericht() {
   const [bericht, setBericht] = useState<BerichtData | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
+  const reportRef = useRef<HTMLDivElement>(null);
+
+  const exportPdf = useCallback(async () => {
+    if (!reportRef.current || isExportingPdf) return;
+    setIsExportingPdf(true);
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const { jsPDF } = await import("jspdf");
+
+      const el = reportRef.current;
+      const originalBg = el.style.background;
+      el.style.background = "#FFFFFF";
+
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: "#FFFFFF",
+        logging: false,
+        windowWidth: 1100,
+      });
+
+      el.style.background = originalBg;
+
+      const imgWidth = 210;
+      const pageHeight = 297;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      let heightLeft = imgHeight;
+      let position = 0;
+      const imgData = canvas.toDataURL("image/jpeg", 0.95);
+
+      pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position = -(imgHeight - heightLeft);
+        pdf.addPage();
+        pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      const berufName = profileData?.beruf?.replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_") || "Bericht";
+      pdf.save(`Entscheidungsbericht_${berufName}.pdf`);
+    } catch (err) {
+      console.error("PDF export failed:", err);
+    } finally {
+      setIsExportingPdf(false);
+    }
+  }, [isExportingPdf, profileData]);
 
   useEffect(() => {
     const completed = localStorage.getItem("rollenDnaCompleted");
@@ -650,14 +702,25 @@ export default function Bericht() {
       <div className="relative z-10">
         <GlobalNav rightSlot={
           bericht && !isGenerating ? (
-            <button onClick={generateBericht} style={{
-              display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 500,
-              padding: "7px 14px", borderRadius: 10, background: "rgba(0,0,0,0.04)",
-              border: "none", cursor: "pointer", color: "#6E6E73",
-            }} data-testid="button-regenerate-bericht">
-              <RefreshCw style={{ width: 12, height: 12 }} />
-              Neu generieren
-            </button>
+            <div style={{ display: "flex", gap: 6 }}>
+              <button onClick={exportPdf} disabled={isExportingPdf} style={{
+                display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 500,
+                padding: "7px 14px", borderRadius: 10, background: "rgba(0,113,227,0.08)",
+                border: "none", cursor: isExportingPdf ? "wait" : "pointer", color: "#0071E3",
+                opacity: isExportingPdf ? 0.6 : 1,
+              }} data-testid="button-export-pdf">
+                {isExportingPdf ? <Loader2 style={{ width: 12, height: 12, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 12, height: 12 }} />}
+                PDF Export
+              </button>
+              <button onClick={generateBericht} style={{
+                display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 500,
+                padding: "7px 14px", borderRadius: 10, background: "rgba(0,0,0,0.04)",
+                border: "none", cursor: "pointer", color: "#6E6E73",
+              }} data-testid="button-regenerate-bericht">
+                <RefreshCw style={{ width: 12, height: 12 }} />
+                Neu generieren
+              </button>
+            </div>
           ) : undefined
         } />
 
@@ -692,7 +755,7 @@ export default function Bericht() {
           )}
 
           {bericht && !isGenerating && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div ref={reportRef} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
               {/* Hero Header */}
               <GlassCard testId="bericht-header" style={{ padding: "36px 32px 30px", textAlign: "center", position: "relative", overflow: "hidden" }}>
