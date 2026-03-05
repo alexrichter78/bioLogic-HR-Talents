@@ -263,7 +263,7 @@ export default function Home() {
               }}
               data-testid="card-ki-coach"
             >
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
                 <div style={{
                   width: 40, height: 40, borderRadius: 12, flexShrink: 0,
                   background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.06))",
@@ -271,15 +271,16 @@ export default function Home() {
                 }}>
                   <Bot style={{ width: 20, height: 20, color: "#0071E3", strokeWidth: 1.5 }} />
                 </div>
-                <div style={{ flex: 1 }}>
-                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 5px", letterSpacing: "-0.01em" }}>
-                    KI-Coach – Beratung auf Basis der bioLogic-Systematik
+                <div>
+                  <h3 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>
+                    KI-Coach
                   </h3>
-                  <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6, margin: 0 }}>
-                    Nutzen Sie den KI-Coach jederzeit für Recruiting, Teamfragen, Gesprächsvorbereitung oder konkrete Handlungsempfehlungen – auch unabhängig von einer Analyse.
-                  </p>
                 </div>
               </div>
+
+              <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.65, margin: "0 0 28px" }}>
+                Beratung auf Basis der bioLogic-Systematik. Nutzen Sie den KI-Coach jederzeit für Recruiting, Teamfragen, Gesprächsvorbereitung oder konkrete Handlungsempfehlungen – auch unabhängig von einer Analyse.
+              </p>
 
               <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 16, marginBottom: 18 }}>
                 <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Typische Einsatzbereiche</p>
