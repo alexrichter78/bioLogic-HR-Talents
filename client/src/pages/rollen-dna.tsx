@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight, Info, RefreshCw, Briefcase, Heart, Settings, Shield, BarChart3, Lightbulb } from "lucide-react";
+import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight, Info, RefreshCw, Briefcase, Heart, Settings, Shield, BarChart3, Lightbulb, FileText, MessageSquare } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE, type BerufLand } from "@/data/berufe";
@@ -1499,10 +1499,10 @@ export default function RollenDNA() {
             <div className="w-full mx-auto px-6" style={{ maxWidth: 1100 }}>
               <div className="text-center mt-2 mb-1">
                 <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-rollen-dna-title">
-                  Rollenprofil ermitteln
+                  Rollen-DNA erfassen
                 </h1>
                 <p style={{ fontSize: 13, color: "#8E8E93", fontWeight: 450, margin: 0 }} data-testid="text-rollen-dna-subtitle">
-                  Erforderliche Rollenstruktur aus der definierten Logik ableiten.
+                  Strukturprofil der Rolle definieren und Entscheidungsgrundlage erstellen.
                 </p>
               </div>
 
@@ -2723,6 +2723,93 @@ export default function RollenDNA() {
 
                 <div className="flex flex-col sm:flex-row items-center gap-3 mt-8">
                   <button
+                    onClick={() => setLocation("/bericht")}
+                    style={{
+                      height: 48,
+                      paddingLeft: 24,
+                      paddingRight: 24,
+                      fontSize: 14,
+                      fontWeight: 600,
+                      borderRadius: 14,
+                      border: "none",
+                      cursor: "pointer",
+                      background: "linear-gradient(135deg, #0071E3, #34AADC)",
+                      color: "#FFFFFF",
+                      boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
+                      transition: "all 200ms ease",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      flex: 1,
+                      justifyContent: "center",
+                      width: "100%",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
+                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
+                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)";
+                    }}
+                    data-testid="button-entscheidungsbericht"
+                  >
+                    <FileText className="w-4 h-4" />
+                    Entscheidungsbericht
+                  </button>
+                  <button
+                    disabled
+                    style={{
+                      height: 48,
+                      paddingLeft: 24,
+                      paddingRight: 24,
+                      fontSize: 14,
+                      fontWeight: 600,
+                      borderRadius: 14,
+                      border: "none",
+                      cursor: "not-allowed",
+                      background: "rgba(0,0,0,0.06)",
+                      color: "#AEAEB2",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      flex: 1,
+                      justifyContent: "center",
+                      width: "100%",
+                      opacity: 0.6,
+                    }}
+                    data-testid="button-detailanalyse"
+                  >
+                    <Search className="w-4 h-4" />
+                    Detailanalyse
+                  </button>
+                  <button
+                    disabled
+                    style={{
+                      height: 48,
+                      paddingLeft: 24,
+                      paddingRight: 24,
+                      fontSize: 14,
+                      fontWeight: 600,
+                      borderRadius: 14,
+                      border: "none",
+                      cursor: "not-allowed",
+                      background: "rgba(0,0,0,0.06)",
+                      color: "#AEAEB2",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      flex: 1,
+                      justifyContent: "center",
+                      width: "100%",
+                      opacity: 0.6,
+                    }}
+                    data-testid="button-interviewleitfaeden"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    Interviewleitfäden
+                  </button>
+                  <button
                     onClick={handleSave}
                     style={{
                       height: 48,
@@ -2756,76 +2843,6 @@ export default function RollenDNA() {
                   >
                     <Save className="w-4 h-4" />
                     Profil speichern
-                  </button>
-                  <button
-                    onClick={() => setLocation("/")}
-                    style={{
-                      height: 48,
-                      paddingLeft: 24,
-                      paddingRight: 24,
-                      fontSize: 14,
-                      fontWeight: 600,
-                      borderRadius: 14,
-                      border: "none",
-                      cursor: "pointer",
-                      background: "linear-gradient(135deg, #0071E3, #34AADC)",
-                      color: "#FFFFFF",
-                      transition: "all 200ms ease",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      flex: 1,
-                      justifyContent: "center",
-                      width: "100%",
-                      boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
-                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
-                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)";
-                    }}
-                    data-testid="button-zurueck-uebersicht"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    Zurück zur Übersicht
-                  </button>
-                  <button
-                    onClick={() => setLocation("/bericht")}
-                    style={{
-                      height: 48,
-                      paddingLeft: 24,
-                      paddingRight: 24,
-                      fontSize: 14,
-                      fontWeight: 600,
-                      borderRadius: 14,
-                      border: "none",
-                      cursor: "pointer",
-                      background: "linear-gradient(135deg, #0071E3, #34AADC)",
-                      color: "#FFFFFF",
-                      transition: "all 200ms ease",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      flex: 1,
-                      justifyContent: "center",
-                      width: "100%",
-                      boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
-                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
-                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)";
-                    }}
-                    data-testid="button-rollenprofil-ermitteln"
-                  >
-                    <Target className="w-4 h-4" />
-                    Rollenprofil ermitteln
                   </button>
                 </div>
                   </>
