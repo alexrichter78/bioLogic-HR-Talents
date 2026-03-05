@@ -1271,11 +1271,11 @@ export default function RollenDNA() {
             {allCollapsed ? null : currentStep === 1 ? (
               <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border animate-in fade-in slide-in-from-bottom-2 duration-400" style={{ overflow: "visible", position: "relative", zIndex: 100 }} data-testid="card-step-1">
                 <div className="p-6" style={{ overflow: "visible" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: "#34C759", letterSpacing: "0.04em" }}>SCHRITT 1</span>
+                  <div style={{ marginBottom: 4 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#34C759", letterSpacing: "0.04em" }}>SCHRITT 1 VON 3</span>
                   </div>
-                  <h2 className="text-lg font-semibold text-foreground/90 mb-5" data-testid="text-step-1-title">
-                    Beruf, Tätigkeit, Rolle
+                  <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: "0 0 20px" }} data-testid="text-step-1-title">
+                    Rolle oder Beruf eingeben
                   </h2>
 
                   <div className="mb-6" style={{ zIndex: 100 }} data-testid="input-beruf-wrapper">
@@ -1285,7 +1285,7 @@ export default function RollenDNA() {
                         ref={inputRef}
                         type="text"
                         autoComplete="off"
-                        placeholder="Beruf eingeben – kein Vorschlag? Trotzdem ausschreiben, wir finden die passende Rolle."
+                        placeholder="Rolle oder Beruf eingeben"
                         value={beruf}
                         onChange={(e) => {
                           setBeruf(e.target.value);
@@ -1385,7 +1385,11 @@ export default function RollenDNA() {
                       )}
                     </div>
 
-                    <div className="flex items-center gap-2 mt-2" data-testid="land-filter">
+                    <p style={{ fontSize: 12.5, color: "#AEAEB2", margin: "6px 0 0", fontStyle: "italic" }}>
+                      Falls kein Vorschlag erscheint, einfach ausschreiben.
+                    </p>
+
+                    <div className="flex items-center gap-2 mt-4" data-testid="land-filter">
                       {([
                         { land: "DE" as BerufLand, label: "DE", flag: (<svg viewBox="0 0 20 14" className="w-4 h-3 rounded-[2px] overflow-hidden"><rect y="0" width="20" height="4.67" fill="#000"/><rect y="4.67" width="20" height="4.67" fill="#D00"/><rect y="9.33" width="20" height="4.67" fill="#FFCE00"/></svg>) },
                         { land: "CH" as BerufLand, label: "CH", flag: (<svg viewBox="0 0 20 14" className="w-4 h-3 rounded-[2px] overflow-hidden"><rect width="20" height="14" fill="#D52B1E"/><rect x="8" y="2.5" width="4" height="9" fill="#FFF"/><rect x="5.5" y="5" width="9" height="4" fill="#FFF"/></svg>) },
@@ -1409,13 +1413,20 @@ export default function RollenDNA() {
                           </button>
                         );
                       })}
+                      <span style={{ fontSize: 12, color: "#AEAEB2", marginLeft: 4 }}>
+                        Land auswählen · Für passende Berufsbezeichnungen und Vergleichsdaten
+                      </span>
                     </div>
 
-                    <div className="mt-3">
+                    <div style={{ marginTop: 20 }}>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 6px" }}>Optionale Ergänzungen</p>
+                      <p style={{ fontSize: 12.5, color: "#AEAEB2", margin: "0 0 8px" }}>
+                        Beschreiben Sie kurz Besonderheiten und Vergleichsdaten.
+                      </p>
                       <textarea
                         value={zusatzInfo}
                         onChange={(e) => setZusatzInfo(e.target.value)}
-                        placeholder="Optional: Geben Sie hier die unternehmensspezifischen Tätigkeiten, Anforderungen ein."
+                        placeholder="Beispiele: Schwerpunkt Key Account, viel Reisetätigkeit, Schichtmodell, ..."
                         className="w-full bg-muted/30 dark:bg-muted/20 border border-border/40 focus:border-primary/40 rounded-lg px-3 py-2 text-sm resize-none placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all"
                         rows={2}
                         data-testid="input-zusatzinfo"
@@ -1460,7 +1471,7 @@ export default function RollenDNA() {
             {allCollapsed ? null : currentStep === 2 ? (
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-2">
                 <div className="mb-6">
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "#34C759", letterSpacing: "0.04em" }}>SCHRITT 2</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "#34C759", letterSpacing: "0.04em" }}>SCHRITT 2 VON 3</span>
                   <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} className="dark:text-foreground/90 mt-1" data-testid="text-step-2-title">
                     Rahmenbedingungen der Rolle
                   </h2>
@@ -1669,7 +1680,7 @@ export default function RollenDNA() {
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-3">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: "#34C759", letterSpacing: "0.04em" }}>SCHRITT 3</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#34C759", letterSpacing: "0.04em" }}>SCHRITT 3 VON 3</span>
                     <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} className="dark:text-foreground/90 mt-1" data-testid="text-step-3-title">
                       Tätigkeiten & Kompetenzen
                     </h2>
