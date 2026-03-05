@@ -1035,8 +1035,10 @@ Schreibe genau 2-3 Sätze, die beschreiben:
 
 Regeln:
 - Schreibe auf Deutsch, in professioneller aber zugänglicher Sprache
-- Keine Aufzählungen, nur Fließtext
-- Keine Floskeln wie "idealerweise" oder "im besten Fall"
+- Verwende KEINE Gedankenstriche (–). Nutze stattdessen Kommas oder neue Sätze
+- Keine Aufzählungen, nur Fließtext (maximal 3 Sätze)
+- Keine Floskeln wie "idealerweise", "im besten Fall", "in der Regel"
+- Keine typischen KI-Formulierungen wie "zeichnen sich aus", "bringen mit", "verfügen über"
 - Konkrete Branchen, Positionen oder Erfahrungshintergründe nennen
 - Maximal 3 Sätze, nicht mehr`;
 

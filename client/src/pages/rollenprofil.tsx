@@ -352,6 +352,30 @@ function buildProfilkonflikt(data: ReportData): string | null {
   return `Hinweis: Die Kerntätigkeiten der Rolle sind geprägt durch ${hauptDom.label} (${kompShort(hauptDom.key)}), während das Gesamtprofil durch ${dom.label} dominiert wird. Diese Abweichung bedeutet: Die Rahmenbedingungen und ergänzenden Anforderungen verschieben das Profil weg von den Kerntätigkeiten. Im Besetzungsprozess sollte geprüft werden, ob die Person primär die Kerntätigkeiten oder das Gesamtpaket abbilden kann.`;
 }
 
+function buildKomponentenBedeutung(data: ReportData): { key: string; label: string; color: string; text: string }[] {
+  const KOMP_TEXTE: Record<string, { label: string; color: string; text: string }> = {
+    ana: {
+      label: "Analytisch",
+      color: COLORS.ana,
+      text: "Analytisch bedeutet in dieser Rolle: strukturierte Priorisierung, saubere Abwägung und verlässliche Entscheidungsgrundlagen im Tagesgeschäft. Diese Komponente stabilisiert Qualität, ohne die Rolle in reines Abarbeiten zu ziehen.",
+    },
+    imp: {
+      label: "Impulsiv",
+      color: COLORS.imp,
+      text: "Impulsiv bedeutet in dieser Rolle: aktives Priorisieren, zügiges Entscheiden im Tagesgeschäft und die Fähigkeit, Aufgaben konsequent zu Ende zu bringen. Diese Komponente verhindert Aufschub und erhöht Umsetzungsgeschwindigkeit.",
+    },
+    int: {
+      label: "Intuitiv",
+      color: COLORS.int,
+      text: "Intuitiv bedeutet in dieser Rolle: situatives Erfassen von Kontext, passende Kommunikation und reibungsarme Zusammenarbeit. Diese Komponente stabilisiert Teamwirkung, ohne die Rolle von Fakten wegzuziehen.",
+    },
+  };
+  const sorted = (["imp", "int", "ana"] as const)
+    .map(k => ({ key: k, value: data.gesamt[k] }))
+    .sort((a, b) => b.value - a.value || (a.key === "imp" ? -1 : a.key === "int" ? 0 : 1));
+  return sorted.map(s => ({ key: s.key, ...KOMP_TEXTE[s.key] }));
+}
+
 function buildFehlbesetzung(data: ReportData): { label: string; bullets: string[] }[] {
   const { dom, sec, wk, isLeadership } = data;
   const risks: { label: string; bullets: string[] }[] = [];
@@ -643,6 +667,8 @@ export default function Rollenprofil() {
   const erfolgsfokusText = buildErfolgsfokusText(data, erfolgsfokusLabels);
   const profilkonflikt = buildProfilkonflikt(data);
 
+  const komponentenBedeutung = buildKomponentenBedeutung(data);
+
   const topTaetigkeiten = hauptTaetigkeiten.slice(0, 4).map((t: any) => t.name);
   const taetigkeitenInText = topTaetigkeiten.length > 0
     ? topTaetigkeiten.join(", ")
@@ -766,6 +792,22 @@ export default function Rollenprofil() {
                 <div style={{ height: 8 }} />
                 <ProfileBar label="Analytisch" value={data.gesamt.ana} color={COLORS.ana} />
               </div>
+
+              <div style={{ marginBottom: 16 }}>
+                <p style={{ fontSize: 12, fontWeight: 600, color: "#6E6E73", margin: "0 0 10px" }}>Bedeutung der Komponenten</p>
+                {komponentenBedeutung.map((kb, i) => (
+                  <div key={i} style={{ marginBottom: i < komponentenBedeutung.length - 1 ? 10 : 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
+                      <div style={{ width: 7, height: 7, borderRadius: "50%", background: kb.color, flexShrink: 0 }} />
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F" }}>{kb.label}</span>
+                    </div>
+                    <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: "0 0 0 13px" }} lang="de" data-testid={`text-bedeutung-${kb.key}`}>
+                      {kb.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 16px", textAlign: "justify", textAlignLast: "left" as any }} lang="de">
                 {strukturprofilText}
               </p>
