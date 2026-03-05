@@ -18,7 +18,7 @@ const RESET_KEYS = [
   "rollenDnaCompleted",
 ];
 
-const NAV_HEIGHT = 48;
+const NAV_HEIGHT = 56;
 
 export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }) {
   const [location, setLocation] = useLocation();
@@ -56,17 +56,17 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
       }}>
         <div style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "10px 20px", maxWidth: 960, margin: "0 auto",
+          padding: "0 20px", height: 56, maxWidth: 960, margin: "0 auto",
         }}>
           <button
             onClick={() => setLocation("/")}
             style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}
             data-testid="nav-logo"
           >
-            <img src={logoSrc} alt="bioLogic Logo" style={{ height: 26, width: "auto" }} />
+            <img src={logoSrc} alt="bioLogic Logo" style={{ height: 28, width: "auto" }} />
           </button>
 
-          <nav style={{ display: "flex", alignItems: "center", gap: 2 }} data-testid="global-nav">
+          <nav style={{ display: "flex", alignItems: "center", gap: 4 }} data-testid="global-nav">
             {NAV_ITEMS.map((item) => {
               const active = isActive(item);
               const Icon = item.icon;
@@ -76,12 +76,12 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                   onClick={() => handleNav(item)}
                   data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
                   style={{
-                    display: "flex", alignItems: "center", gap: 5,
-                    padding: "6px 12px", borderRadius: 10,
+                    display: "flex", alignItems: "center", gap: 6,
+                    padding: "8px 14px", borderRadius: 10,
                     background: active ? "rgba(0,113,227,0.08)" : "transparent",
                     border: "none", cursor: "pointer",
-                    fontSize: 12, fontWeight: active ? 600 : 500,
-                    color: active ? "#0071E3" : "#6E6E73",
+                    fontSize: 13.5, fontWeight: active ? 600 : 500,
+                    color: active ? "#0071E3" : "#1D1D1F",
                     transition: "all 200ms ease",
                     whiteSpace: "nowrap",
                   }}
@@ -92,15 +92,15 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                     if (!active) e.currentTarget.style.background = "transparent";
                   }}
                 >
-                  <Icon style={{ width: 13, height: 13, strokeWidth: 2 }} />
+                  <Icon style={{ width: 15, height: 15, strokeWidth: 1.8 }} />
                   <span className="hidden sm:inline">{item.label}</span>
                 </button>
               );
             })}
           </nav>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 26 }}>
-            {rightSlot || <div style={{ width: 26 }} />}
+          <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 28 }}>
+            {rightSlot || <div style={{ width: 28 }} />}
           </div>
         </div>
       </div>
