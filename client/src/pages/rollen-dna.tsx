@@ -1265,8 +1265,17 @@ export default function RollenDNA() {
             {allCollapsed ? null : currentStep === 1 ? (
               <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border animate-in fade-in slide-in-from-bottom-2 duration-400" style={{ overflow: "visible", position: "relative", zIndex: 100 }} data-testid="card-step-1">
                 <div style={{ padding: "32px 32px 28px", overflow: "visible" }}>
-                  <div style={{ marginBottom: 6 }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: "#34C759", letterSpacing: "0.04em" }}>SCHRITT 1 VON 3</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
+                    {[1, 2, 3].map(n => (
+                      <div key={n} style={{
+                        width: 28, height: 28, borderRadius: "50%",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 12, fontWeight: 700,
+                        background: n === 1 ? "#34C759" : "rgba(0,0,0,0.06)",
+                        color: n === 1 ? "#fff" : "#AEAEB2",
+                        transition: "all 300ms ease",
+                      }}>{n}</div>
+                    ))}
                   </div>
                   <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: "0 0 8px" }} data-testid="text-step-1-title">
                     Welche Rolle möchten Sie analysieren?
@@ -1477,8 +1486,18 @@ export default function RollenDNA() {
             {allCollapsed ? null : currentStep === 2 ? (
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-2">
                 <div className="mb-6">
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "#34C759", letterSpacing: "0.04em" }}>SCHRITT 2 VON 3</span>
-                  <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} className="dark:text-foreground/90 mt-1" data-testid="text-step-2-title">
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
+                    {[1, 2, 3].map(n => (
+                      <div key={n} style={{
+                        width: 28, height: 28, borderRadius: "50%",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 12, fontWeight: 700,
+                        background: n <= 2 ? "#34C759" : "rgba(0,0,0,0.06)",
+                        color: n <= 2 ? "#fff" : "#AEAEB2",
+                      }}>{n === 1 ? "✓" : n}</div>
+                    ))}
+                  </div>
+                  <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-2-title">
                     Rahmenbedingungen der Rolle
                   </h2>
                 </div>
@@ -1686,8 +1705,18 @@ export default function RollenDNA() {
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-3">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: "#34C759", letterSpacing: "0.04em" }}>SCHRITT 3 VON 3</span>
-                    <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} className="dark:text-foreground/90 mt-1" data-testid="text-step-3-title">
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
+                      {[1, 2, 3].map(n => (
+                        <div key={n} style={{
+                          width: 28, height: 28, borderRadius: "50%",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 12, fontWeight: 700,
+                          background: "#34C759",
+                          color: "#fff",
+                        }}>{n <= 2 ? "✓" : n}</div>
+                      ))}
+                    </div>
+                    <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-3-title">
                       Tätigkeiten & Kompetenzen
                     </h2>
                     <p style={{ fontSize: 14, color: "#8E8E93", marginTop: 4 }}>
