@@ -1581,10 +1581,11 @@ export default function RollenDNA() {
                             overflow: "hidden",
                           }}
                         >
-                          <div style={{ maxHeight: 420, overflowY: "auto" }}>
+                          <div style={{ maxHeight: 480, overflowY: "auto" }}>
                             {filteredBerufe.map((b, idx) => {
                               const matchStart = b.name.toLowerCase().indexOf(beruf.toLowerCase());
                               const matchEnd = matchStart + beruf.length;
+                              const katParts = b.kategorie ? b.kategorie.split(" > ") : [];
                               return (
                                 <div
                                   key={b.name}
@@ -1596,30 +1597,29 @@ export default function RollenDNA() {
                                   }}
                                   onMouseEnter={() => setHighlightedIndex(idx)}
                                   style={{
-                                    padding: "14px 18px",
-                                    fontSize: 15,
+                                    padding: "16px 20px",
                                     cursor: "pointer",
-                                    background: idx === highlightedIndex ? "rgba(0,113,227,0.06)" : "transparent",
+                                    background: idx === highlightedIndex ? "rgba(0,113,227,0.05)" : "transparent",
                                     borderBottom: idx < filteredBerufe.length - 1 ? "1px solid rgba(0,0,0,0.05)" : "none",
                                     transition: "background 0.15s",
                                     display: "flex",
                                     alignItems: "center",
-                                    gap: 14,
+                                    gap: 16,
                                   }}
                                 >
                                   <div style={{
-                                    width: 36, height: 36, borderRadius: 8,
-                                    background: "rgba(0,0,0,0.04)",
+                                    width: 42, height: 42, borderRadius: 10,
+                                    background: "rgba(0,0,0,0.035)",
                                     display: "flex", alignItems: "center", justifyContent: "center",
                                     flexShrink: 0,
                                   }}>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                                       <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                                       <polyline points="9 22 9 12 15 12 15 22" />
                                     </svg>
                                   </div>
                                   <div style={{ flex: 1, minWidth: 0 }}>
-                                    <div style={{ fontWeight: 600, lineHeight: 1.35, color: "#1D1D1F" }}>
+                                    <div style={{ fontSize: 15.5, fontWeight: 600, lineHeight: 1.35, color: "#1D1D1F" }}>
                                       {matchStart >= 0 ? (
                                         <>
                                           {b.name.slice(0, matchStart)}
@@ -1628,12 +1628,18 @@ export default function RollenDNA() {
                                         </>
                                       ) : b.name}
                                     </div>
-                                    <div style={{ fontSize: 12.5, color: "#8E8E93", marginTop: 3, lineHeight: 1.3 }}>
-                                      {b.kategorie}
+                                    <div style={{ fontSize: 13, color: "#8E8E93", marginTop: 4, lineHeight: 1.3, display: "flex", alignItems: "center", gap: 4 }}>
+                                      {katParts.length > 1 ? (
+                                        <>
+                                          <span>{katParts[0]}</span>
+                                          <span style={{ color: "#CACACA" }}>›</span>
+                                          <span>{katParts.slice(1).join(" › ")}</span>
+                                        </>
+                                      ) : b.kategorie}
                                     </div>
                                   </div>
-                                  <div style={{ color: "rgba(0,0,0,0.18)", flexShrink: 0 }}>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <div style={{ color: "rgba(0,0,0,0.15)", flexShrink: 0 }}>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                       <polyline points="9 18 15 12 9 6"/>
                                     </svg>
                                   </div>
