@@ -1245,19 +1245,19 @@ export default function RollenDNA() {
         />
         <GlobalNav />
         <div style={{ position: "fixed", top: 56, left: 0, right: 0, zIndex: 8999 }}>
-          <div className="dark:!bg-background/90 pb-3" style={{ backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", background: "rgba(255,255,255,0.82)" }}>
+          <div className="dark:!bg-background/90 pb-2" style={{ backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", background: "rgba(255,255,255,0.82)" }}>
             <div className="w-full max-w-3xl mx-auto px-6">
-              <div className="text-center mt-2 mb-2">
-                <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground/90 mb-1" data-testid="text-rollen-dna-title">
+              <div className="text-center mt-2 mb-1">
+                <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-rollen-dna-title">
                   Rollenprofil ermitteln
                 </h1>
-                <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto" data-testid="text-rollen-dna-subtitle">
+                <p style={{ fontSize: 13, color: "#8E8E93", fontWeight: 450, margin: 0 }} data-testid="text-rollen-dna-subtitle">
                   Erforderliche Rollenstruktur aus der definierten Logik ableiten.
                 </p>
               </div>
 
-              <div style={{ maxHeight: allCollapsed ? 0 : 60, opacity: allCollapsed ? 0 : 1, overflow: "hidden", transition: "max-height 300ms ease, opacity 300ms ease" }}>
-                <div className="mb-2">
+              <div style={{ maxHeight: allCollapsed ? 0 : 56, opacity: allCollapsed ? 0 : 1, overflow: "hidden", transition: "max-height 300ms ease, opacity 300ms ease" }}>
+                <div className="mb-1 mt-1">
                   <StepProgress currentStep={currentStep} completedSteps={completedSteps} />
                 </div>
               </div>
@@ -1265,7 +1265,7 @@ export default function RollenDNA() {
           </div>
         </div>
 
-        <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20" style={{ paddingTop: allCollapsed ? 150 : 280, transition: "padding-top 300ms ease" }}>
+        <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20" style={{ paddingTop: allCollapsed ? 120 : 210, transition: "padding-top 300ms ease" }}>
           <div className="space-y-5">
 
             {allCollapsed ? null : currentStep === 1 ? (
