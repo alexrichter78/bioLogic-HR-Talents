@@ -3,10 +3,10 @@ import { PlusCircle, Pencil, FileText, GitCompareArrows, Bot, ClipboardCheck } f
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 const NAV_ITEMS = [
-  { label: "Neue Rollen-DNA", path: "/rollen-dna", icon: PlusCircle, isNew: true },
-  { label: "Rollen-DNA Bearbeiten", path: "/rollen-dna", icon: Pencil, isNew: false },
-  { label: "Rollenprofil", path: "/bericht", icon: FileText, isNew: false },
-  { label: "Soll-Ist-Vergleich", path: "/jobcheck", icon: GitCompareArrows, isNew: false },
+  { label: "Neue Rolle", path: "/rollen-dna", icon: PlusCircle, isNew: true },
+  { label: "Rolle bearbeiten", path: "/rollen-dna", icon: Pencil, isNew: false },
+  { label: "Bericht", path: "/bericht", icon: FileText, isNew: false },
+  { label: "JobCheck", path: "/jobcheck", icon: GitCompareArrows, isNew: false },
   { label: "TeamCheck", path: "/teamcheck", icon: ClipboardCheck, isNew: false },
   { label: "KI-Coach", path: "/ki-coach", icon: Bot, isNew: false },
 ];
