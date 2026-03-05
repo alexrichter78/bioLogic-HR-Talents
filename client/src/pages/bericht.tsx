@@ -662,7 +662,7 @@ export default function Bericht() {
           ) : undefined
         } />
 
-        <main className="flex-1 w-full max-w-2xl mx-auto px-5 pb-24 pt-10">
+        <main className="flex-1 w-full mx-auto px-5 pb-24 pt-10" style={{ maxWidth: 1100 }}>
 
           {isGenerating && (
             <div style={{ textAlign: "center", paddingTop: 80 }}>

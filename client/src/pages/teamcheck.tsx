@@ -274,7 +274,7 @@ export default function TeamCheck() {
           </button>
         </div>
 
-        <div ref={reportRef} style={{ maxWidth: 780, margin: "0 auto", padding: "40px 24px 80px", display: "flex", flexDirection: "column", gap: 20 }}>
+        <div ref={reportRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 24px 80px", display: "flex", flexDirection: "column", gap: 20 }}>
           {reportView === "detail" ? (
             <>
               {/* Hero Header */}
@@ -906,7 +906,7 @@ export default function TeamCheck() {
         </button>
       </div>
 
-      <div style={{ maxWidth: 860, margin: "0 auto", padding: "32px 20px 80px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 20px 80px" }}>
 
         {/* ═══ META HEADER ═══ */}
         <div style={{

@@ -1246,7 +1246,7 @@ export default function RollenDNA() {
         <GlobalNav />
         <div style={{ position: "fixed", top: 56, left: 0, right: 0, zIndex: 8999 }}>
           <div className="dark:!bg-background/90 pb-2" style={{ backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", background: "rgba(255,255,255,0.82)" }}>
-            <div className="w-full max-w-3xl mx-auto px-6">
+            <div className="w-full mx-auto px-6" style={{ maxWidth: 1100 }}>
               <div className="text-center mt-2 mb-1">
                 <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-rollen-dna-title">
                   Rollenprofil ermitteln
@@ -1265,7 +1265,7 @@ export default function RollenDNA() {
           </div>
         </div>
 
-        <main className="flex-1 w-full max-w-3xl mx-auto px-6 pb-20" style={{ paddingTop: allCollapsed ? 105 : 175, transition: "padding-top 300ms ease" }}>
+        <main className="flex-1 w-full mx-auto px-6 pb-20" style={{ maxWidth: 1100, paddingTop: allCollapsed ? 105 : 175, transition: "padding-top 300ms ease" }}>
           <div className="space-y-5">
 
             {allCollapsed ? null : currentStep === 1 ? (

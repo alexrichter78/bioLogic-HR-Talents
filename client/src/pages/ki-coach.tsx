@@ -263,7 +263,7 @@ export default function KICoach() {
     <div className="min-h-screen" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 40%, #F5F7FA 100%)", display: "flex", flexDirection: "column" }} lang="de">
       <GlobalNav />
 
-      <main style={{ flex: 1, maxWidth: 820, width: "100%", margin: "0 auto", padding: "24px 16px 24px", display: "flex", flexDirection: "column" }}>
+      <main style={{ flex: 1, maxWidth: 1100, width: "100%", margin: "0 auto", padding: "24px 16px 24px", display: "flex", flexDirection: "column" }}>
         <div style={{
           background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
           borderRadius: 32, flex: 1, display: "flex", flexDirection: "column",

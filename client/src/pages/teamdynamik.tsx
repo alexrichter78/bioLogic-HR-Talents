@@ -431,7 +431,7 @@ export default function Teamdynamik() {
     <div className="min-h-screen" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 40%, #F5F7FA 100%)" }} lang="de">
       <GlobalNav />
 
-      <main style={{ maxWidth: 820, margin: "0 auto", padding: "24px 16px 80px" }}>
+      <main style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 16px 80px" }}>
 
         {/* ═══ TAB 1: ANALYSE ═══ */}
         <GlassCard style={{ marginBottom: 20 }} data-testid="tab-analyse">

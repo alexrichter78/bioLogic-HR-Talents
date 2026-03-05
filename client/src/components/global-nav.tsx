@@ -56,7 +56,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
       }}>
         <div style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "0 20px", height: 56, maxWidth: 960, margin: "0 auto",
+          padding: "0 20px", height: 56, maxWidth: 1100, margin: "0 auto",
         }}>
           <nav style={{ display: "flex", alignItems: "center", gap: 4 }} data-testid="global-nav">
             {NAV_ITEMS.map((item) => {

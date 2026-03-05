@@ -166,7 +166,7 @@ export default function Home() {
       <div style={{ position: "relative", zIndex: 10 }}>
         <GlobalNav />
 
-        <div style={{ maxWidth: 640, margin: "0 auto", padding: "48px 24px 80px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 80px" }}>
 
           {/* ROLLENANALYSE CARD */}
           <FadeIn delay={200}>
