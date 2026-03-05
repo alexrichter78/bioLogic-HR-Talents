@@ -219,14 +219,14 @@ export default function Home() {
                 </button>
               </div>
 
-              <div className="flex flex-col items-center gap-2.5">
+              <div style={{ display: "inline-flex", flexDirection: "column", gap: 6, textAlign: "left" }}>
                 {[
                   "Wissenschaftlich fundierte Methodik",
                   "Transparente Ergebnislogik",
                   "Klare Entscheidungsstruktur",
                 ].map((text, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <CheckCircle style={{ width: 13, height: 13, color: "#34C759", strokeWidth: 2 }} />
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <CheckCircle style={{ width: 13, height: 13, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
                     <span style={{ fontSize: 12.5, color: "#6E6E73", fontWeight: 450 }}>{text}</span>
                   </div>
                 ))}
