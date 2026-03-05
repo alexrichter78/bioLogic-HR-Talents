@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { PlusCircle, DoorOpen, Bot, CheckCircle, Sparkles } from "lucide-react";
+import { PlusCircle, FolderOpen, DoorOpen, Bot, CheckCircle, Sparkles } from "lucide-react";
 import { useLocation } from "wouter";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import GlobalNav from "@/components/global-nav";
@@ -215,7 +215,7 @@ export default function Home() {
                   data-testid="button-analyse-starten"
                 >
                   <PlusCircle style={{ width: 17, height: 17 }} />
-                  Neue Analyse starten
+                  Neue Analyse
                 </button>
                 <button
                   onClick={() => fileInputRef.current?.click()}
@@ -229,6 +229,7 @@ export default function Home() {
                   onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.8)"; e.currentTarget.style.transform = "translateY(0)"; }}
                   data-testid="button-analyse-oeffnen"
                 >
+                  <FolderOpen style={{ width: 17, height: 17 }} />
                   Analyse öffnen
                 </button>
               </div>
