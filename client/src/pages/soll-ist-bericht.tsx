@@ -1,11 +1,11 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
-import { AlertTriangle, ArrowRight, ChevronRight, Shield, TrendingDown, TrendingUp, Target, Zap, Users, FileText, Scale, Clock, Lightbulb, CheckCircle2, XCircle, MinusCircle, Download } from "lucide-react";
+import { AlertTriangle, Download, Check } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeSollIst } from "@/lib/soll-ist-engine";
 import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
-import type { SollIstResult, Severity } from "@/lib/soll-ist-engine";
+import type { SollIstResult, Severity, ImpactArea } from "@/lib/soll-ist-engine";
 
 type BG = { imp: number; int: number; ana: number };
 type RoleDnaState = {
@@ -22,16 +22,22 @@ type RoleDnaState = {
   bioGramRahmen?: BG;
 };
 
-const BAR_COLORS: Record<ComponentKey, string> = {
-  impulsiv: "#C41E3A",
-  intuitiv: "#F39200",
-  analytisch: "#1A5DAB",
-};
-
 const COMP_LABELS: Record<ComponentKey, string> = {
   impulsiv: "Umsetzung / Tempo",
   intuitiv: "Zusammenarbeit / Kommunikation",
   analytisch: "Struktur / Analyse",
+};
+
+const COMP_SHORT: Record<ComponentKey, string> = {
+  impulsiv: "Umsetzung",
+  intuitiv: "Zusammenarbeit",
+  analytisch: "Struktur",
+};
+
+const BAR_CSS: Record<ComponentKey, string> = {
+  impulsiv: "bg-red-500",
+  intuitiv: "bg-amber-500",
+  analytisch: "bg-blue-600",
 };
 
 function bgToTriad(bg: BG | undefined): Triad {
@@ -39,156 +45,155 @@ function bgToTriad(bg: BG | undefined): Triad {
   return { impulsiv: Math.round(bg.imp), intuitiv: Math.round(bg.int), analytisch: Math.round(bg.ana) };
 }
 
-function severityColor(s: Severity): string {
-  if (s === "critical") return "#C41E3A";
-  if (s === "warning") return "#F39200";
-  return "#34C759";
+function fitToneClasses(rating: string) {
+  if (rating === "Nicht geeignet") return { text: "text-red-600", bg: "bg-red-50", border: "border-red-200", pill: "bg-red-50 text-red-700 border-red-200" };
+  if (rating === "Bedingt geeignet") return { text: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", pill: "bg-amber-50 text-amber-700 border-amber-200" };
+  return { text: "text-green-600", bg: "bg-green-50", border: "border-green-200", pill: "bg-green-50 text-green-700 border-green-200" };
 }
 
-function severityBg(s: Severity): string {
-  if (s === "critical") return "rgba(196,30,58,0.06)";
-  if (s === "warning") return "rgba(243,146,0,0.06)";
-  return "rgba(52,199,89,0.06)";
+function severityTone(s: Severity) {
+  if (s === "critical") return "bg-red-50 text-red-700 border-red-200";
+  if (s === "warning") return "bg-amber-50 text-amber-700 border-amber-200";
+  return "bg-green-50 text-green-700 border-green-200";
 }
 
-function severityLabel(s: Severity): string {
+function severityLabel(s: Severity) {
   if (s === "critical") return "kritisch";
   if (s === "warning") return "bedingt";
   return "passend";
 }
 
-function SeverityBadge({ severity: s }: { severity: Severity }) {
-  return (
-    <span
-      data-testid={`badge-severity-${s}`}
-      style={{
-        display: "inline-flex", alignItems: "center", gap: 5,
-        padding: "3px 10px", borderRadius: 20,
-        background: severityBg(s),
-        color: severityColor(s),
-        fontSize: 12, fontWeight: 600, letterSpacing: "0.02em",
-      }}
-    >
-      <span style={{ width: 7, height: 7, borderRadius: "50%", background: severityColor(s) }} />
-      {severityLabel(s)}
-    </span>
-  );
+function domTone(k: ComponentKey) {
+  if (k === "impulsiv") return "border-red-200 bg-red-50 text-red-700";
+  if (k === "intuitiv") return "border-amber-200 bg-amber-50 text-amber-700";
+  return "border-blue-200 bg-blue-50 text-blue-700";
 }
 
-function RadarChart({ role, candidate }: { role: Triad; candidate: Triad }) {
-  const cx = 140, cy = 130, r = 100;
-  const labels = [
-    { key: "analytisch" as ComponentKey, label: "Struktur", angle: -90 },
-    { key: "impulsiv" as ComponentKey, label: "Umsetzung", angle: 150 },
-    { key: "intuitiv" as ComponentKey, label: "Zusammenarbeit", angle: 30 },
-  ];
-
-  function toXY(val: number, angleDeg: number) {
-    const rad = (angleDeg * Math.PI) / 180;
-    const dist = (val / 67) * r;
-    return { x: cx + dist * Math.cos(rad), y: cy + dist * Math.sin(rad) };
-  }
-
-  function polyPoints(triad: Triad) {
-    return labels.map(l => {
-      const p = toXY(triad[l.key], l.angle);
-      return `${p.x},${p.y}`;
-    }).join(" ");
-  }
-
-  const gridLevels = [0.33, 0.66, 1.0];
-
-  return (
-    <svg viewBox="0 0 280 260" style={{ width: "100%", maxWidth: 300 }} data-testid="chart-radar">
-      {gridLevels.map((g, i) => (
-        <polygon
-          key={i}
-          points={labels.map(l => { const p = toXY(67 * g, l.angle); return `${p.x},${p.y}`; }).join(" ")}
-          fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth={1}
-        />
-      ))}
-      {labels.map((l, i) => {
-        const end = toXY(67, l.angle);
-        return <line key={i} x1={cx} y1={cy} x2={end.x} y2={end.y} stroke="rgba(0,0,0,0.06)" strokeWidth={1} />;
-      })}
-      <polygon points={polyPoints(role)} fill="rgba(26,93,171,0.15)" stroke="#1A5DAB" strokeWidth={2} />
-      <polygon points={polyPoints(candidate)} fill="rgba(243,146,0,0.15)" stroke="#F39200" strokeWidth={2} />
-      {labels.map((l, i) => {
-        const p = toXY(67 + 16, l.angle);
-        return (
-          <text
-            key={i} x={p.x} y={p.y}
-            textAnchor="middle" dominantBaseline="central"
-            style={{ fontSize: 11, fontWeight: 600, fill: "#6E6E73" }}
-          >
-            {l.label}
-          </text>
-        );
-      })}
-      <circle cx={18} cy={248} r={5} fill="#1A5DAB" />
-      <text x={28} y={248} dominantBaseline="central" style={{ fontSize: 10, fill: "#6E6E73" }}>Rolle (Soll)</text>
-      <circle cx={130} cy={248} r={5} fill="#F39200" />
-      <text x={140} y={248} dominantBaseline="central" style={{ fontSize: 10, fill: "#6E6E73" }}>Kandidat (Ist)</text>
-    </svg>
-  );
-}
-
-function ComparisonBars({ role, candidate }: { role: Triad; candidate: Triad }) {
+function biggestGapText(rt: Triad, ct: Triad): string {
   const keys: ComponentKey[] = ["impulsiv", "intuitiv", "analytisch"];
+  let maxGap = 0, maxKey: ComponentKey = "analytisch";
+  for (const k of keys) {
+    const g = Math.abs(rt[k] - ct[k]);
+    if (g > maxGap) { maxGap = g; maxKey = k; }
+  }
+  return `Die größte Abweichung liegt im Bereich ${COMP_LABELS[maxKey]}. Genau dort liegt die Kernanforderung der Rolle.`;
+}
+
+function fitBadgeLabel(rating: string) {
+  if (rating === "Nicht geeignet") return "Kritischer Fit";
+  if (rating === "Bedingt geeignet") return "Bedingt passend";
+  return "Guter Fit";
+}
+
+function Metric({ label, value, valueClass = "text-slate-900" }: { label: string; value: string; valueClass?: string }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }} data-testid="chart-comparison-bars">
-      {keys.map(k => {
-        const gap = candidate[k] - role[k];
-        return (
-          <div key={k}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: "#1D1D1F" }}>{COMP_LABELS[k]}</span>
-              <span style={{
-                fontSize: 11, fontWeight: 600,
-                color: Math.abs(gap) >= 10 ? "#C41E3A" : Math.abs(gap) >= 5 ? "#F39200" : "#34C759",
-              }}>
-                {gap > 0 ? "+" : ""}{Math.round(gap)}
-              </span>
-            </div>
-            <div style={{ position: "relative", height: 10, background: "rgba(0,0,0,0.04)", borderRadius: 5, overflow: "hidden" }}>
-              <div style={{
-                position: "absolute", top: 0, left: 0, height: "100%",
-                width: `${Math.min(role[k], 100)}%`,
-                background: `${BAR_COLORS[k]}40`, borderRadius: 5,
-              }} />
-              <div style={{
-                position: "absolute", top: 2, left: 0, height: 6,
-                width: `${Math.min(candidate[k], 100)}%`,
-                background: BAR_COLORS[k], borderRadius: 3,
-                transition: "width 400ms ease",
-              }} />
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
-              <span style={{ fontSize: 10, color: "#8E8E93" }}>Soll: {Math.round(role[k])}</span>
-              <span style={{ fontSize: 10, color: "#8E8E93" }}>Ist: {Math.round(candidate[k])}</span>
-            </div>
-          </div>
-        );
-      })}
+    <div>
+      <div className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{label}</div>
+      <div className={`mt-1 text-sm font-semibold ${valueClass}`}>{value}</div>
     </div>
   );
 }
 
-function GaugeBar({ level, maxLevel = 5 }: { level: number; maxLevel?: number }) {
+function ShiftPill({ title, value, tone }: { title: string; value: string; tone: string }) {
   return (
-    <div style={{ display: "flex", gap: 4, alignItems: "center" }} data-testid="gauge-development">
-      {Array.from({ length: maxLevel }).map((_, i) => (
-        <div
-          key={i}
-          style={{
-            width: 24, height: 10, borderRadius: 3,
-            background: i < level
-              ? level <= 2 ? "#C41E3A" : level <= 3 ? "#F39200" : "#34C759"
-              : "rgba(0,0,0,0.08)",
-            transition: "background 300ms ease",
-          }}
-        />
-      ))}
+    <div className={`rounded-2xl border p-4 ${tone}`}>
+      <div className="text-xs font-semibold uppercase tracking-[0.15em] opacity-80">{title}</div>
+      <div className="mt-1 text-base font-semibold">{value}</div>
+    </div>
+  );
+}
+
+function ProfileCard({ title, subtitle, profile, accent, description }: {
+  title: string; subtitle: string;
+  profile: { label: string; short: string; value: number; color: string }[];
+  accent: "blue" | "amber";
+  description: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-slate-200 p-5">
+      <div className="mb-5">
+        <div className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500">{title}</div>
+        <div className="mt-1 text-base font-semibold text-slate-950">{subtitle}</div>
+      </div>
+      <div className="space-y-4">
+        {profile.map(item => (
+          <div key={item.label}>
+            <div className="mb-2 flex items-center justify-between text-sm">
+              <div>
+                <span className="font-medium text-slate-900">{item.label}</span>
+                <span className="ml-2 text-slate-500">{item.short}</span>
+              </div>
+              <span className="font-semibold text-slate-700">{item.value}%</span>
+            </div>
+            <div className="h-3 overflow-hidden rounded-full bg-slate-100">
+              <div className={`h-full rounded-full ${item.color}`} style={{ width: `${item.value}%` }} />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-500">
+        {description}
+      </div>
+    </div>
+  );
+}
+
+function TriangleChart({ role, candidate }: { role: Triad; candidate: Triad }) {
+  const top = { x: 160, y: 25 };
+  const left = { x: 35, y: 220 };
+  const right = { x: 285, y: 220 };
+
+  function triadToPoint(t: Triad) {
+    const total = t.analytisch + t.intuitiv + t.impulsiv || 1;
+    const pA = t.analytisch / total;
+    const pN = t.intuitiv / total;
+    const pI = t.impulsiv / total;
+    return {
+      x: pA * top.x + pN * left.x + pI * right.x,
+      y: pA * top.y + pN * left.y + pI * right.y,
+    };
+  }
+
+  function triadToTriangle(t: Triad) {
+    const total = t.analytisch + t.intuitiv + t.impulsiv || 1;
+    const cx = 160, cy = 155;
+    const scale = 0.85;
+    const pts = [
+      { frac: t.analytisch / total, ref: top },
+      { frac: t.intuitiv / total, ref: left },
+      { frac: t.impulsiv / total, ref: right },
+    ];
+    return pts.map(p => {
+      const dx = p.ref.x - cx;
+      const dy = p.ref.y - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy) * p.frac * 2.5 * scale;
+      const angle = Math.atan2(dy, dx);
+      return `${cx + dist * Math.cos(angle)},${cy + dist * Math.sin(angle)}`;
+    }).join(" ");
+  }
+
+  return (
+    <div className="flex flex-col items-center">
+      <svg viewBox="0 0 320 260" className="h-[260px] w-full max-w-[360px]">
+        <polygon points="160,25 35,220 285,220" fill="none" stroke="#cbd5e1" strokeWidth="2" />
+        <text x="160" y="16" textAnchor="middle" className="fill-slate-500 text-[12px]">Struktur</text>
+        <text x="15" y="235" className="fill-slate-500 text-[12px]">Zusammenarbeit</text>
+        <text x="250" y="235" className="fill-slate-500 text-[12px]">Umsetzung</text>
+        <polygon points={triadToTriangle(role)} fill="rgba(37,99,235,0.10)" stroke="#2563eb" strokeWidth="3" />
+        <polygon points={triadToTriangle(candidate)} fill="rgba(245,158,11,0.14)" stroke="#f59e0b" strokeWidth="3" />
+      </svg>
+      <div className="mt-2 text-center text-sm text-slate-600">
+        Die blaue Fläche zeigt die Rollenanforderung. Die orange Fläche zeigt die Arbeitslogik des Kandidaten.
+      </div>
+    </div>
+  );
+}
+
+function Legend({ color, label }: { color: string; label: string }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className={`h-3 w-3 rounded-full ${color}`} />
+      <span>{label}</span>
     </div>
   );
 }
@@ -238,22 +243,17 @@ export default function SollIstBericht() {
 
   if (!hasRollenDna || !roleTriad) {
     return (
-      <div style={{ minHeight: "100vh", background: "#F5F5F7" }}>
+      <div className="min-h-screen bg-slate-50 text-slate-900">
         <GlobalNav />
-        <div style={{ maxWidth: 800, margin: "0 auto", padding: "80px 24px", textAlign: "center" }}>
-          <AlertTriangle style={{ width: 48, height: 48, color: "#F39200", margin: "0 auto 16px" }} />
-          <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", marginBottom: 12 }}>Keine Rollen-DNA vorhanden</h2>
-          <p style={{ fontSize: 14, color: "#6E6E73", marginBottom: 24, lineHeight: 1.6 }}>
+        <div className="mx-auto max-w-3xl px-6 py-20 text-center">
+          <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-amber-500" />
+          <h2 className="text-xl font-semibold text-slate-950 mb-3">Keine Rollen-DNA vorhanden</h2>
+          <p className="text-sm text-slate-600 mb-6 leading-6">
             Bitte erstellen Sie zuerst eine Rollenanalyse, um den Soll-Ist-Bericht generieren zu können.
           </p>
           <button
             onClick={() => setLocation("/rollen-dna")}
-            style={{
-              height: 44, paddingLeft: 24, paddingRight: 24, fontSize: 14, fontWeight: 600,
-              borderRadius: 12, border: "none", cursor: "pointer",
-              background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
-              boxShadow: "0 4px 14px rgba(0,113,227,0.25)",
-            }}
+            className="inline-flex h-11 items-center gap-2 rounded-xl bg-blue-600 px-6 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors"
             data-testid="button-go-to-rolle"
           >
             Zur Rollenanalyse
@@ -263,445 +263,383 @@ export default function SollIstBericht() {
     );
   }
 
+  const roleProfile = [
+    { label: "Impulsiv", short: "Umsetzung", value: roleTriad.impulsiv, color: BAR_CSS.impulsiv },
+    { label: "Intuitiv", short: "Zusammenarbeit", value: roleTriad.intuitiv, color: BAR_CSS.intuitiv },
+    { label: "Analytisch", short: "Struktur / Analyse", value: roleTriad.analytisch, color: BAR_CSS.analytisch },
+  ];
+  const candProfileArr = [
+    { label: "Impulsiv", short: "Umsetzung", value: candidateProfile.impulsiv, color: BAR_CSS.impulsiv },
+    { label: "Intuitiv", short: "Zusammenarbeit", value: candidateProfile.intuitiv, color: BAR_CSS.intuitiv },
+    { label: "Analytisch", short: "Struktur / Analyse", value: candidateProfile.analytisch, color: BAR_CSS.analytisch },
+  ];
+  const roleDomKey = dominanceModeOf(roleTriad).top1.key;
+  const candDomKey = candDom.top1.key;
+
+  const deltas: { label: string; target: number; candidate: number; delta: string; tone: string }[] = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+    const d = Math.round(candidateProfile[k] - roleTriad[k]);
+    return {
+      label: COMP_LABELS[k],
+      target: Math.round(roleTriad[k]),
+      candidate: Math.round(candidateProfile[k]),
+      delta: d >= 0 ? `+${d}` : `${d}`,
+      tone: Math.abs(d) >= 15 ? "text-red-600" : Math.abs(d) >= 8 ? "text-amber-600" : "text-slate-600",
+    };
+  });
+
   return (
-    <div style={{ minHeight: "100vh", background: "#F5F5F7" }}>
+    <div className="min-h-screen bg-slate-50 text-slate-900">
       <GlobalNav />
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 24px 80px" }}>
+      <div className="mx-auto max-w-7xl px-6 py-10 lg:px-10">
 
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: 0 }} data-testid="text-page-title">
-            Soll-Ist-Bericht
-          </h1>
-          {result && (
-            <button
-              onClick={() => window.print()}
-              style={{
-                height: 38, paddingLeft: 16, paddingRight: 16, fontSize: 13, fontWeight: 600,
-                borderRadius: 10, border: "1px solid rgba(0,0,0,0.1)", cursor: "pointer",
-                background: "#FFFFFF", color: "#1D1D1F",
-                display: "flex", alignItems: "center", gap: 7,
-                boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-                transition: "all 150ms ease",
-              }}
-              className="no-print"
-              data-testid="button-export-pdf"
-            >
-              <Download style={{ width: 15, height: 15 }} />
-              PDF
-            </button>
-          )}
-        </div>
-        <p style={{ fontSize: 14, color: "#8E8E93", marginBottom: 28, fontWeight: 450 }}>
-          Strukturierte Diagnose für Besetzungsentscheidungen
-        </p>
-
-        {/* === INPUT SECTION: Soll + Ist profiles === */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 28 }} className="soll-ist-grid">
-          {/* Soll card */}
-          <div style={{
-            background: "#FFFFFF", borderRadius: 16, padding: "20px 24px",
-            border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
-          }} data-testid="card-soll-profile">
-            <h3 style={{ fontSize: 13, fontWeight: 600, color: "#8E8E93", marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-              Soll-Profil (Rolle)
-            </h3>
-            <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", marginBottom: 4 }}>{roleName}</p>
-            <p style={{ fontSize: 12, color: "#6E6E73", marginBottom: 14 }}>
-              {dominanceLabel(dominanceModeOf(roleTriad))}
-            </p>
-            {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => (
-              <div key={k} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-                <span style={{ width: 72, fontSize: 12, color: "#6E6E73", fontWeight: 500, textAlign: "right" }}>{labelComponent(k)}</span>
-                <div style={{ flex: 1, height: 8, background: "rgba(0,0,0,0.04)", borderRadius: 4, overflow: "hidden" }}>
-                  <div style={{ width: `${Math.min(roleTriad[k], 100)}%`, height: "100%", background: BAR_COLORS[k], borderRadius: 4 }} />
-                </div>
-                <span style={{ width: 32, fontSize: 12, color: "#1D1D1F", fontWeight: 600, textAlign: "right" }}>{Math.round(roleTriad[k])}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Ist card */}
-          <div style={{
-            background: "#FFFFFF", borderRadius: 16, padding: "20px 24px",
-            border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
-          }} data-testid="card-ist-profile">
-            <h3 style={{ fontSize: 13, fontWeight: 600, color: "#8E8E93", marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-              Ist-Profil (Kandidat)
-            </h3>
-            <input
-              value={candidateName}
-              onChange={(e) => setCandidateName(e.target.value)}
-              placeholder="Name des Kandidaten"
-              style={{
-                width: "100%", height: 36, padding: "0 12px", fontSize: 14, fontWeight: 500,
-                borderRadius: 8, border: "1px solid rgba(0,0,0,0.1)", marginBottom: 14,
-                outline: "none", color: "#1D1D1F", background: "#FAFAFA",
-              }}
-              data-testid="input-candidate-name"
-            />
-            <p style={{ fontSize: 12, color: "#6E6E73", marginBottom: 12 }}>{dominanceLabel(candDom)}</p>
-            {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
-              const val = k === "impulsiv" ? candImp : k === "intuitiv" ? candInt : candAna;
-              const setter = k === "impulsiv" ? setCandImp : k === "intuitiv" ? setCandInt : setCandAna;
-              return (
-                <div key={k} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                  <span style={{ width: 72, fontSize: 12, color: "#6E6E73", fontWeight: 500, textAlign: "right" }}>{labelComponent(k)}</span>
-                  <input
-                    type="range" min={5} max={80} value={val}
-                    onChange={(e) => setter(Number(e.target.value))}
-                    style={{ flex: 1, accentColor: BAR_COLORS[k] }}
-                    data-testid={`slider-${k}`}
-                  />
-                  <span style={{ width: 32, fontSize: 12, fontWeight: 600, color: "#1D1D1F", textAlign: "right" }}>{Math.round(candidateProfile[k])}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Generate button */}
+        {/* === INPUT: Slider area before report === */}
         {!reportGenerated && (
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: 32 }}>
-            <button
-              onClick={() => setReportGenerated(true)}
-              style={{
-                height: 48, paddingLeft: 28, paddingRight: 28, fontSize: 15, fontWeight: 600,
-                borderRadius: 14, border: "none", cursor: "pointer",
-                background: "linear-gradient(135deg, #0071E3, #34AADC)",
-                color: "#FFFFFF", boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
-                transition: "all 200ms ease", display: "flex", alignItems: "center", gap: 8,
-              }}
-              data-testid="button-generate-report"
-            >
-              Bericht erstellen
-            </button>
+          <div className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Konfiguration
+            </p>
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-950 mb-6">
+              Soll-Ist-Bericht konfigurieren
+            </h1>
+            <div className="grid gap-8 lg:grid-cols-2">
+              <div>
+                <div className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500 mb-3">Soll-Profil (Rolle)</div>
+                <div className="text-lg font-semibold text-slate-950 mb-1">{roleName}</div>
+                <div className="text-sm text-slate-500 mb-4">{dominanceLabel(dominanceModeOf(roleTriad))}</div>
+                {roleProfile.map(item => (
+                  <div key={item.label} className="mb-3">
+                    <div className="flex items-center justify-between text-sm mb-1">
+                      <span className="font-medium text-slate-800">{item.label} <span className="text-slate-500">{item.short}</span></span>
+                      <span className="font-semibold text-slate-700">{Math.round(item.value)}%</span>
+                    </div>
+                    <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
+                      <div className={`h-full rounded-full ${item.color}`} style={{ width: `${item.value}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div>
+                <div className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500 mb-3">Ist-Profil (Kandidat)</div>
+                <input
+                  value={candidateName}
+                  onChange={(e) => setCandidateName(e.target.value)}
+                  placeholder="Name des Kandidaten"
+                  className="w-full h-9 px-3 text-sm font-medium rounded-lg border border-slate-200 bg-slate-50 text-slate-900 outline-none focus:border-blue-400 mb-4"
+                  data-testid="input-candidate-name"
+                />
+                {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+                  const val = k === "impulsiv" ? candImp : k === "intuitiv" ? candInt : candAna;
+                  const setter = k === "impulsiv" ? setCandImp : k === "intuitiv" ? setCandInt : setCandAna;
+                  return (
+                    <div key={k} className="mb-3 flex items-center gap-3">
+                      <span className="w-20 text-right text-sm font-medium text-slate-600">{labelComponent(k)}</span>
+                      <input
+                        type="range" min={5} max={80} value={val}
+                        onChange={(e) => setter(Number(e.target.value))}
+                        className="flex-1 accent-slate-600"
+                        data-testid={`slider-${k}`}
+                      />
+                      <span className="w-8 text-right text-sm font-semibold text-slate-700">{Math.round(candidateProfile[k])}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="mt-8 flex justify-center">
+              <button
+                onClick={() => setReportGenerated(true)}
+                className="inline-flex h-12 items-center gap-2 rounded-2xl bg-blue-600 px-8 text-[15px] font-semibold text-white shadow-md hover:bg-blue-700 transition-colors"
+                data-testid="button-generate-report"
+              >
+                Bericht erstellen
+              </button>
+            </div>
           </div>
         )}
 
         {/* === REPORT OUTPUT === */}
         {result && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-
-            {/* ── Section 1: Decision Banner ── */}
-            <div
-              style={{
-                background: result.fitColor === "#34C759"
-                  ? "linear-gradient(135deg, #E8F9EE, #F0FBF4)"
-                  : result.fitColor === "#F39200"
-                    ? "linear-gradient(135deg, #FFF5E6, #FFFAF0)"
-                    : "linear-gradient(135deg, #FCEEF1, #FDF5F6)",
-                borderRadius: 20, padding: "28px 32px",
-                border: `1px solid ${result.fitColor}20`,
-                boxShadow: `0 4px 20px ${result.fitColor}15`,
-              }}
-              data-testid="section-decision-banner"
-            >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
-                <div>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>
-                    Rolle: {result.roleName}
+          <>
+            {/* ── Header ── */}
+            <header className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm no-print-hide" data-testid="section-header">
+              <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+                <div className="max-w-3xl">
+                  <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
+                    Soll-Ist-Vergleich · Rollenpassung
                   </p>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-                    <span style={{
-                      fontSize: 22, fontWeight: 800, color: result.fitColor,
-                      letterSpacing: "-0.02em",
-                    }} data-testid="text-fit-rating">
-                      {result.fitLabel.toUpperCase()}
-                    </span>
+                  <div className="flex items-center gap-4 mb-2">
+                    <h1 className="text-3xl font-semibold tracking-tight text-slate-950 lg:text-4xl" data-testid="text-page-title">
+                      {result.roleName} · Passungsbericht
+                    </h1>
+                    <button
+                      onClick={() => window.print()}
+                      className="no-print inline-flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors"
+                      data-testid="button-export-pdf"
+                    >
+                      <Download className="h-4 w-4" />
+                      PDF
+                    </button>
                   </div>
-                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-                    <span style={{ fontSize: 13, color: "#6E6E73" }}>
-                      Steuerungsintensität: <strong style={{ color: "#1D1D1F" }}>{result.controlIntensity}</strong>
-                    </span>
-                    <span style={{ fontSize: 13, color: "#6E6E73" }}>
-                      Kritischer Bereich: <strong style={{ color: "#1D1D1F" }}>{COMP_LABELS[result.roleDomKey]}</strong>
-                    </span>
+                  <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
+                    {result.summaryText}
+                  </p>
+                </div>
+
+                <div className="grid min-w-[280px] grid-cols-2 gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4" data-testid="metrics-grid">
+                  <Metric label="Gesamtpassung" value={result.fitLabel} valueClass={fitToneClasses(result.fitLabel).text} />
+                  <Metric label="Steuerungsintensität" value={result.controlIntensity.charAt(0).toUpperCase() + result.controlIntensity.slice(1)} valueClass={result.controlIntensity === "hoch" ? "text-amber-600" : "text-slate-900"} />
+                  <Metric label="Kritischer Bereich" value="Dominanzstruktur" />
+                  <Metric label="Entwicklung" value={result.developmentLabel.charAt(0).toUpperCase() + result.developmentLabel.slice(1)} />
+                </div>
+              </div>
+            </header>
+
+            {/* ── Decision + Dominance Shift ── */}
+            <section className="mb-8 grid gap-8 lg:grid-cols-[1.4fr_1fr]" data-testid="section-decision-banner">
+              <div className={`rounded-3xl border ${fitToneClasses(result.fitLabel).border} bg-white p-8 shadow-sm`}>
+                <div className="mb-5 flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Entscheidung</p>
+                    <h2 className={`mt-2 text-3xl font-semibold ${fitToneClasses(result.fitLabel).text}`} data-testid="text-fit-rating">
+                      {result.fitLabel}
+                    </h2>
+                  </div>
+                  <div className={`rounded-full border px-3 py-1 text-sm font-medium ${fitToneClasses(result.fitLabel).pill}`}>
+                    {fitBadgeLabel(result.fitLabel)}
                   </div>
                 </div>
-                <div style={{
-                  width: 64, height: 64, borderRadius: "50%",
-                  background: `${result.fitColor}18`,
-                  border: `3px solid ${result.fitColor}`,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                }}>
-                  {result.fitRating === "GEEIGNET"
-                    ? <CheckCircle2 style={{ width: 28, height: 28, color: result.fitColor }} />
-                    : result.fitRating === "BEDINGT"
-                      ? <MinusCircle style={{ width: 28, height: 28, color: result.fitColor }} />
-                      : <XCircle style={{ width: 28, height: 28, color: result.fitColor }} />
-                  }
-                </div>
-              </div>
-              <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.6, marginTop: 16, maxWidth: 680 }}>
-                {result.summaryText}
-              </p>
-            </div>
-
-            {/* ── Section 2: Radar + Comparison ── */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="soll-ist-grid">
-              <div style={{
-                background: "#FFFFFF", borderRadius: 16, padding: "24px",
-                border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
-                display: "flex", flexDirection: "column", alignItems: "center",
-              }} data-testid="section-radar">
-                <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 16, alignSelf: "flex-start" }}>
-                  Profilvergleich
-                </h3>
-                <RadarChart role={result.roleTriad} candidate={result.candTriad} />
-              </div>
-
-              <div style={{
-                background: "#FFFFFF", borderRadius: 16, padding: "24px",
-                border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
-              }} data-testid="section-comparison-bars">
-                <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 16 }}>
-                  Soll-Ist-Abweichung
-                </h3>
-                <ComparisonBars role={result.roleTriad} candidate={result.candTriad} />
-                <div style={{
-                  marginTop: 16, padding: "12px 16px", borderRadius: 12,
-                  background: "rgba(0,0,0,0.02)", fontSize: 12, color: "#6E6E73", lineHeight: 1.6,
-                }}>
-                  Gesamtabweichung: <strong style={{ color: "#1D1D1F" }}>{Math.round(result.totalGap)} Punkte</strong> ({result.gapLevel})
-                </div>
-              </div>
-            </div>
-
-            {/* ── Section 3: Dominance Shift ── */}
-            <div style={{
-              background: "#FFFFFF", borderRadius: 16, padding: "24px",
-              border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
-            }} data-testid="section-dominance-shift">
-              <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 16 }}>
-                Dominanzverschiebung
-              </h3>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 24, flexWrap: "wrap", marginBottom: 16 }}>
-                <div style={{
-                  padding: "14px 24px", borderRadius: 14,
-                  background: `${BAR_COLORS[result.roleDomKey]}10`,
-                  border: `2px solid ${BAR_COLORS[result.roleDomKey]}`,
-                  textAlign: "center", minWidth: 180,
-                }}>
-                  <p style={{ fontSize: 11, fontWeight: 600, color: "#8E8E93", marginBottom: 4, textTransform: "uppercase" }}>Rolle</p>
-                  <p style={{ fontSize: 15, fontWeight: 700, color: BAR_COLORS[result.roleDomKey] }}>{COMP_LABELS[result.roleDomKey]}</p>
-                </div>
-                <ArrowRight style={{ width: 24, height: 24, color: "#C7C7CC", flexShrink: 0 }} />
-                <div style={{
-                  padding: "14px 24px", borderRadius: 14,
-                  background: `${BAR_COLORS[result.candDomKey]}10`,
-                  border: `2px solid ${BAR_COLORS[result.candDomKey]}`,
-                  textAlign: "center", minWidth: 180,
-                }}>
-                  <p style={{ fontSize: 11, fontWeight: 600, color: "#8E8E93", marginBottom: 4, textTransform: "uppercase" }}>Kandidat</p>
-                  <p style={{ fontSize: 15, fontWeight: 700, color: BAR_COLORS[result.candDomKey] }}>{COMP_LABELS[result.candDomKey]}</p>
-                </div>
-              </div>
-              <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, textAlign: "center", maxWidth: 640, margin: "0 auto" }}>
-                {result.dominanceShiftText}
-              </p>
-            </div>
-
-            {/* ── Section 4: Impact Matrix ── */}
-            <div style={{
-              background: "#FFFFFF", borderRadius: 16, padding: "24px",
-              border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
-            }} data-testid="section-impact-matrix">
-              <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 20 }}>
-                Wirkungsanalyse
-              </h3>
-
-              {/* Matrix overview */}
-              <div style={{
-                display: "grid", gridTemplateColumns: "1fr auto",
-                gap: "1px", marginBottom: 20,
-                background: "rgba(0,0,0,0.06)", borderRadius: 12, overflow: "hidden",
-              }}>
-                <div style={{ background: "#F5F5F7", padding: "10px 16px", fontSize: 12, fontWeight: 700, color: "#8E8E93" }}>Bereich</div>
-                <div style={{ background: "#F5F5F7", padding: "10px 16px", fontSize: 12, fontWeight: 700, color: "#8E8E93", textAlign: "center", minWidth: 100 }}>Bewertung</div>
-                {result.impactAreas.map(area => (
-                  <ImpactMatrixRow key={area.id} area={area} />
-                ))}
-              </div>
-
-              {/* Detail cards for each area */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {result.impactAreas.filter(a => a.severity !== "ok").map(area => (
-                  <div key={area.id} style={{
-                    padding: "16px 20px", borderRadius: 12,
-                    background: severityBg(area.severity),
-                    borderLeft: `4px solid ${severityColor(area.severity)}`,
-                  }} data-testid={`impact-detail-${area.id}`}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                      <h4 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{area.label}</h4>
-                      <SeverityBadge severity={area.severity} />
-                    </div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 10 }} className="soll-ist-grid">
-                      <div>
-                        <p style={{ fontSize: 11, fontWeight: 600, color: "#8E8E93", marginBottom: 2 }}>ROLLE VERLANGT</p>
-                        <p style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.5 }}>{area.roleNeed}</p>
-                      </div>
-                      <div>
-                        <p style={{ fontSize: 11, fontWeight: 600, color: "#8E8E93", marginBottom: 2 }}>KANDIDAT ZEIGT</p>
-                        <p style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.5 }}>{area.candidatePattern}</p>
-                      </div>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                      <AlertTriangle style={{ width: 14, height: 14, color: severityColor(area.severity), marginTop: 2, flexShrink: 0 }} />
-                      <p style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.5, margin: 0, fontWeight: 500 }}>{area.risk}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* ── Section 5: Risk Timeline ── */}
-            <div style={{
-              background: "#FFFFFF", borderRadius: 16, padding: "24px",
-              border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
-            }} data-testid="section-risk-timeline">
-              <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 20 }}>
-                Risikoprognose
-              </h3>
-              <div style={{ position: "relative", paddingLeft: 28 }}>
-                <div style={{
-                  position: "absolute", left: 9, top: 8, bottom: 8, width: 2,
-                  background: "linear-gradient(to bottom, #34C759, #F39200, #C41E3A)",
-                  borderRadius: 1,
-                }} />
-                {result.riskTimeline.map((phase, i) => (
-                  <div key={i} style={{ position: "relative", marginBottom: i < result.riskTimeline.length - 1 ? 24 : 0 }}>
-                    <div style={{
-                      position: "absolute", left: -22, top: 6, width: 12, height: 12,
-                      borderRadius: "50%", background: "#FFFFFF",
-                      border: `3px solid ${i === 0 ? "#34C759" : i === 1 ? "#F39200" : "#C41E3A"}`,
-                    }} />
-                    <div style={{ paddingLeft: 8 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                        <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{phase.label}</span>
-                        <span style={{ fontSize: 11, color: "#8E8E93", fontWeight: 500 }}>{phase.period}</span>
-                      </div>
-                      <p style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.6, margin: 0 }}>{phase.text}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* ── Section 6: Development + Actions ── */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="soll-ist-grid">
-              {/* Development */}
-              <div style={{
-                background: "#FFFFFF", borderRadius: 16, padding: "24px",
-                border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
-              }} data-testid="section-development">
-                <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 16 }}>
-                  Entwicklungsprognose
-                </h3>
-                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
-                  <GaugeBar level={result.developmentLevel} />
-                  <span style={{
-                    fontSize: 13, fontWeight: 700,
-                    color: result.developmentLevel <= 2 ? "#C41E3A" : result.developmentLevel <= 3 ? "#F39200" : "#34C759",
-                  }}>
-                    {result.developmentLabel}
-                  </span>
-                </div>
-                <p style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.6, margin: 0 }}>
-                  {result.developmentText}
+                <p className="max-w-3xl text-base leading-7 text-slate-700">
+                  {result.summaryText}
                 </p>
               </div>
 
-              {/* Actions */}
-              <div style={{
-                background: "#FFFFFF", borderRadius: 16, padding: "24px",
-                border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
-              }} data-testid="section-actions">
-                <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 16 }}>
-                  Handlungsempfehlung
-                </h3>
-                <p style={{ fontSize: 12, color: "#8E8E93", marginBottom: 12, fontWeight: 500 }}>
-                  {result.fitRating === "GEEIGNET" ? "Zur Stabilisierung:" : "Wenn die Besetzung dennoch erfolgt:"}
+              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-dominance-shift">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Dominanz-Verschiebung</p>
+                <div className="mt-5 grid gap-4">
+                  <ShiftPill title="Rolle" value={COMP_LABELS[result.roleDomKey]} tone={domTone(result.roleDomKey)} />
+                  <div className="flex items-center justify-center text-2xl text-slate-300">↓</div>
+                  <ShiftPill title="Kandidat" value={COMP_LABELS[result.candDomKey]} tone={domTone(result.candDomKey)} />
+                </div>
+                <p className="mt-5 text-sm leading-6 text-slate-600">
+                  {result.dominanceShiftText}
                 </p>
-                <ul style={{ margin: 0, paddingLeft: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 8 }}>
-                  {result.actions.map((action, i) => (
-                    <li key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                      <ChevronRight style={{ width: 14, height: 14, color: "#0071E3", marginTop: 2, flexShrink: 0 }} />
-                      <span style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.5 }}>{action}</span>
-                    </li>
+              </div>
+            </section>
+
+            {/* ── Profile Comparison + Delta ── */}
+            <section className="mb-8 grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
+              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-radar">
+                <div className="mb-6 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Profilvergleich</p>
+                    <h3 className="mt-2 text-xl font-semibold text-slate-950">Rolle vs. Kandidat</h3>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm text-slate-500">
+                    <Legend color="bg-blue-600" label="Rolle" />
+                    <Legend color="bg-amber-500" label="Kandidat" />
+                  </div>
+                </div>
+                <div className="grid gap-6 lg:grid-cols-2">
+                  <ProfileCard
+                    title="Soll-Profil Rolle" subtitle={result.roleName}
+                    profile={roleProfile} accent="blue"
+                    description={`Die Rolle verlangt vor allem ${COMP_SHORT[result.roleDomKey]}, ${result.roleDomKey === "analytisch" ? "Prüftiefe und verlässliche Planung" : result.roleDomKey === "impulsiv" ? "schnelle Umsetzung und Entscheidungsstärke" : "Kommunikation und Zusammenarbeit"}.`}
+                  />
+                  <ProfileCard
+                    title="Ist-Profil Kandidat" subtitle={result.candidateName}
+                    profile={candProfileArr} accent="amber"
+                    description={`Der Kandidat arbeitet stärker über ${COMP_SHORT[result.candDomKey]}, ${result.candDomKey === "impulsiv" ? "direkte Umsetzung und schnelle Entscheidungen" : result.candDomKey === "analytisch" ? "strukturierte Planung und Prüftiefe" : "Kommunikation und Beziehungsarbeit"}.`}
+                  />
+                </div>
+                <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5" data-testid="chart-triangle">
+                  <TriangleChart role={result.roleTriad} candidate={result.candTriad} />
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-comparison-bars">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Soll-Ist-Abweichung</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">Abweichung je Wirkdimension</h3>
+                <div className="mt-6 space-y-5">
+                  {deltas.map(item => (
+                    <div key={item.label}>
+                      <div className="mb-2 flex items-center justify-between text-sm">
+                        <span className="font-medium text-slate-800">{item.label}</span>
+                        <span className={`font-semibold ${item.tone}`}>{item.delta}</span>
+                      </div>
+                      <div className="mb-2 flex h-3 overflow-hidden rounded-full bg-slate-100">
+                        <div className="bg-slate-300 rounded-full" style={{ width: `${item.target}%` }} />
+                      </div>
+                      <div className="flex items-center justify-between text-xs text-slate-500">
+                        <span>Soll {item.target}%</span>
+                        <span>Ist {item.candidate}%</span>
+                      </div>
+                    </div>
                   ))}
-                </ul>
+                </div>
+                <div className={`mt-6 rounded-2xl border p-4 text-sm leading-6 ${result.fitRating === "GEEIGNET" ? "border-green-100 bg-green-50 text-green-800" : result.fitRating === "BEDINGT" ? "border-amber-100 bg-amber-50 text-amber-800" : "border-red-100 bg-red-50 text-red-800"}`}>
+                  {biggestGapText(result.roleTriad, result.candTriad)}
+                </div>
               </div>
-            </div>
+            </section>
 
-            {/* ── Section 7: Final Assessment ── */}
-            <div
-              style={{
-                background: result.fitColor === "#34C759"
-                  ? "linear-gradient(135deg, #E8F9EE, #F0FBF4)"
-                  : result.fitColor === "#F39200"
-                    ? "linear-gradient(135deg, #FFF5E6, #FFFAF0)"
-                    : "linear-gradient(135deg, #FCEEF1, #FDF5F6)",
-                borderRadius: 20, padding: "28px 32px",
-                border: `1px solid ${result.fitColor}20`,
-              }}
-              data-testid="section-final-assessment"
-            >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16, marginBottom: 16 }}>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Gesamtbewertung</h3>
-                <span style={{
-                  fontSize: 16, fontWeight: 800, color: result.fitColor,
-                  padding: "6px 18px", borderRadius: 12,
-                  background: `${result.fitColor}18`,
-                }} data-testid="text-final-rating">
-                  {result.fitLabel.toUpperCase()}
-                </span>
+            {/* ── Impact Matrix ── */}
+            <section className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-impact-matrix">
+              <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Strukturelle Wirkungsanalyse</p>
+                  <h3 className="mt-2 text-xl font-semibold text-slate-950">Auswirkungen der Abweichung</h3>
+                </div>
+                <div className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-600">
+                  Erst Matrix, dann Detailanalyse
+                </div>
               </div>
-              <div style={{ display: "flex", gap: 24, flexWrap: "wrap", marginBottom: 14 }}>
-                <span style={{ fontSize: 13, color: "#6E6E73" }}>
-                  Grund: <strong style={{ color: "#1D1D1F" }}>Dominanzstruktur</strong>
-                </span>
-                <span style={{ fontSize: 13, color: "#6E6E73" }}>
-                  Steuerungsbedarf: <strong style={{ color: "#1D1D1F" }}>{result.controlIntensity}</strong>
-                </span>
-              </div>
-              <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: 0 }}>
-                {result.finalText}
-              </p>
-            </div>
 
-          </div>
+              <div className="overflow-hidden rounded-2xl border border-slate-200">
+                <div className="grid grid-cols-[1.5fr_0.6fr] bg-slate-50 px-5 py-3 text-sm font-semibold text-slate-600">
+                  <div>Bereich</div>
+                  <div className="text-right">Bewertung</div>
+                </div>
+                <div className="divide-y divide-slate-200">
+                  {result.impactAreas.map(area => (
+                    <div key={area.id} className="grid grid-cols-[1.5fr_0.6fr] items-center px-5 py-4 text-sm" data-testid={`matrix-row-${area.id}`}>
+                      <div className="font-medium text-slate-900">{area.label}</div>
+                      <div className="flex justify-end">
+                        <span className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${severityTone(area.severity)}`}>
+                          {severityLabel(area.severity)}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-8 grid gap-4 md:grid-cols-2">
+                {result.impactAreas.map(area => (
+                  <div key={area.id} className={`rounded-2xl border p-5 ${area.severity === "critical" ? "border-red-100 bg-red-50/40" : area.severity === "warning" ? "border-amber-100 bg-amber-50/40" : "border-green-100 bg-green-50/40"}`} data-testid={`impact-detail-${area.id}`}>
+                    <h4 className="text-base font-semibold text-slate-950">{area.label}</h4>
+                    <div className="mt-4 space-y-3 text-sm leading-6 text-slate-700">
+                      <div><span className="font-semibold text-slate-900">Rolle braucht:</span> {area.roleNeed}</div>
+                      <div><span className="font-semibold text-slate-900">Kandidat bringt:</span> {area.candidatePattern}</div>
+                      <div>
+                        <span className={`font-semibold ${area.severity === "critical" ? "text-red-700" : area.severity === "warning" ? "text-amber-700" : "text-green-700"}`}>
+                          Risiko:
+                        </span>{" "}
+                        {area.risk}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* ── Risk Timeline + Development + Actions ── */}
+            <section className="mb-8 grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
+              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-risk-timeline">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Risikoprognose</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">Zeitliche Entwicklung der Risiken</h3>
+                <div className="mt-8 space-y-6">
+                  {result.riskTimeline.map((phase, i) => {
+                    const dot = i === 0 ? "bg-green-500" : i === 1 ? "bg-amber-500" : "bg-red-500";
+                    const border = i === 0 ? "border-l-green-500" : i === 1 ? "border-l-amber-500" : "border-l-red-500";
+                    return (
+                      <div key={i} className="relative pl-8">
+                        {i < result.riskTimeline.length - 1 && <div className="absolute left-[7px] top-4 h-[calc(100%+12px)] w-px bg-slate-200" />}
+                        <div className={`absolute left-0 top-1.5 h-4 w-4 rounded-full ${dot}`} />
+                        <div className={`rounded-2xl border-l-4 bg-slate-50 p-4 ${border}`}>
+                          <div className="mb-1 text-sm font-semibold text-slate-950">{phase.label} <span className="font-normal text-slate-500">{phase.period}</span></div>
+                          <p className="text-sm leading-6 text-slate-700">{phase.text}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="space-y-8">
+                <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-development">
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Entwicklungsprognose</p>
+                  <h3 className="mt-2 text-xl font-semibold text-slate-950">Anpassungswahrscheinlichkeit</h3>
+                  <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                    <div className="mb-4 flex items-center justify-between text-sm">
+                      <span className="font-medium text-slate-700">Entwicklungschance</span>
+                      <span className={`font-semibold ${result.developmentLevel <= 2 ? "text-red-600" : result.developmentLevel <= 3 ? "text-amber-600" : "text-green-600"}`}>
+                        {result.developmentLabel}
+                      </span>
+                    </div>
+                    <div className="flex gap-2" data-testid="gauge-development">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className={`h-3 flex-1 rounded-full ${i < result.developmentLevel
+                            ? result.developmentLevel <= 2 ? "bg-red-500" : result.developmentLevel <= 3 ? "bg-amber-500" : "bg-green-500"
+                            : "bg-slate-200"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <p className="mt-4 text-sm leading-6 text-slate-700">
+                      {result.developmentText}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-actions">
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Handlungsempfehlung</p>
+                  <h3 className="mt-2 text-xl font-semibold text-slate-950">Konkrete Steuerungsmaßnahmen</h3>
+                  <ul className="mt-6 space-y-3">
+                    {result.actions.map((item, i) => (
+                      <li key={i} className="flex items-start gap-3 text-sm leading-6 text-slate-700">
+                        <span className="mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 text-xs font-bold text-blue-700">
+                          <Check className="h-3 w-3" />
+                        </span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            {/* ── Final Assessment ── */}
+            <section className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-final-assessment">
+              <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Gesamtbewertung</p>
+                  <h3 className="mt-2 text-2xl font-semibold text-slate-950">Abschließende Empfehlung</h3>
+                  <p className="mt-4 max-w-3xl text-base leading-7 text-slate-700">
+                    {result.finalText}
+                  </p>
+                </div>
+                <div className={`rounded-2xl border px-6 py-5 text-center ${fitToneClasses(result.fitLabel).border} ${fitToneClasses(result.fitLabel).bg}`} data-testid="text-final-rating">
+                  <div className={`text-sm font-semibold uppercase tracking-[0.18em] ${fitToneClasses(result.fitLabel).text}`}>Ergebnis</div>
+                  <div className={`mt-2 text-2xl font-semibold ${fitToneClasses(result.fitLabel).text}`}>{result.fitLabel}</div>
+                  <div className="mt-3 text-sm text-slate-600">Dominanzstruktur · {result.controlIntensity}er Steuerungsbedarf</div>
+                </div>
+              </div>
+            </section>
+
+            {/* ── Back / Re-configure button ── */}
+            <div className="flex justify-center no-print">
+              <button
+                onClick={() => setReportGenerated(false)}
+                className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-600 shadow-sm hover:bg-slate-50 transition-colors"
+                data-testid="button-reconfigure"
+              >
+                Profil anpassen
+              </button>
+            </div>
+          </>
         )}
 
         <style>{`
-          @media (max-width: 640px) {
-            .soll-ist-grid { grid-template-columns: 1fr !important; }
-          }
           @media print {
             body { background: #FFFFFF !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .no-print, nav, header, [data-testid="button-generate-report"] { display: none !important; }
-            input[type="range"] { display: none !important; }
-            div[style*="minHeight: 100vh"] { min-height: auto !important; }
-            div[style*="maxWidth: 900"] { max-width: 100% !important; padding: 0 !important; }
-            div[style*="borderRadius"] { break-inside: avoid; }
-            svg { max-width: 280px !important; }
-            * { box-shadow: none !important; }
-            @page { size: A4; margin: 18mm 14mm; }
+            .no-print { display: none !important; }
+            nav { display: none !important; }
+            @page { size: A4 landscape; margin: 12mm; }
           }
         `}</style>
       </div>
     </div>
-  );
-}
-
-function ImpactMatrixRow({ area }: { area: { id: string; label: string; severity: Severity } }) {
-  return (
-    <>
-      <div style={{ background: "#FFFFFF", padding: "10px 16px", fontSize: 13, fontWeight: 500, color: "#1D1D1F" }} data-testid={`matrix-row-${area.id}`}>
-        {area.label}
-      </div>
-      <div style={{ background: "#FFFFFF", padding: "10px 16px", display: "flex", justifyContent: "center" }}>
-        <SeverityBadge severity={area.severity} />
-      </div>
-    </>
   );
 }
