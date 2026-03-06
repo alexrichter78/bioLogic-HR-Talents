@@ -1040,6 +1040,13 @@ export default function Rollenprofil() {
             <div style={{ width: 48, height: 3, background: "#0071E3", borderRadius: 2, margin: "20px auto 0" }} />
           </div>
 
+          {/* ── EINLEITUNG ── */}
+          <div style={{ marginBottom: 32 }}>
+            <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-einleitung">
+              Dieser Bericht beschreibt, welche Persönlichkeitsstruktur für die Rolle {data.beruf} besonders wirksam ist. Neben fachlichen Kompetenzen beeinflusst vor allem die Art, wie eine Person Situationen beurteilt, Entscheidungen trifft und unter Druck handelt, den Erfolg in dieser Rolle. Die folgenden Abschnitte zeigen, welche Persönlichkeitsstruktur die Anforderungen der Rolle unterstützt, wie sich diese im Arbeitsalltag zeigt und welche Spannungsfelder dabei entstehen können.
+            </p>
+          </div>
+
           {/* ── SEITE 1: ROLLEN-DNA ── */}
           <div style={{ marginBottom: 40 }}>
             <h2 style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 20px", paddingBottom: 8, borderBottom: "1px solid rgba(0,0,0,0.08)" }} data-testid="section-1-title">
@@ -1181,6 +1188,8 @@ export default function Rollenprofil() {
               Seite 2 · Verhalten der Rolle · Alltag und Stress
             </h2>
 
+            <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 20px" }}>Wie zeigt sich diese Rolle im Alltag und unter Druck?</p>
+
             {/* Verhalten im Alltag */}
             <div style={{ marginBottom: 28 }}>
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Verhalten im Alltag</p>
@@ -1215,6 +1224,8 @@ export default function Rollenprofil() {
               Seite 3 · Teamwirkung und Fehlbesetzungsrisiken
             </h2>
 
+            <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 20px" }}>Welche Wirkung hat diese Rolle im Team?</p>
+
             {/* Führungswirkung / Teamwirkung */}
             <div style={{ marginBottom: 28 }}>
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>
@@ -1241,10 +1252,10 @@ export default function Rollenprofil() {
               </div>
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "12px 0 0", textAlign: "justify", textAlignLast: "left" as any }} lang="de">
                 {data.dom.key === "imp"
-                  ? "Die Person muss diese Gegensätze situativ ausbalancieren, ohne dabei das Tempo und die Umsetzungsstärke zu verlieren."
+                  ? "Die Rolle verlangt, diese Gegensätze situativ auszubalancieren, ohne dabei das Tempo und die Umsetzungsstärke zu verlieren."
                   : data.dom.key === "int"
-                  ? "Die Person muss diese Gegensätze situativ ausbalancieren, ohne dabei den persönlichen Kontakt und das Vertrauen zu verlieren."
-                  : "Die Person muss diese Gegensätze situativ ausbalancieren, ohne dabei die Sorgfalt und Qualitätssicherung zu verlieren."}
+                  ? "Die Rolle verlangt, diese Gegensätze situativ auszubalancieren, ohne dabei den persönlichen Kontakt und das Vertrauen zu verlieren."
+                  : "Die Rolle verlangt, diese Gegensätze situativ auszubalancieren, ohne dabei die fachliche Qualität und Prozesssicherheit zu gefährden."}
               </p>
             </div>
 
