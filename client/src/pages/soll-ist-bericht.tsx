@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation } from "wouter";
-import { AlertTriangle, ArrowRight, ChevronRight, Shield, TrendingDown, TrendingUp, Target, Zap, Users, FileText, Scale, Clock, Lightbulb, CheckCircle2, XCircle, MinusCircle } from "lucide-react";
+import { AlertTriangle, ArrowRight, ChevronRight, Shield, TrendingDown, TrendingUp, Target, Zap, Users, FileText, Scale, Clock, Lightbulb, CheckCircle2, XCircle, MinusCircle, Download } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeSollIst } from "@/lib/soll-ist-engine";
@@ -268,9 +268,29 @@ export default function SollIstBericht() {
       <GlobalNav />
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 24px 80px" }}>
 
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", marginBottom: 4 }} data-testid="text-page-title">
-          Soll-Ist-Bericht
-        </h1>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: 0 }} data-testid="text-page-title">
+            Soll-Ist-Bericht
+          </h1>
+          {result && (
+            <button
+              onClick={() => window.print()}
+              style={{
+                height: 38, paddingLeft: 16, paddingRight: 16, fontSize: 13, fontWeight: 600,
+                borderRadius: 10, border: "1px solid rgba(0,0,0,0.1)", cursor: "pointer",
+                background: "#FFFFFF", color: "#1D1D1F",
+                display: "flex", alignItems: "center", gap: 7,
+                boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                transition: "all 150ms ease",
+              }}
+              className="no-print"
+              data-testid="button-export-pdf"
+            >
+              <Download style={{ width: 15, height: 15 }} />
+              PDF
+            </button>
+          )}
+        </div>
         <p style={{ fontSize: 14, color: "#8E8E93", marginBottom: 28, fontWeight: 450 }}>
           Strukturierte Diagnose für Besetzungsentscheidungen
         </p>
@@ -655,6 +675,17 @@ export default function SollIstBericht() {
         <style>{`
           @media (max-width: 640px) {
             .soll-ist-grid { grid-template-columns: 1fr !important; }
+          }
+          @media print {
+            body { background: #FFFFFF !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .no-print, nav, header, [data-testid="button-generate-report"] { display: none !important; }
+            input[type="range"] { display: none !important; }
+            div[style*="minHeight: 100vh"] { min-height: auto !important; }
+            div[style*="maxWidth: 900"] { max-width: 100% !important; padding: 0 !important; }
+            div[style*="borderRadius"] { break-inside: avoid; }
+            svg { max-width: 280px !important; }
+            * { box-shadow: none !important; }
+            @page { size: A4; margin: 18mm 14mm; }
           }
         `}</style>
       </div>
