@@ -5,7 +5,7 @@ import GlobalNav from "@/components/global-nav";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeSollIst, mapFuehrungsArt, constellationLabel } from "@/lib/soll-ist-engine";
 import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
-import type { SollIstResult, Severity, ImpactArea, FuehrungsArt } from "@/lib/soll-ist-engine";
+import type { SollIstResult, Severity, ImpactArea, FuehrungsArt, IntegrationPhase } from "@/lib/soll-ist-engine";
 
 type BG = { imp: number; int: number; ana: number };
 type RoleDnaState = {
@@ -611,6 +611,43 @@ export default function SollIstBericht() {
                 </div>
               </div>
             </section>
+
+            {/* ── 30-Day Integration Plan ── */}
+            {result.integrationsplan && (
+              <section className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-integrationsplan">
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-sm">
+                    <Download className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Handlungsempfehlung</p>
+                    <h3 className="mt-1 text-xl font-semibold text-slate-950">30-Tage-Integrationsplan</h3>
+                  </div>
+                </div>
+                <div className="space-y-6">
+                  {result.integrationsplan.map((phase) => (
+                    <div key={phase.num} className="rounded-2xl border border-slate-200 bg-slate-50/60 p-6" data-testid={`integration-phase-${phase.num}`}>
+                      <div className="flex items-center gap-3 mb-4">
+                        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+                          {phase.num}
+                        </span>
+                        <h4 className="text-base font-semibold text-slate-950">
+                          Phase {phase.num}: {phase.title} ({phase.period})
+                        </h4>
+                      </div>
+                      <ul className="space-y-2">
+                        {phase.items.map((item, i) => (
+                          <li key={i} className="flex items-start gap-3 text-sm leading-6 text-slate-700">
+                            <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-slate-400 shrink-0" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* ── Final Assessment ── */}
             <section className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-final-assessment">

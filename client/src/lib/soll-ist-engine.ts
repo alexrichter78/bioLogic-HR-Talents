@@ -31,6 +31,13 @@ export type StressBehavior = {
   uncontrolledStress: string;
 };
 
+export type IntegrationPhase = {
+  num: number;
+  title: string;
+  period: string;
+  items: string[];
+};
+
 export type SollIstResult = {
   roleName: string;
   candidateName: string;
@@ -59,6 +66,7 @@ export type SollIstResult = {
   developmentLabel: string;
   developmentText: string;
   actions: string[];
+  integrationsplan: IntegrationPhase[] | null;
   finalText: string;
 };
 
@@ -205,6 +213,7 @@ export function computeSollIst(
   const riskTimeline = buildRiskTimeline(roleName, cn, rk, ck, gapLevel);
   const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildDevelopment(gapLevel, rk, ck, controlIntensity, cn);
   const actions = buildActions(rk, ck, gapLevel, controlIntensity);
+  const integrationsplan = buildIntegrationsplan(cn, fitLabel, rk, ck, gapLevel, controlIntensity, fuehrungsArt);
   const finalText = buildFinal(roleName, cn, fitLabel, controlIntensity, rk, ck, fuehrungsArt);
 
   return {
@@ -235,6 +244,7 @@ export function computeSollIst(
     developmentLabel,
     developmentText,
     actions,
+    integrationsplan,
     finalText,
   };
 }
@@ -741,6 +751,109 @@ function buildActions(rk: ComponentKey, ck: ComponentKey, gap: string, control: 
   }
 
   return base;
+}
+
+function buildIntegrationsplan(cand: string, fit: string, rk: ComponentKey, ck: ComponentKey, gap: string, control: string, fuehrungsArt: FuehrungsArt): IntegrationPhase[] | null {
+  if (fit === "Nicht geeignet") return null;
+
+  const rkDesc = compDesc(rk);
+  const ckDesc = compDesc(ck);
+  const sameDom = rk === ck;
+  const isLeader = fuehrungsArt !== "keine";
+
+  const phase1Items: string[] = [];
+  const phase2Items: string[] = [];
+  const phase3Items: string[] = [];
+
+  if (sameDom && gap === "gering") {
+    phase1Items.push(`Klärung von Rolle, Erwartungshaltung und Qualitätsstandard.`);
+    phase1Items.push(`Transparenz über bestehende Entscheidungs- und Kommunikationsstrukturen.`);
+    phase1Items.push(`Abstimmung der individuellen Arbeitsprioritäten mit dem Team.`);
+    if (isLeader) phase1Items.push(`Führungsrolle und Verantwortungsrahmen klar definieren.`);
+
+    phase2Items.push(`Eigenständige Übernahme erster Arbeitspakete mit Ergebnisprüfung.`);
+    phase2Items.push(`Feedback zur Wirkung auf Tempo, Qualität und Zusammenarbeit aktiv einholen.`);
+    if (isLeader) phase2Items.push(`Erste Führungsentscheidungen beobachten und reflektieren.`);
+    phase2Items.push(`Schnittstellenarbeit mit angrenzenden Bereichen etablieren.`);
+
+    phase3Items.push(`Evaluation der bisherigen Wirkung auf Entscheidungsrhythmus und Belastung.`);
+    phase3Items.push(`Feinabstimmung der Zusammenarbeit mit dem direkten Umfeld.`);
+    phase3Items.push(`Prioritäten konsolidieren und Standards stabilisieren.`);
+    if (isLeader) phase3Items.push(`Führungswirkung und Teamstabilität überprüfen.`);
+  } else {
+    if (rk === "analytisch" && ck !== "analytisch") {
+      phase1Items.push(`Klärung von Rolle, Erwartungshaltung und Qualitätsstandard.`);
+      phase1Items.push(`Transparenz über bestehende Entscheidungs- und Kommunikationsstrukturen.`);
+      phase1Items.push(`Frühe Abstimmung von Prioritäten, Qualitätskriterien und Entscheidungslogik.`);
+      phase1Items.push(`Klärung operativer Prozesse, Schnittstellen und Definition von 'Done'.`);
+
+      phase2Items.push(`Ein priorisiertes Thema wird strukturiert analysiert und verbessert.`);
+      phase2Items.push(`Feedback zur Wirkung auf Tempo, Qualität und Zusammenarbeit wird aktiv eingeholt.`);
+      phase2Items.push(`Ein klarer Standard (Checkliste/Playbook) wird eingeführt oder geschärft.`);
+      phase2Items.push(`Fehlerquellen identifizieren und beheben.`);
+
+      phase3Items.push(`Evaluation der Wirkung auf Entscheidungsrhythmus, Priorisierung und Belastung.`);
+      phase3Items.push(`Anpassung von Regeln, Schnittstellen und Qualitätsstandards.`);
+      phase3Items.push(`Prioritäten konsolidieren und Standards stabilisieren.`);
+      phase3Items.push(`Prozessstabilität und Durchlaufzeiten prüfen.`);
+    } else if (rk === "impulsiv" && ck !== "impulsiv") {
+      phase1Items.push(`Erwartungen an Tempo, Entscheidungsgeschwindigkeit und Ergebnisorientierung klären.`);
+      phase1Items.push(`Klare Umsetzungsfristen und Deadlines für die ersten Aufgaben definieren.`);
+      phase1Items.push(`Verantwortungsbereiche und Entscheidungsfreiräume klar abgrenzen.`);
+      if (isLeader) phase1Items.push(`Führungsstil und gewünschte Reaktionszeiten transparent machen.`);
+
+      phase2Items.push(`Erste eigenverantwortliche Umsetzungsprojekte mit messbaren Zielen starten.`);
+      phase2Items.push(`Entscheidungsgeschwindigkeit und Ergebnisorientierung beobachten und steuern.`);
+      phase2Items.push(`Feedbackschleifen verkürzen, schnelle Rückmeldungen etablieren.`);
+      phase2Items.push(`Priorisierung zwischen Schnelligkeit und Sorgfalt kalibrieren.`);
+
+      phase3Items.push(`Ergebnisqualität und Tempo über die ersten 30 Tage auswerten.`);
+      phase3Items.push(`Nachsteuerung bei Übertaktung oder Unterforderung.`);
+      phase3Items.push(`Umsetzungserfolge sichtbar machen und verankern.`);
+      phase3Items.push(`Langfristige KPIs und Meilensteine definieren.`);
+    } else if (rk === "intuitiv" && ck !== "intuitiv") {
+      phase1Items.push(`Kommunikationserwartungen und Teamkultur transparent machen.`);
+      phase1Items.push(`Beziehungsaufbau mit Schlüsselpersonen aktiv einplanen.`);
+      phase1Items.push(`Feedback- und Gesprächsformate klären und terminieren.`);
+      if (isLeader) phase1Items.push(`Erwartungen an Teamführung und Mitarbeiterentwicklung besprechen.`);
+
+      phase2Items.push(`Regelmäßige Team-Feedbackrunden durchführen und moderieren.`);
+      phase2Items.push(`Kommunikationsstil und Wirkung auf das Team reflektieren.`);
+      phase2Items.push(`Beziehungsarbeit als konkretes Ziel verfolgen.`);
+      phase2Items.push(`Konfliktsituationen proaktiv ansprechen und lösen.`);
+
+      phase3Items.push(`Wirkung der Kommunikation auf Teamdynamik und Zusammenarbeit bewerten.`);
+      phase3Items.push(`Teamzufriedenheit und Bindung erheben.`);
+      phase3Items.push(`Kommunikationsstandards dauerhaft verankern.`);
+      phase3Items.push(`Offene Punkte in der Beziehungsarbeit klären.`);
+    } else {
+      phase1Items.push(`Klärung von Rolle, Arbeitslogik und Erwartungshaltung.`);
+      phase1Items.push(`Transparenz über bestehende Arbeitsweisen und Entscheidungsstrukturen.`);
+      phase1Items.push(`Schnittstellenklärung mit relevanten Partnern und Bereichen.`);
+      if (isLeader) phase1Items.push(`Führungsverantwortung und Entscheidungsrahmen definieren.`);
+
+      phase2Items.push(`Erste eigenverantwortliche Arbeitspakete mit Ergebniskontrolle.`);
+      phase2Items.push(`Feedback zur Wirkung in ${rkDesc} aktiv einholen.`);
+      phase2Items.push(`Zusammenarbeit mit dem direkten Umfeld reflektieren.`);
+      phase2Items.push(`Abgleich zwischen Ist-Arbeitsweise und Rollenanforderung.`);
+
+      phase3Items.push(`Evaluation der bisherigen Wirkung und Zielerreichung.`);
+      phase3Items.push(`Nachjustierung der Arbeitsweise Richtung ${rkDesc}.`);
+      phase3Items.push(`Standards und Routinen für die Rolle dauerhaft etablieren.`);
+      phase3Items.push(`Langfristige Entwicklungsziele und Meilensteine festlegen.`);
+    }
+
+    if (control === "hoch") {
+      phase1Items.push(`Engmaschige Führungsbegleitung von Tag 1 sicherstellen.`);
+      phase3Items.push(`Überprüfung, ob Steuerungsintensität reduziert werden kann.`);
+    }
+  }
+
+  return [
+    { num: 1, title: "Orientierung", period: "Tag 1\u201310", items: phase1Items },
+    { num: 2, title: "Wirkung", period: "Tag 11\u201320", items: phase2Items },
+    { num: 3, title: "Stabilisierung", period: "Tag 21\u201330", items: phase3Items },
+  ];
 }
 
 function buildFinal(role: string, cand: string, fit: string, control: string, rk: ComponentKey, ck: ComponentKey, fuehrungsArt: FuehrungsArt): string {
