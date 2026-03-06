@@ -3,7 +3,7 @@ import { PlusCircle, FolderOpen, DoorOpen, Bot, CheckCircle, Sparkles } from "lu
 import { useLocation } from "wouter";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import illustrationRollenanalyse from "@assets/illustration-rollenanalyse.png";
-import illustrationKiCoach from "@assets/illustration-ki-coach.png";
+import illustrationKiCoach from "@assets/image_1772800505559.png";
 
 import GlobalNav from "@/components/global-nav";
 
