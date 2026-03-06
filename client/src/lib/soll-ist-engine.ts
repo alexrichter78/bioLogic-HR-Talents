@@ -3,6 +3,13 @@ import type { Triad, ComponentKey } from "./jobcheck-engine";
 
 export type FitRating = "GEEIGNET" | "BEDINGT" | "NICHT_GEEIGNET";
 export type Severity = "ok" | "warning" | "critical";
+export type FuehrungsArt = "keine" | "fachlich" | "disziplinarisch";
+
+export type ConstellationType =
+  | "H_DOM" | "B_DOM" | "S_DOM"
+  | "H_GT_B" | "H_GT_S" | "B_GT_H" | "B_GT_S" | "S_GT_H" | "S_GT_B"
+  | "H_NEAR_B" | "H_NEAR_S" | "B_NEAR_S"
+  | "BALANCED";
 
 export type ImpactArea = {
   id: string;
@@ -19,6 +26,11 @@ export type RiskPhase = {
   text: string;
 };
 
+export type StressBehavior = {
+  controlledPressure: string;
+  uncontrolledStress: string;
+};
+
 export type SollIstResult = {
   roleName: string;
   candidateName: string;
@@ -28,6 +40,10 @@ export type SollIstResult = {
   candDomLabel: string;
   roleDomKey: ComponentKey;
   candDomKey: ComponentKey;
+  roleConstellation: ConstellationType;
+  candConstellation: ConstellationType;
+  roleConstellationLabel: string;
+  candConstellationLabel: string;
   totalGap: number;
   gapLevel: "gering" | "mittel" | "hoch";
   fitRating: FitRating;
@@ -36,6 +52,7 @@ export type SollIstResult = {
   controlIntensity: "gering" | "mittel" | "hoch";
   summaryText: string;
   dominanceShiftText: string;
+  stressBehavior: StressBehavior;
   impactAreas: ImpactArea[];
   riskTimeline: RiskPhase[];
   developmentLevel: number;
@@ -63,11 +80,99 @@ function severity(gap: number): Severity {
   return "ok";
 }
 
+export function detectConstellation(t: Triad): ConstellationType {
+  const sorted = ([
+    { key: "impulsiv" as ComponentKey, val: t.impulsiv },
+    { key: "intuitiv" as ComponentKey, val: t.intuitiv },
+    { key: "analytisch" as ComponentKey, val: t.analytisch },
+  ]).sort((a, b) => b.val - a.val);
+
+  const top = sorted[0];
+  const mid = sorted[1];
+  const bot = sorted[2];
+  const d12 = top.val - mid.val;
+  const d23 = mid.val - bot.val;
+  const range = top.val - bot.val;
+
+  if (range <= 8) return "BALANCED";
+
+  const pairKey = (a: ComponentKey, b: ComponentKey): string => {
+    const m: Record<string, string> = {
+      "impulsiv_intuitiv": "H_B", "intuitiv_impulsiv": "B_H",
+      "impulsiv_analytisch": "H_S", "analytisch_impulsiv": "S_H",
+      "intuitiv_analytisch": "B_S", "analytisch_intuitiv": "S_B",
+    };
+    return m[`${a}_${b}`] || "";
+  };
+
+  if (d12 >= 15) {
+    if (top.key === "impulsiv") return "H_DOM";
+    if (top.key === "intuitiv") return "B_DOM";
+    return "S_DOM";
+  }
+
+  if (d12 <= 5) {
+    const pk = pairKey(top.key, mid.key);
+    if (pk === "H_B" || pk === "B_H") return "H_NEAR_B";
+    if (pk === "H_S" || pk === "S_H") return "H_NEAR_S";
+    return "B_NEAR_S";
+  }
+
+  const gtKey = pairKey(top.key, mid.key);
+  const gtMap: Record<string, ConstellationType> = {
+    "H_B": "H_GT_B", "H_S": "H_GT_S",
+    "B_H": "B_GT_H", "B_S": "B_GT_S",
+    "S_H": "S_GT_H", "S_B": "S_GT_B",
+  };
+  return gtMap[gtKey] || "BALANCED";
+}
+
+export function constellationLabel(c: ConstellationType): string {
+  const labels: Record<ConstellationType, string> = {
+    H_DOM: "Klarer Handlungsfokus",
+    B_DOM: "Klarer Beziehungsfokus",
+    S_DOM: "Klarer Strukturfokus",
+    H_GT_B: "Handlungsfokus mit Beziehungsanteil",
+    H_GT_S: "Handlungsfokus mit Strukturanteil",
+    B_GT_H: "Beziehungsfokus mit Handlungsanteil",
+    B_GT_S: "Beziehungsfokus mit Strukturanteil",
+    S_GT_H: "Strukturfokus mit Handlungsanteil",
+    S_GT_B: "Strukturfokus mit Beziehungsanteil",
+    H_NEAR_B: "Doppelfokus Handlung und Beziehung",
+    H_NEAR_S: "Doppelfokus Handlung und Struktur",
+    B_NEAR_S: "Doppelfokus Beziehung und Struktur",
+    BALANCED: "Ausgeglichenes Profil",
+  };
+  return labels[c];
+}
+
+function primaryKey(c: ConstellationType): ComponentKey {
+  if (c.startsWith("H")) return "impulsiv";
+  if (c.startsWith("B")) return "intuitiv";
+  if (c.startsWith("S")) return "analytisch";
+  return "intuitiv";
+}
+
+function secondaryKey(c: ConstellationType, t: Triad): ComponentKey {
+  const pk = primaryKey(c);
+  const rest = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== pk);
+  return t[rest[0]] >= t[rest[1]] ? rest[0] : rest[1];
+}
+
+export function mapFuehrungsArt(fuehrung: string | undefined): FuehrungsArt {
+  if (!fuehrung) return "keine";
+  const lower = fuehrung.toLowerCase();
+  if (lower.includes("keine")) return "keine";
+  if (lower.includes("fachlich")) return "fachlich";
+  return "disziplinarisch";
+}
+
 export function computeSollIst(
   roleName: string,
   candidateName: string,
   roleProfile: Triad,
-  candProfile: Triad
+  candProfile: Triad,
+  fuehrungsArt: FuehrungsArt = "keine"
 ): SollIstResult {
   const rt = normalizeTriad(roleProfile);
   const ct = normalizeTriad(candProfile);
@@ -90,13 +195,17 @@ export function computeSollIst(
   const ck = cDom.top1.key;
   const cn = candidateName || "Der Kandidat";
 
-  const summaryText = buildSummary(roleName, cn, fitLabel, rk, ck, gapLevel, rt, ct);
-  const dominanceShiftText = buildDominanceShift(roleName, cn, rk, ck, rt, ct);
-  const impactAreas = buildImpactAreas(rk, ck, rt, ct, cn);
+  const rConst = detectConstellation(rt);
+  const cConst = detectConstellation(ct);
+
+  const summaryText = buildSummary(roleName, cn, fitLabel, rk, ck, gapLevel, rt, ct, rConst, cConst);
+  const dominanceShiftText = buildDominanceShift(roleName, cn, rk, ck, rt, ct, rConst, cConst);
+  const stressBehavior = buildStressBehavior(cConst, ct, cn, gapLevel);
+  const impactAreas = buildImpactAreas(rk, ck, rt, ct, cn, fuehrungsArt);
   const riskTimeline = buildRiskTimeline(roleName, cn, rk, ck, gapLevel);
   const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildDevelopment(gapLevel, rk, ck, controlIntensity, cn);
   const actions = buildActions(rk, ck, gapLevel, controlIntensity);
-  const finalText = buildFinal(roleName, cn, fitLabel, controlIntensity, rk, ck);
+  const finalText = buildFinal(roleName, cn, fitLabel, controlIntensity, rk, ck, fuehrungsArt);
 
   return {
     roleName,
@@ -107,6 +216,10 @@ export function computeSollIst(
     candDomLabel: dominanceLabel(cDom),
     roleDomKey: rk,
     candDomKey: ck,
+    roleConstellation: rConst,
+    candConstellation: cConst,
+    roleConstellationLabel: constellationLabel(rConst),
+    candConstellationLabel: constellationLabel(cConst),
     totalGap,
     gapLevel,
     fitRating,
@@ -115,6 +228,7 @@ export function computeSollIst(
     controlIntensity,
     summaryText,
     dominanceShiftText,
+    stressBehavior,
     impactAreas,
     riskTimeline,
     developmentLevel,
@@ -125,34 +239,123 @@ export function computeSollIst(
   };
 }
 
-function buildSummary(role: string, cand: string, fit: string, rk: ComponentKey, ck: ComponentKey, gap: string, rt: Triad, ct: Triad): string {
-  if (rk === ck) {
-    return `${cand} zeigt eine ${fit.toLowerCase()}e Passung für die Rolle ${role}. Die Arbeitslogik stimmt in der Grundausrichtung überein. Beide Profile betonen ${compDesc(rk)}. Die Abweichung betrifft die Gewichtung der sekundären Bereiche und ist ${gap}.`;
+function constellationRoleText(c: ConstellationType): string {
+  const texts: Record<ConstellationType, string> = {
+    H_DOM: "Diese Rolle wirkt vor allem über Geschwindigkeit, klare Priorisierung und direkte Umsetzung. Entscheidungen werden zügig getroffen, Themen schnell in Bewegung gebracht.",
+    B_DOM: "Diese Rolle lebt stark vom direkten Kontakt mit Menschen, vom schnellen Erfassen von Situationen und von reibungsarmer Zusammenarbeit.",
+    S_DOM: "Diese Rolle verlangt vor allem Struktur, sorgfältige Planung und verlässliche Prüftiefe. Qualität entsteht über Ordnung, Disziplin und Nachvollziehbarkeit.",
+    H_GT_B: "Die Rolle wird vor allem durch Umsetzung und Tempo getragen, braucht aber gleichzeitig die Fähigkeit, Menschen mitzunehmen und Situationen sozial klug zu lesen.",
+    H_GT_S: "Die Rolle lebt von zügiger Umsetzung, braucht aber eine stabile Struktur im Hintergrund. Geschwindigkeit allein reicht nicht; sie muss in klare Abläufe eingebettet sein.",
+    B_GT_H: "Die Rolle wirkt primär über Beziehung und Kommunikation, braucht aber eine klare Fähigkeit, bei Bedarf zu entscheiden und in Handlung zu kommen.",
+    B_GT_S: "Die Rolle braucht vor allem Zusammenarbeit, situatives Gespür und tragfähige Kommunikation. Struktur dient hier als Stabilisierung und Absicherung.",
+    S_GT_H: "Die Rolle verlangt in erster Linie Planung, Sorgfalt und Ordnung, braucht aber gleichzeitig die Fähigkeit, Entscheidungen rechtzeitig umzusetzen.",
+    S_GT_B: "Die Rolle wird vor allem über Struktur, Planung und Verlässlichkeit getragen. Gleichzeitig braucht sie ausreichend Kommunikationsfähigkeit, damit die Struktur im System angenommen wird.",
+    H_NEAR_B: "Die Rolle verbindet starke Umsetzungsenergie mit hoher sozialer Beweglichkeit. Sie wirkt zugleich über Tempo und Kontaktfähigkeit.",
+    H_NEAR_S: "Die Rolle verbindet Umsetzungskraft mit Struktur. Sie kann stark sein, wenn Geschwindigkeit und saubere Planung gemeinsam wirken.",
+    B_NEAR_S: "Die Rolle verbindet Zusammenarbeit und Struktur. Sie wirkt über Orientierung, saubere Abstimmung und verlässliche Standards.",
+    BALANCED: "Die Rolle zeigt keine klare strukturelle Einseitigkeit. Umsetzung, Zusammenarbeit und Struktur wirken in relativ ausgeglichener Form zusammen.",
+  };
+  return texts[c];
+}
+
+function constellationCandText(c: ConstellationType, cand: string): string {
+  const texts: Record<ConstellationType, string> = {
+    H_DOM: `${cand} arbeitet mit hoher Umsetzungsenergie, trifft Entscheidungen zügig und bringt Themen schnell ins Handeln.`,
+    B_DOM: `${cand} baut schnell Vertrauen auf, erkennt Bedürfnisse früh und sorgt für reibungsarme Zusammenarbeit.`,
+    S_DOM: `${cand} arbeitet planvoll und präzise, sorgt für verlässliche Abläufe und prüft sorgfältig.`,
+    H_GT_B: `${cand} setzt auf Tempo und direkte Umsetzung, kann aber gleichzeitig Menschen einbinden und situative Zusammenarbeit leisten.`,
+    H_GT_S: `${cand} arbeitet schnell und entscheidungsorientiert, sichert Ergebnisse aber zusätzlich über klare Abläufe und Struktur ab.`,
+    B_GT_H: `${cand} wirkt primär über Beziehung und Kommunikation, kann aber bei Bedarf schnell entscheiden und handeln.`,
+    B_GT_S: `${cand} ist stark in Zusammenarbeit und situativem Gespür, nutzt gleichzeitig Struktur als Absicherung.`,
+    S_GT_H: `${cand} arbeitet vorwiegend strukturiert und planvoll, kann aber bei Bedarf schnell umschalten und handeln.`,
+    S_GT_B: `${cand} legt Wert auf Struktur, Ordnung und Verlässlichkeit. Gleichzeitig sorgt ein Beziehungsanteil dafür, dass Strukturen kommunikativ vermittelt werden.`,
+    H_NEAR_B: `${cand} zeigt eine Doppelausrichtung: starke Umsetzungsenergie und hohe soziale Beweglichkeit wechseln sich je nach Situation ab.`,
+    H_NEAR_S: `${cand} zeigt eine Doppelausrichtung: Umsetzungskraft und Strukturorientierung stehen fast gleichwertig nebeneinander. Je nach Situation wird entweder schnell gehandelt oder gründlich geprüft.`,
+    B_NEAR_S: `${cand} zeigt eine Doppelausrichtung: Zusammenarbeit und Struktur stehen fast gleichwertig nebeneinander. Je nach Situation wird moderiert oder geordnet.`,
+    BALANCED: `${cand} zeigt ein ausgeglichenes Profil ohne klare Einseitigkeit. Das Verhalten passt sich situativ an, ist aber weniger eindeutig steuerbar.`,
+  };
+  return texts[c];
+}
+
+function buildSummary(role: string, cand: string, fit: string, rk: ComponentKey, ck: ComponentKey, gap: string, rt: Triad, ct: Triad, rConst: ConstellationType, cConst: ConstellationType): string {
+  const rLabel = constellationLabel(rConst);
+  const cLabel = constellationLabel(cConst);
+
+  if (rk === ck && gap === "gering") {
+    return `${cand} zeigt eine ${fit.toLowerCase()}e Passung für die Rolle ${role}. Die Arbeitslogik stimmt in der Grundausrichtung überein. Die Rolle erwartet ${rLabel.toLowerCase()}, ${cand} bringt ${cLabel.toLowerCase()} mit. Die Abweichung betrifft die Gewichtung der sekundären Bereiche und ist ${gap}.`;
   }
+
   if (gap === "hoch") {
-    return `Die Arbeitslogik von ${cand} weicht deutlich von der strukturellen Anforderung der Rolle ab. Die Position verlangt eine Arbeitsweise, in der ${rk === "analytisch" ? "Entscheidungen geprüft, Abläufe dokumentiert und Arbeitsschritte sauber geplant werden" : rk === "impulsiv" ? "Aufgaben schnell angegangen, Entscheidungen zügig getroffen und Ergebnisse direkt erzielt werden" : "Abstimmung mit Menschen im Vordergrund steht, Kontext einbezogen und Zusammenarbeit aktiv gestaltet wird"}. ${cand} arbeitet dagegen stärker über ${compDesc(ck)}. Dadurch verschiebt sich die Wirkung der Rolle sichtbar.`;
+    return `Die Arbeitslogik von ${cand} weicht deutlich von der strukturellen Anforderung der Rolle ${role} ab. Die Rolle erwartet ${rLabel.toLowerCase()}: ${constellationRoleText(rConst)} ${cand} bringt dagegen ${cLabel.toLowerCase()} mit: ${constellationCandText(cConst, cand)} Dadurch verschiebt sich die Wirkung der Rolle sichtbar.`;
   }
-  return `${cand} ist für die Rolle ${role} als ${fit.toLowerCase()} einzustufen. Die Rolle verlangt schwerpunktmäßig ${compDesc(rk)}. ${cand} bringt eine stärkere Orientierung an ${compDesc(ck)} mit. Bei gezielter Steuerung kann die Abweichung ausgeglichen werden.`;
+
+  return `${cand} ist für die Rolle ${role} als ${fit.toLowerCase()} einzustufen. Die Rolle erwartet ${rLabel.toLowerCase()}. ${cand} bringt ${cLabel.toLowerCase()} mit. Bei gezielter Steuerung kann die Abweichung ausgeglichen werden.`;
 }
 
-function buildDominanceShift(role: string, cand: string, rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad): string {
+function buildDominanceShift(role: string, cand: string, rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, rConst: ConstellationType, cConst: ConstellationType): string {
   if (rk === ck) {
-    return `Die Grundausrichtung stimmt überein. Sowohl die Rolle als auch ${cand} betonen ${compDesc(rk)}. Unterschiede bestehen in der Ausprägung der sekundären Bereiche. Im Alltag bedeutet das, dass die Grundrichtung der Arbeit passt, einzelne Situationen aber unterschiedlich angegangen werden.`;
+    if (rConst === cConst) {
+      return `Die Grundausrichtung stimmt überein. Sowohl die Rolle als auch ${cand} zeigen ${constellationLabel(rConst).toLowerCase()}. Im Alltag bedeutet das, dass die Grundrichtung der Arbeit passt, einzelne Situationen aber unterschiedlich angegangen werden.`;
+    }
+    return `Die Hauptrichtung stimmt überein, aber die Profilstruktur unterscheidet sich. Die Rolle erwartet ${constellationLabel(rConst).toLowerCase()}, ${cand} zeigt ${constellationLabel(cConst).toLowerCase()}. Die sekundären Anteile verschieben sich, was in bestimmten Situationen zu unterschiedlichem Verhalten führt.`;
   }
-  const roleDesc = rk === "analytisch"
-    ? "eine Arbeitsweise, bei der Abläufe zuerst geprüft und strukturiert geplant werden"
-    : rk === "impulsiv"
-      ? "schnelle Umsetzung, kurze Entscheidungswege und sichtbare Ergebnisse"
-      : "aktive Kommunikation, Abstimmung im Team und kontextbezogene Entscheidungen";
-  const candDesc = ck === "impulsiv"
-    ? "Aufgaben werden schnell angegangen und Entscheidungen zügig getroffen"
-    : ck === "analytisch"
-      ? "Aufgaben werden gründlich geprüft und strukturiert abgearbeitet"
-      : "Abstimmung und Zusammenarbeit stehen im Vordergrund";
-  return `Die Rolle ${role} verlangt ${roleDesc}. ${cand} bringt stattdessen eine Arbeitslogik mit, bei der ${candDesc.toLowerCase()}. Wenn diese Prüfschritte fehlen, kann es passieren, dass Entscheidungen schneller getroffen werden, als sie organisatorisch abgesichert sind.`;
+
+  const isDoubleDom = cConst.includes("NEAR") || cConst === "BALANCED";
+  const roleRichText = constellationRoleText(rConst);
+  const candRichText = constellationCandText(cConst, cand);
+
+  if (isDoubleDom) {
+    return `Die Rolle ${role} erwartet ${constellationLabel(rConst).toLowerCase()}: ${roleRichText} ${candRichText} Durch die Doppelausrichtung kann das Verhalten je nach Situation wechseln, was die Steuerbarkeit erschwert.`;
+  }
+
+  return `Die Rolle ${role} erwartet ${constellationLabel(rConst).toLowerCase()}: ${roleRichText} ${candRichText} Dadurch verschiebt sich die Wirkung der Position weg von ${compShort(rk)} hin zu ${compShort(ck)}.`;
 }
 
-function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, cand: string): ImpactArea[] {
+function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string, gapLevel: string): StressBehavior {
+  const pk = primaryKey(cConst);
+  const sk = secondaryKey(cConst, ct);
+  const d12 = ct[pk] - ct[sk];
+
+  const primaryBehavior: Record<ComponentKey, string> = {
+    impulsiv: "Themen schnell voranzutreiben, Entscheidungen zügig zu treffen und Tempo zu erhöhen",
+    intuitiv: "Menschen einzubinden, Orientierung über Kommunikation zu geben und Abstimmung zu suchen",
+    analytisch: "Abläufe zu sichern, Prioritäten sauber zu ordnen und Fehlerquellen zu kontrollieren",
+  };
+
+  const secondaryBehavior: Record<ComponentKey, string> = {
+    impulsiv: "Entscheidungen werden direkter und schneller getroffen. Das Verhalten wird handlungsorientierter und weniger gründlich abgesichert",
+    intuitiv: "Es wird mehr moderiert, erklärt und abgestimmt. Der Fokus verschiebt sich stärker auf zwischenmenschliche Absicherung",
+    analytisch: "Es wird stärker geordnet, geprüft und abgesichert. Entscheidungen werden langsamer, aber kontrollierter",
+  };
+
+  const secondaryDecision: Record<ComponentKey, string> = {
+    impulsiv: "schneller, aber weniger abgesichert",
+    intuitiv: "kontextbezogener, aber weniger faktenbasiert",
+    analytisch: "gründlicher, aber langsamer",
+  };
+
+  let controlledPressure: string;
+  if (cConst === "BALANCED") {
+    controlledPressure = `Wenn der Arbeitsdruck steigt, verstärkt sich bei ${cand} meist die situativ naheliegendste Arbeitslogik. Da das Profil ausgeglichen ist, gibt es keinen sehr klaren Automatismus. Die tatsächliche Reaktion hängt stärker vom Kontext und der Führung ab.`;
+  } else if (cConst.includes("NEAR")) {
+    controlledPressure = `Wenn der Arbeitsdruck steigt, verstärkt sich bei ${cand} meist die im Moment führende Logik. Da beide Hauptanteile fast gleich stark sind, kann die Reaktion je nach Situation unterschiedlich ausfallen. Das bedeutet: Mal wird stärker über ${compShort(pk)} gesteuert, mal über ${compShort(sk)}.`;
+  } else {
+    controlledPressure = `Wenn der Arbeitsdruck steigt, verstärkt sich bei ${cand} zunächst die Tendenz, ${primaryBehavior[pk]}. Das hilft, die Situation kurzfristig zu stabilisieren. Gleichzeitig steigt damit das Risiko, dass die sekundären Anteile (${compShort(sk)}) in den Hintergrund treten.`;
+  }
+
+  let uncontrolledStress: string;
+  if (cConst === "BALANCED") {
+    uncontrolledStress = `Wenn der Druck sehr hoch wird, kann das Verhalten von ${cand} kippen oder wechseln, weil keine sehr klare Hauptlogik trägt. Die Reaktion wird weniger vorhersagbar. Für die Führungskraft bedeutet das: Die Person braucht in Stressphasen besonders klare Orientierung und Leitplanken.`;
+  } else if (d12 <= 5) {
+    uncontrolledStress = `Wenn die Belastung sehr hoch wird, kann sich der Schwerpunkt bei ${cand} leicht verschieben. Die Person bleibt in ihrer Grundlogik erkennbar, nutzt aber spürbar stärker ${compShort(sk)}. ${secondaryBehavior[sk]}. Für die Führungskraft bedeutet das: Die Arbeitsweise verändert sich, aber die Grundrichtung bleibt steuerbar.`;
+  } else {
+    uncontrolledStress = `Wenn die Belastung sehr hoch wird und viele Anforderungen gleichzeitig auftreten, verschiebt sich das Verhalten von ${cand} deutlich. Dann tritt stärker ${compShort(sk)} in den Vordergrund. ${secondaryBehavior[sk]}. Entscheidungen werden dadurch ${secondaryDecision[sk]}. Für die Führungskraft bedeutet das: Unter starkem Stress arbeitet die Person anders als im Normalzustand. Darauf sollte man vorbereitet sein.`;
+  }
+
+  return { controlledPressure, uncontrolledStress };
+}
+
+function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, cand: string, fuehrungsArt: FuehrungsArt): ImpactArea[] {
   const gapI = Math.abs(rt.impulsiv - ct.impulsiv);
   const gapN = Math.abs(rt.intuitiv - ct.intuitiv);
   const gapA = Math.abs(rt.analytisch - ct.analytisch);
@@ -161,7 +364,7 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
     buildDecisionImpact(rk, ck, gapI, gapA, cand),
     buildWorkStructureImpact(rk, ck, rt, ct, gapA, cand),
     buildDocumentationImpact(rk, ck, rt, ct, gapA, cand),
-    buildLeadershipImpact(rk, ck, gapI, gapN, gapA, cand),
+    buildLeadershipImpact(rk, ck, gapI, gapN, gapA, cand, fuehrungsArt),
     buildConflictImpact(rk, ck, gapI, gapN, cand),
     buildCultureImpact(rk, ck, gapI, gapN, gapA, cand),
   ];
@@ -272,19 +475,31 @@ function buildDocumentationImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
   return { id: "documentation", label: "Dokumentation", severity: sev, roleNeed, candidatePattern, risk };
 }
 
-function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string): ImpactArea {
+function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, fuehrungsArt: FuehrungsArt): ImpactArea {
   const sev = severity(rk !== ck ? Math.max(gapI, gapN, gapA) * 0.7 : 0);
 
   let roleNeed: string;
   let candidatePattern: string;
   let risk: string;
 
-  if (rk === "analytisch") {
-    roleNeed = "Die Rolle verlangt Orientierung über Struktur, Standards und klare Vorgaben. Das Team braucht verlässliche Leitlinien und konsistente Prioritäten.";
-  } else if (rk === "impulsiv") {
-    roleNeed = "Die Rolle verlangt klare Ansagen, schnelle Richtungsentscheidungen und sichtbare Führung. Das Team erwartet direktes, handlungsorientiertes Führungsverhalten.";
+  if (fuehrungsArt === "disziplinarisch") {
+    roleNeed = rk === "analytisch"
+      ? "Die Rolle trägt disziplinarische Führungsverantwortung. Führung wirkt hier über Standards, Klarheit und verlässliche Struktur. Das Team braucht konsistente Prioritäten und nachvollziehbare Entscheidungen."
+      : rk === "impulsiv"
+        ? "Die Rolle trägt disziplinarische Führungsverantwortung. Führung wirkt hier über Entscheidungskraft, klare Richtung und schnelle Steuerung. Das Team erwartet sichtbare Leistungsorientierung."
+        : "Die Rolle trägt disziplinarische Führungsverantwortung. Führung wirkt hier über Einbindung, offene Kommunikation und Gespür für Teamdynamik. Das Team braucht Sicherheit durch persönliche Ansprache.";
+  } else if (fuehrungsArt === "fachlich") {
+    roleNeed = rk === "analytisch"
+      ? "Die Rolle hat fachliche Führungsverantwortung. Teammitglieder suchen hier klare Einschätzung, Qualitätssicherheit und verlässliche Priorisierung. Formale Autorität ist weniger wichtig als fachliche Orientierung."
+      : rk === "impulsiv"
+        ? "Die Rolle hat fachliche Führungsverantwortung. Teammitglieder erwarten schnelle Orientierung, praxisnahe Entscheidungen und klare fachliche Richtung."
+        : "Die Rolle hat fachliche Führungsverantwortung. Teammitglieder erwarten Dialog, fachlichen Austausch und gemeinsame Lösungsfindung.";
   } else {
-    roleNeed = "Die Rolle verlangt empathische Führung, offene Kommunikation und ein Gespür für Teamdynamik. Das Team braucht Sicherheit durch persönliche Ansprache und Einbindung.";
+    roleNeed = rk === "analytisch"
+      ? "Die Rolle verlangt Orientierung über Struktur, Standards und klare Vorgaben. Die eigene Arbeitsweise wirkt als Vorbild für Qualität und Verlässlichkeit."
+      : rk === "impulsiv"
+        ? "Die Rolle verlangt Wirkung über Tempo, Entscheidungsstärke und direkte Umsetzung. Die eigene Arbeitsweise prägt das Umfeld durch Ergebnisorientierung."
+        : "Die Rolle verlangt Wirkung über Kommunikation, Zusammenarbeit und situatives Gespür. Die eigene Arbeitsweise prägt das Umfeld durch Beziehungsarbeit.";
   }
 
   if (ck === "impulsiv") {
@@ -296,18 +511,24 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
   }
 
   if (rk !== ck) {
+    const leadershipSuffix = fuehrungsArt === "disziplinarisch"
+      ? " Da die Rolle disziplinarische Verantwortung trägt, wirkt sich diese Abweichung nicht nur auf Arbeitsergebnisse, sondern auch auf Führungskosten, Eskalationen und Teamstabilität aus."
+      : fuehrungsArt === "fachlich"
+        ? " Da die Rolle fachliche Führungsverantwortung trägt, wirkt sich die Abweichung auf die Teamklarheit und fachliche Sicherheit der Mitarbeiter aus."
+        : "";
+
     if (rk === "analytisch" && ck === "impulsiv") {
-      risk = "Im Alltag bedeutet das: Dem Team fehlen auf Dauer klare Leitlinien und verlässliche Prioritäten. Entscheidungen wirken impulsiv statt durchdacht. Mitarbeiter, die Orientierung durch Struktur brauchen, verlieren den Halt.";
+      risk = `Im Alltag bedeutet das: Dem Team fehlen auf Dauer klare Leitlinien und verlässliche Prioritäten. Entscheidungen wirken impulsiv statt durchdacht. Mitarbeiter, die Orientierung durch Struktur brauchen, verlieren den Halt.${leadershipSuffix}`;
     } else if (rk === "analytisch" && ck === "intuitiv") {
-      risk = "Im Alltag bedeutet das: Führungsentscheidungen werden stärker von Beziehungsdynamik geprägt als von fachlichen Standards. Das Team kann den Eindruck bekommen, dass persönliche Nähe wichtiger ist als Leistung.";
+      risk = `Im Alltag bedeutet das: Führungsentscheidungen werden stärker von Beziehungsdynamik geprägt als von fachlichen Standards. Das Team kann den Eindruck bekommen, dass persönliche Nähe wichtiger ist als Leistung.${leadershipSuffix}`;
     } else if (rk === "impulsiv" && ck === "analytisch") {
-      risk = "Im Alltag bedeutet das: Das Team wartet auf klare Ansagen, die nicht schnell genug kommen. In Drucksituationen fehlt die entschlossene Führung, die das Team erwartet.";
+      risk = `Im Alltag bedeutet das: Das Team wartet auf klare Ansagen, die nicht schnell genug kommen. In Drucksituationen fehlt die entschlossene Führung, die das Team erwartet.${leadershipSuffix}`;
     } else if (rk === "impulsiv" && ck === "intuitiv") {
-      risk = "Im Alltag bedeutet das: Statt schneller Entscheidungen wird viel abgestimmt. Das Team erwartet Tempo, bekommt aber Gesprächsrunden. In zeitkritischen Situationen kann das zu Frustration führen.";
+      risk = `Im Alltag bedeutet das: Statt schneller Entscheidungen wird viel abgestimmt. Das Team erwartet Tempo, bekommt aber Gesprächsrunden. In zeitkritischen Situationen kann das zu Frustration führen.${leadershipSuffix}`;
     } else if (rk === "intuitiv" && ck === "impulsiv") {
-      risk = "Im Alltag bedeutet das: Mitarbeiter fühlen sich übergangen, weil Entscheidungen ohne ausreichende Einbindung getroffen werden. Beziehungsarbeit kommt zu kurz. Teamzusammenhalt kann darunter leiden.";
+      risk = `Im Alltag bedeutet das: Mitarbeiter fühlen sich übergangen, weil Entscheidungen ohne ausreichende Einbindung getroffen werden. Beziehungsarbeit kommt zu kurz. Teamzusammenhalt kann darunter leiden.${leadershipSuffix}`;
     } else {
-      risk = "Im Alltag bedeutet das: Die Führung wirkt formal und distanziert. Das Team erwartet persönliche Nähe und offene Kommunikation, bekommt aber Regeln und Prozesse.";
+      risk = `Im Alltag bedeutet das: Die Führung wirkt formal und distanziert. Das Team erwartet persönliche Nähe und offene Kommunikation, bekommt aber Regeln und Prozesse.${leadershipSuffix}`;
     }
   } else {
     risk = "Der Führungsstil passt zur Rollenanforderung. Die Art, wie Orientierung gegeben wird, stimmt mit den Erwartungen des Teams überein.";
@@ -522,12 +743,18 @@ function buildActions(rk: ComponentKey, ck: ComponentKey, gap: string, control: 
   return base;
 }
 
-function buildFinal(role: string, cand: string, fit: string, control: string, rk: ComponentKey, ck: ComponentKey): string {
+function buildFinal(role: string, cand: string, fit: string, control: string, rk: ComponentKey, ck: ComponentKey, fuehrungsArt: FuehrungsArt): string {
+  const leadSuffix = fuehrungsArt === "disziplinarisch"
+    ? ` Da die Rolle disziplinarische Führungsverantwortung trägt, wirkt sich die Abweichung nicht nur auf die eigene Arbeitsweise aus, sondern auch auf die Führungskultur und Teamstabilität.`
+    : fuehrungsArt === "fachlich"
+      ? ` Da die Rolle fachliche Führung beinhaltet, beeinflusst die Profilabweichung auch die fachliche Orientierung des Teams.`
+      : "";
+
   if (fit === "Geeignet") {
-    return `${cand} zeigt eine gute Passung für die Rolle ${role}. Die Arbeitslogik stimmt in der Grundausrichtung überein. Der Steuerungsbedarf ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich. Die Führungskraft sollte dennoch regelmäßig prüfen, ob die sekundären Bereiche zur Rolle passen.`;
+    return `${cand} zeigt eine gute Passung für die Rolle ${role}. Die Arbeitslogik stimmt in der Grundausrichtung überein. Der Steuerungsbedarf ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich. Die Führungskraft sollte dennoch regelmäßig prüfen, ob die sekundären Bereiche zur Rolle passen.${leadSuffix}`;
   }
   if (fit === "Bedingt geeignet") {
-    return `${cand} kann die Rolle ${role} unter Bedingungen ausfüllen. Der Steuerungsbedarf ist ${control}. Die Arbeitslogik weicht in einzelnen Bereichen von der Rollenanforderung ab, kann aber mit gezielter Führung und klarer Struktur stabilisiert werden. Die Führungskraft sollte konkrete Steuerungsmaßnahmen festlegen und den Fortschritt regelmäßig überprüfen.`;
+    return `${cand} kann die Rolle ${role} unter Bedingungen ausfüllen. Der Steuerungsbedarf ist ${control}. Die Arbeitslogik weicht in einzelnen Bereichen von der Rollenanforderung ab, kann aber mit gezielter Führung und klarer Struktur stabilisiert werden. Die Führungskraft sollte konkrete Steuerungsmaßnahmen festlegen und den Fortschritt regelmäßig überprüfen.${leadSuffix}`;
   }
-  return `${cand} zeigt eine starke Ausrichtung auf ${compDesc(ck)}, während die Rolle einen Schwerpunkt auf ${compDesc(rk)} erfordert. Die Grundpassung ist nicht gegeben. Eine stabile Besetzung wäre nur mit hohem Steuerungsaufwand möglich. Die Führungskraft sollte realistisch bewerten, ob dieser Aufwand langfristig tragbar ist.`;
+  return `${cand} zeigt eine starke Ausrichtung auf ${compDesc(ck)}, während die Rolle einen Schwerpunkt auf ${compDesc(rk)} erfordert. Die Grundpassung ist nicht gegeben. Eine stabile Besetzung wäre nur mit hohem Steuerungsaufwand möglich. Die Führungskraft sollte realistisch bewerten, ob dieser Aufwand langfristig tragbar ist.${leadSuffix}`;
 }

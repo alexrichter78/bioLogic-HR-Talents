@@ -3,9 +3,9 @@ import { useLocation } from "wouter";
 import { AlertTriangle, Download, Check } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
-import { computeSollIst } from "@/lib/soll-ist-engine";
+import { computeSollIst, mapFuehrungsArt, constellationLabel } from "@/lib/soll-ist-engine";
 import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
-import type { SollIstResult, Severity, ImpactArea } from "@/lib/soll-ist-engine";
+import type { SollIstResult, Severity, ImpactArea, FuehrungsArt } from "@/lib/soll-ist-engine";
 
 type BG = { imp: number; int: number; ana: number };
 type RoleDnaState = {
@@ -208,6 +208,7 @@ export default function SollIstBericht() {
   const [roleTriad, setRoleTriad] = useState<Triad | null>(null);
   const [hasRollenDna, setHasRollenDna] = useState(false);
   const [reportGenerated, setReportGenerated] = useState(false);
+  const [fuehrungsArt, setFuehrungsArt] = useState<FuehrungsArt>("keine");
 
   useEffect(() => {
     const raw = localStorage.getItem("rollenDnaState");
@@ -218,6 +219,7 @@ export default function SollIstBericht() {
         setHasRollenDna(true);
         setRoleName(dna.beruf);
         setRoleTriad(bgToTriad(dna.bioGramGesamt));
+        if (dna.fuehrung) setFuehrungsArt(mapFuehrungsArt(dna.fuehrung));
       }
     } catch {}
 
@@ -238,8 +240,8 @@ export default function SollIstBericht() {
 
   const result: SollIstResult | null = useMemo(() => {
     if (!roleTriad || !reportGenerated) return null;
-    return computeSollIst(roleName, candidateName || "Kandidat", roleTriad, candidateProfile);
-  }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated]);
+    return computeSollIst(roleName, candidateName || "Kandidat", roleTriad, candidateProfile, fuehrungsArt);
+  }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated, fuehrungsArt]);
 
   if (!hasRollenDna || !roleTriad) {
     return (
@@ -388,8 +390,8 @@ export default function SollIstBericht() {
                 <div className="grid min-w-[280px] grid-cols-2 gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4" data-testid="metrics-grid">
                   <Metric label="Gesamtpassung" value={result.fitLabel} valueClass={fitToneClasses(result.fitLabel).text} />
                   <Metric label="Steuerungsintensität" value={result.controlIntensity.charAt(0).toUpperCase() + result.controlIntensity.slice(1)} valueClass={result.controlIntensity === "hoch" ? "text-amber-600" : "text-slate-900"} />
-                  <Metric label="Kritischer Bereich" value="Dominanzstruktur" />
-                  <Metric label="Entwicklung" value={result.developmentLabel.charAt(0).toUpperCase() + result.developmentLabel.slice(1)} />
+                  <Metric label="Rollenprofil" value={result.roleConstellationLabel} />
+                  <Metric label="Kandidatenprofil" value={result.candConstellationLabel} />
                 </div>
               </div>
             </header>
@@ -529,6 +531,30 @@ export default function SollIstBericht() {
                     </div>
                   </div>
                 ))}
+              </div>
+            </section>
+
+            {/* ── Stress Behavior ── */}
+            <section className="mb-8 grid gap-8 lg:grid-cols-2" data-testid="section-stress-behavior">
+              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+                <div className="mb-2 flex items-center gap-3">
+                  <div className="h-3 w-3 rounded-full bg-amber-500" />
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Kontrollierter Druck</p>
+                </div>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">Verhalten bei steigendem Arbeitsdruck</h3>
+                <div className="mt-5 rounded-2xl border border-amber-100 bg-amber-50/40 p-5">
+                  <p className="text-sm leading-7 text-slate-700">{result.stressBehavior.controlledPressure}</p>
+                </div>
+              </div>
+              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+                <div className="mb-2 flex items-center gap-3">
+                  <div className="h-3 w-3 rounded-full bg-red-500" />
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Unkontrollierter Stress</p>
+                </div>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">Verhalten bei starker Belastung</h3>
+                <div className="mt-5 rounded-2xl border border-red-100 bg-red-50/40 p-5">
+                  <p className="text-sm leading-7 text-slate-700">{result.stressBehavior.uncontrolledStress}</p>
+                </div>
               </div>
             </section>
 
