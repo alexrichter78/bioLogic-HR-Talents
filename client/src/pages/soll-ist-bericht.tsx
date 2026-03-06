@@ -496,16 +496,16 @@ export default function SollIstBericht() {
                 </div>
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-4">
                 {result.impactAreas.map(area => (
-                  <div key={area.id} className="rounded-2xl border border-slate-200 bg-slate-50/60 p-5" data-testid={`impact-detail-${area.id}`}>
+                  <div key={area.id} className="rounded-2xl border border-slate-200 bg-slate-50/60 p-6" data-testid={`impact-detail-${area.id}`}>
                     <div className="flex items-center justify-between mb-4">
                       <h4 className="text-base font-semibold text-slate-950">{area.label}</h4>
                       <span className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${severityTone(area.severity)}`}>
                         {severityLabel(area.severity)}
                       </span>
                     </div>
-                    <div className="space-y-3 text-sm leading-6 text-slate-700">
+                    <div className="space-y-3 text-sm leading-7 text-slate-700">
                       <div><span className="font-semibold text-slate-900">Rolle braucht:</span> {area.roleNeed}</div>
                       <div><span className="font-semibold text-slate-900">Kandidat bringt:</span> {area.candidatePattern}</div>
                       <div>
