@@ -209,14 +209,57 @@ function buildStressTexts(bg: BG) {
   }
 
   let uncontrolled = "";
+  const midSecClose = gap23 <= 5;
+
   if (hasFullSymmetry) {
-    uncontrolled = "Wenn der Druck sehr hoch wird, fehlt ein klarer Rückfallmechanismus. Das Verhalten wird widersprüchlich. Die Person versucht gleichzeitig zu handeln, abzustimmen und zu analysieren. Entscheidungen werden sprunghaft oder bleiben ganz aus.";
-  } else if (hasSecondaryCompetition) {
-    uncontrolled = "Wenn der Druck sehr hoch wird, verliert die Person ihre klare Linie. Die zweit- und drittstärkste Seite konkurrieren um Aufmerksamkeit. Entscheidungen werden verzögert oder widersprüchlich, weil keine der beiden Seiten klar überwiegt.";
+    // 13: Alle drei ähnlich stark
+    uncontrolled = "Wenn der Druck sehr hoch wird, versucht die Person mehrere Perspektiven gleichzeitig zu berücksichtigen: Tempo, Fakten und Beziehungen. Dadurch kann der Entscheidungsprozess länger dauern, weil verschiedene Aspekte parallel abgewogen werden.";
   } else if (hasDualDominance) {
-    uncontrolled = `Wenn der Druck sehr hoch wird, geraten die beiden starken Seiten in Konflikt. ${behaviorDesc(top.key).charAt(0).toUpperCase() + behaviorDesc(top.key).slice(1)} und ${behaviorDesc(mid.key)} stehen sich im Weg. Entscheidungen dauern länger oder fallen widersprüchlich aus, weil die Person zwischen zwei Herangehensweisen wechselt, ohne sich festzulegen.`;
+    // Doppeldominanz (gap12 <= 5)
+    if ((top.key === "imp" && mid.key === "ana") || (top.key === "ana" && mid.key === "imp")) {
+      // 10: Impulsiv und Analytisch gleich stark
+      uncontrolled = "Unter sehr hohem Druck kann ein Wechsel zwischen schnellem Handeln und gründlicher Prüfung entstehen. Die Person entscheidet zunächst zügig, beginnt danach jedoch häufig wieder zu analysieren und überprüft ihre Entscheidung erneut.";
+    } else if ((top.key === "imp" && mid.key === "int") || (top.key === "int" && mid.key === "imp")) {
+      // 11: Impulsiv und Intuitiv gleich stark
+      uncontrolled = "Bei starkem Druck schwankt die Person zwischen direkter Handlung und dem Wunsch, Beziehungen zu stabilisieren. Entscheidungen können daher zunächst klar getroffen werden, werden später aber teilweise noch einmal angepasst.";
+    } else {
+      // 12: Analytisch und Intuitiv gleich stark
+      uncontrolled = "Unter sehr hohem Druck versucht die Person gleichzeitig, sachliche Richtigkeit und zwischenmenschliche Wirkung zu berücksichtigen. Dadurch kann es länger dauern, bis eine Entscheidung endgültig getroffen wird.";
+    }
+  } else if (top.key === "imp") {
+    if (midSecClose) {
+      // 3: Impulsiv dominant, Analytisch und Intuitiv ähnlich stark
+      uncontrolled = "Bei sehr hohem Druck verliert die Person ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch länger dauern oder mehrfach angepasst werden, weil zwei unterschiedliche Denkweisen gleichzeitig Einfluss nehmen.";
+    } else if (mid.key === "ana") {
+      // 1: Impulsiv dominant, Analytisch zweitstärkste Seite
+      uncontrolled = "Wenn der Druck sehr hoch wird, verliert die Person einen Teil ihrer schnellen Entscheidungsstärke. Sie beginnt stärker zu hinterfragen und sucht nach zusätzlichen Informationen. Dadurch kann es passieren, dass Entscheidungen zunächst sehr schnell angestoßen werden, anschließend jedoch wieder überprüft oder angepasst werden. Für andere wirkt das manchmal wie ein Wechsel zwischen Tempo und Absicherung.";
+    } else {
+      // 2: Impulsiv dominant, Intuitiv zweitstärkste Seite
+      uncontrolled = "Unter starkem Druck schwankt die Person stärker zwischen schnellem Handeln und dem Wunsch, auf Menschen und Beziehungen Rücksicht zu nehmen. Entscheidungen können dadurch zunächst sehr direkt getroffen werden, werden später aber teilweise wieder relativiert, um Spannungen oder Konflikte zu vermeiden.";
+    }
+  } else if (top.key === "ana") {
+    if (midSecClose) {
+      // 6: Analytisch dominant, Impulsiv und Intuitiv ähnlich stark
+      uncontrolled = "Unter extremem Druck verliert die Person teilweise ihre klare Struktur. Sie schwankt zwischen dem Wunsch, schnell zu handeln, und dem Bedürfnis, Beziehungen zu stabilisieren. Dadurch kann es passieren, dass Entscheidungen mehrfach überdacht oder angepasst werden.";
+    } else if (mid.key === "imp") {
+      // 4: Analytisch dominant, Impulsiv zweitstärkste Seite
+      uncontrolled = "Unter sehr hohem Druck steigt der Wunsch, Entscheidungen schneller zu treffen. Die Person verlässt dann teilweise ihre sonst gründliche Vorgehensweise. Entscheidungen werden schneller getroffen, ohne alle Details vollständig zu prüfen. Dadurch kann die gewohnte Absicherung etwas geringer werden.";
+    } else {
+      // 5: Analytisch dominant, Intuitiv zweitstärkste Seite
+      uncontrolled = "Wenn der Druck stark steigt, versucht die Person neben Fakten auch stärker die Wirkung auf Menschen zu berücksichtigen. Entscheidungen können dadurch länger dauern, weil sowohl sachliche Aspekte als auch zwischenmenschliche Auswirkungen bedacht werden.";
+    }
   } else {
-    uncontrolled = `Wenn der Druck sehr hoch wird, verschiebt sich das Verhalten spürbar. Die Person setzt dann stärker auf ${behaviorDesc(mid.key)}. ${mid.key === "ana" ? "Entscheidungen dauern länger, weil mehr Informationen geprüft werden. Details werden intensiver bewertet, während Tempo und spontane Reaktionen abnehmen." : mid.key === "int" ? "Entscheidungen werden stärker über Gespräche und Rückversicherung gesucht, auch wenn die Situation schnelles Handeln erfordert. Das kann Abläufe bremsen." : "Entscheidungen werden direkter und schneller getroffen, auch ohne Rücksprache. Die Gesprächsbereitschaft sinkt, während der Ergebnisdruck steigt."}`;
+    // top.key === "int"
+    if (midSecClose) {
+      // 9: Intuitiv dominant, Impulsiv und Analytisch ähnlich stark
+      uncontrolled = "Wenn der Druck sehr hoch wird, gerät die Person zwischen zwei unterschiedliche Entscheidungswege: schneller Handlung und gründlicher Analyse. Entscheidungen können dadurch länger dauern oder mehrfach angepasst werden.";
+    } else if (mid.key === "imp") {
+      // 7: Intuitiv dominant, Impulsiv zweitstärkste Seite
+      uncontrolled = "Bei sehr hohem Druck steigt der Wunsch nach schneller Handlung. Die Person verlässt dann teilweise ihre sonst stark beziehungsorientierte Vorgehensweise und entscheidet direkter und spontaner. Für andere kann dies ungewohnt entschlossen oder plötzlich wirken.";
+    } else {
+      // 8: Intuitiv dominant, Analytisch zweitstärkste Seite
+      uncontrolled = "Unter starkem Druck versucht die Person verstärkt, Entscheidungen auch sachlich abzusichern. Dadurch kann sie länger über Optionen nachdenken oder zusätzliche Informationen einholen, bevor eine Entscheidung endgültig getroffen wird.";
+    }
   }
 
   return { controlled, uncontrolled };
