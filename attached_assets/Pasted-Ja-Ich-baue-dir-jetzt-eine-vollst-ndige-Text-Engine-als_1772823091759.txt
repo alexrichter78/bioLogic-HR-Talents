@@ -1,0 +1,686 @@
+Ja. Ich baue dir jetzt eine vollständige Text-Engine als Strukturmodell für alle 13 bioLogic-Konstellationen – so, dass dein Entwickler in Replit daraus eine echte Generierungslogik bauen kann.
+
+Ich mache das so, dass es für Berichte nutzbar ist und ohne Modellbegriffe im Fließtext auskommt.
+
+Zur Orientierung verwende ich intern drei Kürzel:
+
+H = Handlungsfokus
+
+B = Beziehungsfokus
+
+S = Strukturfokus
+
+Das sind nur interne Logiken für die Engine.
+Im Bericht selbst stehen stattdessen verständliche Formulierungen.
+
+1. Grundlogik der Text-Engine
+
+Jeder Berichtstext besteht aus 6 Modulen:
+
+Rollenlogik
+
+Kandidatenlogik
+
+Dominanzverschiebung
+
+Wirkung im Alltag
+
+Verhalten unter Druck / starkem Stress
+
+Führungs- und Risikologik
+
+Jedes Modul wird aus zwei Dingen gebaut:
+
+Konstellationstyp
+
+Abweichungsstärke: gering / mittel / hoch
+
+2. Die 13 Konstellationen
+
+Ich definiere sie für die Engine so:
+
+Klare Dominanzen
+
+H-dominant
+
+B-dominant
+
+S-dominant
+
+Doppelstrukturen mit Hauptschwerpunkt
+
+H > B
+
+H > S
+
+B > H
+
+B > S
+
+S > H
+
+S > B
+
+Nahe Doppelspitzen
+
+H ≈ B
+
+H ≈ S
+
+B ≈ S
+
+Ausgewogen
+
+Ausgewogen
+
+3. Semantik-Bibliothek
+
+Das ist die sprachliche Basis.
+
+H = Handlungsfokus
+
+Kernbedeutung
+
+Tempo
+
+Entscheidung
+
+Umsetzung
+
+Vorwärtsbewegung
+
+Priorisierung
+
+Positive Textbausteine
+
+arbeitet mit hoher Umsetzungsenergie
+
+trifft Entscheidungen zügig
+
+bringt Themen ins Handeln
+
+setzt klare Prioritäten
+
+schafft Bewegung und Ergebnisdruck
+
+Risikotext
+
+prüft zu wenig
+
+verkürzt Abstimmung
+
+übersieht Details
+
+erzeugt Tempo vor Struktur
+
+geht zu schnell in die Umsetzung
+
+B = Beziehungsfokus
+
+Kernbedeutung
+
+Kommunikation
+
+Zusammenarbeit
+
+situatives Gespür
+
+Anschlussfähigkeit
+
+Einbindung
+
+Positive Textbausteine
+
+baut schnell Vertrauen auf
+
+erkennt Bedürfnisse früh
+
+schafft Verbindung im Team
+
+stimmt sich gut auf Menschen und Situationen ab
+
+sorgt für reibungsarme Zusammenarbeit
+
+Risikotext
+
+vermeidet klare Abgrenzung
+
+entscheidet zu spät
+
+priorisiert Harmonie vor Klarheit
+
+lässt Leistungserwartungen unscharf werden
+
+hält Spannungen zu lange offen
+
+S = Strukturfokus
+
+Kernbedeutung
+
+Planung
+
+Sorgfalt
+
+Prüftiefe
+
+Ordnung
+
+Nachvollziehbarkeit
+
+Positive Textbausteine
+
+arbeitet planvoll und präzise
+
+sorgt für verlässliche Abläufe
+
+prüft sorgfältig
+
+schafft Struktur und Klarheit
+
+erhöht Qualität und Nachvollziehbarkeit
+
+Risikotext
+
+wird zu langsam
+
+überprüft zu lange
+
+verliert Tempo
+
+hält an Details fest
+
+erschwert spontane Entscheidungen
+
+4. Abweichungslogik
+
+Diese Logik steuerst du global.
+
+Geringe Abweichung
+
+Textmodus
+
+weich
+
+anschlussfähig
+
+„verschiebt leicht“
+
+„erfordert bewusste Steuerung“
+
+Beispielsätze
+
+Die Arbeitsweise weicht leicht von der Rollenlogik ab.
+
+Die Grundanforderung der Rolle bleibt erkennbar erreichbar.
+
+Risiken entstehen vor allem in Spitzenbelastungen.
+
+Mittlere Abweichung
+
+Textmodus
+
+klar
+
+konkret
+
+„verschiebt spürbar“
+
+„nur mit Führung stabil“
+
+Beispielsätze
+
+Die Wirkung der Position verschiebt sich spürbar.
+
+Mehrere Kernanforderungen werden nicht in der geforderten Logik abgebildet.
+
+Eine stabile Besetzung braucht klare Steuerung.
+
+Hohe Abweichung
+
+Textmodus
+
+eindeutig
+
+entscheidungsorientiert
+
+„verschiebt grundlegend“
+
+„Kernanforderung nicht abgebildet“
+
+Beispielsätze
+
+Die zentrale Arbeitslogik der Rolle wird nicht stabil abgebildet.
+
+Die Wirkung der Position verschiebt sich grundlegend.
+
+Die Besetzung ist nur mit hohem Steuerungsaufwand denkbar.
+
+5. Textlogik pro Konstellation
+
+Jetzt die 13 Muster.
+
+1. H-dominant
+Rollenlogik
+
+Diese Rolle wirkt vor allem über Geschwindigkeit, klare Priorisierung und direkte Umsetzung. Entscheidungen werden zügig getroffen, Themen schnell in Bewegung gebracht.
+
+Druck
+
+Unter Druck verstärkt sich diese Dynamik. Die Rolle gewinnt an Tempo und Entscheidungskraft.
+
+Starker Stress
+
+Wenn der Druck zu hoch wird, tritt die zweitstärkste Logik hervor. Dann verschiebt sich das Verhalten entweder stärker in Richtung Struktur oder in Richtung Beziehung.
+
+Führungslogik
+
+Führung wirkt hier über Klarheit, Tempo und direkte Steuerung.
+
+Risiko bei Fehlpassung
+
+Fehlt dieser Fokus, werden Entscheidungen langsamer, Prioritäten unschärfer und Umsetzung verliert an Zug.
+
+2. B-dominant
+Rollenlogik
+
+Diese Rolle lebt stark vom direkten Kontakt mit Menschen, vom schnellen Erfassen von Situationen und von reibungsarmer Zusammenarbeit.
+
+Druck
+
+Unter Druck verstärkt sich die Fähigkeit, Menschen einzubinden und Orientierung über Kommunikation zu geben.
+
+Starker Stress
+
+Wenn die Belastung zu hoch wird, tritt die zweitstärkste Logik hervor. Dann wird das Verhalten entweder strukturierter oder handlungsdirekter.
+
+Führungslogik
+
+Führung wirkt vor allem über Vertrauen, Einbindung und situative Orientierung.
+
+Risiko bei Fehlpassung
+
+Fehlt diese Logik, verliert die Rolle Anschlussfähigkeit. Zusammenarbeit wird schwerer und sensible Situationen eskalieren schneller.
+
+3. S-dominant
+Rollenlogik
+
+Diese Rolle verlangt vor allem Struktur, sorgfältige Planung und verlässliche Prüftiefe. Qualität entsteht über Ordnung, Disziplin und Nachvollziehbarkeit.
+
+Druck
+
+Unter Druck verstärkt sich die Tendenz, Abläufe zu sichern, Prioritäten sauber zu ordnen und Fehlerquellen zu kontrollieren.
+
+Starker Stress
+
+Wenn Belastung zu hoch wird, tritt die zweitstärkste Logik hervor. Dann wird das Verhalten entweder schneller und handlungsorientierter oder stärker auf Menschen und Abstimmung ausgerichtet.
+
+Führungslogik
+
+Führung wirkt hier über Standards, Klarheit und verlässliche Struktur.
+
+Risiko bei Fehlpassung
+
+Fehlt diese Logik, entstehen Prozessunschärfe, Qualitätsrisiken und erhöhte Fehleranfälligkeit.
+
+4. H > B
+Rollenlogik
+
+Die Rolle wird vor allem durch Umsetzung und Tempo getragen, braucht aber gleichzeitig die Fähigkeit, Menschen mitzunehmen und Situationen sozial klug zu lesen.
+
+Wirkung
+
+Erfolg entsteht, wenn Dynamik nicht isoliert wirkt, sondern mit situativer Kommunikation verbunden bleibt.
+
+Druck
+
+Unter Druck zeigt sich zuerst Tempo und Entscheidungskraft.
+
+Starker Stress
+
+Bei starkem Stress tritt Beziehungslogik deutlicher hervor oder konkurriert mit dem Handlungsfokus, je nach Abstand.
+
+Risiko
+
+Ohne diese Balance wird entweder zu hart entschieden oder zu spät nachgesteuert.
+
+5. H > S
+Rollenlogik
+
+Die Rolle lebt von zügiger Umsetzung, braucht aber eine stabile Struktur im Hintergrund. Geschwindigkeit allein reicht nicht; sie muss in klare Abläufe eingebettet sein.
+
+Druck
+
+Unter Druck erhöht sich die Umsetzungsdynamik.
+
+Starker Stress
+
+Wenn Belastung unkontrollierbar wird, tritt die strukturierende Seite stärker hervor. Entscheidungen werden dann langsamer, aber kontrollierter.
+
+Risiko
+
+Ohne strukturelle Absicherung entstehen Fehlerketten, Nacharbeit und instabile Qualität.
+
+6. B > H
+Rollenlogik
+
+Die Rolle wirkt primär über Beziehung und Kommunikation, braucht aber eine klare Fähigkeit, bei Bedarf zu entscheiden und in Handlung zu kommen.
+
+Druck
+
+Unter Druck bleibt die Rolle zunächst verbindend und orientierend.
+
+Starker Stress
+
+Wenn Druck stark steigt, kann das Verhalten direkter, schneller und entscheidungsorientierter werden.
+
+Risiko
+
+Fehlt der Handlungsanteil, bleiben Entscheidungen zu lange offen. Wird er zu stark, verliert die Rolle ihre Anschlussfähigkeit.
+
+7. B > S
+Rollenlogik
+
+Die Rolle braucht vor allem Zusammenarbeit, situatives Gespür und tragfähige Kommunikation. Struktur dient hier als Stabilisierung und Absicherung.
+
+Druck
+
+Unter Druck verstärkt sich zunächst die soziale Orientierungsleistung.
+
+Starker Stress
+
+Bei starkem Stress tritt Struktur stärker in den Vordergrund. Die Person sichert Abläufe, ordnet Themen und entscheidet sachlicher.
+
+Risiko
+
+Fehlt die Struktur, werden Standards unscharf. Fehlt die Beziehung, verliert die Rolle ihre eigentliche Wirkung.
+
+8. S > H
+Rollenlogik
+
+Die Rolle verlangt in erster Linie Planung, Sorgfalt und Ordnung, braucht aber gleichzeitig die Fähigkeit, Entscheidungen rechtzeitig umzusetzen.
+
+Druck
+
+Unter Druck steigt zunächst die Tendenz zur Prüfung und Absicherung.
+
+Starker Stress
+
+Wenn der Druck zu hoch wird, tritt mehr Tempo hervor. Entscheidungen werden direkter und weniger gründlich abgesichert.
+
+Risiko
+
+Ohne Handlungsanteil wird die Rolle zu langsam. Mit zu viel Handlungsanteil verliert sie ihre Prüftiefe.
+
+9. S > B
+Rollenlogik
+
+Die Rolle wird vor allem über Struktur, Planung und Verlässlichkeit getragen. Gleichzeitig braucht sie ausreichend Kommunikationsfähigkeit, damit die Struktur im System angenommen wird.
+
+Druck
+
+Unter Druck verstärkt sich zunächst die Sicherung von Qualität und Ablauf.
+
+Starker Stress
+
+Wenn Belastung unkontrollierbar wird, tritt Beziehungslogik stärker hervor. Es wird mehr moderiert, erklärt und abgestimmt.
+
+Risiko
+
+Ohne Beziehung wirkt Struktur hart und unzugänglich. Ohne Struktur wird Zusammenarbeit unklar und wenig verbindlich.
+
+10. H ≈ B
+Rollenlogik
+
+Die Rolle verbindet starke Umsetzungsenergie mit hoher sozialer Beweglichkeit. Sie wirkt zugleich über Tempo und Kontaktfähigkeit.
+
+Besonderheit
+
+Hier gibt es keine ganz eindeutige Dominanz. Beide Kräfte können je nach Situation wechseln.
+
+Druck
+
+Unter Druck verstärkt sich meist die führende Logik des Moments.
+
+Starker Stress
+
+Bei starkem Stress kann zwischen Tempo und Beziehung kippen. Das Verhalten wird dann inkonsistent, wenn keine klare Führung oder Struktur vorhanden ist.
+
+Risiko
+
+Die Rolle kann zwischen Aktivierung und Abstimmung schwanken. Das macht sie dynamisch, aber auch steuerungssensibel.
+
+11. H ≈ S
+Rollenlogik
+
+Die Rolle verbindet Umsetzungskraft mit Struktur. Sie kann stark sein, wenn Geschwindigkeit und saubere Planung gemeinsam wirken.
+
+Besonderheit
+
+Es besteht eine Konkurrenz zwischen Handeln und Prüfen.
+
+Druck
+
+Unter Druck wird die aktuell dominante Seite stärker.
+
+Starker Stress
+
+Bei hohem Stress kann es zu Pendeln zwischen Tempo und Kontrolle kommen.
+
+Risiko
+
+Entweder wird zu schnell gehandelt oder zu stark kontrolliert. Die Balance ist entscheidend.
+
+12. B ≈ S
+Rollenlogik
+
+Die Rolle verbindet Zusammenarbeit und Struktur. Sie wirkt über Orientierung, saubere Abstimmung und verlässliche Standards.
+
+Besonderheit
+
+Es gibt eine sensible Balance zwischen Mensch und Ordnung.
+
+Druck
+
+Unter Druck kann entweder Beziehungsarbeit oder Strukturdominanz zunehmen.
+
+Starker Stress
+
+Bei starkem Stress können beide Logiken konkurrieren: moderieren oder ordnen.
+
+Risiko
+
+Entscheidungen werden manchmal zu lange vorbereitet, weil Verbindung und Absicherung gleichzeitig gewahrt werden sollen.
+
+13. Ausgewogen
+Rollenlogik
+
+Die Rolle zeigt keine klare strukturelle Einseitigkeit. Umsetzung, Zusammenarbeit und Struktur wirken in relativ ausgeglichener Form zusammen.
+
+Besonderheit
+
+Das Profil ist flexibel, aber weniger eindeutig.
+
+Druck
+
+Unter Druck verstärkt sich meist die situativ naheliegendste Logik.
+
+Starker Stress
+
+Bei hohem Stress kann das Verhalten kippen oder wechseln, weil keine sehr klare Hauptlogik trägt.
+
+Risiko
+
+Die Rolle ist anpassungsfähig, aber weniger stabil in ihrer Grundsteuerung. Führung und Kontext entscheiden stärker über die tatsächliche Wirkung.
+
+6. Engine-Regeln für kontrollierten Druck und unkontrollierten Stress
+
+Das ist deine Kernmechanik.
+
+Regel A – kontrollierter Druck
+
+Die Hauptlogik wird stärker sichtbar.
+
+Template
+
+Wenn der Druck steigt, zeigt sich die Grundlogik der Rolle besonders deutlich. Die Person arbeitet dann noch stärker über {primary_behavior}. Das hilft, die Situation zunächst zu stabilisieren.
+Regel B – unkontrollierter Stress
+
+Die zweite Logik tritt hervor.
+
+Template
+
+Wenn die Belastung jedoch sehr hoch wird und viele Anforderungen gleichzeitig auftreten, verschiebt sich das Verhalten. Dann tritt stärker {secondary_behavior} in den Vordergrund. Entscheidungen werden dadurch {secondary_decision_style}.
+Regel C – bei geringer Abweichung zwischen 1 und 2
+
+Weichere Formulierung.
+
+Unter starkem Stress kann sich der Schwerpunkt leicht verschieben. Die Person bleibt in ihrer Grundlogik erkennbar, nutzt aber spürbar stärker {secondary_behavior}.
+Regel D – bei hoher Abweichung zwischen 1 und 2
+
+Deutlicher Shift.
+
+Unter starkem Stress verliert die ursprüngliche Hauptlogik an Tragkraft. Die zweitstärkste Arbeitsweise übernimmt sichtbar die Steuerung der Situation.
+7. Führungslogik-Engine
+
+Zusätzlich nach Führungsart differenzieren.
+
+Keine Führung
+
+Wirkung über eigene Arbeitsweise
+
+Risiko wirkt auf Abläufe und Qualität
+
+Fachliche Führung
+
+Wirkung über Orientierung, Qualität, Standards
+
+Risiko wirkt auf Teamklarheit und fachliche Sicherheit
+
+Disziplinarische Führung
+
+Wirkung über Entscheidung, Leistungslogik, Priorisierung
+
+Risiko wirkt auf Führungskosten, Eskalationen, Teamstabilität
+
+Template fachliche Führung
+
+Die Rolle wirkt in der Führung vor allem über fachliche Orientierung. Teammitglieder suchen hier weniger formale Autorität als klare Einschätzung, Qualitätssicherheit und verlässliche Priorisierung.
+
+Template disziplinarische Führung
+
+Die Rolle trägt Führungsverantwortung nicht nur fachlich, sondern auch in Richtung Leistung, Entscheidung und Klarheit. Die strukturelle Logik dieser Position prägt deshalb nicht nur Arbeitsergebnisse, sondern auch die Führungskultur.
+8. Beispielhafte Engine-Ausgabe
+Fall: Soll = S-dominant, Ist = H-dominant, Abweichung hoch
+Rollenlogik
+
+Die Rolle verlangt vor allem Struktur, sorgfältige Planung und verlässliche Prüftiefe. Qualität entsteht hier über klare Abläufe, Nachvollziehbarkeit und eine saubere Absicherung von Entscheidungen.
+
+Kandidatenlogik
+
+Der Kandidat arbeitet deutlich stärker über Tempo, direkte Umsetzung und schnelle Priorisierung. Aufgaben werden zügig angegangen, Entscheidungen eher aus dem Handeln heraus getroffen.
+
+Dominanzverschiebung
+
+Die Rolle verlangt primär eine strukturierte und prüforientierte Arbeitsweise. Das Profil des Kandidaten ist dagegen klar auf Tempo und Umsetzung ausgerichtet. Dadurch verschiebt sich die Wirkung der Position weg von Absicherung und Planung hin zu Geschwindigkeit und unmittelbarem Handeln.
+
+Wirkung unter Druck
+
+Wenn der Arbeitsdruck steigt, verstärkt sich beim Kandidaten zunächst die Tendenz, Themen schnell voranzutreiben und Entscheidungen zügig zu treffen. Gerade dort, wo die Rolle sorgfältige Prüfung und verlässliche Struktur braucht, steigt damit das Risiko verkürzter Entscheidungen.
+
+Wirkung bei starkem Stress
+
+Wenn der Druck sehr hoch wird, bleibt die handlungsorientierte Logik meist dominant. Aufgaben werden weiter beschleunigt, während Prüftiefe und Absicherung zusätzlich an Gewicht verlieren. Dadurch können Fehler, Nacharbeit und Instabilität in Abläufen deutlich zunehmen.
+
+Führungsfolge
+
+Wenn diese Rolle fachliche oder disziplinarische Führung enthält, steigt der Steuerungsaufwand deutlich. Führung wirkt dann stärker über Tempo und Direktheit als über Struktur und Orientierung. Das Team erhält weniger methodische Sicherheit und mehr kurzfristige Aktivierung.
+
+9. JSON-Struktur für Replit
+{
+  "patterns": {
+    "H_DOM": {
+      "role_logic": ["..."],
+      "pressure": ["..."],
+      "stress": ["..."],
+      "leadership": ["..."],
+      "risk": ["..."]
+    },
+    "B_DOM": {
+      "role_logic": ["..."],
+      "pressure": ["..."],
+      "stress": ["..."],
+      "leadership": ["..."],
+      "risk": ["..."]
+    },
+    "S_DOM": {
+      "role_logic": ["..."],
+      "pressure": ["..."],
+      "stress": ["..."],
+      "leadership": ["..."],
+      "risk": ["..."]
+    }
+  }
+}
+
+Besser noch:
+
+{
+  "labels": {
+    "H": {
+      "name": "Handlungsfokus",
+      "positive": ["..."],
+      "risk": ["..."]
+    },
+    "B": {
+      "name": "Beziehungsfokus",
+      "positive": ["..."],
+      "risk": ["..."]
+    },
+    "S": {
+      "name": "Strukturfokus",
+      "positive": ["..."],
+      "risk": ["..."]
+    }
+  },
+  "patterns": {
+    "S_GT_H": {
+      "base_text": "...",
+      "pressure_text": "...",
+      "stress_text": "...",
+      "leadership_text": "...",
+      "risk_text": "..."
+    }
+  }
+}
+10. Die wichtigste Regel für die Engine
+
+Nie direkt das Modell erklären. Immer Wirkung beschreiben.
+
+Nicht:
+
+„Die analytische Komponente dominiert.“
+
+Sondern:
+
+„Die Rolle verlangt vor allem Struktur, Planung und verlässliche Prüftiefe.“
+
+Nicht:
+
+„Unter Stress wird die zweite Komponente aktiviert.“
+
+Sondern:
+
+„Wenn der Druck sehr hoch wird, verschiebt sich das Verhalten. Dann treten stärker Ordnung, Kontrolle und Absicherung in den Vordergrund.“
+
+11. Was dein Entwickler als Nächstes braucht
+
+Damit das produktionsreif wird, brauchst du noch 3 Dinge:
+
+Pattern-Erkennungscode
+→ welche der 13 Konstellationen liegt vor?
+
+Abweichungslogik
+→ gering / mittel / hoch
+
+Section Builder
+→ aus Pattern + Rolle + Führung + Aufgaben automatisch Absätze bauen
