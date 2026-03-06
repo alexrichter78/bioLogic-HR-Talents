@@ -411,10 +411,10 @@ function buildErfolgsfokusText(data: ReportData, labels: string[]): string {
   const unique = [...new Set(needed)];
 
   if (unique.length === 1 && unique[0] === data.dom.key) {
-    return "Der Erfolgsfokus passt zur zentralen Anforderung der Rolle. Die Person wird in ihrem stärksten Bereich gemessen. Das erhöht die Wahrscheinlichkeit, dass sie liefern kann.";
+    return "Der Erfolgsfokus passt zur zentralen Anforderung der Rolle. Erfolg wird im stärksten Bereich gemessen. Das erhöht die Wahrscheinlichkeit, dass die Rolle ihre Wirkung entfaltet.";
   }
   if (unique.every(u => u === data.dom.key || u === data.sec.key)) {
-    return "Der Erfolgsfokus wird durch die beiden stärksten Anforderungen der Rolle abgedeckt. Die Person kann auf ihre natürlichen Stärken zurückgreifen. Das erleichtert die Zielerreichung.";
+    return "Der Erfolgsfokus wird durch die beiden stärksten Anforderungen der Rolle abgedeckt. Die natürlichen Stärken der Rolle greifen hier direkt. Das erleichtert die Zielerreichung.";
   }
   const missingKey = unique.find(u => u !== data.dom.key && u !== data.sec.key);
   const missingDesc = missingKey === "imp" ? "schnelle Umsetzung und Ergebnisorientierung" : missingKey === "int" ? "Beziehungsarbeit und persönlichen Kontakt" : "systematische Analyse und Prozessqualität";
@@ -463,7 +463,7 @@ function buildFehlbesetzung(data: ReportData): { label: string; bullets: string[
 
   if (dom.key === "imp" || dom.value >= 45) {
     risks.push({
-      label: "Wenn zu viel Tempo und zu wenig Sorgfalt",
+      label: "Wenn Tempo wichtiger wird als Absicherung",
       bullets: [
         dom.key === "int" ? "Beratung wird hektischer, Gesprächsqualität sinkt" : "Entscheidungen werden zu schnell und ohne Absicherung getroffen",
         isLeadership ? "Das Team kann das Tempo nicht mithalten, Frustration entsteht" : "Abstimmung mit Kolleginnen und Kollegen leidet",
@@ -474,7 +474,7 @@ function buildFehlbesetzung(data: ReportData): { label: string; bullets: string[
 
   if (dom.key === "ana" || wk.key === "int") {
     risks.push({
-      label: "Wenn zu viel Kontrolle und zu wenig Nähe",
+      label: "Wenn Kontrolle den persönlichen Kontakt verdrängt",
       bullets: [
         dom.key === "int" ? "Beratung wirkt distanzierter und unpersönlich" : "Überanalyse bremst Entscheidungen und Umsetzung",
         "Zwischenmenschliche Signale werden übersehen oder ignoriert",
@@ -485,7 +485,7 @@ function buildFehlbesetzung(data: ReportData): { label: string; bullets: string[
 
   if (wk.key === "ana" || (dom.key === "int" && sec.key === "imp")) {
     risks.push({
-      label: "Wenn Beziehung wichtiger wird als Struktur",
+      label: "Wenn Beziehungspflege auf Kosten der Struktur geht",
       bullets: [
         "Wirtschaftliche und prozessuale Aspekte werden vernachlässigt",
         "Abläufe verlieren an Klarheit und Verbindlichkeit",
@@ -496,7 +496,7 @@ function buildFehlbesetzung(data: ReportData): { label: string; bullets: string[
 
   if (wk.key === "imp") {
     risks.push({
-      label: "Wenn Umsetzung zu langsam wird",
+      label: "Wenn Gründlichkeit die Umsetzung blockiert",
       bullets: [
         "Entscheidungen werden aufgeschoben oder zu lange abgewogen",
         "Chancen werden verpasst, weil die Reaktionsgeschwindigkeit fehlt",
@@ -516,7 +516,7 @@ function buildFehlbesetzung(data: ReportData): { label: string; bullets: string[
       label: "Wenn Kerntätigkeiten und Profil auseinanderfallen",
       bullets: [
         `Hochprioritäre Tätigkeiten wie ${namen} verlangen ein anderes Verhalten als das Rollenprofil`,
-        "Die Person wird dauerhaft in einem Bereich gefordert, der nicht ihrer natürlichen Stärke entspricht",
+        "Die Rolle fordert dauerhaft in einem Bereich, der nicht der natürlichen Stärke entspricht",
         "Kompensation ist kurzfristig möglich. Langfristig steigen Erschöpfung und Fehlerquote",
       ],
     });
@@ -939,37 +939,37 @@ export default function Rollenprofil() {
 
   const rollenBeschreibungIntro = (() => {
     if (data.dom.key === "int") {
-      return `Diese Aufgaben verlangen eine Persönlichkeit, die ${data.isLeadership ? "ein Team führen kann und " : ""}schnell Vertrauen aufbaut, Bedürfnisse erkennt und im persönlichen Kontakt überzeugt. Die Person muss Menschen gewinnen können.`;
+      return `Diese Aufgaben verlangen eine Persönlichkeit, die ${data.isLeadership ? "ein Team führen kann und " : ""}schnell Vertrauen aufbaut, Bedürfnisse erkennt und im persönlichen Kontakt überzeugt. Entscheidend ist die Fähigkeit, Menschen zu gewinnen.`;
     } else if (data.dom.key === "imp") {
-      return `Diese Aufgaben erfordern eine Persönlichkeit, die ${data.isLeadership ? "ein Team antreibt und " : ""}schnell entscheidet, klar priorisiert und Ergebnisse konsequent liefert. Die Person muss handlungsfähig bleiben, auch wenn nicht alle Informationen vorliegen.`;
+      return `Diese Aufgaben erfordern eine Persönlichkeit, die ${data.isLeadership ? "ein Team antreibt und " : ""}schnell entscheidet, klar priorisiert und Ergebnisse konsequent liefert. Entscheidend ist die Fähigkeit, auch bei unvollständiger Informationslage handlungsfähig zu bleiben.`;
     } else {
-      return `Diese Aufgaben setzen eine Persönlichkeit voraus, die ${data.isLeadership ? "ein Team methodisch führt und " : ""}systematisch arbeitet, Qualität sichert und fundierte Entscheidungsgrundlagen liefert. Die Person muss sorgfältig und präzise arbeiten.`;
+      return `Diese Aufgaben verlangen eine Persönlichkeit, die ${data.isLeadership ? "ein Team methodisch führt und " : ""}strukturiert arbeitet, Qualität sichert und fundierte Entscheidungsgrundlagen liefert. Entscheidend ist die Fähigkeit, sorgfältig und präzise zu arbeiten.`;
     }
   })();
 
   const rollenBeschreibungErgaenzung = (() => {
     if (data.dom.key === "int") {
       return data.sec.key === "ana"
-        ? "Ohne strukturierte Arbeitsweise entstehen schnell Fehler bei Organisation, Kalkulation und Dokumentation. Die Person muss beides verbinden: persönlichen Kontakt und verlässliche Abläufe."
-        : "Ohne Durchsetzungsfähigkeit bleiben wichtige Entscheidungen offen oder werden zu lange verhandelt. Die Person muss Nähe und Klarheit verbinden können.";
+        ? "Ohne strukturierte Arbeitsweise entstehen schnell Fehler bei Organisation, Kalkulation und Dokumentation. Die Rolle verlangt beides: persönlichen Kontakt und verlässliche Abläufe."
+        : "Ohne Durchsetzungsfähigkeit bleiben wichtige Entscheidungen offen oder werden zu lange verhandelt. Die Rolle verlangt Nähe und Klarheit gleichermaßen.";
     } else if (data.dom.key === "imp") {
       return data.sec.key === "int"
-        ? "Ohne die Fähigkeit, Beziehungen zu pflegen, verliert die Person das Team. Wer nur Ergebnisse fordert, ohne Menschen mitzunehmen, erzeugt Widerstand statt Leistung."
-        : "Ohne Sorgfalt entstehen Fehler bei Qualität, Dokumentation und Prozessen. Die Person muss schnell handeln und trotzdem präzise bleiben.";
+        ? "Ohne die Fähigkeit, Beziehungen zu pflegen, verliert die Rolle ihre Wirkung im Team. Wer nur Ergebnisse fordert, ohne Menschen mitzunehmen, erzeugt Widerstand statt Leistung."
+        : "Ohne Sorgfalt entstehen Fehler bei Qualität, Dokumentation und Prozessen. Die Rolle verlangt schnelles Handeln und trotzdem Präzision.";
     } else {
       return data.sec.key === "int"
-        ? "Ohne Kommunikationsgeschick bleiben Analysen im Elfenbeinturm. Die Person muss ihre Ergebnisse verständlich vermitteln und Akzeptanz im Team schaffen."
-        : "Ohne Handlungsfähigkeit führen Analysen nicht zu Ergebnissen. Die Person muss den Punkt erkennen, an dem genug geprüft wurde, und dann umsetzen.";
+        ? "Ohne Kommunikationsgeschick bleiben Analysen im Elfenbeinturm. Die Rolle verlangt, Ergebnisse verständlich zu vermitteln und Akzeptanz im Team zu schaffen."
+        : "Ohne Handlungsfähigkeit führen Analysen nicht zu Ergebnissen. Die Rolle verlangt, den Punkt zu erkennen, an dem genug geprüft wurde, und dann umzusetzen.";
     }
   })();
 
   const arbeitslogikText = (() => {
     if (data.dom.key === "int") {
-      return `Im Alltag entsteht Wirkung vor allem im direkten Kontakt, ${data.isLeadership ? "mit dem Team, Stakeholdern und Entscheidungsträgern" : "mit Kolleginnen und Kollegen, Kundinnen und Kunden oder Gesprächspartnern"}. Entscheidungen werden häufig situativ und im Gespräch getroffen. ${data.sec.key === "ana" ? "Gleichzeitig braucht die Person die Fähigkeit, Abläufe zu organisieren und Prioritäten klar zu setzen." : "Gleichzeitig braucht die Person die Fähigkeit, schnell zu handeln und Ergebnisse zu liefern, auch wenn nicht alle einverstanden sind."}`;
+      return `Die Wirkung dieser Rolle entsteht vor allem im direkten Kontakt, ${data.isLeadership ? "mit dem Team, Stakeholdern und Entscheidungsträgern" : "mit Kolleginnen und Kollegen, Kundinnen und Kunden oder Gesprächspartnern"}. Entscheidungen werden häufig situativ und im Gespräch getroffen. ${data.sec.key === "ana" ? "Gleichzeitig verlangt die Rolle die Fähigkeit, Abläufe zu organisieren und Prioritäten klar zu setzen." : "Gleichzeitig verlangt die Rolle die Fähigkeit, schnell zu handeln und Ergebnisse zu liefern, auch wenn nicht alle einverstanden sind."}`;
     } else if (data.dom.key === "imp") {
-      return `Im Alltag entsteht Wirkung vor allem über schnelles Handeln und klare Priorisierung. ${data.isLeadership ? "Als Führungskraft gibt diese Person das Tempo vor und treibt Ergebnisse aktiv voran." : "Die Person treibt Themen eigenständig voran und wartet nicht auf Anweisungen."} ${data.sec.key === "int" ? "Dabei darf der Blick für das Team und die Beziehungsebene nicht verloren gehen." : "Dabei braucht es gleichzeitig Sorgfalt, damit Qualität und Nachhaltigkeit gesichert bleiben."}`;
+      return `Die Wirkung dieser Rolle entsteht vor allem über schnelles Handeln und klare Priorisierung. ${data.isLeadership ? "Als Führungskraft gibt sie das Tempo vor und treibt Ergebnisse aktiv voran." : "Themen werden eigenständig vorangetrieben, ohne auf Anweisungen zu warten."} ${data.sec.key === "int" ? "Dabei darf der Blick für das Team und die Beziehungsebene nicht verloren gehen." : "Dabei braucht es gleichzeitig Sorgfalt, damit Qualität und Nachhaltigkeit gesichert bleiben."}`;
     } else {
-      return `Im Alltag entsteht Wirkung über systematische Analyse, klare Prozesse und fundierte Entscheidungsgrundlagen. ${data.isLeadership ? "Als Führungskraft setzt diese Person auf nachvollziehbare Qualitätsstandards und transparente Steuerung." : "Die Person überzeugt durch fachliche Tiefe und sorgfältige Arbeitsweise."} ${data.sec.key === "int" ? "Gleichzeitig muss sie Erkenntnisse verständlich kommunizieren und im Team verankern." : "Gleichzeitig müssen Analysen in konkretes Handeln münden. Reine Theorie reicht nicht."}`;
+      return `Die Wirkung dieser Rolle entsteht über systematische Analyse, klare Prozesse und fundierte Entscheidungsgrundlagen. ${data.isLeadership ? "Als Führungskraft setzt sie auf nachvollziehbare Qualitätsstandards und transparente Steuerung." : "Fachliche Tiefe und sorgfältige Arbeitsweise schaffen Vertrauen und Verlässlichkeit."} ${data.sec.key === "int" ? "Gleichzeitig verlangt die Rolle, Erkenntnisse verständlich zu kommunizieren und im Team zu verankern." : "Gleichzeitig müssen Analysen in konkretes Handeln münden. Reine Theorie reicht nicht."}`;
     }
   })();
 
