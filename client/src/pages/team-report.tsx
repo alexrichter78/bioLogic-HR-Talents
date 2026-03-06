@@ -5,7 +5,7 @@ import GlobalNav from "@/components/global-nav";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeTeamReport } from "@/lib/team-report-engine";
 import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
-import type { TeamReportResult, SystemwirkungResult } from "@/lib/team-report-engine";
+import type { TeamReportResult, SystemwirkungResult, GesamtpassungLevel } from "@/lib/team-report-engine";
 
 type BG = { imp: number; int: number; ana: number };
 type RoleDnaState = {
@@ -213,7 +213,7 @@ export default function TeamReport() {
           <>
             {/* ══ 1. SUMMARY CARD ══ */}
             <section className="mb-12 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-header">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between mb-8">
+              <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between mb-10">
                 <div className="max-w-3xl">
                   <div className="flex items-center gap-3 mb-3">
                     <ShieldAlert className="h-5 w-5 text-slate-400" />
@@ -230,6 +230,26 @@ export default function TeamReport() {
                     </button>
                   </div>
                 </div>
+
+                <div className={`flex items-center gap-4 rounded-2xl border px-6 py-4 shrink-0 ${
+                  result.gesamtpassung === "kritisch" ? "border-red-200 bg-red-50" :
+                  result.gesamtpassung === "bedingt" ? "border-amber-200 bg-amber-50" :
+                  "border-emerald-200 bg-emerald-50"
+                }`} data-testid="indicator-gesamtpassung">
+                  <div className={`h-4 w-4 rounded-full shrink-0 ${
+                    result.gesamtpassung === "kritisch" ? "bg-red-500" :
+                    result.gesamtpassung === "bedingt" ? "bg-amber-500" :
+                    "bg-emerald-500"
+                  }`} />
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Gesamtpassung</div>
+                    <div className={`text-lg font-bold ${
+                      result.gesamtpassung === "kritisch" ? "text-red-700" :
+                      result.gesamtpassung === "bedingt" ? "text-amber-700" :
+                      "text-emerald-700"
+                    }`} data-testid="text-gesamtpassung">{result.gesamtpassungLabel}</div>
+                  </div>
+                </div>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4 mb-8">
@@ -238,6 +258,22 @@ export default function TeamReport() {
                 <MetricTile label="Rolle" value={roleName || "Rolle"} tone="neutral" />
                 <MetricTile label="Kandidat" value={candidateName || "Kandidat"} tone="neutral" />
               </div>
+
+              {result.entscheidungsfaktoren.length > 0 && (
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 mb-8" data-testid="box-entscheidungsfaktoren">
+                  <div className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500 mb-3">
+                    {result.gesamtpassung === "geeignet" ? "Warum geeignet?" : result.gesamtpassung === "bedingt" ? "Warum bedingt?" : "Warum kritisch?"}
+                  </div>
+                  <ol className="space-y-2">
+                    {result.entscheidungsfaktoren.map((f, i) => (
+                      <li key={i} className="flex items-start gap-3 text-[15px] leading-7 text-slate-800" data-testid={`factor-${i}`}>
+                        <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-600">{i + 1}</span>
+                        {f}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
 
               <Prose text={result.managementSummary} />
             </section>

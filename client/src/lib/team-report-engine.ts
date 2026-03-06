@@ -16,7 +16,12 @@ export type SystemwirkungResult = {
   narrative: string;
 };
 
+export type GesamtpassungLevel = "geeignet" | "bedingt" | "kritisch";
+
 export type TeamReportResult = {
+  gesamtpassung: GesamtpassungLevel;
+  gesamtpassungLabel: string;
+  entscheidungsfaktoren: string[];
   managementSummary: string;
   teamstruktur: string;
   fuehrungsprofil: string;
@@ -181,6 +186,10 @@ export function computeTeamReport(
   const tk = teamDom.top1.key;
   const sk = sollDom.top1.key;
 
+  const gesamtpassung: GesamtpassungLevel = status === "gruen" ? "geeignet" : status === "gelb" ? "bedingt" : "kritisch";
+  const gesamtpassungLabel = gesamtpassung === "geeignet" ? "Geeignet" : gesamtpassung === "bedingt" ? "Bedingt geeignet" : "Kritisch";
+  const entscheidungsfaktoren = buildEntscheidungsfaktoren(cn, soll, ist, team, sollIstGap, teamIstGap, sk, rk, tk);
+
   const managementSummary = buildManagementSummary(roleName, cn, soll, ist, team, sollIstGap, teamIstGap, sollIstLevel, teamIstLevel, status, sk, rk, tk, sollLabel, istLabel, teamLabel);
   const teamstruktur = buildTeamstruktur(team, teamDom, teamConst, teamLabel, tk);
   const fuehrungsprofil = buildFuehrungsprofil(cn, ist, istDom, istConst, istLabel, rk);
@@ -196,6 +205,9 @@ export function computeTeamReport(
   const systemfazit = buildSystemfazit(roleName, cn, soll, ist, team, sollIstGap, teamIstGap, status, sk, rk, tk);
 
   return {
+    gesamtpassung,
+    gesamtpassungLabel,
+    entscheidungsfaktoren,
     managementSummary,
     teamstruktur,
     fuehrungsprofil,
@@ -210,6 +222,68 @@ export function computeTeamReport(
     integrationsplan,
     systemfazit,
   };
+}
+
+function buildEntscheidungsfaktoren(
+  cand: string, soll: Triad, ist: Triad, team: Triad,
+  sollIstGap: number, teamIstGap: number,
+  sk: ComponentKey, rk: ComponentKey, tk: ComponentKey
+): string[] {
+  const status = ampel(sollIstGap + teamIstGap);
+  const negative: { priority: number; text: string }[] = [];
+  const positive: { priority: number; text: string }[] = [];
+
+  const keys: ComponentKey[] = ["impulsiv", "intuitiv", "analytisch"];
+  for (const k of keys) {
+    const gap = Math.abs(ist[k] - soll[k]);
+    if (gap > 15) {
+      negative.push({ priority: gap, text: `${compShort(k)}-Kompetenz weicht ${gap > 20 ? "deutlich" : "erkennbar"} vom Sollprofil ab (${ist[k]}% vs. ${soll[k]}%)` });
+    }
+  }
+
+  if (rk !== tk) {
+    negative.push({ priority: teamIstGap, text: `Arbeitslogik verschieden: Kandidat setzt auf ${compShort(rk)}, Team arbeitet mit ${compShort(tk)}` });
+  }
+
+  const tempoGap = Math.abs(ist.impulsiv - team.impulsiv);
+  if (tempoGap > 15) {
+    negative.push({ priority: tempoGap, text: `Tempounterschied ${ist.impulsiv > team.impulsiv ? "zu hoch" : "zu niedrig"} (${tempoGap} Punkte Abweichung)` });
+  }
+
+  if (sollIstGap > 30) {
+    negative.push({ priority: sollIstGap, text: `Gesamtabweichung zum Sollprofil sehr hoch (${sollIstGap} Punkte)` });
+  }
+
+  if (teamIstGap > 30) {
+    negative.push({ priority: teamIstGap, text: `Teamintegration erschwert durch hohe Profilabweichung (${teamIstGap} Punkte)` });
+  }
+
+  if (rk === sk && rk === tk) {
+    positive.push({ priority: 10, text: "Arbeitslogik von Kandidat, Rolle und Team stimmen überein" });
+  }
+
+  if (sollIstGap <= 15) {
+    positive.push({ priority: 5, text: `Gute Passung zum Sollprofil (${sollIstGap} Punkte Abweichung)` });
+  }
+
+  if (teamIstGap <= 15) {
+    positive.push({ priority: 5, text: `Hohe Teamkompatibilität (${teamIstGap} Punkte Abweichung)` });
+  }
+
+  negative.sort((a, b) => b.priority - a.priority);
+  positive.sort((a, b) => b.priority - a.priority);
+
+  if (status === "rot") {
+    return negative.slice(0, 3).map(f => f.text);
+  }
+  if (status === "gruen") {
+    const combined = [...positive, ...negative];
+    combined.sort((a, b) => b.priority - a.priority);
+    return combined.slice(0, 3).map(f => f.text);
+  }
+  const combined = [...negative, ...positive];
+  combined.sort((a, b) => b.priority - a.priority);
+  return combined.slice(0, 3).map(f => f.text);
 }
 
 function buildManagementSummary(
