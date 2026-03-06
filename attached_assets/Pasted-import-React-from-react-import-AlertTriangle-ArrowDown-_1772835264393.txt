@@ -1,0 +1,792 @@
+import React from "react";
+import {
+  AlertTriangle,
+  ArrowDown,
+  BarChart3,
+  CheckCircle2,
+  Gauge,
+  GitCompareArrows,
+  Radar,
+  ShieldAlert,
+  Users,
+  Workflow,
+} from "lucide-react";
+
+/**
+ * Team-Systemreport (Premium UI)
+ * ------------------------------------------------------------
+ * Ziel:
+ * - Management-tauglicher TeamCheck-Report
+ * - klare Hierarchie, weniger Textwüste, mehr Diagnose-UX
+ * - enthält die Ergänzungen:
+ *   1. klare Benennung der Systemwirkung
+ *   2. Intensität der Systemwirkung
+ *   3. visuelle Strukturvergleiche
+ *   4. Systemprognose als zusätzliche Premium-Seite/Sektion
+ *
+ * Hinweise für Replit:
+ * - Tailwind ist vorausgesetzt
+ * - lucide-react ist verfügbar
+ * - Daten können später aus API / JSON gespeist werden
+ */
+
+type ProfilePoint = {
+  key: "tempo" | "kommunikation" | "struktur";
+  label: string;
+  value: number;
+  color: string;
+};
+
+type MetricCard = {
+  label: string;
+  value: string;
+  tone?: "neutral" | "warning" | "danger" | "success";
+};
+
+type MatrixRow = {
+  area: string;
+  rating: "stabil" | "steuerbar" | "kritisch";
+  summary: string;
+};
+
+type TimelineItem = {
+  title: string;
+  range: string;
+  text: string;
+  color: string;
+};
+
+type ForecastItem = {
+  title: string;
+  text: string;
+};
+
+const roleProfile: ProfilePoint[] = [
+  { key: "tempo", label: "Umsetzung / Tempo", value: 22, color: "bg-rose-500" },
+  { key: "kommunikation", label: "Zusammenarbeit / Kommunikation", value: 22, color: "bg-amber-500" },
+  { key: "struktur", label: "Struktur / Analyse", value: 57, color: "bg-blue-600" },
+];
+
+const candidateProfile: ProfilePoint[] = [
+  { key: "tempo", label: "Umsetzung / Tempo", value: 52, color: "bg-rose-500" },
+  { key: "kommunikation", label: "Zusammenarbeit / Kommunikation", value: 41, color: "bg-amber-500" },
+  { key: "struktur", label: "Struktur / Analyse", value: 7, color: "bg-blue-600" },
+];
+
+const teamProfile: ProfilePoint[] = [
+  { key: "tempo", label: "Umsetzung / Tempo", value: 33, color: "bg-rose-500" },
+  { key: "kommunikation", label: "Zusammenarbeit / Kommunikation", value: 34, color: "bg-amber-500" },
+  { key: "struktur", label: "Struktur / Analyse", value: 33, color: "bg-blue-600" },
+];
+
+const topMetrics: MetricCard[] = [
+  { label: "Systemwirkung", value: "Verschiebung", tone: "warning" },
+  { label: "Intensität", value: "Hoch", tone: "danger" },
+  { label: "Teamfit", value: "Spannungsfeld", tone: "warning" },
+  { label: "Integrationsrisiko", value: "Erhöht", tone: "danger" },
+];
+
+const matrixRows: MatrixRow[] = [
+  {
+    area: "Entscheidungen",
+    rating: "kritisch",
+    summary: "Kandidat priorisiert Tempo, das Team eher Abstimmung und Einbindung.",
+  },
+  {
+    area: "Kommunikation",
+    rating: "steuerbar",
+    summary: "Gleiche Themen werden unterschiedlich gewichtet. Missverständnisse sind wahrscheinlich.",
+  },
+  {
+    area: "Arbeitstempo",
+    rating: "kritisch",
+    summary: "Die neue Person arbeitet deutlich schneller als das Team.",
+  },
+  {
+    area: "Qualitätslogik",
+    rating: "kritisch",
+    summary: "Die Rolle verlangt Struktur, die Person bringt sie nur begrenzt mit.",
+  },
+  {
+    area: "Kulturwirkung",
+    rating: "steuerbar",
+    summary: "Mehr Tempo und Ergebnisfokus können als Druck erlebt werden.",
+  },
+  {
+    area: "Zusammenhalt",
+    rating: "stabil",
+    summary: "Der Kommunikationsanteil der Person kann Spannungen teilweise abfedern.",
+  },
+];
+
+const opportunities = [
+  "Die Person stärkt den bisher schwächsten Bereich des Teams: Umsetzung und Tempo.",
+  "Entscheidungen können schneller getroffen und Ergebnisse sichtbarer werden.",
+  "Die zusätzliche Kommunikationsstärke kann Konflikte früher erkennbar machen.",
+  "Das Team gewinnt eine neue Perspektive auf Priorisierung und Handlungskraft.",
+];
+
+const risks = [
+  "Die unterschiedliche Arbeitslogik kann im Alltag zu wiederkehrenden Spannungen führen.",
+  "Ohne klare Steuerung wird die Rolle anders gelebt als vorgesehen.",
+  "Struktur, Planung und saubere Absicherung können gegenüber Geschwindigkeit an Gewicht verlieren.",
+  "Das Team kann das höhere Tempo als Druck oder Fremdlogik erleben.",
+];
+
+const pressureTimeline: TimelineItem[] = [
+  {
+    title: "Kurzfristig",
+    range: "0–4 Wochen",
+    text: "In der Anfangsphase werden Unterschiede in Tempo, Entscheidung und Kommunikation deutlich sichtbar. Das Team braucht Orientierung.",
+    color: "bg-emerald-500",
+  },
+  {
+    title: "Mittelfristig",
+    range: "1–3 Monate",
+    text: "Ohne klare Regeln verschiebt sich die Teamdynamik spürbar in Richtung Tempo. Missverständnisse und Reibung nehmen zu.",
+    color: "bg-amber-500",
+  },
+  {
+    title: "Langfristig",
+    range: "3+ Monate",
+    text: "Die neue Logik kann die Kultur dauerhaft verändern. Das kann Leistung steigern – oder zu dauerhaften Spannungen führen.",
+    color: "bg-rose-500",
+  },
+];
+
+const leadershipLevers = [
+  "In der ersten Woche ein Kick-off mit dem gesamten Team durchführen und Erwartungshorizonte klären.",
+  "Unterschiedliche Arbeitslogiken aktiv übersetzen: Warum priorisiert die neue Person anders, warum reagiert das Team anders?",
+  "Klare Entscheidungszeitfenster definieren, damit Abstimmung nicht in Endlosschleifen kippt.",
+  "Wöchentliches 30-Minuten-Steuerungsmeeting mit Prioritäten, offenen Punkten und Reibungen etablieren.",
+  "Tempo aktiv steuern: sichtbare Meilensteine und Prüfpunkte setzen, damit Geschwindigkeit nicht auf Kosten der Qualität geht.",
+];
+
+const integrationPlan = [
+  {
+    phase: "Woche 1–2 · Orientierung und Erwartungsklärung",
+    bullets: [
+      "Kick-off-Gespräch mit Team und neuer Person.",
+      "Rolle, Spielregeln, Verantwortlichkeiten und Entscheidungsbefugnisse schriftlich klären.",
+      "Arbeitslogik transparent machen: Unterschiede benennen, nicht wegmoderieren.",
+      "Beobachten und zuhören, bevor operative Akzente gesetzt werden.",
+    ],
+  },
+  {
+    phase: "Woche 3–4 · Wirkung entfalten und nachsteuern",
+    bullets: [
+      "Erste strukturierte Feedbackrunde mit Team und neuer Person durchführen.",
+      "Prioritäten auf Basis des Feedbacks nachschärfen.",
+      "Aufgaben bewusst so verteilen, dass Stärken genutzt und Reibung reduziert werden.",
+      "Quick Wins sichtbar machen, damit Akzeptanz entsteht.",
+    ],
+  },
+];
+
+const systemForecast: ForecastItem[] = [
+  {
+    title: "Kurzfristige Wirkung (0–3 Monate)",
+    text: "In der Anfangsphase wird die unterschiedliche Arbeitslogik deutlich sichtbar. Die neue Person arbeitet stärker über Tempo und direkte Entscheidungen, das Team stärker über Abstimmung und Kommunikation. Dadurch entstehen zunächst Reibungen bei Priorisierung und Arbeitsgeschwindigkeit.",
+  },
+  {
+    title: "Mittelfristige Wirkung (3–12 Monate)",
+    text: "Wenn die Zusammenarbeit aktiv moderiert wird, kann das Team von mehr Umsetzungsenergie und klareren Entscheidungen profitieren. Ohne Führung verstärken sich dagegen Missverständnisse und Frustration.",
+  },
+  {
+    title: "Langfristige Wirkung (12+ Monate)",
+    text: "Langfristig verändert sich die Teamkultur spürbar. Tempo und Ergebnisorientierung gewinnen an Gewicht. Wenn diese Entwicklung bewusst gesteuert wird, kann das Team leistungsfähiger werden. Ohne klare Leitplanken drohen dauerhafte Spannungen zwischen Tempo und Abstimmung.",
+  },
+  {
+    title: "Kritischer Kipppunkt",
+    text: "Die entscheidende Phase liegt zwischen der 4. und 8. Woche. Werden in dieser Phase keine klaren Entscheidungswege, Spielregeln und Prioritäten etabliert, können sich Konfliktmuster verfestigen.",
+  },
+];
+
+const stressBars = {
+  normal: [
+    { label: "Tempo", value: 52, color: "bg-rose-500" },
+    { label: "Kommunikation", value: 41, color: "bg-amber-500" },
+    { label: "Struktur", value: 7, color: "bg-blue-600" },
+  ],
+  pressure: [
+    { label: "Tempo", value: 64, color: "bg-rose-500" },
+    { label: "Kommunikation", value: 28, color: "bg-amber-500" },
+    { label: "Struktur", value: 8, color: "bg-blue-600" },
+  ],
+  stress: [
+    { label: "Tempo", value: 38, color: "bg-rose-500" },
+    { label: "Kommunikation", value: 49, color: "bg-amber-500" },
+    { label: "Struktur", value: 13, color: "bg-blue-600" },
+  ],
+};
+
+export default function TeamSystemReportPage() {
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <div className="mx-auto max-w-7xl px-6 py-10 lg:px-10">
+        <HeaderSection />
+
+        <section className="mb-8 grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+          <Card className="p-8">
+            <SectionEyebrow icon={<ShieldAlert className="h-4 w-4" />} label="Management Summary" />
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">Spannungsfeld mit hohem Reibungspotenzial</h2>
+            <p className="mt-4 max-w-3xl text-base leading-7 text-slate-700">
+              Die neue Person weicht deutlich von der Rollenanforderung und gleichzeitig spürbar vom
+              bestehenden Team ab. Ohne aktive Steuerung sind Reibung, Konflikte und Leistungseinbrüche
+              wahrscheinlich. Die ersten 30 Tage sind entscheidend.
+            </p>
+
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {topMetrics.map((metric) => (
+                <MetricTile key={metric.label} {...metric} />
+              ))}
+            </div>
+          </Card>
+
+          <Card className="p-8">
+            <SectionEyebrow icon={<GitCompareArrows className="h-4 w-4" />} label="Systemwirkung" />
+            <h3 className="mt-3 text-2xl font-semibold text-slate-950">Verschiebung der Teamlogik</h3>
+            <div className="mt-6 space-y-4">
+              <ShiftBox title="Team heute" value="Zusammenarbeit / Kommunikation" tone="amber" />
+              <div className="flex justify-center text-slate-300">
+                <ArrowDown className="h-8 w-8" />
+              </div>
+              <ShiftBox title="Neue Person bringt" value="Umsetzung / Tempo" tone="rose" />
+            </div>
+            <p className="mt-5 text-sm leading-6 text-slate-600">
+              Im Kern verschiebt sich die Teamlogik von Abstimmung und Einbindung stärker in Richtung
+              Tempo, direkte Entscheidungen und Ergebnisfokus.
+            </p>
+          </Card>
+        </section>
+
+        <section className="mb-8 grid gap-8 xl:grid-cols-[1.25fr_0.75fr]">
+          <Card className="p-8">
+            <SectionEyebrow icon={<Radar className="h-4 w-4" />} label="Strukturvergleich" />
+            <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+              <div>
+                <h3 className="text-2xl font-semibold text-slate-950">Rolle · Team · neue Person</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Die Visualisierung zeigt, wie weit Rollenanforderung, bestehendes Team und neue Person
+                  in ihrer Arbeitslogik voneinander entfernt sind.
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
+                <Legend color="bg-blue-600" label="Rolle" />
+                <Legend color="bg-amber-500" label="Team" />
+                <Legend color="bg-rose-500" label="Neue Person" />
+              </div>
+            </div>
+
+            <div className="mt-8 grid gap-6 lg:grid-cols-3">
+              <ProfileCard title="Rollenprofil" subtitle="Techniker" profile={roleProfile} note="Die Rolle verlangt klaren Strukturfokus, Prüftiefe und verlässliche Planung." />
+              <ProfileCard title="Teamprofil" subtitle="Bestehendes Team" profile={teamProfile} note="Das Team ist relativ ausgeglichen, mit leichtem Schwerpunkt auf Zusammenarbeit." />
+              <ProfileCard title="Profil neue Person" subtitle="Kandidat" profile={candidateProfile} note="Die neue Person bringt vor allem Tempo, direkte Umsetzung und Kommunikationsanteil mit." />
+            </div>
+
+            <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+              <TripleTriangleChart />
+            </div>
+          </Card>
+
+          <div className="space-y-8">
+            <Card className="p-8">
+              <SectionEyebrow icon={<BarChart3 className="h-4 w-4" />} label="Abweichung" />
+              <h3 className="mt-3 text-2xl font-semibold text-slate-950">Abweichungsprofil</h3>
+              <div className="mt-6 space-y-5">
+                <DeltaRow label="Soll vs. neue Person" value="99 Punkte" tone="danger" />
+                <DeltaRow label="Team vs. neue Person" value="52 Punkte" tone="warning" />
+                <DeltaRow label="Rolle vs. Team" value="49 Punkte" tone="neutral" />
+              </div>
+              <div className="mt-6 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm leading-6 text-rose-800">
+                Die größte Reibung entsteht aus der Kombination von hohem Tempo der neuen Person,
+                niedrigem Strukturfokus und einer Teamlogik, die stärker über Kommunikation arbeitet.
+              </div>
+            </Card>
+
+            <Card className="p-8">
+              <SectionEyebrow icon={<Users className="h-4 w-4" />} label="Teamstruktur" />
+              <h3 className="mt-3 text-2xl font-semibold text-slate-950">Ausgangslage des Teams</h3>
+              <p className="mt-4 text-sm leading-7 text-slate-700">
+                Das Team ist aktuell relativ ausgeglichen. Der leicht stärkste Bereich liegt bei
+                Zusammenarbeit und Kommunikation. Das sorgt für Vielseitigkeit und Anschlussfähigkeit,
+                kann aber dazu führen, dass in keinem Bereich konsequent genug gearbeitet wird.
+              </p>
+            </Card>
+          </div>
+        </section>
+
+        <section className="mb-8 grid gap-8 lg:grid-cols-2">
+          <Card className="p-8">
+            <SectionEyebrow icon={<Workflow className="h-4 w-4" />} label="Führungsprofil" />
+            <h3 className="mt-3 text-2xl font-semibold text-slate-950">Arbeitslogik der neuen Person</h3>
+            <p className="mt-4 text-sm leading-7 text-slate-700">
+              Die neue Person arbeitet mit hoher Umsetzungsenergie. Entscheidungen werden zügig
+              getroffen, Themen schnell in Bewegung gebracht. In der Zusammenarbeit ist das Tempo
+              spürbar. Langwierige Abstimmungsprozesse werden eher als bremsend empfunden.
+            </p>
+            <p className="mt-4 text-sm leading-7 text-slate-700">
+              Der Kommunikationsanteil stabilisiert diese Hauptlogik, ersetzt sie aber nicht. In
+              Drucksituationen tritt der Handlungsfokus zunächst noch deutlicher hervor.
+            </p>
+          </Card>
+
+          <Card className="p-8">
+            <SectionEyebrow icon={<Gauge className="h-4 w-4" />} label="Teamdynamik im Alltag" />
+            <h3 className="mt-3 text-2xl font-semibold text-slate-950">Wie sich die Unterschiede im Alltag zeigen</h3>
+            <div className="mt-6 space-y-5 text-sm leading-7 text-slate-700">
+              <div>
+                <span className="font-semibold text-slate-950">Entscheidungen:</span> Die neue Person priorisiert Tempo,
+                das Team eher Kommunikation. Dadurch entstehen unterschiedliche Bewertungen gleicher Situationen.
+              </div>
+              <div>
+                <span className="font-semibold text-slate-950">Kommunikation:</span> Was für die neue Person klar ist,
+                möchte das Team oft noch abstimmen. Ohne bewusste Steuerung entstehen Frustration und Missverständnisse.
+              </div>
+              <div>
+                <span className="font-semibold text-slate-950">Arbeitstempo:</span> Das Arbeitstempo unterscheidet sich
+                deutlich. Das Team kann sich unter Druck gesetzt fühlen.
+              </div>
+            </div>
+          </Card>
+        </section>
+
+        <section className="mb-8 grid gap-8 lg:grid-cols-2">
+          <ListCard
+            eyebrow="Chancen"
+            icon={<CheckCircle2 className="h-4 w-4" />}
+            title="Potenziale dieser Konstellation"
+            items={opportunities}
+            tone="success"
+          />
+          <ListCard
+            eyebrow="Risiken"
+            icon={<AlertTriangle className="h-4 w-4" />}
+            title="Typische Reibungspunkte"
+            items={risks}
+            tone="danger"
+          />
+        </section>
+
+        <section className="mb-8 grid gap-8 xl:grid-cols-[1.15fr_0.85fr]">
+          <Card className="p-8">
+            <SectionEyebrow icon={<Gauge className="h-4 w-4" />} label="Verhalten unter Druck" />
+            <h3 className="mt-3 text-2xl font-semibold text-slate-950">Stressdynamik der Konstellation</h3>
+
+            <div className="mt-8 grid gap-6 md:grid-cols-3">
+              <StressCard
+                title="Normalzustand"
+                items={stressBars.normal}
+                text="Die neue Person arbeitet sichtbar über Tempo und direkte Umsetzung. Kommunikation unterstützt, Struktur bleibt schwach."
+              />
+              <StressCard
+                title="Kontrollierter Druck"
+                items={stressBars.pressure}
+                text="Unter steigender Belastung verstärkt sich das Tempo noch. Das macht die Abweichung zum Team deutlich sichtbarer."
+              />
+              <StressCard
+                title="Unkontrollierter Stress"
+                items={stressBars.stress}
+                text="Wenn Belastung sehr hoch wird, tritt der Kommunikationsanteil stärker hervor. Entscheidungen werden anders getroffen als im Normalzustand."
+              />
+            </div>
+
+            <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm leading-7 text-slate-700">
+              <p>
+                <span className="font-semibold text-slate-950">Für das Team bedeutet das:</span> Unter Druck wird die
+                Abweichung zunächst sichtbarer, weil die neue Person noch stärker auf Tempo setzt. Unter sehr hohem
+                Stress verschiebt sich das Verhalten erneut – das Team sollte darauf vorbereitet sein.
+              </p>
+            </div>
+          </Card>
+
+          <Card className="p-8">
+            <SectionEyebrow icon={<Users className="h-4 w-4" />} label="Kulturwirkung" />
+            <h3 className="mt-3 text-2xl font-semibold text-slate-950">Veränderung der Teamkultur</h3>
+            <p className="mt-4 text-sm leading-7 text-slate-700">
+              Die neue Person bringt mehr Tempo und Ergebnisorientierung in das Team. Das kann Leistung steigern,
+              wird von einem stärker kommunikationsorientierten Team aber auch als Druck erlebt.
+            </p>
+            <p className="mt-4 text-sm leading-7 text-slate-700">
+              Langfristig kann sich die Kultur deutlich in Richtung Aktivierung und schnellere Entscheidungen
+              verschieben. Ohne klare Regeln geht dabei das Gefühl gemeinsamer Abstimmung verloren.
+            </p>
+          </Card>
+        </section>
+
+        <section className="mb-8 grid gap-8 lg:grid-cols-2">
+          <ListCard
+            eyebrow="Führungshebel"
+            icon={<Workflow className="h-4 w-4" />}
+            title="Was die Führung jetzt aktiv steuern muss"
+            items={leadershipLevers}
+            tone="neutral"
+          />
+
+          <Card className="p-8">
+            <SectionEyebrow icon={<BarChart3 className="h-4 w-4" />} label="Integrationsrisiko" />
+            <h3 className="mt-3 text-2xl font-semibold text-slate-950">Reibungspotenzial auf einen Blick</h3>
+            <div className="mt-6 space-y-5">
+              <RiskMeter label="Reibung im Alltag" value={82} color="bg-rose-500" />
+              <RiskMeter label="Kulturveränderung" value={68} color="bg-amber-500" />
+              <RiskMeter label="Leistungsrisiko" value={77} color="bg-rose-500" />
+              <RiskMeter label="Steuerungsbedarf" value={86} color="bg-blue-600" />
+            </div>
+            <p className="mt-6 text-sm leading-6 text-slate-600">
+              Diese Werte dienen als Management-Indikator: Die Konstellation ist nicht hoffnungslos,
+              aber nur mit klarer Führung und aktivem Erwartungsmanagement stabil steuerbar.
+            </p>
+          </Card>
+        </section>
+
+        <section className="mb-8 grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+          <Card className="p-8">
+            <SectionEyebrow icon={<Workflow className="h-4 w-4" />} label="Integrationsplan" />
+            <h3 className="mt-3 text-2xl font-semibold text-slate-950">Erste 30 Tage</h3>
+            <div className="mt-6 space-y-6">
+              {integrationPlan.map((group, idx) => (
+                <div key={group.phase} className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                  <div className="mb-3 flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-slate-200">
+                      {idx + 1}
+                    </div>
+                    <h4 className="text-base font-semibold text-slate-950">{group.phase}</h4>
+                  </div>
+                  <ul className="space-y-2 text-sm leading-6 text-slate-700">
+                    {group.bullets.map((bullet) => (
+                      <li key={bullet} className="flex gap-3">
+                        <span className="mt-2 h-1.5 w-1.5 rounded-full bg-slate-400" />
+                        <span>{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card className="p-8">
+            <SectionEyebrow icon={<BarChart3 className="h-4 w-4" />} label="Systemprognose" />
+            <h3 className="mt-3 text-2xl font-semibold text-slate-950">Wie sich das System über Zeit entwickelt</h3>
+            <div className="mt-6 space-y-4">
+              {systemForecast.map((item) => (
+                <div key={item.title} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <h4 className="text-sm font-semibold uppercase tracking-[0.14em] text-slate-500">{item.title}</h4>
+                  <p className="mt-2 text-sm leading-6 text-slate-700">{item.text}</p>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </section>
+
+        <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+          <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+            <div>
+              <SectionEyebrow icon={<ShieldAlert className="h-4 w-4" />} label="Systemfazit" />
+              <h3 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">Integration nur mit aktivem Steuerungskonzept</h3>
+              <p className="mt-4 text-base leading-7 text-slate-700">
+                Die neue Person zeigt deutliche Abweichungen zur Rollenanforderung und zugleich spürbare
+                Unterschiede zum bestehenden Team. Ohne aktive und konsequente Steuerung sind Reibung,
+                Konflikte und Leistungseinbrüche wahrscheinlich.
+              </p>
+              <p className="mt-4 text-base leading-7 text-slate-700">
+                Die Integration ist anspruchsvoll, aber nicht unmöglich. Die ersten 30 Tage sind
+                entscheidend: klare Kommunikation, definierte Entscheidungswege und aktives
+                Erwartungsmanagement sind Pflicht.
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-rose-200 bg-rose-50 p-6 text-center">
+              <div className="text-sm font-semibold uppercase tracking-[0.18em] text-rose-700">Empfehlung</div>
+              <div className="mt-3 text-2xl font-semibold text-rose-700">Nur mit enger Führung einsetzen</div>
+              <div className="mt-3 text-sm leading-6 text-slate-700">
+                Regelmäßige Checkpoints einplanen. Eskalationsmechanismen und Entscheidungswege vorab klären.
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+function HeaderSection() {
+  return (
+    <section className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div className="mb-6 max-w-4xl">
+        <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">Team-Systemreport</p>
+        <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-950">Techniker · Systemanalyse</h1>
+        <p className="mt-4 text-base leading-7 text-slate-600">
+          Strukturelle Teamdynamik-Analyse: Wie wirkt sich die neue Person auf das bestehende Team aus?
+        </p>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+          <div className="grid gap-5 sm:grid-cols-3">
+            <TopProfile title="Rolle" name="Techniker" values="I 22 % / N 22 % / A 57 %" />
+            <TopProfile title="Neue Person" name="Kandidat" values="I 52 % / N 41 % / A 7 %" />
+            <TopProfile title="Teamprofil" name="Bestehendes Team" values="I 33 % / N 34 % / A 33 %" />
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+          <div className="grid grid-cols-2 gap-4">
+            <MiniStat label="Abweichung Soll vs. Person" value="99 Punkte" tone="danger" />
+            <MiniStat label="Abweichung Team vs. Person" value="52 Punkte" tone="warning" />
+            <MiniStat label="Systemstatus" value="Spannungsfeld" tone="warning" />
+            <MiniStat label="30-Tage-Relevanz" value="hoch" tone="danger" />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Card({ className = "", children }: { className?: string; children: React.ReactNode }) {
+  return <section className={`rounded-3xl border border-slate-200 bg-white shadow-sm ${className}`}>{children}</section>;
+}
+
+function SectionEyebrow({ icon, label }: { icon: React.ReactNode; label: string }) {
+  return (
+    <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
+      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-600">{icon}</span>
+      {label}
+    </div>
+  );
+}
+
+function MetricTile({ label, value, tone = "neutral" }: MetricCard) {
+  const toneMap = {
+    neutral: "border-slate-200 bg-slate-50 text-slate-900",
+    warning: "border-amber-200 bg-amber-50 text-amber-700",
+    danger: "border-rose-200 bg-rose-50 text-rose-700",
+    success: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  } as const;
+
+  return (
+    <div className={`rounded-2xl border p-4 ${toneMap[tone]}`}>
+      <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{label}</div>
+      <div className="mt-2 text-lg font-semibold">{value}</div>
+    </div>
+  );
+}
+
+function ShiftBox({ title, value, tone }: { title: string; value: string; tone: "amber" | "rose" }) {
+  const toneMap = {
+    amber: "border-amber-200 bg-amber-50 text-amber-700",
+    rose: "border-rose-200 bg-rose-50 text-rose-700",
+  } as const;
+
+  return (
+    <div className={`rounded-2xl border p-4 ${toneMap[tone]}`}>
+      <div className="text-xs font-semibold uppercase tracking-[0.14em] opacity-80">{title}</div>
+      <div className="mt-2 text-xl font-semibold">{value}</div>
+    </div>
+  );
+}
+
+function Legend({ color, label }: { color: string; label: string }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className={`h-3 w-3 rounded-full ${color}`} />
+      <span>{label}</span>
+    </div>
+  );
+}
+
+function ProfileCard({
+  title,
+  subtitle,
+  profile,
+  note,
+}: {
+  title: string;
+  subtitle: string;
+  profile: ProfilePoint[];
+  note: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-slate-200 p-5">
+      <div className="mb-4">
+        <div className="text-sm font-semibold uppercase tracking-[0.14em] text-slate-500">{title}</div>
+        <div className="mt-1 text-base font-semibold text-slate-950">{subtitle}</div>
+      </div>
+      <div className="space-y-4">
+        {profile.map((item) => (
+          <div key={item.key}>
+            <div className="mb-2 flex items-center justify-between text-sm">
+              <div className="font-medium text-slate-900">{item.label}</div>
+              <div className="font-semibold text-slate-700">{item.value}%</div>
+            </div>
+            <div className="h-3 overflow-hidden rounded-full bg-slate-100">
+              <div className={`h-full ${item.color}`} style={{ width: `${item.value}%` }} />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs leading-5 text-slate-600">{note}</div>
+    </div>
+  );
+}
+
+function DeltaRow({ label, value, tone }: { label: string; value: string; tone: "danger" | "warning" | "neutral" }) {
+  const toneMap = {
+    danger: "text-rose-700 bg-rose-50 border-rose-200",
+    warning: "text-amber-700 bg-amber-50 border-amber-200",
+    neutral: "text-slate-700 bg-slate-50 border-slate-200",
+  } as const;
+
+  return (
+    <div className={`rounded-2xl border p-4 ${toneMap[tone]}`}>
+      <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{label}</div>
+      <div className="mt-2 text-lg font-semibold">{value}</div>
+    </div>
+  );
+}
+
+function TripleTriangleChart() {
+  return (
+    <div className="flex flex-col items-center">
+      <svg viewBox="0 0 340 270" className="h-[270px] w-full max-w-[380px]">
+        <polygon points="170,25 35,230 305,230" fill="none" stroke="#cbd5e1" strokeWidth="2" />
+        <text x="170" y="15" textAnchor="middle" className="fill-slate-500 text-[12px]">Struktur</text>
+        <text x="12" y="245" className="fill-slate-500 text-[12px]">Kommunikation</text>
+        <text x="255" y="245" className="fill-slate-500 text-[12px]">Tempo</text>
+
+        {/* Rolle */}
+        <polygon
+          points="170,92 116,185 223,185"
+          fill="rgba(37,99,235,0.10)"
+          stroke="#2563eb"
+          strokeWidth="3"
+        />
+
+        {/* Team */}
+        <polygon
+          points="170,155 126,163 214,163"
+          fill="rgba(245,158,11,0.10)"
+          stroke="#f59e0b"
+          strokeWidth="3"
+        />
+
+        {/* Person */}
+        <polygon
+          points="170,196 52,146 283,214"
+          fill="rgba(244,63,94,0.10)"
+          stroke="#f43f5e"
+          strokeWidth="3"
+        />
+      </svg>
+      <p className="mt-2 text-center text-sm leading-6 text-slate-600">
+        Die Grafik zeigt die strukturelle Logik von Rolle, Team und neuer Person in einem Bild.
+        Je weiter die Flächen auseinanderliegen, desto höher das Reibungspotenzial.
+      </p>
+    </div>
+  );
+}
+
+function ListCard({
+  eyebrow,
+  icon,
+  title,
+  items,
+  tone,
+}: {
+  eyebrow: string;
+  icon: React.ReactNode;
+  title: string;
+  items: string[];
+  tone: "success" | "danger" | "neutral";
+}) {
+  const dotTone = {
+    success: "bg-emerald-500",
+    danger: "bg-rose-500",
+    neutral: "bg-blue-600",
+  } as const;
+
+  return (
+    <Card className="p-8">
+      <SectionEyebrow icon={icon} label={eyebrow} />
+      <h3 className="mt-3 text-2xl font-semibold text-slate-950">{title}</h3>
+      <ul className="mt-6 space-y-3 text-sm leading-7 text-slate-700">
+        {items.map((item) => (
+          <li key={item} className="flex gap-3">
+            <span className={`mt-2 h-2 w-2 rounded-full ${dotTone[tone]}`} />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </Card>
+  );
+}
+
+function StressCard({
+  title,
+  items,
+  text,
+}: {
+  title: string;
+  items: { label: string; value: number; color: string }[];
+  text: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+      <h4 className="text-base font-semibold text-slate-950">{title}</h4>
+      <div className="mt-4 space-y-3">
+        {items.map((item) => (
+          <div key={item.label}>
+            <div className="mb-1 flex items-center justify-between text-xs font-medium text-slate-600">
+              <span>{item.label}</span>
+              <span>{item.value}%</span>
+            </div>
+            <div className="h-2.5 overflow-hidden rounded-full bg-white">
+              <div className={`h-full ${item.color}`} style={{ width: `${item.value}%` }} />
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 text-sm leading-6 text-slate-700">{text}</p>
+    </div>
+  );
+}
+
+function RiskMeter({ label, value, color }: { label: string; value: number; color: string }) {
+  return (
+    <div>
+      <div className="mb-2 flex items-center justify-between text-sm">
+        <span className="font-medium text-slate-800">{label}</span>
+        <span className="font-semibold text-slate-700">{value}%</span>
+      </div>
+      <div className="h-3 overflow-hidden rounded-full bg-slate-100">
+        <div className={`h-full ${color}`} style={{ width: `${value}%` }} />
+      </div>
+    </div>
+  );
+}
+
+function TopProfile({ title, name, values }: { title: string; name: string; values: string }) {
+  return (
+    <div>
+      <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{title}</div>
+      <div className="mt-1 text-base font-semibold text-slate-950">{name}</div>
+      <div className="mt-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Profil</div>
+      <div className="mt-1 text-sm font-medium text-slate-700">{values}</div>
+    </div>
+  );
+}
+
+function MiniStat({ label, value, tone }: { label: string; value: string; tone: "danger" | "warning" | "neutral" }) {
+  const toneMap = {
+    danger: "text-rose-700",
+    warning: "text-amber-700",
+    neutral: "text-slate-900",
+  } as const;
+
+  return (
+    <div>
+      <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{label}</div>
+      <div className={`mt-1 text-sm font-semibold ${toneMap[tone]}`}>{value}</div>
+    </div>
+  );
+}
