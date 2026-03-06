@@ -186,7 +186,7 @@ function behaviorDesc(k: string): string {
   return "sorgfältige Analyse und strukturiertes Arbeiten";
 }
 
-function buildStressTexts(bg: BG) {
+function buildStressTexts(bg: BG, isLeadership: boolean, fuehrungstyp: string) {
   const vals = [
     { key: "imp", value: bg.imp },
     { key: "int", value: bg.int },
@@ -196,69 +196,98 @@ function buildStressTexts(bg: BG) {
   const gap12 = Math.round(top.value - mid.value);
   const gap23 = Math.round(mid.value - vals[2].value);
   const hasDualDominance = gap12 <= 5;
-  const hasSecondaryCompetition = gap12 >= 10 && gap23 <= 5;
   const hasFullSymmetry = gap12 <= 5 && gap23 <= 5;
+
+  const fk = isLeadership ? "Die Führungskraft" : "Die Person";
+  const isFachlich = fuehrungstyp === "Fachliche Führung";
+  const isDisziplinarisch = fuehrungstyp.startsWith("Disziplinarische");
+  const isKoordination = fuehrungstyp.startsWith("Projekt");
 
   let controlled = "";
   if (hasFullSymmetry) {
-    controlled = "Wenn der Arbeitsdruck steigt, fehlt eine klare Richtung. Die Person wechselt zwischen verschiedenen Herangehensweisen. Mal handelt sie schnell, mal sucht sie den Austausch, mal vertieft sie sich in Details. Das kann im Team zu Verunsicherung führen, weil das Verhalten schwer einzuschätzen ist.";
+    controlled = isLeadership
+      ? `Wenn der Arbeitsdruck steigt, fehlt eine klare Führungsrichtung. ${fk} wechselt zwischen verschiedenen Herangehensweisen. Mal wird schnell entschieden, mal wird abgestimmt, mal wird analysiert. ${isDisziplinarisch ? "Das Team verliert Orientierung, weil die Führungslinie schwer einzuschätzen ist." : isFachlich ? "Im fachlichen Bereich entsteht Unsicherheit, weil klare Vorgaben fehlen." : "Im Projekt kann das zu Verzögerungen führen, weil die Koordinationslinie unklar wird."}`
+      : "Wenn der Arbeitsdruck steigt, fehlt eine klare Richtung. Die Person wechselt zwischen verschiedenen Herangehensweisen. Mal handelt sie schnell, mal sucht sie den Austausch, mal vertieft sie sich in Details. Das kann im Team zu Verunsicherung führen, weil das Verhalten schwer einzuschätzen ist.";
   } else if (hasDualDominance) {
-    controlled = `Wenn der Arbeitsdruck steigt, setzt sich eine der beiden starken Seiten durch. Die Person fokussiert sich entweder auf ${behaviorDesc(top.key)} oder auf ${behaviorDesc(mid.key)}. Das schafft kurzfristig Klarheit und stabilisiert die Situation. Gleichzeitig kann die andere Seite zu kurz kommen.`;
+    controlled = isLeadership
+      ? `Wenn der Arbeitsdruck steigt, setzt sich eine der beiden starken Seiten durch. ${fk} fokussiert sich entweder auf ${behaviorDesc(top.key)} oder auf ${behaviorDesc(mid.key)}. ${isDisziplinarisch ? "Das schafft kurzfristig Klarheit für das Team. Die andere Führungsqualität kann dabei zu kurz kommen." : isFachlich ? "Das stabilisiert kurzfristig die fachliche Steuerung. Die andere Qualität tritt in den Hintergrund." : "Das gibt dem Projekt kurzfristig Richtung. Die andere Seite kann dabei vernachlässigt werden."}`
+      : `Wenn der Arbeitsdruck steigt, setzt sich eine der beiden starken Seiten durch. Die Person fokussiert sich entweder auf ${behaviorDesc(top.key)} oder auf ${behaviorDesc(mid.key)}. Das schafft kurzfristig Klarheit und stabilisiert die Situation. Gleichzeitig kann die andere Seite zu kurz kommen.`;
   } else {
-    controlled = `Wenn der Arbeitsdruck steigt, zeigt sich die Stärke der Rolle besonders deutlich. Die Person setzt dann vor allem auf ${behaviorDesc(top.key)}. Das gibt dem Umfeld Sicherheit und Orientierung. Andere Anforderungen treten in den Hintergrund.`;
+    controlled = isLeadership
+      ? `Wenn der Arbeitsdruck steigt, zeigt sich die Stärke der Führung besonders deutlich. ${fk} setzt dann vor allem auf ${behaviorDesc(top.key)}. ${isDisziplinarisch ? "Das gibt dem Team Sicherheit und klare Orientierung." : isFachlich ? "Das sichert die fachliche Qualität und gibt dem Bereich Stabilität." : "Das gibt dem Projekt Richtung und Verlässlichkeit."} Andere Anforderungen treten in den Hintergrund.`
+      : `Wenn der Arbeitsdruck steigt, zeigt sich die Stärke der Rolle besonders deutlich. Die Person setzt dann vor allem auf ${behaviorDesc(top.key)}. Das gibt dem Umfeld Sicherheit und Orientierung. Andere Anforderungen treten in den Hintergrund.`;
   }
 
   let uncontrolled = "";
   const midSecClose = gap23 <= 5;
+  const fSuffix = isDisziplinarisch
+    ? " Das kann die Führungswirkung im Team beeinträchtigen."
+    : isFachlich
+    ? " Das kann die fachliche Steuerung beeinträchtigen."
+    : isKoordination
+    ? " Das kann die Koordination im Projekt beeinträchtigen."
+    : "";
 
   if (hasFullSymmetry) {
-    // 13: Alle drei ähnlich stark
-    uncontrolled = "Wenn der Druck sehr hoch wird, versucht die Person mehrere Perspektiven gleichzeitig zu berücksichtigen: Tempo, Fakten und Beziehungen. Dadurch kann der Entscheidungsprozess länger dauern, weil verschiedene Aspekte parallel abgewogen werden.";
+    uncontrolled = isLeadership
+      ? `Wenn der Druck sehr hoch wird, versucht ${fk.toLowerCase()} mehrere Perspektiven gleichzeitig zu berücksichtigen: Tempo, Fakten und Beziehungen. Dadurch kann der Entscheidungsprozess länger dauern, weil verschiedene Aspekte parallel abgewogen werden.${fSuffix}`
+      : "Wenn der Druck sehr hoch wird, versucht die Person mehrere Perspektiven gleichzeitig zu berücksichtigen: Tempo, Fakten und Beziehungen. Dadurch kann der Entscheidungsprozess länger dauern, weil verschiedene Aspekte parallel abgewogen werden.";
   } else if (hasDualDominance) {
-    // Doppeldominanz (gap12 <= 5)
     if ((top.key === "imp" && mid.key === "ana") || (top.key === "ana" && mid.key === "imp")) {
-      // 10: Impulsiv und Analytisch gleich stark
-      uncontrolled = "Unter sehr hohem Druck kann ein Wechsel zwischen schnellem Handeln und gründlicher Prüfung entstehen. Die Person entscheidet zunächst zügig, beginnt danach jedoch häufig wieder zu analysieren und überprüft ihre Entscheidung erneut.";
+      uncontrolled = isLeadership
+        ? `Unter sehr hohem Druck kann ein Wechsel zwischen schnellem Handeln und gründlicher Prüfung entstehen. ${fk} entscheidet zunächst zügig, beginnt danach jedoch häufig wieder zu analysieren und überprüft ihre Entscheidung erneut.${fSuffix}`
+        : "Unter sehr hohem Druck kann ein Wechsel zwischen schnellem Handeln und gründlicher Prüfung entstehen. Die Person entscheidet zunächst zügig, beginnt danach jedoch häufig wieder zu analysieren und überprüft ihre Entscheidung erneut.";
     } else if ((top.key === "imp" && mid.key === "int") || (top.key === "int" && mid.key === "imp")) {
-      // 11: Impulsiv und Intuitiv gleich stark
-      uncontrolled = "Bei starkem Druck schwankt die Person zwischen direkter Handlung und dem Wunsch, Beziehungen zu stabilisieren. Entscheidungen können daher zunächst klar getroffen werden, werden später aber teilweise noch einmal angepasst.";
+      uncontrolled = isLeadership
+        ? `Bei starkem Druck schwankt ${fk.toLowerCase()} zwischen direkter Handlung und dem Wunsch, Beziehungen zu stabilisieren. Entscheidungen können daher zunächst klar getroffen werden, werden später aber teilweise noch einmal angepasst.${fSuffix}`
+        : "Bei starkem Druck schwankt die Person zwischen direkter Handlung und dem Wunsch, Beziehungen zu stabilisieren. Entscheidungen können daher zunächst klar getroffen werden, werden später aber teilweise noch einmal angepasst.";
     } else {
-      // 12: Analytisch und Intuitiv gleich stark
-      uncontrolled = "Unter sehr hohem Druck versucht die Person gleichzeitig, sachliche Richtigkeit und zwischenmenschliche Wirkung zu berücksichtigen. Dadurch kann es länger dauern, bis eine Entscheidung endgültig getroffen wird.";
+      uncontrolled = isLeadership
+        ? `Unter sehr hohem Druck versucht ${fk.toLowerCase()} gleichzeitig, sachliche Richtigkeit und zwischenmenschliche Wirkung zu berücksichtigen. Dadurch kann es länger dauern, bis eine Entscheidung endgültig getroffen wird.${fSuffix}`
+        : "Unter sehr hohem Druck versucht die Person gleichzeitig, sachliche Richtigkeit und zwischenmenschliche Wirkung zu berücksichtigen. Dadurch kann es länger dauern, bis eine Entscheidung endgültig getroffen wird.";
     }
   } else if (top.key === "imp") {
     if (midSecClose) {
-      // 3: Impulsiv dominant, Analytisch und Intuitiv ähnlich stark
-      uncontrolled = "Bei sehr hohem Druck verliert die Person ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch länger dauern oder mehrfach angepasst werden, weil zwei unterschiedliche Denkweisen gleichzeitig Einfluss nehmen.";
+      uncontrolled = isLeadership
+        ? `Bei sehr hohem Druck verliert ${fk.toLowerCase()} ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch länger dauern oder mehrfach angepasst werden.${fSuffix}`
+        : "Bei sehr hohem Druck verliert die Person ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch länger dauern oder mehrfach angepasst werden, weil zwei unterschiedliche Denkweisen gleichzeitig Einfluss nehmen.";
     } else if (mid.key === "ana") {
-      // 1: Impulsiv dominant, Analytisch zweitstärkste Seite
-      uncontrolled = "Wenn der Druck sehr hoch wird, verliert die Person einen Teil ihrer schnellen Entscheidungsstärke. Sie beginnt stärker zu hinterfragen und sucht nach zusätzlichen Informationen. Dadurch kann es passieren, dass Entscheidungen zunächst sehr schnell angestoßen werden, anschließend jedoch wieder überprüft oder angepasst werden. Für andere wirkt das manchmal wie ein Wechsel zwischen Tempo und Absicherung.";
+      uncontrolled = isLeadership
+        ? `Wenn der Druck sehr hoch wird, verliert ${fk.toLowerCase()} einen Teil ihrer schnellen Entscheidungsstärke. Sie beginnt stärker zu hinterfragen und sucht nach zusätzlichen Informationen. Entscheidungen werden zunächst schnell angestoßen, anschließend jedoch wieder überprüft oder angepasst.${fSuffix}`
+        : "Wenn der Druck sehr hoch wird, verliert die Person einen Teil ihrer schnellen Entscheidungsstärke. Sie beginnt stärker zu hinterfragen und sucht nach zusätzlichen Informationen. Dadurch kann es passieren, dass Entscheidungen zunächst sehr schnell angestoßen werden, anschließend jedoch wieder überprüft oder angepasst werden. Für andere wirkt das manchmal wie ein Wechsel zwischen Tempo und Absicherung.";
     } else {
-      // 2: Impulsiv dominant, Intuitiv zweitstärkste Seite
-      uncontrolled = "Unter starkem Druck schwankt die Person stärker zwischen schnellem Handeln und dem Wunsch, auf Menschen und Beziehungen Rücksicht zu nehmen. Entscheidungen können dadurch zunächst sehr direkt getroffen werden, werden später aber teilweise wieder relativiert, um Spannungen oder Konflikte zu vermeiden.";
+      uncontrolled = isLeadership
+        ? `Unter starkem Druck schwankt ${fk.toLowerCase()} stärker zwischen schnellem Handeln und dem Wunsch, auf das Team Rücksicht zu nehmen. Entscheidungen können zunächst sehr direkt getroffen werden, werden später aber teilweise wieder relativiert, um Spannungen zu vermeiden.${fSuffix}`
+        : "Unter starkem Druck schwankt die Person stärker zwischen schnellem Handeln und dem Wunsch, auf Menschen und Beziehungen Rücksicht zu nehmen. Entscheidungen können dadurch zunächst sehr direkt getroffen werden, werden später aber teilweise wieder relativiert, um Spannungen oder Konflikte zu vermeiden.";
     }
   } else if (top.key === "ana") {
     if (midSecClose) {
-      // 6: Analytisch dominant, Impulsiv und Intuitiv ähnlich stark
-      uncontrolled = "Unter extremem Druck verliert die Person teilweise ihre klare Struktur. Sie schwankt zwischen dem Wunsch, schnell zu handeln, und dem Bedürfnis, Beziehungen zu stabilisieren. Dadurch kann es passieren, dass Entscheidungen mehrfach überdacht oder angepasst werden.";
+      uncontrolled = isLeadership
+        ? `Unter extremem Druck verliert ${fk.toLowerCase()} teilweise ihre klare Struktur. Sie schwankt zwischen dem Wunsch, schnell zu handeln, und dem Bedürfnis, Beziehungen zu stabilisieren. Entscheidungen können mehrfach überdacht oder angepasst werden.${fSuffix}`
+        : "Unter extremem Druck verliert die Person teilweise ihre klare Struktur. Sie schwankt zwischen dem Wunsch, schnell zu handeln, und dem Bedürfnis, Beziehungen zu stabilisieren. Dadurch kann es passieren, dass Entscheidungen mehrfach überdacht oder angepasst werden.";
     } else if (mid.key === "imp") {
-      // 4: Analytisch dominant, Impulsiv zweitstärkste Seite
-      uncontrolled = "Unter sehr hohem Druck steigt der Wunsch, Entscheidungen schneller zu treffen. Die Person verlässt dann teilweise ihre sonst gründliche Vorgehensweise. Entscheidungen werden schneller getroffen, ohne alle Details vollständig zu prüfen. Dadurch kann die gewohnte Absicherung etwas geringer werden.";
+      uncontrolled = isLeadership
+        ? `Unter sehr hohem Druck steigt der Wunsch, Entscheidungen schneller zu treffen. ${fk} verlässt dann teilweise ihre sonst gründliche Vorgehensweise. Entscheidungen werden schneller getroffen, ohne alle Details vollständig zu prüfen.${fSuffix}`
+        : "Unter sehr hohem Druck steigt der Wunsch, Entscheidungen schneller zu treffen. Die Person verlässt dann teilweise ihre sonst gründliche Vorgehensweise. Entscheidungen werden schneller getroffen, ohne alle Details vollständig zu prüfen. Dadurch kann die gewohnte Absicherung etwas geringer werden.";
     } else {
-      // 5: Analytisch dominant, Intuitiv zweitstärkste Seite
-      uncontrolled = "Wenn der Druck stark steigt, versucht die Person neben Fakten auch stärker die Wirkung auf Menschen zu berücksichtigen. Entscheidungen können dadurch länger dauern, weil sowohl sachliche Aspekte als auch zwischenmenschliche Auswirkungen bedacht werden.";
+      uncontrolled = isLeadership
+        ? `Wenn der Druck stark steigt, versucht ${fk.toLowerCase()} neben Fakten auch stärker die Wirkung auf das Team zu berücksichtigen. Entscheidungen können dadurch länger dauern, weil sowohl sachliche Aspekte als auch zwischenmenschliche Auswirkungen bedacht werden.${fSuffix}`
+        : "Wenn der Druck stark steigt, versucht die Person neben Fakten auch stärker die Wirkung auf Menschen zu berücksichtigen. Entscheidungen können dadurch länger dauern, weil sowohl sachliche Aspekte als auch zwischenmenschliche Auswirkungen bedacht werden.";
     }
   } else {
     // top.key === "int"
     if (midSecClose) {
-      // 9: Intuitiv dominant, Impulsiv und Analytisch ähnlich stark
-      uncontrolled = "Wenn der Druck sehr hoch wird, gerät die Person zwischen zwei unterschiedliche Entscheidungswege: schneller Handlung und gründlicher Analyse. Entscheidungen können dadurch länger dauern oder mehrfach angepasst werden.";
+      uncontrolled = isLeadership
+        ? `Wenn der Druck sehr hoch wird, gerät ${fk.toLowerCase()} zwischen zwei unterschiedliche Entscheidungswege: schnelle Handlung und gründliche Analyse. Entscheidungen können dadurch länger dauern oder mehrfach angepasst werden.${fSuffix}`
+        : "Wenn der Druck sehr hoch wird, gerät die Person zwischen zwei unterschiedliche Entscheidungswege: schneller Handlung und gründlicher Analyse. Entscheidungen können dadurch länger dauern oder mehrfach angepasst werden.";
     } else if (mid.key === "imp") {
-      // 7: Intuitiv dominant, Impulsiv zweitstärkste Seite
-      uncontrolled = "Bei sehr hohem Druck steigt der Wunsch nach schneller Handlung. Die Person verlässt dann teilweise ihre sonst stark beziehungsorientierte Vorgehensweise und entscheidet direkter und spontaner. Für andere kann dies ungewohnt entschlossen oder plötzlich wirken.";
+      uncontrolled = isLeadership
+        ? `Bei sehr hohem Druck steigt der Wunsch nach schneller Handlung. ${fk} verlässt dann teilweise ihre sonst stark beziehungsorientierte Vorgehensweise und entscheidet direkter und spontaner. Für das Team kann dies ungewohnt entschlossen oder plötzlich wirken.${fSuffix}`
+        : "Bei sehr hohem Druck steigt der Wunsch nach schneller Handlung. Die Person verlässt dann teilweise ihre sonst stark beziehungsorientierte Vorgehensweise und entscheidet direkter und spontaner. Für andere kann dies ungewohnt entschlossen oder plötzlich wirken.";
     } else {
-      // 8: Intuitiv dominant, Analytisch zweitstärkste Seite
-      uncontrolled = "Unter starkem Druck versucht die Person verstärkt, Entscheidungen auch sachlich abzusichern. Dadurch kann sie länger über Optionen nachdenken oder zusätzliche Informationen einholen, bevor eine Entscheidung endgültig getroffen wird.";
+      uncontrolled = isLeadership
+        ? `Unter starkem Druck versucht ${fk.toLowerCase()} verstärkt, Entscheidungen auch sachlich abzusichern. Dadurch kann sie länger über Optionen nachdenken oder zusätzliche Informationen einholen, bevor eine Entscheidung endgültig getroffen wird.${fSuffix}`
+        : "Unter starkem Druck versucht die Person verstärkt, Entscheidungen auch sachlich abzusichern. Dadurch kann sie länger über Optionen nachdenken oder zusätzliche Informationen einholen, bevor eine Entscheidung endgültig getroffen wird.";
     }
   }
 
@@ -702,7 +731,7 @@ export default function Rollenprofil() {
     );
   }
 
-  const stress = buildStressTexts(data.gesamt);
+  const stress = buildStressTexts(data.gesamt, data.isLeadership, data.fuehrungstyp);
   const teamwirkung = buildTeamwirkung(data);
   const spannungsfelder = buildSpannungsfelder(data);
   const fehlbesetzung = buildFehlbesetzung(data);
