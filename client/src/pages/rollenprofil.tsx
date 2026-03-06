@@ -810,25 +810,9 @@ export default function Rollenprofil() {
     return `Das Profil dieser Rolle wird geprägt durch ${domBehav}. Das ist die zentrale Anforderung an die Person. ${data.sec.key === "ana" ? "Strukturierte Arbeitsweise sorgt dafür, dass Entscheidungen nachvollziehbar bleiben und Abläufe stabil funktionieren." : data.sec.key === "int" ? "Die Fähigkeit, Beziehungen aufzubauen und Menschen mitzunehmen, sorgt für Akzeptanz und Zusammenhalt." : "Gleichzeitig braucht es Handlungsfähigkeit, damit Ergebnisse auch tatsächlich umgesetzt werden."}`;
   })();
 
-  const abschlussText = (() => {
-    const domRisk = data.dom.key === "int"
-      ? "sinkt die Beziehungsqualität im direkten Kontakt"
-      : data.dom.key === "imp"
-      ? "fehlen Tempo und Umsetzungskraft"
-      : "leidet die Prozessqualität und die Absicherung";
-    const secRisk = data.sec.key === "ana"
-      ? "werden Abläufe instabil und wirtschaftliche Steuerung fehlt"
-      : data.sec.key === "int"
-      ? "verliert das Team Zusammenhalt und Akzeptanz"
-      : "stockt die Umsetzung und Verbindlichkeit geht verloren";
-
-    if (data.dom.key === "int") {
-      return `Diese Kombination sichert Vertrauen im persönlichen Kontakt, ${data.sec.key === "ana" ? "stabile Abläufe und eine wirtschaftlich solide Steuerung" : "Handlungsfähigkeit und verbindliche Umsetzung"}${data.isLeadership ? " als Grundlage wirksamer Führung" : ""}. Ohne sie ${domRisk}. Ohne die ergänzende Seite ${secRisk}.`;
-    } else if (data.dom.key === "imp") {
-      return `Diese Kombination sichert schnelle Umsetzung, klare Priorisierung und ${data.sec.key === "int" ? "tragfähige Beziehungen im Team" : "nachvollziehbare Qualität in Prozessen und Ergebnissen"}${data.isLeadership ? " als Grundlage wirksamer Führung" : ""}. Ohne sie ${domRisk}. Ohne die ergänzende Seite ${secRisk}.`;
-    }
-    return `Diese Kombination sichert fundierte Entscheidungsgrundlagen, stabile Prozesse und ${data.sec.key === "int" ? "eine vertrauensvolle Zusammenarbeit im Team" : "konsequente Umsetzung der Ergebnisse"}${data.isLeadership ? " als Grundlage wirksamer Führung" : ""}. Ohne sie ${domRisk}. Ohne die ergänzende Seite ${secRisk}.`;
-  })();
+  const abschlussText = data.isLeadership
+    ? "Wirksame Führung entsteht aus dem Zusammenspiel von klarer Entscheidungsbasis und konsequenter Umsetzung. Diese Kombination ermöglicht genau dieses Gleichgewicht: Entscheidungen werden vorbereitet, getroffen und anschließend verbindlich umgesetzt. Fehlt einer der beiden Anteile, verliert das System an Stabilität \u2013 entweder durch unsaubere Entscheidungen oder durch mangelnde Umsetzung."
+    : "Diese Kombination verbindet tragfähige Entscheidungsgrundlagen mit konsequenter Umsetzung. Dadurch entstehen stabile Prozesse und klare Orientierung im Alltag. Fehlt einer der beiden Anteile, leidet entweder die Qualität der Entscheidungen oder ihre Umsetzung verliert an Verbindlichkeit.";
 
   return (
     <div className="min-h-screen" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 40%, #F5F7FA 100%)" }} lang="de">
