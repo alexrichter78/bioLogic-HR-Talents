@@ -189,23 +189,18 @@ export default function Home() {
               }}
               data-testid="card-profile"
             >
+              <div style={{ flexShrink: 0, width: 180, height: 180, display: "flex", alignItems: "center", justifyContent: "center" }} className="home-illustration-hide-mobile">
+                <img src={illustrationRollenanalyse} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+              </div>
+
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-                  <div style={{
-                    width: 40, height: 40, borderRadius: 12,
-                    background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.06))",
-                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                  }}>
-                    <Sparkles style={{ width: 20, height: 20, color: "#0071E3", strokeWidth: 1.5 }} />
-                  </div>
-                  <div>
-                    <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: 0 }} data-testid="text-no-profile">
-                      Rollenanalyse
-                    </h2>
-                    <p style={{ fontSize: 13, color: "#8E8E93", margin: "3px 0 0", fontWeight: 450 }}>
-                      Präzision in Besetzung und Teamstruktur
-                    </p>
-                  </div>
+                <div style={{ marginBottom: 12 }}>
+                  <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: 0 }} data-testid="text-no-profile">
+                    Rollenanalyse
+                  </h2>
+                  <p style={{ fontSize: 13, color: "#8E8E93", margin: "3px 0 0", fontWeight: 450 }}>
+                    Präzision in Besetzung und Teamstruktur
+                  </p>
                 </div>
 
                 <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.65, margin: "0 0 28px" }} data-testid="text-profile-desc">
@@ -261,10 +256,6 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-
-              <div style={{ flexShrink: 0, width: 160, height: 160, display: "flex", alignItems: "center", justifyContent: "center" }} className="home-illustration-hide-mobile">
-                <img src={illustrationRollenanalyse} alt="" style={{ width: "100%", height: "100%", objectFit: "contain", opacity: 0.9 }} />
-              </div>
             </div>
           </FadeIn>
 
@@ -281,23 +272,18 @@ export default function Home() {
               }}
               data-testid="card-ki-coach"
             >
+              <div style={{ flexShrink: 0, width: 120, height: 120, display: "flex", alignItems: "center", justifyContent: "center" }} className="home-illustration-hide-mobile">
+                <img src={illustrationKiCoach} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+              </div>
+
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-                  <div style={{
-                    width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-                    background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.06))",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                  }}>
-                    <Bot style={{ width: 20, height: 20, color: "#0071E3", strokeWidth: 1.5 }} />
-                  </div>
-                  <div>
-                    <h3 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>
-                      KI-Coach
-                    </h3>
-                    <p style={{ fontSize: 13, color: "#8E8E93", margin: "3px 0 0", fontWeight: 450 }}>
-                      Beratung auf Basis der bioLogic-Systematik
-                    </p>
-                  </div>
+                <div style={{ marginBottom: 12 }}>
+                  <h3 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>
+                    KI-Coach
+                  </h3>
+                  <p style={{ fontSize: 13, color: "#8E8E93", margin: "3px 0 0", fontWeight: 450 }}>
+                    Beratung auf Basis der bioLogic-Systematik
+                  </p>
                 </div>
 
                 <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.65, margin: "0 0 28px" }}>
@@ -321,7 +307,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div style={{ display: "flex", justifyContent: "flex-start" }}>
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
                   <button
                     onClick={() => setLocation("/ki-coach")}
                     style={{
@@ -339,10 +325,6 @@ export default function Home() {
                     KI-Coach öffnen
                   </button>
                 </div>
-              </div>
-
-              <div style={{ flexShrink: 0, width: 140, height: 140, display: "flex", alignItems: "center", justifyContent: "center" }} className="home-illustration-hide-mobile">
-                <img src={illustrationKiCoach} alt="" style={{ width: "100%", height: "100%", objectFit: "contain", opacity: 0.9 }} />
               </div>
             </div>
           </FadeIn>
