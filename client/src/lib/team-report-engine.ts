@@ -16,6 +16,18 @@ export type SystemwirkungResult = {
   narrative: string;
 };
 
+export type MetricTone = "neutral" | "warning" | "danger" | "success";
+export type MatrixRating = "stabil" | "steuerbar" | "kritisch";
+
+export type TopMetric = { label: string; value: string; tone: MetricTone };
+export type WirkungsmatrixRow = { area: string; rating: MatrixRating; summary: string };
+export type DeltaRowData = { label: string; value: number; tone: "neutral" | "warning" | "danger" };
+export type StressBarItem = { label: string; value: number; color: string };
+export type StressBarsData = { normal: StressBarItem[]; pressure: StressBarItem[]; stress: StressBarItem[] };
+export type RiskMeterData = { label: string; value: number; color: string };
+export type ForecastItem = { title: string; text: string };
+export type IntegrationPhase = { phase: string; bullets: string[] };
+
 export type TeamReportResult = {
   managementSummary: string;
   teamstruktur: string;
@@ -30,6 +42,29 @@ export type TeamReportResult = {
   fuehrungshebel: string;
   integrationsplan: string;
   systemfazit: string;
+  topMetrics: TopMetric[];
+  wirkungsmatrix: WirkungsmatrixRow[];
+  deltaRows: DeltaRowData[];
+  stressBars: StressBarsData;
+  riskMeters: RiskMeterData[];
+  systemForecast: ForecastItem[];
+  integrationPhases: IntegrationPhase[];
+  summaryHeadline: string;
+  fazitHeadline: string;
+  fazitTone: "success" | "warning" | "danger";
+  fazitEmpfehlung: string;
+  teamfitLabel: string;
+  integrationsrisiko: string;
+  shiftFrom: string;
+  shiftTo: string;
+  teamNoteText: string;
+  sollNoteText: string;
+  istNoteText: string;
+  stressCallout: string;
+  riskCallout: string;
+  chancenItems: string[];
+  risikenItems: string[];
+  fuehrungshebelItems: string[];
 };
 
 function compDesc(k: ComponentKey): string {
@@ -195,6 +230,32 @@ export function computeTeamReport(
   const integrationsplan = buildIntegrationsplan(cn, rk, tk, teamIstGap, sollIstGap);
   const systemfazit = buildSystemfazit(roleName, cn, soll, ist, team, sollIstGap, teamIstGap, status, sk, rk, tk);
 
+  const teamfitLabel = ampelText(status);
+  const integrationsrisikoLabel = status === "gruen" ? "Gering" : status === "gelb" ? "Erhöht" : "Hoch";
+  const topMetrics = buildTopMetrics(systemwirkungResult, teamfitLabel, integrationsrisikoLabel);
+  const wirkungsmatrix = buildWirkungsmatrix(cn, ist, team, soll, rk, tk, sk, teamIstGap, sollIstGap);
+  const deltaRows = buildDeltaRows(sollIstGap, teamIstGap, sollTeamGap);
+  const stressBarsData = buildStressBars(ist, rk, istDom.top2.key);
+  const riskMetersData = buildRiskMeters(sollIstGap, teamIstGap, rk, tk);
+  const systemForecastData = buildSystemForecast(cn, rk, tk, teamIstGap, sollIstGap, systemwirkungResult);
+  const integrationPhasesData = buildIntegrationPhases(cn, rk, tk, teamIstGap, sollIstGap);
+  const summaryHeadline = buildSummaryHeadline(status, systemwirkungResult);
+  const { headline: fazitHeadline, tone: fazitTone, empfehlung: fazitEmpfehlung } = buildFazitMeta(status, teamIstGap, sollIstGap);
+
+  const shiftFrom = compDesc(tk);
+  const shiftTo = compDesc(rk);
+
+  const teamNoteText = buildTeamNote(team, tk);
+  const sollNoteText = buildSollNote(soll, sk);
+  const istNoteText = buildIstNote(ist, rk, cn);
+
+  const stressCallout = buildStressCallout(cn, rk, tk, istDom.top2.key, teamIstGap);
+  const riskCallout = buildRiskCallout(cn, ist, team, rk, tk);
+
+  const chancenItems = chancen.split("\n\n").filter(s => s.trim());
+  const risikenItems = risiken.split("\n\n").filter(s => s.trim());
+  const fuehrungshebelItems = fuehrungshebel.split("\n\n").filter(s => s.trim());
+
   return {
     managementSummary,
     teamstruktur,
@@ -209,6 +270,29 @@ export function computeTeamReport(
     fuehrungshebel,
     integrationsplan,
     systemfazit,
+    topMetrics,
+    wirkungsmatrix,
+    deltaRows,
+    stressBars: stressBarsData,
+    riskMeters: riskMetersData,
+    systemForecast: systemForecastData,
+    integrationPhases: integrationPhasesData,
+    summaryHeadline,
+    fazitHeadline,
+    fazitTone,
+    fazitEmpfehlung,
+    teamfitLabel,
+    integrationsrisiko: integrationsrisikoLabel,
+    shiftFrom,
+    shiftTo,
+    teamNoteText,
+    sollNoteText,
+    istNoteText,
+    stressCallout,
+    riskCallout,
+    chancenItems,
+    risikenItems,
+    fuehrungshebelItems,
   };
 }
 
@@ -621,4 +705,223 @@ function buildSystemfazit(
   }
 
   return lines.join("\n");
+}
+
+function buildTopMetrics(sw: SystemwirkungResult, teamfit: string, risk: string): TopMetric[] {
+  const swTone: MetricTone = sw.intensity === "gering" ? "success" : sw.intensity === "mittel" ? "warning" : "danger";
+  const intTone: MetricTone = sw.intensity === "gering" ? "success" : sw.intensity === "mittel" ? "warning" : "danger";
+  const tfTone: MetricTone = teamfit === "Stabil" ? "success" : teamfit === "Steuerbar" ? "warning" : "danger";
+  const rrTone: MetricTone = risk === "Gering" ? "success" : risk === "Erhöht" ? "warning" : "danger";
+  return [
+    { label: "Systemwirkung", value: sw.label, tone: swTone },
+    { label: "Intensität", value: sw.intensity.charAt(0).toUpperCase() + sw.intensity.slice(1), tone: intTone },
+    { label: "Teamfit", value: teamfit, tone: tfTone },
+    { label: "Integrationsrisiko", value: risk, tone: rrTone },
+  ];
+}
+
+function buildWirkungsmatrix(
+  cn: string, ist: Triad, team: Triad, soll: Triad,
+  rk: ComponentKey, tk: ComponentKey, sk: ComponentKey,
+  teamIstGap: number, sollIstGap: number
+): WirkungsmatrixRow[] {
+  const tempoGap = Math.abs(ist.impulsiv - team.impulsiv);
+  const kommGap = Math.abs(ist.intuitiv - team.intuitiv);
+  const strukturGap = Math.abs(ist.analytisch - team.analytisch);
+
+  function rate(gap: number): MatrixRating {
+    if (gap <= 8) return "stabil";
+    if (gap <= 18) return "steuerbar";
+    return "kritisch";
+  }
+
+  const rows: WirkungsmatrixRow[] = [];
+
+  if (rk === tk) {
+    rows.push({ area: "Entscheidungen", rating: rate(teamIstGap / 3), summary: `${cn} und das Team treffen Entscheidungen nach ähnlicher Logik.` });
+  } else if (rk === "impulsiv") {
+    rows.push({ area: "Entscheidungen", rating: tempoGap > 15 ? "kritisch" : "steuerbar", summary: `${cn} priorisiert Tempo, das Team eher ${compShort(tk)}.` });
+  } else {
+    rows.push({ area: "Entscheidungen", rating: rate(teamIstGap / 3), summary: `${cn} setzt auf ${compShort(rk)}, das Team auf ${compShort(tk)}. Unterschiedliche Bewertungen sind wahrscheinlich.` });
+  }
+
+  rows.push({ area: "Kommunikation", rating: rate(kommGap), summary: kommGap <= 8 ? "Ähnliche Kommunikationslogik. Missverständnisse sind selten." : `Gleiche Themen werden unterschiedlich gewichtet. Missverständnisse sind ${kommGap > 18 ? "sehr " : ""}wahrscheinlich.` });
+
+  rows.push({ area: "Arbeitstempo", rating: rate(tempoGap), summary: tempoGap <= 8 ? "Kompatibles Arbeitstempo." : ist.impulsiv > team.impulsiv ? `${cn} arbeitet ${tempoGap > 18 ? "deutlich " : ""}schneller als das Team.` : `Das Team arbeitet ${tempoGap > 18 ? "deutlich " : ""}schneller als ${cn}.` });
+
+  const sollStrukturGap = Math.abs(ist.analytisch - soll.analytisch);
+  rows.push({ area: "Qualitätslogik", rating: rate(sollStrukturGap), summary: sollStrukturGap <= 8 ? "Strukturanforderung und Profil passen zusammen." : `Die Rolle verlangt ${soll.analytisch > ist.analytisch ? "mehr" : "weniger"} Struktur als ${cn} mitbringt.` });
+
+  rows.push({ area: "Kulturwirkung", rating: rk === tk ? "stabil" : teamIstGap > 25 ? "kritisch" : "steuerbar", summary: rk === tk ? "Die Teamkultur bleibt stabil." : `Mehr ${compShort(rk)} kann als ${rk === "impulsiv" ? "Druck" : rk === "analytisch" ? "Einschränkung" : "Verzögerung"} erlebt werden.` });
+
+  const kohGap = Math.min(tempoGap, kommGap, strukturGap);
+  rows.push({ area: "Zusammenhalt", rating: teamIstGap <= 15 ? "stabil" : kohGap <= 10 ? "steuerbar" : "kritisch", summary: teamIstGap <= 15 ? "Hohe Kompatibilität stärkt den Zusammenhalt." : ist.intuitiv >= 30 ? `Der Kommunikationsanteil von ${cn} kann Spannungen teilweise abfedern.` : "Ohne bewusste Steuerung kann der Teamzusammenhalt leiden." });
+
+  return rows;
+}
+
+function buildDeltaRows(sollIstGap: number, teamIstGap: number, sollTeamGap: number): DeltaRowData[] {
+  function tone(g: number): "neutral" | "warning" | "danger" {
+    if (g <= 20) return "neutral";
+    if (g <= 40) return "warning";
+    return "danger";
+  }
+  return [
+    { label: "Soll vs. neue Person", value: sollIstGap, tone: tone(sollIstGap) },
+    { label: "Team vs. neue Person", value: teamIstGap, tone: tone(teamIstGap) },
+    { label: "Rolle vs. Team", value: sollTeamGap, tone: tone(sollTeamGap) },
+  ];
+}
+
+function buildStressBars(ist: Triad, rk: ComponentKey, sk2: ComponentKey): StressBarsData {
+  const bot: ComponentKey = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).find(k => k !== rk && k !== sk2)!;
+
+  const pressureRaw = { ...ist };
+  pressureRaw[rk] = Math.min(100, ist[rk] + 12);
+  pressureRaw[sk2] = Math.max(0, ist[sk2] - 8);
+  pressureRaw[bot] = Math.max(0, ist[bot] - 4);
+  const pressure = normalizeTriad(pressureRaw);
+
+  const stressRaw = { ...ist };
+  stressRaw[rk] = Math.max(0, ist[rk] - 14);
+  stressRaw[sk2] = Math.min(100, ist[sk2] + 10);
+  stressRaw[bot] = Math.min(100, ist[bot] + 4);
+  const stress = normalizeTriad(stressRaw);
+
+  function toBars(t: Triad): StressBarItem[] {
+    return [
+      { label: "Tempo", value: Math.round(t.impulsiv), color: "bg-rose-500" },
+      { label: "Kommunikation", value: Math.round(t.intuitiv), color: "bg-amber-500" },
+      { label: "Struktur", value: Math.round(t.analytisch), color: "bg-blue-600" },
+    ];
+  }
+
+  return {
+    normal: toBars(ist),
+    pressure: toBars(pressure),
+    stress: toBars(stress),
+  };
+}
+
+function buildRiskMeters(sollIstGap: number, teamIstGap: number, rk: ComponentKey, tk: ComponentKey): RiskMeterData[] {
+  const reibung = Math.min(100, Math.round((teamIstGap / 60) * 100));
+  const kultur = Math.min(100, rk !== tk ? Math.round(((teamIstGap + 10) / 70) * 100) : Math.round((teamIstGap / 80) * 100));
+  const leistung = Math.min(100, Math.round(((sollIstGap * 0.6 + teamIstGap * 0.4) / 60) * 100));
+  const steuerung = Math.min(100, Math.round(((sollIstGap + teamIstGap) / 80) * 100));
+  return [
+    { label: "Reibung im Alltag", value: reibung, color: reibung > 65 ? "bg-rose-500" : reibung > 40 ? "bg-amber-500" : "bg-blue-600" },
+    { label: "Kulturveränderung", value: kultur, color: kultur > 65 ? "bg-rose-500" : kultur > 40 ? "bg-amber-500" : "bg-blue-600" },
+    { label: "Leistungsrisiko", value: leistung, color: leistung > 65 ? "bg-rose-500" : leistung > 40 ? "bg-amber-500" : "bg-blue-600" },
+    { label: "Steuerungsbedarf", value: steuerung, color: steuerung > 65 ? "bg-rose-500" : steuerung > 40 ? "bg-amber-500" : "bg-blue-600" },
+  ];
+}
+
+function buildSystemForecast(
+  cn: string, rk: ComponentKey, tk: ComponentKey,
+  teamIstGap: number, sollIstGap: number, sw: SystemwirkungResult
+): ForecastItem[] {
+  const items: ForecastItem[] = [];
+
+  if (teamIstGap <= 15) {
+    items.push({ title: "Kurzfristige Wirkung (0-3 Monate)", text: `Die Integration verläuft voraussichtlich reibungsarm. ${cn} und das Team arbeiten nach ähnlicher Logik. Kleine Unterschiede werden im Alltag sichtbar, bleiben aber steuerbar.` });
+    items.push({ title: "Mittelfristige Wirkung (3-12 Monate)", text: `Die Zusammenarbeit stabilisiert sich. ${cn} wird als Teil des Teams wahrgenommen. Die bestehende Teamkultur bleibt weitgehend erhalten.` });
+    items.push({ title: "Langfristige Wirkung (12+ Monate)", text: `Die Konstellation ist langfristig stabil. Kleinere Anpassungen in der Arbeitsweise passieren natürlich. Keine grundlegende Veränderung der Teamkultur zu erwarten.` });
+    items.push({ title: "Kritischer Kipppunkt", text: `Bei dieser Konstellation gibt es keinen kritischen Kipppunkt. Normale Führungssteuerung reicht aus.` });
+  } else if (teamIstGap <= 30) {
+    items.push({ title: "Kurzfristige Wirkung (0-3 Monate)", text: `Unterschiede in ${compShort(rk)} und ${compShort(tk)} werden im Alltag sichtbar. Das Team braucht Orientierung und klare Spielregeln.` });
+    items.push({ title: "Mittelfristige Wirkung (3-12 Monate)", text: `Wenn die Zusammenarbeit aktiv gesteuert wird, kann das Team von der neuen Perspektive profitieren. Ohne Steuerung können sich Spannungen verfestigen.` });
+    items.push({ title: "Langfristige Wirkung (12+ Monate)", text: `Die Teamkultur verändert sich schrittweise. ${compShort(rk)} gewinnt an Bedeutung. Wenn diese Entwicklung bewusst begleitet wird, entsteht ein leistungsfähigeres Team.` });
+    items.push({ title: "Kritischer Kipppunkt", text: `Die entscheidende Phase liegt in den Wochen 3-6. Werden in dieser Phase keine klaren Strukturen etabliert, können sich Konflikte verfestigen.` });
+  } else {
+    items.push({ title: "Kurzfristige Wirkung (0-3 Monate)", text: `Die unterschiedliche Arbeitslogik wird sofort sichtbar. ${cn} arbeitet stärker über ${compShort(rk)}, das Team stärker über ${compShort(tk)}. Reibungen bei Priorisierung und Arbeitsgeschwindigkeit sind wahrscheinlich.` });
+    items.push({ title: "Mittelfristige Wirkung (3-12 Monate)", text: `Wenn die Zusammenarbeit aktiv moderiert wird, kann das Team von mehr ${compShort(rk)} profitieren. Ohne Führung verstärken sich Missverständnisse und Frustration.` });
+    items.push({ title: "Langfristige Wirkung (12+ Monate)", text: `Langfristig verändert sich die Teamkultur spürbar. ${compShort(rk)} gewinnt an Gewicht. Wenn bewusst gesteuert, wird das Team leistungsfähiger. Ohne Leitplanken drohen dauerhafte Spannungen.` });
+    items.push({ title: "Kritischer Kipppunkt", text: `Die entscheidende Phase liegt zwischen der 4. und 8. Woche. Werden in dieser Phase keine klaren Entscheidungswege, Spielregeln und Prioritäten etabliert, können sich Konfliktmuster verfestigen.` });
+  }
+
+  return items;
+}
+
+function buildIntegrationPhases(
+  cn: string, rk: ComponentKey, tk: ComponentKey,
+  teamIstGap: number, sollIstGap: number
+): IntegrationPhase[] {
+  const phase1: string[] = [
+    `Kick-off-Gespräch mit Team und ${cn}.`,
+    "Rolle, Spielregeln, Verantwortlichkeiten und Entscheidungsbefugnisse schriftlich klären.",
+  ];
+  if (rk !== tk) {
+    phase1.push("Arbeitslogik transparent machen: Unterschiede benennen, nicht wegmoderieren.");
+  }
+  phase1.push("Beobachten und zuhören, bevor operative Akzente gesetzt werden.");
+  if (teamIstGap > 25) {
+    phase1.push(`Buddy benennen: Ein erfahrenes Teammitglied als Ansprechpartner für ${cn}.`);
+  }
+
+  const phase2: string[] = [
+    `Erste strukturierte Feedbackrunde mit Team und ${cn} durchführen.`,
+    "Prioritäten auf Basis des Feedbacks nachjustieren.",
+  ];
+  if (rk !== tk) {
+    phase2.push(`Aufgaben bewusst so verteilen, dass Stärken von ${cn} genutzt und Reibung reduziert werden.`);
+  }
+  phase2.push("Quick Wins sichtbar machen, damit Akzeptanz entsteht.");
+  if (teamIstGap > 30 || sollIstGap > 30) {
+    phase2.push("Eskalationsmechanismus klären: Wer moderiert bei Konflikten?");
+  }
+
+  return [
+    { phase: "Woche 1-2: Orientierung und Erwartungsklärung", bullets: phase1 },
+    { phase: "Woche 3-4: Wirkung entfalten und nachsteuern", bullets: phase2 },
+  ];
+}
+
+function buildSummaryHeadline(status: "gruen" | "gelb" | "rot", sw: SystemwirkungResult): string {
+  if (status === "gruen") return "Kompatible Konstellation mit stabilem Fundament";
+  if (status === "gelb") return `${sw.label} mit steuerbarem Reibungspotenzial`;
+  return "Spannungsfeld mit hohem Reibungspotenzial";
+}
+
+function buildFazitMeta(status: "gruen" | "gelb" | "rot", teamIstGap: number, sollIstGap: number): { headline: string; tone: "success" | "warning" | "danger"; empfehlung: string } {
+  if (status === "gruen") {
+    return { headline: "Integration ohne besondere Steuerung möglich", tone: "success", empfehlung: "Normale Einarbeitung mit Feedbackschleifen" };
+  }
+  if (status === "gelb") {
+    return { headline: "Integration mit gezielter Steuerung möglich", tone: "warning", empfehlung: "Aktive Führungsbegleitung in den ersten 30 Tagen" };
+  }
+  return { headline: "Integration nur mit aktivem Steuerungskonzept", tone: "danger", empfehlung: "Nur mit enger Führung einsetzen" };
+}
+
+function buildTeamNote(team: Triad, tk: ComponentKey): string {
+  const wk = weakestKey(team);
+  if (team[tk] - team[wk] <= 8) return "Das Team ist relativ ausgeglichen, mit leichtem Schwerpunkt auf " + compShort(tk) + ".";
+  return `Das Team arbeitet primär über ${compDesc(tk)} (${team[tk]}%). Der schwächste Bereich liegt bei ${compDesc(wk)}.`;
+}
+
+function buildSollNote(soll: Triad, sk: ComponentKey): string {
+  if (sk === "analytisch") return "Die Rolle verlangt klaren Strukturfokus, Prüftiefe und verlässliche Planung.";
+  if (sk === "impulsiv") return "Die Rolle verlangt Tempo, Umsetzungsstärke und schnelle Entscheidungen.";
+  return "Die Rolle verlangt Beziehungsorientierung, Kommunikation und Teamfähigkeit.";
+}
+
+function buildIstNote(ist: Triad, rk: ComponentKey, cn: string): string {
+  const sorted = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).sort((a, b) => ist[b] - ist[a]);
+  return `${cn} bringt vor allem ${compShort(sorted[0])} und ${compShort(sorted[1])} mit.`;
+}
+
+function buildStressCallout(cn: string, rk: ComponentKey, tk: ComponentKey, sk2: ComponentKey, teamIstGap: number): string {
+  if (rk === tk && teamIstGap <= 15) return `Für das Team bedeutet das: Unter Druck bleibt die Konstellation stabil. ${cn} verstärkt die vorhandene Teamlogik.`;
+  if (rk !== tk) return `Für das Team bedeutet das: Unter Druck wird die Abweichung zunächst sichtbarer, weil ${cn} noch stärker auf ${compShort(rk)} setzt. Unter sehr hohem Stress verschiebt sich das Verhalten erneut. Das Team sollte darauf vorbereitet sein.`;
+  return `Für das Team bedeutet das: Unter Druck verstärkt ${cn} die vorhandene Logik. Die Intensität steigt, die Richtung bleibt gleich.`;
+}
+
+function buildRiskCallout(cn: string, ist: Triad, team: Triad, rk: ComponentKey, tk: ComponentKey): string {
+  if (rk === tk) return `Die Profile von ${cn} und dem Team sind in ihrer Grundlogik kompatibel. Die Reibung bleibt gering.`;
+  const gaps: [ComponentKey, number][] = [
+    ["impulsiv", Math.abs(ist.impulsiv - team.impulsiv)],
+    ["intuitiv", Math.abs(ist.intuitiv - team.intuitiv)],
+    ["analytisch", Math.abs(ist.analytisch - team.analytisch)],
+  ];
+  gaps.sort((a, b) => b[1] - a[1]);
+  return `Die größte Reibung entsteht im Bereich ${compDesc(gaps[0][0])}. ${cn} und das Team bewerten diesen Bereich grundlegend anders.`;
 }

@@ -64,6 +64,7 @@ Preferred communication style: Simple, everyday language.
 -   **Entscheidungsbericht**: Displays structural type, gap bars, warning callouts, and stress behavior analysis.
 -   **Spannungsmatrix**: Includes 8 dedicated MIX-cells for balanced profiles.
 -   **Führungskontext Card**: Provides contextual narrative (Führungskraft, Team, Passung, Kernrisiko, Kernchance, Handlungsfokus) with deterministic text based on profile data; colors match dominance.
+-   **TestTeamReport (Premium UI)**: Management-grade team system report at `/team-report` with 8 visual sections: Header with profiles/mini-stats, Management Summary with 4 MetricTiles + Systemwirkung shift visualization, Strukturvergleich with 3 ProfileCards + TripleTriangleChart SVG, Wirkungsmatrix (6-row table with stabil/steuerbar/kritisch ratings), Chancen/Risiken ListCards, Stressdynamik (3 StressCards with bar charts), Führungshebel + RiskMeters, Integrationsplan (2 phases) + Systemprognose (4 forecasts), Systemfazit with tone-colored Empfehlung badge.
 
 ### Technical Implementations
 -   **Leader-Team Match Engine (`client/src/lib/leader-team-match-engine.ts`)**: Provides three evaluations (Normal, Controlled Stress, Uncontrolled Stress) for leadership roles, generating ratings, component breakdowns, Team-Fit-Score (TFS), and flags. Applies leadership rules F1-F7.
