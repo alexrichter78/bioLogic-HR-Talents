@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
-import { Download, AlertTriangle, CheckCircle } from "lucide-react";
+import { Download, AlertTriangle } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE } from "@/data/berufe";
 
@@ -525,41 +525,229 @@ function buildFehlbesetzung(data: ReportData): { label: string; bullets: string[
   return risks.slice(0, 3);
 }
 
-function buildFazit(data: ReportData): { kernsatz: string; persoenlichkeit: string[] } {
-  const { dom, sec, wk, beruf, isLeadership, taetigkeiten, profileType } = data;
-  const hoch = (taetigkeiten || []).filter((t: any) => t.niveau === "Hoch");
+function getFazitVariant(bg: BG): number {
+  const vals = [
+    { key: "imp", value: bg.imp },
+    { key: "int", value: bg.int },
+    { key: "ana", value: bg.ana },
+  ].sort((a, b) => b.value - a.value || SORT_PRIORITY[a.key] - SORT_PRIORITY[b.key]);
+  const [top, mid, bot] = vals;
+  const gap12 = Math.round(top.value - mid.value);
+  const gap23 = Math.round(mid.value - bot.value);
 
-  let kernsatz: string;
-  if (profileType === "balanced_all") {
-    kernsatz = `Die Rolle ${beruf} passt zu Persönlichkeiten, die vielseitig arbeiten können: schnell handeln, Beziehungen pflegen und gründlich analysieren. Wichtig ist die Fähigkeit, situativ zwischen diesen Anforderungen zu wechseln.`;
-  } else {
-    kernsatz = `Die Rolle ${beruf} passt besonders zu Persönlichkeiten, die:`;
+  if (gap12 <= 5 && gap23 <= 5) return 13;
+  if (gap12 <= 5) {
+    if (gap23 > 10) {
+      if ((top.key === "imp" && mid.key === "ana") || (top.key === "ana" && mid.key === "imp")) return 10;
+      if ((top.key === "imp" && mid.key === "int") || (top.key === "int" && mid.key === "imp")) return 11;
+      return 12;
+    }
+    if ((top.key === "imp" && mid.key === "ana") || (top.key === "ana" && mid.key === "imp")) return 4;
+    if ((top.key === "imp" && mid.key === "int") || (top.key === "int" && mid.key === "imp")) return 5;
+    return 6;
   }
-
-  const points: string[] = [];
-  if (dom.key === "int") {
-    points.push("Menschen schnell verstehen, Vertrauen aufbauen und im persönlichen Kontakt überzeugen");
-  } else if (dom.key === "imp") {
-    points.push("schnell entscheiden, klar priorisieren und Ergebnisse konsequent liefern");
-  } else {
-    points.push("systematisch denken, sorgfältig arbeiten und fundierte Entscheidungsgrundlagen liefern");
+  if (gap23 <= 5) {
+    if (top.key === "imp") return 7;
+    if (top.key === "ana") return 8;
+    return 9;
   }
+  if (top.key === "imp") return 1;
+  if (top.key === "ana") return 2;
+  return 3;
+}
 
-  if (sec.key === "ana") points.push("gleichzeitig strukturiert arbeiten und Abläufe stabil halten");
-  else if (sec.key === "int") points.push("gleichzeitig Beziehungen pflegen und das Team mitnehmen");
-  else points.push("gleichzeitig handlungsfähig bleiben und Tempo halten");
+function buildFazit(data: ReportData): { titel: string; absaetze: string[] } {
+  const variant = getFazitVariant(data.gesamt);
+  const isL = data.isLeadership;
 
-  points.push("auch unter Druck ruhig und klar bleiben");
+  const texte: Record<number, { titel: string; ohne: string[]; mit: string[] }> = {
+    1: {
+      titel: "Direkte Umsetzung und schnelles Handeln",
+      ohne: [
+        "In dieser Rolle werden Themen häufig direkt aufgegriffen und zügig in Handlung überführt. Aufgaben bleiben selten lange liegen, sondern werden aktiv vorangetrieben.",
+        "Die Stärke dieser Ausrichtung liegt darin, Bewegung zu schaffen und Entscheidungen schnell in konkrete Schritte umzusetzen.",
+        "Die Herausforderung besteht darin, dass Entscheidungen manchmal schneller getroffen werden, als alle Hintergründe vollständig geprüft sind.",
+      ],
+      mit: [
+        "In dieser Rolle entsteht Führung häufig durch schnelles Handeln und klare Entscheidungen. Themen werden aktiv aufgegriffen und zügig vorangetrieben.",
+        "Für das Team bedeutet das meist eine klare Richtung und spürbare Dynamik. Aufgaben kommen schnell in Bewegung und Entscheidungen werden nicht lange hinausgeschoben.",
+        "Die Stärke dieser Ausrichtung liegt darin, Veränderungen anzustoßen und Themen konsequent voranzubringen.",
+        "Die Herausforderung besteht darin, dass Entscheidungen gelegentlich schneller getroffen werden, als alle Hintergründe vollständig geprüft sind. Für das Team kann dadurch gelegentlich Nachsteuerung notwendig werden.",
+      ],
+    },
+    2: {
+      titel: "Sorgfältige Prüfung vor wichtigen Schritten",
+      ohne: [
+        "In dieser Rolle werden Situationen zunächst genau betrachtet. Informationen und Zusammenhänge werden geprüft, bevor eine Entscheidung getroffen wird.",
+        "Die Stärke liegt in durchdachten Entscheidungen und einer hohen Verlässlichkeit bei wichtigen Aufgaben.",
+        "Die Herausforderung besteht darin, dass Entscheidungen länger vorbereitet werden können, wenn noch offene Fragen geklärt werden sollen.",
+      ],
+      mit: [
+        "In dieser Rolle entsteht Führung häufig über eine gründliche Betrachtung von Situationen. Entscheidungen werden vorbereitet, bevor sie umgesetzt werden.",
+        "Für das Team bedeutet das meist klare Orientierung und nachvollziehbare Entscheidungen. Aufgaben werden eingeordnet, Hintergründe werden berücksichtigt.",
+        "Die Stärke liegt darin, verlässliche und gut begründete Entscheidungen zu treffen.",
+        "Die Herausforderung besteht darin, dass Entscheidungen länger dauern können, wenn zunächst alle Informationen geklärt werden sollen.",
+      ],
+    },
+    3: {
+      titel: "Starkes Gespür für Menschen und Situationen",
+      ohne: [
+        "In dieser Rolle spielen zwischenmenschliche Signale und situative Eindrücke eine wichtige Rolle. Entscheidungen entstehen häufig aus dem Verständnis für Menschen und die aktuelle Situation.",
+        "Die Stärke liegt darin, Zusammenarbeit und Wirkung auf andere gut einschätzen zu können.",
+        "Die Herausforderung besteht darin, Entscheidungen ausreichend sachlich abzusichern.",
+      ],
+      mit: [
+        "In dieser Rolle entsteht Führung häufig über das Verständnis für Menschen und die Situation im Team. Entscheidungen berücksichtigen stark die Wirkung auf Zusammenarbeit und Stimmung.",
+        "Für das Team bedeutet das oft ein hohes Maß an Aufmerksamkeit für Beziehungen, Kommunikation und gegenseitige Unterstützung.",
+        "Die Stärke liegt darin, ein gutes Miteinander zu fördern und Spannungen früh wahrzunehmen.",
+        "Die Herausforderung besteht darin, Entscheidungen ausreichend sachlich abzusichern und nicht zu stark aus der aktuellen Situation heraus zu treffen.",
+      ],
+    },
+    4: {
+      titel: "Tempo verbunden mit sachlicher Überprüfung",
+      ohne: [
+        "In dieser Rolle verbinden sich Tempo und gedankliche Prüfung. Themen werden aktiv angegangen, gleichzeitig werden Hintergründe und Folgen berücksichtigt.",
+        "Die Stärke liegt darin, Entscheidungen voranzubringen und dennoch nachvollziehbar zu begründen.",
+        "Die Herausforderung besteht darin, das richtige Gleichgewicht zwischen schneller Umsetzung und gründlicher Prüfung zu halten.",
+      ],
+      mit: [
+        "In dieser Rolle verbinden sich zügige Entscheidungen mit einer gedanklichen Prüfung der Situation. Themen werden aktiv angegangen, gleichzeitig werden Hintergründe berücksichtigt.",
+        "Für das Team entsteht dadurch häufig eine gute Mischung aus Dynamik und Orientierung. Aufgaben werden vorangebracht und gleichzeitig nachvollziehbar eingeordnet.",
+        "Die Stärke liegt darin, Entscheidungen voranzutreiben und dennoch eine klare Grundlage zu behalten.",
+        "Die Herausforderung besteht darin, das richtige Gleichgewicht zwischen Tempo und gründlicher Prüfung zu halten.",
+      ],
+    },
+    5: {
+      titel: "Aktives Vorgehen mit Blick auf Menschen",
+      ohne: [
+        "In dieser Rolle werden Themen aktiv aufgegriffen, gleichzeitig wird darauf geachtet, wie Entscheidungen auf andere wirken.",
+        "Die Stärke liegt darin, Bewegung zu schaffen und dabei das Miteinander im Blick zu behalten.",
+        "Die Herausforderung besteht darin, Entscheidungen nicht zu stark von der aktuellen Situation oder Stimmung beeinflussen zu lassen.",
+      ],
+      mit: [
+        "In dieser Rolle verbinden sich Aktivität und ein gutes Gespür für Menschen. Entscheidungen führen schnell zu Handlung, gleichzeitig wird auf die Wirkung im Team geachtet.",
+        "Für das Team bedeutet das oft eine lebendige Zusammenarbeit und klare Bewegung in Aufgaben.",
+        "Die Stärke liegt darin, Veränderungen anzustoßen und gleichzeitig das Miteinander im Blick zu behalten.",
+        "Die Herausforderung besteht darin, Entscheidungen nicht zu stark von der aktuellen Situation oder Stimmung beeinflussen zu lassen.",
+      ],
+    },
+    6: {
+      titel: "Sachliche Überlegung mit Gespür für Zusammenarbeit",
+      ohne: [
+        "In dieser Rolle werden Entscheidungen sowohl über Fakten als auch über ihre Wirkung auf Menschen betrachtet.",
+        "Die Stärke liegt darin, Lösungen zu finden, die logisch nachvollziehbar sind und gleichzeitig für andere akzeptabel bleiben.",
+        "Die Herausforderung besteht darin, Entscheidungen nicht zu lange abzuwägen.",
+      ],
+      mit: [
+        "In dieser Rolle werden Entscheidungen sowohl über Fakten als auch über ihre Wirkung auf Menschen betrachtet.",
+        "Für das Team bedeutet das häufig eine ruhige und nachvollziehbare Entscheidungsweise, bei der sowohl Sachfragen als auch Zusammenarbeit berücksichtigt werden.",
+        "Die Stärke liegt darin, Lösungen zu finden, die fachlich sinnvoll sind und gleichzeitig für das Team akzeptabel bleiben.",
+        "Die Herausforderung besteht darin, Entscheidungen nicht zu lange abzuwägen.",
+      ],
+    },
+    7: {
+      titel: "Klare Umsetzung mit Blick für Zusammenhänge und Menschen",
+      ohne: [
+        "In dieser Rolle steht die Umsetzung im Vordergrund. Themen werden aktiv angegangen und Entscheidungen führen schnell zu Handlung.",
+        "Gleichzeitig werden sowohl sachliche Hintergründe als auch Auswirkungen auf Menschen berücksichtigt.",
+        "Die Stärke liegt darin, Entscheidungen voranzubringen und dabei mehrere Aspekte einzubeziehen.",
+        "Die Herausforderung besteht darin, bei vielen Blickwinkeln eine klare Linie zu halten.",
+      ],
+      mit: [
+        "In dieser Rolle werden Entscheidungen aktiv getroffen und zügig umgesetzt. Gleichzeitig werden sowohl Hintergründe als auch Auswirkungen auf das Team berücksichtigt.",
+        "Für das Team bedeutet das häufig eine klare Richtung bei gleichzeitiger Aufmerksamkeit für Zusammenhänge und Zusammenarbeit.",
+        "Die Stärke liegt darin, Entscheidungen voranzubringen und dabei mehrere Aspekte einzubeziehen.",
+        "Die Herausforderung besteht darin, bei verschiedenen Blickwinkeln eine klare Linie beizubehalten.",
+      ],
+    },
+    8: {
+      titel: "Guter Überblick mit praktischer Umsetzung",
+      ohne: [
+        "In dieser Rolle entsteht zunächst ein klares Verständnis der Situation. Anschließend werden Entscheidungen umgesetzt und ihre Wirkung auf das Umfeld berücksichtigt.",
+        "Die Stärke liegt darin, Entscheidungen auf einer guten Grundlage zu treffen und anschließend umzusetzen.",
+        "Die Herausforderung besteht darin, Entscheidungen nicht zu lange vorzubereiten.",
+      ],
+      mit: [
+        "In dieser Rolle entsteht zunächst ein klares Verständnis der Situation. Anschließend werden Entscheidungen umgesetzt und ihre Wirkung auf das Team berücksichtigt.",
+        "Für das Team bedeutet das meist eine ruhige Orientierung und nachvollziehbare Entscheidungen.",
+        "Die Stärke liegt darin, Entscheidungen auf einer guten Grundlage zu treffen und gleichzeitig praktisch umzusetzen.",
+        "Die Herausforderung besteht darin, Entscheidungen nicht zu lange vorzubereiten.",
+      ],
+    },
+    9: {
+      titel: "Gespür für Menschen mit Handlung und Überblick",
+      ohne: [
+        "In dieser Rolle steht das Verständnis für Menschen und Situationen im Mittelpunkt. Gleichzeitig stehen Umsetzung und sachliche Betrachtung zur Verfügung.",
+        "Die Stärke liegt darin, Entscheidungen zu treffen, die sowohl menschliche als auch praktische Aspekte berücksichtigen.",
+        "Die Herausforderung besteht darin, Entscheidungen nicht zu stark an der aktuellen Situation auszurichten.",
+      ],
+      mit: [
+        "In dieser Rolle steht das Verständnis für Menschen und Teamdynamik im Mittelpunkt. Gleichzeitig stehen Umsetzung und sachliche Betrachtung zur Verfügung.",
+        "Für das Team bedeutet das häufig eine Führung, die sowohl auf Zusammenarbeit als auch auf praktische Lösungen achtet.",
+        "Die Stärke liegt darin, menschliche Dynamiken zu erkennen und daraus tragfähige Entscheidungen abzuleiten.",
+        "Die Herausforderung besteht darin, Entscheidungen nicht zu stark an der aktuellen Situation auszurichten.",
+      ],
+    },
+    10: {
+      titel: "Klares Vorgehen mit Tempo und Überblick",
+      ohne: [
+        "In dieser Rolle verbinden sich Aktivität und sachliche Betrachtung. Entscheidungen werden zügig getroffen und gleichzeitig gedanklich geprüft.",
+        "Die Stärke liegt darin, Themen voranzubringen und dabei den Überblick zu behalten.",
+        "Die Herausforderung besteht darin, die Wirkung von Entscheidungen auf Menschen ausreichend zu berücksichtigen.",
+      ],
+      mit: [
+        "In dieser Rolle verbinden sich Aktivität und sachliche Betrachtung. Entscheidungen werden zügig getroffen und gleichzeitig gedanklich geprüft.",
+        "Für das Team bedeutet das meist klare Orientierung und eine schnelle Umsetzung von Aufgaben.",
+        "Die Stärke liegt darin, Entscheidungen voranzubringen und gleichzeitig den Überblick über Zusammenhänge zu behalten.",
+        "Die Herausforderung besteht darin, auch die Wirkung von Entscheidungen auf Menschen ausreichend zu berücksichtigen.",
+      ],
+    },
+    11: {
+      titel: "Dynamisches Vorgehen mit Blick für Menschen",
+      ohne: [
+        "In dieser Rolle werden Themen aktiv vorangetrieben und gleichzeitig auf ihre Wirkung auf andere Menschen geachtet.",
+        "Die Stärke liegt darin, Bewegung zu schaffen und dabei Beziehungen zu stabilisieren.",
+        "Die Herausforderung besteht darin, Entscheidungen ausreichend sachlich zu prüfen.",
+      ],
+      mit: [
+        "In dieser Rolle werden Themen aktiv vorangetrieben und gleichzeitig auf ihre Wirkung auf das Team geachtet.",
+        "Für das Team bedeutet das häufig Bewegung, Motivation und eine hohe Aufmerksamkeit für Zusammenarbeit.",
+        "Die Stärke liegt darin, Veränderungen anzustoßen und dabei Beziehungen im Team zu stabilisieren.",
+        "Die Herausforderung besteht darin, Entscheidungen ausreichend sachlich zu prüfen.",
+      ],
+    },
+    12: {
+      titel: "Überlegtes Vorgehen mit Verständnis für Menschen",
+      ohne: [
+        "In dieser Rolle werden Entscheidungen sowohl über Fakten als auch über ihre Wirkung auf Menschen betrachtet.",
+        "Die Stärke liegt darin, Lösungen zu entwickeln, die logisch nachvollziehbar und gleichzeitig für andere stimmig sind.",
+        "Die Herausforderung besteht darin, Entscheidungen nicht zu lange vorzubereiten.",
+      ],
+      mit: [
+        "In dieser Rolle werden Entscheidungen sowohl über Fakten als auch über ihre Wirkung auf Menschen betrachtet.",
+        "Für das Team bedeutet das meist eine ruhige und überlegte Führung mit Blick auf Zusammenarbeit und Verständnis für unterschiedliche Perspektiven.",
+        "Die Stärke liegt darin, Lösungen zu entwickeln, die fachlich nachvollziehbar und gleichzeitig für das Team stimmig sind.",
+        "Die Herausforderung besteht darin, Entscheidungen nicht zu lange vorzubereiten.",
+      ],
+    },
+    13: {
+      titel: "Ausgewogene Betrachtung aus mehreren Blickwinkeln",
+      ohne: [
+        "In dieser Rolle stehen Handlung, sachliche Betrachtung und das Verständnis für Menschen gleichermaßen zur Verfügung.",
+        "Die Stärke liegt darin, Situationen aus verschiedenen Blickwinkeln zu betrachten und flexibel auf unterschiedliche Anforderungen zu reagieren.",
+        "Die Herausforderung besteht darin, bei mehreren möglichen Perspektiven eine klare Priorität zu setzen und Entscheidungen konsequent umzusetzen.",
+      ],
+      mit: [
+        "In dieser Rolle stehen Handlung, sachliche Betrachtung und das Verständnis für Menschen gleichermaßen zur Verfügung.",
+        "Für das Team bedeutet das meist eine flexible Führung, die unterschiedliche Anforderungen berücksichtigen kann.",
+        "Die Stärke liegt darin, Situationen aus mehreren Blickwinkeln zu betrachten und auf Veränderungen reagieren zu können.",
+        "Die Herausforderung besteht darin, bei mehreren möglichen Perspektiven eine klare Priorität zu setzen und Entscheidungen konsequent umzusetzen.",
+      ],
+    },
+  };
 
-  if (hoch.length > 0) {
-    points.push(`die kritischen Anforderungen (${hoch.slice(0, 3).map((t: any) => cleanTaskName(t.name)).join(", ")}) auf hohem Niveau erfüllen`);
-  }
-
-  if (isLeadership) {
-    points.push(`Führungswirkung entfalten und dabei das Team mitnehmen`);
-  }
-
-  return { kernsatz, persoenlichkeit: points };
+  const t = texte[variant];
+  return { titel: t.titel, absaetze: isL ? t.mit : t.ohne };
 }
 
 const MAX_BIO = 67;
@@ -810,9 +998,6 @@ export default function Rollenprofil() {
     return `Das Profil dieser Rolle wird geprägt durch ${domBehav}. Das ist die zentrale Anforderung an die Person. ${data.sec.key === "ana" ? "Strukturierte Arbeitsweise sorgt dafür, dass Entscheidungen nachvollziehbar bleiben und Abläufe stabil funktionieren." : data.sec.key === "int" ? "Die Fähigkeit, Beziehungen aufzubauen und Menschen mitzunehmen, sorgt für Akzeptanz und Zusammenhalt." : "Gleichzeitig braucht es Handlungsfähigkeit, damit Ergebnisse auch tatsächlich umgesetzt werden."}`;
   })();
 
-  const abschlussText = data.isLeadership
-    ? "Wirksame Führung entsteht aus dem Zusammenspiel von klarer Entscheidungsbasis und konsequenter Umsetzung. Diese Kombination ermöglicht genau dieses Gleichgewicht: Entscheidungen werden vorbereitet, getroffen und anschließend verbindlich umgesetzt. Fehlt einer der beiden Anteile, verliert das System an Stabilität \u2013 entweder durch unsaubere Entscheidungen oder durch mangelnde Umsetzung."
-    : "Diese Kombination verbindet tragfähige Entscheidungsgrundlagen mit konsequenter Umsetzung. Dadurch entstehen stabile Prozesse und klare Orientierung im Alltag. Fehlt einer der beiden Anteile, leidet entweder die Qualität der Entscheidungen oder ihre Umsetzung verliert an Verbindlichkeit.";
 
   return (
     <div className="min-h-screen" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 40%, #F5F7FA 100%)" }} lang="de">
@@ -1114,21 +1299,13 @@ export default function Rollenprofil() {
               background: "linear-gradient(135deg, rgba(0,113,227,0.04), rgba(0,113,227,0.02))",
               border: "1px solid rgba(0,113,227,0.1)",
             }}>
-              <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>Entscheidungsfazit</p>
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 14px", textAlign: "justify", textAlignLast: "left" as any }} lang="de">
-                {fazit.kernsatz}
-              </p>
-              <div style={{ paddingLeft: 4 }}>
-                {fazit.persoenlichkeit.map((p, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 6 }}>
-                    <CheckCircle style={{ width: 16, height: 16, color: "#34C759", marginTop: 2, flexShrink: 0 }} />
-                    <span style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7 }}>{p}</span>
-                  </div>
-                ))}
-              </div>
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "14px 0 0", textAlign: "justify", textAlignLast: "left" as any, fontWeight: 500 }} lang="de">
-                {abschlussText}
-              </p>
+              <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>Entscheidungsfazit</p>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#6E6E73", margin: "0 0 14px" }}>{fazit.titel}</p>
+              {fazit.absaetze.map((absatz, i) => (
+                <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i < fazit.absaetze.length - 1 ? "0 0 10px" : "0", textAlign: "justify", textAlignLast: "left" as any }} lang="de">
+                  {absatz}
+                </p>
+              ))}
             </div>
           </div>
 
