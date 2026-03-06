@@ -1,0 +1,186 @@
+1. Der Bericht erklärt zu wenig, was das im Alltag bedeutet
+
+Zum Beispiel direkt auf Seite 1 steht:
+
+Kandidat ist für die Rolle Techniker als nicht geeignet einzustufen. Die Rolle verlangt Struktur und Planung. Kandidat arbeitet stärker über Umsetzung und Tempo. 
+
+yyyyyyyyyyyyyyyyyy
+
+Das ist korrekt – aber es ist nur eine Feststellung.
+
+Ein Personaler denkt sofort:
+
+Was passiert dann konkret?
+
+Wo genau entstehen Probleme?
+
+Wann merkt man das?
+
+Du brauchst nach solchen Aussagen immer eine Wirkungserklärung.
+
+Beispiel besser:
+
+Vorher
+
+Die Rolle verlangt Struktur und Planung.
+
+Besser
+
+Die Rolle verlangt eine Arbeitsweise, in der Entscheidungen geprüft, Abläufe dokumentiert und Arbeitsschritte sauber geplant werden.
+Der Kandidat arbeitet dagegen stärker über Geschwindigkeit und direkte Umsetzung.
+Dadurch entsteht das Risiko, dass Entscheidungen schneller getroffen werden als sie geprüft werden können.
+
+2. Viele Bereiche wirken wie Stichwortkästen
+
+Auf Seite 5 sieht man viele Boxen wie:
+
+Rolle braucht
+Kandidat bringt
+Risiko
+
+Das ist strukturell gut, aber es liest sich wie ein Formular.
+
+Beispiel aus deinem Bericht:
+
+Kandidat bringt: entscheidet schnell, handelt direkt
+Risiko: Entscheidungen werden stärker durch Tempo geprägt als durch Struktur. 
+
+yyyyyyyyyyyyyyyyyy
+
+Das wirkt technisch.
+
+Besser:
+
+Die Rolle verlangt Entscheidungen, die auf Analyse und klarer Prüfung beruhen.
+Der Kandidat entscheidet deutlich schneller und stärker aus der Situation heraus.
+
+Im Alltag bedeutet das:
+Entscheidungen können schneller getroffen werden, aber wichtige Prüfschritte
+werden möglicherweise übersprungen. Gerade bei komplexeren Aufgaben kann
+das zu Fehlern oder Nacharbeit führen.
+
+Du brauchst also:
+
+Konsequenz + Alltagssituation.
+
+3. Der Bericht erklärt nicht genug, was im Team passiert
+
+Du hast:
+
+Entscheidungslogik
+
+Arbeitssteuerung
+
+Dokumentation
+
+Führungswirkung
+
+Konfliktfähigkeit
+
+Kulturwirkung
+
+Das ist perfekt.
+
+Aber es fehlt fast überall der Team-Effekt.
+
+Beispiel Kulturwirkung:
+
+Kandidat bringt Dynamik und Ergebnisorientierung. 
+
+yyyyyyyyyyyyyyyyyy
+
+Das ist neutral.
+
+Besser:
+
+Der Kandidat bringt Dynamik und Ergebnisorientierung in das Team.
+Kurzfristig kann dadurch mehr Tempo entstehen.
+Gleichzeitig kann die gewünschte Stabilität in Abläufen verloren gehen, wenn Entscheidungen schneller getroffen werden als sie strukturell abgesichert sind.
+
+Was deinem Bericht wirklich fehlt
+
+Es fehlen 3 Arten von Texten:
+
+1️⃣ Übersetzungs-Sätze
+
+Der Bericht muss ständig erklären:
+
+Was bedeutet das konkret?
+
+2️⃣ Alltagsbeispiele
+
+Zum Beispiel:
+
+Wenn mehrere Aufgaben gleichzeitig auftreten, wird der Kandidat eher schnell entscheiden und handeln. Die Rolle verlangt jedoch, dass zuerst geprüft wird, welche Schritte notwendig sind.
+
+3️⃣ Führungsfolgen
+
+Ein Personaler denkt immer:
+
+Was muss ich dann als Führungskraft tun?
+
+Das fehlt.
+
+Ein Beispiel wie dein Bericht wirken sollte
+
+Ich nehme deine Kernaussage und schreibe sie einmal optimal.
+
+Deine Version
+
+Kandidat arbeitet stärker über Umsetzung und Tempo.
+
+Bessere Version
+
+Der Kandidat arbeitet stark über Umsetzung und Geschwindigkeit. Aufgaben werden schnell angegangen und Entscheidungen zügig getroffen.
+Für diese Rolle ist jedoch eine Arbeitsweise notwendig, bei der Abläufe zuerst geprüft und strukturiert geplant werden.
+Wenn diese Prüfschritte fehlen, kann es passieren, dass Entscheidungen schneller getroffen werden, als sie organisatorisch abgesichert sind.
+
+Wichtig: Deine Struktur ist sehr gut
+
+Dein Bericht hat bereits eine sehr starke Architektur:
+
+Management Summary
+
+Dominanzverschiebung
+
+Profilvergleich
+
+Wirkungsanalyse
+
+Risikoentwicklung
+
+Entwicklungsprognose
+
+Handlungsempfehlung
+
+Gesamtbewertung
+
+Das ist exakt die Struktur, die HR-Analytics Tools verwenden.
+
+Meine ehrliche Bewertung
+Bereich	Bewertung
+Struktur	9 / 10
+Diagnose	9 / 10
+UI	8 / 10
+Textverständlichkeit	6 / 10
+Das eigentliche Problem
+
+Der Bericht liest sich wie:
+
+Diagnosebericht für Analysten
+
+nicht wie
+
+Entscheidungshilfe für Personaler
+
+Der wichtigste Satz, der überall rein muss
+
+Deine Texte brauchen häufiger diese Struktur:
+
+Die Rolle verlangt …
+
+Der Kandidat bringt …
+
+Im Alltag bedeutet das …
+
+Das macht den Bericht sofort verständlich.
