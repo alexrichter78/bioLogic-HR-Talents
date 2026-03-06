@@ -1,5 +1,5 @@
 import { useLocation } from "wouter";
-import { Home, PlusCircle, Pencil, FileText, GitCompareArrows, Bot, ClipboardCheck } from "lucide-react";
+import { Home, PlusCircle, Pencil, FileText, GitCompareArrows, Bot, ClipboardCheck, FlaskConical } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 const NAV_ITEMS = [
@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { label: "JobCheck", path: "/jobcheck", icon: GitCompareArrows, isNew: false },
   { label: "TeamCheck", path: "/teamcheck", icon: ClipboardCheck, isNew: false },
   { label: "KI-Coach", path: "/ki-coach", icon: Bot, isNew: false },
+  { label: "Test", path: "/soll-ist", icon: FlaskConical, isNew: false },
 ];
 
 const RESET_KEYS = [

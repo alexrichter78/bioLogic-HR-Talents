@@ -1,0 +1,390 @@
+1. Grundprinzip für Replit
+
+Du solltest nicht einen einzigen Monster-Prompt verwenden, sondern den Bericht abschnittsweise generieren.
+
+Also:
+
+Management Summary
+
+Soll-Profil
+
+Ist-Profil
+
+Dominanz-Verschiebung
+
+Wirkungsanalyse
+
+Risiko-Timeline
+
+Entwicklungsprognose
+
+Handlungsempfehlung
+
+Gesamtbewertung
+
+Warum?
+So bleiben die Texte:
+
+präziser
+
+konsistenter
+
+leichter kontrollierbar
+
+weniger generisch
+
+2. Globaler Stil-Prompt
+
+Diesen Prompt setzt du vor jeden Abschnitt.
+
+Global Style Prompt
+Du schreibst einen professionellen HR-Diagnosebericht für Recruiting- und Besetzungsentscheidungen.
+
+Zielgruppe sind Personaler, Headhunter, Führungskräfte und Geschäftsführer.
+
+Der Text soll klingen wie ein klarer Managementbericht, nicht wie ein psychologischer Fachtext und nicht wie ein KI-Text.
+
+Schreibe in natürlicher, ruhiger, professioneller Sprache.
+
+Regeln:
+- kurze bis mittellange Sätze
+- keine Marketing-Sprache
+- keine psychologischen Fachbegriffe ohne Erklärung
+- keine KI-typischen Formulierungen wie:
+  "darüber hinaus",
+  "insbesondere",
+  "im Kontext von",
+  "maßgeblich",
+  "ganzheitlich",
+  "vielmehr",
+  "nicht nur ..., sondern auch ..."
+- keine Floskeln
+- keine Aufzählungen mitten im Satz
+- jeder Absatz maximal 3 Sätze
+- kein werblicher Ton
+- keine übertriebene Dramatik
+- klar, konkret, verständlich
+
+Wichtig:
+Der Bericht beschreibt nicht die Person allgemein, sondern die Wirkung eines Kandidaten in Bezug auf eine konkrete Rolle.
+
+Der Text muss immer verständlich sein, auch für Leser ohne Kenntnis des bioLogic-Modells.
+
+Die Begriffe impulsiv, intuitiv und analytisch dürfen nur verwendet werden, wenn sie in einer Überschrift, Legende oder im Diagramm stehen. Im Fließtext sollen stattdessen verständliche Beschreibungen genutzt werden:
+- impulsiv = Umsetzung, Tempo, Entscheidung, Handlungsfokus
+- intuitiv = Zusammenarbeit, Gespür für Menschen, Kommunikation, Kontext
+- analytisch = Struktur, Planung, Sorgfalt, Prüftiefe
+
+Der Text soll keine KI-Sprache haben und keine standardisierten Leerformeln enthalten.
+3. Abschnitts-Prompts
+
+Jetzt kommen die einzelnen Prompt-Bausteine.
+
+A) Management Summary Prompt
+Erstelle den Abschnitt "Management Summary" für einen Soll-Ist-Bericht.
+
+Aufgabe:
+Fasse das Ergebnis in 3 kurzen Absätzen zusammen.
+
+Der Abschnitt muss beantworten:
+1. Wie ist die Gesamteinstufung?
+2. Warum ist der Kandidat geeignet, bedingt geeignet oder nicht geeignet?
+3. Welche Arbeitslogik verschiebt sich?
+
+Input:
+- Rolle: {role_name}
+- Gesamteinstufung: {overall_rating}
+- Steuerungsintensität: {control_intensity}
+- Kritischer Bereich: {critical_area}
+- Soll-Dominanz: {target_dominance}
+- Ist-Dominanz: {candidate_dominance}
+- Wichtigste Abweichung: {main_gap_text}
+
+Schreibregeln:
+- maximal 3 Absätze
+- sachlich und klar
+- keine Wiederholung der gleichen Aussage
+- direkt entscheidungsrelevant schreiben
+B) Soll-Profil Prompt
+Erstelle den Abschnitt "Rollenprofil (Soll)".
+
+Aufgabe:
+Erkläre in 1 bis 2 Absätzen, welche Arbeitslogik die Rolle verlangt und warum diese für eine stabile Ausübung der Position notwendig ist.
+
+Input:
+- Rolle: {role_name}
+- Soll-Werte: {target_values}
+- Dominanz: {target_dominance}
+- Erfolgsfokus: {success_focus}
+- Arbeitslogik: {work_logic}
+- Führungsrolle: {leadership_type}
+
+Wichtig:
+Beschreibe die Rolle in verständlicher Sprache.
+Nicht einfach Werte wiederholen.
+Erkläre die Rolle so, dass ein Personaler versteht, welche Art von Person diese Struktur tragen kann.
+C) Kandidatenprofil Prompt
+Erstelle den Abschnitt "Kandidatenprofil (Ist)".
+
+Aufgabe:
+Beschreibe in 1 bis 2 Absätzen die Arbeits- und Verhaltenslogik, die der Kandidat im Alltag mit hoher Wahrscheinlichkeit zeigt.
+
+Input:
+- Kandidatenwerte: {candidate_values}
+- Dominanz: {candidate_dominance}
+- Profilbeschreibung: {candidate_profile_notes}
+
+Wichtig:
+Nicht psychologisch schreiben.
+Beschreibe beobachtbares Verhalten im Arbeitsalltag.
+D) Dominanz-Verschiebung Prompt
+Erstelle den Abschnitt "Dominanz-Verschiebung".
+
+Aufgabe:
+Erkläre klar und verständlich, wie sich die Wirkung der Rolle verändert, wenn die Soll-Dominanz der Rolle und die Ist-Dominanz des Kandidaten nicht übereinstimmen.
+
+Input:
+- Soll-Dominanz: {target_dominance}
+- Ist-Dominanz: {candidate_dominance}
+- Rolle: {role_name}
+- Hauptabweichung: {main_gap_text}
+
+Wichtig:
+Der Abschnitt muss die Frage beantworten:
+"Was verändert sich in der Position, wenn diese Person die Rolle übernimmt?"
+
+Schreibe 2 kurze Absätze:
+1. Was die Rolle eigentlich braucht
+2. Wie das Profil des Kandidaten die Wirkung verschiebt
+E) Wirkungsanalyse Prompt
+Erstelle den Abschnitt "Strukturelle Wirkungsanalyse".
+
+Aufgabe:
+Beschreibe die Auswirkungen der Soll-Ist-Abweichung in diesen Bereichen:
+- Entscheidungslogik
+- Arbeitssteuerung und Dokumentation
+- Führungswirkung
+- Konfliktfähigkeit
+- Kulturwirkung
+
+Input:
+- Rolle: {role_name}
+- Soll-Profil: {target_values}
+- Ist-Profil: {candidate_values}
+- Kritische Bereiche: {critical_fields}
+- Bedingt geeignete Bereiche: {conditional_fields}
+
+Schreibregeln:
+- pro Bereich 2 bis 3 Sätze
+- immer erklären:
+  1. Was die Rolle braucht
+  2. Was das Kandidatenprofil stattdessen stärker mitbringt
+  3. Welches konkrete Risiko daraus entsteht
+F) Stress-Logik Prompt
+Erstelle den Abschnitt "Wirkung unter Druck und Stress".
+
+Aufgabe:
+Beschreibe die Abweichung nicht nur im Normalzustand, sondern auch unter steigender Belastung.
+
+Der Abschnitt muss 2 Teile enthalten:
+
+1. Verhalten unter Druck
+- Welche persönliche Arbeitslogik verstärkt sich unter Belastung?
+- Welche Anforderungen der Rolle geraten dadurch in den Hintergrund?
+
+2. Verhalten bei starkem Stress
+- Wie verändert sich das Verhalten, wenn Belastung dauerhaft hoch ist?
+- Welche Risiken entstehen dann für Qualität, Tempo, Struktur oder Zusammenarbeit?
+
+Input:
+- Rolle: {role_name}
+- Soll-Dominanz: {target_dominance}
+- Ist-Dominanz: {candidate_dominance}
+- Sekundäre Kandidatenlogik: {candidate_secondary}
+- Kritische Anforderungen: {critical_tasks}
+
+Wichtig:
+Nicht theoretisch schreiben.
+Immer auf beobachtbares Verhalten im Arbeitsalltag beziehen.
+G) Risiko-Timeline Prompt
+Erstelle den Abschnitt "Risikoprognose".
+
+Aufgabe:
+Beschreibe die Risiken der Besetzung in drei Zeiträumen:
+- kurzfristig
+- mittelfristig
+- langfristig
+
+Input:
+- Rolle: {role_name}
+- Abweichung: {gap_level}
+- Kritischer Bereich: {critical_area}
+- Zentrale Risiken: {risk_keywords}
+
+Schreibregeln:
+- pro Zeithorizont 2 Sätze
+- zuerst die Wirkung auf Arbeitsweise
+- dann die Wirkung auf Ergebnisse, Qualität oder Führung
+- keine Katastrophensprache
+- konkret und professionell
+H) Entwicklungsprognose Prompt
+Erstelle den Abschnitt "Entwicklungsprognose".
+
+Aufgabe:
+Beschreibe realistisch, wie wahrscheinlich eine Anpassung des Kandidaten an die Anforderungen der Rolle ist.
+
+Input:
+- Entwicklungswahrscheinlichkeit: {development_probability}
+- Zeitraum: {development_time}
+- Kritische Abweichung: {critical_area}
+- Steuerungsintensität: {control_intensity}
+
+Wichtig:
+Nicht absolut formulieren.
+Nicht schreiben, dass Entwicklung unmöglich ist.
+Schreibe realistisch und professionell.
+I) Handlungsempfehlung Prompt
+Erstelle den Abschnitt "Handlungsempfehlung".
+
+Aufgabe:
+Beschreibe, welche Steuerungsmaßnahmen nötig sind, wenn die Besetzung dennoch erfolgt.
+
+Input:
+- Rolle: {role_name}
+- Steuerungsintensität: {control_intensity}
+- Kritische Bereiche: {critical_fields}
+- KPI-Beispiele: {kpi_examples}
+
+Schreibregeln:
+- keine langen Fließtexte
+- klare, konkrete Maßnahmen
+- direkt umsetzbar
+- geeignet für Führungskräfte
+J) Gesamtbewertung Prompt
+Erstelle den Abschnitt "Gesamtbewertung".
+
+Aufgabe:
+Formuliere einen kurzen Abschluss mit:
+- Grundpassung
+- Steuerungsbedarf
+- zentraler Begründung
+- klarer Empfehlung
+
+Input:
+- Rolle: {role_name}
+- Grundpassung: {overall_rating}
+- Steuerungsbedarf: {control_intensity}
+- Kritischer Bereich: {critical_area}
+- Abschlussaussage: {final_recommendation}
+
+Schreibregeln:
+- maximal 4 Sätze
+- klar, sachlich, entscheidungsorientiert
+4. Anti-KI-Regeln für Replit
+
+Das ist extrem wichtig.
+Lass dein System nach der Textgenerierung noch einen Post-Processing-Schritt machen.
+
+Wörter/Phrasen vermeiden
+BANNED_PHRASES = [
+    "darüber hinaus",
+    "insbesondere",
+    "im Kontext von",
+    "maßgeblich",
+    "ganzheitlich",
+    "vielmehr",
+    "nicht nur",
+    "sondern auch",
+    "auf Basis von",
+    "an dieser Stelle",
+    "entsprechend",
+    "grundsätzlich",
+    "im Rahmen",
+]
+
+Dann ersetzt du sie oder flaggst sie.
+
+5. Gute Satzmuster für natürliche Berichte
+
+Diese Muster klingen menschlich und professionell:
+
+Gute Einleitungen
+
+„Die Rolle verlangt vor allem …“
+
+„Das Profil des Kandidaten zeigt …“
+
+„Die Abweichung wirkt sich besonders dort aus, wo …“
+
+„Im Alltag zeigt sich das vor allem in …“
+
+„Kritisch wird es, wenn …“
+
+Gute Risiko-Sätze
+
+„Dadurch steigt das Risiko, dass …“
+
+„In der Praxis zeigt sich das häufig daran, dass …“
+
+„Ohne klare Führung kann sich die Wirkung der Rolle verschieben.“
+
+Gute Schluss-Sätze
+
+„Eine stabile Besetzung ist unter diesen Bedingungen nur eingeschränkt wahrscheinlich.“
+
+„Die Rolle kann nur mit klarer Struktur und enger Führung stabilisiert werden.“
+
+6. Beispiel für Replit-Workflow
+Schrittfolge
+1. Rohdaten berechnen
+2. Dominanz + Abweichung bestimmen
+3. Kritische Felder bestimmen
+4. Für jeden Berichtsteil eigenen Prompt erzeugen
+5. Abschnittsweise generieren
+6. Anti-KI-Filter anwenden
+7. Wiederholungen prüfen
+8. PDF / UI rendern
+7. Replit-Prompt-Objekt
+
+So kann dein Entwickler es sauber strukturieren:
+
+report_prompts = {
+    "global_style": "...",
+    "management_summary": "...",
+    "target_profile": "...",
+    "candidate_profile": "...",
+    "dominance_shift": "...",
+    "impact_analysis": "...",
+    "stress_logic": "...",
+    "risk_timeline": "...",
+    "development": "...",
+    "actions": "...",
+    "final_assessment": "..."
+}
+8. Wichtigste Regel
+
+Der Bericht darf nie klingen wie:
+
+ein psychologischer Fachtext
+
+ein generischer KI-Text
+
+eine Stellenbeschreibung
+
+ein Berater-BlaBla
+
+Er muss klingen wie:
+
+eine klare, hochwertige Management-Diagnose für Personalentscheidungen
+
+9. Meine Empfehlung für Replit
+
+Baue zusätzlich pro Abschnitt noch diese 3 Felder ein:
+
+{
+  "section_title": "Dominanz-Verschiebung",
+  "section_goal": "Erklärt die Veränderung der Rollenwirkung",
+  "max_paragraphs": 2
+}
+
+Das hält die Texte automatisch diszipliniert.
