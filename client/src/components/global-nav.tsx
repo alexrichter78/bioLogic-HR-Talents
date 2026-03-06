@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { label: "MatchCheck", subtitle: "Rolle \u2194 Kandidat", path: "/soll-ist", icon: GitCompareArrows },
   { label: "TeamCheck", subtitle: "Teamstruktur", path: "/teamcheck", icon: Users },
   { label: "KI-Coach", subtitle: "Führung & Entwicklung", path: "/ki-coach", icon: Bot },
-  { label: "TeamReport", subtitle: "Systemanalyse", path: "/team-report", icon: FileBarChart },
+  { label: "TestTeamReport", subtitle: "Systemanalyse", path: "/team-report", icon: FileBarChart },
 ];
 
 const RESET_KEYS = [

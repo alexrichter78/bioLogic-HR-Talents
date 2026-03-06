@@ -58,7 +58,7 @@ Preferred communication style: Simple, everyday language.
 4.  **Vite as dev middleware**: Single port for both API and frontend during development.
 
 ### UI/UX Decisions
--   **GlobalNav**: Unified navigation component (`client/src/components/global-nav.tsx`) with 6 main items and subtitles: Home, JobCheck, MatchCheck, TeamCheck, KI-Coach, TeamReport.
+-   **GlobalNav**: Unified navigation component (`client/src/components/global-nav.tsx`) with 6 main items and subtitles: Home, JobCheck, MatchCheck, TeamCheck, KI-Coach, TestTeamReport.
 -   **Rollen-DNA Completion**: Toggles visibility of additional "Rollenkontext" and "Erfolgsfokus" sections in the Führungskontext card.
 -   **Teamdynamik Page**: Features 4 dashboard modules (Executive Header, Team/Person profiles, 9-field Spannungsmatrix, Actions & Führungshebel), CEO/HR/Teamleitung view modes, 6 steering levers. Includes a stress simulation (`StressShift`) and a department selector influencing fit scores and AI reports.
 -   **Entscheidungsbericht**: Displays structural type, gap bars, warning callouts, and stress behavior analysis.
