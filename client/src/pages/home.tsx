@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import { PlusCircle, FolderOpen, DoorOpen, Bot, CheckCircle, Sparkles } from "lucide-react";
 import { useLocation } from "wouter";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
+import illustrationRollenanalyse from "@assets/illustration-rollenanalyse.png";
+import illustrationKiCoach from "@assets/illustration-ki-coach.png";
+
 import GlobalNav from "@/components/global-nav";
 
 function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
@@ -151,6 +154,11 @@ export default function Home() {
           50% { opacity: 1; }
           100% { opacity: 0.85; }
         }
+        @media (max-width: 600px) {
+          .home-illustration-hide-mobile {
+            display: none !important;
+          }
+        }
       `}</style>
 
       <input
@@ -177,78 +185,85 @@ export default function Home() {
                 boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
                 border: "1px solid rgba(0,0,0,0.04)",
                 marginBottom: 16,
+                display: "flex", alignItems: "center", gap: 32,
               }}
               data-testid="card-profile"
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-                <div style={{
-                  width: 40, height: 40, borderRadius: 12,
-                  background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.06))",
-                  display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                }}>
-                  <Sparkles style={{ width: 20, height: 20, color: "#0071E3", strokeWidth: 1.5 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                  <div style={{
+                    width: 40, height: 40, borderRadius: 12,
+                    background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.06))",
+                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                  }}>
+                    <Sparkles style={{ width: 20, height: 20, color: "#0071E3", strokeWidth: 1.5 }} />
+                  </div>
+                  <div>
+                    <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: 0 }} data-testid="text-no-profile">
+                      Rollenanalyse
+                    </h2>
+                    <p style={{ fontSize: 13, color: "#8E8E93", margin: "3px 0 0", fontWeight: 450 }}>
+                      Präzision in Besetzung und Teamstruktur
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: 0 }} data-testid="text-no-profile">
-                    Rollenanalyse
-                  </h2>
-                  <p style={{ fontSize: 13, color: "#8E8E93", margin: "3px 0 0", fontWeight: 450 }}>
-                    Präzision in Besetzung und Teamstruktur
-                  </p>
+
+                <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.65, margin: "0 0 28px" }} data-testid="text-profile-desc">
+                  Definieren Sie eine Rolle und analysieren Sie die strukturelle Passung. Sie erhalten klare Handlungsempfehlungen für Besetzung, Führung und Zusammenarbeit.
+                </p>
+
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, flexWrap: "wrap" }}>
+                  <button
+                    onClick={handleNewAnalyse}
+                    style={{
+                      height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
+                      borderRadius: 14, border: "none", cursor: "pointer",
+                      background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
+                      boxShadow: "0 4px 16px rgba(0,113,227,0.3)", transition: "all 200ms ease",
+                      display: "flex", alignItems: "center", gap: 8,
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)"; }}
+                    data-testid="button-analyse-starten"
+                  >
+                    <PlusCircle style={{ width: 17, height: 17 }} />
+                    Neue Analyse
+                  </button>
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    style={{
+                      height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
+                      borderRadius: 14, border: "1.5px solid rgba(0,0,0,0.10)", cursor: "pointer",
+                      background: "rgba(255,255,255,0.8)", color: "#1D1D1F", transition: "all 200ms ease",
+                      display: "flex", alignItems: "center", gap: 8,
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.04)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.8)"; e.currentTarget.style.transform = "translateY(0)"; }}
+                    data-testid="button-analyse-oeffnen"
+                  >
+                    <FolderOpen style={{ width: 17, height: 17 }} />
+                    Analyse öffnen
+                  </button>
+                </div>
+
+                <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 20 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 24px" }}>
+                    {[
+                      "Wissenschaftlich fundierte Methodik",
+                      "Transparente Ergebnislogik",
+                      "Klare Entscheidungsstruktur",
+                    ].map((text, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <CheckCircle style={{ width: 13, height: 13, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
+                        <span style={{ fontSize: 12.5, color: "#6E6E73", fontWeight: 450 }}>{text}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.65, margin: "0 0 28px" }} data-testid="text-profile-desc">
-                Definieren Sie eine Rolle und analysieren Sie die strukturelle Passung. Sie erhalten klare Handlungsempfehlungen für Besetzung, Führung und Zusammenarbeit.
-              </p>
-
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, flexWrap: "wrap" }}>
-                <button
-                  onClick={handleNewAnalyse}
-                  style={{
-                    height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
-                    borderRadius: 14, border: "none", cursor: "pointer",
-                    background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
-                    boxShadow: "0 4px 16px rgba(0,113,227,0.3)", transition: "all 200ms ease",
-                    display: "flex", alignItems: "center", gap: 8,
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)"; }}
-                  data-testid="button-analyse-starten"
-                >
-                  <PlusCircle style={{ width: 17, height: 17 }} />
-                  Neue Analyse
-                </button>
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  style={{
-                    height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
-                    borderRadius: 14, border: "1.5px solid rgba(0,0,0,0.10)", cursor: "pointer",
-                    background: "rgba(255,255,255,0.8)", color: "#1D1D1F", transition: "all 200ms ease",
-                    display: "flex", alignItems: "center", gap: 8,
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.04)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.8)"; e.currentTarget.style.transform = "translateY(0)"; }}
-                  data-testid="button-analyse-oeffnen"
-                >
-                  <FolderOpen style={{ width: 17, height: 17 }} />
-                  Analyse öffnen
-                </button>
-              </div>
-
-              <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 20 }}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 24px" }}>
-                  {[
-                    "Wissenschaftlich fundierte Methodik",
-                    "Transparente Ergebnislogik",
-                    "Klare Entscheidungsstruktur",
-                  ].map((text, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <CheckCircle style={{ width: 13, height: 13, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
-                      <span style={{ fontSize: 12.5, color: "#6E6E73", fontWeight: 450 }}>{text}</span>
-                    </div>
-                  ))}
-                </div>
+              <div style={{ flexShrink: 0, width: 160, height: 160, display: "flex", alignItems: "center", justifyContent: "center" }} className="home-illustration-hide-mobile">
+                <img src={illustrationRollenanalyse} alt="" style={{ width: "100%", height: "100%", objectFit: "contain", opacity: 0.9 }} />
               </div>
             </div>
           </FadeIn>
@@ -262,65 +277,72 @@ export default function Home() {
                 borderRadius: 20, padding: "28px 32px 24px",
                 border: "1px solid rgba(0,0,0,0.04)",
                 boxShadow: "0 4px 16px rgba(0,0,0,0.03)",
+                display: "flex", alignItems: "center", gap: 32,
               }}
               data-testid="card-ki-coach"
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-                <div style={{
-                  width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-                  background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.06))",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                }}>
-                  <Bot style={{ width: 20, height: 20, color: "#0071E3", strokeWidth: 1.5 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                  <div style={{
+                    width: 40, height: 40, borderRadius: 12, flexShrink: 0,
+                    background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.06))",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    <Bot style={{ width: 20, height: 20, color: "#0071E3", strokeWidth: 1.5 }} />
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>
+                      KI-Coach
+                    </h3>
+                    <p style={{ fontSize: 13, color: "#8E8E93", margin: "3px 0 0", fontWeight: 450 }}>
+                      Beratung auf Basis der bioLogic-Systematik
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>
-                    KI-Coach
-                  </h3>
-                  <p style={{ fontSize: 13, color: "#8E8E93", margin: "3px 0 0", fontWeight: 450 }}>
-                    Beratung auf Basis der bioLogic-Systematik
-                  </p>
+
+                <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.65, margin: "0 0 28px" }}>
+                  Nutzen Sie den KI-Coach jederzeit für Recruiting, Teamfragen, Gesprächsvorbereitung oder konkrete Handlungsempfehlungen – auch unabhängig von einer Analyse.
+                </p>
+
+                <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 16, marginBottom: 18 }}>
+                  <p style={{ fontSize: 12.5, fontWeight: 600, color: "#6E6E73", margin: "0 0 10px" }}>Typische Einsatzbereiche</p>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 24px" }}>
+                    {[
+                      "Recruiting und Stellenanzeigen",
+                      "Gesprächsvorbereitung",
+                      "Teamkonstellationen analysieren",
+                      "Konfliktmuster erkennen",
+                    ].map((text, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <CheckCircle style={{ width: 12, height: 12, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
+                        <span style={{ fontSize: 12.5, color: "#6E6E73", fontWeight: 450 }}>{text}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "flex-start" }}>
+                  <button
+                    onClick={() => setLocation("/ki-coach")}
+                    style={{
+                      height: 42, paddingLeft: 20, paddingRight: 20, fontSize: 13, fontWeight: 600,
+                      borderRadius: 12, border: "none", cursor: "pointer",
+                      background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
+                      boxShadow: "0 4px 14px rgba(0,113,227,0.25)", transition: "all 200ms ease",
+                      display: "flex", alignItems: "center", gap: 7,
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 18px rgba(0,113,227,0.3)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(0,113,227,0.25)"; }}
+                    data-testid="button-ki-coach"
+                  >
+                    <Bot style={{ width: 14, height: 14 }} />
+                    KI-Coach öffnen
+                  </button>
                 </div>
               </div>
 
-              <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.65, margin: "0 0 28px" }}>
-                Nutzen Sie den KI-Coach jederzeit für Recruiting, Teamfragen, Gesprächsvorbereitung oder konkrete Handlungsempfehlungen – auch unabhängig von einer Analyse.
-              </p>
-
-              <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 16, marginBottom: 18 }}>
-                <p style={{ fontSize: 12.5, fontWeight: 600, color: "#6E6E73", margin: "0 0 10px" }}>Typische Einsatzbereiche</p>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 24px" }}>
-                  {[
-                    "Recruiting und Stellenanzeigen",
-                    "Gesprächsvorbereitung",
-                    "Teamkonstellationen analysieren",
-                    "Konfliktmuster erkennen",
-                  ].map((text, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <CheckCircle style={{ width: 12, height: 12, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
-                      <span style={{ fontSize: 12.5, color: "#6E6E73", fontWeight: 450 }}>{text}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <button
-                  onClick={() => setLocation("/ki-coach")}
-                  style={{
-                    height: 42, paddingLeft: 20, paddingRight: 20, fontSize: 13, fontWeight: 600,
-                    borderRadius: 12, border: "none", cursor: "pointer",
-                    background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
-                    boxShadow: "0 4px 14px rgba(0,113,227,0.25)", transition: "all 200ms ease",
-                    display: "flex", alignItems: "center", gap: 7,
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 18px rgba(0,113,227,0.3)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(0,113,227,0.25)"; }}
-                  data-testid="button-ki-coach"
-                >
-                  <Bot style={{ width: 14, height: 14 }} />
-                  KI-Coach öffnen
-                </button>
+              <div style={{ flexShrink: 0, width: 140, height: 140, display: "flex", alignItems: "center", justifyContent: "center" }} className="home-illustration-hide-mobile">
+                <img src={illustrationKiCoach} alt="" style={{ width: "100%", height: "100%", objectFit: "contain", opacity: 0.9 }} />
               </div>
             </div>
           </FadeIn>
