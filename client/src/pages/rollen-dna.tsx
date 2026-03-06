@@ -964,6 +964,40 @@ export default function RollenDNA() {
     }
   }, []);
 
+  useEffect(() => {
+    const checkReset = () => {
+      const resetFlag = localStorage.getItem("rollenDnaReset");
+      if (resetFlag) {
+        localStorage.removeItem("rollenDnaReset");
+        localStorage.removeItem("rollenDnaState");
+        localStorage.removeItem("rollenDnaCompleted");
+        localStorage.removeItem("kompetenzenCache");
+        localStorage.removeItem("berichtCache");
+        localStorage.removeItem("bioCheckTextOverride");
+        localStorage.removeItem("bioCheckIntroOverride");
+        localStorage.removeItem("bioCheckTextGenerated");
+        localStorage.removeItem("analyseTexte");
+        setCurrentStep(1);
+        setAllCollapsed(false);
+        setBeruf("");
+        setFuehrung("");
+        setErfolgsfokusIndices([]);
+        setAufgabencharakter("");
+        setArbeitslogik("");
+        setZusatzInfo("");
+        setActiveTab("haupt");
+        setTaetigkeiten([]);
+        setNextId(1);
+        setBioCheckTextOverride(null);
+        originalNames.current = new Map();
+        window.scrollTo(0, 0);
+      }
+    };
+    checkReset();
+    window.addEventListener("rollenDnaResetTriggered", checkReset);
+    return () => window.removeEventListener("rollenDnaResetTriggered", checkReset);
+  }, []);
+
   const toggleLand = (land: BerufLand) => {
     setSelectedLaender(prev => {
       const next = new Set(prev);

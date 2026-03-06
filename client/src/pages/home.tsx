@@ -132,6 +132,7 @@ export default function Home() {
       setShowResetConfirm(true);
     } else {
       localStorage.setItem("rollenDnaReset", "1");
+      window.dispatchEvent(new Event("rollenDnaResetTriggered"));
       setLocation("/rollen-dna");
     }
   };
@@ -344,6 +345,7 @@ export default function Home() {
             localStorage.removeItem("bioCheckTextGenerated");
             localStorage.removeItem("analyseTexte");
             localStorage.setItem("rollenDnaReset", "1");
+            window.dispatchEvent(new Event("rollenDnaResetTriggered"));
             setShowResetConfirm(false);
             setLocation("/rollen-dna");
           }}
