@@ -19,6 +19,7 @@ All pages share a unified GlobalNav component (`client/src/components/global-nav
 - **JobCheck**: Navigates to `/jobcheck` (candidate-role fit comparison)
 - **TeamCheck**: Navigates to `/teamcheck` (deterministic team analysis combining Soll/Ist/Team profiles)
 - **KI-Coach**: Navigates to `/ki-coach` (AI coaching chat with bioLogic expertise)
+- **Test** (Soll-Ist-Bericht): Navigates to `/soll-ist` — fully deterministic diagnostic report comparing Soll (role DNA profile) vs. Ist (candidate profile). No AI calls. Engine: `client/src/lib/soll-ist-engine.ts`. Features: Decision Banner with fit rating (Geeignet/Bedingt/Nicht geeignet), Radar Chart, Soll-Ist comparison bars, Dominance Shift card, Impact Matrix with severity badges (6 areas: Entscheidungslogik, Arbeitssteuerung, Dokumentation, Führungswirkung, Konfliktfähigkeit, Kulturwirkung), Risk Timeline (3 phases), Development Gauge, Action Items, Final Assessment. Live-updates when sliders change.
 
 The nav supports a `rightSlot` prop for page-specific actions (e.g., Save/Load on rollen-dna, Regenerate on bericht).
 

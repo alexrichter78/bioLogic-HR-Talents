@@ -1,0 +1,271 @@
+1. Die größten UI-Probleme im aktuellen Bericht
+Problem 1 – Keine visuelle Hierarchie
+
+Alles ist:
+
+Überschrift
+
+Fließtext
+
+Absatz
+
+Es fehlen:
+
+Ergebnisbox
+
+Diagramme
+
+Bewertungselemente
+
+kurze Bullet-Erkenntnisse
+
+Ein Entscheider muss aktuell alles lesen.
+
+Problem 2 – Der wichtigste Punkt ist versteckt
+
+Der wichtigste Punkt ist:
+
+Nicht geeignet
+
+Aber er steht nur im Text.
+
+Er muss visuell herausstechen.
+
+Problem 3 – Die Analyse ist zu textlastig
+
+Zum Beispiel dieser Abschnitt:
+
+Strukturelle Wirkungsanalyse
+
+Das ist ein riesiger Textblock.
+
+Der sollte eigentlich eine Matrix sein.
+
+Problem 4 – Keine visuelle Soll-Ist-Logik
+
+Du beschreibst:
+
+Rolle
+
+Kandidat
+
+Aber man sieht die Differenz nicht sofort.
+
+Das muss grafisch passieren.
+
+Problem 5 – Keine Entscheidungsstruktur
+
+Der Bericht ist nicht aufgebaut wie:
+
+Ergebnis
+
+Ursache
+
+Wirkung
+
+Risiko
+
+Empfehlung
+
+sondern eher wie ein Essay.
+
+2. Wie der Bericht UI-mäßig aussehen sollte
+
+Ich baue dir jetzt eine perfekte Struktur für Replit.
+
+Das sind 3 Seiten mit klarer UX.
+
+Seite 1 – Entscheidung
+Entscheidungsbanner
+────────────────────────────────
+
+ROLLE: TECHNIKER
+
+PASSUNG: NICHT GEEIGNET
+
+Steuerungsintensität: HOCH  
+Kritischer Bereich: Struktur / Analyse
+
+────────────────────────────────
+
+Darunter ein kurzer Satz:
+
+Die Arbeitslogik des Kandidaten weicht deutlich von der strukturellen Anforderung der Rolle ab.
+
+Soll-Ist-Diagramm
+
+UI-Element:
+
+Radar Chart
+
+            Struktur
+               ▲
+               │
+               │
+Zusammenarbeit ┼──────── Umsetzung
+
+Farben:
+
+Rolle = blau
+
+Kandidat = orange
+
+Dominanzverschiebung
+
+UI-Element:
+
+ROLLE
+
+STRUKTUR / ANALYSE
+        ↓
+
+KANDIDAT
+
+UMSETZUNG / TEMPO
+
+Kurzer Text:
+
+Die Rolle verlangt eine strukturierte und prüforientierte Arbeitsweise.
+Das Profil des Kandidaten arbeitet stärker über Tempo und direkte Umsetzung.
+
+Seite 2 – Wirkungsanalyse
+
+Jetzt kommt die Analyse.
+
+Aber nicht als Fließtext, sondern als Matrix.
+
+Wirkungsanalyse-Matrix
+Bereich                    Bewertung
+────────────────────────────────────────
+Entscheidungslogik        🔴 kritisch
+Arbeitsstruktur           🔴 kritisch
+Dokumentation             🔴 kritisch
+Führungswirkung           🔴 kritisch
+Konfliktfähigkeit         🟡 bedingt
+Kulturwirkung             🟡 bedingt
+Entscheidungslogik
+
+Text:
+
+Die Rolle verlangt sorgfältige und strukturierte Entscheidungen.
+Der Kandidat arbeitet dagegen stärker über Tempo und direkte Umsetzung.
+
+Risiko:
+
+Entscheidungen werden schneller getroffen
+
+Detailprüfung nimmt ab
+
+Arbeitssteuerung
+
+Text:
+
+Die Rolle verlangt eine klare Struktur in Planung, Dokumentation und Prozesssteuerung.
+
+Der Kandidat arbeitet mit hohem Tempo und geringerer Planungsorientierung.
+
+Dadurch kann die Nachvollziehbarkeit von Entscheidungen und Arbeitsschritten leiden.
+
+Seite 3 – Risiko & Entwicklung
+Risiko-Timeline
+
+UI-Element
+
+Kurzfristig
+
+Fehler und Nacharbeiten können entstehen, weil Abläufe nicht ausreichend geprüft werden.
+
+────────────────────────
+
+Mittelfristig
+
+Entscheidungen folgen zunehmend der persönlichen Arbeitslogik des Kandidaten.
+
+────────────────────────
+
+Langfristig
+
+Die Wirkung der Rolle kann sich dauerhaft von der ursprünglichen Struktur entfernen.
+Entwicklungsprognose
+
+UI-Element
+
+Anpassungswahrscheinlichkeit
+
+▮▮▯▯▯
+niedrig
+
+Text:
+
+Eine Entwicklung in Richtung stärkerer Struktur und Planung ist möglich, erfordert jedoch intensive Führung und klare Vorgaben.
+
+Handlungsempfehlung
+
+UI-Element
+
+Bullet-Box
+
+Wenn die Besetzung dennoch erfolgt:
+
+• klare Entscheidungsregeln definieren
+• Dokumentationspflicht einführen
+• regelmäßige Review-Termine
+• strukturierte KPI-Kontrolle
+Gesamtbewertung
+
+UI-Element
+
+GESAMTPASSUNG
+
+NICHT GEEIGNET
+
+Grund: Dominanzstruktur
+Steuerungsbedarf: hoch
+3. Warum diese Struktur besser funktioniert
+
+Der Leser kann den Bericht in 30 Sekunden verstehen.
+
+Hierarchie:
+
+1️⃣ Ergebnis
+2️⃣ Grafik
+3️⃣ Ursache
+4️⃣ Wirkung
+5️⃣ Risiko
+6️⃣ Empfehlung
+
+4. Replit UI-Layout (empfohlen)
+Report Page
+│
+├── DecisionBanner
+│
+├── RadarChart
+│
+├── DominanceShiftCard
+│
+├── ImpactMatrix
+│
+├── ImpactSections
+│
+├── RiskTimeline
+│
+├── DevelopmentGauge
+│
+├── RecommendationBox
+│
+└── FinalDecisionBox
+5. Ein wichtiger Punkt für deine Software
+
+Der Bericht darf nicht wie ein PDF aussehen.
+
+Er sollte wirken wie eine Diagnoseplattform.
+
+Also:
+
+Karten
+
+Boxen
+
+Diagramme
+
+kurze Texte.
