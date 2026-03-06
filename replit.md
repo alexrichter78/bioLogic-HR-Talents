@@ -12,14 +12,14 @@ Preferred communication style: Simple, everyday language.
 
 ## Navigation
 
-All pages share a unified GlobalNav component (`client/src/components/global-nav.tsx`) with 6 items:
+All pages share a unified GlobalNav component (`client/src/components/global-nav.tsx`) with 5 items (flat layout with subtitles):
 - **Home**: Landing page at `/`
-- **Rolle**: Navigates to `/rollen-dna` (multi-step wizard)
-- **Bericht**: Navigates to `/bericht` (deterministic flowing document report — Rollen-DNA summary with 3 sections: role description/structural profile/work logic, behavior under stress, team impact/risks/decision conclusion. Component: `rollenprofil.tsx`)
-- **JobCheck**: Navigates to `/jobcheck` (candidate-role fit comparison)
-- **TeamCheck**: Navigates to `/teamcheck` (deterministic team analysis combining Soll/Ist/Team profiles)
-- **KI-Coach**: Navigates to `/ki-coach` (AI coaching chat with bioLogic expertise)
-- **Test** (Soll-Ist-Bericht): Navigates to `/soll-ist` — fully deterministic diagnostic report comparing Soll (role DNA profile) vs. Ist (candidate profile). No AI calls. Engine: `client/src/lib/soll-ist-engine.ts`. Features: Decision Banner with fit rating (Geeignet/Bedingt/Nicht geeignet), Radar Chart, Soll-Ist comparison bars, Dominance Shift card, Impact Matrix with severity badges (6 areas: Entscheidungslogik, Arbeitssteuerung, Dokumentation, Führungswirkung, Konfliktfähigkeit, Kulturwirkung), Risk Timeline (3 phases), Development Gauge, Action Items, Final Assessment. Live-updates when sliders change.
+- **JobCheck** (subtitle: "Analyse der Rolle"): Navigates to `/rollen-dna` (multi-step wizard for role definition)
+- **MatchCheck** (subtitle: "Rolle ↔ Kandidat"): Navigates to `/soll-ist` — fully deterministic diagnostic report comparing Soll (role DNA profile) vs. Ist (candidate profile). No AI calls. Engine: `client/src/lib/soll-ist-engine.ts`. Features: Decision Banner, Radar Chart, comparison bars, Dominance Shift, Impact Matrix (6 areas), Stress Behavior (controlled/uncontrolled), Risk Timeline, Development Gauge, Actions, Final Assessment.
+- **TeamCheck** (subtitle: "Teamstruktur"): Navigates to `/teamcheck` (deterministic team analysis combining Soll/Ist/Team profiles)
+- **KI-Coach** (subtitle: "Führung & Entwicklung"): Navigates to `/ki-coach` (AI coaching chat with bioLogic expertise)
+
+Additional pages accessible by URL but not in nav: `/bericht` (Rollenprofil report), `/jobcheck` (legacy candidate-role fit).
 
 The nav supports a `rightSlot` prop for page-specific actions (e.g., Save/Load on rollen-dna, Regenerate on bericht).
 

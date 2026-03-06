@@ -1,15 +1,13 @@
 import { useLocation } from "wouter";
-import { Home, PlusCircle, Pencil, FileText, GitCompareArrows, Bot, ClipboardCheck, FlaskConical } from "lucide-react";
+import { Home, Briefcase, GitCompareArrows, Users, Bot } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 const NAV_ITEMS = [
-  { label: "Home", path: "/", icon: Home, isNew: false },
-  { label: "Rolle", path: "/rollen-dna", icon: Pencil, isNew: false },
-  { label: "Bericht", path: "/bericht", icon: FileText, isNew: false },
-  { label: "JobCheck", path: "/jobcheck", icon: GitCompareArrows, isNew: false },
-  { label: "TeamCheck", path: "/teamcheck", icon: ClipboardCheck, isNew: false },
-  { label: "KI-Coach", path: "/ki-coach", icon: Bot, isNew: false },
-  { label: "Test", path: "/soll-ist", icon: FlaskConical, isNew: false },
+  { label: "Home", subtitle: "", path: "/", icon: Home },
+  { label: "JobCheck", subtitle: "Analyse der Rolle", path: "/rollen-dna", icon: Briefcase },
+  { label: "MatchCheck", subtitle: "Rolle \u2194 Kandidat", path: "/soll-ist", icon: GitCompareArrows },
+  { label: "TeamCheck", subtitle: "Teamstruktur", path: "/teamcheck", icon: Users },
+  { label: "KI-Coach", subtitle: "Führung & Entwicklung", path: "/ki-coach", icon: Bot },
 ];
 
 const RESET_KEYS = [
@@ -25,26 +23,12 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
   const [location, setLocation] = useLocation();
 
   const handleNav = (item: typeof NAV_ITEMS[0]) => {
-    if (item.isNew) {
-      RESET_KEYS.forEach(k => localStorage.removeItem(k));
-      if (location === "/rollen-dna") {
-        window.location.reload();
-      } else {
-        setLocation("/rollen-dna");
-      }
-      return;
-    }
     setLocation(item.path);
   };
 
   const isActive = (item: typeof NAV_ITEMS[0]) => {
-    if (location !== item.path) return false;
-    if (item.path === "/rollen-dna") {
-      const hasState = !!localStorage.getItem("rollenDnaState");
-      if (item.isNew) return !hasState;
-      return hasState;
-    }
-    return true;
+    if (item.path === "/") return location === "/";
+    return location.startsWith(item.path);
   };
 
   return (
@@ -57,9 +41,9 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
       }}>
         <div style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "0 20px", height: 56, maxWidth: 1100, margin: "0 auto",
+          padding: "0 20px", height: NAV_HEIGHT, maxWidth: 1100, margin: "0 auto",
         }}>
-          <nav style={{ display: "flex", alignItems: "center", gap: 4 }} data-testid="global-nav">
+          <nav style={{ display: "flex", alignItems: "center", gap: 2 }} data-testid="global-nav">
             {NAV_ITEMS.map((item) => {
               const active = isActive(item);
               const Icon = item.icon;
@@ -69,30 +53,46 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                   onClick={() => handleNav(item)}
                   data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
                   style={{
-                    display: "flex", alignItems: "center", gap: 6,
-                    padding: "8px 14px", borderRadius: 10,
+                    display: "flex", alignItems: "center", gap: 7,
+                    padding: "6px 12px", borderRadius: 10,
                     background: active ? "rgba(0,113,227,0.08)" : "transparent",
                     border: "none", cursor: "pointer",
-                    fontSize: 13.5, fontWeight: active ? 600 : 500,
-                    color: active ? "#0071E3" : "#1D1D1F",
                     transition: "all 200ms ease",
                     whiteSpace: "nowrap",
                   }}
                   onMouseEnter={(e) => {
                     if (!active) {
-                      e.currentTarget.style.background = "rgba(0,113,227,0.08)";
-                      e.currentTarget.style.color = "#0071E3";
+                      e.currentTarget.style.background = "rgba(0,113,227,0.05)";
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!active) {
                       e.currentTarget.style.background = "transparent";
-                      e.currentTarget.style.color = "#1D1D1F";
                     }
                   }}
                 >
-                  <Icon style={{ width: 15, height: 15, strokeWidth: 1.8 }} />
-                  <span className="hidden sm:inline">{item.label}</span>
+                  <Icon style={{
+                    width: 15, height: 15, strokeWidth: 1.8,
+                    color: active ? "#0071E3" : "#86868B",
+                    flexShrink: 0,
+                  }} />
+                  <div className="hidden sm:flex" style={{ flexDirection: "column", alignItems: "flex-start", lineHeight: 1.2 }}>
+                    <span style={{
+                      fontSize: 13, fontWeight: active ? 600 : 500,
+                      color: active ? "#0071E3" : "#1D1D1F",
+                    }}>
+                      {item.label}
+                    </span>
+                    {item.subtitle && (
+                      <span style={{
+                        fontSize: 10, fontWeight: 400,
+                        color: active ? "rgba(0,113,227,0.7)" : "#86868B",
+                        marginTop: 1,
+                      }}>
+                        {item.subtitle}
+                      </span>
+                    )}
+                  </div>
                 </button>
               );
             })}
