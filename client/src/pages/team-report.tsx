@@ -356,8 +356,14 @@ export default function TeamReport() {
           @media print {
             body { background: #FFFFFF !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .no-print { display: none !important; }
-            nav { display: none !important; }
-            @page { size: A4 portrait; margin: 12mm; }
+            nav, [data-testid="global-nav"] { display: none !important; }
+            div[style*="position: fixed"] { display: none !important; }
+            div[style*="height: 56"] { display: none !important; }
+            @page { size: A4 portrait; margin: 14mm 16mm; }
+            section, header, [data-testid^="section-"] { break-inside: avoid; page-break-inside: avoid; }
+            h1 { font-size: 22pt !important; }
+            h3 { font-size: 14pt !important; }
+            p, div { font-size: 10pt !important; line-height: 1.5 !important; }
           }
         `}</style>
       </div>
