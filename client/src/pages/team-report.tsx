@@ -5,7 +5,7 @@ import GlobalNav from "@/components/global-nav";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeTeamReport } from "@/lib/team-report-engine";
 import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
-import type { TeamReportResult } from "@/lib/team-report-engine";
+import type { TeamReportResult, SystemwirkungResult } from "@/lib/team-report-engine";
 
 type BG = { imp: number; int: number; ana: number };
 type RoleDnaState = {
@@ -107,6 +107,58 @@ function SliderGroup({
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+const INTENSITY_STYLES: Record<string, { bg: string; text: string; border: string; dot: string }> = {
+  gering: { bg: "bg-green-50", text: "text-green-700", border: "border-green-200", dot: "bg-green-500" },
+  mittel: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200", dot: "bg-amber-500" },
+  hoch: { bg: "bg-red-50", text: "text-red-700", border: "border-red-200", dot: "bg-red-500" },
+};
+
+function SystemwirkungCard({ sw }: { sw: SystemwirkungResult }) {
+  const style = INTENSITY_STYLES[sw.intensity];
+  return (
+    <div className="mt-6 space-y-5" data-testid="systemwirkung-detail">
+      <div className={`rounded-2xl border ${style.border} ${style.bg} p-5`}>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <div className={`h-3 w-3 rounded-full ${style.dot}`} />
+            <span className="text-lg font-semibold text-slate-950">{sw.label}</span>
+          </div>
+          <span className={`rounded-full border ${style.border} px-3 py-1 text-xs font-semibold uppercase tracking-wide ${style.text}`}>
+            Intensität: {sw.intensity}
+          </span>
+        </div>
+        <p className="text-sm leading-7 text-slate-700">{sw.description}</p>
+        <p className="mt-2 text-sm leading-7 text-slate-600 italic">{sw.intensityLabel}</p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="rounded-2xl border border-green-100 bg-green-50/40 p-5">
+          <h4 className="text-sm font-semibold uppercase tracking-[0.12em] text-green-700 mb-3">Chancen</h4>
+          <ul className="space-y-2">
+            {sw.chancen.map((c, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm leading-6 text-slate-700">
+                <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-green-500 shrink-0" />
+                {c}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="rounded-2xl border border-red-100 bg-red-50/40 p-5">
+          <h4 className="text-sm font-semibold uppercase tracking-[0.12em] text-red-700 mb-3">Risiken</h4>
+          <ul className="space-y-2">
+            {sw.risiken.map((r, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm leading-6 text-slate-700">
+                <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-red-500 shrink-0" />
+                {r}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }
@@ -329,15 +381,40 @@ export default function TeamReport() {
             </header>
 
             <div className="space-y-6">
-              {SECTION_TITLES.map(({ key, num, title }) => (
-                <ReportSection
-                  key={key}
-                  num={num}
-                  title={title}
-                  content={result[key]}
-                  testId={`section-${key}`}
-                />
-              ))}
+              {SECTION_TITLES.map(({ key, num, title }) => {
+                if (key === "systemwirkung") {
+                  return (
+                    <div key={key} className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-systemwirkung">
+                      <div className="flex items-start gap-4 mb-5">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-600">
+                          {num}
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Abschnitt {num}</p>
+                          <h3 className="mt-1 text-xl font-semibold text-slate-950">{title}</h3>
+                        </div>
+                      </div>
+                      <SystemwirkungCard sw={result.systemwirkungResult} />
+                      <div className="mt-6 space-y-3 text-sm leading-7 text-slate-700">
+                        {result.systemwirkung.split("\n").filter(l => l.trim()).map((p, i) => {
+                          const isHeading = p.endsWith(":") && p.length < 60;
+                          if (isHeading) return <div key={i} className="font-semibold text-slate-900 mt-4">{p}</div>;
+                          return <p key={i}>{p}</p>;
+                        })}
+                      </div>
+                    </div>
+                  );
+                }
+                return (
+                  <ReportSection
+                    key={key}
+                    num={num}
+                    title={title}
+                    content={result[key] as string}
+                    testId={`section-${key}`}
+                  />
+                );
+              })}
             </div>
 
             <div className="mt-8 flex justify-center no-print">

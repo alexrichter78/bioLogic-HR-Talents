@@ -3,11 +3,25 @@ import type { Triad, ComponentKey } from "./jobcheck-engine";
 import { detectConstellation, constellationLabel } from "./soll-ist-engine";
 import type { ConstellationType } from "./soll-ist-engine";
 
+export type SystemwirkungType = "verstaerkung" | "ergaenzung" | "ausgleich" | "verschiebung" | "polarisierung" | "uebersteuerung";
+
+export type SystemwirkungResult = {
+  type: SystemwirkungType;
+  label: string;
+  description: string;
+  intensity: "gering" | "mittel" | "hoch";
+  intensityLabel: string;
+  chancen: string[];
+  risiken: string[];
+  narrative: string;
+};
+
 export type TeamReportResult = {
   managementSummary: string;
   teamstruktur: string;
   fuehrungsprofil: string;
   systemwirkung: string;
+  systemwirkungResult: SystemwirkungResult;
   teamdynamikAlltag: string;
   chancen: string;
   risiken: string;
@@ -64,6 +78,72 @@ function strongestKey(t: Triad): ComponentKey {
   return "analytisch";
 }
 
+export function detectSystemwirkung(
+  ist: Triad, team: Triad, cn: string,
+  rk: ComponentKey, tk: ComponentKey,
+  teamIstGap: number, istConst: ConstellationType, teamConst: ConstellationType
+): SystemwirkungResult {
+  const istRange = Math.max(ist.impulsiv, ist.intuitiv, ist.analytisch) - Math.min(ist.impulsiv, ist.intuitiv, ist.analytisch);
+  const teamRange = Math.max(team.impulsiv, team.intuitiv, team.analytisch) - Math.min(team.impulsiv, team.intuitiv, team.analytisch);
+  const teamWeak = weakestKey(team);
+  const istStrong = strongestKey(ist);
+
+  let type: SystemwirkungType;
+  let label: string;
+  let description: string;
+  let chancen: string[];
+  let risiken: string[];
+
+  if (rk === tk && teamIstGap <= 15) {
+    type = "verstaerkung";
+    label = "Verstärkung";
+    description = `${cn} bringt die gleiche Arbeitslogik wie das Team. Die vorhandene Dynamik im Bereich ${compDesc(rk)} wird stärker.`;
+    chancen = ["Hohe Stabilität", "Klare Standards", "Sehr gute Qualität in der Kerndisziplin"];
+    risiken = ["Entscheidungsverlangsamung bei einseitiger Logik", "Geringe Veränderungsfähigkeit", "Blinde Flecken im schwächsten Bereich"];
+  } else if (istStrong === teamWeak && teamIstGap >= 15) {
+    type = "ergaenzung";
+    label = "Ergänzung";
+    description = `${cn} bringt eine fehlende Qualität ins Team. Der Bereich ${compDesc(istStrong)}, der im Team bisher schwach ausgeprägt ist, wird durch die neue Person gestärkt. Das Team wird ausgeglichener.`;
+    chancen = ["Bessere Entscheidungen durch neue Perspektive", "Mehr Balance im Team", "Höhere Problemlösungskompetenz"];
+    risiken = ["Anfängliche Reibung durch unterschiedliche Arbeitslogik", "Erhöhter Abstimmungsbedarf", "Integrationswiderstand möglich"];
+  } else if (istRange <= 12 && teamRange > 20) {
+    type = "ausgleich";
+    label = "Ausgleich";
+    description = `${cn} hat ein ausgeglichenes Profil und stabilisiert das eher einseitige Teamprofil. Das System wird ruhiger und balancierter.`;
+    chancen = ["Stabilere Entscheidungen", "Weniger Extremreaktionen", "Bessere Priorisierung"];
+    risiken = ["Das Team empfindet die neue Person als bremsend", "Tempo kann sinken", "Klarheit der Teamidentität verwässert"];
+  } else if (rk !== tk && istRange > 20 && teamIstGap > 35) {
+    type = "polarisierung";
+    label = "Polarisierung";
+    description = `${cn} verstärkt die Gegensätze im Team. Die Arbeitslogik ${compDesc(rk)} steht der Teamlogik ${compDesc(tk)} deutlich gegenüber. Unterschiedliche Arbeitsweisen treten stärker hervor.`;
+    chancen = ["Starke Innovationskraft durch Gegenpole", "Viele Perspektiven", "Hohe kreative Spannung"];
+    risiken = ["Konflikte in der Zusammenarbeit", "Entscheidungsblockaden", "Lagerbildung im Team"];
+  } else if (istRange > 25 && teamRange < 15 && teamIstGap > 25) {
+    type = "uebersteuerung";
+    label = "Übersteuerung";
+    description = `${cn} bringt ein stark ausgeprägtes Profil in ein eher ausgeglichenes Team. Die Arbeitslogik des Teams wird von der neuen Person dominiert. Das System passt sich stark an.`;
+    chancen = ["Schnelle Veränderungen", "Klare Richtung", "Hohe Durchsetzungskraft"];
+    risiken = ["Team verliert Eigenständigkeit", "Fluktuation kann steigen", "Bestehende Teamkultur bricht"];
+  } else {
+    type = "verschiebung";
+    label = "Verschiebung";
+    description = `${cn} verändert die Grundlogik des Teams. Die bisherige Ausrichtung auf ${compDesc(tk)} verschiebt sich Richtung ${compDesc(rk)}. Das Team entwickelt eine neue Arbeitsweise.`;
+    chancen = ["Neue Leistungsfähigkeit", "Strukturelle Weiterentwicklung", "Frische Impulse"];
+    risiken = ["Kulturelle Reibung in der Übergangsphase", "Identitätsverlust im Team möglich", "Produktivitätsdelle in den ersten Wochen"];
+  }
+
+  const intensity: "gering" | "mittel" | "hoch" = teamIstGap <= 15 ? "gering" : teamIstGap <= 30 ? "mittel" : "hoch";
+  const intensityLabel = intensity === "gering"
+    ? "Die Veränderung ist subtil und gut integrierbar."
+    : intensity === "mittel"
+    ? "Die Veränderung ist deutlich spürbar, bleibt jedoch steuerbar."
+    : "Die Veränderung ist stark. Aktive Steuerung durch die Führungskraft ist notwendig.";
+
+  const narrative = `Systemwirkung: ${label}. ${description} Intensität: ${intensity}. ${intensityLabel}`;
+
+  return { type, label, description, intensity, intensityLabel, chancen, risiken, narrative };
+}
+
 export function computeTeamReport(
   roleName: string,
   candidateName: string,
@@ -104,7 +184,8 @@ export function computeTeamReport(
   const managementSummary = buildManagementSummary(roleName, cn, soll, ist, team, sollIstGap, teamIstGap, sollIstLevel, teamIstLevel, status, sk, rk, tk, sollLabel, istLabel, teamLabel);
   const teamstruktur = buildTeamstruktur(team, teamDom, teamConst, teamLabel, tk);
   const fuehrungsprofil = buildFuehrungsprofil(cn, ist, istDom, istConst, istLabel, rk);
-  const systemwirkung = buildSystemwirkung(cn, roleName, ist, team, soll, rk, tk, sk, teamIstGap, sollIstGap, istConst, teamConst);
+  const systemwirkungResult = detectSystemwirkung(ist, team, cn, rk, tk, teamIstGap, istConst, teamConst);
+  const systemwirkung = buildSystemwirkung(cn, roleName, ist, team, soll, rk, tk, sk, teamIstGap, sollIstGap, istConst, teamConst, systemwirkungResult);
   const teamdynamikAlltag = buildTeamdynamikAlltag(cn, ist, team, rk, tk, teamIstGap);
   const chancen = buildChancen(cn, ist, team, soll, rk, tk, sk, teamIstGap);
   const risiken = buildRisiken(cn, ist, team, soll, rk, tk, sk, teamIstGap, sollIstGap);
@@ -119,6 +200,7 @@ export function computeTeamReport(
     teamstruktur,
     fuehrungsprofil,
     systemwirkung,
+    systemwirkungResult,
     teamdynamikAlltag,
     chancen,
     risiken,
@@ -218,21 +300,12 @@ function buildSystemwirkung(
   ist: Triad, team: Triad, soll: Triad,
   rk: ComponentKey, tk: ComponentKey, sk: ComponentKey,
   teamIstGap: number, sollIstGap: number,
-  istConst: ConstellationType, teamConst: ConstellationType
+  istConst: ConstellationType, teamConst: ConstellationType,
+  sw: SystemwirkungResult
 ): string {
   const lines: string[] = [];
 
-  lines.push("Verschiebungsanalyse:");
-  lines.push("");
-
-  if (rk === tk) {
-    lines.push(`${cand} verstärkt die bestehende Teamlogik. Beide setzen auf ${compDesc(rk)}. Die Arbeitsweise des Teams bleibt in ihrer Grundrichtung stabil. Es gibt keine strukturelle Verschiebung.`);
-    if (teamIstGap > 15) {
-      lines.push(`Trotz gleicher Grundrichtung gibt es eine spürbare Intensitätsabweichung (${teamIstGap} Punkte). Die Ausprägung der einzelnen Bereiche unterscheidet sich, was im Alltag zu unterschiedlichem Tempo oder unterschiedlicher Gründlichkeit führen kann.`);
-    }
-  } else {
-    lines.push(`${cand} verschiebt die Teamlogik von ${compShort(tk)} Richtung ${compShort(rk)}. Das Team ist aktuell auf ${compDesc(tk)} ausgerichtet. ${cand} bringt eine andere Priorität mit: ${compDesc(rk)}. Das verändert, wie im Team Entscheidungen getroffen, Aufgaben priorisiert und Ergebnisse bewertet werden.`);
-  }
+  lines.push(sw.description);
 
   lines.push("");
   lines.push("Abgleich mit Sollprofil:");
