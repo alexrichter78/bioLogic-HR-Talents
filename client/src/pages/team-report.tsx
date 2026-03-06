@@ -6,7 +6,7 @@ import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from 
 import { computeTeamReport } from "@/lib/team-report-engine";
 import { constellationLabel, detectConstellation } from "@/lib/soll-ist-engine";
 import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
-import type { TeamReportResult, SystemwirkungResult, GesamtpassungLevel } from "@/lib/team-report-engine";
+import type { TeamReportResult, SystemwirkungResult, GesamtpassungLevel, Severity } from "@/lib/team-report-engine";
 
 type BG = { imp: number; int: number; ana: number };
 type RoleDnaState = {
@@ -62,6 +62,18 @@ function domTone(k: ComponentKey) {
   if (k === "impulsiv") return "border-red-200 bg-red-50 text-red-700";
   if (k === "intuitiv") return "border-amber-200 bg-amber-50 text-amber-700";
   return "border-blue-200 bg-blue-50 text-blue-700";
+}
+
+function severityTone(s: Severity) {
+  if (s === "critical") return "bg-red-50 text-red-700 border-red-200";
+  if (s === "warning") return "bg-amber-50 text-amber-700 border-amber-200";
+  return "bg-green-50 text-green-700 border-green-200";
+}
+
+function severityLabel(s: Severity) {
+  if (s === "critical") return "kritisch";
+  if (s === "warning") return "bedingt";
+  return "passend";
 }
 
 function Metric({ label, value, valueClass = "text-slate-900" }: { label: string; value: string; valueClass?: string }) {
@@ -504,6 +516,58 @@ export default function TeamReport() {
               </div>
             </section>
 
+            {/* ── Impact Areas + Risk Timeline ── */}
+            <section className="mb-8 grid gap-8 xl:grid-cols-[1.1fr_0.9fr]" data-testid="section-impact-risk">
+              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-impact-areas">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Wirkungsfelder</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">Auswirkung nach Bereich</h3>
+                <div className="mt-6 space-y-4">
+                  {result.impactAreas.map((area, i) => (
+                    <div key={i} className={`rounded-2xl border p-5 ${severityTone(area.severity)}`} data-testid={`impact-area-${i}`}>
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-base font-semibold" data-testid={`impact-area-label-${i}`}>{area.label}</h4>
+                        <span className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide ${severityTone(area.severity)}`} data-testid={`impact-area-severity-${i}`}>
+                          {severityLabel(area.severity)}
+                        </span>
+                      </div>
+                      <div className="space-y-2 text-sm leading-6">
+                        <p data-testid={`impact-area-roleneed-${i}`}><span className="font-medium">Rolle erwartet:</span> {area.roleNeed}</p>
+                        <p data-testid={`impact-area-candidate-${i}`}><span className="font-medium">Kandidat zeigt:</span> {area.candidatePattern}</p>
+                        <p data-testid={`impact-area-risk-${i}`}><span className="font-medium">Risiko:</span> {area.risk}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-risk-timeline">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Risiko-Zeitleiste</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">Kritische Phasen</h3>
+                <div className="mt-6 relative">
+                  <div className="absolute left-3 top-3 bottom-3 w-px bg-slate-200" />
+                  <div className="space-y-6">
+                    {result.riskTimeline.map((phase, i) => {
+                      const dotColor = i === 0 ? "border-red-400 bg-red-50 text-red-700" : i === 1 ? "border-amber-400 bg-amber-50 text-amber-700" : "border-green-400 bg-green-50 text-green-700";
+                      return (
+                        <div key={i} className="flex items-start gap-5 relative" data-testid={`risk-phase-${i}`}>
+                          <div className={`relative z-10 mt-1 h-6 w-6 rounded-full border-2 flex items-center justify-center text-xs font-bold ${dotColor}`}>
+                            {i + 1}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-sm font-semibold text-slate-950" data-testid={`risk-phase-label-${i}`}>{phase.label}</span>
+                              <span className="text-xs text-slate-500" data-testid={`risk-phase-period-${i}`}>{phase.period}</span>
+                            </div>
+                            <p className="text-sm leading-6 text-slate-600" data-testid={`risk-phase-text-${i}`}>{phase.text}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </section>
+
             {/* ── Systemwirkung Detail + Teamdynamik ── */}
             <section className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-systemwirkung">
               <div className="mb-6">
@@ -532,44 +596,56 @@ export default function TeamReport() {
               </div>
             </section>
 
-            {/* ── Stress Behavior ── */}
+            {/* ── Development Gauge ── */}
+            <section className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-development">
+              <div className="mb-6">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Entwicklungsbedarf</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">Steuerungsintensität</h3>
+              </div>
+              <div className="flex items-center gap-6 mb-5">
+                <div className="flex gap-1.5">
+                  {[1, 2, 3, 4].map(level => (
+                    <div key={level}
+                      className={`h-8 w-10 rounded-lg ${level <= result.developmentLevel
+                        ? result.developmentLevel >= 3 ? "bg-green-500" : result.developmentLevel === 2 ? "bg-amber-500" : "bg-red-500"
+                        : "bg-slate-100"}`}
+                      data-testid={`dev-bar-${level}`}
+                    />
+                  ))}
+                </div>
+                <div>
+                  <div className="text-lg font-semibold text-slate-950" data-testid="text-development-label">{result.developmentLabel}</div>
+                  <div className="text-xs text-slate-500" data-testid="text-development-level">Stufe {result.developmentLevel} von 4</div>
+                </div>
+              </div>
+              <p className="text-sm leading-7 text-slate-700 max-w-3xl">{result.developmentText}</p>
+              <div className={`mt-5 inline-block rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${result.controlIntensity === "hoch" ? "border-red-200 text-red-700" : result.controlIntensity === "mittel" ? "border-amber-200 text-amber-700" : "border-green-200 text-green-700"}`}>
+                Steuerungsaufwand: {result.controlIntensity}
+              </div>
+            </section>
+
+            {/* ── Stress Behavior (structured) ── */}
             <section className="mb-8 grid gap-8 lg:grid-cols-2" data-testid="section-stress">
-              {(() => {
-                const stressLines = result.verhaltenUnterDruck.split("\n").filter(l => l.trim());
-                const splitIdx = stressLines.findIndex(l => l.includes("Unkontrollierter Stress"));
-                const controlled = stressLines.slice(0, splitIdx > 0 ? splitIdx : Math.floor(stressLines.length / 2))
-                  .filter(l => !l.includes("Kontrollierter Druck:") && l.trim());
-                const uncontrolled = stressLines.slice(splitIdx > 0 ? splitIdx : Math.floor(stressLines.length / 2))
-                  .filter(l => !l.includes("Unkontrollierter Stress:") && l.trim());
-                return (
-                  <>
-                    <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-                      <div className="mb-2 flex items-center gap-3">
-                        <div className="h-3 w-3 rounded-full bg-amber-500" />
-                        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Kontrollierter Druck</p>
-                      </div>
-                      <h3 className="mt-2 text-xl font-semibold text-slate-950">Verhalten bei steigendem Arbeitsdruck</h3>
-                      <div className="mt-5 rounded-2xl border border-amber-100 bg-amber-50/40 p-5">
-                        <div className="space-y-3 text-sm leading-7 text-slate-700">
-                          {controlled.map((l, i) => <p key={i}>{l}</p>)}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-                      <div className="mb-2 flex items-center gap-3">
-                        <div className="h-3 w-3 rounded-full bg-red-500" />
-                        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Unkontrollierter Stress</p>
-                      </div>
-                      <h3 className="mt-2 text-xl font-semibold text-slate-950">Verhalten bei starker Belastung</h3>
-                      <div className="mt-5 rounded-2xl border border-red-100 bg-red-50/40 p-5">
-                        <div className="space-y-3 text-sm leading-7 text-slate-700">
-                          {uncontrolled.map((l, i) => <p key={i}>{l}</p>)}
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                );
-              })()}
+              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+                <div className="mb-2 flex items-center gap-3">
+                  <div className="h-3 w-3 rounded-full bg-amber-500" />
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Kontrollierter Druck</p>
+                </div>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">Verhalten bei steigendem Arbeitsdruck</h3>
+                <div className="mt-5 rounded-2xl border border-amber-100 bg-amber-50/40 p-5">
+                  <p className="text-sm leading-7 text-slate-700">{result.stressBehavior.controlledPressure}</p>
+                </div>
+              </div>
+              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+                <div className="mb-2 flex items-center gap-3">
+                  <div className="h-3 w-3 rounded-full bg-red-500" />
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Unkontrollierter Stress</p>
+                </div>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">Verhalten bei starker Belastung</h3>
+                <div className="mt-5 rounded-2xl border border-red-100 bg-red-50/40 p-5">
+                  <p className="text-sm leading-7 text-slate-700">{result.stressBehavior.uncontrolledStress}</p>
+                </div>
+              </div>
             </section>
 
             {/* ── Chancen / Risiken side by side ── */}
@@ -606,50 +682,37 @@ export default function TeamReport() {
               </div>
             </section>
 
-            {/* ── Führungshebel + Integrationsplan ── */}
+            {/* ── Actions + Integrationsplan (structured) ── */}
             <section className="mb-8 grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
               <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-fuehrungshebel">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Handlungsempfehlung</p>
                 <h3 className="mt-2 text-xl font-semibold text-slate-950">Führungshebel</h3>
-                <ul className="mt-6 space-y-3">
-                  {result.fuehrungshebel.split("\n\n").filter(l => l.trim()).map((item, i) => {
-                    const parts = item.split(": ");
-                    const title = parts.length > 1 ? parts[0] : null;
-                    const body = parts.length > 1 ? parts.slice(1).join(": ") : item;
-                    return (
-                      <li key={i} className="flex items-start gap-3 text-sm leading-6 text-slate-700" data-testid={`lever-${i}`}>
-                        <span className="mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 text-xs font-bold text-blue-700">
-                          <Check className="h-3 w-3" />
-                        </span>
-                        <span>{title && <span className="font-semibold text-slate-900">{title}: </span>}{body}</span>
-                      </li>
-                    );
-                  })}
+                <ul className="mt-6 space-y-4">
+                  {result.actions.map((action, i) => (
+                    <li key={i} className="flex items-start gap-3 text-sm leading-6 text-slate-700" data-testid={`lever-${i}`}>
+                      <span className="mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 text-xs font-bold text-blue-700">
+                        <Check className="h-3 w-3" />
+                      </span>
+                      <span>{action}</span>
+                    </li>
+                  ))}
                 </ul>
               </div>
 
               <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-integrationsplan">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Integrationsplan</p>
-                <h3 className="mt-2 text-xl font-semibold text-slate-950">30-Tage-Plan</h3>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">8-Wochen-Plan</h3>
                 <div className="mt-8 space-y-6">
-                  {result.integrationsplan.split("\n\n").filter(l => l.trim()).reduce<{ title: string; items: string[] }[]>((acc, block) => {
-                    const lines = block.split("\n").filter(l => l.trim());
-                    if (lines.length === 0) return acc;
-                    if (!lines[0].startsWith("- ") && lines[0].includes("Woche")) {
-                      acc.push({ title: lines[0], items: lines.slice(1).map(l => l.replace(/^- /, "")) });
-                    } else if (acc.length > 0) {
-                      acc[acc.length - 1].items.push(...lines.map(l => l.replace(/^- /, "")));
-                    } else {
-                      acc.push({ title: "Phase", items: lines.map(l => l.replace(/^- /, "")) });
-                    }
-                    return acc;
-                  }, []).map((phase, i) => (
+                  {result.integrationsplanPhasen.map((phase, i) => (
                     <div key={i} className="rounded-2xl border border-slate-200 bg-slate-50/60 p-6" data-testid={`integration-phase-${i}`}>
                       <div className="flex items-center gap-3 mb-4">
                         <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
-                          {i + 1}
+                          {phase.num}
                         </span>
-                        <h4 className="text-base font-semibold text-slate-950">{phase.title}</h4>
+                        <div>
+                          <h4 className="text-base font-semibold text-slate-950">{phase.title}</h4>
+                          <span className="text-xs text-slate-500">{phase.period}</span>
+                        </div>
                       </div>
                       <ul className="space-y-2">
                         {phase.items.map((item, j) => (

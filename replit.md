@@ -64,6 +64,7 @@ Preferred communication style: Simple, everyday language.
 -   **Entscheidungsbericht**: Displays structural type, gap bars, warning callouts, and stress behavior analysis.
 -   **Spannungsmatrix**: Includes 8 dedicated MIX-cells for balanced profiles.
 -   **Führungskontext Card**: Provides contextual narrative (Führungskraft, Team, Passung, Kernrisiko, Kernchance, Handlungsfokus) with deterministic text based on profile data; colors match dominance.
+-   **TestTeamReport (team-report.tsx)**: Structured report with Impact Areas (severity-coded cards with roleNeed/candidatePattern/risk), Risk Timeline (dot+line phases), Development Gauge (4-bar scale), Stress Behavior (controlledPressure/uncontrolledStress), structured Actions, and 8-Week Integration Plan (3 phases with numbered cards). Uses `computeTeamReport()` from `team-report-engine.ts`.
 
 ### Technical Implementations
 -   **Leader-Team Match Engine (`client/src/lib/leader-team-match-engine.ts`)**: Provides three evaluations (Normal, Controlled Stress, Uncontrolled Stress) for leadership roles, generating ratings, component breakdowns, Team-Fit-Score (TFS), and flags. Applies leadership rules F1-F7.
