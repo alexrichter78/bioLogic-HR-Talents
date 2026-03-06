@@ -492,34 +492,20 @@ export default function SollIstBericht() {
                   <h3 className="mt-2 text-xl font-semibold text-slate-950">Auswirkungen der Abweichung</h3>
                 </div>
                 <div className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-600">
-                  Erst Matrix, dann Detailanalyse
+                  6 Wirkungsbereiche im Detail
                 </div>
               </div>
 
-              <div className="overflow-hidden rounded-2xl border border-slate-200">
-                <div className="grid grid-cols-[1.5fr_0.6fr] bg-slate-50 px-5 py-3 text-sm font-semibold text-slate-600">
-                  <div>Bereich</div>
-                  <div className="text-right">Bewertung</div>
-                </div>
-                <div className="divide-y divide-slate-200">
-                  {result.impactAreas.map(area => (
-                    <div key={area.id} className="grid grid-cols-[1.5fr_0.6fr] items-center px-5 py-4 text-sm" data-testid={`matrix-row-${area.id}`}>
-                      <div className="font-medium text-slate-900">{area.label}</div>
-                      <div className="flex justify-end">
-                        <span className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${severityTone(area.severity)}`}>
-                          {severityLabel(area.severity)}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-8 grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-2">
                 {result.impactAreas.map(area => (
-                  <div key={area.id} className={`rounded-2xl border p-5 ${area.severity === "critical" ? "border-red-100 bg-red-50/40" : area.severity === "warning" ? "border-amber-100 bg-amber-50/40" : "border-green-100 bg-green-50/40"}`} data-testid={`impact-detail-${area.id}`}>
-                    <h4 className="text-base font-semibold text-slate-950">{area.label}</h4>
-                    <div className="mt-4 space-y-3 text-sm leading-6 text-slate-700">
+                  <div key={area.id} className="rounded-2xl border border-slate-200 bg-slate-50/60 p-5" data-testid={`impact-detail-${area.id}`}>
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-base font-semibold text-slate-950">{area.label}</h4>
+                      <span className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${severityTone(area.severity)}`}>
+                        {severityLabel(area.severity)}
+                      </span>
+                    </div>
+                    <div className="space-y-3 text-sm leading-6 text-slate-700">
                       <div><span className="font-semibold text-slate-900">Rolle braucht:</span> {area.roleNeed}</div>
                       <div><span className="font-semibold text-slate-900">Kandidat bringt:</span> {area.candidatePattern}</div>
                       <div>
