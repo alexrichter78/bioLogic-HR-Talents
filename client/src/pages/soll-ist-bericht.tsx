@@ -26,6 +26,8 @@ type SectionState = {
   error: string | null;
 };
 
+type BG = { imp: number; int: number; ana: number };
+
 type RoleDnaState = {
   beruf: string;
   fuehrung: string;
@@ -33,6 +35,11 @@ type RoleDnaState = {
   aufgabencharakter: string;
   arbeitslogik: string;
   taetigkeiten: { id: number; name: string; kategorie: string }[];
+  bioGramGesamt?: BG;
+  bioGramHaupt?: BG;
+  bioGramNeben?: BG;
+  bioGramFuehrung?: BG;
+  bioGramRahmen?: BG;
 };
 
 const ERFOLGSFOKUS_LABELS = [
@@ -50,30 +57,29 @@ const BAR_COLORS: Record<ComponentKey, string> = {
   analytisch: "#1A5DAB",
 };
 
+function bgToTriad(bg: BG | undefined): Triad {
+  if (!bg) return { impulsiv: 33, intuitiv: 33, analytisch: 34 };
+  return { impulsiv: Math.round(bg.imp), intuitiv: Math.round(bg.int), analytisch: Math.round(bg.ana) };
+}
+
 function buildRoleAnalysisFromDna(dna: RoleDnaState): RoleAnalysis | null {
   if (!dna.beruf) return null;
-  const raw = localStorage.getItem("berichtCache");
-  if (!raw) return null;
-  try {
-    const cache = JSON.parse(raw);
-    const bg = cache.bioGram;
-    if (!bg) return null;
-    return {
-      job_title: dna.beruf,
-      job_family: dna.aufgabencharakter || "",
-      role_profile: { impulsiv: bg.gesamt?.impulsiv ?? 33, intuitiv: bg.gesamt?.intuitiv ?? 33, analytisch: bg.gesamt?.analytisch ?? 34 },
-      frame_profile: { impulsiv: bg.rahmen?.impulsiv ?? 33, intuitiv: bg.rahmen?.intuitiv ?? 33, analytisch: bg.rahmen?.analytisch ?? 34 },
-      tasks_profile: { impulsiv: bg.haupt?.impulsiv ?? 33, intuitiv: bg.haupt?.intuitiv ?? 33, analytisch: bg.haupt?.analytisch ?? 34 },
-      human_profile: { impulsiv: bg.neben?.impulsiv ?? 33, intuitiv: bg.neben?.intuitiv ?? 33, analytisch: bg.neben?.analytisch ?? 34 },
-      leadership: {
-        required: dna.fuehrung !== "Keine",
-        type: dna.fuehrung,
-        profile: bg.fuehrung ? { impulsiv: bg.fuehrung.impulsiv, intuitiv: bg.fuehrung.intuitiv, analytisch: bg.fuehrung.analytisch } : undefined,
-      },
-      success_metrics: (dna.erfolgsfokusIndices || []).map((i: number) => ERFOLGSFOKUS_LABELS[i] || ""),
-      tension_fields: [],
-    };
-  } catch { return null; }
+  if (!dna.bioGramGesamt) return null;
+  return {
+    job_title: dna.beruf,
+    job_family: dna.aufgabencharakter || "",
+    role_profile: bgToTriad(dna.bioGramGesamt),
+    frame_profile: bgToTriad(dna.bioGramRahmen),
+    tasks_profile: bgToTriad(dna.bioGramHaupt),
+    human_profile: bgToTriad(dna.bioGramNeben),
+    leadership: {
+      required: dna.fuehrung !== "Keine",
+      type: dna.fuehrung,
+      profile: dna.bioGramFuehrung ? bgToTriad(dna.bioGramFuehrung) : undefined,
+    },
+    success_metrics: (dna.erfolgsfokusIndices || []).map((i: number) => ERFOLGSFOKUS_LABELS[i] || ""),
+    tension_fields: [],
+  };
 }
 
 function ProfileBar({ label, value, color }: { label: string; value: number; color: string }) {
