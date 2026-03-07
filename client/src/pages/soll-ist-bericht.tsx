@@ -40,6 +40,12 @@ const BAR_CSS: Record<ComponentKey, string> = {
   analytisch: "bg-blue-600",
 };
 
+const BAR_HEX: Record<ComponentKey, string> = {
+  impulsiv: "#C41E3A",
+  intuitiv: "#F39200",
+  analytisch: "#1A5DAB",
+};
+
 function bgToTriad(bg: BG | undefined): Triad {
   if (!bg) return { impulsiv: 33, intuitiv: 33, analytisch: 34 };
   return { impulsiv: Math.round(bg.imp), intuitiv: Math.round(bg.int), analytisch: Math.round(bg.ana) };
@@ -332,16 +338,42 @@ export default function SollIstBericht() {
                 {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                   const val = k === "impulsiv" ? candImp : k === "intuitiv" ? candInt : candAna;
                   const setter = k === "impulsiv" ? setCandImp : k === "intuitiv" ? setCandInt : setCandAna;
+                  const pct = Math.round(candidateProfile[k]);
+                  const hex = BAR_HEX[k];
                   return (
-                    <div key={k} className="mb-3 flex items-center gap-3">
-                      <span className="w-20 text-right text-sm font-medium text-slate-600">{labelComponent(k)}</span>
-                      <input
-                        type="range" min={5} max={80} value={val}
-                        onChange={(e) => setter(Number(e.target.value))}
-                        className="flex-1 accent-slate-600"
-                        data-testid={`slider-${k}`}
-                      />
-                      <span className="w-8 text-right text-sm font-semibold text-slate-700">{Math.round(candidateProfile[k])}</span>
+                    <div key={k} className="mb-4" data-testid={`slider-row-${k}`}>
+                      <div className="relative h-9">
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-600 z-10 pointer-events-none pl-0.5">
+                          {labelComponent(k)}
+                        </span>
+                        <div className="absolute inset-0 flex items-center">
+                          <div className="relative h-8 w-full rounded-full bg-slate-100 overflow-hidden">
+                            <div
+                              className="absolute inset-y-0 left-0 rounded-full transition-all duration-150"
+                              style={{ width: `${Math.max(pct, 5)}%`, backgroundColor: hex }}
+                            />
+                            <span
+                              className="absolute top-1/2 -translate-y-1/2 text-xs font-bold text-white pointer-events-none"
+                              style={{ left: `${Math.max(pct, 5) / 2}%`, transform: "translate(-50%, -50%)" }}
+                            >
+                              {pct > 8 ? `${pct} %` : ""}
+                            </span>
+                          </div>
+                          <div
+                            className="absolute h-7 w-7 rounded-full border-2 border-white shadow-md pointer-events-none"
+                            style={{
+                              left: `calc(${Math.max(pct, 5)}% - 14px)`,
+                              backgroundColor: "#2563EB",
+                            }}
+                          />
+                        </div>
+                        <input
+                          type="range" min={5} max={80} value={val}
+                          onChange={(e) => setter(Number(e.target.value))}
+                          className="absolute inset-0 w-full opacity-0 cursor-pointer z-20"
+                          data-testid={`slider-${k}`}
+                        />
+                      </div>
                     </div>
                   );
                 })}
