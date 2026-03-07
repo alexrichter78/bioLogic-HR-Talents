@@ -128,7 +128,7 @@ function ProfileCard({ title, subtitle, profile, description }: {
   );
 }
 
-function TripleTriangleChart({ soll, ist, team }: { soll: Triad; ist: Triad; team: Triad }) {
+function DualTriangleChart({ ist, team }: { ist: Triad; team: Triad }) {
   const top = { x: 160, y: 25 };
   const left = { x: 35, y: 220 };
   const right = { x: 285, y: 220 };
@@ -158,12 +158,10 @@ function TripleTriangleChart({ soll, ist, team }: { soll: Triad; ist: Triad; tea
         <text x="160" y="16" textAnchor="middle" className="fill-slate-500 text-[12px]">Struktur</text>
         <text x="15" y="235" className="fill-slate-500 text-[12px]">Zusammenarbeit</text>
         <text x="250" y="235" className="fill-slate-500 text-[12px]">Umsetzung</text>
-        <polygon points={triadToTriangle(soll)} fill="rgba(37,99,235,0.10)" stroke="#2563eb" strokeWidth="3" />
         <polygon points={triadToTriangle(team)} fill="rgba(16,185,129,0.10)" stroke="#10b981" strokeWidth="3" />
         <polygon points={triadToTriangle(ist)} fill="rgba(245,158,11,0.14)" stroke="#f59e0b" strokeWidth="3" />
       </svg>
       <div className="mt-2 flex items-center gap-6 text-sm text-slate-500">
-        <Legend color="bg-blue-600" label="Rolle" />
         <Legend color="bg-emerald-500" label="Team" />
         <Legend color="bg-amber-500" label="Kandidat" />
       </div>
@@ -240,9 +238,6 @@ function SliderGroup({
 export default function TeamReport() {
   const [, setLocation] = useLocation();
 
-  const [sollImp, setSollImp] = useState(33);
-  const [sollInt, setSollInt] = useState(34);
-  const [sollAna, setSollAna] = useState(33);
   const [istImp, setIstImp] = useState(33);
   const [istInt, setIstInt] = useState(34);
   const [istAna, setIstAna] = useState(33);
@@ -259,10 +254,6 @@ export default function TeamReport() {
       try {
         const dna = JSON.parse(raw) as RoleDnaState;
         if (dna.beruf) setRoleName(dna.beruf);
-        if (dna.bioGramGesamt) {
-          const t = bgToTriad(dna.bioGramGesamt);
-          setSollImp(t.impulsiv); setSollInt(t.intuitiv); setSollAna(t.analytisch);
-        }
       } catch {}
     }
     const candRaw = localStorage.getItem("jobcheckCandProfile");
@@ -286,31 +277,23 @@ export default function TeamReport() {
     }
   }, []);
 
-  const sollProfile = normalizeTriad({ impulsiv: sollImp, intuitiv: sollInt, analytisch: sollAna });
   const istProfile = normalizeTriad({ impulsiv: istImp, intuitiv: istInt, analytisch: istAna });
   const teamProfileN = normalizeTriad({ impulsiv: teamImp, intuitiv: teamInt, analytisch: teamAna });
 
-  const sollDomKey = dominanceModeOf(sollProfile).top1.key;
   const istDomKey = dominanceModeOf(istProfile).top1.key;
   const teamDomKey = dominanceModeOf(teamProfileN).top1.key;
 
-  const sollConstLabel = constellationLabel(detectConstellation(sollProfile));
   const istConstLabel = constellationLabel(detectConstellation(istProfile));
   const teamConstLabel = constellationLabel(detectConstellation(teamProfileN));
 
   const result: TeamReportResult | null = useMemo(() => {
     if (!reportGenerated) return null;
-    return computeTeamReport(roleName || "Rolle", candidateName || "Kandidat", sollProfile, istProfile, teamProfileN);
-  }, [reportGenerated, roleName, candidateName, sollProfile.impulsiv, sollProfile.intuitiv, sollProfile.analytisch, istProfile.impulsiv, istProfile.intuitiv, istProfile.analytisch, teamProfileN.impulsiv, teamProfileN.intuitiv, teamProfileN.analytisch]);
+    return computeTeamReport(roleName || "Rolle", candidateName || "Kandidat", istProfile, teamProfileN);
+  }, [reportGenerated, roleName, candidateName, istProfile.impulsiv, istProfile.intuitiv, istProfile.analytisch, teamProfileN.impulsiv, teamProfileN.intuitiv, teamProfileN.analytisch]);
 
   const sw = result?.systemwirkungResult;
   const tone = result ? passungTone(result.gesamtpassung) : passungTone("geeignet");
 
-  const sollProfileArr = [
-    { label: "Impulsiv", short: "Umsetzung", value: sollProfile.impulsiv, color: BAR_CSS.impulsiv },
-    { label: "Intuitiv", short: "Zusammenarbeit", value: sollProfile.intuitiv, color: BAR_CSS.intuitiv },
-    { label: "Analytisch", short: "Struktur", value: sollProfile.analytisch, color: BAR_CSS.analytisch },
-  ];
   const istProfileArr = [
     { label: "Impulsiv", short: "Umsetzung", value: istProfile.impulsiv, color: BAR_CSS.impulsiv },
     { label: "Intuitiv", short: "Zusammenarbeit", value: istProfile.intuitiv, color: BAR_CSS.intuitiv },
@@ -322,15 +305,14 @@ export default function TeamReport() {
     { label: "Analytisch", short: "Struktur", value: teamProfileN.analytisch, color: BAR_CSS.analytisch },
   ];
 
-  const deltas: { label: string; soll: number; ist: number; team: number; sollIstDelta: string; sollIstTone: string }[] = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
-    const d = Math.round(istProfile[k] - sollProfile[k]);
+  const deltas: { label: string; team: number; ist: number; delta: string; deltaTone: string }[] = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+    const d = Math.round(istProfile[k] - teamProfileN[k]);
     return {
       label: COMP_LABELS[k],
-      soll: Math.round(sollProfile[k]),
-      ist: Math.round(istProfile[k]),
       team: Math.round(teamProfileN[k]),
-      sollIstDelta: d >= 0 ? `+${d}` : `${d}`,
-      sollIstTone: Math.abs(d) >= 15 ? "text-red-600" : Math.abs(d) >= 8 ? "text-amber-600" : "text-slate-600",
+      ist: Math.round(istProfile[k]),
+      delta: d >= 0 ? `+${d}` : `${d}`,
+      deltaTone: Math.abs(d) >= 15 ? "text-red-600" : Math.abs(d) >= 8 ? "text-amber-600" : "text-slate-600",
     };
   });
 
@@ -344,7 +326,7 @@ export default function TeamReport() {
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Konfiguration</p>
             <h1 className="text-2xl font-semibold tracking-tight text-slate-950 mb-6" data-testid="text-page-title">Team-Systemreport konfigurieren</h1>
             <p className="text-sm text-slate-600 mb-8 max-w-2xl leading-6">
-              Definieren Sie die drei Profile: Das Sollprofil der Rolle, das Ist-Profil des Kandidaten und das bestehende Teamprofil.
+              Definieren Sie die zwei Profile: Das Ist-Profil des Kandidaten und das bestehende Teamprofil.
             </p>
             <div className="grid gap-6 mb-6 lg:grid-cols-2">
               <div>
@@ -360,9 +342,7 @@ export default function TeamReport() {
                   data-testid="input-candidate-name" />
               </div>
             </div>
-            <div className="grid gap-8 lg:grid-cols-3">
-              <SliderGroup title="Sollprofil (Rolle)" imp={sollImp} int={sollInt} ana={sollAna}
-                onImpChange={setSollImp} onIntChange={setSollInt} onAnaChange={setSollAna} testIdPrefix="soll" />
+            <div className="grid gap-8 lg:grid-cols-2">
               <SliderGroup title="Ist-Profil (Kandidat)" imp={istImp} int={istInt} ana={istAna}
                 onImpChange={setIstImp} onIntChange={setIstInt} onAnaChange={setIstAna} testIdPrefix="ist" />
               <SliderGroup title="Teamprofil" imp={teamImp} int={teamInt} ana={teamAna}
@@ -404,7 +384,7 @@ export default function TeamReport() {
                 <div className="grid min-w-[280px] grid-cols-2 gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4" data-testid="metrics-grid">
                   <Metric label="Gesamtpassung" value={result.gesamtpassungLabel} valueClass={tone.text} />
                   <Metric label="Systemwirkung" value={sw.label} valueClass={sw.intensity === "hoch" ? "text-red-600" : "text-slate-900"} />
-                  <Metric label="Rollenprofil" value={sollConstLabel} />
+                  <Metric label="Teamprofil" value={teamConstLabel} />
                   <Metric label="Kandidatenprofil" value={istConstLabel} />
                 </div>
               </div>
@@ -469,13 +449,10 @@ export default function TeamReport() {
                 <div className="mb-6 flex items-center justify-between">
                   <div>
                     <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Strukturvergleich</p>
-                    <h3 className="mt-2 text-xl font-semibold text-slate-950">Rolle · Team · Neue Person</h3>
+                    <h3 className="mt-2 text-xl font-semibold text-slate-950">Team · Neue Person</h3>
                   </div>
                 </div>
-                <div className="grid gap-6 lg:grid-cols-3">
-                  <ProfileCard title="Soll-Profil" subtitle={roleName || "Rolle"} profile={sollProfileArr}
-                    description={`Die Rolle verlangt vor allem ${COMP_SHORT[sollDomKey]}, ${sollDomKey === "analytisch" ? "Prüftiefe und verlässliche Planung" : sollDomKey === "impulsiv" ? "schnelle Umsetzung und Entscheidungsstärke" : "Kommunikation und Zusammenarbeit"}.`}
-                  />
+                <div className="grid gap-6 lg:grid-cols-2">
                   <ProfileCard title="Teamprofil" subtitle="Bestehendes Team" profile={teamProfileArr}
                     description={`Das Team zeigt ${teamConstLabel.toLowerCase()}. Der stärkste Anteil liegt bei ${COMP_SHORT[teamDomKey]}.`}
                   />
@@ -484,26 +461,26 @@ export default function TeamReport() {
                   />
                 </div>
                 <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5" data-testid="chart-triangle">
-                  <TripleTriangleChart soll={sollProfile} ist={istProfile} team={teamProfileN} />
+                  <DualTriangleChart ist={istProfile} team={teamProfileN} />
                 </div>
               </div>
 
               <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-deltas">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Soll-Ist-Abweichung</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Team-Kandidat-Abweichung</p>
                 <h3 className="mt-2 text-xl font-semibold text-slate-950">Abweichung je Wirkdimension</h3>
                 <div className="mt-6 space-y-5">
                   {deltas.map(item => (
                     <div key={item.label}>
                       <div className="mb-2 flex items-center justify-between text-sm">
                         <span className="font-medium text-slate-800">{item.label}</span>
-                        <span className={`font-semibold ${item.sollIstTone}`}>{item.sollIstDelta}</span>
+                        <span className={`font-semibold ${item.deltaTone}`}>{item.delta}</span>
                       </div>
                       <div className="mb-2 flex h-3 overflow-hidden rounded-full bg-slate-100">
-                        <div className="bg-slate-300 rounded-full" style={{ width: `${item.soll}%` }} />
+                        <div className="bg-emerald-400 rounded-full" style={{ width: `${item.team}%` }} />
                       </div>
                       <div className="flex items-center justify-between text-xs text-slate-500">
-                        <span>Soll {item.soll}%</span>
-                        <span>Ist {item.ist}%</span>
+                        <span>Team {item.team}%</span>
+                        <span>Kandidat {item.ist}%</span>
                       </div>
                     </div>
                   ))}
@@ -531,7 +508,7 @@ export default function TeamReport() {
                         </span>
                       </div>
                       <div className="space-y-2 text-sm leading-6">
-                        <p data-testid={`impact-area-roleneed-${i}`}><span className="font-medium">Rolle erwartet:</span> {area.roleNeed}</p>
+                        <p data-testid={`impact-area-teamexpect-${i}`}><span className="font-medium">Team erwartet:</span> {area.teamExpectation}</p>
                         <p data-testid={`impact-area-candidate-${i}`}><span className="font-medium">Kandidat zeigt:</span> {area.candidatePattern}</p>
                         <p data-testid={`impact-area-risk-${i}`}><span className="font-medium">Risiko:</span> {area.risk}</p>
                       </div>

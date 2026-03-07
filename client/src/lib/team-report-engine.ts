@@ -24,7 +24,7 @@ export type ImpactArea = {
   id: string;
   label: string;
   severity: Severity;
-  roleNeed: string;
+  teamExpectation: string;
   candidatePattern: string;
   risk: string;
 };
@@ -52,8 +52,6 @@ export type TeamReportResult = {
   gesamtpassungLabel: string;
   entscheidungsfaktoren: string[];
   controlIntensity: "gering" | "mittel" | "hoch";
-  totalGap: number;
-  sollIstGap: number;
   teamIstGap: number;
   managementSummary: string;
   teamstruktur: string;
@@ -76,7 +74,6 @@ export type TeamReportResult = {
   actions: string[];
   stressBehavior: StressBehavior;
   integrationsplanPhasen: IntegrationPhase[];
-  sollConstellationLabel: string;
   istConstellationLabel: string;
   teamConstellationLabel: string;
 };
@@ -200,66 +197,63 @@ function severity(gap: number): Severity {
 }
 
 function buildTeamImpactAreas(
-  sk: ComponentKey, rk: ComponentKey, tk: ComponentKey,
-  soll: Triad, ist: Triad, team: Triad, cand: string
+  rk: ComponentKey, tk: ComponentKey,
+  ist: Triad, team: Triad, cand: string
 ): ImpactArea[] {
-  const gapI = Math.abs(soll.impulsiv - ist.impulsiv);
-  const gapN = Math.abs(soll.intuitiv - ist.intuitiv);
-  const gapA = Math.abs(soll.analytisch - ist.analytisch);
   const teamGapI = Math.abs(team.impulsiv - ist.impulsiv);
   const teamGapN = Math.abs(team.intuitiv - ist.intuitiv);
   const teamGapA = Math.abs(team.analytisch - ist.analytisch);
 
   const areas: ImpactArea[] = [];
 
-  const decSev = severity(sk === "analytisch" && rk !== "analytisch" ? gapA + 5 : Math.max(gapI, gapA));
-  let decRoleNeed: string;
+  const decSev = severity(tk === "analytisch" && rk !== "analytisch" ? teamGapA + 5 : Math.max(teamGapI, teamGapA));
+  let decTeam: string;
   let decCandPattern: string;
   let decRisk: string;
-  if (sk === "analytisch") {
-    decRoleNeed = "Die Rolle verlangt sorgfältige, planvolle Entscheidungen. Optionen sollen geprüft und Risiken abgewogen werden.";
+  if (tk === "analytisch") {
+    decTeam = "Das Team arbeitet mit sorgfältiger, planvoller Entscheidungslogik. Optionen werden geprüft und Risiken abgewogen.";
     decCandPattern = rk === "impulsiv" ? `${cand} entscheidet schneller und handlungsorientierter. Entscheidungen fallen, bevor alle Informationen vorliegen.` : `${cand} entscheidet kontextbezogen und bezieht Stimmungen ein. Datenbasierte Prüfung steht weniger im Vordergrund.`;
-    decRisk = rk !== "analytisch" ? `Im Team wirkt das als Tempowechsel. ${cand} und das Team (${compShort(tk)}-orientiert) kommen zu unterschiedlichen Entscheidungszeitpunkten.` : "Die Entscheidungslogik passt zur Rollenanforderung.";
-  } else if (sk === "impulsiv") {
-    decRoleNeed = "Die Rolle verlangt schnelle, handlungsorientierte Entscheidungen. Tempo hat Vorrang vor langer Prüfung.";
-    decCandPattern = rk === "analytisch" ? `${cand} prüft gründlich und braucht Daten. Das Tempo ist langsamer als die Rolle verlangt.` : `${cand} bezieht bei Entscheidungen den menschlichen Kontext ein. Abstimmung dauert länger als die Rolle erlaubt.`;
-    decRisk = rk !== "impulsiv" ? `Im Team entsteht Spannung: ${cand} verlangsamt, während die Rolle Tempo braucht. Teamdynamik hängt von der Steuerung ab.` : "Die Entscheidungslogik passt zur Rollenanforderung.";
+    decRisk = rk !== "analytisch" ? `Im Team wirkt das als Tempowechsel. ${cand} und das Team kommen zu unterschiedlichen Entscheidungszeitpunkten.` : "Die Entscheidungslogik passt zum Team.";
+  } else if (tk === "impulsiv") {
+    decTeam = "Das Team arbeitet mit schneller, handlungsorientierter Entscheidungslogik. Tempo hat Vorrang vor langer Prüfung.";
+    decCandPattern = rk === "analytisch" ? `${cand} prüft gründlich und braucht Daten. Das Tempo ist langsamer als das Team gewohnt ist.` : `${cand} bezieht bei Entscheidungen den menschlichen Kontext ein. Abstimmung dauert länger als das Team erwartet.`;
+    decRisk = rk !== "impulsiv" ? `Im Team entsteht Spannung: ${cand} verlangsamt, während das Team Tempo erwartet.` : "Die Entscheidungslogik passt zum Team.";
   } else {
-    decRoleNeed = "Die Rolle verlangt Entscheidungen, die Kontext und Zusammenarbeit berücksichtigen. Abstimmung ist wichtiger als Geschwindigkeit.";
+    decTeam = "Das Team trifft Entscheidungen kontextbezogen. Abstimmung und Zusammenarbeit stehen im Vordergrund.";
     decCandPattern = rk === "impulsiv" ? `${cand} trifft Entscheidungen schnell und direkt. Die Wirkung auf andere wird nicht immer berücksichtigt.` : `${cand} entscheidet über Fakten und Regeln. Die zwischenmenschliche Dimension steht weniger im Fokus.`;
-    decRisk = rk !== "intuitiv" ? `Im Team wirkt das als Stilbruch. Das Team (${compShort(tk)}-orientiert) erwartet eine andere Entscheidungslogik.` : "Die Entscheidungslogik passt zur Rollenanforderung.";
+    decRisk = rk !== "intuitiv" ? `Im Team wirkt das als Stilbruch. Das Team erwartet eine andere Entscheidungslogik.` : "Die Entscheidungslogik passt zum Team.";
   }
-  areas.push({ id: "decision", label: "Entscheidungslogik", severity: decSev, roleNeed: decRoleNeed, candidatePattern: decCandPattern, risk: decRisk });
+  areas.push({ id: "decision", label: "Entscheidungslogik", severity: decSev, teamExpectation: decTeam, candidatePattern: decCandPattern, risk: decRisk });
 
-  const workSev = severity(gapA);
-  let workRoleNeed: string;
-  if (soll.analytisch >= 35) workRoleNeed = "Die Rolle braucht klare Struktur, Priorisierung und verlässliche Abläufe.";
-  else if (soll.analytisch >= 25) workRoleNeed = "Die Rolle braucht eine grundlegende Ordnung in Abläufen und Prozessen.";
-  else workRoleNeed = "Die Rolle erlaubt eine flexible, ergebnisorientierte Arbeitsweise.";
+  const workSev = severity(teamGapA);
+  let workTeam: string;
+  if (team.analytisch >= 35) workTeam = "Das Team arbeitet mit klarer Struktur, Priorisierung und verlässlichen Abläufen.";
+  else if (team.analytisch >= 25) workTeam = "Das Team hat eine grundlegende Ordnung in Abläufen und Prozessen.";
+  else workTeam = "Das Team arbeitet flexibel und ergebnisorientiert.";
   let workCandPattern: string;
   if (ist.analytisch >= 35) workCandPattern = `${cand} arbeitet strukturiert mit klaren Abläufen. Planung hat hohe Priorität.`;
   else if (ist.analytisch >= 25) workCandPattern = `${cand} hat grundlegende Struktur, lässt aber Raum für Anpassungen.`;
   else workCandPattern = `${cand} arbeitet tempoorientiert und reagiert situationsbezogen.`;
   let workRisk: string;
-  if (gapA >= 10 && ist.analytisch < soll.analytisch) workRisk = `Prozessklarheit muss aktiv eingefordert werden. Im Team (${compShort(tk)}-Logik) kann das Strukturdefizit auffallen.`;
-  else if (gapA >= 10 && ist.analytisch > soll.analytisch) workRisk = `${cand} investiert mehr Zeit in Planung als nötig. Das kann das Team bremsen.`;
-  else workRisk = "Arbeitssteuerung passt grundsätzlich zur Rolle und zum Team.";
-  areas.push({ id: "work_structure", label: "Arbeitssteuerung", severity: workSev, roleNeed: workRoleNeed, candidatePattern: workCandPattern, risk: workRisk });
+  if (teamGapA >= 10 && ist.analytisch < team.analytisch) workRisk = `Prozessklarheit muss aktiv eingefordert werden. Im Team (${compShort(tk)}-Logik) kann das Strukturdefizit auffallen.`;
+  else if (teamGapA >= 10 && ist.analytisch > team.analytisch) workRisk = `${cand} investiert mehr Zeit in Planung als das Team gewohnt ist. Das kann das Team bremsen.`;
+  else workRisk = "Arbeitssteuerung passt grundsätzlich zum Team.";
+  areas.push({ id: "work_structure", label: "Arbeitssteuerung", severity: workSev, teamExpectation: workTeam, candidatePattern: workCandPattern, risk: workRisk });
 
   const teamDynSev = severity(Math.max(teamGapI, teamGapN, teamGapA) * 0.8);
-  let dynRoleNeed: string;
+  let dynTeam: string;
   let dynCandPattern: string;
   let dynRisk: string;
   if (rk === tk) {
-    dynRoleNeed = `Das Team arbeitet mit ${compShort(tk)}-Fokus. Die neue Person sollte kompatibel sein.`;
+    dynTeam = `Das Team arbeitet mit ${compShort(tk)}-Fokus. Die neue Person sollte kompatibel sein.`;
     dynCandPattern = `${cand} bringt die gleiche Arbeitslogik mit. Die Integration ist unkompliziert.`;
     dynRisk = `Stärkung des Teamfokus. Risiko: Blinde Flecken im Bereich ${compDesc(weakestKey(team))} werden nicht ausgeglichen.`;
   } else {
-    dynRoleNeed = `Das Team arbeitet mit ${compShort(tk)}-Fokus. Eine neue Logik kann bereichernd oder störend wirken.`;
+    dynTeam = `Das Team arbeitet mit ${compShort(tk)}-Fokus. Eine neue Logik kann bereichernd oder störend wirken.`;
     dynCandPattern = `${cand} bringt ${compShort(rk)}-Fokus. Das unterscheidet sich von der Teamlogik.`;
     dynRisk = `Im Alltag entstehen unterschiedliche Prioritäten. ${cand} setzt auf ${compShort(rk)}, das Team auf ${compShort(tk)}. Steuerung durch die Führung ist nötig.`;
   }
-  areas.push({ id: "team_dynamics", label: "Teamdynamik", severity: teamDynSev, roleNeed: dynRoleNeed, candidatePattern: dynCandPattern, risk: dynRisk });
+  areas.push({ id: "team_dynamics", label: "Teamdynamik", severity: teamDynSev, teamExpectation: dynTeam, candidatePattern: dynCandPattern, risk: dynRisk });
 
   const tempoGap = Math.abs(ist.impulsiv - team.impulsiv);
   const tempoSev = severity(tempoGap);
@@ -267,27 +261,27 @@ function buildTeamImpactAreas(
     id: "tempo",
     label: "Arbeitstempo",
     severity: tempoSev,
-    roleNeed: soll.impulsiv >= 35 ? "Die Rolle erfordert hohes Tempo und schnelle Umsetzung." : soll.impulsiv >= 25 ? "Die Rolle braucht ein ausgeglichenes Arbeitstempo." : "Die Rolle erlaubt ein ruhiges, gründliches Arbeitstempo.",
+    teamExpectation: team.impulsiv >= 35 ? "Das Team arbeitet mit hohem Tempo und schneller Umsetzung." : team.impulsiv >= 25 ? "Das Team arbeitet in einem ausgeglichenen Rhythmus." : "Das Team arbeitet ruhig und gründlich.",
     candidatePattern: ist.impulsiv >= 35 ? `${cand} arbeitet mit hohem Tempo und treibt Themen schnell voran.` : ist.impulsiv >= 25 ? `${cand} arbeitet in einem ausgeglichenen Rhythmus.` : `${cand} arbeitet ruhig und gründlich. Schnelle Umsetzung hat keine Priorität.`,
     risk: tempoGap >= 15 ? `Tempounterschied zum Team: ${tempoGap} Punkte. ${ist.impulsiv > team.impulsiv ? "Das Team kann unter Druck geraten." : "Das Team empfindet die Person als bremsend."}` : "Arbeitstempo ist kompatibel.",
   });
 
-  const kommSev = severity(Math.max(teamGapN, gapN) * 0.7);
+  const kommSev = severity(teamGapN * 0.7);
   areas.push({
     id: "communication",
     label: "Kommunikation",
     severity: kommSev,
-    roleNeed: soll.intuitiv >= 35 ? "Die Rolle lebt stark vom direkten Kontakt und reibungsarmer Zusammenarbeit." : "Die Rolle braucht ein grundlegendes Maß an Kommunikation und Abstimmung.",
+    teamExpectation: team.intuitiv >= 35 ? "Das Team lebt stark vom direkten Kontakt und reibungsarmer Zusammenarbeit." : "Das Team braucht ein grundlegendes Maß an Kommunikation und Abstimmung.",
     candidatePattern: ist.intuitiv >= 35 ? `${cand} baut schnell Vertrauen auf und sorgt für reibungsarme Zusammenarbeit.` : ist.intuitiv <= 25 ? `${cand} kommuniziert sachlich und knapp. Beziehungsorientierte Abstimmung hat geringe Priorität.` : `${cand} kommuniziert situativ angemessen.`,
-    risk: Math.max(teamGapN, gapN) >= 12 ? `Kommunikationslogik weicht ab. Im Team kann das zu Missverständnissen führen.` : "Kommunikationslogik passt zum Team.",
+    risk: teamGapN >= 12 ? `Kommunikationslogik weicht ab. Im Team kann das zu Missverständnissen führen.` : "Kommunikationslogik passt zum Team.",
   });
 
-  const kultSev = severity(Math.max(gapI, gapN, gapA) * 0.5);
+  const kultSev = severity(Math.max(teamGapI, teamGapN, teamGapA) * 0.5);
   areas.push({
     id: "culture",
     label: "Kulturwirkung",
     severity: kultSev,
-    roleNeed: sk === "analytisch" ? "Die Rolle soll Verlässlichkeit und nachvollziehbare Qualität fördern." : sk === "impulsiv" ? "Die Rolle soll eine ergebnisorientierte Kultur stärken." : "Die Rolle soll eine kooperative Kultur fördern.",
+    teamExpectation: tk === "analytisch" ? "Das Team pflegt Verlässlichkeit und nachvollziehbare Qualität." : tk === "impulsiv" ? "Das Team lebt eine ergebnisorientierte Kultur." : "Das Team pflegt eine kooperative Kultur.",
     candidatePattern: rk === "impulsiv" ? `${cand} prägt die Kultur über Dynamik und Ergebnisorientierung.` : rk === "intuitiv" ? `${cand} fördert Teamzusammenhalt und offenen Dialog.` : `${cand} stärkt Qualitätsbewusstsein und Regelklarheit.`,
     risk: rk !== tk ? `Die Teamkultur wird sich verändern. ${cand} bringt ${compShort(rk)}-Logik in ein ${compShort(tk)}-Team. Aktive Steuerung vermeidet Reibung.` : "Die Kulturwirkung passt zum bestehenden Team.",
   });
@@ -297,12 +291,10 @@ function buildTeamImpactAreas(
 
 function buildTeamRiskTimeline(
   role: string, cand: string,
-  sk: ComponentKey, rk: ComponentKey, tk: ComponentKey,
-  sollIstGap: number, teamIstGap: number
+  rk: ComponentKey, tk: ComponentKey,
+  teamIstGap: number
 ): RiskPhase[] {
-  const combined = sollIstGap + teamIstGap;
-
-  if (rk === sk && rk === tk && combined <= 20) {
+  if (rk === tk && teamIstGap <= 20) {
     return [
       { label: "Kurzfristig", period: "0 - 3 Monate", text: "Reibungslose Einarbeitung. Arbeitslogiken stimmen überein. Nur punktuelle Steuerung nötig." },
       { label: "Mittelfristig", period: "3 - 12 Monate", text: "Stabile Leistung erwartbar. Regelmäßige Zielgespräche sichern die Feinsteuerung." },
@@ -313,8 +305,6 @@ function buildTeamRiskTimeline(
   let shortText: string;
   if (rk !== tk && teamIstGap > 25) {
     shortText = `Sichtbare Reibung in den ersten Wochen. ${cand} arbeitet mit ${compShort(rk)}-Logik, das Team mit ${compShort(tk)}. Prioritäten und Arbeitsweisen kollidieren. Aktive Steuerung ab Tag 1 nötig.`;
-  } else if (sollIstGap > 25) {
-    shortText = `${cand} lebt die Rolle anders als vorgesehen. ${compShort(sk)}-Anforderungen werden nicht voll erfüllt. Die Führungskraft muss früh nachsteuern.`;
   } else {
     shortText = `Einarbeitung verläuft mit leichten Abstimmungsverlusten. ${cand} und das Team finden ihren Rhythmus. Klare Erwartungen beschleunigen die Integration.`;
   }
@@ -322,15 +312,13 @@ function buildTeamRiskTimeline(
   let midText: string;
   if (rk !== tk && teamIstGap > 25) {
     midText = `Ohne Steuerung schleift sich die Reibung ein. ${cand} passt sich entweder an (Leistungsverlust) oder beharrt auf der eigenen Logik (Konflikte). Die Führungskraft muss die Balance aktiv moderieren.`;
-  } else if (sollIstGap > 25) {
-    midText = `Die Rollenausübung verschiebt sich weiter. ${cand} prägt die Position zunehmend nach eigener Logik statt nach Sollprofil. Regelmäßige Reviews sind Pflicht.`;
   } else {
     midText = `Stabile Zusammenarbeit möglich. In Einzelsituationen treten die Profilunterschiede hervor. Gezielte Feedbackschleifen halten die Dynamik steuerbar.`;
   }
 
-  const longText = combined > 50
-    ? `Ohne konsequente Steuerung droht eine dauerhafte Verschiebung der Rollenwirkung und der Teamkultur. Halbjährliche Überprüfung ist Pflicht. Bei anhaltender Reibung: Rollenpassung und Teamkonstellation neu bewerten.`
-    : `Mit gezielter Steuerung ist eine stabile Besetzung erreichbar. Die Führungskraft sollte halbjährlich prüfen, ob die Rollenanforderung noch erfüllt wird und die Teamdynamik stabil bleibt.`;
+  const longText = teamIstGap > 40
+    ? `Ohne konsequente Steuerung droht eine dauerhafte Verschiebung der Teamkultur. Halbjährliche Überprüfung ist Pflicht. Bei anhaltender Reibung: Teamkonstellation neu bewerten.`
+    : `Mit gezielter Steuerung ist eine stabile Integration erreichbar. Die Führungskraft sollte halbjährlich prüfen, ob die Teamdynamik stabil bleibt.`;
 
   return [
     { label: "Kurzfristig", period: "0 - 3 Monate", text: shortText },
@@ -340,54 +328,51 @@ function buildTeamRiskTimeline(
 }
 
 function buildTeamDevelopment(
-  sollIstGap: number, teamIstGap: number,
-  sk: ComponentKey, rk: ComponentKey, tk: ComponentKey, cand: string
+  teamIstGap: number,
+  rk: ComponentKey, tk: ComponentKey, cand: string
 ): { level: number; label: string; text: string } {
-  const combined = sollIstGap + teamIstGap;
-
-  if (combined <= 20) {
+  if (teamIstGap <= 15) {
     return {
       level: 4,
       label: "hoch",
-      text: `Die Anpassung an Rolle und Team ist mit hoher Wahrscheinlichkeit erreichbar. Die Grundausrichtung stimmt bereits überein. ${cand} muss lediglich Feinabstimmung leisten.`,
+      text: `Die Anpassung ans Team ist mit hoher Wahrscheinlichkeit erreichbar. Die Grundausrichtung stimmt bereits überein. ${cand} muss lediglich Feinabstimmung leisten.`,
     };
   }
-  if (combined <= 40) {
+  if (teamIstGap <= 30) {
     return {
       level: 3,
       label: "mittel",
-      text: `Eine Entwicklung in Richtung stärkerer ${compDesc(sk)} und besserer Teamkompatibilität ist möglich. Sie erfordert gezielte Führung und regelmäßige Rückmeldung. Der Zeitraum beträgt 6 bis 12 Monate.`,
+      text: `Eine Entwicklung in Richtung besserer Teamkompatibilität ist möglich. Sie erfordert gezielte Führung und regelmäßige Rückmeldung. Der Zeitraum beträgt 6 bis 12 Monate.`,
     };
   }
-  if (combined <= 60) {
+  if (teamIstGap <= 45) {
     return {
       level: 2,
       label: "eingeschränkt",
-      text: `Eine Entwicklung von ${compDesc(rk)} hin zu ${compDesc(sk)} ist möglich, aber aufwändig. Intensive Führung, klare Standards und konsequente Nachsteuerung sind Voraussetzung. Der Erfolg ist nicht sicher.`,
+      text: `Eine Anpassung von ${compDesc(rk)} hin zu ${compDesc(tk)} ist möglich, aber aufwändig. Intensive Führung, klare Standards und konsequente Nachsteuerung sind Voraussetzung. Der Erfolg ist nicht sicher.`,
     };
   }
   return {
     level: 1,
     label: "niedrig",
-    text: `Die Abweichung zu Rolle (${sollIstGap} Punkte) und Team (${teamIstGap} Punkte) ist sehr hoch. Eine vollständige Anpassung ist unwahrscheinlich. Die Führungskraft sollte realistisch abwägen, ob der Steuerungsaufwand tragbar ist.`,
+    text: `Die Abweichung zum Team (${teamIstGap} Punkte) ist sehr hoch. Eine vollständige Anpassung ist unwahrscheinlich. Die Führungskraft sollte realistisch abwägen, ob der Steuerungsaufwand tragbar ist.`,
   };
 }
 
 function buildTeamActions(
-  sk: ComponentKey, rk: ComponentKey, tk: ComponentKey,
-  sollIstGap: number, teamIstGap: number, cand: string
+  rk: ComponentKey, tk: ComponentKey,
+  teamIstGap: number, cand: string
 ): string[] {
-  const combined = sollIstGap + teamIstGap;
-  if (combined <= 20) {
+  if (teamIstGap <= 15) {
     return [
       "Regelmäßige Zielvereinbarungen zur Feinsteuerung durchführen.",
-      "Halbjährliche Überprüfung der Rollen- und Teampassung sicherstellen.",
+      "Halbjährliche Überprüfung der Teampassung sicherstellen.",
     ];
   }
 
   const base: string[] = [];
 
-  if (teamIstGap > 20 || sollIstGap > 20) {
+  if (teamIstGap > 15) {
     base.push(`Kick-off mit dem Team: Arbeitsweise, Erwartungen und Spielregeln transparent machen. ${cand} und das Team müssen verstehen, was voneinander erwartet wird.`);
   }
 
@@ -395,13 +380,13 @@ function buildTeamActions(
     base.push(`Arbeitslogiken aktiv benennen. Dem Team erklären, warum ${cand} anders priorisiert. ${cand} erklären, warum das Team anders arbeitet.`);
   }
 
-  if (sk === "analytisch" && rk !== "analytisch") {
+  if (tk === "analytisch" && rk !== "analytisch") {
     base.push("Klare Entscheidungsregeln und Dokumentationsstandards für die ersten 90 Tage festlegen.");
     base.push("Wöchentliche Review-Termine mit fester KPI-Logik durchführen.");
-  } else if (sk === "impulsiv" && rk !== "impulsiv") {
+  } else if (tk === "impulsiv" && rk !== "impulsiv") {
     base.push("Klare Umsetzungsfristen und Entscheidungsdeadlines definieren.");
     base.push("Ergebnisorientierte KPIs statt Prozess-KPIs verwenden.");
-  } else if (sk === "intuitiv" && rk !== "intuitiv") {
+  } else if (tk === "intuitiv" && rk !== "intuitiv") {
     base.push("Regelmäßige Team-Feedbackrunden und Kommunikationsformate einrichten.");
     base.push("Beziehungsarbeit als explizites Ziel in die Leistungsbewertung aufnehmen.");
   }
@@ -412,7 +397,7 @@ function buildTeamActions(
 
   base.push(`Nach 2 und 4 Wochen strukturiertes Feedback einholen, sowohl vom Team als auch von ${cand}.`);
 
-  if (combined > 50) {
+  if (teamIstGap > 40) {
     base.push("Engmaschige Führungsbegleitung in den ersten 90 Tagen sicherstellen.");
   }
 
@@ -455,12 +440,9 @@ function buildTeamStressBehavior(
 }
 
 function buildTeamIntegrationsplanPhasen(
-  cand: string, sk: ComponentKey, rk: ComponentKey, tk: ComponentKey,
-  sollIstGap: number, teamIstGap: number
+  cand: string, rk: ComponentKey, tk: ComponentKey,
+  teamIstGap: number
 ): IntegrationPhase[] {
-  const sameDom = rk === sk && rk === tk;
-  const combined = sollIstGap + teamIstGap;
-
   const phase1Items: string[] = [];
   const phase2Items: string[] = [];
   const phase3Items: string[] = [];
@@ -487,7 +469,7 @@ function buildTeamIntegrationsplanPhasen(
 
   phase2Items.push(`${cand} früh Gelegenheit geben, sichtbare Ergebnisse zu erzielen. Das baut Akzeptanz auf.`);
 
-  if (combined > 40) {
+  if (teamIstGap > 30) {
     phase2Items.push("Eskalationsmechanismus klären: Wer moderiert bei Konflikten? Wie wird Uneinigkeit gelöst?");
   }
 
@@ -495,7 +477,7 @@ function buildTeamIntegrationsplanPhasen(
   phase3Items.push("Feinabstimmung der Zusammenarbeit mit dem direkten Umfeld.");
   phase3Items.push("Prioritäten konsolidieren und Standards stabilisieren.");
 
-  if (combined > 30) {
+  if (teamIstGap > 25) {
     phase3Items.push("Langfristiges Steuerungskonzept festlegen. Regelmäßige Checkpoints einplanen.");
   }
 
@@ -509,75 +491,62 @@ function buildTeamIntegrationsplanPhasen(
 export function computeTeamReport(
   roleName: string,
   candidateName: string,
-  sollProfile: Triad,
   istProfile: Triad,
   teamProfile: Triad
 ): TeamReportResult {
-  const soll = normalizeTriad(sollProfile);
   const ist = normalizeTriad(istProfile);
   const team = normalizeTriad(teamProfile);
 
-  const sollDom = dominanceModeOf(soll);
   const istDom = dominanceModeOf(ist);
   const teamDom = dominanceModeOf(team);
 
-  const sollConst = detectConstellation(soll);
   const istConst = detectConstellation(ist);
   const teamConst = detectConstellation(team);
 
-  const sollLabel = constellationLabel(sollConst);
   const istLabel = constellationLabel(istConst);
   const teamLabel = constellationLabel(teamConst);
 
-  const sollIstGap = totalGapOf(soll, ist);
   const teamIstGap = totalGapOf(team, ist);
-  const sollTeamGap = totalGapOf(soll, team);
-
-  const sollIstLevel = gapLabel(sollIstGap);
   const teamIstLevel = gapLabel(teamIstGap);
 
-  const status = ampel(sollIstGap + teamIstGap);
+  const status = ampel(teamIstGap);
 
   const cn = candidateName || "Die neue Person";
   const rk = istDom.top1.key;
   const tk = teamDom.top1.key;
-  const sk = sollDom.top1.key;
 
   const gesamtpassung: GesamtpassungLevel = status === "gruen" ? "geeignet" : status === "gelb" ? "bedingt" : "kritisch";
   const gesamtpassungLabel = gesamtpassung === "geeignet" ? "Geeignet" : gesamtpassung === "bedingt" ? "Bedingt geeignet" : "Kritisch";
-  const entscheidungsfaktoren = buildEntscheidungsfaktoren(cn, soll, ist, team, sollIstGap, teamIstGap, sk, rk, tk);
+  const entscheidungsfaktoren = buildEntscheidungsfaktoren(cn, ist, team, teamIstGap, rk, tk);
 
-  const totalGap = sollIstGap + teamIstGap;
-  const controlIntensity: "gering" | "mittel" | "hoch" = totalGap > 50 ? "hoch" : totalGap > 25 ? "mittel" : "gering";
+  const controlIntensity: "gering" | "mittel" | "hoch" = teamIstGap > 40 ? "hoch" : teamIstGap > 20 ? "mittel" : "gering";
 
-  const managementSummary = buildManagementSummary(roleName, cn, soll, ist, team, sollIstGap, teamIstGap, sollIstLevel, teamIstLevel, status, sk, rk, tk, sollLabel, istLabel, teamLabel);
+  const managementSummary = buildManagementSummary(roleName, cn, ist, team, teamIstGap, teamIstLevel, status, rk, tk, istLabel, teamLabel);
   const teamstruktur = buildTeamstruktur(team, teamDom, teamConst, teamLabel, tk);
   const fuehrungsprofil = buildFuehrungsprofil(cn, ist, istDom, istConst, istLabel, rk);
   const systemwirkungResult = detectSystemwirkung(ist, team, cn, rk, tk, teamIstGap, istConst, teamConst);
-  const systemwirkung = buildSystemwirkung(cn, roleName, ist, team, soll, rk, tk, sk, teamIstGap, sollIstGap, istConst, teamConst, systemwirkungResult);
+  const systemwirkung = buildSystemwirkungText(cn, roleName, ist, team, rk, tk, teamIstGap, istConst, teamConst, systemwirkungResult);
   const teamdynamikAlltag = buildTeamdynamikAlltag(cn, ist, team, rk, tk, teamIstGap);
-  const chancen = buildChancen(cn, ist, team, soll, rk, tk, sk, teamIstGap);
-  const risiken = buildRisiken(cn, ist, team, soll, rk, tk, sk, teamIstGap, sollIstGap);
+  const chancen = buildChancen(cn, ist, team, rk, tk, teamIstGap);
+  const risiken = buildRisiken(cn, ist, team, rk, tk, teamIstGap);
   const verhaltenUnterDruck = buildVerhaltenUnterDruck(cn, ist, team, rk, tk, istConst, teamIstGap);
   const kulturwirkung = buildKulturwirkung(cn, ist, team, rk, tk, teamIstGap);
-  const fuehrungshebel = buildFuehrungshebel(cn, rk, tk, teamIstGap, sollIstGap);
-  const integrationsplan = buildIntegrationsplan(cn, rk, tk, teamIstGap, sollIstGap);
-  const systemfazit = buildSystemfazit(roleName, cn, soll, ist, team, sollIstGap, teamIstGap, status, sk, rk, tk);
+  const fuehrungshebel = buildFuehrungshebel(cn, rk, tk, teamIstGap);
+  const integrationsplan = buildIntegrationsplan(cn, rk, tk, teamIstGap);
+  const systemfazit = buildSystemfazit(roleName, cn, ist, team, teamIstGap, status, rk, tk);
 
-  const impactAreas = buildTeamImpactAreas(sk, rk, tk, soll, ist, team, cn);
-  const riskTimeline = buildTeamRiskTimeline(roleName, cn, sk, rk, tk, sollIstGap, teamIstGap);
-  const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildTeamDevelopment(sollIstGap, teamIstGap, sk, rk, tk, cn);
-  const actions = buildTeamActions(sk, rk, tk, sollIstGap, teamIstGap, cn);
+  const impactAreas = buildTeamImpactAreas(rk, tk, ist, team, cn);
+  const riskTimeline = buildTeamRiskTimeline(roleName, cn, rk, tk, teamIstGap);
+  const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildTeamDevelopment(teamIstGap, rk, tk, cn);
+  const actions = buildTeamActions(rk, tk, teamIstGap, cn);
   const stressBehavior = buildTeamStressBehavior(ist, team, cn, rk, tk, istConst, teamIstGap);
-  const integrationsplanPhasen = buildTeamIntegrationsplanPhasen(cn, sk, rk, tk, sollIstGap, teamIstGap);
+  const integrationsplanPhasen = buildTeamIntegrationsplanPhasen(cn, rk, tk, teamIstGap);
 
   return {
     gesamtpassung,
     gesamtpassungLabel,
     entscheidungsfaktoren,
     controlIntensity,
-    totalGap,
-    sollIstGap,
     teamIstGap,
     managementSummary,
     teamstruktur,
@@ -600,26 +569,25 @@ export function computeTeamReport(
     actions,
     stressBehavior,
     integrationsplanPhasen,
-    sollConstellationLabel: sollLabel,
     istConstellationLabel: istLabel,
     teamConstellationLabel: teamLabel,
   };
 }
 
 function buildEntscheidungsfaktoren(
-  cand: string, soll: Triad, ist: Triad, team: Triad,
-  sollIstGap: number, teamIstGap: number,
-  sk: ComponentKey, rk: ComponentKey, tk: ComponentKey
+  cand: string, ist: Triad, team: Triad,
+  teamIstGap: number,
+  rk: ComponentKey, tk: ComponentKey
 ): string[] {
-  const status = ampel(sollIstGap + teamIstGap);
+  const status = ampel(teamIstGap);
   const negative: { priority: number; text: string }[] = [];
   const positive: { priority: number; text: string }[] = [];
 
   const keys: ComponentKey[] = ["impulsiv", "intuitiv", "analytisch"];
   for (const k of keys) {
-    const gap = Math.abs(ist[k] - soll[k]);
+    const gap = Math.abs(ist[k] - team[k]);
     if (gap > 15) {
-      negative.push({ priority: gap, text: `${compShort(k)}-Kompetenz weicht ${gap > 20 ? "deutlich" : "erkennbar"} vom Sollprofil ab (${ist[k]}% vs. ${soll[k]}%)` });
+      negative.push({ priority: gap, text: `${compShort(k)}-Kompetenz weicht ${gap > 20 ? "deutlich" : "erkennbar"} vom Teamprofil ab (${ist[k]}% vs. ${team[k]}%)` });
     }
   }
 
@@ -632,20 +600,12 @@ function buildEntscheidungsfaktoren(
     negative.push({ priority: tempoGap, text: `Tempounterschied ${ist.impulsiv > team.impulsiv ? "zu hoch" : "zu niedrig"} (${tempoGap} Punkte Abweichung)` });
   }
 
-  if (sollIstGap > 30) {
-    negative.push({ priority: sollIstGap, text: `Gesamtabweichung zum Sollprofil sehr hoch (${sollIstGap} Punkte)` });
-  }
-
   if (teamIstGap > 30) {
     negative.push({ priority: teamIstGap, text: `Teamintegration erschwert durch hohe Profilabweichung (${teamIstGap} Punkte)` });
   }
 
-  if (rk === sk && rk === tk) {
-    positive.push({ priority: 10, text: "Arbeitslogik von Kandidat, Rolle und Team stimmen überein" });
-  }
-
-  if (sollIstGap <= 15) {
-    positive.push({ priority: 5, text: `Gute Passung zum Sollprofil (${sollIstGap} Punkte Abweichung)` });
+  if (rk === tk) {
+    positive.push({ priority: 10, text: "Arbeitslogik von Kandidat und Team stimmen überein" });
   }
 
   if (teamIstGap <= 15) {
@@ -670,31 +630,28 @@ function buildEntscheidungsfaktoren(
 
 function buildManagementSummary(
   role: string, cand: string,
-  soll: Triad, ist: Triad, team: Triad,
-  sollIstGap: number, teamIstGap: number,
-  sollIstLevel: string, teamIstLevel: string,
+  ist: Triad, team: Triad,
+  teamIstGap: number, teamIstLevel: string,
   status: "gruen" | "gelb" | "rot",
-  sk: ComponentKey, rk: ComponentKey, tk: ComponentKey,
-  sollLabel: string, istLabel: string, teamLabel: string
+  rk: ComponentKey, tk: ComponentKey,
+  istLabel: string, teamLabel: string
 ): string {
   const lines: string[] = [];
   lines.push(`Rolle: ${role}`);
   lines.push(`Kandidat: ${cand}`);
-  lines.push(`Sollprofil: ${sollLabel} (I ${soll.impulsiv}% / N ${soll.intuitiv}% / A ${soll.analytisch}%)`);
   lines.push(`Kandidatenprofil: ${istLabel} (I ${ist.impulsiv}% / N ${ist.intuitiv}% / A ${ist.analytisch}%)`);
   lines.push(`Teamprofil: ${teamLabel} (I ${team.impulsiv}% / N ${team.intuitiv}% / A ${team.analytisch}%)`);
   lines.push("");
-  lines.push(`Abweichung Soll vs. Ist: ${sollIstGap} Punkte (${sollIstLevel})`);
-  lines.push(`Abweichung Team vs. Ist: ${teamIstGap} Punkte (${teamIstLevel})`);
+  lines.push(`Abweichung Team vs. Kandidat: ${teamIstGap} Punkte (${teamIstLevel})`);
   lines.push(`Gesamtstatus: ${ampelText(status)}`);
   lines.push("");
 
   if (status === "gruen") {
-    lines.push(`${cand} passt strukturell zur Rolle ${role} und zum bestehenden Team. Die Arbeitslogiken sind kompatibel. Die Integration wird voraussichtlich reibungsarm verlaufen.`);
+    lines.push(`${cand} passt strukturell zum bestehenden Team. Die Arbeitslogiken sind kompatibel. Die Integration wird voraussichtlich reibungsarm verlaufen.`);
   } else if (status === "gelb") {
-    lines.push(`${cand} zeigt Abweichungen zur Rollenanforderung oder zum Teamprofil. Die Integration ist steuerbar, erfordert aber gezielte Aufmerksamkeit in den ersten Wochen. Entscheidend sind klare Erwartungen und regelmäßige Abstimmung.`);
+    lines.push(`${cand} zeigt Abweichungen zum Teamprofil. Die Integration ist steuerbar, erfordert aber gezielte Aufmerksamkeit in den ersten Wochen. Entscheidend sind klare Erwartungen und regelmäßige Abstimmung.`);
   } else {
-    lines.push(`${cand} weicht deutlich von der Rollenanforderung und/oder dem Teamprofil ab. Ohne aktive Steuerung sind Reibung, Konflikte und Leistungseinbrüche wahrscheinlich. Die ersten 30 Tage sind entscheidend.`);
+    lines.push(`${cand} weicht deutlich vom Teamprofil ab. Ohne aktive Steuerung sind Reibung, Konflikte und Leistungseinbrüche wahrscheinlich. Die ersten 30 Tage sind entscheidend.`);
   }
 
   return lines.join("\n");
@@ -751,11 +708,11 @@ function buildFuehrungsprofil(
   return lines.join("\n");
 }
 
-function buildSystemwirkung(
+function buildSystemwirkungText(
   cand: string, role: string,
-  ist: Triad, team: Triad, soll: Triad,
-  rk: ComponentKey, tk: ComponentKey, sk: ComponentKey,
-  teamIstGap: number, sollIstGap: number,
+  ist: Triad, team: Triad,
+  rk: ComponentKey, tk: ComponentKey,
+  teamIstGap: number,
   istConst: ConstellationType, teamConst: ConstellationType,
   sw: SystemwirkungResult
 ): string {
@@ -764,15 +721,15 @@ function buildSystemwirkung(
   lines.push(sw.description);
 
   lines.push("");
-  lines.push("Abgleich mit Sollprofil:");
+  lines.push("Abgleich mit Teamprofil:");
   lines.push("");
 
-  if (sollIstGap <= 15) {
-    lines.push(`Die Arbeitslogik von ${cand} liegt nahe am Sollprofil der Rolle ${role}. Die Rolle wird in ihren Kernanforderungen gut abgebildet.`);
-  } else if (sollIstGap <= 30) {
-    lines.push(`Die Arbeitslogik von ${cand} weicht erkennbar vom Sollprofil ab (${sollIstGap} Punkte). In einzelnen Bereichen muss gezielt nachgesteuert werden, um die Rollenanforderungen vollständig zu erfüllen.`);
+  if (teamIstGap <= 15) {
+    lines.push(`Die Arbeitslogik von ${cand} liegt nahe am Teamprofil. Die Integration verläuft voraussichtlich reibungsarm.`);
+  } else if (teamIstGap <= 30) {
+    lines.push(`Die Arbeitslogik von ${cand} weicht erkennbar vom Teamprofil ab (${teamIstGap} Punkte). In einzelnen Bereichen muss gezielt nachgesteuert werden.`);
   } else {
-    lines.push(`Die Arbeitslogik von ${cand} weicht deutlich vom Sollprofil ab (${sollIstGap} Punkte). Ohne aktive Steuerung wird die Rolle anders gelebt als vorgesehen. Die Wirkung der Position verschiebt sich spürbar.`);
+    lines.push(`Die Arbeitslogik von ${cand} weicht deutlich vom Teamprofil ab (${teamIstGap} Punkte). Ohne aktive Steuerung wird die Teamdynamik spürbar verändert.`);
   }
 
   return lines.join("\n");
@@ -822,8 +779,8 @@ function buildTeamdynamikAlltag(
 }
 
 function buildChancen(
-  cand: string, ist: Triad, team: Triad, soll: Triad,
-  rk: ComponentKey, tk: ComponentKey, sk: ComponentKey, teamIstGap: number
+  cand: string, ist: Triad, team: Triad,
+  rk: ComponentKey, tk: ComponentKey, teamIstGap: number
 ): string {
   const items: string[] = [];
 
@@ -837,10 +794,6 @@ function buildChancen(
 
   if (rk === tk) {
     items.push(`${cand} verstärkt den Kernbereich des Teams (${compDesc(rk)}). Die Teamlogik wird konsequenter umgesetzt und stabilisiert.`);
-  }
-
-  if (rk === sk) {
-    items.push(`Die Arbeitslogik von ${cand} passt zum Sollprofil der Rolle. Die Rolle wird so gelebt, wie sie gedacht ist. Das sichert die Wirkung der Position.`);
   }
 
   if (ist.intuitiv >= 35) {
@@ -863,9 +816,9 @@ function buildChancen(
 }
 
 function buildRisiken(
-  cand: string, ist: Triad, team: Triad, soll: Triad,
-  rk: ComponentKey, tk: ComponentKey, sk: ComponentKey,
-  teamIstGap: number, sollIstGap: number
+  cand: string, ist: Triad, team: Triad,
+  rk: ComponentKey, tk: ComponentKey,
+  teamIstGap: number
 ): string {
   const items: string[] = [];
 
@@ -873,12 +826,6 @@ function buildRisiken(
     items.push(`Hohe Abweichung zum Teamprofil (${teamIstGap} Punkte): Die unterschiedliche Arbeitslogik kann im Alltag zu wiederkehrenden Konflikten führen. Das Team empfindet die Arbeitsweise von ${cand} als fremd oder störend.`);
   } else if (rk !== tk && teamIstGap > 15) {
     items.push(`Spürbare Abweichung zum Teamprofil (${teamIstGap} Punkte): In Drucksituationen können die unterschiedlichen Logiken aufeinanderprallen. Gezielte Steuerung reduziert das Risiko.`);
-  }
-
-  if (sollIstGap > 30) {
-    items.push(`Deutliche Abweichung zum Sollprofil (${sollIstGap} Punkte): Die Rolle wird anders gelebt als vorgesehen. Kernaufgaben, die ${compDesc(sk)} erfordern, werden möglicherweise nicht mit der nötigen Konsequenz bearbeitet.`);
-  } else if (sollIstGap > 15) {
-    items.push(`Erkennbare Abweichung zum Sollprofil (${sollIstGap} Punkte): In einzelnen Teilbereichen muss gezielt nachgesteuert werden, um die Rollenanforderungen zu erfüllen.`);
   }
 
   if (rk === tk) {
@@ -973,11 +920,11 @@ function buildKulturwirkung(
 
 function buildFuehrungshebel(
   cand: string, rk: ComponentKey, tk: ComponentKey,
-  teamIstGap: number, sollIstGap: number
+  teamIstGap: number
 ): string {
   const items: string[] = [];
 
-  if (teamIstGap > 20 || sollIstGap > 20) {
+  if (teamIstGap > 15) {
     items.push(`Erwartungsklärung: In der ersten Woche ein Kick-off mit dem gesamten Team durchführen. Prioritäten, Entscheidungswege und Qualitätsmaßstäbe transparent machen. ${cand} und das Team müssen verstehen, was voneinander erwartet wird.`);
   }
 
@@ -1009,7 +956,7 @@ function buildFuehrungshebel(
 
 function buildIntegrationsplan(
   cand: string, rk: ComponentKey, tk: ComponentKey,
-  teamIstGap: number, sollIstGap: number
+  teamIstGap: number
 ): string {
   const lines: string[] = [];
 
@@ -1040,7 +987,7 @@ function buildIntegrationsplan(
 
   lines.push(`- Quick Wins sichern: ${cand} früh Gelegenheit geben, sichtbare Ergebnisse zu erzielen. Das baut Akzeptanz auf.`);
 
-  if (teamIstGap > 30 || sollIstGap > 30) {
+  if (teamIstGap > 30) {
     lines.push(`- Eskalationsmechanismus klären: Wer moderiert, wenn Konflikte auftreten? Wie wird Uneinigkeit gelöst?`);
   }
 
@@ -1049,27 +996,27 @@ function buildIntegrationsplan(
 
 function buildSystemfazit(
   role: string, cand: string,
-  soll: Triad, ist: Triad, team: Triad,
-  sollIstGap: number, teamIstGap: number,
+  ist: Triad, team: Triad,
+  teamIstGap: number,
   status: "gruen" | "gelb" | "rot",
-  sk: ComponentKey, rk: ComponentKey, tk: ComponentKey
+  rk: ComponentKey, tk: ComponentKey
 ): string {
   const lines: string[] = [];
 
   if (status === "gruen") {
-    lines.push(`${cand} passt strukturell zur Rolle ${role} und zum bestehenden Team. Die Arbeitslogiken sind kompatibel. Die Integration wird voraussichtlich reibungsarm verlaufen. Normale Führungssteuerung ist ausreichend.`);
+    lines.push(`${cand} passt strukturell zum bestehenden Team. Die Arbeitslogiken sind kompatibel. Die Integration wird voraussichtlich reibungsarm verlaufen. Normale Führungssteuerung ist ausreichend.`);
     lines.push("");
     lines.push(`Fokuspunkte: Teamkultur bestätigen, Ergänzungspotenziale bewusst nutzen, Feedbackschleifen einbauen.`);
   } else if (status === "gelb") {
-    lines.push(`${cand} ist für die Rolle ${role} steuerbar einsetzbar. Es gibt erkennbare Abweichungen zum Sollprofil (${sollIstGap} Punkte) und/oder zum Team (${teamIstGap} Punkte), die mit gezielter Steuerung ausgeglichen werden können.`);
+    lines.push(`${cand} ist steuerbar ins Team integrierbar. Es gibt erkennbare Abweichungen zum Team (${teamIstGap} Punkte), die mit gezielter Steuerung ausgeglichen werden können.`);
     lines.push("");
     lines.push(`Entscheidend sind die ersten 30 Tage: Klare Erwartungen setzen, Kommunikation bewusst steuern, Feedback strukturiert einholen. Wenn die Integration aktiv begleitet wird, kann ${cand} die Rolle wirksam ausfüllen.`);
     if (rk !== tk) {
       lines.push("");
-      lines.push(`Die unterschiedliche Arbeitslogik (${compShort(rk)} vs. ${compShort(tk)}) ist kein Ausschlusskriterium, erfordert aber bewusste Steuerung. Besonders in Drucksituationen muss die Führung aktiv moderieren.`);
+      lines.push(`Die unterschiedliche Arbeitslogik (${compShort(rk)} vs. ${compShort(tk)}) ist kein Ausschlusskriterium, erfordert aber bewusste Steuerung. In Drucksituationen muss die Führung aktiv moderieren.`);
     }
   } else {
-    lines.push(`${cand} zeigt deutliche Abweichungen zur Rollenanforderung (${sollIstGap} Punkte) und/oder zum Team (${teamIstGap} Punkte). Ohne aktive und konsequente Steuerung sind Reibung, Konflikte und Leistungseinbrüche wahrscheinlich.`);
+    lines.push(`${cand} zeigt deutliche Abweichungen zum Team (${teamIstGap} Punkte). Ohne aktive und konsequente Steuerung sind Reibung, Konflikte und Leistungseinbrüche wahrscheinlich.`);
     lines.push("");
     lines.push(`Die Integration stellt eine erhebliche Herausforderung dar. Die Arbeitslogiken von ${cand} und dem Team sind grundlegend verschieden. Die ersten 30 Tage sind entscheidend: Klare Kommunikation, definierte Entscheidungswege und aktives Erwartungsmanagement sind Pflicht.`);
     lines.push("");
