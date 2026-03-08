@@ -2571,7 +2571,6 @@ export default function RollenDNA() {
                           ))}
                         </div>
 
-                        <p style={{ fontSize: 12, color: "#8E8E93", lineHeight: 1.6, margin: "12px 0 0 0" }}>{roleRequirementText.outro}</p>
                       </div>
                     </>)}
 
