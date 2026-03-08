@@ -2577,7 +2577,6 @@ export default function RollenDNA() {
                     {(() => {
                       const analysis = getRoleAnalysis(bioGramGesamt.imp, bioGramGesamt.int, bioGramGesamt.ana);
                       const rt = roleResultTexts[analysis.resultKey];
-                      const ctxLines = getContextLines(analysis);
                       return (
                         <div style={{
                           marginTop: 18,
@@ -2598,9 +2597,6 @@ export default function RollenDNA() {
                           </div>
                           <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px 0" }} data-testid="text-biocheck-line-0">{rt.headline}</h3>
                           <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-line-1">{rt.summary}</p>
-                          {ctxLines.map((line, i) => (
-                            <p key={i} style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid={`text-biocheck-context-${i}`}>{line}</p>
-                          ))}
                           <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-line-2">{rt.focus}</p>
                           <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: 0 }} data-testid="text-biocheck-line-3">{rt.transfer}</p>
                           {isLeadershipRole && (
@@ -3074,7 +3070,6 @@ export default function RollenDNA() {
                   {(() => {
                     const analysis = getRoleAnalysis(bioGramGesamt.imp, bioGramGesamt.int, bioGramGesamt.ana);
                     const rt = roleResultTexts[analysis.resultKey];
-                    const ctxLines = getContextLines(analysis);
                     return (
                       <div style={{
                         marginTop: 18,
@@ -3095,9 +3090,6 @@ export default function RollenDNA() {
                         </div>
                         <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px 0" }} data-testid="text-biocheck-collapsed-line-0">{rt.headline}</h3>
                         <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-collapsed-line-1">{rt.summary}</p>
-                        {ctxLines.map((line, i) => (
-                          <p key={i} style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid={`text-biocheck-collapsed-context-${i}`}>{line}</p>
-                        ))}
                         <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-collapsed-line-2">{rt.focus}</p>
                         <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: 0 }} data-testid="text-biocheck-collapsed-line-3">{rt.transfer}</p>
                         {isLeadershipRole && (
