@@ -2714,31 +2714,13 @@ export default function RollenDNA() {
                     <CheckCircle2 style={{ width: 24, height: 24, color: "#34C759" }} />
                     <h3 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Datenerfassung abgeschlossen</h3>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setAllCollapsed(false);
-                        localStorage.removeItem("rollenDnaCompleted");
-                      }}
-                      style={{
-                        fontSize: 14,
-                        fontWeight: 500,
-                        color: "#0071E3",
-                        cursor: "pointer",
-                      }}
-                      data-testid="button-reopen-steps"
-                    >
-                      Bearbeiten
-                    </span>
-                    <ChevronDown style={{
-                      width: 18,
-                      height: 18,
-                      color: "#8E8E93",
-                      transform: summaryOpen ? "rotate(180deg)" : "rotate(0deg)",
-                      transition: "transform 300ms ease",
-                    }} />
-                  </div>
+                  <ChevronDown style={{
+                    width: 18,
+                    height: 18,
+                    color: "#8E8E93",
+                    transform: summaryOpen ? "rotate(180deg)" : "rotate(0deg)",
+                    transition: "transform 300ms ease",
+                  }} />
                 </button>
 
                 {summaryOpen && (
@@ -2792,39 +2774,39 @@ export default function RollenDNA() {
 
                 <div className="flex flex-col sm:flex-row items-center gap-3 mt-8">
                   <button
-                    onClick={() => setLocation("/bericht")}
+                    onClick={() => {
+                      setAllCollapsed(false);
+                      localStorage.removeItem("rollenDnaCompleted");
+                    }}
                     style={{
                       height: 48,
-                      paddingLeft: 28,
-                      paddingRight: 28,
+                      paddingLeft: 20,
+                      paddingRight: 20,
                       fontSize: 14,
-                      fontWeight: 600,
+                      fontWeight: 500,
                       borderRadius: 14,
                       border: "none",
                       cursor: "pointer",
-                      background: "linear-gradient(135deg, #0071E3, #34AADC)",
-                      color: "#FFFFFF",
-                      boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
+                      background: "transparent",
+                      color: "#6E6E73",
                       transition: "all 200ms ease",
                       display: "flex",
                       alignItems: "center",
-                      gap: 8,
-                      flex: 1,
+                      gap: 6,
                       justifyContent: "center",
-                      width: "100%",
                     }}
                     onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
-                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)";
+                      (e.currentTarget as HTMLButtonElement).style.color = "#1D1D1F";
+                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.04)";
                     }}
                     onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
-                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)";
+                      (e.currentTarget as HTMLButtonElement).style.color = "#6E6E73";
+                      (e.currentTarget as HTMLButtonElement).style.background = "transparent";
                     }}
-                    data-testid="button-entscheidungsbericht"
+                    data-testid="button-rolle-bearbeiten"
                   >
-                    <FileText className="w-4 h-4" />
-                    Entscheidungsbericht erstellen
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    Datenerfassung bearbeiten
                   </button>
                   <button
                     onClick={handleSave}
@@ -2859,39 +2841,39 @@ export default function RollenDNA() {
                     Profil speichern
                   </button>
                   <button
-                    onClick={() => {
-                      setAllCollapsed(false);
-                      localStorage.removeItem("rollenDnaCompleted");
-                    }}
+                    onClick={() => setLocation("/bericht")}
                     style={{
                       height: 48,
-                      paddingLeft: 20,
-                      paddingRight: 20,
+                      paddingLeft: 28,
+                      paddingRight: 28,
                       fontSize: 14,
-                      fontWeight: 500,
+                      fontWeight: 600,
                       borderRadius: 14,
                       border: "none",
                       cursor: "pointer",
-                      background: "transparent",
-                      color: "#6E6E73",
+                      background: "linear-gradient(135deg, #0071E3, #34AADC)",
+                      color: "#FFFFFF",
+                      boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
                       transition: "all 200ms ease",
                       display: "flex",
                       alignItems: "center",
-                      gap: 6,
+                      gap: 8,
+                      flex: 1,
                       justifyContent: "center",
+                      width: "100%",
                     }}
                     onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.color = "#1D1D1F";
-                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.04)";
+                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
+                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)";
                     }}
                     onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.color = "#6E6E73";
-                      (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
+                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)";
                     }}
-                    data-testid="button-rolle-bearbeiten"
+                    data-testid="button-entscheidungsbericht"
                   >
-                    <RefreshCw className="w-3.5 h-3.5" />
-                    Datenerfassung bearbeiten
+                    <FileText className="w-4 h-4" />
+                    Entscheidungsbericht erstellen
                   </button>
                 </div>
                   </>
