@@ -15,9 +15,7 @@ Impulsiv steht für Umsetzung, Entscheidung und Ergebnisverantwortung.
 
 Intuitiv beschreibt die Qualität der Zusammenarbeit und das Handeln im jeweiligen Kontext.
 
-Analytisch kennzeichnet Struktur, Planung und fachliche Präzision.
-
-Das Gesamtprofil zeigt, wo der Schwerpunkt liegt und wie die drei Dimensionen zueinander gewichtet sind.`;
+Analytisch kennzeichnet Struktur, Planung und fachliche Präzision.`;
 
 function loadBioCheckText(): { generated: string; override: string | null } {
   try {

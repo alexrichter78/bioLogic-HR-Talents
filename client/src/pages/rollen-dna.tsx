@@ -277,7 +277,7 @@ const roleRequirementText = {
     "Die Anforderungen werden den drei Dimensionen Impulsiv, Intuitiv und Analytisch zugeordnet.",
     "So wird sichtbar, welche Form von Wirksamkeit die Rolle im Arbeitsalltag hauptsächlich verlangt.",
   ],
-  outro: "Das Gesamtprofil zeigt, wo der Schwerpunkt liegt und wie die drei Dimensionen zueinander gewichtet sind.",
+  outro: "",
 };
 
 function generateBioCheckText(bg: BioGram, isLeadership: boolean, _fuehrungsBg?: BioGram): string {
