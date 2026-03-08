@@ -2946,9 +2946,25 @@ export default function RollenDNA() {
                     <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.8, marginTop: 14, whiteSpace: "pre-line" }} data-testid="text-biocheck-intro-collapsed">
                       {bioCheckIntroOverride}
                     </p>
-                  ) : (
-                    <div style={{ marginTop: 16 }} data-testid="text-biocheck-intro-collapsed">
-                      <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.8, margin: "0 0 16px 0" }}>Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Dimensionen <span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span>, <span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> und <span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> zugeordnet. So wird erkennbar, welche Form von Wirksamkeit die Rolle bestimmt.</p>
+                  ) : (<>
+                    <div style={{
+                      marginTop: 16,
+                      padding: "16px 18px",
+                      borderRadius: 14,
+                      background: "rgba(0,0,0,0.02)",
+                      border: "1px solid rgba(0,0,0,0.04)",
+                    }} data-testid="card-grundprinzip-collapsed">
+                      <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0" }}>{analysisPrincipleText.title}</h3>
+                      {analysisPrincipleText.body.map((line, i) => (
+                        <p key={i} style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: i === 0 ? 0 : "6px 0 0 0" }}>{line}</p>
+                      ))}
+                    </div>
+
+                    <div style={{ marginTop: 14 }} data-testid="card-anforderungsprofil-collapsed">
+                      <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0" }}>Anforderungsprofil der Rolle</h3>
+                      <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: "0 0 14px 0" }}>
+                        {roleRequirementText.intro.join(" ")}
+                      </p>
 
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
                         {[
@@ -2968,9 +2984,9 @@ export default function RollenDNA() {
                         ))}
                       </div>
 
-                      <p style={{ fontSize: 12, color: "#8E8E93", lineHeight: 1.6, margin: "12px 0 0 0" }}>Das Gesamtprofil zeigt, wo der Schwerpunkt liegt und wie die drei Dimensionen zueinander gewichtet sind.</p>
+                      <p style={{ fontSize: 12, color: "#8E8E93", lineHeight: 1.6, margin: "12px 0 0 0" }}>{roleRequirementText.outro}</p>
                     </div>
-                  )}
+                  </>)}
 
                   {(() => {
                     const resultKey = getRoleResultKey(bioGramGesamt.imp, bioGramGesamt.int, bioGramGesamt.ana);
