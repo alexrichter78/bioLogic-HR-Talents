@@ -2436,8 +2436,8 @@ export default function RollenDNA() {
                           <circle cx="8" cy="8" r="2.5" fill="white" />
                         </svg>
                       </div>
-                      <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
-                        Kurzanalyse der Rolle: {beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}
+                      <span style={{ fontSize: 20, color: "#1D1D1F" }}>
+                        <strong>Kurzanalyse der Rolle:</strong> {beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}
                       </span>
                     </div>
                     <ChevronDown style={{
@@ -2928,8 +2928,8 @@ export default function RollenDNA() {
                         <circle cx="8" cy="8" r="2.5" fill="white" />
                       </svg>
                     </div>
-                    <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
-                      Kurzanalyse der Rolle: {beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}
+                    <span style={{ fontSize: 20, color: "#1D1D1F" }}>
+                      <strong>Kurzanalyse der Rolle:</strong> {beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}
                     </span>
                   </div>
                   <ChevronDown style={{
