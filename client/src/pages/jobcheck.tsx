@@ -575,6 +575,7 @@ export default function JobCheck() {
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
             <GlassCard testId="jobcheck-header" style={{ padding: "32px 32px 28px", position: "relative", overflow: "hidden" }}>
+              <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.18em", color: "#8E8E93", margin: "0 0 10px" }}>bioLogic MatchCheck</p>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
                 <CheckCircle2 style={{ width: 22, height: 22, color: "#34C759", flexShrink: 0 }} />
                 <h1 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", color: "#1D1D1F", lineHeight: 1.2, margin: 0 }} data-testid="text-jobcheck-title">
@@ -599,20 +600,22 @@ export default function JobCheck() {
                       key={card.testId}
                       style={{
                         padding: "14px 16px",
-                        borderRadius: 14,
-                        background: "rgba(0,0,0,0.02)",
-                        border: "1px solid rgba(0,0,0,0.04)",
+                        borderRadius: 16,
+                        background: "rgba(0,0,0,0.025)",
+                        border: "1px solid rgba(0,0,0,0.05)",
                       }}
                       data-testid={card.testId}
                     >
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                        <card.icon style={{ width: 14, height: 14, color: "#8E8E93", flexShrink: 0 }} />
+                        <div style={{ width: 24, height: 24, borderRadius: 7, background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.06))", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <card.icon style={{ width: 12, height: 12, color: "#0071E3", strokeWidth: 2 }} />
+                        </div>
                         <span style={{ fontSize: 13, fontWeight: 650, color: "#1D1D1F" }}>{card.label}</span>
                       </div>
                       {card.value !== null ? (
-                        <p style={{ fontSize: 13, color: "#6E6E73", margin: 0, lineHeight: 1.5, paddingLeft: 22 }}>{card.value}</p>
+                        <p style={{ fontSize: 13, color: "#6E6E73", margin: 0, lineHeight: 1.5, paddingLeft: 32 }}>{card.value}</p>
                       ) : (
-                        <div style={{ display: "flex", gap: 14, paddingLeft: 22, flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", gap: 14, paddingLeft: 32, flexWrap: "wrap" }}>
                           <span style={{ fontSize: 12, color: "#6E6E73" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.taetigkeitenCount}</strong> Tätigkeiten</span>
                           <span style={{ fontSize: 12, color: "#6E6E73" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.humanCount}</strong> Humankompetenzen</span>
                           <span style={{ fontSize: 12, color: "#6E6E73" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.fuehrungCount}</strong> Führung</span>
@@ -710,10 +713,14 @@ export default function JobCheck() {
                   <p style={{ fontSize: 14, color: "#8E8E93" }}>Bitte zuerst das Ist-Profil eingeben und „Bericht erstellen" klicken.</p>
                 </div>
               ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
+                  <div style={{
+                    padding: "24px 24px 20px", borderRadius: 20,
+                    background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
+                    boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
+                  }}>
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
                       <ChapterBadge num={1} color="#0071E3" />
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Management Summary</span>
                     </div>
@@ -736,9 +743,23 @@ export default function JobCheck() {
 
                   </div>
 
-                  <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
-
-                  <div>
+                  <div style={{
+                    padding: "24px 24px 20px", borderRadius: 20,
+                    background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
+                    boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
+                  }}>
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
+                      <div style={{
+                        width: 36, height: 36, borderRadius: 12,
+                        background: "linear-gradient(135deg, #0071E3, #0071E3CC)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        marginRight: 14, flexShrink: 0,
+                        boxShadow: "0 4px 12px #0071E330",
+                      }}>
+                        <Target style={{ width: 16, height: 16, color: "#FFF", strokeWidth: 2.2 }} />
+                      </div>
+                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Dimensionsvergleich</span>
+                    </div>
                     <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.6, marginBottom: 16, hyphens: "auto", textAlign: "justify" } as React.CSSProperties} lang="de">
                       Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Dimensionen{" "}
                       <span style={{ fontWeight: 700, color: COLORS.imp }}>Impulsiv</span>,{" "}
@@ -812,8 +833,6 @@ export default function JobCheck() {
                     <CalloutBox text={engine.keyReason} color={fitColor(engine.overallFit)} icon={Lightbulb} />
                   </div>
 
-                  <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
-
                   {(() => {
                     const sameDom = engine.roleDominance.top1.key === engine.candDominance.top1.key;
                     const roleVal = engine.roleDominance.top1.value;
@@ -870,7 +889,11 @@ export default function JobCheck() {
                     }
 
                     return (
-                      <div>
+                      <div style={{
+                        padding: "24px 24px 20px", borderRadius: 20,
+                        background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
+                        boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
+                      }}>
                         <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
                           <ChapterBadge num={2} color="#0071E3" />
                           <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>
@@ -954,8 +977,11 @@ export default function JobCheck() {
 
                   {engine.secondaryTension && (
                     <>
-                      <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
-                      <div>
+                      <div style={{
+                        padding: "24px 24px 20px", borderRadius: 20,
+                        background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
+                        boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
+                      }}>
                         <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
                           <ChapterBadge num={3} color="#FF9500" />
                           <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Sekundärkomponenten-Spannung</span>
@@ -986,9 +1012,11 @@ export default function JobCheck() {
                     </>
                   )}
 
-                  <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
-
-                  <div>
+                  <div style={{
+                    padding: "24px 24px 20px", borderRadius: 20,
+                    background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
+                    boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
+                  }}>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
                       <ChapterBadge num={engine.secondaryTension ? 4 : 3} color="#0071E3" />
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Strukturelle Eignungsmatrix</span>
@@ -1005,9 +1033,11 @@ export default function JobCheck() {
                     </div>
                   </div>
 
-                  <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
-
-                  <div>
+                  <div style={{
+                    padding: "24px 24px 20px", borderRadius: 20,
+                    background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
+                    boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
+                  }}>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
                       <ChapterBadge num={engine.secondaryTension ? 5 : 4} color="#0071E3" />
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Risikoprognose</span>
@@ -1029,9 +1059,11 @@ export default function JobCheck() {
                     </div>
                   </div>
 
-                  <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
-
-                  <div>
+                  <div style={{
+                    padding: "24px 24px 20px", borderRadius: 20,
+                    background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
+                    boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
+                  }}>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
                       <ChapterBadge num={engine.secondaryTension ? 6 : 5} color="#0071E3" />
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Entwicklungsprognose</span>
@@ -1051,9 +1083,11 @@ export default function JobCheck() {
                     <CalloutBox text={engine.development.text} color="#FF9500" icon={TrendingUp} />
                   </div>
 
-                  <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
-
-                  <div>
+                  <div style={{
+                    padding: "24px 24px 20px", borderRadius: 20,
+                    background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
+                    boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
+                  }}>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 18 }}>
                       <ChapterBadge num={engine.secondaryTension ? 7 : 6} color="#0071E3" />
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>90-Tage-Integrationsplan</span>
@@ -1065,9 +1099,11 @@ export default function JobCheck() {
                     </div>
                   </div>
 
-                  <div style={{ height: 1, background: "rgba(0,0,0,0.06)" }} />
-
-                  <div>
+                  <div style={{
+                    padding: "24px 24px 20px", borderRadius: 20,
+                    background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
+                    boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
+                  }}>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
                       <ChapterBadge num={engine.secondaryTension ? 8 : 7} color="#0071E3" />
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Gesamtbewertung</span>
