@@ -77,6 +77,11 @@ const DUAL_THRESHOLD = 5;
 const BALANCED_THRESHOLD = 5;
 
 const DIMENSION_LABELS: Record<string, string> = { IMP: "Impulsiv", INT: "Intuitiv", ANA: "Analytisch" };
+const DIMENSION_PLAIN: Record<string, string> = {
+  IMP: "Umsetzung und Entscheidungskraft",
+  INT: "Zusammenarbeit und Kommunikation",
+  ANA: "Struktur und Planung",
+};
 
 type RoleAnalysis = {
   resultKey: ResultKey;
@@ -2539,10 +2544,10 @@ export default function RollenDNA() {
                       const analysis = getRoleAnalysis(bioGramGesamt.imp, bioGramGesamt.int, bioGramGesamt.ana);
                       const rt = roleResultTexts[analysis.resultKey];
                       const dynamicIntensity = analysis.intensityLabel
-                        ? `Die ${DIMENSION_LABELS[analysis.sorted[0].key]}-Prägung ist ${analysis.intensityLabel} ausgeprägt (${Math.round(analysis.sorted[0].value)}%).`
+                        ? `Der Schwerpunkt liegt ${analysis.intensityLabel} auf ${DIMENSION_PLAIN[analysis.sorted[0].key]} (${Math.round(analysis.sorted[0].value)}%).`
                         : null;
                       const dynamicBottomClose = analysis.dominanceType === "single" && analysis.bottomTwoClose
-                        ? `${DIMENSION_LABELS[analysis.sorted[1].key]} und ${DIMENSION_LABELS[analysis.sorted[2].key]} liegen mit ${Math.round(analysis.sorted[1].value)}% und ${Math.round(analysis.sorted[2].value)}% nahe beieinander.`
+                        ? `${DIMENSION_PLAIN[analysis.sorted[1].key]} und ${DIMENSION_PLAIN[analysis.sorted[2].key]} sind mit ${Math.round(analysis.sorted[1].value)}% und ${Math.round(analysis.sorted[2].value)}% annähernd gleich gewichtet.`
                         : null;
                       return (
                         <div style={{
@@ -3044,10 +3049,10 @@ export default function RollenDNA() {
                     const analysis = getRoleAnalysis(bioGramGesamt.imp, bioGramGesamt.int, bioGramGesamt.ana);
                     const rt = roleResultTexts[analysis.resultKey];
                     const dynamicIntensity = analysis.intensityLabel
-                      ? `Die ${DIMENSION_LABELS[analysis.sorted[0].key]}-Prägung ist ${analysis.intensityLabel} ausgeprägt (${Math.round(analysis.sorted[0].value)}%).`
+                      ? `Der Schwerpunkt liegt ${analysis.intensityLabel} auf ${DIMENSION_PLAIN[analysis.sorted[0].key]} (${Math.round(analysis.sorted[0].value)}%).`
                       : null;
                     const dynamicBottomClose = analysis.dominanceType === "single" && analysis.bottomTwoClose
-                      ? `${DIMENSION_LABELS[analysis.sorted[1].key]} und ${DIMENSION_LABELS[analysis.sorted[2].key]} liegen mit ${Math.round(analysis.sorted[1].value)}% und ${Math.round(analysis.sorted[2].value)}% nahe beieinander.`
+                      ? `${DIMENSION_PLAIN[analysis.sorted[1].key]} und ${DIMENSION_PLAIN[analysis.sorted[2].key]} sind mit ${Math.round(analysis.sorted[1].value)}% und ${Math.round(analysis.sorted[2].value)}% annähernd gleich gewichtet.`
                       : null;
                     return (
                       <div style={{
