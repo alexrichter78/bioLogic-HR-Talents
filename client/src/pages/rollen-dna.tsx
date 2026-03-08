@@ -2544,10 +2544,10 @@ export default function RollenDNA() {
                       const analysis = getRoleAnalysis(bioGramGesamt.imp, bioGramGesamt.int, bioGramGesamt.ana);
                       const rt = roleResultTexts[analysis.resultKey];
                       const dynamicIntensity = analysis.intensityLabel
-                        ? `Der Schwerpunkt liegt ${analysis.intensityLabel} auf ${DIMENSION_PLAIN[analysis.sorted[0].key]} (${Math.round(analysis.sorted[0].value)}%).`
+                        ? `Der Schwerpunkt liegt ${analysis.intensityLabel} auf ${DIMENSION_PLAIN[analysis.sorted[0].key]} (${DIMENSION_LABELS[analysis.sorted[0].key]}).`
                         : null;
                       const dynamicBottomClose = analysis.dominanceType === "single" && analysis.bottomTwoClose
-                        ? `${DIMENSION_PLAIN[analysis.sorted[1].key]} und ${DIMENSION_PLAIN[analysis.sorted[2].key]} sind mit ${Math.round(analysis.sorted[1].value)}% und ${Math.round(analysis.sorted[2].value)}% annähernd gleich gewichtet.`
+                        ? `${DIMENSION_PLAIN[analysis.sorted[1].key]} (${DIMENSION_LABELS[analysis.sorted[1].key]}) und ${DIMENSION_PLAIN[analysis.sorted[2].key]} (${DIMENSION_LABELS[analysis.sorted[2].key]}) sind annähernd gleich gewichtet.`
                         : null;
                       return (
                         <div style={{
@@ -3049,10 +3049,10 @@ export default function RollenDNA() {
                     const analysis = getRoleAnalysis(bioGramGesamt.imp, bioGramGesamt.int, bioGramGesamt.ana);
                     const rt = roleResultTexts[analysis.resultKey];
                     const dynamicIntensity = analysis.intensityLabel
-                      ? `Der Schwerpunkt liegt ${analysis.intensityLabel} auf ${DIMENSION_PLAIN[analysis.sorted[0].key]} (${Math.round(analysis.sorted[0].value)}%).`
+                      ? `Der Schwerpunkt liegt ${analysis.intensityLabel} auf ${DIMENSION_PLAIN[analysis.sorted[0].key]} (${DIMENSION_LABELS[analysis.sorted[0].key]}).`
                       : null;
                     const dynamicBottomClose = analysis.dominanceType === "single" && analysis.bottomTwoClose
-                      ? `${DIMENSION_PLAIN[analysis.sorted[1].key]} und ${DIMENSION_PLAIN[analysis.sorted[2].key]} sind mit ${Math.round(analysis.sorted[1].value)}% und ${Math.round(analysis.sorted[2].value)}% annähernd gleich gewichtet.`
+                      ? `${DIMENSION_PLAIN[analysis.sorted[1].key]} (${DIMENSION_LABELS[analysis.sorted[1].key]}) und ${DIMENSION_PLAIN[analysis.sorted[2].key]} (${DIMENSION_LABELS[analysis.sorted[2].key]}) sind annähernd gleich gewichtet.`
                       : null;
                     return (
                       <div style={{
