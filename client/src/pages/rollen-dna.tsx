@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight, Info, RefreshCw, Briefcase, Heart, Settings, Shield, BarChart3, Lightbulb, FileText, MessageSquare } from "lucide-react";
+import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight, Info, RefreshCw, Briefcase, Heart, Settings, Shield, BarChart3, Lightbulb, FileText, MessageSquare, LayoutGrid, Wrench, UserCheck, Hash } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE, type BerufLand } from "@/data/berufe";
@@ -2743,15 +2743,50 @@ export default function RollenDNA() {
 
                 {summaryOpen && (
                   <>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 14, color: "#6E6E73" }}>
-                  <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Rolle:</span> {beruf}</div>
-                  <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Art der Aufgaben:</span> {AUFGABENCHARAKTER_OPTIONS.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter}</div>
-                  <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Arbeitsweise:</span> {ARBEITSLOGIK_OPTIONS.find(o => o.value === arbeitslogik)?.label || arbeitslogik}</div>
-                  <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Erfolgsfokus:</span> {erfolgsfokusIndices.map(i => ERFOLGSFOKUS_DISPLAY[i]?.label).filter(Boolean).join(", ")}</div>
-                  <div><span style={{ fontWeight: 600, color: "#1D1D1F" }}>Führung:</span> {FUEHRUNG_OPTIONS.find(o => o.value === fuehrung)?.label || fuehrung}</div>
-                  <div style={{ marginTop: 4 }}>
-                    <span style={{ fontWeight: 600, color: "#1D1D1F" }}>Tätigkeiten:</span> {hauptCount} · <span style={{ fontWeight: 600, color: "#1D1D1F" }}>Humankompetenzen:</span> {nebenCount}
-                    {fuehrung !== "Keine" && <> · <span style={{ fontWeight: 600, color: "#1D1D1F" }}>Führungskompetenzen:</span> {fuehrungCount}</>}
+                <p style={{ fontSize: 13, color: "#8E8E93", margin: "0 0 16px 0" }}>Das Rollenprofil wurde erfolgreich erstellt.</p>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }} data-testid="dna-summary-grid">
+                  {[
+                    { icon: Briefcase, label: "Rolle", value: beruf },
+                    { icon: LayoutGrid, label: "Aufgabenstruktur", value: AUFGABENCHARAKTER_OPTIONS.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter },
+                    { icon: Wrench, label: "Arbeitsweise", value: ARBEITSLOGIK_OPTIONS.find(o => o.value === arbeitslogik)?.label || arbeitslogik },
+                    { icon: Target, label: "Erfolgsfokus", value: erfolgsfokusIndices.map(i => ERFOLGSFOKUS_DISPLAY[i]?.label).filter(Boolean).join(", ") },
+                    { icon: UserCheck, label: "Führung", value: FUEHRUNG_OPTIONS.find(o => o.value === fuehrung)?.label || fuehrung },
+                  ].map(card => (
+                    <div
+                      key={card.label}
+                      style={{
+                        padding: "12px 14px",
+                        borderRadius: 14,
+                        background: "rgba(0,0,0,0.02)",
+                        border: "1px solid rgba(0,0,0,0.04)",
+                      }}
+                      data-testid={`summary-${card.label.toLowerCase()}`}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 3 }}>
+                        <card.icon style={{ width: 14, height: 14, color: "#8E8E93", flexShrink: 0 }} />
+                        <span style={{ fontSize: 13, fontWeight: 650, color: "#1D1D1F" }}>{card.label}</span>
+                      </div>
+                      <p style={{ fontSize: 13, color: "#6E6E73", margin: 0, lineHeight: 1.5, paddingLeft: 21 }}>{card.value}</p>
+                    </div>
+                  ))}
+                  <div
+                    style={{
+                      padding: "12px 14px",
+                      borderRadius: 14,
+                      background: "rgba(0,0,0,0.02)",
+                      border: "1px solid rgba(0,0,0,0.04)",
+                    }}
+                    data-testid="summary-kompetenzanzahl"
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 3 }}>
+                      <Hash style={{ width: 14, height: 14, color: "#8E8E93", flexShrink: 0 }} />
+                      <span style={{ fontSize: 13, fontWeight: 650, color: "#1D1D1F" }}>Kompetenzanzahl</span>
+                    </div>
+                    <div style={{ display: "flex", gap: 12, paddingLeft: 21, flexWrap: "wrap" }}>
+                      <span style={{ fontSize: 12, color: "#6E6E73" }}><strong style={{ color: "#1D1D1F" }}>{hauptCount}</strong> Tätigkeiten</span>
+                      <span style={{ fontSize: 12, color: "#6E6E73" }}><strong style={{ color: "#1D1D1F" }}>{nebenCount}</strong> Humankompetenzen</span>
+                      {fuehrung !== "Keine" && <span style={{ fontSize: 12, color: "#6E6E73" }}><strong style={{ color: "#1D1D1F" }}>{fuehrungCount}</strong> Führung</span>}
+                    </div>
                   </div>
                 </div>
 
