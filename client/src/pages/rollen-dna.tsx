@@ -2792,7 +2792,10 @@ export default function RollenDNA() {
 
                 <div className="flex flex-col sm:flex-row items-center gap-3 mt-8">
                   <button
-                    onClick={() => setLocation("/bericht")}
+                    onClick={() => {
+                      setAllCollapsed(false);
+                      localStorage.removeItem("rollenDnaCompleted");
+                    }}
                     style={{
                       height: 48,
                       paddingLeft: 24,
@@ -2800,11 +2803,10 @@ export default function RollenDNA() {
                       fontSize: 14,
                       fontWeight: 600,
                       borderRadius: 14,
-                      border: "none",
+                      border: "1px solid rgba(0,0,0,0.08)",
                       cursor: "pointer",
-                      background: "linear-gradient(135deg, #0071E3, #34AADC)",
-                      color: "#FFFFFF",
-                      boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
+                      background: "rgba(0,0,0,0.03)",
+                      color: "#1D1D1F",
                       transition: "all 200ms ease",
                       display: "flex",
                       alignItems: "center",
@@ -2813,70 +2815,10 @@ export default function RollenDNA() {
                       justifyContent: "center",
                       width: "100%",
                     }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
-                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
-                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)";
-                    }}
-                    data-testid="button-entscheidungsbericht"
+                    data-testid="button-rolle-bearbeiten"
                   >
-                    <FileText className="w-4 h-4" />
-                    Entscheidungsbericht
-                  </button>
-                  <button
-                    disabled
-                    style={{
-                      height: 48,
-                      paddingLeft: 24,
-                      paddingRight: 24,
-                      fontSize: 14,
-                      fontWeight: 600,
-                      borderRadius: 14,
-                      border: "none",
-                      cursor: "not-allowed",
-                      background: "rgba(0,0,0,0.06)",
-                      color: "#AEAEB2",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      flex: 1,
-                      justifyContent: "center",
-                      width: "100%",
-                      opacity: 0.6,
-                    }}
-                    data-testid="button-detailanalyse"
-                  >
-                    <Search className="w-4 h-4" />
-                    Detailanalyse
-                  </button>
-                  <button
-                    disabled
-                    style={{
-                      height: 48,
-                      paddingLeft: 24,
-                      paddingRight: 24,
-                      fontSize: 14,
-                      fontWeight: 600,
-                      borderRadius: 14,
-                      border: "none",
-                      cursor: "not-allowed",
-                      background: "rgba(0,0,0,0.06)",
-                      color: "#AEAEB2",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      flex: 1,
-                      justifyContent: "center",
-                      width: "100%",
-                      opacity: 0.6,
-                    }}
-                    data-testid="button-interviewleitfaeden"
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                    Interviewleitfäden
+                    <RefreshCw className="w-4 h-4" />
+                    Rolle bearbeiten
                   </button>
                   <button
                     onClick={handleSave}
@@ -2912,6 +2854,41 @@ export default function RollenDNA() {
                   >
                     <Save className="w-4 h-4" />
                     Profil speichern
+                  </button>
+                  <button
+                    onClick={() => setLocation("/bericht")}
+                    style={{
+                      height: 48,
+                      paddingLeft: 24,
+                      paddingRight: 24,
+                      fontSize: 14,
+                      fontWeight: 600,
+                      borderRadius: 14,
+                      border: "none",
+                      cursor: "pointer",
+                      background: "linear-gradient(135deg, #0071E3, #34AADC)",
+                      color: "#FFFFFF",
+                      boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
+                      transition: "all 200ms ease",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      flex: 1,
+                      justifyContent: "center",
+                      width: "100%",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
+                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
+                      (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)";
+                    }}
+                    data-testid="button-entscheidungsbericht"
+                  >
+                    <FileText className="w-4 h-4" />
+                    Entscheidungsbericht
                   </button>
                 </div>
                   </>
