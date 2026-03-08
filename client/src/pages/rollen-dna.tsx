@@ -71,7 +71,7 @@ type ResultKey =
   | "IMP_INT__ANA" | "IMP_ANA__INT" | "INT_IMP__ANA" | "INT_ANA__IMP" | "ANA_IMP__INT" | "ANA_INT__IMP"
   | "BALANCED";
 
-type RoleResultEntry = { headline: string; summary: string; focus: string; transfer: string; leadership: string };
+type RoleResultEntry = { headline: string; body: string[]; leadership: string };
 
 const DUAL_THRESHOLD = 5;
 const BALANCED_THRESHOLD = 5;
@@ -169,95 +169,121 @@ function getRoleResultKey(imp: number, int: number, ana: number): ResultKey {
 
 const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
   IMP_INT_ANA: {
-    headline: "Schwerpunkt: Umsetzung und Zusammenarbeit",
-    summary: "Diese Rolle ist stark auf Umsetzung und Bewegung ausgerichtet. Entscheidungen werden zügig getroffen und Themen aktiv vorangebracht.",
-    focus: "Gleichzeitig spielt der Umgang mit Menschen eine wichtige Rolle. Abstimmung, Kommunikation und die Fähigkeit, andere mitzunehmen, unterstützen die Handlungsorientierung.",
-    transfer: "Struktur und Planung sind vorhanden, stehen jedoch nicht im Vordergrund. Die Rolle wirkt besonders dort stark, wo Tempo, klare Ziele und Zusammenarbeit zusammenkommen.",
-    leadership: "In der Führungsarbeit zeigt sich das durch sichtbare Präsenz, klare Richtung und motivierende Ansprache.",
+    headline: "Impulsiv \u2013 Intuitiv \u2013 Analytisch",
+    body: [
+      "Im Arbeitsalltag wird diese Rolle vor allem durch eine aktive und entscheidungsorientierte Arbeitsweise gepr\u00e4gt. Themen werden fr\u00fch aufgegriffen, Verantwortung wird \u00fcbernommen und Entscheidungen werden vergleichsweise z\u00fcgig getroffen.",
+      "Wenn der Druck steigt, gewinnt der Austausch mit anderen an Bedeutung. Gespr\u00e4che, Abstimmung und das Einbeziehen verschiedener Perspektiven helfen dabei, Entscheidungen abzusichern und L\u00f6sungen gemeinsam zu entwickeln.",
+      "Diese Kombination sorgt daf\u00fcr, dass Themen nicht nur schnell in Bewegung kommen, sondern auch im Dialog mit anderen weiterentwickelt werden.",
+    ],
+    leadership: "In der F\u00fchrungsarbeit zeigt sich das durch klare Entscheidungen, sichtbare Verantwortung und eine offene Kommunikation mit dem Umfeld.",
   },
   IMP_ANA_INT: {
-    headline: "Schwerpunkt: Umsetzung und Struktur",
-    summary: "Diese Rolle verbindet Entscheidungsstärke mit strukturiertem Vorgehen.",
-    focus: "Themen werden konsequent vorangebracht, gleichzeitig wird darauf geachtet, dass Planung, Ordnung und fachliche Qualität erhalten bleiben.",
-    transfer: "Der Umgang mit Menschen unterstützt die Arbeit, steht jedoch weniger im Mittelpunkt als Ergebnisorientierung und klare Abläufe. Besonders wirksam ist die Rolle dort, wo Verantwortung übernommen, Entscheidungen getroffen und Projekte sauber umgesetzt werden müssen.",
-    leadership: "In der Führungsarbeit zeigt sich das durch klare Steuerung, hohe Verbindlichkeit und einen starken Fokus auf Ergebnisse.",
+    headline: "Impulsiv \u2013 Analytisch \u2013 Intuitiv",
+    body: [
+      "Im Arbeitsalltag steht eine klare Entscheidungs- und Umsetzungsorientierung im Mittelpunkt. Themen werden aktiv vorangebracht und Verantwortung wird \u00fcbernommen.",
+      "Wenn der Druck steigt, w\u00e4chst h\u00e4ufig das Bed\u00fcrfnis nach Struktur und \u00dcbersicht. Themen werden genauer gepr\u00fcft, Abl\u00e4ufe werden klarer geordnet und Entscheidungen st\u00e4rker \u00fcber Planung und Analyse abgesichert.",
+      "Diese Kombination sorgt daf\u00fcr, dass Entscheidungen nicht nur getroffen, sondern auch systematisch umgesetzt werden.",
+    ],
+    leadership: "In der F\u00fchrungsarbeit zeigt sich das durch klare Zielorientierung, strukturierte Steuerung und verbindliche Entscheidungen.",
   },
   INT_IMP_ANA: {
-    headline: "Schwerpunkt: Zusammenarbeit und Umsetzung",
-    summary: "Diese Rolle ist stark von Zusammenarbeit und Kommunikation geprägt.",
-    focus: "Menschen zusammenzubringen, Themen zu besprechen und gemeinsame Lösungen zu entwickeln steht im Vordergrund. Gleichzeitig bringt die Rolle genügend Energie mit, um Ideen auch in Bewegung zu bringen und Entscheidungen anzustoßen.",
-    transfer: "Struktur und Planung unterstützen die Arbeit, sind jedoch nicht der zentrale Fokus. Besonders stark wirkt die Rolle dort, wo Abstimmung, Dynamik und gemeinsame Umsetzung zusammenkommen.",
-    leadership: "In der Führungsarbeit zeigt sich das durch offene Kommunikation, Nähe zum Team und motivierende Aktivität.",
+    headline: "Intuitiv \u2013 Impulsiv \u2013 Analytisch",
+    body: [
+      "Im Arbeitsalltag steht vor allem Zusammenarbeit und Austausch mit anderen im Mittelpunkt. Gespr\u00e4che, Abstimmung und ein gutes Gesp\u00fcr f\u00fcr Situationen pr\u00e4gen die Arbeitsweise.",
+      "Wenn der Druck steigt, kann sich das Verhalten st\u00e4rker in Richtung schnellerer Entscheidungen und aktiver Umsetzung bewegen. Themen werden dann direkter angegangen.",
+      "Diese Kombination sorgt daf\u00fcr, dass Zusammenarbeit nicht nur \u00fcber Gespr\u00e4che l\u00e4uft, sondern auch in konkrete Schritte \u00fcberf\u00fchrt wird.",
+    ],
+    leadership: "In der F\u00fchrungsarbeit zeigt sich das durch offene Kommunikation, eine hohe Pr\u00e4senz im Team und die F\u00e4higkeit, Themen gemeinsam voranzubringen.",
   },
   INT_ANA_IMP: {
-    headline: "Schwerpunkt: Zusammenarbeit und Struktur",
-    summary: "Diese Rolle verbindet Teamorientierung mit strukturiertem Arbeiten.",
-    focus: "Kommunikation, Abstimmung und ein gutes Gespür für Menschen gehen Hand in Hand mit Planung, klaren Abläufen und fachlicher Sorgfalt.",
-    transfer: "Entscheidungen werden meist überlegt getroffen und gut abgestimmt. Besonders wirksam ist die Rolle dort, wo Zusammenarbeit und verlässliche Strukturen gleichzeitig wichtig sind.",
-    leadership: "In der Führungsarbeit zeigt sich das durch klare Orientierung, nachvollziehbare Entscheidungen und einen offenen Austausch mit dem Team.",
+    headline: "Intuitiv \u2013 Analytisch \u2013 Impulsiv",
+    body: [
+      "Im Arbeitsalltag wird diese Rolle vor allem durch Zusammenarbeit, Abstimmung und ein gutes Gesp\u00fcr f\u00fcr Menschen gepr\u00e4gt. Austausch und Dialog spielen eine wichtige Rolle.",
+      "Wenn der Druck steigt, w\u00e4chst h\u00e4ufig das Bed\u00fcrfnis nach Struktur und Klarheit. Themen werden st\u00e4rker \u00fcber Planung, Ordnung und nachvollziehbare Abl\u00e4ufe gesteuert.",
+      "Diese Kombination sorgt daf\u00fcr, dass Zusammenarbeit nicht nur \u00fcber Gespr\u00e4che funktioniert, sondern auch durch klare Strukturen stabilisiert wird.",
+    ],
+    leadership: "In der F\u00fchrungsarbeit zeigt sich das durch dialogorientierte F\u00fchrung, nachvollziehbare Entscheidungen und eine strukturierte Organisation der Zusammenarbeit.",
   },
   ANA_IMP_INT: {
-    headline: "Schwerpunkt: Struktur und Umsetzung",
-    summary: "Diese Rolle ist stark von Struktur, fachlicher Präzision und Planung geprägt.",
-    focus: "Gleichzeitig besteht eine deutliche Bereitschaft, Entscheidungen zu treffen und Themen konsequent umzusetzen.",
-    transfer: "Zusammenarbeit unterstützt die Arbeit, steht jedoch weniger im Vordergrund als Qualität, Klarheit und fachliche Ordnung. Die Rolle wirkt besonders stark dort, wo komplexe Aufgaben sauber analysiert und anschließend entschlossen umgesetzt werden müssen.",
-    leadership: "In der Führungsarbeit zeigt sich das durch klare Struktur, sachliche Entscheidungen und eine konsequente Ergebnisorientierung.",
+    headline: "Analytisch \u2013 Impulsiv \u2013 Intuitiv",
+    body: [
+      "Im Arbeitsalltag pr\u00e4gt vor allem eine strukturierte und sorgf\u00e4ltige Arbeitsweise das Verhalten. Themen werden zun\u00e4chst durchdacht und geordnet, bevor Entscheidungen getroffen werden.",
+      "Wenn der Druck steigt, k\u00f6nnen Entscheidungen direkter und schneller getroffen werden, um Themen voranzubringen.",
+      "Diese Kombination sorgt daf\u00fcr, dass sorgf\u00e4ltige Planung mit klarer Umsetzungskraft verbunden wird.",
+    ],
+    leadership: "In der F\u00fchrungsarbeit zeigt sich das durch klare Strukturen, sachliche Entscheidungen und eine konsequente Umsetzung von Vorhaben.",
   },
   ANA_INT_IMP: {
-    headline: "Schwerpunkt: Struktur und Zusammenarbeit",
-    summary: "Diese Rolle verbindet fachliche Struktur mit einer kooperativen Arbeitsweise.",
-    focus: "Planung, Qualität und klare Abläufe spielen eine wichtige Rolle, gleichzeitig wird Wert auf Abstimmung und Zusammenarbeit gelegt.",
-    transfer: "Entscheidungen entstehen meist aus sorgfältiger Überlegung und gemeinsamer Klärung. Besonders stark wirkt die Rolle dort, wo verlässliche Prozesse und gute Zusammenarbeit miteinander verbunden werden müssen.",
-    leadership: "In der Führungsarbeit zeigt sich das durch ruhige Steuerung, klare Strukturen und eine hohe Dialogfähigkeit.",
+    headline: "Analytisch \u2013 Intuitiv \u2013 Impulsiv",
+    body: [
+      "Im Arbeitsalltag stehen Struktur, Planung und fachliche Klarheit im Mittelpunkt. Themen werden sorgf\u00e4ltig analysiert und systematisch vorbereitet.",
+      "Wenn der Druck steigt, gewinnt der Austausch mit anderen an Bedeutung. Gespr\u00e4che helfen dabei, unterschiedliche Perspektiven einzubeziehen und Entscheidungen abzustimmen.",
+      "Diese Kombination sorgt daf\u00fcr, dass Entscheidungen nicht nur gut durchdacht sind, sondern auch im Dialog mit anderen getragen werden.",
+    ],
+    leadership: "In der F\u00fchrungsarbeit zeigt sich das durch klare Strukturen, nachvollziehbare Entscheidungen und eine offene Abstimmung im Team.",
   },
   IMP_INT__ANA: {
-    headline: "Gleichgewicht: Umsetzung und Zusammenarbeit",
-    summary: "Diese Rolle verbindet Handlungsenergie und Menschenorientierung in nahezu gleicher Stärke.",
-    focus: "Entscheidungen werden schnell getroffen, gleichzeitig wird viel Wert auf Kommunikation und Abstimmung gelegt.",
-    transfer: "Struktur und Planung unterstützen die Arbeit, stehen jedoch weniger im Mittelpunkt. Besonders stark wirkt die Rolle dort, wo Dynamik, Austausch und gemeinsame Umsetzung gefragt sind.",
-    leadership: "In der Führungsarbeit zeigt sich das durch aktive Präsenz, direkte Ansprache und eine motivierende Wirkung auf das Team.",
+    headline: "Impulsiv / Intuitiv \u2013 Analytisch",
+    body: [
+      "Im Arbeitsalltag verbinden sich Aktivit\u00e4t und Zusammenarbeit besonders eng. Themen werden aufgegriffen und vorangebracht, gleichzeitig wird der Austausch mit anderen gesucht.",
+      "Wenn der Druck steigt, w\u00e4chst h\u00e4ufig der Wunsch nach mehr Struktur und Klarheit, um Themen zu ordnen und Entscheidungen abzusichern.",
+      "Diese Kombination sorgt daf\u00fcr, dass Dynamik und Zusammenarbeit durch klare Abl\u00e4ufe und Orientierung stabilisiert werden.",
+    ],
+    leadership: "In der F\u00fchrungsarbeit zeigt sich das durch eine aktive Rolle in Gespr\u00e4chen, klare Entscheidungen und eine offene Kommunikation im Team.",
   },
   IMP_ANA__INT: {
-    headline: "Gleichgewicht: Umsetzung und Struktur",
-    summary: "Diese Rolle vereint Entscheidungskraft und strukturiertes Arbeiten.",
-    focus: "Themen werden klar vorangebracht, gleichzeitig wird auf Planung, Ordnung und fachliche Qualität geachtet.",
-    transfer: "Der soziale Austausch unterstützt die Arbeit, spielt jedoch eine geringere Rolle. Die Rolle wirkt besonders stark dort, wo Verantwortung übernommen, Entscheidungen getroffen und Ergebnisse zuverlässig umgesetzt werden müssen.",
-    leadership: "In der Führungsarbeit zeigt sich das durch klare Richtung, strukturierte Steuerung und hohe Ergebnisverantwortung.",
+    headline: "Impulsiv / Analytisch \u2013 Intuitiv",
+    body: [
+      "Im Arbeitsalltag verbinden sich Entscheidungsst\u00e4rke und strukturierte Arbeitsweise. Themen werden vorangebracht und gleichzeitig sorgf\u00e4ltig geplant.",
+      "Wenn der Druck steigt, gewinnt der Austausch mit anderen an Bedeutung. Gespr\u00e4che helfen dabei, Entscheidungen zu reflektieren und Perspektiven einzubeziehen.",
+      "Diese Kombination sorgt daf\u00fcr, dass Entscheidungen sowohl konsequent als auch nachvollziehbar umgesetzt werden.",
+    ],
+    leadership: "In der F\u00fchrungsarbeit zeigt sich das durch klare Orientierung, strukturierte Steuerung und einen offenen Dialog mit dem Umfeld.",
   },
   INT_IMP__ANA: {
-    headline: "Gleichgewicht: Zusammenarbeit und Umsetzung",
-    summary: "Diese Rolle verbindet Zusammenarbeit und Handlungsorientierung.",
-    focus: "Menschen einzubinden, Themen zu besprechen und gleichzeitig Bewegung in Prozesse zu bringen prägt die Arbeitsweise.",
-    transfer: "Struktur und Planung sind vorhanden, stehen jedoch weniger im Mittelpunkt. Die Rolle wirkt besonders stark dort, wo Austausch, Dynamik und gemeinsame Entscheidungen wichtig sind.",
-    leadership: "In der Führungsarbeit zeigt sich das durch offene Kommunikation, Präsenz im Team und eine aktivierende Wirkung.",
+    headline: "Intuitiv / Impulsiv \u2013 Analytisch",
+    body: [
+      "Im Arbeitsalltag wirken Zusammenarbeit und Aktivit\u00e4t besonders eng zusammen. Themen werden im Austausch mit anderen entwickelt und gleichzeitig aktiv vorangebracht.",
+      "Wenn der Druck steigt, w\u00e4chst h\u00e4ufig das Bed\u00fcrfnis nach mehr Struktur und Ordnung, um Entscheidungen abzusichern.",
+      "Diese Kombination sorgt daf\u00fcr, dass Dynamik und Zusammenarbeit durch klare Orientierung stabilisiert werden.",
+    ],
+    leadership: "In der F\u00fchrungsarbeit zeigt sich das durch eine hohe Pr\u00e4senz im Team, offene Kommunikation und die F\u00e4higkeit, Themen gemeinsam voranzubringen.",
   },
   INT_ANA__IMP: {
-    headline: "Gleichgewicht: Zusammenarbeit und Struktur",
-    summary: "Diese Rolle verbindet Teamorientierung und strukturiertes Arbeiten in nahezu gleicher Stärke.",
-    focus: "Zusammenarbeit, Kommunikation und Abstimmung gehen Hand in Hand mit Planung, klaren Abläufen und fachlicher Ordnung.",
-    transfer: "Entscheidungen entstehen meist überlegt und im Austausch mit anderen. Besonders stark wirkt die Rolle dort, wo Menschen zusammenarbeiten und gleichzeitig stabile Prozesse notwendig sind.",
-    leadership: "In der Führungsarbeit zeigt sich das durch nachvollziehbare Entscheidungen, klare Strukturen und einen offenen Dialog mit dem Team.",
+    headline: "Intuitiv / Analytisch \u2013 Impulsiv",
+    body: [
+      "Im Arbeitsalltag verbinden sich Zusammenarbeit und strukturierte Arbeitsweise besonders eng. Gespr\u00e4che, Abstimmung und klare Abl\u00e4ufe pr\u00e4gen die t\u00e4gliche Arbeit.",
+      "Wenn der Druck steigt, k\u00f6nnen Entscheidungen direkter und schneller getroffen werden, um Themen voranzubringen.",
+      "Diese Kombination sorgt daf\u00fcr, dass Zusammenarbeit durch klare Strukturen und konkrete Schritte unterst\u00fctzt wird.",
+    ],
+    leadership: "In der F\u00fchrungsarbeit zeigt sich das durch offene Kommunikation, strukturierte Planung und klare Orientierung f\u00fcr das Team.",
   },
   ANA_IMP__INT: {
-    headline: "Gleichgewicht: Struktur und Umsetzung",
-    summary: "Diese Rolle verbindet fachliche Präzision mit konsequenter Umsetzung.",
-    focus: "Planung und Struktur bilden die Grundlage, gleichzeitig werden Entscheidungen klar getroffen und Ergebnisse aktiv vorangetrieben.",
-    transfer: "Zusammenarbeit unterstützt die Arbeit, steht jedoch weniger im Mittelpunkt. Die Rolle wirkt besonders stark dort, wo klare Entscheidungen und saubere Umsetzung gefragt sind.",
-    leadership: "In der Führungsarbeit zeigt sich das durch strukturierte Steuerung, klare Verantwortung und einen hohen Anspruch an Ergebnisse.",
+    headline: "Analytisch / Impulsiv \u2013 Intuitiv",
+    body: [
+      "Im Arbeitsalltag verbinden sich strukturierte Planung und klare Umsetzungsbereitschaft besonders eng. Themen werden sorgf\u00e4ltig vorbereitet und anschlie\u00dfend konsequent vorangebracht.",
+      "Wenn der Druck steigt, gewinnt der Austausch mit anderen an Bedeutung. Gespr\u00e4che helfen dabei, Entscheidungen abzustimmen und unterschiedliche Sichtweisen einzubeziehen.",
+      "Diese Kombination sorgt daf\u00fcr, dass Klarheit und Tempo nicht f\u00fcr sich stehen, sondern durch abgestimmtes Vorgehen erg\u00e4nzt werden.",
+    ],
+    leadership: "In der F\u00fchrungsarbeit zeigt sich das durch klare Priorit\u00e4ten, verl\u00e4ssliche Steuerung und die Bereitschaft, Entscheidungen transparent zu machen.",
   },
   ANA_INT__IMP: {
-    headline: "Gleichgewicht: Struktur und Zusammenarbeit",
-    summary: "Diese Rolle verbindet fachliche Struktur mit kooperativer Zusammenarbeit.",
-    focus: "Planung, Qualität und klare Abläufe gehen Hand in Hand mit Abstimmung und gemeinsamer Lösungsfindung.",
-    transfer: "Entscheidungen entstehen meist durch sorgfältige Abwägung und Austausch. Besonders wirksam ist die Rolle dort, wo verlässliche Prozesse und gute Zusammenarbeit miteinander verbunden werden müssen.",
-    leadership: "In der Führungsarbeit zeigt sich das durch ruhige Steuerung, klare Orientierung und eine hohe Anschlussfähigkeit im Team.",
+    headline: "Analytisch / Intuitiv \u2013 Impulsiv",
+    body: [
+      "Im Arbeitsalltag wirken strukturierte Planung und Zusammenarbeit besonders eng zusammen. Klare Abl\u00e4ufe, Sorgfalt und gute Abstimmung pr\u00e4gen die Arbeitsweise gemeinsam.",
+      "Wenn der Druck steigt, k\u00f6nnen Entscheidungen direkter und schneller getroffen werden, um Themen voranzubringen und Klarheit herzustellen.",
+      "Diese Kombination sorgt daf\u00fcr, dass Ordnung und Austausch nicht nur stabilisieren, sondern auch in konkrete Schritte \u00fcberf\u00fchrt werden k\u00f6nnen.",
+    ],
+    leadership: "In der F\u00fchrungsarbeit zeigt sich das durch nachvollziehbare Entscheidungen, ruhige Steuerung und eine gute Einbindung des Teams.",
   },
   BALANCED: {
-    headline: "Ausgewogenes Rollenprofil",
-    summary: "Diese Rolle zeigt eine gleichmäßige Verteilung der drei Dimensionen Impulsiv, Intuitiv und Analytisch.",
-    focus: "Je nach Situation kann zwischen Handlung, Zusammenarbeit und Analyse flexibel gewechselt werden. Die Arbeitsweise passt sich häufig den Anforderungen der jeweiligen Aufgabe an.",
-    transfer: "Die Rolle wirkt besonders stark dort, wo unterschiedliche Anforderungen zusammenkommen und ein flexibles Vorgehen notwendig ist.",
-    leadership: "In der Führungsarbeit zeigt sich das durch situationsabhängige Steuerung und eine ausgewogene Verbindung von Klarheit, Dialog und Handlung.",
+    headline: "Ausgeglichenes Profil",
+    body: [
+      "In diesem Profil sind verschiedene Herangehensweisen \u00e4hnlich stark ausgepr\u00e4gt. Die Rolle ist dadurch nicht einseitig festgelegt, sondern kann sich flexibel an unterschiedliche Anforderungen anpassen.",
+      "Je nach Situation kann zwischen Umsetzung, Zusammenarbeit und strukturierter Analyse gewechselt werden. Welche Seite st\u00e4rker sichtbar wird, h\u00e4ngt h\u00e4ufig von Aufgabe, Umfeld und Drucksituation ab.",
+      "Diese Breite sorgt daf\u00fcr, dass die Rolle besonders dort stark wirkt, wo Flexibilit\u00e4t, \u00dcberblick und ein variables Vorgehen gefragt sind.",
+    ],
+    leadership: "In der F\u00fchrungsarbeit zeigt sich das durch eine situationsabh\u00e4ngige Steuerung und die F\u00e4higkeit, je nach Bedarf zwischen Klarheit, Dialog und Umsetzung zu wechseln.",
   },
 };
 
@@ -283,7 +309,7 @@ const roleRequirementText = {
 function generateBioCheckText(bg: BioGram, isLeadership: boolean, _fuehrungsBg?: BioGram): string {
   const key = getRoleResultKey(bg.imp, bg.int, bg.ana);
   const t = roleResultTexts[key];
-  let text = `${t.headline}\n${t.summary}\n${t.focus}\n${t.transfer}`;
+  let text = `${t.headline}\n${t.body.join("\n")}`;
   if (isLeadership) text += `\n${t.leadership}`;
   return text;
 }
@@ -2596,11 +2622,11 @@ export default function RollenDNA() {
                             <span style={{ fontSize: 12, fontWeight: 600, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.04em" }}>Ergebnis der Analyse</span>
                           </div>
                           <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px 0" }} data-testid="text-biocheck-line-0">{rt.headline}</h3>
-                          <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-line-1">{rt.summary}</p>
-                          <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-line-2">{rt.focus}</p>
-                          <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: 0 }} data-testid="text-biocheck-line-3">{rt.transfer}</p>
+                          {rt.body.map((paragraph, i) => (
+                            <p key={i} style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: i < rt.body.length - 1 ? "0 0 6px 0" : "0" }} data-testid={`text-biocheck-line-${i + 1}`}>{paragraph}</p>
+                          ))}
                           {isLeadershipRole && (
-                            <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "6px 0 0 0" }} data-testid="text-biocheck-line-4">{rt.leadership}</p>
+                            <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "6px 0 0 0" }} data-testid="text-biocheck-line-leadership">{rt.leadership}</p>
                           )}
                         </div>
                       );
@@ -3089,11 +3115,11 @@ export default function RollenDNA() {
                           <span style={{ fontSize: 12, fontWeight: 600, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.04em" }}>Ergebnis der Analyse</span>
                         </div>
                         <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px 0" }} data-testid="text-biocheck-collapsed-line-0">{rt.headline}</h3>
-                        <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-collapsed-line-1">{rt.summary}</p>
-                        <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-collapsed-line-2">{rt.focus}</p>
-                        <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: 0 }} data-testid="text-biocheck-collapsed-line-3">{rt.transfer}</p>
+                        {rt.body.map((paragraph, i) => (
+                          <p key={i} style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: i < rt.body.length - 1 ? "0 0 6px 0" : "0" }} data-testid={`text-biocheck-collapsed-line-${i + 1}`}>{paragraph}</p>
+                        ))}
                         {isLeadershipRole && (
-                          <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "6px 0 0 0" }} data-testid="text-biocheck-collapsed-line-4">{rt.leadership}</p>
+                          <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "6px 0 0 0" }} data-testid="text-biocheck-collapsed-line-leadership">{rt.leadership}</p>
                         )}
                       </div>
                     );
