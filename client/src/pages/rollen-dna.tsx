@@ -113,9 +113,6 @@ function getRoleAnalysis(imp: number, int: number, ana: number): RoleAnalysis {
   } else if (topGap <= DUAL_THRESHOLD) {
     resultKey = `${vals[0].key}_${vals[1].key}__${vals[2].key}` as ResultKey;
     dominanceType = "dual";
-  } else if (bottomGap <= DUAL_THRESHOLD) {
-    resultKey = `${vals[0].key}_${vals[1].key}__${vals[2].key}` as ResultKey;
-    dominanceType = "dual";
   } else {
     resultKey = `${vals[0].key}_${vals[1].key}_${vals[2].key}` as ResultKey;
     dominanceType = "single";
