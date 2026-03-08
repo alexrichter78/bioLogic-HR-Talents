@@ -1,0 +1,181 @@
+1. Impulsiv – Intuitiv – Analytisch
+
+IMP_INT_ANA
+
+Diese Rolle ist stark auf Umsetzung und Bewegung ausgerichtet. Entscheidungen werden zügig getroffen und Themen aktiv vorangebracht.
+
+Gleichzeitig spielt der Umgang mit Menschen eine wichtige Rolle. Abstimmung, Kommunikation und die Fähigkeit, andere mitzunehmen, unterstützen die Handlungsorientierung.
+
+Struktur und Planung sind vorhanden, stehen jedoch nicht im Vordergrund. Die Rolle wirkt besonders dort stark, wo Tempo, klare Ziele und Zusammenarbeit zusammenkommen.
+
+In der Führungsarbeit zeigt sich das durch sichtbare Präsenz, klare Richtung und motivierende Ansprache.
+
+2. Impulsiv – Analytisch – Intuitiv
+
+IMP_ANA_INT
+
+Diese Rolle verbindet Entscheidungsstärke mit strukturiertem Vorgehen.
+
+Themen werden konsequent vorangebracht, gleichzeitig wird darauf geachtet, dass Planung, Ordnung und fachliche Qualität erhalten bleiben.
+
+Der Umgang mit Menschen unterstützt die Arbeit, steht jedoch weniger im Mittelpunkt als Ergebnisorientierung und klare Abläufe.
+
+Besonders wirksam ist die Rolle dort, wo Verantwortung übernommen, Entscheidungen getroffen und Projekte sauber umgesetzt werden müssen.
+
+In der Führungsarbeit zeigt sich das durch klare Steuerung, hohe Verbindlichkeit und einen starken Fokus auf Ergebnisse.
+
+3. Intuitiv – Impulsiv – Analytisch
+
+INT_IMP_ANA
+
+Diese Rolle ist stark von Zusammenarbeit und Kommunikation geprägt.
+
+Menschen zusammenzubringen, Themen zu besprechen und gemeinsame Lösungen zu entwickeln steht im Vordergrund.
+
+Gleichzeitig bringt die Rolle genügend Energie mit, um Ideen auch in Bewegung zu bringen und Entscheidungen anzustoßen.
+
+Struktur und Planung unterstützen die Arbeit, sind jedoch nicht der zentrale Fokus.
+
+Besonders stark wirkt die Rolle dort, wo Abstimmung, Dynamik und gemeinsame Umsetzung zusammenkommen.
+
+In der Führungsarbeit zeigt sich das durch offene Kommunikation, Nähe zum Team und motivierende Aktivität.
+
+4. Intuitiv – Analytisch – Impulsiv
+
+INT_ANA_IMP
+
+Diese Rolle verbindet Teamorientierung mit strukturiertem Arbeiten.
+
+Kommunikation, Abstimmung und ein gutes Gespür für Menschen gehen Hand in Hand mit Planung, klaren Abläufen und fachlicher Sorgfalt.
+
+Entscheidungen werden meist überlegt getroffen und gut abgestimmt.
+
+Besonders wirksam ist die Rolle dort, wo Zusammenarbeit und verlässliche Strukturen gleichzeitig wichtig sind.
+
+In der Führungsarbeit zeigt sich das durch klare Orientierung, nachvollziehbare Entscheidungen und einen offenen Austausch mit dem Team.
+
+5. Analytisch – Impulsiv – Intuitiv
+
+ANA_IMP_INT
+
+Diese Rolle ist stark von Struktur, fachlicher Präzision und Planung geprägt.
+
+Gleichzeitig besteht eine deutliche Bereitschaft, Entscheidungen zu treffen und Themen konsequent umzusetzen.
+
+Zusammenarbeit unterstützt die Arbeit, steht jedoch weniger im Vordergrund als Qualität, Klarheit und fachliche Ordnung.
+
+Die Rolle wirkt besonders stark dort, wo komplexe Aufgaben sauber analysiert und anschließend entschlossen umgesetzt werden müssen.
+
+In der Führungsarbeit zeigt sich das durch klare Struktur, sachliche Entscheidungen und eine konsequente Ergebnisorientierung.
+
+6. Analytisch – Intuitiv – Impulsiv
+
+ANA_INT_IMP
+
+Diese Rolle verbindet fachliche Struktur mit einer kooperativen Arbeitsweise.
+
+Planung, Qualität und klare Abläufe spielen eine wichtige Rolle, gleichzeitig wird Wert auf Abstimmung und Zusammenarbeit gelegt.
+
+Entscheidungen entstehen meist aus sorgfältiger Überlegung und gemeinsamer Klärung.
+
+Besonders stark wirkt die Rolle dort, wo verlässliche Prozesse und gute Zusammenarbeit miteinander verbunden werden müssen.
+
+In der Führungsarbeit zeigt sich das durch ruhige Steuerung, klare Strukturen und eine hohe Dialogfähigkeit.
+
+7. Impulsiv / Intuitiv – Analytisch niedriger
+
+IMP_INT__ANA
+
+Diese Rolle verbindet Handlungsenergie und Menschenorientierung in nahezu gleicher Stärke.
+
+Entscheidungen werden schnell getroffen, gleichzeitig wird viel Wert auf Kommunikation und Abstimmung gelegt.
+
+Struktur und Planung unterstützen die Arbeit, stehen jedoch weniger im Mittelpunkt.
+
+Besonders stark wirkt die Rolle dort, wo Dynamik, Austausch und gemeinsame Umsetzung gefragt sind.
+
+In der Führungsarbeit zeigt sich das durch aktive Präsenz, direkte Ansprache und eine motivierende Wirkung auf das Team.
+
+8. Impulsiv / Analytisch – Intuitiv niedriger
+
+IMP_ANA__INT
+
+Diese Rolle vereint Entscheidungskraft und strukturiertes Arbeiten.
+
+Themen werden klar vorangebracht, gleichzeitig wird auf Planung, Ordnung und fachliche Qualität geachtet.
+
+Der soziale Austausch unterstützt die Arbeit, spielt jedoch eine geringere Rolle.
+
+Die Rolle wirkt besonders stark dort, wo Verantwortung übernommen, Entscheidungen getroffen und Ergebnisse zuverlässig umgesetzt werden müssen.
+
+In der Führungsarbeit zeigt sich das durch klare Richtung, strukturierte Steuerung und hohe Ergebnisverantwortung.
+
+9. Intuitiv / Impulsiv – Analytisch niedriger
+
+INT_IMP__ANA
+
+Diese Rolle verbindet Zusammenarbeit und Handlungsorientierung.
+
+Menschen einzubinden, Themen zu besprechen und gleichzeitig Bewegung in Prozesse zu bringen prägt die Arbeitsweise.
+
+Struktur und Planung sind vorhanden, stehen jedoch weniger im Mittelpunkt.
+
+Die Rolle wirkt besonders stark dort, wo Austausch, Dynamik und gemeinsame Entscheidungen wichtig sind.
+
+In der Führungsarbeit zeigt sich das durch offene Kommunikation, Präsenz im Team und eine aktivierende Wirkung.
+
+10. Intuitiv / Analytisch – Impulsiv niedriger
+
+INT_ANA__IMP
+
+Diese Rolle verbindet Teamorientierung und strukturiertes Arbeiten in nahezu gleicher Stärke.
+
+Zusammenarbeit, Kommunikation und Abstimmung gehen Hand in Hand mit Planung, klaren Abläufen und fachlicher Ordnung.
+
+Entscheidungen entstehen meist überlegt und im Austausch mit anderen.
+
+Besonders stark wirkt die Rolle dort, wo Menschen zusammenarbeiten und gleichzeitig stabile Prozesse notwendig sind.
+
+In der Führungsarbeit zeigt sich das durch nachvollziehbare Entscheidungen, klare Strukturen und einen offenen Dialog mit dem Team.
+
+11. Analytisch / Impulsiv – Intuitiv niedriger
+
+ANA_IMP__INT
+
+Diese Rolle verbindet fachliche Präzision mit konsequenter Umsetzung.
+
+Planung und Struktur bilden die Grundlage, gleichzeitig werden Entscheidungen klar getroffen und Ergebnisse aktiv vorangetrieben.
+
+Zusammenarbeit unterstützt die Arbeit, steht jedoch weniger im Mittelpunkt.
+
+Die Rolle wirkt besonders stark dort, wo klare Entscheidungen und saubere Umsetzung gefragt sind.
+
+In der Führungsarbeit zeigt sich das durch strukturierte Steuerung, klare Verantwortung und einen hohen Anspruch an Ergebnisse.
+
+12. Analytisch / Intuitiv – Impulsiv niedriger
+
+ANA_INT__IMP
+
+Diese Rolle verbindet fachliche Struktur mit kooperativer Zusammenarbeit.
+
+Planung, Qualität und klare Abläufe gehen Hand in Hand mit Abstimmung und gemeinsamer Lösungsfindung.
+
+Entscheidungen entstehen meist durch sorgfältige Abwägung und Austausch.
+
+Besonders wirksam ist die Rolle dort, wo verlässliche Prozesse und gute Zusammenarbeit miteinander verbunden werden müssen.
+
+In der Führungsarbeit zeigt sich das durch ruhige Steuerung, klare Orientierung und eine hohe Anschlussfähigkeit im Team.
+
+13. Ausgewogenes Profil
+
+BALANCED
+
+Diese Rolle zeigt eine gleichmäßige Verteilung der drei Dimensionen Impulsiv, Intuitiv und Analytisch.
+
+Je nach Situation kann zwischen Handlung, Zusammenarbeit und Analyse flexibel gewechselt werden.
+
+Die Arbeitsweise passt sich häufig den Anforderungen der jeweiligen Aufgabe an.
+
+Die Rolle wirkt besonders stark dort, wo unterschiedliche Anforderungen zusammenkommen und ein flexibles Vorgehen notwendig ist.
+
+In der Führungsarbeit zeigt sich das durch situationsabhängige Steuerung und eine ausgewogene Verbindung von Klarheit, Dialog und Handlung.
