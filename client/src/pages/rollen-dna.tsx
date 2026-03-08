@@ -128,6 +128,42 @@ function getRoleAnalysis(imp: number, int: number, ana: number): RoleAnalysis {
   return { resultKey, dominanceType, sorted: vals, topGap, bottomGap, bottomTwoClose, intensityLabel };
 }
 
+function getContextLines(analysis: RoleAnalysis): string[] {
+  const s = analysis.sorted;
+  const d0 = DIMENSION_PLAIN[s[0].key], l0 = DIMENSION_LABELS[s[0].key];
+  const d1 = DIMENSION_PLAIN[s[1].key], l1 = DIMENSION_LABELS[s[1].key];
+  const d2 = DIMENSION_PLAIN[s[2].key], l2 = DIMENSION_LABELS[s[2].key];
+
+  if (analysis.dominanceType === "balanced") {
+    return [
+      "Alle drei Dimensionen sind annähernd gleich gewichtet.",
+      "Kein einzelner Bereich dominiert die Rolle. Stattdessen wird ein flexibles Zusammenspiel aller drei Wirkungsweisen verlangt.",
+    ];
+  }
+
+  if (analysis.dominanceType === "dual") {
+    return [
+      `${d0} (${l0}) und ${d1} (${l1}) prägen die Rolle gleichwertig.`,
+      `${d2} (${l2}) spielt eine untergeordnete Rolle.`,
+    ];
+  }
+
+  const lines: string[] = [];
+  if (analysis.intensityLabel) {
+    lines.push(`Der Schwerpunkt liegt ${analysis.intensityLabel} auf ${d0} (${l0}).`);
+  } else {
+    lines.push(`Der Schwerpunkt liegt auf ${d0} (${l0}).`);
+  }
+
+  if (analysis.bottomTwoClose) {
+    lines.push(`${d1} (${l1}) und ${d2} (${l2}) sind annähernd gleich gewichtet.`);
+  } else {
+    lines.push(`${d1} (${l1}) folgt als zweite Ausprägung. ${d2} (${l2}) ist am geringsten gewichtet.`);
+  }
+
+  return lines;
+}
+
 function getRoleResultKey(imp: number, int: number, ana: number): ResultKey {
   return getRoleAnalysis(imp, int, ana).resultKey;
 }
@@ -2543,12 +2579,7 @@ export default function RollenDNA() {
                     {(() => {
                       const analysis = getRoleAnalysis(bioGramGesamt.imp, bioGramGesamt.int, bioGramGesamt.ana);
                       const rt = roleResultTexts[analysis.resultKey];
-                      const dynamicIntensity = analysis.intensityLabel
-                        ? `Der Schwerpunkt liegt ${analysis.intensityLabel} auf ${DIMENSION_PLAIN[analysis.sorted[0].key]} (${DIMENSION_LABELS[analysis.sorted[0].key]}).`
-                        : null;
-                      const dynamicBottomClose = analysis.dominanceType === "single" && analysis.bottomTwoClose
-                        ? `${DIMENSION_PLAIN[analysis.sorted[1].key]} (${DIMENSION_LABELS[analysis.sorted[1].key]}) und ${DIMENSION_PLAIN[analysis.sorted[2].key]} (${DIMENSION_LABELS[analysis.sorted[2].key]}) sind annähernd gleich gewichtet.`
-                        : null;
+                      const ctxLines = getContextLines(analysis);
                       return (
                         <div style={{
                           marginTop: 18,
@@ -2569,12 +2600,9 @@ export default function RollenDNA() {
                           </div>
                           <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px 0" }} data-testid="text-biocheck-line-0">{rt.headline}</h3>
                           <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-line-1">{rt.summary}</p>
-                          {dynamicIntensity && (
-                            <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-intensity">{dynamicIntensity}</p>
-                          )}
-                          {dynamicBottomClose && (
-                            <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-bottom-close">{dynamicBottomClose}</p>
-                          )}
+                          {ctxLines.map((line, i) => (
+                            <p key={i} style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid={`text-biocheck-context-${i}`}>{line}</p>
+                          ))}
                           <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-line-2">{rt.focus}</p>
                           <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: 0 }} data-testid="text-biocheck-line-3">{rt.transfer}</p>
                           {isLeadershipRole && (
@@ -3048,12 +3076,7 @@ export default function RollenDNA() {
                   {(() => {
                     const analysis = getRoleAnalysis(bioGramGesamt.imp, bioGramGesamt.int, bioGramGesamt.ana);
                     const rt = roleResultTexts[analysis.resultKey];
-                    const dynamicIntensity = analysis.intensityLabel
-                      ? `Der Schwerpunkt liegt ${analysis.intensityLabel} auf ${DIMENSION_PLAIN[analysis.sorted[0].key]} (${DIMENSION_LABELS[analysis.sorted[0].key]}).`
-                      : null;
-                    const dynamicBottomClose = analysis.dominanceType === "single" && analysis.bottomTwoClose
-                      ? `${DIMENSION_PLAIN[analysis.sorted[1].key]} (${DIMENSION_LABELS[analysis.sorted[1].key]}) und ${DIMENSION_PLAIN[analysis.sorted[2].key]} (${DIMENSION_LABELS[analysis.sorted[2].key]}) sind annähernd gleich gewichtet.`
-                      : null;
+                    const ctxLines = getContextLines(analysis);
                     return (
                       <div style={{
                         marginTop: 18,
@@ -3074,12 +3097,9 @@ export default function RollenDNA() {
                         </div>
                         <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px 0" }} data-testid="text-biocheck-collapsed-line-0">{rt.headline}</h3>
                         <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-collapsed-line-1">{rt.summary}</p>
-                        {dynamicIntensity && (
-                          <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: "0 0 6px 0" }}>{dynamicIntensity}</p>
-                        )}
-                        {dynamicBottomClose && (
-                          <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: "0 0 6px 0" }}>{dynamicBottomClose}</p>
-                        )}
+                        {ctxLines.map((line, i) => (
+                          <p key={i} style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid={`text-biocheck-collapsed-context-${i}`}>{line}</p>
+                        ))}
                         <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-collapsed-line-2">{rt.focus}</p>
                         <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: 0 }} data-testid="text-biocheck-collapsed-line-3">{rt.transfer}</p>
                         {isLeadershipRole && (
