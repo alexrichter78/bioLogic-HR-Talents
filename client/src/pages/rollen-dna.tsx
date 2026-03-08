@@ -110,7 +110,10 @@ function getRoleAnalysis(imp: number, int: number, ana: number): RoleAnalysis {
   if (maxV - minV <= BALANCED_THRESHOLD) {
     resultKey = "BALANCED";
     dominanceType = "balanced";
-  } else if (topGap <= DUAL_THRESHOLD && bottomGap > DUAL_THRESHOLD) {
+  } else if (topGap <= DUAL_THRESHOLD) {
+    resultKey = `${vals[0].key}_${vals[1].key}__${vals[2].key}` as ResultKey;
+    dominanceType = "dual";
+  } else if (bottomGap <= DUAL_THRESHOLD) {
     resultKey = `${vals[0].key}_${vals[1].key}__${vals[2].key}` as ResultKey;
     dominanceType = "dual";
   } else {
