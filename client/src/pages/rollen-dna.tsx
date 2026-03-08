@@ -2436,9 +2436,8 @@ export default function RollenDNA() {
                           <circle cx="8" cy="8" r="2.5" fill="white" />
                         </svg>
                       </div>
-                      <span style={{ color: "#1D1D1F" }}>
-                        <span style={{ fontSize: 20, fontWeight: 700 }}>Kurzanalyse der Rolle:</span>
-                        <br />
+                      <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
+                        <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Kurzanalyse der Rolle:</span>
                         <span style={{ fontSize: 16 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}</span>
                       </span>
                     </div>
@@ -2930,9 +2929,8 @@ export default function RollenDNA() {
                         <circle cx="8" cy="8" r="2.5" fill="white" />
                       </svg>
                     </div>
-                    <span style={{ color: "#1D1D1F" }}>
-                      <span style={{ fontSize: 20, fontWeight: 700 }}>Kurzanalyse der Rolle:</span>
-                      <br />
+                    <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
+                      <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Kurzanalyse der Rolle:</span>
                       <span style={{ fontSize: 16 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}</span>
                     </span>
                   </div>
