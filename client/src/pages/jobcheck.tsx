@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
-import { FileText, AlertTriangle, Check, Shield, TrendingUp, Users, Zap, Scale, ChevronRight, ChevronDown, CircleAlert, CircleCheck, CircleMinus, Lightbulb, CalendarDays, ClipboardCheck, BarChart3 } from "lucide-react";
-import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
+import { FileText, AlertTriangle, Check, TrendingUp, Zap, Scale, ChevronRight, ChevronDown, CircleAlert, CircleCheck, CircleMinus, Lightbulb, CalendarDays, ClipboardCheck, BarChart3, CheckCircle2, Briefcase, LayoutGrid, Wrench, Target, UserCheck, Hash } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { hyphenateText } from "@/lib/hyphenate";
 import { BERUFE } from "@/data/berufe";
@@ -13,6 +12,47 @@ import {
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 
 type BG = { imp: number; int: number; ana: number };
+
+type RollenDnaSummary = {
+  beruf: string;
+  fuehrung: string;
+  aufgabencharakter: string;
+  arbeitslogik: string;
+  erfolgsfokusIndices: number[];
+  taetigkeitenCount: number;
+  humanCount: number;
+  fuehrungCount: number;
+};
+
+const ERFOLGSFOKUS_DISPLAY_LABELS = [
+  "Ergebnisse und Zielerreichung",
+  "Zusammenarbeit und Netzwerk",
+  "Innovation und Weiterentwicklung",
+  "Prozesse und Effizienz",
+  "Fachliche Qualität und Expertise",
+  "Strategische Wirkung",
+];
+
+const AUFGABENCHARAKTER_LABELS: Record<string, string> = {
+  "überwiegend operativ": "Praktische Umsetzung im Tagesgeschäft",
+  "überwiegend systemisch": "Umsetzung mit strukturiertem Vorgehen",
+  "überwiegend strategisch": "Analyse, Planung und strategische Steuerung",
+  "Gemischt": "Ausgewogene Mischung",
+};
+
+const ARBEITSLOGIK_LABELS: Record<string, string> = {
+  "Umsetzungsorientiert": "Umsetzung und Ergebnisse",
+  "Daten-/prozessorientiert": "Analyse und Struktur",
+  "Menschenorientiert": "Zusammenarbeit und Kommunikation",
+  "Ausgewogen": "Ausgewogene Mischung",
+};
+
+const FUEHRUNG_LABELS: Record<string, string> = {
+  "Keine": "Keine Führungsverantwortung",
+  "Projekt-/Teamkoordination": "Projekt- oder Teamkoordination",
+  "Fachliche Führung": "Fachliche Führung",
+  "Disziplinarische Führung mit Ergebnisverantwortung": "Disziplinarische Führung",
+};
 
 function roundPercentages(p1: number, p2: number, p3: number): [number, number, number] {
   const factor = 10;
@@ -395,6 +435,7 @@ export default function JobCheck() {
   const [analyseOpen, setAnalyseOpen] = useState(true);
   const [berichtOpen, setBerichtOpen] = useState(false);
   const [roleAnalysis, setRoleAnalysis] = useState<RoleAnalysis | null>(null);
+  const [dnaSummary, setDnaSummary] = useState<RollenDnaSummary | null>(null);
   const [candImp, setCandImp] = useState(() => {
     try { const s = localStorage.getItem("jobcheckCandProfile"); if (s) { const p = JSON.parse(s); return p.impulsiv ?? 33; } } catch {} return 33;
   });
@@ -415,6 +456,17 @@ export default function JobCheck() {
       const state = JSON.parse(raw);
       const role = buildRoleAnalysis(state);
       if (role) setRoleAnalysis(role);
+      const taetigkeiten = state.taetigkeiten || [];
+      setDnaSummary({
+        beruf: state.beruf || "",
+        fuehrung: state.fuehrung || "Keine",
+        aufgabencharakter: state.aufgabencharakter || "",
+        arbeitslogik: state.arbeitslogik || "",
+        erfolgsfokusIndices: state.erfolgsfokusIndices || [],
+        taetigkeitenCount: taetigkeiten.filter((t: any) => t.kategorie === "haupt").length,
+        humanCount: taetigkeiten.filter((t: any) => t.kategorie === "neben").length,
+        fuehrungCount: taetigkeiten.filter((t: any) => t.kategorie === "fuehrung").length,
+      });
     } catch {}
   }, []);
 
@@ -522,25 +574,54 @@ export default function JobCheck() {
         <main className="flex-1 w-full mx-auto px-5 pb-24 pt-10" style={{ maxWidth: 1100 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
-            <GlassCard testId="jobcheck-header" style={{ padding: "36px 32px 30px", textAlign: "center", position: "relative", overflow: "hidden" }}>
-              <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(52,170,220,0.04))", pointerEvents: "none" }} />
-              <div style={{
-                display: "inline-flex", alignItems: "center", gap: 6,
-                background: "linear-gradient(135deg, rgba(0,113,227,0.1), rgba(52,170,220,0.06))",
-                borderRadius: 20, padding: "5px 14px", marginBottom: 14,
-              }}>
-                <Shield style={{ width: 12, height: 12, color: "#0071E3" }} />
-                <span style={{ fontSize: 10, fontWeight: 700, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.12em" }}>Recruiting-Entscheidungsgrundlage – Level 2</span>
+            <GlassCard testId="jobcheck-header" style={{ padding: "32px 32px 28px", position: "relative", overflow: "hidden" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+                <CheckCircle2 style={{ width: 22, height: 22, color: "#34C759", flexShrink: 0 }} />
+                <h1 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", color: "#1D1D1F", lineHeight: 1.2, margin: 0 }} data-testid="text-jobcheck-title">
+                  Datenerfassung abgeschlossen
+                </h1>
               </div>
-              <h1 style={{ fontSize: 28, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.15, marginBottom: 4 }} data-testid="text-jobcheck-title">
-                bioLogic JobCheck
-              </h1>
-              <p style={{ fontSize: 15, color: "#6E6E73", marginBottom: 16, fontWeight: 500 }} data-testid="text-jobcheck-position">{roleAnalysis.job_title}</p>
-              <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10 }}>
-                  {roleAnalysis.job_family}
-                </span>
-              </div>
+              <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 20, marginLeft: 32, fontWeight: 400 }} data-testid="text-jobcheck-position">
+                Das Rollenprofil wurde erfolgreich erstellt.
+              </p>
+
+              {dnaSummary && (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }} data-testid="dna-summary-grid">
+                  {[
+                    { icon: Briefcase, label: "Rolle", value: dnaSummary.beruf || roleAnalysis.job_title, testId: "summary-rolle" },
+                    { icon: LayoutGrid, label: "Aufgabenstruktur", value: AUFGABENCHARAKTER_LABELS[dnaSummary.aufgabencharakter] || dnaSummary.aufgabencharakter, testId: "summary-aufgaben" },
+                    { icon: Wrench, label: "Arbeitsweise", value: ARBEITSLOGIK_LABELS[dnaSummary.arbeitslogik] || dnaSummary.arbeitslogik, testId: "summary-arbeitsweise" },
+                    { icon: Target, label: "Erfolgsfokus", value: (Array.isArray(dnaSummary.erfolgsfokusIndices) ? dnaSummary.erfolgsfokusIndices : []).map(i => ERFOLGSFOKUS_DISPLAY_LABELS[i]).filter(Boolean).join(", ") || "Nicht definiert", testId: "summary-erfolgsfokus" },
+                    { icon: UserCheck, label: "Führung", value: FUEHRUNG_LABELS[dnaSummary.fuehrung] || dnaSummary.fuehrung, testId: "summary-fuehrung" },
+                    { icon: Hash, label: "Kompetenzanzahl", value: null, testId: "summary-kompetenz" },
+                  ].map(card => (
+                    <div
+                      key={card.testId}
+                      style={{
+                        padding: "14px 16px",
+                        borderRadius: 14,
+                        background: "rgba(0,0,0,0.02)",
+                        border: "1px solid rgba(0,0,0,0.04)",
+                      }}
+                      data-testid={card.testId}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                        <card.icon style={{ width: 14, height: 14, color: "#8E8E93", flexShrink: 0 }} />
+                        <span style={{ fontSize: 13, fontWeight: 650, color: "#1D1D1F" }}>{card.label}</span>
+                      </div>
+                      {card.value !== null ? (
+                        <p style={{ fontSize: 13, color: "#6E6E73", margin: 0, lineHeight: 1.5, paddingLeft: 22 }}>{card.value}</p>
+                      ) : (
+                        <div style={{ display: "flex", gap: 14, paddingLeft: 22, flexWrap: "wrap" }}>
+                          <span style={{ fontSize: 12, color: "#6E6E73" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.taetigkeitenCount}</strong> Tätigkeiten</span>
+                          <span style={{ fontSize: 12, color: "#6E6E73" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.humanCount}</strong> Humankompetenzen</span>
+                          <span style={{ fontSize: 12, color: "#6E6E73" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.fuehrungCount}</strong> Führung</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </GlassCard>
 
             <AccordionCard
