@@ -66,159 +66,148 @@ function calcBioGram(items: Taetigkeit[]): BioGram {
   return { imp, int, ana };
 }
 
-function generateBioCheckText(bg: BioGram, isLeadership: boolean, fuehrungsBg?: BioGram): string {
+type ResultKey =
+  | "IMP_INT_ANA" | "IMP_ANA_INT" | "INT_IMP_ANA" | "INT_ANA_IMP" | "ANA_IMP_INT" | "ANA_INT_IMP"
+  | "IMP_INT__ANA" | "IMP_ANA__INT" | "INT_IMP__ANA" | "INT_ANA__IMP" | "ANA_IMP__INT" | "ANA_INT__IMP"
+  | "BALANCED";
+
+type RoleResultEntry = { headline: string; summary: string; focus: string; transfer: string; leadership: string };
+
+const DUAL_THRESHOLD = 5;
+const BALANCED_THRESHOLD = 5;
+
+function getRoleResultKey(imp: number, int: number, ana: number): ResultKey {
   const vals = [
-    { key: "imp" as const, label: "impulsiv", value: bg.imp },
-    { key: "int" as const, label: "intuitiv", value: bg.int },
-    { key: "ana" as const, label: "analytisch", value: bg.ana },
+    { key: "IMP", value: imp },
+    { key: "INT", value: int },
+    { key: "ANA", value: ana },
   ].sort((a, b) => b.value - a.value);
+  const maxV = vals[0].value, midV = vals[1].value, minV = vals[2].value;
+  if (maxV - minV <= BALANCED_THRESHOLD) return "BALANCED";
+  if (maxV - midV <= DUAL_THRESHOLD && midV - minV > DUAL_THRESHOLD)
+    return `${vals[0].key}_${vals[1].key}__${vals[2].key}` as ResultKey;
+  return `${vals[0].key}_${vals[1].key}_${vals[2].key}` as ResultKey;
+}
 
-  const max = vals[0], second = vals[1], third = vals[2];
-  const gap = max.value - second.value;
+const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
+  IMP_INT_ANA: {
+    headline: "Dominante Rollenlogik: Impulsiv \u2013 Intuitiv",
+    summary: "Diese Rolle ist vor allem auf Umsetzung, Entscheidungskraft und direkte Wirksamkeit ausgerichtet.",
+    focus: "Tempo, Handlungsorientierung und die Fähigkeit, Menschen in Bewegung zu bringen, stehen im Vordergrund.",
+    transfer: "Die Rolle entfaltet ihre Stärke dort, wo schnelle Entscheidungen, klare Zielorientierung und wirksame Abstimmung zusammenkommen.",
+    leadership: "In der Führungsarbeit zeigt sich das durch sichtbare Steuerung, klare Richtung und motivierende Präsenz.",
+  },
+  IMP_ANA_INT: {
+    headline: "Dominante Rollenlogik: Impulsiv \u2013 Analytisch",
+    summary: "Diese Rolle verbindet Umsetzungsstärke mit sachlicher Struktur und klarer Ergebnisorientierung.",
+    focus: "Im Vordergrund stehen Entscheidungen, Steuerung und die Fähigkeit, Themen konsequent voranzubringen, ohne die fachliche Präzision zu verlieren.",
+    transfer: "Besonders wirksam ist die Rolle dort, wo Tempo, Verbindlichkeit und strukturierte Umsetzung gleichzeitig gefordert sind.",
+    leadership: "In der Führungsarbeit zeigt sich das durch klare Führung, hohe Steuerungsdichte und einen starken Fokus auf Zielerreichung.",
+  },
+  INT_IMP_ANA: {
+    headline: "Dominante Rollenlogik: Intuitiv \u2013 Impulsiv",
+    summary: "Diese Rolle verbindet Menschenorientierung mit Handlungsenergie und direkter Umsetzungsstärke.",
+    focus: "Im Mittelpunkt stehen Zusammenarbeit, schnelle Abstimmung und die Fähigkeit, Dynamik in soziale oder kommunikative Prozesse zu bringen.",
+    transfer: "Die Rolle wirkt besonders stark dort, wo Beziehungen gestaltet und gleichzeitig Entscheidungen zügig in Bewegung gebracht werden müssen.",
+    leadership: "In der Führungsarbeit zeigt sich das durch Nähe zu Menschen, motivierende Kommunikation und handlungsorientierte Führung.",
+  },
+  INT_ANA_IMP: {
+    headline: "Dominante Rollenlogik: Intuitiv \u2013 Analytisch",
+    summary: "Diese Rolle verbindet Zusammenarbeit im Team mit fachlicher Struktur und systematischem Vorgehen.",
+    focus: "Teamorientierung und Prozessklarheit stehen gleichwertig im Vordergrund.",
+    transfer: "Die Rolle entfaltet ihre Stärke dort, wo Abstimmung, Verlässlichkeit und strukturiertes Arbeiten zusammenkommen.",
+    leadership: "In der Führungsarbeit zeigt sich das durch klare Steuerung, kombiniert mit Raum für Austausch und Dialog.",
+  },
+  ANA_IMP_INT: {
+    headline: "Dominante Rollenlogik: Analytisch \u2013 Impulsiv",
+    summary: "Diese Rolle verbindet fachliche Präzision mit konsequenter Umsetzung und klarer Ergebnisorientierung.",
+    focus: "Im Vordergrund stehen Struktur, Verlässlichkeit und die Fähigkeit, aus Planung wirksames Handeln abzuleiten.",
+    transfer: "Besonders stark ist die Rolle dort, wo komplexe Anforderungen sauber durchdacht und anschließend konsequent umgesetzt werden müssen.",
+    leadership: "In der Führungsarbeit zeigt sich das durch strukturierte Steuerung, klare Entscheidungen und einen hohen Qualitätsanspruch.",
+  },
+  ANA_INT_IMP: {
+    headline: "Dominante Rollenlogik: Analytisch \u2013 Intuitiv",
+    summary: "Diese Rolle verbindet fachliche Struktur mit Teamorientierung und einer abgestimmten Arbeitsweise.",
+    focus: "Im Vordergrund stehen Planung, Prozessklarheit und die Fähigkeit, Menschen in verlässliche Abläufe einzubinden.",
+    transfer: "Die Rolle wirkt besonders stark dort, wo Qualität, Zusammenarbeit und saubere Abstimmung miteinander verbunden werden müssen.",
+    leadership: "In der Führungsarbeit zeigt sich das durch ruhige Steuerung, klare Strukturen und einen dialogfähigen Führungsstil.",
+  },
+  IMP_INT__ANA: {
+    headline: "Dominante Rollenlogik: Impulsiv / Intuitiv",
+    summary: "Diese Rolle vereint Umsetzungskraft und Menschenorientierung in nahezu gleicher Ausprägung.",
+    focus: "Im Vordergrund stehen Dynamik, direkte Wirksamkeit und die Fähigkeit, andere aktiv einzubinden.",
+    transfer: "Besonders stark ist die Rolle dort, wo schnell gehandelt, klar kommuniziert und gleichzeitig Beziehung hergestellt werden muss.",
+    leadership: "In der Führungsarbeit zeigt sich das durch präsente Führung, motivierende Kommunikation und eine hohe Aktivierungswirkung.",
+  },
+  IMP_ANA__INT: {
+    headline: "Dominante Rollenlogik: Impulsiv / Analytisch",
+    summary: "Diese Rolle verbindet Entscheidungskraft und Umsetzungsstärke mit Struktur und sachlicher Kontrolle.",
+    focus: "Tempo und Ergebnisverantwortung stehen gleichwertig neben Planung, Ordnung und fachlicher Präzision.",
+    transfer: "Die Rolle wirkt besonders stark dort, wo schnell entschieden werden muss, ohne die Qualität der Umsetzung aus dem Blick zu verlieren.",
+    leadership: "In der Führungsarbeit zeigt sich das durch entschlossene Steuerung, klare Prioritäten und einen hohen Anspruch an Ergebnisse.",
+  },
+  INT_IMP__ANA: {
+    headline: "Dominante Rollenlogik: Intuitiv / Impulsiv",
+    summary: "Diese Rolle verbindet soziale Wirksamkeit mit direkter Handlungsenergie in nahezu gleicher Ausprägung.",
+    focus: "Zusammenarbeit, Kommunikation und Aktivierung stehen gemeinsam im Vordergrund.",
+    transfer: "Die Rolle entfaltet ihre Stärke besonders dort, wo Menschen mitgenommen und Themen gleichzeitig aktiv vorangebracht werden müssen.",
+    leadership: "In der Führungsarbeit zeigt sich das durch nahbare Präsenz, direkte Ansprache und eine mobilisierende Wirkung.",
+  },
+  INT_ANA__IMP: {
+    headline: "Dominante Rollenlogik: Intuitiv / Analytisch",
+    summary: "Diese Rolle verbindet Teamorientierung und strukturierte Arbeitsweise in nahezu gleicher Ausprägung.",
+    focus: "Zusammenarbeit, Prozessklarheit und abgestimmtes Vorgehen stehen gemeinsam im Zentrum.",
+    transfer: "Besonders stark wirkt die Rolle dort, wo Menschenorientierung und fachliche Ordnung gleichzeitig gefragt sind.",
+    leadership: "In der Führungsarbeit zeigt sich das durch klare, nachvollziehbare Steuerung mit hoher Dialogfähigkeit.",
+  },
+  ANA_IMP__INT: {
+    headline: "Dominante Rollenlogik: Analytisch / Impulsiv",
+    summary: "Diese Rolle verbindet fachliche Präzision mit hoher Umsetzungs- und Entscheidungskraft.",
+    focus: "Struktur, Klarheit und Ergebnisverantwortung stehen gleichwertig im Vordergrund.",
+    transfer: "Die Rolle wirkt besonders stark dort, wo komplexe Anforderungen nicht nur durchdacht, sondern auch konsequent entschieden und umgesetzt werden müssen.",
+    leadership: "In der Führungsarbeit zeigt sich das durch klare Steuerung, hohe Verbindlichkeit und konsequente Ergebnisorientierung.",
+  },
+  ANA_INT__IMP: {
+    headline: "Dominante Rollenlogik: Analytisch / Intuitiv",
+    summary: "Diese Rolle verbindet fachliche Struktur und Zusammenarbeit in nahezu gleicher Ausprägung.",
+    focus: "Planung, Prozesssicherheit und Teamabstimmung prägen die Arbeitsweise gleichermaßen.",
+    transfer: "Besonders wirksam ist die Rolle dort, wo Qualität, Verlässlichkeit und gute Zusammenarbeit gleichzeitig notwendig sind.",
+    leadership: "In der Führungsarbeit zeigt sich das durch ruhige Steuerung, nachvollziehbare Entscheidungen und hohe Anschlussfähigkeit im Team.",
+  },
+  BALANCED: {
+    headline: "Ausgewogene Rollenlogik",
+    summary: "Diese Rolle zeigt eine gleichmäßige Verteilung der drei Dimensionen Impulsiv, Intuitiv und Analytisch.",
+    focus: "Weder Tempo noch Beziehung noch Struktur stehen eindeutig im Vordergrund. Stattdessen verlangt die Rolle ein flexibles Zusammenspiel aller drei Wirkungsweisen.",
+    transfer: "Die Rolle wirkt besonders stark dort, wo situationsabhängig zwischen Umsetzung, Zusammenarbeit und Analyse gewechselt werden muss.",
+    leadership: "In der Führungsarbeit zeigt sich das durch hohe Anpassungsfähigkeit, variable Steuerung und ein ausgewogenes Verhältnis von Klarheit, Dialog und Handlung.",
+  },
+};
 
-  const dominantTexts: Record<string, { line1: string; line2: string }> = isLeadership ? {
-    imp: {
-      line1: "Die Rolle ist klar steuernd ausgerichtet.",
-      line2: "Im Vordergrund stehen Zielklarheit, Entscheidungsstärke und konsequente Ergebnisverantwortung.",
-    },
-    int: {
-      line1: "Die Rolle ist integrativ geprägt.",
-      line2: "Im Vordergrund stehen Abstimmung, Zusammenarbeit und ein sicheres Gespür für das Miteinander.",
-    },
-    ana: {
-      line1: "Die Rolle ist strukturbildend angelegt.",
-      line2: "Im Vordergrund stehen Planung, fachliche Tiefe und eine verlässliche Systematik.",
-    },
-  } : {
-    imp: {
-      line1: "Diese Rolle ist klar handlungs- und ergebnisorientiert.",
-      line2: "Sie verlangt eigenständige Entscheidungen, konsequente Umsetzung und Verantwortungsübernahme im operativen Alltag.",
-    },
-    int: {
-      line1: "Diese Rolle ist kontext- und abstimmungsorientiert.",
-      line2: "Sie verlangt ein sicheres Gespür für Situationen, tragfähige Zusammenarbeit und angemessenes Handeln im jeweiligen Umfeld.",
-    },
-    ana: {
-      line1: "Diese Rolle ist strukturell geprägt.",
-      line2: "Sie erfordert planvolles Vorgehen, fachliche Präzision und eine verlässliche, systematische Arbeitsweise.",
-    },
-  };
+const analysisPrincipleText = {
+  title: "Grundprinzip der Analyse",
+  body: [
+    "Jeder Mensch verfügt über die drei grundlegenden Denk- und Handlungsweisen Impulsiv, Intuitiv und Analytisch.",
+    "Alle drei Anteile sind immer vorhanden. Der Unterschied liegt in ihrer Reihenfolge und Gewichtung.",
+    "Diese Struktur prägt, wie Menschen im Alltag entscheiden, kommunizieren und handeln.",
+    "Je nach Situation kann sich die sichtbare Wirkung verändern: im Arbeitsalltag, unter Stress oder in entspannten Situationen.",
+  ],
+};
 
-  const hybridTexts: Record<string, { line1: string; line2: string }> = isLeadership ? {
-    imp_ana: {
-      line1: "Diese Rolle verbindet Ergebnisorientierung mit systematischer Ausrichtung.",
-      line2: "Zielklarheit und strukturelle Genauigkeit werden gleichermaßen erwartet.",
-    },
-    ana_imp: {
-      line1: "Diese Rolle verbindet systematische Ausrichtung mit Ergebnisorientierung.",
-      line2: "Strukturelle Genauigkeit und Zielklarheit werden gleichermaßen erwartet.",
-    },
-    ana_int: {
-      line1: "Diese Rolle verbindet fachliche Systematik mit dem Blick auf das Miteinander.",
-      line2: "Prozessklarheit und Teamorientierung stehen gleichwertig im Vordergrund.",
-    },
-    int_ana: {
-      line1: "Diese Rolle verbindet den Blick auf das Miteinander mit fachlicher Systematik.",
-      line2: "Teamorientierung und Prozessklarheit stehen gleichwertig im Vordergrund.",
-    },
-    imp_int: {
-      line1: "Diese Rolle verbindet Umsetzungsstärke mit integrativer Wirkung.",
-      line2: "Ergebnisverantwortung und Teamstabilität greifen ineinander.",
-    },
-    int_imp: {
-      line1: "Diese Rolle verbindet integrative Wirkung mit Umsetzungsstärke.",
-      line2: "Teamstabilität und Ergebnisverantwortung greifen ineinander.",
-    },
-  } : {
-    imp_ana: {
-      line1: "Diese Rolle verbindet klare Struktur mit konsequenter Umsetzung.",
-      line2: "Planung und Handlung greifen eng ineinander.",
-    },
-    ana_imp: {
-      line1: "Diese Rolle verbindet klare Struktur mit konsequenter Umsetzung.",
-      line2: "Planung und Handlung greifen eng ineinander.",
-    },
-    ana_int: {
-      line1: "Diese Rolle verbindet strukturelle Klarheit mit sensibler Abstimmung im Arbeitsumfeld.",
-      line2: "Systematik und Zusammenarbeit stehen gleichwertig im Vordergrund.",
-    },
-    int_ana: {
-      line1: "Diese Rolle verbindet strukturelle Klarheit mit sensibler Abstimmung im Arbeitsumfeld.",
-      line2: "Systematik und Zusammenarbeit stehen gleichwertig im Vordergrund.",
-    },
-    imp_int: {
-      line1: "Diese Rolle verbindet Umsetzungskraft mit situativem Gespür.",
-      line2: "Handlungsfähigkeit und Zusammenarbeit wirken parallel.",
-    },
-    int_imp: {
-      line1: "Diese Rolle verbindet Umsetzungskraft mit situativem Gespür.",
-      line2: "Handlungsfähigkeit und Zusammenarbeit wirken parallel.",
-    },
-  };
+const roleRequirementText = {
+  intro: [
+    "Diese Auswertung beschreibt die Wirklogik der Rolle.",
+    "Die Anforderungen werden den drei Dimensionen Impulsiv, Intuitiv und Analytisch zugeordnet.",
+    "So wird sichtbar, welche Form von Wirksamkeit die Rolle im Arbeitsalltag hauptsächlich verlangt.",
+  ],
+  outro: "Das Gesamtprofil zeigt, wo der Schwerpunkt liegt und wie die drei Dimensionen zueinander gewichtet sind.",
+};
 
-  const fuehrungsSatz: Record<string, string> = {
-    imp: "In der Führungsarbeit setzt das auf Tempo, Konsequenz und direktes Eingreifen.",
-    int: "In der Führungsarbeit setzt das auf Nähe, Vertrauen und das Mitnehmen anderer.",
-    ana: "In der Führungsarbeit setzt das auf klare Rahmensetzung und verlässliche Orientierung.",
-    imp_ana: "In der Führungsarbeit verbindet sich das mit konsequenter Umsetzung auf Basis klarer Vorgaben.",
-    ana_imp: "In der Führungsarbeit verbindet sich das mit konsequenter Umsetzung auf Basis klarer Vorgaben.",
-    imp_int: "In der Führungsarbeit verbindet sich das mit entschlossenem Handeln und Blick auf die Beteiligten.",
-    int_imp: "In der Führungsarbeit verbindet sich das mit entschlossenem Handeln und Blick auf die Beteiligten.",
-    ana_int: "In der Führungsarbeit verbindet sich das mit durchdachter Steuerung und Raum für Dialog.",
-    int_ana: "In der Führungsarbeit verbindet sich das mit durchdachter Steuerung und Raum für Dialog.",
-    balanced: "In der Führungsarbeit erfordert das eine situative Balance zwischen Steuerung, Zusammenarbeit und Struktur.",
-  };
-
-  let intensityLabel = "";
-  if (max.value >= 50 && gap >= 10) intensityLabel = "mit sehr deutlicher";
-  else if (max.value >= 38 && gap >= 6) intensityLabel = "mit deutlicher";
-  else if (gap >= 5) intensityLabel = "mit leichter";
-
-  const getFuehrungsSatzKey = (): string => {
-    if (!fuehrungsBg) return max.key;
-    const fVals = [
-      { key: "imp" as const, value: fuehrungsBg.imp },
-      { key: "int" as const, value: fuehrungsBg.int },
-      { key: "ana" as const, value: fuehrungsBg.ana },
-    ].sort((a, b) => b.value - a.value);
-    const fMax = fVals[0], fSecond = fVals[1], fThird = fVals[2];
-    const fGap = fMax.value - fSecond.value;
-    const fBottomGap = fSecond.value - fThird.value;
-    if (fGap >= 5) return fMax.key;
-    if (fBottomGap >= 5) return `${fMax.key}_${fSecond.key}`;
-    return "balanced";
-  };
-
-  if (intensityLabel) {
-    const dt = dominantTexts[max.key];
-    const prefix = isLeadership ? "Die Rolle ist" : "Diese Rolle ist";
-    let text = `${prefix} ${intensityLabel} ${max.label}er Prägung geprägt.\n${dt.line2}`;
-    if (isLeadership) {
-      const fKey = getFuehrungsSatzKey();
-      text += `\n${fuehrungsSatz[fKey] || fuehrungsSatz.balanced}`;
-    }
-    return text;
-  }
-
-  const topDiff = Math.abs(max.value - second.value);
-  const bottomGap = second.value - third.value;
-
-  if (bottomGap >= 5) {
-    const pairKey = `${max.key}_${second.key}`;
-    const ht = hybridTexts[pairKey];
-    let text = `${ht.line1}\n${ht.line2}`;
-    if (isLeadership) {
-      const fKey = getFuehrungsSatzKey();
-      text += `\n${fuehrungsSatz[fKey] || fuehrungsSatz.balanced}`;
-    }
-    return text;
-  }
-
-  if (isLeadership) {
-    const fKey = getFuehrungsSatzKey();
-    return `Diese Führungsrolle integriert Steuerung, Zusammenarbeit und strukturelle Orientierung in vergleichbarer Intensität.\n${fuehrungsSatz[fKey] || fuehrungsSatz.balanced}`;
-  }
-  return `Diese Rolle integriert operative, kontextbezogene und strukturelle Anforderungen in vergleichbarer Intensität.\nSie verlangt Flexibilität im Handeln sowie Klarheit in Planung und Zusammenarbeit.`;
+function generateBioCheckText(bg: BioGram, isLeadership: boolean, _fuehrungsBg?: BioGram): string {
+  const key = getRoleResultKey(bg.imp, bg.int, bg.ana);
+  const t = roleResultTexts[key];
+  let text = `${t.headline}\n${t.summary}\n${t.focus}\n${t.transfer}`;
+  if (isLeadership) text += `\n${t.leadership}`;
+  return text;
 }
 
 const ERFOLGSFOKUS_LABELS = [
@@ -2465,9 +2454,25 @@ export default function RollenDNA() {
                       <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.8, marginTop: 14, whiteSpace: "pre-line" }} data-testid="text-biocheck-intro">
                         {bioCheckIntroOverride}
                       </p>
-                    ) : (
-                      <div style={{ marginTop: 16 }} data-testid="text-biocheck-intro">
-                        <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.8, margin: "0 0 16px 0" }}>Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Dimensionen <span style={{ color: "#C41E3A", fontWeight: 600 }}>Impulsiv</span>, <span style={{ color: "#F39200", fontWeight: 600 }}>Intuitiv</span> und <span style={{ color: "#1A5DAB", fontWeight: 600 }}>Analytisch</span> zugeordnet. So wird erkennbar, welche Form von Wirksamkeit die Rolle bestimmt.</p>
+                    ) : (<>
+                      <div style={{
+                        marginTop: 16,
+                        padding: "16px 18px",
+                        borderRadius: 14,
+                        background: "rgba(0,0,0,0.02)",
+                        border: "1px solid rgba(0,0,0,0.04)",
+                      }} data-testid="card-grundprinzip">
+                        <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0" }}>{analysisPrincipleText.title}</h3>
+                        {analysisPrincipleText.body.map((line, i) => (
+                          <p key={i} style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: i === 0 ? 0 : "6px 0 0 0" }}>{line}</p>
+                        ))}
+                      </div>
+
+                      <div style={{ marginTop: 14 }} data-testid="card-anforderungsprofil">
+                        <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0" }}>Anforderungsprofil der Rolle</h3>
+                        <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: "0 0 14px 0" }}>
+                          {roleRequirementText.intro.join(" ")}
+                        </p>
 
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
                           {[
@@ -2487,40 +2492,41 @@ export default function RollenDNA() {
                           ))}
                         </div>
 
-                        <p style={{ fontSize: 12, color: "#8E8E93", lineHeight: 1.6, margin: "12px 0 0 0" }}>Das Gesamtprofil zeigt, wo der Schwerpunkt liegt und wie die drei Dimensionen zueinander gewichtet sind.</p>
+                        <p style={{ fontSize: 12, color: "#8E8E93", lineHeight: 1.6, margin: "12px 0 0 0" }}>{roleRequirementText.outro}</p>
                       </div>
-                    )}
+                    </>)}
 
-                    <div style={{
-                      marginTop: 18,
-                      padding: "16px 18px",
-                      borderRadius: 14,
-                      background: "linear-gradient(135deg, rgba(0,113,227,0.04), rgba(52,170,220,0.04))",
-                      border: "1px solid rgba(0,113,227,0.10)",
-                    }} data-testid="box-biocheck-description">
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                    {(() => {
+                      const resultKey = getRoleResultKey(bioGramGesamt.imp, bioGramGesamt.int, bioGramGesamt.ana);
+                      const rt = roleResultTexts[resultKey];
+                      return (
                         <div style={{
-                          width: 28, height: 28, borderRadius: "50%",
-                          background: "linear-gradient(135deg, rgba(0,113,227,0.12), rgba(52,170,220,0.12))",
-                          display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                        }}>
-                          <Lightbulb size={14} style={{ color: "#0071E3" }} />
+                          marginTop: 18,
+                          padding: "16px 18px",
+                          borderRadius: 14,
+                          background: "linear-gradient(135deg, rgba(0,113,227,0.04), rgba(52,170,220,0.04))",
+                          border: "1px solid rgba(0,113,227,0.10)",
+                        }} data-testid="box-biocheck-description">
+                          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                            <div style={{
+                              width: 28, height: 28, borderRadius: "50%",
+                              background: "linear-gradient(135deg, rgba(0,113,227,0.12), rgba(52,170,220,0.12))",
+                              display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                            }}>
+                              <Lightbulb size={14} style={{ color: "#0071E3" }} />
+                            </div>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.04em" }}>Ergebnis der Analyse</span>
+                          </div>
+                          <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px 0" }} data-testid="text-biocheck-line-0">{rt.headline}</h3>
+                          <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-line-1">{rt.summary}</p>
+                          <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-line-2">{rt.focus}</p>
+                          <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: 0 }} data-testid="text-biocheck-line-3">{rt.transfer}</p>
+                          {isLeadershipRole && (
+                            <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "6px 0 0 0" }} data-testid="text-biocheck-line-4">{rt.leadership}</p>
+                          )}
                         </div>
-                        <span style={{ fontSize: 12, fontWeight: 600, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.04em" }}>Ergebnis der Analyse</span>
-                      </div>
-                      {bioCheckText.split("\n").map((line, i) => (
-                        <p key={i} style={{
-                          fontSize: 14,
-                          color: "#1D1D1F",
-                          lineHeight: 1.7,
-                          fontWeight: i === 0 ? 600 : 400,
-                          margin: i === 0 ? 0 : "6px 0 0 0",
-                          paddingLeft: i > 0 ? 0 : 0,
-                        }} data-testid={`text-biocheck-line-${i}`}>
-                          {line}
-                        </p>
-                      ))}
-                    </div>
+                      );
+                    })()}
 
                     <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                       {[
@@ -2966,35 +2972,37 @@ export default function RollenDNA() {
                     </div>
                   )}
 
-                  <div style={{
-                    marginTop: 18,
-                    padding: "16px 18px",
-                    borderRadius: 14,
-                    background: "linear-gradient(135deg, rgba(0,113,227,0.04), rgba(52,170,220,0.04))",
-                    border: "1px solid rgba(0,113,227,0.10)",
-                  }} data-testid="box-biocheck-description-collapsed">
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                  {(() => {
+                    const resultKey = getRoleResultKey(bioGramGesamt.imp, bioGramGesamt.int, bioGramGesamt.ana);
+                    const rt = roleResultTexts[resultKey];
+                    return (
                       <div style={{
-                        width: 28, height: 28, borderRadius: "50%",
-                        background: "linear-gradient(135deg, rgba(0,113,227,0.12), rgba(52,170,220,0.12))",
-                        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                      }}>
-                        <Lightbulb size={14} style={{ color: "#0071E3" }} />
+                        marginTop: 18,
+                        padding: "16px 18px",
+                        borderRadius: 14,
+                        background: "linear-gradient(135deg, rgba(0,113,227,0.04), rgba(52,170,220,0.04))",
+                        border: "1px solid rgba(0,113,227,0.10)",
+                      }} data-testid="box-biocheck-description-collapsed">
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                          <div style={{
+                            width: 28, height: 28, borderRadius: "50%",
+                            background: "linear-gradient(135deg, rgba(0,113,227,0.12), rgba(52,170,220,0.12))",
+                            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                          }}>
+                            <Lightbulb size={14} style={{ color: "#0071E3" }} />
+                          </div>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.04em" }}>Ergebnis der Analyse</span>
+                        </div>
+                        <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px 0" }} data-testid="text-biocheck-collapsed-line-0">{rt.headline}</h3>
+                        <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-collapsed-line-1">{rt.summary}</p>
+                        <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-collapsed-line-2">{rt.focus}</p>
+                        <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: 0 }} data-testid="text-biocheck-collapsed-line-3">{rt.transfer}</p>
+                        {isLeadershipRole && (
+                          <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "6px 0 0 0" }} data-testid="text-biocheck-collapsed-line-4">{rt.leadership}</p>
+                        )}
                       </div>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.04em" }}>Ergebnis der Analyse</span>
-                    </div>
-                    {bioCheckText.split("\n").map((line, i) => (
-                      <p key={i} style={{
-                        fontSize: 14,
-                        color: "#1D1D1F",
-                        lineHeight: 1.7,
-                        fontWeight: i === 0 ? 600 : 400,
-                        margin: i === 0 ? 0 : "6px 0 0 0",
-                      }} data-testid={`text-biocheck-collapsed-line-${i}`}>
-                        {line}
-                      </p>
-                    ))}
-                  </div>
+                    );
+                  })()}
 
                   <div style={{ marginTop: 16 }}>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
