@@ -2554,8 +2554,8 @@ export default function RollenDNA() {
                           marginTop: 18,
                           padding: "16px 18px",
                           borderRadius: 14,
-                          background: "linear-gradient(135deg, rgba(0,113,227,0.04), rgba(52,170,220,0.04))",
-                          border: "1px solid rgba(0,113,227,0.10)",
+                          background: "rgba(0,0,0,0.02)",
+                          border: "1px solid rgba(0,0,0,0.04)",
                         }} data-testid="box-biocheck-description">
                           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                             <div style={{
@@ -3059,8 +3059,8 @@ export default function RollenDNA() {
                         marginTop: 18,
                         padding: "16px 18px",
                         borderRadius: 14,
-                        background: "linear-gradient(135deg, rgba(0,113,227,0.04), rgba(52,170,220,0.04))",
-                        border: "1px solid rgba(0,113,227,0.10)",
+                        background: "rgba(0,0,0,0.02)",
+                        border: "1px solid rgba(0,0,0,0.04)",
                       }} data-testid="box-biocheck-description-collapsed">
                         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                           <div style={{
