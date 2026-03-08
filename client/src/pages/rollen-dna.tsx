@@ -2448,7 +2448,7 @@ export default function RollenDNA() {
                         </svg>
                       </div>
                       <span style={{ fontSize: 17, color: "#1D1D1F" }}>
-                        Anforderungsprofil der Rolle
+                        Kurzanalyse der Rolle: {beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}
                       </span>
                     </div>
                     <ChevronDown style={{
@@ -2923,7 +2923,7 @@ export default function RollenDNA() {
                       </svg>
                     </div>
                     <span style={{ fontSize: 17, color: "#1D1D1F" }}>
-                      Anforderungsprofil der Rolle
+                      Kurzanalyse der Rolle: {beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}
                     </span>
                   </div>
                   <ChevronDown style={{
