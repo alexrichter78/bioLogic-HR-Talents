@@ -2686,9 +2686,8 @@ export default function RollenDNA() {
                           { label: "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
                           { label: "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
                         ];
-                        const maxVal = Math.max(...bars.map(b => b.value), 1);
                         return bars.map((bar) => {
-                          const widthPct = (bar.value / maxVal) * 100;
+                          const widthPct = (bar.value / 67) * 100;
                           return (
                             <div
                               key={bar.label}
@@ -2711,7 +2710,7 @@ export default function RollenDNA() {
                                 position: "relative",
                               }}>
                                 <div style={{
-                                  width: bar.value === 0 ? "0%" : `${Math.max(widthPct, 3)}%`,
+                                  width: bar.value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 3), 100)}%`,
                                   height: "100%",
                                   borderRadius: 6,
                                   background: bar.color,
@@ -3193,9 +3192,8 @@ export default function RollenDNA() {
                           { label: "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
                           { label: "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
                         ];
-                        const maxVal = Math.max(...bars.map(b => b.value), 1);
                         return bars.map((bar) => {
-                          const widthPct = (bar.value / maxVal) * 100;
+                          const widthPct = (bar.value / 67) * 100;
                           return (
                             <div
                               key={bar.label}
@@ -3218,7 +3216,7 @@ export default function RollenDNA() {
                                 position: "relative",
                               }}>
                                 <div style={{
-                                  width: bar.value === 0 ? "0%" : `${Math.max(widthPct, 3)}%`,
+                                  width: bar.value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 3), 100)}%`,
                                   height: "100%",
                                   borderRadius: 6,
                                   background: bar.color,
