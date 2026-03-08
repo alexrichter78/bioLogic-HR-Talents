@@ -2768,7 +2768,7 @@ export default function RollenDNA() {
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 3 }}>
                       <Hash style={{ width: 14, height: 14, color: "#8E8E93", flexShrink: 0 }} />
-                      <span style={{ fontSize: 13, fontWeight: 650, color: "#1D1D1F" }}>Kompetenzanzahl</span>
+                      <span style={{ fontSize: 13, fontWeight: 650, color: "#1D1D1F" }}>Tätigkeits-/Kompetenzanzahl</span>
                     </div>
                     <div style={{ display: "flex", gap: 12, paddingLeft: 21, flexWrap: "wrap" }}>
                       <span style={{ fontSize: 12, color: "#6E6E73" }}><strong style={{ color: "#1D1D1F" }}>{hauptCount}</strong> Tätigkeiten</span>
