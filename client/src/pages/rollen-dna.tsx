@@ -76,17 +76,55 @@ type RoleResultEntry = { headline: string; summary: string; focus: string; trans
 const DUAL_THRESHOLD = 5;
 const BALANCED_THRESHOLD = 5;
 
-function getRoleResultKey(imp: number, int: number, ana: number): ResultKey {
+const DIMENSION_LABELS: Record<string, string> = { IMP: "Impulsiv", INT: "Intuitiv", ANA: "Analytisch" };
+
+type RoleAnalysis = {
+  resultKey: ResultKey;
+  dominanceType: "single" | "dual" | "balanced";
+  sorted: { key: string; value: number }[];
+  topGap: number;
+  bottomGap: number;
+  bottomTwoClose: boolean;
+  intensityLabel: string;
+};
+
+function getRoleAnalysis(imp: number, int: number, ana: number): RoleAnalysis {
   const vals = [
     { key: "IMP", value: imp },
     { key: "INT", value: int },
     { key: "ANA", value: ana },
   ].sort((a, b) => b.value - a.value);
   const maxV = vals[0].value, midV = vals[1].value, minV = vals[2].value;
-  if (maxV - minV <= BALANCED_THRESHOLD) return "BALANCED";
-  if (maxV - midV <= DUAL_THRESHOLD && midV - minV > DUAL_THRESHOLD)
-    return `${vals[0].key}_${vals[1].key}__${vals[2].key}` as ResultKey;
-  return `${vals[0].key}_${vals[1].key}_${vals[2].key}` as ResultKey;
+  const topGap = maxV - midV;
+  const bottomGap = midV - minV;
+  const bottomTwoClose = bottomGap <= DUAL_THRESHOLD;
+
+  let resultKey: ResultKey;
+  let dominanceType: "single" | "dual" | "balanced";
+
+  if (maxV - minV <= BALANCED_THRESHOLD) {
+    resultKey = "BALANCED";
+    dominanceType = "balanced";
+  } else if (topGap <= DUAL_THRESHOLD && bottomGap > DUAL_THRESHOLD) {
+    resultKey = `${vals[0].key}_${vals[1].key}__${vals[2].key}` as ResultKey;
+    dominanceType = "dual";
+  } else {
+    resultKey = `${vals[0].key}_${vals[1].key}_${vals[2].key}` as ResultKey;
+    dominanceType = "single";
+  }
+
+  let intensityLabel = "";
+  if (dominanceType === "single") {
+    if (topGap >= 15) intensityLabel = "sehr deutlich";
+    else if (topGap >= 10) intensityLabel = "deutlich";
+    else if (topGap >= 6) intensityLabel = "erkennbar";
+  }
+
+  return { resultKey, dominanceType, sorted: vals, topGap, bottomGap, bottomTwoClose, intensityLabel };
+}
+
+function getRoleResultKey(imp: number, int: number, ana: number): ResultKey {
+  return getRoleAnalysis(imp, int, ana).resultKey;
 }
 
 const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
@@ -2498,8 +2536,14 @@ export default function RollenDNA() {
                     </>)}
 
                     {(() => {
-                      const resultKey = getRoleResultKey(bioGramGesamt.imp, bioGramGesamt.int, bioGramGesamt.ana);
-                      const rt = roleResultTexts[resultKey];
+                      const analysis = getRoleAnalysis(bioGramGesamt.imp, bioGramGesamt.int, bioGramGesamt.ana);
+                      const rt = roleResultTexts[analysis.resultKey];
+                      const dynamicIntensity = analysis.intensityLabel
+                        ? `Die ${DIMENSION_LABELS[analysis.sorted[0].key]}-Prägung ist ${analysis.intensityLabel} ausgeprägt (${Math.round(analysis.sorted[0].value)}%).`
+                        : null;
+                      const dynamicBottomClose = analysis.dominanceType === "single" && analysis.bottomTwoClose
+                        ? `${DIMENSION_LABELS[analysis.sorted[1].key]} und ${DIMENSION_LABELS[analysis.sorted[2].key]} liegen mit ${Math.round(analysis.sorted[1].value)}% und ${Math.round(analysis.sorted[2].value)}% nahe beieinander.`
+                        : null;
                       return (
                         <div style={{
                           marginTop: 18,
@@ -2520,6 +2564,12 @@ export default function RollenDNA() {
                           </div>
                           <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px 0" }} data-testid="text-biocheck-line-0">{rt.headline}</h3>
                           <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-line-1">{rt.summary}</p>
+                          {dynamicIntensity && (
+                            <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-intensity">{dynamicIntensity}</p>
+                          )}
+                          {dynamicBottomClose && (
+                            <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-bottom-close">{dynamicBottomClose}</p>
+                          )}
                           <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-line-2">{rt.focus}</p>
                           <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: 0 }} data-testid="text-biocheck-line-3">{rt.transfer}</p>
                           {isLeadershipRole && (
@@ -2991,8 +3041,14 @@ export default function RollenDNA() {
                   </>)}
 
                   {(() => {
-                    const resultKey = getRoleResultKey(bioGramGesamt.imp, bioGramGesamt.int, bioGramGesamt.ana);
-                    const rt = roleResultTexts[resultKey];
+                    const analysis = getRoleAnalysis(bioGramGesamt.imp, bioGramGesamt.int, bioGramGesamt.ana);
+                    const rt = roleResultTexts[analysis.resultKey];
+                    const dynamicIntensity = analysis.intensityLabel
+                      ? `Die ${DIMENSION_LABELS[analysis.sorted[0].key]}-Prägung ist ${analysis.intensityLabel} ausgeprägt (${Math.round(analysis.sorted[0].value)}%).`
+                      : null;
+                    const dynamicBottomClose = analysis.dominanceType === "single" && analysis.bottomTwoClose
+                      ? `${DIMENSION_LABELS[analysis.sorted[1].key]} und ${DIMENSION_LABELS[analysis.sorted[2].key]} liegen mit ${Math.round(analysis.sorted[1].value)}% und ${Math.round(analysis.sorted[2].value)}% nahe beieinander.`
+                      : null;
                     return (
                       <div style={{
                         marginTop: 18,
@@ -3013,6 +3069,12 @@ export default function RollenDNA() {
                         </div>
                         <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px 0" }} data-testid="text-biocheck-collapsed-line-0">{rt.headline}</h3>
                         <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-collapsed-line-1">{rt.summary}</p>
+                        {dynamicIntensity && (
+                          <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: "0 0 6px 0" }}>{dynamicIntensity}</p>
+                        )}
+                        {dynamicBottomClose && (
+                          <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: "0 0 6px 0" }}>{dynamicBottomClose}</p>
+                        )}
                         <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "0 0 6px 0" }} data-testid="text-biocheck-collapsed-line-2">{rt.focus}</p>
                         <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: 0 }} data-testid="text-biocheck-collapsed-line-3">{rt.transfer}</p>
                         {isLeadershipRole && (
