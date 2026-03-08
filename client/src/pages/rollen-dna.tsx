@@ -136,15 +136,14 @@ function getContextLines(analysis: RoleAnalysis): string[] {
 
   if (analysis.dominanceType === "balanced") {
     return [
-      "Alle drei Dimensionen sind annähernd gleich gewichtet.",
-      "Kein einzelner Bereich dominiert die Rolle. Stattdessen wird ein flexibles Zusammenspiel aller drei Wirkungsweisen verlangt.",
+      "Alle drei Bereiche liegen auf einem ähnlichen Niveau. Es gibt keinen klaren Schwerpunkt.",
     ];
   }
 
   if (analysis.dominanceType === "dual") {
     return [
-      `${d0} (${l0}) und ${d1} (${l1}) prägen die Rolle gleichwertig.`,
-      `${d2} (${l2}) spielt eine untergeordnete Rolle.`,
+      `${d0} (${l0}) und ${d1} (${l1}) sind hier gleich stark ausgeprägt.`,
+      `${d2} (${l2}) tritt dagegen in den Hintergrund.`,
     ];
   }
 
@@ -156,9 +155,9 @@ function getContextLines(analysis: RoleAnalysis): string[] {
   }
 
   if (analysis.bottomTwoClose) {
-    lines.push(`${d1} (${l1}) und ${d2} (${l2}) sind annähernd gleich gewichtet.`);
+    lines.push(`${d1} (${l1}) und ${d2} (${l2}) liegen nah beieinander und bilden gemeinsam den Hintergrund.`);
   } else {
-    lines.push(`${d1} (${l1}) folgt als zweite Ausprägung. ${d2} (${l2}) ist am geringsten gewichtet.`);
+    lines.push(`${d1} (${l1}) spielt die zweite Rolle. ${d2} (${l2}) hat das geringste Gewicht.`);
   }
 
   return lines;
@@ -171,94 +170,94 @@ function getRoleResultKey(imp: number, int: number, ana: number): ResultKey {
 const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
   IMP_INT_ANA: {
     headline: "Schwerpunkt: Umsetzung und Zusammenarbeit",
-    summary: "Diese Rolle ist vor allem auf Umsetzung, Entscheidungskraft und direkte Wirksamkeit ausgerichtet.",
-    focus: "Tempo, Handlungsorientierung und die Fähigkeit, Menschen in Bewegung zu bringen, stehen im Vordergrund.",
-    transfer: "Die Rolle entfaltet ihre Stärke dort, wo schnelle Entscheidungen, klare Zielorientierung und wirksame Abstimmung zusammenkommen.",
-    leadership: "In der Führungsarbeit zeigt sich das durch sichtbare Steuerung, klare Richtung und motivierende Präsenz.",
+    summary: "Diese Rolle lebt von schnellem Handeln und direktem Kontakt zu Menschen.",
+    focus: "Wer hier arbeitet, muss Entscheidungen treffen, Tempo machen und gleichzeitig andere mitnehmen. Abstimmung passiert nicht am Schreibtisch, sondern im Gespräch und in Bewegung.",
+    transfer: "Besonders wirksam wird die Rolle dort, wo Ergebnisse zählen und Zusammenarbeit kein Selbstzweck ist, sondern dazu dient, Dinge tatsächlich ins Laufen zu bringen.",
+    leadership: "In der Führung zeigt sich das durch Präsenz, klare Ansagen und die Fähigkeit, ein Team zu mobilisieren, ohne den Überblick zu verlieren.",
   },
   IMP_ANA_INT: {
     headline: "Schwerpunkt: Umsetzung und Struktur",
-    summary: "Diese Rolle verbindet Umsetzungsstärke mit sachlicher Struktur und klarer Ergebnisorientierung.",
-    focus: "Im Vordergrund stehen Entscheidungen, Steuerung und die Fähigkeit, Themen konsequent voranzubringen, ohne die fachliche Präzision zu verlieren.",
-    transfer: "Besonders wirksam ist die Rolle dort, wo Tempo, Verbindlichkeit und strukturierte Umsetzung gleichzeitig gefordert sind.",
-    leadership: "In der Führungsarbeit zeigt sich das durch klare Führung, hohe Steuerungsdichte und einen starken Fokus auf Zielerreichung.",
+    summary: "Diese Rolle verbindet Handlungsstärke mit fachlicher Genauigkeit.",
+    focus: "Hier wird nicht lange diskutiert, sondern entschieden und umgesetzt. Gleichzeitig braucht es Sorgfalt, klare Abläufe und ein gutes Gespür dafür, wann Struktur wichtiger ist als Geschwindigkeit.",
+    transfer: "Am besten funktioniert das dort, wo Ergebnisse geliefert werden müssen und Fehler teuer sind. Tempo und Qualität gehören hier zusammen.",
+    leadership: "In der Führung zeigt sich das durch konsequente Steuerung, hohe Erwartungen und einen klaren Fokus auf Zielerreichung.",
   },
   INT_IMP_ANA: {
     headline: "Schwerpunkt: Zusammenarbeit und Umsetzung",
-    summary: "Diese Rolle verbindet Menschenorientierung mit Handlungsenergie und direkter Umsetzungsstärke.",
-    focus: "Im Mittelpunkt stehen Zusammenarbeit, schnelle Abstimmung und die Fähigkeit, Dynamik in soziale oder kommunikative Prozesse zu bringen.",
-    transfer: "Die Rolle wirkt besonders stark dort, wo Beziehungen gestaltet und gleichzeitig Entscheidungen zügig in Bewegung gebracht werden müssen.",
-    leadership: "In der Führungsarbeit zeigt sich das durch Nähe zu Menschen, motivierende Kommunikation und handlungsorientierte Führung.",
+    summary: "Diese Rolle lebt von guter Kommunikation und der Fähigkeit, Dinge gleichzeitig voranzubringen.",
+    focus: "Menschen zusammenbringen, Abstimmungen gestalten und dabei trotzdem Tempo halten. Die Rolle braucht jemanden, der zuhören kann und trotzdem ins Handeln kommt.",
+    transfer: "Am stärksten wirkt das dort, wo Beziehungen den Unterschied machen und gleichzeitig Ergebnisse erwartet werden.",
+    leadership: "In der Führung zeigt sich das durch Nähe zum Team, offene Kommunikation und die Bereitschaft, Verantwortung zu übernehmen und Richtung zu geben.",
   },
   INT_ANA_IMP: {
     headline: "Schwerpunkt: Zusammenarbeit und Struktur",
-    summary: "Diese Rolle verbindet Zusammenarbeit im Team mit fachlicher Struktur und systematischem Vorgehen.",
-    focus: "Teamorientierung und Prozessklarheit stehen gleichwertig im Vordergrund.",
-    transfer: "Die Rolle entfaltet ihre Stärke dort, wo Abstimmung, Verlässlichkeit und strukturiertes Arbeiten zusammenkommen.",
-    leadership: "In der Führungsarbeit zeigt sich das durch klare Steuerung, kombiniert mit Raum für Austausch und Dialog.",
+    summary: "Diese Rolle verbindet Zusammenarbeit im Team mit strukturiertem Arbeiten.",
+    focus: "Kommunikation, Abstimmung und ein gutes Gespür für Menschen spielen dabei eine ebenso wichtige Rolle wie Planung, klare Abläufe und fachliche Ordnung.",
+    transfer: "Entscheidungen werden eher überlegt und abgestimmt getroffen als spontan. Am stärksten wirkt die Rolle dort, wo Menschen zusammenarbeiten und gleichzeitig verlässliche Strukturen notwendig sind.",
+    leadership: "In der Führung zeigt sich das durch klare Orientierung, nachvollziehbare Entscheidungen und einen offenen Austausch mit dem Team.",
   },
   ANA_IMP_INT: {
     headline: "Schwerpunkt: Struktur und Umsetzung",
-    summary: "Diese Rolle verbindet fachliche Präzision mit konsequenter Umsetzung und klarer Ergebnisorientierung.",
-    focus: "Im Vordergrund stehen Struktur, Verlässlichkeit und die Fähigkeit, aus Planung wirksames Handeln abzuleiten.",
-    transfer: "Besonders stark ist die Rolle dort, wo komplexe Anforderungen sauber durchdacht und anschließend konsequent umgesetzt werden müssen.",
-    leadership: "In der Führungsarbeit zeigt sich das durch strukturierte Steuerung, klare Entscheidungen und einen hohen Qualitätsanspruch.",
+    summary: "Diese Rolle braucht fachliche Tiefe und gleichzeitig die Bereitschaft, Ergebnisse zu liefern.",
+    focus: "Sorgfältige Planung und durchdachte Abläufe stehen im Vordergrund. Wenn eine Entscheidung getroffen ist, wird sie konsequent umgesetzt. Diskussionen ohne Ergebnis passen nicht zu dieser Rolle.",
+    transfer: "Am wirksamsten ist das dort, wo Qualität und Verlässlichkeit zählen und trotzdem Fortschritt sichtbar sein muss.",
+    leadership: "In der Führung zeigt sich das durch hohe fachliche Ansprüche, klare Erwartungen und eine strukturierte Art, Themen voranzubringen.",
   },
   ANA_INT_IMP: {
     headline: "Schwerpunkt: Struktur und Zusammenarbeit",
-    summary: "Diese Rolle verbindet fachliche Struktur mit Teamorientierung und einer abgestimmten Arbeitsweise.",
-    focus: "Im Vordergrund stehen Planung, Prozessklarheit und die Fähigkeit, Menschen in verlässliche Abläufe einzubinden.",
-    transfer: "Die Rolle wirkt besonders stark dort, wo Qualität, Zusammenarbeit und saubere Abstimmung miteinander verbunden werden müssen.",
-    leadership: "In der Führungsarbeit zeigt sich das durch ruhige Steuerung, klare Strukturen und einen dialogfähigen Führungsstil.",
+    summary: "Diese Rolle braucht fachliche Sorgfalt und die Fähigkeit, gut mit anderen zusammenzuarbeiten.",
+    focus: "Planung, Ordnung und nachvollziehbare Abläufe bilden das Fundament. Gleichzeitig ist wichtig, dass Wissen geteilt, Absprachen eingehalten und andere einbezogen werden.",
+    transfer: "Am stärksten wirkt die Rolle dort, wo Genauigkeit und Teamarbeit gleichermaßen gefragt sind. Schnelle Einzelentscheidungen stehen weniger im Vordergrund.",
+    leadership: "In der Führung zeigt sich das durch ruhige Steuerung, Transparenz bei Entscheidungen und die Bereitschaft, das Team in Prozesse einzubinden.",
   },
   IMP_INT__ANA: {
     headline: "Gleichgewicht: Umsetzung und Zusammenarbeit",
-    summary: "Diese Rolle vereint Umsetzungskraft und Menschenorientierung in nahezu gleicher Ausprägung.",
-    focus: "Im Vordergrund stehen Dynamik, direkte Wirksamkeit und die Fähigkeit, andere aktiv einzubinden.",
-    transfer: "Besonders stark ist die Rolle dort, wo schnell gehandelt, klar kommuniziert und gleichzeitig Beziehung hergestellt werden muss.",
-    leadership: "In der Führungsarbeit zeigt sich das durch präsente Führung, motivierende Kommunikation und eine hohe Aktivierungswirkung.",
+    summary: "Diese Rolle braucht beides gleichermaßen: Handlungsstärke und den Draht zu Menschen.",
+    focus: "Wer diese Rolle ausfüllt, muss gleichzeitig Ergebnisse liefern und Beziehungen gestalten. Beides hat das gleiche Gewicht. Weder reines Durchsetzen noch reine Harmonie führen hier zum Ziel.",
+    transfer: "Am besten funktioniert das dort, wo Tempo und Teamarbeit zusammengehören. Struktur und Planung rücken in den Hintergrund.",
+    leadership: "In der Führung zeigt sich das durch direkte Ansprache, sichtbare Energie und die Fähigkeit, andere mitzuziehen, ohne den persönlichen Kontakt zu verlieren.",
   },
   IMP_ANA__INT: {
     headline: "Gleichgewicht: Umsetzung und Struktur",
-    summary: "Diese Rolle verbindet Entscheidungskraft und Umsetzungsstärke mit Struktur und sachlicher Kontrolle.",
-    focus: "Tempo und Ergebnisverantwortung stehen gleichwertig neben Planung, Ordnung und fachlicher Präzision.",
-    transfer: "Die Rolle wirkt besonders stark dort, wo schnell entschieden werden muss, ohne die Qualität der Umsetzung aus dem Blick zu verlieren.",
-    leadership: "In der Führungsarbeit zeigt sich das durch entschlossene Steuerung, klare Prioritäten und einen hohen Anspruch an Ergebnisse.",
+    summary: "Diese Rolle verlangt schnelle Entscheidungen und gleichzeitig fachliche Präzision.",
+    focus: "Hier treffen Tempo und Genauigkeit aufeinander. Ergebnisse müssen stimmen und rechtzeitig kommen. Wer diese Rolle ausfüllt, braucht die Fähigkeit, unter Druck sauber zu arbeiten.",
+    transfer: "Am wirksamsten ist das dort, wo Fehler Konsequenzen haben und trotzdem Geschwindigkeit erwartet wird. Zwischenmenschliche Abstimmung spielt eine nachgeordnete Rolle.",
+    leadership: "In der Führung zeigt sich das durch klare Prioritäten, hohe Verbindlichkeit und die Erwartung, dass Ergebnisse nicht nur schnell, sondern auch belastbar sind.",
   },
   INT_IMP__ANA: {
     headline: "Gleichgewicht: Zusammenarbeit und Umsetzung",
-    summary: "Diese Rolle verbindet soziale Wirksamkeit mit direkter Handlungsenergie in nahezu gleicher Ausprägung.",
-    focus: "Zusammenarbeit, Kommunikation und Aktivierung stehen gemeinsam im Vordergrund.",
-    transfer: "Die Rolle entfaltet ihre Stärke besonders dort, wo Menschen mitgenommen und Themen gleichzeitig aktiv vorangebracht werden müssen.",
-    leadership: "In der Führungsarbeit zeigt sich das durch nahbare Präsenz, direkte Ansprache und eine mobilisierende Wirkung.",
+    summary: "Diese Rolle lebt von guten Beziehungen und gleichzeitigem Vorankommen.",
+    focus: "Menschenorientierung und Handlungsbereitschaft halten sich die Waage. Wer hier arbeitet, muss mit anderen zusammenarbeiten und dabei Themen vorantreiben, ohne sich in Abstimmungen zu verlieren.",
+    transfer: "Am stärksten wirkt das dort, wo Vertrauen den Unterschied macht und gleichzeitig Bewegung nötig ist. Detailplanung steht nicht im Mittelpunkt.",
+    leadership: "In der Führung zeigt sich das durch eine nahbare, aktivierende Art. Ziele werden im Dialog gesetzt und mit Entschlossenheit verfolgt.",
   },
   INT_ANA__IMP: {
     headline: "Gleichgewicht: Zusammenarbeit und Struktur",
-    summary: "Diese Rolle verbindet Teamorientierung und strukturierte Arbeitsweise in nahezu gleicher Ausprägung.",
-    focus: "Zusammenarbeit, Prozessklarheit und abgestimmtes Vorgehen stehen gemeinsam im Zentrum.",
-    transfer: "Besonders stark wirkt die Rolle dort, wo Menschenorientierung und fachliche Ordnung gleichzeitig gefragt sind.",
-    leadership: "In der Führungsarbeit zeigt sich das durch klare, nachvollziehbare Steuerung mit hoher Dialogfähigkeit.",
+    summary: "Diese Rolle verbindet Menschenorientierung und strukturiertes Arbeiten zu gleichen Teilen.",
+    focus: "Gute Abstimmung und klare Abläufe gehören hier zusammen. Wer diese Rolle ausfüllt, denkt mit, bezieht andere ein und sorgt dafür, dass Prozesse sauber laufen.",
+    transfer: "Am stärksten wirkt die Rolle dort, wo Verlässlichkeit und Teamarbeit zusammenkommen. Schnelle Alleingänge passen weniger zu diesem Profil.",
+    leadership: "In der Führung zeigt sich das durch Klarheit in der Steuerung, echtes Interesse am Team und die Bereitschaft, Entscheidungen transparent und nachvollziehbar zu treffen.",
   },
   ANA_IMP__INT: {
     headline: "Gleichgewicht: Struktur und Umsetzung",
-    summary: "Diese Rolle verbindet fachliche Präzision mit hoher Umsetzungs- und Entscheidungskraft.",
-    focus: "Struktur, Klarheit und Ergebnisverantwortung stehen gleichwertig im Vordergrund.",
-    transfer: "Die Rolle wirkt besonders stark dort, wo komplexe Anforderungen nicht nur durchdacht, sondern auch konsequent entschieden und umgesetzt werden müssen.",
-    leadership: "In der Führungsarbeit zeigt sich das durch klare Steuerung, hohe Verbindlichkeit und konsequente Ergebnisorientierung.",
+    summary: "Diese Rolle verlangt analytisches Denken und konsequentes Handeln gleichermaßen.",
+    focus: "Hier wird erst gedacht, dann gemacht. Aber gemacht wird. Planung und Umsetzung liegen nah beieinander, ohne dass das eine das andere bremst.",
+    transfer: "Am wirksamsten ist das dort, wo komplexe Themen nicht nur verstanden, sondern auch in klare Ergebnisse überführt werden müssen. Zusammenarbeit ist dabei nachrangig.",
+    leadership: "In der Führung zeigt sich das durch sachliche Steuerung, hohe Erwartungen und die Konsequenz, geplante Vorhaben auch wirklich durchzuziehen.",
   },
   ANA_INT__IMP: {
     headline: "Gleichgewicht: Struktur und Zusammenarbeit",
-    summary: "Diese Rolle verbindet fachliche Struktur und Zusammenarbeit in nahezu gleicher Ausprägung.",
-    focus: "Planung, Prozesssicherheit und Teamabstimmung prägen die Arbeitsweise gleichermaßen.",
-    transfer: "Besonders wirksam ist die Rolle dort, wo Qualität, Verlässlichkeit und gute Zusammenarbeit gleichzeitig notwendig sind.",
-    leadership: "In der Führungsarbeit zeigt sich das durch ruhige Steuerung, nachvollziehbare Entscheidungen und hohe Anschlussfähigkeit im Team.",
+    summary: "Diese Rolle braucht fachliche Ordnung und gute Zusammenarbeit zu gleichen Teilen.",
+    focus: "Sorgfältige Planung und offener Austausch stehen gleichberechtigt nebeneinander. Wer hier arbeitet, achtet auf Qualität und bezieht andere in den Prozess ein.",
+    transfer: "Am stärksten wirkt die Rolle dort, wo gemeinsam an komplexen Themen gearbeitet wird und Verlässlichkeit wichtiger ist als Schnelligkeit.",
+    leadership: "In der Führung zeigt sich das durch ruhige, transparente Steuerung und die Fähigkeit, das Team fachlich und menschlich mitzunehmen.",
   },
   BALANCED: {
     headline: "Ausgewogenes Rollenprofil",
-    summary: "Diese Rolle zeigt eine gleichmäßige Verteilung aller drei Bereiche.",
-    focus: "Weder Tempo noch Beziehung noch Struktur stehen eindeutig im Vordergrund. Stattdessen verlangt die Rolle ein flexibles Zusammenspiel aller drei Wirkungsweisen.",
-    transfer: "Die Rolle wirkt besonders stark dort, wo situationsabhängig zwischen Umsetzung, Zusammenarbeit und Planung gewechselt werden muss.",
-    leadership: "In der Führungsarbeit zeigt sich das durch hohe Anpassungsfähigkeit, variable Steuerung und ein ausgewogenes Verhältnis von Klarheit, Dialog und Handlung.",
+    summary: "Diese Rolle hat keinen klaren Schwerpunkt. Alle drei Bereiche sind annähernd gleich gewichtet.",
+    focus: "Weder Geschwindigkeit noch Zusammenarbeit noch Struktur stehen eindeutig im Vordergrund. Stattdessen braucht es die Fähigkeit, je nach Situation zwischen allen drei Arbeitsweisen zu wechseln.",
+    transfer: "Am besten funktioniert das dort, wo sich Anforderungen ständig verändern und keine einzelne Arbeitsweise dauerhaft dominiert.",
+    leadership: "In der Führung zeigt sich das durch hohe Anpassungsfähigkeit. Mal braucht es klare Ansagen, mal offenen Dialog, mal strukturierte Planung.",
   },
 };
 
