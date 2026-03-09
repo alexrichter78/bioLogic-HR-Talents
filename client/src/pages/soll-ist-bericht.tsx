@@ -411,8 +411,8 @@ export default function SollIstBericht() {
               : "Unterschiedliche Arbeitslogiken treffen aufeinander. Die Person arbeitet und entscheidet anders, als es die Rolle erfordert. Im Alltag entsteht dadurch erhöhter Abstimmungsbedarf.";
 
             let devScore: number;
-            if (sameDom && totalGap <= 15) devScore = 6;
-            else if (sameDom && totalGap <= 25) devScore = 5;
+            if (sameDom && totalGap <= 10) devScore = 6;
+            else if (sameDom && totalGap <= 20) devScore = 5;
             else if (totalGap <= 20) devScore = 4;
             else if (totalGap <= 30) devScore = 3;
             else if (totalGap <= 40) devScore = 2;
@@ -421,7 +421,7 @@ export default function SollIstBericht() {
             if (structureMismatch && devScore > 4) devScore = 4;
             if (structureMismatch && devScore > 1) devScore = Math.max(devScore - 1, 1);
 
-            if (fitLabel === "Bedingt geeignet" && devScore > 4) devScore = 4;
+            if (fitLabel === "Bedingt geeignet" && devScore > 3) devScore = 3;
             if (fitLabel === "Nicht geeignet" && devScore > 2) devScore = 2;
             if (fitLabel === "Geeignet" && devScore < 3) devScore = 3;
 
