@@ -1,11 +1,11 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation } from "wouter";
-import { AlertTriangle, Download, Check, ChevronLeft } from "lucide-react";
+import { AlertTriangle, Download, ChevronLeft } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
-import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
-import { computeSollIst, mapFuehrungsArt, constellationLabel } from "@/lib/soll-ist-engine";
+import { dominanceModeOf, labelComponent } from "@/lib/jobcheck-engine";
+import { computeSollIst, mapFuehrungsArt } from "@/lib/soll-ist-engine";
 import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
-import type { SollIstResult, Severity, ImpactArea, FuehrungsArt, IntegrationPhase } from "@/lib/soll-ist-engine";
+import type { SollIstResult, Severity, FuehrungsArt } from "@/lib/soll-ist-engine";
 
 type BG = { imp: number; int: number; ana: number };
 type RoleDnaState = {
@@ -28,18 +28,6 @@ const COMP_LABELS: Record<ComponentKey, string> = {
   analytisch: "Struktur / Analyse",
 };
 
-const COMP_SHORT: Record<ComponentKey, string> = {
-  impulsiv: "Umsetzung",
-  intuitiv: "Zusammenarbeit",
-  analytisch: "Struktur",
-};
-
-const BAR_CSS: Record<ComponentKey, string> = {
-  impulsiv: "bg-red-500",
-  intuitiv: "bg-amber-500",
-  analytisch: "bg-blue-600",
-};
-
 const BAR_HEX: Record<ComponentKey, string> = {
   impulsiv: "#C41E3A",
   intuitiv: "#F39200",
@@ -51,28 +39,10 @@ function bgToTriad(bg: BG | undefined): Triad {
   return { impulsiv: Math.round(bg.imp), intuitiv: Math.round(bg.int), analytisch: Math.round(bg.ana) };
 }
 
-function fitToneClasses(rating: string) {
-  if (rating === "Nicht geeignet") return { text: "text-red-600", bg: "bg-red-50", border: "border-red-200", pill: "bg-red-50 text-red-700 border-red-200" };
-  if (rating === "Bedingt geeignet") return { text: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", pill: "bg-amber-50 text-amber-700 border-amber-200" };
-  return { text: "text-green-600", bg: "bg-green-50", border: "border-green-200", pill: "bg-green-50 text-green-700 border-green-200" };
-}
-
-function severityTone(s: Severity) {
-  if (s === "critical") return "bg-red-50 text-red-700 border-red-200";
-  if (s === "warning") return "bg-amber-50 text-amber-700 border-amber-200";
-  return "bg-green-50 text-green-700 border-green-200";
-}
-
 function severityLabel(s: Severity) {
   if (s === "critical") return "kritisch";
   if (s === "warning") return "bedingt";
   return "passend";
-}
-
-function domTone(k: ComponentKey) {
-  if (k === "impulsiv") return "border-red-200 bg-red-50 text-red-700";
-  if (k === "intuitiv") return "border-amber-200 bg-amber-50 text-amber-700";
-  return "border-blue-200 bg-blue-50 text-blue-700";
 }
 
 function biggestGapText(rt: Triad, ct: Triad): string {
@@ -85,102 +55,12 @@ function biggestGapText(rt: Triad, ct: Triad): string {
   return `Die größte Abweichung liegt im Bereich ${COMP_LABELS[maxKey]}. Genau dort liegt die Kernanforderung der Rolle.`;
 }
 
-function fitBadgeLabel(rating: string) {
-  if (rating === "Nicht geeignet") return "Kritischer Fit";
-  if (rating === "Bedingt geeignet") return "Bedingt passend";
-  return "Guter Fit";
-}
 
-function Metric({ label, value, valueClass = "text-slate-900" }: { label: string; value: string; valueClass?: string }) {
-  return (
-    <div>
-      <div className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{label}</div>
-      <div className={`mt-1 text-sm font-semibold ${valueClass}`}>{value}</div>
-    </div>
-  );
-}
-
-function ShiftPill({ title, value, tone }: { title: string; value: string; tone: string }) {
-  return (
-    <div className={`rounded-2xl border p-4 ${tone}`}>
-      <div className="text-xs font-semibold uppercase tracking-[0.15em] opacity-80">{title}</div>
-      <div className="mt-1 text-base font-semibold">{value}</div>
-    </div>
-  );
-}
-
-function ProfileCard({ title, subtitle, profile, accent, description }: {
-  title: string; subtitle: string;
-  profile: { label: string; short: string; value: number; color: string }[];
-  accent: "blue" | "amber";
-  description: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-slate-200 p-5">
-      <div className="mb-5">
-        <div className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500">{title}</div>
-        <div className="mt-1 text-base font-semibold text-slate-950">{subtitle}</div>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-        {profile.map(item => {
-          const hex = BAR_HEX[item.label.toLowerCase() as ComponentKey];
-          const widthPct = (item.value / 67) * 100;
-          const isSmall = widthPct < 18;
-          return (
-            <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>
-                {item.label}
-              </span>
-              <div style={{ flex: 1, position: "relative", height: 26 }}>
-                <div style={{
-                  position: "absolute", inset: 0,
-                  borderRadius: 13, background: "rgba(0,0,0,0.06)",
-                }} />
-                <div style={{
-                  position: "absolute", left: 0, top: 0, bottom: 0,
-                  width: `${Math.min(Math.max(widthPct, 4), 100)}%`,
-                  borderRadius: 13, background: hex,
-                  transition: "width 600ms ease",
-                  display: "flex", alignItems: "center", paddingLeft: 10,
-                  minWidth: isSmall ? 8 : 50,
-                }}>
-                  {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(item.value)} %</span>}
-                </div>
-                {isSmall && (
-                  <span style={{
-                    position: "absolute", top: "50%", transform: "translateY(-50%)",
-                    left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
-                    fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
-                    transition: "left 600ms ease",
-                  }}>{Math.round(item.value)} %</span>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-500">
-        {description}
-      </div>
-    </div>
-  );
-}
 
 function TriangleChart({ role, candidate }: { role: Triad; candidate: Triad }) {
   const top = { x: 160, y: 25 };
   const left = { x: 35, y: 220 };
   const right = { x: 285, y: 220 };
-
-  function triadToPoint(t: Triad) {
-    const total = t.analytisch + t.intuitiv + t.impulsiv || 1;
-    const pA = t.analytisch / total;
-    const pN = t.intuitiv / total;
-    const pI = t.impulsiv / total;
-    return {
-      x: pA * top.x + pN * left.x + pI * right.x,
-      y: pA * top.y + pN * left.y + pI * right.y,
-    };
-  }
 
   function triadToTriangle(t: Triad) {
     const total = t.analytisch + t.intuitiv + t.impulsiv || 1;
@@ -213,15 +93,6 @@ function TriangleChart({ role, candidate }: { role: Triad; candidate: Triad }) {
       <div className="mt-2 text-center text-sm text-slate-600">
         Die blaue Fläche zeigt die Rollenanforderung. Die orange Fläche zeigt die Arbeitslogik des Kandidaten.
       </div>
-    </div>
-  );
-}
-
-function Legend({ color, label }: { color: string; label: string }) {
-  return (
-    <div className="flex items-center gap-2">
-      <span className={`h-3 w-3 rounded-full ${color}`} />
-      <span>{label}</span>
     </div>
   );
 }
@@ -317,29 +188,12 @@ export default function SollIstBericht() {
     );
   }
 
-  const roleProfile = [
-    { label: "Impulsiv", short: "Umsetzung", value: roleTriad.impulsiv, color: BAR_CSS.impulsiv },
-    { label: "Intuitiv", short: "Zusammenarbeit", value: roleTriad.intuitiv, color: BAR_CSS.intuitiv },
-    { label: "Analytisch", short: "Struktur / Analyse", value: roleTriad.analytisch, color: BAR_CSS.analytisch },
-  ];
-  const candProfileArr = [
-    { label: "Impulsiv", short: "Umsetzung", value: candidateProfile.impulsiv, color: BAR_CSS.impulsiv },
-    { label: "Intuitiv", short: "Zusammenarbeit", value: candidateProfile.intuitiv, color: BAR_CSS.intuitiv },
-    { label: "Analytisch", short: "Struktur / Analyse", value: candidateProfile.analytisch, color: BAR_CSS.analytisch },
-  ];
-  const roleDomKey = dominanceModeOf(roleTriad).top1.key;
-  const candDomKey = candDom.top1.key;
-
-  const deltas: { label: string; target: number; candidate: number; delta: string; tone: string }[] = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
-    const d = Math.round(candidateProfile[k] - roleTriad[k]);
-    return {
-      label: COMP_LABELS[k],
-      target: Math.round(roleTriad[k]),
-      candidate: Math.round(candidateProfile[k]),
-      delta: d >= 0 ? `+${d}` : `${d}`,
-      tone: Math.abs(d) >= 15 ? "text-red-600" : Math.abs(d) >= 8 ? "text-amber-600" : "text-slate-600",
-    };
-  });
+  const roleProfile = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => ({
+    label: labelComponent(k),
+    value: roleTriad[k],
+    hex: BAR_HEX[k],
+    key: k,
+  }));
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -374,7 +228,7 @@ export default function SollIstBericht() {
                 <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   {roleProfile.map(item => {
-                    const hex = BAR_HEX[item.label.toLowerCase() as ComponentKey];
+                    const hex = item.hex;
                     const widthPct = (item.value / 67) * 100;
                     const isSmall = widthPct < 18;
                     return (
@@ -525,206 +379,137 @@ export default function SollIstBericht() {
         )}
 
         {/* === REPORT OUTPUT === */}
-        {result && (
-          <>
-            {/* ── Header ── */}
-            <header className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm no-print-hide" data-testid="section-header">
-              <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-                <div className="max-w-3xl">
-                  <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
-                    Soll-Ist-Vergleich · Rollenpassung
-                  </p>
-                  <div className="flex items-center gap-4 mb-2">
-                    <h1 className="text-3xl font-semibold tracking-tight text-slate-950 lg:text-4xl" data-testid="text-page-title">
-                      {result.roleName} · Passungsbericht
-                    </h1>
-                    <button
-                      onClick={() => window.print()}
-                      className="no-print inline-flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors"
-                      data-testid="button-export-pdf"
-                    >
-                      <Download className="h-4 w-4" />
-                      PDF
-                    </button>
-                  </div>
-                  <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
-                    {result.summaryText}
-                  </p>
-                </div>
+        {result && (() => {
+          const fitCol = result.fitRating === "GEEIGNET" ? "#34C759" : result.fitRating === "BEDINGT" ? "#FF9500" : "#FF3B30";
+          const rc = BAR_HEX[result.roleDomKey];
+          const cc = BAR_HEX[result.candDomKey];
+          const sameDom = result.roleDomKey === result.candDomKey;
+          const sep = { borderBottom: "1px solid rgba(0,0,0,0.08)", paddingBottom: 28, marginBottom: 28 } as const;
 
-                <div className="grid min-w-[280px] grid-cols-2 gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4" data-testid="metrics-grid">
-                  <Metric label="Gesamtpassung" value={result.fitLabel} valueClass={fitToneClasses(result.fitLabel).text} />
-                  <Metric label="Steuerungsintensität" value={result.controlIntensity.charAt(0).toUpperCase() + result.controlIntensity.slice(1)} valueClass={result.controlIntensity === "hoch" ? "text-amber-600" : "text-slate-900"} />
-                  <Metric label="Rollenprofil" value={result.roleConstellationLabel} />
-                  <Metric label="Kandidatenprofil" value={result.candConstellationLabel} />
+          return (
+          <div style={{ maxWidth: 800, margin: "0 auto" }}>
+            <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 4, padding: "48px 44px", boxShadow: "0 1px 3px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.06)" }}>
+
+              <div style={{ textAlign: "center", marginBottom: 40 }} data-testid="section-header">
+                <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.14em", textTransform: "uppercase", margin: "0 0 12px" }}>Soll-Ist-Vergleich · Rollenpassung</p>
+                <h1 style={{ fontSize: 26, fontWeight: 800, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.03em", lineHeight: 1.2 }} data-testid="text-page-title">
+                  {result.roleName} · Passungsbericht
+                </h1>
+                <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 14 }}>
+                  {[
+                    { label: result.fitLabel, bg: `${fitCol}15`, color: fitCol, border: `${fitCol}30` },
+                    { label: result.roleConstellationLabel, bg: "rgba(0,0,0,0.04)", color: "#1D1D1F", border: "rgba(0,0,0,0.08)" },
+                    { label: result.candConstellationLabel, bg: "rgba(0,0,0,0.04)", color: "#1D1D1F", border: "rgba(0,0,0,0.08)" },
+                  ].map((b, i) => (
+                    <span key={i} style={{ display: "inline-block", padding: "5px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, color: b.color, background: b.bg, border: `1px solid ${b.border}` }}>{b.label}</span>
+                  ))}
                 </div>
+                <button
+                  onClick={() => window.print()}
+                  className="no-print"
+                  style={{ position: "absolute", right: 44, top: 48, display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,113,227,0.06)", fontSize: 13, fontWeight: 600, color: "#0071E3", cursor: "pointer" }}
+                  data-testid="button-export-pdf"
+                >
+                  <Download style={{ width: 14, height: 14 }} />
+                  PDF
+                </button>
               </div>
-            </header>
 
-            {/* ── Decision + Dominance Shift ── */}
-            <section className="mb-8 grid gap-8 lg:grid-cols-[1.4fr_1fr]" data-testid="section-decision-banner">
-              <div className={`rounded-3xl border ${fitToneClasses(result.fitLabel).border} bg-white p-8 shadow-sm`}>
-                <div className="mb-5 flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Entscheidung</p>
-                    <h2 className={`mt-2 text-3xl font-semibold ${fitToneClasses(result.fitLabel).text}`} data-testid="text-fit-rating">
-                      {result.fitLabel}
-                    </h2>
-                  </div>
-                  <div className={`rounded-full border px-3 py-1 text-sm font-medium ${fitToneClasses(result.fitLabel).pill}`}>
-                    {fitBadgeLabel(result.fitLabel)}
-                  </div>
-                </div>
-                <p className="max-w-3xl text-base leading-7 text-slate-700">
+              <div style={{ marginBottom: 32 }}>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
                   {result.summaryText}
                 </p>
               </div>
 
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-dominance-shift">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Dominanz-Verschiebung</p>
-                <div className="mt-5 grid gap-4">
-                  <ShiftPill title="Rolle" value={COMP_LABELS[result.roleDomKey]} tone={domTone(result.roleDomKey)} />
-                  <div className="flex items-center justify-center text-2xl text-slate-300">↓</div>
-                  <ShiftPill title="Kandidat" value={COMP_LABELS[result.candDomKey]} tone={domTone(result.candDomKey)} />
+              <div style={sep} data-testid="section-dominance-shift">
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>1. Dominanz-Verschiebung</p>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 14, padding: "16px 20px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
+                  <div style={{ textAlign: "center" }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Rolle</p>
+                    <div style={{ padding: "5px 14px", borderRadius: 10, background: `${rc}12`, border: `1px solid ${rc}25` }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: rc }}>{COMP_LABELS[result.roleDomKey]}</span>
+                    </div>
+                  </div>
+                  {sameDom ? (
+                    <span style={{ fontSize: 18, fontWeight: 700, color: "#34C759" }}>=</span>
+                  ) : (
+                    <span style={{ fontSize: 18, fontWeight: 700, color: "#FF3B30" }}>→</span>
+                  )}
+                  <div style={{ textAlign: "center" }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Kandidat</p>
+                    <div style={{ padding: "5px 14px", borderRadius: 10, background: `${cc}12`, border: `1px solid ${cc}25` }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: cc }}>{COMP_LABELS[result.candDomKey]}</span>
+                    </div>
+                  </div>
                 </div>
-                <p className="mt-5 text-sm leading-6 text-slate-600">
-                  {result.dominanceShiftText}
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{result.dominanceShiftText}</p>
+              </div>
+
+              <div style={sep} data-testid="section-comparison-bars">
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>2. Dimensionsvergleich</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 420, marginBottom: 14 }}>
+                  {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+                    const sollVal = Math.round(roleTriad![k]);
+                    const istVal = Math.round(candidateProfile[k]);
+                    const delta = istVal - sollVal;
+                    const hex = BAR_HEX[k];
+                    return (
+                      <div key={k}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: hex }}>{labelComponent(k)}</span>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: delta === 0 ? "#34C759" : Math.abs(delta) <= 5 ? "#8E8E93" : Math.abs(delta) <= 15 ? "#FF9500" : "#FF3B30" }}>
+                            Δ {delta > 0 ? "+" : ""}{delta}
+                          </span>
+                        </div>
+                        <div style={{ position: "relative", height: 28, borderRadius: 8, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
+                          <div style={{ position: "absolute", top: 0, left: 0, height: "50%", width: `${(Math.min(sollVal, 67) / 67) * 100}%`, background: `${hex}40`, borderRadius: "8px 8px 0 0", transition: "width 0.4s ease" }} />
+                          <div style={{ position: "absolute", bottom: 0, left: 0, height: "50%", width: `${(Math.min(istVal, 67) / 67) * 100}%`, background: hex, borderRadius: "0 0 8px 8px", transition: "width 0.4s ease" }} />
+                          <div style={{ position: "absolute", top: 0, left: 8, height: "50%", display: "flex", alignItems: "center" }}>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: "#1D1D1F" }}>Soll {sollVal}%</span>
+                          </div>
+                          <div style={{ position: "absolute", bottom: 0, left: 8, height: "50%", display: "flex", alignItems: "center" }}>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: "#fff" }}>Ist {istVal}%</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
+                  {biggestGapText(result.roleTriad, result.candTriad)}
                 </p>
               </div>
-            </section>
 
-            {/* ── Profile Comparison + Delta ── */}
-            <section className="mb-8 grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-radar">
-                <div className="mb-6 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Profilvergleich</p>
-                    <h3 className="mt-2 text-xl font-semibold text-slate-950">Rolle vs. Kandidat</h3>
+              <div style={sep} data-testid="section-radar">
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>3. Profilvergleich</p>
+                <div style={{ display: "flex", justifyContent: "center", gap: 16, marginBottom: 8 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: 5, background: "#2563eb" }} />
+                    <span style={{ fontSize: 12, color: "#6E6E73" }}>Rolle</span>
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-slate-500">
-                    <Legend color="bg-blue-600" label="Rolle" />
-                    <Legend color="bg-amber-500" label="Kandidat" />
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: 5, background: "#f59e0b" }} />
+                    <span style={{ fontSize: 12, color: "#6E6E73" }}>Kandidat</span>
                   </div>
                 </div>
-                <div className="grid gap-6 lg:grid-cols-2">
-                  <ProfileCard
-                    title="Soll-Profil Rolle" subtitle={result.roleName}
-                    profile={roleProfile} accent="blue"
-                    description={`Die Rolle verlangt vor allem ${COMP_SHORT[result.roleDomKey]}, ${result.roleDomKey === "analytisch" ? "Prüftiefe und verlässliche Planung" : result.roleDomKey === "impulsiv" ? "schnelle Umsetzung und Entscheidungsstärke" : "Kommunikation und Zusammenarbeit"}.`}
-                  />
-                  <ProfileCard
-                    title="Ist-Profil Kandidat" subtitle={result.candidateName}
-                    profile={candProfileArr} accent="amber"
-                    description={`Der Kandidat arbeitet stärker über ${COMP_SHORT[result.candDomKey]}, ${result.candDomKey === "impulsiv" ? "direkte Umsetzung und schnelle Entscheidungen" : result.candDomKey === "analytisch" ? "strukturierte Planung und Prüftiefe" : "Kommunikation und Beziehungsarbeit"}.`}
-                  />
-                </div>
-                <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5" data-testid="chart-triangle">
-                  <TriangleChart role={result.roleTriad} candidate={result.candTriad} />
-                </div>
+                <TriangleChart role={result.roleTriad} candidate={result.candTriad} />
               </div>
 
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-comparison-bars">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Soll-Ist-Abweichung</p>
-                <h3 className="mt-2 text-xl font-semibold text-slate-950">Abweichung je Wirkdimension</h3>
-                <div className="mt-6 space-y-5">
-                  {deltas.map(item => (
-                    <div key={item.label}>
-                      <div className="mb-2 flex items-center justify-between text-sm">
-                        <span className="font-medium text-slate-800">{item.label}</span>
-                        <span className={`font-semibold ${item.tone}`}>{item.delta}</span>
-                      </div>
-                      <div className="mb-2 flex h-3 overflow-hidden rounded-full bg-slate-100">
-                        <div className="bg-slate-300 rounded-full" style={{ width: `${item.target}%` }} />
-                      </div>
-                      <div className="flex items-center justify-between text-xs text-slate-500">
-                        <span>Soll {item.target}%</span>
-                        <span>Ist {item.candidate}%</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className={`mt-6 rounded-2xl border p-4 text-sm leading-6 ${result.fitRating === "GEEIGNET" ? "border-green-100 bg-green-50 text-green-800" : result.fitRating === "BEDINGT" ? "border-amber-100 bg-amber-50 text-amber-800" : "border-red-100 bg-red-50 text-red-800"}`}>
-                  {biggestGapText(result.roleTriad, result.candTriad)}
-                </div>
-              </div>
-            </section>
-
-            {/* ── Impact Matrix ── */}
-            <section className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-impact-matrix">
-              <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Strukturelle Wirkungsanalyse</p>
-                  <h3 className="mt-2 text-xl font-semibold text-slate-950">Auswirkungen der Abweichung</h3>
-                </div>
-                <div className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-600">
-                  6 Wirkungsbereiche im Detail
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                {result.impactAreas.map(area => (
-                  <div key={area.id} className="rounded-2xl border border-slate-200 bg-slate-50/60 p-6" data-testid={`impact-detail-${area.id}`}>
-                    <div className="flex items-center justify-between mb-4">
-                      <h4 className="text-base font-semibold text-slate-950">{area.label}</h4>
-                      <span className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${severityTone(area.severity)}`}>
-                        {severityLabel(area.severity)}
-                      </span>
-                    </div>
-                    <div className="space-y-3 text-sm leading-7 text-slate-700">
-                      <div><span className="font-semibold text-slate-900">Rolle braucht:</span> {area.roleNeed}</div>
-                      <div><span className="font-semibold text-slate-900">Kandidat bringt:</span> {area.candidatePattern}</div>
-                      <div>
-                        <span className={`font-semibold ${area.severity === "critical" ? "text-red-700" : area.severity === "warning" ? "text-amber-700" : "text-green-700"}`}>
-                          Risiko:
-                        </span>{" "}
-                        {area.risk}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* ── Stress Behavior ── */}
-            <section className="mb-8 grid gap-8 lg:grid-cols-2" data-testid="section-stress-behavior">
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-                <div className="mb-2 flex items-center gap-3">
-                  <div className="h-3 w-3 rounded-full bg-amber-500" />
-                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Kontrollierter Druck</p>
-                </div>
-                <h3 className="mt-2 text-xl font-semibold text-slate-950">Verhalten bei steigendem Arbeitsdruck</h3>
-                <div className="mt-5 rounded-2xl border border-amber-100 bg-amber-50/40 p-5">
-                  <p className="text-sm leading-7 text-slate-700">{result.stressBehavior.controlledPressure}</p>
-                </div>
-              </div>
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-                <div className="mb-2 flex items-center gap-3">
-                  <div className="h-3 w-3 rounded-full bg-red-500" />
-                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Unkontrollierter Stress</p>
-                </div>
-                <h3 className="mt-2 text-xl font-semibold text-slate-950">Verhalten bei starker Belastung</h3>
-                <div className="mt-5 rounded-2xl border border-red-100 bg-red-50/40 p-5">
-                  <p className="text-sm leading-7 text-slate-700">{result.stressBehavior.uncontrolledStress}</p>
-                </div>
-              </div>
-            </section>
-
-            {/* ── Risk Timeline + Development + Actions ── */}
-            <section className="mb-8 grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-risk-timeline">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Risikoprognose</p>
-                <h3 className="mt-2 text-xl font-semibold text-slate-950">Zeitliche Entwicklung der Risiken</h3>
-                <div className="mt-8 space-y-6">
-                  {result.riskTimeline.map((phase, i) => {
-                    const dot = i === 0 ? "bg-green-500" : i === 1 ? "bg-amber-500" : "bg-red-500";
-                    const border = i === 0 ? "border-l-green-500" : i === 1 ? "border-l-amber-500" : "border-l-red-500";
+              <div style={sep} data-testid="section-impact-matrix">
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>4. Strukturelle Wirkungsanalyse</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {result.impactAreas.map(area => {
+                    const sevCol = area.severity === "critical" ? "#FF3B30" : area.severity === "warning" ? "#FF9500" : "#34C759";
                     return (
-                      <div key={i} className="relative pl-8">
-                        {i < result.riskTimeline.length - 1 && <div className="absolute left-[7px] top-4 h-[calc(100%+12px)] w-px bg-slate-200" />}
-                        <div className={`absolute left-0 top-1.5 h-4 w-4 rounded-full ${dot}`} />
-                        <div className={`rounded-2xl border-l-4 bg-slate-50 p-4 ${border}`}>
-                          <div className="mb-1 text-sm font-semibold text-slate-950">{phase.label} <span className="font-normal text-slate-500">{phase.period}</span></div>
-                          <p className="text-sm leading-6 text-slate-700">{phase.text}</p>
+                      <div key={area.id} style={{ padding: "14px 16px", borderRadius: 12, background: `${sevCol}06`, border: `1px solid ${sevCol}15` }} data-testid={`impact-detail-${area.id}`}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{area.label}</span>
+                          <span style={{ fontSize: 10, fontWeight: 700, color: sevCol, textTransform: "uppercase", letterSpacing: "0.05em" }}>{severityLabel(area.severity)}</span>
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 13, lineHeight: 1.7, color: "#48484A" }}>
+                          <div><span style={{ fontWeight: 700, color: "#1D1D1F" }}>Rolle braucht:</span> {area.roleNeed}</div>
+                          <div><span style={{ fontWeight: 700, color: "#1D1D1F" }}>Kandidat bringt:</span> {area.candidatePattern}</div>
+                          <div><span style={{ fontWeight: 700, color: sevCol }}>Risiko:</span> {area.risk}</div>
                         </div>
                       </div>
                     );
@@ -732,118 +517,102 @@ export default function SollIstBericht() {
                 </div>
               </div>
 
-              <div className="space-y-8">
-                <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-development">
-                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Entwicklungsprognose</p>
-                  <h3 className="mt-2 text-xl font-semibold text-slate-950">Anpassungswahrscheinlichkeit</h3>
-                  <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                    <div className="mb-4 flex items-center justify-between text-sm">
-                      <span className="font-medium text-slate-700">Entwicklungschance</span>
-                      <span className={`font-semibold ${result.developmentLevel <= 2 ? "text-red-600" : result.developmentLevel <= 3 ? "text-amber-600" : "text-green-600"}`}>
-                        {result.developmentLabel}
-                      </span>
-                    </div>
-                    <div className="flex gap-2" data-testid="gauge-development">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className={`h-3 flex-1 rounded-full ${i < result.developmentLevel
-                            ? result.developmentLevel <= 2 ? "bg-red-500" : result.developmentLevel <= 3 ? "bg-amber-500" : "bg-green-500"
-                            : "bg-slate-200"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <p className="mt-4 text-sm leading-6 text-slate-700">
-                      {result.developmentText}
-                    </p>
-                  </div>
+              <div style={sep} data-testid="section-stress-behavior">
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>5. Stressverhalten</p>
+                <div style={{ marginBottom: 12 }}>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: "#FF9500", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 6px" }}>Kontrollierter Druck</p>
+                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{result.stressBehavior.controlledPressure}</p>
                 </div>
-
-                <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-actions">
-                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Handlungsempfehlung</p>
-                  <h3 className="mt-2 text-xl font-semibold text-slate-950">Konkrete Steuerungsmaßnahmen</h3>
-                  <ul className="mt-6 space-y-3">
-                    {result.actions.map((item, i) => (
-                      <li key={i} className="flex items-start gap-3 text-sm leading-6 text-slate-700">
-                        <span className="mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 text-xs font-bold text-blue-700">
-                          <Check className="h-3 w-3" />
-                        </span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
+                <div>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: "#FF3B30", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 6px" }}>Unkontrollierter Stress</p>
+                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{result.stressBehavior.uncontrolledStress}</p>
                 </div>
               </div>
-            </section>
 
-            {/* ── 30-Day Integration Plan ── */}
-            {result.integrationsplan && (
-              <section className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-integrationsplan">
-                <div className="flex items-start gap-4 mb-6">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-sm">
-                    <Download className="h-4 w-4 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Handlungsempfehlung</p>
-                    <h3 className="mt-1 text-xl font-semibold text-slate-950">30-Tage-Integrationsplan</h3>
-                  </div>
-                </div>
-                <div className="space-y-6">
-                  {result.integrationsplan.map((phase) => (
-                    <div key={phase.num} className="rounded-2xl border border-slate-200 bg-slate-50/60 p-6" data-testid={`integration-phase-${phase.num}`}>
-                      <div className="flex items-center gap-3 mb-4">
-                        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
-                          {phase.num}
-                        </span>
-                        <h4 className="text-base font-semibold text-slate-950">
-                          Phase {phase.num}: {phase.title} ({phase.period})
-                        </h4>
+              <div style={sep} data-testid="section-risk-timeline">
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>6. Risikoprognose</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {result.riskTimeline.map((phase, i) => {
+                    const phaseCol = i === 0 ? "#34C759" : i === 1 ? "#FF9500" : "#C41E3A";
+                    return (
+                      <div key={i} style={{ padding: "12px 16px", borderRadius: 12, background: `${phaseCol}06`, border: `1px solid ${phaseCol}15` }}>
+                        <p style={{ fontSize: 12, fontWeight: 700, color: phaseCol, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>{phase.label} <span style={{ fontWeight: 500, textTransform: "none", letterSpacing: "0" }}>{phase.period}</span></p>
+                        <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, margin: 0 }}>{phase.text}</p>
                       </div>
-                      <ul className="space-y-2">
-                        {phase.items.map((item, i) => (
-                          <li key={i} className="flex items-start gap-3 text-sm leading-6 text-slate-700">
-                            <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-slate-400 shrink-0" />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div style={sep} data-testid="section-development">
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>7. Entwicklungsprognose</p>
+                <div style={{ display: "flex", gap: 4, marginBottom: 10 }} data-testid="gauge-development">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} style={{ flex: 1, height: 10, borderRadius: 5, background: i < result.developmentLevel ? (result.developmentLevel <= 2 ? "#FF3B30" : result.developmentLevel <= 3 ? "#FF9500" : "#34C759") : "rgba(0,0,0,0.06)" }} />
                   ))}
                 </div>
-              </section>
-            )}
-
-            {/* ── Final Assessment ── */}
-            <section className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-final-assessment">
-              <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Gesamtbewertung</p>
-                  <h3 className="mt-2 text-2xl font-semibold text-slate-950">Abschließende Empfehlung</h3>
-                  <p className="mt-4 max-w-3xl text-base leading-7 text-slate-700">
-                    {result.finalText}
-                  </p>
+                <div style={{ display: "flex", gap: 12, marginBottom: 14 }}>
+                  <span style={{ fontSize: 13, color: "#8E8E93" }}>Entwicklungschance: <span style={{ fontWeight: 700, color: result.developmentLevel <= 2 ? "#FF3B30" : result.developmentLevel <= 3 ? "#FF9500" : "#34C759" }}>{result.developmentLabel}</span></span>
+                  <span style={{ fontSize: 13, color: "#8E8E93" }}>Steuerungsbedarf: <span style={{ fontWeight: 700, color: result.controlIntensity === "hoch" ? "#FF9500" : "#1D1D1F" }}>{result.controlIntensity.charAt(0).toUpperCase() + result.controlIntensity.slice(1)}</span></span>
                 </div>
-                <div className={`rounded-2xl border px-6 py-5 text-center ${fitToneClasses(result.fitLabel).border} ${fitToneClasses(result.fitLabel).bg}`} data-testid="text-final-rating">
-                  <div className={`text-sm font-semibold uppercase tracking-[0.18em] ${fitToneClasses(result.fitLabel).text}`}>Ergebnis</div>
-                  <div className={`mt-2 text-2xl font-semibold ${fitToneClasses(result.fitLabel).text}`}>{result.fitLabel}</div>
-                  <div className="mt-3 text-sm text-slate-600">Dominanzstruktur · {result.controlIntensity}er Steuerungsbedarf</div>
-                </div>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{result.developmentText}</p>
               </div>
-            </section>
 
-            {/* ── Back / Re-configure button ── */}
-            <div className="flex justify-center no-print">
+              <div style={sep} data-testid="section-actions">
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>8. Handlungsempfehlung</p>
+                <ul style={{ margin: 0, paddingLeft: 20, listStyleType: "disc" }}>
+                  {result.actions.map((item, i) => (
+                    <li key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, marginBottom: 3 }}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+
+              {result.integrationsplan && (
+                <div style={sep} data-testid="section-integrationsplan">
+                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>9. 30-Tage-Integrationsplan</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                    {result.integrationsplan.map(phase => {
+                      const phaseCol = phase.num === 1 ? "#0071E3" : phase.num === 2 ? "#F39200" : "#34C759";
+                      return (
+                        <div key={phase.num} data-testid={`integration-phase-${phase.num}`}>
+                          <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>
+                            Phase {phase.num}: {phase.title} <span style={{ fontWeight: 500, color: "#8E8E93" }}>({phase.period})</span>
+                          </p>
+                          <ul style={{ margin: 0, paddingLeft: 20, listStyleType: "disc" }}>
+                            {phase.items.map((item, i) => (
+                              <li key={i} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, marginBottom: 2 }}>{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              <div data-testid="section-final-assessment">
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>{result.integrationsplan ? "10" : "9"}. Gesamtbewertung</p>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+                  <span style={{ fontSize: 13, color: "#8E8E93" }}>Grundpassung: <span style={{ fontWeight: 700, color: fitCol }}>{result.fitLabel}</span></span>
+                  <span style={{ fontSize: 13, color: "#8E8E93" }}>Steuerungsbedarf: <span style={{ fontWeight: 700, color: result.controlIntensity === "hoch" ? "#FF9500" : "#1D1D1F" }}>{result.controlIntensity.charAt(0).toUpperCase() + result.controlIntensity.slice(1)}</span></span>
+                </div>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de" data-testid="text-final-rating-text">{result.finalText}</p>
+              </div>
+
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "center", padding: "24px 0" }} className="no-print">
               <button
                 onClick={() => setReportGenerated(false)}
-                className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-600 shadow-sm hover:bg-slate-50 transition-colors"
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 40, padding: "0 20px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "#FFF", fontSize: 14, fontWeight: 600, color: "#6E6E73", cursor: "pointer" }}
                 data-testid="button-reconfigure"
               >
                 Profil anpassen
               </button>
             </div>
-          </>
-        )}
+          </div>
+          );
+        })()}
 
         <style>{`
           @media print {
