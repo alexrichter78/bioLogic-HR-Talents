@@ -587,13 +587,25 @@ export default function JobCheck() {
       <div className="relative z-10">
         <GlobalNav />
 
-        <main className="flex-1 w-full mx-auto px-5 pb-24 pt-10" style={{ maxWidth: 1100 }}>
+        <div style={{ position: "fixed", top: 55, left: 0, right: 0, zIndex: 8999 }}>
+          <div className="dark:!bg-background pb-2" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", paddingTop: 1 }}>
+            <div className="w-full mx-auto px-6" style={{ maxWidth: 1100 }}>
+              <div className="text-center mt-2 mb-1">
+                <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-jobcheck-title">
+                  bioLogic JobCheck
+                </h1>
+                <p style={{ fontSize: 13, color: "#8E8E93", fontWeight: 450, margin: 0 }} data-testid="text-jobcheck-subtitle">
+                  Bewerten Sie die strukturelle Passung zwischen Rollenprofil und Personenprofil.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <main className="flex-1 w-full mx-auto px-5 pb-24" style={{ maxWidth: 1100, paddingTop: 115 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
-            <GlassCard testId="jobcheck-header" style={{ padding: "32px 32px 28px", position: "relative", overflow: "hidden" }}>
-              <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.18em", color: "#8E8E93", margin: "0 0 10px" }}>bioLogic MatchCheck</p>
-              <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 20, fontWeight: 400 }} data-testid="text-jobcheck-position">
-              </p>
+            <GlassCard testId="jobcheck-header" style={{ padding: "28px 32px", position: "relative", overflow: "hidden" }}>
 
               {dnaSummary && (
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }} data-testid="dna-summary-grid">
