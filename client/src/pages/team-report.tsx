@@ -111,7 +111,7 @@ function ProfileCard({ title, subtitle, profile, description }: {
         <div className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500">{title}</div>
         <div className="mt-1 text-base font-semibold text-slate-950">{subtitle}</div>
       </div>
-      <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         {profile.map(item => {
           const hex = BAR_HEX[item.label.toLowerCase() as ComponentKey];
           const widthPct = (item.value / 67) * 100;
@@ -136,23 +136,12 @@ function ProfileCard({ title, subtitle, profile, description }: {
                 }}>
                   {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(item.value)} %</span>}
                 </div>
-                <div style={{
-                  position: "absolute",
-                  left: `${Math.min(Math.max(widthPct, 4), 100)}%`,
-                  top: "50%",
-                  transform: "translate(-50%, -50%)",
-                  width: 26, height: 26, borderRadius: "50%",
-                  background: `radial-gradient(circle at 40% 38%, ${hex}, color-mix(in srgb, ${hex} 70%, #000))`,
-                  border: "3px solid #F0F0F2",
-                  transition: "left 600ms ease",
-                  zIndex: 1,
-                }} />
                 {isSmall && (
                   <span style={{
                     position: "absolute", top: "50%", transform: "translateY(-50%)",
-                    left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 18px)`,
+                    left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
                     fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
-                    transition: "left 600ms ease", zIndex: 1,
+                    transition: "left 600ms ease",
                   }}>{Math.round(item.value)} %</span>
                 )}
               </div>
@@ -283,33 +272,22 @@ function SliderGroup({
                 }}>
                   {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{pct} %</span>}
                 </div>
-                <div style={{
-                  position: "absolute",
-                  left: `${Math.min(Math.max(widthPct, 4), 100)}%`,
-                  top: "50%",
-                  transform: "translate(-50%, -50%)",
-                  width: 26, height: 26, borderRadius: "50%",
-                  background: `radial-gradient(circle at 40% 38%, ${hex}, color-mix(in srgb, ${hex} 70%, #000))`,
-                  border: "3px solid #F0F0F2",
-                  transition: "left 150ms ease",
-                  zIndex: 1,
-                }} />
                 <input type="range" min={5} max={80} value={val} onChange={(e) => setter(Number(e.target.value))}
                   className="bio-slider"
                   data-testid={`slider-${testIdPrefix}-${key}`}
                   style={{
                     position: "absolute", inset: 0, width: "100%", height: "100%",
                     appearance: "none", WebkitAppearance: "none" as const,
-                    background: "transparent", outline: "none", cursor: "pointer",
+                    background: "transparent", outline: "none", cursor: "ew-resize",
                     margin: 0, zIndex: 3,
                   }}
                 />
                 {isSmall && (
                   <span style={{
                     position: "absolute", top: "50%", transform: "translateY(-50%)",
-                    left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 18px)`,
+                    left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
                     fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
-                    transition: "left 150ms ease", zIndex: 1,
+                    transition: "left 150ms ease",
                   }}>{pct} %</span>
                 )}
               </div>

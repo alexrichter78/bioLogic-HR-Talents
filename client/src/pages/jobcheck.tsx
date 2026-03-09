@@ -271,20 +271,10 @@ function SoftBar({ items }: { items: { label: string; value: number; color: stri
                   <span style={{ fontSize: 13, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{bar.value} %</span>
                 )}
               </div>
-              <div style={{
-                position: "absolute",
-                left: `${Math.min(Math.max(widthPct, 4), 100)}%`,
-                top: "50%",
-                transform: "translate(-50%, -50%)",
-                width: 26, height: 26, borderRadius: "50%",
-                background: `radial-gradient(circle at 40% 38%, ${bar.color}, color-mix(in srgb, ${bar.color} 70%, #000))`,
-                border: "3px solid #F0F0F2",
-                transition: "left 600ms ease",
-              }} />
               {isSmall && (
                 <span style={{
                   position: "absolute", top: "50%", transform: "translateY(-50%)",
-                  left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 18px)`,
+                  left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
                   fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
                   transition: "left 600ms ease",
                 }}>{bar.value} %</span>
@@ -318,19 +308,6 @@ function BarSlider({ label, value, color, onChange }: { label: string; value: nu
         }}>
           {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>}
         </div>
-        {value > 0 && (
-          <div style={{
-            position: "absolute",
-            left: `${Math.min(Math.max(widthPct, 4), 100)}%`,
-            top: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 26, height: 26, borderRadius: "50%",
-            background: `radial-gradient(circle at 40% 38%, ${color}, color-mix(in srgb, ${color} 70%, #000))`,
-            border: "3px solid #F0F0F2",
-            transition: "left 150ms ease",
-            zIndex: 1,
-          }} />
-        )}
         <input
           type="range" min={0} max={67} value={value}
           onChange={e => onChange(Number(e.target.value))}
@@ -339,14 +316,14 @@ function BarSlider({ label, value, color, onChange }: { label: string; value: nu
           style={{
             position: "absolute", inset: 0, width: "100%", height: "100%",
             appearance: "none", WebkitAppearance: "none",
-            background: "transparent", outline: "none", cursor: "pointer",
+            background: "transparent", outline: "none", cursor: "ew-resize",
             margin: 0, zIndex: 3,
           }}
         />
         {isSmall && value > 0 && (
           <span style={{
             position: "absolute", top: "50%", transform: "translateY(-50%)",
-            left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 18px)`,
+            left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
             fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
             transition: "left 150ms ease", zIndex: 1,
           }}>{Math.round(value)} %</span>

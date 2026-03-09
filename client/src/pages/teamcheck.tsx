@@ -123,17 +123,6 @@ function ProfileCard({ title, num, triad, dominanz, color, onChange, testIdPrefi
                 }}>
                   {!isSmall && <span style={{ fontSize: 10, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(val)} %</span>}
                 </div>
-                <div style={{
-                  position: "absolute",
-                  left: `${Math.min(Math.max(widthPct, 4), 100)}%`,
-                  top: "50%",
-                  transform: "translate(-50%, -50%)",
-                  width: 22, height: 22, borderRadius: "50%",
-                  background: `radial-gradient(circle at 40% 38%, ${barColor}, color-mix(in srgb, ${barColor} 70%, #000))`,
-                  border: "3px solid #F0F0F2",
-                  transition: "left 150ms ease",
-                  zIndex: 1,
-                }} />
                 {onChange && (
                   <input
                     type="range" min={0} max={MAX_BIO} value={val}
@@ -143,7 +132,7 @@ function ProfileCard({ title, num, triad, dominanz, color, onChange, testIdPrefi
                     style={{
                       position: "absolute", inset: 0, width: "100%", height: "100%",
                       appearance: "none", WebkitAppearance: "none",
-                      background: "transparent", outline: "none", cursor: "pointer",
+                      background: "transparent", outline: "none", cursor: "ew-resize",
                       margin: 0, zIndex: 3,
                     }}
                   />
@@ -151,9 +140,9 @@ function ProfileCard({ title, num, triad, dominanz, color, onChange, testIdPrefi
                 {isSmall && (
                   <span style={{
                     position: "absolute", top: "50%", transform: "translateY(-50%)",
-                    left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 16px)`,
+                    left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
                     fontSize: 10, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
-                    transition: "left 150ms ease", zIndex: 1,
+                    transition: "left 150ms ease",
                   }}>{Math.round(val)} %</span>
                 )}
               </div>
