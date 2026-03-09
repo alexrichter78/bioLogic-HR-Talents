@@ -2848,7 +2848,10 @@ export default function RollenDNA() {
                     }}>
                       <Check style={{ width: 16, height: 16, color: "#FFF", strokeWidth: 2.5 }} />
                     </div>
-                    <h3 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Rollenprofil erfolgreich erstellt</h3>
+                    <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
+                      <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Rollenprofil erfolgreich erstellt:</span>
+                      <span style={{ fontSize: 16 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}</span>
+                    </span>
                   </div>
                   <ChevronDown style={{
                     width: 18,
