@@ -247,22 +247,35 @@ function ChapterBadge({ num, color }: { num: number; color: string }) {
 
 function SoftBar({ items }: { items: { label: string; value: number; color: string }[] }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+    <div style={{ background: "#2C2C2E", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 12 }}>
       {items.map(bar => {
         const widthPct = (bar.value / 67) * 100;
+        const isSmall = widthPct < 15;
         return (
-          <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 12, color: "#6E6E73", width: 62, flexShrink: 0 }}>{bar.label}</span>
-            <div style={{ flex: 1, height: 24, borderRadius: 6, background: "rgba(0,0,0,0.04)", overflow: "hidden", position: "relative" }}>
+          <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", width: 72, flexShrink: 0 }}>{bar.label}</span>
+            <div style={{ flex: 1, height: 28, borderRadius: 14, background: "rgba(255,255,255,0.08)", overflow: "visible", position: "relative", display: "flex", alignItems: "center" }}>
               <div style={{
                 width: `${Math.min(Math.max(widthPct, 3), 100)}%`,
-                height: "100%", borderRadius: 6, background: bar.color,
+                height: "100%", borderRadius: 14, background: bar.color,
                 transition: "width 600ms ease",
-                display: "flex", alignItems: "center", paddingLeft: 8,
-                minWidth: 40,
+                display: "flex", alignItems: "center", paddingLeft: 10,
+                minWidth: isSmall ? 8 : 50,
+                position: "relative",
               }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{bar.value} %</span>
+                {!isSmall && (
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{bar.value} %</span>
+                )}
+                <div style={{
+                  position: "absolute", right: -10, top: "50%", transform: "translateY(-50%)",
+                  width: 24, height: 24, borderRadius: "50%", background: bar.color,
+                  border: "3px solid #2C2C2E",
+                  boxShadow: `0 0 0 1px ${bar.color}`,
+                }} />
               </div>
+              {isSmall && (
+                <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.7)", marginLeft: 20, whiteSpace: "nowrap" }}>{bar.value} %</span>
+              )}
             </div>
           </div>
         );
