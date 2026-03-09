@@ -131,6 +131,7 @@ export default function SollIstBericht() {
   const [roleTriad, setRoleTriad] = useState<Triad | null>(null);
   const [hasRollenDna, setHasRollenDna] = useState(false);
   const [reportGenerated, setReportGenerated] = useState(false);
+  const [profilvergleichOpen, setProfilvergleichOpen] = useState(true);
   const [systemwirkungOpen, setSystemwirkungOpen] = useState(true);
   const [fuehrungsArt, setFuehrungsArt] = useState<FuehrungsArt>("keine");
 
@@ -221,14 +222,21 @@ export default function SollIstBericht() {
 
         {/* === INPUT: Slider area before report === */}
         {!reportGenerated && (<>
-          <div className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+          <div className="mb-8 rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <button
+              onClick={() => setProfilvergleichOpen(!profilvergleichOpen)}
+              style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.02)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+              data-testid="button-toggle-profilvergleich"
+            >
+              <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.14em", textTransform: "uppercase", margin: 0 }}>
+                Profilvergleich
+              </p>
+              <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${profilvergleichOpen ? "rotate-180" : ""}`} />
+            </button>
 
-            <div className="flex items-center gap-4 mb-6">
-              <div className="h-px flex-1 bg-slate-200" />
-              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Profilvergleich</span>
-              <div className="h-px flex-1 bg-slate-200" />
-            </div>
-
+            {profilvergleichOpen && (<div style={{ padding: "0 32px 32px" }}>
             <div className="grid gap-6 lg:grid-cols-2">
               <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="card-soll-profil">
                 <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
@@ -374,6 +382,7 @@ export default function SollIstBericht() {
                 Bericht erstellen
               </button>
             </div>
+            </div>)}
           </div>
 
           {(() => {
