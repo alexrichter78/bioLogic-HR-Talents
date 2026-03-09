@@ -334,6 +334,7 @@ function BarSlider({ label, value, color, onChange }: { label: string; value: nu
         <input
           type="range" min={0} max={67} value={value}
           onChange={e => onChange(Number(e.target.value))}
+          className="bio-slider"
           data-testid={`slider-${label.toLowerCase()}`}
           style={{
             position: "absolute", inset: 0, width: "100%", height: "100%",
@@ -602,20 +603,7 @@ export default function JobCheck() {
           50% { opacity: 1; }
           100% { opacity: 0.85; }
         }
-        input[type="range"]::-webkit-slider-thumb {
-          -webkit-appearance: none; appearance: none;
-          width: 6px; height: 24px; border-radius: 3px;
-          background: rgba(255,255,255,0.85); border: none;
-          box-shadow: 0 0 4px rgba(0,0,0,0.2);
-          cursor: ew-resize;
-        }
-        input[type="range"]::-moz-range-thumb {
-          width: 6px; height: 24px; border-radius: 3px;
-          background: rgba(255,255,255,0.85); border: none;
-          box-shadow: 0 0 4px rgba(0,0,0,0.2);
-          cursor: ew-resize;
-        }
-        input[type="range"]::-webkit-slider-runnable-track { height: 24px; cursor: ew-resize; }
+        input[type="range"]::-webkit-slider-runnable-track { height: 24px; cursor: ew-resize; background: transparent; }
         input[type="range"]::-moz-range-track { height: 24px; cursor: ew-resize; background: transparent; }
       `}</style>
 

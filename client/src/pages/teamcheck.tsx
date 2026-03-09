@@ -138,6 +138,7 @@ function ProfileCard({ title, num, triad, dominanz, color, onChange, testIdPrefi
                   <input
                     type="range" min={0} max={MAX_BIO} value={val}
                     onChange={e => onChange({ ...triad, [k]: Number(e.target.value) })}
+                    className="bio-slider"
                     data-testid={testIdPrefix ? `${testIdPrefix}-${k}` : undefined}
                     style={{
                       position: "absolute", inset: 0, width: "100%", height: "100%",

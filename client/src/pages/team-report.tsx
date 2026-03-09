@@ -295,6 +295,7 @@ function SliderGroup({
                   zIndex: 1,
                 }} />
                 <input type="range" min={5} max={80} value={val} onChange={(e) => setter(Number(e.target.value))}
+                  className="bio-slider"
                   data-testid={`slider-${testIdPrefix}-${key}`}
                   style={{
                     position: "absolute", inset: 0, width: "100%", height: "100%",

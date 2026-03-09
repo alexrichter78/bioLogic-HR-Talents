@@ -440,6 +440,7 @@ export default function SollIstBericht() {
                           <input
                             type="range" min={5} max={80} value={val}
                             onChange={(e) => setter(Number(e.target.value))}
+                            className="bio-slider"
                             style={{
                               position: "absolute", inset: 0, width: "100%", height: "100%",
                               appearance: "none", WebkitAppearance: "none" as const,
