@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
 import { AlertTriangle, Download, Check, ChevronLeft } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
@@ -418,29 +418,52 @@ export default function SollIstBericht() {
                           }}>
                             {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{pct} %</span>}
                           </div>
-                          <div style={{
-                            position: "absolute",
-                            left: `${Math.min(Math.max(widthPct, 4), 100)}%`,
-                            top: "50%",
-                            transform: "translate(-50%, -50%)",
-                            width: 26, height: 26, borderRadius: "50%",
-                            background: hex,
-                            border: "3px solid #F0F0F2",
-                            transition: "left 150ms ease",
-                            zIndex: 2,
-                            pointerEvents: "none",
-                          }} />
-                          <input
-                            type="range" min={5} max={80} value={val}
-                            onChange={(e) => setter(Number(e.target.value))}
-                            className="bio-slider"
-                            style={{
-                              position: "absolute", inset: 0, width: "100%", height: "100%",
-                              appearance: "none", WebkitAppearance: "none" as const,
-                              background: "transparent", outline: "none", cursor: "ew-resize",
-                              margin: 0, zIndex: 3,
-                            }}
+                          <div
                             data-testid={`slider-${k}`}
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              const track = e.currentTarget.parentElement!;
+                              const rect = track.getBoundingClientRect();
+                              const move = (ev: MouseEvent) => {
+                                const ratio = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
+                                const raw = Math.round(ratio * 67);
+                                setter(Math.max(5, Math.min(80, raw)));
+                              };
+                              const up = () => {
+                                window.removeEventListener("mousemove", move);
+                                window.removeEventListener("mouseup", up);
+                              };
+                              window.addEventListener("mousemove", move);
+                              window.addEventListener("mouseup", up);
+                            }}
+                            onTouchStart={(e) => {
+                              const track = e.currentTarget.parentElement!;
+                              const rect = track.getBoundingClientRect();
+                              const move = (ev: TouchEvent) => {
+                                const touch = ev.touches[0];
+                                const ratio = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
+                                const raw = Math.round(ratio * 67);
+                                setter(Math.max(5, Math.min(80, raw)));
+                              };
+                              const up = () => {
+                                window.removeEventListener("touchmove", move);
+                                window.removeEventListener("touchend", up);
+                              };
+                              window.addEventListener("touchmove", move);
+                              window.addEventListener("touchend", up);
+                            }}
+                            style={{
+                              position: "absolute",
+                              left: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+                              top: "50%",
+                              transform: "translate(-50%, -50%)",
+                              width: 28, height: 28, borderRadius: "50%",
+                              background: hex,
+                              border: "3px solid #F0F0F2",
+                              transition: "left 80ms ease",
+                              zIndex: 3,
+                              cursor: "grab",
+                            }}
                           />
                           {isSmall && (
                             <span style={{
