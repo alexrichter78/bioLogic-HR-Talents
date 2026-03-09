@@ -2711,7 +2711,7 @@ export default function RollenDNA() {
                               <div style={{
                                 flex: 1,
                                 height: 24,
-                                borderRadius: 6,
+                                borderRadius: 12,
                                 background: "rgba(0,0,0,0.04)",
                                 overflow: "hidden",
                                 position: "relative",
@@ -2719,7 +2719,7 @@ export default function RollenDNA() {
                                 <div style={{
                                   width: bar.value === 0 ? "0%" : `${Math.max(bar.value, 2)}%`,
                                   height: "100%",
-                                  borderRadius: 6,
+                                  borderRadius: 12,
                                   background: bar.color,
                                   transition: "width 600ms ease",
                                   display: "flex",
@@ -3203,7 +3203,7 @@ export default function RollenDNA() {
                               <div style={{
                                 flex: 1,
                                 height: 24,
-                                borderRadius: 6,
+                                borderRadius: 12,
                                 background: "rgba(0,0,0,0.04)",
                                 overflow: "hidden",
                                 position: "relative",
@@ -3211,7 +3211,7 @@ export default function RollenDNA() {
                                 <div style={{
                                   width: bar.value === 0 ? "0%" : `${Math.max(bar.value, 2)}%`,
                                   height: "100%",
-                                  borderRadius: 6,
+                                  borderRadius: 12,
                                   background: bar.color,
                                   transition: "width 600ms ease",
                                   display: "flex",
