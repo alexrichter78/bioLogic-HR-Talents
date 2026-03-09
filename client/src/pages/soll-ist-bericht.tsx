@@ -416,7 +416,7 @@ export default function SollIstBericht() {
             let devScore: number;
             if (sameDom && totalGap <= 20) devScore = 6;
             else if (sameDom && totalGap <= 28) devScore = 5;
-            else if (totalGap <= 20 || (sameDom && totalGap <= 28)) devScore = 4;
+            else if (totalGap <= 20 || (sameDom && totalGap <= 35)) devScore = 4;
             else if (totalGap <= 35) devScore = 3;
             else if (totalGap <= 50) devScore = 2;
             else devScore = 1;
@@ -696,7 +696,7 @@ export default function SollIstBericht() {
                 let rDev: number;
                 if (sameD && tGap <= 20) rDev = 6;
                 else if (sameD && tGap <= 28) rDev = 5;
-                else if (tGap <= 20 || (sameD && tGap <= 28)) rDev = 4;
+                else if (tGap <= 20 || (sameD && tGap <= 35)) rDev = 4;
                 else if (tGap <= 35) rDev = 3;
                 else if (tGap <= 50) rDev = 2;
                 else rDev = 1;
