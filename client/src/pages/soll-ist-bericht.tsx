@@ -421,6 +421,10 @@ export default function SollIstBericht() {
             if (structureMismatch && devScore > 4) devScore = 4;
             if (structureMismatch && devScore > 1) devScore = Math.max(devScore - 1, 1);
 
+            if (fitLabel === "Bedingt geeignet" && devScore > 4) devScore = 4;
+            if (fitLabel === "Nicht geeignet" && devScore > 2) devScore = 2;
+            if (fitLabel === "Geeignet" && devScore < 3) devScore = 3;
+
             const devTexts: Record<number, string> = {
               1: "Die grundlegende Arbeitslogik der Person unterscheidet sich stark von den Anforderungen der Rolle. Eine stabile Anpassung ist daher nur sehr eingeschränkt zu erwarten.",
               2: "Die Anforderungen der Rolle unterscheiden sich deutlich von der natürlichen Arbeitsweise der Person. Eine Entwicklung ist grundsätzlich möglich, erfordert jedoch intensive Führung und klare Rahmenbedingungen.",
