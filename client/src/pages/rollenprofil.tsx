@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
-import { Download, AlertTriangle } from "lucide-react";
+import { Download, AlertTriangle, BarChart3, Briefcase, Users } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE } from "@/data/berufe";
+import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 
@@ -1029,15 +1030,44 @@ export default function Rollenprofil() {
         }}>
 
           {/* ── HEADER ── */}
-          <div style={{ textAlign: "center", marginBottom: 40 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: "#0071E3", letterSpacing: "0.12em", textTransform: "uppercase", margin: "0 0 8px" }}>bioLogic Strukturanalyse</p>
-            <h1 style={{ fontSize: 28, fontWeight: 800, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.025em" }} data-testid="text-report-title">
+          <div style={{ textAlign: "center", marginBottom: 40, position: "relative" }}>
+            <img src={logoSrc} alt="bioLogic" style={{ height: 28, margin: "0 auto 20px", display: "block", objectFit: "contain" }} />
+
+            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.14em", textTransform: "uppercase", margin: "0 0 12px" }}>
+              Strukturanalyse
+            </p>
+
+            <h1 style={{ fontSize: 30, fontWeight: 800, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.03em", lineHeight: 1.2 }} data-testid="text-report-title">
               Rollen-DNA: {data.beruf}
             </h1>
+
             {data.bereich && (
-              <p style={{ fontSize: 13, color: "#8E8E93", margin: 0, fontWeight: 500 }}>{data.bereich}</p>
+              <p style={{ fontSize: 14, color: "#8E8E93", margin: "0 0 0", fontWeight: 500 }}>{data.bereich}</p>
             )}
-            <div style={{ width: 48, height: 3, background: "#0071E3", borderRadius: 2, margin: "20px auto 0" }} />
+
+            <div style={{
+              width: 64, height: 4, borderRadius: 2, margin: "20px auto 0",
+              background: `linear-gradient(90deg, ${COLORS[data.dom.key as keyof typeof COLORS]}, ${COLORS[data.sec.key as keyof typeof COLORS]})`,
+            }} />
+
+            <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 18, flexWrap: "wrap" }}>
+              {[
+                { label: data.dom.label, color: COLORS[data.dom.key as keyof typeof COLORS] },
+                ...(data.isLeadership ? [{ label: "Führungsrolle", color: "#6E6E73" }] : []),
+                { label: data.aufgabencharakter || "Operativ", color: "#6E6E73" },
+              ].map((badge, i) => (
+                <span key={i} style={{
+                  fontSize: 11, fontWeight: 600,
+                  color: badge.color,
+                  background: `${badge.color}10`,
+                  border: `1px solid ${badge.color}20`,
+                  padding: "4px 12px", borderRadius: 8,
+                  letterSpacing: "0.02em",
+                }}>
+                  {badge.label}
+                </span>
+              ))}
+            </div>
           </div>
 
           {/* ── EINLEITUNG ── */}
