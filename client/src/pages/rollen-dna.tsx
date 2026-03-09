@@ -2766,17 +2766,17 @@ export default function RollenDNA() {
                           { label: "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
                         ];
                         return (
-                          <div style={{ background: "#3A3A3C", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
+                          <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
                             {bars.map((bar) => {
                               const widthPct = (bar.value / 67) * 100;
                               const isSmall = widthPct < 18;
                               return (
                                 <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                                  <span style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", width: 72, flexShrink: 0 }}>
+                                  <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>
                                     {bar.label}
                                   </span>
                                   <div style={{ flex: 1, position: "relative", height: 26 }}>
-                                    <div style={{ position: "absolute", inset: 0, borderRadius: 13, background: "rgba(255,255,255,0.10)" }} />
+                                    <div style={{ position: "absolute", inset: 0, borderRadius: 13, background: "rgba(0,0,0,0.06)" }} />
                                     <div style={{
                                       position: "absolute", left: 0, top: 0, bottom: 0,
                                       width: bar.value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 4), 100)}%`,
@@ -2794,7 +2794,7 @@ export default function RollenDNA() {
                                         top: "50%", transform: "translate(-50%, -50%)",
                                         width: 26, height: 26, borderRadius: "50%",
                                         background: `radial-gradient(circle at 40% 38%, ${bar.color}, color-mix(in srgb, ${bar.color} 70%, #000))`,
-                                        border: "3px solid #3A3A3C",
+                                        border: "3px solid #F0F0F2",
                                         transition: "left 600ms ease", zIndex: 1,
                                       }} />
                                     )}
@@ -2802,7 +2802,7 @@ export default function RollenDNA() {
                                       <span style={{
                                         position: "absolute", top: "50%", transform: "translateY(-50%)",
                                         left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 18px)`,
-                                        fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap",
+                                        fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
                                         transition: "left 600ms ease", zIndex: 1,
                                       }}>{Math.round(bar.value)} %</span>
                                     )}
@@ -3260,17 +3260,17 @@ export default function RollenDNA() {
                           { label: "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
                         ];
                         return (
-                          <div style={{ background: "#3A3A3C", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
+                          <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
                             {bars.map((bar) => {
                               const widthPct = (bar.value / 67) * 100;
                               const isSmall = widthPct < 18;
                               return (
                                 <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                                  <span style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", width: 72, flexShrink: 0 }}>
+                                  <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>
                                     {bar.label}
                                   </span>
                                   <div style={{ flex: 1, position: "relative", height: 26 }}>
-                                    <div style={{ position: "absolute", inset: 0, borderRadius: 13, background: "rgba(255,255,255,0.10)" }} />
+                                    <div style={{ position: "absolute", inset: 0, borderRadius: 13, background: "rgba(0,0,0,0.06)" }} />
                                     <div style={{
                                       position: "absolute", left: 0, top: 0, bottom: 0,
                                       width: bar.value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 4), 100)}%`,
@@ -3288,7 +3288,7 @@ export default function RollenDNA() {
                                         top: "50%", transform: "translate(-50%, -50%)",
                                         width: 26, height: 26, borderRadius: "50%",
                                         background: `radial-gradient(circle at 40% 38%, ${bar.color}, color-mix(in srgb, ${bar.color} 70%, #000))`,
-                                        border: "3px solid #3A3A3C",
+                                        border: "3px solid #F0F0F2",
                                         transition: "left 600ms ease", zIndex: 1,
                                       }} />
                                     )}
@@ -3296,7 +3296,7 @@ export default function RollenDNA() {
                                       <span style={{
                                         position: "absolute", top: "50%", transform: "translateY(-50%)",
                                         left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 18px)`,
-                                        fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap",
+                                        fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
                                         transition: "left 600ms ease", zIndex: 1,
                                       }}>{Math.round(bar.value)} %</span>
                                     )}

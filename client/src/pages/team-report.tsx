@@ -111,20 +111,20 @@ function ProfileCard({ title, subtitle, profile, description }: {
         <div className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500">{title}</div>
         <div className="mt-1 text-base font-semibold text-slate-950">{subtitle}</div>
       </div>
-      <div style={{ background: "#3A3A3C", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
         {profile.map(item => {
           const hex = BAR_HEX[item.label.toLowerCase() as ComponentKey];
           const widthPct = (item.value / 67) * 100;
           const isSmall = widthPct < 18;
           return (
             <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", width: 72, flexShrink: 0 }}>
+              <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>
                 {item.label}
               </span>
               <div style={{ flex: 1, position: "relative", height: 26 }}>
                 <div style={{
                   position: "absolute", inset: 0,
-                  borderRadius: 13, background: "rgba(255,255,255,0.10)",
+                  borderRadius: 13, background: "rgba(0,0,0,0.06)",
                 }} />
                 <div style={{
                   position: "absolute", left: 0, top: 0, bottom: 0,
@@ -143,7 +143,7 @@ function ProfileCard({ title, subtitle, profile, description }: {
                   transform: "translate(-50%, -50%)",
                   width: 26, height: 26, borderRadius: "50%",
                   background: `radial-gradient(circle at 40% 38%, ${hex}, color-mix(in srgb, ${hex} 70%, #000))`,
-                  border: "3px solid #3A3A3C",
+                  border: "3px solid #F0F0F2",
                   transition: "left 600ms ease",
                   zIndex: 1,
                 }} />
@@ -151,7 +151,7 @@ function ProfileCard({ title, subtitle, profile, description }: {
                   <span style={{
                     position: "absolute", top: "50%", transform: "translateY(-50%)",
                     left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 18px)`,
-                    fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap",
+                    fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
                     transition: "left 600ms ease", zIndex: 1,
                   }}>{Math.round(item.value)} %</span>
                 )}
@@ -257,7 +257,7 @@ function SliderGroup({
     <div>
       <div className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500 mb-2">{title}</div>
       <div className="text-xs text-slate-500 mb-4">{dominanceLabel(dom)}</div>
-      <div style={{ background: "#3A3A3C", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
         {items.map(({ key, val, setter }) => {
           const pct = Math.round(profile[key]);
           const hex = BAR_HEX[key];
@@ -265,13 +265,13 @@ function SliderGroup({
           const isSmall = widthPct < 18;
           return (
             <div key={key} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", width: 72, flexShrink: 0 }}>
+              <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>
                 {labelComponent(key)}
               </span>
               <div style={{ flex: 1, position: "relative", height: 26 }}>
                 <div style={{
                   position: "absolute", inset: 0,
-                  borderRadius: 13, background: "rgba(255,255,255,0.10)",
+                  borderRadius: 13, background: "rgba(0,0,0,0.06)",
                 }} />
                 <div style={{
                   position: "absolute", left: 0, top: 0, bottom: 0,
@@ -290,7 +290,7 @@ function SliderGroup({
                   transform: "translate(-50%, -50%)",
                   width: 26, height: 26, borderRadius: "50%",
                   background: `radial-gradient(circle at 40% 38%, ${hex}, color-mix(in srgb, ${hex} 70%, #000))`,
-                  border: "3px solid #3A3A3C",
+                  border: "3px solid #F0F0F2",
                   transition: "left 150ms ease",
                   zIndex: 1,
                 }} />
@@ -307,7 +307,7 @@ function SliderGroup({
                   <span style={{
                     position: "absolute", top: "50%", transform: "translateY(-50%)",
                     left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 18px)`,
-                    fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap",
+                    fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
                     transition: "left 150ms ease", zIndex: 1,
                   }}>{pct} %</span>
                 )}
