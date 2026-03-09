@@ -173,7 +173,7 @@ function getRoleResultKey(imp: number, int: number, ana: number): ResultKey {
 
 const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
   IMP_INT_ANA: {
-    headline: "Impulsiv \u2013 Intuitiv \u2013 Analytisch",
+    headline: "Aktives Handeln pr\u00e4gt den Alltag \u2013 unter Druck mehr Austausch mit anderen",
     body: [
       "Im Arbeitsalltag wird diese Rolle vor allem durch eine aktive und entscheidungsorientierte Arbeitsweise gepr\u00e4gt. Themen werden fr\u00fch aufgegriffen, Verantwortung wird \u00fcbernommen und Entscheidungen werden vergleichsweise z\u00fcgig getroffen.",
       "Wenn der Druck steigt, gewinnt der Austausch mit anderen an Bedeutung. Gespr\u00e4che, Abstimmung und das Einbeziehen verschiedener Perspektiven helfen dabei, Entscheidungen abzusichern und L\u00f6sungen gemeinsam zu entwickeln.",
@@ -182,7 +182,7 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
     leadership: "In der F\u00fchrungsarbeit zeigt sich das durch klare Entscheidungen, sichtbare Verantwortung und eine offene Kommunikation mit dem Umfeld.",
   },
   IMP_ANA_INT: {
-    headline: "Impulsiv \u2013 Analytisch \u2013 Intuitiv",
+    headline: "Entscheidungen und Umsetzung pr\u00e4gen den Alltag \u2013 unter Druck mehr Struktur und Kontrolle",
     body: [
       "Im Arbeitsalltag steht eine klare Entscheidungs- und Umsetzungsorientierung im Mittelpunkt. Themen werden aktiv vorangebracht und Verantwortung wird \u00fcbernommen.",
       "Wenn der Druck steigt, w\u00e4chst h\u00e4ufig das Bed\u00fcrfnis nach Struktur und \u00dcbersicht. Themen werden genauer gepr\u00fcft, Abl\u00e4ufe werden klarer geordnet und Entscheidungen st\u00e4rker \u00fcber Planung und Analyse abgesichert.",
@@ -191,7 +191,7 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
     leadership: "In der F\u00fchrungsarbeit zeigt sich das durch klare Zielorientierung, strukturierte Steuerung und verbindliche Entscheidungen.",
   },
   INT_IMP_ANA: {
-    headline: "Intuitiv \u2013 Impulsiv \u2013 Analytisch",
+    headline: "Zusammenarbeit pr\u00e4gt den Alltag \u2013 unter Druck schnelleres Entscheiden und Handeln",
     body: [
       "Im Arbeitsalltag steht vor allem Zusammenarbeit und Austausch mit anderen im Mittelpunkt. Gespr\u00e4che, Abstimmung und ein gutes Gesp\u00fcr f\u00fcr Situationen pr\u00e4gen die Arbeitsweise.",
       "Wenn der Druck steigt, kann sich das Verhalten st\u00e4rker in Richtung schnellerer Entscheidungen und aktiver Umsetzung bewegen. Themen werden dann direkter angegangen.",
@@ -200,7 +200,7 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
     leadership: "In der F\u00fchrungsarbeit zeigt sich das durch offene Kommunikation, eine hohe Pr\u00e4senz im Team und die F\u00e4higkeit, Themen gemeinsam voranzubringen.",
   },
   INT_ANA_IMP: {
-    headline: "Intuitiv \u2013 Analytisch \u2013 Impulsiv",
+    headline: "Zusammenarbeit pr\u00e4gt den Alltag \u2013 unter Druck mehr Struktur und Klarheit",
     body: [
       "Im Arbeitsalltag wird diese Rolle vor allem durch Zusammenarbeit, Abstimmung und ein gutes Gesp\u00fcr f\u00fcr Menschen gepr\u00e4gt. Austausch und Dialog spielen eine wichtige Rolle.",
       "Wenn der Druck steigt, w\u00e4chst h\u00e4ufig das Bed\u00fcrfnis nach Struktur und Klarheit. Themen werden st\u00e4rker \u00fcber Planung, Ordnung und nachvollziehbare Abl\u00e4ufe gesteuert.",
@@ -209,7 +209,7 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
     leadership: "In der F\u00fchrungsarbeit zeigt sich das durch dialogorientierte F\u00fchrung, nachvollziehbare Entscheidungen und eine strukturierte Organisation der Zusammenarbeit.",
   },
   ANA_IMP_INT: {
-    headline: "Analytisch \u2013 Impulsiv \u2013 Intuitiv",
+    headline: "Struktur und Planung pr\u00e4gen den Alltag \u2013 unter Druck schnellere Entscheidungen",
     body: [
       "Im Arbeitsalltag pr\u00e4gt vor allem eine strukturierte und sorgf\u00e4ltige Arbeitsweise das Verhalten. Themen werden zun\u00e4chst durchdacht und geordnet, bevor Entscheidungen getroffen werden.",
       "Wenn der Druck steigt, k\u00f6nnen Entscheidungen direkter und schneller getroffen werden, um Themen voranzubringen.",
@@ -218,7 +218,7 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
     leadership: "In der F\u00fchrungsarbeit zeigt sich das durch klare Strukturen, sachliche Entscheidungen und eine konsequente Umsetzung von Vorhaben.",
   },
   ANA_INT_IMP: {
-    headline: "Analytisch \u2013 Intuitiv \u2013 Impulsiv",
+    headline: "Struktur und Planung pr\u00e4gen den Alltag \u2013 unter Druck mehr Austausch und Abstimmung",
     body: [
       "Im Arbeitsalltag stehen Struktur, Planung und fachliche Klarheit im Mittelpunkt. Themen werden sorgf\u00e4ltig analysiert und systematisch vorbereitet.",
       "Wenn der Druck steigt, gewinnt der Austausch mit anderen an Bedeutung. Gespr\u00e4che helfen dabei, unterschiedliche Perspektiven einzubeziehen und Entscheidungen abzustimmen.",
@@ -227,7 +227,7 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
     leadership: "In der F\u00fchrungsarbeit zeigt sich das durch klare Strukturen, nachvollziehbare Entscheidungen und eine offene Abstimmung im Team.",
   },
   IMP_INT__ANA: {
-    headline: "Impulsiv / Intuitiv \u2013 Analytisch",
+    headline: "Aktives Handeln und Zusammenarbeit pr\u00e4gen den Alltag \u2013 unter Druck mehr Struktur",
     body: [
       "Im Arbeitsalltag verbinden sich Aktivit\u00e4t und Zusammenarbeit besonders eng. Themen werden aufgegriffen und vorangebracht, gleichzeitig wird der Austausch mit anderen gesucht.",
       "Wenn der Druck steigt, w\u00e4chst h\u00e4ufig der Wunsch nach mehr Struktur und Klarheit, um Themen zu ordnen und Entscheidungen abzusichern.",
@@ -236,7 +236,7 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
     leadership: "In der F\u00fchrungsarbeit zeigt sich das durch eine aktive Rolle in Gespr\u00e4chen, klare Entscheidungen und eine offene Kommunikation im Team.",
   },
   IMP_ANA__INT: {
-    headline: "Impulsiv / Analytisch \u2013 Intuitiv",
+    headline: "Entscheidungen und Struktur pr\u00e4gen den Alltag \u2013 unter Druck mehr Austausch",
     body: [
       "Im Arbeitsalltag verbinden sich Entscheidungsst\u00e4rke und strukturierte Arbeitsweise. Themen werden vorangebracht und gleichzeitig sorgf\u00e4ltig geplant.",
       "Wenn der Druck steigt, gewinnt der Austausch mit anderen an Bedeutung. Gespr\u00e4che helfen dabei, Entscheidungen zu reflektieren und Perspektiven einzubeziehen.",
@@ -245,7 +245,7 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
     leadership: "In der F\u00fchrungsarbeit zeigt sich das durch klare Orientierung, strukturierte Steuerung und einen offenen Dialog mit dem Umfeld.",
   },
   INT_IMP__ANA: {
-    headline: "Intuitiv / Impulsiv \u2013 Analytisch",
+    headline: "Zusammenarbeit und Aktivit\u00e4t pr\u00e4gen den Alltag \u2013 unter Druck mehr Struktur",
     body: [
       "Im Arbeitsalltag wirken Zusammenarbeit und Aktivit\u00e4t besonders eng zusammen. Themen werden im Austausch mit anderen entwickelt und gleichzeitig aktiv vorangebracht.",
       "Wenn der Druck steigt, w\u00e4chst h\u00e4ufig das Bed\u00fcrfnis nach mehr Struktur und Ordnung, um Entscheidungen abzusichern.",
@@ -254,7 +254,7 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
     leadership: "In der F\u00fchrungsarbeit zeigt sich das durch eine hohe Pr\u00e4senz im Team, offene Kommunikation und die F\u00e4higkeit, Themen gemeinsam voranzubringen.",
   },
   INT_ANA__IMP: {
-    headline: "Intuitiv / Analytisch \u2013 Impulsiv",
+    headline: "Zusammenarbeit und Struktur pr\u00e4gen den Alltag \u2013 unter Druck schnellere Entscheidungen",
     body: [
       "Im Arbeitsalltag verbinden sich Zusammenarbeit und strukturierte Arbeitsweise besonders eng. Gespr\u00e4che, Abstimmung und klare Abl\u00e4ufe pr\u00e4gen die t\u00e4gliche Arbeit.",
       "Wenn der Druck steigt, k\u00f6nnen Entscheidungen direkter und schneller getroffen werden, um Themen voranzubringen.",
@@ -263,7 +263,7 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
     leadership: "In der F\u00fchrungsarbeit zeigt sich das durch offene Kommunikation, strukturierte Planung und klare Orientierung f\u00fcr das Team.",
   },
   ANA_IMP__INT: {
-    headline: "Analytisch / Impulsiv \u2013 Intuitiv",
+    headline: "Struktur und Umsetzung pr\u00e4gen den Alltag \u2013 unter Druck mehr Austausch",
     body: [
       "Im Arbeitsalltag verbinden sich strukturierte Planung und klare Umsetzungsbereitschaft besonders eng. Themen werden sorgf\u00e4ltig vorbereitet und anschlie\u00dfend konsequent vorangebracht.",
       "Wenn der Druck steigt, gewinnt der Austausch mit anderen an Bedeutung. Gespr\u00e4che helfen dabei, Entscheidungen abzustimmen und unterschiedliche Sichtweisen einzubeziehen.",
@@ -272,7 +272,7 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
     leadership: "In der F\u00fchrungsarbeit zeigt sich das durch klare Priorit\u00e4ten, verl\u00e4ssliche Steuerung und die Bereitschaft, Entscheidungen transparent zu machen.",
   },
   ANA_INT__IMP: {
-    headline: "Analytisch / Intuitiv \u2013 Impulsiv",
+    headline: "Struktur und Zusammenarbeit pr\u00e4gen den Alltag \u2013 unter Druck schnellere Entscheidungen",
     body: [
       "Im Arbeitsalltag wirken strukturierte Planung und Zusammenarbeit besonders eng zusammen. Klare Abl\u00e4ufe, Sorgfalt und gute Abstimmung pr\u00e4gen die Arbeitsweise gemeinsam.",
       "Wenn der Druck steigt, k\u00f6nnen Entscheidungen direkter und schneller getroffen werden, um Themen voranzubringen und Klarheit herzustellen.",
@@ -281,7 +281,7 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
     leadership: "In der F\u00fchrungsarbeit zeigt sich das durch nachvollziehbare Entscheidungen, ruhige Steuerung und eine gute Einbindung des Teams.",
   },
   BD_IMP: {
-    headline: "Impulsiv \u2013 Intuitiv / Analytisch",
+    headline: "Schnelle Entscheidungen pr\u00e4gen den Alltag \u2013 unter Druck mehr Austausch oder Struktur",
     body: [
       "Im Arbeitsalltag wird diese Rolle vor allem durch Handlungsorientierung und Entscheidungsbereitschaft gepr\u00e4gt. Themen werden aktiv aufgegriffen und vorangebracht.",
       "Wenn der Druck steigt, k\u00f6nnen zwei unterschiedliche Reaktionsweisen sichtbar werden. Entweder wird st\u00e4rker der Austausch mit anderen gesucht oder es entsteht ein gr\u00f6\u00dferes Bed\u00fcrfnis nach Struktur und Ordnung.",
@@ -290,7 +290,7 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
     leadership: "In der F\u00fchrungsarbeit zeigt sich das durch klare Entscheidungen, offene Kommunikation und eine flexible Anpassung an unterschiedliche Situationen.",
   },
   BD_INT: {
-    headline: "Intuitiv \u2013 Analytisch / Impulsiv",
+    headline: "Zusammenarbeit pr\u00e4gt den Alltag \u2013 unter Druck mehr Struktur oder schnellere Entscheidungen",
     body: [
       "Im Arbeitsalltag steht vor allem Zusammenarbeit und Austausch mit anderen im Mittelpunkt. Gespr\u00e4che und Abstimmung pr\u00e4gen die Arbeitsweise.",
       "Wenn der Druck steigt, kann sich das Verhalten in zwei Richtungen entwickeln: entweder \u00fcber mehr Struktur und Planung oder \u00fcber schnellere Entscheidungen.",
@@ -299,7 +299,7 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
     leadership: "In der F\u00fchrungsarbeit zeigt sich das durch offene Kommunikation, klare Orientierung und die F\u00e4higkeit, auf unterschiedliche Situationen flexibel zu reagieren.",
   },
   BD_ANA: {
-    headline: "Analytisch \u2013 Impulsiv / Intuitiv",
+    headline: "Struktur pr\u00e4gt den Alltag \u2013 unter Druck schnellere Entscheidungen oder mehr Austausch",
     body: [
       "Im Arbeitsalltag pr\u00e4gen vor allem Struktur, Planung und fachliche Klarheit die Arbeitsweise. Themen werden sorgf\u00e4ltig gepr\u00fcft und vorbereitet.",
       "Wenn der Druck steigt, kann sich das Verhalten zwischen schnelleren Entscheidungen und verst\u00e4rkter Abstimmung mit anderen bewegen.",
