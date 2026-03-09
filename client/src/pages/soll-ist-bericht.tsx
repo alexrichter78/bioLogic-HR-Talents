@@ -58,14 +58,14 @@ function biggestGapText(rt: Triad, ct: Triad): string {
 
 
 function TriangleChart({ role, candidate }: { role: Triad; candidate: Triad }) {
-  const top = { x: 160, y: 45 };
-  const left = { x: 35, y: 240 };
-  const right = { x: 285, y: 240 };
+  const top = { x: 160, y: 60 };
+  const left = { x: 35, y: 250 };
+  const right = { x: 285, y: 250 };
 
   function triadToTriangle(t: Triad) {
     const total = t.analytisch + t.intuitiv + t.impulsiv || 1;
-    const cx = 160, cy = 175;
-    const scale = 0.85;
+    const cx = 160, cy = 187;
+    const scale = 0.82;
     const pts = [
       { frac: t.analytisch / total, ref: top },
       { frac: t.intuitiv / total, ref: left },
@@ -82,11 +82,11 @@ function TriangleChart({ role, candidate }: { role: Triad; candidate: Triad }) {
 
   return (
     <div className="flex flex-col items-center">
-      <svg viewBox="0 0 320 280" className="h-[280px] w-full max-w-[360px]">
-        <polygon points="160,45 35,240 285,240" fill="none" stroke="#cbd5e1" strokeWidth="2" />
-        <text x="160" y="32" textAnchor="middle" className="fill-slate-500 text-[12px]">Struktur</text>
-        <text x="15" y="258" className="fill-slate-500 text-[12px]">Zusammenarbeit</text>
-        <text x="250" y="258" className="fill-slate-500 text-[12px]">Umsetzung</text>
+      <svg viewBox="0 0 320 290" className="h-[290px] w-full max-w-[360px]">
+        <polygon points="160,60 35,250 285,250" fill="none" stroke="#cbd5e1" strokeWidth="2" />
+        <text x="160" y="28" textAnchor="middle" className="fill-slate-500 text-[12px]">Struktur</text>
+        <text x="15" y="268" className="fill-slate-500 text-[12px]">Zusammenarbeit</text>
+        <text x="250" y="268" className="fill-slate-500 text-[12px]">Umsetzung</text>
         <polygon points={triadToTriangle(role)} fill="rgba(37,99,235,0.10)" stroke="#2563eb" strokeWidth="3" />
         <polygon points={triadToTriangle(candidate)} fill="rgba(245,158,11,0.14)" stroke="#f59e0b" strokeWidth="3" />
       </svg>
