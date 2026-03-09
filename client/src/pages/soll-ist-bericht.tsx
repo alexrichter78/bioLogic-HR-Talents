@@ -653,19 +653,95 @@ export default function SollIstBericht() {
                 </div>
               </div>
 
-              <div style={sep} data-testid="section-development">
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>7. Entwicklungsprognose</p>
-                <div style={{ display: "flex", gap: 4, marginBottom: 10 }} data-testid="gauge-development">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} style={{ flex: 1, height: 10, borderRadius: 5, background: i < result.developmentLevel ? (result.developmentLevel <= 2 ? "#FF3B30" : result.developmentLevel <= 3 ? "#FF9500" : "#34C759") : "rgba(0,0,0,0.06)" }} />
-                  ))}
-                </div>
-                <div style={{ display: "flex", gap: 12, marginBottom: 14 }}>
-                  <span style={{ fontSize: 13, color: "#8E8E93" }}>Entwicklungschance: <span style={{ fontWeight: 700, color: result.developmentLevel <= 2 ? "#FF3B30" : result.developmentLevel <= 3 ? "#FF9500" : "#34C759" }}>{result.developmentLabel}</span></span>
-                  <span style={{ fontSize: 13, color: "#8E8E93" }}>Steuerungsbedarf: <span style={{ fontWeight: 700, color: result.controlIntensity === "hoch" ? "#FF9500" : "#1D1D1F" }}>{result.controlIntensity.charAt(0).toUpperCase() + result.controlIntensity.slice(1)}</span></span>
-                </div>
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{result.developmentText}</p>
-              </div>
+              {(() => {
+                const rTriad = result.roleTriad;
+                const cTriad = result.candTriad;
+                const rSorted = [rTriad.impulsiv, rTriad.intuitiv, rTriad.analytisch].sort((a, b) => b - a);
+                const cSorted = [cTriad.impulsiv, cTriad.intuitiv, cTriad.analytisch].sort((a, b) => b - a);
+                const DT = 6;
+                const rSecGap = rSorted[1] - rSorted[2];
+                const cSecGap = cSorted[1] - cSorted[2];
+                const rPrimGap = rSorted[0] - rSorted[1];
+                const cPrimGap = cSorted[0] - cSorted[1];
+                const sMismatch = (cSecGap < DT) !== (rSecGap < DT) || (cPrimGap < DT) !== (rPrimGap < DT);
+                const tGap = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).reduce((s, k) => s + Math.abs(rTriad[k] - cTriad[k]), 0);
+                const sameD = result.roleDomKey === result.candDomKey;
+
+                const rFitLabel = tGap > 40 ? "Nicht geeignet" : tGap > 20 ? "Bedingt geeignet" : "Geeignet";
+                const rFitColor = tGap > 40 ? "#D64045" : tGap > 20 ? "#E5A832" : "#3A9A5C";
+
+                const rFazit = sameD && tGap <= 20 && !sMismatch
+                  ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
+                  : sameD && tGap <= 20 && sMismatch
+                  ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur unterscheidet sich. Konkurrierende Komponenten erzeugen innere Spannung und machen das Verhalten in Drucksituationen weniger vorhersehbar."
+                  : sameD
+                  ? "Die Grundausrichtung ist ähnlich, es bestehen jedoch spürbare Unterschiede in der Intensität. Mit gezielter Führung lässt sich die Zusammenarbeit stabil gestalten."
+                  : tGap > 40
+                  ? "Die Arbeits- und Entscheidungslogiken von Rolle und Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch erhöhter Abstimmungs- und Steuerungsbedarf."
+                  : "Unterschiedliche Arbeitslogiken treffen aufeinander. Die Person arbeitet und entscheidet anders, als es die Rolle erfordert. Im Alltag entsteht dadurch erhöhter Abstimmungsbedarf.";
+
+                let rDev: number;
+                if (sameD && tGap <= 10) rDev = 6;
+                else if (sameD && tGap <= 20) rDev = 5;
+                else if (tGap <= 20) rDev = 4;
+                else if (tGap <= 30) rDev = 3;
+                else if (tGap <= 40) rDev = 2;
+                else rDev = 1;
+                if (sMismatch && rDev > 4) rDev = 4;
+                if (sMismatch && rDev > 1) rDev = Math.max(rDev - 1, 1);
+                if (rFitLabel === "Bedingt geeignet" && rDev > 3) rDev = 3;
+                if (rFitLabel === "Nicht geeignet" && rDev > 2) rDev = 2;
+                if (rFitLabel === "Geeignet" && rDev < 3) rDev = 3;
+
+                const rDevTexts: Record<number, string> = {
+                  1: "Die grundlegende Arbeitslogik der Person unterscheidet sich stark von den Anforderungen der Rolle. Eine stabile Anpassung ist daher nur sehr eingeschränkt zu erwarten.",
+                  2: "Die Anforderungen der Rolle unterscheiden sich deutlich von der natürlichen Arbeitsweise der Person. Eine Entwicklung ist grundsätzlich möglich, erfordert jedoch intensive Führung und klare Rahmenbedingungen.",
+                  3: "Die Person kann sich teilweise an die Anforderungen der Rolle anpassen. Eine stabile Umsetzung erfordert jedoch Zeit, Erfahrung und unterstützende Strukturen.",
+                  4: "Die Person kann sich grundsätzlich gut an die Anforderungen der Rolle entwickeln. Mit klaren Entscheidungswegen und Feedback ist eine stabile Zusammenarbeit gut erreichbar.",
+                  5: "Die Arbeits- und Entscheidungslogik der Person passt bereits weitgehend zu den Anforderungen der Rolle. Eine Entwicklung zu einer stabilen und erfolgreichen Umsetzung ist sehr wahrscheinlich.",
+                  6: "Die Person kann die Anforderungen der Rolle sehr schnell und stabil erfüllen. Arbeitsweise, Entscheidungslogik und Umfeld der Rolle passen sehr gut zusammen.",
+                };
+                const rDevLabels: Record<number, string> = {
+                  1: "Entwicklung praktisch nicht erreichbar",
+                  2: "Entwicklung sehr schwierig",
+                  3: "Entwicklung möglich mit hohem Aufwand",
+                  4: "Entwicklung gut möglich",
+                  5: "Entwicklung sehr wahrscheinlich",
+                  6: "Entwicklung sehr schnell erreichbar",
+                };
+                const rGaugeCol = rDev >= 5 ? "#3A9A5C" : rDev >= 3 ? "#E5A832" : "#D64045";
+
+                return (
+                  <div style={sep} data-testid="section-development">
+                    <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 18px" }}>7. Systemwirkung & Entwicklungsprognose</p>
+
+                    <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
+                      <div style={{ width: 16, height: 16, borderRadius: 8, background: rFitColor, flexShrink: 0, boxShadow: `0 0 0 3px ${rFitColor}20` }} />
+                      <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>{result.roleName}</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: rFitColor }}>
+                        {rFitLabel}
+                      </span>
+                    </div>
+
+                    <div style={{ background: `${rFitColor}08`, borderLeft: `3px solid ${rFitColor}`, borderRadius: "0 8px 8px 0", padding: "12px 16px", marginBottom: 22 }}>
+                      <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: 0 }}>{rFazit}</p>
+                    </div>
+
+                    <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 12px" }}>
+                      Entwicklungsprognose
+                    </p>
+                    <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>
+                      {rDev} von 6 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>– {rDevLabels[rDev]}</span>
+                    </p>
+                    <div style={{ display: "flex", gap: 5, marginBottom: 16 }} data-testid="gauge-development">
+                      {Array.from({ length: 6 }).map((_, i) => (
+                        <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < rDev ? rGaugeCol : "rgba(0,0,0,0.08)" }} />
+                      ))}
+                    </div>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{rDevTexts[rDev]}</p>
+                  </div>
+                );
+              })()}
 
               <div style={sep} data-testid="section-actions">
                 <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>8. Handlungsempfehlung</p>
