@@ -592,16 +592,8 @@ export default function JobCheck() {
 
             <GlassCard testId="jobcheck-header" style={{ padding: "32px 32px 28px", position: "relative", overflow: "hidden" }}>
               <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.18em", color: "#8E8E93", margin: "0 0 10px" }}>bioLogic MatchCheck</p>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-                <CheckCircle2 style={{ width: 22, height: 22, color: "#34C759", flexShrink: 0 }} />
-                <h1 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", color: "#1D1D1F", lineHeight: 1.2, margin: 0 }} data-testid="text-jobcheck-title">
-                  Rollenprofil erfolgreich erstellt
-                </h1>
-              </div>
-              <div style={{ marginLeft: 32, marginBottom: 20, display: "flex", flexDirection: "column", gap: 1 }}>
-                <span style={{ fontSize: 13, color: "#6E6E73" }}>Rolle: {dnaSummary?.beruf || roleAnalysis.job_title}</span>
-                <span style={{ fontSize: 13, color: "#6E6E73" }}><strong style={{ color: "#1D1D1F" }}>Führungsverantwortung:</strong> {dnaSummary?.fuehrung && dnaSummary.fuehrung !== "Keine" ? "Ja" : "Nein"}</span>
-              </div>
+              <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 20, fontWeight: 400 }} data-testid="text-jobcheck-position">
+              </p>
 
               {dnaSummary && (
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }} data-testid="dna-summary-grid">

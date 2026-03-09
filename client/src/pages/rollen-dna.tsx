@@ -2848,16 +2848,10 @@ export default function RollenDNA() {
                     }}>
                       <Check style={{ width: 16, height: 16, color: "#FFF", strokeWidth: 2.5 }} />
                     </div>
-                    <div style={{ color: "#1D1D1F", display: "flex", flexDirection: "column", gap: 2 }}>
-                      <span style={{ fontSize: 20, fontWeight: 700 }}>Rollenprofil erfolgreich erstellt</span>
-                      <div style={{ fontSize: 15, color: "#6E6E73", display: "flex", flexDirection: "column", gap: 1 }}>
-                        <span>Rolle: {beruf}</span>
-                        {fuehrung && fuehrung !== "Keine" && (
-                          <span><strong style={{ color: "#1D1D1F" }}>Führungsverantwortung:</strong> Ja</span>
-                        )}
-                        <span style={{ marginTop: 8 }}>Vergleichen Sie das Rollenprofil mit dem Kandidatenprofil, um die Passung für diese Position zu analysieren.</span>
-                      </div>
-                    </div>
+                    <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
+                      <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Rollenprofil erfolgreich erstellt:</span>
+                      <span style={{ fontSize: 16 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}</span>
+                    </span>
                   </div>
                   <ChevronDown style={{
                     width: 18,

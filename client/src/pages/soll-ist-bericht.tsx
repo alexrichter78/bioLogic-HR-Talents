@@ -349,12 +349,15 @@ export default function SollIstBericht() {
         {/* === INPUT: Slider area before report === */}
         {!reportGenerated && (
           <div className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Konfiguration
+            </p>
             <h1 className="text-2xl font-semibold tracking-tight text-slate-950 mb-3">
               Soll-Ist-Bericht konfigurieren
             </h1>
-            <div className="flex flex-col gap-0.5 mb-2">
-              <span className="text-sm text-slate-700">Rolle: {roleName}</span>
-              <span className="text-sm text-slate-700"><span className="font-semibold text-slate-900">Führungsverantwortung:</span> {fuehrungsArt === "keine" ? "Nein" : "Ja"}</span>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-1 mb-2">
+              <span className="text-sm text-slate-700"><span className="font-semibold text-slate-900">Rolle:</span> {roleName}</span>
+              <span className="text-sm text-slate-500">Führungsverantwortung: {fuehrungsArt === "keine" ? "Nein" : "Ja"}</span>
             </div>
             <p className="text-sm text-slate-500 mb-8" data-testid="text-config-description">
               Vergleichen Sie das Rollenprofil mit dem Kandidatenprofil, um die Passung für diese Position zu analysieren.
