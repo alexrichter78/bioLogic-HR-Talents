@@ -2522,7 +2522,7 @@ export default function RollenDNA() {
                           localStorage.setItem("rollenDnaCompleted", "true");
                         }}
                       >
-                        Datenerfassung abgeschlossen
+                        Rollenprofil erfolgreich erstellt
                         <ChevronRight className="w-5 h-5" />
                       </Button>
                     );
@@ -2842,7 +2842,7 @@ export default function RollenDNA() {
                 >
                   <div className="flex items-center gap-3">
                     <CheckCircle2 style={{ width: 24, height: 24, color: "#34C759" }} />
-                    <h3 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Datenerfassung abgeschlossen</h3>
+                    <h3 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Rollenprofil erfolgreich erstellt</h3>
                   </div>
                   <ChevronDown style={{
                     width: 18,
