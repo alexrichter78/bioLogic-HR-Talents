@@ -398,14 +398,6 @@ export default function SollIstBericht() {
                 </div>
               </div>
               <div>
-                <div className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500 mb-3">Ist-Profil (Kandidat)</div>
-                <input
-                  value={candidateName}
-                  onChange={(e) => setCandidateName(e.target.value)}
-                  placeholder="Name des Kandidaten"
-                  className="w-full h-9 px-3 text-sm font-medium rounded-lg border border-slate-200 bg-slate-50 text-slate-900 outline-none focus:border-blue-400 mb-4"
-                  data-testid="input-candidate-name"
-                />
                 <div style={{ background: "#3A3A3C", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
                   {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                     const val = k === "impulsiv" ? candImp : k === "intuitiv" ? candInt : candAna;
