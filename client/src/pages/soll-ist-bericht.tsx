@@ -418,6 +418,18 @@ export default function SollIstBericht() {
                           }}>
                             {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{pct} %</span>}
                           </div>
+                          <div style={{
+                            position: "absolute",
+                            left: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+                            top: "50%",
+                            transform: "translate(-50%, -50%)",
+                            width: 26, height: 26, borderRadius: "50%",
+                            background: hex,
+                            border: "3px solid #F0F0F2",
+                            transition: "left 150ms ease",
+                            zIndex: 2,
+                            pointerEvents: "none",
+                          }} />
                           <input
                             type="range" min={5} max={80} value={val}
                             onChange={(e) => setter(Number(e.target.value))}
