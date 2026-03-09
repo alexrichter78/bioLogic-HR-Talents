@@ -396,7 +396,7 @@ export default function SollIstBericht() {
                     const setter = k === "impulsiv" ? setCandImp : k === "intuitiv" ? setCandInt : setCandAna;
                     const pct = Math.round(candidateProfile[k]);
                     const hex = BAR_HEX[k];
-                    const widthPct = (pct / 67) * 100;
+                    const widthPct = (val / 67) * 100;
                     const isSmall = widthPct < 18;
                     return (
                       <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }} data-testid={`slider-row-${k}`}>
