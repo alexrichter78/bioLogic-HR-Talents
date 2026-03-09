@@ -711,7 +711,7 @@ export default function TeamCheck() {
                   {/* Quick KPI strip */}
                   <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                     {[
-                      { label: isLeading ? "Führungskraft" : "Kandidat", value: result.diagnose.kandidatDominanz, color: "#F39200", icon: Users },
+                      { label: isLeading ? "Führungskraft" : "Person", value: result.diagnose.kandidatDominanz, color: "#F39200", icon: Users },
                       { label: "Verschiebung", value: result.diagnose.kandidatDominanz === result.diagnose.teamDominanz ? "Verstärkung" : "Strukturwechsel", color: result.diagnose.kandidatDominanz === result.diagnose.teamDominanz ? "#34C759" : "#FF9500", icon: Activity },
                       { label: "Team", value: result.diagnose.teamDominanz, color: "#34C759", icon: Users },
                     ].map((kpi, i) => (
@@ -1033,7 +1033,7 @@ export default function TeamCheck() {
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
               <ProfileCard title="Rollen-DNA (Soll)" num={1} triad={soll} dominanz={result.diagnose.sollDominanz} color="#0071E3" />
-              <ProfileCard title="Kandidatenprofil (Ist)" num={2} triad={kandidat} dominanz={result.diagnose.kandidatDominanz} color="#F39200" onChange={setKandidat} testIdPrefix="slider-kand" />
+              <ProfileCard title="Personenprofil (Ist)" num={2} triad={kandidat} dominanz={result.diagnose.kandidatDominanz} color="#F39200" onChange={setKandidat} testIdPrefix="slider-kand" />
               <ProfileCard title="Teamprofil (Ist)" num={3} triad={team} dominanz={result.diagnose.teamDominanz} color="#34C759" onChange={setTeam} testIdPrefix="slider-team" />
             </div>
 

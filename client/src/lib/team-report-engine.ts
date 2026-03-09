@@ -592,7 +592,7 @@ function buildEntscheidungsfaktoren(
   }
 
   if (rk !== tk) {
-    negative.push({ priority: teamIstGap, text: `Arbeitslogik verschieden: Kandidat setzt auf ${compShort(rk)}, Team arbeitet mit ${compShort(tk)}` });
+    negative.push({ priority: teamIstGap, text: `Arbeitslogik verschieden: Person setzt auf ${compShort(rk)}, Team arbeitet mit ${compShort(tk)}` });
   }
 
   const tempoGap = Math.abs(ist.impulsiv - team.impulsiv);
@@ -605,7 +605,7 @@ function buildEntscheidungsfaktoren(
   }
 
   if (rk === tk) {
-    positive.push({ priority: 10, text: "Arbeitslogik von Kandidat und Team stimmen überein" });
+    positive.push({ priority: 10, text: "Arbeitslogik von Person und Team stimmen überein" });
   }
 
   if (teamIstGap <= 15) {
@@ -638,11 +638,11 @@ function buildManagementSummary(
 ): string {
   const lines: string[] = [];
   lines.push(`Rolle: ${role}`);
-  lines.push(`Kandidat: ${cand}`);
-  lines.push(`Kandidatenprofil: ${istLabel} (I ${ist.impulsiv}% / N ${ist.intuitiv}% / A ${ist.analytisch}%)`);
+  lines.push(`Person: ${cand}`);
+  lines.push(`Personenprofil: ${istLabel} (I ${ist.impulsiv}% / N ${ist.intuitiv}% / A ${ist.analytisch}%)`);
   lines.push(`Teamprofil: ${teamLabel} (I ${team.impulsiv}% / N ${team.intuitiv}% / A ${team.analytisch}%)`);
   lines.push("");
-  lines.push(`Abweichung Team vs. Kandidat: ${teamIstGap} Punkte (${teamIstLevel})`);
+  lines.push(`Abweichung Team vs. Person: ${teamIstGap} Punkte (${teamIstLevel})`);
   lines.push(`Gesamtstatus: ${ampelText(status)}`);
   lines.push("");
 

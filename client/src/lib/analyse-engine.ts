@@ -112,7 +112,7 @@ export function generateAnalyseLocal(params: {
 
   let bereich3: string;
   const schwachBereich = allCounts.imp <= allCounts.int && allCounts.imp <= allCounts.ana ? "Umsetzungsstärke (Impulsiv)" : allCounts.int <= allCounts.imp && allCounts.int <= allCounts.ana ? "Beziehungskompetenz (Intuitiv)" : "Strukturkompetenz (Analytisch)";
-  bereich3 = `Bei der Besetzung der Rolle ${beruf} sollte besonders auf die ${isBalanced ? "Vielseitigkeit der Kandidaten" : `Passung im dominanten Kompetenzbereich ${domAll}`} geachtet werden. `;
+  bereich3 = `Bei der Besetzung der Rolle ${beruf} sollte besonders auf die ${isBalanced ? "Vielseitigkeit der Personen" : `Passung im dominanten Kompetenzbereich ${domAll}`} geachtet werden. `;
 
   if (hochHaupt.length > 0) {
     bereich3 += `Die hochpriorisierten Tätigkeiten (${hochHaupt.map(t => t.name).join(", ")}) erfordern eine gezielte Eignungsprüfung. `;

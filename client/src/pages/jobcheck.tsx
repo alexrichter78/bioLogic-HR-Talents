@@ -519,7 +519,7 @@ export default function JobCheck() {
   const engine: EngineResult | null = useMemo(() => {
     if (!roleAnalysis || !reportGenerated) return null;
     const cand: CandidateInput = {
-      candidate_name: snapshotName || "Kandidat",
+      candidate_name: snapshotName || "Person",
       candidate_profile: snapshotCand,
     };
     return runEngine(roleAnalysis, cand);
@@ -665,8 +665,8 @@ export default function JobCheck() {
                 <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "0 -4px" }} />
 
                 <div>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 6 }}>Istprofil (Kandidat)</p>
-                  <p style={{ fontSize: 12, color: "#8E8E93", marginBottom: 16 }}>Verschieben Sie die Regler, um das Kandidatenprofil einzugeben. Die Werte werden automatisch normalisiert.</p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 6 }}>Istprofil (Person)</p>
+                  <p style={{ fontSize: 12, color: "#8E8E93", marginBottom: 16 }}>Verschieben Sie die Regler, um das Personenprofil einzugeben. Die Werte werden automatisch normalisiert.</p>
 
                   <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
                     <BarSlider label="Impulsiv" value={candImp} color={COLORS.imp} onChange={setCandImp} />
@@ -679,7 +679,7 @@ export default function JobCheck() {
                     return (
                       <div style={{ marginTop: 10, padding: "10px 14px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
                         <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }} lang="de" data-testid="text-cand-dominance">
-                          {"Die dominante Logik des Kandidaten ist "}
+                          {"Die dominante Logik der Person ist "}
                           {labelComponent(candDom.top1.key)}
                           {" geprägt: "}
                           {dominanceLabel(candDom)}.
@@ -864,7 +864,7 @@ export default function JobCheck() {
                     let sectionTitle: string;
 
                     if (isEqualDist) {
-                      calloutText = `Gleichverteilung: Der Kandidat zeigt keinen erkennbaren Schwerpunkt (${engine.candDominance.top1.value}/${engine.candDominance.top2.value}/${engine.candDominance.top3.value}). Die Rolle braucht eine klare ${labelComponent(rk)}-Ausrichtung (Soll: ${roleVal}). Ohne klaren Schwerpunkt fehlt die Grundlage, um Prioritäten gezielt zu setzen und konsequent zu entscheiden.`;
+                      calloutText = `Gleichverteilung: Die Person zeigt keinen erkennbaren Schwerpunkt (${engine.candDominance.top1.value}/${engine.candDominance.top2.value}/${engine.candDominance.top3.value}). Die Rolle braucht eine klare ${labelComponent(rk)}-Ausrichtung (Soll: ${roleVal}). Ohne klaren Schwerpunkt fehlt die Grundlage, um Prioritäten gezielt zu setzen und konsequent zu entscheiden.`;
                       calloutColor = "#FF3B30";
                       sectionTitle = "Gleichverteilung";
                     } else if (dualConflict) {
@@ -875,7 +875,7 @@ export default function JobCheck() {
                         calloutText = `Doppeldominanz: Die ${labelComponent(rk)}-Arbeitsweise ist vorhanden, konkurriert aber mit einer gleich starken ${c2L}-Prägung. Die Rolle braucht eine eindeutige ${labelComponent(rk)}-Ausrichtung – Prioritäten und konsequentes Handeln werden instabil.`;
                         calloutColor = "#FF9500";
                       } else {
-                        calloutText = `Der Kandidat arbeitet ${labelComponent(ck)}-/${c2L}-geprägt. Die für die Rolle entscheidende ${labelComponent(rk)}-Arbeitsweise fehlt. Entscheidungen und Prioritäten sind kritisch betroffen.`;
+                        calloutText = `Die Person arbeitet ${labelComponent(ck)}-/${c2L}-geprägt. Die für die Rolle entscheidende ${labelComponent(rk)}-Arbeitsweise fehlt. Entscheidungen und Prioritäten sind kritisch betroffen.`;
                         calloutColor = "#FF3B30";
                       }
                       sectionTitle = "Doppeldominanz";
@@ -892,7 +892,7 @@ export default function JobCheck() {
                       calloutColor = "#FF3B30";
                       sectionTitle = "Dominanz-Vergleich";
                     } else {
-                      calloutText = `Rolle braucht ${labelComponent(rk)}-Arbeitsweise (${roleVal}), Kandidat arbeitet ${labelComponent(ck)}-geprägt (${candVal}). Die zentrale Arbeitsweise der Position wird grundlegend verschoben.`;
+                      calloutText = `Rolle braucht ${labelComponent(rk)}-Arbeitsweise (${roleVal}), die Person arbeitet ${labelComponent(ck)}-geprägt (${candVal}). Die zentrale Arbeitsweise der Position wird grundlegend verschoben.`;
                       calloutColor = "#FF3B30";
                       sectionTitle = "Dominanz-Verschiebung";
                     }
@@ -1009,7 +1009,7 @@ export default function JobCheck() {
                           </div>
                           <span style={{ fontSize: 16, fontWeight: 700, color: "#FF9500" }}>⇄</span>
                           <div style={{ textAlign: "center" }}>
-                            <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Kandidat bringt</p>
+                            <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Person bringt</p>
                             <div style={{ padding: "6px 16px", borderRadius: 10, background: `${engine.secondaryTension.candSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.candSecondary === "intuitiv" ? COLORS.int : COLORS.ana}12`, border: `1px solid ${engine.secondaryTension.candSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.candSecondary === "intuitiv" ? COLORS.int : COLORS.ana}25` }}>
                               <span style={{ fontSize: 14, fontWeight: 700, color: engine.secondaryTension.candSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.candSecondary === "intuitiv" ? COLORS.int : COLORS.ana }}>{labelComponent(engine.secondaryTension.candSecondary)}</span>
                               <span style={{ fontSize: 11, fontWeight: 600, color: engine.secondaryTension.candSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.candSecondary === "intuitiv" ? COLORS.int : COLORS.ana, opacity: 0.7, marginLeft: 4 }}>{engine.secondaryTension.candSecondaryValue}%</span>
@@ -1148,7 +1148,7 @@ export default function JobCheck() {
                           ? "Die Besetzung passt zur Rolle. Fokus auf saubere Umsetzung und klare Arbeitsroutinen."
                           : engine.overallFit === "CONDITIONAL"
                             ? "Die Besetzung ist nicht risikofrei, aber entwicklungsfähig – vorausgesetzt, klare Erwartungen und Rahmenvorgaben werden etabliert."
-                            : "Die Arbeitsweise des Kandidaten passt nicht zur Grundlogik dieser Rolle. Eine erfolgreiche Besetzung ist unwahrscheinlich."
+                            : "Die Arbeitsweise der Person passt nicht zur Grundlogik dieser Rolle. Eine erfolgreiche Besetzung ist unwahrscheinlich."
                         )}
                       </p>
                     </div>

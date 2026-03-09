@@ -203,7 +203,7 @@ export function computeSollIst(
 
   const rk = rDom.top1.key;
   const ck = cDom.top1.key;
-  const cn = candidateName || "Der Kandidat";
+  const cn = candidateName || "Die Person";
 
   const rConst = detectConstellation(rt);
   const cConst = detectConstellation(ct);
@@ -627,7 +627,7 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
       risk = "Im Alltag bedeutet das: Die Kultur wird formaler und distanzierter. Persönliche Verbindung und offener Austausch nehmen ab. Das Teamgefühl kann darunter leiden.";
     }
   } else {
-    risk = "Die Kulturwirkung stimmt mit der Rollenanforderung überein. Die Art, wie der Kandidat das Arbeitsumfeld prägt, passt zu den Erwartungen.";
+    risk = "Die Kulturwirkung stimmt mit der Rollenanforderung überein. Die Art, wie die Person das Arbeitsumfeld prägt, passt zu den Erwartungen.";
   }
 
   return { id: "culture", label: "Kulturwirkung", severity: sev, roleNeed, candidatePattern, risk };

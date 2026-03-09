@@ -191,7 +191,7 @@ function DualTriangleChart({ ist, team }: { ist: Triad; team: Triad }) {
       </svg>
       <div className="mt-2 flex items-center gap-6 text-sm text-slate-500">
         <Legend color="bg-emerald-500" label="Team" />
-        <Legend color="bg-amber-500" label="Kandidat" />
+        <Legend color="bg-amber-500" label="Person" />
       </div>
     </div>
   );
@@ -410,7 +410,7 @@ export default function TeamReport() {
 
   const result: TeamReportResult | null = useMemo(() => {
     if (!reportGenerated) return null;
-    return computeTeamReport(roleName || "Rolle", candidateName || "Kandidat", istProfile, teamProfileN);
+    return computeTeamReport(roleName || "Rolle", candidateName || "Person", istProfile, teamProfileN);
   }, [reportGenerated, roleName, candidateName, istProfile.impulsiv, istProfile.intuitiv, istProfile.analytisch, teamProfileN.impulsiv, teamProfileN.intuitiv, teamProfileN.analytisch]);
 
   const sw = result?.systemwirkungResult;
@@ -448,7 +448,7 @@ export default function TeamReport() {
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Konfiguration</p>
             <h1 className="text-2xl font-semibold tracking-tight text-slate-950 mb-6" data-testid="text-page-title">Team-Systemreport konfigurieren</h1>
             <p className="text-sm text-slate-600 mb-8 max-w-2xl leading-6">
-              Definieren Sie die zwei Profile: Das Ist-Profil des Kandidaten und das bestehende Teamprofil.
+              Definieren Sie die zwei Profile: Das Ist-Profil der Person und das bestehende Teamprofil.
             </p>
             <div className="grid gap-6 mb-6 lg:grid-cols-2">
               <div>
@@ -458,14 +458,14 @@ export default function TeamReport() {
                   data-testid="input-role-name" />
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-700 mb-1 block">Name des Kandidaten</label>
-                <input value={candidateName} onChange={(e) => setCandidateName(e.target.value)} placeholder="Name des Kandidaten"
+                <label className="text-sm font-medium text-slate-700 mb-1 block">Name der Person</label>
+                <input value={candidateName} onChange={(e) => setCandidateName(e.target.value)} placeholder="Name der Person"
                   className="w-full h-9 px-3 text-sm font-medium rounded-lg border border-slate-200 bg-slate-50 text-slate-900 outline-none focus:border-blue-400"
                   data-testid="input-candidate-name" />
               </div>
             </div>
             <div className="grid gap-8 lg:grid-cols-2">
-              <SliderGroup title="Ist-Profil (Kandidat)" triad={istTriad}
+              <SliderGroup title="Ist-Profil (Person)" triad={istTriad}
                 onTriadChange={updateIstTriad} testIdPrefix="ist" />
               <SliderGroup title="Teamprofil" triad={teamTriad}
                 onTriadChange={updateTeamTriad} testIdPrefix="team" />
@@ -507,7 +507,7 @@ export default function TeamReport() {
                   <Metric label="Gesamtpassung" value={result.gesamtpassungLabel} valueClass={tone.text} />
                   <Metric label="Systemwirkung" value={sw.label} valueClass={sw.intensity === "hoch" ? "text-red-600" : "text-slate-900"} />
                   <Metric label="Teamprofil" value={teamConstLabel} />
-                  <Metric label="Kandidatenprofil" value={istConstLabel} />
+                  <Metric label="Personenprofil" value={istConstLabel} />
                 </div>
               </div>
             </header>
@@ -578,8 +578,8 @@ export default function TeamReport() {
                   <ProfileCard title="Teamprofil" subtitle="Bestehendes Team" profile={teamProfileArr}
                     description={`Das Team zeigt ${teamConstLabel.toLowerCase()}. Der stärkste Anteil liegt bei ${COMP_SHORT[teamDomKey]}.`}
                   />
-                  <ProfileCard title="Kandidat" subtitle={candidateName || "Kandidat"} profile={istProfileArr}
-                    description={`Der Kandidat arbeitet stärker über ${COMP_SHORT[istDomKey]}, ${istDomKey === "impulsiv" ? "direkte Umsetzung und schnelle Entscheidungen" : istDomKey === "analytisch" ? "strukturierte Planung und Prüftiefe" : "Kommunikation und Beziehungsarbeit"}.`}
+                  <ProfileCard title="Person" subtitle={candidateName || "Person"} profile={istProfileArr}
+                    description={`Die Person arbeitet stärker über ${COMP_SHORT[istDomKey]}, ${istDomKey === "impulsiv" ? "direkte Umsetzung und schnelle Entscheidungen" : istDomKey === "analytisch" ? "strukturierte Planung und Prüftiefe" : "Kommunikation und Beziehungsarbeit"}.`}
                   />
                 </div>
                 <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5" data-testid="chart-triangle">
@@ -588,7 +588,7 @@ export default function TeamReport() {
               </div>
 
               <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-deltas">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Team-Kandidat-Abweichung</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Team-Person-Abweichung</p>
                 <h3 className="mt-2 text-xl font-semibold text-slate-950">Abweichung je Wirkdimension</h3>
                 <div className="mt-6 space-y-5">
                   {deltas.map(item => (
@@ -602,7 +602,7 @@ export default function TeamReport() {
                       </div>
                       <div className="flex items-center justify-between text-xs text-slate-500">
                         <span>Team {item.team}%</span>
-                        <span>Kandidat {item.ist}%</span>
+                        <span>Person {item.ist}%</span>
                       </div>
                     </div>
                   ))}
@@ -631,7 +631,7 @@ export default function TeamReport() {
                       </div>
                       <div className="space-y-2 text-sm leading-6">
                         <p data-testid={`impact-area-teamexpect-${i}`}><span className="font-medium">Team erwartet:</span> {area.teamExpectation}</p>
-                        <p data-testid={`impact-area-candidate-${i}`}><span className="font-medium">Kandidat zeigt:</span> {area.candidatePattern}</p>
+                        <p data-testid={`impact-area-candidate-${i}`}><span className="font-medium">Person zeigt:</span> {area.candidatePattern}</p>
                         <p data-testid={`impact-area-risk-${i}`}><span className="font-medium">Risiko:</span> {area.risk}</p>
                       </div>
                     </div>

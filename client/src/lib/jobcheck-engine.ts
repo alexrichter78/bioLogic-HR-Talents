@@ -121,7 +121,7 @@ function resolveRoleTerms(role: RoleAnalysis): RoleTerms {
         forecastTerm: "Personalplanung",
         reportingDesc: "Personalberichte, Fluktuationskennzahlen, Besetzungsstand",
         qualityMetric: "Besetzungsqualität",
-        pipelineTerm: "Kandidaten-Pipeline und Besetzungsstand",
+        pipelineTerm: "Besetzungs-Pipeline und Besetzungsstand",
         escalationExample: "bei Vakanzen oder Personalengpässen",
         competitionMetrics: "Time-to-Hire, Besetzungsqualität, Fluktuation",
         resultMetric: "Besetzungsqualität und Mitarbeiterbindung",
@@ -493,7 +493,7 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
     roleDemand: dominanceLabel(rDom), candidatePattern: dominanceLabel(cDom),
     status: dominanceStatus,
     reasoning: candIsEqualDist
-      ? `Gleichverteilung: Der Kandidat zeigt keine klare Arbeitsweise. Die Rolle braucht eine deutliche ${rLabel}-Ausrichtung. Ohne einen klaren Schwerpunkt fehlt die Grundlage, um Aufgaben gezielt zu priorisieren und Entscheidungen konsequent zu treffen.`
+      ? `Gleichverteilung: Die Person zeigt keine klare Arbeitsweise. Die Rolle braucht eine deutliche ${rLabel}-Ausrichtung. Ohne einen klaren Schwerpunkt fehlt die Grundlage, um Aufgaben gezielt zu priorisieren und Entscheidungen konsequent zu treffen.`
       : dominanceStatus === "SUITABLE"
         ? `Die Arbeitsweise passt: Beide Profile sind ${rLabel}-geprägt und ${gapAdj(domDiff)}. Die Rolle wird in ihren Kernanforderungen gut abgebildet – Entscheidungen, Prioritäten und Arbeitsweise bleiben konsistent.`
         : dominanceStatus === "CONDITIONAL"
@@ -531,12 +531,12 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
       : "Konsensorientiert, teambezogen, moderierend",
     status: decisionStatus,
     reasoning: decisionStatus === "SUITABLE"
-      ? `Passt: Die Rolle braucht ${decRoleDesc}, der Kandidat entscheidet ${decCandDesc}. Die Art, wie Entscheidungen getroffen und Prioritäten gesetzt werden, stimmt überein. Tempo und Abläufe bleiben stabil.`
+      ? `Passt: Die Rolle braucht ${decRoleDesc}, die Person entscheidet ${decCandDesc}. Die Art, wie Entscheidungen getroffen und Prioritäten gesetzt werden, stimmt überein. Tempo und Abläufe bleiben stabil.`
       : decisionStatus === "CONDITIONAL"
         ? (sameDominant
           ? `Gleiche Entscheidungsweise (${rLabel}), aber es gibt ${gapDesc(decMainDiff)} in der Ausprägung. Entscheidungen können weicher oder langsamer ausfallen. Klare Fristen und feste Regeln für Eskalationen helfen.`
-          : `Die Rolle braucht ${decRoleDesc}, der Kandidat entscheidet ${decCandDesc}. Es gibt ${gapDesc(decMainDiff)} zwischen Anforderung und Kandidat. Entscheidungen werden anders getroffen als die Rolle es verlangt. Klare Fristen und Eskalationswege können das ausgleichen.`)
-        : `Die Rolle braucht ${decRoleDesc}, der Kandidat ist ${decCandDesc}. Es gibt ${gapDesc(decMainDiff)} zwischen Anforderung und Kandidat. Eingriffe werden verzögert oder anders priorisiert. ${t.tempoContext}, ${t.qualityMetric} und die operative Führung sind betroffen.`,
+          : `Die Rolle braucht ${decRoleDesc}, die Person entscheidet ${decCandDesc}. Es gibt ${gapDesc(decMainDiff)} zwischen Anforderung und Person. Entscheidungen werden anders getroffen als die Rolle es verlangt. Klare Fristen und Eskalationswege können das ausgleichen.`)
+        : `Die Rolle braucht ${decRoleDesc}, die Person ist ${decCandDesc}. Es gibt ${gapDesc(decMainDiff)} zwischen Anforderung und Person. Eingriffe werden verzögert oder anders priorisiert. ${t.tempoContext}, ${t.qualityMetric} und die operative Führung sind betroffen.`,
   });
 
   const kpiStatus: FitStatus = (() => {
@@ -556,7 +556,7 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
     reasoning: kpiStatus === "SUITABLE"
       ? `Die analytische Grundlage ist vorhanden. Der Umgang mit ${t.kpiExamples} und ${t.reportingDesc} kann stabil aufgesetzt werden. ${t.forecastTerm} und Zielerreichung bleiben verlässlich.`
       : kpiStatus === "CONDITIONAL"
-        ? `Es gibt ${gapDesc(kpiDiff)} zwischen Anforderung und Kandidat im analytischen Bereich. Für ${t.reportingDesc} braucht es feste Routinen, klare Standards und konsequentes Nachhalten. Ohne diese Struktur sinkt die Qualität von ${t.forecastTerm} und ${t.qualityMetric}.`
+        ? `Es gibt ${gapDesc(kpiDiff)} zwischen Anforderung und Person im analytischen Bereich. Für ${t.reportingDesc} braucht es feste Routinen, klare Standards und konsequentes Nachhalten. Ohne diese Struktur sinkt die Qualität von ${t.forecastTerm} und ${t.qualityMetric}.`
         : `Die analytische Anforderung wird ${gapAdj(kpiDiff)} verfehlt. ${t.reportingDesc} wird unzuverlässig und braucht durchgehende Begleitung. Kennzahlen wie ${t.kpiExamples} verlieren ohne enge Führung ihre Wirkung. ${t.forecastTerm} und ${t.qualityMetric} werden instabil.`,
   });
 
@@ -586,10 +586,10 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
       candidatePattern: `${labelComponent(cDom.top1.key)}-geprägt (${c.impulsiv}/${c.intuitiv}/${c.analytisch})`,
       status: leadershipStatus,
       reasoning: leadershipStatus === "SUITABLE"
-        ? `Die Führungsanforderung ist ${lLabel}-geprägt – der Kandidat bringt eine passende Ausprägung mit. Zielklarheit, Delegation und Durchsetzungsfähigkeit passen zur Rolle. Das Team bekommt die Führung, die es braucht.`
+        ? `Die Führungsanforderung ist ${lLabel}-geprägt – die Person bringt eine passende Ausprägung mit. Zielklarheit, Delegation und Durchsetzungsfähigkeit passen zur Rolle. Das Team bekommt die Führung, die es braucht.`
         : leadershipStatus === "NOT_SUITABLE"
-          ? `Die Rolle braucht ${lLabel}-betonte Führung. Es gibt ${gapDesc(leadDiffVal)} zwischen Anforderung und Kandidat. Klare Zielsetzung, Konfliktfähigkeit und Durchsetzung unter Druck sind zu schwach ausgeprägt. Der Führungsaufwand für die nächste Ebene steigt erheblich.`
-          : `Die Führungsanforderung ist ${lLabel}-geprägt. Es gibt ${gapDesc(leadDiffVal)} zwischen Anforderung und Kandidat. Führungswirkung ist machbar, wenn klare Ziele, Eskalationswege und regelmäßige Reviews für ${t.kpiExamples} definiert werden.`,
+          ? `Die Rolle braucht ${lLabel}-betonte Führung. Es gibt ${gapDesc(leadDiffVal)} zwischen Anforderung und Person. Klare Zielsetzung, Konfliktfähigkeit und Durchsetzung unter Druck sind zu schwach ausgeprägt. Der Führungsaufwand für die nächste Ebene steigt erheblich.`
+          : `Die Führungsanforderung ist ${lLabel}-geprägt. Es gibt ${gapDesc(leadDiffVal)} zwischen Anforderung und Person. Führungswirkung ist machbar, wenn klare Ziele, Eskalationswege und regelmäßige Reviews für ${t.kpiExamples} definiert werden.`,
     });
   }
 
@@ -614,7 +614,7 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
     reasoning: conflictStatus === "SUITABLE"
       ? `Durchsetzungsfähigkeit und Bereitschaft, Probleme direkt anzusprechen, passen zur Rolle. Konflikte werden zeitnah angegangen, Leistungsunterschiede im Team bleiben sichtbar.`
       : conflictStatus === "NOT_SUITABLE"
-        ? `Es gibt ${gapDesc(conflictImpDiff)} bei der Konfliktfähigkeit. Bei Abweichungen von Zielen wird der Kandidat eher vermitteln statt klar einzugreifen. Leistungsunterschiede im Team werden nicht konsequent angesprochen – Qualität und Tempo leiden.`
+        ? `Es gibt ${gapDesc(conflictImpDiff)} bei der Konfliktfähigkeit. Bei Abweichungen von Zielen wird die Person eher vermitteln statt klar einzugreifen. Leistungsunterschiede im Team werden nicht konsequent angesprochen – Qualität und Tempo leiden.`
         : `Es gibt ${gapDesc(conflictImpDiff)} bei der Konfliktfähigkeit. Sie ist vorhanden, muss aber in schwierigen Leistungssituationen konsequent eingesetzt werden. Klare Eskalationswege, feste Fristen und verbindliche Ziele helfen dabei.`,
   });
 
@@ -663,7 +663,7 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
     reasoning: cultureStatus === "SUITABLE"
       ? `Die kulturelle Wirkung passt zur Rolle. Teamzusammenhalt, Motivation und Bindung bleiben stabil, ohne die Rollenanforderungen zu beeinträchtigen.`
       : cultureStatus === "NOT_SUITABLE"
-        ? `Die kulturelle Wirkung verschiebt sich deutlich. Ergebnisorientierung und klare Leistungsunterschiede werden geschwächt. Die Rolle verlangt Leistungsfokus, der Kandidat setzt eher auf Beziehungspflege.`
+        ? `Die kulturelle Wirkung verschiebt sich deutlich. Ergebnisorientierung und klare Leistungsunterschiede werden geschwächt. Die Rolle verlangt Leistungsfokus, die Person setzt eher auf Beziehungspflege.`
         : `Es gibt ${gapDesc(cultIntDiff)} in der kulturellen Wirkung. Es besteht das Risiko einer Kulturverschiebung. Machbar, wenn klare Ziele, Leistungserwartungen und Ergebnisorientierung fest verankert werden.`,
   });
 
@@ -965,7 +965,7 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   const cL = labelComponent(candDom.top1.key);
   const mainDiff = Math.abs(r[roleDom.top1.key] - c[roleDom.top1.key]);
 
-  const candName = cand.candidate_name || "Kandidat";
+  const candName = cand.candidate_name || "Person";
   const jobTitle = role.job_title || "diese Position";
   const competingL = dualConflict ? labelComponent(candDom.top1.key === roleDom.top1.key ? candDom.top2.key : candDom.top1.key) : "";
 
@@ -986,7 +986,7 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
       return `${candName} arbeitet grundsätzlich ${rL}-orientiert, aber die Ausprägung liegt unter dem, was die Rolle braucht. Es gibt ${gapDesc(mainDiff)} – besonders im Bereich „${critical.label}". Mit Führung steuerbar, aber nicht selbsttragend.`;
     }
     if (overallFit === "CONDITIONAL") {
-      return `${candName} bringt eine andere Arbeitsweise mit als ${jobTitle} braucht (Rolle: ${rL}, Kandidat: ${cL}). Eine Besetzung ist möglich, braucht aber klare Ziele und Führung – besonders im Bereich „${critical.label}".`;
+      return `${candName} bringt eine andere Arbeitsweise mit als ${jobTitle} braucht (Rolle: ${rL}, Person: ${cL}). Eine Besetzung ist möglich, braucht aber klare Ziele und Führung – besonders im Bereich „${critical.label}".`;
     }
     return `${candName} passt nicht zu den Kernanforderungen der Rolle ${jobTitle}. Die geforderte ${rL}-Arbeitsweise wird nicht abgebildet – es gibt ${gapDesc(mainDiff)}. Besonders kritisch: „${critical.label}".`;
   })();
@@ -1025,9 +1025,9 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
     const roleSecDesc = secDescriptions[rSec];
     const candSecDesc = secDescriptions[cSec];
 
-    const text = `Die Hauptausrichtung stimmt überein (${rL}). Die Zweitstärke der Rolle ist ${roleSecDesc.label} (${roleSecDesc.focus}), der Kandidat bringt jedoch ${candSecDesc.label} als Zweitstärke mit (${candSecDesc.focus}). Im Alltag unauffällig – unter Druck reagiert die Person eher mit ${candSecDesc.stressBehavior} statt mit ${roleSecDesc.stressBehavior}.`;
+    const text = `Die Hauptausrichtung stimmt überein (${rL}). Die Zweitstärke der Rolle ist ${roleSecDesc.label} (${roleSecDesc.focus}), die Person bringt jedoch ${candSecDesc.label} als Zweitstärke mit (${candSecDesc.focus}). Im Alltag unauffällig – unter Druck reagiert die Person eher mit ${candSecDesc.stressBehavior} statt mit ${roleSecDesc.stressBehavior}.`;
 
-    const stressText = `Unter Stress: Die Rolle erwartet in kritischen Situationen ${roleSecDesc.stressBehavior}. Der Kandidat wird stattdessen auf ${candSecDesc.stressBehavior} zurückgreifen. Im Team und in den Abläufen ist das situativ spürbar.`;
+    const stressText = `Unter Stress: Die Rolle erwartet in kritischen Situationen ${roleSecDesc.stressBehavior}. Die Person wird stattdessen auf ${candSecDesc.stressBehavior} zurückgreifen. Im Team und in den Abläufen ist das situativ spürbar.`;
 
     return {
       detected: true,

@@ -727,7 +727,7 @@ PROFILTYPEN:
 - Balanced: alle drei Bereiche nahezu gleich (Differenz <3%). Vielseitig einsetzbar, aber ohne klares Profil. Risiko: "kann alles ein bisschen, aber nichts richtig gut". Stärke: Brückenbauer zwischen verschiedenen Typen.
 
 SOLL-IST-VERGLEICH (JobCheck):
-- Vergleicht Rollen-DNA (Soll) mit Kandidatenprofil (Ist).
+- Vergleicht Rollen-DNA (Soll) mit Personenprofil (Ist).
 - Gleiche Dominanz = geringstes Risiko. Gegensätzliche Dominanz = höchstes Risiko.
 - Steuerungsintensität: NIEDRIG (gute Passung), MITTEL (Begleitung nötig), HOCH (aktive Steuerung).
 - Fit-Status: SUITABLE (≤15% Abweichung), CONDITIONAL (15-25%), CRITICAL (>25%).
@@ -804,24 +804,24 @@ ONBOARDING-BEGLEITUNG:
 - Beispiel: "Ein Roter kommt in ein blaues Team" → "In der ersten Woche wird er Tempo machen wollen, während das Team Prozesse einhalten will. Gib ihm sofort eine Aufgabe mit sichtbarem Ergebnis, aber erkläre ihm vorher die 2-3 wichtigsten Spielregeln des Teams – kurz und direkt, nicht als 20-seitiges Handbuch."
 
 STELLENANZEIGEN & RECRUITING-MARKETING (bioLogic-basierte Anzeigengestaltung):
-- Stellenanzeigen sollten persönlichkeitsorientiert formuliert werden, um die richtigen Kandidaten anzusprechen.
+- Stellenanzeigen sollten persönlichkeitsorientiert formuliert werden, um die richtigen Personen anzusprechen.
 - Wort- und Bildsprache müssen zum gewünschten bioLogic-Profil passen:
 
-IMPULSIVE (ROTE) KANDIDATEN ANSPRECHEN:
+IMPULSIVE (ROTE) PERSONEN ANSPRECHEN:
 - Wortsprache: Direkt, ergebnisorientiert, aktionsgeladen. Verben wie "durchsetzen", "umsetzen", "entscheiden", "vorantreiben", "gestalten", "verantworten".
 - Formulierungen: "Sie übernehmen Verantwortung", "Sie treiben Ergebnisse", "Sie entscheiden selbstständig", "Wirkung zeigen", "Tempo machen".
 - Bildsprache: Dynamisch, kraftvoll, klare Kontraste. Einzelperson in Aktion, Zielerreichung, Wettbewerb, Herausforderung.
 - Tonalität: Kurz, prägnant, auf den Punkt. Keine langen Beschreibungen. Bullet Points statt Fließtext.
 - Was vermeiden: Zu viel Harmonie-Sprache, zu detaillierte Prozessbeschreibungen, weiche Formulierungen wie "wir würden uns freuen".
 
-INTUITIVE (GELBE) KANDIDATEN ANSPRECHEN:
+INTUITIVE (GELBE) PERSONEN ANSPRECHEN:
 - Wortsprache: Beziehungsorientiert, wertschätzend, teamfokussiert. Worte wie "gemeinsam", "zusammen", "Team", "Austausch", "gestalten", "entwickeln", "begleiten".
 - Formulierungen: "Sie arbeiten in einem engagierten Team", "Zusammenarbeit auf Augenhöhe", "Wir schätzen Ihre Ideen", "Teil von etwas Größerem", "Menschen begeistern".
 - Bildsprache: Teambilder, lachende Menschen, Zusammenarbeit, warme Farben, offene Atmosphäre, gemeinsame Aktivitäten.
 - Tonalität: Einladend, persönlich, emotional ansprechend. Unternehmenskultur und Teamgeist hervorheben.
 - Was vermeiden: Rein sachliche Aufzählungen, kalte Fakten ohne menschlichen Bezug, zu hierarchische Sprache.
 
-ANALYTISCHE (BLAUE) KANDIDATEN ANSPRECHEN:
+ANALYTISCHE (BLAUE) PERSONEN ANSPRECHEN:
 - Wortsprache: Sachlich, strukturiert, faktenbezogen. Worte wie "analysieren", "optimieren", "Qualität", "Präzision", "Expertise", "Standard", "Methode", "Prozess".
 - Formulierungen: "Klar definierte Verantwortungsbereiche", "strukturiertes Arbeitsumfeld", "nachvollziehbare Prozesse", "fundierte Entscheidungsgrundlagen", "fachliche Exzellenz".
 - Bildsprache: Ordnung, Struktur, Daten, Grafiken, aufgeräumte Arbeitsplätze, professionelle Settings, klare Linienführung.
@@ -833,12 +833,12 @@ STELLENANZEIGEN-AUFBAU nach bioLogic:
 2. Zielgruppen-Ansprache: Wort- und Bildsprache auf das gewünschte Profil abstimmen.
 3. Authentizität: Die Anzeige muss zur tatsächlichen Rolle und Unternehmenskultur passen – keine Versprechen, die nicht eingehalten werden.
 4. Kanäle: Unterschiedliche Persönlichkeitstypen nutzen unterschiedliche Plattformen und reagieren auf unterschiedliche Formate.
-5. Fehlbesetzungen vermeiden: Eine persönlichkeitsorientierte Anzeige filtert bereits vor – es bewerben sich verstärkt Kandidaten, die zur Rolle passen.
+5. Fehlbesetzungen vermeiden: Eine persönlichkeitsorientierte Anzeige filtert bereits vor – es bewerben sich verstärkt Personen, die zur Rolle passen.
 
 KOMMUNIKATIONSEMPFEHLUNGEN FÜR BEWERBUNGSGESPRÄCHE:
-- Impulsive (Rote) Kandidaten: Kurze, direkte Fragen. Fokus auf Ergebnisse und Erfolge. Nicht zu viele Details abfragen. Entscheidungskompetenz testen.
-- Intuitive (Gelbe) Kandidaten: Beziehung aufbauen vor Sachfragen. Nach Teamarbeit und Zusammenarbeitserfahrungen fragen. Wohlfühlatmosphäre schaffen.
-- Analytische (Blaue) Kandidaten: Strukturiertes Interview mit klarem Ablauf. Fachfragen in der Tiefe. Zeit zum Nachdenken geben. Fakten und Zahlen als Gesprächsbasis.
+- Impulsive (Rote) Personen: Kurze, direkte Fragen. Fokus auf Ergebnisse und Erfolge. Nicht zu viele Details abfragen. Entscheidungskompetenz testen.
+- Intuitive (Gelbe) Personen: Beziehung aufbauen vor Sachfragen. Nach Teamarbeit und Zusammenarbeitserfahrungen fragen. Wohlfühlatmosphäre schaffen.
+- Analytische (Blaue) Personen: Strukturiertes Interview mit klarem Ablauf. Fachfragen in der Tiefe. Zeit zum Nachdenken geben. Fakten und Zahlen als Gesprächsbasis.
 
 KONFLIKTMUSTER ERKENNEN:
 - Wenn der Nutzer einen wiederkehrenden Konflikt beschreibt, identifiziere das bioLogic-Muster dahinter:
@@ -1020,14 +1020,14 @@ ZUSAMMENFASSUNGEN:
         .map((t) => t.name)
         .slice(0, 8);
 
-      const prompt = `Du bist ein erfahrener Personalberater. Beschreibe in 2-3 Sätzen, aus welchen Rollen und Arbeitsumfeldern typische Kandidaten für die Position "${safeBeruf}"${safeBereich ? ` (${safeBereich})` : ""} kommen.
+      const prompt = `Du bist ein erfahrener Personalberater. Beschreibe in 2-3 Sätzen, aus welchen Rollen und Arbeitsumfeldern typische Personen für die Position "${safeBeruf}"${safeBereich ? ` (${safeBereich})` : ""} kommen.
 
 Kontext:
 - Kerntätigkeiten: ${alleTaetigkeiten.join(", ") || "nicht spezifiziert"}
 ${safeFuehrungstyp && safeFuehrungstyp !== "Keine" ? `- Führungsverantwortung: ${safeFuehrungstyp}` : "- Keine Führungsverantwortung"}
 
 Wichtig:
-- Beschreibe, aus welchen ROLLEN und ARBEITSUMFELDERN die Kandidaten typischerweise kommen (z.B. "Rollen mit intensiver Gästebetreuung und Verantwortung für das Getränkeangebot")
+- Beschreibe, aus welchen ROLLEN und ARBEITSUMFELDERN die Personen typischerweise kommen (z.B. "Rollen mit intensiver Gästebetreuung und Verantwortung für das Getränkeangebot")
 - NICHT: formale Abschlüsse, Zertifikate oder Ausbildungsbezeichnungen (NICHT "abgeschlossene Ausbildung", "nachgewiesen durch", "zertifiziert als")
 - NICHT: "idealerweise", "im besten Fall", "in der Regel", "zeichnen sich aus", "bringen mit", "verfügen über"
 - Keine Gedankenstriche (–), keine Aufzählungen
@@ -1043,7 +1043,7 @@ Wichtig:
       const text = response.choices[0]?.message?.content?.trim() || "";
       res.json({ text });
     } catch (error) {
-      console.error("Error generating Kandidatenprofil:", error);
+      console.error("Error generating Personenprofil:", error);
       res.status(500).json({ error: "Fehler bei der Generierung" });
     }
   });

@@ -1313,7 +1313,7 @@ export default function Rollenprofil() {
             {/* Typischer Kandidat (AI-generiert) */}
             {(kandidatenText || kandidatenLoading || kandidatenError) && (
               <div style={{ marginBottom: 28 }} data-testid="section-kandidatenprofil">
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Typischer Kandidat für diese Rolle</p>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Typische Person für diese Rolle</p>
                 {kandidatenLoading ? (
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <div style={{
@@ -1327,7 +1327,7 @@ export default function Rollenprofil() {
                   </div>
                 ) : kandidatenError ? (
                   <p style={{ fontSize: 13, color: "#8E8E93", margin: 0, fontStyle: "italic" }}>
-                    Kandidatenprofil konnte nicht geladen werden.
+                    Personenprofil konnte nicht geladen werden.
                   </p>
                 ) : (
                   <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-kandidatenprofil">

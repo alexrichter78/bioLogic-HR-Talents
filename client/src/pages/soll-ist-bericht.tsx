@@ -91,7 +91,7 @@ function TriangleChart({ role, candidate }: { role: Triad; candidate: Triad }) {
         <polygon points={triadToTriangle(candidate)} fill="rgba(245,158,11,0.14)" stroke="#f59e0b" strokeWidth="3" />
       </svg>
       <div className="mt-2 text-center text-sm text-slate-600">
-        Die blaue Fläche zeigt die Rollenanforderung. Die orange Fläche zeigt die Arbeitslogik des Kandidaten.
+        Die blaue Fläche zeigt die Rollenanforderung. Die orange Fläche zeigt die Arbeitslogik der Person.
       </div>
     </div>
   );
@@ -165,7 +165,7 @@ export default function SollIstBericht() {
 
   const result: SollIstResult | null = useMemo(() => {
     if (!roleTriad || !reportGenerated) return null;
-    return computeSollIst(roleName, candidateName || "Kandidat", roleTriad, candidateProfile, fuehrungsArt);
+    return computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt);
   }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated, fuehrungsArt]);
 
   if (!hasRollenDna || !roleTriad) {
@@ -210,7 +210,7 @@ export default function SollIstBericht() {
                   Passungsanalyse konfigurieren
                 </h1>
                 <p style={{ fontSize: 13, color: "#8E8E93", fontWeight: 450, margin: 0 }} data-testid="text-matchcheck-subtitle">
-                  Vergleichen Sie das Rollenprofil mit dem Kandidatenprofil, um die strukturelle Passung für diese Position zu analysieren.
+                  Vergleichen Sie das Rollenprofil mit dem Personenprofil, um die strukturelle Passung für diese Position zu analysieren.
                 </p>
               </div>
             </div>
@@ -284,7 +284,7 @@ export default function SollIstBericht() {
               </div>
 
               <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="card-ist-profil">
-                <p className="text-base font-semibold text-slate-900 mb-6">Ist-Profil <span className="font-normal text-slate-500">(Kandidat)</span></p>
+                <p className="text-base font-semibold text-slate-900 mb-6">Ist-Profil <span className="font-normal text-slate-500">(Person)</span></p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                     const val = candTriad[k];
@@ -558,7 +558,7 @@ export default function SollIstBericht() {
                     <span style={{ fontSize: 18, fontWeight: 700, color: "#FF3B30" }}>→</span>
                   )}
                   <div style={{ textAlign: "center" }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Kandidat</p>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Person</p>
                     <div style={{ padding: "5px 14px", borderRadius: 10, background: `${cc}12`, border: `1px solid ${cc}25` }}>
                       <span style={{ fontSize: 13, fontWeight: 700, color: cc }}>{COMP_LABELS[result.candDomKey]}</span>
                     </div>
@@ -611,7 +611,7 @@ export default function SollIstBericht() {
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <div style={{ width: 10, height: 10, borderRadius: 5, background: "#f59e0b" }} />
-                    <span style={{ fontSize: 12, color: "#6E6E73" }}>Kandidat</span>
+                    <span style={{ fontSize: 12, color: "#6E6E73" }}>Person</span>
                   </div>
                 </div>
                 <TriangleChart role={result.roleTriad} candidate={result.candTriad} />
@@ -630,7 +630,7 @@ export default function SollIstBericht() {
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 13, lineHeight: 1.7, color: "#48484A" }}>
                           <div><span style={{ fontWeight: 700, color: "#1D1D1F" }}>Rolle braucht:</span> {area.roleNeed}</div>
-                          <div><span style={{ fontWeight: 700, color: "#1D1D1F" }}>Kandidat bringt:</span> {area.candidatePattern}</div>
+                          <div><span style={{ fontWeight: 700, color: "#1D1D1F" }}>Person bringt:</span> {area.candidatePattern}</div>
                           <div><span style={{ fontWeight: 700, color: sevCol }}>Risiko:</span> {area.risk}</div>
                         </div>
                       </div>

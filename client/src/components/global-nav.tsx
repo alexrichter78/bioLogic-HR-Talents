@@ -5,7 +5,7 @@ import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 const NAV_ITEMS = [
   { label: "Home", subtitle: "", path: "/", icon: Home },
   { label: "JobCheck", subtitle: "Analyse der Rolle", path: "/rollen-dna", icon: Briefcase },
-  { label: "MatchCheck", subtitle: "Rolle \u2194 Kandidat", path: "/soll-ist", icon: GitCompareArrows },
+  { label: "MatchCheck", subtitle: "Rolle \u2194 Person", path: "/soll-ist", icon: GitCompareArrows },
   { label: "TeamCheck", subtitle: "Teamstruktur", path: "/teamcheck", icon: Users },
   { label: "KI-Coach", subtitle: "Führung & Entwicklung", path: "/ki-coach", icon: Bot },
   { label: "TestTeamReport", subtitle: "Systemanalyse", path: "/team-report", icon: FileBarChart },
