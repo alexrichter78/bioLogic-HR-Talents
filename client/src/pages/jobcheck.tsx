@@ -299,21 +299,38 @@ function SoftBar({ items }: { items: { label: string; value: number; color: stri
 
 function BarSlider({ label, value, color, onChange }: { label: string; value: number; color: string; onChange: (v: number) => void }) {
   const widthPct = (value / 67) * 100;
+  const isSmall = widthPct < 18;
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10, position: "relative" }}>
-      <span style={{ fontSize: 12, color: "#6E6E73", width: 62, flexShrink: 0 }}>{label}</span>
-      <div style={{ flex: 1, position: "relative", height: 24 }}>
-        <div style={{ position: "absolute", inset: 0, borderRadius: 6, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
-          <div style={{
-            width: value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 5), 100)}%`,
-            height: "100%", borderRadius: 6, background: color,
-            transition: "width 150ms ease",
-            display: "flex", alignItems: "center", paddingLeft: 8,
-            minWidth: value === 0 ? 0 : 40,
-          }}>
-            <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>
-          </div>
+    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <span style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", width: 72, flexShrink: 0 }}>{label}</span>
+      <div style={{ flex: 1, position: "relative", height: 26 }}>
+        <div style={{
+          position: "absolute", inset: 0,
+          borderRadius: 13, background: "rgba(255,255,255,0.10)",
+        }} />
+        <div style={{
+          position: "absolute", left: 0, top: 0, bottom: 0,
+          width: value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 4), 100)}%`,
+          borderRadius: 13, background: color,
+          transition: "width 150ms ease",
+          display: "flex", alignItems: "center", paddingLeft: 10,
+          minWidth: value === 0 ? 0 : (isSmall ? 8 : 50),
+        }}>
+          {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>}
         </div>
+        {value > 0 && (
+          <div style={{
+            position: "absolute",
+            left: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+            top: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 26, height: 26, borderRadius: "50%",
+            background: `radial-gradient(circle at 40% 38%, ${color}, color-mix(in srgb, ${color} 70%, #000))`,
+            border: "3px solid #3A3A3C",
+            transition: "left 150ms ease",
+            zIndex: 1,
+          }} />
+        )}
         <input
           type="range" min={0} max={67} value={value}
           onChange={e => onChange(Number(e.target.value))}
@@ -322,9 +339,17 @@ function BarSlider({ label, value, color, onChange }: { label: string; value: nu
             position: "absolute", inset: 0, width: "100%", height: "100%",
             appearance: "none", WebkitAppearance: "none",
             background: "transparent", outline: "none", cursor: "pointer",
-            margin: 0, zIndex: 2,
+            margin: 0, zIndex: 3,
           }}
         />
+        {isSmall && value > 0 && (
+          <span style={{
+            position: "absolute", top: "50%", transform: "translateY(-50%)",
+            left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 18px)`,
+            fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap",
+            transition: "left 150ms ease", zIndex: 1,
+          }}>{Math.round(value)} %</span>
+        )}
       </div>
     </div>
   );
@@ -685,7 +710,7 @@ export default function JobCheck() {
                   <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 6 }}>Istprofil (Kandidat)</p>
                   <p style={{ fontSize: 12, color: "#8E8E93", marginBottom: 16 }}>Verschieben Sie die Regler, um das Kandidatenprofil einzugeben. Die Werte werden automatisch normalisiert.</p>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <div style={{ background: "#3A3A3C", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
                     <BarSlider label="Impulsiv" value={candImp} color={COLORS.imp} onChange={setCandImp} />
                     <BarSlider label="Intuitiv" value={candInt} color={COLORS.int} onChange={setCandInt} />
                     <BarSlider label="Analytisch" value={candAna} color={COLORS.ana} onChange={setCandAna} />

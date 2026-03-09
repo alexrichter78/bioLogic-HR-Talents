@@ -97,41 +97,69 @@ function ProfileCard({ title, num, triad, dominanz, color, onChange, testIdPrefi
         </div>
         <span style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F" }}>{title}</span>
       </div>
-      {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
-        const val = triad[k];
-        const barColor = k === "impulsiv" ? COLORS.imp : k === "intuitiv" ? COLORS.int : COLORS.ana;
-        const widthPct = (val / MAX_BIO) * 100;
-        return (
-          <div key={k} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-            <span style={{ fontSize: 11, color: "#6E6E73", width: 58, flexShrink: 0 }}>
-              {k.charAt(0).toUpperCase() + k.slice(1)}
-            </span>
-            <div style={{ flex: 1, height: 22, borderRadius: 6, background: "rgba(0,0,0,0.04)", overflow: "hidden", position: "relative" }}>
-              <div style={{
-                width: `${Math.min(Math.max(widthPct, 3), 100)}%`, height: "100%",
-                borderRadius: 6, background: barColor, transition: "width 150ms ease",
-                display: "flex", alignItems: "center", paddingLeft: 8,
-              }}>
-                {val >= 8 && <span style={{ fontSize: 9, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(val)} %</span>}
+      <div style={{ background: "#3A3A3C", borderRadius: 14, padding: "12px 14px", display: "flex", flexDirection: "column", gap: 10 }}>
+        {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+          const val = triad[k];
+          const barColor = k === "impulsiv" ? COLORS.imp : k === "intuitiv" ? COLORS.int : COLORS.ana;
+          const widthPct = (val / MAX_BIO) * 100;
+          const isSmall = widthPct < 18;
+          return (
+            <div key={k} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.65)", width: 58, flexShrink: 0 }}>
+                {k.charAt(0).toUpperCase() + k.slice(1)}
+              </span>
+              <div style={{ flex: 1, position: "relative", height: 22 }}>
+                <div style={{
+                  position: "absolute", inset: 0,
+                  borderRadius: 11, background: "rgba(255,255,255,0.10)",
+                }} />
+                <div style={{
+                  position: "absolute", left: 0, top: 0, bottom: 0,
+                  width: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+                  borderRadius: 11, background: barColor,
+                  transition: "width 150ms ease",
+                  display: "flex", alignItems: "center", paddingLeft: 8,
+                  minWidth: isSmall ? 8 : 40,
+                }}>
+                  {!isSmall && <span style={{ fontSize: 10, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(val)} %</span>}
+                </div>
+                <div style={{
+                  position: "absolute",
+                  left: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+                  top: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: 22, height: 22, borderRadius: "50%",
+                  background: `radial-gradient(circle at 40% 38%, ${barColor}, color-mix(in srgb, ${barColor} 70%, #000))`,
+                  border: "3px solid #3A3A3C",
+                  transition: "left 150ms ease",
+                  zIndex: 1,
+                }} />
+                {onChange && (
+                  <input
+                    type="range" min={0} max={MAX_BIO} value={val}
+                    onChange={e => onChange({ ...triad, [k]: Number(e.target.value) })}
+                    data-testid={testIdPrefix ? `${testIdPrefix}-${k}` : undefined}
+                    style={{
+                      position: "absolute", inset: 0, width: "100%", height: "100%",
+                      appearance: "none", WebkitAppearance: "none",
+                      background: "transparent", outline: "none", cursor: "pointer",
+                      margin: 0, zIndex: 3,
+                    }}
+                  />
+                )}
+                {isSmall && (
+                  <span style={{
+                    position: "absolute", top: "50%", transform: "translateY(-50%)",
+                    left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 16px)`,
+                    fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap",
+                    transition: "left 150ms ease", zIndex: 1,
+                  }}>{Math.round(val)} %</span>
+                )}
               </div>
-              {onChange && (
-                <input
-                  type="range" min={0} max={MAX_BIO} value={val}
-                  onChange={e => onChange({ ...triad, [k]: Number(e.target.value) })}
-                  data-testid={testIdPrefix ? `${testIdPrefix}-${k}` : undefined}
-                  style={{
-                    position: "absolute", inset: 0, width: "100%", height: "100%",
-                    appearance: "none", WebkitAppearance: "none",
-                    background: "transparent", outline: "none", cursor: "pointer",
-                    margin: 0, zIndex: 2,
-                  }}
-                />
-              )}
             </div>
-            {val < 8 && <span style={{ fontSize: 9, fontWeight: 600, color: "#8E8E93" }}>{Math.round(val)} %</span>}
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }

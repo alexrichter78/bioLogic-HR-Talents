@@ -41,6 +41,12 @@ const BAR_CSS: Record<ComponentKey, string> = {
   analytisch: "bg-blue-600",
 };
 
+const BAR_HEX: Record<ComponentKey, string> = {
+  impulsiv: "#C41E3A",
+  intuitiv: "#F39200",
+  analytisch: "#1A5DAB",
+};
+
 function bgToTriad(bg: BG | undefined): Triad {
   if (!bg) return { impulsiv: 33, intuitiv: 33, analytisch: 34 };
   return { impulsiv: Math.round(bg.imp), intuitiv: Math.round(bg.int), analytisch: Math.round(bg.ana) };
@@ -105,21 +111,54 @@ function ProfileCard({ title, subtitle, profile, description }: {
         <div className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500">{title}</div>
         <div className="mt-1 text-base font-semibold text-slate-950">{subtitle}</div>
       </div>
-      <div className="space-y-4">
-        {profile.map(item => (
-          <div key={item.label}>
-            <div className="mb-2 flex items-center justify-between text-sm">
-              <div>
-                <span className="font-medium text-slate-900">{item.label}</span>
-                <span className="ml-2 text-slate-500">{item.short}</span>
+      <div style={{ background: "#3A3A3C", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
+        {profile.map(item => {
+          const hex = BAR_HEX[item.label.toLowerCase() as ComponentKey];
+          const widthPct = (item.value / 67) * 100;
+          const isSmall = widthPct < 18;
+          return (
+            <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <span style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", width: 72, flexShrink: 0 }}>
+                {item.label}
+              </span>
+              <div style={{ flex: 1, position: "relative", height: 26 }}>
+                <div style={{
+                  position: "absolute", inset: 0,
+                  borderRadius: 13, background: "rgba(255,255,255,0.10)",
+                }} />
+                <div style={{
+                  position: "absolute", left: 0, top: 0, bottom: 0,
+                  width: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+                  borderRadius: 13, background: hex,
+                  transition: "width 600ms ease",
+                  display: "flex", alignItems: "center", paddingLeft: 10,
+                  minWidth: isSmall ? 8 : 50,
+                }}>
+                  {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(item.value)} %</span>}
+                </div>
+                <div style={{
+                  position: "absolute",
+                  left: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+                  top: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: 26, height: 26, borderRadius: "50%",
+                  background: `radial-gradient(circle at 40% 38%, ${hex}, color-mix(in srgb, ${hex} 70%, #000))`,
+                  border: "3px solid #3A3A3C",
+                  transition: "left 600ms ease",
+                  zIndex: 1,
+                }} />
+                {isSmall && (
+                  <span style={{
+                    position: "absolute", top: "50%", transform: "translateY(-50%)",
+                    left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 18px)`,
+                    fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap",
+                    transition: "left 600ms ease", zIndex: 1,
+                  }}>{Math.round(item.value)} %</span>
+                )}
               </div>
-              <span className="font-semibold text-slate-700">{item.value}%</span>
             </div>
-            <div className="h-3 overflow-hidden rounded-full bg-slate-100">
-              <div className={`h-full rounded-full ${item.color}`} style={{ width: `${item.value}%` }} />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-500">
         {description}
@@ -218,19 +257,65 @@ function SliderGroup({
     <div>
       <div className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500 mb-2">{title}</div>
       <div className="text-xs text-slate-500 mb-4">{dominanceLabel(dom)}</div>
-      {items.map(({ key, val, setter }) => (
-        <div key={key} className="mb-3">
-          <div className="flex items-center justify-between text-sm mb-1">
-            <span className="font-medium text-slate-800">{labelComponent(key)} <span className="text-slate-500">{COMP_LABELS[key]}</span></span>
-            <span className="font-semibold text-slate-700">{Math.round(profile[key])}%</span>
-          </div>
-          <input type="range" min={5} max={80} value={val} onChange={(e) => setter(Number(e.target.value))}
-            className="w-full accent-slate-600" data-testid={`slider-${testIdPrefix}-${key}`} />
-          <div className="h-2.5 overflow-hidden rounded-full bg-slate-100 mt-1">
-            <div className={`h-full rounded-full ${BAR_CSS[key]}`} style={{ width: `${profile[key]}%` }} />
-          </div>
-        </div>
-      ))}
+      <div style={{ background: "#3A3A3C", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
+        {items.map(({ key, val, setter }) => {
+          const pct = Math.round(profile[key]);
+          const hex = BAR_HEX[key];
+          const widthPct = (pct / 67) * 100;
+          const isSmall = widthPct < 18;
+          return (
+            <div key={key} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <span style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", width: 72, flexShrink: 0 }}>
+                {labelComponent(key)}
+              </span>
+              <div style={{ flex: 1, position: "relative", height: 26 }}>
+                <div style={{
+                  position: "absolute", inset: 0,
+                  borderRadius: 13, background: "rgba(255,255,255,0.10)",
+                }} />
+                <div style={{
+                  position: "absolute", left: 0, top: 0, bottom: 0,
+                  width: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+                  borderRadius: 13, background: hex,
+                  transition: "width 150ms ease",
+                  display: "flex", alignItems: "center", paddingLeft: 10,
+                  minWidth: isSmall ? 8 : 50,
+                }}>
+                  {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{pct} %</span>}
+                </div>
+                <div style={{
+                  position: "absolute",
+                  left: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+                  top: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: 26, height: 26, borderRadius: "50%",
+                  background: `radial-gradient(circle at 40% 38%, ${hex}, color-mix(in srgb, ${hex} 70%, #000))`,
+                  border: "3px solid #3A3A3C",
+                  transition: "left 150ms ease",
+                  zIndex: 1,
+                }} />
+                <input type="range" min={5} max={80} value={val} onChange={(e) => setter(Number(e.target.value))}
+                  data-testid={`slider-${testIdPrefix}-${key}`}
+                  style={{
+                    position: "absolute", inset: 0, width: "100%", height: "100%",
+                    appearance: "none", WebkitAppearance: "none" as const,
+                    background: "transparent", outline: "none", cursor: "pointer",
+                    margin: 0, zIndex: 3,
+                  }}
+                />
+                {isSmall && (
+                  <span style={{
+                    position: "absolute", top: "50%", transform: "translateY(-50%)",
+                    left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 18px)`,
+                    fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap",
+                    transition: "left 150ms ease", zIndex: 1,
+                  }}>{pct} %</span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

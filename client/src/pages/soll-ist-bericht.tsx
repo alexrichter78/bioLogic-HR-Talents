@@ -121,21 +121,54 @@ function ProfileCard({ title, subtitle, profile, accent, description }: {
         <div className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500">{title}</div>
         <div className="mt-1 text-base font-semibold text-slate-950">{subtitle}</div>
       </div>
-      <div className="space-y-4">
-        {profile.map(item => (
-          <div key={item.label}>
-            <div className="mb-2 flex items-center justify-between text-sm">
-              <div>
-                <span className="font-medium text-slate-900">{item.label}</span>
-                <span className="ml-2 text-slate-500">{item.short}</span>
+      <div style={{ background: "#3A3A3C", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
+        {profile.map(item => {
+          const hex = BAR_HEX[item.label.toLowerCase() as ComponentKey];
+          const widthPct = (item.value / 67) * 100;
+          const isSmall = widthPct < 18;
+          return (
+            <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <span style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", width: 72, flexShrink: 0 }}>
+                {item.label}
+              </span>
+              <div style={{ flex: 1, position: "relative", height: 26 }}>
+                <div style={{
+                  position: "absolute", inset: 0,
+                  borderRadius: 13, background: "rgba(255,255,255,0.10)",
+                }} />
+                <div style={{
+                  position: "absolute", left: 0, top: 0, bottom: 0,
+                  width: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+                  borderRadius: 13, background: hex,
+                  transition: "width 600ms ease",
+                  display: "flex", alignItems: "center", paddingLeft: 10,
+                  minWidth: isSmall ? 8 : 50,
+                }}>
+                  {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(item.value)} %</span>}
+                </div>
+                <div style={{
+                  position: "absolute",
+                  left: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+                  top: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: 26, height: 26, borderRadius: "50%",
+                  background: `radial-gradient(circle at 40% 38%, ${hex}, color-mix(in srgb, ${hex} 70%, #000))`,
+                  border: "3px solid #3A3A3C",
+                  transition: "left 600ms ease",
+                  zIndex: 1,
+                }} />
+                {isSmall && (
+                  <span style={{
+                    position: "absolute", top: "50%", transform: "translateY(-50%)",
+                    left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 18px)`,
+                    fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap",
+                    transition: "left 600ms ease", zIndex: 1,
+                  }}>{Math.round(item.value)} %</span>
+                )}
               </div>
-              <span className="font-semibold text-slate-700">{item.value}%</span>
             </div>
-            <div className="h-3 overflow-hidden rounded-full bg-slate-100">
-              <div className={`h-full rounded-full ${item.color}`} style={{ width: `${item.value}%` }} />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-500">
         {description}
@@ -314,17 +347,55 @@ export default function SollIstBericht() {
                 <div className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500 mb-3">Soll-Profil (Rolle)</div>
                 <div className="text-lg font-semibold text-slate-950 mb-1">{roleName}</div>
                 <div className="text-sm text-slate-500 mb-4">{dominanceLabel(dominanceModeOf(roleTriad))}</div>
-                {roleProfile.map(item => (
-                  <div key={item.label} className="mb-3">
-                    <div className="flex items-center justify-between text-sm mb-1">
-                      <span className="font-medium text-slate-800">{item.label} <span className="text-slate-500">{item.short}</span></span>
-                      <span className="font-semibold text-slate-700">{Math.round(item.value)}%</span>
-                    </div>
-                    <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
-                      <div className={`h-full rounded-full ${item.color}`} style={{ width: `${item.value}%` }} />
-                    </div>
-                  </div>
-                ))}
+                <div style={{ background: "#3A3A3C", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
+                  {roleProfile.map(item => {
+                    const hex = BAR_HEX[item.label.toLowerCase() as ComponentKey];
+                    const widthPct = (item.value / 67) * 100;
+                    const isSmall = widthPct < 18;
+                    return (
+                      <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <span style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", width: 72, flexShrink: 0 }}>
+                          {item.label}
+                        </span>
+                        <div style={{ flex: 1, position: "relative", height: 26 }}>
+                          <div style={{
+                            position: "absolute", inset: 0,
+                            borderRadius: 13, background: "rgba(255,255,255,0.10)",
+                          }} />
+                          <div style={{
+                            position: "absolute", left: 0, top: 0, bottom: 0,
+                            width: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+                            borderRadius: 13, background: hex,
+                            transition: "width 600ms ease",
+                            display: "flex", alignItems: "center", paddingLeft: 10,
+                            minWidth: isSmall ? 8 : 50,
+                          }}>
+                            {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(item.value)} %</span>}
+                          </div>
+                          <div style={{
+                            position: "absolute",
+                            left: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+                            top: "50%",
+                            transform: "translate(-50%, -50%)",
+                            width: 26, height: 26, borderRadius: "50%",
+                            background: `radial-gradient(circle at 40% 38%, ${hex}, color-mix(in srgb, ${hex} 70%, #000))`,
+                            border: "3px solid #3A3A3C",
+                            transition: "left 600ms ease",
+                            zIndex: 1,
+                          }} />
+                          {isSmall && (
+                            <span style={{
+                              position: "absolute", top: "50%", transform: "translateY(-50%)",
+                              left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 18px)`,
+                              fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap",
+                              transition: "left 600ms ease", zIndex: 1,
+                            }}>{Math.round(item.value)} %</span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
               <div>
                 <div className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500 mb-3">Ist-Profil (Kandidat)</div>
@@ -335,48 +406,69 @@ export default function SollIstBericht() {
                   className="w-full h-9 px-3 text-sm font-medium rounded-lg border border-slate-200 bg-slate-50 text-slate-900 outline-none focus:border-blue-400 mb-4"
                   data-testid="input-candidate-name"
                 />
-                {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
-                  const val = k === "impulsiv" ? candImp : k === "intuitiv" ? candInt : candAna;
-                  const setter = k === "impulsiv" ? setCandImp : k === "intuitiv" ? setCandInt : setCandAna;
-                  const pct = Math.round(candidateProfile[k]);
-                  const hex = BAR_HEX[k];
-                  return (
-                    <div key={k} className="mb-4" data-testid={`slider-row-${k}`}>
-                      <div className="relative h-9">
-                        <span className="absolute left-0 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-600 z-10 pointer-events-none pl-0.5">
+                <div style={{ background: "#3A3A3C", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
+                  {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+                    const val = k === "impulsiv" ? candImp : k === "intuitiv" ? candInt : candAna;
+                    const setter = k === "impulsiv" ? setCandImp : k === "intuitiv" ? setCandInt : setCandAna;
+                    const pct = Math.round(candidateProfile[k]);
+                    const hex = BAR_HEX[k];
+                    const widthPct = (pct / 67) * 100;
+                    const isSmall = widthPct < 18;
+                    return (
+                      <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }} data-testid={`slider-row-${k}`}>
+                        <span style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", width: 72, flexShrink: 0 }}>
                           {labelComponent(k)}
                         </span>
-                        <div className="absolute inset-0 flex items-center">
-                          <div className="relative h-8 w-full rounded-full bg-slate-100 overflow-hidden">
-                            <div
-                              className="absolute inset-y-0 left-0 rounded-full transition-all duration-150"
-                              style={{ width: `${Math.max(pct, 5)}%`, backgroundColor: hex }}
-                            />
-                            <span
-                              className="absolute top-1/2 -translate-y-1/2 text-xs font-bold text-white pointer-events-none"
-                              style={{ left: `${Math.max(pct, 5) / 2}%`, transform: "translate(-50%, -50%)" }}
-                            >
-                              {pct > 8 ? `${pct} %` : ""}
-                            </span>
+                        <div style={{ flex: 1, position: "relative", height: 26 }}>
+                          <div style={{
+                            position: "absolute", inset: 0,
+                            borderRadius: 13, background: "rgba(255,255,255,0.10)",
+                          }} />
+                          <div style={{
+                            position: "absolute", left: 0, top: 0, bottom: 0,
+                            width: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+                            borderRadius: 13, background: hex,
+                            transition: "width 150ms ease",
+                            display: "flex", alignItems: "center", paddingLeft: 10,
+                            minWidth: isSmall ? 8 : 50,
+                          }}>
+                            {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{pct} %</span>}
                           </div>
-                          <div
-                            className="absolute h-7 w-7 rounded-full border-2 border-white shadow-md pointer-events-none"
+                          <div style={{
+                            position: "absolute",
+                            left: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+                            top: "50%",
+                            transform: "translate(-50%, -50%)",
+                            width: 26, height: 26, borderRadius: "50%",
+                            background: `radial-gradient(circle at 40% 38%, ${hex}, color-mix(in srgb, ${hex} 70%, #000))`,
+                            border: "3px solid #3A3A3C",
+                            transition: "left 150ms ease",
+                            zIndex: 1,
+                          }} />
+                          <input
+                            type="range" min={5} max={80} value={val}
+                            onChange={(e) => setter(Number(e.target.value))}
                             style={{
-                              left: `calc(${Math.max(pct, 5)}% - 14px)`,
-                              backgroundColor: "#2563EB",
+                              position: "absolute", inset: 0, width: "100%", height: "100%",
+                              appearance: "none", WebkitAppearance: "none" as const,
+                              background: "transparent", outline: "none", cursor: "pointer",
+                              margin: 0, zIndex: 3,
                             }}
+                            data-testid={`slider-${k}`}
                           />
+                          {isSmall && (
+                            <span style={{
+                              position: "absolute", top: "50%", transform: "translateY(-50%)",
+                              left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 18px)`,
+                              fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap",
+                              transition: "left 150ms ease", zIndex: 1,
+                            }}>{pct} %</span>
+                          )}
                         </div>
-                        <input
-                          type="range" min={5} max={80} value={val}
-                          onChange={(e) => setter(Number(e.target.value))}
-                          className="absolute inset-0 w-full opacity-0 cursor-pointer z-20"
-                          data-testid={`slider-${k}`}
-                        />
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
             <div className="mt-8 flex justify-center">
