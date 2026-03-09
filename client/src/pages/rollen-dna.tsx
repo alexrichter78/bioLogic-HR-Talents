@@ -2855,6 +2855,7 @@ export default function RollenDNA() {
                         {fuehrung && fuehrung !== "Keine" && (
                           <span><strong style={{ color: "#1D1D1F" }}>Führungsverantwortung:</strong> Ja</span>
                         )}
+                        <span style={{ marginTop: 8 }}>Vergleichen Sie das Rollenprofil mit dem Kandidatenprofil, um die Passung für diese Position zu analysieren.</span>
                       </div>
                     </div>
                   </div>
