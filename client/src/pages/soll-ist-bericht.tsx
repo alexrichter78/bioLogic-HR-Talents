@@ -229,9 +229,33 @@ function Legend({ color, label }: { color: string; label: string }) {
 export default function SollIstBericht() {
   const [, setLocation] = useLocation();
   const [candidateName, setCandidateName] = useState("");
-  const [candImp, setCandImp] = useState(33);
-  const [candInt, setCandInt] = useState(34);
-  const [candAna, setCandAna] = useState(33);
+  const [candTriad, setCandTriad] = useState<{impulsiv: number; intuitiv: number; analytisch: number}>({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
+
+  const updateCandTriad = useCallback((key: ComponentKey, newVal: number) => {
+    setCandTriad(prev => {
+      const clamped = Math.max(5, Math.min(67, Math.round(newVal)));
+      const others = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== key);
+      const remaining = 100 - clamped;
+      const otherSum = prev[others[0]] + prev[others[1]];
+      let o1: number, o2: number;
+      if (otherSum === 0) {
+        o1 = Math.round(remaining / 2);
+        o2 = remaining - o1;
+      } else {
+        o1 = Math.round((prev[others[0]] / otherSum) * remaining);
+        o2 = remaining - o1;
+      }
+      o1 = Math.max(5, Math.min(67, o1));
+      o2 = Math.max(5, Math.min(67, o2));
+      const total = clamped + o1 + o2;
+      if (total !== 100) {
+        const diff = 100 - total;
+        if (o2 + diff >= 5 && o2 + diff <= 67) o2 += diff;
+        else if (o1 + diff >= 5 && o1 + diff <= 67) o1 += diff;
+      }
+      return { [key]: clamped, [others[0]]: o1, [others[1]]: o2 } as typeof prev;
+    });
+  }, []);
   const [roleName, setRoleName] = useState("");
   const [roleTriad, setRoleTriad] = useState<Triad | null>(null);
   const [hasRollenDna, setHasRollenDna] = useState(false);
@@ -256,14 +280,14 @@ export default function SollIstBericht() {
       try {
         const cand = JSON.parse(candRaw);
         if (cand.name) setCandidateName(cand.name);
-        if (cand.impulsiv != null) setCandImp(cand.impulsiv);
-        if (cand.intuitiv != null) setCandInt(cand.intuitiv);
-        if (cand.analytisch != null) setCandAna(cand.analytisch);
+        if (cand.impulsiv != null && cand.intuitiv != null && cand.analytisch != null) {
+          setCandTriad({ impulsiv: cand.impulsiv, intuitiv: cand.intuitiv, analytisch: cand.analytisch });
+        }
       } catch {}
     }
   }, []);
 
-  const candidateProfile = normalizeTriad({ impulsiv: candImp, intuitiv: candInt, analytisch: candAna });
+  const candidateProfile = candTriad;
   const candDom = dominanceModeOf(candidateProfile);
 
   const result: SollIstResult | null = useMemo(() => {
@@ -392,10 +416,9 @@ export default function SollIstBericht() {
                 <p className="text-base font-semibold text-slate-900 mb-6">Ist-Profil <span className="font-normal text-slate-500">(Kandidat)</span></p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
-                    const val = k === "impulsiv" ? candImp : k === "intuitiv" ? candInt : candAna;
-                    const setter = k === "impulsiv" ? setCandImp : k === "intuitiv" ? setCandInt : setCandAna;
-                    const pct = Math.round(candidateProfile[k]);
+                    const val = candTriad[k];
                     const hex = BAR_HEX[k];
+                    const pct = val;
                     const widthPct = (val / 67) * 100;
                     const isSmall = widthPct < 18;
                     return (
@@ -427,7 +450,7 @@ export default function SollIstBericht() {
                               const move = (ev: MouseEvent) => {
                                 const ratio = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
                                 const raw = Math.round(ratio * 67);
-                                setter(Math.max(5, Math.min(67, raw)));
+                                updateCandTriad(k, raw);
                               };
                               const up = () => {
                                 window.removeEventListener("mousemove", move);
@@ -443,7 +466,7 @@ export default function SollIstBericht() {
                                 const touch = ev.touches[0];
                                 const ratio = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
                                 const raw = Math.round(ratio * 67);
-                                setter(Math.max(5, Math.min(67, raw)));
+                                updateCandTriad(k, raw);
                               };
                               const up = () => {
                                 window.removeEventListener("touchmove", move);
