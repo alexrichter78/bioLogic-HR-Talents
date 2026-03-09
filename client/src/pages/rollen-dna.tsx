@@ -2840,8 +2840,14 @@ export default function RollenDNA() {
                   }}
                   data-testid="button-summary-toggle"
                 >
-                  <div className="flex items-center gap-3">
-                    <CheckCircle2 style={{ width: 24, height: 24, color: "#34C759" }} />
+                  <div className="flex items-center gap-2.5">
+                    <div style={{
+                      width: 28, height: 28, borderRadius: "50%",
+                      background: "linear-gradient(135deg, #34C759, #30D158)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}>
+                      <Check style={{ width: 16, height: 16, color: "#FFF", strokeWidth: 2.5 }} />
+                    </div>
                     <h3 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Rollenprofil erfolgreich erstellt</h3>
                   </div>
                   <ChevronDown style={{
@@ -2855,7 +2861,7 @@ export default function RollenDNA() {
 
                 {summaryOpen && (
                   <>
-                <p style={{ fontSize: 13, color: "#8E8E93", margin: "0 0 16px 0" }}>Das Rollenprofil wurde erfolgreich erstellt.</p>
+                
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }} data-testid="dna-summary-grid">
                   {[
                     { icon: Briefcase, label: "Rolle", value: beruf },
@@ -3042,7 +3048,7 @@ export default function RollenDNA() {
                       width: 28,
                       height: 28,
                       borderRadius: "50%",
-                      background: "linear-gradient(135deg, #0071E3, #34AADC)",
+                      background: "linear-gradient(135deg, #34C759, #30D158)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
