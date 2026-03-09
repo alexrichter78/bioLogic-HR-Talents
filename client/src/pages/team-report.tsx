@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation } from "wouter";
-import { AlertTriangle, Download, Check, Users } from "lucide-react";
+import { AlertTriangle, Download, Check, Users, ChevronDown } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeTeamReport } from "@/lib/team-report-engine";
@@ -366,6 +366,7 @@ export default function TeamReport() {
 
   const updateIstTriad = useMemo(() => makeTriadUpdater(setIstTriad), [makeTriadUpdater]);
   const updateTeamTriad = useMemo(() => makeTriadUpdater(setTeamTriad), [makeTriadUpdater]);
+  const [configOpen, setConfigOpen] = useState(true);
   const [roleName, setRoleName] = useState("");
   const [candidateName, setCandidateName] = useState("");
   const [reportGenerated, setReportGenerated] = useState(false);
@@ -459,9 +460,17 @@ export default function TeamReport() {
 
       <div className="mx-auto px-5" style={{ maxWidth: 1100, paddingTop: 135, paddingBottom: 40 }}>
 
-        {!reportGenerated && (
-          <div className="mb-8 rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm">
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
+        <div className="mb-8 rounded-[20px] border border-slate-200 bg-white shadow-sm overflow-hidden" data-testid="accordion-teamcheck">
+          <button
+            onClick={() => setConfigOpen(!configOpen)}
+            style={{
+              width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
+              padding: "18px 24px", background: "none", border: "none", cursor: "pointer",
+              gap: 12,
+            }}
+            data-testid="accordion-teamcheck-toggle"
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <div style={{
                 width: 36, height: 36, borderRadius: 12,
                 background: "linear-gradient(135deg, rgba(52,199,89,0.15), rgba(52,199,89,0.08))",
@@ -471,21 +480,34 @@ export default function TeamReport() {
               </div>
               <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", color: "#1D1D1F" }} data-testid="text-teamcheck-label">TeamCheck</span>
             </div>
-            <div className="grid gap-8 lg:grid-cols-2">
-              <SliderGroup title="Ist-Profil (Person)" triad={istTriad}
-                onTriadChange={updateIstTriad} testIdPrefix="ist" />
-              <SliderGroup title="Teamprofil" triad={teamTriad}
-                onTriadChange={updateTeamTriad} testIdPrefix="team" />
-            </div>
-            <div className="mt-8 flex justify-center">
-              <button onClick={() => setReportGenerated(true)}
-                className="inline-flex h-12 items-center gap-2 rounded-2xl bg-blue-600 px-8 text-[15px] font-semibold text-white shadow-md hover:bg-blue-700 transition-colors"
-                data-testid="button-generate-report">
-                Bericht erstellen
-              </button>
+            <ChevronDown style={{
+              width: 18, height: 18, color: "#8E8E93", strokeWidth: 2,
+              transition: "transform 300ms ease",
+              transform: configOpen ? "rotate(180deg)" : "rotate(0deg)",
+            }} />
+          </button>
+          <div style={{
+            maxHeight: configOpen ? 5000 : 0,
+            overflow: "hidden",
+            transition: "max-height 400ms ease",
+          }}>
+            <div style={{ padding: "0 24px 24px" }}>
+              <div className="grid gap-8 lg:grid-cols-2">
+                <SliderGroup title="Ist-Profil (Person)" triad={istTriad}
+                  onTriadChange={updateIstTriad} testIdPrefix="ist" />
+                <SliderGroup title="Teamprofil" triad={teamTriad}
+                  onTriadChange={updateTeamTriad} testIdPrefix="team" />
+              </div>
+              <div className="mt-8 flex justify-center">
+                <button onClick={() => setReportGenerated(true)}
+                  className="inline-flex h-12 items-center gap-2 rounded-2xl bg-blue-600 px-8 text-[15px] font-semibold text-white shadow-md hover:bg-blue-700 transition-colors"
+                  data-testid="button-generate-report">
+                  Bericht erstellen
+                </button>
+              </div>
             </div>
           </div>
-        )}
+        </div>
 
         {result && sw && (
           <>
