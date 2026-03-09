@@ -386,20 +386,14 @@ export default function SollIstBericht() {
 
             const roleSorted = [roleTriad.impulsiv, roleTriad.intuitiv, roleTriad.analytisch].sort((a, b) => b - a);
             const candSorted = [candTriad.impulsiv, candTriad.intuitiv, candTriad.analytisch].sort((a, b) => b - a);
-            const roleSecGap = roleSorted[1] - roleSorted[2];
-            const candSecGap = candSorted[1] - candSorted[2];
-            const secGapDiff = Math.abs(roleSecGap - candSecGap);
-            const rolePrimGap = roleSorted[0] - roleSorted[1];
-            const candPrimGap = candSorted[0] - candSorted[1];
-            const primGapDiff = Math.abs(rolePrimGap - candPrimGap);
-            const structureDiff = Math.max(secGapDiff, primGapDiff);
+            const secGapDiff = Math.abs((roleSorted[1] - roleSorted[2]) - (candSorted[1] - candSorted[2]));
 
             const fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > 20 ? "Bedingt geeignet" : "Geeignet";
             const fitColor = totalGap > 40 ? "#D64045" : totalGap > 20 ? "#E5A832" : "#3A9A5C";
 
-            const fazitText = sameDom && totalGap <= 20 && structureDiff <= 4
+            const fazitText = sameDom && totalGap <= 20 && secGapDiff < 6
               ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
-              : sameDom && totalGap <= 20 && structureDiff > 4
+              : sameDom && totalGap <= 20 && secGapDiff >= 6
               ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur unterscheidet sich. Konkurrierende Komponenten erzeugen innere Spannung und machen das Verhalten in Drucksituationen weniger vorhersehbar."
               : sameDom
               ? "Die Grundausrichtung ist ähnlich, es bestehen jedoch spürbare Unterschiede in der Intensität. Mit gezielter Führung lässt sich die Zusammenarbeit stabil gestalten."
@@ -410,17 +404,12 @@ export default function SollIstBericht() {
             let devScore: number;
             if (sameDom && totalGap <= 10) devScore = 6;
             else if (sameDom && totalGap <= 20) devScore = 5;
-            else if (totalGap <= 20) devScore = 4;
-            else if (totalGap <= 30) devScore = 3;
-            else if (totalGap <= 40) devScore = 2;
+            else if (totalGap <= 20 || (sameDom && totalGap <= 28)) devScore = 4;
+            else if (totalGap <= 35) devScore = 3;
+            else if (totalGap <= 50) devScore = 2;
             else devScore = 1;
 
-            if (structureDiff >= 12) devScore = Math.max(devScore - 2, 1);
-            else if (structureDiff >= 6) devScore = Math.max(devScore - 1, 1);
-
-            if (fitLabel === "Bedingt geeignet" && devScore > 3) devScore = 3;
-            if (fitLabel === "Nicht geeignet" && devScore > 2) devScore = 2;
-            if (fitLabel === "Geeignet" && devScore < 3) devScore = 3;
+            if (secGapDiff >= 6) devScore = Math.max(devScore - 1, 1);
 
             const devTexts: Record<number, string> = {
               1: "Die grundlegende Arbeitslogik der Person unterscheidet sich stark von den Anforderungen der Rolle. Eine stabile Anpassung ist daher nur sehr eingeschränkt zu erwarten.",
@@ -655,22 +644,16 @@ export default function SollIstBericht() {
                 const cTriad = result.candTriad;
                 const rSorted = [rTriad.impulsiv, rTriad.intuitiv, rTriad.analytisch].sort((a, b) => b - a);
                 const cSorted = [cTriad.impulsiv, cTriad.intuitiv, cTriad.analytisch].sort((a, b) => b - a);
-                const rSecGap = rSorted[1] - rSorted[2];
-                const cSecGap = cSorted[1] - cSorted[2];
-                const rPrimGap = rSorted[0] - rSorted[1];
-                const cPrimGap = cSorted[0] - cSorted[1];
-                const rSecGapDiff = Math.abs(rSecGap - cSecGap);
-                const rPrimGapDiff = Math.abs(rPrimGap - cPrimGap);
-                const rStructDiff = Math.max(rSecGapDiff, rPrimGapDiff);
+                const rSecGapDiff = Math.abs((rSorted[1] - rSorted[2]) - (cSorted[1] - cSorted[2]));
                 const tGap = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).reduce((s, k) => s + Math.abs(rTriad[k] - cTriad[k]), 0);
                 const sameD = result.roleDomKey === result.candDomKey;
 
                 const rFitLabel = tGap > 40 ? "Nicht geeignet" : tGap > 20 ? "Bedingt geeignet" : "Geeignet";
                 const rFitColor = tGap > 40 ? "#D64045" : tGap > 20 ? "#E5A832" : "#3A9A5C";
 
-                const rFazit = sameD && tGap <= 20 && rStructDiff <= 4
+                const rFazit = sameD && tGap <= 20 && rSecGapDiff < 6
                   ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
-                  : sameD && tGap <= 20 && rStructDiff > 4
+                  : sameD && tGap <= 20 && rSecGapDiff >= 6
                   ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur unterscheidet sich. Konkurrierende Komponenten erzeugen innere Spannung und machen das Verhalten in Drucksituationen weniger vorhersehbar."
                   : sameD
                   ? "Die Grundausrichtung ist ähnlich, es bestehen jedoch spürbare Unterschiede in der Intensität. Mit gezielter Führung lässt sich die Zusammenarbeit stabil gestalten."
@@ -681,15 +664,11 @@ export default function SollIstBericht() {
                 let rDev: number;
                 if (sameD && tGap <= 10) rDev = 6;
                 else if (sameD && tGap <= 20) rDev = 5;
-                else if (tGap <= 20) rDev = 4;
-                else if (tGap <= 30) rDev = 3;
-                else if (tGap <= 40) rDev = 2;
+                else if (tGap <= 20 || (sameD && tGap <= 28)) rDev = 4;
+                else if (tGap <= 35) rDev = 3;
+                else if (tGap <= 50) rDev = 2;
                 else rDev = 1;
-                if (rStructDiff >= 12) rDev = Math.max(rDev - 2, 1);
-                else if (rStructDiff >= 6) rDev = Math.max(rDev - 1, 1);
-                if (rFitLabel === "Bedingt geeignet" && rDev > 3) rDev = 3;
-                if (rFitLabel === "Nicht geeignet" && rDev > 2) rDev = 2;
-                if (rFitLabel === "Geeignet" && rDev < 3) rDev = 3;
+                if (rSecGapDiff >= 6) rDev = Math.max(rDev - 1, 1);
 
                 const rDevTexts: Record<number, string> = {
                   1: "Die grundlegende Arbeitslogik der Person unterscheidet sich stark von den Anforderungen der Rolle. Eine stabile Anpassung ist daher nur sehr eingeschränkt zu erwarten.",
