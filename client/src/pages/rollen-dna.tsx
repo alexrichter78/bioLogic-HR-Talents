@@ -1654,7 +1654,7 @@ export default function RollenDNA() {
         />
         <GlobalNav />
         <div style={{ position: "fixed", top: 56, left: 0, right: 0, zIndex: 8999 }}>
-          <div className="dark:!bg-background/90 pb-2" style={{ backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", background: "rgba(255,255,255,0.82)" }}>
+          <div className="dark:!bg-background pb-2" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
             <div className="w-full mx-auto px-6" style={{ maxWidth: 1100 }}>
               <div className="text-center mt-2 mb-1">
                 <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-rollen-dna-title">
