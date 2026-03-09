@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation } from "wouter";
 import { AlertTriangle, Download, Check } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
@@ -228,29 +228,24 @@ function Prose({ text }: { text: string }) {
 }
 
 function SliderGroup({
-  title, imp, int, ana, onImpChange, onIntChange, onAnaChange, testIdPrefix,
+  title, triad, onTriadChange, testIdPrefix,
 }: {
-  title: string; imp: number; int: number; ana: number;
-  onImpChange: (v: number) => void; onIntChange: (v: number) => void; onAnaChange: (v: number) => void;
+  title: string;
+  triad: { impulsiv: number; intuitiv: number; analytisch: number };
+  onTriadChange: (key: ComponentKey, val: number) => void;
   testIdPrefix: string;
 }) {
-  const profile = normalizeTriad({ impulsiv: imp, intuitiv: int, analytisch: ana });
-  const dom = dominanceModeOf(profile);
-  const items: { key: ComponentKey; val: number; setter: (v: number) => void }[] = [
-    { key: "impulsiv", val: imp, setter: onImpChange },
-    { key: "intuitiv", val: int, setter: onIntChange },
-    { key: "analytisch", val: ana, setter: onAnaChange },
-  ];
+  const dom = dominanceModeOf(triad);
 
   return (
     <div>
       <div className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500 mb-2">{title}</div>
       <div className="text-xs text-slate-500 mb-4">{dominanceLabel(dom)}</div>
-      <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
-        {items.map(({ key, val, setter }) => {
-          const pct = Math.round(profile[key]);
+      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(key => {
+          const val = triad[key];
           const hex = BAR_HEX[key];
-          const widthPct = (pct / 67) * 100;
+          const widthPct = (val / 67) * 100;
           const isSmall = widthPct < 18;
           return (
             <div key={key} style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -270,25 +265,61 @@ function SliderGroup({
                   display: "flex", alignItems: "center", paddingLeft: 10,
                   minWidth: isSmall ? 8 : 50,
                 }}>
-                  {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{pct} %</span>}
+                  {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>}
                 </div>
-                <input type="range" min={5} max={80} value={val} onChange={(e) => setter(Number(e.target.value))}
-                  className="bio-slider"
+                <div
                   data-testid={`slider-${testIdPrefix}-${key}`}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    const track = e.currentTarget.parentElement!;
+                    const rect = track.getBoundingClientRect();
+                    const move = (ev: MouseEvent) => {
+                      const ratio = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
+                      onTriadChange(key, Math.round(ratio * 67));
+                    };
+                    const up = () => {
+                      window.removeEventListener("mousemove", move);
+                      window.removeEventListener("mouseup", up);
+                    };
+                    window.addEventListener("mousemove", move);
+                    window.addEventListener("mouseup", up);
+                  }}
+                  onTouchStart={(e) => {
+                    const track = e.currentTarget.parentElement!;
+                    const rect = track.getBoundingClientRect();
+                    const move = (ev: TouchEvent) => {
+                      const touch = ev.touches[0];
+                      const ratio = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
+                      onTriadChange(key, Math.round(ratio * 67));
+                    };
+                    const up = () => {
+                      window.removeEventListener("touchmove", move);
+                      window.removeEventListener("touchend", up);
+                    };
+                    window.addEventListener("touchmove", move);
+                    window.addEventListener("touchend", up);
+                  }}
                   style={{
-                    position: "absolute", inset: 0, width: "100%", height: "100%",
-                    appearance: "none", WebkitAppearance: "none" as const,
-                    background: "transparent", outline: "none", cursor: "ew-resize",
-                    margin: 0, zIndex: 3,
+                    position: "absolute",
+                    left: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+                    top: "50%",
+                    transform: "translate(-50%, -50%)",
+                    width: 28, height: 28, borderRadius: "50%",
+                    background: hex,
+                    border: "3px solid #F0F0F2",
+                    transition: "left 80ms ease",
+                    zIndex: 3,
+                    cursor: "grab",
                   }}
                 />
                 {isSmall && (
                   <span style={{
                     position: "absolute", top: "50%", transform: "translateY(-50%)",
-                    left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
+                    left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 20px)`,
                     fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
                     transition: "left 150ms ease",
-                  }}>{pct} %</span>
+                    zIndex: 4,
+                  }}>{val} %</span>
                 )}
               </div>
             </div>
@@ -302,12 +333,39 @@ function SliderGroup({
 export default function TeamReport() {
   const [, setLocation] = useLocation();
 
-  const [istImp, setIstImp] = useState(33);
-  const [istInt, setIstInt] = useState(34);
-  const [istAna, setIstAna] = useState(33);
-  const [teamImp, setTeamImp] = useState(33);
-  const [teamInt, setTeamInt] = useState(34);
-  const [teamAna, setTeamAna] = useState(33);
+  const [istTriad, setIstTriad] = useState({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
+  const [teamTriad, setTeamTriad] = useState({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
+
+  const makeTriadUpdater = useCallback((setter: React.Dispatch<React.SetStateAction<{ impulsiv: number; intuitiv: number; analytisch: number }>>) => {
+    return (key: ComponentKey, newVal: number) => {
+      setter(prev => {
+        const clamped = Math.max(5, Math.min(67, Math.round(newVal)));
+        const others = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== key);
+        const remaining = 100 - clamped;
+        const otherSum = prev[others[0]] + prev[others[1]];
+        let o1: number, o2: number;
+        if (otherSum === 0) {
+          o1 = Math.round(remaining / 2);
+          o2 = remaining - o1;
+        } else {
+          o1 = Math.round((prev[others[0]] / otherSum) * remaining);
+          o2 = remaining - o1;
+        }
+        o1 = Math.max(5, Math.min(67, o1));
+        o2 = Math.max(5, Math.min(67, o2));
+        const total = clamped + o1 + o2;
+        if (total !== 100) {
+          const diff = 100 - total;
+          if (o2 + diff >= 5 && o2 + diff <= 67) o2 += diff;
+          else if (o1 + diff >= 5 && o1 + diff <= 67) o1 += diff;
+        }
+        return { [key]: clamped, [others[0]]: o1, [others[1]]: o2 } as typeof prev;
+      });
+    };
+  }, []);
+
+  const updateIstTriad = useMemo(() => makeTriadUpdater(setIstTriad), [makeTriadUpdater]);
+  const updateTeamTriad = useMemo(() => makeTriadUpdater(setTeamTriad), [makeTriadUpdater]);
   const [roleName, setRoleName] = useState("");
   const [candidateName, setCandidateName] = useState("");
   const [reportGenerated, setReportGenerated] = useState(false);
@@ -325,24 +383,24 @@ export default function TeamReport() {
       try {
         const cand = JSON.parse(candRaw);
         if (cand.name) setCandidateName(cand.name);
-        if (cand.impulsiv != null) setIstImp(cand.impulsiv);
-        if (cand.intuitiv != null) setIstInt(cand.intuitiv);
-        if (cand.analytisch != null) setIstAna(cand.analytisch);
+        if (cand.impulsiv != null && cand.intuitiv != null && cand.analytisch != null) {
+          setIstTriad({ impulsiv: cand.impulsiv, intuitiv: cand.intuitiv, analytisch: cand.analytisch });
+        }
       } catch {}
     }
     const teamRaw = localStorage.getItem("teamProfile");
     if (teamRaw) {
       try {
         const tp = JSON.parse(teamRaw);
-        if (tp.impulsiv != null) setTeamImp(tp.impulsiv);
-        if (tp.intuitiv != null) setTeamInt(tp.intuitiv);
-        if (tp.analytisch != null) setTeamAna(tp.analytisch);
+        if (tp.impulsiv != null && tp.intuitiv != null && tp.analytisch != null) {
+          setTeamTriad({ impulsiv: tp.impulsiv, intuitiv: tp.intuitiv, analytisch: tp.analytisch });
+        }
       } catch {}
     }
   }, []);
 
-  const istProfile = normalizeTriad({ impulsiv: istImp, intuitiv: istInt, analytisch: istAna });
-  const teamProfileN = normalizeTriad({ impulsiv: teamImp, intuitiv: teamInt, analytisch: teamAna });
+  const istProfile = istTriad;
+  const teamProfileN = teamTriad;
 
   const istDomKey = dominanceModeOf(istProfile).top1.key;
   const teamDomKey = dominanceModeOf(teamProfileN).top1.key;
@@ -407,10 +465,10 @@ export default function TeamReport() {
               </div>
             </div>
             <div className="grid gap-8 lg:grid-cols-2">
-              <SliderGroup title="Ist-Profil (Kandidat)" imp={istImp} int={istInt} ana={istAna}
-                onImpChange={setIstImp} onIntChange={setIstInt} onAnaChange={setIstAna} testIdPrefix="ist" />
-              <SliderGroup title="Teamprofil" imp={teamImp} int={teamInt} ana={teamAna}
-                onImpChange={setTeamImp} onIntChange={setTeamInt} onAnaChange={setTeamAna} testIdPrefix="team" />
+              <SliderGroup title="Ist-Profil (Kandidat)" triad={istTriad}
+                onTriadChange={updateIstTriad} testIdPrefix="ist" />
+              <SliderGroup title="Teamprofil" triad={teamTriad}
+                onTriadChange={updateTeamTriad} testIdPrefix="team" />
             </div>
             <div className="mt-8 flex justify-center">
               <button onClick={() => setReportGenerated(true)}
