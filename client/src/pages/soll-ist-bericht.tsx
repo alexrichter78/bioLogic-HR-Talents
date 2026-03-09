@@ -231,8 +231,8 @@ export default function SollIstBericht() {
               data-testid="button-toggle-profilvergleich"
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <CheckCircle2 className="w-5 h-5" style={{ color: "#3A9A5C", flexShrink: 0 }} />
-                <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.14em", textTransform: "uppercase", margin: 0 }}>
+                <CheckCircle2 className="w-[18px] h-[18px]" style={{ color: "#3A9A5C", flexShrink: 0 }} />
+                <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", letterSpacing: "0.01em", margin: 0 }}>
                   Profilvergleich
                 </p>
               </div>
@@ -454,8 +454,8 @@ export default function SollIstBericht() {
                     data-testid="button-toggle-systemwirkung"
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <CheckCircle2 className="w-5 h-5" style={{ color: "#3A9A5C", flexShrink: 0 }} />
-                      <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.14em", textTransform: "uppercase", margin: 0 }}>
+                      <CheckCircle2 className="w-[18px] h-[18px]" style={{ color: "#3A9A5C", flexShrink: 0 }} />
+                      <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", letterSpacing: "0.01em", margin: 0 }}>
                         MatchCheck — Systemwirkung
                       </p>
                     </div>
