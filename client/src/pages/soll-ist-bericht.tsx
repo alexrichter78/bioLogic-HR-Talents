@@ -384,25 +384,22 @@ export default function SollIstBericht() {
             const sameDom = roleDomKey === candDomKey;
             const totalGap = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).reduce((sum, k) => sum + Math.abs(roleTriad[k] - candTriad[k]), 0);
 
-            const DUAL_THRESH = 6;
             const roleSorted = [roleTriad.impulsiv, roleTriad.intuitiv, roleTriad.analytisch].sort((a, b) => b - a);
             const candSorted = [candTriad.impulsiv, candTriad.intuitiv, candTriad.analytisch].sort((a, b) => b - a);
             const roleSecGap = roleSorted[1] - roleSorted[2];
             const candSecGap = candSorted[1] - candSorted[2];
-            const roleHasDual = roleSecGap < DUAL_THRESH;
-            const candHasDual = candSecGap < DUAL_THRESH;
+            const secGapDiff = Math.abs(roleSecGap - candSecGap);
             const rolePrimGap = roleSorted[0] - roleSorted[1];
             const candPrimGap = candSorted[0] - candSorted[1];
-            const roleHasPrimDual = rolePrimGap < DUAL_THRESH;
-            const candHasPrimDual = candPrimGap < DUAL_THRESH;
-            const structureMismatch = (candHasDual !== roleHasDual) || (candHasPrimDual !== roleHasPrimDual);
+            const primGapDiff = Math.abs(rolePrimGap - candPrimGap);
+            const structureDiff = Math.max(secGapDiff, primGapDiff);
 
             const fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > 20 ? "Bedingt geeignet" : "Geeignet";
             const fitColor = totalGap > 40 ? "#D64045" : totalGap > 20 ? "#E5A832" : "#3A9A5C";
 
-            const fazitText = sameDom && totalGap <= 20 && !structureMismatch
+            const fazitText = sameDom && totalGap <= 20 && structureDiff <= 4
               ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
-              : sameDom && totalGap <= 20 && structureMismatch
+              : sameDom && totalGap <= 20 && structureDiff > 4
               ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur unterscheidet sich. Konkurrierende Komponenten erzeugen innere Spannung und machen das Verhalten in Drucksituationen weniger vorhersehbar."
               : sameDom
               ? "Die Grundausrichtung ist ähnlich, es bestehen jedoch spürbare Unterschiede in der Intensität. Mit gezielter Führung lässt sich die Zusammenarbeit stabil gestalten."
@@ -418,8 +415,8 @@ export default function SollIstBericht() {
             else if (totalGap <= 40) devScore = 2;
             else devScore = 1;
 
-            if (structureMismatch && devScore > 4) devScore = 4;
-            if (structureMismatch && devScore > 1) devScore = Math.max(devScore - 1, 1);
+            if (structureDiff >= 12) devScore = Math.max(devScore - 2, 1);
+            else if (structureDiff >= 6) devScore = Math.max(devScore - 1, 1);
 
             if (fitLabel === "Bedingt geeignet" && devScore > 3) devScore = 3;
             if (fitLabel === "Nicht geeignet" && devScore > 2) devScore = 2;
@@ -658,21 +655,22 @@ export default function SollIstBericht() {
                 const cTriad = result.candTriad;
                 const rSorted = [rTriad.impulsiv, rTriad.intuitiv, rTriad.analytisch].sort((a, b) => b - a);
                 const cSorted = [cTriad.impulsiv, cTriad.intuitiv, cTriad.analytisch].sort((a, b) => b - a);
-                const DT = 6;
                 const rSecGap = rSorted[1] - rSorted[2];
                 const cSecGap = cSorted[1] - cSorted[2];
                 const rPrimGap = rSorted[0] - rSorted[1];
                 const cPrimGap = cSorted[0] - cSorted[1];
-                const sMismatch = (cSecGap < DT) !== (rSecGap < DT) || (cPrimGap < DT) !== (rPrimGap < DT);
+                const rSecGapDiff = Math.abs(rSecGap - cSecGap);
+                const rPrimGapDiff = Math.abs(rPrimGap - cPrimGap);
+                const rStructDiff = Math.max(rSecGapDiff, rPrimGapDiff);
                 const tGap = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).reduce((s, k) => s + Math.abs(rTriad[k] - cTriad[k]), 0);
                 const sameD = result.roleDomKey === result.candDomKey;
 
                 const rFitLabel = tGap > 40 ? "Nicht geeignet" : tGap > 20 ? "Bedingt geeignet" : "Geeignet";
                 const rFitColor = tGap > 40 ? "#D64045" : tGap > 20 ? "#E5A832" : "#3A9A5C";
 
-                const rFazit = sameD && tGap <= 20 && !sMismatch
+                const rFazit = sameD && tGap <= 20 && rStructDiff <= 4
                   ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
-                  : sameD && tGap <= 20 && sMismatch
+                  : sameD && tGap <= 20 && rStructDiff > 4
                   ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur unterscheidet sich. Konkurrierende Komponenten erzeugen innere Spannung und machen das Verhalten in Drucksituationen weniger vorhersehbar."
                   : sameD
                   ? "Die Grundausrichtung ist ähnlich, es bestehen jedoch spürbare Unterschiede in der Intensität. Mit gezielter Führung lässt sich die Zusammenarbeit stabil gestalten."
@@ -687,8 +685,8 @@ export default function SollIstBericht() {
                 else if (tGap <= 30) rDev = 3;
                 else if (tGap <= 40) rDev = 2;
                 else rDev = 1;
-                if (sMismatch && rDev > 4) rDev = 4;
-                if (sMismatch && rDev > 1) rDev = Math.max(rDev - 1, 1);
+                if (rStructDiff >= 12) rDev = Math.max(rDev - 2, 1);
+                else if (rStructDiff >= 6) rDev = Math.max(rDev - 1, 1);
                 if (rFitLabel === "Bedingt geeignet" && rDev > 3) rDev = 3;
                 if (rFitLabel === "Nicht geeignet" && rDev > 2) rDev = 2;
                 if (rFitLabel === "Geeignet" && rDev < 3) rDev = 3;
