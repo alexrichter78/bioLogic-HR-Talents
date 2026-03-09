@@ -231,10 +231,10 @@ export default function SollIstBericht() {
               data-testid="button-toggle-profilvergleich"
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <CheckCircle2 className="w-[18px] h-[18px]" style={{ color: "#3A9A5C", flexShrink: 0 }} />
-                <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", letterSpacing: "0.01em", margin: 0 }}>
+                <CheckCircle2 style={{ width: 22, height: 22, color: "#3A9A5C", flexShrink: 0 }} />
+                <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
                   Profilvergleich
-                </p>
+                </span>
               </div>
               <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${profilvergleichOpen ? "rotate-180" : ""}`} />
             </button>
@@ -454,10 +454,10 @@ export default function SollIstBericht() {
                     data-testid="button-toggle-systemwirkung"
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <CheckCircle2 className="w-[18px] h-[18px]" style={{ color: "#3A9A5C", flexShrink: 0 }} />
-                      <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", letterSpacing: "0.01em", margin: 0 }}>
+                      <CheckCircle2 style={{ width: 22, height: 22, color: "#3A9A5C", flexShrink: 0 }} />
+                      <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
                         MatchCheck — Systemwirkung
-                      </p>
+                      </span>
                     </div>
                     <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${systemwirkungOpen ? "rotate-180" : ""}`} />
                   </button>
