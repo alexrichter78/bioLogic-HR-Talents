@@ -464,33 +464,36 @@ export default function SollIstBericht() {
 
                   {systemwirkungOpen && (
                   <div style={{ padding: "0 32px 28px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
-                      <div style={{ width: 18, height: 18, borderRadius: 9, background: fitColor, flexShrink: 0, boxShadow: `0 0 0 4px ${fitColor}20` }} />
-                      <div style={{ flex: 1 }}>
-                        <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-summary-role">{roleName || "Rolle"}</span>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
+                          <div style={{ width: 18, height: 18, borderRadius: 9, background: fitColor, flexShrink: 0, boxShadow: `0 0 0 4px ${fitColor}20` }} />
+                          <div style={{ flex: 1 }}>
+                            <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-summary-role">{roleName || "Rolle"}</span>
+                          </div>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: fitColor, letterSpacing: "0.03em" }} data-testid="text-summary-fit">
+                            {fitLabel}
+                          </span>
+                        </div>
+                        <div style={{ background: `${fitColor}08`, borderLeft: `3px solid ${fitColor}`, borderRadius: "0 8px 8px 0", padding: "12px 16px" }}>
+                          <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: 0 }} data-testid="text-summary-fazit">{fazitText}</p>
+                        </div>
                       </div>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: fitColor, letterSpacing: "0.03em" }} data-testid="text-summary-fit">
-                        {fitLabel}
-                      </span>
-                    </div>
 
-                    <div style={{ background: `${fitColor}08`, borderLeft: `3px solid ${fitColor}`, borderRadius: "0 8px 8px 0", padding: "12px 16px", marginBottom: 0 }}>
-                      <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: 0 }} data-testid="text-summary-fazit">{fazitText}</p>
-                    </div>
-
-                    <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", marginTop: 24, paddingTop: 24 }}>
-                      <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 14px" }}>
-                        Entwicklungsprognose
-                      </p>
-                      <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }} data-testid="text-dev-prognose">
-                        {devScore} von 6 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>– {devLabels[devScore]}</span>
-                      </p>
-                      <div style={{ display: "flex", gap: 5, marginBottom: 18 }} data-testid="gauge-dev-prognose">
-                        {Array.from({ length: 6 }).map((_, i) => (
-                          <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)" }} />
-                        ))}
+                      <div style={{ borderLeft: "1px solid rgba(0,0,0,0.06)", paddingLeft: 24 }}>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 14px" }}>
+                          Entwicklungsprognose
+                        </p>
+                        <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }} data-testid="text-dev-prognose">
+                          {devScore} von 6 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>– {devLabels[devScore]}</span>
+                        </p>
+                        <div style={{ display: "flex", gap: 5, marginBottom: 18 }} data-testid="gauge-dev-prognose">
+                          {Array.from({ length: 6 }).map((_, i) => (
+                            <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)" }} />
+                          ))}
+                        </div>
+                        <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.75, margin: 0 }} data-testid="text-dev-description">{devTexts[devScore]}</p>
                       </div>
-                      <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.75, margin: 0 }} data-testid="text-dev-description">{devTexts[devScore]}</p>
                     </div>
                   </div>
                   )}
