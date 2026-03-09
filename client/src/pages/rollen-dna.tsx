@@ -1658,10 +1658,10 @@ export default function RollenDNA() {
             <div className="w-full mx-auto px-6" style={{ maxWidth: 1100 }}>
               <div className="text-center mt-2 mb-1">
                 <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-rollen-dna-title">
-                  Rollen-DNA erfassen
+                  Rollenprofil definieren
                 </h1>
                 <p style={{ fontSize: 13, color: "#8E8E93", fontWeight: 450, margin: 0 }} data-testid="text-rollen-dna-subtitle">
-                  Strukturprofil der Rolle definieren und Entscheidungsgrundlage erstellen.
+                  Erfassen Sie die Anforderungen und Arbeitslogik der Position als Grundlage für den Entscheidungsbericht, die Passungsanalyse zur Rolle und Person sowie den TeamCheck.
                 </p>
               </div>
 
