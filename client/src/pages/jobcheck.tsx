@@ -598,9 +598,10 @@ export default function JobCheck() {
                   Rollenprofil erfolgreich erstellt
                 </h1>
               </div>
-              <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 20, marginLeft: 32, fontWeight: 400 }} data-testid="text-jobcheck-position">
-                Das Rollenprofil wurde erfolgreich erstellt.
-              </p>
+              <div style={{ marginLeft: 32, marginBottom: 20, display: "flex", flexDirection: "column", gap: 1 }}>
+                <span style={{ fontSize: 13, color: "#6E6E73" }}>Rolle: {dnaSummary?.beruf || roleAnalysis.job_title}</span>
+                <span style={{ fontSize: 13, color: "#6E6E73" }}><strong style={{ color: "#1D1D1F" }}>Führungsverantwortung:</strong> {dnaSummary?.fuehrung && dnaSummary.fuehrung !== "Keine" ? "Ja" : "Nein"}</span>
+              </div>
 
               {dnaSummary && (
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }} data-testid="dna-summary-grid">
