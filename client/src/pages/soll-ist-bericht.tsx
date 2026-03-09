@@ -388,12 +388,13 @@ export default function SollIstBericht() {
             const candSorted = [candTriad.impulsiv, candTriad.intuitiv, candTriad.analytisch].sort((a, b) => b - a);
             const secGapDiff = Math.abs((roleSorted[1] - roleSorted[2]) - (candSorted[1] - candSorted[2]));
 
-            const fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > 20 ? "Bedingt geeignet" : "Geeignet";
-            const fitColor = totalGap > 40 ? "#D64045" : totalGap > 20 ? "#E5A832" : "#3A9A5C";
+            const geignetLimit = sameDom ? 28 : 20;
+            const fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
+            const fitColor = totalGap > 40 ? "#D64045" : totalGap > geignetLimit ? "#E5A832" : "#3A9A5C";
 
-            const fazitText = sameDom && totalGap <= 20 && secGapDiff < 6
+            const fazitText = sameDom && totalGap <= geignetLimit && secGapDiff < 6
               ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
-              : sameDom && totalGap <= 20 && secGapDiff >= 6
+              : sameDom && totalGap <= geignetLimit && secGapDiff >= 6
               ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur unterscheidet sich. Konkurrierende Komponenten erzeugen innere Spannung und machen das Verhalten in Drucksituationen weniger vorhersehbar."
               : sameDom
               ? "Die Grundausrichtung ist ähnlich, es bestehen jedoch spürbare Unterschiede in der Intensität. Mit gezielter Führung lässt sich die Zusammenarbeit stabil gestalten."
@@ -648,12 +649,13 @@ export default function SollIstBericht() {
                 const tGap = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).reduce((s, k) => s + Math.abs(rTriad[k] - cTriad[k]), 0);
                 const sameD = result.roleDomKey === result.candDomKey;
 
-                const rFitLabel = tGap > 40 ? "Nicht geeignet" : tGap > 20 ? "Bedingt geeignet" : "Geeignet";
-                const rFitColor = tGap > 40 ? "#D64045" : tGap > 20 ? "#E5A832" : "#3A9A5C";
+                const rGeignetLimit = sameD ? 28 : 20;
+                const rFitLabel = tGap > 40 ? "Nicht geeignet" : tGap > rGeignetLimit ? "Bedingt geeignet" : "Geeignet";
+                const rFitColor = tGap > 40 ? "#D64045" : tGap > rGeignetLimit ? "#E5A832" : "#3A9A5C";
 
-                const rFazit = sameD && tGap <= 20 && rSecGapDiff < 6
+                const rFazit = sameD && tGap <= rGeignetLimit && rSecGapDiff < 6
                   ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
-                  : sameD && tGap <= 20 && rSecGapDiff >= 6
+                  : sameD && tGap <= rGeignetLimit && rSecGapDiff >= 6
                   ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur unterscheidet sich. Konkurrierende Komponenten erzeugen innere Spannung und machen das Verhalten in Drucksituationen weniger vorhersehbar."
                   : sameD
                   ? "Die Grundausrichtung ist ähnlich, es bestehen jedoch spürbare Unterschiede in der Intensität. Mit gezielter Führung lässt sich die Zusammenarbeit stabil gestalten."
