@@ -378,16 +378,32 @@ export default function SollIstBericht() {
           </div>
 
           {(() => {
-            const roleDomKey = dominanceModeOf(roleTriad).top1.key;
+            const roleDom = dominanceModeOf(roleTriad);
+            const roleDomKey = roleDom.top1.key;
             const candDomKey = candDom.top1.key;
             const sameDom = roleDomKey === candDomKey;
             const totalGap = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).reduce((sum, k) => sum + Math.abs(roleTriad[k] - candTriad[k]), 0);
 
+            const DUAL_THRESH = 6;
+            const roleSorted = [roleTriad.impulsiv, roleTriad.intuitiv, roleTriad.analytisch].sort((a, b) => b - a);
+            const candSorted = [candTriad.impulsiv, candTriad.intuitiv, candTriad.analytisch].sort((a, b) => b - a);
+            const roleSecGap = roleSorted[1] - roleSorted[2];
+            const candSecGap = candSorted[1] - candSorted[2];
+            const roleHasDual = roleSecGap < DUAL_THRESH;
+            const candHasDual = candSecGap < DUAL_THRESH;
+            const rolePrimGap = roleSorted[0] - roleSorted[1];
+            const candPrimGap = candSorted[0] - candSorted[1];
+            const roleHasPrimDual = rolePrimGap < DUAL_THRESH;
+            const candHasPrimDual = candPrimGap < DUAL_THRESH;
+            const structureMismatch = (candHasDual !== roleHasDual) || (candHasPrimDual !== roleHasPrimDual);
+
             const fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > 20 ? "Bedingt geeignet" : "Geeignet";
             const fitColor = totalGap > 40 ? "#D64045" : totalGap > 20 ? "#E5A832" : "#3A9A5C";
 
-            const fazitText = sameDom && totalGap <= 20
+            const fazitText = sameDom && totalGap <= 20 && !structureMismatch
               ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
+              : sameDom && totalGap <= 20 && structureMismatch
+              ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur unterscheidet sich. Konkurrierende Komponenten erzeugen innere Spannung und machen das Verhalten in Drucksituationen weniger vorhersehbar."
               : sameDom
               ? "Die Grundausrichtung ist ähnlich, es bestehen jedoch spürbare Unterschiede in der Intensität. Mit gezielter Führung lässt sich die Zusammenarbeit stabil gestalten."
               : totalGap > 40
@@ -401,6 +417,9 @@ export default function SollIstBericht() {
             else if (totalGap <= 30) devScore = 3;
             else if (totalGap <= 40) devScore = 2;
             else devScore = 1;
+
+            if (structureMismatch && devScore > 4) devScore = 4;
+            if (structureMismatch && devScore > 1) devScore = Math.max(devScore - 1, 1);
 
             const devTexts: Record<number, string> = {
               1: "Die grundlegende Arbeitslogik der Person unterscheidet sich stark von den Anforderungen der Rolle. Eine stabile Anpassung ist daher nur sehr eingeschränkt zu erwarten.",
