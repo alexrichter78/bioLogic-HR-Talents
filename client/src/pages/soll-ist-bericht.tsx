@@ -218,7 +218,7 @@ export default function SollIstBericht() {
         </div>
       )}
 
-      <div className="mx-auto px-5" style={{ maxWidth: 1100, paddingTop: !reportGenerated ? 135 : 40, paddingBottom: 40 }}>
+      <div className="mx-auto px-6" style={{ maxWidth: 1100, paddingTop: !reportGenerated ? 135 : 40, paddingBottom: 40 }}>
 
         {/* === INPUT: Slider area before report === */}
         {!reportGenerated && (<>
