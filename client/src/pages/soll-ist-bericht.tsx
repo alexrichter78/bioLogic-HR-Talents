@@ -131,8 +131,7 @@ export default function SollIstBericht() {
   const [roleTriad, setRoleTriad] = useState<Triad | null>(null);
   const [hasRollenDna, setHasRollenDna] = useState(false);
   const [reportGenerated, setReportGenerated] = useState(false);
-  const [sollOpen, setSollOpen] = useState(true);
-  const [istOpen, setIstOpen] = useState(true);
+  const [systemwirkungOpen, setSystemwirkungOpen] = useState(true);
   const [fuehrungsArt, setFuehrungsArt] = useState<FuehrungsArt>("keine");
 
   useEffect(() => {
@@ -231,70 +230,51 @@ export default function SollIstBericht() {
             </div>
 
             <div className="grid gap-6 lg:grid-cols-2">
-              <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden" data-testid="card-soll-profil">
-                <button
-                  onClick={() => setSollOpen(!sollOpen)}
-                  className="w-full flex items-center justify-between p-6 cursor-pointer hover:bg-slate-50/60 transition-colors"
-                  style={{ border: "none", background: "transparent" }}
-                  data-testid="button-toggle-soll"
-                >
-                  <p className="text-base font-semibold text-slate-900 m-0">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
-                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${sollOpen ? "rotate-180" : ""}`} />
-                </button>
-                {sollOpen && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "0 24px 24px" }}>
-                    {roleProfile.map(item => {
-                      const hex = item.hex;
-                      const widthPct = (item.value / 67) * 100;
-                      const isSmall = widthPct < 18;
-                      return (
-                        <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                          <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>
-                            {item.label}
-                          </span>
-                          <div style={{ flex: 1, position: "relative", height: 26 }}>
-                            <div style={{
-                              position: "absolute", inset: 0,
-                              borderRadius: 13, background: "rgba(0,0,0,0.06)",
-                            }} />
-                            <div style={{
-                              position: "absolute", left: 0, top: 0, bottom: 0,
-                              width: `${Math.min(Math.max(widthPct, 4), 100)}%`,
-                              borderRadius: 13, background: hex,
-                              transition: "width 600ms ease",
-                              display: "flex", alignItems: "center", paddingLeft: 10,
-                              minWidth: isSmall ? 8 : 50,
-                            }}>
-                              {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(item.value)} %</span>}
-                            </div>
-                            {isSmall && (
-                              <span style={{
-                                position: "absolute", top: "50%", transform: "translateY(-50%)",
-                                left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
-                                fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
-                                transition: "left 600ms ease",
-                              }}>{Math.round(item.value)} %</span>
-                            )}
+              <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="card-soll-profil">
+                <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                  {roleProfile.map(item => {
+                    const hex = item.hex;
+                    const widthPct = (item.value / 67) * 100;
+                    const isSmall = widthPct < 18;
+                    return (
+                      <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>
+                          {item.label}
+                        </span>
+                        <div style={{ flex: 1, position: "relative", height: 26 }}>
+                          <div style={{
+                            position: "absolute", inset: 0,
+                            borderRadius: 13, background: "rgba(0,0,0,0.06)",
+                          }} />
+                          <div style={{
+                            position: "absolute", left: 0, top: 0, bottom: 0,
+                            width: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+                            borderRadius: 13, background: hex,
+                            transition: "width 600ms ease",
+                            display: "flex", alignItems: "center", paddingLeft: 10,
+                            minWidth: isSmall ? 8 : 50,
+                          }}>
+                            {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(item.value)} %</span>}
                           </div>
+                          {isSmall && (
+                            <span style={{
+                              position: "absolute", top: "50%", transform: "translateY(-50%)",
+                              left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
+                              fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
+                              transition: "left 600ms ease",
+                            }}>{Math.round(item.value)} %</span>
+                          )}
                         </div>
-                      );
-                    })}
-                  </div>
-                )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden" data-testid="card-ist-profil">
-                <button
-                  onClick={() => setIstOpen(!istOpen)}
-                  className="w-full flex items-center justify-between p-6 cursor-pointer hover:bg-slate-50/60 transition-colors"
-                  style={{ border: "none", background: "transparent" }}
-                  data-testid="button-toggle-ist"
-                >
-                  <p className="text-base font-semibold text-slate-900 m-0">Ist-Profil <span className="font-normal text-slate-500">(Kandidat)</span></p>
-                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${istOpen ? "rotate-180" : ""}`} />
-                </button>
-                {istOpen && (
-                <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "0 24px 24px" }}>
+              <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="card-ist-profil">
+                <p className="text-base font-semibold text-slate-900 mb-6">Ist-Profil <span className="font-normal text-slate-500">(Kandidat)</span></p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                     const val = candTriad[k];
                     const hex = BAR_HEX[k];
@@ -382,7 +362,6 @@ export default function SollIstBericht() {
                     );
                   })}
                 </div>
-                )}
               </div>
             </div>
 
@@ -454,40 +433,52 @@ export default function SollIstBericht() {
 
             return (
               <div style={{ marginTop: 20 }} data-testid="section-summary-card">
-                <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.14em", textTransform: "uppercase", textAlign: "center", margin: "0 0 12px" }}>
-                  MatchCheck — Systemwirkung
-                </p>
-                <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "28px 32px", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
-
-                  <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
-                    <div style={{ width: 18, height: 18, borderRadius: 9, background: fitColor, flexShrink: 0, boxShadow: `0 0 0 4px ${fitColor}20` }} />
-                    <div style={{ flex: 1 }}>
-                      <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-summary-role">{roleName || "Rolle"}</span>
-                    </div>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: fitColor, letterSpacing: "0.03em" }} data-testid="text-summary-fit">
-                      {fitLabel}
-                    </span>
-                  </div>
-
-                  <div style={{ background: `${fitColor}08`, borderLeft: `3px solid ${fitColor}`, borderRadius: "0 8px 8px 0", padding: "12px 16px", marginBottom: 0 }}>
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: 0 }} data-testid="text-summary-fazit">{fazitText}</p>
-                  </div>
-
-                  <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", marginTop: 24, paddingTop: 24 }}>
-                    <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 14px" }}>
-                      Entwicklungsprognose
+                <div style={{ background: "#FFFFFF", borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", overflow: "hidden" }}>
+                  <button
+                    onClick={() => setSystemwirkungOpen(!systemwirkungOpen)}
+                    style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.02)"; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+                    data-testid="button-toggle-systemwirkung"
+                  >
+                    <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.14em", textTransform: "uppercase", margin: 0 }}>
+                      MatchCheck — Systemwirkung
                     </p>
-                    <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }} data-testid="text-dev-prognose">
-                      {devScore} von 6 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>– {devLabels[devScore]}</span>
-                    </p>
-                    <div style={{ display: "flex", gap: 5, marginBottom: 18 }} data-testid="gauge-dev-prognose">
-                      {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)" }} />
-                      ))}
-                    </div>
-                    <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.75, margin: 0 }} data-testid="text-dev-description">{devTexts[devScore]}</p>
-                  </div>
+                    <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${systemwirkungOpen ? "rotate-180" : ""}`} />
+                  </button>
 
+                  {systemwirkungOpen && (
+                  <div style={{ padding: "0 32px 28px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
+                      <div style={{ width: 18, height: 18, borderRadius: 9, background: fitColor, flexShrink: 0, boxShadow: `0 0 0 4px ${fitColor}20` }} />
+                      <div style={{ flex: 1 }}>
+                        <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-summary-role">{roleName || "Rolle"}</span>
+                      </div>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: fitColor, letterSpacing: "0.03em" }} data-testid="text-summary-fit">
+                        {fitLabel}
+                      </span>
+                    </div>
+
+                    <div style={{ background: `${fitColor}08`, borderLeft: `3px solid ${fitColor}`, borderRadius: "0 8px 8px 0", padding: "12px 16px", marginBottom: 0 }}>
+                      <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: 0 }} data-testid="text-summary-fazit">{fazitText}</p>
+                    </div>
+
+                    <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", marginTop: 24, paddingTop: 24 }}>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 14px" }}>
+                        Entwicklungsprognose
+                      </p>
+                      <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }} data-testid="text-dev-prognose">
+                        {devScore} von 6 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>– {devLabels[devScore]}</span>
+                      </p>
+                      <div style={{ display: "flex", gap: 5, marginBottom: 18 }} data-testid="gauge-dev-prognose">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                          <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)" }} />
+                        ))}
+                      </div>
+                      <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.75, margin: 0 }} data-testid="text-dev-description">{devTexts[devScore]}</p>
+                    </div>
+                  </div>
+                  )}
                 </div>
               </div>
             );
