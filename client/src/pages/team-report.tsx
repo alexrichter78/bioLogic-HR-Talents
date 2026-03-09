@@ -227,6 +227,58 @@ function Prose({ text }: { text: string }) {
   );
 }
 
+function StaticBarGroup({ title, triad }: {
+  title: string;
+  triad: { impulsiv: number; intuitiv: number; analytisch: number };
+}) {
+  const dom = dominanceModeOf(triad);
+  return (
+    <div>
+      <div className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500 mb-2">{title}</div>
+      <div className="text-xs text-slate-500 mb-4">{dominanceLabel(dom)}</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(key => {
+          const val = triad[key];
+          const hex = BAR_HEX[key];
+          const widthPct = (val / 67) * 100;
+          const isSmall = widthPct < 18;
+          return (
+            <div key={key} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>
+                {labelComponent(key)}
+              </span>
+              <div style={{ flex: 1, position: "relative", height: 26 }}>
+                <div style={{
+                  position: "absolute", inset: 0,
+                  borderRadius: 13, background: "rgba(0,0,0,0.06)",
+                }} />
+                <div style={{
+                  position: "absolute", left: 0, top: 0, bottom: 0,
+                  width: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+                  borderRadius: 13, background: hex,
+                  transition: "width 600ms ease",
+                  display: "flex", alignItems: "center", paddingLeft: 10,
+                  minWidth: isSmall ? 8 : 50,
+                }}>
+                  {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>}
+                </div>
+                {isSmall && (
+                  <span style={{
+                    position: "absolute", top: "50%", transform: "translateY(-50%)",
+                    left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
+                    fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
+                    transition: "left 600ms ease",
+                  }}>{val} %</span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function SliderGroup({
   title, triad, onTriadChange, testIdPrefix,
 }: {
@@ -493,8 +545,7 @@ export default function TeamReport() {
           }}>
             <div style={{ padding: "0 24px 24px" }}>
               <div className="grid gap-8 lg:grid-cols-2">
-                <SliderGroup title="Ist-Profil (Person)" triad={istTriad}
-                  onTriadChange={updateIstTriad} testIdPrefix="ist" />
+                <StaticBarGroup title="Ist-Profil (Person)" triad={istTriad} />
                 <SliderGroup title="Teamprofil" triad={teamTriad}
                   onTriadChange={updateTeamTriad} testIdPrefix="team" />
               </div>
