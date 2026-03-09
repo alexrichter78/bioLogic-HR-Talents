@@ -359,14 +359,7 @@ export default function SollIstBericht() {
               </div>
             </div>
 
-            <div className="mt-8 flex items-center justify-between">
-              <button
-                onClick={() => setLocation("/jobcheck")}
-                className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-5 text-sm font-medium text-blue-600 hover:bg-slate-50 transition-colors"
-                data-testid="button-back"
-              >
-                <ChevronLeft className="w-4 h-4" /> Zurück
-              </button>
+            <div className="mt-8 flex items-center justify-end">
               <button
                 onClick={() => setReportGenerated(true)}
                 className="inline-flex h-12 items-center gap-2 rounded-2xl bg-blue-600 px-8 text-[15px] font-semibold text-white shadow-md hover:bg-blue-700 transition-colors"
