@@ -69,6 +69,7 @@ function calcBioGram(items: Taetigkeit[]): BioGram {
 type ResultKey =
   | "IMP_INT_ANA" | "IMP_ANA_INT" | "INT_IMP_ANA" | "INT_ANA_IMP" | "ANA_IMP_INT" | "ANA_INT_IMP"
   | "IMP_INT__ANA" | "IMP_ANA__INT" | "INT_IMP__ANA" | "INT_ANA__IMP" | "ANA_IMP__INT" | "ANA_INT__IMP"
+  | "BD_IMP" | "BD_INT" | "BD_ANA"
   | "BALANCED";
 
 type RoleResultEntry = { headline: string; body: string[]; leadership: string };
@@ -112,6 +113,9 @@ function getRoleAnalysis(imp: number, int: number, ana: number): RoleAnalysis {
     dominanceType = "balanced";
   } else if (topGap <= DUAL_THRESHOLD) {
     resultKey = `${vals[0].key}_${vals[1].key}__${vals[2].key}` as ResultKey;
+    dominanceType = "dual";
+  } else if (bottomGap <= DUAL_THRESHOLD) {
+    resultKey = `BD_${vals[0].key}` as ResultKey;
     dominanceType = "dual";
   } else {
     resultKey = `${vals[0].key}_${vals[1].key}_${vals[2].key}` as ResultKey;
@@ -275,6 +279,33 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
       "Diese Kombination sorgt daf\u00fcr, dass Ordnung und Austausch nicht nur stabilisieren, sondern auch in konkrete Schritte \u00fcberf\u00fchrt werden k\u00f6nnen.",
     ],
     leadership: "In der F\u00fchrungsarbeit zeigt sich das durch nachvollziehbare Entscheidungen, ruhige Steuerung und eine gute Einbindung des Teams.",
+  },
+  BD_IMP: {
+    headline: "Impulsiv \u2013 Intuitiv / Analytisch",
+    body: [
+      "Im Arbeitsalltag wird diese Rolle vor allem durch Handlungsorientierung und Entscheidungsbereitschaft gepr\u00e4gt. Themen werden aktiv aufgegriffen und vorangebracht.",
+      "Wenn der Druck steigt, k\u00f6nnen zwei unterschiedliche Reaktionsweisen sichtbar werden. Entweder wird st\u00e4rker der Austausch mit anderen gesucht oder es entsteht ein gr\u00f6\u00dferes Bed\u00fcrfnis nach Struktur und Ordnung.",
+      "Diese Kombination sorgt daf\u00fcr, dass Entscheidungen sowohl im Dialog als auch \u00fcber klare Abl\u00e4ufe abgesichert werden k\u00f6nnen.",
+    ],
+    leadership: "In der F\u00fchrungsarbeit zeigt sich das durch klare Entscheidungen, offene Kommunikation und eine flexible Anpassung an unterschiedliche Situationen.",
+  },
+  BD_INT: {
+    headline: "Intuitiv \u2013 Analytisch / Impulsiv",
+    body: [
+      "Im Arbeitsalltag steht vor allem Zusammenarbeit und Austausch mit anderen im Mittelpunkt. Gespr\u00e4che und Abstimmung pr\u00e4gen die Arbeitsweise.",
+      "Wenn der Druck steigt, kann sich das Verhalten in zwei Richtungen entwickeln: entweder \u00fcber mehr Struktur und Planung oder \u00fcber schnellere Entscheidungen.",
+      "Diese Kombination sorgt daf\u00fcr, dass Zusammenarbeit sowohl durch klare Abl\u00e4ufe als auch durch aktive Entscheidungen unterst\u00fctzt werden kann.",
+    ],
+    leadership: "In der F\u00fchrungsarbeit zeigt sich das durch offene Kommunikation, klare Orientierung und die F\u00e4higkeit, auf unterschiedliche Situationen flexibel zu reagieren.",
+  },
+  BD_ANA: {
+    headline: "Analytisch \u2013 Impulsiv / Intuitiv",
+    body: [
+      "Im Arbeitsalltag pr\u00e4gen vor allem Struktur, Planung und fachliche Klarheit die Arbeitsweise. Themen werden sorgf\u00e4ltig gepr\u00fcft und vorbereitet.",
+      "Wenn der Druck steigt, kann sich das Verhalten zwischen schnelleren Entscheidungen und verst\u00e4rkter Abstimmung mit anderen bewegen.",
+      "Diese Kombination sorgt daf\u00fcr, dass Entscheidungen sowohl durch klare Analyse als auch durch situatives Handeln unterst\u00fctzt werden.",
+    ],
+    leadership: "In der F\u00fchrungsarbeit zeigt sich das durch klare Strukturen, nachvollziehbare Entscheidungen und eine flexible Steuerung der Zusammenarbeit.",
   },
   BALANCED: {
     headline: "Ausgeglichenes Profil",
