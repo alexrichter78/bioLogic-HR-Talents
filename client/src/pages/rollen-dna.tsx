@@ -1654,9 +1654,9 @@ export default function RollenDNA() {
         />
         <GlobalNav />
         <div style={{ position: "fixed", top: 55, left: 0, right: 0, zIndex: 8999 }}>
-          <div className="dark:!bg-background pb-2" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", paddingTop: 1 }}>
+          <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: "5px 0 10px" }}>
             <div className="w-full mx-auto px-6" style={{ maxWidth: 1100 }}>
-              <div className="text-center mt-2 mb-1">
+              <div className="text-center">
                 <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-rollen-dna-title">
                   Rollenprofil definieren
                 </h1>
