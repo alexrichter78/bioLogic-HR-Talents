@@ -2918,7 +2918,7 @@ export default function RollenDNA() {
                       border: "none",
                       cursor: "pointer",
                       background: "transparent",
-                      color: "#6E6E73",
+                      color: "#2563EB",
                       transition: "all 200ms ease",
                       display: "flex",
                       alignItems: "center",
@@ -2926,11 +2926,11 @@ export default function RollenDNA() {
                       justifyContent: "center",
                     }}
                     onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.color = "#1D1D1F";
-                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.04)";
+                      (e.currentTarget as HTMLButtonElement).style.color = "#1D4ED8";
+                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(37,99,235,0.06)";
                     }}
                     onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.color = "#6E6E73";
+                      (e.currentTarget as HTMLButtonElement).style.color = "#2563EB";
                       (e.currentTarget as HTMLButtonElement).style.background = "transparent";
                     }}
                     data-testid="button-rolle-bearbeiten"
