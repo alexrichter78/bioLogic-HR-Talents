@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation } from "wouter";
-import { AlertTriangle, Download, ChevronLeft, ChevronDown } from "lucide-react";
+import { AlertTriangle, Download, ChevronLeft, ChevronDown, CheckCircle2 } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { dominanceModeOf, labelComponent } from "@/lib/jobcheck-engine";
 import { computeSollIst, mapFuehrungsArt } from "@/lib/soll-ist-engine";
@@ -230,9 +230,12 @@ export default function SollIstBericht() {
               onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
               data-testid="button-toggle-profilvergleich"
             >
-              <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.14em", textTransform: "uppercase", margin: 0 }}>
-                Profilvergleich
-              </p>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <CheckCircle2 className="w-5 h-5" style={{ color: "#3A9A5C", flexShrink: 0 }} />
+                <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.14em", textTransform: "uppercase", margin: 0 }}>
+                  Profilvergleich
+                </p>
+              </div>
               <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${profilvergleichOpen ? "rotate-180" : ""}`} />
             </button>
 
@@ -450,9 +453,12 @@ export default function SollIstBericht() {
                     onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
                     data-testid="button-toggle-systemwirkung"
                   >
-                    <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.14em", textTransform: "uppercase", margin: 0 }}>
-                      MatchCheck — Systemwirkung
-                    </p>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <CheckCircle2 className="w-5 h-5" style={{ color: "#3A9A5C", flexShrink: 0 }} />
+                      <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.14em", textTransform: "uppercase", margin: 0 }}>
+                        MatchCheck — Systemwirkung
+                      </p>
+                    </div>
                     <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${systemwirkungOpen ? "rotate-180" : ""}`} />
                   </button>
 
