@@ -97,25 +97,28 @@ function classifyProfile(bg: BG): { type: ProfileType; intensity: Intensity } {
     { key: "ana", value: bg.ana },
   ].sort((a, b) => b.value - a.value || SORT_PRIORITY[a.key] - SORT_PRIORITY[b.key]);
   const [max, second, third] = vals;
-  const gap12 = max.value - second.value;
-  const gap23 = second.value - third.value;
-  const abII = Math.abs(bg.imp - bg.int);
-  const abIA = Math.abs(bg.imp - bg.ana);
-  const abNA = Math.abs(bg.int - bg.ana);
+  const gap1 = max.value - second.value;
+  const gap2 = second.value - third.value;
 
-  if (abII <= 6 && abIA <= 6 && abNA <= 6) return { type: "balanced_all", intensity: "balanced" };
-  if (max.value >= 55) return { type: `strong_${max.key}` as ProfileType, intensity: "strong" };
-  if (gap12 >= 8) return { type: `dominant_${max.key}` as ProfileType, intensity: "clear" };
-  if (gap12 <= 5 && gap23 > 5) {
+  const isExtreme = max.value >= 60 || gap1 >= 18;
+  const isClear = gap1 >= 8;
+  const isDual = gap1 <= 4 && gap2 >= 6;
+  const isFullBal = gap1 <= 5 && gap2 <= 5;
+  const isBalTendency = gap1 <= 7 && gap2 <= 7 && max.value > second.value;
+
+  if (isExtreme) return { type: `strong_${max.key}` as ProfileType, intensity: "strong" };
+  if (isDual) {
     const k1 = max.key, k2 = second.key;
     const hybridKey = `hybrid_${k1}_${k2}`;
     const validHybrids = ["hybrid_imp_ana", "hybrid_ana_int", "hybrid_imp_int"];
     const reverseMap: Record<string, string> = { "hybrid_ana_imp": "hybrid_imp_ana", "hybrid_int_ana": "hybrid_ana_int", "hybrid_int_imp": "hybrid_imp_int" };
     const resolved = validHybrids.includes(hybridKey) ? hybridKey : (reverseMap[hybridKey] || "hybrid_imp_ana");
-    const hybridIntensity: Intensity = gap23 >= 15 ? "strong" : gap23 >= 8 ? "clear" : "light";
+    const hybridIntensity: Intensity = gap2 >= 15 ? "strong" : gap2 >= 8 ? "clear" : "light";
     return { type: resolved as ProfileType, intensity: hybridIntensity };
   }
-  if (gap12 >= 5) return { type: `light_${max.key}` as ProfileType, intensity: "light" };
+  if (isClear) return { type: `dominant_${max.key}` as ProfileType, intensity: "clear" };
+  if (isFullBal) return { type: "balanced_all", intensity: "balanced" };
+  if (isBalTendency) return { type: `light_${max.key}` as ProfileType, intensity: "light" };
   return { type: "balanced_all", intensity: "balanced" };
 }
 
@@ -194,9 +197,9 @@ function buildStressTexts(bg: BG, isLeadership: boolean, fuehrungstyp: string) {
     { key: "ana", value: bg.ana },
   ].sort((a, b) => b.value - a.value || SORT_PRIORITY[a.key] - SORT_PRIORITY[b.key]);
   const [top, mid] = vals;
-  const gap12 = Math.round(top.value - mid.value);
-  const gap23 = Math.round(mid.value - vals[2].value);
-  const hasDualDominance = gap12 <= 5;
+  const gap12 = top.value - mid.value;
+  const gap23 = mid.value - vals[2].value;
+  const hasDualDominance = gap12 <= 4 && gap23 >= 6;
   const hasFullSymmetry = gap12 <= 5 && gap23 <= 5;
 
   const fk = isLeadership ? "Die Führungskraft" : "Die Person";
@@ -533,12 +536,12 @@ function getFazitVariant(bg: BG): number {
     { key: "ana", value: bg.ana },
   ].sort((a, b) => b.value - a.value || SORT_PRIORITY[a.key] - SORT_PRIORITY[b.key]);
   const [top, mid, bot] = vals;
-  const gap12 = Math.round(top.value - mid.value);
-  const gap23 = Math.round(mid.value - bot.value);
+  const gap1 = top.value - mid.value;
+  const gap2 = mid.value - bot.value;
 
-  if (gap12 <= 5 && gap23 <= 5) return 13;
-  if (gap12 <= 5) {
-    if (gap23 > 10) {
+  if (gap1 <= 5 && gap2 <= 5) return 13;
+  if (gap1 <= 4 && gap2 >= 6) {
+    if (gap2 > 10) {
       if ((top.key === "imp" && mid.key === "ana") || (top.key === "ana" && mid.key === "imp")) return 10;
       if ((top.key === "imp" && mid.key === "int") || (top.key === "int" && mid.key === "imp")) return 11;
       return 12;
@@ -547,7 +550,7 @@ function getFazitVariant(bg: BG): number {
     if ((top.key === "imp" && mid.key === "int") || (top.key === "int" && mid.key === "imp")) return 5;
     return 6;
   }
-  if (gap23 <= 5) {
+  if (gap2 <= 4 && gap1 >= 6) {
     if (top.key === "imp") return 7;
     if (top.key === "ana") return 8;
     return 9;

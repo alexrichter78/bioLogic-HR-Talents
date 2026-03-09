@@ -101,25 +101,28 @@ function classifyProfile(bg: BG): { type: ProfileType; intensity: Intensity } {
     { key: "ana", value: bg.ana },
   ].sort((a, b) => b.value - a.value);
   const [max, second, third] = vals;
-  const gap12 = max.value - second.value;
-  const gap23 = second.value - third.value;
-  const abII = Math.abs(bg.imp - bg.int);
-  const abIA = Math.abs(bg.imp - bg.ana);
-  const abNA = Math.abs(bg.int - bg.ana);
+  const gap1 = max.value - second.value;
+  const gap2 = second.value - third.value;
 
-  if (abII <= 6 && abIA <= 6 && abNA <= 6) return { type: "balanced_all", intensity: "balanced" };
-  if (max.value >= 55) return { type: `strong_${max.key}` as ProfileType, intensity: "strong" };
-  if (gap12 >= 8) return { type: `dominant_${max.key}` as ProfileType, intensity: "clear" };
-  if (gap12 <= 5 && gap23 > 5) {
+  const isExtreme = max.value >= 60 || gap1 >= 18;
+  const isClear = gap1 >= 8;
+  const isDual = gap1 <= 4 && gap2 >= 6;
+  const isFullBal = gap1 <= 5 && gap2 <= 5;
+  const isBalTendency = gap1 <= 7 && gap2 <= 7 && max.value > second.value;
+
+  if (isExtreme) return { type: `strong_${max.key}` as ProfileType, intensity: "strong" };
+  if (isDual) {
     const k1 = max.key, k2 = second.key;
     const hybridKey = `hybrid_${k1}_${k2}`;
     const validHybrids = ["hybrid_imp_ana", "hybrid_ana_int", "hybrid_imp_int"];
     const reverseMap: Record<string, string> = { "hybrid_ana_imp": "hybrid_imp_ana", "hybrid_int_ana": "hybrid_ana_int", "hybrid_int_imp": "hybrid_imp_int" };
     const resolved = validHybrids.includes(hybridKey) ? hybridKey : (reverseMap[hybridKey] || "hybrid_imp_ana");
-    const hybridIntensity: Intensity = gap23 >= 15 ? "strong" : gap23 >= 8 ? "clear" : "light";
+    const hybridIntensity: Intensity = gap2 >= 15 ? "strong" : gap2 >= 8 ? "clear" : "light";
     return { type: resolved as ProfileType, intensity: hybridIntensity };
   }
-  if (gap12 >= 5) return { type: `light_${max.key}` as ProfileType, intensity: "light" };
+  if (isClear) return { type: `dominant_${max.key}` as ProfileType, intensity: "clear" };
+  if (isFullBal) return { type: "balanced_all", intensity: "balanced" };
+  if (isBalTendency) return { type: `light_${max.key}` as ProfileType, intensity: "light" };
   return { type: "balanced_all", intensity: "balanced" };
 }
 
@@ -154,7 +157,7 @@ function analyzeProfileStructure(bg: BG): StructuralInsight {
   const rawGap23 = mid.value - low.value;
   const gap12 = Math.round(rawGap12);
   const gap23 = Math.round(rawGap23);
-  const hasDualDominance = rawGap12 <= 5;
+  const hasDualDominance = rawGap12 <= 4 && rawGap23 >= 6;
   const hasSecondaryCompetition = rawGap12 >= 10 && rawGap23 <= 5;
 
   const dominantLabel = COMP_LABELS[top.key];

@@ -74,7 +74,8 @@ type ResultKey =
 
 type RoleResultEntry = { headline: string; body: string[]; leadership: string };
 
-const DUAL_THRESHOLD = 5;
+const DUAL_THRESHOLD = 4;
+const DUAL_GAP2_MIN = 6;
 const BALANCED_THRESHOLD = 5;
 
 const DIMENSION_LABELS: Record<string, string> = { IMP: "Impulsiv", INT: "Intuitiv", ANA: "Analytisch" };
@@ -108,13 +109,13 @@ function getRoleAnalysis(imp: number, int: number, ana: number): RoleAnalysis {
   let resultKey: ResultKey;
   let dominanceType: "single" | "dual" | "balanced";
 
-  if (maxV - minV <= BALANCED_THRESHOLD) {
+  if (topGap <= BALANCED_THRESHOLD && bottomGap <= BALANCED_THRESHOLD) {
     resultKey = "BALANCED";
     dominanceType = "balanced";
-  } else if (topGap <= DUAL_THRESHOLD) {
+  } else if (topGap <= DUAL_THRESHOLD && bottomGap >= DUAL_GAP2_MIN) {
     resultKey = `${vals[0].key}_${vals[1].key}__${vals[2].key}` as ResultKey;
     dominanceType = "dual";
-  } else if (bottomGap <= DUAL_THRESHOLD) {
+  } else if (bottomGap <= DUAL_THRESHOLD && topGap >= DUAL_GAP2_MIN) {
     resultKey = `BD_${vals[0].key}` as ResultKey;
     dominanceType = "dual";
   } else {
