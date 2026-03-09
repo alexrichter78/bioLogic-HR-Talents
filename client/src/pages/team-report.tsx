@@ -441,7 +441,7 @@ export default function TeamReport() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <GlobalNav />
-      <div className="mx-auto max-w-7xl px-6 py-10 lg:px-10">
+      <div className="mx-auto px-5 py-10" style={{ maxWidth: 1100 }}>
 
         {!reportGenerated && (
           <div className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
