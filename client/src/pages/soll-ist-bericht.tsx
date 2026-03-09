@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
-import { AlertTriangle, Download, Check } from "lucide-react";
+import { AlertTriangle, Download, Check, ChevronLeft } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeSollIst, mapFuehrungsArt, constellationLabel } from "@/lib/soll-ist-engine";
@@ -339,15 +339,27 @@ export default function SollIstBericht() {
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
               Konfiguration
             </p>
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-950 mb-6">
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-950 mb-3">
               Soll-Ist-Bericht konfigurieren
             </h1>
-            <div className="grid gap-8 lg:grid-cols-2">
-              <div>
-                <div className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500 mb-3">Soll-Profil (Rolle)</div>
-                <div className="text-lg font-semibold text-slate-950 mb-1">{roleName}</div>
-                <div className="text-sm text-slate-500 mb-4">{dominanceLabel(dominanceModeOf(roleTriad))}</div>
-                <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-1 mb-2">
+              <span className="text-sm text-slate-700"><span className="font-semibold text-slate-900">Rolle:</span> {roleName}</span>
+              <span className="text-sm text-slate-500">Führungsverantwortung: {fuehrungsArt === "keine" ? "Nein" : "Ja"}</span>
+            </div>
+            <p className="text-sm text-slate-500 mb-8" data-testid="text-config-description">
+              Vergleichen Sie das Rollenprofil mit dem Kandidatenprofil, um die Passung für diese Position zu analysieren.
+            </p>
+
+            <div className="flex items-center gap-4 mb-6">
+              <div className="h-px flex-1 bg-slate-200" />
+              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Profilvergleich</span>
+              <div className="h-px flex-1 bg-slate-200" />
+            </div>
+
+            <div className="grid gap-6 lg:grid-cols-2">
+              <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="card-soll-profil">
+                <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   {roleProfile.map(item => {
                     const hex = BAR_HEX[item.label.toLowerCase() as ComponentKey];
                     const widthPct = (item.value / 67) * 100;
@@ -379,7 +391,7 @@ export default function SollIstBericht() {
                             transform: "translate(-50%, -50%)",
                             width: 26, height: 26, borderRadius: "50%",
                             background: `radial-gradient(circle at 40% 38%, ${hex}, color-mix(in srgb, ${hex} 70%, #000))`,
-                            border: "3px solid #F0F0F2",
+                            border: "3px solid white",
                             transition: "left 600ms ease",
                             zIndex: 1,
                           }} />
@@ -397,8 +409,10 @@ export default function SollIstBericht() {
                   })}
                 </div>
               </div>
-              <div>
-                <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
+
+              <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="card-ist-profil">
+                <p className="text-base font-semibold text-slate-900 mb-6">Ist-Profil <span className="font-normal text-slate-500">(Kandidat)</span></p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                     const val = k === "impulsiv" ? candImp : k === "intuitiv" ? candInt : candAna;
                     const setter = k === "impulsiv" ? setCandImp : k === "intuitiv" ? setCandInt : setCandAna;
@@ -433,7 +447,7 @@ export default function SollIstBericht() {
                             transform: "translate(-50%, -50%)",
                             width: 26, height: 26, borderRadius: "50%",
                             background: `radial-gradient(circle at 40% 38%, ${hex}, color-mix(in srgb, ${hex} 70%, #000))`,
-                            border: "3px solid #F0F0F2",
+                            border: "3px solid white",
                             transition: "left 150ms ease",
                             zIndex: 1,
                           }} />
@@ -464,7 +478,15 @@ export default function SollIstBericht() {
                 </div>
               </div>
             </div>
-            <div className="mt-8 flex justify-center">
+
+            <div className="mt-8 flex items-center justify-between">
+              <button
+                onClick={() => setLocation("/jobcheck")}
+                className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-5 text-sm font-medium text-blue-600 hover:bg-slate-50 transition-colors"
+                data-testid="button-back"
+              >
+                <ChevronLeft className="w-4 h-4" /> Zurück
+              </button>
               <button
                 onClick={() => setReportGenerated(true)}
                 className="inline-flex h-12 items-center gap-2 rounded-2xl bg-blue-600 px-8 text-[15px] font-semibold text-white shadow-md hover:bg-blue-700 transition-colors"
