@@ -427,7 +427,7 @@ export default function SollIstBericht() {
                               const move = (ev: MouseEvent) => {
                                 const ratio = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
                                 const raw = Math.round(ratio * 67);
-                                setter(Math.max(5, Math.min(80, raw)));
+                                setter(Math.max(5, Math.min(67, raw)));
                               };
                               const up = () => {
                                 window.removeEventListener("mousemove", move);
@@ -443,7 +443,7 @@ export default function SollIstBericht() {
                                 const touch = ev.touches[0];
                                 const ratio = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
                                 const raw = Math.round(ratio * 67);
-                                setter(Math.max(5, Math.min(80, raw)));
+                                setter(Math.max(5, Math.min(67, raw)));
                               };
                               const up = () => {
                                 window.removeEventListener("touchmove", move);
