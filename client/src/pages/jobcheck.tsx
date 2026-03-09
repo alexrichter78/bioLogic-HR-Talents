@@ -602,7 +602,7 @@ export default function JobCheck() {
           </div>
         </div>
 
-        <main className="flex-1 w-full mx-auto px-6 pb-24" style={{ maxWidth: 1100, paddingTop: 135 }}>
+        <div className="mx-auto px-6" style={{ maxWidth: 1100, paddingTop: 135, paddingBottom: 40 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
             <GlassCard testId="jobcheck-header" style={{ padding: "28px 32px", position: "relative", overflow: "hidden" }}>
@@ -1171,7 +1171,7 @@ export default function JobCheck() {
             </AccordionCard>
 
           </div>
-        </main>
+        </div>
       </div>
     </div>
   );
