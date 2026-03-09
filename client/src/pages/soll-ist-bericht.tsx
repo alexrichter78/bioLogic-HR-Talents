@@ -383,16 +383,15 @@ export default function SollIstBericht() {
             const sameDom = roleDomKey === candDomKey;
             const totalGap = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).reduce((sum, k) => sum + Math.abs(roleTriad[k] - candTriad[k]), 0);
 
-            const fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > 20 ? "Bedingt geeignet" : "Geeignet";
-            const fitColor = totalGap > 40 ? "#FF3B30" : totalGap > 20 ? "#F39200" : "#34C759";
+            const fitLabel = totalGap > 40 ? "nicht geeignet" : totalGap > 20 ? "bedingt geeignet" : "geeignet";
 
             const fazitText = sameDom && totalGap <= 20
-              ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle. Die Integration verläuft reibungsarm und erfordert wenig Steuerung."
+              ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
               : sameDom
-              ? "Die Grundausrichtung ist ähnlich, aber es bestehen spürbare Unterschiede in der Intensität einzelner Dimensionen. Mit gezielter Führung und klaren Erwartungen lässt sich die Zusammenarbeit stabil gestalten."
+              ? "Die Grundausrichtung ist ähnlich, es bestehen jedoch spürbare Unterschiede in der Intensität. Mit gezielter Führung lässt sich die Zusammenarbeit stabil gestalten."
               : totalGap > 40
-              ? "Die Arbeits- und Entscheidungslogiken von Rolle und Person unterscheiden sich grundlegend. Das erzeugt im Alltag hohen Steuerungsbedarf, häufigen Abstimmungsaufwand und wiederkehrende Reibung. Die Führungskraft muss aktiv gegensteuern, um Stabilität zu sichern."
-              : "Unterschiedliche Arbeitslogiken treffen aufeinander. Die neue Person arbeitet und entscheidet anders, als es die Rolle erfordert. Das führt zu erhöhtem Abstimmungsbedarf im Alltag und erfordert klare Rahmenbedingungen.";
+              ? "Die Arbeits- und Entscheidungslogiken von Rolle und Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch erhöhter Abstimmungs- und Steuerungsbedarf."
+              : "Unterschiedliche Arbeitslogiken treffen aufeinander. Die Person arbeitet und entscheidet anders, als es die Rolle erfordert. Im Alltag entsteht dadurch erhöhter Abstimmungsbedarf.";
 
             let devScore: number;
             if (sameDom && totalGap <= 15) devScore = 6;
@@ -403,7 +402,7 @@ export default function SollIstBericht() {
             else devScore = 1;
 
             const devTexts: Record<number, string> = {
-              1: "Die grundlegende Arbeits- und Entscheidungslogik der Person unterscheidet sich stark von den Anforderungen der Rolle. Eine stabile Anpassung an die Anforderungen ist nur sehr eingeschränkt zu erwarten.",
+              1: "Die grundlegende Arbeitslogik der Person unterscheidet sich stark von den Anforderungen der Rolle. Eine stabile Anpassung ist daher nur sehr eingeschränkt zu erwarten.",
               2: "Die Anforderungen der Rolle unterscheiden sich deutlich von der natürlichen Arbeitsweise der Person. Eine Entwicklung ist grundsätzlich möglich, erfordert jedoch intensive Führung und klare Rahmenbedingungen.",
               3: "Die Person kann sich teilweise an die Anforderungen der Rolle anpassen. Eine stabile Umsetzung erfordert jedoch Zeit, Erfahrung und unterstützende Strukturen.",
               4: "Die Person kann sich grundsätzlich gut an die Anforderungen der Rolle entwickeln. Mit klaren Entscheidungswegen und Feedback ist eine stabile Zusammenarbeit gut erreichbar.",
@@ -412,15 +411,15 @@ export default function SollIstBericht() {
             };
 
             const devLabels: Record<number, string> = {
-              1: "Praktisch nicht erreichbar",
-              2: "Sehr schwierig",
-              3: "Möglich mit hohem Aufwand",
-              4: "Gut möglich",
-              5: "Sehr wahrscheinlich",
-              6: "Sehr schnell erreichbar",
+              1: "Entwicklung praktisch nicht erreichbar",
+              2: "Entwicklung sehr schwierig",
+              3: "Entwicklung möglich mit hohem Aufwand",
+              4: "Entwicklung gut möglich",
+              5: "Entwicklung sehr wahrscheinlich",
+              6: "Entwicklung sehr schnell erreichbar",
             };
 
-            const gaugeColor = devScore >= 5 ? "#6B9B6B" : devScore >= 3 ? "#C8A951" : "#C07055";
+            const gaugeColor = "#48484A";
 
             return (
               <div style={{ marginTop: 20 }} data-testid="section-summary-card">
@@ -429,26 +428,28 @@ export default function SollIstBericht() {
                 </p>
                 <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "28px 32px", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
 
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-                    <div style={{ width: 12, height: 12, borderRadius: 6, background: fitColor, flexShrink: 0 }} />
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: 5, background: "#48484A", flexShrink: 0 }} />
                     <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-summary-role">{roleName || "Rolle"}</span>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: fitColor, letterSpacing: "0.04em", textTransform: "uppercase" }} data-testid="text-summary-fit">{fitLabel}</span>
                   </div>
+                  <p style={{ fontSize: 14, color: "#48484A", margin: "0 0 14px" }} data-testid="text-summary-fit">
+                    Passung: {fitLabel}
+                  </p>
                   <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.75, margin: 0 }} data-testid="text-summary-fazit">{fazitText}</p>
 
-                  <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", marginTop: 22, paddingTop: 22 }}>
-                    <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 10 }}>
-                      <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }} data-testid="text-dev-prognose">
-                        Entwicklungsprognose: {devScore} von 6
-                      </p>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: gaugeColor }}>{devLabels[devScore]}</span>
-                    </div>
-                    <div style={{ display: "flex", gap: 5, marginBottom: 14 }} data-testid="gauge-dev-prognose">
+                  <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", marginTop: 24, paddingTop: 24 }}>
+                    <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 14px" }}>
+                      Entwicklungsprognose
+                    </p>
+                    <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }} data-testid="text-dev-prognose">
+                      {devScore} von 6 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>– {devLabels[devScore]}</span>
+                    </p>
+                    <div style={{ display: "flex", gap: 5, marginBottom: 18 }} data-testid="gauge-dev-prognose">
                       {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} style={{ flex: 1, height: 12, borderRadius: 3, background: i < devScore ? gaugeColor : "rgba(0,0,0,0.08)" }} />
+                        <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < devScore ? gaugeColor : "rgba(0,0,0,0.08)" }} />
                       ))}
                     </div>
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: 0 }} data-testid="text-dev-description">{devTexts[devScore]}</p>
+                    <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.75, margin: 0 }} data-testid="text-dev-description">{devTexts[devScore]}</p>
                   </div>
 
                 </div>
