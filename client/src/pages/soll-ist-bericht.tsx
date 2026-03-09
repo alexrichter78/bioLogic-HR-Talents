@@ -201,7 +201,7 @@ export default function SollIstBericht() {
       <div className="mx-auto max-w-7xl px-6 py-10 lg:px-10">
 
         {/* === INPUT: Slider area before report === */}
-        {!reportGenerated && (
+        {!reportGenerated && (<>
           <div className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
               Konfiguration
@@ -376,7 +376,73 @@ export default function SollIstBericht() {
               </button>
             </div>
           </div>
-        )}
+
+          {(() => {
+            const roleDomKey = dominanceModeOf(roleTriad).top1.key;
+            const candDomKey = candDom.top1.key;
+            const sameDom = roleDomKey === candDomKey;
+            const totalGap = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).reduce((sum, k) => sum + Math.abs(roleTriad[k] - candTriad[k]), 0);
+            const isGood = totalGap <= 20 && sameDom;
+            const isCritical = totalGap > 40 || (!sameDom && totalGap > 30);
+
+            const badgeColor = isGood ? "#34C759" : isCritical ? "#FF3B30" : "#FF9500";
+            const badgeLabel = isGood ? "Passend" : isCritical ? "Kritisch" : "Steuerbar";
+
+            const headerText = sameDom
+              ? "Ähnliche Arbeitsweisen treffen aufeinander. Die Strukturen passen grundsätzlich zusammen, was eine schnelle Integration begünstigt."
+              : "Unterschiedliche Arbeitsweisen treffen aufeinander. Die neue Person arbeitet anders als das Team es gewohnt ist. Das führt zu mehr Abstimmung und gelegentlichen Spannungen.";
+
+            const sectionTitle = sameDom
+              ? "Strukturelle Passung – Stärken nutzen"
+              : "Unterschiedliche Arbeitsweisen – aktiv steuern";
+
+            const sectionSub = sameDom
+              ? "Die Grundstruktur stimmt überein. Bestehendes kann direkt genutzt werden."
+              : "Unterschiede sind spürbar. Mit klaren Regeln bleibt das System stabil steuerbar.";
+
+            const konkretItems = sameDom
+              ? [
+                  "Onboarding-Aufwand bleibt gering.",
+                  "Kommunikationswege können sofort genutzt werden.",
+                  "Bestehende Routinen werden nicht gestört.",
+                ]
+              : [
+                  "Entscheidungen dauern teilweise länger.",
+                  "Prioritäten müssen häufiger erklärt werden.",
+                  "Abstimmungsaufwand steigt im Alltag.",
+                ];
+
+            const todoText = sameDom
+              ? "Stärken gezielt einsetzen und Entwicklungschancen innerhalb der Rolle identifizieren."
+              : "Entscheidungswege, Zeitfenster und Verantwortlichkeiten müssen klar gesetzt werden.";
+
+            return (
+              <div style={{ marginTop: 16, background: "#FAFAFA", borderRadius: 20, padding: "32px 36px", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-summary-card">
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                  <div style={{ width: 10, height: 10, borderRadius: 5, background: badgeColor, flexShrink: 0 }} />
+                  <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>{roleName || "Rolle"}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: badgeColor, padding: "3px 10px", borderRadius: 6, background: `${badgeColor}12`, border: `1px solid ${badgeColor}20` }}>{badgeLabel}</span>
+                </div>
+                <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.75, margin: "0 0 28px", maxWidth: 680 }}>{headerText}</p>
+
+                <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{sectionTitle}</p>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: "0 0 20px" }}>{sectionSub}</p>
+
+                <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 10px" }}>Was bedeutet das konkret?</p>
+                <ul style={{ margin: "0 0 24px", paddingLeft: 18 }}>
+                  {konkretItems.map((item, i) => (
+                    <li key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, marginBottom: 3, listStyleType: "disc" }} data-testid={`summary-bullet-${i}`}>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+
+                <p style={{ fontSize: 11, fontWeight: 700, color: "#FF9500", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 8px" }}>Was ist zu tun?</p>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: 0 }}>{todoText}</p>
+              </div>
+            );
+          })()}
+        </>)}
 
         {/* === REPORT OUTPUT === */}
         {result && (() => {
@@ -600,65 +666,6 @@ export default function SollIstBericht() {
               </div>
 
             </div>
-
-            {(() => {
-              const badgeColor = result.fitRating === "GEEIGNET" ? "#34C759" : result.fitRating === "BEDINGT" ? "#FF9500" : "#FF3B30";
-              const badgeLabel = result.fitRating === "GEEIGNET" ? "Passend" : result.fitRating === "BEDINGT" ? "Steuerbar" : "Kritisch";
-
-              const headerText = sameDom
-                ? "Ähnliche Arbeitsweisen treffen aufeinander. Die Strukturen passen grundsätzlich zusammen, was eine schnelle Integration begünstigt."
-                : "Unterschiedliche Arbeitsweisen treffen aufeinander. Die neue Person arbeitet anders als das Team es gewohnt ist. Das führt zu mehr Abstimmung und gelegentlichen Spannungen.";
-
-              const sectionTitle = sameDom
-                ? "Strukturelle Passung – Stärken nutzen"
-                : "Unterschiedliche Arbeitsweisen – aktiv steuern";
-
-              const sectionSub = sameDom
-                ? "Die Grundstruktur stimmt überein. Bestehendes kann direkt genutzt werden."
-                : "Unterschiede sind spürbar. Mit klaren Regeln bleibt das System stabil steuerbar.";
-
-              const konkretItems = sameDom
-                ? [
-                    "Onboarding-Aufwand bleibt gering.",
-                    "Kommunikationswege können sofort genutzt werden.",
-                    "Bestehende Routinen werden nicht gestört.",
-                  ]
-                : [
-                    "Entscheidungen dauern teilweise länger.",
-                    "Prioritäten müssen häufiger erklärt werden.",
-                    "Abstimmungsaufwand steigt im Alltag.",
-                  ];
-
-              const todoText = sameDom
-                ? "Stärken gezielt einsetzen und Entwicklungschancen innerhalb der Rolle identifizieren."
-                : "Entscheidungswege, Zeitfenster und Verantwortlichkeiten müssen klar gesetzt werden.";
-
-              return (
-                <div style={{ marginTop: 24, background: "#FAFAFA", borderRadius: 4, padding: "36px 44px", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-summary-card">
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-                    <div style={{ width: 10, height: 10, borderRadius: 5, background: badgeColor, flexShrink: 0 }} />
-                    <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>{result.roleName}</span>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: badgeColor, padding: "3px 10px", borderRadius: 6, background: `${badgeColor}12`, border: `1px solid ${badgeColor}20` }}>{badgeLabel}</span>
-                  </div>
-                  <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.75, margin: "0 0 28px", maxWidth: 680 }}>{headerText}</p>
-
-                  <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{sectionTitle}</p>
-                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: "0 0 20px" }}>{sectionSub}</p>
-
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 10px" }}>Was bedeutet das konkret?</p>
-                  <ul style={{ margin: "0 0 24px", paddingLeft: 18 }}>
-                    {konkretItems.map((item, i) => (
-                      <li key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, marginBottom: 3, listStyleType: "disc" }} data-testid={`summary-bullet-${i}`}>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#FF9500", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 8px" }}>Was ist zu tun?</p>
-                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: 0 }}>{todoText}</p>
-                </div>
-              );
-            })()}
 
             <div style={{ display: "flex", justifyContent: "center", padding: "24px 0" }} className="no-print">
               <button
