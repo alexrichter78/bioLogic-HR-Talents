@@ -387,12 +387,12 @@ export default function SollIstBericht() {
             const fitColor = totalGap > 40 ? "#FF3B30" : totalGap > 20 ? "#F39200" : "#34C759";
 
             const fazitText = sameDom && totalGap <= 20
-              ? "Arbeitslogiken stimmen überein. Die Integration verläuft reibungsarm."
+              ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle. Die Integration verläuft reibungsarm und erfordert wenig Steuerung."
               : sameDom
-              ? "Ähnliche Grundausrichtung, aber spürbare Unterschiede in der Intensität."
+              ? "Die Grundausrichtung ist ähnlich, aber es bestehen spürbare Unterschiede in der Intensität einzelner Dimensionen. Mit gezielter Führung und klaren Erwartungen lässt sich die Zusammenarbeit stabil gestalten."
               : totalGap > 40
-              ? "Gegensätzliche Arbeitslogiken erzeugen hohen Steuerungsbedarf und Reibung."
-              : "Unterschiedliche Arbeitslogiken führen zu erhöhtem Abstimmungsbedarf im Alltag.";
+              ? "Die Arbeits- und Entscheidungslogiken von Rolle und Person unterscheiden sich grundlegend. Das erzeugt im Alltag hohen Steuerungsbedarf, häufigen Abstimmungsaufwand und wiederkehrende Reibung. Die Führungskraft muss aktiv gegensteuern, um Stabilität zu sichern."
+              : "Unterschiedliche Arbeitslogiken treffen aufeinander. Die neue Person arbeitet und entscheidet anders, als es die Rolle erfordert. Das führt zu erhöhtem Abstimmungsbedarf im Alltag und erfordert klare Rahmenbedingungen.";
 
             let devScore: number;
             if (sameDom && totalGap <= 15) devScore = 6;
@@ -402,29 +402,70 @@ export default function SollIstBericht() {
             else if (totalGap <= 40) devScore = 2;
             else devScore = 1;
 
+            const devTexts: Record<number, string> = {
+              1: "Die grundlegende Arbeits- und Entscheidungslogik der Person unterscheidet sich stark von den Anforderungen der Rolle. Eine stabile Anpassung an die Anforderungen ist nur sehr eingeschränkt zu erwarten.",
+              2: "Die Anforderungen der Rolle unterscheiden sich deutlich von der natürlichen Arbeitsweise der Person. Eine Entwicklung ist grundsätzlich möglich, erfordert jedoch intensive Führung und klare Rahmenbedingungen.",
+              3: "Die Person kann sich teilweise an die Anforderungen der Rolle anpassen. Eine stabile Umsetzung erfordert jedoch Zeit, Erfahrung und unterstützende Strukturen.",
+              4: "Die Person kann sich grundsätzlich gut an die Anforderungen der Rolle entwickeln. Mit klaren Entscheidungswegen und Feedback ist eine stabile Zusammenarbeit gut erreichbar.",
+              5: "Die Arbeits- und Entscheidungslogik der Person passt bereits weitgehend zu den Anforderungen der Rolle. Eine Entwicklung zu einer stabilen und erfolgreichen Umsetzung ist sehr wahrscheinlich.",
+              6: "Die Person kann die Anforderungen der Rolle sehr schnell und stabil erfüllen. Arbeitsweise, Entscheidungslogik und Umfeld der Rolle passen sehr gut zusammen.",
+            };
+
+            const devLabels: Record<number, string> = {
+              1: "Praktisch nicht erreichbar",
+              2: "Sehr schwierig",
+              3: "Möglich mit hohem Aufwand",
+              4: "Gut möglich",
+              5: "Sehr wahrscheinlich",
+              6: "Sehr schnell erreichbar",
+            };
+
+            const gaugeColor = devScore >= 5 ? "#6B9B6B" : devScore >= 3 ? "#C8A951" : "#C07055";
+
             return (
               <div style={{ marginTop: 20 }} data-testid="section-summary-card">
                 <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.14em", textTransform: "uppercase", textAlign: "center", margin: "0 0 12px" }}>
                   MatchCheck — Systemwirkung
                 </p>
                 <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "28px 32px", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+
                   <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
                     <div style={{ width: 12, height: 12, borderRadius: 6, background: fitColor, flexShrink: 0 }} />
                     <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-summary-role">{roleName || "Rolle"}</span>
                     <span style={{ fontSize: 12, fontWeight: 700, color: fitColor, letterSpacing: "0.04em", textTransform: "uppercase" }} data-testid="text-summary-fit">{fitLabel}</span>
                   </div>
-                  <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.7, margin: "0 0 20px" }} data-testid="text-summary-fazit">{fazitText}</p>
+                  <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.75, margin: 0 }} data-testid="text-summary-fazit">{fazitText}</p>
 
-                  <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 18 }}>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }} data-testid="text-dev-prognose">
-                      Entwicklungsprognose: {devScore} von 6
-                    </p>
-                    <div style={{ display: "flex", gap: 5 }} data-testid="gauge-dev-prognose">
+                  <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", marginTop: 22, paddingTop: 22 }}>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 10 }}>
+                      <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }} data-testid="text-dev-prognose">
+                        Entwicklungsprognose: {devScore} von 6
+                      </p>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: gaugeColor }}>{devLabels[devScore]}</span>
+                    </div>
+                    <div style={{ display: "flex", gap: 5, marginBottom: 14 }} data-testid="gauge-dev-prognose">
                       {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} style={{ flex: 1, height: 12, borderRadius: 3, background: i < devScore ? "#6B9B6B" : "rgba(0,0,0,0.08)" }} />
+                        <div key={i} style={{ flex: 1, height: 12, borderRadius: 3, background: i < devScore ? gaugeColor : "rgba(0,0,0,0.08)" }} />
                       ))}
                     </div>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: "0 0 20px" }} data-testid="text-dev-description">{devTexts[devScore]}</p>
+
+                    <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 12, padding: "16px 20px", border: "1px solid rgba(0,0,0,0.04)" }}>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 12px" }}>Skala — Entwicklungsprognose</p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                        {([6, 5, 4, 3, 2, 1] as const).map(v => {
+                          const active = v === devScore;
+                          return (
+                            <div key={v} style={{ display: "flex", alignItems: "center", gap: 10, padding: "5px 10px", borderRadius: 8, background: active ? `${gaugeColor}10` : "transparent", border: active ? `1px solid ${gaugeColor}25` : "1px solid transparent" }}>
+                              <span style={{ fontSize: 13, fontWeight: 700, color: active ? gaugeColor : "#8E8E93", width: 16, textAlign: "center", flexShrink: 0 }}>{v}</span>
+                              <span style={{ fontSize: 13, color: active ? "#1D1D1F" : "#8E8E93", fontWeight: active ? 600 : 400 }}>{devLabels[v]}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
+
                 </div>
               </div>
             );
