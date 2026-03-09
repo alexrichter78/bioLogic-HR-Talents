@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight, Info, RefreshCw, Briefcase, Heart, Settings, Shield, BarChart3, Lightbulb, FileText, MessageSquare, LayoutGrid, Wrench, UserCheck, Hash } from "lucide-react";
+import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ChevronLeft, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight, Info, RefreshCw, Briefcase, Heart, Settings, Shield, BarChart3, Lightbulb, FileText, MessageSquare, LayoutGrid, Wrench, UserCheck, Hash } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE, type BerufLand } from "@/data/berufe";
@@ -2913,6 +2913,13 @@ export default function RollenDNA() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-center gap-3 mt-8">
+                  <button
+                    onClick={() => setLocation("/")}
+                    className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-5 text-sm font-medium text-blue-600 hover:bg-slate-50 transition-colors"
+                    data-testid="button-back-home"
+                  >
+                    <ChevronLeft className="w-4 h-4" /> Zurück
+                  </button>
                   <button
                     onClick={() => {
                       setAllCollapsed(false);
