@@ -1661,7 +1661,7 @@ export default function RollenDNA() {
                   Rollenprofil definieren
                 </h1>
                 <p style={{ fontSize: 13, color: "#8E8E93", fontWeight: 450, margin: 0 }} data-testid="text-rollen-dna-subtitle">
-                  Erfassen Sie die Anforderungen und Arbeitslogik der Position als Grundlage für den Entscheidungsbericht, die Passungsanalyse zur Rolle und Person sowie den TeamCheck.
+                  Erfassen Sie die Anforderungen und Arbeitslogik der Position als Grundlage für den Entscheidungsbericht, die Passungsanalyse sowie den TeamCheck.
                 </p>
               </div>
 
