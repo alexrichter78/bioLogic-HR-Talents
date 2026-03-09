@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation } from "wouter";
-import { AlertTriangle, Download, ChevronLeft } from "lucide-react";
+import { AlertTriangle, Download, ChevronLeft, ChevronDown } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { dominanceModeOf, labelComponent } from "@/lib/jobcheck-engine";
 import { computeSollIst, mapFuehrungsArt } from "@/lib/soll-ist-engine";
@@ -131,6 +131,8 @@ export default function SollIstBericht() {
   const [roleTriad, setRoleTriad] = useState<Triad | null>(null);
   const [hasRollenDna, setHasRollenDna] = useState(false);
   const [reportGenerated, setReportGenerated] = useState(false);
+  const [sollOpen, setSollOpen] = useState(true);
+  const [istOpen, setIstOpen] = useState(true);
   const [fuehrungsArt, setFuehrungsArt] = useState<FuehrungsArt>("keine");
 
   useEffect(() => {
@@ -229,51 +231,70 @@ export default function SollIstBericht() {
             </div>
 
             <div className="grid gap-6 lg:grid-cols-2">
-              <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="card-soll-profil">
-                <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                  {roleProfile.map(item => {
-                    const hex = item.hex;
-                    const widthPct = (item.value / 67) * 100;
-                    const isSmall = widthPct < 18;
-                    return (
-                      <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                        <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>
-                          {item.label}
-                        </span>
-                        <div style={{ flex: 1, position: "relative", height: 26 }}>
-                          <div style={{
-                            position: "absolute", inset: 0,
-                            borderRadius: 13, background: "rgba(0,0,0,0.06)",
-                          }} />
-                          <div style={{
-                            position: "absolute", left: 0, top: 0, bottom: 0,
-                            width: `${Math.min(Math.max(widthPct, 4), 100)}%`,
-                            borderRadius: 13, background: hex,
-                            transition: "width 600ms ease",
-                            display: "flex", alignItems: "center", paddingLeft: 10,
-                            minWidth: isSmall ? 8 : 50,
-                          }}>
-                            {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(item.value)} %</span>}
+              <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden" data-testid="card-soll-profil">
+                <button
+                  onClick={() => setSollOpen(!sollOpen)}
+                  className="w-full flex items-center justify-between p-6 cursor-pointer hover:bg-slate-50/60 transition-colors"
+                  style={{ border: "none", background: "transparent" }}
+                  data-testid="button-toggle-soll"
+                >
+                  <p className="text-base font-semibold text-slate-900 m-0">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
+                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${sollOpen ? "rotate-180" : ""}`} />
+                </button>
+                {sollOpen && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "0 24px 24px" }}>
+                    {roleProfile.map(item => {
+                      const hex = item.hex;
+                      const widthPct = (item.value / 67) * 100;
+                      const isSmall = widthPct < 18;
+                      return (
+                        <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                          <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>
+                            {item.label}
+                          </span>
+                          <div style={{ flex: 1, position: "relative", height: 26 }}>
+                            <div style={{
+                              position: "absolute", inset: 0,
+                              borderRadius: 13, background: "rgba(0,0,0,0.06)",
+                            }} />
+                            <div style={{
+                              position: "absolute", left: 0, top: 0, bottom: 0,
+                              width: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+                              borderRadius: 13, background: hex,
+                              transition: "width 600ms ease",
+                              display: "flex", alignItems: "center", paddingLeft: 10,
+                              minWidth: isSmall ? 8 : 50,
+                            }}>
+                              {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(item.value)} %</span>}
+                            </div>
+                            {isSmall && (
+                              <span style={{
+                                position: "absolute", top: "50%", transform: "translateY(-50%)",
+                                left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
+                                fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
+                                transition: "left 600ms ease",
+                              }}>{Math.round(item.value)} %</span>
+                            )}
                           </div>
-                          {isSmall && (
-                            <span style={{
-                              position: "absolute", top: "50%", transform: "translateY(-50%)",
-                              left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
-                              fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
-                              transition: "left 600ms ease",
-                            }}>{Math.round(item.value)} %</span>
-                          )}
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="card-ist-profil">
-                <p className="text-base font-semibold text-slate-900 mb-6">Ist-Profil <span className="font-normal text-slate-500">(Kandidat)</span></p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden" data-testid="card-ist-profil">
+                <button
+                  onClick={() => setIstOpen(!istOpen)}
+                  className="w-full flex items-center justify-between p-6 cursor-pointer hover:bg-slate-50/60 transition-colors"
+                  style={{ border: "none", background: "transparent" }}
+                  data-testid="button-toggle-ist"
+                >
+                  <p className="text-base font-semibold text-slate-900 m-0">Ist-Profil <span className="font-normal text-slate-500">(Kandidat)</span></p>
+                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${istOpen ? "rotate-180" : ""}`} />
+                </button>
+                {istOpen && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "0 24px 24px" }}>
                   {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                     const val = candTriad[k];
                     const hex = BAR_HEX[k];
@@ -361,6 +382,7 @@ export default function SollIstBericht() {
                     );
                   })}
                 </div>
+                )}
               </div>
             </div>
 
