@@ -1921,8 +1921,8 @@ export default function RollenDNA() {
                     background: "rgba(255,255,255,0.65)",
                     backdropFilter: "blur(24px)",
                     WebkitBackdropFilter: "blur(24px)",
-                    borderRadius: 24,
-                    padding: "48px",
+                    borderRadius: 20,
+                    padding: "28px 32px",
                     boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
                     border: "1px solid rgba(0,0,0,0.04)",
                   }}
@@ -2114,8 +2114,8 @@ export default function RollenDNA() {
                     background: "rgba(255,255,255,0.65)",
                     backdropFilter: "blur(24px)",
                     WebkitBackdropFilter: "blur(24px)",
-                    borderRadius: 24,
-                    padding: "32px",
+                    borderRadius: 20,
+                    padding: "28px 32px",
                     boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
                     border: "1px solid rgba(0,0,0,0.04)",
                   }}

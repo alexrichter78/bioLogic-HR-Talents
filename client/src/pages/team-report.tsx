@@ -444,7 +444,7 @@ export default function TeamReport() {
       <div className="mx-auto px-5 py-10" style={{ maxWidth: 1100 }}>
 
         {!reportGenerated && (
-          <div className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+          <div className="mb-8 rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm">
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Konfiguration</p>
             <h1 className="text-2xl font-semibold tracking-tight text-slate-950 mb-6" data-testid="text-page-title">Team-Systemreport konfigurieren</h1>
             <p className="text-sm text-slate-600 mb-8 max-w-2xl leading-6">
@@ -483,7 +483,7 @@ export default function TeamReport() {
         {result && sw && (
           <>
             {/* ── Header ── */}
-            <header className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-header">
+            <header className="mb-8 rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-header">
               <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
                 <div className="max-w-3xl">
                   <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
@@ -514,7 +514,7 @@ export default function TeamReport() {
 
             {/* ── Decision + Systemwirkung ── */}
             <section className="mb-8 grid gap-8 lg:grid-cols-[1.4fr_1fr]" data-testid="section-decision-banner">
-              <div className={`rounded-3xl border ${tone.border} bg-white p-8 shadow-sm`}>
+              <div className={`rounded-[20px] border ${tone.border} bg-white p-8 shadow-sm`}>
                 <div className="mb-5 flex items-start justify-between gap-4">
                   <div>
                     <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Entscheidung</p>
@@ -548,7 +548,7 @@ export default function TeamReport() {
                 </p>
               </div>
 
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-systemwirkung-shift">
+              <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-systemwirkung-shift">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Systemwirkung</p>
                 <h3 className="mt-2 text-2xl font-semibold text-slate-950">{sw.label}</h3>
                 <div className={`mt-3 inline-block rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${sw.intensity === "hoch" ? "border-red-200 text-red-700" : sw.intensity === "mittel" ? "border-amber-200 text-amber-700" : "border-slate-200 text-slate-500"}`}>
@@ -567,7 +567,7 @@ export default function TeamReport() {
 
             {/* ── Profile Comparison + Deltas ── */}
             <section className="mb-8 grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-strukturvergleich">
+              <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-strukturvergleich">
                 <div className="mb-6 flex items-center justify-between">
                   <div>
                     <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Strukturvergleich</p>
@@ -587,7 +587,7 @@ export default function TeamReport() {
                 </div>
               </div>
 
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-deltas">
+              <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-deltas">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Team-Person-Abweichung</p>
                 <h3 className="mt-2 text-xl font-semibold text-slate-950">Abweichung je Wirkdimension</h3>
                 <div className="mt-6 space-y-5">
@@ -617,7 +617,7 @@ export default function TeamReport() {
 
             {/* ── Impact Areas + Risk Timeline ── */}
             <section className="mb-8 grid gap-8 xl:grid-cols-[1.1fr_0.9fr]" data-testid="section-impact-risk">
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-impact-areas">
+              <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-impact-areas">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Wirkungsfelder</p>
                 <h3 className="mt-2 text-xl font-semibold text-slate-950">Auswirkung nach Bereich</h3>
                 <div className="mt-6 space-y-4">
@@ -639,7 +639,7 @@ export default function TeamReport() {
                 </div>
               </div>
 
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-risk-timeline">
+              <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-risk-timeline">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Risiko-Zeitleiste</p>
                 <h3 className="mt-2 text-xl font-semibold text-slate-950">Kritische Phasen</h3>
                 <div className="mt-6 relative">
@@ -668,7 +668,7 @@ export default function TeamReport() {
             </section>
 
             {/* ── Systemwirkung Detail + Teamdynamik ── */}
-            <section className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-systemwirkung">
+            <section className="mb-8 rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-systemwirkung">
               <div className="mb-6">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Strukturelle Wirkungsanalyse</p>
                 <h3 className="mt-2 text-xl font-semibold text-slate-950">Wirkung im System</h3>
@@ -696,7 +696,7 @@ export default function TeamReport() {
             </section>
 
             {/* ── Development Gauge ── */}
-            <section className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-development">
+            <section className="mb-8 rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-development">
               <div className="mb-6">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Entwicklungsbedarf</p>
                 <h3 className="mt-2 text-xl font-semibold text-slate-950">Steuerungsintensität</h3>
@@ -725,7 +725,7 @@ export default function TeamReport() {
 
             {/* ── Stress Behavior (structured) ── */}
             <section className="mb-8 grid gap-8 lg:grid-cols-2" data-testid="section-stress">
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+              <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm">
                 <div className="mb-2 flex items-center gap-3">
                   <div className="h-3 w-3 rounded-full bg-amber-500" />
                   <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Kontrollierter Druck</p>
@@ -735,7 +735,7 @@ export default function TeamReport() {
                   <p className="text-sm leading-7 text-slate-700">{result.stressBehavior.controlledPressure}</p>
                 </div>
               </div>
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+              <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm">
                 <div className="mb-2 flex items-center gap-3">
                   <div className="h-3 w-3 rounded-full bg-red-500" />
                   <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Unkontrollierter Stress</p>
@@ -749,7 +749,7 @@ export default function TeamReport() {
 
             {/* ── Chancen / Risiken side by side ── */}
             <section className="mb-8 grid gap-8 lg:grid-cols-2" data-testid="section-chancen-risiken">
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+              <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 mb-2">Chancen</p>
                 <h3 className="text-xl font-semibold text-slate-950 mb-5">Potenziale der Besetzung</h3>
                 <ul className="space-y-3">
@@ -764,7 +764,7 @@ export default function TeamReport() {
                   <Prose text={result.chancen} />
                 </div>
               </div>
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+              <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 mb-2">Risiken</p>
                 <h3 className="text-xl font-semibold text-slate-950 mb-5">Strukturelle Risiken</h3>
                 <ul className="space-y-3">
@@ -783,7 +783,7 @@ export default function TeamReport() {
 
             {/* ── Actions + Integrationsplan (structured) ── */}
             <section className="mb-8 grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-fuehrungshebel">
+              <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-fuehrungshebel">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Handlungsempfehlung</p>
                 <h3 className="mt-2 text-xl font-semibold text-slate-950">Führungshebel</h3>
                 <ul className="mt-6 space-y-4">
@@ -798,7 +798,7 @@ export default function TeamReport() {
                 </ul>
               </div>
 
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-integrationsplan">
+              <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-integrationsplan">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Integrationsplan</p>
                 <h3 className="mt-2 text-xl font-semibold text-slate-950">8-Wochen-Plan</h3>
                 <div className="mt-8 space-y-6">
@@ -828,7 +828,7 @@ export default function TeamReport() {
             </section>
 
             {/* ── Final Assessment ── */}
-            <section className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-systemfazit">
+            <section className="mb-8 rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-systemfazit">
               <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
                 <div>
                   <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Gesamtbewertung</p>

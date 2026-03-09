@@ -53,9 +53,9 @@ function GlassCard({ children, style, ...props }: { children: React.ReactNode; s
   return (
     <div style={{
       background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
-      borderRadius: 32, padding: "36px 32px",
-      boxShadow: "0 2px 20px rgba(0,0,0,0.03), 0 12px 48px rgba(0,0,0,0.05)",
-      border: "1px solid rgba(255,255,255,0.7)", ...style,
+      borderRadius: 20, padding: "28px 32px",
+      boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+      border: "1px solid rgba(0,0,0,0.04)", ...style,
     }} {...props}>{children}</div>
   );
 }
@@ -928,7 +928,7 @@ export default function TeamCheck() {
 
         {/* ═══ META HEADER ═══ */}
         <div style={{
-          padding: "28px 32px 24px", borderRadius: 18, marginBottom: 28,
+          padding: "28px 32px", borderRadius: 20, marginBottom: 28,
           background: "linear-gradient(135deg, rgba(0,0,0,0.025), rgba(0,0,0,0.015))",
           border: "1px solid rgba(0,0,0,0.06)",
           position: "relative",

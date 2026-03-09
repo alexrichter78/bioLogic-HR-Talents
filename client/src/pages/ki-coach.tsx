@@ -266,9 +266,9 @@ export default function KICoach() {
       <main style={{ flex: 1, maxWidth: 1100, width: "100%", margin: "0 auto", padding: "24px 16px 24px", display: "flex", flexDirection: "column" }}>
         <div style={{
           background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
-          borderRadius: 32, flex: 1, display: "flex", flexDirection: "column",
-          boxShadow: "0 2px 20px rgba(0,0,0,0.03), 0 12px 48px rgba(0,0,0,0.05)",
-          border: "1px solid rgba(255,255,255,0.7)", overflow: "hidden",
+          borderRadius: 20, flex: 1, display: "flex", flexDirection: "column",
+          boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+          border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden",
           minHeight: "calc(100vh - 140px)",
         }}>
           <div style={{
