@@ -448,22 +448,7 @@ export default function SollIstBericht() {
                         <div key={i} style={{ flex: 1, height: 12, borderRadius: 3, background: i < devScore ? gaugeColor : "rgba(0,0,0,0.08)" }} />
                       ))}
                     </div>
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: "0 0 20px" }} data-testid="text-dev-description">{devTexts[devScore]}</p>
-
-                    <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 12, padding: "16px 20px", border: "1px solid rgba(0,0,0,0.04)" }}>
-                      <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 12px" }}>Skala — Entwicklungsprognose</p>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                        {([6, 5, 4, 3, 2, 1] as const).map(v => {
-                          const active = v === devScore;
-                          return (
-                            <div key={v} style={{ display: "flex", alignItems: "center", gap: 10, padding: "5px 10px", borderRadius: 8, background: active ? `${gaugeColor}10` : "transparent", border: active ? `1px solid ${gaugeColor}25` : "1px solid transparent" }}>
-                              <span style={{ fontSize: 13, fontWeight: 700, color: active ? gaugeColor : "#8E8E93", width: 16, textAlign: "center", flexShrink: 0 }}>{v}</span>
-                              <span style={{ fontSize: 13, color: active ? "#1D1D1F" : "#8E8E93", fontWeight: active ? 600 : 400 }}>{devLabels[v]}</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: 0 }} data-testid="text-dev-description">{devTexts[devScore]}</p>
                   </div>
 
                 </div>
