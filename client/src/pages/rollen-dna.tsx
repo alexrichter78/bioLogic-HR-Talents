@@ -2936,7 +2936,7 @@ export default function RollenDNA() {
                     data-testid="button-rolle-bearbeiten"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
-                    Datenerfassung bearbeiten
+                    Rollenprofil ändern
                   </button>
                   <button
                     onClick={handleSave}
