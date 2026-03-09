@@ -563,7 +563,7 @@ export default function JobCheck() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden" lang="de" data-testid="jobcheck-page">
+    <div className="min-h-screen relative overflow-x-hidden" lang="de" data-testid="jobcheck-page">
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -587,7 +587,7 @@ export default function JobCheck() {
       <div className="relative z-10">
         <GlobalNav />
 
-        <div style={{ position: "fixed", top: 55, left: 0, right: 0, zIndex: 8999 }}>
+        <div style={{ position: "fixed", top: 56, left: 0, right: 0, zIndex: 8999 }}>
           <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: "5px 0 10px" }}>
             <div className="w-full mx-auto px-6" style={{ maxWidth: 1100 }}>
               <div className="text-center">
