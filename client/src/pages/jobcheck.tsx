@@ -592,7 +592,14 @@ export default function JobCheck() {
 
             <GlassCard testId="jobcheck-header" style={{ padding: "32px 32px 28px", position: "relative", overflow: "hidden" }}>
               <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.18em", color: "#8E8E93", margin: "0 0 10px" }}>bioLogic MatchCheck</p>
-              <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 20, fontWeight: 400 }} data-testid="text-jobcheck-position">
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+                <CheckCircle2 style={{ width: 22, height: 22, color: "#34C759", flexShrink: 0 }} />
+                <h1 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", color: "#1D1D1F", lineHeight: 1.2, margin: 0 }} data-testid="text-jobcheck-title">
+                  Rollenprofil erfolgreich erstellt
+                </h1>
+              </div>
+              <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 20, marginLeft: 32, fontWeight: 400 }} data-testid="text-jobcheck-position">
+                Das Rollenprofil wurde erfolgreich erstellt.
               </p>
 
               {dnaSummary && (
