@@ -231,7 +231,7 @@ export default function SollIstBericht() {
               data-testid="button-toggle-profilvergleich"
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <SlidersHorizontal style={{ width: 22, height: 22, color: "#0071E3", flexShrink: 0 }} />
+                <SlidersHorizontal style={{ width: 22, height: 22, color: "#3A9A5C", flexShrink: 0 }} />
                 <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
                   Profilvergleich
                 </span>
@@ -454,7 +454,7 @@ export default function SollIstBericht() {
                     data-testid="button-toggle-systemwirkung"
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <Zap style={{ width: 22, height: 22, color: "#F39200", flexShrink: 0 }} />
+                      <Zap style={{ width: 22, height: 22, color: "#3A9A5C", flexShrink: 0 }} />
                       <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
                         MatchCheck — Systemwirkung
                       </span>
