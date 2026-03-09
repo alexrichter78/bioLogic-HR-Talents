@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation } from "wouter";
-import { AlertTriangle, Download, Check } from "lucide-react";
+import { AlertTriangle, Download, Check, Users } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeTeamReport } from "@/lib/team-report-engine";
@@ -441,28 +441,35 @@ export default function TeamReport() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <GlobalNav />
-      <div className="mx-auto px-5 py-10" style={{ maxWidth: 1100 }}>
+
+      <div style={{ position: "fixed", top: 56, left: 0, right: 0, zIndex: 8999 }}>
+        <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: "5px 0 10px" }}>
+          <div className="w-full mx-auto px-6" style={{ maxWidth: 1100 }}>
+            <div className="text-center">
+              <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-teamreport-title">
+                Teamstruktur analysieren
+              </h1>
+              <p style={{ fontSize: 13, color: "#8E8E93", fontWeight: 450, margin: 0 }} data-testid="text-teamreport-subtitle">
+                Analysieren Sie die Zusammensetzung des Teams und erkennen Sie systemische Wirkungen, Entscheidungslogiken und mögliche Spannungsfelder.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-auto px-5" style={{ maxWidth: 1100, paddingTop: 135, paddingBottom: 40 }}>
 
         {!reportGenerated && (
           <div className="mb-8 rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Konfiguration</p>
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-950 mb-6" data-testid="text-page-title">Team-Systemreport konfigurieren</h1>
-            <p className="text-sm text-slate-600 mb-8 max-w-2xl leading-6">
-              Definieren Sie die zwei Profile: Das Ist-Profil der Person und das bestehende Teamprofil.
-            </p>
-            <div className="grid gap-6 mb-6 lg:grid-cols-2">
-              <div>
-                <label className="text-sm font-medium text-slate-700 mb-1 block">Rollenbezeichnung</label>
-                <input value={roleName} onChange={(e) => setRoleName(e.target.value)} placeholder="z.B. Teamleiter Vertrieb"
-                  className="w-full h-9 px-3 text-sm font-medium rounded-lg border border-slate-200 bg-slate-50 text-slate-900 outline-none focus:border-blue-400"
-                  data-testid="input-role-name" />
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: 12,
+                background: "linear-gradient(135deg, rgba(52,199,89,0.15), rgba(52,199,89,0.08))",
+                display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+              }}>
+                <Users style={{ width: 18, height: 18, color: "#34C759", strokeWidth: 2 }} />
               </div>
-              <div>
-                <label className="text-sm font-medium text-slate-700 mb-1 block">Name der Person</label>
-                <input value={candidateName} onChange={(e) => setCandidateName(e.target.value)} placeholder="Name der Person"
-                  className="w-full h-9 px-3 text-sm font-medium rounded-lg border border-slate-200 bg-slate-50 text-slate-900 outline-none focus:border-blue-400"
-                  data-testid="input-candidate-name" />
-              </div>
+              <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", color: "#1D1D1F" }} data-testid="text-teamcheck-label">TeamCheck</span>
             </div>
             <div className="grid gap-8 lg:grid-cols-2">
               <SliderGroup title="Ist-Profil (Person)" triad={istTriad}
