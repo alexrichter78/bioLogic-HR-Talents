@@ -198,24 +198,29 @@ export default function SollIstBericht() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <GlobalNav />
-      <div className="mx-auto max-w-7xl px-6 py-10 lg:px-10">
+
+      {!reportGenerated && (
+        <div style={{ position: "fixed", top: 55, left: 0, right: 0, zIndex: 8999 }}>
+          <div className="dark:!bg-background pb-2" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", paddingTop: 1 }}>
+            <div className="w-full mx-auto px-6" style={{ maxWidth: 1100 }}>
+              <div className="text-center mt-2 mb-1">
+                <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-matchcheck-title">
+                  Passungsanalyse konfigurieren
+                </h1>
+                <p style={{ fontSize: 13, color: "#8E8E93", fontWeight: 450, margin: 0 }} data-testid="text-matchcheck-subtitle">
+                  Vergleichen Sie das Rollenprofil mit dem Kandidatenprofil, um die strukturelle Passung für diese Position zu analysieren.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="mx-auto max-w-7xl px-6 lg:px-10" style={{ paddingTop: !reportGenerated ? 115 : 40, paddingBottom: 40 }}>
 
         {/* === INPUT: Slider area before report === */}
         {!reportGenerated && (<>
           <div className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
-              Konfiguration
-            </p>
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-950 mb-3">
-              Soll-Ist-Bericht konfigurieren
-            </h1>
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-1 mb-2">
-              <span className="text-sm text-slate-700"><span className="font-semibold text-slate-900">Rolle:</span> {roleName}</span>
-              <span className="text-sm text-slate-500">Führungsverantwortung: {fuehrungsArt === "keine" ? "Nein" : "Ja"}</span>
-            </div>
-            <p className="text-sm text-slate-500 mb-8" data-testid="text-config-description">
-              Vergleichen Sie das Rollenprofil mit dem Kandidatenprofil, um die Passung für diese Position zu analysieren.
-            </p>
 
             <div className="flex items-center gap-4 mb-6">
               <div className="h-px flex-1 bg-slate-200" />
