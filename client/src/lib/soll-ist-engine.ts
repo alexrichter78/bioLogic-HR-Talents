@@ -188,14 +188,16 @@ export function computeSollIst(
   const cDom = dominanceModeOf(ct);
 
   const totalGap = Math.abs(rt.impulsiv - ct.impulsiv) + Math.abs(rt.intuitiv - ct.intuitiv) + Math.abs(rt.analytisch - ct.analytisch);
-  const gapLevel: "gering" | "mittel" | "hoch" = totalGap > 40 ? "hoch" : totalGap > 20 ? "mittel" : "gering";
+  const sameDom = rDom.top1.key === cDom.top1.key;
+  const geignetLimit = sameDom ? 28 : 20;
+  const gapLevel: "gering" | "mittel" | "hoch" = totalGap > 40 ? "hoch" : totalGap > geignetLimit ? "mittel" : "gering";
 
   let fitRating: FitRating;
   let fitLabel: string;
   let fitColor: string;
-  if (totalGap > 40) { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#C41E3A"; }
-  else if (totalGap > 20) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#F39200"; }
-  else { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#34C759"; }
+  if (totalGap > 40) { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
+  else if (totalGap > geignetLimit) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
+  else { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; }
 
   const controlIntensity: "gering" | "mittel" | "hoch" = totalGap > 35 ? "hoch" : totalGap > 15 ? "mittel" : "gering";
 

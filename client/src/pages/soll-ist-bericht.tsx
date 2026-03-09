@@ -476,7 +476,7 @@ export default function SollIstBericht() {
 
         {/* === REPORT OUTPUT === */}
         {result && (() => {
-          const fitCol = result.fitRating === "GEEIGNET" ? "#34C759" : result.fitRating === "BEDINGT" ? "#FF9500" : "#FF3B30";
+          const fitCol = result.fitRating === "GEEIGNET" ? "#3A9A5C" : result.fitRating === "BEDINGT" ? "#E5A832" : "#D64045";
           const rc = BAR_HEX[result.roleDomKey];
           const cc = BAR_HEX[result.candDomKey];
           const sameDom = result.roleDomKey === result.candDomKey;
