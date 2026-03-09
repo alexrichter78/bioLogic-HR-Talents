@@ -2850,10 +2850,10 @@ export default function RollenDNA() {
                     </div>
                     <div style={{ color: "#1D1D1F", display: "flex", flexDirection: "column", gap: 2 }}>
                       <span style={{ fontSize: 20, fontWeight: 700 }}>Rollenprofil erfolgreich erstellt</span>
-                      <div style={{ fontSize: 15, color: "#6E6E73" }}>
+                      <div style={{ fontSize: 15, color: "#6E6E73", display: "flex", flexDirection: "column", gap: 1 }}>
                         <span>Rolle: {beruf}</span>
                         {fuehrung && fuehrung !== "Keine" && (
-                          <span style={{ marginLeft: 16 }}><strong style={{ color: "#1D1D1F" }}>Führungsverantwortung:</strong> Ja</span>
+                          <span><strong style={{ color: "#1D1D1F" }}>Führungsverantwortung:</strong> Ja</span>
                         )}
                       </div>
                     </div>
