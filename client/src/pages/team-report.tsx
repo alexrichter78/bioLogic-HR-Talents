@@ -461,11 +461,13 @@ export default function TeamReport() {
   const istConstLabel = constellationLabel(detectConstellation(istProfile));
   const teamConstLabel = constellationLabel(detectConstellation(teamProfileN));
 
-  const result: TeamReportResult | null = useMemo(() => {
-    if (!reportGenerated) return null;
+  const liveResult: TeamReportResult = useMemo(() => {
     return computeTeamReport(roleName || "Rolle", candidateName || "Person", istProfile, teamProfileN);
-  }, [reportGenerated, roleName, candidateName, istProfile.impulsiv, istProfile.intuitiv, istProfile.analytisch, teamProfileN.impulsiv, teamProfileN.intuitiv, teamProfileN.analytisch]);
+  }, [roleName, candidateName, istProfile.impulsiv, istProfile.intuitiv, istProfile.analytisch, teamProfileN.impulsiv, teamProfileN.intuitiv, teamProfileN.analytisch]);
 
+  const result: TeamReportResult | null = reportGenerated ? liveResult : null;
+
+  const liveSw = liveResult.systemwirkungResult;
   const sw = result?.systemwirkungResult;
   const tone = result ? passungTone(result.gesamtpassung) : passungTone("geeignet");
 
@@ -560,64 +562,63 @@ export default function TeamReport() {
           </div>
         </div>
 
-        {result && sw && (
-          <>
-            {/* ── Kompakt-Zusammenfassung ── */}
-            <div className="mb-8 rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-kompakt">
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
-                <div style={{
-                  width: 12, height: 12, borderRadius: "50%", flexShrink: 0,
-                  background: result.gesamtpassung === "geeignet" ? "#34C759" : result.gesamtpassung === "bedingt" ? "#FF9500" : "#C41E3A",
-                }} />
-                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="kompakt-rolle">{roleName || "Rolle"}</span>
-                <span style={{
-                  fontSize: 12, fontWeight: 650, letterSpacing: "0.02em",
-                  padding: "3px 10px", borderRadius: 8,
-                  background: result.gesamtpassung === "geeignet" ? "rgba(52,199,89,0.10)" : result.gesamtpassung === "bedingt" ? "rgba(255,149,0,0.10)" : "rgba(196,30,58,0.10)",
-                  color: result.gesamtpassung === "geeignet" ? "#34C759" : result.gesamtpassung === "bedingt" ? "#FF9500" : "#C41E3A",
-                  border: `1px solid ${result.gesamtpassung === "geeignet" ? "rgba(52,199,89,0.20)" : result.gesamtpassung === "bedingt" ? "rgba(255,149,0,0.20)" : "rgba(196,30,58,0.20)"}`,
-                }} data-testid="kompakt-badge">
-                  {result.controlIntensity === "gering" ? "Stabil" : result.controlIntensity === "mittel" ? "Steuerbar" : "Kritisch"}
-                </span>
-              </div>
-              <p style={{ fontSize: 13.5, color: "#6E6E73", lineHeight: 1.7, margin: "0 0 24px", paddingLeft: 24 }} data-testid="kompakt-summary">
-                {sw.description}
-              </p>
+        <div className="mb-8 rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-kompakt">
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
+            <div style={{
+              width: 12, height: 12, borderRadius: "50%", flexShrink: 0,
+              background: liveResult.gesamtpassung === "geeignet" ? "#34C759" : liveResult.gesamtpassung === "bedingt" ? "#FF9500" : "#C41E3A",
+            }} />
+            <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="kompakt-rolle">{roleName || "Rolle"}</span>
+            <span style={{
+              fontSize: 12, fontWeight: 650, letterSpacing: "0.02em",
+              padding: "3px 10px", borderRadius: 8,
+              background: liveResult.gesamtpassung === "geeignet" ? "rgba(52,199,89,0.10)" : liveResult.gesamtpassung === "bedingt" ? "rgba(255,149,0,0.10)" : "rgba(196,30,58,0.10)",
+              color: liveResult.gesamtpassung === "geeignet" ? "#34C759" : liveResult.gesamtpassung === "bedingt" ? "#FF9500" : "#C41E3A",
+              border: `1px solid ${liveResult.gesamtpassung === "geeignet" ? "rgba(52,199,89,0.20)" : liveResult.gesamtpassung === "bedingt" ? "rgba(255,149,0,0.20)" : "rgba(196,30,58,0.20)"}`,
+            }} data-testid="kompakt-badge">
+              {liveResult.controlIntensity === "gering" ? "Stabil" : liveResult.controlIntensity === "mittel" ? "Steuerbar" : "Kritisch"}
+            </span>
+          </div>
+          <p style={{ fontSize: 13.5, color: "#6E6E73", lineHeight: 1.7, margin: "0 0 24px", paddingLeft: 24 }} data-testid="kompakt-summary">
+            {liveSw.description}
+          </p>
 
-              <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 20 }}>
-                <h3 style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }} data-testid="kompakt-title">
-                  {sw.label} – {result.controlIntensity === "gering" ? "stabil halten" : result.controlIntensity === "mittel" ? "aktiv steuern" : "gezielt eingreifen"}
-                </h3>
-                <p style={{ fontSize: 13.5, color: "#6E6E73", lineHeight: 1.7, margin: "0 0 16px" }} data-testid="kompakt-narrative">
-                  {sw.narrative}
-                </p>
+          <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 20 }}>
+            <h3 style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }} data-testid="kompakt-title">
+              {liveSw.label} – {liveResult.controlIntensity === "gering" ? "stabil halten" : liveResult.controlIntensity === "mittel" ? "aktiv steuern" : "gezielt eingreifen"}
+            </h3>
+            <p style={{ fontSize: 13.5, color: "#6E6E73", lineHeight: 1.7, margin: "0 0 16px" }} data-testid="kompakt-narrative">
+              {liveSw.narrative}
+            </p>
 
-                <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 10px" }}>
-                  Was bedeutet das konkret?
-                </p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
-                  {result.entscheidungsfaktoren.slice(0, 3).map((f, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }} data-testid={`kompakt-punkt-${i}`}>
-                      <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#6E6E73", marginTop: 7, flexShrink: 0, opacity: 0.5 }} />
-                      <span style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.7 }}>{f}</span>
-                    </div>
-                  ))}
+            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 10px" }}>
+              Was bedeutet das konkret?
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
+              {liveResult.entscheidungsfaktoren.slice(0, 3).map((f, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }} data-testid={`kompakt-punkt-${i}`}>
+                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#6E6E73", marginTop: 7, flexShrink: 0, opacity: 0.5 }} />
+                  <span style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.7 }}>{f}</span>
                 </div>
-
-                <div style={{
-                  padding: "14px 18px", borderRadius: 14,
-                  background: "rgba(255,149,0,0.04)", border: "1px solid rgba(255,149,0,0.12)",
-                }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#FF9500", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 6px" }}>
-                    Was ist zu tun?
-                  </p>
-                  <p style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.7, margin: 0 }} data-testid="kompakt-action">
-                    {result.actions[0] || "Klare Erwartungen und Rahmenvorgaben etablieren."}
-                  </p>
-                </div>
-              </div>
+              ))}
             </div>
 
+            <div style={{
+              padding: "14px 18px", borderRadius: 14,
+              background: "rgba(255,149,0,0.04)", border: "1px solid rgba(255,149,0,0.12)",
+            }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: "#FF9500", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 6px" }}>
+                Was ist zu tun?
+              </p>
+              <p style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.7, margin: 0 }} data-testid="kompakt-action">
+                {liveResult.actions[0] || "Klare Erwartungen und Rahmenvorgaben etablieren."}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {result && sw && (
+          <>
             {/* ── Header ── */}
             <header className="mb-8 rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-header">
               <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
