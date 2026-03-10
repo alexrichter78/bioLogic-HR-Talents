@@ -417,31 +417,31 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
   let risk: string;
 
   if (rk === "analytisch") {
-    roleNeed = "Die Rolle verlangt sorgfältige, planvolle und prüforientierte Entscheidungen. Bevor gehandelt wird, sollen Optionen geprüft und Risiken abgewogen werden.";
+    roleNeed = "Sorgfältige, planvolle und prüforientierte Entscheidungen. Optionen prüfen, Risiken abwägen — erst dann handeln.";
     if (ck === "impulsiv") {
-      candidatePattern = `${s} entscheidet deutlich schneller und stärker aus dem Handeln heraus. Entscheidungen werden zügig getroffen, oft noch bevor alle Informationen vorliegen.`;
-      risk = "Im Alltag bedeutet das: Entscheidungen können schneller getroffen werden, aber wichtige Prüfschritte werden möglicherweise übersprungen. Gerade bei komplexeren Aufgaben kann das zu Fehlern oder Nacharbeit führen.";
+      candidatePattern = `${s} entscheidet deutlich schneller und stärker aus dem Handeln heraus — oft noch bevor alle Informationen vorliegen.`;
+      risk = "Wichtige Prüfschritte können übersprungen werden. Gerade bei komplexeren Aufgaben steigt das Risiko für Fehler oder Nacharbeit.";
     } else {
-      candidatePattern = `${s} entscheidet stärker aus dem Kontext heraus und bezieht dabei vor allem Stimmungen und Beziehungen ein. Datenbasierte Prüfung steht weniger im Vordergrund.`;
-      risk = "Im Alltag bedeutet das: Entscheidungen werden von zwischenmenschlichen Faktoren geprägt statt von sachlicher Analyse. Technische Details oder Risikoabwägungen können dabei zu kurz kommen.";
+      candidatePattern = `${s} entscheidet stärker aus dem Kontext heraus und bezieht vor allem Stimmungen und Beziehungen ein. Datenbasierte Prüfung steht weniger im Vordergrund.`;
+      risk = "Technische Details und Risikoabwägungen können zu kurz kommen, wenn zwischenmenschliche Faktoren die Entscheidung dominieren.";
     }
   } else if (rk === "impulsiv") {
-    roleNeed = "Die Rolle verlangt schnelle, handlungsorientierte Entscheidungen. Tempo und klare Richtung haben Vorrang vor langer Prüfung.";
+    roleNeed = "Schnelle, handlungsorientierte Entscheidungen. Tempo und klare Richtung haben Vorrang vor langer Prüfung.";
     if (ck === "analytisch") {
-      candidatePattern = `${s} prüft gründlich und braucht eine solide Datengrundlage, bevor eine Entscheidung getroffen wird. Das Tempo ist langsamer als die Rolle verlangt.`;
-      risk = "Im Alltag bedeutet das: In Situationen, die schnelles Handeln erfordern, kann es zu Verzögerungen kommen. Chancen werden möglicherweise verpasst, weil die Entscheidung zu spät fällt.";
+      candidatePattern = `${s} prüft gründlich und braucht eine solide Datengrundlage, bevor eine Entscheidung fällt. Das Tempo bleibt unter dem Rollenbedarf.`;
+      risk = "In Situationen, die schnelles Handeln erfordern, entstehen Verzögerungen. Chancen werden möglicherweise verpasst, weil die Entscheidung zu spät fällt.";
     } else {
       candidatePattern = `${s} bezieht bei Entscheidungen stark den Kontext und die beteiligten Menschen ein. Abstimmungsprozesse dauern länger als die Rolle erlaubt.`;
-      risk = "Im Alltag bedeutet das: Entscheidungen, die eigentlich sofort fallen müssten, werden durch Abstimmungsrunden verzögert. Das Umsetzungstempo der Rolle leidet darunter.";
+      risk = "Entscheidungen, die sofort fallen müssten, werden durch Abstimmungsrunden verzögert. Das Umsetzungstempo leidet.";
     }
   } else {
-    roleNeed = "Die Rolle verlangt Entscheidungen, die Kontext, Zusammenarbeit und zwischenmenschliche Wirkung berücksichtigen. Abstimmung im Team ist wichtiger als Geschwindigkeit.";
+    roleNeed = "Entscheidungen, die Kontext, Zusammenarbeit und zwischenmenschliche Wirkung berücksichtigen. Abstimmung im Team vor Geschwindigkeit.";
     if (ck === "impulsiv") {
-      candidatePattern = `${s} trifft Entscheidungen schnell und handlungsorientiert. Die Wirkung auf andere Menschen wird dabei nicht immer berücksichtigt.`;
-      risk = "Im Alltag bedeutet das: Entscheidungen werden getroffen, ohne das Team ausreichend einzubinden. Betroffene fühlen sich übergangen, was langfristig die Zusammenarbeit belastet.";
+      candidatePattern = `${s} trifft Entscheidungen schnell und handlungsorientiert. Die Wirkung auf andere wird dabei nicht immer berücksichtigt.`;
+      risk = "Betroffene fühlen sich übergangen, weil Entscheidungen ohne ausreichende Einbindung fallen. Das belastet langfristig die Zusammenarbeit.";
     } else {
-      candidatePattern = `${s} entscheidet über Fakten und Regeln. Die zwischenmenschliche Dimension von Entscheidungen steht weniger im Fokus.`;
-      risk = "Im Alltag bedeutet das: Entscheidungen sind sachlich korrekt, aber die Auswirkungen auf Motivation und Teamdynamik werden nicht ausreichend berücksichtigt.";
+      candidatePattern = `${s} entscheidet über Fakten und Regeln. Die zwischenmenschliche Dimension steht weniger im Fokus.`;
+      risk = "Sachlich korrekte Entscheidungen, aber Auswirkungen auf Motivation und Teamdynamik werden unterschätzt.";
     }
   }
 
@@ -456,11 +456,11 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
   let risk: string;
 
   if (rt.analytisch >= 35) {
-    roleNeed = "Die Rolle braucht klare Struktur, Priorisierung und verlässliche Abläufe. Arbeitsschritte müssen nachvollziehbar geplant und kontrolliert werden.";
+    roleNeed = "Klare Struktur, Priorisierung und verlässliche Abläufe. Arbeitsschritte nachvollziehbar planen und kontrollieren.";
   } else if (rt.analytisch >= 25) {
-    roleNeed = "Die Rolle braucht eine grundlegende Ordnung in Abläufen und Prozessen. Aufgaben sollten strukturiert abgearbeitet werden.";
+    roleNeed = "Grundlegende Ordnung in Abläufen und Prozessen. Aufgaben strukturiert abarbeiten.";
   } else {
-    roleNeed = "Die Rolle erlaubt eine flexible, ergebnisorientierte Arbeitsweise. Formale Planung ist weniger wichtig als schnelle Anpassung.";
+    roleNeed = "Flexible, ergebnisorientierte Arbeitsweise. Schnelle Anpassung vor formaler Planung.";
   }
 
   const s = Subj(cand);
@@ -473,11 +473,11 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
   }
 
   if (gapA >= 10 && ct.analytisch < rt.analytisch) {
-    risk = `Im Alltag bedeutet das: Wenn mehrere Aufgaben gleichzeitig auftreten, wird ${subj(cand)} eher schnell entscheiden und handeln. Die Rolle verlangt jedoch, dass zuerst geprüft wird, welche Schritte notwendig sind. Wichtige Prüfschritte können verkürzt werden. Für die Führungskraft bedeutet das: Prozessklarheit muss aktiv eingefordert werden.`;
+    risk = `Bei parallelen Aufgaben wird ${subj(cand)} eher schnell handeln statt Schritte zu prüfen. Wichtige Prüfschritte können verkürzt werden. Die Führungskraft muss Prozessklarheit aktiv einfordern.`;
   } else if (gapA >= 10 && ct.analytisch > rt.analytisch) {
-    risk = `Im Alltag bedeutet das: Aufgaben, die schnell erledigt werden könnten, werden länger geprüft als notwendig. ${s} investiert mehr Zeit in Planung und Absicherung als die Rolle erlaubt. Das bremst das Gesamttempo der Position. Die Führungskraft sollte klare Zeitvorgaben setzen.`;
+    risk = `Aufgaben werden länger geprüft als notwendig. ${s} investiert mehr Zeit in Planung und Absicherung als die Rolle erlaubt — das bremst das Gesamttempo. Klare Zeitvorgaben helfen.`;
   } else {
-    risk = "Im Alltag bedeutet das: Die Arbeitssteuerung passt grundsätzlich zur Rolle. Feinabstimmung kann notwendig sein, aber die Grundlogik stimmt.";
+    risk = "Arbeitssteuerung passt grundsätzlich zur Rolle. Feinabstimmung kann notwendig sein, aber die Grundlogik stimmt.";
   }
 
   return { id: "work_structure", label: "Arbeitssteuerung", severity: sev, roleNeed, candidatePattern, risk };
@@ -491,24 +491,24 @@ function buildDocumentationImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
   let risk: string;
 
   if (rt.analytisch >= 35) {
-    roleNeed = "Die Position verlangt nachvollziehbare Dokumentation und saubere Nachweise. Entscheidungen, Prozesse und Ergebnisse müssen schriftlich festgehalten werden.";
+    roleNeed = "Nachvollziehbare Dokumentation und saubere Nachweise. Entscheidungen, Prozesse und Ergebnisse schriftlich festhalten.";
   } else {
-    roleNeed = "Die Rolle erfordert ein grundlegendes Maß an Dokumentation. Wichtige Entscheidungen sollten nachvollziehbar sein.";
+    roleNeed = "Grundlegendes Maß an Dokumentation. Wichtige Entscheidungen nachvollziehbar halten.";
   }
 
   const s = Subj(cand);
   if (ct.analytisch >= 35) {
     candidatePattern = `${s} dokumentiert gründlich und systematisch. Nachvollziehbarkeit hat hohe Bedeutung.`;
   } else {
-    candidatePattern = `Dokumentation hat für ${subj(cand)} keine natürliche Priorität. Die Arbeit ist stärker auf direkte Ergebnisse ausgerichtet als auf schriftliche Nachweise.`;
+    candidatePattern = `Dokumentation hat für ${subj(cand)} keine natürliche Priorität. Der Fokus liegt auf direkten Ergebnissen statt auf schriftlichen Nachweisen.`;
   }
 
   if (rt.analytisch > ct.analytisch && gapA >= 10) {
-    risk = `Im Alltag bedeutet das: Nachvollziehbarkeit sinkt. Fehler und Abweichungen werden später sichtbar, weil Entscheidungswege nicht dokumentiert werden. Für die Führungskraft wird es schwieriger, die Arbeit von ${subj(cand)} zu überprüfen und bei Bedarf zu korrigieren. Klare Dokumentationsregeln sollten von Anfang an vereinbart werden.`;
+    risk = `Nachvollziehbarkeit sinkt. Fehler und Abweichungen werden später sichtbar, weil Entscheidungswege nicht dokumentiert werden. Die Führungskraft kann die Arbeit von ${subj(cand)} schwerer überprüfen. Klare Dokumentationsregeln von Anfang an vereinbaren.`;
   } else if (ct.analytisch > rt.analytisch && gapA >= 10) {
-    risk = `Im Alltag bedeutet das: Die Dokumentation ist gründlicher als die Rolle verlangt. ${s} investiert Zeit in schriftliche Nachweise, die in dieser Position nicht gebraucht werden. Die Führungskraft sollte den Dokumentationsumfang klar eingrenzen.`;
+    risk = `Dokumentation ist gründlicher als nötig. ${s} investiert Zeit in Nachweise, die in dieser Position nicht gebraucht werden. Den Dokumentationsumfang klar eingrenzen.`;
   } else {
-    risk = "Im Alltag bedeutet das: Das Dokumentationsverhalten passt grundsätzlich zur Rolle. Keine wesentliche Abweichung erkennbar.";
+    risk = "Dokumentationsverhalten passt grundsätzlich zur Rolle. Keine wesentliche Abweichung erkennbar.";
   }
 
   return { id: "documentation", label: "Dokumentation", severity: sev, roleNeed, candidatePattern, risk };
@@ -523,22 +523,22 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
 
   if (fuehrungsArt === "disziplinarisch") {
     roleNeed = rk === "analytisch"
-      ? "Die Rolle trägt disziplinarische Führungsverantwortung. Führung wirkt hier über Standards, Klarheit und verlässliche Struktur. Das Team braucht konsistente Prioritäten und nachvollziehbare Entscheidungen."
+      ? "Disziplinarische Führung über Standards, Klarheit und verlässliche Struktur. Das Team braucht konsistente Prioritäten und nachvollziehbare Entscheidungen."
       : rk === "impulsiv"
-        ? "Die Rolle trägt disziplinarische Führungsverantwortung. Führung wirkt hier über Entscheidungskraft, klare Richtung und schnelle Steuerung. Das Team erwartet sichtbare Leistungsorientierung."
-        : "Die Rolle trägt disziplinarische Führungsverantwortung. Führung wirkt hier über Einbindung, offene Kommunikation und Gespür für Teamdynamik. Das Team braucht Sicherheit durch persönliche Ansprache.";
+        ? "Disziplinarische Führung über Entscheidungskraft, klare Richtung und schnelle Steuerung. Das Team erwartet sichtbare Leistungsorientierung."
+        : "Disziplinarische Führung über Einbindung, offene Kommunikation und Gespür für Teamdynamik. Sicherheit durch persönliche Ansprache.";
   } else if (fuehrungsArt === "fachlich") {
     roleNeed = rk === "analytisch"
-      ? "Die Rolle hat fachliche Führungsverantwortung. Teammitglieder suchen hier klare Einschätzung, Qualitätssicherheit und verlässliche Priorisierung. Formale Autorität ist weniger wichtig als fachliche Orientierung."
+      ? "Fachliche Führung mit klarer Einschätzung, Qualitätssicherheit und verlässlicher Priorisierung. Fachliche Orientierung vor formaler Autorität."
       : rk === "impulsiv"
-        ? "Die Rolle hat fachliche Führungsverantwortung. Teammitglieder erwarten schnelle Orientierung, praxisnahe Entscheidungen und klare fachliche Richtung."
-        : "Die Rolle hat fachliche Führungsverantwortung. Teammitglieder erwarten Dialog, fachlichen Austausch und gemeinsame Lösungsfindung.";
+        ? "Fachliche Führung mit schneller Orientierung, praxisnahen Entscheidungen und klarer Richtung."
+        : "Fachliche Führung über Dialog, Austausch und gemeinsame Lösungsfindung.";
   } else {
     roleNeed = rk === "analytisch"
-      ? "Die Rolle verlangt Orientierung über Struktur, Standards und klare Vorgaben. Die eigene Arbeitsweise wirkt als Vorbild für Qualität und Verlässlichkeit."
+      ? "Orientierung über Struktur, Standards und klare Vorgaben. Die eigene Arbeitsweise wirkt als Vorbild für Qualität und Verlässlichkeit."
       : rk === "impulsiv"
-        ? "Die Rolle verlangt Wirkung über Tempo, Entscheidungsstärke und direkte Umsetzung. Die eigene Arbeitsweise prägt das Umfeld durch Ergebnisorientierung."
-        : "Die Rolle verlangt Wirkung über Kommunikation, Zusammenarbeit und situatives Gespür. Die eigene Arbeitsweise prägt das Umfeld durch Beziehungsarbeit.";
+        ? "Wirkung über Tempo, Entscheidungsstärke und direkte Umsetzung. Die eigene Arbeitsweise prägt das Umfeld durch Ergebnisorientierung."
+        : "Wirkung über Kommunikation, Zusammenarbeit und situatives Gespür. Die eigene Arbeitsweise prägt das Umfeld durch Beziehungsarbeit.";
   }
 
   const s = Subj(cand);
@@ -552,26 +552,26 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
 
   if (rk !== ck) {
     const leadershipSuffix = fuehrungsArt === "disziplinarisch"
-      ? " Da die Rolle disziplinarische Verantwortung trägt, wirkt sich diese Abweichung nicht nur auf Arbeitsergebnisse, sondern auch auf Führungskosten, Eskalationen und Teamstabilität aus."
+      ? " Bei disziplinarischer Verantwortung wirkt sich das auf Führungskosten, Eskalationen und Teamstabilität aus."
       : fuehrungsArt === "fachlich"
-        ? " Da die Rolle fachliche Führungsverantwortung trägt, wirkt sich die Abweichung auf die Teamklarheit und fachliche Sicherheit der Mitarbeiter aus."
+        ? " Bei fachlicher Führung wirkt sich das auf Teamklarheit und fachliche Sicherheit der Mitarbeiter aus."
         : "";
 
     if (rk === "analytisch" && ck === "impulsiv") {
-      risk = `Im Alltag bedeutet das: Dem Team fehlen auf Dauer klare Leitlinien und verlässliche Prioritäten. Entscheidungen wirken impulsiv statt durchdacht. Mitarbeiter, die Orientierung durch Struktur brauchen, verlieren den Halt.${leadershipSuffix}`;
+      risk = `Dem Team fehlen klare Leitlinien und verlässliche Prioritäten. Entscheidungen wirken impulsiv statt durchdacht — struktursuchende Mitarbeiter verlieren den Halt.${leadershipSuffix}`;
     } else if (rk === "analytisch" && ck === "intuitiv") {
-      risk = `Im Alltag bedeutet das: Führungsentscheidungen werden stärker von Beziehungsdynamik geprägt als von fachlichen Standards. Das Team kann den Eindruck bekommen, dass persönliche Nähe wichtiger ist als Leistung.${leadershipSuffix}`;
+      risk = `Führungsentscheidungen werden stärker von Beziehungsdynamik geprägt als von fachlichen Standards. Es kann der Eindruck entstehen, dass persönliche Nähe wichtiger ist als Leistung.${leadershipSuffix}`;
     } else if (rk === "impulsiv" && ck === "analytisch") {
-      risk = `Im Alltag bedeutet das: Das Team wartet auf klare Ansagen, die nicht schnell genug kommen. In Drucksituationen fehlt die entschlossene Führung, die das Team erwartet.${leadershipSuffix}`;
+      risk = `Das Team wartet auf klare Ansagen, die nicht schnell genug kommen. In Drucksituationen fehlt die entschlossene Führung, die erwartet wird.${leadershipSuffix}`;
     } else if (rk === "impulsiv" && ck === "intuitiv") {
-      risk = `Im Alltag bedeutet das: Statt schneller Entscheidungen wird viel abgestimmt. Das Team erwartet Tempo, bekommt aber Gesprächsrunden. In zeitkritischen Situationen kann das zu Frustration führen.${leadershipSuffix}`;
+      risk = `Statt schneller Entscheidungen wird abgestimmt. Das Team erwartet Tempo, bekommt Gesprächsrunden. Zeitkritische Situationen erzeugen Frustration.${leadershipSuffix}`;
     } else if (rk === "intuitiv" && ck === "impulsiv") {
-      risk = `Im Alltag bedeutet das: Mitarbeiter fühlen sich übergangen, weil Entscheidungen ohne ausreichende Einbindung getroffen werden. Beziehungsarbeit kommt zu kurz. Teamzusammenhalt kann darunter leiden.${leadershipSuffix}`;
+      risk = `Mitarbeiter fühlen sich übergangen — Entscheidungen fallen ohne ausreichende Einbindung. Beziehungsarbeit kommt zu kurz, Teamzusammenhalt leidet.${leadershipSuffix}`;
     } else {
-      risk = `Im Alltag bedeutet das: Die Führung wirkt formal und distanziert. Das Team erwartet persönliche Nähe und offene Kommunikation, bekommt aber Regeln und Prozesse.${leadershipSuffix}`;
+      risk = `Führung wirkt formal und distanziert. Erwartet werden persönliche Nähe und offene Kommunikation — geliefert werden Regeln und Prozesse.${leadershipSuffix}`;
     }
   } else {
-    risk = "Der Führungsstil passt zur Rollenanforderung. Die Art, wie Orientierung gegeben wird, stimmt mit den Erwartungen des Teams überein.";
+    risk = "Führungsstil passt zur Rollenanforderung. Die Art, wie Orientierung gegeben wird, stimmt mit den Erwartungen des Teams überein.";
   }
 
   return { id: "leadership", label: "Führungswirkung", severity: sev, roleNeed, candidatePattern, risk };
@@ -585,34 +585,34 @@ function buildConflictImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
   let risk: string;
 
   if (rk === "analytisch") {
-    roleNeed = "Konflikte sollen sachlich, ruhig und präzise geklärt werden. Die Rolle verlangt faktenbasierte Auseinandersetzung, nicht emotionale Konfrontation.";
+    roleNeed = "Sachliche, ruhige und präzise Konfliktklärung. Faktenbasierte Auseinandersetzung statt emotionaler Konfrontation.";
   } else if (rk === "impulsiv") {
-    roleNeed = "Konflikte sollen direkt und schnell angesprochen werden. Lange Abstimmungsprozesse sind in der Rolle nicht vorgesehen.";
+    roleNeed = "Direkte und schnelle Konfliktansprache. Kein Raum für lange Abstimmungsprozesse.";
   } else {
-    roleNeed = "Konflikte sollen über Dialog, Vermittlung und Beziehungsarbeit gelöst werden. Die Rolle verlangt ein Gespür für Stimmungen und Bedürfnisse.";
+    roleNeed = "Konfliktlösung über Dialog, Vermittlung und Beziehungsarbeit. Gespür für Stimmungen und Bedürfnisse gefragt.";
   }
 
   const s = Subj(cand);
   if (ck === "impulsiv") {
-    candidatePattern = `${s} geht Konflikte eher direkt und kurzfristig an. Auseinandersetzungen werden schnell auf den Punkt gebracht und entschieden.`;
+    candidatePattern = `${s} geht Konflikte direkt und kurzfristig an. Auseinandersetzungen werden schnell auf den Punkt gebracht.`;
   } else if (ck === "intuitiv") {
-    candidatePattern = `${s} sucht bei Konflikten Ausgleich und Kompromiss. Direkte Konfrontation wird vermieden, stattdessen wird auf Verständigung gesetzt.`;
+    candidatePattern = `${s} sucht bei Konflikten Ausgleich und Kompromiss. Direkte Konfrontation wird vermieden.`;
   } else {
-    candidatePattern = `${s} klärt Konflikte über Fakten, Regeln und klare Zuständigkeiten. Emotionale Aspekte werden weniger berücksichtigt.`;
+    candidatePattern = `${s} klärt Konflikte über Fakten, Regeln und klare Zuständigkeiten. Emotionale Aspekte bleiben untergeordnet.`;
   }
 
   if (gapI >= 12 || gapN >= 12) {
     if (rk === "analytisch" && ck === "impulsiv") {
-      risk = "Im Alltag bedeutet das: Konflikte werden schneller und direkter ausgetragen als die Rolle vorsieht. Schnelle Entscheidungen sind möglich, nachhaltige Klärung aber nicht immer gesichert. Im Team kann der Eindruck entstehen, dass Probleme nicht gründlich durchdacht werden.";
+      risk = "Konflikte werden schneller und direkter ausgetragen als vorgesehen. Schnelle Klärung möglich, aber nachhaltige Lösung nicht gesichert — Probleme wirken nicht gründlich durchdacht.";
     } else if (rk === "impulsiv" && ck === "analytisch") {
-      risk = "Im Alltag bedeutet das: Konflikte werden zu lange analysiert statt gelöst. In Situationen, die schnelle Klärung brauchen, verzögert sich die Lösung durch zu viel Abwägung.";
+      risk = "Konflikte werden zu lange analysiert statt gelöst. Wo schnelle Klärung gebraucht wird, verzögert sich die Lösung durch zu viel Abwägung.";
     } else if (rk === "intuitiv" && ck === "impulsiv") {
-      risk = "Im Alltag bedeutet das: Konflikte werden zu schnell entschieden, ohne die Beteiligten ausreichend einzubinden. Betroffene fühlen sich nicht gehört. Das belastet die Zusammenarbeit langfristig.";
+      risk = "Konflikte werden zu schnell entschieden, ohne Beteiligte einzubinden. Betroffene fühlen sich nicht gehört — das belastet die Zusammenarbeit langfristig.";
     } else {
-      risk = "Im Alltag bedeutet das: Das Konfliktverhalten passt nicht zur Erwartung der Rolle. Spannungen in der Zusammenarbeit sind wahrscheinlich, weil die Art der Konfliktlösung nicht den Bedürfnissen des Umfelds entspricht.";
+      risk = "Konfliktverhalten passt nicht zur Rollenerwartung. Spannungen wahrscheinlich, weil die Art der Konfliktlösung nicht den Bedürfnissen des Umfelds entspricht.";
     }
   } else {
-    risk = "Das Konfliktverhalten passt grundsätzlich zur Rolle. Kleinere Unterschiede können im Alltag auftreten, sind aber steuerbar.";
+    risk = "Konfliktverhalten passt grundsätzlich zur Rolle. Kleinere Unterschiede steuerbar.";
   }
 
   return { id: "conflict", label: "Konfliktfähigkeit", severity: sev, roleNeed, candidatePattern, risk };
@@ -626,38 +626,38 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
   let risk: string;
 
   if (rk === "analytisch") {
-    roleNeed = "Die Rolle soll Verlässlichkeit, Ruhe und nachvollziehbare Qualität fördern. Das Umfeld erwartet stabile Abläufe und planbare Ergebnisse.";
+    roleNeed = "Verlässlichkeit, Ruhe und nachvollziehbare Qualität. Stabile Abläufe und planbare Ergebnisse.";
   } else if (rk === "impulsiv") {
-    roleNeed = "Die Rolle soll eine leistungs- und ergebnisorientierte Kultur stärken. Tempo und Wirkung stehen im Vordergrund.";
+    roleNeed = "Leistungs- und ergebnisorientierte Kultur. Tempo und Wirkung im Vordergrund.";
   } else {
-    roleNeed = "Die Rolle soll eine kooperative, beziehungsorientierte Kultur fördern. Zusammenhalt und gegenseitige Unterstützung prägen das Arbeitsumfeld.";
+    roleNeed = "Kooperative, beziehungsorientierte Kultur. Zusammenhalt und gegenseitige Unterstützung.";
   }
 
   const s = Subj(cand);
   if (ck === "impulsiv") {
-    candidatePattern = `${s} prägt die Kultur stärker über Dynamik und unmittelbare Bewegung. Kurzfristig kann dadurch mehr Tempo entstehen.`;
+    candidatePattern = `${s} prägt die Kultur über Dynamik und unmittelbare Bewegung. Kurzfristig entsteht mehr Tempo.`;
   } else if (ck === "intuitiv") {
-    candidatePattern = `${s} fördert Teamzusammenhalt, offenen Dialog und eine einladende Arbeitsatmosphäre. Beziehungen stehen im Mittelpunkt.`;
+    candidatePattern = `${s} fördert Teamzusammenhalt, offenen Dialog und eine einladende Atmosphäre. Beziehungen stehen im Mittelpunkt.`;
   } else {
     candidatePattern = `${s} stärkt Qualitätsbewusstsein, Regelklarheit und Ordnung. Die Kultur wird sachlicher und strukturierter.`;
   }
 
   if (rk !== ck) {
     if (rk === "analytisch" && ck === "impulsiv") {
-      risk = "Im Alltag bedeutet das: Die gewünschte Stabilität in Abläufen kann verloren gehen, wenn Entscheidungen schneller getroffen werden als sie strukturell abgesichert sind. Kurzfristig entsteht Zug, langfristig kann Verlässlichkeit leiden.";
+      risk = "Stabilität in Abläufen kann verloren gehen, wenn Entscheidungen schneller fallen als sie strukturell abgesichert sind. Kurzfristig entsteht Zug, langfristig leidet Verlässlichkeit.";
     } else if (rk === "analytisch" && ck === "intuitiv") {
-      risk = "Im Alltag bedeutet das: Die Kultur verschiebt sich von sachlicher Qualität hin zu persönlicher Verbindung. Standards und Regeln können aufgeweicht werden, wenn Beziehungen wichtiger werden als Prozesse.";
+      risk = "Die Kultur verschiebt sich von sachlicher Qualität hin zu persönlicher Verbindung. Standards und Regeln können aufweichen, wenn Beziehungen wichtiger werden als Prozesse.";
     } else if (rk === "impulsiv" && ck === "analytisch") {
-      risk = "Im Alltag bedeutet das: Das Tempo der Abteilung sinkt. Statt schneller Umsetzung entsteht eine Kultur der Prüfung und Absicherung. In einem dynamischen Umfeld kann das zum Wettbewerbsnachteil werden.";
+      risk = "Das Tempo sinkt. Statt schneller Umsetzung entsteht eine Kultur der Prüfung und Absicherung — in einem dynamischen Umfeld ein Wettbewerbsnachteil.";
     } else if (rk === "impulsiv" && ck === "intuitiv") {
-      risk = "Im Alltag bedeutet das: Ergebnisorientierung weicht einer Konsenskultur. Entscheidungen werden länger diskutiert statt umgesetzt. Die Dynamik der Rolle geht verloren.";
+      risk = "Ergebnisorientierung weicht einer Konsenskultur. Entscheidungen werden diskutiert statt umgesetzt. Die Dynamik der Rolle geht verloren.";
     } else if (rk === "intuitiv" && ck === "impulsiv") {
-      risk = "Im Alltag bedeutet das: Die kooperative Kultur wird durch Ergebnisorientierung verdrängt. Mitarbeiter erleben weniger persönliche Ansprache und mehr Leistungsdruck. Bindung und Motivation können sinken.";
+      risk = "Kooperative Kultur wird durch Ergebnisorientierung verdrängt. Weniger persönliche Ansprache, mehr Leistungsdruck — Bindung und Motivation können sinken.";
     } else {
-      risk = "Im Alltag bedeutet das: Die Kultur wird formaler und distanzierter. Persönliche Verbindung und offener Austausch nehmen ab. Das Teamgefühl kann darunter leiden.";
+      risk = "Kultur wird formaler und distanzierter. Persönliche Verbindung und offener Austausch nehmen ab, das Teamgefühl leidet.";
     }
   } else {
-    risk = "Die Kulturwirkung stimmt mit der Rollenanforderung überein. Die Art, wie die Person das Arbeitsumfeld prägt, passt zu den Erwartungen.";
+    risk = "Kulturwirkung stimmt mit der Rollenanforderung überein. Die Art, wie das Arbeitsumfeld geprägt wird, passt zu den Erwartungen.";
   }
 
   return { id: "culture", label: "Kulturwirkung", severity: sev, roleNeed, candidatePattern, risk };
