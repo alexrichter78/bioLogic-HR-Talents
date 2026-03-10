@@ -382,59 +382,72 @@ function SliderGroup({
   );
 }
 
-type TeamCheckVariant = {
-  indicatorText: string;
-  steeringDescription: string;
-};
+type ClassificationReason = "gap" | "secFlip_strong" | "secFlip_weak" | "unclearSec";
 
-const TEAMCHECK_PREVIEW_DATA: Record<string, Record<number, TeamCheckVariant>> = {
+const INDICATOR_TEXTS: Record<string, Record<ClassificationReason, Record<string, string>>> = {
   teammitglied: {
-    1: { indicatorText: "Die Arbeits- und Entscheidungslogik der Person entspricht der dominierenden Teamstruktur weitgehend. Im Arbeitsalltag ist daher von einer schnellen Integration und einem stabilen Zusammenspiel auszugehen.", steeringDescription: "Die Integration wird voraussichtlich mit geringem Abstimmungs- und Steuerungsaufwand gelingen." },
-    2: { indicatorText: "Zwischen Person und Team besteht eine klare Grundpassung. Unterschiede sind vorhanden, wirken im Arbeitsalltag jedoch eher ergänzend als belastend.", steeringDescription: "Die Einbindung ist gut realistisch und erfordert nur punktuelle Führung und Abstimmung." },
-    3: { indicatorText: "Die Person bringt eine Arbeitslogik mit, die gut in die Teamstruktur eingebunden werden kann. Einzelne Abweichungen sind erkennbar, bleiben aber im Alltag voraussichtlich gut steuerbar.", steeringDescription: "Im Regelfall ist nur ein begrenzter Steuerungs- und Begleitaufwand notwendig." },
-    4: { indicatorText: "Zwischen Person und Team bestehen sowohl Anschlussflächen als auch erkennbare Unterschiede. Im Arbeitsalltag kann dies je nach Situation zu zusätzlichem Abstimmungsbedarf führen.", steeringDescription: "Eine tragfähige Integration ist möglich, benötigt aber bewusste Führung und klare Abstimmung." },
-    5: { indicatorText: "Die Person ergänzt das Team in einzelnen Bereichen, weicht in ihrer Arbeits- und Entscheidungslogik jedoch spürbar vom Teammuster ab. Dadurch kann es situativ zu Reibungen kommen.", steeringDescription: "Die Integration ist möglich, wenn Erwartungen, Rollen und Entscheidungswege klar geführt werden." },
-    6: { indicatorText: "Die Passung ist im Grundsatz vorhanden, bleibt aber nicht durchgehend stabil. Vor allem in Drucksituationen können Unterschiede in Tempo, Abstimmung und Priorisierung deutlicher sichtbar werden.", steeringDescription: "Damit die Zusammenarbeit tragfähig bleibt, ist ein erhöhter Steuerungs- und Klärungsaufwand sinnvoll." },
-    7: { indicatorText: "Person und Team verfügen über teils passende, teils gegensätzliche Arbeitslogiken. Dadurch ist weder von einer klaren Harmonie noch von einer grundsätzlichen Unvereinbarkeit auszugehen.", steeringDescription: "Eine stabile Einbindung ist möglich, verlangt aber aktive Führung und klare Orientierung im Alltag." },
-    8: { indicatorText: "Die Person kann in das Team eingebunden werden, wird die bestehende Struktur jedoch nicht automatisch stützen. Ohne klare Rahmung steigt die Wahrscheinlichkeit für Missverständnisse und Reibungsverluste.", steeringDescription: "Die Integration verlangt sichtbare Führung, laufende Abstimmung und konsequentes Erwartungsmanagement." },
-    9: { indicatorText: "Die Arbeits- und Entscheidungslogik der Person unterscheidet sich deutlich von der Teamstruktur. Im Arbeitsalltag entsteht dadurch erhöhter Abstimmungsbedarf und ein spürbares Risiko für Reibungen.", steeringDescription: "Eine stabile Integration ist nur mit erhöhtem Führungs- und Steuerungsaufwand realistisch." },
-    10: { indicatorText: "Person und Team setzen in ihrer Arbeitsweise unterschiedliche Schwerpunkte. Diese Unterschiede wirken nicht nur ergänzend, sondern führen voraussichtlich zu fortlaufendem Abstimmungs- und Klärungsbedarf.", steeringDescription: "Damit die Zusammenarbeit tragfähig bleibt, wäre ein dauerhaft hoher Steuerungsaufwand erforderlich." },
-    11: { indicatorText: "Die Person bringt eine Arbeitslogik in das Team ein, die sich nur eingeschränkt in die bestehende Struktur einfügt. Dadurch ist im Alltag mit Spannungen in Abstimmung, Tempo und Umsetzung zu rechnen.", steeringDescription: "Eine verlässliche Einbindung ist nur mit deutlicher Führung und enger Steuerung überhaupt erreichbar." },
-    12: { indicatorText: "Die Passung zwischen Person und Team ist deutlich eingeschränkt. Die Unterschiede in Arbeits- und Entscheidungsverhalten sind so ausgeprägt, dass die Teamstabilität im Alltag belastet werden kann.", steeringDescription: "Die Integration wäre nur mit sehr hohem Führungs- und Steuerungsaufwand denkbar." },
-    13: { indicatorText: "Die Arbeits- und Entscheidungslogiken von Person und Team unterscheiden sich grundlegend. Eine stabile Einbindung in die bestehende Teamstruktur ist daher nur sehr eingeschränkt vorstellbar.", steeringDescription: "Eine tragfähige Integration erscheint nur unter massivem Steuerungsaufwand und klarer Gegensteuerung möglich." },
+    gap: {
+      geeignet: "Die Arbeits- und Entscheidungslogik der Person entspricht der dominierenden Teamstruktur weitgehend. Im Arbeitsalltag ist daher von einer schnellen Integration und einem stabilen Zusammenspiel auszugehen.",
+      bedingt_low: "Die Passung ist im Grundsatz vorhanden, bleibt aber nicht durchgehend stabil. Vor allem in Drucksituationen können Unterschiede in Tempo, Abstimmung und Priorisierung deutlicher sichtbar werden.",
+      bedingt_high: "Die Person kann in das Team eingebunden werden, wird die bestehende Struktur jedoch nicht automatisch stützen. Ohne klare Rahmung steigt die Wahrscheinlichkeit für Missverständnisse und Reibungsverluste.",
+      nicht_low: "Die Arbeits- und Entscheidungslogik der Person unterscheidet sich deutlich von der Teamstruktur. Im Arbeitsalltag entsteht dadurch erhöhter Abstimmungsbedarf und ein spürbares Risiko für Reibungen.",
+      nicht_high: "Die Arbeits- und Entscheidungslogiken von Person und Team unterscheiden sich grundlegend. Eine stabile Einbindung in die bestehende Teamstruktur ist daher nur sehr eingeschränkt vorstellbar.",
+    },
+    secFlip_strong: {
+      default: "Die dominante Arbeitslogik stimmt überein, aber die Sekundärausrichtung weicht deutlich ab. Die Person bringt die falsche zweite Stärke klar ausgeprägt mit. Arbeitsstil und Prioritätensetzung unterscheiden sich dadurch strukturell vom Team.",
+    },
+    secFlip_weak: {
+      default: "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar und erschwert die Integration ins Team.",
+    },
+    unclearSec: {
+      default: "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar.",
+    },
   },
   fuehrung: {
-    1: { indicatorText: "Die Führungslogik der Person passt sehr gut zur bestehenden Teamstruktur. Dadurch ist zu erwarten, dass Entscheidungen, Orientierung und Zusammenarbeit schnell stabil geführt werden können.", steeringDescription: "Das Team kann voraussichtlich mit geringem Führungsaufwand wirksam gesteuert und stabilisiert werden." },
-    2: { indicatorText: "Zwischen Führungsstil und Teamstruktur besteht eine klare Grundpassung. Erkennbare Unterschiede bleiben im Alltag voraussichtlich ergänzend und beeinträchtigen die Führbarkeit des Teams nicht wesentlich.", steeringDescription: "Eine stabile Führungswirkung ist gut realistisch und erfordert nur punktuelle Nachsteuerung." },
-    3: { indicatorText: "Die Person bringt eine Führungslogik mit, die gut an die vorhandene Teamdynamik anschließen kann. Einzelne Unterschiede sind vorhanden, bleiben aber voraussichtlich gut beherrschbar.", steeringDescription: "Für eine tragfähige Führung sind nur begrenzte Steuerungs- und Anpassungsimpulse notwendig." },
-    4: { indicatorText: "Zwischen Führungsstil und Teamstruktur bestehen sowohl Anschlussflächen als auch erkennbare Spannungsfelder. Im Alltag kann dies zu zusätzlichem Führungs- und Klärungsbedarf führen.", steeringDescription: "Eine wirksame Führung ist möglich, braucht jedoch bewusste Rahmung und klare Orientierung." },
-    5: { indicatorText: "Die Führungskraft kann das Team in einzelnen Bereichen sinnvoll ergänzen, weicht in ihrer Steuerungslogik jedoch spürbar von der bestehenden Teamdynamik ab. Dadurch können situativ Spannungen entstehen.", steeringDescription: "Eine stabile Führungswirkung ist möglich, wenn Erwartungen, Entscheidungswege und Prioritäten klar gesetzt werden." },
-    6: { indicatorText: "Die Führbarkeit des Teams ist grundsätzlich gegeben, bleibt aber nicht durchgehend stabil. Vor allem unter Druck können Unterschiede in Tempo, Richtung und Steuerungsanspruch deutlicher sichtbar werden.", steeringDescription: "Damit das Team tragfähig geführt werden kann, ist ein erhöhter Steuerungs- und Klärungsaufwand sinnvoll." },
-    7: { indicatorText: "Führungskraft und Team verfügen über teils passende, teils gegensätzliche Muster. Dadurch ist weder von einer klaren Führungsstabilität noch von einer vollständigen Unführbarkeit auszugehen.", steeringDescription: "Eine belastbare Führungswirkung ist möglich, verlangt aber aktive Steuerung und klare Führungspräsenz." },
-    8: { indicatorText: "Die Person kann das Team führen, wird die bestehende Dynamik jedoch nicht automatisch stabilisieren. Ohne klare Führungslinien steigt die Wahrscheinlichkeit für Irritationen und Reibungsverluste.", steeringDescription: "Die Führungsrolle verlangt sichtbare Steuerung, laufende Abstimmung und konsequentes Erwartungsmanagement." },
-    9: { indicatorText: "Die Führungslogik der Person unterscheidet sich deutlich von der bestehenden Teamstruktur. Dadurch steigt das Risiko, dass Entscheidungen im Team nicht stabil verankert werden und zusätzliche Spannungen entstehen.", steeringDescription: "Eine stabile Führung ist nur mit erhöhtem Steuerungs-, Präsenz- und Klärungsaufwand realistisch." },
-    10: { indicatorText: "Führungskraft und Team setzen in ihrer Arbeits- und Steuerungslogik unterschiedliche Schwerpunkte. Diese Unterschiede führen voraussichtlich zu fortlaufendem Führungs- und Abstimmungsbedarf.", steeringDescription: "Damit das Team überhaupt stabil geführt werden kann, wäre ein dauerhaft hoher Führungsaufwand erforderlich." },
-    11: { indicatorText: "Die Person bringt eine Führungslogik in das Team ein, die sich nur eingeschränkt an die bestehende Teamstruktur anschließen lässt. Dadurch ist mit Spannungen in Steuerung, Orientierung und Umsetzung zu rechnen.", steeringDescription: "Eine verlässliche Führungswirkung ist nur mit deutlicher Gegensteuerung und enger Begleitung überhaupt erreichbar." },
-    12: { indicatorText: "Die Passung zwischen Führungskraft und Team ist deutlich eingeschränkt. Die Unterschiede in Steuerungs- und Entscheidungsverhalten sind so ausgeprägt, dass die Teamstabilität belastet werden kann.", steeringDescription: "Die Führbarkeit des Teams wäre nur mit sehr hohem Steuerungs- und Stabilisierungsaufwand denkbar." },
-    13: { indicatorText: "Die Führungs- und Teamlogik unterscheiden sich grundlegend. Eine stabile Führung des bestehenden Teams ist daher nur sehr eingeschränkt vorstellbar.", steeringDescription: "Eine tragfähige Führungswirkung erscheint nur unter massivem Steuerungsaufwand und klarer Gegensteuerung möglich." },
+    gap: {
+      geeignet: "Die Führungslogik der Person passt sehr gut zur bestehenden Teamstruktur. Dadurch ist zu erwarten, dass Entscheidungen, Orientierung und Zusammenarbeit schnell stabil geführt werden können.",
+      bedingt_low: "Die Führbarkeit des Teams ist grundsätzlich gegeben, bleibt aber nicht durchgehend stabil. Vor allem unter Druck können Unterschiede in Tempo, Richtung und Steuerungsanspruch deutlicher sichtbar werden.",
+      bedingt_high: "Die Person kann das Team führen, wird die bestehende Dynamik jedoch nicht automatisch stabilisieren. Ohne klare Führungslinien steigt die Wahrscheinlichkeit für Irritationen und Reibungsverluste.",
+      nicht_low: "Die Führungslogik der Person unterscheidet sich deutlich von der bestehenden Teamstruktur. Dadurch steigt das Risiko, dass Entscheidungen im Team nicht stabil verankert werden und zusätzliche Spannungen entstehen.",
+      nicht_high: "Die Führungs- und Teamlogik unterscheiden sich grundlegend. Eine stabile Führung des bestehenden Teams ist daher nur sehr eingeschränkt vorstellbar.",
+    },
+    secFlip_strong: {
+      default: "Die dominante Führungslogik stimmt mit der Teamstruktur überein, aber die Sekundärausrichtung weicht deutlich ab. Die Führungskraft bringt die falsche zweite Stärke klar ausgeprägt mit. Steuerungsstil und Prioritätensetzung unterscheiden sich dadurch strukturell vom Team.",
+    },
+    secFlip_weak: {
+      default: "Die dominante Führungslogik stimmt mit der Teamstruktur überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente liegen nah beieinander – das macht das Führungsverhalten in Drucksituationen weniger vorhersehbar und erschwert die stabile Steuerung des Teams.",
+    },
+    unclearSec: {
+      default: "Die dominante Führungslogik stimmt mit der Teamstruktur überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente liegen nah beieinander – das macht das Führungsverhalten in Drucksituationen weniger vorhersehbar.",
+    },
   },
 };
 
-function getVariantKey(fitLabel: string, devScore: number, totalGap: number): number {
-  if (fitLabel === "Geeignet") {
-    if (devScore >= 6) return 1;
-    if (devScore >= 5) return 2;
-    return 3;
-  }
-  if (fitLabel === "Bedingt geeignet") {
-    if (devScore >= 5) return 4;
-    if (devScore >= 4) return 5;
-    if (devScore >= 3) return totalGap <= 35 ? 6 : 7;
-    return 8;
-  }
-  if (devScore >= 3) return 9;
-  if (devScore >= 2) return totalGap <= 45 ? 10 : 11;
-  return totalGap <= 55 ? 12 : 13;
+const STEERING_DESCRIPTIONS: Record<string, Record<number, string>> = {
+  teammitglied: {
+    6: "Die Integration wird voraussichtlich mit geringem Abstimmungs- und Steuerungsaufwand gelingen.",
+    5: "Die Einbindung ist gut realistisch und erfordert nur punktuelle Führung und Abstimmung.",
+    4: "Eine tragfähige Integration ist möglich, benötigt aber bewusste Führung und klare Abstimmung.",
+    3: "Damit die Zusammenarbeit tragfähig bleibt, ist ein erhöhter Steuerungs- und Klärungsaufwand sinnvoll.",
+    2: "Eine stabile Integration ist nur mit erhöhtem Führungs- und Steuerungsaufwand realistisch.",
+    1: "Eine tragfähige Integration erscheint nur unter massivem Steuerungsaufwand und klarer Gegensteuerung möglich.",
+  },
+  fuehrung: {
+    6: "Das Team kann voraussichtlich mit geringem Führungsaufwand wirksam gesteuert und stabilisiert werden.",
+    5: "Eine stabile Führungswirkung ist gut realistisch und erfordert nur punktuelle Nachsteuerung.",
+    4: "Eine wirksame Führung ist möglich, braucht jedoch bewusste Rahmung und klare Orientierung.",
+    3: "Damit das Team tragfähig geführt werden kann, ist ein erhöhter Steuerungs- und Klärungsaufwand sinnvoll.",
+    2: "Eine stabile Führung ist nur mit erhöhtem Steuerungs-, Präsenz- und Klärungsaufwand realistisch.",
+    1: "Eine tragfähige Führungswirkung erscheint nur unter massivem Steuerungsaufwand und klarer Gegensteuerung möglich.",
+  },
+};
+
+function selectIndicatorText(roleType: string, reason: ClassificationReason, fitLabel: string, totalGap: number): string {
+  const pool = INDICATOR_TEXTS[roleType]?.[reason] || INDICATOR_TEXTS.teammitglied[reason];
+  if (reason !== "gap") return pool.default;
+  if (fitLabel === "Geeignet") return pool.geeignet;
+  if (fitLabel === "Bedingt geeignet") return totalGap <= 35 ? pool.bedingt_low : pool.bedingt_high;
+  return totalGap <= 50 ? pool.nicht_low : pool.nicht_high;
 }
 
 export default function TeamReport() {
@@ -699,12 +712,13 @@ export default function TeamReport() {
 
           const geignetLimit = sameDom ? 28 : 20;
           let fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
+          let classReason: ClassificationReason = "gap";
           if (secondaryFlip && candSecGap > 5) {
-            fitLabel = "Nicht geeignet";
+            fitLabel = "Nicht geeignet"; classReason = "secFlip_strong";
           } else if (secondaryFlip && fitLabel === "Geeignet") {
-            fitLabel = "Bedingt geeignet";
+            fitLabel = "Bedingt geeignet"; classReason = "secFlip_weak";
           } else if (fitLabel === "Geeignet" && sameDom && candSecGap <= 5) {
-            fitLabel = "Bedingt geeignet";
+            fitLabel = "Bedingt geeignet"; classReason = "unclearSec";
           }
 
           let devScore: number;
@@ -721,8 +735,8 @@ export default function TeamReport() {
             else devScore = Math.min(devScore, 4);
           }
 
-          const variantKey = getVariantKey(fitLabel, devScore, totalGap);
-          const variant = TEAMCHECK_PREVIEW_DATA[roleTypeForCard]?.[variantKey] || TEAMCHECK_PREVIEW_DATA.teammitglied[9];
+          const indicatorText = selectIndicatorText(roleTypeForCard, classReason, fitLabel, totalGap);
+          const steeringDescription = STEERING_DESCRIPTIONS[roleTypeForCard]?.[devScore] || STEERING_DESCRIPTIONS.teammitglied[devScore] || "";
           const roleChipLabel = roleTypeForCard === "fuehrung" ? "Führungskraft" : "Teammitglied";
           const resultBg = fitLabel === "Geeignet" ? "#eaf8ef" : fitLabel === "Bedingt geeignet" ? "#fff4df" : "#ffe7e7";
           const resultColor = fitLabel === "Geeignet" ? "#1f8f52" : fitLabel === "Bedingt geeignet" ? "#d28a00" : "#e14848";
@@ -768,7 +782,7 @@ export default function TeamReport() {
                     <div className="grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] gap-10" style={{ alignItems: "start" }}>
                       <div style={{ minWidth: 0 }}>
                         <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8d96a8", marginBottom: 10 }}>Indikator</div>
-                        <p style={{ margin: 0, fontSize: 18, lineHeight: 1.75, color: "#4d5666" }} data-testid="text-teamcheck-indicator">{variant.indicatorText}</p>
+                        <p style={{ margin: 0, fontSize: 18, lineHeight: 1.75, color: "#4d5666" }} data-testid="text-teamcheck-indicator">{indicatorText}</p>
                       </div>
 
                       <div style={{ minWidth: 0 }}>
@@ -785,7 +799,7 @@ export default function TeamReport() {
                           ))}
                         </div>
 
-                        <p style={{ margin: 0, fontSize: 18, lineHeight: 1.75, color: "#4d5666" }} data-testid="text-steering-description">{variant.steeringDescription}</p>
+                        <p style={{ margin: 0, fontSize: 18, lineHeight: 1.75, color: "#4d5666" }} data-testid="text-steering-description">{steeringDescription}</p>
                       </div>
                     </div>
                   </div>
