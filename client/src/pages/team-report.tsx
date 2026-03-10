@@ -552,11 +552,19 @@ export default function TeamReport() {
                 <SliderGroup title="Teamprofil" triad={teamTriad}
                   onTriadChange={updateTeamTriad} testIdPrefix="team" />
               </div>
-              <div className="mt-8 flex justify-center">
+              <div className="mt-8 flex justify-center gap-4">
                 <button onClick={() => setReportGenerated(true)}
                   className="inline-flex h-12 items-center gap-2 rounded-2xl bg-blue-600 px-8 text-[15px] font-semibold text-white shadow-md hover:bg-blue-700 transition-colors"
                   data-testid="button-generate-report">
                   Bericht erstellen
+                </button>
+                <button onClick={() => {
+                    setTeamTriad({ impulsiv: 20, intuitiv: 45, analytisch: 35 });
+                    setReportGenerated(true);
+                  }}
+                  className="inline-flex h-12 items-center gap-2 rounded-2xl border border-slate-300 bg-white px-8 text-[15px] font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors"
+                  data-testid="button-generate-test2">
+                  Testbericht 2
                 </button>
               </div>
             </div>
