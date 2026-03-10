@@ -369,23 +369,23 @@ function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string,
     analytisch: "gründlicher, aber langsamer",
   };
 
-  const sn = subj(cand);
+  const sn = Subj(cand);
   let controlledPressure: string;
   if (cConst === "BALANCED") {
-    controlledPressure = `Wenn der Arbeitsdruck steigt, verstärkt sich bei ${sn} meist die situativ naheliegendste Arbeitslogik. Da das Profil ausgeglichen ist, gibt es keinen klaren Automatismus. Die tatsächliche Reaktion hängt stärker vom Kontext und der Führung ab.`;
+    controlledPressure = `Steigt der Arbeitsdruck, greift ${subj(cand)} auf die situativ naheliegendste Arbeitslogik zurück. Da das Profil ausgeglichen ist, gibt es keinen klaren Automatismus — die Reaktion hängt stärker vom Kontext und der Führung ab.`;
   } else if (cConst.includes("NEAR")) {
-    controlledPressure = `Wenn der Arbeitsdruck steigt, verstärkt sich bei ${sn} meist die im Moment führende Logik. Da beide Hauptanteile fast gleich stark sind, kann die Reaktion je nach Situation unterschiedlich ausfallen. Das bedeutet: Mal wird stärker über ${compShort(pk)} gesteuert, mal über ${compShort(sk)}.`;
+    controlledPressure = `Steigt der Arbeitsdruck, greift ${subj(cand)} auf die gerade führende Logik zurück. Da beide Hauptanteile fast gleich stark sind, fällt die Reaktion situationsabhängig aus: Mal wird stärker über ${compShort(pk)} gesteuert, mal über ${compShort(sk)}.`;
   } else {
-    controlledPressure = `Wenn der Arbeitsdruck steigt, verstärkt sich bei ${sn} zunächst die Tendenz, ${primaryBehavior[pk]}. Das hilft, die Situation kurzfristig zu stabilisieren. Gleichzeitig steigt damit das Risiko, dass die sekundären Anteile (${compShort(sk)}) in den Hintergrund treten.`;
+    controlledPressure = `Steigt der Arbeitsdruck, verstärkt sich zunächst die Tendenz, ${primaryBehavior[pk]}. Kurzfristig stabilisiert das die Situation. Gleichzeitig steigt das Risiko, dass die sekundären Anteile (${compShort(sk)}) in den Hintergrund treten.`;
   }
 
   let uncontrolledStress: string;
   if (cConst === "BALANCED") {
-    uncontrolledStress = `Wenn der Druck sehr hoch wird, kann das Verhalten von ${sn} kippen oder wechseln, weil keine klare Hauptlogik trägt. Die Reaktion wird weniger vorhersagbar. Für die Führungskraft bedeutet das: ${Subj(cand)} braucht in Stressphasen besonders klare Orientierung und Leitplanken.`;
+    uncontrolledStress = `Wird der Druck sehr hoch, kann das Verhalten kippen oder wechseln, weil keine klare Hauptlogik trägt. Die Reaktion wird weniger vorhersagbar. ${sn} braucht in Stressphasen besonders klare Orientierung und Leitplanken.`;
   } else if (d12 <= 5) {
-    uncontrolledStress = `Wenn die Belastung sehr hoch wird, kann sich der Schwerpunkt bei ${sn} leicht verschieben. ${Subj(cand)} bleibt in der Grundlogik erkennbar, nutzt aber spürbar stärker ${compShort(sk)}. ${secondaryBehavior[sk]}. Für die Führungskraft bedeutet das: Die Arbeitsweise verändert sich, aber die Grundrichtung bleibt steuerbar.`;
+    uncontrolledStress = `Wird die Belastung sehr hoch, kann sich der Schwerpunkt leicht verschieben. ${sn} bleibt in der Grundlogik erkennbar, nutzt aber spürbar stärker ${compShort(sk)}. ${secondaryBehavior[sk]}. Die Arbeitsweise verändert sich, die Grundrichtung bleibt aber steuerbar.`;
   } else {
-    uncontrolledStress = `Wenn die Belastung sehr hoch wird und viele Anforderungen gleichzeitig auftreten, verschiebt sich das Verhalten von ${sn} deutlich. Dann tritt stärker ${compShort(sk)} in den Vordergrund. ${secondaryBehavior[sk]}. Entscheidungen werden dadurch ${secondaryDecision[sk]}. Für die Führungskraft bedeutet das: Unter starkem Stress arbeitet ${subj(cand)} anders als im Normalzustand. Darauf sollte man vorbereitet sein.`;
+    uncontrolledStress = `Wird die Belastung sehr hoch und treten viele Anforderungen gleichzeitig auf, verschiebt sich das Verhalten deutlich. ${compShort(sk)} tritt stärker in den Vordergrund. ${secondaryBehavior[sk]}. Entscheidungen werden ${secondaryDecision[sk]}. Unter starkem Stress arbeitet ${subj(cand)} anders als im Normalzustand — darauf sollte die Führungskraft vorbereitet sein.`;
   }
 
   return { controlledPressure, uncontrolledStress };
