@@ -398,10 +398,13 @@ export default function SollIstBericht() {
             const roleSorted = [roleTriad.impulsiv, roleTriad.intuitiv, roleTriad.analytisch].sort((a, b) => b - a);
             const candSorted = [candTriad.impulsiv, candTriad.intuitiv, candTriad.analytisch].sort((a, b) => b - a);
             const secGapDiff = Math.abs((roleSorted[1] - roleSorted[2]) - (candSorted[1] - candSorted[2]));
+            const secondaryFlip = sameDom && roleDom.top2.key !== candDom.top2.key;
+            const top2Diff = secondaryFlip ? Math.abs(roleTriad[roleDom.top2.key] - candTriad[roleDom.top2.key]) : 0;
 
             const geignetLimit = sameDom ? 28 : 20;
-            const fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
-            const fitColor = totalGap > 40 ? "#D64045" : totalGap > geignetLimit ? "#E5A832" : "#3A9A5C";
+            let fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
+            if (fitLabel === "Geeignet" && secondaryFlip && top2Diff >= 5) fitLabel = "Bedingt geeignet";
+            const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
 
             const fazitText = sameDom && totalGap <= geignetLimit && secGapDiff < 6
               ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
@@ -417,7 +420,7 @@ export default function SollIstBericht() {
             if (sameDom && totalGap <= 20) devScore = 6;
             else if (sameDom && totalGap <= 28) devScore = 5;
             else if (totalGap <= 20 || (sameDom && totalGap <= 35)) devScore = 4;
-            else if (totalGap <= 35) devScore = 3;
+            else if (totalGap <= 35 || (sameDom && totalGap <= 45)) devScore = 3;
             else if (totalGap <= 50) devScore = 2;
             else devScore = 1;
 
@@ -678,10 +681,15 @@ export default function SollIstBericht() {
                 const rSecGapDiff = Math.abs((rSorted[1] - rSorted[2]) - (cSorted[1] - cSorted[2]));
                 const tGap = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).reduce((s, k) => s + Math.abs(rTriad[k] - cTriad[k]), 0);
                 const sameD = result.roleDomKey === result.candDomKey;
+                const rRoleDom = dominanceModeOf(rTriad);
+                const rCandDom = dominanceModeOf(cTriad);
+                const rSecFlip = sameD && rRoleDom.top2.key !== rCandDom.top2.key;
+                const rTop2Diff = rSecFlip ? Math.abs(rTriad[rRoleDom.top2.key] - cTriad[rRoleDom.top2.key]) : 0;
 
                 const rGeignetLimit = sameD ? 28 : 20;
-                const rFitLabel = tGap > 40 ? "Nicht geeignet" : tGap > rGeignetLimit ? "Bedingt geeignet" : "Geeignet";
-                const rFitColor = tGap > 40 ? "#D64045" : tGap > rGeignetLimit ? "#E5A832" : "#3A9A5C";
+                let rFitLabel = tGap > 40 ? "Nicht geeignet" : tGap > rGeignetLimit ? "Bedingt geeignet" : "Geeignet";
+                if (rFitLabel === "Geeignet" && rSecFlip && rTop2Diff >= 5) rFitLabel = "Bedingt geeignet";
+                const rFitColor = rFitLabel === "Nicht geeignet" ? "#D64045" : rFitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
 
                 const rFazit = sameD && tGap <= rGeignetLimit && rSecGapDiff < 6
                   ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
@@ -697,7 +705,7 @@ export default function SollIstBericht() {
                 if (sameD && tGap <= 20) rDev = 6;
                 else if (sameD && tGap <= 28) rDev = 5;
                 else if (tGap <= 20 || (sameD && tGap <= 35)) rDev = 4;
-                else if (tGap <= 35) rDev = 3;
+                else if (tGap <= 35 || (sameD && tGap <= 45)) rDev = 3;
                 else if (tGap <= 50) rDev = 2;
                 else rDev = 1;
                 if (rSecGapDiff >= 12) rDev = Math.max(rDev - 2, 1);
