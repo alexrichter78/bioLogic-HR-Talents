@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation } from "wouter";
-import { AlertTriangle, Download, Check, Users, ChevronDown } from "lucide-react";
+import { AlertTriangle, Download, Check, Users, ChevronDown, Zap } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeTeamReport } from "@/lib/team-report-engine";
@@ -422,6 +422,7 @@ export default function TeamReport() {
   const [roleName, setRoleName] = useState("");
   const [candidateName, setCandidateName] = useState("");
   const [reportGenerated, setReportGenerated] = useState(false);
+  const [matchCheckOpen, setMatchCheckOpen] = useState(true);
 
   useEffect(() => {
     const raw = localStorage.getItem("rollenDnaState");
@@ -561,6 +562,137 @@ export default function TeamReport() {
             </div>
           </div>
         </div>
+
+        {(() => {
+          const teamDom = dominanceModeOf(teamProfileN);
+          const candDom = dominanceModeOf(istProfile);
+          const teamDomKeyFit = teamDom.top1.key;
+          const candDomKeyFit = candDom.top1.key;
+          const sameDom = teamDomKeyFit === candDomKeyFit;
+          const totalGap = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).reduce((sum, k) => sum + Math.abs(teamProfileN[k] - istProfile[k]), 0);
+
+          const teamSorted = [teamProfileN.impulsiv, teamProfileN.intuitiv, teamProfileN.analytisch].sort((a, b) => b - a);
+          const candSorted = [istProfile.impulsiv, istProfile.intuitiv, istProfile.analytisch].sort((a, b) => b - a);
+          const secondaryFlip = sameDom && teamDom.top2.key !== candDom.top2.key;
+          const candSecGap = candSorted[1] - candSorted[2];
+
+          const geignetLimit = sameDom ? 28 : 20;
+          let fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
+          if (secondaryFlip && candSecGap > 5) {
+            fitLabel = "Nicht geeignet";
+          } else if (secondaryFlip && fitLabel === "Geeignet") {
+            fitLabel = "Bedingt geeignet";
+          } else if (fitLabel === "Geeignet" && sameDom && candSecGap <= 5) {
+            fitLabel = "Bedingt geeignet";
+          }
+          const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
+
+          const fazitText = secondaryFlip && candSecGap > 5
+            ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärausrichtung passt nicht. Die Person bringt die falsche zweite Stärke klar ausgeprägt mit. Arbeitsstil und Prioritätensetzung weichen strukturell ab."
+            : secondaryFlip && totalGap <= geignetLimit
+            ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
+            : sameDom && candSecGap <= 5 && totalGap <= geignetLimit
+            ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
+            : sameDom && totalGap <= geignetLimit
+            ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen des Teams."
+            : sameDom
+            ? "Die Grundausrichtung ist ähnlich, es bestehen jedoch spürbare Unterschiede in der Intensität. Mit gezielter Führung lässt sich die Zusammenarbeit stabil gestalten."
+            : totalGap > 40
+            ? "Die Arbeits- und Entscheidungslogiken von Team und Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch erhöhter Abstimmungs- und Steuerungsbedarf."
+            : "Unterschiedliche Arbeitslogiken treffen aufeinander. Die Person arbeitet und entscheidet anders, als es das Team erfordert. Im Alltag entsteht dadurch erhöhter Abstimmungsbedarf.";
+
+          let devScore: number;
+          if (sameDom && totalGap <= 20) devScore = 6;
+          else if (sameDom && totalGap <= 28) devScore = 5;
+          else if (totalGap <= 20 || (sameDom && totalGap <= 35)) devScore = 4;
+          else if (totalGap <= 35 || (sameDom && totalGap <= 45)) devScore = 3;
+          else if (totalGap <= 50) devScore = 2;
+          else devScore = 1;
+
+          if (devScore === 6 && candSecGap <= 5) devScore = 5;
+          if (secondaryFlip) {
+            if (candSecGap > 5) devScore = Math.min(devScore, 2);
+            else devScore = Math.min(devScore, 4);
+          }
+
+          const devTexts: Record<number, string> = {
+            1: "Die grundlegende Arbeitslogik der Person unterscheidet sich stark von der Teamstruktur. Eine stabile Anpassung ist daher nur sehr eingeschränkt zu erwarten.",
+            2: "Die Teamstruktur unterscheidet sich deutlich von der natürlichen Arbeitsweise der Person. Eine Entwicklung ist grundsätzlich möglich, erfordert jedoch intensive Führung und klare Rahmenbedingungen.",
+            3: "Die Person kann sich teilweise an die Anforderungen des Teams anpassen. Eine stabile Umsetzung erfordert jedoch Zeit, Erfahrung und unterstützende Strukturen.",
+            4: "Die Person kann sich grundsätzlich gut an die Teamstruktur entwickeln. Mit klaren Entscheidungswegen und Feedback ist eine stabile Zusammenarbeit gut erreichbar.",
+            5: "Die Arbeits- und Entscheidungslogik der Person passt bereits weitgehend zur Teamstruktur. Eine Entwicklung zu einer stabilen und erfolgreichen Umsetzung ist sehr wahrscheinlich.",
+            6: "Die Person kann sich sehr schnell und stabil ins Team einfügen. Arbeitsweise, Entscheidungslogik und Teamstruktur passen sehr gut zusammen.",
+          };
+
+          const devLabels: Record<number, string> = {
+            1: "Entwicklung praktisch nicht erreichbar",
+            2: "Entwicklung sehr schwierig",
+            3: "Entwicklung möglich mit hohem Aufwand",
+            4: "Entwicklung gut möglich",
+            5: "Entwicklung sehr wahrscheinlich",
+            6: "Entwicklung sehr schnell erreichbar",
+          };
+
+          const devGaugeColor = devScore >= 5 ? "#3A9A5C" : devScore >= 3 ? "#E5A832" : "#D64045";
+
+          return (
+            <div className="mb-8" data-testid="section-matchcheck-team">
+              <div style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }}>
+                <button
+                  onClick={() => setMatchCheckOpen(!matchCheckOpen)}
+                  style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.02)"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+                  data-testid="button-toggle-matchcheck-team"
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <Zap style={{ width: 22, height: 22, color: "#3A9A5C", flexShrink: 0 }} />
+                    <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
+                      MatchCheck — Systemwirkung
+                    </span>
+                  </div>
+                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${matchCheckOpen ? "rotate-180" : ""}`} />
+                </button>
+
+                {matchCheckOpen && (
+                <div style={{ padding: "0 32px 28px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
+                        <div style={{ width: 18, height: 18, borderRadius: 9, background: fitColor, flexShrink: 0, boxShadow: `0 0 0 4px ${fitColor}20` }} />
+                        <div style={{ flex: 1 }}>
+                          <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-matchcheck-team-name">{roleName || "Team"}</span>
+                        </div>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: fitColor, letterSpacing: "0.03em" }} data-testid="text-matchcheck-team-fit">
+                          {fitLabel}
+                        </span>
+                      </div>
+                      <div style={{ background: `${fitColor}08`, borderLeft: `3px solid ${fitColor}`, borderRadius: "0 8px 8px 0", padding: "12px 16px" }}>
+                        <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: 0 }} data-testid="text-matchcheck-team-fazit">{fazitText}</p>
+                      </div>
+                    </div>
+
+                    <div style={{ borderLeft: "1px solid rgba(0,0,0,0.06)", paddingLeft: 24 }}>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 14px" }}>
+                        Entwicklungsprognose
+                      </p>
+                      <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }} data-testid="text-matchcheck-team-dev">
+                        {devScore} von 6 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>– {devLabels[devScore]}</span>
+                      </p>
+                      <div style={{ display: "flex", gap: 5, marginBottom: 18 }} data-testid="gauge-matchcheck-team-dev">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                          <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)" }} />
+                        ))}
+                      </div>
+                      <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.75, margin: 0 }} data-testid="text-matchcheck-team-devtext">{devTexts[devScore]}</p>
+                    </div>
+                  </div>
+                </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
 
         <div className="mb-8 rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-kompakt">
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
