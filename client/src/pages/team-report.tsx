@@ -491,6 +491,7 @@ export default function TeamReport() {
   const [candidateName, setCandidateName] = useState("");
   const [reportGenerated, setReportGenerated] = useState(false);
   const [matchCheckOpen, setMatchCheckOpen] = useState(true);
+  const [integrationPlanOpen, setIntegrationPlanOpen] = useState(true);
   const [roleTypeForCard, setRoleTypeForCard] = useState<"teammitglied" | "fuehrung">("teammitglied");
 
   useEffect(() => {
@@ -801,6 +802,71 @@ export default function TeamReport() {
             </div>
           );
         })()}
+
+        {liveResult.integrationsplanPhasen.length > 0 && (
+          <div style={{ marginTop: 20 }} data-testid="section-integrationsplan-preview">
+            <div style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }}>
+              <button
+                onClick={() => setIntegrationPlanOpen(!integrationPlanOpen)}
+                style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.02)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+                data-testid="button-toggle-integrationsplan"
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <Users style={{ width: 22, height: 22, color: "#0071E3", flexShrink: 0 }} />
+                  <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
+                    Integrationsplan
+                  </span>
+                </div>
+                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${integrationPlanOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              {integrationPlanOpen && (
+              <div style={{ padding: "0 32px 28px" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+                  {liveResult.integrationsplanPhasen.map((phase, i) => {
+                    const phaseColors = [
+                      { bg: "rgba(255,149,0,0.04)", border: "rgba(255,149,0,0.10)", badge: "#FF9500" },
+                      { bg: "rgba(0,113,227,0.04)", border: "rgba(0,113,227,0.10)", badge: "#0071E3" },
+                      { bg: "rgba(52,199,89,0.04)", border: "rgba(52,199,89,0.10)", badge: "#34C759" },
+                    ];
+                    const c = phaseColors[i] || phaseColors[0];
+                    return (
+                      <div key={i} style={{
+                        padding: "18px 20px", borderRadius: 18,
+                        background: c.bg, border: `1px solid ${c.border}`,
+                      }} data-testid={`integration-preview-phase-${i}`}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                          <div style={{
+                            width: 28, height: 28, borderRadius: 9,
+                            background: c.badge,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                          }}>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: "#FFF" }}>{phase.num}</span>
+                          </div>
+                          <div>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{phase.title}</span>
+                            <span style={{ fontSize: 12, color: "#8E8E93", marginLeft: 8 }}>{phase.period}</span>
+                          </div>
+                        </div>
+                        <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 6 }}>
+                          {phase.items.map((item, j) => (
+                            <li key={j} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13, color: "#48484A", lineHeight: 1.65 }}>
+                              <div style={{ width: 5, height: 5, borderRadius: "50%", background: c.badge, marginTop: 7, flexShrink: 0, opacity: 0.7 }} />
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {result && sw && (
           <>
