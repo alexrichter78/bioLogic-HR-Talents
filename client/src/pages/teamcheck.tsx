@@ -231,7 +231,21 @@ export default function TeamCheck() {
         }
       }
     } catch {}
+
+    try {
+      const savedTeam = localStorage.getItem("teamProfile");
+      if (savedTeam) {
+        const tp = JSON.parse(savedTeam);
+        if (tp.impulsiv != null && tp.intuitiv != null && tp.analytisch != null) {
+          setTeam({ impulsiv: tp.impulsiv, intuitiv: tp.intuitiv, analytisch: tp.analytisch });
+        }
+      }
+    } catch {}
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("teamProfile", JSON.stringify({ impulsiv: team.impulsiv, intuitiv: team.intuitiv, analytisch: team.analytisch }));
+  }, [team.impulsiv, team.intuitiv, team.analytisch]);
 
   const input: TeamCheckInput = useMemo(() => ({
     soll, kandidat, team, beruf, bereich, fuehrungstyp, isLeading,
