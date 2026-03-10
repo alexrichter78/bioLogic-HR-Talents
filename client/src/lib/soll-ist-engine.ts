@@ -376,7 +376,7 @@ function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string,
   } else if (cConst.includes("NEAR")) {
     controlledPressure = `Steigt der Arbeitsdruck, greift ${subj(cand)} auf die gerade führende Logik zurück. Da beide Hauptanteile fast gleich stark sind, fällt die Reaktion situationsabhängig aus: Mal wird stärker über ${compShort(pk)} gesteuert, mal über ${compShort(sk)}.`;
   } else {
-    controlledPressure = `Steigt der Arbeitsdruck, verstärkt sich zunächst die Tendenz, ${primaryBehavior[pk]}. Kurzfristig stabilisiert das die Situation. Gleichzeitig steigt das Risiko, dass die sekundären Anteile (${compShort(sk)}) in den Hintergrund treten.`;
+    controlledPressure = `Steigt der Arbeitsdruck, verstärkt sich zunächst die Tendenz, ${primaryBehavior[pk]}. Kurzfristig stabilisiert das die Situation — gleichzeitig steigt das Risiko, dass ${compShort(sk)} in den Hintergrund tritt.`;
   }
 
   let uncontrolledStress: string;
