@@ -956,11 +956,9 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   }
   const secondaryFlipped = sameDom && roleDom.top2.key !== candDom.top2.key;
   if (overallFit === "SUITABLE" && secondaryFlipped && !ko) {
-    const r2 = normalizeTriad(role.role_profile);
-    const c2 = normalizeTriad(cand.candidate_profile);
-    const top2DiffRole = Math.abs(r2[roleDom.top2.key] - c2[roleDom.top2.key]);
-    const top2DiffCand = Math.abs(r2[candDom.top2.key] - c2[candDom.top2.key]);
-    if (top2DiffRole >= 5 || top2DiffCand >= 5) {
+    if (candDom.gap2 > 5) {
+      overallFit = "NOT_SUITABLE";
+    } else {
       overallFit = "CONDITIONAL";
     }
   }
@@ -992,10 +990,15 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
     if (overallFit === "SUITABLE") {
       return `${candName} passt zur Rolle ${jobTitle}. Die geforderte ${rL}-Arbeitsweise wird stabil abgebildet. Kritischster Bereich: „${critical.label}" – dort ist die Passung am engsten.`;
     }
+    if (secondaryFlipped && overallFit === "NOT_SUITABLE") {
+      const roleSecL = labelComponent(roleDom.top2.key);
+      const candSecL = labelComponent(candDom.top2.key);
+      return `${candName} arbeitet zwar ${rL}-orientiert, aber die Sekundärausrichtung passt nicht: Die Rolle braucht ${roleSecL} als zweite Stärke, ${candName} bringt jedoch klar ${candSecL} mit. Diese strukturelle Abweichung verändert Arbeitsstil und Prioritäten grundlegend – besonders im Bereich „${critical.label}".`;
+    }
     if (secondaryFlipped && sameDom && overallFit === "CONDITIONAL") {
       const roleSecL = labelComponent(roleDom.top2.key);
       const candSecL = labelComponent(candDom.top2.key);
-      return `${candName} arbeitet ${rL}-orientiert wie gefordert, aber die Sekundärausrichtung weicht ab: Die Rolle braucht ${roleSecL} als zweite Stärke, ${candName} setzt auf ${candSecL}. Das verändert Arbeitsstil und Prioritäten – besonders im Bereich „${critical.label}". Mit Führung steuerbar.`;
+      return `${candName} arbeitet ${rL}-orientiert wie gefordert, aber die Sekundärausrichtung ist unklar: Die Rolle braucht ${roleSecL} als zweite Stärke, ${candName} zeigt eine Mischung aus ${roleSecL} und ${candSecL}. Mit Führung steuerbar – besonders im Bereich „${critical.label}".`;
     }
     if (sameDom && overallFit === "CONDITIONAL") {
       return `${candName} arbeitet grundsätzlich ${rL}-orientiert, aber die Ausprägung liegt unter dem, was die Rolle braucht. Es gibt ${gapDesc(mainDiff)} – besonders im Bereich „${critical.label}". Mit Führung steuerbar, aber nicht selbsttragend.`;
@@ -1014,10 +1017,14 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
       domLine = `Gleichverteilung – kein erkennbarer Schwerpunkt. Die Rolle braucht eine klare ${rL}-Ausrichtung. Die Grundlage für gezielte Prioritäten und konsequente Entscheidungen fehlt.`;
     } else if (dualConflict) {
       domLine = `Doppeldominanz: ${labelComponent(candDom.top1.key)} und ${labelComponent(candDom.top2.key)} konkurrieren – die Rolle braucht eine klare ${rL}-Ausrichtung. Prioritäten und Entscheidungen werden instabil.`;
+    } else if (sameDom && secondaryFlipped && candDom.gap2 > 5) {
+      const roleSecL = labelComponent(roleDom.top2.key);
+      const candSecL = labelComponent(candDom.top2.key);
+      domLine = `Beide Profile sind ${rL}-geprägt, aber die Sekundärausrichtung passt nicht: Rolle erwartet ${roleSecL}, Person bringt klar ${candSecL}. Arbeitsstil und Prioritätensetzung weichen strukturell ab.`;
     } else if (sameDom && secondaryFlipped) {
       const roleSecL = labelComponent(roleDom.top2.key);
       const candSecL = labelComponent(candDom.top2.key);
-      domLine = `Beide Profile sind ${rL}-geprägt, aber die Sekundärausrichtung weicht ab: Rolle erwartet ${roleSecL}, Person bringt ${candSecL}. Das beeinflusst Arbeitsstil und Prioritätensetzung.`;
+      domLine = `Beide Profile sind ${rL}-geprägt, die Sekundärausrichtung ist jedoch unklar: Rolle erwartet ${roleSecL}, Person zeigt eine Mischung. Mit Führung steuerbar.`;
     } else if (sameDom) {
       domLine = `Beide Profile sind ${rL}-geprägt und ${gapAdj(mainDiff)}. Arbeitsweise und Prioritäten stimmen in der Grundrichtung überein.`;
     } else {
