@@ -399,11 +399,12 @@ export default function SollIstBericht() {
             const candSorted = [candTriad.impulsiv, candTriad.intuitiv, candTriad.analytisch].sort((a, b) => b - a);
             const secGapDiff = Math.abs((roleSorted[1] - roleSorted[2]) - (candSorted[1] - candSorted[2]));
             const secondaryFlip = sameDom && roleDom.top2.key !== candDom.top2.key;
-            const top2Diff = secondaryFlip ? Math.abs(roleTriad[roleDom.top2.key] - candTriad[roleDom.top2.key]) : 0;
+            const top2DiffRole = secondaryFlip ? Math.abs(roleTriad[roleDom.top2.key] - candTriad[roleDom.top2.key]) : 0;
+            const top2DiffCand = secondaryFlip ? Math.abs(roleTriad[candDom.top2.key] - candTriad[candDom.top2.key]) : 0;
 
             const geignetLimit = sameDom ? 28 : 20;
             let fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
-            if (fitLabel === "Geeignet" && secondaryFlip && top2Diff >= 5) fitLabel = "Bedingt geeignet";
+            if (fitLabel === "Geeignet" && secondaryFlip && (top2DiffRole >= 5 || top2DiffCand >= 5)) fitLabel = "Bedingt geeignet";
             const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
 
             const fazitText = sameDom && totalGap <= geignetLimit && secGapDiff < 6
@@ -428,6 +429,7 @@ export default function SollIstBericht() {
             else if (secGapDiff >= 6) devScore = Math.max(devScore - 1, 1);
             const candSecGap = candSorted[1] - candSorted[2];
             if (devScore === 6 && candSecGap <= 5) devScore = 5;
+            if (devScore >= 5 && secondaryFlip && (top2DiffRole >= 5 || top2DiffCand >= 5)) devScore = Math.min(devScore, 4);
 
             const devTexts: Record<number, string> = {
               1: "Die grundlegende Arbeitslogik der Person unterscheidet sich stark von den Anforderungen der Rolle. Eine stabile Anpassung ist daher nur sehr eingeschränkt zu erwarten.",
@@ -686,11 +688,12 @@ export default function SollIstBericht() {
                 const rRoleDom = dominanceModeOf(rTriad);
                 const rCandDom = dominanceModeOf(cTriad);
                 const rSecFlip = sameD && rRoleDom.top2.key !== rCandDom.top2.key;
-                const rTop2Diff = rSecFlip ? Math.abs(rTriad[rRoleDom.top2.key] - cTriad[rRoleDom.top2.key]) : 0;
+                const rTop2DiffRole = rSecFlip ? Math.abs(rTriad[rRoleDom.top2.key] - cTriad[rRoleDom.top2.key]) : 0;
+                const rTop2DiffCand = rSecFlip ? Math.abs(rTriad[rCandDom.top2.key] - cTriad[rCandDom.top2.key]) : 0;
 
                 const rGeignetLimit = sameD ? 28 : 20;
                 let rFitLabel = tGap > 40 ? "Nicht geeignet" : tGap > rGeignetLimit ? "Bedingt geeignet" : "Geeignet";
-                if (rFitLabel === "Geeignet" && rSecFlip && rTop2Diff >= 5) rFitLabel = "Bedingt geeignet";
+                if (rFitLabel === "Geeignet" && rSecFlip && (rTop2DiffRole >= 5 || rTop2DiffCand >= 5)) rFitLabel = "Bedingt geeignet";
                 const rFitColor = rFitLabel === "Nicht geeignet" ? "#D64045" : rFitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
 
                 const rFazit = sameD && tGap <= rGeignetLimit && rSecGapDiff < 6
@@ -714,6 +717,7 @@ export default function SollIstBericht() {
                 else if (rSecGapDiff >= 6) rDev = Math.max(rDev - 1, 1);
                 const rCandSecGap = cSorted[1] - cSorted[2];
                 if (rDev === 6 && rCandSecGap <= 5) rDev = 5;
+                if (rDev >= 5 && rSecFlip && (rTop2DiffRole >= 5 || rTop2DiffCand >= 5)) rDev = Math.min(rDev, 4);
 
                 const rDevTexts: Record<number, string> = {
                   1: "Die grundlegende Arbeitslogik der Person unterscheidet sich stark von den Anforderungen der Rolle. Eine stabile Anpassung ist daher nur sehr eingeschränkt zu erwarten.",

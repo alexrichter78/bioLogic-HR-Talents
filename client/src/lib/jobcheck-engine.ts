@@ -958,8 +958,9 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   if (overallFit === "SUITABLE" && secondaryFlipped && !ko) {
     const r2 = normalizeTriad(role.role_profile);
     const c2 = normalizeTriad(cand.candidate_profile);
-    const top2Diff = Math.abs(r2[roleDom.top2.key] - c2[roleDom.top2.key]);
-    if (top2Diff >= 5) {
+    const top2DiffRole = Math.abs(r2[roleDom.top2.key] - c2[roleDom.top2.key]);
+    const top2DiffCand = Math.abs(r2[candDom.top2.key] - c2[candDom.top2.key]);
+    if (top2DiffRole >= 5 || top2DiffCand >= 5) {
       overallFit = "CONDITIONAL";
     }
   }
