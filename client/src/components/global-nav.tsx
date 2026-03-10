@@ -3,12 +3,12 @@ import { Home, Briefcase, GitCompareArrows, Users, Bot, FileBarChart } from "luc
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 const NAV_ITEMS = [
-  { label: "Home", subtitle: "", path: "/", icon: Home },
-  { label: "JobCheck", subtitle: "Analyse der Rolle", path: "/rollen-dna", icon: Briefcase },
-  { label: "MatchCheck", subtitle: "Rolle \u2194 Person", path: "/soll-ist", icon: GitCompareArrows },
-  { label: "TeamCheck", subtitle: "Teamstruktur", path: "/teamcheck", icon: Users },
-  { label: "KI-Coach", subtitle: "Führung & Entwicklung", path: "/ki-coach", icon: Bot },
-  { label: "TestTeamReport", subtitle: "Systemanalyse", path: "/team-report", icon: FileBarChart },
+  { label: "Home", subtitle: "", path: "/", icon: Home, disabled: false },
+  { label: "JobCheck", subtitle: "Analyse der Rolle", path: "/rollen-dna", icon: Briefcase, disabled: false },
+  { label: "MatchCheck", subtitle: "Rolle \u2194 Person", path: "/soll-ist", icon: GitCompareArrows, disabled: false },
+  { label: "TeamCheck", subtitle: "Teamstruktur", path: "/teamcheck", icon: Users, disabled: true },
+  { label: "KI-Coach", subtitle: "Führung & Entwicklung", path: "/ki-coach", icon: Bot, disabled: false },
+  { label: "TestTeamReport", subtitle: "Systemanalyse", path: "/team-report", icon: FileBarChart, disabled: true },
 ];
 
 const RESET_KEYS = [
@@ -51,23 +51,26 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
               return (
                 <button
                   key={item.label}
-                  onClick={() => handleNav(item)}
+                  onClick={() => !item.disabled && handleNav(item)}
+                  disabled={item.disabled}
                   data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
                   style={{
                     display: "flex", alignItems: "center", gap: 7,
                     padding: "6px 12px", borderRadius: 10,
                     background: active ? "rgba(0,113,227,0.08)" : "transparent",
-                    border: "none", cursor: "pointer",
+                    border: "none", cursor: item.disabled ? "default" : "pointer",
                     transition: "all 200ms ease",
                     whiteSpace: "nowrap",
+                    opacity: item.disabled ? 0.35 : 1,
+                    pointerEvents: item.disabled ? "none" : "auto",
                   }}
                   onMouseEnter={(e) => {
-                    if (!active) {
+                    if (!active && !item.disabled) {
                       e.currentTarget.style.background = "rgba(0,113,227,0.05)";
                     }
                   }}
                   onMouseLeave={(e) => {
-                    if (!active) {
+                    if (!active && !item.disabled) {
                       e.currentTarget.style.background = "transparent";
                     }
                   }}
