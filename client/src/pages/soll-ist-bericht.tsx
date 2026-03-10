@@ -590,33 +590,57 @@ export default function SollIstBericht() {
 
               <div style={sep} data-testid="section-comparison-bars">
                 <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>2. Dimensionsvergleich</p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 420, marginBottom: 14 }}>
-                  {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
-                    const sollVal = Math.round(roleTriad![k]);
-                    const istVal = Math.round(candidateProfile[k]);
-                    const delta = istVal - sollVal;
-                    const hex = BAR_HEX[k];
-                    return (
-                      <div key={k}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                          <span style={{ fontSize: 13, fontWeight: 700, color: hex }}>{labelComponent(k)}</span>
-                          <span style={{ fontSize: 12, fontWeight: 600, color: delta === 0 ? "#34C759" : Math.abs(delta) <= 5 ? "#8E8E93" : Math.abs(delta) <= 15 ? "#FF9500" : "#FF3B30" }}>
-                            Δ {delta > 0 ? "+" : ""}{delta}
-                          </span>
-                        </div>
-                        <div style={{ position: "relative", height: 28, borderRadius: 8, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
-                          <div style={{ position: "absolute", top: 0, left: 0, height: "50%", width: `${(Math.min(sollVal, 67) / 67) * 100}%`, background: `${hex}40`, borderRadius: "8px 8px 0 0", transition: "width 0.4s ease" }} />
-                          <div style={{ position: "absolute", bottom: 0, left: 0, height: "50%", width: `${(Math.min(istVal, 67) / 67) * 100}%`, background: hex, borderRadius: "0 0 8px 8px", transition: "width 0.4s ease" }} />
-                          <div style={{ position: "absolute", top: 0, left: 8, height: "50%", display: "flex", alignItems: "center" }}>
-                            <span style={{ fontSize: 10, fontWeight: 700, color: "#1D1D1F" }}>Soll {sollVal}%</span>
+                <div className="grid gap-6 grid-cols-2" style={{ marginBottom: 14 }}>
+                  <div className="rounded-2xl border border-slate-200 bg-white p-6">
+                    <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                      {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+                        const val = Math.round(roleTriad![k]);
+                        const hex = BAR_HEX[k];
+                        const widthPct = (val / 67) * 100;
+                        const isSmall = widthPct < 18;
+                        return (
+                          <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                            <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>{labelComponent(k)}</span>
+                            <div style={{ flex: 1, position: "relative", height: 26 }}>
+                              <div style={{ position: "absolute", inset: 0, borderRadius: 13, background: "rgba(0,0,0,0.06)" }} />
+                              <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50 }}>
+                                {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>}
+                              </div>
+                              {isSmall && (
+                                <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap" }}>{val} %</span>
+                              )}
+                            </div>
                           </div>
-                          <div style={{ position: "absolute", bottom: 0, left: 8, height: "50%", display: "flex", alignItems: "center" }}>
-                            <span style={{ fontSize: 10, fontWeight: 700, color: "#fff" }}>Ist {istVal}%</span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="rounded-2xl border border-slate-200 bg-white p-6">
+                    <p className="text-base font-semibold text-slate-900 mb-6">Ist-Profil <span className="font-normal text-slate-500">(Person)</span></p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                      {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+                        const val = Math.round(candidateProfile[k]);
+                        const hex = BAR_HEX[k];
+                        const widthPct = (val / 67) * 100;
+                        const isSmall = widthPct < 18;
+                        return (
+                          <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                            <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>{labelComponent(k)}</span>
+                            <div style={{ flex: 1, position: "relative", height: 26 }}>
+                              <div style={{ position: "absolute", inset: 0, borderRadius: 13, background: "rgba(0,0,0,0.06)" }} />
+                              <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50 }}>
+                                {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>}
+                              </div>
+                              {isSmall && (
+                                <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap" }}>{val} %</span>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    );
-                  })}
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
                   {biggestGapText(result.roleTriad, result.candTriad)}
