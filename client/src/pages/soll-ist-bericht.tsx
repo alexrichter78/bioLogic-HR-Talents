@@ -58,17 +58,19 @@ function biggestGapText(rt: Triad, ct: Triad): string {
 
 
 function TriangleChart({ role, candidate }: { role: Triad; candidate: Triad }) {
-  const w = 340, h = 300;
-  const cx = w / 2, cy = 168;
-  const R = 120;
+  const w = 360, h = 330;
+  const cx = w / 2, cy = 178;
+  const R = 110;
+  const MAX_VAL = 67;
   const angles = [-Math.PI / 2, Math.PI / 2 - Math.PI / 3, Math.PI / 2 + Math.PI / 3];
   const verts = angles.map(a => ({ x: cx + R * Math.cos(a), y: cy + R * Math.sin(a) }));
+  const labelR = R + 22;
+  const labelPts = angles.map(a => ({ x: cx + labelR * Math.cos(a), y: cy + labelR * Math.sin(a) }));
 
   function triadPoly(t: Triad) {
-    const total = t.analytisch + t.intuitiv + t.impulsiv || 1;
-    const fracs = [t.analytisch / total, t.intuitiv / total, t.impulsiv / total];
-    return fracs.map((f, i) => {
-      const d = f * 2.5 * R * 0.82;
+    const vals = [t.analytisch, t.intuitiv, t.impulsiv];
+    return vals.map((v, i) => {
+      const d = (Math.min(v, MAX_VAL) / MAX_VAL) * R;
       return { x: cx + d * Math.cos(angles[i]), y: cy + d * Math.sin(angles[i]) };
     });
   }
@@ -81,12 +83,8 @@ function TriangleChart({ role, candidate }: { role: Triad; candidate: Triad }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <svg viewBox={`0 0 ${w} ${h}`} style={{ width: "100%", maxWidth: 380, height: "auto" }}>
+      <svg viewBox={`0 0 ${w} ${h}`} style={{ width: "100%", maxWidth: 400, height: "auto" }}>
         <defs>
-          <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#f8fafc" />
-            <stop offset="100%" stopColor="#f1f5f9" />
-          </radialGradient>
           <linearGradient id="rFill" x1="0%" y1="0%" x2="50%" y2="100%">
             <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.22" />
             <stop offset="100%" stopColor="#2563eb" stopOpacity="0.06" />
@@ -108,9 +106,9 @@ function TriangleChart({ role, candidate }: { role: Triad; candidate: Triad }) {
         {rp.map((p, i) => <circle key={`r${i}`} cx={p.x} cy={p.y} r="3.5" fill="#3b82f6" stroke="#fff" strokeWidth="1.5" />)}
         {cp.map((p, i) => <circle key={`c${i}`} cx={p.x} cy={p.y} r="3.5" fill="#f59e0b" stroke="#fff" strokeWidth="1.5" />)}
 
-        <text x={cx} y="28" textAnchor="middle" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>Analytisch</text>
-        <text x="18" y={h - 12} textAnchor="start" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>Intuitiv</text>
-        <text x={w - 18} y={h - 12} textAnchor="end" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>Impulsiv</text>
+        <text x={labelPts[0].x} y={labelPts[0].y - 4} textAnchor="middle" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>Analytisch</text>
+        <text x={labelPts[1].x - 4} y={labelPts[1].y + 14} textAnchor="start" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>Intuitiv</text>
+        <text x={labelPts[2].x + 4} y={labelPts[2].y + 14} textAnchor="end" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>Impulsiv</text>
       </svg>
     </div>
   );
