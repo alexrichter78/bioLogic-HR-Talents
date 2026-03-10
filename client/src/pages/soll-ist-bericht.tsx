@@ -575,9 +575,11 @@ export default function SollIstBericht() {
               </div>
 
               <div style={{ marginBottom: 32 }}>
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
-                  {result.summaryText}
-                </p>
+                {result.summaryText.split("\n\n").map((para, i) => (
+                  <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i > 0 ? "12px 0 0" : "0", textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
+                    {para}
+                  </p>
+                ))}
               </div>
 
               <div style={sep} data-testid="section-dominance-shift">

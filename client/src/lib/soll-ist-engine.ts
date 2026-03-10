@@ -303,37 +303,32 @@ function constellationCandText(c: ConstellationType, cand: string): string {
 }
 
 function buildSummary(role: string, cand: string, fit: string, rk: ComponentKey, ck: ComponentKey, gap: string, rt: Triad, ct: Triad, rConst: ConstellationType, cConst: ConstellationType): string {
-  const rLabel = constellationLabel(rConst);
-  const cLabel = constellationLabel(cConst);
-
   if (rk === ck && gap === "gering") {
-    return `${cand} zeigt eine ${fit.toLowerCase()}e Passung für die Rolle ${role}. Die Arbeitslogik stimmt in der Grundausrichtung überein. Die Rolle erwartet ${rLabel.toLowerCase()}, ${cand} bringt ${cLabel.toLowerCase()} mit. Die Abweichung betrifft die Gewichtung der sekundären Bereiche und ist ${gap}.`;
+    return `${cand} passt in der Grundausrichtung gut zur Rolle ${role}. Beide setzen auf dieselbe Arbeitslogik. ${constellationRoleText(rConst)} ${cand} arbeitet ähnlich — kleinere Unterschiede zeigen sich vor allem in der Gewichtung der sekundären Bereiche und sind im Alltag gut steuerbar.`;
   }
 
   if (gap === "hoch") {
-    return `Die Arbeitslogik von ${cand} weicht deutlich von der strukturellen Anforderung der Rolle ${role} ab. Die Rolle erwartet ${rLabel.toLowerCase()}: ${constellationRoleText(rConst)} ${cand} bringt dagegen ${cLabel.toLowerCase()} mit: ${constellationCandText(cConst, cand)} Dadurch verschiebt sich die Wirkung der Rolle sichtbar.`;
+    return `${cand} und die Rolle ${role} funktionieren grundlegend unterschiedlich.\n\nWas die Rolle braucht: ${constellationRoleText(rConst)}\n\nWas ${cand} mitbringt: ${constellationCandText(cConst, cand)}\n\nDiese Unterschiede wirken sich im Alltag spürbar aus — bei Entscheidungen, Arbeitsweise und Zusammenarbeit. Ohne gezielte Steuerung entsteht Reibung.`;
   }
 
-  return `${cand} ist für die Rolle ${role} als ${fit.toLowerCase()} einzustufen. Die Rolle erwartet ${rLabel.toLowerCase()}. ${cand} bringt ${cLabel.toLowerCase()} mit. Bei gezielter Steuerung kann die Abweichung ausgeglichen werden.`;
+  return `${cand} bringt eine andere Arbeitslogik mit, als die Rolle ${role} erfordert. ${constellationRoleText(rConst)} ${constellationCandText(cConst, cand)} Die Unterschiede sind erkennbar, lassen sich aber bei gezielter Führung und klaren Erwartungen im Alltag ausgleichen.`;
 }
 
 function buildDominanceShift(role: string, cand: string, rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, rConst: ConstellationType, cConst: ConstellationType): string {
   if (rk === ck) {
     if (rConst === cConst) {
-      return `Die Grundausrichtung stimmt überein. Sowohl die Rolle als auch ${cand} zeigen ${constellationLabel(rConst).toLowerCase()}. Im Alltag bedeutet das, dass die Grundrichtung der Arbeit passt, einzelne Situationen aber unterschiedlich angegangen werden.`;
+      return `Die Grundausrichtung stimmt überein. Sowohl die Rolle als auch ${cand} setzen auf dieselbe Arbeitslogik. Im Alltag bedeutet das, dass die Grundrichtung passt — einzelne Situationen werden aber unterschiedlich angegangen.`;
     }
-    return `Die Hauptrichtung stimmt überein, aber die Profilstruktur unterscheidet sich. Die Rolle erwartet ${constellationLabel(rConst).toLowerCase()}, ${cand} zeigt ${constellationLabel(cConst).toLowerCase()}. Die sekundären Anteile verschieben sich, was in bestimmten Situationen zu unterschiedlichem Verhalten führt.`;
+    return `Die Hauptrichtung stimmt überein, aber die Gewichtung unterscheidet sich. ${constellationRoleText(rConst)} ${constellationCandText(cConst, cand)} Die sekundären Anteile verschieben sich, was in bestimmten Situationen zu unterschiedlichem Verhalten führt.`;
   }
 
   const isDoubleDom = cConst.includes("NEAR") || cConst === "BALANCED";
-  const roleRichText = constellationRoleText(rConst);
-  const candRichText = constellationCandText(cConst, cand);
 
   if (isDoubleDom) {
-    return `Die Rolle ${role} erwartet ${constellationLabel(rConst).toLowerCase()}: ${roleRichText} ${candRichText} Durch die Doppelausrichtung kann das Verhalten je nach Situation wechseln, was die Steuerbarkeit erschwert.`;
+    return `${constellationRoleText(rConst)} ${constellationCandText(cConst, cand)} Da ${cand} zwischen zwei Ausrichtungen wechselt, ist das Verhalten weniger vorhersehbar. Für die Führungskraft bedeutet das: klare Rahmenvorgaben und regelmäßiges Feedback sind besonders wichtig.`;
   }
 
-  return `Die Rolle ${role} erwartet ${constellationLabel(rConst).toLowerCase()}: ${roleRichText} ${candRichText} Dadurch verschiebt sich die Wirkung der Position weg von ${compShort(rk)} hin zu ${compShort(ck)}.`;
+  return `${constellationRoleText(rConst)} ${constellationCandText(cConst, cand)} Im Ergebnis verschiebt sich der Schwerpunkt der Position — weg von ${compShort(rk)}, hin zu ${compShort(ck)}.`;
 }
 
 function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string, gapLevel: string): StressBehavior {
