@@ -137,16 +137,17 @@ export default function SollIstBericht() {
 
   useEffect(() => {
     const raw = localStorage.getItem("rollenDnaState");
-    if (!raw) return;
-    try {
-      const dna = JSON.parse(raw) as RoleDnaState;
-      if (dna.beruf && dna.bioGramGesamt) {
-        setHasRollenDna(true);
-        setRoleName(dna.beruf);
-        setRoleTriad(bgToTriad(dna.bioGramGesamt));
-        if (dna.fuehrung) setFuehrungsArt(mapFuehrungsArt(dna.fuehrung));
-      }
-    } catch {}
+    if (raw) {
+      try {
+        const dna = JSON.parse(raw) as RoleDnaState;
+        if (dna.beruf && dna.bioGramGesamt) {
+          setHasRollenDna(true);
+          setRoleName(dna.beruf);
+          setRoleTriad(bgToTriad(dna.bioGramGesamt));
+          if (dna.fuehrung) setFuehrungsArt(mapFuehrungsArt(dna.fuehrung));
+        }
+      } catch {}
+    }
 
     const candRaw = localStorage.getItem("jobcheckCandProfile");
     if (candRaw) {
