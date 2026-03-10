@@ -738,6 +738,7 @@ export default function TeamReport() {
           const indicatorText = selectIndicatorText(roleTypeForCard, classReason, fitLabel, totalGap);
           const steeringDescription = STEERING_DESCRIPTIONS[roleTypeForCard]?.[devScore] || STEERING_DESCRIPTIONS.teammitglied[devScore] || "";
           const roleChipLabel = roleTypeForCard === "fuehrung" ? "Führungskraft" : "Teammitglied";
+          const teamFitLabel = fitLabel === "Geeignet" ? "Stabil" : fitLabel === "Bedingt geeignet" ? "Steuerbar" : "Kritisch";
           const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
           const steeringLabels: Record<number, string> = { 1: "sehr hoch", 2: "hoch", 3: "erhöht", 4: "moderat", 5: "niedrig", 6: "sehr niedrig" };
           const computedSteeringLabel = steeringLabels[devScore] || "moderat";
@@ -772,7 +773,7 @@ export default function TeamReport() {
                           <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-summary-role">{roleChipLabel}</span>
                         </div>
                         <span style={{ fontSize: 13, fontWeight: 700, color: fitColor, letterSpacing: "0.03em" }} data-testid="badge-teamcheck-result">
-                          {fitLabel}
+                          {teamFitLabel}
                         </span>
                       </div>
                       <div style={{ background: `${fitColor}08`, borderLeft: `3px solid ${fitColor}`, borderRadius: "0 8px 8px 0", padding: "12px 16px" }}>
