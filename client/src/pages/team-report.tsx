@@ -533,7 +533,7 @@ export default function TeamReport() {
               }}>
                 <Users style={{ width: 18, height: 18, color: "#34C759", strokeWidth: 2 }} />
               </div>
-              <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", color: "#1D1D1F" }} data-testid="text-teamcheck-label">TeamCheck</span>
+              <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", color: "#1D1D1F" }} data-testid="text-teamcheck-label">Profilvergleich Rolle vs. Team</span>
             </div>
             <ChevronDown style={{
               width: 18, height: 18, color: "#8E8E93", strokeWidth: 2,
@@ -648,13 +648,21 @@ export default function TeamReport() {
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <Zap style={{ width: 22, height: 22, color: "#3A9A5C", flexShrink: 0 }} />
                     <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
-                      MatchCheck — Systemwirkung
+                      TeamCheck — Systemwirkung
                     </span>
                   </div>
-                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${matchCheckOpen ? "rotate-180" : ""}`} />
+                  <ChevronDown style={{
+                    width: 18, height: 18, color: "#8E8E93", strokeWidth: 2,
+                    transition: "transform 300ms ease",
+                    transform: matchCheckOpen ? "rotate(180deg)" : "rotate(0deg)",
+                  }} />
                 </button>
 
-                {matchCheckOpen && (
+                <div style={{
+                  maxHeight: matchCheckOpen ? 5000 : 0,
+                  overflow: "hidden",
+                  transition: "max-height 400ms ease",
+                }}>
                 <div style={{ padding: "0 32px 28px" }}>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
                     <div>
@@ -688,7 +696,7 @@ export default function TeamReport() {
                     </div>
                   </div>
                 </div>
-                )}
+                </div>
               </div>
             </div>
           );
