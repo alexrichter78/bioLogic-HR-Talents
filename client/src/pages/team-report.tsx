@@ -547,7 +547,7 @@ export default function TeamReport() {
             transition: "max-height 400ms ease",
           }}>
             <div style={{ padding: "0 24px 24px" }}>
-              <div className="grid gap-8 lg:grid-cols-2">
+              <div className="grid gap-8 md:grid-cols-2">
                 <StaticBarGroup title="Ist-Profil (Person)" triad={istTriad} />
                 <SliderGroup title="Teamprofil" triad={teamTriad}
                   onTriadChange={updateTeamTriad} testIdPrefix="team" />
