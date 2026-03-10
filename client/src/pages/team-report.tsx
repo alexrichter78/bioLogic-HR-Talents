@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation } from "wouter";
-import { AlertTriangle, Download, Check, Users, ChevronDown } from "lucide-react";
+import { AlertTriangle, Download, Check, Users, ChevronDown, Zap } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeTeamReport } from "@/lib/team-report-engine";
@@ -738,72 +738,65 @@ export default function TeamReport() {
           const indicatorText = selectIndicatorText(roleTypeForCard, classReason, fitLabel, totalGap);
           const steeringDescription = STEERING_DESCRIPTIONS[roleTypeForCard]?.[devScore] || STEERING_DESCRIPTIONS.teammitglied[devScore] || "";
           const roleChipLabel = roleTypeForCard === "fuehrung" ? "Führungskraft" : "Teammitglied";
-          const resultBg = fitLabel === "Geeignet" ? "#eaf8ef" : fitLabel === "Bedingt geeignet" ? "#fff4df" : "#ffe7e7";
-          const resultColor = fitLabel === "Geeignet" ? "#1f8f52" : fitLabel === "Bedingt geeignet" ? "#d28a00" : "#e14848";
-          const steeringLabels: Record<number, string> = { 1: "– sehr hoch", 2: "– hoch", 3: "– erhöht", 4: "– moderat", 5: "– niedrig", 6: "– sehr niedrig" };
-          const computedSteeringLabel = steeringLabels[devScore] || "– moderat";
+          const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
+          const steeringLabels: Record<number, string> = { 1: "sehr hoch", 2: "hoch", 3: "erhöht", 4: "moderat", 5: "niedrig", 6: "sehr niedrig" };
+          const computedSteeringLabel = steeringLabels[devScore] || "moderat";
+          const devGaugeColor = devScore >= 5 ? "#3A9A5C" : devScore >= 3 ? "#E5A832" : "#D64045";
 
           return (
-            <div className="mb-8" data-testid="section-matchcheck-team">
-              <div style={{ width: "100%", background: "#f7f8fb", border: "1px solid #e8ebf2", borderRadius: 28, padding: "28px 32px 30px", boxShadow: "0 6px 24px rgba(31,36,48,0.04)" }}>
+            <div style={{ marginTop: 20 }} data-testid="section-matchcheck-team">
+              <div style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }}>
                 <button
                   onClick={() => setMatchCheckOpen(!matchCheckOpen)}
-                  style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 20, background: "none", border: "none", cursor: "pointer", padding: 0, textAlign: "left" }}
+                  style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.02)"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
                   data-testid="button-toggle-matchcheck-team"
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: 16, minWidth: 0 }}>
-                    <div style={{ width: 54, height: 54, borderRadius: 16, background: "#e9f7ef", color: "#1faa67", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0 }}>⚡</div>
-                    <div>
-                      <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700, lineHeight: 1.2, color: "#1f2430" }}>TeamCheck — Systemwirkung</h2>
-                      <p style={{ margin: "4px 0 0", fontSize: 14, color: "#7d8798", lineHeight: 1.5 }}>Kurze Ersteinschätzung zur Passung und zum voraussichtlichen Steuerungsbedarf.</p>
-                    </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <Zap style={{ width: 22, height: 22, color: "#3A9A5C", flexShrink: 0 }} />
+                    <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
+                      TeamCheck — Systemwirkung
+                    </span>
                   </div>
-                  <ChevronDown style={{
-                    width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, flexShrink: 0,
-                    transition: "transform 300ms ease",
-                    transform: matchCheckOpen ? "rotate(180deg)" : "rotate(0deg)",
-                  }} />
+                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${matchCheckOpen ? "rotate-180" : ""}`} />
                 </button>
 
-                <div style={{
-                  maxHeight: matchCheckOpen ? 5000 : 0,
-                  overflow: "hidden",
-                  transition: "max-height 400ms ease",
-                }}>
-                  <div style={{ borderTop: "1px solid #e8ebf2", paddingTop: 24 }}>
-                    <div style={{ display: "inline-flex", alignItems: "center", gap: 8, minHeight: 34, padding: "0 14px", background: "#eef2f8", color: "#556074", borderRadius: 999, fontSize: 13, fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: 16 }} data-testid="chip-role-type">
-                      {roleChipLabel}
+                {matchCheckOpen && (
+                <div style={{ padding: "0 32px 28px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
+                        <div style={{ width: 18, height: 18, borderRadius: 9, background: fitColor, flexShrink: 0, boxShadow: `0 0 0 4px ${fitColor}20` }} />
+                        <div style={{ flex: 1 }}>
+                          <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-summary-role">{roleChipLabel}</span>
+                        </div>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: fitColor, letterSpacing: "0.03em" }} data-testid="badge-teamcheck-result">
+                          {fitLabel}
+                        </span>
+                      </div>
+                      <div style={{ background: `${fitColor}08`, borderLeft: `3px solid ${fitColor}`, borderRadius: "0 8px 8px 0", padding: "12px 16px" }}>
+                        <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: 0 }} data-testid="text-teamcheck-indicator">{indicatorText}</p>
+                      </div>
                     </div>
 
-                    <div style={{ display: "inline-flex", alignItems: "center", minHeight: 44, padding: "0 18px", borderRadius: 999, fontSize: 28, fontWeight: 700, marginBottom: 24, marginLeft: 12, background: resultBg, color: resultColor }} data-testid="badge-teamcheck-result">
-                      {fitLabel}
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] gap-10" style={{ alignItems: "start" }}>
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8d96a8", marginBottom: 10 }}>Indikator</div>
-                        <p style={{ margin: 0, fontSize: 18, lineHeight: 1.75, color: "#4d5666" }} data-testid="text-teamcheck-indicator">{indicatorText}</p>
+                    <div style={{ borderLeft: "1px solid rgba(0,0,0,0.06)", paddingLeft: 24 }}>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 14px" }}>
+                        Steuerungsintensität
+                      </p>
+                      <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }} data-testid="text-steering-level">
+                        {devScore} von 6 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>– {computedSteeringLabel}</span>
+                      </p>
+                      <div style={{ display: "flex", gap: 5, marginBottom: 18 }} data-testid="bars-steering">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                          <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)" }} />
+                        ))}
                       </div>
-
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8d96a8", marginBottom: 10 }}>Steuerungsintensität</div>
-
-                        <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 14, flexWrap: "wrap" }}>
-                          <span style={{ fontSize: 28, fontWeight: 700, color: "#1f2430" }} data-testid="text-steering-level">{devScore} von 6</span>
-                          <span style={{ fontSize: 20, fontWeight: 600, color: "#1f2430" }} data-testid="text-steering-label">{computedSteeringLabel}</span>
-                        </div>
-
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 8, maxWidth: 320, marginBottom: 16 }} data-testid="bars-steering">
-                          {Array.from({ length: 6 }).map((_, i) => (
-                            <span key={i} style={{ height: 16, borderRadius: 6, background: i < devScore ? "linear-gradient(90deg, #ff5a5f 0%, #ff9f1a 100%)" : "#e8ebf2" }} />
-                          ))}
-                        </div>
-
-                        <p style={{ margin: 0, fontSize: 18, lineHeight: 1.75, color: "#4d5666" }} data-testid="text-steering-description">{steeringDescription}</p>
-                      </div>
+                      <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.75, margin: 0 }} data-testid="text-steering-description">{steeringDescription}</p>
                     </div>
                   </div>
                 </div>
+                )}
               </div>
             </div>
           );
