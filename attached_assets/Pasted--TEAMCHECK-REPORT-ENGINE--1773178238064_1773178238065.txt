@@ -1,0 +1,604 @@
+/*********************************************************************
+ TEAMCHECK REPORT ENGINE
+ --------------------------------------------------------------------
+ Einsatzbereich:
+ - TeamCheck für Vertriebsteams im Außendienst
+ - Variante 1: neues Teammitglied
+ - Variante 2: neue Führungskraft für das Team
+
+ Ziel:
+ - eine einheitliche Berichtsseite
+ - klare, professionelle Sprache
+ - alle 13 bioLogic-Variationen
+ - Ergebnisheader mit:
+   Passung zum Team
+   Wirkung im Team
+   Prägung des Teams
+   Prägung der Person
+
+ HINWEIS:
+ - Die Texte sind bewusst verständlich formuliert
+ - Die Logik ist so gebaut, dass sie direkt in Replit / Node / Browser
+   eingebunden werden kann
+*********************************************************************/
+
+
+/*********************************************************************
+ 1. HILFSFUNKTIONEN
+*********************************************************************/
+
+function round(value) {
+  return Math.round(Number(value || 0));
+}
+
+function diff(a, b) {
+  return Math.abs(round(a) - round(b));
+}
+
+function max3(a, b, c) {
+  return Math.max(round(a), round(b), round(c));
+}
+
+function sortComponents(profile) {
+  return [
+    { key: "impulsiv", value: round(profile.impulsiv) },
+    { key: "intuitiv", value: round(profile.intuitiv) },
+    { key: "analytisch", value: round(profile.analytisch) }
+  ].sort((x, y) => y.value - x.value);
+}
+
+function titleCaseComponent(key) {
+  if (key === "impulsiv") return "Impulsiv";
+  if (key === "intuitiv") return "Intuitiv";
+  return "Analytisch";
+}
+
+function componentBusinessName(key) {
+  if (key === "impulsiv") return "Umsetzung und Tempo";
+  if (key === "intuitiv") return "Zusammenarbeit und Kommunikation";
+  return "Struktur und Analyse";
+}
+
+function componentShortName(key) {
+  if (key === "impulsiv") return "Tempo";
+  if (key === "intuitiv") return "Kommunikation";
+  return "Struktur";
+}
+
+
+/*********************************************************************
+ 2. 13 bioLogic-VARIATIONEN
+*********************************************************************/
+
+function getBioLogicType(profile) {
+  const i = round(profile.impulsiv);
+  const n = round(profile.intuitiv);
+  const a = round(profile.analytisch);
+
+  const dIN = diff(i, n);
+  const dIA = diff(i, a);
+  const dNA = diff(n, a);
+
+  if (dIN <= 5 && dIA <= 5 && dNA <= 5) {
+    return "alle_gleich";
+  }
+
+  // Eine klare Hauptkomponente, Platz 2 und 3 nahezu gleich
+  if (i > n && i > a && dNA <= 5) return "impulsiv_mit_gleicher_nebenlage";
+  if (n > i && n > a && dIA <= 5) return "intuitiv_mit_gleicher_nebenlage";
+  if (a > i && a > n && dIN <= 5) return "analytisch_mit_gleicher_nebenlage";
+
+  // Drei klare Reihenfolgen
+  const sorted = sortComponents(profile).map(x => x.key).join("_");
+
+  if (sorted === "impulsiv_intuitiv_analytisch") return "impulsiv_intuitiv_analytisch";
+  if (sorted === "impulsiv_analytisch_intuitiv") return "impulsiv_analytisch_intuitiv";
+  if (sorted === "intuitiv_impulsiv_analytisch") return "intuitiv_impulsiv_analytisch";
+  if (sorted === "intuitiv_analytisch_impulsiv") return "intuitiv_analytisch_impulsiv";
+  if (sorted === "analytisch_impulsiv_intuitiv") return "analytisch_impulsiv_intuitiv";
+  if (sorted === "analytisch_intuitiv_impulsiv") return "analytisch_intuitiv_impulsiv";
+
+  // Doppeldominanzen
+  if (dIN <= 5 && i > a && n > a) return "impulsiv_intuitiv_doppeldominanz";
+  if (dIA <= 5 && i > n && a > n) return "impulsiv_analytisch_doppeldominanz";
+  if (dNA <= 5 && n > i && a > i) return "intuitiv_analytisch_doppeldominanz";
+
+  // Fallback
+  return "alle_gleich";
+}
+
+const PROFILE_LABELS = {
+  impulsiv_intuitiv_analytisch: "Handlungsfokus mit Beziehungsanteil",
+  impulsiv_analytisch_intuitiv: "Handlungsfokus mit Strukturanteil",
+  intuitiv_impulsiv_analytisch: "Beziehungsfokus mit Umsetzungsanteil",
+  intuitiv_analytisch_impulsiv: "Beziehungsfokus mit Strukturanteil",
+  analytisch_impulsiv_intuitiv: "Strukturfokus mit Umsetzungsanteil",
+  analytisch_intuitiv_impulsiv: "Strukturfokus mit Beziehungsanteil",
+
+  impulsiv_intuitiv_doppeldominanz: "Doppeldominanz aus Tempo und Kommunikation",
+  impulsiv_analytisch_doppeldominanz: "Doppeldominanz aus Tempo und Struktur",
+  intuitiv_analytisch_doppeldominanz: "Doppeldominanz aus Kommunikation und Struktur",
+
+  impulsiv_mit_gleicher_nebenlage: "Klare Umsetzungsorientierung mit ausgeglichener Nebenlage",
+  intuitiv_mit_gleicher_nebenlage: "Klare Kommunikationsorientierung mit ausgeglichener Nebenlage",
+  analytisch_mit_gleicher_nebenlage: "Klare Strukturausrichtung mit ausgeglichener Nebenlage",
+
+  alle_gleich: "Ausgeglichenes Profil"
+};
+
+const PROFILE_TEXTS = {
+  impulsiv_intuitiv_analytisch: `
+Die Person arbeitet in erster Linie über Umsetzung und Tempo. Themen werden zügig aufgegriffen, Entscheidungen werden eher nach vorne als nach hinten gedacht. Der zweite Schwerpunkt liegt in Zusammenarbeit und Kommunikation. Dadurch bleibt die Person trotz hoher Dynamik anschlussfähig im Kontakt mit Kunden und Kollegen. Struktur und Analyse sind vorhanden, stehen jedoch nicht im Vordergrund.
+
+Im Vertriebsalltag zeigt sich dieses Profil häufig in hoher Aktivität, klarer Eigeninitiative und einer spürbaren Vorwärtsbewegung. Chancen entstehen dort, wo Geschwindigkeit, Präsenz im Markt und direkte Wirkung wichtig sind. Risiken entstehen dort, wo saubere Nachverfolgung, konsequente Dokumentation und disziplinierte Prozessführung dauerhaft nötig sind.
+`,
+
+  impulsiv_analytisch_intuitiv: `
+Die Person arbeitet in erster Linie über Umsetzung und Tempo. Der zweite Schwerpunkt liegt auf Struktur und Analyse. Dadurch verbindet sie hohe Aktivität mit einem gewissen Blick für Zielklarheit, Prioritäten und sachliche Ordnung. Zusammenarbeit und Kommunikation sind vorhanden, stehen aber nicht an erster Stelle.
+
+Im Vertriebsalltag zeigt sich dieses Profil oft in konsequenter Zielorientierung, klarem Antrieb und einer guten Fähigkeit, Themen nicht nur anzustoßen, sondern auch geordnet zu steuern. Chancen liegen in Durchsetzung, Fokus und Verbindlichkeit. Risiken entstehen dann, wenn Abstimmung, Beziehungsarbeit oder sensible Teamkommunikation zu wenig Raum bekommen.
+`,
+
+  intuitiv_impulsiv_analytisch: `
+Die Person arbeitet in erster Linie über Zusammenarbeit und Kommunikation. Der zweite Schwerpunkt liegt auf Umsetzung und Tempo. Dadurch verbindet sie Kontaktstärke mit Aktivität und wirkt im Vertrieb oft verbindend, motivierend und beweglich. Struktur und Analyse sind vorhanden, aber nicht die tragende Leitlinie.
+
+Im Alltag zeigt sich dieses Profil häufig in kundenorientierter Kommunikation, schneller Kontaktaufnahme und hoher Wirkung in Gesprächen. Chancen liegen in Netzwerken, Beziehungsaufbau und positiver Präsenz. Risiken entstehen dort, wo konsequente Nachhaltung, analytische Tiefe und Prozessdisziplin dauerhaft gefragt sind.
+`,
+
+  intuitiv_analytisch_impulsiv: `
+Die Person arbeitet in erster Linie über Zusammenarbeit und Kommunikation. Der zweite Schwerpunkt liegt auf Struktur und Analyse. Dadurch verbindet sie Beziehungsstärke mit einem geordneten, reflektierten Vorgehen. Tempo und spontane Umsetzung sind vorhanden, stehen aber nicht im Vordergrund.
+
+Im Vertriebsalltag zeigt sich dieses Profil oft in ruhiger Gesprächsführung, guter Bedarfsaufnahme und einer sauberen Abstimmung mit Kunden und Team. Chancen liegen in Vertrauensaufbau, Verlässlichkeit und konsistenter Zusammenarbeit. Risiken entstehen dann, wenn schnelle Entscheidungen, harte Priorisierung oder kurzfristiger Umsetzungsdruck gefragt sind.
+`,
+
+  analytisch_impulsiv_intuitiv: `
+Die Person arbeitet in erster Linie über Struktur und Analyse. Der zweite Schwerpunkt liegt auf Umsetzung und Tempo. Dadurch bringt sie eine klare Ordnung in Themen, denkt sachlich und zielbezogen und kann Entscheidungen auch konsequent in die Umsetzung bringen. Zusammenarbeit und Kommunikation sind vorhanden, aber nicht der primäre Antrieb.
+
+Im Vertriebsumfeld zeigt sich dieses Profil häufig in sauberer Vorbereitung, klarer Argumentation und disziplinierter Arbeitsweise. Chancen liegen in Qualität, Steuerbarkeit und belastbaren Entscheidungen. Risiken entstehen dort, wo hohe Flexibilität, emotionale Anschlussfähigkeit oder spontane Anpassung im Vordergrund stehen.
+`,
+
+  analytisch_intuitiv_impulsiv: `
+Die Person arbeitet in erster Linie über Struktur und Analyse. Der zweite Schwerpunkt liegt auf Zusammenarbeit und Kommunikation. Dadurch verbindet sie Klarheit, Sorgfalt und nachvollziehbare Entscheidungen mit einem kooperativen Umgang. Tempo und spontane Umsetzung sind vorhanden, aber nicht die bevorzugte Linie.
+
+Im Vertriebsalltag zeigt sich dieses Profil oft in gut vorbereiteten Gesprächen, klarer Argumentation, verlässlicher Abstimmung und solider Prozessführung. Chancen liegen in Qualität, Stabilität und professioneller Wirkung. Risiken entstehen dann, wenn ein sehr hohes Verkaufstempo, spontane Marktreaktion oder starke Abschlussdynamik gefordert sind.
+`,
+
+  impulsiv_intuitiv_doppeldominanz: `
+Die Person zeigt eine Doppeldominanz aus Umsetzung und Kommunikation. Sie bringt sowohl Tempo als auch Kontaktstärke mit. Entscheidungen werden häufig zügig getroffen, gleichzeitig bleibt die Wirkung auf Menschen wichtig. Struktur und Analyse sind vorhanden, stehen jedoch deutlich im Hintergrund.
+
+Im Vertriebsalltag kann dieses Profil sehr wirksam sein, wenn Marktnähe, Aktivität, Sichtbarkeit und Beziehungsarbeit gebraucht werden. Risiken liegen vor allem in nachlassender Ordnung, geringer Dokumentationstiefe und wechselnden Prioritäten unter Druck.
+`,
+
+  impulsiv_analytisch_doppeldominanz: `
+Die Person zeigt eine Doppeldominanz aus Umsetzung und Struktur. Sie verbindet Aktivität mit Sachorientierung und arbeitet häufig zugleich entschlossen und klar. Zusammenarbeit und Kommunikation sind vorhanden, haben aber weniger Gewicht als Ergebnisorientierung und Ordnung.
+
+Im Vertriebsalltag kann dieses Profil besonders stark sein, wenn Zielklarheit, Steuerung und Verbindlichkeit gefragt sind. Risiken entstehen dort, wo Abstimmung, sensible Kommunikation oder ein stark beziehungsorientiertes Teamumfeld eine größere Rolle spielen.
+`,
+
+  intuitiv_analytisch_doppeldominanz: `
+Die Person zeigt eine Doppeldominanz aus Kommunikation und Struktur. Sie verbindet kooperative Zusammenarbeit mit einem geordneten, nachvollziehbaren Vorgehen. Tempo ist vorhanden, aber nicht die bevorzugte erste Reaktion.
+
+Im Vertriebsalltag zeigt sich dieses Profil häufig in verlässlicher Kundenkommunikation, sauberer Vorbereitung und stabiler Zusammenarbeit. Chancen liegen in Qualität, Ruhe und Vertrauensbildung. Risiken entstehen dort, wo ein sehr hohes Umsetzungstempo oder aggressive Marktbearbeitung gefordert sind.
+`,
+
+  impulsiv_mit_gleicher_nebenlage: `
+Die Person ist klar auf Umsetzung und Tempo ausgerichtet. Die beiden übrigen Bereiche sind in ähnlicher Stärke vorhanden, konkurrieren aber nicht um die Hauptlinie. Im Zentrum steht das Vorantreiben von Themen, das schnelle Handeln und die direkte Wirkung.
+
+Im Vertriebsalltag zeigt sich dieses Profil in hoher Energie, klarer Eigeninitiative und starkem Vorwärtsdrang. Chancen liegen in Dynamik, Aktivität und sichtbarer Leistung. Risiken entstehen dort, wo das Umfeld mehr Abstimmung, Geduld oder strukturelle Sorgfalt verlangt.
+`,
+
+  intuitiv_mit_gleicher_nebenlage: `
+Die Person ist klar auf Zusammenarbeit und Kommunikation ausgerichtet. Die beiden übrigen Bereiche sind in ähnlicher Stärke vorhanden, stehen aber hinter der Hauptlinie zurück. Im Zentrum stehen Beziehung, Austausch, Vertrauen und Wirkung auf Menschen.
+
+Im Vertriebsalltag zeigt sich dieses Profil oft in verbindender Kommunikation, guter Kundenansprache und einer kooperativen Wirkung im Team. Chancen liegen in Beziehungsaufbau, Integration und Kundenpflege. Risiken entstehen dort, wo sehr konsequente Steuerung, Tempo oder harte Priorisierung gefragt sind.
+`,
+
+  analytisch_mit_gleicher_nebenlage: `
+Die Person ist klar auf Struktur und Analyse ausgerichtet. Die beiden übrigen Bereiche sind in ähnlicher Stärke vorhanden, aber nicht führend. Im Zentrum stehen Klarheit, Nachvollziehbarkeit, sachliche Prüfung und geordnete Arbeitsweise.
+
+Im Vertriebsalltag zeigt sich dieses Profil oft in Verlässlichkeit, professioneller Vorbereitung und kontrolliertem Vorgehen. Chancen liegen in Qualität, Stabilität und sauberer Steuerung. Risiken entstehen dort, wo spontane Anpassung, hohe Marktdynamik und offensive Umsetzungsenergie im Vordergrund stehen.
+`,
+
+  alle_gleich: `
+Die Person zeigt ein ausgeglichenes Profil. Umsetzung, Kommunikation und Struktur sind in ähnlicher Stärke ausgeprägt. Es gibt keine einseitige Hauptlinie, sondern eine breite Anschlussfähigkeit an unterschiedliche Anforderungen.
+
+Im Vertriebsalltag kann dieses Profil sehr flexibel wirken. Die Person kann sich auf verschiedene Situationen einstellen und unterschiedliche Erwartungen verbinden. Chancen liegen in Vielseitigkeit und Balance. Risiken entstehen dort, wo das Umfeld eine besonders klare Kante, hohe Durchsetzung oder eine sehr eindeutige Arbeitslogik verlangt.
+`
+};
+
+
+/*********************************************************************
+ 3. TEAMPROFIL-TEXTE
+*********************************************************************/
+
+function getTeamProfileLabel(teamProfile) {
+  const type = getBioLogicType(teamProfile);
+  return PROFILE_LABELS[type] || "Ausgeglichenes Profil";
+}
+
+function getTeamProfileText(teamProfile) {
+  const type = getBioLogicType(teamProfile);
+  const primary = sortComponents(teamProfile)[0].key;
+
+  if (type === "alle_gleich") {
+    return `
+Das Team zeigt ein ausgeglichenes Profil. Umsetzung, Zusammenarbeit und Struktur sind in ähnlicher Stärke vorhanden. Dadurch entsteht eine breite Anschlussfähigkeit an unterschiedliche Aufgaben. Gleichzeitig besteht die Gefahr, dass keine Arbeitslogik konsequent genug getragen wird, wenn Prioritäten nicht klar gesetzt werden.
+`;
+  }
+
+  if (primary === "impulsiv") {
+    return `
+Das Team ist vor allem auf Umsetzung und Tempo ausgerichtet. Im Alltag zeigt sich dies in hoher Aktivität, schneller Themenbearbeitung und einer klaren Vorwärtsbewegung. Entscheidungen werden eher pragmatisch und zügig getroffen. Für den Vertrieb kann das sehr wirksam sein, wenn Marktbewegung, Abschlussstärke und sichtbare Präsenz gefragt sind. Gleichzeitig steigt das Risiko, dass Abstimmung, Sorgfalt und saubere Nachverfolgung zu wenig Aufmerksamkeit erhalten.
+`;
+  }
+
+  if (primary === "intuitiv") {
+    return `
+Das Team ist vor allem auf Zusammenarbeit und Kommunikation ausgerichtet. Im Alltag zeigt sich dies in hoher Abstimmung, starker Beziehungsorientierung und einem eher gemeinsamen als rein individuellen Vorgehen. Für den Vertrieb ist das besonders wertvoll, wenn Kundennähe, Vertrauen und Teamabstimmung tragende Erfolgsfaktoren sind. Gleichzeitig steigt das Risiko, dass Entscheidungen zu lange abgestimmt werden und klare Prioritäten nicht konsequent genug umgesetzt werden.
+`;
+  }
+
+  return `
+Das Team ist vor allem auf Struktur und Analyse ausgerichtet. Im Alltag zeigt sich dies in geordneten Abläufen, nachvollziehbaren Entscheidungen und einer eher sachlichen Herangehensweise. Für den Vertrieb ist das besonders wertvoll, wenn Qualität, Verlässlichkeit und saubere Steuerung wichtig sind. Gleichzeitig steigt das Risiko, dass Dynamik, Marktreaktion und schnelle Umsetzung an Kraft verlieren.
+`;
+}
+
+
+/*********************************************************************
+ 4. ABGLEICH TEAM VS PERSON
+*********************************************************************/
+
+function getDelta(teamProfile, personProfile) {
+  return {
+    impulsiv: round(personProfile.impulsiv) - round(teamProfile.impulsiv),
+    intuitiv: round(personProfile.intuitiv) - round(teamProfile.intuitiv),
+    analytisch: round(personProfile.analytisch) - round(teamProfile.analytisch)
+  };
+}
+
+function getDistanceScore(teamProfile, personProfile) {
+  const d = getDelta(teamProfile, personProfile);
+  return Math.abs(d.impulsiv) + Math.abs(d.intuitiv) + Math.abs(d.analytisch);
+}
+
+function getPrimaryKey(profile) {
+  return sortComponents(profile)[0].key;
+}
+
+function getSecondaryKey(profile) {
+  return sortComponents(profile)[1].key;
+}
+
+
+/*********************************************************************
+ 5. SYSTEMWIRKUNG UND PASSUNG
+*********************************************************************/
+
+function getSystemwirkung(teamProfile, personProfile) {
+  const teamPrimary = getPrimaryKey(teamProfile);
+  const personPrimary = getPrimaryKey(personProfile);
+  const distance = getDistanceScore(teamProfile, personProfile);
+
+  if (distance <= 24) return "Verstärkung";
+
+  if (teamPrimary === personPrimary && distance <= 42) return "Verstärkung";
+
+  if (teamPrimary !== personPrimary) {
+    const teamWeakest = sortComponents(teamProfile)[2].key;
+    if (personPrimary === teamWeakest) return "Ergänzung";
+  }
+
+  if (distance >= 70) return "Transformation";
+
+  return "Spannung";
+}
+
+function getPassung(teamProfile, personProfile, roleType) {
+  const distance = getDistanceScore(teamProfile, personProfile);
+  const systemwirkung = getSystemwirkung(teamProfile, personProfile);
+  const teamPrimary = getPrimaryKey(teamProfile);
+  const personPrimary = getPrimaryKey(personProfile);
+
+  let score = 100;
+
+  score -= Math.min(distance, 80) * 0.65;
+
+  if (teamPrimary !== personPrimary) score -= 8;
+  if (systemwirkung === "Spannung") score -= 10;
+  if (systemwirkung === "Transformation") score -= 18;
+  if (systemwirkung === "Ergänzung") score -= 4;
+
+  if (roleType === "leadership") {
+    if (systemwirkung === "Transformation") score -= 8;
+    if (diff(teamProfile.analytisch, personProfile.analytisch) > 25) score -= 6;
+  }
+
+  if (score >= 76) return "Passend";
+  if (score >= 56) return "Bedingt passend";
+  return "Kritisch";
+}
+
+
+/*********************************************************************
+ 6. GRÜNDE FÜR DAS ERGEBNIS
+*********************************************************************/
+
+function buildReasonLines(teamProfile, personProfile, roleType) {
+  const teamPrimary = getPrimaryKey(teamProfile);
+  const personPrimary = getPrimaryKey(personProfile);
+  const delta = getDelta(teamProfile, personProfile);
+  const distance = getDistanceScore(teamProfile, personProfile);
+  const reasons = [];
+
+  if (teamPrimary !== personPrimary) {
+    reasons.push(
+      `Arbeitslogik unterschiedlich: Das Team arbeitet stärker über ${componentBusinessName(teamPrimary).toLowerCase()}, die Person stärker über ${componentBusinessName(personPrimary).toLowerCase()}.`
+    );
+  } else {
+    reasons.push(
+      `Arbeitslogik ähnlich: Team und Person haben denselben Hauptfokus in ${componentBusinessName(teamPrimary).toLowerCase()}.`
+    );
+  }
+
+  if (distance >= 60) {
+    reasons.push(`Die Abweichung zum Teamprofil ist deutlich. Dadurch ist im Alltag mit spürbarer Reibung zu rechnen.`);
+  } else if (distance >= 35) {
+    reasons.push(`Die Person weicht in mehreren Bereichen sichtbar vom Team ab. Das kann bereichernd sein, verlangt aber bewusste Steuerung.`);
+  } else {
+    reasons.push(`Die Person liegt in ihrer Arbeitslogik nah am Team. Dadurch ist eine stabile Einbindung grundsätzlich gut möglich.`);
+  }
+
+  const strongestDelta = [
+    { key: "impulsiv", value: Math.abs(delta.impulsiv) },
+    { key: "intuitiv", value: Math.abs(delta.intuitiv) },
+    { key: "analytisch", value: Math.abs(delta.analytisch) }
+  ].sort((a, b) => b.value - a.value)[0];
+
+  if (strongestDelta.value > 18) {
+    const key = strongestDelta.key;
+    const teamValue = round(teamProfile[key]);
+    const personValue = round(personProfile[key]);
+    if (personValue > teamValue) {
+      reasons.push(
+        `${componentBusinessName(key)} ist bei der Person deutlich stärker ausgeprägt als im Team. Das verändert Prioritäten und Arbeitsrhythmus spürbar.`
+      );
+    } else {
+      reasons.push(
+        `${componentBusinessName(key)} ist bei der Person deutlich schwächer ausgeprägt als im Team. Dadurch kann es zu Erwartungsunterschieden im Alltag kommen.`
+      );
+    }
+  }
+
+  if (roleType === "leadership") {
+    reasons.push(
+      `Da es sich um eine Führungsrolle handelt, wirkt die Arbeitslogik nicht nur individuell, sondern prägt Entscheidungswege, Prioritäten und die Teamkultur insgesamt.`
+    );
+  } else {
+    reasons.push(
+      `Da es sich um ein Teammitglied handelt, zeigt sich die Wirkung vor allem in Zusammenarbeit, Abstimmung, Tempo und alltäglicher Integration ins bestehende Team.`
+    );
+  }
+
+  return reasons.slice(0, 4);
+}
+
+
+/*********************************************************************
+ 7. VISUELLE TEAM-SPANNUNGSANALYSE
+*********************************************************************/
+
+function classifyTension(teamValue, personValue) {
+  const d = personValue - teamValue;
+  const abs = Math.abs(d);
+
+  if (abs <= 8) return "stabil";
+  if (abs <= 18) return d > 0 ? "moderat_mehr" : "moderat_weniger";
+  return d > 0 ? "deutlich_mehr" : "deutlich_weniger";
+}
+
+function getVisualTensionAnalysis(teamProfile, personProfile) {
+  const items = ["impulsiv", "intuitiv", "analytisch"].map(key => {
+    const teamValue = round(teamProfile[key]);
+    const personValue = round(personProfile[key]);
+    const status = classifyTension(teamValue, personValue);
+
+    let title = componentBusinessName(key);
+    let interpretation = "";
+
+    if (status === "stabil") {
+      interpretation = `In diesem Bereich liegt die Person nah am Team. Dadurch ist hier eher Stabilität als Reibung zu erwarten.`;
+    } else if (status === "moderat_mehr") {
+      interpretation = `Die Person bringt in diesem Bereich etwas mehr Stärke ein als das Team. Das kann das Team sinnvoll ergänzen, ohne sofort starken Gegendruck auszulösen.`;
+    } else if (status === "moderat_weniger") {
+      interpretation = `Die Person bringt in diesem Bereich etwas weniger mit als das Team. Das ist grundsätzlich ausgleichbar, wird im Alltag aber sichtbar sein.`;
+    } else if (status === "deutlich_mehr") {
+      interpretation = `Die Person bringt in diesem Bereich deutlich mehr ein als das Team. Hier entsteht ein klarer Veränderungsimpuls.`;
+    } else {
+      interpretation = `Die Person bringt in diesem Bereich deutlich weniger mit als das Team. Hier ist mit spürbaren Erwartungsunterschieden zu rechnen.`;
+    }
+
+    return {
+      key,
+      title,
+      teamValue,
+      personValue,
+      status,
+      interpretation
+    };
+  });
+
+  return items;
+}
+
+
+/*********************************************************************
+ 8. SYSTEMWIRKUNGSTEXTE
+*********************************************************************/
+
+function getSystemwirkungText(teamProfile, personProfile, roleType) {
+  const systemwirkung = getSystemwirkung(teamProfile, personProfile);
+  const teamPrimary = getPrimaryKey(teamProfile);
+  const personPrimary = getPrimaryKey(personProfile);
+
+  const intro =
+    roleType === "leadership"
+      ? `Die neue Führungskraft wirkt nicht nur als einzelne Person, sondern setzt im Team spürbare Schwerpunkte. Ihre Arbeitslogik beeinflusst Prioritäten, Entscheidungswege und die Art, wie Leistung im Alltag gesteuert wird.`
+      : `Das neue Teammitglied wirkt vor allem über den täglichen Kontakt mit Kunden und Kollegen, über den Arbeitsrhythmus und über die Art, wie Aufgaben im Team umgesetzt werden.`;
+
+  if (systemwirkung === "Verstärkung") {
+    return `
+${intro}
+
+Die Konstellation wirkt insgesamt als Verstärkung. Die Person bringt eine Arbeitslogik mit, die zum Grundmuster des Teams passt. Dadurch werden bestehende Stärken eher ausgebaut als grundlegend verändert.
+
+Für das Vertriebsteam bedeutet das: ${componentBusinessName(teamPrimary)} wird durch die Person zusätzlich getragen. Das kann Stabilität, Klarheit und eine schnellere Eingliederung fördern. Gleichzeitig ist darauf zu achten, dass das Team nicht noch einseitiger wird. Wenn ein bereits stark ausgeprägter Bereich weiter verstärkt wird, können blinde Flecken in den schwächer ausgeprägten Bereichen zunehmen.
+`;
+  }
+
+  if (systemwirkung === "Ergänzung") {
+    return `
+${intro}
+
+Die Konstellation wirkt insgesamt als Ergänzung. Die Person bringt eine Qualität ins Team, die bisher weniger stark ausgeprägt ist. Dadurch kann das Team breiter, beweglicher und leistungsfähiger werden.
+
+Für das Vertriebsteam bedeutet das: Das Team erhält durch die Person mehr Gewicht in ${componentBusinessName(personPrimary).toLowerCase()}. Das ist grundsätzlich eine Chance. Gleichzeitig entsteht eine natürliche Reibung, weil das Team andere Schwerpunkte gewohnt ist. Der Nutzen dieser Ergänzung zeigt sich nur dann voll, wenn Unterschiede erklärt, Erwartungen geklärt und gemeinsame Spielregeln gesetzt werden.
+`;
+  }
+
+  if (systemwirkung === "Transformation") {
+    return `
+${intro}
+
+Die Konstellation wirkt insgesamt als deutliche Veränderung. Die Person bringt eine Arbeitslogik mit, die das Team spürbar in eine neue Richtung ziehen kann. Das ist keine kleine Ergänzung, sondern ein klarer Eingriff in das bestehende System.
+
+Für das Vertriebsteam bedeutet das: ${componentBusinessName(personPrimary)} gewinnt deutlich an Gewicht, während das bisherige Teammuster relativiert wird. Das kann eine bewusste strategische Entscheidung sein, verlangt aber in jedem Fall aktive Führung, klare Kommunikation und konsequente Begleitung. Ohne diese Steuerung ist mit Reibung, Missverständnissen und einem erhöhten Integrationsaufwand zu rechnen.
+`;
+  }
+
+  return `
+${intro}
+
+Die Konstellation erzeugt Spannung. Die Person bringt eine Arbeitslogik mit, die in wichtigen Punkten vom Team abweicht. Diese Unterschiede können produktiv sein, wenn sie bewusst genutzt werden. Ohne klare Führung besteht jedoch die Gefahr, dass Arbeitsweisen gegeneinander statt miteinander wirken.
+
+Für das Vertriebsteam bedeutet das: Das Team setzt stärker auf ${componentBusinessName(teamPrimary).toLowerCase()}, die Person stärker auf ${componentBusinessName(personPrimary).toLowerCase()}. Dadurch entstehen unterschiedliche Erwartungen an Prioritäten, Abstimmung und Umsetzung. Entscheidend ist, ob diese Unterschiede früh benannt und konstruktiv eingebunden werden.
+`;
+}
+
+
+/*********************************************************************
+ 9. AUSWIRKUNGEN IM ARBEITSALLTAG
+*********************************************************************/
+
+function getImpactTexts(teamProfile, personProfile, roleType) {
+  const teamPrimary = getPrimaryKey(teamProfile);
+  const personPrimary = getPrimaryKey(personProfile);
+  const delta = getDelta(teamProfile, personProfile);
+
+  const leadershipPrefix =
+    roleType === "leadership"
+      ? "Als Führungskraft"
+      : "Als Teammitglied";
+
+  const decisionText = `
+${leadershipPrefix} wird die Person Entscheidungen stärker aus ${componentBusinessName(personPrimary).toLowerCase()} heraus prägen. Das Team ist hingegen stärker an ${componentBusinessName(teamPrimary).toLowerCase()} orientiert. Im Alltag zeigt sich das vor allem darin, wie schnell entschieden wird, wie viel Abstimmung eingeholt wird und woran Entscheidungen gemessen werden.
+`;
+
+  let steeringText = `
+Die Arbeitssteuerung verändert sich spürbar. Die Person setzt andere Akzente als das Team. Dadurch verschieben sich Prioritäten, Arbeitsrhythmus und die Art, wie Aufgaben im Vertriebsalltag verfolgt werden.
+`;
+
+  if (delta.analytisch < -15) {
+    steeringText += `
+Besonders sichtbar wird das in der Nachverfolgung, in der Dokumentation und in der Frage, wie sauber Prozesse eingehalten werden.
+`;
+  } else if (delta.analytisch > 15) {
+    steeringText += `
+Besonders sichtbar wird das in klarerer Ordnung, nachvollziehbareren Entscheidungen und höherer Prozesssicherheit.
+`;
+  }
+
+  let dynamicText = `
+In der Teamdynamik werden Unterschiede im Alltag deutlich spürbar. Das betrifft vor allem Abstimmung, Erwartungshaltung und die Frage, was als gutes Arbeiten gilt.
+`;
+
+  if (personPrimary === "impulsiv" && teamPrimary === "intuitiv") {
+    dynamicText += `
+Die Person wird stärker auf Vorwärtsbewegung und unmittelbare Umsetzung drängen, während das Team stärker über Abstimmung und gemeinsame Einordnung arbeitet.
+`;
+  } else if (personPrimary === "analytisch" && teamPrimary === "impulsiv") {
+    dynamicText += `
+Die Person wird stärker auf Ordnung, Qualität und nachvollziehbare Entscheidungen achten, während das Team eher auf Geschwindigkeit und direkte Wirkung setzt.
+`;
+  } else if (personPrimary === "intuitiv" && teamPrimary === "analytisch") {
+    dynamicText += `
+Die Person wird stärker auf Austausch und Beziehung achten, während das Team eher über Klarheit, Sachlogik und Struktur arbeitet.
+`;
+  }
+
+  let tempoText = `
+Das Arbeitstempo wird im Team neu wahrgenommen. Die Person setzt einen anderen Rhythmus als das bestehende Team.
+`;
+
+  if (delta.impulsiv > 12) {
+    tempoText += `
+Die Person bringt spürbar mehr Dynamik, Aktivität und direkte Bewegung in Themen. Das kann Leistung freisetzen, aber auch als Druck empfunden werden.
+`;
+  } else if (delta.impulsiv < -12) {
+    tempoText += `
+Die Person bringt weniger unmittelbare Vorwärtsbewegung ein als das Team. Dadurch kann sie im Umfeld eines sehr dynamischen Teams als zu vorsichtig oder zu langsam wahrgenommen werden.
+`;
+  } else {
+    tempoText += `
+Hier ist keine starke Abweichung zu erwarten. Der Arbeitsrhythmus dürfte grundsätzlich anschlussfähig sein.
+`;
+  }
+
+  let communicationText = `
+Die Kommunikation im Team wird ebenfalls beeinflusst. Dabei geht es nicht nur um Gesprächsstil, sondern auch darum, wie offen abgestimmt wird, wie viel Erklärung nötig ist und wie Konflikte angesprochen werden.
+`;
+
+  if (delta.intuitiv > 12) {
+    communicationText += `
+Die Person bringt mehr Beziehungs- und Abstimmungsorientierung ein. Das kann Vertrauen stärken und Schnittstellen verbessern.
+`;
+  } else if (delta.intuitiv < -12) {
+    communicationText += `
+Die Person bringt weniger Abstimmungsorientierung ein als das Team. Dadurch kann sie direkter, knapper oder weniger anschlussfähig wirken.
+`;
+  } else {
+    communicationText += `
+Die Kommunikationslogik liegt nahe am Team. Dadurch besteht in diesem Bereich eine gute Basis für Zusammenarbeit.
+`;
+  }
+
+  return [
+    { title: "Entscheidungslogik", text: decisionText.trim() },
+    { title: "Arbeitssteuerung", text: steeringText.trim() },
+    { title: "Teamdynamik", text: dynamicText.trim() },
+    { title: "Arbeitstempo", text: tempoText.trim() },
+    { title: "Kommunikation", text: communicationText.trim() }
+  ];
+}
+
+
+/*********************************************************************
+ 10. CHANCEN
+*********************************************************************/
+
+function getChances(teamProfile, personProfile, roleType) {
+  const systemwirkung = getSystemwirkung(teamProfile, personProfile);
+  const personPrimary = getPrimaryKey(personProfile);
+  const teamPrimary = getPrimaryKey(teamProfile);
+
+  const list = [];
+
+  if (systemwirkung === "Ergänzung") {
+    list.push(`Die Person stärkt einen Bereich, der im Team bisher weniger Gewicht hat. Dadurch kann das Team breiter und wirksamer aufgestellt werden.`);
+  } else if (systemwirkung === "Verstärkung") {
+    list.push(`Die Person baut eine bestehende Stärke des Teams weiter aus. Dadurch kann mehr Klarheit, Tempo oder Stabilität im Alltag entstehen.`);
+  } else {
+    list.push(`Die Unterschiede zwischen Team und Person eröffnen neue Perspektiven. Richtig geführt kann daraus echte Weiterentwicklung entstehen.`);
+  }
+
+  if (personPrimary === "impulsiv") {
+    list
