@@ -82,6 +82,18 @@ function compShort(k: ComponentKey): string {
   return "Struktur";
 }
 
+export function subj(name: string): string {
+  const lower = name.toLowerCase();
+  if (lower === "person" || lower === "die person") return "die Person";
+  return name;
+}
+
+export function Subj(name: string): string {
+  const lower = name.toLowerCase();
+  if (lower === "person" || lower === "die person") return "Die Person";
+  return name;
+}
+
 function severity(gap: number): Severity {
   if (gap >= 15) return "critical";
   if (gap >= 8) return "warning";
@@ -284,51 +296,54 @@ function constellationRoleText(c: ConstellationType): string {
 }
 
 function constellationCandText(c: ConstellationType, cand: string): string {
+  const s = Subj(cand);
   const texts: Record<ConstellationType, string> = {
-    H_DOM: `${cand} arbeitet mit hoher Umsetzungsenergie, trifft Entscheidungen zügig und bringt Themen schnell ins Handeln.`,
-    B_DOM: `${cand} baut schnell Vertrauen auf, erkennt Bedürfnisse früh und sorgt für reibungsarme Zusammenarbeit.`,
-    S_DOM: `${cand} arbeitet planvoll und präzise, sorgt für verlässliche Abläufe und prüft sorgfältig.`,
-    H_GT_B: `${cand} setzt auf Tempo und direkte Umsetzung, kann aber gleichzeitig Menschen einbinden und situative Zusammenarbeit leisten.`,
-    H_GT_S: `${cand} arbeitet schnell und entscheidungsorientiert, sichert Ergebnisse aber zusätzlich über klare Abläufe und Struktur ab.`,
-    B_GT_H: `${cand} wirkt primär über Beziehung und Kommunikation, kann aber bei Bedarf schnell entscheiden und handeln.`,
-    B_GT_S: `${cand} ist stark in Zusammenarbeit und situativem Gespür, nutzt gleichzeitig Struktur als Absicherung.`,
-    S_GT_H: `${cand} arbeitet vorwiegend strukturiert und planvoll, kann aber bei Bedarf schnell umschalten und handeln.`,
-    S_GT_B: `${cand} legt Wert auf Struktur, Ordnung und Verlässlichkeit. Gleichzeitig sorgt ein Beziehungsanteil dafür, dass Strukturen kommunikativ vermittelt werden.`,
-    H_NEAR_B: `${cand} zeigt eine Doppelausrichtung: starke Umsetzungsenergie und hohe soziale Beweglichkeit wechseln sich je nach Situation ab.`,
-    H_NEAR_S: `${cand} zeigt eine Doppelausrichtung: Umsetzungskraft und Strukturorientierung stehen fast gleichwertig nebeneinander. Je nach Situation wird entweder schnell gehandelt oder gründlich geprüft.`,
-    B_NEAR_S: `${cand} zeigt eine Doppelausrichtung: Zusammenarbeit und Struktur stehen fast gleichwertig nebeneinander. Je nach Situation wird moderiert oder geordnet.`,
-    BALANCED: `${cand} zeigt ein ausgeglichenes Profil ohne klare Einseitigkeit. Das Verhalten passt sich situativ an, ist aber weniger eindeutig steuerbar.`,
+    H_DOM: `${s} arbeitet mit hoher Umsetzungsenergie, trifft Entscheidungen zügig und bringt Themen schnell ins Handeln.`,
+    B_DOM: `${s} baut schnell Vertrauen auf, erkennt Bedürfnisse früh und sorgt für reibungsarme Zusammenarbeit.`,
+    S_DOM: `${s} arbeitet planvoll und präzise, sorgt für verlässliche Abläufe und prüft sorgfältig.`,
+    H_GT_B: `${s} setzt auf Tempo und direkte Umsetzung, kann aber gleichzeitig Menschen einbinden und situative Zusammenarbeit leisten.`,
+    H_GT_S: `${s} arbeitet schnell und entscheidungsorientiert, sichert Ergebnisse aber zusätzlich über klare Abläufe und Struktur ab.`,
+    B_GT_H: `${s} wirkt vor allem über Beziehung und Kommunikation, kann aber bei Bedarf schnell entscheiden und handeln.`,
+    B_GT_S: `${s} ist stark in Zusammenarbeit und situativem Gespür und nutzt gleichzeitig Struktur als Absicherung.`,
+    S_GT_H: `${s} arbeitet vorwiegend strukturiert und planvoll, kann aber bei Bedarf schnell umschalten und handeln.`,
+    S_GT_B: `${s} legt Wert auf Struktur, Ordnung und Verlässlichkeit. Gleichzeitig sorgt ein spürbarer Beziehungsanteil dafür, dass Strukturen auch kommunikativ vermittelt werden.`,
+    H_NEAR_B: `Bei ${subj(cand)} wechseln sich starke Umsetzungsenergie und hohe soziale Beweglichkeit je nach Situation ab.`,
+    H_NEAR_S: `Bei ${subj(cand)} stehen Umsetzungskraft und Strukturorientierung fast gleichwertig nebeneinander. Je nach Situation wird entweder schnell gehandelt oder gründlich geprüft.`,
+    B_NEAR_S: `Bei ${subj(cand)} stehen Zusammenarbeit und Struktur fast gleichwertig nebeneinander. Je nach Situation wird moderiert oder geordnet.`,
+    BALANCED: `${s} zeigt ein ausgeglichenes Profil ohne klare Einseitigkeit. Das Verhalten passt sich situativ an, ist aber weniger eindeutig steuerbar.`,
   };
   return texts[c];
 }
 
 function buildSummary(role: string, cand: string, fit: string, rk: ComponentKey, ck: ComponentKey, gap: string, rt: Triad, ct: Triad, rConst: ConstellationType, cConst: ConstellationType): string {
+  const s = Subj(cand);
   if (rk === ck && gap === "gering") {
-    return `${cand} passt in der Grundausrichtung gut zur Rolle ${role}. Beide setzen auf dieselbe Arbeitslogik. ${constellationRoleText(rConst)} ${cand} arbeitet ähnlich — kleinere Unterschiede zeigen sich vor allem in der Gewichtung der sekundären Bereiche und sind im Alltag gut steuerbar.`;
+    return `${s} passt in der Grundausrichtung gut zur Rolle ${role}. Beide setzen auf dieselbe Arbeitslogik. ${constellationRoleText(rConst)} ${s} arbeitet ähnlich — kleinere Unterschiede zeigen sich vor allem in der Gewichtung der sekundären Bereiche und sind im Alltag gut steuerbar.`;
   }
 
   if (gap === "hoch") {
-    return `${cand} und die Rolle ${role} funktionieren grundlegend unterschiedlich.\n\nWas die Rolle braucht: ${constellationRoleText(rConst)}\n\nWas ${cand} mitbringt: ${constellationCandText(cConst, cand)}\n\nDiese Unterschiede wirken sich im Alltag spürbar aus — bei Entscheidungen, Arbeitsweise und Zusammenarbeit. Ohne gezielte Steuerung entsteht Reibung.`;
+    return `${s} und die Rolle ${role} funktionieren grundlegend unterschiedlich.\n\nWas die Rolle braucht: ${constellationRoleText(rConst)}\n\nWas ${subj(cand)} mitbringt: ${constellationCandText(cConst, cand)}\n\nDiese Unterschiede wirken sich im Alltag spürbar aus — bei Entscheidungen, Arbeitsweise und Zusammenarbeit. Ohne gezielte Steuerung entsteht Reibung.`;
   }
 
-  return `${cand} bringt eine andere Arbeitslogik mit, als die Rolle ${role} erfordert. ${constellationRoleText(rConst)} ${cand} geht dagegen anders vor: ${constellationCandText(cConst, cand)} Die Unterschiede sind erkennbar, lassen sich aber bei gezielter Führung und klaren Erwartungen im Alltag ausgleichen.`;
+  return `${s} bringt eine andere Arbeitslogik mit, als die Rolle ${role} erfordert. ${constellationRoleText(rConst)} ${s} geht dagegen anders vor: ${constellationCandText(cConst, cand)} Die Unterschiede sind erkennbar, lassen sich aber bei gezielter Führung und klaren Erwartungen im Alltag ausgleichen.`;
 }
 
 function buildDominanceShift(role: string, cand: string, rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, rConst: ConstellationType, cConst: ConstellationType): string {
+  const s = Subj(cand);
   if (rk === ck) {
     if (rConst === cConst) {
-      return `Die Grundausrichtung stimmt überein. Sowohl die Rolle als auch ${cand} setzen auf dieselbe Arbeitslogik. Im Alltag bedeutet das, dass die Grundrichtung passt — einzelne Situationen werden aber unterschiedlich angegangen.`;
+      return `Die Grundausrichtung stimmt überein. Sowohl die Rolle als auch ${subj(cand)} setzen auf dieselbe Arbeitslogik. Im Alltag bedeutet das, dass die Grundrichtung passt — einzelne Situationen werden aber unterschiedlich angegangen.`;
     }
-    return `Die Hauptrichtung stimmt überein, aber die Gewichtung unterscheidet sich. ${constellationRoleText(rConst)} ${cand} arbeitet zwar in dieselbe Richtung, gewichtet aber anders: ${constellationCandText(cConst, cand)} Das kann in bestimmten Situationen zu unterschiedlichem Verhalten führen.`;
+    return `Die Hauptrichtung stimmt überein, aber die Gewichtung unterscheidet sich. ${constellationRoleText(rConst)} ${s} arbeitet zwar in dieselbe Richtung, gewichtet aber anders: ${constellationCandText(cConst, cand)} Das kann in bestimmten Situationen zu unterschiedlichem Verhalten führen.`;
   }
 
   const isDoubleDom = cConst.includes("NEAR") || cConst === "BALANCED";
 
   if (isDoubleDom) {
-    return `${constellationRoleText(rConst)} ${cand} bringt jedoch eine andere Arbeitsweise mit: ${constellationCandText(cConst, cand)} Da ${cand} zwischen zwei Ausrichtungen wechselt, ist das Verhalten weniger vorhersehbar. Für die Führungskraft bedeutet das: klare Rahmenvorgaben und regelmäßiges Feedback sind besonders wichtig.`;
+    return `${constellationRoleText(rConst)} ${s} bringt jedoch eine andere Arbeitsweise mit: ${constellationCandText(cConst, cand)} Da ${subj(cand)} zwischen zwei Ausrichtungen wechselt, ist das Verhalten weniger vorhersehbar. Für die Führungskraft bedeutet das: klare Rahmenvorgaben und regelmäßiges Feedback sind besonders wichtig.`;
   }
 
-  return `${constellationRoleText(rConst)} ${cand} arbeitet aber anders: ${constellationCandText(cConst, cand)} Dadurch verschiebt sich im Alltag der Schwerpunkt — weg von ${compShort(rk)}, hin zu ${compShort(ck)}.`;
+  return `${constellationRoleText(rConst)} ${s} arbeitet aber anders: ${constellationCandText(cConst, cand)} Dadurch verschiebt sich im Alltag der Schwerpunkt — weg von ${compShort(rk)}, hin zu ${compShort(ck)}.`;
 }
 
 function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string, gapLevel: string): StressBehavior {
@@ -354,22 +369,23 @@ function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string,
     analytisch: "gründlicher, aber langsamer",
   };
 
+  const sn = subj(cand);
   let controlledPressure: string;
   if (cConst === "BALANCED") {
-    controlledPressure = `Wenn der Arbeitsdruck steigt, verstärkt sich bei ${cand} meist die situativ naheliegendste Arbeitslogik. Da das Profil ausgeglichen ist, gibt es keinen sehr klaren Automatismus. Die tatsächliche Reaktion hängt stärker vom Kontext und der Führung ab.`;
+    controlledPressure = `Wenn der Arbeitsdruck steigt, verstärkt sich bei ${sn} meist die situativ naheliegendste Arbeitslogik. Da das Profil ausgeglichen ist, gibt es keinen klaren Automatismus. Die tatsächliche Reaktion hängt stärker vom Kontext und der Führung ab.`;
   } else if (cConst.includes("NEAR")) {
-    controlledPressure = `Wenn der Arbeitsdruck steigt, verstärkt sich bei ${cand} meist die im Moment führende Logik. Da beide Hauptanteile fast gleich stark sind, kann die Reaktion je nach Situation unterschiedlich ausfallen. Das bedeutet: Mal wird stärker über ${compShort(pk)} gesteuert, mal über ${compShort(sk)}.`;
+    controlledPressure = `Wenn der Arbeitsdruck steigt, verstärkt sich bei ${sn} meist die im Moment führende Logik. Da beide Hauptanteile fast gleich stark sind, kann die Reaktion je nach Situation unterschiedlich ausfallen. Das bedeutet: Mal wird stärker über ${compShort(pk)} gesteuert, mal über ${compShort(sk)}.`;
   } else {
-    controlledPressure = `Wenn der Arbeitsdruck steigt, verstärkt sich bei ${cand} zunächst die Tendenz, ${primaryBehavior[pk]}. Das hilft, die Situation kurzfristig zu stabilisieren. Gleichzeitig steigt damit das Risiko, dass die sekundären Anteile (${compShort(sk)}) in den Hintergrund treten.`;
+    controlledPressure = `Wenn der Arbeitsdruck steigt, verstärkt sich bei ${sn} zunächst die Tendenz, ${primaryBehavior[pk]}. Das hilft, die Situation kurzfristig zu stabilisieren. Gleichzeitig steigt damit das Risiko, dass die sekundären Anteile (${compShort(sk)}) in den Hintergrund treten.`;
   }
 
   let uncontrolledStress: string;
   if (cConst === "BALANCED") {
-    uncontrolledStress = `Wenn der Druck sehr hoch wird, kann das Verhalten von ${cand} kippen oder wechseln, weil keine sehr klare Hauptlogik trägt. Die Reaktion wird weniger vorhersagbar. Für die Führungskraft bedeutet das: Die Person braucht in Stressphasen besonders klare Orientierung und Leitplanken.`;
+    uncontrolledStress = `Wenn der Druck sehr hoch wird, kann das Verhalten von ${sn} kippen oder wechseln, weil keine klare Hauptlogik trägt. Die Reaktion wird weniger vorhersagbar. Für die Führungskraft bedeutet das: ${Subj(cand)} braucht in Stressphasen besonders klare Orientierung und Leitplanken.`;
   } else if (d12 <= 5) {
-    uncontrolledStress = `Wenn die Belastung sehr hoch wird, kann sich der Schwerpunkt bei ${cand} leicht verschieben. Die Person bleibt in ihrer Grundlogik erkennbar, nutzt aber spürbar stärker ${compShort(sk)}. ${secondaryBehavior[sk]}. Für die Führungskraft bedeutet das: Die Arbeitsweise verändert sich, aber die Grundrichtung bleibt steuerbar.`;
+    uncontrolledStress = `Wenn die Belastung sehr hoch wird, kann sich der Schwerpunkt bei ${sn} leicht verschieben. ${Subj(cand)} bleibt in der Grundlogik erkennbar, nutzt aber spürbar stärker ${compShort(sk)}. ${secondaryBehavior[sk]}. Für die Führungskraft bedeutet das: Die Arbeitsweise verändert sich, aber die Grundrichtung bleibt steuerbar.`;
   } else {
-    uncontrolledStress = `Wenn die Belastung sehr hoch wird und viele Anforderungen gleichzeitig auftreten, verschiebt sich das Verhalten von ${cand} deutlich. Dann tritt stärker ${compShort(sk)} in den Vordergrund. ${secondaryBehavior[sk]}. Entscheidungen werden dadurch ${secondaryDecision[sk]}. Für die Führungskraft bedeutet das: Unter starkem Stress arbeitet die Person anders als im Normalzustand. Darauf sollte man vorbereitet sein.`;
+    uncontrolledStress = `Wenn die Belastung sehr hoch wird und viele Anforderungen gleichzeitig auftreten, verschiebt sich das Verhalten von ${sn} deutlich. Dann tritt stärker ${compShort(sk)} in den Vordergrund. ${secondaryBehavior[sk]}. Entscheidungen werden dadurch ${secondaryDecision[sk]}. Für die Führungskraft bedeutet das: Unter starkem Stress arbeitet ${subj(cand)} anders als im Normalzustand. Darauf sollte man vorbereitet sein.`;
   }
 
   return { controlledPressure, uncontrolledStress };
@@ -394,6 +410,7 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
 
 function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapA: number, cand: string): ImpactArea {
   const sev = severity(rk === "analytisch" && ck !== "analytisch" ? gapA + 5 : Math.max(gapI, gapA));
+  const s = Subj(cand);
 
   let roleNeed: string;
   let candidatePattern: string;
@@ -402,28 +419,28 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
   if (rk === "analytisch") {
     roleNeed = "Die Rolle verlangt sorgfältige, planvolle und prüforientierte Entscheidungen. Bevor gehandelt wird, sollen Optionen geprüft und Risiken abgewogen werden.";
     if (ck === "impulsiv") {
-      candidatePattern = `${cand} entscheidet deutlich schneller und stärker aus dem Handeln heraus. Entscheidungen werden zügig getroffen, oft noch bevor alle Informationen vorliegen.`;
+      candidatePattern = `${s} entscheidet deutlich schneller und stärker aus dem Handeln heraus. Entscheidungen werden zügig getroffen, oft noch bevor alle Informationen vorliegen.`;
       risk = "Im Alltag bedeutet das: Entscheidungen können schneller getroffen werden, aber wichtige Prüfschritte werden möglicherweise übersprungen. Gerade bei komplexeren Aufgaben kann das zu Fehlern oder Nacharbeit führen.";
     } else {
-      candidatePattern = `${cand} entscheidet stärker aus dem Kontext heraus und bezieht dabei vor allem Stimmungen und Beziehungen ein. Datenbasierte Prüfung steht weniger im Vordergrund.`;
+      candidatePattern = `${s} entscheidet stärker aus dem Kontext heraus und bezieht dabei vor allem Stimmungen und Beziehungen ein. Datenbasierte Prüfung steht weniger im Vordergrund.`;
       risk = "Im Alltag bedeutet das: Entscheidungen werden von zwischenmenschlichen Faktoren geprägt statt von sachlicher Analyse. Technische Details oder Risikoabwägungen können dabei zu kurz kommen.";
     }
   } else if (rk === "impulsiv") {
     roleNeed = "Die Rolle verlangt schnelle, handlungsorientierte Entscheidungen. Tempo und klare Richtung haben Vorrang vor langer Prüfung.";
     if (ck === "analytisch") {
-      candidatePattern = `${cand} prüft gründlich und braucht eine solide Datengrundlage, bevor eine Entscheidung getroffen wird. Das Tempo ist langsamer als die Rolle verlangt.`;
+      candidatePattern = `${s} prüft gründlich und braucht eine solide Datengrundlage, bevor eine Entscheidung getroffen wird. Das Tempo ist langsamer als die Rolle verlangt.`;
       risk = "Im Alltag bedeutet das: In Situationen, die schnelles Handeln erfordern, kann es zu Verzögerungen kommen. Chancen werden möglicherweise verpasst, weil die Entscheidung zu spät fällt.";
     } else {
-      candidatePattern = `${cand} bezieht bei Entscheidungen stark den Kontext und die beteiligten Menschen ein. Abstimmungsprozesse dauern länger als die Rolle erlaubt.`;
+      candidatePattern = `${s} bezieht bei Entscheidungen stark den Kontext und die beteiligten Menschen ein. Abstimmungsprozesse dauern länger als die Rolle erlaubt.`;
       risk = "Im Alltag bedeutet das: Entscheidungen, die eigentlich sofort fallen müssten, werden durch Abstimmungsrunden verzögert. Das Umsetzungstempo der Rolle leidet darunter.";
     }
   } else {
     roleNeed = "Die Rolle verlangt Entscheidungen, die Kontext, Zusammenarbeit und zwischenmenschliche Wirkung berücksichtigen. Abstimmung im Team ist wichtiger als Geschwindigkeit.";
     if (ck === "impulsiv") {
-      candidatePattern = `${cand} trifft Entscheidungen schnell und handlungsorientiert. Die Wirkung auf andere Menschen wird dabei nicht immer berücksichtigt.`;
+      candidatePattern = `${s} trifft Entscheidungen schnell und handlungsorientiert. Die Wirkung auf andere Menschen wird dabei nicht immer berücksichtigt.`;
       risk = "Im Alltag bedeutet das: Entscheidungen werden getroffen, ohne das Team ausreichend einzubinden. Betroffene fühlen sich übergangen, was langfristig die Zusammenarbeit belastet.";
     } else {
-      candidatePattern = `${cand} entscheidet über Fakten und Regeln. Die zwischenmenschliche Dimension von Entscheidungen steht weniger im Fokus.`;
+      candidatePattern = `${s} entscheidet über Fakten und Regeln. Die zwischenmenschliche Dimension von Entscheidungen steht weniger im Fokus.`;
       risk = "Im Alltag bedeutet das: Entscheidungen sind sachlich korrekt, aber die Auswirkungen auf Motivation und Teamdynamik werden nicht ausreichend berücksichtigt.";
     }
   }
@@ -446,18 +463,19 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
     roleNeed = "Die Rolle erlaubt eine flexible, ergebnisorientierte Arbeitsweise. Formale Planung ist weniger wichtig als schnelle Anpassung.";
   }
 
+  const s = Subj(cand);
   if (ct.analytisch >= 35) {
-    candidatePattern = `${cand} arbeitet strukturiert mit klaren Abläufen und festen Arbeitsschritten. Planung hat hohe Priorität.`;
+    candidatePattern = `${s} arbeitet strukturiert mit klaren Abläufen und festen Arbeitsschritten. Planung hat hohe Priorität.`;
   } else if (ct.analytisch >= 25) {
-    candidatePattern = `${cand} hat eine grundlegende Struktur in der Arbeitsweise, lässt aber Raum für situative Anpassungen.`;
+    candidatePattern = `${s} hat eine grundlegende Struktur in der Arbeitsweise, lässt aber Raum für situative Anpassungen.`;
   } else {
-    candidatePattern = `${cand} arbeitet stark tempoorientiert und reagiert situationsbezogen. Formale Planung und Dokumentation haben geringe Priorität.`;
+    candidatePattern = `${s} arbeitet stark tempoorientiert und reagiert situationsbezogen. Formale Planung und Dokumentation haben geringe Priorität.`;
   }
 
   if (gapA >= 10 && ct.analytisch < rt.analytisch) {
-    risk = `Im Alltag bedeutet das: Wenn mehrere Aufgaben gleichzeitig auftreten, wird ${cand} eher schnell entscheiden und handeln. Die Rolle verlangt jedoch, dass zuerst geprüft wird, welche Schritte notwendig sind. Wichtige Prüfschritte können verkürzt werden. Für die Führungskraft bedeutet das: Prozessklarheit muss aktiv eingefordert werden.`;
+    risk = `Im Alltag bedeutet das: Wenn mehrere Aufgaben gleichzeitig auftreten, wird ${subj(cand)} eher schnell entscheiden und handeln. Die Rolle verlangt jedoch, dass zuerst geprüft wird, welche Schritte notwendig sind. Wichtige Prüfschritte können verkürzt werden. Für die Führungskraft bedeutet das: Prozessklarheit muss aktiv eingefordert werden.`;
   } else if (gapA >= 10 && ct.analytisch > rt.analytisch) {
-    risk = `Im Alltag bedeutet das: Aufgaben, die schnell erledigt werden könnten, werden länger geprüft als notwendig. ${cand} investiert mehr Zeit in Planung und Absicherung als die Rolle erlaubt. Das bremst das Gesamttempo der Position. Die Führungskraft sollte klare Zeitvorgaben setzen.`;
+    risk = `Im Alltag bedeutet das: Aufgaben, die schnell erledigt werden könnten, werden länger geprüft als notwendig. ${s} investiert mehr Zeit in Planung und Absicherung als die Rolle erlaubt. Das bremst das Gesamttempo der Position. Die Führungskraft sollte klare Zeitvorgaben setzen.`;
   } else {
     risk = "Im Alltag bedeutet das: Die Arbeitssteuerung passt grundsätzlich zur Rolle. Feinabstimmung kann notwendig sein, aber die Grundlogik stimmt.";
   }
@@ -478,16 +496,17 @@ function buildDocumentationImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
     roleNeed = "Die Rolle erfordert ein grundlegendes Maß an Dokumentation. Wichtige Entscheidungen sollten nachvollziehbar sein.";
   }
 
+  const s = Subj(cand);
   if (ct.analytisch >= 35) {
-    candidatePattern = `${cand} dokumentiert gründlich und systematisch. Nachvollziehbarkeit hat hohe Bedeutung.`;
+    candidatePattern = `${s} dokumentiert gründlich und systematisch. Nachvollziehbarkeit hat hohe Bedeutung.`;
   } else {
-    candidatePattern = `Dokumentation hat für ${cand} keine natürliche Priorität. Die Arbeit ist stärker auf direkte Ergebnisse ausgerichtet als auf schriftliche Nachweise.`;
+    candidatePattern = `Dokumentation hat für ${subj(cand)} keine natürliche Priorität. Die Arbeit ist stärker auf direkte Ergebnisse ausgerichtet als auf schriftliche Nachweise.`;
   }
 
   if (rt.analytisch > ct.analytisch && gapA >= 10) {
-    risk = `Im Alltag bedeutet das: Nachvollziehbarkeit sinkt. Fehler und Abweichungen werden später sichtbar, weil Entscheidungswege nicht dokumentiert werden. Für die Führungskraft wird es schwieriger, die Arbeit von ${cand} zu überprüfen und bei Bedarf zu korrigieren. Klare Dokumentationsregeln sollten von Anfang an vereinbart werden.`;
+    risk = `Im Alltag bedeutet das: Nachvollziehbarkeit sinkt. Fehler und Abweichungen werden später sichtbar, weil Entscheidungswege nicht dokumentiert werden. Für die Führungskraft wird es schwieriger, die Arbeit von ${subj(cand)} zu überprüfen und bei Bedarf zu korrigieren. Klare Dokumentationsregeln sollten von Anfang an vereinbart werden.`;
   } else if (ct.analytisch > rt.analytisch && gapA >= 10) {
-    risk = `Im Alltag bedeutet das: Die Dokumentation ist gründlicher als die Rolle verlangt. ${cand} investiert Zeit in schriftliche Nachweise, die in dieser Position nicht gebraucht werden. Die Führungskraft sollte den Dokumentationsumfang klar eingrenzen.`;
+    risk = `Im Alltag bedeutet das: Die Dokumentation ist gründlicher als die Rolle verlangt. ${s} investiert Zeit in schriftliche Nachweise, die in dieser Position nicht gebraucht werden. Die Führungskraft sollte den Dokumentationsumfang klar eingrenzen.`;
   } else {
     risk = "Im Alltag bedeutet das: Das Dokumentationsverhalten passt grundsätzlich zur Rolle. Keine wesentliche Abweichung erkennbar.";
   }
@@ -522,12 +541,13 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
         : "Die Rolle verlangt Wirkung über Kommunikation, Zusammenarbeit und situatives Gespür. Die eigene Arbeitsweise prägt das Umfeld durch Beziehungsarbeit.";
   }
 
+  const s = Subj(cand);
   if (ck === "impulsiv") {
-    candidatePattern = `${cand} führt eher über Tempo, direkte Ansprache und Aktivierung. Entscheidungen werden schnell kommuniziert und umgesetzt.`;
+    candidatePattern = `${s} führt eher über Tempo, direkte Ansprache und Aktivierung. Entscheidungen werden schnell kommuniziert und umgesetzt.`;
   } else if (ck === "intuitiv") {
-    candidatePattern = `${cand} führt über Beziehung, Dialog und aktives Zuhören. Entscheidungen werden im Gespräch entwickelt und abgestimmt.`;
+    candidatePattern = `${s} führt über Beziehung, Dialog und aktives Zuhören. Entscheidungen werden im Gespräch entwickelt und abgestimmt.`;
   } else {
-    candidatePattern = `${cand} führt über Struktur, klare Regeln und nachvollziehbare Vorgaben. Entscheidungen werden sachlich begründet und dokumentiert.`;
+    candidatePattern = `${s} führt über Struktur, klare Regeln und nachvollziehbare Vorgaben. Entscheidungen werden sachlich begründet und dokumentiert.`;
   }
 
   if (rk !== ck) {
@@ -572,12 +592,13 @@ function buildConflictImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
     roleNeed = "Konflikte sollen über Dialog, Vermittlung und Beziehungsarbeit gelöst werden. Die Rolle verlangt ein Gespür für Stimmungen und Bedürfnisse.";
   }
 
+  const s = Subj(cand);
   if (ck === "impulsiv") {
-    candidatePattern = `${cand} geht Konflikte eher direkt und kurzfristig an. Auseinandersetzungen werden schnell auf den Punkt gebracht und entschieden.`;
+    candidatePattern = `${s} geht Konflikte eher direkt und kurzfristig an. Auseinandersetzungen werden schnell auf den Punkt gebracht und entschieden.`;
   } else if (ck === "intuitiv") {
-    candidatePattern = `${cand} sucht bei Konflikten Ausgleich und Kompromiss. Direkte Konfrontation wird vermieden, stattdessen wird auf Verständigung gesetzt.`;
+    candidatePattern = `${s} sucht bei Konflikten Ausgleich und Kompromiss. Direkte Konfrontation wird vermieden, stattdessen wird auf Verständigung gesetzt.`;
   } else {
-    candidatePattern = `${cand} klärt Konflikte über Fakten, Regeln und klare Zuständigkeiten. Emotionale Aspekte werden weniger berücksichtigt.`;
+    candidatePattern = `${s} klärt Konflikte über Fakten, Regeln und klare Zuständigkeiten. Emotionale Aspekte werden weniger berücksichtigt.`;
   }
 
   if (gapI >= 12 || gapN >= 12) {
@@ -612,12 +633,13 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
     roleNeed = "Die Rolle soll eine kooperative, beziehungsorientierte Kultur fördern. Zusammenhalt und gegenseitige Unterstützung prägen das Arbeitsumfeld.";
   }
 
+  const s = Subj(cand);
   if (ck === "impulsiv") {
-    candidatePattern = `${cand} prägt die Kultur stärker über Dynamik und unmittelbare Bewegung. Kurzfristig kann dadurch mehr Tempo entstehen.`;
+    candidatePattern = `${s} prägt die Kultur stärker über Dynamik und unmittelbare Bewegung. Kurzfristig kann dadurch mehr Tempo entstehen.`;
   } else if (ck === "intuitiv") {
-    candidatePattern = `${cand} fördert Teamzusammenhalt, offenen Dialog und eine einladende Arbeitsatmosphäre. Beziehungen stehen im Mittelpunkt.`;
+    candidatePattern = `${s} fördert Teamzusammenhalt, offenen Dialog und eine einladende Arbeitsatmosphäre. Beziehungen stehen im Mittelpunkt.`;
   } else {
-    candidatePattern = `${cand} stärkt Qualitätsbewusstsein, Regelklarheit und Ordnung. Die Kultur wird sachlicher und strukturierter.`;
+    candidatePattern = `${s} stärkt Qualitätsbewusstsein, Regelklarheit und Ordnung. Die Kultur wird sachlicher und strukturierter.`;
   }
 
   if (rk !== ck) {
@@ -652,17 +674,17 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
 
   const shortRisks: Record<ComponentKey, Record<ComponentKey, string>> = {
     impulsiv: {
-      intuitiv: `In der Einarbeitung investiert ${cand} mehr Zeit in Abstimmung als die Rolle erlaubt. Erste Verzögerungen beim Umsetzungstempo werden sichtbar. Die Führungskraft muss aktiv Tempo einfordern.`,
-      analytisch: `In der Einarbeitung werden Entscheidungen langsamer getroffen als die Rolle verlangt. ${cand} prüft mehr als nötig und verliert dabei an Geschwindigkeit. Die Führungskraft sollte klare Fristen setzen.`,
+      intuitiv: `In der Einarbeitung investiert ${subj(cand)} mehr Zeit in Abstimmung als die Rolle erlaubt. Erste Verzögerungen beim Umsetzungstempo werden sichtbar. Die Führungskraft muss aktiv Tempo einfordern.`,
+      analytisch: `In der Einarbeitung werden Entscheidungen langsamer getroffen als die Rolle verlangt. ${Subj(cand)} prüft mehr als nötig und verliert dabei an Geschwindigkeit. Die Führungskraft sollte klare Fristen setzen.`,
       impulsiv: "",
     },
     intuitiv: {
-      impulsiv: `In der Einarbeitung treibt ${cand} schneller voran als die Rolle vorsieht. Beziehungsarbeit und Abstimmung können darunter leiden. Die Führungskraft sollte frühzeitig auf Teamfeedback achten.`,
+      impulsiv: `In der Einarbeitung treibt ${subj(cand)} schneller voran als die Rolle vorsieht. Beziehungsarbeit und Abstimmung können darunter leiden. Die Führungskraft sollte frühzeitig auf Teamfeedback achten.`,
       analytisch: `In der Einarbeitung werden formale Prozesse stärker betont als nötig. Die zwischenmenschliche Wirkung der Rolle kann in den Hintergrund treten. Die Führungskraft sollte den Fokus auf Kommunikation lenken.`,
       intuitiv: "",
     },
     analytisch: {
-      impulsiv: `In der Einarbeitung entstehen erste Reibungen, weil Tempo und Arbeitslogik von ${cand} nicht zur geforderten Prüftiefe passen. Fehler und Nacharbeiten können auftreten, weil Abläufe nicht ausreichend geprüft werden. Die Führungskraft muss Qualitätsstandards aktiv einfordern.`,
+      impulsiv: `In der Einarbeitung entstehen erste Reibungen, weil Tempo und Arbeitslogik von ${subj(cand)} nicht zur geforderten Prüftiefe passen. Fehler und Nacharbeiten können auftreten, weil Abläufe nicht ausreichend geprüft werden. Die Führungskraft muss Qualitätsstandards aktiv einfordern.`,
       intuitiv: `In der Einarbeitung werden Entscheidungen stärker beziehungsorientiert getroffen als die Rolle vorsieht. Die strukturelle Präzision kann nachlassen. Die Führungskraft sollte klare Dokumentationserwartungen formulieren.`,
       analytisch: "",
     },
@@ -670,7 +692,7 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
 
   const midRisks: Record<ComponentKey, Record<ComponentKey, string>> = {
     impulsiv: {
-      intuitiv: `Prioritäten, Entscheidungen und Arbeitsweise folgen zunehmend der persönlichen Beziehungslogik von ${cand}. Die Umsetzungsgeschwindigkeit sinkt weiter. Die Führungskraft muss regelmäßig Tempo und Ergebnisorientierung einfordern.`,
+      intuitiv: `Prioritäten, Entscheidungen und Arbeitsweise folgen zunehmend der persönlichen Beziehungslogik von ${subj(cand)}. Die Umsetzungsgeschwindigkeit sinkt weiter. Die Führungskraft muss regelmäßig Tempo und Ergebnisorientierung einfordern.`,
       analytisch: `Die Rolle wird zunehmend über Prüfung und Kontrolle gesteuert statt über Tempo. Die Dynamik der Position geht verloren. Ohne Korrektur durch die Führungskraft wird die Rolle langsamer als vorgesehen.`,
       impulsiv: "",
     },
@@ -680,7 +702,7 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
       intuitiv: "",
     },
     analytisch: {
-      impulsiv: `Prioritäten, Entscheidungen und Arbeitsweise folgen zunehmend der persönlichen Arbeitslogik von ${cand}. Struktur und Prozessqualität werden instabil. Die Qualitätsstandards der Rolle erodieren schrittweise.`,
+      impulsiv: `Prioritäten, Entscheidungen und Arbeitsweise folgen zunehmend der persönlichen Arbeitslogik von ${subj(cand)}. Struktur und Prozessqualität werden instabil. Die Qualitätsstandards der Rolle erodieren schrittweise.`,
       intuitiv: `Die analytische Schärfe der Rolle wird durch Konsensentscheidungen aufgeweicht. Prüftiefe nimmt ab, Entscheidungen werden stärker von Beziehungsdynamik geprägt als von Fakten.`,
       analytisch: "",
     },
@@ -695,7 +717,7 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
     {
       label: "Mittelfristig",
       period: "3 - 12 Monate",
-      text: midRisks[rk]?.[ck] || `Die persönliche Arbeitslogik von ${cand} prägt zunehmend die Rolle. Ohne gezielte Steuerung verschiebt sich die Wirkung der Position dauerhaft.`,
+      text: midRisks[rk]?.[ck] || `Die persönliche Arbeitslogik von ${subj(cand)} prägt zunehmend die Rolle. Ohne gezielte Steuerung verschiebt sich die Wirkung der Position dauerhaft.`,
     },
     {
       label: "Langfristig",
@@ -712,7 +734,7 @@ function buildDevelopment(gap: string, rk: ComponentKey, ck: ComponentKey, contr
     return {
       level: 4,
       label: "hoch",
-      text: `Die Anpassung an die Rollenanforderung ist mit hoher Wahrscheinlichkeit erreichbar. Die Grundausrichtung stimmt bereits überein. ${cand} muss lediglich in den sekundären Bereichen Feinabstimmung leisten. Bei klarer Erwartungssetzung ist das realistisch.`,
+      text: `Die Anpassung an die Rollenanforderung ist mit hoher Wahrscheinlichkeit erreichbar. Die Grundausrichtung stimmt bereits überein. ${Subj(cand)} muss lediglich in den sekundären Bereichen Feinabstimmung leisten. Bei klarer Erwartungssetzung ist das realistisch.`,
     };
   }
   if (gap === "mittel") {
@@ -873,11 +895,12 @@ function buildFinal(role: string, cand: string, fit: string, control: string, rk
       ? ` Da die Rolle fachliche Führung beinhaltet, beeinflusst die Profilabweichung auch die fachliche Orientierung des Teams.`
       : "";
 
+  const s = Subj(cand);
   if (fit === "Geeignet") {
-    return `${cand} zeigt eine gute Passung für die Rolle ${role}. Die Arbeitslogik stimmt in der Grundausrichtung überein. Der Steuerungsbedarf ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich. Die Führungskraft sollte dennoch regelmäßig prüfen, ob die sekundären Bereiche zur Rolle passen.${leadSuffix}`;
+    return `${s} zeigt eine gute Passung für die Rolle ${role}. Die Arbeitslogik stimmt in der Grundausrichtung überein und der Steuerungsbedarf ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich. Die Führungskraft sollte dennoch regelmäßig prüfen, ob die sekundären Bereiche zur Rolle passen.${leadSuffix}`;
   }
   if (fit === "Bedingt geeignet") {
-    return `${cand} kann die Rolle ${role} unter Bedingungen ausfüllen. Der Steuerungsbedarf ist ${control}. Die Arbeitslogik weicht in einzelnen Bereichen von der Rollenanforderung ab, kann aber mit gezielter Führung und klarer Struktur stabilisiert werden. Die Führungskraft sollte konkrete Steuerungsmaßnahmen festlegen und den Fortschritt regelmäßig überprüfen.${leadSuffix}`;
+    return `${s} kann die Rolle ${role} unter bestimmten Bedingungen ausfüllen. Der Steuerungsbedarf ist ${control}. Die Arbeitslogik weicht in einzelnen Bereichen von der Rollenanforderung ab, lässt sich aber mit gezielter Führung und klarer Struktur stabilisieren. Die Führungskraft sollte konkrete Steuerungsmaßnahmen festlegen und den Fortschritt regelmäßig überprüfen.${leadSuffix}`;
   }
-  return `${cand} zeigt eine starke Ausrichtung auf ${compDesc(ck)}, während die Rolle einen Schwerpunkt auf ${compDesc(rk)} erfordert. Die Grundpassung ist nicht gegeben. Eine stabile Besetzung wäre nur mit hohem Steuerungsaufwand möglich. Die Führungskraft sollte realistisch bewerten, ob dieser Aufwand langfristig tragbar ist.${leadSuffix}`;
+  return `${s} ist stark auf ${compDesc(ck)} ausgerichtet, während die Rolle einen Schwerpunkt auf ${compDesc(rk)} erfordert. Die Grundpassung ist damit nicht gegeben. Eine stabile Besetzung wäre nur mit hohem Steuerungsaufwand möglich. Die Führungskraft sollte realistisch bewerten, ob dieser Aufwand langfristig tragbar ist.${leadSuffix}`;
 }
