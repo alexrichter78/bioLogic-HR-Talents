@@ -424,20 +424,20 @@ const TEAMCHECK_PREVIEW_DATA: Record<string, Record<number, TeamCheckVariant>> =
   },
 };
 
-function getVariantKey(devScore: number, sameDom: boolean, totalGap: number, candSecGap: number): number {
-  if (devScore >= 6) return 1;
-  if (devScore === 5) return totalGap <= 15 ? 2 : 3;
-  if (devScore === 4) return sameDom ? 4 : 5;
-  if (devScore === 3) {
-    if (totalGap <= 35) return 6;
-    if (totalGap <= 40) return 7;
+function getVariantKey(fitLabel: string, devScore: number, totalGap: number): number {
+  if (fitLabel === "Geeignet") {
+    if (devScore >= 6) return 1;
+    if (devScore >= 5) return 2;
+    return 3;
+  }
+  if (fitLabel === "Bedingt geeignet") {
+    if (devScore >= 5) return 4;
+    if (devScore >= 4) return 5;
+    if (devScore >= 3) return totalGap <= 35 ? 6 : 7;
     return 8;
   }
-  if (devScore === 2) {
-    if (totalGap <= 42) return 9;
-    if (totalGap <= 48) return 10;
-    return 11;
-  }
+  if (devScore >= 3) return 9;
+  if (devScore >= 2) return totalGap <= 45 ? 10 : 11;
   return totalGap <= 55 ? 12 : 13;
 }
 
@@ -701,6 +701,16 @@ export default function TeamReport() {
           const secondaryFlip = sameDom && teamDom.top2.key !== candDom.top2.key;
           const candSecGap = candSorted[1] - candSorted[2];
 
+          const geignetLimit = sameDom ? 28 : 20;
+          let fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
+          if (secondaryFlip && candSecGap > 5) {
+            fitLabel = "Nicht geeignet";
+          } else if (secondaryFlip && fitLabel === "Geeignet") {
+            fitLabel = "Bedingt geeignet";
+          } else if (fitLabel === "Geeignet" && sameDom && candSecGap <= 5) {
+            fitLabel = "Bedingt geeignet";
+          }
+
           let devScore: number;
           if (sameDom && totalGap <= 20) devScore = 6;
           else if (sameDom && totalGap <= 28) devScore = 5;
@@ -715,7 +725,7 @@ export default function TeamReport() {
             else devScore = Math.min(devScore, 4);
           }
 
-          const variantKey = getVariantKey(devScore, sameDom, totalGap, candSecGap);
+          const variantKey = getVariantKey(fitLabel, devScore, totalGap);
           const variant = TEAMCHECK_PREVIEW_DATA[roleTypeForCard]?.[variantKey] || TEAMCHECK_PREVIEW_DATA.teammitglied[9];
           const roleChipLabel = roleTypeForCard === "fuehrung" ? "Führungskraft" : "Teammitglied";
           const resultBg = variant.resultClass === "result-fit" ? "#eaf8ef" : variant.resultClass === "result-partial" ? "#fff4df" : "#ffe7e7";
