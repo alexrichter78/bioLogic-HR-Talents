@@ -125,19 +125,19 @@ const PROFILE_LABELS: Record<string, string> = {
 };
 
 const PROFILE_TEXTS: Record<string, string> = {
-  impulsiv_intuitiv_analytisch: `Die Person arbeitet in erster Linie über Umsetzung und Tempo. Themen werden zügig aufgegriffen, Entscheidungen werden eher nach vorne als nach hinten gedacht. Der zweite Schwerpunkt liegt in Zusammenarbeit und Kommunikation. Dadurch bleibt die Person trotz hoher Dynamik im Kontakt mit dem Umfeld anschlussfähig. Struktur und Analyse sind vorhanden, stehen jedoch nicht im Vordergrund.\n\nIm Arbeitsalltag zeigt sich dieses Profil häufig in hoher Aktivität, klarer Eigeninitiative und einer spürbaren Vorwärtsbewegung. Chancen entstehen dort, wo Geschwindigkeit, Präsenz und direkte Wirkung wichtig sind. Risiken entstehen dort, wo saubere Nachverfolgung, konsequente Dokumentation und disziplinierte Prozessführung dauerhaft nötig sind.`,
-  impulsiv_analytisch_intuitiv: `Die Person arbeitet in erster Linie über Umsetzung und Tempo. Der zweite Schwerpunkt liegt auf Struktur und Analyse. Dadurch verbindet sie hohe Aktivität mit einem gewissen Blick für Zielklarheit, Prioritäten und sachliche Ordnung. Zusammenarbeit und Kommunikation sind vorhanden, stehen aber nicht an erster Stelle.\n\nIm Arbeitsalltag zeigt sich dieses Profil oft in konsequenter Zielorientierung, klarem Antrieb und einer guten Fähigkeit, Themen nicht nur anzustoßen, sondern auch geordnet zu steuern. Chancen liegen in Durchsetzung, Fokus und Verbindlichkeit. Risiken entstehen dort, wo Abstimmung oder sensible Teamkommunikation zu wenig Raum bekommen.`,
-  intuitiv_impulsiv_analytisch: `Die Person arbeitet in erster Linie über Zusammenarbeit und Kommunikation. Der zweite Schwerpunkt liegt auf Umsetzung und Tempo. Dadurch verbindet sie Kontaktstärke mit Aktivität und wirkt häufig verbindend, motivierend und beweglich. Struktur und Analyse sind vorhanden, aber nicht die tragende Leitlinie.\n\nIm Alltag zeigt sich dieses Profil häufig in kundenorientierter Kommunikation, schneller Kontaktaufnahme und hoher Wirkung in Gesprächen. Chancen liegen in Netzwerken, Beziehungsaufbau und positiver Präsenz. Risiken entstehen dort, wo konsequente Nachhaltung, analytische Tiefe und Prozessdisziplin dauerhaft gefragt sind.`,
-  intuitiv_analytisch_impulsiv: `Die Person arbeitet in erster Linie über Zusammenarbeit und Kommunikation. Der zweite Schwerpunkt liegt auf Struktur und Analyse. Dadurch verbindet sie Beziehungsstärke mit einem geordneten, reflektierten Vorgehen. Tempo und spontane Umsetzung sind vorhanden, stehen aber nicht im Vordergrund.\n\nIm Arbeitsalltag zeigt sich dieses Profil oft in ruhiger Gesprächsführung, guter Bedarfsaufnahme und einer sauberen Abstimmung mit dem Umfeld. Chancen liegen in Vertrauensaufbau, Verlässlichkeit und konsistenter Zusammenarbeit. Risiken entstehen dort, wo schnelle Entscheidungen, harte Priorisierung oder kurzfristiger Umsetzungsdruck gefragt sind.`,
-  analytisch_impulsiv_intuitiv: `Die Person arbeitet in erster Linie über Struktur und Analyse. Der zweite Schwerpunkt liegt auf Umsetzung und Tempo. Dadurch bringt sie eine klare Ordnung in Themen, denkt sachlich und zielbezogen und kann Entscheidungen auch konsequent in die Umsetzung bringen. Zusammenarbeit und Kommunikation sind vorhanden, aber nicht der primäre Antrieb.\n\nIm Arbeitsumfeld zeigt sich dieses Profil häufig in sauberer Vorbereitung, klarer Argumentation und disziplinierter Arbeitsweise. Chancen liegen in Qualität, Steuerbarkeit und belastbaren Entscheidungen. Risiken entstehen dort, wo hohe Flexibilität oder spontane Anpassung im Vordergrund stehen.`,
-  analytisch_intuitiv_impulsiv: `Die Person arbeitet in erster Linie über Struktur und Analyse. Der zweite Schwerpunkt liegt auf Zusammenarbeit und Kommunikation. Dadurch verbindet sie Klarheit, Sorgfalt und nachvollziehbare Entscheidungen mit einem kooperativen Umgang. Tempo und spontane Umsetzung sind vorhanden, aber nicht die bevorzugte Linie.\n\nIm Arbeitsalltag zeigt sich dieses Profil oft in gut vorbereiteten Gesprächen, klarer Argumentation, verlässlicher Abstimmung und solider Prozessführung. Chancen liegen in Qualität, Stabilität und professioneller Wirkung. Risiken entstehen dort, wenn ein sehr hohes Tempo oder spontane Marktreaktion im Vordergrund stehen.`,
-  impulsiv_intuitiv_doppeldominanz: `Die Person zeigt eine Doppeldominanz aus Umsetzung und Kommunikation. Sie bringt sowohl Tempo als auch Kontaktstärke mit. Entscheidungen werden häufig zügig getroffen, gleichzeitig bleibt die Wirkung auf andere wichtig. Struktur und Analyse sind vorhanden, stehen jedoch deutlich im Hintergrund.\n\nIm Arbeitsalltag kann dieses Profil sehr wirksam sein, wenn Aktivität, Sichtbarkeit und Beziehungsarbeit gebraucht werden. Risiken liegen vor allem in nachlassender Ordnung, geringer Dokumentationstiefe und wechselnden Prioritäten unter Druck.`,
-  impulsiv_analytisch_doppeldominanz: `Die Person zeigt eine Doppeldominanz aus Umsetzung und Struktur. Sie verbindet Aktivität mit Sachorientierung und arbeitet häufig zugleich entschlossen und klar. Zusammenarbeit und Kommunikation sind vorhanden, haben aber weniger Gewicht als Ergebnisorientierung und Ordnung.\n\nIm Arbeitsalltag kann dieses Profil besonders stark sein, wenn Zielklarheit, Steuerung und Verbindlichkeit gefragt sind. Risiken entstehen dort, wo Abstimmung oder sensible Kommunikation eine größere Rolle spielen.`,
-  intuitiv_analytisch_doppeldominanz: `Die Person zeigt eine Doppeldominanz aus Kommunikation und Struktur. Sie verbindet kooperative Zusammenarbeit mit einem geordneten, nachvollziehbaren Vorgehen. Tempo ist vorhanden, aber nicht die bevorzugte erste Reaktion.\n\nIm Arbeitsalltag zeigt sich dieses Profil häufig in verlässlicher Kommunikation, sauberer Vorbereitung und stabiler Zusammenarbeit. Chancen liegen in Qualität, Ruhe und Vertrauensbildung. Risiken entstehen dort, wo ein sehr hohes Umsetzungstempo gefordert ist.`,
-  impulsiv_mit_gleicher_nebenlage: `Die Person ist klar auf Umsetzung und Tempo ausgerichtet. Die beiden übrigen Bereiche sind in ähnlicher Stärke vorhanden, konkurrieren aber nicht um die Hauptlinie. Im Zentrum steht das Vorantreiben von Themen, das schnelle Handeln und die direkte Wirkung.\n\nIm Arbeitsalltag zeigt sich dieses Profil in hoher Energie, klarer Eigeninitiative und starkem Vorwärtsdrang. Chancen liegen in Dynamik, Aktivität und sichtbarer Leistung. Risiken entstehen dort, wo das Umfeld mehr Abstimmung, Geduld oder strukturelle Sorgfalt verlangt.`,
-  intuitiv_mit_gleicher_nebenlage: `Die Person ist klar auf Zusammenarbeit und Kommunikation ausgerichtet. Die beiden übrigen Bereiche sind in ähnlicher Stärke vorhanden, stehen aber hinter der Hauptlinie zurück. Im Zentrum stehen Beziehung, Austausch, Vertrauen und Wirkung auf Menschen.\n\nIm Arbeitsalltag zeigt sich dieses Profil oft in verbindender Kommunikation, guter Ansprache und einer kooperativen Wirkung im Team. Chancen liegen in Beziehungsaufbau, Integration und Zusammenarbeit. Risiken entstehen dort, wo sehr konsequente Steuerung, Tempo oder harte Priorisierung gefragt sind.`,
-  analytisch_mit_gleicher_nebenlage: `Die Person ist klar auf Struktur und Analyse ausgerichtet. Die beiden übrigen Bereiche sind in ähnlicher Stärke vorhanden, aber nicht führend. Im Zentrum stehen Klarheit, Nachvollziehbarkeit, sachliche Prüfung und geordnete Arbeitsweise.\n\nIm Arbeitsalltag zeigt sich dieses Profil oft in Verlässlichkeit, professioneller Vorbereitung und kontrolliertem Vorgehen. Chancen liegen in Qualität, Stabilität und sauberer Steuerung. Risiken entstehen dort, wo spontane Anpassung, hohe Dynamik und offensive Umsetzungsenergie im Vordergrund stehen.`,
-  alle_gleich: `Die Person zeigt ein ausgeglichenes Profil. Umsetzung, Kommunikation und Struktur sind in ähnlicher Stärke ausgeprägt. Es gibt keine einseitige Hauptlinie, sondern eine breite Anschlussfähigkeit an unterschiedliche Anforderungen.\n\nIm Arbeitsalltag kann dieses Profil sehr flexibel wirken. Die Person kann sich auf verschiedene Situationen einstellen und unterschiedliche Erwartungen verbinden. Chancen liegen in Vielseitigkeit und Balance. Risiken entstehen dort, wo das Umfeld eine besonders klare Kante oder eine sehr eindeutige Arbeitslogik verlangt.`,
+  impulsiv_intuitiv_analytisch: `Die Besetzung arbeitet primär über Umsetzung und Tempo. Themen werden zügig aufgegriffen, Entscheidungen konsequent nach vorn getrieben. Der zweite Schwerpunkt liegt in Zusammenarbeit und Kommunikation – dadurch bleibt die Besetzung trotz hoher Dynamik anschlussfähig an das Umfeld. Struktur und Analyse sind vorhanden, stehen jedoch nicht im Vordergrund.\n\nIm Arbeitsalltag zeigt sich dieses Profil in hoher Eigeninitiative, klarer Aktionsorientierung und einer spürbaren Umsetzungsdynamik. Chancen entstehen dort, wo operative Geschwindigkeit, Präsenz und direkte Wirkung gefragt sind. Risiken bestehen dort, wo konsequente Nachverfolgung, saubere Dokumentation und disziplinierte Prozessführung dauerhaft erforderlich sind.`,
+  impulsiv_analytisch_intuitiv: `Die Besetzung arbeitet primär über Umsetzung und Tempo. Der zweite Schwerpunkt liegt auf Struktur und Analyse – dadurch verbindet sie hohe Aktivität mit einem ausgeprägten Blick für Zielklarheit, Prioritäten und sachliche Ordnung. Zusammenarbeit und Kommunikation sind vorhanden, stehen aber nicht an erster Stelle.\n\nIm Arbeitsalltag zeigt sich dieses Profil in konsequenter Zielorientierung, klarer Umsetzungsausrichtung und einer guten Fähigkeit, Themen nicht nur anzustoßen, sondern geordnet zu steuern. Chancen liegen in Durchsetzungskraft, Fokus und Verbindlichkeit. Risiken entstehen dort, wo Abstimmung oder sensible Teamkommunikation zu wenig Raum erhalten.`,
+  intuitiv_impulsiv_analytisch: `Die Besetzung arbeitet primär über Zusammenarbeit und Kommunikation. Der zweite Schwerpunkt liegt auf Umsetzung und Tempo – dadurch verbindet sie Kontaktstärke mit Aktivität und wirkt häufig verbindend, motivierend und beweglich. Struktur und Analyse sind vorhanden, aber nicht die tragende Leitlinie.\n\nIm Arbeitsalltag zeigt sich dieses Profil in kundenorientierter Kommunikation, schneller Kontaktaufnahme und hoher Wirksamkeit in Gesprächen. Chancen liegen in Netzwerkaufbau, Beziehungspflege und positiver Präsenz. Risiken entstehen dort, wo konsequente Nachverfolgung, analytische Tiefe und Prozessdisziplin dauerhaft gefordert sind.`,
+  intuitiv_analytisch_impulsiv: `Die Besetzung arbeitet primär über Zusammenarbeit und Kommunikation. Der zweite Schwerpunkt liegt auf Struktur und Analyse – dadurch verbindet sie Beziehungsstärke mit einem geordneten, reflektierten Vorgehen. Tempo und spontane Umsetzung sind vorhanden, stehen aber nicht im Vordergrund.\n\nIm Arbeitsalltag zeigt sich dieses Profil in ruhiger Gesprächsführung, sauberer Bedarfsaufnahme und konsistenter Abstimmung mit dem Umfeld. Chancen liegen in Vertrauensbildung, Verlässlichkeit und nachhaltiger Zusammenarbeit. Risiken entstehen dort, wo schnelle Entscheidungen, harte Priorisierung oder kurzfristiger Umsetzungsdruck erforderlich sind.`,
+  analytisch_impulsiv_intuitiv: `Die Besetzung arbeitet primär über Struktur und Analyse. Der zweite Schwerpunkt liegt auf Umsetzung und Tempo – dadurch bringt sie eine klare Ordnung in Themen, denkt sachlich und zielbezogen und kann Entscheidungen auch konsequent in die Umsetzung überführen. Zusammenarbeit und Kommunikation sind vorhanden, aber nicht der primäre Antrieb.\n\nIm Arbeitsumfeld zeigt sich dieses Profil in sauberer Vorbereitung, klarer Argumentation und disziplinierter Arbeitsweise. Chancen liegen in Qualitätssicherung, Steuerbarkeit und belastbaren Entscheidungen. Risiken entstehen dort, wo hohe Flexibilität oder spontane Anpassung im Vordergrund stehen.`,
+  analytisch_intuitiv_impulsiv: `Die Besetzung arbeitet primär über Struktur und Analyse. Der zweite Schwerpunkt liegt auf Zusammenarbeit und Kommunikation – dadurch verbindet sie Klarheit, Sorgfalt und nachvollziehbare Entscheidungen mit einem kooperativen Umgang. Tempo und spontane Umsetzung sind vorhanden, aber nicht die bevorzugte Linie.\n\nIm Arbeitsalltag zeigt sich dieses Profil in gut vorbereiteten Gesprächen, klarer Argumentation, verlässlicher Abstimmung und solider Prozessführung. Chancen liegen in Qualität, Stabilität und professioneller Wirkung. Risiken entstehen dort, wo ein sehr hohes Tempo oder spontane Marktreaktion gefordert sind.`,
+  impulsiv_intuitiv_doppeldominanz: `Die Besetzung zeigt eine Doppeldominanz aus Umsetzung und Kommunikation. Sie bringt sowohl Tempo als auch Kontaktstärke mit. Entscheidungen werden häufig zügig getroffen, gleichzeitig bleibt die Wirkung auf das Umfeld wichtig. Struktur und Analyse sind vorhanden, stehen jedoch deutlich im Hintergrund.\n\nIm Arbeitsalltag kann dieses Profil sehr wirksam sein, wenn Aktivität, Sichtbarkeit und Beziehungsarbeit gebraucht werden. Risiken liegen vor allem in nachlassender Ordnung, geringer Dokumentationstiefe und wechselnden Prioritäten unter Belastung.`,
+  impulsiv_analytisch_doppeldominanz: `Die Besetzung zeigt eine Doppeldominanz aus Umsetzung und Struktur. Sie verbindet Aktivität mit Sachorientierung und arbeitet häufig zugleich entschlossen und klar. Zusammenarbeit und Kommunikation sind vorhanden, haben aber weniger Gewicht als Ergebnisorientierung und Ordnung.\n\nIm Arbeitsalltag kann dieses Profil besonders stark sein, wenn Zielklarheit, Steuerung und Verbindlichkeit gefragt sind. Risiken entstehen dort, wo Abstimmung oder sensible Kommunikation eine größere Rolle spielen.`,
+  intuitiv_analytisch_doppeldominanz: `Die Besetzung zeigt eine Doppeldominanz aus Kommunikation und Struktur. Sie verbindet kooperative Zusammenarbeit mit einem geordneten, nachvollziehbaren Vorgehen. Tempo ist vorhanden, aber nicht die bevorzugte erste Reaktion.\n\nIm Arbeitsalltag zeigt sich dieses Profil in verlässlicher Kommunikation, sauberer Vorbereitung und stabiler Zusammenarbeit. Chancen liegen in Qualität, Ruhe und Vertrauensbildung. Risiken entstehen dort, wo ein sehr hohes Umsetzungstempo gefordert ist.`,
+  impulsiv_mit_gleicher_nebenlage: `Die Besetzung ist klar auf Umsetzung und Tempo ausgerichtet. Die beiden übrigen Bereiche sind in ähnlicher Stärke vorhanden, konkurrieren aber nicht um die Hauptlinie. Im Zentrum steht das konsequente Vorantreiben von Themen, zügiges Handeln und direkte Wirkung.\n\nIm Arbeitsalltag zeigt sich dieses Profil in hoher Energie, klarer Eigeninitiative und starker Umsetzungsdynamik. Chancen liegen in operativer Geschwindigkeit, Aktivität und sichtbarer Leistung. Risiken entstehen dort, wo das Umfeld mehr Abstimmung, Geduld oder strukturelle Sorgfalt verlangt.`,
+  intuitiv_mit_gleicher_nebenlage: `Die Besetzung ist klar auf Zusammenarbeit und Kommunikation ausgerichtet. Die beiden übrigen Bereiche sind in ähnlicher Stärke vorhanden, stehen aber hinter der Hauptlinie zurück. Im Zentrum stehen Beziehung, Austausch, Vertrauen und zwischenmenschliche Wirkung.\n\nIm Arbeitsalltag zeigt sich dieses Profil in verbindender Kommunikation, guter Ansprache und kooperativer Teamwirkung. Chancen liegen in Beziehungsaufbau, Integration und nachhaltiger Zusammenarbeit. Risiken entstehen dort, wo konsequente Steuerung, operative Geschwindigkeit oder harte Priorisierung gefragt sind.`,
+  analytisch_mit_gleicher_nebenlage: `Die Besetzung ist klar auf Struktur und Analyse ausgerichtet. Die beiden übrigen Bereiche sind in ähnlicher Stärke vorhanden, aber nicht führend. Im Zentrum stehen Klarheit, Nachvollziehbarkeit, sachliche Prüfung und geordnete Arbeitsweise.\n\nIm Arbeitsalltag zeigt sich dieses Profil in Verlässlichkeit, professioneller Vorbereitung und kontrolliertem Vorgehen. Chancen liegen in Qualitätssicherung, Stabilität und sauberer Steuerung. Risiken entstehen dort, wo spontane Anpassung, hohe Dynamik und offensive Umsetzungsenergie im Vordergrund stehen.`,
+  alle_gleich: `Die Besetzung zeigt ein ausgeglichenes Profil. Umsetzung, Kommunikation und Struktur sind in ähnlicher Stärke ausgeprägt. Es gibt keine einseitige Hauptlinie, sondern eine breite Anschlussfähigkeit an unterschiedliche Anforderungen.\n\nIm Arbeitsalltag kann dieses Profil sehr flexibel wirken. Die Besetzung kann sich auf verschiedene Situationen einstellen und unterschiedliche Erwartungen verbinden. Chancen liegen in Vielseitigkeit und Balance. Risiken entstehen dort, wo das Umfeld eine besonders klare Kante oder eine sehr eindeutige Arbeitslogik verlangt.`,
 };
 
 function getProfileLabel(profile: Triad): string {
@@ -213,27 +213,40 @@ function normalizeRoleLevel(value: string): "leadership" | "member" {
   return "member";
 }
 
-function getRoleRef(roleTitle: string, lower = false): string {
-  const title = String(roleTitle || "die Rolle").trim();
-  if (!title) return lower ? "die Rolle" : "Die Rolle";
-  return lower ? `die Rolle ${title}` : `Die Rolle ${title}`;
+function besetzungRef(roleTitle: string): string {
+  const title = String(roleTitle || "").trim();
+  return title ? `die Besetzung in der Rolle ${title}` : "die Besetzung";
+}
+
+function BesetzungRef(roleTitle: string): string {
+  const title = String(roleTitle || "").trim();
+  return title ? `Die Besetzung in der Rolle ${title}` : "Die Besetzung";
+}
+
+function rolleRef(roleTitle: string): string {
+  const title = String(roleTitle || "").trim();
+  return title ? `die Rolle ${title}` : "die Rolle";
+}
+
+function RolleRef(roleTitle: string): string {
+  const title = String(roleTitle || "").trim();
+  return title ? `Die Rolle ${title}` : "Die Rolle";
 }
 
 function getTeamProfileText(teamProfile: Triad, roleTitle: string): string {
   const type = getBioLogicType(teamProfile);
   const primary = getPrimaryKey(teamProfile);
-  const ref = getRoleRef(roleTitle, false);
 
   if (type === "alle_gleich") {
-    return `${ref} trifft auf ein Team mit ausgeglichenem Profil. Umsetzung, Zusammenarbeit und Struktur sind in ähnlicher Stärke vorhanden. Dadurch besteht eine breite Anschlussfähigkeit an unterschiedliche Anforderungen. Gleichzeitig besteht die Gefahr, dass keine Arbeitslogik konsequent genug getragen wird, wenn Prioritäten nicht klar gesetzt werden.`;
+    return `${RolleRef(roleTitle)} trifft auf ein Team mit ausgeglichenem Profil. Umsetzung, Zusammenarbeit und Struktur sind in ähnlicher Stärke vorhanden. Dadurch besteht eine breite Anschlussfähigkeit an unterschiedliche Anforderungen. Gleichzeitig besteht die Gefahr, dass keine Arbeitslogik konsequent genug getragen wird, wenn Prioritäten nicht klar verankert werden.`;
   }
   if (primary === "impulsiv") {
-    return `${ref} trifft auf ein Team, das vor allem auf Umsetzung und Tempo ausgerichtet ist. Im Alltag zeigt sich dies in hoher Aktivität, schneller Themenbearbeitung und einer klaren Vorwärtsbewegung. Entscheidungen werden eher pragmatisch und zügig getroffen. Das ist besonders wertvoll, wenn sichtbare Ergebnisse und direkte Wirkung gefragt sind. Gleichzeitig steigt das Risiko, dass Abstimmung, Sorgfalt und saubere Nachverfolgung zu wenig Aufmerksamkeit erhalten.`;
+    return `${RolleRef(roleTitle)} trifft auf ein Team, das primär auf Umsetzung und Tempo ausgerichtet ist. Im Alltag zeigt sich dies in hoher Aktivität, schneller Themenbearbeitung und einer klaren operativen Taktung. Entscheidungen werden pragmatisch und zügig getroffen. Das ist besonders wertvoll, wenn sichtbare Ergebnisse und direkte Wirkung gefragt sind. Gleichzeitig steigt das Risiko, dass Abstimmung, Sorgfalt und konsequente Nachverfolgung zu wenig Aufmerksamkeit erhalten.`;
   }
   if (primary === "intuitiv") {
-    return `${ref} trifft auf ein Team, das vor allem auf Zusammenarbeit und Kommunikation ausgerichtet ist. Im Alltag zeigt sich dies in hoher Abstimmung, starker Beziehungsorientierung und einem eher gemeinsamen als rein individuellen Vorgehen. Das ist besonders wertvoll, wenn Kundennähe, Vertrauen und Teamabstimmung tragende Erfolgsfaktoren sind. Gleichzeitig steigt das Risiko, dass Entscheidungen zu lange abgestimmt werden und klare Prioritäten nicht konsequent genug umgesetzt werden.`;
+    return `${RolleRef(roleTitle)} trifft auf ein Team, das primär auf Zusammenarbeit und Kommunikation ausgerichtet ist. Im Alltag zeigt sich dies in ausgeprägter Abstimmung, starker Beziehungsorientierung und einem eher gemeinsamen als rein individuellen Vorgehen. Das ist besonders wertvoll, wenn Kundennähe, Vertrauen und Teamabstimmung tragende Erfolgsfaktoren sind. Gleichzeitig steigt das Risiko, dass Entscheidungen zu lange abgestimmt werden und klare Prioritäten nicht konsequent genug umgesetzt werden.`;
   }
-  return `${ref} trifft auf ein Team, das vor allem auf Struktur und Analyse ausgerichtet ist. Im Alltag zeigt sich dies in geordneten Abläufen, nachvollziehbaren Entscheidungen und einer eher sachlichen Herangehensweise. Das ist besonders wertvoll, wenn Qualität, Verlässlichkeit und saubere Steuerung wichtig sind. Gleichzeitig steigt das Risiko, dass Dynamik und schnelle Umsetzung an Kraft verlieren.`;
+  return `${RolleRef(roleTitle)} trifft auf ein Team, das primär auf Struktur und Analyse ausgerichtet ist. Im Alltag zeigt sich dies in geordneten Abläufen, nachvollziehbaren Entscheidungen und einer sachlich geprägten Herangehensweise. Das ist besonders wertvoll, wenn Qualität, Verlässlichkeit und saubere Steuerung entscheidend sind. Gleichzeitig steigt das Risiko, dass operative Dynamik und schnelle Umsetzung an Kraft verlieren.`;
 }
 
 function buildReasonLines(teamProfile: Triad, personProfile: Triad, roleTitle: string, roleType: string): string[] {
@@ -241,17 +254,12 @@ function buildReasonLines(teamProfile: Triad, personProfile: Triad, roleTitle: s
   const personPrimary = getPrimaryKey(personProfile);
   const delta = getDelta(teamProfile, personProfile);
   const distance = getDistanceScore(teamProfile, personProfile);
-  const ref = getRoleRef(roleTitle, false);
   const reasons: string[] = [];
 
-  reasons.push(`${ref} bringt eine andere Arbeitslogik mit als das bestehende Team: Das Team arbeitet stärker über ${componentBusinessName(teamPrimary).toLowerCase()}, die Person stärker über ${componentBusinessName(personPrimary).toLowerCase()}.`);
-
-  if (distance >= 60) {
-    reasons.push("Die Abweichung zum Teamprofil ist deutlich. Dadurch ist im Alltag mit spürbarer Reibung zu rechnen.");
-  } else if (distance >= 35) {
-    reasons.push("Die Person weicht in mehreren Bereichen sichtbar vom Team ab. Das kann bereichernd sein, verlangt aber bewusste Steuerung.");
+  if (teamPrimary === personPrimary) {
+    reasons.push(`Die Besetzung teilt die Hauptarbeitslogik des Teams: Beide setzen primär auf ${componentBusinessName(teamPrimary).toLowerCase()}. Dadurch besteht eine grundsätzliche Anschlussfähigkeit im Arbeitsalltag.`);
   } else {
-    reasons.push("Die Person liegt in ihrer Arbeitslogik nah am Team. Dadurch ist eine stabile Einbindung grundsätzlich gut möglich.");
+    reasons.push(`Die Besetzung setzt andere Schwerpunkte als das bestehende Team. Während das Team stärker über ${componentBusinessName(teamPrimary).toLowerCase()} arbeitet, bringt die Besetzung mehr ${componentBusinessName(personPrimary).toLowerCase()} mit.`);
   }
 
   const strongestDelta = ([
@@ -265,16 +273,24 @@ function buildReasonLines(teamProfile: Triad, personProfile: Triad, roleTitle: s
     const teamValue = round(teamProfile[key]);
     const personValue = round(personProfile[key]);
     if (personValue > teamValue) {
-      reasons.push(`${componentBusinessName(key)} ist bei der Person deutlich stärker ausgeprägt als im Team. Das verändert Prioritäten und Arbeitsrhythmus spürbar.`);
+      reasons.push(`${componentBusinessName(key)} ist bei der Besetzung deutlich stärker ausgeprägt als im Team. Dadurch verschieben sich Prioritäten, Entscheidungswege und die operative Taktung spürbar.`);
     } else {
-      reasons.push(`${componentBusinessName(key)} ist bei der Person deutlich schwächer ausgeprägt als im Team. Dadurch kann es zu Erwartungsunterschieden im Alltag kommen.`);
+      reasons.push(`${componentBusinessName(key)} ist bei der Besetzung deutlich schwächer ausgeprägt als im Team. Dadurch entstehen Erwartungsunterschiede in Arbeitsrhythmus und Qualitätsanspruch.`);
     }
   }
 
-  if (roleType === "leadership") {
-    reasons.push(`${ref} wirkt in einer Führungsfunktion nicht nur individuell, sondern prägt Entscheidungswege, Prioritäten und die Teamkultur insgesamt.`);
+  if (distance >= 60) {
+    reasons.push("Die Gesamtabweichung zum Teamprofil ist erheblich. Im Arbeitsalltag ist mit substanzieller Reibung in Prioritätensetzung und Arbeitssteuerung zu rechnen.");
+  } else if (distance >= 35) {
+    reasons.push("Die Besetzung weicht in mehreren Bereichen sichtbar vom Team ab. Das kann bereichernd wirken, verlangt aber bewusste Steuerung und klare Vereinbarungen.");
   } else {
-    reasons.push(`${ref} wirkt als Teammitglied vor allem über Zusammenarbeit, Abstimmung, Tempo und die alltägliche Integration in das bestehende Team.`);
+    reasons.push("Die Besetzung liegt in ihrer Arbeitslogik nah am Team. Dadurch ist eine stabile Einbindung grundsätzlich gut möglich.");
+  }
+
+  if (roleType === "leadership") {
+    reasons.push(`In einer Führungsfunktion wirken diese Unterschiede nicht nur individuell, sondern prägen Prioritätensetzung, Entscheidungsverankerung und die Teamkultur insgesamt. Führungsstabilität und Orientierung im Team hängen direkt davon ab, wie diese Konstellation gesteuert wird.`);
+  } else {
+    reasons.push(`Als Teammitglied wirkt die Besetzung vor allem über die alltägliche Zusammenarbeit, Abstimmung und Integration in das bestehende Team. Die Steuerungswirkung ist begrenzter, aber im direkten Umfeld dennoch spürbar.`);
   }
 
   return reasons.slice(0, 4);
@@ -296,15 +312,15 @@ function getVisualTensionAnalysis(teamProfile: Triad, personProfile: Triad): Ten
     let interpretation = "";
 
     if (status === "stabil") {
-      interpretation = "In diesem Bereich liegt die Person nah am Team. Dadurch ist hier eher Stabilität als Reibung zu erwarten.";
+      interpretation = "In diesem Bereich liegt die Besetzung nah am Team. Dadurch ist hier eher Stabilität als Reibung zu erwarten.";
     } else if (status === "moderat_mehr") {
-      interpretation = "Die Person bringt in diesem Bereich etwas mehr Stärke ein als das Team. Das kann das Team sinnvoll ergänzen, ohne sofort starken Gegendruck auszulösen.";
+      interpretation = "Die Besetzung bringt in diesem Bereich etwas mehr Gewicht ein als das Team. Das kann das bestehende Profil sinnvoll ergänzen, ohne sofort starken Gegendruck auszulösen.";
     } else if (status === "moderat_weniger") {
-      interpretation = "Die Person bringt in diesem Bereich etwas weniger mit als das Team. Das ist grundsätzlich ausgleichbar, wird im Alltag aber sichtbar sein.";
+      interpretation = "Die Besetzung bringt in diesem Bereich etwas weniger mit als das Team. Das ist grundsätzlich ausgleichbar, wird im Arbeitsalltag aber sichtbar sein.";
     } else if (status === "deutlich_mehr") {
-      interpretation = "Die Person bringt in diesem Bereich deutlich mehr ein als das Team. Hier entsteht ein klarer Veränderungsimpuls.";
+      interpretation = "Die Besetzung bringt in diesem Bereich deutlich mehr ein als das Team. Hier entsteht ein klarer Veränderungsimpuls, der aktiv gesteuert werden muss.";
     } else {
-      interpretation = "Die Person bringt in diesem Bereich deutlich weniger mit als das Team. Hier ist mit spürbaren Erwartungsunterschieden zu rechnen.";
+      interpretation = "Die Besetzung bringt in diesem Bereich deutlich weniger mit als das Team. Hier ist mit spürbaren Erwartungsunterschieden zu rechnen.";
     }
 
     return { key, title: componentBusinessName(key), teamValue, personValue, interpretation };
@@ -315,66 +331,69 @@ function getSystemwirkungText(teamProfile: Triad, personProfile: Triad, roleTitl
   const systemwirkung = getSystemwirkung(teamProfile, personProfile);
   const teamPrimary = getPrimaryKey(teamProfile);
   const personPrimary = getPrimaryKey(personProfile);
-  const ref = getRoleRef(roleTitle, false);
 
   const intro = roleType === "leadership"
-    ? `${ref} wirkt nicht nur als einzelne Besetzung, sondern setzt im Team spürbare Schwerpunkte. Die Arbeitslogik beeinflusst Prioritäten, Entscheidungswege und die Art, wie Leistung im Alltag gesteuert wird.`
-    : `${ref} wirkt vor allem über den täglichen Kontakt im Team, über den Arbeitsrhythmus und über die Art, wie Aufgaben im Alltag umgesetzt werden.`;
+    ? `Die Besetzung wirkt in der Führungsfunktion nicht nur als einzelne Stellenbesetzung, sondern setzt im Team spürbare Schwerpunkte. Die Arbeitslogik beeinflusst Prioritätensetzung, Entscheidungsverankerung und die Art, wie Leistung im Alltag gesteuert und bewertet wird.`
+    : `Die Besetzung wirkt im Teamalltag vor allem über den täglichen Kontakt, den Arbeitsrhythmus und die Art, wie Aufgaben umgesetzt und koordiniert werden.`;
 
   if (systemwirkung === "Verstärkung") {
-    return `${intro}\n\nDie Konstellation wirkt insgesamt als Verstärkung. ${ref} bringt eine Arbeitslogik mit, die zum Grundmuster des Teams passt. Dadurch werden bestehende Stärken eher ausgebaut als grundlegend verändert.\n\nFür die Rolle bedeutet das: ${componentBusinessName(teamPrimary)} wird durch die Besetzung zusätzlich getragen. Das kann Stabilität, Klarheit und eine schnellere Eingliederung fördern. Gleichzeitig ist darauf zu achten, dass das Team nicht noch einseitiger wird.`;
+    return `${intro}\n\nDie Konstellation wirkt insgesamt als Verstärkung. Die Besetzung bringt eine Arbeitslogik mit, die zum Grundmuster des Teams passt. Dadurch werden bestehende Stärken weiter ausgebaut.\n\nFür ${rolleRef(roleTitle)} bedeutet das: ${componentBusinessName(teamPrimary)} wird durch die Besetzung zusätzlich getragen. Das fördert Stabilität, Klarheit und eine schnellere Eingliederung. Gleichzeitig ist darauf zu achten, dass das Team nicht noch einseitiger wird und schwächere Bereiche weiter an Gewicht verlieren.`;
   }
   if (systemwirkung === "Ergänzung") {
-    return `${intro}\n\nDie Konstellation wirkt insgesamt als Ergänzung. ${ref} bringt eine Qualität ins Team, die bisher weniger stark ausgeprägt ist. Dadurch kann das Team breiter, beweglicher und leistungsfähiger werden.\n\nFür die Rolle bedeutet das: Das Team erhält durch die Besetzung mehr Gewicht in ${componentBusinessName(personPrimary).toLowerCase()}. Das ist grundsätzlich eine Chance. Gleichzeitig entsteht eine natürliche Reibung, weil das Team andere Schwerpunkte gewohnt ist. Der Nutzen dieser Ergänzung zeigt sich nur dann voll, wenn Unterschiede erklärt, Erwartungen geklärt und gemeinsame Spielregeln gesetzt werden.`;
+    return `${intro}\n\nDie Konstellation wirkt insgesamt als Ergänzung. Die Besetzung bringt eine Qualität ins Team, die bisher weniger stark ausgeprägt ist. Dadurch kann das Team breiter, beweglicher und leistungsfähiger werden.\n\nFür ${rolleRef(roleTitle)} bedeutet das: Das Team erhält durch die Besetzung mehr Gewicht in ${componentBusinessName(personPrimary).toLowerCase()}. Das ist grundsätzlich eine Chance. Gleichzeitig entsteht eine natürliche Reibung, weil das Team andere Schwerpunkte gewohnt ist. Der Nutzen dieser Ergänzung zeigt sich nur dann voll, wenn Unterschiede transparent gemacht, Erwartungen geklärt und gemeinsame Spielregeln verankert werden.`;
   }
   if (systemwirkung === "Transformation") {
-    return `${intro}\n\nDie Konstellation wirkt insgesamt als deutliche Veränderung. ${ref} bringt eine Arbeitslogik mit, die das Team spürbar in eine neue Richtung ziehen kann. Das ist keine kleine Ergänzung, sondern ein klarer Eingriff in das bestehende System.\n\nFür die Rolle bedeutet das: ${componentBusinessName(personPrimary)} gewinnt deutlich an Gewicht, während das bisherige Teammuster relativiert wird. Das kann eine bewusste strategische Entscheidung sein, verlangt aber in jedem Fall aktive Führung, klare Kommunikation und konsequente Begleitung.`;
+    return `${intro}\n\nDie Konstellation wirkt insgesamt als deutliche Veränderung. Die Besetzung bringt eine Arbeitslogik mit, die das Team spürbar in eine neue Richtung ziehen kann. Das ist kein moderater Impuls, sondern ein struktureller Eingriff in das bestehende System.\n\nFür ${rolleRef(roleTitle)} bedeutet das: ${componentBusinessName(personPrimary)} gewinnt deutlich an Gewicht, während das bisherige Teammuster relativiert wird. Das kann eine bewusste strategische Entscheidung sein, verlangt aber in jedem Fall aktive Führung, konsequente Kommunikation und eine klare Steuerungsarchitektur.`;
   }
-  return `${intro}\n\nDie Konstellation erzeugt Spannung. ${ref} bringt eine Arbeitslogik mit, die in wichtigen Punkten vom Team abweicht. Diese Unterschiede können produktiv sein, wenn sie bewusst genutzt werden. Ohne klare Steuerung besteht jedoch die Gefahr, dass Arbeitsweisen gegeneinander statt miteinander wirken.\n\nFür die Rolle bedeutet das: Das Team setzt stärker auf ${componentBusinessName(teamPrimary).toLowerCase()}, die Besetzung stärker auf ${componentBusinessName(personPrimary).toLowerCase()}. Dadurch entstehen unterschiedliche Erwartungen an Prioritäten, Abstimmung und Umsetzung.`;
+  return `${intro}\n\nDie Konstellation erzeugt Spannung. Die Besetzung bringt eine Arbeitslogik mit, die in wichtigen Punkten vom Team abweicht. Diese Unterschiede können produktiv sein, wenn sie bewusst genutzt werden. Ohne klare Steuerung besteht jedoch die Gefahr, dass Arbeitsweisen gegeneinander statt miteinander wirken.\n\nFür ${rolleRef(roleTitle)} bedeutet das: Das Team setzt stärker auf ${componentBusinessName(teamPrimary).toLowerCase()}, die Besetzung stärker auf ${componentBusinessName(personPrimary).toLowerCase()}. Dadurch entstehen unterschiedliche Erwartungen an Prioritätensetzung, Abstimmungstiefe und Umsetzungsgeschwindigkeit.`;
 }
 
 function getImpactTexts(teamProfile: Triad, personProfile: Triad, roleTitle: string, roleType: string): ImpactItem[] {
   const teamPrimary = getPrimaryKey(teamProfile);
   const personPrimary = getPrimaryKey(personProfile);
   const delta = getDelta(teamProfile, personProfile);
-  const refLower = getRoleRef(roleTitle, true);
-  const ref = getRoleRef(roleTitle, false);
-  const prefix = roleType === "leadership" ? `${refLower} prägt in der Führungsrolle` : `${refLower} zeigt im Teamalltag`;
+  const prefix = roleType === "leadership" ? `Die Besetzung prägt in der Führungsfunktion` : `Die Besetzung zeigt im Teamalltag`;
 
-  const decisionText = `${prefix} Entscheidungen stärker aus ${componentBusinessName(personPrimary).toLowerCase()} heraus. Das Team ist hingegen stärker an ${componentBusinessName(teamPrimary).toLowerCase()} orientiert. Im Alltag zeigt sich das vor allem darin, wie schnell entschieden wird, wie viel Abstimmung eingeholt wird und woran Entscheidungen gemessen werden.`;
+  const decisionText = `${prefix} Entscheidungen stärker aus ${componentBusinessName(personPrimary).toLowerCase()} heraus. Das Team ist hingegen stärker an ${componentBusinessName(teamPrimary).toLowerCase()} orientiert. Im Alltag zeigt sich das vor allem darin, wie schnell entschieden wird, wie viel Abstimmung eingeholt wird und woran Entscheidungsqualität gemessen wird.`;
 
-  let steeringText = `${ref} setzt andere Akzente als das Team. Dadurch verschieben sich Prioritäten, Arbeitsrhythmus und die Art, wie Aufgaben in der Rolle verfolgt werden.`;
+  let steeringText = `Die Besetzung setzt andere Akzente als das Team. Dadurch verschieben sich Prioritäten, operative Taktung und die Art, wie Aufgaben verfolgt und bewertet werden.`;
   if (delta.analytisch < -15) {
-    steeringText += " Besonders sichtbar wird das in der Nachverfolgung, in der Dokumentation und in der Frage, wie sauber Prozesse eingehalten werden.";
+    steeringText += " Besonders sichtbar wird das in der Nachverfolgung, in der Dokumentation und in der Frage, wie konsequent Prozesse und Standards eingehalten werden.";
   } else if (delta.analytisch > 15) {
     steeringText += " Besonders sichtbar wird das in klarerer Ordnung, nachvollziehbareren Entscheidungen und höherer Prozesssicherheit.";
   }
 
-  let dynamicText = "In der Teamdynamik werden Unterschiede im Alltag deutlich spürbar. Das betrifft vor allem Abstimmung, Erwartungshaltung und die Frage, was als gutes Arbeiten gilt.";
+  let dynamicText = "In der Teamdynamik werden Unterschiede im Alltag deutlich spürbar. Das betrifft vor allem Abstimmungstiefe, Erwartungshaltung und die Frage, was als leistungsfähiges Arbeiten gilt.";
   if (personPrimary === "impulsiv" && teamPrimary === "intuitiv") {
-    dynamicText += " Die Besetzung wird stärker auf Vorwärtsbewegung und unmittelbare Umsetzung drängen, während das Team stärker über Abstimmung und gemeinsame Einordnung arbeitet.";
+    dynamicText += " Die Besetzung wird stärker auf unmittelbare Umsetzung und höhere operative Taktung drängen, während das Team stärker über Abstimmung und gemeinsame Einordnung arbeitet.";
   } else if (personPrimary === "analytisch" && teamPrimary === "impulsiv") {
-    dynamicText += " Die Besetzung wird stärker auf Ordnung, Qualität und nachvollziehbare Entscheidungen achten, während das Team eher auf Geschwindigkeit und direkte Wirkung setzt.";
+    dynamicText += " Die Besetzung wird stärker auf Ordnung, Qualitätssicherung und nachvollziehbare Entscheidungen achten, während das Team eher auf Geschwindigkeit und direkte Wirkung setzt.";
   } else if (personPrimary === "intuitiv" && teamPrimary === "analytisch") {
-    dynamicText += " Die Besetzung wird stärker auf Austausch und Beziehung achten, während das Team eher über Klarheit, Sachlogik und Struktur arbeitet.";
+    dynamicText += " Die Besetzung wird stärker auf Austausch und Beziehungspflege achten, während das Team eher über Sachlogik, Klarheit und Struktur arbeitet.";
+  } else if (personPrimary === "impulsiv" && teamPrimary === "analytisch") {
+    dynamicText += " Die Besetzung wird stärker auf Geschwindigkeit und Entscheidungsbeschleunigung setzen, während das Team eher auf Gründlichkeit, Absicherung und Nachvollziehbarkeit achtet.";
+  } else if (personPrimary === "intuitiv" && teamPrimary === "impulsiv") {
+    dynamicText += " Die Besetzung wird stärker auf Abstimmung und Kommunikation setzen, während das Team eher über direkte Umsetzung und schnelle Ergebnisse arbeitet.";
+  } else if (personPrimary === "analytisch" && teamPrimary === "intuitiv") {
+    dynamicText += " Die Besetzung wird stärker auf Strukturierung und sachliche Prüfung setzen, während das Team eher über Beziehung und dialogorientierte Abstimmung arbeitet.";
   }
 
-  let tempoText = `${ref} setzt einen anderen Rhythmus als das bestehende Team.`;
+  let tempoText = `Die Besetzung setzt einen anderen Rhythmus als das bestehende Team.`;
   if (delta.impulsiv > 12) {
-    tempoText += " Dadurch entsteht spürbar mehr Dynamik, Aktivität und direkte Bewegung in Themen. Das kann Leistung freisetzen, aber auch als Druck empfunden werden.";
+    tempoText += " Dadurch entsteht spürbar mehr Umsetzungsdynamik, erhöhte operative Taktung und direktere Bewegung in Themen. Das kann Leistung freisetzen, aber auch als Druck empfunden werden.";
   } else if (delta.impulsiv < -12) {
-    tempoText += " Dadurch kann die Besetzung im Umfeld eines sehr dynamischen Teams als zu vorsichtig oder zu langsam wahrgenommen werden.";
+    tempoText += " Dadurch kann die Besetzung im Umfeld eines sehr dynamischen Teams als zu bedacht oder zu vorsichtig wahrgenommen werden.";
   } else {
     tempoText += " Hier ist keine starke Abweichung zu erwarten. Der Arbeitsrhythmus dürfte grundsätzlich anschlussfähig sein.";
   }
 
-  let communicationText = "Die Kommunikation im Team wird ebenfalls beeinflusst. Dabei geht es nicht nur um Gesprächsstil, sondern auch darum, wie offen abgestimmt wird, wie viel Erklärung nötig ist und wie Konflikte angesprochen werden.";
+  let communicationText = "Die Kommunikationsstruktur im Team wird ebenfalls beeinflusst. Dabei geht es nicht nur um Gesprächsstil, sondern auch darum, wie offen abgestimmt wird, wie viel Erklärung notwendig ist und wie Konflikte adressiert werden.";
   if (delta.intuitiv > 12) {
-    communicationText += " Die Besetzung bringt mehr Beziehungs- und Abstimmungsorientierung ein. Das kann Vertrauen stärken und Schnittstellen verbessern.";
+    communicationText += " Die Besetzung bringt mehr Beziehungs- und Abstimmungsorientierung ein. Das kann Vertrauen stärken und die Schnittstellenqualität verbessern.";
   } else if (delta.intuitiv < -12) {
-    communicationText += " Die Besetzung bringt weniger Abstimmungsorientierung ein als das Team. Dadurch kann sie direkter, knapper oder weniger anschlussfähig wirken.";
+    communicationText += " Die Besetzung bringt weniger Abstimmungsorientierung mit als das Team. Dadurch kann sie direkter, knapper oder weniger anschlussfähig wirken.";
   } else {
-    communicationText += " Die Kommunikationslogik liegt nahe am Team. Dadurch besteht in diesem Bereich eine gute Basis für Zusammenarbeit.";
+    communicationText += " Die Kommunikationslogik liegt nah am Team. Dadurch besteht in diesem Bereich eine solide Basis für die Zusammenarbeit.";
   }
 
   return [
@@ -389,12 +408,11 @@ function getImpactTexts(teamProfile: Triad, personProfile: Triad, roleTitle: str
 function getStressTexts(profile: Triad, roleTitle: string, roleType: string): StressTexts {
   const primary = getPrimaryKey(profile);
   const secondary = getSecondaryKey(profile);
-  const ref = getRoleRef(roleTitle, false);
-  const roleStart = roleType === "leadership" ? `${ref} verstärkt in der Führungsrolle` : `${ref} verstärkt im Arbeitsalltag`;
+  const roleStart = roleType === "leadership" ? `Die Besetzung verstärkt in der Führungsfunktion` : `Die Besetzung verstärkt im Arbeitsalltag`;
 
-  const controlled = `${roleStart} unter kontrolliertem Druck in der Regel die Hauptlogik. Im vorliegenden Profil tritt daher ${componentBusinessName(primary).toLowerCase()} noch deutlicher in den Vordergrund. Entscheidungen werden klarer aus dieser Linie heraus getroffen, Prioritäten werden stärker verdichtet und das Verhalten wirkt eindeutiger als im Normalzustand.\n\nFür das Team bedeutet das: Unter Ziel- und Leistungsdruck wird der Unterschied zur gewohnten Teamlogik sichtbarer. Das kann positiv sein, wenn genau diese Stärke gebraucht wird. Es kann aber auch Reibung auslösen, wenn das Team unter Druck ein anderes Muster erwartet.`;
+  const controlled = `${roleStart} unter kontrolliertem Druck in der Regel die Hauptlogik. Im vorliegenden Profil tritt daher ${componentBusinessName(primary).toLowerCase()} noch deutlicher in den Vordergrund. Entscheidungen werden klarer aus dieser Linie heraus getroffen, Prioritäten werden stärker verdichtet und das Verhalten wirkt eindeutiger als im Normalzustand.\n\nFür das Team bedeutet das: Unter Ziel- und Leistungsdruck wird der Unterschied zur gewohnten Teamlogik sichtbarer. Das kann positiv sein, wenn genau diese Stärke gebraucht wird. Es kann aber auch Reibung auslösen, wenn das Team unter Belastung ein anderes Muster erwartet.`;
 
-  const uncontrolled = `Wenn Belastung sehr hoch wird oder über längere Zeit anhält, verliert die Hauptlinie an Stabilität. Dann tritt der zweite Bereich des Profils stärker hervor. Im vorliegenden Fall gewinnt ${componentBusinessName(secondary).toLowerCase()} an Einfluss. Dadurch kann das Verhalten für das Umfeld wechselhafter wirken als im Normalzustand.\n\nFür das Team ist wichtig, diese Verschiebung früh zu verstehen. Unter hoher Belastung braucht es klare Absprachen, kurze Entscheidungswege und eine bewusste Führung der Zusammenarbeit. Sonst kann aus Leistungsdruck schnell Missverständnisdruck werden.`;
+  const uncontrolled = `Wenn Belastung sehr hoch wird oder über längere Zeit anhält, verliert die Hauptlinie an Stabilität. Dann tritt der zweite Bereich des Profils stärker hervor. Im vorliegenden Fall gewinnt ${componentBusinessName(secondary).toLowerCase()} an Einfluss. Dadurch kann das Verhalten für das Umfeld wechselhafter und weniger berechenbar wirken als im Normalzustand.\n\nFür das Team ist wichtig, diese Verschiebung frühzeitig zu erkennen. Unter hoher Belastung braucht es klare Vereinbarungen, kurze Entscheidungswege und eine bewusste Steuerung der Zusammenarbeit. Ohne diese Maßnahmen kann aus Leistungsdruck schnell Orientierungsverlust werden.`;
 
   return { controlled, uncontrolled };
 }
@@ -402,32 +420,31 @@ function getStressTexts(profile: Triad, roleTitle: string, roleType: string): St
 function getChances(teamProfile: Triad, personProfile: Triad, roleTitle: string, roleType: string): string[] {
   const systemwirkung = getSystemwirkung(teamProfile, personProfile);
   const personPrimary = getPrimaryKey(personProfile);
-  const ref = getRoleRef(roleTitle, false);
   const list: string[] = [];
 
   if (systemwirkung === "Ergänzung") {
-    list.push(`${ref} stärkt einen Bereich, der im Team bisher weniger Gewicht hat. Dadurch kann das Team breiter und wirksamer aufgestellt werden.`);
+    list.push(`Die Besetzung stärkt einen Bereich, der im Team bisher weniger Gewicht hat. Dadurch kann das Team breiter, widerstandsfähiger und in der Gesamtwirkung leistungsfähiger aufgestellt werden.`);
   } else if (systemwirkung === "Verstärkung") {
-    list.push(`${ref} baut eine bestehende Stärke des Teams weiter aus. Dadurch kann mehr Klarheit, Tempo oder Stabilität im Alltag entstehen.`);
+    list.push(`Die Besetzung baut eine bestehende Stärke des Teams weiter aus. Dadurch können Klarheit, Stabilität und Verbindlichkeit im Alltag zunehmen.`);
   } else {
-    list.push("Die Unterschiede zwischen Team und Besetzung eröffnen neue Perspektiven. Richtig geführt kann daraus echte Weiterentwicklung entstehen.");
+    list.push("Die Unterschiede zwischen Team und Besetzung eröffnen neue Perspektiven. Bei bewusster Steuerung kann daraus eine nachhaltige Weiterentwicklung des Teamsystems entstehen.");
   }
 
   if (personPrimary === "impulsiv") {
-    list.push(`${ref} kann mehr Zug, Aktivität und sichtbare Vorwärtsbewegung ins Team bringen. Das ist besonders wertvoll, wenn Umsetzungskraft gestärkt werden soll.`);
+    list.push(`Die höhere Umsetzungsorientierung der Besetzung kann dem Team mehr operative Geschwindigkeit, Entscheidungsbeschleunigung und direktere Ergebnisorientierung geben, wenn diese Energie klar in Prioritäten und Standards eingebettet wird.`);
   }
   if (personPrimary === "intuitiv") {
-    list.push(`${ref} kann die Zusammenarbeit im Team und an Schnittstellen stärken. Das verbessert Anschlussfähigkeit, Kommunikation und Beziehungsqualität.`);
+    list.push(`Die stärkere Kommunikationsorientierung der Besetzung kann die Zusammenarbeit an Schnittstellen stärken, die Abstimmungsqualität erhöhen und die Anschlussfähigkeit des Teams nach innen und außen verbessern.`);
   }
   if (personPrimary === "analytisch") {
-    list.push(`${ref} kann mehr Ordnung, Nachvollziehbarkeit und Prozesssicherheit in den Arbeitsalltag bringen. Das erhöht Qualität und Verlässlichkeit.`);
+    list.push(`Die stärkere Strukturorientierung der Besetzung kann mehr Ordnung, Nachvollziehbarkeit und Prozesssicherheit in den Arbeitsalltag bringen. Das erhöht Qualitätsstandards und Verbindlichkeit.`);
   }
 
-  list.push("Unterschiedliche Arbeitslogiken können die Qualität von Entscheidungen erhöhen, wenn sie bewusst genutzt werden und nicht gegeneinander arbeiten.");
-  list.push("Das Team kann durch die neue Besetzung lernen, bisher schwächere Arbeitsweisen besser zu integrieren und dadurch an Breite gewinnen.");
+  list.push("Die Konstellation bietet die Möglichkeit, bisher schwächere Arbeitsbereiche im Team gezielt zu stärken und dadurch die Gesamtleistungsfähigkeit auf eine breitere Basis zu stellen.");
+
   list.push(roleType === "leadership"
-    ? `${ref} kann in der Führungsrolle neue Standards setzen und dem Team eine klarere Richtung geben, wenn Erwartungen früh und eindeutig geklärt werden.`
-    : `${ref} kann als Teammitglied neue Impulse geben, ohne die bestehende Struktur sofort grundsätzlich zu verändern.`);
+    ? `In der Führungsfunktion kann die Besetzung neue Standards setzen und dem Team eine klarere Richtung geben, wenn Erwartungen frühzeitig und eindeutig verankert werden.`
+    : `Als Teammitglied kann die Besetzung neue Impulse geben, ohne die bestehende Struktur sofort grundsätzlich zu verändern.`);
 
   return list.slice(0, 5);
 }
@@ -435,63 +452,60 @@ function getChances(teamProfile: Triad, personProfile: Triad, roleTitle: string,
 function getRisks(teamProfile: Triad, personProfile: Triad, roleTitle: string, roleType: string): string[] {
   const systemwirkung = getSystemwirkung(teamProfile, personProfile);
   const delta = getDelta(teamProfile, personProfile);
-  const ref = getRoleRef(roleTitle, false);
   const list: string[] = [];
 
-  list.push("Unterschiedliche Arbeitslogiken können im Alltag zu Missverständnissen führen, wenn nicht klar benannt wird, wie Entscheidungen getroffen und Prioritäten gesetzt werden.");
+  list.push("Unterschiedliche Arbeitslogiken können im Alltag zu Missverständnissen führen, wenn nicht klar definiert wird, wie Entscheidungen getroffen, Prioritäten gesetzt und Ergebnisse bewertet werden.");
 
   if (Math.abs(delta.impulsiv) > 15) {
-    list.push("Das abweichende Arbeitstempo kann im Team als Druck, Langsamkeit oder mangelnde Passung wahrgenommen werden. Dadurch entstehen schnell unnötige Spannungen.");
+    list.push("Die abweichende operative Taktung kann im Team als unangemessener Druck oder als fehlende Umsetzungsgeschwindigkeit wahrgenommen werden. Das erzeugt unnötige Spannungen in der täglichen Zusammenarbeit.");
   }
   if (Math.abs(delta.intuitiv) > 15) {
-    list.push("Die Unterschiede in Kommunikation und Abstimmung können zu Reibung führen. Was für die eine Seite effizient wirkt, kann für die andere Seite als zu knapp oder zu abstimmungsintensiv empfunden werden.");
+    list.push("Die Unterschiede in Kommunikation und Abstimmungstiefe können zu struktureller Reibung führen. Was für die eine Seite effizient wirkt, kann für die andere als zu knapp oder zu abstimmungsintensiv empfunden werden.");
   }
   if (Math.abs(delta.analytisch) > 15) {
-    list.push("Abweichungen in Struktur und Analyse wirken sich direkt auf Nachverfolgung, Dokumentation, Qualitätsanspruch und Verbindlichkeit aus.");
+    list.push("Abweichungen in Struktur und Analyse wirken sich direkt auf Nachverfolgung, Dokumentation, Qualitätsanspruch und die Verbindlichkeit von Vereinbarungen aus.");
   }
 
   if (systemwirkung === "Transformation") {
-    list.push(`${ref} verändert das Team deutlich. Ohne aktive Steuerung kann dies zu Unsicherheit, Widerstand oder einem schleichenden Kulturkonflikt führen.`);
+    list.push(`Die Besetzung verändert das Teamsystem deutlich. Ohne aktive Steuerung kann dies zu Orientierungsverlust, Widerstand oder einem schleichenden Kulturkonflikt führen.`);
   } else if (systemwirkung === "Spannung") {
-    list.push("Die Konstellation erzeugt eine dauerhafte Reibungsfläche. Wird diese nicht geführt, steigt das Risiko wiederkehrender Konflikte im Arbeitsalltag.");
+    list.push("Die Konstellation erzeugt eine dauerhafte Reibungsfläche. Wird diese nicht aktiv geführt, steigt das Risiko wiederkehrender Konflikte und sinkender Teamstabilität.");
   } else {
     list.push("Auch eine grundsätzlich passende Konstellation birgt das Risiko, dass das Team einseitiger wird und schwächere Bereiche weiter an Gewicht verlieren.");
   }
 
   list.push(roleType === "leadership"
-    ? `${ref} wirkt in einer Führungsfunktion mit hoher Hebelwirkung. Unklare Führung verstärkt Unruhe, Prioritätskonflikte und Orientierungsverlust im Team.`
-    : `${ref} kann bei fehlender Integration entweder gebremst werden oder dauerhaft gegen das bestehende Muster arbeiten.`);
+    ? `In einer Führungsfunktion wirkt die Besetzung mit hoher Hebelwirkung. Unklare Führungspräsenz verstärkt Orientierungsverlust, Prioritätenkonflikte und nachlassende Teamstabilität.`
+    : `Ohne aktive Integration kann die Besetzung entweder gebremst werden oder dauerhaft gegen das bestehende Muster arbeiten, was zu schleichendem Leistungsverlust führt.`);
 
   return list.slice(0, 5);
 }
 
 function getAdvice(roleType: string, teamProfile: Triad, personProfile: Triad, roleTitle: string): AdviceItem[] {
   const personPrimary = getPrimaryKey(personProfile);
-  const ref = getRoleRef(roleTitle, false);
-  const refLower = getRoleRef(roleTitle, true);
 
   return [
     {
-      title: "Erwartungen klar machen",
-      text: `Zu Beginn sollte offen benannt werden, welche Arbeitsweise das Team heute prägt und welche Wirkung von ${refLower} erwartet wird. Tempo, Abstimmung und Qualitätsanspruch sollten nicht vorausgesetzt, sondern klar definiert werden.`,
+      title: "Erwartungen verankern",
+      text: `Zu Beginn sollte offen benannt werden, welche Arbeitslogik das Team heute prägt und welche Wirkung von der Besetzung erwartet wird. Tempo, Abstimmungstiefe und Qualitätsanspruch sollten nicht vorausgesetzt, sondern explizit definiert und verbindlich vereinbart werden.`,
     },
     {
-      title: "Entscheidungswege festlegen",
-      text: "Es sollte geklärt werden, welche Themen schnell entschieden werden, wo Abstimmung notwendig ist und welche Standards verbindlich gelten. So wird verhindert, dass Unterschiede in der Arbeitslogik zu unnötigen Reibungen führen.",
+      title: "Entscheidungsarchitektur klären",
+      text: "Es sollte klar definiert werden, welche Themen schnell entschieden werden, wo Abstimmung notwendig ist und welche Standards verbindlich gelten. So wird verhindert, dass Unterschiede in der Arbeitslogik zu unnötiger Reibung und Orientierungsverlust führen.",
     },
     {
-      title: "Stärken gezielt nutzen",
-      text: `${ref} sollte nicht nur am Team gemessen, sondern gezielt in den stärksten Bereichen eingesetzt werden. Im vorliegenden Fall betrifft das vor allem ${componentBusinessName(personPrimary).toLowerCase()}. Dort entsteht der größte Mehrwert.`,
+      title: "Stärken gezielt einsetzen",
+      text: `Die Besetzung sollte nicht nur am Teamprofil gemessen, sondern gezielt in den stärksten Bereichen eingesetzt werden. Im vorliegenden Fall betrifft das vor allem ${componentBusinessName(personPrimary).toLowerCase()}. Dort entsteht der größte Mehrwert für das Gesamtsystem.`,
     },
     {
-      title: roleType === "leadership" ? "Führung sichtbar machen" : "Integration aktiv steuern",
+      title: roleType === "leadership" ? "Führungspräsenz sichtbar machen" : "Integration aktiv steuern",
       text: roleType === "leadership"
-        ? `${ref} sollte in den ersten Wochen Prioritäten, Kommunikationsstil und Entscheidungspraxis besonders klar machen. Das Team braucht früh erkennbare Orientierung.`
-        : `In den ersten Wochen braucht ${refLower} eine aktive Einbindung in Teamabläufe, Schnittstellen und Abstimmungsformate. Integration darf nicht dem Zufall überlassen werden.`,
+        ? `Die Besetzung sollte in den ersten Wochen Prioritäten, Kommunikationsstandards und Entscheidungspraxis besonders klar machen. Das Team braucht frühzeitig erkennbare Orientierung und eine verlässliche Führungsarchitektur.`
+        : `In den ersten Wochen braucht die Besetzung eine aktive Einbindung in Teamabläufe, Schnittstellen und Abstimmungsformate. Integration darf nicht dem Zufall überlassen werden.`,
     },
     {
-      title: "Frühe Feedbackschleifen einbauen",
-      text: "Nach zwei, vier und acht Wochen sollten kurze Rückmeldungen eingeholt werden. So lassen sich Missverständnisse, Tempokonflikte und Friktionen in der Zusammenarbeit früh erkennen und sauber nachsteuern.",
+      title: "Strukturierte Feedbackschleifen einbauen",
+      text: "Nach zwei, vier und acht Wochen sollten strukturierte Rückmeldungen eingeholt werden. So lassen sich Erwartungsunterschiede, Tempokonflikte und Reibung in der Zusammenarbeit frühzeitig erkennen und gezielt nachsteuern.",
     },
   ];
 }

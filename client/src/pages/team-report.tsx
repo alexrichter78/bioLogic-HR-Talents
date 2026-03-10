@@ -837,7 +837,7 @@ export default function TeamReport() {
                         padding: "18px 20px", borderRadius: 18,
                         background: c.bg, border: `1px solid ${c.border}`,
                       }} data-testid={`integration-preview-phase-${i}`}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
                           <div style={{
                             width: 28, height: 28, borderRadius: 9,
                             background: c.badge,
@@ -848,6 +848,20 @@ export default function TeamReport() {
                           <div>
                             <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{phase.title}</span>
                             <span style={{ fontSize: 12, color: "#8E8E93", marginLeft: 8 }}>{phase.period}</span>
+                          </div>
+                        </div>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 8, marginBottom: 12 }}>
+                          <div style={{ background: "rgba(255,255,255,0.6)", borderRadius: 10, padding: "8px 12px" }}>
+                            <div style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 3 }}>Ziel</div>
+                            <div style={{ fontSize: 12, color: "#1D1D1F", lineHeight: 1.5 }}>{phase.ziel}</div>
+                          </div>
+                          <div style={{ background: "rgba(255,255,255,0.6)", borderRadius: 10, padding: "8px 12px" }}>
+                            <div style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 3 }}>Führungsfokus</div>
+                            <div style={{ fontSize: 12, color: "#1D1D1F", lineHeight: 1.5 }}>{phase.fuehrungsfokus}</div>
+                          </div>
+                          <div style={{ background: "rgba(255,255,255,0.6)", borderRadius: 10, padding: "8px 12px" }}>
+                            <div style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 3 }}>Erfolgskriterium</div>
+                            <div style={{ fontSize: 12, color: "#1D1D1F", lineHeight: 1.5 }}>{phase.erfolgskriterium}</div>
                           </div>
                         </div>
                         <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 6 }}>
@@ -1199,6 +1213,20 @@ export default function TeamReport() {
                         <div>
                           <h4 className="text-base font-semibold text-slate-950">{phase.title}</h4>
                           <span className="text-xs text-slate-500">{phase.period}</span>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                        <div className="rounded-xl bg-white border border-slate-100 p-3">
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Ziel</div>
+                          <div className="text-xs leading-relaxed text-slate-700">{phase.ziel}</div>
+                        </div>
+                        <div className="rounded-xl bg-white border border-slate-100 p-3">
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Führungsfokus</div>
+                          <div className="text-xs leading-relaxed text-slate-700">{phase.fuehrungsfokus}</div>
+                        </div>
+                        <div className="rounded-xl bg-white border border-slate-100 p-3">
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Erfolgskriterium</div>
+                          <div className="text-xs leading-relaxed text-slate-700">{phase.erfolgskriterium}</div>
                         </div>
                       </div>
                       <ul className="space-y-2">

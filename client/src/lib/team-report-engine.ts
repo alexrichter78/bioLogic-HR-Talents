@@ -44,6 +44,9 @@ export type IntegrationPhase = {
   num: number;
   title: string;
   period: string;
+  ziel: string;
+  fuehrungsfokus: string;
+  erfolgskriterium: string;
   items: string[];
 };
 
@@ -486,10 +489,32 @@ export function buildTeamIntegrationsplanPhasen(
     phase3Items.push("Langfristiges Steuerungskonzept festlegen. Regelmäßige Checkpoints einplanen.");
   }
 
+  const ziel1 = rk !== tk
+    ? "Gegenseitiges Verständnis für Arbeitslogik und Erwartungen schaffen. Orientierung geben, ohne sofortige Anpassung zu erzwingen."
+    : "Bestehende Teamlogik verstehen, eigene Arbeitsweise einordnen und erste Anschlussfähigkeit herstellen.";
+  const fokus1 = teamIstGap > 30
+    ? "Erwartungen aktiv klären, Buddy-System etablieren, erste Reibungspunkte offen benennen."
+    : "Raum für Beobachtung geben, Grundregeln klären und Kommunikationswege transparent machen.";
+  const erfolg1 = "Die Besetzung kennt die Teamlogik und weiß, wo Unterschiede bestehen. Das Team versteht die Arbeitsweise der Besetzung. Es gibt keine verdeckten Erwartungskonflikte.";
+
+  const ziel2 = rk !== tk
+    ? "Erste sichtbare Ergebnisse erzielen. Stärken der Besetzung gezielt in Aufgaben überführen und Brücken zur Teamlogik bauen."
+    : "Eigenständige Wirkung aufbauen. Erste Erfolge nutzen, um Vertrauen und Akzeptanz im Team zu festigen.";
+  const fokus2 = teamIstGap > 30
+    ? "Strukturiertes Feedback einholen, Prioritäten nachjustieren, Eskalationsmechanismen klären."
+    : "Feedback einholen, Stärken sichtbar machen, erste Verantwortungsbereiche klar definieren.";
+  const erfolg2 = "Die Besetzung hat mindestens ein sichtbares Ergebnis erzielt. Feedback von Team und Besetzung liegt vor. Es gibt klare Vereinbarungen für die nächsten Wochen.";
+
+  const ziel3 = "Zusammenarbeit stabilisieren, Standards konsolidieren und langfristige Steuerungsarchitektur verankern.";
+  const fokus3 = teamIstGap > 25
+    ? "Langfristiges Steuerungskonzept festlegen, regelmäßige Checkpoints einplanen, Nachhaltigkeit sicherstellen."
+    : "Feinabstimmung der Zusammenarbeit, Standardisierung der Routinen, Fokus auf Nachhaltigkeit.";
+  const erfolg3 = "Die Zusammenarbeit läuft stabil. Entscheidungswege sind klar. Die Besetzung wird als integrierter Teil des Teams wahrgenommen.";
+
   return [
-    { num: 1, title: "Orientierung", period: "Woche 1-2", items: phase1Items },
-    { num: 2, title: "Wirkung entfalten", period: "Woche 3-4", items: phase2Items },
-    { num: 3, title: "Konsolidierung", period: "Woche 5-8", items: phase3Items },
+    { num: 1, title: "Orientierung", period: "Woche 1–2", ziel: ziel1, fuehrungsfokus: fokus1, erfolgskriterium: erfolg1, items: phase1Items },
+    { num: 2, title: "Wirkung entfalten", period: "Woche 3–4", ziel: ziel2, fuehrungsfokus: fokus2, erfolgskriterium: erfolg2, items: phase2Items },
+    { num: 3, title: "Konsolidierung", period: "Woche 5–8", ziel: ziel3, fuehrungsfokus: fokus3, erfolgskriterium: erfolg3, items: phase3Items },
   ];
 }
 
