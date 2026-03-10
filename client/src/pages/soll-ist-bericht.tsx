@@ -240,7 +240,7 @@ export default function SollIstBericht() {
             </button>
 
             {profilvergleichOpen && (<div style={{ padding: "0 32px 32px" }}>
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-6 grid-cols-2">
               <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="card-soll-profil">
                 <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
