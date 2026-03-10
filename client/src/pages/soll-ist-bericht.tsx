@@ -403,18 +403,18 @@ export default function SollIstBericht() {
 
             const geignetLimit = sameDom ? 28 : 20;
             let fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
-            if (secondaryFlip) {
-              if (candSecGap > 5) {
-                fitLabel = "Nicht geeignet";
-              } else if (fitLabel === "Geeignet") {
-                fitLabel = "Bedingt geeignet";
-              }
+            if (secondaryFlip && candSecGap > 5) {
+              fitLabel = "Nicht geeignet";
+            } else if (secondaryFlip && fitLabel === "Geeignet") {
+              fitLabel = "Bedingt geeignet";
+            } else if (fitLabel === "Geeignet" && candSecGap <= 5) {
+              fitLabel = "Bedingt geeignet";
             }
             const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
 
             const fazitText = secondaryFlip && candSecGap > 5
               ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärausrichtung passt nicht. Die Person bringt die falsche zweite Stärke klar ausgeprägt mit. Arbeitsstil und Prioritätensetzung weichen strukturell ab."
-              : secondaryFlip
+              : candSecGap <= 5
               ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
               : sameDom && totalGap <= geignetLimit
               ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
@@ -699,18 +699,18 @@ export default function SollIstBericht() {
 
                 const rGeignetLimit = sameD ? 28 : 20;
                 let rFitLabel = tGap > 40 ? "Nicht geeignet" : tGap > rGeignetLimit ? "Bedingt geeignet" : "Geeignet";
-                if (rSecFlip) {
-                  if (rCandSecGap > 5) {
-                    rFitLabel = "Nicht geeignet";
-                  } else if (rFitLabel === "Geeignet") {
-                    rFitLabel = "Bedingt geeignet";
-                  }
+                if (rSecFlip && rCandSecGap > 5) {
+                  rFitLabel = "Nicht geeignet";
+                } else if (rSecFlip && rFitLabel === "Geeignet") {
+                  rFitLabel = "Bedingt geeignet";
+                } else if (rFitLabel === "Geeignet" && rCandSecGap <= 5) {
+                  rFitLabel = "Bedingt geeignet";
                 }
                 const rFitColor = rFitLabel === "Nicht geeignet" ? "#D64045" : rFitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
 
                 const rFazit = rSecFlip && rCandSecGap > 5
                   ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärausrichtung passt nicht. Die Person bringt die falsche zweite Stärke klar ausgeprägt mit. Arbeitsstil und Prioritätensetzung weichen strukturell ab."
-                  : rSecFlip
+                  : rCandSecGap <= 5
                   ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
                   : sameD && tGap <= rGeignetLimit
                   ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
