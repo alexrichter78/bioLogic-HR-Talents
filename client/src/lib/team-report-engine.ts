@@ -444,7 +444,7 @@ function buildTeamStressBehavior(
   return { controlledPressure, uncontrolledStress };
 }
 
-function buildTeamIntegrationsplanPhasen(
+export function buildTeamIntegrationsplanPhasen(
   cand: string, rk: ComponentKey, tk: ComponentKey,
   teamIstGap: number
 ): IntegrationPhase[] {

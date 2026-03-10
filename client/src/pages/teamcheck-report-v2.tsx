@@ -6,6 +6,11 @@ import {
   type TeamCheckV2Input,
   type TeamCheckV2Result,
 } from "@/lib/teamcheck-v2-engine";
+import {
+  buildTeamIntegrationsplanPhasen,
+  type IntegrationPhase,
+} from "@/lib/team-report-engine";
+import { dominanceModeOf, type ComponentKey } from "@/lib/jobcheck-engine";
 import { ArrowLeft } from "lucide-react";
 
 function StatusBadge({ label }: { label: string }) {
@@ -234,6 +239,52 @@ export default function TeamCheckReportV2() {
               Hinweis: Das System leitet den Rollenkontext automatisch aus der Führungsverantwortung ab. Eine manuelle Auswahl zwischen Führungskraft und Teammitglied ist nicht erforderlich.
             </p>
           </Card>
+
+          {(() => {
+            const candDom = dominanceModeOf(input.personProfile);
+            const teamDom = dominanceModeOf(input.teamProfile);
+            const rk = candDom.top1.key;
+            const tk = teamDom.top1.key;
+            const teamIstGap = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).reduce(
+              (sum, k) => sum + Math.abs(input.teamProfile[k] - input.personProfile[k]), 0
+            );
+            const phases = buildTeamIntegrationsplanPhasen("die Person", rk, tk, teamIstGap);
+            const phaseColors = [
+              { bg: "rgba(255,149,0,0.06)", border: "rgba(255,149,0,0.15)", badge: "#FF9500" },
+              { bg: "rgba(0,113,227,0.06)", border: "rgba(0,113,227,0.15)", badge: "#0071E3" },
+              { bg: "rgba(52,199,89,0.06)", border: "rgba(52,199,89,0.15)", badge: "#34C759" },
+            ];
+            return (
+              <Card title="Integrationsplan" intro="Der 8-Wochen-Plan strukturiert die Integration in drei Phasen – von der Orientierung bis zur Konsolidierung." testId="section-integrationsplan">
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                  {phases.map((phase, i) => {
+                    const c = phaseColors[i] || phaseColors[0];
+                    return (
+                      <div key={i} style={{ padding: "18px 20px", borderRadius: 18, background: c.bg, border: `1px solid ${c.border}` }} data-testid={`integration-phase-${i}`}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                          <div style={{ width: 28, height: 28, borderRadius: 9, background: c.badge, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: "#FFF" }}>{phase.num}</span>
+                          </div>
+                          <div>
+                            <span style={{ fontSize: 15, fontWeight: 700, color: "#1f2937" }}>{phase.title}</span>
+                            <span style={{ fontSize: 12, color: "#5b6472", marginLeft: 8 }}>{phase.period}</span>
+                          </div>
+                        </div>
+                        <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 6 }}>
+                          {phase.items.map((item, j) => (
+                            <li key={j} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 14, color: "#1f2937", lineHeight: 1.65 }}>
+                              <div style={{ width: 5, height: 5, borderRadius: "50%", background: c.badge, marginTop: 8, flexShrink: 0, opacity: 0.7 }} />
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
+            );
+          })()}
 
         </div>
       </div>
