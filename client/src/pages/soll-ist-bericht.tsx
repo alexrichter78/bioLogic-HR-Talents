@@ -416,10 +416,8 @@ export default function SollIstBericht() {
               ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärausrichtung passt nicht. Die Person bringt die falsche zweite Stärke klar ausgeprägt mit. Arbeitsstil und Prioritätensetzung weichen strukturell ab."
               : secondaryFlip
               ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
-              : sameDom && totalGap <= geignetLimit && secGapDiff < 6
+              : sameDom && totalGap <= geignetLimit
               ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
-              : sameDom && totalGap <= geignetLimit && secGapDiff >= 6
-              ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur unterscheidet sich. Konkurrierende Komponenten erzeugen innere Spannung und machen das Verhalten in Drucksituationen weniger vorhersehbar."
               : sameDom
               ? "Die Grundausrichtung ist ähnlich, es bestehen jedoch spürbare Unterschiede in der Intensität. Mit gezielter Führung lässt sich die Zusammenarbeit stabil gestalten."
               : totalGap > 40
@@ -434,8 +432,6 @@ export default function SollIstBericht() {
             else if (totalGap <= 50) devScore = 2;
             else devScore = 1;
 
-            if (secGapDiff >= 12) devScore = Math.max(devScore - 2, 1);
-            else if (secGapDiff >= 6) devScore = Math.max(devScore - 1, 1);
             if (devScore === 6 && candSecGap <= 5) devScore = 5;
             if (secondaryFlip) {
               if (candSecGap > 5) devScore = Math.min(devScore, 2);
@@ -716,10 +712,8 @@ export default function SollIstBericht() {
                   ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärausrichtung passt nicht. Die Person bringt die falsche zweite Stärke klar ausgeprägt mit. Arbeitsstil und Prioritätensetzung weichen strukturell ab."
                   : rSecFlip
                   ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
-                  : sameD && tGap <= rGeignetLimit && rSecGapDiff < 6
+                  : sameD && tGap <= rGeignetLimit
                   ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
-                  : sameD && tGap <= rGeignetLimit && rSecGapDiff >= 6
-                  ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur unterscheidet sich. Konkurrierende Komponenten erzeugen innere Spannung und machen das Verhalten in Drucksituationen weniger vorhersehbar."
                   : sameD
                   ? "Die Grundausrichtung ist ähnlich, es bestehen jedoch spürbare Unterschiede in der Intensität. Mit gezielter Führung lässt sich die Zusammenarbeit stabil gestalten."
                   : tGap > 40
@@ -733,8 +727,6 @@ export default function SollIstBericht() {
                 else if (tGap <= 35 || (sameD && tGap <= 45)) rDev = 3;
                 else if (tGap <= 50) rDev = 2;
                 else rDev = 1;
-                if (rSecGapDiff >= 12) rDev = Math.max(rDev - 2, 1);
-                else if (rSecGapDiff >= 6) rDev = Math.max(rDev - 1, 1);
                 if (rDev === 6 && rCandSecGap <= 5) rDev = 5;
                 if (rSecFlip) {
                   if (rCandSecGap > 5) rDev = Math.min(rDev, 2);
