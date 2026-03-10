@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation } from "wouter";
-import { AlertTriangle, Download, Check, Users, ChevronDown, Zap } from "lucide-react";
+import { AlertTriangle, Download, Check, Users, ChevronDown } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeTeamReport } from "@/lib/team-report-engine";
@@ -382,6 +382,65 @@ function SliderGroup({
   );
 }
 
+type TeamCheckVariant = {
+  result: string;
+  resultClass: string;
+  indicatorText: string;
+  steeringLevel: number;
+  steeringLabel: string;
+  steeringDescription: string;
+};
+
+const TEAMCHECK_PREVIEW_DATA: Record<string, Record<number, TeamCheckVariant>> = {
+  teammitglied: {
+    1: { result: "Geeignet", resultClass: "result-fit", indicatorText: "Die Arbeits- und Entscheidungslogik der Person entspricht der dominierenden Teamstruktur weitgehend. Im Arbeitsalltag ist daher von einer schnellen Integration und einem stabilen Zusammenspiel auszugehen.", steeringLevel: 6, steeringLabel: "– sehr niedrig", steeringDescription: "Die Integration wird voraussichtlich mit geringem Abstimmungs- und Steuerungsaufwand gelingen." },
+    2: { result: "Geeignet", resultClass: "result-fit", indicatorText: "Zwischen Person und Team besteht eine klare Grundpassung. Unterschiede sind vorhanden, wirken im Arbeitsalltag jedoch eher ergänzend als belastend.", steeringLevel: 5, steeringLabel: "– niedrig", steeringDescription: "Die Einbindung ist gut realistisch und erfordert nur punktuelle Führung und Abstimmung." },
+    3: { result: "Geeignet", resultClass: "result-fit", indicatorText: "Die Person bringt eine Arbeitslogik mit, die gut in die Teamstruktur eingebunden werden kann. Einzelne Abweichungen sind erkennbar, bleiben aber im Alltag voraussichtlich gut steuerbar.", steeringLevel: 5, steeringLabel: "– niedrig", steeringDescription: "Im Regelfall ist nur ein begrenzter Steuerungs- und Begleitaufwand notwendig." },
+    4: { result: "Bedingt geeignet", resultClass: "result-partial", indicatorText: "Zwischen Person und Team bestehen sowohl Anschlussflächen als auch erkennbare Unterschiede. Im Arbeitsalltag kann dies je nach Situation zu zusätzlichem Abstimmungsbedarf führen.", steeringLevel: 4, steeringLabel: "– moderat", steeringDescription: "Eine tragfähige Integration ist möglich, benötigt aber bewusste Führung und klare Abstimmung." },
+    5: { result: "Bedingt geeignet", resultClass: "result-partial", indicatorText: "Die Person ergänzt das Team in einzelnen Bereichen, weicht in ihrer Arbeits- und Entscheidungslogik jedoch spürbar vom Teammuster ab. Dadurch kann es situativ zu Reibungen kommen.", steeringLevel: 4, steeringLabel: "– moderat", steeringDescription: "Die Integration ist möglich, wenn Erwartungen, Rollen und Entscheidungswege klar geführt werden." },
+    6: { result: "Bedingt geeignet", resultClass: "result-partial", indicatorText: "Die Passung ist im Grundsatz vorhanden, bleibt aber nicht durchgehend stabil. Vor allem in Drucksituationen können Unterschiede in Tempo, Abstimmung und Priorisierung deutlicher sichtbar werden.", steeringLevel: 3, steeringLabel: "– erhöht", steeringDescription: "Damit die Zusammenarbeit tragfähig bleibt, ist ein erhöhter Steuerungs- und Klärungsaufwand sinnvoll." },
+    7: { result: "Bedingt geeignet", resultClass: "result-partial", indicatorText: "Person und Team verfügen über teils passende, teils gegensätzliche Arbeitslogiken. Dadurch ist weder von einer klaren Harmonie noch von einer grundsätzlichen Unvereinbarkeit auszugehen.", steeringLevel: 3, steeringLabel: "– erhöht", steeringDescription: "Eine stabile Einbindung ist möglich, verlangt aber aktive Führung und klare Orientierung im Alltag." },
+    8: { result: "Bedingt geeignet", resultClass: "result-partial", indicatorText: "Die Person kann in das Team eingebunden werden, wird die bestehende Struktur jedoch nicht automatisch stützen. Ohne klare Rahmung steigt die Wahrscheinlichkeit für Missverständnisse und Reibungsverluste.", steeringLevel: 3, steeringLabel: "– erhöht", steeringDescription: "Die Integration verlangt sichtbare Führung, laufende Abstimmung und konsequentes Erwartungsmanagement." },
+    9: { result: "Nicht geeignet", resultClass: "result-not-fit", indicatorText: "Die Arbeits- und Entscheidungslogik der Person unterscheidet sich deutlich von der Teamstruktur. Im Arbeitsalltag entsteht dadurch erhöhter Abstimmungsbedarf und ein spürbares Risiko für Reibungen.", steeringLevel: 2, steeringLabel: "– hoch", steeringDescription: "Eine stabile Integration ist nur mit erhöhtem Führungs- und Steuerungsaufwand realistisch." },
+    10: { result: "Nicht geeignet", resultClass: "result-not-fit", indicatorText: "Person und Team setzen in ihrer Arbeitsweise unterschiedliche Schwerpunkte. Diese Unterschiede wirken nicht nur ergänzend, sondern führen voraussichtlich zu fortlaufendem Abstimmungs- und Klärungsbedarf.", steeringLevel: 2, steeringLabel: "– hoch", steeringDescription: "Damit die Zusammenarbeit tragfähig bleibt, wäre ein dauerhaft hoher Steuerungsaufwand erforderlich." },
+    11: { result: "Nicht geeignet", resultClass: "result-not-fit", indicatorText: "Die Person bringt eine Arbeitslogik in das Team ein, die sich nur eingeschränkt in die bestehende Struktur einfügt. Dadurch ist im Alltag mit Spannungen in Abstimmung, Tempo und Umsetzung zu rechnen.", steeringLevel: 2, steeringLabel: "– hoch", steeringDescription: "Eine verlässliche Einbindung ist nur mit deutlicher Führung und enger Steuerung überhaupt erreichbar." },
+    12: { result: "Nicht geeignet", resultClass: "result-not-fit", indicatorText: "Die Passung zwischen Person und Team ist deutlich eingeschränkt. Die Unterschiede in Arbeits- und Entscheidungsverhalten sind so ausgeprägt, dass die Teamstabilität im Alltag belastet werden kann.", steeringLevel: 1, steeringLabel: "– sehr hoch", steeringDescription: "Die Integration wäre nur mit sehr hohem Führungs- und Steuerungsaufwand denkbar." },
+    13: { result: "Nicht geeignet", resultClass: "result-not-fit", indicatorText: "Die Arbeits- und Entscheidungslogiken von Person und Team unterscheiden sich grundlegend. Eine stabile Einbindung in die bestehende Teamstruktur ist daher nur sehr eingeschränkt vorstellbar.", steeringLevel: 1, steeringLabel: "– sehr hoch", steeringDescription: "Eine tragfähige Integration erscheint nur unter massivem Steuerungsaufwand und klarer Gegensteuerung möglich." },
+  },
+  fuehrung: {
+    1: { result: "Geeignet", resultClass: "result-fit", indicatorText: "Die Führungslogik der Person passt sehr gut zur bestehenden Teamstruktur. Dadurch ist zu erwarten, dass Entscheidungen, Orientierung und Zusammenarbeit schnell stabil geführt werden können.", steeringLevel: 6, steeringLabel: "– sehr niedrig", steeringDescription: "Das Team kann voraussichtlich mit geringem Führungsaufwand wirksam gesteuert und stabilisiert werden." },
+    2: { result: "Geeignet", resultClass: "result-fit", indicatorText: "Zwischen Führungsstil und Teamstruktur besteht eine klare Grundpassung. Erkennbare Unterschiede bleiben im Alltag voraussichtlich ergänzend und beeinträchtigen die Führbarkeit des Teams nicht wesentlich.", steeringLevel: 5, steeringLabel: "– niedrig", steeringDescription: "Eine stabile Führungswirkung ist gut realistisch und erfordert nur punktuelle Nachsteuerung." },
+    3: { result: "Geeignet", resultClass: "result-fit", indicatorText: "Die Person bringt eine Führungslogik mit, die gut an die vorhandene Teamdynamik anschließen kann. Einzelne Unterschiede sind vorhanden, bleiben aber voraussichtlich gut beherrschbar.", steeringLevel: 5, steeringLabel: "– niedrig", steeringDescription: "Für eine tragfähige Führung sind nur begrenzte Steuerungs- und Anpassungsimpulse notwendig." },
+    4: { result: "Bedingt geeignet", resultClass: "result-partial", indicatorText: "Zwischen Führungsstil und Teamstruktur bestehen sowohl Anschlussflächen als auch erkennbare Spannungsfelder. Im Alltag kann dies zu zusätzlichem Führungs- und Klärungsbedarf führen.", steeringLevel: 4, steeringLabel: "– moderat", steeringDescription: "Eine wirksame Führung ist möglich, braucht jedoch bewusste Rahmung und klare Orientierung." },
+    5: { result: "Bedingt geeignet", resultClass: "result-partial", indicatorText: "Die Führungskraft kann das Team in einzelnen Bereichen sinnvoll ergänzen, weicht in ihrer Steuerungslogik jedoch spürbar von der bestehenden Teamdynamik ab. Dadurch können situativ Spannungen entstehen.", steeringLevel: 4, steeringLabel: "– moderat", steeringDescription: "Eine stabile Führungswirkung ist möglich, wenn Erwartungen, Entscheidungswege und Prioritäten klar gesetzt werden." },
+    6: { result: "Bedingt geeignet", resultClass: "result-partial", indicatorText: "Die Führbarkeit des Teams ist grundsätzlich gegeben, bleibt aber nicht durchgehend stabil. Vor allem unter Druck können Unterschiede in Tempo, Richtung und Steuerungsanspruch deutlicher sichtbar werden.", steeringLevel: 3, steeringLabel: "– erhöht", steeringDescription: "Damit das Team tragfähig geführt werden kann, ist ein erhöhter Steuerungs- und Klärungsaufwand sinnvoll." },
+    7: { result: "Bedingt geeignet", resultClass: "result-partial", indicatorText: "Führungskraft und Team verfügen über teils passende, teils gegensätzliche Muster. Dadurch ist weder von einer klaren Führungsstabilität noch von einer vollständigen Unführbarkeit auszugehen.", steeringLevel: 3, steeringLabel: "– erhöht", steeringDescription: "Eine belastbare Führungswirkung ist möglich, verlangt aber aktive Steuerung und klare Führungspräsenz." },
+    8: { result: "Bedingt geeignet", resultClass: "result-partial", indicatorText: "Die Person kann das Team führen, wird die bestehende Dynamik jedoch nicht automatisch stabilisieren. Ohne klare Führungslinien steigt die Wahrscheinlichkeit für Irritationen und Reibungsverluste.", steeringLevel: 3, steeringLabel: "– erhöht", steeringDescription: "Die Führungsrolle verlangt sichtbare Steuerung, laufende Abstimmung und konsequentes Erwartungsmanagement." },
+    9: { result: "Nicht geeignet", resultClass: "result-not-fit", indicatorText: "Die Führungslogik der Person unterscheidet sich deutlich von der bestehenden Teamstruktur. Dadurch steigt das Risiko, dass Entscheidungen im Team nicht stabil verankert werden und zusätzliche Spannungen entstehen.", steeringLevel: 2, steeringLabel: "– hoch", steeringDescription: "Eine stabile Führung ist nur mit erhöhtem Steuerungs-, Präsenz- und Klärungsaufwand realistisch." },
+    10: { result: "Nicht geeignet", resultClass: "result-not-fit", indicatorText: "Führungskraft und Team setzen in ihrer Arbeits- und Steuerungslogik unterschiedliche Schwerpunkte. Diese Unterschiede führen voraussichtlich zu fortlaufendem Führungs- und Abstimmungsbedarf.", steeringLevel: 2, steeringLabel: "– hoch", steeringDescription: "Damit das Team überhaupt stabil geführt werden kann, wäre ein dauerhaft hoher Führungsaufwand erforderlich." },
+    11: { result: "Nicht geeignet", resultClass: "result-not-fit", indicatorText: "Die Person bringt eine Führungslogik in das Team ein, die sich nur eingeschränkt an die bestehende Teamstruktur anschließen lässt. Dadurch ist mit Spannungen in Steuerung, Orientierung und Umsetzung zu rechnen.", steeringLevel: 2, steeringLabel: "– hoch", steeringDescription: "Eine verlässliche Führungswirkung ist nur mit deutlicher Gegensteuerung und enger Begleitung überhaupt erreichbar." },
+    12: { result: "Nicht geeignet", resultClass: "result-not-fit", indicatorText: "Die Passung zwischen Führungskraft und Team ist deutlich eingeschränkt. Die Unterschiede in Steuerungs- und Entscheidungsverhalten sind so ausgeprägt, dass die Teamstabilität belastet werden kann.", steeringLevel: 1, steeringLabel: "– sehr hoch", steeringDescription: "Die Führbarkeit des Teams wäre nur mit sehr hohem Steuerungs- und Stabilisierungsaufwand denkbar." },
+    13: { result: "Nicht geeignet", resultClass: "result-not-fit", indicatorText: "Die Führungs- und Teamlogik unterscheiden sich grundlegend. Eine stabile Führung des bestehenden Teams ist daher nur sehr eingeschränkt vorstellbar.", steeringLevel: 1, steeringLabel: "– sehr hoch", steeringDescription: "Eine tragfähige Führungswirkung erscheint nur unter massivem Steuerungsaufwand und klarer Gegensteuerung möglich." },
+  },
+};
+
+function getVariantKey(devScore: number, sameDom: boolean, totalGap: number, candSecGap: number): number {
+  if (devScore >= 6) return 1;
+  if (devScore === 5) return totalGap <= 15 ? 2 : 3;
+  if (devScore === 4) return sameDom ? 4 : 5;
+  if (devScore === 3) {
+    if (totalGap <= 35) return 6;
+    if (totalGap <= 40) return 7;
+    return 8;
+  }
+  if (devScore === 2) {
+    if (totalGap <= 42) return 9;
+    if (totalGap <= 48) return 10;
+    return 11;
+  }
+  return totalGap <= 55 ? 12 : 13;
+}
+
 export default function TeamReport() {
   const [, setLocation] = useLocation();
 
@@ -423,6 +482,7 @@ export default function TeamReport() {
   const [candidateName, setCandidateName] = useState("");
   const [reportGenerated, setReportGenerated] = useState(false);
   const [matchCheckOpen, setMatchCheckOpen] = useState(true);
+  const [roleTypeForCard, setRoleTypeForCard] = useState<"teammitglied" | "fuehrung">("teammitglied");
 
   useEffect(() => {
     const raw = localStorage.getItem("rollenDnaState");
@@ -430,6 +490,12 @@ export default function TeamReport() {
       try {
         const dna = JSON.parse(raw) as RoleDnaState;
         if (dna.beruf) setRoleName(dna.beruf);
+        if (dna.fuehrung) {
+          const f = dna.fuehrung.toLowerCase();
+          if ((f.includes("führung") || f.includes("fachlich") || f.includes("disziplinarisch") || f.includes("projekt") || f.includes("koordination") || f.includes("leiter") || f.includes("lead")) && !f.includes("keine")) {
+            setRoleTypeForCard("fuehrung");
+          }
+        }
       } catch {}
     }
     const candRaw = localStorage.getItem("jobcheckCandProfile");
@@ -631,35 +697,9 @@ export default function TeamReport() {
           const sameDom = teamDomKeyFit === candDomKeyFit;
           const totalGap = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).reduce((sum, k) => sum + Math.abs(teamProfileN[k] - istProfile[k]), 0);
 
-          const teamSorted = [teamProfileN.impulsiv, teamProfileN.intuitiv, teamProfileN.analytisch].sort((a, b) => b - a);
           const candSorted = [istProfile.impulsiv, istProfile.intuitiv, istProfile.analytisch].sort((a, b) => b - a);
           const secondaryFlip = sameDom && teamDom.top2.key !== candDom.top2.key;
           const candSecGap = candSorted[1] - candSorted[2];
-
-          const geignetLimit = sameDom ? 28 : 20;
-          let fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
-          if (secondaryFlip && candSecGap > 5) {
-            fitLabel = "Nicht geeignet";
-          } else if (secondaryFlip && fitLabel === "Geeignet") {
-            fitLabel = "Bedingt geeignet";
-          } else if (fitLabel === "Geeignet" && sameDom && candSecGap <= 5) {
-            fitLabel = "Bedingt geeignet";
-          }
-          const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
-
-          const fazitText = secondaryFlip && candSecGap > 5
-            ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärausrichtung passt nicht. Die Person bringt die falsche zweite Stärke klar ausgeprägt mit. Arbeitsstil und Prioritätensetzung weichen strukturell ab."
-            : secondaryFlip && totalGap <= geignetLimit
-            ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
-            : sameDom && candSecGap <= 5 && totalGap <= geignetLimit
-            ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
-            : sameDom && totalGap <= geignetLimit
-            ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen des Teams."
-            : sameDom
-            ? "Die Grundausrichtung ist ähnlich, es bestehen jedoch spürbare Unterschiede in der Intensität. Mit gezielter Führung lässt sich die Zusammenarbeit stabil gestalten."
-            : totalGap > 40
-            ? "Die Arbeits- und Entscheidungslogiken von Team und Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch erhöhter Abstimmungs- und Steuerungsbedarf."
-            : "Unterschiedliche Arbeitslogiken treffen aufeinander. Die Person arbeitet und entscheidet anders, als es das Team erfordert. Im Alltag entsteht dadurch erhöhter Abstimmungsbedarf.";
 
           let devScore: number;
           if (sameDom && totalGap <= 20) devScore = 6;
@@ -675,44 +715,29 @@ export default function TeamReport() {
             else devScore = Math.min(devScore, 4);
           }
 
-          const devTexts: Record<number, string> = {
-            1: "Die grundlegende Arbeitslogik der Person unterscheidet sich stark von der Teamstruktur. Eine stabile Anpassung ist daher nur sehr eingeschränkt zu erwarten.",
-            2: "Die Teamstruktur unterscheidet sich deutlich von der natürlichen Arbeitsweise der Person. Eine Entwicklung ist grundsätzlich möglich, erfordert jedoch intensive Führung und klare Rahmenbedingungen.",
-            3: "Die Person kann sich teilweise an die Anforderungen des Teams anpassen. Eine stabile Umsetzung erfordert jedoch Zeit, Erfahrung und unterstützende Strukturen.",
-            4: "Die Person kann sich grundsätzlich gut an die Teamstruktur entwickeln. Mit klaren Entscheidungswegen und Feedback ist eine stabile Zusammenarbeit gut erreichbar.",
-            5: "Die Arbeits- und Entscheidungslogik der Person passt bereits weitgehend zur Teamstruktur. Eine Entwicklung zu einer stabilen und erfolgreichen Umsetzung ist sehr wahrscheinlich.",
-            6: "Die Person kann sich sehr schnell und stabil ins Team einfügen. Arbeitsweise, Entscheidungslogik und Teamstruktur passen sehr gut zusammen.",
-          };
-
-          const devLabels: Record<number, string> = {
-            1: "Entwicklung praktisch nicht erreichbar",
-            2: "Entwicklung sehr schwierig",
-            3: "Entwicklung möglich mit hohem Aufwand",
-            4: "Entwicklung gut möglich",
-            5: "Entwicklung sehr wahrscheinlich",
-            6: "Entwicklung sehr schnell erreichbar",
-          };
-
-          const devGaugeColor = devScore >= 5 ? "#3A9A5C" : devScore >= 3 ? "#E5A832" : "#D64045";
+          const variantKey = getVariantKey(devScore, sameDom, totalGap, candSecGap);
+          const variant = TEAMCHECK_PREVIEW_DATA[roleTypeForCard]?.[variantKey] || TEAMCHECK_PREVIEW_DATA.teammitglied[9];
+          const roleChipLabel = roleTypeForCard === "fuehrung" ? "Führungskraft" : "Teammitglied";
+          const resultBg = variant.resultClass === "result-fit" ? "#eaf8ef" : variant.resultClass === "result-partial" ? "#fff4df" : "#ffe7e7";
+          const resultColor = variant.resultClass === "result-fit" ? "#1f8f52" : variant.resultClass === "result-partial" ? "#d28a00" : "#e14848";
 
           return (
             <div className="mb-8" data-testid="section-matchcheck-team">
-              <div style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }}>
+              <div style={{ width: "100%", background: "#f7f8fb", border: "1px solid #e8ebf2", borderRadius: 28, padding: "28px 32px 30px", boxShadow: "0 6px 24px rgba(31,36,48,0.04)" }}>
                 <button
                   onClick={() => setMatchCheckOpen(!matchCheckOpen)}
-                  style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.02)"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+                  style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 20, background: "none", border: "none", cursor: "pointer", padding: 0, textAlign: "left" }}
                   data-testid="button-toggle-matchcheck-team"
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <Zap style={{ width: 22, height: 22, color: "#3A9A5C", flexShrink: 0 }} />
-                    <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
-                      TeamCheck — Systemwirkung
-                    </span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 16, minWidth: 0 }}>
+                    <div style={{ width: 54, height: 54, borderRadius: 16, background: "#e9f7ef", color: "#1faa67", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0 }}>⚡</div>
+                    <div>
+                      <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700, lineHeight: 1.2, color: "#1f2430" }}>TeamCheck — Systemwirkung</h2>
+                      <p style={{ margin: "4px 0 0", fontSize: 14, color: "#7d8798", lineHeight: 1.5 }}>Kurze Ersteinschätzung zur Passung und zum voraussichtlichen Steuerungsbedarf.</p>
+                    </div>
                   </div>
                   <ChevronDown style={{
-                    width: 18, height: 18, color: "#8E8E93", strokeWidth: 2,
+                    width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, flexShrink: 0,
                     transition: "transform 300ms ease",
                     transform: matchCheckOpen ? "rotate(180deg)" : "rotate(0deg)",
                   }} />
@@ -723,39 +748,39 @@ export default function TeamReport() {
                   overflow: "hidden",
                   transition: "max-height 400ms ease",
                 }}>
-                <div style={{ padding: "0 32px 28px" }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
-                        <div style={{ width: 18, height: 18, borderRadius: 9, background: fitColor, flexShrink: 0, boxShadow: `0 0 0 4px ${fitColor}20` }} />
-                        <div style={{ flex: 1 }}>
-                          <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-matchcheck-team-name">{roleName || "Team"}</span>
-                        </div>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: fitColor, letterSpacing: "0.03em" }} data-testid="text-matchcheck-team-fit">
-                          {fitLabel}
-                        </span>
-                      </div>
-                      <div style={{ background: `${fitColor}08`, borderLeft: `3px solid ${fitColor}`, borderRadius: "0 8px 8px 0", padding: "12px 16px" }}>
-                        <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: 0 }} data-testid="text-matchcheck-team-fazit">{fazitText}</p>
-                      </div>
+                  <div style={{ borderTop: "1px solid #e8ebf2", paddingTop: 24 }}>
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: 8, minHeight: 34, padding: "0 14px", background: "#eef2f8", color: "#556074", borderRadius: 999, fontSize: 13, fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: 16 }} data-testid="chip-role-type">
+                      {roleChipLabel}
                     </div>
 
-                    <div style={{ borderLeft: "1px solid rgba(0,0,0,0.06)", paddingLeft: 24 }}>
-                      <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 14px" }}>
-                        Entwicklungsprognose
-                      </p>
-                      <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }} data-testid="text-matchcheck-team-dev">
-                        {devScore} von 6 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>– {devLabels[devScore]}</span>
-                      </p>
-                      <div style={{ display: "flex", gap: 5, marginBottom: 18 }} data-testid="gauge-matchcheck-team-dev">
-                        {Array.from({ length: 6 }).map((_, i) => (
-                          <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)" }} />
-                        ))}
+                    <div style={{ display: "inline-flex", alignItems: "center", minHeight: 44, padding: "0 18px", borderRadius: 999, fontSize: 28, fontWeight: 700, marginBottom: 24, marginLeft: 12, background: resultBg, color: resultColor }} data-testid="badge-teamcheck-result">
+                      {variant.result}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] gap-10" style={{ alignItems: "start" }}>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8d96a8", marginBottom: 10 }}>Indikator</div>
+                        <p style={{ margin: 0, fontSize: 18, lineHeight: 1.75, color: "#4d5666" }} data-testid="text-teamcheck-indicator">{variant.indicatorText}</p>
                       </div>
-                      <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.75, margin: 0 }} data-testid="text-matchcheck-team-devtext">{devTexts[devScore]}</p>
+
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8d96a8", marginBottom: 10 }}>Steuerungsintensität</div>
+
+                        <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 14, flexWrap: "wrap" }}>
+                          <span style={{ fontSize: 28, fontWeight: 700, color: "#1f2430" }} data-testid="text-steering-level">{variant.steeringLevel} von 6</span>
+                          <span style={{ fontSize: 20, fontWeight: 600, color: "#1f2430" }} data-testid="text-steering-label">{variant.steeringLabel}</span>
+                        </div>
+
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 8, maxWidth: 320, marginBottom: 16 }} data-testid="bars-steering">
+                          {Array.from({ length: 6 }).map((_, i) => (
+                            <span key={i} style={{ height: 16, borderRadius: 6, background: i < variant.steeringLevel ? "linear-gradient(90deg, #ff5a5f 0%, #ff9f1a 100%)" : "#e8ebf2" }} />
+                          ))}
+                        </div>
+
+                        <p style={{ margin: 0, fontSize: 18, lineHeight: 1.75, color: "#4d5666" }} data-testid="text-steering-description">{variant.steeringDescription}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
                 </div>
               </div>
             </div>
