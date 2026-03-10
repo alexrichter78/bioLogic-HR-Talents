@@ -58,41 +58,90 @@ function biggestGapText(rt: Triad, ct: Triad): string {
 
 
 function TriangleChart({ role, candidate }: { role: Triad; candidate: Triad }) {
-  const top = { x: 160, y: 60 };
-  const left = { x: 35, y: 250 };
-  const right = { x: 285, y: 250 };
+  const cx = 180, cy = 190;
+  const top = { x: 180, y: 52 };
+  const left = { x: 40, y: 268 };
+  const right = { x: 320, y: 268 };
+  const vertices = [top, left, right];
 
-  function triadToTriangle(t: Triad) {
+  function triadToPoints(t: Triad) {
     const total = t.analytisch + t.intuitiv + t.impulsiv || 1;
-    const cx = 160, cy = 187;
     const scale = 0.82;
-    const pts = [
-      { frac: t.analytisch / total, ref: top },
-      { frac: t.intuitiv / total, ref: left },
-      { frac: t.impulsiv / total, ref: right },
-    ];
-    return pts.map(p => {
-      const dx = p.ref.x - cx;
-      const dy = p.ref.y - cy;
-      const dist = Math.sqrt(dx * dx + dy * dy) * p.frac * 2.5 * scale;
+    const fracs = [t.analytisch / total, t.intuitiv / total, t.impulsiv / total];
+    return fracs.map((frac, i) => {
+      const ref = vertices[i];
+      const dx = ref.x - cx;
+      const dy = ref.y - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy) * frac * 2.5 * scale;
       const angle = Math.atan2(dy, dx);
-      return `${cx + dist * Math.cos(angle)},${cy + dist * Math.sin(angle)}`;
+      return { x: cx + dist * Math.cos(angle), y: cy + dist * Math.sin(angle) };
+    });
+  }
+
+  function gridTriangle(scale: number) {
+    return vertices.map(v => {
+      const x = cx + (v.x - cx) * scale;
+      const y = cy + (v.y - cy) * scale;
+      return `${x},${y}`;
     }).join(" ");
   }
 
+  const rolePoints = triadToPoints(role);
+  const candPoints = triadToPoints(candidate);
+  const rolePoly = rolePoints.map(p => `${p.x},${p.y}`).join(" ");
+  const candPoly = candPoints.map(p => `${p.x},${p.y}`).join(" ");
+
   return (
-    <div className="flex flex-col items-center">
-      <svg viewBox="0 0 320 290" className="h-[290px] w-full max-w-[360px]">
-        <polygon points="160,60 35,250 285,250" fill="none" stroke="#cbd5e1" strokeWidth="2" />
-        <text x="160" y="28" textAnchor="middle" className="fill-slate-500 text-[12px]">Struktur</text>
-        <text x="15" y="268" className="fill-slate-500 text-[12px]">Zusammenarbeit</text>
-        <text x="250" y="268" className="fill-slate-500 text-[12px]">Umsetzung</text>
-        <polygon points={triadToTriangle(role)} fill="rgba(37,99,235,0.10)" stroke="#2563eb" strokeWidth="3" />
-        <polygon points={triadToTriangle(candidate)} fill="rgba(245,158,11,0.14)" stroke="#f59e0b" strokeWidth="3" />
-      </svg>
-      <div className="mt-2 text-center text-sm text-slate-600">
-        Die blaue Fläche zeigt die Rollenanforderung. Die orange Fläche zeigt die Arbeitslogik der Person.
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <div style={{ display: "flex", justifyContent: "center", gap: 24, marginBottom: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+          <div style={{ width: 10, height: 10, borderRadius: 5, background: "#2563eb", boxShadow: "0 0 0 3px rgba(37,99,235,0.15)" }} />
+          <span style={{ fontSize: 13, fontWeight: 600, color: "#48484A" }}>Rolle</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+          <div style={{ width: 10, height: 10, borderRadius: 5, background: "#f59e0b", boxShadow: "0 0 0 3px rgba(245,158,11,0.15)" }} />
+          <span style={{ fontSize: 13, fontWeight: 600, color: "#48484A" }}>Person</span>
+        </div>
       </div>
+      <svg viewBox="0 0 360 310" style={{ width: "100%", maxWidth: 400, height: "auto" }}>
+        <defs>
+          <linearGradient id="roleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#2563eb" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.08" />
+          </linearGradient>
+          <linearGradient id="candGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.22" />
+            <stop offset="100%" stopColor="#fbbf24" stopOpacity="0.08" />
+          </linearGradient>
+          <filter id="roleShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="#2563eb" floodOpacity="0.15" />
+          </filter>
+          <filter id="candShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="#f59e0b" floodOpacity="0.15" />
+          </filter>
+        </defs>
+
+        {[0.25, 0.5, 0.75, 1].map(s => (
+          <polygon key={s} points={gridTriangle(s)} fill="none" stroke={s === 1 ? "rgba(0,0,0,0.08)" : "rgba(0,0,0,0.04)"} strokeWidth={s === 1 ? 1.5 : 1} strokeDasharray={s === 1 ? "none" : "4 3"} />
+        ))}
+        {vertices.map((v, i) => (
+          <line key={i} x1={cx} y1={cy} x2={v.x} y2={v.y} stroke="rgba(0,0,0,0.05)" strokeWidth="1" />
+        ))}
+
+        <polygon points={rolePoly} fill="url(#roleGrad)" stroke="#2563eb" strokeWidth="2.5" strokeLinejoin="round" filter="url(#roleShadow)" />
+        <polygon points={candPoly} fill="url(#candGrad)" stroke="#f59e0b" strokeWidth="2.5" strokeLinejoin="round" filter="url(#candShadow)" />
+
+        {rolePoints.map((p, i) => (
+          <circle key={`r${i}`} cx={p.x} cy={p.y} r="4" fill="#fff" stroke="#2563eb" strokeWidth="2" />
+        ))}
+        {candPoints.map((p, i) => (
+          <circle key={`c${i}`} cx={p.x} cy={p.y} r="4" fill="#fff" stroke="#f59e0b" strokeWidth="2" />
+        ))}
+
+        <text x="180" y="40" textAnchor="middle" style={{ fontSize: 13, fontWeight: 600, fill: "#48484A" }}>Analytisch</text>
+        <text x="25" y="290" textAnchor="start" style={{ fontSize: 13, fontWeight: 600, fill: "#48484A" }}>Intuitiv</text>
+        <text x="335" y="290" textAnchor="end" style={{ fontSize: 13, fontWeight: 600, fill: "#48484A" }}>Impulsiv</text>
+      </svg>
     </div>
   );
 }
