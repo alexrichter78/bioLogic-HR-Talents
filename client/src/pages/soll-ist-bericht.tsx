@@ -426,6 +426,8 @@ export default function SollIstBericht() {
 
             if (secGapDiff >= 12) devScore = Math.max(devScore - 2, 1);
             else if (secGapDiff >= 6) devScore = Math.max(devScore - 1, 1);
+            const candSecGap = candSorted[1] - candSorted[2];
+            if (devScore === 6 && candSecGap <= 5) devScore = 5;
 
             const devTexts: Record<number, string> = {
               1: "Die grundlegende Arbeitslogik der Person unterscheidet sich stark von den Anforderungen der Rolle. Eine stabile Anpassung ist daher nur sehr eingeschränkt zu erwarten.",
@@ -710,6 +712,8 @@ export default function SollIstBericht() {
                 else rDev = 1;
                 if (rSecGapDiff >= 12) rDev = Math.max(rDev - 2, 1);
                 else if (rSecGapDiff >= 6) rDev = Math.max(rDev - 1, 1);
+                const rCandSecGap = cSorted[1] - cSorted[2];
+                if (rDev === 6 && rCandSecGap <= 5) rDev = 5;
 
                 const rDevTexts: Record<number, string> = {
                   1: "Die grundlegende Arbeitslogik der Person unterscheidet sich stark von den Anforderungen der Rolle. Eine stabile Anpassung ist daher nur sehr eingeschränkt zu erwarten.",
