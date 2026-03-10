@@ -407,14 +407,14 @@ export default function SollIstBericht() {
               fitLabel = "Nicht geeignet";
             } else if (secondaryFlip && fitLabel === "Geeignet") {
               fitLabel = "Bedingt geeignet";
-            } else if (fitLabel === "Geeignet" && candSecGap <= 5) {
+            } else if (fitLabel === "Geeignet" && sameDom && candSecGap <= 5) {
               fitLabel = "Bedingt geeignet";
             }
             const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
 
             const fazitText = secondaryFlip && candSecGap > 5
               ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärausrichtung passt nicht. Die Person bringt die falsche zweite Stärke klar ausgeprägt mit. Arbeitsstil und Prioritätensetzung weichen strukturell ab."
-              : candSecGap <= 5
+              : sameDom && candSecGap <= 5
               ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
               : sameDom && totalGap <= geignetLimit
               ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
@@ -703,14 +703,14 @@ export default function SollIstBericht() {
                   rFitLabel = "Nicht geeignet";
                 } else if (rSecFlip && rFitLabel === "Geeignet") {
                   rFitLabel = "Bedingt geeignet";
-                } else if (rFitLabel === "Geeignet" && rCandSecGap <= 5) {
+                } else if (rFitLabel === "Geeignet" && sameD && rCandSecGap <= 5) {
                   rFitLabel = "Bedingt geeignet";
                 }
                 const rFitColor = rFitLabel === "Nicht geeignet" ? "#D64045" : rFitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
 
                 const rFazit = rSecFlip && rCandSecGap > 5
                   ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärausrichtung passt nicht. Die Person bringt die falsche zweite Stärke klar ausgeprägt mit. Arbeitsstil und Prioritätensetzung weichen strukturell ab."
-                  : rCandSecGap <= 5
+                  : sameD && rCandSecGap <= 5
                   ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
                   : sameD && tGap <= rGeignetLimit
                   ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
