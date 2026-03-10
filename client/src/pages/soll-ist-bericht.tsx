@@ -58,89 +58,59 @@ function biggestGapText(rt: Triad, ct: Triad): string {
 
 
 function TriangleChart({ role, candidate }: { role: Triad; candidate: Triad }) {
-  const cx = 180, cy = 190;
-  const top = { x: 180, y: 52 };
-  const left = { x: 40, y: 268 };
-  const right = { x: 320, y: 268 };
-  const vertices = [top, left, right];
+  const w = 340, h = 300;
+  const cx = w / 2, cy = 168;
+  const R = 120;
+  const angles = [-Math.PI / 2, Math.PI / 2 - Math.PI / 3, Math.PI / 2 + Math.PI / 3];
+  const verts = angles.map(a => ({ x: cx + R * Math.cos(a), y: cy + R * Math.sin(a) }));
 
-  function triadToPoints(t: Triad) {
+  function triadPoly(t: Triad) {
     const total = t.analytisch + t.intuitiv + t.impulsiv || 1;
-    const scale = 0.82;
     const fracs = [t.analytisch / total, t.intuitiv / total, t.impulsiv / total];
-    return fracs.map((frac, i) => {
-      const ref = vertices[i];
-      const dx = ref.x - cx;
-      const dy = ref.y - cy;
-      const dist = Math.sqrt(dx * dx + dy * dy) * frac * 2.5 * scale;
-      const angle = Math.atan2(dy, dx);
-      return { x: cx + dist * Math.cos(angle), y: cy + dist * Math.sin(angle) };
+    return fracs.map((f, i) => {
+      const d = f * 2.5 * R * 0.82;
+      return { x: cx + d * Math.cos(angles[i]), y: cy + d * Math.sin(angles[i]) };
     });
   }
 
-  function gridTriangle(scale: number) {
-    return vertices.map(v => {
-      const x = cx + (v.x - cx) * scale;
-      const y = cy + (v.y - cy) * scale;
-      return `${x},${y}`;
-    }).join(" ");
-  }
+  const rp = triadPoly(role);
+  const cp = triadPoly(candidate);
 
-  const rolePoints = triadToPoints(role);
-  const candPoints = triadToPoints(candidate);
-  const rolePoly = rolePoints.map(p => `${p.x},${p.y}`).join(" ");
-  const candPoly = candPoints.map(p => `${p.x},${p.y}`).join(" ");
+  const toStr = (pts: { x: number; y: number }[]) => pts.map(p => `${p.x},${p.y}`).join(" ");
+  const toPath = (pts: { x: number; y: number }[]) => `M${pts.map(p => `${p.x},${p.y}`).join("L")}Z`;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <div style={{ display: "flex", justifyContent: "center", gap: 24, marginBottom: 8 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-          <div style={{ width: 10, height: 10, borderRadius: 5, background: "#2563eb", boxShadow: "0 0 0 3px rgba(37,99,235,0.15)" }} />
-          <span style={{ fontSize: 13, fontWeight: 600, color: "#48484A" }}>Rolle</span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-          <div style={{ width: 10, height: 10, borderRadius: 5, background: "#f59e0b", boxShadow: "0 0 0 3px rgba(245,158,11,0.15)" }} />
-          <span style={{ fontSize: 13, fontWeight: 600, color: "#48484A" }}>Person</span>
-        </div>
-      </div>
-      <svg viewBox="0 0 360 310" style={{ width: "100%", maxWidth: 400, height: "auto" }}>
+      <svg viewBox={`0 0 ${w} ${h}`} style={{ width: "100%", maxWidth: 380, height: "auto" }}>
         <defs>
-          <linearGradient id="roleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#2563eb" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.08" />
+          <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#f8fafc" />
+            <stop offset="100%" stopColor="#f1f5f9" />
+          </radialGradient>
+          <linearGradient id="rFill" x1="0%" y1="0%" x2="50%" y2="100%">
+            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.22" />
+            <stop offset="100%" stopColor="#2563eb" stopOpacity="0.06" />
           </linearGradient>
-          <linearGradient id="candGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.22" />
-            <stop offset="100%" stopColor="#fbbf24" stopOpacity="0.08" />
+          <linearGradient id="cFill" x1="50%" y1="100%" x2="50%" y2="0%">
+            <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="#fbbf24" stopOpacity="0.06" />
           </linearGradient>
-          <filter id="roleShadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="#2563eb" floodOpacity="0.15" />
-          </filter>
-          <filter id="candShadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="#f59e0b" floodOpacity="0.15" />
-          </filter>
         </defs>
 
-        {[0.25, 0.5, 0.75, 1].map(s => (
-          <polygon key={s} points={gridTriangle(s)} fill="none" stroke={s === 1 ? "rgba(0,0,0,0.08)" : "rgba(0,0,0,0.04)"} strokeWidth={s === 1 ? 1.5 : 1} strokeDasharray={s === 1 ? "none" : "4 3"} />
-        ))}
-        {vertices.map((v, i) => (
-          <line key={i} x1={cx} y1={cy} x2={v.x} y2={v.y} stroke="rgba(0,0,0,0.05)" strokeWidth="1" />
+        <polygon points={toStr(verts)} fill="none" stroke="#e2e8f0" strokeWidth="1" />
+        {[0.33, 0.66].map(s => (
+          <polygon key={s} points={verts.map(v => `${cx + (v.x - cx) * s},${cy + (v.y - cy) * s}`).join(" ")} fill="none" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="3 4" />
         ))}
 
-        <polygon points={rolePoly} fill="url(#roleGrad)" stroke="#2563eb" strokeWidth="2.5" strokeLinejoin="round" filter="url(#roleShadow)" />
-        <polygon points={candPoly} fill="url(#candGrad)" stroke="#f59e0b" strokeWidth="2.5" strokeLinejoin="round" filter="url(#candShadow)" />
+        <path d={toPath(rp)} fill="url(#rFill)" stroke="#3b82f6" strokeWidth="2" strokeLinejoin="round" opacity="0.95" />
+        <path d={toPath(cp)} fill="url(#cFill)" stroke="#f59e0b" strokeWidth="2" strokeLinejoin="round" opacity="0.95" />
 
-        {rolePoints.map((p, i) => (
-          <circle key={`r${i}`} cx={p.x} cy={p.y} r="4" fill="#fff" stroke="#2563eb" strokeWidth="2" />
-        ))}
-        {candPoints.map((p, i) => (
-          <circle key={`c${i}`} cx={p.x} cy={p.y} r="4" fill="#fff" stroke="#f59e0b" strokeWidth="2" />
-        ))}
+        {rp.map((p, i) => <circle key={`r${i}`} cx={p.x} cy={p.y} r="3.5" fill="#3b82f6" stroke="#fff" strokeWidth="1.5" />)}
+        {cp.map((p, i) => <circle key={`c${i}`} cx={p.x} cy={p.y} r="3.5" fill="#f59e0b" stroke="#fff" strokeWidth="1.5" />)}
 
-        <text x="180" y="40" textAnchor="middle" style={{ fontSize: 13, fontWeight: 600, fill: "#48484A" }}>Analytisch</text>
-        <text x="25" y="290" textAnchor="start" style={{ fontSize: 13, fontWeight: 600, fill: "#48484A" }}>Intuitiv</text>
-        <text x="335" y="290" textAnchor="end" style={{ fontSize: 13, fontWeight: 600, fill: "#48484A" }}>Impulsiv</text>
+        <text x={cx} y="28" textAnchor="middle" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>Analytisch</text>
+        <text x="18" y={h - 12} textAnchor="start" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>Intuitiv</text>
+        <text x={w - 18} y={h - 12} textAnchor="end" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>Impulsiv</text>
       </svg>
     </div>
   );
@@ -698,14 +668,14 @@ export default function SollIstBericht() {
 
               <div style={sep} data-testid="section-radar">
                 <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>3. Profilvergleich</p>
-                <div style={{ display: "flex", justifyContent: "center", gap: 16, marginBottom: 8 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <div style={{ width: 10, height: 10, borderRadius: 5, background: "#2563eb" }} />
-                    <span style={{ fontSize: 12, color: "#6E6E73" }}>Rolle</span>
+                <div style={{ display: "flex", justifyContent: "center", gap: 20, marginBottom: 4 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                    <div style={{ width: 22, height: 3, borderRadius: 2, background: "#3b82f6" }} />
+                    <span style={{ fontSize: 12, fontWeight: 500, color: "#64748b" }}>Rolle</span>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <div style={{ width: 10, height: 10, borderRadius: 5, background: "#f59e0b" }} />
-                    <span style={{ fontSize: 12, color: "#6E6E73" }}>Person</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                    <div style={{ width: 22, height: 3, borderRadius: 2, background: "#f59e0b" }} />
+                    <span style={{ fontSize: 12, fontWeight: 500, color: "#64748b" }}>Person</span>
                   </div>
                 </div>
                 <TriangleChart role={result.roleTriad} candidate={result.candTriad} />
