@@ -1,0 +1,390 @@
+Es fehlen aus meiner Sicht aber noch ein paar Punkte, damit sie diagnostisch sauber, konsistent und erklärbar wird.
+
+Was an deiner Logik gut ist
+
+Du prüfst schon die richtigen Ebenen:
+
+Gesamtabstand über totalGap
+
+Primärdominanz über sameDom / effectiveSameDom
+
+Sekundärstruktur über SecondaryFlip
+
+Klarheit der Ausprägung über candSecGap
+
+Sonderfall gleichverteilte Profile
+
+Kopplung an devScore, damit die Prognose nicht der Passung widerspricht
+
+Das ist inhaltlich sinnvoll.
+
+Was noch fehlt oder unscharf ist
+1. Primärabstand fehlt als eigene Härtebedingung
+
+Im Moment prüfst du anscheinend nur, ob die dominante Komponente gleich ist.
+Es fehlt aber die Frage:
+
+Wie stark ist diese Dominanz überhaupt ausgeprägt?
+
+Beispiel:
+
+Rolle: Analytisch 41 / Impulsiv 35 / Intuitiv 24
+
+Kandidat: Analytisch 36 / Impulsiv 34 / Intuitiv 30
+
+Hier wäre sameDom = true, aber die Dominanz ist faktisch weich.
+Dann sollte nicht automatisch dieselbe Güte gelten wie bei:
+
+Kandidat: Analytisch 52 / Impulsiv 29 / Intuitiv 19
+
+Empfehlung:
+Führe zusätzlich einen Primärabstand / Primärklarheit ein:
+
+roleDomGap = roleTop - roleSecond
+
+candDomGap = candTop - candSecond
+
+Dann z. B.:
+
+candDomGap <= 5 → Dominanz unklar → max Bedingt geeignet
+
+roleDomGap > 8 und candDomGap <= 5 → stärker abwerten
+
+Das fehlt aktuell.
+
+2. sameDom allein ist zu grob
+
+Es reicht nicht immer, nur die gleiche Top-Komponente zu haben.
+Denn zwei Profile können zwar beide analytisch dominant sein, aber strukturell trotzdem sehr verschieden.
+
+Beispiel:
+
+Rolle: A 41 / I 35 / N 24
+
+Kandidat: A 41 / N 35 / I 24
+
+Gleiche Dominanz, aber andere Sekundärlogik.
+Das fängst du teilweise über SecondaryFlip ab — gut.
+Aber die Regel sollte klarer formuliert sein:
+
+gleiche Dominanz ist notwendig, aber nicht hinreichend
+
+die Reihenfolge der restlichen Komponenten ist ein eigener Matching-Faktor
+
+Das würde ich explizit trennen in:
+
+Primärfit
+
+Strukturfit
+
+Intensitätsfit
+
+3. Es fehlt ein Symmetrie-Check zwischen Rolle und Person
+
+Du prüfst Sonderfälle wie:
+
+Person BAL_FULL, Rolle nicht → Nicht geeignet
+
+Beide BAL_FULL → max Bedingt
+
+Gut.
+
+Aber es fehlt der umgekehrte Fall in deiner Beschreibung sauber als Prinzip:
+
+Rolle gleichverteilt, Person stark zugespitzt
+
+Das ist nicht automatisch gut.
+
+Beispiel:
+
+Rolle = BAL_FULL
+
+Kandidat extrem impulsiv
+
+Dann sagst du aktuell wohl:
+roleIsBalFull => Dominanzcheck wird übersprungen
+
+Das ist okay als Logik, aber dann fehlt noch:
+
+Wie weit darf die Person von der Ausgewogenheit abweichen, bevor es kritisch wird?
+
+Denn eine gleichverteilte Rolle verlangt oft Flexibilität, nicht nur irgendeine Stärke.
+
+Empfehlung:
+Wenn roleIsBalFull = true, dann nicht einfach Dominanzprüfung überspringen, sondern andere Regel aktivieren:
+
+candDomGap > X oder
+
+max component - min component > Y
+
+→ dann höchstens Bedingt geeignet
+→ bei extremer Einseitigkeit evtl. Nicht geeignet
+
+Sonst werden stark einseitige Kandidaten für balancierte Rollen zu leicht durchgewunken.
+
+4. totalGap allein kann falsche Gleichheiten erzeugen
+
+Zwei Profile können denselben totalGap haben, aber diagnostisch sehr unterschiedlich sein.
+
+Beispiel A:
+
+alle drei Werte leicht verschoben
+
+Beispiel B:
+
+eine Komponente massiv falsch, zwei zufällig nah dran
+
+Beide können rechnerisch ähnlich aussehen.
+Psychologisch bzw. diagnostisch ist das aber nicht dasselbe.
+
+Empfehlung:
+Zusätzlich zum totalGap eine Maximalabweichung pro Komponente prüfen:
+
+maxGap = max(abs(role[i] - cand[i]))
+
+Dann z. B.:
+
+maxGap > 18 → max Bedingt geeignet
+
+maxGap > 25 → eher Nicht geeignet
+
+Das macht dein Modell robuster gegen mathematisch “schöne”, aber inhaltlich falsche Treffer.
+
+5. Rolle mit enger Top-2-Konstellation braucht eigene Logik
+
+Ein wichtiger Sonderfall:
+
+Rolle Top 1 und Top 2 liegen sehr eng beieinander, z. B. 41 / 35
+
+Dann ist die Rolle nicht “rein analytisch”, sondern eher eine Mischlogik mit analytischer Führung.
+
+Wenn du dann beim Kandidaten streng auf gleiche Dominanz gehst, kann das zu hart sein.
+
+Beispiel:
+
+Rolle: A 41 / I 35 / N 24
+
+Kandidat: I 39 / A 37 / N 24
+
+Formal Dominanz anders.
+Inhaltlich aber möglicherweise näher dran, als dein System aktuell abbildet.
+
+Empfehlung:
+Wenn roleDomGap <= 6, dann Rolle als nahe Doppeldominanz behandeln.
+
+Dann könnte gelten:
+
+Flip zwischen Top 1 und Top 2 = nicht automatisch Nicht geeignet
+
+sondern eher max Bedingt geeignet, abhängig von Gesamtgap
+
+Das fehlt noch.
+
+6. Gleiches Problem bei der Person
+
+Analog dazu:
+
+Wenn der Kandidat selbst eine sehr enge Top-2-Struktur hat, ist seine Arbeitslogik weniger stabil vorhersagbar.
+
+Das wird teilweise über candSecGap <= 5 erfasst, aber der Begriff ist etwas unscharf.
+Du solltest sauber unterscheiden zwischen:
+
+unklare Dominanz
+
+unklare Sekundärstruktur
+
+Denn das sind zwei verschiedene Dinge.
+
+Zum Beispiel:
+
+candTop - candSecond <= 5 = unklare Primärdominanz
+
+candSecond - candThird <= 5 = unklare Sekundärstruktur
+
+Diese Trennung würde ich unbedingt einbauen.
+
+7. SecondaryFlip sollte nicht immer gleich hart bewertet werden
+
+Aktuell:
+
+klarer Sekundärabstand (>5) + SecondaryFlip → Nicht geeignet
+
+unklarer Abstand (≤5) → max Bedingt
+
+Das ist logisch, aber eventuell zu grob.
+
+Denn nicht jeder Flip ist gleich kritisch.
+Es macht einen Unterschied, ob:
+
+Rolle: Analytisch > Impulsiv > Intuitiv
+
+Kandidat: Analytisch > Intuitiv > Impulsiv
+
+oder ob zusätzlich die Größenverhältnisse fast identisch sind.
+
+Besser wäre:
+SecondaryFlip nur dann hart werten, wenn:
+
+gleiche Primärdominanz und
+
+Rolle hat klare Sekundärlogik und
+
+Kandidat hat klare abweichende Sekundärlogik
+
+Also wirklich:
+
+roleSecGap > 5
+
+candSecGap > 5
+
+Sekundärachse verschieden
+
+Dann Nicht geeignet
+
+Sonst eher Bedingt geeignet
+
+Dir fehlt also noch der roleSecGap als Gegenstück zu candSecGap.
+
+8. Entwicklung sollte nicht nur “geklemmt”, sondern auch logisch hergeleitet werden
+
+Die Klammerung ist gut:
+
+Geeignet → 5–6
+
+Bedingt → 3–4
+
+Nicht → 1–2
+
+Aber:
+Wenn devScore nur hinten drangehängt wird, wirkt es schnell künstlich.
+
+Besser ist:
+
+fitLabel = aktuelle Passung
+
+devScore = Entwicklungsfähigkeit in die Rolle
+
+Dann kann man sauber sagen:
+
+Aktuell bedingt geeignet, mit guter Entwicklungsprognose
+
+Aktuell bedingt geeignet, Entwicklungsprognose begrenzt
+
+Aktuell nicht geeignet, auch Entwicklung nur eingeschränkt realistisch
+
+Das heißt:
+devScore sollte nicht nur technisch begrenzt werden, sondern auf eigenen Faktoren beruhen, etwa:
+
+Nähe zur Soll-Dominanz
+
+Lernrichtung nur 1 Achse entfernt oder 2 Achsen entfernt
+
+unklare vs. stabile Eigenlogik
+
+balancierte Person evtl. entwicklungsfähiger als starre Einseitigkeit
+
+Was ich konkret noch ergänzen würde
+
+Ich würde dein Modell auf 6 Prüfblöcke stellen:
+
+1. Gesamtfit
+
+totalGap
+
+2. Maximalabweichung
+
+maxGap
+
+3. Primärlogik
+
+sameDom
+
+roleDomGap
+
+candDomGap
+
+4. Sekundärlogik
+
+gleiche Sekundärachse ja/nein
+
+roleSecGap
+
+candSecGap
+
+5. Strukturtyp
+
+BAL_FULL
+
+naheliegende Doppeldominanz
+
+klare Einseitigkeit
+
+6. Entwicklungsprognose
+
+separat gerechnet, dann ans Label gebunden
+
+Meine wichtigste Ergänzung für deine jetzige Logik
+
+Wenn ich nur 3 Dinge ergänzen dürfte, wären es diese:
+
+1. maxGap
+
+Damit einzelne massive Fehlpassungen nicht im totalGap verschwinden.
+
+2. roleDomGap
+
+Damit du weißt, wie klar die Rolle überhaupt geprägt ist.
+
+3. Trennung von
+
+unklarer Primärdominanz
+
+unklarer Sekundärstruktur
+
+Das ist diagnostisch sehr wichtig.
+
+Vorschlag für eine sauberere Entscheidungslogik
+
+So würde ich es logisch ordnen:
+
+Nicht geeignet, wenn mindestens eines zutrifft:
+
+Person BAL_FULL, Rolle nicht BAL_FULL
+
+!effectiveSameDom und Rolle nicht nahe Doppeldominanz
+
+klare Sekundärabweichung bei klarer Rollenstruktur
+
+totalGap > 40
+
+maxGap > 25
+
+Maximal bedingt geeignet, wenn:
+
+beide BAL_FULL
+
+candDomGap <= 5
+
+candSecond - candThird <= 5
+
+Rolle BAL_FULL, Person aber deutlich einseitig
+
+SecondaryFlip bei unklarer Sekundärstruktur
+
+totalGap im mittleren Bereich
+
+Geeignet nur wenn alles erfüllt:
+
+gleiche Primärlogik oder Rolle BAL_FULL
+
+gleiche Sekundärachse
+
+klare Dominanzstruktur
+
+klare Sekundärstruktur
+
+kein extremer Einzelgap
+
+totalGap <= 28
+
+keine BAL_FULL-Sonderbegrenzung
