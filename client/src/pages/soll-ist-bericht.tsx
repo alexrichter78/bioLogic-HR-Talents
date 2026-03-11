@@ -420,6 +420,7 @@ export default function SollIstBericht() {
 
             const geignetLimit = sameDom ? 28 : 20;
             let fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
+            if (!sameDom && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
             if (secondaryFlip && candSecGap > 5) {
               fitLabel = "Nicht geeignet";
             } else if (secondaryFlip && fitLabel === "Geeignet") {

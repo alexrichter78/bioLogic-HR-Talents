@@ -826,6 +826,7 @@ export default function TeamReport() {
 
           const geignetLimit = sameDom ? 28 : 20;
           let fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
+          if (!sameDom && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
           let classReason: ClassificationReason = "gap";
           if (secondaryFlip && candSecGap > 5) {
             fitLabel = "Nicht geeignet"; classReason = "secFlip_strong";

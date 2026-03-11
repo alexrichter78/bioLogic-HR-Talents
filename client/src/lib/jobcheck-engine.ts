@@ -954,6 +954,9 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
       overallFit = "NOT_SUITABLE";
     }
   }
+  if (!sameDom && overallFit === "SUITABLE" && !ko) {
+    overallFit = "CONDITIONAL";
+  }
   const secondaryFlipped = sameDom && roleDom.top2.key !== candDom.top2.key;
   if (overallFit === "SUITABLE" && !ko) {
     if (secondaryFlipped && candDom.gap2 > 5) {
