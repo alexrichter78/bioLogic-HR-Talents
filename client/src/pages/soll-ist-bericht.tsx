@@ -894,7 +894,43 @@ export default function SollIstBericht() {
             body { background: #FFFFFF !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .no-print { display: none !important; }
             nav { display: none !important; }
-            @page { size: A4 landscape; margin: 12mm; }
+            @page { size: A4 portrait; margin: 14mm 16mm; }
+
+            [data-testid="section-dominance-shift"],
+            [data-testid="section-comparison-bars"],
+            [data-testid="section-radar"],
+            [data-testid="section-impact-matrix"],
+            [data-testid="section-stress-behavior"],
+            [data-testid="section-risk-timeline"],
+            [data-testid="section-development"],
+            [data-testid="section-actions"],
+            [data-testid="section-integrationsplan"],
+            [data-testid="section-final-assessment"],
+            [data-testid="section-summary-card"],
+            [data-testid="section-header"] {
+              break-inside: avoid !important;
+              page-break-inside: avoid !important;
+            }
+
+            [data-testid^="impact-detail-"],
+            [data-testid^="integration-phase-"] {
+              break-inside: avoid !important;
+              page-break-inside: avoid !important;
+            }
+
+            [data-testid="section-dominance-shift"],
+            [data-testid="section-comparison-bars"],
+            [data-testid="section-radar"],
+            [data-testid="section-impact-matrix"],
+            [data-testid="section-stress-behavior"],
+            [data-testid="section-risk-timeline"],
+            [data-testid="section-development"],
+            [data-testid="section-actions"],
+            [data-testid="section-integrationsplan"],
+            [data-testid="section-final-assessment"] {
+              break-before: auto;
+              page-break-before: auto;
+            }
           }
         `}</style>
       </div>
