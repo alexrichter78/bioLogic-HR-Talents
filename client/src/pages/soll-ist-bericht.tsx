@@ -422,7 +422,7 @@ export default function SollIstBericht() {
             const candIsBalFull = candDom.gap1 <= 5 && candDom.gap2 <= 5;
             const roleIsBalFull = roleDom.gap1 <= 5 && roleDom.gap2 <= 5;
             let fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
-            if (!sameDom && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
+            if (!sameDom) fitLabel = "Nicht geeignet";
             if (candIsBalFull && !roleIsBalFull) {
               fitLabel = "Nicht geeignet";
             } else if (candIsBalFull && roleIsBalFull && fitLabel === "Geeignet") {

@@ -826,7 +826,7 @@ export default function TeamReport() {
 
           const geignetLimit = sameDom ? 28 : 20;
           let fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
-          if (!sameDom && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
+          if (!sameDom) fitLabel = "Nicht geeignet";
           const candIsBalFull = candDom.gap1 <= 5 && candDom.gap2 <= 5;
           const teamIsBalFull = teamDom.gap1 <= 5 && teamDom.gap2 <= 5;
           if (candIsBalFull && !teamIsBalFull) {
