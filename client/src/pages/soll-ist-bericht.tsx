@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation } from "wouter";
-import { AlertTriangle, Download, ChevronLeft, ChevronDown, SlidersHorizontal, Zap } from "lucide-react";
+import { AlertTriangle, Download, ChevronLeft, ChevronDown, SlidersHorizontal, Zap, Compass, BarChart3, Triangle, Shield, Flame, Clock, TrendingUp, CheckCircle2, FileText, Award, AlertCircle } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { dominanceModeOf, labelComponent } from "@/lib/jobcheck-engine";
 import { computeSollIst, mapFuehrungsArt } from "@/lib/soll-ist-engine";
@@ -527,14 +527,26 @@ export default function SollIstBericht() {
           const rc = BAR_HEX[result.roleDomKey];
           const cc = BAR_HEX[result.candDomKey];
           const sameDom = result.roleDomKey === result.candDomKey;
-          const sep = { borderBottom: "1px solid rgba(0,0,0,0.08)", paddingBottom: 28, marginBottom: 28 } as const;
+          const sep = { borderBottom: "1px solid rgba(0,0,0,0.06)", paddingBottom: 32, marginBottom: 32 } as const;
+
+          const SectionHead = ({ num, icon: Icon, title, iconColor }: { num: number; icon: any; title: string; iconColor?: string }) => (
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8, background: iconColor ? `${iconColor}12` : "rgba(0,0,0,0.04)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <Icon style={{ width: 15, height: 15, color: iconColor || "#6E6E73" }} />
+              </div>
+              <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>{num}. {title}</span>
+            </div>
+          );
 
           return (
           <div style={{ maxWidth: 800, margin: "0 auto" }}>
-            <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 4, padding: "48px 44px", boxShadow: "0 1px 3px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.06)" }}>
+            <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 16, padding: "48px 44px", boxShadow: "0 2px 12px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)", border: "none" }}>
 
               <div style={{ textAlign: "center", marginBottom: 40 }} data-testid="section-header">
-                <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.14em", textTransform: "uppercase", margin: "0 0 12px" }}>Soll-Ist-Vergleich · Rollenpassung</p>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 20, background: "rgba(0,0,0,0.03)", marginBottom: 16 }}>
+                  <FileText style={{ width: 13, height: 13, color: "#8E8E93" }} />
+                  <span style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.14em", textTransform: "uppercase" }}>Soll-Ist-Vergleich · Rollenpassung</span>
+                </div>
                 <h1 style={{ fontSize: 26, fontWeight: 800, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.03em", lineHeight: 1.2 }} data-testid="text-page-title">
                   {result.roleName} · Passungsbericht
                 </h1>
@@ -558,7 +570,7 @@ export default function SollIstBericht() {
                 </button>
               </div>
 
-              <div style={{ marginBottom: 32 }}>
+              <div style={{ marginBottom: 32, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.015)", border: "1px solid rgba(0,0,0,0.04)" }}>
                 {result.summaryText.split("\n\n").map((para, i) => (
                   <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i > 0 ? "12px 0 0" : "0", textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
                     {para}
@@ -567,7 +579,7 @@ export default function SollIstBericht() {
               </div>
 
               <div style={sep} data-testid="section-dominance-shift">
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>1. Dominanz-Verschiebung</p>
+                <SectionHead num={1} icon={Compass} title="Dominanz-Verschiebung" iconColor="#0071E3" />
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 14, padding: "16px 20px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
                   <div style={{ textAlign: "center" }}>
                     <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Rolle</p>
@@ -591,7 +603,7 @@ export default function SollIstBericht() {
               </div>
 
               <div style={sep} data-testid="section-comparison-bars">
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>2. Dimensionsvergleich</p>
+                <SectionHead num={2} icon={BarChart3} title="Dimensionsvergleich" iconColor="#5856D6" />
                 <div className="grid gap-6 grid-cols-2" style={{ marginBottom: 14 }}>
                   <div className="rounded-2xl border border-slate-200 bg-white p-6">
                     <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
@@ -650,7 +662,7 @@ export default function SollIstBericht() {
               </div>
 
               <div style={sep} data-testid="section-radar">
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>3. Profilvergleich</p>
+                <SectionHead num={3} icon={Triangle} title="Profilvergleich" iconColor="#FF9500" />
                 <div style={{ display: "flex", justifyContent: "center", gap: 20, marginBottom: 4 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
                     <div style={{ width: 22, height: 3, borderRadius: 2, background: "#3b82f6" }} />
@@ -665,7 +677,7 @@ export default function SollIstBericht() {
               </div>
 
               <div style={sep} data-testid="section-impact-matrix">
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>4. Strukturelle Wirkungsanalyse</p>
+                <SectionHead num={4} icon={Shield} title="Strukturelle Wirkungsanalyse" iconColor="#34C759" />
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {result.impactAreas.map(area => {
                     const sevCol = area.severity === "critical" ? "#FF3B30" : area.severity === "warning" ? "#FF9500" : "#34C759";
@@ -687,29 +699,43 @@ export default function SollIstBericht() {
               </div>
 
               <div style={sep} data-testid="section-stress-behavior">
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>5. Stressverhalten</p>
-                <div style={{ marginBottom: 12 }}>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: "#FF9500", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 6px" }}>Kontrollierter Druck</p>
-                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{result.stressBehavior.controlledPressure}</p>
-                </div>
-                <div>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: "#FF3B30", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 6px" }}>Unkontrollierter Stress</p>
-                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{result.stressBehavior.uncontrolledStress}</p>
+                <SectionHead num={5} icon={Flame} title="Stressverhalten" iconColor="#FF3B30" />
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF950008", border: "1px solid #FF950018" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                      <AlertCircle style={{ width: 14, height: 14, color: "#FF9500" }} />
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#FF9500", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>Kontrollierter Druck</p>
+                    </div>
+                    <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: 0 }} lang="de">{result.stressBehavior.controlledPressure}</p>
+                  </div>
+                  <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF3B3008", border: "1px solid #FF3B3018" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                      <AlertTriangle style={{ width: 14, height: 14, color: "#FF3B30" }} />
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#FF3B30", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>Unkontrollierter Stress</p>
+                    </div>
+                    <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: 0 }} lang="de">{result.stressBehavior.uncontrolledStress}</p>
+                  </div>
                 </div>
               </div>
 
               <div style={sep} data-testid="section-risk-timeline">
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>6. Risikoprognose</p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {result.riskTimeline.map((phase, i) => {
-                    const phaseCol = i === 0 ? "#34C759" : i === 1 ? "#FF9500" : "#C41E3A";
-                    return (
-                      <div key={i} style={{ padding: "12px 16px", borderRadius: 12, background: `${phaseCol}06`, border: `1px solid ${phaseCol}15` }}>
-                        <p style={{ fontSize: 12, fontWeight: 700, color: phaseCol, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>{phase.label} <span style={{ fontWeight: 500, textTransform: "none", letterSpacing: "0" }}>{phase.period}</span></p>
-                        <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, margin: 0 }}>{phase.text}</p>
-                      </div>
-                    );
-                  })}
+                <SectionHead num={6} icon={Clock} title="Risikoprognose" iconColor="#C41E3A" />
+                <div style={{ position: "relative", paddingLeft: 28 }}>
+                  <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
+                  <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                    {result.riskTimeline.map((phase, i) => {
+                      const phaseCol = i === 0 ? "#34C759" : i === 1 ? "#FF9500" : "#C41E3A";
+                      return (
+                        <div key={i} style={{ position: "relative" }}>
+                          <div style={{ position: "absolute", left: -22, top: 14, width: 10, height: 10, borderRadius: 5, background: phaseCol, boxShadow: `0 0 0 3px ${phaseCol}20` }} />
+                          <div style={{ padding: "12px 16px", borderRadius: 12, background: `${phaseCol}06`, border: `1px solid ${phaseCol}15` }}>
+                            <p style={{ fontSize: 12, fontWeight: 700, color: phaseCol, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>{phase.label} <span style={{ fontWeight: 500, textTransform: "none", letterSpacing: "0" }}>{phase.period}</span></p>
+                            <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, margin: 0 }}>{phase.text}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 
@@ -737,54 +763,29 @@ export default function SollIstBericht() {
                 }
                 const rFitColor = rFitLabel === "Nicht geeignet" ? "#D64045" : rFitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
 
-                const rFazit = rSecFlip && rCandSecGap > 5
-                  ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärausrichtung passt nicht. Die Person bringt die falsche zweite Stärke klar ausgeprägt mit. Arbeitsstil und Prioritätensetzung weichen strukturell ab."
-                  : rSecFlip && tGap <= rGeignetLimit
-                  ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
-                  : sameD && rCandSecGap <= 5 && tGap <= rGeignetLimit
-                  ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
-                  : sameD && tGap <= rGeignetLimit
-                  ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
-                  : sameD
-                  ? "Die Grundausrichtung ist ähnlich, es bestehen jedoch spürbare Unterschiede in der Intensität. Mit gezielter Führung lässt sich die Zusammenarbeit stabil gestalten."
-                  : tGap > 40
-                  ? "Die Arbeits- und Entscheidungslogiken von Rolle und Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch erhöhter Abstimmungs- und Steuerungsbedarf."
-                  : "Unterschiedliche Arbeitslogiken treffen aufeinander. Die Person arbeitet und entscheidet anders, als es die Rolle erfordert. Im Alltag entsteht dadurch erhöhter Abstimmungsbedarf.";
+                const rFazit = rFitLabel === "Geeignet"
+                  ? "Die Arbeitsweise der Person passt gut zu den Anforderungen der Rolle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein."
+                  : rFitLabel === "Bedingt geeignet"
+                  ? "Die Grundausrichtung ist ähnlich. In einzelnen Punkten unterscheidet sich die Arbeitsweise jedoch. Mit klaren Erwartungen und guter Führung kann die Zusammenarbeit stabil funktionieren."
+                  : "Die Anforderungen der Rolle und die natürliche Arbeitsweise der Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch ein erhöhter Abstimmungsbedarf.";
 
-                let rDev: number;
-                if (sameD && tGap <= 20) rDev = 6;
-                else if (sameD && tGap <= 28) rDev = 5;
-                else if (tGap <= 20 || (sameD && tGap <= 35)) rDev = 4;
-                else if (tGap <= 35 || (sameD && tGap <= 45)) rDev = 3;
-                else if (tGap <= 50) rDev = 2;
-                else rDev = 1;
-                if (rDev === 6 && rCandSecGap <= 5) rDev = 5;
-                if (rSecFlip) {
-                  if (rCandSecGap > 5) rDev = Math.min(rDev, 2);
-                  else rDev = Math.min(rDev, 4);
-                }
+                const rDev = rFitLabel === "Geeignet" ? 3 : rFitLabel === "Bedingt geeignet" ? 2 : 1;
 
                 const rDevTexts: Record<number, string> = {
-                  1: "Die grundlegende Arbeitslogik der Person unterscheidet sich stark von den Anforderungen der Rolle. Eine stabile Anpassung ist daher nur sehr eingeschränkt zu erwarten.",
-                  2: "Die Anforderungen der Rolle unterscheiden sich deutlich von der natürlichen Arbeitsweise der Person. Eine Entwicklung ist grundsätzlich möglich, erfordert jedoch intensive Führung und klare Rahmenbedingungen.",
-                  3: "Die Person kann sich teilweise an die Anforderungen der Rolle anpassen. Eine stabile Umsetzung erfordert jedoch Zeit, Erfahrung und unterstützende Strukturen.",
-                  4: "Die Person kann sich grundsätzlich gut an die Anforderungen der Rolle entwickeln. Mit klaren Entscheidungswegen und Feedback ist eine stabile Zusammenarbeit gut erreichbar.",
-                  5: "Die Arbeits- und Entscheidungslogik der Person passt bereits weitgehend zu den Anforderungen der Rolle. Eine Entwicklung zu einer stabilen und erfolgreichen Umsetzung ist sehr wahrscheinlich.",
-                  6: "Die Person kann die Anforderungen der Rolle sehr schnell und stabil erfüllen. Arbeitsweise, Entscheidungslogik und Umfeld der Rolle passen sehr gut zusammen.",
+                  1: "Die Anforderungen der Rolle liegen weit außerhalb der natürlichen Arbeitsweise der Person. Eine stabile Entwicklung ist deshalb kaum zu erwarten.",
+                  2: "Die Rolle verlangt eine deutlich andere Arbeitsweise als die Person von Natur aus mitbringt. Eine Entwicklung ist möglich, erfordert jedoch dauerhaft starke Führung und klare Struktur.",
+                  3: "Die Arbeitsweise der Person passt sehr gut zur Rolle. Die Anforderungen können schnell übernommen und dauerhaft stabil umgesetzt werden.",
                 };
                 const rDevLabels: Record<number, string> = {
-                  1: "Entwicklung praktisch nicht erreichbar",
-                  2: "Entwicklung sehr schwierig",
-                  3: "Entwicklung möglich mit hohem Aufwand",
-                  4: "Entwicklung gut möglich",
-                  5: "Entwicklung sehr wahrscheinlich",
-                  6: "Entwicklung sehr schnell erreichbar",
+                  1: "Entwicklung unwahrscheinlich",
+                  2: "Entwicklung mit Unterstützung möglich",
+                  3: "Entwicklung sehr wahrscheinlich",
                 };
-                const rGaugeCol = rDev >= 5 ? "#3A9A5C" : rDev >= 3 ? "#E5A832" : "#D64045";
+                const rGaugeCol = rDev === 3 ? "#3A9A5C" : rDev === 2 ? "#E5A832" : "#D64045";
 
                 return (
                   <div style={sep} data-testid="section-development">
-                    <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 18px" }}>7. Systemwirkung & Entwicklungsprognose</p>
+                    <SectionHead num={7} icon={TrendingUp} title="Systemwirkung & Entwicklungsprognose" iconColor="#5856D6" />
 
                     <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
                       <div style={{ width: 16, height: 16, borderRadius: 8, background: rFitColor, flexShrink: 0, boxShadow: `0 0 0 3px ${rFitColor}20` }} />
@@ -802,10 +803,10 @@ export default function SollIstBericht() {
                       Entwicklungsprognose
                     </p>
                     <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>
-                      {rDev} von 6 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>– {rDevLabels[rDev]}</span>
+                      {rDev} von 3 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>– {rDevLabels[rDev]}</span>
                     </p>
                     <div style={{ display: "flex", gap: 5, marginBottom: 16 }} data-testid="gauge-development">
-                      {Array.from({ length: 6 }).map((_, i) => (
+                      {Array.from({ length: 3 }).map((_, i) => (
                         <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < rDev ? rGaugeCol : "rgba(0,0,0,0.08)" }} />
                       ))}
                     </div>
@@ -815,42 +816,60 @@ export default function SollIstBericht() {
               })()}
 
               <div style={sep} data-testid="section-actions">
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>8. Handlungsempfehlung</p>
-                <ul style={{ margin: 0, paddingLeft: 20, listStyleType: "disc" }}>
+                <SectionHead num={8} icon={CheckCircle2} title="Handlungsempfehlung" iconColor="#34C759" />
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {result.actions.map((item, i) => (
-                    <li key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, marginBottom: 3 }}>{item}</li>
+                    <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 14px", borderRadius: 10, background: "rgba(52,199,89,0.04)", border: "1px solid rgba(52,199,89,0.1)" }}>
+                      <CheckCircle2 style={{ width: 16, height: 16, color: "#34C759", flexShrink: 0, marginTop: 2 }} />
+                      <span style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7 }}>{item}</span>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
 
               {result.integrationsplan && (
                 <div style={sep} data-testid="section-integrationsplan">
-                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>9. 30-Tage-Integrationsplan</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                    {result.integrationsplan.map(phase => {
-                      const phaseCol = phase.num === 1 ? "#0071E3" : phase.num === 2 ? "#F39200" : "#34C759";
-                      return (
-                        <div key={phase.num} data-testid={`integration-phase-${phase.num}`}>
-                          <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>
-                            Phase {phase.num}: {phase.title} <span style={{ fontWeight: 500, color: "#8E8E93" }}>({phase.period})</span>
-                          </p>
-                          <ul style={{ margin: 0, paddingLeft: 20, listStyleType: "disc" }}>
-                            {phase.items.map((item, i) => (
-                              <li key={i} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, marginBottom: 2 }}>{item}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      );
-                    })}
+                  <SectionHead num={9} icon={FileText} title="30-Tage-Integrationsplan" iconColor="#0071E3" />
+                  <div style={{ position: "relative", paddingLeft: 28 }}>
+                    <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
+                    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                      {result.integrationsplan.map(phase => {
+                        const phaseCol = phase.num === 1 ? "#0071E3" : phase.num === 2 ? "#F39200" : "#34C759";
+                        return (
+                          <div key={phase.num} style={{ position: "relative" }} data-testid={`integration-phase-${phase.num}`}>
+                            <div style={{ position: "absolute", left: -22, top: 14, width: 10, height: 10, borderRadius: 5, background: phaseCol, boxShadow: `0 0 0 3px ${phaseCol}20` }} />
+                            <div style={{ padding: "12px 16px", borderRadius: 12, background: `${phaseCol}06`, border: `1px solid ${phaseCol}15` }}>
+                              <p style={{ fontSize: 13, fontWeight: 700, color: phaseCol, margin: "0 0 8px" }}>
+                                Phase {phase.num}: {phase.title} <span style={{ fontWeight: 500, color: "#8E8E93" }}>({phase.period})</span>
+                              </p>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                                {phase.items.map((item, i) => (
+                                  <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                    <div style={{ width: 5, height: 5, borderRadius: 3, background: phaseCol, flexShrink: 0, marginTop: 7 }} />
+                                    <span style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7 }}>{item}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               )}
 
-              <div data-testid="section-final-assessment">
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>{result.integrationsplan ? "10" : "9"}. Gesamtbewertung</p>
-                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
-                  <span style={{ fontSize: 13, color: "#8E8E93" }}>Grundpassung: <span style={{ fontWeight: 700, color: fitCol }}>{result.fitLabel}</span></span>
-                  <span style={{ fontSize: 13, color: "#8E8E93" }}>Steuerungsbedarf: <span style={{ fontWeight: 700, color: result.controlIntensity === "hoch" ? "#FF9500" : "#1D1D1F" }}>{result.controlIntensity.charAt(0).toUpperCase() + result.controlIntensity.slice(1)}</span></span>
+              <div data-testid="section-final-assessment" style={{ padding: "24px", borderRadius: 14, background: `${fitCol}06`, border: `1px solid ${fitCol}18` }}>
+                <SectionHead num={result.integrationsplan ? 10 : 9} icon={Award} title="Gesamtbewertung" iconColor={fitCol} />
+                <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
+                  <div style={{ flex: 1, padding: "10px 14px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Grundpassung</p>
+                    <p style={{ fontSize: 15, fontWeight: 700, color: fitCol, margin: 0 }}>{result.fitLabel}</p>
+                  </div>
+                  <div style={{ flex: 1, padding: "10px 14px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Steuerungsbedarf</p>
+                    <p style={{ fontSize: 15, fontWeight: 700, color: result.controlIntensity === "hoch" ? "#FF9500" : "#1D1D1F", margin: 0 }}>{result.controlIntensity.charAt(0).toUpperCase() + result.controlIntensity.slice(1)}</p>
+                  </div>
                 </div>
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de" data-testid="text-final-rating-text">{result.finalText}</p>
               </div>
