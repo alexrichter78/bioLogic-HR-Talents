@@ -970,6 +970,11 @@ export default function SollIstBericht() {
               margin-bottom: 10px !important;
             }
 
+            [data-testid="section-comparison-bars"] {
+              break-before: page !important;
+              page-break-before: always !important;
+            }
+
             [data-testid="section-dominance-shift"],
             [data-testid="section-radar"],
             [data-testid="section-impact-matrix"],
