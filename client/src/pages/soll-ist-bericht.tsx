@@ -919,9 +919,16 @@ export default function SollIstBericht() {
             .no-print,
             nav,
             button,
-            [data-testid="section-summary-card"],
-            .print-hide-summary {
+            [data-testid="section-summary-card"] {
               display: none !important;
+            }
+
+            .print-hide-summary {
+              background: none !important;
+              border: none !important;
+              border-radius: 0 !important;
+              padding: 0 !important;
+              margin-bottom: 24px !important;
             }
 
             [data-testid="print-report-wrapper"] {
@@ -943,7 +950,7 @@ export default function SollIstBericht() {
               overflow: visible !important;
             }
 
-            [data-testid="print-report-card"] > div:not(.print-hide-summary),
+            [data-testid="print-report-card"] > div,
             [data-testid="print-report-card"] > section {
               display: block !important;
               width: 100% !important;
