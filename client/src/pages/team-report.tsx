@@ -827,6 +827,13 @@ export default function TeamReport() {
           const geignetLimit = sameDom ? 28 : 20;
           let fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
           if (!sameDom && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
+          const candIsBalFull = candDom.gap1 <= 5 && candDom.gap2 <= 5;
+          const teamIsBalFull = teamDom.gap1 <= 5 && teamDom.gap2 <= 5;
+          if (candIsBalFull && !teamIsBalFull) {
+            fitLabel = "Nicht geeignet";
+          } else if (candIsBalFull && teamIsBalFull && fitLabel === "Geeignet") {
+            fitLabel = "Bedingt geeignet";
+          }
           let classReason: ClassificationReason = "gap";
           if (secondaryFlip && candSecGap > 5) {
             fitLabel = "Nicht geeignet"; classReason = "secFlip_strong";
@@ -849,6 +856,9 @@ export default function TeamReport() {
             if (candSecGap > 5) devScore = Math.min(devScore, 2);
             else devScore = Math.min(devScore, 4);
           }
+          if (fitLabel === "Geeignet" && devScore < 5) devScore = 5;
+          else if (fitLabel === "Bedingt geeignet") devScore = Math.max(3, Math.min(4, devScore));
+          else if (fitLabel === "Nicht geeignet") devScore = Math.max(1, Math.min(2, devScore));
 
           const systemwirkungLabel = getSystemwirkung(teamProfileN, istProfile);
           const indicatorText = selectIndicatorText(roleTypeForCard, classReason, fitLabel, totalGap, systemwirkungLabel);

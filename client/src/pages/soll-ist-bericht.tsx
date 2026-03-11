@@ -419,8 +419,15 @@ export default function SollIstBericht() {
             const candSecGap = candSorted[1] - candSorted[2];
 
             const geignetLimit = sameDom ? 28 : 20;
+            const candIsBalFull = candDom.gap1 <= 5 && candDom.gap2 <= 5;
+            const roleIsBalFull = roleDom.gap1 <= 5 && roleDom.gap2 <= 5;
             let fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
             if (!sameDom && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
+            if (candIsBalFull && !roleIsBalFull) {
+              fitLabel = "Nicht geeignet";
+            } else if (candIsBalFull && roleIsBalFull && fitLabel === "Geeignet") {
+              fitLabel = "Bedingt geeignet";
+            }
             if (secondaryFlip && candSecGap > 5) {
               fitLabel = "Nicht geeignet";
             } else if (secondaryFlip && fitLabel === "Geeignet") {
@@ -457,6 +464,9 @@ export default function SollIstBericht() {
               if (candSecGap > 5) devScore = Math.min(devScore, 2);
               else devScore = Math.min(devScore, 4);
             }
+            if (fitLabel === "Geeignet" && devScore < 5) devScore = 5;
+            else if (fitLabel === "Bedingt geeignet") devScore = Math.max(3, Math.min(4, devScore));
+            else if (fitLabel === "Nicht geeignet") devScore = Math.max(1, Math.min(2, devScore));
 
             const devTexts: Record<number, string> = {
               1: "Die grundlegende Arbeitslogik der Person unterscheidet sich stark von den Anforderungen der Rolle. Eine stabile Anpassung ist daher nur sehr eingeschränkt zu erwarten.",
