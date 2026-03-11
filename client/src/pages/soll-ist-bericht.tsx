@@ -602,11 +602,15 @@ export default function SollIstBericht() {
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{result.dominanceShiftText}</p>
               </div>
 
-              <div className="print-page-break" style={{ height: 0, overflow: "hidden" }} />
               <div style={sep} data-testid="section-comparison-bars">
-                <SectionHead num={2} icon={BarChart3} title="Dimensionsvergleich" iconColor="#5856D6" />
                 <div className="grid gap-6 grid-cols-2" style={{ marginBottom: 14 }}>
-                  <div className="rounded-2xl border border-slate-200 bg-white p-6">
+                  <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="comparison-soll-card">
+                    <div className="section-head" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: 8, background: "#5856D612", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <BarChart3 style={{ width: 15, height: 15, color: "#5856D6" }} />
+                      </div>
+                      <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>2. Dimensionsvergleich</span>
+                    </div>
                     <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                       {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
@@ -980,24 +984,11 @@ export default function SollIstBericht() {
               margin-bottom: 10px !important;
             }
 
-            .print-page-break {
-              break-after: page !important;
-              page-break-after: always !important;
-              height: 0 !important;
-              margin: 0 !important;
-              padding: 0 !important;
-              border: none !important;
-            }
-
-            .section-head {
-              display: flex !important;
-              break-after: avoid !important;
-              page-break-after: avoid !important;
+            [data-testid="comparison-soll-card"] {
               break-inside: avoid !important;
               page-break-inside: avoid !important;
             }
 
-            [data-testid="section-comparison-bars"],
             [data-testid="section-dominance-shift"],
             [data-testid="section-radar"],
             [data-testid="section-impact-matrix"],
