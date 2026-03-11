@@ -530,7 +530,7 @@ export default function SollIstBericht() {
           const sep = { borderBottom: "1px solid rgba(0,0,0,0.06)", paddingBottom: 32, marginBottom: 32 } as const;
 
           const SectionHead = ({ num, icon: Icon, title, iconColor }: { num: number; icon: any; title: string; iconColor?: string }) => (
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
+            <div className="section-head" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
               <div style={{ width: 28, height: 28, borderRadius: 8, background: iconColor ? `${iconColor}12` : "rgba(0,0,0,0.04)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <Icon style={{ width: 15, height: 15, color: iconColor || "#6E6E73" }} />
               </div>
@@ -989,6 +989,15 @@ export default function SollIstBericht() {
               border: none !important;
             }
 
+            .section-head {
+              display: flex !important;
+              break-after: avoid !important;
+              page-break-after: avoid !important;
+              break-inside: avoid !important;
+              page-break-inside: avoid !important;
+            }
+
+            [data-testid="section-comparison-bars"],
             [data-testid="section-dominance-shift"],
             [data-testid="section-radar"],
             [data-testid="section-impact-matrix"],
