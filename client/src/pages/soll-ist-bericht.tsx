@@ -835,6 +835,7 @@ export default function SollIstBericht() {
                 );
               })()}
 
+              {result.fitLabel !== "Nicht geeignet" && (
               <div style={sep} data-testid="section-actions">
                 <SectionHead num={7} icon={CheckCircle2} title="Handlungsempfehlung" iconColor="#34C759" />
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -846,6 +847,7 @@ export default function SollIstBericht() {
                   ))}
                 </div>
               </div>
+              )}
 
               {result.integrationsplan && (
                 <div style={sep} data-testid="section-integrationsplan">
