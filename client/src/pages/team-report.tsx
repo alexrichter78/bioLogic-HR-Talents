@@ -831,7 +831,7 @@ export default function TeamReport() {
             fitLabel = "Nicht geeignet"; classReason = "secFlip_strong";
           } else if (secondaryFlip && fitLabel === "Geeignet") {
             fitLabel = "Bedingt geeignet"; classReason = "secFlip_weak";
-          } else if (fitLabel === "Geeignet" && sameDom && candSecGap <= 5) {
+          } else if (fitLabel === "Geeignet" && sameDom && candSecGap <= 5 && candDom.gap1 <= 15) {
             fitLabel = "Bedingt geeignet"; classReason = "unclearSec";
           }
 
@@ -843,7 +843,7 @@ export default function TeamReport() {
           else if (totalGap <= 50) devScore = 2;
           else devScore = 1;
 
-          if (devScore === 6 && candSecGap <= 5) devScore = 5;
+          if (devScore === 6 && candSecGap <= 5 && candDom.gap1 <= 15) devScore = 5;
           if (secondaryFlip) {
             if (candSecGap > 5) devScore = Math.min(devScore, 2);
             else devScore = Math.min(devScore, 4);

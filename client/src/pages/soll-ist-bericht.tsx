@@ -424,7 +424,7 @@ export default function SollIstBericht() {
               fitLabel = "Nicht geeignet";
             } else if (secondaryFlip && fitLabel === "Geeignet") {
               fitLabel = "Bedingt geeignet";
-            } else if (fitLabel === "Geeignet" && sameDom && candSecGap <= 5) {
+            } else if (fitLabel === "Geeignet" && sameDom && candSecGap <= 5 && candDom.gap1 <= 15) {
               fitLabel = "Bedingt geeignet";
             }
             const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
@@ -433,7 +433,7 @@ export default function SollIstBericht() {
               ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärausrichtung passt nicht. Die Person bringt die falsche zweite Stärke klar ausgeprägt mit. Arbeitsstil und Prioritätensetzung weichen strukturell ab."
               : secondaryFlip && totalGap <= geignetLimit
               ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
-              : sameDom && candSecGap <= 5 && totalGap <= geignetLimit
+              : sameDom && candSecGap <= 5 && candDom.gap1 <= 15 && totalGap <= geignetLimit
               ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
               : sameDom && totalGap <= geignetLimit
               ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
@@ -451,7 +451,7 @@ export default function SollIstBericht() {
             else if (totalGap <= 50) devScore = 2;
             else devScore = 1;
 
-            if (devScore === 6 && candSecGap <= 5) devScore = 5;
+            if (devScore === 6 && candSecGap <= 5 && candDom.gap1 <= 15) devScore = 5;
             if (secondaryFlip) {
               if (candSecGap > 5) devScore = Math.min(devScore, 2);
               else devScore = Math.min(devScore, 4);

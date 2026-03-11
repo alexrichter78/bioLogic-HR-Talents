@@ -960,7 +960,7 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
       overallFit = "NOT_SUITABLE";
     } else if (secondaryFlipped) {
       overallFit = "CONDITIONAL";
-    } else if (sameDom && candDom.gap2 <= 5) {
+    } else if (sameDom && candDom.gap2 <= 5 && candDom.gap1 <= 15) {
       overallFit = "CONDITIONAL";
     }
   }
