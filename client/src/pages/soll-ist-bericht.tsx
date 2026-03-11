@@ -440,26 +440,26 @@ export default function SollIstBericht() {
             const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
 
             const fazitText = candIsBalFull && !roleIsBalFull
-              ? "Die Person zeigt kein klares Komponentenprofil – alle Anteile liegen nahe beieinander. Die Rolle erfordert jedoch eine klare Ausrichtung. Im Arbeitsalltag fehlt die natürliche Priorisierung, die die Rolle verlangt."
+              ? "Die Person zeigt keine klare Arbeitsausrichtung. Die Stärken liegen nah beieinander. Die Rolle verlangt jedoch eine klare Schwerpunktsetzung. Im Arbeitsalltag fehlt dadurch die natürliche Priorität für die Aufgaben."
               : maxGap > 25
-              ? "Eine einzelne Komponente weicht extrem vom Soll-Profil ab. Diese massive Fehlpassung kann durch die übrigen Stärken nicht kompensiert werden."
+              ? "Ein zentraler Teil der Arbeitsweise weicht stark von den Anforderungen der Rolle ab. Diese Abweichung ist so deutlich, dass sie durch andere Stärken kaum ausgeglichen werden kann."
               : roleIsBalFull && candSpread > 20
-              ? "Die Rolle erfordert eine ausgewogene Arbeitsweise. Die Person ist jedoch stark auf eine Komponente zugespitzt. Im Alltag fehlt die Flexibilität, die die Rolle verlangt."
+              ? "Die Rolle verlangt eine ausgewogene Arbeitsweise. Die Person arbeitet jedoch stark aus einer Richtung heraus. Dadurch fehlt im Alltag die Flexibilität, die die Aufgaben erfordern."
               : secondaryFlip && candSecGap > 5 && roleSecGap > 5
-              ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärausrichtung passt nicht. Die Person bringt die falsche zweite Stärke klar ausgeprägt mit. Arbeitsstil und Prioritätensetzung weichen strukturell ab."
+              ? "Die grundlegende Arbeitsweise passt zur Rolle. Die Person setzt jedoch andere Schwerpunkte im Arbeiten und Entscheiden. Dadurch unterscheiden sich Arbeitsstil und Prioritäten im Alltag deutlich."
               : secondaryFlip
-              ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
+              ? "Die grundlegende Arbeitsweise passt zur Rolle. In Drucksituationen kann sich das Verhalten in unterschiedliche Richtungen entwickeln. Mehrere Arbeitsweisen sind ähnlich stark ausgeprägt."
               : effectiveSameDom && candDomGap <= 5
-              ? "Die Grundrichtung stimmt, aber die Primärdominanz der Person ist unklar. Die stärkste und zweitstärkste Komponente liegen nah beieinander – unter Druck kann die Arbeitslogik kippen."
+              ? "Die Grundausrichtung passt zur Rolle. Die Person arbeitet jedoch aus zwei ähnlich starken Richtungen heraus. Unter Druck kann sich der Arbeitsstil dadurch verändern."
               : effectiveSameDom && candSecGap <= 5 && totalGap <= geignetLimit
-              ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
+              ? "Die Arbeitsweise passt grundsätzlich zur Rolle. Weitere Stärken liegen jedoch nah beieinander. Dadurch kann sich das Verhalten unter Druck unterschiedlich entwickeln."
               : effectiveSameDom && totalGap <= geignetLimit
-              ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
+              ? "Die Arbeitsweise der Person passt gut zu den Anforderungen der Rolle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein."
               : effectiveSameDom
-              ? "Die Grundausrichtung ist ähnlich, es bestehen jedoch spürbare Unterschiede in der Intensität. Mit gezielter Führung lässt sich die Zusammenarbeit stabil gestalten."
+              ? "Die Grundausrichtung ist ähnlich. In einzelnen Punkten unterscheidet sich die Arbeitsweise jedoch. Mit klaren Erwartungen und guter Führung kann die Zusammenarbeit stabil funktionieren."
               : totalGap > 40
-              ? "Die Arbeits- und Entscheidungslogiken von Rolle und Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch erhöhter Abstimmungs- und Steuerungsbedarf."
-              : "Unterschiedliche Arbeitslogiken treffen aufeinander. Die Person arbeitet und entscheidet anders, als es die Rolle erfordert. Im Alltag entsteht dadurch erhöhter Abstimmungsbedarf.";
+              ? "Die Anforderungen der Rolle und die natürliche Arbeitsweise der Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch ein erhöhter Abstimmungsbedarf."
+              : "Die Person arbeitet und entscheidet anders, als es die Rolle verlangt. Im Arbeitsalltag entsteht dadurch zusätzlicher Abstimmungsbedarf.";
 
             let devScore: number;
             if (effectiveSameDom && totalGap <= 20) devScore = 6;
@@ -479,12 +479,12 @@ export default function SollIstBericht() {
             else if (fitLabel === "Nicht geeignet") devScore = Math.max(1, Math.min(2, devScore));
 
             const devTexts: Record<number, string> = {
-              1: "Die grundlegende Arbeitslogik der Person unterscheidet sich stark von den Anforderungen der Rolle. Eine stabile Anpassung ist daher nur sehr eingeschränkt zu erwarten.",
+              1: "Die natürliche Arbeitsweise der Person unterscheidet sich stark von den Anforderungen der Rolle. Eine stabile Anpassung ist daher kaum zu erwarten.",
               2: "Die Anforderungen der Rolle unterscheiden sich deutlich von der natürlichen Arbeitsweise der Person. Eine Entwicklung ist grundsätzlich möglich, erfordert jedoch intensive Führung und klare Rahmenbedingungen.",
               3: "Die Person kann sich teilweise an die Anforderungen der Rolle anpassen. Eine stabile Umsetzung erfordert jedoch Zeit, Erfahrung und unterstützende Strukturen.",
-              4: "Die Person kann sich grundsätzlich gut an die Anforderungen der Rolle entwickeln. Mit klaren Entscheidungswegen und Feedback ist eine stabile Zusammenarbeit gut erreichbar.",
-              5: "Die Arbeits- und Entscheidungslogik der Person passt bereits weitgehend zu den Anforderungen der Rolle. Eine Entwicklung zu einer stabilen und erfolgreichen Umsetzung ist sehr wahrscheinlich.",
-              6: "Die Person kann die Anforderungen der Rolle sehr schnell und stabil erfüllen. Arbeitsweise, Entscheidungslogik und Umfeld der Rolle passen sehr gut zusammen.",
+              4: "Die Person kann sich gut an die Anforderungen der Rolle entwickeln. Mit klaren Entscheidungswegen und regelmäßigem Feedback ist eine stabile Zusammenarbeit erreichbar.",
+              5: "Die Arbeitsweise der Person passt bereits weitgehend zu den Anforderungen der Rolle. Eine stabile und erfolgreiche Umsetzung ist sehr wahrscheinlich.",
+              6: "Die Person kann die Anforderungen der Rolle sehr schnell erfüllen. Arbeitsweise und Aufgaben der Rolle passen sehr gut zusammen.",
             };
 
             const devLabels: Record<number, string> = {

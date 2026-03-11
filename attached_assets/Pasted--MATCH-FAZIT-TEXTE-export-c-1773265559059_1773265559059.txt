@@ -1,0 +1,83 @@
+// =============================
+// MATCH FAZIT TEXTE
+// =============================
+
+export const MATCH_CONCLUSION_TEXTS = {
+
+personBalFullRoleNotBalFull:
+"Die Person zeigt keine klare Arbeitsausrichtung. Die Stärken liegen nah beieinander. Die Rolle verlangt jedoch eine klare Schwerpunktsetzung. Im Arbeitsalltag fehlt dadurch die natürliche Priorität für die Aufgaben.",
+
+maxGapOver25:
+"Ein zentraler Teil der Arbeitsweise weicht stark von den Anforderungen der Rolle ab. Diese Abweichung ist so deutlich, dass sie durch andere Stärken kaum ausgeglichen werden kann.",
+
+roleBalFullCandSpreadOver20:
+"Die Rolle verlangt eine ausgewogene Arbeitsweise. Die Person arbeitet jedoch stark aus einer Richtung heraus. Dadurch fehlt im Alltag die Flexibilität, die die Aufgaben erfordern.",
+
+secondaryFlipClear:
+"Die grundlegende Arbeitsweise passt zur Rolle. Die Person setzt jedoch andere Schwerpunkte im Arbeiten und Entscheiden. Dadurch unterscheiden sich Arbeitsstil und Prioritäten im Alltag deutlich.",
+
+secondaryFlipUnclear:
+"Die grundlegende Arbeitsweise passt zur Rolle. In Drucksituationen kann sich das Verhalten in unterschiedliche Richtungen entwickeln. Mehrere Arbeitsweisen sind ähnlich stark ausgeprägt.",
+
+sameDomButPrimaryUnclear:
+"Die Grundausrichtung passt zur Rolle. Die Person arbeitet jedoch aus zwei ähnlich starken Richtungen heraus. Unter Druck kann sich der Arbeitsstil dadurch verändern.",
+
+sameDomButSecondaryUnclear:
+"Die Arbeitsweise passt grundsätzlich zur Rolle. Weitere Stärken liegen jedoch nah beieinander. Dadurch kann sich das Verhalten unter Druck unterschiedlich entwickeln.",
+
+sameDomAndLowGap:
+"Die Arbeitsweise der Person passt gut zu den Anforderungen der Rolle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein.",
+
+sameDomButHigherGap:
+"Die Grundausrichtung ist ähnlich. In einzelnen Punkten unterscheidet sich die Arbeitsweise jedoch. Mit klaren Erwartungen und guter Führung kann die Zusammenarbeit stabil funktionieren.",
+
+diffDomAndHighGap:
+"Die Anforderungen der Rolle und die natürliche Arbeitsweise der Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch ein erhöhter Abstimmungsbedarf.",
+
+diffDomFallback:
+"Die Person arbeitet und entscheidet anders, als es die Rolle verlangt. Im Arbeitsalltag entsteht dadurch zusätzlicher Abstimmungsbedarf."
+
+};
+
+
+// =============================
+// ENTWICKLUNGSPROGNOSE LABEL
+// =============================
+
+export const DEV_SCORE_LABELS = {
+
+1: "Entwicklung praktisch nicht erreichbar",
+2: "Entwicklung sehr schwierig",
+3: "Entwicklung möglich mit hohem Aufwand",
+4: "Entwicklung gut möglich",
+5: "Entwicklung sehr wahrscheinlich",
+6: "Entwicklung sehr schnell erreichbar"
+
+};
+
+
+// =============================
+// ENTWICKLUNGSPROGNOSE TEXTE
+// =============================
+
+export const DEV_SCORE_TEXTS = {
+
+1:
+"Die natürliche Arbeitsweise der Person unterscheidet sich stark von den Anforderungen der Rolle. Eine stabile Anpassung ist daher kaum zu erwarten.",
+
+2:
+"Die Anforderungen der Rolle unterscheiden sich deutlich von der natürlichen Arbeitsweise der Person. Eine Entwicklung ist grundsätzlich möglich, erfordert jedoch intensive Führung und klare Rahmenbedingungen.",
+
+3:
+"Die Person kann sich teilweise an die Anforderungen der Rolle anpassen. Eine stabile Umsetzung erfordert jedoch Zeit, Erfahrung und unterstützende Strukturen.",
+
+4:
+"Die Person kann sich gut an die Anforderungen der Rolle entwickeln. Mit klaren Entscheidungswegen und regelmäßigem Feedback ist eine stabile Zusammenarbeit erreichbar.",
+
+5:
+"Die Arbeitsweise der Person passt bereits weitgehend zu den Anforderungen der Rolle. Eine stabile und erfolgreiche Umsetzung ist sehr wahrscheinlich.",
+
+6:
+"Die Person kann die Anforderungen der Rolle sehr schnell erfüllen. Arbeitsweise und Aufgaben der Rolle passen sehr gut zusammen."
+
+};
