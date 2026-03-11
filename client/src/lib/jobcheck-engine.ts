@@ -938,13 +938,15 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   const ko = koRuleTriggered(role, cand);
   const mismatch = weightedMismatch(role.role_profile, cand.candidate_profile);
   const sameDom = roleDom.top1.key === candDom.top1.key;
+  const roleNearDual = roleDom.gap1 <= 5;
+  const effectiveSameDom = sameDom || (roleNearDual && candDom.top1.key === roleDom.top2.key);
   const candEqualDist = candDom.mode === "BAL_FULL";
   const candDualDominance = !candEqualDist && candDom.gap1 <= 5;
   const roleClearDominance = roleDom.gap1 >= 15;
   const dualConflict = candDualDominance && roleClearDominance;
   const equalDistConflict = candEqualDist && roleClearDominance;
   const roleKeyInDual = dualConflict && (candDom.top1.key === roleDom.top1.key || candDom.top2.key === roleDom.top1.key);
-  let overallFit: FitStatus = ko ? "NOT_SUITABLE" : overallFitFromScore(mismatch, sameDom);
+  let overallFit: FitStatus = ko ? "NOT_SUITABLE" : overallFitFromScore(mismatch, effectiveSameDom);
   if (equalDistConflict && !ko) {
     overallFit = "NOT_SUITABLE";
   } else if (dualConflict && !ko) {
@@ -1002,7 +1004,7 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
       const candSecL = labelComponent(candDom.top2.key);
       return `${candName} arbeitet ${rL}-orientiert wie gefordert, aber die Sekundärausrichtung ist unklar: Die Rolle braucht ${roleSecL} als zweite Stärke, ${candName} zeigt eine Mischung aus ${roleSecL} und ${candSecL}. Mit Führung steuerbar – besonders im Bereich „${critical.label}".`;
     }
-    if (sameDom && overallFit === "CONDITIONAL") {
+    if (effectiveSameDom && overallFit === "CONDITIONAL") {
       return `${candName} arbeitet grundsätzlich ${rL}-orientiert, aber die Ausprägung liegt unter dem, was die Rolle braucht. Es gibt ${gapDesc(mainDiff)} – besonders im Bereich „${critical.label}". Mit Führung steuerbar, aber nicht selbsttragend.`;
     }
     if (overallFit === "CONDITIONAL") {
@@ -1027,7 +1029,7 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
       const roleSecL = labelComponent(roleDom.top2.key);
       const candSecL = labelComponent(candDom.top2.key);
       domLine = `Beide Profile sind ${rL}-geprägt, die Sekundärausrichtung ist jedoch unklar: Rolle erwartet ${roleSecL}, Person zeigt eine Mischung. Mit Führung steuerbar.`;
-    } else if (sameDom) {
+    } else if (effectiveSameDom) {
       domLine = `Beide Profile sind ${rL}-geprägt und ${gapAdj(mainDiff)}. Arbeitsweise und Prioritäten stimmen in der Grundrichtung überein.`;
     } else {
       domLine = `Die Rolle braucht eine ${rL}-geprägte Arbeitsweise. ${candName} arbeitet ${cL}-geprägt. Entscheidungen und Prioritäten brauchen Führung.`;

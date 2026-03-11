@@ -410,6 +410,8 @@ export default function SollIstBericht() {
             const roleDomKey = roleDom.top1.key;
             const candDomKey = candDom.top1.key;
             const sameDom = roleDomKey === candDomKey;
+            const roleNearDual = roleDom.gap1 <= 5;
+            const effectiveSameDom = sameDom || (roleNearDual && candDomKey === roleDom.top2.key);
             const totalGap = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).reduce((sum, k) => sum + Math.abs(roleTriad[k] - candTriad[k]), 0);
 
             const roleSorted = [roleTriad.impulsiv, roleTriad.intuitiv, roleTriad.analytisch].sort((a, b) => b - a);
@@ -418,13 +420,13 @@ export default function SollIstBericht() {
             const secondaryFlip = sameDom && roleDom.top2.key !== candDom.top2.key;
             const candSecGap = candSorted[1] - candSorted[2];
 
-            const geignetLimit = sameDom ? 28 : 20;
+            const geignetLimit = effectiveSameDom ? 28 : 20;
             let fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
             if (secondaryFlip && candSecGap > 5) {
               fitLabel = "Nicht geeignet";
             } else if (secondaryFlip && fitLabel === "Geeignet") {
               fitLabel = "Bedingt geeignet";
-            } else if (fitLabel === "Geeignet" && sameDom && candSecGap <= 5 && candDom.gap1 <= 15) {
+            } else if (fitLabel === "Geeignet" && effectiveSameDom && candSecGap <= 5 && candDom.gap1 <= 15) {
               fitLabel = "Bedingt geeignet";
             }
             const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
@@ -433,21 +435,21 @@ export default function SollIstBericht() {
               ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärausrichtung passt nicht. Die Person bringt die falsche zweite Stärke klar ausgeprägt mit. Arbeitsstil und Prioritätensetzung weichen strukturell ab."
               : secondaryFlip && totalGap <= geignetLimit
               ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
-              : sameDom && candSecGap <= 5 && candDom.gap1 <= 15 && totalGap <= geignetLimit
+              : effectiveSameDom && candSecGap <= 5 && candDom.gap1 <= 15 && totalGap <= geignetLimit
               ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
-              : sameDom && totalGap <= geignetLimit
+              : effectiveSameDom && totalGap <= geignetLimit
               ? "Arbeitslogiken stimmen überein. Die natürliche Arbeitsweise der Person entspricht den Anforderungen der Rolle."
-              : sameDom
+              : effectiveSameDom
               ? "Die Grundausrichtung ist ähnlich, es bestehen jedoch spürbare Unterschiede in der Intensität. Mit gezielter Führung lässt sich die Zusammenarbeit stabil gestalten."
               : totalGap > 40
               ? "Die Arbeits- und Entscheidungslogiken von Rolle und Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch erhöhter Abstimmungs- und Steuerungsbedarf."
               : "Unterschiedliche Arbeitslogiken treffen aufeinander. Die Person arbeitet und entscheidet anders, als es die Rolle erfordert. Im Alltag entsteht dadurch erhöhter Abstimmungsbedarf.";
 
             let devScore: number;
-            if (sameDom && totalGap <= 20) devScore = 6;
-            else if (sameDom && totalGap <= 28) devScore = 5;
-            else if (totalGap <= 20 || (sameDom && totalGap <= 35)) devScore = 4;
-            else if (totalGap <= 35 || (sameDom && totalGap <= 45)) devScore = 3;
+            if (effectiveSameDom && totalGap <= 20) devScore = 6;
+            else if (effectiveSameDom && totalGap <= 28) devScore = 5;
+            else if (totalGap <= 20 || (effectiveSameDom && totalGap <= 35)) devScore = 4;
+            else if (totalGap <= 35 || (effectiveSameDom && totalGap <= 45)) devScore = 3;
             else if (totalGap <= 50) devScore = 2;
             else devScore = 1;
 
