@@ -454,8 +454,8 @@ export default function SollIstBericht() {
             };
 
             const devLabels: Record<number, string> = {
-              1: "Entwicklung kaum erreichbar",
-              2: "Entwicklung möglich mit Führung",
+              1: "Entwicklung unwahrscheinlich",
+              2: "Entwicklung mit Unterstützung möglich",
               3: "Entwicklung sehr wahrscheinlich",
             };
 
