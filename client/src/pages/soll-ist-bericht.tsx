@@ -422,28 +422,35 @@ export default function SollIstBericht() {
             const roleIsBalFull = roleDom.gap1 <= 5 && roleDom.gap2 <= 5;
             const effectiveSameDom = sameDom || roleIsBalFull;
             const geignetLimit = effectiveSameDom ? 28 : 20;
+            const maxGap = Math.max(...(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => Math.abs(roleTriad[k] - candTriad[k])));
+            const candDomGap = candDom.gap1;
+            const roleSecGap = roleDom.gap2;
+            const candSpread = candSorted[0] - candSorted[2];
             let fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
             if (!effectiveSameDom) fitLabel = "Nicht geeignet";
-            if (candIsBalFull && !roleIsBalFull) {
-              fitLabel = "Nicht geeignet";
-            } else if (candIsBalFull && roleIsBalFull && fitLabel === "Geeignet") {
-              fitLabel = "Bedingt geeignet";
-            }
-            if (secondaryFlip && candSecGap > 5) {
-              fitLabel = "Nicht geeignet";
-            } else if (secondaryFlip && fitLabel === "Geeignet") {
-              fitLabel = "Bedingt geeignet";
-            } else if (fitLabel === "Geeignet" && effectiveSameDom && candSecGap <= 5) {
-              fitLabel = "Bedingt geeignet";
-            }
+            if (candIsBalFull && !roleIsBalFull) fitLabel = "Nicht geeignet";
+            if (maxGap > 25) fitLabel = "Nicht geeignet";
+            if (secondaryFlip && candSecGap > 5 && roleSecGap > 5) fitLabel = "Nicht geeignet";
+            if (candIsBalFull && roleIsBalFull && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
+            if (secondaryFlip && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
+            if (fitLabel === "Geeignet" && effectiveSameDom && candSecGap <= 5) fitLabel = "Bedingt geeignet";
+            if (maxGap > 18 && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
+            if (candDomGap <= 5 && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
+            if (roleIsBalFull && candSpread > 20 && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
             const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
 
             const fazitText = candIsBalFull && !roleIsBalFull
               ? "Die Person zeigt kein klares Komponentenprofil – alle Anteile liegen nahe beieinander. Die Rolle erfordert jedoch eine klare Ausrichtung. Im Arbeitsalltag fehlt die natürliche Priorisierung, die die Rolle verlangt."
-              : secondaryFlip && candSecGap > 5
+              : maxGap > 25
+              ? "Eine einzelne Komponente weicht extrem vom Soll-Profil ab. Diese massive Fehlpassung kann durch die übrigen Stärken nicht kompensiert werden."
+              : roleIsBalFull && candSpread > 20
+              ? "Die Rolle erfordert eine ausgewogene Arbeitsweise. Die Person ist jedoch stark auf eine Komponente zugespitzt. Im Alltag fehlt die Flexibilität, die die Rolle verlangt."
+              : secondaryFlip && candSecGap > 5 && roleSecGap > 5
               ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärausrichtung passt nicht. Die Person bringt die falsche zweite Stärke klar ausgeprägt mit. Arbeitsstil und Prioritätensetzung weichen strukturell ab."
-              : secondaryFlip && totalGap <= geignetLimit
+              : secondaryFlip
               ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
+              : effectiveSameDom && candDomGap <= 5
+              ? "Die Grundrichtung stimmt, aber die Primärdominanz der Person ist unklar. Die stärkste und zweitstärkste Komponente liegen nah beieinander – unter Druck kann die Arbeitslogik kippen."
               : effectiveSameDom && candSecGap <= 5 && totalGap <= geignetLimit
               ? "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar."
               : effectiveSameDom && totalGap <= geignetLimit

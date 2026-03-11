@@ -957,6 +957,10 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   const candIsBalFull = candDom.gap1 <= 5 && candDom.gap2 <= 5;
   const roleIsBalFull = roleDom.gap1 <= 5 && roleDom.gap2 <= 5;
   const effectiveSameDom = sameDom || roleIsBalFull;
+  const rN = normalizeTriad(role.role_profile);
+  const cN = normalizeTriad(cand.candidate_profile);
+  const maxGapVal = Math.max(Math.abs(rN.impulsiv - cN.impulsiv), Math.abs(rN.intuitiv - cN.intuitiv), Math.abs(rN.analytisch - cN.analytisch));
+  const candSpread = candDom.top1.value - candDom.top3.value;
   if (!effectiveSameDom && !ko) {
     overallFit = "NOT_SUITABLE";
   }
@@ -965,9 +969,12 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   } else if (candIsBalFull && roleIsBalFull && overallFit === "SUITABLE" && !ko) {
     overallFit = "CONDITIONAL";
   }
+  if (maxGapVal > 25 && !ko) {
+    overallFit = "NOT_SUITABLE";
+  }
   const secondaryFlipped = effectiveSameDom && roleDom.top2.key !== candDom.top2.key;
   if (overallFit === "SUITABLE" && !ko) {
-    if (secondaryFlipped && candDom.gap2 > 5) {
+    if (secondaryFlipped && candDom.gap2 > 5 && roleDom.gap2 > 5) {
       overallFit = "NOT_SUITABLE";
     } else if (secondaryFlipped) {
       overallFit = "CONDITIONAL";
@@ -975,16 +982,19 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
       overallFit = "CONDITIONAL";
     }
   }
+  if (overallFit === "SUITABLE" && !ko) {
+    if (maxGapVal > 18) overallFit = "CONDITIONAL";
+    else if (candDom.gap1 <= 5) overallFit = "CONDITIONAL";
+    else if (roleIsBalFull && candSpread > 20) overallFit = "CONDITIONAL";
+  }
   const t = resolveRoleTerms(role);
   const ctrl = calcControlIntensity(role, cand);
   const matrix = buildMatrix(role, cand, t);
   const critical = criticalAreaFromMatrix(matrix);
 
-  const r = normalizeTriad(role.role_profile);
-  const c = normalizeTriad(cand.candidate_profile);
   const rL = labelComponent(roleDom.top1.key);
   const cL = labelComponent(candDom.top1.key);
-  const mainDiff = Math.abs(r[roleDom.top1.key] - c[roleDom.top1.key]);
+  const mainDiff = Math.abs(rN[roleDom.top1.key] - cN[roleDom.top1.key]);
 
   const candName = cand.candidate_name || "Person";
   const jobTitle = role.job_title || "diese Position";

@@ -828,21 +828,25 @@ export default function TeamReport() {
           const teamIsBalFull = teamDom.gap1 <= 5 && teamDom.gap2 <= 5;
           const effectiveSameDom = sameDom || teamIsBalFull;
           const geignetLimit = effectiveSameDom ? 28 : 20;
+          const maxGap = Math.max(...(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => Math.abs(teamProfileN[k] - istProfile[k])));
+          const candDomGap = candDom.gap1;
+          const teamSecGap = teamDom.gap2;
+          const candSpread = candSorted[0] - candSorted[2];
           let fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
           if (!effectiveSameDom) fitLabel = "Nicht geeignet";
-          if (candIsBalFull && !teamIsBalFull) {
-            fitLabel = "Nicht geeignet";
-          } else if (candIsBalFull && teamIsBalFull && fitLabel === "Geeignet") {
-            fitLabel = "Bedingt geeignet";
-          }
+          if (candIsBalFull && !teamIsBalFull) fitLabel = "Nicht geeignet";
+          if (maxGap > 25) fitLabel = "Nicht geeignet";
+          if (secondaryFlip && candSecGap > 5 && teamSecGap > 5) fitLabel = "Nicht geeignet";
+          if (candIsBalFull && teamIsBalFull && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
+          if (secondaryFlip && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
+          if (fitLabel === "Geeignet" && effectiveSameDom && candSecGap <= 5) fitLabel = "Bedingt geeignet";
+          if (maxGap > 18 && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
+          if (candDomGap <= 5 && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
+          if (teamIsBalFull && candSpread > 20 && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
           let classReason: ClassificationReason = "gap";
-          if (secondaryFlip && candSecGap > 5) {
-            fitLabel = "Nicht geeignet"; classReason = "secFlip_strong";
-          } else if (secondaryFlip && fitLabel === "Geeignet") {
-            fitLabel = "Bedingt geeignet"; classReason = "secFlip_weak";
-          } else if (fitLabel === "Geeignet" && effectiveSameDom && candSecGap <= 5) {
-            fitLabel = "Bedingt geeignet"; classReason = "unclearSec";
-          }
+          if (secondaryFlip && candSecGap > 5 && teamSecGap > 5) classReason = "secFlip_strong";
+          else if (secondaryFlip && fitLabel === "Bedingt geeignet") classReason = "secFlip_weak";
+          else if (candSecGap <= 5 && fitLabel !== "Nicht geeignet") classReason = "unclearSec";
 
           let devScore: number;
           if (effectiveSameDom && totalGap <= 20) devScore = 6;
