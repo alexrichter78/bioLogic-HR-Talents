@@ -540,6 +540,12 @@ export default function SollIstBericht() {
 
           return (
           <div style={{ maxWidth: 800, margin: "0 auto" }} data-testid="print-report-wrapper">
+            <div className="print-page-header" style={{ display: "none", position: "fixed", top: 0, left: 0, right: 0, padding: "8mm 10mm 6mm 20mm", borderBottom: "1px solid #e0e0e0", background: "#FFFFFF", zIndex: 9999 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: 9, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.1em", textTransform: "uppercase" }}>Soll-Ist-Vergleich · Rollenpassung</span>
+                <span style={{ fontSize: 9, fontWeight: 600, color: "#1D1D1F" }}>{result.roleName} · Passungsbericht</span>
+              </div>
+            </div>
             <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 16, padding: "48px 44px", boxShadow: "0 2px 12px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)", border: "none" }} data-testid="print-report-card">
 
               <div style={{ textAlign: "center", marginBottom: 40 }} data-testid="section-header">
@@ -929,6 +935,22 @@ export default function SollIstBericht() {
               border-radius: 0 !important;
               padding: 0 !important;
               margin-bottom: 24px !important;
+            }
+
+            .print-page-header {
+              display: block !important;
+              position: fixed !important;
+              top: 0 !important;
+              left: 0 !important;
+              right: 0 !important;
+              padding: 0 10mm 4mm 20mm !important;
+              border-bottom: 1px solid #e0e0e0 !important;
+              background: #FFFFFF !important;
+              z-index: 9999 !important;
+            }
+
+            [data-testid="print-report-card"] {
+              margin-top: 14mm !important;
             }
 
             [data-testid="print-report-wrapper"] {
