@@ -700,7 +700,7 @@ export default function SollIstBericht() {
 
               <div style={sep} data-testid="section-stress-behavior">
                 <SectionHead num={5} icon={Flame} title="Stressverhalten" iconColor="#FF3B30" />
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div className="print-single-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF950008", border: "1px solid #FF950018" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                       <AlertCircle style={{ width: 14, height: 14, color: "#FF9500" }} />
@@ -894,6 +894,7 @@ export default function SollIstBericht() {
             * {
               -webkit-print-color-adjust: exact !important;
               print-color-adjust: exact !important;
+              box-sizing: border-box !important;
             }
 
             @page {
@@ -901,15 +902,18 @@ export default function SollIstBericht() {
               margin: 10mm 10mm 10mm 20mm;
             }
 
-            html, body, div, main, section {
+            html, body {
               background: #FFFFFF !important;
-              background-color: #FFFFFF !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              width: 100% !important;
             }
 
             .min-h-screen {
               background: #FFFFFF !important;
               min-height: auto !important;
               padding: 0 !important;
+              margin: 0 !important;
             }
 
             .no-print,
@@ -920,7 +924,7 @@ export default function SollIstBericht() {
             }
 
             [data-testid="print-report-wrapper"] {
-              max-width: 100% !important;
+              max-width: none !important;
               width: 100% !important;
               margin: 0 !important;
               padding: 0 !important;
@@ -932,18 +936,41 @@ export default function SollIstBericht() {
               border: none !important;
               padding: 0 !important;
               background: #FFFFFF !important;
+              width: 100% !important;
+              max-width: none !important;
+              display: block !important;
+              overflow: visible !important;
             }
 
-            .grid-cols-2 {
-              grid-template-columns: 1fr !important;
+            [data-testid="print-report-card"] > div,
+            [data-testid="print-report-card"] > section {
+              display: block !important;
+              width: 100% !important;
+              float: none !important;
+              clear: both !important;
             }
 
-            [data-testid="section-stress-behavior"] > div:last-child {
-              grid-template-columns: 1fr !important;
+            .grid, [class*="grid-cols"] {
+              display: block !important;
+            }
+
+            .grid > *, [class*="grid-cols"] > * {
+              display: block !important;
+              width: 100% !important;
+              margin-bottom: 12px !important;
+            }
+
+            .print-single-col {
+              display: block !important;
+            }
+
+            .print-single-col > * {
+              display: block !important;
+              width: 100% !important;
+              margin-bottom: 10px !important;
             }
 
             [data-testid="section-dominance-shift"],
-            [data-testid="section-comparison-bars"],
             [data-testid="section-radar"],
             [data-testid="section-impact-matrix"],
             [data-testid="section-stress-behavior"],
@@ -957,20 +984,23 @@ export default function SollIstBericht() {
               page-break-inside: avoid !important;
             }
 
+            [data-testid="section-comparison-bars"] {
+              break-inside: auto !important;
+            }
+
+            [data-testid="section-comparison-bars"] .rounded-2xl {
+              break-inside: avoid !important;
+              page-break-inside: avoid !important;
+            }
+
             [data-testid^="impact-detail-"],
             [data-testid^="integration-phase-"] {
               break-inside: avoid !important;
               page-break-inside: avoid !important;
             }
 
-            [data-testid="section-comparison-bars"] {
-              break-inside: auto !important;
-              page-break-inside: auto !important;
-            }
-
-            [data-testid="section-comparison-bars"] .rounded-2xl {
-              break-inside: avoid !important;
-              page-break-inside: avoid !important;
+            [data-testid="section-final-assessment"] > div:nth-child(2) {
+              display: flex !important;
             }
           }
         `}</style>
