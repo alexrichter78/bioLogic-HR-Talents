@@ -602,6 +602,7 @@ export default function SollIstBericht() {
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{result.dominanceShiftText}</p>
               </div>
 
+              <div className="print-page-break" style={{ height: 0, overflow: "hidden" }} />
               <div style={sep} data-testid="section-comparison-bars">
                 <SectionHead num={2} icon={BarChart3} title="Dimensionsvergleich" iconColor="#5856D6" />
                 <div className="grid gap-6 grid-cols-2" style={{ marginBottom: 14 }}>
@@ -979,9 +980,13 @@ export default function SollIstBericht() {
               margin-bottom: 10px !important;
             }
 
-            [data-testid="section-comparison-bars"] {
-              break-before: page !important;
-              page-break-before: always !important;
+            .print-page-break {
+              break-after: page !important;
+              page-break-after: always !important;
+              height: 0 !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              border: none !important;
             }
 
             [data-testid="section-dominance-shift"],
@@ -996,10 +1001,6 @@ export default function SollIstBericht() {
             [data-testid="section-header"] {
               break-inside: avoid !important;
               page-break-inside: avoid !important;
-            }
-
-            [data-testid="section-comparison-bars"] {
-              break-inside: auto !important;
             }
 
             [data-testid="section-comparison-bars"] .rounded-2xl {
