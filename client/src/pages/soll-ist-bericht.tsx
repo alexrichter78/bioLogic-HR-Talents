@@ -461,42 +461,21 @@ export default function SollIstBericht() {
               ? "Die Anforderungen der Rolle und die natürliche Arbeitsweise der Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch ein erhöhter Abstimmungsbedarf."
               : "Die Person arbeitet und entscheidet anders, als es die Rolle verlangt. Im Arbeitsalltag entsteht dadurch zusätzlicher Abstimmungsbedarf.";
 
-            let devScore: number;
-            if (effectiveSameDom && totalGap <= 20) devScore = 6;
-            else if (effectiveSameDom && totalGap <= 28) devScore = 5;
-            else if (totalGap <= 20 || (effectiveSameDom && totalGap <= 35)) devScore = 4;
-            else if (totalGap <= 35 || (effectiveSameDom && totalGap <= 45)) devScore = 3;
-            else if (totalGap <= 50) devScore = 2;
-            else devScore = 1;
-
-            if (devScore === 6 && candSecGap <= 5) devScore = 5;
-            if (secondaryFlip) {
-              if (candSecGap > 5) devScore = Math.min(devScore, 2);
-              else devScore = Math.min(devScore, 4);
-            }
-            if (fitLabel === "Geeignet" && devScore < 5) devScore = 5;
-            else if (fitLabel === "Bedingt geeignet") devScore = Math.max(3, Math.min(4, devScore));
-            else if (fitLabel === "Nicht geeignet") devScore = Math.max(1, Math.min(2, devScore));
+            const devScore = fitLabel === "Geeignet" ? 3 : fitLabel === "Bedingt geeignet" ? 2 : 1;
 
             const devTexts: Record<number, string> = {
               1: "Die Anforderungen der Rolle liegen weit außerhalb der natürlichen Arbeitsweise der Person. Eine stabile Entwicklung ist deshalb kaum zu erwarten.",
               2: "Die Rolle verlangt eine deutlich andere Arbeitsweise als die Person von Natur aus mitbringt. Eine Entwicklung ist möglich, erfordert jedoch dauerhaft starke Führung und klare Struktur.",
-              3: "Die Person kann sich teilweise an die Anforderungen der Rolle anpassen. Eine stabile Umsetzung braucht jedoch Zeit, Erfahrung und klare Orientierung.",
-              4: "Die Person kann sich gut in die Anforderungen der Rolle einarbeiten. Mit klaren Erwartungen und regelmäßigem Feedback ist eine stabile Entwicklung gut erreichbar.",
-              5: "Die Arbeitsweise der Person passt bereits weitgehend zur Rolle. Die weitere Entwicklung in der Position wird voraussichtlich schnell und stabil verlaufen.",
-              6: "Die Arbeitsweise der Person passt sehr gut zur Rolle. Die Anforderungen können schnell übernommen und dauerhaft stabil umgesetzt werden.",
+              3: "Die Arbeitsweise der Person passt sehr gut zur Rolle. Die Anforderungen können schnell übernommen und dauerhaft stabil umgesetzt werden.",
             };
 
             const devLabels: Record<number, string> = {
-              1: "Entwicklung praktisch nicht erreichbar",
-              2: "Entwicklung sehr schwierig",
-              3: "Entwicklung möglich mit hohem Aufwand",
-              4: "Entwicklung gut möglich",
-              5: "Entwicklung sehr wahrscheinlich",
-              6: "Entwicklung sehr schnell erreichbar",
+              1: "Entwicklung kaum erreichbar",
+              2: "Entwicklung möglich mit Führung",
+              3: "Entwicklung sehr wahrscheinlich",
             };
 
-            const devGaugeColor = devScore >= 5 ? "#3A9A5C" : devScore >= 3 ? "#E5A832" : "#D64045";
+            const devGaugeColor = devScore === 3 ? "#3A9A5C" : devScore === 2 ? "#E5A832" : "#D64045";
 
             return (
               <div style={{ marginTop: 20 }} data-testid="section-summary-card">
@@ -540,10 +519,10 @@ export default function SollIstBericht() {
                           Entwicklungsprognose
                         </p>
                         <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }} data-testid="text-dev-prognose">
-                          {devScore} von 6 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>– {devLabels[devScore]}</span>
+                          {devScore} von 3 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>– {devLabels[devScore]}</span>
                         </p>
                         <div style={{ display: "flex", gap: 5, marginBottom: 18 }} data-testid="gauge-dev-prognose">
-                          {Array.from({ length: 6 }).map((_, i) => (
+                          {Array.from({ length: 3 }).map((_, i) => (
                             <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)" }} />
                           ))}
                         </div>

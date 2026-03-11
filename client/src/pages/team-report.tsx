@@ -538,19 +538,13 @@ const INDICATOR_TEXTS: Record<string, Record<string, Record<ClassificationReason
 
 const STEERING_DESCRIPTIONS: Record<string, Record<number, string>> = {
   teammitglied: {
-    6: "Die Integration wird voraussichtlich mit geringem Abstimmungs- und Steuerungsaufwand gelingen.",
-    5: "Die Einbindung ist gut realistisch und erfordert nur punktuelle Führung und Abstimmung.",
-    4: "Eine tragfähige Integration ist möglich, benötigt aber bewusste Führung und klare Abstimmung.",
-    3: "Damit die Zusammenarbeit tragfähig bleibt, ist ein erhöhter Steuerungs- und Klärungsaufwand sinnvoll.",
-    2: "Eine stabile Integration ist nur mit erhöhtem Führungs- und Steuerungsaufwand realistisch.",
+    3: "Die Integration wird voraussichtlich mit geringem Abstimmungs- und Steuerungsaufwand gelingen.",
+    2: "Eine tragfähige Integration ist möglich, benötigt aber bewusste Führung und klare Abstimmung.",
     1: "Eine tragfähige Integration erscheint nur unter massivem Steuerungsaufwand und klarer Gegensteuerung möglich.",
   },
   fuehrung: {
-    6: "Das Team kann voraussichtlich mit geringem Führungsaufwand wirksam gesteuert und stabilisiert werden.",
-    5: "Eine stabile Führungswirkung ist gut realistisch und erfordert nur punktuelle Nachsteuerung.",
-    4: "Eine wirksame Führung ist möglich, braucht jedoch bewusste Rahmung und klare Orientierung.",
-    3: "Damit das Team tragfähig geführt werden kann, ist ein erhöhter Steuerungs- und Klärungsaufwand sinnvoll.",
-    2: "Eine stabile Führung ist nur mit erhöhtem Steuerungs-, Präsenz- und Klärungsaufwand realistisch.",
+    3: "Das Team kann voraussichtlich mit geringem Führungsaufwand wirksam gesteuert und stabilisiert werden.",
+    2: "Eine wirksame Führung ist möglich, braucht jedoch bewusste Rahmung und klare Orientierung.",
     1: "Eine tragfähige Führungswirkung erscheint nur unter massivem Steuerungsaufwand und klarer Gegensteuerung möglich.",
   },
 };
@@ -848,22 +842,7 @@ export default function TeamReport() {
           else if (secondaryFlip && fitLabel === "Bedingt geeignet") classReason = "secFlip_weak";
           else if (candSecGap <= 5 && fitLabel !== "Nicht geeignet") classReason = "unclearSec";
 
-          let devScore: number;
-          if (effectiveSameDom && totalGap <= 20) devScore = 6;
-          else if (effectiveSameDom && totalGap <= 28) devScore = 5;
-          else if (totalGap <= 20 || (effectiveSameDom && totalGap <= 35)) devScore = 4;
-          else if (totalGap <= 35 || (effectiveSameDom && totalGap <= 45)) devScore = 3;
-          else if (totalGap <= 50) devScore = 2;
-          else devScore = 1;
-
-          if (devScore === 6 && candSecGap <= 5) devScore = 5;
-          if (secondaryFlip) {
-            if (candSecGap > 5) devScore = Math.min(devScore, 2);
-            else devScore = Math.min(devScore, 4);
-          }
-          if (fitLabel === "Geeignet" && devScore < 5) devScore = 5;
-          else if (fitLabel === "Bedingt geeignet") devScore = Math.max(3, Math.min(4, devScore));
-          else if (fitLabel === "Nicht geeignet") devScore = Math.max(1, Math.min(2, devScore));
+          const devScore = fitLabel === "Geeignet" ? 3 : fitLabel === "Bedingt geeignet" ? 2 : 1;
 
           const systemwirkungLabel = getSystemwirkung(teamProfileN, istProfile);
           const indicatorText = selectIndicatorText(roleTypeForCard, classReason, fitLabel, totalGap, systemwirkungLabel);
