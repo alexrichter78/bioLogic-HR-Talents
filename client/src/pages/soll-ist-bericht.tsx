@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
-import { AlertTriangle, Download, ChevronLeft, ChevronDown, SlidersHorizontal, Zap, Compass, BarChart3, Triangle, Shield, Flame, Clock, TrendingUp, CheckCircle2, FileText, Award, AlertCircle } from "lucide-react";
+import { AlertTriangle, Download, Loader2, ChevronLeft, ChevronDown, SlidersHorizontal, Zap, Compass, BarChart3, Triangle, Shield, Flame, Clock, TrendingUp, CheckCircle2, FileText, Award, AlertCircle } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { dominanceModeOf, labelComponent } from "@/lib/jobcheck-engine";
 import { computeSollIst, mapFuehrungsArt } from "@/lib/soll-ist-engine";
@@ -147,9 +147,61 @@ export default function SollIstBericht() {
   const [roleTriad, setRoleTriad] = useState<Triad | null>(null);
   const [hasRollenDna, setHasRollenDna] = useState(false);
   const [reportGenerated, setReportGenerated] = useState(false);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
+  const reportRef = useRef<HTMLDivElement>(null);
   const [profilvergleichOpen, setProfilvergleichOpen] = useState(true);
   const [systemwirkungOpen, setSystemwirkungOpen] = useState(true);
   const [fuehrungsArt, setFuehrungsArt] = useState<FuehrungsArt>("keine");
+
+  const exportPdf = useCallback(async () => {
+    if (!reportRef.current || isExportingPdf) return;
+    setIsExportingPdf(true);
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const { jsPDF } = await import("jspdf");
+
+      const el = reportRef.current;
+      const originalBg = el.style.background;
+      el.style.background = "#FFFFFF";
+
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: "#FFFFFF",
+        logging: false,
+        windowWidth: 1100,
+      });
+
+      el.style.background = originalBg;
+
+      const imgWidth = 210;
+      const pageHeight = 297;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      let heightLeft = imgHeight;
+      let position = 0;
+      const imgData = canvas.toDataURL("image/jpeg", 0.95);
+
+      pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position = -(imgHeight - heightLeft);
+        pdf.addPage();
+        pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      const safeName = roleName.replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_") || "Bericht";
+      pdf.save(`Soll_Ist_Bericht_${safeName}.pdf`);
+    } catch (err) {
+      console.error("PDF export failed:", err);
+    } finally {
+      setIsExportingPdf(false);
+    }
+  }, [isExportingPdf, roleName]);
 
   useEffect(() => {
     const raw = localStorage.getItem("rollenDnaState");
@@ -539,7 +591,7 @@ export default function SollIstBericht() {
           );
 
           return (
-          <div style={{ maxWidth: 800, margin: "0 auto" }} data-testid="print-report-wrapper">
+          <div ref={reportRef} style={{ maxWidth: 800, margin: "0 auto" }} data-testid="print-report-wrapper">
             <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 16, padding: "48px 44px", boxShadow: "0 2px 12px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)", border: "none" }} data-testid="print-report-card">
 
               <div style={{ textAlign: "center", marginBottom: 40 }} data-testid="section-header">
@@ -560,12 +612,12 @@ export default function SollIstBericht() {
                   ))}
                 </div>
                 <button
-                  onClick={() => window.print()}
-                  className="no-print"
-                  style={{ position: "absolute", right: 44, top: 48, display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,113,227,0.06)", fontSize: 13, fontWeight: 600, color: "#0071E3", cursor: "pointer" }}
+                  onClick={exportPdf}
+                  disabled={isExportingPdf}
+                  style={{ position: "absolute", right: 44, top: 48, display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,113,227,0.06)", fontSize: 13, fontWeight: 600, color: "#0071E3", cursor: isExportingPdf ? "wait" : "pointer", opacity: isExportingPdf ? 0.6 : 1 }}
                   data-testid="button-export-pdf"
                 >
-                  <Download style={{ width: 14, height: 14 }} />
+                  {isExportingPdf ? <Loader2 style={{ width: 14, height: 14, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 14, height: 14 }} />}
                   PDF
                 </button>
               </div>
@@ -603,14 +655,9 @@ export default function SollIstBericht() {
               </div>
 
               <div style={sep} data-testid="section-comparison-bars">
+                <SectionHead num={2} icon={BarChart3} title="Dimensionsvergleich" iconColor="#5856D6" />
                 <div className="grid gap-6 grid-cols-2" style={{ marginBottom: 14 }}>
-                  <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="comparison-soll-card">
-                    <div className="section-head" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: 8, background: "#5856D612", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <BarChart3 style={{ width: 15, height: 15, color: "#5856D6" }} />
-                      </div>
-                      <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>2. Dimensionsvergleich</span>
-                    </div>
+                  <div className="rounded-2xl border border-slate-200 bg-white p-6">
                     <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                       {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
@@ -895,129 +942,7 @@ export default function SollIstBericht() {
         })()}
 
         <style>{`
-          @media print {
-            * {
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-              box-sizing: border-box !important;
-            }
-
-            @page {
-              size: A4 portrait;
-              margin: 10mm 10mm 10mm 20mm;
-            }
-
-            html, body {
-              background: #FFFFFF !important;
-              margin: 0 !important;
-              padding: 0 !important;
-              width: 100% !important;
-            }
-
-            .min-h-screen {
-              background: #FFFFFF !important;
-              min-height: auto !important;
-              padding: 0 !important;
-              margin: 0 !important;
-            }
-
-            .no-print,
-            nav,
-            button,
-            [data-testid="section-summary-card"] {
-              display: none !important;
-            }
-
-            .print-hide-summary {
-              background: none !important;
-              border: none !important;
-              border-radius: 0 !important;
-              padding: 0 !important;
-              margin-bottom: 24px !important;
-            }
-
-
-            [data-testid="print-report-wrapper"] {
-              max-width: none !important;
-              width: 100% !important;
-              margin: 0 !important;
-              padding: 0 !important;
-            }
-
-            [data-testid="print-report-card"] {
-              border-radius: 0 !important;
-              box-shadow: none !important;
-              border: none !important;
-              padding: 0 !important;
-              background: #FFFFFF !important;
-              width: 100% !important;
-              max-width: none !important;
-              display: block !important;
-              overflow: visible !important;
-            }
-
-            [data-testid="print-report-card"] > div,
-            [data-testid="print-report-card"] > section {
-              display: block !important;
-              width: 100% !important;
-              float: none !important;
-              clear: both !important;
-            }
-
-            .grid, [class*="grid-cols"] {
-              display: block !important;
-            }
-
-            .grid > *, [class*="grid-cols"] > * {
-              display: block !important;
-              width: 100% !important;
-              margin-bottom: 12px !important;
-            }
-
-            .print-single-col {
-              display: block !important;
-            }
-
-            .print-single-col > * {
-              display: block !important;
-              width: 100% !important;
-              margin-bottom: 10px !important;
-            }
-
-            [data-testid="comparison-soll-card"] {
-              break-inside: avoid !important;
-              page-break-inside: avoid !important;
-            }
-
-            [data-testid="section-dominance-shift"],
-            [data-testid="section-radar"],
-            [data-testid="section-impact-matrix"],
-            [data-testid="section-stress-behavior"],
-            [data-testid="section-risk-timeline"],
-            [data-testid="section-development"],
-            [data-testid="section-actions"],
-            [data-testid="section-integrationsplan"],
-            [data-testid="section-final-assessment"],
-            [data-testid="section-header"] {
-              break-inside: avoid !important;
-              page-break-inside: avoid !important;
-            }
-
-            [data-testid="section-comparison-bars"] .rounded-2xl {
-              break-inside: avoid !important;
-              page-break-inside: avoid !important;
-            }
-
-            [data-testid^="impact-detail-"],
-            [data-testid^="integration-phase-"] {
-              break-inside: avoid !important;
-              page-break-inside: avoid !important;
-            }
-
-            [data-testid="section-final-assessment"] > div:nth-child(2) {
-              display: flex !important;
-            }
-          }
+          @keyframes spin { to { transform: rotate(360deg); } }
         `}</style>
       </div>
     </div>
