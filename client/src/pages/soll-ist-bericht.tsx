@@ -479,12 +479,12 @@ export default function SollIstBericht() {
             else if (fitLabel === "Nicht geeignet") devScore = Math.max(1, Math.min(2, devScore));
 
             const devTexts: Record<number, string> = {
-              1: "Die natürliche Arbeitsweise der Person unterscheidet sich stark von den Anforderungen der Rolle. Eine stabile Anpassung ist daher kaum zu erwarten.",
-              2: "Die Anforderungen der Rolle unterscheiden sich deutlich von der natürlichen Arbeitsweise der Person. Eine Entwicklung ist grundsätzlich möglich, erfordert jedoch intensive Führung und klare Rahmenbedingungen.",
-              3: "Die Person kann sich teilweise an die Anforderungen der Rolle anpassen. Eine stabile Umsetzung erfordert jedoch Zeit, Erfahrung und unterstützende Strukturen.",
-              4: "Die Person kann sich gut an die Anforderungen der Rolle entwickeln. Mit klaren Entscheidungswegen und regelmäßigem Feedback ist eine stabile Zusammenarbeit erreichbar.",
-              5: "Die Arbeitsweise der Person passt bereits weitgehend zu den Anforderungen der Rolle. Eine stabile und erfolgreiche Umsetzung ist sehr wahrscheinlich.",
-              6: "Die Person kann die Anforderungen der Rolle sehr schnell erfüllen. Arbeitsweise und Aufgaben der Rolle passen sehr gut zusammen.",
+              1: "Die Anforderungen der Rolle liegen weit außerhalb der natürlichen Arbeitsweise der Person. Eine stabile Entwicklung ist deshalb kaum zu erwarten.",
+              2: "Die Rolle verlangt eine deutlich andere Arbeitsweise als die Person von Natur aus mitbringt. Eine Entwicklung ist möglich, erfordert jedoch dauerhaft starke Führung und klare Struktur.",
+              3: "Die Person kann sich teilweise an die Anforderungen der Rolle anpassen. Eine stabile Umsetzung braucht jedoch Zeit, Erfahrung und klare Orientierung.",
+              4: "Die Person kann sich gut in die Anforderungen der Rolle einarbeiten. Mit klaren Erwartungen und regelmäßigem Feedback ist eine stabile Entwicklung gut erreichbar.",
+              5: "Die Arbeitsweise der Person passt bereits weitgehend zur Rolle. Die weitere Entwicklung in der Position wird voraussichtlich schnell und stabil verlaufen.",
+              6: "Die Arbeitsweise der Person passt sehr gut zur Rolle. Die Anforderungen können schnell übernommen und dauerhaft stabil umgesetzt werden.",
             };
 
             const devLabels: Record<number, string> = {
