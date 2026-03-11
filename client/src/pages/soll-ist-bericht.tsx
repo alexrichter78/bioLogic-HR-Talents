@@ -891,10 +891,31 @@ export default function SollIstBericht() {
 
         <style>{`
           @media print {
-            body { background: #FFFFFF !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .no-print { display: none !important; }
-            nav { display: none !important; }
-            @page { size: A4 portrait; margin: 14mm 16mm; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+            @page { size: A4 portrait; margin: 10mm 20mm 10mm 10mm; }
+
+            html, body, .min-h-screen, div[class*="bg-slate"] {
+              background: #FFFFFF !important;
+              background-color: #FFFFFF !important;
+              min-height: auto !important;
+            }
+
+            .no-print, nav, button[data-testid="button-export-pdf"],
+            button[data-testid="button-reconfigure"],
+            [data-testid="section-summary-card"] { display: none !important; }
+
+            div[style*="maxWidth: 800"] {
+              max-width: 100% !important;
+              margin: 0 !important;
+            }
+
+            div[style*="borderRadius: 16"] {
+              border-radius: 0 !important;
+              box-shadow: none !important;
+              border: none !important;
+              padding: 0 !important;
+            }
 
             [data-testid="section-dominance-shift"],
             [data-testid="section-comparison-bars"],
@@ -906,7 +927,6 @@ export default function SollIstBericht() {
             [data-testid="section-actions"],
             [data-testid="section-integrationsplan"],
             [data-testid="section-final-assessment"],
-            [data-testid="section-summary-card"],
             [data-testid="section-header"] {
               break-inside: avoid !important;
               page-break-inside: avoid !important;
@@ -918,19 +938,7 @@ export default function SollIstBericht() {
               page-break-inside: avoid !important;
             }
 
-            [data-testid="section-dominance-shift"],
-            [data-testid="section-comparison-bars"],
-            [data-testid="section-radar"],
-            [data-testid="section-impact-matrix"],
-            [data-testid="section-stress-behavior"],
-            [data-testid="section-risk-timeline"],
-            [data-testid="section-development"],
-            [data-testid="section-actions"],
-            [data-testid="section-integrationsplan"],
-            [data-testid="section-final-assessment"] {
-              break-before: auto;
-              page-break-before: auto;
-            }
+            svg { print-color-adjust: exact !important; }
           }
         `}</style>
       </div>
