@@ -934,6 +934,14 @@ export default function SollIstBericht() {
               background: #FFFFFF !important;
             }
 
+            .grid-cols-2 {
+              grid-template-columns: 1fr !important;
+            }
+
+            [data-testid="section-stress-behavior"] > div:last-child {
+              grid-template-columns: 1fr !important;
+            }
+
             [data-testid="section-dominance-shift"],
             [data-testid="section-comparison-bars"],
             [data-testid="section-radar"],
@@ -951,6 +959,16 @@ export default function SollIstBericht() {
 
             [data-testid^="impact-detail-"],
             [data-testid^="integration-phase-"] {
+              break-inside: avoid !important;
+              page-break-inside: avoid !important;
+            }
+
+            [data-testid="section-comparison-bars"] {
+              break-inside: auto !important;
+              page-break-inside: auto !important;
+            }
+
+            [data-testid="section-comparison-bars"] .rounded-2xl {
               break-inside: avoid !important;
               page-break-inside: avoid !important;
             }
