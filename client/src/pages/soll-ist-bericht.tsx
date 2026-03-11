@@ -567,11 +567,8 @@ export default function SollIstBericht() {
           const sameDom = result.roleDomKey === result.candDomKey;
           const sep = { borderBottom: "1px solid rgba(0,0,0,0.06)", paddingBottom: 32, marginBottom: 32 } as const;
 
-          const SectionHead = ({ num, icon: Icon, title, iconColor }: { num: number; icon: any; title: string; iconColor?: string }) => (
-            <div className="section-head" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
-              <div style={{ width: 28, height: 28, borderRadius: 8, background: iconColor ? `${iconColor}12` : "rgba(0,0,0,0.04)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <Icon style={{ width: 15, height: 15, color: iconColor || "#6E6E73" }} />
-              </div>
+          const SectionHead = ({ num, title }: { num: number; icon?: any; title: string; iconColor?: string }) => (
+            <div className="section-head" style={{ marginBottom: 18 }}>
               <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>{num}. {title}</span>
             </div>
           );
