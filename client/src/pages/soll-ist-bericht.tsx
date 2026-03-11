@@ -539,8 +539,8 @@ export default function SollIstBericht() {
           );
 
           return (
-          <div style={{ maxWidth: 800, margin: "0 auto" }}>
-            <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 16, padding: "48px 44px", boxShadow: "0 2px 12px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)", border: "none" }}>
+          <div style={{ maxWidth: 800, margin: "0 auto" }} data-testid="print-report-wrapper">
+            <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 16, padding: "48px 44px", boxShadow: "0 2px 12px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)", border: "none" }} data-testid="print-report-card">
 
               <div style={{ textAlign: "center", marginBottom: 40 }} data-testid="section-header">
                 <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 20, background: "rgba(0,0,0,0.03)", marginBottom: 16 }}>
@@ -891,30 +891,47 @@ export default function SollIstBericht() {
 
         <style>{`
           @media print {
-            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
 
-            @page { size: A4 portrait; margin: 10mm 20mm 10mm 10mm; }
+            @page {
+              size: A4 portrait;
+              margin: 10mm 10mm 10mm 20mm;
+            }
 
-            html, body, .min-h-screen, div[class*="bg-slate"] {
+            html, body, div, main, section {
               background: #FFFFFF !important;
               background-color: #FFFFFF !important;
+            }
+
+            .min-h-screen {
+              background: #FFFFFF !important;
               min-height: auto !important;
+              padding: 0 !important;
             }
 
-            .no-print, nav, button[data-testid="button-export-pdf"],
-            button[data-testid="button-reconfigure"],
-            [data-testid="section-summary-card"] { display: none !important; }
+            .no-print,
+            nav,
+            button,
+            [data-testid="section-summary-card"] {
+              display: none !important;
+            }
 
-            div[style*="maxWidth: 800"] {
+            [data-testid="print-report-wrapper"] {
               max-width: 100% !important;
+              width: 100% !important;
               margin: 0 !important;
+              padding: 0 !important;
             }
 
-            div[style*="borderRadius: 16"] {
+            [data-testid="print-report-card"] {
               border-radius: 0 !important;
               box-shadow: none !important;
               border: none !important;
               padding: 0 !important;
+              background: #FFFFFF !important;
             }
 
             [data-testid="section-dominance-shift"],
@@ -937,8 +954,6 @@ export default function SollIstBericht() {
               break-inside: avoid !important;
               page-break-inside: avoid !important;
             }
-
-            svg { print-color-adjust: exact !important; }
           }
         `}</style>
       </div>
