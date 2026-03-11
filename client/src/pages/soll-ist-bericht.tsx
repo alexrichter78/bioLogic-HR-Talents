@@ -699,23 +699,8 @@ export default function SollIstBericht() {
                 </p>
               </div>
 
-              <div style={sep} data-testid="section-radar">
-                <SectionHead num={3} icon={Triangle} title="Profilvergleich" iconColor="#FF9500" />
-                <div style={{ display: "flex", justifyContent: "center", gap: 20, marginBottom: 4 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                    <div style={{ width: 22, height: 3, borderRadius: 2, background: "#3b82f6" }} />
-                    <span style={{ fontSize: 12, fontWeight: 500, color: "#64748b" }}>Rolle</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                    <div style={{ width: 22, height: 3, borderRadius: 2, background: "#f59e0b" }} />
-                    <span style={{ fontSize: 12, fontWeight: 500, color: "#64748b" }}>Person</span>
-                  </div>
-                </div>
-                <TriangleChart role={result.roleTriad} candidate={result.candTriad} />
-              </div>
-
               <div style={sep} data-testid="section-impact-matrix">
-                <SectionHead num={4} icon={Shield} title="Strukturelle Wirkungsanalyse" iconColor="#34C759" />
+                <SectionHead num={3} icon={Shield} title="Strukturelle Wirkungsanalyse" iconColor="#34C759" />
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {result.impactAreas.map(area => {
                     const sevCol = area.severity === "critical" ? "#FF3B30" : area.severity === "warning" ? "#FF9500" : "#34C759";
@@ -737,7 +722,7 @@ export default function SollIstBericht() {
               </div>
 
               <div style={sep} data-testid="section-stress-behavior">
-                <SectionHead num={5} icon={Flame} title="Stressverhalten" iconColor="#FF3B30" />
+                <SectionHead num={4} icon={Flame} title="Stressverhalten" iconColor="#FF3B30" />
                 <div className="print-single-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF950008", border: "1px solid #FF950018" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
@@ -757,7 +742,7 @@ export default function SollIstBericht() {
               </div>
 
               <div style={sep} data-testid="section-risk-timeline">
-                <SectionHead num={6} icon={Clock} title="Risikoprognose" iconColor="#C41E3A" />
+                <SectionHead num={5} icon={Clock} title="Risikoprognose" iconColor="#C41E3A" />
                 <div style={{ position: "relative", paddingLeft: 28 }}>
                   <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
                   <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -823,7 +808,7 @@ export default function SollIstBericht() {
 
                 return (
                   <div style={sep} data-testid="section-development">
-                    <SectionHead num={7} icon={TrendingUp} title="Systemwirkung & Entwicklungsprognose" iconColor="#5856D6" />
+                    <SectionHead num={6} icon={TrendingUp} title="Systemwirkung & Entwicklungsprognose" iconColor="#5856D6" />
 
                     <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
                       <div style={{ width: 16, height: 16, borderRadius: 8, background: rFitColor, flexShrink: 0, boxShadow: `0 0 0 3px ${rFitColor}20` }} />
@@ -854,7 +839,7 @@ export default function SollIstBericht() {
               })()}
 
               <div style={sep} data-testid="section-actions">
-                <SectionHead num={8} icon={CheckCircle2} title="Handlungsempfehlung" iconColor="#34C759" />
+                <SectionHead num={7} icon={CheckCircle2} title="Handlungsempfehlung" iconColor="#34C759" />
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {result.actions.map((item, i) => (
                     <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 14px", borderRadius: 10, background: "rgba(52,199,89,0.04)", border: "1px solid rgba(52,199,89,0.1)" }}>
@@ -867,7 +852,7 @@ export default function SollIstBericht() {
 
               {result.integrationsplan && (
                 <div style={sep} data-testid="section-integrationsplan">
-                  <SectionHead num={9} icon={FileText} title="30-Tage-Integrationsplan" iconColor="#0071E3" />
+                  <SectionHead num={8} icon={FileText} title="30-Tage-Integrationsplan" iconColor="#0071E3" />
                   <div style={{ position: "relative", paddingLeft: 28 }}>
                     <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
                     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -898,7 +883,7 @@ export default function SollIstBericht() {
               )}
 
               <div data-testid="section-final-assessment" style={{ padding: "24px", borderRadius: 14, background: `${fitCol}06`, border: `1px solid ${fitCol}18` }}>
-                <SectionHead num={result.integrationsplan ? 10 : 9} icon={Award} title="Gesamtbewertung" iconColor={fitCol} />
+                <SectionHead num={result.integrationsplan ? 9 : 8} icon={Award} title="Gesamtbewertung" iconColor={fitCol} />
                 <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
                   <div style={{ flex: 1, padding: "10px 14px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
                     <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Grundpassung</p>
