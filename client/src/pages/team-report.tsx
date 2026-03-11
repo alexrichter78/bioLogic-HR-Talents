@@ -5,6 +5,7 @@ import GlobalNav from "@/components/global-nav";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeTeamReport } from "@/lib/team-report-engine";
 import { constellationLabel, detectConstellation } from "@/lib/soll-ist-engine";
+import { getSystemwirkung } from "@/lib/teamcheck-v2-engine";
 import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
 import type { TeamReportResult, SystemwirkungResult, GesamtpassungLevel, Severity } from "@/lib/team-report-engine";
 
@@ -741,12 +742,7 @@ export default function TeamReport() {
           const teamFitLabel = fitLabel === "Geeignet" ? "Stabil" : fitLabel === "Bedingt geeignet" ? "Steuerbar" : "Kritisch";
           const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
 
-          let systemwirkungLabel: string;
-          const teamWeakestKey = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).sort((a, b) => teamProfileN[a] - teamProfileN[b])[0];
-          if (totalGap <= 24 || (sameDom && totalGap <= 42)) systemwirkungLabel = "Verstärkung";
-          else if (!sameDom && candDomKeyFit === teamWeakestKey) systemwirkungLabel = "Ergänzung";
-          else if (totalGap >= 70) systemwirkungLabel = "Transformation";
-          else systemwirkungLabel = "Spannung";
+          const systemwirkungLabel = getSystemwirkung(teamProfileN, istProfile);
 
           const swColor = systemwirkungLabel === "Verstärkung" ? "#3A9A5C" : systemwirkungLabel === "Ergänzung" ? "#0071E3" : systemwirkungLabel === "Spannung" ? "#E5A832" : "#D64045";
           const swDescriptions: Record<string, string> = {

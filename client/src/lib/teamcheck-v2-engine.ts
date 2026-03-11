@@ -157,7 +157,7 @@ function getDistanceScore(teamProfile: Triad, personProfile: Triad): number {
   return Math.abs(d.impulsiv) + Math.abs(d.intuitiv) + Math.abs(d.analytisch);
 }
 
-function getSystemwirkung(teamProfile: Triad, personProfile: Triad): string {
+export function getSystemwirkung(teamProfile: Triad, personProfile: Triad): string {
   const teamPrimary = getPrimaryKey(teamProfile);
   const personPrimary = getPrimaryKey(personProfile);
   const distance = getDistanceScore(teamProfile, personProfile);
