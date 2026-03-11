@@ -570,14 +570,6 @@ export default function SollIstBericht() {
                 </button>
               </div>
 
-              <div style={{ marginBottom: 32, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.015)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                {result.summaryText.split("\n\n").map((para, i) => (
-                  <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i > 0 ? "12px 0 0" : "0", textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
-                    {para}
-                  </p>
-                ))}
-              </div>
-
               <div style={sep} data-testid="section-dominance-shift">
                 <SectionHead num={1} icon={Compass} title="Dominanz-Verschiebung" iconColor="#0071E3" />
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 14, padding: "16px 20px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
