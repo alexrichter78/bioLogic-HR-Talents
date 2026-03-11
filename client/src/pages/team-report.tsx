@@ -824,11 +824,12 @@ export default function TeamReport() {
           const secondaryFlip = sameDom && teamDom.top2.key !== candDom.top2.key;
           const candSecGap = candSorted[1] - candSorted[2];
 
-          const geignetLimit = sameDom ? 28 : 20;
-          let fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
-          if (!sameDom) fitLabel = "Nicht geeignet";
           const candIsBalFull = candDom.gap1 <= 5 && candDom.gap2 <= 5;
           const teamIsBalFull = teamDom.gap1 <= 5 && teamDom.gap2 <= 5;
+          const effectiveSameDom = sameDom || teamIsBalFull;
+          const geignetLimit = effectiveSameDom ? 28 : 20;
+          let fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
+          if (!effectiveSameDom) fitLabel = "Nicht geeignet";
           if (candIsBalFull && !teamIsBalFull) {
             fitLabel = "Nicht geeignet";
           } else if (candIsBalFull && teamIsBalFull && fitLabel === "Geeignet") {
@@ -839,15 +840,15 @@ export default function TeamReport() {
             fitLabel = "Nicht geeignet"; classReason = "secFlip_strong";
           } else if (secondaryFlip && fitLabel === "Geeignet") {
             fitLabel = "Bedingt geeignet"; classReason = "secFlip_weak";
-          } else if (fitLabel === "Geeignet" && sameDom && candSecGap <= 5) {
+          } else if (fitLabel === "Geeignet" && effectiveSameDom && candSecGap <= 5) {
             fitLabel = "Bedingt geeignet"; classReason = "unclearSec";
           }
 
           let devScore: number;
-          if (sameDom && totalGap <= 20) devScore = 6;
-          else if (sameDom && totalGap <= 28) devScore = 5;
-          else if (totalGap <= 20 || (sameDom && totalGap <= 35)) devScore = 4;
-          else if (totalGap <= 35 || (sameDom && totalGap <= 45)) devScore = 3;
+          if (effectiveSameDom && totalGap <= 20) devScore = 6;
+          else if (effectiveSameDom && totalGap <= 28) devScore = 5;
+          else if (totalGap <= 20 || (effectiveSameDom && totalGap <= 35)) devScore = 4;
+          else if (totalGap <= 35 || (effectiveSameDom && totalGap <= 45)) devScore = 3;
           else if (totalGap <= 50) devScore = 2;
           else devScore = 1;
 

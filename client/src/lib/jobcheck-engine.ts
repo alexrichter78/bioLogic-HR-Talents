@@ -954,23 +954,24 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
       overallFit = "NOT_SUITABLE";
     }
   }
-  if (!sameDom && !ko) {
-    overallFit = "NOT_SUITABLE";
-  }
   const candIsBalFull = candDom.gap1 <= 5 && candDom.gap2 <= 5;
   const roleIsBalFull = roleDom.gap1 <= 5 && roleDom.gap2 <= 5;
+  const effectiveSameDom = sameDom || roleIsBalFull;
+  if (!effectiveSameDom && !ko) {
+    overallFit = "NOT_SUITABLE";
+  }
   if (candIsBalFull && !roleIsBalFull && !ko) {
     overallFit = "NOT_SUITABLE";
   } else if (candIsBalFull && roleIsBalFull && overallFit === "SUITABLE" && !ko) {
     overallFit = "CONDITIONAL";
   }
-  const secondaryFlipped = sameDom && roleDom.top2.key !== candDom.top2.key;
+  const secondaryFlipped = effectiveSameDom && roleDom.top2.key !== candDom.top2.key;
   if (overallFit === "SUITABLE" && !ko) {
     if (secondaryFlipped && candDom.gap2 > 5) {
       overallFit = "NOT_SUITABLE";
     } else if (secondaryFlipped) {
       overallFit = "CONDITIONAL";
-    } else if (sameDom && candDom.gap2 <= 5) {
+    } else if (effectiveSameDom && candDom.gap2 <= 5) {
       overallFit = "CONDITIONAL";
     }
   }
