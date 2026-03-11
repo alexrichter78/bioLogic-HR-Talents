@@ -943,7 +943,7 @@ export default function SollIstBericht() {
               overflow: visible !important;
             }
 
-            [data-testid="print-report-card"] > div,
+            [data-testid="print-report-card"] > div:not(.print-hide-summary),
             [data-testid="print-report-card"] > section {
               display: block !important;
               width: 100% !important;
