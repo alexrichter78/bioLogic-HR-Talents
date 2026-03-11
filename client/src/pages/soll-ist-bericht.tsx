@@ -439,27 +439,11 @@ export default function SollIstBericht() {
             if (roleIsBalFull && candSpread > 20 && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
             const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
 
-            const fazitText = candIsBalFull && !roleIsBalFull
-              ? "Die Person zeigt keine klare Arbeitsausrichtung. Die Stärken liegen nah beieinander. Die Rolle verlangt jedoch eine klare Schwerpunktsetzung. Im Arbeitsalltag fehlt dadurch die natürliche Priorität für die Aufgaben."
-              : maxGap > 25
-              ? "Ein zentraler Teil der Arbeitsweise weicht stark von den Anforderungen der Rolle ab. Diese Abweichung ist so deutlich, dass sie durch andere Stärken kaum ausgeglichen werden kann."
-              : roleIsBalFull && candSpread > 20
-              ? "Die Rolle verlangt eine ausgewogene Arbeitsweise. Die Person arbeitet jedoch stark aus einer Richtung heraus. Dadurch fehlt im Alltag die Flexibilität, die die Aufgaben erfordern."
-              : secondaryFlip && candSecGap > 5 && roleSecGap > 5
-              ? "Die grundlegende Arbeitsweise passt zur Rolle. Die Person setzt jedoch andere Schwerpunkte im Arbeiten und Entscheiden. Dadurch unterscheiden sich Arbeitsstil und Prioritäten im Alltag deutlich."
-              : secondaryFlip
-              ? "Die grundlegende Arbeitsweise passt zur Rolle. In Drucksituationen kann sich das Verhalten in unterschiedliche Richtungen entwickeln. Mehrere Arbeitsweisen sind ähnlich stark ausgeprägt."
-              : effectiveSameDom && candDomGap <= 5
-              ? "Die Grundausrichtung passt zur Rolle. Die Person arbeitet jedoch aus zwei ähnlich starken Richtungen heraus. Unter Druck kann sich der Arbeitsstil dadurch verändern."
-              : effectiveSameDom && candSecGap <= 5 && totalGap <= geignetLimit
-              ? "Die Arbeitsweise passt grundsätzlich zur Rolle. Weitere Stärken liegen jedoch nah beieinander. Dadurch kann sich das Verhalten unter Druck unterschiedlich entwickeln."
-              : effectiveSameDom && totalGap <= geignetLimit
+            const fazitText = fitLabel === "Geeignet"
               ? "Die Arbeitsweise der Person passt gut zu den Anforderungen der Rolle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein."
-              : effectiveSameDom
+              : fitLabel === "Bedingt geeignet"
               ? "Die Grundausrichtung ist ähnlich. In einzelnen Punkten unterscheidet sich die Arbeitsweise jedoch. Mit klaren Erwartungen und guter Führung kann die Zusammenarbeit stabil funktionieren."
-              : totalGap > 40
-              ? "Die Anforderungen der Rolle und die natürliche Arbeitsweise der Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch ein erhöhter Abstimmungsbedarf."
-              : "Die Person arbeitet und entscheidet anders, als es die Rolle verlangt. Im Arbeitsalltag entsteht dadurch zusätzlicher Abstimmungsbedarf.";
+              : "Die Anforderungen der Rolle und die natürliche Arbeitsweise der Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch ein erhöhter Abstimmungsbedarf.";
 
             const devScore = fitLabel === "Geeignet" ? 3 : fitLabel === "Bedingt geeignet" ? 2 : 1;
 
