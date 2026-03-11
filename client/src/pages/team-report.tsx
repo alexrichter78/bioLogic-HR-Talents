@@ -385,41 +385,153 @@ function SliderGroup({
 
 type ClassificationReason = "gap" | "secFlip_strong" | "secFlip_weak" | "unclearSec";
 
-const INDICATOR_TEXTS: Record<string, Record<ClassificationReason, Record<string, string>>> = {
+const INDICATOR_TEXTS: Record<string, Record<string, Record<ClassificationReason, Record<string, string>>>> = {
   teammitglied: {
-    gap: {
-      geeignet: "Die Arbeits- und Entscheidungslogik der Person entspricht der dominierenden Teamstruktur weitgehend. Im Arbeitsalltag ist daher von einer schnellen Integration und einem stabilen Zusammenspiel auszugehen.",
-      bedingt_low: "Die Passung ist im Grundsatz vorhanden, bleibt aber nicht durchgehend stabil. Vor allem in Drucksituationen können Unterschiede in Tempo, Abstimmung und Priorisierung deutlicher sichtbar werden.",
-      bedingt_high: "Die Person kann in das Team eingebunden werden, wird die bestehende Struktur jedoch nicht automatisch stützen. Ohne klare Rahmung steigt die Wahrscheinlichkeit für Missverständnisse und Reibungsverluste.",
-      nicht_low: "Die Arbeits- und Entscheidungslogik der Person unterscheidet sich deutlich von der Teamstruktur. Im Arbeitsalltag entsteht dadurch erhöhter Abstimmungsbedarf und ein spürbares Risiko für Reibungen.",
-      nicht_high: "Die Arbeits- und Entscheidungslogiken von Person und Team unterscheiden sich grundlegend. Eine stabile Einbindung in die bestehende Teamstruktur ist daher nur sehr eingeschränkt vorstellbar.",
+    Verstärkung: {
+      gap: {
+        geeignet: "Die Arbeitslogik der Besetzung entspricht der Teamstruktur. Bestehende Stärken werden weiter ausgebaut. Im Arbeitsalltag ist von einer schnellen Integration und einem stabilen Zusammenspiel auszugehen.",
+        bedingt_low: "Die Grundlogik passt zur Teamstruktur, kleine Abweichungen bleiben steuerbar. Die Besetzung verstärkt das bestehende Muster, bringt aber in Drucksituationen leicht andere Akzente in Tempo und Priorisierung.",
+        bedingt_high: "Die Besetzung passt im Kern zur Teamlogik, die Verstärkung ist aber nicht durchgehend stabil. Ohne klare Rahmung können punktuelle Unterschiede in der Umsetzung sichtbar werden.",
+        nicht_low: "Die Besetzung weist trotz ähnlicher Grundlogik relevante Abweichungen auf. Die verstärkende Wirkung bleibt begrenzt und erfordert bewusste Steuerung.",
+        nicht_high: "Trotz struktureller Nähe unterscheiden sich Arbeitsweisen in wichtigen Bereichen. Die angestrebte Verstärkung kommt nicht ohne erheblichen Steuerungsaufwand zustande.",
+      },
+      secFlip_strong: {
+        default: "Die dominante Arbeitslogik stimmt überein und verstärkt die Teamstruktur. Die Sekundärausrichtung weicht jedoch deutlich ab. Arbeitsstil und Prioritätensetzung unterscheiden sich dadurch strukturell, obwohl die Grundrichtung passt.",
+      },
+      secFlip_weak: {
+        default: "Die dominante Arbeitslogik stimmt überein und stützt das Teammuster. Die Sekundärstruktur ist jedoch unklar — das macht das Verhalten in Drucksituationen weniger vorhersehbar.",
+      },
+      unclearSec: {
+        default: "Die dominante Arbeitslogik stimmt überein und wirkt verstärkend. Die zweite und dritte Komponente liegen nah beieinander — unter Druck kann das Verhalten schwerer einzuschätzen sein.",
+      },
     },
-    secFlip_strong: {
-      default: "Die dominante Arbeitslogik stimmt überein, aber die Sekundärausrichtung weicht deutlich ab. Die Person bringt die falsche zweite Stärke klar ausgeprägt mit. Arbeitsstil und Prioritätensetzung unterscheiden sich dadurch strukturell vom Team.",
+    Ergänzung: {
+      gap: {
+        geeignet: "Die Besetzung bringt eine Qualität ins Team, die bisher weniger stark ausgeprägt ist. Das Team wird breiter aufgestellt und gewinnt an Leistungsfähigkeit.",
+        bedingt_low: "Die Besetzung ergänzt das Team in einem bisher schwächeren Bereich. Die Passung ist im Grundsatz vorhanden, erfordert aber Klarheit in der gegenseitigen Erwartungshaltung.",
+        bedingt_high: "Die ergänzende Wirkung ist strukturell gegeben, die Unterschiede in der Arbeitslogik sind aber spürbar. Ohne bewusste Rahmung können Reibungsverluste entstehen.",
+        nicht_low: "Die Besetzung ergänzt das Team fachlich, die Arbeitslogik weicht jedoch deutlich ab. Die Ergänzung entfaltet ihre Wirkung nur mit aktiver Führung und klarer Abstimmung.",
+        nicht_high: "Die ergänzende Qualität ist vorhanden, aber die Arbeitslogik unterscheidet sich grundlegend vom Team. Der Integrationsaufwand ist erheblich.",
+      },
+      secFlip_strong: {
+        default: "Die Besetzung ergänzt das Team in einem wichtigen Bereich, bringt aber eine deutlich abweichende Sekundärausrichtung mit. Dadurch unterscheiden sich Arbeitsstil und Prioritäten strukturell vom Team.",
+      },
+      secFlip_weak: {
+        default: "Die Besetzung ergänzt das Team, aber die Sekundärstruktur ist unklar. In Drucksituationen kann das Verhalten schwerer einzuschätzen sein, was die Ergänzungswirkung abschwächt.",
+      },
+      unclearSec: {
+        default: "Die Besetzung ergänzt einen schwächeren Bereich im Team. Die Sekundärstruktur ist aber unklar — unter Druck kann das Verhalten weniger vorhersehbar sein.",
+      },
     },
-    secFlip_weak: {
-      default: "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar und erschwert die Integration ins Team.",
+    Spannung: {
+      gap: {
+        geeignet: "Die Arbeitslogik weicht in wichtigen Punkten vom Team ab, bleibt aber integrierbar. Ohne bewusste Steuerung können Arbeitsweisen gegeneinander statt miteinander wirken.",
+        bedingt_low: "Die Besetzung erzeugt Spannung im Teamsystem. Die Unterschiede sind spürbar, aber noch steuerbar — vor allem in Drucksituationen steigt der Abstimmungsbedarf deutlich.",
+        bedingt_high: "Die Spannung zwischen Besetzung und Team ist deutlich. Ohne klare Rahmung und aktive Führung steigt die Wahrscheinlichkeit für Missverständnisse und Reibungsverluste.",
+        nicht_low: "Die Besetzung weicht in der Arbeitslogik deutlich vom Team ab. Die Spannung ist im Alltag permanent spürbar und erfordert erhöhten Steuerungsaufwand.",
+        nicht_high: "Die Arbeitslogik der Besetzung steht der Teamstruktur in wichtigen Bereichen entgegen. Eine stabile Integration ist nur mit erheblichem Führungsaufwand vorstellbar.",
+      },
+      secFlip_strong: {
+        default: "Die dominante Arbeitslogik erzeugt Spannung zum Team. Die Sekundärausrichtung weicht zusätzlich ab — Arbeitsstil und Prioritätensetzung unterscheiden sich dadurch auf mehreren Ebenen.",
+      },
+      secFlip_weak: {
+        default: "Die Arbeitslogik erzeugt Spannung im Team. Zusätzlich ist die Sekundärstruktur unklar — in Drucksituationen kann das Verhalten der Besetzung schwer einzuschätzen sein.",
+      },
+      unclearSec: {
+        default: "Die Arbeitslogik erzeugt Spannung im Team. Die zweite und dritte Komponente liegen nah beieinander — unter Druck wird das Verhalten weniger vorhersehbar.",
+      },
     },
-    unclearSec: {
-      default: "Die dominante Arbeitslogik stimmt überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente der Person liegen nah beieinander – das macht das Verhalten in Drucksituationen weniger vorhersehbar.",
+    Transformation: {
+      gap: {
+        geeignet: "Die Besetzung verändert das Teamsystem strukturell. Das ist ein bewusster Eingriff, der aktive Führung und konsequente Steuerung erfordert.",
+        bedingt_low: "Die Besetzung setzt einen transformativen Impuls im Team. Die Veränderung ist steuerbar, verlangt aber klare Kommunikation und bewusste Führung in der Übergangsphase.",
+        bedingt_high: "Die Besetzung verändert die Teamlogik deutlich. Ohne konsequente Steuerungsarchitektur können bestehende Arbeitsweisen destabilisiert werden.",
+        nicht_low: "Die Besetzung greift tief in die bestehende Teamstruktur ein. Die transformative Wirkung erfordert aktive Führung, klare Erwartungssteuerung und eine tragfähige Integrationsarchitektur.",
+        nicht_high: "Die Besetzung verändert das Teamsystem grundlegend. Die bestehende Arbeitslogik wird in Frage gestellt. Ohne massive Führungsintervention ist eine stabile Integration nicht vorstellbar.",
+      },
+      secFlip_strong: {
+        default: "Die Besetzung transformiert das Teamsystem und bringt zusätzlich eine abweichende Sekundärausrichtung mit. Der strukturelle Eingriff wirkt auf mehreren Ebenen gleichzeitig.",
+      },
+      secFlip_weak: {
+        default: "Die Besetzung transformiert das Teamsystem. Die Sekundärstruktur ist zusätzlich unklar — das macht die Wirkung der Besetzung in Drucksituationen schwerer steuerbar.",
+      },
+      unclearSec: {
+        default: "Die Besetzung transformiert das Teamsystem. Die zweite und dritte Komponente liegen nah beieinander — unter Druck kann das Verhalten der Besetzung schwer einzuschätzen sein.",
+      },
     },
   },
   fuehrung: {
-    gap: {
-      geeignet: "Die Führungslogik der Person passt sehr gut zur bestehenden Teamstruktur. Dadurch ist zu erwarten, dass Entscheidungen, Orientierung und Zusammenarbeit schnell stabil geführt werden können.",
-      bedingt_low: "Die Führbarkeit des Teams ist grundsätzlich gegeben, bleibt aber nicht durchgehend stabil. Vor allem unter Druck können Unterschiede in Tempo, Richtung und Steuerungsanspruch deutlicher sichtbar werden.",
-      bedingt_high: "Die Person kann das Team führen, wird die bestehende Dynamik jedoch nicht automatisch stabilisieren. Ohne klare Führungslinien steigt die Wahrscheinlichkeit für Irritationen und Reibungsverluste.",
-      nicht_low: "Die Führungslogik der Person unterscheidet sich deutlich von der bestehenden Teamstruktur. Dadurch steigt das Risiko, dass Entscheidungen im Team nicht stabil verankert werden und zusätzliche Spannungen entstehen.",
-      nicht_high: "Die Führungs- und Teamlogik unterscheiden sich grundlegend. Eine stabile Führung des bestehenden Teams ist daher nur sehr eingeschränkt vorstellbar.",
+    Verstärkung: {
+      gap: {
+        geeignet: "Die Führungslogik passt sehr gut zur Teamstruktur und verstärkt das bestehende Muster. Entscheidungen, Orientierung und Zusammenarbeit können schnell stabil geführt werden.",
+        bedingt_low: "Die Führungslogik verstärkt das Teammuster im Grundsatz, bleibt aber unter Druck nicht durchgehend stabil. Punktuelle Unterschiede in Tempo und Steuerungsanspruch können sichtbar werden.",
+        bedingt_high: "Die Führungskraft verstärkt die bestehende Teamlogik, wird sie aber nicht automatisch stabilisieren. Ohne klare Führungslinien können punktuelle Irritationen entstehen.",
+        nicht_low: "Die Führungslogik zeigt trotz ähnlicher Grundrichtung relevante Abweichungen. Die verstärkende Wirkung bleibt begrenzt und erfordert bewusste Führungsrahmung.",
+        nicht_high: "Trotz struktureller Nähe in der Grundlogik weichen Führungs- und Teamlogik in wichtigen Bereichen ab. Eine stabile verstärkende Wirkung kommt nur mit erheblichem Steuerungsaufwand zustande.",
+      },
+      secFlip_strong: {
+        default: "Die dominante Führungslogik stimmt mit der Teamstruktur überein und verstärkt sie. Die Sekundärausrichtung weicht jedoch deutlich ab. Steuerungsstil und Prioritätensetzung unterscheiden sich dadurch strukturell.",
+      },
+      secFlip_weak: {
+        default: "Die dominante Führungslogik verstärkt die Teamstruktur. Die Sekundärstruktur ist jedoch unklar — das macht das Führungsverhalten in Drucksituationen weniger vorhersehbar.",
+      },
+      unclearSec: {
+        default: "Die dominante Führungslogik verstärkt die Teamstruktur. Die zweite und dritte Komponente liegen nah beieinander — unter Druck kann das Führungsverhalten schwerer einzuschätzen sein.",
+      },
     },
-    secFlip_strong: {
-      default: "Die dominante Führungslogik stimmt mit der Teamstruktur überein, aber die Sekundärausrichtung weicht deutlich ab. Die Führungskraft bringt die falsche zweite Stärke klar ausgeprägt mit. Steuerungsstil und Prioritätensetzung unterscheiden sich dadurch strukturell vom Team.",
+    Ergänzung: {
+      gap: {
+        geeignet: "Die Führungskraft ergänzt das Team in einem Bereich, der bisher weniger Gewicht hatte. Das Team gewinnt an Breite und Steuerungsfähigkeit.",
+        bedingt_low: "Die Führungskraft ergänzt das Team in einem wichtigen Bereich. Die Passung erfordert aber Klarheit in der gegenseitigen Erwartungshaltung und bewusste Führungsrahmung.",
+        bedingt_high: "Die ergänzende Führungswirkung ist strukturell gegeben, die Unterschiede in der Steuerungslogik aber spürbar. Ohne bewusste Führungslinien steigen Reibungsverluste.",
+        nicht_low: "Die Führungskraft ergänzt das Team, die Steuerungslogik weicht aber deutlich ab. Der Führungsnutzen entfaltet sich nur mit aktiver Rahmung und klarer Erwartungssteuerung.",
+        nicht_high: "Die ergänzende Qualität der Führungskraft ist vorhanden, die Steuerungslogik unterscheidet sich aber grundlegend. Der Integrationsaufwand auf Führungsebene ist erheblich.",
+      },
+      secFlip_strong: {
+        default: "Die Führungskraft ergänzt das Team in einem wichtigen Bereich, bringt aber eine abweichende Sekundärausrichtung mit. Steuerungsstil und Prioritäten unterscheiden sich dadurch strukturell.",
+      },
+      secFlip_weak: {
+        default: "Die Führungskraft ergänzt das Team, aber die Sekundärstruktur ist unklar. In Drucksituationen kann das Führungsverhalten schwerer einzuschätzen sein.",
+      },
+      unclearSec: {
+        default: "Die Führungskraft ergänzt einen schwächeren Bereich im Team. Die Sekundärstruktur ist aber unklar — unter Druck kann das Führungsverhalten weniger vorhersehbar sein.",
+      },
     },
-    secFlip_weak: {
-      default: "Die dominante Führungslogik stimmt mit der Teamstruktur überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente liegen nah beieinander – das macht das Führungsverhalten in Drucksituationen weniger vorhersehbar und erschwert die stabile Steuerung des Teams.",
+    Spannung: {
+      gap: {
+        geeignet: "Die Führungslogik weicht in wichtigen Punkten vom Team ab. Ohne bewusste Steuerung können Führungsimpulse und Teamerwartungen gegeneinander wirken.",
+        bedingt_low: "Die Führungskraft erzeugt Spannung im Teamsystem. Die Unterschiede sind steuerbar, aber unter Druck steigt der Klärungsbedarf zwischen Führungsanspruch und Teamerwartung.",
+        bedingt_high: "Die Spannung zwischen Führungslogik und Team ist deutlich. Ohne klare Führungsrahmung steigt die Wahrscheinlichkeit für Irritationen und Steuerungsverluste.",
+        nicht_low: "Die Führungslogik weicht deutlich vom Team ab. Die Spannung ist im Alltag permanent spürbar und erfordert erhöhten Steuerungsaufwand auf beiden Seiten.",
+        nicht_high: "Die Führungslogik steht der Teamstruktur in wichtigen Bereichen entgegen. Eine stabile Führung ist nur mit erheblichem Steuerungsaufwand vorstellbar.",
+      },
+      secFlip_strong: {
+        default: "Die Führungslogik erzeugt Spannung zum Team. Die Sekundärausrichtung weicht zusätzlich ab — Steuerungsstil und Prioritätensetzung unterscheiden sich auf mehreren Ebenen.",
+      },
+      secFlip_weak: {
+        default: "Die Führungslogik erzeugt Spannung im Team. Zusätzlich ist die Sekundärstruktur unklar — in Drucksituationen kann das Führungsverhalten schwer einzuschätzen sein.",
+      },
+      unclearSec: {
+        default: "Die Führungslogik erzeugt Spannung im Team. Die zweite und dritte Komponente liegen nah beieinander — unter Druck wird das Führungsverhalten weniger vorhersehbar.",
+      },
     },
-    unclearSec: {
-      default: "Die dominante Führungslogik stimmt mit der Teamstruktur überein, aber die Sekundärstruktur ist unklar. Die zweite und dritte Komponente liegen nah beieinander – das macht das Führungsverhalten in Drucksituationen weniger vorhersehbar.",
+    Transformation: {
+      gap: {
+        geeignet: "Die Führungskraft verändert das Teamsystem strukturell. Das ist ein bewusster Eingriff, der konsequente Steuerungsarchitektur und klare Kommunikation erfordert.",
+        bedingt_low: "Die Führungskraft setzt einen transformativen Impuls. Die Veränderung ist steuerbar, verlangt aber bewusste Führung und klare Erwartungssteuerung in der Übergangsphase.",
+        bedingt_high: "Die Führungskraft verändert die Teamlogik deutlich. Ohne konsequente Steuerungsarchitektur können bestehende Strukturen und Arbeitsweisen destabilisiert werden.",
+        nicht_low: "Die Führungskraft greift tief in die bestehende Teamstruktur ein. Die transformative Wirkung erfordert klare Steuerungsarchitektur und eine tragfähige Führungsrahmung.",
+        nicht_high: "Die Führungskraft verändert das Teamsystem grundlegend. Ohne massive Führungsintervention und konsequente Steuerung ist eine stabile Integration nicht vorstellbar.",
+      },
+      secFlip_strong: {
+        default: "Die Führungskraft transformiert das Teamsystem und bringt zusätzlich eine abweichende Sekundärausrichtung mit. Der strukturelle Eingriff wirkt auf Führungs- und Teamebene gleichzeitig.",
+      },
+      secFlip_weak: {
+        default: "Die Führungskraft transformiert das Teamsystem. Die Sekundärstruktur ist zusätzlich unklar — die Führungswirkung wird in Drucksituationen schwerer steuerbar.",
+      },
+      unclearSec: {
+        default: "Die Führungskraft transformiert das Teamsystem. Die zweite und dritte Komponente liegen nah beieinander — unter Druck kann das Führungsverhalten schwer einzuschätzen sein.",
+      },
     },
   },
 };
@@ -443,8 +555,9 @@ const STEERING_DESCRIPTIONS: Record<string, Record<number, string>> = {
   },
 };
 
-function selectIndicatorText(roleType: string, reason: ClassificationReason, fitLabel: string, totalGap: number): string {
-  const pool = INDICATOR_TEXTS[roleType]?.[reason] || INDICATOR_TEXTS.teammitglied[reason];
+function selectIndicatorText(roleType: string, reason: ClassificationReason, fitLabel: string, totalGap: number, swLabel: string): string {
+  const swPool = INDICATOR_TEXTS[roleType]?.[swLabel] || INDICATOR_TEXTS.teammitglied[swLabel] || INDICATOR_TEXTS.teammitglied["Spannung"];
+  const pool = swPool[reason] || swPool.gap;
   if (reason !== "gap") return pool.default;
   if (fitLabel === "Geeignet") return pool.geeignet;
   if (fitLabel === "Bedingt geeignet") return totalGap <= 35 ? pool.bedingt_low : pool.bedingt_high;
@@ -736,20 +849,19 @@ export default function TeamReport() {
             else devScore = Math.min(devScore, 4);
           }
 
-          const indicatorText = selectIndicatorText(roleTypeForCard, classReason, fitLabel, totalGap);
+          const systemwirkungLabel = getSystemwirkung(teamProfileN, istProfile);
+          const indicatorText = selectIndicatorText(roleTypeForCard, classReason, fitLabel, totalGap, systemwirkungLabel);
           const steeringDescription = STEERING_DESCRIPTIONS[roleTypeForCard]?.[devScore] || STEERING_DESCRIPTIONS.teammitglied[devScore] || "";
           const roleChipLabel = roleTypeForCard === "fuehrung" ? "Führungskraft" : "Teammitglied";
           const teamFitLabel = fitLabel === "Geeignet" ? "Stabil" : fitLabel === "Bedingt geeignet" ? "Steuerbar" : "Kritisch";
           const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
 
-          const systemwirkungLabel = getSystemwirkung(teamProfileN, istProfile);
-
           const swColor = systemwirkungLabel === "Verstärkung" ? "#3A9A5C" : systemwirkungLabel === "Ergänzung" ? "#0071E3" : systemwirkungLabel === "Spannung" ? "#E5A832" : "#D64045";
           const swDescriptions: Record<string, string> = {
-            "Verstärkung": "Die Besetzung passt zur Grundlogik des Teams und baut bestehende Stärken weiter aus. Das fördert Stabilität und schnelle Eingliederung.",
-            "Ergänzung": "Die Besetzung stärkt einen Bereich, der im Team bisher weniger Gewicht hat. Dadurch kann das Team breiter und leistungsfähiger aufgestellt werden.",
-            "Spannung": "Die Besetzung weicht in wichtigen Punkten vom Team ab. Ohne bewusste Steuerung können Arbeitsweisen gegeneinander statt miteinander wirken.",
-            "Transformation": "Die Besetzung verändert das Teamsystem deutlich. Das ist ein struktureller Eingriff, der aktive Führung und konsequente Steuerung erfordert.",
+            "Verstärkung": "Die Besetzung bringt eine Arbeitslogik mit, die zum Grundmuster des Teams passt. Bestehende Stärken werden weiter ausgebaut — das fördert Stabilität, Klarheit und eine schnellere Eingliederung.",
+            "Ergänzung": "Die Besetzung bringt eine Qualität ins Team, die bisher weniger stark ausgeprägt ist. Das Team kann breiter und leistungsfähiger werden — vorausgesetzt, Unterschiede werden transparent gemacht und gemeinsame Spielregeln verankert.",
+            "Spannung": "Die Besetzung weicht in wichtigen Punkten vom Team ab. Die Unterschiede können produktiv sein, wenn sie bewusst gesteuert werden. Ohne klare Rahmung besteht die Gefahr, dass Arbeitsweisen gegeneinander statt miteinander wirken.",
+            "Transformation": "Die Besetzung verändert das Teamsystem deutlich. Das ist kein moderater Impuls, sondern ein struktureller Eingriff, der aktive Führung, konsequente Kommunikation und eine klare Steuerungsarchitektur erfordert.",
           };
 
           return (
