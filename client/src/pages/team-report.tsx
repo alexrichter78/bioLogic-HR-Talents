@@ -740,9 +740,21 @@ export default function TeamReport() {
           const roleChipLabel = roleTypeForCard === "fuehrung" ? "Führungskraft" : "Teammitglied";
           const teamFitLabel = fitLabel === "Geeignet" ? "Stabil" : fitLabel === "Bedingt geeignet" ? "Steuerbar" : "Kritisch";
           const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
-          const steeringLabels: Record<number, string> = { 1: "sehr hoch", 2: "hoch", 3: "erhöht", 4: "moderat", 5: "niedrig", 6: "sehr niedrig" };
-          const computedSteeringLabel = steeringLabels[devScore] || "moderat";
-          const devGaugeColor = devScore >= 5 ? "#3A9A5C" : devScore >= 3 ? "#E5A832" : "#D64045";
+
+          let systemwirkungLabel: string;
+          const teamWeakestKey = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).sort((a, b) => teamProfileN[a] - teamProfileN[b])[0];
+          if (totalGap <= 24 || (sameDom && totalGap <= 42)) systemwirkungLabel = "Verstärkung";
+          else if (!sameDom && candDomKeyFit === teamWeakestKey) systemwirkungLabel = "Ergänzung";
+          else if (totalGap >= 70) systemwirkungLabel = "Transformation";
+          else systemwirkungLabel = "Spannung";
+
+          const swColor = systemwirkungLabel === "Verstärkung" ? "#3A9A5C" : systemwirkungLabel === "Ergänzung" ? "#0071E3" : systemwirkungLabel === "Spannung" ? "#E5A832" : "#D64045";
+          const swDescriptions: Record<string, string> = {
+            "Verstärkung": "Die Besetzung passt zur Grundlogik des Teams und baut bestehende Stärken weiter aus. Das fördert Stabilität und schnelle Eingliederung.",
+            "Ergänzung": "Die Besetzung stärkt einen Bereich, der im Team bisher weniger Gewicht hat. Dadurch kann das Team breiter und leistungsfähiger aufgestellt werden.",
+            "Spannung": "Die Besetzung weicht in wichtigen Punkten vom Team ab. Ohne bewusste Steuerung können Arbeitsweisen gegeneinander statt miteinander wirken.",
+            "Transformation": "Die Besetzung verändert das Teamsystem deutlich. Das ist ein struktureller Eingriff, der aktive Führung und konsequente Steuerung erfordert.",
+          };
 
           return (
             <div style={{ marginTop: 20 }} data-testid="section-matchcheck-team">
@@ -783,17 +795,15 @@ export default function TeamReport() {
 
                     <div style={{ borderLeft: "1px solid rgba(0,0,0,0.06)", paddingLeft: 24 }}>
                       <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 14px" }}>
-                        Steuerungsintensität
+                        Systemwirkung
                       </p>
-                      <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }} data-testid="text-steering-level">
-                        {devScore} von 6 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>– {computedSteeringLabel}</span>
-                      </p>
-                      <div style={{ display: "flex", gap: 5, marginBottom: 18 }} data-testid="bars-steering">
-                        {Array.from({ length: 6 }).map((_, i) => (
-                          <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)" }} />
-                        ))}
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                        <div style={{ width: 12, height: 12, borderRadius: 6, background: swColor, boxShadow: `0 0 0 3px ${swColor}20` }} />
+                        <p style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: 0 }} data-testid="text-systemwirkung-label">
+                          {systemwirkungLabel}
+                        </p>
                       </div>
-                      <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.75, margin: 0 }} data-testid="text-steering-description">{steeringDescription}</p>
+                      <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.75, margin: 0 }} data-testid="text-systemwirkung-description">{swDescriptions[systemwirkungLabel]}</p>
                     </div>
                   </div>
                 </div>
