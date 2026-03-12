@@ -532,7 +532,7 @@ export default function SollIstBericht() {
                           </span>
                         </div>
                         <div style={{ background: `${fitColor}08`, borderLeft: `3px solid ${fitColor}`, borderRadius: "0 8px 8px 0", padding: "12px 16px" }}>
-                          <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: 0 }} data-testid="text-summary-fazit">{fazitText}</p>
+                          <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }} data-testid="text-summary-fazit">{fazitText}</p>
                         </div>
                       </div>
 
@@ -548,7 +548,7 @@ export default function SollIstBericht() {
                             <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)" }} />
                           ))}
                         </div>
-                        <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.75, margin: 0 }} data-testid="text-dev-description">{devTexts[devScore]}</p>
+                        <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }} data-testid="text-dev-description">{devTexts[devScore]}</p>
                       </div>
                     </div>
                   </div>
@@ -707,7 +707,7 @@ export default function SollIstBericht() {
                           <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{area.label}</span>
                           <span style={{ fontSize: 10, fontWeight: 700, color: sevCol, textTransform: "uppercase", letterSpacing: "0.05em" }}>{severityLabel(area.severity)}</span>
                         </div>
-                        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#48484A", margin: 0 }}>
+                        <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0 }}>
                           {area.roleNeed} {area.candidatePattern} {area.risk}
                         </p>
                       </div>
@@ -724,14 +724,14 @@ export default function SollIstBericht() {
                       <AlertCircle style={{ width: 14, height: 14, color: "#FF9500" }} />
                       <p style={{ fontSize: 12, fontWeight: 700, color: "#FF9500", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>Kontrollierter Druck</p>
                     </div>
-                    <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: 0 }} lang="de">{result.stressBehavior.controlledPressure}</p>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }} lang="de">{result.stressBehavior.controlledPressure}</p>
                   </div>
                   <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF3B3008", border: "1px solid #FF3B3018" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                       <AlertTriangle style={{ width: 14, height: 14, color: "#FF3B30" }} />
                       <p style={{ fontSize: 12, fontWeight: 700, color: "#FF3B30", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>Unkontrollierter Stress</p>
                     </div>
-                    <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: 0 }} lang="de">{result.stressBehavior.uncontrolledStress}</p>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }} lang="de">{result.stressBehavior.uncontrolledStress}</p>
                   </div>
                 </div>
               </div>
@@ -748,7 +748,7 @@ export default function SollIstBericht() {
                           <div style={{ position: "absolute", left: -22, top: 14, width: 10, height: 10, borderRadius: 5, background: phaseCol, boxShadow: `0 0 0 3px ${phaseCol}20` }} />
                           <div style={{ padding: "12px 16px", borderRadius: 12, background: `${phaseCol}06`, border: `1px solid ${phaseCol}15` }}>
                             <p style={{ fontSize: 12, fontWeight: 700, color: phaseCol, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>{phase.label} <span style={{ fontWeight: 500, textTransform: "none", letterSpacing: "0" }}>{phase.period}</span></p>
-                            <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, margin: 0 }}>{phase.text}</p>
+                            <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }}>{phase.text}</p>
                           </div>
                         </div>
                       );
@@ -814,7 +814,7 @@ export default function SollIstBericht() {
                     </div>
 
                     <div style={{ background: `${rFitColor}08`, borderLeft: `3px solid ${rFitColor}`, borderRadius: "0 8px 8px 0", padding: "12px 16px", marginBottom: 22 }}>
-                      <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: 0 }}>{rFazit}</p>
+                      <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }}>{rFazit}</p>
                     </div>
 
                     <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 12px" }}>
@@ -840,7 +840,7 @@ export default function SollIstBericht() {
                   {result.actions.map((item, i) => (
                     <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 14px", borderRadius: 10, background: "rgba(52,199,89,0.04)", border: "1px solid rgba(52,199,89,0.1)" }}>
                       <CheckCircle2 style={{ width: 16, height: 16, color: "#34C759", flexShrink: 0, marginTop: 2 }} />
-                      <span style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7 }}>{item}</span>
+                      <span style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85 }}>{item}</span>
                     </div>
                   ))}
                 </div>
@@ -866,7 +866,7 @@ export default function SollIstBericht() {
                                 {phase.items.map((item, i) => (
                                   <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
                                     <div style={{ width: 5, height: 5, borderRadius: 3, background: phaseCol, flexShrink: 0, marginTop: 7 }} />
-                                    <span style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7 }}>{item}</span>
+                                    <span style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85 }}>{item}</span>
                                   </div>
                                 ))}
                               </div>
