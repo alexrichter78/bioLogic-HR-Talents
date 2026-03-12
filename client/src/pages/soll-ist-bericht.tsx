@@ -707,11 +707,9 @@ export default function SollIstBericht() {
                           <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{area.label}</span>
                           <span style={{ fontSize: 10, fontWeight: 700, color: sevCol, textTransform: "uppercase", letterSpacing: "0.05em" }}>{severityLabel(area.severity)}</span>
                         </div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 13, lineHeight: 1.7, color: "#48484A" }}>
-                          <div><span style={{ fontWeight: 700, color: "#1D1D1F" }}>Rolle braucht:</span> {area.roleNeed}</div>
-                          <div><span style={{ fontWeight: 700, color: "#1D1D1F" }}>Person bringt:</span> {area.candidatePattern}</div>
-                          <div><span style={{ fontWeight: 700, color: sevCol }}>Risiko:</span> {area.risk}</div>
-                        </div>
+                        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#48484A", margin: 0 }}>
+                          {area.roleNeed} {area.candidatePattern} {area.risk}
+                        </p>
                       </div>
                     );
                   })}
