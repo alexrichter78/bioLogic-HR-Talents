@@ -566,28 +566,32 @@ export default function SollIstBericht() {
           const rc = BAR_HEX[result.roleDomKey];
           const cc = BAR_HEX[result.candDomKey];
           const sameDom = result.roleDomKey === result.candDomKey;
-          const sep = { borderBottom: "1px solid rgba(0,0,0,0.06)", paddingBottom: 32, marginBottom: 32 } as const;
+          const sep = { borderBottom: "1px solid rgba(0,0,0,0.05)", paddingBottom: 36, marginBottom: 36 } as const;
 
           const SectionHead = ({ num, title }: { num: number; icon?: any; title: string; iconColor?: string }) => (
-            <div className="section-head" style={{ marginBottom: 18 }}>
-              <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>{num}. {title}</span>
+            <div className="section-head" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+              <div style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(0,0,0,0.04)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <span style={{ fontSize: 13, fontWeight: 800, color: "#8E8E93" }}>{num}</span>
+              </div>
+              <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>{title}</span>
             </div>
           );
 
           return (
           <div ref={reportRef} style={{ maxWidth: 800, margin: "0 auto" }} data-testid="print-report-wrapper">
-            <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 16, padding: "48px 44px", boxShadow: "0 2px 12px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)", border: "none" }} data-testid="print-report-card">
+            <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 16, padding: "48px 44px", boxShadow: "0 2px 16px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04)", border: "none", overflow: "hidden" }} data-testid="print-report-card">
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg, ${fitCol}, ${fitCol}80)` }} />
 
-              <div style={{ marginBottom: 40 }} data-testid="section-header">
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
-                  <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 20, background: "rgba(0,0,0,0.03)" }}>
-                    <FileText style={{ width: 13, height: 13, color: "#8E8E93" }} />
-                    <span style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.14em", textTransform: "uppercase" }}>Passungsbericht</span>
+              <div style={{ marginBottom: 44 }} data-testid="section-header">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 22 }}>
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "5px 14px", borderRadius: 20, background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.04)" }}>
+                    <FileText style={{ width: 12, height: 12, color: "#A0A0A5" }} />
+                    <span style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", letterSpacing: "0.16em", textTransform: "uppercase" }}>Passungsbericht</span>
                   </div>
                   <button
                     onClick={exportPdf}
                     disabled={isExportingPdf}
-                    style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,113,227,0.06)", fontSize: 13, fontWeight: 600, color: "#0071E3", cursor: isExportingPdf ? "wait" : "pointer", opacity: isExportingPdf ? 0.6 : 1 }}
+                    style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 16px", borderRadius: 10, border: "1px solid rgba(0,113,227,0.15)", background: "rgba(0,113,227,0.05)", fontSize: 13, fontWeight: 600, color: "#0071E3", cursor: isExportingPdf ? "wait" : "pointer", opacity: isExportingPdf ? 0.6 : 1, transition: "all 0.15s ease" }}
                     data-testid="button-export-pdf"
                   >
                     {isExportingPdf ? <Loader2 style={{ width: 14, height: 14, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 14, height: 14 }} />}
@@ -631,30 +635,42 @@ export default function SollIstBericht() {
                 })()}
               </div>
 
-              <div className="print-hide-summary" style={{ marginBottom: 32, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.015)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                {result.summaryText.split("\n\n").map((para, i) => (
-                  <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i > 0 ? "12px 0 0" : "0", textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
-                    {para}
-                  </p>
-                ))}
-                {result.executiveBullets.length > 0 && (
-                  <div style={{ marginTop: 16, padding: "14px 20px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                    <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>Warum dieses Ergebnis</p>
-                    <ul style={{ margin: 0, paddingLeft: 18, listStyleType: "disc" }}>
-                      {result.executiveBullets.map((b, i) => (
-                        <li key={i} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, marginBottom: i < result.executiveBullets.length - 1 ? 4 : 0 }}>{b}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {result.constellationRisks.length > 0 && (
-                  <div style={{ marginTop: 16, padding: "14px 20px", borderRadius: 10, background: "rgba(212,58,69,0.04)", border: "1px solid rgba(212,58,69,0.12)" }}>
-                    <p style={{ fontSize: 11, fontWeight: 700, color: "#D43A45", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>Typische Risiken dieser Konstellation</p>
-                    <ul style={{ margin: 0, paddingLeft: 18, listStyleType: "disc" }}>
-                      {result.constellationRisks.map((r, i) => (
-                        <li key={i} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, marginBottom: i < result.constellationRisks.length - 1 ? 4 : 0 }}>{r}</li>
-                      ))}
-                    </ul>
+              <div className="print-hide-summary" style={{ marginBottom: 36 }}>
+                <div style={{ padding: "22px 26px", borderRadius: 14, background: "rgba(0,0,0,0.015)", border: "1px solid rgba(0,0,0,0.04)" }}>
+                  {result.summaryText.split("\n\n").map((para, i) => (
+                    <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i > 0 ? "12px 0 0" : "0", textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
+                      {para}
+                    </p>
+                  ))}
+                </div>
+                {(result.executiveBullets.length > 0 || result.constellationRisks.length > 0) && (
+                  <div style={{ display: "grid", gridTemplateColumns: result.executiveBullets.length > 0 && result.constellationRisks.length > 0 ? "1fr 1fr" : "1fr", gap: 12, marginTop: 12 }}>
+                    {result.executiveBullets.length > 0 && (
+                      <div style={{ padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.018)", border: "1px solid rgba(0,0,0,0.04)" }}>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 10px" }}>Warum dieses Ergebnis</p>
+                        <ul style={{ margin: 0, paddingLeft: 16, listStyleType: "none" }}>
+                          {result.executiveBullets.map((b, i) => (
+                            <li key={i} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, marginBottom: i < result.executiveBullets.length - 1 ? 6 : 0, paddingLeft: 12, position: "relative" }}>
+                              <span style={{ position: "absolute", left: 0, top: 9, width: 5, height: 5, borderRadius: 3, background: fitCol }} />
+                              {b}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {result.constellationRisks.length > 0 && (
+                      <div style={{ padding: "16px 20px", borderRadius: 12, background: "rgba(212,58,69,0.03)", border: "1px solid rgba(212,58,69,0.10)" }}>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: "#D43A45", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 10px" }}>Risiken dieser Konstellation</p>
+                        <ul style={{ margin: 0, paddingLeft: 16, listStyleType: "none" }}>
+                          {result.constellationRisks.map((r, i) => (
+                            <li key={i} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, marginBottom: i < result.constellationRisks.length - 1 ? 6 : 0, paddingLeft: 12, position: "relative" }}>
+                              <span style={{ position: "absolute", left: 0, top: 9, width: 5, height: 5, borderRadius: 3, background: "#D43A45" }} />
+                              {r}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -975,24 +991,27 @@ export default function SollIstBericht() {
                 </div>
               )}
 
-              <div data-testid="section-final-assessment" style={{ padding: "24px", borderRadius: 14, background: `${fitCol}06`, border: `1px solid ${fitCol}18` }}>
+              <div data-testid="section-final-assessment" style={{ padding: "28px", borderRadius: 14, background: `${fitCol}05`, border: `1px solid ${fitCol}12` }}>
                 <SectionHead num={result.integrationsplan ? 8 : 7} icon={Award} title="Gesamtbewertung" iconColor={fitCol} />
-                <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
-                  <div style={{ flex: 1, padding: "10px 14px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Grundpassung</p>
-                    <p style={{ fontSize: 15, fontWeight: 700, color: fitCol, margin: 0 }}>{result.fitLabel}</p>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
+                  <div style={{ padding: "14px 18px", borderRadius: 12, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(0,0,0,0.05)", textAlign: "center" }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 8px" }}>Grundpassung</p>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                      <div style={{ width: 10, height: 10, borderRadius: 5, background: fitCol, boxShadow: `0 0 0 3px ${fitCol}20` }} />
+                      <span style={{ fontSize: 16, fontWeight: 700, color: fitCol }}>{result.fitLabel}</span>
+                    </div>
                   </div>
                   {(() => {
                     const cLevel = result.controlIntensity === "hoch" ? 3 : result.controlIntensity === "mittel" ? 2 : 1;
                     const cCol = cLevel === 3 ? "#D64045" : cLevel === 2 ? "#E5A832" : "#3A9A5C";
                     const cLabel = result.controlIntensity === "hoch" ? "Hoher Steuerungsbedarf" : result.controlIntensity === "mittel" ? "Mittlerer Steuerungsbedarf" : "Geringer Steuerungsbedarf";
                     return (
-                      <div style={{ flex: 1, padding: "10px 14px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Steuerungsbedarf</p>
-                        <p style={{ fontSize: 14, fontWeight: 700, color: cCol, margin: "0 0 8px" }}>{cLevel} von 3 <span style={{ fontWeight: 400, fontSize: 12, color: "#48484A" }}>– {cLabel}</span></p>
-                        <div style={{ display: "flex", gap: 4, maxWidth: 120, margin: "0 auto" }}>
+                      <div style={{ padding: "14px 18px", borderRadius: 12, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(0,0,0,0.05)", textAlign: "center" }}>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 8px" }}>Steuerungsbedarf</p>
+                        <p style={{ fontSize: 15, fontWeight: 700, color: cCol, margin: "0 0 10px" }}>{cLabel}</p>
+                        <div style={{ display: "flex", gap: 4, maxWidth: 100, margin: "0 auto" }}>
                           {Array.from({ length: 3 }).map((_, i) => (
-                            <div key={i} style={{ flex: 1, height: 8, borderRadius: 3, background: i < cLevel ? cCol : "rgba(0,0,0,0.08)" }} />
+                            <div key={i} style={{ flex: 1, height: 6, borderRadius: 3, background: i < cLevel ? cCol : "rgba(0,0,0,0.06)" }} />
                           ))}
                         </div>
                       </div>
@@ -1000,6 +1019,18 @@ export default function SollIstBericht() {
                   })()}
                 </div>
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de" data-testid="text-final-rating-text">{result.finalText}</p>
+              </div>
+
+              <div style={{ marginTop: 48, paddingTop: 24, borderTop: "1px solid rgba(0,0,0,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div style={{ width: 20, height: 20, borderRadius: 6, background: "linear-gradient(135deg, #0071E3, #5856D6)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <span style={{ fontSize: 10, fontWeight: 800, color: "#FFF" }}>b</span>
+                  </div>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#B0B0B5", letterSpacing: "0.02em" }}>bioLogic Passungsanalyse</span>
+                </div>
+                <span style={{ fontSize: 11, color: "#B0B0B5" }}>
+                  {new Date().toLocaleDateString("de-CH", { day: "2-digit", month: "long", year: "numeric" })}
+                </span>
               </div>
 
             </div>
