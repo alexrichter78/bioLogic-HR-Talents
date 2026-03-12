@@ -1,0 +1,218 @@
+Ich habe deinen Bericht Satz für Satz analysiert. Insgesamt ist er schon sehr verständlich geschrieben, aber es gibt einige typische Muster, die den Text unnötig schwer machen.
+
+Die wichtigsten Punkte:
+
+zu viele Nebensätze
+
+zu viele ähnliche Formulierungen
+
+passive Sprache
+
+„kann / können / könnte“ zu häufig
+
+einige Sätze sind zu lang
+
+Wenn du das optimierst, wird der Bericht deutlich klarer, kürzer und stärker.
+
+Ich zeige dir konkrete Beispiele aus deinem Bericht.
+
+1. Zu lange Sätze
+
+Beispiel Seite 1:
+
+Die Person und die Rolle Vertriebsleiter für Technische Geräte funktionieren grundlegend unterschiedlich. Die Rolle verlangt in erster Linie Planung, Sorgfalt und Ordnung, braucht aber gleichzeitig die Fähigkeit, Entscheidungen rechtzeitig umzusetzen. Die Person setzt auf Tempo und direkte Umsetzung, kann aber gleichzeitig Menschen einbinden und situative Zusammenarbeit leisten. 
+
+73b56f1f-59b0-4576-ba22-ff014a7…
+
+Der Satz ist verständlich, aber zu verschachtelt.
+
+Besser:
+
+Optimiert
+
+Rolle und Person arbeiten nach unterschiedlichen Prinzipien.
+Die Rolle verlangt Planung, Struktur und sorgfältige Prüfung.
+Die Person arbeitet stärker über Tempo und direkte Umsetzung.
+Entscheidungen werden schneller getroffen und situativ abgestimmt.
+
+Warum besser?
+
+kürzere Sätze
+
+klarere Struktur
+
+leichter lesbar
+
+2. „kann / können“ zu häufig
+
+Viele Sätze wirken dadurch unsicher.
+
+Beispiel:
+
+Wichtige Prüfschritte können übersprungen werden. Gerade bei komplexeren Aufgaben steigt das Risiko für Fehler oder Nacharbeit. 
+
+73b56f1f-59b0-4576-ba22-ff014a7…
+
+Besser:
+
+Prüfschritte werden eher verkürzt oder übersprungen.
+Bei komplexen Aufgaben steigt dadurch das Risiko für Fehler oder Nacharbeit.
+
+Das wirkt klarer und entschlossener.
+
+3. Passiv statt aktiv
+
+Beispiel:
+
+Nachvollziehbarkeit sinkt. Fehler und Abweichungen werden später sichtbar. 
+
+73b56f1f-59b0-4576-ba22-ff014a7…
+
+Besser:
+
+Entscheidungen werden seltener dokumentiert.
+Dadurch werden Fehler und Abweichungen oft erst später sichtbar.
+
+Aktive Sprache ist für Entscheider leichter zu verstehen.
+
+4. Wiederholungen im Text
+
+In mehreren Abschnitten steht sinngemäß immer wieder:
+
+Person arbeitet schneller
+
+Rolle braucht Struktur
+
+Beispiel Arbeitssteuerung:
+
+Die Person arbeitet stärker tempoorientiert und reagiert situationsbezogen. Formale Planung und Dokumentation haben geringere Priorität. 
+
+73b56f1f-59b0-4576-ba22-ff014a7…
+
+Das wurde zuvor schon erklärt.
+
+Besser:
+
+Die Person arbeitet situativ und tempoorientiert.
+Strukturierte Planung und Dokumentation haben geringere Priorität.
+
+Kürzer ist hier stärker.
+
+5. Ein typischer Stilbruch
+
+In deinem Bericht steht einmal:
+
+Die Führungskraft kann die Arbeit von der Person schwerer überprüfen. 
+
+73b56f1f-59b0-4576-ba22-ff014a7…
+
+Das klingt sprachlich etwas holprig.
+
+Besser:
+
+Die Führungskraft kann Entscheidungen und Arbeitswege schwerer überprüfen.
+
+Oder:
+
+Entscheidungen und Arbeitswege sind für die Führungskraft schwerer nachvollziehbar.
+
+Das klingt professioneller.
+
+6. Gute Stelle im Bericht
+
+Diese Passage ist bereits sehr gut:
+
+Kurzfristig entsteht mehr Tempo. Stabilität in Abläufen kann verloren gehen. Wenn Entscheidungen schneller fallen als sie strukturell abgesichert werden. 
+
+73b56f1f-59b0-4576-ba22-ff014a7…
+
+Das ist:
+
+klar
+
+verständlich
+
+praxisnah
+
+Solche kurzen Sätze funktionieren hervorragend.
+
+7. Ein Satz der missverständlich sein kann
+
+Im Stressbereich:
+
+Kommunikation tritt stärker in den Vordergrund. Es wird mehr moderiert, erklärt und abgestimmt. 
+
+73b56f1f-59b0-4576-ba22-ff014a7…
+
+Das klingt neutral, erklärt aber nicht wirklich was das Problem ist.
+
+Besser:
+
+Entscheidungen werden stärker abgestimmt und erklärt.
+Der Fokus verschiebt sich von sachlicher Prüfung zu zwischenmenschlicher Absicherung.
+
+Dann versteht der Leser sofort den Unterschied.
+
+8. Sehr guter Satz im Fazit
+
+Dieser Satz ist stark:
+
+Eine stabile Besetzung wäre nur mit hohem Steuerungsaufwand möglich. 
+
+73b56f1f-59b0-4576-ba22-ff014a7…
+
+Das ist exakt die Sprache, die Geschäftsführer mögen.
+
+Kurz. Klar. Konsequenz.
+
+Die wichtigste Stilregel für deinen Bericht
+
+Jeder Satz sollte diese Struktur haben:
+
+Ursache → Wirkung
+
+Beispiel:
+
+schwach
+
+Die Person arbeitet stärker tempoorientiert.
+
+stark
+
+Die Person arbeitet tempoorientiert. Dadurch werden Entscheidungen schneller getroffen als die Rolle vorsieht.
+
+Das ist diagnostischer Text.
+
+Die 5 Regeln für perfekte Verständlichkeit
+
+Wenn du diese Regeln anwendest, wird dein Bericht extrem klar.
+
+maximal 15–18 Wörter pro Satz
+
+möglichst keine Nebensätze
+
+wenig „kann / könnte / können“
+
+Ursache → Wirkung Struktur
+
+keine Wiederholung derselben Aussage
+
+Mein ehrliches Urteil zu deinen Texten
+
+Die Texte sind bereits deutlich besser als typische HR-Berichte.
+
+Viele Diagnosetools schreiben so:
+
+Die Person zeigt eine erhöhte Tendenz zur situativen Handlungsorientierung bei gleichzeitig reduzierter analytischer Verarbeitungslogik.
+
+Das macht dein Bericht nicht.
+
+Dein Stil ist bereits:
+
+verständlich
+
+praxisnah
+
+entscheidungsorientiert
+
+Mit kleinen Anpassungen erreichst du sehr hohe Klarheit.

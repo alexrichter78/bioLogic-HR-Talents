@@ -612,6 +612,16 @@ export default function SollIstBericht() {
                     {para}
                   </p>
                 ))}
+                {result.executiveBullets.length > 0 && (
+                  <div style={{ marginTop: 16, padding: "14px 20px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
+                    <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>Warum dieses Ergebnis</p>
+                    <ul style={{ margin: 0, paddingLeft: 18, listStyleType: "disc" }}>
+                      {result.executiveBullets.map((b, i) => (
+                        <li key={i} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, marginBottom: i < result.executiveBullets.length - 1 ? 4 : 0 }}>{b}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
 
               <div style={sep} data-testid="section-dominance-shift">
