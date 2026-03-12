@@ -618,14 +618,14 @@ export default function SollIstBericht() {
                 <SectionHead num={1} icon={Compass} title="Dominanz-Verschiebung" iconColor="#0071E3" />
                 {isExportingPdf ? (
                 <div style={{ marginBottom: 14, padding: "16px 20px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                  <svg width="100%" height="60" viewBox="0 0 400 60" preserveAspectRatio="xMidYMid meet" style={{ display: "block" }}>
-                    <text x="130" y="14" fill="#8E8E93" fontSize="10" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle" letterSpacing="0.08em">ROLLE</text>
-                    <rect x="60" y="22" width="140" height="32" rx="10" fill={`${rc}12`} stroke={`${rc}25`} strokeWidth="1" />
-                    <text x="130" y="44" fill={rc} fontSize="13" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle">{COMP_LABELS[result.roleDomKey]}</text>
-                    <text x="200" y="44" fill={sameDom ? "#34C759" : "#FF3B30"} fontSize="18" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle">{sameDom ? "=" : "→"}</text>
-                    <text x="270" y="14" fill="#8E8E93" fontSize="10" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle" letterSpacing="0.08em">PERSON</text>
-                    <rect x="200" y="22" width="140" height="32" rx="10" fill={`${cc}12`} stroke={`${cc}25`} strokeWidth="1" />
-                    <text x="270" y="44" fill={cc} fontSize="13" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle">{COMP_LABELS[result.candDomKey]}</text>
+                  <svg width="100%" height="60" viewBox="0 0 460 60" preserveAspectRatio="xMidYMid meet" style={{ display: "block" }}>
+                    <text x="110" y="14" fill="#8E8E93" fontSize="10" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle" letterSpacing="0.08em">ROLLE</text>
+                    <rect x="40" y="22" width="140" height="32" rx="10" fill={`${rc}12`} stroke={`${rc}25`} strokeWidth="1" />
+                    <text x="110" y="44" fill={rc} fontSize="13" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle">{COMP_LABELS[result.roleDomKey]}</text>
+                    <text x="230" y="44" fill={sameDom ? "#34C759" : "#FF3B30"} fontSize="18" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle">{sameDom ? "=" : "→"}</text>
+                    <text x="350" y="14" fill="#8E8E93" fontSize="10" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle" letterSpacing="0.08em">PERSON</text>
+                    <rect x="280" y="22" width="140" height="32" rx="10" fill={`${cc}12`} stroke={`${cc}25`} strokeWidth="1" />
+                    <text x="350" y="44" fill={cc} fontSize="13" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle">{COMP_LABELS[result.candDomKey]}</text>
                   </svg>
                 </div>
                 ) : (
