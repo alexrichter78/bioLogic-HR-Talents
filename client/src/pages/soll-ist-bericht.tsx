@@ -946,17 +946,25 @@ export default function SollIstBericht() {
                         return (
                           <div key={phase.num} style={{ position: "relative" }} data-testid={`integration-phase-${phase.num}`}>
                             <div style={{ position: "absolute", left: -22, top: 14, width: 10, height: 10, borderRadius: 5, background: phaseCol, boxShadow: `0 0 0 3px ${phaseCol}20` }} />
-                            <div style={{ padding: "12px 16px", borderRadius: 12, background: `${phaseCol}06`, border: `1px solid ${phaseCol}15` }}>
-                              <p style={{ fontSize: 13, fontWeight: 700, color: phaseCol, margin: "0 0 8px" }}>
+                            <div style={{ padding: "14px 18px", borderRadius: 12, background: `${phaseCol}06`, border: `1px solid ${phaseCol}15` }}>
+                              <p style={{ fontSize: 13, fontWeight: 700, color: phaseCol, margin: "0 0 4px" }}>
                                 Phase {phase.num}: {phase.title} <span style={{ fontWeight: 500, color: "#8E8E93" }}>({phase.period})</span>
                               </p>
-                              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                              <p style={{ fontSize: 12, fontWeight: 600, color: "#48484A", margin: "0 0 10px" }}>Ziel: {phase.ziel}</p>
+
+                              <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>Massnahmen</p>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 12 }}>
                                 {phase.items.map((item, i) => (
                                   <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
                                     <div style={{ width: 5, height: 5, borderRadius: 3, background: phaseCol, flexShrink: 0, marginTop: 7 }} />
                                     <span style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85 }}>{item}</span>
                                   </div>
                                 ))}
+                              </div>
+
+                              <div style={{ padding: "10px 14px", borderRadius: 8, background: `${phaseCol}08`, borderLeft: `3px solid ${phaseCol}40` }}>
+                                <p style={{ fontSize: 11, fontWeight: 700, color: phaseCol, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 4px" }}>Integrationsfokus</p>
+                                <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, margin: 0 }}>{phase.fokus}</p>
                               </div>
                             </div>
                           </div>

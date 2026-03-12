@@ -1,0 +1,150 @@
+Automatischer Integrationsplan (Systemlogik)
+
+Dein System kann den Integrationsplan aus drei Faktoren erzeugen:
+
+1️⃣ Dominanzrichtung
+
+Impulsiv dominant
+
+Intuitiv dominant
+
+Analytisch dominant
+
+2️⃣ größte Abweichung
+
+z.B.
+
+Impulsiv zu niedrig
+
+Analytisch zu hoch
+
+Intuitiv zu niedrig
+
+3️⃣ Steuerungsbedarf
+
+niedrig
+
+mittel
+
+hoch
+
+Beispiel Integrationsplan (aus deinem Bericht generiert)
+Integrationsfokus
+
+Die Grundlogik der Rolle und der Person stimmt überein.
+Die Integration konzentriert sich daher auf drei Punkte:
+
+Entscheidungsrhythmus im Vertrieb erhöhen
+
+Umsetzungsgeschwindigkeit stärken
+
+Strukturierte Arbeitsweise beibehalten
+
+Phase 1 – Orientierung (Tag 1–10)
+
+Ziel
+Rollenanforderung und Entscheidungsrhythmus verstehen.
+
+Maßnahmen
+
+Klärung der Entscheidungswege im Vertrieb.
+
+Abstimmung der wichtigsten Vertriebsprioritäten.
+
+Transparenz über bestehende Abläufe und Prozesse.
+
+Einführung in zentrale Kunden- und Angebotsprozesse.
+
+Integrationsfokus
+
+Die Person arbeitet sehr strukturiert. Wichtig ist daher, früh zu klären:
+
+wo schnelle Entscheidungen notwendig sind
+
+wo strukturierte Prüfung erwartet wird.
+
+Phase 2 – Wirkung (Tag 11–20)
+
+Ziel
+Erste operative Führung und Entscheidungen übernehmen.
+
+Maßnahmen
+
+Priorisierung wichtiger Kunden- und Angebotsentscheidungen.
+
+Erste Vertriebsentscheidungen eigenständig treffen.
+
+Abstimmung mit Service und Technik.
+
+Feedback zur Wirkung auf Entscheidungsrhythmus und Teamführung einholen.
+
+Integrationsfokus
+
+Die Person sollte bewusst darauf achten:
+
+Entscheidungen nicht zu lange zu prüfen
+
+Umsetzung aktiv zu treiben.
+
+Phase 3 – Stabilisierung (Tag 21–30)
+
+Ziel
+Arbeitsweise und Führungsrhythmus stabilisieren.
+
+Maßnahmen
+
+Evaluation der bisherigen Führungswirkung.
+
+Feinabstimmung von Entscheidungsprozessen.
+
+Etablierung regelmäßiger Vertriebsmeetings.
+
+Definition klarer Prioritäten im Vertriebsteam.
+
+Integrationsfokus
+
+Struktur und Qualität bleiben erhalten, während die Umsetzungsgeschwindigkeit steigt.
+
+So wird der Integrationsplan automatisch generiert
+
+Dein Tool könnte intern so arbeiten:
+
+if maxGap == Impulsiv:
+    Fokus = "Tempo und Umsetzung stärken"
+
+if maxGap == Analytisch:
+    Fokus = "Struktur und Analyse stärken"
+
+if maxGap == Intuitiv:
+    Fokus = "Kommunikation und Zusammenarbeit stärken"
+
+Zusätzlich:
+
+if devScore <= 2:
+    Integration intensiver
+
+if devScore == 3-4:
+    Standardintegration
+
+if devScore >= 5:
+    kurze Integration
+Das wäre ein extrem starkes Feature für deine Software
+
+Dein Tool würde dann automatisch liefern:
+
+1️⃣ Soll-Ist Analyse
+2️⃣ Systemwirkung
+3️⃣ Stressverhalten
+4️⃣ Risikoentwicklung
+5️⃣ Entwicklungsprognose
+6️⃣ Integrationsplan
+
+Das ist ein kompletter Recruiting-Entscheidungsprozess.
+
+Viele Diagnosetools hören bei Punkt 1 auf.
+
+Eine Sache könnte dein Tool wirklich einzigartig machen
+
+Wenn du willst, kann ich dir noch zeigen:
+
+Ein 90-Tage-Integrationsmodell, das perfekt zu deinem Bericht passt und den Nutzen deiner Software für Unternehmen noch einmal massiv erhöht.
