@@ -449,59 +449,30 @@ export default function SollIstBericht() {
           </div>
 
           {(() => {
-            const roleDom = dominanceModeOf(roleTriad);
-            const roleDomKey = roleDom.top1.key;
-            const candDomKey = candDom.top1.key;
-            const sameDom = roleDomKey === candDomKey;
-            const totalGap = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).reduce((sum, k) => sum + Math.abs(roleTriad[k] - candTriad[k]), 0);
-
-            const roleSorted = [roleTriad.impulsiv, roleTriad.intuitiv, roleTriad.analytisch].sort((a, b) => b - a);
-            const candSorted = [candTriad.impulsiv, candTriad.intuitiv, candTriad.analytisch].sort((a, b) => b - a);
-            const secGapDiff = Math.abs((roleSorted[1] - roleSorted[2]) - (candSorted[1] - candSorted[2]));
-            const secondaryFlip = sameDom && roleDom.top2.key !== candDom.top2.key;
-            const candSecGap = candSorted[1] - candSorted[2];
-
-            const candIsBalFull = candDom.gap1 <= 5 && candDom.gap2 <= 5;
-            const roleIsBalFull = roleDom.gap1 <= 5 && roleDom.gap2 <= 5;
-            const effectiveSameDom = sameDom || roleIsBalFull;
-            const geignetLimit = effectiveSameDom ? 28 : 20;
-            const maxGap = Math.max(...(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => Math.abs(roleTriad[k] - candTriad[k])));
-            const candDomGap = candDom.gap1;
-            const roleSecGap = roleDom.gap2;
-            const candSpread = candSorted[0] - candSorted[2];
-            let fitLabel = totalGap > 40 ? "Nicht geeignet" : totalGap > geignetLimit ? "Bedingt geeignet" : "Geeignet";
-            if (!effectiveSameDom) fitLabel = "Nicht geeignet";
-            if (candIsBalFull && !roleIsBalFull) fitLabel = "Nicht geeignet";
-            if (maxGap > 25) fitLabel = "Nicht geeignet";
-            if (secondaryFlip && candSecGap > 5 && roleSecGap > 5) fitLabel = "Nicht geeignet";
-            if (candIsBalFull && roleIsBalFull && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
-            if (secondaryFlip && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
-            if (fitLabel === "Geeignet" && effectiveSameDom && candSecGap <= 5) fitLabel = "Bedingt geeignet";
-            if (maxGap > 18 && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
-            if (candDomGap <= 5 && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
-            if (roleIsBalFull && candSpread > 20 && fitLabel === "Geeignet") fitLabel = "Bedingt geeignet";
+            const fitLabel = result ? result.fitLabel : (() => {
+              const r = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, matchCheckFit);
+              return r.fitLabel;
+            })();
             const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
 
-            const fazitText = fitLabel === "Geeignet"
-              ? "Die Arbeitsweise der Person passt gut zu den Anforderungen der Rolle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein."
-              : fitLabel === "Bedingt geeignet"
-              ? "Die Grundausrichtung ist ähnlich. In einzelnen Punkten unterscheidet sich die Arbeitsweise jedoch. Mit klaren Erwartungen und guter Führung kann die Zusammenarbeit stabil funktionieren."
-              : "Die Anforderungen der Rolle und die natürliche Arbeitsweise der Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch ein erhöhter Abstimmungsbedarf.";
+            const gapLevel = result ? result.gapLevel : "mittel";
+            let fazitText: string;
+            if (fitLabel === "Geeignet") {
+              fazitText = "Die Arbeitsweise der Person passt gut zu den Anforderungen der Rolle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein.";
+            } else if (fitLabel === "Bedingt geeignet" && gapLevel === "gering") {
+              fazitText = "Die Grundausrichtung ist ähnlich, jedoch unterscheidet sich die Gewichtung der sekundären Bereiche. Mit klaren Erwartungen und gezielter Führung ist die Zusammenarbeit stabil möglich.";
+            } else if (fitLabel === "Bedingt geeignet") {
+              fazitText = "Die Grundausrichtung ist ähnlich. In einzelnen Punkten unterscheidet sich die Arbeitsweise jedoch. Mit klaren Erwartungen und guter Führung kann die Zusammenarbeit stabil funktionieren.";
+            } else if (fitLabel === "Nicht geeignet" && gapLevel !== "hoch") {
+              fazitText = "Die strukturelle Abweichung zwischen Rolle und Person ist deutlich. Obwohl der Gesamtabstand moderat ist, weicht die Gewichtung der Arbeitsbereiche erheblich ab.";
+            } else {
+              fazitText = "Die Anforderungen der Rolle und die natürliche Arbeitsweise der Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch ein erhöhter Abstimmungsbedarf.";
+            }
 
-            const devScore = fitLabel === "Geeignet" ? 3 : fitLabel === "Bedingt geeignet" ? 2 : 1;
-
-            const devTexts: Record<number, string> = {
-              1: "Die Anforderungen der Rolle liegen weit außerhalb der natürlichen Arbeitsweise der Person. Eine stabile Entwicklung ist deshalb kaum zu erwarten.",
-              2: "Die Rolle verlangt eine deutlich andere Arbeitsweise als die Person von Natur aus mitbringt. Eine Entwicklung ist möglich, erfordert jedoch dauerhaft starke Führung und klare Struktur.",
-              3: "Die Arbeitsweise der Person passt sehr gut zur Rolle. Die Anforderungen können schnell übernommen und dauerhaft stabil umgesetzt werden.",
-            };
-
-            const devLabels: Record<number, string> = {
-              1: "Entwicklung unwahrscheinlich",
-              2: "Entwicklung mit Unterstützung möglich",
-              3: "Entwicklung sehr wahrscheinlich",
-            };
-
+            const devLevel = result ? result.developmentLevel : (gapLevel === "gering" ? 4 : gapLevel === "mittel" ? 3 : 1);
+            const devScore = devLevel >= 4 ? 3 : devLevel >= 3 ? 2 : 1;
+            const devLabel = result ? (result.developmentLabel === "hoch" ? "Entwicklung sehr wahrscheinlich" : result.developmentLabel === "mittel" ? "Entwicklung mit Unterstützung möglich" : "Entwicklung unwahrscheinlich") : (devScore === 3 ? "Entwicklung sehr wahrscheinlich" : devScore === 2 ? "Entwicklung mit Unterstützung möglich" : "Entwicklung unwahrscheinlich");
+            const devText = result ? result.developmentText : "";
             const devGaugeColor = devScore === 3 ? "#3A9A5C" : devScore === 2 ? "#E5A832" : "#D64045";
 
             return (
@@ -546,14 +517,14 @@ export default function SollIstBericht() {
                           Entwicklungsprognose
                         </p>
                         <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }} data-testid="text-dev-prognose">
-                          {devScore} von 3 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>– {devLabels[devScore]}</span>
+                          {devScore} von 3 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>– {devLabel}</span>
                         </p>
                         <div style={{ display: "flex", gap: 5, marginBottom: 18 }} data-testid="gauge-dev-prognose">
                           {Array.from({ length: 3 }).map((_, i) => (
                             <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)" }} />
                           ))}
                         </div>
-                        <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }} data-testid="text-dev-description">{devTexts[devScore]}</p>
+                        {devText && <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }} data-testid="text-dev-description">{devText}</p>}
                       </div>
                     </div>
                   </div>
