@@ -6,7 +6,7 @@ const NAV_ITEMS = [
   { label: "Home", subtitle: "", path: "/", icon: Home, disabled: false },
   { label: "JobCheck", subtitle: "Analyse der Rolle", path: "/rollen-dna", icon: Briefcase, disabled: false },
   { label: "MatchCheck", subtitle: "Rolle \u2194 Person", path: "/soll-ist", icon: GitCompareArrows, disabled: false },
-  { label: "TeamCheck", subtitle: "Teamstruktur", path: "/teamcheck", icon: Users, disabled: true },
+  { label: "TeamCheck", subtitle: "Teamstruktur", path: "/teamcheck", icon: Users },
   { label: "KI-Coach", subtitle: "Führung & Entwicklung", path: "/ki-coach", icon: Bot, disabled: false },
   { label: "TestTeamReport", subtitle: "Systemanalyse", path: "/team-report", icon: FileBarChart, disabled: false },
 ];
