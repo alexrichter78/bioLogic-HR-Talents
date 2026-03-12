@@ -957,10 +957,22 @@ export default function SollIstBericht() {
                     <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Grundpassung</p>
                     <p style={{ fontSize: 15, fontWeight: 700, color: fitCol, margin: 0 }}>{result.fitLabel}</p>
                   </div>
-                  <div style={{ flex: 1, padding: "10px 14px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Steuerungsbedarf</p>
-                    <p style={{ fontSize: 15, fontWeight: 700, color: result.controlIntensity === "hoch" ? "#FF9500" : "#1D1D1F", margin: 0 }}>{result.controlIntensity.charAt(0).toUpperCase() + result.controlIntensity.slice(1)}</p>
-                  </div>
+                  {(() => {
+                    const cLevel = result.controlIntensity === "hoch" ? 3 : result.controlIntensity === "mittel" ? 2 : 1;
+                    const cCol = cLevel === 3 ? "#D64045" : cLevel === 2 ? "#E5A832" : "#3A9A5C";
+                    const cLabel = result.controlIntensity === "hoch" ? "Hoher Steuerungsbedarf" : result.controlIntensity === "mittel" ? "Mittlerer Steuerungsbedarf" : "Geringer Steuerungsbedarf";
+                    return (
+                      <div style={{ flex: 1, padding: "10px 14px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Steuerungsbedarf</p>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: cCol, margin: "0 0 8px" }}>{cLevel} von 3 <span style={{ fontWeight: 400, fontSize: 12, color: "#48484A" }}>– {cLabel}</span></p>
+                        <div style={{ display: "flex", gap: 4, maxWidth: 120, margin: "0 auto" }}>
+                          {Array.from({ length: 3 }).map((_, i) => (
+                            <div key={i} style={{ flex: 1, height: 8, borderRadius: 3, background: i < cLevel ? cCol : "rgba(0,0,0,0.08)" }} />
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de" data-testid="text-final-rating-text">{result.finalText}</p>
               </div>
