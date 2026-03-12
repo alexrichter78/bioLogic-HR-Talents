@@ -322,7 +322,7 @@ function buildSummary(role: string, cand: string, fit: string, rk: ComponentKey,
   }
 
   if (gap === "hoch") {
-    return `${s} und die Rolle ${role} funktionieren grundlegend unterschiedlich.\n\nWas die Rolle braucht: ${constellationRoleText(rConst)}\n\nWas ${subj(cand)} mitbringt: ${constellationCandText(cConst, cand)}\n\nDiese Unterschiede wirken sich im Alltag spürbar aus, bei Entscheidungen, Arbeitsweise und Zusammenarbeit.`;
+    return `${s} und die Rolle ${role} funktionieren grundlegend unterschiedlich.\n\nDie Rolle verlangt in erster Linie: ${constellationRoleText(rConst)}\n\n${s} arbeitet dagegen so: ${constellationCandText(cConst, cand)}\n\nDiese Unterschiede wirken sich im Alltag spürbar aus, bei Entscheidungen, Arbeitsweise und Zusammenarbeit.`;
   }
 
   return `${s} bringt eine andere Arbeitslogik mit, als die Rolle ${role} erfordert. ${constellationRoleText(rConst)} ${s} geht dagegen anders vor: ${constellationCandText(cConst, cand)} Die Unterschiede sind erkennbar, lassen sich aber bei gezielter Führung und klaren Erwartungen im Alltag ausgleichen.`;
