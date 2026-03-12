@@ -975,35 +975,35 @@ export default function SollIstBericht() {
                 </div>
               )}
 
-              <div data-testid="section-final-assessment" style={{ padding: "28px", borderRadius: 14, background: `${fitCol}05`, border: `1px solid ${fitCol}12` }}>
-                <SectionHead num={result.integrationsplan ? 8 : 7} icon={Award} title="Gesamtbewertung" iconColor={fitCol} />
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
-                  <div style={{ padding: "14px 18px", borderRadius: 12, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(0,0,0,0.05)", textAlign: "center" }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 8px" }}>Grundpassung</p>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                      <div style={{ width: 10, height: 10, borderRadius: 5, background: fitCol, boxShadow: `0 0 0 3px ${fitCol}20` }} />
-                      <span style={{ fontSize: 16, fontWeight: 700, color: fitCol }}>{result.fitLabel}</span>
-                    </div>
-                  </div>
-                  {(() => {
-                    const cLevel = result.controlIntensity === "hoch" ? 3 : result.controlIntensity === "mittel" ? 2 : 1;
-                    const cCol = cLevel === 3 ? "#D64045" : cLevel === 2 ? "#E5A832" : "#3A9A5C";
-                    const cLabel = result.controlIntensity === "hoch" ? "Hoher Steuerungsbedarf" : result.controlIntensity === "mittel" ? "Mittlerer Steuerungsbedarf" : "Geringer Steuerungsbedarf";
-                    return (
+              {(() => {
+                const fDev = result.fitLabel === "Geeignet" ? 3 : result.fitLabel === "Bedingt geeignet" ? 2 : 1;
+                const fDevCol = fDev === 3 ? "#3A9A5C" : fDev === 2 ? "#E5A832" : "#D64045";
+                const fDevLabel = fDev === 3 ? "Entwicklung sehr wahrscheinlich" : fDev === 2 ? "Entwicklung mit Unterstützung möglich" : "Entwicklung unwahrscheinlich";
+                return (
+                  <div data-testid="section-final-assessment" style={{ padding: "28px", borderRadius: 14, background: `${fitCol}05`, border: `1px solid ${fitCol}12` }}>
+                    <SectionHead num={result.integrationsplan ? 8 : 7} icon={Award} title="Gesamtbewertung" iconColor={fitCol} />
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
                       <div style={{ padding: "14px 18px", borderRadius: 12, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(0,0,0,0.05)", textAlign: "center" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 8px" }}>Steuerungsbedarf</p>
-                        <p style={{ fontSize: 15, fontWeight: 700, color: cCol, margin: "0 0 10px" }}>{cLabel}</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 8px" }}>Grundpassung</p>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                          <div style={{ width: 10, height: 10, borderRadius: 5, background: fitCol, boxShadow: `0 0 0 3px ${fitCol}20` }} />
+                          <span style={{ fontSize: 16, fontWeight: 700, color: fitCol }}>{result.fitLabel}</span>
+                        </div>
+                      </div>
+                      <div style={{ padding: "14px 18px", borderRadius: 12, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(0,0,0,0.05)", textAlign: "center" }}>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 8px" }}>Entwicklungsprognose</p>
+                        <p style={{ fontSize: 15, fontWeight: 700, color: fDevCol, margin: "0 0 10px" }}>{fDevLabel}</p>
                         <div style={{ display: "flex", gap: 4, maxWidth: 100, margin: "0 auto" }}>
                           {Array.from({ length: 3 }).map((_, i) => (
-                            <div key={i} style={{ flex: 1, height: 6, borderRadius: 3, background: i < cLevel ? cCol : "rgba(0,0,0,0.06)" }} />
+                            <div key={i} style={{ flex: 1, height: 6, borderRadius: 3, background: i < fDev ? fDevCol : "rgba(0,0,0,0.06)" }} />
                           ))}
                         </div>
                       </div>
-                    );
-                  })()}
-                </div>
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de" data-testid="text-final-rating-text">{result.finalText}</p>
-              </div>
+                    </div>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de" data-testid="text-final-rating-text">{result.finalText}</p>
+                  </div>
+                );
+              })()}
 
               <div style={{ marginTop: 48, paddingTop: 24, borderTop: "1px solid rgba(0,0,0,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
