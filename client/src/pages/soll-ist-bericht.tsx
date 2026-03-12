@@ -649,15 +649,14 @@ export default function SollIstBericht() {
                         const widthPct = (val / 67) * 100;
                         const isSmall = widthPct < 18;
                         return (
-                          <div key={k} style={{ display: "flex", alignItems: "center", gap: 12, height: 26 }}>
-                            <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0, lineHeight: "26px" }}>{labelComponent(k)}</span>
-                            <div style={{ flex: 1, position: "relative", height: 26 }}>
+                          <div key={k} style={{ position: "relative", height: 26 }}>
+                            <span style={{ position: "absolute", left: 0, top: 0, fontSize: 13, color: "#6E6E73", width: 72, height: 26, lineHeight: "26px" }}>{labelComponent(k)}</span>
+                            <div style={{ position: "absolute", left: 84, right: 0, top: 0, height: 26 }}>
                               <div style={{ position: "absolute", inset: 0, borderRadius: 13, background: "rgba(0,0,0,0.06)" }} />
-                              <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50 }}>
-                                {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap", lineHeight: "26px" }}>{val} %</span>}
-                              </div>
+                              <div style={{ position: "absolute", left: 0, top: 0, height: 26, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, minWidth: isSmall ? 8 : 50 }} />
+                              {!isSmall && <span style={{ position: "absolute", left: 10, top: 0, fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap", height: 26, lineHeight: "26px" }}>{val} %</span>}
                               {isSmall && (
-                                <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap", lineHeight: "26px" }}>{val} %</span>
+                                <span style={{ position: "absolute", top: 0, left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap", height: 26, lineHeight: "26px" }}>{val} %</span>
                               )}
                             </div>
                           </div>
@@ -674,15 +673,14 @@ export default function SollIstBericht() {
                         const widthPct = (val / 67) * 100;
                         const isSmall = widthPct < 18;
                         return (
-                          <div key={k} style={{ display: "flex", alignItems: "center", gap: 12, height: 26 }}>
-                            <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0, lineHeight: "26px" }}>{labelComponent(k)}</span>
-                            <div style={{ flex: 1, position: "relative", height: 26 }}>
+                          <div key={k} style={{ position: "relative", height: 26 }}>
+                            <span style={{ position: "absolute", left: 0, top: 0, fontSize: 13, color: "#6E6E73", width: 72, height: 26, lineHeight: "26px" }}>{labelComponent(k)}</span>
+                            <div style={{ position: "absolute", left: 84, right: 0, top: 0, height: 26 }}>
                               <div style={{ position: "absolute", inset: 0, borderRadius: 13, background: "rgba(0,0,0,0.06)" }} />
-                              <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50 }}>
-                                {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap", lineHeight: "26px" }}>{val} %</span>}
-                              </div>
+                              <div style={{ position: "absolute", left: 0, top: 0, height: 26, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, minWidth: isSmall ? 8 : 50 }} />
+                              {!isSmall && <span style={{ position: "absolute", left: 10, top: 0, fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap", height: 26, lineHeight: "26px" }}>{val} %</span>}
                               {isSmall && (
-                                <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap", lineHeight: "26px" }}>{val} %</span>
+                                <span style={{ position: "absolute", top: 0, left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap", height: 26, lineHeight: "26px" }}>{val} %</span>
                               )}
                             </div>
                           </div>
