@@ -595,46 +595,40 @@ export default function SollIstBericht() {
                   </button>
                 </div>
 
-                <div style={{ padding: "24px 28px", borderRadius: 14, background: `linear-gradient(135deg, ${fitCol}08, ${fitCol}04)`, border: `1px solid ${fitCol}18`, marginBottom: 0 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                    <div style={{ width: 10, height: 10, borderRadius: 5, background: fitCol, boxShadow: `0 0 0 3px ${fitCol}25` }} />
-                    <span style={{ fontSize: 13, fontWeight: 700, color: fitCol, letterSpacing: "0.02em" }}>{result.fitLabel}</span>
-                  </div>
-
-                  <h1 style={{ fontSize: 22, fontWeight: 700, color: "#1D1D1F", margin: "0 0 16px", letterSpacing: "-0.02em", lineHeight: 1.3 }} data-testid="text-page-title">
-                    {result.roleName}
-                  </h1>
-
-                  <div style={{ display: "flex", gap: 12 }}>
-                    <div style={{ flex: 1, padding: "10px 14px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.06)" }}>
-                      <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 3px" }}>Rollenprofil</p>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <div style={{ width: 8, height: 8, borderRadius: 4, background: rc }} />
-                        <span style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F" }}>{result.roleConstellationLabel}</span>
-                      </div>
-                    </div>
-                    <div style={{ flex: 1, padding: "10px 14px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.06)" }}>
-                      <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 3px" }}>Kandidat</p>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <div style={{ width: 8, height: 8, borderRadius: 4, background: cc }} />
-                        <span style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F" }}>{result.candidateName !== "Die Person" ? result.candidateName + " · " : ""}{result.candConstellationLabel}</span>
-                      </div>
-                    </div>
-                    {(() => {
-                      const cCol = result.controlIntensity === "hoch" ? "#D64045" : result.controlIntensity === "mittel" ? "#E5A832" : "#3A9A5C";
-                      const cLabel = result.controlIntensity === "hoch" ? "Hoch" : result.controlIntensity === "mittel" ? "Mittel" : "Gering";
-                      return (
-                        <div style={{ flex: 1, padding: "10px 14px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.06)" }}>
-                          <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 3px" }}>Steuerungsbedarf</p>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            <div style={{ width: 8, height: 8, borderRadius: 4, background: cCol }} />
-                            <span style={{ fontSize: 13, fontWeight: 600, color: cCol }}>{cLabel}</span>
-                          </div>
+                {(() => {
+                  const cCol = result.controlIntensity === "hoch" ? "#D64045" : result.controlIntensity === "mittel" ? "#E5A832" : "#3A9A5C";
+                  const cLabel = result.controlIntensity === "hoch" ? "Hoch" : result.controlIntensity === "mittel" ? "Mittel" : "Gering";
+                  return (
+                    <div style={{ padding: "24px 28px", borderRadius: 14, background: `linear-gradient(135deg, ${fitCol}08, ${fitCol}04)`, border: `1px solid ${fitCol}18`, marginBottom: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <div style={{ width: 10, height: 10, borderRadius: 5, background: fitCol, boxShadow: `0 0 0 3px ${fitCol}25` }} />
+                          <span style={{ fontSize: 13, fontWeight: 700, color: fitCol, letterSpacing: "0.02em" }}>{result.fitLabel}</span>
                         </div>
-                      );
-                    })()}
-                  </div>
-                </div>
+                        <div style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "3px 10px", borderRadius: 8, background: `${cCol}10`, border: `1px solid ${cCol}20` }}>
+                          <div style={{ width: 6, height: 6, borderRadius: 3, background: cCol }} />
+                          <span style={{ fontSize: 11, fontWeight: 600, color: cCol }}>Steuerung: {cLabel}</span>
+                        </div>
+                      </div>
+
+                      <h1 style={{ fontSize: 22, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px", letterSpacing: "-0.02em", lineHeight: 1.3 }} data-testid="text-page-title">
+                        {result.roleName}
+                      </h1>
+
+                      <p style={{ fontSize: 13, color: "#6E6E73", margin: 0, lineHeight: 1.6 }}>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                          <span style={{ width: 7, height: 7, borderRadius: 4, background: rc, display: "inline-block", flexShrink: 0 }} />
+                          <span style={{ color: "#48484A", fontWeight: 500 }}>Rolle:</span> {result.roleConstellationLabel}
+                        </span>
+                        <span style={{ margin: "0 10px", color: "#D1D1D6" }}>|</span>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                          <span style={{ width: 7, height: 7, borderRadius: 4, background: cc, display: "inline-block", flexShrink: 0 }} />
+                          <span style={{ color: "#48484A", fontWeight: 500 }}>{result.candidateName !== "Die Person" ? result.candidateName : "Person"}:</span> {result.candConstellationLabel}
+                        </span>
+                      </p>
+                    </div>
+                  );
+                })()}
               </div>
 
               <div className="print-hide-summary" style={{ marginBottom: 32, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.015)", border: "1px solid rgba(0,0,0,0.04)" }}>
