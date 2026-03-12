@@ -882,7 +882,20 @@ export default function SollIstBericht() {
               {(() => {
                 const rFitLabel = result.fitLabel;
                 const rFitColor = result.fitColor;
+
+                const rFazit = rFitLabel === "Geeignet"
+                  ? "Die Arbeitsweise der Person passt gut zu den Anforderungen der Rolle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein."
+                  : rFitLabel === "Bedingt geeignet"
+                  ? "Die Grundausrichtung ist ähnlich. In einzelnen Punkten unterscheidet sich die Arbeitsweise jedoch. Mit klaren Erwartungen und guter Führung kann die Zusammenarbeit stabil funktionieren."
+                  : "Die Anforderungen der Rolle und die natürliche Arbeitsweise der Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch ein erhöhter Abstimmungsbedarf.";
+
                 const rDev = rFitLabel === "Geeignet" ? 3 : rFitLabel === "Bedingt geeignet" ? 2 : 1;
+
+                const rDevTexts: Record<number, string> = {
+                  1: "Die Anforderungen der Rolle liegen weit außerhalb der natürlichen Arbeitsweise der Person. Eine stabile Entwicklung ist deshalb kaum zu erwarten.",
+                  2: "Die Rolle verlangt eine deutlich andere Arbeitsweise als die Person von Natur aus mitbringt. Eine Entwicklung ist möglich, erfordert jedoch dauerhaft starke Führung und klare Struktur.",
+                  3: "Die Arbeitsweise der Person passt sehr gut zur Rolle. Die Anforderungen können schnell übernommen und dauerhaft stabil umgesetzt werden.",
+                };
                 const rDevLabels: Record<number, string> = {
                   1: "Entwicklung unwahrscheinlich",
                   2: "Entwicklung mit Unterstützung möglich",
@@ -892,31 +905,32 @@ export default function SollIstBericht() {
 
                 return (
                   <div style={sep} data-testid="section-development">
-                    <SectionHead num={6} icon={TrendingUp} title="Systemwirkung" iconColor="#5856D6" />
+                    <SectionHead num={6} icon={TrendingUp} title="Systemwirkung & Entwicklungsprognose" iconColor="#5856D6" />
 
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-                      <div style={{ padding: "18px 20px", borderRadius: 14, background: `${rFitColor}06`, border: `1px solid ${rFitColor}12` }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                          <div style={{ width: 12, height: 12, borderRadius: 6, background: rFitColor, boxShadow: `0 0 0 3px ${rFitColor}20` }} />
-                          <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>{result.roleName}</span>
-                        </div>
-                        <span style={{ fontSize: 15, fontWeight: 700, color: rFitColor }}>{rFitLabel}</span>
-                      </div>
-
-                      <div style={{ padding: "18px 20px", borderRadius: 14, background: "rgba(0,0,0,0.015)", border: "1px solid rgba(0,0,0,0.05)" }}>
-                        <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 10px" }}>
-                          Entwicklungsprognose
-                        </p>
-                        <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>
-                          {rDev} von 3 <span style={{ fontWeight: 400, fontSize: 13, color: "#48484A" }}>{rDevLabels[rDev]}</span>
-                        </p>
-                        <div style={{ display: "flex", gap: 5 }} data-testid="gauge-development">
-                          {Array.from({ length: 3 }).map((_, i) => (
-                            <div key={i} style={{ flex: 1, height: 8, borderRadius: 3, background: i < rDev ? rGaugeCol : "rgba(0,0,0,0.08)" }} />
-                          ))}
-                        </div>
-                      </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
+                      <div style={{ width: 16, height: 16, borderRadius: 8, background: rFitColor, flexShrink: 0, boxShadow: `0 0 0 3px ${rFitColor}20` }} />
+                      <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>{result.roleName}</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: rFitColor }}>
+                        {rFitLabel}
+                      </span>
                     </div>
+
+                    <div style={{ background: `${rFitColor}08`, borderLeft: `3px solid ${rFitColor}`, borderRadius: "0 8px 8px 0", padding: "12px 16px", marginBottom: 22 }}>
+                      <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }}>{rFazit}</p>
+                    </div>
+
+                    <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 12px" }}>
+                      Entwicklungsprognose
+                    </p>
+                    <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>
+                      {rDev} von 3 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>{rDevLabels[rDev]}</span>
+                    </p>
+                    <div style={{ display: "flex", gap: 5, marginBottom: 16 }} data-testid="gauge-development">
+                      {Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < rDev ? rGaugeCol : "rgba(0,0,0,0.08)" }} />
+                      ))}
+                    </div>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{rDevTexts[rDev]}</p>
                   </div>
                 );
               })()}
@@ -988,6 +1002,7 @@ export default function SollIstBericht() {
                     );
                   })()}
                 </div>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de" data-testid="text-final-rating-text">{result.finalText}</p>
               </div>
 
               <div style={{ marginTop: 48, paddingTop: 24, borderTop: "1px solid rgba(0,0,0,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
