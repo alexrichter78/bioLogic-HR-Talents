@@ -578,32 +578,50 @@ export default function SollIstBericht() {
           <div ref={reportRef} style={{ maxWidth: 800, margin: "0 auto" }} data-testid="print-report-wrapper">
             <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 16, padding: "48px 44px", boxShadow: "0 2px 12px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)", border: "none" }} data-testid="print-report-card">
 
-              <div style={{ textAlign: "center", marginBottom: 40 }} data-testid="section-header">
-                <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 20, background: "rgba(0,0,0,0.03)", marginBottom: 16 }}>
-                  <FileText style={{ width: 13, height: 13, color: "#8E8E93" }} />
-                  <span style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.14em", textTransform: "uppercase" }}>Soll-Ist-Vergleich · Rollenpassung</span>
+              <div style={{ marginBottom: 40 }} data-testid="section-header">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 20, background: "rgba(0,0,0,0.03)" }}>
+                    <FileText style={{ width: 13, height: 13, color: "#8E8E93" }} />
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.14em", textTransform: "uppercase" }}>Passungsbericht</span>
+                  </div>
+                  <button
+                    onClick={exportPdf}
+                    disabled={isExportingPdf}
+                    style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,113,227,0.06)", fontSize: 13, fontWeight: 600, color: "#0071E3", cursor: isExportingPdf ? "wait" : "pointer", opacity: isExportingPdf ? 0.6 : 1 }}
+                    data-testid="button-export-pdf"
+                  >
+                    {isExportingPdf ? <Loader2 style={{ width: 14, height: 14, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 14, height: 14 }} />}
+                    PDF
+                  </button>
                 </div>
-                <h1 style={{ fontSize: 26, fontWeight: 800, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.03em", lineHeight: 1.2 }} data-testid="text-page-title">
-                  {result.roleName} · Passungsbericht
-                </h1>
-                <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 14 }}>
-                  {[
-                    { label: result.fitLabel, bg: `${fitCol}15`, color: fitCol, border: `${fitCol}30` },
-                    { label: result.roleConstellationLabel, bg: "rgba(0,0,0,0.04)", color: "#1D1D1F", border: "rgba(0,0,0,0.08)" },
-                    { label: result.candConstellationLabel, bg: "rgba(0,0,0,0.04)", color: "#1D1D1F", border: "rgba(0,0,0,0.08)" },
-                  ].map((b, i) => (
-                    <span key={i} style={{ display: "inline-block", padding: "5px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, color: b.color, background: b.bg, border: `1px solid ${b.border}` }}>{b.label}</span>
-                  ))}
+
+                <div style={{ padding: "24px 28px", borderRadius: 14, background: `linear-gradient(135deg, ${fitCol}08, ${fitCol}04)`, border: `1px solid ${fitCol}18`, marginBottom: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: 5, background: fitCol, boxShadow: `0 0 0 3px ${fitCol}25` }} />
+                    <span style={{ fontSize: 13, fontWeight: 700, color: fitCol, letterSpacing: "0.02em" }}>{result.fitLabel}</span>
+                  </div>
+
+                  <h1 style={{ fontSize: 22, fontWeight: 700, color: "#1D1D1F", margin: "0 0 16px", letterSpacing: "-0.02em", lineHeight: 1.3 }} data-testid="text-page-title">
+                    {result.roleName}
+                  </h1>
+
+                  <div style={{ display: "flex", gap: 12 }}>
+                    <div style={{ flex: 1, padding: "10px 14px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.06)" }}>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 3px" }}>Rollenprofil</p>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <div style={{ width: 8, height: 8, borderRadius: 4, background: rc }} />
+                        <span style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F" }}>{result.roleConstellationLabel}</span>
+                      </div>
+                    </div>
+                    <div style={{ flex: 1, padding: "10px 14px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.06)" }}>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 3px" }}>Kandidat</p>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <div style={{ width: 8, height: 8, borderRadius: 4, background: cc }} />
+                        <span style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F" }}>{result.candidateName !== "Die Person" ? result.candidateName + " · " : ""}{result.candConstellationLabel}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <button
-                  onClick={exportPdf}
-                  disabled={isExportingPdf}
-                  style={{ position: "absolute", right: 44, top: 48, display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 14px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,113,227,0.06)", fontSize: 13, fontWeight: 600, color: "#0071E3", cursor: isExportingPdf ? "wait" : "pointer", opacity: isExportingPdf ? 0.6 : 1 }}
-                  data-testid="button-export-pdf"
-                >
-                  {isExportingPdf ? <Loader2 style={{ width: 14, height: 14, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 14, height: 14 }} />}
-                  PDF
-                </button>
               </div>
 
               <div className="print-hide-summary" style={{ marginBottom: 32, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.015)", border: "1px solid rgba(0,0,0,0.04)" }}>
