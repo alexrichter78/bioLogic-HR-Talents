@@ -385,7 +385,7 @@ function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string,
   } else if (d12 <= 5) {
     uncontrolledStress = `Wird die Belastung sehr hoch, kann sich der Schwerpunkt leicht verschieben. ${sn} bleibt in der Grundlogik erkennbar, nutzt aber spürbar stärker ${compShort(sk)}. ${secondaryBehavior[sk]}. Die Arbeitsweise verändert sich, die Grundrichtung bleibt aber steuerbar.`;
   } else {
-    uncontrolledStress = `Wird die Belastung sehr hoch und treten viele Anforderungen gleichzeitig auf, verschiebt sich das Verhalten deutlich. ${compShort(sk)} tritt stärker in den Vordergrund. ${secondaryBehavior[sk]}. Entscheidungen werden ${secondaryDecision[sk]}. Unter starkem Stress arbeitet ${subj(cand)} anders als im Normalzustand. Darauf sollte die Führungskraft vorbereitet sein.`;
+    uncontrolledStress = `Wird die Belastung sehr hoch und treten viele Anforderungen gleichzeitig auf, verschiebt sich das Verhalten deutlich. ${compShort(sk)} tritt stärker in den Vordergrund. ${secondaryBehavior[sk]}. Entscheidungen werden ${secondaryDecision[sk]}.`;
   }
 
   return { controlledPressure, uncontrolledStress };
