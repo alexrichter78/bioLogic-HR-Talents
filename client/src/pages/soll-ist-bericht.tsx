@@ -156,6 +156,7 @@ export default function SollIstBericht() {
   const exportPdf = useCallback(async () => {
     if (!reportRef.current || isExportingPdf) return;
     setIsExportingPdf(true);
+    await new Promise(r => setTimeout(r, 100));
     try {
       const html2pdf = (await import("html2pdf.js")).default;
 
@@ -615,6 +616,7 @@ export default function SollIstBericht() {
 
               <div style={sep} data-testid="section-dominance-shift">
                 <SectionHead num={1} icon={Compass} title="Dominanz-Verschiebung" iconColor="#0071E3" />
+                {isExportingPdf ? (
                 <div style={{ marginBottom: 14, padding: "16px 20px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
                   <svg width="100%" height="60" viewBox="0 0 400 60" preserveAspectRatio="xMidYMid meet" style={{ display: "block" }}>
                     <text x="130" y="14" fill="#8E8E93" fontSize="10" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle" letterSpacing="0.08em">ROLLE</text>
@@ -626,6 +628,27 @@ export default function SollIstBericht() {
                     <text x="270" y="44" fill={cc} fontSize="13" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle">{COMP_LABELS[result.candDomKey]}</text>
                   </svg>
                 </div>
+                ) : (
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 14, padding: "16px 20px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
+                  <div style={{ textAlign: "center" }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Rolle</p>
+                    <div style={{ padding: "5px 14px", borderRadius: 10, background: `${rc}12`, border: `1px solid ${rc}25` }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: rc }}>{COMP_LABELS[result.roleDomKey]}</span>
+                    </div>
+                  </div>
+                  {sameDom ? (
+                    <span style={{ fontSize: 18, fontWeight: 700, color: "#34C759" }}>=</span>
+                  ) : (
+                    <span style={{ fontSize: 18, fontWeight: 700, color: "#FF3B30" }}>→</span>
+                  )}
+                  <div style={{ textAlign: "center" }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Person</p>
+                    <div style={{ padding: "5px 14px", borderRadius: 10, background: `${cc}12`, border: `1px solid ${cc}25` }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: cc }}>{COMP_LABELS[result.candDomKey]}</span>
+                    </div>
+                  </div>
+                </div>
+                )}
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{result.dominanceShiftText}</p>
               </div>
 
@@ -634,39 +657,89 @@ export default function SollIstBericht() {
                 <div className="grid gap-6 grid-cols-2" style={{ marginBottom: 14 }}>
                   <div className="rounded-2xl border border-slate-200 bg-white p-6">
                     <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
-                    {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
-                      const val = Math.round(roleTriad![k]);
-                      const hex = BAR_HEX[k];
-                      const barW = Math.min(Math.max((val / 67) * 100, 6), 100);
-                      const isSmall = barW < 20;
-                      return (
-                        <svg key={k} width="100%" height="42" viewBox="0 0 400 42" preserveAspectRatio="xMinYMid meet" style={{ display: "block" }}>
-                          <text x="0" y="25" fill="#6E6E73" fontSize="13" fontFamily="system-ui, sans-serif">{labelComponent(k)}</text>
-                          <rect x="80" y="7" width="310" height="28" rx="14" fill="rgba(0,0,0,0.06)" />
-                          <rect x="80" y="7" width={Math.max(310 * barW / 100, isSmall ? 14 : 50)} height="28" rx="14" fill={hex} />
-                          {!isSmall && <text x="92" y="25.5" fill="#FFF" fontSize="13" fontWeight="700" fontFamily="system-ui, sans-serif">{val} %</text>}
-                          {isSmall && <text x={80 + 310 * barW / 100 + 8} y="25.5" fill="#8E8E93" fontSize="13" fontWeight="600" fontFamily="system-ui, sans-serif">{val} %</text>}
-                        </svg>
-                      );
-                    })}
+                    {isExportingPdf ? (
+                      (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+                        const val = Math.round(roleTriad![k]);
+                        const hex = BAR_HEX[k];
+                        const barW = Math.min(Math.max((val / 67) * 100, 6), 100);
+                        const isSmall = barW < 20;
+                        return (
+                          <svg key={k} width="100%" height="42" viewBox="0 0 400 42" preserveAspectRatio="xMinYMid meet" style={{ display: "block" }}>
+                            <text x="0" y="25" fill="#6E6E73" fontSize="13" fontFamily="system-ui, sans-serif">{labelComponent(k)}</text>
+                            <rect x="80" y="7" width="310" height="28" rx="14" fill="rgba(0,0,0,0.06)" />
+                            <rect x="80" y="7" width={Math.max(310 * barW / 100, isSmall ? 14 : 50)} height="28" rx="14" fill={hex} />
+                            {!isSmall && <text x="92" y="25.5" fill="#FFF" fontSize="13" fontWeight="700" fontFamily="system-ui, sans-serif">{val} %</text>}
+                            {isSmall && <text x={80 + 310 * barW / 100 + 8} y="25.5" fill="#8E8E93" fontSize="13" fontWeight="600" fontFamily="system-ui, sans-serif">{val} %</text>}
+                          </svg>
+                        );
+                      })
+                    ) : (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                        {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+                          const val = Math.round(roleTriad![k]);
+                          const hex = BAR_HEX[k];
+                          const widthPct = (val / 67) * 100;
+                          const isSmall = widthPct < 18;
+                          return (
+                            <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                              <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>{labelComponent(k)}</span>
+                              <div style={{ flex: 1, position: "relative", height: 26 }}>
+                                <div style={{ position: "absolute", inset: 0, borderRadius: 13, background: "rgba(0,0,0,0.06)" }} />
+                                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50 }}>
+                                  {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>}
+                                </div>
+                                {isSmall && (
+                                  <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap" }}>{val} %</span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                   <div className="rounded-2xl border border-slate-200 bg-white p-6">
                     <p className="text-base font-semibold text-slate-900 mb-6">Ist-Profil <span className="font-normal text-slate-500">(Person)</span></p>
-                    {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
-                      const val = Math.round(candidateProfile[k]);
-                      const hex = BAR_HEX[k];
-                      const barW = Math.min(Math.max((val / 67) * 100, 6), 100);
-                      const isSmall = barW < 20;
-                      return (
-                        <svg key={k} width="100%" height="42" viewBox="0 0 400 42" preserveAspectRatio="xMinYMid meet" style={{ display: "block" }}>
-                          <text x="0" y="25" fill="#6E6E73" fontSize="13" fontFamily="system-ui, sans-serif">{labelComponent(k)}</text>
-                          <rect x="80" y="7" width="310" height="28" rx="14" fill="rgba(0,0,0,0.06)" />
-                          <rect x="80" y="7" width={Math.max(310 * barW / 100, isSmall ? 14 : 50)} height="28" rx="14" fill={hex} />
-                          {!isSmall && <text x="92" y="25.5" fill="#FFF" fontSize="13" fontWeight="700" fontFamily="system-ui, sans-serif">{val} %</text>}
-                          {isSmall && <text x={80 + 310 * barW / 100 + 8} y="25.5" fill="#8E8E93" fontSize="13" fontWeight="600" fontFamily="system-ui, sans-serif">{val} %</text>}
-                        </svg>
-                      );
-                    })}
+                    {isExportingPdf ? (
+                      (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+                        const val = Math.round(candidateProfile[k]);
+                        const hex = BAR_HEX[k];
+                        const barW = Math.min(Math.max((val / 67) * 100, 6), 100);
+                        const isSmall = barW < 20;
+                        return (
+                          <svg key={k} width="100%" height="42" viewBox="0 0 400 42" preserveAspectRatio="xMinYMid meet" style={{ display: "block" }}>
+                            <text x="0" y="25" fill="#6E6E73" fontSize="13" fontFamily="system-ui, sans-serif">{labelComponent(k)}</text>
+                            <rect x="80" y="7" width="310" height="28" rx="14" fill="rgba(0,0,0,0.06)" />
+                            <rect x="80" y="7" width={Math.max(310 * barW / 100, isSmall ? 14 : 50)} height="28" rx="14" fill={hex} />
+                            {!isSmall && <text x="92" y="25.5" fill="#FFF" fontSize="13" fontWeight="700" fontFamily="system-ui, sans-serif">{val} %</text>}
+                            {isSmall && <text x={80 + 310 * barW / 100 + 8} y="25.5" fill="#8E8E93" fontSize="13" fontWeight="600" fontFamily="system-ui, sans-serif">{val} %</text>}
+                          </svg>
+                        );
+                      })
+                    ) : (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                        {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+                          const val = Math.round(candidateProfile[k]);
+                          const hex = BAR_HEX[k];
+                          const widthPct = (val / 67) * 100;
+                          const isSmall = widthPct < 18;
+                          return (
+                            <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                              <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>{labelComponent(k)}</span>
+                              <div style={{ flex: 1, position: "relative", height: 26 }}>
+                                <div style={{ position: "absolute", inset: 0, borderRadius: 13, background: "rgba(0,0,0,0.06)" }} />
+                                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50 }}>
+                                  {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>}
+                                </div>
+                                {isSmall && (
+                                  <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap" }}>{val} %</span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
