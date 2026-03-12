@@ -196,7 +196,8 @@ export function computeSollIst(
   candidateName: string,
   roleProfile: Triad,
   candProfile: Triad,
-  fuehrungsArt: FuehrungsArt = "keine"
+  fuehrungsArt: FuehrungsArt = "keine",
+  matchCheckFit?: string
 ): SollIstResult {
   const rt = normalizeTriad(roleProfile);
   const ct = normalizeTriad(candProfile);
@@ -208,23 +209,30 @@ export function computeSollIst(
   const geignetLimit = sameDom ? 28 : 20;
   const gapLevel: "gering" | "mittel" | "hoch" = totalGap > 40 ? "hoch" : totalGap > geignetLimit ? "mittel" : "gering";
 
-  const secondaryFlip = sameDom && rDom.top2.key !== cDom.top2.key;
-  const candSecGap = cDom.gap2;
-
   let fitRating: FitRating;
   let fitLabel: string;
   let fitColor: string;
-  if (totalGap > 40) { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
-  else if (totalGap > geignetLimit) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
-  else { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; }
 
-  if (fitLabel === "Geeignet") {
-    if (secondaryFlip && candSecGap > 5) {
-      fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
-    } else if (secondaryFlip) {
-      fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
-    } else if (sameDom && candSecGap <= 5) {
-      fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
+  if (matchCheckFit) {
+    if (matchCheckFit === "SUITABLE") { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; }
+    else if (matchCheckFit === "CONDITIONAL") { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
+    else { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
+  } else {
+    const secondaryFlip = sameDom && rDom.top2.key !== cDom.top2.key;
+    const candSecGap = cDom.gap2;
+
+    if (totalGap > 40) { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
+    else if (totalGap > geignetLimit) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
+    else { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; }
+
+    if (fitLabel === "Geeignet") {
+      if (secondaryFlip && candSecGap > 5) {
+        fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
+      } else if (secondaryFlip) {
+        fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
+      } else if (sameDom && candSecGap <= 5) {
+        fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
+      }
     }
   }
 

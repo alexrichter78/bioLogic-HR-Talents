@@ -513,6 +513,12 @@ export default function JobCheck() {
     localStorage.setItem("jobcheckCandProfile", JSON.stringify({ ...normalizedCand, name: candidateName }));
   }, [normalizedCand, candidateName]);
 
+  useEffect(() => {
+    if (engine) {
+      localStorage.setItem("jobcheckOverallFit", engine.overallFit);
+    }
+  }, [engine]);
+
   const [snapshotCand, setSnapshotCand] = useState(normalizedCand);
   const [snapshotName, setSnapshotName] = useState(candidateName);
 

@@ -152,6 +152,7 @@ export default function SollIstBericht() {
   const [profilvergleichOpen, setProfilvergleichOpen] = useState(true);
   const [systemwirkungOpen, setSystemwirkungOpen] = useState(true);
   const [fuehrungsArt, setFuehrungsArt] = useState<FuehrungsArt>("keine");
+  const [matchCheckFit, setMatchCheckFit] = useState<string | undefined>(undefined);
 
   const exportPdf = useCallback(async () => {
     if (!reportRef.current || isExportingPdf) return;
@@ -214,6 +215,9 @@ export default function SollIstBericht() {
         }
       } catch {}
     }
+
+    const savedFit = localStorage.getItem("jobcheckOverallFit");
+    if (savedFit) setMatchCheckFit(savedFit);
   }, []);
 
   const candidateProfile = candTriad;
@@ -221,8 +225,8 @@ export default function SollIstBericht() {
 
   const result: SollIstResult | null = useMemo(() => {
     if (!roleTriad || !reportGenerated) return null;
-    return computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt);
-  }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated, fuehrungsArt]);
+    return computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, matchCheckFit);
+  }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated, fuehrungsArt, matchCheckFit]);
 
   if (!hasRollenDna || !roleTriad) {
     return (
@@ -876,28 +880,8 @@ export default function SollIstBericht() {
               </div>
 
               {(() => {
-                const rTriad = result.roleTriad;
-                const cTriad = result.candTriad;
-                const rSorted = [rTriad.impulsiv, rTriad.intuitiv, rTriad.analytisch].sort((a, b) => b - a);
-                const cSorted = [cTriad.impulsiv, cTriad.intuitiv, cTriad.analytisch].sort((a, b) => b - a);
-                const rSecGapDiff = Math.abs((rSorted[1] - rSorted[2]) - (cSorted[1] - cSorted[2]));
-                const tGap = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).reduce((s, k) => s + Math.abs(rTriad[k] - cTriad[k]), 0);
-                const sameD = result.roleDomKey === result.candDomKey;
-                const rRoleDom = dominanceModeOf(rTriad);
-                const rCandDom = dominanceModeOf(cTriad);
-                const rSecFlip = sameD && rRoleDom.top2.key !== rCandDom.top2.key;
-                const rCandSecGap = cSorted[1] - cSorted[2];
-
-                const rGeignetLimit = sameD ? 28 : 20;
-                let rFitLabel = tGap > 40 ? "Nicht geeignet" : tGap > rGeignetLimit ? "Bedingt geeignet" : "Geeignet";
-                if (rSecFlip && rCandSecGap > 5) {
-                  rFitLabel = "Nicht geeignet";
-                } else if (rSecFlip && rFitLabel === "Geeignet") {
-                  rFitLabel = "Bedingt geeignet";
-                } else if (rFitLabel === "Geeignet" && sameD && rCandSecGap <= 5) {
-                  rFitLabel = "Bedingt geeignet";
-                }
-                const rFitColor = rFitLabel === "Nicht geeignet" ? "#D64045" : rFitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
+                const rFitLabel = result.fitLabel;
+                const rFitColor = result.fitColor;
 
                 const rFazit = rFitLabel === "Geeignet"
                   ? "Die Arbeitsweise der Person passt gut zu den Anforderungen der Rolle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein."
