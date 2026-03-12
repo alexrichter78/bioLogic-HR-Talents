@@ -568,13 +568,8 @@ export default function SollIstBericht() {
           const sameDom = result.roleDomKey === result.candDomKey;
           const sep = { borderBottom: "1px solid rgba(0,0,0,0.06)", paddingBottom: 32, marginBottom: 32 } as const;
 
-          const SectionHead = ({ num, icon: Icon, title, iconColor }: { num: number; icon?: any; title: string; iconColor?: string }) => (
-            <div className="section-head" style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
-              {Icon && iconColor && (
-                <div style={{ width: 28, height: 28, borderRadius: 8, background: `${iconColor}12`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <Icon style={{ width: 14, height: 14, color: iconColor }} />
-                </div>
-              )}
+          const SectionHead = ({ num, title }: { num: number; icon?: any; title: string; iconColor?: string }) => (
+            <div className="section-head" style={{ marginBottom: 18 }}>
               <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>{num}. {title}</span>
             </div>
           );
@@ -625,6 +620,19 @@ export default function SollIstBericht() {
                         <span style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F" }}>{result.candidateName !== "Die Person" ? result.candidateName + " · " : ""}{result.candConstellationLabel}</span>
                       </div>
                     </div>
+                    {(() => {
+                      const cCol = result.controlIntensity === "hoch" ? "#D64045" : result.controlIntensity === "mittel" ? "#E5A832" : "#3A9A5C";
+                      const cLabel = result.controlIntensity === "hoch" ? "Hoch" : result.controlIntensity === "mittel" ? "Mittel" : "Gering";
+                      return (
+                        <div style={{ flex: 1, padding: "10px 14px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.06)" }}>
+                          <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 3px" }}>Steuerungsbedarf</p>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <div style={{ width: 8, height: 8, borderRadius: 4, background: cCol }} />
+                            <span style={{ fontSize: 13, fontWeight: 600, color: cCol }}>{cLabel}</span>
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>
@@ -697,69 +705,94 @@ export default function SollIstBericht() {
 
               <div style={sep} data-testid="section-comparison-bars">
                 <SectionHead num={2} icon={BarChart3} title="Dimensionsvergleich" iconColor="#5856D6" />
-                <div style={{ display: "flex", gap: 16, marginBottom: 10, paddingLeft: 90 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <div style={{ width: 10, height: 10, borderRadius: 3, background: "#1D1D1F", opacity: 0.7 }} />
-                    <span style={{ fontSize: 11, fontWeight: 600, color: "#6E6E73" }}>Rolle (Soll)</span>
+                <div className="grid gap-6 grid-cols-2" style={{ marginBottom: 14 }}>
+                  <div className="rounded-2xl border border-slate-200 bg-white p-6">
+                    <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
+                    {isExportingPdf ? (
+                      (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+                        const val = Math.round(roleTriad![k]);
+                        const hex = BAR_HEX[k];
+                        const barW = Math.min(Math.max((val / 67) * 100, 6), 100);
+                        const isSmall = barW < 20;
+                        return (
+                          <svg key={k} width="100%" height="42" viewBox="0 0 400 42" preserveAspectRatio="xMinYMid meet" style={{ display: "block" }}>
+                            <text x="0" y="25" fill="#6E6E73" fontSize="13" fontFamily="system-ui, sans-serif">{labelComponent(k)}</text>
+                            <rect x="80" y="7" width="310" height="28" rx="14" fill="rgba(0,0,0,0.06)" />
+                            <rect x="80" y="7" width={Math.max(310 * barW / 100, isSmall ? 14 : 50)} height="28" rx="14" fill={hex} />
+                            {!isSmall && <text x="92" y="25.5" fill="#FFF" fontSize="13" fontWeight="700" fontFamily="system-ui, sans-serif">{val} %</text>}
+                            {isSmall && <text x={80 + 310 * barW / 100 + 8} y="25.5" fill="#8E8E93" fontSize="13" fontWeight="600" fontFamily="system-ui, sans-serif">{val} %</text>}
+                          </svg>
+                        );
+                      })
+                    ) : (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                        {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+                          const val = Math.round(roleTriad![k]);
+                          const hex = BAR_HEX[k];
+                          const widthPct = (val / 67) * 100;
+                          const isSmall = widthPct < 18;
+                          return (
+                            <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                              <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>{labelComponent(k)}</span>
+                              <div style={{ flex: 1, position: "relative", height: 26 }}>
+                                <div style={{ position: "absolute", inset: 0, borderRadius: 13, background: "rgba(0,0,0,0.06)" }} />
+                                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50 }}>
+                                  {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>}
+                                </div>
+                                {isSmall && (
+                                  <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap" }}>{val} %</span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <div style={{ width: 10, height: 10, borderRadius: 3, border: "2px solid #1D1D1F", opacity: 0.4 }} />
-                    <span style={{ fontSize: 11, fontWeight: 600, color: "#6E6E73" }}>Person (Ist)</span>
+                  <div className="rounded-2xl border border-slate-200 bg-white p-6">
+                    <p className="text-base font-semibold text-slate-900 mb-6">Ist-Profil <span className="font-normal text-slate-500">(Person)</span></p>
+                    {isExportingPdf ? (
+                      (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+                        const val = Math.round(candidateProfile[k]);
+                        const hex = BAR_HEX[k];
+                        const barW = Math.min(Math.max((val / 67) * 100, 6), 100);
+                        const isSmall = barW < 20;
+                        return (
+                          <svg key={k} width="100%" height="42" viewBox="0 0 400 42" preserveAspectRatio="xMinYMid meet" style={{ display: "block" }}>
+                            <text x="0" y="25" fill="#6E6E73" fontSize="13" fontFamily="system-ui, sans-serif">{labelComponent(k)}</text>
+                            <rect x="80" y="7" width="310" height="28" rx="14" fill="rgba(0,0,0,0.06)" />
+                            <rect x="80" y="7" width={Math.max(310 * barW / 100, isSmall ? 14 : 50)} height="28" rx="14" fill={hex} />
+                            {!isSmall && <text x="92" y="25.5" fill="#FFF" fontSize="13" fontWeight="700" fontFamily="system-ui, sans-serif">{val} %</text>}
+                            {isSmall && <text x={80 + 310 * barW / 100 + 8} y="25.5" fill="#8E8E93" fontSize="13" fontWeight="600" fontFamily="system-ui, sans-serif">{val} %</text>}
+                          </svg>
+                        );
+                      })
+                    ) : (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                        {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+                          const val = Math.round(candidateProfile[k]);
+                          const hex = BAR_HEX[k];
+                          const widthPct = (val / 67) * 100;
+                          const isSmall = widthPct < 18;
+                          return (
+                            <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                              <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>{labelComponent(k)}</span>
+                              <div style={{ flex: 1, position: "relative", height: 26 }}>
+                                <div style={{ position: "absolute", inset: 0, borderRadius: 13, background: "rgba(0,0,0,0.06)" }} />
+                                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50 }}>
+                                  {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>}
+                                </div>
+                                {isSmall && (
+                                  <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap" }}>{val} %</span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
-                {isExportingPdf ? (
-                  <div style={{ marginBottom: 14 }}>
-                    {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
-                      const rv = Math.round(roleTriad![k]);
-                      const cv = Math.round(candidateProfile[k]);
-                      const hex = BAR_HEX[k];
-                      const rW = Math.min(Math.max((rv / 67) * 100, 6), 100);
-                      const cW = Math.min(Math.max((cv / 67) * 100, 6), 100);
-                      const barTotal = 310;
-                      return (
-                        <svg key={k} width="100%" height="52" viewBox="0 0 480 52" preserveAspectRatio="xMinYMid meet" style={{ display: "block" }}>
-                          <text x="0" y="30" fill="#6E6E73" fontSize="13" fontFamily="system-ui, sans-serif">{labelComponent(k)}</text>
-                          <rect x="90" y="7" width={barTotal} height="14" rx="7" fill="rgba(0,0,0,0.06)" />
-                          <rect x="90" y="7" width={Math.max(barTotal * rW / 100, 14)} height="14" rx="7" fill={hex} opacity="0.85" />
-                          <text x={90 + Math.max(barTotal * rW / 100, 14) + 6} y="17" fill={hex} fontSize="11" fontWeight="700" fontFamily="system-ui, sans-serif">{rv}%</text>
-                          <rect x="90" y="27" width={barTotal} height="14" rx="7" fill="rgba(0,0,0,0.04)" />
-                          <rect x="90" y="27" width={Math.max(barTotal * cW / 100, 14)} height="14" rx="7" fill={hex} opacity="0.35" />
-                          <rect x="90" y="27" width={Math.max(barTotal * cW / 100, 14)} height="14" rx="7" fill="none" stroke={hex} strokeWidth="1.5" opacity="0.6" />
-                          <text x={90 + Math.max(barTotal * cW / 100, 14) + 6} y="37" fill="#8E8E93" fontSize="11" fontWeight="600" fontFamily="system-ui, sans-serif">{cv}%</text>
-                        </svg>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 14 }}>
-                    {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
-                      const rv = Math.round(roleTriad![k]);
-                      const cv = Math.round(candidateProfile[k]);
-                      const hex = BAR_HEX[k];
-                      const rPct = (rv / 67) * 100;
-                      const cPct = (cv / 67) * 100;
-                      return (
-                        <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                          <span style={{ fontSize: 13, color: "#6E6E73", width: 78, flexShrink: 0 }}>{labelComponent(k)}</span>
-                          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
-                            <div style={{ position: "relative", height: 14 }}>
-                              <div style={{ position: "absolute", inset: 0, borderRadius: 7, background: "rgba(0,0,0,0.06)" }} />
-                              <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(rPct, 4), 100)}%`, borderRadius: 7, background: hex, opacity: 0.85 }} />
-                            </div>
-                            <div style={{ position: "relative", height: 14 }}>
-                              <div style={{ position: "absolute", inset: 0, borderRadius: 7, background: "rgba(0,0,0,0.04)" }} />
-                              <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(cPct, 4), 100)}%`, borderRadius: 7, background: `${hex}30`, border: `1.5px solid ${hex}60` }} />
-                            </div>
-                          </div>
-                          <div style={{ width: 52, flexShrink: 0, textAlign: "right" }}>
-                            <span style={{ fontSize: 12, fontWeight: 700, color: hex }}>{rv}%</span>
-                            <span style={{ fontSize: 11, color: "#8E8E93" }}> / {cv}%</span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
                   {biggestGapText(result.roleTriad, result.candTriad)}
                 </p>
@@ -954,29 +987,22 @@ export default function SollIstBericht() {
                 </div>
               )}
 
-              <div data-testid="section-final-assessment" style={{ padding: "28px", borderRadius: 16, background: `linear-gradient(135deg, ${fitCol}0A, ${fitCol}04)`, border: `1px solid ${fitCol}20`, boxShadow: `0 4px 20px ${fitCol}08` }}>
+              <div data-testid="section-final-assessment" style={{ padding: "24px", borderRadius: 14, background: `${fitCol}06`, border: `1px solid ${fitCol}18` }}>
                 <SectionHead num={result.integrationsplan ? 9 : 8} icon={Award} title="Gesamtbewertung" iconColor={fitCol} />
-
-                <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 20, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.8)", border: `1px solid ${fitCol}18` }}>
-                  <div style={{ width: 44, height: 44, borderRadius: 22, background: `${fitCol}15`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: `0 0 0 3px ${fitCol}10` }}>
-                    <Award style={{ width: 22, height: 22, color: fitCol }} />
+                <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
+                  <div style={{ flex: 1, padding: "10px 14px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Grundpassung</p>
+                    <p style={{ fontSize: 15, fontWeight: 700, color: fitCol, margin: 0 }}>{result.fitLabel}</p>
                   </div>
-                  <div>
-                    <p style={{ fontSize: 20, fontWeight: 800, color: fitCol, margin: 0, letterSpacing: "-0.02em" }}>{result.fitLabel}</p>
-                    <p style={{ fontSize: 12, color: "#6E6E73", margin: "2px 0 0" }}>{result.roleName}</p>
-                  </div>
-                </div>
-
-                <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
                   {(() => {
                     const cLevel = result.controlIntensity === "hoch" ? 3 : result.controlIntensity === "mittel" ? 2 : 1;
                     const cCol = cLevel === 3 ? "#D64045" : cLevel === 2 ? "#E5A832" : "#3A9A5C";
                     const cLabel = result.controlIntensity === "hoch" ? "Hoher Steuerungsbedarf" : result.controlIntensity === "mittel" ? "Mittlerer Steuerungsbedarf" : "Geringer Steuerungsbedarf";
                     return (
-                      <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.06)" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>Steuerungsbedarf</p>
+                      <div style={{ flex: 1, padding: "10px 14px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Steuerungsbedarf</p>
                         <p style={{ fontSize: 14, fontWeight: 700, color: cCol, margin: "0 0 8px" }}>{cLevel} von 3 <span style={{ fontWeight: 400, fontSize: 12, color: "#48484A" }}>– {cLabel}</span></p>
-                        <div style={{ display: "flex", gap: 4 }}>
+                        <div style={{ display: "flex", gap: 4, maxWidth: 120, margin: "0 auto" }}>
                           {Array.from({ length: 3 }).map((_, i) => (
                             <div key={i} style={{ flex: 1, height: 8, borderRadius: 3, background: i < cLevel ? cCol : "rgba(0,0,0,0.08)" }} />
                           ))}
@@ -984,19 +1010,7 @@ export default function SollIstBericht() {
                       </div>
                     );
                   })()}
-                  <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.06)" }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>Gesamtabweichung</p>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>{result.totalGap} Punkte <span style={{ fontWeight: 400, fontSize: 12, color: "#48484A" }}>– {result.gapLevel}</span></p>
-                    <div style={{ display: "flex", gap: 4 }}>
-                      {Array.from({ length: 3 }).map((_, i) => {
-                        const gCol = result.gapLevel === "hoch" ? "#D64045" : result.gapLevel === "mittel" ? "#E5A832" : "#3A9A5C";
-                        const gLevel = result.gapLevel === "hoch" ? 3 : result.gapLevel === "mittel" ? 2 : 1;
-                        return <div key={i} style={{ flex: 1, height: 8, borderRadius: 3, background: i < gLevel ? gCol : "rgba(0,0,0,0.08)" }} />;
-                      })}
-                    </div>
-                  </div>
                 </div>
-
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de" data-testid="text-final-rating-text">{result.finalText}</p>
               </div>
 
