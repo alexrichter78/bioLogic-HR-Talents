@@ -883,24 +883,23 @@ export default function SollIstBericht() {
                 const rFitLabel = result.fitLabel;
                 const rFitColor = result.fitColor;
 
-                const rFazit = rFitLabel === "Geeignet"
-                  ? "Die Arbeitsweise der Person passt gut zu den Anforderungen der Rolle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein."
-                  : rFitLabel === "Bedingt geeignet"
-                  ? "Die Grundausrichtung ist ähnlich. In einzelnen Punkten unterscheidet sich die Arbeitsweise jedoch. Mit klaren Erwartungen und guter Führung kann die Zusammenarbeit stabil funktionieren."
-                  : "Die Anforderungen der Rolle und die natürliche Arbeitsweise der Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch ein erhöhter Abstimmungsbedarf.";
+                const rGapLevel = result.gapLevel;
+                let rFazit: string;
+                if (rFitLabel === "Geeignet") {
+                  rFazit = "Die Arbeitsweise der Person passt gut zu den Anforderungen der Rolle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein.";
+                } else if (rFitLabel === "Bedingt geeignet" && rGapLevel === "gering") {
+                  rFazit = "Die Grundausrichtung ist ähnlich, jedoch unterscheidet sich die Gewichtung der sekundären Bereiche. Mit klaren Erwartungen und gezielter Führung ist die Zusammenarbeit stabil möglich.";
+                } else if (rFitLabel === "Bedingt geeignet") {
+                  rFazit = "Die Grundausrichtung ist ähnlich. In einzelnen Punkten unterscheidet sich die Arbeitsweise jedoch. Mit klaren Erwartungen und guter Führung kann die Zusammenarbeit stabil funktionieren.";
+                } else if (rFitLabel === "Nicht geeignet" && rGapLevel !== "hoch") {
+                  rFazit = "Die strukturelle Abweichung zwischen Rolle und Person ist deutlich. Obwohl der Gesamtabstand moderat ist, weicht die Gewichtung der Arbeitsbereiche erheblich ab.";
+                } else {
+                  rFazit = "Die Anforderungen der Rolle und die natürliche Arbeitsweise der Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch ein erhöhter Abstimmungsbedarf.";
+                }
 
-                const rDev = rFitLabel === "Geeignet" ? 3 : rFitLabel === "Bedingt geeignet" ? 2 : 1;
-
-                const rDevTexts: Record<number, string> = {
-                  1: "Die Anforderungen der Rolle liegen weit außerhalb der natürlichen Arbeitsweise der Person. Eine stabile Entwicklung ist deshalb kaum zu erwarten.",
-                  2: "Die Rolle verlangt eine deutlich andere Arbeitsweise als die Person von Natur aus mitbringt. Eine Entwicklung ist möglich, erfordert jedoch dauerhaft starke Führung und klare Struktur.",
-                  3: "Die Arbeitsweise der Person passt sehr gut zur Rolle. Die Anforderungen können schnell übernommen und dauerhaft stabil umgesetzt werden.",
-                };
-                const rDevLabels: Record<number, string> = {
-                  1: "Entwicklung unwahrscheinlich",
-                  2: "Entwicklung mit Unterstützung möglich",
-                  3: "Entwicklung sehr wahrscheinlich",
-                };
+                const rDevLevel = result.developmentLevel;
+                const rDev = rDevLevel >= 4 ? 3 : rDevLevel >= 3 ? 2 : 1;
+                const rDevLabel = result.developmentLabel === "hoch" ? "Entwicklung sehr wahrscheinlich" : result.developmentLabel === "mittel" ? "Entwicklung mit Unterstützung möglich" : "Entwicklung unwahrscheinlich";
                 const rGaugeCol = rDev === 3 ? "#3A9A5C" : rDev === 2 ? "#E5A832" : "#D64045";
 
                 return (
@@ -923,14 +922,14 @@ export default function SollIstBericht() {
                       Entwicklungsprognose
                     </p>
                     <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>
-                      {rDev} von 3 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>{rDevLabels[rDev]}</span>
+                      {rDev} von 3 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>{rDevLabel}</span>
                     </p>
                     <div style={{ display: "flex", gap: 5, marginBottom: 16 }} data-testid="gauge-development">
                       {Array.from({ length: 3 }).map((_, i) => (
                         <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < rDev ? rGaugeCol : "rgba(0,0,0,0.08)" }} />
                       ))}
                     </div>
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{rDevTexts[rDev]}</p>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{result.developmentText}</p>
                   </div>
                 );
               })()}
@@ -976,9 +975,10 @@ export default function SollIstBericht() {
               )}
 
               {(() => {
-                const fDev = result.fitLabel === "Geeignet" ? 3 : result.fitLabel === "Bedingt geeignet" ? 2 : 1;
+                const fDevLevel = result.developmentLevel;
+                const fDev = fDevLevel >= 4 ? 3 : fDevLevel >= 3 ? 2 : 1;
                 const fDevCol = fDev === 3 ? "#3A9A5C" : fDev === 2 ? "#E5A832" : "#D64045";
-                const fDevLabel = fDev === 3 ? "Entwicklung sehr wahrscheinlich" : fDev === 2 ? "Entwicklung mit Unterstützung möglich" : "Entwicklung unwahrscheinlich";
+                const fDevLabel = result.developmentLabel === "hoch" ? "Entwicklung sehr wahrscheinlich" : result.developmentLabel === "mittel" ? "Entwicklung mit Unterstützung möglich" : "Entwicklung unwahrscheinlich";
                 return (
                   <div data-testid="section-final-assessment" style={{ padding: "28px", borderRadius: 14, background: `${fitCol}05`, border: `1px solid ${fitCol}12` }}>
                     <SectionHead num={result.integrationsplan ? 8 : 7} icon={Award} title="Gesamtbewertung" iconColor={fitCol} />
