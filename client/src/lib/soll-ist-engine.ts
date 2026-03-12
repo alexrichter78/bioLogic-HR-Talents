@@ -59,6 +59,7 @@ export type SollIstResult = {
   controlIntensity: "gering" | "mittel" | "hoch";
   summaryText: string;
   executiveBullets: string[];
+  constellationRisks: string[];
   dominanceShiftText: string;
   stressBehavior: StressBehavior;
   impactAreas: ImpactArea[];
@@ -236,6 +237,7 @@ export function computeSollIst(
 
   const summaryText = buildSummary(roleName, cn, fitLabel, rk, ck, gapLevel, rt, ct, rConst, cConst);
   const executiveBullets = buildExecutiveBullets(rk, ck, gapLevel, fitLabel, cn, rt, ct);
+  const constellationRisks = buildConstellationRisks(rk, ck, gapLevel, rt, ct);
   const dominanceShiftText = buildDominanceShift(roleName, cn, rk, ck, rt, ct, rConst, cConst);
   const stressBehavior = buildStressBehavior(cConst, ct, cn, gapLevel);
   const impactAreas = buildImpactAreas(rk, ck, rt, ct, cn, fuehrungsArt);
@@ -266,6 +268,7 @@ export function computeSollIst(
     controlIntensity,
     summaryText,
     executiveBullets,
+    constellationRisks,
     dominanceShiftText,
     stressBehavior,
     impactAreas,
@@ -348,6 +351,53 @@ function buildExecutiveBullets(rk: ComponentKey, ck: ComponentKey, gapLevel: str
   }
 
   return bullets;
+}
+
+function buildConstellationRisks(rk: ComponentKey, ck: ComponentKey, gapLevel: string, rt: Triad, ct: Triad): string[] {
+  if (rk === ck && gapLevel === "gering") return [];
+
+  const gapI = Math.abs(rt.impulsiv - ct.impulsiv);
+  const gapN = Math.abs(rt.intuitiv - ct.intuitiv);
+  const gapA = Math.abs(rt.analytisch - ct.analytisch);
+  const risks: string[] = [];
+
+  if (rk === "analytisch" && ck === "impulsiv") {
+    risks.push("Entscheidungen werden schneller getroffen als Prozesse geprüft werden");
+    risks.push("Struktur und Dokumentation verlieren an Priorität");
+    risks.push("Qualitätsstandards müssen stärker eingefordert werden");
+  } else if (rk === "analytisch" && ck === "intuitiv") {
+    risks.push("Beziehungsdynamik dominiert über sachliche Prüfung");
+    risks.push("Standards weichen auf, wenn persönliche Nähe wichtiger wird");
+    risks.push("Qualitätssicherung erfordert klare Leitlinien");
+  } else if (rk === "impulsiv" && ck === "analytisch") {
+    risks.push("Entscheidungsgeschwindigkeit bleibt hinter der Rollenanforderung zurück");
+    risks.push("Chancen werden durch zu lange Prüfphasen verpasst");
+    risks.push("Klare Fristen und Zeitvorgaben sind notwendig");
+  } else if (rk === "impulsiv" && ck === "intuitiv") {
+    risks.push("Abstimmungsrunden verzögern Entscheidungen, die sofort fallen müssten");
+    risks.push("Umsetzungstempo leidet unter Konsensbedürfnis");
+    risks.push("Direkte Zielvorgaben sind wichtiger als Teamdiskussionen");
+  } else if (rk === "intuitiv" && ck === "impulsiv") {
+    risks.push("Betroffene fühlen sich übergangen, weil Entscheidungen ohne Einbindung fallen");
+    risks.push("Beziehungsarbeit und Teamzusammenhalt kommen zu kurz");
+    risks.push("Kommunikationsregeln müssen aktiv etabliert werden");
+  } else if (rk === "intuitiv" && ck === "analytisch") {
+    risks.push("Zwischenmenschliche Wirkung tritt hinter formale Prozesse zurück");
+    risks.push("Teamdynamik leidet unter zu sachlicher Kommunikation");
+    risks.push("Persönliche Ansprache muss bewusst eingefordert werden");
+  } else if (rk === ck) {
+    if (gapI >= 10 || gapN >= 10 || gapA >= 10) {
+      risks.push("Grundrichtung stimmt, aber die Gewichtung der Nebenbereiche weicht ab");
+      if (gapA >= 10) risks.push("Unterschiedliches Mass an Strukturorientierung erfordert Abstimmung");
+      if (gapI >= 10) risks.push("Unterschiedliches Umsetzungstempo erfordert klare Erwartungen");
+      if (gapN >= 10) risks.push("Unterschiedlicher Kommunikationsstil erfordert bewusste Führung");
+    } else {
+      risks.push("Feinabstimmung in den Nebenbereichen nötig");
+      risks.push("Regelmässiges Feedback sichert die Passung langfristig");
+    }
+  }
+
+  return risks;
 }
 
 function buildSummary(role: string, cand: string, fit: string, rk: ComponentKey, ck: ComponentKey, gap: string, rt: Triad, ct: Triad, rConst: ConstellationType, cConst: ConstellationType): string {

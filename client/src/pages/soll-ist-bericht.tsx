@@ -622,6 +622,16 @@ export default function SollIstBericht() {
                     </ul>
                   </div>
                 )}
+                {result.constellationRisks.length > 0 && (
+                  <div style={{ marginTop: 16, padding: "14px 20px", borderRadius: 10, background: "rgba(212,58,69,0.04)", border: "1px solid rgba(212,58,69,0.12)" }}>
+                    <p style={{ fontSize: 11, fontWeight: 700, color: "#D43A45", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>Typische Risiken dieser Konstellation</p>
+                    <ul style={{ margin: 0, paddingLeft: 18, listStyleType: "disc" }}>
+                      {result.constellationRisks.map((r, i) => (
+                        <li key={i} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, marginBottom: i < result.constellationRisks.length - 1 ? 4 : 0 }}>{r}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
 
               <div style={sep} data-testid="section-dominance-shift">
