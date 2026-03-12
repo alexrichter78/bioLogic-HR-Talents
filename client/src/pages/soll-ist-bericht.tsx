@@ -580,9 +580,9 @@ export default function SollIstBericht() {
           return (
           <div ref={reportRef} style={{ maxWidth: 800, margin: "0 auto" }} data-testid="print-report-wrapper">
             <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 16, padding: "48px 44px", boxShadow: "0 2px 16px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04)", border: "none", overflow: "hidden" }} data-testid="print-report-card">
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg, ${fitCol}, ${fitCol}80)` }} />
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${fitCol}90, ${fitCol}40)` }} />
 
-              <div style={{ marginBottom: 44 }} data-testid="section-header">
+              <div style={{ marginBottom: 28 }} data-testid="section-header">
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 22 }}>
                   <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "5px 14px", borderRadius: 20, background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.04)" }}>
                     <FileText style={{ width: 12, height: 12, color: "#A0A0A5" }} />
