@@ -512,7 +512,7 @@ export default function SollIstBericht() {
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                       <Zap style={{ width: 22, height: 22, color: "#3A9A5C", flexShrink: 0 }} />
                       <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
-                        MatchCheck — Systemwirkung
+                        MatchCheck Systemwirkung
                       </span>
                     </div>
                     <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${systemwirkungOpen ? "rotate-180" : ""}`} />

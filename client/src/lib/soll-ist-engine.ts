@@ -318,11 +318,11 @@ function constellationCandText(c: ConstellationType, cand: string): string {
 function buildSummary(role: string, cand: string, fit: string, rk: ComponentKey, ck: ComponentKey, gap: string, rt: Triad, ct: Triad, rConst: ConstellationType, cConst: ConstellationType): string {
   const s = Subj(cand);
   if (rk === ck && gap === "gering") {
-    return `${s} passt in der Grundausrichtung gut zur Rolle ${role}. Beide setzen auf dieselbe Arbeitslogik. ${constellationRoleText(rConst)} ${s} arbeitet ähnlich — kleinere Unterschiede zeigen sich vor allem in der Gewichtung der sekundären Bereiche und sind im Alltag gut steuerbar.`;
+    return `${s} passt in der Grundausrichtung gut zur Rolle ${role}. Beide setzen auf dieselbe Arbeitslogik. ${constellationRoleText(rConst)} ${s} arbeitet ähnlich. Kleinere Unterschiede zeigen sich vor allem in der Gewichtung der sekundären Bereiche und sind im Alltag gut steuerbar.`;
   }
 
   if (gap === "hoch") {
-    return `${s} und die Rolle ${role} funktionieren grundlegend unterschiedlich.\n\nWas die Rolle braucht: ${constellationRoleText(rConst)}\n\nWas ${subj(cand)} mitbringt: ${constellationCandText(cConst, cand)}\n\nDiese Unterschiede wirken sich im Alltag spürbar aus — bei Entscheidungen, Arbeitsweise und Zusammenarbeit.`;
+    return `${s} und die Rolle ${role} funktionieren grundlegend unterschiedlich.\n\nWas die Rolle braucht: ${constellationRoleText(rConst)}\n\nWas ${subj(cand)} mitbringt: ${constellationCandText(cConst, cand)}\n\nDiese Unterschiede wirken sich im Alltag spürbar aus, bei Entscheidungen, Arbeitsweise und Zusammenarbeit.`;
   }
 
   return `${s} bringt eine andere Arbeitslogik mit, als die Rolle ${role} erfordert. ${constellationRoleText(rConst)} ${s} geht dagegen anders vor: ${constellationCandText(cConst, cand)} Die Unterschiede sind erkennbar, lassen sich aber bei gezielter Führung und klaren Erwartungen im Alltag ausgleichen.`;
@@ -332,7 +332,7 @@ function buildDominanceShift(role: string, cand: string, rk: ComponentKey, ck: C
   const s = Subj(cand);
   if (rk === ck) {
     if (rConst === cConst) {
-      return `Die Grundausrichtung stimmt überein. Sowohl die Rolle als auch ${subj(cand)} setzen auf dieselbe Arbeitslogik. Im Alltag bedeutet das, dass die Grundrichtung passt — einzelne Situationen werden aber unterschiedlich angegangen.`;
+      return `Die Grundausrichtung stimmt überein. Sowohl die Rolle als auch ${subj(cand)} setzen auf dieselbe Arbeitslogik. Im Alltag bedeutet das, dass die Grundrichtung passt. Einzelne Situationen werden aber unterschiedlich angegangen.`;
     }
     return `Die Hauptrichtung stimmt überein, aber die Gewichtung unterscheidet sich. ${constellationRoleText(rConst)} ${s} arbeitet zwar in dieselbe Richtung, gewichtet aber anders: ${constellationCandText(cConst, cand)} Das kann in bestimmten Situationen zu unterschiedlichem Verhalten führen.`;
   }
@@ -343,7 +343,7 @@ function buildDominanceShift(role: string, cand: string, rk: ComponentKey, ck: C
     return `${constellationRoleText(rConst)} ${s} bringt jedoch eine andere Arbeitsweise mit: ${constellationCandText(cConst, cand)} Da ${subj(cand)} zwischen zwei Ausrichtungen wechselt, ist das Verhalten weniger vorhersehbar. Für die Führungskraft bedeutet das: klare Rahmenvorgaben und regelmäßiges Feedback sind besonders wichtig.`;
   }
 
-  return `${constellationRoleText(rConst)} ${s} arbeitet aber anders: ${constellationCandText(cConst, cand)} Dadurch verschiebt sich im Alltag der Schwerpunkt — weg von ${compShort(rk)}, hin zu ${compShort(ck)}.`;
+  return `${constellationRoleText(rConst)} ${s} arbeitet aber anders: ${constellationCandText(cConst, cand)} Dadurch verschiebt sich im Alltag der Schwerpunkt, weg von ${compShort(rk)}, hin zu ${compShort(ck)}.`;
 }
 
 function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string, gapLevel: string): StressBehavior {
@@ -372,11 +372,11 @@ function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string,
   const sn = Subj(cand);
   let controlledPressure: string;
   if (cConst === "BALANCED") {
-    controlledPressure = `Steigt der Arbeitsdruck, greift ${subj(cand)} auf die situativ naheliegendste Arbeitslogik zurück. Da das Profil ausgeglichen ist, gibt es keinen klaren Automatismus — die Reaktion hängt stärker vom Kontext und der Führung ab.`;
+    controlledPressure = `Steigt der Arbeitsdruck, greift ${subj(cand)} auf die situativ naheliegendste Arbeitslogik zurück. Da das Profil ausgeglichen ist, gibt es keinen klaren Automatismus. Die Reaktion hängt stärker vom Kontext und der Führung ab.`;
   } else if (cConst.includes("NEAR")) {
     controlledPressure = `Steigt der Arbeitsdruck, greift ${subj(cand)} auf die gerade führende Logik zurück. Da beide Hauptanteile fast gleich stark sind, fällt die Reaktion situationsabhängig aus: Mal wird stärker über ${compShort(pk)} gesteuert, mal über ${compShort(sk)}.`;
   } else {
-    controlledPressure = `Steigt der Arbeitsdruck, verstärkt sich zunächst die Tendenz, ${primaryBehavior[pk]}. Kurzfristig stabilisiert das die Situation — gleichzeitig steigt das Risiko, dass ${compShort(sk)} in den Hintergrund tritt.`;
+    controlledPressure = `Steigt der Arbeitsdruck, verstärkt sich zunächst die Tendenz, ${primaryBehavior[pk]}. Kurzfristig stabilisiert das die Situation, gleichzeitig steigt das Risiko, dass ${compShort(sk)} in den Hintergrund tritt.`;
   }
 
   let uncontrolledStress: string;
@@ -385,7 +385,7 @@ function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string,
   } else if (d12 <= 5) {
     uncontrolledStress = `Wird die Belastung sehr hoch, kann sich der Schwerpunkt leicht verschieben. ${sn} bleibt in der Grundlogik erkennbar, nutzt aber spürbar stärker ${compShort(sk)}. ${secondaryBehavior[sk]}. Die Arbeitsweise verändert sich, die Grundrichtung bleibt aber steuerbar.`;
   } else {
-    uncontrolledStress = `Wird die Belastung sehr hoch und treten viele Anforderungen gleichzeitig auf, verschiebt sich das Verhalten deutlich. ${compShort(sk)} tritt stärker in den Vordergrund. ${secondaryBehavior[sk]}. Entscheidungen werden ${secondaryDecision[sk]}. Unter starkem Stress arbeitet ${subj(cand)} anders als im Normalzustand — darauf sollte die Führungskraft vorbereitet sein.`;
+    uncontrolledStress = `Wird die Belastung sehr hoch und treten viele Anforderungen gleichzeitig auf, verschiebt sich das Verhalten deutlich. ${compShort(sk)} tritt stärker in den Vordergrund. ${secondaryBehavior[sk]}. Entscheidungen werden ${secondaryDecision[sk]}. Unter starkem Stress arbeitet ${subj(cand)} anders als im Normalzustand. Darauf sollte die Führungskraft vorbereitet sein.`;
   }
 
   return { controlledPressure, uncontrolledStress };
@@ -417,9 +417,9 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
   let risk: string;
 
   if (rk === "analytisch") {
-    roleNeed = "Sorgfältige, planvolle und prüforientierte Entscheidungen. Optionen prüfen, Risiken abwägen — erst dann handeln.";
+    roleNeed = "Sorgfältige, planvolle und prüforientierte Entscheidungen. Optionen prüfen, Risiken abwägen, erst dann handeln.";
     if (ck === "impulsiv") {
-      candidatePattern = `${s} entscheidet deutlich schneller und stärker aus dem Handeln heraus — oft noch bevor alle Informationen vorliegen.`;
+      candidatePattern = `${s} entscheidet deutlich schneller und stärker aus dem Handeln heraus, oft noch bevor alle Informationen vorliegen.`;
       risk = "Wichtige Prüfschritte können übersprungen werden. Gerade bei komplexeren Aufgaben steigt das Risiko für Fehler oder Nacharbeit.";
     } else {
       candidatePattern = `${s} entscheidet stärker aus dem Kontext heraus und bezieht vor allem Stimmungen und Beziehungen ein. Datenbasierte Prüfung steht weniger im Vordergrund.`;
@@ -475,7 +475,7 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
   if (gapA >= 10 && ct.analytisch < rt.analytisch) {
     risk = `Bei parallelen Aufgaben wird ${subj(cand)} eher schnell handeln statt Schritte zu prüfen. Wichtige Prüfschritte können verkürzt werden. Die Führungskraft muss Prozessklarheit aktiv einfordern.`;
   } else if (gapA >= 10 && ct.analytisch > rt.analytisch) {
-    risk = `Aufgaben werden länger geprüft als notwendig. ${s} investiert mehr Zeit in Planung und Absicherung als die Rolle erlaubt — das bremst das Gesamttempo. Klare Zeitvorgaben helfen.`;
+    risk = `Aufgaben werden länger geprüft als notwendig. ${s} investiert mehr Zeit in Planung und Absicherung als die Rolle erlaubt. Das bremst das Gesamttempo. Klare Zeitvorgaben helfen.`;
   } else {
     risk = "Arbeitssteuerung passt grundsätzlich zur Rolle. Feinabstimmung kann notwendig sein, aber die Grundlogik stimmt.";
   }
@@ -558,7 +558,7 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
         : "";
 
     if (rk === "analytisch" && ck === "impulsiv") {
-      risk = `Dem Team fehlen klare Leitlinien und verlässliche Prioritäten. Entscheidungen wirken impulsiv statt durchdacht — struktursuchende Mitarbeiter verlieren den Halt.${leadershipSuffix}`;
+      risk = `Dem Team fehlen klare Leitlinien und verlässliche Prioritäten. Entscheidungen wirken impulsiv statt durchdacht. Struktursuchende Mitarbeiter verlieren den Halt.${leadershipSuffix}`;
     } else if (rk === "analytisch" && ck === "intuitiv") {
       risk = `Führungsentscheidungen werden stärker von Beziehungsdynamik geprägt als von fachlichen Standards. Es kann der Eindruck entstehen, dass persönliche Nähe wichtiger ist als Leistung.${leadershipSuffix}`;
     } else if (rk === "impulsiv" && ck === "analytisch") {
@@ -566,9 +566,9 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
     } else if (rk === "impulsiv" && ck === "intuitiv") {
       risk = `Statt schneller Entscheidungen wird abgestimmt. Das Team erwartet Tempo, bekommt Gesprächsrunden. Zeitkritische Situationen erzeugen Frustration.${leadershipSuffix}`;
     } else if (rk === "intuitiv" && ck === "impulsiv") {
-      risk = `Mitarbeiter fühlen sich übergangen — Entscheidungen fallen ohne ausreichende Einbindung. Beziehungsarbeit kommt zu kurz, Teamzusammenhalt leidet.${leadershipSuffix}`;
+      risk = `Mitarbeiter fühlen sich übergangen, weil Entscheidungen ohne ausreichende Einbindung fallen. Beziehungsarbeit kommt zu kurz, der Teamzusammenhalt leidet.${leadershipSuffix}`;
     } else {
-      risk = `Führung wirkt formal und distanziert. Erwartet werden persönliche Nähe und offene Kommunikation — geliefert werden Regeln und Prozesse.${leadershipSuffix}`;
+      risk = `Führung wirkt formal und distanziert. Erwartet werden persönliche Nähe und offene Kommunikation, geliefert werden Regeln und Prozesse.${leadershipSuffix}`;
     }
   } else {
     risk = "Führungsstil passt zur Rollenanforderung. Die Art, wie Orientierung gegeben wird, stimmt mit den Erwartungen des Teams überein.";
@@ -603,11 +603,11 @@ function buildConflictImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
 
   if (gapI >= 12 || gapN >= 12) {
     if (rk === "analytisch" && ck === "impulsiv") {
-      risk = "Konflikte werden schneller und direkter ausgetragen als vorgesehen. Schnelle Klärung möglich, aber nachhaltige Lösung nicht gesichert — Probleme wirken nicht gründlich durchdacht.";
+      risk = "Konflikte werden schneller und direkter ausgetragen als vorgesehen. Schnelle Klärung möglich, aber nachhaltige Lösung nicht gesichert. Probleme wirken nicht gründlich durchdacht.";
     } else if (rk === "impulsiv" && ck === "analytisch") {
       risk = "Konflikte werden zu lange analysiert statt gelöst. Wo schnelle Klärung gebraucht wird, verzögert sich die Lösung durch zu viel Abwägung.";
     } else if (rk === "intuitiv" && ck === "impulsiv") {
-      risk = "Konflikte werden zu schnell entschieden, ohne Beteiligte einzubinden. Betroffene fühlen sich nicht gehört — das belastet die Zusammenarbeit langfristig.";
+      risk = "Konflikte werden zu schnell entschieden, ohne Beteiligte einzubinden. Betroffene fühlen sich nicht gehört. Das belastet die Zusammenarbeit langfristig.";
     } else {
       risk = "Konfliktverhalten passt nicht zur Rollenerwartung. Spannungen wahrscheinlich, weil die Art der Konfliktlösung nicht den Bedürfnissen des Umfelds entspricht.";
     }
@@ -648,11 +648,11 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
     } else if (rk === "analytisch" && ck === "intuitiv") {
       risk = "Die Kultur verschiebt sich von sachlicher Qualität hin zu persönlicher Verbindung. Standards und Regeln können aufweichen, wenn Beziehungen wichtiger werden als Prozesse.";
     } else if (rk === "impulsiv" && ck === "analytisch") {
-      risk = "Das Tempo sinkt. Statt schneller Umsetzung entsteht eine Kultur der Prüfung und Absicherung — in einem dynamischen Umfeld ein Wettbewerbsnachteil.";
+      risk = "Das Tempo sinkt. Statt schneller Umsetzung entsteht eine Kultur der Prüfung und Absicherung. In einem dynamischen Umfeld ein Wettbewerbsnachteil.";
     } else if (rk === "impulsiv" && ck === "intuitiv") {
       risk = "Ergebnisorientierung weicht einer Konsenskultur. Entscheidungen werden diskutiert statt umgesetzt. Die Dynamik der Rolle geht verloren.";
     } else if (rk === "intuitiv" && ck === "impulsiv") {
-      risk = "Kooperative Kultur wird durch Ergebnisorientierung verdrängt. Weniger persönliche Ansprache, mehr Leistungsdruck — Bindung und Motivation können sinken.";
+      risk = "Kooperative Kultur wird durch Ergebnisorientierung verdrängt. Weniger persönliche Ansprache, mehr Leistungsdruck. Bindung und Motivation können sinken.";
     } else {
       risk = "Kultur wird formaler und distanzierter. Persönliche Verbindung und offener Austausch nehmen ab, das Teamgefühl leidet.";
     }
