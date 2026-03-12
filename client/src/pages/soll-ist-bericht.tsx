@@ -642,51 +642,51 @@ export default function SollIstBericht() {
                 <div className="grid gap-6 grid-cols-2" style={{ marginBottom: 14 }}>
                   <div className="rounded-2xl border border-slate-200 bg-white p-6">
                     <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", borderSpacing: 0 }}>
+                      <tbody>
                       {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                         const val = Math.round(roleTriad![k]);
                         const hex = BAR_HEX[k];
                         const widthPct = (val / 67) * 100;
                         const isSmall = widthPct < 18;
                         return (
-                          <div key={k} style={{ position: "relative", height: 26 }}>
-                            <span style={{ position: "absolute", left: 0, top: 4, fontSize: 13, color: "#6E6E73", width: 72 }}>{labelComponent(k)}</span>
-                            <div style={{ position: "absolute", left: 84, right: 0, top: 0, height: 26 }}>
-                              <div style={{ position: "absolute", inset: 0, borderRadius: 13, background: "rgba(0,0,0,0.06)" }} />
-                              <div style={{ position: "absolute", left: 0, top: 0, height: 26, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, minWidth: isSmall ? 8 : 50 }} />
-                              {!isSmall && <span style={{ position: "absolute", left: 10, top: 4, fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>}
-                              {isSmall && (
-                                <span style={{ position: "absolute", top: 4, left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap" }}>{val} %</span>
-                              )}
-                            </div>
-                          </div>
+                          <tr key={k}>
+                            <td style={{ fontSize: 13, color: "#6E6E73", width: 72, paddingRight: 12, paddingTop: 8, paddingBottom: 8, verticalAlign: "middle" }}>{labelComponent(k)}</td>
+                            <td style={{ verticalAlign: "middle", paddingTop: 8, paddingBottom: 8 }}>
+                              <div style={{ position: "relative", height: 26, borderRadius: 13, background: "rgba(0,0,0,0.06)", overflow: "hidden" }}>
+                                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, minWidth: isSmall ? 8 : 50 }} />
+                              </div>
+                            </td>
+                            <td style={{ width: 50, textAlign: "right", fontSize: 13, fontWeight: 700, color: "#1D1D1F", paddingLeft: 10, verticalAlign: "middle", paddingTop: 8, paddingBottom: 8, whiteSpace: "nowrap" }}>{val} %</td>
+                          </tr>
                         );
                       })}
-                    </div>
+                      </tbody>
+                    </table>
                   </div>
                   <div className="rounded-2xl border border-slate-200 bg-white p-6">
                     <p className="text-base font-semibold text-slate-900 mb-6">Ist-Profil <span className="font-normal text-slate-500">(Person)</span></p>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", borderSpacing: 0 }}>
+                      <tbody>
                       {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                         const val = Math.round(candidateProfile[k]);
                         const hex = BAR_HEX[k];
                         const widthPct = (val / 67) * 100;
                         const isSmall = widthPct < 18;
                         return (
-                          <div key={k} style={{ position: "relative", height: 26 }}>
-                            <span style={{ position: "absolute", left: 0, top: 4, fontSize: 13, color: "#6E6E73", width: 72 }}>{labelComponent(k)}</span>
-                            <div style={{ position: "absolute", left: 84, right: 0, top: 0, height: 26 }}>
-                              <div style={{ position: "absolute", inset: 0, borderRadius: 13, background: "rgba(0,0,0,0.06)" }} />
-                              <div style={{ position: "absolute", left: 0, top: 0, height: 26, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, minWidth: isSmall ? 8 : 50 }} />
-                              {!isSmall && <span style={{ position: "absolute", left: 10, top: 4, fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>}
-                              {isSmall && (
-                                <span style={{ position: "absolute", top: 4, left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap" }}>{val} %</span>
-                              )}
-                            </div>
-                          </div>
+                          <tr key={k}>
+                            <td style={{ fontSize: 13, color: "#6E6E73", width: 72, paddingRight: 12, paddingTop: 8, paddingBottom: 8, verticalAlign: "middle" }}>{labelComponent(k)}</td>
+                            <td style={{ verticalAlign: "middle", paddingTop: 8, paddingBottom: 8 }}>
+                              <div style={{ position: "relative", height: 26, borderRadius: 13, background: "rgba(0,0,0,0.06)", overflow: "hidden" }}>
+                                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, minWidth: isSmall ? 8 : 50 }} />
+                              </div>
+                            </td>
+                            <td style={{ width: 50, textAlign: "right", fontSize: 13, fontWeight: 700, color: "#1D1D1F", paddingLeft: 10, verticalAlign: "middle", paddingTop: 8, paddingBottom: 8, whiteSpace: "nowrap" }}>{val} %</td>
+                          </tr>
                         );
                       })}
-                    </div>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
