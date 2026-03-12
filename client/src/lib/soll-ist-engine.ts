@@ -197,7 +197,9 @@ export function computeSollIst(
   roleProfile: Triad,
   candProfile: Triad,
   fuehrungsArt: FuehrungsArt = "keine",
-  matchCheckFit?: string
+  matchCheckFit?: string,
+  matchCheckControl?: string,
+  matchCheckMismatch?: number
 ): SollIstResult {
   const rt = normalizeTriad(roleProfile);
   const ct = normalizeTriad(candProfile);
@@ -206,18 +208,27 @@ export function computeSollIst(
 
   const totalGap = Math.abs(rt.impulsiv - ct.impulsiv) + Math.abs(rt.intuitiv - ct.intuitiv) + Math.abs(rt.analytisch - ct.analytisch);
   const sameDom = rDom.top1.key === cDom.top1.key;
-  const geignetLimit = sameDom ? 28 : 20;
-  const gapLevel: "gering" | "mittel" | "hoch" = totalGap > 40 ? "hoch" : totalGap > geignetLimit ? "mittel" : "gering";
 
   let fitRating: FitRating;
   let fitLabel: string;
   let fitColor: string;
+  let gapLevel: "gering" | "mittel" | "hoch";
+  let controlIntensity: "gering" | "mittel" | "hoch";
 
   if (matchCheckFit) {
-    if (matchCheckFit === "SUITABLE") { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; }
-    else if (matchCheckFit === "CONDITIONAL") { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
-    else { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
+    if (matchCheckFit === "SUITABLE") { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; gapLevel = "gering"; }
+    else if (matchCheckFit === "CONDITIONAL") { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; gapLevel = "mittel"; }
+    else { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; gapLevel = "hoch"; }
+
+    if (matchCheckControl) {
+      controlIntensity = matchCheckControl === "HIGH" ? "hoch" : matchCheckControl === "MEDIUM" ? "mittel" : "gering";
+    } else {
+      controlIntensity = fitRating === "NICHT_GEEIGNET" ? "hoch" : fitRating === "BEDINGT" ? "mittel" : "gering";
+    }
   } else {
+    const geignetLimit = sameDom ? 28 : 20;
+    gapLevel = totalGap > 40 ? "hoch" : totalGap > geignetLimit ? "mittel" : "gering";
+
     const secondaryFlip = sameDom && rDom.top2.key !== cDom.top2.key;
     const candSecGap = cDom.gap2;
 
@@ -234,9 +245,9 @@ export function computeSollIst(
         fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
       }
     }
-  }
 
-  const controlIntensity: "gering" | "mittel" | "hoch" = totalGap > 35 ? "hoch" : totalGap > 15 ? "mittel" : "gering";
+    controlIntensity = totalGap > 35 ? "hoch" : totalGap > 15 ? "mittel" : "gering";
+  }
 
   const rk = rDom.top1.key;
   const ck = cDom.top1.key;

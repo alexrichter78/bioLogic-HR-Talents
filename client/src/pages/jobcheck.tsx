@@ -516,6 +516,8 @@ export default function JobCheck() {
   useEffect(() => {
     if (engine) {
       localStorage.setItem("jobcheckOverallFit", engine.overallFit);
+      localStorage.setItem("jobcheckControlIntensity", engine.controlIntensity);
+      localStorage.setItem("jobcheckMismatchScore", String(engine.mismatchScore));
     }
   }, [engine]);
 
