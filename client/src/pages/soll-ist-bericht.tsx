@@ -653,11 +653,25 @@ export default function SollIstBericht() {
                           <tr key={k}>
                             <td style={{ fontSize: 13, color: "#6E6E73", width: 72, paddingRight: 12, paddingTop: 8, paddingBottom: 8, verticalAlign: "middle" }}>{labelComponent(k)}</td>
                             <td style={{ verticalAlign: "middle", paddingTop: 8, paddingBottom: 8 }}>
-                              <div style={{ position: "relative", height: 26, borderRadius: 13, background: "rgba(0,0,0,0.06)", overflow: "hidden" }}>
-                                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, minWidth: isSmall ? 8 : 50 }} />
+                              <div style={{ position: "relative", height: 28, borderRadius: 14, background: "rgba(0,0,0,0.06)", overflow: "hidden" }}>
+                                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 14, background: hex, minWidth: isSmall ? 8 : 50 }}>
+                                  {!isSmall && (
+                                    <div style={{ height: 28, display: "table", width: "100%" }}>
+                                      <div style={{ display: "table-cell", verticalAlign: "middle", paddingLeft: 10 }}>
+                                        <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                                {isSmall && (
+                                  <div style={{ position: "absolute", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, top: 0, height: 28, display: "table" }}>
+                                    <div style={{ display: "table-cell", verticalAlign: "middle" }}>
+                                      <span style={{ fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap" }}>{val} %</span>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             </td>
-                            <td style={{ width: 50, textAlign: "right", fontSize: 13, fontWeight: 700, color: "#1D1D1F", paddingLeft: 10, verticalAlign: "middle", paddingTop: 8, paddingBottom: 8, whiteSpace: "nowrap" }}>{val} %</td>
                           </tr>
                         );
                       })}
@@ -677,11 +691,25 @@ export default function SollIstBericht() {
                           <tr key={k}>
                             <td style={{ fontSize: 13, color: "#6E6E73", width: 72, paddingRight: 12, paddingTop: 8, paddingBottom: 8, verticalAlign: "middle" }}>{labelComponent(k)}</td>
                             <td style={{ verticalAlign: "middle", paddingTop: 8, paddingBottom: 8 }}>
-                              <div style={{ position: "relative", height: 26, borderRadius: 13, background: "rgba(0,0,0,0.06)", overflow: "hidden" }}>
-                                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, minWidth: isSmall ? 8 : 50 }} />
+                              <div style={{ position: "relative", height: 28, borderRadius: 14, background: "rgba(0,0,0,0.06)", overflow: "hidden" }}>
+                                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 14, background: hex, minWidth: isSmall ? 8 : 50 }}>
+                                  {!isSmall && (
+                                    <div style={{ height: 28, display: "table", width: "100%" }}>
+                                      <div style={{ display: "table-cell", verticalAlign: "middle", paddingLeft: 10 }}>
+                                        <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                                {isSmall && (
+                                  <div style={{ position: "absolute", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, top: 0, height: 28, display: "table" }}>
+                                    <div style={{ display: "table-cell", verticalAlign: "middle" }}>
+                                      <span style={{ fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap" }}>{val} %</span>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             </td>
-                            <td style={{ width: 50, textAlign: "right", fontSize: 13, fontWeight: 700, color: "#1D1D1F", paddingLeft: 10, verticalAlign: "middle", paddingTop: 8, paddingBottom: 8, whiteSpace: "nowrap" }}>{val} %</td>
                           </tr>
                         );
                       })}
