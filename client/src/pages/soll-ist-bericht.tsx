@@ -642,79 +642,39 @@ export default function SollIstBericht() {
                 <div className="grid gap-6 grid-cols-2" style={{ marginBottom: 14 }}>
                   <div className="rounded-2xl border border-slate-200 bg-white p-6">
                     <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
-                    <table style={{ width: "100%", borderCollapse: "collapse", borderSpacing: 0 }}>
-                      <tbody>
-                      {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
-                        const val = Math.round(roleTriad![k]);
-                        const hex = BAR_HEX[k];
-                        const widthPct = (val / 67) * 100;
-                        const isSmall = widthPct < 18;
-                        return (
-                          <tr key={k}>
-                            <td style={{ fontSize: 13, color: "#6E6E73", width: 72, paddingRight: 12, paddingTop: 8, paddingBottom: 8, verticalAlign: "middle" }}>{labelComponent(k)}</td>
-                            <td style={{ verticalAlign: "middle", paddingTop: 8, paddingBottom: 8 }}>
-                              <div style={{ position: "relative", height: 28, borderRadius: 14, background: "rgba(0,0,0,0.06)", overflow: "hidden" }}>
-                                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 14, background: hex, minWidth: isSmall ? 8 : 50 }}>
-                                  {!isSmall && (
-                                    <div style={{ height: 28, display: "table", width: "100%" }}>
-                                      <div style={{ display: "table-cell", verticalAlign: "middle", paddingLeft: 10 }}>
-                                        <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                                {isSmall && (
-                                  <div style={{ position: "absolute", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, top: 0, height: 28, display: "table" }}>
-                                    <div style={{ display: "table-cell", verticalAlign: "middle" }}>
-                                      <span style={{ fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap" }}>{val} %</span>
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                      </tbody>
-                    </table>
+                    {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+                      const val = Math.round(roleTriad![k]);
+                      const hex = BAR_HEX[k];
+                      const barW = Math.min(Math.max((val / 67) * 100, 6), 100);
+                      const isSmall = barW < 20;
+                      return (
+                        <svg key={k} width="100%" height="42" viewBox="0 0 400 42" preserveAspectRatio="xMinYMid meet" style={{ display: "block" }}>
+                          <text x="0" y="25" fill="#6E6E73" fontSize="13" fontFamily="system-ui, sans-serif">{labelComponent(k)}</text>
+                          <rect x="80" y="7" width="310" height="28" rx="14" fill="rgba(0,0,0,0.06)" />
+                          <rect x="80" y="7" width={Math.max(310 * barW / 100, isSmall ? 14 : 50)} height="28" rx="14" fill={hex} />
+                          {!isSmall && <text x="92" y="25.5" fill="#FFF" fontSize="13" fontWeight="700" fontFamily="system-ui, sans-serif">{val} %</text>}
+                          {isSmall && <text x={80 + 310 * barW / 100 + 8} y="25.5" fill="#8E8E93" fontSize="13" fontWeight="600" fontFamily="system-ui, sans-serif">{val} %</text>}
+                        </svg>
+                      );
+                    })}
                   </div>
                   <div className="rounded-2xl border border-slate-200 bg-white p-6">
                     <p className="text-base font-semibold text-slate-900 mb-6">Ist-Profil <span className="font-normal text-slate-500">(Person)</span></p>
-                    <table style={{ width: "100%", borderCollapse: "collapse", borderSpacing: 0 }}>
-                      <tbody>
-                      {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
-                        const val = Math.round(candidateProfile[k]);
-                        const hex = BAR_HEX[k];
-                        const widthPct = (val / 67) * 100;
-                        const isSmall = widthPct < 18;
-                        return (
-                          <tr key={k}>
-                            <td style={{ fontSize: 13, color: "#6E6E73", width: 72, paddingRight: 12, paddingTop: 8, paddingBottom: 8, verticalAlign: "middle" }}>{labelComponent(k)}</td>
-                            <td style={{ verticalAlign: "middle", paddingTop: 8, paddingBottom: 8 }}>
-                              <div style={{ position: "relative", height: 28, borderRadius: 14, background: "rgba(0,0,0,0.06)", overflow: "hidden" }}>
-                                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 14, background: hex, minWidth: isSmall ? 8 : 50 }}>
-                                  {!isSmall && (
-                                    <div style={{ height: 28, display: "table", width: "100%" }}>
-                                      <div style={{ display: "table-cell", verticalAlign: "middle", paddingLeft: 10 }}>
-                                        <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                                {isSmall && (
-                                  <div style={{ position: "absolute", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, top: 0, height: 28, display: "table" }}>
-                                    <div style={{ display: "table-cell", verticalAlign: "middle" }}>
-                                      <span style={{ fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap" }}>{val} %</span>
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                      </tbody>
-                    </table>
+                    {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+                      const val = Math.round(candidateProfile[k]);
+                      const hex = BAR_HEX[k];
+                      const barW = Math.min(Math.max((val / 67) * 100, 6), 100);
+                      const isSmall = barW < 20;
+                      return (
+                        <svg key={k} width="100%" height="42" viewBox="0 0 400 42" preserveAspectRatio="xMinYMid meet" style={{ display: "block" }}>
+                          <text x="0" y="25" fill="#6E6E73" fontSize="13" fontFamily="system-ui, sans-serif">{labelComponent(k)}</text>
+                          <rect x="80" y="7" width="310" height="28" rx="14" fill="rgba(0,0,0,0.06)" />
+                          <rect x="80" y="7" width={Math.max(310 * barW / 100, isSmall ? 14 : 50)} height="28" rx="14" fill={hex} />
+                          {!isSmall && <text x="92" y="25.5" fill="#FFF" fontSize="13" fontWeight="700" fontFamily="system-ui, sans-serif">{val} %</text>}
+                          {isSmall && <text x={80 + 310 * barW / 100 + 8} y="25.5" fill="#8E8E93" fontSize="13" fontWeight="600" fontFamily="system-ui, sans-serif">{val} %</text>}
+                        </svg>
+                      );
+                    })}
                   </div>
                 </div>
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
