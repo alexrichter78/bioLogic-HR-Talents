@@ -31,13 +31,18 @@ export type StressBehavior = {
   uncontrolledStress: string;
 };
 
+export type IntegrationFokus = {
+  intro: string;
+  bullets: string[];
+};
+
 export type IntegrationPhase = {
   num: number;
   title: string;
   period: string;
   ziel: string;
   items: string[];
-  fokus: string;
+  fokus: IntegrationFokus;
 };
 
 export type SollIstResult = {
@@ -884,9 +889,9 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
   let p1Ziel: string;
   let p2Ziel: string;
   let p3Ziel: string;
-  let p1Fokus: string;
-  let p2Fokus: string;
-  let p3Fokus: string;
+  let p1Fokus: IntegrationFokus;
+  let p2Fokus: IntegrationFokus;
+  let p3Fokus: IntegrationFokus;
 
   if (sameDom && !isBedingt) {
     p1Ziel = `Rollenanforderungen in ${role} verstehen und Erwartungen abstimmen.`;
@@ -894,21 +899,42 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
     p1Items.push(`Abstimmung der wichtigsten Arbeitsprioritäten mit dem direkten Umfeld.`);
     p1Items.push(`Transparenz über bestehende Abläufe, Prozesse und Qualitätsstandards.`);
     if (isLeader) p1Items.push(`Führungsrolle, Verantwortungsrahmen und Erwartungen an die Teamsteuerung definieren.`);
-    p1Fokus = `Die Grundlogik der Rolle und ${s === "Die Person" ? "der Person" : cand + "s Arbeitsweise"} stimmt überein. Die Orientierung konzentriert sich auf schnelle Klarheit über Abläufe und Schnittstellen.`;
+    p1Fokus = {
+      intro: `Die Grundlogik der Rolle und ${s === "Die Person" ? "der Person" : cand + "s Arbeitsweise"} stimmt überein. Wichtig ist daher, schnell Klarheit zu schaffen über:`,
+      bullets: [
+        `bestehende Abläufe und Schnittstellen`,
+        `Entscheidungswege und Verantwortungsbereiche`,
+        `Qualitätsstandards und Erwartungshaltung`,
+      ],
+    };
 
     p2Ziel = `Erste operative Verantwortung in ${role} übernehmen und Wirkung zeigen.`;
     p2Items.push(`Eigenständige Übernahme erster Arbeitspakete mit Ergebnisprüfung.`);
     p2Items.push(`Feedback zur Wirkung auf Tempo, Qualität und Zusammenarbeit aktiv einholen.`);
     if (isLeader) p2Items.push(`Erste Führungsentscheidungen eigenständig treffen und reflektieren.`);
     p2Items.push(`Schnittstellenarbeit mit angrenzenden Bereichen etablieren.`);
-    p2Fokus = `${s} arbeitet bereits in der richtigen Grundlogik. Der Fokus liegt darauf, die Wirksamkeit in ${role} sichtbar zu machen und Routinen zu entwickeln.`;
+    p2Fokus = {
+      intro: `${s} arbeitet bereits in der richtigen Grundlogik. Es geht jetzt darum:`,
+      bullets: [
+        `Wirksamkeit in ${role} sichtbar zu machen`,
+        `erste Arbeitsergebnisse eigenständig zu liefern`,
+        `belastbare Routinen zu entwickeln`,
+      ],
+    };
 
     p3Ziel = `Arbeitsweise und ${isLeader ? "Führungsrhythmus" : "Arbeitsrhythmus"} in ${role} stabilisieren.`;
     p3Items.push(`Evaluation der bisherigen Wirkung auf Entscheidungsrhythmus und Belastung.`);
     p3Items.push(`Feinabstimmung der Zusammenarbeit mit dem direkten Umfeld.`);
     p3Items.push(`Prioritäten konsolidieren und Standards stabilisieren.`);
     if (isLeader) p3Items.push(`Führungswirkung und Teamstabilität überprüfen.`);
-    p3Fokus = `Stärken beibehalten, Routinen festigen und langfristige Stabilität in ${role} sichern.`;
+    p3Fokus = {
+      intro: `Die Arbeitsweise ist stabil. Jetzt gilt es:`,
+      bullets: [
+        `Stärken beibehalten und Routinen festigen`,
+        `langfristige Stabilität in ${role} sichern`,
+        ...(isLeader ? [`Führungswirkung und Teamstabilität absichern`] : []),
+      ],
+    };
 
   } else {
 
@@ -919,8 +945,22 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
       p1Items.push(`Verantwortungsbereiche und Entscheidungsfreiräume abgrenzen.`);
       if (isLeader) p1Items.push(`Erwartungen an Führungstempo und Reaktionszeiten transparent machen.`);
       p1Fokus = maxGap.key === "impulsiv" && maxGap.diff > 0
-        ? `${s} arbeitet von Natur aus über ${candStrength}. In ${role} wird jedoch ein deutlich höheres Umsetzungstempo erwartet. Wichtig ist, früh zu klären, wo schnelle Entscheidungen notwendig sind und wo strukturierte Prüfung Raum hat.`
-        : `${s} bringt ${candStrength} als Stärke mit. In ${role} steht Umsetzungsgeschwindigkeit im Vordergrund. Die Orientierungsphase stellt sicher, dass beide Erwartungen klar sind.`;
+        ? {
+            intro: `${s} arbeitet von Natur aus über ${candStrength}. In ${role} wird ein höheres Umsetzungstempo erwartet. Wichtig ist daher, früh zu klären:`,
+            bullets: [
+              `wo schnelle Entscheidungen notwendig sind`,
+              `wo strukturierte Prüfung erwartet wird`,
+              `welche Reaktionszeiten gelten`,
+            ],
+          }
+        : {
+            intro: `${s} bringt ${candStrength} als Stärke mit. In ${role} steht Umsetzungsgeschwindigkeit im Vordergrund. Zu klären ist:`,
+            bullets: [
+              `welches Tempo erwartet wird`,
+              `wo Entscheidungsfreiräume bestehen`,
+              `wie Prioritäten gesetzt werden`,
+            ],
+          };
 
       p2Ziel = `Erste eigenverantwortliche Umsetzung in ${role} starten und Ergebnisse liefern.`;
       p2Items.push(`Erste eigenverantwortliche Umsetzungsprojekte mit messbaren Zielen starten.`);
@@ -929,8 +969,22 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
       if (isLeader) p2Items.push(`Erste Vertriebsentscheidungen eigenständig treffen und auswerten.`);
       else p2Items.push(`Priorisierung zwischen Schnelligkeit und Sorgfalt kalibrieren.`);
       p2Fokus = isBedingt
-        ? `${s} sollte bewusst darauf achten, Entscheidungen nicht zu lange zu prüfen und Umsetzung aktiv zu treiben. Regelmäßiges Feedback hilft, den richtigen Rhythmus zu finden.`
-        : `${s} zeigt bereits eine gute Grunddynamik. Der Fokus liegt darauf, das Umsetzungstempo in ${role} weiter zu schärfen.`;
+        ? {
+            intro: `${s} sollte bewusst darauf achten, Entscheidungen aktiv zu treiben. Konkret bedeutet das:`,
+            bullets: [
+              `Entscheidungen nicht zu lange prüfen`,
+              `Umsetzung aktiv vorantreiben`,
+              `regelmäßig Feedback zum Rhythmus einholen`,
+            ],
+          }
+        : {
+            intro: `${s} zeigt bereits eine gute Grunddynamik. Jetzt geht es darum:`,
+            bullets: [
+              `das Umsetzungstempo in ${role} weiter zu schärfen`,
+              `erste Ergebnisse sichtbar zu machen`,
+              `Feedbackschleifen zu etablieren`,
+            ],
+          };
 
       p3Ziel = `Umsetzungsrhythmus und ${isLeader ? "Führungswirkung" : "Arbeitsweise"} in ${role} stabilisieren.`;
       p3Items.push(`Ergebnisqualität und Tempo über die ersten 30 Tage auswerten.`);
@@ -947,8 +1001,22 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
       p1Items.push(`Klärung operativer Prozesse und Schnittstellen.`);
       if (isLeader) p1Items.push(`Führungserwartungen in Bezug auf Prozesssteuerung und Qualitätssicherung klären.`);
       p1Fokus = maxGap.key === "analytisch" && maxGap.diff > 0
-        ? `${s} arbeitet primär über ${candStrength}. Die Rolle ${role} verlangt jedoch eine deutlich stärkere analytische Orientierung. Wichtig ist, früh zu klären, wo strukturierte Prüfung erwartet wird und wo pragmatische Lösungen reichen.`
-        : `${s} bringt ${candStrength} als Stärke mit. In ${role} steht Struktur und Analyse im Vordergrund. Die Orientierungsphase schafft Klarheit über die erwartete Arbeitstiefe.`;
+        ? {
+            intro: `${s} arbeitet primär über ${candStrength}. Die Rolle ${role} verlangt eine stärkere analytische Orientierung. Wichtig ist, früh zu klären:`,
+            bullets: [
+              `wo strukturierte Prüfung erwartet wird`,
+              `wo pragmatische Lösungen reichen`,
+              `welche Dokumentationsstandards gelten`,
+            ],
+          }
+        : {
+            intro: `${s} bringt ${candStrength} als Stärke mit. In ${role} steht Struktur und Analyse im Vordergrund. Zu klären ist:`,
+            bullets: [
+              `welche Arbeitstiefe erwartet wird`,
+              `welche Standards und Prozesse gelten`,
+              `wie Qualität gemessen wird`,
+            ],
+          };
 
       p2Ziel = `Erste strukturierte Arbeitsergebnisse in ${role} liefern und Standards etablieren.`;
       p2Items.push(`Ein priorisiertes Thema strukturiert analysieren und verbessern.`);
@@ -956,8 +1024,22 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
       p2Items.push(`Einen klaren Standard (Checkliste, Playbook oder Dokumentation) einführen oder schärfen.`);
       p2Items.push(`Fehlerquellen identifizieren und systematisch beheben.`);
       p2Fokus = isBedingt
-        ? `${s} sollte bewusst darauf achten, analytische Tiefe nicht zu umgehen und Ergebnisse sauber zu dokumentieren. Führung sollte hier gezielt begleiten.`
-        : `${s} zeigt bereits eine gute Grundstruktur. Der Fokus liegt darauf, die analytische Arbeitsweise in ${role} weiter zu vertiefen.`;
+        ? {
+            intro: `${s} sollte bewusst auf analytische Tiefe achten. Konkret bedeutet das:`,
+            bullets: [
+              `Ergebnisse sauber dokumentieren`,
+              `analytische Prüfung nicht umgehen`,
+              `Führungsbegleitung aktiv nutzen`,
+            ],
+          }
+        : {
+            intro: `${s} zeigt bereits eine gute Grundstruktur. Jetzt geht es darum:`,
+            bullets: [
+              `die analytische Arbeitsweise in ${role} zu vertiefen`,
+              `Standards einzuführen oder zu schärfen`,
+              `Qualität systematisch sichtbar zu machen`,
+            ],
+          };
 
       p3Ziel = `Qualitätsstandards und Prozesssteuerung in ${role} dauerhaft verankern.`;
       p3Items.push(`Evaluation der Wirkung auf Entscheidungsrhythmus, Priorisierung und Belastung.`);
@@ -973,8 +1055,22 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
       p1Items.push(`Feedback- und Gesprächsformate klären und terminieren.`);
       if (isLeader) p1Items.push(`Erwartungen an Teamführung, Mitarbeiterentwicklung und Gesprächskultur besprechen.`);
       p1Fokus = maxGap.key === "intuitiv" && maxGap.diff > 0
-        ? `${s} arbeitet primär über ${candStrength}. Die Rolle ${role} verlangt eine stärkere Orientierung an Zusammenarbeit und Kommunikation. Wichtig ist, früh zu klären, wo aktive Beziehungsarbeit erwartet wird.`
-        : `${s} bringt ${candStrength} als Stärke mit. In ${role} steht Kommunikation und Zusammenarbeit im Vordergrund. Die Orientierungsphase schafft Klarheit über die erwartete Gesprächskultur.`;
+        ? {
+            intro: `${s} arbeitet primär über ${candStrength}. Die Rolle ${role} verlangt stärkere Beziehungsorientierung. Wichtig ist, früh zu klären:`,
+            bullets: [
+              `wo aktive Beziehungsarbeit erwartet wird`,
+              `welche Gesprächsformate gelten`,
+              `wie Konflikte angesprochen werden`,
+            ],
+          }
+        : {
+            intro: `${s} bringt ${candStrength} als Stärke mit. In ${role} steht Kommunikation im Vordergrund. Zu klären ist:`,
+            bullets: [
+              `welche Gesprächskultur erwartet wird`,
+              `wie Beziehungsarbeit priorisiert wird`,
+              `welche Abstimmungsformate existieren`,
+            ],
+          };
 
       p2Ziel = `Kommunikationswirkung und Beziehungsarbeit in ${role} aktiv gestalten.`;
       p2Items.push(`Regelmäßige Team-Feedbackrunden durchführen und moderieren.`);
@@ -982,8 +1078,22 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
       p2Items.push(`Beziehungsarbeit als konkretes, messbares Ziel verfolgen.`);
       p2Items.push(`Konfliktsituationen proaktiv ansprechen und lösen.`);
       p2Fokus = isBedingt
-        ? `${s} sollte bewusst darauf achten, Kommunikation und Abstimmung nicht als Nebensache zu behandeln. Aktive Beziehungsarbeit ist in ${role} ein zentraler Erfolgsfaktor.`
-        : `${s} zeigt bereits eine gute Kommunikationsbasis. Der Fokus liegt darauf, die Wirkung im Team von ${role} weiter auszubauen.`;
+        ? {
+            intro: `${s} sollte Kommunikation und Abstimmung bewusst priorisieren. Konkret bedeutet das:`,
+            bullets: [
+              `Kommunikation nicht als Nebensache behandeln`,
+              `aktive Beziehungsarbeit als Erfolgsfaktor verstehen`,
+              `regelmäßig Feedback zur Wirkung einholen`,
+            ],
+          }
+        : {
+            intro: `${s} zeigt bereits eine gute Kommunikationsbasis. Jetzt geht es darum:`,
+            bullets: [
+              `die Wirkung im Team von ${role} auszubauen`,
+              `Kommunikationsstandards zu etablieren`,
+              `Teamdynamik aktiv zu gestalten`,
+            ],
+          };
 
       p3Ziel = `Kommunikationsstandards und Teamwirkung in ${role} dauerhaft verankern.`;
       p3Items.push(`Wirkung der Kommunikation auf Teamdynamik und Zusammenarbeit bewerten.`);
@@ -999,8 +1109,21 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
     }
 
     p3Fokus = isBedingt
-      ? `${candStrength} bleibt erhalten, während die Arbeitsweise gezielt Richtung ${rkDesc} weiterentwickelt wird. Die Führungskraft prüft, ob der Steuerungsaufwand langfristig tragbar ist.`
-      : `Stärken beibehalten, Routinen in ${role} festigen und langfristige Stabilität sichern.`;
+      ? {
+          intro: `${candStrength} bleibt erhalten, während die Arbeitsweise Richtung ${rkDesc} weiterentwickelt wird. Die Führungskraft prüft:`,
+          bullets: [
+            `ob der Steuerungsaufwand langfristig tragbar ist`,
+            `ob die Entwicklungsrichtung stimmt`,
+            `ob die Rolle dauerhaft stabil besetzt werden kann`,
+          ],
+        }
+      : {
+          intro: `Die Arbeitsweise ist stabil. Jetzt gilt es:`,
+          bullets: [
+            `Stärken beibehalten und Routinen festigen`,
+            `langfristige Stabilität in ${role} sichern`,
+          ],
+        };
   }
 
   return [
