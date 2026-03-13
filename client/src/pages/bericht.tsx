@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
-import { BarChart3, Briefcase, Heart, Shield, AlertTriangle, FileText, Check, Settings, RefreshCw, Loader2, Zap, Brain, Users, Target, TrendingUp, Lightbulb, Star, Activity, Download } from "lucide-react";
+import { BarChart3, Briefcase, Heart, Shield, AlertTriangle, FileText, Check, Settings, RefreshCw, Loader2, Zap, Brain, Users, Target, TrendingUp, Lightbulb, Star, Activity, Download, Compass, Layers, Award, Crosshair, ArrowUpRight, Gauge, MessageCircle, ShieldCheck, ClipboardList } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE } from "@/data/berufe";
@@ -813,7 +813,13 @@ export default function Bericht() {
                   <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Gesamtprofil</span>
                 </div>
                 <ChartCard icon={BarChart3} title="Gesamtprofil" bg={gesamt} accent={CHAPTER_COLORS[1]} />
-                <div style={{ marginTop: 18 }}><TextBlock text={bericht.gesamtprofil} /></div>
+                <div style={{ marginTop: 18 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                    <Compass style={{ width: 14, height: 14, color: CHAPTER_COLORS[1] }} />
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Zusammenfassung</p>
+                  </div>
+                  <TextBlock text={bericht.gesamtprofil} />
+                </div>
               </GlassCard>
 
               {/* Strukturanalyse (deterministic) */}
@@ -920,7 +926,10 @@ export default function Bericht() {
 
                     <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "18px 0" }} />
 
-                    <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>Verhalten unter Druck</p>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                      <Gauge style={{ width: 14, height: 14, color: "#6E6E73" }} />
+                      <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Verhalten unter Druck</p>
+                    </div>
 
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                       <div style={{
@@ -956,18 +965,30 @@ export default function Bericht() {
                   <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Rahmenbedingungen</span>
                 </div>
                 <ChartCard icon={Settings} title="Rahmenprofil" bg={rahmen} accent={CHAPTER_COLORS[2]} />
-                <div style={{ marginTop: 18 }}><TextBlock text={bericht.rahmenbedingungen.beschreibung} /></div>
+                <div style={{ marginTop: 18 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                    <Layers style={{ width: 14, height: 14, color: CHAPTER_COLORS[2] }} />
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Rollenkontext</p>
+                  </div>
+                  <TextBlock text={bericht.rahmenbedingungen.beschreibung} />
+                </div>
 
                 {bericht.rahmenbedingungen.verantwortungsfelder?.length > 0 && (
                   <div style={{ marginTop: 18 }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 10 }}>Zentrale Verantwortungsbereiche</p>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                      <Crosshair style={{ width: 14, height: 14, color: CHAPTER_COLORS[2] }} />
+                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Zentrale Verantwortungsbereiche</p>
+                    </div>
                     <BulletList items={bericht.rahmenbedingungen.verantwortungsfelder} />
                   </div>
                 )}
 
                 {bericht.rahmenbedingungen.erfolgsmessung?.length > 0 && (
                   <div style={{ marginTop: 18 }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 10 }}>Erfolg wird gemessen an</p>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                      <TrendingUp style={{ width: 14, height: 14, color: CHAPTER_COLORS[2] }} />
+                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Erfolg wird gemessen an</p>
+                    </div>
                     <BulletList items={bericht.rahmenbedingungen.erfolgsmessung} icon="check" color={CHAPTER_COLORS[2]} />
                   </div>
                 )}
@@ -991,20 +1012,32 @@ export default function Bericht() {
                     <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Führungskontext</span>
                   </div>
                   {isLeadership && <ChartCard icon={Shield} title="Führungskompetenzen" bg={fuehrung} accent={CHAPTER_COLORS[3]} />}
-                  <div style={{ marginTop: isLeadership ? 18 : 0 }}><TextBlock text={bericht.fuehrungskontext.beschreibung} /></div>
+                  <div style={{ marginTop: isLeadership ? 18 : 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                      <Users style={{ width: 14, height: 14, color: CHAPTER_COLORS[3] }} />
+                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{isLeadership ? "Führungsanforderung" : "Zusammenarbeit"}</p>
+                    </div>
+                    <TextBlock text={bericht.fuehrungskontext.beschreibung} />
+                  </div>
 
                   {bericht.fuehrungskontext.wirkungshebel?.length > 0 && (
                     <div style={{ marginTop: 18 }}>
-                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 10 }}>
-                        {isLeadership ? "Führungswirkung entsteht über" : "Wirkung entsteht über"}
-                      </p>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                        <ArrowUpRight style={{ width: 14, height: 14, color: CHAPTER_COLORS[3] }} />
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
+                          {isLeadership ? "Führungswirkung entsteht über" : "Wirkung entsteht über"}
+                        </p>
+                      </div>
                       <BulletList items={bericht.fuehrungskontext.wirkungshebel} icon="check" color={CHAPTER_COLORS[3]} />
                     </div>
                   )}
 
                   {bericht.fuehrungskontext.analytische_anforderungen?.length > 0 && (
                     <div style={{ marginTop: 18 }}>
-                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 10 }}>Strukturelle Stabilisierung</p>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                        <ShieldCheck style={{ width: 14, height: 14, color: CHAPTER_COLORS[3] }} />
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Strukturelle Stabilisierung</p>
+                      </div>
                       <BulletList items={bericht.fuehrungskontext.analytische_anforderungen} />
                     </div>
                   )}
@@ -1137,7 +1170,10 @@ export default function Bericht() {
                 }}>{bericht.fazit.kernsatz}</p>
 
                 <div style={{ marginTop: 20, marginBottom: 20 }}>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 12 }}>Entscheidend für die Besetzung ist eine Persönlichkeit, die:</p>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                    <Award style={{ width: 14, height: 14, color: CHAPTER_COLORS[7] }} />
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Entscheidend für die Besetzung ist eine Persönlichkeit, die:</p>
+                  </div>
                   <BulletList items={bericht.fazit.persoenlichkeit || []} icon="check" color={CHAPTER_COLORS[7]} />
                 </div>
 
