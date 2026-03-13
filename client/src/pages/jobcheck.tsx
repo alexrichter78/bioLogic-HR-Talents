@@ -1172,8 +1172,8 @@ export default function JobCheck() {
                         {hyphenateText(engine.overallFit === "SUITABLE"
                           ? "Die Besetzung passt zur Rolle. Fokus auf saubere Umsetzung und klare Arbeitsroutinen."
                           : engine.overallFit === "CONDITIONAL"
-                            ? "Die Besetzung ist nicht risikofrei, aber entwicklungsfähig – vorausgesetzt, klare Erwartungen und Rahmenvorgaben werden etabliert."
-                            : "Die Arbeitsweise der Person passt nicht zur Grundlogik dieser Rolle. Eine erfolgreiche Besetzung ist unwahrscheinlich."
+                            ? "Die Besetzung ist nicht risikofrei, aber entwicklungsfähig. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und höherem Führungsaufwand führen. Mit klaren Erwartungen und Rahmenvorgaben lässt sich die Zusammenarbeit stabilisieren."
+                            : "Die Arbeitsweise der Person passt nicht zur Grundlogik dieser Rolle. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen. Eine stabile Besetzung ist unter diesen Bedingungen unwahrscheinlich."
                         )}
                       </p>
                     </div>

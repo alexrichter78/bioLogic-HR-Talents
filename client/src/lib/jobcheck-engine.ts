@@ -1172,9 +1172,9 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
       return `${s} bringt die geforderte Arbeitslogik grundsätzlich mit, aber die Ausprägung liegt unter dem, was die Rolle braucht. ${roleDesc} ${candDesc} Die Unterschiede sind erkennbar, lassen sich aber bei gezielter Führung und klaren Erwartungen ausgleichen.`;
     }
     if (overallFit === "CONDITIONAL") {
-      return `${s} bringt eine andere Arbeitslogik mit als die Rolle ${jobTitle} erfordert. ${roleDesc} ${s} geht anders vor: ${candDesc} Die Unterschiede sind erkennbar, lassen sich aber bei gezielter Führung und klaren Erwartungen ausgleichen.`;
+      return `${s} bringt eine andere Arbeitslogik mit als die Rolle ${jobTitle} erfordert. ${roleDesc} ${s} geht anders vor: ${candDesc} Im Alltag kann das zu erhöhtem Abstimmungsbedarf und höherem Führungsaufwand führen. Mit gezielter Führung und klaren Erwartungen lassen sich die Unterschiede ausgleichen.`;
     }
-    return `Rolle und ${subjName(candName)} arbeiten nach unterschiedlichen Prinzipien. ${roleDesc} ${candDesc} Diese Unterschiede wirken sich im Alltag spürbar aus: bei Entscheidungen, Arbeitsweise und Zusammenarbeit.`;
+    return `Rolle und ${subjName(candName)} arbeiten nach unterschiedlichen Prinzipien. ${roleDesc} ${candDesc} Im Alltag kann das zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.`;
   })();
 
   const execSummary = (() => {
