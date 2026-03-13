@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "R0TTLSGbAcmv56UfY8nMT"
+uri = "file://attached_assets/systemwirkung-texte.md"
+type = "text"
+title = "Systemwirkung-Texte - Alle Konstellationen"
