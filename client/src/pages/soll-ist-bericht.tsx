@@ -453,13 +453,13 @@ export default function SollIstBericht() {
           </div>
 
           {(() => {
-            const fitLabel = result ? result.fitLabel : (() => {
-              const r = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, matchCheckFit, matchCheckControl);
-              return r.fitLabel;
-            })();
+            const effective = result || (roleTriad ? computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, matchCheckFit, matchCheckControl) : null);
+            if (!effective) return null;
+
+            const fitLabel = effective.fitLabel;
             const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
 
-            const gapLevel = result ? result.gapLevel : "mittel";
+            const gapLevel = effective.gapLevel;
             let fazitText: string;
             if (fitLabel === "Geeignet") {
               fazitText = "Die Arbeitsweise der Person passt gut zu den Anforderungen der Rolle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein.";
@@ -473,10 +473,10 @@ export default function SollIstBericht() {
               fazitText = "Die Anforderungen der Rolle und die natürliche Arbeitsweise der Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch ein erhöhter Abstimmungsbedarf.";
             }
 
-            const devLevel = result ? result.developmentLevel : (gapLevel === "gering" ? 4 : gapLevel === "mittel" ? 3 : 1);
+            const devLevel = effective.developmentLevel;
             const devScore = devLevel >= 4 ? 3 : devLevel >= 3 ? 2 : 1;
-            const devLabel = result ? (result.developmentLabel === "hoch" ? "Entwicklung sehr wahrscheinlich" : result.developmentLabel === "mittel" ? "Entwicklung mit Unterstützung möglich" : "Entwicklung unwahrscheinlich") : (devScore === 3 ? "Entwicklung sehr wahrscheinlich" : devScore === 2 ? "Entwicklung mit Unterstützung möglich" : "Entwicklung unwahrscheinlich");
-            const devText = result ? result.developmentText : "";
+            const devLabel = effective.developmentLabel === "hoch" ? "Entwicklung sehr wahrscheinlich" : effective.developmentLabel === "mittel" ? "Entwicklung mit Unterstützung möglich" : "Entwicklung unwahrscheinlich";
+            const devText = effective.developmentText;
             const devGaugeColor = devScore === 3 ? "#3A9A5C" : devScore === 2 ? "#E5A832" : "#D64045";
 
             return (
