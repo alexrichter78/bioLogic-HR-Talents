@@ -1112,7 +1112,9 @@ export default function JobCheck() {
                         <p style={{ fontSize: 18, fontWeight: 750, color: "#0071E3", margin: 0 }}>{engine.development.timeframe}</p>
                       </div>
                     </div>
-                    <CalloutBox text={engine.development.text} color="#FF9500" icon={TrendingUp} />
+                    <div data-testid="text-dev-prognose-detail">
+                      <CalloutBox text={engine.development.text} color="#FF9500" icon={TrendingUp} />
+                    </div>
                   </div>
 
                   <div style={{

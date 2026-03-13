@@ -849,10 +849,47 @@ function buildRisks(role: RoleAnalysis, cand: CandidateInput, engine: { overallF
   return { shortTerm, midTerm, longTerm };
 }
 
-function developmentFromControl(control: ControlIntensity, points: number, criticalLabel: string, t: RoleTerms) {
-  if (control === "LOW") return { likelihood: "hoch" as const, timeframe: "3–6 Monate", text: `Führungsaufwand: gering. Die Arbeitsweise passt zur Rolle – regelmäßige Gespräche und normales Feedback reichen aus. ${t.qualityMetric} und stabile Abläufe sind positiv zu erwarten.` };
-  if (control === "MEDIUM") return { likelihood: "mittel" as const, timeframe: "6–12 Monate", text: `Führungsaufwand: mittel. Gezielte Review-Gespräche und klare Ziele sind nötig – besonders im Bereich „${criticalLabel}". Ohne aktive Führung verschieben sich Prioritäten. ${t.qualityMetric} ist machbar, aber braucht Begleitung.` };
-  return { likelihood: "gering" as const, timeframe: ">12 Monate", text: `Führungsaufwand: hoch. Die Abweichung betrifft die zentralen Anforderungen der Rolle. Entwicklung braucht intensive Führungsarbeit und enge Begleitung – besonders im Bereich „${criticalLabel}". ${t.qualityMetric} und stabile Abläufe sind nur mit dauerhaft hohem Führungsaufwand erreichbar.` };
+function devModeLabel(mode: DominanceMode): string {
+  switch (mode) {
+    case "EXTREME_I": return "stark impulsiver Prägung";
+    case "EXTREME_N": return "stark intuitiver Prägung";
+    case "EXTREME_A": return "stark analytischer Prägung";
+    case "DOM_I": return "impulsivem Schwerpunkt";
+    case "DOM_N": return "intuitivem Schwerpunkt";
+    case "DOM_A": return "analytischem Schwerpunkt";
+    case "DUAL_I_A": return "impulsiv-analytischem Doppelfokus";
+    case "DUAL_I_N": return "impulsiv-intuitivem Doppelfokus";
+    case "DUAL_N_A": return "intuitiv-analytischem Doppelfokus";
+    case "BAL_I": return "ausgeglichenem Profil mit Impulsiv-Tendenz";
+    case "BAL_N": return "ausgeglichenem Profil mit Intuitiv-Tendenz";
+    case "BAL_A": return "ausgeglichenem Profil mit Analytisch-Tendenz";
+    case "BAL_FULL": return "voll ausgeglichenem Profil";
+    default: return "gemischtem Profil";
+  }
+}
+
+function developmentFromControl(control: ControlIntensity, points: number, criticalLabel: string, t: RoleTerms, roleDom?: DominanceResult, candDom?: DominanceResult) {
+  const rLabel = roleDom ? devModeLabel(roleDom.mode) : "";
+  const cLabel = candDom ? devModeLabel(candDom.mode) : "";
+  const sameDom = roleDom && candDom && roleDom.top1.key === candDom.top1.key;
+
+  let text: string;
+  if (control === "LOW") {
+    text = sameDom
+      ? `Führungsaufwand gering: Grundlogik stimmt überein, regelmäßiges Feedback reicht aus.`
+      : `Führungsaufwand gering: Die Entwicklung von ${cLabel} hin zu ${rLabel} gelingt mit normalem Feedback.`;
+    return { likelihood: "hoch" as const, timeframe: "3-6 Monate", text };
+  }
+  if (control === "MEDIUM") {
+    text = sameDom
+      ? `Führungsaufwand mittel: Grundrichtung stimmt, aber im Bereich "${criticalLabel}" ist gezielte Nachsteuerung nötig.`
+      : `Führungsaufwand mittel: Die Entwicklung von ${cLabel} hin zu ${rLabel} erfordert gezielte Führung im Bereich "${criticalLabel}".`;
+    return { likelihood: "mittel" as const, timeframe: "6-12 Monate", text };
+  }
+  text = sameDom
+    ? `Führungsaufwand hoch: Trotz gleicher Grundrichtung ist der Abstand im Bereich "${criticalLabel}" so groß, dass intensive Begleitung nötig ist.`
+    : `Führungsaufwand hoch: Der Wechsel von ${cLabel} auf ${rLabel} erfordert intensive Führung und ist nicht sicher.`;
+  return { likelihood: "gering" as const, timeframe: ">12 Monate", text };
 }
 
 function integrationPlan(role: RoleAnalysis, criticalArea: MatrixAreaId, control: ControlIntensity, t: RoleTerms) {
@@ -1061,8 +1098,8 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
     const rSec = roleDom.top2.key;
     const cSec = candDom.top2.key;
     if (rSec === cSec) return null;
-    const rSecVal = r[rSec];
-    const cSecDiff = Math.abs(c[cSec] - c[rSec]);
+    const rSecVal = rN[rSec];
+    const cSecDiff = Math.abs(cN[cSec] - cN[rSec]);
     if (cSecDiff < 3) return null;
 
     const secDescriptions: Record<ComponentKey, { label: string; focus: string; stressBehavior: string }> = {
@@ -1083,7 +1120,7 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
       roleSecondary: rSec,
       candSecondary: cSec,
       roleSecondaryValue: rSecVal,
-      candSecondaryValue: c[cSec],
+      candSecondaryValue: cN[cSec],
       text,
       stressText,
     };
@@ -1093,7 +1130,7 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   if (secondaryTension) {
     risks.midTerm.push(secondaryTension.stressText);
   }
-  const dev = developmentFromControl(ctrl.level, ctrl.points, critical.label, t);
+  const dev = developmentFromControl(ctrl.level, ctrl.points, critical.label, t, roleDom, candDom);
   const plan = integrationPlan(role, critical.id, ctrl.level, t);
 
   return {
