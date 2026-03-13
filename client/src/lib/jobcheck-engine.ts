@@ -772,79 +772,79 @@ function buildRisks(role: RoleAnalysis, cand: CandidateInput, engine: { overallF
   const roleKeyInDual = dualConflict && (cDom.top1.key === rDom.top1.key || cDom.top2.key === rDom.top1.key);
 
   if (engine.overallFit === "SUITABLE") {
-    shortTerm.push(`Die Arbeitsweise passt zur Rolle ${jobTitle}. Die Person kann sich schnell einarbeiten und wirksam werden. ${t.qualityMetric} und stabile Abläufe sind positiv zu erwarten.`);
-    midTerm.push("Der Führungsaufwand bleibt überschaubar. Prioritäten und Entscheidungen liegen im erwarteten Rahmen – die Person steuert sich weitgehend selbst.");
-    longTerm.push("Die Wirkung in der Rolle bleibt voraussichtlich stabil. Es ist nicht zu erwarten, dass sich die Arbeitsweise schleichend von den Anforderungen entfernt.");
+    shortTerm.push(`Die Rolle ${jobTitle} braucht ${rL}-geprägte Arbeit. Die Arbeitsweise passt dazu. Schnelle Einarbeitung und stabile Wirkung bei ${t.qualityMetric} sind zu erwarten.`);
+    midTerm.push(`Die Rolle erfordert eigenständiges Priorisieren und Entscheiden. Der Führungsaufwand bleibt überschaubar, die Person steuert sich weitgehend selbst.`);
+    longTerm.push(`Die Rollenanforderungen werden langfristig stabil abgedeckt. Es ist nicht zu erwarten, dass sich die Arbeitsweise schleichend von dem entfernt, was ${jobTitle} braucht.`);
   } else if (engine.overallFit === "CONDITIONAL") {
     if (dualConflict) {
       const c2L = labelComponent(cDom.top2.key);
-      shortTerm.push(`Die Person zeigt eine Doppeldominanz: ${labelComponent(cDom.top1.key)} und ${c2L} sind nahezu gleich stark ausgeprägt. Die Rolle ${jobTitle} braucht aber eine klare ${rL}-Ausrichtung. Reibung im Alltag ist wahrscheinlich.`);
-      midTerm.push(`Die beiden gleichstarken Arbeitsweisen führen dazu, dass ${rL}-Aufgaben nicht mit voller Konsequenz bearbeitet werden. Die Person wechselt zwischen ${labelComponent(cDom.top1.key)}- und ${c2L}-Prioritäten – Konstanz und ${t.qualityMetric} schwanken.`);
-      longTerm.push(`Ohne klare Führung wird die Rollenausübung zunehmend unscharf. Die geforderte ${rL}-Wirkung verwässert – Entscheidungen und Abläufe verschieben sich schleichend.`);
+      shortTerm.push(`Die Rolle ${jobTitle} braucht eine klare ${rL}-Ausrichtung. Die Person zeigt aber eine Doppeldominanz: ${labelComponent(cDom.top1.key)} und ${c2L} sind nahezu gleich stark. Reibung im Alltag ist wahrscheinlich.`);
+      midTerm.push(`Die Rolle verlangt konsequente ${rL}-Arbeit. Durch die Doppeldominanz wechselt die Person zwischen ${labelComponent(cDom.top1.key)}- und ${c2L}-Prioritäten. Konstanz und ${t.qualityMetric} schwanken.`);
+      longTerm.push(`Ohne klare Führung wird die geforderte ${rL}-Wirkung in ${jobTitle} zunehmend verwässert. Entscheidungen und Abläufe verschieben sich schleichend.`);
     } else {
-      shortTerm.push(`Reibung im Bereich „${critical.label}": Die Abweichung zwischen dem, was die Rolle braucht, und der Arbeitsweise der Person zeigt sich hier am deutlichsten. Ein guter Start ist möglich, braucht aber klare Führung.`);
+      shortTerm.push(`Die Rolle ${jobTitle} hat im Bereich "${critical.label}" die höchsten Anforderungen. Genau dort zeigt sich die grösste Abweichung. Ein guter Start ist möglich, braucht aber klare Führung.`);
       if (sameDom) {
-        midTerm.push(`Die Grundrichtung stimmt, aber die nötige Intensität fehlt. Ohne klare Ziele und regelmäßige Abstimmungen werden Prioritäten und Umsetzung zunehmend weicher – Abläufe werden instabiler.`);
+        midTerm.push(`Die Rolle braucht eine stärkere ${rL}-Ausprägung als vorhanden. Ohne klare Ziele und regelmässige Abstimmungen werden Prioritäten und Umsetzung zunehmend weicher.`);
       } else {
-        midTerm.push(`Die Arbeitsweise der Person weicht von dem ab, was die Rolle braucht. Ohne klare Ziele besteht das Risiko, dass Entscheidungen und Prioritäten nach eigener Logik gesetzt werden. Abläufe verschieben sich.`);
+        midTerm.push(`Die Rolle erfordert ${rL}-geprägte Arbeit. Die Arbeitsweise weicht davon ab. Ohne klare Ziele besteht das Risiko, dass Entscheidungen und Prioritäten nach eigener Logik gesetzt werden.`);
       }
-      longTerm.push(`Ohne aktive Führung verändert sich die Wirkung der Position ${jobTitle} über die Zeit. Anforderungen werden anders priorisiert, der Fokus auf ${t.kpiExamples} verschiebt sich – die Wirkung der Position nimmt ab.`);
+      longTerm.push(`Ohne aktive Führung verändert sich die Wirkung von ${jobTitle} über die Zeit. Der Fokus auf ${t.kpiExamples} verschiebt sich, die Rolleneffektivität nimmt ab.`);
     }
   } else {
     if (equalDistConflict) {
-      shortTerm.push(`Die Person zeigt keinen erkennbaren Schwerpunkt in der Arbeitsweise. Die Rolle ${jobTitle} braucht eine klare ${rL}-Ausrichtung – diese fehlt. Bereits in der Einarbeitung ist Orientierungslosigkeit zu erwarten.`);
-      midTerm.push(`Ohne klaren Schwerpunkt fehlt die Grundlage, um konsequent Prioritäten zu setzen. Die Person reagiert situativ statt systematisch. Entscheidungsqualität, ${t.qualityMetric} und stabile Abläufe sind nicht verlässlich.`);
-      longTerm.push(`Die Gleichverteilung verhindert eine stabile Wirkung in der Rolle. Statt ${rL}-geprägter Arbeit entsteht eine unklare Dynamik. ${t.kpiExamples} und Ergebnisqualität bleiben dauerhaft fragil.`);
+      shortTerm.push(`Die Rolle ${jobTitle} braucht eine klare ${rL}-Ausrichtung. Die Person zeigt keinen erkennbaren Schwerpunkt. Bereits in der Einarbeitung ist Orientierungslosigkeit zu erwarten.`);
+      midTerm.push(`Die Rolle verlangt konsequente Prioritäten und systematische Entscheidungen. Ohne klaren Schwerpunkt reagiert die Person situativ statt rollengerecht. ${t.qualityMetric} und stabile Abläufe sind nicht verlässlich.`);
+      longTerm.push(`Die Rollenanforderungen verlangen ${rL}-geprägte Arbeit. Die Gleichverteilung verhindert eine stabile Wirkung. ${t.kpiExamples} und Ergebnisqualität bleiben dauerhaft fragil.`);
     } else if (dualConflict && !roleKeyInDual) {
       const c2L = labelComponent(cDom.top2.key);
-      shortTerm.push(`Doppeldominanz ${labelComponent(cDom.top1.key)}/${c2L} – die von der Rolle ${jobTitle} geforderte ${rL}-Ausrichtung ist in keiner der beiden Stärken enthalten. Reibung zeigt sich schon in der Einarbeitung.`);
-      midTerm.push(`Die Arbeitsweise wird von ${labelComponent(cDom.top1.key)} und ${c2L} bestimmt. Die für die Rolle zentrale ${rL}-Ausrichtung fehlt. Entscheidungen, ${t.qualityMetric} und Prioritäten folgen einer grundlegend anderen Logik.`);
-      longTerm.push(`Die Besetzung verändert die Grundausrichtung der Position. Statt ${rL}-geprägter Arbeit entsteht eine ${labelComponent(cDom.top1.key)}/${c2L}-Dynamik. Abläufe und Ergebnisqualität passen nicht zur Rolle.`);
+      shortTerm.push(`Die Rolle ${jobTitle} verlangt ${rL}-Ausrichtung. Diese ist in keiner der beiden Stärken (${labelComponent(cDom.top1.key)}/${c2L}) enthalten. Reibung zeigt sich schon in der Einarbeitung.`);
+      midTerm.push(`Die Rolle erfordert ${rL}-geprägte Entscheidungen und Prioritäten. Die Arbeitsweise wird aber von ${labelComponent(cDom.top1.key)} und ${c2L} bestimmt. ${t.qualityMetric} folgt einer grundlegend anderen Logik.`);
+      longTerm.push(`Die Rollenanforderungen verlangen ${rL}-geprägte Arbeit. Stattdessen entsteht eine ${labelComponent(cDom.top1.key)}/${c2L}-Dynamik. Abläufe und Ergebnisqualität passen nicht zu ${jobTitle}.`);
     } else {
-      shortTerm.push(`Schon in der Einarbeitung ist mit Reibung zu rechnen. Die Arbeitsweise der Person passt nicht zu dem, was die Position ${jobTitle} braucht.`);
-      midTerm.push(`Die Leistungsstruktur der Rolle wird sich voraussichtlich verschieben. Prioritäten, Entscheidungen und Führungsfähigkeit folgen einer anderen Logik. ${t.qualityMetric} und stabile Abläufe sind gefährdet.`);
+      shortTerm.push(`Die Rolle ${jobTitle} stellt klare Anforderungen an die Arbeitsweise. Diese werden nicht abgedeckt. Schon in der Einarbeitung ist mit Reibung zu rechnen.`);
+      midTerm.push(`Die Rolle erfordert eine bestimmte Leistungsstruktur. Prioritäten, Entscheidungen und Arbeitsweise folgen einer anderen Logik. ${t.qualityMetric} und stabile Abläufe sind gefährdet.`);
       longTerm.push(
         role.leadership?.required
-          ? `Die Abweichung betrifft die Kernanforderungen der Position. Tempo, ${t.qualityMetric}, ${t.forecastTerm} und Führungswirkung werden dauerhaft nicht das erreichen, was die Rolle braucht.`
-          : `Die Abweichung betrifft die Kernanforderungen der Position. Tempo, ${t.qualityMetric} und ${t.forecastTerm} werden dauerhaft nicht das erreichen, was die Rolle braucht.`
+          ? `Die Kernanforderungen von ${jobTitle} werden dauerhaft nicht erreicht. Tempo, ${t.qualityMetric}, ${t.forecastTerm} und Führungswirkung bleiben unter dem, was die Rolle braucht.`
+          : `Die Kernanforderungen von ${jobTitle} werden dauerhaft nicht erreicht. Tempo, ${t.qualityMetric} und ${t.forecastTerm} bleiben unter dem, was die Rolle braucht.`
       );
     }
   }
 
   if (critical.id === "conflict") {
-    midTerm.push("Bei Zielabweichungen wird die Person eher vermitteln als klar einzugreifen. Leistungsunterschiede im Team werden nicht deutlich angesprochen.");
-    longTerm.push("Der Unterschied zwischen starken und schwachen Leistungen verwischt. Qualität und Ergebnisse sinken, weil Korrekturen nicht rechtzeitig erfolgen.");
+    midTerm.push(`Die Rolle ${jobTitle} erfordert klares Eingreifen bei Zielabweichungen. Stattdessen wird eher vermittelt. Leistungsunterschiede im Team werden nicht deutlich angesprochen.`);
+    longTerm.push(`Die Rolle braucht konsequente Korrekturen. Ohne diese verwischt der Unterschied zwischen starken und schwachen Leistungen. Qualität und Ergebnisse sinken.`);
   }
   if (critical.id === "decision_logic") {
-    midTerm.push("Entscheidungen werden tendenziell langsamer getroffen. Die Person sichert sich stärker ab, statt zügig zu handeln. Operative Abläufe verlangsamen sich.");
-    longTerm.push(`Unter Zeitdruck oder bei Zielkonflikten sinkt die Reaktionsgeschwindigkeit deutlich. ${t.forecastTerm} und stabile Abläufe leiden, weil sich Verzögerungen aufsummieren.`);
+    midTerm.push(`Die Rolle ${jobTitle} braucht zügige Entscheidungen. Stattdessen wird stärker abgesichert. Operative Abläufe verlangsamen sich.`);
+    longTerm.push(`Die Rolle verlangt Tempo bei Zielkonflikten. Unter Zeitdruck sinkt die Reaktionsgeschwindigkeit deutlich. ${t.forecastTerm} und stabile Abläufe leiden.`);
   }
   if (critical.id === "kpi_work") {
-    midTerm.push(`${t.forecastTerm} und Reporting: Die Disziplin bei ${t.reportingDesc} wird voraussichtlich ungleichmäßig sein. Kennzahlen verlieren ihre Aussagekraft.`);
-    longTerm.push(`Ohne regelmäßiges Nachhalten sinkt die Transparenz über Zielerreichung und ${t.pipelineTerm}. Lücken werden erst spät sichtbar.`);
+    midTerm.push(`Die Rolle ${jobTitle} erfordert verlässliches Reporting (${t.reportingDesc}). Die Disziplin wird voraussichtlich ungleichmässig sein. Kennzahlen verlieren ihre Aussagekraft.`);
+    longTerm.push(`Ohne regelmässiges Nachhalten sinkt die Transparenz über Zielerreichung und ${t.pipelineTerm}. Die Rolle braucht stabile Datenbasis, Lücken werden erst spät sichtbar.`);
   }
   if (critical.id === "leadership_effect") {
-    midTerm.push("Die Führungswirkung weicht von dem ab, was die Rolle braucht. Das Team bekommt nicht die Impulse, die es braucht. Der Führungsaufwand für die nächste Ebene steigt.");
-    longTerm.push(`Ohne klare Eskalationswege und feste Ziele bleibt die Führungswirkung fragil. Delegation und konsequente Zielverfolgung nehmen ab – ${t.qualityMetric} leidet.`);
+    midTerm.push(`Die Rolle ${jobTitle} erfordert klare Führungsimpulse. Das Team bekommt nicht die Orientierung, die es braucht. Der Führungsaufwand für die nächste Ebene steigt.`);
+    longTerm.push(`Die Rolle braucht konsequente Zielverfolgung und Delegation. Ohne klare Eskalationswege bleibt die Führungswirkung fragil. ${t.qualityMetric} leidet.`);
   }
   if (critical.id === "competition") {
-    midTerm.push(`Tempo und ${t.resultMetric}: Geschwindigkeit und Durchsetzungskraft werden voraussichtlich gebremst. Prioritäten verschieben sich in Richtung Absicherung statt Handlung.`);
-    longTerm.push(`In einem dynamischen Umfeld besteht das Risiko, dass Aufgaben abwartend statt proaktiv angegangen werden. ${t.resultMetric} und ${t.qualityMetric} können sich verschlechtern.`);
+    midTerm.push(`Die Rolle ${jobTitle} braucht Tempo bei ${t.resultMetric}. Geschwindigkeit und Durchsetzungskraft werden voraussichtlich gebremst. Prioritäten verschieben sich in Richtung Absicherung.`);
+    longTerm.push(`Die Rolle verlangt proaktives Handeln in einem dynamischen Umfeld. Stattdessen werden Aufgaben abwartend angegangen. ${t.resultMetric} und ${t.qualityMetric} können sich verschlechtern.`);
   }
   if (critical.id === "culture") {
-    midTerm.push("Die kulturelle Wirkung der Person unterscheidet sich von dem, was die Rolle braucht. Leistungsfokus und Ergebnisorientierung im Team verschieben sich.");
-    longTerm.push(`Langfristig können Leistungsunterschiede und Ergebnisorientierung nachlassen. ${t.qualityMetric} leidet, weil die Teamkultur in eine unkontrollierte Richtung driftet.`);
+    midTerm.push(`Die Rolle ${jobTitle} erfordert eine bestimmte Leistungskultur. Die kulturelle Wirkung weicht davon ab. Leistungsfokus und Ergebnisorientierung im Team verschieben sich.`);
+    longTerm.push(`Die Rolle braucht stabile Ergebnisorientierung. Ohne diese können Leistungsunterschiede nachlassen. ${t.qualityMetric} leidet, weil die Teamkultur in eine unkontrollierte Richtung driftet.`);
   }
 
   if (candEqualDist) {
-    midTerm.push(`Vollsymmetrie-Risiko: Ohne klare Leitstruktur fehlt unter Stress der Rückfallmechanismus. Das Verhalten wird sprunghaft – die Person wechselt unkontrolliert zwischen allen drei Arbeitsweisen. Entscheidungen werden widersprüchlich oder bleiben aus.`);
-    longTerm.push(`Die fehlende Leitstruktur verhindert eine stabile Stressreaktion. Während Personen mit klarem Schwerpunkt unter Druck vorhersagbar reagieren, bleibt bei Vollsymmetrie offen, welche Steuerungslogik sich durchsetzt. Das macht langfristige Führung und Entwicklung deutlich schwieriger.`);
+    midTerm.push(`Vollsymmetrie-Risiko: Die Rolle ${jobTitle} braucht unter Stress eine klare Leitstruktur. Diese fehlt. Das Verhalten wird sprunghaft, Entscheidungen werden widersprüchlich oder bleiben aus.`);
+    longTerm.push(`Die Rolle braucht vorhersagbare Stressreaktionen. Die fehlende Leitstruktur verhindert das. Langfristige Führung und Entwicklung für ${jobTitle} werden deutlich schwieriger.`);
   }
 
   if (tags.market_pressure === "hoch")
-    longTerm.push(`In einem Hochdruckumfeld wirkt jede Verzögerung direkt auf ${t.resultMetric}. Die beschriebenen Abweichungen verstärken sich unter Druck.`);
+    longTerm.push(`Die Rolle ${jobTitle} operiert in einem Hochdruckumfeld. Jede Verzögerung wirkt direkt auf ${t.resultMetric}. Die beschriebenen Abweichungen verstärken sich unter diesem Druck.`);
   if (tags.regulation === "hoch")
-    longTerm.push("In einem regulierten Umfeld können die beschriebenen Abweichungen zu Qualitäts-, Haftungs- oder Auditproblemen führen. Sorgfalt und Regeltreue müssen durchgehend sichergestellt werden.");
+    longTerm.push(`Die Rolle ${jobTitle} operiert in einem regulierten Umfeld. Die beschriebenen Abweichungen können zu Qualitäts-, Haftungs- oder Auditproblemen führen. Sorgfalt und Regeltreue müssen durchgehend sichergestellt werden.`);
 
   return { shortTerm, midTerm, longTerm };
 }
@@ -876,19 +876,19 @@ function developmentFromControl(control: ControlIntensity, points: number, criti
   let text: string;
   if (control === "LOW") {
     text = sameDom
-      ? `Führungsaufwand gering: Grundlogik stimmt überein, regelmäßiges Feedback reicht aus.`
-      : `Führungsaufwand gering: Die Entwicklung von ${cLabel} hin zu ${rLabel} gelingt mit normalem Feedback.`;
+      ? `Die Rolle verlangt ${rLabel}. Die Grundlogik stimmt überein, regelmässiges Feedback reicht aus.`
+      : `Die Rolle verlangt ${rLabel}. Die Anpassung von ${cLabel} gelingt mit normalem Feedback.`;
     return { likelihood: "hoch" as const, timeframe: "3-6 Monate", text };
   }
   if (control === "MEDIUM") {
     text = sameDom
-      ? `Führungsaufwand mittel: Grundrichtung stimmt, aber im Bereich "${criticalLabel}" ist gezielte Nachsteuerung nötig.`
-      : `Führungsaufwand mittel: Die Entwicklung von ${cLabel} hin zu ${rLabel} erfordert gezielte Führung im Bereich "${criticalLabel}".`;
+      ? `Die Rolle verlangt ${rLabel}. Die Grundrichtung stimmt, aber im Bereich "${criticalLabel}" ist gezielte Nachsteuerung nötig.`
+      : `Die Rolle verlangt ${rLabel}. Die Anpassung von ${cLabel} erfordert gezielte Führung im Bereich "${criticalLabel}".`;
     return { likelihood: "mittel" as const, timeframe: "6-12 Monate", text };
   }
   text = sameDom
-    ? `Führungsaufwand hoch: Trotz gleicher Grundrichtung ist der Abstand im Bereich "${criticalLabel}" so groß, dass intensive Begleitung nötig ist.`
-    : `Führungsaufwand hoch: Der Wechsel von ${cLabel} auf ${rLabel} erfordert intensive Führung und ist nicht sicher.`;
+    ? `Die Rolle verlangt ${rLabel}. Trotz gleicher Grundrichtung ist der Abstand im Bereich "${criticalLabel}" so gross, dass intensive Begleitung nötig ist.`
+    : `Die Rolle verlangt ${rLabel}. Der Wechsel von ${cLabel} erfordert intensive Führung und ist nicht sicher.`;
   return { likelihood: "gering" as const, timeframe: ">12 Monate", text };
 }
 
@@ -1147,34 +1147,34 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
 
   const keyReason = (() => {
     if (equalDistConflict) {
-      return `${s} zeigt ein ausgeglichenes Profil ohne klare Einseitigkeit. ${roleDesc} Ohne einen erkennbaren Schwerpunkt fehlt die Grundlage, um die Rollenanforderungen gezielt umzusetzen.`;
+      return `${roleDesc} Die Rolle braucht eine klare ${rL}-Ausrichtung. ${s} zeigt jedoch ein ausgeglichenes Profil ohne erkennbaren Schwerpunkt. Damit fehlt die Grundlage, um die Anforderungen von ${jobTitle} gezielt umzusetzen.`;
     }
     if (dualConflict && roleKeyInDual) {
-      return `${s} bringt die geforderte ${rL}-Arbeitsweise grundsätzlich mit, allerdings konkurriert sie mit einer gleich starken ${competingL}-Prägung. ${roleDesc} Diese Eindeutigkeit fehlt. Prioritäten und ${t.qualityMetric} werden instabil.`;
+      return `${roleDesc} Die Rolle verlangt eine eindeutige ${rL}-Ausrichtung. ${s} bringt diese Arbeitsweise grundsätzlich mit, allerdings konkurriert sie mit einer gleich starken ${competingL}-Prägung. Die nötige Eindeutigkeit fehlt. Prioritäten und ${t.qualityMetric} werden instabil.`;
     }
     if (dualConflict && !roleKeyInDual) {
-      return `${candDesc} ${roleDesc} Die für ${jobTitle} entscheidende Arbeitslogik wird nicht abgebildet. Entscheidungen, Prioritäten und stabile Abläufe sind kritisch betroffen.`;
+      return `${roleDesc} Die für ${jobTitle} entscheidende ${rL}-Arbeitslogik wird nicht abgebildet. ${candDesc} Entscheidungen, Prioritäten und stabile Abläufe sind kritisch betroffen.`;
     }
     if (overallFit === "SUITABLE") {
-      return `${s} passt in der Grundausrichtung gut zur Rolle ${jobTitle}. Beide setzen auf dieselbe Arbeitslogik. ${roleDesc} ${s} arbeitet ähnlich. Kleinere Unterschiede in der Gewichtung der sekundären Bereiche sind im Alltag gut steuerbar.`;
+      return `${roleDesc} ${s} arbeitet nach derselben Grundlogik. Arbeitsweise und Prioritäten passen zur Rolle ${jobTitle}. Kleinere Unterschiede in der Gewichtung der sekundären Bereiche sind im Alltag gut steuerbar.`;
     }
     if (secondaryFlipped && overallFit === "NOT_SUITABLE") {
       const roleSecL = labelComponent(roleDom.top2.key);
       const candSecL = labelComponent(candDom.top2.key);
-      return `${s} arbeitet zwar ${rL}-orientiert, aber die Sekundärausrichtung passt nicht: Die Rolle braucht ${roleSecL} als zweite Stärke, ${candName} bringt jedoch klar ${candSecL} mit. ${roleDesc} Diese strukturelle Abweichung verändert Arbeitsstil und Prioritäten grundlegend.`;
+      return `${roleDesc} Die Rolle braucht ${roleSecL} als zweite Stärke. ${s} arbeitet zwar ${rL}-orientiert, bringt aber ${candSecL} statt ${roleSecL} mit. Diese strukturelle Abweichung verändert Arbeitsstil und Prioritäten in ${jobTitle} grundlegend.`;
     }
     if (secondaryFlipped && sameDom && overallFit === "CONDITIONAL") {
       const roleSecL = labelComponent(roleDom.top2.key);
       const candSecL = labelComponent(candDom.top2.key);
-      return `${s} arbeitet ${rL}-orientiert wie gefordert, aber die Sekundärausrichtung ist unklar: Die Rolle braucht ${roleSecL} als zweite Stärke, ${candName} zeigt eine Mischung aus ${roleSecL} und ${candSecL}. ${roleDesc} Mit gezielter Führung steuerbar.`;
+      return `${roleDesc} Die Rolle braucht ${roleSecL} als zweite Stärke. ${s} arbeitet ${rL}-orientiert wie gefordert, zeigt aber eine Mischung aus ${roleSecL} und ${candSecL} als Zweitstärke. Mit gezielter Führung steuerbar.`;
     }
     if (sameDom && overallFit === "CONDITIONAL") {
-      return `${s} bringt die geforderte Arbeitslogik grundsätzlich mit, aber die Ausprägung liegt unter dem, was die Rolle braucht. ${roleDesc} ${candDesc} Die Unterschiede sind erkennbar, lassen sich aber bei gezielter Führung und klaren Erwartungen ausgleichen.`;
+      return `${roleDesc} ${s} bringt die geforderte Arbeitslogik grundsätzlich mit, aber die Ausprägung liegt unter dem, was ${jobTitle} braucht. ${candDesc} Die Unterschiede sind erkennbar, lassen sich aber bei gezielter Führung und klaren Erwartungen ausgleichen.`;
     }
     if (overallFit === "CONDITIONAL") {
-      return `${s} bringt eine andere Arbeitslogik mit als die Rolle ${jobTitle} erfordert. ${roleDesc} ${s} geht anders vor: ${candDesc} Im Alltag kann das zu erhöhtem Abstimmungsbedarf und höherem Führungsaufwand führen. Mit gezielter Führung und klaren Erwartungen lassen sich die Unterschiede ausgleichen.`;
+      return `${roleDesc} ${s} bringt eine andere Arbeitslogik mit als ${jobTitle} erfordert. ${candDesc} Im Alltag kann das zu erhöhtem Abstimmungsbedarf und höherem Führungsaufwand führen. Mit gezielter Führung und klaren Erwartungen lassen sich die Unterschiede ausgleichen.`;
     }
-    return `Rolle und ${subjName(candName)} arbeiten nach unterschiedlichen Prinzipien. ${roleDesc} ${candDesc} Im Alltag kann das zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.`;
+    return `${roleDesc} ${candDesc} Rolle und ${subjName(candName)} arbeiten nach unterschiedlichen Prinzipien. Im Alltag führt das zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand.`;
   })();
 
   const execSummary = (() => {
@@ -1182,17 +1182,17 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
     const fitLine = `Gesamteinstufung: ${statusLabel(overallFit)} · Führungsaufwand: ${controlLabel(ctrl.level)}`;
     let domLine: string;
     if (equalDistConflict) {
-      domLine = `${s} zeigt ein ausgeglichenes Profil. ${roleDesc} Ohne klaren Schwerpunkt fehlt die Grundlage für gezielte Prioritäten und konsequente Entscheidungen.`;
+      domLine = `${roleDesc} Die Rolle braucht eine klare ${rL}-Ausrichtung. ${s} zeigt ein ausgeglichenes Profil ohne Schwerpunkt. Die Grundlage für gezielte Prioritäten und konsequente Entscheidungen fehlt.`;
     } else if (dualConflict) {
-      domLine = `Doppeldominanz: ${labelComponent(candDom.top1.key)} und ${labelComponent(candDom.top2.key)} konkurrieren. ${roleDesc} Prioritäten und Entscheidungen werden instabil.`;
+      domLine = `${roleDesc} Die Rolle verlangt eine eindeutige ${rL}-Ausrichtung. ${s} zeigt eine Doppeldominanz: ${labelComponent(candDom.top1.key)} und ${labelComponent(candDom.top2.key)} konkurrieren. Prioritäten und Entscheidungen werden instabil.`;
     } else if (sameDom && secondaryFlipped && candDom.gap2 > 5) {
-      domLine = `Beide Profile sind ${rL}-geprägt, aber die Sekundärausrichtung passt nicht. ${roleDesc} ${candDesc} Arbeitsstil und Prioritätensetzung weichen strukturell ab.`;
+      domLine = `${roleDesc} Beide Profile sind ${rL}-geprägt, aber die Sekundärausrichtung passt nicht zur Rolle. ${candDesc} Arbeitsstil und Prioritätensetzung weichen strukturell ab.`;
     } else if (sameDom && secondaryFlipped) {
-      domLine = `Beide Profile sind ${rL}-geprägt, die Sekundärausrichtung ist jedoch unklar. ${roleDesc} Mit Führung steuerbar.`;
+      domLine = `${roleDesc} Beide Profile sind ${rL}-geprägt. Die Sekundärausrichtung weicht leicht von den Rollenanforderungen ab. Mit Führung steuerbar.`;
     } else if (sameDom) {
-      domLine = `Beide Profile setzen auf dieselbe Arbeitslogik und sind ${gapAdj(mainDiff)}. ${roleDesc} Arbeitsweise und Prioritäten stimmen in der Grundrichtung überein.`;
+      domLine = `${roleDesc} Arbeitsweise und Prioritäten passen zur Rolle. Beide Profile setzen auf dieselbe Arbeitslogik und sind ${gapAdj(mainDiff)}.`;
     } else {
-      domLine = `${roleDesc} ${candDesc} Entscheidungen und Prioritäten brauchen Führung.`;
+      domLine = `${roleDesc} ${candDesc} Die Arbeitslogik weicht von den Rollenanforderungen ab. Entscheidungen und Prioritäten brauchen Führung.`;
     }
     return [intro, fitLine, domLine].join("\n");
   })();
@@ -1215,9 +1215,9 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
     const roleSecDesc = secDescriptions[rSec];
     const candSecDesc = secDescriptions[cSec];
 
-    const text = `Die Hauptausrichtung stimmt überein (${rL}). Die Zweitstärke der Rolle ist ${roleSecDesc.label} (${roleSecDesc.focus}), die Person bringt jedoch ${candSecDesc.label} als Zweitstärke mit (${candSecDesc.focus}). Im Alltag unauffällig – unter Druck reagiert die Person eher mit ${candSecDesc.stressBehavior} statt mit ${roleSecDesc.stressBehavior}.`;
+    const text = `Die Hauptausrichtung stimmt überein (${rL}). Die Rolle braucht ${roleSecDesc.label} als Zweitstärke (${roleSecDesc.focus}). Die Person bringt jedoch ${candSecDesc.label} als Zweitstärke mit (${candSecDesc.focus}). Im Alltag unauffällig, unter Druck reagiert die Person eher mit ${candSecDesc.stressBehavior} statt mit ${roleSecDesc.stressBehavior}.`;
 
-    const stressText = `Unter Stress: Die Rolle erwartet in kritischen Situationen ${roleSecDesc.stressBehavior}. Die Person wird stattdessen auf ${candSecDesc.stressBehavior} zurückgreifen. Im Team und in den Abläufen ist das situativ spürbar.`;
+    const stressText = `Unter Stress: Die Rolle erwartet ${roleSecDesc.stressBehavior}. Die Person greift stattdessen auf ${candSecDesc.stressBehavior} zurück. Im Team und in den Abläufen ist das situativ spürbar.`;
 
     return {
       detected: true,
