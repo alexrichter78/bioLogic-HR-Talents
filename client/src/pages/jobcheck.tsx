@@ -790,10 +790,10 @@ export default function JobCheck() {
                       }}>
                         <Target style={{ width: 16, height: 16, color: "#FFF", strokeWidth: 2.2 }} />
                       </div>
-                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Dimensionsvergleich</span>
+                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Vergleich der Profile</span>
                     </div>
                     <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.6, marginBottom: 16, hyphens: "auto", textAlign: "justify" } as React.CSSProperties} lang="de">
-                      Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Dimensionen{" "}
+                      Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Arbeitsbereichen{" "}
                       <span style={{ fontWeight: 700, color: COLORS.imp }}>Impulsiv</span>,{" "}
                       <span style={{ fontWeight: 700, color: COLORS.int }}>Intuitiv</span> und{" "}
                       <span style={{ fontWeight: 700, color: COLORS.ana }}>Analytisch</span> zugeordnet.
@@ -905,17 +905,17 @@ export default function JobCheck() {
                     } else if (sameDom && intensityDiff <= 5) {
                       calloutText = `Soll: ${roleVal} / Ist: ${candVal}. Beide Profile ${labelComponent(rk)}-geprägt, Ausprägung nahezu gleichauf (Δ ${intensityDiff} Punkte). Arbeitsweise und Prioritäten bilden die Rollenanforderung stabil ab.`;
                       calloutColor = "#34C759";
-                      sectionTitle = "Dominanz-Vergleich";
+                      sectionTitle = "Profilvergleich";
                     } else if (sameDom && intensityDiff <= 15) {
                       calloutText = `Soll: ${roleVal} / Ist: ${candVal} (Δ ${intensityDiff} Punkte). Beide Profile ${labelComponent(rk)}-geprägt. Die Grundrichtung stimmt, die Ausprägung liegt unter dem, was die Rolle braucht. Mit Führung steuerbar.`;
                       calloutColor = "#FF9500";
-                      sectionTitle = "Dominanz-Vergleich";
+                      sectionTitle = "Profilvergleich";
                     } else if (sameDom) {
                       calloutText = `Soll: ${roleVal} / Ist: ${candVal} (Δ ${intensityDiff} Punkte). Beide Profile ${labelComponent(rk)}-geprägt, aber die geforderte Ausprägung fehlt deutlich. Qualität und stabile Abläufe sind gefährdet.`;
                       calloutColor = "#FF3B30";
-                      sectionTitle = "Dominanz-Vergleich";
+                      sectionTitle = "Profilvergleich";
                     } else {
-                      calloutText = `Rolle braucht ${labelComponent(rk)}-Arbeitsweise (${roleVal}), die Person arbeitet ${labelComponent(ck)}-geprägt (${candVal}). Die zentrale Arbeitsweise der Position wird grundlegend verschoben.`;
+                      calloutText = `Rolle braucht ${labelComponent(rk)}-Arbeitsweise (${roleVal}), die Person arbeitet ${labelComponent(ck)}-geprägt (${candVal}). Die zentrale Arbeitsweise der Rolle wird grundlegend verschoben.`;
                       calloutColor = "#FF3B30";
                       sectionTitle = "Unterschied zwischen Rolle und Person";
                     }

@@ -920,7 +920,7 @@ export default function Bericht() {
 
                     <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "18px 0" }} />
 
-                    <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>Stressverhalten</p>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>Verhalten unter Druck</p>
 
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                       <div style={{

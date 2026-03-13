@@ -477,7 +477,7 @@ export default function SollIstBericht() {
 
             const devLevel = effective.developmentLevel;
             const devScore = devLevel >= 4 ? 3 : devLevel >= 3 ? 2 : 1;
-            const devLabel = effective.developmentLabel === "hoch" ? "Entwicklung sehr wahrscheinlich" : effective.developmentLabel === "mittel" ? "Entwicklung mit Unterstützung möglich" : "Entwicklung unwahrscheinlich";
+            const devLabel = effective.developmentLabel === "hoch" ? "Geringer Entwicklungsaufwand" : effective.developmentLabel === "mittel" ? "Entwicklung mit gezielter Führung möglich" : "Hoher Entwicklungsaufwand, Ergebnis unsicher";
             const devText = effective.developmentText;
             const devGaugeColor = devScore === 3 ? "#3A9A5C" : devScore === 2 ? "#E5A832" : "#D64045";
 
@@ -695,7 +695,7 @@ export default function SollIstBericht() {
               </div>
 
               <div style={sep} data-testid="section-comparison-bars">
-                <SectionHead num={2} icon={BarChart3} title="Dimensionsvergleich" iconColor="#5856D6" />
+                <SectionHead num={2} icon={BarChart3} title="Vergleich der Profile" iconColor="#5856D6" />
                 <div className="grid gap-6 grid-cols-2" style={{ marginBottom: 14 }}>
                   <div className="rounded-2xl border border-slate-200 bg-white p-6">
                     <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
@@ -816,7 +816,7 @@ export default function SollIstBericht() {
               </div>
 
               <div style={sep} data-testid="section-stress-behavior">
-                <SectionHead num={4} icon={Flame} title="Stressverhalten" iconColor="#FF3B30" />
+                <SectionHead num={4} icon={Flame} title="Verhalten unter Druck" iconColor="#FF3B30" />
                 <div className="print-single-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF950008", border: "1px solid #FF950018" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
@@ -833,6 +833,9 @@ export default function SollIstBericht() {
                     <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }} lang="de">{result.stressBehavior.uncontrolledStress}</p>
                   </div>
                 </div>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "14px 0 0", fontStyle: "italic" }} lang="de">
+                  Unter zunehmendem Arbeitsdruck können sich diese Verhaltensmuster verstärken. Dadurch entstehen im Arbeitsalltag Risiken für Abstimmung, Führung und Zusammenarbeit.
+                </p>
               </div>
 
               <div style={sep} data-testid="section-risk-timeline">
@@ -876,12 +879,12 @@ export default function SollIstBericht() {
 
                 const rDevLevel = result.developmentLevel;
                 const rDev = rDevLevel >= 4 ? 3 : rDevLevel >= 3 ? 2 : 1;
-                const rDevLabel = result.developmentLabel === "hoch" ? "Entwicklung sehr wahrscheinlich" : result.developmentLabel === "mittel" ? "Entwicklung mit Unterstützung möglich" : "Entwicklung unwahrscheinlich";
+                const rDevLabel = result.developmentLabel === "hoch" ? "Geringer Entwicklungsaufwand" : result.developmentLabel === "mittel" ? "Entwicklung mit gezielter Führung möglich" : "Hoher Entwicklungsaufwand, Ergebnis unsicher";
                 const rGaugeCol = rDev === 3 ? "#3A9A5C" : rDev === 2 ? "#E5A832" : "#D64045";
 
                 return (
                   <div style={sep} data-testid="section-development">
-                    <SectionHead num={6} icon={TrendingUp} title="Systemwirkung & Entwicklungsprognose" iconColor="#5856D6" />
+                    <SectionHead num={6} icon={TrendingUp} title="Gesamtbewertung" iconColor="#5856D6" />
 
                     <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
                       <div style={{ width: 16, height: 16, borderRadius: 8, background: rFitColor, flexShrink: 0, boxShadow: `0 0 0 3px ${rFitColor}20` }} />
@@ -907,6 +910,17 @@ export default function SollIstBericht() {
                       ))}
                     </div>
                     <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{result.developmentText}</p>
+
+                    <div style={{ marginTop: 20, padding: "14px 18px", borderRadius: 12, background: `${rFitColor}08`, border: `1px solid ${rFitColor}18` }}>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>Managementeinschätzung</p>
+                      <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }}>
+                        {rFitLabel === "Geeignet"
+                          ? "Die Arbeitsweise der Person und die Anforderungen der Rolle stimmen gut überein. Eine stabile Besetzung ist ohne erhöhten Steuerungsaufwand möglich. Aus Managementsicht wird diese Besetzung empfohlen."
+                          : rFitLabel === "Bedingt geeignet"
+                          ? "Die Arbeitsweise der Person weicht in einzelnen Bereichen von den Anforderungen der Rolle ab. Eine stabile Besetzung ist mit gezielter Führung und regelmässiger Rückmeldung möglich. Aus Managementsicht ist diese Besetzung unter Voraussetzungen vertretbar."
+                          : "Die strukturelle Abweichung zwischen Rolle und Person ist deutlich. Eine stabile Besetzung wäre nur mit dauerhaft erhöhtem Steuerungsaufwand möglich. Aus Managementsicht wird diese Besetzung nicht empfohlen."}
+                      </p>
+                    </div>
                   </div>
                 );
               })()}

@@ -412,7 +412,7 @@ function buildExecutiveBullets(rk: ComponentKey, ck: ComponentKey, gapLevel: str
   if (maxGap >= 10) {
     bullets.push(`Grösste Abweichung im Bereich ${labelComponent(maxGapKey)} (${maxGap} Punkte Differenz).`);
   } else {
-    bullets.push("Alle drei Dimensionen liegen nah beieinander. Geringe Abweichung.");
+    bullets.push("Alle drei Arbeitsbereiche liegen nah beieinander. Geringe Abweichung.");
   }
 
   if (fitLabel === "Nicht geeignet") {
@@ -596,7 +596,7 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
       candidatePattern = `${s} trifft Entscheidungen schnell und handlungsorientiert. Die Wirkung auf andere wird dabei selten berücksichtigt.`;
       risk = "Betroffene fühlen sich übergangen. Entscheidungen fallen ohne ausreichende Einbindung. Das belastet langfristig die Zusammenarbeit.";
     } else {
-      candidatePattern = `${s} entscheidet über Fakten und Regeln. Die zwischenmenschliche Dimension steht weniger im Fokus.`;
+      candidatePattern = `${s} entscheidet über Fakten und Regeln. Der zwischenmenschliche Arbeitsbereich steht weniger im Fokus.`;
       risk = "Sachlich korrekte Entscheidungen, aber Auswirkungen auf Motivation und Teamdynamik werden unterschätzt.";
     }
   }
@@ -777,7 +777,7 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
   const midRisks: Record<ComponentKey, Record<ComponentKey, string>> = {
     impulsiv: {
       intuitiv: `Prioritäten, Entscheidungen und Arbeitsweise folgen zunehmend der persönlichen Beziehungslogik von ${subj(cand)}. Die Umsetzungsgeschwindigkeit sinkt weiter. Die Führungskraft muss regelmäßig Tempo und Ergebnisorientierung einfordern.`,
-      analytisch: `Die Rolle wird zunehmend über Prüfung und Kontrolle gesteuert statt über Tempo. Die Dynamik der Position geht verloren. Ohne Korrektur durch die Führungskraft wird die Rolle langsamer als vorgesehen.`,
+      analytisch: `Die Rolle wird zunehmend über Prüfung und Kontrolle gesteuert statt über Tempo. Die Dynamik der Rolle geht verloren. Ohne Korrektur durch die Führungskraft wird die Rolle langsamer als vorgesehen.`,
       impulsiv: "",
     },
     intuitiv: {
@@ -801,7 +801,7 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
     {
       label: "Mittelfristig",
       period: "3 - 12 Monate",
-      text: midRisks[rk]?.[ck] || `Die persönliche Arbeitslogik von ${subj(cand)} prägt zunehmend die Rolle. Ohne gezielte Steuerung verschiebt sich die Wirkung der Position dauerhaft.`,
+      text: midRisks[rk]?.[ck] || `Die persönliche Arbeitslogik von ${subj(cand)} prägt zunehmend die Rolle. Ohne gezielte Steuerung verschiebt sich die Wirkung der Rolle dauerhaft.`,
     },
     {
       label: "Langfristig",
