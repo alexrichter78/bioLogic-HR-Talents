@@ -416,11 +416,11 @@ function buildExecutiveBullets(rk: ComponentKey, ck: ComponentKey, gapLevel: str
   }
 
   if (fitLabel === "Nicht geeignet") {
-    bullets.push("Hoher Steuerungsaufwand durch die Führungskraft erforderlich. Grundlegende Abweichung zur Rollenanforderung.");
+    bullets.push("Hoher Führungsaufwand erforderlich. Grundlegende Abweichung zur Rollenanforderung.");
   } else if (fitLabel === "Bedingt geeignet") {
-    bullets.push("Moderater Steuerungsaufwand. Gezielte Führung und klare Erwartungen gleichen Differenzen aus.");
+    bullets.push("Moderater Führungsaufwand. Gezielte Führung und klare Erwartungen gleichen Differenzen aus.");
   } else {
-    bullets.push("Geringer Steuerungsaufwand. Natürliche Passung vorhanden.");
+    bullets.push("Geringer Führungsaufwand. Natürliche Passung vorhanden.");
   }
 
   return bullets;
@@ -752,7 +752,7 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
     return [
       { label: "Kurzfristig", period: "0 - 3 Monate", text: "Die Einarbeitung verläuft voraussichtlich reibungslos. Die Arbeitslogik stimmt mit der Rollenanforderung überein. Die Führungskraft muss nur in Einzelfällen nachsteuern." },
       { label: "Mittelfristig", period: "3 - 12 Monate", text: "Stabile Leistung ist erwartbar. In den sekundären Bereichen treten kleinere Abweichungen auf. Regelmäßige Zielgespräche helfen, diese frühzeitig zu erkennen." },
-      { label: "Langfristig", period: "12+ Monate", text: "Eine nachhaltige Besetzung ist wahrscheinlich. Der Steuerungsbedarf bleibt gering. Halbjährliche Überprüfungen genügen, um die Passung sicherzustellen." },
+      { label: "Langfristig", period: "12+ Monate", text: "Eine nachhaltige Besetzung ist wahrscheinlich. Der Führungsaufwand bleibt gering. Halbjährliche Überprüfungen genügen, um die Passung sicherzustellen." },
     ];
   }
 
@@ -801,14 +801,14 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
     {
       label: "Mittelfristig",
       period: "3 - 12 Monate",
-      text: midRisks[rk]?.[ck] || `Die persönliche Arbeitslogik von ${subj(cand)} prägt zunehmend die Rolle. Ohne gezielte Steuerung verschiebt sich die Wirkung der Rolle dauerhaft.`,
+      text: midRisks[rk]?.[ck] || `Die persönliche Arbeitslogik von ${subj(cand)} prägt zunehmend die Rolle. Ohne gezielte Führung verschiebt sich die Wirkung der Rolle dauerhaft.`,
     },
     {
       label: "Langfristig",
       period: "12+ Monate",
       text: gap === "hoch"
-        ? `Die Wirkung der Rolle kann sich dauerhaft von der ursprünglichen Anforderung entfernen. Qualitäts- und Führungsrisiken steigen deutlich. Eine Korrektur wird mit der Zeit schwieriger. Die Führungskraft muss entscheiden, ob der Steuerungsaufwand langfristig tragbar ist.`
-        : `Ohne gezielte Steuerung kann sich die Rollenausübung allmählich verschieben. Regelmäßige Überprüfung ist ratsam. Die Führungskraft sollte halbjährlich prüfen, ob die Rollenanforderung noch erfüllt wird.`,
+        ? `Die Wirkung der Rolle kann sich dauerhaft von der ursprünglichen Anforderung entfernen. Qualitäts- und Führungsrisiken steigen deutlich. Eine Korrektur wird mit der Zeit schwieriger. Die Führungskraft muss entscheiden, ob der Führungsaufwand langfristig tragbar ist.`
+        : `Ohne gezielte Führung kann sich die Rollenausübung allmählich verschieben. Regelmäßige Überprüfung ist ratsam. Die Führungskraft sollte halbjährlich prüfen, ob die Rollenanforderung noch erfüllt wird.`,
     },
   ];
 }
@@ -1115,14 +1115,14 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
 
     if (control === "hoch") {
       p1Items.push(`Engmaschige Führungsbegleitung von Tag 1 sicherstellen.`);
-      p3Items.push(`Überprüfen, ob die Steuerungsintensität schrittweise reduziert werden kann.`);
+      p3Items.push(`Überprüfen, ob der Führungsaufwand schrittweise reduziert werden kann.`);
     }
 
     p3Fokus = isBedingt
       ? {
           intro: `${candStrength} bleibt erhalten, während die Arbeitsweise Richtung ${rkDesc} weiterentwickelt wird. Die Führungskraft prüft:`,
           bullets: [
-            `ob der Steuerungsaufwand langfristig tragbar ist`,
+            `ob der Führungsaufwand langfristig tragbar ist`,
             `ob die Entwicklungsrichtung stimmt`,
             `ob die Rolle dauerhaft stabil besetzt werden kann`,
           ],
@@ -1152,10 +1152,10 @@ function buildFinal(role: string, cand: string, fit: string, control: string, rk
 
   const s = Subj(cand);
   if (fit === "Geeignet") {
-    return `${s} zeigt eine gute Passung für die Rolle ${role}. Die Arbeitslogik stimmt in der Grundausrichtung überein. Der Steuerungsbedarf ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich.${leadSuffix}`;
+    return `${s} zeigt eine gute Passung für die Rolle ${role}. Die Arbeitslogik stimmt in der Grundausrichtung überein. Der Führungsaufwand ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich.${leadSuffix}`;
   }
   if (fit === "Bedingt geeignet") {
-    return `${s} kann die Rolle ${role} unter bestimmten Bedingungen ausfüllen. Die Arbeitslogik weicht in einzelnen Bereichen von der Rollenanforderung ab. Mit gezielter Führung und klarer Struktur lässt sich die Zusammenarbeit stabilisieren. Der Steuerungsbedarf ist ${control}.${leadSuffix}`;
+    return `${s} kann die Rolle ${role} unter bestimmten Bedingungen ausfüllen. Die Arbeitslogik weicht in einzelnen Bereichen von der Rollenanforderung ab. Mit gezielter Führung und klarer Struktur lässt sich die Zusammenarbeit stabilisieren. Der Führungsaufwand ist ${control}.${leadSuffix}`;
   }
-  return `${s} ist stark auf ${compDesc(ck)} ausgerichtet, während die Rolle einen Schwerpunkt auf ${compDesc(rk)} erfordert. Die Grundpassung ist damit nicht gegeben. Eine stabile Besetzung wäre nur mit dauerhaft erhöhtem Steuerungsaufwand möglich.${leadSuffix}`;
+  return `${s} ist stark auf ${compDesc(ck)} ausgerichtet, während die Rolle einen Schwerpunkt auf ${compDesc(rk)} erfordert. Die Grundpassung ist damit nicht gegeben. Eine stabile Besetzung wäre nur mit dauerhaft erhöhtem Führungsaufwand möglich.${leadSuffix}`;
 }

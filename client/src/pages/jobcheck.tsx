@@ -853,7 +853,7 @@ export default function JobCheck() {
 
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 20, marginBottom: 14 }}>
                       <div style={{ padding: "12px 14px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Steuerungsintensität</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Führungsaufwand</p>
                         <p style={{ fontSize: 16, fontWeight: 750, color: controlColor(engine.controlIntensity), margin: 0 }}>{controlLabel(engine.controlIntensity)}</p>
                       </div>
                       <div style={{ padding: "12px 14px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
@@ -1148,7 +1148,7 @@ export default function JobCheck() {
                         <p style={{ fontSize: 15, fontWeight: 700, color: fitColor(engine.overallFit), margin: 0 }}>{statusLabel(engine.overallFit)}</p>
                       </div>
                       <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Steuerungsbedarf</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Führungsaufwand</p>
                         <p style={{ fontSize: 15, fontWeight: 700, color: controlColor(engine.controlIntensity), margin: 0 }}>{controlLabel(engine.controlIntensity)}</p>
                       </div>
                       <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>

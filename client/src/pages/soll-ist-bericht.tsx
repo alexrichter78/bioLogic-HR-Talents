@@ -592,7 +592,7 @@ export default function SollIstBericht() {
                         </div>
                         <div style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "3px 10px", borderRadius: 8, background: `${cCol}10`, border: `1px solid ${cCol}20` }}>
                           <div style={{ width: 6, height: 6, borderRadius: 3, background: cCol }} />
-                          <span style={{ fontSize: 11, fontWeight: 600, color: cCol }}>Steuerung: {cLabel}</span>
+                          <span style={{ fontSize: 11, fontWeight: 600, color: cCol }}>Führungsaufwand: {cLabel}</span>
                         </div>
                       </div>
 
@@ -915,10 +915,10 @@ export default function SollIstBericht() {
                       <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>Managementeinschätzung</p>
                       <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }}>
                         {rFitLabel === "Geeignet"
-                          ? "Die Arbeitsweise der Person und die Anforderungen der Rolle stimmen gut überein. Eine stabile Besetzung ist ohne erhöhten Steuerungsaufwand möglich. Aus Managementsicht wird diese Besetzung empfohlen."
+                          ? "Die Arbeitsweise der Person und die Anforderungen der Rolle stimmen gut überein. Eine stabile Besetzung ist ohne erhöhten Führungsaufwand möglich. Aus Managementsicht wird diese Besetzung empfohlen."
                           : rFitLabel === "Bedingt geeignet"
                           ? "Die Arbeitsweise der Person weicht in einzelnen Bereichen von den Anforderungen der Rolle ab. Eine stabile Besetzung ist mit gezielter Führung und regelmässiger Rückmeldung möglich. Aus Managementsicht ist diese Besetzung unter Voraussetzungen vertretbar."
-                          : "Die strukturelle Abweichung zwischen Rolle und Person ist deutlich. Eine stabile Besetzung wäre nur mit dauerhaft erhöhtem Steuerungsaufwand möglich. Aus Managementsicht wird diese Besetzung nicht empfohlen."}
+                          : "Die strukturelle Abweichung zwischen Rolle und Person ist deutlich. Eine stabile Besetzung wäre nur mit dauerhaft erhöhtem Führungsaufwand möglich. Aus Managementsicht wird diese Besetzung nicht empfohlen."}
                       </p>
                     </div>
                   </div>
