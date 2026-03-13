@@ -790,7 +790,7 @@ export default function SollIstBericht() {
               </div>
 
               <div style={sep} data-testid="section-impact-matrix">
-                <SectionHead num={3} icon={Shield} title="Strukturelle Wirkungsanalyse" iconColor="#34C759" />
+                <SectionHead num={3} icon={Shield} title="Wirkung der Besetzung im Arbeitsalltag" iconColor="#34C759" />
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {result.impactAreas.map(area => {
                     const sevCol = area.severity === "critical" ? "#FF3B30" : area.severity === "warning" ? "#FF9500" : "#34C759";

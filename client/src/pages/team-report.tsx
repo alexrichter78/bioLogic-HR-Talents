@@ -1185,7 +1185,7 @@ export default function TeamReport() {
             {/* ── Systemwirkung Detail + Teamdynamik ── */}
             <section className="mb-8 rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-systemwirkung">
               <div className="mb-6">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Strukturelle Wirkungsanalyse</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Wirkung der Besetzung im Arbeitsalltag</p>
                 <h3 className="mt-2 text-xl font-semibold text-slate-950">Wirkung im System</h3>
               </div>
 
