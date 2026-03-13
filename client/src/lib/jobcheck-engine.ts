@@ -969,6 +969,102 @@ export function controlLabel(c: ControlIntensity) {
   return "Hoch";
 }
 
+type ConstellationType =
+  | "H_DOM" | "B_DOM" | "S_DOM"
+  | "H_GT_B" | "H_GT_S" | "B_GT_H" | "B_GT_S" | "S_GT_H" | "S_GT_B"
+  | "H_NEAR_B" | "H_NEAR_S" | "B_NEAR_S"
+  | "BALANCED";
+
+function detectConstellation(t: Triad): ConstellationType {
+  const sorted = ([
+    { key: "impulsiv" as ComponentKey, val: t.impulsiv },
+    { key: "intuitiv" as ComponentKey, val: t.intuitiv },
+    { key: "analytisch" as ComponentKey, val: t.analytisch },
+  ]).sort((a, b) => b.val - a.val);
+  const top = sorted[0];
+  const mid = sorted[1];
+  const d12 = top.val - mid.val;
+  const range = top.val - sorted[2].val;
+  if (range <= 8) return "BALANCED";
+  const pairKey = (a: ComponentKey, b: ComponentKey): string => {
+    const m: Record<string, string> = {
+      "impulsiv_intuitiv": "H_B", "intuitiv_impulsiv": "B_H",
+      "impulsiv_analytisch": "H_S", "analytisch_impulsiv": "S_H",
+      "intuitiv_analytisch": "B_S", "analytisch_intuitiv": "S_B",
+    };
+    return m[`${a}_${b}`] || "";
+  };
+  if (d12 >= 15) {
+    if (top.key === "impulsiv") return "H_DOM";
+    if (top.key === "intuitiv") return "B_DOM";
+    return "S_DOM";
+  }
+  if (d12 <= 5) {
+    const pk = pairKey(top.key, mid.key);
+    if (pk === "H_B" || pk === "B_H") return "H_NEAR_B";
+    if (pk === "H_S" || pk === "S_H") return "H_NEAR_S";
+    return "B_NEAR_S";
+  }
+  const gtKey = pairKey(top.key, mid.key);
+  const gtMap: Record<string, ConstellationType> = {
+    "H_B": "H_GT_B", "H_S": "H_GT_S",
+    "B_H": "B_GT_H", "B_S": "B_GT_S",
+    "S_H": "S_GT_H", "S_B": "S_GT_B",
+  };
+  return gtMap[gtKey] || "BALANCED";
+}
+
+function subjName(name: string): string {
+  const l = name.toLowerCase();
+  if (l === "person" || l === "die person") return "die Person";
+  return name;
+}
+function SubjName(name: string): string {
+  const l = name.toLowerCase();
+  if (l === "person" || l === "die person") return "Die Person";
+  return name;
+}
+
+function constellationRoleText(c: ConstellationType): string {
+  const texts: Record<ConstellationType, string> = {
+    H_DOM: "Diese Rolle wirkt vor allem über Geschwindigkeit, klare Priorisierung und direkte Umsetzung. Entscheidungen werden zügig getroffen, Themen schnell in Bewegung gebracht.",
+    B_DOM: "Diese Rolle lebt stark vom direkten Kontakt mit Menschen, vom schnellen Erfassen von Situationen und von reibungsarmer Zusammenarbeit.",
+    S_DOM: "Diese Rolle verlangt vor allem Struktur, sorgfältige Planung und verlässliche Prüftiefe. Qualität entsteht über Ordnung, Disziplin und Nachvollziehbarkeit.",
+    H_GT_B: "Die Rolle wird vor allem durch Umsetzung und Tempo getragen, braucht aber gleichzeitig die Fähigkeit, Menschen mitzunehmen und Situationen sozial klug zu lesen.",
+    H_GT_S: "Die Rolle lebt von zügiger Umsetzung, braucht aber eine stabile Struktur im Hintergrund. Geschwindigkeit allein reicht nicht; sie muss in klare Abläufe eingebettet sein.",
+    B_GT_H: "Die Rolle wirkt primär über Beziehung und Kommunikation, braucht aber eine klare Fähigkeit, bei Bedarf zu entscheiden und in Handlung zu kommen.",
+    B_GT_S: "Die Rolle braucht vor allem Zusammenarbeit, situatives Gespür und tragfähige Kommunikation. Struktur dient hier als Stabilisierung und Absicherung.",
+    S_GT_H: "Die Rolle verlangt in erster Linie Planung, Sorgfalt und Ordnung, braucht aber gleichzeitig die Fähigkeit, Entscheidungen rechtzeitig umzusetzen.",
+    S_GT_B: "Die Rolle wird vor allem über Struktur, Planung und Verlässlichkeit getragen. Gleichzeitig braucht sie ausreichend Kommunikationsfähigkeit, damit die Struktur im System angenommen wird.",
+    H_NEAR_B: "Die Rolle verbindet starke Umsetzungsenergie mit hoher sozialer Beweglichkeit. Sie wirkt zugleich über Tempo und Kontaktfähigkeit.",
+    H_NEAR_S: "Die Rolle verbindet Umsetzungskraft mit Struktur. Sie kann stark sein, wenn Geschwindigkeit und saubere Planung gemeinsam wirken.",
+    B_NEAR_S: "Die Rolle verbindet Zusammenarbeit und Struktur. Sie wirkt über Orientierung, saubere Abstimmung und verlässliche Standards.",
+    BALANCED: "Die Rolle zeigt keine klare strukturelle Einseitigkeit. Umsetzung, Zusammenarbeit und Struktur wirken in relativ ausgeglichener Form zusammen.",
+  };
+  return texts[c];
+}
+
+function constellationCandText(c: ConstellationType, cand: string): string {
+  const s = SubjName(cand);
+  const sLower = subjName(cand);
+  const texts: Record<ConstellationType, string> = {
+    H_DOM: `${s} arbeitet mit hoher Umsetzungsenergie, trifft Entscheidungen zügig und bringt Themen schnell ins Handeln.`,
+    B_DOM: `${s} baut schnell Vertrauen auf, erkennt Bedürfnisse früh und sorgt für reibungsarme Zusammenarbeit.`,
+    S_DOM: `${s} arbeitet planvoll und präzise, sorgt für verlässliche Abläufe und prüft sorgfältig.`,
+    H_GT_B: `${s} setzt auf Tempo und direkte Umsetzung, kann aber gleichzeitig Menschen einbinden und situative Zusammenarbeit leisten.`,
+    H_GT_S: `${s} arbeitet schnell und entscheidungsorientiert, sichert Ergebnisse aber zusätzlich über klare Abläufe und Struktur ab.`,
+    B_GT_H: `${s} wirkt vor allem über Beziehung und Kommunikation, kann aber bei Bedarf schnell entscheiden und handeln.`,
+    B_GT_S: `${s} ist stark in Zusammenarbeit und situativem Gespür und nutzt gleichzeitig Struktur als Absicherung.`,
+    S_GT_H: `${s} arbeitet vorwiegend strukturiert und planvoll, kann aber bei Bedarf schnell umschalten und handeln.`,
+    S_GT_B: `${s} legt Wert auf Struktur, Ordnung und Verlässlichkeit. Gleichzeitig sorgt ein spürbarer Beziehungsanteil dafür, dass Strukturen auch kommunikativ vermittelt werden.`,
+    H_NEAR_B: `Bei ${sLower} wechseln sich starke Umsetzungsenergie und hohe soziale Beweglichkeit je nach Situation ab.`,
+    H_NEAR_S: `Bei ${sLower} stehen Umsetzungskraft und Strukturorientierung fast gleichwertig nebeneinander. Je nach Situation wird entweder schnell gehandelt oder gründlich geprüft.`,
+    B_NEAR_S: `Bei ${sLower} stehen Zusammenarbeit und Struktur fast gleichwertig nebeneinander. Je nach Situation wird moderiert oder geordnet.`,
+    BALANCED: `${s} zeigt ein ausgeglichenes Profil ohne klare Einseitigkeit. Das Verhalten passt sich situativ an, ist aber weniger eindeutig steuerbar.`,
+  };
+  return texts[c];
+}
+
 export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResult {
   const roleDom = dominanceModeOf(role.role_profile);
   const candDom = dominanceModeOf(cand.candidate_profile);
@@ -1034,39 +1130,44 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   const mainDiff = Math.abs(rN[roleDom.top1.key] - cN[roleDom.top1.key]);
 
   const candName = cand.candidate_name || "Person";
+  const s = SubjName(candName);
   const jobTitle = role.job_title || "diese Position";
   const competingL = dualConflict ? labelComponent(candDom.top1.key === roleDom.top1.key ? candDom.top2.key : candDom.top1.key) : "";
+  const rConst = detectConstellation(rN);
+  const cConst = detectConstellation(cN);
+  const roleDesc = constellationRoleText(rConst);
+  const candDesc = constellationCandText(cConst, candName);
 
   const keyReason = (() => {
     if (equalDistConflict) {
-      return `${candName} zeigt eine Gleichverteilung aller drei Komponenten – es gibt keinen erkennbaren Schwerpunkt. Die Rolle ${jobTitle} braucht eine klare ${rL}-Ausrichtung. Ohne klaren Schwerpunkt fehlt die Grundlage, um gezielt Prioritäten zu setzen und konsequent zu entscheiden.`;
+      return `${s} zeigt ein ausgeglichenes Profil ohne klare Einseitigkeit. ${roleDesc} Ohne einen erkennbaren Schwerpunkt fehlt die Grundlage, um die Rollenanforderungen gezielt umzusetzen.`;
     }
     if (dualConflict && roleKeyInDual) {
-      return `${candName} bringt die geforderte ${rL}-Arbeitsweise grundsätzlich mit, allerdings konkurriert sie mit einer gleich starken ${competingL}-Prägung. Die Rolle ${jobTitle} braucht eine klare ${rL}-Ausrichtung – diese Eindeutigkeit fehlt. Prioritäten und ${t.qualityMetric} werden instabil.`;
+      return `${s} bringt die geforderte ${rL}-Arbeitsweise grundsätzlich mit, allerdings konkurriert sie mit einer gleich starken ${competingL}-Prägung. ${roleDesc} Diese Eindeutigkeit fehlt. Prioritäten und ${t.qualityMetric} werden instabil.`;
     }
     if (dualConflict && !roleKeyInDual) {
-      return `${candName} arbeitet vorrangig ${labelComponent(candDom.top1.key)}-/${labelComponent(candDom.top2.key)}-geprägt. Die für ${jobTitle} entscheidende ${rL}-Arbeitsweise fehlt. Entscheidungen, Prioritäten und stabile Abläufe sind kritisch betroffen.`;
+      return `${candDesc} ${roleDesc} Die für ${jobTitle} entscheidende Arbeitslogik wird nicht abgebildet. Entscheidungen, Prioritäten und stabile Abläufe sind kritisch betroffen.`;
     }
     if (overallFit === "SUITABLE") {
-      return `${candName} passt zur Rolle ${jobTitle}. Die geforderte ${rL}-Arbeitsweise wird stabil abgebildet. Kritischster Bereich: „${critical.label}" – dort ist die Passung am engsten.`;
+      return `${s} passt in der Grundausrichtung gut zur Rolle ${jobTitle}. Beide setzen auf dieselbe Arbeitslogik. ${roleDesc} ${s} arbeitet ähnlich. Kleinere Unterschiede in der Gewichtung der sekundären Bereiche sind im Alltag gut steuerbar.`;
     }
     if (secondaryFlipped && overallFit === "NOT_SUITABLE") {
       const roleSecL = labelComponent(roleDom.top2.key);
       const candSecL = labelComponent(candDom.top2.key);
-      return `${candName} arbeitet zwar ${rL}-orientiert, aber die Sekundärausrichtung passt nicht: Die Rolle braucht ${roleSecL} als zweite Stärke, ${candName} bringt jedoch klar ${candSecL} mit. Diese strukturelle Abweichung verändert Arbeitsstil und Prioritäten grundlegend – besonders im Bereich „${critical.label}".`;
+      return `${s} arbeitet zwar ${rL}-orientiert, aber die Sekundärausrichtung passt nicht: Die Rolle braucht ${roleSecL} als zweite Stärke, ${candName} bringt jedoch klar ${candSecL} mit. ${roleDesc} Diese strukturelle Abweichung verändert Arbeitsstil und Prioritäten grundlegend.`;
     }
     if (secondaryFlipped && sameDom && overallFit === "CONDITIONAL") {
       const roleSecL = labelComponent(roleDom.top2.key);
       const candSecL = labelComponent(candDom.top2.key);
-      return `${candName} arbeitet ${rL}-orientiert wie gefordert, aber die Sekundärausrichtung ist unklar: Die Rolle braucht ${roleSecL} als zweite Stärke, ${candName} zeigt eine Mischung aus ${roleSecL} und ${candSecL}. Mit Führung steuerbar – besonders im Bereich „${critical.label}".`;
+      return `${s} arbeitet ${rL}-orientiert wie gefordert, aber die Sekundärausrichtung ist unklar: Die Rolle braucht ${roleSecL} als zweite Stärke, ${candName} zeigt eine Mischung aus ${roleSecL} und ${candSecL}. ${roleDesc} Mit gezielter Führung steuerbar.`;
     }
     if (sameDom && overallFit === "CONDITIONAL") {
-      return `${candName} arbeitet grundsätzlich ${rL}-orientiert, aber die Ausprägung liegt unter dem, was die Rolle braucht. Es gibt ${gapDesc(mainDiff)} – besonders im Bereich „${critical.label}". Mit Führung steuerbar, aber nicht selbsttragend.`;
+      return `${s} bringt die geforderte Arbeitslogik grundsätzlich mit, aber die Ausprägung liegt unter dem, was die Rolle braucht. ${roleDesc} ${candDesc} Die Unterschiede sind erkennbar, lassen sich aber bei gezielter Führung und klaren Erwartungen ausgleichen.`;
     }
     if (overallFit === "CONDITIONAL") {
-      return `${candName} bringt eine andere Arbeitsweise mit als ${jobTitle} braucht (Rolle: ${rL}, Person: ${cL}). Eine Besetzung ist möglich, braucht aber klare Ziele und Führung – besonders im Bereich „${critical.label}".`;
+      return `${s} bringt eine andere Arbeitslogik mit als die Rolle ${jobTitle} erfordert. ${roleDesc} ${s} geht anders vor: ${candDesc} Die Unterschiede sind erkennbar, lassen sich aber bei gezielter Führung und klaren Erwartungen ausgleichen.`;
     }
-    return `${candName} passt nicht zu den Kernanforderungen der Rolle ${jobTitle}. Die geforderte ${rL}-Arbeitsweise wird nicht abgebildet – es gibt ${gapDesc(mainDiff)}. Besonders kritisch: „${critical.label}".`;
+    return `Rolle und ${subjName(candName)} arbeiten nach unterschiedlichen Prinzipien. ${roleDesc} ${candDesc} Diese Unterschiede wirken sich im Alltag spürbar aus: bei Entscheidungen, Arbeitsweise und Zusammenarbeit.`;
   })();
 
   const execSummary = (() => {
@@ -1074,21 +1175,17 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
     const fitLine = `Gesamteinstufung: ${statusLabel(overallFit)} · Führungsaufwand: ${controlLabel(ctrl.level)}`;
     let domLine: string;
     if (equalDistConflict) {
-      domLine = `Gleichverteilung – kein erkennbarer Schwerpunkt. Die Rolle braucht eine klare ${rL}-Ausrichtung. Die Grundlage für gezielte Prioritäten und konsequente Entscheidungen fehlt.`;
+      domLine = `${s} zeigt ein ausgeglichenes Profil. ${roleDesc} Ohne klaren Schwerpunkt fehlt die Grundlage für gezielte Prioritäten und konsequente Entscheidungen.`;
     } else if (dualConflict) {
-      domLine = `Doppeldominanz: ${labelComponent(candDom.top1.key)} und ${labelComponent(candDom.top2.key)} konkurrieren – die Rolle braucht eine klare ${rL}-Ausrichtung. Prioritäten und Entscheidungen werden instabil.`;
+      domLine = `Doppeldominanz: ${labelComponent(candDom.top1.key)} und ${labelComponent(candDom.top2.key)} konkurrieren. ${roleDesc} Prioritäten und Entscheidungen werden instabil.`;
     } else if (sameDom && secondaryFlipped && candDom.gap2 > 5) {
-      const roleSecL = labelComponent(roleDom.top2.key);
-      const candSecL = labelComponent(candDom.top2.key);
-      domLine = `Beide Profile sind ${rL}-geprägt, aber die Sekundärausrichtung passt nicht: Rolle erwartet ${roleSecL}, Person bringt klar ${candSecL}. Arbeitsstil und Prioritätensetzung weichen strukturell ab.`;
+      domLine = `Beide Profile sind ${rL}-geprägt, aber die Sekundärausrichtung passt nicht. ${roleDesc} ${candDesc} Arbeitsstil und Prioritätensetzung weichen strukturell ab.`;
     } else if (sameDom && secondaryFlipped) {
-      const roleSecL = labelComponent(roleDom.top2.key);
-      const candSecL = labelComponent(candDom.top2.key);
-      domLine = `Beide Profile sind ${rL}-geprägt, die Sekundärausrichtung ist jedoch unklar: Rolle erwartet ${roleSecL}, Person zeigt eine Mischung. Mit Führung steuerbar.`;
+      domLine = `Beide Profile sind ${rL}-geprägt, die Sekundärausrichtung ist jedoch unklar. ${roleDesc} Mit Führung steuerbar.`;
     } else if (sameDom) {
-      domLine = `Beide Profile sind ${rL}-geprägt und ${gapAdj(mainDiff)}. Arbeitsweise und Prioritäten stimmen in der Grundrichtung überein.`;
+      domLine = `Beide Profile setzen auf dieselbe Arbeitslogik und sind ${gapAdj(mainDiff)}. ${roleDesc} Arbeitsweise und Prioritäten stimmen in der Grundrichtung überein.`;
     } else {
-      domLine = `Die Rolle braucht eine ${rL}-geprägte Arbeitsweise. ${candName} arbeitet ${cL}-geprägt. Entscheidungen und Prioritäten brauchen Führung.`;
+      domLine = `${roleDesc} ${candDesc} Entscheidungen und Prioritäten brauchen Führung.`;
     }
     return [intro, fitLine, domLine].join("\n");
   })();

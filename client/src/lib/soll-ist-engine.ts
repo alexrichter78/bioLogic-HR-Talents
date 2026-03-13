@@ -349,7 +349,7 @@ export function computeSollIst(
   };
 }
 
-function constellationRoleText(c: ConstellationType): string {
+export function constellationRoleText(c: ConstellationType): string {
   const texts: Record<ConstellationType, string> = {
     H_DOM: "Diese Rolle wirkt vor allem über Geschwindigkeit, klare Priorisierung und direkte Umsetzung. Entscheidungen werden zügig getroffen, Themen schnell in Bewegung gebracht.",
     B_DOM: "Diese Rolle lebt stark vom direkten Kontakt mit Menschen, vom schnellen Erfassen von Situationen und von reibungsarmer Zusammenarbeit.",
@@ -368,7 +368,7 @@ function constellationRoleText(c: ConstellationType): string {
   return texts[c];
 }
 
-function constellationCandText(c: ConstellationType, cand: string): string {
+export function constellationCandText(c: ConstellationType, cand: string): string {
   const s = Subj(cand);
   const texts: Record<ConstellationType, string> = {
     H_DOM: `${s} arbeitet mit hoher Umsetzungsenergie, trifft Entscheidungen zügig und bringt Themen schnell ins Handeln.`,
