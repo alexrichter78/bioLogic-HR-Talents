@@ -201,9 +201,11 @@ function buildEinleitung(beruf: string, bereich: string, dom: ReturnType<typeof 
   const aufgChar = aufgabencharakter ? ` Der Aufgabencharakter ist ${aufgabencharakter.toLowerCase()}.` : "";
   const p2 = `Diese Rolle ist ${intensityAdj(intensity)} durch ${kompLabel(dom.key)} und verlangt eine Persönlichkeit, die ${kompShort(dom.key)} als natürliche Stärke mitbringt.${aufgChar} Ergänzend wird ${kompLabel(sec.key)} benötigt, um die Rolle vollständig auszufüllen.`;
 
-  const p3 = `Dieser Bericht beschreibt die strukturellen Anforderungen der Rolle, unabhängig von Lebenslauf, Branchenerfahrung oder bisherigen Leistungskennzahlen.`;
+  const p3 = `Passt die strukturelle Arbeitslogik nicht zur Rolle, zeigt sich das im Alltag durch steigenden Abstimmungsbedarf, Konflikte im Team und wachsenden Führungsaufwand. Eine Fehlbesetzung wird damit nicht nur zum personellen, sondern zum wirtschaftlichen Risiko.`;
 
-  return `${p1}\n\n${p2}\n\n${p3}`;
+  const p4 = `Dieser Bericht beschreibt die strukturellen Anforderungen der Rolle, unabhängig von Lebenslauf, Branchenerfahrung oder bisherigen Leistungskennzahlen.`;
+
+  return `${p1}\n\n${p2}\n\n${p3}\n\n${p4}`;
 }
 
 function buildGesamtprofil(gesamt: BG, dom: ReturnType<typeof dominant>, sec: ReturnType<typeof secondary>, wk: ReturnType<typeof weakest>, intensity: Intensity, profileType: ProfileType, beruf: string): string {
