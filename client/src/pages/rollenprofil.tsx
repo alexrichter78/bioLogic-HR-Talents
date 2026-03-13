@@ -866,37 +866,32 @@ export default function Rollenprofil() {
   const handlePDF = async () => {
     if (!reportRef.current) return;
     setPdfLoading(true);
+    await new Promise(r => setTimeout(r, 100));
     try {
-      const html2canvas = (await import("html2canvas")).default;
-      const jsPDF = (await import("jspdf")).default;
-      const canvas = await html2canvas(reportRef.current, { scale: 2, backgroundColor: "#FFFFFF", useCORS: true, logging: false });
-      const imgData = canvas.toDataURL("image/jpeg", 0.92);
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pageW = pdf.internal.pageSize.getWidth();
-      const pageH = pdf.internal.pageSize.getHeight();
-      const marginX = 10;
-      const marginY = 10;
-      const imgW = pageW - 2 * marginX;
-      const imgH = (canvas.height * imgW) / canvas.width;
-      const usableH = pageH - 2 * marginY;
-      const totalPages = Math.ceil(imgH / usableH);
-      for (let p = 0; p < totalPages; p++) {
-        if (p > 0) pdf.addPage();
-        pdf.addImage(imgData, "JPEG", marginX, marginY - (p * usableH), imgW, imgH);
-      }
-      const fileName = `Rollen-DNA_${data?.beruf || "Bericht"}.pdf`;
-      const blob = pdf.output("blob");
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = fileName;
-      link.style.display = "none";
-      document.body.appendChild(link);
-      link.click();
-      setTimeout(() => {
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      }, 200);
+      const html2pdf = (await import("html2pdf.js")).default;
+      const el = reportRef.current;
+      const buttons = el.querySelectorAll("button");
+      buttons.forEach(b => (b as HTMLElement).style.display = "none");
+
+      const safeName = (data?.beruf || "Bericht").replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_");
+
+      await html2pdf().set({
+        margin: [10, 10, 10, 15],
+        filename: `Rollen-DNA_${safeName}.pdf`,
+        image: { type: "jpeg", quality: 0.95 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: "#FFFFFF",
+          logging: false,
+          windowWidth: 900,
+        },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+      }).from(el).save();
+
+      buttons.forEach(b => (b as HTMLElement).style.display = "");
     } catch (e) {
       console.error("PDF error:", e);
       alert("PDF-Export fehlgeschlagen. Bitte versuchen Sie es erneut.");

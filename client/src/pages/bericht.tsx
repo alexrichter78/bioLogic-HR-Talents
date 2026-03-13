@@ -524,48 +524,35 @@ export default function Bericht() {
   const exportPdf = useCallback(async () => {
     if (!reportRef.current || isExportingPdf) return;
     setIsExportingPdf(true);
+    await new Promise(r => setTimeout(r, 100));
     try {
-      const html2canvas = (await import("html2canvas")).default;
-      const { jsPDF } = await import("jspdf");
-
+      const html2pdf = (await import("html2pdf.js")).default;
       const el = reportRef.current;
-      const originalBg = el.style.background;
-      el.style.background = "#FFFFFF";
-
-      const canvas = await html2canvas(el, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#FFFFFF",
-        logging: false,
-        windowWidth: 1100,
-      });
-
-      el.style.background = originalBg;
-
-      const imgWidth = 210;
-      const pageHeight = 297;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      const pdf = new jsPDF("p", "mm", "a4");
-
-      let heightLeft = imgHeight;
-      let position = 0;
-      const imgData = canvas.toDataURL("image/jpeg", 0.95);
-
-      pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft > 0) {
-        position = -(imgHeight - heightLeft);
-        pdf.addPage();
-        pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
+      const buttons = el.querySelectorAll("button");
+      buttons.forEach(b => (b as HTMLElement).style.display = "none");
 
       const berufName = profileData?.beruf?.replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_") || "Bericht";
-      pdf.save(`Entscheidungsbericht_${berufName}.pdf`);
+
+      await html2pdf().set({
+        margin: [10, 10, 10, 15],
+        filename: `Entscheidungsbericht_${berufName}.pdf`,
+        image: { type: "jpeg", quality: 0.95 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: "#FFFFFF",
+          logging: false,
+          windowWidth: 1100,
+        },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+      }).from(el).save();
+
+      buttons.forEach(b => (b as HTMLElement).style.display = "");
     } catch (err) {
       console.error("PDF export failed:", err);
+      alert("PDF-Export fehlgeschlagen. Bitte versuchen Sie es erneut.");
     } finally {
       setIsExportingPdf(false);
     }
