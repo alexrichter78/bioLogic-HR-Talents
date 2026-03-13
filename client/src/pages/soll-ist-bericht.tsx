@@ -814,13 +814,13 @@ export default function SollIstBericht() {
 
                 <div style={{ marginTop: 20, padding: "18px 22px", borderRadius: 14, background: "rgba(0,0,0,0.015)", border: "1px solid rgba(0,0,0,0.04)" }}>
                   <p style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", margin: "0 0 14px", letterSpacing: "0.02em" }}>Bedeutung der Komponenten</p>
-                  {(["intuitiv", "impulsiv", "analytisch"] as ComponentKey[]).map((k, i) => {
+                  {(["intuitiv", "impulsiv", "analytisch"] as const).map((k, i) => {
                     const hex = BAR_HEX[k];
                     const label = labelComponent(k);
                     const meaning: Record<ComponentKey, string> = {
-                      intuitiv: "In dieser Rolle heisst das: erkennen, was Gesprächspartner oder das Team gerade brauchen, und die Kommunikation darauf abstimmen. Ohne diese Fähigkeit leidet die Zusammenarbeit und das Vertrauen sinkt.",
-                      impulsiv: "In dieser Rolle heisst das: Aufgaben zügig anpacken, Prioritäten setzen und Ergebnisse liefern. Ohne diese Fähigkeit werden Entscheidungen aufgeschoben und Chancen verpasst.",
-                      analytisch: "In dieser Rolle heisst das: sauber abwägen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten. Ohne diese Fähigkeit entstehen schnell Fehler bei Planung, Kalkulation und Dokumentation.",
+                      intuitiv: "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen.",
+                      impulsiv: "Aufgaben schnell vorantreiben, Prioritäten setzen und Ergebnisse liefern.",
+                      analytisch: "Strukturen schaffen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten.",
                     };
                     return (
                       <div key={k} style={{ marginBottom: i < 2 ? 14 : 0 }}>

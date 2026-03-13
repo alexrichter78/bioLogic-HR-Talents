@@ -802,15 +802,19 @@ export default function JobCheck() {
                       <span style={{ fontWeight: 700, color: COLORS.ana }}>Analytisch</span> zugeordnet.
                       So wird erkennbar, welche Form von Wirksamkeit die Rolle bestimmt.
                     </p>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 20 }}>
+                    <div style={{ padding: "16px 20px", borderRadius: 14, background: "rgba(0,0,0,0.015)", border: "1px solid rgba(0,0,0,0.04)", marginBottom: 20 }}>
+                      <p style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", margin: "0 0 14px", letterSpacing: "0.02em" }}>Bedeutung der Komponenten</p>
                       {[
-                        { label: "Impulsiv", color: COLORS.imp, desc: "Umsetzung, Entscheidung und Ergebnisverantwortung" },
-                        { label: "Intuitiv", color: COLORS.int, desc: "Zusammenarbeit und kontextbezogenes Handeln" },
-                        { label: "Analytisch", color: COLORS.ana, desc: "Struktur, Planung und fachliche Präzision" },
-                      ].map(d => (
-                        <div key={d.label} style={{ padding: "14px 16px", borderRadius: 16, background: `${d.color}08`, border: `1px solid ${d.color}15` }}>
-                          <p style={{ fontSize: 13, fontWeight: 700, color: d.color, margin: "0 0 4px" }}>{d.label}</p>
-                          <p style={{ fontSize: 12, color: "#6E6E73", margin: 0, lineHeight: 1.4 }}>{d.desc}</p>
+                        { label: "Intuitiv", color: COLORS.int, desc: "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen." },
+                        { label: "Impulsiv", color: COLORS.imp, desc: "Aufgaben schnell vorantreiben, Prioritäten setzen und Ergebnisse liefern." },
+                        { label: "Analytisch", color: COLORS.ana, desc: "Strukturen schaffen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten." },
+                      ].map((d, i) => (
+                        <div key={d.label} style={{ marginBottom: i < 2 ? 14 : 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                            <span style={{ width: 7, height: 7, borderRadius: 4, background: d.color, display: "inline-block", flexShrink: 0 }} />
+                            <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{d.label}</span>
+                          </div>
+                          <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: 0, paddingLeft: 13 }}>{d.desc}</p>
                         </div>
                       ))}
                     </div>
