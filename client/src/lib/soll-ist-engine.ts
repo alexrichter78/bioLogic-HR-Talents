@@ -228,24 +228,65 @@ export function computeSollIst(
     const geignetLimit = sameDom ? 28 : 20;
     gapLevel = totalGap > 40 ? "hoch" : totalGap > geignetLimit ? "mittel" : "gering";
 
-    const secondaryFlip = sameDom && rDom.top2.key !== cDom.top2.key;
+    const candIsBalFull = cDom.gap1 <= 5 && cDom.gap2 <= 5;
+    const roleIsBalFull = rDom.gap1 <= 5 && rDom.gap2 <= 5;
+    const roleClearDominance = rDom.gap1 >= 15;
+    const candDualDominance = !candIsBalFull && cDom.gap1 <= 5;
+    const maxGapVal = Math.max(
+      Math.abs(rt.impulsiv - ct.impulsiv),
+      Math.abs(rt.intuitiv - ct.intuitiv),
+      Math.abs(rt.analytisch - ct.analytisch)
+    );
+    const effectiveSameDom = sameDom || roleIsBalFull;
+    const secondaryFlip = effectiveSameDom && rDom.top2.key !== cDom.top2.key;
     const candSecGap = cDom.gap2;
 
     if (totalGap > 40) { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
     else if (totalGap > geignetLimit) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
     else { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; }
 
-    if (fitLabel === "Geeignet") {
-      if (secondaryFlip && candSecGap > 5) {
+    if (candIsBalFull && !roleIsBalFull) {
+      fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
+    } else if (candIsBalFull && roleIsBalFull && fitRating === "GEEIGNET") {
+      fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
+    }
+
+    if (!effectiveSameDom && fitRating !== "NICHT_GEEIGNET") {
+      fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
+    }
+
+    if (maxGapVal > 25 && fitRating !== "NICHT_GEEIGNET") {
+      fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
+    }
+
+    if (candDualDominance && roleClearDominance && fitRating !== "NICHT_GEEIGNET") {
+      const roleKeyInDual = cDom.top1.key === rDom.top1.key || cDom.top2.key === rDom.top1.key;
+      if (!roleKeyInDual) {
         fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
-      } else if (secondaryFlip) {
-        fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
-      } else if (sameDom && candSecGap <= 5) {
+      } else if (fitRating === "GEEIGNET") {
         fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
       }
     }
 
+    if (fitLabel === "Geeignet") {
+      if (secondaryFlip && candSecGap > 5 && rDom.gap2 > 5) {
+        fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
+      } else if (secondaryFlip) {
+        fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
+      } else if (effectiveSameDom && candSecGap <= 5) {
+        fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
+      }
+    }
+
+    if (fitLabel === "Geeignet") {
+      if (maxGapVal > 18) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
+      else if (cDom.gap1 <= 5) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
+    }
+
     controlIntensity = totalGap > 35 ? "hoch" : totalGap > 15 ? "mittel" : "gering";
+
+    if (fitRating === "NICHT_GEEIGNET") { gapLevel = "hoch"; controlIntensity = "hoch"; }
+    else if (fitRating === "BEDINGT" && gapLevel === "gering") { gapLevel = "mittel"; controlIntensity = controlIntensity === "gering" ? "mittel" : controlIntensity; }
   }
 
   const rk = rDom.top1.key;
@@ -262,7 +303,7 @@ export function computeSollIst(
   const stressBehavior = buildStressBehavior(cConst, ct, cn, gapLevel);
   const impactAreas = buildImpactAreas(rk, ck, rt, ct, cn, fuehrungsArt);
   const riskTimeline = buildRiskTimeline(roleName, cn, rk, ck, gapLevel);
-  const devGap = matchCheckFit ? controlIntensity : gapLevel;
+  const devGap = fitRating === "NICHT_GEEIGNET" ? "hoch" : (matchCheckFit ? controlIntensity : gapLevel);
   const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildDevelopment(devGap, rk, ck, controlIntensity, cn);
   const actions = buildActions(rk, ck, gapLevel, controlIntensity);
   const integrationsplan = buildIntegrationsplan(roleName, cn, fitLabel, rk, ck, gapLevel, controlIntensity, fuehrungsArt, rt, ct);

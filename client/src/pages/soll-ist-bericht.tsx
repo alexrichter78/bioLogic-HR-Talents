@@ -119,6 +119,8 @@ export default function SollIstBericht() {
   const [candTriad, setCandTriad] = useState<{impulsiv: number; intuitiv: number; analytisch: number}>({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
 
   const updateCandTriad = useCallback((key: ComponentKey, newVal: number) => {
+    setMatchCheckFit(undefined);
+    setMatchCheckControl(undefined);
     setCandTriad(prev => {
       const clamped = Math.max(5, Math.min(67, Math.round(newVal)));
       const others = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== key);
