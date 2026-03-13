@@ -82,10 +82,42 @@ export type SollIstResult = {
   finalText: string;
 };
 
+const compVariants: Record<ComponentKey, string[]> = {
+  impulsiv: [
+    "Entscheidungsstärke und Umsetzung",
+    "Tempo und direkte Ergebnisorientierung",
+    "schnelle Entscheidungen und operative Durchsetzung",
+    "Handlungsorientierung und Umsetzungskraft",
+  ],
+  intuitiv: [
+    "Beziehungsgestaltung und Kommunikation",
+    "Austausch und persönliche Ansprache",
+    "Zusammenarbeit und situatives Gespür",
+    "Abstimmung und zwischenmenschliche Wirkung",
+  ],
+  analytisch: [
+    "Struktur und Analyse",
+    "Sorgfalt und systematische Prüfung",
+    "Ordnung und verlässliche Prozesse",
+    "analytische Tiefe und Qualitätssicherung",
+  ],
+};
+
+let variantCounter: Record<ComponentKey, number> = { impulsiv: 0, intuitiv: 0, analytisch: 0 };
+
+function resetVariants(): void {
+  variantCounter = { impulsiv: 0, intuitiv: 0, analytisch: 0 };
+}
+
 function compDesc(k: ComponentKey): string {
-  if (k === "impulsiv") return "Entscheidungsstärke und Umsetzung";
-  if (k === "intuitiv") return "Beziehungsgestaltung und Kommunikation";
-  return "Struktur und Analyse";
+  const variants = compVariants[k];
+  const idx = variantCounter[k] % variants.length;
+  variantCounter[k]++;
+  return variants[idx];
+}
+
+function compDescFirst(k: ComponentKey): string {
+  return compVariants[k][0];
 }
 
 function compShort(k: ComponentKey): string {
@@ -208,6 +240,7 @@ export function computeSollIst(
   matchCheckFit?: string,
   matchCheckControl?: string
 ): SollIstResult {
+  resetVariants();
   const rt = normalizeTriad(roleProfile);
   const ct = normalizeTriad(candProfile);
   const rDom = dominanceModeOf(rt);
