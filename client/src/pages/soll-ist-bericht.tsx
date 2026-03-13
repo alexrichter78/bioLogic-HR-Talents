@@ -513,7 +513,7 @@ export default function SollIstBericht() {
                             {fitLabel}
                           </span>
                         </div>
-                        <div style={{ background: `${fitColor}08`, borderLeft: `3px solid ${fitColor}`, borderRadius: "0 8px 8px 0", padding: "12px 16px" }}>
+                        <div style={{ background: `${fitColor}08`, borderLeft: `3px solid ${fitColor}`, borderRadius: "0 8px 8px 0", padding: "12px 16px", minHeight: 80 }}>
                           <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }} data-testid="text-summary-fazit">{fazitText}</p>
                         </div>
                       </div>
@@ -522,15 +522,15 @@ export default function SollIstBericht() {
                         <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 14px" }}>
                           Entwicklungsprognose
                         </p>
-                        <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }} data-testid="text-dev-prognose">
+                        <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px", whiteSpace: "nowrap" }} data-testid="text-dev-prognose">
                           {devScore} von 3 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>– {devLabel}</span>
                         </p>
                         <div style={{ display: "flex", gap: 5, marginBottom: 18 }} data-testid="gauge-dev-prognose">
                           {Array.from({ length: 3 }).map((_, i) => (
-                            <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)" }} />
+                            <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)", transition: "background 200ms ease" }} />
                           ))}
                         </div>
-                        {devText && <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }} data-testid="text-dev-description">{devText}</p>}
+                        {devText && <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, minHeight: 80 }} data-testid="text-dev-description">{devText}</p>}
                       </div>
                     </div>
                   </div>
