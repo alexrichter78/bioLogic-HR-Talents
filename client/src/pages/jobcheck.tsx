@@ -466,15 +466,17 @@ export default function JobCheck() {
   const [roleAnalysis, setRoleAnalysis] = useState<RoleAnalysis | null>(null);
   const [dnaSummary, setDnaSummary] = useState<RollenDnaSummary | null>(null);
   const [candImp, setCandImp] = useState(() => {
-    try { const s = localStorage.getItem("jobcheckCandProfile"); if (s) { const p = JSON.parse(s); return p.impulsiv ?? 33; } } catch {} return 33;
+    try { const s = localStorage.getItem("jobcheckCandSliders"); if (s) { const p = JSON.parse(s); return p.impulsiv ?? 33; } } catch {} return 33;
   });
   const [candInt, setCandInt] = useState(() => {
-    try { const s = localStorage.getItem("jobcheckCandProfile"); if (s) { const p = JSON.parse(s); return p.intuitiv ?? 34; } } catch {} return 34;
+    try { const s = localStorage.getItem("jobcheckCandSliders"); if (s) { const p = JSON.parse(s); return p.intuitiv ?? 34; } } catch {} return 34;
   });
   const [candAna, setCandAna] = useState(() => {
-    try { const s = localStorage.getItem("jobcheckCandProfile"); if (s) { const p = JSON.parse(s); return p.analytisch ?? 33; } } catch {} return 33;
+    try { const s = localStorage.getItem("jobcheckCandSliders"); if (s) { const p = JSON.parse(s); return p.analytisch ?? 33; } } catch {} return 33;
   });
-  const [candidateName, setCandidateName] = useState("");
+  const [candidateName, setCandidateName] = useState(() => {
+    try { const s = localStorage.getItem("jobcheckCandSliders"); if (s) { const p = JSON.parse(s); return p.name ?? ""; } } catch {} return "";
+  });
   const [reportGenerated, setReportGenerated] = useState(false);
   const [reportKey, setReportKey] = useState(0);
 
@@ -511,7 +513,8 @@ export default function JobCheck() {
 
   useEffect(() => {
     localStorage.setItem("jobcheckCandProfile", JSON.stringify({ ...normalizedCand, name: candidateName }));
-  }, [normalizedCand, candidateName]);
+    localStorage.setItem("jobcheckCandSliders", JSON.stringify({ impulsiv: candImp, intuitiv: candInt, analytisch: candAna, name: candidateName }));
+  }, [normalizedCand, candidateName, candImp, candInt, candAna]);
 
   const [snapshotCand, setSnapshotCand] = useState(normalizedCand);
   const [snapshotName, setSnapshotName] = useState(candidateName);

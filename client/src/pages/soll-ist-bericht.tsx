@@ -941,9 +941,12 @@ export default function SollIstBericht() {
                               <div style={{ padding: "10px 14px", borderRadius: 8, background: `${phaseCol}08`, borderLeft: `3px solid ${phaseCol}40` }}>
                                 <p style={{ fontSize: 11, fontWeight: 700, color: phaseCol, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 4px" }}>Integrationsfokus</p>
                                 <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.5, margin: "0 0 6px" }}>{phase.fokus.intro}</p>
-                                <ul style={{ margin: 0, paddingLeft: 18 }}>
+                                <ul style={{ margin: 0, paddingLeft: 0, listStyle: "none" }}>
                                   {phase.fokus.bullets.map((b, bi) => (
-                                    <li key={bi} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, marginBottom: 2 }}>{b}</li>
+                                    <li key={bi} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, marginBottom: 3, paddingLeft: 16, position: "relative" }}>
+                                      <span style={{ position: "absolute", left: 0, top: 8, width: 6, height: 6, borderRadius: "50%", background: phaseCol }} />
+                                      {b}
+                                    </li>
                                   ))}
                                 </ul>
                               </div>
