@@ -360,13 +360,13 @@ export function constellationRoleText(c: ConstellationType): string {
     H_DOM: "Diese Rolle wirkt vor allem über Geschwindigkeit, klare Priorisierung und direkte Umsetzung. Entscheidungen werden zügig getroffen, Themen schnell in Bewegung gebracht.",
     B_DOM: "Diese Rolle lebt stark vom direkten Kontakt mit Menschen, vom schnellen Erfassen von Situationen und von reibungsarmer Zusammenarbeit.",
     S_DOM: "Diese Rolle verlangt vor allem Struktur, sorgfältige Planung und verlässliche Prüftiefe. Qualität entsteht über Ordnung, Disziplin und Nachvollziehbarkeit.",
-    H_GT_B: "Die Rolle wird vor allem durch Umsetzung und Tempo getragen, braucht aber gleichzeitig die Fähigkeit, Menschen mitzunehmen und Situationen sozial klug zu lesen.",
+    H_GT_B: "Die Rolle wird vor allem durch schnelle Entscheidungen und direkte Umsetzung getragen, braucht aber gleichzeitig die Fähigkeit, Menschen mitzunehmen und Situationen sozial klug zu lesen.",
     H_GT_S: "Die Rolle lebt von zügiger Umsetzung, braucht aber eine stabile Struktur im Hintergrund. Geschwindigkeit allein reicht nicht; sie muss in klare Abläufe eingebettet sein.",
     B_GT_H: "Die Rolle wirkt primär über Beziehung und Kommunikation, braucht aber eine klare Fähigkeit, bei Bedarf zu entscheiden und in Handlung zu kommen.",
     B_GT_S: "Die Rolle braucht vor allem Zusammenarbeit, situatives Gespür und tragfähige Kommunikation. Struktur dient hier als Stabilisierung und Absicherung.",
     S_GT_H: "Die Rolle verlangt in erster Linie Planung, Sorgfalt und Ordnung, braucht aber gleichzeitig die Fähigkeit, Entscheidungen rechtzeitig umzusetzen.",
     S_GT_B: "Die Rolle wird vor allem über Struktur, Planung und Verlässlichkeit getragen. Gleichzeitig braucht sie ausreichend Kommunikationsfähigkeit, damit die Struktur im System angenommen wird.",
-    H_NEAR_B: "Die Rolle verbindet starke Umsetzungsenergie mit hoher sozialer Beweglichkeit. Sie wirkt zugleich über Tempo und Kontaktfähigkeit.",
+    H_NEAR_B: "Die Rolle verbindet hohe Ergebnisdynamik mit sozialer Beweglichkeit. Sie wirkt zugleich über schnelle Entscheidungen und Kontaktfähigkeit.",
     H_NEAR_S: "Die Rolle verbindet Umsetzungskraft mit Struktur. Sie kann stark sein, wenn Geschwindigkeit und saubere Planung gemeinsam wirken.",
     B_NEAR_S: "Die Rolle verbindet Zusammenarbeit und Struktur. Sie wirkt über Orientierung, saubere Abstimmung und verlässliche Standards.",
     BALANCED: "Die Rolle zeigt keine klare strukturelle Einseitigkeit. Umsetzung, Zusammenarbeit und Struktur wirken in relativ ausgeglichener Form zusammen.",
@@ -380,13 +380,13 @@ export function constellationCandText(c: ConstellationType, cand: string): strin
     H_DOM: `${s} arbeitet mit hoher Umsetzungsenergie, trifft Entscheidungen zügig und bringt Themen schnell ins Handeln.`,
     B_DOM: `${s} baut schnell Vertrauen auf, erkennt Bedürfnisse früh und sorgt für reibungsarme Zusammenarbeit.`,
     S_DOM: `${s} arbeitet planvoll und präzise, sorgt für verlässliche Abläufe und prüft sorgfältig.`,
-    H_GT_B: `${s} setzt auf Tempo und direkte Umsetzung, kann aber gleichzeitig Menschen einbinden und situative Zusammenarbeit leisten.`,
+    H_GT_B: `${s} setzt auf schnelle Entscheidungen und direkte Ergebnisse, kann aber gleichzeitig Menschen einbinden und situative Zusammenarbeit leisten.`,
     H_GT_S: `${s} arbeitet schnell und entscheidungsorientiert, sichert Ergebnisse aber zusätzlich über klare Abläufe und Struktur ab.`,
     B_GT_H: `${s} wirkt vor allem über Beziehung und Kommunikation, kann aber bei Bedarf schnell entscheiden und handeln.`,
     B_GT_S: `${s} ist stark in Zusammenarbeit und situativem Gespür und nutzt gleichzeitig Struktur als Absicherung.`,
     S_GT_H: `${s} arbeitet vorwiegend strukturiert und planvoll, kann aber bei Bedarf schnell umschalten und handeln.`,
     S_GT_B: `${s} legt Wert auf Struktur, Ordnung und Verlässlichkeit. Gleichzeitig sorgt ein spürbarer Beziehungsanteil dafür, dass Strukturen auch kommunikativ vermittelt werden.`,
-    H_NEAR_B: `Bei ${subj(cand)} wechseln sich starke Umsetzungsenergie und hohe soziale Beweglichkeit je nach Situation ab.`,
+    H_NEAR_B: `Bei ${subj(cand)} wechseln sich hohe Ergebnisdynamik und soziale Beweglichkeit je nach Situation ab.`,
     H_NEAR_S: `Bei ${subj(cand)} stehen Umsetzungskraft und Strukturorientierung fast gleichwertig nebeneinander. Je nach Situation wird entweder schnell gehandelt oder gründlich geprüft.`,
     B_NEAR_S: `Bei ${subj(cand)} stehen Zusammenarbeit und Struktur fast gleichwertig nebeneinander. Je nach Situation wird moderiert oder geordnet.`,
     BALANCED: `${s} zeigt ein ausgeglichenes Profil ohne klare Einseitigkeit. Das Verhalten passt sich situativ an, ist aber weniger eindeutig steuerbar.`,
@@ -582,7 +582,7 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
       risk = "Technische Details und Risikoabwägungen kommen zu kurz, wenn zwischenmenschliche Faktoren die Entscheidung bestimmen.";
     }
   } else if (rk === "impulsiv") {
-    roleNeed = "Schnelle, handlungsorientierte Entscheidungen. Tempo und klare Richtung vor langer Prüfung.";
+    roleNeed = "Schnelle, ergebnisorientierte Entscheidungen. Klare Richtung und direkte Umsetzung vor langer Prüfung.";
     if (ck === "analytisch") {
       candidatePattern = `${s} prüft gründlich und braucht eine solide Datengrundlage vor jeder Entscheidung. Das Tempo bleibt unter dem Rollenbedarf.`;
       risk = "In Situationen, die schnelles Handeln erfordern, entstehen Verzögerungen. Chancen werden verpasst, weil die Entscheidung zu spät fällt.";
@@ -648,10 +648,10 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
 
   if (fuehrungsArt === "disziplinarisch") {
     roleNeed = rk === "analytisch"
-      ? "Disziplinarische Führung über Standards, Klarheit und verlässliche Struktur. Das Team braucht konsistente Prioritäten und nachvollziehbare Entscheidungen."
+      ? "Führung über klare Standards, verlässliche Struktur und nachvollziehbare Entscheidungen. Das Team braucht konsistente Prioritäten und Orientierung."
       : rk === "impulsiv"
-        ? "Disziplinarische Führung über Entscheidungskraft, klare Richtung und schnelle Steuerung. Das Team erwartet sichtbare Leistungsorientierung."
-        : "Disziplinarische Führung über Einbindung, offene Kommunikation und Gespür für Teamdynamik. Sicherheit durch persönliche Ansprache.";
+        ? "Führung über Entscheidungskraft, klare Richtung und schnelle Steuerung. Das Team erwartet sichtbare Ergebnisorientierung."
+        : "Führung über persönliche Einbindung, offene Kommunikation und Gespür für Teamdynamik. Das Team braucht Nähe und Ansprache.";
   } else if (fuehrungsArt === "fachlich") {
     roleNeed = rk === "analytisch"
       ? "Fachliche Führung mit klarer Einschätzung, Qualitätssicherheit und verlässlicher Priorisierung. Fachliche Orientierung vor formaler Autorität."
@@ -662,7 +662,7 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
     roleNeed = rk === "analytisch"
       ? "Orientierung über Struktur, Standards und klare Vorgaben. Die eigene Arbeitsweise wirkt als Vorbild für Qualität und Verlässlichkeit."
       : rk === "impulsiv"
-        ? "Wirkung über Tempo, Entscheidungsstärke und direkte Umsetzung. Die eigene Arbeitsweise prägt das Umfeld durch Ergebnisorientierung."
+        ? "Wirkung über schnelle Entscheidungen, klare Richtung und hohe Ergebnisdynamik. Die eigene Arbeitsweise prägt das Umfeld durch Handlungsorientierung."
         : "Wirkung über Kommunikation, Zusammenarbeit und situatives Gespür. Die eigene Arbeitsweise prägt das Umfeld durch Beziehungsarbeit.";
   }
 
@@ -677,7 +677,7 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
 
   if (rk !== ck) {
     const leadershipSuffix = fuehrungsArt === "disziplinarisch"
-      ? " Bei disziplinarischer Verantwortung wirkt sich das auf Führungskosten, Eskalationen und Teamstabilität aus."
+      ? " Da die Person Führungsverantwortung trägt, wirkt sich das direkt auf Teamstabilität und Zusammenarbeit aus."
       : fuehrungsArt === "fachlich"
         ? " Bei fachlicher Führung wirkt sich das auf Teamklarheit und fachliche Sicherheit der Mitarbeiter aus."
         : "";
@@ -1145,17 +1145,17 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
 
 function buildFinal(role: string, cand: string, fit: string, control: string, rk: ComponentKey, ck: ComponentKey, fuehrungsArt: FuehrungsArt): string {
   const leadSuffix = fuehrungsArt === "disziplinarisch"
-    ? ` Da die Rolle disziplinarische Führungsverantwortung trägt, wirkt sich die Abweichung nicht nur auf die eigene Arbeitsweise aus, sondern auch auf die Führungskultur und Teamstabilität.`
+    ? ` Da die Person Führungsverantwortung trägt, wirkt sich die Abweichung auch auf die Führungskultur und Teamstabilität aus.`
     : fuehrungsArt === "fachlich"
-      ? ` Da die Rolle fachliche Führung beinhaltet, beeinflusst die Profilabweichung auch die fachliche Orientierung des Teams.`
+      ? ` Da die Rolle fachliche Führung beinhaltet, beeinflusst die Abweichung auch die fachliche Orientierung des Teams.`
       : "";
 
   const s = Subj(cand);
   if (fit === "Geeignet") {
-    return `${s} zeigt eine gute Passung für die Rolle ${role}. Die Arbeitslogik stimmt in der Grundausrichtung überein und der Steuerungsbedarf ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich. Die Führungskraft sollte dennoch regelmäßig prüfen, ob die sekundären Bereiche zur Rolle passen.${leadSuffix}`;
+    return `${s} zeigt eine gute Passung für die Rolle ${role}. Die Arbeitslogik stimmt in der Grundausrichtung überein. Der Steuerungsbedarf ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich.${leadSuffix}`;
   }
   if (fit === "Bedingt geeignet") {
-    return `${s} kann die Rolle ${role} unter bestimmten Bedingungen ausfüllen. Der Steuerungsbedarf ist ${control}. Die Arbeitslogik weicht in einzelnen Bereichen von der Rollenanforderung ab, lässt sich aber mit gezielter Führung und klarer Struktur stabilisieren. Die Führungskraft sollte konkrete Steuerungsmaßnahmen festlegen und den Fortschritt regelmäßig überprüfen.${leadSuffix}`;
+    return `${s} kann die Rolle ${role} unter bestimmten Bedingungen ausfüllen. Die Arbeitslogik weicht in einzelnen Bereichen von der Rollenanforderung ab. Mit gezielter Führung und klarer Struktur lässt sich die Zusammenarbeit stabilisieren. Der Steuerungsbedarf ist ${control}.${leadSuffix}`;
   }
-  return `${s} ist stark auf ${compDesc(ck)} ausgerichtet, während die Rolle einen Schwerpunkt auf ${compDesc(rk)} erfordert. Die Grundpassung ist damit nicht gegeben. Eine stabile Besetzung wäre nur mit hohem Steuerungsaufwand möglich. Die Führungskraft sollte realistisch bewerten, ob dieser Aufwand langfristig tragbar ist.${leadSuffix}`;
+  return `${s} ist stark auf ${compDesc(ck)} ausgerichtet, während die Rolle einen Schwerpunkt auf ${compDesc(rk)} erfordert. Die Grundpassung ist damit nicht gegeben. Eine stabile Besetzung wäre nur mit dauerhaft erhöhtem Steuerungsaufwand möglich.${leadSuffix}`;
 }
