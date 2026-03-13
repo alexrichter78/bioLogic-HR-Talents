@@ -1095,9 +1095,9 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   const maxGapVal = Math.max(Math.abs(rN.impulsiv - cN.impulsiv), Math.abs(rN.intuitiv - cN.intuitiv), Math.abs(rN.analytisch - cN.analytisch));
   const candSpread = candDom.top1.value - candDom.top3.value;
   if (roleIsBalFull && !ko) {
-    if (maxGapVal <= 5) {
+    if (candSpread <= 5) {
       overallFit = "SUITABLE";
-    } else if (maxGapVal <= 12) {
+    } else if (candSpread < 12) {
       overallFit = "CONDITIONAL";
     } else {
       overallFit = "NOT_SUITABLE";

@@ -247,9 +247,10 @@ export function computeSollIst(
     const candSecGap = cDom.gap2;
 
     const roleIsBalFull2 = rDom.gap1 <= 5 && rDom.gap2 <= 5;
+    const candSpreadVal = cDom.top1.value - cDom.top3.value;
     if (roleIsBalFull2) {
-      if (maxGapVal <= 5) { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; }
-      else if (maxGapVal <= 12) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
+      if (candSpreadVal <= 5) { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; }
+      else if (candSpreadVal < 12) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
       else { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
     } else {
       if (totalGap > 40) { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
