@@ -464,15 +464,15 @@ export default function SollIstBericht() {
             const gapLevel = effective.gapLevel;
             let fazitText: string;
             if (fitLabel === "Geeignet") {
-              fazitText = "Die Arbeitsweise der Person passt gut zu den Anforderungen der Rolle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein.";
+              fazitText = "Die Arbeitsweise der Person passt gut zu den Anforderungen der Rolle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein. Dadurch ist zu erwarten, dass die Person die Rolle in ihrer natürlichen Ausrichtung stabil und wirksam ausfüllen kann.";
             } else if (fitLabel === "Bedingt geeignet" && gapLevel === "gering") {
-              fazitText = "Die Grundausrichtung ist ähnlich, jedoch unterscheidet sich die Gewichtung der sekundären Bereiche. Mit klaren Erwartungen und gezielter Führung ist die Zusammenarbeit stabil möglich.";
+              fazitText = "Die Grundausrichtung der Person ist mit den Anforderungen der Rolle grundsätzlich vereinbar. In der konkreten Gewichtung einzelner Arbeitsbereiche zeigen sich jedoch Abweichungen. Mit klaren Erwartungen, Orientierung und gezielter Führung ist die Zusammenarbeit stabil möglich.";
             } else if (fitLabel === "Bedingt geeignet") {
-              fazitText = "Die Grundausrichtung ist ähnlich. In einzelnen Punkten unterscheidet sich die Arbeitsweise jedoch. Mit klaren Erwartungen und guter Führung kann die Zusammenarbeit stabil funktionieren.";
+              fazitText = "Die Person bringt eine grundsätzlich passende Arbeitsrichtung für die Rolle mit. In mehreren für die Aufgabe wichtigen Bereichen zeigt sich jedoch ein spürbarer Anpassungsbedarf. Mit klaren Erwartungen, enger Führung und regelmäßiger Rückmeldung kann die Zusammenarbeit funktionieren.";
             } else if (fitLabel === "Nicht geeignet" && gapLevel !== "hoch") {
-              fazitText = "Die strukturelle Abweichung zwischen Rolle und Person ist deutlich. Obwohl der Gesamtabstand moderat ist, weicht die Gewichtung der Arbeitsbereiche erheblich ab.";
+              fazitText = "Zwischen Rolle und Person besteht eine deutliche strukturelle Abweichung. Auch wenn der Gesamtabstand nicht extrem hoch ist, passt die innere Gewichtung der Arbeitsweise nicht ausreichend zu den Anforderungen der Rolle. Im Arbeitsalltag ist dadurch mit Reibung, höherem Abstimmungsbedarf und eingeschränkter Wirksamkeit zu rechnen.";
             } else {
-              fazitText = "Die Anforderungen der Rolle und die natürliche Arbeitsweise der Person unterscheiden sich deutlich. Im Arbeitsalltag entsteht dadurch ein erhöhter Abstimmungsbedarf.";
+              fazitText = "Die Anforderungen der Rolle und die natürliche Arbeitsweise der Person unterscheiden sich deutlich. Aufgabenverständnis, Entscheidungslogik und Arbeitsstil liegen zu weit auseinander. Im Arbeitsalltag entsteht dadurch ein erhöhter Abstimmungs- und Führungsbedarf, während eine stabile Wirksamkeit in der Rolle nur schwer zu erwarten ist.";
             }
 
             const devLevel = effective.developmentLevel;

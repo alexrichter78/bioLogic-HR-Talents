@@ -808,12 +808,11 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
 }
 
 function buildDevelopment(gap: string, rk: ComponentKey, ck: ComponentKey, control: string, cand: string): { level: number; label: string; text: string } {
-  const s = Subj(cand);
   if (gap === "gering") {
     return {
       level: 4,
       label: "hoch",
-      text: `Die Anpassung an die Rollenanforderung ist mit hoher Wahrscheinlichkeit erreichbar. Die Grundausrichtung stimmt bereits überein. ${s} muss lediglich in den sekundären Bereichen Feinabstimmung leisten. Bei klarer Erwartungssetzung ist das realistisch.`,
+      text: "Die Anpassung an die Anforderungen der Rolle ist mit hoher Wahrscheinlichkeit erreichbar. Die Grundausrichtung passt bereits gut, sodass vor allem Feinabstimmung in einzelnen Bereichen notwendig ist. Bei klarer Erwartungssetzung und einer sauberen Einarbeitung ist eine stabile Entwicklung realistisch.",
     };
   }
   if (gap === "mittel") {
@@ -821,16 +820,16 @@ function buildDevelopment(gap: string, rk: ComponentKey, ck: ComponentKey, contr
       level: 3,
       label: "mittel",
       text: rk === ck
-        ? `Die Grundrichtung stimmt, aber die Ausprägung im Bereich ${compDesc(rk)} liegt unter dem, was die Rolle braucht. Eine gezielte Stärkung ist möglich und erfordert klare Erwartungen und regelmäßige Rückmeldung über 6 bis 12 Monate. Die Führungskraft sollte konkrete Entwicklungsziele definieren und den Fortschritt regelmäßig überprüfen.`
-        : `Eine Entwicklung in Richtung stärkerer ${compDesc(rk)} ist möglich. Sie erfordert gezielte Führung, klare Erwartungen und regelmäßige Rückmeldung. Der Zeitraum beträgt erfahrungsgemäß 6 bis 12 Monate. Die Führungskraft sollte konkrete Entwicklungsziele definieren und den Fortschritt regelmäßig überprüfen.`,
+        ? "Die Entwicklung in die Rolle ist möglich, erfordert jedoch gezielte Unterstützung. Die Grundausrichtung passt in wesentlichen Teilen, einzelne Anforderungen der Rolle müssen jedoch bewusst aufgebaut und stabilisiert werden. Klare Erwartungen, regelmäßige Rückmeldung und eine konsequente Begleitung über mehrere Monate sind dafür sinnvoll."
+        : "Eine Entwicklung in Richtung der Rollenanforderung ist möglich, verlangt jedoch bewusste Verhaltensanpassung. Die Person setzt von Natur aus andere Schwerpunkte als die Rolle. Mit klarer Führung, konkreten Entwicklungszielen und regelmäßiger Rückmeldung kann die notwendige Anpassung aufgebaut werden.",
     };
   }
   return {
     level: 1,
     label: "niedrig",
     text: rk === ck
-      ? `Die Grundrichtung stimmt formal, aber die Ausprägung im Bereich ${compDesc(rk)} ist deutlich zu schwach. Eine tragfähige Entwicklung erfordert intensive Führung, klare Standards und konsequente Nachsteuerung über einen längeren Zeitraum. Der Erfolg ist nicht sicher. Die Führungskraft sollte realistisch abwägen, ob der notwendige Aufwand im Verhältnis zum erwarteten Ergebnis steht.`
-      : `Eine Entwicklung von ${compDesc(ck)} hin zu ${compDesc(rk)} ist grundsätzlich möglich, erfordert jedoch intensive Führung, klare Standards und konsequente Nachsteuerung über einen längeren Zeitraum. Der Erfolg ist nicht sicher. Die Führungskraft sollte realistisch abwägen, ob der notwendige Aufwand im Verhältnis zum erwarteten Ergebnis steht.`,
+      ? "Die Grundrichtung der Person passt formal zur Rolle, in der erforderlichen Ausprägung ist sie jedoch deutlich zu schwach. Eine tragfähige Entwicklung würde über längere Zeit konsequente Führung, klare Standards und intensive Nachsteuerung erfordern. Ob dieser Aufwand im Verhältnis zum erwarteten Ergebnis steht, sollte realistisch geprüft werden."
+      : "Die natürliche Arbeitsweise der Person setzt andere Schwerpunkte als die Rolle verlangt. Eine Entwicklung ist grundsätzlich nicht ausgeschlossen, würde jedoch einen deutlichen Umbau im Verhalten und eine intensive Begleitung über längere Zeit erfordern. Der notwendige Aufwand ist hoch und der Erfolg nur eingeschränkt planbar.",
   };
 }
 

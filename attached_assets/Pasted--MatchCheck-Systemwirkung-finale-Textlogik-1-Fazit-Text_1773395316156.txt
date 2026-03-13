@@ -1,0 +1,71 @@
+// MatchCheck Systemwirkung - finale Textlogik
+
+// 1. Fazit-Text
+
+const MATCHCHECK_FAZIT_TEXTS = {
+  F1: "Die Arbeitsweise der Person passt gut zu den Anforderungen der Rolle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein. Dadurch ist zu erwarten, dass die Person die Rolle in ihrer natürlichen Ausrichtung stabil und wirksam ausfüllen kann.",
+
+  F2: "Die Grundausrichtung der Person ist mit den Anforderungen der Rolle grundsätzlich vereinbar. In der konkreten Gewichtung einzelner Arbeitsbereiche zeigen sich jedoch Abweichungen. Mit klaren Erwartungen, Orientierung und gezielter Führung ist die Zusammenarbeit stabil möglich.",
+
+  F3: "Die Person bringt eine grundsätzlich passende Arbeitsrichtung für die Rolle mit. In mehreren für die Aufgabe wichtigen Bereichen zeigt sich jedoch ein spürbarer Anpassungsbedarf. Mit klaren Erwartungen, enger Führung und regelmäßiger Rückmeldung kann die Zusammenarbeit funktionieren.",
+
+  F4: "Zwischen Rolle und Person besteht eine deutliche strukturelle Abweichung. Auch wenn der Gesamtabstand nicht extrem hoch ist, passt die innere Gewichtung der Arbeitsweise nicht ausreichend zu den Anforderungen der Rolle. Im Arbeitsalltag ist dadurch mit Reibung, höherem Abstimmungsbedarf und eingeschränkter Wirksamkeit zu rechnen.",
+
+  F5: "Die Anforderungen der Rolle und die natürliche Arbeitsweise der Person unterscheiden sich deutlich. Aufgabenverständnis, Entscheidungslogik und Arbeitsstil liegen zu weit auseinander. Im Arbeitsalltag entsteht dadurch ein erhöhter Abstimmungs- und Führungsbedarf, während eine stabile Wirksamkeit in der Rolle nur schwer zu erwarten ist."
+};
+
+// 2. Entwicklungsprognose-Text
+
+const MATCHCHECK_DEVELOPMENT_TEXTS = {
+  E1: {
+    label: "3 von 3 - Entwicklung sehr wahrscheinlich",
+    text: "Die Anpassung an die Anforderungen der Rolle ist mit hoher Wahrscheinlichkeit erreichbar. Die Grundausrichtung passt bereits gut, sodass vor allem Feinabstimmung in einzelnen Bereichen notwendig ist. Bei klarer Erwartungssetzung und einer sauberen Einarbeitung ist eine stabile Entwicklung realistisch."
+  },
+
+  E2: {
+    label: "2 von 3 - Entwicklung mit Unterstützung möglich",
+    text: "Die Entwicklung in die Rolle ist möglich, erfordert jedoch gezielte Unterstützung. Die Grundausrichtung passt in wesentlichen Teilen, einzelne Anforderungen der Rolle müssen jedoch bewusst aufgebaut und stabilisiert werden. Klare Erwartungen, regelmäßige Rückmeldung und eine konsequente Begleitung über mehrere Monate sind dafür sinnvoll."
+  },
+
+  E3: {
+    label: "2 von 3 - Entwicklung mit Unterstützung möglich",
+    text: "Eine Entwicklung in Richtung der Rollenanforderung ist möglich, verlangt jedoch bewusste Verhaltensanpassung. Die Person setzt von Natur aus andere Schwerpunkte als die Rolle. Mit klarer Führung, konkreten Entwicklungszielen und regelmäßiger Rückmeldung kann die notwendige Anpassung aufgebaut werden."
+  },
+
+  E4: {
+    label: "1 von 3 - Entwicklung unwahrscheinlich",
+    text: "Die Grundrichtung der Person passt formal zur Rolle, in der erforderlichen Ausprägung ist sie jedoch deutlich zu schwach. Eine tragfähige Entwicklung würde über längere Zeit konsequente Führung, klare Standards und intensive Nachsteuerung erfordern. Ob dieser Aufwand im Verhältnis zum erwarteten Ergebnis steht, sollte realistisch geprüft werden."
+  },
+
+  E5: {
+    label: "1 von 3 - Entwicklung unwahrscheinlich",
+    text: "Die natürliche Arbeitsweise der Person setzt andere Schwerpunkte als die Rolle verlangt. Eine Entwicklung ist grundsätzlich nicht ausgeschlossen, würde jedoch einen deutlichen Umbau im Verhalten und eine intensive Begleitung über längere Zeit erfordern. Der notwendige Aufwand ist hoch und der Erfolg nur eingeschränkt planbar."
+  }
+};
+
+// 3. Bereichsbezeichnungen
+
+const MATCHCHECK_AREAS = {
+  impulsiv: "Umsetzung und Tempo",
+  intuitiv: "Zusammenarbeit und Kommunikation",
+  analytisch: "Struktur und Planung"
+};
+
+// 4. Logik-Hinweis
+// Nicht geeignet ist nicht automatisch gleich hoher Gap.
+// Es ist zu unterscheiden zwischen:
+// - strukturellem Fehlfit bei moderatem Abstand => F4 / eher E5
+// - deutlicher Gesamtabweichung => F5 / E4 oder E5 je nach Struktur
+//
+// 3 von 3 darf nur vergeben werden, wenn:
+// - fitLabel = Geeignet
+// - stimmige Grundausrichtung
+// - geringer Anpassungsbedarf
+//
+// 2 von 3 bei:
+// - Bedingt geeignet
+// - Entwicklung mit Führung realistisch
+//
+// 1 von 3 bei:
+// - Nicht geeignet
+// - oder sehr hoher Entwicklungsaufwand / struktureller Fehlfit
