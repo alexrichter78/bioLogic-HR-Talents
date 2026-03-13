@@ -657,7 +657,7 @@ export default function SollIstBericht() {
               </div>
 
               <div style={sep} data-testid="section-dominance-shift">
-                <SectionHead num={1} icon={Compass} title="Dominanz-Verschiebung" iconColor="#0071E3" />
+                <SectionHead num={1} icon={Compass} title="Unterschied zwischen Rolle und Person" iconColor="#0071E3" />
                 {isExportingPdf ? (
                 <div style={{ marginBottom: 14, padding: "16px 20px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
                   <svg width="100%" height="60" viewBox="0 0 460 60" preserveAspectRatio="xMidYMid meet" style={{ display: "block" }}>

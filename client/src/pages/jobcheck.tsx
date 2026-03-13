@@ -917,7 +917,7 @@ export default function JobCheck() {
                     } else {
                       calloutText = `Rolle braucht ${labelComponent(rk)}-Arbeitsweise (${roleVal}), die Person arbeitet ${labelComponent(ck)}-geprägt (${candVal}). Die zentrale Arbeitsweise der Position wird grundlegend verschoben.`;
                       calloutColor = "#FF3B30";
-                      sectionTitle = "Dominanz-Verschiebung";
+                      sectionTitle = "Unterschied zwischen Rolle und Person";
                     }
 
                     return (
