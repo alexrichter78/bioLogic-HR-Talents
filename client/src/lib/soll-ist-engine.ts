@@ -246,46 +246,51 @@ export function computeSollIst(
     const secondaryFlip = effectiveSameDom && rDom.top2.key !== cDom.top2.key;
     const candSecGap = cDom.gap2;
 
-    if (totalGap > 40) { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
-    else if (totalGap > geignetLimit) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
-    else { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; }
+    const roleIsBalFull2 = rDom.gap1 <= 5 && rDom.gap2 <= 5;
+    if (roleIsBalFull2) {
+      if (maxGapVal <= 5) { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; }
+      else if (maxGapVal <= 12) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
+      else { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
+    } else {
+      if (totalGap > 40) { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
+      else if (totalGap > geignetLimit) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
+      else { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; }
 
-    if (candIsBalFull && !roleIsBalFull) {
-      fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
-    } else if (candIsBalFull && roleIsBalFull && fitRating === "GEEIGNET") {
-      fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
-    }
-
-    if (!effectiveSameDom && fitRating !== "NICHT_GEEIGNET") {
-      fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
-    }
-
-    if (maxGapVal > 25 && fitRating !== "NICHT_GEEIGNET") {
-      fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
-    }
-
-    if (candDualDominance && roleClearDominance && fitRating !== "NICHT_GEEIGNET") {
-      const roleKeyInDual = cDom.top1.key === rDom.top1.key || cDom.top2.key === rDom.top1.key;
-      if (!roleKeyInDual) {
+      if (candIsBalFull && !roleIsBalFull) {
         fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
-      } else if (fitRating === "GEEIGNET") {
-        fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
       }
-    }
 
-    if (fitLabel === "Geeignet") {
-      if (secondaryFlip && candSecGap > 5 && rDom.gap2 > 5) {
+      if (!effectiveSameDom && fitRating !== "NICHT_GEEIGNET") {
         fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
-      } else if (secondaryFlip) {
-        fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
-      } else if (effectiveSameDom && candSecGap <= 5) {
-        fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
       }
-    }
 
-    if (fitLabel === "Geeignet") {
-      if (maxGapVal > 18) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
-      else if (cDom.gap1 <= 5) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
+      if (maxGapVal > 25 && fitRating !== "NICHT_GEEIGNET") {
+        fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
+      }
+
+      if (candDualDominance && roleClearDominance && fitRating !== "NICHT_GEEIGNET") {
+        const roleKeyInDual = cDom.top1.key === rDom.top1.key || cDom.top2.key === rDom.top1.key;
+        if (!roleKeyInDual) {
+          fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
+        } else if (fitRating === "GEEIGNET") {
+          fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
+        }
+      }
+
+      if (fitLabel === "Geeignet") {
+        if (secondaryFlip && candSecGap > 5 && rDom.gap2 > 5) {
+          fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
+        } else if (secondaryFlip) {
+          fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
+        } else if (effectiveSameDom && candSecGap <= 5) {
+          fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
+        }
+      }
+
+      if (fitLabel === "Geeignet") {
+        if (maxGapVal > 18) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
+        else if (cDom.gap1 <= 5) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
+      }
     }
 
     controlIntensity = totalGap > 35 ? "hoch" : totalGap > 15 ? "mittel" : "gering";
