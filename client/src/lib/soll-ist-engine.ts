@@ -81,14 +81,14 @@ export type SollIstResult = {
 
 function compDesc(k: ComponentKey): string {
   if (k === "impulsiv") return "Entscheidungsstärke und Umsetzung";
-  if (k === "intuitiv") return "Zusammenarbeit und Kommunikation";
-  return "Struktur und Planung";
+  if (k === "intuitiv") return "Beziehungsgestaltung und Kommunikation";
+  return "Struktur und Analyse";
 }
 
 function compShort(k: ComponentKey): string {
-  if (k === "impulsiv") return "Tempo";
-  if (k === "intuitiv") return "Kommunikation";
-  return "Struktur";
+  if (k === "impulsiv") return "Handlungsorientierung";
+  if (k === "intuitiv") return "Einfühlungsvermögen";
+  return "Ordnung und Verlässlichkeit";
 }
 
 export function subj(name: string): string {
@@ -358,17 +358,17 @@ export function computeSollIst(
 export function constellationRoleText(c: ConstellationType): string {
   const texts: Record<ConstellationType, string> = {
     H_DOM: "Diese Rolle wirkt vor allem über Geschwindigkeit, klare Priorisierung und direkte Umsetzung. Entscheidungen werden zügig getroffen, Themen schnell in Bewegung gebracht.",
-    B_DOM: "Diese Rolle lebt stark vom direkten Kontakt mit Menschen, vom schnellen Erfassen von Situationen und von reibungsarmer Zusammenarbeit.",
-    S_DOM: "Diese Rolle verlangt vor allem Struktur, sorgfältige Planung und verlässliche Prüftiefe. Qualität entsteht über Ordnung, Disziplin und Nachvollziehbarkeit.",
+    B_DOM: "Diese Rolle lebt vom direkten Kontakt mit Menschen, vom Gespür für Situationen und von tragfähiger Zusammenarbeit. Wirksamkeit entsteht über Vertrauen und Beziehungsarbeit.",
+    S_DOM: "Diese Rolle verlangt analytisches Denken, sorgfältige Planung und verlässliche Prüftiefe. Qualität entsteht über Ordnung, Systematik und Nachvollziehbarkeit.",
     H_GT_B: "Die Rolle wird vor allem durch schnelle Entscheidungen und direkte Umsetzung getragen, braucht aber gleichzeitig die Fähigkeit, Menschen mitzunehmen und Situationen sozial klug zu lesen.",
     H_GT_S: "Die Rolle lebt von zügiger Umsetzung, braucht aber eine stabile Struktur im Hintergrund. Geschwindigkeit allein reicht nicht; sie muss in klare Abläufe eingebettet sein.",
-    B_GT_H: "Die Rolle wirkt primär über Beziehung und Kommunikation, braucht aber eine klare Fähigkeit, bei Bedarf zu entscheiden und in Handlung zu kommen.",
-    B_GT_S: "Die Rolle braucht vor allem Zusammenarbeit, situatives Gespür und tragfähige Kommunikation. Struktur dient hier als Stabilisierung und Absicherung.",
-    S_GT_H: "Die Rolle verlangt in erster Linie Planung, Sorgfalt und Ordnung, braucht aber gleichzeitig die Fähigkeit, Entscheidungen rechtzeitig umzusetzen.",
-    S_GT_B: "Die Rolle wird vor allem über Struktur, Planung und Verlässlichkeit getragen. Gleichzeitig braucht sie ausreichend Kommunikationsfähigkeit, damit die Struktur im System angenommen wird.",
+    B_GT_H: "Die Rolle wirkt primär über Vertrauen, Einfühlungsvermögen und Gesprächsführung, braucht aber eine klare Fähigkeit, bei Bedarf zu entscheiden und in Handlung zu kommen.",
+    B_GT_S: "Die Rolle braucht vor allem Beziehungsgestaltung, situatives Gespür und tragfähigen Dialog. Analytische Absicherung dient hier als stabilisierendes Fundament.",
+    S_GT_H: "Die Rolle verlangt in erster Linie analytisches Denken, Sorgfalt und systematische Ordnung, braucht aber gleichzeitig die Fähigkeit, Entscheidungen rechtzeitig umzusetzen.",
+    S_GT_B: "Die Rolle wird vor allem über analytische Tiefe, Verlässlichkeit und klare Prozesse getragen. Gleichzeitig braucht sie ausreichend Kommunikationsfähigkeit, damit Strukturen auch angenommen werden.",
     H_NEAR_B: "Die Rolle verbindet hohe Ergebnisdynamik mit sozialer Beweglichkeit. Sie wirkt zugleich über schnelle Entscheidungen und Kontaktfähigkeit.",
     H_NEAR_S: "Die Rolle verbindet Umsetzungskraft mit Struktur. Sie kann stark sein, wenn Geschwindigkeit und saubere Planung gemeinsam wirken.",
-    B_NEAR_S: "Die Rolle verbindet Zusammenarbeit und Struktur. Sie wirkt über Orientierung, saubere Abstimmung und verlässliche Standards.",
+    B_NEAR_S: "Die Rolle verbindet Beziehungsgestaltung und analytische Absicherung. Sie wirkt über Orientierung, saubere Abstimmung und verlässliche Standards.",
     BALANCED: "Die Rolle zeigt keine klare strukturelle Einseitigkeit. Umsetzung, Zusammenarbeit und Struktur wirken in relativ ausgeglichener Form zusammen.",
   };
   return texts[c];
@@ -378,17 +378,17 @@ export function constellationCandText(c: ConstellationType, cand: string): strin
   const s = Subj(cand);
   const texts: Record<ConstellationType, string> = {
     H_DOM: `${s} arbeitet mit hoher Umsetzungsenergie, trifft Entscheidungen zügig und bringt Themen schnell ins Handeln.`,
-    B_DOM: `${s} baut schnell Vertrauen auf, erkennt Bedürfnisse früh und sorgt für reibungsarme Zusammenarbeit.`,
-    S_DOM: `${s} arbeitet planvoll und präzise, sorgt für verlässliche Abläufe und prüft sorgfältig.`,
+    B_DOM: `${s} baut schnell Vertrauen auf, erkennt Bedürfnisse früh und schafft ein kooperatives Arbeitsumfeld.`,
+    S_DOM: `${s} arbeitet analytisch und präzise, sorgt für verlässliche Abläufe und prüft gründlich.`,
     H_GT_B: `${s} setzt auf schnelle Entscheidungen und direkte Ergebnisse, kann aber gleichzeitig Menschen einbinden und situative Zusammenarbeit leisten.`,
     H_GT_S: `${s} arbeitet schnell und entscheidungsorientiert, sichert Ergebnisse aber zusätzlich über klare Abläufe und Struktur ab.`,
-    B_GT_H: `${s} wirkt vor allem über Beziehung und Kommunikation, kann aber bei Bedarf schnell entscheiden und handeln.`,
-    B_GT_S: `${s} ist stark in Zusammenarbeit und situativem Gespür und nutzt gleichzeitig Struktur als Absicherung.`,
-    S_GT_H: `${s} arbeitet vorwiegend strukturiert und planvoll, kann aber bei Bedarf schnell umschalten und handeln.`,
-    S_GT_B: `${s} legt Wert auf Struktur, Ordnung und Verlässlichkeit. Gleichzeitig sorgt ein spürbarer Beziehungsanteil dafür, dass Strukturen auch kommunikativ vermittelt werden.`,
+    B_GT_H: `${s} wirkt vor allem über Vertrauen und Einfühlungsvermögen, kann aber bei Bedarf schnell entscheiden und handeln.`,
+    B_GT_S: `${s} ist stark in Beziehungsgestaltung und situativem Gespür und nutzt gleichzeitig analytische Absicherung als Fundament.`,
+    S_GT_H: `${s} arbeitet vorwiegend analytisch und systematisch, kann aber bei Bedarf schnell umschalten und handeln.`,
+    S_GT_B: `${s} legt Wert auf Analyse, Ordnung und Verlässlichkeit. Gleichzeitig sorgt ein spürbarer Beziehungsanteil dafür, dass Ergebnisse auch kommunikativ vermittelt werden.`,
     H_NEAR_B: `Bei ${subj(cand)} wechseln sich hohe Ergebnisdynamik und soziale Beweglichkeit je nach Situation ab.`,
     H_NEAR_S: `Bei ${subj(cand)} stehen Umsetzungskraft und Strukturorientierung fast gleichwertig nebeneinander. Je nach Situation wird entweder schnell gehandelt oder gründlich geprüft.`,
-    B_NEAR_S: `Bei ${subj(cand)} stehen Zusammenarbeit und Struktur fast gleichwertig nebeneinander. Je nach Situation wird moderiert oder geordnet.`,
+    B_NEAR_S: `Bei ${subj(cand)} stehen Beziehungsgestaltung und analytisches Denken fast gleichwertig nebeneinander. Je nach Situation wird moderiert oder systematisch geordnet.`,
     BALANCED: `${s} zeigt ein ausgeglichenes Profil ohne klare Einseitigkeit. Das Verhalten passt sich situativ an, ist aber weniger eindeutig steuerbar.`,
   };
   return texts[c];
