@@ -869,27 +869,37 @@ export default function Rollenprofil() {
     try {
       const html2canvas = (await import("html2canvas")).default;
       const jsPDF = (await import("jspdf")).default;
-      const canvas = await html2canvas(reportRef.current, { scale: 2, backgroundColor: "#FFFFFF", useCORS: true });
-      const imgData = canvas.toDataURL("image/png");
+      const canvas = await html2canvas(reportRef.current, { scale: 2, backgroundColor: "#FFFFFF", useCORS: true, logging: false });
+      const imgData = canvas.toDataURL("image/jpeg", 0.92);
       const pdf = new jsPDF("p", "mm", "a4");
       const pageW = pdf.internal.pageSize.getWidth();
       const pageH = pdf.internal.pageSize.getHeight();
-      const imgW = pageW - 20;
+      const marginX = 10;
+      const marginY = 10;
+      const imgW = pageW - 2 * marginX;
       const imgH = (canvas.height * imgW) / canvas.width;
-      let y = 10;
-      let remaining = imgH;
-      const usableH = pageH - 20;
-      let page = 0;
-      while (remaining > 0) {
-        if (page > 0) pdf.addPage();
-        pdf.addImage(imgData, "PNG", 10, y - (page * usableH), imgW, imgH);
-        remaining -= usableH;
-        page++;
-        y = 10;
+      const usableH = pageH - 2 * marginY;
+      const totalPages = Math.ceil(imgH / usableH);
+      for (let p = 0; p < totalPages; p++) {
+        if (p > 0) pdf.addPage();
+        pdf.addImage(imgData, "JPEG", marginX, marginY - (p * usableH), imgW, imgH);
       }
-      pdf.save(`Rollen-DNA_${data?.beruf || "Bericht"}.pdf`);
+      const fileName = `Rollen-DNA_${data?.beruf || "Bericht"}.pdf`;
+      const blob = pdf.output("blob");
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      link.style.display = "none";
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 200);
     } catch (e) {
       console.error("PDF error:", e);
+      alert("PDF-Export fehlgeschlagen. Bitte versuchen Sie es erneut.");
     } finally {
       setPdfLoading(false);
     }
