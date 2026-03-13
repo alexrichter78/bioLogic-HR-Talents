@@ -658,19 +658,34 @@ export default function SollIstBericht() {
 
               <div style={sep} data-testid="section-dominance-shift">
                 <SectionHead num={1} icon={Compass} title="Unterschied zwischen Rolle und Person" iconColor="#0071E3" />
-                {isExportingPdf ? (
+                {(() => {
+                  const candBadges: { key: ComponentKey; label: string }[] = result.candIsEqualDist
+                    ? (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => ({ key: k, label: COMP_LABELS[k] }))
+                    : result.candIsDualDom
+                      ? [{ key: result.candDomKey, label: COMP_LABELS[result.candDomKey] }, { key: result.candDom2Key, label: COMP_LABELS[result.candDom2Key] }]
+                      : [{ key: result.candDomKey, label: COMP_LABELS[result.candDomKey] }];
+                  const shiftSymbol = result.candIsEqualDist ? "≠" : result.candIsDualDom ? "⇄" : sameDom ? "=" : "→";
+                  const shiftColor = result.candIsEqualDist ? "#FF3B30" : result.candIsDualDom ? "#FF9500" : sameDom ? "#34C759" : "#FF3B30";
+                  return isExportingPdf ? (
                 <div style={{ marginBottom: 14, padding: "16px 20px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                  <svg width="100%" height="60" viewBox="0 0 460 60" preserveAspectRatio="xMidYMid meet" style={{ display: "block" }}>
+                  <svg width="100%" height={candBadges.length > 1 ? 22 + candBadges.length * 30 : 60} viewBox={`0 0 460 ${candBadges.length > 1 ? 22 + candBadges.length * 30 : 60}`} preserveAspectRatio="xMidYMid meet" style={{ display: "block" }}>
                     <text x="110" y="14" fill="#8E8E93" fontSize="10" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle" letterSpacing="0.08em">ROLLE</text>
                     <rect x="40" y="22" width="140" height="32" rx="10" fill={`${rc}12`} stroke={`${rc}25`} strokeWidth="1" />
                     <text x="110" y="44" fill={rc} fontSize="13" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle">{COMP_LABELS[result.roleDomKey]}</text>
-                    <text x="230" y="44" fill={sameDom ? "#34C759" : "#FF3B30"} fontSize="18" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle">{sameDom ? "=" : "→"}</text>
+                    <text x="230" y={candBadges.length > 1 ? 14 + candBadges.length * 15 : 44} fill={shiftColor} fontSize="18" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle">{shiftSymbol}</text>
                     <text x="350" y="14" fill="#8E8E93" fontSize="10" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle" letterSpacing="0.08em">PERSON</text>
-                    <rect x="280" y="22" width="140" height="32" rx="10" fill={`${cc}12`} stroke={`${cc}25`} strokeWidth="1" />
-                    <text x="350" y="44" fill={cc} fontSize="13" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle">{COMP_LABELS[result.candDomKey]}</text>
+                    {candBadges.map((b, i) => {
+                      const bColor = BAR_HEX[b.key];
+                      return (
+                        <g key={b.key}>
+                          <rect x="280" y={22 + i * 30} width="140" height="26" rx="10" fill={`${bColor}12`} stroke={`${bColor}25`} strokeWidth="1" />
+                          <text x="350" y={40 + i * 30} fill={bColor} fontSize="12" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle">{b.label}</text>
+                        </g>
+                      );
+                    })}
                   </svg>
                 </div>
-                ) : (
+                  ) : (
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 14, padding: "16px 20px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
                   <div style={{ textAlign: "center" }}>
                     <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Rolle</p>
@@ -678,19 +693,23 @@ export default function SollIstBericht() {
                       <span style={{ fontSize: 13, fontWeight: 700, color: rc }}>{COMP_LABELS[result.roleDomKey]}</span>
                     </div>
                   </div>
-                  {sameDom ? (
-                    <span style={{ fontSize: 18, fontWeight: 700, color: "#34C759" }}>=</span>
-                  ) : (
-                    <span style={{ fontSize: 18, fontWeight: 700, color: "#FF3B30" }}>→</span>
-                  )}
+                  <span style={{ fontSize: 18, fontWeight: 700, color: shiftColor }}>{shiftSymbol}</span>
                   <div style={{ textAlign: "center" }}>
                     <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Person</p>
-                    <div style={{ padding: "5px 14px", borderRadius: 10, background: `${cc}12`, border: `1px solid ${cc}25` }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: cc }}>{COMP_LABELS[result.candDomKey]}</span>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      {candBadges.map(b => {
+                        const bColor = BAR_HEX[b.key];
+                        return (
+                          <div key={b.key} style={{ padding: "5px 14px", borderRadius: 10, background: `${bColor}12`, border: `1px solid ${bColor}25` }}>
+                            <span style={{ fontSize: 13, fontWeight: 700, color: bColor }}>{b.label}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
-                )}
+                  );
+                })()}
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{result.dominanceShiftText}</p>
               </div>
 
