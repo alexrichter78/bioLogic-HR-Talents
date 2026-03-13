@@ -670,9 +670,9 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
   if (ck === "impulsiv") {
     candidatePattern = `${s} führt eher über Geschwindigkeit, direkte Ansprache und Aktivierung. Entscheidungen werden schnell kommuniziert und umgesetzt.`;
   } else if (ck === "intuitiv") {
-    candidatePattern = `${s} führt über Beziehung, Dialog und aktives Zuhören. Entscheidungen werden im Gespräch entwickelt und abgestimmt.`;
+    candidatePattern = `${s} führt über Vertrauen, Dialog und aktives Zuhören. Entscheidungen werden im Gespräch entwickelt und gemeinsam getragen.`;
   } else {
-    candidatePattern = `${s} führt über Struktur, klare Regeln und nachvollziehbare Vorgaben. Entscheidungen werden sachlich begründet und dokumentiert.`;
+    candidatePattern = `${s} führt über Systematik, klare Regeln und nachvollziehbare Vorgaben. Entscheidungen werden analytisch begründet und dokumentiert.`;
   }
 
   if (rk !== ck) {

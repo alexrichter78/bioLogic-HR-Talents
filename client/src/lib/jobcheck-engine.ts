@@ -792,14 +792,14 @@ function buildRisks(role: RoleAnalysis, cand: CandidateInput, engine: { overallF
     }
   } else {
     if (equalDistConflict) {
-      shortTerm.push(`Gleichverteilung (${c.impulsiv}/${c.intuitiv}/${c.analytisch}): Es gibt keinen erkennbaren Schwerpunkt in der Arbeitsweise. Die Rolle ${jobTitle} braucht eine klare ${rL}-Ausrichtung – diese fehlt. Bereits in der Einarbeitung ist Orientierungslosigkeit zu erwarten.`);
+      shortTerm.push(`Die Person zeigt keinen erkennbaren Schwerpunkt in der Arbeitsweise. Die Rolle ${jobTitle} braucht eine klare ${rL}-Ausrichtung – diese fehlt. Bereits in der Einarbeitung ist Orientierungslosigkeit zu erwarten.`);
       midTerm.push(`Ohne klaren Schwerpunkt fehlt die Grundlage, um konsequent Prioritäten zu setzen. Die Person reagiert situativ statt systematisch. Entscheidungsqualität, ${t.qualityMetric} und stabile Abläufe sind nicht verlässlich.`);
-      longTerm.push(`Die Gleichverteilung verhindert eine stabile Wirkung in der Rolle. Statt ${rL}-geprägter Arbeit entsteht eine unklare Dynamik. ${t.kpiExamples}, Tempo und Qualität bleiben dauerhaft fragil.`);
+      longTerm.push(`Die Gleichverteilung verhindert eine stabile Wirkung in der Rolle. Statt ${rL}-geprägter Arbeit entsteht eine unklare Dynamik. ${t.kpiExamples} und Ergebnisqualität bleiben dauerhaft fragil.`);
     } else if (dualConflict && !roleKeyInDual) {
       const c2L = labelComponent(cDom.top2.key);
       shortTerm.push(`Doppeldominanz ${labelComponent(cDom.top1.key)}/${c2L} – die von der Rolle ${jobTitle} geforderte ${rL}-Ausrichtung ist in keiner der beiden Stärken enthalten. Reibung zeigt sich schon in der Einarbeitung.`);
       midTerm.push(`Die Arbeitsweise wird von ${labelComponent(cDom.top1.key)} und ${c2L} bestimmt. Die für die Rolle zentrale ${rL}-Ausrichtung fehlt. Entscheidungen, ${t.qualityMetric} und Prioritäten folgen einer grundlegend anderen Logik.`);
-      longTerm.push(`Die Besetzung verändert die Grundausrichtung der Position. Statt ${rL}-geprägter Arbeit entsteht eine ${labelComponent(cDom.top1.key)}/${c2L}-Dynamik. Abläufe, Tempo und Qualität passen nicht zur Rolle.`);
+      longTerm.push(`Die Besetzung verändert die Grundausrichtung der Position. Statt ${rL}-geprägter Arbeit entsteht eine ${labelComponent(cDom.top1.key)}/${c2L}-Dynamik. Abläufe und Ergebnisqualität passen nicht zur Rolle.`);
     } else {
       shortTerm.push(`Schon in der Einarbeitung ist mit Reibung zu rechnen. Die Arbeitsweise der Person passt nicht zu dem, was die Position ${jobTitle} braucht.`);
       midTerm.push(`Die Leistungsstruktur der Rolle wird sich voraussichtlich verschieben. Prioritäten, Entscheidungen und Führungsfähigkeit folgen einer anderen Logik. ${t.qualityMetric} und stabile Abläufe sind gefährdet.`);
