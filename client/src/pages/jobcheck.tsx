@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
-import { FileText, AlertTriangle, Check, TrendingUp, Zap, Scale, ChevronRight, ChevronDown, CircleAlert, CircleCheck, CircleMinus, Lightbulb, CalendarDays, ClipboardCheck, BarChart3, CheckCircle2, Briefcase, LayoutGrid, Wrench, Target, UserCheck, Hash } from "lucide-react";
+import { FileText, AlertTriangle, Check, TrendingUp, Zap, Scale, ChevronRight, ChevronDown, CircleAlert, CircleCheck, CircleMinus, Lightbulb, CalendarDays, ClipboardCheck, BarChart3, CheckCircle2, Briefcase, LayoutGrid, Wrench, Target, UserCheck, Hash, Compass, Shield, Gauge, Award, ArrowUpRight, Layers } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { hyphenateText } from "@/lib/hyphenate";
 import { BERUFE } from "@/data/berufe";
@@ -754,6 +754,9 @@ export default function JobCheck() {
                   }}>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
                       <ChapterBadge num={1} color="#0071E3" />
+                      <div style={{ width: 30, height: 30, borderRadius: 10, flexShrink: 0, background: "rgba(0,113,227,0.10)", display: "flex", alignItems: "center", justifyContent: "center", marginRight: 10 }}>
+                        <FileText style={{ width: 14, height: 14, color: "#0071E3", strokeWidth: 2 }} />
+                      </div>
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Management Summary</span>
                     </div>
                     <div style={{
@@ -928,6 +931,9 @@ export default function JobCheck() {
                       }}>
                         <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
                           <ChapterBadge num={2} color="#0071E3" />
+                          <div style={{ width: 30, height: 30, borderRadius: 10, flexShrink: 0, background: "rgba(0,113,227,0.10)", display: "flex", alignItems: "center", justifyContent: "center", marginRight: 10 }}>
+                            <Layers style={{ width: 14, height: 14, color: "#0071E3", strokeWidth: 2 }} />
+                          </div>
                           <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>
                             {sectionTitle}
                           </span>
@@ -1016,6 +1022,9 @@ export default function JobCheck() {
                       }}>
                         <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
                           <ChapterBadge num={3} color="#FF9500" />
+                          <div style={{ width: 30, height: 30, borderRadius: 10, flexShrink: 0, background: "rgba(255,149,0,0.10)", display: "flex", alignItems: "center", justifyContent: "center", marginRight: 10 }}>
+                            <Gauge style={{ width: 14, height: 14, color: "#FF9500", strokeWidth: 2 }} />
+                          </div>
                           <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Sekundärkomponenten-Spannung</span>
                         </div>
                         <div style={{
@@ -1051,6 +1060,9 @@ export default function JobCheck() {
                   }}>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
                       <ChapterBadge num={engine.secondaryTension ? 4 : 3} color="#0071E3" />
+                      <div style={{ width: 30, height: 30, borderRadius: 10, flexShrink: 0, background: "rgba(0,113,227,0.10)", display: "flex", alignItems: "center", justifyContent: "center", marginRight: 10 }}>
+                        <LayoutGrid style={{ width: 14, height: 14, color: "#0071E3", strokeWidth: 2 }} />
+                      </div>
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Strukturelle Eignungsmatrix</span>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -1072,6 +1084,9 @@ export default function JobCheck() {
                   }}>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
                       <ChapterBadge num={engine.secondaryTension ? 5 : 4} color="#0071E3" />
+                      <div style={{ width: 30, height: 30, borderRadius: 10, flexShrink: 0, background: "rgba(196,30,58,0.10)", display: "flex", alignItems: "center", justifyContent: "center", marginRight: 10 }}>
+                        <Shield style={{ width: 14, height: 14, color: "#C41E3A", strokeWidth: 2 }} />
+                      </div>
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Risikoprognose</span>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -1098,6 +1113,9 @@ export default function JobCheck() {
                   }}>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
                       <ChapterBadge num={engine.secondaryTension ? 6 : 5} color="#0071E3" />
+                      <div style={{ width: 30, height: 30, borderRadius: 10, flexShrink: 0, background: "rgba(255,149,0,0.10)", display: "flex", alignItems: "center", justifyContent: "center", marginRight: 10 }}>
+                        <TrendingUp style={{ width: 14, height: 14, color: "#FF9500", strokeWidth: 2 }} />
+                      </div>
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Entwicklungsprognose</span>
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
@@ -1124,6 +1142,9 @@ export default function JobCheck() {
                   }}>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 18 }}>
                       <ChapterBadge num={engine.secondaryTension ? 7 : 6} color="#0071E3" />
+                      <div style={{ width: 30, height: 30, borderRadius: 10, flexShrink: 0, background: "rgba(52,199,89,0.10)", display: "flex", alignItems: "center", justifyContent: "center", marginRight: 10 }}>
+                        <CalendarDays style={{ width: 14, height: 14, color: "#34C759", strokeWidth: 2 }} />
+                      </div>
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>90-Tage-Integrationsplan</span>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
@@ -1140,6 +1161,9 @@ export default function JobCheck() {
                   }}>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
                       <ChapterBadge num={engine.secondaryTension ? 8 : 7} color="#0071E3" />
+                      <div style={{ width: 30, height: 30, borderRadius: 10, flexShrink: 0, background: "rgba(0,113,227,0.10)", display: "flex", alignItems: "center", justifyContent: "center", marginRight: 10 }}>
+                        <Award style={{ width: 14, height: 14, color: "#0071E3", strokeWidth: 2 }} />
+                      </div>
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Gesamtbewertung</span>
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
