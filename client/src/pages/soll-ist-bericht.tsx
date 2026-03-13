@@ -720,27 +720,9 @@ export default function SollIstBericht() {
 
               <div style={sep} data-testid="section-comparison-bars">
                 <SectionHead num={2} icon={BarChart3} title="Vergleich der Profile" iconColor="#5856D6" />
-                <div style={{ marginBottom: 20 }}>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", margin: "0 0 14px", letterSpacing: "0.02em" }}>Bedeutung der Komponenten</p>
-                  {(["intuitiv", "impulsiv", "analytisch"] as const).map((k, i) => {
-                    const hex = BAR_HEX[k];
-                    const label = labelComponent(k);
-                    const meaning: Record<ComponentKey, string> = {
-                      intuitiv: "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen.",
-                      impulsiv: "Aufgaben schnell vorantreiben, Prioritäten setzen und Ergebnisse liefern.",
-                      analytisch: "Strukturen schaffen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten.",
-                    };
-                    return (
-                      <div key={k} style={{ marginBottom: i < 2 ? 14 : 0 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                          <span style={{ width: 7, height: 7, borderRadius: 4, background: hex, display: "inline-block", flexShrink: 0 }} />
-                          <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{label}</span>
-                        </div>
-                        <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: 0, paddingLeft: 13 }}>{meaning[k]}</p>
-                      </div>
-                    );
-                  })}
-                </div>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
+                  {biggestGapText(result.roleTriad, result.candTriad)}
+                </p>
                 <div className="grid gap-6 grid-cols-2" style={{ marginBottom: 14 }}>
                   <div className="rounded-2xl border border-slate-200 bg-white p-6">
                     <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
@@ -829,9 +811,27 @@ export default function SollIstBericht() {
                     )}
                   </div>
                 </div>
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
-                  {biggestGapText(result.roleTriad, result.candTriad)}
-                </p>
+                <div style={{ marginTop: 20 }}>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", margin: "0 0 14px", letterSpacing: "0.02em" }}>Bedeutung der Komponenten</p>
+                  {(["intuitiv", "impulsiv", "analytisch"] as const).map((k, i) => {
+                    const hex = BAR_HEX[k];
+                    const label = labelComponent(k);
+                    const meaning: Record<ComponentKey, string> = {
+                      intuitiv: "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen.",
+                      impulsiv: "Aufgaben schnell vorantreiben, Prioritäten setzen und Ergebnisse liefern.",
+                      analytisch: "Strukturen schaffen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten.",
+                    };
+                    return (
+                      <div key={k} style={{ marginBottom: i < 2 ? 14 : 0 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                          <span style={{ width: 7, height: 7, borderRadius: 4, background: hex, display: "inline-block", flexShrink: 0 }} />
+                          <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{label}</span>
+                        </div>
+                        <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: 0, paddingLeft: 13 }}>{meaning[k]}</p>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
 
               <div style={sep} data-testid="section-impact-matrix">

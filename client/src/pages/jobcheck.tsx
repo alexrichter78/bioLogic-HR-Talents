@@ -802,23 +802,6 @@ export default function JobCheck() {
                       <span style={{ fontWeight: 700, color: COLORS.ana }}>Analytisch</span> zugeordnet.
                       So wird erkennbar, welche Form von Wirksamkeit die Rolle bestimmt.
                     </p>
-                    <div style={{ marginBottom: 20 }}>
-                      <p style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", margin: "0 0 14px", letterSpacing: "0.02em" }}>Bedeutung der Komponenten</p>
-                      {[
-                        { label: "Intuitiv", color: COLORS.int, desc: "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen." },
-                        { label: "Impulsiv", color: COLORS.imp, desc: "Aufgaben schnell vorantreiben, Prioritäten setzen und Ergebnisse liefern." },
-                        { label: "Analytisch", color: COLORS.ana, desc: "Strukturen schaffen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten." },
-                      ].map((d, i) => (
-                        <div key={d.label} style={{ marginBottom: i < 2 ? 14 : 0 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                            <span style={{ width: 7, height: 7, borderRadius: 4, background: d.color, display: "inline-block", flexShrink: 0 }} />
-                            <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{d.label}</span>
-                          </div>
-                          <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: 0, paddingLeft: 13 }}>{d.desc}</p>
-                        </div>
-                      ))}
-                    </div>
-
                     {roleProfile && (() => {
                       const r = roleProfile;
                       const c = snapshotCand;
@@ -870,6 +853,23 @@ export default function JobCheck() {
                     </div>
 
                     <CalloutBox text={engine.keyReason} color={fitColor(engine.overallFit)} icon={Lightbulb} />
+
+                    <div style={{ marginTop: 20 }}>
+                      <p style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", margin: "0 0 14px", letterSpacing: "0.02em" }}>Bedeutung der Komponenten</p>
+                      {[
+                        { label: "Intuitiv", color: COLORS.int, desc: "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen." },
+                        { label: "Impulsiv", color: COLORS.imp, desc: "Aufgaben schnell vorantreiben, Prioritäten setzen und Ergebnisse liefern." },
+                        { label: "Analytisch", color: COLORS.ana, desc: "Strukturen schaffen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten." },
+                      ].map((d, i) => (
+                        <div key={d.label} style={{ marginBottom: i < 2 ? 14 : 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                            <span style={{ width: 7, height: 7, borderRadius: 4, background: d.color, display: "inline-block", flexShrink: 0 }} />
+                            <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{d.label}</span>
+                          </div>
+                          <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: 0, paddingLeft: 13 }}>{d.desc}</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
                   {(() => {
