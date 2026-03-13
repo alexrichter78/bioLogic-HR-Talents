@@ -51,7 +51,7 @@ const FUEHRUNG_LABELS: Record<string, string> = {
   "Keine": "Keine Führungsverantwortung",
   "Projekt-/Teamkoordination": "Projekt- oder Teamkoordination",
   "Fachliche Führung": "Fachliche Führung",
-  "Disziplinarische Führung mit Ergebnisverantwortung": "Disziplinarische Führung",
+  "Disziplinarische Führung mit Ergebnisverantwortung": "Führung mit Personalverantwortung",
 };
 
 function roundPercentages(p1: number, p2: number, p3: number): [number, number, number] {

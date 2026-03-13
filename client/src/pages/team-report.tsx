@@ -765,7 +765,7 @@ export default function TeamReport() {
                     const FUEHRUNG_LABELS: Record<string, string> = {
                       "Keine": "Keine Führungsverantwortung",
                       "Fachlich": "Fachliche Führung",
-                      "Disziplinarisch": "Disziplinarische Führung",
+                      "Disziplinarisch": "Führung mit Personalverantwortung",
                       "Projektleitung": "Projektleitung / Koordination",
                     };
                     let roleTitle = roleName || "die Rolle";

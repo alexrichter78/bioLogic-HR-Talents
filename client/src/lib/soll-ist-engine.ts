@@ -80,7 +80,7 @@ export type SollIstResult = {
 };
 
 function compDesc(k: ComponentKey): string {
-  if (k === "impulsiv") return "Umsetzung und Tempo";
+  if (k === "impulsiv") return "Entscheidungsstärke und Umsetzung";
   if (k === "intuitiv") return "Zusammenarbeit und Kommunikation";
   return "Struktur und Planung";
 }
@@ -650,8 +650,8 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
     roleNeed = rk === "analytisch"
       ? "Führung über klare Standards, verlässliche Struktur und nachvollziehbare Entscheidungen. Das Team braucht konsistente Prioritäten und Orientierung."
       : rk === "impulsiv"
-        ? "Führung über Entscheidungskraft, klare Richtung und schnelle Steuerung. Das Team erwartet sichtbare Ergebnisorientierung."
-        : "Führung über persönliche Einbindung, offene Kommunikation und Gespür für Teamdynamik. Das Team braucht Nähe und Ansprache.";
+        ? "Führung über Entscheidungskraft, klare Richtung und operative Geschwindigkeit. Das Team erwartet sichtbare Ergebnisorientierung."
+        : "Führung über persönliche Ansprache, offene Kommunikation und ein Gespür für Teamdynamik. Das Team braucht Nähe und Vertrauen.";
   } else if (fuehrungsArt === "fachlich") {
     roleNeed = rk === "analytisch"
       ? "Fachliche Führung mit klarer Einschätzung, Qualitätssicherheit und verlässlicher Priorisierung. Fachliche Orientierung vor formaler Autorität."
@@ -668,7 +668,7 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
 
   const s = Subj(cand);
   if (ck === "impulsiv") {
-    candidatePattern = `${s} führt eher über Tempo, direkte Ansprache und Aktivierung. Entscheidungen werden schnell kommuniziert und umgesetzt.`;
+    candidatePattern = `${s} führt eher über Geschwindigkeit, direkte Ansprache und Aktivierung. Entscheidungen werden schnell kommuniziert und umgesetzt.`;
   } else if (ck === "intuitiv") {
     candidatePattern = `${s} führt über Beziehung, Dialog und aktives Zuhören. Entscheidungen werden im Gespräch entwickelt und abgestimmt.`;
   } else {
@@ -732,7 +732,7 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
     } else if (rk === "analytisch" && ck === "intuitiv") {
       risk = "Die Kultur verschiebt sich von sachlicher Qualität hin zu persönlicher Verbindung. Standards und Regeln weichen auf, wenn Beziehungen wichtiger werden als Prozesse.";
     } else if (rk === "impulsiv" && ck === "analytisch") {
-      risk = "Das Tempo sinkt. Statt schneller Umsetzung entsteht eine Kultur der Prüfung und Absicherung. In einem dynamischen Umfeld ein Wettbewerbsnachteil.";
+      risk = "Die operative Geschwindigkeit sinkt. Statt direkter Umsetzung entsteht eine Kultur der Prüfung und Absicherung. In einem dynamischen Umfeld ein Wettbewerbsnachteil.";
     } else if (rk === "impulsiv" && ck === "intuitiv") {
       risk = "Ergebnisorientierung weicht einer Konsenskultur. Entscheidungen werden diskutiert statt umgesetzt. Die Dynamik der Rolle geht verloren.";
     } else if (rk === "intuitiv" && ck === "impulsiv") {
@@ -758,7 +758,7 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
 
   const shortRisks: Record<ComponentKey, Record<ComponentKey, string>> = {
     impulsiv: {
-      intuitiv: `In der Einarbeitung investiert ${subj(cand)} mehr Zeit in Abstimmung als die Rolle erlaubt. Erste Verzögerungen beim Umsetzungstempo werden sichtbar. Die Führungskraft muss aktiv Tempo einfordern.`,
+      intuitiv: `In der Einarbeitung investiert ${subj(cand)} mehr Zeit in Abstimmung als die Rolle erlaubt. Erste Verzögerungen bei der operativen Umsetzung werden sichtbar. Die Führungskraft muss aktiv Ergebnisorientierung einfordern.`,
       analytisch: `In der Einarbeitung werden Entscheidungen langsamer getroffen als die Rolle verlangt. ${Subj(cand)} prüft mehr als nötig und verliert dabei an Geschwindigkeit. Die Führungskraft sollte klare Fristen setzen.`,
       impulsiv: "",
     },
@@ -776,7 +776,7 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
 
   const midRisks: Record<ComponentKey, Record<ComponentKey, string>> = {
     impulsiv: {
-      intuitiv: `Prioritäten, Entscheidungen und Arbeitsweise folgen zunehmend der persönlichen Beziehungslogik von ${subj(cand)}. Die Umsetzungsgeschwindigkeit sinkt weiter. Die Führungskraft muss regelmäßig Tempo und Ergebnisorientierung einfordern.`,
+      intuitiv: `Prioritäten, Entscheidungen und Arbeitsweise folgen zunehmend der persönlichen Beziehungslogik von ${subj(cand)}. Die operative Geschwindigkeit sinkt weiter. Die Führungskraft muss regelmässig klare Ergebnisziele einfordern.`,
       analytisch: `Die Rolle wird zunehmend über Prüfung und Kontrolle gesteuert statt über Tempo. Die Dynamik der Rolle geht verloren. Ohne Korrektur durch die Führungskraft wird die Rolle langsamer als vorgesehen.`,
       impulsiv: "",
     },

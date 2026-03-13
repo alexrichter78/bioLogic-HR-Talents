@@ -382,9 +382,9 @@ const ARBEITSLOGIK_OPTIONS: DescOption[] = [
 
 const FUEHRUNG_OPTIONS: DescOption[] = [
   { value: "Keine", label: "Keine Führungsverantwortung", desc: "Die Rolle arbeitet ohne direkte Führung von Mitarbeitenden." },
-  { value: "Projekt-/Teamkoordination", label: "Projekt- oder Teamkoordination", desc: "Die Rolle koordiniert Aufgaben oder Projekte, ohne disziplinarische Verantwortung." },
+  { value: "Projekt-/Teamkoordination", label: "Projekt- oder Teamkoordination", desc: "Die Rolle koordiniert Aufgaben oder Projekte, ohne Personalverantwortung." },
   { value: "Fachliche Führung", label: "Fachliche Führung", desc: "Die Rolle steuert fachliche Arbeit und Qualität im Team." },
-  { value: "Disziplinarische Führung mit Ergebnisverantwortung", label: "Disziplinarische Führung", desc: "Die Rolle trägt Verantwortung für Mitarbeitende, Ergebnisse und Entwicklung." },
+  { value: "Disziplinarische Führung mit Ergebnisverantwortung", label: "Führung mit Personalverantwortung", desc: "Die Rolle trägt Verantwortung für Mitarbeitende, Ergebnisse und Entwicklung." },
 ];
 
 const SECTION_SUBTITLES: Record<string, string> = {
@@ -1600,7 +1600,7 @@ export default function RollenDNA() {
               { label: "Keine", desc: "Keine Weisungs- oder Steuerungsverantwortung." },
               { label: "Koordination", desc: "Steuert Zusammenarbeit, aber ohne formale Weisungs- oder Personalverantwortung." },
               { label: "Fachliche Führung", desc: "Führt fachlich (Qualität, Standards, Prioritäten), aber ohne Personalentscheidungen." },
-              { label: "Disziplinarische Führung", desc: "Personalverantwortung inkl. Ziele, Entwicklung, Entscheidungen und Ergebnis-KPIs." },
+              { label: "Führung mit Personalverantwortung", desc: "Verantwortung für Mitarbeitende inkl. Ziele, Entwicklung, Entscheidungen und Ergebnis-KPIs." },
             ].map(item => (
               <div key={item.label}>
                 <span style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F" }}>{item.label}: </span>
@@ -1612,7 +1612,7 @@ export default function RollenDNA() {
             <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", lineHeight: 1.6 }}>
               Im Zweifel orientieren Sie sich bitte an folgender Leitfrage:<br />
               Hat die Rolle formale Zielvereinbarungs- und Beurteilungsverantwortung für Mitarbeitende?<br />
-              Wenn ja, liegt in der Regel disziplinarische Führung vor.
+              Wenn ja, liegt in der Regel Führung mit Personalverantwortung vor.
             </p>
           </div>
         </div>
