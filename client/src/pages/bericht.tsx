@@ -814,8 +814,10 @@ export default function Bericht() {
                 </div>
                 <ChartCard icon={BarChart3} title="Gesamtprofil" bg={gesamt} accent={CHAPTER_COLORS[1]} />
                 <div style={{ marginTop: 18 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                    <Compass style={{ width: 14, height: 14, color: CHAPTER_COLORS[1] }} />
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                    <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${CHAPTER_COLORS[1]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Compass style={{ width: 13, height: 13, color: CHAPTER_COLORS[1], strokeWidth: 2 }} />
+                    </div>
                     <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Zusammenfassung</p>
                   </div>
                   <TextBlock text={bericht.gesamtprofil} />
@@ -926,8 +928,10 @@ export default function Bericht() {
 
                     <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "18px 0" }} />
 
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-                      <Gauge style={{ width: 14, height: 14, color: "#6E6E73" }} />
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                      <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: "rgba(110,110,115,0.10)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <Gauge style={{ width: 13, height: 13, color: "#6E6E73", strokeWidth: 2 }} />
+                      </div>
                       <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Verhalten unter Druck</p>
                     </div>
 
@@ -966,8 +970,10 @@ export default function Bericht() {
                 </div>
                 <ChartCard icon={Settings} title="Rahmenprofil" bg={rahmen} accent={CHAPTER_COLORS[2]} />
                 <div style={{ marginTop: 18 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                    <Layers style={{ width: 14, height: 14, color: CHAPTER_COLORS[2] }} />
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                    <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${CHAPTER_COLORS[2]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Layers style={{ width: 13, height: 13, color: CHAPTER_COLORS[2], strokeWidth: 2 }} />
+                    </div>
                     <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Rollenkontext</p>
                   </div>
                   <TextBlock text={bericht.rahmenbedingungen.beschreibung} />
@@ -975,8 +981,10 @@ export default function Bericht() {
 
                 {bericht.rahmenbedingungen.verantwortungsfelder?.length > 0 && (
                   <div style={{ marginTop: 18 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                      <Crosshair style={{ width: 14, height: 14, color: CHAPTER_COLORS[2] }} />
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                      <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${CHAPTER_COLORS[2]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <Crosshair style={{ width: 13, height: 13, color: CHAPTER_COLORS[2], strokeWidth: 2 }} />
+                      </div>
                       <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Zentrale Verantwortungsbereiche</p>
                     </div>
                     <BulletList items={bericht.rahmenbedingungen.verantwortungsfelder} />
@@ -985,8 +993,10 @@ export default function Bericht() {
 
                 {bericht.rahmenbedingungen.erfolgsmessung?.length > 0 && (
                   <div style={{ marginTop: 18 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                      <TrendingUp style={{ width: 14, height: 14, color: CHAPTER_COLORS[2] }} />
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                      <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${CHAPTER_COLORS[2]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <TrendingUp style={{ width: 13, height: 13, color: CHAPTER_COLORS[2], strokeWidth: 2 }} />
+                      </div>
                       <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Erfolg wird gemessen an</p>
                     </div>
                     <BulletList items={bericht.rahmenbedingungen.erfolgsmessung} icon="check" color={CHAPTER_COLORS[2]} />
@@ -1013,8 +1023,10 @@ export default function Bericht() {
                   </div>
                   {isLeadership && <ChartCard icon={Shield} title="Führungskompetenzen" bg={fuehrung} accent={CHAPTER_COLORS[3]} />}
                   <div style={{ marginTop: isLeadership ? 18 : 0 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                      <Users style={{ width: 14, height: 14, color: CHAPTER_COLORS[3] }} />
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                      <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${CHAPTER_COLORS[3]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <Users style={{ width: 13, height: 13, color: CHAPTER_COLORS[3], strokeWidth: 2 }} />
+                      </div>
                       <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{isLeadership ? "Führungsanforderung" : "Zusammenarbeit"}</p>
                     </div>
                     <TextBlock text={bericht.fuehrungskontext.beschreibung} />
@@ -1022,8 +1034,10 @@ export default function Bericht() {
 
                   {bericht.fuehrungskontext.wirkungshebel?.length > 0 && (
                     <div style={{ marginTop: 18 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                        <ArrowUpRight style={{ width: 14, height: 14, color: CHAPTER_COLORS[3] }} />
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                        <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${CHAPTER_COLORS[3]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <ArrowUpRight style={{ width: 13, height: 13, color: CHAPTER_COLORS[3], strokeWidth: 2 }} />
+                        </div>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
                           {isLeadership ? "Führungswirkung entsteht über" : "Wirkung entsteht über"}
                         </p>
@@ -1034,8 +1048,10 @@ export default function Bericht() {
 
                   {bericht.fuehrungskontext.analytische_anforderungen?.length > 0 && (
                     <div style={{ marginTop: 18 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                        <ShieldCheck style={{ width: 14, height: 14, color: CHAPTER_COLORS[3] }} />
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                        <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${CHAPTER_COLORS[3]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <ShieldCheck style={{ width: 13, height: 13, color: CHAPTER_COLORS[3], strokeWidth: 2 }} />
+                        </div>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Strukturelle Stabilisierung</p>
                       </div>
                       <BulletList items={bericht.fuehrungskontext.analytische_anforderungen} />
@@ -1170,8 +1186,10 @@ export default function Bericht() {
                 }}>{bericht.fazit.kernsatz}</p>
 
                 <div style={{ marginTop: 20, marginBottom: 20 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                    <Award style={{ width: 14, height: 14, color: CHAPTER_COLORS[7] }} />
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                    <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${CHAPTER_COLORS[7]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Award style={{ width: 13, height: 13, color: CHAPTER_COLORS[7], strokeWidth: 2 }} />
+                    </div>
                     <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Entscheidend für die Besetzung ist eine Persönlichkeit, die:</p>
                   </div>
                   <BulletList items={bericht.fazit.persoenlichkeit || []} icon="check" color={CHAPTER_COLORS[7]} />
