@@ -802,7 +802,7 @@ export default function JobCheck() {
                       <span style={{ fontWeight: 700, color: COLORS.ana }}>Analytisch</span> zugeordnet.
                       So wird erkennbar, welche Form von Wirksamkeit die Rolle bestimmt.
                     </p>
-                    <div style={{ padding: "16px 20px", borderRadius: 14, background: "rgba(0,0,0,0.015)", border: "1px solid rgba(0,0,0,0.04)", marginBottom: 20 }}>
+                    <div style={{ marginBottom: 20 }}>
                       <p style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", margin: "0 0 14px", letterSpacing: "0.02em" }}>Bedeutung der Komponenten</p>
                       {[
                         { label: "Intuitiv", color: COLORS.int, desc: "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen." },

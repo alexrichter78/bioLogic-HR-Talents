@@ -808,11 +808,7 @@ export default function SollIstBericht() {
                     )}
                   </div>
                 </div>
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
-                  {biggestGapText(result.roleTriad, result.candTriad)}
-                </p>
-
-                <div style={{ marginTop: 20, padding: "18px 22px", borderRadius: 14, background: "rgba(0,0,0,0.015)", border: "1px solid rgba(0,0,0,0.04)" }}>
+                <div style={{ marginTop: 20, marginBottom: 20 }}>
                   <p style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", margin: "0 0 14px", letterSpacing: "0.02em" }}>Bedeutung der Komponenten</p>
                   {(["intuitiv", "impulsiv", "analytisch"] as const).map((k, i) => {
                     const hex = BAR_HEX[k];
@@ -833,6 +829,10 @@ export default function SollIstBericht() {
                     );
                   })}
                 </div>
+
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
+                  {biggestGapText(result.roleTriad, result.candTriad)}
+                </p>
               </div>
 
               <div style={sep} data-testid="section-impact-matrix">
