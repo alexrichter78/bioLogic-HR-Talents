@@ -404,9 +404,9 @@ function buildExecutiveBullets(rk: ComponentKey, ck: ComponentKey, gapLevel: str
   const bullets: string[] = [];
 
   if (rk === ck) {
-    bullets.push(`Gleiche Grundausrichtung: Rolle und ${subj(cand)} setzen auf ${compDesc(rk)}.`);
+    bullets.push(`Die Rolle erfordert ${compDesc(rk)}. ${Subj(cand)} bringt dieselbe Grundausrichtung mit.`);
   } else {
-    bullets.push(`Unterschiedliche Grundausrichtung: Rolle setzt auf ${compDesc(rk)}, ${subj(cand)} auf ${compDesc(ck)}.`);
+    bullets.push(`Die Rolle erfordert ${compDesc(rk)}. ${Subj(cand)} setzt auf ${compDesc(ck)}.`);
   }
 
   const gapI = Math.abs(rt.impulsiv - ct.impulsiv);
@@ -482,32 +482,32 @@ function buildConstellationRisks(rk: ComponentKey, ck: ComponentKey, gapLevel: s
 function buildSummary(role: string, cand: string, fit: string, rk: ComponentKey, ck: ComponentKey, gap: string, rt: Triad, ct: Triad, rConst: ConstellationType, cConst: ConstellationType): string {
   const s = Subj(cand);
   if (rk === ck && gap === "gering") {
-    return `${s} passt in der Grundausrichtung gut zur Rolle ${role}. Beide setzen auf dieselbe Arbeitslogik. ${constellationRoleText(rConst)} ${s} arbeitet ähnlich. Kleinere Unterschiede in der Gewichtung der sekundären Bereiche sind im Alltag gut steuerbar.`;
+    return `${constellationRoleText(rConst)} ${s} arbeitet nach derselben Grundlogik. Arbeitsweise und Prioritäten passen zur Rolle ${role}. Kleinere Unterschiede in der Gewichtung der sekundären Bereiche sind im Alltag gut steuerbar.`;
   }
 
   if (gap === "hoch") {
-    return `Rolle und Person arbeiten nach unterschiedlichen Prinzipien. ${constellationRoleText(rConst)} ${constellationCandText(cConst, cand)} Diese Unterschiede wirken sich im Alltag spürbar aus: bei Entscheidungen, Arbeitsweise und Zusammenarbeit.`;
+    return `${constellationRoleText(rConst)} ${constellationCandText(cConst, cand)} Rolle und ${subj(cand)} arbeiten nach unterschiedlichen Prinzipien. Im Alltag führt das zu Reibung bei Entscheidungen, Arbeitsweise und Zusammenarbeit.`;
   }
 
-  return `${s} bringt eine andere Arbeitslogik mit als die Rolle ${role} erfordert. ${constellationRoleText(rConst)} ${s} geht anders vor: ${constellationCandText(cConst, cand)} Die Unterschiede sind erkennbar, lassen sich aber bei gezielter Führung und klaren Erwartungen ausgleichen.`;
+  return `${constellationRoleText(rConst)} ${s} bringt eine andere Arbeitslogik mit als die Rolle ${role} erfordert. ${constellationCandText(cConst, cand)} Die Unterschiede sind erkennbar, lassen sich aber bei gezielter Führung und klaren Erwartungen ausgleichen.`;
 }
 
 function buildDominanceShift(role: string, cand: string, rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, rConst: ConstellationType, cConst: ConstellationType): string {
   const s = Subj(cand);
   if (rk === ck) {
     if (rConst === cConst) {
-      return `Die Grundausrichtung stimmt überein. Sowohl die Rolle als auch ${subj(cand)} setzen auf dieselbe Arbeitslogik. Im Alltag bedeutet das, dass die Grundrichtung passt. Einzelne Situationen werden aber unterschiedlich angegangen.`;
+      return `${constellationRoleText(rConst)} ${s} setzt auf dieselbe Arbeitslogik. Die Grundrichtung passt. Einzelne Situationen werden aber unterschiedlich angegangen.`;
     }
-    return `Die Hauptrichtung stimmt überein, aber die Gewichtung unterscheidet sich. ${constellationRoleText(rConst)} ${s} arbeitet zwar in dieselbe Richtung, gewichtet aber anders: ${constellationCandText(cConst, cand)} Das kann in bestimmten Situationen zu unterschiedlichem Verhalten führen.`;
+    return `${constellationRoleText(rConst)} ${s} arbeitet in dieselbe Richtung, gewichtet aber anders: ${constellationCandText(cConst, cand)} Das kann in bestimmten Situationen zu unterschiedlichem Verhalten führen.`;
   }
 
   const isDoubleDom = cConst.includes("NEAR") || cConst === "BALANCED";
 
   if (isDoubleDom) {
-    return `${constellationRoleText(rConst)} ${s} bringt jedoch eine andere Arbeitsweise mit: ${constellationCandText(cConst, cand)} Da ${subj(cand)} zwischen zwei Ausrichtungen wechselt, ist das Verhalten weniger vorhersehbar. Für die Führungskraft bedeutet das: klare Rahmenvorgaben und regelmäßiges Feedback sind besonders wichtig.`;
+    return `${constellationRoleText(rConst)} ${s} bringt jedoch eine andere Arbeitsweise mit: ${constellationCandText(cConst, cand)} Da ${subj(cand)} zwischen zwei Ausrichtungen wechselt, ist das Verhalten weniger vorhersehbar. Klare Rahmenvorgaben und regelmässiges Feedback sind besonders wichtig.`;
   }
 
-  return `${constellationRoleText(rConst)} ${s} arbeitet aber anders: ${constellationCandText(cConst, cand)} Dadurch verschiebt sich im Alltag der Schwerpunkt, weg von ${compShort(rk)}, hin zu ${compShort(ck)}.`;
+  return `${constellationRoleText(rConst)} ${s} arbeitet aber anders: ${constellationCandText(cConst, cand)} Dadurch verschiebt sich im Alltag der Schwerpunkt weg von ${compShort(rk)} hin zu ${compShort(ck)}.`;
 }
 
 function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string, gapLevel: string): StressBehavior {
@@ -756,44 +756,44 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
 function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: ComponentKey, gap: string): RiskPhase[] {
   if (rk === ck || gap === "gering") {
     return [
-      { label: "Kurzfristig", period: "0 - 3 Monate", text: "Die Einarbeitung verläuft voraussichtlich reibungslos. Die Arbeitslogik stimmt mit der Rollenanforderung überein. Die Führungskraft muss nur in Einzelfällen nachsteuern." },
-      { label: "Mittelfristig", period: "3 - 12 Monate", text: "Stabile Leistung ist erwartbar. In den sekundären Bereichen treten kleinere Abweichungen auf. Regelmäßige Zielgespräche helfen, diese frühzeitig zu erkennen." },
-      { label: "Langfristig", period: "12+ Monate", text: "Eine nachhaltige Besetzung ist wahrscheinlich. Der Führungsaufwand bleibt gering. Halbjährliche Überprüfungen genügen, um die Passung sicherzustellen." },
+      { label: "Kurzfristig", period: "0 - 3 Monate", text: `Die Rolle ${role} verlangt ${compDesc(rk)}. Die Arbeitslogik passt. Die Einarbeitung verläuft voraussichtlich reibungslos. Nur in Einzelfällen muss nachgesteuert werden.` },
+      { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die Rollenanforderungen werden stabil abgedeckt. In den sekundären Bereichen treten kleinere Abweichungen auf. Regelmässige Zielgespräche helfen, diese frühzeitig zu erkennen.` },
+      { label: "Langfristig", period: "12+ Monate", text: `Die Rollenanforderungen werden langfristig stabil erfüllt. Der Führungsaufwand bleibt gering. Halbjährliche Überprüfungen genügen.` },
     ];
   }
 
   const shortRisks: Record<ComponentKey, Record<ComponentKey, string>> = {
     impulsiv: {
-      intuitiv: `In der Einarbeitung investiert ${subj(cand)} mehr Zeit in Abstimmung als die Rolle erlaubt. Erste Verzögerungen bei der operativen Umsetzung werden sichtbar. Die Führungskraft muss aktiv Ergebnisorientierung einfordern.`,
-      analytisch: `In der Einarbeitung werden Entscheidungen langsamer getroffen als die Rolle verlangt. ${Subj(cand)} prüft mehr als nötig und verliert dabei an Geschwindigkeit. Die Führungskraft sollte klare Fristen setzen.`,
+      intuitiv: `Die Rolle verlangt schnelle Umsetzung und operative Geschwindigkeit. ${Subj(cand)} investiert stattdessen mehr Zeit in Abstimmung. Erste Verzögerungen werden sichtbar. Ergebnisorientierung muss aktiv eingefordert werden.`,
+      analytisch: `Die Rolle verlangt zügige Entscheidungen und direktes Handeln. ${Subj(cand)} prüft gründlicher als nötig und verliert dabei an Geschwindigkeit. Klare Fristen sollten gesetzt werden.`,
       impulsiv: "",
     },
     intuitiv: {
-      impulsiv: `In der Einarbeitung treibt ${subj(cand)} schneller voran als die Rolle vorsieht. Beziehungsarbeit und Abstimmung leiden darunter. Die Führungskraft sollte frühzeitig auf Teamfeedback achten.`,
-      analytisch: `In der Einarbeitung werden formale Prozesse stärker betont als nötig. Die zwischenmenschliche Wirkung der Rolle tritt in den Hintergrund. Die Führungskraft sollte den Fokus auf Kommunikation lenken.`,
+      impulsiv: `Die Rolle verlangt Beziehungsarbeit und sorgfältige Abstimmung. ${Subj(cand)} treibt schneller voran als vorgesehen. Beziehungspflege und Teamdynamik leiden. Frühzeitig auf Teamfeedback achten.`,
+      analytisch: `Die Rolle verlangt zwischenmenschliche Wirkung und Kommunikation. Stattdessen werden formale Prozesse stärker betont. Der Fokus auf Dialog und Beziehungsgestaltung muss aktiv gelenkt werden.`,
       intuitiv: "",
     },
     analytisch: {
-      impulsiv: `In der Einarbeitung entstehen erste Reibungen, weil Tempo und Arbeitslogik von ${subj(cand)} nicht zur geforderten Prüftiefe passen. Fehler und Nacharbeiten treten auf, weil Abläufe nicht ausreichend geprüft werden. Die Führungskraft muss Qualitätsstandards aktiv einfordern.`,
-      intuitiv: `In der Einarbeitung werden Entscheidungen stärker beziehungsorientiert getroffen als die Rolle vorsieht. Die strukturelle Präzision lässt nach. Die Führungskraft sollte klare Dokumentationserwartungen formulieren.`,
+      impulsiv: `Die Rolle verlangt Prüftiefe, Sorgfalt und strukturierte Abläufe. ${Subj(cand)} arbeitet tempogetrieben. Fehler und Nacharbeiten treten auf, weil Abläufe nicht ausreichend geprüft werden. Qualitätsstandards müssen aktiv eingefordert werden.`,
+      intuitiv: `Die Rolle verlangt strukturelle Präzision und analytische Schärfe. Entscheidungen werden stattdessen stärker beziehungsorientiert getroffen. Klare Dokumentationserwartungen sollten formuliert werden.`,
       analytisch: "",
     },
   };
 
   const midRisks: Record<ComponentKey, Record<ComponentKey, string>> = {
     impulsiv: {
-      intuitiv: `Prioritäten, Entscheidungen und Arbeitsweise folgen zunehmend der persönlichen Beziehungslogik von ${subj(cand)}. Die operative Geschwindigkeit sinkt weiter. Die Führungskraft muss regelmässig klare Ergebnisziele einfordern.`,
-      analytisch: `Die Rolle wird zunehmend über Prüfung und Kontrolle gesteuert statt über Tempo. Die Dynamik der Rolle geht verloren. Ohne Korrektur durch die Führungskraft wird die Rolle langsamer als vorgesehen.`,
+      intuitiv: `Die Rolle braucht operative Geschwindigkeit und Ergebnisorientierung. Stattdessen folgen Prioritäten und Entscheidungen zunehmend einer Beziehungslogik. Klare Ergebnisziele müssen regelmässig eingefordert werden.`,
+      analytisch: `Die Rolle braucht Tempo und direkte Umsetzung. Stattdessen wird zunehmend über Prüfung und Kontrolle gesteuert. Die Dynamik der Rolle geht verloren. Ohne Korrektur wird die Rolle langsamer als vorgesehen.`,
       impulsiv: "",
     },
     intuitiv: {
-      impulsiv: `Die kooperative Kultur der Rolle wird durch Ergebnisorientierung verdrängt. Mitarbeiterbindung kann sinken, weil die persönliche Ansprache abnimmt. Die Führungskraft sollte gezielt Teamformate einsetzen.`,
-      analytisch: `Die Rolle verliert ihren zwischenmenschlichen Charakter. Prozesse ersetzen zunehmend den persönlichen Kontakt. Das Team kann den Eindruck bekommen, dass Nähe nicht mehr gewünscht ist.`,
+      impulsiv: `Die Rolle braucht kooperative Kultur und persönliche Ansprache. Stattdessen wird die Kultur durch Ergebnisorientierung verdrängt. Mitarbeiterbindung kann sinken. Gezielt Teamformate einsetzen.`,
+      analytisch: `Die Rolle braucht zwischenmenschlichen Charakter und persönlichen Kontakt. Stattdessen ersetzen Prozesse zunehmend den Dialog. Das Team kann den Eindruck bekommen, dass Nähe nicht mehr gewünscht ist.`,
       intuitiv: "",
     },
     analytisch: {
-      impulsiv: `Prioritäten, Entscheidungen und Arbeitsweise folgen zunehmend der persönlichen Arbeitslogik von ${subj(cand)}. Struktur und Prozessqualität werden instabil. Die Qualitätsstandards der Rolle erodieren schrittweise.`,
-      intuitiv: `Die analytische Schärfe der Rolle wird durch Konsensentscheidungen aufgeweicht. Prüftiefe nimmt ab, Entscheidungen werden stärker von Beziehungsdynamik geprägt als von Fakten.`,
+      impulsiv: `Die Rolle braucht Struktur und Prozessqualität. Stattdessen folgen Prioritäten und Entscheidungen zunehmend einer tempogetriebenen Arbeitslogik. Die Qualitätsstandards der Rolle erodieren schrittweise.`,
+      intuitiv: `Die Rolle braucht analytische Schärfe und faktenbasierte Entscheidungen. Stattdessen werden Entscheidungen durch Konsensdynamik aufgeweicht. Prüftiefe nimmt ab.`,
       analytisch: "",
     },
   };
@@ -802,29 +802,30 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
     {
       label: "Kurzfristig",
       period: "0 - 3 Monate",
-      text: shortRisks[rk]?.[ck] || `Die Einarbeitung zeigt erste Abweichungen von der Rollenanforderung. Die Führungskraft sollte aufmerksam beobachten und frühzeitig gegensteuern.`,
+      text: shortRisks[rk]?.[ck] || `Die Rolle ${role} stellt klare Anforderungen. Erste Abweichungen zeigen sich in der Einarbeitung. Aufmerksam beobachten und frühzeitig gegensteuern.`,
     },
     {
       label: "Mittelfristig",
       period: "3 - 12 Monate",
-      text: midRisks[rk]?.[ck] || `Die persönliche Arbeitslogik von ${subj(cand)} prägt zunehmend die Rolle. Ohne gezielte Führung verschiebt sich die Wirkung der Rolle dauerhaft.`,
+      text: midRisks[rk]?.[ck] || `Die Rollenanforderungen werden zunehmend von der persönlichen Arbeitslogik überlagert. Ohne gezielte Führung verschiebt sich die Wirkung der Rolle dauerhaft.`,
     },
     {
       label: "Langfristig",
       period: "12+ Monate",
       text: gap === "hoch"
-        ? `Die Wirkung der Rolle kann sich dauerhaft von der ursprünglichen Anforderung entfernen. Qualitäts- und Führungsrisiken steigen deutlich. Eine Korrektur wird mit der Zeit schwieriger. Die Führungskraft muss entscheiden, ob der Führungsaufwand langfristig tragbar ist.`
-        : `Ohne gezielte Führung kann sich die Rollenausübung allmählich verschieben. Regelmäßige Überprüfung ist ratsam. Die Führungskraft sollte halbjährlich prüfen, ob die Rollenanforderung noch erfüllt wird.`,
+        ? `Die Rollenanforderungen können dauerhaft verfehlt werden. Qualitäts- und Führungsrisiken steigen deutlich. Eine Korrektur wird mit der Zeit schwieriger. Es muss entschieden werden, ob der Führungsaufwand langfristig tragbar ist.`
+        : `Ohne gezielte Führung kann sich die Rollenausübung allmählich verschieben. Halbjährliche Überprüfung der Rollenanforderungen ist ratsam.`,
     },
   ];
 }
 
 function buildDevelopment(gap: string, rk: ComponentKey, ck: ComponentKey, control: string, cand: string): { level: number; label: string; text: string } {
+  const s = Subj(cand);
   if (gap === "gering") {
     return {
       level: 4,
       label: "hoch",
-      text: "Die Anpassung an die Anforderungen der Rolle ist mit hoher Wahrscheinlichkeit erreichbar. Die Grundausrichtung passt bereits gut, sodass vor allem Feinabstimmung in einzelnen Bereichen notwendig ist. Bei klarer Erwartungssetzung und einer sauberen Einarbeitung ist eine stabile Entwicklung realistisch.",
+      text: `Die Rolle erfordert ${compDesc(rk)}. ${s} bringt diese Grundausrichtung mit. Die Anpassung ist mit hoher Wahrscheinlichkeit erreichbar. Vor allem Feinabstimmung in einzelnen Bereichen ist notwendig. Bei klarer Erwartungssetzung und sauberer Einarbeitung ist eine stabile Entwicklung realistisch.`,
     };
   }
   if (gap === "mittel") {
@@ -832,16 +833,16 @@ function buildDevelopment(gap: string, rk: ComponentKey, ck: ComponentKey, contr
       level: 3,
       label: "mittel",
       text: rk === ck
-        ? "Die Entwicklung in die Rolle ist möglich, erfordert jedoch gezielte Unterstützung. Die Grundausrichtung passt in wesentlichen Teilen, einzelne Anforderungen der Rolle müssen jedoch bewusst aufgebaut und stabilisiert werden. Klare Erwartungen, regelmäßige Rückmeldung und eine konsequente Begleitung über mehrere Monate sind dafür sinnvoll."
-        : "Eine Entwicklung in Richtung der Rollenanforderung ist möglich, verlangt jedoch bewusste Verhaltensanpassung. Die Person setzt von Natur aus andere Schwerpunkte als die Rolle. Mit klarer Führung, konkreten Entwicklungszielen und regelmäßiger Rückmeldung kann die notwendige Anpassung aufgebaut werden.",
+        ? `Die Rolle erfordert ${compDesc(rk)}. ${s} arbeitet in dieselbe Richtung, einzelne Anforderungen müssen jedoch bewusst aufgebaut und stabilisiert werden. Klare Erwartungen, regelmässige Rückmeldung und konsequente Begleitung über mehrere Monate sind dafür sinnvoll.`
+        : `Die Rolle erfordert ${compDesc(rk)}. ${s} setzt von Natur aus auf ${compDesc(ck)}. Eine Entwicklung in Richtung der Rollenanforderung ist möglich, verlangt jedoch bewusste Verhaltensanpassung. Mit klarer Führung und konkreten Entwicklungszielen kann die Anpassung aufgebaut werden.`,
     };
   }
   return {
     level: 1,
     label: "niedrig",
     text: rk === ck
-      ? "Die Grundrichtung der Person passt formal zur Rolle, in der erforderlichen Ausprägung ist sie jedoch deutlich zu schwach. Eine tragfähige Entwicklung würde über längere Zeit konsequente Führung, klare Standards und intensive Nachsteuerung erfordern. Ob dieser Aufwand im Verhältnis zum erwarteten Ergebnis steht, sollte realistisch geprüft werden."
-      : "Die natürliche Arbeitsweise der Person setzt andere Schwerpunkte als die Rolle verlangt. Eine Entwicklung ist grundsätzlich nicht ausgeschlossen, würde jedoch einen deutlichen Umbau im Verhalten und eine intensive Begleitung über längere Zeit erfordern. Der notwendige Aufwand ist hoch und der Erfolg nur eingeschränkt planbar.",
+      ? `Die Rolle erfordert ${compDesc(rk)} in einer Ausprägung, die ${subj(cand)} deutlich nicht erreicht. Die Grundrichtung passt formal, ist jedoch zu schwach. Konsequente Führung, klare Standards und intensive Nachsteuerung wären über längere Zeit erforderlich. Ob dieser Aufwand im Verhältnis zum erwarteten Ergebnis steht, sollte realistisch geprüft werden.`
+      : `Die Rolle erfordert ${compDesc(rk)}. ${s} setzt auf ${compDesc(ck)}. Diese Grundabweichung würde einen deutlichen Umbau im Verhalten und intensive Begleitung über längere Zeit erfordern. Der notwendige Aufwand ist hoch und der Erfolg nur eingeschränkt planbar.`,
   };
 }
 
@@ -916,7 +917,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
     p1Items.push(`Transparenz über bestehende Abläufe, Prozesse und Qualitätsstandards.`);
     if (isLeader) p1Items.push(`Führungsrolle, Verantwortungsrahmen und Erwartungen an die Teamsteuerung definieren.`);
     p1Fokus = {
-      intro: `Die Grundlogik der Rolle und ${s === "Die Person" ? "der Person" : cand + "s Arbeitsweise"} stimmt überein. Wichtig ist daher, schnell Klarheit zu schaffen über:`,
+      intro: `Die Rolle und ${s === "Die Person" ? "die Person" : cand} teilen dieselbe Grundlogik. Wichtig ist daher, schnell Klarheit zu schaffen über:`,
       bullets: [
         `bestehende Abläufe und Schnittstellen`,
         `Entscheidungswege und Verantwortungsbereiche`,
@@ -962,7 +963,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
       if (isLeader) p1Items.push(`Erwartungen an Führungstempo und Reaktionszeiten transparent machen.`);
       p1Fokus = maxGap.key === "impulsiv" && maxGap.diff > 0
         ? {
-            intro: `${s} arbeitet von Natur aus über ${candStrength}. In ${role} wird ein höheres Umsetzungstempo erwartet. Wichtig ist daher, früh zu klären:`,
+            intro: `Die Rolle ${role} verlangt ein hohes Umsetzungstempo. ${s} arbeitet von Natur aus über ${candStrength}. Wichtig ist daher, früh zu klären:`,
             bullets: [
               `wo schnelle Entscheidungen notwendig sind`,
               `wo strukturierte Prüfung erwartet wird`,
@@ -970,7 +971,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
             ],
           }
         : {
-            intro: `${s} bringt ${candStrength} als Stärke mit. In ${role} steht Umsetzungsgeschwindigkeit im Vordergrund. Zu klären ist:`,
+            intro: `Die Rolle ${role} stellt Umsetzungsgeschwindigkeit in den Vordergrund. ${s} bringt ${candStrength} als Stärke mit. Zu klären ist:`,
             bullets: [
               `welches Tempo erwartet wird`,
               `wo Entscheidungsfreiräume bestehen`,
@@ -1018,7 +1019,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
       if (isLeader) p1Items.push(`Führungserwartungen in Bezug auf Prozesssteuerung und Qualitätssicherung klären.`);
       p1Fokus = maxGap.key === "analytisch" && maxGap.diff > 0
         ? {
-            intro: `${s} arbeitet primär über ${candStrength}. Die Rolle ${role} verlangt eine stärkere analytische Orientierung. Wichtig ist, früh zu klären:`,
+            intro: `Die Rolle ${role} verlangt eine starke analytische Orientierung. ${s} arbeitet primär über ${candStrength}. Wichtig ist, früh zu klären:`,
             bullets: [
               `wo strukturierte Prüfung erwartet wird`,
               `wo pragmatische Lösungen reichen`,
@@ -1026,7 +1027,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
             ],
           }
         : {
-            intro: `${s} bringt ${candStrength} als Stärke mit. In ${role} steht Struktur und Analyse im Vordergrund. Zu klären ist:`,
+            intro: `Die Rolle ${role} stellt Struktur und Analyse in den Vordergrund. ${s} bringt ${candStrength} als Stärke mit. Zu klären ist:`,
             bullets: [
               `welche Arbeitstiefe erwartet wird`,
               `welche Standards und Prozesse gelten`,
@@ -1072,7 +1073,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
       if (isLeader) p1Items.push(`Erwartungen an Teamführung, Mitarbeiterentwicklung und Gesprächskultur besprechen.`);
       p1Fokus = maxGap.key === "intuitiv" && maxGap.diff > 0
         ? {
-            intro: `${s} arbeitet primär über ${candStrength}. Die Rolle ${role} verlangt stärkere Beziehungsorientierung. Wichtig ist, früh zu klären:`,
+            intro: `Die Rolle ${role} verlangt stärkere Beziehungsorientierung. ${s} arbeitet primär über ${candStrength}. Wichtig ist, früh zu klären:`,
             bullets: [
               `wo aktive Beziehungsarbeit erwartet wird`,
               `welche Gesprächsformate gelten`,
@@ -1080,7 +1081,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
             ],
           }
         : {
-            intro: `${s} bringt ${candStrength} als Stärke mit. In ${role} steht Kommunikation im Vordergrund. Zu klären ist:`,
+            intro: `Die Rolle ${role} stellt Kommunikation und Beziehungsarbeit in den Vordergrund. ${s} bringt ${candStrength} als Stärke mit. Zu klären ist:`,
             bullets: [
               `welche Gesprächskultur erwartet wird`,
               `wie Beziehungsarbeit priorisiert wird`,
@@ -1151,17 +1152,17 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
 
 function buildFinal(role: string, cand: string, fit: string, control: string, rk: ComponentKey, ck: ComponentKey, fuehrungsArt: FuehrungsArt): string {
   const leadSuffix = fuehrungsArt === "disziplinarisch"
-    ? ` Da die Person Führungsverantwortung trägt, wirkt sich die Abweichung auch auf die Führungskultur und Teamstabilität aus.`
+    ? ` Da die Rolle Führungsverantwortung beinhaltet, wirkt sich die Abweichung auch auf Führungskultur und Teamstabilität aus.`
     : fuehrungsArt === "fachlich"
       ? ` Da die Rolle fachliche Führung beinhaltet, beeinflusst die Abweichung auch die fachliche Orientierung des Teams.`
       : "";
 
   const s = Subj(cand);
   if (fit === "Geeignet") {
-    return `${s} zeigt eine gute Passung für die Rolle ${role}. Die Arbeitslogik stimmt in der Grundausrichtung überein. Der Führungsaufwand ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich.${leadSuffix}`;
+    return `Die Rolle ${role} erfordert ${compDesc(rk)}. ${s} bringt diese Grundausrichtung mit. Der Führungsaufwand ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich.`;
   }
   if (fit === "Bedingt geeignet") {
-    return `${s} kann die Rolle ${role} unter bestimmten Bedingungen ausfüllen. Die Arbeitslogik weicht in einzelnen Bereichen von der Rollenanforderung ab. Mit gezielter Führung und klarer Struktur lässt sich die Zusammenarbeit stabilisieren. Der Führungsaufwand ist ${control}.${leadSuffix}`;
+    return `Die Rolle ${role} erfordert ${compDesc(rk)}. ${s} weicht in einzelnen Bereichen von der Rollenanforderung ab. Mit gezielter Führung und klarer Struktur lässt sich die Zusammenarbeit stabilisieren. Der Führungsaufwand ist ${control}.${leadSuffix}`;
   }
-  return `${s} ist stark auf ${compDesc(ck)} ausgerichtet, während die Rolle einen Schwerpunkt auf ${compDesc(rk)} erfordert. Die Grundpassung ist damit nicht gegeben. Eine stabile Besetzung wäre nur mit dauerhaft erhöhtem Führungsaufwand möglich.${leadSuffix}`;
+  return `Die Rolle ${role} erfordert einen Schwerpunkt auf ${compDesc(rk)}. ${s} ist stark auf ${compDesc(ck)} ausgerichtet. Die Grundpassung ist damit nicht gegeben. Eine stabile Besetzung wäre nur mit dauerhaft erhöhtem Führungsaufwand möglich.${leadSuffix}`;
 }
