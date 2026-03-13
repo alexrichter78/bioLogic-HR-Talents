@@ -154,7 +154,7 @@ export default function SollIstBericht() {
   const [fuehrungsArt, setFuehrungsArt] = useState<FuehrungsArt>("keine");
   const [matchCheckFit, setMatchCheckFit] = useState<string | undefined>(undefined);
   const [matchCheckControl, setMatchCheckControl] = useState<string | undefined>(undefined);
-  const [matchCheckMismatch, setMatchCheckMismatch] = useState<number | undefined>(undefined);
+
 
   const exportPdf = useCallback(async () => {
     if (!reportRef.current || isExportingPdf) return;
@@ -222,8 +222,6 @@ export default function SollIstBericht() {
     if (savedFit) setMatchCheckFit(savedFit);
     const savedControl = localStorage.getItem("jobcheckControlIntensity");
     if (savedControl) setMatchCheckControl(savedControl);
-    const savedMismatch = localStorage.getItem("jobcheckMismatchScore");
-    if (savedMismatch) setMatchCheckMismatch(Number(savedMismatch));
   }, []);
 
   const candidateProfile = candTriad;
@@ -231,8 +229,8 @@ export default function SollIstBericht() {
 
   const result: SollIstResult | null = useMemo(() => {
     if (!roleTriad || !reportGenerated) return null;
-    return computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, matchCheckFit, matchCheckControl, matchCheckMismatch);
-  }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated, fuehrungsArt, matchCheckFit, matchCheckControl, matchCheckMismatch]);
+    return computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, matchCheckFit, matchCheckControl);
+  }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated, fuehrungsArt, matchCheckFit, matchCheckControl]);
 
   if (!hasRollenDna || !roleTriad) {
     return (
@@ -456,7 +454,7 @@ export default function SollIstBericht() {
 
           {(() => {
             const fitLabel = result ? result.fitLabel : (() => {
-              const r = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, matchCheckFit, matchCheckControl, matchCheckMismatch);
+              const r = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, matchCheckFit, matchCheckControl);
               return r.fitLabel;
             })();
             const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";

@@ -513,14 +513,6 @@ export default function JobCheck() {
     localStorage.setItem("jobcheckCandProfile", JSON.stringify({ ...normalizedCand, name: candidateName }));
   }, [normalizedCand, candidateName]);
 
-  useEffect(() => {
-    if (engine) {
-      localStorage.setItem("jobcheckOverallFit", engine.overallFit);
-      localStorage.setItem("jobcheckControlIntensity", engine.controlIntensity);
-      localStorage.setItem("jobcheckMismatchScore", String(engine.mismatchScore));
-    }
-  }, [engine]);
-
   const [snapshotCand, setSnapshotCand] = useState(normalizedCand);
   const [snapshotName, setSnapshotName] = useState(candidateName);
 
@@ -532,6 +524,14 @@ export default function JobCheck() {
     };
     return runEngine(roleAnalysis, cand);
   }, [roleAnalysis, snapshotCand, snapshotName, reportGenerated, reportKey]);
+
+  useEffect(() => {
+    if (engine) {
+      localStorage.setItem("jobcheckOverallFit", engine.overallFit);
+      localStorage.setItem("jobcheckControlIntensity", engine.controlIntensity);
+      localStorage.setItem("jobcheckMismatchScore", String(engine.mismatchScore));
+    }
+  }, [engine]);
 
   function handleCreateReport() {
     setSnapshotCand({ ...normalizedCand });

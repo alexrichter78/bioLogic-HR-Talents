@@ -198,8 +198,7 @@ export function computeSollIst(
   candProfile: Triad,
   fuehrungsArt: FuehrungsArt = "keine",
   matchCheckFit?: string,
-  matchCheckControl?: string,
-  matchCheckMismatch?: number
+  matchCheckControl?: string
 ): SollIstResult {
   const rt = normalizeTriad(roleProfile);
   const ct = normalizeTriad(candProfile);
@@ -263,7 +262,8 @@ export function computeSollIst(
   const stressBehavior = buildStressBehavior(cConst, ct, cn, gapLevel);
   const impactAreas = buildImpactAreas(rk, ck, rt, ct, cn, fuehrungsArt);
   const riskTimeline = buildRiskTimeline(roleName, cn, rk, ck, gapLevel);
-  const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildDevelopment(gapLevel, rk, ck, controlIntensity, cn);
+  const devGap = matchCheckFit ? controlIntensity : gapLevel;
+  const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildDevelopment(devGap, rk, ck, controlIntensity, cn);
   const actions = buildActions(rk, ck, gapLevel, controlIntensity);
   const integrationsplan = buildIntegrationsplan(roleName, cn, fitLabel, rk, ck, gapLevel, controlIntensity, fuehrungsArt, rt, ct);
   const finalText = buildFinal(roleName, cn, fitLabel, controlIntensity, rk, ck, fuehrungsArt);
