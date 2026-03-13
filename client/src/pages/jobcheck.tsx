@@ -903,19 +903,19 @@ export default function JobCheck() {
                       }
                       sectionTitle = "Doppeldominanz";
                     } else if (sameDom && intensityDiff <= 5) {
-                      calloutText = `Soll: ${roleVal} / Ist: ${candVal}. Beide Profile ${labelComponent(rk)}-geprägt, Ausprägung nahezu gleichauf (Δ ${intensityDiff} Punkte). Arbeitsweise und Prioritäten bilden die Rollenanforderung stabil ab.`;
+                      calloutText = `Beide Profile sind ${labelComponent(rk)}-geprägt, die Ausprägung ist nahezu gleichauf. Arbeitsweise und Prioritäten bilden die Rollenanforderung stabil ab.`;
                       calloutColor = "#34C759";
                       sectionTitle = "Profilvergleich";
                     } else if (sameDom && intensityDiff <= 15) {
-                      calloutText = `Soll: ${roleVal} / Ist: ${candVal} (Δ ${intensityDiff} Punkte). Beide Profile ${labelComponent(rk)}-geprägt. Die Grundrichtung stimmt, die Ausprägung liegt unter dem, was die Rolle braucht. Mit Führung steuerbar.`;
+                      calloutText = `Beide Profile sind ${labelComponent(rk)}-geprägt. Die Grundrichtung stimmt, die Ausprägung liegt jedoch unter dem, was die Rolle braucht. Mit gezielter Führung steuerbar.`;
                       calloutColor = "#FF9500";
                       sectionTitle = "Profilvergleich";
                     } else if (sameDom) {
-                      calloutText = `Soll: ${roleVal} / Ist: ${candVal} (Δ ${intensityDiff} Punkte). Beide Profile ${labelComponent(rk)}-geprägt, aber die geforderte Ausprägung fehlt deutlich. Qualität und stabile Abläufe sind gefährdet.`;
+                      calloutText = `Beide Profile sind ${labelComponent(rk)}-geprägt, aber die geforderte Ausprägung fehlt deutlich. Qualität und stabile Abläufe sind gefährdet.`;
                       calloutColor = "#FF3B30";
                       sectionTitle = "Profilvergleich";
                     } else {
-                      calloutText = `Rolle braucht ${labelComponent(rk)}-Arbeitsweise (${roleVal}), die Person arbeitet ${labelComponent(ck)}-geprägt (${candVal}). Die zentrale Arbeitsweise der Rolle wird grundlegend verschoben.`;
+                      calloutText = `Die Rolle braucht eine ${labelComponent(rk)}-Arbeitsweise, die Person arbeitet ${labelComponent(ck)}-geprägt. Die zentrale Arbeitslogik der Rolle wird grundlegend verschoben.`;
                       calloutColor = "#FF3B30";
                       sectionTitle = "Unterschied zwischen Rolle und Person";
                     }
