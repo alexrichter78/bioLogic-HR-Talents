@@ -1094,31 +1094,38 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   const cN = normalizeTriad(cand.candidate_profile);
   const maxGapVal = Math.max(Math.abs(rN.impulsiv - cN.impulsiv), Math.abs(rN.intuitiv - cN.intuitiv), Math.abs(rN.analytisch - cN.analytisch));
   const candSpread = candDom.top1.value - candDom.top3.value;
-  if (!effectiveSameDom && !ko) {
-    overallFit = "NOT_SUITABLE";
-  }
-  if (candIsBalFull && !roleIsBalFull && !ko) {
-    overallFit = "NOT_SUITABLE";
-  } else if (candIsBalFull && roleIsBalFull && overallFit === "SUITABLE" && !ko) {
-    overallFit = "CONDITIONAL";
-  }
-  if (maxGapVal > 25 && !ko) {
-    overallFit = "NOT_SUITABLE";
-  }
-  const secondaryFlipped = effectiveSameDom && roleDom.top2.key !== candDom.top2.key;
-  if (overallFit === "SUITABLE" && !ko) {
-    if (secondaryFlipped && candDom.gap2 > 5 && roleDom.gap2 > 5) {
+  if (roleIsBalFull && !ko) {
+    if (maxGapVal <= 5) {
+      overallFit = "SUITABLE";
+    } else if (maxGapVal <= 12) {
+      overallFit = "CONDITIONAL";
+    } else {
       overallFit = "NOT_SUITABLE";
-    } else if (secondaryFlipped) {
-      overallFit = "CONDITIONAL";
-    } else if (effectiveSameDom && candDom.gap2 <= 5) {
-      overallFit = "CONDITIONAL";
     }
-  }
-  if (overallFit === "SUITABLE" && !ko) {
-    if (maxGapVal > 18) overallFit = "CONDITIONAL";
-    else if (candDom.gap1 <= 5) overallFit = "CONDITIONAL";
-    else if (roleIsBalFull && candSpread > 20) overallFit = "CONDITIONAL";
+  } else {
+    if (!effectiveSameDom && !ko) {
+      overallFit = "NOT_SUITABLE";
+    }
+    if (candIsBalFull && !roleIsBalFull && !ko) {
+      overallFit = "NOT_SUITABLE";
+    }
+    if (maxGapVal > 25 && !ko) {
+      overallFit = "NOT_SUITABLE";
+    }
+    const secondaryFlipped = effectiveSameDom && roleDom.top2.key !== candDom.top2.key;
+    if (overallFit === "SUITABLE" && !ko) {
+      if (secondaryFlipped && candDom.gap2 > 5 && roleDom.gap2 > 5) {
+        overallFit = "NOT_SUITABLE";
+      } else if (secondaryFlipped) {
+        overallFit = "CONDITIONAL";
+      } else if (effectiveSameDom && candDom.gap2 <= 5) {
+        overallFit = "CONDITIONAL";
+      }
+    }
+    if (overallFit === "SUITABLE" && !ko) {
+      if (maxGapVal > 18) overallFit = "CONDITIONAL";
+      else if (candDom.gap1 <= 5) overallFit = "CONDITIONAL";
+    }
   }
   const t = resolveRoleTerms(role);
   const ctrl = calcControlIntensity(role, cand);
