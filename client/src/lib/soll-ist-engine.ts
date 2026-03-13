@@ -410,7 +410,7 @@ function buildExecutiveBullets(rk: ComponentKey, ck: ComponentKey, gapLevel: str
   const maxGap = Math.max(gapI, gapN, gapA);
 
   if (maxGap >= 10) {
-    bullets.push(`Grösste Abweichung im Bereich ${labelComponent(maxGapKey)} (${maxGap} Punkte Differenz).`);
+    bullets.push(`Grösste Abweichung im Bereich ${labelComponent(maxGapKey)}.`);
   } else {
     bullets.push("Alle drei Arbeitsbereiche liegen nah beieinander. Geringe Abweichung.");
   }

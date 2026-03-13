@@ -887,7 +887,7 @@ export default function JobCheck() {
                     let sectionTitle: string;
 
                     if (isEqualDist) {
-                      calloutText = `Gleichverteilung: Die Person zeigt keinen erkennbaren Schwerpunkt (${engine.candDominance.top1.value}/${engine.candDominance.top2.value}/${engine.candDominance.top3.value}). Die Rolle braucht eine klare ${labelComponent(rk)}-Ausrichtung (Soll: ${roleVal}). Ohne klaren Schwerpunkt fehlt die Grundlage, um Prioritäten gezielt zu setzen und konsequent zu entscheiden.`;
+                      calloutText = `Die Person zeigt keinen erkennbaren Schwerpunkt. Die Rolle braucht eine klare ${labelComponent(rk)}-Ausrichtung. Ohne klaren Schwerpunkt fehlt die Grundlage, um Prioritäten gezielt zu setzen und konsequent zu entscheiden.`;
                       calloutColor = "#FF3B30";
                       sectionTitle = "Gleichverteilung";
                     } else if (dualConflict) {
@@ -997,7 +997,7 @@ export default function JobCheck() {
                             border: `1px solid ${intensityDiff <= 5 ? "rgba(52,199,89,0.15)" : intensityDiff <= 15 ? "rgba(255,149,0,0.15)" : "rgba(255,59,48,0.15)"}`,
                           }}>
                             <span style={{ fontSize: 12, fontWeight: 600, color: intensityDiff <= 5 ? "#34C759" : intensityDiff <= 15 ? "#FF9500" : "#FF3B30" }}>
-                              {intensityDiff <= 5 ? `Δ ${intensityDiff} Punkte – Ausprägung nahezu identisch` : intensityDiff <= 15 ? `Δ ${intensityDiff} Punkte – spürbare Abweichung` : `Δ ${intensityDiff} Punkte – deutliche Abweichung`}
+                              {intensityDiff <= 5 ? "Ausprägung nahezu identisch" : intensityDiff <= 15 ? "Spürbare Abweichung" : "Deutliche Abweichung"}
                             </span>
                           </div>
                         )}
