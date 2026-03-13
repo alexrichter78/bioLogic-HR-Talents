@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
-import { FileText, AlertTriangle, Check, TrendingUp, Zap, Scale, ChevronRight, ChevronDown, CircleAlert, CircleCheck, CircleMinus, Lightbulb, CalendarDays, ClipboardCheck, BarChart3, CheckCircle2, Briefcase, LayoutGrid, Wrench, Target, UserCheck, Hash, Download, Loader2 } from "lucide-react";
+import { FileText, AlertTriangle, Check, TrendingUp, Zap, Scale, ChevronRight, ChevronDown, CircleAlert, CircleCheck, CircleMinus, Lightbulb, CalendarDays, ClipboardCheck, BarChart3, CheckCircle2, Briefcase, LayoutGrid, Wrench, Target, UserCheck, Hash } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { hyphenateText } from "@/lib/hyphenate";
 import { BERUFE } from "@/data/berufe";
@@ -479,8 +479,6 @@ export default function JobCheck() {
   });
   const [reportGenerated, setReportGenerated] = useState(false);
   const [reportKey, setReportKey] = useState(0);
-  const [isExportingPdf, setIsExportingPdf] = useState(false);
-  const reportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const raw = localStorage.getItem("rollenDnaState");
@@ -537,32 +535,6 @@ export default function JobCheck() {
       localStorage.setItem("jobcheckMismatchScore", String(engine.mismatchScore));
     }
   }, [engine]);
-
-  const exportPdf = useCallback(async () => {
-    if (!reportRef.current || isExportingPdf) return;
-    setIsExportingPdf(true);
-    await new Promise(r => setTimeout(r, 100));
-    try {
-      const html2pdf = (await import("html2pdf.js")).default;
-      const el = reportRef.current;
-      const buttons = el.querySelectorAll("button");
-      buttons.forEach(b => (b as HTMLElement).style.display = "none");
-      const safeName = (roleAnalysis?.job_title || "MatchCheck").replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_");
-      await html2pdf().set({
-        margin: [10, 10, 10, 15],
-        filename: `MatchCheck_${safeName}.pdf`,
-        image: { type: "jpeg", quality: 0.95 },
-        html2canvas: { scale: 2, useCORS: true, allowTaint: true, backgroundColor: "#FFFFFF", logging: false, windowWidth: 900 },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        pagebreak: { mode: ["avoid-all", "css", "legacy"], avoid: [".chapter-card"] },
-      }).from(el).save();
-      buttons.forEach(b => (b as HTMLElement).style.display = "");
-    } catch (err) {
-      console.error("PDF export failed:", err);
-    } finally {
-      setIsExportingPdf(false);
-    }
-  }, [isExportingPdf, roleAnalysis]);
 
   function handleCreateReport() {
     setSnapshotCand({ ...normalizedCand });
@@ -773,21 +745,9 @@ export default function JobCheck() {
                   <p style={{ fontSize: 14, color: "#8E8E93" }}>Bitte zuerst das Ist-Profil eingeben und „Bericht erstellen" klicken.</p>
                 </div>
               ) : (
-                <div ref={reportRef} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
-                  <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: -8 }}>
-                    <button
-                      onClick={exportPdf}
-                      disabled={isExportingPdf}
-                      data-testid="button-export-pdf"
-                      style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 16px", borderRadius: 10, border: "1px solid rgba(0,113,227,0.15)", background: "rgba(0,113,227,0.05)", fontSize: 13, fontWeight: 600, color: "#0071E3", cursor: isExportingPdf ? "wait" : "pointer", opacity: isExportingPdf ? 0.6 : 1, transition: "all 0.15s ease" }}
-                    >
-                      {isExportingPdf ? <Loader2 style={{ width: 14, height: 14, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 14, height: 14 }} />}
-                      PDF
-                    </button>
-                  </div>
-
-                  <div className="chapter-card" style={{
+                  <div style={{
                     padding: "24px 24px 20px", borderRadius: 20,
                     background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
                     boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
@@ -815,7 +775,7 @@ export default function JobCheck() {
 
                   </div>
 
-                  <div className="chapter-card" style={{
+                  <div style={{
                     padding: "24px 24px 20px", borderRadius: 20,
                     background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
                     boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
@@ -961,7 +921,7 @@ export default function JobCheck() {
                     }
 
                     return (
-                      <div className="chapter-card" style={{
+                      <div style={{
                         padding: "24px 24px 20px", borderRadius: 20,
                         background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
                         boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
@@ -1049,7 +1009,7 @@ export default function JobCheck() {
 
                   {engine.secondaryTension && (
                     <>
-                      <div className="chapter-card" style={{
+                      <div style={{
                         padding: "24px 24px 20px", borderRadius: 20,
                         background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
                         boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
@@ -1084,7 +1044,7 @@ export default function JobCheck() {
                     </>
                   )}
 
-                  <div className="chapter-card" style={{
+                  <div style={{
                     padding: "24px 24px 20px", borderRadius: 20,
                     background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
                     boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
@@ -1105,7 +1065,7 @@ export default function JobCheck() {
                     </div>
                   </div>
 
-                  <div className="chapter-card" style={{
+                  <div style={{
                     padding: "24px 24px 20px", borderRadius: 20,
                     background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
                     boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
@@ -1131,7 +1091,7 @@ export default function JobCheck() {
                     </div>
                   </div>
 
-                  <div className="chapter-card" style={{
+                  <div style={{
                     padding: "24px 24px 20px", borderRadius: 20,
                     background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
                     boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
@@ -1157,7 +1117,7 @@ export default function JobCheck() {
                     </div>
                   </div>
 
-                  <div className="chapter-card" style={{
+                  <div style={{
                     padding: "24px 24px 20px", borderRadius: 20,
                     background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
                     boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
@@ -1173,7 +1133,7 @@ export default function JobCheck() {
                     </div>
                   </div>
 
-                  <div className="chapter-card" style={{
+                  <div style={{
                     padding: "24px 24px 20px", borderRadius: 20,
                     background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
                     boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
