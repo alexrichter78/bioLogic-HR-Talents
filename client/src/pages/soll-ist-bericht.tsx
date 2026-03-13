@@ -166,8 +166,12 @@ export default function SollIstBericht() {
       const html2pdf = (await import("html2pdf.js")).default;
 
       const el = reportRef.current;
+      el.classList.add("pdf-export-mode");
       const buttons = el.querySelectorAll("button");
       buttons.forEach(b => (b as HTMLElement).style.display = "none");
+
+      const twoColGrids = el.querySelectorAll<HTMLElement>('[style*="grid-template-columns: 1fr 1fr"]');
+      twoColGrids.forEach(g => { g.dataset.origCols = g.style.gridTemplateColumns; g.style.gridTemplateColumns = "1fr"; });
 
       const safeName = roleName.replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_") || "Bericht";
 
@@ -188,6 +192,8 @@ export default function SollIstBericht() {
       }).from(el).save();
 
       buttons.forEach(b => (b as HTMLElement).style.display = "");
+      twoColGrids.forEach(g => { g.style.gridTemplateColumns = g.dataset.origCols || "1fr 1fr"; delete g.dataset.origCols; });
+      el.classList.remove("pdf-export-mode");
     } catch (err) {
       console.error("PDF export failed:", err);
     } finally {
@@ -622,9 +628,9 @@ export default function SollIstBericht() {
               </div>
 
               <div className="print-hide-summary" style={{ marginBottom: 36 }}>
-                <div style={{ padding: "22px 26px", borderRadius: 14, background: "rgba(0,0,0,0.015)", border: "1px solid rgba(0,0,0,0.04)" }}>
+                <div style={{ padding: "22px 26px", borderRadius: 14, background: "rgba(0,0,0,0.015)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }}>
                   {result.summaryText.split("\n\n").map((para, i) => (
-                    <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i > 0 ? "12px 0 0" : "0", textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
+                    <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i > 0 ? "12px 0 0" : "0", textAlign: "justify", textAlignLast: "left", wordBreak: "break-word", overflowWrap: "break-word" } as React.CSSProperties} lang="de">
                       {para}
                     </p>
                   ))}
@@ -632,7 +638,7 @@ export default function SollIstBericht() {
                 {(result.executiveBullets.length > 0 || result.constellationRisks.length > 0) && (
                   <div style={{ display: "grid", gridTemplateColumns: result.executiveBullets.length > 0 && result.constellationRisks.length > 0 ? "1fr 1fr" : "1fr", gap: 12, marginTop: 12 }}>
                     {result.executiveBullets.length > 0 && (
-                      <div style={{ padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.018)", border: "1px solid rgba(0,0,0,0.04)" }}>
+                      <div style={{ padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.018)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }}>
                         <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 10px" }}>Warum dieses Ergebnis</p>
                         <ul style={{ margin: 0, paddingLeft: 16, listStyleType: "none" }}>
                           {result.executiveBullets.map((b, i) => (
@@ -645,7 +651,7 @@ export default function SollIstBericht() {
                       </div>
                     )}
                     {result.constellationRisks.length > 0 && (
-                      <div style={{ padding: "16px 20px", borderRadius: 12, background: "rgba(212,58,69,0.03)", border: "1px solid rgba(212,58,69,0.10)" }}>
+                      <div style={{ padding: "16px 20px", borderRadius: 12, background: "rgba(212,58,69,0.03)", border: "1px solid rgba(212,58,69,0.10)", overflow: "hidden" }}>
                         <p style={{ fontSize: 11, fontWeight: 700, color: "#D43A45", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 10px" }}>Risiken dieser Konstellation</p>
                         <ul style={{ margin: 0, paddingLeft: 16, listStyleType: "none" }}>
                           {result.constellationRisks.map((r, i) => (
@@ -715,7 +721,7 @@ export default function SollIstBericht() {
                 </div>
                   );
                 })()}
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{result.dominanceShiftText}</p>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left", wordBreak: "break-word", overflowWrap: "break-word" } as React.CSSProperties} lang="de">{result.dominanceShiftText}</p>
               </div>
 
               <div style={sep} data-testid="section-comparison-bars">
@@ -850,9 +856,11 @@ export default function SollIstBericht() {
                             </div>
                             <span style={{ fontSize: 10, fontWeight: 700, color: sevCol, textTransform: "uppercase", letterSpacing: "0.05em" }}>{severityLabel(area.severity)}</span>
                           </div>
-                          <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0 }}>
-                            {area.roleNeed} {area.candidatePattern} {area.risk}
-                          </p>
+                          <div style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", wordBreak: "break-word", overflowWrap: "break-word" }}>
+                            <p style={{ margin: "0 0 4px", fontWeight: 600, color: "#1D1D1F" }}>{area.roleNeed}</p>
+                            <p style={{ margin: "0 0 4px" }}>{area.candidatePattern}</p>
+                            <p style={{ margin: 0, fontStyle: "italic", color: "#6E6E73" }}>{area.risk}</p>
+                          </div>
                         </div>
                       </div>
                     );
@@ -863,19 +871,19 @@ export default function SollIstBericht() {
               <div style={sep} data-testid="section-stress-behavior">
                 <SectionHead num={4} icon={Flame} title="Verhalten unter Druck" iconColor="#FF3B30" />
                 <div className="print-single-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                  <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF950008", border: "1px solid #FF950018" }}>
+                  <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF950008", border: "1px solid #FF950018", overflow: "hidden" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                      <AlertCircle style={{ width: 14, height: 14, color: "#FF9500" }} />
+                      <AlertCircle style={{ width: 14, height: 14, color: "#FF9500", flexShrink: 0 }} />
                       <p style={{ fontSize: 12, fontWeight: 700, color: "#FF9500", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>Kontrollierter Druck</p>
                     </div>
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }} lang="de">{result.stressBehavior.controlledPressure}</p>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang="de">{result.stressBehavior.controlledPressure}</p>
                   </div>
-                  <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF3B3008", border: "1px solid #FF3B3018" }}>
+                  <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF3B3008", border: "1px solid #FF3B3018", overflow: "hidden" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                      <AlertTriangle style={{ width: 14, height: 14, color: "#FF3B30" }} />
+                      <AlertTriangle style={{ width: 14, height: 14, color: "#FF3B30", flexShrink: 0 }} />
                       <p style={{ fontSize: 12, fontWeight: 700, color: "#FF3B30", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>Unkontrollierter Stress</p>
                     </div>
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }} lang="de">{result.stressBehavior.uncontrolledStress}</p>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang="de">{result.stressBehavior.uncontrolledStress}</p>
                   </div>
                 </div>
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "14px 0 0", fontStyle: "italic" }} lang="de">
@@ -895,7 +903,7 @@ export default function SollIstBericht() {
                           <div style={{ position: "absolute", left: -22, top: 14, width: 10, height: 10, borderRadius: 5, background: phaseCol, boxShadow: `0 0 0 3px ${phaseCol}20` }} />
                           <div style={{ padding: "12px 16px", borderRadius: 12, background: `${phaseCol}06`, border: `1px solid ${phaseCol}15` }}>
                             <p style={{ fontSize: 12, fontWeight: 700, color: phaseCol, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>{phase.label} <span style={{ fontWeight: 500, textTransform: "none", letterSpacing: "0" }}>{phase.period}</span></p>
-                            <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }}>{phase.text}</p>
+                            <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }}>{phase.text}</p>
                           </div>
                         </div>
                       );
@@ -954,7 +962,7 @@ export default function SollIstBericht() {
                         <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < rDev ? rGaugeCol : "rgba(0,0,0,0.08)" }} />
                       ))}
                     </div>
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{result.developmentText}</p>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left", wordBreak: "break-word", overflowWrap: "break-word" } as React.CSSProperties} lang="de">{result.developmentText}</p>
 
                     <div style={{ marginTop: 20, padding: "14px 18px", borderRadius: 12, background: `${rFitColor}08`, border: `1px solid ${rFitColor}18` }}>
                       <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>Managementeinschätzung</p>
@@ -1044,7 +1052,7 @@ export default function SollIstBericht() {
                         </div>
                       </div>
                     </div>
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de" data-testid="text-final-rating-text">{result.finalText}</p>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left", wordBreak: "break-word", overflowWrap: "break-word" } as React.CSSProperties} lang="de" data-testid="text-final-rating-text">{result.finalText}</p>
                   </div>
                 );
               })()}
@@ -1078,6 +1086,12 @@ export default function SollIstBericht() {
 
         <style>{`
           @keyframes spin { to { transform: rotate(360deg); } }
+          .pdf-export-mode .print-single-col { grid-template-columns: 1fr !important; }
+          .pdf-export-mode .print-hide-summary { break-inside: avoid; }
+          .pdf-export-mode [data-testid^="impact-detail-"] { break-inside: avoid; page-break-inside: avoid; }
+          .pdf-export-mode [data-testid^="integration-phase-"] { break-inside: avoid; page-break-inside: avoid; }
+          .pdf-export-mode [data-testid^="section-"] { break-inside: avoid; page-break-inside: avoid; }
+          .pdf-export-mode p { word-break: break-word; overflow-wrap: break-word; hyphens: auto; }
         `}</style>
       </div>
     </div>
