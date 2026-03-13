@@ -319,8 +319,6 @@ export function dominanceModeOf(tIn: Triad): DominanceResult {
     mode = "BAL_FULL";
   } else if (isBalancedTendency) {
     mode = k === "impulsiv" ? "BAL_I" : k === "intuitiv" ? "BAL_N" : "BAL_A";
-  } else if (gap2 > 5) {
-    mode = k === "impulsiv" ? "BAL_I" : k === "intuitiv" ? "BAL_N" : "BAL_A";
   } else {
     mode = "BAL_FULL";
   }
@@ -1105,9 +1103,6 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
     overallFit = "CONDITIONAL";
   }
   if (maxGapVal > 25 && !ko) {
-    overallFit = "NOT_SUITABLE";
-  }
-  if (roleIsBalFull && maxGapVal > 18 && !ko) {
     overallFit = "NOT_SUITABLE";
   }
   const secondaryFlipped = effectiveSameDom && roleDom.top2.key !== candDom.top2.key;
