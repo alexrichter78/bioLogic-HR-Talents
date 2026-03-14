@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
 import { createRoot } from "react-dom/client";
+import { flushSync } from "react-dom";
 import { AlertTriangle, Download, Loader2, ChevronLeft, ChevronDown, SlidersHorizontal, Zap, Compass, BarChart3, Triangle, Shield, Flame, Clock, TrendingUp, CheckCircle2, FileText, Award, AlertCircle } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import PdfFlatReport from "@/components/pdf-flat-report";
@@ -207,12 +208,15 @@ export default function SollIstBericht() {
       const html2pdf = (await import("html2pdf.js")).default;
 
       container = document.createElement("div");
-      container.style.cssText = "position:fixed;left:-9999px;top:0;width:800px;background:#FFF;z-index:-1;";
+      container.style.cssText = "position:absolute;left:0;top:0;width:800px;background:#FFF;z-index:-1;overflow:hidden;opacity:0;pointer-events:none;";
       document.body.appendChild(container);
 
       root = createRoot(container);
-      root.render(<PdfFlatReport result={result} roleTriad={roleTriad} candidateProfile={candidateProfile} />);
-      await new Promise(r => setTimeout(r, 200));
+      flushSync(() => {
+        root!.render(<PdfFlatReport result={result} roleTriad={roleTriad} candidateProfile={candidateProfile} />);
+      });
+      container.style.opacity = "1";
+      await new Promise(r => setTimeout(r, 100));
 
       const safeName = roleName.replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_") || "Bericht";
 
