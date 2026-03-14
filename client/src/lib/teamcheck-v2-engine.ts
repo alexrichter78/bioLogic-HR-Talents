@@ -64,11 +64,11 @@ function sortProfile(profile: Triad): { key: ComponentKey; value: number }[] {
   ].sort((a, b) => b.value - a.value);
 }
 
-function getPrimaryKey(profile: Triad): ComponentKey {
+export function getPrimaryKey(profile: Triad): ComponentKey {
   return sortProfile(profile)[0].key;
 }
 
-function getSecondaryKey(profile: Triad): ComponentKey {
+export function getSecondaryKey(profile: Triad): ComponentKey {
   return sortProfile(profile)[1].key;
 }
 
@@ -108,7 +108,7 @@ function componentBusinessName(key: ComponentKey): string {
   return variants[idx];
 }
 
-function componentBusinessNameFirst(key: ComponentKey): string {
+export function componentBusinessNameFirst(key: ComponentKey): string {
   return COMP_VARIANTS[key][0];
 }
 

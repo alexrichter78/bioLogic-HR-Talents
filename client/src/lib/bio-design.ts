@@ -58,10 +58,14 @@ export const TC_SECTION_COLORS = [
   BIO_COLORS.intuitiv,
   BIO_COLORS.impulsiv,
   BIO_COLORS.bedingt,
+  BIO_COLORS.impulsiv,
   BIO_COLORS.nichtGeeignet,
+  BIO_COLORS.analytisch,
   BIO_COLORS.geeignet,
   BIO_COLORS.nichtGeeignet,
   BIO_COLORS.analytisch,
+  BIO_COLORS.geeignet,
+  BIO_COLORS.intuitiv,
 ] as const;
 
 export function fitColor(rating: string): string {

@@ -1,7 +1,7 @@
-import type { Triad } from "./jobcheck-engine";
+import type { Triad, ComponentKey } from "./jobcheck-engine";
 import { computeTeamReport } from "./team-report-engine";
 import type { TeamReportResult } from "./team-report-engine";
-import { computeTeamCheckV2 } from "./teamcheck-v2-engine";
+import { computeTeamCheckV2, getPrimaryKey, getSecondaryKey, componentBusinessNameFirst } from "./teamcheck-v2-engine";
 import type { TeamCheckV2Result, TeamCheckV2Input, TensionItem, ImpactItem, AdviceItem } from "./teamcheck-v2-engine";
 
 export interface V3RiskPhase {
@@ -47,10 +47,37 @@ export interface TeamCheckV3Result {
 
   advice: AdviceItem[];
 
+  strukturdiagnose: StructureDiagnosis;
+  leistungswirkung: PerformanceImpact;
+  integrationsfaktor: IntegrationFactor;
+  alternativwirkung: string;
+
   teamText: string;
   personText: string;
   roleType: "leadership" | "member";
   roleLabel: string;
+}
+
+export interface StructureDiagnosis {
+  teamDominant: string;
+  personDominant: string;
+  teamSecondary: string;
+  personSecondary: string;
+  strukturwirkung: string;
+}
+
+export interface PerformanceImpact {
+  entscheidungsqualitaet: string;
+  umsetzungsgeschwindigkeit: string;
+  prioritaetensetzung: string;
+  wirkungAufErgebnisse: string;
+}
+
+export interface IntegrationFactor {
+  integrationsfaehigkeit: string;
+  integrationsdauer: string;
+  fuehrungsaufwand: string;
+  stabilisierung: string;
 }
 
 export interface TeamCheckV3Input {
@@ -104,6 +131,11 @@ export function computeTeamCheckV3(input: TeamCheckV3Input): TeamCheckV3Result {
 
   const mergedReasons = mergeReasons(v2.reasons, v1);
 
+  const strukturdiagnose = buildStrukturdiagnose(input.teamProfile, input.personProfile, v2.roleType);
+  const leistungswirkung = buildLeistungswirkung(input.teamProfile, input.personProfile);
+  const integrationsfaktor = buildIntegrationsfaktor(input.teamProfile, input.personProfile, v2.passung, steuerungsaufwand);
+  const alternativwirkung = buildAlternativwirkung(input.teamProfile, input.personProfile);
+
   return {
     roleTitle: input.roleTitle,
     passung: v2.passung,
@@ -135,6 +167,11 @@ export function computeTeamCheckV3(input: TeamCheckV3Input): TeamCheckV3Result {
     risks: v2.risks,
 
     advice: v2.advice,
+
+    strukturdiagnose,
+    leistungswirkung,
+    integrationsfaktor,
+    alternativwirkung,
 
     teamText: v2.teamText,
     personText: v2.personText,
@@ -305,4 +342,143 @@ function buildRiskTimeline(v2: TeamCheckV2Result, v1: TeamReportResult, _input: 
   }
 
   return phases;
+}
+
+const ENTSCHEIDUNGSLOGIK: Record<ComponentKey, string> = {
+  impulsiv: "unmittelbarer Wirkung und schneller Umsetzung",
+  intuitiv: "Abstimmung, Einbindung und gemeinsamer Orientierung",
+  analytisch: "Struktur, Genauigkeit und fundierter Analyse",
+};
+
+function buildStrukturdiagnose(teamProfile: Triad, personProfile: Triad, roleType: string): StructureDiagnosis {
+  const teamPrimary = getPrimaryKey(teamProfile);
+  const personPrimary = getPrimaryKey(personProfile);
+  const teamSecondary = getSecondaryKey(teamProfile);
+  const personSecondary = getSecondaryKey(personProfile);
+
+  const teamDom = componentBusinessNameFirst(teamPrimary);
+  const personDom = componentBusinessNameFirst(personPrimary);
+  const teamSec = componentBusinessNameFirst(teamSecondary);
+  const personSec = componentBusinessNameFirst(personSecondary);
+
+  let strukturwirkung: string;
+  if (teamPrimary === personPrimary) {
+    strukturwirkung = "Treffen gleiche Dominanzstrukturen aufeinander, verstärkt sich die bestehende Arbeitslogik. Das stärkt Stabilität und Berechenbarkeit, kann aber auch dazu führen, dass alternative Perspektiven zu wenig Beachtung finden.";
+  } else {
+    strukturwirkung = "Treffen unterschiedliche Dominanzstrukturen aufeinander, entsteht im Alltag häufig eine Verschiebung der Arbeitslogik. Das bedeutet nicht automatisch, dass die Konstellation problematisch ist. Unterschiede können auch eine Ergänzung darstellen. Entscheidend ist jedoch, ob die unterschiedlichen Arbeitslogiken bewusst geführt und klar eingeordnet werden.";
+  }
+
+  if (roleType === "leadership") {
+    strukturwirkung += "\n\nIn einer Führungsrolle verstärkt sich diese Wirkung zusätzlich, da die Arbeitsweise der Führungskraft Prioritäten, Entscheidungswege und Arbeitsrhythmen im Team prägt.";
+  }
+
+  return {
+    teamDominant: teamDom,
+    personDominant: personDom,
+    teamSecondary: teamSec,
+    personSecondary: personSec,
+    strukturwirkung,
+  };
+}
+
+function buildLeistungswirkung(teamProfile: Triad, personProfile: Triad): PerformanceImpact {
+  const teamPrimary = getPrimaryKey(teamProfile);
+  const personPrimary = getPrimaryKey(personProfile);
+
+  const teamLogik = ENTSCHEIDUNGSLOGIK[teamPrimary];
+  const personLogik = ENTSCHEIDUNGSLOGIK[personPrimary];
+
+  const entscheidungsqualitaet = teamPrimary === personPrimary
+    ? `Team und Person bewerten Entscheidungen aus einer ähnlichen Logik heraus: Beide achten stärker auf ${teamLogik}. Das erleichtert die Abstimmung und beschleunigt Entscheidungsprozesse.`
+    : `Unterschiedliche Arbeitslogiken führen häufig dazu, dass Entscheidungen aus verschiedenen Perspektiven bewertet werden. Während das Team stärker auf ${teamLogik} achtet, trifft die Person Entscheidungen stärker aus ${personLogik} heraus. Dadurch können Prioritäten unterschiedlich interpretiert werden.`;
+
+  let umsetzungsgeschwindigkeit: string;
+  if (personPrimary === "impulsiv") {
+    umsetzungsgeschwindigkeit = "Die Person bringt in der Regel mehr operative Bewegung in Themen. Aufgaben werden schneller angestoßen und Ergebnisse stärker eingefordert. Das kann die Leistungsdynamik im Team erhöhen, kann aber auch zu Spannungen führen, wenn Abstimmung und gemeinsame Einordnung für das Team wichtiger sind.";
+  } else if (personPrimary === "analytisch") {
+    umsetzungsgeschwindigkeit = "Die Person setzt stärker auf gründliche Vorbereitung und klare Strukturen, bevor Umsetzung startet. Das kann die Ergebnisqualität steigern, aber auch die Geschwindigkeit im Team verlangsamen, wenn schnelle Entscheidungen gefragt sind.";
+  } else {
+    umsetzungsgeschwindigkeit = "Die Person orientiert sich an Abstimmung und gemeinsamer Ausrichtung. Umsetzung erfolgt über Einbindung statt über Tempo. Das stärkt den Teamzusammenhalt, kann aber operative Geschwindigkeit reduzieren.";
+  }
+
+  let prioritaetensetzung: string;
+  if (teamPrimary === personPrimary) {
+    prioritaetensetzung = "Team und Person gewichten Aufgaben nach ähnlichen Kriterien. Das reduziert Reibung bei der Priorisierung und erleichtert die tägliche Zusammenarbeit.";
+  } else {
+    const personFokus = personPrimary === "impulsiv" ? "unmittelbarer Wirkung und Fortschritt" : personPrimary === "analytisch" ? "Genauigkeit und langfristiger Qualität" : "gemeinsamer Abstimmung und Beziehungspflege";
+    const teamFokus = teamPrimary === "impulsiv" ? "schnellem Fortschritt und sichtbaren Ergebnissen" : teamPrimary === "analytisch" ? "strukturierter Planung und Qualitätskontrolle" : "gemeinsamer Abstimmung und langfristiger Stabilität";
+    prioritaetensetzung = `Die Person bewertet Aufgaben möglicherweise stärker nach ${personFokus}. Das Team orientiert sich hingegen stärker an ${teamFokus}. Dadurch kann sich verändern, welche Themen im Alltag Vorrang erhalten.`;
+  }
+
+  const wirkungAufErgebnisse = teamPrimary === personPrimary
+    ? "Da beide Seiten ähnliche Arbeitslogiken teilen, können Ergebnisse effizient und mit hoher Konsistenz erzielt werden. Wichtig ist, blinde Flecken bewusst zu adressieren, die durch die gemeinsame Perspektive entstehen können."
+    : "Wenn die unterschiedlichen Arbeitslogiken bewusst genutzt werden, kann die Konstellation sowohl Geschwindigkeit als auch Qualität stärken. Ohne klare Abstimmung besteht jedoch das Risiko, dass Energie eher in Abstimmungsprozesse als in Ergebnisse fließt.";
+
+  return { entscheidungsqualitaet, umsetzungsgeschwindigkeit, prioritaetensetzung, wirkungAufErgebnisse };
+}
+
+function buildIntegrationsfaktor(teamProfile: Triad, personProfile: Triad, passung: string, steuerungsaufwand: string): IntegrationFactor {
+  const distance = Math.round(
+    Math.abs(teamProfile.impulsiv - personProfile.impulsiv) +
+    Math.abs(teamProfile.intuitiv - personProfile.intuitiv) +
+    Math.abs(teamProfile.analytisch - personProfile.analytisch)
+  );
+
+  let integrationsfaehigkeit: string;
+  if (passung === "Passend") {
+    integrationsfaehigkeit = "Die Integration fällt voraussichtlich leicht, da die Arbeitslogiken von Team und Person gut zueinander passen. Erwartungen und Prioritäten sind von Beginn an ähnlich ausgerichtet.";
+  } else if (passung === "Bedingt passend") {
+    integrationsfaehigkeit = "Die Integration hängt vor allem davon ab, wie bewusst die unterschiedlichen Arbeitslogiken im Alltag geführt werden. Je klarer Erwartungen, Prioritäten und Entscheidungswege definiert sind, desto leichter gelingt die Zusammenarbeit.";
+  } else {
+    integrationsfaehigkeit = "Die Integration erfordert aktive Steuerung und bewusste Begleitung. Ohne klare Orientierung und regelmässige Abstimmung besteht das Risiko, dass Reibung und Frustration die Zusammenarbeit belasten.";
+  }
+
+  let integrationsdauer: string;
+  if (distance <= 20) {
+    integrationsdauer = "Bei dieser Profilkonstellation kann die Integration vergleichsweise schnell gelingen. Ein stabiler gemeinsamer Arbeitsrhythmus kann sich bereits innerhalb weniger Wochen entwickeln.";
+  } else if (distance <= 40) {
+    integrationsdauer = "Bei sichtbaren Strukturunterschieden benötigt ein Team in der Regel mehrere Monate, um einen stabilen gemeinsamen Arbeitsrhythmus zu entwickeln. In dieser Zeit sind klare Orientierung und regelmässige Abstimmung besonders wichtig.";
+  } else {
+    integrationsdauer = "Bei deutlichen Strukturunterschieden muss mit einer Integrationsphase von mindestens 3 bis 6 Monaten gerechnet werden. In dieser Zeit braucht es engmaschige Führung, klare Vereinbarungen und regelmässige Reflexion.";
+  }
+
+  let fuehrungsaufwand: string;
+  if (steuerungsaufwand === "gering") {
+    fuehrungsaufwand = "Der Führungsaufwand bleibt überschaubar. Es reicht, klare Erwartungen zu setzen und die Einarbeitung begleitend zu unterstützen.";
+  } else if (steuerungsaufwand === "mittel") {
+    fuehrungsaufwand = "Je stärker sich Team- und Personenprofil unterscheiden, desto wichtiger wird aktive Führung. Führung bedeutet in diesem Zusammenhang vor allem, Erwartungen zu klären, Prioritäten sichtbar zu machen und Entscheidungsprozesse transparent zu gestalten.";
+  } else {
+    fuehrungsaufwand = "Der Führungsaufwand ist hoch. Ohne aktive, bewusste Steuerung der unterschiedlichen Arbeitslogiken werden Spannungen und Missverständnisse im Alltag schnell zur Belastung für alle Beteiligten.";
+  }
+
+  let stabilisierung: string;
+  if (passung === "Passend") {
+    stabilisierung = "Eine bewusste Integration kann dazu führen, dass die bestehende Teamstabilität erhalten bleibt und gleichzeitig neue Impulse aufgenommen werden.";
+  } else {
+    stabilisierung = "Eine bewusste Integration kann dazu führen, dass neue Stärken in das Team eingebracht werden, ohne die bestehende Teamstabilität zu gefährden. Ohne diese bewusste Steuerung steigt das Risiko dauerhafter Spannungen im Arbeitsalltag.";
+  }
+
+  return { integrationsfaehigkeit, integrationsdauer, fuehrungsaufwand, stabilisierung };
+}
+
+function buildAlternativwirkung(teamProfile: Triad, personProfile: Triad): string {
+  const personPrimary = getPrimaryKey(personProfile);
+  const teamPrimary = getPrimaryKey(teamProfile);
+  const personBereich = componentBusinessNameFirst(personPrimary);
+
+  const lines: string[] = [];
+
+  lines.push("Ohne die aktuelle Besetzung bleibt die bestehende Arbeitslogik des Teams weitgehend stabil. Entscheidungswege, Zusammenarbeit und Arbeitsrhythmus verändern sich nur geringfügig.");
+
+  lines.push("Gleichzeitig bleiben auch bestehende Stärken und Schwächen des Teams unverändert bestehen.");
+
+  if (teamPrimary === personPrimary) {
+    lines.push(`Die neue Besetzung verstärkt die bestehende Arbeitslogik des Teams im Bereich ${personBereich}. Dadurch wird das vorhandene Muster gefestigt, aber auch einseitiger.`);
+  } else {
+    lines.push(`Die neue Besetzung bringt eine andere Arbeitslogik in das System ein, insbesondere im Bereich ${personBereich}. Dadurch können neue Impulse entstehen, insbesondere in Bereichen, in denen das Team bislang weniger stark ausgeprägt ist.`);
+  }
+
+  lines.push("Ob diese Veränderung zu einer nachhaltigen Verbesserung führt, hängt massgeblich davon ab, wie bewusst die unterschiedlichen Arbeitsweisen im Alltag gesteuert werden.");
+
+  return lines.join("\n\n");
 }
