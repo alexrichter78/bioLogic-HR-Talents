@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
-import { buildPdfHtml } from "@/lib/pdf-html-builder";
+import { buildAndSavePdf } from "@/lib/pdf-direct-builder";
 import { AlertTriangle, Download, Loader2, ChevronLeft, ChevronDown, SlidersHorizontal, Zap, Compass, BarChart3, Triangle, Shield, Flame, Clock, TrendingUp, CheckCircle2, FileText, Award, AlertCircle } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { dominanceModeOf, labelComponent } from "@/lib/jobcheck-engine";
@@ -200,41 +200,12 @@ export default function SollIstBericht() {
   const exportPdf = useCallback(async () => {
     if (!result || isExportingPdf || !roleTriad) return;
     setIsExportingPdf(true);
-    let container: HTMLDivElement | null = null;
     try {
-      const html2pdf = (await import("html2pdf.js")).default;
-
-      container = document.createElement("div");
-      container.style.cssText = "position:fixed;left:0;top:0;width:800px;background:#FFFFFF;z-index:99999;pointer-events:none;overflow:auto;";
-      container.innerHTML = buildPdfHtml(result, roleTriad, candidateProfile);
-      document.body.appendChild(container);
-
-      await new Promise(r => setTimeout(r, 100));
-      console.log("[PDF] container size:", container.scrollWidth, "x", container.scrollHeight, "children:", container.childNodes.length);
-
       const safeName = roleName.replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_") || "Bericht";
-
-      await html2pdf().set({
-        margin: [10, 10, 10, 10],
-        filename: `Passungsbericht_${safeName}.pdf`,
-        image: { type: "jpeg", quality: 0.95 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: "#FFFFFF",
-          logging: true,
-          windowWidth: 800,
-          scrollX: 0,
-          scrollY: 0,
-        },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        pagebreak: { mode: ["css", "legacy"] },
-      }).from(container).save();
+      await buildAndSavePdf(result, roleTriad, candidateProfile, `Passungsbericht_${safeName}.pdf`);
     } catch (err) {
       console.error("PDF export failed:", err);
     } finally {
-      if (container && container.parentNode) container.parentNode.removeChild(container);
       setIsExportingPdf(false);
     }
   }, [isExportingPdf, roleName, result, roleTriad, candidateProfile]);
