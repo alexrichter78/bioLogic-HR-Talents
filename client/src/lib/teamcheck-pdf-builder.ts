@@ -297,71 +297,103 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
   y = headerH + 8;
 
   const tcCol = (i: number): RGB => hexToRgb(TC_SECTION_COLORS[i] || BIO_COLORS.analytisch);
+  const rCol = result.integrationsrisiko === "gering" ? C.green : result.integrationsrisiko === "mittel" ? C.amber : C.red;
 
-  sectionHead(1, "Systemstatus", tcCol(0));
-
-  const metaItems = [
-    { label: "Rolle", value: result.roleTitle || "–" },
-    { label: "Gesamtpassung", value: result.passung },
-    { label: "Systemwirkung", value: result.systemwirkung },
-    { label: "Teamprofil", value: result.teamLabel },
-    { label: "Personenprofil", value: result.personLabel },
-    { label: "Steuerungsaufwand", value: result.steuerungsaufwand },
+  labelTag("SYSTEMSTATUS");
+  const statusItems = [
+    { label: "Gesamtpassung", value: result.passung, color: pCol },
+    { label: "Systemwirkung", value: result.systemwirkung, color: C.black },
+    { label: "Steuerungsaufwand", value: result.steuerungsaufwand, color: sCol },
+    { label: "Integrationsrisiko", value: result.integrationsrisiko, color: rCol },
   ];
-  const metaColW = CW / 3;
-  for (let i = 0; i < metaItems.length; i++) {
-    const col = Math.floor(i % 3);
-    if (col === 0) checkPage(14);
-    const mx = ML + col * metaColW + 1;
-    const mw = metaColW - 2;
-    const my = y + Math.floor(i / 3) * 13;
-    bgBox(mx, my, mw, 11, C.bg, C.lineFaint);
+  const statusColW = CW / 4;
+  for (let i = 0; i < statusItems.length; i++) {
+    const mx = ML + i * statusColW + 1;
+    const mw = statusColW - 2;
+    bgBox(mx, y, mw, 11, C.bg, C.lineFaint);
     doc.setFontSize(6);
     doc.setFont("helvetica", "bold");
     setC(C.light);
-    doc.text(metaItems[i].label.toUpperCase(), mx + 4, my + 4);
+    doc.text(statusItems[i].label.toUpperCase(), mx + 3, y + 4);
     doc.setFontSize(8.5);
     doc.setFont("helvetica", "bold");
-    const itemColor = metaItems[i].label === "Gesamtpassung" ? pCol
-      : metaItems[i].label === "Steuerungsaufwand" ? sCol
-      : C.black;
-    setC(itemColor);
-    doc.text(metaItems[i].value, mx + 4, my + 8.5);
+    setC(statusItems[i].color);
+    doc.text(statusItems[i].value, mx + 3, y + 8.5);
   }
-  y += Math.ceil(metaItems.length / 3) * 13 + 4;
+  y += 15;
 
-  separator(30);
-
-  sectionHead(2, "Managementfazit", tcCol(1));
-  printText(result.managementFazit, ML, CW, 8.5, C.dark, 4.3);
-
-  separator(40);
-
-  sectionHead(3, "Strukturdiagnose", tcCol(2));
-  printText("Die Strukturdiagnose beschreibt, wie die grundlegende Arbeitslogik der Person im Verhältnis zum bestehenden Team aufgebaut ist.", ML, CW, 8.5, C.mid, 4.3);
-  y += 4;
-
-  labelTag("DOMINANZSTRUKTUR");
-  printText(`Das Team wird aktuell hauptsächlich über ${result.strukturdiagnose.teamDominant} geprägt. Die Person arbeitet hingegen primär über ${result.strukturdiagnose.personDominant}.`, ML, CW, 8.5, C.dark, 4.3);
-  y += 2;
-  printText("Damit unterscheiden sich die grundlegenden Ausgangspunkte, aus denen Entscheidungen getroffen, Prioritäten gesetzt und Themen vorangetrieben werden.", ML, CW, 8.5, C.mid, 4.3);
-  y += 4;
-
-  labelTag("SEKUNDÄRSTRUKTUR");
-  printText(`Beim Team liegt der zweite Schwerpunkt auf ${result.strukturdiagnose.teamSecondary}. Bei der Person liegt er auf ${result.strukturdiagnose.personSecondary}.`, ML, CW, 8.5, C.dark, 4.3);
-  y += 2;
-  printText("Diese Reihenfolge beeinflusst, wie Entscheidungen vorbereitet, abgestimmt und umgesetzt werden.", ML, CW, 8.5, C.mid, 4.3);
-  y += 4;
-
-  labelTag("STRUKTURWIRKUNG");
-  result.strukturdiagnose.strukturwirkung.split("\n\n").forEach(p => {
-    printText(p, ML, CW, 8.5, C.dark, 4.3);
-    y += 2;
+  labelTag("SYSTEMÜBERBLICK");
+  const overviewItems = [
+    { label: "Teamprofil", value: result.teamLabel },
+    { label: "Personenprofil", value: result.personLabel },
+    { label: "Team–Person-Abweichung", value: `${result.teamPersonAbweichung} Punkte` },
+  ];
+  overviewItems.forEach(item => {
+    checkPage(6);
+    doc.setFontSize(7.5);
+    doc.setFont("helvetica", "normal");
+    setC(C.mid);
+    doc.text(item.label, ML, y);
+    doc.setFont("helvetica", "bold");
+    const valCol = item.label === "Team–Person-Abweichung"
+      ? (result.teamPersonAbweichung > 40 ? C.red : result.teamPersonAbweichung > 20 ? C.amber : C.green)
+      : C.black;
+    setC(valCol);
+    doc.text(item.value, PW - MR, y, { align: "right" });
+    y += 5;
   });
+  y += 2;
+
+  labelTag("STRUKTURKONSTELLATION");
+  doc.setFontSize(7.5);
+  doc.setFont("helvetica", "normal");
+  setC(C.mid);
+  doc.text("Dominanz Team", ML, y);
+  doc.setFont("helvetica", "bold");
+  setC(C.black);
+  doc.text(result.strukturdiagnose.teamDominant, PW - MR, y, { align: "right" });
+  y += 5;
+  doc.setFont("helvetica", "normal");
+  setC(C.mid);
+  doc.text("Dominanz Person", ML, y);
+  doc.setFont("helvetica", "bold");
+  setC(C.black);
+  doc.text(result.strukturdiagnose.personDominant, PW - MR, y, { align: "right" });
+  y += 5;
+  labelTag("STRUKTURWIRKUNG");
+  printText(result.strukturdiagnose.strukturwirkung.split("\n\n")[0], ML, CW, 8, C.dark, 4);
+  y += 3;
+
+  labelTag("MANAGEMENTKURZFAZIT");
+  setF(pCol);
+  doc.roundedRect(ML, y - 1, 1.5, 0.1, 0, 0, "F");
+  doc.rect(ML, y - 1, 1.5, 20, "F");
+  doc.roundedRect(ML, y - 1, 1.5, 20, 0.5, 0.5, "F");
+  printText(result.managementFazit, ML + 4, CW - 4, 8.5, C.dark, 4.3);
+  y += 3;
+
+  labelTag("INTEGRATIONSFAKTOR");
+  const intPairs = [
+    { label: "Integrationsdauer", value: result.integrationsfaktor.integrationsdauer },
+    { label: "Führungsaufwand", value: result.steuerungsaufwand },
+    { label: "Erfolgsfaktor", value: result.erfolgsfaktor },
+  ];
+  intPairs.forEach(item => {
+    checkPage(6);
+    doc.setFontSize(7.5);
+    doc.setFont("helvetica", "normal");
+    setC(C.mid);
+    doc.text(item.label, ML, y);
+    doc.setFont("helvetica", "bold");
+    setC(C.black);
+    doc.text(item.value, PW - MR, y, { align: "right" });
+    y += 5;
+  });
+  y += 2;
 
   separator(30);
 
-  sectionHead(4, "Warum dieses Ergebnis", tcCol(3));
+  sectionHead(2, "Warum dieses Ergebnis", tcCol(0));
   result.reasonLines.forEach(r => {
     checkPage(6);
     dot(ML, y, pCol);
@@ -371,7 +403,7 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
 
   separator(50);
 
-  sectionHead(5, "Systemwirkung", tcCol(4));
+  sectionHead(3, "Systemwirkung", tcCol(1));
   result.systemwirkungText.split("\n\n").forEach(p => {
     printText(p, ML, CW, 8.5, C.dark, 4.3);
     y += 2;
@@ -390,7 +422,7 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
 
   separator(60);
 
-  sectionHead(6, "Strukturvergleich", tcCol(5));
+  sectionHead(4, "Strukturvergleich", tcCol(2));
 
   const barMaxW = 55;
   const barH = 5.5;
@@ -478,7 +510,7 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
 
   separator(40);
 
-  sectionHead(7, "Team-Spannungsanalyse", tcCol(6));
+  sectionHead(5, "Team-Spannungsanalyse", tcCol(3));
   result.tension.forEach((t, idx) => {
     checkPage(30);
     doc.setFontSize(9);
@@ -517,7 +549,7 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
 
   separator(30);
 
-  sectionHead(8, "Auswirkungen im Arbeitsalltag", tcCol(7));
+  sectionHead(6, "Auswirkungen im Arbeitsalltag", tcCol(4));
   result.impacts.forEach((imp, idx) => {
     checkPage(14);
     doc.setFontSize(9);
@@ -535,7 +567,7 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
 
   separator(30);
 
-  sectionHead(9, "Auswirkungen auf Leistung und Ergebnisse", tcCol(8));
+  sectionHead(7, "Auswirkungen auf Leistung und Ergebnisse", tcCol(5));
   const leistungItems = [
     { label: "Entscheidungsqualität", text: result.leistungswirkung.entscheidungsqualitaet },
     { label: "Umsetzungsgeschwindigkeit", text: result.leistungswirkung.umsetzungsgeschwindigkeit },
@@ -559,7 +591,7 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
 
   separator(60);
 
-  sectionHead(10, "Verhalten unter Druck", tcCol(9));
+  sectionHead(8, "Verhalten unter Druck", tcCol(6));
   checkPage(14);
 
   setF(C.amberLight);
@@ -592,7 +624,7 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
 
   separator(50);
 
-  sectionHead(11, "Risikoentwicklung über Zeit", tcCol(10));
+  sectionHead(9, "Risikoentwicklung über Zeit", tcCol(7));
   result.riskTimeline.forEach((phase, i) => {
     const phaseCol = i === 0 ? C.amber : i === 1 ? C.blue : C.green;
     const phaseBg = i === 0 ? C.amberLight : i === 1 ? [232, 240, 254] as RGB : C.greenLight;
@@ -617,33 +649,7 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
 
   separator(30);
 
-  sectionHead(12, "Integrationsfaktor", tcCol(11));
-  printText("Neben der strukturellen Passung ist entscheidend, wie gut sich die Person in das bestehende Teamgefüge integrieren kann.", ML, CW, 8.5, C.mid, 4.3);
-  y += 4;
-  const integItems = [
-    { label: "Integrationsfähigkeit", text: result.integrationsfaktor.integrationsfaehigkeit },
-    { label: "Integrationsdauer", text: result.integrationsfaktor.integrationsdauer },
-    { label: "Führungsaufwand", text: result.integrationsfaktor.fuehrungsaufwand },
-    { label: "Stabilisierung des Systems", text: result.integrationsfaktor.stabilisierung },
-  ];
-  integItems.forEach((item, idx) => {
-    checkPage(14);
-    doc.setFontSize(9);
-    doc.setFont("helvetica", "bold");
-    setC(C.black);
-    doc.text(item.label, ML, y);
-    y += 5;
-    printText(item.text, ML, CW, 8.5, C.dark, 4.3);
-    if (idx < integItems.length - 1) {
-      y += 2;
-      hline(ML, y, ML + CW, C.lineFaint);
-      y += 4;
-    }
-  });
-
-  separator(30);
-
-  sectionHead(13, "Chancen", tcCol(12));
+  sectionHead(10, "Chancen", tcCol(8));
   result.chances.forEach(c => {
     checkPage(6);
     dot(ML, y, C.green);
@@ -653,7 +659,7 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
 
   separator(30);
 
-  sectionHead(14, "Risiken", tcCol(13));
+  sectionHead(11, "Risiken", tcCol(9));
   result.risks.forEach(r => {
     checkPage(6);
     dot(ML, y, C.red);
@@ -663,7 +669,7 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
 
   separator(30);
 
-  sectionHead(15, "Handlungsempfehlung", tcCol(14));
+  sectionHead(12, "Handlungsempfehlung", tcCol(10));
   result.advice.forEach((a, idx) => {
     checkPage(14);
     doc.setFontSize(9);
@@ -681,7 +687,7 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
 
   separator(30);
 
-  sectionHead(16, "Alternativwirkung", tcCol(15));
+  sectionHead(13, "Alternativwirkung", tcCol(11));
   printText("Neben der Frage, wie sich die Besetzung auf das Team auswirkt, ist auch relevant, welche Wirkung ohne diese Besetzung bestehen bleibt.", ML, CW, 8.5, C.mid, 4.3);
   y += 4;
   result.alternativwirkung.split("\n\n").forEach(p => {

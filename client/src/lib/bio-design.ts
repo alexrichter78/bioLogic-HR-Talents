@@ -51,8 +51,6 @@ export const SECTION_COLORS = {
 
 export const TC_SECTION_COLORS = [
   BIO_COLORS.analytisch,
-  BIO_COLORS.geeignet,
-  BIO_COLORS.intuitiv,
   BIO_COLORS.impulsiv,
   BIO_COLORS.analytisch,
   BIO_COLORS.intuitiv,
@@ -64,7 +62,6 @@ export const TC_SECTION_COLORS = [
   BIO_COLORS.geeignet,
   BIO_COLORS.nichtGeeignet,
   BIO_COLORS.analytisch,
-  BIO_COLORS.geeignet,
   BIO_COLORS.intuitiv,
 ] as const;
 

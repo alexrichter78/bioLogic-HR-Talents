@@ -1,0 +1,155 @@
+Seite 1 muss für Führungskräfte in 10 Sekunden verständlich sein.
+Die meisten Entscheider lesen nur diese Seite vollständig. Der Rest wird nur überflogen.
+
+Deshalb sollte Seite 1 eine Executive Decision Page sein.
+
+Ziel:
+
+Entscheidung sichtbar machen
+
+Risiko sichtbar machen
+
+Wirkung sichtbar machen
+
+Details erst danach
+
+Ich zeige dir zuerst die ideale Struktur, danach den konkreten Text für deinen Bericht.
+
+IDEALE STRUKTUR SEITE 1
+
+Kopfbereich
+
+TEAMCHECK BERICHT
+Rolle + Datum
+
+SYSTEMSTATUS (Entscheidungsebene)
+
+Gesamtpassung
+Kritisch
+
+Systemwirkung
+Spannung
+
+Steuerungsaufwand
+hoch
+
+Integrationsrisiko
+hoch
+
+SYSTEMÜBERBLICK
+
+Rolle
+Key Account Manager
+
+Teamprofil
+Beziehungsfokus mit Umsetzungsanteil
+
+Personenprofil
+Handlungsfokus mit Beziehungsanteil
+
+Team–Person-Abweichung
+44 Punkte
+
+STRUKTURKONSTELLATION
+
+Dominanz Team
+Zusammenarbeit und Kommunikation
+
+Dominanz Person
+Umsetzung und Tempo
+
+Strukturwirkung
+Unterschiedliche Arbeitslogik mit klarer Veränderungswirkung im Team.
+
+MANAGEMENTKURZFAZIT
+
+Die Besetzung bringt eine deutlich andere Arbeitslogik in das bestehende Team.
+Während das Team stärker über Abstimmung und Zusammenarbeit arbeitet, setzt die Person stärker auf Umsetzung und Geschwindigkeit.
+
+In einer Führungsrolle wirkt diese Differenz besonders stark, da sie Prioritäten, Entscheidungswege und Arbeitsrhythmus im Team prägt.
+
+Ohne aktive Steuerung entstehen wahrscheinlich Reibung, Konflikte und Leistungseinbrüche.
+Mit klarer Führungsarchitektur kann die Konstellation jedoch zusätzliche Dynamik und Ergebnisorientierung in das Team bringen.
+
+INTEGRATIONSFAKTOR
+
+Integrationsdauer
+3–6 Monate
+
+Führungsaufwand
+hoch
+
+Erfolgsfaktor
+klare Prioritäten, definierte Entscheidungswege und regelmäßige Feedbackschleifen.
+
+WICHTIG: WARUM DIESE SEITE SO STARK IST
+
+Diese Seite beantwortet sofort:
+
+1️⃣ Wie kritisch ist es?
+→ Kritisch
+
+2️⃣ Warum ist es kritisch?
+→ Dominanzwechsel
+
+3️⃣ Was passiert im Team?
+→ Spannung
+
+4️⃣ Kann es funktionieren?
+→ Ja, mit Führung
+
+5️⃣ Wie aufwendig wird es?
+→ hoch
+
+Das ist exakt das, was Geschäftsführer wissen wollen.
+
+VISUELLE ANORDNUNG (SEHR WICHTIG)
+
+Seite 1 sollte 3 Blöcke haben:
+
+----------------------------------------------------
+
+TEAMCHECK BERICHT
+Key Account Manager
+
+----------------------------------------------------
+
+SYSTEMSTATUS
+
+Gesamtpassung        Kritisch
+Systemwirkung        Spannung
+Steuerungsaufwand    Hoch
+Integrationsrisiko   Hoch
+
+----------------------------------------------------
+
+SYSTEMÜBERBLICK
+
+Teamprofil           Beziehungsfokus mit Umsetzungsanteil
+Personenprofil       Handlungsfokus mit Beziehungsanteil
+Abweichung           44 Punkte
+
+----------------------------------------------------
+
+STRUKTURKONSTELLATION
+
+Dominanz Team        Zusammenarbeit / Kommunikation
+Dominanz Person      Umsetzung / Tempo
+
+Strukturwirkung
+Unterschiedliche Arbeitslogik mit klarer Veränderungswirkung.
+
+----------------------------------------------------
+
+MANAGEMENTKURZFAZIT
+
+[4–6 Zeilen Text]
+
+----------------------------------------------------
+
+INTEGRATIONSFAKTOR
+
+Integrationsdauer    3–6 Monate
+Führungsaufwand      hoch
+
+----------------------------------------------------

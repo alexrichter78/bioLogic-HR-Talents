@@ -51,6 +51,8 @@ export interface TeamCheckV3Result {
   leistungswirkung: PerformanceImpact;
   integrationsfaktor: IntegrationFactor;
   alternativwirkung: string;
+  integrationsrisiko: string;
+  erfolgsfaktor: string;
 
   teamText: string;
   personText: string;
@@ -136,6 +138,16 @@ export function computeTeamCheckV3(input: TeamCheckV3Input): TeamCheckV3Result {
   const integrationsfaktor = buildIntegrationsfaktor(input.teamProfile, input.personProfile, v2.passung, steuerungsaufwand);
   const alternativwirkung = buildAlternativwirkung(input.teamProfile, input.personProfile);
 
+  let integrationsrisiko: string;
+  if (v2.passung === "Kritisch") integrationsrisiko = "hoch";
+  else if (v2.passung === "Bedingt passend") integrationsrisiko = totalGap > 35 ? "mittel" : "gering";
+  else integrationsrisiko = "gering";
+
+  let erfolgsfaktor: string;
+  if (v2.passung === "Kritisch") erfolgsfaktor = "klare Prioritäten, definierte Entscheidungswege und regelmäßige Feedbackschleifen.";
+  else if (v2.passung === "Bedingt passend") erfolgsfaktor = "regelmäßige Abstimmung und gezielte Unterstützung in den ersten Monaten.";
+  else erfolgsfaktor = "stabile Rahmenbedingungen und kontinuierliche Aufgabenklarheit.";
+
   return {
     roleTitle: input.roleTitle,
     passung: v2.passung,
@@ -172,6 +184,8 @@ export function computeTeamCheckV3(input: TeamCheckV3Input): TeamCheckV3Result {
     leistungswirkung,
     integrationsfaktor,
     alternativwirkung,
+    integrationsrisiko,
+    erfolgsfaktor,
 
     teamText: v2.teamText,
     personText: v2.personText,

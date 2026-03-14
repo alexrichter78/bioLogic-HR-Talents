@@ -6,7 +6,7 @@ import {
   type TeamCheckV3Input,
   type TeamCheckV3Result,
 } from "@/lib/teamcheck-v3-engine";
-import { ArrowLeft, BarChart3, Users, Zap, Shield, Layers, Activity, Flame, Clock, Sparkles, AlertTriangle, CheckCircle2, Download, Loader2, Microscope, TrendingUp, UserPlus, GitCompare } from "lucide-react";
+import { ArrowLeft, Zap, Shield, Layers, Activity, Flame, Clock, Sparkles, AlertTriangle, CheckCircle2, Download, Loader2, TrendingUp, GitCompare, Users } from "lucide-react";
 import { COMP_HEX, TC_SECTION_COLORS, BIO_COLORS } from "@/lib/bio-design";
 import { buildTeamCheckPdf } from "@/lib/teamcheck-pdf-builder";
 import { useToast } from "@/hooks/use-toast";
@@ -21,6 +21,12 @@ function passungColor(p: string): string {
 function steuerColor(s: string): string {
   if (s === "gering") return BIO_COLORS.geeignet;
   if (s === "mittel") return BIO_COLORS.bedingt;
+  return BIO_COLORS.nichtGeeignet;
+}
+
+function risikoColor(r: string): string {
+  if (r === "gering") return BIO_COLORS.geeignet;
+  if (r === "mittel") return BIO_COLORS.bedingt;
   return BIO_COLORS.nichtGeeignet;
 }
 
@@ -62,7 +68,25 @@ function BarRow({ label, value, color }: { label: string; value: number; color: 
   );
 }
 
-const sectionIcons = [BarChart3, CheckCircle2, Microscope, Zap, Activity, Layers, Users, Shield, TrendingUp, Flame, Clock, UserPlus, Sparkles, AlertTriangle, CheckCircle2, GitCompare];
+function MetricBadge({ label, value, color }: { label: string; value: string; color?: string }) {
+  return (
+    <div style={{ flex: 1, minWidth: 0, padding: "14px 16px", borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}>
+      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.50)", marginBottom: 5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</div>
+      <div style={{ fontSize: 15, fontWeight: 700, color: color || "rgba(255,255,255,0.90)" }} data-testid={`v3-status-${label.toLowerCase().replace(/\s/g, "-")}`}>{value}</div>
+    </div>
+  );
+}
+
+function OverviewRow({ label, value, valueColor }: { label: string; value: string; valueColor?: string }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: "1px solid rgba(0,0,0,0.04)" }}>
+      <span style={{ fontSize: 13, fontWeight: 600, color: "#6E6E73" }}>{label}</span>
+      <span style={{ fontSize: 14, fontWeight: 700, color: valueColor || "#1D1D1F", textAlign: "right", maxWidth: "60%" }}>{value}</span>
+    </div>
+  );
+}
+
+const sectionIcons = [Zap, Activity, Layers, Users, Shield, TrendingUp, Flame, Clock, Sparkles, AlertTriangle, CheckCircle2, GitCompare];
 
 export default function TeamCheckReportV3() {
   const [, navigate] = useLocation();
@@ -114,6 +138,8 @@ export default function TeamCheckReportV3() {
 
   const pCol = passungColor(result.passung);
   const sCol = steuerColor(result.steuerungsaufwand);
+  const rCol = risikoColor(result.integrationsrisiko);
+  const abwCol = result.teamPersonAbweichung > 40 ? BIO_COLORS.nichtGeeignet : result.teamPersonAbweichung > 20 ? BIO_COLORS.bedingt : BIO_COLORS.geeignet;
   const sep = { paddingBottom: 36, marginBottom: 36 } as const;
 
   return (
@@ -145,8 +171,8 @@ export default function TeamCheckReportV3() {
         <div ref={reportRef} data-testid="v3-report-wrapper">
           <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }}>
 
-            <div style={{ background: "linear-gradient(135deg, #343A48, #2A2F3A)", padding: "32px 44px 28px", position: "relative" }} data-testid="v3-header">
-              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${pCol}, ${pCol}60, transparent)` }} />
+            {/* ─── EXECUTIVE DECISION PAGE (Header + consolidated Section 1) ─── */}
+            <div style={{ background: "linear-gradient(135deg, #343A48, #2A2F3A)", padding: "32px 44px 0", position: "relative" }} data-testid="v3-header">
 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -156,104 +182,95 @@ export default function TeamCheckReportV3() {
                 </div>
               </div>
 
-              <h1 style={{ fontSize: 26, fontWeight: 700, color: "#FFFFFF", margin: "0 0 10px", letterSpacing: "-0.02em", lineHeight: 1.2 }} data-testid="v3-title">
+              <h1 style={{ fontSize: 26, fontWeight: 700, color: "#FFFFFF", margin: "0 0 22px", letterSpacing: "-0.02em", lineHeight: 1.2 }} data-testid="v3-title">
                 {result.roleTitle || "TeamCheck"}
               </h1>
 
-              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", margin: "0 0 18px", lineHeight: 1.6 }}>
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-                  <span style={{ width: 7, height: 7, borderRadius: 4, background: COMP_HEX.analytisch, display: "inline-block", flexShrink: 0 }} />
-                  <span style={{ color: "rgba(255,255,255,0.7)", fontWeight: 500 }}>Team:</span> {result.teamLabel}
-                </span>
-                <span style={{ margin: "0 10px", color: "rgba(255,255,255,0.2)" }}>|</span>
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-                  <span style={{ width: 7, height: 7, borderRadius: 4, background: COMP_HEX.intuitiv, display: "inline-block", flexShrink: 0 }} />
-                  <span style={{ color: "rgba(255,255,255,0.7)", fontWeight: 500 }}>Person:</span> {result.personLabel}
-                </span>
-              </p>
-
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 10, background: `${pCol}18`, border: `1px solid ${pCol}30` }}>
-                  <div style={{ width: 8, height: 8, borderRadius: 4, background: pCol, boxShadow: `0 0 6px ${pCol}60` }} />
-                  <span style={{ fontSize: 13, fontWeight: 700, color: pCol }} data-testid="badge-v3-passung">{result.passung}</span>
-                </div>
-                <div style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                  <div style={{ width: 6, height: 6, borderRadius: 3, background: sCol }} />
-                  <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.65)" }}>Steuerungsaufwand: {result.steuerungsaufwand}</span>
-                </div>
-              </div>
-            </div>
-
-            <div style={{ padding: "36px 44px 48px" }}>
-
-              {/* Section 1 – Systemstatus */}
-              <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="v3-section-systemstatus">
-                <SectionHead num={1} icon={sectionIcons[0]} title="Systemstatus" iconColor={TC_SECTION_COLORS[0]} />
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" style={{ marginBottom: 16 }}>
-                  {[
-                    { label: "Rolle", value: result.roleTitle || "–" },
-                    { label: "Gesamtpassung", value: result.passung, color: pCol },
-                    { label: "Systemwirkung", value: result.systemwirkung },
-                    { label: "Teamprofil", value: result.teamLabel },
-                    { label: "Personenprofil", value: result.personLabel },
-                    { label: "Steuerungsaufwand", value: result.steuerungsaufwand, color: sCol },
-                  ].map(m => (
-                    <div key={m.label} style={{ padding: "14px 16px", borderRadius: 14, background: "linear-gradient(135deg, #f8f9fb, #f1f3f8)", border: "1px solid rgba(0,0,0,0.05)" }}>
-                      <div style={{ fontSize: 10, color: "#8E8E93", marginBottom: 4, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>{m.label}</div>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: (m as any).color || "#1D1D1F" }} data-testid={`v3-meta-${m.label.toLowerCase()}`}>{m.value}</div>
-                    </div>
-                  ))}
+              {/* SYSTEMSTATUS – 4 key metrics */}
+              <div data-testid="v3-section-systemstatus" style={{ marginBottom: 22 }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 10px" }}>Systemstatus</p>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <MetricBadge label="Gesamtpassung" value={result.passung} color={pCol} />
+                  <MetricBadge label="Systemwirkung" value={result.systemwirkung} />
+                  <MetricBadge label="Steuerungsaufwand" value={result.steuerungsaufwand} color={sCol} />
+                  <MetricBadge label="Integrationsrisiko" value={result.integrationsrisiko} color={rCol} />
                 </div>
               </div>
 
-              {/* Section 2 – Managementfazit */}
-              <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="v3-section-fazit">
-                <SectionHead num={2} icon={sectionIcons[1]} title="Managementfazit" iconColor={TC_SECTION_COLORS[1]} />
-                <div style={{ padding: "24px 28px", borderRadius: 14, background: "linear-gradient(135deg, #f8f9fb, #f1f3f8)", border: "1px solid rgba(0,0,0,0.05)", position: "relative" }}>
-                  <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, borderRadius: "14px 0 0 14px", background: `linear-gradient(180deg, ${pCol}, ${pCol}40)` }} />
-                  <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, fontWeight: 450 }} data-testid="v3-text-fazit">
-                    {result.managementFazit}
+              {/* SYSTEMÜBERBLICK */}
+              <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }} data-testid="v3-section-ueberblick">
+                <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Systemüberblick</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>Teamprofil</span>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.85)" }}>{result.teamLabel}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>Personenprofil</span>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.85)" }}>{result.personLabel}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0" }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>Team–Person-Abweichung</span>
+                    <span style={{ fontSize: 15, fontWeight: 800, color: abwCol }}>{result.teamPersonAbweichung} Punkte</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* STRUKTURKONSTELLATION */}
+              <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }} data-testid="v3-section-strukturkonstellation">
+                <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Strukturkonstellation</p>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>Dominanz Team</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.85)" }}>{result.strukturdiagnose.teamDominant}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>Dominanz Person</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.85)" }}>{result.strukturdiagnose.personDominant}</span>
+                </div>
+                <div style={{ padding: "10px 0 4px" }}>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 6px" }}>Strukturwirkung</p>
+                  <p style={{ margin: 0, fontSize: 13, lineHeight: 1.75, color: "rgba(255,255,255,0.70)" }}>
+                    {result.strukturdiagnose.strukturwirkung.split(/\n\n+/)[0]}
                   </p>
                 </div>
               </div>
 
-              {/* Section 3 – Strukturdiagnose */}
-              <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="v3-section-strukturdiagnose">
-                <SectionHead num={3} icon={sectionIcons[2]} title="Strukturdiagnose" iconColor={TC_SECTION_COLORS[2]} />
-                <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: "0 0 20px" }}>
-                  Die Strukturdiagnose beschreibt, wie die grundlegende Arbeitslogik der Person im Verhältnis zum bestehenden Team aufgebaut ist. Entscheidend ist dabei nicht nur die Stärke einzelner Bereiche, sondern vor allem die Reihenfolge und Gewichtung der Schwerpunkte.
+              {/* MANAGEMENTKURZFAZIT */}
+              <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", position: "relative" }} data-testid="v3-section-fazit">
+                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, borderRadius: "12px 0 0 12px", background: `linear-gradient(180deg, ${pCol}, ${pCol}40)` }} />
+                <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Managementkurzfazit</p>
+                <p style={{ fontSize: 13, lineHeight: 1.85, color: "rgba(255,255,255,0.75)", margin: 0 }} data-testid="v3-text-fazit">
+                  {result.managementFazit}
                 </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div style={{ padding: "18px 22px", borderRadius: 14, background: "linear-gradient(135deg, #f8f9fb, #f1f3f8)", border: "1px solid rgba(0,0,0,0.05)" }}>
-                    <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>Dominanzstruktur</p>
-                    <p style={{ margin: 0, fontSize: 14, lineHeight: 1.75, color: "#48484A" }}>
-                      Das Team wird aktuell hauptsächlich über <strong>{result.strukturdiagnose.teamDominant}</strong> geprägt.
-                      Die Person arbeitet hingegen primär über <strong>{result.strukturdiagnose.personDominant}</strong>.
-                    </p>
-                    <p style={{ margin: "8px 0 0", fontSize: 13, lineHeight: 1.75, color: "#6E6E73" }}>
-                      Damit unterscheiden sich die grundlegenden Ausgangspunkte, aus denen Entscheidungen getroffen, Prioritäten gesetzt und Themen vorangetrieben werden.
-                    </p>
+              </div>
+
+              {/* INTEGRATIONSFAKTOR (compact) */}
+              <div style={{ marginBottom: 0, padding: "16px 20px 20px", borderRadius: "12px 12px 0 0", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", borderBottom: "none" }} data-testid="v3-section-integration-header">
+                <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Integrationsfaktor</p>
+                <div style={{ display: "flex", gap: 18 }}>
+                  <div>
+                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.50)", fontWeight: 600 }}>Integrationsdauer</span>
+                    <p style={{ margin: "2px 0 0", fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.85)" }}>{result.integrationsfaktor.integrationsdauer}</p>
                   </div>
-                  <div style={{ padding: "18px 22px", borderRadius: 14, background: "linear-gradient(135deg, #f8f9fb, #f1f3f8)", border: "1px solid rgba(0,0,0,0.05)" }}>
-                    <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>Sekundärstruktur</p>
-                    <p style={{ margin: 0, fontSize: 14, lineHeight: 1.75, color: "#48484A" }}>
-                      Beim Team liegt der zweite Schwerpunkt auf <strong>{result.strukturdiagnose.teamSecondary}</strong>.
-                      Bei der Person liegt er auf <strong>{result.strukturdiagnose.personSecondary}</strong>.
-                    </p>
-                    <p style={{ margin: "8px 0 0", fontSize: 13, lineHeight: 1.75, color: "#6E6E73" }}>
-                      Diese Reihenfolge beeinflusst, wie Entscheidungen vorbereitet, abgestimmt und umgesetzt werden.
-                    </p>
+                  <div>
+                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.50)", fontWeight: 600 }}>Führungsaufwand</span>
+                    <p style={{ margin: "2px 0 0", fontSize: 14, fontWeight: 700, color: sCol }}>{result.steuerungsaufwand}</p>
                   </div>
-                </div>
-                <div style={{ marginTop: 16, padding: "18px 22px", borderRadius: 14, background: `${pCol}08`, border: `1px solid ${pCol}18` }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>Strukturwirkung</p>
-                  <Paragraphs text={result.strukturdiagnose.strukturwirkung} />
+                  <div style={{ flex: 1 }}>
+                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.50)", fontWeight: 600 }}>Erfolgsfaktor</span>
+                    <p style={{ margin: "2px 0 0", fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,0.70)", lineHeight: 1.5 }}>{result.erfolgsfaktor}</p>
+                  </div>
                 </div>
               </div>
 
-              {/* Section 4 – Warum dieses Ergebnis */}
+            </div>
+            {/* ─── END EXECUTIVE DECISION PAGE ─── */}
+
+            <div style={{ padding: "36px 44px 48px" }}>
+
+              {/* Section 2 – Warum dieses Ergebnis */}
               <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="v3-section-reasons">
-                <SectionHead num={4} icon={sectionIcons[3]} title="Warum dieses Ergebnis" iconColor={TC_SECTION_COLORS[3]} />
+                <SectionHead num={2} icon={sectionIcons[0]} title="Warum dieses Ergebnis" iconColor={TC_SECTION_COLORS[0]} />
                 <ul style={{ margin: 0, paddingLeft: 16, listStyleType: "none", display: "grid", gap: 8 }}>
                   {result.reasonLines.map((r, i) => (
                     <li key={i} style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", paddingLeft: 14, position: "relative" }} data-testid={`v3-reason-${i}`}>
@@ -264,9 +281,9 @@ export default function TeamCheckReportV3() {
                 </ul>
               </div>
 
-              {/* Section 5 – Systemwirkung */}
+              {/* Section 3 – Systemwirkung */}
               <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="v3-section-systemwirkung">
-                <SectionHead num={5} icon={sectionIcons[4]} title="Systemwirkung" iconColor={TC_SECTION_COLORS[4]} />
+                <SectionHead num={3} icon={sectionIcons[1]} title="Systemwirkung" iconColor={TC_SECTION_COLORS[1]} />
                 <Paragraphs text={result.systemwirkungText} />
                 <div style={{ marginTop: 18, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   <div style={{ padding: "18px 22px", borderRadius: 14, background: "linear-gradient(135deg, #f8f9fb, #f1f3f8)", border: "1px solid rgba(0,0,0,0.05)" }}>
@@ -280,9 +297,9 @@ export default function TeamCheckReportV3() {
                 </div>
               </div>
 
-              {/* Section 6 – Strukturvergleich */}
+              {/* Section 4 – Strukturvergleich */}
               <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="v3-section-strukturvergleich">
-                <SectionHead num={6} icon={sectionIcons[5]} title="Strukturvergleich" iconColor={TC_SECTION_COLORS[5]} />
+                <SectionHead num={4} icon={sectionIcons[2]} title="Strukturvergleich" iconColor={TC_SECTION_COLORS[2]} />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div style={{ padding: "18px 22px", borderRadius: 14, background: "linear-gradient(135deg, #f8f9fb, #f1f3f8)", border: "1px solid rgba(0,0,0,0.05)" }}>
                     <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 14px" }}>Teamprofil</p>
@@ -303,15 +320,15 @@ export default function TeamCheckReportV3() {
                 </div>
                 <div style={{ marginTop: 14, padding: "14px 20px", borderRadius: 14, background: `${pCol}08`, border: `1px solid ${pCol}18`, textAlign: "center" }}>
                   <span style={{ fontSize: 13, fontWeight: 700, color: "#48484A" }}>Team–Person-Abweichung: </span>
-                  <span style={{ fontSize: 18, fontWeight: 800, color: result.teamPersonAbweichung > 40 ? BIO_COLORS.nichtGeeignet : result.teamPersonAbweichung > 20 ? BIO_COLORS.bedingt : BIO_COLORS.geeignet }} data-testid="v3-abweichung">
+                  <span style={{ fontSize: 18, fontWeight: 800, color: abwCol }} data-testid="v3-abweichung">
                     {result.teamPersonAbweichung} Punkte
                   </span>
                 </div>
               </div>
 
-              {/* Section 7 – Team-Spannungsanalyse */}
+              {/* Section 5 – Team-Spannungsanalyse */}
               <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="v3-section-tension">
-                <SectionHead num={7} icon={sectionIcons[6]} title="Team-Spannungsanalyse" iconColor={TC_SECTION_COLORS[6]} />
+                <SectionHead num={5} icon={sectionIcons[3]} title="Team-Spannungsanalyse" iconColor={TC_SECTION_COLORS[3]} />
                 <div style={{ display: "grid", gap: 14 }}>
                   {result.tension.map(t => (
                     <div key={t.key} style={{ padding: "18px 22px", borderRadius: 14, background: "linear-gradient(135deg, #f8f9fb, #f1f3f8)", border: "1px solid rgba(0,0,0,0.05)" }} data-testid={`v3-tension-${t.key}`}>
@@ -326,9 +343,9 @@ export default function TeamCheckReportV3() {
                 </div>
               </div>
 
-              {/* Section 8 – Auswirkungen im Arbeitsalltag */}
+              {/* Section 6 – Auswirkungen im Arbeitsalltag */}
               <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="v3-section-impacts">
-                <SectionHead num={8} icon={sectionIcons[7]} title="Auswirkungen im Arbeitsalltag" iconColor={TC_SECTION_COLORS[7]} />
+                <SectionHead num={6} icon={sectionIcons[4]} title="Auswirkungen im Arbeitsalltag" iconColor={TC_SECTION_COLORS[4]} />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {result.impacts.map(imp => (
                     <div key={imp.title} style={{ padding: "18px 22px", borderRadius: 14, background: "linear-gradient(135deg, #f8f9fb, #f1f3f8)", border: "1px solid rgba(0,0,0,0.05)" }} data-testid={`v3-impact-${imp.title.toLowerCase()}`}>
@@ -339,9 +356,9 @@ export default function TeamCheckReportV3() {
                 </div>
               </div>
 
-              {/* Section 9 – Auswirkungen auf Leistung und Ergebnisse */}
+              {/* Section 7 – Auswirkungen auf Leistung und Ergebnisse */}
               <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="v3-section-leistung">
-                <SectionHead num={9} icon={sectionIcons[8]} title="Auswirkungen auf Leistung und Ergebnisse" iconColor={TC_SECTION_COLORS[8]} />
+                <SectionHead num={7} icon={sectionIcons[5]} title="Auswirkungen auf Leistung und Ergebnisse" iconColor={TC_SECTION_COLORS[5]} />
                 <div style={{ display: "grid", gap: 14 }}>
                   {[
                     { label: "Entscheidungsqualität", text: result.leistungswirkung.entscheidungsqualitaet },
@@ -357,9 +374,9 @@ export default function TeamCheckReportV3() {
                 </div>
               </div>
 
-              {/* Section 10 – Verhalten unter Druck */}
+              {/* Section 8 – Verhalten unter Druck */}
               <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="v3-section-stress">
-                <SectionHead num={10} icon={sectionIcons[9]} title="Verhalten unter Druck" iconColor={TC_SECTION_COLORS[9]} />
+                <SectionHead num={8} icon={sectionIcons[6]} title="Verhalten unter Druck" iconColor={TC_SECTION_COLORS[6]} />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div style={{ padding: "18px 22px", borderRadius: 14, background: "rgba(255,149,0,0.04)", border: "1px solid rgba(255,149,0,0.12)" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
@@ -381,9 +398,9 @@ export default function TeamCheckReportV3() {
                 </p>
               </div>
 
-              {/* Section 11 – Risikoentwicklung über Zeit */}
+              {/* Section 9 – Risikoentwicklung über Zeit */}
               <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="v3-section-risktimeline">
-                <SectionHead num={11} icon={sectionIcons[10]} title="Risikoentwicklung über Zeit" iconColor={TC_SECTION_COLORS[10]} />
+                <SectionHead num={9} icon={sectionIcons[7]} title="Risikoentwicklung über Zeit" iconColor={TC_SECTION_COLORS[7]} />
                 <div style={{ position: "relative", paddingLeft: 28 }}>
                   <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
                   <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -406,30 +423,9 @@ export default function TeamCheckReportV3() {
                 </div>
               </div>
 
-              {/* Section 12 – Integrationsfaktor */}
-              <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="v3-section-integration">
-                <SectionHead num={12} icon={sectionIcons[11]} title="Integrationsfaktor" iconColor={TC_SECTION_COLORS[11]} />
-                <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: "0 0 20px" }}>
-                  Neben der strukturellen Passung ist entscheidend, wie gut sich die Person in das bestehende Teamgefüge integrieren kann.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {[
-                    { label: "Integrationsfähigkeit", text: result.integrationsfaktor.integrationsfaehigkeit },
-                    { label: "Integrationsdauer", text: result.integrationsfaktor.integrationsdauer },
-                    { label: "Führungsaufwand", text: result.integrationsfaktor.fuehrungsaufwand },
-                    { label: "Stabilisierung des Systems", text: result.integrationsfaktor.stabilisierung },
-                  ].map(item => (
-                    <div key={item.label} style={{ padding: "18px 22px", borderRadius: 14, background: "linear-gradient(135deg, #f8f9fb, #f1f3f8)", border: "1px solid rgba(0,0,0,0.05)" }} data-testid={`v3-integration-${item.label.toLowerCase().replace(/\s/g, "-")}`}>
-                      <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>{item.label}</p>
-                      <p style={{ margin: 0, fontSize: 14, lineHeight: 1.75, color: "#48484A" }}>{item.text}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Section 13 – Chancen */}
+              {/* Section 10 – Chancen */}
               <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="v3-section-chances">
-                <SectionHead num={13} icon={sectionIcons[12]} title="Chancen" iconColor={TC_SECTION_COLORS[12]} />
+                <SectionHead num={10} icon={sectionIcons[8]} title="Chancen" iconColor={TC_SECTION_COLORS[8]} />
                 <ul style={{ margin: 0, paddingLeft: 16, listStyleType: "none", display: "grid", gap: 8 }}>
                   {result.chances.map((c, i) => (
                     <li key={i} style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", paddingLeft: 14, position: "relative" }} data-testid={`v3-chance-${i}`}>
@@ -440,9 +436,9 @@ export default function TeamCheckReportV3() {
                 </ul>
               </div>
 
-              {/* Section 14 – Risiken */}
+              {/* Section 11 – Risiken */}
               <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="v3-section-risks">
-                <SectionHead num={14} icon={sectionIcons[13]} title="Risiken" iconColor={TC_SECTION_COLORS[13]} />
+                <SectionHead num={11} icon={sectionIcons[9]} title="Risiken" iconColor={TC_SECTION_COLORS[9]} />
                 <ul style={{ margin: 0, paddingLeft: 16, listStyleType: "none", display: "grid", gap: 8 }}>
                   {result.risks.map((r, i) => (
                     <li key={i} style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", paddingLeft: 14, position: "relative" }} data-testid={`v3-risk-${i}`}>
@@ -453,9 +449,9 @@ export default function TeamCheckReportV3() {
                 </ul>
               </div>
 
-              {/* Section 15 – Handlungsempfehlung */}
+              {/* Section 12 – Handlungsempfehlung */}
               <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="v3-section-advice">
-                <SectionHead num={15} icon={sectionIcons[14]} title="Handlungsempfehlung" iconColor={TC_SECTION_COLORS[14]} />
+                <SectionHead num={12} icon={sectionIcons[10]} title="Handlungsempfehlung" iconColor={TC_SECTION_COLORS[10]} />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {result.advice.map(a => (
                     <div key={a.title} style={{ padding: "18px 22px", borderRadius: 14, background: "linear-gradient(135deg, #f8f9fb, #f1f3f8)", border: "1px solid rgba(0,0,0,0.05)" }} data-testid={`v3-advice-${a.title.toLowerCase().replace(/\s/g, "-")}`}>
@@ -466,9 +462,9 @@ export default function TeamCheckReportV3() {
                 </div>
               </div>
 
-              {/* Section 16 – Alternativwirkung */}
+              {/* Section 13 – Alternativwirkung */}
               <div style={{ paddingBottom: 12 }} data-testid="v3-section-alternativ">
-                <SectionHead num={16} icon={sectionIcons[15]} title="Alternativwirkung" iconColor={TC_SECTION_COLORS[15]} />
+                <SectionHead num={13} icon={sectionIcons[11]} title="Alternativwirkung" iconColor={TC_SECTION_COLORS[11]} />
                 <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: "0 0 16px" }}>
                   Neben der Frage, wie sich die Besetzung auf das Team auswirkt, ist auch relevant, welche Wirkung ohne diese Besetzung bestehen bleibt.
                 </p>
