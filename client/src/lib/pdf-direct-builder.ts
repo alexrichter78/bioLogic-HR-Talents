@@ -1,6 +1,7 @@
 import type { SollIstResult, Severity } from "./soll-ist-engine";
 import type { ComponentKey, Triad } from "./jobcheck-engine";
 import { labelComponent } from "./jobcheck-engine";
+import { getLogoDataUrl } from "./logo-base64";
 
 const COMP_LABELS: Record<ComponentKey, string> = {
   impulsiv: "Umsetzung / Tempo",
@@ -27,36 +28,28 @@ function hexToRgb(hex: string): RGB {
   return [parseInt(h.substring(0, 2), 16), parseInt(h.substring(2, 4), 16), parseInt(h.substring(4, 6), 16)];
 }
 
-function blendRgb(c: RGB, alpha: number, bg: RGB = [255, 255, 255]): RGB {
-  return [
-    Math.round(c[0] * alpha + bg[0] * (1 - alpha)),
-    Math.round(c[1] * alpha + bg[1] * (1 - alpha)),
-    Math.round(c[2] * alpha + bg[2] * (1 - alpha)),
-  ];
-}
-
 const C = {
-  black: [29, 29, 31] as RGB,
-  dark: [72, 72, 74] as RGB,
-  mid: [110, 110, 115] as RGB,
-  light: [142, 142, 147] as RGB,
-  faint: [176, 176, 181] as RGB,
-  veryFaint: [210, 210, 215] as RGB,
-  line: [218, 218, 222] as RGB,
-  lineFaint: [238, 238, 242] as RGB,
-  bg: [247, 247, 250] as RGB,
+  black: [40, 40, 42] as RGB,
+  dark: [75, 75, 80] as RGB,
+  mid: [120, 120, 128] as RGB,
+  light: [155, 155, 162] as RGB,
+  faint: [185, 185, 192] as RGB,
+  line: [220, 220, 225] as RGB,
+  lineFaint: [240, 240, 244] as RGB,
+  bg: [248, 248, 251] as RGB,
   white: [255, 255, 255] as RGB,
-  green: [46, 139, 80] as RGB,
-  greenLight: [232, 245, 237] as RGB,
-  amber: [210, 150, 30] as RGB,
-  amberLight: [254, 246, 224] as RGB,
-  red: [200, 50, 55] as RGB,
-  redLight: [253, 232, 233] as RGB,
-  impulsiv: [196, 30, 58] as RGB,
-  intuitiv: [243, 146, 0] as RGB,
-  analytisch: [26, 93, 171] as RGB,
-  blue: [0, 113, 227] as RGB,
-  headerDark: [34, 40, 56] as RGB,
+  green: hexToRgb("#3A9A5C"),
+  greenLight: [235, 248, 240] as RGB,
+  amber: hexToRgb("#E5A832"),
+  amberLight: [255, 249, 232] as RGB,
+  red: hexToRgb("#D64045"),
+  redLight: [254, 237, 237] as RGB,
+  impulsiv: hexToRgb("#C41E3A"),
+  intuitiv: hexToRgb("#F39200"),
+  analytisch: hexToRgb("#1A5DAB"),
+  blue: hexToRgb("#1A5DAB"),
+  headerBg: [250, 250, 253] as RGB,
+  headerAccent: hexToRgb("#1A5DAB"),
 };
 
 const compColor = (k: ComponentKey): RGB => C[k];
@@ -82,6 +75,9 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   const { jsPDF } = await import("jspdf");
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
 
+  let logoDataUrl: string | null = null;
+  try { logoDataUrl = await getLogoDataUrl(); } catch (_) {}
+
   const PW = 210;
   const PH = 297;
   const ML = 16;
@@ -91,7 +87,6 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   const CW = PW - ML - MR;
   const midX = ML + CW / 2;
   let pageNum = 1;
-
   let y = MT;
 
   function setC(rgb: RGB) { doc.setTextColor(rgb[0], rgb[1], rgb[2]); }
@@ -119,9 +114,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   }
 
   function checkPage(needed: number) {
-    if (y + needed > PH - MB) {
-      newPage();
-    }
+    if (y + needed > PH - MB) { newPage(); }
   }
 
   function hline(x1: number, yy: number, x2: number, color: RGB = C.line, w = 0.3) {
@@ -148,28 +141,28 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
     return lines.length;
   }
 
-  function sectionHead(num: number, title: string, accentColor: RGB = C.headerDark) {
+  function sectionHead(num: number, title: string, accentColor: RGB = C.analytisch) {
     checkPage(16);
     y += 2;
 
-    setF(accentColor);
-    doc.roundedRect(ML, y - 4.5, CW, 9, 1.5, 1.5, "F");
+    setD(accentColor);
+    doc.setLineWidth(0.6);
+    doc.line(ML, y - 2, ML, y + 5);
 
+    setF(C.bg);
+    doc.roundedRect(ML + 3, y - 4.5, CW - 3, 9, 1.5, 1.5, "F");
+
+    setF(accentColor);
+    doc.roundedRect(ML + 5, y - 3.2, 6.5, 6.5, 1, 1, "F");
     doc.setFontSize(8);
     doc.setFont("helvetica", "bold");
     setC(C.white);
-
-    const numBg = blendRgb(C.white, 0.2, accentColor);
-    setF(numBg);
-    doc.roundedRect(ML + 3, y - 3.2, 6.5, 6.5, 1, 1, "F");
-    doc.setFontSize(8);
-    setC(C.white);
-    doc.text(String(num), ML + 6.25, y + 1, { align: "center" });
+    doc.text(String(num), ML + 8.25, y + 1, { align: "center" });
 
     doc.setFontSize(8.5);
     doc.setFont("helvetica", "bold");
-    setC(C.white);
-    doc.text(title.toUpperCase(), ML + 12, y + 1);
+    setC(C.black);
+    doc.text(title.toUpperCase(), ML + 14, y + 1);
     y += 10;
   }
 
@@ -232,35 +225,41 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   const dateStr = new Date().toLocaleDateString("de-CH", { day: "2-digit", month: "long", year: "numeric" });
   const personLabel = result.candidateName !== "Die Person" ? result.candidateName : "Person";
 
-  setF(C.headerDark);
-  doc.rect(0, 0, PW, 42, "F");
+  setF(C.white);
+  doc.rect(0, 0, PW, 44, "F");
 
-  setF(fitCol);
-  doc.rect(0, 42, PW, 1.5, "F");
+  setD(fitCol);
+  doc.setLineWidth(1.2);
+  doc.line(ML, 43, ML + CW, 43);
+
+  if (logoDataUrl) {
+    try { doc.addImage(logoDataUrl, "PNG", ML, y - 2, 32, 12); } catch (_) {}
+  }
+  y += 14;
 
   doc.setFontSize(7);
   doc.setFont("helvetica", "normal");
-  setC(blendRgb(C.white, 0.5, C.headerDark));
-  doc.text("PASSUNGSBERICHT", ML, y + 2);
-  doc.text(dateStr, PW - MR, y + 2, { align: "right" });
-  y += 9;
+  setC(C.faint);
+  doc.text("PASSUNGSBERICHT", ML, y);
+  doc.text(dateStr, PW - MR, y, { align: "right" });
+  y += 6;
 
-  doc.setFontSize(18);
+  doc.setFontSize(17);
   doc.setFont("helvetica", "bold");
-  setC(C.white);
+  setC(C.black);
   doc.text(result.roleName, ML, y);
-  y += 7;
+  y += 6;
 
   doc.setFontSize(8.5);
   doc.setFont("helvetica", "normal");
-  setC(blendRgb(C.white, 0.65, C.headerDark));
+  setC(C.mid);
   doc.text(`Rolle: ${result.roleConstellationLabel}  |  ${personLabel}: ${result.candConstellationLabel}`, ML, y);
-  y = 49;
+  y = 50;
 
   const badgeRowY = y;
   checkPage(14);
 
-  const gpBadgeW = badge(ML, badgeRowY, result.fitLabel, fitBg, fitCol);
+  badge(ML, badgeRowY, result.fitLabel, fitBg, fitCol);
   doc.setFontSize(7.5);
   doc.setFont("helvetica", "normal");
   setC(C.mid);
@@ -304,7 +303,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
 
   separator();
 
-  sectionHead(1, "Soll-Ist-Profil");
+  sectionHead(1, "Soll-Ist Profil", C.analytisch);
 
   const barMaxW = 55;
   const barH = 5.5;
@@ -325,18 +324,18 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   doc.setFontSize(9);
   doc.setFont("helvetica", "bold");
   setC(C.black);
-  doc.text("Soll-Profil", leftBoxX + boxPad, leftY);
+  doc.text("Soll-Profil ", leftBoxX + boxPad, leftY);
   doc.setFont("helvetica", "normal");
   setC(C.mid);
-  doc.text(" (Rolle)", leftBoxX + boxPad + doc.getTextWidth("Soll-Profil"), leftY);
+  doc.text("(Rolle)", leftBoxX + boxPad + doc.getTextWidth("Soll-Profil "), leftY);
   leftY += 7;
 
   doc.setFont("helvetica", "bold");
   setC(C.black);
-  doc.text("Ist-Profil", rightBoxX + boxPad, rightY);
+  doc.text("Ist-Profil ", rightBoxX + boxPad, rightY);
   doc.setFont("helvetica", "normal");
   setC(C.mid);
-  doc.text(" (Person)", rightBoxX + boxPad + doc.getTextWidth("Ist-Profil"), rightY);
+  doc.text("(Person)", rightBoxX + boxPad + doc.getTextWidth("Ist-Profil "), rightY);
   rightY += 7;
 
   const keys: ComponentKey[] = ["impulsiv", "intuitiv", "analytisch"];
@@ -353,13 +352,12 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
     drawBar(leftBoxX + boxPad + 22, leftY - 2.5, barMaxW, rv, col, barH);
     doc.setFontSize(7.5);
     doc.setFont("helvetica", "bold");
-    setC(C.white);
-    const rvStr = `${rv} %`;
     if (rv > 12) {
-      doc.text(rvStr, leftBoxX + boxPad + 22 + 3, leftY + 1.2);
+      setC(C.white);
+      doc.text(`${rv} %`, leftBoxX + boxPad + 22 + 3, leftY + 1.2);
     } else {
       setC(col);
-      doc.text(rvStr, leftBoxX + boxPad + 22 + Math.max(barH, (rv / 100) * barMaxW) + 2, leftY + 1.2);
+      doc.text(`${rv} %`, leftBoxX + boxPad + 22 + Math.max(barH, (rv / 100) * barMaxW) + 2, leftY + 1.2);
     }
     leftY += 11;
 
@@ -370,13 +368,12 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
     drawBar(rightBoxX + boxPad + 22, rightY - 2.5, barMaxW, cv, col, barH);
     doc.setFontSize(7.5);
     doc.setFont("helvetica", "bold");
-    setC(C.white);
-    const cvStr = `${cv} %`;
     if (cv > 12) {
-      doc.text(cvStr, rightBoxX + boxPad + 22 + 3, rightY + 1.2);
+      setC(C.white);
+      doc.text(`${cv} %`, rightBoxX + boxPad + 22 + 3, rightY + 1.2);
     } else {
       setC(col);
-      doc.text(cvStr, rightBoxX + boxPad + 22 + Math.max(barH, (cv / 100) * barMaxW) + 2, rightY + 1.2);
+      doc.text(`${cv} %`, rightBoxX + boxPad + 22 + Math.max(barH, (cv / 100) * barMaxW) + 2, rightY + 1.2);
     }
     rightY += 11;
   }
@@ -388,16 +385,15 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   printText(`Die grösste Abweichung liegt im Bereich ${COMP_LABELS[maxKey]}. Genau dort liegt die Kernanforderung der Rolle.`, ML, CW, 8.5, C.dark, 4.3);
   y += 2;
 
-  checkPage(30);
-  const colW = [CW * 0.38, CW * 0.16, CW * 0.16, CW * 0.18];
-  const colX = [ML, ML + colW[0], ML + colW[0] + colW[1], ML + colW[0] + colW[1] + colW[2]];
+  checkPage(24);
+  const colW = [CW * 0.5, CW * 0.2, CW * 0.2];
+  const colX = [ML, ML + colW[0], ML + colW[0] + colW[1]];
   doc.setFontSize(6.5);
   doc.setFont("helvetica", "bold");
   setC(C.light);
   doc.text("KOMPONENTE", colX[0], y);
   doc.text("ROLLE", colX[1] + colW[1], y, { align: "right" });
   doc.text("PERSON", colX[2] + colW[2], y, { align: "right" });
-  doc.text("ABWEICHUNG", colX[3] + colW[3], y, { align: "right" });
   y += 2;
   hline(ML, y, ML + CW, C.line);
   y += 5;
@@ -405,9 +401,6 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   for (const k of keys) {
     const rv = Math.round(roleTriad[k]);
     const cv = Math.round(candidateProfile[k]);
-    const diff = cv - rv;
-    const diffStr = diff > 0 ? `+${diff}` : `${diff}`;
-    const diffCol = Math.abs(diff) > 10 ? C.red : Math.abs(diff) > 5 ? C.amber : C.dark;
 
     checkPage(8);
     dot(colX[0], y, compColor(k));
@@ -419,9 +412,6 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
     setC(C.dark);
     doc.text(`${rv} %`, colX[1] + colW[1], y, { align: "right" });
     doc.text(`${cv} %`, colX[2] + colW[2], y, { align: "right" });
-    doc.setFont("helvetica", "bold");
-    setC(diffCol);
-    doc.text(diffStr, colX[3] + colW[3], y, { align: "right" });
     y += 3;
     hline(ML, y, ML + CW, C.lineFaint);
     y += 4.5;
@@ -467,7 +457,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
       : [{ key: result.candDomKey, label: COMP_LABELS[result.candDomKey] }];
   const shiftSymbol = result.candIsEqualDist ? "!=" : result.candIsDualDom ? "<>" : sameDom ? "=" : "->";
 
-  sectionHead(2, "Unterschied zwischen Rolle und Person", [60, 68, 90]);
+  sectionHead(2, "Unterschied zwischen Rolle und Person", C.intuitiv);
 
   checkPage(20);
   doc.setFontSize(7);
@@ -489,20 +479,20 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   doc.text(shiftSymbol, midX, y, { align: "center" });
 
   doc.setFontSize(9);
-  let badgeY = y;
+  let bY = y;
   candBadges.forEach(b => {
     doc.setFont("helvetica", "bold");
     setC(compColor(b.key));
-    doc.text(b.label, midX + 10, badgeY);
-    badgeY += 5.5;
+    doc.text(b.label, midX + 10, bY);
+    bY += 5.5;
   });
-  y = Math.max(y + 6, badgeY) + 3;
+  y = Math.max(y + 6, bY) + 3;
 
   printText(result.dominanceShiftText, ML, CW, 8.5, C.dark, 4.3);
 
   separator();
 
-  sectionHead(3, "Wirkung der Besetzung im Arbeitsalltag", [75, 55, 45]);
+  sectionHead(3, "Wirkung der Besetzung im Arbeitsalltag", C.impulsiv);
   result.impactAreas.forEach((area, idx) => {
     const sevCol = area.severity === "critical" ? C.red : area.severity === "warning" ? C.amber : C.green;
     const sevBg = area.severity === "critical" ? C.redLight : area.severity === "warning" ? C.amberLight : C.greenLight;
@@ -529,7 +519,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
 
   separator();
 
-  sectionHead(4, "Verhalten unter Druck", [120, 90, 40]);
+  sectionHead(4, "Verhalten unter Druck", C.amber);
   checkPage(14);
 
   setF(C.amberLight);
@@ -558,7 +548,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
 
   separator();
 
-  sectionHead(5, "Risikoprognose", [60, 80, 70]);
+  sectionHead(5, "Risikoprognose", C.analytisch);
   result.riskTimeline.forEach((phase, i) => {
     const phaseCol = i === 0 ? C.green : i === 1 ? C.amber : C.red;
     const phaseBg = i === 0 ? C.greenLight : i === 1 ? C.amberLight : C.redLight;
@@ -569,11 +559,11 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
     doc.setFontSize(8);
     doc.setFont("helvetica", "bold");
     setC(phaseCol);
-    doc.text(phase.label, ML + 3, y + 1);
+    const phLabel = phase.label;
+    doc.text(phLabel, ML + 3, y + 1);
     doc.setFont("helvetica", "normal");
     setC(C.mid);
-    const plW = doc.getTextWidth(phase.label + "  ");
-    doc.text(phase.period, ML + 3 + plW, y + 1);
+    doc.text(" - " + phase.period, ML + 3 + doc.getTextWidth(phLabel), y + 1);
     y += 8;
     printText(phase.text, ML, CW, 8.5, C.dark, 4.3);
     if (i < result.riskTimeline.length - 1) {
@@ -605,7 +595,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   const rGaugeCol = rDev === 3 ? C.green : rDev === 2 ? C.amber : C.red;
   const rFitColorRgb = hexToRgb(rFitColor);
 
-  sectionHead(6, "Gesamtbewertung", [40, 55, 75]);
+  sectionHead(6, "Gesamtbewertung", C.green);
 
   checkPage(30);
 
@@ -743,7 +733,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   separator();
 
   const finalSecNum = result.integrationsplan ? 8 : 7;
-  sectionHead(finalSecNum, "Schlussbewertung", C.headerDark);
+  sectionHead(finalSecNum, "Schlussbewertung", C.analytisch);
 
   checkPage(16);
   doc.setFontSize(8.5);
