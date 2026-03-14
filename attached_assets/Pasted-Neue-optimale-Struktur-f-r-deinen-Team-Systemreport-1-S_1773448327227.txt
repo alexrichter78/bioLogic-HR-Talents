@@ -1,0 +1,227 @@
+Neue optimale Struktur für deinen Team-Systemreport
+1. Systemstatus (Managementübersicht)
+
+Hier sieht die Führung sofort die Kernaussage.
+
+Beispiel:
+
+Team-Systemreport · Organisationsdiagnose
+
+Rolle
+Key Account Manager
+
+Gesamtpassung
+Kritisch
+
+Systemwirkung
+Polarisierung
+
+Teamprofil
+Beziehungsfokus mit Umsetzungsanteil
+
+Personenprofil
+Handlungsfokus mit Beziehungsanteil
+
+Steuerungsaufwand
+hoch
+
+2. Managementfazit
+
+3–4 Sätze maximal.
+
+Beispiel:
+
+Die Besetzung weicht deutlich vom bestehenden Teamprofil ab. Während das Team stärker über Zusammenarbeit und Kommunikation arbeitet, bringt die Person mehr Umsetzung und Tempo ein. Dadurch entstehen unterschiedliche Erwartungen an Entscheidungsrhythmus, Abstimmung und Prioritätensetzung. Ohne aktive Steuerung sind Reibung, Konflikte und Leistungseinbrüche wahrscheinlich.
+
+3. Warum dieses Ergebnis
+
+Hier erklärst du die Ursachen.
+
+3 klare Punkte.
+
+Beispiel:
+
+Arbeitslogik verschieden: Person setzt auf Tempo, Team arbeitet über Kommunikation.
+
+Deutliche Profilabweichung zwischen Team und Person (44 Punkte).
+
+Umsetzungskompetenz der Person liegt deutlich über dem Teamniveau (52 % vs. 30 %).
+
+4. Systemwirkung
+
+Jetzt kommt die systemische Analyse aus deinem TeamCheck.
+
+Überschrift:
+
+Was passiert im Team, wenn diese Besetzung kommt?
+
+Text:
+
+Die Besetzung wirkt nicht nur als einzelne Stellenbesetzung, sondern verändert die Arbeitslogik im Team. Entscheidungen werden schneller getroffen, Themen direkter vorangetrieben und Prioritäten stärker über Umsetzung definiert. Das Team arbeitet hingegen stärker über Abstimmung und Kommunikation. Diese Unterschiede erzeugen Spannung im Arbeitsalltag.
+
+5. Strukturvergleich
+
+Hier bleiben deine klaren Zahlen.
+
+Teamprofil
+
+Impulsiv
+30 %
+
+Intuitiv
+50 %
+
+Analytisch
+20 %
+
+Person
+
+Impulsiv
+52 %
+
+Intuitiv
+41 %
+
+Analytisch
+7 %
+
+Team-Person-Abweichung
+44 Punkte
+
+6. Team-Spannungsanalyse
+
+Das ist einer deiner stärksten Teile.
+
+Umsetzung / Tempo
+Team 30 %
+Person 52 %
+
+Zusammenarbeit / Kommunikation
+Team 50 %
+Person 41 %
+
+Struktur / Analyse
+Team 20 %
+Person 7 %
+
+Kurzer Text pro Bereich.
+
+7. Auswirkungen im Arbeitsalltag
+
+Hier kommt wieder dein guter Analyseblock.
+
+Unterpunkte:
+
+Entscheidungslogik
+
+Arbeitssteuerung
+
+Teamdynamik
+
+Arbeitstempo
+
+Kommunikation
+
+Kulturwirkung
+
+Das erklärt wie sich das System verändert.
+
+8. Verhalten unter Druck
+
+Zwei Abschnitte:
+
+Kontrollierter Druck
+
+Hauptlogik verstärkt sich.
+
+Unkontrollierter Stress
+
+Sekundärlogik wird sichtbar.
+
+Das ist wichtig für Führung.
+
+9. Risikoentwicklung über Zeit
+
+Sehr stark aus deinem TeamReport.
+
+0–3 Monate
+erste Reibungen
+
+3–12 Monate
+Konflikt oder Anpassung
+
+12+ Monate
+Kulturverschiebung möglich
+
+10. Chancen
+
+Nicht nur Risiko zeigen.
+
+Beispiele:
+
+höhere Umsetzungsgeschwindigkeit
+
+neue Perspektiven
+
+stärkere Ergebnisorientierung
+
+11. Risiken
+
+Beispiele:
+
+Konflikte im Arbeitsstil
+
+unterschiedliche Prioritäten
+
+Lagerbildung im Team
+
+12. Handlungsempfehlung
+
+Konkrete Führungshebel.
+
+Zum Beispiel:
+
+Kick-off mit dem Team
+
+Entscheidungsregeln definieren
+
+regelmäßige Feedbackschleifen
+
+Steuerungsmeeting
+
+Warum diese Struktur optimal ist
+
+Sie kombiniert beide Reports:
+
+TeamReport
+
+→ klare Entscheidung
+
+TeamCheck
+
+→ Systemanalyse
+
+Die Logik ist jetzt:
+
+1️⃣ Entscheidung
+2️⃣ Ursache
+3️⃣ Systemwirkung
+4️⃣ Arbeitsalltag
+5️⃣ Risikoentwicklung
+6️⃣ Steuerung
+
+Das ist genau die Struktur von hochpreisigen Organisationsdiagnosen.
+
+Mein wichtigster Rat
+
+Die ersten 3 Abschnitte sind entscheidend:
+
+Systemstatus
+
+Managementfazit
+
+Warum dieses Ergebnis
+
+Wenn diese drei perfekt sind, versteht der Leser 80 % des Reports in 30 Sekunden.
+
+Das ist entscheidend für Führungskräfte.
