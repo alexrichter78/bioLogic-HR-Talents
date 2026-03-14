@@ -6,8 +6,10 @@ import {
   type TeamCheckV3Input,
   type TeamCheckV3Result,
 } from "@/lib/teamcheck-v3-engine";
-import { ArrowLeft, BarChart3, Users, Zap, Shield, Layers, Activity, Flame, Clock, Sparkles, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, BarChart3, Users, Zap, Shield, Layers, Activity, Flame, Clock, Sparkles, AlertTriangle, CheckCircle2, Download, Loader2 } from "lucide-react";
 import { COMP_HEX, TC_SECTION_COLORS, BIO_COLORS } from "@/lib/bio-design";
+import { buildTeamCheckPdf } from "@/lib/teamcheck-pdf-builder";
+import { useToast } from "@/hooks/use-toast";
 import logoPath from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 function passungColor(p: string): string {
@@ -66,7 +68,23 @@ export default function TeamCheckReportV3() {
   const [, navigate] = useLocation();
   const [result, setResult] = useState<TeamCheckV3Result | null>(null);
   const [input, setInput] = useState<TeamCheckV3Input | null>(null);
+  const [pdfBusy, setPdfBusy] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+
+  async function handlePdf() {
+    if (!result || pdfBusy) return;
+    setPdfBusy(true);
+    try {
+      const name = (result.roleTitle || "TeamCheck").replace(/[^a-zA-Z0-9äöüÄÖÜß_-]/g, "_");
+      await buildTeamCheckPdf(result, `TeamCheck_${name}.pdf`);
+    } catch (e) {
+      console.error("PDF error", e);
+      toast({ title: "PDF-Fehler", description: "Der PDF-Export konnte nicht erstellt werden.", variant: "destructive" });
+    } finally {
+      setPdfBusy(false);
+    }
+  }
 
   useEffect(() => {
     const raw = sessionStorage.getItem("teamcheckV3Input");
@@ -104,14 +122,25 @@ export default function TeamCheckReportV3() {
 
       <div style={{ maxWidth: 820, margin: "0 auto", padding: "80px 20px 48px" }}>
 
-        <button
-          onClick={() => navigate("/team-report")}
-          style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", color: "#1A5DAB", fontWeight: 600, fontSize: 14, marginBottom: 18, padding: 0 }}
-          data-testid="button-back-v3"
-        >
-          <ArrowLeft size={16} />
-          Zurück zum TeamCheck
-        </button>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
+          <button
+            onClick={() => navigate("/team-report")}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", color: "#1A5DAB", fontWeight: 600, fontSize: 14, padding: 0 }}
+            data-testid="button-back-v3"
+          >
+            <ArrowLeft size={16} />
+            Zurück zum TeamCheck
+          </button>
+          <button
+            onClick={handlePdf}
+            disabled={pdfBusy}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#1A5DAB", border: "none", cursor: pdfBusy ? "wait" : "pointer", color: "#fff", fontWeight: 600, fontSize: 14, padding: "8px 18px", borderRadius: 8, opacity: pdfBusy ? 0.6 : 1, transition: "opacity 0.2s" }}
+            data-testid="button-pdf-v3"
+          >
+            {pdfBusy ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+            PDF
+          </button>
+        </div>
 
         <div ref={reportRef} data-testid="v3-report-wrapper">
           <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }}>
