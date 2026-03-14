@@ -1,10 +1,8 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
-import { createRoot } from "react-dom/client";
-import { flushSync } from "react-dom";
+import { buildPdfHtml } from "@/lib/pdf-html-builder";
 import { AlertTriangle, Download, Loader2, ChevronLeft, ChevronDown, SlidersHorizontal, Zap, Compass, BarChart3, Triangle, Shield, Flame, Clock, TrendingUp, CheckCircle2, FileText, Award, AlertCircle } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
-import PdfFlatReport from "@/components/pdf-flat-report";
 import { dominanceModeOf, labelComponent } from "@/lib/jobcheck-engine";
 import { computeSollIst, mapFuehrungsArt } from "@/lib/soll-ist-engine";
 import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
@@ -203,20 +201,15 @@ export default function SollIstBericht() {
     if (!result || isExportingPdf || !roleTriad) return;
     setIsExportingPdf(true);
     let container: HTMLDivElement | null = null;
-    let root: ReturnType<typeof createRoot> | null = null;
     try {
       const html2pdf = (await import("html2pdf.js")).default;
 
       container = document.createElement("div");
-      container.style.cssText = "position:absolute;left:0;top:0;width:800px;background:#FFF;z-index:-1;overflow:hidden;opacity:0;pointer-events:none;";
+      container.style.cssText = "position:absolute;left:0;top:0;width:800px;background:#FFF;z-index:-1;pointer-events:none;";
+      container.innerHTML = buildPdfHtml(result, roleTriad, candidateProfile);
       document.body.appendChild(container);
 
-      root = createRoot(container);
-      flushSync(() => {
-        root!.render(<PdfFlatReport result={result} roleTriad={roleTriad} candidateProfile={candidateProfile} />);
-      });
-      container.style.opacity = "1";
-      await new Promise(r => setTimeout(r, 100));
+      await new Promise(r => setTimeout(r, 50));
 
       const safeName = roleName.replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_") || "Bericht";
 
@@ -238,7 +231,6 @@ export default function SollIstBericht() {
     } catch (err) {
       console.error("PDF export failed:", err);
     } finally {
-      if (root) root.unmount();
       if (container && container.parentNode) container.parentNode.removeChild(container);
       setIsExportingPdf(false);
     }
