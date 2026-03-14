@@ -1,7 +1,9 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
+import { createRoot } from "react-dom/client";
 import { AlertTriangle, Download, Loader2, ChevronLeft, ChevronDown, SlidersHorizontal, Zap, Compass, BarChart3, Triangle, Shield, Flame, Clock, TrendingUp, CheckCircle2, FileText, Award, AlertCircle } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
+import PdfFlatReport from "@/components/pdf-flat-report";
 import { dominanceModeOf, labelComponent } from "@/lib/jobcheck-engine";
 import { computeSollIst, mapFuehrungsArt } from "@/lib/soll-ist-engine";
 import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
@@ -157,50 +159,6 @@ export default function SollIstBericht() {
   const [matchCheckFit, setMatchCheckFit] = useState<string | undefined>(undefined);
   const [matchCheckControl, setMatchCheckControl] = useState<string | undefined>(undefined);
 
-
-  const exportPdf = useCallback(async () => {
-    if (!reportRef.current || isExportingPdf) return;
-    setIsExportingPdf(true);
-    await new Promise(r => setTimeout(r, 100));
-    try {
-      const html2pdf = (await import("html2pdf.js")).default;
-
-      const el = reportRef.current;
-      el.classList.add("pdf-export-mode");
-      const buttons = el.querySelectorAll("button");
-      buttons.forEach(b => (b as HTMLElement).style.display = "none");
-
-      const twoColGrids = el.querySelectorAll<HTMLElement>('[style*="grid-template-columns: 1fr 1fr"]');
-      twoColGrids.forEach(g => { g.dataset.origCols = g.style.gridTemplateColumns; g.style.gridTemplateColumns = "1fr"; });
-
-      const safeName = roleName.replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_") || "Bericht";
-
-      await html2pdf().set({
-        margin: [12, 12, 12, 12],
-        filename: `Soll_Ist_Bericht_${safeName}.pdf`,
-        image: { type: "jpeg", quality: 0.95 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: "#FFFFFF",
-          logging: false,
-          windowWidth: 1000,
-        },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        pagebreak: { mode: ["avoid-all", "css", "legacy"], avoid: [".section-head", ".rounded-2xl", "[data-testid^='section-']", "[data-testid^='impact-detail-']", "[data-testid^='integration-phase-']"] },
-      }).from(el).save();
-
-      buttons.forEach(b => (b as HTMLElement).style.display = "");
-      twoColGrids.forEach(g => { g.style.gridTemplateColumns = g.dataset.origCols || "1fr 1fr"; delete g.dataset.origCols; });
-      el.classList.remove("pdf-export-mode");
-    } catch (err) {
-      console.error("PDF export failed:", err);
-    } finally {
-      setIsExportingPdf(false);
-    }
-  }, [isExportingPdf, roleName]);
-
   useEffect(() => {
     const raw = localStorage.getItem("rollenDnaState");
     if (raw) {
@@ -239,6 +197,48 @@ export default function SollIstBericht() {
     if (!roleTriad || !reportGenerated) return null;
     return computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, matchCheckFit, matchCheckControl);
   }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated, fuehrungsArt, matchCheckFit, matchCheckControl]);
+
+  const exportPdf = useCallback(async () => {
+    if (!result || isExportingPdf || !roleTriad) return;
+    setIsExportingPdf(true);
+    let container: HTMLDivElement | null = null;
+    let root: ReturnType<typeof createRoot> | null = null;
+    try {
+      const html2pdf = (await import("html2pdf.js")).default;
+
+      container = document.createElement("div");
+      container.style.cssText = "position:fixed;left:-9999px;top:0;width:800px;background:#FFF;z-index:-1;";
+      document.body.appendChild(container);
+
+      root = createRoot(container);
+      root.render(<PdfFlatReport result={result} roleTriad={roleTriad} candidateProfile={candidateProfile} />);
+      await new Promise(r => setTimeout(r, 200));
+
+      const safeName = roleName.replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_") || "Bericht";
+
+      await html2pdf().set({
+        margin: [10, 10, 10, 10],
+        filename: `Passungsbericht_${safeName}.pdf`,
+        image: { type: "jpeg", quality: 0.95 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: "#FFFFFF",
+          logging: false,
+          windowWidth: 800,
+        },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ["css", "legacy"] },
+      }).from(container).save();
+    } catch (err) {
+      console.error("PDF export failed:", err);
+    } finally {
+      if (root) root.unmount();
+      if (container && container.parentNode) container.parentNode.removeChild(container);
+      setIsExportingPdf(false);
+    }
+  }, [isExportingPdf, roleName, result, roleTriad, candidateProfile]);
 
   if (!hasRollenDna || !roleTriad) {
     return (
@@ -627,7 +627,7 @@ export default function SollIstBericht() {
                 })()}
               </div>
 
-              <div className="print-hide-summary" style={{ marginBottom: 36 }}>
+              <div style={{ marginBottom: 36 }}>
                 <div style={{ padding: "22px 26px", borderRadius: 14, background: "rgba(0,0,0,0.015)", border: "1px solid rgba(0,0,0,0.04)", overflow: "visible" }}>
                   {result.summaryText.split("\n\n").map((para, i) => (
                     <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i > 0 ? "12px 0 0" : "0", textAlign: "left", wordBreak: "break-word", overflowWrap: "break-word" } as React.CSSProperties} lang="de">
@@ -677,26 +677,7 @@ export default function SollIstBericht() {
                       : [{ key: result.candDomKey, label: COMP_LABELS[result.candDomKey] }];
                   const shiftSymbol = result.candIsEqualDist ? "≠" : result.candIsDualDom ? "⇄" : sameDom ? "=" : "→";
                   const shiftColor = result.candIsEqualDist ? "#FF3B30" : result.candIsDualDom ? "#FF9500" : sameDom ? "#34C759" : "#FF3B30";
-                  return isExportingPdf ? (
-                <div style={{ marginBottom: 14, padding: "16px 20px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                  <svg width="100%" height={candBadges.length > 1 ? 22 + candBadges.length * 30 : 60} viewBox={`0 0 460 ${candBadges.length > 1 ? 22 + candBadges.length * 30 : 60}`} preserveAspectRatio="xMidYMid meet" style={{ display: "block" }}>
-                    <text x="110" y="14" fill="#8E8E93" fontSize="10" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle" letterSpacing="0.08em">ROLLE</text>
-                    <rect x="40" y="22" width="140" height="32" rx="10" fill={`${rc}12`} stroke={`${rc}25`} strokeWidth="1" />
-                    <text x="110" y="44" fill={rc} fontSize="13" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle">{COMP_LABELS[result.roleDomKey]}</text>
-                    <text x="230" y={candBadges.length > 1 ? 14 + candBadges.length * 15 : 44} fill={shiftColor} fontSize="18" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle">{shiftSymbol}</text>
-                    <text x="350" y="14" fill="#8E8E93" fontSize="10" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle" letterSpacing="0.08em">PERSON</text>
-                    {candBadges.map((b, i) => {
-                      const bColor = BAR_HEX[b.key];
-                      return (
-                        <g key={b.key}>
-                          <rect x="280" y={22 + i * 30} width="140" height="26" rx="10" fill={`${bColor}12`} stroke={`${bColor}25`} strokeWidth="1" />
-                          <text x="350" y={40 + i * 30} fill={bColor} fontSize="12" fontWeight="700" fontFamily="system-ui, sans-serif" textAnchor="middle">{b.label}</text>
-                        </g>
-                      );
-                    })}
-                  </svg>
-                </div>
-                  ) : (
+                  return (
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 14, padding: "16px 20px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
                   <div style={{ textAlign: "center" }}>
                     <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Rolle</p>
@@ -732,89 +713,53 @@ export default function SollIstBericht() {
                 <div className="grid gap-6 grid-cols-2" style={{ marginBottom: 14 }}>
                   <div className="rounded-2xl border border-slate-200 bg-white p-6">
                     <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
-                    {isExportingPdf ? (
-                      (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+                    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                      {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                         const val = Math.round(roleTriad![k]);
                         const hex = BAR_HEX[k];
-                        const barW = Math.min(Math.max((val / 67) * 100, 6), 100);
-                        const isSmall = barW < 20;
+                        const widthPct = (val / 67) * 100;
+                        const isSmall = widthPct < 18;
                         return (
-                          <svg key={k} width="100%" height="42" viewBox="0 0 400 42" preserveAspectRatio="xMinYMid meet" style={{ display: "block" }}>
-                            <text x="0" y="25" fill="#6E6E73" fontSize="13" fontFamily="system-ui, sans-serif">{labelComponent(k)}</text>
-                            <rect x="80" y="7" width="310" height="28" rx="14" fill="rgba(0,0,0,0.06)" />
-                            <rect x="80" y="7" width={Math.max(310 * barW / 100, isSmall ? 14 : 50)} height="28" rx="14" fill={hex} />
-                            {!isSmall && <text x="92" y="25.5" fill="#FFF" fontSize="13" fontWeight="700" fontFamily="system-ui, sans-serif">{val} %</text>}
-                            {isSmall && <text x={80 + 310 * barW / 100 + 8} y="25.5" fill="#8E8E93" fontSize="13" fontWeight="600" fontFamily="system-ui, sans-serif">{val} %</text>}
-                          </svg>
-                        );
-                      })
-                    ) : (
-                      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                        {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
-                          const val = Math.round(roleTriad![k]);
-                          const hex = BAR_HEX[k];
-                          const widthPct = (val / 67) * 100;
-                          const isSmall = widthPct < 18;
-                          return (
-                            <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                              <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>{labelComponent(k)}</span>
-                              <div style={{ flex: 1, position: "relative", height: 26 }}>
-                                <div style={{ position: "absolute", inset: 0, borderRadius: 13, background: "rgba(0,0,0,0.06)" }} />
-                                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50 }}>
-                                  {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>}
-                                </div>
-                                {isSmall && (
-                                  <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap" }}>{val} %</span>
-                                )}
+                          <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                            <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>{labelComponent(k)}</span>
+                            <div style={{ flex: 1, position: "relative", height: 26 }}>
+                              <div style={{ position: "absolute", inset: 0, borderRadius: 13, background: "rgba(0,0,0,0.06)" }} />
+                              <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50 }}>
+                                {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>}
                               </div>
+                              {isSmall && (
+                                <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap" }}>{val} %</span>
+                              )}
                             </div>
-                          );
-                        })}
-                      </div>
-                    )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                   <div className="rounded-2xl border border-slate-200 bg-white p-6">
                     <p className="text-base font-semibold text-slate-900 mb-6">Ist-Profil <span className="font-normal text-slate-500">(Person)</span></p>
-                    {isExportingPdf ? (
-                      (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+                    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                      {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                         const val = Math.round(candidateProfile[k]);
                         const hex = BAR_HEX[k];
-                        const barW = Math.min(Math.max((val / 67) * 100, 6), 100);
-                        const isSmall = barW < 20;
+                        const widthPct = (val / 67) * 100;
+                        const isSmall = widthPct < 18;
                         return (
-                          <svg key={k} width="100%" height="42" viewBox="0 0 400 42" preserveAspectRatio="xMinYMid meet" style={{ display: "block" }}>
-                            <text x="0" y="25" fill="#6E6E73" fontSize="13" fontFamily="system-ui, sans-serif">{labelComponent(k)}</text>
-                            <rect x="80" y="7" width="310" height="28" rx="14" fill="rgba(0,0,0,0.06)" />
-                            <rect x="80" y="7" width={Math.max(310 * barW / 100, isSmall ? 14 : 50)} height="28" rx="14" fill={hex} />
-                            {!isSmall && <text x="92" y="25.5" fill="#FFF" fontSize="13" fontWeight="700" fontFamily="system-ui, sans-serif">{val} %</text>}
-                            {isSmall && <text x={80 + 310 * barW / 100 + 8} y="25.5" fill="#8E8E93" fontSize="13" fontWeight="600" fontFamily="system-ui, sans-serif">{val} %</text>}
-                          </svg>
-                        );
-                      })
-                    ) : (
-                      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                        {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
-                          const val = Math.round(candidateProfile[k]);
-                          const hex = BAR_HEX[k];
-                          const widthPct = (val / 67) * 100;
-                          const isSmall = widthPct < 18;
-                          return (
-                            <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                              <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>{labelComponent(k)}</span>
-                              <div style={{ flex: 1, position: "relative", height: 26 }}>
-                                <div style={{ position: "absolute", inset: 0, borderRadius: 13, background: "rgba(0,0,0,0.06)" }} />
-                                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50 }}>
-                                  {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>}
-                                </div>
-                                {isSmall && (
-                                  <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap" }}>{val} %</span>
-                                )}
+                          <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                            <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>{labelComponent(k)}</span>
+                            <div style={{ flex: 1, position: "relative", height: 26 }}>
+                              <div style={{ position: "absolute", inset: 0, borderRadius: 13, background: "rgba(0,0,0,0.06)" }} />
+                              <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 13, background: hex, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50 }}>
+                                {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>}
                               </div>
+                              {isSmall && (
+                                <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap" }}>{val} %</span>
+                              )}
                             </div>
-                          );
-                        })}
-                      </div>
-                    )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
                 <div style={{ marginTop: 20 }}>
@@ -870,7 +815,7 @@ export default function SollIstBericht() {
 
               <div style={sep} data-testid="section-stress-behavior">
                 <SectionHead num={4} icon={Flame} title="Verhalten unter Druck" iconColor="#FF3B30" />
-                <div className="print-single-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF950008", border: "1px solid #FF950018", overflow: "visible" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                       <AlertCircle style={{ width: 14, height: 14, color: "#FF9500", flexShrink: 0 }} />
@@ -1086,40 +1031,6 @@ export default function SollIstBericht() {
 
         <style>{`
           @keyframes spin { to { transform: rotate(360deg); } }
-          .pdf-export-mode .print-single-col { grid-template-columns: 1fr !important; }
-          .pdf-export-mode .print-hide-summary { break-inside: avoid; page-break-inside: avoid; }
-          .pdf-export-mode [data-testid^="impact-detail-"] { break-inside: avoid; page-break-inside: avoid; }
-          .pdf-export-mode [data-testid^="integration-phase-"] { break-inside: avoid; page-break-inside: avoid; }
-          .pdf-export-mode [data-testid^="section-"] { break-inside: avoid; page-break-inside: avoid; }
-          .pdf-export-mode p,
-          .pdf-export-mode li,
-          .pdf-export-mode span,
-          .pdf-export-mode div {
-            word-break: break-word !important;
-            overflow-wrap: break-word !important;
-            text-align: left !important;
-          }
-          .pdf-export-mode p { orphans: 3; widows: 3; }
-          .pdf-export-mode h1, .pdf-export-mode h2, .pdf-export-mode h3 {
-            break-after: avoid !important;
-            page-break-after: avoid !important;
-          }
-          .pdf-export-mode .section-head {
-            break-after: avoid !important;
-            page-break-after: avoid !important;
-          }
-          .pdf-export-mode [data-testid="print-report-card"] {
-            overflow: visible !important;
-            height: auto !important;
-          }
-          .pdf-export-mode [data-testid="print-report-card"] > div {
-            overflow: visible !important;
-            height: auto !important;
-            max-height: none !important;
-          }
-          .pdf-export-mode .grid-cols-2 {
-            grid-template-columns: 1fr !important;
-          }
           @media print {
             body { margin: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .no-print { display: none !important; }
