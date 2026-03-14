@@ -274,45 +274,52 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   doc.setFontSize(8.5);
   doc.setFont("helvetica", "normal");
 
-  const dotR = 1.8;
+  const dotR = 1.6;
+  const textY = hY;
+  const dotCenterY = textY - 1.2;
+
   setF(roleDomCol);
-  doc.circle(ML + dotR, hY - dotR + 0.5, dotR, "F");
+  doc.circle(ML + dotR, dotCenterY, dotR, "F");
   setC(headerTextDim);
   doc.setFont("helvetica", "bold");
-  doc.text("Rolle:", ML + dotR * 2 + 2, hY + 0.5);
+  doc.text("Rolle:", ML + dotR * 2 + 2.5, textY);
   const roleLabelW = doc.getTextWidth("Rolle: ");
   doc.setFont("helvetica", "normal");
-  doc.text(result.roleConstellationLabel, ML + dotR * 2 + 2 + roleLabelW, hY + 0.5);
-  const roleBlockW = dotR * 2 + 2 + roleLabelW + doc.getTextWidth(result.roleConstellationLabel);
+  doc.text(result.roleConstellationLabel, ML + dotR * 2 + 2.5 + roleLabelW, textY);
+  const roleBlockW = dotR * 2 + 2.5 + roleLabelW + doc.getTextWidth(result.roleConstellationLabel);
 
   const sepX = ML + roleBlockW + 6;
   setC(headerDivider);
-  doc.text("|", sepX, hY + 0.5);
+  doc.text("|", sepX, textY);
 
   const personStartX = sepX + 6;
   setF(candDomCol);
-  doc.circle(personStartX + dotR, hY - dotR + 0.5, dotR, "F");
+  doc.circle(personStartX + dotR, dotCenterY, dotR, "F");
   setC(headerTextDim);
   doc.setFont("helvetica", "bold");
-  doc.text(`${personLabel}:`, personStartX + dotR * 2 + 2, hY + 0.5);
+  doc.text(`${personLabel}:`, personStartX + dotR * 2 + 2.5, textY);
   const personLabelW = doc.getTextWidth(`${personLabel}: `);
   doc.setFont("helvetica", "normal");
-  doc.text(result.candConstellationLabel, personStartX + dotR * 2 + 2 + personLabelW, hY + 0.5);
+  doc.text(result.candConstellationLabel, personStartX + dotR * 2 + 2.5 + personLabelW, textY);
 
   hY += 9;
 
-  const badgeH = 7.5;
+  const badgeH = 7;
   const badgeR = 3.5;
+  const badgeTextY = hY;
+  const badgeDotCY = badgeTextY - 1.2;
+  const badgeBoxY = badgeTextY - 4.2;
+
   const fitBadgeText = result.fitLabel;
   doc.setFontSize(8);
   doc.setFont("helvetica", "bold");
   const fitBadgeW = doc.getTextWidth(fitBadgeText) + 16;
   setF(badgeBgBlend);
-  doc.roundedRect(ML, hY - 4.5, fitBadgeW, badgeH, badgeR, badgeR, "F");
+  doc.roundedRect(ML, badgeBoxY, fitBadgeW, badgeH, badgeR, badgeR, "F");
   setF(fitCol);
-  doc.circle(ML + 5 + dotR, hY - dotR + 0.2, dotR, "F");
+  doc.circle(ML + 5 + dotR, badgeDotCY, dotR, "F");
   setC(C.white);
-  doc.text(fitBadgeText, ML + 5 + dotR * 2 + 3, hY + 0.3);
+  doc.text(fitBadgeText, ML + 5 + dotR * 2 + 3, badgeTextY);
 
   const cBadgeText = `Führungsaufwand: ${cLabel}`;
   doc.setFontSize(8);
@@ -320,11 +327,11 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   const cBadgeW = doc.getTextWidth(cBadgeText) + 16;
   const cBadgeX = ML + fitBadgeW + 6;
   setF(badgeBgBlend);
-  doc.roundedRect(cBadgeX, hY - 4.5, cBadgeW, badgeH, badgeR, badgeR, "F");
+  doc.roundedRect(cBadgeX, badgeBoxY, cBadgeW, badgeH, badgeR, badgeR, "F");
   setF(cCol);
-  doc.circle(cBadgeX + 5 + dotR, hY - dotR + 0.2, dotR, "F");
+  doc.circle(cBadgeX + 5 + dotR, badgeDotCY, dotR, "F");
   setC(C.white);
-  doc.text(cBadgeText, cBadgeX + 5 + dotR * 2 + 3, hY + 0.3);
+  doc.text(cBadgeText, cBadgeX + 5 + dotR * 2 + 3, badgeTextY);
 
   y = headerH + 8;
 
