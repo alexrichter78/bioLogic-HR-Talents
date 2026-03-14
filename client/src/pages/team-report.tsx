@@ -1330,6 +1330,8 @@ export default function TeamReport() {
             nav { display: none !important; }
             @page { size: A4 landscape; margin: 12mm; }
             section { break-inside: avoid; page-break-inside: avoid; }
+            p, li { orphans: 3; widows: 3; text-align: left !important; word-break: break-word; overflow-wrap: break-word; }
+            h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
           }
         `}</style>
       </div>

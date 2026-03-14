@@ -1,0 +1,145 @@
+Ja - in deinem PDF sieht man ziemlich klar, dass das Problem sehr wahrscheinlich nicht der Inhalt selbst ist, sondern das HTML/CSS-PDF-Rendering.
+
+Auffällig sind vor allem diese Punkte:
+
+Auf Seite 1 und auch auf den Folgeseiten sind die Fließtexte extrem auseinandergezogen. Die Wörter haben teils unnatürlich große Abstände. Das ist ein typisches Zeichen für text-align: justify in Verbindung mit zu schmaler Textbreite, falscher Silbentrennung oder fehlender Print-Optimierung. 
+
+5d70f536-1b66-4fb3-a197-42c1f07…
+
+Auf mehreren Seiten wirkt das Layout so, als würden Inhalte in einen Bereich gepresst, der für Bildschirmdarstellung gebaut wurde, aber nicht sauber für PDF. Das betrifft vor allem die langen Textblöcke, die Abschnittsabstände und die Box auf Seite 5. Die PDF sieht nicht komplett kaputt aus, aber sie wirkt so, als ob Containerhöhen, Seitenumbrüche oder Print-CSS nicht sauber kontrolliert werden. 
+
+5d70f536-1b66-4fb3-a197-42c1f07…
+
+Was ich als wahrscheinlichste Ursachen sehe:
+
+text-align: justify
+Das ist hier fast sicher ein Hauptproblem. Gerade bei schmalem Satzspiegel entstehen diese „Lückenbänder“ zwischen den Wörtern.
+
+Feste Höhen (height, max-height) oder overflow: hidden
+Dann werden Texte abgeschnitten oder „abgehakt“, sobald der Inhalt länger wird als gedacht.
+
+PDF-Rendering mit ungeeigneten Layout-Mechaniken
+Dinge wie flex, grid, absolute Positionierungen oder transformierte Elemente funktionieren im Browser oft gut, im PDF aber nicht immer stabil.
+
+Keine eigene Print-CSS
+Bildschirmlayout und PDF-Layout brauchen fast immer getrennte Regeln. Ohne @media print oder spezielle PDF-Stile verrutschen Abstände, Seitenumbrüche und Container.
+
+Fehlende Regeln für Seitenumbrüche
+Wenn Überschrift, Box, Balken oder Textblock getrennt werden dürfen, wirkt der Bericht schnell verschoben oder unvollständig.
+
+So würde ich es lösen:
+
+Erstens: Fließtext nicht auf Blocksatz setzen.
+Stattdessen:
+
+.report-text {
+  text-align: left;
+  line-height: 1.55;
+}
+
+Zweitens: alle festen Höhen bei Textcontainern entfernen.
+Also prüfen auf:
+
+height: ...
+max-height: ...
+overflow: hidden;
+
+Bei Berichtsblöcken besser:
+
+height: auto;
+overflow: visible;
+
+Drittens: eine saubere Print/PDF-Version bauen.
+Zum Beispiel:
+
+@media print {
+  body {
+    margin: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 18mm 16mm 18mm 16mm;
+    box-sizing: border-box;
+    page-break-after: always;
+  }
+
+  h1, h2, h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .section, .card, .chart-block {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  p, li {
+    orphans: 3;
+    widows: 3;
+  }
+}
+
+Viertens: Textspalte breiter machen.
+Der große Wortabstand wird stärker, wenn die Textspalte zu schmal ist. Also entweder weniger Innenabstand oder größere Content-Breite.
+
+Fünftens: für PDF möglichst einfache Layoutstruktur nutzen.
+Für Berichte stabiler als komplexe verschachtelte Flex-Layouts ist oft:
+
+normaler Block-Flow
+
+klare Sections
+
+wenig absolute Positionierung
+
+definierte Seitencontainer
+
+Sechstens: falls du mit Puppeteer oder Browser-Print exportierst, die PDF-Optionen prüfen.
+Zum Beispiel:
+
+printBackground: true
+
+korrektes format: 'A4'
+
+passende Ränder
+
+keine Skalierung, die Elemente zusammendrückt
+
+Ein typisches stabiles Beispiel in Puppeteer wäre:
+
+await page.pdf({
+  format: 'A4',
+  printBackground: true,
+  margin: {
+    top: '12mm',
+    right: '12mm',
+    bottom: '12mm',
+    left: '12mm'
+  }
+});
+
+Mein fachlicher Eindruck zu deinem PDF:
+Der Bericht ist inhaltlich schon nah dran, aber die Ausgabe ist noch nicht „druckstabil“. Das Problem sitzt sehr wahrscheinlich in:
+
+Blocksatz
+
+Containerhöhen
+
+Seitenumbruchlogik
+
+fehlendem Print-CSS
+
+Am schnellsten kommst du weiter, wenn du in Replit genau diese Stellen prüfst:
+
+globale p, li, .text, .report-text
+
+.card, .section, .page
+
+overflow, height, max-height
+
+display:flex bei längeren Textabschnitten
+
+@media print

@@ -176,7 +176,7 @@ export default function SollIstBericht() {
       const safeName = roleName.replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_") || "Bericht";
 
       await html2pdf().set({
-        margin: [10, 10, 10, 15],
+        margin: [12, 12, 12, 12],
         filename: `Soll_Ist_Bericht_${safeName}.pdf`,
         image: { type: "jpeg", quality: 0.95 },
         html2canvas: {
@@ -185,7 +185,7 @@ export default function SollIstBericht() {
           allowTaint: true,
           backgroundColor: "#FFFFFF",
           logging: false,
-          windowWidth: 900,
+          windowWidth: 1000,
         },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
         pagebreak: { mode: ["avoid-all", "css", "legacy"], avoid: [".section-head", ".rounded-2xl", "[data-testid^='section-']", "[data-testid^='impact-detail-']", "[data-testid^='integration-phase-']"] },
@@ -571,7 +571,7 @@ export default function SollIstBericht() {
 
           return (
           <div ref={reportRef} style={{ maxWidth: 800, margin: "0 auto" }} data-testid="print-report-wrapper">
-            <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 16, padding: "48px 44px", boxShadow: "0 2px 16px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04)", border: "none", overflow: "hidden" }} data-testid="print-report-card">
+            <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 16, padding: "48px 44px", boxShadow: "0 2px 16px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04)", border: "none", overflow: "visible" }} data-testid="print-report-card">
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${fitCol}90, ${fitCol}40)` }} />
 
               <div style={{ marginBottom: 28 }} data-testid="section-header">
@@ -628,9 +628,9 @@ export default function SollIstBericht() {
               </div>
 
               <div className="print-hide-summary" style={{ marginBottom: 36 }}>
-                <div style={{ padding: "22px 26px", borderRadius: 14, background: "rgba(0,0,0,0.015)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }}>
+                <div style={{ padding: "22px 26px", borderRadius: 14, background: "rgba(0,0,0,0.015)", border: "1px solid rgba(0,0,0,0.04)", overflow: "visible" }}>
                   {result.summaryText.split("\n\n").map((para, i) => (
-                    <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i > 0 ? "12px 0 0" : "0", textAlign: "justify", textAlignLast: "left", wordBreak: "break-word", overflowWrap: "break-word" } as React.CSSProperties} lang="de">
+                    <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i > 0 ? "12px 0 0" : "0", textAlign: "left", wordBreak: "break-word", overflowWrap: "break-word" } as React.CSSProperties} lang="de">
                       {para}
                     </p>
                   ))}
@@ -638,7 +638,7 @@ export default function SollIstBericht() {
                 {(result.executiveBullets.length > 0 || result.constellationRisks.length > 0) && (
                   <div style={{ display: "grid", gridTemplateColumns: result.executiveBullets.length > 0 && result.constellationRisks.length > 0 ? "1fr 1fr" : "1fr", gap: 12, marginTop: 12 }}>
                     {result.executiveBullets.length > 0 && (
-                      <div style={{ padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.018)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }}>
+                      <div style={{ padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.018)", border: "1px solid rgba(0,0,0,0.04)", overflow: "visible" }}>
                         <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 10px" }}>Warum dieses Ergebnis</p>
                         <ul style={{ margin: 0, paddingLeft: 16, listStyleType: "none" }}>
                           {result.executiveBullets.map((b, i) => (
@@ -651,7 +651,7 @@ export default function SollIstBericht() {
                       </div>
                     )}
                     {result.constellationRisks.length > 0 && (
-                      <div style={{ padding: "16px 20px", borderRadius: 12, background: "rgba(212,58,69,0.03)", border: "1px solid rgba(212,58,69,0.10)", overflow: "hidden" }}>
+                      <div style={{ padding: "16px 20px", borderRadius: 12, background: "rgba(212,58,69,0.03)", border: "1px solid rgba(212,58,69,0.10)", overflow: "visible" }}>
                         <p style={{ fontSize: 11, fontWeight: 700, color: "#D43A45", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 10px" }}>Risiken dieser Konstellation</p>
                         <ul style={{ margin: 0, paddingLeft: 16, listStyleType: "none" }}>
                           {result.constellationRisks.map((r, i) => (
@@ -721,12 +721,12 @@ export default function SollIstBericht() {
                 </div>
                   );
                 })()}
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left", wordBreak: "break-word", overflowWrap: "break-word" } as React.CSSProperties} lang="de">{result.dominanceShiftText}</p>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "left", wordBreak: "break-word", overflowWrap: "break-word" } as React.CSSProperties} lang="de">{result.dominanceShiftText}</p>
               </div>
 
               <div style={sep} data-testid="section-comparison-bars">
                 <SectionHead num={2} icon={BarChart3} title="Vergleich der Profile" iconColor="#5856D6" />
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "left" } as React.CSSProperties} lang="de">
                   {biggestGapText(result.roleTriad, result.candTriad)}
                 </p>
                 <div className="grid gap-6 grid-cols-2" style={{ marginBottom: 14 }}>
@@ -871,14 +871,14 @@ export default function SollIstBericht() {
               <div style={sep} data-testid="section-stress-behavior">
                 <SectionHead num={4} icon={Flame} title="Verhalten unter Druck" iconColor="#FF3B30" />
                 <div className="print-single-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                  <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF950008", border: "1px solid #FF950018", overflow: "hidden" }}>
+                  <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF950008", border: "1px solid #FF950018", overflow: "visible" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                       <AlertCircle style={{ width: 14, height: 14, color: "#FF9500", flexShrink: 0 }} />
                       <p style={{ fontSize: 12, fontWeight: 700, color: "#FF9500", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>Kontrollierter Druck</p>
                     </div>
                     <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang="de">{result.stressBehavior.controlledPressure}</p>
                   </div>
-                  <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF3B3008", border: "1px solid #FF3B3018", overflow: "hidden" }}>
+                  <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF3B3008", border: "1px solid #FF3B3018", overflow: "visible" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                       <AlertTriangle style={{ width: 14, height: 14, color: "#FF3B30", flexShrink: 0 }} />
                       <p style={{ fontSize: 12, fontWeight: 700, color: "#FF3B30", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>Unkontrollierter Stress</p>
@@ -962,7 +962,7 @@ export default function SollIstBericht() {
                         <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < rDev ? rGaugeCol : "rgba(0,0,0,0.08)" }} />
                       ))}
                     </div>
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left", wordBreak: "break-word", overflowWrap: "break-word" } as React.CSSProperties} lang="de">{result.developmentText}</p>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "left", wordBreak: "break-word", overflowWrap: "break-word" } as React.CSSProperties} lang="de">{result.developmentText}</p>
 
                     <div style={{ marginTop: 20, padding: "14px 18px", borderRadius: 12, background: `${rFitColor}08`, border: `1px solid ${rFitColor}18` }}>
                       <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>Managementeinschätzung</p>
@@ -1052,7 +1052,7 @@ export default function SollIstBericht() {
                         </div>
                       </div>
                     </div>
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left", wordBreak: "break-word", overflowWrap: "break-word" } as React.CSSProperties} lang="de" data-testid="text-final-rating-text">{result.finalText}</p>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "left", wordBreak: "break-word", overflowWrap: "break-word" } as React.CSSProperties} lang="de" data-testid="text-final-rating-text">{result.finalText}</p>
                   </div>
                 );
               })()}
@@ -1087,11 +1087,48 @@ export default function SollIstBericht() {
         <style>{`
           @keyframes spin { to { transform: rotate(360deg); } }
           .pdf-export-mode .print-single-col { grid-template-columns: 1fr !important; }
-          .pdf-export-mode .print-hide-summary { break-inside: avoid; }
+          .pdf-export-mode .print-hide-summary { break-inside: avoid; page-break-inside: avoid; }
           .pdf-export-mode [data-testid^="impact-detail-"] { break-inside: avoid; page-break-inside: avoid; }
           .pdf-export-mode [data-testid^="integration-phase-"] { break-inside: avoid; page-break-inside: avoid; }
           .pdf-export-mode [data-testid^="section-"] { break-inside: avoid; page-break-inside: avoid; }
-          .pdf-export-mode p { word-break: break-word; overflow-wrap: break-word; hyphens: auto; }
+          .pdf-export-mode p,
+          .pdf-export-mode li,
+          .pdf-export-mode span,
+          .pdf-export-mode div {
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+            text-align: left !important;
+          }
+          .pdf-export-mode p { orphans: 3; widows: 3; }
+          .pdf-export-mode h1, .pdf-export-mode h2, .pdf-export-mode h3 {
+            break-after: avoid !important;
+            page-break-after: avoid !important;
+          }
+          .pdf-export-mode .section-head {
+            break-after: avoid !important;
+            page-break-after: avoid !important;
+          }
+          .pdf-export-mode [data-testid="print-report-card"] {
+            overflow: visible !important;
+            height: auto !important;
+          }
+          .pdf-export-mode [data-testid="print-report-card"] > div {
+            overflow: visible !important;
+            height: auto !important;
+            max-height: none !important;
+          }
+          .pdf-export-mode .grid-cols-2 {
+            grid-template-columns: 1fr !important;
+          }
+          @media print {
+            body { margin: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .no-print { display: none !important; }
+            p, li { orphans: 3; widows: 3; text-align: left !important; }
+            h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
+            [data-testid^="section-"], [data-testid^="impact-detail-"], [data-testid^="integration-phase-"] {
+              break-inside: avoid; page-break-inside: avoid;
+            }
+          }
         `}</style>
       </div>
     </div>
