@@ -205,11 +205,12 @@ export default function SollIstBericht() {
       const html2pdf = (await import("html2pdf.js")).default;
 
       container = document.createElement("div");
-      container.style.cssText = "position:absolute;left:0;top:0;width:800px;background:#FFF;z-index:-1;pointer-events:none;";
+      container.style.cssText = "position:fixed;left:0;top:0;width:800px;background:#FFFFFF;z-index:99999;pointer-events:none;overflow:auto;";
       container.innerHTML = buildPdfHtml(result, roleTriad, candidateProfile);
       document.body.appendChild(container);
 
-      await new Promise(r => setTimeout(r, 50));
+      await new Promise(r => setTimeout(r, 100));
+      console.log("[PDF] container size:", container.scrollWidth, "x", container.scrollHeight, "children:", container.childNodes.length);
 
       const safeName = roleName.replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_") || "Bericht";
 
@@ -222,8 +223,10 @@ export default function SollIstBericht() {
           useCORS: true,
           allowTaint: true,
           backgroundColor: "#FFFFFF",
-          logging: false,
+          logging: true,
           windowWidth: 800,
+          scrollX: 0,
+          scrollY: 0,
         },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
         pagebreak: { mode: ["css", "legacy"] },
