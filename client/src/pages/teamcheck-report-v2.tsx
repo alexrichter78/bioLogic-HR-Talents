@@ -95,7 +95,7 @@ export default function TeamCheckReportV2() {
                 Team-Systemreport · Organisationsdiagnose
               </h1>
               <p style={{ color: "#5b6472", maxWidth: 820, margin: 0 }}>
-                Der TeamCheck analysiert, wie sich die vorgesehene Besetzung in der Rolle {input.roleTitle || "–"} auf das bestehende Team auswirkt. Bewertet werden Passung, Spannungsfelder und die zu erwartende Systemwirkung im Arbeitsalltag.
+                Dieser Bericht zeigt, was passiert, wenn die Besetzung in der Rolle {input.roleTitle || "–"} auf das bestehende Team trifft – wo es passt, wo es reibt und was die Führung wissen muss.
               </p>
             </div>
 
@@ -135,7 +135,7 @@ export default function TeamCheckReportV2() {
 
         <div style={{ display: "grid", gap: 18 }}>
 
-          <Card title="Gesamtbewertung" intro="Die Gesamtbewertung zeigt die verdichtete Einordnung der Konstellation. Sie beantwortet, wie passend die Besetzung im aktuellen Teamumfeld ist und welche Systemwirkung zu erwarten ist." testId="section-gesamtbewertung">
+          <Card title="Gesamtbewertung" intro="Wie gut passt die Besetzung ins aktuelle Teamumfeld – und was bedeutet das für die Zusammenarbeit im Alltag?" testId="section-gesamtbewertung">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
               {[
                 { label: "Passung zum Team", value: result.passung },
@@ -151,7 +151,7 @@ export default function TeamCheckReportV2() {
             </div>
           </Card>
 
-          <Card title="Warum dieses Ergebnis" intro="Die folgenden Punkte benennen die wesentlichen Ursachen für die Gesamtbewertung." testId="section-reasons">
+          <Card title="Warum dieses Ergebnis" intro="Welche Faktoren haben zu dieser Einschätzung geführt?" testId="section-reasons">
             <ul style={{ margin: 0, paddingLeft: 20, display: "grid", gap: 10 }}>
               {result.reasons.map((r, i) => (
                 <li key={i} data-testid={`reason-${i}`}>{r}</li>
@@ -159,7 +159,7 @@ export default function TeamCheckReportV2() {
             </ul>
           </Card>
 
-          <Card title="Team-Spannungsanalyse" intro="Die Analyse zeigt, in welchen Bereichen Stabilität, Ergänzung oder spürbare Spannungen zwischen Team und Person zu erwarten sind." testId="section-tension">
+          <Card title="Team-Spannungsanalyse" intro="Wo liegen Stabilität und Ergänzung – und wo ist mit spürbarer Reibung zu rechnen?" testId="section-tension">
             <div style={{ display: "grid", gap: 16 }}>
               {result.tension.map((t) => (
                 <div key={t.key} style={{ border: "1px solid #e5eaf2", borderRadius: 18, padding: 18, background: "#fff" }} data-testid={`tension-${t.key}`}>
@@ -174,7 +174,7 @@ export default function TeamCheckReportV2() {
             </div>
           </Card>
 
-          <Card title="Systemwirkung" intro="Dieser Abschnitt beschreibt, wie die Besetzung auf das bestehende Team wirkt und welche strukturelle Bewegung dadurch im System entsteht." testId="section-systemwirkung">
+          <Card title="Systemwirkung" intro="Was passiert im Team, wenn diese Besetzung kommt – und welche Dynamik entsteht dadurch?" testId="section-systemwirkung">
             <Paragraphs text={result.systemwirkungText} />
             <div style={{ marginTop: 16, border: "1px solid #e5eaf2", borderRadius: 18, padding: 18, background: "#f9fbff" }}>
               <h4 style={{ margin: "0 0 8px", fontSize: 17 }}>Profilkonstellation</h4>
@@ -183,7 +183,7 @@ export default function TeamCheckReportV2() {
             </div>
           </Card>
 
-          <Card title="Auswirkungen im Arbeitsalltag" intro="Die Wirkung zeigt sich nicht nur im Profilvergleich, sondern konkret in Entscheidungen, Arbeitsweise, Zusammenarbeit und Arbeitsrhythmus." testId="section-impacts">
+          <Card title="Auswirkungen im Arbeitsalltag" intro="Wie wirkt sich die Besetzung konkret auf Entscheidungen, Arbeitsweise und den täglichen Rhythmus im Team aus?" testId="section-impacts">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
               {result.impacts.map((imp) => (
                 <div key={imp.title} style={{ border: "1px solid #e5eaf2", borderRadius: 18, padding: 18, background: "#fff" }} data-testid={`impact-${imp.title.toLowerCase()}`}>
@@ -194,7 +194,7 @@ export default function TeamCheckReportV2() {
             </div>
           </Card>
 
-          <Card title="Verhalten unter Druck und Stress" intro="Dieser Abschnitt beschreibt, wie sich die Besetzung unter steigendem Leistungsdruck und unter hoher Belastung im Team zeigt." testId="section-stress">
+          <Card title="Verhalten unter Druck und Stress" intro="Was passiert, wenn der Druck steigt – und wie verändert sich das Verhalten der Besetzung im Team?" testId="section-stress">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div style={{ border: "1px solid #e5eaf2", borderRadius: 18, padding: 18, background: "#fff" }}>
                 <h4 style={{ margin: "0 0 8px", fontSize: 17 }}>Kontrollierter Druck</h4>
@@ -207,7 +207,7 @@ export default function TeamCheckReportV2() {
             </div>
           </Card>
 
-          <Card title="Chancen" intro="Die folgenden Punkte zeigen, welches konkrete Potenzial in der vorliegenden Konstellation liegt." testId="section-chances">
+          <Card title="Chancen" intro="Welches Potenzial steckt in dieser Konstellation?" testId="section-chances">
             <ul style={{ margin: 0, paddingLeft: 20, display: "grid", gap: 10 }}>
               {result.chances.map((c, i) => (
                 <li key={i} data-testid={`chance-${i}`}>{c}</li>
@@ -215,7 +215,7 @@ export default function TeamCheckReportV2() {
             </ul>
           </Card>
 
-          <Card title="Risiken" intro="Die folgenden Punkte benennen, welche Spannungsfelder in dieser Konstellation bewusst gesteuert werden müssen." testId="section-risks">
+          <Card title="Risiken" intro="Worauf muss geachtet werden, damit die Konstellation nicht ins Negative kippt?" testId="section-risks">
             <ul style={{ margin: 0, paddingLeft: 20, display: "grid", gap: 10 }}>
               {result.risks.map((r, i) => (
                 <li key={i} data-testid={`risk-${i}`}>{r}</li>
@@ -223,7 +223,7 @@ export default function TeamCheckReportV2() {
             </ul>
           </Card>
 
-          <Card title="Handlungsempfehlung" intro="Diese Empfehlungen helfen dabei, die Wirkung im Team gezielt zu steuern und die Integrationsphase sauber zu begleiten." testId="section-advice">
+          <Card title="Handlungsempfehlung" intro="Was kann die Führung konkret tun, um die Einbindung erfolgreich zu gestalten?" testId="section-advice">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
               {result.advice.map((a) => (
                 <div key={a.title} style={{ border: "1px solid #e5eaf2", borderRadius: 18, padding: 18, background: "#fff" }} data-testid={`advice-${a.title.toLowerCase().replace(/\s/g, "-")}`}>
