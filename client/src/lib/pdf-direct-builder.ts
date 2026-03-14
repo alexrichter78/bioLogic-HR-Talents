@@ -226,53 +226,107 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   const dateStr = new Date().toLocaleDateString("de-CH", { day: "2-digit", month: "long", year: "numeric" });
   const personLabel = result.candidateName !== "Die Person" ? result.candidateName : "Person";
 
-  const headerH = 44;
-  setF([52, 58, 72] as RGB);
+  const roleDomCol = compColor(result.roleDomKey);
+  const candDomCol = compColor(result.candDomKey);
+  const headerBgRgb: RGB = [52, 58, 72];
+  const headerTextDim: RGB = [160, 165, 180];
+  const headerTextSubtle: RGB = [130, 135, 148];
+  const headerDivider: RGB = [82, 87, 99];
+  const badgeBgBlend: RGB = [82, 87, 99];
+
+  const headerH = 56;
+  setF(headerBgRgb);
   doc.rect(0, 0, PW, headerH, "F");
 
   setF(fitCol);
-  doc.rect(0, headerH, PW, 1.5, "F");
+  doc.rect(0, headerH, PW, 1.8, "F");
+
+  let hY = MT;
 
   if (logoDataUrl) {
-    try { doc.addImage(logoDataUrl, "PNG", PW - MR - 30, y - 1, 30, 11); } catch (_) {}
+    try { doc.addImage(logoDataUrl, "PNG", ML, hY - 2, 24, 9); } catch (_) {}
   }
+  const logoEndX = ML + (logoDataUrl ? 27 : 0);
+
+  setD(headerDivider);
+  doc.setLineWidth(0.3);
+  const dividerX = logoEndX + 3;
+  doc.line(dividerX, hY - 1, dividerX, hY + 6);
+
+  doc.setFontSize(7.5);
+  doc.setFont("helvetica", "bold");
+  setC(headerTextDim);
+  doc.text("PASSUNGSBERICHT", dividerX + 4, hY + 3.5);
 
   doc.setFontSize(7);
   doc.setFont("helvetica", "normal");
-  setC([160, 165, 180] as RGB);
-  doc.text("PASSUNGSBERICHT", ML, y + 2);
-  doc.text(dateStr, PW - MR - (logoDataUrl ? 34 : 0), y + 2, { align: logoDataUrl ? "right" : "right" });
-  y += 10;
+  setC(headerTextSubtle);
+  doc.text(dateStr, PW - MR, hY + 3.5, { align: "right" });
+
+  hY += 14;
 
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
   setC(C.white);
-  doc.text(result.roleName, ML, y);
-  y += 7;
+  doc.text(result.roleName, ML, hY);
+  hY += 8;
 
   doc.setFontSize(8.5);
   doc.setFont("helvetica", "normal");
-  setC([175, 180, 195] as RGB);
-  doc.text(`Rolle: ${result.roleConstellationLabel}  |  ${personLabel}: ${result.candConstellationLabel}`, ML, y);
+
+  const dotR = 1.8;
+  setF(roleDomCol);
+  doc.circle(ML + dotR, hY - dotR + 0.5, dotR, "F");
+  setC(headerTextDim);
+  doc.setFont("helvetica", "bold");
+  doc.text("Rolle:", ML + dotR * 2 + 2, hY + 0.5);
+  const roleLabelW = doc.getTextWidth("Rolle: ");
+  doc.setFont("helvetica", "normal");
+  doc.text(result.roleConstellationLabel, ML + dotR * 2 + 2 + roleLabelW, hY + 0.5);
+  const roleBlockW = dotR * 2 + 2 + roleLabelW + doc.getTextWidth(result.roleConstellationLabel);
+
+  const sepX = ML + roleBlockW + 6;
+  setC(headerDivider);
+  doc.text("|", sepX, hY + 0.5);
+
+  const personStartX = sepX + 6;
+  setF(candDomCol);
+  doc.circle(personStartX + dotR, hY - dotR + 0.5, dotR, "F");
+  setC(headerTextDim);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${personLabel}:`, personStartX + dotR * 2 + 2, hY + 0.5);
+  const personLabelW = doc.getTextWidth(`${personLabel}: `);
+  doc.setFont("helvetica", "normal");
+  doc.text(result.candConstellationLabel, personStartX + dotR * 2 + 2 + personLabelW, hY + 0.5);
+
+  hY += 9;
+
+  const badgeH = 7.5;
+  const badgeR = 3.5;
+  const fitBadgeText = result.fitLabel;
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "bold");
+  const fitBadgeW = doc.getTextWidth(fitBadgeText) + 16;
+  setF(badgeBgBlend);
+  doc.roundedRect(ML, hY - 4.5, fitBadgeW, badgeH, badgeR, badgeR, "F");
+  setF(fitCol);
+  doc.circle(ML + 5 + dotR, hY - dotR + 0.2, dotR, "F");
+  setC(C.white);
+  doc.text(fitBadgeText, ML + 5 + dotR * 2 + 3, hY + 0.3);
+
+  const cBadgeText = `Führungsaufwand: ${cLabel}`;
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "bold");
+  const cBadgeW = doc.getTextWidth(cBadgeText) + 16;
+  const cBadgeX = ML + fitBadgeW + 6;
+  setF(badgeBgBlend);
+  doc.roundedRect(cBadgeX, hY - 4.5, cBadgeW, badgeH, badgeR, badgeR, "F");
+  setF(cCol);
+  doc.circle(cBadgeX + 5 + dotR, hY - dotR + 0.2, dotR, "F");
+  setC(C.white);
+  doc.text(cBadgeText, cBadgeX + 5 + dotR * 2 + 3, hY + 0.3);
+
   y = headerH + 8;
-
-  const badgeRowY = y;
-  checkPage(14);
-
-  badge(ML, badgeRowY, result.fitLabel, fitBg, fitCol);
-  doc.setFontSize(7.5);
-  doc.setFont("helvetica", "normal");
-  setC(C.mid);
-  doc.text("Grundpassung", ML, badgeRowY + 6);
-
-  const cBadgeBg = cCol === C.red ? C.redLight : cCol === C.amber ? C.amberLight : C.greenLight;
-  badge(midX, badgeRowY, cLabel, cBadgeBg, cCol);
-  doc.setFontSize(7.5);
-  doc.setFont("helvetica", "normal");
-  setC(C.mid);
-  doc.text("Führungsaufwand", midX, badgeRowY + 6);
-
-  y = badgeRowY + 12;
 
   result.summaryText.split("\n\n").forEach(para => {
     printText(para, ML, CW, 8.5, C.dark, 4.3);
