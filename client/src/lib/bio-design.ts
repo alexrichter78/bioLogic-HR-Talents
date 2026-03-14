@@ -49,6 +49,21 @@ export const SECTION_COLORS = {
   schlussbewertung: BIO_COLORS.analytisch,
 } as const;
 
+export const TC_SECTION_COLORS = [
+  BIO_COLORS.analytisch,
+  BIO_COLORS.geeignet,
+  BIO_COLORS.intuitiv,
+  BIO_COLORS.impulsiv,
+  BIO_COLORS.analytisch,
+  BIO_COLORS.intuitiv,
+  BIO_COLORS.impulsiv,
+  BIO_COLORS.bedingt,
+  BIO_COLORS.nichtGeeignet,
+  BIO_COLORS.geeignet,
+  BIO_COLORS.nichtGeeignet,
+  BIO_COLORS.analytisch,
+] as const;
+
 export function fitColor(rating: string): string {
   if (rating === "GEEIGNET" || rating === "Geeignet") return BIO_COLORS.geeignet;
   if (rating === "BEDINGT" || rating === "Bedingt geeignet") return BIO_COLORS.bedingt;
