@@ -221,36 +221,35 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   const dateStr = new Date().toLocaleDateString("de-CH", { day: "2-digit", month: "long", year: "numeric" });
   const personLabel = result.candidateName !== "Die Person" ? result.candidateName : "Person";
 
-  setF(C.white);
-  doc.rect(0, 0, PW, 44, "F");
+  const headerH = 44;
+  setF([52, 58, 72] as RGB);
+  doc.rect(0, 0, PW, headerH, "F");
 
-  setD(fitCol);
-  doc.setLineWidth(1.2);
-  doc.line(ML, 43, ML + CW, 43);
+  setF(fitCol);
+  doc.rect(0, headerH, PW, 1.5, "F");
 
   if (logoDataUrl) {
-    try { doc.addImage(logoDataUrl, "PNG", ML, y - 2, 32, 12); } catch (_) {}
+    try { doc.addImage(logoDataUrl, "PNG", PW - MR - 30, y - 1, 30, 11); } catch (_) {}
   }
-  y += 14;
 
   doc.setFontSize(7);
   doc.setFont("helvetica", "normal");
-  setC(C.faint);
-  doc.text("PASSUNGSBERICHT", ML, y);
-  doc.text(dateStr, PW - MR, y, { align: "right" });
-  y += 6;
+  setC([160, 165, 180] as RGB);
+  doc.text("PASSUNGSBERICHT", ML, y + 2);
+  doc.text(dateStr, PW - MR - (logoDataUrl ? 34 : 0), y + 2, { align: logoDataUrl ? "right" : "right" });
+  y += 10;
 
-  doc.setFontSize(17);
+  doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
-  setC(C.black);
+  setC(C.white);
   doc.text(result.roleName, ML, y);
-  y += 6;
+  y += 7;
 
   doc.setFontSize(8.5);
   doc.setFont("helvetica", "normal");
-  setC(C.mid);
+  setC([175, 180, 195] as RGB);
   doc.text(`Rolle: ${result.roleConstellationLabel}  |  ${personLabel}: ${result.candConstellationLabel}`, ML, y);
-  y = 50;
+  y = headerH + 8;
 
   const badgeRowY = y;
   checkPage(14);
