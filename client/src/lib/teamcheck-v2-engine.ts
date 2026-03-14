@@ -421,13 +421,13 @@ function getImpactTexts(teamProfile: Triad, personProfile: Triad, roleTitle: str
     tempoText += " Hier ist keine starke Abweichung zu erwarten. Der Arbeitsrhythmus dürfte grundsätzlich anschlussfähig sein.";
   }
 
-  let communicationText = "Die Kommunikationsstruktur im Team wird ebenfalls beeinflusst. Dabei geht es nicht nur um Gesprächsstil, sondern auch darum, wie offen abgestimmt wird, wie viel Erklärung notwendig ist und wie Konflikte adressiert werden.";
+  let communicationText = "Die Gesprächskultur im Team wird ebenfalls beeinflusst. Dabei geht es nicht nur um den Stil, sondern auch darum, wie offen abgestimmt wird und wie Konflikte adressiert werden.";
   if (delta.intuitiv > 12) {
-    communicationText += " Die Besetzung bringt mehr Beziehungs- und Abstimmungsorientierung ein. Das kann Vertrauen stärken und die Schnittstellenqualität verbessern.";
+    communicationText += " Die Besetzung bringt mehr Beziehungs- und Dialogorientierung ein. Das kann Vertrauen stärken und die Schnittstellenqualität verbessern.";
   } else if (delta.intuitiv < -12) {
-    communicationText += " Die Besetzung bringt weniger Abstimmungsorientierung mit als das Team. Dadurch kann sie direkter, knapper oder weniger anschlussfähig wirken.";
+    communicationText += " Die Besetzung bringt weniger Dialogorientierung mit als das Team. Dadurch kann sie direkter oder knapper wirken.";
   } else {
-    communicationText += " Die Kommunikationslogik liegt nah am Team. Dadurch besteht in diesem Bereich eine solide Basis für die Zusammenarbeit.";
+    communicationText += " Die Gesprächslogik liegt nah am Team. Dadurch besteht hier eine solide Basis.";
   }
 
   return [
@@ -465,13 +465,13 @@ function getChances(teamProfile: Triad, personProfile: Triad, roleTitle: string,
   }
 
   if (personPrimary === "impulsiv") {
-    list.push(`Die höhere Umsetzungsorientierung der Besetzung kann dem Team mehr operative Geschwindigkeit, Entscheidungsbeschleunigung und direktere Ergebnisorientierung geben, wenn diese Energie klar in Prioritäten und Standards eingebettet wird.`);
+    list.push(`Die stärkere Handlungsorientierung der Besetzung kann dem Team mehr operative Geschwindigkeit und direktere Ergebnisorientierung geben, wenn diese Energie klar in Prioritäten und Standards eingebettet wird.`);
   }
   if (personPrimary === "intuitiv") {
-    list.push(`Die stärkere Kommunikationsorientierung der Besetzung kann die Zusammenarbeit an Schnittstellen stärken, die Abstimmungsqualität erhöhen und die Anschlussfähigkeit des Teams nach innen und außen verbessern.`);
+    list.push(`Die ausgeprägtere Dialogorientierung der Besetzung kann die Abstimmungsqualität erhöhen und die Anschlussfähigkeit des Teams nach innen und außen verbessern.`);
   }
   if (personPrimary === "analytisch") {
-    list.push(`Die stärkere Strukturorientierung der Besetzung kann mehr Ordnung, Nachvollziehbarkeit und Prozesssicherheit in den Arbeitsalltag bringen. Das erhöht Qualitätsstandards und Verbindlichkeit.`);
+    list.push(`Die stärkere Qualitätsorientierung der Besetzung kann mehr Ordnung, Nachvollziehbarkeit und Prozesssicherheit in den Arbeitsalltag bringen. Das erhöht Verbindlichkeit und Steuerbarkeit.`);
   }
 
   list.push("Die Konstellation bietet die Möglichkeit, bisher schwächere Arbeitsbereiche im Team gezielt zu stärken und dadurch die Gesamtleistungsfähigkeit auf eine breitere Basis zu stellen.");
@@ -491,13 +491,13 @@ function getRisks(teamProfile: Triad, personProfile: Triad, roleTitle: string, r
   list.push("Unterschiedliche Arbeitslogiken können im Alltag zu Missverständnissen führen, wenn nicht klar definiert wird, wie Entscheidungen getroffen, Prioritäten gesetzt und Ergebnisse bewertet werden.");
 
   if (Math.abs(delta.impulsiv) > 15) {
-    list.push("Die abweichende operative Taktung kann im Team als unangemessener Druck oder als fehlende Umsetzungsgeschwindigkeit wahrgenommen werden. Das erzeugt unnötige Spannungen in der täglichen Zusammenarbeit.");
+    list.push("Die abweichende operative Taktung kann im Team als unangemessener Druck oder als fehlende Handlungsgeschwindigkeit wahrgenommen werden. Das erzeugt unnötige Spannungen im Arbeitsalltag.");
   }
   if (Math.abs(delta.intuitiv) > 15) {
-    list.push("Die Unterschiede in Kommunikation und Abstimmungstiefe können zu struktureller Reibung führen. Was für die eine Seite effizient wirkt, kann für die andere als zu knapp oder zu abstimmungsintensiv empfunden werden.");
+    list.push("Die Unterschiede in Austausch und Abstimmungstiefe können zu struktureller Reibung führen. Was für die eine Seite effizient wirkt, kann für die andere als zu knapp oder zu abstimmungsintensiv empfunden werden.");
   }
   if (Math.abs(delta.analytisch) > 15) {
-    list.push("Abweichungen in Struktur und Analyse wirken sich direkt auf Nachverfolgung, Dokumentation, Qualitätsanspruch und die Verbindlichkeit von Vereinbarungen aus.");
+    list.push("Abweichungen in Ordnung und sachlicher Prüfung wirken sich direkt auf Nachverfolgung, Qualitätsanspruch und die Verbindlichkeit von Vereinbarungen aus.");
   }
 
   if (systemwirkung === "Transformation") {
@@ -521,7 +521,7 @@ function getAdvice(roleType: string, teamProfile: Triad, personProfile: Triad, r
   return [
     {
       title: "Erwartungen verankern",
-      text: `Zu Beginn sollte offen benannt werden, welche Arbeitslogik das Team heute prägt und welche Wirkung von der Besetzung erwartet wird. Tempo, Abstimmungstiefe und Qualitätsanspruch sollten nicht vorausgesetzt, sondern explizit definiert und verbindlich vereinbart werden.`,
+      text: `Zu Beginn sollte offen benannt werden, welche Arbeitslogik das Team heute prägt und welche Wirkung von der Besetzung erwartet wird. Handlungsgeschwindigkeit, Abstimmungstiefe und Qualitätsanspruch sollten nicht vorausgesetzt, sondern explizit definiert und verbindlich vereinbart werden.`,
     },
     {
       title: "Entscheidungsarchitektur klären",
@@ -539,7 +539,7 @@ function getAdvice(roleType: string, teamProfile: Triad, personProfile: Triad, r
     },
     {
       title: "Strukturierte Feedbackschleifen einbauen",
-      text: "Nach zwei, vier und acht Wochen sollten strukturierte Rückmeldungen eingeholt werden. So lassen sich Erwartungsunterschiede, Tempokonflikte und Reibung in der Zusammenarbeit frühzeitig erkennen und gezielt nachsteuern.",
+      text: "Nach zwei, vier und acht Wochen sollten strukturierte Rückmeldungen eingeholt werden. So lassen sich Erwartungsunterschiede und Spannungen im Arbeitsalltag frühzeitig erkennen und gezielt nachsteuern.",
     },
   ];
 }
