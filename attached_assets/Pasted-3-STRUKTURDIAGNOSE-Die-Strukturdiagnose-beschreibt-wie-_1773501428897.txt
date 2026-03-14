@@ -1,0 +1,124 @@
+3 STRUKTURDIAGNOSE
+
+Die Strukturdiagnose beschreibt, wie die grundlegende Arbeitslogik der Person im Verhältnis zum bestehenden Team aufgebaut ist. Entscheidend ist dabei nicht nur die Stärke einzelner Bereiche, sondern vor allem die Reihenfolge und Gewichtung der Schwerpunkte.
+
+Dominanzstruktur
+
+Das Team wird aktuell hauptsächlich über {TEAM_DOMINANT_BEREICH} geprägt.
+Die Person arbeitet hingegen primär über {PERSON_DOMINANT_BEREICH}.
+
+Damit unterscheiden sich die grundlegenden Ausgangspunkte, aus denen Entscheidungen getroffen, Prioritäten gesetzt und Themen vorangetrieben werden.
+
+Sekundärstruktur
+
+Neben dem Hauptschwerpunkt spielt auch der zweite Arbeitsbereich eine wichtige Rolle.
+Beim Team liegt dieser Schwerpunkt auf {TEAM_SECONDARY_BEREICH}.
+Bei der Person liegt der zweite Schwerpunkt auf {PERSON_SECONDARY_BEREICH}.
+
+Diese Reihenfolge beeinflusst, wie Entscheidungen vorbereitet, abgestimmt und umgesetzt werden.
+
+Strukturwirkung
+
+Treffen unterschiedliche Dominanzstrukturen aufeinander, entsteht im Alltag häufig eine Verschiebung der Arbeitslogik.
+
+Das bedeutet nicht automatisch, dass die Konstellation problematisch ist. Unterschiede können auch eine Ergänzung darstellen. Entscheidend ist jedoch, ob die unterschiedlichen Arbeitslogiken bewusst geführt und klar eingeordnet werden.
+
+In einer Führungsrolle verstärkt sich diese Wirkung zusätzlich, da die Arbeitsweise der Führungskraft Prioritäten, Entscheidungswege und Arbeitsrhythmen im Team prägt.
+
+7 AUSWIRKUNGEN AUF LEISTUNG UND ERGEBNISSE
+
+Neben der Zusammenarbeit beeinflusst die Konstellation auch die Art, wie Leistung im Alltag entsteht und bewertet wird.
+
+Entscheidungsqualität
+
+Unterschiedliche Arbeitslogiken führen häufig dazu, dass Entscheidungen aus verschiedenen Perspektiven bewertet werden. Während das Team stärker auf {TEAM_ENTSCHEIDUNGSLOGIK} achtet, trifft die Person Entscheidungen stärker aus {PERSON_ENTSCHEIDUNGSLOGIK} heraus.
+
+Dadurch können Prioritäten unterschiedlich interpretiert werden.
+
+Umsetzungsgeschwindigkeit
+
+Die Person bringt in der Regel mehr operative Bewegung in Themen. Aufgaben werden schneller angestoßen und Ergebnisse stärker eingefordert.
+
+Das kann die Leistungsdynamik im Team erhöhen, kann aber auch zu Spannungen führen, wenn Abstimmung und gemeinsame Einordnung für das Team wichtiger sind.
+
+Prioritätensetzung
+
+Die Person bewertet Aufgaben möglicherweise stärker nach unmittelbarer Wirkung und Fortschritt.
+Das Team orientiert sich hingegen stärker an gemeinsamer Abstimmung und langfristiger Stabilität.
+
+Dadurch kann sich verändern, welche Themen im Alltag Vorrang erhalten.
+
+Wirkung auf Ergebnisse
+
+Wenn die unterschiedlichen Arbeitslogiken bewusst genutzt werden, kann die Konstellation sowohl Geschwindigkeit als auch Qualität stärken.
+
+Ohne klare Abstimmung besteht jedoch das Risiko, dass Energie eher in Abstimmungsprozesse als in Ergebnisse fließt.
+
+10 INTEGRATIONSFAKTOR
+
+Neben der strukturellen Passung ist entscheidend, wie gut sich die Person in das bestehende Teamgefüge integrieren kann.
+
+Integrationsfähigkeit
+
+Die Integration hängt vor allem davon ab, wie bewusst die unterschiedlichen Arbeitslogiken im Alltag geführt werden. Je klarer Erwartungen, Prioritäten und Entscheidungswege definiert sind, desto leichter gelingt die Zusammenarbeit.
+
+Integrationsdauer
+
+Bei sichtbaren Strukturunterschieden benötigt ein Team in der Regel mehrere Monate, um einen stabilen gemeinsamen Arbeitsrhythmus zu entwickeln. In dieser Zeit sind klare Orientierung und regelmäßige Abstimmung besonders wichtig.
+
+Führungsaufwand
+
+Je stärker sich Team- und Personenprofil unterscheiden, desto wichtiger wird aktive Führung. Führung bedeutet in diesem Zusammenhang vor allem, Erwartungen zu klären, Prioritäten sichtbar zu machen und Entscheidungsprozesse transparent zu gestalten.
+
+Stabilisierung des Systems
+
+Eine bewusste Integration kann dazu führen, dass neue Stärken in das Team eingebracht werden, ohne die bestehende Teamstabilität zu gefährden. Ohne diese bewusste Steuerung steigt das Risiko dauerhafter Spannungen im Arbeitsalltag.
+
+11 ALTERNATIVWIRKUNG
+
+Neben der Frage, wie sich die Besetzung auf das Team auswirkt, ist auch relevant, welche Wirkung ohne diese Besetzung bestehen bleibt.
+
+Ohne die aktuelle Besetzung bleibt die bestehende Arbeitslogik des Teams weitgehend stabil. Entscheidungswege, Zusammenarbeit und Arbeitsrhythmus verändern sich nur geringfügig.
+
+Gleichzeitig bleiben auch bestehende Stärken und Schwächen des Teams unverändert bestehen.
+
+Die neue Besetzung bringt dagegen eine andere Arbeitslogik in das System ein. Dadurch können neue Impulse entstehen, insbesondere in Bereichen, in denen das Team bislang weniger stark ausgeprägt ist.
+
+Ob diese Veränderung zu einer nachhaltigen Verbesserung führt, hängt maßgeblich davon ab, wie bewusst die unterschiedlichen Arbeitsweisen im Alltag gesteuert werden.
+
+WICHTIG für Replit (Platzhalter)
+
+Damit dein System das automatisch generieren kann, brauchst du nur diese Variablen:
+
+{TEAM_DOMINANT_BEREICH}
+{PERSON_DOMINANT_BEREICH}
+
+{TEAM_SECONDARY_BEREICH}
+{PERSON_SECONDARY_BEREICH}
+
+{TEAM_ENTSCHEIDUNGSLOGIK}
+{PERSON_ENTSCHEIDUNGSLOGIK}
+
+Beispiele:
+
+TEAM_DOMINANT_BEREICH = Zusammenarbeit und Kommunikation
+PERSON_DOMINANT_BEREICH = Umsetzung und Tempo
+Mein Hinweis zur Struktur
+
+Diese neuen Kapitel solltest du im Bericht so platzieren:
+
+1 Systemstatus
+2 Managementfazit
+3 Strukturdiagnose ← NEU
+4 Warum dieses Ergebnis
+5 Systemwirkung
+6 Team-Spannungsanalyse
+7 Auswirkungen im Arbeitsalltag
+8 Auswirkungen auf Leistung ← NEU
+9 Verhalten unter Druck
+10 Risikoentwicklung
+11 Integrationsfaktor ← NEU
+12 Chancen
+13 Risiken
+14 Handlungsempfehlung
+15 Alternativwirkung ← NEU
