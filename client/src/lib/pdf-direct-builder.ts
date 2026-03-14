@@ -8,6 +8,12 @@ const COMP_LABELS: Record<ComponentKey, string> = {
   analytisch: "Struktur / Analyse",
 };
 
+const COMP_SHORT: Record<ComponentKey, string> = {
+  impulsiv: "Impulsiv",
+  intuitiv: "Intuitiv",
+  analytisch: "Analytisch",
+};
+
 function severityLabel(s: Severity) {
   if (s === "critical") return "KRITISCH";
   if (s === "warning") return "BEDINGT";
@@ -21,36 +27,55 @@ function hexToRgb(hex: string): RGB {
   return [parseInt(h.substring(0, 2), 16), parseInt(h.substring(2, 4), 16), parseInt(h.substring(4, 6), 16)];
 }
 
-const COL = {
+function blendRgb(c: RGB, alpha: number, bg: RGB = [255, 255, 255]): RGB {
+  return [
+    Math.round(c[0] * alpha + bg[0] * (1 - alpha)),
+    Math.round(c[1] * alpha + bg[1] * (1 - alpha)),
+    Math.round(c[2] * alpha + bg[2] * (1 - alpha)),
+  ];
+}
+
+const C = {
   black: [29, 29, 31] as RGB,
   dark: [72, 72, 74] as RGB,
   mid: [110, 110, 115] as RGB,
   light: [142, 142, 147] as RGB,
   faint: [176, 176, 181] as RGB,
-  line: [224, 224, 224] as RGB,
-  lineFaint: [240, 240, 242] as RGB,
-  green: [58, 154, 92] as RGB,
-  amber: [229, 168, 50] as RGB,
-  red: [214, 64, 69] as RGB,
-  redDark: [212, 58, 69] as RGB,
+  veryFaint: [210, 210, 215] as RGB,
+  line: [218, 218, 222] as RGB,
+  lineFaint: [238, 238, 242] as RGB,
+  bg: [247, 247, 250] as RGB,
+  white: [255, 255, 255] as RGB,
+  green: [46, 139, 80] as RGB,
+  greenLight: [232, 245, 237] as RGB,
+  amber: [210, 150, 30] as RGB,
+  amberLight: [254, 246, 224] as RGB,
+  red: [200, 50, 55] as RGB,
+  redLight: [253, 232, 233] as RGB,
   impulsiv: [196, 30, 58] as RGB,
   intuitiv: [243, 146, 0] as RGB,
   analytisch: [26, 93, 171] as RGB,
   blue: [0, 113, 227] as RGB,
+  headerDark: [34, 40, 56] as RGB,
 };
 
-const compColor = (k: ComponentKey): RGB => COL[k];
+const compColor = (k: ComponentKey): RGB => C[k];
 
 function fitRgb(rating: string): RGB {
-  if (rating === "GEEIGNET") return COL.green;
-  if (rating === "BEDINGT") return COL.amber;
-  return COL.red;
+  if (rating === "GEEIGNET") return C.green;
+  if (rating === "BEDINGT") return C.amber;
+  return C.red;
+}
+function fitBgRgb(rating: string): RGB {
+  if (rating === "GEEIGNET") return C.greenLight;
+  if (rating === "BEDINGT") return C.amberLight;
+  return C.redLight;
 }
 
 function controlRgb(ci: string): RGB {
-  if (ci === "hoch") return COL.red;
-  if (ci === "mittel") return COL.amber;
-  return COL.green;
+  if (ci === "hoch") return C.red;
+  if (ci === "mittel") return C.amber;
+  return C.green;
 }
 
 export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, candidateProfile: Triad, filename: string) {
@@ -59,41 +84,62 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
 
   const PW = 210;
   const PH = 297;
-  const ML = 18;
-  const MR = 18;
-  const MT = 18;
-  const MB = 16;
+  const ML = 16;
+  const MR = 16;
+  const MT = 14;
+  const MB = 18;
   const CW = PW - ML - MR;
+  const midX = ML + CW / 2;
+  let pageNum = 1;
 
   let y = MT;
 
+  function setC(rgb: RGB) { doc.setTextColor(rgb[0], rgb[1], rgb[2]); }
+  function setD(rgb: RGB) { doc.setDrawColor(rgb[0], rgb[1], rgb[2]); }
+  function setF(rgb: RGB) { doc.setFillColor(rgb[0], rgb[1], rgb[2]); }
+
+  function drawFooter() {
+    doc.setFontSize(7);
+    doc.setFont("helvetica", "normal");
+    setC(C.faint);
+    doc.text("bioLogic Passungsanalyse", ML, PH - 8);
+    doc.text(`Seite ${pageNum}`, PW - MR, PH - 8, { align: "right" });
+    setD(C.lineFaint);
+    doc.setLineWidth(0.2);
+    doc.line(ML, PH - 11, ML + CW, PH - 11);
+  }
+
+  drawFooter();
+
+  function newPage() {
+    doc.addPage();
+    pageNum++;
+    y = MT;
+    drawFooter();
+  }
+
   function checkPage(needed: number) {
     if (y + needed > PH - MB) {
-      doc.addPage();
-      y = MT;
+      newPage();
     }
   }
 
-  function setColor(rgb: RGB) { doc.setTextColor(rgb[0], rgb[1], rgb[2]); }
-  function setDraw(rgb: RGB) { doc.setDrawColor(rgb[0], rgb[1], rgb[2]); }
-  function setFill(rgb: RGB) { doc.setFillColor(rgb[0], rgb[1], rgb[2]); }
-
-  function drawLine(x1: number, yy: number, x2: number, color: RGB = COL.line) {
-    setDraw(color);
-    doc.setLineWidth(0.3);
+  function hline(x1: number, yy: number, x2: number, color: RGB = C.line, w = 0.3) {
+    setD(color);
+    doc.setLineWidth(w);
     doc.line(x1, yy, x2, yy);
   }
 
-  function wrapText(text: string, maxW: number, fontSize: number): string[] {
+  function wrap(text: string, maxW: number, fontSize: number): string[] {
     doc.setFontSize(fontSize);
     return doc.splitTextToSize(text, maxW) as string[];
   }
 
-  function printWrapped(text: string, x: number, maxW: number, fontSize: number, color: RGB, lineH: number, bold = false): number {
+  function printText(text: string, x: number, maxW: number, fontSize: number, color: RGB, lineH: number, style: string = "normal"): number {
     doc.setFontSize(fontSize);
-    doc.setFont("helvetica", bold ? "bold" : "normal");
-    setColor(color);
-    const lines = wrapText(text, maxW, fontSize);
+    doc.setFont("helvetica", style);
+    setC(color);
+    const lines = wrap(text, maxW, fontSize);
     for (const line of lines) {
       checkPage(lineH);
       doc.text(line, x, y);
@@ -102,116 +148,313 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
     return lines.length;
   }
 
-  function sectionTitle(num: number, title: string) {
-    checkPage(14);
-    setFill(COL.lineFaint);
-    doc.roundedRect(ML, y - 3.8, 7, 7, 1, 1, "F");
-    doc.setFontSize(7.5);
-    doc.setFont("helvetica", "bold");
-    setColor(COL.light);
-    doc.text(String(num), ML + 3.5, y + 0.8, { align: "center" });
+  function sectionHead(num: number, title: string, accentColor: RGB = C.headerDark) {
+    checkPage(16);
+    y += 2;
 
-    doc.setFontSize(9.5);
+    setF(accentColor);
+    doc.roundedRect(ML, y - 4.5, CW, 9, 1.5, 1.5, "F");
+
+    doc.setFontSize(8);
     doc.setFont("helvetica", "bold");
-    setColor(COL.black);
-    doc.text(title.toUpperCase(), ML + 10, y + 0.5);
+    setC(C.white);
+
+    const numBg = blendRgb(C.white, 0.2, accentColor);
+    setF(numBg);
+    doc.roundedRect(ML + 3, y - 3.2, 6.5, 6.5, 1, 1, "F");
+    doc.setFontSize(8);
+    setC(C.white);
+    doc.text(String(num), ML + 6.25, y + 1, { align: "center" });
+
+    doc.setFontSize(8.5);
+    doc.setFont("helvetica", "bold");
+    setC(C.white);
+    doc.text(title.toUpperCase(), ML + 12, y + 1);
     y += 10;
   }
 
   function separator() {
-    checkPage(8);
-    y += 3;
-    drawLine(ML, y, ML + CW);
-    y += 7;
+    checkPage(10);
+    y += 4;
+    hline(ML, y, ML + CW, C.lineFaint);
+    y += 6;
   }
 
-  function bullet(x: number, yy: number, color: RGB) {
-    setFill(color);
-    doc.circle(x + 1.2, yy - 1.2, 1.2, "F");
+  function dot(x: number, yy: number, color: RGB, r = 1.2) {
+    setF(color);
+    doc.circle(x + r, yy - r, r, "F");
   }
 
-  function labelSmall(text: string) {
-    checkPage(6);
-    doc.setFontSize(7);
+  function labelTag(text: string) {
+    checkPage(7);
+    doc.setFontSize(6.5);
     doc.setFont("helvetica", "bold");
-    setColor(COL.light);
+    setC(C.light);
     doc.text(text.toUpperCase(), ML, y);
-    y += 5;
+    y += 4.5;
+  }
+
+  function badge(x: number, yy: number, text: string, bgColor: RGB, textColor: RGB, w?: number) {
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    const tw = w || doc.getTextWidth(text) + 6;
+    setF(bgColor);
+    doc.roundedRect(x, yy - 4, tw, 7, 1.5, 1.5, "F");
+    setC(textColor);
+    doc.text(text, x + tw / 2, yy + 0.3, { align: "center" });
+    return tw;
+  }
+
+  function bgBox(x: number, yy: number, w: number, h: number, color: RGB, borderColor?: RGB) {
+    setF(color);
+    doc.roundedRect(x, yy, w, h, 2, 2, "F");
+    if (borderColor) {
+      setD(borderColor);
+      doc.setLineWidth(0.3);
+      doc.roundedRect(x, yy, w, h, 2, 2, "S");
+    }
+  }
+
+  function drawBar(x: number, yy: number, maxW: number, pct: number, color: RGB, h: number = 5) {
+    setF(C.lineFaint);
+    doc.roundedRect(x, yy, maxW, h, h / 2, h / 2, "F");
+    if (pct > 0) {
+      const barW = Math.max(h, (pct / 100) * maxW);
+      setF(color);
+      doc.roundedRect(x, yy, barW, h, h / 2, h / 2, "F");
+    }
   }
 
   const fitCol = fitRgb(result.fitRating);
+  const fitBg = fitBgRgb(result.fitRating);
   const cCol = controlRgb(result.controlIntensity);
   const cLabel = result.controlIntensity === "hoch" ? "Hoch" : result.controlIntensity === "mittel" ? "Mittel" : "Gering";
+  const dateStr = new Date().toLocaleDateString("de-CH", { day: "2-digit", month: "long", year: "numeric" });
+  const personLabel = result.candidateName !== "Die Person" ? result.candidateName : "Person";
+
+  setF(C.headerDark);
+  doc.rect(0, 0, PW, 42, "F");
+
+  setF(fitCol);
+  doc.rect(0, 42, PW, 1.5, "F");
 
   doc.setFontSize(7);
-  doc.setFont("helvetica", "bold");
-  setColor(COL.faint);
-  doc.text("PASSUNGSBERICHT", ML, y);
-  const dateStr = new Date().toLocaleDateString("de-CH", { day: "2-digit", month: "long", year: "numeric" });
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.5);
-  doc.text(dateStr, PW - MR, y, { align: "right" });
+  setC(blendRgb(C.white, 0.5, C.headerDark));
+  doc.text("PASSUNGSBERICHT", ML, y + 2);
+  doc.text(dateStr, PW - MR, y + 2, { align: "right" });
+  y += 9;
+
+  doc.setFontSize(18);
+  doc.setFont("helvetica", "bold");
+  setC(C.white);
+  doc.text(result.roleName, ML, y);
   y += 7;
 
-  doc.setFontSize(16);
-  doc.setFont("helvetica", "bold");
-  setColor(COL.black);
-  doc.text(result.roleName, ML, y);
-  y += 5;
-
-  doc.setFontSize(8);
+  doc.setFontSize(8.5);
   doc.setFont("helvetica", "normal");
-  setColor(COL.mid);
-  const personLabel = result.candidateName !== "Die Person" ? result.candidateName : "Person";
+  setC(blendRgb(C.white, 0.65, C.headerDark));
   doc.text(`Rolle: ${result.roleConstellationLabel}  |  ${personLabel}: ${result.candConstellationLabel}`, ML, y);
-  y += 8;
+  y = 49;
 
-  doc.setFontSize(9);
-  doc.setFont("helvetica", "bold");
-  setColor(COL.dark);
-  doc.text("Grundpassung: ", ML, y);
-  const gpW = doc.getTextWidth("Grundpassung: ");
-  setColor(fitCol);
-  doc.text(result.fitLabel, ML + gpW, y);
+  const badgeRowY = y;
+  checkPage(14);
 
-  const midX = ML + CW / 2;
-  setColor(COL.dark);
-  doc.text("Führungsaufwand: ", midX, y);
-  const faW = doc.getTextWidth("Führungsaufwand: ");
-  setColor(cCol);
-  doc.text(cLabel, midX + faW, y);
-  y += 4;
+  const gpBadgeW = badge(ML, badgeRowY, result.fitLabel, fitBg, fitCol);
+  doc.setFontSize(7.5);
+  doc.setFont("helvetica", "normal");
+  setC(C.mid);
+  doc.text("Grundpassung", ML, badgeRowY + 6);
 
-  setDraw(fitCol);
-  doc.setLineWidth(0.8);
-  doc.line(ML, y, ML + CW, y);
-  y += 8;
+  const cBadgeBg = cCol === C.red ? C.redLight : cCol === C.amber ? C.amberLight : C.greenLight;
+  badge(midX, badgeRowY, cLabel, cBadgeBg, cCol);
+  doc.setFontSize(7.5);
+  doc.setFont("helvetica", "normal");
+  setC(C.mid);
+  doc.text("Führungsaufwand", midX, badgeRowY + 6);
+
+  y = badgeRowY + 12;
 
   result.summaryText.split("\n\n").forEach(para => {
-    printWrapped(para, ML, CW, 8.5, COL.dark, 4.2);
+    printText(para, ML, CW, 8.5, C.dark, 4.3);
     y += 2;
   });
 
   if (result.executiveBullets.length > 0) {
     y += 2;
-    labelSmall("Warum dieses Ergebnis");
+    labelTag("Warum dieses Ergebnis");
     result.executiveBullets.forEach(b => {
       checkPage(6);
-      bullet(ML, y, fitCol);
-      printWrapped(b, ML + 5, CW - 5, 8.5, COL.dark, 4.2);
+      dot(ML, y, fitCol);
+      printText(b, ML + 5, CW - 5, 8.5, C.dark, 4.3);
       y += 1;
     });
   }
 
   if (result.constellationRisks.length > 0) {
     y += 2;
-    labelSmall("Risiken dieser Konstellation");
+    labelTag("Risiken dieser Konstellation");
     result.constellationRisks.forEach(r => {
       checkPage(6);
-      bullet(ML, y, COL.redDark);
-      printWrapped(r, ML + 5, CW - 5, 8.5, COL.dark, 4.2);
+      dot(ML, y, C.red);
+      printText(r, ML + 5, CW - 5, 8.5, C.dark, 4.3);
       y += 1;
     });
+  }
+
+  separator();
+
+  sectionHead(1, "Soll-Ist-Profil");
+
+  const barMaxW = 55;
+  const barH = 5.5;
+  const halfW = CW / 2 - 4;
+  const leftBoxX = ML;
+  const rightBoxX = midX + 4;
+  const profileTotalH = 52;
+
+  checkPage(profileTotalH + 4);
+
+  bgBox(leftBoxX, y, halfW, profileTotalH, C.bg, C.lineFaint);
+  bgBox(rightBoxX, y, halfW, profileTotalH, C.bg, C.lineFaint);
+
+  const boxPad = 6;
+  let leftY = y + boxPad;
+  let rightY = y + boxPad;
+
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "bold");
+  setC(C.black);
+  doc.text("Soll-Profil", leftBoxX + boxPad, leftY);
+  doc.setFont("helvetica", "normal");
+  setC(C.mid);
+  doc.text(" (Rolle)", leftBoxX + boxPad + doc.getTextWidth("Soll-Profil"), leftY);
+  leftY += 7;
+
+  doc.setFont("helvetica", "bold");
+  setC(C.black);
+  doc.text("Ist-Profil", rightBoxX + boxPad, rightY);
+  doc.setFont("helvetica", "normal");
+  setC(C.mid);
+  doc.text(" (Person)", rightBoxX + boxPad + doc.getTextWidth("Ist-Profil"), rightY);
+  rightY += 7;
+
+  const keys: ComponentKey[] = ["impulsiv", "intuitiv", "analytisch"];
+
+  for (const k of keys) {
+    const rv = Math.round(roleTriad[k]);
+    const cv = Math.round(candidateProfile[k]);
+    const col = compColor(k);
+
+    doc.setFontSize(7.5);
+    doc.setFont("helvetica", "normal");
+    setC(C.mid);
+    doc.text(COMP_SHORT[k], leftBoxX + boxPad, leftY + 1);
+    drawBar(leftBoxX + boxPad + 22, leftY - 2.5, barMaxW, rv, col, barH);
+    doc.setFontSize(7.5);
+    doc.setFont("helvetica", "bold");
+    setC(C.white);
+    const rvStr = `${rv} %`;
+    if (rv > 12) {
+      doc.text(rvStr, leftBoxX + boxPad + 22 + 3, leftY + 1.2);
+    } else {
+      setC(col);
+      doc.text(rvStr, leftBoxX + boxPad + 22 + Math.max(barH, (rv / 100) * barMaxW) + 2, leftY + 1.2);
+    }
+    leftY += 11;
+
+    doc.setFontSize(7.5);
+    doc.setFont("helvetica", "normal");
+    setC(C.mid);
+    doc.text(COMP_SHORT[k], rightBoxX + boxPad, rightY + 1);
+    drawBar(rightBoxX + boxPad + 22, rightY - 2.5, barMaxW, cv, col, barH);
+    doc.setFontSize(7.5);
+    doc.setFont("helvetica", "bold");
+    setC(C.white);
+    const cvStr = `${cv} %`;
+    if (cv > 12) {
+      doc.text(cvStr, rightBoxX + boxPad + 22 + 3, rightY + 1.2);
+    } else {
+      setC(col);
+      doc.text(cvStr, rightBoxX + boxPad + 22 + Math.max(barH, (cv / 100) * barMaxW) + 2, rightY + 1.2);
+    }
+    rightY += 11;
+  }
+
+  y += profileTotalH + 6;
+
+  let maxGap = 0; let maxKey: ComponentKey = "analytisch";
+  for (const k of keys) { const g = Math.abs(roleTriad[k] - candidateProfile[k]); if (g > maxGap) { maxGap = g; maxKey = k; } }
+  printText(`Die grösste Abweichung liegt im Bereich ${COMP_LABELS[maxKey]}. Genau dort liegt die Kernanforderung der Rolle.`, ML, CW, 8.5, C.dark, 4.3);
+  y += 2;
+
+  checkPage(30);
+  const colW = [CW * 0.38, CW * 0.16, CW * 0.16, CW * 0.18];
+  const colX = [ML, ML + colW[0], ML + colW[0] + colW[1], ML + colW[0] + colW[1] + colW[2]];
+  doc.setFontSize(6.5);
+  doc.setFont("helvetica", "bold");
+  setC(C.light);
+  doc.text("KOMPONENTE", colX[0], y);
+  doc.text("ROLLE", colX[1] + colW[1], y, { align: "right" });
+  doc.text("PERSON", colX[2] + colW[2], y, { align: "right" });
+  doc.text("ABWEICHUNG", colX[3] + colW[3], y, { align: "right" });
+  y += 2;
+  hline(ML, y, ML + CW, C.line);
+  y += 5;
+
+  for (const k of keys) {
+    const rv = Math.round(roleTriad[k]);
+    const cv = Math.round(candidateProfile[k]);
+    const diff = cv - rv;
+    const diffStr = diff > 0 ? `+${diff}` : `${diff}`;
+    const diffCol = Math.abs(diff) > 10 ? C.red : Math.abs(diff) > 5 ? C.amber : C.dark;
+
+    checkPage(8);
+    dot(colX[0], y, compColor(k));
+    doc.setFontSize(8.5);
+    doc.setFont("helvetica", "bold");
+    setC(compColor(k));
+    doc.text(labelComponent(k), colX[0] + 5, y);
+    doc.setFont("helvetica", "normal");
+    setC(C.dark);
+    doc.text(`${rv} %`, colX[1] + colW[1], y, { align: "right" });
+    doc.text(`${cv} %`, colX[2] + colW[2], y, { align: "right" });
+    doc.setFont("helvetica", "bold");
+    setC(diffCol);
+    doc.text(diffStr, colX[3] + colW[3], y, { align: "right" });
+    y += 3;
+    hline(ML, y, ML + CW, C.lineFaint);
+    y += 4.5;
+  }
+
+  y += 2;
+  labelTag("Bedeutung der Komponenten");
+  const compMeaning: Record<ComponentKey, string> = {
+    intuitiv: "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen.",
+    impulsiv: "Aufgaben schnell vorantreiben, Prioritäten setzen und Ergebnisse liefern.",
+    analytisch: "Strukturen schaffen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten.",
+  };
+  for (const k of ["intuitiv", "impulsiv", "analytisch"] as ComponentKey[]) {
+    checkPage(8);
+    dot(ML, y, compColor(k));
+    doc.setFontSize(8.5);
+    doc.setFont("helvetica", "bold");
+    setC(C.black);
+    const nameStr = labelComponent(k);
+    doc.text(nameStr, ML + 5, y);
+    const nameW = doc.getTextWidth(nameStr);
+    doc.setFont("helvetica", "normal");
+    setC(C.mid);
+    const descLines = wrap(` – ${compMeaning[k]}`, CW - 5 - nameW, 8.5);
+    doc.text(descLines[0], ML + 5 + nameW, y);
+    if (descLines.length > 1) {
+      for (let i = 1; i < descLines.length; i++) {
+        y += 4.3;
+        checkPage(4.3);
+        doc.text(descLines[i], ML + 5, y);
+      }
+    }
+    y += 5.5;
   }
 
   separator();
@@ -224,182 +467,117 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
       : [{ key: result.candDomKey, label: COMP_LABELS[result.candDomKey] }];
   const shiftSymbol = result.candIsEqualDist ? "!=" : result.candIsDualDom ? "<>" : sameDom ? "=" : "->";
 
-  sectionTitle(1, "Unterschied zwischen Rolle und Person");
+  sectionHead(2, "Unterschied zwischen Rolle und Person", [60, 68, 90]);
 
-  checkPage(18);
+  checkPage(20);
   doc.setFontSize(7);
   doc.setFont("helvetica", "bold");
-  setColor(COL.light);
+  setC(C.light);
   doc.text("ROLLE", ML + 5, y);
-  doc.text("PERSON", ML + CW * 0.6, y);
+  doc.text("PERSON", midX + 10, y);
   y += 2;
-  drawLine(ML, y, ML + CW);
+  hline(ML, y, ML + CW);
   y += 6;
 
   doc.setFontSize(9);
   doc.setFont("helvetica", "bold");
-  setColor(compColor(result.roleDomKey));
+  setC(compColor(result.roleDomKey));
   doc.text(COMP_LABELS[result.roleDomKey], ML + 5, y);
 
-  setColor(COL.light);
-  doc.setFontSize(12);
-  doc.text(shiftSymbol, ML + CW * 0.42, y, { align: "center" });
+  setC(C.faint);
+  doc.setFontSize(13);
+  doc.text(shiftSymbol, midX, y, { align: "center" });
 
   doc.setFontSize(9);
   let badgeY = y;
   candBadges.forEach(b => {
     doc.setFont("helvetica", "bold");
-    setColor(compColor(b.key));
-    doc.text(b.label, ML + CW * 0.6, badgeY);
-    badgeY += 5;
+    setC(compColor(b.key));
+    doc.text(b.label, midX + 10, badgeY);
+    badgeY += 5.5;
   });
-  y = Math.max(y + 5, badgeY) + 2;
+  y = Math.max(y + 6, badgeY) + 3;
 
-  printWrapped(result.dominanceShiftText, ML, CW, 8.5, COL.dark, 4.2);
-
-  separator();
-
-  sectionTitle(2, "Vergleich der Profile");
-
-  const keys: ComponentKey[] = ["impulsiv", "intuitiv", "analytisch"];
-  let maxGap = 0; let maxKey: ComponentKey = "analytisch";
-  for (const k of keys) { const g = Math.abs(roleTriad[k] - candidateProfile[k]); if (g > maxGap) { maxGap = g; maxKey = k; } }
-  printWrapped(`Die grösste Abweichung liegt im Bereich ${COMP_LABELS[maxKey]}. Genau dort liegt die Kernanforderung der Rolle.`, ML, CW, 8.5, COL.dark, 4.2);
-  y += 2;
-
-  checkPage(28);
-  const colWidths = [CW * 0.4, CW * 0.15, CW * 0.15, CW * 0.15];
-  const colStarts = [ML, ML + colWidths[0], ML + colWidths[0] + colWidths[1], ML + colWidths[0] + colWidths[1] + colWidths[2]];
-  doc.setFontSize(7);
-  doc.setFont("helvetica", "bold");
-  setColor(COL.light);
-  doc.text("KOMPONENTE", colStarts[0], y);
-  doc.text("ROLLE", colStarts[1] + colWidths[1], y, { align: "right" });
-  doc.text("PERSON", colStarts[2] + colWidths[2], y, { align: "right" });
-  doc.text("ABWEICHUNG", colStarts[3] + colWidths[3], y, { align: "right" });
-  y += 2;
-  drawLine(ML, y, ML + CW);
-  y += 5;
-
-  for (const k of keys) {
-    const rv = Math.round(roleTriad[k]);
-    const cv = Math.round(candidateProfile[k]);
-    const diff = cv - rv;
-    const diffStr = diff > 0 ? `+${diff}` : `${diff}`;
-    const diffCol = Math.abs(diff) > 10 ? COL.red : Math.abs(diff) > 5 ? COL.amber : COL.dark;
-
-    checkPage(7);
-    bullet(colStarts[0], y, compColor(k));
-    doc.setFontSize(8.5);
-    doc.setFont("helvetica", "bold");
-    setColor(compColor(k));
-    doc.text(labelComponent(k), colStarts[0] + 5, y);
-    doc.setFont("helvetica", "normal");
-    setColor(COL.dark);
-    doc.text(`${rv} %`, colStarts[1] + colWidths[1], y, { align: "right" });
-    doc.text(`${cv} %`, colStarts[2] + colWidths[2], y, { align: "right" });
-    doc.setFont("helvetica", "bold");
-    setColor(diffCol);
-    doc.text(diffStr, colStarts[3] + colWidths[3], y, { align: "right" });
-    y += 3;
-    drawLine(ML, y, ML + CW, COL.lineFaint);
-    y += 4;
-  }
-
-  y += 2;
-  labelSmall("Bedeutung der Komponenten");
-  const compMeaning: Record<ComponentKey, string> = {
-    intuitiv: "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen.",
-    impulsiv: "Aufgaben schnell vorantreiben, Prioritäten setzen und Ergebnisse liefern.",
-    analytisch: "Strukturen schaffen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten.",
-  };
-  for (const k of ["intuitiv", "impulsiv", "analytisch"] as ComponentKey[]) {
-    checkPage(8);
-    bullet(ML, y, compColor(k));
-    doc.setFontSize(8.5);
-    doc.setFont("helvetica", "bold");
-    setColor(COL.black);
-    const nameStr = labelComponent(k);
-    doc.text(nameStr, ML + 5, y);
-    const nameW = doc.getTextWidth(nameStr);
-    doc.setFont("helvetica", "normal");
-    setColor(COL.mid);
-    doc.text(` – ${compMeaning[k]}`, ML + 5 + nameW, y);
-    y += 5;
-  }
+  printText(result.dominanceShiftText, ML, CW, 8.5, C.dark, 4.3);
 
   separator();
 
-  sectionTitle(3, "Wirkung der Besetzung im Arbeitsalltag");
+  sectionHead(3, "Wirkung der Besetzung im Arbeitsalltag", [75, 55, 45]);
   result.impactAreas.forEach((area, idx) => {
-    const sevCol = area.severity === "critical" ? COL.red : area.severity === "warning" ? COL.amber : COL.green;
-    checkPage(22);
-    bullet(ML, y, sevCol);
-    doc.setFontSize(8.5);
+    const sevCol = area.severity === "critical" ? C.red : area.severity === "warning" ? C.amber : C.green;
+    const sevBg = area.severity === "critical" ? C.redLight : area.severity === "warning" ? C.amberLight : C.greenLight;
+    checkPage(24);
+
+    dot(ML, y, sevCol, 1.5);
+    doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
-    setColor(COL.black);
+    setC(C.black);
     const labelStr = area.label;
     doc.text(labelStr, ML + 5, y);
-    const lw = doc.getTextWidth(labelStr);
-    doc.setFontSize(7.5);
-    setColor(sevCol);
-    doc.text(` ${severityLabel(area.severity)}`, ML + 5 + lw, y);
-    y += 5;
-    printWrapped(area.roleNeed, ML + 5, CW - 5, 8.5, COL.black, 4.2, true);
-    printWrapped(area.candidatePattern, ML + 5, CW - 5, 8.5, COL.dark, 4.2);
-    doc.setFont("helvetica", "italic");
-    printWrapped(area.risk, ML + 5, CW - 5, 8.5, COL.mid, 4.2);
+    const lw = doc.getTextWidth(labelStr + " ");
+    badge(ML + 5 + lw, y, severityLabel(area.severity), sevBg, sevCol, 22);
+    y += 6;
+    printText(area.roleNeed, ML + 5, CW - 5, 8.5, C.black, 4.3, "bold");
+    printText(area.candidatePattern, ML + 5, CW - 5, 8.5, C.dark, 4.3);
+    printText(area.risk, ML + 5, CW - 5, 8.5, C.mid, 4.3, "italic");
     if (idx < result.impactAreas.length - 1) {
-      y += 1;
-      drawLine(ML, y, ML + CW, COL.lineFaint);
-      y += 4;
+      y += 2;
+      hline(ML + 5, y, ML + CW - 5, C.lineFaint);
+      y += 5;
     }
   });
 
   separator();
 
-  sectionTitle(4, "Verhalten unter Druck");
-  checkPage(12);
-  doc.setFontSize(8);
+  sectionHead(4, "Verhalten unter Druck", [120, 90, 40]);
+  checkPage(14);
+
+  setF(C.amberLight);
+  doc.roundedRect(ML, y - 1, CW, 0.8, 0.4, 0.4, "F");
+  y += 3;
+  doc.setFontSize(7.5);
   doc.setFont("helvetica", "bold");
-  setColor(COL.amber);
+  setC(C.amber);
   doc.text("KONTROLLIERTER DRUCK", ML, y);
   y += 5;
-  printWrapped(result.stressBehavior.controlledPressure, ML, CW, 8.5, COL.dark, 4.2);
-  y += 2;
+  printText(result.stressBehavior.controlledPressure, ML, CW, 8.5, C.dark, 4.3);
+  y += 3;
 
-  checkPage(12);
-  doc.setFontSize(8);
+  checkPage(14);
+  setF(C.redLight);
+  doc.roundedRect(ML, y - 1, CW, 0.8, 0.4, 0.4, "F");
+  y += 3;
+  doc.setFontSize(7.5);
   doc.setFont("helvetica", "bold");
-  setColor(COL.red);
+  setC(C.red);
   doc.text("UNKONTROLLIERTER STRESS", ML, y);
   y += 5;
-  printWrapped(result.stressBehavior.uncontrolledStress, ML, CW, 8.5, COL.dark, 4.2);
-  y += 2;
-  doc.setFont("helvetica", "italic");
-  printWrapped("Unter zunehmendem Arbeitsdruck können sich diese Verhaltensmuster verstärken. Dadurch entstehen im Arbeitsalltag Risiken für Abstimmung, Führung und Zusammenarbeit.", ML, CW, 8.5, COL.mid, 4.2);
+  printText(result.stressBehavior.uncontrolledStress, ML, CW, 8.5, C.dark, 4.3);
+  y += 3;
+  printText("Unter zunehmendem Arbeitsdruck können sich diese Verhaltensmuster verstärken. Dadurch entstehen im Arbeitsalltag Risiken für Abstimmung, Führung und Zusammenarbeit.", ML, CW, 8.5, C.mid, 4.3, "italic");
 
   separator();
 
-  sectionTitle(5, "Risikoprognose");
+  sectionHead(5, "Risikoprognose", [60, 80, 70]);
   result.riskTimeline.forEach((phase, i) => {
-    const phaseCol = i === 0 ? COL.green : i === 1 ? COL.amber : COL.red;
-    checkPage(14);
+    const phaseCol = i === 0 ? C.green : i === 1 ? C.amber : C.red;
+    const phaseBg = i === 0 ? C.greenLight : i === 1 ? C.amberLight : C.redLight;
+    checkPage(16);
+
+    setF(phaseBg);
+    doc.roundedRect(ML, y - 3, CW, 7, 1.2, 1.2, "F");
     doc.setFontSize(8);
     doc.setFont("helvetica", "bold");
-    setColor(phaseCol);
-    const phaseLabel = phase.label;
-    doc.text(phaseLabel, ML, y);
-    const plW = doc.getTextWidth(phaseLabel + " ");
+    setC(phaseCol);
+    doc.text(phase.label, ML + 3, y + 1);
     doc.setFont("helvetica", "normal");
-    setColor(COL.light);
-    doc.text(phase.period, ML + plW, y);
-    y += 5;
-    printWrapped(phase.text, ML, CW, 8.5, COL.dark, 4.2);
+    setC(C.mid);
+    const plW = doc.getTextWidth(phase.label + "  ");
+    doc.text(phase.period, ML + 3 + plW, y + 1);
+    y += 8;
+    printText(phase.text, ML, CW, 8.5, C.dark, 4.3);
     if (i < result.riskTimeline.length - 1) {
-      y += 1;
-      drawLine(ML, y, ML + CW, COL.lineFaint);
-      y += 4;
+      y += 3;
     }
   });
 
@@ -424,132 +602,139 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   const rDevLevel = result.developmentLevel;
   const rDev = rDevLevel >= 4 ? 3 : rDevLevel >= 3 ? 2 : 1;
   const rDevLabel = result.developmentLabel === "hoch" ? "Geringer Entwicklungsaufwand" : result.developmentLabel === "mittel" ? "Entwicklung mit gezielter Führung möglich" : "Hoher Entwicklungsaufwand, Ergebnis unsicher";
-  const rGaugeCol = rDev === 3 ? COL.green : rDev === 2 ? COL.amber : COL.red;
+  const rGaugeCol = rDev === 3 ? C.green : rDev === 2 ? C.amber : C.red;
   const rFitColorRgb = hexToRgb(rFitColor);
 
-  sectionTitle(6, "Gesamtbewertung");
+  sectionHead(6, "Gesamtbewertung", [40, 55, 75]);
 
-  checkPage(22);
+  checkPage(30);
+
+  const summBoxH = 26;
+  bgBox(ML, y, CW, summBoxH, C.bg, C.lineFaint);
+
+  const sy = y + 6;
   doc.setFontSize(8.5);
   doc.setFont("helvetica", "bold");
-  setColor(COL.dark);
-  doc.text("Rolle", ML, y);
-  doc.setFont("helvetica", "bold");
-  setColor(COL.black);
-  doc.text(result.roleName, ML + 45, y);
-  y += 3;
-  drawLine(ML, y, ML + CW);
-  y += 5;
+  setC(C.mid);
+  doc.text("Rolle", ML + 5, sy);
+  setC(C.black);
+  doc.text(result.roleName, ML + 42, sy);
 
   doc.setFont("helvetica", "bold");
-  setColor(COL.dark);
-  doc.text("Grundpassung", ML, y);
-  setColor(rFitColorRgb);
-  doc.text(rFitLabel, ML + 45, y);
-  y += 3;
-  drawLine(ML, y, ML + CW);
-  y += 5;
+  setC(C.mid);
+  doc.text("Grundpassung", ML + 5, sy + 8);
+  badge(ML + 42, sy + 8, rFitLabel, fitBg, fitCol);
 
   doc.setFont("helvetica", "bold");
-  setColor(COL.dark);
-  doc.text("Entwicklungsprognose", ML, y);
-  setColor(rGaugeCol);
-  doc.text(`${rDev} von 3`, ML + 45, y);
-  const devNumW = doc.getTextWidth(`${rDev} von 3 `);
+  setC(C.mid);
+  doc.text("Entwicklung", ML + 5, sy + 16);
+  setC(rGaugeCol);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${rDev} / 3`, ML + 42, sy + 16);
   doc.setFont("helvetica", "normal");
-  setColor(COL.dark);
-  doc.text(rDevLabel, ML + 45 + devNumW, y);
-  y += 3;
-  drawLine(ML, y, ML + CW);
-  y += 6;
+  setC(C.dark);
+  doc.text(rDevLabel, ML + 54, sy + 16);
 
-  setDraw(rFitColorRgb);
-  doc.setLineWidth(0.6);
-  doc.line(ML, y, ML, y + 8);
-  printWrapped(rFazit, ML + 4, CW - 4, 8.5, COL.dark, 4.2);
-  y += 3;
-  printWrapped(result.developmentText, ML, CW, 8.5, COL.dark, 4.2);
-  y += 3;
+  y += summBoxH + 6;
 
-  drawLine(ML, y, ML + CW);
-  y += 5;
-  labelSmall("Managementeinschätzung");
+  setD(rFitColorRgb);
+  doc.setLineWidth(0.7);
+  const fazitLines = wrap(rFazit, CW - 6, 8.5);
+  const fazitH = fazitLines.length * 4.3 + 2;
+  doc.line(ML, y, ML, y + fazitH);
+  printText(rFazit, ML + 5, CW - 6, 8.5, C.dark, 4.3);
+  y += 3;
+  printText(result.developmentText, ML, CW, 8.5, C.dark, 4.3);
+  y += 4;
+
+  checkPage(20);
   const mgmtText = rFitLabel === "Geeignet"
     ? "Die Arbeitsweise der Person und die Anforderungen der Rolle stimmen gut überein. Eine stabile Besetzung ist ohne erhöhten Führungsaufwand möglich. Aus Managementsicht wird diese Besetzung empfohlen."
     : rFitLabel === "Bedingt geeignet"
     ? "Die Arbeitsweise der Person weicht in einzelnen Bereichen von den Anforderungen der Rolle ab. Eine stabile Besetzung ist mit gezielter Führung und regelmässiger Rückmeldung möglich. Aus Managementsicht ist diese Besetzung unter Voraussetzungen vertretbar."
     : "Die strukturelle Abweichung zwischen Rolle und Person ist deutlich. Eine stabile Besetzung wäre nur mit dauerhaft erhöhtem Führungsaufwand möglich. Aus Managementsicht wird diese Besetzung nicht empfohlen.";
-  printWrapped(mgmtText, ML, CW, 8.5, COL.dark, 4.2);
+
+  const mgmtLines = wrap(mgmtText, CW - 10, 8.5);
+  const mgmtBoxH = mgmtLines.length * 4.3 + 12;
+  bgBox(ML, y, CW, mgmtBoxH, fitBg);
+  y += 5;
+  doc.setFontSize(6.5);
+  doc.setFont("helvetica", "bold");
+  setC(fitCol);
+  doc.text("MANAGEMENTEINSCHÄTZUNG", ML + 5, y);
+  y += 4.5;
+  printText(mgmtText, ML + 5, CW - 10, 8.5, C.dark, 4.3);
+  y += 4;
 
   if (result.integrationsplan) {
     separator();
-    sectionTitle(7, "30-Tage-Integrationsplan");
+    sectionHead(7, "30-Tage-Integrationsplan", C.blue);
     result.integrationsplan.forEach((phase, idx) => {
-      const phaseCol = phase.num === 1 ? COL.blue : phase.num === 2 ? COL.intuitiv : COL.green;
-      checkPage(20);
-      doc.setFontSize(9);
+      const phaseCol = phase.num === 1 ? C.blue : phase.num === 2 ? C.intuitiv : C.green;
+      checkPage(22);
+      doc.setFontSize(9.5);
       doc.setFont("helvetica", "bold");
-      setColor(phaseCol);
+      setC(phaseCol);
       doc.text(`Phase ${phase.num}: ${phase.title}`, ML, y);
       doc.setFont("helvetica", "normal");
-      setColor(COL.light);
+      setC(C.light);
       const ptW = doc.getTextWidth(`Phase ${phase.num}: ${phase.title} `);
       doc.text(`(${phase.period})`, ML + ptW, y);
       y += 5;
       doc.setFontSize(8);
       doc.setFont("helvetica", "bold");
-      setColor(COL.dark);
+      setC(C.dark);
       doc.text(`Ziel: ${phase.ziel}`, ML, y);
       y += 6;
 
-      labelSmall("Massnahmen");
+      labelTag("Massnahmen");
       phase.items.forEach(item => {
         checkPage(6);
         doc.setFontSize(8.5);
         doc.setFont("helvetica", "bold");
-        setColor(phaseCol);
+        setC(phaseCol);
         doc.text("–", ML, y);
         doc.setFont("helvetica", "normal");
-        setColor(COL.dark);
-        const lines = wrapText(item, CW - 6, 8.5);
+        setC(C.dark);
+        const lines = wrap(item, CW - 6, 8.5);
         lines.forEach(line => {
           checkPage(4.5);
           doc.text(line, ML + 5, y);
-          y += 4.2;
+          y += 4.3;
         });
         y += 1;
       });
 
-      checkPage(10);
+      checkPage(12);
       y += 2;
-      setDraw(phaseCol);
-      doc.setLineWidth(0.4);
-      doc.line(ML + 3, y, ML + 3, y + 10);
-
-      doc.setFontSize(7);
+      setD(phaseCol);
+      doc.setLineWidth(0.5);
+      const fokusStartY = y;
+      doc.setFontSize(6.5);
       doc.setFont("helvetica", "bold");
-      setColor(phaseCol);
+      setC(phaseCol);
       doc.text("INTEGRATIONSFOKUS", ML + 6, y + 2);
       y += 6;
-      printWrapped(phase.fokus.intro, ML + 6, CW - 8, 8.5, COL.dark, 4.2);
+      printText(phase.fokus.intro, ML + 6, CW - 8, 8.5, C.dark, 4.3);
       phase.fokus.bullets.forEach(b => {
         checkPage(6);
         doc.setFontSize(8.5);
         doc.setFont("helvetica", "bold");
-        setColor(phaseCol);
+        setC(phaseCol);
         doc.text("–", ML + 6, y);
         doc.setFont("helvetica", "normal");
-        setColor(COL.dark);
-        const lines = wrapText(b, CW - 12, 8.5);
+        setC(C.dark);
+        const lines = wrap(b, CW - 14, 8.5);
         lines.forEach(line => {
           checkPage(4.5);
           doc.text(line, ML + 10, y);
-          y += 4.2;
+          y += 4.3;
         });
       });
+      doc.line(ML + 3, fokusStartY, ML + 3, y);
       if (idx < result.integrationsplan!.length - 1) {
-        y += 2;
-        drawLine(ML, y, ML + CW, COL.lineFaint);
+        y += 3;
+        hline(ML, y, ML + CW, C.lineFaint);
         y += 5;
       }
     });
@@ -558,40 +743,29 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   separator();
 
   const finalSecNum = result.integrationsplan ? 8 : 7;
-  sectionTitle(finalSecNum, "Gesamtbewertung");
+  sectionHead(finalSecNum, "Schlussbewertung", C.headerDark);
 
-  checkPage(14);
+  checkPage(16);
   doc.setFontSize(8.5);
   doc.setFont("helvetica", "bold");
-  setColor(COL.dark);
+  setC(C.dark);
   doc.text("Grundpassung: ", ML, y);
   const gpW2 = doc.getTextWidth("Grundpassung: ");
-  setColor(fitCol);
+  setC(fitCol);
   doc.text(result.fitLabel, ML + gpW2, y);
 
   const fDevCol = rGaugeCol;
   const fDevLabel = result.developmentLabel === "hoch" ? "Entwicklung sehr wahrscheinlich" : result.developmentLabel === "mittel" ? "Entwicklung mit Unterstützung möglich" : "Entwicklung unwahrscheinlich";
-  setColor(COL.dark);
+  setC(C.dark);
   doc.text("Entwicklungsprognose: ", midX, y);
   const epW = doc.getTextWidth("Entwicklungsprognose: ");
-  setColor(fDevCol);
+  setC(fDevCol);
   doc.text(fDevLabel, midX + epW, y);
   y += 3;
-  drawLine(ML, y, ML + CW);
+  hline(ML, y, ML + CW);
   y += 6;
 
-  printWrapped(result.finalText, ML, CW, 8.5, COL.dark, 4.2);
-
-  y += 6;
-  drawLine(ML, y, ML + CW);
-  y += 6;
-  doc.setFontSize(8);
-  doc.setFont("helvetica", "bold");
-  setColor(COL.faint);
-  doc.text("bioLogic Passungsanalyse", ML, y);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.5);
-  doc.text(dateStr, PW - MR, y, { align: "right" });
+  printText(result.finalText, ML, CW, 8.5, C.dark, 4.3);
 
   doc.save(filename);
 }
