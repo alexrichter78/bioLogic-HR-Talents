@@ -30,11 +30,8 @@ const COMP_LABELS: Record<ComponentKey, string> = {
   analytisch: "Struktur / Analyse",
 };
 
-const BAR_HEX: Record<ComponentKey, string> = {
-  impulsiv: "#C41E3A",
-  intuitiv: "#F39200",
-  analytisch: "#1A5DAB",
-};
+import { COMP_HEX, SECTION_COLORS, BIO_COLORS, fitColor as bioFitColor, controlColor as bioControlColor } from "@/lib/bio-design";
+const BAR_HEX = COMP_HEX;
 
 function bgToTriad(bg: BG | undefined): Triad {
   if (!bg) return { impulsiv: 33, intuitiv: 33, analytisch: 34 };
@@ -436,7 +433,7 @@ export default function SollIstBericht() {
             if (!effective) return null;
 
             const fitLabel = effective.fitLabel;
-            const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
+            const fitColor = bioFitColor(fitLabel);
 
             const gapLevel = effective.gapLevel;
             let fazitText: string;
@@ -565,7 +562,7 @@ export default function SollIstBericht() {
                 </div>
 
                 {(() => {
-                  const cCol = result.controlIntensity === "hoch" ? "#D64045" : result.controlIntensity === "mittel" ? "#E5A832" : "#3A9A5C";
+                  const cCol = bioControlColor(result.controlIntensity);
                   const cLabel = result.controlIntensity === "hoch" ? "Hoch" : result.controlIntensity === "mittel" ? "Mittel" : "Gering";
                   const fitBg = result.fitRating === "GEEIGNET" ? "rgba(58,154,92,0.12)" : result.fitRating === "BEDINGT" ? "rgba(229,168,50,0.12)" : "rgba(214,64,69,0.12)";
                   return (
@@ -651,7 +648,7 @@ export default function SollIstBericht() {
               </div>
 
               <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-dominance-shift">
-                <SectionHead num={1} icon={Compass} title="Unterschied zwischen Rolle und Person" iconColor="#1A5DAB" />
+                <SectionHead num={1} icon={Compass} title="Unterschied zwischen Rolle und Person" iconColor={SECTION_COLORS.unterschied} />
                 {(() => {
                   const candBadges: { key: ComponentKey; label: string }[] = result.candIsEqualDist
                     ? (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => ({ key: k, label: COMP_LABELS[k] }))
@@ -696,7 +693,7 @@ export default function SollIstBericht() {
               </div>
 
               <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-comparison-bars">
-                <SectionHead num={2} icon={BarChart3} title="Vergleich der Profile" iconColor="#F39200" />
+                <SectionHead num={2} icon={BarChart3} title="Vergleich der Profile" iconColor={SECTION_COLORS.sollIstProfil} />
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "left" } as React.CSSProperties} lang="de">
                   {biggestGapText(result.roleTriad, result.candTriad)}
                 </p>
@@ -776,7 +773,7 @@ export default function SollIstBericht() {
               </div>
 
               <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-impact-matrix">
-                <SectionHead num={3} icon={Shield} title="Wirkung der Besetzung im Arbeitsalltag" iconColor="#C41E3A" />
+                <SectionHead num={3} icon={Shield} title="Wirkung der Besetzung im Arbeitsalltag" iconColor={SECTION_COLORS.wirkung} />
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {result.impactAreas.map(area => {
                     const sevCol = area.severity === "critical" ? "#FF3B30" : area.severity === "warning" ? "#FF9500" : "#34C759";
@@ -804,7 +801,7 @@ export default function SollIstBericht() {
               </div>
 
               <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-stress-behavior">
-                <SectionHead num={4} icon={Flame} title="Verhalten unter Druck" iconColor="#E5A832" />
+                <SectionHead num={4} icon={Flame} title="Verhalten unter Druck" iconColor={SECTION_COLORS.druck} />
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF950008", border: "1px solid #FF950018", overflow: "visible" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
@@ -827,7 +824,7 @@ export default function SollIstBericht() {
               </div>
 
               <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-risk-timeline">
-                <SectionHead num={5} icon={Clock} title="Risikoprognose" iconColor="#1A5DAB" />
+                <SectionHead num={5} icon={Clock} title="Risikoprognose" iconColor={SECTION_COLORS.risiko} />
                 <div style={{ position: "relative", paddingLeft: 28 }}>
                   <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
                   <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -872,7 +869,7 @@ export default function SollIstBericht() {
 
                 return (
                   <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-development">
-                    <SectionHead num={6} icon={TrendingUp} title="Gesamtbewertung" iconColor="#3A9A5C" />
+                    <SectionHead num={6} icon={TrendingUp} title="Gesamtbewertung" iconColor={SECTION_COLORS.gesamtbewertung} />
 
                     <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
                       <div style={{ width: 16, height: 16, borderRadius: 8, background: rFitColor, flexShrink: 0, boxShadow: `0 0 0 3px ${rFitColor}20` }} />
@@ -915,7 +912,7 @@ export default function SollIstBericht() {
 
               {result.integrationsplan && (
                 <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-integrationsplan">
-                  <SectionHead num={7} icon={FileText} title="30-Tage-Integrationsplan" iconColor="#1A5DAB" />
+                  <SectionHead num={7} icon={FileText} title="30-Tage-Integrationsplan" iconColor={SECTION_COLORS.integrationsplan} />
                   <div style={{ position: "relative", paddingLeft: 28 }}>
                     <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
                     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>

@@ -2,6 +2,7 @@ import type { SollIstResult, Severity } from "./soll-ist-engine";
 import type { ComponentKey, Triad } from "./jobcheck-engine";
 import { labelComponent } from "./jobcheck-engine";
 import { getLogoDataUrl } from "./logo-base64";
+import { SECTION_COLORS, BIO_COLORS } from "./bio-design";
 
 const COMP_LABELS: Record<ComponentKey, string> = {
   impulsiv: "Umsetzung / Tempo",
@@ -162,8 +163,12 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
     y += 10;
   }
 
-  function separator() {
-    checkPage(10);
+  function separator(nextSectionMinH: number = 10) {
+    const lineSpace = 10;
+    if (y + lineSpace + nextSectionMinH > PH - MB) {
+      newPage();
+      return;
+    }
     y += 4;
     hline(ML, y, ML + CW, C.lineFaint);
     y += 6;
@@ -296,9 +301,9 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
     });
   }
 
-  separator();
+  separator(70);
 
-  sectionHead(1, "Soll-Ist Profil", C.analytisch);
+  sectionHead(1, "Soll-Ist Profil", hexToRgb(SECTION_COLORS.sollIstProfil));
 
   const barMaxW = 55;
   const barH = 5.5;
@@ -379,40 +384,6 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   for (const k of keys) { const g = Math.abs(roleTriad[k] - candidateProfile[k]); if (g > maxGap) { maxGap = g; maxKey = k; } }
   printText(`Die grösste Abweichung liegt im Bereich ${COMP_LABELS[maxKey]}. Genau dort liegt die Kernanforderung der Rolle.`, ML, CW, 8.5, C.dark, 4.3);
   y += 2;
-
-  checkPage(24);
-  const colW = [CW * 0.5, CW * 0.2, CW * 0.2];
-  const colX = [ML, ML + colW[0], ML + colW[0] + colW[1]];
-  doc.setFontSize(6.5);
-  doc.setFont("helvetica", "bold");
-  setC(C.light);
-  doc.text("KOMPONENTE", colX[0], y);
-  doc.text("ROLLE", colX[1] + colW[1], y, { align: "right" });
-  doc.text("PERSON", colX[2] + colW[2], y, { align: "right" });
-  y += 2;
-  hline(ML, y, ML + CW, C.line);
-  y += 5;
-
-  for (const k of keys) {
-    const rv = Math.round(roleTriad[k]);
-    const cv = Math.round(candidateProfile[k]);
-
-    checkPage(8);
-    dot(colX[0], y, compColor(k));
-    doc.setFontSize(8.5);
-    doc.setFont("helvetica", "bold");
-    setC(compColor(k));
-    doc.text(labelComponent(k), colX[0] + 5, y);
-    doc.setFont("helvetica", "normal");
-    setC(C.dark);
-    doc.text(`${rv} %`, colX[1] + colW[1], y, { align: "right" });
-    doc.text(`${cv} %`, colX[2] + colW[2], y, { align: "right" });
-    y += 3;
-    hline(ML, y, ML + CW, C.lineFaint);
-    y += 4.5;
-  }
-
-  y += 2;
   labelTag("Bedeutung der Komponenten");
   const compMeaning: Record<ComponentKey, string> = {
     intuitiv: "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen.",
@@ -442,7 +413,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
     y += 5.5;
   }
 
-  separator();
+  separator(50);
 
   const sameDom = result.roleDomKey === result.candDomKey;
   const candBadges: { key: ComponentKey; label: string }[] = result.candIsEqualDist
@@ -452,7 +423,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
       : [{ key: result.candDomKey, label: COMP_LABELS[result.candDomKey] }];
   const shiftSymbol = result.candIsEqualDist ? "!=" : result.candIsDualDom ? "<>" : sameDom ? "=" : "->";
 
-  sectionHead(2, "Unterschied zwischen Rolle und Person", C.intuitiv);
+  sectionHead(2, "Unterschied zwischen Rolle und Person", hexToRgb(SECTION_COLORS.unterschied));
 
   checkPage(20);
   doc.setFontSize(7);
@@ -485,9 +456,9 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
 
   printText(result.dominanceShiftText, ML, CW, 8.5, C.dark, 4.3);
 
-  separator();
+  separator(40);
 
-  sectionHead(3, "Wirkung der Besetzung im Arbeitsalltag", C.impulsiv);
+  sectionHead(3, "Wirkung der Besetzung im Arbeitsalltag", hexToRgb(SECTION_COLORS.wirkung));
   result.impactAreas.forEach((area, idx) => {
     const sevCol = area.severity === "critical" ? C.red : area.severity === "warning" ? C.amber : C.green;
     const sevBg = area.severity === "critical" ? C.redLight : area.severity === "warning" ? C.amberLight : C.greenLight;
@@ -512,9 +483,9 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
     }
   });
 
-  separator();
+  separator(60);
 
-  sectionHead(4, "Verhalten unter Druck", C.amber);
+  sectionHead(4, "Verhalten unter Druck", hexToRgb(SECTION_COLORS.druck));
   checkPage(14);
 
   setF(C.amberLight);
@@ -541,9 +512,9 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   y += 3;
   printText("Unter zunehmendem Arbeitsdruck können sich diese Verhaltensmuster verstärken. Dadurch entstehen im Arbeitsalltag Risiken für Abstimmung, Führung und Zusammenarbeit.", ML, CW, 8.5, C.mid, 4.3, "italic");
 
-  separator();
+  separator(50);
 
-  sectionHead(5, "Risikoprognose", C.analytisch);
+  sectionHead(5, "Risikoprognose", hexToRgb(SECTION_COLORS.risiko));
   result.riskTimeline.forEach((phase, i) => {
     const phaseCol = i === 0 ? C.green : i === 1 ? C.amber : C.red;
     const phaseBg = i === 0 ? C.greenLight : i === 1 ? C.amberLight : C.redLight;
@@ -566,7 +537,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
     }
   });
 
-  separator();
+  separator(50);
 
   const rFitLabel = result.fitLabel;
   const rFitColor = result.fitColor;
@@ -590,7 +561,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   const rGaugeCol = rDev === 3 ? C.green : rDev === 2 ? C.amber : C.red;
   const rFitColorRgb = hexToRgb(rFitColor);
 
-  sectionHead(6, "Gesamtbewertung", C.green);
+  sectionHead(6, "Gesamtbewertung", hexToRgb(SECTION_COLORS.gesamtbewertung));
 
   checkPage(30);
 
@@ -652,8 +623,8 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   y += 4;
 
   if (result.integrationsplan) {
-    separator();
-    sectionHead(7, "30-Tage-Integrationsplan", C.blue);
+    separator(40);
+    sectionHead(7, "30-Tage-Integrationsplan", hexToRgb(SECTION_COLORS.integrationsplan));
     result.integrationsplan.forEach((phase, idx) => {
       const phaseCol = phase.num === 1 ? C.blue : phase.num === 2 ? C.intuitiv : C.green;
       checkPage(22);
@@ -725,10 +696,10 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
     });
   }
 
-  separator();
+  separator(30);
 
   const finalSecNum = result.integrationsplan ? 8 : 7;
-  sectionHead(finalSecNum, "Schlussbewertung", C.analytisch);
+  sectionHead(finalSecNum, "Schlussbewertung", hexToRgb(SECTION_COLORS.schlussbewertung));
 
   checkPage(16);
   doc.setFontSize(8.5);
