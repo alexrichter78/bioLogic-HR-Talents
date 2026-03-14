@@ -145,24 +145,20 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
     checkPage(16);
     y += 2;
 
-    setD(accentColor);
-    doc.setLineWidth(0.6);
-    doc.line(ML, y - 2, ML, y + 5);
-
-    setF(C.bg);
-    doc.roundedRect(ML + 3, y - 4.5, CW - 3, 9, 1.5, 1.5, "F");
-
     setF(accentColor);
-    doc.roundedRect(ML + 5, y - 3.2, 6.5, 6.5, 1, 1, "F");
+    doc.roundedRect(ML, y - 4.5, CW, 9, 1.5, 1.5, "F");
+
+    setF(C.white);
+    doc.roundedRect(ML + 3, y - 3.2, 6.5, 6.5, 1, 1, "F");
     doc.setFontSize(8);
     doc.setFont("helvetica", "bold");
-    setC(C.white);
-    doc.text(String(num), ML + 8.25, y + 1, { align: "center" });
+    setC(accentColor);
+    doc.text(String(num), ML + 6.25, y + 1, { align: "center" });
 
     doc.setFontSize(8.5);
     doc.setFont("helvetica", "bold");
-    setC(C.black);
-    doc.text(title.toUpperCase(), ML + 14, y + 1);
+    setC(C.white);
+    doc.text(title.toUpperCase(), ML + 12, y + 1);
     y += 10;
   }
 
