@@ -902,7 +902,7 @@ export default function Rollenprofil() {
 
   if (!data) {
     return (
-      <div className="min-h-screen" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 40%, #F5F7FA 100%)" }}>
+      <div className="min-h-screen" style={{ background: "#F1F5F9" }}>
         <GlobalNav />
         <main style={{ maxWidth: 800, margin: "0 auto", padding: "60px 20px", textAlign: "center" }}>
           <div style={{ background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", borderRadius: 20, padding: "28px 32px", boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)" }}>
@@ -1008,67 +1008,69 @@ export default function Rollenprofil() {
   })();
 
 
+  const domColor = COLORS[data.dom.key as keyof typeof COLORS] || "#1A5DAB";
+
+  const SectionHead = ({ num, title, color }: { num: number; title: string; color: string }) => (
+    <div className="bio-section-head" style={{ display: "flex", alignItems: "center", gap: 0, marginBottom: 24, borderRadius: 10, overflow: "hidden", background: color }}>
+      <div style={{ width: 38, height: 38, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.2)", flexShrink: 0 }}>
+        <span style={{ fontSize: 14, fontWeight: 800, color: "#FFF" }}>{num}</span>
+      </div>
+      <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", letterSpacing: "0.06em", textTransform: "uppercase", padding: "0 16px" }}>{title}</span>
+    </div>
+  );
+
+  const SECTION_COLORS = {
+    rollenDna: domColor,
+    verhalten: "#6366F1",
+    teamwirkung: "#0EA5E9",
+  };
+
   return (
-    <div className="min-h-screen" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 40%, #F5F7FA 100%)" }} lang="de">
-      <GlobalNav rightSlot={
-        <button
-          onClick={handlePDF}
-          disabled={pdfLoading}
-          data-testid="button-pdf-export"
-          style={{
-            display: "flex", alignItems: "center", gap: 6, padding: "7px 16px", borderRadius: 10,
-            background: pdfLoading ? "rgba(0,113,227,0.04)" : "rgba(0,113,227,0.08)",
-            border: "none", cursor: pdfLoading ? "default" : "pointer",
-            fontSize: 13, fontWeight: 600, color: "#0071E3",
-            transition: "all 200ms ease",
-          }}
-        >
-          <Download style={{ width: 14, height: 14 }} />
-          {pdfLoading ? "Wird erstellt..." : "PDF"}
-        </button>
-      } />
+    <div className="min-h-screen" style={{ background: "#F1F5F9" }} lang="de">
+      <GlobalNav />
 
-      <main style={{ maxWidth: 800, margin: "0 auto", padding: "24px 16px 80px" }}>
-        <div ref={reportRef} style={{
-          background: "#FFFFFF",
-          borderRadius: 4,
-          padding: "48px 44px",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-          border: "1px solid rgba(0,0,0,0.06)",
-        }}>
+      <main style={{ maxWidth: 820, margin: "0 auto", padding: "24px 16px 80px" }}>
+        <div ref={reportRef} style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }}>
 
-          {/* ── HEADER ── */}
-          <div style={{ textAlign: "center", marginBottom: 40, position: "relative" }}>
-            <img src={logoSrc} alt="bioLogic" style={{ height: 28, margin: "0 auto 20px", display: "block", objectFit: "contain" }} />
+          {/* ── DARK HEADER ── */}
+          <div style={{ background: "linear-gradient(135deg, #343A48, #2A2F3A)", padding: "32px 44px 28px", position: "relative" }} data-testid="bericht-header">
 
-            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.14em", textTransform: "uppercase", margin: "0 0 12px" }}>
-              Strukturanalyse
-            </p>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <img src={logoSrc} alt="bioLogic" style={{ height: 28, opacity: 0.9 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.15)" }} />
+                <span style={{ fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.45)", letterSpacing: "0.16em", textTransform: "uppercase" }}>Strukturanalyse</span>
+              </div>
+              <button
+                onClick={handlePDF}
+                disabled={pdfLoading}
+                data-testid="button-pdf-export"
+                style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 16px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.08)", fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.85)", cursor: pdfLoading ? "wait" : "pointer", opacity: pdfLoading ? 0.6 : 1, transition: "all 0.15s ease", backdropFilter: "blur(8px)" }}
+              >
+                <Download style={{ width: 14, height: 14 }} />
+                {pdfLoading ? "Wird erstellt..." : "PDF"}
+              </button>
+            </div>
 
-            <h1 style={{ fontSize: 30, fontWeight: 800, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.03em", lineHeight: 1.2 }} data-testid="text-report-title">
+            <h1 style={{ fontSize: 26, fontWeight: 700, color: "#FFFFFF", margin: "0 0 6px", letterSpacing: "-0.02em", lineHeight: 1.2 }} data-testid="text-report-title">
               Rollen-DNA: {data.beruf}
             </h1>
 
             {data.bereich && (
-              <p style={{ fontSize: 14, color: "#8E8E93", margin: "0 0 0", fontWeight: 500 }}>{data.bereich}</p>
+              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", margin: "0 0 0", fontWeight: 500 }}>{data.bereich}</p>
             )}
 
-            <div style={{
-              width: 64, height: 4, borderRadius: 2, margin: "20px auto 0",
-              background: `linear-gradient(90deg, ${COLORS[data.dom.key as keyof typeof COLORS]}, ${COLORS[data.sec.key as keyof typeof COLORS]})`,
-            }} />
-
-            <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 18, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 8, marginTop: 18, flexWrap: "wrap" }}>
               {[
                 { label: data.dom.label, color: COLORS[data.dom.key as keyof typeof COLORS] },
-                ...(data.isLeadership ? [{ label: "Führungsrolle", color: "#6E6E73" }] : []),
-                { label: data.aufgabencharakter || "Operativ", color: "#6E6E73" },
+                ...(data.isLeadership ? [{ label: "Führungsrolle", color: "#94A3B8" }] : []),
+                { label: data.aufgabencharakter || "Operativ", color: "#94A3B8" },
               ].map((badge, i) => (
                 <span key={i} style={{
                   fontSize: 11, fontWeight: 600,
                   color: badge.color,
-                  background: `${badge.color}10`,
-                  border: `1px solid ${badge.color}20`,
+                  background: `${badge.color}18`,
+                  border: `1px solid ${badge.color}30`,
                   padding: "4px 12px", borderRadius: 8,
                   letterSpacing: "0.02em",
                 }}>
@@ -1076,20 +1078,44 @@ export default function Rollenprofil() {
                 </span>
               ))}
             </div>
+
+            <div style={{ marginTop: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }} data-testid="section-profil-ueberblick">
+              <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Profilüberblick</p>
+              {[
+                { label: "Strukturtyp", value: data.profileType === "balanced_all" ? "Ausgeglichen" : data.profileType.startsWith("hybrid_") ? "Hybrid" : data.profileType.startsWith("dominant_") ? "Klar dominant" : data.profileType.startsWith("strong_") ? "Stark dominant" : "Leichte Tendenz" },
+                { label: "Dominanz", value: data.dom.label, color: COLORS[data.dom.key as keyof typeof COLORS] },
+                { label: "Sekundär", value: data.sec.label, color: COLORS[data.sec.key as keyof typeof COLORS] },
+                { label: "Tertiär", value: data.wk.label, color: COLORS[data.wk.key as keyof typeof COLORS] },
+              ].map((row, i, arr) => (
+                <div key={row.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>{row.label}</span>
+                  <span style={{ fontSize: 14, fontWeight: row.color ? 800 : 700, color: row.color || "rgba(255,255,255,0.85)" }}>{row.value}</span>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ marginTop: 16, marginBottom: 0, padding: "16px 20px", borderRadius: "12px 12px 0 0", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", borderBottom: "none", position: "relative" }} data-testid="section-kernaussage">
+              <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, borderRadius: "12px 0 0 0", background: `linear-gradient(180deg, ${domColor}, ${domColor}40)` }} />
+              <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Kernaussage</p>
+              <p style={{ fontSize: 13, lineHeight: 1.85, color: "rgba(255,255,255,0.75)", margin: 0 }}>
+                {rollenBeschreibungIntro}
+              </p>
+            </div>
           </div>
 
+          {/* ── BODY ── */}
+          <div style={{ padding: "40px 44px 48px" }}>
+
           {/* ── EINLEITUNG ── */}
-          <div style={{ marginBottom: 32 }}>
+          <div style={{ marginBottom: 32 }} data-testid="bericht-section-intro">
             <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-einleitung">
               Dieser Bericht beschreibt, welche Persönlichkeitsstruktur für die Rolle {data.beruf} besonders wirksam ist. Neben fachlichen Kompetenzen beeinflusst vor allem die Art, wie eine Person Situationen beurteilt, Entscheidungen trifft und unter Druck handelt, den Erfolg in dieser Rolle. Die folgenden Abschnitte zeigen, welche Persönlichkeitsstruktur die Anforderungen der Rolle unterstützt, wie sich diese im Arbeitsalltag zeigt und welche Spannungsfelder dabei entstehen können.
             </p>
           </div>
 
           {/* ── SEITE 1: ROLLEN-DNA ── */}
-          <div style={{ marginBottom: 40 }}>
-            <h2 style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 20px", paddingBottom: 8, borderBottom: "1px solid rgba(0,0,0,0.08)" }} data-testid="section-1-title">
-              Seite 1 · Rollen-DNA · die Entscheidungsgrundlage
-            </h2>
+          <div style={{ marginBottom: 40 }} data-testid="bericht-section-gesamtprofil">
+            <SectionHead num={1} title="Rollen-DNA · Entscheidungsgrundlage" color={SECTION_COLORS.rollenDna} />
 
             <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>Welche Persönlichkeit braucht diese Rolle?</p>
 
@@ -1188,7 +1214,7 @@ export default function Rollenprofil() {
 
             {/* 4. Rahmenbedingungen */}
             {rahmenText && (
-              <div style={{ marginBottom: 28 }}>
+              <div style={{ marginBottom: 28 }} data-testid="bericht-section-rahmen">
                 <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>4. Rahmenbedingungen</p>
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-rahmenbedingungen">
                   {rahmenText}
@@ -1198,7 +1224,7 @@ export default function Rollenprofil() {
 
             {/* 5. Erfolgsfokus */}
             {erfolgsfokusText && (
-              <div style={{ marginBottom: 0 }}>
+              <div style={{ marginBottom: 0 }} data-testid="bericht-section-kompetenz">
                 <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>
                   {rahmenText ? "5." : "4."} Erfolgsfokus
                 </p>
@@ -1217,14 +1243,9 @@ export default function Rollenprofil() {
             )}
           </div>
 
-          {/* ── DIVIDER ── */}
-          <div style={{ height: 1, background: "rgba(0,0,0,0.08)", margin: "0 0 40px" }} />
-
           {/* ── SEITE 2: VERHALTEN ── */}
-          <div style={{ marginBottom: 40 }}>
-            <h2 style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 20px", paddingBottom: 8, borderBottom: "1px solid rgba(0,0,0,0.08)" }} data-testid="section-2-title">
-              Seite 2 · Verhalten der Rolle · Alltag und Stress
-            </h2>
+          <div style={{ marginBottom: 40 }} data-testid="bericht-section-struktur">
+            <SectionHead num={2} title="Verhalten · Alltag und Stress" color={SECTION_COLORS.verhalten} />
 
             <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 20px" }}>Wie zeigt sich diese Rolle im Alltag und unter Druck?</p>
 
@@ -1253,14 +1274,9 @@ export default function Rollenprofil() {
             </div>
           </div>
 
-          {/* ── DIVIDER ── */}
-          <div style={{ height: 1, background: "rgba(0,0,0,0.08)", margin: "0 0 40px" }} />
-
           {/* ── SEITE 3: TEAMWIRKUNG & RISIKEN ── */}
-          <div>
-            <h2 style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 20px", paddingBottom: 8, borderBottom: "1px solid rgba(0,0,0,0.08)" }} data-testid="section-3-title">
-              Seite 3 · Teamwirkung und Fehlbesetzungsrisiken
-            </h2>
+          <div data-testid="bericht-section-risiko">
+            <SectionHead num={3} title="Teamwirkung & Fehlbesetzungsrisiken" color={SECTION_COLORS.teamwirkung} />
 
             <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 20px" }}>Welche Wirkung hat diese Rolle im Team?</p>
 
@@ -1347,7 +1363,7 @@ export default function Rollenprofil() {
               marginTop: 32, padding: "24px 28px", borderRadius: 16,
               background: "linear-gradient(135deg, rgba(0,113,227,0.04), rgba(0,113,227,0.02))",
               border: "1px solid rgba(0,113,227,0.1)",
-            }}>
+            }} data-testid="bericht-section-fazit">
               <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>Entscheidungsfazit</p>
               <p style={{ fontSize: 13, fontWeight: 600, color: "#6E6E73", margin: "0 0 14px" }}>{fazit.titel}</p>
               {fazit.absaetze.map((absatz, i) => (
@@ -1363,6 +1379,7 @@ export default function Rollenprofil() {
             <p style={{ fontSize: 10, color: "#C7C7CC", margin: 0, letterSpacing: "0.02em" }}>
               bioLogic RoleDynamics · Strukturanalyse · Erstellt am {new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
             </p>
+          </div>
           </div>
         </div>
       </main>

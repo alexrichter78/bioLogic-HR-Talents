@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
-import { BarChart3, Briefcase, Heart, Shield, AlertTriangle, FileText, Check, Settings, RefreshCw, Loader2, Zap, Brain, Users, Target, TrendingUp, Lightbulb, Star, Activity, Download, Compass, Layers, Award, Crosshair, ArrowUpRight, Gauge, MessageCircle, ShieldCheck, ClipboardList } from "lucide-react";
+import { BarChart3, Briefcase, Heart, Shield, AlertTriangle, FileText, Check, Settings, RefreshCw, Loader2, Zap, Brain, Users, Target, TrendingUp, Lightbulb, Star, Activity, Download, Compass, Layers, Award, Crosshair, ArrowUpRight, Gauge, ShieldCheck } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE } from "@/data/berufe";
@@ -333,43 +333,32 @@ function ChartCard({ icon: Icon, title, bg }: { icon: typeof BarChart3; title: s
   );
 }
 
-function GlassCard({ children, style, testId }: { children: React.ReactNode; style?: React.CSSProperties; testId?: string }) {
-  return (
-    <div style={{
-      background: "rgba(255,255,255,0.78)",
-      backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
-      borderRadius: 32, padding: "36px 32px",
-      boxShadow: "0 2px 20px rgba(0,0,0,0.03), 0 12px 48px rgba(0,0,0,0.05)",
-      border: "1px solid rgba(255,255,255,0.7)",
-      ...style,
-    }} data-testid={testId}>{children}</div>
-  );
-}
+const BERICHT_SECTION_COLORS = [
+  "#1A5DAB",
+  "#F39200",
+  "#C41E3A",
+  "#1A5DAB",
+  "#F39200",
+  "#C41E3A",
+  "#E5A832",
+  "#D64045",
+  "#3A9A5C",
+];
 
-function SectionDivider() {
-  return <div style={{ height: 1, margin: "0 28px", background: "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.05) 30%, rgba(0,0,0,0.05) 70%, transparent 100%)" }} />;
-}
-
-function ChapterBadge({ num, color }: { num: number; color: string }) {
+function SectionHead({ num, title, color }: { num: number; title: string; color: string }) {
   return (
-    <div style={{
-      width: 36, height: 36, borderRadius: 12,
-      background: `linear-gradient(135deg, ${color}, ${color}CC)`,
-      display: "flex", alignItems: "center", justifyContent: "center",
-      marginRight: 14, flexShrink: 0,
-      boxShadow: `0 4px 12px ${color}30`,
-    }}>
-      <span style={{ fontSize: 14, fontWeight: 700, color: "#FFF", fontVariantNumeric: "tabular-nums" }}>
-        {String(num).padStart(2, "0")}
-      </span>
+    <div style={{ display: "flex", alignItems: "center", gap: 0, marginBottom: 24, borderRadius: 10, overflow: "hidden", background: color }}>
+      <div style={{ width: 38, height: 38, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.2)", flexShrink: 0 }}>
+        <span style={{ fontSize: 14, fontWeight: 800, color: "#FFF" }}>{num}</span>
+      </div>
+      <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", letterSpacing: "0.06em", textTransform: "uppercase", padding: "0 16px" }}>{title}</span>
     </div>
   );
 }
 
-const CHAPTER_COLORS = [
-  "#0071E3", "#0071E3", "#0071E3", "#0071E3",
-  "#0071E3", "#0071E3", "#0071E3", "#0071E3",
-];
+function SectionDivider() {
+  return <div style={{ height: 1, background: "rgba(0,0,0,0.05)", margin: "24px 0" }} />;
+}
 
 function BulletList({ items, icon, color }: { items: string[]; icon?: "check" | "dot" | "arrow"; color?: string }) {
   const c = color || "#6E6E73";
@@ -640,25 +629,23 @@ export default function Bericht() {
 
   if (!profileData) {
     return (
-      <div className="min-h-screen" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 40%, #F5F7FA 100%)" }}>
+      <div className="min-h-screen" style={{ background: "#F1F5F9" }}>
         <GlobalNav />
         <div className="flex items-center justify-center" style={{ minHeight: "calc(100vh - 60px)" }}>
-          <GlassCard testId="bericht-no-data">
-            <div className="text-center" style={{ padding: "24px 44px" }}>
-              <div style={{ width: 56, height: 56, borderRadius: 18, background: "linear-gradient(135deg, #E8F0FA, #FDEAED)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
-                <FileText style={{ width: 24, height: 24, color: "#6E6E73" }} />
-              </div>
-              <p style={{ fontSize: 17, fontWeight: 600, color: "#1D1D1F", marginBottom: 8 }}>Keine Analyse vorhanden</p>
-              <p style={{ fontSize: 14, color: "#8E8E93", marginBottom: 20, maxWidth: 260 }}>Erstelle zuerst ein Rollenprofil, um den Entscheidungsbericht zu generieren.</p>
-              <button
-                onClick={() => setLocation("/rollen-dna")}
-                style={{ background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "white", border: "none", borderRadius: 14, padding: "12px 28px", fontSize: 14, fontWeight: 600, cursor: "pointer", boxShadow: "0 4px 12px rgba(0,113,227,0.25)" }}
-                data-testid="button-goto-rollen-dna"
-              >
-                Zur Datenerfassung
-              </button>
+          <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "60px 48px", boxShadow: "0 4px 40px rgba(0,0,0,0.08)", textAlign: "center" }} data-testid="bericht-no-data">
+            <div style={{ width: 56, height: 56, borderRadius: 18, background: "linear-gradient(135deg, #E8F0FA, #FDEAED)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+              <FileText style={{ width: 24, height: 24, color: "#6E6E73" }} />
             </div>
-          </GlassCard>
+            <p style={{ fontSize: 17, fontWeight: 600, color: "#1D1D1F", marginBottom: 8 }}>Keine Analyse vorhanden</p>
+            <p style={{ fontSize: 14, color: "#8E8E93", marginBottom: 20, maxWidth: 260 }}>Erstelle zuerst ein Rollenprofil, um den Entscheidungsbericht zu generieren.</p>
+            <button
+              onClick={() => setLocation("/rollen-dna")}
+              style={{ background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "white", border: "none", borderRadius: 14, padding: "12px 28px", fontSize: 14, fontWeight: 600, cursor: "pointer", boxShadow: "0 4px 12px rgba(0,113,227,0.25)" }}
+              data-testid="button-goto-rollen-dna"
+            >
+              Zur Datenerfassung
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -668,131 +655,140 @@ export default function Bericht() {
   let chapter = 0;
   const nextChapter = () => ++chapter;
 
+  const sa = analyzeProfileStructure(gesamt);
+  const compColor = (key: string) => key === "imp" ? COLORS.imp : key === "int" ? COLORS.int : COLORS.ana;
+  const sep = { paddingBottom: 36, marginBottom: 36, borderBottom: "1px solid rgba(0,0,0,0.05)" } as const;
+
   return (
-    <div className="min-h-screen relative overflow-hidden" data-bericht lang="de">
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse 120% 80% at 20% 60%, rgba(252,205,210,0.35) 0%, transparent 50%), " +
-            "radial-gradient(ellipse 100% 70% at 80% 30%, rgba(186,220,248,0.35) 0%, transparent 50%), " +
-            "radial-gradient(ellipse 80% 60% at 50% 80%, rgba(200,235,210,0.3) 0%, transparent 50%)",
-          animation: "gradientShift 20s ease-in-out infinite alternate",
-        }}
-      />
+    <div className="min-h-screen" style={{ background: "#F1F5F9" }} data-bericht lang="de">
+      <GlobalNav />
 
-      <style>{`
-        @keyframes gradientShift {
-          0% { opacity: 0.85; }
-          50% { opacity: 1; }
-          100% { opacity: 0.85; }
-        }
-      `}</style>
+      <main className="flex-1 w-full mx-auto px-5 pb-24 pt-10" style={{ maxWidth: 820 }}>
 
-      <div className="relative z-10">
-        <GlobalNav rightSlot={
-          bericht && !isGenerating ? (
-            <div style={{ display: "flex", gap: 6 }}>
-              <button onClick={exportPdf} disabled={isExportingPdf} style={{
-                display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 500,
-                padding: "7px 14px", borderRadius: 10, background: "rgba(0,113,227,0.08)",
-                border: "none", cursor: isExportingPdf ? "wait" : "pointer", color: "#0071E3",
-                opacity: isExportingPdf ? 0.6 : 1,
-              }} data-testid="button-export-pdf">
-                {isExportingPdf ? <Loader2 style={{ width: 12, height: 12, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 12, height: 12 }} />}
-                PDF Export
-              </button>
-              <button onClick={generateBericht} style={{
-                display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 500,
-                padding: "7px 14px", borderRadius: 10, background: "rgba(0,0,0,0.04)",
-                border: "none", cursor: "pointer", color: "#6E6E73",
-              }} data-testid="button-regenerate-bericht">
-                <RefreshCw style={{ width: 12, height: 12 }} />
-                Neu generieren
-              </button>
+        {isGenerating && (
+          <div style={{ textAlign: "center", paddingTop: 80 }}>
+            <div style={{
+              width: 80, height: 80, borderRadius: 24,
+              background: "linear-gradient(135deg, rgba(0,113,227,0.1), rgba(52,170,220,0.06))",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              margin: "0 auto 24px", boxShadow: "0 8px 32px rgba(0,113,227,0.1)",
+            }}>
+              <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#0071E3" }} />
             </div>
-          ) : undefined
-        } />
+            <p style={{ fontSize: 20, fontWeight: 650, color: "#1D1D1F", marginBottom: 8 }}>Bericht wird erstellt</p>
+            <p style={{ fontSize: 14, color: "#8E8E93", maxWidth: 320, margin: "0 auto" }}>Die KI analysiert das Rollenprofil und erstellt einen individuellen Entscheidungsbericht.</p>
+          </div>
+        )}
 
-        <main className="flex-1 w-full mx-auto px-5 pb-24 pt-10" style={{ maxWidth: 1100 }}>
-
-          {isGenerating && (
-            <div style={{ textAlign: "center", paddingTop: 80 }}>
-              <div style={{
-                width: 80, height: 80, borderRadius: 24,
-                background: "linear-gradient(135deg, rgba(0,113,227,0.1), rgba(52,170,220,0.06))",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                margin: "0 auto 24px", boxShadow: "0 8px 32px rgba(0,113,227,0.1)",
-              }}>
-                <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#0071E3" }} />
-              </div>
-              <p style={{ fontSize: 20, fontWeight: 650, color: "#1D1D1F", marginBottom: 8 }}>Bericht wird erstellt</p>
-              <p style={{ fontSize: 14, color: "#8E8E93", maxWidth: 320, margin: "0 auto" }}>Die KI analysiert das Rollenprofil und erstellt einen individuellen Entscheidungsbericht.</p>
+        {error && !isGenerating && (
+          <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "44px 36px", textAlign: "center", boxShadow: "0 4px 40px rgba(0,0,0,0.08)" }} data-testid="bericht-error">
+            <div style={{ width: 56, height: 56, borderRadius: 18, background: "rgba(196,30,58,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+              <AlertTriangle style={{ width: 24, height: 24, color: "#C41E3A" }} />
             </div>
-          )}
+            <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", marginBottom: 6 }}>Generierung fehlgeschlagen</p>
+            <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 20 }}>{error}</p>
+            <button onClick={generateBericht} style={{ background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "white", border: "none", borderRadius: 14, padding: "10px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer" }} data-testid="button-retry-bericht">
+              Erneut versuchen
+            </button>
+          </div>
+        )}
 
-          {error && !isGenerating && (
-            <GlassCard testId="bericht-error" style={{ padding: "44px 36px", textAlign: "center" }}>
-              <div style={{ width: 56, height: 56, borderRadius: 18, background: "rgba(196,30,58,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
-                <AlertTriangle style={{ width: 24, height: 24, color: "#C41E3A" }} />
-              </div>
-              <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", marginBottom: 6 }}>Generierung fehlgeschlagen</p>
-              <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 20 }}>{error}</p>
-              <button onClick={generateBericht} style={{ background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "white", border: "none", borderRadius: 14, padding: "10px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer" }} data-testid="button-retry-bericht">
-                Erneut versuchen
-              </button>
-            </GlassCard>
-          )}
+        {bericht && !isGenerating && (
+          <div ref={reportRef} data-testid="print-report-wrapper">
+            <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }} data-testid="print-report-card">
 
-          {bericht && !isGenerating && (
-            <div ref={reportRef} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-
-              {/* Hero Header */}
-              <GlassCard testId="bericht-header" style={{ padding: "36px 32px 30px", textAlign: "center", position: "relative", overflow: "hidden" }}>
-                <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(52,170,220,0.04))", pointerEvents: "none" }} />
-                <div style={{ position: "absolute", bottom: -20, left: -20, width: 80, height: 80, borderRadius: "50%", background: "linear-gradient(135deg, rgba(0,113,227,0.04), rgba(52,170,220,0.03))", pointerEvents: "none" }} />
-
-                <div style={{
-                  display: "inline-flex", alignItems: "center", gap: 6,
-                  background: "linear-gradient(135deg, rgba(0,113,227,0.1), rgba(52,170,220,0.06))",
-                  borderRadius: 20, padding: "5px 14px", marginBottom: 14,
-                }}>
-                  <FileText style={{ width: 12, height: 12, color: "#0071E3" }} />
-                  <span style={{ fontSize: 10, fontWeight: 700, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.12em" }}>Entscheidungsgrundlage</span>
+              {/* ─── DARK HEADER ─── */}
+              <div style={{ background: "linear-gradient(135deg, #343A48, #2A2F3A)", padding: "32px 44px 28px", position: "relative" }} data-testid="bericht-header">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <img src={logoSrc} alt="bioLogic" style={{ height: 28, opacity: 0.9 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                    <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.15)" }} />
+                    <span style={{ fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.45)", letterSpacing: "0.16em", textTransform: "uppercase" }}>Strukturanalyse</span>
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button onClick={exportPdf} disabled={isExportingPdf} style={{
+                      display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 16px", borderRadius: 10,
+                      border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.08)",
+                      fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.85)",
+                      cursor: isExportingPdf ? "wait" : "pointer", opacity: isExportingPdf ? 0.6 : 1,
+                      transition: "all 0.15s ease", backdropFilter: "blur(8px)",
+                    }} data-testid="button-export-pdf">
+                      {isExportingPdf ? <Loader2 style={{ width: 14, height: 14, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 14, height: 14 }} />}
+                      PDF
+                    </button>
+                    <button onClick={generateBericht} style={{
+                      display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 16px", borderRadius: 10,
+                      border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.08)",
+                      fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.85)",
+                      cursor: "pointer", transition: "all 0.15s ease", backdropFilter: "blur(8px)",
+                    }} data-testid="button-regenerate-bericht">
+                      <RefreshCw style={{ width: 14, height: 14 }} />
+                      Neu
+                    </button>
+                  </div>
                 </div>
 
-                <h1 style={{ fontSize: 28, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.15, marginBottom: 6 }} data-testid="text-bericht-beruf">
-                  {beruf}
+                <h1 style={{ fontSize: 26, fontWeight: 700, color: "#FFFFFF", margin: "0 0 6px", letterSpacing: "-0.02em", lineHeight: 1.2 }} data-testid="text-bericht-beruf">
+                  Rollen-DNA: {beruf}
                 </h1>
-                {bereich && <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 16 }}>{bereich}</p>}
+                {bereich && <p style={{ fontSize: 13, color: "rgba(255,255,255,0.50)", margin: "0 0 18px" }}>{bereich}</p>}
 
-                <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 22 }}>
                   <span style={{
-                    fontSize: 12, fontWeight: 600, color: "#3A3A3C",
-                    background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10,
-                  }}>{bericht.rollencharakter}</span>
-                  <span style={{
-                    fontSize: 12, fontWeight: 600, color: "#3A3A3C",
-                    background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10,
+                    fontSize: 12, fontWeight: 600, color: "#FFFFFF",
+                    background: `${compColor(sa.dominantKey)}CC`, padding: "5px 14px", borderRadius: 8,
                   }}>{bericht.dominanteKomponente}</span>
+                  <span style={{
+                    fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.85)",
+                    background: "rgba(255,255,255,0.10)", padding: "5px 14px", borderRadius: 8,
+                  }}>{isLeadership ? "Führungsrolle" : "Fachrolle"}</span>
+                  <span style={{
+                    fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.85)",
+                    background: "rgba(255,255,255,0.10)", padding: "5px 14px", borderRadius: 8,
+                  }}>{bericht.rollencharakter}</span>
                 </div>
-              </GlassCard>
+
+                {/* Profile overview in dark header */}
+                <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }} data-testid="section-profil-ueberblick">
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Profilübersicht</p>
+                  {[
+                    { label: "Strukturtyp", value: sa.structureType },
+                    { label: "Dominanz", value: `${sa.dominantLabel} (${Math.round(gesamt[sa.dominantKey as keyof BG])}%)`, color: compColor(sa.dominantKey) },
+                    { label: "Sekundär", value: `${sa.secondLabel} (${Math.round(gesamt[sa.secondKey as keyof BG])}%)` },
+                    { label: "Tertiär", value: `${sa.thirdLabel} (${Math.round(gesamt[sa.thirdKey as keyof BG])}%)` },
+                  ].map((row, i, arr) => (
+                    <div key={row.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "7px 0", borderBottom: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>{row.label}</span>
+                      <span style={{ fontSize: 14, fontWeight: row.color ? 800 : 700, color: row.color || "rgba(255,255,255,0.85)" }}>{row.value}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Einleitung summary in header */}
+                <div style={{ padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", position: "relative" }}>
+                  <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, borderRadius: "12px 0 0 12px", background: `linear-gradient(180deg, ${compColor(sa.dominantKey)}, ${compColor(sa.dominantKey)}40)` }} />
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Kernaussage</p>
+                  <p style={{ fontSize: 13, lineHeight: 1.85, color: "rgba(255,255,255,0.75)", margin: 0 }}>
+                    {splitIntoBlocks(bericht.einleitung)[0]}
+                  </p>
+                </div>
+              </div>
+              {/* ─── END DARK HEADER ─── */}
+
+              <div style={{ padding: "36px 44px 48px" }}>
 
               {/* 01 Einleitung */}
-              <GlassCard testId="bericht-section-intro" style={{ padding: "30px 28px" }}>
-                <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
-                  <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[0]} />
-                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Einleitung</span>
-                </div>
+              <div style={{ ...sep }} data-testid="bericht-section-intro">
+                <SectionHead num={nextChapter()} title="Einleitung" color={BERICHT_SECTION_COLORS[0]} />
                 {(() => {
                   const blocks = splitIntoBlocks(bericht.einleitung);
                   const first = blocks[0];
                   const rest = blocks.slice(1);
                   return (
                     <>
-                      <CalloutBox text={first} color={CHAPTER_COLORS[0]} icon={Lightbulb} />
+                      <CalloutBox text={first} color={BERICHT_SECTION_COLORS[0]} icon={Lightbulb} />
                       {rest.length > 0 && (
-                        <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 0 }}>
+                        <div style={{ marginTop: 16 }}>
                           {rest.map((p, i) => (
                             <div key={i}>
                               {i > 0 && <hr style={{ border: "none", borderTop: "1px solid rgba(0,0,0,0.06)", margin: "14px 0" }} />}
@@ -804,175 +800,160 @@ export default function Bericht() {
                     </>
                   );
                 })()}
-              </GlassCard>
+              </div>
 
               {/* 02 Gesamtprofil */}
-              <GlassCard testId="bericht-section-gesamtprofil" style={{ padding: "30px 28px" }}>
-                <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
-                  <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[1]} />
-                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Gesamtprofil</span>
-                </div>
-                <ChartCard icon={BarChart3} title="Gesamtprofil" bg={gesamt} accent={CHAPTER_COLORS[1]} />
+              <div style={{ ...sep }} data-testid="bericht-section-gesamtprofil">
+                <SectionHead num={nextChapter()} title="Gesamtprofil" color={BERICHT_SECTION_COLORS[1]} />
+                <ChartCard icon={BarChart3} title="Gesamtprofil" bg={gesamt} />
                 <div style={{ marginTop: 18 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                    <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${CHAPTER_COLORS[1]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <Compass style={{ width: 13, height: 13, color: CHAPTER_COLORS[1], strokeWidth: 2 }} />
+                    <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${BERICHT_SECTION_COLORS[1]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Compass style={{ width: 13, height: 13, color: BERICHT_SECTION_COLORS[1], strokeWidth: 2 }} />
                     </div>
                     <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Zusammenfassung</p>
                   </div>
                   <TextBlock text={bericht.gesamtprofil} />
                 </div>
-              </GlassCard>
+              </div>
 
-              {/* Strukturanalyse (deterministic) */}
-              {(() => {
-                const sa = analyzeProfileStructure(gesamt);
-                const compColor = (key: string) => key === "imp" ? COLORS.imp : key === "int" ? COLORS.int : COLORS.ana;
-                return (
-                  <GlassCard testId="bericht-section-struktur" style={{ padding: "30px 28px" }}>
-                    <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
-                      <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[1]} />
-                      <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Strukturanalyse</span>
-                    </div>
+              {/* 03 Strukturanalyse */}
+              <div style={{ ...sep }} data-testid="bericht-section-struktur">
+                <SectionHead num={nextChapter()} title="Strukturanalyse" color={BERICHT_SECTION_COLORS[2]} />
 
-                    <div style={{
-                      display: "flex", alignItems: "center", gap: 10,
-                      padding: "12px 18px", borderRadius: 14,
-                      background: `${compColor(sa.dominantKey)}08`,
-                      border: `1px solid ${compColor(sa.dominantKey)}15`,
-                      marginBottom: 18,
-                    }}>
-                      <div style={{
-                        width: 28, height: 28, borderRadius: 9, flexShrink: 0,
-                        background: `${compColor(sa.dominantKey)}15`,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                      }}>
-                        <Activity style={{ width: 14, height: 14, color: compColor(sa.dominantKey), strokeWidth: 2 }} />
-                      </div>
-                      <div>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{sa.structureType}</span>
-                        <span style={{ fontSize: 12, color: "#8E8E93", marginLeft: 8 }}>
-                          {sa.dominantLabel} {Math.round(gesamt[sa.dominantKey as keyof BG])} · {sa.secondLabel} {Math.round(gesamt[sa.secondKey as keyof BG])} · {sa.thirdLabel} {Math.round(gesamt[sa.thirdKey as keyof BG])}
-                        </span>
-                      </div>
-                    </div>
-
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
-                      {hyphenateText(sa.structureDescription)}
-                    </p>
-
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", width: 52, flexShrink: 0 }}>Δ 1–2</span>
-                        <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
-                          <div style={{ width: `${Math.min((sa.gap12 / 30) * 100, 100)}%`, height: "100%", borderRadius: 3, background: sa.hasFullSymmetry ? "#FF3B30" : sa.hasDualDominance ? "#FF9500" : "#34C759", transition: "width 600ms" }} />
-                        </div>
-                        <span style={{ fontSize: 11, fontWeight: 600, color: "#3A3A3C", width: 32, textAlign: "right" }}>{sa.gap12}</span>
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", width: 52, flexShrink: 0 }}>Δ 2–3</span>
-                        <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
-                          <div style={{ width: `${Math.min((sa.gap23 / 30) * 100, 100)}%`, height: "100%", borderRadius: 3, background: sa.hasFullSymmetry ? "#FF3B30" : sa.hasSecondaryCompetition ? "#FF9500" : "#34C759", transition: "width 600ms" }} />
-                        </div>
-                        <span style={{ fontSize: 11, fontWeight: 600, color: "#3A3A3C", width: 32, textAlign: "right" }}>{sa.gap23}</span>
-                      </div>
-                    </div>
-
-                    {sa.hasFullSymmetry && (
-                      <div style={{
-                        padding: "14px 18px", borderRadius: 14, marginBottom: 14,
-                        background: "rgba(255,59,48,0.06)", border: "1px solid rgba(255,59,48,0.12)",
-                        display: "flex", alignItems: "flex-start", gap: 10,
-                      }} data-testid="warning-full-symmetry">
-                        <AlertTriangle style={{ width: 14, height: 14, color: "#FF3B30", marginTop: 2, flexShrink: 0 }} />
-                        <div>
-                          <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", display: "block", marginBottom: 2 }}>Vollsymmetrie – keine Leitstruktur</span>
-                          <span style={{ fontSize: 12.5, color: "#48484A", lineHeight: 1.7 }}>
-                            Alle drei Komponenten liegen innerhalb von {Math.max(sa.gap12, sa.gap23)} Punkten. Es gibt keine dominante Steuerungslogik. Das Profil wechselt situativ zwischen allen Arbeitsweisen – unter Stress fehlt ein Rückfallmechanismus. In Rollen mit klarem Fokus ist das ein erhebliches Risiko.
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    {sa.hasDualDominance && !sa.hasFullSymmetry && (
-                      <div style={{
-                        padding: "14px 18px", borderRadius: 14, marginBottom: 14,
-                        background: "rgba(255,149,0,0.06)", border: "1px solid rgba(255,149,0,0.12)",
-                        display: "flex", alignItems: "flex-start", gap: 10,
-                      }}>
-                        <AlertTriangle style={{ width: 14, height: 14, color: "#FF9500", marginTop: 2, flexShrink: 0 }} />
-                        <div>
-                          <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", display: "block", marginBottom: 2 }}>Doppeldominanz</span>
-                          <span style={{ fontSize: 12.5, color: "#48484A", lineHeight: 1.7 }}>
-                            {sa.dominantLabel} und {sa.secondLabel} liegen nur {sa.gap12} Punkte auseinander. Das Profil hat keine eindeutige Leitkomponente – im Alltag kann das zwischen Flexibilität und Richtungswechsel pendeln.
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    {sa.hasSecondaryCompetition && (
-                      <div style={{
-                        padding: "14px 18px", borderRadius: 14, marginBottom: 14,
-                        background: "rgba(255,149,0,0.06)", border: "1px solid rgba(255,149,0,0.12)",
-                        display: "flex", alignItems: "flex-start", gap: 10,
-                      }}>
-                        <AlertTriangle style={{ width: 14, height: 14, color: "#FF9500", marginTop: 2, flexShrink: 0 }} />
-                        <div>
-                          <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", display: "block", marginBottom: 2 }}>Sekundär-Konkurrenz</span>
-                          <span style={{ fontSize: 12.5, color: "#48484A", lineHeight: 1.7 }}>
-                            {sa.secondLabel} und {sa.thirdLabel} liegen nur {sa.gap23} Punkte auseinander, während {sa.dominantLabel} klar führt. Unter Stress können die beiden ähnlich starken Komponenten gegeneinander arbeiten.
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "18px 0" }} />
-
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                      <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: "rgba(110,110,115,0.10)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <Gauge style={{ width: 13, height: 13, color: "#6E6E73", strokeWidth: 2 }} />
-                      </div>
-                      <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Verhalten unter Druck</p>
-                    </div>
-
-                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                      <div style={{
-                        padding: "14px 18px", borderRadius: 14,
-                        background: "rgba(52,199,89,0.05)", border: "1px solid rgba(52,199,89,0.12)",
-                      }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-                          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#34C759" }} />
-                          <span style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F" }}>Kontrollierter Stress</span>
-                        </div>
-                        <p style={{ fontSize: 12.5, color: "#48484A", lineHeight: 1.7, margin: 0 }}>{sa.stressControlled}</p>
-                      </div>
-
-                      <div style={{
-                        padding: "14px 18px", borderRadius: 14,
-                        background: "rgba(255,59,48,0.05)", border: "1px solid rgba(255,59,48,0.12)",
-                      }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-                          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#FF3B30" }} />
-                          <span style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F" }}>Unkontrollierter Stress</span>
-                        </div>
-                        <p style={{ fontSize: 12.5, color: "#48484A", lineHeight: 1.7, margin: 0 }}>{sa.stressUncontrolled}</p>
-                      </div>
-                    </div>
-                  </GlassCard>
-                );
-              })()}
-
-              {/* 03 Rahmenbedingungen */}
-              <GlassCard testId="bericht-section-rahmen" style={{ padding: "30px 28px" }}>
-                <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
-                  <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[2]} />
-                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Rahmenbedingungen</span>
+                <div style={{
+                  display: "flex", alignItems: "center", gap: 10,
+                  padding: "12px 18px", borderRadius: 14,
+                  background: `${compColor(sa.dominantKey)}08`,
+                  border: `1px solid ${compColor(sa.dominantKey)}15`,
+                  marginBottom: 18,
+                }}>
+                  <div style={{
+                    width: 28, height: 28, borderRadius: 9, flexShrink: 0,
+                    background: `${compColor(sa.dominantKey)}15`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    <Activity style={{ width: 14, height: 14, color: compColor(sa.dominantKey), strokeWidth: 2 }} />
+                  </div>
+                  <div>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{sa.structureType}</span>
+                    <span style={{ fontSize: 12, color: "#8E8E93", marginLeft: 8 }}>
+                      {sa.dominantLabel} {Math.round(gesamt[sa.dominantKey as keyof BG])} · {sa.secondLabel} {Math.round(gesamt[sa.secondKey as keyof BG])} · {sa.thirdLabel} {Math.round(gesamt[sa.thirdKey as keyof BG])}
+                    </span>
+                  </div>
                 </div>
-                <ChartCard icon={Settings} title="Rahmenprofil" bg={rahmen} accent={CHAPTER_COLORS[2]} />
+
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
+                  {hyphenateText(sa.structureDescription)}
+                </p>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", width: 52, flexShrink: 0 }}>Δ 1–2</span>
+                    <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
+                      <div style={{ width: `${Math.min((sa.gap12 / 30) * 100, 100)}%`, height: "100%", borderRadius: 3, background: sa.hasFullSymmetry ? "#FF3B30" : sa.hasDualDominance ? "#FF9500" : "#34C759", transition: "width 600ms" }} />
+                    </div>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: "#3A3A3C", width: 32, textAlign: "right" }}>{sa.gap12}</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", width: 52, flexShrink: 0 }}>Δ 2–3</span>
+                    <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
+                      <div style={{ width: `${Math.min((sa.gap23 / 30) * 100, 100)}%`, height: "100%", borderRadius: 3, background: sa.hasFullSymmetry ? "#FF3B30" : sa.hasSecondaryCompetition ? "#FF9500" : "#34C759", transition: "width 600ms" }} />
+                    </div>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: "#3A3A3C", width: 32, textAlign: "right" }}>{sa.gap23}</span>
+                  </div>
+                </div>
+
+                {sa.hasFullSymmetry && (
+                  <div style={{
+                    padding: "14px 18px", borderRadius: 14, marginBottom: 14,
+                    background: "rgba(255,59,48,0.06)", border: "1px solid rgba(255,59,48,0.12)",
+                    display: "flex", alignItems: "flex-start", gap: 10,
+                  }} data-testid="warning-full-symmetry">
+                    <AlertTriangle style={{ width: 14, height: 14, color: "#FF3B30", marginTop: 2, flexShrink: 0 }} />
+                    <div>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", display: "block", marginBottom: 2 }}>Vollsymmetrie – keine Leitstruktur</span>
+                      <span style={{ fontSize: 12.5, color: "#48484A", lineHeight: 1.7 }}>
+                        Alle drei Komponenten liegen innerhalb von {Math.max(sa.gap12, sa.gap23)} Punkten. Es gibt keine dominante Steuerungslogik. Das Profil wechselt situativ zwischen allen Arbeitsweisen – unter Stress fehlt ein Rückfallmechanismus. In Rollen mit klarem Fokus ist das ein erhebliches Risiko.
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {sa.hasDualDominance && !sa.hasFullSymmetry && (
+                  <div style={{
+                    padding: "14px 18px", borderRadius: 14, marginBottom: 14,
+                    background: "rgba(255,149,0,0.06)", border: "1px solid rgba(255,149,0,0.12)",
+                    display: "flex", alignItems: "flex-start", gap: 10,
+                  }}>
+                    <AlertTriangle style={{ width: 14, height: 14, color: "#FF9500", marginTop: 2, flexShrink: 0 }} />
+                    <div>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", display: "block", marginBottom: 2 }}>Doppeldominanz</span>
+                      <span style={{ fontSize: 12.5, color: "#48484A", lineHeight: 1.7 }}>
+                        {sa.dominantLabel} und {sa.secondLabel} liegen nur {sa.gap12} Punkte auseinander. Das Profil hat keine eindeutige Leitkomponente – im Alltag kann das zwischen Flexibilität und Richtungswechsel pendeln.
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {sa.hasSecondaryCompetition && (
+                  <div style={{
+                    padding: "14px 18px", borderRadius: 14, marginBottom: 14,
+                    background: "rgba(255,149,0,0.06)", border: "1px solid rgba(255,149,0,0.12)",
+                    display: "flex", alignItems: "flex-start", gap: 10,
+                  }}>
+                    <AlertTriangle style={{ width: 14, height: 14, color: "#FF9500", marginTop: 2, flexShrink: 0 }} />
+                    <div>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", display: "block", marginBottom: 2 }}>Sekundär-Konkurrenz</span>
+                      <span style={{ fontSize: 12.5, color: "#48484A", lineHeight: 1.7 }}>
+                        {sa.secondLabel} und {sa.thirdLabel} liegen nur {sa.gap23} Punkte auseinander, während {sa.dominantLabel} klar führt. Unter Stress können die beiden ähnlich starken Komponenten gegeneinander arbeiten.
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                <SectionDivider />
+
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                  <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: "rgba(110,110,115,0.10)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Gauge style={{ width: 13, height: 13, color: "#6E6E73", strokeWidth: 2 }} />
+                  </div>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Verhalten unter Druck</p>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div style={{
+                    padding: "14px 18px", borderRadius: 14,
+                    background: "rgba(52,199,89,0.05)", border: "1px solid rgba(52,199,89,0.12)",
+                  }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#34C759" }} />
+                      <span style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F" }}>Kontrollierter Stress</span>
+                    </div>
+                    <p style={{ fontSize: 12.5, color: "#48484A", lineHeight: 1.7, margin: 0 }}>{sa.stressControlled}</p>
+                  </div>
+
+                  <div style={{
+                    padding: "14px 18px", borderRadius: 14,
+                    background: "rgba(255,59,48,0.05)", border: "1px solid rgba(255,59,48,0.12)",
+                  }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#FF3B30" }} />
+                      <span style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F" }}>Unkontrollierter Stress</span>
+                    </div>
+                    <p style={{ fontSize: 12.5, color: "#48484A", lineHeight: 1.7, margin: 0 }}>{sa.stressUncontrolled}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 04 Rahmenbedingungen */}
+              <div style={{ ...sep }} data-testid="bericht-section-rahmen">
+                <SectionHead num={nextChapter()} title="Rahmenbedingungen" color={BERICHT_SECTION_COLORS[3]} />
+                <ChartCard icon={Settings} title="Rahmenprofil" bg={rahmen} />
                 <div style={{ marginTop: 18 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                    <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${CHAPTER_COLORS[2]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <Layers style={{ width: 13, height: 13, color: CHAPTER_COLORS[2], strokeWidth: 2 }} />
+                    <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${BERICHT_SECTION_COLORS[3]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Layers style={{ width: 13, height: 13, color: BERICHT_SECTION_COLORS[3], strokeWidth: 2 }} />
                     </div>
                     <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Rollenkontext</p>
                   </div>
@@ -982,8 +963,8 @@ export default function Bericht() {
                 {bericht.rahmenbedingungen.verantwortungsfelder?.length > 0 && (
                   <div style={{ marginTop: 18 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                      <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${CHAPTER_COLORS[2]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <Crosshair style={{ width: 13, height: 13, color: CHAPTER_COLORS[2], strokeWidth: 2 }} />
+                      <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${BERICHT_SECTION_COLORS[3]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <Crosshair style={{ width: 13, height: 13, color: BERICHT_SECTION_COLORS[3], strokeWidth: 2 }} />
                       </div>
                       <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Zentrale Verantwortungsbereiche</p>
                     </div>
@@ -994,12 +975,12 @@ export default function Bericht() {
                 {bericht.rahmenbedingungen.erfolgsmessung?.length > 0 && (
                   <div style={{ marginTop: 18 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                      <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${CHAPTER_COLORS[2]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <TrendingUp style={{ width: 13, height: 13, color: CHAPTER_COLORS[2], strokeWidth: 2 }} />
+                      <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${BERICHT_SECTION_COLORS[3]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <TrendingUp style={{ width: 13, height: 13, color: BERICHT_SECTION_COLORS[3], strokeWidth: 2 }} />
                       </div>
                       <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Erfolg wird gemessen an</p>
                     </div>
-                    <BulletList items={bericht.rahmenbedingungen.erfolgsmessung} icon="check" color={CHAPTER_COLORS[2]} />
+                    <BulletList items={bericht.rahmenbedingungen.erfolgsmessung} icon="check" color={BERICHT_SECTION_COLORS[3]} />
                   </div>
                 )}
 
@@ -1007,25 +988,22 @@ export default function Bericht() {
                   <div style={{ marginTop: 20 }}>
                     <CalloutBox
                       text={`Die Rolle erfordert die gleichzeitige Steuerung von ${bericht.rahmenbedingungen.spannungsfelder_rahmen.length} Spannungsfeldern.`}
-                      color={CHAPTER_COLORS[2]}
+                      color={BERICHT_SECTION_COLORS[3]}
                       icon={Target}
                     />
                   </div>
                 )}
-              </GlassCard>
+              </div>
 
-              {/* 04 Führungskontext */}
+              {/* 05 Führungskontext */}
               {bericht.fuehrungskontext && (
-                <GlassCard testId="bericht-section-fuehrung" style={{ padding: "30px 28px" }}>
-                  <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
-                    <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[3]} />
-                    <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Führungskontext</span>
-                  </div>
-                  {isLeadership && <ChartCard icon={Shield} title="Führungskompetenzen" bg={fuehrung} accent={CHAPTER_COLORS[3]} />}
+                <div style={{ ...sep }} data-testid="bericht-section-fuehrung">
+                  <SectionHead num={nextChapter()} title="Führungskontext" color={BERICHT_SECTION_COLORS[4]} />
+                  {isLeadership && <ChartCard icon={Shield} title="Führungskompetenzen" bg={fuehrung} />}
                   <div style={{ marginTop: isLeadership ? 18 : 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                      <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${CHAPTER_COLORS[3]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <Users style={{ width: 13, height: 13, color: CHAPTER_COLORS[3], strokeWidth: 2 }} />
+                      <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${BERICHT_SECTION_COLORS[4]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <Users style={{ width: 13, height: 13, color: BERICHT_SECTION_COLORS[4], strokeWidth: 2 }} />
                       </div>
                       <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{isLeadership ? "Führungsanforderung" : "Zusammenarbeit"}</p>
                     </div>
@@ -1035,22 +1013,22 @@ export default function Bericht() {
                   {bericht.fuehrungskontext.wirkungshebel?.length > 0 && (
                     <div style={{ marginTop: 18 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                        <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${CHAPTER_COLORS[3]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          <ArrowUpRight style={{ width: 13, height: 13, color: CHAPTER_COLORS[3], strokeWidth: 2 }} />
+                        <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${BERICHT_SECTION_COLORS[4]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <ArrowUpRight style={{ width: 13, height: 13, color: BERICHT_SECTION_COLORS[4], strokeWidth: 2 }} />
                         </div>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
                           {isLeadership ? "Führungswirkung entsteht über" : "Wirkung entsteht über"}
                         </p>
                       </div>
-                      <BulletList items={bericht.fuehrungskontext.wirkungshebel} icon="check" color={CHAPTER_COLORS[3]} />
+                      <BulletList items={bericht.fuehrungskontext.wirkungshebel} icon="check" color={BERICHT_SECTION_COLORS[4]} />
                     </div>
                   )}
 
                   {bericht.fuehrungskontext.analytische_anforderungen?.length > 0 && (
                     <div style={{ marginTop: 18 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                        <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${CHAPTER_COLORS[3]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          <ShieldCheck style={{ width: 13, height: 13, color: CHAPTER_COLORS[3], strokeWidth: 2 }} />
+                        <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${BERICHT_SECTION_COLORS[4]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <ShieldCheck style={{ width: 13, height: 13, color: BERICHT_SECTION_COLORS[4], strokeWidth: 2 }} />
                         </div>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Strukturelle Stabilisierung</p>
                       </div>
@@ -1060,22 +1038,19 @@ export default function Bericht() {
 
                   {bericht.fuehrungskontext.schlusssatz && (
                     <div style={{ marginTop: 18 }}>
-                      <CalloutBox text={bericht.fuehrungskontext.schlusssatz} color={CHAPTER_COLORS[3]} icon={AlertTriangle} />
+                      <CalloutBox text={bericht.fuehrungskontext.schlusssatz} color={BERICHT_SECTION_COLORS[4]} icon={AlertTriangle} />
                     </div>
                   )}
-                </GlassCard>
+                </div>
               )}
 
-              {/* 05 Kompetenzanalyse */}
-              <GlassCard testId="bericht-section-kompetenz" style={{ padding: "30px 28px" }}>
-                <div style={{ display: "flex", alignItems: "center", marginBottom: 22 }}>
-                  <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[4]} />
-                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Kompetenzanalyse</span>
-                </div>
+              {/* 06 Kompetenzanalyse */}
+              <div style={{ ...sep }} data-testid="bericht-section-kompetenz">
+                <SectionHead num={nextChapter()} title="Kompetenzanalyse" color={BERICHT_SECTION_COLORS[5]} />
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 22 }}>
-                  <ChartCard icon={Briefcase} title="Tätigkeiten" bg={haupt} accent={COLORS.imp} />
-                  <ChartCard icon={Heart} title="Humankompetenzen" bg={neben} accent={COLORS.ana} />
+                  <ChartCard icon={Briefcase} title="Tätigkeiten" bg={haupt} />
+                  <ChartCard icon={Heart} title="Humankompetenzen" bg={neben} />
                 </div>
 
                 {(() => {
@@ -1083,7 +1058,7 @@ export default function Bericht() {
                   if (hochTaetigkeiten.length === 0) return null;
                   return (
                     <div style={{
-                      marginBottom: 24, padding: "22px 22px 20px", borderRadius: 22,
+                      marginBottom: 24, padding: "22px 22px 20px", borderRadius: 14,
                       background: "linear-gradient(135deg, rgba(212,136,15,0.06), rgba(243,146,0,0.02))",
                       border: "1px solid rgba(243,146,0,0.12)",
                     }} data-testid="bericht-hoch-taetigkeiten">
@@ -1134,15 +1109,12 @@ export default function Bericht() {
                   )}
                   <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.75, fontStyle: "italic", marginTop: 12 }}>{bericht.kompetenzanalyse.human_schluss}</p>
                 </div>
-              </GlassCard>
+              </div>
 
-              {/* 06 Spannungsfelder */}
+              {/* 07 Spannungsfelder */}
               {bericht.spannungsfelder?.length > 0 && (
-                <GlassCard testId="bericht-section-spannungsfelder" style={{ padding: "30px 28px" }}>
-                  <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
-                    <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[5]} />
-                    <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Spannungsfelder</span>
-                  </div>
+                <div style={{ ...sep }} data-testid="bericht-section-spannungsfelder">
+                  <SectionHead num={nextChapter()} title="Spannungsfelder" color={BERICHT_SECTION_COLORS[6]} />
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                     {bericht.spannungsfelder.map((sf, i) => (
                       <SpannungsfeldPill key={i} text={sf} />
@@ -1150,73 +1122,64 @@ export default function Bericht() {
                   </div>
                   {bericht.spannungsfelder_schluss && (
                     <div style={{ marginTop: 16 }}>
-                      <CalloutBox text={bericht.spannungsfelder_schluss} color={CHAPTER_COLORS[5]} icon={Target} />
+                      <CalloutBox text={bericht.spannungsfelder_schluss} color={BERICHT_SECTION_COLORS[6]} icon={Target} />
                     </div>
                   )}
-                </GlassCard>
+                </div>
               )}
 
-              {/* 07 Risikobewertung */}
-              <GlassCard testId="bericht-section-risiko" style={{ padding: "30px 28px" }}>
-                <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
-                  <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[6]} />
-                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Risikobewertung</span>
-                </div>
+              {/* 08 Risikobewertung */}
+              <div style={{ ...sep }} data-testid="bericht-section-risiko">
+                <SectionHead num={nextChapter()} title="Risikobewertung" color={BERICHT_SECTION_COLORS[7]} />
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                   {(bericht.risikobewertung || []).map((risk, i) => (
                     <RiskCard key={i} label={risk.label} color={getRiskColor(risk.label)} bullets={risk.bullets} alltagssatz={risk.alltagssatz} />
                   ))}
                 </div>
-              </GlassCard>
+              </div>
 
-              {/* 08 Fazit */}
-              <GlassCard testId="bericht-section-fazit" style={{
-                padding: "34px 28px",
-                background: "linear-gradient(160deg, rgba(255,255,255,0.85), rgba(0,113,227,0.04), rgba(255,255,255,0.8))",
-                border: "1px solid rgba(0,113,227,0.12)",
-              }}>
-                <div style={{ display: "flex", alignItems: "center", marginBottom: 22 }}>
-                  <ChapterBadge num={nextChapter()} color={CHAPTER_COLORS[7]} />
-                  <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>Fazit</span>
-                </div>
+              {/* 09 Fazit */}
+              <div data-testid="bericht-section-fazit">
+                <SectionHead num={nextChapter()} title="Fazit" color={BERICHT_SECTION_COLORS[8]} />
 
                 <p style={{
                   fontSize: 16, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.7, margin: 0,
-                  paddingBottom: 18, borderBottom: "1px solid rgba(0,113,227,0.12)",
+                  paddingBottom: 18, borderBottom: "1px solid rgba(0,0,0,0.06)",
                 }}>{bericht.fazit.kernsatz}</p>
 
                 <div style={{ marginTop: 20, marginBottom: 20 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                    <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${CHAPTER_COLORS[7]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <Award style={{ width: 13, height: 13, color: CHAPTER_COLORS[7], strokeWidth: 2 }} />
+                    <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: `${BERICHT_SECTION_COLORS[8]}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Award style={{ width: 13, height: 13, color: BERICHT_SECTION_COLORS[8], strokeWidth: 2 }} />
                     </div>
                     <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Entscheidend für die Besetzung ist eine Persönlichkeit, die:</p>
                   </div>
-                  <BulletList items={bericht.fazit.persoenlichkeit || []} icon="check" color={CHAPTER_COLORS[7]} />
+                  <BulletList items={bericht.fazit.persoenlichkeit || []} icon="check" color={BERICHT_SECTION_COLORS[8]} />
                 </div>
 
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, marginBottom: 16, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{hyphenateText(bericht.fazit.fehlbesetzung)}</p>
 
                 <div style={{
-                  padding: "18px 22px", borderRadius: 18,
-                  background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.03))",
-                  border: "1px solid rgba(0,113,227,0.12)",
+                  padding: "18px 22px", borderRadius: 14,
+                  background: `${BERICHT_SECTION_COLORS[8]}08`,
+                  border: `1px solid ${BERICHT_SECTION_COLORS[8]}15`,
                   display: "flex", alignItems: "flex-start", gap: 12,
                 }}>
                   <div style={{
                     width: 24, height: 24, borderRadius: 8, flexShrink: 0,
-                    background: "rgba(0,113,227,0.15)", display: "flex", alignItems: "center", justifyContent: "center",
+                    background: `${BERICHT_SECTION_COLORS[8]}20`, display: "flex", alignItems: "center", justifyContent: "center",
                   }}>
-                    <Check style={{ width: 13, height: 13, color: "#0071E3", strokeWidth: 2.5 }} />
+                    <Check style={{ width: 13, height: 13, color: BERICHT_SECTION_COLORS[8], strokeWidth: 2.5 }} />
                   </div>
                   <p style={{ fontSize: 14, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.75, margin: 0, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">{hyphenateText(bericht.fazit.schlusssatz)}</p>
                 </div>
-              </GlassCard>
+              </div>
 
+              </div>
             </div>
-          )}
-        </main>
-      </div>
+          </div>
+        )}
+      </main>
     </div>
   );
 }
