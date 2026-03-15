@@ -864,34 +864,89 @@ export default function Rollenprofil() {
   }, []);
 
   const handlePDF = async () => {
-    if (!reportRef.current) return;
+    if (!data) return;
     setPdfLoading(true);
-    await new Promise(r => setTimeout(r, 100));
     try {
-      const html2pdf = (await import("html2pdf.js")).default;
-      const el = reportRef.current;
-      const buttons = el.querySelectorAll("button");
-      buttons.forEach(b => (b as HTMLElement).style.display = "none");
+      const { buildRollenprofilPdf } = await import("@/lib/rollenprofil-pdf-builder");
 
-      const safeName = (data?.beruf || "Bericht").replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_");
+      const stress = buildStressTexts(data.gesamt, data.isLeadership, data.fuehrungstyp);
+      const hauptTaetigkeiten = (data.taetigkeiten || []).filter((t: any) => t.kategorie === "haupt");
+      const hochItems = hauptTaetigkeiten.filter((t: any) => t.niveau === "Hoch");
+      const erfolgsfokusLabelsLocal = data.erfolgsfokusIndices.map(i => ERFOLGSFOKUS_LABELS[i]).filter(Boolean);
 
-      await html2pdf().set({
-        margin: [10, 10, 10, 15],
-        filename: `Rollen-DNA_${safeName}.pdf`,
-        image: { type: "jpeg", quality: 0.95 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: "#FFFFFF",
-          logging: false,
-          windowWidth: 900,
-        },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        pagebreak: { mode: ["avoid-all", "css", "legacy"] },
-      }).from(el).save();
+      const topT = hauptTaetigkeiten.slice(0, 3).map((t: any) => cleanTaskName(t.name));
+      const introText = (() => {
+        if (data.dom.key === "int") return `Diese Aufgaben verlangen eine Persönlichkeit, die ${data.isLeadership ? "ein Team führen kann und " : ""}schnell Vertrauen aufbaut, Bedürfnisse erkennt und im persönlichen Kontakt überzeugt. Entscheidend ist die Fähigkeit, Menschen zu gewinnen.`;
+        if (data.dom.key === "imp") return `Diese Aufgaben erfordern eine Persönlichkeit, die ${data.isLeadership ? "ein Team antreibt und " : ""}schnell entscheidet, klar priorisiert und Ergebnisse konsequent liefert. Entscheidend ist die Fähigkeit, auch bei unvollständiger Informationslage handlungsfähig zu bleiben.`;
+        return `Diese Aufgaben verlangen eine Persönlichkeit, die ${data.isLeadership ? "ein Team methodisch führt und " : ""}strukturiert arbeitet, Qualität sichert und fundierte Entscheidungsgrundlagen liefert. Entscheidend ist die Fähigkeit, sorgfältig und präzise zu arbeiten.`;
+      })();
+      const ergaenzung = (() => {
+        if (data.dom.key === "int") return data.sec.key === "ana" ? "Ohne strukturierte Arbeitsweise entstehen schnell Fehler bei Organisation, Kalkulation und Dokumentation. Die Rolle verlangt beides: persönlichen Kontakt und verlässliche Abläufe." : "Ohne Durchsetzungsfähigkeit bleiben wichtige Entscheidungen offen oder werden zu lange verhandelt. Die Rolle verlangt Nähe und Klarheit gleichermaßen.";
+        if (data.dom.key === "imp") return data.sec.key === "int" ? "Ohne die Fähigkeit, Beziehungen zu pflegen, verliert die Rolle ihre Wirkung im Team. Wer nur Ergebnisse fordert, ohne Menschen mitzunehmen, erzeugt Widerstand statt Leistung." : "Ohne Sorgfalt entstehen Fehler bei Qualität, Dokumentation und Prozessen. Die Rolle verlangt schnelles Handeln und trotzdem Präzision.";
+        return data.sec.key === "int" ? "Ohne Kommunikationsgeschick bleiben Analysen im Elfenbeinturm. Die Rolle verlangt, Ergebnisse verständlich zu vermitteln und Akzeptanz im Team zu schaffen." : "Ohne Handlungsfähigkeit führen Analysen nicht zu Ergebnissen. Die Rolle verlangt, den Punkt zu erkennen, an dem genug geprüft wurde, und dann umzusetzen.";
+      })();
 
-      buttons.forEach(b => (b as HTMLElement).style.display = "");
+      const hochNamen = hochItems.slice(0, 3).map((t: any) => cleanTaskName(t.name));
+      const hochRef = hochNamen.length > 0 ? `Besonders kritisch sind dabei ${hochNamen.join(", ")}. ` : "";
+      const alltagText = (() => {
+        if (data.dom.key === "int") return `Im normalen Arbeitstag zeigt sich die Stärke dieser Rolle im persönlichen Kontakt. ${data.isLeadership ? "Die Führungskraft" : "Die Person"} baut Vertrauen auf, erkennt Bedürfnisse schnell und schafft ein Umfeld, in dem sich Menschen gehört fühlen. ${hochRef}${data.sec.key === "ana" ? "Damit das funktioniert, braucht die Rolle gleichzeitig klare Organisation. Abläufe, Dokumentation und Standards dürfen nicht zu kurz kommen." : "Damit das funktioniert, braucht die Rolle gleichzeitig Tempo und Entscheidungsfähigkeit. Nicht alles lässt sich im Konsens lösen."}`;
+        if (data.dom.key === "imp") return `Im normalen Arbeitstag zeigt sich die Stärke dieser Rolle in klarer Priorisierung und konsequenter Umsetzung. ${data.isLeadership ? "Die Führungskraft" : "Die Person"} treibt Ergebnisse voran und bleibt auch bei Widerständen handlungsfähig. ${hochRef}${data.sec.key === "int" ? "Damit das funktioniert, braucht die Rolle gleichzeitig Sensibilität für das Team. Wer nur Tempo macht, verliert die Leute." : "Damit das funktioniert, braucht die Rolle Sorgfalt bei Analysen und Qualitätssicherung. Schnelle Entscheidungen müssen trotzdem fundiert sein."}`;
+        return `Im normalen Arbeitstag zeigt sich die Stärke dieser Rolle in methodischer Arbeit, sauberer Dokumentation und hoher Qualität. ${data.isLeadership ? "Die Führungskraft" : "Die Person"} überzeugt durch fachliche Tiefe und nachvollziehbare Ergebnisse. ${hochRef}${data.sec.key === "int" ? "Damit das funktioniert, braucht die Rolle Kommunikationsgeschick. Fachlich richtige Ergebnisse müssen verständlich vermittelt werden." : "Damit das funktioniert, braucht die Rolle Handlungsbereitschaft. Wer nur analysiert, aber nicht entscheidet, blockiert den Fortschritt."}`;
+      })();
+
+      const strukturText = (() => {
+        if (data.profileType === "balanced_all") return "Diese Rolle verlangt keine klare Spezialisierung. Sie erfordert eine Persönlichkeit, die situativ zwischen schnellem Handeln, persönlichem Kontakt und gründlicher Analyse wechseln kann. Das macht die Besetzung anspruchsvoll. Die Person muss vielseitig sein, ohne beliebig zu wirken.";
+        if (data.profileType.startsWith("hybrid_")) {
+          const domB = data.dom.key === "imp" ? "schnelles Handeln und Umsetzungsstärke" : data.dom.key === "int" ? "persönlichen Kontakt und Beziehungsarbeit" : "methodische Sorgfalt und Qualitätssicherung";
+          const secB = data.sec.key === "imp" ? "schnelles Handeln und Umsetzungsstärke" : data.sec.key === "int" ? "persönlichen Kontakt und Beziehungsarbeit" : "methodische Sorgfalt und Qualitätssicherung";
+          return `Diese Rolle verlangt gleichzeitig ${domB} und ${secB}. Beide Anforderungen sind nahezu gleichwertig. Die Person muss beides auf hohem Niveau mitbringen.`;
+        }
+        const domB = data.dom.key === "imp" ? "schnelles Handeln und klare Entscheidungen" : data.dom.key === "int" ? "persönlichen Kontakt und die Fähigkeit, Vertrauen aufzubauen" : "sorgfältige Analyse und strukturiertes Arbeiten";
+        return `Das Profil dieser Rolle wird geprägt durch ${domB}. Das ist die zentrale Anforderung an die Person. ${data.sec.key === "ana" ? "Strukturierte Arbeitsweise sorgt dafür, dass Entscheidungen nachvollziehbar bleiben und Abläufe stabil funktionieren." : data.sec.key === "int" ? "Die Fähigkeit, Beziehungen aufzubauen und Menschen mitzunehmen, sorgt für Akzeptanz und Zusammenhalt." : "Gleichzeitig braucht es Handlungsfähigkeit, damit Ergebnisse auch tatsächlich umgesetzt werden."}`;
+      })();
+
+      const arbeitslogik = (() => {
+        if (data.dom.key === "int") return `Die Wirkung dieser Rolle entsteht vor allem im direkten Kontakt, ${data.isLeadership ? "mit dem Team, Stakeholdern und Entscheidungsträgern" : "mit Kolleginnen und Kollegen, Kundinnen und Kunden oder Gesprächspartnern"}. Entscheidungen werden häufig situativ und im Gespräch getroffen. ${data.sec.key === "ana" ? "Gleichzeitig verlangt die Rolle die Fähigkeit, Abläufe zu organisieren und Prioritäten klar zu setzen." : "Gleichzeitig verlangt die Rolle die Fähigkeit, schnell zu handeln und Ergebnisse zu liefern, auch wenn nicht alle einverstanden sind."}`;
+        if (data.dom.key === "imp") return `Die Wirkung dieser Rolle entsteht vor allem über schnelles Handeln und klare Priorisierung. ${data.isLeadership ? "Als Führungskraft gibt sie das Tempo vor und treibt Ergebnisse aktiv voran." : "Themen werden eigenständig vorangetrieben, ohne auf Anweisungen zu warten."} ${data.sec.key === "int" ? "Dabei darf der Blick für das Team und die Beziehungsebene nicht verloren gehen." : "Dabei braucht es gleichzeitig Sorgfalt, damit Qualität und Nachhaltigkeit gesichert bleiben."}`;
+        return `Die Wirkung dieser Rolle entsteht über systematische Analyse, klare Prozesse und fundierte Entscheidungsgrundlagen. ${data.isLeadership ? "Als Führungskraft setzt sie auf nachvollziehbare Qualitätsstandards und transparente Steuerung." : "Fachliche Tiefe und sorgfältige Arbeitsweise schaffen Vertrauen und Verlässlichkeit."} ${data.sec.key === "int" ? "Gleichzeitig verlangt die Rolle, Erkenntnisse verständlich zu kommunizieren und im Team zu verankern." : "Gleichzeitig müssen Analysen in konkretes Handeln münden. Reine Theorie reicht nicht."}`;
+      })();
+
+      const fazitLocal = buildFazit(data);
+      const safeName = (data.beruf || "Bericht").replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_");
+
+      await buildRollenprofilPdf({
+        beruf: data.beruf,
+        bereich: data.bereich,
+        isLeadership: data.isLeadership,
+        fuehrungstyp: data.fuehrungstyp,
+        aufgabencharakter: data.aufgabencharakter,
+        profileType: data.profileType,
+        gesamt: data.gesamt,
+        dom: data.dom,
+        sec: data.sec,
+        wk: data.wk,
+        einleitung: `Dieser Bericht beschreibt, welche Persönlichkeitsstruktur für die Rolle ${data.beruf} besonders wirksam ist. Neben fachlichen Kompetenzen beeinflusst vor allem die Art, wie eine Person Situationen beurteilt, Entscheidungen trifft und unter Druck handelt, den Erfolg in dieser Rolle. Die folgenden Abschnitte zeigen, welche Persönlichkeitsstruktur die Anforderungen der Rolle unterstützt, wie sich diese im Arbeitsalltag zeigt und welche Spannungsfelder dabei entstehen können.`,
+        topTaetigkeiten: topT,
+        rollenBeschreibungIntro: introText,
+        rollenBeschreibungErgaenzung: ergaenzung,
+        strukturprofilText: strukturText,
+        komponentenBedeutung: buildKomponentenBedeutung(data),
+        profilherkunft: buildProfilherkunft(data),
+        profilkonflikt: buildProfilkonflikt(data),
+        arbeitslogikText: arbeitslogik,
+        rahmenText: buildRahmenText(data),
+        erfolgsfokusLabels: erfolgsfokusLabelsLocal,
+        erfolgsfokusText: buildErfolgsfokusText(data, erfolgsfokusLabelsLocal),
+        alltagsverhalten: alltagText,
+        stressControlled: stress.controlled,
+        stressUncontrolled: stress.uncontrolled,
+        teamwirkung: buildTeamwirkung(data),
+        spannungsfelder: buildSpannungsfelder(data),
+        fehlbesetzung: buildFehlbesetzung(data),
+        kandidatenText: kandidatenText || "",
+        fazitTitel: fazitLocal.titel,
+        fazitAbsaetze: fazitLocal.absaetze,
+      }, `Rollen-DNA_${safeName}.pdf`);
     } catch (e) {
       console.error("PDF error:", e);
       alert("PDF-Export fehlgeschlagen. Bitte versuchen Sie es erneut.");
