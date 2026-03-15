@@ -2,7 +2,7 @@ import type { SollIstResult, Severity } from "./soll-ist-engine";
 import type { ComponentKey, Triad } from "./jobcheck-engine";
 import { labelComponent } from "./jobcheck-engine";
 import { getLogoDataUrl } from "./logo-base64";
-import { SECTION_COLORS, BIO_COLORS } from "./bio-design";
+import { SECTION_COLORS } from "./bio-design";
 
 const COMP_LABELS: Record<ComponentKey, string> = {
   impulsiv: "Umsetzung / Tempo",
@@ -234,12 +234,48 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   const headerDivider: RGB = [82, 87, 99];
   const badgeBgBlend: RGB = [82, 87, 99];
 
-  const headerH = 56;
-  setF(headerBgRgb);
-  doc.rect(0, 0, PW, headerH, "F");
+  const devLevel = result.developmentLevel;
+  const devScore = devLevel >= 4 ? 3 : devLevel >= 3 ? 2 : 1;
+  const devLabel = devScore === 3 ? "gering" : devScore === 2 ? "mittel" : "hoch";
+  const devCol: RGB = devScore === 3 ? C.green : devScore === 2 ? C.amber : C.red;
+  const gapCol: RGB = result.totalGap > 40 ? C.red : result.totalGap > 20 ? C.amber : C.green;
 
-  setF(fitCol);
-  doc.rect(0, headerH, PW, 1.8, "F");
+  const blockInner = CW;
+
+  const shiftFirst = result.dominanceShiftText.split(/\n\n+/)[0];
+  const shiftLines = wrap(shiftFirst, blockInner, 7.5);
+  const summaryFirst = result.summaryText.split(/\n\n+/)[0];
+  const fazitLines = wrap(summaryFirst, blockInner - 6, 7.5);
+
+  const metricW = blockInner / 4 - 1.5;
+  const metricH = 14;
+  const metricGap = 2;
+  const rowH = 5.5;
+
+  const metrics = [
+    { label: "Grundpassung", value: result.fitLabel, color: fitCol },
+    { label: "Führungsaufwand", value: cLabel, color: cCol },
+    { label: "Profilabweichung", value: result.gapLevel, color: gapCol },
+    { label: "Entwicklungsaufwand", value: devLabel, color: devCol },
+  ];
+  const overviewRows = [
+    { label: "Rollenprofil", value: result.roleConstellationLabel, color: C.white },
+    { label: `${personLabel}profil`, value: result.candConstellationLabel, color: C.white },
+    { label: "Soll-Ist-Abweichung", value: `${result.totalGap} Punkte`, color: gapCol },
+  ];
+
+  let bulletLines = 0;
+  result.executiveBullets.forEach(b => { bulletLines += wrap(b, blockInner - 8, 7.5).length; });
+  let riskLines = 0;
+  result.constellationRisks.forEach(r => { riskLines += wrap(r, blockInner - 8, 7.5).length; });
+
+  let estH = MT + 14 + 10 + 4 + metricH + 5 + 4 + (overviewRows.length * rowH) + 2 + 4 + (2 * rowH) + 2 + (shiftLines.length * 3.8) + 4 + 4 + (fazitLines.length * 3.8);
+  if (bulletLines > 0) estH += 6 + bulletLines * 3.8;
+  if (riskLines > 0) estH += 6 + riskLines * 3.8;
+  estH += 6;
+
+  setF(headerBgRgb);
+  doc.rect(0, 0, PW, estH, "F");
 
   let hY = MT;
 
@@ -264,107 +300,143 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   doc.text(dateStr, PW - MR, hY + 3.5, { align: "right" });
 
   hY += 14;
-
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
   setC(C.white);
   doc.text(result.roleName, ML, hY);
-  hY += 8;
+  hY += 10;
 
-  doc.setFontSize(8.5);
+  doc.setFontSize(6.5);
+  doc.setFont("helvetica", "bold");
+  setC(headerTextSubtle);
+  doc.text("SYSTEMSTATUS", ML, hY);
+  hY += 4;
+
+  metrics.forEach((m, i) => {
+    const mx = ML + i * (metricW + metricGap);
+    setF(badgeBgBlend);
+    doc.roundedRect(mx, hY, metricW, metricH, 1.5, 1.5, "F");
+    doc.setFontSize(5.5);
+    doc.setFont("helvetica", "normal");
+    setC(headerTextSubtle);
+    doc.text(m.label.toUpperCase(), mx + 3, hY + 5);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    setC(m.color);
+    doc.text(m.value, mx + 3, hY + 11);
+  });
+  hY += metricH + 5;
+
+  doc.setFontSize(6.5);
+  doc.setFont("helvetica", "bold");
+  setC(headerTextSubtle);
+  doc.text("SYSTEMÜBERBLICK", ML, hY);
+  hY += 4;
+
+  overviewRows.forEach(row => {
+    doc.setFontSize(7.5);
+    doc.setFont("helvetica", "normal");
+    setC(headerTextDim);
+    doc.text(row.label, ML, hY);
+    doc.setFont("helvetica", "bold");
+    setC(row.color);
+    doc.text(row.value, ML + blockInner, hY, { align: "right" });
+    hY += rowH;
+  });
+  hY += 2;
+
+  doc.setFontSize(6.5);
+  doc.setFont("helvetica", "bold");
+  setC(headerTextSubtle);
+  doc.text("STRUKTURKONSTELLATION", ML, hY);
+  hY += 4;
+
+  doc.setFontSize(7.5);
   doc.setFont("helvetica", "normal");
-
-  const dotR = 1.6;
-  const textY = hY;
-  const dotCenterY = textY - 1.2;
-
-  setF(roleDomCol);
-  doc.circle(ML + dotR, dotCenterY, dotR, "F");
   setC(headerTextDim);
+  doc.text("Dominanz Rolle", ML, hY);
   doc.setFont("helvetica", "bold");
-  doc.text("Rolle:", ML + dotR * 2 + 2.5, textY);
-  const roleLabelW = doc.getTextWidth("Rolle: ");
+  setC(roleDomCol);
+  doc.text(COMP_LABELS[result.roleDomKey], ML + blockInner, hY, { align: "right" });
+  hY += rowH;
+
   doc.setFont("helvetica", "normal");
-  doc.text(result.roleConstellationLabel, ML + dotR * 2 + 2.5 + roleLabelW, textY);
-  const roleBlockW = dotR * 2 + 2.5 + roleLabelW + doc.getTextWidth(result.roleConstellationLabel);
-
-  const sepX = ML + roleBlockW + 6;
-  setC(headerDivider);
-  doc.text("|", sepX, textY);
-
-  const personStartX = sepX + 6;
-  setF(candDomCol);
-  doc.circle(personStartX + dotR, dotCenterY, dotR, "F");
   setC(headerTextDim);
+  doc.text("Dominanz Person", ML, hY);
   doc.setFont("helvetica", "bold");
-  doc.text(`${personLabel}:`, personStartX + dotR * 2 + 2.5, textY);
-  const personLabelW = doc.getTextWidth(`${personLabel}: `);
+  setC(candDomCol);
+  doc.text(COMP_LABELS[result.candDomKey], ML + blockInner, hY, { align: "right" });
+  hY += rowH + 2;
+
+  doc.setFontSize(7.5);
   doc.setFont("helvetica", "normal");
-  doc.text(result.candConstellationLabel, personStartX + dotR * 2 + 2.5 + personLabelW, textY);
+  shiftLines.forEach(line => {
+    setC(headerTextDim);
+    doc.text(line, ML, hY);
+    hY += 3.8;
+  });
+  hY += 4;
 
-  hY += 9;
-
-  const badgeH = 7;
-  const badgeR = 3.5;
-  const badgeTextY = hY;
-  const badgeDotCY = badgeTextY - 1.2;
-  const badgeBoxY = badgeTextY - 4.2;
-
-  const fitBadgeText = result.fitLabel;
-  doc.setFontSize(8);
+  doc.setFontSize(6.5);
   doc.setFont("helvetica", "bold");
-  const fitBadgeW = doc.getTextWidth(fitBadgeText) + 16;
-  setF(badgeBgBlend);
-  doc.roundedRect(ML, badgeBoxY, fitBadgeW, badgeH, badgeR, badgeR, "F");
-  setF(fitCol);
-  doc.circle(ML + 5 + dotR, badgeDotCY, dotR, "F");
-  setC(C.white);
-  doc.text(fitBadgeText, ML + 5 + dotR * 2 + 3, badgeTextY);
-
-  const cBadgeText = `Führungsaufwand: ${cLabel}`;
-  doc.setFontSize(8);
-  doc.setFont("helvetica", "bold");
-  const cBadgeW = doc.getTextWidth(cBadgeText) + 16;
-  const cBadgeX = ML + fitBadgeW + 6;
-  setF(badgeBgBlend);
-  doc.roundedRect(cBadgeX, badgeBoxY, cBadgeW, badgeH, badgeR, badgeR, "F");
-  setF(cCol);
-  doc.circle(cBadgeX + 5 + dotR, badgeDotCY, dotR, "F");
-  setC(C.white);
-  doc.text(cBadgeText, cBadgeX + 5 + dotR * 2 + 3, badgeTextY);
-
-  y = headerH + 8;
-
-  result.summaryText.split("\n\n").forEach(para => {
-    printText(para, ML, CW, 8.5, C.dark, 4.3);
-    y += 2;
+  setC(headerTextSubtle);
+  doc.text("MANAGEMENTKURZFAZIT", ML, hY);
+  hY += 4;
+  doc.setFontSize(7.5);
+  doc.setFont("helvetica", "normal");
+  fazitLines.forEach(line => {
+    setC(headerTextDim);
+    doc.text(line, ML + 4, hY);
+    hY += 3.8;
   });
 
   if (result.executiveBullets.length > 0) {
-    y += 2;
-    labelTag("Warum dieses Ergebnis");
+    hY += 3;
+    doc.setFontSize(6.5);
+    doc.setFont("helvetica", "bold");
+    setC(headerTextSubtle);
+    doc.text("WARUM DIESES ERGEBNIS", ML, hY);
+    hY += 4;
     result.executiveBullets.forEach(b => {
-      checkPage(6);
-      dot(ML, y, fitCol);
-      printText(b, ML + 5, CW - 5, 8.5, C.dark, 4.3);
-      y += 1;
+      const bLines = wrap(b, blockInner - 8, 7.5);
+      setF(fitCol);
+      doc.circle(ML + 1.5, hY - 1.2, 1.2, "F");
+      doc.setFontSize(7.5);
+      doc.setFont("helvetica", "normal");
+      bLines.forEach((line, li) => {
+        setC(headerTextDim);
+        doc.text(line, ML + 5, hY);
+        hY += 3.8;
+      });
     });
   }
 
   if (result.constellationRisks.length > 0) {
-    y += 2;
-    labelTag("Risiken dieser Konstellation");
+    hY += 3;
+    doc.setFontSize(6.5);
+    doc.setFont("helvetica", "bold");
+    setC(headerTextSubtle);
+    doc.text("RISIKEN DIESER KONSTELLATION", ML, hY);
+    hY += 4;
     result.constellationRisks.forEach(r => {
-      checkPage(6);
-      dot(ML, y, C.red);
-      printText(r, ML + 5, CW - 5, 8.5, C.dark, 4.3);
-      y += 1;
+      const rLines = wrap(r, blockInner - 8, 7.5);
+      setF(C.red);
+      doc.circle(ML + 1.5, hY - 1.2, 1.2, "F");
+      doc.setFontSize(7.5);
+      doc.setFont("helvetica", "normal");
+      rLines.forEach(line => {
+        setC(headerTextDim);
+        doc.text(line, ML + 5, hY);
+        hY += 3.8;
+      });
     });
   }
 
+  y = hY + 8;
+
   separator(70);
 
-  sectionHead(1, "Soll-Ist Profil", hexToRgb(SECTION_COLORS.sollIstProfil));
+  sectionHead(2, "Soll-Ist Profil", hexToRgb(SECTION_COLORS.sollIstProfil));
 
   const barMaxW = 55;
   const barH = 5.5;
@@ -475,49 +547,6 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   }
 
   separator(50);
-
-  const sameDom = result.roleDomKey === result.candDomKey;
-  const candBadges: { key: ComponentKey; label: string }[] = result.candIsEqualDist
-    ? (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => ({ key: k, label: COMP_LABELS[k] }))
-    : result.candIsDualDom
-      ? [{ key: result.candDomKey, label: COMP_LABELS[result.candDomKey] }, { key: result.candDom2Key, label: COMP_LABELS[result.candDom2Key] }]
-      : [{ key: result.candDomKey, label: COMP_LABELS[result.candDomKey] }];
-  const shiftSymbol = result.candIsEqualDist ? "!=" : result.candIsDualDom ? "<>" : sameDom ? "=" : "->";
-
-  sectionHead(2, "Unterschied zwischen Rolle und Person", hexToRgb(SECTION_COLORS.unterschied));
-
-  checkPage(20);
-  doc.setFontSize(7);
-  doc.setFont("helvetica", "bold");
-  setC(C.light);
-  doc.text("ROLLE", ML + 5, y);
-  doc.text("PERSON", midX + 10, y);
-  y += 2;
-  hline(ML, y, ML + CW);
-  y += 6;
-
-  doc.setFontSize(9);
-  doc.setFont("helvetica", "bold");
-  setC(compColor(result.roleDomKey));
-  doc.text(COMP_LABELS[result.roleDomKey], ML + 5, y);
-
-  setC(C.faint);
-  doc.setFontSize(13);
-  doc.text(shiftSymbol, midX, y, { align: "center" });
-
-  doc.setFontSize(9);
-  let bY = y;
-  candBadges.forEach(b => {
-    doc.setFont("helvetica", "bold");
-    setC(compColor(b.key));
-    doc.text(b.label, midX + 10, bY);
-    bY += 5.5;
-  });
-  y = Math.max(y + 6, bY) + 3;
-
-  printText(result.dominanceShiftText, ML, CW, 8.5, C.dark, 4.3);
-
-  separator(40);
 
   sectionHead(3, "Wirkung der Besetzung im Arbeitsalltag", hexToRgb(SECTION_COLORS.wirkung));
   result.impactAreas.forEach((area, idx) => {
@@ -656,8 +685,8 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
 
   setD(rFitColorRgb);
   doc.setLineWidth(0.7);
-  const fazitLines = wrap(rFazit, CW - 6, 8.5);
-  const fazitH = fazitLines.length * 4.3 + 2;
+  const rFazitLines = wrap(rFazit, CW - 6, 8.5);
+  const fazitH = rFazitLines.length * 4.3 + 2;
   doc.line(ML, y, ML, y + fazitH);
   printText(rFazit, ML + 5, CW - 6, 8.5, C.dark, 4.3);
   y += 3;

@@ -520,7 +520,6 @@ export default function SollIstBericht() {
           const fitCol = result.fitRating === "GEEIGNET" ? "#3A9A5C" : result.fitRating === "BEDINGT" ? "#E5A832" : "#D64045";
           const rc = BAR_HEX[result.roleDomKey];
           const cc = BAR_HEX[result.candDomKey];
-          const sameDom = result.roleDomKey === result.candDomKey;
           const sep = { paddingBottom: 36, marginBottom: 36 } as const;
 
           const SectionHead = ({ num, icon: Icon, title, iconColor }: { num: number; icon?: any; title: string; iconColor?: string }) => (
@@ -541,8 +540,8 @@ export default function SollIstBericht() {
           <div ref={reportRef} style={{ maxWidth: 820, margin: "0 auto" }} data-testid="print-report-wrapper">
             <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }} data-testid="print-report-card">
 
-              <div style={{ background: "linear-gradient(135deg, #343A48, #2A2F3A)", padding: "32px 44px 28px", position: "relative" }} data-testid="section-header">
-                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${fitCol}, ${fitCol}60, transparent)` }} />
+              {/* ─── EXECUTIVE DECISION PAGE ─── */}
+              <div style={{ background: "linear-gradient(135deg, #343A48, #2A2F3A)", padding: "32px 44px 0", position: "relative" }} data-testid="section-header">
 
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -561,136 +560,117 @@ export default function SollIstBericht() {
                   </button>
                 </div>
 
+                <h1 style={{ fontSize: 26, fontWeight: 700, color: "#FFFFFF", margin: "0 0 22px", letterSpacing: "-0.02em", lineHeight: 1.2 }} data-testid="text-page-title">
+                  {result.roleName}
+                </h1>
+
                 {(() => {
                   const cCol = bioControlColor(result.controlIntensity);
                   const cLabel = result.controlIntensity === "hoch" ? "Hoch" : result.controlIntensity === "mittel" ? "Mittel" : "Gering";
-                  const fitBg = result.fitRating === "GEEIGNET" ? "rgba(58,154,92,0.12)" : result.fitRating === "BEDINGT" ? "rgba(229,168,50,0.12)" : "rgba(214,64,69,0.12)";
+                  const devLevel = result.developmentLevel;
+                  const devScore = devLevel >= 4 ? 3 : devLevel >= 3 ? 2 : 1;
+                  const devLabel = devScore === 3 ? "gering" : devScore === 2 ? "mittel" : "hoch";
+                  const devCol = devScore === 3 ? BIO_COLORS.geeignet : devScore === 2 ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
+                  const gapCol = result.totalGap > 40 ? BIO_COLORS.nichtGeeignet : result.totalGap > 20 ? BIO_COLORS.bedingt : BIO_COLORS.geeignet;
+                  const personLabel = result.candidateName !== "Die Person" ? result.candidateName : "Person";
+
                   return (
                     <>
-                      <h1 style={{ fontSize: 26, fontWeight: 700, color: "#FFFFFF", margin: "0 0 10px", letterSpacing: "-0.02em", lineHeight: 1.2 }} data-testid="text-page-title">
-                        {result.roleName}
-                      </h1>
-
-                      <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", margin: "0 0 18px", lineHeight: 1.6 }}>
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-                          <span style={{ width: 7, height: 7, borderRadius: 4, background: rc, display: "inline-block", flexShrink: 0 }} />
-                          <span style={{ color: "rgba(255,255,255,0.7)", fontWeight: 500 }}>Rolle:</span> {result.roleConstellationLabel}
-                        </span>
-                        <span style={{ margin: "0 10px", color: "rgba(255,255,255,0.2)" }}>|</span>
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-                          <span style={{ width: 7, height: 7, borderRadius: 4, background: cc, display: "inline-block", flexShrink: 0 }} />
-                          <span style={{ color: "rgba(255,255,255,0.7)", fontWeight: 500 }}>{result.candidateName !== "Die Person" ? result.candidateName : "Person"}:</span> {result.candConstellationLabel}
-                        </span>
-                      </p>
-
-                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 10, background: fitBg, border: `1px solid ${fitCol}30` }}>
-                          <div style={{ width: 8, height: 8, borderRadius: 4, background: fitCol, boxShadow: `0 0 6px ${fitCol}60` }} />
-                          <span style={{ fontSize: 13, fontWeight: 700, color: fitCol }}>{result.fitLabel}</span>
-                        </div>
-                        <div style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                          <div style={{ width: 6, height: 6, borderRadius: 3, background: cCol }} />
-                          <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.65)" }}>Führungsaufwand: {cLabel}</span>
+                      {/* SYSTEMSTATUS */}
+                      <div style={{ marginBottom: 22 }} data-testid="section-systemstatus">
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 10px" }}>Systemstatus</p>
+                        <div style={{ display: "flex", gap: 10 }}>
+                          {[
+                            { label: "Grundpassung", value: result.fitLabel, color: fitCol },
+                            { label: "Führungsaufwand", value: cLabel, color: cCol },
+                            { label: "Profilabweichung", value: result.gapLevel, color: gapCol },
+                            { label: "Entwicklungsaufwand", value: devLabel, color: devCol },
+                          ].map(m => (
+                            <div key={m.label} style={{ flex: 1, minWidth: 0, padding: "14px 16px", borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.50)", marginBottom: 5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>{m.label}</div>
+                              <div style={{ fontSize: 15, fontWeight: 700, color: m.color }} data-testid={`status-${m.label.toLowerCase().replace(/\s/g, "-")}`}>{m.value}</div>
+                            </div>
+                          ))}
                         </div>
                       </div>
+
+                      {/* SYSTEMÜBERBLICK */}
+                      <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }} data-testid="section-ueberblick">
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Systemüberblick</p>
+                        {[
+                          { label: "Rollenprofil", value: result.roleConstellationLabel },
+                          { label: `${personLabel}profil`, value: result.candConstellationLabel },
+                          { label: "Soll-Ist-Abweichung", value: `${result.totalGap} Punkte`, color: gapCol },
+                        ].map((row, i, arr) => (
+                          <div key={row.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
+                            <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>{row.label}</span>
+                            <span style={{ fontSize: 14, fontWeight: row.color ? 800 : 700, color: row.color || "rgba(255,255,255,0.85)" }}>{row.value}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* STRUKTURKONSTELLATION */}
+                      <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }} data-testid="section-strukturkonstellation">
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Strukturkonstellation</p>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>Dominanz Rolle</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: rc }}>{COMP_LABELS[result.roleDomKey]}</span>
+                        </div>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>Dominanz Person</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: cc }}>{COMP_LABELS[result.candDomKey]}</span>
+                        </div>
+                        <div style={{ padding: "10px 0 4px" }}>
+                          <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 6px" }}>Strukturwirkung</p>
+                          <p style={{ margin: 0, fontSize: 13, lineHeight: 1.75, color: "rgba(255,255,255,0.70)" }}>
+                            {result.dominanceShiftText.split(/\n\n+/)[0]}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* MANAGEMENTKURZFAZIT */}
+                      <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", position: "relative" }} data-testid="section-fazit">
+                        <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, borderRadius: "12px 0 0 12px", background: `linear-gradient(180deg, ${fitCol}, ${fitCol}40)` }} />
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Managementkurzfazit</p>
+                        <p style={{ fontSize: 13, lineHeight: 1.85, color: "rgba(255,255,255,0.75)", margin: 0 }} data-testid="text-summary-fazit">
+                          {result.summaryText.split(/\n\n+/)[0]}
+                        </p>
+                      </div>
+
+                      {/* WARUM / RISIKEN compact */}
+                      {(result.executiveBullets.length > 0 || result.constellationRisks.length > 0) && (
+                        <div style={{ marginBottom: 0, padding: "16px 20px 20px", borderRadius: "12px 12px 0 0", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", borderBottom: "none" }} data-testid="section-executive-bullets">
+                          {result.executiveBullets.length > 0 && (
+                            <div style={{ marginBottom: result.constellationRisks.length > 0 ? 14 : 0 }}>
+                              <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 6px" }}>Warum dieses Ergebnis</p>
+                              {result.executiveBullets.map((b, i) => (
+                                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 4 }}>
+                                  <span style={{ width: 5, height: 5, borderRadius: 3, background: fitCol, flexShrink: 0, marginTop: 6 }} />
+                                  <span style={{ fontSize: 12, lineHeight: 1.6, color: "rgba(255,255,255,0.65)" }}>{b}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          {result.constellationRisks.length > 0 && (
+                            <div>
+                              <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 6px" }}>Risiken dieser Konstellation</p>
+                              {result.constellationRisks.map((r, i) => (
+                                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 4 }}>
+                                  <span style={{ width: 5, height: 5, borderRadius: 3, background: BIO_COLORS.nichtGeeignet, flexShrink: 0, marginTop: 6 }} />
+                                  <span style={{ fontSize: 12, lineHeight: 1.6, color: "rgba(255,255,255,0.65)" }}>{r}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </>
                   );
                 })()}
               </div>
+              {/* ─── END EXECUTIVE DECISION PAGE ─── */}
 
               <div style={{ padding: "36px 44px 48px" }}>
-
-              <div style={{ marginBottom: 36 }}>
-                <div style={{ padding: "24px 28px", borderRadius: 14, background: "linear-gradient(135deg, #f8f9fb, #f1f3f8)", border: "1px solid rgba(0,0,0,0.05)", overflow: "visible", position: "relative" }}>
-                  <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, borderRadius: "14px 0 0 14px", background: `linear-gradient(180deg, ${fitCol}, ${fitCol}40)` }} />
-                  {result.summaryText.split("\n\n").map((para, i) => (
-                    <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i > 0 ? "12px 0 0" : "0", textAlign: "left", wordBreak: "break-word", overflowWrap: "break-word" } as React.CSSProperties} lang="de">
-                      {para}
-                    </p>
-                  ))}
-                </div>
-                {(result.executiveBullets.length > 0 || result.constellationRisks.length > 0) && (
-                  <div style={{ display: "grid", gridTemplateColumns: result.executiveBullets.length > 0 && result.constellationRisks.length > 0 ? "1fr 1fr" : "1fr", gap: 12, marginTop: 12 }}>
-                    {result.executiveBullets.length > 0 && (
-                      <div style={{ padding: "18px 22px", borderRadius: 14, background: `linear-gradient(135deg, ${fitCol}06, ${fitCol}02)`, border: `1px solid ${fitCol}15`, overflow: "visible" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                          <CheckCircle2 style={{ width: 14, height: 14, color: fitCol }} />
-                          <p style={{ fontSize: 11, fontWeight: 700, color: fitCol, textTransform: "uppercase", letterSpacing: "0.08em", margin: 0 }}>Warum dieses Ergebnis</p>
-                        </div>
-                        <ul style={{ margin: 0, paddingLeft: 16, listStyleType: "none" }}>
-                          {result.executiveBullets.map((b, i) => (
-                            <li key={i} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, marginBottom: i < result.executiveBullets.length - 1 ? 6 : 0, paddingLeft: 12, position: "relative" }}>
-                              <span style={{ position: "absolute", left: 0, top: 9, width: 5, height: 5, borderRadius: 3, background: fitCol }} />
-                              {b}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    {result.constellationRisks.length > 0 && (
-                      <div style={{ padding: "18px 22px", borderRadius: 14, background: "linear-gradient(135deg, rgba(212,58,69,0.04), rgba(212,58,69,0.01))", border: "1px solid rgba(212,58,69,0.12)", overflow: "visible" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                          <AlertTriangle style={{ width: 14, height: 14, color: "#D43A45" }} />
-                          <p style={{ fontSize: 11, fontWeight: 700, color: "#D43A45", textTransform: "uppercase", letterSpacing: "0.08em", margin: 0 }}>Risiken dieser Konstellation</p>
-                        </div>
-                        <ul style={{ margin: 0, paddingLeft: 16, listStyleType: "none" }}>
-                          {result.constellationRisks.map((r, i) => (
-                            <li key={i} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, marginBottom: i < result.constellationRisks.length - 1 ? 6 : 0, paddingLeft: 12, position: "relative" }}>
-                              <span style={{ position: "absolute", left: 0, top: 9, width: 5, height: 5, borderRadius: 3, background: "#D43A45" }} />
-                              {r}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-dominance-shift">
-                <SectionHead num={1} icon={Compass} title="Unterschied zwischen Rolle und Person" iconColor={SECTION_COLORS.unterschied} />
-                {(() => {
-                  const candBadges: { key: ComponentKey; label: string }[] = result.candIsEqualDist
-                    ? (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => ({ key: k, label: COMP_LABELS[k] }))
-                    : result.candIsDualDom
-                      ? [{ key: result.candDomKey, label: COMP_LABELS[result.candDomKey] }, { key: result.candDom2Key, label: COMP_LABELS[result.candDom2Key] }]
-                      : [{ key: result.candDomKey, label: COMP_LABELS[result.candDomKey] }];
-                  const shiftSymbol = result.candIsEqualDist ? "≠" : result.candIsDualDom ? "⇄" : sameDom ? "=" : "→";
-                  const shiftColor = result.candIsEqualDist ? "#FF3B30" : result.candIsDualDom ? "#FF9500" : sameDom ? "#34C759" : "#FF3B30";
-                  return (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 20, marginBottom: 18, padding: "22px 28px", borderRadius: 16, background: "linear-gradient(135deg, #f8f9fb, #eef1f8)", border: "1px solid rgba(0,0,0,0.05)", boxShadow: "0 2px 12px rgba(0,0,0,0.03)" }}>
-                  <div style={{ textAlign: "center", flex: 1 }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>Rolle</p>
-                    <div style={{ padding: "8px 18px", borderRadius: 12, background: `${rc}12`, border: `1px solid ${rc}20`, boxShadow: `0 2px 8px ${rc}10` }}>
-                      <span style={{ fontSize: 14, fontWeight: 700, color: rc }}>{COMP_LABELS[result.roleDomKey]}</span>
-                    </div>
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, flexShrink: 0 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 18, background: `${shiftColor}15`, border: `2px solid ${shiftColor}30`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <span style={{ fontSize: 18, fontWeight: 700, color: shiftColor, lineHeight: 1 }}>{shiftSymbol}</span>
-                    </div>
-                    <span style={{ fontSize: 9, fontWeight: 700, color: shiftColor, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                      {result.candIsEqualDist ? "verteilt" : result.candIsDualDom ? "dual" : sameDom ? "gleich" : "anders"}
-                    </span>
-                  </div>
-                  <div style={{ textAlign: "center", flex: 1 }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>Person</p>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                      {candBadges.map(b => {
-                        const bColor = BAR_HEX[b.key];
-                        return (
-                          <div key={b.key} style={{ padding: "8px 18px", borderRadius: 12, background: `${bColor}12`, border: `1px solid ${bColor}20`, boxShadow: `0 2px 8px ${bColor}10` }}>
-                            <span style={{ fontSize: 14, fontWeight: 700, color: bColor }}>{b.label}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-                  );
-                })()}
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "left", wordBreak: "break-word", overflowWrap: "break-word" } as React.CSSProperties} lang="de">{result.dominanceShiftText}</p>
-              </div>
 
               <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-comparison-bars">
                 <SectionHead num={2} icon={BarChart3} title="Vergleich der Profile" iconColor={SECTION_COLORS.sollIstProfil} />
