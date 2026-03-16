@@ -333,7 +333,7 @@ const roleRequirementText = {
   intro: [
     "Diese Auswertung beschreibt die Wirklogik der Position.",
     "Die Anforderungen werden den drei Dimensionen Impulsiv, Intuitiv und Analytisch zugeordnet.",
-    "So wird sichtbar, welche Form von Wirksamkeit die Position im Arbeitsalltag hauptsächlich verlangt.",
+    "Dadurch wird sichtbar, welche Form der Wirksamkeit im Arbeitsalltag dieser Position im Mittelpunkt steht.",
   ],
   outro: "",
 };
