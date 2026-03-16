@@ -717,7 +717,7 @@ export default function JobCheck() {
                   data-testid="button-create-report"
                   style={{
                     width: "100%", height: 48, padding: "0 28px", borderRadius: 14,
-                    background: "linear-gradient(135deg, #0071E3, #34AADC)",
+                    background: "#0071E3",
                     color: "#FFFFFF", border: "none", fontSize: 14, fontWeight: 600,
                     cursor: "pointer", boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
