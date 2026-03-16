@@ -2906,13 +2906,32 @@ export default function RollenDNA() {
                       <span style={{ fontSize: 16 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}</span>
                     </span>
                   </div>
-                  <ChevronDown style={{
-                    width: 18,
-                    height: 18,
-                    color: "#8E8E93",
-                    transform: summaryOpen ? "rotate(180deg)" : "rotate(0deg)",
-                    transition: "transform 300ms ease",
-                  }} />
+                  <div className="flex items-center gap-3">
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setAllCollapsed(false);
+                        setCurrentStep(1);
+                        setSummaryOpen(false);
+                      }}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 4,
+                        color: "#007AFF", fontSize: 14, fontWeight: 500,
+                        cursor: "pointer", whiteSpace: "nowrap",
+                      }}
+                      data-testid="button-summary-edit"
+                    >
+                      <Pencil style={{ width: 14, height: 14 }} />
+                      Bearbeiten
+                    </span>
+                    <ChevronDown style={{
+                      width: 18,
+                      height: 18,
+                      color: "#8E8E93",
+                      transform: summaryOpen ? "rotate(180deg)" : "rotate(0deg)",
+                      transition: "transform 300ms ease",
+                    }} />
+                  </div>
                 </button>
 
                 {summaryOpen && (
