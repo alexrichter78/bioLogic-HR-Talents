@@ -74,63 +74,118 @@ function effectStrength(score: number): "leicht" | "mittel" | "stark" {
 }
 
 function scorePhotoEffect(features: PhotoFeatures): PhotoEffectScores {
-  const impulsivRaw =
-    (features.blickrichtung === 1 ? 2 : 0) * 1.4 +
-    features.blickintensitaet * 1.6 +
-    features.brauenkontraktion * 1.5 +
-    features.lippenpressung * 1.2 +
-    features.kieferanspannung * 1.2 +
-    (features.kopfPitch === 1 ? 2 : 0) * 0.9 +
-    (features.kopfYaw === 0 ? 2 : 0) * 0.6 +
-    features.glabellaLinie * 0.9 +
-    features.gesamtspannung * 1.3 +
-    features.kinnprojektion * 0.8 +
-    features.gesichtsrundung * 0.6 +
-    features.fwhRatio * 0.5;
+  let imp = 0;
+  let int_ = 0;
+  let ana = 0;
 
-  const intuitivRaw =
-    features.augenfreundlichkeit * 1.7 +
-    Math.max(0, features.mundwinkel) * 1.7 +
-    features.laechelnIntensitaet * 1.8 +
-    features.duchenneNahe * 1.4 +
-    features.kopfRoll * 1.0 +
-    features.lachfalten * 0.7 +
-    (2 - features.lippenpressung) * 0.8 +
-    (2 - features.kieferanspannung) * 0.6 +
-    (2 - features.gesamtspannung) * 0.7 +
-    (features.augenbrauenhoehe === 2 ? 2 : 0) * 0.5;
+  // 1. Blickrichtung
+  if (features.blickrichtung === -1) { imp += 0; int_ += 0; ana += 1; }
+  else if (features.blickrichtung === 0) { imp += 1; int_ += 0; ana += 1; }
+  else { imp += 2; int_ += 0; ana += 0; }
 
-  const analytischRaw =
-    features.gesichtskontrolle * 1.9 +
-    features.stirnspannung * 1.1 +
-    (features.blickintensitaet === 1 ? 2 : 0) * 1.0 +
-    (features.mundwinkel === 0 ? 2 : 0) * 1.3 +
-    (2 - features.gesichtsexpressivitaet) * 1.5 +
-    features.stirnlinien * 0.8 +
-    features.augensymmetrie * 0.7 +
-    features.mundsymmetrie * 0.7 +
-    (features.kopfYaw === 0 ? 2 : 0) * 0.5 +
-    (features.kopfPitch === 0 ? 2 : 0) * 0.7 +
-    (features.augenbrauenhoehe === 1 ? 2 : 0) * 0.6;
+  // 2. Blickintensität
+  if (features.blickintensitaet === 0) { imp += 0; int_ += 2; ana += 0; }
+  else if (features.blickintensitaet === 1) { imp += 0; int_ += 0; ana += 2; }
+  else { imp += 2; int_ += 0; ana += 0; }
 
-  const impulsivMax =
-    2 * 1.4 + 2 * 1.6 + 2 * 1.5 + 2 * 1.2 + 2 * 1.2 +
-    2 * 0.9 + 2 * 0.6 + 2 * 0.9 + 2 * 1.3 + 2 * 0.8 +
-    2 * 0.6 + 2 * 0.5;
+  // 3. Augenfreundlichkeit
+  if (features.augenfreundlichkeit === 0) { imp += 0; int_ += 0; ana += 1; }
+  else if (features.augenfreundlichkeit === 1) { imp += 0; int_ += 1; ana += 1; }
+  else { imp += 0; int_ += 2; ana += 0; }
 
-  const intuitivMax =
-    2 * 1.7 + 2 * 1.7 + 2 * 1.8 + 2 * 1.4 + 1 * 1.0 +
-    2 * 0.7 + 2 * 0.8 + 2 * 0.6 + 2 * 0.7 + 2 * 0.5;
+  // 4. Augenbrauenposition
+  if (features.augenbrauenhoehe === 0) { imp += 2; int_ += 0; ana += 0; }
+  else if (features.augenbrauenhoehe === 1) { imp += 0; int_ += 0; ana += 2; }
+  else { imp += 0; int_ += 2; ana += 0; }
 
-  const analytischMax =
-    2 * 1.9 + 2 * 1.1 + 2 * 1.0 + 2 * 1.3 + 2 * 1.5 +
-    2 * 0.8 + 2 * 0.7 + 2 * 0.7 + 2 * 0.5 + 2 * 0.7 +
-    2 * 0.6;
+  // 5. Brauenkontraktion
+  if (features.brauenkontraktion === 0) { imp += 0; int_ += 1; ana += 1; }
+  else if (features.brauenkontraktion === 1) { imp += 1; int_ += 0; ana += 1; }
+  else { imp += 2; int_ += 0; ana += 0; }
+
+  // 6. Stirnspannung
+  if (features.stirnspannung === 0) { imp += 0; int_ += 1; ana += 0; }
+  else if (features.stirnspannung === 1) { imp += 0; int_ += 0; ana += 1; }
+  else { imp += 1; int_ += 0; ana += 2; }
+
+  // 7. Mundwinkel
+  if (features.mundwinkel === -1) { imp += 1; int_ += 0; ana += 1; }
+  else if (features.mundwinkel === 0) { imp += 0; int_ += 0; ana += 2; }
+  else if (features.mundwinkel === 1) { imp += 0; int_ += 2; ana += 0; }
+  else { imp += 0; int_ += 3; ana += 0; }
+
+  // 8. Lächelnintensität
+  if (features.laechelnIntensitaet === 0) { imp += 0; int_ += 0; ana += 2; }
+  else if (features.laechelnIntensitaet === 1) { imp += 0; int_ += 2; ana += 0; }
+  else { imp += 0; int_ += 3; ana += 0; }
+
+  // 9. Duchenne-Nähe
+  if (features.duchenneNahe === 0) { imp += 0; int_ += 0; ana += 1; }
+  else if (features.duchenneNahe === 1) { imp += 0; int_ += 1; ana += 0; }
+  else { imp += 0; int_ += 2; ana += 0; }
+
+  // 10. Lippenpressung
+  if (features.lippenpressung === 0) { imp += 0; int_ += 1; ana += 0; }
+  else if (features.lippenpressung === 1) { imp += 1; int_ += 0; ana += 1; }
+  else { imp += 2; int_ += 0; ana += 1; }
+
+  // 11. Kieferanspannung
+  if (features.kieferanspannung === 0) { imp += 0; int_ += 1; ana += 0; }
+  else if (features.kieferanspannung === 1) { imp += 1; int_ += 0; ana += 1; }
+  else { imp += 2; int_ += 0; ana += 1; }
+
+  // 12. Kopf Pitch
+  if (features.kopfPitch === -1) { imp += 0; int_ += 0; ana += 2; }
+  else if (features.kopfPitch === 0) { imp += 0; int_ += 0; ana += 1; }
+  else { imp += 2; int_ += 0; ana += 0; }
+
+  // 13. Kopf Roll
+  if (features.kopfRoll === 0) { imp += 0; int_ += 0; ana += 1; }
+  else { imp += 0; int_ += 2; ana += 0; }
+
+  // 14. Kopf Yaw
+  if (features.kopfYaw === 0) { imp += 1; int_ += 0; ana += 1; }
+  else if (features.kopfYaw === 1) { imp += 0; int_ += 1; ana += 1; }
+  else { imp += 0; int_ += 2; ana += 0; }
+
+  // 15. Gesichtsexpressivität
+  if (features.gesichtsexpressivitaet === 0) { imp += 0; int_ += 0; ana += 2; }
+  else if (features.gesichtsexpressivitaet === 1) { imp += 1; int_ += 1; ana += 0; }
+  else { imp += 1; int_ += 2; ana += 0; }
+
+  // 16. Gesichtskontrolle
+  if (features.gesichtskontrolle === 0) { imp += 0; int_ += 2; ana += 0; }
+  else if (features.gesichtskontrolle === 1) { imp += 0; int_ += 0; ana += 2; }
+  else { imp += 1; int_ += 0; ana += 3; }
+
+  // 17. Lachfalten (schwach)
+  if (features.lachfalten === 0) { imp += 0; int_ += 0; ana += 1; }
+  else if (features.lachfalten === 1) { imp += 0; int_ += 1; ana += 0; }
+  else { imp += 0; int_ += 2; ana += 0; }
+
+  // 18. Glabella-Linie (schwach)
+  if (features.glabellaLinie === 0) { /* 0/0/0 */ }
+  else if (features.glabellaLinie === 1) { imp += 1; int_ += 0; ana += 1; }
+  else { imp += 2; int_ += 0; ana += 1; }
+
+  // 19. Stirnlinien (schwach)
+  if (features.stirnlinien === 0) { /* 0/0/0 */ }
+  else if (features.stirnlinien === 1) { imp += 0; int_ += 0; ana += 1; }
+  else { imp += 0; int_ += 0; ana += 2; }
+
+  // 20. Gesamtspannung
+  if (features.gesamtspannung === 0) { imp += 0; int_ += 2; ana += 0; }
+  else if (features.gesamtspannung === 1) { imp += 1; int_ += 0; ana += 1; }
+  else { imp += 2; int_ += 0; ana += 1; }
+
+  const impMax = 2 + 2 + 0 + 2 + 2 + 1 + 1 + 0 + 0 + 2 + 2 + 2 + 0 + 1 + 1 + 1 + 0 + 2 + 0 + 2;
+  const intMax = 0 + 2 + 2 + 2 + 1 + 1 + 3 + 3 + 2 + 1 + 1 + 0 + 2 + 2 + 2 + 2 + 2 + 0 + 0 + 2;
+  const anaMax = 1 + 2 + 1 + 2 + 1 + 2 + 2 + 2 + 1 + 1 + 1 + 2 + 1 + 1 + 2 + 3 + 1 + 1 + 2 + 1;
 
   return {
-    impulsivScore: normalizeTo10(impulsivRaw, impulsivMax),
-    intuitivScore: normalizeTo10(intuitivRaw, intuitivMax),
-    analytischScore: normalizeTo10(analytischRaw, analytischMax),
+    impulsivScore: normalizeTo10(imp, impMax),
+    intuitivScore: normalizeTo10(int_, intMax),
+    analytischScore: normalizeTo10(ana, anaMax),
   };
 }
 

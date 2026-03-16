@@ -1,0 +1,346 @@
+Ziel
+
+Das Foto soll nicht als Persönlichkeit bewertet werden, sondern nur als Foto-Wirkung in drei Skalen:
+
+Impulsiv
+
+Intuitiv
+
+Analytisch
+
+Grundregel
+
+Jedes Merkmal gibt Punkte auf eine oder mehrere Skalen.
+Am Ende gilt:
+
+höchste Punktzahl = Primärwirkung
+
+zweithöchste Punktzahl = Sekundärwirkung
+
+niedrigste Punktzahl = Tertiärwirkung
+
+Die echten Bewertungskriterien
+1. Blickrichtung
+
+Frage: Schaut die Person direkt in die Kamera?
+
+ausweichend = 0 impulsiv / 0 intuitiv / 1 analytisch
+
+neutral = 1 impulsiv / 0 intuitiv / 1 analytisch
+
+direkt = 2 impulsiv / 0 intuitiv / 0 analytisch
+
+Logik:
+Direkter Blick erhöht Präsenz und Durchsetzung.
+
+2. Blickintensität
+
+Frage: Wie stark wirkt der Blick?
+
+weich = 0 impulsiv / 2 intuitiv / 0 analytisch
+
+ruhig = 0 impulsiv / 0 intuitiv / 2 analytisch
+
+stark = 2 impulsiv / 0 intuitiv / 0 analytisch
+
+Logik:
+Weich = Nähe
+ruhig = Kontrolle
+stark = Dominanz
+
+3. Augenfreundlichkeit
+
+Frage: Wirken die Augen warm oder kühl?
+
+kühl = 0 impulsiv / 0 intuitiv / 1 analytisch
+
+neutral = 0 / 1 / 1
+
+warm = 0 / 2 / 0
+
+Logik:
+Warme Augen erhöhen intuitive Wirkung stark.
+
+4. Augenbrauenposition
+
+Frage: Wie wirken die Brauen?
+
+tief / zusammenziehend = 2 impulsiv / 0 intuitiv / 0 analytisch
+
+neutral = 0 / 0 / 2
+
+hoch / offen = 0 / 2 / 0
+
+Logik:
+Tief = Dominanz
+hoch = Offenheit
+neutral = Kontrolle
+
+5. Brauenkontraktion
+
+Frage: Ist Spannung zwischen den Brauen sichtbar?
+
+keine = 0 impulsiv / 1 intuitiv / 1 analytisch
+
+leicht = 1 impulsiv / 0 / 1
+
+stark = 2 impulsiv / 0 / 0
+
+Logik:
+Mehr Kontraktion = mehr Fokus / Dominanz
+
+6. Stirnspannung
+
+Frage: Wie stark wirken Stirn und obere Gesichtsmuskeln angespannt?
+
+gering = 0 impulsiv / 1 intuitiv / 0 analytisch
+
+mittel = 0 / 0 / 1
+
+hoch = 1 / 0 / 2
+
+Logik:
+Stirnspannung deutet eher auf Analyse / Kontrolle
+
+7. Mundwinkel
+
+Frage: Wie stehen die Mundwinkel?
+
+negativ = 1 impulsiv / 0 intuitiv / 1 analytisch
+
+neutral = 0 / 0 / 2
+
+leicht positiv = 0 / 2 / 0
+
+klar positiv = 0 / 3 / 0
+
+Logik:
+Mundwinkel sind ein Hauptsignal für intuitive Wirkung.
+
+8. Lächelnintensität
+
+Frage: Wie stark lächelt die Person?
+
+keines = 0 impulsiv / 0 intuitiv / 2 analytisch
+
+leicht = 0 / 2 / 0
+
+deutlich = 0 / 3 / 0
+
+Logik:
+Kein Lächeln erhöht analytische Wirkung, Lächeln intuitiv.
+
+9. Duchenne-Nähe
+
+Frage: Beteiligen sich die Augen am Lächeln?
+
+nein = 0 impulsiv / 0 intuitiv / 1 analytisch
+
+teilweise = 0 / 1 / 0
+
+ja = 0 / 2 / 0
+
+Logik:
+Echtes Lächeln erhöht intuitive Wirkung.
+
+10. Lippenpressung
+
+Frage: Wie stark sind die Lippen gespannt?
+
+entspannt = 0 impulsiv / 1 intuitiv / 0 analytisch
+
+leicht gespannt = 1 / 0 / 1
+
+stark gespannt = 2 / 0 / 1
+
+Logik:
+Spannung erhöht Impulsiv und etwas Analytisch.
+
+11. Kieferanspannung
+
+Frage: Wie angespannt wirkt die untere Gesichtshälfte?
+
+gering = 0 impulsiv / 1 intuitiv / 0 analytisch
+
+mittel = 1 / 0 / 1
+
+hoch = 2 / 0 / 1
+
+Logik:
+Hohe Spannung = Dominanz / Kontrolle
+
+12. Kopfhaltung nach vorne / oben (Pitch)
+
+Frage: Wie ist der Kopf ausgerichtet?
+
+leicht nach unten = 0 impulsiv / 0 intuitiv / 2 analytisch
+
+neutral = 0 / 0 / 1
+
+leicht nach vorne / oben = 2 / 0 / 0
+
+Logik:
+Vorne = Präsenz
+unten = Kontrolle / Zurückhaltung
+
+13. Kopfneigung seitlich (Roll)
+
+Frage: Ist der Kopf leicht geneigt?
+
+nein = 0 impulsiv / 0 intuitiv / 1 analytisch
+
+ja = 0 / 2 / 0
+
+Logik:
+Kopfneigung erhöht intuitive Wirkung.
+
+14. Kopfausrichtung frontal / seitlich (Yaw)
+
+Frage: Frontal oder abgewandt?
+
+frontal = 1 impulsiv / 0 intuitiv / 1 analytisch
+
+leicht seitlich = 0 / 1 / 1
+
+deutlich seitlich = 0 / 2 / 0
+
+Logik:
+Frontal = Präsenz
+leicht seitlich = weicher / kontaktorientierter
+
+15. Gesichtsexpressivität
+
+Frage: Wie viel sichtbare Emotion zeigt das Gesicht?
+
+niedrig = 0 impulsiv / 0 intuitiv / 2 analytisch
+
+mittel = 1 / 1 / 0
+
+hoch = 1 / 2 / 0
+
+Logik:
+Wenig Emotion = analytisch
+viel Emotion = intuitiv / etwas impulsiv
+
+16. Gesichtskontrolle
+
+Frage: Wie kontrolliert und gesammelt wirkt das Gesicht?
+
+locker = 0 impulsiv / 2 intuitiv / 0 analytisch
+
+gesammelt = 0 / 0 / 2
+
+stark kontrolliert = 1 / 0 / 3
+
+Logik:
+Gesichtskontrolle ist einer der stärksten analytischen Marker.
+
+Zusatzkriterien mit geringer Gewichtung
+
+Diese nur schwach bewerten.
+
+17. Lachfalten
+
+keine = 0 / 0 / 1
+
+leicht = 0 / 1 / 0
+
+deutlich = 0 / 2 / 0
+
+18. Glabella-Linie / Zornesfalte
+
+keine = 0 / 0 / 0
+
+leicht = 1 / 0 / 1
+
+deutlich = 2 / 0 / 1
+
+19. Stirnlinien
+
+keine = 0 / 0 / 0
+
+leicht = 0 / 0 / 1
+
+deutlich = 0 / 0 / 2
+
+20. Gesamtspannung
+
+niedrig = 0 / 2 / 0
+
+mittel = 1 / 0 / 1
+
+hoch = 2 / 0 / 1
+
+Entscheidungslogik am Ende
+Score bilden
+
+Einfach alle Punkte aufsummieren:
+
+impulsivGesamt
+
+intuitivGesamt
+
+analytischGesamt
+
+Ranking
+
+Dann sortieren:
+
+höchster Score = Primärwirkung
+
+zweithöchster = Sekundärwirkung
+
+niedrigster = Tertiärwirkung
+
+Text darf erst danach gebaut werden
+
+Also:
+
+nicht
+„Bild sieht ruhig aus, also analytisch“
+
+sondern nur:
+
+Merkmale bewerten
+
+Punkte summieren
+
+Ranking bilden
+
+Text aus Ranking erzeugen
+
+Warum dein Beispiel falsch lief
+
+Bei dem Bild mit dem lächelnden Mann ist nach diesen Kriterien fast sicher:
+
+Mundwinkel positiv
+
+Lächeln vorhanden
+
+Augen freundlich
+
+Gesicht wenig kontrolliert
+
+hohe Wärme
+
+Dadurch muss das Ergebnis eher sein:
+
+Intuitiv hoch
+
+Impulsiv etwas
+
+Analytisch niedrig
+
+Also genau das, was du gesagt hast:
+
+Impulsiv:   ███░░░░░░
+Intuitiv:   ███████░░
+Analytisch: ██░░░░░░░
+Das ist die wichtigste Regel für Replit
+
+Wenn du willst, gib Replit genau diese Anweisung:
+
+Bewerte das Foto ausschließlich anhand der definierten Merkmale und Punkte.
+Interpretiere das Ergebnis nicht frei.
+Der Text darf erst aus dem finalen Ranking gebaut werden.
+Maßgeblich sind nur die aufsummierten Scores für impulsiv, intuitiv und analytisch.
