@@ -2905,9 +2905,9 @@ export default function RollenDNA() {
                       <span style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F" }}>Tätigkeits-/Kompetenzanzahl</span>
                     </div>
                     <div style={{ display: "flex", gap: 12, paddingLeft: 21, flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 12, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{hauptCount}</strong> Tätigkeiten</span>
-                      <span style={{ fontSize: 12, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{nebenCount}</strong> Humankompetenzen</span>
-                      {fuehrung !== "Keine" && <span style={{ fontSize: 12, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{fuehrungCount}</strong> Führung</span>}
+                      <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{hauptCount}</strong> Tätigkeiten</span>
+                      <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{nebenCount}</strong> Humankompetenzen</span>
+                      {fuehrung !== "Keine" && <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{fuehrungCount}</strong> Führung</span>}
                     </div>
                   </div>
                 </div>
