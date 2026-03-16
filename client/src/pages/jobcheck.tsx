@@ -725,7 +725,7 @@ export default function JobCheck() {
                   onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)"; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)"; }}
                 >
-                  <FileText style={{ width: 16, height: 16 }} />
+                  <FileText style={{ width: 17, height: 17 }} />
                   Bericht erstellen
                 </button>
               </div>
