@@ -1559,11 +1559,23 @@ export default function RollenDNA() {
     }
   });
 
+  const [editingFromOverview, setEditingFromOverview] = useState(false);
+
   const goToStep = (step: number) => {
+    if (allCollapsed) {
+      setEditingFromOverview(true);
+    }
+    setAllCollapsed(false);
     setCurrentStep(step);
     if (step === 3 && currentStep === 2) {
       generateKompetenzen();
     }
+  };
+
+  const returnToOverview = () => {
+    setEditingFromOverview(false);
+    setAllCollapsed(true);
+    setCurrentStep(4);
   };
 
   const sectionsFilled = [
