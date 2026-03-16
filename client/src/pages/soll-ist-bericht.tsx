@@ -545,9 +545,9 @@ export default function SollIstBericht() {
 
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <img src={logoPath} alt="bioLogic" style={{ height: 28, opacity: 0.9 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                    <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.15)" }} />
-                    <span style={{ fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.45)", letterSpacing: "0.16em", textTransform: "uppercase" }}>Passungsbericht</span>
+                    <img src={logoPath} alt="bioLogic" style={{ height: 36, opacity: 1 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                    <div style={{ width: 1, height: 24, background: "rgba(255,255,255,0.25)" }} />
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.7)", letterSpacing: "0.16em", textTransform: "uppercase" }}>Passungsbericht</span>
                   </div>
                   <button
                     onClick={exportPdf}
