@@ -2100,7 +2100,7 @@ export default function RollenDNA() {
                       Formen Sie die konkrete Struktur dieser Rolle.
                     </p>
                   </div>
-                  <div style={{ textAlign: "right", fontSize: 12, color: "#6E6E73", lineHeight: 1.8 }}>
+                  <div style={{ textAlign: "right", fontSize: 14, color: "#48484A", lineHeight: 1.8 }}>
                     <div>Tätigkeiten <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{hauptCount} / 15</span></div>
                     <div>Humankompetenzen <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{nebenCount} / 10</span></div>
                     {fuehrung !== "Keine" && (
@@ -2150,14 +2150,14 @@ export default function RollenDNA() {
                             alignItems: "center",
                             justifyContent: "center",
                             gap: 6,
-                            fontSize: 13,
+                            fontSize: 14,
                             fontWeight: isActive ? 650 : 500,
                             borderRadius: 10,
                             border: "none",
                             cursor: "pointer",
                             transition: "background 200ms ease, color 200ms ease",
                             background: isActive ? "rgba(0,113,227,0.08)" : "transparent",
-                            color: isActive ? "#0071E3" : "#8E8E93",
+                            color: isActive ? "#0071E3" : "#6E6E73",
                             boxShadow: "none",
                           }}
                           data-testid={`tab-${tab.key}`}
@@ -2349,7 +2349,7 @@ export default function RollenDNA() {
 
                               <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 10 }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                  <span style={{ fontSize: 11, fontWeight: 500, color: "#AEAEB2", minWidth: 52, textTransform: "uppercase", letterSpacing: "0.5px" }}>Niveau</span>
+                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#8E8E93", minWidth: 52, textTransform: "uppercase", letterSpacing: "0.5px" }}>Niveau</span>
                                   <div style={{ display: "flex", gap: 6 }}>
                                     {NIVEAU_OPTIONS.map(n => (
                                       <button
@@ -2382,7 +2382,7 @@ export default function RollenDNA() {
                                 </div>
 
                                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                  <span style={{ fontSize: 11, fontWeight: 500, color: "#AEAEB2", minWidth: 52, textTransform: "uppercase", letterSpacing: "0.5px" }}>Bereich</span>
+                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#8E8E93", minWidth: 52, textTransform: "uppercase", letterSpacing: "0.5px" }}>Bereich</span>
                                   <div style={{ display: "flex", gap: 6 }}>
                                     {KOMPETENZ_OPTIONS.map(k => (
                                       <button
