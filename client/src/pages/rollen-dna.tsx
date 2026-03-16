@@ -475,11 +475,13 @@ function CollapsedStep({
   title,
   summary,
   onEdit,
+  icon: Icon,
 }: {
   step: number;
   title: string;
   summary: string;
   onEdit: () => void;
+  icon?: React.ComponentType<{ style?: React.CSSProperties; strokeWidth?: number }>;
 }) {
   return (
     <div
@@ -488,7 +490,7 @@ function CollapsedStep({
       data-testid={`collapsed-step-${step}`}
     >
       <span className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center flex-shrink-0">
-        <Check className="w-4 h-4" strokeWidth={2.5} />
+        {Icon ? <Icon style={{ width: 16, height: 16, color: "#FFF" }} strokeWidth={2.2} /> : <Check className="w-4 h-4" strokeWidth={2.5} />}
       </span>
       <div className="flex-1 min-w-0">
         <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: 0 }}>{title}</p>
@@ -1913,6 +1915,7 @@ export default function RollenDNA() {
                 title="Ausgewählte Position / Bezeichnung"
                 summary={beruf}
                 onEdit={() => goToStep(1)}
+                icon={Briefcase}
               />
             )}
 
@@ -1928,7 +1931,7 @@ export default function RollenDNA() {
                     Rahmenbedingungen der Stelle
                   </h2>
                   <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6 }}>
-                    Definieren Sie die grundlegenden Merkmale dieser Position. Die Angaben helfen dabei, die strukturelle Rollenlogik zu bestimmen.
+                    Grundlegende Merkmale dieser Position / Bezeichnung.
                   </p>
                 </div>
 
@@ -2095,6 +2098,7 @@ export default function RollenDNA() {
                 title="Rahmenbedingungen der Stelle"
                 summary={`${AUFGABENCHARAKTER_OPTIONS.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter} · ${ARBEITSLOGIK_OPTIONS.find(o => o.value === arbeitslogik)?.label || arbeitslogik} · ${erfolgsfokusIndices.map(i => ERFOLGSFOKUS_DISPLAY[i]?.label).filter(Boolean).join(", ")} · ${FUEHRUNG_OPTIONS.find(o => o.value === fuehrung)?.label || fuehrung}`}
                 onEdit={() => goToStep(2)}
+                icon={Settings}
               />
             ) : (
               <LockedStep step={2} title="Rahmenbedingungen der Stelle" />
@@ -2106,6 +2110,7 @@ export default function RollenDNA() {
                 title="Tätigkeiten & Kompetenzen"
                 summary={`${taetigkeiten.filter(t => t.kategorie === "haupt").length} Tätigkeiten · ${taetigkeiten.filter(t => t.kategorie === "neben").length} Humankompetenzen${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} Führung` : ""}`}
                 onEdit={() => goToStep(3)}
+                icon={Layers}
               />
             ) : currentStep === 3 ? (
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-3">
