@@ -24,6 +24,9 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
   const [location, setLocation] = useLocation();
 
   const handleNav = (item: typeof NAV_ITEMS[0]) => {
+    if (location === item.path || location.startsWith(item.path + "/")) {
+      window.dispatchEvent(new CustomEvent("nav-reclick", { detail: item.path }));
+    }
     setLocation(item.path);
   };
 

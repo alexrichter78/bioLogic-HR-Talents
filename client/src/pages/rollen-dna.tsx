@@ -1561,6 +1561,20 @@ export default function RollenDNA() {
 
   const [editingFromOverview, setEditingFromOverview] = useState(false);
 
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail === "/rollen-dna" && beruf.trim().length > 0) {
+        setAllCollapsed(true);
+        setCurrentStep(4);
+        setEditingFromOverview(false);
+        window.scrollTo(0, 0);
+      }
+    };
+    window.addEventListener("nav-reclick", handler);
+    return () => window.removeEventListener("nav-reclick", handler);
+  });
+
   const goToStep = (step: number) => {
     if (allCollapsed) {
       setEditingFromOverview(true);
@@ -1900,7 +1914,7 @@ export default function RollenDNA() {
                   <div className="flex justify-end" style={{ marginTop: 24 }}>
                     <Button
                       disabled={!step1Valid}
-                      onClick={() => goToStep(2)}
+                      onClick={() => editingFromOverview ? returnToOverview() : goToStep(2)}
                       className="gap-2"
                       style={{
                         height: 48,
@@ -1915,7 +1929,7 @@ export default function RollenDNA() {
                       }}
                       data-testid="button-step-1-weiter"
                     >
-                      Rolle analysieren
+                      {editingFromOverview ? "Übernehmen" : "Rolle analysieren"}
                       <ArrowRight className="w-4 h-4" />
                     </Button>
                   </div>
@@ -2083,7 +2097,7 @@ export default function RollenDNA() {
                   <div className="flex justify-end" style={{ marginTop: 40 }}>
                     <Button
                       disabled={!step2Valid}
-                      onClick={() => goToStep(3)}
+                      onClick={() => editingFromOverview ? returnToOverview() : goToStep(3)}
                       style={{
                         height: 52,
                         paddingLeft: 32,
@@ -2098,7 +2112,7 @@ export default function RollenDNA() {
                       className="gap-2"
                       data-testid="button-step-2-weiter"
                     >
-                      Weiter
+                      {editingFromOverview ? "Übernehmen" : "Weiter"}
                       <ArrowRight className="w-5 h-5" />
                     </Button>
                   </div>
@@ -2560,6 +2574,7 @@ export default function RollenDNA() {
                         data-testid="button-step-3-fertig"
                         onClick={() => {
                           setAllCollapsed(true);
+                          setEditingFromOverview(false);
                           localStorage.setItem("rollenDnaCompleted", "true");
                         }}
                       >
