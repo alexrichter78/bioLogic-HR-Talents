@@ -2349,7 +2349,7 @@ export default function RollenDNA() {
 
                               <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 10 }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#8E8E93", minWidth: 52, textTransform: "uppercase", letterSpacing: "0.5px" }}>Niveau</span>
+                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", minWidth: 52, textTransform: "uppercase", letterSpacing: "0.5px" }}>Niveau</span>
                                   <div style={{ display: "flex", gap: 6 }}>
                                     {NIVEAU_OPTIONS.map(n => (
                                       <button
@@ -2382,7 +2382,7 @@ export default function RollenDNA() {
                                 </div>
 
                                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#8E8E93", minWidth: 52, textTransform: "uppercase", letterSpacing: "0.5px" }}>Bereich</span>
+                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", minWidth: 52, textTransform: "uppercase", letterSpacing: "0.5px" }}>Bereich</span>
                                   <div style={{ display: "flex", gap: 6 }}>
                                     {KOMPETENZ_OPTIONS.map(k => (
                                       <button
