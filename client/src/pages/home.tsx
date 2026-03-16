@@ -203,7 +203,7 @@ export default function Home() {
                   </p>
                 </div>
 
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: "0 0 28px" }} data-testid="text-profile-desc">
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: "0 0 28px", fontWeight: 600 }} data-testid="text-profile-desc">
                   Definieren Sie eine Position und analysieren Sie die strukturelle Passung. Die Analyse liefert klare Handlungsempfehlungen für Besetzung, Führung und Zusammenarbeit.
                 </p>
 
@@ -286,7 +286,7 @@ export default function Home() {
                   </p>
                 </div>
 
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: "0 0 24px" }}>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: "0 0 24px", fontWeight: 600 }}>
                   Nutzen Sie den KI-Coach für Recruiting, Teamfragen, Gesprächsvorbereitung und konkrete Handlungsempfehlungen – jederzeit, auch ohne Analyse.
                 </p>
 
