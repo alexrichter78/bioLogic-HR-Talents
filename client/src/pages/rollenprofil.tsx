@@ -1115,47 +1115,6 @@ export default function Rollenprofil() {
               <p style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", margin: "0 0 0", fontWeight: 500 }}>{data.bereich}</p>
             )}
 
-            <div style={{ display: "flex", gap: 8, marginTop: 18, flexWrap: "wrap" }}>
-              {[
-                { label: data.dom.label, color: COLORS[data.dom.key as keyof typeof COLORS] },
-                ...(data.isLeadership ? [{ label: "Führungsrolle", color: "#94A3B8" }] : []),
-                { label: data.aufgabencharakter || "Operativ", color: "#94A3B8" },
-              ].map((badge, i) => (
-                <span key={i} style={{
-                  fontSize: 11, fontWeight: 600,
-                  color: badge.color,
-                  background: `${badge.color}18`,
-                  border: `1px solid ${badge.color}30`,
-                  padding: "4px 12px", borderRadius: 8,
-                  letterSpacing: "0.02em",
-                }}>
-                  {badge.label}
-                </span>
-              ))}
-            </div>
-
-            <div style={{ marginTop: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }} data-testid="section-profil-ueberblick">
-              <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Profilüberblick</p>
-              {[
-                { label: "Strukturtyp", value: data.profileType === "balanced_all" ? "Ausgeglichen" : data.profileType.startsWith("hybrid_") ? "Hybrid" : data.profileType.startsWith("dominant_") ? "Klar dominant" : data.profileType.startsWith("strong_") ? "Stark dominant" : "Leichte Tendenz" },
-                { label: "Dominanz", value: data.dom.label, color: COLORS[data.dom.key as keyof typeof COLORS] },
-                { label: "Sekundär", value: data.sec.label, color: COLORS[data.sec.key as keyof typeof COLORS] },
-                { label: "Tertiär", value: data.wk.label, color: COLORS[data.wk.key as keyof typeof COLORS] },
-              ].map((row, i, arr) => (
-                <div key={row.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>{row.label}</span>
-                  <span style={{ fontSize: 14, fontWeight: row.color ? 800 : 700, color: row.color || "rgba(255,255,255,0.85)" }}>{row.value}</span>
-                </div>
-              ))}
-            </div>
-
-            <div style={{ marginTop: 16, marginBottom: 0, padding: "16px 20px", borderRadius: "12px 12px 0 0", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", borderBottom: "none", position: "relative" }} data-testid="section-kernaussage">
-              <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, borderRadius: "12px 0 0 0", background: `linear-gradient(180deg, ${domColor}, ${domColor}40)` }} />
-              <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Kernaussage</p>
-              <p style={{ fontSize: 13, lineHeight: 1.85, color: "rgba(255,255,255,0.75)", margin: 0 }}>
-                {rollenBeschreibungIntro}
-              </p>
-            </div>
           </div>
 
           {/* ── BODY ── */}

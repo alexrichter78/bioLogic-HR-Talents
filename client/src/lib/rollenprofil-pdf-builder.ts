@@ -195,26 +195,8 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
   const headerTextDim: RGB = [160, 165, 180];
   const headerTextSubtle: RGB = [130, 135, 148];
   const headerDivider: RGB = [82, 87, 99];
-  const badgeBgBlend: RGB = [82, 87, 99];
-  const blockInner = CW;
 
-  const structType = data.profileType === "balanced_all" ? "Ausgeglichen"
-    : data.profileType.startsWith("hybrid_") ? "Hybrid"
-    : data.profileType.startsWith("strong_") ? "Stark dominant"
-    : data.profileType.startsWith("dominant_") ? "Klar dominant"
-    : "Leichte Tendenz";
-
-  const profileRows = [
-    { label: "Strukturtyp", value: structType, color: C.white },
-    { label: "Dominanz", value: data.dom.label, color: COMP_MAP[data.dom.key]?.color || C.white },
-    { label: "Sekundär", value: data.sec.label, color: COMP_MAP[data.sec.key]?.color || C.white },
-    { label: "Tertiär", value: data.wk.label, color: COMP_MAP[data.wk.key]?.color || C.white },
-  ];
-  const rowH = 5.5;
-
-  const kernaussageLines = wrap(data.rollenBeschreibungIntro, blockInner - 6, 7.5);
-
-  let estH = MT + 14 + 10 + 4 + (profileRows.length * rowH) + 4 + 4 + (kernaussageLines.length * 3.8) + 8;
+  let estH = MT + 14 + 10 + 8;
 
   setF(headerBgRgb);
   doc.rect(0, 0, PW, estH, "F");
@@ -255,61 +237,6 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
     doc.text(data.bereich, ML, hY);
     hY += 4;
   }
-
-  const badges: { label: string; color: RGB }[] = [
-    { label: data.dom.label, color: domColor },
-  ];
-  if (data.isLeadership) badges.push({ label: "Führungsrolle", color: headerTextDim });
-  if (data.aufgabencharakter) badges.push({ label: data.aufgabencharakter, color: headerTextDim });
-
-  let bx = ML;
-  for (const b of badges) {
-    doc.setFontSize(7);
-    doc.setFont("helvetica", "bold");
-    const tw = doc.getTextWidth(b.label) + 8;
-    setF(badgeBgBlend);
-    doc.roundedRect(bx, hY - 3, tw, 6.5, 1.2, 1.2, "F");
-    setC(b.color);
-    doc.text(b.label, bx + 4, hY + 0.8);
-    bx += tw + 3;
-  }
-  hY += 8;
-
-  doc.setFontSize(6.5);
-  doc.setFont("helvetica", "bold");
-  setC(headerTextSubtle);
-  doc.text("PROFILÜBERBLICK", ML, hY);
-  hY += 4;
-
-  profileRows.forEach(row => {
-    doc.setFontSize(7.5);
-    doc.setFont("helvetica", "normal");
-    setC(headerTextDim);
-    doc.text(row.label, ML, hY);
-    doc.setFont("helvetica", "bold");
-    setC(row.color);
-    doc.text(row.value, ML + blockInner, hY, { align: "right" });
-    hY += rowH;
-  });
-  hY += 2;
-
-  doc.setFontSize(6.5);
-  doc.setFont("helvetica", "bold");
-  setC(headerTextSubtle);
-  doc.text("KERNAUSSAGE", ML, hY);
-  hY += 4;
-
-  setD(domColor);
-  doc.setLineWidth(0.7);
-  const kernStart = hY;
-  doc.setFontSize(7.5);
-  doc.setFont("helvetica", "normal");
-  kernaussageLines.forEach(line => {
-    setC(headerTextDim);
-    doc.text(line, ML + 4, hY);
-    hY += 3.8;
-  });
-  doc.line(ML, kernStart - 1, ML, hY);
 
   y = hY + 8;
 
