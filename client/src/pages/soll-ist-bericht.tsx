@@ -419,8 +419,16 @@ export default function SollIstBericht() {
             <div className="mt-8 flex items-center justify-end">
               <button
                 onClick={() => setReportGenerated(true)}
-                className="inline-flex h-12 items-center gap-2 rounded-2xl bg-blue-600 px-8 text-[15px] font-semibold text-white shadow-md hover:bg-blue-700 transition-colors"
                 data-testid="button-generate-report"
+                style={{
+                  height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
+                  borderRadius: 14, border: "none", cursor: "pointer",
+                  background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
+                  boxShadow: "0 4px 16px rgba(0,113,227,0.3)", transition: "all 200ms ease",
+                  display: "inline-flex", alignItems: "center", gap: 8,
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)"; }}
               >
                 Bericht erstellen
               </button>
