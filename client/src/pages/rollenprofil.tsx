@@ -760,7 +760,7 @@ function ProfileBar({ label, value, color }: { label: string; value: number; col
   const widthPct = (value / MAX_BIO) * 100;
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-      <span style={{ fontSize: 13, color: "#48484A", width: 72, flexShrink: 0, fontWeight: 500 }}>{label}</span>
+      <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0, fontWeight: 500 }}>{label}</span>
       <div style={{ flex: 1, height: 28, borderRadius: 8, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
         <div style={{
           width: value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 5), 100)}%`,
@@ -1170,14 +1170,14 @@ export default function Rollenprofil() {
               </div>
 
               <div style={{ marginBottom: 16 }}>
-                <p style={{ fontSize: 12, fontWeight: 600, color: "#48484A", margin: "0 0 10px" }}>Bedeutung der Komponenten</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 10px" }}>Bedeutung der Komponenten</p>
                 {komponentenBedeutung.map((kb, i) => (
                   <div key={i} style={{ marginBottom: i < komponentenBedeutung.length - 1 ? 10 : 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
                       <div style={{ width: 7, height: 7, borderRadius: "50%", background: kb.color, flexShrink: 0 }} />
-                      <span style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F" }}>{kb.label}</span>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F" }}>{kb.label}</span>
                     </div>
-                    <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: "0 0 0 13px" }} lang="de" data-testid={`text-bedeutung-${kb.key}`}>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: "0 0 0 13px" }} lang="de" data-testid={`text-bedeutung-${kb.key}`}>
                       {kb.text}
                     </p>
                   </div>
@@ -1188,7 +1188,7 @@ export default function Rollenprofil() {
                 {strukturprofilText}
               </p>
 
-              <p style={{ fontSize: 12, fontWeight: 600, color: "#48484A", margin: "0 0 8px" }}>Profilherkunft</p>
+              <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 8px" }}>Profilherkunft</p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                 {profilherkunft.map((p, i) => {
                   const c = p.dom === "Impulsiv" ? COLORS.imp : p.dom === "Intuitiv" ? COLORS.int : p.dom === "Analytisch" ? COLORS.ana : "#8E8E93";
@@ -1211,7 +1211,7 @@ export default function Rollenprofil() {
                   marginTop: 14, padding: "12px 16px", borderRadius: 10,
                   background: "rgba(255,149,0,0.06)", border: "1px solid rgba(255,149,0,0.15)",
                 }}>
-                  <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, margin: 0, fontWeight: 450 }} data-testid="text-profilkonflikt" lang="de">
+                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, fontWeight: 450 }} data-testid="text-profilkonflikt" lang="de">
                     {profilkonflikt}
                   </p>
                 </div>
@@ -1332,7 +1332,7 @@ export default function Rollenprofil() {
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>Fehlbesetzungsrisiken</p>
               {fehlbesetzung.map((risk, i) => (
                 <div key={i} style={{ marginBottom: 16 }}>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: "#3A3A3C", margin: "0 0 8px", fontStyle: "italic" }}>{risk.label}</p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: "#3A3A3C", margin: "0 0 8px", fontStyle: "italic" }}>{risk.label}</p>
                   <div style={{ paddingLeft: 4 }}>
                     {risk.bullets.map((b, j) => (
                       <div key={j} style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 4 }}>
@@ -1379,7 +1379,7 @@ export default function Rollenprofil() {
               border: "1px solid rgba(0,113,227,0.1)",
             }} data-testid="bericht-section-fazit">
               <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>Entscheidungsfazit</p>
-              <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 14px" }}>{fazit.titel}</p>
+              <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 14px" }}>{fazit.titel}</p>
               {fazit.absaetze.map((absatz, i) => (
                 <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i < fazit.absaetze.length - 1 ? "0 0 10px" : "0", textAlign: "justify", textAlignLast: "left" as any }} lang="de">
                   {absatz}
