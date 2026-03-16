@@ -1658,7 +1658,7 @@ export default function RollenDNA() {
             <div className="w-full mx-auto px-6" style={{ maxWidth: 1100 }}>
               <div className="text-center">
                 <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-rollen-dna-title">
-                  Rollenprofil definieren
+                  Stellenprofil definieren
                 </h1>
                 <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0 }} data-testid="text-rollen-dna-subtitle">
                   Erfassen Sie die Anforderungen und Arbeitslogik der Position als Grundlage für den Entscheidungsbericht, die Passungsanalyse sowie den TeamCheck.
@@ -2523,7 +2523,7 @@ export default function RollenDNA() {
                           localStorage.setItem("rollenDnaCompleted", "true");
                         }}
                       >
-                        Rollenprofil erfolgreich erstellt
+                        Stellenprofil erfolgreich erstellt
                         <ChevronRight className="w-5 h-5" />
                       </Button>
                     );
@@ -2573,7 +2573,7 @@ export default function RollenDNA() {
                         </svg>
                       </div>
                       <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
-                        <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Kurzanalyse der Rolle:</span>
+                        <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Kurzanalyse der Stelle:</span>
                         <span style={{ fontSize: 16 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}</span>
                       </span>
                     </div>
@@ -2850,7 +2850,7 @@ export default function RollenDNA() {
                       <Check style={{ width: 16, height: 16, color: "#FFF", strokeWidth: 2.5 }} />
                     </div>
                     <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
-                      <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Rollenprofil erfolgreich erstellt:</span>
+                      <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Stellenprofil erfolgreich erstellt:</span>
                       <span style={{ fontSize: 16 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}</span>
                     </span>
                   </div>
@@ -2946,7 +2946,7 @@ export default function RollenDNA() {
                     data-testid="button-rolle-bearbeiten"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
-                    Rollenprofil ändern
+                    Stellenprofil ändern
                   </button>
                   <button
                     onClick={handleSave}
@@ -2978,7 +2978,7 @@ export default function RollenDNA() {
                     data-testid="button-profil-speichern"
                   >
                     <Save className="w-4 h-4" />
-                    Profil speichern
+                    Stellenprofil speichern
                   </button>
                   <button
                     onClick={() => setLocation("/bericht")}
@@ -3063,7 +3063,7 @@ export default function RollenDNA() {
                       </svg>
                     </div>
                     <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
-                      <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Kurzanalyse der Rolle:</span>
+                      <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Kurzanalyse der Stelle:</span>
                       <span style={{ fontSize: 16 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}</span>
                     </span>
                   </div>
