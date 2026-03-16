@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { PlusCircle, FolderOpen, DoorOpen, Bot, CheckCircle, Sparkles } from "lucide-react";
 import { useLocation } from "wouter";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
-import illustrationRollenanalyse from "@assets/stellenanalyse_final.png";
-import illustrationKiCoach from "@assets/ki_coach_final.png";
+import illustrationRollenanalyse from "@assets/stellenanalyse_v3.png";
+import illustrationKiCoach from "@assets/ki_coach_v5.png";
 
 import GlobalNav from "@/components/global-nav";
 
