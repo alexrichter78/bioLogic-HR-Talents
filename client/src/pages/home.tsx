@@ -247,6 +247,7 @@ export default function Home() {
                       "Wissenschaftlich fundierte Methodik",
                       "Transparente Ergebnislogik",
                       "Klare Entscheidungsstruktur",
+                      "Reduziert Fehlbesetzungsrisiken",
                     ].map((text, i) => (
                       <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <CheckCircle style={{ width: 13, height: 13, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
