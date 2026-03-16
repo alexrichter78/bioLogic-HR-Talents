@@ -961,7 +961,7 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
         <p style={{ fontSize: 14, fontWeight: 600, color: "#3A3A3C", lineHeight: 1.5, margin: "0 0 4px" }}>
           {arbeitsOpt?.label}
         </p>
-        <p style={{ fontSize: 14, color: "#58585D", lineHeight: 1.65, margin: 0 }}>
+        <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: 0 }}>
           {arbDetail[0]}
           {arbDetail[1] ? <><br />{arbDetail[1]}</> : null}
         </p>
@@ -975,7 +975,7 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
         <p style={{ fontSize: 14, fontWeight: 600, color: "#3A3A3C", lineHeight: 1.5, margin: "0 0 4px" }}>
           {fuehrungOpt?.label}
         </p>
-        <p style={{ fontSize: 14, color: "#58585D", lineHeight: 1.65, margin: 0 }}>
+        <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: 0 }}>
           {fuehDetail}
         </p>
       </div>
@@ -1592,7 +1592,7 @@ export default function RollenDNA() {
               <X style={{ width: 16, height: 16 }} />
             </button>
           </div>
-          <p style={{ fontSize: 13, color: "#58585D", lineHeight: 1.6, marginBottom: 16 }}>
+          <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.6, marginBottom: 16 }}>
             Bitte ordnen Sie die Rolle nach der tatsächlichen Weisungs- und Personalverantwortung ein – nicht nach dem Jobtitel. Entscheidend ist, welche formale Entscheidungsmacht und Ergebnisverantwortung mit der Rolle verbunden sind.
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -1604,7 +1604,7 @@ export default function RollenDNA() {
             ].map(item => (
               <div key={item.label}>
                 <span style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F" }}>{item.label}: </span>
-                <span style={{ fontSize: 13, color: "#58585D", lineHeight: 1.5 }}>{item.desc}</span>
+                <span style={{ fontSize: 13, color: "#48484A", lineHeight: 1.5 }}>{item.desc}</span>
               </div>
             ))}
           </div>
@@ -1683,7 +1683,7 @@ export default function RollenDNA() {
                   <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: "0 0 8px" }} data-testid="text-step-1-title">
                     Welche Rolle möchten Sie analysieren?
                   </h2>
-                  <p style={{ fontSize: 13, color: "#58585D", lineHeight: 1.6, margin: "0 0 28px" }}>
+                  <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.6, margin: "0 0 28px" }}>
                     Geben Sie die Berufsbezeichnung oder Stellenbezeichnung ein, z.B. „Vertriebsleiter", „HR Business Partner" oder „Projektmanager IT".
                     <br />
                     Kein passender Vorschlag? Einfach ausschreiben – wir erkennen die Rolle automatisch.
@@ -1814,7 +1814,7 @@ export default function RollenDNA() {
 
 
                     <div style={{ marginTop: 28 }}>
-                      <p style={{ fontSize: 12.5, fontWeight: 600, color: "#58585D", margin: "0 0 2px" }}>Arbeitsmarkt</p>
+                      <p style={{ fontSize: 12.5, fontWeight: 600, color: "#48484A", margin: "0 0 2px" }}>Arbeitsmarkt</p>
                       <p style={{ fontSize: 12, color: "#AEAEB2", margin: "0 0 8px" }}>
                         Vorschläge werden für die aktiven Länder angezeigt. Zum Ein- oder Ausschalten einfach klicken.
                       </p>
@@ -2588,7 +2588,7 @@ export default function RollenDNA() {
 
                   {bioCheckOpen && (<>
                     {bioCheckIntroOverride ? (
-                      <p style={{ fontSize: 13, color: "#58585D", lineHeight: 1.8, marginTop: 14, whiteSpace: "pre-line" }} data-testid="text-biocheck-intro">
+                      <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.8, marginTop: 14, whiteSpace: "pre-line" }} data-testid="text-biocheck-intro">
                         {bioCheckIntroOverride}
                       </p>
                     ) : (<>
@@ -2601,13 +2601,13 @@ export default function RollenDNA() {
                       }} data-testid="card-grundprinzip">
                         <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0" }}>{analysisPrincipleText.title}</h3>
                         {analysisPrincipleText.body.map((line, i) => (
-                          <p key={i} style={{ fontSize: 13, color: "#58585D", lineHeight: 1.7, margin: i === 0 ? 0 : "6px 0 0 0" }}>{line}</p>
+                          <p key={i} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, margin: i === 0 ? 0 : "6px 0 0 0" }}>{line}</p>
                         ))}
                       </div>
 
                       <div style={{ marginTop: 14 }} data-testid="card-anforderungsprofil">
                         <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0" }}>Anforderungsprofil der Rolle</h3>
-                        <p style={{ fontSize: 13, color: "#58585D", lineHeight: 1.7, margin: "0 0 14px 0" }}>
+                        <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px 0" }}>
                           {roleRequirementText.intro.join(" ")}
                         </p>
 
@@ -2624,7 +2624,7 @@ export default function RollenDNA() {
                               padding: "10px 12px",
                             }}>
                               <p style={{ fontSize: 12, fontWeight: 700, color: d.color, margin: "0 0 4px 0" }}>{d.label}</p>
-                              <p style={{ fontSize: 11, color: "#58585D", lineHeight: 1.5, margin: 0 }}>{d.desc}</p>
+                              <p style={{ fontSize: 11, color: "#48484A", lineHeight: 1.5, margin: 0 }}>{d.desc}</p>
                             </div>
                           ))}
                         </div>
@@ -2773,7 +2773,7 @@ export default function RollenDNA() {
                               const isSmall = widthPct < 18;
                               return (
                                 <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                                  <span style={{ fontSize: 13, color: "#58585D", width: 72, flexShrink: 0 }}>
+                                  <span style={{ fontSize: 13, color: "#48484A", width: 72, flexShrink: 0 }}>
                                     {bar.label}
                                   </span>
                                   <div style={{ flex: 1, position: "relative", height: 26 }}>
@@ -2888,7 +2888,7 @@ export default function RollenDNA() {
                         <card.icon style={{ width: 14, height: 14, color: "#8E8E93", flexShrink: 0 }} />
                         <span style={{ fontSize: 13, fontWeight: 650, color: "#1D1D1F" }}>{card.label}</span>
                       </div>
-                      <p style={{ fontSize: 13, color: "#58585D", margin: 0, lineHeight: 1.5, paddingLeft: 21 }}>{card.value}</p>
+                      <p style={{ fontSize: 13, color: "#48484A", margin: 0, lineHeight: 1.5, paddingLeft: 21 }}>{card.value}</p>
                     </div>
                   ))}
                   <div
@@ -2905,9 +2905,9 @@ export default function RollenDNA() {
                       <span style={{ fontSize: 13, fontWeight: 650, color: "#1D1D1F" }}>Tätigkeits-/Kompetenzanzahl</span>
                     </div>
                     <div style={{ display: "flex", gap: 12, paddingLeft: 21, flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 12, color: "#58585D" }}><strong style={{ color: "#1D1D1F" }}>{hauptCount}</strong> Tätigkeiten</span>
-                      <span style={{ fontSize: 12, color: "#58585D" }}><strong style={{ color: "#1D1D1F" }}>{nebenCount}</strong> Humankompetenzen</span>
-                      {fuehrung !== "Keine" && <span style={{ fontSize: 12, color: "#58585D" }}><strong style={{ color: "#1D1D1F" }}>{fuehrungCount}</strong> Führung</span>}
+                      <span style={{ fontSize: 12, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{hauptCount}</strong> Tätigkeiten</span>
+                      <span style={{ fontSize: 12, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{nebenCount}</strong> Humankompetenzen</span>
+                      {fuehrung !== "Keine" && <span style={{ fontSize: 12, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{fuehrungCount}</strong> Führung</span>}
                     </div>
                   </div>
                 </div>
@@ -3078,7 +3078,7 @@ export default function RollenDNA() {
 
                 {bioCheckOpen && (<>
                   {bioCheckIntroOverride ? (
-                    <p style={{ fontSize: 13, color: "#58585D", lineHeight: 1.8, marginTop: 14, whiteSpace: "pre-line" }} data-testid="text-biocheck-intro-collapsed">
+                    <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.8, marginTop: 14, whiteSpace: "pre-line" }} data-testid="text-biocheck-intro-collapsed">
                       {bioCheckIntroOverride}
                     </p>
                   ) : (<>
@@ -3091,13 +3091,13 @@ export default function RollenDNA() {
                     }} data-testid="card-grundprinzip-collapsed">
                       <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0" }}>{analysisPrincipleText.title}</h3>
                       {analysisPrincipleText.body.map((line, i) => (
-                        <p key={i} style={{ fontSize: 13, color: "#58585D", lineHeight: 1.7, margin: i === 0 ? 0 : "6px 0 0 0" }}>{line}</p>
+                        <p key={i} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, margin: i === 0 ? 0 : "6px 0 0 0" }}>{line}</p>
                       ))}
                     </div>
 
                     <div style={{ marginTop: 14 }} data-testid="card-anforderungsprofil-collapsed">
                       <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0" }}>Anforderungsprofil der Rolle</h3>
-                      <p style={{ fontSize: 13, color: "#58585D", lineHeight: 1.7, margin: "0 0 14px 0" }}>
+                      <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px 0" }}>
                         {roleRequirementText.intro.join(" ")}
                       </p>
 
@@ -3114,7 +3114,7 @@ export default function RollenDNA() {
                             padding: "10px 12px",
                           }}>
                             <p style={{ fontSize: 12, fontWeight: 700, color: d.color, margin: "0 0 4px 0" }}>{d.label}</p>
-                            <p style={{ fontSize: 11, color: "#58585D", lineHeight: 1.5, margin: 0 }}>{d.desc}</p>
+                            <p style={{ fontSize: 11, color: "#48484A", lineHeight: 1.5, margin: 0 }}>{d.desc}</p>
                           </div>
                         ))}
                       </div>
@@ -3265,7 +3265,7 @@ export default function RollenDNA() {
                               const isSmall = widthPct < 18;
                               return (
                                 <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                                  <span style={{ fontSize: 13, color: "#58585D", width: 72, flexShrink: 0 }}>
+                                  <span style={{ fontSize: 13, color: "#48484A", width: 72, flexShrink: 0 }}>
                                     {bar.label}
                                   </span>
                                   <div style={{ flex: 1, position: "relative", height: 26 }}>

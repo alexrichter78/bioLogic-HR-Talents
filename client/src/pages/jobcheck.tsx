@@ -253,7 +253,7 @@ function SoftBar({ items }: { items: { label: string; value: number; color: stri
         const isSmall = widthPct < 18;
         return (
           <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontSize: 13, color: "#58585D", width: 72, flexShrink: 0 }}>{bar.label}</span>
+            <span style={{ fontSize: 13, color: "#48484A", width: 72, flexShrink: 0 }}>{bar.label}</span>
             <div style={{ flex: 1, position: "relative", height: 26 }}>
               <div style={{
                 position: "absolute", inset: 0,
@@ -292,7 +292,7 @@ function BarSlider({ label, value, color, onChange }: { label: string; value: nu
   const isSmall = widthPct < 18;
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-      <span style={{ fontSize: 13, color: "#58585D", width: 72, flexShrink: 0 }}>{label}</span>
+      <span style={{ fontSize: 13, color: "#48484A", width: 72, flexShrink: 0 }}>{label}</span>
       <div style={{ flex: 1, position: "relative", height: 26 }}>
         <div style={{
           position: "absolute", inset: 0,
@@ -334,7 +334,7 @@ function BarSlider({ label, value, color, onChange }: { label: string; value: nu
 }
 
 function BulletList({ items, icon, color }: { items: string[]; icon?: "check" | "dot"; color?: string }) {
-  const c = color || "#58585D";
+  const c = color || "#48484A";
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
       {items.map((item, i) => (
@@ -405,7 +405,7 @@ function MatrixRowUI({ bereich, status, begruendung }: { bereich: string; status
         <span style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F" }}>{bereich}</span>
         <StatusBadge status={status} />
       </div>
-      <p style={{ fontSize: 13, color: "#58585D", lineHeight: 1.65, margin: 0, textAlign: "justify", textAlignLast: "left", overflowWrap: "break-word", wordBreak: "normal" } as React.CSSProperties} lang="de">{hyphenateText(begruendung)}</p>
+      <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0, textAlign: "justify", textAlignLast: "left", overflowWrap: "break-word", wordBreak: "normal" } as React.CSSProperties} lang="de">{hyphenateText(begruendung)}</p>
     </div>
   );
 }
@@ -645,12 +645,12 @@ export default function JobCheck() {
                         <span style={{ fontSize: 13, fontWeight: 650, color: "#1D1D1F" }}>{card.label}</span>
                       </div>
                       {card.value !== null ? (
-                        <p style={{ fontSize: 13, color: "#58585D", margin: 0, lineHeight: 1.5, paddingLeft: 32 }}>{card.value}</p>
+                        <p style={{ fontSize: 13, color: "#48484A", margin: 0, lineHeight: 1.5, paddingLeft: 32 }}>{card.value}</p>
                       ) : (
                         <div style={{ display: "flex", gap: 14, paddingLeft: 32, flexWrap: "wrap" }}>
-                          <span style={{ fontSize: 12, color: "#58585D" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.taetigkeitenCount}</strong> Tätigkeiten</span>
-                          <span style={{ fontSize: 12, color: "#58585D" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.humanCount}</strong> Humankompetenzen</span>
-                          <span style={{ fontSize: 12, color: "#58585D" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.fuehrungCount}</strong> Führung</span>
+                          <span style={{ fontSize: 12, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.taetigkeitenCount}</strong> Tätigkeiten</span>
+                          <span style={{ fontSize: 12, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.humanCount}</strong> Humankompetenzen</span>
+                          <span style={{ fontSize: 12, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.fuehrungCount}</strong> Führung</span>
                         </div>
                       )}
                     </div>
@@ -795,7 +795,7 @@ export default function JobCheck() {
                       </div>
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Vergleich der Profile</span>
                     </div>
-                    <p style={{ fontSize: 14, color: "#58585D", lineHeight: 1.6, marginBottom: 16, hyphens: "auto", textAlign: "justify" } as React.CSSProperties} lang="de">
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, marginBottom: 16, hyphens: "auto", textAlign: "justify" } as React.CSSProperties} lang="de">
                       Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Arbeitsbereichen{" "}
                       <span style={{ fontWeight: 700, color: COLORS.imp }}>Impulsiv</span>,{" "}
                       <span style={{ fontWeight: 700, color: COLORS.int }}>Intuitiv</span> und{" "}
@@ -866,7 +866,7 @@ export default function JobCheck() {
                             <span style={{ width: 7, height: 7, borderRadius: 4, background: d.color, display: "inline-block", flexShrink: 0 }} />
                             <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{d.label}</span>
                           </div>
-                          <p style={{ fontSize: 13, color: "#58585D", lineHeight: 1.7, margin: 0, paddingLeft: 13 }}>{d.desc}</p>
+                          <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, margin: 0, paddingLeft: 13 }}>{d.desc}</p>
                         </div>
                       ))}
                     </div>

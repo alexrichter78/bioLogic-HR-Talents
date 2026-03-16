@@ -51,7 +51,7 @@ function ConfirmResetModal({ onConfirm, onCancel }: { onConfirm: () => void; onC
         <h3 style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", marginBottom: 12 }}>
           Sind Sie sich sicher?
         </h3>
-        <p style={{ fontSize: 14, color: "#58585D", lineHeight: 1.6, marginBottom: 24 }}>
+        <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, marginBottom: 24 }}>
           Alle eingegebenen Daten werden gelöscht.
         </p>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
@@ -204,7 +204,7 @@ export default function Home() {
                   </p>
                 </div>
 
-                <p style={{ fontSize: 14, color: "#58585D", lineHeight: 1.65, margin: "0 0 28px" }} data-testid="text-profile-desc">
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: "0 0 28px" }} data-testid="text-profile-desc">
                   Definieren Sie eine Rolle und analysieren Sie die strukturelle Passung. Sie erhalten klare Handlungsempfehlungen für Besetzung, Führung und Zusammenarbeit.
                 </p>
 
@@ -251,7 +251,7 @@ export default function Home() {
                     ].map((text, i) => (
                       <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <CheckCircle style={{ width: 13, height: 13, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
-                        <span style={{ fontSize: 12.5, color: "#58585D", fontWeight: 450 }}>{text}</span>
+                        <span style={{ fontSize: 12.5, color: "#48484A", fontWeight: 450 }}>{text}</span>
                       </div>
                     ))}
                   </div>
@@ -287,12 +287,12 @@ export default function Home() {
                   </p>
                 </div>
 
-                <p style={{ fontSize: 14, color: "#58585D", lineHeight: 1.65, margin: "0 0 28px" }}>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: "0 0 28px" }}>
                   Nutzen Sie den KI-Coach jederzeit für Recruiting, Teamfragen, Gesprächsvorbereitung oder konkrete Handlungsempfehlungen – auch unabhängig von einer Analyse.
                 </p>
 
                 <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 16, marginBottom: 18 }}>
-                  <p style={{ fontSize: 12.5, fontWeight: 600, color: "#58585D", margin: "0 0 10px" }}>Typische Einsatzbereiche</p>
+                  <p style={{ fontSize: 12.5, fontWeight: 600, color: "#48484A", margin: "0 0 10px" }}>Typische Einsatzbereiche</p>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 24px" }}>
                     {[
                       "Recruiting und Stellenanzeigen",
@@ -302,7 +302,7 @@ export default function Home() {
                     ].map((text, i) => (
                       <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <CheckCircle style={{ width: 12, height: 12, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
-                        <span style={{ fontSize: 12.5, color: "#58585D", fontWeight: 450 }}>{text}</span>
+                        <span style={{ fontSize: 12.5, color: "#48484A", fontWeight: 450 }}>{text}</span>
                       </div>
                     ))}
                   </div>

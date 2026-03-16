@@ -119,7 +119,7 @@ function ProfileCard({ title, subtitle, profile, description }: {
           const isSmall = widthPct < 18;
           return (
             <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 13, color: "#58585D", width: 72, flexShrink: 0 }}>
+              <span style={{ fontSize: 13, color: "#48484A", width: 72, flexShrink: 0 }}>
                 {item.label}
               </span>
               <div style={{ flex: 1, position: "relative", height: 26 }}>
@@ -245,7 +245,7 @@ function StaticBarGroup({ title, triad }: {
           const isSmall = widthPct < 18;
           return (
             <div key={key} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 13, color: "#58585D", width: 72, flexShrink: 0 }}>
+              <span style={{ fontSize: 13, color: "#48484A", width: 72, flexShrink: 0 }}>
                 {labelComponent(key)}
               </span>
               <div style={{ flex: 1, position: "relative", height: 26 }}>
@@ -302,7 +302,7 @@ function SliderGroup({
           const isSmall = widthPct < 18;
           return (
             <div key={key} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 13, color: "#58585D", width: 72, flexShrink: 0 }}>
+              <span style={{ fontSize: 13, color: "#48484A", width: 72, flexShrink: 0 }}>
                 {labelComponent(key)}
               </span>
               <div style={{ flex: 1, position: "relative", height: 26 }}>
@@ -985,7 +985,7 @@ export default function TeamReport() {
                           {systemwirkungLabel}
                         </p>
                       </div>
-                      <p style={{ fontSize: 14, color: "#58585D", lineHeight: 1.75, margin: 0 }} data-testid="text-systemwirkung-description">{swDescriptions[systemwirkungLabel]}</p>
+                      <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: 0 }} data-testid="text-systemwirkung-description">{swDescriptions[systemwirkungLabel]}</p>
                     </div>
                   </div>
                 </div>
