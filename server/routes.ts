@@ -644,7 +644,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
 
   app.post("/api/ki-coach", async (req, res) => {
     try {
-      const { messages, stammdaten, image } = req.body;
+      const { messages, stammdaten } = req.body;
       if (!Array.isArray(messages) || messages.length === 0) {
         return res.status(400).json({ error: "Keine Nachrichten" });
       }
@@ -670,17 +670,14 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
         "rot", "roter", "rote", "rotdominant", "gelb", "gelber", "gelbe", "gelbdominant", "blau", "blauer", "blaue", "blaudominant",
         "rollen-dna", "rollenprofil", "soll-ist", "teamdynamik",
         "hallo", "hi", "guten tag", "hilfe", "help", "was kannst du", "wer bist du",
-        "bild", "foto", "image", "analyse", "upload", "hochgeladen", "zeig", "schau",
       ];
-
-      const hasImage = !!image;
 
       const hasTopicKeyword = ALLOWED_TOPICS.some(t => lastMsg.includes(t));
       const isFirstMessage = messages.length <= 1;
       const isShortMessage = lastMsg.length < 15;
       const isOngoingConversation = messages.length >= 3;
 
-      const isAllowed = hasTopicKeyword || isFirstMessage || isShortMessage || isOngoingConversation || hasImage;
+      const isAllowed = hasTopicKeyword || isFirstMessage || isShortMessage || isOngoingConversation;
 
       if (!isAllowed) {
         return res.json({
@@ -881,30 +878,16 @@ ZUSAMMENFASSUNGEN:
         if (stammdaten.beruf) contextBlock += `\n\nAktuelle Rolle: ${stammdaten.beruf}`;
         if (stammdaten.fuehrung) contextBlock += `\nFührungsverantwortung: ${stammdaten.fuehrung}`;
         if (stammdaten.taetigkeiten) contextBlock += `\nKerntätigkeiten: ${stammdaten.taetigkeiten}`;
-        if (stammdaten.bildanalyseKontext) contextBlock += `\n\nBildanalyse-Kontext (nutze diese Anweisungen wenn der Nutzer ein Bild hochlädt):\n${stammdaten.bildanalyseKontext}`;
         fullSystemPrompt += contextBlock;
       }
 
-      const recentMessages = messages.slice(-10);
-      const apiMessages: any[] = [
-        { role: "system", content: fullSystemPrompt },
+      const apiMessages: { role: "system" | "user" | "assistant" | "tool"; content: string; tool_call_id?: string }[] = [
+        { role: "system" as const, content: fullSystemPrompt },
+        ...messages.slice(-10).map((m: { role: string; content: string }) => ({
+          role: m.role as "user" | "assistant",
+          content: m.content,
+        })),
       ];
-
-      for (let i = 0; i < recentMessages.length; i++) {
-        const m = recentMessages[i];
-        const isLastUserWithImage = i === recentMessages.length - 1 && m.role === "user" && image;
-        if (isLastUserWithImage) {
-          apiMessages.push({
-            role: "user",
-            content: [
-              { type: "text", text: m.content || "Bitte analysiere dieses Bild." },
-              { type: "image_url", image_url: { url: image, detail: "high" } },
-            ],
-          });
-        } else {
-          apiMessages.push({ role: m.role, content: m.content });
-        }
-      }
 
       const webSearchTool = {
         type: "function" as const,
@@ -1062,107 +1045,6 @@ Wichtig:
     } catch (error) {
       console.error("Error generating Personenprofil:", error);
       res.status(500).json({ error: "Fehler bei der Generierung" });
-    }
-  });
-
-  app.post("/api/photo-analyse", async (req, res) => {
-    try {
-      const { image, bildanalyseKontext } = req.body;
-      if (!image) {
-        return res.status(400).json({ error: "Kein Bild übermittelt" });
-      }
-
-      const ratingPrompt = `You are a professional photo coach. A client has submitted their business portrait for feedback.
-
-Rate this portrait photo on three different communication style scales. This is about the VISUAL IMPRESSION the photo creates — what viewers perceive when they see this headshot.
-
-SCALE A - "DYNAMIC" (power, directness, energy, dominance, presence):
-Photos that score HIGH on this scale typically show: direct strong gaze, forward-leaning energy, intense expression, tension/determination, strong jaw, pressed lips, frontal confrontational pose.
-Photos that score LOW on this scale show: soft or averted gaze, relaxed posture, no visible tension or dominance.
-
-SCALE B - "WARM" (warmth, approachability, openness, connection, friendliness):
-Photos that score HIGH on this scale typically show: genuine smile (the single strongest signal!), warm engaging eyes, open relaxed expression, slight head tilt, laugh lines, natural/unforced look, raised eyebrows.
-Photos that score LOW on this scale show: no smile, neutral/flat expression, reserved or distant look.
-CRITICAL: A visible smile is the #1 indicator for a high WARM score. A broad genuine smile = very high WARM score.
-
-SCALE C - "COMPOSED" (control, calm, structure, professionalism, distance):
-Photos that score HIGH on this scale typically show: no smile, neutral controlled expression, steady calm gaze, straight formal posture, minimal expressiveness, composed reserved look.
-Photos that score LOW on this scale show: broad smile, animated expression, relaxed informal look.
-
-Rate each scale from 0.0 to 10.0 where:
-- 0-2 = very low presence of this quality
-- 3-4 = slight presence
-- 5-6 = moderate presence  
-- 7-8 = strong presence
-- 9-10 = dominant characteristic
-
-IMPORTANT RULES:
-- If there is a clear smile → WARM must be at least 6.0, COMPOSED should be lower
-- If there is no smile and a neutral look → COMPOSED must be significant
-- The three scores do NOT need to add up to any specific total
-- Rate based on what you actually see in the photograph
-- Ignore background, clothing, hair
-
-Answer ONLY with JSON, no other text:
-{"dynamic": <0.0-10.0>, "warm": <0.0-10.0>, "composed": <0.0-10.0>}${bildanalyseKontext ? `\n\nAdditional context from the client:\n${bildanalyseKontext}` : ""}`;
-
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: "You are a professional photo coach who rates business portrait photos on visual communication scales. This is standard photo coaching practice used by photographers and branding consultants. Always provide honest, specific ratings based on what the photo communicates visually."
-          },
-          {
-            role: "user",
-            content: [
-              { type: "text", text: ratingPrompt },
-              { type: "image_url", image_url: { url: image, detail: "high" } },
-            ],
-          },
-        ] as any,
-        temperature: 0.3,
-        max_tokens: 200,
-      });
-
-      const raw = response.choices[0]?.message?.content?.trim() || "";
-      console.log("[photo-analyse] Raw response:", raw);
-
-      let parsedScores: { dynamic: number; warm: number; composed: number };
-      try {
-        const jsonMatch = raw.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) throw new Error("Kein JSON gefunden");
-        parsedScores = JSON.parse(jsonMatch[0]);
-      } catch {
-        return res.status(500).json({ error: "Fotoanalyse fehlgeschlagen." });
-      }
-
-      if (typeof parsedScores.dynamic !== "number" || typeof parsedScores.warm !== "number" || typeof parsedScores.composed !== "number") {
-        return res.status(500).json({ error: "Fotoanalyse fehlgeschlagen — ungültige Bewertung erhalten." });
-      }
-      const imp = Math.max(0, Math.min(10, parsedScores.dynamic));
-      const int_ = Math.max(0, Math.min(10, parsedScores.warm));
-      const ana = Math.max(0, Math.min(10, parsedScores.composed));
-
-      const sorted = [
-        { key: "impulsiv", value: imp },
-        { key: "intuitiv", value: int_ },
-        { key: "analytisch", value: ana },
-      ].sort((a, b) => b.value - a.value);
-
-      res.json({
-        scores: {
-          impulsivScore: Number(imp.toFixed(1)),
-          intuitivScore: Number(int_.toFixed(1)),
-          analytischScore: Number(ana.toFixed(1)),
-          primaryEffect: sorted[0].key,
-          secondaryEffect: sorted[1].key,
-          tertiaryEffect: sorted[2].key,
-        },
-      });
-    } catch (error) {
-      console.error("Error in photo-analyse:", error);
-      res.status(500).json({ error: "Fehler bei der Fotoanalyse" });
     }
   });
 
