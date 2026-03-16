@@ -2573,7 +2573,7 @@ export default function RollenDNA() {
                         </svg>
                       </div>
                       <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
-                        <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Kurzanalyse der Stelle:</span>
+                        <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Kurzprofil der Stelle:</span>
                         <span style={{ fontSize: 16 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}</span>
                       </span>
                     </div>
@@ -3063,7 +3063,7 @@ export default function RollenDNA() {
                       </svg>
                     </div>
                     <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
-                      <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Kurzanalyse der Stelle:</span>
+                      <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Kurzprofil der Stelle:</span>
                       <span style={{ fontSize: 16 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}</span>
                     </span>
                   </div>
