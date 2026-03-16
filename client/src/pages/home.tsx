@@ -264,11 +264,11 @@ export default function Home() {
           <FadeIn delay={400}>
             <div
               style={{
-                background: "rgba(255,255,255,0.55)",
-                backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+                background: "rgba(255,255,255,0.65)",
+                backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
                 borderRadius: 20, padding: "28px 32px",
+                boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
                 border: "1px solid rgba(0,0,0,0.04)",
-                boxShadow: "0 4px 16px rgba(0,0,0,0.03)",
                 display: "flex", alignItems: "center", gap: 32,
               }}
               data-testid="card-ki-coach"
