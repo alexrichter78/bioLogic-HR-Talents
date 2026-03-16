@@ -1072,39 +1072,51 @@ Wichtig:
         return res.status(400).json({ error: "Kein Bild übermittelt" });
       }
 
-      const featurePrompt = `Du bist ein Experte für Gesichtsanalyse und nonverbale Kommunikation. Analysiere das Foto und bewerte die folgenden 25 Merkmale.
+      const featurePrompt = `Du bist ein Experte für Gesichtsanalyse und nonverbale Kommunikation im Kontext von Persönlichkeitswirkung.
 
-Antworte NUR als valides JSON-Objekt mit genau diesen Feldern und den angegebenen Wertebereichen:
+KONTEXT: Die Merkmale werden für ein bioLogic-Scoring verwendet, das drei Wirkungsdimensionen misst:
+- IMPULSIV (Dominanz/Agency): Starker direkter Blick, Durchsetzung, Kieferanspannung, Stirnkontraktion, Gesamtspannung
+- INTUITIV (Wärme/Kontakt): Warme Augen, echtes Lächeln, Duchenne-Marker (Krähenfüße beim Lächeln), offene/freundliche Ausstrahlung, entspannte Haltung, angehobene Mundwinkel
+- ANALYTISCH (Kontrolle/Struktur): Neutraler kontrollierter Ausdruck, wenig Expressivität, ruhiger/gesammelter Blick, symmetrisch, gerade Kopfhaltung
+
+WICHTIGE BEWERTUNGSREGELN:
+- Ein breites, warmes, echtes Lächeln ist das STÄRKSTE Intuitiv-Signal. Wenn jemand deutlich lächelt: laechelnIntensitaet=2, mundwinkel=2, duchenneNahe mindestens 1 (2 wenn Augen mitlächeln/Krähenfüße sichtbar), augenfreundlichkeit=2, gesichtsexpressivitaet=2, gesichtskontrolle=0 (locker, nicht kontrolliert!)
+- Lächelnde Menschen sind NICHT analytisch-kontrolliert. Ein Lächeln senkt gesichtskontrolle und gesamtspannung.
+- Brille allein bedeutet NICHT analytisch. Glatze/kurze Haare bedeuten NICHT analytisch.
+- gesichtskontrolle=2 (stark kontrolliert) NUR bei wirklich verschlossenem, neutralem, maskenhaftem Ausdruck OHNE Lächeln
+- Lachfalten (Krähenfüße, Nasolabialfalten) bei einem Lächeln = hoher Intuitiv-Marker (lachfalten=2, duchenneNahe=2)
+
+Bewerte NUR als valides JSON-Objekt:
 
 {
   "blickrichtung": <-1 ausweichend | 0 neutral | 1 direkt>,
   "blickintensitaet": <0 weich | 1 ruhig | 2 stark>,
-  "augenfreundlichkeit": <0 kühl | 1 neutral | 2 warm>,
+  "augenfreundlichkeit": <0 kühl | 1 neutral | 2 warm — WARM wenn Augen freundlich/lächelnd wirken>,
   "augenbrauenhoehe": <0 tief | 1 neutral | 2 hoch>,
   "brauenkontraktion": <0 entspannt | 1 leicht | 2 stark>,
   "stirnspannung": <0 gering | 1 mittel | 2 hoch>,
-  "mundwinkel": <-1 negativ | 0 neutral | 1 leicht positiv | 2 klar positiv>,
-  "laechelnIntensitaet": <0 keines | 1 leicht | 2 deutlich>,
-  "duchenneNahe": <0 nein | 1 teilweise | 2 ja>,
-  "lippenpressung": <0 entspannt | 1 leicht gespannt | 2 stark gespannt>,
-  "kieferanspannung": <0 gering | 1 mittel | 2 hoch>,
+  "mundwinkel": <-1 negativ | 0 neutral | 1 leicht positiv | 2 klar positiv — bei Lächeln mindestens 1, bei breitem Lächeln 2>,
+  "laechelnIntensitaet": <0 keines | 1 leicht | 2 deutlich — bei sichtbarem Lächeln mindestens 1>,
+  "duchenneNahe": <0 nein | 1 teilweise | 2 ja — JA wenn Augen beim Lächeln mitlachen, Krähenfüße sichtbar>,
+  "lippenpressung": <0 entspannt | 1 leicht gespannt | 2 stark gespannt — bei Lächeln immer 0>,
+  "kieferanspannung": <0 gering | 1 mittel | 2 hoch — bei Lächeln immer 0>,
   "kopfPitch": <-1 leicht nach unten | 0 neutral | 1 leicht nach vorne/oben>,
   "kopfRoll": <0 neutral | 1 leicht geneigt>,
   "kopfYaw": <0 frontal | 1 leicht seitlich | 2 deutlich seitlich>,
-  "gesichtsexpressivitaet": <0 niedrig | 1 mittel | 2 hoch>,
-  "gesichtskontrolle": <0 locker | 1 gesammelt | 2 stark kontrolliert>,
+  "gesichtsexpressivitaet": <0 niedrig | 1 mittel | 2 hoch — bei Lächeln mindestens 1, bei breitem Lächeln 2>,
+  "gesichtskontrolle": <0 locker | 1 gesammelt | 2 stark kontrolliert — bei Lächeln 0 oder maximal 1, NIEMALS 2>,
   "fwhRatio": <0 niedrig | 1 mittel | 2 hoch>,
   "gesichtsrundung": <0 weich | 1 neutral | 2 markant>,
-  "lachfalten": <0 keine | 1 leicht | 2 deutlich>,
+  "lachfalten": <0 keine | 1 leicht | 2 deutlich — Krähenfüße/Nasolabialfalten bei Lächeln = 2>,
   "glabellaLinie": <0 keine | 1 leicht | 2 deutlich>,
   "stirnlinien": <0 keine | 1 leicht | 2 deutlich>,
   "kinnprojektion": <0 zurückhaltend | 1 neutral | 2 vorwärts>,
   "mundsymmetrie": <0 gering | 1 mittel | 2 hoch>,
   "augensymmetrie": <0 gering | 1 mittel | 2 hoch>,
-  "gesamtspannung": <0 niedrig | 1 mittel | 2 hoch>
+  "gesamtspannung": <0 niedrig | 1 mittel | 2 hoch — bei Lächeln/entspanntem Gesicht 0>
 }
 
-Bewerte objektiv basierend auf dem, was du auf dem Foto siehst. Keine Erklärungen, kein Text außerhalb des JSON.${bildanalyseKontext ? `\n\nZusätzlicher Kontext für die Analyse:\n${bildanalyseKontext}` : ""}`;
+Keine Erklärungen, kein Text außerhalb des JSON. Bewerte was du SIEHST.${bildanalyseKontext ? `\n\nZusätzlicher Kontext für die Analyse:\n${bildanalyseKontext}` : ""}`;
 
       const response = await openai.chat.completions.create({
         model: "gpt-4.1",
