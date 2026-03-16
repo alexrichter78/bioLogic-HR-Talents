@@ -119,7 +119,7 @@ function ProfileCard({ title, subtitle, profile, description }: {
           const isSmall = widthPct < 18;
           return (
             <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 13, color: "#48484A", width: 72, flexShrink: 0 }}>
+              <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>
                 {item.label}
               </span>
               <div style={{ flex: 1, position: "relative", height: 26 }}>
@@ -141,7 +141,7 @@ function ProfileCard({ title, subtitle, profile, description }: {
                   <span style={{
                     position: "absolute", top: "50%", transform: "translateY(-50%)",
                     left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
-                    fontSize: 13, fontWeight: 600, color: "#6E6E73", whiteSpace: "nowrap",
+                    fontSize: 14, fontWeight: 600, color: "#48484A", whiteSpace: "nowrap",
                     transition: "left 600ms ease",
                   }}>{Math.round(item.value)} %</span>
                 )}
@@ -245,7 +245,7 @@ function StaticBarGroup({ title, triad }: {
           const isSmall = widthPct < 18;
           return (
             <div key={key} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 13, color: "#48484A", width: 72, flexShrink: 0 }}>
+              <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>
                 {labelComponent(key)}
               </span>
               <div style={{ flex: 1, position: "relative", height: 26 }}>
@@ -267,7 +267,7 @@ function StaticBarGroup({ title, triad }: {
                   <span style={{
                     position: "absolute", top: "50%", transform: "translateY(-50%)",
                     left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
-                    fontSize: 13, fontWeight: 600, color: "#6E6E73", whiteSpace: "nowrap",
+                    fontSize: 14, fontWeight: 600, color: "#48484A", whiteSpace: "nowrap",
                     transition: "left 600ms ease",
                   }}>{val} %</span>
                 )}
@@ -302,7 +302,7 @@ function SliderGroup({
           const isSmall = widthPct < 18;
           return (
             <div key={key} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 13, color: "#48484A", width: 72, flexShrink: 0 }}>
+              <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>
                 {labelComponent(key)}
               </span>
               <div style={{ flex: 1, position: "relative", height: 26 }}>
@@ -369,7 +369,7 @@ function SliderGroup({
                   <span style={{
                     position: "absolute", top: "50%", transform: "translateY(-50%)",
                     left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 20px)`,
-                    fontSize: 13, fontWeight: 600, color: "#6E6E73", whiteSpace: "nowrap",
+                    fontSize: 14, fontWeight: 600, color: "#48484A", whiteSpace: "nowrap",
                     transition: "left 150ms ease",
                     zIndex: 4,
                   }}>{val} %</span>
@@ -966,7 +966,7 @@ export default function TeamReport() {
                         <div style={{ flex: 1 }}>
                           <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-summary-role">{roleChipLabel}</span>
                         </div>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: fitColor, letterSpacing: "0.03em" }} data-testid="badge-teamcheck-result">
+                        <span style={{ fontSize: 14, fontWeight: 700, color: fitColor, letterSpacing: "0.03em" }} data-testid="badge-teamcheck-result">
                           {teamFitLabel}
                         </span>
                       </div>
