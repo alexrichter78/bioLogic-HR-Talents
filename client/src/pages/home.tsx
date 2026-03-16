@@ -311,11 +311,11 @@ export default function Home() {
                   <button
                     onClick={() => setLocation("/ki-coach")}
                     style={{
-                      height: 42, paddingLeft: 20, paddingRight: 20, fontSize: 13, fontWeight: 600,
-                      borderRadius: 12, border: "none", cursor: "pointer",
+                      height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
+                      borderRadius: 14, border: "none", cursor: "pointer",
                       background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
-                      boxShadow: "0 4px 14px rgba(0,113,227,0.25)", transition: "all 200ms ease",
-                      display: "flex", alignItems: "center", gap: 7,
+                      boxShadow: "0 4px 16px rgba(0,113,227,0.3)", transition: "all 200ms ease",
+                      display: "flex", alignItems: "center", gap: 8,
                     }}
                     onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 18px rgba(0,113,227,0.3)"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(0,113,227,0.25)"; }}
