@@ -198,7 +198,7 @@ export default function Home() {
                   <h2 style={{ fontSize: 24, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: 0 }} data-testid="text-no-profile">
                     Stellenanalyse
                   </h2>
-                  <p style={{ fontSize: 14, color: "#6E6E73", margin: "3px 0 0", fontWeight: 450 }}>
+                  <p style={{ fontSize: 14, color: "#48484A", margin: "3px 0 0", fontWeight: 450 }}>
                     Strukturelle Passung für sichere Besetzungsentscheidungen
                   </p>
                 </div>
@@ -281,7 +281,7 @@ export default function Home() {
                   <h3 style={{ fontSize: 24, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>
                     KI-Coach
                   </h3>
-                  <p style={{ fontSize: 14, color: "#6E6E73", margin: "3px 0 0", fontWeight: 450 }}>
+                  <p style={{ fontSize: 14, color: "#48484A", margin: "3px 0 0", fontWeight: 450 }}>
                     Coaching und Beratung auf Basis der bioLogic-Systematik
                   </p>
                 </div>
