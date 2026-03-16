@@ -1931,7 +1931,7 @@ export default function RollenDNA() {
                     Rahmenbedingungen der Stelle
                   </h2>
                   <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6 }}>
-                    Grundlegende Merkmale dieser Position / Bezeichnung.
+                    Definieren Sie die grundlegenden Merkmale dieser Position. Die Angaben helfen dabei, die strukturelle Rollenlogik zu bestimmen.
                   </p>
                 </div>
 
@@ -2096,7 +2096,7 @@ export default function RollenDNA() {
               <CollapsedStep
                 step={2}
                 title="Rahmenbedingungen der Stelle"
-                summary={`${AUFGABENCHARAKTER_OPTIONS.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter} · ${ARBEITSLOGIK_OPTIONS.find(o => o.value === arbeitslogik)?.label || arbeitslogik} · ${erfolgsfokusIndices.map(i => ERFOLGSFOKUS_DISPLAY[i]?.label).filter(Boolean).join(", ")} · ${FUEHRUNG_OPTIONS.find(o => o.value === fuehrung)?.label || fuehrung}`}
+                summary="Grundlegende Merkmale dieser Position / Bezeichnung."
                 onEdit={() => goToStep(2)}
                 icon={Settings}
               />
