@@ -2523,7 +2523,7 @@ export default function RollenDNA() {
                           localStorage.setItem("rollenDnaCompleted", "true");
                         }}
                       >
-                        Stellenprofil erfolgreich erstellt
+                        Stellendefinition:
                         <ChevronRight className="w-5 h-5" />
                       </Button>
                     );
@@ -2850,7 +2850,7 @@ export default function RollenDNA() {
                       <Check style={{ width: 16, height: 16, color: "#FFF", strokeWidth: 2.5 }} />
                     </div>
                     <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
-                      <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Stellenprofil erfolgreich erstellt:</span>
+                      <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Stellendefinition::</span>
                       <span style={{ fontSize: 16 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}</span>
                     </span>
                   </div>
