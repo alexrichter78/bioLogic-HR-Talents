@@ -1072,50 +1072,42 @@ Wichtig:
         return res.status(400).json({ error: "Kein Bild übermittelt" });
       }
 
-      const featurePrompt = `Du bist ein Experte für Gesichtsanalyse und nonverbale Kommunikation. Bewerte das Foto rein visuell — beschreibe NUR was du siehst, keine Interpretation.
+      const featurePrompt = `You are a professional photo coach helping a client understand how their portrait photo comes across to others. This is about the PHOTO's visual impression, not about identifying the person.
 
-WICHTIG:
-- Bewerte jedes Merkmal einzeln und unabhängig. Nicht interpretieren, nur beobachten.
-- Brille, Glatze, Haarfarbe etc. sind KEINE Bewertungskriterien.
-- Bei einem sichtbaren Lächeln: mundwinkel muss positiv sein (1 oder 2), laechelnIntensitaet muss > 0 sein, lippenpressung und kieferanspannung müssen niedrig sein (0), gesichtskontrolle muss niedrig sein (0 = locker), gesichtsexpressivitaet muss hoch sein (2).
-- Wenn Augen beim Lächeln mitlachen (Krähenfüße sichtbar): duchenneNahe = 2, lachfalten = 2, augenfreundlichkeit = 2.
-- gesichtskontrolle = 2 (stark kontrolliert) NUR bei verschlossenem, neutralem, maskenhaftem Ausdruck OHNE jede Emotion.
+Analyze the visual impression of this portrait photo and rate the following communication signals. This is standard practice in professional photo coaching for headshots and business portraits.
 
-Antworte NUR als JSON:
+Rate each signal as a number. Answer ONLY with valid JSON, no other text:
 
 {
-  "blickrichtung": <-1 ausweichend | 0 neutral | 1 direkt>,
-  "blickintensitaet": <0 weich | 1 ruhig | 2 stark>,
-  "augenfreundlichkeit": <0 kühl | 1 neutral | 2 warm>,
-  "augenbrauenhoehe": <0 tief/zusammenziehend | 1 neutral | 2 hoch/offen>,
-  "brauenkontraktion": <0 keine/entspannt | 1 leicht | 2 stark>,
-  "stirnspannung": <0 gering | 1 mittel | 2 hoch>,
-  "mundwinkel": <-1 negativ | 0 neutral | 1 leicht positiv | 2 klar positiv>,
-  "laechelnIntensitaet": <0 keines | 1 leicht | 2 deutlich>,
-  "duchenneNahe": <0 nein | 1 teilweise | 2 ja (Augen lachen mit)>,
-  "lippenpressung": <0 entspannt | 1 leicht gespannt | 2 stark gespannt>,
-  "kieferanspannung": <0 gering | 1 mittel | 2 hoch>,
-  "kopfPitch": <-1 leicht nach unten | 0 neutral | 1 leicht nach vorne/oben>,
-  "kopfRoll": <0 neutral/gerade | 1 leicht geneigt>,
-  "kopfYaw": <0 frontal | 1 leicht seitlich | 2 deutlich seitlich>,
-  "gesichtsexpressivitaet": <0 niedrig | 1 mittel | 2 hoch>,
-  "gesichtskontrolle": <0 locker/offen | 1 gesammelt | 2 stark kontrolliert/maskenhaft>,
-  "fwhRatio": <0 niedrig | 1 mittel | 2 hoch>,
-  "gesichtsrundung": <0 weich | 1 neutral | 2 markant>,
-  "lachfalten": <0 keine | 1 leicht | 2 deutlich>,
-  "glabellaLinie": <0 keine | 1 leicht | 2 deutlich>,
-  "stirnlinien": <0 keine | 1 leicht | 2 deutlich>,
-  "kinnprojektion": <0 zurückhaltend | 1 neutral | 2 vorwärts>,
-  "mundsymmetrie": <0 gering | 1 mittel | 2 hoch>,
-  "augensymmetrie": <0 gering | 1 mittel | 2 hoch>,
-  "gesamtspannung": <0 niedrig/entspannt | 1 mittel | 2 hoch/angespannt>
-}
-
-Keine Erklärungen, kein Text außerhalb des JSON.${bildanalyseKontext ? `\n\nZusätzlicher Kontext:\n${bildanalyseKontext}` : ""}`;
+  "blickrichtung": (gaze direction: -1=looking away, 0=neutral, 1=looking directly at camera),
+  "blickintensitaet": (gaze intensity: 0=soft/gentle, 1=calm/steady, 2=strong/piercing),
+  "augenfreundlichkeit": (eye warmth: 0=cool/distant, 1=neutral, 2=warm/friendly),
+  "augenbrauenhoehe": (eyebrow position: 0=lowered/furrowed, 1=neutral, 2=raised/open),
+  "brauenkontraktion": (brow contraction: 0=none/relaxed, 1=slight, 2=strong),
+  "stirnspannung": (forehead tension: 0=low, 1=medium, 2=high),
+  "mundwinkel": (mouth corners: -1=downturned, 0=neutral/flat, 1=slightly upturned, 2=clearly upturned),
+  "laechelnIntensitaet": (smile intensity: 0=no smile, 1=slight smile, 2=clear/broad smile),
+  "duchenneNahe": (genuine smile markers - crow's feet when smiling: 0=none, 1=partial, 2=yes),
+  "lippenpressung": (lip tension: 0=relaxed/open, 1=slightly pressed, 2=strongly pressed),
+  "kieferanspannung": (jaw tension: 0=low/relaxed, 1=medium, 2=high),
+  "kopfPitch": (head tilt forward/back: -1=tilted down, 0=neutral, 1=tilted forward/up),
+  "kopfRoll": (head tilt sideways: 0=straight, 1=tilted to side),
+  "kopfYaw": (head rotation: 0=frontal, 1=slightly turned, 2=clearly turned),
+  "gesichtsexpressivitaet": (facial expressiveness: 0=low/flat, 1=moderate, 2=high/animated),
+  "gesichtskontrolle": (facial control: 0=loose/natural/open, 1=composed, 2=tightly controlled/masked),
+  "lachfalten": (laugh lines visible: 0=none, 1=slight, 2=clearly visible),
+  "glabellaLinie": (frown line between brows: 0=none, 1=slight, 2=clear),
+  "stirnlinien": (forehead lines: 0=none, 1=slight, 2=clear),
+  "gesamtspannung": (overall facial tension: 0=relaxed, 1=moderate, 2=tense)
+}${bildanalyseKontext ? `\n\nAdditional context:\n${bildanalyseKontext}` : ""}`;
 
       const response = await openai.chat.completions.create({
-        model: "gpt-4.1",
+        model: "gpt-4o",
         messages: [
+          {
+            role: "system",
+            content: "You are a professional photo coach. You analyze portrait photos to help clients understand how their photo comes across visually. This is standard photo coaching practice. Always provide your analysis as requested."
+          },
           {
             role: "user",
             content: [
@@ -1124,11 +1116,12 @@ Keine Erklärungen, kein Text außerhalb des JSON.${bildanalyseKontext ? `\n\nZu
             ],
           },
         ] as any,
-        temperature: 0.2,
+        temperature: 0.1,
         max_tokens: 800,
       });
 
       const raw = response.choices[0]?.message?.content?.trim() || "";
+      console.log("[photo-analyse] Raw response:", raw);
       let features: Record<string, number>;
       try {
         const jsonMatch = raw.match(/\{[\s\S]*\}/);
