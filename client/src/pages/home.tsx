@@ -195,7 +195,7 @@ export default function Home() {
 
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ marginBottom: 12 }}>
-                  <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: 0 }} data-testid="text-no-profile">
+                  <h2 style={{ fontSize: 24, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: 0 }} data-testid="text-no-profile">
                     Stellenanalyse
                   </h2>
                   <p style={{ fontSize: 14, color: "#6E6E73", margin: "3px 0 0", fontWeight: 450 }}>
@@ -278,7 +278,7 @@ export default function Home() {
 
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ marginBottom: 12 }}>
-                  <h3 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>
+                  <h3 style={{ fontSize: 24, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>
                     KI-Coach
                   </h3>
                   <p style={{ fontSize: 14, color: "#6E6E73", margin: "3px 0 0", fontWeight: 450 }}>
