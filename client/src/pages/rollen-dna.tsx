@@ -2886,7 +2886,7 @@ export default function RollenDNA() {
                     >
                       <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 3 }}>
                         <card.icon style={{ width: 14, height: 14, color: "#8E8E93", flexShrink: 0 }} />
-                        <span style={{ fontSize: 13, fontWeight: 650, color: "#1D1D1F" }}>{card.label}</span>
+                        <span style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F" }}>{card.label}</span>
                       </div>
                       <p style={{ fontSize: 14, color: "#48484A", margin: 0, lineHeight: 1.5, paddingLeft: 21 }}>{card.value}</p>
                     </div>
@@ -2902,7 +2902,7 @@ export default function RollenDNA() {
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 3 }}>
                       <Hash style={{ width: 14, height: 14, color: "#8E8E93", flexShrink: 0 }} />
-                      <span style={{ fontSize: 13, fontWeight: 650, color: "#1D1D1F" }}>Tätigkeits-/Kompetenzanzahl</span>
+                      <span style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F" }}>Tätigkeits-/Kompetenzanzahl</span>
                     </div>
                     <div style={{ display: "flex", gap: 12, paddingLeft: 21, flexWrap: "wrap" }}>
                       <span style={{ fontSize: 12, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{hauptCount}</strong> Tätigkeiten</span>
