@@ -2623,8 +2623,8 @@ export default function RollenDNA() {
                               borderRadius: 10,
                               padding: "10px 12px",
                             }}>
-                              <p style={{ fontSize: 12, fontWeight: 700, color: d.color, margin: "0 0 4px 0" }}>{d.label}</p>
-                              <p style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.5, margin: 0 }}>{d.desc}</p>
+                              <p style={{ fontSize: 14, fontWeight: 700, color: d.color, margin: "0 0 4px 0" }}>{d.label}</p>
+                              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.5, margin: 0 }}>{d.desc}</p>
                             </div>
                           ))}
                         </div>
@@ -3113,8 +3113,8 @@ export default function RollenDNA() {
                             borderRadius: 10,
                             padding: "10px 12px",
                           }}>
-                            <p style={{ fontSize: 12, fontWeight: 700, color: d.color, margin: "0 0 4px 0" }}>{d.label}</p>
-                            <p style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.5, margin: 0 }}>{d.desc}</p>
+                            <p style={{ fontSize: 14, fontWeight: 700, color: d.color, margin: "0 0 4px 0" }}>{d.label}</p>
+                            <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.5, margin: 0 }}>{d.desc}</p>
                           </div>
                         ))}
                       </div>
