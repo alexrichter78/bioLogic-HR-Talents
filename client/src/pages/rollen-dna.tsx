@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight, Info, RefreshCw, Briefcase, Heart, Settings, Shield, BarChart3, Lightbulb, FileText, MessageSquare, LayoutGrid, Wrench, UserCheck, Hash } from "lucide-react";
+import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight, Info, RefreshCw, Briefcase, Heart, Settings, Shield, BarChart3, Lightbulb, FileText, MessageSquare, LayoutGrid, Wrench, UserCheck, Hash, ClipboardList } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE, type BerufLand } from "@/data/berufe";
@@ -2567,10 +2567,7 @@ export default function RollenDNA() {
                         alignItems: "center",
                         justifyContent: "center",
                       }}>
-                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                          <circle cx="8" cy="8" r="6" stroke="white" strokeWidth="1.5" />
-                          <circle cx="8" cy="8" r="2.5" fill="white" />
-                        </svg>
+                        <FileText style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                       </div>
                       <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
                         <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Kurzprofil der Stelle:</span>
@@ -2847,7 +2844,7 @@ export default function RollenDNA() {
                       background: "linear-gradient(135deg, #34C759, #30D158)",
                       display: "flex", alignItems: "center", justifyContent: "center",
                     }}>
-                      <Check style={{ width: 16, height: 16, color: "#FFF", strokeWidth: 2.5 }} />
+                      <ClipboardList style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                     </div>
                     <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
                       <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Stellendefinition:</span>
@@ -3057,10 +3054,7 @@ export default function RollenDNA() {
                       alignItems: "center",
                       justifyContent: "center",
                     }}>
-                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                        <circle cx="8" cy="8" r="6" stroke="white" strokeWidth="1.5" />
-                        <circle cx="8" cy="8" r="2.5" fill="white" />
-                      </svg>
+                      <FileText style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                     </div>
                     <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
                       <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Kurzprofil der Stelle:</span>
