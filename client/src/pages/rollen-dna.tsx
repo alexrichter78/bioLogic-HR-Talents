@@ -2683,7 +2683,7 @@ export default function RollenDNA() {
                         >
                           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                             <section.icon style={{ width: 15, height: 15, color: "#6E6E73", strokeWidth: 1.8 }} />
-                            <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
+                            <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
                               {section.title}
                             </p>
                           </div>
@@ -2773,7 +2773,7 @@ export default function RollenDNA() {
                               const isSmall = widthPct < 18;
                               return (
                                 <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                                  <span style={{ fontSize: 13, color: "#48484A", width: 72, flexShrink: 0 }}>
+                                  <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>
                                     {bar.label}
                                   </span>
                                   <div style={{ flex: 1, position: "relative", height: 26 }}>
@@ -3175,7 +3175,7 @@ export default function RollenDNA() {
                         >
                           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                             <section.icon style={{ width: 15, height: 15, color: "#6E6E73", strokeWidth: 1.8 }} />
-                            <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
+                            <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
                               {section.title}
                             </p>
                           </div>
@@ -3265,7 +3265,7 @@ export default function RollenDNA() {
                               const isSmall = widthPct < 18;
                               return (
                                 <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                                  <span style={{ fontSize: 13, color: "#48484A", width: 72, flexShrink: 0 }}>
+                                  <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>
                                     {bar.label}
                                   </span>
                                   <div style={{ flex: 1, position: "relative", height: 26 }}>
