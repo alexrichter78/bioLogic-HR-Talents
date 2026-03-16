@@ -290,7 +290,7 @@ export default function SollIstBericht() {
                     const isSmall = widthPct < 18;
                     return (
                       <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12, height: 26 }}>
-                        <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0, lineHeight: "26px" }}>
+                        <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0, lineHeight: "26px" }}>
                           {item.label}
                         </span>
                         <div style={{ flex: 1, position: "relative", height: 26 }}>
@@ -334,7 +334,7 @@ export default function SollIstBericht() {
                     const isSmall = widthPct < 18;
                     return (
                       <div key={k} style={{ display: "flex", alignItems: "center", gap: 12, height: 26 }} data-testid={`slider-row-${k}`}>
-                        <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0, lineHeight: "26px" }}>
+                        <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0, lineHeight: "26px" }}>
                           {labelComponent(k)}
                         </span>
                         <div style={{ flex: 1, position: "relative", height: 26 }}>
@@ -603,7 +603,7 @@ export default function SollIstBericht() {
                           { label: "Soll-Ist-Abweichung", value: `${result.totalGap} Punkte`, color: gapCol },
                         ].map((row, i, arr) => (
                           <div key={row.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
-                            <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>{row.label}</span>
+                            <span style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.65)" }}>{row.label}</span>
                             <span style={{ fontSize: 14, fontWeight: row.color ? 800 : 700, color: row.color || "rgba(255,255,255,0.85)" }}>{row.value}</span>
                           </div>
                         ))}
@@ -613,11 +613,11 @@ export default function SollIstBericht() {
                       <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }} data-testid="section-strukturkonstellation">
                         <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Strukturkonstellation</p>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                          <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>Dominanz Rolle</span>
+                          <span style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.65)" }}>Dominanz Rolle</span>
                           <span style={{ fontSize: 14, fontWeight: 700, color: rc }}>{COMP_LABELS[result.roleDomKey]}</span>
                         </div>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                          <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>Dominanz Person</span>
+                          <span style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.65)" }}>Dominanz Person</span>
                           <span style={{ fontSize: 14, fontWeight: 700, color: cc }}>{COMP_LABELS[result.candDomKey]}</span>
                         </div>
                         <div style={{ padding: "10px 0 4px" }}>
@@ -688,7 +688,7 @@ export default function SollIstBericht() {
                         const isSmall = widthPct < 18;
                         return (
                           <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                            <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>{labelComponent(k)}</span>
+                            <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>{labelComponent(k)}</span>
                             <div style={{ flex: 1, position: "relative", height: 28 }}>
                               <div style={{ position: "absolute", inset: 0, borderRadius: 14, background: "rgba(0,0,0,0.05)" }} />
                               <div className="bio-bar-animate" style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 14, background: `linear-gradient(90deg, ${hex}, ${hex}CC)`, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50, boxShadow: `0 2px 8px ${hex}30`, transition: "width 800ms cubic-bezier(0.34, 1.56, 0.64, 1)" }}>
@@ -713,7 +713,7 @@ export default function SollIstBericht() {
                         const isSmall = widthPct < 18;
                         return (
                           <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                            <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>{labelComponent(k)}</span>
+                            <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>{labelComponent(k)}</span>
                             <div style={{ flex: 1, position: "relative", height: 28 }}>
                               <div style={{ position: "absolute", inset: 0, borderRadius: 14, background: "rgba(0,0,0,0.05)" }} />
                               <div className="bio-bar-animate" style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 14, background: `linear-gradient(90deg, ${hex}, ${hex}CC)`, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50, boxShadow: `0 2px 8px ${hex}30`, transition: "width 800ms cubic-bezier(0.34, 1.56, 0.64, 1)" }}>
@@ -730,7 +730,7 @@ export default function SollIstBericht() {
                   </div>
                 </div>
                 <div style={{ marginTop: 20 }}>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", margin: "0 0 14px", letterSpacing: "0.02em" }}>Bedeutung der Komponenten</p>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 14px", letterSpacing: "0.02em" }}>Bedeutung der Komponenten</p>
                   {(["intuitiv", "impulsiv", "analytisch"] as const).map((k, i) => {
                     const hex = BAR_HEX[k];
                     const label = labelComponent(k);
@@ -743,9 +743,9 @@ export default function SollIstBericht() {
                       <div key={k} style={{ marginBottom: i < 2 ? 14 : 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
                           <span style={{ width: 7, height: 7, borderRadius: 4, background: hex, display: "inline-block", flexShrink: 0 }} />
-                          <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{label}</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{label}</span>
                         </div>
-                        <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: 0, paddingLeft: 13 }}>{meaning[k]}</p>
+                        <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, paddingLeft: 13 }}>{meaning[k]}</p>
                       </div>
                     );
                   })}
@@ -764,7 +764,7 @@ export default function SollIstBericht() {
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                               <div style={{ width: 8, height: 8, borderRadius: 4, background: sevCol, boxShadow: `0 0 0 2px ${sevCol}25` }} />
-                              <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{area.label}</span>
+                              <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{area.label}</span>
                             </div>
                             <span style={{ fontSize: 10, fontWeight: 700, color: sevCol, textTransform: "uppercase", letterSpacing: "0.05em" }}>{severityLabel(area.severity)}</span>
                           </div>
@@ -854,7 +854,7 @@ export default function SollIstBericht() {
                     <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
                       <div style={{ width: 16, height: 16, borderRadius: 8, background: rFitColor, flexShrink: 0, boxShadow: `0 0 0 3px ${rFitColor}20` }} />
                       <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>{result.roleName}</span>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: rFitColor }}>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: rFitColor }}>
                         {rFitLabel}
                       </span>
                     </div>
@@ -902,10 +902,10 @@ export default function SollIstBericht() {
                           <div key={phase.num} style={{ position: "relative" }} data-testid={`integration-phase-${phase.num}`}>
                             <div style={{ position: "absolute", left: -22, top: 14, width: 10, height: 10, borderRadius: 5, background: phaseCol, boxShadow: `0 0 0 3px ${phaseCol}20` }} />
                             <div style={{ padding: "14px 18px", borderRadius: 12, background: `${phaseCol}06`, border: `1px solid ${phaseCol}15` }}>
-                              <p style={{ fontSize: 13, fontWeight: 700, color: phaseCol, margin: "0 0 4px" }}>
+                              <p style={{ fontSize: 14, fontWeight: 700, color: phaseCol, margin: "0 0 4px" }}>
                                 Phase {phase.num}: {phase.title} <span style={{ fontWeight: 500, color: "#8E8E93" }}>({phase.period})</span>
                               </p>
-                              <p style={{ fontSize: 12, fontWeight: 600, color: "#48484A", margin: "0 0 10px" }}>Ziel: {phase.ziel}</p>
+                              <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 10px" }}>Ziel: {phase.ziel}</p>
 
                               <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>Massnahmen</p>
                               <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 12 }}>
