@@ -1072,80 +1072,94 @@ Wichtig:
         return res.status(400).json({ error: "Kein Bild übermittelt" });
       }
 
-      const featurePrompt = `You are a professional photo coach helping a client understand how their portrait photo comes across to others. This is about the PHOTO's visual impression, not about identifying the person.
+      const ratingPrompt = `You are a professional photo coach. A client has submitted their business portrait for feedback.
 
-Analyze the visual impression of this portrait photo and rate the following communication signals. This is standard practice in professional photo coaching for headshots and business portraits.
+Rate this portrait photo on three different communication style scales. This is about the VISUAL IMPRESSION the photo creates — what viewers perceive when they see this headshot.
 
-Rate each signal as a number. Answer ONLY with valid JSON, no other text:
+SCALE A - "DYNAMIC" (power, directness, energy, dominance, presence):
+Photos that score HIGH on this scale typically show: direct strong gaze, forward-leaning energy, intense expression, tension/determination, strong jaw, pressed lips, frontal confrontational pose.
+Photos that score LOW on this scale show: soft or averted gaze, relaxed posture, no visible tension or dominance.
 
-{
-  "blickrichtung": (gaze direction: -1=looking away, 0=neutral, 1=looking directly at camera),
-  "blickintensitaet": (gaze intensity: 0=soft/gentle, 1=calm/steady, 2=strong/piercing),
-  "augenfreundlichkeit": (eye warmth: 0=cool/distant, 1=neutral, 2=warm/friendly),
-  "augenbrauenhoehe": (eyebrow position: 0=lowered/furrowed, 1=neutral, 2=raised/open),
-  "brauenkontraktion": (brow contraction: 0=none/relaxed, 1=slight, 2=strong),
-  "stirnspannung": (forehead tension: 0=low, 1=medium, 2=high),
-  "mundwinkel": (mouth corners: -1=downturned, 0=neutral/flat, 1=slightly upturned, 2=clearly upturned),
-  "laechelnIntensitaet": (smile intensity: 0=no smile, 1=slight smile, 2=clear/broad smile),
-  "duchenneNahe": (genuine smile markers - crow's feet when smiling: 0=none, 1=partial, 2=yes),
-  "lippenpressung": (lip tension: 0=relaxed/open, 1=slightly pressed, 2=strongly pressed),
-  "kieferanspannung": (jaw tension: 0=low/relaxed, 1=medium, 2=high),
-  "kopfPitch": (head tilt forward/back: -1=tilted down, 0=neutral, 1=tilted forward/up),
-  "kopfRoll": (head tilt sideways: 0=straight, 1=tilted to side),
-  "kopfYaw": (head rotation: 0=frontal, 1=slightly turned, 2=clearly turned),
-  "gesichtsexpressivitaet": (facial expressiveness: 0=low/flat, 1=moderate, 2=high/animated),
-  "gesichtskontrolle": (facial control: 0=loose/natural/open, 1=composed, 2=tightly controlled/masked),
-  "lachfalten": (laugh lines visible: 0=none, 1=slight, 2=clearly visible),
-  "glabellaLinie": (frown line between brows: 0=none, 1=slight, 2=clear),
-  "stirnlinien": (forehead lines: 0=none, 1=slight, 2=clear),
-  "gesamtspannung": (overall facial tension: 0=relaxed, 1=moderate, 2=tense)
-}${bildanalyseKontext ? `\n\nAdditional context:\n${bildanalyseKontext}` : ""}`;
+SCALE B - "WARM" (warmth, approachability, openness, connection, friendliness):
+Photos that score HIGH on this scale typically show: genuine smile (the single strongest signal!), warm engaging eyes, open relaxed expression, slight head tilt, laugh lines, natural/unforced look, raised eyebrows.
+Photos that score LOW on this scale show: no smile, neutral/flat expression, reserved or distant look.
+CRITICAL: A visible smile is the #1 indicator for a high WARM score. A broad genuine smile = very high WARM score.
+
+SCALE C - "COMPOSED" (control, calm, structure, professionalism, distance):
+Photos that score HIGH on this scale typically show: no smile, neutral controlled expression, steady calm gaze, straight formal posture, minimal expressiveness, composed reserved look.
+Photos that score LOW on this scale show: broad smile, animated expression, relaxed informal look.
+
+Rate each scale from 0.0 to 10.0 where:
+- 0-2 = very low presence of this quality
+- 3-4 = slight presence
+- 5-6 = moderate presence  
+- 7-8 = strong presence
+- 9-10 = dominant characteristic
+
+IMPORTANT RULES:
+- If there is a clear smile → WARM must be at least 6.0, COMPOSED should be lower
+- If there is no smile and a neutral look → COMPOSED must be significant
+- The three scores do NOT need to add up to any specific total
+- Rate based on what you actually see in the photograph
+- Ignore background, clothing, hair
+
+Answer ONLY with JSON, no other text:
+{"dynamic": <0.0-10.0>, "warm": <0.0-10.0>, "composed": <0.0-10.0>}${bildanalyseKontext ? `\n\nAdditional context from the client:\n${bildanalyseKontext}` : ""}`;
 
       const response = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: [
           {
             role: "system",
-            content: "You are a professional photo coach. You analyze portrait photos to help clients understand how their photo comes across visually. This is standard photo coaching practice. Always provide your analysis as requested."
+            content: "You are a professional photo coach who rates business portrait photos on visual communication scales. This is standard photo coaching practice used by photographers and branding consultants. Always provide honest, specific ratings based on what the photo communicates visually."
           },
           {
             role: "user",
             content: [
-              { type: "text", text: featurePrompt },
+              { type: "text", text: ratingPrompt },
               { type: "image_url", image_url: { url: image, detail: "high" } },
             ],
           },
         ] as any,
-        temperature: 0.1,
-        max_tokens: 800,
+        temperature: 0.3,
+        max_tokens: 200,
       });
 
       const raw = response.choices[0]?.message?.content?.trim() || "";
       console.log("[photo-analyse] Raw response:", raw);
-      let features: Record<string, number>;
+
+      let parsedScores: { dynamic: number; warm: number; composed: number };
       try {
         const jsonMatch = raw.match(/\{[\s\S]*\}/);
         if (!jsonMatch) throw new Error("Kein JSON gefunden");
-        features = JSON.parse(jsonMatch[0]);
+        parsedScores = JSON.parse(jsonMatch[0]);
       } catch {
-        return res.status(500).json({ error: "Fotoanalyse fehlgeschlagen — Gesichtsmerkmale konnten nicht erkannt werden." });
+        return res.status(500).json({ error: "Fotoanalyse fehlgeschlagen." });
       }
 
-      const requiredKeys = [
-        "blickrichtung","blickintensitaet","augenfreundlichkeit","augenbrauenhoehe",
-        "brauenkontraktion","stirnspannung","mundwinkel","laechelnIntensitaet",
-        "duchenneNahe","lippenpressung","kieferanspannung","kopfPitch","kopfRoll",
-        "kopfYaw","gesichtsexpressivitaet","gesichtskontrolle","fwhRatio",
-        "gesichtsrundung","lachfalten","glabellaLinie","stirnlinien","kinnprojektion",
-        "mundsymmetrie","augensymmetrie","gesamtspannung"
-      ];
-      for (const key of requiredKeys) {
-        if (typeof features[key] !== "number" || !isFinite(features[key])) {
-          features[key] = 1;
-        }
+      if (typeof parsedScores.dynamic !== "number" || typeof parsedScores.warm !== "number" || typeof parsedScores.composed !== "number") {
+        return res.status(500).json({ error: "Fotoanalyse fehlgeschlagen — ungültige Bewertung erhalten." });
       }
+      const imp = Math.max(0, Math.min(10, parsedScores.dynamic));
+      const int_ = Math.max(0, Math.min(10, parsedScores.warm));
+      const ana = Math.max(0, Math.min(10, parsedScores.composed));
 
-      res.json({ features });
+      const sorted = [
+        { key: "impulsiv", value: imp },
+        { key: "intuitiv", value: int_ },
+        { key: "analytisch", value: ana },
+      ].sort((a, b) => b.value - a.value);
+
+      res.json({
+        scores: {
+          impulsivScore: Number(imp.toFixed(1)),
+          intuitivScore: Number(int_.toFixed(1)),
+          analytischScore: Number(ana.toFixed(1)),
+          primaryEffect: sorted[0].key,
+          secondaryEffect: sorted[1].key,
+          tertiaryEffect: sorted[2].key,
+        },
+      });
     } catch (error) {
       console.error("Error in photo-analyse:", error);
       res.status(500).json({ error: "Fehler bei der Fotoanalyse" });

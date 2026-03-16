@@ -104,6 +104,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Photo Effect Engine
 -   **Location**: `client/src/lib/photo-effect-engine.ts`
--   **Purpose**: Scores facial expression impact on 3 bioLogic dimensions (Impulsiv/Intuitiv/Analytisch) from 25 facial features.
--   **API Endpoint**: `POST /api/photo-analyse` — sends image to GPT-4 Vision to extract PhotoFeatures JSON, returned to client where `runPhotoEffectAnalysis()` computes scores (0-10 scale), ranking, strength labels, and effect text.
+-   **Purpose**: Scores portrait photo visual impression on 3 bioLogic dimensions (Impulsiv/Intuitiv/Analytisch) using 20 criteria.
+-   **API Endpoint**: `POST /api/photo-analyse` — sends image to GPT-4o Vision which rates the photo on three communication scales (dynamic/warm/composed). Returns normalized scores (0-10) mapped to Impulsiv/Intuitiv/Analytisch. Client uses `buildPhotoResultFromScores()` to generate ranking, strength labels, and effect text.
+-   **Architecture**: Single API call approach — GPT rates the photo directly on abstract scales rather than extracting individual facial features (which OpenAI API safety filters block).
 -   **Integration**: KI-Coach automatically triggers photo analysis when image is uploaded, shows visual score card (colored bars) in chat, and passes results as context to the coach for interpretation.

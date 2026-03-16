@@ -322,3 +322,27 @@ export function runPhotoEffectAnalysis(
     note: NOTE_TEXT,
   };
 }
+
+export function buildPhotoResultFromScores(
+  impulsivScore: number,
+  intuitivScore: number,
+  analytischScore: number
+): PhotoEffectResult {
+  const scores: PhotoEffectScores = {
+    impulsivScore: clamp(round2(impulsivScore), 0, 10),
+    intuitivScore: clamp(round2(intuitivScore), 0, 10),
+    analytischScore: clamp(round2(analytischScore), 0, 10),
+  };
+  const ranking = rankEffects(scores);
+  const effectText = buildEffectText(scores, ranking);
+
+  return {
+    ...scores,
+    ...ranking,
+    impulsivStrength: effectStrength(scores.impulsivScore),
+    intuitivStrength: effectStrength(scores.intuitivScore),
+    analytischStrength: effectStrength(scores.analytischScore),
+    effectText,
+    note: NOTE_TEXT,
+  };
+}

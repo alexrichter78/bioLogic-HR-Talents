@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImagePlus, X } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
-import { runPhotoEffectAnalysis, type PhotoFeatures, type PhotoEffectResult } from "@/lib/photo-effect-engine";
+import { buildPhotoResultFromScores, type PhotoEffectResult } from "@/lib/photo-effect-engine";
 
 type Message = {
   role: "user" | "assistant";
@@ -258,8 +258,12 @@ export default function KICoach() {
           });
           if (photoRes.ok) {
             const photoData = await photoRes.json();
-            if (photoData.features) {
-              photoResult = runPhotoEffectAnalysis(photoData.features as PhotoFeatures);
+            if (photoData.scores) {
+              photoResult = buildPhotoResultFromScores(
+                photoData.scores.impulsivScore,
+                photoData.scores.intuitivScore,
+                photoData.scores.analytischScore
+              );
             }
           } else {
             photoError = true;
