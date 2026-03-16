@@ -2868,7 +2868,7 @@ export default function RollenDNA() {
                 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }} data-testid="dna-summary-grid">
                   {[
-                    { icon: Briefcase, label: "Position", value: beruf },
+                    { icon: Briefcase, label: "Position / Bezeichnung", value: beruf },
                     { icon: LayoutGrid, label: "Aufgabenstruktur", value: AUFGABENCHARAKTER_OPTIONS.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter },
                     { icon: Wrench, label: "Arbeitsweise", value: ARBEITSLOGIK_OPTIONS.find(o => o.value === arbeitslogik)?.label || arbeitslogik },
                     { icon: Target, label: "Erfolgsfokus", value: erfolgsfokusIndices.map(i => ERFOLGSFOKUS_DISPLAY[i]?.label).filter(Boolean).join(", ") },
