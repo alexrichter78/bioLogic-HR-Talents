@@ -199,7 +199,7 @@ export default function Home() {
                   <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: 0 }} data-testid="text-no-profile">
                     Rollenanalyse
                   </h2>
-                  <p style={{ fontSize: 13, color: "#6E6E73", margin: "3px 0 0", fontWeight: 450 }}>
+                  <p style={{ fontSize: 14, color: "#6E6E73", margin: "3px 0 0", fontWeight: 450 }}>
                     Präzision in Besetzung und Teamstruktur
                   </p>
                 </div>
@@ -251,7 +251,7 @@ export default function Home() {
                     ].map((text, i) => (
                       <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <CheckCircle style={{ width: 13, height: 13, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
-                        <span style={{ fontSize: 12.5, color: "#48484A", fontWeight: 450 }}>{text}</span>
+                        <span style={{ fontSize: 14, color: "#48484A", fontWeight: 450 }}>{text}</span>
                       </div>
                     ))}
                   </div>
@@ -282,7 +282,7 @@ export default function Home() {
                   <h3 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>
                     KI-Coach
                   </h3>
-                  <p style={{ fontSize: 13, color: "#6E6E73", margin: "3px 0 0", fontWeight: 450 }}>
+                  <p style={{ fontSize: 14, color: "#6E6E73", margin: "3px 0 0", fontWeight: 450 }}>
                     Beratung auf Basis der bioLogic-Systematik
                   </p>
                 </div>
@@ -292,7 +292,7 @@ export default function Home() {
                 </p>
 
                 <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 16, marginBottom: 18 }}>
-                  <p style={{ fontSize: 12.5, fontWeight: 600, color: "#48484A", margin: "0 0 10px" }}>Typische Einsatzbereiche</p>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 10px" }}>Typische Einsatzbereiche</p>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 24px" }}>
                     {[
                       "Recruiting und Stellenanzeigen",
@@ -302,7 +302,7 @@ export default function Home() {
                     ].map((text, i) => (
                       <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <CheckCircle style={{ width: 12, height: 12, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
-                        <span style={{ fontSize: 12.5, color: "#48484A", fontWeight: 450 }}>{text}</span>
+                        <span style={{ fontSize: 14, color: "#48484A", fontWeight: 450 }}>{text}</span>
                       </div>
                     ))}
                   </div>
