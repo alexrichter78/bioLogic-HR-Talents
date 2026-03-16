@@ -601,7 +601,7 @@ export default function TeamReport() {
   const [matchCheckOpen, setMatchCheckOpen] = useState(true);
   const [roleTypeForCard, setRoleTypeForCard] = useState<"teammitglied" | "fuehrung">("teammitglied");
 
-  useEffect(() => {
+  const syncFromLocalStorage = useCallback(() => {
     const raw = localStorage.getItem("rollenDnaState");
     if (raw) {
       try {
@@ -635,6 +635,25 @@ export default function TeamReport() {
       } catch {}
     }
   }, []);
+
+  useEffect(() => {
+    syncFromLocalStorage();
+  }, [syncFromLocalStorage]);
+
+  useEffect(() => {
+    const onFocus = () => syncFromLocalStorage();
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "jobcheckCandProfile" || e.key === "jobcheckCandSliders" || e.key === "teamProfile" || e.key === "rollenDnaState") {
+        syncFromLocalStorage();
+      }
+    };
+    window.addEventListener("focus", onFocus);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, [syncFromLocalStorage]);
 
   const istProfile = istTriad;
   const teamProfileN = teamTriad;
