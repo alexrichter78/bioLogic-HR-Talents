@@ -1,0 +1,126 @@
+type PhotoEffectKey = "impulsiv" | "intuitiv" | "analytisch";
+
+type PhotoEffectScores = {
+  impulsivScore: number;
+  intuitivScore: number;
+  analytischScore: number;
+};
+
+type PhotoEffectRanking = {
+  primaryEffect: PhotoEffectKey;
+  secondaryEffect: PhotoEffectKey;
+  tertiaryEffect: PhotoEffectKey;
+  gap12: number;
+  gap23: number;
+};
+
+const PHOTO_EFFECT_LABELS: Record<PhotoEffectKey, string> = {
+  impulsiv: "impulsiv",
+  intuitiv: "intuitiv",
+  analytisch: "analytisch",
+};
+
+const PHOTO_EFFECT_MAIN_TEXT: Record<PhotoEffectKey, string> = {
+  impulsiv:
+    "Das Foto vermittelt vor allem Präsenz, Direktheit und Durchsetzung.",
+  intuitiv:
+    "Das Foto vermittelt vor allem Wärme, Zugänglichkeit und Beziehung.",
+  analytisch:
+    "Das Foto vermittelt vor allem Kontrolle, Ruhe und sachliche Präsenz.",
+};
+
+const PHOTO_EFFECT_PERCEPTION_TEXT: Record<PhotoEffectKey, string> = {
+  impulsiv:
+    "Andere Menschen nehmen diese Wirkung oft als präsent, entschlossen und direkt wahr.",
+  intuitiv:
+    "Andere Menschen nehmen diese Wirkung oft als sympathisch, offen und nahbar wahr.",
+  analytisch:
+    "Andere Menschen nehmen diese Wirkung oft als strukturiert, ruhig und kontrolliert wahr.",
+};
+
+const PHOTO_EFFECT_LOW_TEXT: Record<PhotoEffectKey, string> = {
+  impulsiv:
+    "Impulsive Signale wie starke Dominanz, Tempo oder Durchsetzungsdruck stehen hier nicht im Vordergrund.",
+  intuitiv:
+    "Intuitive Signale wie Wärme, emotionale Nähe oder starke Beziehungsorientierung stehen hier nicht im Vordergrund.",
+  analytisch:
+    "Analytische Signale wie Distanz, starke Kontrolle oder sachliche Strenge stehen hier nicht im Vordergrund.",
+};
+
+function effectStrength(score: number): "leicht" | "mittel" | "stark" {
+  if (score >= 7.5) return "stark";
+  if (score >= 4.5) return "mittel";
+  return "leicht";
+}
+
+function getScoreByKey(
+  scores: PhotoEffectScores,
+  key: PhotoEffectKey
+): number {
+  if (key === "impulsiv") return scores.impulsivScore;
+  if (key === "intuitiv") return scores.intuitivScore;
+  return scores.analytischScore;
+}
+
+function buildEffectText(
+  scores: PhotoEffectScores,
+  ranking: PhotoEffectRanking
+): string {
+  const primaryScore = getScoreByKey(scores, ranking.primaryEffect);
+  const secondaryScore = getScoreByKey(scores, ranking.secondaryEffect);
+  const tertiaryScore = getScoreByKey(scores, ranking.tertiaryEffect);
+
+  const primaryStrength = effectStrength(primaryScore);
+  const secondaryStrength = effectStrength(secondaryScore);
+  const tertiaryStrength = effectStrength(tertiaryScore);
+
+  let text = "";
+
+  // Primärwirkung
+  text += `Das Foto wirkt primär ${PHOTO_EFFECT_LABELS[ranking.primaryEffect]}. `;
+  text += PHOTO_EFFECT_MAIN_TEXT[ranking.primaryEffect] + " ";
+  text += PHOTO_EFFECT_PERCEPTION_TEXT[ranking.primaryEffect] + " ";
+
+  if (primaryStrength === "stark") {
+    text += "Die Wirkung ist klar und deutlich ausgeprägt. ";
+  } else if (primaryStrength === "mittel") {
+    text += "Die Wirkung ist gut erkennbar, ohne überzeichnet zu wirken. ";
+  } else {
+    text += "Die Wirkung ist eher zurückhaltend ausgeprägt. ";
+  }
+
+  // Sekundärwirkung
+  if (secondaryScore >= 3) {
+    text += `Zusätzlich zeigt das Bild einen ${secondaryStrength}en ${PHOTO_EFFECT_LABELS[ranking.secondaryEffect]}en Anteil. `;
+
+    if (ranking.secondaryEffect === "impulsiv") {
+      text +=
+        "Dadurch wirkt die Person neben der Grundwirkung auch etwas präsenter, direkter oder energischer. ";
+    }
+
+    if (ranking.secondaryEffect === "intuitiv") {
+      text +=
+        "Dadurch wirkt die Person neben der Grundwirkung auch etwas wärmer, offener und zwischenmenschlich zugänglicher. ";
+    }
+
+    if (ranking.secondaryEffect === "analytisch") {
+      text +=
+        "Dadurch wirkt die Person neben der Grundwirkung auch etwas kontrollierter, ruhiger und sachlicher. ";
+    }
+  }
+
+  // Tertiärwirkung
+  if (tertiaryStrength === "leicht") {
+    text += PHOTO_EFFECT_LOW_TEXT[ranking.tertiaryEffect] + " ";
+  }
+
+  // Sonderfall: Primär und sekundär sehr nah beieinander
+  if (ranking.gap12 <= 1.2) {
+    text += `Die primäre und sekundäre Wirkung liegen relativ nahe beieinander. Dadurch entsteht insgesamt ein gemischter Eindruck aus ${PHOTO_EFFECT_LABELS[ranking.primaryEffect]}er und ${PHOTO_EFFECT_LABELS[ranking.secondaryEffect]}er Wirkung. `;
+  }
+
+  text +=
+    "Hinweis: Dieses Ergebnis beschreibt die Wirkung des Fotos, nicht die tatsächliche Persönlichkeitsstruktur.";
+
+  return text.trim();
+}

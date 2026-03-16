@@ -270,9 +270,9 @@ export default function KICoach() {
       }
 
       const photoContext = photoResult
-        ? `\n\n--- FOTOWIRKUNGS-ANALYSE (bioLogic) ---\nImpulsiv: ${photoResult.impulsivScore}/10 (${photoResult.impulsivStrength})\nIntuitiv: ${photoResult.intuitivScore}/10 (${photoResult.intuitivStrength})\nAnalytisch: ${photoResult.analytischScore}/10 (${photoResult.analytischStrength})\nPrimärwirkung: ${photoResult.primaryEffect}\nSekundärwirkung: ${photoResult.secondaryEffect}\nTertiärwirkung: ${photoResult.tertiaryEffect}\n${photoResult.effectText}\n--- ENDE FOTOWIRKUNGS-ANALYSE ---\n\nBitte beziehe dich in deiner Antwort auf diese Fotowirkungs-Analyse und erkläre dem Nutzer die Ergebnisse im bioLogic-Kontext.`
+        ? `\n\n--- FOTOWIRKUNGS-ANALYSE (bioLogic) ---\nImpulsiv: ${photoResult.impulsivScore}/10 (${photoResult.impulsivStrength})\nIntuitiv: ${photoResult.intuitivScore}/10 (${photoResult.intuitivStrength})\nAnalytisch: ${photoResult.analytischScore}/10 (${photoResult.analytischStrength})\nPrimärwirkung: ${photoResult.primaryEffect}\nSekundärwirkung: ${photoResult.secondaryEffect}\nTertiärwirkung: ${photoResult.tertiaryEffect}\n\n${photoResult.effectText}\n--- ENDE FOTOWIRKUNGS-ANALYSE ---\n\nWICHTIG: Antworte SEHR KURZ. Gib nur den generierten effectText oben wieder — OHNE eigene Ergänzungen, Interpretationen oder Erklärungen. Der effectText ist die vollständige Analyse. Füge nichts hinzu.`
         : photoError
-        ? "\n\n[Hinweis: Die automatische Fotowirkungs-Analyse konnte nicht durchgeführt werden. Bitte analysiere das Bild dennoch qualitativ im bioLogic-Kontext (Impulsiv/Intuitiv/Analytisch).]"
+        ? "\n\n[Hinweis: Die automatische Fotowirkungs-Analyse konnte nicht durchgeführt werden. Bitte analysiere das Bild dennoch qualitativ im bioLogic-Kontext (Impulsiv/Intuitiv/Analytisch). Halte dich kurz.]"
         : "";
 
       const res = await fetch("/api/ki-coach", {
