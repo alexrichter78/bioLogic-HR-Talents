@@ -1,8 +1,4 @@
-import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
-import { Save, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
+import { useState } from "react";
 import GlobalNav from "@/components/global-nav";
 
 const DEFAULT_BEREICH1 = `Noch keine Analyse vorhanden. Erstelle zuerst ein vollständiges Rollenprofil, um die KI-Analyse zu starten.`;
@@ -28,12 +24,6 @@ function loadBioCheckText(): { generated: string; override: string | null } {
   } catch { return { generated: "", override: null }; }
 }
 
-const ERFOLGSFOKUS_LABELS = [
-  "Ergebnis-/Umsatzwirkung",
-  "Beziehungs- und Netzwerkstabilität",
-  "Qualitäts- und Prozesssicherheit",
-  "Innovations- und Zukunftsfähigkeit",
-];
 
 function loadSaved() {
   try {
@@ -50,22 +40,13 @@ function loadSaved() {
   return { bereich1: DEFAULT_BEREICH1, bereich2: DEFAULT_BEREICH2, bereich3: DEFAULT_BEREICH3 };
 }
 
-function loadRollenDna() {
-  try {
-    const raw = localStorage.getItem("rollenDnaState");
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return null;
-}
 
 export default function Analyse() {
-  const [, setLocation] = useLocation();
   const initial = loadSaved();
   const [bereich1, setBereich1] = useState(initial.bereich1);
   const [bereich2, setBereich2] = useState(initial.bereich2);
   const [bereich3, setBereich3] = useState(initial.bereich3);
   const [saved, setSaved] = useState(true);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const bioCheckData = loadBioCheckText();
   const [bioCheckText, setBioCheckText] = useState(bioCheckData.override ?? bioCheckData.generated);
@@ -111,59 +92,6 @@ export default function Analyse() {
     setBioCheckIntroEdited(false);
   };
 
-  const runAnalyse = async () => {
-    const dna = loadRollenDna();
-    if (!dna || !dna.beruf || !dna.taetigkeiten || dna.taetigkeiten.length === 0) return;
-
-    setIsAnalyzing(true);
-    try {
-      const erfolgsfokusText = (dna.erfolgsfokusIndices || [])
-        .map((i: number) => ERFOLGSFOKUS_LABELS[i])
-        .filter(Boolean)
-        .join(", ");
-
-      const resp = await fetch("/api/generate-analyse", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          beruf: dna.beruf,
-          fuehrung: dna.fuehrung,
-          erfolgsfokus: erfolgsfokusText,
-          aufgabencharakter: dna.aufgabencharakter,
-          arbeitslogik: dna.arbeitslogik,
-          taetigkeiten: dna.taetigkeiten,
-        }),
-      });
-
-      if (!resp.ok) throw new Error("Analyse-Fehler");
-      const data = await resp.json();
-
-      if (data.bereich1) { setBereich1(data.bereich1); }
-      if (data.bereich2) { setBereich2(data.bereich2); }
-      if (data.bereich3) { setBereich3(data.bereich3); }
-
-      localStorage.setItem("analyseTexte", JSON.stringify({
-        bereich1: data.bereich1 || bereich1,
-        bereich2: data.bereich2 || bereich2,
-        bereich3: data.bereich3 || bereich3,
-      }));
-      setSaved(true);
-    } catch (err) {
-      console.error("Analyse-Generierung fehlgeschlagen:", err);
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
-
-  useEffect(() => {
-    const dna = loadRollenDna();
-    const hasProfile = dna && dna.beruf && dna.taetigkeiten && dna.taetigkeiten.length > 0;
-    const hasDefaultTexts = bereich1 === DEFAULT_BEREICH1 && bereich2 === DEFAULT_BEREICH2;
-    if (hasProfile && hasDefaultTexts) {
-      runAnalyse();
-    }
-  }, []);
-
   const textareaStyle: React.CSSProperties = {
     width: "100%",
     borderRadius: 12,
@@ -187,9 +115,6 @@ export default function Analyse() {
     boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
     border: "1px solid rgba(0,0,0,0.04)",
   };
-
-  const dna = loadRollenDna();
-  const hasProfile = dna && dna.beruf && dna.taetigkeiten && dna.taetigkeiten.length > 0;
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -216,28 +141,7 @@ export default function Analyse() {
             </h1>
           </div>
 
-          {isAnalyzing && (
-            <div className="text-center py-8 mb-6" data-testid="loading-analyse">
-              <div style={{
-                width: 40,
-                height: 40,
-                border: "3px solid rgba(0,113,227,0.15)",
-                borderTopColor: "#0071E3",
-                borderRadius: "50%",
-                animation: "spin 0.8s linear infinite",
-                margin: "0 auto 16px",
-              }} />
-              <p style={{ fontSize: 15, color: "#0071E3", fontWeight: 500 }}>
-                KI analysiert das Rollenprofil...
-              </p>
-              <p style={{ fontSize: 13, color: "#8E8E93", marginTop: 4 }}>
-                Das kann einige Sekunden dauern.
-              </p>
-              <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-            </div>
-          )}
-
-          <div className="flex flex-col gap-6" style={{ opacity: isAnalyzing ? 0.4 : 1, transition: "opacity 300ms" }}>
+          <div className="flex flex-col gap-6">
             <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-biocheck-intro">
                 bioCheck-Einleitungstext (statisch)
@@ -385,6 +289,27 @@ export default function Analyse() {
                 onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; }}
                 data-testid="textarea-bereich3"
               />
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button
+                onClick={handleSave}
+                disabled={saved}
+                style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  padding: "10px 28px",
+                  borderRadius: 10,
+                  border: "none",
+                  background: saved ? "rgba(0,0,0,0.06)" : "#0071E3",
+                  color: saved ? "#8E8E93" : "#fff",
+                  cursor: saved ? "default" : "pointer",
+                  transition: "all 200ms ease",
+                }}
+                data-testid="button-save-bereiche"
+              >
+                {saved ? "Gespeichert" : "Bereiche speichern"}
+              </button>
             </div>
           </div>
         </main>
