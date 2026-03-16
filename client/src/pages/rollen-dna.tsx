@@ -717,7 +717,7 @@ function DescriptiveOptionGroup({
             }}>{opt.label}</span>
             <span style={{
               fontSize: 13,
-              color: "#8E8E93",
+              color: "#6E6E73",
               lineHeight: 1.5,
               marginTop: 3,
             }}>{opt.desc}</span>
@@ -777,7 +777,7 @@ function DescriptiveOptionGroupIndexed({
             }}>{opt.label}</span>
             <span style={{
               fontSize: 13,
-              color: "#8E8E93",
+              color: "#6E6E73",
               lineHeight: 1.5,
               marginTop: 3,
             }}>{opt.desc}</span>
