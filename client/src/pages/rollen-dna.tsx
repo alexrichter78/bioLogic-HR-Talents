@@ -1957,7 +1957,7 @@ export default function RollenDNA() {
                     Rahmenbedingungen der Stelle
                   </h2>
                   <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6 }}>
-                    Definieren Sie die grundlegenden Merkmale dieser Position. Die Angaben helfen dabei, die strukturelle Rollenlogik zu bestimmen.
+                    Definieren Sie die grundlegenden Merkmale dieser Position. Die Angaben helfen dabei, die strukturelle Positionslogik zu bestimmen.
                   </p>
                 </div>
 
