@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight, Info, RefreshCw, Briefcase, Heart, Settings, Shield, BarChart3, Lightbulb, FileText, MessageSquare, LayoutGrid, Wrench, UserCheck, Hash, ClipboardList } from "lucide-react";
+import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRight, Users, Target, Layers, Activity, CheckCircle2, MoreHorizontal, X, ChevronRight, Info, RefreshCw, Briefcase, Heart, Settings, Shield, BarChart3, Lightbulb, FileText, MessageSquare, LayoutGrid, Wrench, UserCheck, Hash, ClipboardList, Pencil } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE, type BerufLand } from "@/data/berufe";
@@ -494,6 +494,22 @@ function CollapsedStep({
         <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: 0 }}>{title}</p>
         <p style={{ fontSize: 14, color: "#48484A", margin: 0 }} className="truncate">{summary}</p>
       </div>
+      <button
+        onClick={(e) => { e.stopPropagation(); onEdit(); }}
+        style={{
+          display: "flex", alignItems: "center", gap: 5,
+          fontSize: 13, fontWeight: 500, color: "#0071E3",
+          background: "transparent", border: "none", cursor: "pointer",
+          padding: "4px 8px", borderRadius: 8, flexShrink: 0,
+          transition: "background 200ms ease",
+        }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,113,227,0.06)"; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+        data-testid={`button-edit-step-${step}`}
+      >
+        <Pencil style={{ width: 13, height: 13 }} />
+        Bearbeiten
+      </button>
       <ChevronDown className="w-4 h-4 text-muted-foreground/40 flex-shrink-0" />
     </div>
   );
@@ -1894,7 +1910,7 @@ export default function RollenDNA() {
             ) : (
               <CollapsedStep
                 step={1}
-                title="Ausgewählte Rolle"
+                title="Ausgewählte Position / Bezeichnung"
                 summary={beruf}
                 onEdit={() => goToStep(1)}
               />
@@ -1909,7 +1925,7 @@ export default function RollenDNA() {
                     <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>3</div>
                   </div>
                   <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-2-title">
-                    Rahmenbedingungen der Rolle
+                    Rahmenbedingungen der Stelle
                   </h2>
                   <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6 }}>
                     Definieren Sie die grundlegenden Merkmale dieser Position. Die Angaben helfen dabei, die strukturelle Rollenlogik zu bestimmen.
@@ -2076,15 +2092,22 @@ export default function RollenDNA() {
             ) : !allCollapsed && currentStep > 2 ? (
               <CollapsedStep
                 step={2}
-                title="Rahmenbedingungen der Rolle"
+                title="Rahmenbedingungen der Stelle"
                 summary={`${AUFGABENCHARAKTER_OPTIONS.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter} · ${ARBEITSLOGIK_OPTIONS.find(o => o.value === arbeitslogik)?.label || arbeitslogik} · ${erfolgsfokusIndices.map(i => ERFOLGSFOKUS_DISPLAY[i]?.label).filter(Boolean).join(", ")} · ${FUEHRUNG_OPTIONS.find(o => o.value === fuehrung)?.label || fuehrung}`}
                 onEdit={() => goToStep(2)}
               />
             ) : (
-              <LockedStep step={2} title="Rahmenbedingungen der Rolle" />
+              <LockedStep step={2} title="Rahmenbedingungen der Stelle" />
             )}
 
-            {allCollapsed ? null : currentStep === 3 ? (
+            {allCollapsed ? null : currentStep >= 4 && taetigkeiten.length > 0 ? (
+              <CollapsedStep
+                step={3}
+                title="Tätigkeiten & Kompetenzen"
+                summary={`${taetigkeiten.filter(t => t.kategorie === "haupt").length} Tätigkeiten · ${taetigkeiten.filter(t => t.kategorie === "neben").length} Humankompetenzen${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} Führung` : ""}`}
+                onEdit={() => goToStep(3)}
+              />
+            ) : currentStep === 3 ? (
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-400" data-testid="card-step-3">
                 <div className="flex items-center justify-between mb-6">
                   <div>
@@ -2913,6 +2936,7 @@ export default function RollenDNA() {
                   <button
                     onClick={() => {
                       setAllCollapsed(false);
+                      setCurrentStep(4);
                       localStorage.removeItem("rollenDnaCompleted");
                     }}
                     style={{
