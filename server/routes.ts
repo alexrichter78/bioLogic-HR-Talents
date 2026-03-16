@@ -644,7 +644,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
 
   app.post("/api/ki-coach", async (req, res) => {
     try {
-      const { messages, stammdaten } = req.body;
+      const { messages, stammdaten, image } = req.body;
       if (!Array.isArray(messages) || messages.length === 0) {
         return res.status(400).json({ error: "Keine Nachrichten" });
       }
@@ -670,14 +670,17 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
         "rot", "roter", "rote", "rotdominant", "gelb", "gelber", "gelbe", "gelbdominant", "blau", "blauer", "blaue", "blaudominant",
         "rollen-dna", "rollenprofil", "soll-ist", "teamdynamik",
         "hallo", "hi", "guten tag", "hilfe", "help", "was kannst du", "wer bist du",
+        "bild", "foto", "image", "analyse", "upload", "hochgeladen", "zeig", "schau",
       ];
+
+      const hasImage = !!image;
 
       const hasTopicKeyword = ALLOWED_TOPICS.some(t => lastMsg.includes(t));
       const isFirstMessage = messages.length <= 1;
       const isShortMessage = lastMsg.length < 15;
       const isOngoingConversation = messages.length >= 3;
 
-      const isAllowed = hasTopicKeyword || isFirstMessage || isShortMessage || isOngoingConversation;
+      const isAllowed = hasTopicKeyword || isFirstMessage || isShortMessage || isOngoingConversation || hasImage;
 
       if (!isAllowed) {
         return res.json({
@@ -878,16 +881,30 @@ ZUSAMMENFASSUNGEN:
         if (stammdaten.beruf) contextBlock += `\n\nAktuelle Rolle: ${stammdaten.beruf}`;
         if (stammdaten.fuehrung) contextBlock += `\nFührungsverantwortung: ${stammdaten.fuehrung}`;
         if (stammdaten.taetigkeiten) contextBlock += `\nKerntätigkeiten: ${stammdaten.taetigkeiten}`;
+        if (stammdaten.bildanalyseKontext) contextBlock += `\n\nBildanalyse-Kontext (nutze diese Anweisungen wenn der Nutzer ein Bild hochlädt):\n${stammdaten.bildanalyseKontext}`;
         fullSystemPrompt += contextBlock;
       }
 
-      const apiMessages: { role: "system" | "user" | "assistant" | "tool"; content: string; tool_call_id?: string }[] = [
-        { role: "system" as const, content: fullSystemPrompt },
-        ...messages.slice(-10).map((m: { role: string; content: string }) => ({
-          role: m.role as "user" | "assistant",
-          content: m.content,
-        })),
+      const recentMessages = messages.slice(-10);
+      const apiMessages: any[] = [
+        { role: "system", content: fullSystemPrompt },
       ];
+
+      for (let i = 0; i < recentMessages.length; i++) {
+        const m = recentMessages[i];
+        const isLastUserWithImage = i === recentMessages.length - 1 && m.role === "user" && image;
+        if (isLastUserWithImage) {
+          apiMessages.push({
+            role: "user",
+            content: [
+              { type: "text", text: m.content || "Bitte analysiere dieses Bild." },
+              { type: "image_url", image_url: { url: image, detail: "high" } },
+            ],
+          });
+        } else {
+          apiMessages.push({ role: m.role, content: m.content });
+        }
+      }
 
       const webSearchTool = {
         type: "function" as const,

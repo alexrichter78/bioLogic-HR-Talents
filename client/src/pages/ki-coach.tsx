@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp } from "lucide-react";
+import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImagePlus, X } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 
 type Message = {
   role: "user" | "assistant";
   content: string;
+  imageUrl?: string;
 };
 
 const WELCOME_MSG: Message = {
@@ -162,21 +163,43 @@ export default function KICoach() {
   const [loading, setLoading] = useState(false);
   const [showPrompts, setShowPrompts] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [pendingImage, setPendingImage] = useState<{ dataUrl: string; file: File } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return;
+    if (file.size > 10 * 1024 * 1024) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPendingImage({ dataUrl: reader.result as string, file });
+    };
+    reader.readAsDataURL(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   const sendMessage = useCallback(async () => {
     const text = input.trim();
-    if (!text || loading) return;
+    const hasImage = !!pendingImage;
+    if ((!text && !hasImage) || loading) return;
 
-    const userMsg: Message = { role: "user", content: text };
+    const userMsg: Message = {
+      role: "user",
+      content: text || (hasImage ? "Bitte analysiere dieses Bild." : ""),
+      ...(hasImage ? { imageUrl: pendingImage.dataUrl } : {}),
+    };
+    const imageBase64 = hasImage ? pendingImage.dataUrl : undefined;
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     setInput("");
+    setPendingImage(null);
     setLoading(true);
 
     if (inputRef.current) {
@@ -184,7 +207,11 @@ export default function KICoach() {
     }
 
     try {
-      const chatHistory = newMessages.filter(m => m !== WELCOME_MSG);
+      const chatHistory = newMessages.filter(m => m !== WELCOME_MSG).map(m => ({
+        role: m.role,
+        content: m.content,
+        ...(m.imageUrl ? { imageUrl: m.imageUrl } : {}),
+      }));
 
       let stammdaten: Record<string, string> = {};
       try {
@@ -206,6 +233,11 @@ export default function KICoach() {
           if (dna.fuehrung) stammdaten.fuehrung = dna.fuehrung;
           if (dna.taetigkeiten) stammdaten.taetigkeiten = dna.taetigkeiten.join(", ");
         }
+        const bildanalyseKontext = localStorage.getItem("bildanalyseKontext");
+        if (bildanalyseKontext) {
+          const parsed = JSON.parse(bildanalyseKontext);
+          if (parsed && !parsed.startsWith("Noch kein")) stammdaten.bildanalyseKontext = parsed;
+        }
       } catch {}
 
       const hasStammdaten = Object.keys(stammdaten).length > 0;
@@ -213,7 +245,11 @@ export default function KICoach() {
       const res = await fetch("/api/ki-coach", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: chatHistory, ...(hasStammdaten ? { stammdaten } : {}) }),
+        body: JSON.stringify({
+          messages: chatHistory,
+          ...(hasStammdaten ? { stammdaten } : {}),
+          ...(imageBase64 ? { image: imageBase64 } : {}),
+        }),
       });
 
       if (!res.ok) throw new Error("Fehler");
@@ -228,7 +264,7 @@ export default function KICoach() {
       setLoading(false);
       setTimeout(() => inputRef.current?.focus(), 100);
     }
-  }, [input, loading, messages]);
+  }, [input, loading, messages, pendingImage]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -337,6 +373,14 @@ export default function KICoach() {
                   color: msg.role === "user" ? "#FFFFFF" : "#1D1D1F",
                   fontSize: 14, lineHeight: 1.6,
                 }}>
+                  {msg.imageUrl && (
+                    <img
+                      src={msg.imageUrl}
+                      alt="Hochgeladenes Bild"
+                      style={{ maxWidth: "100%", maxHeight: 300, borderRadius: 12, marginBottom: 8, display: "block" }}
+                      data-testid={`image-message-${i}`}
+                    />
+                  )}
                   {formatMessage(msg.content)}
                 </div>
               </div>
@@ -369,18 +413,68 @@ export default function KICoach() {
             borderTop: "1px solid rgba(0,0,0,0.06)",
             background: "rgba(255,255,255,0.5)",
           }}>
+            {pendingImage && (
+              <div style={{
+                display: "flex", alignItems: "center", gap: 10, marginBottom: 10,
+                padding: "8px 12px", background: "rgba(0,113,227,0.06)",
+                borderRadius: 14, border: "1px solid rgba(0,113,227,0.15)",
+              }}>
+                <img
+                  src={pendingImage.dataUrl}
+                  alt="Vorschau"
+                  style={{ width: 56, height: 56, borderRadius: 10, objectFit: "cover" }}
+                  data-testid="image-preview"
+                />
+                <span style={{ flex: 1, fontSize: 13, color: "#48484A", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {pendingImage.file.name}
+                </span>
+                <button
+                  onClick={() => setPendingImage(null)}
+                  data-testid="button-remove-image"
+                  style={{
+                    width: 28, height: 28, borderRadius: 8, border: "none",
+                    background: "rgba(0,0,0,0.06)", cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                  }}
+                >
+                  <X style={{ width: 14, height: 14, color: "#6E6E73" }} />
+                </button>
+              </div>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageSelect}
+              style={{ display: "none" }}
+              data-testid="input-file-image"
+            />
             <div style={{
               display: "flex", gap: 10, alignItems: "flex-end",
               background: "rgba(0,0,0,0.03)",
               borderRadius: 20, padding: "10px 12px 10px 18px",
               border: "1px solid rgba(0,0,0,0.06)",
             }}>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={loading}
+                data-testid="button-upload-image"
+                title="Bild hochladen"
+                style={{
+                  width: 36, height: 36, borderRadius: 12, border: "none",
+                  background: "rgba(0,0,0,0.04)", cursor: loading ? "default" : "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  flexShrink: 0, transition: "all 200ms ease",
+                }}
+              >
+                <ImagePlus style={{ width: 16, height: 16, color: loading ? "#C7C7CC" : "#6E6E73" }} />
+              </button>
               <textarea
                 ref={inputRef}
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Frage stellen..."
+                placeholder={pendingImage ? "Frage zum Bild stellen..." : "Frage stellen..."}
                 data-testid="input-chat"
                 rows={1}
                 style={{
@@ -397,21 +491,21 @@ export default function KICoach() {
               />
               <button
                 onClick={sendMessage}
-                disabled={loading || !input.trim()}
+                disabled={loading || (!input.trim() && !pendingImage)}
                 data-testid="button-send"
                 style={{
                   width: 36, height: 36, borderRadius: 12, border: "none",
-                  background: input.trim() && !loading
+                  background: (input.trim() || pendingImage) && !loading
                     ? "linear-gradient(135deg, #0071E3, #34AADC)"
                     : "rgba(0,0,0,0.06)",
-                  cursor: input.trim() && !loading ? "pointer" : "default",
+                  cursor: (input.trim() || pendingImage) && !loading ? "pointer" : "default",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   flexShrink: 0, transition: "all 200ms ease",
                 }}
               >
                 <Send style={{
                   width: 16, height: 16,
-                  color: input.trim() && !loading ? "#FFFFFF" : "#C7C7CC",
+                  color: (input.trim() || pendingImage) && !loading ? "#FFFFFF" : "#C7C7CC",
                 }} />
               </button>
             </div>

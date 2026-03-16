@@ -125,6 +125,26 @@ export default function Analyse() {
   });
   const [bioCheckIntroEdited, setBioCheckIntroEdited] = useState(false);
 
+  const DEFAULT_BILDANALYSE = "Noch kein Bildanalyse-Kontext hinterlegt. Hier können Sie Anweisungen für die KI-Coach-Bildanalyse hinterlegen.";
+  const [bildanalyseKontext, setBildanalyseKontext] = useState(() => {
+    try {
+      const saved = localStorage.getItem("bildanalyseKontext");
+      return saved ? JSON.parse(saved) : DEFAULT_BILDANALYSE;
+    } catch { return DEFAULT_BILDANALYSE; }
+  });
+  const [bildanalyseEdited, setBildanalyseEdited] = useState(false);
+
+  const handleBildanalyseSave = () => {
+    localStorage.setItem("bildanalyseKontext", JSON.stringify(bildanalyseKontext));
+    setBildanalyseEdited(false);
+  };
+
+  const handleBildanalyseReset = () => {
+    localStorage.removeItem("bildanalyseKontext");
+    setBildanalyseKontext(DEFAULT_BILDANALYSE);
+    setBildanalyseEdited(false);
+  };
+
   const handleChange = (setter: (v: string) => void) => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setter(e.target.value);
     setSaved(false);
@@ -354,6 +374,61 @@ export default function Analyse() {
                 onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; }}
                 data-testid="textarea-bereich3"
               />
+            </div>
+
+            <div style={cardStyle}>
+              <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-bildanalyse">
+                Bildanalyse-Kontext (KI-Coach)
+              </label>
+              <p style={{ fontSize: 13, color: "#6E6E73", margin: "0 0 10px", lineHeight: 1.5 }}>
+                Anweisungen für den KI-Coach, wenn ein Bild hochgeladen wird. Definiert, wie Bilder analysiert und interpretiert werden sollen.
+              </p>
+              <textarea
+                value={bildanalyseKontext}
+                onChange={(e) => { setBildanalyseKontext(e.target.value); setBildanalyseEdited(true); }}
+                rows={6}
+                style={textareaStyle}
+                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(0,113,227,0.4)"; }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; }}
+                data-testid="textarea-bildanalyse"
+              />
+              <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+                <button
+                  onClick={handleBildanalyseSave}
+                  disabled={!bildanalyseEdited}
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 600,
+                    padding: "6px 16px",
+                    borderRadius: 8,
+                    border: "none",
+                    background: bildanalyseEdited ? "#0071E3" : "rgba(0,0,0,0.06)",
+                    color: bildanalyseEdited ? "#fff" : "#8E8E93",
+                    cursor: bildanalyseEdited ? "pointer" : "default",
+                    transition: "all 200ms ease",
+                  }}
+                  data-testid="button-bildanalyse-save"
+                >
+                  Übernehmen
+                </button>
+                <button
+                  onClick={handleBildanalyseReset}
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 500,
+                    padding: "6px 16px",
+                    borderRadius: 8,
+                    border: "1px solid rgba(0,0,0,0.1)",
+                    background: "transparent",
+                    color: "#6E6E73",
+                    cursor: "pointer",
+                    transition: "all 200ms ease",
+                  }}
+                  data-testid="button-bildanalyse-reset"
+                >
+                  Zurücksetzen
+                </button>
+              </div>
             </div>
 
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
