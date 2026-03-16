@@ -491,8 +491,8 @@ function CollapsedStep({
         <Check className="w-4 h-4" strokeWidth={2.5} />
       </span>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-foreground/80">{title}</p>
-        <p className="text-xs text-muted-foreground truncate">{summary}</p>
+        <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: 0 }}>{title}</p>
+        <p style={{ fontSize: 14, color: "#48484A", margin: 0 }} className="truncate">{summary}</p>
       </div>
       <ChevronDown className="w-4 h-4 text-muted-foreground/40 flex-shrink-0" />
     </div>
