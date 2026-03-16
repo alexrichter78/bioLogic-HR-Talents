@@ -716,15 +716,23 @@ export default function JobCheck() {
                   onClick={handleCreateReport}
                   data-testid="button-create-report"
                   style={{
-                    width: "100%", padding: "14px 24px", borderRadius: 16,
+                    width: "100%", height: 48, padding: "0 28px", borderRadius: 14,
                     background: "linear-gradient(135deg, #0071E3, #34AADC)",
-                    color: "white", border: "none", fontSize: 15, fontWeight: 650,
+                    color: "#FFFFFF", border: "none", fontSize: 14, fontWeight: 600,
                     cursor: "pointer", boxShadow: "0 4px 16px rgba(0,113,227,0.3)",
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                    transition: "transform 150ms ease, box-shadow 150ms ease",
+                    transition: "all 200ms ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
+                    (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
+                    (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)";
                   }}
                 >
-                  <BarChart3 style={{ width: 16, height: 16 }} />
+                  <FileText style={{ width: 16, height: 16 }} />
                   Bericht erstellen
                 </button>
               </div>
