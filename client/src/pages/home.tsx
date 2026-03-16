@@ -199,12 +199,12 @@ export default function Home() {
                   <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: 0 }} data-testid="text-no-profile">
                     Rollenanalyse
                   </h2>
-                  <p style={{ fontSize: 13, color: "#8E8E93", margin: "3px 0 0", fontWeight: 450 }}>
+                  <p style={{ fontSize: 13, color: "#6E6E73", margin: "3px 0 0", fontWeight: 450 }}>
                     Präzision in Besetzung und Teamstruktur
                   </p>
                 </div>
 
-                <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.65, margin: "0 0 28px" }} data-testid="text-profile-desc">
+                <p style={{ fontSize: 14, color: "#58585D", lineHeight: 1.65, margin: "0 0 28px" }} data-testid="text-profile-desc">
                   Definieren Sie eine Rolle und analysieren Sie die strukturelle Passung. Sie erhalten klare Handlungsempfehlungen für Besetzung, Führung und Zusammenarbeit.
                 </p>
 
