@@ -449,6 +449,71 @@ function normalize(s: string): string {
     .trim();
 }
 
+type StammdatenTexte = { bereich1?: string; bereich2?: string; bereich3?: string };
+
+function loadStammdaten(): StammdatenTexte {
+  try {
+    const raw = localStorage.getItem("analyseTexte");
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return {};
+}
+
+function extractKeywords(text: string): string[] {
+  if (!text || text.startsWith("Noch keine Analyse")) return [];
+  return text
+    .toLowerCase()
+    .replace(/[.,;:!?()\[\]{}""„"»«\-–—]/g, " ")
+    .split(/\s+/)
+    .filter(w => w.length >= 4)
+    .filter((w, i, arr) => arr.indexOf(w) === i);
+}
+
+function scoreAgainstStammdaten(
+  taetigkeitText: string,
+  stammdaten: StammdatenTexte,
+): KompetenzTyp | null {
+  const impKeywords = extractKeywords(stammdaten.bereich1 || "");
+  const intKeywords = extractKeywords(stammdaten.bereich2 || "");
+  const anaKeywords = extractKeywords(stammdaten.bereich3 || "");
+
+  if (impKeywords.length === 0 && intKeywords.length === 0 && anaKeywords.length === 0) {
+    return null;
+  }
+
+  const lower = taetigkeitText.toLowerCase();
+  const words = lower.replace(/[.,;:!?()\[\]{}""„"»«\-–—]/g, " ").split(/\s+/).filter(w => w.length >= 4);
+
+  let impScore = 0;
+  let intScore = 0;
+  let anaScore = 0;
+
+  for (const word of words) {
+    if (impKeywords.includes(word)) impScore++;
+    if (intKeywords.includes(word)) intScore++;
+    if (anaKeywords.includes(word)) anaScore++;
+  }
+
+  const maxScore = Math.max(impScore, intScore, anaScore);
+  if (maxScore === 0) return null;
+
+  if (impScore === maxScore && impScore > intScore && impScore > anaScore) return "Impulsiv";
+  if (intScore === maxScore && intScore > impScore && intScore > anaScore) return "Intuitiv";
+  if (anaScore === maxScore && anaScore > impScore && anaScore > intScore) return "Analytisch";
+
+  return null;
+}
+
+function applyStammdaten(items: KompetenzItem[], stammdaten: StammdatenTexte): KompetenzItem[] {
+  return items.map(item => {
+    const matched = scoreAgainstStammdaten(item.name, stammdaten);
+    if (matched && matched !== item.kompetenz) {
+      return { ...item, kompetenz: matched };
+    }
+    return item;
+  });
+}
+
 function findProfile(beruf: string): typeof BERUFS_PROFILE[string] | null {
   const n = normalize(beruf);
   for (const [key, profile] of Object.entries(BERUFS_PROFILE)) {
@@ -506,20 +571,26 @@ export function generateKompetenzenLokal(
   const profile = findProfile(beruf);
   if (!profile) return null;
 
-  const haupt: KompetenzItem[] = profile.haupt.map(([name, kompetenz, niveau]) => ({
+  const stammdaten = loadStammdaten();
+
+  let haupt: KompetenzItem[] = profile.haupt.map(([name, kompetenz, niveau]) => ({
     name, kompetenz, niveau,
   }));
+  haupt = applyStammdaten(haupt, stammdaten);
 
   const bias = profile.bias || { imp: 33, int: 33, ana: 34 };
-  const neben = pickNeben(bias);
+  let neben = pickNeben(bias);
+  neben = applyStammdaten(neben, stammdaten);
 
   const result: KompetenzResult = { haupt, neben };
 
   const hasFuehrung = fuehrung && fuehrung !== "Keine" && fuehrung !== "";
   if (hasFuehrung && FUEHRUNG_TEMPLATES[fuehrung]) {
-    result.fuehrung = FUEHRUNG_TEMPLATES[fuehrung].map(([name, kompetenz, niveau]) => ({
+    let fuehrungItems = FUEHRUNG_TEMPLATES[fuehrung].map(([name, kompetenz, niveau]) => ({
       name, kompetenz, niveau,
     }));
+    fuehrungItems = applyStammdaten(fuehrungItems, stammdaten);
+    result.fuehrung = fuehrungItems;
   }
 
   return result;
