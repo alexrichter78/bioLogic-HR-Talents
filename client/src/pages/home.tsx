@@ -273,7 +273,7 @@ export default function Home() {
               }}
               data-testid="card-ki-coach"
             >
-              <div style={{ flexShrink: 0, width: 150, height: 150, borderRadius: 20, background: "linear-gradient(135deg, rgba(186,220,248,0.25), rgba(200,235,210,0.15))", display: "flex", alignItems: "center", justifyContent: "center", padding: 12 }} className="home-illustration-hide-mobile">
+              <div style={{ flexShrink: 0, width: 150, height: 150, borderRadius: 20, background: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", padding: 12 }} className="home-illustration-hide-mobile">
                 <img src={illustrationKiCoach} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
               </div>
 
