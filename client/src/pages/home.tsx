@@ -196,15 +196,15 @@ export default function Home() {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ marginBottom: 12 }}>
                   <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: 0 }} data-testid="text-no-profile">
-                    Rollenanalyse
+                    Stellenanalyse
                   </h2>
                   <p style={{ fontSize: 14, color: "#6E6E73", margin: "3px 0 0", fontWeight: 450 }}>
-                    Präzision in Besetzung und Teamstruktur
+                    Strukturelle Passung für sichere Besetzungsentscheidungen
                   </p>
                 </div>
 
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: "0 0 28px" }} data-testid="text-profile-desc">
-                  Definieren Sie eine Rolle und analysieren Sie die strukturelle Passung. Sie erhalten klare Handlungsempfehlungen für Besetzung, Führung und Zusammenarbeit.
+                  Definieren Sie eine Position und analysieren Sie die strukturelle Passung. Die Analyse liefert klare Handlungsempfehlungen für Besetzung, Führung und Zusammenarbeit.
                 </p>
 
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, flexWrap: "wrap" }}>
@@ -282,32 +282,15 @@ export default function Home() {
                     KI-Coach
                   </h3>
                   <p style={{ fontSize: 14, color: "#6E6E73", margin: "3px 0 0", fontWeight: 450 }}>
-                    Beratung auf Basis der bioLogic-Systematik
+                    Coaching und Beratung auf Basis der bioLogic-Systematik
                   </p>
                 </div>
 
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: "0 0 28px" }}>
-                  Nutzen Sie den KI-Coach jederzeit für Recruiting, Teamfragen, Gesprächsvorbereitung oder konkrete Handlungsempfehlungen – auch unabhängig von einer Analyse.
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: "0 0 24px" }}>
+                  Nutzen Sie den KI-Coach für Recruiting, Teamfragen, Gesprächsvorbereitung und konkrete Handlungsempfehlungen – jederzeit, auch ohne Analyse.
                 </p>
 
-                <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 16, marginBottom: 18 }}>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 10px" }}>Typische Einsatzbereiche</p>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 24px" }}>
-                    {[
-                      "Recruiting und Stellenanzeigen",
-                      "Gesprächsvorbereitung",
-                      "Teamkonstellationen analysieren",
-                      "Konfliktmuster erkennen",
-                    ].map((text, i) => (
-                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <CheckCircle style={{ width: 12, height: 12, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
-                        <span style={{ fontSize: 14, color: "#48484A", fontWeight: 450 }}>{text}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <div style={{ marginBottom: 24 }}>
                   <button
                     onClick={() => setLocation("/ki-coach")}
                     style={{
@@ -321,9 +304,26 @@ export default function Home() {
                     onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(0,113,227,0.25)"; }}
                     data-testid="button-ki-coach"
                   >
-                    <Bot style={{ width: 14, height: 14 }} />
+                    <Bot style={{ width: 17, height: 17 }} />
                     KI-Coach öffnen
                   </button>
+                </div>
+
+                <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 16 }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 10px" }}>Typische Einsatzbereiche</p>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 24px" }}>
+                    {[
+                      "Recruiting und Stellenanzeigen",
+                      "Gesprächsvorbereitung",
+                      "Analyse von Teamkonstellationen",
+                      "Konfliktmuster erkennen und lösen",
+                    ].map((text, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <CheckCircle style={{ width: 12, height: 12, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
+                        <span style={{ fontSize: 14, color: "#48484A", fontWeight: 450 }}>{text}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
