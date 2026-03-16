@@ -451,12 +451,31 @@ function normalize(s: string): string {
 
 type StammdatenTexte = { bereich1?: string; bereich2?: string; bereich3?: string };
 
+const STAMMDATEN_DEFAULTS: StammdatenTexte = {
+  bereich1: `IMPULSIV = Handlungs- und Umsetzungskompetenz (MACHEN & DURCHSETZEN)
+Entscheidungen treffen Verantwortung Konsequenzen Verhandlungen führen Ergebnisse durchsetzen Zielvorgaben einfordern kontrollieren Eskalation Zielkonflikten Blockaden Priorisierung Zeitdruck Ressourcenknappheit Steuerung Dienstleister Durchsetzung Leistungsanforderungen Budget Ergebnisverantwortung Personalentscheidungen Einstellung Trennung Beförderung Pragmatismus Krisenmanagement`,
+  bereich2: `INTUITIV = Sozial- und Beziehungskompetenz (FÜHLEN & VERBINDEN)
+Zwischenmenschliche Interaktion Empathie Zuhören Verständnis Menschen Teamführung Mitarbeiterentwicklung persönlicher Ebene Moderation Gruppendiskussionen Workshops Konfliktlösung Gespräch Beziehungsarbeit Coaching Mentoring persönliche Begleitung Netzwerken Vertrauensbeziehungen Kundenbetreuung persönlichem Kontakt Feedbackgespräche Mitarbeitergespräche interkulturelle Sensibilität Zusammenarbeit`,
+  bereich3: `ANALYTISCH = Fach- und Methodenkompetenz (DENKEN & VERSTEHEN)
+Systematisches Arbeiten Systemen Datenbanken Bewerten Abwägen Daten Zahlen Termine Prozesse Dokumentation Reporting Monitoring Fachwissen vermitteln erklären Qualitätskontrolle Einhaltung Standards Planung Strukturierung Organisation Abläufe Reinigung Instandhaltung Wartung Pflege Sorgfalt Einkauf Bestellung Lagerverwaltung Inventur Rezepturentwicklung Speiseplanung Kalkulation Hygienevorschriften Sicherheitsstandards technische Prüfung Fehlerbehebung`,
+};
+
 function loadStammdaten(): StammdatenTexte {
   try {
     const raw = localStorage.getItem("analyseTexte");
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      const hasContent = (v: string | undefined) => v && !v.startsWith("Noch keine Analyse");
+      if (hasContent(parsed.bereich1) || hasContent(parsed.bereich2) || hasContent(parsed.bereich3)) {
+        return {
+          bereich1: hasContent(parsed.bereich1) ? parsed.bereich1 : STAMMDATEN_DEFAULTS.bereich1,
+          bereich2: hasContent(parsed.bereich2) ? parsed.bereich2 : STAMMDATEN_DEFAULTS.bereich2,
+          bereich3: hasContent(parsed.bereich3) ? parsed.bereich3 : STAMMDATEN_DEFAULTS.bereich3,
+        };
+      }
+    }
   } catch {}
-  return {};
+  return STAMMDATEN_DEFAULTS;
 }
 
 function extractKeywords(text: string): string[] {

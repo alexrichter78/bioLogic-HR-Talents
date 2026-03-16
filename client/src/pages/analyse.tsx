@@ -1,9 +1,74 @@
 import { useState } from "react";
 import GlobalNav from "@/components/global-nav";
 
-const DEFAULT_BEREICH1 = `Noch keine Analyse vorhanden. Erstelle zuerst ein vollständiges Rollenprofil, um die KI-Analyse zu starten.`;
-const DEFAULT_BEREICH2 = `Noch keine Analyse vorhanden. Erstelle zuerst ein vollständiges Rollenprofil, um die KI-Analyse zu starten.`;
-const DEFAULT_BEREICH3 = `Noch keine Analyse vorhanden. Erstelle zuerst ein vollständiges Rollenprofil, um die KI-Analyse zu starten.`;
+const DEFAULT_BEREICH1 = `IMPULSIV = Handlungs- und Umsetzungskompetenz (MACHEN & DURCHSETZEN)
+
+Kernfrage: Braucht diese Tätigkeit primär DURCHSETZUNGSKRAFT — Entscheidungen unter Unsicherheit treffen, Ergebnisse gegen Widerstände erzielen, Tempo und Pragmatismus?
+
+Typische Sachverhalte (Impulsiv):
+- Entscheidungen treffen und Verantwortung für Konsequenzen übernehmen
+- Verhandlungen führen mit dem Ziel, Ergebnisse durchzusetzen
+- Zielvorgaben definieren, einfordern und kontrollieren
+- Eskalation bei Zielkonflikten oder Blockaden
+- Priorisierung unter Zeitdruck und Ressourcenknappheit
+- Steuerung externer Dienstleister und Durchsetzung von Leistungsanforderungen
+- Budget- und Ergebnisverantwortung
+- Personalentscheidungen (Einstellung, Trennung, Beförderung)
+- Pragmatisches Handeln statt Perfektionismus
+- Krisenmanagement und schnelle Reaktion auf unvorhergesehene Ereignisse
+
+NICHT Impulsiv:
+- Rein operative Tätigkeiten ohne Entscheidungsspielraum (→ Analytisch)
+- Körperliche Arbeit oder Routineaufgaben ohne Ergebnisverantwortung (→ Analytisch)
+- Abstimmungen auf Augenhöhe ohne Durchsetzungskomponente (→ Intuitiv)`;
+
+const DEFAULT_BEREICH2 = `INTUITIV = Sozial- und Beziehungskompetenz (FÜHLEN & VERBINDEN)
+
+Kernfrage: Braucht diese Tätigkeit primär EMOTIONALE INTELLIGENZ — Menschen lesen, Beziehungen gestalten, Vertrauen aufbauen, Stimmungen wahrnehmen?
+
+Typische Sachverhalte (Intuitiv):
+- Direkte zwischenmenschliche Interaktion als KERN der Tätigkeit
+- Empathie, aktives Zuhören und Verständnis für den Menschen
+- Teamführung und Mitarbeiterentwicklung auf persönlicher Ebene
+- Moderation von Gruppendiskussionen und Workshops
+- Konfliktlösung durch Gespräch und Beziehungsarbeit
+- Coaching, Mentoring und persönliche Begleitung
+- Aufbau und Pflege von Netzwerken und Vertrauensbeziehungen
+- Kundenbetreuung mit direktem persönlichem Kontakt
+- Feedbackgespräche und Mitarbeitergespräche
+- Interkulturelle Sensibilität in der Zusammenarbeit
+
+NICHT Intuitiv (häufige Fehlzuordnungen):
+- Reinigung, Pflege von Räumen oder Gegenständen — auch wenn Wörter wie "Empfang" oder "Gäste" vorkommen (→ Analytisch, weil es um Sorgfalt und Prozesse geht, nicht um menschliche Interaktion)
+- Dokumentation, Berichte, Reports — auch über soziale Themen (→ Analytisch)
+- Koordination von Terminen und Abläufen ohne persönliche Beziehungsgestaltung (→ Analytisch)
+- Einhaltung von Hygienevorschriften, Sicherheitsstandards (→ Analytisch)
+- Bestellung, Lagerhaltung, Warenwirtschaft (→ Analytisch)
+- Durchsetzung von Entscheidungen gegenüber Mitarbeitern (→ Impulsiv)
+- Verhandlung von Preisen und Konditionen (→ Impulsiv)`;
+
+const DEFAULT_BEREICH3 = `ANALYTISCH = Fach- und Methodenkompetenz (DENKEN & VERSTEHEN)
+
+Kernfrage: Braucht diese Tätigkeit primär KOPFARBEIT — Wissen anwenden, Daten verarbeiten, Systeme bedienen, Sachverhalte durchdringen, fachlich bewerten?
+
+Typische Sachverhalte (Analytisch):
+- Systematisches Arbeiten in Systemen (ERP, CRM, SAP, Software, Datenbanken)
+- Fachliches Bewerten und sachliches Abwägen — auch wenn Wörter wie "klären" oder "Konflikt" vorkommen
+- Arbeit mit Daten, Zahlen, Terminen, Prozessen
+- Dokumentation, Reporting, Monitoring
+- Fachwissen vermitteln oder erklären
+- Qualitätskontrolle und Einhaltung von Standards
+- Planung, Strukturierung und Organisation von Abläufen
+- Reinigung, Instandhaltung, Wartung, Pflege (physische Sorgfaltstätigkeiten)
+- Einkauf, Bestellung, Lagerverwaltung, Inventur
+- Rezepturentwicklung, Speiseplanung, Kalkulation
+- Einhaltung von Hygienevorschriften und Sicherheitsstandards
+- Technische Prüfung und Fehlerbehebung
+
+NICHT Analytisch:
+- Persönliche Mitarbeitergespräche mit Beziehungsfokus (→ Intuitiv)
+- Durchsetzung von Entscheidungen gegen Widerstände (→ Impulsiv)
+- Verhandlungen mit Ergebnisdruck (→ Impulsiv)`;
 
 const DEFAULT_BIOCHECK_INTRO = `Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Dimensionen Impulsiv, Intuitiv und Analytisch zugeordnet. So wird erkennbar, welche Form von Wirksamkeit die Rolle bestimmt.
 
