@@ -119,7 +119,7 @@ function ProfileCard({ title, subtitle, profile, description }: {
           const isSmall = widthPct < 18;
           return (
             <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>
+              <span style={{ fontSize: 13, color: "#58585D", width: 72, flexShrink: 0 }}>
                 {item.label}
               </span>
               <div style={{ flex: 1, position: "relative", height: 26 }}>
@@ -141,7 +141,7 @@ function ProfileCard({ title, subtitle, profile, description }: {
                   <span style={{
                     position: "absolute", top: "50%", transform: "translateY(-50%)",
                     left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
-                    fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
+                    fontSize: 13, fontWeight: 600, color: "#6E6E73", whiteSpace: "nowrap",
                     transition: "left 600ms ease",
                   }}>{Math.round(item.value)} %</span>
                 )}
@@ -245,7 +245,7 @@ function StaticBarGroup({ title, triad }: {
           const isSmall = widthPct < 18;
           return (
             <div key={key} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>
+              <span style={{ fontSize: 13, color: "#58585D", width: 72, flexShrink: 0 }}>
                 {labelComponent(key)}
               </span>
               <div style={{ flex: 1, position: "relative", height: 26 }}>
@@ -267,7 +267,7 @@ function StaticBarGroup({ title, triad }: {
                   <span style={{
                     position: "absolute", top: "50%", transform: "translateY(-50%)",
                     left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
-                    fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
+                    fontSize: 13, fontWeight: 600, color: "#6E6E73", whiteSpace: "nowrap",
                     transition: "left 600ms ease",
                   }}>{val} %</span>
                 )}
@@ -302,7 +302,7 @@ function SliderGroup({
           const isSmall = widthPct < 18;
           return (
             <div key={key} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>
+              <span style={{ fontSize: 13, color: "#58585D", width: 72, flexShrink: 0 }}>
                 {labelComponent(key)}
               </span>
               <div style={{ flex: 1, position: "relative", height: 26 }}>
@@ -369,7 +369,7 @@ function SliderGroup({
                   <span style={{
                     position: "absolute", top: "50%", transform: "translateY(-50%)",
                     left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 20px)`,
-                    fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
+                    fontSize: 13, fontWeight: 600, color: "#6E6E73", whiteSpace: "nowrap",
                     transition: "left 150ms ease",
                     zIndex: 4,
                   }}>{val} %</span>
@@ -706,7 +706,7 @@ export default function TeamReport() {
               <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-teamreport-title">
                 Teamstruktur analysieren
               </h1>
-              <p style={{ fontSize: 13, color: "#8E8E93", fontWeight: 450, margin: 0 }} data-testid="text-teamreport-subtitle">
+              <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0 }} data-testid="text-teamreport-subtitle">
                 Analysieren Sie die Zusammensetzung des Teams und erkennen Sie systemische Wirkungen, Entscheidungslogiken und mögliche Spannungsfelder.
               </p>
             </div>
@@ -976,7 +976,7 @@ export default function TeamReport() {
                     </div>
 
                     <div style={{ borderLeft: "1px solid rgba(0,0,0,0.06)", paddingLeft: 24 }}>
-                      <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 14px" }}>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: "#6E6E73", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 14px" }}>
                         Systemwirkung
                       </p>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
@@ -985,7 +985,7 @@ export default function TeamReport() {
                           {systemwirkungLabel}
                         </p>
                       </div>
-                      <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.75, margin: 0 }} data-testid="text-systemwirkung-description">{swDescriptions[systemwirkungLabel]}</p>
+                      <p style={{ fontSize: 14, color: "#58585D", lineHeight: 1.75, margin: 0 }} data-testid="text-systemwirkung-description">{swDescriptions[systemwirkungLabel]}</p>
                     </div>
                   </div>
                 </div>

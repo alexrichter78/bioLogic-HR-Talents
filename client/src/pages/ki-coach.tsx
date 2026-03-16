@@ -285,7 +285,7 @@ export default function KICoach() {
             </div>
             <div style={{ flex: 1 }}>
               <h1 style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">bioLogic KI-Coach</h1>
-              <p style={{ fontSize: 11, color: "#8E8E93", margin: "2px 0 0" }}>Führung · Personal · Assessment · Kommunikation</p>
+              <p style={{ fontSize: 11, color: "#6E6E73", margin: "2px 0 0" }}>Führung · Personal · Assessment · Kommunikation</p>
             </div>
             <button
               onClick={exportChat}
@@ -356,7 +356,7 @@ export default function KICoach() {
                   background: "rgba(0,0,0,0.04)", display: "flex", alignItems: "center", gap: 8,
                 }}>
                   <Loader2 style={{ width: 16, height: 16, color: "#8E8E93", animation: "spin 1s linear infinite" }} />
-                  <span style={{ fontSize: 13, color: "#8E8E93" }}>Antwort wird erstellt...</span>
+                  <span style={{ fontSize: 13, color: "#6E6E73" }}>Antwort wird erstellt...</span>
                 </div>
               </div>
             )}

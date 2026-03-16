@@ -253,7 +253,7 @@ function SoftBar({ items }: { items: { label: string; value: number; color: stri
         const isSmall = widthPct < 18;
         return (
           <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>{bar.label}</span>
+            <span style={{ fontSize: 13, color: "#58585D", width: 72, flexShrink: 0 }}>{bar.label}</span>
             <div style={{ flex: 1, position: "relative", height: 26 }}>
               <div style={{
                 position: "absolute", inset: 0,
@@ -275,7 +275,7 @@ function SoftBar({ items }: { items: { label: string; value: number; color: stri
                 <span style={{
                   position: "absolute", top: "50%", transform: "translateY(-50%)",
                   left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
-                  fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
+                  fontSize: 13, fontWeight: 600, color: "#6E6E73", whiteSpace: "nowrap",
                   transition: "left 600ms ease",
                 }}>{bar.value} %</span>
               )}
@@ -292,7 +292,7 @@ function BarSlider({ label, value, color, onChange }: { label: string; value: nu
   const isSmall = widthPct < 18;
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-      <span style={{ fontSize: 13, color: "#6E6E73", width: 72, flexShrink: 0 }}>{label}</span>
+      <span style={{ fontSize: 13, color: "#58585D", width: 72, flexShrink: 0 }}>{label}</span>
       <div style={{ flex: 1, position: "relative", height: 26 }}>
         <div style={{
           position: "absolute", inset: 0,
@@ -324,7 +324,7 @@ function BarSlider({ label, value, color, onChange }: { label: string; value: nu
           <span style={{
             position: "absolute", top: "50%", transform: "translateY(-50%)",
             left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
-            fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
+            fontSize: 13, fontWeight: 600, color: "#6E6E73", whiteSpace: "nowrap",
             transition: "left 150ms ease", zIndex: 1,
           }}>{Math.round(value)} %</span>
         )}
@@ -334,7 +334,7 @@ function BarSlider({ label, value, color, onChange }: { label: string; value: nu
 }
 
 function BulletList({ items, icon, color }: { items: string[]; icon?: "check" | "dot"; color?: string }) {
-  const c = color || "#6E6E73";
+  const c = color || "#58585D";
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
       {items.map((item, i) => (
@@ -405,7 +405,7 @@ function MatrixRowUI({ bereich, status, begruendung }: { bereich: string; status
         <span style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F" }}>{bereich}</span>
         <StatusBadge status={status} />
       </div>
-      <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.65, margin: 0, textAlign: "justify", textAlignLast: "left", overflowWrap: "break-word", wordBreak: "normal" } as React.CSSProperties} lang="de">{hyphenateText(begruendung)}</p>
+      <p style={{ fontSize: 13, color: "#58585D", lineHeight: 1.65, margin: 0, textAlign: "justify", textAlignLast: "left", overflowWrap: "break-word", wordBreak: "normal" } as React.CSSProperties} lang="de">{hyphenateText(begruendung)}</p>
     </div>
   );
 }
@@ -558,7 +558,7 @@ export default function JobCheck() {
                 <FileText style={{ width: 24, height: 24, color: "#6E6E73" }} />
               </div>
               <p style={{ fontSize: 17, fontWeight: 600, color: "#1D1D1F", marginBottom: 8 }}>Keine Analyse vorhanden</p>
-              <p style={{ fontSize: 14, color: "#8E8E93", marginBottom: 20, maxWidth: 260 }}>Erstelle zuerst ein Rollenprofil, um den JobCheck durchzuführen.</p>
+              <p style={{ fontSize: 14, color: "#6E6E73", marginBottom: 20, maxWidth: 260 }}>Erstelle zuerst ein Rollenprofil, um den JobCheck durchzuführen.</p>
               <button
                 onClick={() => setLocation("/rollen-dna")}
                 style={{ background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "white", border: "none", borderRadius: 14, padding: "12px 28px", fontSize: 14, fontWeight: 600, cursor: "pointer", boxShadow: "0 4px 12px rgba(0,113,227,0.25)" }}
@@ -605,7 +605,7 @@ export default function JobCheck() {
                 <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-jobcheck-title">
                   bioLogic JobCheck
                 </h1>
-                <p style={{ fontSize: 13, color: "#8E8E93", fontWeight: 450, margin: 0 }} data-testid="text-jobcheck-subtitle">
+                <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0 }} data-testid="text-jobcheck-subtitle">
                   Bewerten Sie die strukturelle Passung zwischen Rollenprofil und Personenprofil.
                 </p>
               </div>
@@ -645,12 +645,12 @@ export default function JobCheck() {
                         <span style={{ fontSize: 13, fontWeight: 650, color: "#1D1D1F" }}>{card.label}</span>
                       </div>
                       {card.value !== null ? (
-                        <p style={{ fontSize: 13, color: "#6E6E73", margin: 0, lineHeight: 1.5, paddingLeft: 32 }}>{card.value}</p>
+                        <p style={{ fontSize: 13, color: "#58585D", margin: 0, lineHeight: 1.5, paddingLeft: 32 }}>{card.value}</p>
                       ) : (
                         <div style={{ display: "flex", gap: 14, paddingLeft: 32, flexWrap: "wrap" }}>
-                          <span style={{ fontSize: 12, color: "#6E6E73" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.taetigkeitenCount}</strong> Tätigkeiten</span>
-                          <span style={{ fontSize: 12, color: "#6E6E73" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.humanCount}</strong> Humankompetenzen</span>
-                          <span style={{ fontSize: 12, color: "#6E6E73" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.fuehrungCount}</strong> Führung</span>
+                          <span style={{ fontSize: 12, color: "#58585D" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.taetigkeitenCount}</strong> Tätigkeiten</span>
+                          <span style={{ fontSize: 12, color: "#58585D" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.humanCount}</strong> Humankompetenzen</span>
+                          <span style={{ fontSize: 12, color: "#58585D" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.fuehrungCount}</strong> Führung</span>
                         </div>
                       )}
                     </div>
@@ -689,14 +689,14 @@ export default function JobCheck() {
 
                 <div>
                   <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 6 }}>Istprofil (Person)</p>
-                  <p style={{ fontSize: 12, color: "#8E8E93", marginBottom: 16 }}>Verschieben Sie die Regler, um das Personenprofil einzugeben. Die Werte werden automatisch normalisiert.</p>
+                  <p style={{ fontSize: 12, color: "#6E6E73", marginBottom: 16 }}>Verschieben Sie die Regler, um das Personenprofil einzugeben. Die Werte werden automatisch normalisiert.</p>
 
                   <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
                     <BarSlider label="Impulsiv" value={candImp} color={COLORS.imp} onChange={setCandImp} />
                     <BarSlider label="Intuitiv" value={candInt} color={COLORS.int} onChange={setCandInt} />
                     <BarSlider label="Analytisch" value={candAna} color={COLORS.ana} onChange={setCandAna} />
                   </div>
-                  <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Normalisiertes Profil (max. 67 % pro Komponente)</p>
+                  <p style={{ fontSize: 11, color: "#6E6E73", marginTop: 8, textAlign: "center" }}>Normalisiertes Profil (max. 67 % pro Komponente)</p>
                   {(() => {
                     const candDom = dominanceModeOf(normalizedCand);
                     return (
@@ -742,7 +742,7 @@ export default function JobCheck() {
             >
               {!engine ? (
                 <div style={{ textAlign: "center", padding: "30px 0" }}>
-                  <p style={{ fontSize: 14, color: "#8E8E93" }}>Bitte zuerst das Ist-Profil eingeben und „Bericht erstellen" klicken.</p>
+                  <p style={{ fontSize: 14, color: "#6E6E73" }}>Bitte zuerst das Ist-Profil eingeben und „Bericht erstellen" klicken.</p>
                 </div>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -795,7 +795,7 @@ export default function JobCheck() {
                       </div>
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Vergleich der Profile</span>
                     </div>
-                    <p style={{ fontSize: 14, color: "#6E6E73", lineHeight: 1.6, marginBottom: 16, hyphens: "auto", textAlign: "justify" } as React.CSSProperties} lang="de">
+                    <p style={{ fontSize: 14, color: "#58585D", lineHeight: 1.6, marginBottom: 16, hyphens: "auto", textAlign: "justify" } as React.CSSProperties} lang="de">
                       Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Arbeitsbereichen{" "}
                       <span style={{ fontWeight: 700, color: COLORS.imp }}>Impulsiv</span>,{" "}
                       <span style={{ fontWeight: 700, color: COLORS.int }}>Intuitiv</span> und{" "}
@@ -843,11 +843,11 @@ export default function JobCheck() {
 
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 20, marginBottom: 14 }}>
                       <div style={{ padding: "12px 14px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Führungsaufwand</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>Führungsaufwand</p>
                         <p style={{ fontSize: 16, fontWeight: 750, color: controlColor(engine.controlIntensity), margin: 0 }}>{controlLabel(engine.controlIntensity)}</p>
                       </div>
                       <div style={{ padding: "12px 14px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Abweichung</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>Abweichung</p>
                         <p style={{ fontSize: 16, fontWeight: 750, color: "#1D1D1F", margin: 0 }}>{engine.mismatchScore <= 8 ? "Gering" : engine.mismatchScore <= 15 ? "Moderat" : "Hoch"}{engine.koTriggered ? " · K.O." : ""}</p>
                       </div>
                     </div>
@@ -855,7 +855,7 @@ export default function JobCheck() {
                     <CalloutBox text={engine.keyReason} color={fitColor(engine.overallFit)} icon={Lightbulb} />
 
                     <div style={{ marginTop: 20 }}>
-                      <p style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", margin: "0 0 14px", letterSpacing: "0.02em" }}>Bedeutung der Komponenten</p>
+                      <p style={{ fontSize: 12, fontWeight: 600, color: "#6E6E73", margin: "0 0 14px", letterSpacing: "0.02em" }}>Bedeutung der Komponenten</p>
                       {[
                         { label: "Intuitiv", color: COLORS.int, desc: "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen." },
                         { label: "Impulsiv", color: COLORS.imp, desc: "Aufgaben schnell vorantreiben, Prioritäten setzen und Ergebnisse liefern." },
@@ -866,7 +866,7 @@ export default function JobCheck() {
                             <span style={{ width: 7, height: 7, borderRadius: 4, background: d.color, display: "inline-block", flexShrink: 0 }} />
                             <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{d.label}</span>
                           </div>
-                          <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.7, margin: 0, paddingLeft: 13 }}>{d.desc}</p>
+                          <p style={{ fontSize: 13, color: "#58585D", lineHeight: 1.7, margin: 0, paddingLeft: 13 }}>{d.desc}</p>
                         </div>
                       ))}
                     </div>
@@ -949,7 +949,7 @@ export default function JobCheck() {
                           background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)",
                         }}>
                           <div style={{ textAlign: "center" }}>
-                            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Soll</p>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Soll</p>
                             <div style={{ padding: "6px 16px", borderRadius: 10, background: `${rc}12`, border: `1px solid ${rc}25` }}>
                               <span style={{ fontSize: 15, fontWeight: 700, color: rc }}>{labelComponent(rk)}</span>
                               <span style={{ fontSize: 12, fontWeight: 600, color: rc, opacity: 0.7, marginLeft: 4 }}>{roleVal}%</span>
@@ -965,7 +965,7 @@ export default function JobCheck() {
                             <ChevronRight style={{ width: 20, height: 20, color: "#FF3B30" }} />
                           )}
                           <div style={{ textAlign: "center" }}>
-                            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Ist</p>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Ist</p>
                             {isEqualDist ? (
                               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                                 {[engine.candDominance.top1, engine.candDominance.top2, engine.candDominance.top3].map((comp) => {
@@ -1037,7 +1037,7 @@ export default function JobCheck() {
                           background: "rgba(255,149,0,0.04)", border: "1px solid rgba(255,149,0,0.12)",
                         }}>
                           <div style={{ textAlign: "center" }}>
-                            <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Rolle erwartet</p>
+                            <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Rolle erwartet</p>
                             <div style={{ padding: "6px 16px", borderRadius: 10, background: `${engine.secondaryTension.roleSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.roleSecondary === "intuitiv" ? COLORS.int : COLORS.ana}12`, border: `1px solid ${engine.secondaryTension.roleSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.roleSecondary === "intuitiv" ? COLORS.int : COLORS.ana}25` }}>
                               <span style={{ fontSize: 14, fontWeight: 700, color: engine.secondaryTension.roleSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.roleSecondary === "intuitiv" ? COLORS.int : COLORS.ana }}>{labelComponent(engine.secondaryTension.roleSecondary)}</span>
                               <span style={{ fontSize: 11, fontWeight: 600, color: engine.secondaryTension.roleSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.roleSecondary === "intuitiv" ? COLORS.int : COLORS.ana, opacity: 0.7, marginLeft: 4 }}>{engine.secondaryTension.roleSecondaryValue}%</span>
@@ -1045,7 +1045,7 @@ export default function JobCheck() {
                           </div>
                           <span style={{ fontSize: 16, fontWeight: 700, color: "#FF9500" }}>⇄</span>
                           <div style={{ textAlign: "center" }}>
-                            <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Person bringt</p>
+                            <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Person bringt</p>
                             <div style={{ padding: "6px 16px", borderRadius: 10, background: `${engine.secondaryTension.candSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.candSecondary === "intuitiv" ? COLORS.int : COLORS.ana}12`, border: `1px solid ${engine.secondaryTension.candSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.candSecondary === "intuitiv" ? COLORS.int : COLORS.ana}25` }}>
                               <span style={{ fontSize: 14, fontWeight: 700, color: engine.secondaryTension.candSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.candSecondary === "intuitiv" ? COLORS.int : COLORS.ana }}>{labelComponent(engine.secondaryTension.candSecondary)}</span>
                               <span style={{ fontSize: 11, fontWeight: 600, color: engine.secondaryTension.candSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.candSecondary === "intuitiv" ? COLORS.int : COLORS.ana, opacity: 0.7, marginLeft: 4 }}>{engine.secondaryTension.candSecondaryValue}%</span>
@@ -1124,13 +1124,13 @@ export default function JobCheck() {
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
                       <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Wahrscheinlichkeit</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>Wahrscheinlichkeit</p>
                         <p style={{ fontSize: 18, fontWeight: 750, color: engine.development.likelihood === "hoch" ? "#34C759" : engine.development.likelihood === "mittel" ? "#FF9500" : "#C41E3A", margin: 0 }}>
                           {engine.development.likelihood.charAt(0).toUpperCase() + engine.development.likelihood.slice(1)}
                         </p>
                       </div>
                       <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Zeitraum</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>Zeitraum</p>
                         <p style={{ fontSize: 18, fontWeight: 750, color: "#0071E3", margin: 0 }}>{engine.development.timeframe}</p>
                       </div>
                     </div>
@@ -1172,19 +1172,19 @@ export default function JobCheck() {
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
                       <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Grundpassung</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>Grundpassung</p>
                         <p style={{ fontSize: 15, fontWeight: 700, color: fitColor(engine.overallFit), margin: 0 }}>{statusLabel(engine.overallFit)}</p>
                       </div>
                       <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Führungsaufwand</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>Führungsaufwand</p>
                         <p style={{ fontSize: 15, fontWeight: 700, color: controlColor(engine.controlIntensity), margin: 0 }}>{controlLabel(engine.controlIntensity)}</p>
                       </div>
                       <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Kritischer Bereich</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>Kritischer Bereich</p>
                         <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{engine.criticalAreaLabel}</p>
                       </div>
                       <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Empfehlung</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>Empfehlung</p>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#0071E3", margin: 0 }}>
                           {engine.overallFit === "SUITABLE" ? "Besetzung strukturell passend" : engine.overallFit === "CONDITIONAL" ? "Besetzung möglich mit Integrations-Setup" : "Für diese Rolle nicht strukturgerecht"}
                         </p>
