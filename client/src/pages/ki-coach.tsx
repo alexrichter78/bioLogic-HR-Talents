@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImagePlus, X } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
+import { runPhotoEffectAnalysis, type PhotoFeatures, type PhotoEffectResult } from "@/lib/photo-effect-engine";
 
 type Message = {
   role: "user" | "assistant";
   content: string;
   imageUrl?: string;
+  photoResult?: PhotoEffectResult;
 };
 
 const WELCOME_MSG: Message = {
@@ -242,11 +244,46 @@ export default function KICoach() {
 
       const hasStammdaten = Object.keys(stammdaten).length > 0;
 
+      let photoResult: PhotoEffectResult | undefined;
+      let photoError = false;
+      if (imageBase64) {
+        try {
+          const photoRes = await fetch("/api/photo-analyse", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              image: imageBase64,
+              ...(stammdaten.bildanalyseKontext ? { bildanalyseKontext: stammdaten.bildanalyseKontext } : {}),
+            }),
+          });
+          if (photoRes.ok) {
+            const photoData = await photoRes.json();
+            if (photoData.features) {
+              photoResult = runPhotoEffectAnalysis(photoData.features as PhotoFeatures);
+            }
+          } else {
+            photoError = true;
+          }
+        } catch {
+          photoError = true;
+        }
+      }
+
+      const photoContext = photoResult
+        ? `\n\n--- FOTOWIRKUNGS-ANALYSE (bioLogic) ---\nImpulsiv: ${photoResult.impulsivScore}/10 (${photoResult.impulsivStrength})\nIntuitiv: ${photoResult.intuitivScore}/10 (${photoResult.intuitivStrength})\nAnalytisch: ${photoResult.analytischScore}/10 (${photoResult.analytischStrength})\nPrimärwirkung: ${photoResult.primaryEffect}\nSekundärwirkung: ${photoResult.secondaryEffect}\nTertiärwirkung: ${photoResult.tertiaryEffect}\n${photoResult.effectText}\n--- ENDE FOTOWIRKUNGS-ANALYSE ---\n\nBitte beziehe dich in deiner Antwort auf diese Fotowirkungs-Analyse und erkläre dem Nutzer die Ergebnisse im bioLogic-Kontext.`
+        : photoError
+        ? "\n\n[Hinweis: Die automatische Fotowirkungs-Analyse konnte nicht durchgeführt werden. Bitte analysiere das Bild dennoch qualitativ im bioLogic-Kontext (Impulsiv/Intuitiv/Analytisch).]"
+        : "";
+
       const res = await fetch("/api/ki-coach", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: chatHistory,
+          messages: chatHistory.map((m, i) =>
+            i === chatHistory.length - 1 && photoContext
+              ? { ...m, content: (m.content || "") + photoContext }
+              : m
+          ),
           ...(hasStammdaten ? { stammdaten } : {}),
           ...(imageBase64 ? { image: imageBase64 } : {}),
         }),
@@ -254,7 +291,11 @@ export default function KICoach() {
 
       if (!res.ok) throw new Error("Fehler");
       const data = await res.json();
-      setMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
+      setMessages(prev => [...prev, {
+        role: "assistant",
+        content: data.reply,
+        ...(photoResult ? { photoResult } : {}),
+      }]);
     } catch {
       setMessages(prev => [...prev, {
         role: "assistant",
@@ -382,6 +423,48 @@ export default function KICoach() {
                     />
                   )}
                   {formatMessage(msg.content)}
+                  {msg.photoResult && (
+                    <div style={{
+                      marginTop: 12, padding: "14px 16px", borderRadius: 14,
+                      background: "rgba(255,255,255,0.85)", border: "1px solid rgba(0,0,0,0.08)",
+                    }} data-testid={`photo-result-${i}`}>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: "#6E6E73", textTransform: "uppercase" as const, letterSpacing: 0.5, marginBottom: 10 }}>
+                        Fotowirkung — bioLogic
+                      </div>
+                      {([
+                        { key: "impulsiv", label: "Impulsiv", score: msg.photoResult.impulsivScore, color: "#C41E3A" },
+                        { key: "intuitiv", label: "Intuitiv", score: msg.photoResult.intuitivScore, color: "#F39200" },
+                        { key: "analytisch", label: "Analytisch", score: msg.photoResult.analytischScore, color: "#1A5DAB" },
+                      ] as const).map(item => (
+                        <div key={item.key} style={{ marginBottom: 8 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+                            <span style={{ fontSize: 13, fontWeight: 500, color: "#1D1D1F" }}>{item.label}</span>
+                            <span style={{ fontSize: 13, fontWeight: 600, color: item.color }}>{item.score.toFixed(1)}</span>
+                          </div>
+                          <div style={{ height: 6, borderRadius: 3, background: "rgba(0,0,0,0.06)", overflow: "hidden" }}>
+                            <div style={{
+                              height: "100%", borderRadius: 3,
+                              width: `${(item.score / 10) * 100}%`,
+                              background: item.color,
+                              transition: "width 600ms ease",
+                            }} />
+                          </div>
+                        </div>
+                      ))}
+                      <div style={{
+                        marginTop: 10, padding: "8px 10px", borderRadius: 8,
+                        background: "rgba(0,0,0,0.03)", fontSize: 12, color: "#48484A", lineHeight: 1.5,
+                      }}>
+                        Primärwirkung: <strong style={{ color: msg.photoResult.primaryEffect === "impulsiv" ? "#C41E3A" : msg.photoResult.primaryEffect === "intuitiv" ? "#F39200" : "#1A5DAB" }}>
+                          {msg.photoResult.primaryEffect.charAt(0).toUpperCase() + msg.photoResult.primaryEffect.slice(1)}
+                        </strong>
+                        {" · "}
+                        {msg.photoResult.impulsivStrength === "stark" || msg.photoResult.intuitivStrength === "stark" || msg.photoResult.analytischStrength === "stark"
+                          ? "Deutlich ausgeprägt"
+                          : "Erkennbar"}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

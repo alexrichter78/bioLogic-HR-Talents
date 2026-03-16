@@ -100,4 +100,10 @@ Preferred communication style: Simple, everyday language.
 -   **connect-pg-simple**: Session storage.
 
 ### AI Services
--   **OpenAI**: For AI-generated reports and the KI-Coach.
+-   **OpenAI**: For AI-generated reports, the KI-Coach, and photo effect analysis (GPT-4 Vision).
+
+### Photo Effect Engine
+-   **Location**: `client/src/lib/photo-effect-engine.ts`
+-   **Purpose**: Scores facial expression impact on 3 bioLogic dimensions (Impulsiv/Intuitiv/Analytisch) from 25 facial features.
+-   **API Endpoint**: `POST /api/photo-analyse` — sends image to GPT-4 Vision to extract PhotoFeatures JSON, returned to client where `runPhotoEffectAnalysis()` computes scores (0-10 scale), ranking, strength labels, and effect text.
+-   **Integration**: KI-Coach automatically triggers photo analysis when image is uploaded, shows visual score card (colored bars) in chat, and passes results as context to the coach for interpretation.

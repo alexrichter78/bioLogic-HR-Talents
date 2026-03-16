@@ -1065,5 +1065,92 @@ Wichtig:
     }
   });
 
+  app.post("/api/photo-analyse", async (req, res) => {
+    try {
+      const { image, bildanalyseKontext } = req.body;
+      if (!image) {
+        return res.status(400).json({ error: "Kein Bild übermittelt" });
+      }
+
+      const featurePrompt = `Du bist ein Experte für Gesichtsanalyse und nonverbale Kommunikation. Analysiere das Foto und bewerte die folgenden 25 Merkmale.
+
+Antworte NUR als valides JSON-Objekt mit genau diesen Feldern und den angegebenen Wertebereichen:
+
+{
+  "blickrichtung": <-1 ausweichend | 0 neutral | 1 direkt>,
+  "blickintensitaet": <0 weich | 1 ruhig | 2 stark>,
+  "augenfreundlichkeit": <0 kühl | 1 neutral | 2 warm>,
+  "augenbrauenhoehe": <0 tief | 1 neutral | 2 hoch>,
+  "brauenkontraktion": <0 entspannt | 1 leicht | 2 stark>,
+  "stirnspannung": <0 gering | 1 mittel | 2 hoch>,
+  "mundwinkel": <-1 negativ | 0 neutral | 1 leicht positiv | 2 klar positiv>,
+  "laechelnIntensitaet": <0 keines | 1 leicht | 2 deutlich>,
+  "duchenneNahe": <0 nein | 1 teilweise | 2 ja>,
+  "lippenpressung": <0 entspannt | 1 leicht gespannt | 2 stark gespannt>,
+  "kieferanspannung": <0 gering | 1 mittel | 2 hoch>,
+  "kopfPitch": <-1 leicht nach unten | 0 neutral | 1 leicht nach vorne/oben>,
+  "kopfRoll": <0 neutral | 1 leicht geneigt>,
+  "kopfYaw": <0 frontal | 1 leicht seitlich | 2 deutlich seitlich>,
+  "gesichtsexpressivitaet": <0 niedrig | 1 mittel | 2 hoch>,
+  "gesichtskontrolle": <0 locker | 1 gesammelt | 2 stark kontrolliert>,
+  "fwhRatio": <0 niedrig | 1 mittel | 2 hoch>,
+  "gesichtsrundung": <0 weich | 1 neutral | 2 markant>,
+  "lachfalten": <0 keine | 1 leicht | 2 deutlich>,
+  "glabellaLinie": <0 keine | 1 leicht | 2 deutlich>,
+  "stirnlinien": <0 keine | 1 leicht | 2 deutlich>,
+  "kinnprojektion": <0 zurückhaltend | 1 neutral | 2 vorwärts>,
+  "mundsymmetrie": <0 gering | 1 mittel | 2 hoch>,
+  "augensymmetrie": <0 gering | 1 mittel | 2 hoch>,
+  "gesamtspannung": <0 niedrig | 1 mittel | 2 hoch>
+}
+
+Bewerte objektiv basierend auf dem, was du auf dem Foto siehst. Keine Erklärungen, kein Text außerhalb des JSON.${bildanalyseKontext ? `\n\nZusätzlicher Kontext für die Analyse:\n${bildanalyseKontext}` : ""}`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4.1",
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: featurePrompt },
+              { type: "image_url", image_url: { url: image, detail: "high" } },
+            ],
+          },
+        ] as any,
+        temperature: 0.2,
+        max_tokens: 800,
+      });
+
+      const raw = response.choices[0]?.message?.content?.trim() || "";
+      let features: Record<string, number>;
+      try {
+        const jsonMatch = raw.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) throw new Error("Kein JSON gefunden");
+        features = JSON.parse(jsonMatch[0]);
+      } catch {
+        return res.status(500).json({ error: "Fotoanalyse fehlgeschlagen — Gesichtsmerkmale konnten nicht erkannt werden." });
+      }
+
+      const requiredKeys = [
+        "blickrichtung","blickintensitaet","augenfreundlichkeit","augenbrauenhoehe",
+        "brauenkontraktion","stirnspannung","mundwinkel","laechelnIntensitaet",
+        "duchenneNahe","lippenpressung","kieferanspannung","kopfPitch","kopfRoll",
+        "kopfYaw","gesichtsexpressivitaet","gesichtskontrolle","fwhRatio",
+        "gesichtsrundung","lachfalten","glabellaLinie","stirnlinien","kinnprojektion",
+        "mundsymmetrie","augensymmetrie","gesamtspannung"
+      ];
+      for (const key of requiredKeys) {
+        if (typeof features[key] !== "number" || !isFinite(features[key])) {
+          features[key] = 1;
+        }
+      }
+
+      res.json({ features });
+    } catch (error) {
+      console.error("Error in photo-analyse:", error);
+      res.status(500).json({ error: "Fehler bei der Fotoanalyse" });
+    }
+  });
+
   return httpServer;
 }
