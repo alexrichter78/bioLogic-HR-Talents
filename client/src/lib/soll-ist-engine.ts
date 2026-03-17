@@ -331,7 +331,7 @@ export function computeSollIst(
       }
 
       if (rDom.gap1 <= 5 && cDom.gap1 > 12 && fitRating !== "NICHT_GEEIGNET") {
-        if (totalGap > 20) { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
+        if (totalGap >= 18) { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
         else { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
       }
     }
