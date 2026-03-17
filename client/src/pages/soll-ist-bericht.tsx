@@ -667,25 +667,6 @@ export default function SollIstBericht() {
                         ))}
                       </div>
 
-                      {/* STRUKTURKONSTELLATION */}
-                      <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-strukturkonstellation">
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Zusammenspiel von Person und Position</p>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-                          <span style={{ fontSize: 14, fontWeight: 600, color: "#6E6E73" }}>Dominanz Stelle</span>
-                          <span style={{ fontSize: 14, fontWeight: 700, color: rc }}>{COMP_LABELS[result.roleDomKey]}</span>
-                        </div>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-                          <span style={{ fontSize: 14, fontWeight: 600, color: "#6E6E73" }}>Dominanz Person</span>
-                          <span style={{ fontSize: 14, fontWeight: 700, color: cc }}>{COMP_LABELS[result.candDomKey]}</span>
-                        </div>
-                        <div style={{ padding: "10px 0 4px" }}>
-                          <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 6px" }}>Auswirkung im Arbeitsalltag</p>
-                          <p style={{ margin: 0, fontSize: 13, lineHeight: 1.75, color: "#48484A" }}>
-                            {result.dominanceShiftText.split(/\n\n+/)[0]}
-                          </p>
-                        </div>
-                      </div>
-
                       {/* MANAGEMENTKURZFAZIT */}
                       <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", position: "relative" }} data-testid="section-fazit">
                         <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, borderRadius: "12px 0 0 12px", background: `linear-gradient(180deg, ${fitCol}, ${fitCol}40)` }} />
