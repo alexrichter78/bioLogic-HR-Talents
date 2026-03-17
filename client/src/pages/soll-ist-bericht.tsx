@@ -509,7 +509,7 @@ export default function SollIstBericht() {
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                       <Zap style={{ width: 22, height: 22, color: "#34C759", flexShrink: 0 }} />
                       <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
-                        MatchCheck Systemwirkung
+                        MatchCheck: {roleName || "Stelle"}
                       </span>
                     </div>
                     <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${systemwirkungOpen ? "rotate-180" : ""}`} />
@@ -520,11 +520,10 @@ export default function SollIstBericht() {
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px 32px" }}>
 
                       <div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
                           <div style={{ width: 14, height: 14, borderRadius: 7, background: fitColor, flexShrink: 0 }} />
                           <span style={{ fontSize: 14, fontWeight: 700, color: fitColor }} data-testid="text-summary-fit">{fitLabel}</span>
                         </div>
-                        <p style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }} data-testid="text-summary-role">{roleName || "Stelle"}</p>
                         <p style={{ fontSize: 14, fontWeight: 500, color: "#6E6E73", margin: 0 }} data-testid="text-summary-fazit">{shortFazit}</p>
                       </div>
 
