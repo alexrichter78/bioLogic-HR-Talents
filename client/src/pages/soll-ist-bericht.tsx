@@ -592,8 +592,8 @@ export default function SollIstBericht() {
           <div ref={reportRef} style={{ maxWidth: 820, margin: "0 auto" }} data-testid="print-report-wrapper">
             <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }} data-testid="print-report-card">
 
-              {/* ─── EXECUTIVE DECISION PAGE ─── */}
-              <div style={{ background: "linear-gradient(135deg, #343A48, #2A2F3A)", padding: "32px 44px 0", position: "relative" }} data-testid="section-header">
+              {/* ─── DARK HEADER (nur Logo + Titel) ─── */}
+              <div style={{ background: "linear-gradient(135deg, #343A48, #2A2F3A)", padding: "32px 44px 28px", position: "relative" }} data-testid="section-header">
 
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -612,10 +612,14 @@ export default function SollIstBericht() {
                   </button>
                 </div>
 
-                <h1 style={{ fontSize: 26, fontWeight: 700, color: "#FFFFFF", margin: "0 0 22px", letterSpacing: "-0.02em", lineHeight: 1.2 }} data-testid="text-page-title">
+                <h1 style={{ fontSize: 26, fontWeight: 700, color: "#FFFFFF", margin: "0 0 6px", letterSpacing: "-0.02em", lineHeight: 1.2 }} data-testid="text-page-title">
                   {result.roleName}
                 </h1>
 
+              </div>
+
+              {/* ─── EXECUTIVE DECISION CONTENT (weißer Hintergrund) ─── */}
+              <div style={{ padding: "28px 44px 0" }}>
                 {(() => {
                   const cCol = bioControlColor(result.controlIntensity);
                   const cLabel = result.controlIntensity === "hoch" ? "Hoch" : result.controlIntensity === "mittel" ? "Mittel" : "Gering";
@@ -630,7 +634,7 @@ export default function SollIstBericht() {
                     <>
                       {/* SYSTEMSTATUS */}
                       <div style={{ marginBottom: 22 }} data-testid="section-systemstatus">
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 10px" }}>Systemstatus</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 10px" }}>Systemstatus</p>
                         <div style={{ display: "flex", gap: 10 }}>
                           {[
                             { label: "Grundpassung", value: result.fitLabel, color: fitCol },
@@ -638,8 +642,8 @@ export default function SollIstBericht() {
                             { label: "Profilabweichung", value: result.gapLevel, color: gapCol },
                             { label: "Entwicklungsprognose", value: devLabel, color: devCol },
                           ].map(m => (
-                            <div key={m.label} style={{ flex: 1, minWidth: 0, padding: "14px 16px", borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.50)", marginBottom: 5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>{m.label}</div>
+                            <div key={m.label} style={{ flex: 1, minWidth: 0, padding: "14px 16px", borderRadius: 10, background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.06)" }}>
+                              <div style={{ fontSize: 10, color: "#8E8E93", marginBottom: 5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>{m.label}</div>
                               <div style={{ fontSize: 15, fontWeight: 700, color: m.color }} data-testid={`status-${m.label.toLowerCase().replace(/\s/g, "-")}`}>{m.value}</div>
                             </div>
                           ))}
@@ -647,69 +651,69 @@ export default function SollIstBericht() {
                       </div>
 
                       {/* SYSTEMÜBERBLICK */}
-                      <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }} data-testid="section-ueberblick">
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Systemüberblick</p>
+                      <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-ueberblick">
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Systemüberblick</p>
                         {[
                           { label: "Stellenprofil", value: result.roleConstellationLabel },
                           { label: `${personLabel}profil`, value: result.candConstellationLabel },
                           { label: "Soll-Ist-Abweichung", value: `${result.totalGap} Punkte`, color: gapCol },
                         ].map((row, i, arr) => (
-                          <div key={row.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
-                            <span style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.65)" }}>{row.label}</span>
-                            <span style={{ fontSize: 14, fontWeight: row.color ? 800 : 700, color: row.color || "rgba(255,255,255,0.85)" }}>{row.value}</span>
+                          <div key={row.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < arr.length - 1 ? "1px solid rgba(0,0,0,0.06)" : "none" }}>
+                            <span style={{ fontSize: 14, fontWeight: 600, color: "#6E6E73" }}>{row.label}</span>
+                            <span style={{ fontSize: 14, fontWeight: row.color ? 800 : 700, color: row.color || "#1D1D1F" }}>{row.value}</span>
                           </div>
                         ))}
                       </div>
 
                       {/* STRUKTURKONSTELLATION */}
-                      <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }} data-testid="section-strukturkonstellation">
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Strukturkonstellation</p>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                          <span style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.65)" }}>Dominanz Stelle</span>
+                      <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-strukturkonstellation">
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Strukturkonstellation</p>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                          <span style={{ fontSize: 14, fontWeight: 600, color: "#6E6E73" }}>Dominanz Stelle</span>
                           <span style={{ fontSize: 14, fontWeight: 700, color: rc }}>{COMP_LABELS[result.roleDomKey]}</span>
                         </div>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                          <span style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.65)" }}>Dominanz Person</span>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                          <span style={{ fontSize: 14, fontWeight: 600, color: "#6E6E73" }}>Dominanz Person</span>
                           <span style={{ fontSize: 14, fontWeight: 700, color: cc }}>{COMP_LABELS[result.candDomKey]}</span>
                         </div>
                         <div style={{ padding: "10px 0 4px" }}>
-                          <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 6px" }}>Strukturwirkung</p>
-                          <p style={{ margin: 0, fontSize: 13, lineHeight: 1.75, color: "rgba(255,255,255,0.70)" }}>
+                          <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 6px" }}>Strukturwirkung</p>
+                          <p style={{ margin: 0, fontSize: 13, lineHeight: 1.75, color: "#48484A" }}>
                             {result.dominanceShiftText.split(/\n\n+/)[0]}
                           </p>
                         </div>
                       </div>
 
                       {/* MANAGEMENTKURZFAZIT */}
-                      <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", position: "relative" }} data-testid="section-fazit">
+                      <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", position: "relative" }} data-testid="section-fazit">
                         <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, borderRadius: "12px 0 0 12px", background: `linear-gradient(180deg, ${fitCol}, ${fitCol}40)` }} />
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Managementkurzfazit</p>
-                        <p style={{ fontSize: 13, lineHeight: 1.85, color: "rgba(255,255,255,0.75)", margin: 0 }} data-testid="text-summary-fazit">
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Managementkurzfazit</p>
+                        <p style={{ fontSize: 13, lineHeight: 1.85, color: "#48484A", margin: 0 }} data-testid="text-summary-fazit">
                           {result.summaryText.split(/\n\n+/)[0]}
                         </p>
                       </div>
 
                       {/* WARUM / RISIKEN compact */}
                       {(result.executiveBullets.length > 0 || result.constellationRisks.length > 0) && (
-                        <div style={{ marginBottom: 0, padding: "16px 20px 20px", borderRadius: "12px 12px 0 0", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", borderBottom: "none" }} data-testid="section-executive-bullets">
+                        <div style={{ marginBottom: 0, padding: "16px 20px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-executive-bullets">
                           {result.executiveBullets.length > 0 && (
                             <div style={{ marginBottom: result.constellationRisks.length > 0 ? 14 : 0 }}>
-                              <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 6px" }}>Warum dieses Ergebnis</p>
+                              <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 6px" }}>Warum dieses Ergebnis</p>
                               {result.executiveBullets.map((b, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 4 }}>
                                   <span style={{ width: 5, height: 5, borderRadius: 3, background: fitCol, flexShrink: 0, marginTop: 6 }} />
-                                  <span style={{ fontSize: 12, lineHeight: 1.6, color: "rgba(255,255,255,0.65)" }}>{b}</span>
+                                  <span style={{ fontSize: 12, lineHeight: 1.6, color: "#48484A" }}>{b}</span>
                                 </div>
                               ))}
                             </div>
                           )}
                           {result.constellationRisks.length > 0 && (
                             <div>
-                              <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 6px" }}>Risiken dieser Konstellation</p>
+                              <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 6px" }}>Risiken dieser Konstellation</p>
                               {result.constellationRisks.map((r, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 4 }}>
                                   <span style={{ width: 5, height: 5, borderRadius: 3, background: BIO_COLORS.nichtGeeignet, flexShrink: 0, marginTop: 6 }} />
-                                  <span style={{ fontSize: 12, lineHeight: 1.6, color: "rgba(255,255,255,0.65)" }}>{r}</span>
+                                  <span style={{ fontSize: 12, lineHeight: 1.6, color: "#48484A" }}>{r}</span>
                                 </div>
                               ))}
                             </div>
