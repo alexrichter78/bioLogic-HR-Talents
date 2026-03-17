@@ -2902,8 +2902,9 @@ export default function RollenDNA() {
                       onClick={(e) => {
                         e.stopPropagation();
                         setAllCollapsed(false);
-                        setCurrentStep(1);
+                        setCurrentStep(4);
                         setSummaryOpen(false);
+                        localStorage.removeItem("rollenDnaCompleted");
                       }}
                       style={{
                         display: "flex", alignItems: "center", gap: 4,
