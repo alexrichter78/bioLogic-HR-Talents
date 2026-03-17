@@ -459,7 +459,7 @@ export default function SollIstBericht() {
 
             const devLevel = effective.developmentLevel;
             const devScore = devLevel >= 4 ? 3 : devLevel >= 3 ? 2 : 1;
-            const devLabel = effective.developmentLabel === "hoch" ? "Geringer Entwicklungsaufwand" : effective.developmentLabel === "mittel" ? "Entwicklung mit gezielter Führung möglich" : "Hoher Entwicklungsaufwand, Ergebnis unsicher";
+            const devLabel = effective.developmentLabel === "hoch" ? "Gute Aussichten, wenig Aufwand" : effective.developmentLabel === "mittel" ? "Machbar, braucht gezielte Führung" : "Hoher Aufwand, Ergebnis unsicher";
             const devText = effective.developmentText;
             const devGaugeColor = devScore === 3 ? "#3A9A5C" : devScore === 2 ? "#E5A832" : "#D64045";
 
@@ -592,7 +592,7 @@ export default function SollIstBericht() {
                             { label: "Grundpassung", value: result.fitLabel, color: fitCol },
                             { label: "Führungsaufwand", value: cLabel, color: cCol },
                             { label: "Profilabweichung", value: result.gapLevel, color: gapCol },
-                            { label: "Entwicklungsaufwand", value: devLabel, color: devCol },
+                            { label: "Entwicklungsprognose", value: devLabel, color: devCol },
                           ].map(m => (
                             <div key={m.label} style={{ flex: 1, minWidth: 0, padding: "14px 16px", borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}>
                               <div style={{ fontSize: 10, color: "rgba(255,255,255,0.50)", marginBottom: 5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>{m.label}</div>
@@ -852,7 +852,7 @@ export default function SollIstBericht() {
 
                 const rDevLevel = result.developmentLevel;
                 const rDev = rDevLevel >= 4 ? 3 : rDevLevel >= 3 ? 2 : 1;
-                const rDevLabel = result.developmentLabel === "hoch" ? "Geringer Entwicklungsaufwand" : result.developmentLabel === "mittel" ? "Entwicklung mit gezielter Führung möglich" : "Hoher Entwicklungsaufwand, Ergebnis unsicher";
+                const rDevLabel = result.developmentLabel === "hoch" ? "Gute Aussichten, wenig Aufwand" : result.developmentLabel === "mittel" ? "Machbar, braucht gezielte Führung" : "Hoher Aufwand, Ergebnis unsicher";
                 const rGaugeCol = rDev === 3 ? "#3A9A5C" : rDev === 2 ? "#E5A832" : "#D64045";
 
                 return (

@@ -858,7 +858,7 @@ function buildDevelopment(gap: string, rk: ComponentKey, ck: ComponentKey, contr
     return {
       level: 4,
       label: "hoch",
-      text: `Die Stelle erfordert ${compDesc(rk)}. ${s} bringt diese Grundausrichtung mit. Die Anpassung ist mit hoher Wahrscheinlichkeit erreichbar. Vor allem Feinabstimmung in einzelnen Bereichen ist notwendig. Bei klarer Erwartungssetzung und sauberer Einarbeitung ist eine stabile Entwicklung realistisch.`,
+      text: `Die Stelle verlangt ${compDesc(rk)}. ${s} bringt genau das mit. In einzelnen Bereichen ist Feinabstimmung nötig, aber die Grundlage stimmt. Mit klaren Erwartungen und guter Einarbeitung ist eine stabile Entwicklung realistisch.`,
     };
   }
   if (gap === "mittel") {
@@ -866,16 +866,16 @@ function buildDevelopment(gap: string, rk: ComponentKey, ck: ComponentKey, contr
       level: 3,
       label: "mittel",
       text: rk === ck
-        ? `Die Stelle erfordert ${compDesc(rk)}. ${s} arbeitet in dieselbe Richtung, einzelne Anforderungen müssen jedoch bewusst aufgebaut und stabilisiert werden. Klare Erwartungen, regelmässige Rückmeldung und konsequente Begleitung über mehrere Monate sind dafür sinnvoll.`
-        : `Die Stelle erfordert ${compDesc(rk)}. ${s} setzt von Natur aus auf ${compDesc(ck)}. Eine Entwicklung in Richtung der Stellenanforderung ist möglich, verlangt jedoch bewusste Verhaltensanpassung. Mit klarer Führung und konkreten Entwicklungszielen kann die Anpassung aufgebaut werden.`,
+        ? `Die Stelle verlangt ${compDesc(rk)}. ${s} arbeitet in dieselbe Richtung, muss aber in einzelnen Bereichen noch gezielt dazulernen. Mit klaren Zielen und regelmässigem Feedback ist das gut machbar.`
+        : `Die Stelle verlangt ${compDesc(rk)}. ${s} arbeitet eher über ${compDesc(ck)}. Die Anpassung ist möglich, braucht aber klare Führung und konkrete Ziele über mehrere Monate.`,
     };
   }
   return {
     level: 1,
     label: "niedrig",
     text: rk === ck
-      ? `Die Stelle erfordert ${compDesc(rk)} in einer Ausprägung, die ${subj(cand)} deutlich nicht erreicht. Die Grundrichtung passt formal, ist jedoch zu schwach. Konsequente Führung, klare Standards und intensive Nachsteuerung wären über längere Zeit erforderlich. Ob dieser Aufwand im Verhältnis zum erwarteten Ergebnis steht, sollte realistisch geprüft werden.`
-      : `Die Stelle erfordert ${compDesc(rk)}. ${s} setzt auf ${compDesc(ck)}. Diese Grundabweichung würde einen deutlichen Umbau im Verhalten und intensive Begleitung über längere Zeit erfordern. Der notwendige Aufwand ist hoch und der Erfolg nur eingeschränkt planbar.`,
+      ? `Die Stelle verlangt ${compDesc(rk)} – deutlich stärker, als ${subj(cand)} es mitbringt. Die Richtung passt zwar, reicht aber nicht aus. Es bräuchte intensive Begleitung über längere Zeit. Ob sich dieser Aufwand lohnt, sollte ehrlich geprüft werden.`
+      : `Die Stelle verlangt ${compDesc(rk)}. ${s} setzt auf ${compDesc(ck)}. Das sind zwei unterschiedliche Arbeitsweisen. Die Anpassung wäre aufwendig, langwierig und im Ergebnis unsicher.`,
   };
 }
 
