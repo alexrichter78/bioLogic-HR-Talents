@@ -35,13 +35,23 @@ const EXAMPLE_PROMPTS: { category: string; prompts: string[] }[] = [
     ],
   },
   {
-    category: "Szenarien durchspielen",
+    category: "Gespräche durchspielen & üben",
     prompts: [
-      "Spiel mit mir ein Gehaltsgespräch durch. Mein Gegenüber ist rotdominant und sehr fordernd.",
-      "Ich möchte ein Konfliktgespräch zwischen zwei Teammitgliedern moderieren. Kannst du die Rollen übernehmen?",
-      "Simuliere ein Bewerbungsgespräch mit mir. Ich bin der Interviewer, die Person ist gelbdominant.",
-      "Spiel mit mir durch, wie ich meinem blaudominanten Chef eine innovative Idee pitche.",
-      "Übe mit mir ein Feedbackgespräch. Ich muss einem langjährigen Mitarbeiter sagen, dass er sich verändern muss.",
+      "Spiel mit mir ein Gehaltsgespräch durch. Mein Gegenüber ist rotdominant und sehr fordernd. Übernimm seine Rolle und gib mir nach jeder Runde Feedback.",
+      "Mein gelbdominanter Mitarbeiter kommt ständig zu spät. Ich bin rotdominant. Spiel das Gespräch mit mir durch – du bist der Mitarbeiter.",
+      "Simuliere ein Bewerbungsgespräch mit mir. Ich bin der Interviewer, die Person ist gelbdominant. Reagiere wie ein echter Bewerber.",
+      "Übe mit mir ein Feedbackgespräch. Ich muss einem langjährigen blaudominanten Mitarbeiter sagen, dass er sich verändern muss. Du spielst ihn.",
+      "Ich möchte meinem rotdominanten Chef eine Gehaltserhöhung vorschlagen. Lass uns das durchspielen – du bist mein Chef.",
+    ],
+  },
+  {
+    category: "Formulierungen prüfen & verbessern",
+    prompts: [
+      "Ich würde zu meinem gelbdominanten Mitarbeiter sagen: 'Du kommst seit Wochen zu spät, das nervt das ganze Team.' – Was ist daran falsch und wie wäre es besser?",
+      "Prüf meinen Satz für ein Kritikgespräch mit einem Blauen: 'Ich habe das Gefühl, dass du dich nicht genug einbringst.' – Wie wirkt das auf ihn?",
+      "Wie würde ein Roter auf diesen Satz reagieren: 'Könnten wir vielleicht mal darüber sprechen, ob die Deadline realistisch ist?'",
+      "Ich will meinem Team sagen: 'Ab sofort gilt: Wer zu spät kommt, muss sich erklären.' – Wie wirkt das auf die verschiedenen Typen?",
+      "Formuliere mir drei verschiedene Einstiege für ein Kritikgespräch mit einem Gelben – ich wähle dann den besten.",
     ],
   },
   {
