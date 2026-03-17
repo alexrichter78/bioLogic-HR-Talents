@@ -285,7 +285,7 @@ export function computeSollIst(
     const roleIsBalFull2 = rDom.gap1 <= 5 && rDom.gap2 <= 5;
     const candSpreadVal = cDom.top1.value - cDom.top3.value;
     if (roleIsBalFull2) {
-      if (candSpreadVal <= 5) { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; }
+      if (candSpreadVal <= 5 || totalGap <= 8) { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; }
       else if (candSpreadVal < 12) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
       else { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
     } else {
@@ -316,7 +316,8 @@ export function computeSollIst(
 
       if (fitLabel === "Geeignet") {
         if (secondaryFlip && candSecGap > 5 && rDom.gap2 > 5) {
-          fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
+          if (totalGap > 30) { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
+          else { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
         } else if (secondaryFlip) {
           fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
         } else if (effectiveSameDom && candSecGap <= 5) {
