@@ -1188,24 +1188,6 @@ export default function Rollenprofil() {
                 {strukturprofilText}
               </p>
 
-              <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 8px" }}>Profilherkunft</p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {profilherkunft.map((p, i) => {
-                  const c = p.dom === "Impulsiv" ? COLORS.imp : p.dom === "Intuitiv" ? COLORS.int : p.dom === "Analytisch" ? COLORS.ana : "#8E8E93";
-                  return (
-                    <div key={i} style={{
-                      display: "flex", alignItems: "center", gap: 6,
-                      padding: "5px 10px", borderRadius: 8, background: "rgba(0,0,0,0.03)",
-                      fontSize: 12, color: "#48484A",
-                    }} data-testid={`profilherkunft-${i}`}>
-                      <div style={{ width: 8, height: 8, borderRadius: 4, background: c, flexShrink: 0 }} />
-                      <span style={{ fontWeight: 600 }}>{p.label}:</span>
-                      <span>{p.dom} ({p.pct} %)</span>
-                    </div>
-                  );
-                })}
-              </div>
-
               {profilkonflikt && (
                 <div style={{
                   marginTop: 14, padding: "12px 16px", borderRadius: 10,
@@ -1242,14 +1224,6 @@ export default function Rollenprofil() {
                 <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>
                   {rahmenText ? "5." : "4."} Erfolgsfokus
                 </p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
-                  {erfolgsfokusLabels.map((l, i) => (
-                    <span key={i} style={{
-                      fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 6,
-                      background: "rgba(0,113,227,0.06)", color: "#0071E3",
-                    }} data-testid={`tag-erfolgsfokus-${i}`}>{l}</span>
-                  ))}
-                </div>
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-erfolgsfokus">
                   {erfolgsfokusText}
                 </p>
