@@ -6,6 +6,8 @@ type Message = {
   role: "user" | "assistant";
   content: string;
   image?: string;
+  overlayTitle?: string;
+  overlaySubtitle?: string;
 };
 
 const WELCOME_MSG: Message = {
@@ -242,6 +244,8 @@ export default function KICoach() {
       if (data.image) {
         assistantMsg.image = `data:image/png;base64,${data.image}`;
       }
+      if (data.overlayTitle) assistantMsg.overlayTitle = data.overlayTitle;
+      if (data.overlaySubtitle) assistantMsg.overlaySubtitle = data.overlaySubtitle;
       setMessages(prev => [...prev, assistantMsg]);
     } catch {
       setMessages(prev => [...prev, {
@@ -368,45 +372,153 @@ export default function KICoach() {
                   {formatMessage(msg.content)}
                   {msg.image && (
                     <div style={{ marginTop: 12 }}>
-                      <img
-                        src={msg.image}
-                        alt="KI-generiertes Bild"
-                        data-testid={`image-generated-${i}`}
-                        style={{
-                          width: "100%",
-                          maxWidth: 480,
-                          borderRadius: 12,
-                          border: "1px solid rgba(0,0,0,0.08)",
-                          display: "block",
-                        }}
-                      />
-                      <button
-                        onClick={() => {
-                          const a = document.createElement("a");
-                          a.href = msg.image!;
-                          a.download = `bioLogic-Coach-Bild_${new Date().toISOString().slice(0, 10)}.png`;
-                          a.click();
-                        }}
-                        data-testid={`button-download-image-${i}`}
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 6,
-                          marginTop: 8,
-                          padding: "6px 14px",
-                          borderRadius: 10,
-                          border: "1px solid rgba(0,0,0,0.1)",
-                          background: "rgba(255,255,255,0.9)",
-                          cursor: "pointer",
-                          fontSize: 12,
-                          fontWeight: 600,
-                          color: "#0071E3",
-                          transition: "all 200ms ease",
-                        }}
-                      >
-                        <Download style={{ width: 13, height: 13 }} />
-                        Bild herunterladen
-                      </button>
+                      <div style={{ position: "relative", display: "inline-block", maxWidth: 520, width: "100%" }}>
+                        <img
+                          src={msg.image}
+                          alt="KI-generiertes Bild"
+                          data-testid={`image-generated-${i}`}
+                          style={{
+                            width: "100%",
+                            borderRadius: 12,
+                            border: "1px solid rgba(0,0,0,0.08)",
+                            display: "block",
+                          }}
+                        />
+                        {msg.overlayTitle && (
+                          <div
+                            data-testid={`image-overlay-${i}`}
+                            style={{
+                              position: "absolute",
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              padding: "20px 24px 18px",
+                              borderRadius: "0 0 12px 12px",
+                              background: "linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 60%, transparent 100%)",
+                            }}
+                          >
+                            <div style={{
+                              color: "#FFFFFF",
+                              fontSize: 18,
+                              fontWeight: 700,
+                              lineHeight: 1.3,
+                              textShadow: "0 1px 4px rgba(0,0,0,0.5)",
+                            }}>
+                              {msg.overlayTitle}
+                            </div>
+                            {msg.overlaySubtitle && (
+                              <div style={{
+                                color: "rgba(255,255,255,0.9)",
+                                fontSize: 13,
+                                fontWeight: 500,
+                                marginTop: 4,
+                                textShadow: "0 1px 3px rgba(0,0,0,0.5)",
+                              }}>
+                                {msg.overlaySubtitle}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+                        <button
+                          onClick={() => {
+                            if (msg.overlayTitle) {
+                              const canvas = document.createElement("canvas");
+                              const img = new Image();
+                              img.onload = () => {
+                                canvas.width = img.naturalWidth;
+                                canvas.height = img.naturalHeight;
+                                const ctx = canvas.getContext("2d")!;
+                                ctx.drawImage(img, 0, 0);
+                                const gradH = canvas.height * 0.35;
+                                const grad = ctx.createLinearGradient(0, canvas.height - gradH, 0, canvas.height);
+                                grad.addColorStop(0, "rgba(0,0,0,0)");
+                                grad.addColorStop(0.4, "rgba(0,0,0,0.4)");
+                                grad.addColorStop(1, "rgba(0,0,0,0.7)");
+                                ctx.fillStyle = grad;
+                                ctx.fillRect(0, canvas.height - gradH, canvas.width, gradH);
+                                const titleSize = Math.max(28, Math.round(canvas.width * 0.03));
+                                ctx.font = `bold ${titleSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+                                ctx.fillStyle = "#FFFFFF";
+                                ctx.shadowColor = "rgba(0,0,0,0.5)";
+                                ctx.shadowBlur = 6;
+                                ctx.shadowOffsetY = 2;
+                                const lines = msg.overlayTitle!.split("\n");
+                                const lineHeight = titleSize * 1.35;
+                                let yBase = canvas.height - 30;
+                                if (msg.overlaySubtitle) yBase -= titleSize * 0.8;
+                                yBase -= (lines.length - 1) * lineHeight;
+                                lines.forEach((line, idx) => {
+                                  ctx.fillText(line, 36, yBase + idx * lineHeight);
+                                });
+                                if (msg.overlaySubtitle) {
+                                  const subSize = Math.max(18, Math.round(titleSize * 0.65));
+                                  ctx.font = `500 ${subSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+                                  ctx.fillStyle = "rgba(255,255,255,0.9)";
+                                  ctx.fillText(msg.overlaySubtitle, 36, yBase + lines.length * lineHeight + 4);
+                                }
+                                const a = document.createElement("a");
+                                a.href = canvas.toDataURL("image/png");
+                                a.download = `bioLogic-Stellenanzeige_${new Date().toISOString().slice(0, 10)}.png`;
+                                a.click();
+                              };
+                              img.src = msg.image!;
+                            } else {
+                              const a = document.createElement("a");
+                              a.href = msg.image!;
+                              a.download = `bioLogic-Coach-Bild_${new Date().toISOString().slice(0, 10)}.png`;
+                              a.click();
+                            }
+                          }}
+                          data-testid={`button-download-image-${i}`}
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: 6,
+                            padding: "6px 14px",
+                            borderRadius: 10,
+                            border: "1px solid rgba(0,0,0,0.1)",
+                            background: "rgba(255,255,255,0.9)",
+                            cursor: "pointer",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: "#0071E3",
+                            transition: "all 200ms ease",
+                          }}
+                        >
+                          <Download style={{ width: 13, height: 13 }} />
+                          {msg.overlayTitle ? "Bild mit Text" : "Bild herunterladen"}
+                        </button>
+                        {msg.overlayTitle && (
+                          <button
+                            onClick={() => {
+                              const a = document.createElement("a");
+                              a.href = msg.image!;
+                              a.download = `bioLogic-Bild-ohne-Text_${new Date().toISOString().slice(0, 10)}.png`;
+                              a.click();
+                            }}
+                            data-testid={`button-download-raw-${i}`}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 6,
+                              padding: "6px 14px",
+                              borderRadius: 10,
+                              border: "1px solid rgba(0,0,0,0.1)",
+                              background: "rgba(255,255,255,0.9)",
+                              cursor: "pointer",
+                              fontSize: 12,
+                              fontWeight: 600,
+                              color: "#6E6E73",
+                              transition: "all 200ms ease",
+                            }}
+                          >
+                            <ImageIcon style={{ width: 13, height: 13 }} />
+                            Nur Bild (ohne Text)
+                          </button>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>

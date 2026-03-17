@@ -994,7 +994,15 @@ ZUSAMMENFASSUNGEN:
             properties: {
               prompt: {
                 type: "string",
-                description: "Detaillierte englische Bildbeschreibung für die Bildgenerierung. Beschreibe Stil, Komposition, Farben, Stimmung und Inhalt präzise. Beispiel: 'Professional corporate photography style, diverse team of 4 people collaborating around a modern conference table, warm natural lighting, clean minimalist office environment, conveying teamwork and innovation'",
+                description: "WICHTIG: Der Prompt MUSS auf Englisch sein und MUSS diese Regeln befolgen: 1) IMMER 'absolutely no text, no letters, no words, no watermarks, no labels in the image' einfügen. 2) IMMER 'professional stock photography, photorealistic, high resolution, 8K quality' verwenden. 3) Die Szene detailliert beschreiben: Personen, Umgebung, Lichtstimmung, Kamerawinkel, Farbtöne. 4) Für Stellenanzeigen: Eine authentische Arbeitssituation zeigen, die zur Stelle passt. Beispiel: 'Professional stock photography, photorealistic, high resolution. A focused male janitor in clean uniform mopping a bright modern office hallway, natural daylight through large windows, warm tones, shallow depth of field, professional and dignified atmosphere. Absolutely no text, no letters, no words, no watermarks in the image.'",
+              },
+              overlayTitle: {
+                type: "string",
+                description: "Optionaler Text, der als professionelles Overlay ÜBER dem Bild angezeigt wird (z.B. Stellentitel). Wird im Frontend als scharfer, fehlerfreier Text gerendert – NICHT als Teil der Bildgenerierung. Beispiel: 'Sachbearbeiter Forderungsmanagement (m/w/d)'. Nur bei Stellenanzeigen oder Marketing-Material verwenden.",
+              },
+              overlaySubtitle: {
+                type: "string",
+                description: "Optionaler Untertitel für das Overlay (z.B. Firmenname, Standort, 'befristet', 'Vollzeit'). Wird unter dem Titel angezeigt.",
               },
             },
             required: ["prompt"],
@@ -1003,6 +1011,8 @@ ZUSAMMENFASSUNGEN:
       };
 
       let generatedImageBase64: string | null = null;
+      let imageOverlayTitle: string | null = null;
+      let imageOverlaySubtitle: string | null = null;
 
       let response = await openai.chat.completions.create({
         model: "gpt-4.1",
@@ -1082,13 +1092,19 @@ ZUSAMMENFASSUNGEN:
           try {
             const args = JSON.parse(toolCall.function.arguments);
             imagePrompt = args.prompt || "";
+            if (args.overlayTitle) imageOverlayTitle = args.overlayTitle;
+            if (args.overlaySubtitle) imageOverlaySubtitle = args.overlaySubtitle;
           } catch { imagePrompt = ""; }
 
-          let imageToolResult = "Bild wurde erfolgreich generiert und wird dem Nutzer angezeigt.";
+          if (imagePrompt && !imagePrompt.toLowerCase().includes("no text")) {
+            imagePrompt += " Absolutely no text, no letters, no words, no watermarks, no labels in the image.";
+          }
+
+          let imageToolResult = "Bild wurde erfolgreich generiert und wird dem Nutzer angezeigt." + (imageOverlayTitle ? ` Der Stellentitel "${imageOverlayTitle}" wird als scharfes Text-Overlay über dem Bild angezeigt.` : "") + " WICHTIG: Liefere in deiner Antwort zusätzlich zum Bild eine marketing-fertige Beschreibung mit bioLogic-optimierten Bullet-Points, die ein Marketingteam direkt verwenden kann. Formatiere die Beschreibung als 'Stellenprofil nach bioLogic-Methode:' mit den Aufgaben, Anforderungen und dem Wir-bieten-Bereich. Verwende Bullet-Points und bioLogic-Sprache angepasst an den Zieltyp der Stelle.";
           if (imagePrompt) {
             try {
               const { generateImageBuffer } = await import("./replit_integrations/image/client");
-              const buffer = await generateImageBuffer(imagePrompt, "1024x1024");
+              const buffer = await generateImageBuffer(imagePrompt, "1536x1024");
               const b64 = buffer.toString("base64");
               if (b64 && b64.length > 100) {
                 generatedImageBase64 = b64;
@@ -1127,10 +1143,12 @@ ZUSAMMENFASSUNGEN:
       }
 
       const reply = assistantMessage?.content || "Entschuldigung, ich konnte keine Antwort generieren.";
-      const responseData: { reply: string; filtered: boolean; image?: string } = { reply, filtered: false };
+      const responseData: { reply: string; filtered: boolean; image?: string; overlayTitle?: string; overlaySubtitle?: string } = { reply, filtered: false };
       if (generatedImageBase64) {
         responseData.image = generatedImageBase64;
       }
+      if (imageOverlayTitle) responseData.overlayTitle = imageOverlayTitle;
+      if (imageOverlaySubtitle) responseData.overlaySubtitle = imageOverlaySubtitle;
       res.json(responseData);
     } catch (error) {
       console.error("Error in KI-Coach:", error);
