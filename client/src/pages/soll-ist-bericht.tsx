@@ -271,7 +271,7 @@ export default function SollIstBericht() {
               data-testid="button-toggle-profilvergleich"
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <SlidersHorizontal style={{ width: 22, height: 22, color: "#3A9A5C", flexShrink: 0 }} />
+                <SlidersHorizontal style={{ width: 22, height: 22, color: "#34C759", flexShrink: 0 }} />
                 <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
                   Profilvergleich
                 </span>
@@ -461,7 +461,7 @@ export default function SollIstBericht() {
             const devScore = devLevel >= 4 ? 3 : devLevel >= 3 ? 2 : 1;
             const devLabel = effective.developmentLabel === "hoch" ? "Gute Aussichten, wenig Aufwand" : effective.developmentLabel === "mittel" ? "Machbar, braucht gezielte Führung" : "Hoher Aufwand, Ergebnis unsicher";
             const devText = effective.developmentText;
-            const devGaugeColor = devScore === 3 ? "#3A9A5C" : devScore === 2 ? "#E5A832" : "#D64045";
+            const devGaugeColor = devScore === 3 ? "#34C759" : devScore === 2 ? "#E5A832" : "#D64045";
 
             return (
               <div style={{ marginTop: 20 }} data-testid="section-summary-card">
@@ -474,7 +474,7 @@ export default function SollIstBericht() {
                     data-testid="button-toggle-systemwirkung"
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <Zap style={{ width: 22, height: 22, color: "#3A9A5C", flexShrink: 0 }} />
+                      <Zap style={{ width: 22, height: 22, color: "#34C759", flexShrink: 0 }} />
                       <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
                         MatchCheck Systemwirkung
                       </span>
@@ -525,7 +525,7 @@ export default function SollIstBericht() {
 
         {/* === REPORT OUTPUT === */}
         {result && (() => {
-          const fitCol = result.fitRating === "GEEIGNET" ? "#3A9A5C" : result.fitRating === "BEDINGT" ? "#E5A832" : "#D64045";
+          const fitCol = result.fitRating === "GEEIGNET" ? "#34C759" : result.fitRating === "BEDINGT" ? "#E5A832" : "#D64045";
           const rc = BAR_HEX[result.roleDomKey];
           const cc = BAR_HEX[result.candDomKey];
           const sep = { paddingBottom: 36, marginBottom: 36 } as const;
@@ -853,7 +853,7 @@ export default function SollIstBericht() {
                 const rDevLevel = result.developmentLevel;
                 const rDev = rDevLevel >= 4 ? 3 : rDevLevel >= 3 ? 2 : 1;
                 const rDevLabel = result.developmentLabel === "hoch" ? "Gute Aussichten, wenig Aufwand" : result.developmentLabel === "mittel" ? "Machbar, braucht gezielte Führung" : "Hoher Aufwand, Ergebnis unsicher";
-                const rGaugeCol = rDev === 3 ? "#3A9A5C" : rDev === 2 ? "#E5A832" : "#D64045";
+                const rGaugeCol = rDev === 3 ? "#34C759" : rDev === 2 ? "#E5A832" : "#D64045";
 
                 return (
                   <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-development">
@@ -949,7 +949,7 @@ export default function SollIstBericht() {
               {(() => {
                 const fDevLevel = result.developmentLevel;
                 const fDev = fDevLevel >= 4 ? 3 : fDevLevel >= 3 ? 2 : 1;
-                const fDevCol = fDev === 3 ? "#3A9A5C" : fDev === 2 ? "#E5A832" : "#D64045";
+                const fDevCol = fDev === 3 ? "#34C759" : fDev === 2 ? "#E5A832" : "#D64045";
                 const fDevLabel = result.developmentLabel === "hoch" ? "Entwicklung sehr wahrscheinlich" : result.developmentLabel === "mittel" ? "Entwicklung mit Unterstützung möglich" : "Entwicklung unwahrscheinlich";
                 return (
                   <div data-testid="section-final-assessment" style={{ padding: "28px", borderRadius: 16, background: `linear-gradient(135deg, ${fitCol}08, ${fitCol}03)`, border: `1px solid ${fitCol}15`, boxShadow: `0 4px 20px ${fitCol}08` }}>
