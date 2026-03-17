@@ -659,7 +659,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
         "mitarbeiter", "team", "personal", "hr", "besetzung", "rolle", "profil", "biologic", "biogram",
         "coaching", "beratung", "mentor", "sparring",
         "stellenanzeige", "anzeige", "jobinserat", "wortsprache", "bildsprache", "marketingrelevant", "recruiting-marketing", "zielgruppe", "ansprache", "formulierung",
-        "bild", "grafik", "visual", "erstelle", "generiere", "zeig mir",
+        "bild", "grafik", "visual", "erstelle", "generiere", "zeig mir", "hochformat", "querformat", "portrait", "landscape",
         "durchspielen", "üben", "ueben", "simulier", "rollenspiel", "trainier", "formulier", "sag mir was", "wie würde", "ich würde sagen", "mein satz",
         "kündigung", "kuendigung", "trennung", "offboarding", "austritt",
         "motivation", "leistung", "ziel", "delegation", "verantwortung",
@@ -942,6 +942,27 @@ ZUSAMMENFASSUNGEN:
 - Wenn das Gespräch länger wird (ab ca. 6+ Nachrichten), biete an, die wichtigsten Punkte zusammenzufassen. Beispiel: "Soll ich dir die drei wichtigsten Punkte aus unserem Gespräch kurz zusammenfassen – zum Mitnehmen?"
 - Wenn der Nutzer explizit nach einer Zusammenfassung fragt, liefere 3-5 klare Handlungspunkte mit bioLogic-Begründung.
 
+BILDGENERIERUNG – QUALITÄTSREGELN:
+Wenn du die generate_image-Funktion aufrufst, musst du EXTREM detaillierte, professionelle englische Prompts schreiben. Dein Prompt entscheidet über die Bildqualität.
+
+PFLICHT-Elemente in jedem Bildprompt:
+1. Stil: "Professional stock photography, photorealistic, high resolution, 8K quality, sharp focus"
+2. Szene: Beschreibe GENAU was zu sehen ist – Personen (Anzahl, Geschlecht, Alter, Kleidung, Haltung), Umgebung (Raum, Licht, Farben, Möbel), Aktivität
+3. Kamera: Kamerawinkel, Tiefenschärfe, Beleuchtung (z.B. "natural soft daylight from left, shallow depth of field, eye-level angle")
+4. Stimmung: Atmosphäre, Farbpalette (z.B. "warm tones, inviting, professional yet approachable")
+5. IMMER am Ende: "Absolutely no text, no letters, no words, no watermarks, no labels, no logos in the image."
+
+Beispiel für einen GUTEN Prompt:
+"Professional stock photography, photorealistic, high resolution, 8K quality. A middle-aged male janitor in a clean navy blue uniform carefully mopping a bright modern office hallway with floor-to-ceiling windows, natural soft daylight streaming in from the left, polished concrete floors reflecting the light, minimalist decor with green plants in the background, shallow depth of field focusing on the worker, warm and dignified atmosphere conveying pride in work, color palette of warm whites, soft blues and natural greens. Absolutely no text, no letters, no words, no watermarks in the image."
+
+FORMAT-ERKENNUNG:
+- Wenn der Nutzer "Hochformat" oder "Portrait" sagt → setze den format-Parameter auf "portrait"
+- Wenn der Nutzer "Querformat" oder "Landscape" sagt → setze den format-Parameter auf "landscape"
+- Wenn nichts gesagt wird → Standard ist "landscape" (Querformat, optimal für Stellenanzeigen und Marketing)
+- Frage NICHT nach dem Format, es sei denn es ist unklar und relevant
+
+Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und overlaySubtitle (z.B. "Jetzt bewerben!", Standort, "Vollzeit" etc.).
+
 - Deutsch.`;
 
       let fullSystemPrompt = systemPrompt;
@@ -1003,6 +1024,11 @@ ZUSAMMENFASSUNGEN:
               overlaySubtitle: {
                 type: "string",
                 description: "Optionaler Untertitel für das Overlay (z.B. Firmenname, Standort, 'befristet', 'Vollzeit'). Wird unter dem Titel angezeigt.",
+              },
+              format: {
+                type: "string",
+                enum: ["landscape", "portrait"],
+                description: "Bildformat: 'landscape' (Querformat, 1536x1024, Standard) oder 'portrait' (Hochformat, 1024x1536). Nutze 'portrait' wenn der Nutzer 'Hochformat' sagt, sonst Standard 'landscape'.",
               },
             },
             required: ["prompt"],
@@ -1089,22 +1115,27 @@ ZUSAMMENFASSUNGEN:
           assistantMessage = response.choices[0]?.message;
         } else if (toolCall.function.name === "generate_image") {
           let imagePrompt = "";
+          let imageFormat: "1536x1024" | "1024x1536" = "1536x1024";
           try {
             const args = JSON.parse(toolCall.function.arguments);
             imagePrompt = args.prompt || "";
             if (args.overlayTitle) imageOverlayTitle = args.overlayTitle;
             if (args.overlaySubtitle) imageOverlaySubtitle = args.overlaySubtitle;
+            if (args.format === "portrait") imageFormat = "1024x1536";
           } catch { imagePrompt = ""; }
 
           if (imagePrompt && !imagePrompt.toLowerCase().includes("no text")) {
             imagePrompt += " Absolutely no text, no letters, no words, no watermarks, no labels in the image.";
+          }
+          if (imagePrompt && !imagePrompt.toLowerCase().includes("photorealistic")) {
+            imagePrompt = "Professional stock photography, photorealistic, high resolution, 8K quality, sharp focus. " + imagePrompt;
           }
 
           let imageToolResult = "Bild wurde erfolgreich generiert und wird dem Nutzer angezeigt." + (imageOverlayTitle ? ` Der Stellentitel "${imageOverlayTitle}" wird als scharfes Text-Overlay über dem Bild angezeigt.` : "") + " WICHTIG: Liefere in deiner Antwort zusätzlich zum Bild eine marketing-fertige Beschreibung mit bioLogic-optimierten Bullet-Points, die ein Marketingteam direkt verwenden kann. Formatiere die Beschreibung als 'Stellenprofil nach bioLogic-Methode:' mit den Aufgaben, Anforderungen und dem Wir-bieten-Bereich. Verwende Bullet-Points und bioLogic-Sprache angepasst an den Zieltyp der Stelle.";
           if (imagePrompt) {
             try {
               const { generateImageBuffer } = await import("./replit_integrations/image/client");
-              const buffer = await generateImageBuffer(imagePrompt, "1536x1024");
+              const buffer = await generateImageBuffer(imagePrompt, imageFormat);
               const b64 = buffer.toString("base64");
               if (b64 && b64.length > 100) {
                 generatedImageBase64 = b64;
