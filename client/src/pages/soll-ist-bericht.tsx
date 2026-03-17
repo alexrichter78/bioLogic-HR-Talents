@@ -659,7 +659,6 @@ export default function SollIstBericht() {
                         {[
                           { label: "Stellenprofil", value: result.roleConstellationLabel },
                           { label: `${personLabel}profil`, value: result.candConstellationLabel },
-                          { label: "Soll-Ist-Abweichung", value: `${result.totalGap} Punkte`, color: gapCol },
                         ].map((row, i, arr) => (
                           <div key={row.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < arr.length - 1 ? "1px solid rgba(0,0,0,0.06)" : "none" }}>
                             <span style={{ fontSize: 14, fontWeight: 600, color: "#6E6E73" }}>{row.label}</span>
