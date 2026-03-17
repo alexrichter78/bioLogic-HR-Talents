@@ -532,14 +532,14 @@ export default function SollIstBericht() {
                       </div>
 
                       <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Entwicklung</p>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Entwicklungsaufwand</p>
                         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
                           <div style={{ display: "flex", gap: 5, flex: 1 }}>
                             {Array.from({ length: 3 }).map((_, i) => (
                               <div key={i} style={{ flex: 1, height: 12, borderRadius: 4, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)" }} />
                             ))}
                           </div>
-                          <span style={{ fontSize: 14, fontWeight: 700, color: devGaugeColor, flexShrink: 0 }}>{effective.developmentLabel}</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: devGaugeColor, flexShrink: 0 }}>{devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch"}</span>
                         </div>
                         <p style={{ fontSize: 13, color: "#6E6E73", margin: 0 }} data-testid="text-dev-short">{devShort}</p>
                       </div>
