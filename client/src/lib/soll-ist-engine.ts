@@ -328,6 +328,11 @@ export function computeSollIst(
         if (maxGapVal > 18) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
         else if (cDom.gap1 <= 5 && rDom.gap1 > 5) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
       }
+
+      if (rDom.gap1 <= 5 && cDom.gap1 > 12 && fitRating !== "NICHT_GEEIGNET") {
+        if (totalGap > 20) { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
+        else { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
+      }
     }
 
     controlIntensity = totalGap > 35 ? "hoch" : totalGap > 15 ? "mittel" : "gering";
