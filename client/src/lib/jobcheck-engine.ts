@@ -285,8 +285,9 @@ export function normalizeTriad(t: Triad): Triad {
   };
 }
 
+const COMP_SORT_ORDER: Record<ComponentKey, number> = { impulsiv: 0, intuitiv: 1, analytisch: 2 };
 function sortTriadDesc(t: Triad) {
-  return (Object.keys(t) as ComponentKey[]).map(k => ({ key: k, value: t[k] })).sort((a, b) => b.value - a.value);
+  return (Object.keys(t) as ComponentKey[]).map(k => ({ key: k, value: t[k] })).sort((a, b) => b.value - a.value || COMP_SORT_ORDER[a.key] - COMP_SORT_ORDER[b.key]);
 }
 
 export function dominanceModeOf(tIn: Triad): DominanceResult {
