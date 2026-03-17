@@ -621,7 +621,7 @@ export default function SollIstBericht() {
               {/* ─── EXECUTIVE DECISION CONTENT (weißer Hintergrund) ─── */}
               <div style={{ padding: "28px 44px 0" }}>
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 24px", textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-einleitung">
-                  Diese Passungsanalyse zeigt, wie gut Person und Rolle in ihrer Arbeitslogik zusammenpassen. Sie macht sichtbar, wo Übereinstimmungen bestehen, wo Abweichungen entstehen und welcher Führungs- oder Entwicklungsaufwand daraus im Alltag zu erwarten ist.
+                  Diese Passungsanalyse zeigt, wie gut Person und Position in ihrer Arbeitslogik zusammenpassen. Sie macht sichtbar, wo Übereinstimmungen bestehen, wo Abweichungen entstehen und welcher Führungs- oder Entwicklungsaufwand daraus im Alltag zu erwarten ist.
                 </p>
                 {(() => {
                   const cCol = bioControlColor(result.controlIntensity);
