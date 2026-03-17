@@ -528,15 +528,15 @@ export default function SollIstBericht() {
                         <p style={{ fontSize: 14, fontWeight: 500, color: "#6E6E73", margin: 0 }} data-testid="text-summary-fazit">{shortFazit}</p>
                       </div>
 
-                      <div>
-                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>Entwicklung</p>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                          <div style={{ display: "flex", gap: 4, width: 80 }}>
+                      <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Entwicklung</p>
+                        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+                          <div style={{ display: "flex", gap: 5, flex: 1 }}>
                             {Array.from({ length: 3 }).map((_, i) => (
-                              <div key={i} style={{ flex: 1, height: 8, borderRadius: 3, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)" }} />
+                              <div key={i} style={{ flex: 1, height: 12, borderRadius: 4, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)" }} />
                             ))}
                           </div>
-                          <span style={{ fontSize: 13, fontWeight: 600, color: devGaugeColor }}>{effective.developmentLabel}</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: devGaugeColor, flexShrink: 0 }}>{effective.developmentLabel}</span>
                         </div>
                         <p style={{ fontSize: 13, color: "#6E6E73", margin: 0 }} data-testid="text-dev-short">{devShort}</p>
                       </div>
