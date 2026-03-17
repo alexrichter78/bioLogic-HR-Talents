@@ -904,7 +904,7 @@ ZUSAMMENFASSUNGEN:
 
       let fullSystemPrompt = systemPrompt;
       if (stammdaten && typeof stammdaten === "object" && Object.keys(stammdaten).length > 0) {
-        let contextBlock = "\n\nWISSENSBASIS (Stammdaten aus der bioLogic-Analyse – nutze dieses Wissen, um deine Antworten präziser und fundierter zu machen. Zitiere nicht wörtlich, sondern nutze die Inhalte als Hintergrundwissen für deine bioLogic-Begründungen):";
+        let contextBlock = "\n\nWISSENSBASIS (Daten aus der bioLogic-Stellenanalyse – das ist NICHT das persönliche Profil des Nutzers, sondern das Anforderungsprofil der analysierten Stelle und die Analyse des Stelleninhabers/Kandidaten. Nutze dieses Wissen, um deine Antworten zur Besetzung, Teamdynamik und Führung präziser zu machen):";
         if (stammdaten.bioCheckIntro) contextBlock += `\n\nbioLogic-Grundlagen:\n${stammdaten.bioCheckIntro}`;
         if (stammdaten.bioCheckText) contextBlock += `\n\nbioCheck-Stellenanforderung:\n${stammdaten.bioCheckText}`;
         if (stammdaten.impulsiveDaten) contextBlock += `\n\nImpulsive Dimension (Rot) – Details:\n${stammdaten.impulsiveDaten}`;

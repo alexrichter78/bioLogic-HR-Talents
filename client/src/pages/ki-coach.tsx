@@ -13,7 +13,7 @@ const WELCOME_MSG: Message = {
   content: "Willkommen beim bioLogic KI-Coach.\n\nIch unterstütze Sie bei Fragen rund um Führung, Personalentscheidungen, Assessment, Bewerbungsgespräche und Kommunikation.\n\nWie kann ich Ihnen helfen?",
 };
 
-const EXAMPLE_PROMPTS: { category: string; prompts: string[] }[] = [
+const EXAMPLE_PROMPTS: { category: string; prompts: string[]; requiresAnalysis?: boolean }[] = [
   {
     category: "bioLogic-basierte Beratung",
     prompts: [
@@ -106,12 +106,13 @@ const EXAMPLE_PROMPTS: { category: string; prompts: string[] }[] = [
   },
   {
     category: "Stammdaten-Kontext",
+    requiresAnalysis: true,
     prompts: [
-      "Schau dir mein bioLogic-Profil an und sag mir: Wo sind meine blinden Flecken als Führungskraft?",
-      "Basierend auf meiner Rollen-DNA: Welche Art von Mitarbeiter ergänzt mich am besten?",
-      "Analysiere mein Profil: In welchen Gesprächssituationen bin ich besonders stark und wo verletzlich?",
-      "Wie wirkt mein bioLogic-Profil auf rotdominante Mitarbeiter? Was sollte ich bewusst anders machen?",
-      "Welche Führungsfehler mache ich wahrscheinlich aufgrund meines Profils, ohne es zu merken?",
+      "Schau dir die analysierte Stelle an und sag mir: Welche bioLogic-Typen passen am besten auf diese Rolle?",
+      "Basierend auf der Rollen-DNA: Welche Art von Kandidat ergänzt das Anforderungsprofil am besten?",
+      "Analysiere das Stellenprofil: Welche Stärken braucht der Stelleninhaber und wo liegen typische Risiken?",
+      "Wie würde ein rotdominanter Kandidat auf diese Stelle wirken? Was sollte man bei der Besetzung beachten?",
+      "Welche typischen Besetzungsfehler passieren bei diesem Stellenprofil, ohne dass man es merkt?",
     ],
   },
   {
@@ -175,6 +176,14 @@ export default function KICoach() {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const hasAnalysisData = useCallback(() => {
+    try {
+      const analyseRaw = localStorage.getItem("analyseTexte");
+      const rollenDna = localStorage.getItem("rollenDnaState");
+      return !!(analyseRaw || rollenDna);
+    } catch { return false; }
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -507,27 +516,35 @@ export default function KICoach() {
               maxHeight: 360, overflowY: "auto",
               padding: "12px 28px 16px",
             }} data-testid="panel-example-prompts">
-              {EXAMPLE_PROMPTS.map((cat) => (
+              {EXAMPLE_PROMPTS.map((cat) => {
+                const isDisabled = cat.requiresAnalysis && !hasAnalysisData();
+                return (
                 <div key={cat.category} style={{ marginBottom: 4 }}>
                   <button
-                    onClick={() => setExpandedCategory(expandedCategory === cat.category ? null : cat.category)}
+                    onClick={() => !isDisabled && setExpandedCategory(expandedCategory === cat.category ? null : cat.category)}
                     data-testid={`category-${cat.category.replace(/\s+/g, "-").toLowerCase()}`}
                     style={{
                       width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
-                      padding: "10px 12px", border: "none", cursor: "pointer",
+                      padding: "10px 12px", border: "none",
+                      cursor: isDisabled ? "default" : "pointer",
+                      opacity: isDisabled ? 0.4 : 1,
                       background: expandedCategory === cat.category ? "rgba(0,113,227,0.06)" : "transparent",
                       borderRadius: 10, fontSize: 13, fontWeight: 600,
                       color: expandedCategory === cat.category ? "#0071E3" : "#1D1D1F",
                       transition: "all 150ms ease",
                     }}
+                    title={isDisabled ? "Bitte zuerst eine Stelle analysieren" : undefined}
                   >
-                    {cat.category}
+                    <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      {cat.category}
+                      {isDisabled && <span style={{ fontSize: 11, fontWeight: 400, color: "#8E8E93" }}>(Stelle erforderlich)</span>}
+                    </span>
                     {expandedCategory === cat.category
                       ? <ChevronUp style={{ width: 14, height: 14, color: "#8E8E93" }} />
                       : <ChevronDown style={{ width: 14, height: 14, color: "#C7C7CC" }} />
                     }
                   </button>
-                  {expandedCategory === cat.category && (
+                  {expandedCategory === cat.category && !isDisabled && (
                     <div style={{ padding: "4px 0 8px 8px", display: "flex", flexDirection: "column", gap: 4 }}>
                       {cat.prompts.map((prompt, pi) => (
                         <button
@@ -564,7 +581,8 @@ export default function KICoach() {
                     </div>
                   )}
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
