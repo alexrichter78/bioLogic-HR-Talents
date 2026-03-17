@@ -335,6 +335,13 @@ export function computeSollIst(
         else if (cDom.gap1 <= 5 && rDom.gap1 > 5) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
       }
 
+      if (fitLabel === "Geeignet" && roleDualDom) {
+        const candValForR1 = ct[rDom.top1.key];
+        const candValForR2 = ct[rDom.top2.key];
+        const candDualGap = Math.abs(candValForR1 - candValForR2);
+        if (candDualGap > 5) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
+      }
+
       if (rDom.gap1 <= 5 && cDom.gap1 > 12 && fitRating !== "NICHT_GEEIGNET") {
         if (totalGap >= 18) { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
         else { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
