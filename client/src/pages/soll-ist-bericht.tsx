@@ -637,7 +637,7 @@ export default function SollIstBericht() {
                     <>
                       {/* SYSTEMSTATUS */}
                       <div style={{ marginBottom: 22 }} data-testid="section-systemstatus">
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 10px" }}>Systemstatus</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 10px" }}>Gesamtbewertung</p>
                         <div style={{ display: "flex", gap: 10 }}>
                           {[
                             { label: "Grundpassung", value: result.fitLabel, color: fitCol },
@@ -655,7 +655,7 @@ export default function SollIstBericht() {
 
                       {/* SYSTEMÜBERBLICK */}
                       <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-ueberblick">
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Systemüberblick</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Kurzübersicht</p>
                         {[
                           { label: "Stellenprofil", value: result.roleConstellationLabel },
                           { label: `${personLabel}profil`, value: result.candConstellationLabel },
@@ -670,7 +670,7 @@ export default function SollIstBericht() {
 
                       {/* STRUKTURKONSTELLATION */}
                       <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-strukturkonstellation">
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Strukturkonstellation</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Zusammenspiel von Person und Position</p>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
                           <span style={{ fontSize: 14, fontWeight: 600, color: "#6E6E73" }}>Dominanz Stelle</span>
                           <span style={{ fontSize: 14, fontWeight: 700, color: rc }}>{COMP_LABELS[result.roleDomKey]}</span>
