@@ -1698,13 +1698,13 @@ export default function RollenDNA() {
         />
         <GlobalNav />
         <div style={{ position: "fixed", top: 56, left: 0, right: 0, zIndex: 8999 }}>
-          <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: "5px 0 10px" }}>
+          <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: "5px 0 10px", minHeight: 62 }}>
             <div className="w-full mx-auto px-6" style={{ maxWidth: 1100 }}>
               <div className="text-center">
                 <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-rollen-dna-title">
                   Stellenprofil definieren
                 </h1>
-                <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0 }} data-testid="text-rollen-dna-subtitle">
+                <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-rollen-dna-subtitle">
                   Erfassen Sie die Anforderungen und Arbeitslogik der Position als Grundlage für den Entscheidungsbericht, die Passungsanalyse sowie den TeamCheck.
                 </p>
               </div>
@@ -1713,7 +1713,7 @@ export default function RollenDNA() {
           </div>
         </div>
 
-        <main className="flex-1 w-full mx-auto px-6 pb-20" style={{ maxWidth: 1100, paddingTop: allCollapsed ? 125 : 135, transition: "padding-top 300ms ease" }}>
+        <main className="flex-1 w-full mx-auto px-6 pb-20" style={{ maxWidth: 1100, paddingTop: 135 }}>
           <div className="space-y-5">
 
             {allCollapsed ? null : currentStep === 1 ? (

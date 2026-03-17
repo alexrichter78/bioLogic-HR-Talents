@@ -599,13 +599,13 @@ export default function JobCheck() {
         <GlobalNav />
 
         <div style={{ position: "fixed", top: 56, left: 0, right: 0, zIndex: 8999 }}>
-          <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: "5px 0 10px" }}>
+          <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: "5px 0 10px", minHeight: 62 }}>
             <div className="w-full mx-auto px-6" style={{ maxWidth: 1100 }}>
               <div className="text-center">
                 <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-jobcheck-title">
                   bioLogic JobCheck
                 </h1>
-                <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0 }} data-testid="text-jobcheck-subtitle">
+                <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-jobcheck-subtitle">
                   Bewerten Sie die strukturelle Passung zwischen Positionsprofil und Personenprofil.
                 </p>
               </div>
