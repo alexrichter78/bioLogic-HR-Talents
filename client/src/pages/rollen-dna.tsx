@@ -1727,7 +1727,7 @@ export default function RollenDNA() {
                   <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: "0 0 8px" }} data-testid="text-step-1-title">
                     Welche Position möchten Sie analysieren?
                   </h2>
-                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, margin: "0 0 28px" }}>
+                  <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6, margin: "0 0 28px" }}>
                     Geben Sie die Berufsbezeichnung oder Stellenbezeichnung ein, z.B. „Vertriebsleiter", „HR Business Partner" oder „Projektmanager IT".
                     <br />
                     Kein passender Vorschlag? Einfach ausschreiben – wir erkennen die Position automatisch.
