@@ -653,18 +653,24 @@ export default function SollIstBericht() {
                         </div>
                       </div>
 
-                      {/* SYSTEMÜBERBLICK */}
-                      <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-ueberblick">
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Kurzübersicht</p>
-                        {[
-                          { label: "Stellenprofil", value: result.roleConstellationLabel },
-                          { label: `${personLabel}profil`, value: result.candConstellationLabel },
-                        ].map((row, i, arr) => (
-                          <div key={row.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < arr.length - 1 ? "1px solid rgba(0,0,0,0.06)" : "none" }}>
-                            <span style={{ fontSize: 14, fontWeight: 600, color: "#6E6E73" }}>{row.label}</span>
-                            <span style={{ fontSize: 14, fontWeight: row.color ? 800 : 700, color: row.color || "#1D1D1F" }}>{row.value}</span>
+                      {/* KURZÜBERSICHT – Rolle vs Person */}
+                      <div style={{ marginBottom: 22, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-ueberblick">
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 16px", textAlign: "center" }}>Kurzübersicht</p>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16 }}>
+                          <div style={{ flex: 1, textAlign: "center" }}>
+                            <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.12em", margin: "0 0 10px" }}>Rolle</p>
+                            <div style={{ display: "inline-block", padding: "10px 20px", borderRadius: 20, background: `${BAR_HEX[result.roleDomKey]}14`, border: `1px solid ${BAR_HEX[result.roleDomKey]}30` }}>
+                              <span style={{ fontSize: 14, fontWeight: 700, color: BAR_HEX[result.roleDomKey] }}>{COMP_LABELS[result.roleDomKey]}</span>
+                            </div>
                           </div>
-                        ))}
+                          <div style={{ fontSize: 20, color: "#C7C7CC", flexShrink: 0, marginTop: 18 }}>→</div>
+                          <div style={{ flex: 1, textAlign: "center" }}>
+                            <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.12em", margin: "0 0 10px" }}>Person</p>
+                            <div style={{ display: "inline-block", padding: "10px 20px", borderRadius: 20, background: `${BAR_HEX[result.candDomKey]}14`, border: `1px solid ${BAR_HEX[result.candDomKey]}30` }}>
+                              <span style={{ fontSize: 14, fontWeight: 700, color: BAR_HEX[result.candDomKey] }}>{COMP_LABELS[result.candDomKey]}</span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
                       {/* AUSWIRKUNG IM ARBEITSALLTAG */}
