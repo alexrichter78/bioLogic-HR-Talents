@@ -659,7 +659,7 @@ export default function SollIstBericht() {
                         const matchSymbol = isMatch ? "=" : "⚡";
                         const matchColor = isMatch ? "#34C759" : "#D64045";
                         const c2key = result.candDom2Key;
-                        const showDual = result.candIsDualDom && c2key !== result.candDomKey;
+                        const showDual = (result.candIsDualDom || result.candIsEqualDist) && c2key !== result.candDomKey;
                         return (
                           <div style={{ marginBottom: 22, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-ueberblick">
                             <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 16px", textAlign: "center" }}>Kurzübersicht</p>
