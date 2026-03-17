@@ -680,7 +680,7 @@ export default function SollIstBericht() {
                           <span style={{ fontSize: 14, fontWeight: 700, color: cc }}>{COMP_LABELS[result.candDomKey]}</span>
                         </div>
                         <div style={{ padding: "10px 0 4px" }}>
-                          <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 6px" }}>Strukturwirkung</p>
+                          <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 6px" }}>Auswirkung im Arbeitsalltag</p>
                           <p style={{ margin: 0, fontSize: 13, lineHeight: 1.75, color: "#48484A" }}>
                             {result.dominanceShiftText.split(/\n\n+/)[0]}
                           </p>
