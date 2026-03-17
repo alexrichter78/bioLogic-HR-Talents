@@ -316,7 +316,8 @@ export function computeSollIst(
 
       if (fitLabel === "Geeignet") {
         if (secondaryFlip && candSecGap > 5 && rDom.gap2 > 5) {
-          if (totalGap > 30) { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
+          const flipThreshold = rDom.gap1 <= 5 ? 16 : 30;
+          if (totalGap >= flipThreshold) { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
           else { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
         } else if (secondaryFlip) {
           fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
