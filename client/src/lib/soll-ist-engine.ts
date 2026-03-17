@@ -266,21 +266,25 @@ export function computeSollIst(
       controlIntensity = fitRating === "NICHT_GEEIGNET" ? "hoch" : fitRating === "BEDINGT" ? "mittel" : "gering";
     }
   } else {
-    const geignetLimit = sameDom ? 28 : 20;
-    gapLevel = totalGap > 40 ? "hoch" : totalGap > geignetLimit ? "mittel" : "gering";
-
     const candIsBalFull = cDom.gap1 <= 5 && cDom.gap2 <= 5;
     const roleIsBalFull = rDom.gap1 <= 5 && rDom.gap2 <= 5;
     const roleClearDominance = rDom.gap1 >= 15;
+    const roleDualDom = rDom.gap1 <= 5 && rDom.gap2 > 5;
     const candDualDominance = !candIsBalFull && cDom.gap1 <= 5;
     const maxGapVal = Math.max(
       Math.abs(rt.impulsiv - ct.impulsiv),
       Math.abs(rt.intuitiv - ct.intuitiv),
       Math.abs(rt.analytisch - ct.analytisch)
     );
-    const effectiveSameDom = sameDom || roleIsBalFull;
-    const secondaryFlip = effectiveSameDom && rDom.top2.key !== cDom.top2.key;
+    const candMatchesDualDom = roleDualDom && (cDom.top1.key === rDom.top1.key || cDom.top1.key === rDom.top2.key);
+    const dualDomKeysMatch = roleDualDom
+      && [rDom.top1.key, rDom.top2.key].includes(cDom.top1.key)
+      && [rDom.top1.key, rDom.top2.key].includes(cDom.top2.key);
+    const effectiveSameDom = sameDom || roleIsBalFull || candMatchesDualDom;
+    const secondaryFlip = effectiveSameDom && rDom.top2.key !== cDom.top2.key && !dualDomKeysMatch;
     const candSecGap = cDom.gap2;
+    const geignetLimit = effectiveSameDom ? 28 : 20;
+    gapLevel = totalGap > 40 ? "hoch" : totalGap > geignetLimit ? "mittel" : "gering";
 
     const roleIsBalFull2 = rDom.gap1 <= 5 && rDom.gap2 <= 5;
     const candSpreadVal = cDom.top1.value - cDom.top3.value;
