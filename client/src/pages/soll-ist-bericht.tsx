@@ -443,25 +443,58 @@ export default function SollIstBericht() {
             const fitLabel = effective.fitLabel;
             const fitColor = bioFitColor(fitLabel);
 
-            const gapLevel = effective.gapLevel;
-            let fazitText: string;
+            let shortFazit: string;
             if (fitLabel === "Geeignet") {
-              fazitText = "Die Arbeitsweise der Person passt gut zu den Anforderungen der Stelle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein. Dadurch ist zu erwarten, dass die Person die Stelle in ihrer natürlichen Ausrichtung stabil und wirksam ausfüllen kann.";
-            } else if (fitLabel === "Bedingt geeignet" && gapLevel === "gering") {
-              fazitText = "Die Grundausrichtung der Person ist mit den Anforderungen der Stelle grundsätzlich vereinbar. In der konkreten Gewichtung einzelner Arbeitsbereiche zeigen sich jedoch Abweichungen. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf und höherem Führungsaufwand führen. Mit klaren Erwartungen und gezielter Führung ist die Zusammenarbeit stabil möglich.";
+              shortFazit = "Arbeitsweise passt zur Rolle";
             } else if (fitLabel === "Bedingt geeignet") {
-              fazitText = "Die Person bringt eine grundsätzlich passende Arbeitsrichtung für die Stelle mit. In mehreren für die Aufgabe wichtigen Bereichen zeigt sich jedoch ein spürbarer Anpassungsbedarf. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen. Mit klaren Erwartungen und regelmässiger Rückmeldung kann die Zusammenarbeit funktionieren.";
-            } else if (fitLabel === "Nicht geeignet" && gapLevel !== "hoch") {
-              fazitText = "Zwischen Stelle und Person besteht eine deutliche strukturelle Abweichung. Auch wenn der Gesamtabstand nicht extrem hoch ist, passt die innere Gewichtung der Arbeitsweise nicht ausreichend zu den Stellenanforderungen. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
+              shortFazit = "Arbeitsweise passt teilweise zur Rolle";
             } else {
-              fazitText = "Die Anforderungen der Stelle und die natürliche Arbeitsweise der Person unterscheiden sich deutlich. Aufgabenverständnis, Entscheidungslogik und Arbeitsstil liegen zu weit auseinander. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
+              shortFazit = "Arbeitslogik passt nicht zur Rolle";
             }
 
             const devLevel = effective.developmentLevel;
             const devScore = devLevel >= 4 ? 3 : devLevel >= 3 ? 2 : 1;
-            const devLabel = effective.developmentLabel === "hoch" ? "Gute Aussichten, wenig Aufwand" : effective.developmentLabel === "mittel" ? "Machbar, braucht gezielte Führung" : "Hoher Aufwand, Ergebnis unsicher";
-            const devText = effective.developmentText;
             const devGaugeColor = devScore === 3 ? "#34C759" : devScore === 2 ? "#E5A832" : "#D64045";
+            const devShort = devScore === 3 ? "Gute Aussichten · Wenig Aufwand" : devScore === 2 ? "Machbar · Gezielte Führung nötig" : "Hoher Aufwand · Ergebnis unsicher";
+
+            const bulletCol = fitLabel === "Geeignet" ? "#34C759" : fitLabel === "Bedingt geeignet" ? "#FF9500" : "#FF9500";
+
+            const kritischBullets: string[] = [];
+            if (fitLabel === "Geeignet") {
+              kritischBullets.push("Arbeitsweise stimmt überein");
+              kritischBullets.push("Entscheidungslogik passt");
+              kritischBullets.push("Tempo und Struktur kompatibel");
+            } else if (fitLabel === "Bedingt geeignet") {
+              kritischBullets.push("Arbeitsweise weicht teilweise ab");
+              kritischBullets.push("Entscheidungslogik unterschiedlich");
+              kritischBullets.push("Tempo / Struktur anpassbar");
+            } else {
+              kritischBullets.push("Arbeitsweise weicht ab");
+              kritischBullets.push("Entscheidungslogik passt nicht");
+              kritischBullets.push("Tempo / Struktur unterschiedlich");
+            }
+
+            const auswirkungBullets: string[] = [];
+            if (fitLabel === "Geeignet") {
+              auswirkungBullets.push("Reibungslose Zusammenarbeit");
+              auswirkungBullets.push("Stabiles Teamgefüge");
+              auswirkungBullets.push("Geringer Führungsaufwand");
+            } else if (fitLabel === "Bedingt geeignet") {
+              auswirkungBullets.push("Mehr Abstimmung");
+              auswirkungBullets.push("Leichtes Spannungspotenzial");
+              auswirkungBullets.push("Erhöhter Führungsaufwand");
+            } else {
+              auswirkungBullets.push("Mehr Abstimmung");
+              auswirkungBullets.push("Konfliktpotenzial");
+              auswirkungBullets.push("Hoher Führungsaufwand");
+            }
+
+            const BulletItem = ({ text, color }: { text: string; color: string }) => (
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                <CheckCircle2 style={{ width: 15, height: 15, color, flexShrink: 0 }} />
+                <span style={{ fontSize: 14, color: "#48484A", lineHeight: 1.5 }}>{text}</span>
+              </div>
+            );
 
             return (
               <div style={{ marginTop: 20 }} data-testid="section-summary-card">
@@ -484,36 +517,44 @@ export default function SollIstBericht() {
 
                   {systemwirkungOpen && (
                   <div style={{ padding: "0 32px 28px" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px 32px" }}>
+
                       <div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
-                          <div style={{ width: 18, height: 18, borderRadius: 9, background: fitColor, flexShrink: 0, boxShadow: `0 0 0 4px ${fitColor}20` }} />
-                          <div style={{ flex: 1 }}>
-                            <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-summary-role">{roleName || "Stelle"}</span>
-                          </div>
-                          <span style={{ fontSize: 13, fontWeight: 700, color: fitColor, letterSpacing: "0.03em" }} data-testid="text-summary-fit">
-                            {fitLabel}
-                          </span>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                          <div style={{ width: 14, height: 14, borderRadius: 7, background: fitColor, flexShrink: 0 }} />
+                          <span style={{ fontSize: 14, fontWeight: 700, color: fitColor }} data-testid="text-summary-fit">{fitLabel}</span>
                         </div>
-                        <div style={{ background: `${fitColor}08`, borderLeft: `3px solid ${fitColor}`, borderRadius: "0 8px 8px 0", padding: "12px 16px", minHeight: 80 }}>
-                          <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }} data-testid="text-summary-fazit">{fazitText}</p>
-                        </div>
+                        <p style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }} data-testid="text-summary-role">{roleName || "Stelle"}</p>
+                        <p style={{ fontSize: 14, fontWeight: 500, color: "#6E6E73", margin: 0 }} data-testid="text-summary-fazit">{shortFazit}</p>
                       </div>
 
-                      <div style={{ borderLeft: "1px solid rgba(0,0,0,0.06)", paddingLeft: 24 }}>
-                        <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 14px" }}>
-                          Entwicklungsprognose
-                        </p>
-                        <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px", whiteSpace: "nowrap" }} data-testid="text-dev-prognose">
-                          {devScore} von 3 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>– {devLabel}</span>
-                        </p>
-                        <div style={{ display: "flex", gap: 5, marginBottom: 18 }} data-testid="gauge-dev-prognose">
-                          {Array.from({ length: 3 }).map((_, i) => (
-                            <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)", transition: "background 200ms ease" }} />
-                          ))}
+                      <div>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>Entwicklung</p>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                          <div style={{ display: "flex", gap: 4, width: 80 }}>
+                            {Array.from({ length: 3 }).map((_, i) => (
+                              <div key={i} style={{ flex: 1, height: 8, borderRadius: 3, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)" }} />
+                            ))}
+                          </div>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: devGaugeColor }}>{effective.developmentLabel}</span>
                         </div>
-                        {devText && <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, minHeight: 80 }} data-testid="text-dev-description">{devText}</p>}
+                        <p style={{ fontSize: 13, color: "#6E6E73", margin: 0 }} data-testid="text-dev-short">{devShort}</p>
                       </div>
+
+                      <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>Kritisch</p>
+                        {kritischBullets.map((b, i) => (
+                          <BulletItem key={i} text={b} color={bulletCol} />
+                        ))}
+                      </div>
+
+                      <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>Auswirkung</p>
+                        {auswirkungBullets.map((b, i) => (
+                          <BulletItem key={i} text={b} color={bulletCol} />
+                        ))}
+                      </div>
+
                     </div>
                   </div>
                   )}
