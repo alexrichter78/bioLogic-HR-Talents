@@ -168,10 +168,9 @@ function buildRoleAnalysis(state: any): RoleAnalysis | null {
 function GlassCard({ children, style, testId }: { children: React.ReactNode; style?: React.CSSProperties; testId?: string }) {
   return (
     <div style={{
-      background: "rgba(255,255,255,0.78)",
-      backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
+      background: "#FFFFFF",
       borderRadius: 20, padding: "28px 32px",
-      boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+      boxShadow: "0 8px 30px rgba(0,0,0,0.04)",
       border: "1px solid rgba(0,0,0,0.04)",
       ...style,
     }} data-testid={testId}>{children}</div>
@@ -184,10 +183,9 @@ function AccordionCard({ title, icon: Icon, open, onToggle, children, testId, ba
 }) {
   return (
     <div style={{
-      background: "rgba(255,255,255,0.82)",
-      backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
+      background: "#FFFFFF",
       borderRadius: 20, overflow: "hidden",
-      boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+      boxShadow: "0 8px 30px rgba(0,0,0,0.04)",
       border: "1px solid rgba(0,0,0,0.04)",
     }} data-testid={testId}>
       <button
@@ -750,7 +748,7 @@ export default function JobCheck() {
 
                   <div style={{
                     padding: "24px 24px 20px", borderRadius: 20,
-                    background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
+                    background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.04)",
                     boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
                   }}>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
@@ -781,7 +779,7 @@ export default function JobCheck() {
 
                   <div style={{
                     padding: "24px 24px 20px", borderRadius: 20,
-                    background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
+                    background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.04)",
                     boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
                   }}>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
@@ -931,7 +929,7 @@ export default function JobCheck() {
                     return (
                       <div style={{
                         padding: "24px 24px 20px", borderRadius: 20,
-                        background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
+                        background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.04)",
                         boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
                       }}>
                         <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
@@ -1022,7 +1020,7 @@ export default function JobCheck() {
                     <>
                       <div style={{
                         padding: "24px 24px 20px", borderRadius: 20,
-                        background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
+                        background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.04)",
                         boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
                       }}>
                         <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
@@ -1060,7 +1058,7 @@ export default function JobCheck() {
 
                   <div style={{
                     padding: "24px 24px 20px", borderRadius: 20,
-                    background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
+                    background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.04)",
                     boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
                   }}>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
@@ -1084,7 +1082,7 @@ export default function JobCheck() {
 
                   <div style={{
                     padding: "24px 24px 20px", borderRadius: 20,
-                    background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
+                    background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.04)",
                     boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
                   }}>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
@@ -1113,7 +1111,7 @@ export default function JobCheck() {
 
                   <div style={{
                     padding: "24px 24px 20px", borderRadius: 20,
-                    background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
+                    background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.04)",
                     boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
                   }}>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>
@@ -1142,7 +1140,7 @@ export default function JobCheck() {
 
                   <div style={{
                     padding: "24px 24px 20px", borderRadius: 20,
-                    background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
+                    background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.04)",
                     boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
                   }}>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 18 }}>
@@ -1161,7 +1159,7 @@ export default function JobCheck() {
 
                   <div style={{
                     padding: "24px 24px 20px", borderRadius: 20,
-                    background: "rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)",
+                    background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.04)",
                     boxShadow: "0 1px 6px rgba(0,0,0,0.03)",
                   }}>
                     <div style={{ display: "flex", alignItems: "center", marginBottom: 14 }}>

@@ -1717,7 +1717,7 @@ export default function RollenDNA() {
           <div className="space-y-5">
 
             {allCollapsed ? null : currentStep === 1 ? (
-              <Card className="bg-white/60 dark:bg-card/60 backdrop-blur-sm border-card-border animate-in fade-in slide-in-from-bottom-2 duration-400" style={{ overflow: "visible", position: "relative", zIndex: 100 }} data-testid="card-step-1">
+              <Card className="bg-white dark:bg-card border-card-border animate-in fade-in slide-in-from-bottom-2 duration-400" style={{ overflow: "visible", position: "relative", zIndex: 100 }} data-testid="card-step-1">
                 <div style={{ padding: "32px 32px 28px", overflow: "visible" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
                     <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "#34C759", color: "#fff" }}>1</div>
@@ -1963,12 +1963,10 @@ export default function RollenDNA() {
 
                 <div
                   style={{
-                    background: "rgba(255,255,255,0.65)",
-                    backdropFilter: "blur(24px)",
-                    WebkitBackdropFilter: "blur(24px)",
+                    background: "#FFFFFF",
                     borderRadius: 20,
                     padding: "28px 32px",
-                    boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+                    boxShadow: "0 8px 30px rgba(0,0,0,0.04)",
                     border: "1px solid rgba(0,0,0,0.04)",
                   }}
                   className="dark:bg-card/40"
@@ -2165,12 +2163,10 @@ export default function RollenDNA() {
 
                 <div
                   style={{
-                    background: "rgba(255,255,255,0.65)",
-                    backdropFilter: "blur(24px)",
-                    WebkitBackdropFilter: "blur(24px)",
+                    background: "#FFFFFF",
                     borderRadius: 20,
                     padding: "28px 32px",
-                    boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+                    boxShadow: "0 8px 30px rgba(0,0,0,0.04)",
                     border: "1px solid rgba(0,0,0,0.04)",
                   }}
                   className="dark:bg-card/40"
@@ -2587,12 +2583,10 @@ export default function RollenDNA() {
 
                 <div
                   style={{
-                    background: "rgba(255,255,255,0.65)",
-                    backdropFilter: "blur(24px)",
-                    WebkitBackdropFilter: "blur(24px)",
+                    background: "#FFFFFF",
                     borderRadius: 20,
                     padding: "28px 32px",
-                    boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+                    boxShadow: "0 8px 30px rgba(0,0,0,0.04)",
                     border: "1px solid rgba(0,0,0,0.04)",
                     marginTop: 28,
                   }}
@@ -2867,12 +2861,10 @@ export default function RollenDNA() {
               <>
               <div
                 style={{
-                  background: "rgba(255,255,255,0.65)",
-                  backdropFilter: "blur(24px)",
-                  WebkitBackdropFilter: "blur(24px)",
+                  background: "#FFFFFF",
                   borderRadius: 20,
                   padding: "28px 32px",
-                  boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+                  boxShadow: "0 8px 30px rgba(0,0,0,0.04)",
                   border: "1px solid rgba(0,0,0,0.04)",
                 }}
                 className="dark:bg-card/40"
@@ -3093,12 +3085,10 @@ export default function RollenDNA() {
 
               <div
                 style={{
-                  background: "rgba(255,255,255,0.65)",
-                  backdropFilter: "blur(24px)",
-                  WebkitBackdropFilter: "blur(24px)",
+                  background: "#FFFFFF",
                   borderRadius: 20,
                   padding: "28px 32px",
-                  boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+                  boxShadow: "0 8px 30px rgba(0,0,0,0.04)",
                   border: "1px solid rgba(0,0,0,0.04)",
                   marginTop: 24,
                 }}
