@@ -628,7 +628,7 @@ export default function SollIstBericht() {
                   const cLabel = result.controlIntensity === "hoch" ? "Hoch" : result.controlIntensity === "mittel" ? "Mittel" : "Gering";
                   const devLevel = result.developmentLevel;
                   const devScore = devLevel >= 4 ? 3 : devLevel >= 3 ? 2 : 1;
-                  const devLabel = devScore === 3 ? "gering" : devScore === 2 ? "mittel" : "hoch";
+                  const devLabel = devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch";
                   const devCol = devScore === 3 ? BIO_COLORS.geeignet : devScore === 2 ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
                   const gapCol = result.totalGap > 40 ? BIO_COLORS.nichtGeeignet : result.totalGap > 20 ? BIO_COLORS.bedingt : BIO_COLORS.geeignet;
                   const personLabel = result.candidateName !== "Die Person" ? result.candidateName : "Person";
@@ -643,7 +643,7 @@ export default function SollIstBericht() {
                             { label: "Grundpassung", value: result.fitLabel, color: fitCol },
                             { label: "Führungsaufwand", value: cLabel, color: cCol },
                             { label: "Profilabweichung", value: result.gapLevel, color: gapCol },
-                            { label: "Entwicklungsprognose", value: devLabel, color: devCol },
+                            { label: "Entwicklungsaufwand", value: devLabel, color: devCol },
                           ].map(m => (
                             <div key={m.label} style={{ flex: 1, minWidth: 0, padding: "14px 16px", borderRadius: 10, background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.06)" }}>
                               <div style={{ fontSize: 10, color: "#8E8E93", marginBottom: 5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>{m.label}</div>
