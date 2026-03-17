@@ -326,7 +326,7 @@ export function computeSollIst(
 
       if (fitLabel === "Geeignet") {
         if (maxGapVal > 18) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
-        else if (cDom.gap1 <= 5) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
+        else if (cDom.gap1 <= 5 && rDom.gap1 > 5) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
       }
     }
 
