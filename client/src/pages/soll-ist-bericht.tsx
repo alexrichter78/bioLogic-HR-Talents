@@ -51,7 +51,7 @@ function biggestGapText(rt: Triad, ct: Triad): string {
     const g = Math.abs(rt[k] - ct[k]);
     if (g > maxGap) { maxGap = g; maxKey = k; }
   }
-  return `Die größte Abweichung liegt im Bereich ${COMP_LABELS[maxKey]}. Genau dort liegt die Kernanforderung der Rolle.`;
+  return `Die größte Abweichung liegt im Bereich ${COMP_LABELS[maxKey]}. Genau dort liegt die Kernanforderung der Position.`;
 }
 
 
@@ -216,14 +216,14 @@ export default function SollIstBericht() {
           <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-amber-500" />
           <h2 className="text-xl font-semibold text-slate-950 mb-3">Keine Rollen-DNA vorhanden</h2>
           <p className="text-sm text-slate-600 mb-6 leading-6">
-            Bitte erstellen Sie zuerst eine Rollenanalyse, um den Soll-Ist-Bericht generieren zu können.
+            Bitte erstellen Sie zuerst eine Stellenanalyse, um den Soll-Ist-Bericht generieren zu können.
           </p>
           <button
             onClick={() => setLocation("/rollen-dna")}
             className="inline-flex h-11 items-center gap-2 rounded-xl bg-blue-600 px-6 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors"
             data-testid="button-go-to-rolle"
           >
-            Zur Rollenanalyse
+            Zur Stellenanalyse
           </button>
         </div>
       </div>
@@ -250,7 +250,7 @@ export default function SollIstBericht() {
                   Passungsanalyse konfigurieren
                 </h1>
                 <p style={{ fontSize: 13, color: "#8E8E93", fontWeight: 450, margin: 0 }} data-testid="text-matchcheck-subtitle">
-                  Vergleichen Sie das Rollenprofil mit dem Personenprofil, um die strukturelle Passung für diese Position zu analysieren.
+                  Vergleichen Sie das Positionsprofil mit dem Personenprofil, um die strukturelle Passung für diese Position zu analysieren.
                 </p>
               </div>
             </div>
@@ -282,7 +282,7 @@ export default function SollIstBericht() {
             {profilvergleichOpen && (<div style={{ padding: "0 32px 32px" }}>
             <div className="grid gap-6 grid-cols-2">
               <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="card-soll-profil">
-                <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Rolle)</span></p>
+                <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Position)</span></p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   {roleProfile.map(item => {
                     const hex = item.hex;
@@ -446,15 +446,15 @@ export default function SollIstBericht() {
             const gapLevel = effective.gapLevel;
             let fazitText: string;
             if (fitLabel === "Geeignet") {
-              fazitText = "Die Arbeitsweise der Person passt gut zu den Anforderungen der Rolle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein. Dadurch ist zu erwarten, dass die Person die Rolle in ihrer natürlichen Ausrichtung stabil und wirksam ausfüllen kann.";
+              fazitText = "Die Arbeitsweise der Person passt gut zu den Anforderungen der Position. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein. Dadurch ist zu erwarten, dass die Person die Position in ihrer natürlichen Ausrichtung stabil und wirksam ausfüllen kann.";
             } else if (fitLabel === "Bedingt geeignet" && gapLevel === "gering") {
-              fazitText = "Die Grundausrichtung der Person ist mit den Anforderungen der Rolle grundsätzlich vereinbar. In der konkreten Gewichtung einzelner Arbeitsbereiche zeigen sich jedoch Abweichungen. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf und höherem Führungsaufwand führen. Mit klaren Erwartungen und gezielter Führung ist die Zusammenarbeit stabil möglich.";
+              fazitText = "Die Grundausrichtung der Person ist mit den Anforderungen der Position grundsätzlich vereinbar. In der konkreten Gewichtung einzelner Arbeitsbereiche zeigen sich jedoch Abweichungen. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf und höherem Führungsaufwand führen. Mit klaren Erwartungen und gezielter Führung ist die Zusammenarbeit stabil möglich.";
             } else if (fitLabel === "Bedingt geeignet") {
-              fazitText = "Die Person bringt eine grundsätzlich passende Arbeitsrichtung für die Rolle mit. In mehreren für die Aufgabe wichtigen Bereichen zeigt sich jedoch ein spürbarer Anpassungsbedarf. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen. Mit klaren Erwartungen und regelmässiger Rückmeldung kann die Zusammenarbeit funktionieren.";
+              fazitText = "Die Person bringt eine grundsätzlich passende Arbeitsrichtung für die Position mit. In mehreren für die Aufgabe wichtigen Bereichen zeigt sich jedoch ein spürbarer Anpassungsbedarf. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen. Mit klaren Erwartungen und regelmässiger Rückmeldung kann die Zusammenarbeit funktionieren.";
             } else if (fitLabel === "Nicht geeignet" && gapLevel !== "hoch") {
-              fazitText = "Zwischen Rolle und Person besteht eine deutliche strukturelle Abweichung. Auch wenn der Gesamtabstand nicht extrem hoch ist, passt die innere Gewichtung der Arbeitsweise nicht ausreichend zu den Anforderungen der Rolle. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
+              fazitText = "Zwischen Position und Person besteht eine deutliche strukturelle Abweichung. Auch wenn der Gesamtabstand nicht extrem hoch ist, passt die innere Gewichtung der Arbeitsweise nicht ausreichend zu den Anforderungen der Position. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
             } else {
-              fazitText = "Die Anforderungen der Rolle und die natürliche Arbeitsweise der Person unterscheiden sich deutlich. Aufgabenverständnis, Entscheidungslogik und Arbeitsstil liegen zu weit auseinander. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
+              fazitText = "Die Anforderungen der Position und die natürliche Arbeitsweise der Person unterscheiden sich deutlich. Aufgabenverständnis, Entscheidungslogik und Arbeitsstil liegen zu weit auseinander. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
             }
 
             const devLevel = effective.developmentLevel;
@@ -489,7 +489,7 @@ export default function SollIstBericht() {
                         <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
                           <div style={{ width: 18, height: 18, borderRadius: 9, background: fitColor, flexShrink: 0, boxShadow: `0 0 0 4px ${fitColor}20` }} />
                           <div style={{ flex: 1 }}>
-                            <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-summary-role">{roleName || "Rolle"}</span>
+                            <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-summary-role">{roleName || "Position"}</span>
                           </div>
                           <span style={{ fontSize: 13, fontWeight: 700, color: fitColor, letterSpacing: "0.03em" }} data-testid="text-summary-fit">
                             {fitLabel}
@@ -606,7 +606,7 @@ export default function SollIstBericht() {
                       <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }} data-testid="section-ueberblick">
                         <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Systemüberblick</p>
                         {[
-                          { label: "Rollenprofil", value: result.roleConstellationLabel },
+                          { label: "Positionsprofil", value: result.roleConstellationLabel },
                           { label: `${personLabel}profil`, value: result.candConstellationLabel },
                           { label: "Soll-Ist-Abweichung", value: `${result.totalGap} Punkte`, color: gapCol },
                         ].map((row, i, arr) => (
@@ -621,7 +621,7 @@ export default function SollIstBericht() {
                       <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }} data-testid="section-strukturkonstellation">
                         <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Strukturkonstellation</p>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                          <span style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.65)" }}>Dominanz Rolle</span>
+                          <span style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.65)" }}>Dominanz Position</span>
                           <span style={{ fontSize: 14, fontWeight: 700, color: rc }}>{COMP_LABELS[result.roleDomKey]}</span>
                         </div>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
@@ -687,7 +687,7 @@ export default function SollIstBericht() {
                 </p>
                 <div className="grid gap-6 grid-cols-2" style={{ marginBottom: 14 }}>
                   <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
-                    <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>Soll-Profil <span style={{ fontWeight: 400, color: "#8E8E93" }}>(Rolle)</span></p>
+                    <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>Soll-Profil <span style={{ fontWeight: 400, color: "#8E8E93" }}>(Position)</span></p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                       {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                         const val = Math.round(roleTriad![k]);
@@ -839,15 +839,15 @@ export default function SollIstBericht() {
                 const rGapLevel = result.gapLevel;
                 let rFazit: string;
                 if (rFitLabel === "Geeignet") {
-                  rFazit = "Die Arbeitsweise der Person passt gut zu den Anforderungen der Rolle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein.";
+                  rFazit = "Die Arbeitsweise der Person passt gut zu den Anforderungen der Position. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein.";
                 } else if (rFitLabel === "Bedingt geeignet" && rGapLevel === "gering") {
                   rFazit = "Die Grundausrichtung ist ähnlich, jedoch unterscheidet sich die Gewichtung einzelner Arbeitsbereiche. Im Alltag kann das zu erhöhtem Abstimmungsbedarf und höherem Führungsaufwand führen.";
                 } else if (rFitLabel === "Bedingt geeignet") {
                   rFazit = "Die Grundausrichtung ist ähnlich. In einzelnen Bereichen zeigt sich jedoch spürbarer Anpassungsbedarf. Im Alltag kann das zu Konflikten im Team und deutlich höherem Führungsaufwand führen.";
                 } else if (rFitLabel === "Nicht geeignet" && rGapLevel !== "hoch") {
-                  rFazit = "Die strukturelle Abweichung zwischen Rolle und Person ist deutlich. Im Alltag kann das zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
+                  rFazit = "Die strukturelle Abweichung zwischen Position und Person ist deutlich. Im Alltag kann das zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
                 } else {
-                  rFazit = "Die Anforderungen der Rolle und die Arbeitsweise der Person unterscheiden sich deutlich. Im Alltag kann das zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
+                  rFazit = "Die Anforderungen der Position und die Arbeitsweise der Person unterscheiden sich deutlich. Im Alltag kann das zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
                 }
 
                 const rDevLevel = result.developmentLevel;
@@ -888,10 +888,10 @@ export default function SollIstBericht() {
                       <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>Managementeinschätzung</p>
                       <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }}>
                         {rFitLabel === "Geeignet"
-                          ? "Die Arbeitsweise der Person und die Anforderungen der Rolle stimmen gut überein. Eine stabile Besetzung ist ohne erhöhten Führungsaufwand möglich. Aus Managementsicht wird diese Besetzung empfohlen."
+                          ? "Die Arbeitsweise der Person und die Anforderungen der Position stimmen gut überein. Eine stabile Besetzung ist ohne erhöhten Führungsaufwand möglich. Aus Managementsicht wird diese Besetzung empfohlen."
                           : rFitLabel === "Bedingt geeignet"
-                          ? "Die Arbeitsweise der Person weicht in einzelnen Bereichen von den Anforderungen der Rolle ab. Eine stabile Besetzung ist mit gezielter Führung und regelmässiger Rückmeldung möglich. Aus Managementsicht ist diese Besetzung unter Voraussetzungen vertretbar."
-                          : "Die strukturelle Abweichung zwischen Rolle und Person ist deutlich. Eine stabile Besetzung wäre nur mit dauerhaft erhöhtem Führungsaufwand möglich. Aus Managementsicht wird diese Besetzung nicht empfohlen."}
+                          ? "Die Arbeitsweise der Person weicht in einzelnen Bereichen von den Anforderungen der Position ab. Eine stabile Besetzung ist mit gezielter Führung und regelmässiger Rückmeldung möglich. Aus Managementsicht ist diese Besetzung unter Voraussetzungen vertretbar."
+                          : "Die strukturelle Abweichung zwischen Position und Person ist deutlich. Eine stabile Besetzung wäre nur mit dauerhaft erhöhtem Führungsaufwand möglich. Aus Managementsicht wird diese Besetzung nicht empfohlen."}
                       </p>
                     </div>
                   </div>
