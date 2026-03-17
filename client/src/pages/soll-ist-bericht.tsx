@@ -642,8 +642,8 @@ export default function SollIstBericht() {
                           {[
                             { label: "Grundpassung", value: result.fitLabel, color: fitCol },
                             { label: "Führungsaufwand", value: cLabel, color: cCol },
-                            { label: "Abweichung", value: result.gapLevel, color: gapCol },
-                            { label: "Entwicklungsaufwand", value: devLabel, color: devCol },
+                            { label: "Profilabweichung", value: result.gapLevel, color: gapCol },
+                            { label: "Entwicklungsprognose", value: devLabel, color: devCol },
                           ].map(m => (
                             <div key={m.label} style={{ flex: 1, minWidth: 0, padding: "14px 16px", borderRadius: 10, background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.06)" }}>
                               <div style={{ fontSize: 10, color: "#8E8E93", marginBottom: 5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>{m.label}</div>
@@ -653,7 +653,19 @@ export default function SollIstBericht() {
                         </div>
                       </div>
 
-
+                      {/* SYSTEMÜBERBLICK */}
+                      <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-ueberblick">
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Kurzübersicht</p>
+                        {[
+                          { label: "Stellenprofil", value: result.roleConstellationLabel },
+                          { label: `${personLabel}profil`, value: result.candConstellationLabel },
+                        ].map((row, i, arr) => (
+                          <div key={row.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < arr.length - 1 ? "1px solid rgba(0,0,0,0.06)" : "none" }}>
+                            <span style={{ fontSize: 14, fontWeight: 600, color: "#6E6E73" }}>{row.label}</span>
+                            <span style={{ fontSize: 14, fontWeight: row.color ? 800 : 700, color: row.color || "#1D1D1F" }}>{row.value}</span>
+                          </div>
+                        ))}
+                      </div>
 
                       {/* STRUKTURKONSTELLATION */}
                       <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-strukturkonstellation">
