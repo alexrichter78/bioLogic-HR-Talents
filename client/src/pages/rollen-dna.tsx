@@ -2874,7 +2874,6 @@ export default function RollenDNA() {
                   padding: "28px 32px",
                   boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
                   border: "1px solid rgba(0,0,0,0.04)",
-                  marginTop: 24,
                 }}
                 className="dark:bg-card/40"
               >
