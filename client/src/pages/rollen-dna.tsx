@@ -1725,7 +1725,7 @@ export default function RollenDNA() {
                     <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>3</div>
                   </div>
                   <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: "0 0 8px" }} data-testid="text-step-1-title">
-                    Welche Rolle möchten Sie analysieren?
+                    Welche Position möchten Sie analysieren?
                   </h2>
                   <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, margin: "0 0 28px" }}>
                     Geben Sie die Berufsbezeichnung oder Stellenbezeichnung ein, z.B. „Vertriebsleiter", „HR Business Partner" oder „Projektmanager IT".
@@ -1858,8 +1858,8 @@ export default function RollenDNA() {
 
 
                     <div style={{ marginTop: 28 }}>
-                      <p style={{ fontSize: 12.5, fontWeight: 600, color: "#48484A", margin: "0 0 2px" }}>Arbeitsmarkt</p>
-                      <p style={{ fontSize: 12, color: "#AEAEB2", margin: "0 0 8px" }}>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 2px" }}>Arbeitsmarkt</p>
+                      <p style={{ fontSize: 13, color: "#6E6E73", margin: "0 0 8px" }}>
                         Vorschläge werden für die aktiven Länder angezeigt. Zum Ein- oder Ausschalten einfach klicken.
                       </p>
                       <div className="flex items-center gap-2" data-testid="land-filter">
@@ -1895,7 +1895,7 @@ export default function RollenDNA() {
 
                     <div style={{ marginTop: 32, borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 24 }}>
                       <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 6px" }}>Optionale Ergänzungen</p>
-                      <p style={{ fontSize: 12.5, color: "#AEAEB2", margin: "0 0 12px" }}>
+                      <p style={{ fontSize: 13, color: "#6E6E73", margin: "0 0 12px" }}>
                         Was macht diese Position in Ihrem Unternehmen besonders? Je konkreter, desto genauer die Analyse.
                       </p>
                       <textarea
