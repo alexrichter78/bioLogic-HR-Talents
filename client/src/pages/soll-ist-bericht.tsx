@@ -445,11 +445,11 @@ export default function SollIstBericht() {
 
             let shortFazit: string;
             if (fitLabel === "Geeignet") {
-              shortFazit = "Arbeitsweise passt zur Rolle";
+              shortFazit = "Arbeitsweise passt zur Stelle";
             } else if (fitLabel === "Bedingt geeignet") {
-              shortFazit = "Arbeitsweise passt teilweise zur Rolle";
+              shortFazit = "Arbeitsweise passt teilweise zur Stelle";
             } else {
-              shortFazit = "Arbeitslogik passt nicht zur Rolle";
+              shortFazit = "Arbeitslogik passt nicht zur Stelle";
             }
 
             const devLevel = effective.developmentLevel;
