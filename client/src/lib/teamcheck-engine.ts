@@ -883,7 +883,7 @@ export function generateDetailReport(input: TeamCheckInput, result: TeamCheckRes
   const rolleDat = input.isLeading ? "der Führungskraft" : "dem neuen Teammitglied";
   const rolleAkk = input.isLeading ? "die Führungskraft" : "das neue Teammitglied";
   const rolleLabel = input.isLeading ? "Führungskraft" : "neues Teammitglied";
-  const rolleAdj = input.isLeading ? "Führungsposition" : "Position";
+  const rolleAdj = input.isLeading ? "Führungsposition" : "Stelle";
   const beruf = input.beruf || "die offene Rolle";
   const kLabel = plainLabel(domK);
   const tLabel = plainLabel(domT);

@@ -176,7 +176,7 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
   IMP_INT_ANA: {
     headline: "Aktives Handeln pr\u00e4gt den Alltag \u2013 unter Druck mehr Austausch mit anderen",
     body: [
-      "Im Arbeitsalltag wird diese Position vor allem durch eine aktive und entscheidungsorientierte Arbeitsweise geprägt. Themen werden früh aufgegriffen, Verantwortung wird übernommen und Entscheidungen werden vergleichsweise zügig getroffen. Die Position wirkt dadurch dynamisch und handlungsstark.",
+      "Im Arbeitsalltag wird diese Stelle vor allem durch eine aktive und entscheidungsorientierte Arbeitsweise geprägt. Themen werden früh aufgegriffen, Verantwortung wird übernommen und Entscheidungen werden vergleichsweise zügig getroffen. Die Stelle wirkt dadurch dynamisch und handlungsstark.",
       "Wenn der Druck steigt, r\u00fcckt st\u00e4rker der Austausch mit anderen in den Vordergrund. Gespr\u00e4che, Abstimmung und das Einbeziehen verschiedener Perspektiven helfen dabei, Entscheidungen abzusichern und L\u00f6sungen gemeinsam zu entwickeln.",
       "Diese Kombination sorgt daf\u00fcr, dass Themen nicht nur schnell in Bewegung kommen, sondern auch im Dialog mit anderen weiterentwickelt werden. Entscheidungen werden dadurch sowohl getragen als auch umgesetzt.",
     ],
@@ -185,7 +185,7 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
   IMP_ANA_INT: {
     headline: "Entscheidungen und Umsetzung pr\u00e4gen den Alltag \u2013 unter Druck mehr Struktur und Kontrolle",
     body: [
-      "Im Arbeitsalltag wird diese Position vor allem durch Entscheidungsstärke und Umsetzungsorientierung geprägt. Themen werden aktiv aufgegriffen, Verantwortung wird übernommen und Entscheidungen werden vergleichsweise zügig getroffen.",
+      "Im Arbeitsalltag wird diese Stelle vor allem durch Entscheidungsstärke und Umsetzungsorientierung geprägt. Themen werden aktiv aufgegriffen, Verantwortung wird übernommen und Entscheidungen werden vergleichsweise zügig getroffen.",
       "Wenn der Druck steigt, w\u00e4chst h\u00e4ufig das Bed\u00fcrfnis nach Struktur, Planung und Kontrolle. Themen werden genauer gepr\u00fcft, Abl\u00e4ufe werden klarer geordnet und Entscheidungen st\u00e4rker \u00fcber Analyse abgesichert.",
       "Diese Kombination sorgt daf\u00fcr, dass Entscheidungen nicht nur getroffen, sondern auch strukturiert umgesetzt werden. Dynamik wird durch Ordnung erg\u00e4nzt.",
     ],
@@ -203,7 +203,7 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
   INT_ANA_IMP: {
     headline: "Zusammenarbeit pr\u00e4gt den Alltag \u2013 unter Druck mehr Struktur und Klarheit",
     body: [
-      "Im Arbeitsalltag prägt vor allem Zusammenarbeit und Abstimmung diese Position. Austausch, Gespräche und ein gutes Gespür für Menschen stehen im Mittelpunkt.",
+      "Im Arbeitsalltag prägt vor allem Zusammenarbeit und Abstimmung diese Stelle. Austausch, Gespräche und ein gutes Gespür für Menschen stehen im Mittelpunkt.",
       "Wenn der Druck steigt, w\u00e4chst h\u00e4ufig das Bed\u00fcrfnis nach Struktur, Planung und klaren Abl\u00e4ufen. Entscheidungen werden st\u00e4rker \u00fcber Analyse und Ordnung abgesichert.",
       "Diese Kombination sorgt daf\u00fcr, dass Zusammenarbeit nicht nur \u00fcber Gespr\u00e4che funktioniert, sondern auch durch klare Strukturen stabilisiert wird.",
     ],
@@ -311,9 +311,9 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
   BALANCED: {
     headline: "Ausgeglichenes Profil",
     body: [
-      "In diesem Profil sind verschiedene Herangehensweisen ähnlich stark ausgeprägt. Die Position ist dadurch nicht einseitig festgelegt, sondern kann sich flexibel an unterschiedliche Anforderungen anpassen.",
+      "In diesem Profil sind verschiedene Herangehensweisen ähnlich stark ausgeprägt. Die Stelle ist dadurch nicht einseitig festgelegt, sondern kann sich flexibel an unterschiedliche Anforderungen anpassen.",
       "Je nach Situation kann zwischen Umsetzung, Zusammenarbeit und strukturierter Analyse gewechselt werden. Welche Seite st\u00e4rker sichtbar wird, h\u00e4ngt h\u00e4ufig von Aufgabe, Umfeld und Drucksituation ab.",
-      "Diese Breite sorgt dafür, dass die Position besonders dort stark wirkt, wo Flexibilität, Überblick und ein variables Vorgehen gefragt sind.",
+      "Diese Breite sorgt dafür, dass die Stelle besonders dort stark wirkt, wo Flexibilität, Überblick und ein variables Vorgehen gefragt sind.",
     ],
     leadership: "In der F\u00fchrungsarbeit zeigt sich das durch eine situationsabh\u00e4ngige Steuerung und die F\u00e4higkeit, je nach Bedarf zwischen Klarheit, Dialog und Umsetzung zu wechseln.",
   },
@@ -331,9 +331,9 @@ const analysisPrincipleText = {
 
 const roleRequirementText = {
   intro: [
-    "Diese Auswertung beschreibt die Wirklogik der Position.",
+    "Diese Auswertung beschreibt die Wirklogik der Stelle.",
     "Die Anforderungen werden den drei Dimensionen Impulsiv, Intuitiv und Analytisch zugeordnet.",
-    "Dadurch wird sichtbar, welche Form der Wirksamkeit im Arbeitsalltag dieser Position im Mittelpunkt steht.",
+    "Dadurch wird sichtbar, welche Form der Wirksamkeit im Arbeitsalltag dieser Stelle im Mittelpunkt steht.",
   ],
   outro: "",
 };
@@ -370,7 +370,7 @@ const AUFGABENCHARAKTER_OPTIONS: DescOption[] = [
   { value: "überwiegend operativ", label: "Praktische Umsetzung im Tagesgeschäft", desc: "Der Schwerpunkt liegt auf operativer Arbeit und direkter Umsetzung von Aufgaben." },
   { value: "überwiegend systemisch", label: "Umsetzung mit strukturiertem Vorgehen", desc: "Praxis und Planung greifen ineinander. Aufgaben werden umgesetzt und gleichzeitig strukturiert gesteuert." },
   { value: "überwiegend strategisch", label: "Analyse, Planung und strategische Steuerung", desc: "Entscheidungen entstehen vor allem durch Analyse, Planung und Bewertung." },
-  { value: "Gemischt", label: "Ausgewogene Mischung", desc: "Die Position verbindet operative Umsetzung, Analyse und Abstimmung." },
+  { value: "Gemischt", label: "Ausgewogene Mischung", desc: "Die Stelle verbindet operative Umsetzung, Analyse und Abstimmung." },
 ];
 
 const ARBEITSLOGIK_OPTIONS: DescOption[] = [
@@ -381,17 +381,17 @@ const ARBEITSLOGIK_OPTIONS: DescOption[] = [
 ];
 
 const FUEHRUNG_OPTIONS: DescOption[] = [
-  { value: "Keine", label: "Keine Führungsverantwortung", desc: "Die Position arbeitet ohne direkte Führung von Mitarbeitenden." },
-  { value: "Projekt-/Teamkoordination", label: "Projekt- oder Teamkoordination", desc: "Die Position koordiniert Aufgaben oder Projekte, ohne Personalverantwortung." },
-  { value: "Fachliche Führung", label: "Fachliche Führung", desc: "Die Position steuert die fachliche Arbeit und sichert die Qualität im Team." },
-  { value: "Disziplinarische Führung mit Ergebnisverantwortung", label: "Führung mit Personalverantwortung", desc: "Die Position trägt Verantwortung für Mitarbeitende, Ergebnisse und Entwicklung." },
+  { value: "Keine", label: "Keine Führungsverantwortung", desc: "Die Stelle arbeitet ohne direkte Führung von Mitarbeitenden." },
+  { value: "Projekt-/Teamkoordination", label: "Projekt- oder Teamkoordination", desc: "Die Stelle koordiniert Aufgaben oder Projekte, ohne Personalverantwortung." },
+  { value: "Fachliche Führung", label: "Fachliche Führung", desc: "Die Stelle steuert die fachliche Arbeit und sichert die Qualität im Team." },
+  { value: "Disziplinarische Führung mit Ergebnisverantwortung", label: "Führung mit Personalverantwortung", desc: "Die Stelle trägt Verantwortung für Mitarbeitende, Ergebnisse und Entwicklung." },
 ];
 
 const SECTION_SUBTITLES: Record<string, string> = {
-  aufgabencharakter: "Welche Art von Aufgaben prägt diese Position hauptsächlich?",
-  arbeitslogik: "Was prägt die tägliche Arbeit dieser Position am stärksten?",
-  erfolgsfokus: "Woran wird der Erfolg dieser Position hauptsächlich gemessen?",
-  fuehrung: "Welche Führungsrolle gehört zu dieser Position?",
+  aufgabencharakter: "Welche Art von Aufgaben prägt diese Stelle hauptsächlich?",
+  arbeitslogik: "Was prägt die tägliche Arbeit dieser Stelle am stärksten?",
+  erfolgsfokus: "Woran wird der Erfolg dieser Stelle hauptsächlich gemessen?",
+  fuehrung: "Welche Führungsrolle gehört zu dieser Stelle?",
 };
 
 function Header({ onSave, onLoad }: { onSave: () => void; onLoad: () => void }) {
@@ -861,7 +861,7 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
   const arbeitsOpt = ARBEITSLOGIK_OPTIONS.find(o => o.value === arbeitslogik);
   const fuehrungOpt = FUEHRUNG_OPTIONS.find(o => o.value === fuehrung);
   const fokusLabels = erfolgsfokusIndices.map(i => ERFOLGSFOKUS_DISPLAY[i]?.label).filter(Boolean);
-  const rollenName = beruf || "diese Position";
+  const rollenName = beruf || "diese Stelle";
 
   const aufgabenSatz: Record<string, string> = {
     "überwiegend operativ": `verbindet praktische Arbeit mit direkter Umsetzung im Tagesgeschäft`,
@@ -879,7 +879,7 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
 
   const arbeitsDetail: Record<string, [string, string]> = {
     "Umsetzungsorientiert": [
-      "Die Position arbeitet stark praktisch und lösungsorientiert.",
+      "Die Stelle arbeitet stark praktisch und lösungsorientiert.",
       "Aufgaben werden direkt angegangen und in konkrete Ergebnisse überführt.",
     ],
     "Daten-/prozessorientiert": [
@@ -897,10 +897,10 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
   };
 
   const fuehrungDetail: Record<string, string> = {
-    "Keine": "Die Position arbeitet eigenverantwortlich ohne direkte Führung von Mitarbeitenden.",
-    "Projekt-/Teamkoordination": "Die Position koordiniert Aufgaben und Projekte und sorgt für eine reibungslose Zusammenarbeit im Team.",
-    "Fachliche Führung": "Die Position übernimmt fachliche Verantwortung im Team und stellt sicher, dass Arbeit und Qualität zuverlässig umgesetzt werden.",
-    "Disziplinarische Führung mit Ergebnisverantwortung": "Die Position trägt Verantwortung für Mitarbeitende, deren Entwicklung und die Erreichung konkreter Ergebnisse.",
+    "Keine": "Die Stelle arbeitet eigenverantwortlich ohne direkte Führung von Mitarbeitenden.",
+    "Projekt-/Teamkoordination": "Die Stelle koordiniert Aufgaben und Projekte und sorgt für eine reibungslose Zusammenarbeit im Team.",
+    "Fachliche Führung": "Die Stelle übernimmt fachliche Verantwortung im Team und stellt sicher, dass Arbeit und Qualität zuverlässig umgesetzt werden.",
+    "Disziplinarische Führung mit Ergebnisverantwortung": "Die Stelle trägt Verantwortung für Mitarbeitende, deren Entwicklung und die Erreichung konkreter Ergebnisse.",
   };
 
   const fokusKurz: Record<string, string> = {
@@ -916,9 +916,9 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
   const arbText = arbeitsSatz[arbeitslogik] || "unterschiedliche Arbeitsweisen";
   const fokusTeile = fokusLabels.map(l => fokusKurz[l] || l.toLowerCase()).filter(Boolean);
   let fokusSatz = "";
-  if (fokusTeile.length === 1) fokusSatz = `Der Erfolg dieser Position zeigt sich vor allem in ${fokusTeile[0]}.`;
-  else if (fokusTeile.length === 2) fokusSatz = `Der Erfolg dieser Position zeigt sich vor allem in ${fokusTeile[0]} und ${fokusTeile[1]}.`;
-  else if (fokusTeile.length > 2) fokusSatz = `Der Erfolg dieser Position zeigt sich vor allem in ${fokusTeile.slice(0, -1).join(", ")} und ${fokusTeile[fokusTeile.length - 1]}.`;
+  if (fokusTeile.length === 1) fokusSatz = `Der Erfolg dieser Stelle zeigt sich vor allem in ${fokusTeile[0]}.`;
+  else if (fokusTeile.length === 2) fokusSatz = `Der Erfolg dieser Stelle zeigt sich vor allem in ${fokusTeile[0]} und ${fokusTeile[1]}.`;
+  else if (fokusTeile.length > 2) fokusSatz = `Der Erfolg dieser Stelle zeigt sich vor allem in ${fokusTeile.slice(0, -1).join(", ")} und ${fokusTeile[fokusTeile.length - 1]}.`;
 
   const arbDetail = arbeitsDetail[arbeitslogik] || ["Die Arbeitsweise ist vielseitig und situationsabhängig.", ""];
   const fuehDetail = fuehrungDetail[fuehrung] || fuehrungOpt?.desc || "";
@@ -959,10 +959,10 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
       </div>
 
       <p style={{ fontSize: 13.5, color: "#6E6E73", lineHeight: 1.6, margin: "0 0 8px" }}>
-        So lässt sich die Position aktuell beschreiben:
+        So lässt sich die Stelle aktuell beschreiben:
       </p>
       <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "0 0 4px" }}>
-        Die Position {rollenName} {aufgText}.
+        Die Stelle {rollenName} {aufgText}.
         {" "}Im Alltag geht es vor allem darum, {arbText}.
       </p>
       {fokusSatz && (
@@ -1637,7 +1637,7 @@ export default function RollenDNA() {
             </button>
           </div>
           <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, marginBottom: 16 }}>
-            Bitte ordnen Sie die Position nach der tatsächlichen Weisungs- und Personalverantwortung ein – nicht nach dem Jobtitel. Entscheidend ist, welche formale Entscheidungsmacht und Ergebnisverantwortung mit der Position verbunden sind.
+            Bitte ordnen Sie die Stelle nach der tatsächlichen Weisungs- und Personalverantwortung ein – nicht nach dem Jobtitel. Entscheidend ist, welche formale Entscheidungsmacht und Ergebnisverantwortung mit der Stelle verbunden sind.
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {[
@@ -1655,7 +1655,7 @@ export default function RollenDNA() {
           <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
             <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", lineHeight: 1.6 }}>
               Im Zweifel orientieren Sie sich bitte an folgender Leitfrage:<br />
-              Hat die Position formale Zielvereinbarungs- und Beurteilungsverantwortung für Mitarbeitende?<br />
+              Hat die Stelle formale Zielvereinbarungs- und Beurteilungsverantwortung für Mitarbeitende?<br />
               Wenn ja, liegt in der Regel Führung mit Personalverantwortung vor.
             </p>
           </div>
@@ -1705,7 +1705,7 @@ export default function RollenDNA() {
                   Stellenprofil definieren
                 </h1>
                 <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-rollen-dna-subtitle">
-                  Erfassen Sie die Anforderungen und Arbeitslogik der Position als Grundlage für den Entscheidungsbericht, die Passungsanalyse sowie den TeamCheck.
+                  Erfassen Sie die Anforderungen und Arbeitslogik der Stelle als Grundlage für den Entscheidungsbericht, die Passungsanalyse sowie den TeamCheck.
                 </p>
               </div>
 
@@ -1725,12 +1725,12 @@ export default function RollenDNA() {
                     <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>3</div>
                   </div>
                   <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: "0 0 8px" }} data-testid="text-step-1-title">
-                    Welche Position möchten Sie analysieren?
+                    Welche Stelle möchten Sie analysieren?
                   </h2>
                   <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6, margin: "0 0 28px" }}>
                     Geben Sie die Berufsbezeichnung oder Stellenbezeichnung ein, z.B. „Vertriebsleiter", „HR Business Partner" oder „Projektmanager IT".
                     <br />
-                    Kein passender Vorschlag? Einfach ausschreiben – wir erkennen die Position automatisch.
+                    Kein passender Vorschlag? Einfach ausschreiben – wir erkennen die Stelle automatisch.
                   </p>
 
                   <div className="mb-0" style={{ zIndex: 100 }} data-testid="input-beruf-wrapper">
@@ -1896,7 +1896,7 @@ export default function RollenDNA() {
                     <div style={{ marginTop: 32, borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 24 }}>
                       <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 6px" }}>Optionale Ergänzungen</p>
                       <p style={{ fontSize: 13, color: "#6E6E73", margin: "0 0 12px" }}>
-                        Was macht diese Position in Ihrem Unternehmen besonders? Je konkreter, desto genauer die Analyse.
+                        Was macht diese Stelle in Ihrem Unternehmen besonders? Je konkreter, desto genauer die Analyse.
                       </p>
                       <textarea
                         value={zusatzInfo}
@@ -1938,7 +1938,7 @@ export default function RollenDNA() {
             ) : (
               <CollapsedStep
                 step={1}
-                title="Ausgewählte Position / Bezeichnung"
+                title="Ausgewählte Stelle / Bezeichnung"
                 summary={beruf}
                 onEdit={() => goToStep(1)}
                 icon={Briefcase}
@@ -1957,7 +1957,7 @@ export default function RollenDNA() {
                     Rahmenbedingungen der Stelle
                   </h2>
                   <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6 }}>
-                    Definieren Sie die grundlegenden Merkmale dieser Position. Die Angaben helfen dabei, die strukturelle Positionslogik zu bestimmen.
+                    Definieren Sie die grundlegenden Merkmale dieser Stelle. Die Angaben helfen dabei, die strukturelle Stellenlogik zu bestimmen.
                   </p>
                 </div>
 
@@ -2005,7 +2005,7 @@ export default function RollenDNA() {
                         <div className="flex items-center gap-3">
                           <Activity style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
-                            Arbeitsweise der Position
+                            Arbeitsweise der Stelle
                           </h3>
                         </div>
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
@@ -2120,7 +2120,7 @@ export default function RollenDNA() {
               <CollapsedStep
                 step={2}
                 title="Rahmenbedingungen der Stelle"
-                summary="Grundlegende Merkmale dieser Position / Bezeichnung."
+                summary="Grundlegende Merkmale dieser Stelle / Bezeichnung."
                 onEdit={() => goToStep(2)}
                 icon={Settings}
               />
@@ -2149,7 +2149,7 @@ export default function RollenDNA() {
                       Tätigkeiten & Kompetenzen
                     </h2>
                     <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 4 }}>
-                      Formen Sie die konkrete Struktur dieser Position.
+                      Formen Sie die konkrete Struktur dieser Stelle.
                     </p>
                   </div>
                   <div style={{ textAlign: "right", fontSize: 14, color: "#48484A", lineHeight: 1.8 }}>
@@ -2652,7 +2652,7 @@ export default function RollenDNA() {
                       </div>
 
                       <div style={{ marginTop: 14 }} data-testid="card-anforderungsprofil">
-                        <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0" }}>Anforderungsprofil der Position</h3>
+                        <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0" }}>Anforderungsprofil der Stelle</h3>
                         <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px 0" }}>
                           {roleRequirementText.intro.join(" ")}
                         </p>
@@ -2930,7 +2930,7 @@ export default function RollenDNA() {
                 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }} data-testid="dna-summary-grid">
                   {[
-                    { icon: Briefcase, label: "Position / Bezeichnung", value: beruf },
+                    { icon: Briefcase, label: "Stelle / Bezeichnung", value: beruf },
                     { icon: LayoutGrid, label: "Aufgabenstruktur", value: AUFGABENCHARAKTER_OPTIONS.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter },
                     { icon: Wrench, label: "Arbeitsweise", value: ARBEITSLOGIK_OPTIONS.find(o => o.value === arbeitslogik)?.label || arbeitslogik },
                     { icon: Target, label: "Erfolgsfokus", value: erfolgsfokusIndices.map(i => ERFOLGSFOKUS_DISPLAY[i]?.label).filter(Boolean).join(", ") },
@@ -3154,7 +3154,7 @@ export default function RollenDNA() {
                     </div>
 
                     <div style={{ marginTop: 14 }} data-testid="card-anforderungsprofil-collapsed">
-                      <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0" }}>Anforderungsprofil der Position</h3>
+                      <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0" }}>Anforderungsprofil der Stelle</h3>
                       <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px 0" }}>
                         {roleRequirementText.intro.join(" ")}
                       </p>

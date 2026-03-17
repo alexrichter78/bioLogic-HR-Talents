@@ -134,7 +134,7 @@ function bgToTriad(bg: BG): Triad {
 
 function buildRoleAnalysis(state: any): RoleAnalysis | null {
   try {
-    const beruf = state.beruf || "Unbenannte Position";
+    const beruf = state.beruf || "Unbenannte Stelle";
     const found = BERUFE.find(b => b.name === beruf);
     const bereich = found?.kategorie || "";
     const fuehrungstyp = state.fuehrung || "Keine";
@@ -604,7 +604,7 @@ export default function JobCheck() {
                   bioLogic JobCheck
                 </h1>
                 <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-jobcheck-subtitle">
-                  Bewerten Sie die strukturelle Passung zwischen Positionsprofil und Personenprofil.
+                  Bewerten Sie die strukturelle Passung zwischen Stellenprofil und Personenprofil.
                 </p>
               </div>
             </div>
@@ -619,7 +619,7 @@ export default function JobCheck() {
               {dnaSummary && (
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }} data-testid="dna-summary-grid">
                   {[
-                    { icon: Briefcase, label: "Position", value: dnaSummary.beruf || roleAnalysis.job_title, testId: "summary-rolle" },
+                    { icon: Briefcase, label: "Stelle", value: dnaSummary.beruf || roleAnalysis.job_title, testId: "summary-rolle" },
                     { icon: LayoutGrid, label: "Aufgabenstruktur", value: AUFGABENCHARAKTER_LABELS[dnaSummary.aufgabencharakter] || dnaSummary.aufgabencharakter, testId: "summary-aufgaben" },
                     { icon: Wrench, label: "Arbeitsweise", value: ARBEITSLOGIK_LABELS[dnaSummary.arbeitslogik] || dnaSummary.arbeitslogik, testId: "summary-arbeitsweise" },
                     { icon: Target, label: "Erfolgsfokus", value: (Array.isArray(dnaSummary.erfolgsfokusIndices) ? dnaSummary.erfolgsfokusIndices : []).map(i => ERFOLGSFOKUS_DISPLAY_LABELS[i]).filter(Boolean).join(", ") || "Nicht definiert", testId: "summary-erfolgsfokus" },
@@ -666,7 +666,7 @@ export default function JobCheck() {
             >
               <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
                 <div>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>Sollprofil (Position)</p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>Sollprofil (Stelle)</p>
                   {roleProfile && (
                     <SoftBar items={[
                       { label: "Impulsiv", value: roleProfile.impulsiv, color: COLORS.imp },
@@ -676,7 +676,7 @@ export default function JobCheck() {
                   )}
                   <div style={{ marginTop: 10 }}>
                     <CalloutBox
-                      text={`Die dominante Logik der Position ist ${roleProfile ? labelComponent(dominanceModeOf(roleProfile).top1.key) : ""} geprägt: ${roleProfile ? dominanceLabel(dominanceModeOf(roleProfile)) : ""}.`}
+                      text={`Die dominante Logik der Stelle ist ${roleProfile ? labelComponent(dominanceModeOf(roleProfile).top1.key) : ""} geprägt: ${roleProfile ? dominanceLabel(dominanceModeOf(roleProfile)) : ""}.`}
                       color={roleProfile ? (dominanceModeOf(roleProfile).top1.key === "impulsiv" ? COLORS.imp : dominanceModeOf(roleProfile).top1.key === "intuitiv" ? COLORS.int : COLORS.ana) : "#0071E3"}
                       icon={Zap}
                     />
@@ -795,11 +795,11 @@ export default function JobCheck() {
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Vergleich der Profile</span>
                     </div>
                     <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, marginBottom: 16, hyphens: "auto", textAlign: "justify" } as React.CSSProperties} lang="de">
-                      Diese Auswertung beschreibt die Wirklogik einer Position. Die Anforderungen werden den drei Arbeitsbereichen{" "}
+                      Diese Auswertung beschreibt die Wirklogik einer Stelle. Die Anforderungen werden den drei Arbeitsbereichen{" "}
                       <span style={{ fontWeight: 700, color: COLORS.imp }}>Impulsiv</span>,{" "}
                       <span style={{ fontWeight: 700, color: COLORS.int }}>Intuitiv</span> und{" "}
                       <span style={{ fontWeight: 700, color: COLORS.ana }}>Analytisch</span> zugeordnet.
-                      So wird erkennbar, welche Form von Wirksamkeit die Position bestimmt.
+                      So wird erkennbar, welche Form von Wirksamkeit die Stelle bestimmt.
                     </p>
                     {roleProfile && (() => {
                       const r = roleProfile;
@@ -893,7 +893,7 @@ export default function JobCheck() {
                     let sectionTitle: string;
 
                     if (isEqualDist) {
-                      calloutText = `Die Person zeigt keinen erkennbaren Schwerpunkt. Die Position braucht eine klare ${labelComponent(rk)}-Ausrichtung. Ohne klaren Schwerpunkt fehlt die Grundlage, um Prioritäten gezielt zu setzen und konsequent zu entscheiden.`;
+                      calloutText = `Die Person zeigt keinen erkennbaren Schwerpunkt. Die Stelle braucht eine klare ${labelComponent(rk)}-Ausrichtung. Ohne klaren Schwerpunkt fehlt die Grundlage, um Prioritäten gezielt zu setzen und konsequent zu entscheiden.`;
                       calloutColor = "#FF3B30";
                       sectionTitle = "Gleichverteilung";
                     } else if (dualConflict) {
@@ -901,19 +901,19 @@ export default function JobCheck() {
                       const c2L = labelComponent(c2k);
                       const roleInDual = ck === rk || c2k === rk;
                       if (roleInDual) {
-                        calloutText = `Doppeldominanz: Die ${labelComponent(rk)}-Arbeitsweise ist vorhanden, konkurriert aber mit einer gleich starken ${c2L}-Prägung. Die Position braucht eine eindeutige ${labelComponent(rk)}-Ausrichtung – Prioritäten und konsequentes Handeln werden instabil.`;
+                        calloutText = `Doppeldominanz: Die ${labelComponent(rk)}-Arbeitsweise ist vorhanden, konkurriert aber mit einer gleich starken ${c2L}-Prägung. Die Stelle braucht eine eindeutige ${labelComponent(rk)}-Ausrichtung – Prioritäten und konsequentes Handeln werden instabil.`;
                         calloutColor = "#FF9500";
                       } else {
-                        calloutText = `Die Person arbeitet ${labelComponent(ck)}-/${c2L}-geprägt. Die für die Position entscheidende ${labelComponent(rk)}-Arbeitsweise fehlt. Entscheidungen und Prioritäten sind kritisch betroffen.`;
+                        calloutText = `Die Person arbeitet ${labelComponent(ck)}-/${c2L}-geprägt. Die für die Stelle entscheidende ${labelComponent(rk)}-Arbeitsweise fehlt. Entscheidungen und Prioritäten sind kritisch betroffen.`;
                         calloutColor = "#FF3B30";
                       }
                       sectionTitle = "Doppeldominanz";
                     } else if (sameDom && intensityDiff <= 5) {
-                      calloutText = `Beide Profile sind ${labelComponent(rk)}-geprägt, die Ausprägung ist nahezu gleichauf. Arbeitsweise und Prioritäten bilden die Positionsanforderung stabil ab.`;
+                      calloutText = `Beide Profile sind ${labelComponent(rk)}-geprägt, die Ausprägung ist nahezu gleichauf. Arbeitsweise und Prioritäten bilden die Stellenanforderung stabil ab.`;
                       calloutColor = "#34C759";
                       sectionTitle = "Profilvergleich";
                     } else if (sameDom && intensityDiff <= 15) {
-                      calloutText = `Beide Profile sind ${labelComponent(rk)}-geprägt. Die Grundrichtung stimmt, die Ausprägung liegt jedoch unter dem, was die Position braucht. Mit gezielter Führung steuerbar.`;
+                      calloutText = `Beide Profile sind ${labelComponent(rk)}-geprägt. Die Grundrichtung stimmt, die Ausprägung liegt jedoch unter dem, was die Stelle braucht. Mit gezielter Führung steuerbar.`;
                       calloutColor = "#FF9500";
                       sectionTitle = "Profilvergleich";
                     } else if (sameDom) {
@@ -921,9 +921,9 @@ export default function JobCheck() {
                       calloutColor = "#FF3B30";
                       sectionTitle = "Profilvergleich";
                     } else {
-                      calloutText = `Die Position braucht eine ${labelComponent(rk)}-Arbeitsweise, die Person arbeitet ${labelComponent(ck)}-geprägt. Die zentrale Arbeitslogik der Position wird grundlegend verschoben.`;
+                      calloutText = `Die Stelle braucht eine ${labelComponent(rk)}-Arbeitsweise, die Person arbeitet ${labelComponent(ck)}-geprägt. Die zentrale Arbeitslogik der Stelle wird grundlegend verschoben.`;
                       calloutColor = "#FF3B30";
-                      sectionTitle = "Unterschied zwischen Position und Person";
+                      sectionTitle = "Unterschied zwischen Stelle und Person";
                     }
 
                     return (
@@ -1036,7 +1036,7 @@ export default function JobCheck() {
                           background: "rgba(255,149,0,0.04)", border: "1px solid rgba(255,149,0,0.12)",
                         }}>
                           <div style={{ textAlign: "center" }}>
-                            <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Position erwartet</p>
+                            <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Stelle erwartet</p>
                             <div style={{ padding: "6px 16px", borderRadius: 10, background: `${engine.secondaryTension.roleSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.roleSecondary === "intuitiv" ? COLORS.int : COLORS.ana}12`, border: `1px solid ${engine.secondaryTension.roleSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.roleSecondary === "intuitiv" ? COLORS.int : COLORS.ana}25` }}>
                               <span style={{ fontSize: 14, fontWeight: 700, color: engine.secondaryTension.roleSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.roleSecondary === "intuitiv" ? COLORS.int : COLORS.ana }}>{labelComponent(engine.secondaryTension.roleSecondary)}</span>
                               <span style={{ fontSize: 11, fontWeight: 600, color: engine.secondaryTension.roleSecondary === "impulsiv" ? COLORS.imp : engine.secondaryTension.roleSecondary === "intuitiv" ? COLORS.int : COLORS.ana, opacity: 0.7, marginLeft: 4 }}>{engine.secondaryTension.roleSecondaryValue}%</span>
@@ -1185,7 +1185,7 @@ export default function JobCheck() {
                       <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
                         <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>Empfehlung</p>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#0071E3", margin: 0 }}>
-                          {engine.overallFit === "SUITABLE" ? "Besetzung strukturell passend" : engine.overallFit === "CONDITIONAL" ? "Besetzung möglich mit Integrations-Setup" : "Für diese Position nicht strukturgerecht"}
+                          {engine.overallFit === "SUITABLE" ? "Besetzung strukturell passend" : engine.overallFit === "CONDITIONAL" ? "Besetzung möglich mit Integrations-Setup" : "Für diese Stelle nicht strukturgerecht"}
                         </p>
                       </div>
                     </div>
@@ -1197,10 +1197,10 @@ export default function JobCheck() {
                     }}>
                       <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.85, margin: 0, fontWeight: 500, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
                         {hyphenateText(engine.overallFit === "SUITABLE"
-                          ? "Die Besetzung passt zur Position. Fokus auf saubere Umsetzung und klare Arbeitsroutinen."
+                          ? "Die Besetzung passt zur Stelle. Fokus auf saubere Umsetzung und klare Arbeitsroutinen."
                           : engine.overallFit === "CONDITIONAL"
                             ? "Die Besetzung ist nicht risikofrei, aber entwicklungsfähig. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und höherem Führungsaufwand führen. Mit klaren Erwartungen und Rahmenvorgaben lässt sich die Zusammenarbeit stabilisieren."
-                            : "Die Arbeitsweise der Person passt nicht zur Grundlogik dieser Position. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen. Eine stabile Besetzung ist unter diesen Bedingungen unwahrscheinlich."
+                            : "Die Arbeitsweise der Person passt nicht zur Grundlogik dieser Stelle. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen. Eine stabile Besetzung ist unter diesen Bedingungen unwahrscheinlich."
                         )}
                       </p>
                     </div>

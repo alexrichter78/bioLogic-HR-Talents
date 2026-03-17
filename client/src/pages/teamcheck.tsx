@@ -179,7 +179,7 @@ export default function TeamCheck() {
   const [soll, setSoll] = useState<Triad>({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
   const [kandidat, setKandidat] = useState<Triad>({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
   const [team, setTeam] = useState<Triad>({ impulsiv: 30, intuitiv: 50, analytisch: 20 });
-  const [beruf, setBeruf] = useState("Neue Position");
+  const [beruf, setBeruf] = useState("Neue Stelle");
   const [bereich, setBereich] = useState("");
   const [fuehrungstyp, setFuehrungstyp] = useState("Keine");
   const [aufgabencharakter, setAufgabencharakter] = useState("");
@@ -965,7 +965,7 @@ export default function TeamCheck() {
           <h2 style={{ fontSize: 20, fontWeight: 800, color: "#1D1D1F", margin: "0 0 2px", letterSpacing: "-0.02em" }}>bioLogic-TeamCheck</h2>
           <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 18px", fontWeight: 500 }}>Recruiting-Entscheidungsgrundlage – Level 2</p>
           <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", rowGap: 6, columnGap: 16, fontSize: 13 }}>
-            <span style={{ color: "#8E8E93", fontWeight: 500 }}>Position:</span>
+            <span style={{ color: "#8E8E93", fontWeight: 500 }}>Stelle:</span>
             <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-position">{beruf}</span>
             <span style={{ color: "#8E8E93", fontWeight: 500 }}>Bereich:</span>
             <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-bereich">{bereich || "–"}</span>

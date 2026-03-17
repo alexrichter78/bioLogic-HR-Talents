@@ -204,7 +204,7 @@ export default function Home() {
                 </div>
 
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: "0 0 28px", fontWeight: 600 }} data-testid="text-profile-desc">
-                  Definieren Sie eine Position und analysieren Sie die strukturelle Passung. Die Analyse liefert klare Handlungsempfehlungen für Besetzung, Führung und Zusammenarbeit.
+                  Definieren Sie eine Stelle und analysieren Sie die strukturelle Passung. Die Analyse liefert klare Handlungsempfehlungen für Besetzung, Führung und Zusammenarbeit.
                 </p>
 
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, flexWrap: "wrap" }}>
