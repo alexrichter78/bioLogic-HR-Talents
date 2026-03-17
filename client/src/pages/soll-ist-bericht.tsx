@@ -459,19 +459,23 @@ export default function SollIstBericht() {
 
             const bulletCol = fitLabel === "Geeignet" ? "#34C759" : fitLabel === "Bedingt geeignet" ? "#FF9500" : "#FF9500";
 
+            let kritischLabel: string;
             const kritischBullets: string[] = [];
             if (fitLabel === "Geeignet") {
+              kritischLabel = "Stärken";
               kritischBullets.push("Arbeitsweise stimmt überein");
               kritischBullets.push("Entscheidungslogik passt");
               kritischBullets.push("Tempo und Struktur kompatibel");
             } else if (fitLabel === "Bedingt geeignet") {
+              kritischLabel = "Auffällig";
               kritischBullets.push("Arbeitsweise weicht teilweise ab");
               kritischBullets.push("Entscheidungslogik unterschiedlich");
-              kritischBullets.push("Tempo / Struktur anpassbar");
+              kritischBullets.push("Tempo / Struktur nicht deckungsgleich");
             } else {
-              kritischBullets.push("Arbeitsweise weicht ab");
+              kritischLabel = "Kritisch";
+              kritischBullets.push("Arbeitsweise weicht deutlich ab");
               kritischBullets.push("Entscheidungslogik passt nicht");
-              kritischBullets.push("Tempo / Struktur unterschiedlich");
+              kritischBullets.push("Tempo / Struktur nicht kompatibel");
             }
 
             const auswirkungBullets: string[] = [];
@@ -480,12 +484,12 @@ export default function SollIstBericht() {
               auswirkungBullets.push("Stabiles Teamgefüge");
               auswirkungBullets.push("Geringer Führungsaufwand");
             } else if (fitLabel === "Bedingt geeignet") {
-              auswirkungBullets.push("Mehr Abstimmung");
+              auswirkungBullets.push("Mehr Abstimmung nötig");
               auswirkungBullets.push("Leichtes Spannungspotenzial");
               auswirkungBullets.push("Erhöhter Führungsaufwand");
             } else {
-              auswirkungBullets.push("Mehr Abstimmung");
-              auswirkungBullets.push("Konfliktpotenzial");
+              auswirkungBullets.push("Deutlich mehr Abstimmung nötig");
+              auswirkungBullets.push("Konfliktpotenzial im Team");
               auswirkungBullets.push("Hoher Führungsaufwand");
             }
 
@@ -541,7 +545,7 @@ export default function SollIstBericht() {
                       </div>
 
                       <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
-                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>Kritisch</p>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>{kritischLabel}</p>
                         {kritischBullets.map((b, i) => (
                           <BulletItem key={i} text={b} color={bulletCol} />
                         ))}
