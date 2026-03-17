@@ -77,7 +77,7 @@ Preferred communication style: Simple, everyday language.
 -   **Leader-Team Match Engine (`client/src/lib/leader-team-match-engine.ts`)**: Provides three evaluations (Normal, Controlled Stress, Uncontrolled Stress) for leadership roles, generating ratings, component breakdowns, Team-Fit-Score (TFS), and flags. Applies leadership rules F1-F7.
 -   **Teamdynamik Engine (`client/src/lib/teamdynamik-engine.ts`)**: Calculates DG (Distribution Gap), DC (Dominance Clash), RG (Role Gap), TS (Transformation Score), CI (Conflict Index). Reuses functions from `jobcheck-engine.ts`. Implements `StressShift` for stability rating.
 -   **Rollen-DNA to Dominance Mapping**: Role's arbeitslogik (e.g., Ergebnis & Umsetzung → IMPULSIV) and erfolgsfokus (e.g., "Ergebnis-/ Umsatzwirkung" → IMPULSIV) are mapped to dominance types for fit analysis.
--   **AI Integration**: OpenAI for AI-generated reports and KI-Coach, with server-side topic filtering for the KI-Coach.
+-   **AI Integration**: OpenAI for AI-generated reports and KI-Coach, with server-side topic filtering for the KI-Coach. KI-Coach uses function calling with two tools: `web_search` (for internet research) and `generate_image` (for creating visuals for Stellenanzeigen, Recruiting-Marketing, etc.). Image generation uses `gpt-image-1` via `/api/generate-image` backend; images are returned as base64 in the chat response and displayed inline with a download button.
 
 ## External Dependencies
 

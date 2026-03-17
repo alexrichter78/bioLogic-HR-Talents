@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp } from "lucide-react";
+import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImageIcon } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 
 type Message = {
   role: "user" | "assistant";
   content: string;
+  image?: string;
 };
 
 const WELCOME_MSG: Message = {
@@ -218,7 +219,11 @@ export default function KICoach() {
 
       if (!res.ok) throw new Error("Fehler");
       const data = await res.json();
-      setMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
+      const assistantMsg: Message = { role: "assistant", content: data.reply };
+      if (data.image) {
+        assistantMsg.image = `data:image/png;base64,${data.image}`;
+      }
+      setMessages(prev => [...prev, assistantMsg]);
     } catch {
       setMessages(prev => [...prev, {
         role: "assistant",
@@ -248,7 +253,11 @@ export default function KICoach() {
     text += `${"─".repeat(50)}\n\n`;
     for (const msg of chatMessages) {
       const label = msg.role === "user" ? "Frage" : "Coach";
-      text += `${label}:\n${msg.content}\n\n`;
+      text += `${label}:\n${msg.content}\n`;
+      if (msg.image) {
+        text += `[KI-generiertes Bild wurde in diesem Schritt erstellt]\n`;
+      }
+      text += `\n`;
     }
     const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -338,6 +347,49 @@ export default function KICoach() {
                   fontSize: 14, lineHeight: 1.6,
                 }}>
                   {formatMessage(msg.content)}
+                  {msg.image && (
+                    <div style={{ marginTop: 12 }}>
+                      <img
+                        src={msg.image}
+                        alt="KI-generiertes Bild"
+                        data-testid={`image-generated-${i}`}
+                        style={{
+                          width: "100%",
+                          maxWidth: 480,
+                          borderRadius: 12,
+                          border: "1px solid rgba(0,0,0,0.08)",
+                          display: "block",
+                        }}
+                      />
+                      <button
+                        onClick={() => {
+                          const a = document.createElement("a");
+                          a.href = msg.image!;
+                          a.download = `bioLogic-Coach-Bild_${new Date().toISOString().slice(0, 10)}.png`;
+                          a.click();
+                        }}
+                        data-testid={`button-download-image-${i}`}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 6,
+                          marginTop: 8,
+                          padding: "6px 14px",
+                          borderRadius: 10,
+                          border: "1px solid rgba(0,0,0,0.1)",
+                          background: "rgba(255,255,255,0.9)",
+                          cursor: "pointer",
+                          fontSize: 12,
+                          fontWeight: 600,
+                          color: "#0071E3",
+                          transition: "all 200ms ease",
+                        }}
+                      >
+                        <Download style={{ width: 13, height: 13 }} />
+                        Bild herunterladen
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -356,7 +408,7 @@ export default function KICoach() {
                   background: "rgba(0,0,0,0.04)", display: "flex", alignItems: "center", gap: 8,
                 }}>
                   <Loader2 style={{ width: 16, height: 16, color: "#8E8E93", animation: "spin 1s linear infinite" }} />
-                  <span style={{ fontSize: 13, color: "#6E6E73" }}>Antwort wird erstellt...</span>
+                  <span style={{ fontSize: 13, color: "#6E6E73" }} data-testid="text-loading">Antwort wird erstellt...</span>
                 </div>
               </div>
             )}

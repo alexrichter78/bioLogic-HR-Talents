@@ -659,6 +659,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
         "mitarbeiter", "team", "personal", "hr", "besetzung", "rolle", "profil", "biologic", "biogram",
         "coaching", "beratung", "mentor", "sparring",
         "stellenanzeige", "anzeige", "jobinserat", "wortsprache", "bildsprache", "marketingrelevant", "recruiting-marketing", "zielgruppe", "ansprache", "formulierung",
+        "bild", "grafik", "visual", "erstelle", "generiere", "zeig mir",
         "kündigung", "kuendigung", "trennung", "offboarding", "austritt",
         "motivation", "leistung", "ziel", "delegation", "verantwortung",
         "kultur", "werte", "vertrauen", "zusammenarbeit",
@@ -907,10 +908,30 @@ ZUSAMMENFASSUNGEN:
         },
       };
 
+      const generateImageTool = {
+        type: "function" as const,
+        function: {
+          name: "generate_image",
+          description: "Erstelle ein KI-generiertes Bild basierend auf einer Beschreibung. Nutze diese Funktion wenn der Nutzer ausdrücklich nach einem Bild, einer Grafik, einem Visual, einem Bildkonzept oder einer Bildsprache für eine Stellenanzeige, Recruiting-Material, Employer Branding, Präsentation oder ähnliches fragt. Beispiele: 'Erstelle mir ein Bild für eine Stellenanzeige', 'Generiere ein Visual für...', 'Zeig mir ein Bild von...', 'Mach mir eine Grafik...'. NICHT nutzen bei reinen Textfragen über Bildsprache oder Konzepte.",
+          parameters: {
+            type: "object",
+            properties: {
+              prompt: {
+                type: "string",
+                description: "Detaillierte englische Bildbeschreibung für die Bildgenerierung. Beschreibe Stil, Komposition, Farben, Stimmung und Inhalt präzise. Beispiel: 'Professional corporate photography style, diverse team of 4 people collaborating around a modern conference table, warm natural lighting, clean minimalist office environment, conveying teamwork and innovation'",
+              },
+            },
+            required: ["prompt"],
+          },
+        },
+      };
+
+      let generatedImageBase64: string | null = null;
+
       let response = await openai.chat.completions.create({
         model: "gpt-4.1",
         messages: apiMessages as any,
-        tools: [webSearchTool],
+        tools: [webSearchTool, generateImageTool],
         tool_choice: "auto",
         temperature: 0.4,
         max_tokens: 2000,
@@ -918,7 +939,7 @@ ZUSAMMENFASSUNGEN:
 
       let assistantMessage = response.choices[0]?.message;
 
-      if (assistantMessage?.tool_calls && assistantMessage.tool_calls.length > 0) {
+      while (assistantMessage?.tool_calls && assistantMessage.tool_calls.length > 0) {
         const toolCall = assistantMessage.tool_calls[0];
         if (toolCall.function.name === "web_search") {
           let searchQuery = "";
@@ -980,11 +1001,61 @@ ZUSAMMENFASSUNGEN:
             max_tokens: 2000,
           });
           assistantMessage = response.choices[0]?.message;
+        } else if (toolCall.function.name === "generate_image") {
+          let imagePrompt = "";
+          try {
+            const args = JSON.parse(toolCall.function.arguments);
+            imagePrompt = args.prompt || "";
+          } catch { imagePrompt = ""; }
+
+          let imageToolResult = "Bild wurde erfolgreich generiert und wird dem Nutzer angezeigt.";
+          if (imagePrompt) {
+            try {
+              const { generateImageBuffer } = await import("./replit_integrations/image/client");
+              const buffer = await generateImageBuffer(imagePrompt, "1024x1024");
+              const b64 = buffer.toString("base64");
+              if (b64 && b64.length > 100) {
+                generatedImageBase64 = b64;
+              } else {
+                imageToolResult = "Bildgenerierung fehlgeschlagen – leere Antwort vom Bildservice. Bitte beschreibe dem Nutzer, was das Bild zeigen sollte, und entschuldige dich für den technischen Fehler.";
+              }
+            } catch (imgError) {
+              console.error("Error generating image:", imgError);
+              imageToolResult = "Fehler bei der Bildgenerierung. Bitte beschreibe dem Nutzer, was das Bild zeigen sollte, und entschuldige dich für den technischen Fehler.";
+            }
+          } else {
+            imageToolResult = "Kein Prompt angegeben. Bitte beschreibe dem Nutzer, was das Bild zeigen sollte.";
+          }
+
+          (apiMessages as any[]).push({
+            role: "assistant",
+            content: null,
+            tool_calls: assistantMessage.tool_calls,
+          });
+          (apiMessages as any[]).push({
+            role: "tool",
+            content: imageToolResult,
+            tool_call_id: toolCall.id,
+          });
+
+          response = await openai.chat.completions.create({
+            model: "gpt-4.1",
+            messages: apiMessages as any,
+            temperature: 0.4,
+            max_tokens: 2000,
+          });
+          assistantMessage = response.choices[0]?.message;
+        } else {
+          break;
         }
       }
 
       const reply = assistantMessage?.content || "Entschuldigung, ich konnte keine Antwort generieren.";
-      res.json({ reply, filtered: false });
+      const responseData: { reply: string; filtered: boolean; image?: string } = { reply, filtered: false };
+      if (generatedImageBase64) {
+        responseData.image = generatedImageBase64;
+      }
+      res.json(responseData);
     } catch (error) {
       console.error("Error in KI-Coach:", error);
       res.status(500).json({ error: "Fehler bei der Verarbeitung" });
