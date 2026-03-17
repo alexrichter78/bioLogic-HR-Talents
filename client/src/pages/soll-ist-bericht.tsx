@@ -152,6 +152,7 @@ export default function SollIstBericht() {
   const reportRef = useRef<HTMLDivElement>(null);
   const [profilvergleichOpen, setProfilvergleichOpen] = useState(true);
   const [systemwirkungOpen, setSystemwirkungOpen] = useState(true);
+  const [swTab, setSwTab] = useState<"systemwirkung" | "spannung">("systemwirkung");
   const [fuehrungsArt, setFuehrungsArt] = useState<FuehrungsArt>("keine");
   const [matchCheckFit, setMatchCheckFit] = useState<string | undefined>(undefined);
   const [matchCheckControl, setMatchCheckControl] = useState<string | undefined>(undefined);
@@ -443,25 +444,47 @@ export default function SollIstBericht() {
             const fitLabel = effective.fitLabel;
             const fitColor = bioFitColor(fitLabel);
 
-            const gapLevel = effective.gapLevel;
-            let fazitText: string;
+            let shortFazit: string;
             if (fitLabel === "Geeignet") {
-              fazitText = "Die Arbeitsweise der Person passt gut zu den Anforderungen der Stelle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein. Dadurch ist zu erwarten, dass die Person die Stelle in ihrer natürlichen Ausrichtung stabil und wirksam ausfüllen kann.";
-            } else if (fitLabel === "Bedingt geeignet" && gapLevel === "gering") {
-              fazitText = "Die Grundausrichtung der Person ist mit den Anforderungen der Stelle grundsätzlich vereinbar. In der konkreten Gewichtung einzelner Arbeitsbereiche zeigen sich jedoch Abweichungen. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf und höherem Führungsaufwand führen. Mit klaren Erwartungen und gezielter Führung ist die Zusammenarbeit stabil möglich.";
+              shortFazit = "Arbeitsweise passt zur Rolle";
             } else if (fitLabel === "Bedingt geeignet") {
-              fazitText = "Die Person bringt eine grundsätzlich passende Arbeitsrichtung für die Stelle mit. In mehreren für die Aufgabe wichtigen Bereichen zeigt sich jedoch ein spürbarer Anpassungsbedarf. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen. Mit klaren Erwartungen und regelmässiger Rückmeldung kann die Zusammenarbeit funktionieren.";
-            } else if (fitLabel === "Nicht geeignet" && gapLevel !== "hoch") {
-              fazitText = "Zwischen Stelle und Person besteht eine deutliche strukturelle Abweichung. Auch wenn der Gesamtabstand nicht extrem hoch ist, passt die innere Gewichtung der Arbeitsweise nicht ausreichend zu den Stellenanforderungen. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
+              shortFazit = "Arbeitsweise passt teilweise zur Rolle";
             } else {
-              fazitText = "Die Anforderungen der Stelle und die natürliche Arbeitsweise der Person unterscheiden sich deutlich. Aufgabenverständnis, Entscheidungslogik und Arbeitsstil liegen zu weit auseinander. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
+              shortFazit = "Arbeitslogik passt nicht zur Rolle";
             }
 
             const devLevel = effective.developmentLevel;
             const devScore = devLevel >= 4 ? 3 : devLevel >= 3 ? 2 : 1;
-            const devLabel = effective.developmentLabel === "hoch" ? "Gute Aussichten, wenig Aufwand" : effective.developmentLabel === "mittel" ? "Machbar, braucht gezielte Führung" : "Hoher Aufwand, Ergebnis unsicher";
-            const devText = effective.developmentText;
             const devGaugeColor = devScore === 3 ? "#34C759" : devScore === 2 ? "#E5A832" : "#D64045";
+
+            const alltagBullets: string[] = [];
+            if (fitLabel !== "Geeignet") {
+              alltagBullets.push("Mehr Abstimmung notwendig");
+              if (fitLabel === "Nicht geeignet") alltagBullets.push("Konfliktpotenzial im Team");
+              alltagBullets.push(fitLabel === "Geeignet" ? "Geringer Führungsaufwand" : fitLabel === "Bedingt geeignet" ? "Erhöhter Führungsaufwand" : "Hoher Führungsaufwand");
+            } else {
+              alltagBullets.push("Reibungslose Zusammenarbeit");
+              alltagBullets.push("Geringer Führungsaufwand");
+              alltagBullets.push("Natürliche Passung vorhanden");
+            }
+
+            const devBullets: string[] = [];
+            if (devScore === 3) {
+              devBullets.push("Feinabstimmung genügt");
+              devBullets.push("Stabile Entwicklung erwartbar");
+            } else if (devScore === 2) {
+              devBullets.push("Gezielter Aufbau nötig");
+              devBullets.push("Klare Führung erforderlich");
+            } else {
+              devBullets.push("Hoher Anpassungsaufwand");
+              devBullets.push("Ergebnis unsicher");
+            }
+
+            const bulletIcon = (severity: "positive" | "neutral" | "warning") => {
+              const col = severity === "positive" ? "#34C759" : severity === "warning" ? "#FF9500" : "#8E8E93";
+              return <div style={{ width: 6, height: 6, borderRadius: 3, background: col, flexShrink: 0, marginTop: 6 }} />;
+            };
+            const bulletSeverity: "positive" | "neutral" | "warning" = fitLabel === "Geeignet" ? "positive" : fitLabel === "Bedingt geeignet" ? "neutral" : "warning";
 
             return (
               <div style={{ marginTop: 20 }} data-testid="section-summary-card">
@@ -484,37 +507,110 @@ export default function SollIstBericht() {
 
                   {systemwirkungOpen && (
                   <div style={{ padding: "0 32px 28px" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
-                      <div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
-                          <div style={{ width: 18, height: 18, borderRadius: 9, background: fitColor, flexShrink: 0, boxShadow: `0 0 0 4px ${fitColor}20` }} />
-                          <div style={{ flex: 1 }}>
-                            <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-summary-role">{roleName || "Stelle"}</span>
-                          </div>
-                          <span style={{ fontSize: 13, fontWeight: 700, color: fitColor, letterSpacing: "0.03em" }} data-testid="text-summary-fit">
-                            {fitLabel}
-                          </span>
-                        </div>
-                        <div style={{ background: `${fitColor}08`, borderLeft: `3px solid ${fitColor}`, borderRadius: "0 8px 8px 0", padding: "12px 16px", minHeight: 80 }}>
-                          <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0 }} data-testid="text-summary-fazit">{fazitText}</p>
-                        </div>
-                      </div>
-
-                      <div style={{ borderLeft: "1px solid rgba(0,0,0,0.06)", paddingLeft: 24 }}>
-                        <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 14px" }}>
-                          Entwicklungsprognose
-                        </p>
-                        <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px", whiteSpace: "nowrap" }} data-testid="text-dev-prognose">
-                          {devScore} von 3 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>– {devLabel}</span>
-                        </p>
-                        <div style={{ display: "flex", gap: 5, marginBottom: 18 }} data-testid="gauge-dev-prognose">
-                          {Array.from({ length: 3 }).map((_, i) => (
-                            <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)", transition: "background 200ms ease" }} />
-                          ))}
-                        </div>
-                        {devText && <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, minHeight: 80 }} data-testid="text-dev-description">{devText}</p>}
+                    <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 8 }}>
+                      <div style={{ width: 14, height: 14, borderRadius: 7, background: fitColor, flexShrink: 0, boxShadow: `0 0 0 3px ${fitColor}20` }} />
+                      <span style={{ fontSize: 13, fontWeight: 700, color: fitColor }} data-testid="text-summary-fit">{fitLabel}</span>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 6 }}>
+                      <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-summary-role">{roleName || "Stelle"}</span>
+                      <div style={{ display: "flex", gap: 0 }}>
+                        {(["systemwirkung", "spannung"] as const).map(t => (
+                          <button
+                            key={t}
+                            onClick={() => setSwTab(t)}
+                            style={{ padding: "4px 12px", fontSize: 13, fontWeight: swTab === t ? 700 : 500, color: swTab === t ? "#FF9500" : "#8E8E93", background: "none", border: "none", cursor: "pointer", borderBottom: swTab === t ? "2px solid #FF9500" : "2px solid transparent", transition: "all 150ms" }}
+                            data-testid={`tab-sw-${t}`}
+                          >
+                            {t === "systemwirkung" ? "Systemwirkung" : "Spannung"}
+                          </button>
+                        ))}
                       </div>
                     </div>
+                    <p style={{ fontSize: 15, fontWeight: 600, color: "#48484A", margin: "0 0 18px" }} data-testid="text-summary-fazit">{shortFazit}</p>
+
+                    {swTab === "systemwirkung" && (
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                        <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
+                          <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 10px" }}>Warum dieses Ergebnis</p>
+                          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                            {effective.executiveBullets.map((b, i) => (
+                              <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                {bulletIcon(bulletSeverity)}
+                                <span style={{ fontSize: 13, color: "#48484A", lineHeight: 1.5 }}>{b}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
+                          <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 10px" }}>Auswirkung im Alltag</p>
+                          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                            {alltagBullets.map((b, i) => (
+                              <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                {bulletIcon(bulletSeverity)}
+                                <span style={{ fontSize: 13, color: "#48484A", lineHeight: 1.5 }}>{b}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)", gridColumn: effective.constellationRisks.length > 0 ? "span 1" : "span 2" }}>
+                          <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 10px" }}>Entwicklung</p>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                            <div style={{ display: "flex", gap: 4, flex: 1, maxWidth: 100 }}>
+                              {Array.from({ length: 3 }).map((_, i) => (
+                                <div key={i} style={{ flex: 1, height: 8, borderRadius: 3, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)" }} />
+                              ))}
+                            </div>
+                            <span style={{ fontSize: 13, fontWeight: 600, color: devGaugeColor }}>{effective.developmentLabel}</span>
+                          </div>
+                          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                            {devBullets.map((b, i) => (
+                              <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                {bulletIcon(bulletSeverity)}
+                                <span style={{ fontSize: 13, color: "#48484A", lineHeight: 1.5 }}>{b}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {effective.constellationRisks.length > 0 && (
+                          <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 10px" }}>Risiken</p>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                              {effective.constellationRisks.slice(0, 3).map((r, i) => (
+                                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                  {bulletIcon(bulletSeverity)}
+                                  <span style={{ fontSize: 13, color: "#48484A", lineHeight: 1.5 }}>{r}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {swTab === "spannung" && (
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                        {effective.impactAreas.slice(0, 4).map(area => {
+                          const sevCol = area.severity === "critical" ? "#FF3B30" : area.severity === "warning" ? "#FF9500" : "#34C759";
+                          return (
+                            <div key={area.id} style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                                <div style={{ width: 8, height: 8, borderRadius: 4, background: sevCol }} />
+                                <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.08em", textTransform: "uppercase", margin: 0 }}>{area.label}</p>
+                              </div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                                <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                  <div style={{ width: 6, height: 6, borderRadius: 3, background: sevCol, flexShrink: 0, marginTop: 6 }} />
+                                  <span style={{ fontSize: 13, color: "#48484A", lineHeight: 1.5 }}>{area.risk}</span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                   )}
                 </div>
