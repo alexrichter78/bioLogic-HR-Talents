@@ -1,14 +1,13 @@
 import { useLocation } from "wouter";
-import { Home, Briefcase, GitCompareArrows, Users, Bot, FileBarChart } from "lucide-react";
+import { Home, Briefcase, GitCompareArrows, Users, Bot } from "lucide-react";
 import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
 
 const NAV_ITEMS = [
   { label: "Home", subtitle: "", path: "/", icon: Home, disabled: false },
   { label: "JobCheck", subtitle: "Stellenanalyse", path: "/rollen-dna", icon: Briefcase, disabled: false },
   { label: "MatchCheck", subtitle: "Stelle \u2194 Person", path: "/soll-ist", icon: GitCompareArrows, disabled: false },
-  { label: "TeamCheck", subtitle: "Teamstruktur", path: "/teamcheck", icon: Users },
+  { label: "TeamCheck", subtitle: "Teamstruktur", path: "/team-report", icon: Users, disabled: false },
   { label: "KI-Coach", subtitle: "Führung & Entwicklung", path: "/ki-coach", icon: Bot, disabled: false },
-  { label: "TestTeamReport", subtitle: "Systemanalyse", path: "/team-report", icon: FileBarChart, disabled: false },
 ];
 
 const RESET_KEYS = [
