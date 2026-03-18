@@ -243,9 +243,9 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   const blockInner = CW;
 
   const shiftFirst = result.dominanceShiftText.split(/\n\n+/)[0];
-  const shiftLines = wrap(shiftFirst, blockInner, 7.5);
+  const shiftLines = wrap(shiftFirst, blockInner, 8);
   const summaryFirst = result.summaryText.split(/\n\n+/)[0];
-  const fazitLines = wrap(summaryFirst, blockInner - 6, 7.5);
+  const fazitLines = wrap(summaryFirst, blockInner - 6, 8);
 
   const metricW = blockInner / 4 - 1.5;
   const metricH = 14;
@@ -265,14 +265,14 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   ];
 
   let bulletLines = 0;
-  result.executiveBullets.forEach(b => { bulletLines += wrap(b, blockInner - 8, 7.5).length; });
+  result.executiveBullets.forEach(b => { bulletLines += wrap(b, blockInner - 8, 8).length; });
   let riskLines = 0;
-  result.constellationRisks.forEach(r => { riskLines += wrap(r, blockInner - 8, 7.5).length; });
+  result.constellationRisks.forEach(r => { riskLines += wrap(r, blockInner - 8, 8).length; });
 
-  let estH = MT + 14 + 10 + 4 + metricH + 5 + 4 + (overviewRows.length * rowH) + 2 + 4 + (2 * rowH) + 2 + (shiftLines.length * 3.8) + 4 + 4 + (fazitLines.length * 3.8);
-  if (bulletLines > 0) estH += 6 + bulletLines * 3.8;
-  if (riskLines > 0) estH += 6 + riskLines * 3.8;
-  estH += 6;
+  let estH = MT + 14 + 10 + 4 + metricH + 5 + 4 + (overviewRows.length * rowH) + 2 + 4 + (2 * rowH) + 2 + (shiftLines.length * 4) + 4 + 4 + (fazitLines.length * 4);
+  if (bulletLines > 0) estH += 7 + bulletLines * 4;
+  if (riskLines > 0) estH += 7 + riskLines * 4;
+  estH += 12;
 
   setF(headerBgRgb);
   doc.rect(0, 0, PW, estH, "F");
@@ -368,12 +368,12 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   doc.text(COMP_LABELS[result.candDomKey], ML + blockInner, hY, { align: "right" });
   hY += rowH + 2;
 
-  doc.setFontSize(7.5);
+  doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
   shiftLines.forEach(line => {
     setC(headerTextDim);
     doc.text(line, ML, hY);
-    hY += 3.8;
+    hY += 4;
   });
   hY += 4;
 
@@ -382,12 +382,12 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   setC(headerTextSubtle);
   doc.text("MANAGEMENTKURZFAZIT", ML, hY);
   hY += 4;
-  doc.setFontSize(7.5);
+  doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
   fazitLines.forEach(line => {
     setC(headerTextDim);
     doc.text(line, ML + 4, hY);
-    hY += 3.8;
+    hY += 4;
   });
 
   if (result.executiveBullets.length > 0) {
@@ -398,15 +398,15 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
     doc.text("WARUM DIESES ERGEBNIS", ML, hY);
     hY += 4;
     result.executiveBullets.forEach(b => {
-      const bLines = wrap(b, blockInner - 8, 7.5);
+      const bLines = wrap(b, blockInner - 8, 8);
       setF(fitCol);
       doc.circle(ML + 1.5, hY - 1.2, 1.2, "F");
-      doc.setFontSize(7.5);
+      doc.setFontSize(8);
       doc.setFont("helvetica", "normal");
       bLines.forEach((line, li) => {
         setC(headerTextDim);
         doc.text(line, ML + 5, hY);
-        hY += 3.8;
+        hY += 4;
       });
     });
   }
@@ -419,20 +419,20 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
     doc.text("RISIKEN DIESER KONSTELLATION", ML, hY);
     hY += 4;
     result.constellationRisks.forEach(r => {
-      const rLines = wrap(r, blockInner - 8, 7.5);
+      const rLines = wrap(r, blockInner - 8, 8);
       setF(C.red);
       doc.circle(ML + 1.5, hY - 1.2, 1.2, "F");
-      doc.setFontSize(7.5);
+      doc.setFontSize(8);
       doc.setFont("helvetica", "normal");
       rLines.forEach(line => {
         setC(headerTextDim);
         doc.text(line, ML + 5, hY);
-        hY += 3.8;
+        hY += 4;
       });
     });
   }
 
-  y = hY + 8;
+  y = Math.max(hY + 10, estH + 4);
 
   separator(70);
 
@@ -515,7 +515,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
 
   let maxGap = 0; let maxKey: ComponentKey = "analytisch";
   for (const k of keys) { const g = Math.abs(roleTriad[k] - candidateProfile[k]); if (g > maxGap) { maxGap = g; maxKey = k; } }
-  printText(`Die grösste Abweichung liegt im Bereich ${COMP_LABELS[maxKey]}. Genau dort liegt die Kernanforderung der Rolle.`, ML, CW, 8.5, C.dark, 4.3);
+  printText(`Die grösste Abweichung liegt im Bereich ${COMP_LABELS[maxKey]}. Genau dort liegt die Kernanforderung der Rolle.`, ML, CW, 9, C.dark, 4.5);
   y += 2;
   labelTag("Bedeutung der Komponenten");
   const compMeaning: Record<ComponentKey, string> = {
@@ -526,7 +526,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   for (const k of ["intuitiv", "impulsiv", "analytisch"] as ComponentKey[]) {
     checkPage(8);
     dot(ML, y, compColor(k));
-    doc.setFontSize(8.5);
+    doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
     setC(C.black);
     const nameStr = labelComponent(k);
@@ -534,12 +534,12 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
     const nameW = doc.getTextWidth(nameStr);
     doc.setFont("helvetica", "normal");
     setC(C.mid);
-    const descLines = wrap(` – ${compMeaning[k]}`, CW - 5 - nameW, 8.5);
+    const descLines = wrap(` – ${compMeaning[k]}`, CW - 5 - nameW, 9);
     doc.text(descLines[0], ML + 5 + nameW, y);
     if (descLines.length > 1) {
       for (let i = 1; i < descLines.length; i++) {
-        y += 4.3;
-        checkPage(4.3);
+        y += 4.5;
+        checkPage(4.5);
         doc.text(descLines[i], ML + 5, y);
       }
     }
@@ -563,9 +563,9 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
     const lw = doc.getTextWidth(labelStr + " ");
     badge(ML + 5 + lw, y, severityLabel(area.severity), sevBg, sevCol, 22);
     y += 6;
-    printText(area.roleNeed, ML + 5, CW - 5, 8.5, C.black, 4.3, "bold");
-    printText(area.candidatePattern, ML + 5, CW - 5, 8.5, C.dark, 4.3);
-    printText(area.risk, ML + 5, CW - 5, 8.5, C.mid, 4.3, "italic");
+    printText(area.roleNeed, ML + 5, CW - 5, 9, C.black, 4.5, "bold");
+    printText(area.candidatePattern, ML + 5, CW - 5, 9, C.dark, 4.5);
+    printText(area.risk, ML + 5, CW - 5, 9, C.mid, 4.5, "italic");
     if (idx < result.impactAreas.length - 1) {
       y += 2;
       hline(ML + 5, y, ML + CW - 5, C.lineFaint);
@@ -586,7 +586,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   setC(C.amber);
   doc.text("KONTROLLIERTER DRUCK", ML, y);
   y += 5;
-  printText(result.stressBehavior.controlledPressure, ML, CW, 8.5, C.dark, 4.3);
+  printText(result.stressBehavior.controlledPressure, ML, CW, 9, C.dark, 4.5);
   y += 3;
 
   checkPage(14);
@@ -598,9 +598,9 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   setC(C.red);
   doc.text("UNKONTROLLIERTER STRESS", ML, y);
   y += 5;
-  printText(result.stressBehavior.uncontrolledStress, ML, CW, 8.5, C.dark, 4.3);
+  printText(result.stressBehavior.uncontrolledStress, ML, CW, 9, C.dark, 4.5);
   y += 3;
-  printText("Unter zunehmendem Arbeitsdruck können sich diese Verhaltensmuster verstärken. Dadurch entstehen im Arbeitsalltag Risiken für Abstimmung, Führung und Zusammenarbeit.", ML, CW, 8.5, C.mid, 4.3, "italic");
+  printText("Unter zunehmendem Arbeitsdruck können sich diese Verhaltensmuster verstärken. Dadurch entstehen im Arbeitsalltag Risiken für Abstimmung, Führung und Zusammenarbeit.", ML, CW, 9, C.mid, 4.5, "italic");
 
   separator(50);
 
@@ -621,7 +621,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
     setC(C.mid);
     doc.text(" - " + phase.period, ML + 3 + doc.getTextWidth(phLabel), y + 1);
     y += 8;
-    printText(phase.text, ML, CW, 8.5, C.dark, 4.3);
+    printText(phase.text, ML, CW, 9, C.dark, 4.5);
     if (i < result.riskTimeline.length - 1) {
       y += 3;
     }
@@ -659,7 +659,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   bgBox(ML, y, CW, summBoxH, C.bg, C.lineFaint);
 
   const sy = y + 6;
-  doc.setFontSize(8.5);
+  doc.setFontSize(9);
   doc.setFont("helvetica", "bold");
   setC(C.mid);
   doc.text("Rolle", ML + 5, sy);
@@ -685,12 +685,12 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
 
   setD(rFitColorRgb);
   doc.setLineWidth(0.7);
-  const rFazitLines = wrap(rFazit, CW - 6, 8.5);
-  const fazitH = rFazitLines.length * 4.3 + 2;
+  const rFazitLines = wrap(rFazit, CW - 6, 9);
+  const fazitH = rFazitLines.length * 4.5 + 2;
   doc.line(ML, y, ML, y + fazitH);
-  printText(rFazit, ML + 5, CW - 6, 8.5, C.dark, 4.3);
+  printText(rFazit, ML + 5, CW - 6, 9, C.dark, 4.5);
   y += 3;
-  printText(result.developmentText, ML, CW, 8.5, C.dark, 4.3);
+  printText(result.developmentText, ML, CW, 9, C.dark, 4.5);
   y += 4;
 
   checkPage(20);
@@ -700,8 +700,8 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
     ? "Die Arbeitsweise der Person weicht in einzelnen Bereichen von den Anforderungen der Rolle ab. Eine stabile Besetzung ist mit gezielter Führung und regelmässiger Rückmeldung möglich. Aus Managementsicht ist diese Besetzung unter Voraussetzungen vertretbar."
     : "Die strukturelle Abweichung zwischen Rolle und Person ist deutlich. Eine stabile Besetzung wäre nur mit dauerhaft erhöhtem Führungsaufwand möglich. Aus Managementsicht wird diese Besetzung nicht empfohlen.";
 
-  const mgmtLines = wrap(mgmtText, CW - 10, 8.5);
-  const mgmtBoxH = mgmtLines.length * 4.3 + 12;
+  const mgmtLines = wrap(mgmtText, CW - 10, 9);
+  const mgmtBoxH = mgmtLines.length * 4.5 + 12;
   bgBox(ML, y, CW, mgmtBoxH, fitBg);
   y += 5;
   doc.setFontSize(6.5);
@@ -709,7 +709,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   setC(fitCol);
   doc.text("MANAGEMENTEINSCHÄTZUNG", ML + 5, y);
   y += 4.5;
-  printText(mgmtText, ML + 5, CW - 10, 8.5, C.dark, 4.3);
+  printText(mgmtText, ML + 5, CW - 10, 9, C.dark, 4.5);
   y += 4;
 
   if (result.integrationsplan) {
@@ -736,17 +736,17 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
       labelTag("Massnahmen");
       phase.items.forEach(item => {
         checkPage(6);
-        doc.setFontSize(8.5);
+        doc.setFontSize(9);
         doc.setFont("helvetica", "bold");
         setC(phaseCol);
         doc.text("–", ML, y);
         doc.setFont("helvetica", "normal");
         setC(C.dark);
-        const lines = wrap(item, CW - 6, 8.5);
+        const lines = wrap(item, CW - 6, 9);
         lines.forEach(line => {
           checkPage(4.5);
           doc.text(line, ML + 5, y);
-          y += 4.3;
+          y += 4.5;
         });
         y += 1;
       });
@@ -761,20 +761,20 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
       setC(phaseCol);
       doc.text("INTEGRATIONSFOKUS", ML + 6, y + 2);
       y += 6;
-      printText(phase.fokus.intro, ML + 6, CW - 8, 8.5, C.dark, 4.3);
+      printText(phase.fokus.intro, ML + 6, CW - 8, 9, C.dark, 4.5);
       phase.fokus.bullets.forEach(b => {
         checkPage(6);
-        doc.setFontSize(8.5);
+        doc.setFontSize(9);
         doc.setFont("helvetica", "bold");
         setC(phaseCol);
         doc.text("–", ML + 6, y);
         doc.setFont("helvetica", "normal");
         setC(C.dark);
-        const lines = wrap(b, CW - 14, 8.5);
+        const lines = wrap(b, CW - 14, 9);
         lines.forEach(line => {
           checkPage(4.5);
           doc.text(line, ML + 10, y);
-          y += 4.3;
+          y += 4.5;
         });
       });
       doc.line(ML + 3, fokusStartY, ML + 3, y);
@@ -792,7 +792,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   sectionHead(finalSecNum, "Schlussbewertung", hexToRgb(SECTION_COLORS.schlussbewertung));
 
   checkPage(16);
-  doc.setFontSize(8.5);
+  doc.setFontSize(9);
   doc.setFont("helvetica", "bold");
   setC(C.dark);
   doc.text("Grundpassung: ", ML, y);
@@ -811,7 +811,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   hline(ML, y, ML + CW);
   y += 6;
 
-  printText(result.finalText, ML, CW, 8.5, C.dark, 4.3);
+  printText(result.finalText, ML, CW, 9, C.dark, 4.5);
 
   doc.save(filename);
 }
