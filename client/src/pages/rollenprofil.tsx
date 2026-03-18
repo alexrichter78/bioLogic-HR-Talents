@@ -299,24 +299,50 @@ function buildStressTexts(bg: BG, isLeadership: boolean, fuehrungstyp: string) {
 }
 
 function buildTeamwirkung(data: ReportData) {
-  const { isLeadership, dom, fuehrungstyp } = data;
+  const { isLeadership, dom, sec, fuehrungstyp, profileType } = data;
 
   if (isLeadership) {
-    if (dom.key === "imp") {
-      return `Die Stelle übernimmt ${fuehrungstyp.toLowerCase()} im Team. Die Führungskraft gibt das Tempo vor, setzt klare Prioritäten und trifft Entscheidungen verbindlich. Teammitglieder wissen, woran sie sind. In Situationen mit hohem Handlungsdruck zeigt diese Führung ihre größte Stärke.`;
-    } else if (dom.key === "int") {
-      return `Die Stelle übernimmt ${fuehrungstyp.toLowerCase()} im Team. Die Führungskraft baut Vertrauen auf, bringt unterschiedliche Perspektiven zusammen und sorgt dafür, dass Entscheidungen vom Team getragen werden. Teammitglieder orientieren sich an dieser Person besonders bei schwierigen zwischenmenschlichen Situationen.`;
-    } else {
-      return `Die Stelle übernimmt ${fuehrungstyp.toLowerCase()} im Team. Die Führungskraft steuert über fachliche Expertise, klare Standards und nachvollziehbare Prozesse. Teammitglieder vertrauen auf die methodische Sicherheit und die sachliche Herangehensweise.`;
+    const ft = fuehrungstyp.toLowerCase();
+    if (profileType === "balanced_all") {
+      return `Die Stelle übernimmt ${ft} im Team. Die Führungskraft wechselt situativ zwischen verschiedenen Herangehensweisen – mal entschlossen und tempoorientiert, mal beziehungsorientiert, mal analytisch-strukturiert. Teammitglieder erleben eine flexible Führung, die sich an unterschiedliche Anforderungen anpassen kann. Die Herausforderung liegt darin, dabei eine klare und verlässliche Linie zu halten.`;
     }
+    if (profileType === "hybrid_imp_ana") {
+      return `Die Stelle übernimmt ${ft} im Team. Die Führungskraft verbindet Tempo und Struktur – Entscheidungen werden zügig getroffen und gleichzeitig sorgfältig abgesichert. Teammitglieder orientieren sich an der klaren Richtung und der nachvollziehbaren Vorgehensweise. Die Herausforderung liegt darin, die zwischenmenschliche Ebene dabei nicht zu vernachlässigen.`;
+    }
+    if (profileType === "hybrid_imp_int") {
+      return `Die Stelle übernimmt ${ft} im Team. Die Führungskraft verbindet Durchsetzungskraft mit persönlicher Zugewandtheit – Ergebnisse werden konsequent vorangetrieben, gleichzeitig wird auf den Zusammenhalt im Team geachtet. Teammitglieder erleben Dynamik und Aufmerksamkeit. Die Herausforderung liegt darin, Entscheidungen auch analytisch ausreichend abzusichern.`;
+    }
+    if (profileType === "hybrid_ana_int") {
+      return `Die Stelle übernimmt ${ft} im Team. Die Führungskraft verbindet fachliche Tiefe mit kommunikativer Kompetenz – Entscheidungen werden fundiert vorbereitet und verständlich kommuniziert. Teammitglieder vertrauen auf die sachliche Herangehensweise und fühlen sich gleichzeitig eingebunden. Die Herausforderung liegt darin, Entscheidungen auch bei Unsicherheit zeitnah zu treffen.`;
+    }
+    if (dom.key === "imp") {
+      return `Die Stelle übernimmt ${ft} im Team. Die Führungskraft gibt das Tempo vor, setzt klare Prioritäten und trifft Entscheidungen verbindlich. Teammitglieder wissen, woran sie sind. ${sec.key === "int" ? "Dabei achtet die Führungskraft auch auf den persönlichen Kontakt und die Stimmung im Team." : "Dabei sorgt die Führungskraft auch für die nötige Struktur und Qualitätssicherung."} In Situationen mit hohem Handlungsdruck zeigt diese Führung ihre größte Stärke.`;
+    }
+    if (dom.key === "int") {
+      return `Die Stelle übernimmt ${ft} im Team. Die Führungskraft baut Vertrauen auf, bringt unterschiedliche Perspektiven zusammen und sorgt dafür, dass Entscheidungen vom Team getragen werden. ${sec.key === "ana" ? "Dabei sichert sie Ergebnisse auch über klare Strukturen und nachvollziehbare Prozesse ab." : "Dabei treibt sie Ergebnisse auch aktiv voran und setzt klare Prioritäten."} Teammitglieder orientieren sich an dieser Person besonders bei schwierigen zwischenmenschlichen Situationen.`;
+    }
+    return `Die Stelle übernimmt ${ft} im Team. Die Führungskraft steuert über fachliche Expertise, klare Standards und nachvollziehbare Prozesse. ${sec.key === "int" ? "Dabei achtet sie auch auf Kommunikation und ein konstruktives Miteinander im Team." : "Dabei sorgt sie auch für Umsetzungstempo und klare Entscheidungen."} Teammitglieder vertrauen auf die methodische Sicherheit und die sachliche Herangehensweise.`;
   }
 
-  if (dom.key === "imp") {
-    return "Die Stelle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung vor allem über schnelle Ergebnisse und klare Priorisierung. Kolleginnen und Kollegen orientieren sich an dieser Arbeitsweise, besonders bei Umsetzungsfragen und operativen Entscheidungen.";
-  } else if (dom.key === "int") {
-    return "Die Stelle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung vor allem über Vertrauen und persönlichen Kontakt. Kolleginnen und Kollegen orientieren sich an dieser Person, besonders bei zwischenmenschlichen Situationen und Teamabstimmungen.";
+  if (profileType === "balanced_all") {
+    return "Die Stelle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung über Vielseitigkeit und Anpassungsfähigkeit. Kolleginnen und Kollegen erleben eine Person, die je nach Situation unterschiedlich reagiert – mal pragmatisch und schnell, mal einfühlsam und gesprächsbereit, mal gründlich und strukturiert. Die Herausforderung liegt darin, dabei als verlässlich und berechenbar wahrgenommen zu werden.";
   }
-  return "Die Stelle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung vor allem über fachliche Tiefe und verlässliche Arbeitsergebnisse. Kolleginnen und Kollegen orientieren sich an dieser Arbeitsweise, besonders bei fachlichen Fragen und Prozessthemen.";
+  if (profileType === "hybrid_imp_ana") {
+    return "Die Stelle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung über die Verbindung von Tempo und Gründlichkeit. Kolleginnen und Kollegen orientieren sich an dieser Arbeitsweise, besonders wenn Aufgaben schnell und gleichzeitig sorgfältig erledigt werden müssen.";
+  }
+  if (profileType === "hybrid_imp_int") {
+    return "Die Stelle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung über die Verbindung von Handlungsorientierung und persönlichem Kontakt. Kolleginnen und Kollegen erleben eine Person, die Ergebnisse vorantreibt und gleichzeitig den Zusammenhalt fördert.";
+  }
+  if (profileType === "hybrid_ana_int") {
+    return "Die Stelle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung über die Verbindung von fachlicher Tiefe und kommunikativer Kompetenz. Kolleginnen und Kollegen orientieren sich an der sachlichen Herangehensweise und schätzen die verständliche Kommunikation.";
+  }
+  if (dom.key === "imp") {
+    return `Die Stelle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung vor allem über schnelle Ergebnisse und klare Priorisierung. ${sec.key === "int" ? "Dabei pflegt die Person auch den persönlichen Kontakt und nimmt Rücksicht auf die Dynamik im Team." : "Dabei achtet die Person auch auf Genauigkeit und eine fundierte Grundlage für Entscheidungen."} Kolleginnen und Kollegen orientieren sich an dieser Arbeitsweise, besonders bei Umsetzungsfragen und operativen Entscheidungen.`;
+  }
+  if (dom.key === "int") {
+    return `Die Stelle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung vor allem über Vertrauen und persönlichen Kontakt. ${sec.key === "ana" ? "Dabei sorgt die Person auch für Ordnung und eine verlässliche Arbeitsweise." : "Dabei bringt die Person auch Umsetzungsstärke und Eigeninitiative ein."} Kolleginnen und Kollegen orientieren sich an dieser Person, besonders bei zwischenmenschlichen Situationen und Teamabstimmungen.`;
+  }
+  return `Die Stelle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung vor allem über fachliche Tiefe und verlässliche Arbeitsergebnisse. ${sec.key === "int" ? "Dabei pflegt die Person auch den Austausch im Team und kommuniziert Ergebnisse verständlich." : "Dabei bringt die Person auch Umsetzungsstärke und Eigeninitiative ein, damit Analysen in konkretes Handeln überführt werden."} Kolleginnen und Kollegen orientieren sich an dieser Arbeitsweise, besonders bei fachlichen Fragen und Prozessthemen.`;
 }
 
 function buildSpannungsfelder(data: ReportData): string[] {
@@ -879,12 +905,22 @@ export default function Rollenprofil() {
 
       const topT = hauptTaetigkeiten.slice(0, 3).map((t: any) => cleanTaskName(t.name));
       const introText = (() => {
-        const fuehrung = data.isLeadership;
-        if (data.dom.key === "int") return `Diese Anforderungen verlangen eine Persönlichkeit, die rasch Vertrauen aufbaut, Bedürfnisse frühzeitig erkennt und im persönlichen Kontakt überzeugt. Entscheidend sind ein ausgeprägtes Gespür für zwischenmenschliche Dynamiken, die Fähigkeit, tragfähige Beziehungen aufzubauen, und ein sicheres Auftreten im direkten Austausch.${fuehrung ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team einfühlsam zu führen und dabei sowohl fachliche als auch zwischenmenschliche Anforderungen im Blick zu behalten." : ""}`;
-        if (data.dom.key === "imp") return `Diese Anforderungen erfordern eine Persönlichkeit, die zügig entscheidet, klar priorisiert und Ergebnisse konsequent vorantreibt. Entscheidend sind Entschlusskraft, Handlungsorientierung und die Fähigkeit, auch bei unvollständiger Informationslage wirksam zu agieren.${fuehrung ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team entschlossen zu führen und Verantwortung für dessen Ergebnisse zu übernehmen." : ""}`;
-        return `Diese Anforderungen verlangen eine Persönlichkeit, die strukturiert, sorgfältig und verlässlich arbeitet, klare Standards einhält und auch bei wiederkehrenden Abläufen mit hoher Präzision vorgeht. Entscheidend sind ein ausgeprägtes Qualitätsbewusstsein, ein methodisches Vorgehen und die Fähigkeit, Aufgaben konsequent und gewissenhaft umzusetzen.${fuehrung ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team methodisch zu führen und für nachvollziehbare Abläufe und einheitliche Standards zu sorgen." : ""}`;
+        const fk = data.isLeadership;
+        const pt = data.profileType;
+        if (pt === "balanced_all") return `Diese Anforderungen verlangen eine vielseitige Persönlichkeit, die situativ zwischen zügigem Handeln, persönlichem Kontakt und sorgfältigem Arbeiten wechseln kann. Entscheidend ist die Fähigkeit, flexibel auf unterschiedliche Situationen zu reagieren, ohne dabei an Verbindlichkeit und Verlässlichkeit zu verlieren.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team flexibel zu führen und je nach Situation unterschiedliche Schwerpunkte zu setzen." : ""}`;
+        if (pt === "hybrid_imp_ana") return `Diese Anforderungen verlangen eine Persönlichkeit, die entschlossen handelt und gleichzeitig methodisch vorgeht. Entscheidend sind Umsetzungsstärke und analytische Sorgfalt – beides muss auf hohem Niveau zusammenwirken.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team sowohl mit klarer Richtung als auch mit strukturierter Steuerung zu führen." : ""}`;
+        if (pt === "hybrid_imp_int") return `Diese Anforderungen verlangen eine Persönlichkeit, die zügig entscheidet und gleichzeitig ein Gespür für Menschen und Teamdynamiken mitbringt. Entscheidend sind Handlungsorientierung und Beziehungsfähigkeit – beides muss auf hohem Niveau zusammenwirken.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team mit Energie und Empathie zu führen und dabei sowohl Ergebnisse als auch den Zusammenhalt im Blick zu behalten." : ""}`;
+        if (pt === "hybrid_ana_int") return `Diese Anforderungen verlangen eine Persönlichkeit, die sorgfältig analysiert und gleichzeitig im persönlichen Kontakt überzeugt. Entscheidend sind methodische Gründlichkeit und kommunikative Kompetenz – beides muss auf hohem Niveau zusammenwirken.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team fachlich fundiert und zugleich menschlich überzeugend zu führen." : ""}`;
+        if (data.dom.key === "int") return `Diese Anforderungen verlangen eine Persönlichkeit, die rasch Vertrauen aufbaut, Bedürfnisse frühzeitig erkennt und im persönlichen Kontakt überzeugt. Entscheidend sind ein ausgeprägtes Gespür für zwischenmenschliche Dynamiken, die Fähigkeit, tragfähige Beziehungen aufzubauen, und ein sicheres Auftreten im direkten Austausch.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team einfühlsam zu führen und dabei sowohl fachliche als auch zwischenmenschliche Anforderungen im Blick zu behalten." : ""}`;
+        if (data.dom.key === "imp") return `Diese Anforderungen erfordern eine Persönlichkeit, die zügig entscheidet, klar priorisiert und Ergebnisse konsequent vorantreibt. Entscheidend sind Entschlusskraft, Handlungsorientierung und die Fähigkeit, auch bei unvollständiger Informationslage wirksam zu agieren.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team entschlossen zu führen und Verantwortung für dessen Ergebnisse zu übernehmen." : ""}`;
+        return `Diese Anforderungen verlangen eine Persönlichkeit, die strukturiert, sorgfältig und verlässlich arbeitet, klare Standards einhält und auch bei wiederkehrenden Abläufen mit hoher Präzision vorgeht. Entscheidend sind ein ausgeprägtes Qualitätsbewusstsein, ein methodisches Vorgehen und die Fähigkeit, Aufgaben konsequent und gewissenhaft umzusetzen.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team methodisch zu führen und für nachvollziehbare Abläufe und einheitliche Standards zu sorgen." : ""}`;
       })();
       const ergaenzung = (() => {
+        const pt = data.profileType;
+        if (pt === "balanced_all") return "Da alle drei Anforderungsbereiche nahezu gleich gewichtet sind, gibt es keine eindeutige Ergänzungsanforderung. Die Person muss in allen Dimensionen – Handlung, Kommunikation und Analyse – ein solides Grundniveau mitbringen und situativ den richtigen Schwerpunkt setzen.";
+        if (pt === "hybrid_imp_ana") return "Ergänzend erfordert die Stelle ein Mindestmaß an Kommunikationsfähigkeit und Beziehungsarbeit, um Ergebnisse im Team zu verankern und die Zusammenarbeit auch bei hohem Tempo und hoher Anforderung an Genauigkeit nicht zu vernachlässigen.";
+        if (pt === "hybrid_imp_int") return "Ergänzend erfordert die Stelle ein Mindestmaß an analytischer Sorgfalt und Strukturbewusstsein, um Entscheidungen auf einer fundierten Grundlage zu treffen und Qualitätsstandards auch bei hoher Dynamik einzuhalten.";
+        if (pt === "hybrid_ana_int") return "Ergänzend erfordert die Stelle ein Mindestmaß an Umsetzungsstärke und Entscheidungstempo, um Erkenntnisse und Abstimmungen zeitnah in konkretes Handeln zu überführen und den Fortschritt nicht zu bremsen.";
         if (data.dom.key === "int") return data.sec.key === "ana" ? "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Struktur und Organisationsfähigkeit, um Abläufe verlässlich zu gestalten, Dokumentationen sorgfältig zu führen und einheitliche Standards einzuhalten." : "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Durchsetzungsfähigkeit, um Entscheidungen klar zu treffen, Prioritäten verbindlich zu setzen und auch bei Widerständen handlungsfähig zu bleiben.";
         if (data.dom.key === "imp") return data.sec.key === "int" ? "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Beziehungsfähigkeit, um das Team mitzunehmen, Akzeptanz zu schaffen und die Zusammenarbeit auf eine tragfähige Grundlage zu stellen." : "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Sorgfalt und Genauigkeit, um Qualitätsstandards einzuhalten, Prozesse nachvollziehbar zu dokumentieren und fundierte Entscheidungsgrundlagen zu liefern.";
         return data.sec.key === "int" ? "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Abstimmung und Kommunikationsfähigkeit, um Abläufe im Team verlässlich zu unterstützen, Rückmeldungen verständlich weiterzugeben und eine reibungslose Zusammenarbeit sicherzustellen." : "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Handlungsfähigkeit und Umsetzungsstärke, um Analyseergebnisse in konkrete Maßnahmen zu überführen, Entscheidungen zeitnah zu treffen und den Fortschritt aktiv voranzutreiben.";
@@ -893,9 +929,15 @@ export default function Rollenprofil() {
       const hochNamen = hochItems.slice(0, 3).map((t: any) => cleanTaskName(t.name));
       const hochRef = hochNamen.length > 0 ? `Besonders kritisch sind dabei ${hochNamen.join(", ")}. ` : "";
       const alltagText = (() => {
-        if (data.dom.key === "int") return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vor allem im persönlichen Kontakt. ${data.isLeadership ? "Die Führungskraft" : "Die Person"} schafft Vertrauen, nimmt Bedürfnisse frühzeitig wahr und gestaltet ein Umfeld, in dem sich Beteiligte eingebunden und wertgeschätzt fühlen. ${hochRef}${data.sec.key === "ana" ? "Damit dies gelingt, erfordert die Stelle zugleich ein hohes Maß an Organisation und Verlässlichkeit. Abläufe, Dokumentation und einheitliche Standards müssen konsequent eingehalten werden." : "Damit dies gelingt, erfordert die Stelle zugleich Entscheidungsstärke und Umsetzungstempo. Nicht jede Situation lässt sich im Konsens lösen."}`;
-        if (data.dom.key === "imp") return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vor allem durch klare Priorisierung und konsequente Umsetzung. ${data.isLeadership ? "Die Führungskraft" : "Die Person"} treibt Ergebnisse zielgerichtet voran und bleibt auch bei Widerständen handlungsfähig. ${hochRef}${data.sec.key === "int" ? "Damit dies gelingt, erfordert die Stelle zugleich Sensibilität für zwischenmenschliche Dynamiken. Wer ausschließlich auf Tempo setzt, riskiert den Rückhalt im Team." : "Damit dies gelingt, erfordert die Stelle zugleich analytische Sorgfalt und Qualitätsbewusstsein. Auch zügig getroffene Entscheidungen müssen auf einer fundierten Grundlage beruhen."}`;
-        return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vor allem durch methodisches Arbeiten, präzise Dokumentation und eine konsequente Qualitätsorientierung. ${data.isLeadership ? "Die Führungskraft" : "Die Person"} überzeugt durch fachliche Tiefe und nachvollziehbare Ergebnisse. ${hochRef}${data.sec.key === "int" ? "Damit dies gelingt, erfordert die Stelle zugleich kommunikatives Geschick. Fachlich fundierte Ergebnisse müssen verständlich aufbereitet und im Team verankert werden." : "Damit dies gelingt, erfordert die Stelle zugleich Handlungsbereitschaft und Umsetzungsstärke. Wer ausschließlich analysiert, ohne Entscheidungen herbeizuführen, hemmt den Fortschritt."}`;
+        const person = data.isLeadership ? "Die Führungskraft" : "Die Person";
+        const pt = data.profileType;
+        if (pt === "balanced_all") return `Im regulären Arbeitsalltag zeigt sich bei dieser Stelle keine eindeutige Handlungsrichtung. ${person} wechselt situativ zwischen zügigem Handeln, persönlichem Kontakt und gründlicher Analyse. ${hochRef}Die Stärke liegt in der Vielseitigkeit. Die Herausforderung besteht darin, bei wechselnden Anforderungen eine konsistente Linie zu halten.`;
+        if (pt === "hybrid_imp_ana") return `Im regulären Arbeitsalltag verbindet diese Stelle zügiges Handeln mit gründlicher Prüfung. ${person} treibt Ergebnisse aktiv voran und achtet gleichzeitig auf Qualität und Nachvollziehbarkeit. ${hochRef}Dabei darf die Kommunikation im Team nicht vernachlässigt werden – Ergebnisse wirken nur, wenn sie verstanden und mitgetragen werden.`;
+        if (pt === "hybrid_imp_int") return `Im regulären Arbeitsalltag verbindet diese Stelle Umsetzungsstärke mit einem guten Gespür für Menschen. ${person} treibt Ergebnisse voran und achtet gleichzeitig auf den Zusammenhalt im Team. ${hochRef}Dabei darf die analytische Absicherung nicht zu kurz kommen – auch bei hoher Dynamik brauchen Entscheidungen eine fundierte Grundlage.`;
+        if (pt === "hybrid_ana_int") return `Im regulären Arbeitsalltag verbindet diese Stelle analytische Gründlichkeit mit kommunikativer Kompetenz. ${person} prüft Sachverhalte sorgfältig und kommuniziert Ergebnisse verständlich im Team. ${hochRef}Dabei muss das Umsetzungstempo gewährleistet bleiben – gründliche Analyse und Abstimmung dürfen die Handlungsfähigkeit nicht bremsen.`;
+        if (data.dom.key === "int") return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vor allem im persönlichen Kontakt. ${person} schafft Vertrauen, nimmt Bedürfnisse frühzeitig wahr und gestaltet ein Umfeld, in dem sich Beteiligte eingebunden und wertgeschätzt fühlen. ${hochRef}${data.sec.key === "ana" ? "Damit dies gelingt, erfordert die Stelle zugleich ein hohes Maß an Organisation und Verlässlichkeit. Abläufe, Dokumentation und einheitliche Standards müssen konsequent eingehalten werden." : "Damit dies gelingt, erfordert die Stelle zugleich Entscheidungsstärke und Umsetzungstempo. Nicht jede Situation lässt sich im Konsens lösen."}`;
+        if (data.dom.key === "imp") return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vor allem durch klare Priorisierung und konsequente Umsetzung. ${person} treibt Ergebnisse zielgerichtet voran und bleibt auch bei Widerständen handlungsfähig. ${hochRef}${data.sec.key === "int" ? "Damit dies gelingt, erfordert die Stelle zugleich Sensibilität für zwischenmenschliche Dynamiken. Wer ausschließlich auf Tempo setzt, riskiert den Rückhalt im Team." : "Damit dies gelingt, erfordert die Stelle zugleich analytische Sorgfalt und Qualitätsbewusstsein. Auch zügig getroffene Entscheidungen müssen auf einer fundierten Grundlage beruhen."}`;
+        return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vor allem durch methodisches Arbeiten, präzise Dokumentation und eine konsequente Qualitätsorientierung. ${person} überzeugt durch fachliche Tiefe und nachvollziehbare Ergebnisse. ${hochRef}${data.sec.key === "int" ? "Damit dies gelingt, erfordert die Stelle zugleich kommunikatives Geschick. Fachlich fundierte Ergebnisse müssen verständlich aufbereitet und im Team verankert werden." : "Damit dies gelingt, erfordert die Stelle zugleich Handlungsbereitschaft und Umsetzungsstärke. Wer ausschließlich analysiert, ohne Entscheidungen herbeizuführen, hemmt den Fortschritt."}`;
       })();
 
       const strukturText = (() => {
@@ -910,9 +952,15 @@ export default function Rollenprofil() {
       })();
 
       const arbeitslogik = (() => {
-        if (data.dom.key === "int") return `Die Wirksamkeit dieser Stelle entsteht vor allem im direkten persönlichen Austausch – ${data.isLeadership ? "mit dem Team, relevanten Stakeholdern und Entscheidungsträgern" : "mit Kolleginnen und Kollegen, Kundinnen und Kunden oder weiteren Gesprächspartnern"}. Entscheidungen werden häufig situativ und dialogorientiert getroffen. ${data.sec.key === "ana" ? "Zugleich verlangt die Stelle die Fähigkeit, Abläufe strukturiert zu organisieren, Prioritäten klar zu setzen und Verbindlichkeit in der Umsetzung sicherzustellen." : "Zugleich verlangt die Stelle die Fähigkeit, zügig zu handeln und Ergebnisse konsequent zu liefern – auch dann, wenn nicht alle Beteiligten einverstanden sind."}`;
-        if (data.dom.key === "imp") return `Die Wirksamkeit dieser Stelle entsteht vor allem durch entschlossenes Handeln und klare Priorisierung. ${data.isLeadership ? "Als Führungskraft gibt sie das Tempo vor und treibt Ergebnisse aktiv und verbindlich voran." : "Aufgaben und Themen werden eigenständig vorangetrieben, ohne auf detaillierte Anweisungen zu warten."} ${data.sec.key === "int" ? "Dabei darf der Blick für das Team und die zwischenmenschliche Ebene nicht verloren gehen. Nachhaltige Ergebnisse entstehen nur, wenn auch die Beziehungsebene gepflegt wird." : "Dabei erfordert die Stelle zugleich analytische Sorgfalt, damit Qualität, Nachhaltigkeit und fundierte Entscheidungsgrundlagen gewährleistet bleiben."}`;
-        return `Die Wirksamkeit dieser Stelle entsteht durch systematische Analyse, klar definierte Prozesse und fundierte Entscheidungsgrundlagen. ${data.isLeadership ? "Als Führungskraft setzt sie auf nachvollziehbare Qualitätsstandards und eine transparente, methodische Steuerung." : "Fachliche Tiefe und eine sorgfältige Arbeitsweise schaffen Vertrauen, Verlässlichkeit und Orientierung."} ${data.sec.key === "int" ? "Zugleich verlangt die Stelle, Erkenntnisse verständlich zu kommunizieren, im Team zu verankern und eine konstruktive Zusammenarbeit aktiv zu fördern." : "Zugleich müssen Analyseergebnisse in konkretes Handeln überführt werden. Fundierte Erkenntnis allein erzeugt noch keine Wirkung."}`;
+        const fk = data.isLeadership;
+        const pt = data.profileType;
+        if (pt === "balanced_all") return `Die Wirksamkeit dieser Stelle entsteht nicht über eine einzelne Stärke, sondern über die Fähigkeit, situativ den richtigen Schwerpunkt zu setzen. ${fk ? "Als Führungskraft muss sie je nach Anforderung zwischen zügiger Entscheidung, persönlicher Abstimmung und gründlicher Analyse wechseln können." : "Die Person muss je nach Situation zwischen zügigem Handeln, persönlichem Austausch und gründlicher Analyse wechseln können."} Das erfordert ein hohes Maß an Selbstreflexion und Anpassungsfähigkeit.`;
+        if (pt === "hybrid_imp_ana") return `Die Wirksamkeit dieser Stelle entsteht durch die Verbindung von Tempo und Gründlichkeit. ${fk ? "Als Führungskraft treibt sie Ergebnisse voran und sichert gleichzeitig Qualität und Nachvollziehbarkeit." : "Aufgaben werden zügig angegangen und gleichzeitig sorgfältig geprüft."} Dabei darf die zwischenmenschliche Ebene nicht vernachlässigt werden – Ergebnisse müssen im Team verankert und verständlich kommuniziert werden.`;
+        if (pt === "hybrid_imp_int") return `Die Wirksamkeit dieser Stelle entsteht durch die Verbindung von Handlungsorientierung und Beziehungsfähigkeit. ${fk ? "Als Führungskraft treibt sie Ergebnisse voran und achtet gleichzeitig auf den Zusammenhalt und die Motivation im Team." : "Aufgaben werden zügig vorangetrieben und gleichzeitig wird auf die Wirkung auf andere geachtet."} Dabei darf die analytische Absicherung nicht zu kurz kommen – auch dynamische Entscheidungen brauchen eine fundierte Grundlage.`;
+        if (pt === "hybrid_ana_int") return `Die Wirksamkeit dieser Stelle entsteht durch die Verbindung von analytischer Tiefe und kommunikativer Kompetenz. ${fk ? "Als Führungskraft setzt sie auf fundierte Entscheidungen und verankert diese gleichzeitig über persönliche Kommunikation im Team." : "Sachverhalte werden gründlich geprüft und gleichzeitig verständlich und überzeugend kommuniziert."} Dabei muss die Umsetzungsstärke gewährleistet bleiben – Erkenntnis und Abstimmung allein erzeugen noch keine Wirkung.`;
+        if (data.dom.key === "int") return `Die Wirksamkeit dieser Stelle entsteht vor allem im direkten persönlichen Austausch – ${fk ? "mit dem Team, relevanten Stakeholdern und Entscheidungsträgern" : "mit Kolleginnen und Kollegen, Kundinnen und Kunden oder weiteren Gesprächspartnern"}. Entscheidungen werden häufig situativ und dialogorientiert getroffen. ${data.sec.key === "ana" ? "Zugleich verlangt die Stelle die Fähigkeit, Abläufe strukturiert zu organisieren, Prioritäten klar zu setzen und Verbindlichkeit in der Umsetzung sicherzustellen." : "Zugleich verlangt die Stelle die Fähigkeit, zügig zu handeln und Ergebnisse konsequent zu liefern – auch dann, wenn nicht alle Beteiligten einverstanden sind."}`;
+        if (data.dom.key === "imp") return `Die Wirksamkeit dieser Stelle entsteht vor allem durch entschlossenes Handeln und klare Priorisierung. ${fk ? "Als Führungskraft gibt sie das Tempo vor und treibt Ergebnisse aktiv und verbindlich voran." : "Aufgaben und Themen werden eigenständig vorangetrieben, ohne auf detaillierte Anweisungen zu warten."} ${data.sec.key === "int" ? "Dabei darf der Blick für das Team und die zwischenmenschliche Ebene nicht verloren gehen. Nachhaltige Ergebnisse entstehen nur, wenn auch die Beziehungsebene gepflegt wird." : "Dabei erfordert die Stelle zugleich analytische Sorgfalt, damit Qualität, Nachhaltigkeit und fundierte Entscheidungsgrundlagen gewährleistet bleiben."}`;
+        return `Die Wirksamkeit dieser Stelle entsteht durch systematische Analyse, klar definierte Prozesse und fundierte Entscheidungsgrundlagen. ${fk ? "Als Führungskraft setzt sie auf nachvollziehbare Qualitätsstandards und eine transparente, methodische Steuerung." : "Fachliche Tiefe und eine sorgfältige Arbeitsweise schaffen Vertrauen, Verlässlichkeit und Orientierung."} ${data.sec.key === "int" ? "Zugleich verlangt die Stelle, Erkenntnisse verständlich zu kommunizieren, im Team zu verankern und eine konstruktive Zusammenarbeit aktiv zu fördern." : "Zugleich müssen Analyseergebnisse in konkretes Handeln überführt werden. Fundierte Erkenntnis allein erzeugt noch keine Wirkung."}`;
       })();
 
       const fazitLocal = buildFazit(data);
@@ -1006,52 +1054,107 @@ export default function Rollenprofil() {
   const topTaetigkeiten = hauptTaetigkeiten.slice(0, 3).map((t: any) => cleanTaskName(t.name));
 
   const rollenBeschreibungIntro = (() => {
-    const fuehrung = data.isLeadership;
-    if (data.dom.key === "int") {
-      return `Diese Anforderungen verlangen eine Persönlichkeit, die rasch Vertrauen aufbaut, Bedürfnisse frühzeitig erkennt und im persönlichen Kontakt überzeugt. Entscheidend sind ein ausgeprägtes Gespür für zwischenmenschliche Dynamiken, die Fähigkeit, tragfähige Beziehungen aufzubauen, und ein sicheres Auftreten im direkten Austausch.${fuehrung ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team einfühlsam zu führen und dabei sowohl fachliche als auch zwischenmenschliche Anforderungen im Blick zu behalten." : ""}`;
-    } else if (data.dom.key === "imp") {
-      return `Diese Anforderungen erfordern eine Persönlichkeit, die zügig entscheidet, klar priorisiert und Ergebnisse konsequent vorantreibt. Entscheidend sind Entschlusskraft, Handlungsorientierung und die Fähigkeit, auch bei unvollständiger Informationslage wirksam zu agieren.${fuehrung ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team entschlossen zu führen und Verantwortung für dessen Ergebnisse zu übernehmen." : ""}`;
-    } else {
-      return `Diese Anforderungen verlangen eine Persönlichkeit, die strukturiert, sorgfältig und verlässlich arbeitet, klare Standards einhält und auch bei wiederkehrenden Abläufen mit hoher Präzision vorgeht. Entscheidend sind ein ausgeprägtes Qualitätsbewusstsein, ein methodisches Vorgehen und die Fähigkeit, Aufgaben konsequent und gewissenhaft umzusetzen.${fuehrung ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team methodisch zu führen und für nachvollziehbare Abläufe und einheitliche Standards zu sorgen." : ""}`;
+    const fk = data.isLeadership;
+    const pt = data.profileType;
+    if (pt === "balanced_all") {
+      return `Diese Anforderungen verlangen eine vielseitige Persönlichkeit, die situativ zwischen zügigem Handeln, persönlichem Kontakt und sorgfältigem Arbeiten wechseln kann. Entscheidend ist die Fähigkeit, flexibel auf unterschiedliche Situationen zu reagieren, ohne dabei an Verbindlichkeit und Verlässlichkeit zu verlieren.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team flexibel zu führen und je nach Situation unterschiedliche Schwerpunkte zu setzen." : ""}`;
     }
+    if (pt === "hybrid_imp_ana") {
+      return `Diese Anforderungen verlangen eine Persönlichkeit, die entschlossen handelt und gleichzeitig methodisch vorgeht. Entscheidend sind Umsetzungsstärke und analytische Sorgfalt – beides muss auf hohem Niveau zusammenwirken.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team sowohl mit klarer Richtung als auch mit strukturierter Steuerung zu führen." : ""}`;
+    }
+    if (pt === "hybrid_imp_int") {
+      return `Diese Anforderungen verlangen eine Persönlichkeit, die zügig entscheidet und gleichzeitig ein Gespür für Menschen und Teamdynamiken mitbringt. Entscheidend sind Handlungsorientierung und Beziehungsfähigkeit – beides muss auf hohem Niveau zusammenwirken.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team mit Energie und Empathie zu führen und dabei sowohl Ergebnisse als auch den Zusammenhalt im Blick zu behalten." : ""}`;
+    }
+    if (pt === "hybrid_ana_int") {
+      return `Diese Anforderungen verlangen eine Persönlichkeit, die sorgfältig analysiert und gleichzeitig im persönlichen Kontakt überzeugt. Entscheidend sind methodische Gründlichkeit und kommunikative Kompetenz – beides muss auf hohem Niveau zusammenwirken.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team fachlich fundiert und zugleich menschlich überzeugend zu führen." : ""}`;
+    }
+    if (data.dom.key === "int") {
+      return `Diese Anforderungen verlangen eine Persönlichkeit, die rasch Vertrauen aufbaut, Bedürfnisse frühzeitig erkennt und im persönlichen Kontakt überzeugt. Entscheidend sind ein ausgeprägtes Gespür für zwischenmenschliche Dynamiken, die Fähigkeit, tragfähige Beziehungen aufzubauen, und ein sicheres Auftreten im direkten Austausch.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team einfühlsam zu führen und dabei sowohl fachliche als auch zwischenmenschliche Anforderungen im Blick zu behalten." : ""}`;
+    }
+    if (data.dom.key === "imp") {
+      return `Diese Anforderungen erfordern eine Persönlichkeit, die zügig entscheidet, klar priorisiert und Ergebnisse konsequent vorantreibt. Entscheidend sind Entschlusskraft, Handlungsorientierung und die Fähigkeit, auch bei unvollständiger Informationslage wirksam zu agieren.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team entschlossen zu führen und Verantwortung für dessen Ergebnisse zu übernehmen." : ""}`;
+    }
+    return `Diese Anforderungen verlangen eine Persönlichkeit, die strukturiert, sorgfältig und verlässlich arbeitet, klare Standards einhält und auch bei wiederkehrenden Abläufen mit hoher Präzision vorgeht. Entscheidend sind ein ausgeprägtes Qualitätsbewusstsein, ein methodisches Vorgehen und die Fähigkeit, Aufgaben konsequent und gewissenhaft umzusetzen.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team methodisch zu führen und für nachvollziehbare Abläufe und einheitliche Standards zu sorgen." : ""}`;
   })();
 
   const rollenBeschreibungErgaenzung = (() => {
+    const pt = data.profileType;
+    if (pt === "balanced_all") {
+      return "Da alle drei Anforderungsbereiche nahezu gleich gewichtet sind, gibt es keine eindeutige Ergänzungsanforderung. Die Person muss in allen Dimensionen – Handlung, Kommunikation und Analyse – ein solides Grundniveau mitbringen und situativ den richtigen Schwerpunkt setzen.";
+    }
+    if (pt === "hybrid_imp_ana") {
+      return "Ergänzend erfordert die Stelle ein Mindestmaß an Kommunikationsfähigkeit und Beziehungsarbeit, um Ergebnisse im Team zu verankern und die Zusammenarbeit auch bei hohem Tempo und hoher Anforderung an Genauigkeit nicht zu vernachlässigen.";
+    }
+    if (pt === "hybrid_imp_int") {
+      return "Ergänzend erfordert die Stelle ein Mindestmaß an analytischer Sorgfalt und Strukturbewusstsein, um Entscheidungen auf einer fundierten Grundlage zu treffen und Qualitätsstandards auch bei hoher Dynamik einzuhalten.";
+    }
+    if (pt === "hybrid_ana_int") {
+      return "Ergänzend erfordert die Stelle ein Mindestmaß an Umsetzungsstärke und Entscheidungstempo, um Erkenntnisse und Abstimmungen zeitnah in konkretes Handeln zu überführen und den Fortschritt nicht zu bremsen.";
+    }
     if (data.dom.key === "int") {
       return data.sec.key === "ana"
         ? "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Struktur und Organisationsfähigkeit, um Abläufe verlässlich zu gestalten, Dokumentationen sorgfältig zu führen und einheitliche Standards einzuhalten."
         : "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Durchsetzungsfähigkeit, um Entscheidungen klar zu treffen, Prioritäten verbindlich zu setzen und auch bei Widerständen handlungsfähig zu bleiben.";
-    } else if (data.dom.key === "imp") {
+    }
+    if (data.dom.key === "imp") {
       return data.sec.key === "int"
         ? "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Beziehungsfähigkeit, um das Team mitzunehmen, Akzeptanz zu schaffen und die Zusammenarbeit auf eine tragfähige Grundlage zu stellen."
         : "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Sorgfalt und Genauigkeit, um Qualitätsstandards einzuhalten, Prozesse nachvollziehbar zu dokumentieren und fundierte Entscheidungsgrundlagen zu liefern.";
-    } else {
-      return data.sec.key === "int"
-        ? "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Abstimmung und Kommunikationsfähigkeit, um Abläufe im Team verlässlich zu unterstützen, Rückmeldungen verständlich weiterzugeben und eine reibungslose Zusammenarbeit sicherzustellen."
-        : "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Handlungsfähigkeit und Umsetzungsstärke, um Analyseergebnisse in konkrete Maßnahmen zu überführen, Entscheidungen zeitnah zu treffen und den Fortschritt aktiv voranzutreiben.";
     }
+    return data.sec.key === "int"
+      ? "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Abstimmung und Kommunikationsfähigkeit, um Abläufe im Team verlässlich zu unterstützen, Rückmeldungen verständlich weiterzugeben und eine reibungslose Zusammenarbeit sicherzustellen."
+      : "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Handlungsfähigkeit und Umsetzungsstärke, um Analyseergebnisse in konkrete Maßnahmen zu überführen, Entscheidungen zeitnah zu treffen und den Fortschritt aktiv voranzutreiben.";
   })();
 
   const arbeitslogikText = (() => {
-    if (data.dom.key === "int") {
-      return `Die Wirksamkeit dieser Stelle entsteht vor allem im direkten persönlichen Austausch – ${data.isLeadership ? "mit dem Team, relevanten Stakeholdern und Entscheidungsträgern" : "mit Kolleginnen und Kollegen, Kundinnen und Kunden oder weiteren Gesprächspartnern"}. Entscheidungen werden häufig situativ und dialogorientiert getroffen. ${data.sec.key === "ana" ? "Zugleich verlangt die Stelle die Fähigkeit, Abläufe strukturiert zu organisieren, Prioritäten klar zu setzen und Verbindlichkeit in der Umsetzung sicherzustellen." : "Zugleich verlangt die Stelle die Fähigkeit, zügig zu handeln und Ergebnisse konsequent zu liefern – auch dann, wenn nicht alle Beteiligten einverstanden sind."}`;
-    } else if (data.dom.key === "imp") {
-      return `Die Wirksamkeit dieser Stelle entsteht vor allem durch entschlossenes Handeln und klare Priorisierung. ${data.isLeadership ? "Als Führungskraft gibt sie das Tempo vor und treibt Ergebnisse aktiv und verbindlich voran." : "Aufgaben und Themen werden eigenständig vorangetrieben, ohne auf detaillierte Anweisungen zu warten."} ${data.sec.key === "int" ? "Dabei darf der Blick für das Team und die zwischenmenschliche Ebene nicht verloren gehen. Nachhaltige Ergebnisse entstehen nur, wenn auch die Beziehungsebene gepflegt wird." : "Dabei erfordert die Stelle zugleich analytische Sorgfalt, damit Qualität, Nachhaltigkeit und fundierte Entscheidungsgrundlagen gewährleistet bleiben."}`;
-    } else {
-      return `Die Wirksamkeit dieser Stelle entsteht durch systematische Analyse, klar definierte Prozesse und fundierte Entscheidungsgrundlagen. ${data.isLeadership ? "Als Führungskraft setzt sie auf nachvollziehbare Qualitätsstandards und eine transparente, methodische Steuerung." : "Fachliche Tiefe und eine sorgfältige Arbeitsweise schaffen Vertrauen, Verlässlichkeit und Orientierung."} ${data.sec.key === "int" ? "Zugleich verlangt die Stelle, Erkenntnisse verständlich zu kommunizieren, im Team zu verankern und eine konstruktive Zusammenarbeit aktiv zu fördern." : "Zugleich müssen Analyseergebnisse in konkretes Handeln überführt werden. Fundierte Erkenntnis allein erzeugt noch keine Wirkung."}`;
+    const fk = data.isLeadership;
+    const pt = data.profileType;
+    if (pt === "balanced_all") {
+      return `Die Wirksamkeit dieser Stelle entsteht nicht über eine einzelne Stärke, sondern über die Fähigkeit, situativ den richtigen Schwerpunkt zu setzen. ${fk ? "Als Führungskraft muss sie je nach Anforderung zwischen zügiger Entscheidung, persönlicher Abstimmung und gründlicher Analyse wechseln können." : "Die Person muss je nach Situation zwischen zügigem Handeln, persönlichem Austausch und gründlicher Analyse wechseln können."} Das erfordert ein hohes Maß an Selbstreflexion und Anpassungsfähigkeit.`;
     }
+    if (pt === "hybrid_imp_ana") {
+      return `Die Wirksamkeit dieser Stelle entsteht durch die Verbindung von Tempo und Gründlichkeit. ${fk ? "Als Führungskraft treibt sie Ergebnisse voran und sichert gleichzeitig Qualität und Nachvollziehbarkeit." : "Aufgaben werden zügig angegangen und gleichzeitig sorgfältig geprüft."} Dabei darf die zwischenmenschliche Ebene nicht vernachlässigt werden – Ergebnisse müssen im Team verankert und verständlich kommuniziert werden.`;
+    }
+    if (pt === "hybrid_imp_int") {
+      return `Die Wirksamkeit dieser Stelle entsteht durch die Verbindung von Handlungsorientierung und Beziehungsfähigkeit. ${fk ? "Als Führungskraft treibt sie Ergebnisse voran und achtet gleichzeitig auf den Zusammenhalt und die Motivation im Team." : "Aufgaben werden zügig vorangetrieben und gleichzeitig wird auf die Wirkung auf andere geachtet."} Dabei darf die analytische Absicherung nicht zu kurz kommen – auch dynamische Entscheidungen brauchen eine fundierte Grundlage.`;
+    }
+    if (pt === "hybrid_ana_int") {
+      return `Die Wirksamkeit dieser Stelle entsteht durch die Verbindung von analytischer Tiefe und kommunikativer Kompetenz. ${fk ? "Als Führungskraft setzt sie auf fundierte Entscheidungen und verankert diese gleichzeitig über persönliche Kommunikation im Team." : "Sachverhalte werden gründlich geprüft und gleichzeitig verständlich und überzeugend kommuniziert."} Dabei muss die Umsetzungsstärke gewährleistet bleiben – Erkenntnis und Abstimmung allein erzeugen noch keine Wirkung.`;
+    }
+    if (data.dom.key === "int") {
+      return `Die Wirksamkeit dieser Stelle entsteht vor allem im direkten persönlichen Austausch – ${fk ? "mit dem Team, relevanten Stakeholdern und Entscheidungsträgern" : "mit Kolleginnen und Kollegen, Kundinnen und Kunden oder weiteren Gesprächspartnern"}. Entscheidungen werden häufig situativ und dialogorientiert getroffen. ${data.sec.key === "ana" ? "Zugleich verlangt die Stelle die Fähigkeit, Abläufe strukturiert zu organisieren, Prioritäten klar zu setzen und Verbindlichkeit in der Umsetzung sicherzustellen." : "Zugleich verlangt die Stelle die Fähigkeit, zügig zu handeln und Ergebnisse konsequent zu liefern – auch dann, wenn nicht alle Beteiligten einverstanden sind."}`;
+    }
+    if (data.dom.key === "imp") {
+      return `Die Wirksamkeit dieser Stelle entsteht vor allem durch entschlossenes Handeln und klare Priorisierung. ${fk ? "Als Führungskraft gibt sie das Tempo vor und treibt Ergebnisse aktiv und verbindlich voran." : "Aufgaben und Themen werden eigenständig vorangetrieben, ohne auf detaillierte Anweisungen zu warten."} ${data.sec.key === "int" ? "Dabei darf der Blick für das Team und die zwischenmenschliche Ebene nicht verloren gehen. Nachhaltige Ergebnisse entstehen nur, wenn auch die Beziehungsebene gepflegt wird." : "Dabei erfordert die Stelle zugleich analytische Sorgfalt, damit Qualität, Nachhaltigkeit und fundierte Entscheidungsgrundlagen gewährleistet bleiben."}`;
+    }
+    return `Die Wirksamkeit dieser Stelle entsteht durch systematische Analyse, klar definierte Prozesse und fundierte Entscheidungsgrundlagen. ${fk ? "Als Führungskraft setzt sie auf nachvollziehbare Qualitätsstandards und eine transparente, methodische Steuerung." : "Fachliche Tiefe und eine sorgfältige Arbeitsweise schaffen Vertrauen, Verlässlichkeit und Orientierung."} ${data.sec.key === "int" ? "Zugleich verlangt die Stelle, Erkenntnisse verständlich zu kommunizieren, im Team zu verankern und eine konstruktive Zusammenarbeit aktiv zu fördern." : "Zugleich müssen Analyseergebnisse in konkretes Handeln überführt werden. Fundierte Erkenntnis allein erzeugt noch keine Wirkung."}`;
   })();
 
   const alltagsverhalten = (() => {
     const hochNamen = hochItems.slice(0, 3).map((t: any) => cleanTaskName(t.name));
     const hochRef = hochNamen.length > 0 ? `Besonders kritisch sind dabei ${hochNamen.join(", ")}. ` : "";
-    if (data.dom.key === "int") {
-      return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vor allem im persönlichen Kontakt. ${data.isLeadership ? "Die Führungskraft" : "Die Person"} schafft Vertrauen, nimmt Bedürfnisse frühzeitig wahr und gestaltet ein Umfeld, in dem sich Beteiligte eingebunden und wertgeschätzt fühlen. ${hochRef}${data.sec.key === "ana" ? "Damit dies gelingt, erfordert die Stelle zugleich ein hohes Maß an Organisation und Verlässlichkeit. Abläufe, Dokumentation und einheitliche Standards müssen konsequent eingehalten werden." : "Damit dies gelingt, erfordert die Stelle zugleich Entscheidungsstärke und Umsetzungstempo. Nicht jede Situation lässt sich im Konsens lösen."}`;
-    } else if (data.dom.key === "imp") {
-      return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vor allem durch klare Priorisierung und konsequente Umsetzung. ${data.isLeadership ? "Die Führungskraft" : "Die Person"} treibt Ergebnisse zielgerichtet voran und bleibt auch bei Widerständen handlungsfähig. ${hochRef}${data.sec.key === "int" ? "Damit dies gelingt, erfordert die Stelle zugleich Sensibilität für zwischenmenschliche Dynamiken. Wer ausschließlich auf Tempo setzt, riskiert den Rückhalt im Team." : "Damit dies gelingt, erfordert die Stelle zugleich analytische Sorgfalt und Qualitätsbewusstsein. Auch zügig getroffene Entscheidungen müssen auf einer fundierten Grundlage beruhen."}`;
-    } else {
-      return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vor allem durch methodisches Arbeiten, präzise Dokumentation und eine konsequente Qualitätsorientierung. ${data.isLeadership ? "Die Führungskraft" : "Die Person"} überzeugt durch fachliche Tiefe und nachvollziehbare Ergebnisse. ${hochRef}${data.sec.key === "int" ? "Damit dies gelingt, erfordert die Stelle zugleich kommunikatives Geschick. Fachlich fundierte Ergebnisse müssen verständlich aufbereitet und im Team verankert werden." : "Damit dies gelingt, erfordert die Stelle zugleich Handlungsbereitschaft und Umsetzungsstärke. Wer ausschließlich analysiert, ohne Entscheidungen herbeizuführen, hemmt den Fortschritt."}`;
+    const fk = data.isLeadership;
+    const person = fk ? "Die Führungskraft" : "Die Person";
+    const pt = data.profileType;
+    if (pt === "balanced_all") {
+      return `Im regulären Arbeitsalltag zeigt sich bei dieser Stelle keine eindeutige Handlungsrichtung. ${person} wechselt situativ zwischen zügigem Handeln, persönlichem Kontakt und gründlicher Analyse. ${hochRef}Die Stärke liegt in der Vielseitigkeit. Die Herausforderung besteht darin, bei wechselnden Anforderungen eine konsistente Linie zu halten.`;
     }
+    if (pt === "hybrid_imp_ana") {
+      return `Im regulären Arbeitsalltag verbindet diese Stelle zügiges Handeln mit gründlicher Prüfung. ${person} treibt Ergebnisse aktiv voran und achtet gleichzeitig auf Qualität und Nachvollziehbarkeit. ${hochRef}Dabei darf die Kommunikation im Team nicht vernachlässigt werden – Ergebnisse wirken nur, wenn sie verstanden und mitgetragen werden.`;
+    }
+    if (pt === "hybrid_imp_int") {
+      return `Im regulären Arbeitsalltag verbindet diese Stelle Umsetzungsstärke mit einem guten Gespür für Menschen. ${person} treibt Ergebnisse voran und achtet gleichzeitig auf den Zusammenhalt im Team. ${hochRef}Dabei darf die analytische Absicherung nicht zu kurz kommen – auch bei hoher Dynamik brauchen Entscheidungen eine fundierte Grundlage.`;
+    }
+    if (pt === "hybrid_ana_int") {
+      return `Im regulären Arbeitsalltag verbindet diese Stelle analytische Gründlichkeit mit kommunikativer Kompetenz. ${person} prüft Sachverhalte sorgfältig und kommuniziert Ergebnisse verständlich im Team. ${hochRef}Dabei muss das Umsetzungstempo gewährleistet bleiben – gründliche Analyse und Abstimmung dürfen die Handlungsfähigkeit nicht bremsen.`;
+    }
+    if (data.dom.key === "int") {
+      return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vor allem im persönlichen Kontakt. ${person} schafft Vertrauen, nimmt Bedürfnisse frühzeitig wahr und gestaltet ein Umfeld, in dem sich Beteiligte eingebunden und wertgeschätzt fühlen. ${hochRef}${data.sec.key === "ana" ? "Damit dies gelingt, erfordert die Stelle zugleich ein hohes Maß an Organisation und Verlässlichkeit. Abläufe, Dokumentation und einheitliche Standards müssen konsequent eingehalten werden." : "Damit dies gelingt, erfordert die Stelle zugleich Entscheidungsstärke und Umsetzungstempo. Nicht jede Situation lässt sich im Konsens lösen."}`;
+    }
+    if (data.dom.key === "imp") {
+      return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vor allem durch klare Priorisierung und konsequente Umsetzung. ${person} treibt Ergebnisse zielgerichtet voran und bleibt auch bei Widerständen handlungsfähig. ${hochRef}${data.sec.key === "int" ? "Damit dies gelingt, erfordert die Stelle zugleich Sensibilität für zwischenmenschliche Dynamiken. Wer ausschließlich auf Tempo setzt, riskiert den Rückhalt im Team." : "Damit dies gelingt, erfordert die Stelle zugleich analytische Sorgfalt und Qualitätsbewusstsein. Auch zügig getroffene Entscheidungen müssen auf einer fundierten Grundlage beruhen."}`;
+    }
+    return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vor allem durch methodisches Arbeiten, präzise Dokumentation und eine konsequente Qualitätsorientierung. ${person} überzeugt durch fachliche Tiefe und nachvollziehbare Ergebnisse. ${hochRef}${data.sec.key === "int" ? "Damit dies gelingt, erfordert die Stelle zugleich kommunikatives Geschick. Fachlich fundierte Ergebnisse müssen verständlich aufbereitet und im Team verankert werden." : "Damit dies gelingt, erfordert die Stelle zugleich Handlungsbereitschaft und Umsetzungsstärke. Wer ausschließlich analysiert, ohne Entscheidungen herbeizuführen, hemmt den Fortschritt."}`;
   })();
 
   const strukturprofilText = (() => {
