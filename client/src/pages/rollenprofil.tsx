@@ -886,15 +886,17 @@ function ProfileBar({ label, value, color }: { label: string; value: number; col
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
       <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0, fontWeight: 500 }}>{label}</span>
-      <div style={{ flex: 1, height: 28, borderRadius: 8, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
+      <div style={{ flex: 1, height: 30, borderRadius: 8, background: "rgba(0,0,0,0.04)", overflow: "hidden", position: "relative" }}>
         <div style={{
           width: value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 5), 100)}%`,
           height: "100%", borderRadius: 8, background: color,
           display: "flex", alignItems: "center", justifyContent: "center",
           minWidth: value === 0 ? 0 : 44,
           transition: "width 300ms ease",
+          textAlign: "center",
+          lineHeight: "30px",
         }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap", lineHeight: 1 }}>{Math.round(value)} %</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap", lineHeight: "30px", verticalAlign: "middle" }}>{Math.round(value)} %</span>
         </div>
       </div>
     </div>
@@ -1284,8 +1286,8 @@ export default function Rollenprofil() {
 
   const SectionHead = ({ num, title }: { num: number; title: string; color?: string }) => (
     <div className="bio-section-head" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, marginLeft: -44, marginRight: -44, padding: "0 18px", height: 38, background: "linear-gradient(135deg, #343A48 0%, #3d4455 50%, #464f62 100%)", boxShadow: "0 2px 6px rgba(52,58,72,0.3)" }}>
-      <div style={{ width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.95)", borderRadius: "50%", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.2)", lineHeight: 1 }}>
-        <span style={{ fontSize: 12, fontWeight: 800, color: "#343A48", lineHeight: 1, display: "block", marginTop: -1 }}>{String(num).padStart(2, "0")}</span>
+      <div style={{ width: 28, height: 28, background: "rgba(255,255,255,0.95)", borderRadius: "50%", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.2)", textAlign: "center", lineHeight: "28px" }}>
+        <span style={{ fontSize: 12, fontWeight: 800, color: "#343A48", lineHeight: "28px", verticalAlign: "middle" }}>{String(num).padStart(2, "0")}</span>
       </div>
       <span style={{ fontSize: 15, fontWeight: 700, color: "#FFFFFF", letterSpacing: "0.03em" }}>{title}</span>
     </div>
@@ -1301,8 +1303,8 @@ export default function Rollenprofil() {
   const SubHead = ({ num, title, color }: { num?: number; title: string; color: string }) => (
     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
       {num != null && (
-        <div style={{ width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center", background: color, borderRadius: "50%", flexShrink: 0, lineHeight: 1 }}>
-          <span style={{ fontSize: 11, fontWeight: 800, color: "#fff", lineHeight: 1, display: "block", marginTop: -1 }}>{num}</span>
+        <div style={{ width: 24, height: 24, background: color, borderRadius: "50%", flexShrink: 0, textAlign: "center", lineHeight: "24px" }}>
+          <span style={{ fontSize: 11, fontWeight: 800, color: "#fff", lineHeight: "24px", verticalAlign: "middle" }}>{num}</span>
         </div>
       )}
       <div>
