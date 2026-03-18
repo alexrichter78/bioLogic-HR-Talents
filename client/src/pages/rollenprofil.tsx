@@ -1187,7 +1187,7 @@ export default function Rollenprofil() {
                             </p>
                           </div>
                           <div style={{ width: "100%", height: 2, background: kb.color, margin: "10px 0", borderRadius: 1, flexShrink: 0 }} />
-                          <p style={{ fontSize: 12, lineHeight: 1.6, margin: 0, color: "#9A9A9E", textAlign: "justify", textAlignLast: "left" as any }} lang="de">
+                          <p style={{ fontSize: 12, lineHeight: 1.6, margin: 0, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any }} lang="de">
                             {kb.warning}
                           </p>
                         </div>
