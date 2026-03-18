@@ -727,7 +727,7 @@ export default function SollIstBericht() {
                       {/* AUSWIRKUNG IM ARBEITSALLTAG */}
                       <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-auswirkung">
                         <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 6px" }}>Auswirkung im Arbeitsalltag</p>
-                        <p style={{ margin: 0, fontSize: 13, lineHeight: 1.75, color: "#48484A" }}>
+                        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.75, color: "#48484A" }}>
                           {result.dominanceShiftText.split(/\n\n+/)[0]}
                         </p>
                       </div>
@@ -736,7 +736,7 @@ export default function SollIstBericht() {
                       <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", position: "relative" }} data-testid="section-fazit">
                         <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, borderRadius: "12px 0 0 12px", background: `linear-gradient(180deg, ${fitCol}, ${fitCol}40)` }} />
                         <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Managementkurzfazit</p>
-                        <p style={{ fontSize: 13, lineHeight: 1.85, color: "#48484A", margin: 0 }} data-testid="text-summary-fazit">
+                        <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0 }} data-testid="text-summary-fazit">
                           {result.summaryText.split(/\n\n+/)[0]}
                         </p>
                       </div>
@@ -750,7 +750,7 @@ export default function SollIstBericht() {
                               {result.executiveBullets.map((b, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 4 }}>
                                   <span style={{ width: 5, height: 5, borderRadius: 3, background: fitCol, flexShrink: 0, marginTop: 6 }} />
-                                  <span style={{ fontSize: 12, lineHeight: 1.6, color: "#48484A" }}>{b}</span>
+                                  <span style={{ fontSize: 14, lineHeight: 1.6, color: "#48484A" }}>{b}</span>
                                 </div>
                               ))}
                             </div>
@@ -761,7 +761,7 @@ export default function SollIstBericht() {
                               {result.constellationRisks.map((r, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 4 }}>
                                   <span style={{ width: 5, height: 5, borderRadius: 3, background: BIO_COLORS.nichtGeeignet, flexShrink: 0, marginTop: 6 }} />
-                                  <span style={{ fontSize: 12, lineHeight: 1.6, color: "#48484A" }}>{r}</span>
+                                  <span style={{ fontSize: 14, lineHeight: 1.6, color: "#48484A" }}>{r}</span>
                                 </div>
                               ))}
                             </div>
@@ -875,14 +875,14 @@ export default function SollIstBericht() {
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
                             <div style={{ padding: "10px 12px", borderRadius: 8, background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.05)" }}>
                               <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Stelle verlangt</p>
-                              <p style={{ fontSize: 13, lineHeight: 1.7, color: "#1D1D1F", fontWeight: 600, margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }}>{area.roleNeed}</p>
+                              <p style={{ fontSize: 14, lineHeight: 1.7, color: "#1D1D1F", fontWeight: 600, margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }}>{area.roleNeed}</p>
                             </div>
                             <div style={{ padding: "10px 12px", borderRadius: 8, background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.05)" }}>
                               <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Person bringt mit</p>
-                              <p style={{ fontSize: 13, lineHeight: 1.7, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }}>{area.candidatePattern}</p>
+                              <p style={{ fontSize: 14, lineHeight: 1.7, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }}>{area.candidatePattern}</p>
                             </div>
                           </div>
-                          <p style={{ fontSize: 13, lineHeight: 1.7, margin: 0, fontStyle: "italic", color: "#6E6E73", wordBreak: "break-word", overflowWrap: "break-word" }}>{area.risk}</p>
+                          <p style={{ fontSize: 14, lineHeight: 1.7, margin: 0, fontStyle: "italic", color: "#6E6E73", wordBreak: "break-word", overflowWrap: "break-word" }}>{area.risk}</p>
                         </div>
                       </div>
                     );
@@ -1029,10 +1029,10 @@ export default function SollIstBericht() {
 
                               <div style={{ padding: "10px 14px", borderRadius: 8, background: `${phaseCol}08`, borderLeft: `3px solid ${phaseCol}40` }}>
                                 <p style={{ fontSize: 11, fontWeight: 700, color: phaseCol, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 4px" }}>Integrationsfokus</p>
-                                <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.5, margin: "0 0 6px" }}>{phase.fokus.intro}</p>
+                                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.5, margin: "0 0 6px" }}>{phase.fokus.intro}</p>
                                 <ul style={{ margin: 0, paddingLeft: 0, listStyle: "none" }}>
                                   {phase.fokus.bullets.map((b, bi) => (
-                                    <li key={bi} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, marginBottom: 3, paddingLeft: 16, position: "relative" }}>
+                                    <li key={bi} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, marginBottom: 3, paddingLeft: 16, position: "relative" }}>
                                       <span style={{ position: "absolute", left: 0, top: 8, width: 6, height: 6, borderRadius: "50%", background: phaseCol }} />
                                       {b}
                                     </li>
