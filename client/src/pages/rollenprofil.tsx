@@ -1288,6 +1288,20 @@ export default function Rollenprofil() {
     fazit: "#10B981",
   };
 
+  const SubHead = ({ num, title, color }: { num?: number; title: string; color: string }) => (
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+      {num != null && (
+        <div style={{ width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center", background: color, borderRadius: "50%", flexShrink: 0 }}>
+          <span style={{ fontSize: 11, fontWeight: 800, color: "#fff" }}>{num}</span>
+        </div>
+      )}
+      <div>
+        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{title}</p>
+        <div style={{ width: 36, height: 2.5, borderRadius: 2, background: color, marginTop: 4, opacity: 0.7 }} />
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen" style={{ background: "#F1F5F9" }} lang="de">
       <GlobalNav />
@@ -1340,7 +1354,7 @@ export default function Rollenprofil() {
 
             {/* 1. Kurzbeschreibung */}
             <div style={{ marginTop: 24, marginBottom: 28 }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>1. Kurzbeschreibung der Stelle</p>
+              <SubHead num={1} title="Kurzbeschreibung der Stelle" color={SECTION_COLORS.rollenDna} />
 
               {topTaetigkeiten.length > 0 && (
                 <>
@@ -1365,7 +1379,7 @@ export default function Rollenprofil() {
 
             {/* 2. Strukturprofil */}
             <div style={{ marginBottom: 28 }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>2. Strukturprofil der Stelle</p>
+              <SubHead num={2} title="Strukturprofil der Stelle" color={SECTION_COLORS.rollenDna} />
 
               <div style={{ marginBottom: 16 }}>
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, fontWeight: 400, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
@@ -1421,7 +1435,7 @@ export default function Rollenprofil() {
 
             {/* 3. Arbeitslogik */}
             <div style={{ marginBottom: 28 }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>3. Arbeitslogik der Stelle</p>
+              <SubHead num={3} title="Arbeitslogik der Stelle" color={SECTION_COLORS.rollenDna} />
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {arbeitslogikText}
               </p>
@@ -1430,7 +1444,7 @@ export default function Rollenprofil() {
             {/* 4. Rahmenbedingungen */}
             {rahmenText && (
               <div style={{ marginBottom: 28 }} data-testid="bericht-section-rahmen">
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>4. Rahmenbedingungen</p>
+                <SubHead num={4} title="Rahmenbedingungen" color={SECTION_COLORS.rollenDna} />
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-rahmenbedingungen">
                   {rahmenText}
                 </p>
@@ -1440,9 +1454,7 @@ export default function Rollenprofil() {
             {/* 5. Erfolgsfokus */}
             {erfolgsfokusText && (
               <div style={{ marginBottom: 0 }} data-testid="bericht-section-kompetenz">
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>
-                  {rahmenText ? "5." : "4."} Erfolgsfokus
-                </p>
+                <SubHead num={rahmenText ? 5 : 4} title="Erfolgsfokus" color={SECTION_COLORS.rollenDna} />
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-erfolgsfokus">
                   {erfolgsfokusText}
                 </p>
@@ -1500,9 +1512,7 @@ export default function Rollenprofil() {
 
             {/* Führungswirkung / Teamwirkung */}
             <div style={{ marginBottom: 28 }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>
-                {data.isLeadership ? "Führungswirkung der Stelle" : "Teamwirkung der Stelle"}
-              </p>
+              <SubHead title={data.isLeadership ? "Führungswirkung der Stelle" : "Teamwirkung der Stelle"} color={SECTION_COLORS.teamwirkung} />
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {teamwirkung}
               </p>
@@ -1510,7 +1520,7 @@ export default function Rollenprofil() {
 
             {/* Spannungsfelder */}
             <div style={{ marginBottom: 28 }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Spannungsfelder der Stelle</p>
+              <SubHead title="Spannungsfelder der Stelle" color={SECTION_COLORS.teamwirkung} />
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, margin: "0 0 12px" }}>
                 Typische Spannungen dieser Stelle sind:
               </p>
@@ -1529,7 +1539,7 @@ export default function Rollenprofil() {
 
             {/* Fehlbesetzungsrisiken */}
             <div style={{ marginBottom: 28 }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>Fehlbesetzungsrisiken</p>
+              <SubHead title="Fehlbesetzungsrisiken" color={SECTION_COLORS.teamwirkung} />
               {fehlbesetzung.map((risk, i) => (
                 <div key={i} style={{ marginBottom: 16 }}>
                   <p style={{ fontSize: 14, fontWeight: 700, color: "#3A3A3C", margin: "0 0 8px", fontStyle: "italic" }}>{risk.label}</p>
@@ -1548,7 +1558,7 @@ export default function Rollenprofil() {
             {/* Typischer Kandidat (AI-generiert) */}
             {(kandidatenText || kandidatenLoading || kandidatenError) && (
               <div style={{ marginBottom: 28 }} data-testid="section-kandidatenprofil">
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Typische Person für diese Stelle</p>
+                <SubHead title="Typische Person für diese Stelle" color={SECTION_COLORS.teamwirkung} />
                 {kandidatenLoading ? (
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <div style={{
