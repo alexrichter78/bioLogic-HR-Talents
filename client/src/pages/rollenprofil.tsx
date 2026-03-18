@@ -921,16 +921,16 @@ function ProfileBar({ label, value, color }: { label: string; value: number; col
   const widthPct = (value / MAX_BIO) * 100;
   return (
     <div data-profile-bar style={{ display: "flex", alignItems: "center", gap: 12 }}>
-      <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0, fontWeight: 500 }}>{label}</span>
+      <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0, fontWeight: 500, lineHeight: "30px", height: 30 }}>{label}</span>
       <div style={{ flex: 1, height: 30, borderRadius: 8, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
         <div style={{
           width: value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 5), 100)}%`,
           height: 30, borderRadius: 8, background: color,
-          display: "flex", alignItems: "center", justifyContent: "flex-start", paddingLeft: 10,
+          paddingLeft: 10,
           minWidth: value === 0 ? 0 : 44,
           transition: "width 300ms ease",
         }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap", lineHeight: "30px", height: 30, display: "inline-block" }}>{Math.round(value)} %</span>
         </div>
       </div>
     </div>
