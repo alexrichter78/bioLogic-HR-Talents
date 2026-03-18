@@ -1159,12 +1159,14 @@ export default function Rollenprofil() {
                   {strukturprofilText}
                 </p>
               </div>
-              <div style={{ maxWidth: 400, marginBottom: 16 }}>
-                <ProfileBar label="Impulsiv" value={data.gesamt.imp} color={COLORS.imp} />
-                <div style={{ height: 8 }} />
-                <ProfileBar label="Intuitiv" value={data.gesamt.int} color={COLORS.int} />
-                <div style={{ height: 8 }} />
-                <ProfileBar label="Analytisch" value={data.gesamt.ana} color={COLORS.ana} />
+              <div style={{ padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)", marginBottom: 16 }}>
+                <div style={{ maxWidth: 400 }}>
+                  <ProfileBar label="Impulsiv" value={data.gesamt.imp} color={COLORS.imp} />
+                  <div style={{ height: 8 }} />
+                  <ProfileBar label="Intuitiv" value={data.gesamt.int} color={COLORS.int} />
+                  <div style={{ height: 8 }} />
+                  <ProfileBar label="Analytisch" value={data.gesamt.ana} color={COLORS.ana} />
+                </div>
               </div>
 
               <div style={{ marginBottom: 16 }}>
