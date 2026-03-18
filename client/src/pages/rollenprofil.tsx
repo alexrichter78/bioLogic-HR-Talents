@@ -1358,9 +1358,12 @@ export default function Rollenprofil() {
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 8px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {rollenBeschreibungIntro}
               </p>
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                {rollenBeschreibungErgaenzung}
-              </p>
+              <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                <img src="/person-icon.png" alt="" style={{ width: 56, height: 56, borderRadius: "50%", flexShrink: 0, marginTop: 2 }} />
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
+                  {rollenBeschreibungErgaenzung}
+                </p>
+              </div>
             </div>
 
             {/* 2. Strukturprofil */}
