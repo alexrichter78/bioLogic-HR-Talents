@@ -890,11 +890,11 @@ function ProfileBar({ label, value, color }: { label: string; value: number; col
         <div style={{
           width: value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 5), 100)}%`,
           height: "100%", borderRadius: 8, background: color,
-          display: "flex", alignItems: "center", paddingLeft: 10,
+          display: "flex", alignItems: "center", justifyContent: "center",
           minWidth: value === 0 ? 0 : 44,
           transition: "width 300ms ease",
         }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap", lineHeight: 1 }}>{Math.round(value)} %</span>
         </div>
       </div>
     </div>
@@ -1022,8 +1022,10 @@ export default function Rollenprofil() {
 
       const A4_W = 595.28;
       const A4_H = 841.89;
+      const TOP_MARGIN_PT = 28.35;
       const pxWidth = 794;
-      const pxPageH = Math.floor((A4_H / A4_W) * pxWidth);
+      const usablePageH = A4_H - TOP_MARGIN_PT;
+      const pxPageH = Math.floor((usablePageH / A4_W) * pxWidth);
 
       const cloneTop = clone.getBoundingClientRect().top;
       const allBlocks = clone.querySelectorAll<HTMLElement>("[data-pdf-block]");
@@ -1097,7 +1099,7 @@ export default function Rollenprofil() {
         const imgData = pageCanvas.toDataURL("image/jpeg", 0.92);
         const imgW = A4_W;
         const imgH = (sliceH / pxWidth) * A4_W;
-        doc.addImage(imgData, "JPEG", 0, 0, imgW, imgH);
+        doc.addImage(imgData, "JPEG", 0, TOP_MARGIN_PT, imgW, imgH);
       }
 
       const safeName = (data.beruf || "Bericht").replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_");
@@ -1282,8 +1284,8 @@ export default function Rollenprofil() {
 
   const SectionHead = ({ num, title }: { num: number; title: string; color?: string }) => (
     <div className="bio-section-head" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, marginLeft: -44, marginRight: -44, padding: "0 18px", height: 38, background: "linear-gradient(135deg, #343A48 0%, #3d4455 50%, #464f62 100%)", boxShadow: "0 2px 6px rgba(52,58,72,0.3)" }}>
-      <div style={{ width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.95)", borderRadius: "50%", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }}>
-        <span style={{ fontSize: 12, fontWeight: 800, color: "#343A48" }}>{String(num).padStart(2, "0")}</span>
+      <div style={{ width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.95)", borderRadius: "50%", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.2)", lineHeight: 1 }}>
+        <span style={{ fontSize: 12, fontWeight: 800, color: "#343A48", lineHeight: 1, display: "block", marginTop: -1 }}>{String(num).padStart(2, "0")}</span>
       </div>
       <span style={{ fontSize: 15, fontWeight: 700, color: "#FFFFFF", letterSpacing: "0.03em" }}>{title}</span>
     </div>
@@ -1299,8 +1301,8 @@ export default function Rollenprofil() {
   const SubHead = ({ num, title, color }: { num?: number; title: string; color: string }) => (
     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
       {num != null && (
-        <div style={{ width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center", background: color, borderRadius: "50%", flexShrink: 0 }}>
-          <span style={{ fontSize: 11, fontWeight: 800, color: "#fff" }}>{num}</span>
+        <div style={{ width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center", background: color, borderRadius: "50%", flexShrink: 0, lineHeight: 1 }}>
+          <span style={{ fontSize: 11, fontWeight: 800, color: "#fff", lineHeight: 1, display: "block", marginTop: -1 }}>{num}</span>
         </div>
       )}
       <div>
@@ -1483,8 +1485,8 @@ export default function Rollenprofil() {
               <p style={{ fontSize: 14, color: "#6E6E73", margin: "0 0 20px", lineHeight: 1.6 }}>Die folgende Darstellung zeigt, wie sich die Stellenanforderung im regulären Arbeitsalltag, unter Druck und bei starkem Stress typischerweise ausdrückt.</p>
               <div style={{ borderLeft: "4px solid #34C759", borderRadius: 8, background: "rgba(52,199,89,0.04)", padding: "16px 20px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                  <Sun size={18} color="#34C759" strokeWidth={2.2} />
-                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Verhalten im Alltag</p>
+                  <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, flexShrink: 0 }}><Sun size={18} color="#34C759" strokeWidth={2.2} /></span>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, lineHeight: 1 }}>Verhalten im Alltag</p>
                 </div>
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                   {alltagsverhalten}
@@ -1495,8 +1497,8 @@ export default function Rollenprofil() {
             {/* Verhalten unter Druck */}
             <div style={{ marginBottom: 20, borderLeft: "4px solid #FF9500", borderRadius: 8, background: "rgba(255,149,0,0.04)", padding: "16px 20px" }} data-pdf-block>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                <Gauge size={18} color="#FF9500" strokeWidth={2.2} />
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Verhalten unter Druck</p>
+                <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, flexShrink: 0 }}><Gauge size={18} color="#FF9500" strokeWidth={2.2} /></span>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, lineHeight: 1 }}>Verhalten unter Druck</p>
               </div>
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {stress.controlled}
@@ -1506,8 +1508,8 @@ export default function Rollenprofil() {
             {/* Verhalten bei starkem Stress */}
             <div style={{ marginBottom: 0, borderLeft: "4px solid #FF3B30", borderRadius: 8, background: "rgba(255,59,48,0.04)", padding: "16px 20px" }} data-pdf-block>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                <Flame size={18} color="#FF3B30" strokeWidth={2.2} />
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Verhalten bei starkem Stress</p>
+                <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, flexShrink: 0 }}><Flame size={18} color="#FF3B30" strokeWidth={2.2} /></span>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, lineHeight: 1 }}>Verhalten bei starkem Stress</p>
               </div>
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {stress.uncontrolled}
