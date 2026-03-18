@@ -261,12 +261,10 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
   const introDiscPad = 4;
   const introDiscTotalH = introDiscLines.length * 4.3 + introDiscPad * 2 + 2;
   checkPage(introDiscTotalH + 4);
-  doc.setDrawColor(255, 59, 48);
-  doc.setLineWidth(0.8);
-  doc.setFillColor(255, 240, 240);
+  doc.setDrawColor(255, 200, 200);
+  doc.setLineWidth(0.3);
+  doc.setFillColor(255, 245, 245);
   doc.roundedRect(ML, y - introDiscPad, CW, introDiscTotalH, 2, 2, "FD");
-  doc.setFillColor(255, 59, 48);
-  doc.rect(ML, y - introDiscPad, CW, 0.8, "F");
   y += 2;
   doc.setFontSize(8);
   doc.setFont("helvetica", "bold");
