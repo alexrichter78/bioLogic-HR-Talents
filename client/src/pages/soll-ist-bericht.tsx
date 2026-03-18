@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
-import { buildAndSavePdf } from "@/lib/pdf-direct-builder";
 import { AlertTriangle, Download, Loader2, ChevronLeft, ChevronDown, SlidersHorizontal, Zap, Compass, BarChart3, Triangle, Shield, Flame, Clock, TrendingUp, CheckCircle2, FileText, Award, AlertCircle, ArrowRight } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { dominanceModeOf, labelComponent } from "@/lib/jobcheck-engine";
@@ -196,14 +195,142 @@ export default function SollIstBericht() {
   }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated, fuehrungsArt, matchCheckFit, matchCheckControl]);
 
   const exportPdf = useCallback(async () => {
-    if (!result || isExportingPdf || !roleTriad) return;
+    if (!result || isExportingPdf || !roleTriad || !reportRef.current) return;
     setIsExportingPdf(true);
+    let clone: HTMLElement | null = null;
+    let pdfBtn: HTMLElement | null = null;
+    let backBtn: HTMLElement | null = null;
+    let reconfigBtn: HTMLElement | null = null;
     try {
-      const safeName = roleName.replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_") || "Bericht";
-      await buildAndSavePdf(result, roleTriad, candidateProfile, `Passungsbericht_${safeName}.pdf`);
-    } catch (err) {
-      console.error("PDF export failed:", err);
+      const html2canvas = (await import("html2canvas")).default;
+      const { default: jsPDF } = await import("jspdf");
+
+      const source = reportRef.current;
+      pdfBtn = source.querySelector("[data-testid='button-export-pdf']") as HTMLElement | null;
+      backBtn = source.querySelector("[data-testid='link-back-matchcheck']") as HTMLElement | null;
+      reconfigBtn = source.querySelector("[data-testid='button-reconfigure']") as HTMLElement | null;
+      if (pdfBtn) pdfBtn.style.display = "none";
+      if (backBtn) backBtn.style.display = "none";
+      if (reconfigBtn) reconfigBtn.style.display = "none";
+
+      clone = source.cloneNode(true) as HTMLElement;
+      clone.style.position = "absolute";
+      clone.style.left = "-9999px";
+      clone.style.top = "0";
+      clone.style.width = "794px";
+      clone.style.borderRadius = "0";
+      clone.style.boxShadow = "none";
+      clone.style.overflow = "visible";
+      document.body.appendChild(clone);
+
+      const allTextEls = clone.querySelectorAll<HTMLElement>("p, span, li, div");
+      allTextEls.forEach(el => {
+        el.style.hyphens = "none";
+        (el.style as any).WebkitHyphens = "none";
+        el.style.wordBreak = "normal";
+        el.style.overflowWrap = "break-word";
+        el.style.textAlign = "left";
+      });
+
+      clone.querySelectorAll<HTMLElement>(".bio-section-head").forEach(sh => {
+        sh.style.justifyContent = "flex-start";
+        sh.style.gap = "0";
+      });
+
+      const A4_W = 595.28;
+      const A4_H = 841.89;
+      const TOP_MARGIN_PT = 28.35;
+      const pxWidth = 794;
+      const usablePageH = A4_H - TOP_MARGIN_PT;
+      const pxPageH = Math.floor((usablePageH / A4_W) * pxWidth);
+
+      const cloneTop = clone.getBoundingClientRect().top;
+      const allBlocks = clone.querySelectorAll<HTMLElement>("[data-pdf-block]");
+      const breakPoints: number[] = [0];
+      allBlocks.forEach(b => {
+        const r = b.getBoundingClientRect();
+        const top = r.top - cloneTop;
+        const bottom = r.bottom - cloneTop;
+        if (top > 0) breakPoints.push(top);
+        if (bottom > 0) breakPoints.push(bottom);
+      });
+      breakPoints.sort((a, b) => a - b);
+
+      const contentH = clone.scrollHeight;
+      const scale = contentH > 8000 ? 1.5 : 2;
+
+      const canvas = await html2canvas(clone, {
+        scale,
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: "#FFFFFF",
+        width: pxWidth,
+        windowWidth: pxWidth,
+      });
+
+      document.body.removeChild(clone);
+      clone = null;
+      if (pdfBtn) { pdfBtn.style.display = ""; pdfBtn = null; }
+      if (backBtn) { backBtn.style.display = ""; backBtn = null; }
+      if (reconfigBtn) { reconfigBtn.style.display = ""; reconfigBtn = null; }
+
+      const totalH = canvas.height / scale;
+      const doc = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
+
+      const pageCuts: number[] = [0];
+      let cursor = 0;
+      while (cursor < totalH) {
+        const ideal = cursor + pxPageH;
+        if (ideal >= totalH) {
+          pageCuts.push(totalH);
+          break;
+        }
+        let bestCut = ideal;
+        for (let i = breakPoints.length - 1; i >= 0; i--) {
+          if (breakPoints[i] <= ideal && breakPoints[i] > cursor + pxPageH * 0.3) {
+            bestCut = breakPoints[i];
+            break;
+          }
+        }
+        pageCuts.push(bestCut);
+        cursor = bestCut;
+      }
+
+      for (let p = 0; p < pageCuts.length - 1; p++) {
+        if (p > 0) doc.addPage();
+        const yStart = pageCuts[p];
+        const sliceH = pageCuts[p + 1] - yStart;
+
+        const pageCanvas = document.createElement("canvas");
+        pageCanvas.width = pxWidth * scale;
+        pageCanvas.height = sliceH * scale;
+        const ctx = pageCanvas.getContext("2d")!;
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+        ctx.drawImage(
+          canvas,
+          0, yStart * scale,
+          pxWidth * scale, sliceH * scale,
+          0, 0,
+          pxWidth * scale, sliceH * scale
+        );
+
+        const imgData = pageCanvas.toDataURL("image/jpeg", 0.92);
+        const imgW = A4_W;
+        const imgH = (sliceH / pxWidth) * A4_W;
+        doc.addImage(imgData, "JPEG", 0, TOP_MARGIN_PT, imgW, imgH);
+      }
+
+      const safeName = (roleName || "Bericht").replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_");
+      doc.save(`MatchCheck_${safeName}.pdf`);
+    } catch (e) {
+      console.error("PDF error:", e);
+      alert("PDF-Export fehlgeschlagen. Bitte versuchen Sie es erneut.");
     } finally {
+      if (clone && clone.parentNode) clone.parentNode.removeChild(clone);
+      if (pdfBtn) pdfBtn.style.display = "";
+      if (backBtn) backBtn.style.display = "";
+      if (reconfigBtn) reconfigBtn.style.display = "";
       setIsExportingPdf(false);
     }
   }, [isExportingPdf, roleName, result, roleTriad, candidateProfile]);
@@ -615,7 +742,7 @@ export default function SollIstBericht() {
             <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }} data-testid="print-report-card">
 
               {/* ─── DARK HEADER ─── */}
-              <div className="report-header" data-testid="section-header">
+              <div data-pdf-block className="report-header" data-testid="section-header">
 
                 <img src={logoPath} alt="bioLogic" className="report-logo" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
 
@@ -639,7 +766,7 @@ export default function SollIstBericht() {
 
               {/* ─── EXECUTIVE DECISION CONTENT (weißer Hintergrund) ─── */}
               <div style={{ padding: "28px 44px 0" }}>
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 24px", textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-einleitung">
+                <p data-pdf-block style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 24px", textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-einleitung">
                   Diese Passungsanalyse zeigt, wie gut Person und Position in ihrer Arbeitslogik zusammenpassen. Sie macht sichtbar, wo Übereinstimmungen bestehen, wo Abweichungen entstehen und welcher Führungs- oder Entwicklungsaufwand daraus im Alltag zu erwarten ist.
                 </p>
                 {(() => {
@@ -655,7 +782,7 @@ export default function SollIstBericht() {
                   return (
                     <>
                       {/* SYSTEMSTATUS */}
-                      <div style={{ marginBottom: 22 }} data-testid="section-systemstatus">
+                      <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-systemstatus">
                         <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 10px" }}>Gesamtbewertung</p>
                         <div style={{ display: "flex", gap: 10 }}>
                           {[
@@ -690,7 +817,7 @@ export default function SollIstBericht() {
                             : [result.candDomKey];
 
                         return (
-                          <div style={{ marginBottom: 22, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-ueberblick">
+                          <div data-pdf-block style={{ marginBottom: 22, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-ueberblick">
                             <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 16px", textAlign: "center" }}>Kurzübersicht</p>
                             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: 16 }}>
                               <div style={{ flex: 1, textAlign: "center" }}>
@@ -722,7 +849,7 @@ export default function SollIstBericht() {
                       })()}
 
                       {/* AUSWIRKUNG IM ARBEITSALLTAG */}
-                      <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-auswirkung">
+                      <div data-pdf-block style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-auswirkung">
                         <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 6px" }}>Auswirkung im Arbeitsalltag</p>
                         <p style={{ margin: 0, fontSize: 14, lineHeight: 1.75, color: "#48484A" }}>
                           {result.dominanceShiftText.split(/\n\n+/)[0]}
@@ -730,7 +857,7 @@ export default function SollIstBericht() {
                       </div>
 
                       {/* MANAGEMENTKURZFAZIT */}
-                      <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", position: "relative" }} data-testid="section-fazit">
+                      <div data-pdf-block style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", position: "relative" }} data-testid="section-fazit">
                         <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, borderRadius: "12px 0 0 12px", background: `linear-gradient(180deg, ${fitCol}, ${fitCol}40)` }} />
                         <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Managementkurzfazit</p>
                         <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0 }} data-testid="text-summary-fazit">
@@ -740,7 +867,7 @@ export default function SollIstBericht() {
 
                       {/* WARUM / RISIKEN compact */}
                       {(result.executiveBullets.length > 0 || result.constellationRisks.length > 0) && (
-                        <div style={{ marginBottom: 0, padding: "16px 20px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-executive-bullets">
+                        <div data-pdf-block style={{ marginBottom: 0, padding: "16px 20px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-executive-bullets">
                           {result.executiveBullets.length > 0 && (
                             <div style={{ marginBottom: result.constellationRisks.length > 0 ? 14 : 0 }}>
                               <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 6px" }}>Warum dieses Ergebnis</p>
@@ -773,7 +900,7 @@ export default function SollIstBericht() {
 
               <div style={{ padding: "36px 44px 48px" }}>
 
-              <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-comparison-bars">
+              <div data-pdf-block style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-comparison-bars">
                 <SectionHead num={2} icon={BarChart3} title="Vergleich der Profile" iconColor={SECTION_COLORS.sollIstProfil} />
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "left" } as React.CSSProperties} lang="de">
                   {biggestGapText(result.roleTriad, result.candTriad)}
@@ -853,7 +980,7 @@ export default function SollIstBericht() {
                 </div>
               </div>
 
-              <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-impact-matrix">
+              <div data-pdf-block style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-impact-matrix">
                 <SectionHead num={3} icon={Shield} title="Wirkung der Besetzung im Arbeitsalltag" iconColor={SECTION_COLORS.wirkung} />
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {result.impactAreas.map(area => {
@@ -887,7 +1014,7 @@ export default function SollIstBericht() {
                 </div>
               </div>
 
-              <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-stress-behavior">
+              <div data-pdf-block style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-stress-behavior">
                 <SectionHead num={4} icon={Flame} title="Verhalten unter Druck" iconColor={SECTION_COLORS.druck} />
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF950008", border: "1px solid #FF950018", overflow: "visible" }}>
@@ -910,7 +1037,7 @@ export default function SollIstBericht() {
                 </p>
               </div>
 
-              <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-risk-timeline">
+              <div data-pdf-block style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-risk-timeline">
                 <SectionHead num={5} icon={Clock} title="Risikoprognose" iconColor={SECTION_COLORS.risiko} />
                 <div style={{ position: "relative", paddingLeft: 28 }}>
                   <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
@@ -955,7 +1082,7 @@ export default function SollIstBericht() {
                 const rGaugeCol = rDev === 3 ? "#34C759" : rDev === 2 ? "#E5A832" : "#D64045";
 
                 return (
-                  <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-development">
+                  <div data-pdf-block style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-development">
                     <SectionHead num={6} icon={TrendingUp} title="Gesamtbewertung" iconColor={SECTION_COLORS.gesamtbewertung} />
 
                     <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
@@ -998,7 +1125,7 @@ export default function SollIstBericht() {
               })()}
 
               {result.integrationsplan && (
-                <div style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-integrationsplan">
+                <div data-pdf-block style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-integrationsplan">
                   <SectionHead num={7} icon={FileText} title="30-Tage-Integrationsplan" iconColor={SECTION_COLORS.integrationsplan} />
                   <div style={{ position: "relative", paddingLeft: 28 }}>
                     <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
@@ -1051,7 +1178,7 @@ export default function SollIstBericht() {
                 const fDevCol = fDev === 3 ? "#34C759" : fDev === 2 ? "#E5A832" : "#D64045";
                 const fDevLabel = result.developmentLabel === "hoch" ? "Entwicklung sehr wahrscheinlich" : result.developmentLabel === "mittel" ? "Entwicklung mit Unterstützung möglich" : "Entwicklung unwahrscheinlich";
                 return (
-                  <div data-testid="section-final-assessment" style={{ padding: "28px", borderRadius: 16, background: `linear-gradient(135deg, ${fitCol}08, ${fitCol}03)`, border: `1px solid ${fitCol}15`, boxShadow: `0 4px 20px ${fitCol}08` }}>
+                  <div data-pdf-block data-testid="section-final-assessment" style={{ padding: "28px", borderRadius: 16, background: `linear-gradient(135deg, ${fitCol}08, ${fitCol}03)`, border: `1px solid ${fitCol}15`, boxShadow: `0 4px 20px ${fitCol}08` }}>
                     <SectionHead num={result.integrationsplan ? 8 : 7} icon={Award} title="Schlussbewertung" iconColor={fitCol} />
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
                       <div style={{ padding: "14px 18px", borderRadius: 12, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(0,0,0,0.05)", textAlign: "center" }}>
