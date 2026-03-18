@@ -1153,12 +1153,20 @@ export default function Rollenprofil() {
             {/* 2. Strukturprofil */}
             <div style={{ marginBottom: 28 }}>
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>2. Strukturprofil der Stelle</p>
-              <div style={{ maxWidth: 400, marginBottom: 14 }}>
-                <ProfileBar label="Impulsiv" value={data.gesamt.imp} color={COLORS.imp} />
-                <div style={{ height: 8 }} />
-                <ProfileBar label="Intuitiv" value={data.gesamt.int} color={COLORS.int} />
-                <div style={{ height: 8 }} />
-                <ProfileBar label="Analytisch" value={data.gesamt.ana} color={COLORS.ana} />
+
+              <div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
+                <div style={{ flex: 1, padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)" }}>
+                  <ProfileBar label="Impulsiv" value={data.gesamt.imp} color={COLORS.imp} />
+                  <div style={{ height: 8 }} />
+                  <ProfileBar label="Intuitiv" value={data.gesamt.int} color={COLORS.int} />
+                  <div style={{ height: 8 }} />
+                  <ProfileBar label="Analytisch" value={data.gesamt.ana} color={COLORS.ana} />
+                </div>
+                <div style={{ flex: 1, padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)", display: "flex", alignItems: "center" }}>
+                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de">
+                    {strukturprofilText}
+                  </p>
+                </div>
               </div>
 
               <div style={{ marginBottom: 16 }}>
@@ -1176,13 +1184,9 @@ export default function Rollenprofil() {
                 ))}
               </div>
 
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 16px", textAlign: "justify", textAlignLast: "left" as any }} lang="de">
-                {strukturprofilText}
-              </p>
-
               {profilkonflikt && (
                 <div style={{
-                  marginTop: 14, padding: "12px 16px", borderRadius: 10,
+                  marginTop: 14, padding: "12px 16px", borderRadius: 12,
                   background: "rgba(255,149,0,0.06)", border: "1px solid rgba(255,149,0,0.15)",
                 }}>
                   <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, fontWeight: 450 }} data-testid="text-profilkonflikt" lang="de">
