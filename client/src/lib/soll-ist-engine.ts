@@ -632,7 +632,7 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
 
 function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapA: number, cand: string): ImpactArea {
   const maxGap = Math.max(gapI, gapA);
-  const sev = rk === ck ? severity(maxGap * 0.6) : severity(rk === "analytisch" ? gapA + 5 : maxGap);
+  const sev = rk === ck ? severity(maxGap) : severity(rk === "analytisch" ? gapA + 5 : maxGap);
   const s = Subj(cand);
 
   let roleNeed: string;
@@ -728,7 +728,7 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
 
 function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, fuehrungsArt: FuehrungsArt): ImpactArea {
   const maxGap = Math.max(gapI, gapN, gapA);
-  const sev = severity(rk !== ck ? maxGap * 0.7 : maxGap * 0.4);
+  const sev = severity(rk !== ck ? maxGap * 0.7 : maxGap * 0.65);
 
   let roleNeed: string;
   let candidatePattern: string;
@@ -784,7 +784,7 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
       risk = `Führung wirkt formal und distanziert. Erwartet werden persönliche Nähe und offene Kommunikation, geliefert werden Regeln und Prozesse.${leadershipSuffix}`;
     }
   } else {
-    risk = maxGap >= 10
+    risk = maxGap >= 8
       ? "Die Führungsrichtung stimmt, aber unterschiedliche Gewichtungen in den Nebenbereichen beeinflussen, wie Orientierung gegeben wird. Regelmässiges Feedback zur Führungswirkung ist ratsam."
       : "Führungsstil passt zur Stellenanforderung. Die Art, wie Orientierung gegeben wird, stimmt mit den Erwartungen des Teams überein.";
   }
@@ -793,7 +793,7 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
 }
 
 function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string): ImpactArea {
-  const sev = severity(Math.max(gapI, gapN, gapA) * 0.5);
+  const sev = severity(Math.max(gapI, gapN, gapA) * 0.65);
 
   let roleNeed: string;
   let candidatePattern: string;
@@ -832,7 +832,7 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
     }
   } else {
     const cMaxGap = Math.max(gapI, gapN, gapA);
-    risk = cMaxGap >= 10
+    risk = cMaxGap >= 8
       ? "Die kulturelle Grundrichtung stimmt. Da die Nebenbereiche unterschiedlich gewichtet werden, kann sich die gelebte Kultur in einzelnen Aspekten von der Stellenerwartung unterscheiden."
       : "Kulturwirkung stimmt mit der Stellenanforderung überein. Die Art, wie das Arbeitsumfeld geprägt wird, passt zu den Erwartungen.";
   }
