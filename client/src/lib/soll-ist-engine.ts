@@ -762,7 +762,8 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
 
   if (roleIsBalFull) {
     const totalGap = gapI + gapN + gapA;
-    const sev = severity(totalGap * 0.3);
+    const maxSingleGap = Math.max(gapI, gapN, gapA);
+    const sev = severity(maxSingleGap * 0.45);
     const roleNeed = fuehrungsArt === "disziplinarisch"
       ? "Führung, die alle drei Ebenen abdeckt: operative Klarheit, persönliche Nähe und strukturierte Verlässlichkeit. Die Stelle verlangt situatives Führen, nicht einen einzelnen Stil."
       : fuehrungsArt === "fachlich"
@@ -857,7 +858,8 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
 
   if (roleIsBalFull) {
     const totalGap = gapI + gapN + gapA;
-    const sev = severity(totalGap * 0.3);
+    const maxSingleGap = Math.max(gapI, gapN, gapA);
+    const sev = severity(maxSingleGap * 0.45);
     const roleNeed = "Ausgewogene Kultur, die Leistungsorientierung, Zusammenarbeit und Verlässlichkeit verbindet. Kein einzelner Kulturaspekt dominiert.";
 
     let candidatePattern: string;
