@@ -1179,12 +1179,9 @@ export default function Rollenprofil() {
                   <div style={{ display: "flex", gap: 12 }}>
                     {komponentenBedeutung.map((kb, i) => (
                       <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-                        <div style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: "#fff", border: "1px solid rgba(0,0,0,0.08)", display: "flex", flexDirection: "column" }}>
+                        <div style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: `linear-gradient(135deg, ${kb.color}12, ${kb.color}06)`, border: `1px solid ${kb.color}20`, display: "flex", flexDirection: "column" }}>
                           <div style={{ flex: 1 }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
-                              <div style={{ width: 8, height: 8, borderRadius: "50%", background: kb.color, flexShrink: 0 }} />
-                              <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{kb.label}</span>
-                            </div>
+                            <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 8, display: "block" }}>{kb.label}</span>
                             <p style={{ fontSize: 12.5, lineHeight: 1.65, margin: 0, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid={`text-bedeutung-${kb.key}`}>
                               {kb.text}
                             </p>
