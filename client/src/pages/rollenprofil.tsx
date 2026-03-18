@@ -1387,27 +1387,31 @@ export default function Rollenprofil() {
             </div>
 
             {/* 2. Strukturprofil */}
-            <div style={{ marginBottom: 28 }} data-pdf-block>
-              <SubHead num={2} title="Strukturprofil der Stelle" color={SECTION_COLORS.rollenDna} />
-
-              <div style={{ marginBottom: 16 }}>
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, fontWeight: 400, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                  {strukturprofilText}
-                </p>
+            <div style={{ marginBottom: 28 }}>
+              <div data-pdf-block>
+                <SubHead num={2} title="Strukturprofil der Stelle" color={SECTION_COLORS.rollenDna} />
+                <div style={{ marginBottom: 16 }}>
+                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, fontWeight: 400, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
+                    {strukturprofilText}
+                  </p>
+                </div>
               </div>
-              <div style={{ padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)", marginBottom: 16 }}>
-                <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: "0 0 16px", fontWeight: 400, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                  Jeder Mensch verfügt über die drei grundlegenden Denk- und Handlungsweisen Impulsiv, Intuitiv und Analytisch. Alle drei Anteile sind immer vorhanden. Der Unterschied liegt in ihrer Reihenfolge und Gewichtung.
-                  <br /><br />
-                  Diese Struktur prägt, wie Menschen im Alltag entscheiden, kommunizieren und handeln. Je nach Situation kann sich die sichtbare Wirkung verändern: im Arbeitsalltag, unter Stress oder in entspannten Situationen.
-                </p>
-                <ProfileBar label="Impulsiv" value={data.gesamt.imp} color={COLORS.imp} />
-                <div style={{ height: 8 }} />
-                <ProfileBar label="Intuitiv" value={data.gesamt.int} color={COLORS.int} />
-                <div style={{ height: 8 }} />
-                <ProfileBar label="Analytisch" value={data.gesamt.ana} color={COLORS.ana} />
-
-                <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+              <div data-pdf-block>
+                <div style={{ padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)", marginBottom: 16 }}>
+                  <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: "0 0 16px", fontWeight: 400, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
+                    Jeder Mensch verfügt über die drei grundlegenden Denk- und Handlungsweisen Impulsiv, Intuitiv und Analytisch. Alle drei Anteile sind immer vorhanden. Der Unterschied liegt in ihrer Reihenfolge und Gewichtung.
+                    <br /><br />
+                    Diese Struktur prägt, wie Menschen im Alltag entscheiden, kommunizieren und handeln. Je nach Situation kann sich die sichtbare Wirkung verändern: im Arbeitsalltag, unter Stress oder in entspannten Situationen.
+                  </p>
+                  <ProfileBar label="Impulsiv" value={data.gesamt.imp} color={COLORS.imp} />
+                  <div style={{ height: 8 }} />
+                  <ProfileBar label="Intuitiv" value={data.gesamt.int} color={COLORS.int} />
+                  <div style={{ height: 8 }} />
+                  <ProfileBar label="Analytisch" value={data.gesamt.ana} color={COLORS.ana} />
+                </div>
+              </div>
+              <div data-pdf-block>
+                <div style={{ padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)", marginBottom: 16 }}>
                   <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>Bedeutung der Komponenten</p>
                   <div style={{ display: "flex", gap: 12 }}>
                     {komponentenBedeutung.map((kb, i) => (
@@ -1431,7 +1435,7 @@ export default function Rollenprofil() {
               </div>
 
               {profilkonflikt && (
-                <div style={{
+                <div data-pdf-block style={{
                   marginTop: 14, padding: "12px 16px", borderRadius: 12,
                   background: "rgba(255,149,0,0.06)", border: "1px solid rgba(255,149,0,0.15)",
                 }}>
