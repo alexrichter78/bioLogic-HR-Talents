@@ -76,7 +76,7 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
     doc.setFontSize(7);
     doc.setFont("helvetica", "normal");
     setC(C.faint);
-    doc.text("bioLogic TeamCheck Analyse", ML, PH - 8);
+    doc.text("bioLogic Talent Navigator · TeamCheck", ML, PH - 8);
     doc.text(`Seite ${pageNum}`, PW - MR, PH - 8, { align: "right" });
     setD(C.lineFaint);
     doc.setLineWidth(0.2);

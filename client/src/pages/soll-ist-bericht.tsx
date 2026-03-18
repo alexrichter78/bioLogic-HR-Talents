@@ -614,32 +614,27 @@ export default function SollIstBericht() {
             </button>
             <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }} data-testid="print-report-card">
 
-              {/* ─── DARK HEADER (nur Logo + Titel) ─── */}
-              <div style={{ background: "linear-gradient(135deg, #343A48, #2A2F3A)", padding: "36px 44px 32px", position: "relative" }} data-testid="section-header">
+              {/* ─── DARK HEADER ─── */}
+              <div className="report-header" data-testid="section-header">
 
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                  <div>
-                    <img src={logoPath} alt="bioLogic" style={{ height: 52, marginBottom: 14 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                    <div style={{ display: "flex", alignItems: "center", gap: 0, marginBottom: 18 }}>
-                      <div style={{ width: 28, height: 1, background: "rgba(255,255,255,0.25)", marginRight: 10 }} />
-                      <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.50)", letterSpacing: "0.18em", textTransform: "uppercase" }}>Passungsbericht</span>
-                    </div>
-                  </div>
-                  <button
-                    onClick={exportPdf}
-                    disabled={isExportingPdf}
-                    style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 16px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.06)", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.75)", cursor: isExportingPdf ? "wait" : "pointer", opacity: isExportingPdf ? 0.6 : 1, transition: "all 0.15s ease", backdropFilter: "blur(8px)" }}
-                    data-testid="button-export-pdf"
-                  >
-                    {isExportingPdf ? <Loader2 style={{ width: 14, height: 14, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 14, height: 14 }} />}
-                    PDF
-                  </button>
-                </div>
+                <img src={logoPath} alt="bioLogic" className="report-logo" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
 
-                <h1 style={{ fontSize: 28, fontWeight: 700, color: "#FFFFFF", margin: "0 0 6px", letterSpacing: "-0.02em", lineHeight: 1.2 }} data-testid="text-page-title">
-                  {result.roleName}
-                </h1>
+                <button
+                  onClick={exportPdf}
+                  disabled={isExportingPdf}
+                  data-testid="button-export-pdf"
+                  className="report-pdf-btn"
+                  style={{ cursor: isExportingPdf ? "wait" : "pointer", opacity: isExportingPdf ? 0.6 : 1, transition: "all 0.15s ease" }}
+                >
+                  {isExportingPdf ? <Loader2 style={{ width: 15, height: 15, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 15, height: 15 }} />}
+                  <span>PDF</span>
+                </button>
 
+                <div className="report-kicker">PASSUNGSANALYSE</div>
+                <h1 className="report-title" data-testid="text-page-title">MatchCheck</h1>
+                <div className="report-subtitle">{result.roleName}</div>
+
+                <div className="report-rings" />
               </div>
 
               {/* ─── EXECUTIVE DECISION CONTENT (weißer Hintergrund) ─── */}

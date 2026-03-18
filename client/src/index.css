@@ -474,3 +474,41 @@ input[type="range"].bio-slider::-moz-range-track {
   right: -30px;
   top: 35px;
 }
+
+.report-header--auto {
+  height: auto;
+  padding: 18px 24px 24px 24px;
+}
+
+.report-header--auto .report-logo {
+  position: absolute;
+}
+
+.report-header--auto .report-kicker {
+  position: relative;
+  top: auto;
+  left: auto;
+  margin-top: 96px;
+  margin-left: 20px;
+  margin-bottom: 6px;
+}
+
+.report-header--auto .report-kicker::before {
+  left: -16px;
+}
+
+.report-title--flow {
+  position: relative;
+  top: auto;
+  left: auto;
+  margin-left: 20px;
+  margin-bottom: 2px;
+}
+
+.report-subtitle--flow {
+  position: relative;
+  top: auto;
+  left: auto;
+  margin-left: 20px;
+  margin-bottom: 20px;
+}

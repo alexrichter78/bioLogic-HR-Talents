@@ -172,24 +172,18 @@ export default function TeamCheckReportV3() {
           <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }}>
 
             {/* ─── EXECUTIVE DECISION PAGE (Header + consolidated Section 1) ─── */}
-            <div style={{ background: "linear-gradient(135deg, #343A48, #2A2F3A)", padding: "36px 44px 0", position: "relative" }} data-testid="v3-header">
+            <div className="report-header report-header--auto" data-testid="v3-header">
 
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <div>
-                  <img src={logoPath} alt="bioLogic" style={{ height: 52, marginBottom: 14 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                  <div style={{ display: "flex", alignItems: "center", gap: 0, marginBottom: 18 }}>
-                    <div style={{ width: 28, height: 1, background: "rgba(255,255,255,0.25)", marginRight: 10 }} />
-                    <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.50)", letterSpacing: "0.18em", textTransform: "uppercase" }}>TeamCheck Bericht</span>
-                  </div>
-                </div>
-              </div>
+              <img src={logoPath} alt="bioLogic" className="report-logo" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
 
-              <h1 style={{ fontSize: 28, fontWeight: 700, color: "#FFFFFF", margin: "0 0 22px", letterSpacing: "-0.02em", lineHeight: 1.2 }} data-testid="v3-title">
-                {result.roleTitle || "TeamCheck"}
-              </h1>
+              <div className="report-kicker">TEAMANALYSE</div>
+              <h1 className="report-title report-title--flow">TeamCheck</h1>
+              <div className="report-subtitle report-subtitle--flow">{result.roleTitle || "Teambericht"}</div>
+
+              <div className="report-rings" />
 
               {/* SYSTEMSTATUS – 4 key metrics */}
-              <div data-testid="v3-section-systemstatus" style={{ marginBottom: 22 }}>
+              <div data-testid="v3-section-systemstatus" style={{ marginBottom: 22, marginLeft: 20 }}>
                 <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 10px" }}>Systemstatus</p>
                 <div style={{ display: "flex", gap: 10 }}>
                   <MetricBadge label="Gesamtpassung" value={result.passung} color={pCol} />
@@ -200,7 +194,7 @@ export default function TeamCheckReportV3() {
               </div>
 
               {/* SYSTEMÜBERBLICK */}
-              <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }} data-testid="v3-section-ueberblick">
+              <div style={{ marginBottom: 22, marginLeft: 20, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }} data-testid="v3-section-ueberblick">
                 <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Systemüberblick</p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
@@ -219,7 +213,7 @@ export default function TeamCheckReportV3() {
               </div>
 
               {/* STRUKTURKONSTELLATION */}
-              <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }} data-testid="v3-section-strukturkonstellation">
+              <div style={{ marginBottom: 22, marginLeft: 20, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }} data-testid="v3-section-strukturkonstellation">
                 <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Strukturkonstellation</p>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
                   <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>Dominanz Team</span>
@@ -238,7 +232,7 @@ export default function TeamCheckReportV3() {
               </div>
 
               {/* MANAGEMENTKURZFAZIT */}
-              <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", position: "relative" }} data-testid="v3-section-fazit">
+              <div style={{ marginBottom: 22, marginLeft: 20, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", position: "relative" }} data-testid="v3-section-fazit">
                 <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, borderRadius: "12px 0 0 12px", background: `linear-gradient(180deg, ${pCol}, ${pCol}40)` }} />
                 <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Managementkurzfazit</p>
                 <p style={{ fontSize: 13, lineHeight: 1.85, color: "rgba(255,255,255,0.75)", margin: 0 }} data-testid="v3-text-fazit">
@@ -247,7 +241,7 @@ export default function TeamCheckReportV3() {
               </div>
 
               {/* INTEGRATIONSFAKTOR (compact) */}
-              <div style={{ marginBottom: 0, padding: "16px 20px 20px", borderRadius: "12px 12px 0 0", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", borderBottom: "none" }} data-testid="v3-section-integration-header">
+              <div style={{ marginBottom: 0, marginLeft: 20, padding: "16px 20px 20px", borderRadius: "12px 12px 0 0", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", borderBottom: "none" }} data-testid="v3-section-integration-header">
                 <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Integrationsfaktor</p>
                 <div style={{ display: "flex", gap: 18 }}>
                   <div>
