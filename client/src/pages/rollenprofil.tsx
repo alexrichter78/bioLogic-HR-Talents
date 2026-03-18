@@ -920,7 +920,7 @@ const MAX_BIO = 67;
 function ProfileBar({ label, value, color }: { label: string; value: number; color: string }) {
   const widthPct = (value / MAX_BIO) * 100;
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+    <div data-profile-bar style={{ display: "flex", alignItems: "center", gap: 12 }}>
       <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0, fontWeight: 500 }}>{label}</span>
       <div style={{ flex: 1, height: 30, borderRadius: 8, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
         <div style={{
@@ -930,7 +930,7 @@ function ProfileBar({ label, value, color }: { label: string; value: number; col
           minWidth: value === 0 ? 0 : 44,
           transition: "width 300ms ease",
         }}>
-          <span data-bar-pct style={{ fontSize: 12, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>
         </div>
       </div>
     </div>
@@ -1049,13 +1049,12 @@ export default function Rollenprofil() {
 
       const allTextEls = clone.querySelectorAll<HTMLElement>("p, span, li, div");
       allTextEls.forEach(el => {
+        if (el.closest("[data-profile-bar]")) return;
         el.style.hyphens = "none";
         (el.style as any).WebkitHyphens = "none";
         el.style.wordBreak = "normal";
         el.style.overflowWrap = "break-word";
-        if (!el.hasAttribute("data-bar-pct")) {
-          el.style.textAlign = "left";
-        }
+        el.style.textAlign = "left";
       });
 
       clone.querySelectorAll<HTMLElement>(".bio-section-head").forEach(sh => {
