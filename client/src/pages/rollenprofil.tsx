@@ -1322,9 +1322,15 @@ export default function Rollenprofil() {
 
           {/* ── EINLEITUNG ── */}
           <div style={{ marginBottom: 32 }} data-testid="bericht-section-intro">
-            <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-einleitung">
+            <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 16px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-einleitung">
               Dieser Bericht zeigt, welche Persönlichkeitsstruktur für die Stelle {data.beruf} besonders passend und wirksam ist. Neben den fachlichen Anforderungen beeinflusst vor allem die Art, wie eine Person Situationen einschätzt, Entscheidungen trifft und unter Druck handelt, die Wirksamkeit in dieser Position.<br /><br />Die folgenden Abschnitte verdeutlichen, welche Persönlichkeitsanforderungen die Stelle mit sich bringt, wie sich diese im Arbeitsalltag zeigen und welche Spannungsfelder daraus entstehen können.
             </p>
+            <div style={{ display: "flex", gap: 14, padding: "12px 0" }}>
+              <div style={{ width: 3, flexShrink: 0, borderRadius: 2, background: "#FF3B30" }} />
+              <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.75, margin: 0 }}>
+                Die Aussagen beschreiben dabei keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse ist wertfrei zu verstehen und dient als Orientierung für die Einschätzung von Passung und Wirksamkeit. Da jede Person individuell ist, ersetzt sie keine Einzelfallbetrachtung, sondern ergänzt diese um eine strukturierte und fundierte Entscheidungsgrundlage.
+              </p>
+            </div>
           </div>
 
           {/* ── SEITE 1: ROLLEN-DNA ── */}
@@ -1506,12 +1512,6 @@ export default function Rollenprofil() {
             {/* Spannungsfelder */}
             <div style={{ marginBottom: 28 }}>
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Spannungsfelder der Stelle</p>
-              <div style={{ display: "flex", gap: 14, margin: "0 0 16px", padding: "12px 0" }}>
-                <div style={{ width: 3, flexShrink: 0, borderRadius: 2, background: "#FF3B30" }} />
-                <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.75, margin: 0 }}>
-                  Die Aussagen beschreiben dabei keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse ist wertfrei zu verstehen und dient als Orientierung für die Einschätzung von Passung und Wirksamkeit. Da jede Person individuell ist, ersetzt sie keine Einzelfallbetrachtung, sondern ergänzt diese um eine strukturierte und fundierte Entscheidungsgrundlage.
-                </p>
-              </div>
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, margin: "0 0 12px" }}>
                 Typische Spannungen dieser Stelle sind:
               </p>
