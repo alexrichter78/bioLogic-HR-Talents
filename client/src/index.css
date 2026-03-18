@@ -339,7 +339,7 @@ input[type="range"].bio-slider::-moz-range-track {
 
 .report-header {
   width: 100%;
-  height: 220px;
+  height: 260px;
   position: relative;
   overflow: hidden;
   border-radius: 18px 18px 0 0;
@@ -365,9 +365,9 @@ input[type="range"].bio-slider::-moz-range-track {
 
 .report-logo {
   position: absolute;
-  top: 14px;
-  left: 24px;
-  height: 76px;
+  top: 12px;
+  left: 10px;
+  height: 90px;
   width: auto;
 }
 
@@ -394,7 +394,7 @@ input[type="range"].bio-slider::-moz-range-track {
 .report-kicker {
   position: absolute;
   left: 44px;
-  top: 94px;
+  top: 112px;
   font-size: 11px;
   letter-spacing: 0.18em;
   font-weight: 700;
@@ -415,7 +415,7 @@ input[type="range"].bio-slider::-moz-range-track {
 .report-title {
   position: absolute;
   left: 44px;
-  top: 126px;
+  top: 148px;
   font-size: 38px;
   line-height: 1;
   font-weight: 800;
@@ -426,7 +426,7 @@ input[type="range"].bio-slider::-moz-range-track {
 .report-subtitle {
   position: absolute;
   left: 44px;
-  top: 168px;
+  top: 190px;
   font-size: 25px;
   line-height: 1;
   font-weight: 300;
