@@ -358,7 +358,7 @@ export function computeSollIst(
   const rk2 = rDom.top2.key;
   const ck = cDom.top1.key;
   const cn = candidateName || "Die Person";
-  const isDualDomRole = roleDualDom;
+  const isDualDomRole = rDom.gap1 <= 5 && rDom.gap2 > 5;
 
   const rConst = detectConstellation(rt);
   const cConst = detectConstellation(ct);
