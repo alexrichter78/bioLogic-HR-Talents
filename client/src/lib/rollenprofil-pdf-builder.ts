@@ -440,8 +440,15 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
   doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
   setC(C.black);
-  doc.text("Wie zeigt sich diese Stelle im Alltag und unter Druck?", ML, y);
-  y += 8;
+  doc.text("Verhalten im Alltag und unter Druck", ML, y);
+  y += 5;
+
+  doc.setFontSize(8.5);
+  doc.setFont("helvetica", "normal");
+  setC(C.grey);
+  const introLines = doc.splitTextToSize("Die folgende Darstellung zeigt, wie sich die Stellenanforderung im regulären Arbeitsalltag, unter Druck und bei starkem Stress typischerweise ausdrückt.", CW);
+  doc.text(introLines, ML, y);
+  y += introLines.length * 4.3 + 4;
 
   doc.setFontSize(9);
   doc.setFont("helvetica", "bold");

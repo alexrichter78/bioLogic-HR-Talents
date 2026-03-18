@@ -1354,7 +1354,8 @@ export default function Rollenprofil() {
           <div data-section="position" style={{ marginBottom: 40 }} data-testid="bericht-section-struktur">
             <SectionHead num={2} title="Verhalten · Alltag und Stress" color={SECTION_COLORS.verhalten} />
 
-            <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 20px" }}>Wie zeigt sich diese Stelle im Alltag und unter Druck?</p>
+            <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Verhalten im Alltag und unter Druck</p>
+            <p style={{ fontSize: 14, color: "#6E6E73", margin: "0 0 20px", lineHeight: 1.6 }}>Die folgende Darstellung zeigt, wie sich die Stellenanforderung im regulären Arbeitsalltag, unter Druck und bei starkem Stress typischerweise ausdrückt.</p>
 
             {/* Verhalten im Alltag */}
             <div style={{ marginBottom: 20, borderLeft: "4px solid #34C759", borderRadius: 8, background: "rgba(52,199,89,0.04)", padding: "16px 20px" }}>
