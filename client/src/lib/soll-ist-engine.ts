@@ -57,6 +57,9 @@ export type SollIstResult = {
   candDom2Key: ComponentKey;
   candIsEqualDist: boolean;
   candIsDualDom: boolean;
+  roleDom2Key: ComponentKey;
+  roleIsBalFull: boolean;
+  roleIsDualDom: boolean;
   roleConstellation: ConstellationType;
   candConstellation: ConstellationType;
   roleConstellationLabel: string;
@@ -388,6 +391,9 @@ export function computeSollIst(
     candDom2Key: cDom.top2.key,
     candIsEqualDist: cDom.mode === "BAL_FULL",
     candIsDualDom: cDom.mode !== "BAL_FULL" && cDom.gap1 <= 5,
+    roleDom2Key: rDom.top2.key,
+    roleIsBalFull: rDom.gap1 <= 5 && rDom.gap2 <= 5,
+    roleIsDualDom: isDualDomRole,
     roleConstellation: rConst,
     candConstellation: cConst,
     roleConstellationLabel: constellationLabel(rConst),

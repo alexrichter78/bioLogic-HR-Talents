@@ -658,32 +658,44 @@ export default function SollIstBericht() {
                         const isMatch = result.roleDomKey === result.candDomKey;
                         const matchSymbol = isMatch ? "=" : "⚡";
                         const matchColor = isMatch ? "#34C759" : "#D64045";
-                        const c2key = result.candDom2Key;
-                        const showDual = result.candIsDualDom && c2key !== result.candDomKey;
+
+                        const roleKeys: ComponentKey[] = result.roleIsBalFull
+                          ? (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[])
+                          : result.roleIsDualDom
+                            ? [result.roleDomKey, result.roleDom2Key]
+                            : [result.roleDomKey];
+
+                        const candKeys: ComponentKey[] = result.candIsEqualDist
+                          ? (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[])
+                          : result.candIsDualDom
+                            ? [result.candDomKey, result.candDom2Key]
+                            : [result.candDomKey];
+
                         return (
                           <div style={{ marginBottom: 22, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-ueberblick">
                             <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 16px", textAlign: "center" }}>Kurzübersicht</p>
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16 }}>
+                            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: 16 }}>
                               <div style={{ flex: 1, textAlign: "center" }}>
                                 <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.12em", margin: "0 0 10px" }}>Rolle</p>
-                                <div style={{ display: "inline-block", padding: "10px 20px", borderRadius: 20, background: `${BAR_HEX[result.roleDomKey]}14`, border: `1px solid ${BAR_HEX[result.roleDomKey]}30` }}>
-                                  <span style={{ fontSize: 14, fontWeight: 700, color: BAR_HEX[result.roleDomKey] }}>{COMP_LABELS[result.roleDomKey]}</span>
+                                <div style={{ display: "inline-flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
+                                  {roleKeys.map(k => (
+                                    <div key={k} style={{ padding: "10px 20px", borderRadius: 20, background: `${BAR_HEX[k]}14`, border: `1px solid ${BAR_HEX[k]}30` }}>
+                                      <span style={{ fontSize: 14, fontWeight: 700, color: BAR_HEX[k] }}>{COMP_LABELS[k]}</span>
+                                    </div>
+                                  ))}
                                 </div>
                               </div>
-                              <div style={{ flexShrink: 0, marginTop: 18, width: 36, height: 36, borderRadius: "50%", background: `${matchColor}14`, border: `2px solid ${matchColor}40`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <div style={{ flexShrink: 0, marginTop: roleKeys.length > 1 ? roleKeys.length * 14 + 4 : 18, width: 36, height: 36, borderRadius: "50%", background: `${matchColor}14`, border: `2px solid ${matchColor}40`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                                 <span style={{ fontSize: 18, fontWeight: 700, color: matchColor, lineHeight: 1 }}>{matchSymbol}</span>
                               </div>
                               <div style={{ flex: 1, textAlign: "center" }}>
                                 <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.12em", margin: "0 0 10px" }}>Person</p>
                                 <div style={{ display: "inline-flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
-                                  <div style={{ padding: "10px 20px", borderRadius: 20, background: `${BAR_HEX[result.candDomKey]}14`, border: `1px solid ${BAR_HEX[result.candDomKey]}30` }}>
-                                    <span style={{ fontSize: 14, fontWeight: 700, color: BAR_HEX[result.candDomKey] }}>{COMP_LABELS[result.candDomKey]}</span>
-                                  </div>
-                                  {showDual && (
-                                    <div style={{ padding: "10px 20px", borderRadius: 20, background: `${BAR_HEX[c2key]}14`, border: `1px solid ${BAR_HEX[c2key]}30` }}>
-                                      <span style={{ fontSize: 14, fontWeight: 700, color: BAR_HEX[c2key] }}>{COMP_LABELS[c2key]}</span>
+                                  {candKeys.map(k => (
+                                    <div key={k} style={{ padding: "10px 20px", borderRadius: 20, background: `${BAR_HEX[k]}14`, border: `1px solid ${BAR_HEX[k]}30` }}>
+                                      <span style={{ fontSize: 14, fontWeight: 700, color: BAR_HEX[k] }}>{COMP_LABELS[k]}</span>
                                     </div>
-                                  )}
+                                  ))}
                                 </div>
                               </div>
                             </div>
