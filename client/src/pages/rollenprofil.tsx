@@ -211,16 +211,16 @@ function buildStressTexts(bg: BG, isLeadership: boolean, fuehrungstyp: string) {
   let controlled = "";
   if (hasFullSymmetry) {
     controlled = isLeadership
-      ? `Wenn der Arbeitsdruck steigt, fehlt eine klare Führungsrichtung. ${fk} wechselt zwischen verschiedenen Herangehensweisen. Mal wird schnell entschieden, mal wird abgestimmt, mal wird analysiert. ${isDisziplinarisch ? "Das Team verliert Orientierung, weil die Führungslinie schwer einzuschätzen ist." : isFachlich ? "Im fachlichen Bereich entsteht Unsicherheit, weil klare Vorgaben fehlen." : "Im Projekt kann das zu Verzögerungen führen, weil die Koordinationslinie unklar wird."}`
-      : "Wenn der Arbeitsdruck steigt, fehlt eine klare Richtung. Die Person wechselt zwischen verschiedenen Herangehensweisen. Mal handelt sie schnell, mal sucht sie den Austausch, mal vertieft sie sich in Details. Das kann im Team zu Verunsicherung führen, weil das Verhalten schwer einzuschätzen ist.";
+      ? `Unter zunehmendem Arbeitsdruck fehlt tendenziell eine klare Führungsrichtung. ${fk} neigt dazu, zwischen verschiedenen Herangehensweisen zu wechseln. Mal wird eher schnell entschieden, mal eher abgestimmt, mal eher analysiert. ${isDisziplinarisch ? "Das Team verliert dadurch tendenziell die Orientierung, weil die Führungslinie schwer einzuschätzen ist." : isFachlich ? "Im fachlichen Bereich kann dadurch eher Unsicherheit entstehen, weil klare Vorgaben fehlen." : "Im Projekt kann das eher zu Verzögerungen führen, weil die Koordinationslinie unklar wird."}`
+      : "Unter zunehmendem Arbeitsdruck fehlt tendenziell eine klare Richtung. Die Person neigt dazu, zwischen verschiedenen Herangehensweisen zu wechseln. Mal handelt sie eher schnell, mal sucht sie eher den Austausch, mal vertieft sie sich vermehrt in Details. Das kann im Team zu Verunsicherung führen, weil das Verhalten schwer einzuschätzen ist.";
   } else if (hasDualDominance) {
     controlled = isLeadership
-      ? `Wenn der Arbeitsdruck steigt, setzt sich eine der beiden starken Seiten durch. ${fk} fokussiert sich entweder auf ${behaviorDesc(top.key)} oder auf ${behaviorDesc(mid.key)}. ${isDisziplinarisch ? "Das schafft kurzfristig Klarheit für das Team. Die andere Führungsqualität kann dabei zu kurz kommen." : isFachlich ? "Das stabilisiert kurzfristig die fachliche Steuerung. Die andere Qualität tritt in den Hintergrund." : "Das gibt dem Projekt kurzfristig Richtung. Die andere Seite kann dabei vernachlässigt werden."}`
-      : `Wenn der Arbeitsdruck steigt, setzt sich eine der beiden starken Seiten durch. Die Person fokussiert sich entweder auf ${behaviorDesc(top.key)} oder auf ${behaviorDesc(mid.key)}. Das schafft kurzfristig Klarheit und stabilisiert die Situation. Gleichzeitig kann die andere Seite zu kurz kommen.`;
+      ? `Unter zunehmendem Arbeitsdruck setzt sich tendenziell eine der beiden starken Seiten durch. ${fk} fokussiert sich dann eher auf ${behaviorDesc(top.key)} oder auf ${behaviorDesc(mid.key)}. ${isDisziplinarisch ? "Das schafft kurzfristig Klarheit für das Team. Die andere Führungsqualität kann dabei eher zu kurz kommen." : isFachlich ? "Das stabilisiert kurzfristig die fachliche Steuerung. Die andere Qualität tritt tendenziell in den Hintergrund." : "Das gibt dem Projekt kurzfristig Richtung. Die andere Seite kann dabei eher vernachlässigt werden."}`
+      : `Unter zunehmendem Arbeitsdruck setzt sich tendenziell eine der beiden starken Seiten durch. Die Person fokussiert sich dann eher auf ${behaviorDesc(top.key)} oder auf ${behaviorDesc(mid.key)}. Das schafft kurzfristig Klarheit und stabilisiert die Situation. Gleichzeitig kann die andere Seite eher zu kurz kommen.`;
   } else {
     controlled = isLeadership
-      ? `Wenn der Arbeitsdruck steigt, zeigt sich die Stärke der Führung besonders deutlich. ${fk} setzt dann vor allem auf ${behaviorDesc(top.key)}. ${isDisziplinarisch ? "Das gibt dem Team Sicherheit und klare Orientierung." : isFachlich ? "Das sichert die fachliche Qualität und gibt dem Bereich Stabilität." : "Das gibt dem Projekt Richtung und Verlässlichkeit."} Andere Anforderungen treten in den Hintergrund.`
-      : `Wenn der Arbeitsdruck steigt, zeigt sich die Stärke der Stelle besonders deutlich. Die Person setzt dann vor allem auf ${behaviorDesc(top.key)}. Das gibt dem Umfeld Sicherheit und Orientierung. Andere Anforderungen treten in den Hintergrund.`;
+      ? `Unter zunehmendem Arbeitsdruck zeigt sich die Stärke der Führung besonders deutlich. ${fk} setzt dann verstärkt auf ${behaviorDesc(top.key)}. ${isDisziplinarisch ? "Das gibt dem Team Sicherheit und klare Orientierung." : isFachlich ? "Das sichert die fachliche Qualität und gibt dem Bereich Stabilität." : "Das gibt dem Projekt Richtung und Verlässlichkeit."} Andere Anforderungen treten tendenziell in den Hintergrund.`
+      : `Unter zunehmendem Arbeitsdruck zeigt sich die Stärke der Stelle besonders deutlich. Die Person setzt dann verstärkt auf ${behaviorDesc(top.key)}. Das gibt dem Umfeld Sicherheit und Orientierung. Andere Anforderungen treten tendenziell in den Hintergrund.`;
   }
 
   let uncontrolled = "";
@@ -235,64 +235,64 @@ function buildStressTexts(bg: BG, isLeadership: boolean, fuehrungstyp: string) {
 
   if (hasFullSymmetry) {
     uncontrolled = isLeadership
-      ? `Wenn der Druck sehr hoch wird, versucht ${fkLower} mehrere Perspektiven gleichzeitig zu berücksichtigen: Tempo, Fakten und Beziehungen. Dadurch kann der Entscheidungsprozess länger dauern, weil verschiedene Aspekte parallel abgewogen werden.${fSuffix}`
-      : "Wenn der Druck sehr hoch wird, versucht die Person mehrere Perspektiven gleichzeitig zu berücksichtigen: Tempo, Fakten und Beziehungen. Dadurch kann der Entscheidungsprozess länger dauern, weil verschiedene Aspekte parallel abgewogen werden.";
+      ? `In nicht mehr kontrollierbaren Situationen versucht ${fkLower} eher, mehrere Perspektiven gleichzeitig zu berücksichtigen: Tempo, Fakten und Beziehungen. Der Entscheidungsprozess dauert dadurch tendenziell länger, weil verschiedene Aspekte parallel abgewogen werden.${fSuffix}`
+      : "In nicht mehr kontrollierbaren Situationen versucht die Person eher, mehrere Perspektiven gleichzeitig zu berücksichtigen: Tempo, Fakten und Beziehungen. Der Entscheidungsprozess dauert dadurch tendenziell länger, weil verschiedene Aspekte parallel abgewogen werden.";
   } else if (hasDualDominance) {
     if ((top.key === "imp" && mid.key === "ana") || (top.key === "ana" && mid.key === "imp")) {
       uncontrolled = isLeadership
-        ? `Unter sehr hohem Druck kann ein Wechsel zwischen schnellem Handeln und gründlicher Prüfung entstehen. ${fk} entscheidet zunächst zügig, beginnt danach jedoch häufig wieder zu analysieren und überprüft ihre Entscheidung erneut.${fSuffix}`
-        : "Unter sehr hohem Druck kann ein Wechsel zwischen schnellem Handeln und gründlicher Prüfung entstehen. Die Person entscheidet zunächst zügig, beginnt danach jedoch häufig wieder zu analysieren und überprüft ihre Entscheidung erneut.";
+        ? `In nicht mehr kontrollierbaren Situationen kann eher ein Wechsel zwischen schnellem Handeln und gründlicher Prüfung entstehen. ${fk} entscheidet zunächst zügig, neigt danach jedoch vermehrt dazu, die Entscheidung erneut zu analysieren und zu überprüfen.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen kann eher ein Wechsel zwischen schnellem Handeln und gründlicher Prüfung entstehen. Die Person entscheidet zunächst zügig, neigt danach jedoch vermehrt dazu, die Entscheidung erneut zu analysieren und zu überprüfen.";
     } else if ((top.key === "imp" && mid.key === "int") || (top.key === "int" && mid.key === "imp")) {
       uncontrolled = isLeadership
-        ? `Bei starkem Druck schwankt ${fkLower} zwischen direkter Handlung und dem Wunsch, Beziehungen zu stabilisieren. Entscheidungen können daher zunächst klar getroffen werden, werden später aber teilweise noch einmal angepasst.${fSuffix}`
-        : "Bei starkem Druck schwankt die Person zwischen direkter Handlung und dem Wunsch, Beziehungen zu stabilisieren. Entscheidungen können daher zunächst klar getroffen werden, werden später aber teilweise noch einmal angepasst.";
+        ? `In nicht mehr kontrollierbaren Situationen schwankt ${fkLower} eher zwischen direkter Handlung und dem Wunsch, Beziehungen zu stabilisieren. Entscheidungen werden zunächst klar getroffen, tendenziell aber später noch einmal angepasst.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen schwankt die Person eher zwischen direkter Handlung und dem Wunsch, Beziehungen zu stabilisieren. Entscheidungen werden zunächst klar getroffen, tendenziell aber später noch einmal angepasst.";
     } else {
       uncontrolled = isLeadership
-        ? `Unter sehr hohem Druck versucht ${fkLower} gleichzeitig, sachliche Richtigkeit und zwischenmenschliche Wirkung zu berücksichtigen. Dadurch kann es länger dauern, bis eine Entscheidung endgültig getroffen wird.${fSuffix}`
-        : "Unter sehr hohem Druck versucht die Person gleichzeitig, sachliche Richtigkeit und zwischenmenschliche Wirkung zu berücksichtigen. Dadurch kann es länger dauern, bis eine Entscheidung endgültig getroffen wird.";
+        ? `In nicht mehr kontrollierbaren Situationen versucht ${fkLower} vermehrt, gleichzeitig sachliche Richtigkeit und zwischenmenschliche Wirkung zu berücksichtigen. Es dauert dadurch tendenziell länger, bis eine Entscheidung endgültig getroffen wird.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen versucht die Person vermehrt, gleichzeitig sachliche Richtigkeit und zwischenmenschliche Wirkung zu berücksichtigen. Es dauert dadurch tendenziell länger, bis eine Entscheidung endgültig getroffen wird.";
     }
   } else if (top.key === "imp") {
     if (midSecClose) {
       uncontrolled = isLeadership
-        ? `Bei sehr hohem Druck verliert ${fkLower} ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch länger dauern oder mehrfach angepasst werden.${fSuffix}`
-        : "Bei sehr hohem Druck verliert die Person ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch länger dauern oder mehrfach angepasst werden, weil zwei unterschiedliche Denkweisen gleichzeitig Einfluss nehmen.";
+        ? `In nicht mehr kontrollierbaren Situationen verliert ${fkLower} tendenziell ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt eher ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch vermehrt länger dauern oder mehrfach angepasst werden.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen verliert die Person tendenziell ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt eher ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch vermehrt länger dauern oder mehrfach angepasst werden, weil zwei unterschiedliche Denkweisen gleichzeitig Einfluss nehmen.";
     } else if (mid.key === "ana") {
       uncontrolled = isLeadership
-        ? `Wenn der Druck sehr hoch wird, verliert ${fkLower} einen Teil ihrer schnellen Entscheidungsstärke. Sie beginnt stärker zu hinterfragen und sucht nach zusätzlichen Informationen. Entscheidungen werden zunächst schnell angestoßen, anschließend jedoch wieder überprüft oder angepasst.${fSuffix}`
-        : "Wenn der Druck sehr hoch wird, verliert die Person einen Teil ihrer schnellen Entscheidungsstärke. Sie beginnt stärker zu hinterfragen und sucht nach zusätzlichen Informationen. Dadurch kann es passieren, dass Entscheidungen zunächst sehr schnell angestoßen werden, anschließend jedoch wieder überprüft oder angepasst werden. Für andere wirkt das manchmal wie ein Wechsel zwischen Tempo und Absicherung.";
+        ? `In nicht mehr kontrollierbaren Situationen verliert ${fkLower} tendenziell einen Teil ihrer schnellen Entscheidungsstärke. Sie beginnt eher stärker zu hinterfragen und sucht vermehrt nach zusätzlichen Informationen. Entscheidungen werden zunächst schnell angestoßen, anschließend jedoch wieder überprüft oder angepasst.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen verliert die Person tendenziell einen Teil ihrer schnellen Entscheidungsstärke. Sie beginnt eher stärker zu hinterfragen und sucht vermehrt nach zusätzlichen Informationen. Dadurch kann es passieren, dass Entscheidungen zunächst schnell angestoßen, anschließend jedoch wieder überprüft oder angepasst werden.";
     } else {
       uncontrolled = isLeadership
-        ? `Unter starkem Druck schwankt ${fkLower} stärker zwischen schnellem Handeln und dem Wunsch, auf das Team Rücksicht zu nehmen. Entscheidungen können zunächst sehr direkt getroffen werden, werden später aber teilweise wieder relativiert, um Spannungen zu vermeiden.${fSuffix}`
-        : "Unter starkem Druck schwankt die Person stärker zwischen schnellem Handeln und dem Wunsch, auf Menschen und Beziehungen Rücksicht zu nehmen. Entscheidungen können dadurch zunächst sehr direkt getroffen werden, werden später aber teilweise wieder relativiert, um Spannungen oder Konflikte zu vermeiden.";
+        ? `In nicht mehr kontrollierbaren Situationen schwankt ${fkLower} verstärkt zwischen schnellem Handeln und dem Wunsch, auf das Team Rücksicht zu nehmen. Entscheidungen werden zunächst eher direkt getroffen, später aber teilweise wieder relativiert, um Spannungen zu vermeiden.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen schwankt die Person verstärkt zwischen schnellem Handeln und dem Wunsch, auf Menschen und Beziehungen Rücksicht zu nehmen. Entscheidungen werden zunächst eher direkt getroffen, später aber teilweise wieder relativiert, um Spannungen oder Konflikte zu vermeiden.";
     }
   } else if (top.key === "ana") {
     if (midSecClose) {
       uncontrolled = isLeadership
-        ? `Unter extremem Druck verliert ${fkLower} teilweise ihre klare Struktur. Sie schwankt zwischen dem Wunsch, schnell zu handeln, und dem Bedürfnis, Beziehungen zu stabilisieren. Entscheidungen können mehrfach überdacht oder angepasst werden.${fSuffix}`
-        : "Unter extremem Druck verliert die Person teilweise ihre klare Struktur. Sie schwankt zwischen dem Wunsch, schnell zu handeln, und dem Bedürfnis, Beziehungen zu stabilisieren. Dadurch kann es passieren, dass Entscheidungen mehrfach überdacht oder angepasst werden.";
+        ? `In nicht mehr kontrollierbaren Situationen verliert ${fkLower} tendenziell ihre klare Struktur. Sie schwankt eher zwischen dem Wunsch, schnell zu handeln, und dem Bedürfnis, Beziehungen zu stabilisieren. Entscheidungen werden dadurch vermehrt überdacht oder angepasst.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen verliert die Person tendenziell ihre klare Struktur. Sie schwankt eher zwischen dem Wunsch, schnell zu handeln, und dem Bedürfnis, Beziehungen zu stabilisieren. Dadurch kann es passieren, dass Entscheidungen vermehrt überdacht oder angepasst werden.";
     } else if (mid.key === "imp") {
       uncontrolled = isLeadership
-        ? `Unter sehr hohem Druck steigt der Wunsch, Entscheidungen schneller zu treffen. ${fk} verlässt dann teilweise ihre sonst gründliche Vorgehensweise. Entscheidungen werden schneller getroffen, ohne alle Details vollständig zu prüfen.${fSuffix}`
-        : "Unter sehr hohem Druck steigt der Wunsch, Entscheidungen schneller zu treffen. Die Person verlässt dann teilweise ihre sonst gründliche Vorgehensweise. Entscheidungen werden schneller getroffen, ohne alle Details vollständig zu prüfen. Dadurch kann die gewohnte Absicherung etwas geringer werden.";
+        ? `In nicht mehr kontrollierbaren Situationen steigt bei ${fkLower} verstärkt der Wunsch, Entscheidungen schneller zu treffen. Sie verlässt dann eher ihre sonst gründliche Vorgehensweise. Entscheidungen werden tendenziell schneller getroffen, ohne alle Details vollständig zu prüfen.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen steigt verstärkt der Wunsch, Entscheidungen schneller zu treffen. Die Person verlässt dann eher ihre sonst gründliche Vorgehensweise. Entscheidungen werden tendenziell schneller getroffen, ohne alle Details vollständig zu prüfen.";
     } else {
       uncontrolled = isLeadership
-        ? `Wenn der Druck stark steigt, versucht ${fkLower} neben Fakten auch stärker die Wirkung auf das Team zu berücksichtigen. Entscheidungen können dadurch länger dauern, weil sowohl sachliche Aspekte als auch zwischenmenschliche Auswirkungen bedacht werden.${fSuffix}`
-        : "Wenn der Druck stark steigt, versucht die Person neben Fakten auch stärker die Wirkung auf Menschen zu berücksichtigen. Entscheidungen können dadurch länger dauern, weil sowohl sachliche Aspekte als auch zwischenmenschliche Auswirkungen bedacht werden.";
+        ? `In nicht mehr kontrollierbaren Situationen versucht ${fkLower} vermehrt, neben Fakten auch die Wirkung auf das Team zu berücksichtigen. Entscheidungen können dadurch tendenziell länger dauern, weil sowohl sachliche Aspekte als auch zwischenmenschliche Auswirkungen bedacht werden.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen versucht die Person vermehrt, neben Fakten auch die Wirkung auf Menschen zu berücksichtigen. Entscheidungen können dadurch tendenziell länger dauern, weil sowohl sachliche Aspekte als auch zwischenmenschliche Auswirkungen bedacht werden.";
     }
   } else {
     // top.key === "int"
     if (midSecClose) {
       uncontrolled = isLeadership
-        ? `Wenn der Druck sehr hoch wird, gerät ${fkLower} zwischen zwei unterschiedliche Entscheidungswege: schnelle Handlung und gründliche Analyse. Entscheidungen können dadurch länger dauern oder mehrfach angepasst werden.${fSuffix}`
-        : "Wenn der Druck sehr hoch wird, gerät die Person zwischen zwei unterschiedliche Entscheidungswege: schneller Handlung und gründlicher Analyse. Entscheidungen können dadurch länger dauern oder mehrfach angepasst werden.";
+        ? `In nicht mehr kontrollierbaren Situationen gerät ${fkLower} eher zwischen zwei unterschiedliche Entscheidungswege: schnelle Handlung und gründliche Analyse. Entscheidungen können dadurch tendenziell länger dauern oder vermehrt angepasst werden.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen gerät die Person eher zwischen zwei unterschiedliche Entscheidungswege: schnelle Handlung und gründliche Analyse. Entscheidungen können dadurch tendenziell länger dauern oder vermehrt angepasst werden.";
     } else if (mid.key === "imp") {
       uncontrolled = isLeadership
-        ? `Bei sehr hohem Druck steigt der Wunsch nach schneller Handlung. ${fk} verlässt dann teilweise ihre sonst stark beziehungsorientierte Vorgehensweise und entscheidet direkter und spontaner. Für das Team kann dies ungewohnt entschlossen oder plötzlich wirken.${fSuffix}`
-        : "Bei sehr hohem Druck steigt der Wunsch nach schneller Handlung. Die Person verlässt dann teilweise ihre sonst stark beziehungsorientierte Vorgehensweise und entscheidet direkter und spontaner. Für andere kann dies ungewohnt entschlossen oder plötzlich wirken.";
+        ? `In nicht mehr kontrollierbaren Situationen steigt bei ${fkLower} verstärkt der Wunsch nach schneller Handlung. Sie verlässt dann eher ihre sonst stark beziehungsorientierte Vorgehensweise und entscheidet tendenziell direkter und spontaner. Für das Team kann dies ungewohnt entschlossen wirken.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen steigt verstärkt der Wunsch nach schneller Handlung. Die Person verlässt dann eher ihre sonst stark beziehungsorientierte Vorgehensweise und entscheidet tendenziell direkter und spontaner. Für andere kann dies ungewohnt entschlossen wirken.";
     } else {
       uncontrolled = isLeadership
-        ? `Unter starkem Druck versucht ${fkLower} verstärkt, Entscheidungen auch sachlich abzusichern. Dadurch kann sie länger über Optionen nachdenken oder zusätzliche Informationen einholen, bevor eine Entscheidung endgültig getroffen wird.${fSuffix}`
-        : "Unter starkem Druck versucht die Person verstärkt, Entscheidungen auch sachlich abzusichern. Dadurch kann sie länger über Optionen nachdenken oder zusätzliche Informationen einholen, bevor eine Entscheidung endgültig getroffen wird.";
+        ? `In nicht mehr kontrollierbaren Situationen versucht ${fkLower} verstärkt, Entscheidungen auch sachlich abzusichern. Sie neigt dann eher dazu, länger über Optionen nachzudenken oder zusätzliche Informationen einzuholen, bevor eine Entscheidung endgültig getroffen wird.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen versucht die Person verstärkt, Entscheidungen auch sachlich abzusichern. Sie neigt dann eher dazu, länger über Optionen nachzudenken oder zusätzliche Informationen einzuholen, bevor eine Entscheidung endgültig getroffen wird.";
     }
   }
 
@@ -1142,24 +1142,24 @@ export default function Rollenprofil() {
     const person = fk ? "Die Führungskraft" : "Die Person";
     const pt = data.profileType;
     if (pt === "balanced_all") {
-      return `Im regulären Arbeitsalltag zeigt sich bei dieser Stelle keine eindeutige Handlungsrichtung. ${person} wechselt situativ zwischen zügigem Handeln, persönlichem Kontakt und gründlicher Analyse. ${hochRef}Die Stärke liegt in der Vielseitigkeit. Die Herausforderung besteht darin, bei wechselnden Anforderungen eine konsistente Linie zu halten.`;
+      return `Im regulären Arbeitsalltag zeigt sich bei dieser Stelle keine eindeutige Handlungsrichtung. ${person} wechselt vorwiegend situativ zwischen zügigem Handeln, persönlichem Kontakt und gründlicher Analyse. ${hochRef}Die Stärke liegt in der Vielseitigkeit. Die Herausforderung besteht eher darin, bei wechselnden Anforderungen eine konsistente Linie zu halten.`;
     }
     if (pt === "hybrid_imp_ana") {
-      return `Im regulären Arbeitsalltag verbindet diese Stelle zügiges Handeln mit gründlicher Prüfung. ${person} treibt Ergebnisse aktiv voran und achtet gleichzeitig auf Qualität und Nachvollziehbarkeit. ${hochRef}Dabei darf die Kommunikation im Team nicht vernachlässigt werden – Ergebnisse wirken nur, wenn sie verstanden und mitgetragen werden.`;
+      return `Im regulären Arbeitsalltag verbindet diese Stelle vorwiegend zügiges Handeln mit gründlicher Prüfung. ${person} treibt Ergebnisse eher aktiv voran und achtet gleichzeitig auf Qualität und Nachvollziehbarkeit. ${hochRef}Dabei darf die Kommunikation im Team nicht vernachlässigt werden – Ergebnisse wirken nur, wenn sie verstanden und mitgetragen werden.`;
     }
     if (pt === "hybrid_imp_int") {
-      return `Im regulären Arbeitsalltag verbindet diese Stelle Umsetzungsstärke mit einem guten Gespür für Menschen. ${person} treibt Ergebnisse voran und achtet gleichzeitig auf den Zusammenhalt im Team. ${hochRef}Dabei darf die analytische Absicherung nicht zu kurz kommen – auch bei hoher Dynamik brauchen Entscheidungen eine fundierte Grundlage.`;
+      return `Im regulären Arbeitsalltag verbindet diese Stelle vorwiegend Umsetzungsstärke mit einem guten Gespür für Menschen. ${person} treibt eher Ergebnisse voran und achtet gleichzeitig auf den Zusammenhalt im Team. ${hochRef}Dabei darf die analytische Absicherung nicht zu kurz kommen – auch bei hoher Dynamik brauchen Entscheidungen eine fundierte Grundlage.`;
     }
     if (pt === "hybrid_ana_int") {
-      return `Im regulären Arbeitsalltag verbindet diese Stelle analytische Gründlichkeit mit kommunikativer Kompetenz. ${person} prüft Sachverhalte sorgfältig und kommuniziert Ergebnisse verständlich im Team. ${hochRef}Dabei muss das Umsetzungstempo gewährleistet bleiben – gründliche Analyse und Abstimmung dürfen die Handlungsfähigkeit nicht bremsen.`;
+      return `Im regulären Arbeitsalltag verbindet diese Stelle vorwiegend analytische Gründlichkeit mit kommunikativer Kompetenz. ${person} prüft Sachverhalte eher sorgfältig und kommuniziert Ergebnisse verständlich im Team. ${hochRef}Dabei muss das Umsetzungstempo gewährleistet bleiben – gründliche Analyse und Abstimmung dürfen die Handlungsfähigkeit nicht bremsen.`;
     }
     if (data.dom.key === "int") {
-      return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vor allem im persönlichen Kontakt. ${person} schafft Vertrauen, nimmt Bedürfnisse frühzeitig wahr und gestaltet ein Umfeld, in dem sich Beteiligte eingebunden und wertgeschätzt fühlen. ${hochRef}${data.sec.key === "ana" ? "Damit dies gelingt, erfordert die Stelle zugleich ein hohes Maß an Organisation und Verlässlichkeit. Abläufe, Dokumentation und einheitliche Standards müssen konsequent eingehalten werden." : "Damit dies gelingt, erfordert die Stelle zugleich Entscheidungsstärke und Umsetzungstempo. Nicht jede Situation lässt sich im Konsens lösen."}`;
+      return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vorwiegend im persönlichen Kontakt. ${person} schafft eher Vertrauen, nimmt Bedürfnisse frühzeitig wahr und gestaltet ein Umfeld, in dem sich Beteiligte eingebunden und wertgeschätzt fühlen. ${hochRef}${data.sec.key === "ana" ? "Damit dies gelingt, erfordert die Stelle zugleich ein hohes Maß an Organisation und Verlässlichkeit. Abläufe, Dokumentation und einheitliche Standards müssen konsequent eingehalten werden." : "Damit dies gelingt, erfordert die Stelle zugleich Entscheidungsstärke und Umsetzungstempo. Nicht jede Situation lässt sich im Konsens lösen."}`;
     }
     if (data.dom.key === "imp") {
-      return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vor allem durch klare Priorisierung und konsequente Umsetzung. ${person} treibt Ergebnisse zielgerichtet voran und bleibt auch bei Widerständen handlungsfähig. ${hochRef}${data.sec.key === "int" ? "Damit dies gelingt, erfordert die Stelle zugleich Sensibilität für zwischenmenschliche Dynamiken. Wer ausschließlich auf Tempo setzt, riskiert den Rückhalt im Team." : "Damit dies gelingt, erfordert die Stelle zugleich analytische Sorgfalt und Qualitätsbewusstsein. Auch zügig getroffene Entscheidungen müssen auf einer fundierten Grundlage beruhen."}`;
+      return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vorwiegend durch klare Priorisierung und konsequente Umsetzung. ${person} treibt Ergebnisse eher zielgerichtet voran und bleibt auch bei Widerständen handlungsfähig. ${hochRef}${data.sec.key === "int" ? "Damit dies gelingt, erfordert die Stelle zugleich Sensibilität für zwischenmenschliche Dynamiken. Wer ausschließlich auf Tempo setzt, riskiert den Rückhalt im Team." : "Damit dies gelingt, erfordert die Stelle zugleich analytische Sorgfalt und Qualitätsbewusstsein. Auch zügig getroffene Entscheidungen müssen auf einer fundierten Grundlage beruhen."}`;
     }
-    return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vor allem durch methodisches Arbeiten, präzise Dokumentation und eine konsequente Qualitätsorientierung. ${person} überzeugt durch fachliche Tiefe und nachvollziehbare Ergebnisse. ${hochRef}${data.sec.key === "int" ? "Damit dies gelingt, erfordert die Stelle zugleich kommunikatives Geschick. Fachlich fundierte Ergebnisse müssen verständlich aufbereitet und im Team verankert werden." : "Damit dies gelingt, erfordert die Stelle zugleich Handlungsbereitschaft und Umsetzungsstärke. Wer ausschließlich analysiert, ohne Entscheidungen herbeizuführen, hemmt den Fortschritt."}`;
+    return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vorwiegend durch methodisches Arbeiten, präzise Dokumentation und eine konsequente Qualitätsorientierung. ${person} überzeugt eher durch fachliche Tiefe und nachvollziehbare Ergebnisse. ${hochRef}${data.sec.key === "int" ? "Damit dies gelingt, erfordert die Stelle zugleich kommunikatives Geschick. Fachlich fundierte Ergebnisse müssen verständlich aufbereitet und im Team verankert werden." : "Damit dies gelingt, erfordert die Stelle zugleich Handlungsbereitschaft und Umsetzungsstärke. Wer ausschließlich analysiert, ohne Entscheidungen herbeizuführen, hemmt den Fortschritt."}`;
   })();
 
   const strukturprofilText = (() => {
