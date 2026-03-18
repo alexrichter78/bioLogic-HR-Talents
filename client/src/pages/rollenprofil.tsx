@@ -930,7 +930,7 @@ function ProfileBar({ label, value, color }: { label: string; value: number; col
           minWidth: value === 0 ? 0 : 44,
           transition: "width 300ms ease",
         }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>
+          <span data-bar-pct style={{ fontSize: 12, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>
         </div>
       </div>
     </div>
@@ -1053,7 +1053,9 @@ export default function Rollenprofil() {
         (el.style as any).WebkitHyphens = "none";
         el.style.wordBreak = "normal";
         el.style.overflowWrap = "break-word";
-        el.style.textAlign = "left";
+        if (!el.hasAttribute("data-bar-pct")) {
+          el.style.textAlign = "left";
+        }
       });
 
       clone.querySelectorAll<HTMLElement>(".bio-section-head").forEach(sh => {
