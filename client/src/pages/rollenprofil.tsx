@@ -1330,7 +1330,7 @@ export default function Rollenprofil() {
   const SectionHead = ({ num, title }: { num: number; title: string; color?: string }) => (
     <div className="bio-section-head" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, marginLeft: -44, marginRight: -44, padding: "0 18px", height: 38, background: "linear-gradient(135deg, #343A48 0%, #3d4455 50%, #464f62 100%)", boxShadow: "0 2px 6px rgba(52,58,72,0.3)" }}>
       <img src={sectionCircleUrls[num as keyof typeof sectionCircleUrls]} alt={String(num).padStart(2, "0")} style={{ width: 28, height: 28, flexShrink: 0 }} />
-      <span style={{ fontSize: 15, fontWeight: 700, color: "#FFFFFF", letterSpacing: "0.03em" }}>{title}</span>
+      <span style={{ fontSize: 15, fontWeight: 700, color: "#FFFFFF", letterSpacing: "0.03em", lineHeight: 1 }}>{title}</span>
     </div>
   );
 
@@ -1355,7 +1355,7 @@ export default function Rollenprofil() {
         {num != null && (
           <img src={getSubCircle(num, color)} alt={String(num)} style={{ width: 24, height: 24, flexShrink: 0 }} />
         )}
-        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{title}</p>
+        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, lineHeight: 1 }}>{title}</p>
       </div>
       <div style={{ width: 36, height: 2.5, borderRadius: 2, background: color, marginTop: 4, marginLeft: num != null ? 34 : 0, opacity: 0.7 }} />
     </div>
