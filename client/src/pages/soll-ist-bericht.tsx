@@ -843,18 +843,24 @@ export default function SollIstBericht() {
                       <div key={area.id} style={{ display: "flex", borderRadius: 12, overflow: "hidden", background: `${sevCol}06`, border: `1px solid ${sevCol}15` }} data-testid={`impact-detail-${area.id}`}>
                         <div style={{ width: 4, background: sevCol, flexShrink: 0 }} />
                         <div style={{ flex: 1, padding: "14px 16px" }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                               <div style={{ width: 8, height: 8, borderRadius: 4, background: sevCol, boxShadow: `0 0 0 2px ${sevCol}25` }} />
                               <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{area.label}</span>
                             </div>
                             <span style={{ fontSize: 10, fontWeight: 700, color: sevCol, textTransform: "uppercase", letterSpacing: "0.05em" }}>{severityLabel(area.severity)}</span>
                           </div>
-                          <div style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", wordBreak: "break-word", overflowWrap: "break-word" }}>
-                            <p style={{ margin: "0 0 4px", fontWeight: 600, color: "#1D1D1F" }}>{area.roleNeed}</p>
-                            <p style={{ margin: "0 0 4px" }}>{area.candidatePattern}</p>
-                            <p style={{ margin: 0, fontStyle: "italic", color: "#6E6E73" }}>{area.risk}</p>
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+                            <div style={{ padding: "10px 12px", borderRadius: 8, background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.05)" }}>
+                              <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Stelle verlangt</p>
+                              <p style={{ fontSize: 13, lineHeight: 1.7, color: "#1D1D1F", fontWeight: 600, margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }}>{area.roleNeed}</p>
+                            </div>
+                            <div style={{ padding: "10px 12px", borderRadius: 8, background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.05)" }}>
+                              <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Person bringt mit</p>
+                              <p style={{ fontSize: 13, lineHeight: 1.7, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }}>{area.candidatePattern}</p>
+                            </div>
                           </div>
+                          <p style={{ fontSize: 13, lineHeight: 1.7, margin: 0, fontStyle: "italic", color: "#6E6E73", wordBreak: "break-word", overflowWrap: "break-word" }}>{area.risk}</p>
                         </div>
                       </div>
                     );
