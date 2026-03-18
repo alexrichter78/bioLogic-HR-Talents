@@ -1103,13 +1103,9 @@ export default function Rollenprofil() {
               <span>{pdfLoading ? "Wird erstellt..." : "PDF"}</span>
             </button>
 
-            <div className="report-kicker">STRUKTURANALYSE</div>
-            <h1 className="report-title" data-testid="text-report-title">Rollen-DNA</h1>
+            <div className="report-kicker">STELLENANALYSE</div>
+            <h1 className="report-title" data-testid="text-report-title">Stellenprofil</h1>
             <div className="report-subtitle">{data.beruf}</div>
-            <div className="report-desc">
-              Detaillierte Analyse der strukturellen Anforderungslogik {data.bereich ? `im Bereich ${data.bereich} für ` : "für "}diese Position
-            </div>
-
             <div className="report-rings" />
           </div>
 
