@@ -1056,6 +1056,18 @@ export default function Rollenprofil() {
         el.style.textAlign = "left";
       });
 
+      clone.querySelectorAll<HTMLElement>(".bio-section-head").forEach(sh => {
+        const img = sh.querySelector("img");
+        if (img) img.remove();
+        sh.style.justifyContent = "center";
+        sh.style.gap = "0";
+      });
+      clone.querySelectorAll<HTMLElement>("[data-subhead-circle]").forEach(el => {
+        const line = el.closest("[style]")?.parentElement?.querySelector<HTMLElement>("[style*='border-radius']");
+        if (line) line.style.marginLeft = "0";
+        el.remove();
+      });
+
       const A4_W = 595.28;
       const A4_H = 841.89;
       const TOP_MARGIN_PT = 28.35;
@@ -1353,7 +1365,7 @@ export default function Rollenprofil() {
     <div style={{ marginBottom: 12 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         {num != null && (
-          <img src={getSubCircle(num, color)} alt={String(num)} style={{ width: 24, height: 24, flexShrink: 0 }} />
+          <img src={getSubCircle(num, color)} alt={String(num)} data-subhead-circle style={{ width: 24, height: 24, flexShrink: 0 }} />
         )}
         <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, lineHeight: 1 }}>{title}</p>
       </div>
