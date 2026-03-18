@@ -1182,12 +1182,12 @@ export default function Rollenprofil() {
                         <div style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: `linear-gradient(135deg, ${kb.color}12, ${kb.color}06)`, border: `1px solid ${kb.color}20`, display: "flex", flexDirection: "column" }}>
                           <div style={{ flex: 1 }}>
                             <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginBottom: 8, display: "block" }}>{kb.label}</span>
-                            <p style={{ fontSize: 12.5, lineHeight: 1.65, margin: 0, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid={`text-bedeutung-${kb.key}`}>
+                            <p style={{ fontSize: 12.5, lineHeight: 1.65, margin: 0, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid={`text-bedeutung-${kb.key}`}>
                               {kb.text}
                             </p>
                           </div>
                           <div style={{ width: "100%", height: 2, background: kb.color, margin: "10px 0", borderRadius: 1, flexShrink: 0 }} />
-                          <p style={{ fontSize: 12, lineHeight: 1.6, margin: 0, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any }} lang="de">
+                          <p style={{ fontSize: 12, lineHeight: 1.6, margin: 0, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                             {kb.warning}
                           </p>
                         </div>
