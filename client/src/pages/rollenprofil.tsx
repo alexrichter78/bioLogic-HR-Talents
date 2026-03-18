@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
-import { Download, AlertTriangle, BarChart3, Briefcase, Users } from "lucide-react";
+import { Download, AlertTriangle, BarChart3, Briefcase, Users, Sun, Gauge, Flame } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE } from "@/data/berufe";
 import logoSrc from "@assets/LOGO_bio_1773853681939.png";
@@ -1352,24 +1352,33 @@ export default function Rollenprofil() {
             <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 20px" }}>Wie zeigt sich diese Stelle im Alltag und unter Druck?</p>
 
             {/* Verhalten im Alltag */}
-            <div style={{ marginBottom: 28 }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Verhalten im Alltag</p>
+            <div style={{ marginBottom: 20, borderLeft: "4px solid #34C759", borderRadius: 8, background: "rgba(52,199,89,0.04)", padding: "16px 20px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                <Sun size={18} color="#34C759" strokeWidth={2.2} />
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Verhalten im Alltag</p>
+              </div>
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {alltagsverhalten}
               </p>
             </div>
 
             {/* Verhalten unter Druck */}
-            <div style={{ marginBottom: 28 }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Verhalten unter Druck</p>
+            <div style={{ marginBottom: 20, borderLeft: "4px solid #FF9500", borderRadius: 8, background: "rgba(255,149,0,0.04)", padding: "16px 20px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                <Gauge size={18} color="#FF9500" strokeWidth={2.2} />
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Verhalten unter Druck</p>
+              </div>
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {stress.controlled}
               </p>
             </div>
 
             {/* Verhalten bei starkem Stress */}
-            <div style={{ marginBottom: 0 }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Verhalten bei starkem Stress</p>
+            <div style={{ marginBottom: 0, borderLeft: "4px solid #FF3B30", borderRadius: 8, background: "rgba(255,59,48,0.04)", padding: "16px 20px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                <Flame size={18} color="#FF3B30" strokeWidth={2.2} />
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Verhalten bei starkem Stress</p>
+              </div>
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {stress.uncontrolled}
               </p>
