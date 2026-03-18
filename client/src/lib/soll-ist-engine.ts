@@ -664,6 +664,44 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
     }
   }
 
+  const rSorted = ([
+    { key: "impulsiv" as ComponentKey, val: rt.impulsiv },
+    { key: "intuitiv" as ComponentKey, val: rt.intuitiv },
+    { key: "analytisch" as ComponentKey, val: rt.analytisch },
+  ]).sort((a, b) => b.val - a.val);
+  const roleDualDom = (rSorted[0].val - rSorted[1].val) <= 5 && (rSorted[1].val - rSorted[2].val) > 5;
+
+  if (roleDualDom) {
+    const rDom1 = rSorted[0].key;
+    const rDom2 = rSorted[1].key;
+    const cSorted = ([
+      { key: "impulsiv" as ComponentKey, val: ct.impulsiv },
+      { key: "intuitiv" as ComponentKey, val: ct.intuitiv },
+      { key: "analytisch" as ComponentKey, val: ct.analytisch },
+    ]).sort((a, b) => b.val - a.val);
+    const candClearSingle = (cSorted[0].val - cSorted[1].val) > 5;
+    const candDom1 = cSorted[0].key;
+    const candCoversOne = candDom1 === rDom1 || candDom1 === rDom2;
+
+    if (candClearSingle && candCoversOne) {
+      const s = Subj(cand);
+      const coveredDesc = compShort(candDom1);
+      const missingKey = candDom1 === rDom1 ? rDom2 : rDom1;
+      const missingDesc = compShort(missingKey);
+      const dom1Desc = compShort(rDom1);
+      const dom2Desc = compShort(rDom2);
+
+      const dualRoleNote = `Die Stelle verlangt gleichermassen ${dom1Desc} und ${dom2Desc}. ${s} deckt ${coveredDesc} ab, bringt aber zu wenig ${missingDesc} mit. Eine der beiden Kernanforderungen wird nicht ausreichend bedient.`;
+
+      for (const area of areas) {
+        if (area.severity === "ok") {
+          area.severity = "warning";
+          area.risk = dualRoleNote;
+        }
+      }
+    }
+  }
+
   return areas;
 }
 
