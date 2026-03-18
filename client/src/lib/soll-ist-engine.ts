@@ -636,6 +636,7 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
     areas.push(buildLeadershipImpact(rk, ck, gapI, gapN, gapA, cand, fuehrungsArt, roleIsBalFull, ct));
   }
 
+  areas.push(buildCommunicationImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct));
   areas.push(buildCultureImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct));
 
   return areas;
@@ -855,6 +856,74 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
   }
 
   return { id: "leadership", label: "Führungswirkung", severity: sev, roleNeed, candidatePattern, risk };
+}
+
+function buildCommunicationImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, roleIsBalFull = false, ct?: Triad): ImpactArea {
+  const s = Subj(cand);
+  const maxGap = Math.max(gapI, gapN, gapA);
+
+  if (roleIsBalFull && ct) {
+    const maxSingleGap = Math.max(gapI, gapN, gapA);
+    const sev = severity(maxSingleGap * 0.55);
+    const roleNeed = "Situative Kommunikation, die je nach Kontext direkt, empathisch oder sachlich-präzise erfolgt. Die Stelle verlangt kommunikative Vielseitigkeit.";
+
+    let candidatePattern: string;
+    let risk: string;
+    const spread = Math.max(ct.impulsiv, ct.intuitiv, ct.analytisch) - Math.min(ct.impulsiv, ct.intuitiv, ct.analytisch);
+    if (spread <= 10) {
+      candidatePattern = `${s} kommuniziert situativ und flexibel. Je nach Kontext wird direkt, empathisch oder sachlich kommuniziert.`;
+      risk = "Kommunikationsverhalten passt zur Vielseitigkeit der Stelle. Feinabstimmung im Umgang mit verschiedenen Stakeholdern empfohlen.";
+    } else {
+      const domKey: ComponentKey = ct.impulsiv >= ct.intuitiv && ct.impulsiv >= ct.analytisch ? "impulsiv" : ct.intuitiv >= ct.analytisch ? "intuitiv" : "analytisch";
+      const domComm = domKey === "impulsiv" ? "direkt, kurz und ergebnisorientiert" : domKey === "intuitiv" ? "dialogorientiert und empathisch" : "sachlich, präzise und faktenbasiert";
+      const weakKeys = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== domKey);
+      const weakComms = weakKeys.map(k => k === "impulsiv" ? "Direktheit" : k === "intuitiv" ? "Empathie" : "sachliche Präzision").join(" und ");
+      candidatePattern = `${s} kommuniziert bevorzugt ${domComm}. Die Stelle erwartet jedoch kommunikative Vielseitigkeit.`;
+      risk = `Die einseitige Kommunikation kann zu Missverständnissen führen, wenn ${weakComms} gefragt ist. Gesprächspartner mit anderem Kommunikationsstil fühlen sich möglicherweise nicht abgeholt.`;
+    }
+    return { id: "communication", label: "Kommunikationsverhalten", severity: sev, roleNeed, candidatePattern, risk };
+  }
+
+  const sev = severity(rk !== ck ? maxGap * 0.55 : maxGap * 0.35);
+
+  let roleNeed: string;
+  if (rk === "impulsiv") {
+    roleNeed = "Klare, direkte Kommunikation. Kurze Wege, schnelle Abstimmung, ergebnisorientierter Austausch.";
+  } else if (rk === "intuitiv") {
+    roleNeed = "Empathische, dialogorientierte Kommunikation. Aktives Zuhören, Einbindung und persönliche Ansprache.";
+  } else {
+    roleNeed = "Sachliche, faktenbasierte Kommunikation. Klare Argumentation, strukturierte Informationsweitergabe.";
+  }
+
+  let candidatePattern: string;
+  if (ck === "impulsiv") {
+    candidatePattern = `${s} kommuniziert direkt, kurz und handlungsorientiert. Entscheidungen werden rasch mitgeteilt, Details eher knapp gehalten.`;
+  } else if (ck === "intuitiv") {
+    candidatePattern = `${s} kommuniziert offen, dialogorientiert und einbindend. Der persönliche Austausch steht im Vordergrund.`;
+  } else {
+    candidatePattern = `${s} kommuniziert sachlich, strukturiert und faktenbasiert. Informationen werden präzise und nachvollziehbar weitergegeben.`;
+  }
+
+  let risk: string;
+  if (rk === ck) {
+    risk = maxGap >= 8
+      ? "Der Kommunikationsstil passt grundsätzlich. In den Feinheiten gibt es Abweichungen, die im Alltag auffallen können. Gezielte Abstimmung empfohlen."
+      : "Kommunikationsverhalten passt zur Stellenanforderung. Die Art der Kommunikation entspricht dem, was erwartet wird.";
+  } else if (rk === "impulsiv" && ck === "intuitiv") {
+    risk = `Die Stelle verlangt schnelle, direkte Kommunikation. ${s} investiert mehr Zeit in Dialog und Abstimmung. Entscheidungen werden verzögert kommuniziert. Klare Kommunikationserwartungen setzen.`;
+  } else if (rk === "impulsiv" && ck === "analytisch") {
+    risk = `Die Stelle verlangt kurze, direkte Kommunikation. ${s} kommuniziert ausführlicher und detaillierter als nötig. Die Informationsdichte kann das Tempo bremsen.`;
+  } else if (rk === "intuitiv" && ck === "impulsiv") {
+    risk = `Die Stelle verlangt empathische Kommunikation. ${s} kommuniziert eher direkt und knapp. Gesprächspartner können sich übergangen fühlen. Bewusstes Zuhören und Einbindung aktiv einfordern.`;
+  } else if (rk === "intuitiv" && ck === "analytisch") {
+    risk = `Die Stelle verlangt persönlichen Dialog. ${s} kommuniziert eher sachlich und distanziert. Der zwischenmenschliche Aspekt kommt zu kurz. Gesprächsformate mit persönlichem Austausch einplanen.`;
+  } else if (rk === "analytisch" && ck === "impulsiv") {
+    risk = `Die Stelle verlangt sachliche Präzision. ${s} kommuniziert eher kurz und handlungsorientiert. Details und Begründungen werden ausgelassen. Dokumentationserwartungen klar formulieren.`;
+  } else {
+    risk = `Die Stelle verlangt faktenbasierte Kommunikation. ${s} kommuniziert eher beziehungsorientiert. Sachliche Tiefe und Nachvollziehbarkeit können leiden. Klare Standards für Informationsweitergabe setzen.`;
+  }
+
+  return { id: "communication", label: "Kommunikationsverhalten", severity: sev, roleNeed, candidatePattern, risk };
 }
 
 function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, roleIsBalFull = false, ct?: Triad): ImpactArea {
