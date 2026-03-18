@@ -642,6 +642,7 @@ export default function SollIstBericht() {
                           {[
                             { label: "Grundpassung", value: result.fitLabel, color: fitCol },
                             { label: "Führungsaufwand", value: cLabel, color: cCol },
+                            { label: "Profilabweichung", value: result.gapLevel, color: gapCol },
                             { label: "Entwicklungsaufwand", value: devLabel, color: devCol },
                           ].map(m => (
                             <div key={m.label} style={{ flex: 1, minWidth: 0, padding: "14px 16px", borderRadius: 10, background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.06)" }}>
