@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImageIcon } from "lucide-react";
+import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImageIcon, Mic, MicOff } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 
 type Message = {
@@ -176,8 +176,66 @@ export default function KICoach() {
   const [loading, setLoading] = useState(false);
   const [showPrompts, setShowPrompts] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [isListening, setIsListening] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const recognitionRef = useRef<any>(null);
+
+  const speechSupported = typeof window !== "undefined" && ("SpeechRecognition" in window || "webkitSpeechRecognition" in window);
+
+  const toggleListening = useCallback(() => {
+    if (!speechSupported) return;
+
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = "de-CH";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    let finalTranscript = "";
+
+    recognition.onresult = (event: any) => {
+      let interim = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript;
+        } else {
+          interim += transcript;
+        }
+      }
+      setInput(prev => {
+        const base = prev.endsWith(finalTranscript) ? prev : (prev ? prev + " " : "") + finalTranscript;
+        return interim ? base + interim : base;
+      });
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+      recognitionRef.current = null;
+      if (inputRef.current) {
+        inputRef.current.style.height = "48px";
+        inputRef.current.style.height = Math.min(inputRef.current.scrollHeight, 120) + "px";
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      if (event.error !== "aborted") {
+        setIsListening(false);
+        recognitionRef.current = null;
+      }
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+    setIsListening(true);
+  }, [isListening, speechSupported]);
 
   const hasAnalysisData = useCallback(() => {
     try {
@@ -194,6 +252,11 @@ export default function KICoach() {
   const sendMessage = useCallback(async () => {
     const text = input.trim();
     if (!text || loading) return;
+
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    }
 
     const userMsg: Message = { role: "user", content: text };
     const newMessages = [...messages, userMsg];
@@ -256,7 +319,7 @@ export default function KICoach() {
       setLoading(false);
       setTimeout(() => inputRef.current?.focus(), 100);
     }
-  }, [input, loading, messages]);
+  }, [input, loading, messages, isListening]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -578,6 +641,27 @@ export default function KICoach() {
                   t.style.height = Math.min(t.scrollHeight, 120) + "px";
                 }}
               />
+              {speechSupported && (
+                <button
+                  onClick={toggleListening}
+                  data-testid="button-mic"
+                  style={{
+                    width: 36, height: 36, borderRadius: 12, border: "none",
+                    background: isListening
+                      ? "linear-gradient(135deg, #FF3B30, #FF6B6B)"
+                      : "rgba(0,0,0,0.06)",
+                    cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    flexShrink: 0, transition: "all 200ms ease",
+                    animation: isListening ? "micPulse 1.5s ease-in-out infinite" : "none",
+                  }}
+                >
+                  {isListening
+                    ? <MicOff style={{ width: 16, height: 16, color: "#FFFFFF" }} />
+                    : <Mic style={{ width: 16, height: 16, color: "#8E8E93" }} />
+                  }
+                </button>
+              )}
               <button
                 onClick={sendMessage}
                 disabled={loading || !input.trim()}
