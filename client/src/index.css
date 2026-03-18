@@ -365,9 +365,9 @@ input[type="range"].bio-slider::-moz-range-track {
 
 .report-logo {
   position: absolute;
-  top: 4px;
+  top: -6px;
   left: 10px;
-  height: 120px;
+  height: 136px;
   width: auto;
 }
 
