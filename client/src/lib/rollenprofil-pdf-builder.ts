@@ -264,7 +264,7 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
   doc.setLineWidth(0.7);
   doc.line(ML, y - 2, ML, y + introDiscH - 2);
   doc.setFontSize(8);
-  doc.setFont("helvetica", "normal");
+  doc.setFont("helvetica", "bold");
   setC([255, 59, 48]);
   introDiscLines.forEach(line => {
     doc.text(line, ML + 6, y);
