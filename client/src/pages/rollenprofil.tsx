@@ -434,22 +434,25 @@ function buildProfilkonflikt(data: ReportData): string | null {
   return `Hinweis: Die Kerntätigkeiten der Stelle verlangen vor allem ${hauptBehavior}. Das Gesamtprofil verschiebt sich jedoch in Richtung ${gesamtBehavior}. Rahmenbedingungen und ergänzende Anforderungen verändern das Anforderungsprofil. Im Besetzungsprozess sollte geprüft werden, ob die Person primär die Kerntätigkeiten oder das Gesamtpaket abbilden kann.`;
 }
 
-function buildKomponentenBedeutung(data: ReportData): { key: string; label: string; color: string; text: string }[] {
-  const KOMP_TEXTE: Record<string, { label: string; color: string; text: string }> = {
+function buildKomponentenBedeutung(data: ReportData): { key: string; label: string; color: string; text: string; warning: string }[] {
+  const KOMP_TEXTE: Record<string, { label: string; color: string; text: string; warning: string }> = {
     ana: {
       label: "Analytisch",
       color: COLORS.ana,
-      text: "Steht für sorgfältiges Abwägen, strukturiertes Organisieren von Abläufen und nachvollziehbares Vorbereiten von Entscheidungen. Fehlt diese Fähigkeit, entstehen Fehler bei Planung, Kalkulation und Dokumentation.",
+      text: "Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe.",
+      warning: "Fehlt dieser Anteil, entstehen Fehler in Planung, Kalkulation und Dokumentation.",
     },
     imp: {
       label: "Impulsiv",
       color: COLORS.imp,
-      text: "Steht für zügiges Anpacken, klares Setzen von Prioritäten und konsequentes Liefern von Ergebnissen. Fehlt diese Fähigkeit, werden Entscheidungen aufgeschoben und Chancen verpasst.",
+      text: "Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung.",
+      warning: "Fehlt dieser Anteil, werden Entscheidungen verzögert und Chancen nicht genutzt.",
     },
     int: {
       label: "Intuitiv",
       color: COLORS.int,
-      text: "Steht für das Erkennen, was Gesprächspartner oder das Team gerade brauchen, und ein gezieltes Abstimmen der Kommunikation darauf. Fehlt diese Fähigkeit, leidet die Zusammenarbeit und das Vertrauen sinkt.",
+      text: "Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team.",
+      warning: "Fehlt dieser Anteil, leidet die Zusammenarbeit und Vertrauen sinkt.",
     },
   };
   const sorted = (["imp", "int", "ana"] as const)
@@ -1172,18 +1175,23 @@ export default function Rollenprofil() {
                 <ProfileBar label="Analytisch" value={data.gesamt.ana} color={COLORS.ana} />
 
                 <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
-                  <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 10px" }}>Bedeutung der Komponenten</p>
-                  {komponentenBedeutung.map((kb, i) => (
-                    <div key={i} style={{ marginBottom: i < komponentenBedeutung.length - 1 ? 10 : 0 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
-                        <div style={{ width: 7, height: 7, borderRadius: "50%", background: kb.color, flexShrink: 0 }} />
-                        <span style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F" }}>{kb.label}</span>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>Bedeutung der Komponenten</p>
+                  <div style={{ display: "flex", gap: 12 }}>
+                    {komponentenBedeutung.map((kb, i) => (
+                      <div key={i} style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: "#343A48", color: "#fff" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                          <div style={{ width: 8, height: 8, borderRadius: "50%", background: kb.color, flexShrink: 0 }} />
+                          <span style={{ fontSize: 13, fontWeight: 700 }}>{kb.label}</span>
+                        </div>
+                        <p style={{ fontSize: 12.5, lineHeight: 1.65, margin: "0 0 10px", color: "#E8E8ED" }} lang="de" data-testid={`text-bedeutung-${kb.key}`}>
+                          {kb.text}
+                        </p>
+                        <p style={{ fontSize: 12, lineHeight: 1.6, margin: 0, color: "rgba(255,255,255,0.5)" }} lang="de">
+                          {kb.warning}
+                        </p>
                       </div>
-                      <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: "0 0 0 13px" }} lang="de" data-testid={`text-bedeutung-${kb.key}`}>
-                        {kb.text}
-                      </p>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
 

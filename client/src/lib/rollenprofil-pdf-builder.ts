@@ -48,7 +48,7 @@ export interface RollenprofilPdfData {
   rollenBeschreibungIntro: string;
   rollenBeschreibungErgaenzung: string;
   strukturprofilText: string;
-  komponentenBedeutung: { key: string; label: string; color: string; text: string }[];
+  komponentenBedeutung: { key: string; label: string; color: string; text: string; warning: string }[];
   profilherkunft: { label: string; dom: string; pct: number }[];
   profilkonflikt: string | null;
   arbeitslogikText: string;
@@ -343,6 +343,8 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
     doc.text(kb.label, ML + 5, y);
     y += 4.5;
     printText(kb.text, ML + 5, CW - 5, 8.5, C.dark, 4.3);
+    y += 1;
+    printText(kb.warning, ML + 5, CW - 5, 8, C.mid, 4);
     y += 2;
   });
   y += 2;
