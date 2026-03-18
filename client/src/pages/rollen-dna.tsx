@@ -2890,7 +2890,7 @@ export default function RollenDNA() {
                       background: "linear-gradient(135deg, #34C759, #30D158)",
                       display: "flex", alignItems: "center", justifyContent: "center",
                     }}>
-                      <ClipboardList style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
+                      <Briefcase style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                     </div>
                     <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
                       <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Stellendefinition:</span>
@@ -3119,7 +3119,7 @@ export default function RollenDNA() {
                       alignItems: "center",
                       justifyContent: "center",
                     }}>
-                      <FileText style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
+                      <Lightbulb style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                     </div>
                     <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
                       <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Kurzprofil der Stelle:</span>
