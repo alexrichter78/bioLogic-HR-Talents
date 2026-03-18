@@ -989,117 +989,116 @@ export default function Rollenprofil() {
   }, []);
 
   const handlePDF = async () => {
-    if (!data) return;
+    if (!data || !reportRef.current) return;
     setPdfLoading(true);
+    let clone: HTMLElement | null = null;
+    let pdfBtn: HTMLElement | null = null;
     try {
-      const { buildRollenprofilPdf } = await import("@/lib/rollenprofil-pdf-builder");
+      const html2canvas = (await import("html2canvas")).default;
+      const { default: jsPDF } = await import("jspdf");
 
-      const stress = buildStressTexts(data.gesamt, data.isLeadership, data.fuehrungstyp);
-      const hauptTaetigkeiten = (data.taetigkeiten || []).filter((t: any) => t.kategorie === "haupt");
-      const hochItems = hauptTaetigkeiten.filter((t: any) => t.niveau === "Hoch");
-      const erfolgsfokusLabelsLocal = data.erfolgsfokusIndices.map(i => ERFOLGSFOKUS_LABELS[i]).filter(Boolean);
+      const source = reportRef.current;
+      pdfBtn = source.querySelector("[data-testid='button-pdf-export']") as HTMLElement | null;
+      if (pdfBtn) pdfBtn.style.display = "none";
 
-      const topT = hauptTaetigkeiten.slice(0, 3).map((t: any) => cleanTaskName(t.name));
-      const introText = (() => {
-        const fk = data.isLeadership;
-        const pt = data.profileType;
-        if (pt === "balanced_all") return `Diese Anforderungen verlangen eine vielseitige Persönlichkeit, die situativ zwischen zügigem Handeln, persönlichem Kontakt und sorgfältigem Arbeiten wechseln kann. Entscheidend ist die Fähigkeit, flexibel auf unterschiedliche Situationen zu reagieren, ohne dabei an Verbindlichkeit und Verlässlichkeit zu verlieren.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team flexibel zu führen und je nach Situation unterschiedliche Schwerpunkte zu setzen." : ""}`;
-        if (pt === "hybrid_imp_ana") return `Diese Anforderungen verlangen eine Persönlichkeit, die entschlossen handelt und gleichzeitig methodisch vorgeht. Entscheidend sind Umsetzungsstärke und analytische Sorgfalt – beides muss auf hohem Niveau zusammenwirken.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team sowohl mit klarer Richtung als auch mit strukturierter Steuerung zu führen." : ""}`;
-        if (pt === "hybrid_imp_int") return `Diese Anforderungen verlangen eine Persönlichkeit, die zügig entscheidet und gleichzeitig ein Gespür für Menschen und Teamdynamiken mitbringt. Entscheidend sind Handlungsorientierung und Beziehungsfähigkeit – beides muss auf hohem Niveau zusammenwirken.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team mit Energie und Empathie zu führen und dabei sowohl Ergebnisse als auch den Zusammenhalt im Blick zu behalten." : ""}`;
-        if (pt === "hybrid_ana_int") return `Diese Anforderungen verlangen eine Persönlichkeit, die sorgfältig analysiert und gleichzeitig im persönlichen Kontakt überzeugt. Entscheidend sind methodische Gründlichkeit und kommunikative Kompetenz – beides muss auf hohem Niveau zusammenwirken.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team fachlich fundiert und zugleich menschlich überzeugend zu führen." : ""}`;
-        if (data.dom.key === "int") return `Diese Anforderungen verlangen eine Persönlichkeit, die rasch Vertrauen aufbaut, Bedürfnisse frühzeitig erkennt und im persönlichen Kontakt überzeugt. Entscheidend sind ein ausgeprägtes Gespür für zwischenmenschliche Dynamiken, die Fähigkeit, tragfähige Beziehungen aufzubauen, und ein sicheres Auftreten im direkten Austausch.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team einfühlsam zu führen und dabei sowohl fachliche als auch zwischenmenschliche Anforderungen im Blick zu behalten." : ""}`;
-        if (data.dom.key === "imp") return `Diese Anforderungen erfordern eine Persönlichkeit, die zügig entscheidet, klar priorisiert und Ergebnisse konsequent vorantreibt. Entscheidend sind Entschlusskraft, Handlungsorientierung und die Fähigkeit, auch bei unvollständiger Informationslage wirksam zu agieren.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team entschlossen zu führen und Verantwortung für dessen Ergebnisse zu übernehmen." : ""}`;
-        return `Diese Anforderungen verlangen eine Persönlichkeit, die strukturiert, sorgfältig und verlässlich arbeitet, klare Standards einhält und auch bei wiederkehrenden Abläufen mit hoher Präzision vorgeht. Entscheidend sind ein ausgeprägtes Qualitätsbewusstsein, ein methodisches Vorgehen und die Fähigkeit, Aufgaben konsequent und gewissenhaft umzusetzen.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team methodisch zu führen und für nachvollziehbare Abläufe und einheitliche Standards zu sorgen." : ""}`;
-      })();
-      const ergaenzung = (() => {
-        const pt = data.profileType;
-        if (pt === "balanced_all") return "Da alle drei Anforderungsbereiche nahezu gleich gewichtet sind, gibt es keine eindeutige Ergänzungsanforderung. Die Person muss in allen Dimensionen – Handlung, Kommunikation und Analyse – ein solides Grundniveau mitbringen und situativ den richtigen Schwerpunkt setzen.";
-        if (pt === "hybrid_imp_ana") return "Ergänzend erfordert die Stelle ein Mindestmaß an Kommunikationsfähigkeit und Beziehungsarbeit, um Ergebnisse im Team zu verankern und die Zusammenarbeit auch bei hohem Tempo und hoher Anforderung an Genauigkeit nicht zu vernachlässigen.";
-        if (pt === "hybrid_imp_int") return "Ergänzend erfordert die Stelle ein Mindestmaß an analytischer Sorgfalt und Strukturbewusstsein, um Entscheidungen auf einer fundierten Grundlage zu treffen und Qualitätsstandards auch bei hoher Dynamik einzuhalten.";
-        if (pt === "hybrid_ana_int") return "Ergänzend erfordert die Stelle ein Mindestmaß an Umsetzungsstärke und Entscheidungstempo, um Erkenntnisse und Abstimmungen zeitnah in konkretes Handeln zu überführen und den Fortschritt nicht zu bremsen.";
-        if (data.dom.key === "int") return data.sec.key === "ana" ? "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Struktur und Organisationsfähigkeit, um Abläufe verlässlich zu gestalten, Dokumentationen sorgfältig zu führen und einheitliche Standards einzuhalten." : "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Durchsetzungsfähigkeit, um Entscheidungen klar zu treffen, Prioritäten verbindlich zu setzen und auch bei Widerständen handlungsfähig zu bleiben.";
-        if (data.dom.key === "imp") return data.sec.key === "int" ? "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Beziehungsfähigkeit, um das Team mitzunehmen, Akzeptanz zu schaffen und die Zusammenarbeit auf eine tragfähige Grundlage zu stellen." : "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Sorgfalt und Genauigkeit, um Qualitätsstandards einzuhalten, Prozesse nachvollziehbar zu dokumentieren und fundierte Entscheidungsgrundlagen zu liefern.";
-        return data.sec.key === "int" ? "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Abstimmung und Kommunikationsfähigkeit, um Abläufe im Team verlässlich zu unterstützen, Rückmeldungen verständlich weiterzugeben und eine reibungslose Zusammenarbeit sicherzustellen." : "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Handlungsfähigkeit und Umsetzungsstärke, um Analyseergebnisse in konkrete Maßnahmen zu überführen, Entscheidungen zeitnah zu treffen und den Fortschritt aktiv voranzutreiben.";
-      })();
+      clone = source.cloneNode(true) as HTMLElement;
+      clone.style.position = "absolute";
+      clone.style.left = "-9999px";
+      clone.style.top = "0";
+      clone.style.width = "794px";
+      clone.style.borderRadius = "0";
+      clone.style.boxShadow = "none";
+      clone.style.overflow = "visible";
+      document.body.appendChild(clone);
 
-      const hochNamen = hochItems.slice(0, 3).map((t: any) => cleanTaskName(t.name));
-      const hochRef = hochNamen.length > 0 ? `Besonders kritisch sind dabei ${hochNamen.join(", ")}. ` : "";
-      const alltagText = (() => {
-        const person = data.isLeadership ? "Die Führungskraft" : "Die Person";
-        const pt = data.profileType;
-        if (pt === "balanced_all") return `Im regulären Arbeitsalltag zeigt sich bei dieser Stelle keine eindeutige Handlungsrichtung. ${person} wechselt situativ zwischen zügigem Handeln, persönlichem Kontakt und gründlicher Analyse. ${hochRef}Die Stärke liegt in der Vielseitigkeit. Die Herausforderung besteht darin, bei wechselnden Anforderungen eine konsistente Linie zu halten.`;
-        if (pt === "hybrid_imp_ana") return `Im regulären Arbeitsalltag verbindet diese Stelle zügiges Handeln mit gründlicher Prüfung. ${person} treibt Ergebnisse aktiv voran und achtet gleichzeitig auf Qualität und Nachvollziehbarkeit. ${hochRef}Dabei darf die Kommunikation im Team nicht vernachlässigt werden – Ergebnisse wirken nur, wenn sie verstanden und mitgetragen werden.`;
-        if (pt === "hybrid_imp_int") return `Im regulären Arbeitsalltag verbindet diese Stelle Umsetzungsstärke mit einem guten Gespür für Menschen. ${person} treibt Ergebnisse voran und achtet gleichzeitig auf den Zusammenhalt im Team. ${hochRef}Dabei darf die analytische Absicherung nicht zu kurz kommen – auch bei hoher Dynamik brauchen Entscheidungen eine fundierte Grundlage.`;
-        if (pt === "hybrid_ana_int") return `Im regulären Arbeitsalltag verbindet diese Stelle analytische Gründlichkeit mit kommunikativer Kompetenz. ${person} prüft Sachverhalte sorgfältig und kommuniziert Ergebnisse verständlich im Team. ${hochRef}Dabei muss das Umsetzungstempo gewährleistet bleiben – gründliche Analyse und Abstimmung dürfen die Handlungsfähigkeit nicht bremsen.`;
-        if (data.dom.key === "int") return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vor allem im persönlichen Kontakt. ${person} schafft Vertrauen, nimmt Bedürfnisse frühzeitig wahr und gestaltet ein Umfeld, in dem sich Beteiligte eingebunden und wertgeschätzt fühlen. ${hochRef}${data.sec.key === "ana" ? "Damit dies gelingt, erfordert die Stelle zugleich ein hohes Maß an Organisation und Verlässlichkeit. Abläufe, Dokumentation und einheitliche Standards müssen konsequent eingehalten werden." : "Damit dies gelingt, erfordert die Stelle zugleich Entscheidungsstärke und Umsetzungstempo. Nicht jede Situation lässt sich im Konsens lösen."}`;
-        if (data.dom.key === "imp") return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vor allem durch klare Priorisierung und konsequente Umsetzung. ${person} treibt Ergebnisse zielgerichtet voran und bleibt auch bei Widerständen handlungsfähig. ${hochRef}${data.sec.key === "int" ? "Damit dies gelingt, erfordert die Stelle zugleich Sensibilität für zwischenmenschliche Dynamiken. Wer ausschließlich auf Tempo setzt, riskiert den Rückhalt im Team." : "Damit dies gelingt, erfordert die Stelle zugleich analytische Sorgfalt und Qualitätsbewusstsein. Auch zügig getroffene Entscheidungen müssen auf einer fundierten Grundlage beruhen."}`;
-        return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vor allem durch methodisches Arbeiten, präzise Dokumentation und eine konsequente Qualitätsorientierung. ${person} überzeugt durch fachliche Tiefe und nachvollziehbare Ergebnisse. ${hochRef}${data.sec.key === "int" ? "Damit dies gelingt, erfordert die Stelle zugleich kommunikatives Geschick. Fachlich fundierte Ergebnisse müssen verständlich aufbereitet und im Team verankert werden." : "Damit dies gelingt, erfordert die Stelle zugleich Handlungsbereitschaft und Umsetzungsstärke. Wer ausschließlich analysiert, ohne Entscheidungen herbeizuführen, hemmt den Fortschritt."}`;
-      })();
+      const A4_W = 595.28;
+      const A4_H = 841.89;
+      const pxWidth = 794;
+      const pxPageH = Math.floor((A4_H / A4_W) * pxWidth);
 
-      const strukturText = (() => {
-        if (data.profileType === "balanced_all") return "Diese Stelle erfordert keine eindeutige Spezialisierung. Sie verlangt eine Persönlichkeit, die situativ zwischen zügigem Handeln, persönlichem Kontakt und sorgfältigem Arbeiten wechseln kann. Das macht die Besetzung besonders anspruchsvoll – die Person muss vielseitig agieren, ohne dabei an Verlässlichkeit und Verbindlichkeit zu verlieren.";
-        if (data.profileType.startsWith("hybrid_")) {
-          const domB = data.dom.key === "imp" ? "entschlossenes Handeln und Umsetzungsstärke" : data.dom.key === "int" ? "ein sicheres Auftreten im persönlichen Kontakt und ein gutes Gespür für andere" : "Gründlichkeit, Sorgfalt und eine konsequente Einhaltung von Standards";
-          const secB = data.sec.key === "imp" ? "entschlossenes Handeln und Umsetzungsstärke" : data.sec.key === "int" ? "ein sicheres Auftreten im persönlichen Kontakt und ein gutes Gespür für andere" : "Gründlichkeit, Sorgfalt und eine konsequente Einhaltung von Standards";
-          return `Diese Stelle verlangt gleichzeitig ${domB} und ${secB}. Beide Anforderungsbereiche sind nahezu gleichwertig ausgeprägt. Die Person muss in beiden Dimensionen ein hohes Wirkungsniveau mitbringen.`;
+      const cloneTop = clone.getBoundingClientRect().top;
+      const allBlocks = clone.querySelectorAll<HTMLElement>("[data-pdf-block]");
+      const breakPoints: number[] = [0];
+      allBlocks.forEach(b => {
+        const r = b.getBoundingClientRect();
+        const top = r.top - cloneTop;
+        const bottom = r.bottom - cloneTop;
+        if (top > 0) breakPoints.push(top);
+        if (bottom > 0) breakPoints.push(bottom);
+      });
+      breakPoints.sort((a, b) => a - b);
+
+      const contentH = clone.scrollHeight;
+      const scale = contentH > 8000 ? 1.5 : 2;
+
+      const canvas = await html2canvas(clone, {
+        scale,
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: "#FFFFFF",
+        width: pxWidth,
+        windowWidth: pxWidth,
+      });
+
+      document.body.removeChild(clone);
+      clone = null;
+      if (pdfBtn) { pdfBtn.style.display = ""; pdfBtn = null; }
+
+      const totalH = canvas.height / scale;
+      const doc = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
+
+      const pageCuts: number[] = [0];
+      let cursor = 0;
+      while (cursor < totalH) {
+        const ideal = cursor + pxPageH;
+        if (ideal >= totalH) {
+          pageCuts.push(totalH);
+          break;
         }
-        const domB = data.dom.key === "imp" ? "entschlossenes Handeln und klare Prioritätensetzung" : data.dom.key === "int" ? "persönlichen Kontakt und die Fähigkeit, Vertrauen und Nähe herzustellen" : "Gründlichkeit, Verlässlichkeit und ein konsequent sorgfältiges Vorgehen";
-        return `Das Profil dieser Stelle wird maßgeblich geprägt durch ${domB}. Dies bildet die zentrale Anforderung an die Person. ${data.sec.key === "ana" ? "Ergänzend dazu braucht es eine ordentliche und gewissenhafte Arbeitsweise, damit Abläufe stabil bleiben und Ergebnisse den geforderten Qualitätsstandards entsprechen." : data.sec.key === "int" ? "Ergänzend dazu braucht es die Fähigkeit, sich im Team abzustimmen, verständlich zu kommunizieren und ein konstruktives Miteinander zu fördern." : "Ergänzend dazu braucht es Umsetzungsstärke und Eigeninitiative, damit Aufgaben nicht nur geplant, sondern auch zuverlässig erledigt werden."}`;
-      })();
+        let bestCut = ideal;
+        for (let i = breakPoints.length - 1; i >= 0; i--) {
+          if (breakPoints[i] <= ideal && breakPoints[i] > cursor + pxPageH * 0.3) {
+            bestCut = breakPoints[i];
+            break;
+          }
+        }
+        pageCuts.push(bestCut);
+        cursor = bestCut;
+      }
 
-      const arbeitslogik = (() => {
-        const fk = data.isLeadership;
-        const pt = data.profileType;
-        if (pt === "balanced_all") return `Die Wirksamkeit dieser Stelle entsteht nicht über eine einzelne Stärke, sondern über die Fähigkeit, situativ den richtigen Schwerpunkt zu setzen. ${fk ? "Als Führungskraft muss sie je nach Anforderung zwischen zügiger Entscheidung, persönlicher Abstimmung und gründlicher Analyse wechseln können." : "Die Person muss je nach Situation zwischen zügigem Handeln, persönlichem Austausch und gründlicher Analyse wechseln können."} Das erfordert ein hohes Maß an Selbstreflexion und Anpassungsfähigkeit.`;
-        if (pt === "hybrid_imp_ana") return `Die Wirksamkeit dieser Stelle entsteht durch die Verbindung von Tempo und Gründlichkeit. ${fk ? "Als Führungskraft treibt sie Ergebnisse voran und sichert gleichzeitig Qualität und Nachvollziehbarkeit." : "Aufgaben werden zügig angegangen und gleichzeitig sorgfältig geprüft."} Dabei darf die zwischenmenschliche Ebene nicht vernachlässigt werden – Ergebnisse müssen im Team verankert und verständlich kommuniziert werden.`;
-        if (pt === "hybrid_imp_int") return `Die Wirksamkeit dieser Stelle entsteht durch die Verbindung von Handlungsorientierung und Beziehungsfähigkeit. ${fk ? "Als Führungskraft treibt sie Ergebnisse voran und achtet gleichzeitig auf den Zusammenhalt und die Motivation im Team." : "Aufgaben werden zügig vorangetrieben und gleichzeitig wird auf die Wirkung auf andere geachtet."} Dabei darf die analytische Absicherung nicht zu kurz kommen – auch dynamische Entscheidungen brauchen eine fundierte Grundlage.`;
-        if (pt === "hybrid_ana_int") return `Die Wirksamkeit dieser Stelle entsteht durch die Verbindung von analytischer Tiefe und kommunikativer Kompetenz. ${fk ? "Als Führungskraft setzt sie auf fundierte Entscheidungen und verankert diese gleichzeitig über persönliche Kommunikation im Team." : "Sachverhalte werden gründlich geprüft und gleichzeitig verständlich und überzeugend kommuniziert."} Dabei muss die Umsetzungsstärke gewährleistet bleiben – Erkenntnis und Abstimmung allein erzeugen noch keine Wirkung.`;
-        if (data.dom.key === "int") return `Die Wirksamkeit dieser Stelle entsteht vor allem im direkten persönlichen Austausch – ${fk ? "mit dem Team, relevanten Stakeholdern und Entscheidungsträgern" : "mit Kolleginnen und Kollegen, Kundinnen und Kunden oder weiteren Gesprächspartnern"}. Entscheidungen werden häufig situativ und dialogorientiert getroffen. ${data.sec.key === "ana" ? "Zugleich verlangt die Stelle die Fähigkeit, Abläufe strukturiert zu organisieren, Prioritäten klar zu setzen und Verbindlichkeit in der Umsetzung sicherzustellen." : "Zugleich verlangt die Stelle die Fähigkeit, zügig zu handeln und Ergebnisse konsequent zu liefern – auch dann, wenn nicht alle Beteiligten einverstanden sind."}`;
-        if (data.dom.key === "imp") return `Die Wirksamkeit dieser Stelle entsteht vor allem durch entschlossenes Handeln und klare Priorisierung. ${fk ? "Als Führungskraft gibt sie das Tempo vor und treibt Ergebnisse aktiv und verbindlich voran." : "Aufgaben und Themen werden eigenständig vorangetrieben, ohne auf detaillierte Anweisungen zu warten."} ${data.sec.key === "int" ? "Dabei darf der Blick für das Team und die zwischenmenschliche Ebene nicht verloren gehen. Nachhaltige Ergebnisse entstehen nur, wenn auch die Beziehungsebene gepflegt wird." : "Dabei erfordert die Stelle zugleich analytische Sorgfalt, damit Qualität, Nachhaltigkeit und fundierte Entscheidungsgrundlagen gewährleistet bleiben."}`;
-        return `Die Wirksamkeit dieser Stelle entsteht durch systematische Analyse, klar definierte Prozesse und fundierte Entscheidungsgrundlagen. ${fk ? "Als Führungskraft setzt sie auf nachvollziehbare Qualitätsstandards und eine transparente, methodische Steuerung." : "Fachliche Tiefe und eine sorgfältige Arbeitsweise schaffen Vertrauen, Verlässlichkeit und Orientierung."} ${data.sec.key === "int" ? "Zugleich verlangt die Stelle, Erkenntnisse verständlich zu kommunizieren, im Team zu verankern und eine konstruktive Zusammenarbeit aktiv zu fördern." : "Zugleich müssen Analyseergebnisse in konkretes Handeln überführt werden. Fundierte Erkenntnis allein erzeugt noch keine Wirkung."}`;
-      })();
+      for (let p = 0; p < pageCuts.length - 1; p++) {
+        if (p > 0) doc.addPage();
+        const yStart = pageCuts[p];
+        const sliceH = pageCuts[p + 1] - yStart;
 
-      const fazitLocal = buildFazit(data);
+        const pageCanvas = document.createElement("canvas");
+        pageCanvas.width = pxWidth * scale;
+        pageCanvas.height = sliceH * scale;
+        const ctx = pageCanvas.getContext("2d")!;
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+        ctx.drawImage(
+          canvas,
+          0, yStart * scale,
+          pxWidth * scale, sliceH * scale,
+          0, 0,
+          pxWidth * scale, sliceH * scale
+        );
+
+        const imgData = pageCanvas.toDataURL("image/jpeg", 0.92);
+        const imgW = A4_W;
+        const imgH = (sliceH / pxWidth) * A4_W;
+        doc.addImage(imgData, "JPEG", 0, 0, imgW, imgH);
+      }
+
       const safeName = (data.beruf || "Bericht").replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_");
-
-      await buildRollenprofilPdf({
-        beruf: data.beruf,
-        bereich: data.bereich,
-        isLeadership: data.isLeadership,
-        fuehrungstyp: data.fuehrungstyp,
-        aufgabencharakter: data.aufgabencharakter,
-        profileType: data.profileType,
-        gesamt: data.gesamt,
-        dom: data.dom,
-        sec: data.sec,
-        wk: data.wk,
-        einleitung: `Dieser Bericht zeigt, welche Persönlichkeitsstruktur für die Stelle ${data.beruf} besonders passend und wirksam ist. Neben den fachlichen Anforderungen beeinflusst vor allem die Art, wie eine Person Situationen einschätzt, Entscheidungen trifft und unter Druck handelt, die Wirksamkeit in dieser Position.\n\nDie folgenden Abschnitte verdeutlichen, welche Persönlichkeitsanforderungen die Stelle mit sich bringt, wie sich diese im Arbeitsalltag zeigen und welche Spannungsfelder daraus entstehen können.`,
-        topTaetigkeiten: topT,
-        rollenBeschreibungIntro: introText,
-        rollenBeschreibungErgaenzung: ergaenzung,
-        strukturprofilText: strukturText,
-        komponentenBedeutung: buildKomponentenBedeutung(data),
-        profilherkunft: buildProfilherkunft(data),
-        profilkonflikt: buildProfilkonflikt(data),
-        arbeitslogikText: arbeitslogik,
-        rahmenText: buildRahmenText(data),
-        erfolgsfokusLabels: erfolgsfokusLabelsLocal,
-        erfolgsfokusText: buildErfolgsfokusText(data, erfolgsfokusLabelsLocal),
-        alltagsverhalten: alltagText,
-        stressControlled: stress.controlled,
-        stressUncontrolled: stress.uncontrolled,
-        teamwirkung: buildTeamwirkung(data),
-        spannungsfelder: buildSpannungsfelder(data).fields,
-        spannungsfazit: buildSpannungsfelder(data).fazit,
-        fehlbesetzung: buildFehlbesetzung(data),
-        kandidatenText: kandidatenText || "",
-        fazitTitel: fazitLocal.titel,
-        fazitAbsaetze: fazitLocal.absaetze,
-      }, `Stellenprofil_${safeName}.pdf`);
+      doc.save(`Stellenprofil_${safeName}.pdf`);
     } catch (e) {
       console.error("PDF error:", e);
       alert("PDF-Export fehlgeschlagen. Bitte versuchen Sie es erneut.");
     } finally {
+      if (clone && clone.parentNode) clone.parentNode.removeChild(clone);
+      if (pdfBtn) pdfBtn.style.display = "";
       setPdfLoading(false);
     }
   };
@@ -1335,7 +1334,7 @@ export default function Rollenprofil() {
           <div style={{ padding: "40px 44px 48px" }}>
 
           {/* ── EINLEITUNG ── */}
-          <div style={{ marginBottom: 32 }} data-testid="bericht-section-intro">
+          <div style={{ marginBottom: 32 }} data-testid="bericht-section-intro" data-pdf-block>
             <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 16px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-einleitung">
               Dieser Bericht zeigt, welche Persönlichkeitsstruktur für die Stelle {data.beruf} besonders passend und wirksam ist. Neben den fachlichen Anforderungen beeinflusst vor allem die Art, wie eine Person Situationen einschätzt, Entscheidungen trifft und unter Druck handelt, die Wirksamkeit in dieser Position.<br /><br />Die folgenden Abschnitte verdeutlichen, welche Persönlichkeitsanforderungen die Stelle mit sich bringt, wie sich diese im Arbeitsalltag zeigen und welche Spannungsfelder daraus entstehen können.
             </p>
@@ -1347,13 +1346,13 @@ export default function Rollenprofil() {
           </div>
 
           {/* ── SEITE 1: ROLLEN-DNA ── */}
-          <div data-section="struktur" style={{ marginBottom: 40 }} data-testid="bericht-section-gesamtprofil">
+          <div data-section="struktur" style={{ marginBottom: 40 }} data-testid="bericht-section-gesamtprofil" data-pdf-block>
             <SectionHead num={1} title="Stellenprofil · Entscheidungsgrundlage" color={SECTION_COLORS.rollenDna} />
 
             <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>Welche Persönlichkeit braucht diese Stelle?</p>
 
             {/* 1. Kurzbeschreibung */}
-            <div style={{ marginTop: 24, marginBottom: 28 }}>
+            <div style={{ marginTop: 24, marginBottom: 28 }} data-pdf-block>
               <SubHead num={1} title="Kurzbeschreibung der Stelle" color={SECTION_COLORS.rollenDna} />
 
               {topTaetigkeiten.length > 0 && (
@@ -1378,7 +1377,7 @@ export default function Rollenprofil() {
             </div>
 
             {/* 2. Strukturprofil */}
-            <div style={{ marginBottom: 28 }}>
+            <div style={{ marginBottom: 28 }} data-pdf-block>
               <SubHead num={2} title="Strukturprofil der Stelle" color={SECTION_COLORS.rollenDna} />
 
               <div style={{ marginBottom: 16 }}>
@@ -1434,7 +1433,7 @@ export default function Rollenprofil() {
             </div>
 
             {/* 3. Arbeitslogik */}
-            <div style={{ marginBottom: 28 }}>
+            <div style={{ marginBottom: 28 }} data-pdf-block>
               <SubHead num={3} title="Arbeitslogik der Stelle" color={SECTION_COLORS.rollenDna} />
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {arbeitslogikText}
@@ -1443,7 +1442,7 @@ export default function Rollenprofil() {
 
             {/* 4. Rahmenbedingungen */}
             {rahmenText && (
-              <div style={{ marginBottom: 28 }} data-testid="bericht-section-rahmen">
+              <div style={{ marginBottom: 28 }} data-testid="bericht-section-rahmen" data-pdf-block>
                 <SubHead num={4} title="Rahmenbedingungen" color={SECTION_COLORS.rollenDna} />
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-rahmenbedingungen">
                   {rahmenText}
@@ -1453,7 +1452,7 @@ export default function Rollenprofil() {
 
             {/* 5. Erfolgsfokus */}
             {erfolgsfokusText && (
-              <div style={{ marginBottom: 0 }} data-testid="bericht-section-kompetenz">
+              <div style={{ marginBottom: 0 }} data-testid="bericht-section-kompetenz" data-pdf-block>
                 <SubHead num={rahmenText ? 5 : 4} title="Erfolgsfokus" color={SECTION_COLORS.rollenDna} />
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-erfolgsfokus">
                   {erfolgsfokusText}
@@ -1463,14 +1462,14 @@ export default function Rollenprofil() {
           </div>
 
           {/* ── SEITE 2: VERHALTEN ── */}
-          <div data-section="position" style={{ marginBottom: 40 }} data-testid="bericht-section-struktur">
+          <div data-section="position" style={{ marginBottom: 40 }} data-testid="bericht-section-struktur" data-pdf-block>
             <SectionHead num={2} title="Verhalten · Alltag und Stress" color={SECTION_COLORS.verhalten} />
 
             <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Verhalten im Alltag und unter Druck</p>
             <p style={{ fontSize: 14, color: "#6E6E73", margin: "0 0 20px", lineHeight: 1.6 }}>Die folgende Darstellung zeigt, wie sich die Stellenanforderung im regulären Arbeitsalltag, unter Druck und bei starkem Stress typischerweise ausdrückt.</p>
 
             {/* Verhalten im Alltag */}
-            <div style={{ marginBottom: 20, borderLeft: "4px solid #34C759", borderRadius: 8, background: "rgba(52,199,89,0.04)", padding: "16px 20px" }}>
+            <div style={{ marginBottom: 20, borderLeft: "4px solid #34C759", borderRadius: 8, background: "rgba(52,199,89,0.04)", padding: "16px 20px" }} data-pdf-block>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                 <Sun size={18} color="#34C759" strokeWidth={2.2} />
                 <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Verhalten im Alltag</p>
@@ -1481,7 +1480,7 @@ export default function Rollenprofil() {
             </div>
 
             {/* Verhalten unter Druck */}
-            <div style={{ marginBottom: 20, borderLeft: "4px solid #FF9500", borderRadius: 8, background: "rgba(255,149,0,0.04)", padding: "16px 20px" }}>
+            <div style={{ marginBottom: 20, borderLeft: "4px solid #FF9500", borderRadius: 8, background: "rgba(255,149,0,0.04)", padding: "16px 20px" }} data-pdf-block>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                 <Gauge size={18} color="#FF9500" strokeWidth={2.2} />
                 <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Verhalten unter Druck</p>
@@ -1492,7 +1491,7 @@ export default function Rollenprofil() {
             </div>
 
             {/* Verhalten bei starkem Stress */}
-            <div style={{ marginBottom: 0, borderLeft: "4px solid #FF3B30", borderRadius: 8, background: "rgba(255,59,48,0.04)", padding: "16px 20px" }}>
+            <div style={{ marginBottom: 0, borderLeft: "4px solid #FF3B30", borderRadius: 8, background: "rgba(255,59,48,0.04)", padding: "16px 20px" }} data-pdf-block>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                 <Flame size={18} color="#FF3B30" strokeWidth={2.2} />
                 <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Verhalten bei starkem Stress</p>
@@ -1504,14 +1503,14 @@ export default function Rollenprofil() {
           </div>
 
           {/* ── SEITE 3: TEAMWIRKUNG & RISIKEN ── */}
-          <div data-section="anforderung" data-testid="bericht-section-risiko">
+          <div data-section="anforderung" data-testid="bericht-section-risiko" data-pdf-block>
             <SectionHead num={3} title="Teamwirkung & Fehlbesetzungsrisiken" color={SECTION_COLORS.teamwirkung} />
 
             <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Wirkung, Spannungsfelder und Risiken</p>
             <p style={{ fontSize: 14, color: "#6E6E73", margin: "0 0 20px", lineHeight: 1.6 }}>{data.isLeadership ? "Dieser Abschnitt beschreibt, welche Wirkung von der Stelle im Team ausgeht, welche typischen Spannungsfelder sich ergeben und welche Risiken bei einer Fehlbesetzung entstehen können." : "Dieser Abschnitt beschreibt, welche Wirkung die Stelle im Arbeitsumfeld entfaltet, welche typischen Spannungsfelder sich ergeben und welche Risiken bei einer Fehlbesetzung entstehen können."}</p>
 
             {/* Führungswirkung / Teamwirkung */}
-            <div style={{ marginBottom: 28 }}>
+            <div style={{ marginBottom: 28 }} data-pdf-block>
               <SubHead num={1} title={data.isLeadership ? "Führungswirkung der Stelle" : "Teamwirkung der Stelle"} color={SECTION_COLORS.teamwirkung} />
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {teamwirkung}
@@ -1519,7 +1518,7 @@ export default function Rollenprofil() {
             </div>
 
             {/* Spannungsfelder */}
-            <div style={{ marginBottom: 28 }}>
+            <div style={{ marginBottom: 28 }} data-pdf-block>
               <SubHead num={2} title="Spannungsfelder der Stelle" color={SECTION_COLORS.teamwirkung} />
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, margin: "0 0 12px" }}>
                 Typische Spannungen dieser Stelle sind:
@@ -1538,7 +1537,7 @@ export default function Rollenprofil() {
             </div>
 
             {/* Fehlbesetzungsrisiken */}
-            <div style={{ marginBottom: 28 }}>
+            <div style={{ marginBottom: 28 }} data-pdf-block>
               <SubHead num={3} title="Fehlbesetzungsrisiken" color={SECTION_COLORS.teamwirkung} />
               {fehlbesetzung.map((risk, i) => (
                 <div key={i} style={{ marginBottom: 16 }}>
@@ -1557,7 +1556,7 @@ export default function Rollenprofil() {
 
             {/* Typischer Kandidat (AI-generiert) */}
             {(kandidatenText || kandidatenLoading || kandidatenError) && (
-              <div style={{ marginBottom: 28 }} data-testid="section-kandidatenprofil">
+              <div style={{ marginBottom: 28 }} data-testid="section-kandidatenprofil" data-pdf-block>
                 <SubHead num={4} title="Typische Person für diese Stelle" color={SECTION_COLORS.teamwirkung} />
                 {kandidatenLoading ? (
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -1585,7 +1584,7 @@ export default function Rollenprofil() {
           </div>
 
           {/* ── SEITE 4: ENTSCHEIDUNGSFAZIT ── */}
-          <div data-section="fazit" style={{ marginBottom: 40 }} data-testid="bericht-section-fazit">
+          <div data-section="fazit" style={{ marginBottom: 40 }} data-testid="bericht-section-fazit" data-pdf-block>
             <SectionHead num={4} title="Entscheidungsfazit" color={SECTION_COLORS.fazit} />
 
             <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 14px" }}>{fazit.titel}</p>

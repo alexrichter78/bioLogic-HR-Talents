@@ -98,6 +98,12 @@ Preferred communication style: Simple, everyday language.
 -   **react-resizable-panels**: Resizable panel layouts.
 -   **input-otp**: OTP input component.
 -   **connect-pg-simple**: Session storage.
+-   **html2canvas**: HTML-to-canvas rendering for PDF export.
+-   **jsPDF**: PDF document generation (used with html2canvas for pixel-perfect HTML-to-PDF export).
+
+### PDF Export Architecture
+-   **Stellenprofil PDF (rollenprofil.tsx)**: Uses HTML-to-PDF approach via `html2canvas` + `jsPDF`. The report DOM is cloned offscreen at fixed 794px width, rendered to a single canvas at 2x scale (1.5x for reports >8000px), then sliced into A4 pages using intelligent block-boundary detection. Content blocks marked with `data-pdf-block` attributes define valid page-break points — the algorithm finds the best break point within the bottom 70% of each page to avoid cutting mid-block. Each page slice is exported as JPEG and assembled into the final PDF.
+-   **Other PDF exports** (Passungsbericht, TeamCheck) still use manual jsPDF line-by-line builders (`pdf-direct-builder.ts`, `teamcheck-pdf-builder.ts`).
 
 ### AI Services
 -   **OpenAI**: For AI-generated reports and the KI-Coach.
