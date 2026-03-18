@@ -254,8 +254,8 @@ function buildStressTexts(bg: BG, isLeadership: boolean, fuehrungstyp: string) {
   } else if (top.key === "imp") {
     if (midSecClose) {
       uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen verliert ${fkLower} eher ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt tendenziell ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch vermehrt länger dauern oder mehrfach angepasst werden.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen verliert die Person eher ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt tendenziell ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch vermehrt länger dauern oder mehrfach angepasst werden, weil zwei unterschiedliche Denkweisen gleichzeitig Einfluss nehmen.";
+        ? `In nicht mehr kontrollierbaren Situationen verliert ${fkLower} eher ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt tendenziell ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch deutlich länger dauern oder mehrfach angepasst werden.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen verliert die Person eher ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt tendenziell ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch deutlich länger dauern oder mehrfach angepasst werden, weil zwei unterschiedliche Denkweisen gleichzeitig Einfluss nehmen.";
     } else if (mid.key === "ana") {
       uncontrolled = isLeadership
         ? `In nicht mehr kontrollierbaren Situationen verliert ${fkLower} eher einen Teil ihrer schnellen Entscheidungsstärke. Sie beginnt tendenziell stärker zu hinterfragen und sucht vermehrt nach zusätzlichen Informationen. Entscheidungen werden zunächst schnell angestoßen, anschließend jedoch wieder überprüft oder angepasst.${fSuffix}`
@@ -272,8 +272,8 @@ function buildStressTexts(bg: BG, isLeadership: boolean, fuehrungstyp: string) {
         : "In nicht mehr kontrollierbaren Situationen verliert die Person eher ihre klare Struktur. Sie neigt tendenziell dazu, zwischen dem Wunsch, schnell zu handeln, und dem Bedürfnis, Beziehungen zu stabilisieren, zu schwanken. Dadurch kann es passieren, dass Entscheidungen vermehrt überdacht oder angepasst werden.";
     } else if (mid.key === "imp") {
       uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen neigt ${fkLower} eher dazu, Entscheidungen schneller treffen zu wollen. Sie verlässt dann tendenziell ihre sonst gründliche Vorgehensweise. Entscheidungen werden vermehrt schneller getroffen, ohne alle Details vollständig zu prüfen.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen neigt die Person eher dazu, Entscheidungen schneller treffen zu wollen. Sie verlässt dann tendenziell ihre sonst gründliche Vorgehensweise. Entscheidungen werden vermehrt schneller getroffen, ohne alle Details vollständig zu prüfen.";
+        ? `In nicht mehr kontrollierbaren Situationen neigt ${fkLower} eher dazu, Entscheidungen schneller treffen zu wollen. Sie verlässt dann tendenziell ihre sonst gründliche Vorgehensweise. Entscheidungen werden dann schneller getroffen, ohne alle Details vollständig zu prüfen.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen neigt die Person eher dazu, Entscheidungen schneller treffen zu wollen. Sie verlässt dann tendenziell ihre sonst gründliche Vorgehensweise. Entscheidungen werden dann schneller getroffen, ohne alle Details vollständig zu prüfen.";
     } else {
       uncontrolled = isLeadership
         ? `In nicht mehr kontrollierbaren Situationen versucht ${fkLower} eher, neben Fakten auch die Wirkung auf das Team zu berücksichtigen. Entscheidungen können dadurch tendenziell länger dauern, weil sowohl sachliche Aspekte als auch zwischenmenschliche Auswirkungen bedacht werden.${fSuffix}`
