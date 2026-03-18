@@ -630,9 +630,13 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
   const areas: ImpactArea[] = [
     buildDecisionImpact(rk, ck, gapI, gapA, gapN, cand, roleIsBalFull, ct),
     buildWorkStructureImpact(rk, ck, rt, ct, gapA, cand),
-    buildLeadershipImpact(rk, ck, gapI, gapN, gapA, cand, fuehrungsArt, roleIsBalFull, ct),
-    buildCultureImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct),
   ];
+
+  if (fuehrungsArt !== "keine") {
+    areas.push(buildLeadershipImpact(rk, ck, gapI, gapN, gapA, cand, fuehrungsArt, roleIsBalFull, ct));
+  }
+
+  areas.push(buildCultureImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct));
 
   return areas;
 }
@@ -787,7 +791,7 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
       candidatePattern = `${s} führt primär über ${ckStyle}. Die Stelle verlangt jedoch ein breites Führungsrepertoire.`;
       risk = `Die einseitige Führungswirkung deckt nur einen Teil der Stellenanforderung ab.${weakStr} Ohne bewusste Steuerung entstehen blinde Flecken in der Führung.`;
     }
-    return { id: "leadership", label: "Führungsaufwand", severity: sev, roleNeed, candidatePattern, risk };
+    return { id: "leadership", label: "Führungswirkung", severity: sev, roleNeed, candidatePattern, risk };
   }
 
   const sev = severity(rk !== ck ? maxGap * 0.7 : maxGap * 0.4);
@@ -850,7 +854,7 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
       : "Führungsstil passt zur Stellenanforderung. Die Art, wie Orientierung gegeben wird, stimmt mit den Erwartungen des Teams überein.";
   }
 
-  return { id: "leadership", label: "Führungsaufwand", severity: sev, roleNeed, candidatePattern, risk };
+  return { id: "leadership", label: "Führungswirkung", severity: sev, roleNeed, candidatePattern, risk };
 }
 
 function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, roleIsBalFull = false, ct?: Triad): ImpactArea {
