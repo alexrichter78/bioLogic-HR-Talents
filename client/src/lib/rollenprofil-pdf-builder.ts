@@ -60,6 +60,7 @@ export interface RollenprofilPdfData {
   stressUncontrolled: string;
   teamwirkung: string;
   spannungsfelder: string[];
+  spannungsfazit: string;
   fehlbesetzung: { label: string; bullets: string[] }[];
   kandidatenText: string;
   fazitTitel: string;
@@ -526,12 +527,7 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
     });
   });
   y += 2;
-  const balanceText = data.dom.key === "imp"
-    ? "Die Rolle verlangt, diese Gegensätze situativ auszubalancieren, ohne dabei das Tempo und die Umsetzungsstärke zu verlieren."
-    : data.dom.key === "int"
-    ? "Die Rolle verlangt, diese Gegensätze situativ auszubalancieren, ohne dabei den persönlichen Kontakt und das Vertrauen zu verlieren."
-    : "Die Rolle verlangt, diese Gegensätze situativ auszubalancieren, ohne dabei die fachliche Qualität und Prozesssicherheit zu gefährden.";
-  printText(balanceText, ML, CW, 8.5, C.dark, 4.3);
+  printText(data.spannungsfazit, ML, CW, 8.5, C.dark, 4.3);
   y += 4;
 
   doc.setFontSize(9);

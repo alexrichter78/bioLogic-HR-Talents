@@ -350,35 +350,99 @@ function buildTeamwirkung(data: ReportData) {
   return `Die Stelle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung vor allem über fachliche Tiefe und verlässliche Arbeitsergebnisse. ${sec.key === "int" ? "Dabei pflegt die Person auch den Austausch im Team und kommuniziert Ergebnisse verständlich." : "Dabei bringt die Person auch Umsetzungsstärke und Eigeninitiative ein, damit Analysen in konkretes Handeln überführt werden."} Kolleginnen und Kollegen orientieren sich an dieser Arbeitsweise, besonders bei fachlichen Fragen und Prozessthemen.`;
 }
 
-function buildSpannungsfelder(data: ReportData): string[] {
+function buildSpannungsfelder(data: ReportData): { fields: string[]; fazit: string } {
   const { dom, sec, wk, isLeadership, profileType } = data;
   const fields: string[] = [];
+  let fazit = "";
 
-  if (dom.key === "imp") {
+  if (profileType === "balanced_all") {
+    fields.push("Vielseitigkeit vs. klare Positionierung und Verlässlichkeit");
+    fields.push("Situatives Reagieren vs. konsistente Linie und Berechenbarkeit");
+    if (isLeadership) {
+      fields.push("Flexibilität in der Führung vs. eindeutige Richtungsvorgabe");
+      fields.push("Breite Anschlussfähigkeit vs. erkennbares Führungsprofil");
+    } else {
+      fields.push("Anpassungsfähigkeit vs. klare Arbeitsweise und Wiedererkennbarkeit");
+      fields.push("Offenheit für unterschiedliche Aufgaben vs. fachliche Tiefe");
+    }
+    fazit = "Die Stelle verlangt, situativ den richtigen Schwerpunkt zu setzen, ohne dabei an Verlässlichkeit und Orientierung zu verlieren.";
+  } else if (profileType === "hybrid_imp_ana") {
+    fields.push("Tempo und Entscheidungsstärke vs. Gründlichkeit und Absicherung");
+    fields.push("Schnelles Handeln vs. sorgfältige Analyse und Prüfung");
+    if (isLeadership) {
+      fields.push("Ergebnisorientierte Führung vs. methodische Steuerung");
+      fields.push("Direkte Entscheidung vs. fundierte Vorbereitung");
+    } else {
+      fields.push("Pragmatische Umsetzung vs. detaillierte Qualitätskontrolle");
+      fields.push("Eigeninitiative vs. prozesstreue Arbeitsweise");
+    }
+    fields.push("Zwei gleichstarke Anforderungen stehen im Wettbewerb um Aufmerksamkeit");
+    fazit = "Die Stelle verlangt, Tempo und Gründlichkeit gleichzeitig aufrechtzuerhalten, ohne dabei die zwischenmenschliche Ebene zu vernachlässigen.";
+  } else if (profileType === "hybrid_imp_int") {
+    fields.push("Durchsetzungskraft vs. Einfühlungsvermögen und Rücksichtnahme");
+    fields.push("Schnelle Entscheidungen vs. Einbindung und Konsens");
+    if (isLeadership) {
+      fields.push("Ergebnisorientierte Führung vs. beziehungsorientierte Teamsteuerung");
+      fields.push("Klare Vorgaben vs. partizipative Entscheidungsfindung");
+    } else {
+      fields.push("Eigenständiges Vorantreiben vs. Abstimmung und Teamorientierung");
+      fields.push("Direkte Kommunikation vs. Rücksicht auf Befindlichkeiten");
+    }
+    fields.push("Zwei gleichstarke Anforderungen stehen im Wettbewerb um Aufmerksamkeit");
+    fazit = "Die Stelle verlangt, Handlungsstärke und Beziehungsfähigkeit zu verbinden, ohne dabei die analytische Absicherung aus dem Blick zu verlieren.";
+  } else if (profileType === "hybrid_ana_int") {
+    fields.push("Sachliche Tiefe vs. kommunikative Vermittlung");
+    fields.push("Gründliche Analyse vs. zeitnahe Entscheidung und Umsetzung");
+    if (isLeadership) {
+      fields.push("Fachliche Steuerung vs. persönliche Führung und Motivation");
+      fields.push("Qualitätsanspruch vs. Teamdynamik und Akzeptanz");
+    } else {
+      fields.push("Detaillierte Prüfung vs. verständliche Kommunikation der Ergebnisse");
+      fields.push("Prozesstreue vs. flexible Reaktion auf Teambedürfnisse");
+    }
+    fields.push("Zwei gleichstarke Anforderungen stehen im Wettbewerb um Aufmerksamkeit");
+    fazit = "Die Stelle verlangt, fachliche Tiefe und kommunikative Kompetenz zu verbinden, ohne dabei die Umsetzungsgeschwindigkeit zu gefährden.";
+  } else if (dom.key === "imp") {
     fields.push("Tempo und Ergebnisorientierung vs. Sorgfalt und Absicherung");
     if (isLeadership) fields.push("Durchsetzungskraft vs. Mitarbeiterbindung und Teamakzeptanz");
     else fields.push("Eigeninitiative und schnelles Handeln vs. Abstimmung im Team");
+    if (sec.key === "int") {
+      fields.push("Direktes Handeln vs. Rücksicht auf Beziehungen und Stimmungen");
+    } else {
+      fields.push("Pragmatische Entscheidungen vs. analytische Vollständigkeit");
+    }
+    if (wk.key === "ana") fields.push("Handlungstempo vs. Reflexion und Gründlichkeit");
+    else fields.push("Sachliche Korrektheit vs. Beziehungspflege");
+    fazit = "Die Stelle verlangt, diese Gegensätze situativ auszubalancieren, ohne dabei das Tempo und die Umsetzungsstärke zu verlieren.";
   } else if (dom.key === "int") {
     fields.push("Persönliche Beziehungspflege vs. wirtschaftliche Kalkulation");
     fields.push("Individuelle Beratung und Empathie vs. Zeitdruck und Effizienz");
     if (isLeadership) fields.push("Konsensorientierung vs. klare Entscheidungen unter Zeitdruck");
     else fields.push("Teamorientierung vs. eigenverantwortliches Handeln");
+    if (sec.key === "ana") {
+      fields.push("Beziehungsorientierung vs. strukturelle Anforderungen und Standards");
+    } else {
+      fields.push("Harmoniestreben vs. Notwendigkeit schneller Entscheidungen");
+    }
+    if (wk.key === "imp") fields.push("Reflexion und Gründlichkeit vs. Handlungsdruck");
+    else fields.push("Gespür und Erfahrung vs. Strukturbedarf");
+    fazit = "Die Stelle verlangt, diese Gegensätze situativ auszubalancieren, ohne dabei den persönlichen Kontakt und das Vertrauen zu verlieren.";
   } else {
     fields.push("Gründlichkeit und Qualitätsanspruch vs. Pragmatismus und Geschwindigkeit");
     fields.push("Kontrolle und Standards vs. Flexibilität und Anpassung");
     if (isLeadership) fields.push("Detailsteuerung vs. strategischer Überblick und Delegation");
     else fields.push("Systematische Arbeitsweise vs. kreative Lösungsansätze");
+    if (sec.key === "int") {
+      fields.push("Sachliche Exaktheit vs. zwischenmenschliche Wirkung und Kommunikation");
+    } else {
+      fields.push("Gründliche Vorbereitung vs. Entscheidungstempo und Umsetzungsdruck");
+    }
+    if (wk.key === "imp") fields.push("Reflexion und Gründlichkeit vs. Handlungsdruck");
+    else fields.push("Sachliche Korrektheit vs. Beziehungspflege");
+    fazit = "Die Stelle verlangt, diese Gegensätze situativ auszubalancieren, ohne dabei die fachliche Qualität und Prozesssicherheit zu gefährden.";
   }
 
-  if (profileType.startsWith("hybrid_")) {
-    fields.push("Zwei gleichstarke Anforderungen stehen im Wettbewerb um Aufmerksamkeit");
-  }
-
-  if (wk.key === "imp") fields.push("Reflexion und Gründlichkeit vs. Handlungsdruck");
-  else if (wk.key === "int") fields.push("Sachliche Korrektheit vs. Beziehungspflege");
-  else fields.push("Gespür und Erfahrung vs. Strukturbedarf");
-
-  return fields;
+  return { fields, fazit };
 }
 
 function isNeutralProfile(bg: BG): boolean {
@@ -998,7 +1062,8 @@ export default function Rollenprofil() {
         stressControlled: stress.controlled,
         stressUncontrolled: stress.uncontrolled,
         teamwirkung: buildTeamwirkung(data),
-        spannungsfelder: buildSpannungsfelder(data),
+        spannungsfelder: buildSpannungsfelder(data).fields,
+        spannungsfazit: buildSpannungsfelder(data).fazit,
         fehlbesetzung: buildFehlbesetzung(data),
         kandidatenText: kandidatenText || "",
         fazitTitel: fazitLocal.titel,
@@ -1042,7 +1107,9 @@ export default function Rollenprofil() {
 
   const stress = buildStressTexts(data.gesamt, data.isLeadership, data.fuehrungstyp);
   const teamwirkung = buildTeamwirkung(data);
-  const spannungsfelder = buildSpannungsfelder(data);
+  const spannungsfelderResult = buildSpannungsfelder(data);
+  const spannungsfelder = spannungsfelderResult.fields;
+  const spannungsfazit = spannungsfelderResult.fazit;
   const fehlbesetzung = buildFehlbesetzung(data);
   const fazit = buildFazit(data);
 
@@ -1424,11 +1491,7 @@ export default function Rollenprofil() {
                 ))}
               </div>
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "12px 0 0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                {data.dom.key === "imp"
-                  ? "Die Stelle verlangt, diese Gegensätze situativ auszubalancieren, ohne dabei das Tempo und die Umsetzungsstärke zu verlieren."
-                  : data.dom.key === "int"
-                  ? "Die Stelle verlangt, diese Gegensätze situativ auszubalancieren, ohne dabei den persönlichen Kontakt und das Vertrauen zu verlieren."
-                  : "Die Stelle verlangt, diese Gegensätze situativ auszubalancieren, ohne dabei die fachliche Qualität und Prozesssicherheit zu gefährden."}
+                {spannungsfazit}
               </p>
             </div>
 
