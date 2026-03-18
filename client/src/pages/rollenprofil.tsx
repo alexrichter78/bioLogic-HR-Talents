@@ -557,71 +557,68 @@ function buildKomponentenBedeutung(data: ReportData): { key: string; label: stri
 }
 
 function buildFehlbesetzung(data: ReportData): { label: string; bullets: string[] }[] {
-  const { dom, sec, wk, isLeadership } = data;
+  const { dom, sec, wk, isLeadership, profileType } = data;
   const risks: { label: string; bullets: string[] }[] = [];
 
-  const hauptTaetigkeiten = (data.taetigkeiten || []).filter((t: any) => t.kategorie === "haupt");
-  const hochItems = hauptTaetigkeiten.filter((t: any) => t.niveau === "Hoch");
+  const gap23 = Math.abs(sec.value - wk.value);
+  const secWkClose = gap23 <= 5;
 
-  if (dom.key === "imp" || dom.value >= 45) {
-    risks.push({
-      label: "Wenn Tempo wichtiger wird als Absicherung",
-      bullets: [
-        dom.key === "int" ? "Beratung wird hektischer, Gesprächsqualität sinkt" : "Entscheidungen werden zu schnell und ohne Absicherung getroffen",
-        isLeadership ? "Das Team kann das Tempo nicht mithalten, Frustration entsteht" : "Abstimmung mit Kolleginnen und Kollegen leidet",
-        dom.key === "int" ? "Kunden und Gesprächspartner fühlen sich weniger individuell betreut" : "Prozessfehler und Qualitätsprobleme nehmen zu",
-      ],
-    });
-  }
+  const riskImp = {
+    label: "Wenn Tempo wichtiger wird als Absicherung",
+    bullets: [
+      "Entscheidungen werden zu schnell und ohne ausreichende Grundlage getroffen",
+      isLeadership ? "Das Team kann das Tempo nicht mithalten, Frustration und Überforderung entstehen" : "Abstimmung mit Kolleginnen und Kollegen leidet unter dem Handlungsdruck",
+      "Qualität und Sorgfalt gehen zugunsten von Geschwindigkeit verloren",
+    ],
+  };
 
-  if (dom.key === "ana" || wk.key === "int") {
-    risks.push({
-      label: "Wenn Kontrolle den persönlichen Kontakt verdrängt",
-      bullets: [
-        dom.key === "int" ? "Beratung wirkt distanzierter und unpersönlich" : "Überanalyse bremst Entscheidungen und Umsetzung",
-        "Zwischenmenschliche Signale werden übersehen oder ignoriert",
-        isLeadership ? "Teammitglieder fühlen sich kontrolliert statt geführt" : "Zusammenarbeit wird als starr und unflexibel empfunden",
-      ],
-    });
-  }
+  const riskInt = {
+    label: "Wenn Beziehungspflege auf Kosten der Ergebnisse geht",
+    bullets: [
+      "Harmonie und Konsens werden über notwendige Entscheidungen gestellt",
+      isLeadership ? "Standards und Verbindlichkeit werden zugunsten von Teamstimmung aufgeweicht" : "Ergebnisse werden verzögert, weil zu viel abgestimmt und zu wenig entschieden wird",
+      "Wirtschaftliche und sachliche Anforderungen treten in den Hintergrund",
+    ],
+  };
 
-  if (wk.key === "ana" || (dom.key === "int" && sec.key === "imp")) {
-    risks.push({
-      label: "Wenn Beziehungspflege auf Kosten der Struktur geht",
-      bullets: [
-        "Wirtschaftliche und prozessuale Aspekte werden vernachlässigt",
-        "Abläufe verlieren an Klarheit und Verbindlichkeit",
-        isLeadership ? "Standards werden zugunsten von Harmonie aufgeweicht" : "Dokumentation und Nachvollziehbarkeit leiden",
-      ],
-    });
-  }
+  const riskAna = {
+    label: "Wenn Gründlichkeit die Handlungsfähigkeit bremst",
+    bullets: [
+      "Entscheidungen werden aufgeschoben oder zu lange abgewogen",
+      isLeadership ? "Das Team wartet auf klare Richtungsvorgaben, die ausbleiben" : "Chancen werden verpasst, weil die Reaktionsgeschwindigkeit fehlt",
+      "Überanalyse verdrängt pragmatisches Handeln und zwischenmenschliches Gespür",
+    ],
+  };
 
-  if (wk.key === "imp") {
-    risks.push({
-      label: "Wenn Gründlichkeit die Umsetzung blockiert",
-      bullets: [
-        "Entscheidungen werden aufgeschoben oder zu lange abgewogen",
-        "Chancen werden verpasst, weil die Reaktionsgeschwindigkeit fehlt",
-        isLeadership ? "Das Team wartet auf klare Ansagen, die ausbleiben" : "Wichtige Aufgaben werden nicht rechtzeitig priorisiert",
-      ],
-    });
-  }
-
-  const conflicting = hochItems.filter((t: any) =>
-    (dom.key === "imp" && t.kompetenz !== "Impulsiv") ||
-    (dom.key === "int" && t.kompetenz !== "Intuitiv") ||
-    (dom.key === "ana" && t.kompetenz !== "Analytisch")
-  );
-  if (conflicting.length >= 2 && risks.length < 3) {
-    const namen = conflicting.slice(0, 2).map((t: any) => cleanTaskName(t.name)).join(" und ");
-    risks.push({
-      label: "Wenn Kerntätigkeiten und Profil auseinanderfallen",
-      bullets: [
-        `Hochprioritäre Tätigkeiten wie ${namen} verlangen ein anderes Verhalten als das Stellenprofil`,
-        "Die Stelle fordert dauerhaft in einem Bereich, der nicht der natürlichen Stärke entspricht",
-        "Kompensation ist kurzfristig möglich. Langfristig steigen Erschöpfung und Fehlerquote",
-      ],
-    });
+  if (profileType === "balanced_all") {
+    risks.push(riskImp, riskInt, riskAna);
+  } else if (profileType === "hybrid_imp_ana") {
+    risks.push(riskImp, riskAna, riskInt);
+  } else if (profileType === "hybrid_imp_int") {
+    risks.push(riskImp, riskInt, riskAna);
+  } else if (profileType === "hybrid_ana_int") {
+    risks.push(riskAna, riskInt, riskImp);
+  } else if (dom.key === "imp") {
+    if (secWkClose) {
+      risks.push(riskInt, riskAna);
+    } else {
+      risks.push(sec.key === "int" ? riskAna : riskInt);
+      risks.push(wk.key === "int" ? riskInt : riskAna);
+    }
+  } else if (dom.key === "int") {
+    if (secWkClose) {
+      risks.push(riskImp, riskAna);
+    } else {
+      risks.push(sec.key === "imp" ? riskAna : riskImp);
+      risks.push(wk.key === "imp" ? riskImp : riskAna);
+    }
+  } else {
+    if (secWkClose) {
+      risks.push(riskImp, riskInt);
+    } else {
+      risks.push(sec.key === "imp" ? riskInt : riskImp);
+      risks.push(wk.key === "imp" ? riskImp : riskInt);
+    }
   }
 
   return risks.slice(0, 3);
