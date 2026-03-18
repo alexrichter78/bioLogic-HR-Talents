@@ -1117,7 +1117,7 @@ export default function Rollenprofil() {
 
           {/* ── EINLEITUNG ── */}
           <div style={{ marginBottom: 32 }} data-testid="bericht-section-intro">
-            <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-einleitung">
+            <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-einleitung">
               Dieser Bericht zeigt, welche Persönlichkeitsstruktur für die Stelle {data.beruf} besonders passend und wirksam ist. Neben den fachlichen Anforderungen beeinflusst vor allem die Art, wie eine Person Situationen einschätzt, Entscheidungen trifft und unter Druck handelt, die Wirksamkeit in dieser Position.<br /><br />Die folgenden Abschnitte verdeutlichen, welche Persönlichkeitsanforderungen die Stelle mit sich bringt, wie sich diese im Arbeitsalltag zeigen und welche Spannungsfelder daraus entstehen können.
             </p>
           </div>
@@ -1145,10 +1145,10 @@ export default function Rollenprofil() {
                 </>
               )}
 
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 8px", textAlign: "justify", textAlignLast: "left" as any }} lang="de">
+              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 8px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {rollenBeschreibungIntro}
               </p>
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de">
+              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {rollenBeschreibungErgaenzung}
               </p>
             </div>
@@ -1163,7 +1163,7 @@ export default function Rollenprofil() {
                 </p>
               </div>
               <div style={{ padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)", marginBottom: 16 }}>
-                <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: "0 0 16px", fontWeight: 400 }} lang="de">
+                <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: "0 0 16px", fontWeight: 400, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                   Jeder Mensch verfügt über die drei grundlegenden Denk- und Handlungsweisen Impulsiv, Intuitiv und Analytisch. Alle drei Anteile sind immer vorhanden. Der Unterschied liegt in ihrer Reihenfolge und Gewichtung.
                   <br /><br />
                   Diese Struktur prägt, wie Menschen im Alltag entscheiden, kommunizieren und handeln. Je nach Situation kann sich die sichtbare Wirkung verändern: im Arbeitsalltag, unter Stress oder in entspannten Situationen.
@@ -1212,7 +1212,7 @@ export default function Rollenprofil() {
             {/* 3. Arbeitslogik */}
             <div style={{ marginBottom: 28 }}>
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>3. Arbeitslogik der Stelle</p>
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de">
+              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {arbeitslogikText}
               </p>
             </div>
@@ -1221,7 +1221,7 @@ export default function Rollenprofil() {
             {rahmenText && (
               <div style={{ marginBottom: 28 }} data-testid="bericht-section-rahmen">
                 <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>4. Rahmenbedingungen</p>
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-rahmenbedingungen">
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-rahmenbedingungen">
                   {rahmenText}
                 </p>
               </div>
@@ -1233,7 +1233,7 @@ export default function Rollenprofil() {
                 <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>
                   {rahmenText ? "5." : "4."} Erfolgsfokus
                 </p>
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-erfolgsfokus">
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-erfolgsfokus">
                   {erfolgsfokusText}
                 </p>
               </div>
@@ -1249,7 +1249,7 @@ export default function Rollenprofil() {
             {/* Verhalten im Alltag */}
             <div style={{ marginBottom: 28 }}>
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Verhalten im Alltag</p>
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de">
+              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {alltagsverhalten}
               </p>
             </div>
@@ -1257,7 +1257,7 @@ export default function Rollenprofil() {
             {/* Verhalten unter Druck */}
             <div style={{ marginBottom: 28 }}>
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Verhalten unter Druck</p>
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de">
+              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {stress.controlled}
               </p>
             </div>
@@ -1265,7 +1265,7 @@ export default function Rollenprofil() {
             {/* Verhalten bei starkem Stress */}
             <div style={{ marginBottom: 0 }}>
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Verhalten bei starkem Stress</p>
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de">
+              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {stress.uncontrolled}
               </p>
             </div>
@@ -1282,7 +1282,7 @@ export default function Rollenprofil() {
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>
                 {data.isLeadership ? "Führungswirkung der Stelle" : "Teamwirkung der Stelle"}
               </p>
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de">
+              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {teamwirkung}
               </p>
             </div>
@@ -1301,7 +1301,7 @@ export default function Rollenprofil() {
                   </div>
                 ))}
               </div>
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "12px 0 0", textAlign: "justify", textAlignLast: "left" as any }} lang="de">
+              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "12px 0 0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {data.dom.key === "imp"
                   ? "Die Stelle verlangt, diese Gegensätze situativ auszubalancieren, ohne dabei das Tempo und die Umsetzungsstärke zu verlieren."
                   : data.dom.key === "int"
@@ -1348,7 +1348,7 @@ export default function Rollenprofil() {
                     Personenprofil konnte nicht geladen werden.
                   </p>
                 ) : (
-                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-kandidatenprofil">
+                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-kandidatenprofil">
                     {kandidatenText}
                   </p>
                 )}
@@ -1364,7 +1364,7 @@ export default function Rollenprofil() {
               <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>Entscheidungsfazit</p>
               <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 14px" }}>{fazit.titel}</p>
               {fazit.absaetze.map((absatz, i) => (
-                <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i < fazit.absaetze.length - 1 ? "0 0 10px" : "0", textAlign: "justify", textAlignLast: "left" as any }} lang="de">
+                <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i < fazit.absaetze.length - 1 ? "0 0 10px" : "0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                   {absatz}
                 </p>
               ))}
