@@ -895,14 +895,14 @@ export default function Rollenprofil() {
       })();
 
       const strukturText = (() => {
-        if (data.profileType === "balanced_all") return "Diese Stelle erfordert keine eindeutige Spezialisierung. Sie verlangt eine Persönlichkeit, die situativ zwischen zügigem Handeln, persönlichem Kontakt und gründlicher Analyse wechseln kann. Das macht die Besetzung besonders anspruchsvoll – die Person muss vielseitig agieren, ohne dabei an Profil und Verbindlichkeit zu verlieren.";
+        if (data.profileType === "balanced_all") return "Diese Stelle erfordert keine eindeutige Spezialisierung. Sie verlangt eine Persönlichkeit, die situativ zwischen zügigem Handeln, persönlichem Kontakt und sorgfältigem Arbeiten wechseln kann. Das macht die Besetzung besonders anspruchsvoll – die Person muss vielseitig agieren, ohne dabei an Verlässlichkeit und Verbindlichkeit zu verlieren.";
         if (data.profileType.startsWith("hybrid_")) {
-          const domB = data.dom.key === "imp" ? "entschlossenes Handeln und Umsetzungsstärke" : data.dom.key === "int" ? "tragfähigen persönlichen Kontakt und aktive Beziehungsgestaltung" : "methodische Sorgfalt und konsequente Qualitätssicherung";
-          const secB = data.sec.key === "imp" ? "entschlossenes Handeln und Umsetzungsstärke" : data.sec.key === "int" ? "tragfähigen persönlichen Kontakt und aktive Beziehungsgestaltung" : "methodische Sorgfalt und konsequente Qualitätssicherung";
+          const domB = data.dom.key === "imp" ? "entschlossenes Handeln und Umsetzungsstärke" : data.dom.key === "int" ? "ein sicheres Auftreten im persönlichen Kontakt und ein gutes Gespür für andere" : "Gründlichkeit, Sorgfalt und eine konsequente Einhaltung von Standards";
+          const secB = data.sec.key === "imp" ? "entschlossenes Handeln und Umsetzungsstärke" : data.sec.key === "int" ? "ein sicheres Auftreten im persönlichen Kontakt und ein gutes Gespür für andere" : "Gründlichkeit, Sorgfalt und eine konsequente Einhaltung von Standards";
           return `Diese Stelle verlangt gleichzeitig ${domB} und ${secB}. Beide Anforderungsbereiche sind nahezu gleichwertig ausgeprägt. Die Person muss in beiden Dimensionen ein hohes Wirkungsniveau mitbringen.`;
         }
-        const domB = data.dom.key === "imp" ? "entschlossenes Handeln und klare Entscheidungsfähigkeit" : data.dom.key === "int" ? "persönlichen Kontakt und die Fähigkeit, tragfähiges Vertrauen aufzubauen" : "sorgfältige Analyse und ein konsequent strukturiertes Vorgehen";
-        return `Das Profil dieser Stelle wird maßgeblich geprägt durch ${domB}. Dies bildet die zentrale Anforderung an die Person. ${data.sec.key === "ana" ? "Eine strukturierte und verlässliche Arbeitsweise stellt sicher, dass Entscheidungen nachvollziehbar bleiben und Abläufe stabil funktionieren." : data.sec.key === "int" ? "Die Fähigkeit, Beziehungen aktiv zu gestalten und Menschen einzubinden, schafft Akzeptanz, Zusammenhalt und eine tragfähige Basis für die Zusammenarbeit." : "Zugleich erfordert die Stelle Handlungsfähigkeit und Umsetzungsstärke, damit Ergebnisse tatsächlich realisiert und nicht nur geplant werden."}`;
+        const domB = data.dom.key === "imp" ? "entschlossenes Handeln und klare Prioritätensetzung" : data.dom.key === "int" ? "persönlichen Kontakt und die Fähigkeit, Vertrauen und Nähe herzustellen" : "Gründlichkeit, Verlässlichkeit und ein konsequent sorgfältiges Vorgehen";
+        return `Das Profil dieser Stelle wird maßgeblich geprägt durch ${domB}. Dies bildet die zentrale Anforderung an die Person. ${data.sec.key === "ana" ? "Ergänzend dazu braucht es eine ordentliche und gewissenhafte Arbeitsweise, damit Abläufe stabil bleiben und Ergebnisse den geforderten Qualitätsstandards entsprechen." : data.sec.key === "int" ? "Ergänzend dazu braucht es die Fähigkeit, sich im Team abzustimmen, verständlich zu kommunizieren und ein konstruktives Miteinander zu fördern." : "Ergänzend dazu braucht es Umsetzungsstärke und Eigeninitiative, damit Aufgaben nicht nur geplant, sondern auch zuverlässig erledigt werden."}`;
       })();
 
       const arbeitslogik = (() => {
@@ -1051,15 +1051,15 @@ export default function Rollenprofil() {
 
   const strukturprofilText = (() => {
     if (data.profileType === "balanced_all") {
-      return "Diese Stelle erfordert keine eindeutige Spezialisierung. Sie verlangt eine Persönlichkeit, die situativ zwischen zügigem Handeln, persönlichem Kontakt und gründlicher Analyse wechseln kann. Das macht die Besetzung besonders anspruchsvoll – die Person muss vielseitig agieren, ohne dabei an Profil und Verbindlichkeit zu verlieren.";
+      return "Diese Stelle erfordert keine eindeutige Spezialisierung. Sie verlangt eine Persönlichkeit, die situativ zwischen zügigem Handeln, persönlichem Kontakt und sorgfältigem Arbeiten wechseln kann. Das macht die Besetzung besonders anspruchsvoll – die Person muss vielseitig agieren, ohne dabei an Verlässlichkeit und Verbindlichkeit zu verlieren.";
     }
     if (data.profileType.startsWith("hybrid_")) {
-      const domBehav = data.dom.key === "imp" ? "entschlossenes Handeln und Umsetzungsstärke" : data.dom.key === "int" ? "tragfähigen persönlichen Kontakt und aktive Beziehungsgestaltung" : "methodische Sorgfalt und konsequente Qualitätssicherung";
-      const secBehav = data.sec.key === "imp" ? "entschlossenes Handeln und Umsetzungsstärke" : data.sec.key === "int" ? "tragfähigen persönlichen Kontakt und aktive Beziehungsgestaltung" : "methodische Sorgfalt und konsequente Qualitätssicherung";
+      const domBehav = data.dom.key === "imp" ? "entschlossenes Handeln und Umsetzungsstärke" : data.dom.key === "int" ? "ein sicheres Auftreten im persönlichen Kontakt und ein gutes Gespür für andere" : "Gründlichkeit, Sorgfalt und eine konsequente Einhaltung von Standards";
+      const secBehav = data.sec.key === "imp" ? "entschlossenes Handeln und Umsetzungsstärke" : data.sec.key === "int" ? "ein sicheres Auftreten im persönlichen Kontakt und ein gutes Gespür für andere" : "Gründlichkeit, Sorgfalt und eine konsequente Einhaltung von Standards";
       return `Diese Stelle verlangt gleichzeitig ${domBehav} und ${secBehav}. Beide Anforderungsbereiche sind nahezu gleichwertig ausgeprägt. Die Person muss in beiden Dimensionen ein hohes Wirkungsniveau mitbringen.`;
     }
-    const domBehav = data.dom.key === "imp" ? "entschlossenes Handeln und klare Entscheidungsfähigkeit" : data.dom.key === "int" ? "persönlichen Kontakt und die Fähigkeit, tragfähiges Vertrauen aufzubauen" : "sorgfältige Analyse und ein konsequent strukturiertes Vorgehen";
-    return `Das Profil dieser Stelle wird maßgeblich geprägt durch ${domBehav}. Dies bildet die zentrale Anforderung an die Person. ${data.sec.key === "ana" ? "Eine strukturierte und verlässliche Arbeitsweise stellt sicher, dass Entscheidungen nachvollziehbar bleiben und Abläufe stabil funktionieren." : data.sec.key === "int" ? "Die Fähigkeit, Beziehungen aktiv zu gestalten und Menschen einzubinden, schafft Akzeptanz, Zusammenhalt und eine tragfähige Basis für die Zusammenarbeit." : "Zugleich erfordert die Stelle Handlungsfähigkeit und Umsetzungsstärke, damit Ergebnisse tatsächlich realisiert und nicht nur geplant werden."}`;
+    const domBehav = data.dom.key === "imp" ? "entschlossenes Handeln und klare Prioritätensetzung" : data.dom.key === "int" ? "persönlichen Kontakt und die Fähigkeit, Vertrauen und Nähe herzustellen" : "Gründlichkeit, Verlässlichkeit und ein konsequent sorgfältiges Vorgehen";
+    return `Das Profil dieser Stelle wird maßgeblich geprägt durch ${domBehav}. Dies bildet die zentrale Anforderung an die Person. ${data.sec.key === "ana" ? "Ergänzend dazu braucht es eine ordentliche und gewissenhafte Arbeitsweise, damit Abläufe stabil bleiben und Ergebnisse den geforderten Qualitätsstandards entsprechen." : data.sec.key === "int" ? "Ergänzend dazu braucht es die Fähigkeit, sich im Team abzustimmen, verständlich zu kommunizieren und ein konstruktives Miteinander zu fördern." : "Ergänzend dazu braucht es Umsetzungsstärke und Eigeninitiative, damit Aufgaben nicht nur geplant, sondern auch zuverlässig erledigt werden."}`;
   })();
 
 
