@@ -1066,11 +1066,11 @@ export default function Rollenprofil() {
   const domColor = COLORS[data.dom.key as keyof typeof COLORS] || "#1A5DAB";
 
   const SectionHead = ({ num, title }: { num: number; title: string; color?: string }) => (
-    <div className="bio-section-head" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, marginLeft: -44, marginRight: -44, padding: "0 18px", height: 38, background: "linear-gradient(135deg, #3b6cb5 0%, #5a8fd4 60%, #7aaae0 100%)", boxShadow: "0 2px 6px rgba(59,108,181,0.25)" }}>
-      <div style={{ width: 26, height: 26, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #f0a24f, #e8952e)", borderRadius: "50%", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }}>
+    <div className="bio-section-head" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, marginLeft: -44, marginRight: -44, padding: "0 18px", height: 38, background: "linear-gradient(135deg, #343A48 0%, #3d4455 50%, #464f62 100%)", boxShadow: "0 2px 6px rgba(52,58,72,0.3)" }}>
+      <div style={{ width: 26, height: 26, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #f0a24f, #e8952e)", borderRadius: "50%", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.25)" }}>
         <span style={{ fontSize: 11, fontWeight: 800, color: "#FFF" }}>{String(num).padStart(2, "0")}</span>
       </div>
-      <span style={{ fontSize: 13, fontWeight: 600, color: "#FFF", letterSpacing: "0.03em" }}>{title}</span>
+      <span style={{ fontSize: 13, fontWeight: 600, color: "#f4f4f2", letterSpacing: "0.03em" }}>{title}</span>
     </div>
   );
 
