@@ -664,7 +664,7 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
       candidatePattern = `${s} entscheidet bevorzugt über ${ckLabel} Logik. Die Stelle verlangt jedoch Vielseitigkeit, nicht Spezialisierung.`;
       risk = `Die einseitige Entscheidungslogik führt dazu, dass bestimmte Situationen nicht mit der passenden Herangehensweise bearbeitet werden.${weakStr} Die Führungskraft muss gezielt gegensteuern.`;
     }
-    return { id: "decision", label: "Entscheidungslogik", severity: sev, roleNeed, candidatePattern, risk };
+    return { id: "decision", label: "Entscheidungsverhalten", severity: sev, roleNeed, candidatePattern, risk };
   }
 
   const sev = rk === ck ? severity(maxGap * 0.4) : severity(rk === "analytisch" ? gapA + 5 : maxGap);
@@ -718,7 +718,7 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
     }
   }
 
-  return { id: "decision", label: "Entscheidungslogik", severity: sev, roleNeed, candidatePattern, risk };
+  return { id: "decision", label: "Entscheidungsverhalten", severity: sev, roleNeed, candidatePattern, risk };
 }
 
 function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, gapA: number, cand: string): ImpactArea {
@@ -753,7 +753,7 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
     risk = "Arbeitssteuerung passt grundsätzlich zur Stelle. Feinabstimmung nötig, aber die Grundlogik stimmt.";
   }
 
-  return { id: "work_structure", label: "Arbeitssteuerung", severity: sev, roleNeed, candidatePattern, risk };
+  return { id: "work_structure", label: "Arbeitsweise", severity: sev, roleNeed, candidatePattern, risk };
 }
 
 function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, fuehrungsArt: FuehrungsArt, roleIsBalFull = false, ct?: Triad): ImpactArea {
@@ -787,7 +787,7 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
       candidatePattern = `${s} führt primär über ${ckStyle}. Die Stelle verlangt jedoch ein breites Führungsrepertoire.`;
       risk = `Die einseitige Führungswirkung deckt nur einen Teil der Stellenanforderung ab.${weakStr} Ohne bewusste Steuerung entstehen blinde Flecken in der Führung.`;
     }
-    return { id: "leadership", label: "Führungswirkung", severity: sev, roleNeed, candidatePattern, risk };
+    return { id: "leadership", label: "Führungsaufwand", severity: sev, roleNeed, candidatePattern, risk };
   }
 
   const sev = severity(rk !== ck ? maxGap * 0.7 : maxGap * 0.4);
@@ -850,7 +850,7 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
       : "Führungsstil passt zur Stellenanforderung. Die Art, wie Orientierung gegeben wird, stimmt mit den Erwartungen des Teams überein.";
   }
 
-  return { id: "leadership", label: "Führungswirkung", severity: sev, roleNeed, candidatePattern, risk };
+  return { id: "leadership", label: "Führungsaufwand", severity: sev, roleNeed, candidatePattern, risk };
 }
 
 function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, roleIsBalFull = false, ct?: Triad): ImpactArea {
@@ -879,7 +879,7 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
       candidatePattern = `${s} prägt die Kultur primär über ${ckCulture}. Die Stelle erwartet jedoch eine ausgewogene Kulturwirkung.`;
       risk = `Die einseitige Kulturprägung verschiebt das Arbeitsumfeld in eine Richtung, die nur einen Teil der Stellenanforderung abdeckt.${weakStr}`;
     }
-    return { id: "culture", label: "Kulturwirkung", severity: sev, roleNeed, candidatePattern, risk };
+    return { id: "culture", label: "Wirkung auf Zusammenarbeit und Teamkultur", severity: sev, roleNeed, candidatePattern, risk };
   }
 
   const sev = severity(rk !== ck ? Math.max(gapI, gapN, gapA) * 0.65 : Math.max(gapI, gapN, gapA) * 0.4);
@@ -925,7 +925,7 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
       : "Kulturwirkung stimmt mit der Stellenanforderung überein. Die Art, wie das Arbeitsumfeld geprägt wird, passt zu den Erwartungen.";
   }
 
-  return { id: "culture", label: "Kulturwirkung", severity: sev, roleNeed, candidatePattern, risk };
+  return { id: "culture", label: "Wirkung auf Zusammenarbeit und Teamkultur", severity: sev, roleNeed, candidatePattern, risk };
 }
 
 function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: ComponentKey, gap: string, roleIsBalFull = false, rt?: Triad, ct?: Triad): RiskPhase[] {
