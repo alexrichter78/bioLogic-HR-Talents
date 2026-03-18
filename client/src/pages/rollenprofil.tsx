@@ -235,64 +235,64 @@ function buildStressTexts(bg: BG, isLeadership: boolean, fuehrungstyp: string) {
 
   if (hasFullSymmetry) {
     uncontrolled = isLeadership
-      ? `In nicht mehr kontrollierbaren Situationen, versucht ${fkLower} eher, mehrere Perspektiven gleichzeitig zu berücksichtigen: Tempo, Fakten und Beziehungen. Der Entscheidungsprozess dauert dadurch tendenziell länger, weil verschiedene Aspekte parallel abgewogen werden.${fSuffix}`
-      : "In nicht mehr kontrollierbaren Situationen, versucht die Person eher, mehrere Perspektiven gleichzeitig zu berücksichtigen: Tempo, Fakten und Beziehungen. Der Entscheidungsprozess dauert dadurch tendenziell länger, weil verschiedene Aspekte parallel abgewogen werden.";
+      ? `In nicht mehr kontrollierbaren Situationen versucht ${fkLower} eher, mehrere Perspektiven gleichzeitig zu berücksichtigen: Tempo, Fakten und Beziehungen. Der Entscheidungsprozess dauert dadurch tendenziell länger, weil verschiedene Aspekte parallel abgewogen werden.${fSuffix}`
+      : "In nicht mehr kontrollierbaren Situationen versucht die Person eher, mehrere Perspektiven gleichzeitig zu berücksichtigen: Tempo, Fakten und Beziehungen. Der Entscheidungsprozess dauert dadurch tendenziell länger, weil verschiedene Aspekte parallel abgewogen werden.";
   } else if (hasDualDominance) {
     if ((top.key === "imp" && mid.key === "ana") || (top.key === "ana" && mid.key === "imp")) {
       uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen, neigt ${fkLower} eher dazu, zwischen schnellem Handeln und gründlicher Prüfung zu wechseln. Sie entscheidet zunächst zügig, beginnt danach jedoch vermehrt, die Entscheidung erneut zu analysieren und zu überprüfen.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen, neigt die Person eher dazu, zwischen schnellem Handeln und gründlicher Prüfung zu wechseln. Sie entscheidet zunächst zügig, beginnt danach jedoch vermehrt, die Entscheidung erneut zu analysieren und zu überprüfen.";
+        ? `In nicht mehr kontrollierbaren Situationen neigt ${fkLower} eher dazu, zwischen schnellem Handeln und gründlicher Prüfung zu wechseln. Sie entscheidet zunächst zügig, beginnt danach jedoch vermehrt, die Entscheidung erneut zu analysieren und zu überprüfen.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen neigt die Person eher dazu, zwischen schnellem Handeln und gründlicher Prüfung zu wechseln. Sie entscheidet zunächst zügig, beginnt danach jedoch vermehrt, die Entscheidung erneut zu analysieren und zu überprüfen.";
     } else if ((top.key === "imp" && mid.key === "int") || (top.key === "int" && mid.key === "imp")) {
       uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen, neigt ${fkLower} eher dazu, zwischen direkter Handlung und dem Wunsch, Beziehungen zu stabilisieren, zu schwanken. Entscheidungen werden zunächst klar getroffen, tendenziell aber später noch einmal angepasst.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen, neigt die Person eher dazu, zwischen direkter Handlung und dem Wunsch, Beziehungen zu stabilisieren, zu schwanken. Entscheidungen werden zunächst klar getroffen, tendenziell aber später noch einmal angepasst.";
+        ? `In nicht mehr kontrollierbaren Situationen neigt ${fkLower} eher dazu, zwischen direkter Handlung und dem Wunsch, Beziehungen zu stabilisieren, zu schwanken. Entscheidungen werden zunächst klar getroffen, tendenziell aber später noch einmal angepasst.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen neigt die Person eher dazu, zwischen direkter Handlung und dem Wunsch, Beziehungen zu stabilisieren, zu schwanken. Entscheidungen werden zunächst klar getroffen, tendenziell aber später noch einmal angepasst.";
     } else {
       uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen, versucht ${fkLower} eher, gleichzeitig sachliche Richtigkeit und zwischenmenschliche Wirkung zu berücksichtigen. Es dauert dadurch tendenziell länger, bis eine Entscheidung endgültig getroffen wird.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen, versucht die Person eher, gleichzeitig sachliche Richtigkeit und zwischenmenschliche Wirkung zu berücksichtigen. Es dauert dadurch tendenziell länger, bis eine Entscheidung endgültig getroffen wird.";
+        ? `In nicht mehr kontrollierbaren Situationen versucht ${fkLower} eher, gleichzeitig sachliche Richtigkeit und zwischenmenschliche Wirkung zu berücksichtigen. Es dauert dadurch tendenziell länger, bis eine Entscheidung endgültig getroffen wird.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen versucht die Person eher, gleichzeitig sachliche Richtigkeit und zwischenmenschliche Wirkung zu berücksichtigen. Es dauert dadurch tendenziell länger, bis eine Entscheidung endgültig getroffen wird.";
     }
   } else if (top.key === "imp") {
     if (midSecClose) {
       uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen, verliert ${fkLower} eher ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt tendenziell ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch vermehrt länger dauern oder mehrfach angepasst werden.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen, verliert die Person eher ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt tendenziell ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch vermehrt länger dauern oder mehrfach angepasst werden, weil zwei unterschiedliche Denkweisen gleichzeitig Einfluss nehmen.";
+        ? `In nicht mehr kontrollierbaren Situationen verliert ${fkLower} eher ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt tendenziell ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch vermehrt länger dauern oder mehrfach angepasst werden.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen verliert die Person eher ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt tendenziell ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch vermehrt länger dauern oder mehrfach angepasst werden, weil zwei unterschiedliche Denkweisen gleichzeitig Einfluss nehmen.";
     } else if (mid.key === "ana") {
       uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen, verliert ${fkLower} eher einen Teil ihrer schnellen Entscheidungsstärke. Sie beginnt tendenziell stärker zu hinterfragen und sucht vermehrt nach zusätzlichen Informationen. Entscheidungen werden zunächst schnell angestoßen, anschließend jedoch wieder überprüft oder angepasst.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen, verliert die Person eher einen Teil ihrer schnellen Entscheidungsstärke. Sie beginnt tendenziell stärker zu hinterfragen und sucht vermehrt nach zusätzlichen Informationen. Dadurch kann es passieren, dass Entscheidungen zunächst schnell angestoßen, anschließend jedoch wieder überprüft oder angepasst werden.";
+        ? `In nicht mehr kontrollierbaren Situationen verliert ${fkLower} eher einen Teil ihrer schnellen Entscheidungsstärke. Sie beginnt tendenziell stärker zu hinterfragen und sucht vermehrt nach zusätzlichen Informationen. Entscheidungen werden zunächst schnell angestoßen, anschließend jedoch wieder überprüft oder angepasst.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen verliert die Person eher einen Teil ihrer schnellen Entscheidungsstärke. Sie beginnt tendenziell stärker zu hinterfragen und sucht vermehrt nach zusätzlichen Informationen. Dadurch kann es passieren, dass Entscheidungen zunächst schnell angestoßen, anschließend jedoch wieder überprüft oder angepasst werden.";
     } else {
       uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen, neigt ${fkLower} eher dazu, zwischen schnellem Handeln und dem Wunsch, auf das Team Rücksicht zu nehmen, zu schwanken. Entscheidungen werden zunächst direkt getroffen, später aber teilweise wieder relativiert, um Spannungen zu vermeiden.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen, neigt die Person eher dazu, zwischen schnellem Handeln und dem Wunsch, auf Menschen und Beziehungen Rücksicht zu nehmen, zu schwanken. Entscheidungen werden zunächst direkt getroffen, später aber teilweise wieder relativiert, um Spannungen oder Konflikte zu vermeiden.";
+        ? `In nicht mehr kontrollierbaren Situationen neigt ${fkLower} eher dazu, zwischen schnellem Handeln und dem Wunsch, auf das Team Rücksicht zu nehmen, zu schwanken. Entscheidungen werden zunächst direkt getroffen, später aber teilweise wieder relativiert, um Spannungen zu vermeiden.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen neigt die Person eher dazu, zwischen schnellem Handeln und dem Wunsch, auf Menschen und Beziehungen Rücksicht zu nehmen, zu schwanken. Entscheidungen werden zunächst direkt getroffen, später aber teilweise wieder relativiert, um Spannungen oder Konflikte zu vermeiden.";
     }
   } else if (top.key === "ana") {
     if (midSecClose) {
       uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen, verliert ${fkLower} eher ihre klare Struktur. Sie neigt tendenziell dazu, zwischen dem Wunsch, schnell zu handeln, und dem Bedürfnis, Beziehungen zu stabilisieren, zu schwanken. Entscheidungen werden dadurch vermehrt überdacht oder angepasst.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen, verliert die Person eher ihre klare Struktur. Sie neigt tendenziell dazu, zwischen dem Wunsch, schnell zu handeln, und dem Bedürfnis, Beziehungen zu stabilisieren, zu schwanken. Dadurch kann es passieren, dass Entscheidungen vermehrt überdacht oder angepasst werden.";
+        ? `In nicht mehr kontrollierbaren Situationen verliert ${fkLower} eher ihre klare Struktur. Sie neigt tendenziell dazu, zwischen dem Wunsch, schnell zu handeln, und dem Bedürfnis, Beziehungen zu stabilisieren, zu schwanken. Entscheidungen werden dadurch vermehrt überdacht oder angepasst.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen verliert die Person eher ihre klare Struktur. Sie neigt tendenziell dazu, zwischen dem Wunsch, schnell zu handeln, und dem Bedürfnis, Beziehungen zu stabilisieren, zu schwanken. Dadurch kann es passieren, dass Entscheidungen vermehrt überdacht oder angepasst werden.";
     } else if (mid.key === "imp") {
       uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen, neigt ${fkLower} eher dazu, Entscheidungen schneller treffen zu wollen. Sie verlässt dann tendenziell ihre sonst gründliche Vorgehensweise. Entscheidungen werden vermehrt schneller getroffen, ohne alle Details vollständig zu prüfen.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen, neigt die Person eher dazu, Entscheidungen schneller treffen zu wollen. Sie verlässt dann tendenziell ihre sonst gründliche Vorgehensweise. Entscheidungen werden vermehrt schneller getroffen, ohne alle Details vollständig zu prüfen.";
+        ? `In nicht mehr kontrollierbaren Situationen neigt ${fkLower} eher dazu, Entscheidungen schneller treffen zu wollen. Sie verlässt dann tendenziell ihre sonst gründliche Vorgehensweise. Entscheidungen werden vermehrt schneller getroffen, ohne alle Details vollständig zu prüfen.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen neigt die Person eher dazu, Entscheidungen schneller treffen zu wollen. Sie verlässt dann tendenziell ihre sonst gründliche Vorgehensweise. Entscheidungen werden vermehrt schneller getroffen, ohne alle Details vollständig zu prüfen.";
     } else {
       uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen, versucht ${fkLower} eher, neben Fakten auch die Wirkung auf das Team zu berücksichtigen. Entscheidungen können dadurch tendenziell länger dauern, weil sowohl sachliche Aspekte als auch zwischenmenschliche Auswirkungen bedacht werden.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen, versucht die Person eher, neben Fakten auch die Wirkung auf Menschen zu berücksichtigen. Entscheidungen können dadurch tendenziell länger dauern, weil sowohl sachliche Aspekte als auch zwischenmenschliche Auswirkungen bedacht werden.";
+        ? `In nicht mehr kontrollierbaren Situationen versucht ${fkLower} eher, neben Fakten auch die Wirkung auf das Team zu berücksichtigen. Entscheidungen können dadurch tendenziell länger dauern, weil sowohl sachliche Aspekte als auch zwischenmenschliche Auswirkungen bedacht werden.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen versucht die Person eher, neben Fakten auch die Wirkung auf Menschen zu berücksichtigen. Entscheidungen können dadurch tendenziell länger dauern, weil sowohl sachliche Aspekte als auch zwischenmenschliche Auswirkungen bedacht werden.";
     }
   } else {
     // top.key === "int"
     if (midSecClose) {
       uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen, gerät ${fkLower} eher zwischen zwei unterschiedliche Entscheidungswege: schnelle Handlung und gründliche Analyse. Entscheidungen können dadurch tendenziell länger dauern oder vermehrt angepasst werden.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen, gerät die Person eher zwischen zwei unterschiedliche Entscheidungswege: schnelle Handlung und gründliche Analyse. Entscheidungen können dadurch tendenziell länger dauern oder vermehrt angepasst werden.";
+        ? `In nicht mehr kontrollierbaren Situationen gerät ${fkLower} eher zwischen zwei unterschiedliche Entscheidungswege: schnelle Handlung und gründliche Analyse. Entscheidungen können dadurch tendenziell länger dauern oder vermehrt angepasst werden.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen gerät die Person eher zwischen zwei unterschiedliche Entscheidungswege: schnelle Handlung und gründliche Analyse. Entscheidungen können dadurch tendenziell länger dauern oder vermehrt angepasst werden.";
     } else if (mid.key === "imp") {
       uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen, neigt ${fkLower} eher dazu, schneller handeln zu wollen. Sie verlässt dann tendenziell ihre sonst stark beziehungsorientierte Vorgehensweise und entscheidet vermehrt direkter und spontaner. Für das Team kann dies ungewohnt entschlossen wirken.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen, neigt die Person eher dazu, schneller handeln zu wollen. Sie verlässt dann tendenziell ihre sonst stark beziehungsorientierte Vorgehensweise und entscheidet vermehrt direkter und spontaner. Für andere kann dies ungewohnt entschlossen wirken.";
+        ? `In nicht mehr kontrollierbaren Situationen neigt ${fkLower} eher dazu, schneller handeln zu wollen. Sie verlässt dann tendenziell ihre sonst stark beziehungsorientierte Vorgehensweise und entscheidet vermehrt direkter und spontaner. Für das Team kann dies ungewohnt entschlossen wirken.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen neigt die Person eher dazu, schneller handeln zu wollen. Sie verlässt dann tendenziell ihre sonst stark beziehungsorientierte Vorgehensweise und entscheidet vermehrt direkter und spontaner. Für andere kann dies ungewohnt entschlossen wirken.";
     } else {
       uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen, versucht ${fkLower} eher, Entscheidungen auch sachlich abzusichern. Sie neigt dann tendenziell dazu, länger über Optionen nachzudenken oder zusätzliche Informationen einzuholen, bevor eine Entscheidung endgültig getroffen wird.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen, versucht die Person eher, Entscheidungen auch sachlich abzusichern. Sie neigt dann tendenziell dazu, länger über Optionen nachzudenken oder zusätzliche Informationen einzuholen, bevor eine Entscheidung endgültig getroffen wird.";
+        ? `In nicht mehr kontrollierbaren Situationen versucht ${fkLower} eher, Entscheidungen auch sachlich abzusichern. Sie neigt dann tendenziell dazu, länger über Optionen nachzudenken oder zusätzliche Informationen einzuholen, bevor eine Entscheidung endgültig getroffen wird.${fSuffix}`
+        : "In nicht mehr kontrollierbaren Situationen versucht die Person eher, Entscheidungen auch sachlich abzusichern. Sie neigt dann tendenziell dazu, länger über Optionen nachzudenken oder zusätzliche Informationen einzuholen, bevor eine Entscheidung endgültig getroffen wird.";
     }
   }
 
