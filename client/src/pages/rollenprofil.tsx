@@ -1356,14 +1356,13 @@ export default function Rollenprofil() {
 
           {/* ── SEITE 1: ROLLEN-DNA ── */}
           <div data-section="struktur" style={{ marginBottom: 40 }} data-testid="bericht-section-gesamtprofil">
-            <div data-pdf-block>
+            {/* 1. Kurzbeschreibung */}
+            <div style={{ marginBottom: 28 }} data-pdf-block>
               <SectionHead num={1} title="Stellenprofil · Entscheidungsgrundlage" color={SECTION_COLORS.rollenDna} />
               <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>Welche Persönlichkeit braucht diese Stelle?</p>
-            </div>
-
-            {/* 1. Kurzbeschreibung */}
-            <div style={{ marginTop: 24, marginBottom: 28 }} data-pdf-block>
-              <SubHead num={1} title="Kurzbeschreibung der Stelle" color={SECTION_COLORS.rollenDna} />
+              <div style={{ marginTop: 24 }}>
+                <SubHead num={1} title="Kurzbeschreibung der Stelle" color={SECTION_COLORS.rollenDna} />
+              </div>
 
               {topTaetigkeiten.length > 0 && (
                 <>
@@ -1477,21 +1476,20 @@ export default function Rollenprofil() {
 
           {/* ── SEITE 2: VERHALTEN ── */}
           <div data-section="position" style={{ marginBottom: 40 }} data-testid="bericht-section-struktur">
-            <div data-pdf-block>
+            {/* Verhalten im Alltag */}
+            <div style={{ marginBottom: 20 }} data-pdf-block>
               <SectionHead num={2} title="Verhalten · Alltag und Stress" color={SECTION_COLORS.verhalten} />
               <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Verhalten im Alltag und unter Druck</p>
               <p style={{ fontSize: 14, color: "#6E6E73", margin: "0 0 20px", lineHeight: 1.6 }}>Die folgende Darstellung zeigt, wie sich die Stellenanforderung im regulären Arbeitsalltag, unter Druck und bei starkem Stress typischerweise ausdrückt.</p>
-            </div>
-
-            {/* Verhalten im Alltag */}
-            <div style={{ marginBottom: 20, borderLeft: "4px solid #34C759", borderRadius: 8, background: "rgba(52,199,89,0.04)", padding: "16px 20px" }} data-pdf-block>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                <Sun size={18} color="#34C759" strokeWidth={2.2} />
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Verhalten im Alltag</p>
+              <div style={{ borderLeft: "4px solid #34C759", borderRadius: 8, background: "rgba(52,199,89,0.04)", padding: "16px 20px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                  <Sun size={18} color="#34C759" strokeWidth={2.2} />
+                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Verhalten im Alltag</p>
+                </div>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
+                  {alltagsverhalten}
+                </p>
               </div>
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                {alltagsverhalten}
-              </p>
             </div>
 
             {/* Verhalten unter Druck */}
@@ -1519,14 +1517,11 @@ export default function Rollenprofil() {
 
           {/* ── SEITE 3: TEAMWIRKUNG & RISIKEN ── */}
           <div data-section="anforderung" data-testid="bericht-section-risiko">
-            <div data-pdf-block>
+            {/* Führungswirkung / Teamwirkung */}
+            <div style={{ marginBottom: 28 }} data-pdf-block>
               <SectionHead num={3} title="Teamwirkung & Fehlbesetzungsrisiken" color={SECTION_COLORS.teamwirkung} />
               <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Wirkung, Spannungsfelder und Risiken</p>
               <p style={{ fontSize: 14, color: "#6E6E73", margin: "0 0 20px", lineHeight: 1.6 }}>{data.isLeadership ? "Dieser Abschnitt beschreibt, welche Wirkung von der Stelle im Team ausgeht, welche typischen Spannungsfelder sich ergeben und welche Risiken bei einer Fehlbesetzung entstehen können." : "Dieser Abschnitt beschreibt, welche Wirkung die Stelle im Arbeitsumfeld entfaltet, welche typischen Spannungsfelder sich ergeben und welche Risiken bei einer Fehlbesetzung entstehen können."}</p>
-            </div>
-
-            {/* Führungswirkung / Teamwirkung */}
-            <div style={{ marginBottom: 28 }} data-pdf-block>
               <SubHead num={1} title={data.isLeadership ? "Führungswirkung der Stelle" : "Teamwirkung der Stelle"} color={SECTION_COLORS.teamwirkung} />
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {teamwirkung}
@@ -1604,12 +1599,12 @@ export default function Rollenprofil() {
             <div data-pdf-block>
               <SectionHead num={4} title="Entscheidungsfazit" color={SECTION_COLORS.fazit} />
               <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 14px" }}>{fazit.titel}</p>
+              {fazit.absaetze.map((absatz, i) => (
+                <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i < fazit.absaetze.length - 1 ? "0 0 10px" : "0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
+                  {absatz}
+                </p>
+              ))}
             </div>
-            {fazit.absaetze.map((absatz, i) => (
-              <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i < fazit.absaetze.length - 1 ? "0 0 10px" : "0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                {absatz}
-              </p>
-            ))}
           </div>
 
           {/* ── FOOTER ── */}
