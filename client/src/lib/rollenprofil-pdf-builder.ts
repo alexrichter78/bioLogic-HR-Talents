@@ -258,19 +258,24 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
   y += 5;
   const introDisclaimerText = "Die Aussagen beschreiben dabei keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse ist wertfrei zu verstehen und dient als Orientierung für die Einschätzung von Passung und Wirksamkeit. Da jede Person individuell ist, ersetzt sie keine Einzelfallbetrachtung, sondern ergänzt diese um eine strukturierte und fundierte Entscheidungsgrundlage.";
   const introDiscLines = wrap(introDisclaimerText, CW - 8, 8);
-  const introDiscH = introDiscLines.length * 4 + 4;
-  checkPage(introDiscH + 4);
+  const introDiscPad = 4;
+  const introDiscTotalH = introDiscLines.length * 4.3 + introDiscPad * 2 + 2;
+  checkPage(introDiscTotalH + 4);
   doc.setDrawColor(255, 59, 48);
-  doc.setLineWidth(0.7);
-  doc.line(ML, y - 2, ML, y + introDiscH - 2);
+  doc.setLineWidth(0.8);
+  doc.setFillColor(255, 240, 240);
+  doc.roundedRect(ML, y - introDiscPad, CW, introDiscTotalH, 2, 2, "FD");
+  doc.setFillColor(255, 59, 48);
+  doc.rect(ML, y - introDiscPad, CW, 0.8, "F");
+  y += 2;
   doc.setFontSize(8);
   doc.setFont("helvetica", "bold");
   setC([255, 59, 48]);
   introDiscLines.forEach(line => {
-    doc.text(line, ML + 6, y);
+    doc.text(line, ML + 4, y);
     y += 4.3;
   });
-  y += 5;
+  y += introDiscPad + 4;
 
   separator(50);
 
