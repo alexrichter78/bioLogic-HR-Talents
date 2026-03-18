@@ -203,6 +203,7 @@ function buildStressTexts(bg: BG, isLeadership: boolean, fuehrungstyp: string) {
   const hasFullSymmetry = gap12 <= 5 && gap23 <= 5;
 
   const fk = isLeadership ? "Die Führungskraft" : "Die Person";
+  const fkLower = isLeadership ? "die Führungskraft" : "die Person";
   const isFachlich = fuehrungstyp === "Fachliche Führung";
   const isDisziplinarisch = fuehrungstyp.startsWith("Disziplinarische");
   const isKoordination = fuehrungstyp.startsWith("Projekt");
@@ -234,7 +235,7 @@ function buildStressTexts(bg: BG, isLeadership: boolean, fuehrungstyp: string) {
 
   if (hasFullSymmetry) {
     uncontrolled = isLeadership
-      ? `Wenn der Druck sehr hoch wird, versucht ${fk.toLowerCase()} mehrere Perspektiven gleichzeitig zu berücksichtigen: Tempo, Fakten und Beziehungen. Dadurch kann der Entscheidungsprozess länger dauern, weil verschiedene Aspekte parallel abgewogen werden.${fSuffix}`
+      ? `Wenn der Druck sehr hoch wird, versucht ${fkLower} mehrere Perspektiven gleichzeitig zu berücksichtigen: Tempo, Fakten und Beziehungen. Dadurch kann der Entscheidungsprozess länger dauern, weil verschiedene Aspekte parallel abgewogen werden.${fSuffix}`
       : "Wenn der Druck sehr hoch wird, versucht die Person mehrere Perspektiven gleichzeitig zu berücksichtigen: Tempo, Fakten und Beziehungen. Dadurch kann der Entscheidungsprozess länger dauern, weil verschiedene Aspekte parallel abgewogen werden.";
   } else if (hasDualDominance) {
     if ((top.key === "imp" && mid.key === "ana") || (top.key === "ana" && mid.key === "imp")) {
@@ -243,31 +244,31 @@ function buildStressTexts(bg: BG, isLeadership: boolean, fuehrungstyp: string) {
         : "Unter sehr hohem Druck kann ein Wechsel zwischen schnellem Handeln und gründlicher Prüfung entstehen. Die Person entscheidet zunächst zügig, beginnt danach jedoch häufig wieder zu analysieren und überprüft ihre Entscheidung erneut.";
     } else if ((top.key === "imp" && mid.key === "int") || (top.key === "int" && mid.key === "imp")) {
       uncontrolled = isLeadership
-        ? `Bei starkem Druck schwankt ${fk.toLowerCase()} zwischen direkter Handlung und dem Wunsch, Beziehungen zu stabilisieren. Entscheidungen können daher zunächst klar getroffen werden, werden später aber teilweise noch einmal angepasst.${fSuffix}`
+        ? `Bei starkem Druck schwankt ${fkLower} zwischen direkter Handlung und dem Wunsch, Beziehungen zu stabilisieren. Entscheidungen können daher zunächst klar getroffen werden, werden später aber teilweise noch einmal angepasst.${fSuffix}`
         : "Bei starkem Druck schwankt die Person zwischen direkter Handlung und dem Wunsch, Beziehungen zu stabilisieren. Entscheidungen können daher zunächst klar getroffen werden, werden später aber teilweise noch einmal angepasst.";
     } else {
       uncontrolled = isLeadership
-        ? `Unter sehr hohem Druck versucht ${fk.toLowerCase()} gleichzeitig, sachliche Richtigkeit und zwischenmenschliche Wirkung zu berücksichtigen. Dadurch kann es länger dauern, bis eine Entscheidung endgültig getroffen wird.${fSuffix}`
+        ? `Unter sehr hohem Druck versucht ${fkLower} gleichzeitig, sachliche Richtigkeit und zwischenmenschliche Wirkung zu berücksichtigen. Dadurch kann es länger dauern, bis eine Entscheidung endgültig getroffen wird.${fSuffix}`
         : "Unter sehr hohem Druck versucht die Person gleichzeitig, sachliche Richtigkeit und zwischenmenschliche Wirkung zu berücksichtigen. Dadurch kann es länger dauern, bis eine Entscheidung endgültig getroffen wird.";
     }
   } else if (top.key === "imp") {
     if (midSecClose) {
       uncontrolled = isLeadership
-        ? `Bei sehr hohem Druck verliert ${fk.toLowerCase()} ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch länger dauern oder mehrfach angepasst werden.${fSuffix}`
+        ? `Bei sehr hohem Druck verliert ${fkLower} ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch länger dauern oder mehrfach angepasst werden.${fSuffix}`
         : "Bei sehr hohem Druck verliert die Person ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch länger dauern oder mehrfach angepasst werden, weil zwei unterschiedliche Denkweisen gleichzeitig Einfluss nehmen.";
     } else if (mid.key === "ana") {
       uncontrolled = isLeadership
-        ? `Wenn der Druck sehr hoch wird, verliert ${fk.toLowerCase()} einen Teil ihrer schnellen Entscheidungsstärke. Sie beginnt stärker zu hinterfragen und sucht nach zusätzlichen Informationen. Entscheidungen werden zunächst schnell angestoßen, anschließend jedoch wieder überprüft oder angepasst.${fSuffix}`
+        ? `Wenn der Druck sehr hoch wird, verliert ${fkLower} einen Teil ihrer schnellen Entscheidungsstärke. Sie beginnt stärker zu hinterfragen und sucht nach zusätzlichen Informationen. Entscheidungen werden zunächst schnell angestoßen, anschließend jedoch wieder überprüft oder angepasst.${fSuffix}`
         : "Wenn der Druck sehr hoch wird, verliert die Person einen Teil ihrer schnellen Entscheidungsstärke. Sie beginnt stärker zu hinterfragen und sucht nach zusätzlichen Informationen. Dadurch kann es passieren, dass Entscheidungen zunächst sehr schnell angestoßen werden, anschließend jedoch wieder überprüft oder angepasst werden. Für andere wirkt das manchmal wie ein Wechsel zwischen Tempo und Absicherung.";
     } else {
       uncontrolled = isLeadership
-        ? `Unter starkem Druck schwankt ${fk.toLowerCase()} stärker zwischen schnellem Handeln und dem Wunsch, auf das Team Rücksicht zu nehmen. Entscheidungen können zunächst sehr direkt getroffen werden, werden später aber teilweise wieder relativiert, um Spannungen zu vermeiden.${fSuffix}`
+        ? `Unter starkem Druck schwankt ${fkLower} stärker zwischen schnellem Handeln und dem Wunsch, auf das Team Rücksicht zu nehmen. Entscheidungen können zunächst sehr direkt getroffen werden, werden später aber teilweise wieder relativiert, um Spannungen zu vermeiden.${fSuffix}`
         : "Unter starkem Druck schwankt die Person stärker zwischen schnellem Handeln und dem Wunsch, auf Menschen und Beziehungen Rücksicht zu nehmen. Entscheidungen können dadurch zunächst sehr direkt getroffen werden, werden später aber teilweise wieder relativiert, um Spannungen oder Konflikte zu vermeiden.";
     }
   } else if (top.key === "ana") {
     if (midSecClose) {
       uncontrolled = isLeadership
-        ? `Unter extremem Druck verliert ${fk.toLowerCase()} teilweise ihre klare Struktur. Sie schwankt zwischen dem Wunsch, schnell zu handeln, und dem Bedürfnis, Beziehungen zu stabilisieren. Entscheidungen können mehrfach überdacht oder angepasst werden.${fSuffix}`
+        ? `Unter extremem Druck verliert ${fkLower} teilweise ihre klare Struktur. Sie schwankt zwischen dem Wunsch, schnell zu handeln, und dem Bedürfnis, Beziehungen zu stabilisieren. Entscheidungen können mehrfach überdacht oder angepasst werden.${fSuffix}`
         : "Unter extremem Druck verliert die Person teilweise ihre klare Struktur. Sie schwankt zwischen dem Wunsch, schnell zu handeln, und dem Bedürfnis, Beziehungen zu stabilisieren. Dadurch kann es passieren, dass Entscheidungen mehrfach überdacht oder angepasst werden.";
     } else if (mid.key === "imp") {
       uncontrolled = isLeadership
@@ -275,14 +276,14 @@ function buildStressTexts(bg: BG, isLeadership: boolean, fuehrungstyp: string) {
         : "Unter sehr hohem Druck steigt der Wunsch, Entscheidungen schneller zu treffen. Die Person verlässt dann teilweise ihre sonst gründliche Vorgehensweise. Entscheidungen werden schneller getroffen, ohne alle Details vollständig zu prüfen. Dadurch kann die gewohnte Absicherung etwas geringer werden.";
     } else {
       uncontrolled = isLeadership
-        ? `Wenn der Druck stark steigt, versucht ${fk.toLowerCase()} neben Fakten auch stärker die Wirkung auf das Team zu berücksichtigen. Entscheidungen können dadurch länger dauern, weil sowohl sachliche Aspekte als auch zwischenmenschliche Auswirkungen bedacht werden.${fSuffix}`
+        ? `Wenn der Druck stark steigt, versucht ${fkLower} neben Fakten auch stärker die Wirkung auf das Team zu berücksichtigen. Entscheidungen können dadurch länger dauern, weil sowohl sachliche Aspekte als auch zwischenmenschliche Auswirkungen bedacht werden.${fSuffix}`
         : "Wenn der Druck stark steigt, versucht die Person neben Fakten auch stärker die Wirkung auf Menschen zu berücksichtigen. Entscheidungen können dadurch länger dauern, weil sowohl sachliche Aspekte als auch zwischenmenschliche Auswirkungen bedacht werden.";
     }
   } else {
     // top.key === "int"
     if (midSecClose) {
       uncontrolled = isLeadership
-        ? `Wenn der Druck sehr hoch wird, gerät ${fk.toLowerCase()} zwischen zwei unterschiedliche Entscheidungswege: schnelle Handlung und gründliche Analyse. Entscheidungen können dadurch länger dauern oder mehrfach angepasst werden.${fSuffix}`
+        ? `Wenn der Druck sehr hoch wird, gerät ${fkLower} zwischen zwei unterschiedliche Entscheidungswege: schnelle Handlung und gründliche Analyse. Entscheidungen können dadurch länger dauern oder mehrfach angepasst werden.${fSuffix}`
         : "Wenn der Druck sehr hoch wird, gerät die Person zwischen zwei unterschiedliche Entscheidungswege: schneller Handlung und gründlicher Analyse. Entscheidungen können dadurch länger dauern oder mehrfach angepasst werden.";
     } else if (mid.key === "imp") {
       uncontrolled = isLeadership
@@ -290,7 +291,7 @@ function buildStressTexts(bg: BG, isLeadership: boolean, fuehrungstyp: string) {
         : "Bei sehr hohem Druck steigt der Wunsch nach schneller Handlung. Die Person verlässt dann teilweise ihre sonst stark beziehungsorientierte Vorgehensweise und entscheidet direkter und spontaner. Für andere kann dies ungewohnt entschlossen oder plötzlich wirken.";
     } else {
       uncontrolled = isLeadership
-        ? `Unter starkem Druck versucht ${fk.toLowerCase()} verstärkt, Entscheidungen auch sachlich abzusichern. Dadurch kann sie länger über Optionen nachdenken oder zusätzliche Informationen einholen, bevor eine Entscheidung endgültig getroffen wird.${fSuffix}`
+        ? `Unter starkem Druck versucht ${fkLower} verstärkt, Entscheidungen auch sachlich abzusichern. Dadurch kann sie länger über Optionen nachdenken oder zusätzliche Informationen einholen, bevor eine Entscheidung endgültig getroffen wird.${fSuffix}`
         : "Unter starkem Druck versucht die Person verstärkt, Entscheidungen auch sachlich abzusichern. Dadurch kann sie länger über Optionen nachdenken oder zusätzliche Informationen einholen, bevor eine Entscheidung endgültig getroffen wird.";
     }
   }
@@ -298,11 +299,15 @@ function buildStressTexts(bg: BG, isLeadership: boolean, fuehrungstyp: string) {
   return { controlled, uncontrolled };
 }
 
+function lowerFirst(s: string): string {
+  return s.charAt(0).toLowerCase() + s.slice(1);
+}
+
 function buildTeamwirkung(data: ReportData) {
   const { isLeadership, dom, sec, fuehrungstyp, profileType } = data;
 
   if (isLeadership) {
-    const ft = fuehrungstyp.toLowerCase();
+    const ft = lowerFirst(fuehrungstyp);
     if (profileType === "balanced_all") {
       return `Die Stelle übernimmt ${ft} im Team. Die Führungskraft wechselt situativ zwischen verschiedenen Herangehensweisen – mal entschlossen und tempoorientiert, mal beziehungsorientiert, mal analytisch-strukturiert. Teammitglieder erleben eine flexible Führung, die sich an unterschiedliche Anforderungen anpassen kann. Die Herausforderung liegt darin, dabei eine klare und verlässliche Linie zu halten.`;
     }
@@ -422,7 +427,7 @@ function buildRahmenText(data: ReportData): string {
     parts.push(logikMap[data.arbeitslogik] || `Die Arbeitslogik ist ${data.arbeitslogik.toLowerCase()}.`);
   }
   if (data.isLeadership && data.fuehrungstyp) {
-    parts.push(`Die Stelle umfasst ${data.fuehrungstyp.toLowerCase()}.`);
+    parts.push(`Die Stelle umfasst ${lowerFirst(data.fuehrungstyp)}.`);
   }
   return parts.join(" ");
 }
