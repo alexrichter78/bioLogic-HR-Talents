@@ -1,6 +1,6 @@
 import { useLocation } from "wouter";
 import { Home, Briefcase, GitCompareArrows, Users, Bot } from "lucide-react";
-import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
+import logoSrc from "@assets/1_1773849007741.png";
 
 const NAV_ITEMS = [
   { label: "Home", subtitle: "", path: "/", icon: Home, disabled: false },

@@ -7,7 +7,7 @@ import { dominanceModeOf, labelComponent } from "@/lib/jobcheck-engine";
 import { computeSollIst, mapFuehrungsArt } from "@/lib/soll-ist-engine";
 import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
 import type { SollIstResult, Severity, FuehrungsArt } from "@/lib/soll-ist-engine";
-import logoPath from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
+import logoPath from "@assets/1_1773849007741.png";
 
 type BG = { imp: number; int: number; ana: number };
 type RoleDnaState = {

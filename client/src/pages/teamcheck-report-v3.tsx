@@ -10,7 +10,7 @@ import { ArrowLeft, Zap, Shield, Layers, Activity, Flame, Clock, Sparkles, Alert
 import { COMP_HEX, TC_SECTION_COLORS, BIO_COLORS } from "@/lib/bio-design";
 import { buildTeamCheckPdf } from "@/lib/teamcheck-pdf-builder";
 import { useToast } from "@/hooks/use-toast";
-import logoPath from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
+import logoPath from "@assets/1_1773849007741.png";
 
 function passungColor(p: string): string {
   if (p === "Passend") return BIO_COLORS.geeignet;

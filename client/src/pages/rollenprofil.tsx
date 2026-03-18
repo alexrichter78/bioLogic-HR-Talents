@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Download, AlertTriangle, BarChart3, Briefcase, Users } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE } from "@/data/berufe";
-import logoSrc from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
+import logoSrc from "@assets/1_1773849007741.png";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 

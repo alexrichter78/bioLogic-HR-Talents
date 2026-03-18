@@ -1,4 +1,4 @@
-import logoUrl from "@assets/bioLogic-Logo-Transparent_1771718118370.png";
+import logoUrl from "@assets/1_1773849007741.png";
 
 let cachedDataUrl: string | null = null;
 
