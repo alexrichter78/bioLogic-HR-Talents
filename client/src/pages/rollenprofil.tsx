@@ -1357,7 +1357,7 @@ export default function Rollenprofil() {
           {/* ── FOOTER ── */}
           <div style={{ marginTop: 40, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
             <p style={{ fontSize: 10, color: "#C7C7CC", margin: 0, letterSpacing: "0.02em" }}>
-              bioLogic RoleDynamics · Strukturanalyse · Erstellt am {new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
+              © {new Date().getFullYear()} bioLogic Talent Navigator · Stellenanalyse · Erstellt am {new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
             </p>
           </div>
           </div>
