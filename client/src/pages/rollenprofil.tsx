@@ -1359,7 +1359,6 @@ export default function Rollenprofil() {
                 {rollenBeschreibungIntro}
               </p>
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                <img src="/person-icon-colored.png" alt="" style={{ width: 52, height: 52, borderRadius: "50%", float: "left", marginRight: 14, marginBottom: 4, marginTop: 2 }} />
                 {rollenBeschreibungErgaenzung}
               </p>
             </div>
