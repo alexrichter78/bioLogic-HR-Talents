@@ -439,17 +439,17 @@ function buildKomponentenBedeutung(data: ReportData): { key: string; label: stri
     ana: {
       label: "Analytisch",
       color: COLORS.ana,
-      text: "In dieser Stelle heißt das: sauber abwägen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten. Ohne diese Fähigkeit entstehen schnell Fehler bei Planung, Kalkulation und Dokumentation.",
+      text: "Steht für sorgfältiges Abwägen, strukturiertes Organisieren von Abläufen und nachvollziehbares Vorbereiten von Entscheidungen. Fehlt diese Fähigkeit, entstehen Fehler bei Planung, Kalkulation und Dokumentation.",
     },
     imp: {
       label: "Impulsiv",
       color: COLORS.imp,
-      text: "In dieser Stelle heißt das: Aufgaben zügig anpacken, Prioritäten setzen und Ergebnisse liefern. Ohne diese Fähigkeit werden Entscheidungen aufgeschoben und Chancen verpasst.",
+      text: "Steht für zügiges Anpacken, klares Setzen von Prioritäten und konsequentes Liefern von Ergebnissen. Fehlt diese Fähigkeit, werden Entscheidungen aufgeschoben und Chancen verpasst.",
     },
     int: {
       label: "Intuitiv",
       color: COLORS.int,
-      text: "In dieser Stelle heißt das: erkennen, was Gesprächspartner oder das Team gerade brauchen, und die Kommunikation darauf abstimmen. Ohne diese Fähigkeit leidet die Zusammenarbeit und das Vertrauen sinkt.",
+      text: "Steht für das Erkennen, was Gesprächspartner oder das Team gerade brauchen, und ein gezieltes Abstimmen der Kommunikation darauf. Fehlt diese Fähigkeit, leidet die Zusammenarbeit und das Vertrauen sinkt.",
     },
   };
   const sorted = (["imp", "int", "ana"] as const)
@@ -1160,26 +1160,31 @@ export default function Rollenprofil() {
                 </p>
               </div>
               <div style={{ padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)", marginBottom: 16 }}>
+                <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: "0 0 16px", fontWeight: 400 }} lang="de">
+                  Jeder Mensch verfügt über die drei grundlegenden Denk- und Handlungsweisen Impulsiv, Intuitiv und Analytisch. Alle drei Anteile sind immer vorhanden. Der Unterschied liegt in ihrer Reihenfolge und Gewichtung.
+                  <br /><br />
+                  Diese Struktur prägt, wie Menschen im Alltag entscheiden, kommunizieren und handeln. Je nach Situation kann sich die sichtbare Wirkung verändern: im Arbeitsalltag, unter Stress oder in entspannten Situationen.
+                </p>
                 <ProfileBar label="Impulsiv" value={data.gesamt.imp} color={COLORS.imp} />
                 <div style={{ height: 8 }} />
                 <ProfileBar label="Intuitiv" value={data.gesamt.int} color={COLORS.int} />
                 <div style={{ height: 8 }} />
                 <ProfileBar label="Analytisch" value={data.gesamt.ana} color={COLORS.ana} />
-              </div>
 
-              <div style={{ marginBottom: 16 }}>
-                <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 10px" }}>Bedeutung der Komponenten</p>
-                {komponentenBedeutung.map((kb, i) => (
-                  <div key={i} style={{ marginBottom: i < komponentenBedeutung.length - 1 ? 10 : 0 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
-                      <div style={{ width: 7, height: 7, borderRadius: "50%", background: kb.color, flexShrink: 0 }} />
-                      <span style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F" }}>{kb.label}</span>
+                <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 10px" }}>Bedeutung der Komponenten</p>
+                  {komponentenBedeutung.map((kb, i) => (
+                    <div key={i} style={{ marginBottom: i < komponentenBedeutung.length - 1 ? 10 : 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
+                        <div style={{ width: 7, height: 7, borderRadius: "50%", background: kb.color, flexShrink: 0 }} />
+                        <span style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F" }}>{kb.label}</span>
+                      </div>
+                      <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: "0 0 0 13px" }} lang="de" data-testid={`text-bedeutung-${kb.key}`}>
+                        {kb.text}
+                      </p>
                     </div>
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: "0 0 0 13px" }} lang="de" data-testid={`text-bedeutung-${kb.key}`}>
-                      {kb.text}
-                    </p>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
 
               {profilkonflikt && (
