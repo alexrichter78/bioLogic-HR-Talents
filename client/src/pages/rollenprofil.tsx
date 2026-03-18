@@ -1163,7 +1163,7 @@ export default function Rollenprofil() {
                   <ProfileBar label="Analytisch" value={data.gesamt.ana} color={COLORS.ana} />
                 </div>
                 <div style={{ flex: 1, padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)", display: "flex", alignItems: "center" }}>
-                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de">
+                  <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: 0, fontWeight: 400 }} lang="de">
                     {strukturprofilText}
                   </p>
                 </div>
