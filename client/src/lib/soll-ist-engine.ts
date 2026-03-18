@@ -864,7 +864,7 @@ function buildCommunicationImpact(rk: ComponentKey, ck: ComponentKey, gapI: numb
 
   if (roleIsBalFull && ct) {
     const maxSingleGap = Math.max(gapI, gapN, gapA);
-    const sev = severity(maxSingleGap * 0.55);
+    const sev = severity(maxSingleGap * 0.65);
     const roleNeed = "Situative Kommunikation, die je nach Kontext direkt, empathisch oder sachlich-präzise erfolgt. Die Stelle verlangt kommunikative Vielseitigkeit.";
 
     let candidatePattern: string;
