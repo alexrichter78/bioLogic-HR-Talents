@@ -926,7 +926,7 @@ function ProfileBar({ label, value, color }: { label: string; value: number; col
         <div style={{
           width: value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 5), 100)}%`,
           height: 30, borderRadius: 8, background: color,
-          display: "flex", alignItems: "center", justifyContent: "center",
+          display: "flex", alignItems: "center", justifyContent: "flex-start", paddingLeft: 10,
           minWidth: value === 0 ? 0 : 44,
           transition: "width 300ms ease",
         }}>
