@@ -590,14 +590,41 @@ function buildFehlbesetzung(data: ReportData): { label: string; bullets: string[
     ],
   };
 
+  const riskHybridImpAna = {
+    label: "Wenn Tempo und Analyse sich gegenseitig blockieren",
+    bullets: [
+      "Schnelle Entscheidungen werden durch nachträgliche Überprüfung ausgebremst",
+      isLeadership ? "Das Team erlebt widersprüchliche Signale – mal Tempo, mal Kontrolle" : "Andere erleben ein Schwanken zwischen Aktionismus und Perfektionismus",
+      "Die zwischenmenschliche Ebene gerät in den Hintergrund, weil beide Seiten sachlich ausgerichtet sind",
+    ],
+  };
+
+  const riskHybridImpInt = {
+    label: "Wenn Handeln und Harmonie in Konflikt geraten",
+    bullets: [
+      "Schnelle Entscheidungen kollidieren mit dem Wunsch, alle einzubinden",
+      isLeadership ? "Das Team erlebt wechselnde Führungsstile – mal durchsetzungsstark, mal konsensorientiert" : "Andere erleben ein Schwanken zwischen Direktheit und Rücksichtnahme",
+      "Analytische Absicherung und Qualitätskontrolle kommen zu kurz",
+    ],
+  };
+
+  const riskHybridAnaInt = {
+    label: "Wenn Gründlichkeit und Abstimmung die Umsetzung verzögern",
+    bullets: [
+      "Fundierte Analyse und persönliche Abstimmung beanspruchen zu viel Zeit",
+      isLeadership ? "Das Team wartet auf Entscheidungen, die wiederholt geprüft und besprochen werden" : "Andere warten auf Ergebnisse, die immer weiter verfeinert werden",
+      "Umsetzungstempo und Entscheidungsstärke fehlen, wenn schnelles Handeln gefragt ist",
+    ],
+  };
+
   if (profileType === "balanced_all") {
     risks.push(riskImp, riskInt, riskAna);
   } else if (profileType === "hybrid_imp_ana") {
-    risks.push(riskImp, riskAna, riskInt);
+    risks.push(riskHybridImpAna, riskInt);
   } else if (profileType === "hybrid_imp_int") {
-    risks.push(riskImp, riskInt, riskAna);
+    risks.push(riskHybridImpInt, riskAna);
   } else if (profileType === "hybrid_ana_int") {
-    risks.push(riskAna, riskInt, riskImp);
+    risks.push(riskHybridAnaInt, riskImp);
   } else if (dom.key === "imp") {
     const riskForSec = sec.key === "int" ? riskInt : riskAna;
     const riskForWk = wk.key === "int" ? riskInt : riskAna;
