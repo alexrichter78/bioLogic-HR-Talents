@@ -631,14 +631,35 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
 }
 
 function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapA: number, cand: string): ImpactArea {
-  const sev = severity(rk === "analytisch" && ck !== "analytisch" ? gapA + 5 : Math.max(gapI, gapA));
+  const maxGap = Math.max(gapI, gapA);
+  const sev = rk === ck ? severity(maxGap * 0.6) : severity(rk === "analytisch" ? gapA + 5 : maxGap);
   const s = Subj(cand);
 
   let roleNeed: string;
   let candidatePattern: string;
   let risk: string;
 
-  if (rk === "analytisch") {
+  if (rk === ck) {
+    if (rk === "analytisch") {
+      roleNeed = "Sorgfältige, prüforientierte Entscheidungen. Optionen abwägen, Risiken prüfen, erst dann handeln.";
+      candidatePattern = `${s} arbeitet ebenfalls analytisch und prüft Entscheidungen gründlich. Die Grundlogik stimmt überein.`;
+      risk = maxGap >= 8
+        ? "Die Entscheidungslogik passt in der Grundrichtung. Unterschiede in der Gewichtung der Nebenbereiche können aber dazu führen, dass Tempo oder Kommunikation unterschiedlich priorisiert werden."
+        : "Entscheidungslogik passt zur Stellenanforderung. Die Art, wie Entscheidungen getroffen werden, stimmt mit den Erwartungen überein.";
+    } else if (rk === "impulsiv") {
+      roleNeed = "Schnelle, ergebnisorientierte Entscheidungen. Klare Richtung und direkte Umsetzung vor langer Prüfung.";
+      candidatePattern = `${s} entscheidet ebenfalls schnell und handlungsorientiert. Die Grunddynamik stimmt.`;
+      risk = maxGap >= 8
+        ? "Die Entscheidungsgeschwindigkeit passt. In Nebenbereichen wie Absicherung oder Abstimmung können sich aber unterschiedliche Gewichtungen zeigen."
+        : "Entscheidungslogik passt zur Stellenanforderung. Die Art, wie Entscheidungen getroffen werden, stimmt mit den Erwartungen überein.";
+    } else {
+      roleNeed = "Entscheidungen, die Kontext, Zusammenarbeit und zwischenmenschliche Wirkung berücksichtigen. Abstimmung im Team vor Geschwindigkeit.";
+      candidatePattern = `${s} entscheidet ebenfalls kontextbezogen und bezieht das Umfeld aktiv ein. Die Grundhaltung stimmt.`;
+      risk = maxGap >= 8
+        ? "Die Kommunikationsorientierung passt. In Nebenbereichen wie Strukturklarheit oder Umsetzungstempo können aber Unterschiede auftreten."
+        : "Entscheidungslogik passt zur Stellenanforderung. Die Art, wie Entscheidungen getroffen werden, stimmt mit den Erwartungen überein.";
+    }
+  } else if (rk === "analytisch") {
     roleNeed = "Sorgfältige, prüforientierte Entscheidungen. Optionen abwägen, Risiken prüfen, erst dann handeln.";
     if (ck === "impulsiv") {
       candidatePattern = `${s} entscheidet deutlich schneller und handelt oft, bevor alle Informationen vorliegen.`;
@@ -706,7 +727,8 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
 }
 
 function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, fuehrungsArt: FuehrungsArt): ImpactArea {
-  const sev = severity(rk !== ck ? Math.max(gapI, gapN, gapA) * 0.7 : 0);
+  const maxGap = Math.max(gapI, gapN, gapA);
+  const sev = severity(rk !== ck ? maxGap * 0.7 : maxGap * 0.4);
 
   let roleNeed: string;
   let candidatePattern: string;
@@ -762,7 +784,9 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
       risk = `Führung wirkt formal und distanziert. Erwartet werden persönliche Nähe und offene Kommunikation, geliefert werden Regeln und Prozesse.${leadershipSuffix}`;
     }
   } else {
-    risk = "Führungsstil passt zur Stellenanforderung. Die Art, wie Orientierung gegeben wird, stimmt mit den Erwartungen des Teams überein.";
+    risk = maxGap >= 10
+      ? "Die Führungsrichtung stimmt, aber unterschiedliche Gewichtungen in den Nebenbereichen beeinflussen, wie Orientierung gegeben wird. Regelmässiges Feedback zur Führungswirkung ist ratsam."
+      : "Führungsstil passt zur Stellenanforderung. Die Art, wie Orientierung gegeben wird, stimmt mit den Erwartungen des Teams überein.";
   }
 
   return { id: "leadership", label: "Führungswirkung", severity: sev, roleNeed, candidatePattern, risk };
@@ -807,7 +831,10 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
       risk = "Kultur wird formaler und distanzierter. Persönliche Verbindung und offener Austausch nehmen ab, das Teamgefühl leidet.";
     }
   } else {
-    risk = "Kulturwirkung stimmt mit der Stellenanforderung überein. Die Art, wie das Arbeitsumfeld geprägt wird, passt zu den Erwartungen.";
+    const cMaxGap = Math.max(gapI, gapN, gapA);
+    risk = cMaxGap >= 10
+      ? "Die kulturelle Grundrichtung stimmt. Da die Nebenbereiche unterschiedlich gewichtet werden, kann sich die gelebte Kultur in einzelnen Aspekten von der Stellenerwartung unterscheiden."
+      : "Kulturwirkung stimmt mit der Stellenanforderung überein. Die Art, wie das Arbeitsumfeld geprägt wird, passt zu den Erwartungen.";
   }
 
   return { id: "culture", label: "Kulturwirkung", severity: sev, roleNeed, candidatePattern, risk };
