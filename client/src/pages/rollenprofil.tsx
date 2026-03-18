@@ -1327,7 +1327,7 @@ export default function Rollenprofil() {
             </p>
             <div style={{ display: "flex", gap: 14, padding: "12px 0" }}>
               <div style={{ width: 3, flexShrink: 0, borderRadius: 2, background: "#FF3B30" }} />
-              <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.75, margin: 0 }}>
+              <p style={{ fontSize: 14, color: "#FF3B30", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 Die Aussagen beschreiben dabei keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse ist wertfrei zu verstehen und dient als Orientierung für die Einschätzung von Passung und Wirksamkeit. Da jede Person individuell ist, ersetzt sie keine Einzelfallbetrachtung, sondern ergänzt diese um eine strukturierte und fundierte Entscheidungsgrundlage.
               </p>
             </div>
