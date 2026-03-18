@@ -510,6 +510,21 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
   setC(C.black);
   checkPage(10);
   doc.text("Spannungsfelder der Stelle", ML, y);
+  y += 6;
+  checkPage(22);
+  const disclaimerText = "Die Aussagen beschreiben dabei keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse ist wertfrei zu verstehen und dient als Orientierung für die Einschätzung von Passung und Wirksamkeit. Da jede Person individuell ist, ersetzt sie keine Einzelfallbetrachtung, sondern ergänzt diese um eine strukturierte und fundierte Entscheidungsgrundlage.";
+  const disclaimerLines = wrap(disclaimerText, CW - 8, 8);
+  const disclaimerH = disclaimerLines.length * 4 + 4;
+  doc.setDrawColor(255, 59, 48);
+  doc.setLineWidth(0.7);
+  doc.line(ML, y - 2, ML, y + disclaimerH - 2);
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "normal");
+  setC([110, 110, 115]);
+  disclaimerLines.forEach(line => {
+    doc.text(line, ML + 6, y);
+    y += 4;
+  });
   y += 5;
   printText("Typische Spannungen dieser Stelle sind:", ML, CW, 8.5, C.dark, 4.3);
   y += 1;
