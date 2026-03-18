@@ -7,7 +7,7 @@ import { dominanceModeOf, labelComponent } from "@/lib/jobcheck-engine";
 import { computeSollIst, mapFuehrungsArt } from "@/lib/soll-ist-engine";
 import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
 import type { SollIstResult, Severity, FuehrungsArt } from "@/lib/soll-ist-engine";
-import logoPath from "@assets/1_1773849007741.png";
+import logoPath from "@assets/LOGO_bio_1773853681939.png";
 
 type BG = { imp: number; int: number; ana: number };
 type RoleDnaState = {
@@ -615,18 +615,20 @@ export default function SollIstBericht() {
             <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }} data-testid="print-report-card">
 
               {/* ─── DARK HEADER (nur Logo + Titel) ─── */}
-              <div style={{ background: "linear-gradient(135deg, #343A48, #2A2F3A)", padding: "32px 44px 28px", position: "relative" }} data-testid="section-header">
+              <div style={{ background: "linear-gradient(135deg, #343A48, #2A2F3A)", padding: "36px 44px 32px", position: "relative" }} data-testid="section-header">
 
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <img src={logoPath} alt="bioLogic" style={{ height: 108, opacity: 1 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                    <div style={{ width: 1, height: 24, background: "rgba(255,255,255,0.25)" }} />
-                    <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.7)", letterSpacing: "0.16em", textTransform: "uppercase" }}>Passungsbericht</span>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <div>
+                    <img src={logoPath} alt="bioLogic" style={{ height: 52, marginBottom: 14 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                    <div style={{ display: "flex", alignItems: "center", gap: 0, marginBottom: 18 }}>
+                      <div style={{ width: 28, height: 1, background: "rgba(255,255,255,0.25)", marginRight: 10 }} />
+                      <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.50)", letterSpacing: "0.18em", textTransform: "uppercase" }}>Passungsbericht</span>
+                    </div>
                   </div>
                   <button
                     onClick={exportPdf}
                     disabled={isExportingPdf}
-                    style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 16px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.08)", fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.85)", cursor: isExportingPdf ? "wait" : "pointer", opacity: isExportingPdf ? 0.6 : 1, transition: "all 0.15s ease", backdropFilter: "blur(8px)" }}
+                    style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 16px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.06)", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.75)", cursor: isExportingPdf ? "wait" : "pointer", opacity: isExportingPdf ? 0.6 : 1, transition: "all 0.15s ease", backdropFilter: "blur(8px)" }}
                     data-testid="button-export-pdf"
                   >
                     {isExportingPdf ? <Loader2 style={{ width: 14, height: 14, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 14, height: 14 }} />}
@@ -634,7 +636,7 @@ export default function SollIstBericht() {
                   </button>
                 </div>
 
-                <h1 style={{ fontSize: 26, fontWeight: 700, color: "#FFFFFF", margin: "0 0 6px", letterSpacing: "-0.02em", lineHeight: 1.2 }} data-testid="text-page-title">
+                <h1 style={{ fontSize: 28, fontWeight: 700, color: "#FFFFFF", margin: "0 0 6px", letterSpacing: "-0.02em", lineHeight: 1.2 }} data-testid="text-page-title">
                   {result.roleName}
                 </h1>
 
@@ -1081,7 +1083,7 @@ export default function SollIstBericht() {
 
               <div style={{ marginTop: 48, paddingTop: 20, borderTop: "1px solid rgba(0,0,0,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <img src={logoPath} alt="bioLogic" style={{ height: 54, opacity: 0.4 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                  <img src={logoPath} alt="bioLogic" style={{ height: 28, opacity: 0.35 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                   <span style={{ fontSize: 11, fontWeight: 500, color: "#C0C0C5", letterSpacing: "0.02em" }}>Passungsanalyse</span>
                 </div>
                 <span style={{ fontSize: 11, color: "#C0C0C5" }}>

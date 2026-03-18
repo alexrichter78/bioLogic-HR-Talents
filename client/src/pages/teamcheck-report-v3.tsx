@@ -10,7 +10,7 @@ import { ArrowLeft, Zap, Shield, Layers, Activity, Flame, Clock, Sparkles, Alert
 import { COMP_HEX, TC_SECTION_COLORS, BIO_COLORS } from "@/lib/bio-design";
 import { buildTeamCheckPdf } from "@/lib/teamcheck-pdf-builder";
 import { useToast } from "@/hooks/use-toast";
-import logoPath from "@assets/1_1773849007741.png";
+import logoPath from "@assets/LOGO_bio_1773853681939.png";
 
 function passungColor(p: string): string {
   if (p === "Passend") return BIO_COLORS.geeignet;
@@ -172,17 +172,19 @@ export default function TeamCheckReportV3() {
           <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }}>
 
             {/* ─── EXECUTIVE DECISION PAGE (Header + consolidated Section 1) ─── */}
-            <div style={{ background: "linear-gradient(135deg, #343A48, #2A2F3A)", padding: "32px 44px 0", position: "relative" }} data-testid="v3-header">
+            <div style={{ background: "linear-gradient(135deg, #343A48, #2A2F3A)", padding: "36px 44px 0", position: "relative" }} data-testid="v3-header">
 
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <img src={logoPath} alt="bioLogic" style={{ height: 108, opacity: 1 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                  <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.15)" }} />
-                  <span style={{ fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.45)", letterSpacing: "0.16em", textTransform: "uppercase" }}>TeamCheck Bericht</span>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <div>
+                  <img src={logoPath} alt="bioLogic" style={{ height: 52, marginBottom: 14 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                  <div style={{ display: "flex", alignItems: "center", gap: 0, marginBottom: 18 }}>
+                    <div style={{ width: 28, height: 1, background: "rgba(255,255,255,0.25)", marginRight: 10 }} />
+                    <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.50)", letterSpacing: "0.18em", textTransform: "uppercase" }}>TeamCheck Bericht</span>
+                  </div>
                 </div>
               </div>
 
-              <h1 style={{ fontSize: 26, fontWeight: 700, color: "#FFFFFF", margin: "0 0 22px", letterSpacing: "-0.02em", lineHeight: 1.2 }} data-testid="v3-title">
+              <h1 style={{ fontSize: 28, fontWeight: 700, color: "#FFFFFF", margin: "0 0 22px", letterSpacing: "-0.02em", lineHeight: 1.2 }} data-testid="v3-title">
                 {result.roleTitle || "TeamCheck"}
               </h1>
 

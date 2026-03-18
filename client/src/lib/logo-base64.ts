@@ -1,4 +1,4 @@
-import logoUrl from "@assets/1_1773849007741.png";
+import logoUrl from "@assets/LOGO_bio_1773853681939.png";
 
 let cachedDataUrl: string | null = null;
 

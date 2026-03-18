@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Download, AlertTriangle, BarChart3, Briefcase, Users } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE } from "@/data/berufe";
-import logoSrc from "@assets/1_1773849007741.png";
+import logoSrc from "@assets/LOGO_bio_1773853681939.png";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 
@@ -1088,31 +1088,33 @@ export default function Rollenprofil() {
         <div ref={reportRef} style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }}>
 
           {/* ── DARK HEADER ── */}
-          <div style={{ background: "linear-gradient(135deg, #343A48, #2A2F3A)", padding: "32px 44px 28px", position: "relative" }} data-testid="bericht-header">
+          <div style={{ background: "linear-gradient(135deg, #343A48, #2A2F3A)", padding: "36px 44px 32px", position: "relative" }} data-testid="bericht-header">
 
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <img src={logoSrc} alt="bioLogic" style={{ height: 108, opacity: 1 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                <div style={{ width: 1, height: 24, background: "rgba(255,255,255,0.25)" }} />
-                <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.7)", letterSpacing: "0.16em", textTransform: "uppercase" }}>Strukturanalyse</span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div>
+                <img src={logoSrc} alt="bioLogic" style={{ height: 52, marginBottom: 14 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                <div style={{ display: "flex", alignItems: "center", gap: 0, marginBottom: 18 }}>
+                  <div style={{ width: 28, height: 1, background: "rgba(255,255,255,0.25)", marginRight: 10 }} />
+                  <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.50)", letterSpacing: "0.18em", textTransform: "uppercase" }}>Strukturanalyse</span>
+                </div>
               </div>
               <button
                 onClick={handlePDF}
                 disabled={pdfLoading}
                 data-testid="button-pdf-export"
-                style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 16px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.08)", fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.85)", cursor: pdfLoading ? "wait" : "pointer", opacity: pdfLoading ? 0.6 : 1, transition: "all 0.15s ease", backdropFilter: "blur(8px)" }}
+                style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 16px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.06)", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.75)", cursor: pdfLoading ? "wait" : "pointer", opacity: pdfLoading ? 0.6 : 1, transition: "all 0.15s ease", backdropFilter: "blur(8px)" }}
               >
                 <Download style={{ width: 14, height: 14 }} />
                 {pdfLoading ? "Wird erstellt..." : "PDF"}
               </button>
             </div>
 
-            <h1 style={{ fontSize: 26, fontWeight: 700, color: "#FFFFFF", margin: "0 0 6px", letterSpacing: "-0.02em", lineHeight: 1.2 }} data-testid="text-report-title">
+            <h1 style={{ fontSize: 28, fontWeight: 700, color: "#FFFFFF", margin: "0 0 6px", letterSpacing: "-0.02em", lineHeight: 1.2 }} data-testid="text-report-title">
               Rollen-DNA: {data.beruf}
             </h1>
 
             {data.bereich && (
-              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", margin: "0 0 0", fontWeight: 500 }}>{data.bereich}</p>
+              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.50)", margin: "0 0 0", fontWeight: 500 }}>{data.bereich}</p>
             )}
 
           </div>
