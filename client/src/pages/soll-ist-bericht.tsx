@@ -619,7 +619,7 @@ export default function SollIstBericht() {
 
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <img src={logoPath} alt="bioLogic" style={{ height: 36, opacity: 1 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                    <img src={logoPath} alt="bioLogic" style={{ height: 108, opacity: 1 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                     <div style={{ width: 1, height: 24, background: "rgba(255,255,255,0.25)" }} />
                     <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.7)", letterSpacing: "0.16em", textTransform: "uppercase" }}>Passungsbericht</span>
                   </div>
@@ -1081,7 +1081,7 @@ export default function SollIstBericht() {
 
               <div style={{ marginTop: 48, paddingTop: 20, borderTop: "1px solid rgba(0,0,0,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <img src={logoPath} alt="bioLogic" style={{ height: 18, opacity: 0.4 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                  <img src={logoPath} alt="bioLogic" style={{ height: 54, opacity: 0.4 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                   <span style={{ fontSize: 11, fontWeight: 500, color: "#C0C0C5", letterSpacing: "0.02em" }}>Passungsanalyse</span>
                 </div>
                 <span style={{ fontSize: 11, color: "#C0C0C5" }}>
