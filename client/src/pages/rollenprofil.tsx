@@ -439,7 +439,7 @@ function buildSpannungsfelder(data: ReportData): { fields: string[]; fazit: stri
     }
     if (wk.key === "imp") fields.push("Reflexion und Gründlichkeit vs. Handlungsdruck");
     else fields.push("Sachliche Korrektheit vs. Beziehungspflege");
-    fazit = "Die Stelle verlangt, diese Gegensätze situativ auszubalancieren, ohne dabei die fachliche Qualität und Prozesssicherheit zu gefährden.";
+    fazit = "Die Stelle verlangt, diese Gegensätze situativ auszubalancieren, ohne dabei die fachliche Qualität und Ergebnissicherheit zu gefährden.";
   }
 
   return { fields, fazit };
