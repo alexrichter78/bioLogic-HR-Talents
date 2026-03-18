@@ -878,12 +878,12 @@ export default function Rollenprofil() {
       const introText = (() => {
         if (data.dom.key === "int") return `Diese Aufgaben verlangen eine Persönlichkeit, die ${data.isLeadership ? "ein Team führen kann und " : ""}schnell Vertrauen aufbaut, Bedürfnisse erkennt und im persönlichen Kontakt überzeugt. Entscheidend ist die Fähigkeit, Menschen zu gewinnen.`;
         if (data.dom.key === "imp") return `Diese Aufgaben erfordern eine Persönlichkeit, die ${data.isLeadership ? "ein Team antreibt und " : ""}schnell entscheidet, klar priorisiert und Ergebnisse konsequent liefert. Entscheidend ist die Fähigkeit, auch bei unvollständiger Informationslage handlungsfähig zu bleiben.`;
-        return `Diese Aufgaben verlangen eine Persönlichkeit, die ${data.isLeadership ? "ein Team methodisch führt und " : ""}strukturiert arbeitet, Qualität sichert und fundierte Entscheidungsgrundlagen liefert. Entscheidend ist die Fähigkeit, sorgfältig und präzise zu arbeiten.`;
+        return `Diese Anforderungen verlangen eine Persönlichkeit, die ${data.isLeadership ? "ein Team methodisch führt und " : ""}strukturiert, sorgfältig und verlässlich arbeitet, klare Standards einhält und auch bei wiederkehrenden Abläufen mit hoher Präzision vorgeht. Entscheidend sind ein ausgeprägtes Qualitätsbewusstsein, ein methodisches Vorgehen und die Fähigkeit, Aufgaben konsequent und gewissenhaft umzusetzen.`;
       })();
       const ergaenzung = (() => {
         if (data.dom.key === "int") return data.sec.key === "ana" ? "Ohne strukturierte Arbeitsweise entstehen schnell Fehler bei Organisation, Kalkulation und Dokumentation. Die Stelle verlangt beides: persönlichen Kontakt und verlässliche Abläufe." : "Ohne Durchsetzungsfähigkeit bleiben wichtige Entscheidungen offen oder werden zu lange verhandelt. Die Stelle verlangt Nähe und Klarheit gleichermaßen.";
         if (data.dom.key === "imp") return data.sec.key === "int" ? "Ohne die Fähigkeit, Beziehungen zu pflegen, verliert die Stelle ihre Wirkung im Team. Wer nur Ergebnisse fordert, ohne Menschen mitzunehmen, erzeugt Widerstand statt Leistung." : "Ohne Sorgfalt entstehen Fehler bei Qualität, Dokumentation und Prozessen. Die Stelle verlangt schnelles Handeln und trotzdem Präzision.";
-        return data.sec.key === "int" ? "Ohne Kommunikationsgeschick bleiben Analysen im Elfenbeinturm. Die Stelle verlangt, Ergebnisse verständlich zu vermitteln und Akzeptanz im Team zu schaffen." : "Ohne Handlungsfähigkeit führen Analysen nicht zu Ergebnissen. Die Stelle verlangt, den Punkt zu erkennen, an dem genug geprüft wurde, und dann umzusetzen.";
+        return data.sec.key === "int" ? "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Abstimmung und Kommunikationsfähigkeit, um Abläufe im Team verlässlich zu unterstützen, Rückmeldungen verständlich weiterzugeben und eine reibungslose Zusammenarbeit sicherzustellen." : "Ohne Handlungsfähigkeit führen Analysen nicht zu Ergebnissen. Die Stelle verlangt, den Punkt zu erkennen, an dem genug geprüft wurde, und dann umzusetzen.";
       })();
 
       const hochNamen = hochItems.slice(0, 3).map((t: any) => cleanTaskName(t.name));
@@ -1007,7 +1007,7 @@ export default function Rollenprofil() {
     } else if (data.dom.key === "imp") {
       return `Diese Aufgaben erfordern eine Persönlichkeit, die ${data.isLeadership ? "ein Team antreibt und " : ""}schnell entscheidet, klar priorisiert und Ergebnisse konsequent liefert. Entscheidend ist die Fähigkeit, auch bei unvollständiger Informationslage handlungsfähig zu bleiben.`;
     } else {
-      return `Diese Aufgaben verlangen eine Persönlichkeit, die ${data.isLeadership ? "ein Team methodisch führt und " : ""}strukturiert arbeitet, Qualität sichert und fundierte Entscheidungsgrundlagen liefert. Entscheidend ist die Fähigkeit, sorgfältig und präzise zu arbeiten.`;
+      return `Diese Anforderungen verlangen eine Persönlichkeit, die ${data.isLeadership ? "ein Team methodisch führt und " : ""}strukturiert, sorgfältig und verlässlich arbeitet, klare Standards einhält und auch bei wiederkehrenden Abläufen mit hoher Präzision vorgeht. Entscheidend sind ein ausgeprägtes Qualitätsbewusstsein, ein methodisches Vorgehen und die Fähigkeit, Aufgaben konsequent und gewissenhaft umzusetzen.`;
     }
   })();
 
@@ -1022,7 +1022,7 @@ export default function Rollenprofil() {
         : "Ohne Sorgfalt entstehen Fehler bei Qualität, Dokumentation und Prozessen. Die Stelle verlangt schnelles Handeln und trotzdem Präzision.";
     } else {
       return data.sec.key === "int"
-        ? "Ohne Kommunikationsgeschick bleiben Analysen im Elfenbeinturm. Die Stelle verlangt, Ergebnisse verständlich zu vermitteln und Akzeptanz im Team zu schaffen."
+        ? "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Abstimmung und Kommunikationsfähigkeit, um Abläufe im Team verlässlich zu unterstützen, Rückmeldungen verständlich weiterzugeben und eine reibungslose Zusammenarbeit sicherzustellen."
         : "Ohne Handlungsfähigkeit führen Analysen nicht zu Ergebnissen. Die Stelle verlangt, den Punkt zu erkennen, an dem genug geprüft wurde, und dann umzusetzen.";
     }
   })();
