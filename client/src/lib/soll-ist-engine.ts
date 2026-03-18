@@ -355,24 +355,26 @@ export function computeSollIst(
   }
 
   const rk = rDom.top1.key;
+  const rk2 = rDom.top2.key;
   const ck = cDom.top1.key;
   const cn = candidateName || "Die Person";
+  const isDualDomRole = roleDualDom;
 
   const rConst = detectConstellation(rt);
   const cConst = detectConstellation(ct);
 
   const summaryText = buildSummary(roleName, cn, fitLabel, rk, ck, gapLevel, rt, ct, rConst, cConst);
-  const executiveBullets = buildExecutiveBullets(rk, ck, gapLevel, fitLabel, cn, rt, ct);
+  const executiveBullets = buildExecutiveBullets(rk, ck, gapLevel, fitLabel, cn, rt, ct, isDualDomRole, rk2);
   const constellationRisks = buildConstellationRisks(rk, ck, gapLevel, rt, ct);
   const dominanceShiftText = buildDominanceShift(roleName, cn, rk, ck, rt, ct, rConst, cConst);
   const stressBehavior = buildStressBehavior(cConst, ct, cn, gapLevel);
   const impactAreas = buildImpactAreas(rk, ck, rt, ct, cn, fuehrungsArt);
   const riskTimeline = buildRiskTimeline(roleName, cn, rk, ck, gapLevel);
   const devGap = fitRating === "NICHT_GEEIGNET" ? "hoch" : (matchCheckFit ? controlIntensity : gapLevel);
-  const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildDevelopment(devGap, rk, ck, controlIntensity, cn);
+  const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildDevelopment(devGap, rk, ck, controlIntensity, cn, isDualDomRole, rk2);
   const actions = buildActions(rk, ck, gapLevel, controlIntensity);
   const integrationsplan = buildIntegrationsplan(roleName, cn, fitLabel, rk, ck, gapLevel, controlIntensity, fuehrungsArt, rt, ct);
-  const finalText = buildFinal(roleName, cn, fitLabel, controlIntensity, rk, ck, fuehrungsArt);
+  const finalText = buildFinal(roleName, cn, fitLabel, controlIntensity, rk, ck, fuehrungsArt, isDualDomRole, rk2);
 
   return {
     roleName,
@@ -451,13 +453,20 @@ export function constellationCandText(c: ConstellationType, cand: string): strin
   return texts[c];
 }
 
-function buildExecutiveBullets(rk: ComponentKey, ck: ComponentKey, gapLevel: string, fitLabel: string, cand: string, rt: Triad, ct: Triad): string[] {
+function dualRoleDesc(rk: ComponentKey, rk2: ComponentKey): string {
+  return `${compShort(rk)} und ${compShort(rk2)} gleichermassen`;
+}
+
+function buildExecutiveBullets(rk: ComponentKey, ck: ComponentKey, gapLevel: string, fitLabel: string, cand: string, rt: Triad, ct: Triad, isDualDomRole = false, rk2?: ComponentKey): string[] {
   const bullets: string[] = [];
+  const roleDesc = isDualDomRole && rk2 ? dualRoleDesc(rk, rk2) : compDesc(rk);
 
   if (rk === ck) {
-    bullets.push(`Die Stelle erfordert ${compDesc(rk)}. ${Subj(cand)} bringt dieselbe Grundausrichtung mit.`);
+    bullets.push(`Die Stelle erfordert ${roleDesc}. ${Subj(cand)} bringt dieselbe Grundausrichtung mit.`);
+  } else if (isDualDomRole && rk2 && (ck === rk || ck === rk2)) {
+    bullets.push(`Die Stelle erfordert ${roleDesc}. ${Subj(cand)} bringt ${compDesc(ck)} als Schwerpunkt mit – deckt damit einen der beiden Kernbereiche ab.`);
   } else {
-    bullets.push(`Die Stelle erfordert ${compDesc(rk)}. ${Subj(cand)} setzt auf ${compDesc(ck)}.`);
+    bullets.push(`Die Stelle erfordert ${roleDesc}. ${Subj(cand)} setzt auf ${compDesc(ck)}.`);
   }
 
   const gapI = Math.abs(rt.impulsiv - ct.impulsiv);
@@ -805,11 +814,29 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
 }
 
 function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: ComponentKey, gap: string): RiskPhase[] {
-  if (rk === ck || gap === "gering") {
+  if (rk === ck && gap === "gering") {
     return [
       { label: "Kurzfristig", period: "0 - 3 Monate", text: `Die Stelle ${role} verlangt ${compDesc(rk)}. Die Arbeitslogik passt. Die Einarbeitung verläuft voraussichtlich reibungslos. Nur in Einzelfällen muss nachgesteuert werden.` },
       { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die Stellenanforderungen werden stabil abgedeckt. In den sekundären Bereichen treten kleinere Abweichungen auf. Regelmässige Zielgespräche helfen, diese frühzeitig zu erkennen.` },
       { label: "Langfristig", period: "12+ Monate", text: `Die Stellenanforderungen werden langfristig stabil erfüllt. Der Führungsaufwand bleibt gering. Halbjährliche Überprüfungen genügen.` },
+    ];
+  }
+
+  if (rk === ck && gap !== "gering") {
+    return [
+      { label: "Kurzfristig", period: "0 - 3 Monate", text: `Die Stelle ${role} verlangt ${compDesc(rk)}. ${Subj(cand)} arbeitet in dieselbe Richtung, gewichtet aber die Nebenbereiche anders. Bereits in der Einarbeitung sollte gezielt auf diese Unterschiede geachtet werden.` },
+      { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die Grundrichtung stimmt, aber die Abweichungen in den sekundären Bereichen werden im Alltag spürbar. Ohne gezielte Steuerung können sich diese Unterschiede verfestigen. Regelmässige Zielgespräche und klare Erwartungen sind notwendig.` },
+      { label: "Langfristig", period: "12+ Monate", text: gap === "hoch"
+          ? `Trotz gleicher Grundausrichtung bleibt der Führungsaufwand erhöht. Die Nebenbereich-Abweichungen erfordern dauerhafte Aufmerksamkeit. Es sollte geprüft werden, ob der Steuerungsaufwand langfristig tragbar ist.`
+          : `Mit gezielter Führung lassen sich die Unterschiede in den Nebenbereichen dauerhaft ausgleichen. Halbjährliche Überprüfung empfohlen, um sicherzustellen, dass die Passung stabil bleibt.` },
+    ];
+  }
+
+  if (gap === "gering") {
+    return [
+      { label: "Kurzfristig", period: "0 - 3 Monate", text: `Die Stelle ${role} verlangt ${compDesc(rk)}. ${Subj(cand)} bringt eine andere Grundausrichtung mit, die Abweichungen sind aber gering. Die Einarbeitung verläuft voraussichtlich ohne grössere Reibung.` },
+      { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die geringen Abweichungen bleiben im Alltag gut steuerbar. Regelmässiges Feedback hilft, die Passung dauerhaft zu sichern.` },
+      { label: "Langfristig", period: "12+ Monate", text: `Die Stellenanforderungen werden langfristig stabil abgedeckt. Der Führungsaufwand bleibt überschaubar. Halbjährliche Überprüfungen genügen.` },
     ];
   }
 
@@ -870,13 +897,14 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
   ];
 }
 
-function buildDevelopment(gap: string, rk: ComponentKey, ck: ComponentKey, control: string, cand: string): { level: number; label: string; text: string } {
+function buildDevelopment(gap: string, rk: ComponentKey, ck: ComponentKey, control: string, cand: string, isDualDomRole = false, rk2?: ComponentKey): { level: number; label: string; text: string } {
   const s = Subj(cand);
+  const roleDesc = isDualDomRole && rk2 ? dualRoleDesc(rk, rk2) : compDesc(rk);
   if (gap === "gering") {
     return {
       level: 4,
       label: "hoch",
-      text: `Die Stelle verlangt ${compDesc(rk)}. ${s} bringt genau das mit. In einzelnen Bereichen ist Feinabstimmung nötig, aber die Grundlage stimmt. Mit klaren Erwartungen und guter Einarbeitung ist eine stabile Entwicklung realistisch.`,
+      text: `Die Stelle verlangt ${roleDesc}. ${s} bringt genau das mit. In einzelnen Bereichen ist Feinabstimmung nötig, aber die Grundlage stimmt. Mit klaren Erwartungen und guter Einarbeitung ist eine stabile Entwicklung realistisch.`,
     };
   }
   if (gap === "mittel") {
@@ -884,16 +912,16 @@ function buildDevelopment(gap: string, rk: ComponentKey, ck: ComponentKey, contr
       level: 3,
       label: "mittel",
       text: rk === ck
-        ? `Die Stelle verlangt ${compDesc(rk)}. ${s} arbeitet in dieselbe Richtung, muss aber in einzelnen Bereichen noch gezielt dazulernen. Mit klaren Zielen und regelmässigem Feedback ist das gut machbar.`
-        : `Die Stelle verlangt ${compDesc(rk)}. ${s} arbeitet eher über ${compDesc(ck)}. Die Anpassung ist möglich, braucht aber klare Führung und konkrete Ziele über mehrere Monate.`,
+        ? `Die Stelle verlangt ${roleDesc}. ${s} arbeitet in dieselbe Richtung, muss aber in einzelnen Bereichen noch gezielt dazulernen. Mit klaren Zielen und regelmässigem Feedback ist das gut machbar.`
+        : `Die Stelle verlangt ${roleDesc}. ${s} arbeitet eher über ${compDesc(ck)}. Die Anpassung ist möglich, braucht aber klare Führung und konkrete Ziele über mehrere Monate.`,
     };
   }
   return {
     level: 1,
     label: "niedrig",
     text: rk === ck
-      ? `Die Stelle verlangt ${compDesc(rk)} – deutlich stärker, als ${subj(cand)} es mitbringt. Die Richtung passt zwar, reicht aber nicht aus. Es bräuchte intensive Begleitung über längere Zeit. Ob sich dieser Aufwand lohnt, sollte ehrlich geprüft werden.`
-      : `Die Stelle verlangt ${compDesc(rk)}. ${s} setzt auf ${compDesc(ck)}. Das sind zwei unterschiedliche Arbeitsweisen. Die Anpassung wäre aufwendig, langwierig und im Ergebnis unsicher.`,
+      ? `Die Stelle verlangt ${roleDesc} – deutlich stärker, als ${subj(cand)} es mitbringt. Die Richtung passt zwar, reicht aber nicht aus. Es bräuchte intensive Begleitung über längere Zeit. Ob sich dieser Aufwand lohnt, sollte ehrlich geprüft werden.`
+      : `Die Stelle verlangt ${roleDesc}. ${s} setzt auf ${compDesc(ck)}. Das sind zwei unterschiedliche Arbeitsweisen. Die Anpassung wäre aufwendig, langwierig und im Ergebnis unsicher.`,
   };
 }
 
@@ -907,17 +935,28 @@ function buildActions(rk: ComponentKey, ck: ComponentKey, gap: string, control: 
 
   const base: string[] = [];
 
-  if (rk === "analytisch" && ck !== "analytisch") {
+  if (rk === ck) {
+    base.push("Abweichungen in den sekundären Bereichen identifizieren und gezielt ansprechen.");
+    base.push("Regelmässige Zielgespräche zur Kalibrierung der Nebenbereich-Gewichtung durchführen.");
+    if (rk === "analytisch") {
+      base.push("Prüfen, ob Tempo und Kommunikation den Stellenanforderungen entsprechen.");
+    } else if (rk === "impulsiv") {
+      base.push("Prüfen, ob Struktur und Beziehungsarbeit ausreichend berücksichtigt werden.");
+    } else {
+      base.push("Prüfen, ob Entscheidungstempo und Prozessklarheit den Erwartungen entsprechen.");
+    }
+    base.push("Vierteljährliche Überprüfung der Gesamtpassung einplanen.");
+  } else if (rk === "analytisch") {
     base.push("Klare Entscheidungsregeln für die ersten 90 Tage festlegen.");
     base.push("Schriftliche Standards für Dokumentation und Prüfschritte definieren.");
     base.push("Wöchentliche Review-Termine mit fester KPI-Logik durchführen.");
     base.push("Arbeitsfortschritt in überprüfbare Zwischenschritte unterteilen.");
-  } else if (rk === "impulsiv" && ck !== "impulsiv") {
+  } else if (rk === "impulsiv") {
     base.push("Klare Umsetzungsfristen und Entscheidungsdeadlines definieren.");
     base.push("Schnelle Entscheidungswege einrichten und Abstimmungsrunden begrenzen.");
     base.push("Ergebnisorientierte KPIs statt Prozess-KPIs verwenden.");
     base.push("Wöchentliche Fortschrittsreviews mit messbaren Meilensteinen einführen.");
-  } else if (rk === "intuitiv" && ck !== "intuitiv") {
+  } else if (rk === "intuitiv") {
     base.push("Regelmäßige Team-Feedbackrunden fest im Kalender verankern.");
     base.push("Kommunikationserwartungen klar und schriftlich formulieren.");
     base.push("Beziehungsarbeit als explizites Ziel in die Leistungsbewertung aufnehmen.");
@@ -1201,7 +1240,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
   ];
 }
 
-function buildFinal(role: string, cand: string, fit: string, control: string, rk: ComponentKey, ck: ComponentKey, fuehrungsArt: FuehrungsArt): string {
+function buildFinal(role: string, cand: string, fit: string, control: string, rk: ComponentKey, ck: ComponentKey, fuehrungsArt: FuehrungsArt, isDualDomRole = false, rk2?: ComponentKey): string {
   const leadSuffix = fuehrungsArt === "disziplinarisch"
     ? ` Da die Stelle Führungsverantwortung beinhaltet, wirkt sich die Abweichung auch auf Führungskultur und Teamstabilität aus.`
     : fuehrungsArt === "fachlich"
@@ -1209,11 +1248,12 @@ function buildFinal(role: string, cand: string, fit: string, control: string, rk
       : "";
 
   const s = Subj(cand);
+  const roleDesc = isDualDomRole && rk2 ? dualRoleDesc(rk, rk2) : compDesc(rk);
   if (fit === "Geeignet") {
-    return `Die Stelle ${role} erfordert ${compDesc(rk)}. ${s} bringt diese Grundausrichtung mit. Der Führungsaufwand ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich.`;
+    return `Die Stelle ${role} erfordert ${roleDesc}. ${s} bringt diese Grundausrichtung mit. Der Führungsaufwand ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich.`;
   }
   if (fit === "Bedingt geeignet") {
-    return `Die Stelle ${role} erfordert ${compDesc(rk)}. ${s} weicht in einzelnen Bereichen von der Stellenanforderung ab. Mit gezielter Führung und klarer Struktur lässt sich die Zusammenarbeit stabilisieren. Der Führungsaufwand ist ${control}.${leadSuffix}`;
+    return `Die Stelle ${role} erfordert ${roleDesc}. ${s} weicht in einzelnen Bereichen von der Stellenanforderung ab. Mit gezielter Führung und klarer Struktur lässt sich die Zusammenarbeit stabilisieren. Der Führungsaufwand ist ${control}.${leadSuffix}`;
   }
-  return `Die Stelle ${role} erfordert einen Schwerpunkt auf ${compDesc(rk)}. ${s} ist stark auf ${compDesc(ck)} ausgerichtet. Die Grundpassung ist damit nicht gegeben. Eine stabile Besetzung wäre nur mit dauerhaft erhöhtem Führungsaufwand möglich.${leadSuffix}`;
+  return `Die Stelle ${role} erfordert einen Schwerpunkt auf ${roleDesc}. ${s} ist stark auf ${compDesc(ck)} ausgerichtet. Die Grundpassung ist damit nicht gegeben. Eine stabile Besetzung wäre nur mit dauerhaft erhöhtem Führungsaufwand möglich.${leadSuffix}`;
 }
