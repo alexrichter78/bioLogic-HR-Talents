@@ -599,25 +599,28 @@ function buildFehlbesetzung(data: ReportData): { label: string; bullets: string[
   } else if (profileType === "hybrid_ana_int") {
     risks.push(riskAna, riskInt, riskImp);
   } else if (dom.key === "imp") {
+    const riskForSec = sec.key === "int" ? riskInt : riskAna;
+    const riskForWk = wk.key === "int" ? riskInt : riskAna;
     if (secWkClose) {
       risks.push(riskInt, riskAna);
     } else {
-      risks.push(sec.key === "int" ? riskAna : riskInt);
-      risks.push(wk.key === "int" ? riskInt : riskAna);
+      risks.push(riskForWk, riskForSec);
     }
   } else if (dom.key === "int") {
+    const riskForSec = sec.key === "imp" ? riskImp : riskAna;
+    const riskForWk = wk.key === "imp" ? riskImp : riskAna;
     if (secWkClose) {
       risks.push(riskImp, riskAna);
     } else {
-      risks.push(sec.key === "imp" ? riskAna : riskImp);
-      risks.push(wk.key === "imp" ? riskImp : riskAna);
+      risks.push(riskForWk, riskForSec);
     }
   } else {
+    const riskForSec = sec.key === "imp" ? riskImp : riskInt;
+    const riskForWk = wk.key === "imp" ? riskImp : riskInt;
     if (secWkClose) {
       risks.push(riskImp, riskInt);
     } else {
-      risks.push(sec.key === "imp" ? riskInt : riskImp);
-      risks.push(wk.key === "imp" ? riskImp : riskInt);
+      risks.push(riskForWk, riskForSec);
     }
   }
 
