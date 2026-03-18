@@ -1157,7 +1157,7 @@ export default function Rollenprofil() {
             <div style={{ marginBottom: 28 }}>
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>2. Strukturprofil der Stelle</p>
 
-              <div style={{ padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)", marginBottom: 16 }}>
+              <div style={{ marginBottom: 16 }}>
                 <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: 0, fontWeight: 400 }} lang="de">
                   {strukturprofilText}
                 </p>
