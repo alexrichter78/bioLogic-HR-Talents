@@ -1184,14 +1184,14 @@ export default function Rollenprofil() {
                             <div style={{ width: 8, height: 8, borderRadius: "50%", background: kb.color, flexShrink: 0 }} />
                             <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{kb.label}</span>
                           </div>
-                          <p style={{ fontSize: 12.5, lineHeight: 1.65, margin: "0 0 10px", color: "#48484A" }} lang="de" data-testid={`text-bedeutung-${kb.key}`}>
+                          <p style={{ fontSize: 12.5, lineHeight: 1.65, margin: 0, color: "#48484A" }} lang="de" data-testid={`text-bedeutung-${kb.key}`}>
                             {kb.text}
                           </p>
+                          <div style={{ width: "60%", height: 2, background: kb.color, margin: "10px auto", borderRadius: 1 }} />
                           <p style={{ fontSize: 12, lineHeight: 1.6, margin: 0, color: "#9A9A9E" }} lang="de">
                             {kb.warning}
                           </p>
                         </div>
-                        <div style={{ width: "60%", height: 2, background: kb.color, margin: "8px auto 0", borderRadius: 1 }} />
                       </div>
                     ))}
                   </div>
