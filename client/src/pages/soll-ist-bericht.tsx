@@ -655,9 +655,8 @@ export default function SollIstBericht() {
 
                       {/* KURZÜBERSICHT – Rolle vs Person */}
                       {(() => {
-                        const isMatch = result.roleDomKey === result.candDomKey;
-                        const matchSymbol = isMatch ? "=" : "⚡";
-                        const matchColor = isMatch ? "#34C759" : "#D64045";
+                        const matchSymbol = result.fitRating === "GEEIGNET" ? "=" : result.fitRating === "BEDINGT" ? "~" : "⚡";
+                        const matchColor = result.fitRating === "GEEIGNET" ? "#34C759" : result.fitRating === "BEDINGT" ? "#E5A832" : "#D64045";
 
                         const roleKeys: ComponentKey[] = result.roleIsBalFull
                           ? (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[])
