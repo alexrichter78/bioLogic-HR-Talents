@@ -1088,84 +1088,29 @@ export default function Rollenprofil() {
         <div ref={reportRef} style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }}>
 
           {/* ── DARK HEADER ── */}
-          <div style={{ background: "linear-gradient(135deg, #1E2230 0%, #2A2F3A 40%, #2D3340 100%)", padding: "40px 44px 0", position: "relative", overflow: "hidden" }} data-testid="bericht-header">
+          <div className="report-header" data-testid="bericht-header">
 
-            {/* Decorative blue rings */}
-            <svg style={{ position: "absolute", right: -40, top: "50%", transform: "translateY(-50%)", width: 340, height: 340, opacity: 0.12, pointerEvents: "none" }} viewBox="0 0 340 340">
-              <circle cx="170" cy="170" r="80" fill="none" stroke="#4A9EF5" strokeWidth="1.5" />
-              <circle cx="170" cy="170" r="120" fill="none" stroke="#4A9EF5" strokeWidth="1" />
-              <circle cx="170" cy="170" r="160" fill="none" stroke="#4A9EF5" strokeWidth="0.7" />
-              <circle cx="220" cy="120" r="60" fill="none" stroke="#6BB8FF" strokeWidth="1.2" />
-              <circle cx="220" cy="120" r="100" fill="none" stroke="#6BB8FF" strokeWidth="0.6" />
-            </svg>
+            <img src={logoSrc} alt="bioLogic" className="report-logo" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
 
-            {/* Subtle warm glow left edge */}
-            <div style={{ position: "absolute", left: -60, top: "30%", width: 120, height: 160, background: "radial-gradient(ellipse, rgba(255,140,40,0.08), transparent 70%)", pointerEvents: "none" }} />
+            <button
+              onClick={handlePDF}
+              disabled={pdfLoading}
+              data-testid="button-pdf-export"
+              className="report-pdf-btn"
+              style={{ cursor: pdfLoading ? "wait" : "pointer", opacity: pdfLoading ? 0.6 : 1, transition: "all 0.15s ease" }}
+            >
+              <Download style={{ width: 15, height: 15 }} />
+              <span>{pdfLoading ? "Wird erstellt..." : "PDF"}</span>
+            </button>
 
-            <div style={{ position: "relative", zIndex: 1 }}>
-              {/* Top row: Logo + PDF button */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 32 }}>
-                <img src={logoSrc} alt="bioLogic" style={{ height: 64 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                <button
-                  onClick={handlePDF}
-                  disabled={pdfLoading}
-                  data-testid="button-pdf-export"
-                  style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 38, padding: "0 20px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.06)", fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.85)", cursor: pdfLoading ? "wait" : "pointer", opacity: pdfLoading ? 0.6 : 1, transition: "all 0.15s ease", backdropFilter: "blur(8px)" }}
-                >
-                  <Download style={{ width: 15, height: 15 }} />
-                  {pdfLoading ? "Wird erstellt..." : "PDF"}
-                </button>
-              </div>
-
-              {/* Orange bar + label */}
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-                <div style={{ width: 3, height: 18, borderRadius: 2, background: "#FF8A09" }} />
-                <span style={{ fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.55)", letterSpacing: "0.20em", textTransform: "uppercase" }}>Strukturanalyse</span>
-              </div>
-
-              {/* Title */}
-              <h1 style={{ fontSize: 36, fontWeight: 700, color: "#FFFFFF", margin: "0 0 2px", letterSpacing: "-0.02em", lineHeight: 1.15 }} data-testid="text-report-title">
-                Rollen-DNA
-              </h1>
-              <p style={{ fontSize: 30, fontWeight: 400, color: "rgba(255,255,255,0.90)", margin: "0 0 20px", letterSpacing: "-0.01em", lineHeight: 1.2 }}>
-                {data.beruf}
-              </p>
-
-              {/* Separator line */}
-              <div style={{ width: 50, height: 2, background: "linear-gradient(90deg, #4A9EF5, #6BB8FF)", borderRadius: 1, marginBottom: 14 }} />
-
-              {/* Subtitle */}
-              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", margin: "0 0 32px", fontWeight: 400, maxWidth: 480 }}>
-                Detaillierte Analyse der strukturellen Anforderungslogik {data.bereich ? `im Bereich ${data.bereich} für ` : "für "}diese Position
-              </p>
-
-              {/* Tab navigation */}
-              <div style={{ display: "flex", gap: 8 }}>
-                {[
-                  { icon: "grid", label: "Strukturanalyse", id: "struktur" },
-                  { icon: "target", label: "Positionslogik", id: "position" },
-                  { icon: "chart", label: "Anforderungsprofil", id: "anforderung" },
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    data-testid={`tab-${tab.id}`}
-                    onClick={() => {
-                      const el = document.querySelector(`[data-section="${tab.id}"]`);
-                      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                    }}
-                    style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 42, padding: "0 20px", borderRadius: "10px 10px 0 0", border: "1px solid rgba(255,255,255,0.10)", borderBottom: "none", background: "rgba(255,255,255,0.04)", fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.70)", cursor: "pointer", transition: "all 0.15s ease" }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "rgba(255,255,255,0.95)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.color = "rgba(255,255,255,0.70)"; }}
-                  >
-                    {tab.icon === "grid" && <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>}
-                    {tab.icon === "target" && <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="3"/><circle cx="8" cy="8" r="1" fill="currentColor"/></svg>}
-                    {tab.icon === "chart" && <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="9" width="3" height="6" rx="0.5"/><rect x="6" y="5" width="3" height="10" rx="0.5"/><rect x="11" y="2" width="3" height="13" rx="0.5"/></svg>}
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
+            <div className="report-kicker">STRUKTURANALYSE</div>
+            <h1 className="report-title" data-testid="text-report-title">Rollen-DNA</h1>
+            <div className="report-subtitle">{data.beruf}</div>
+            <div className="report-desc">
+              Detaillierte Analyse der strukturellen Anforderungslogik {data.bereich ? `im Bereich ${data.bereich} für ` : "für "}diese Position
             </div>
 
+            <div className="report-rings" />
           </div>
 
           {/* ── BODY ── */}
