@@ -1178,17 +1178,20 @@ export default function Rollenprofil() {
                   <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>Bedeutung der Komponenten</p>
                   <div style={{ display: "flex", gap: 12 }}>
                     {komponentenBedeutung.map((kb, i) => (
-                      <div key={i} style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: "#fff", border: "1px solid rgba(0,0,0,0.08)" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
-                          <div style={{ width: 8, height: 8, borderRadius: "50%", background: kb.color, flexShrink: 0 }} />
-                          <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{kb.label}</span>
+                      <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                        <div style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: "#fff", border: "1px solid rgba(0,0,0,0.08)" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                            <div style={{ width: 8, height: 8, borderRadius: "50%", background: kb.color, flexShrink: 0 }} />
+                            <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{kb.label}</span>
+                          </div>
+                          <p style={{ fontSize: 12.5, lineHeight: 1.65, margin: "0 0 10px", color: "#48484A" }} lang="de" data-testid={`text-bedeutung-${kb.key}`}>
+                            {kb.text}
+                          </p>
+                          <p style={{ fontSize: 12, lineHeight: 1.6, margin: 0, color: "#9A9A9E" }} lang="de">
+                            {kb.warning}
+                          </p>
                         </div>
-                        <p style={{ fontSize: 12.5, lineHeight: 1.65, margin: "0 0 10px", color: "#48484A" }} lang="de" data-testid={`text-bedeutung-${kb.key}`}>
-                          {kb.text}
-                        </p>
-                        <p style={{ fontSize: 12, lineHeight: 1.6, margin: 0, color: "#9A9A9E" }} lang="de">
-                          {kb.warning}
-                        </p>
+                        <div style={{ width: "60%", height: 2, background: kb.color, margin: "8px auto 0", borderRadius: 1 }} />
                       </div>
                     ))}
                   </div>
