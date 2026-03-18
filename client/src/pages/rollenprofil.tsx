@@ -1060,7 +1060,7 @@ export default function Rollenprofil() {
       clone.querySelectorAll<HTMLElement>(".bio-section-head").forEach(sh => {
         const img = sh.querySelector("img");
         if (img) img.remove();
-        sh.style.justifyContent = "center";
+        sh.style.justifyContent = "flex-start";
         sh.style.gap = "0";
       });
       clone.querySelectorAll<HTMLElement>("[data-subhead-circle]").forEach(el => el.remove());
@@ -1340,7 +1340,7 @@ export default function Rollenprofil() {
   const SectionHead = ({ num, title }: { num: number; title: string; color?: string }) => (
     <div className="bio-section-head" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, marginLeft: -44, marginRight: -44, padding: "0 18px", height: 38, background: "linear-gradient(135deg, #343A48 0%, #3d4455 50%, #464f62 100%)", boxShadow: "0 2px 6px rgba(52,58,72,0.3)" }}>
       <img src={sectionCircleUrls[num as keyof typeof sectionCircleUrls]} alt={String(num).padStart(2, "0")} style={{ width: 28, height: 28, flexShrink: 0, display: "block" }} />
-      <span style={{ fontSize: 15, fontWeight: 700, color: "#FFFFFF", letterSpacing: "0.03em", lineHeight: 1, display: "block" }}>{title}</span>
+      <span style={{ fontSize: 15, fontWeight: 700, color: "#FFFFFF", letterSpacing: "0.03em", lineHeight: "38px", height: 38, display: "inline-block" }}>{title}</span>
     </div>
   );
 
