@@ -91,7 +91,7 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
     doc.setFontSize(7);
     doc.setFont("helvetica", "normal");
     setC(C.faint);
-    doc.text("bioLogic Strukturanalyse", ML, PH - 8);
+    doc.text("bioLogic Talent Navigator · Stellenanalyse", ML, PH - 8);
     doc.text(`Seite ${pageNum}`, PW - MR, PH - 8, { align: "right" });
     setD(C.lineFaint);
     doc.setLineWidth(0.2);
@@ -216,7 +216,7 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
   doc.setFontSize(7.5);
   doc.setFont("helvetica", "bold");
   setC(headerTextDim);
-  doc.text("STRUKTURANALYSE", dividerX + 4, hY + 3.5);
+  doc.text("STELLENANALYSE", dividerX + 4, hY + 3.5);
 
   doc.setFontSize(7);
   doc.setFont("helvetica", "normal");
@@ -227,7 +227,7 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
   setC(C.white);
-  doc.text(`Rollen-DNA: ${data.beruf}`, ML, hY);
+  doc.text(`Stellenprofil: ${data.beruf}`, ML, hY);
   hY += 6;
 
   if (data.bereich) {
@@ -251,25 +251,25 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
     teamwirkung: hexToRgb("#0EA5E9"),
   };
 
-  sectionHead(1, "Rollen-DNA · Entscheidungsgrundlage", SECTION_COLORS_PDF.rollenDna);
+  sectionHead(1, "Stellenprofil · Entscheidungsgrundlage", SECTION_COLORS_PDF.rollenDna);
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
   setC(C.black);
-  doc.text("Welche Persönlichkeit braucht diese Rolle?", ML, y);
+  doc.text("Welche Persönlichkeit braucht diese Stelle?", ML, y);
   y += 6;
 
   doc.setFontSize(9);
   doc.setFont("helvetica", "bold");
   setC(C.black);
-  doc.text("1. Kurzbeschreibung der Rolle", ML, y);
+  doc.text("1. Kurzbeschreibung der Stelle", ML, y);
   y += 5;
 
   if (data.topTaetigkeiten.length > 0) {
     doc.setFontSize(8.5);
     doc.setFont("helvetica", "normal");
     setC(C.dark);
-    doc.text("Die zentralen Aufgaben dieser Rolle:", ML, y);
+    doc.text("Die zentralen Aufgaben dieser Stelle:", ML, y);
     y += 4.5;
     data.topTaetigkeiten.forEach(t => {
       checkPage(5);
@@ -290,7 +290,7 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
   doc.setFont("helvetica", "bold");
   setC(C.black);
   checkPage(8);
-  doc.text("2. Strukturprofil der Rolle", ML, y);
+  doc.text("2. Strukturprofil der Stelle", ML, y);
   y += 6;
 
   const barMaxW = 80;
@@ -374,7 +374,7 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
   doc.setFont("helvetica", "bold");
   setC(C.black);
   checkPage(8);
-  doc.text("3. Arbeitslogik der Rolle", ML, y);
+  doc.text("3. Arbeitslogik der Stelle", ML, y);
   y += 5;
   printText(data.arbeitslogikText, ML, CW, 8.5, C.dark, 4.3);
   y += 4;
@@ -425,7 +425,7 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
   doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
   setC(C.black);
-  doc.text("Wie zeigt sich diese Rolle im Alltag und unter Druck?", ML, y);
+  doc.text("Wie zeigt sich diese Stelle im Alltag und unter Druck?", ML, y);
   y += 8;
 
   doc.setFontSize(9);
@@ -466,7 +466,7 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
   doc.setFontSize(9);
   doc.setFont("helvetica", "bold");
   setC(C.black);
-  doc.text(data.isLeadership ? "Führungswirkung der Rolle" : "Teamwirkung der Rolle", ML, y);
+  doc.text(data.isLeadership ? "Führungswirkung der Stelle" : "Teamwirkung der Stelle", ML, y);
   y += 5;
   printText(data.teamwirkung, ML, CW, 8.5, C.dark, 4.3);
   y += 4;
@@ -475,9 +475,9 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
   doc.setFont("helvetica", "bold");
   setC(C.black);
   checkPage(10);
-  doc.text("Spannungsfelder der Rolle", ML, y);
+  doc.text("Spannungsfelder der Stelle", ML, y);
   y += 5;
-  printText("Typische Spannungen dieser Rolle sind:", ML, CW, 8.5, C.dark, 4.3);
+  printText("Typische Spannungen dieser Stelle sind:", ML, CW, 8.5, C.dark, 4.3);
   y += 1;
   data.spannungsfelder.forEach(sf => {
     checkPage(6);
@@ -542,7 +542,7 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
     doc.setFont("helvetica", "bold");
     setC(C.black);
     checkPage(10);
-    doc.text("Typische Person für diese Rolle", ML, y);
+    doc.text("Typische Person für diese Stelle", ML, y);
     y += 5;
     printText(data.kandidatenText, ML, CW, 8.5, C.dark, 4.3);
   }
@@ -596,7 +596,7 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
   doc.setFontSize(7);
   doc.setFont("helvetica", "normal");
   setC(C.faint);
-  doc.text(`bioLogic RoleDynamics · Strukturanalyse · Erstellt am ${new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}`, ML + CW / 2, y, { align: "center" });
+  doc.text(`© ${new Date().getFullYear()} bioLogic Talent Navigator · Stellenanalyse · Erstellt am ${new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}`, ML + CW / 2, y, { align: "center" });
 
   doc.save(filename);
 }

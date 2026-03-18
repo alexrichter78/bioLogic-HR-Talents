@@ -946,7 +946,7 @@ export default function Rollenprofil() {
         kandidatenText: kandidatenText || "",
         fazitTitel: fazitLocal.titel,
         fazitAbsaetze: fazitLocal.absaetze,
-      }, `Rollen-DNA_${safeName}.pdf`);
+      }, `Stellenprofil_${safeName}.pdf`);
     } catch (e) {
       console.error("PDF error:", e);
       alert("PDF-Export fehlgeschlagen. Bitte versuchen Sie es erneut.");
@@ -962,9 +962,9 @@ export default function Rollenprofil() {
         <main style={{ maxWidth: 800, margin: "0 auto", padding: "60px 20px", textAlign: "center" }}>
           <div style={{ background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", borderRadius: 20, padding: "28px 32px", boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)" }}>
             <AlertTriangle style={{ width: 40, height: 40, color: "#FF9500", margin: "0 auto 16px" }} />
-            <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>Keine Rollen-DNA vorhanden</h2>
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>Kein Stellenprofil vorhanden</h2>
             <p style={{ fontSize: 14, color: "#48484A", margin: "0 0 24px", lineHeight: 1.6 }}>
-              Bitte erstellen Sie zuerst eine Rollen-DNA, um den Bericht generieren zu können.
+              Bitte erstellen Sie zuerst ein Stellenprofil, um den Bericht generieren zu können.
             </p>
             <button
               onClick={() => setLocation("/rollen-dna")}
@@ -975,7 +975,7 @@ export default function Rollenprofil() {
                 cursor: "pointer",
               }}
             >
-              Rollen-DNA erstellen
+              Stellenprofil erstellen
             </button>
           </div>
         </main>
@@ -1121,7 +1121,7 @@ export default function Rollenprofil() {
 
           {/* ── SEITE 1: ROLLEN-DNA ── */}
           <div data-section="struktur" style={{ marginBottom: 40 }} data-testid="bericht-section-gesamtprofil">
-            <SectionHead num={1} title="Rollen-DNA · Entscheidungsgrundlage" color={SECTION_COLORS.rollenDna} />
+            <SectionHead num={1} title="Stellenprofil · Entscheidungsgrundlage" color={SECTION_COLORS.rollenDna} />
 
             <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>Welche Persönlichkeit braucht diese Stelle?</p>
 
