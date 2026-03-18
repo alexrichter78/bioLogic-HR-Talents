@@ -406,7 +406,7 @@ function Header({ onSave, onLoad }: { onSave: () => void; onLoad: () => void }) 
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
-        <img src={logoSrc} alt="bioLogic Logo" className="h-7 w-auto" data-testid="logo-rollen-dna" />
+        <img src={logoSrc} alt="bioLogic Logo" className="h-20 w-auto" data-testid="logo-rollen-dna" />
         <span className="text-sm text-muted-foreground/70 font-light tracking-wide hidden sm:inline">RoleDynamics</span>
       </div>
       <div className="flex items-center gap-2">
