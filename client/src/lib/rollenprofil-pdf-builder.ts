@@ -482,8 +482,18 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
   doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
   setC(C.black);
-  doc.text("Welche Wirkung hat diese Rolle im Team?", ML, y);
-  y += 8;
+  doc.text("Wirkung, Spannungsfelder und Risiken", ML, y);
+  y += 5;
+
+  doc.setFontSize(8.5);
+  doc.setFont("helvetica", "normal");
+  setC(C.grey);
+  const wirkIntroText = data.isLeadership
+    ? "Dieser Abschnitt beschreibt, welche Wirkung von der Stelle im Team ausgeht, welche typischen Spannungsfelder sich ergeben und welche Risiken bei einer Fehlbesetzung entstehen können."
+    : "Dieser Abschnitt beschreibt, welche Wirkung die Stelle im Arbeitsumfeld entfaltet, welche typischen Spannungsfelder sich ergeben und welche Risiken bei einer Fehlbesetzung entstehen können.";
+  const wirkIntroLines = doc.splitTextToSize(wirkIntroText, CW);
+  doc.text(wirkIntroLines, ML, y);
+  y += wirkIntroLines.length * 4.3 + 4;
 
   doc.setFontSize(9);
   doc.setFont("helvetica", "bold");

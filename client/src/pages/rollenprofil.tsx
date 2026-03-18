@@ -1395,7 +1395,8 @@ export default function Rollenprofil() {
           <div data-section="anforderung" data-testid="bericht-section-risiko">
             <SectionHead num={3} title="Teamwirkung & Fehlbesetzungsrisiken" color={SECTION_COLORS.teamwirkung} />
 
-            <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 20px" }}>Welche Wirkung hat diese Stelle im Team?</p>
+            <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Wirkung, Spannungsfelder und Risiken</p>
+            <p style={{ fontSize: 14, color: "#6E6E73", margin: "0 0 20px", lineHeight: 1.6 }}>{data.isLeadership ? "Dieser Abschnitt beschreibt, welche Wirkung von der Stelle im Team ausgeht, welche typischen Spannungsfelder sich ergeben und welche Risiken bei einer Fehlbesetzung entstehen können." : "Dieser Abschnitt beschreibt, welche Wirkung die Stelle im Arbeitsumfeld entfaltet, welche typischen Spannungsfelder sich ergeben und welche Risiken bei einer Fehlbesetzung entstehen können."}</p>
 
             {/* Führungswirkung / Teamwirkung */}
             <div style={{ marginBottom: 28 }}>
