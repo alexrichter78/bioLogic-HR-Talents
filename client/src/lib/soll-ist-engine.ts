@@ -373,12 +373,12 @@ export function computeSollIst(
   const stressBehavior = buildStressBehavior(cConst, ct, cn, gapLevel);
   const roleIsBalFull = rDom.gap1 <= 5 && rDom.gap2 <= 5;
   const impactAreas = buildImpactAreas(rk, ck, rt, ct, cn, fuehrungsArt, roleIsBalFull);
-  const riskTimeline = buildRiskTimeline(roleName, cn, rk, ck, gapLevel);
+  const riskTimeline = buildRiskTimeline(roleName, cn, rk, ck, gapLevel, roleIsBalFull, rt, ct);
   const devGap = fitRating === "NICHT_GEEIGNET" ? "hoch" : (matchCheckFit ? controlIntensity : gapLevel);
-  const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildDevelopment(devGap, rk, ck, controlIntensity, cn, isDualDomRole, rk2);
-  const actions = buildActions(rk, ck, gapLevel, controlIntensity);
-  const integrationsplan = buildIntegrationsplan(roleName, cn, fitLabel, rk, ck, gapLevel, controlIntensity, fuehrungsArt, rt, ct);
-  const finalText = buildFinal(roleName, cn, fitLabel, controlIntensity, rk, ck, fuehrungsArt, isDualDomRole, rk2);
+  const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildDevelopment(devGap, rk, ck, controlIntensity, cn, isDualDomRole, rk2, roleIsBalFull, ct);
+  const actions = buildActions(rk, ck, gapLevel, controlIntensity, roleIsBalFull, ct);
+  const integrationsplan = buildIntegrationsplan(roleName, cn, fitLabel, rk, ck, gapLevel, controlIntensity, fuehrungsArt, rt, ct, roleIsBalFull);
+  const finalText = buildFinal(roleName, cn, fitLabel, controlIntensity, rk, ck, fuehrungsArt, isDualDomRole, rk2, roleIsBalFull, ct);
 
   return {
     roleName,
@@ -928,7 +928,35 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
   return { id: "culture", label: "Kulturwirkung", severity: sev, roleNeed, candidatePattern, risk };
 }
 
-function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: ComponentKey, gap: string): RiskPhase[] {
+function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: ComponentKey, gap: string, roleIsBalFull = false, rt?: Triad, ct?: Triad): RiskPhase[] {
+  if (roleIsBalFull && ct) {
+    const s = Subj(cand);
+    const spread = Math.max(ct.impulsiv, ct.intuitiv, ct.analytisch) - Math.min(ct.impulsiv, ct.intuitiv, ct.analytisch);
+    const candBalanced = spread <= 10;
+    const totalGap = (rt ? Math.abs(rt.impulsiv - ct.impulsiv) + Math.abs(rt.intuitiv - ct.intuitiv) + Math.abs(rt.analytisch - ct.analytisch) : 0);
+
+    if (candBalanced) {
+      return [
+        { label: "Kurzfristig", period: "0 - 3 Monate", text: `Die Stelle ${role} verlangt Vielseitigkeit in der Arbeitsweise. ${s} bringt ein ausgeglichenes Profil mit. Die Einarbeitung verläuft voraussichtlich reibungslos.` },
+        { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die vielseitige Grundausrichtung passt zur Stellenanforderung. Kleinere Gewichtungsunterschiede bleiben im Alltag gut steuerbar. Regelmässige Zielgespräche sichern die Passung.` },
+        { label: "Langfristig", period: "12+ Monate", text: `Die Stellenanforderungen werden langfristig stabil abgedeckt. Der Führungsaufwand bleibt gering. Halbjährliche Überprüfungen genügen.` },
+      ];
+    }
+
+    const domKey: ComponentKey = ct.impulsiv >= ct.intuitiv && ct.impulsiv >= ct.analytisch ? "impulsiv" : ct.intuitiv >= ct.analytisch ? "intuitiv" : "analytisch";
+    const domDesc = domKey === "impulsiv" ? "Tempo und direkte Ergebnisorientierung" : domKey === "intuitiv" ? "Beziehungsarbeit und Dialog" : "Struktur und analytische Prüfung";
+    const weakKeys = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== domKey);
+    const weakDescs = weakKeys.map(k => compShort(k)).join(" und ");
+
+    return [
+      { label: "Kurzfristig", period: "0 - 3 Monate", text: `Die Stelle ${role} verlangt eine vielseitige Arbeitsweise über alle drei Bereiche. ${s} arbeitet bevorzugt über ${domDesc}. Bereits in der Einarbeitung sollte auf die einseitige Schwerpunktsetzung geachtet werden.` },
+      { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die einseitige Ausrichtung wird im Alltag deutlicher spürbar. ${weakDescs} werden nicht ausreichend abgedeckt. Ohne gezielte Steuerung verschiebt sich die Stellenausübung in eine einzelne Richtung. Regelmässige Zielgespräche und klare Erwartungen sind notwendig.` },
+      { label: "Langfristig", period: "12+ Monate", text: totalGap > 40
+        ? `Die Vielseitigkeitsanforderung der Stelle wird dauerhaft verfehlt. Die einseitige Prägung erschwert die Wirkung in allen geforderten Bereichen. Es muss entschieden werden, ob der Führungsaufwand langfristig tragbar ist.`
+        : `Mit gezielter Führung lässt sich die einseitige Ausrichtung teilweise kompensieren. Halbjährliche Überprüfung empfohlen, um sicherzustellen, dass die Vielseitigkeit gewährleistet bleibt.` },
+    ];
+  }
+
   if (rk === ck && gap === "gering") {
     return [
       { label: "Kurzfristig", period: "0 - 3 Monate", text: `Die Stelle ${role} verlangt ${compDesc(rk)}. Die Arbeitslogik passt. Die Einarbeitung verläuft voraussichtlich reibungslos. Nur in Einzelfällen muss nachgesteuert werden.` },
@@ -1012,8 +1040,35 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
   ];
 }
 
-function buildDevelopment(gap: string, rk: ComponentKey, ck: ComponentKey, control: string, cand: string, isDualDomRole = false, rk2?: ComponentKey): { level: number; label: string; text: string } {
+function buildDevelopment(gap: string, rk: ComponentKey, ck: ComponentKey, control: string, cand: string, isDualDomRole = false, rk2?: ComponentKey, roleIsBalFull = false, ct?: Triad): { level: number; label: string; text: string } {
   const s = Subj(cand);
+
+  if (roleIsBalFull && ct) {
+    const spread = Math.max(ct.impulsiv, ct.intuitiv, ct.analytisch) - Math.min(ct.impulsiv, ct.intuitiv, ct.analytisch);
+    const candBalanced = spread <= 10;
+    if (candBalanced) {
+      return {
+        level: 4,
+        label: "hoch",
+        text: `Die Stelle verlangt Vielseitigkeit über alle drei Bereiche. ${s} bringt ein ausgeglichenes Profil mit. In einzelnen Bereichen ist Feinabstimmung nötig, aber die Grundlage stimmt. Mit klaren Erwartungen ist eine stabile Entwicklung realistisch.`,
+      };
+    }
+    const domKey: ComponentKey = ct.impulsiv >= ct.intuitiv && ct.impulsiv >= ct.analytisch ? "impulsiv" : ct.intuitiv >= ct.analytisch ? "intuitiv" : "analytisch";
+    const domDesc = domKey === "impulsiv" ? "Tempo und Ergebnisorientierung" : domKey === "intuitiv" ? "Beziehungsarbeit und Dialog" : "Struktur und Analyse";
+    if (gap === "gering" || gap === "mittel") {
+      return {
+        level: 3,
+        label: "mittel",
+        text: `Die Stelle verlangt eine vielseitige Arbeitsweise. ${s} arbeitet bevorzugt über ${domDesc}. Die Anpassung hin zu mehr Vielseitigkeit ist möglich, braucht aber klare Führung und gezielte Entwicklungsziele.`,
+      };
+    }
+    return {
+      level: 1,
+      label: "niedrig",
+      text: `Die Stelle verlangt Vielseitigkeit über alle drei Bereiche. ${s} ist stark auf ${domDesc} spezialisiert. Die nötige Anpassung wäre aufwendig und im Ergebnis unsicher. Es sollte ehrlich geprüft werden, ob der Entwicklungsaufwand realistisch ist.`,
+    };
+  }
+
   const roleDesc = isDualDomRole && rk2 ? dualRoleDesc(rk, rk2) : compDesc(rk);
   if (gap === "gering") {
     return {
@@ -1040,7 +1095,26 @@ function buildDevelopment(gap: string, rk: ComponentKey, ck: ComponentKey, contr
   };
 }
 
-function buildActions(rk: ComponentKey, ck: ComponentKey, gap: string, control: string): string[] {
+function buildActions(rk: ComponentKey, ck: ComponentKey, gap: string, control: string, roleIsBalFull = false, ct?: Triad): string[] {
+  if (roleIsBalFull && ct) {
+    const spread = Math.max(ct.impulsiv, ct.intuitiv, ct.analytisch) - Math.min(ct.impulsiv, ct.intuitiv, ct.analytisch);
+    if (spread <= 10) {
+      return [
+        "Regelmässige Zielvereinbarungen zur Feinsteuerung der Vielseitigkeit durchführen.",
+        "Halbjährliche Überprüfung der Stellenpassung sicherstellen.",
+      ];
+    }
+    const domKey: ComponentKey = ct.impulsiv >= ct.intuitiv && ct.impulsiv >= ct.analytisch ? "impulsiv" : ct.intuitiv >= ct.analytisch ? "intuitiv" : "analytisch";
+    const weakKeys = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== domKey);
+    const weakDescs = weakKeys.map(k => compShort(k)).join(" und ");
+    return [
+      `Gezielte Entwicklung in den untervertretenen Bereichen (${weakDescs}) einleiten.`,
+      "Regelmässige Zielgespräche mit Fokus auf Vielseitigkeit in der Arbeitsweise durchführen.",
+      "Vierteljährliche Überprüfung, ob alle drei Bereiche im Arbeitsalltag abgedeckt werden.",
+      "Klare Erwartungen an die situative Flexibilität formulieren und kommunizieren.",
+    ];
+  }
+
   if (gap === "gering") {
     return [
       "Regelmäßige Zielvereinbarungen zur Feinsteuerung durchführen.",
@@ -1085,7 +1159,7 @@ function buildActions(rk: ComponentKey, ck: ComponentKey, gap: string, control: 
   return base;
 }
 
-function buildIntegrationsplan(role: string, cand: string, fit: string, rk: ComponentKey, ck: ComponentKey, gap: string, control: string, fuehrungsArt: FuehrungsArt, rt: Triad, ct: Triad): IntegrationPhase[] | null {
+function buildIntegrationsplan(role: string, cand: string, fit: string, rk: ComponentKey, ck: ComponentKey, gap: string, control: string, fuehrungsArt: FuehrungsArt, rt: Triad, ct: Triad, roleIsBalFull = false): IntegrationPhase[] | null {
   if (fit === "Nicht geeignet") return null;
 
   const s = Subj(cand);
@@ -1094,6 +1168,108 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
   const sameDom = rk === ck;
   const isLeader = fuehrungsArt !== "keine";
   const isBedingt = fit === "Bedingt geeignet";
+
+  if (roleIsBalFull) {
+    const spread = Math.max(ct.impulsiv, ct.intuitiv, ct.analytisch) - Math.min(ct.impulsiv, ct.intuitiv, ct.analytisch);
+    const candBalanced = spread <= 10;
+    const candLower = cand === "Die Person" ? "die Person" : cand;
+
+    if (candBalanced) {
+      return [
+        {
+          phase: 1, title: "Orientierung & Erwartungsabgleich", period: "Woche 1 – 4",
+          ziel: `Vielseitige Anforderungen der Stelle ${role} verstehen und Erwartungen abstimmen.`,
+          items: [
+            `Klärung, wie die drei Bereiche (Tempo, Dialog, Struktur) in ${role} gewichtet werden.`,
+            `Abstimmung der Arbeitsprioritäten mit dem direkten Umfeld.`,
+            `Transparenz über bestehende Abläufe und Qualitätsstandards.`,
+            ...(isLeader ? [`Führungsrolle und Verantwortungsrahmen definieren.`] : []),
+          ],
+          fokus: {
+            intro: `Die Stelle und ${candLower} teilen eine vielseitige Grundausrichtung. Wichtig ist, schnell Klarheit zu schaffen über:`,
+            bullets: [`situative Gewichtung der drei Bereiche`, `Entscheidungswege und Verantwortungsbereiche`, `Qualitätsstandards und Erwartungshaltung`],
+          },
+        },
+        {
+          phase: 2, title: "Wirkung & Anpassung", period: "Monat 2 – 3",
+          ziel: `Vielseitige Wirkung in ${role} zeigen und situative Flexibilität unter Beweis stellen.`,
+          items: [
+            `Eigenständige Übernahme erster Aufgaben mit wechselnden Anforderungsprofilen.`,
+            `Feedback zur Wirkung in allen drei Bereichen einholen.`,
+            ...(isLeader ? [`Erste Führungsentscheidungen eigenständig treffen und reflektieren.`] : []),
+          ],
+          fokus: {
+            intro: `${s} arbeitet bereits vielseitig. Es geht jetzt darum:`,
+            bullets: [`Wirksamkeit in ${role} sichtbar zu machen`, `situative Flexibilität im Alltag zu beweisen`, `belastbare Routinen zu entwickeln`],
+          },
+        },
+        {
+          phase: 3, title: "Stabilisierung", period: "Monat 4 – 6",
+          ziel: `Arbeitsweise in ${role} stabilisieren und langfristige Passung sichern.`,
+          items: [
+            `Evaluation der bisherigen Wirkung in allen drei Bereichen.`,
+            `Feinabstimmung der Zusammenarbeit mit dem direkten Umfeld.`,
+            `Prioritäten konsolidieren und Standards stabilisieren.`,
+            ...(isLeader ? [`Führungswirkung und Teamstabilität überprüfen.`] : []),
+          ],
+          fokus: {
+            intro: `Die Arbeitsweise ist stabil. Jetzt gilt es:`,
+            bullets: [`Vielseitigkeit beibehalten und Routinen festigen`, `langfristige Stabilität in ${role} sichern`, ...(isLeader ? [`Führungswirkung absichern`] : [])],
+          },
+        },
+      ];
+    }
+
+    const domKey: ComponentKey = ct.impulsiv >= ct.intuitiv && ct.impulsiv >= ct.analytisch ? "impulsiv" : ct.intuitiv >= ct.analytisch ? "intuitiv" : "analytisch";
+    const domDesc = domKey === "impulsiv" ? "Tempo und Ergebnisorientierung" : domKey === "intuitiv" ? "Beziehungsarbeit und Dialog" : "Struktur und Analyse";
+    const weakKeys = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== domKey);
+    const weakDescs = weakKeys.map(k => compShort(k)).join(" und ");
+
+    return [
+      {
+        phase: 1, title: "Orientierung & Erwartungsabgleich", period: "Woche 1 – 4",
+        ziel: `Vielseitige Anforderungen der Stelle ${role} verstehen und eigene Einseitigkeit erkennen.`,
+        items: [
+          `Klärung, dass die Stelle Vielseitigkeit verlangt – nicht nur ${domDesc}.`,
+          `Transparenz über Anforderungen in den untervertretenen Bereichen (${weakDescs}).`,
+          `Klare Erwartungen an situatives Arbeiten formulieren.`,
+          ...(isLeader ? [`Führungsrolle und Verantwortungsrahmen definieren.`] : []),
+        ],
+        fokus: {
+          intro: `${s} bringt eine einseitige Ausrichtung auf ${domDesc} mit. In der Einarbeitung muss klar werden:`,
+          bullets: [`welche Bereiche neben ${domDesc} erwartet werden`, `wo gezielt gegengesteuert werden muss`, `wie Fortschritte gemessen werden`],
+        },
+      },
+      {
+        phase: 2, title: "Gezielter Ausgleich", period: "Monat 2 – 3",
+        ziel: `Gezielte Entwicklung der untervertretenen Bereiche (${weakDescs}).`,
+        items: [
+          `Konkrete Aufgaben, die ${weakDescs} erfordern, gezielt zuweisen.`,
+          `Regelmässiges Feedback zur Wirkung ausserhalb der Komfortzone einholen.`,
+          ...(isLeader ? [`Führungswirkung in allen drei Bereichen bewusst steuern.`] : []),
+          `Fortschritte dokumentieren und Erwartungen nachschärfen.`,
+        ],
+        fokus: {
+          intro: `Der Schwerpunkt liegt auf dem Aufbau fehlender Fähigkeiten:`,
+          bullets: [`${weakDescs} aktiv einfordern und begleiten`, `Komfortzone bewusst erweitern`, `Ergebnisse regelmässig überprüfen`],
+        },
+      },
+      {
+        phase: 3, title: "Stabilisierung & Entscheid", period: "Monat 4 – 6",
+        ziel: `Bewerten, ob die vielseitige Stellenanforderung dauerhaft erfüllt werden kann.`,
+        items: [
+          `Evaluation, ob die untervertretenen Bereiche ausreichend abgedeckt werden.`,
+          `Entscheid, ob der Führungsaufwand langfristig tragbar ist.`,
+          `Gegebenenfalls Rollenanpassung oder Begleitmassnahmen definieren.`,
+          ...(isLeader ? [`Führungswirkung und Teamstabilität abschliessend bewerten.`] : []),
+        ],
+        fokus: {
+          intro: `Jetzt zeigt sich, ob die Anpassung gelingt:`,
+          bullets: [`Vielseitigkeit im Alltag messbar bewerten`, `Entscheid über langfristige Tragfähigkeit treffen`, ...(isLeader ? [`Führungswirkung absichern`] : [])],
+        },
+      },
+    ];
+  }
 
   const gaps = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => ({
     key: k,
@@ -1355,7 +1531,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
   ];
 }
 
-function buildFinal(role: string, cand: string, fit: string, control: string, rk: ComponentKey, ck: ComponentKey, fuehrungsArt: FuehrungsArt, isDualDomRole = false, rk2?: ComponentKey): string {
+function buildFinal(role: string, cand: string, fit: string, control: string, rk: ComponentKey, ck: ComponentKey, fuehrungsArt: FuehrungsArt, isDualDomRole = false, rk2?: ComponentKey, roleIsBalFull = false, ct?: Triad): string {
   const leadSuffix = fuehrungsArt === "disziplinarisch"
     ? ` Da die Stelle Führungsverantwortung beinhaltet, wirkt sich die Abweichung auch auf Führungskultur und Teamstabilität aus.`
     : fuehrungsArt === "fachlich"
@@ -1363,6 +1539,23 @@ function buildFinal(role: string, cand: string, fit: string, control: string, rk
       : "";
 
   const s = Subj(cand);
+
+  if (roleIsBalFull && ct) {
+    const spread = Math.max(ct.impulsiv, ct.intuitiv, ct.analytisch) - Math.min(ct.impulsiv, ct.intuitiv, ct.analytisch);
+    const candBalanced = spread <= 10;
+    if (fit === "Geeignet") {
+      return candBalanced
+        ? `Die Stelle ${role} erfordert Vielseitigkeit über alle drei Bereiche. ${s} bringt ein ausgeglichenes Profil mit. Der Führungsaufwand ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich.`
+        : `Die Stelle ${role} erfordert Vielseitigkeit. ${s} bringt eine einseitige Ausrichtung mit, die Abweichungen sind aber steuerbar. Der Führungsaufwand ist ${control}. Mit gezielter Begleitung ist eine stabile Besetzung möglich.`;
+    }
+    if (fit === "Bedingt geeignet") {
+      const domKey: ComponentKey = ct.impulsiv >= ct.intuitiv && ct.impulsiv >= ct.analytisch ? "impulsiv" : ct.intuitiv >= ct.analytisch ? "intuitiv" : "analytisch";
+      const domDesc = domKey === "impulsiv" ? "Tempo und Ergebnisorientierung" : domKey === "intuitiv" ? "Beziehungsarbeit und Dialog" : "Struktur und Analyse";
+      return `Die Stelle ${role} erfordert Vielseitigkeit über alle drei Bereiche. ${s} ist auf ${domDesc} fokussiert und deckt die geforderte Breite nicht ab. Mit gezielter Führung und klarer Entwicklungsbegleitung lässt sich die Zusammenarbeit stabilisieren. Der Führungsaufwand ist ${control}.${leadSuffix}`;
+    }
+    return `Die Stelle ${role} erfordert Vielseitigkeit über alle drei Bereiche. ${s} ist einseitig ausgerichtet und deckt die geforderte Breite nicht ab. Die Grundpassung ist damit nicht gegeben. Eine stabile Besetzung wäre nur mit dauerhaft erhöhtem Führungsaufwand möglich.${leadSuffix}`;
+  }
+
   const roleDesc = isDualDomRole && rk2 ? dualRoleDesc(rk, rk2) : compDesc(rk);
   if (fit === "Geeignet") {
     return `Die Stelle ${role} erfordert ${roleDesc}. ${s} bringt diese Grundausrichtung mit. Der Führungsaufwand ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich.`;
