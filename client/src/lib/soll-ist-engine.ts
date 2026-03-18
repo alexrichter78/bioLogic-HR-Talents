@@ -639,6 +639,31 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
   areas.push(buildCommunicationImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct));
   areas.push(buildCultureImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct));
 
+  const rVals = [rt.impulsiv, rt.intuitiv, rt.analytisch].sort((a, b) => b - a);
+  const cVals = [ct.impulsiv, ct.intuitiv, ct.analytisch].sort((a, b) => b - a);
+  const roleClearDom = (rVals[0] - rVals[1]) > 5;
+  const candDualDom = (cVals[0] - cVals[1]) <= 5;
+
+  if (rk === ck && roleClearDom && candDualDom && !roleIsBalFull) {
+    const s = Subj(cand);
+    const rkDesc = rk === "impulsiv" ? "Handlungsorientierung" : rk === "intuitiv" ? "Einfühlungsvermögen" : "Struktur und Analyse";
+    const cSecondKey: ComponentKey = ct.impulsiv >= ct.intuitiv && ct.impulsiv >= ct.analytisch
+      ? (ct.intuitiv >= ct.analytisch ? "intuitiv" : "analytisch")
+      : ct.intuitiv >= ct.analytisch
+        ? (ct.impulsiv >= ct.analytisch ? "impulsiv" : "analytisch")
+        : (ct.impulsiv >= ct.intuitiv ? "impulsiv" : "intuitiv");
+    const secDesc = cSecondKey === "impulsiv" ? "Handlungsorientierung" : cSecondKey === "intuitiv" ? "Einfühlungsvermögen" : "Struktur und Analyse";
+
+    const dualNote = `Die Stelle verlangt klare ${rkDesc}. ${s} teilt den Fokus jedoch zwischen ${rkDesc} und ${secDesc}. Die geteilte Aufmerksamkeit kann dazu führen, dass die Kernkompetenz nicht mit der nötigen Konsequenz eingesetzt wird.`;
+
+    for (const area of areas) {
+      if (area.severity === "ok") {
+        area.severity = "warning";
+        area.risk = dualNote;
+      }
+    }
+  }
+
   return areas;
 }
 
