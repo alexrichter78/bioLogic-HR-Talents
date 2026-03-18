@@ -591,7 +591,7 @@ export default function SollIstBericht() {
           return (
           <div ref={reportRef} style={{ maxWidth: 820, margin: "0 auto" }} data-testid="print-report-wrapper">
             <button
-              onClick={() => setLocation("/bericht")}
+              onClick={() => { setReportGenerated(false); window.scrollTo(0, 0); }}
               style={{
                 display: "inline-flex",
                 alignItems: "center",
