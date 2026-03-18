@@ -371,7 +371,8 @@ export function computeSollIst(
   const constellationRisks = buildConstellationRisks(rk, ck, gapLevel, rt, ct);
   const dominanceShiftText = buildDominanceShift(roleName, cn, rk, ck, rt, ct, rConst, cConst);
   const stressBehavior = buildStressBehavior(cConst, ct, cn, gapLevel);
-  const impactAreas = buildImpactAreas(rk, ck, rt, ct, cn, fuehrungsArt);
+  const roleIsBalFull = rDom.gap1 <= 5 && rDom.gap2 <= 5;
+  const impactAreas = buildImpactAreas(rk, ck, rt, ct, cn, fuehrungsArt, roleIsBalFull);
   const riskTimeline = buildRiskTimeline(roleName, cn, rk, ck, gapLevel);
   const devGap = fitRating === "NICHT_GEEIGNET" ? "hoch" : (matchCheckFit ? controlIntensity : gapLevel);
   const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildDevelopment(devGap, rk, ck, controlIntensity, cn, isDualDomRole, rk2);
@@ -621,29 +622,52 @@ function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string,
   return { controlledPressure, uncontrolledStress };
 }
 
-function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, cand: string, fuehrungsArt: FuehrungsArt): ImpactArea[] {
+function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, cand: string, fuehrungsArt: FuehrungsArt, roleIsBalFull = false): ImpactArea[] {
   const gapI = Math.abs(rt.impulsiv - ct.impulsiv);
   const gapN = Math.abs(rt.intuitiv - ct.intuitiv);
   const gapA = Math.abs(rt.analytisch - ct.analytisch);
 
   const areas: ImpactArea[] = [
-    buildDecisionImpact(rk, ck, gapI, gapA, cand),
+    buildDecisionImpact(rk, ck, gapI, gapA, gapN, cand, roleIsBalFull, ct),
     buildWorkStructureImpact(rk, ck, rt, ct, gapA, cand),
-    buildLeadershipImpact(rk, ck, gapI, gapN, gapA, cand, fuehrungsArt),
-    buildCultureImpact(rk, ck, gapI, gapN, gapA, cand),
+    buildLeadershipImpact(rk, ck, gapI, gapN, gapA, cand, fuehrungsArt, roleIsBalFull, ct),
+    buildCultureImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct),
   ];
 
   return areas;
 }
 
-function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapA: number, cand: string): ImpactArea {
+function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapA: number, gapN: number, cand: string, roleIsBalFull = false, ct?: Triad): ImpactArea {
   const maxGap = Math.max(gapI, gapA);
-  const sev = rk === ck ? severity(maxGap * 0.4) : severity(rk === "analytisch" ? gapA + 5 : maxGap);
   const s = Subj(cand);
 
   let roleNeed: string;
   let candidatePattern: string;
   let risk: string;
+
+  if (roleIsBalFull) {
+    const totalGap = gapI + gapN + gapA;
+    const sev = severity(totalGap * 0.35);
+    roleNeed = "Situative Entscheidungsfähigkeit. Die Stelle verlangt, je nach Situation analytisch, handlungsorientiert oder kontextbezogen zu entscheiden. Keine einzelne Logik dominiert.";
+    if (ct && Math.max(ct.impulsiv, ct.intuitiv, ct.analytisch) - Math.min(ct.impulsiv, ct.intuitiv, ct.analytisch) <= 10) {
+      candidatePattern = `${s} bringt ebenfalls eine breite Entscheidungsbasis mit. Die Vielseitigkeit passt zur Stellenanforderung.`;
+      risk = totalGap >= 15
+        ? "Die Grundausrichtung passt, aber die Gewichtung der drei Entscheidungslogiken unterscheidet sich. In einzelnen Situationen kann die Reaktion anders ausfallen als erwartet."
+        : "Die Entscheidungslogik passt zur Stellenanforderung. Sowohl Stelle als auch Person arbeiten situativ und vielseitig.";
+    } else {
+      const ckLabel = ck === "impulsiv" ? "schnelle, handlungsorientierte" : ck === "intuitiv" ? "kontextbezogene, abstimmungsorientierte" : "analytische, prüfungsorientierte";
+      const weakAreas = [];
+      if (ct && ct.impulsiv < 20) weakAreas.push("Handlungstempo");
+      if (ct && ct.intuitiv < 20) weakAreas.push("Kontextgespür");
+      if (ct && ct.analytisch < 20) weakAreas.push("Analysefähigkeit");
+      const weakStr = weakAreas.length > 0 ? ` Besonders ${weakAreas.join(" und ")} liegt deutlich unter der Stellenanforderung.` : "";
+      candidatePattern = `${s} entscheidet bevorzugt über ${ckLabel} Logik. Die Stelle verlangt jedoch Vielseitigkeit, nicht Spezialisierung.`;
+      risk = `Die einseitige Entscheidungslogik führt dazu, dass bestimmte Situationen nicht mit der passenden Herangehensweise bearbeitet werden.${weakStr} Die Führungskraft muss gezielt gegensteuern.`;
+    }
+    return { id: "decision", label: "Entscheidungslogik", severity: sev, roleNeed, candidatePattern, risk };
+  }
+
+  const sev = rk === ck ? severity(maxGap * 0.4) : severity(rk === "analytisch" ? gapA + 5 : maxGap);
 
   if (rk === ck) {
     if (rk === "analytisch") {
@@ -732,8 +756,39 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
   return { id: "work_structure", label: "Arbeitssteuerung", severity: sev, roleNeed, candidatePattern, risk };
 }
 
-function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, fuehrungsArt: FuehrungsArt): ImpactArea {
+function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, fuehrungsArt: FuehrungsArt, roleIsBalFull = false, ct?: Triad): ImpactArea {
   const maxGap = Math.max(gapI, gapN, gapA);
+  const s = Subj(cand);
+
+  if (roleIsBalFull) {
+    const totalGap = gapI + gapN + gapA;
+    const sev = severity(totalGap * 0.3);
+    const roleNeed = fuehrungsArt === "disziplinarisch"
+      ? "Führung, die alle drei Ebenen abdeckt: operative Klarheit, persönliche Nähe und strukturierte Verlässlichkeit. Die Stelle verlangt situatives Führen, nicht einen einzelnen Stil."
+      : fuehrungsArt === "fachlich"
+        ? "Fachliche Orientierung, die sowohl über klare Entscheidungen als auch über Dialog und Struktur wirkt. Die Stelle verlangt situative Anpassung."
+        : "Die Stelle wirkt in alle Richtungen – über Handlungsorientierung, Beziehungsarbeit und strukturierte Verlässlichkeit gleichermassen.";
+
+    let candidatePattern: string;
+    let risk: string;
+    if (ct && Math.max(ct.impulsiv, ct.intuitiv, ct.analytisch) - Math.min(ct.impulsiv, ct.intuitiv, ct.analytisch) <= 10) {
+      candidatePattern = `${s} bringt ebenfalls eine breite Führungsbasis mit und kann situativ zwischen verschiedenen Stilen wechseln.`;
+      risk = totalGap >= 15
+        ? "Die Grundausrichtung passt, aber die Gewichtung der Führungsebenen unterscheidet sich. In bestimmten Situationen kann die Führungswirkung anders ausfallen als erwartet."
+        : "Führungsstil passt zur Stellenanforderung. Die Vielseitigkeit wird abgedeckt.";
+    } else {
+      const ckStyle = ck === "impulsiv" ? "Tempo und direkte Ansprache" : ck === "intuitiv" ? "persönliche Nähe und Dialog" : "Systematik und klare Regeln";
+      const weakAreas = [];
+      if (ct && ct.impulsiv < 20) weakAreas.push("operative Klarheit und Tempo");
+      if (ct && ct.intuitiv < 20) weakAreas.push("persönliche Nähe und Teamgespür");
+      if (ct && ct.analytisch < 20) weakAreas.push("strukturierte Verlässlichkeit");
+      const weakStr = weakAreas.length > 0 ? ` ${weakAreas.join(" und ")} fehlt dabei deutlich.` : "";
+      candidatePattern = `${s} führt primär über ${ckStyle}. Die Stelle verlangt jedoch ein breites Führungsrepertoire.`;
+      risk = `Die einseitige Führungswirkung deckt nur einen Teil der Stellenanforderung ab.${weakStr} Ohne bewusste Steuerung entstehen blinde Flecken in der Führung.`;
+    }
+    return { id: "leadership", label: "Führungswirkung", severity: sev, roleNeed, candidatePattern, risk };
+  }
+
   const sev = severity(rk !== ck ? maxGap * 0.7 : maxGap * 0.4);
 
   let roleNeed: string;
@@ -760,7 +815,6 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
         : "Wirkung über Kommunikation, Zusammenarbeit und situatives Gespür. Die eigene Arbeitsweise prägt das Umfeld durch Beziehungsarbeit.";
   }
 
-  const s = Subj(cand);
   if (ck === "impulsiv") {
     candidatePattern = `${s} führt eher über Geschwindigkeit, direkte Ansprache und Aktivierung. Entscheidungen werden schnell kommuniziert und umgesetzt.`;
   } else if (ck === "intuitiv") {
@@ -798,7 +852,34 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
   return { id: "leadership", label: "Führungswirkung", severity: sev, roleNeed, candidatePattern, risk };
 }
 
-function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string): ImpactArea {
+function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, roleIsBalFull = false, ct?: Triad): ImpactArea {
+  const s = Subj(cand);
+
+  if (roleIsBalFull) {
+    const totalGap = gapI + gapN + gapA;
+    const sev = severity(totalGap * 0.3);
+    const roleNeed = "Ausgewogene Kultur, die Leistungsorientierung, Zusammenarbeit und Verlässlichkeit verbindet. Kein einzelner Kulturaspekt dominiert.";
+
+    let candidatePattern: string;
+    let risk: string;
+    if (ct && Math.max(ct.impulsiv, ct.intuitiv, ct.analytisch) - Math.min(ct.impulsiv, ct.intuitiv, ct.analytisch) <= 10) {
+      candidatePattern = `${s} bringt eine ähnlich breite kulturelle Prägung mit. Die Vielseitigkeit passt zur Stellenerwartung.`;
+      risk = totalGap >= 15
+        ? "Die kulturelle Grundrichtung stimmt, aber einzelne Aspekte werden unterschiedlich gewichtet. Feinabstimmung ist sinnvoll."
+        : "Kulturwirkung passt zur Stellenanforderung. Die gelebte Kultur entspricht den Erwartungen.";
+    } else {
+      const ckCulture = ck === "impulsiv" ? "Dynamik und Ergebnisorientierung" : ck === "intuitiv" ? "persönliche Verbindung und Teamzusammenhalt" : "Ordnung, Qualität und Regelklarheit";
+      const weakAreas = [];
+      if (ct && ct.impulsiv < 20) weakAreas.push("Leistungsdynamik");
+      if (ct && ct.intuitiv < 20) weakAreas.push("Teamverbundenheit");
+      if (ct && ct.analytisch < 20) weakAreas.push("Verlässlichkeit und Struktur");
+      const weakStr = weakAreas.length > 0 ? ` ${weakAreas.join(" und ")} wird dabei kaum gelebt.` : "";
+      candidatePattern = `${s} prägt die Kultur primär über ${ckCulture}. Die Stelle erwartet jedoch eine ausgewogene Kulturwirkung.`;
+      risk = `Die einseitige Kulturprägung verschiebt das Arbeitsumfeld in eine Richtung, die nur einen Teil der Stellenanforderung abdeckt.${weakStr}`;
+    }
+    return { id: "culture", label: "Kulturwirkung", severity: sev, roleNeed, candidatePattern, risk };
+  }
+
   const sev = severity(rk !== ck ? Math.max(gapI, gapN, gapA) * 0.65 : Math.max(gapI, gapN, gapA) * 0.4);
 
   let roleNeed: string;
@@ -813,7 +894,6 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
     roleNeed = "Kooperative, beziehungsorientierte Kultur. Zusammenhalt und gegenseitige Unterstützung.";
   }
 
-  const s = Subj(cand);
   if (ck === "impulsiv") {
     candidatePattern = `${s} prägt die Kultur über Dynamik und unmittelbare Bewegung. Kurzfristig entsteht mehr Tempo.`;
   } else if (ck === "intuitiv") {
