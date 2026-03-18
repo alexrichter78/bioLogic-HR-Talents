@@ -590,6 +590,28 @@ export default function SollIstBericht() {
 
           return (
           <div ref={reportRef} style={{ maxWidth: 820, margin: "0 auto" }} data-testid="print-report-wrapper">
+            <button
+              onClick={() => setLocation("/bericht")}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: 14,
+                fontWeight: 500,
+                color: "#2563EB",
+                padding: "4px 0",
+                marginBottom: 16,
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = "0.7"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.opacity = "1"; }}
+              data-testid="link-back-matchcheck"
+            >
+              <ChevronLeft style={{ width: 16, height: 16 }} />
+              Zurück zum MatchCheck
+            </button>
             <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }} data-testid="print-report-card">
 
               {/* ─── DARK HEADER (nur Logo + Titel) ─── */}
