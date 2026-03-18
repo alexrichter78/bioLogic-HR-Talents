@@ -398,7 +398,7 @@ input[type="range"].bio-slider::-moz-range-track {
   font-size: 11px;
   letter-spacing: 0.18em;
   font-weight: 700;
-  color: #f0a24f;
+  color: #f4f4f2;
 }
 
 .report-kicker::before {
@@ -409,7 +409,7 @@ input[type="range"].bio-slider::-moz-range-track {
   width: 2px;
   height: 28px;
   border-radius: 2px;
-  background: #f0a24f;
+  background: #f4f4f2;
 }
 
 .report-title {
