@@ -262,6 +262,7 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
     rollenDna: domColor,
     verhalten: hexToRgb("#6366F1"),
     teamwirkung: hexToRgb("#0EA5E9"),
+    fazit: hexToRgb("#10B981"),
   };
 
   sectionHead(1, "Stellenprofil · Entscheidungsgrundlage", SECTION_COLORS_PDF.rollenDna);
@@ -579,48 +580,25 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
     printText(data.kandidatenText, ML, CW, 8.5, C.dark, 4.3);
   }
 
-  y += 6;
+  separator(50);
 
-  checkPage(24);
-  const fazitBoxPad = 5;
-  const fazitTextLines: string[] = [];
-  data.fazitAbsaetze.forEach(a => {
-    wrap(a, CW - fazitBoxPad * 2 - 2, 8.5).forEach(l => fazitTextLines.push(l));
-    fazitTextLines.push("");
-  });
-  const fazitTitelLines = wrap(data.fazitTitel, CW - fazitBoxPad * 2, 7.5);
-  const fazitBoxH = 8 + fazitTitelLines.length * 4 + 4 + fazitTextLines.length * 4.3 + fazitBoxPad;
+  sectionHead(4, "Entscheidungsfazit", SECTION_COLORS_PDF.fazit);
 
-  setF(C.bg);
-  doc.roundedRect(ML, y, CW, fazitBoxH, 3, 3, "F");
-  setD(C.analytisch);
-  doc.setLineWidth(0.3);
-  doc.roundedRect(ML, y, CW, fazitBoxH, 3, 3, "S");
-
-  let fy = y + fazitBoxPad + 4;
-  doc.setFontSize(10);
+  doc.setFontSize(9);
   doc.setFont("helvetica", "bold");
   setC(C.black);
-  doc.text("Entscheidungsfazit", ML + fazitBoxPad, fy);
-  fy += 5;
-  doc.setFontSize(7.5);
-  doc.setFont("helvetica", "normal");
-  setC(C.mid);
-  fazitTitelLines.forEach(l => {
-    doc.text(l, ML + fazitBoxPad, fy);
-    fy += 4;
-  });
-  fy += 2;
+  doc.text(data.fazitTitel, ML, y);
+  y += 6;
+
   doc.setFontSize(8.5);
   doc.setFont("helvetica", "normal");
   setC(C.dark);
-  fazitTextLines.forEach(l => {
-    if (l === "") { fy += 2; return; }
-    doc.text(l, ML + fazitBoxPad, fy);
-    fy += 4.3;
+  data.fazitAbsaetze.forEach((a, i) => {
+    printText(a, ML, CW, 8.5, C.dark, 4.3);
+    if (i < data.fazitAbsaetze.length - 1) y += 2;
   });
 
-  y = fy + 6;
+  y += 6;
 
   checkPage(10);
   hline(ML, y, ML + CW, C.lineFaint);

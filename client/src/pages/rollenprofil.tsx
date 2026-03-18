@@ -1191,6 +1191,7 @@ export default function Rollenprofil() {
     rollenDna: domColor,
     verhalten: "#6366F1",
     teamwirkung: "#0EA5E9",
+    fazit: "#10B981",
   };
 
   return (
@@ -1476,20 +1477,18 @@ export default function Rollenprofil() {
               </div>
             )}
 
-            {/* Entscheidungsfazit */}
-            <div style={{
-              marginTop: 32, padding: "24px 28px", borderRadius: 16,
-              background: "linear-gradient(135deg, rgba(0,113,227,0.04), rgba(0,113,227,0.02))",
-              border: "1px solid rgba(0,113,227,0.1)",
-            }} data-testid="bericht-section-fazit">
-              <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>Entscheidungsfazit</p>
-              <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 14px" }}>{fazit.titel}</p>
-              {fazit.absaetze.map((absatz, i) => (
-                <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i < fazit.absaetze.length - 1 ? "0 0 10px" : "0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                  {absatz}
-                </p>
-              ))}
-            </div>
+          </div>
+
+          {/* ── SEITE 4: ENTSCHEIDUNGSFAZIT ── */}
+          <div data-section="fazit" style={{ marginBottom: 40 }} data-testid="bericht-section-fazit">
+            <SectionHead num={4} title="Entscheidungsfazit" color={SECTION_COLORS.fazit} />
+
+            <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 14px" }}>{fazit.titel}</p>
+            {fazit.absaetze.map((absatz, i) => (
+              <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i < fazit.absaetze.length - 1 ? "0 0 10px" : "0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
+                {absatz}
+              </p>
+            ))}
           </div>
 
           {/* ── FOOTER ── */}
