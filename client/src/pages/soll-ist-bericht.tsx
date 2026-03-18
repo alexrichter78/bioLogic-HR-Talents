@@ -526,13 +526,13 @@ export default function SollIstBericht() {
                       <div>
                         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
                           <div style={{ width: 14, height: 14, borderRadius: 7, background: fitColor, flexShrink: 0 }} />
-                          <span style={{ fontSize: 14, fontWeight: 700, color: fitColor }} data-testid="text-summary-fit">{fitLabel}</span>
+                          <span style={{ fontSize: 15, fontWeight: 700, color: fitColor }} data-testid="text-summary-fit">{fitLabel}</span>
                         </div>
                         <p style={{ fontSize: 14, fontWeight: 500, color: "#6E6E73", margin: 0 }} data-testid="text-summary-fazit">{shortFazit}</p>
                       </div>
 
                       <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Entwicklungsaufwand</p>
+                        <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Entwicklungsaufwand</p>
                         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
                           <div style={{ display: "flex", gap: 5, flex: 1 }}>
                             {Array.from({ length: 3 }).map((_, i) => (
@@ -541,18 +541,18 @@ export default function SollIstBericht() {
                           </div>
                           <span style={{ fontSize: 14, fontWeight: 700, color: devGaugeColor, flexShrink: 0 }}>{devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch"}</span>
                         </div>
-                        <p style={{ fontSize: 13, color: "#6E6E73", margin: 0 }} data-testid="text-dev-short">{devShort}</p>
+                        <p style={{ fontSize: 14, color: "#6E6E73", margin: 0 }} data-testid="text-dev-short">{devShort}</p>
                       </div>
 
                       <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
-                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>{kritischLabel}</p>
+                        <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>{kritischLabel}</p>
                         {kritischBullets.map((b, i) => (
                           <BulletItem key={i} text={b} color={bulletCol} />
                         ))}
                       </div>
 
                       <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
-                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>Auswirkung</p>
+                        <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>Auswirkung</p>
                         {auswirkungBullets.map((b, i) => (
                           <BulletItem key={i} text={b} color={bulletCol} />
                         ))}
