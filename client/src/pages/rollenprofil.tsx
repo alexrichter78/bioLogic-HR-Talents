@@ -1512,7 +1512,7 @@ export default function Rollenprofil() {
 
             {/* Führungswirkung / Teamwirkung */}
             <div style={{ marginBottom: 28 }}>
-              <SubHead title={data.isLeadership ? "Führungswirkung der Stelle" : "Teamwirkung der Stelle"} color={SECTION_COLORS.teamwirkung} />
+              <SubHead num={1} title={data.isLeadership ? "Führungswirkung der Stelle" : "Teamwirkung der Stelle"} color={SECTION_COLORS.teamwirkung} />
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                 {teamwirkung}
               </p>
@@ -1520,7 +1520,7 @@ export default function Rollenprofil() {
 
             {/* Spannungsfelder */}
             <div style={{ marginBottom: 28 }}>
-              <SubHead title="Spannungsfelder der Stelle" color={SECTION_COLORS.teamwirkung} />
+              <SubHead num={2} title="Spannungsfelder der Stelle" color={SECTION_COLORS.teamwirkung} />
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, margin: "0 0 12px" }}>
                 Typische Spannungen dieser Stelle sind:
               </p>
@@ -1539,7 +1539,7 @@ export default function Rollenprofil() {
 
             {/* Fehlbesetzungsrisiken */}
             <div style={{ marginBottom: 28 }}>
-              <SubHead title="Fehlbesetzungsrisiken" color={SECTION_COLORS.teamwirkung} />
+              <SubHead num={3} title="Fehlbesetzungsrisiken" color={SECTION_COLORS.teamwirkung} />
               {fehlbesetzung.map((risk, i) => (
                 <div key={i} style={{ marginBottom: 16 }}>
                   <p style={{ fontSize: 14, fontWeight: 700, color: "#3A3A3C", margin: "0 0 8px", fontStyle: "italic" }}>{risk.label}</p>
@@ -1558,7 +1558,7 @@ export default function Rollenprofil() {
             {/* Typischer Kandidat (AI-generiert) */}
             {(kandidatenText || kandidatenLoading || kandidatenError) && (
               <div style={{ marginBottom: 28 }} data-testid="section-kandidatenprofil">
-                <SubHead title="Typische Person für diese Stelle" color={SECTION_COLORS.teamwirkung} />
+                <SubHead num={4} title="Typische Person für diese Stelle" color={SECTION_COLORS.teamwirkung} />
                 {kandidatenLoading ? (
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <div style={{
