@@ -907,8 +907,11 @@ function makeCircleDataUrl(
   ctx.font = `${fontWeight} ${fontSize * scale}px Inter, Arial, sans-serif`;
   ctx.fillStyle = textColor;
   ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(text, s / 2, s / 2);
+  ctx.textBaseline = "alphabetic";
+  const m = ctx.measureText(text);
+  const textH = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
+  const yPos = s / 2 + textH / 2 - m.actualBoundingBoxDescent;
+  ctx.fillText(text, s / 2, yPos);
   return c.toDataURL("image/png");
 }
 
