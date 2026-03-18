@@ -1062,11 +1062,8 @@ export default function Rollenprofil() {
         sh.style.justifyContent = "center";
         sh.style.gap = "0";
       });
-      clone.querySelectorAll<HTMLElement>("[data-subhead-circle]").forEach(el => {
-        const line = el.closest("[style]")?.parentElement?.querySelector<HTMLElement>("[style*='border-radius']");
-        if (line) line.style.marginLeft = "0";
-        el.remove();
-      });
+      clone.querySelectorAll<HTMLElement>("[data-subhead-circle]").forEach(el => el.remove());
+      clone.querySelectorAll<HTMLElement>("[data-subhead-line]").forEach(el => el.remove());
 
       const A4_W = 595.28;
       const A4_H = 841.89;
@@ -1369,7 +1366,7 @@ export default function Rollenprofil() {
         )}
         <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, lineHeight: 1 }}>{title}</p>
       </div>
-      <div style={{ width: 36, height: 2.5, borderRadius: 2, background: color, marginTop: 4, marginLeft: num != null ? 34 : 0, opacity: 0.7 }} />
+      <div data-subhead-line style={{ width: 36, height: 2.5, borderRadius: 2, background: color, marginTop: 4, marginLeft: num != null ? 34 : 0, opacity: 0.7 }} />
     </div>
   );
 
