@@ -908,7 +908,7 @@ function makeCircleDataUrl(
   ctx.fillStyle = textColor;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(text, s / 2, s / 2 + 0.5 * scale);
+  ctx.fillText(text, s / 2, s / 2);
   return c.toDataURL("image/png");
 }
 
