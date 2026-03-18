@@ -237,6 +237,26 @@ export default function SollIstBericht() {
         sh.style.gap = "0";
       });
 
+      const animatedSections = clone.querySelectorAll<HTMLElement>(
+        "[data-testid='print-report-card'] > div > div, .bio-bar-animate"
+      );
+      animatedSections.forEach(el => {
+        el.style.animation = "none";
+        el.style.opacity = "1";
+        el.style.transform = "none";
+        el.style.transition = "none";
+      });
+
+      clone.querySelectorAll<HTMLElement>(".no-print").forEach(el => {
+        el.style.display = "none";
+      });
+
+      const cardEl = clone.querySelector<HTMLElement>("[data-testid='print-report-card']");
+      if (cardEl) {
+        cardEl.style.overflow = "visible";
+        cardEl.style.borderRadius = "0";
+      }
+
       const A4_W = 595.28;
       const A4_H = 841.89;
       const TOP_MARGIN_PT = 28.35;
