@@ -1115,7 +1115,7 @@ export default function Rollenprofil() {
           {/* ── EINLEITUNG ── */}
           <div style={{ marginBottom: 32 }} data-testid="bericht-section-intro">
             <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-einleitung">
-              Dieser Bericht beschreibt, welche Persönlichkeitsstruktur für die Stelle {data.beruf} besonders wirksam ist. Neben fachlichen Kompetenzen beeinflusst vor allem die Art, wie eine Person Situationen beurteilt, Entscheidungen trifft und unter Druck handelt, den Erfolg in dieser Stelle. Die folgenden Abschnitte zeigen, welche Persönlichkeitsstruktur die Anforderungen der Stelle unterstützt, wie sich diese im Arbeitsalltag zeigt und welche Spannungsfelder dabei entstehen können.
+              Dieser Bericht beschreibt, welche Persönlichkeitsstruktur für die Stelle {data.beruf} besonders wirksam ist. Neben fachlichen Kompetenzen beeinflusst vor allem die Art, wie eine Person Situationen beurteilt, Entscheidungen trifft und unter Druck handelt, den Erfolg in dieser Stelle.<br /><br />Die folgenden Abschnitte zeigen, welche Persönlichkeitsstruktur die Anforderungen der Stelle unterstützt, wie sich diese im Arbeitsalltag zeigt und welche Spannungsfelder dabei entstehen können.
             </p>
           </div>
 
