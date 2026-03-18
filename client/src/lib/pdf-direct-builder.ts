@@ -280,9 +280,9 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   let hY = MT;
 
   if (logoDataUrl) {
-    try { doc.addImage(logoDataUrl, "PNG", ML, hY - 4, 48, 18); } catch (_) {}
+    try { doc.addImage(logoDataUrl, "PNG", ML, hY - 3, 30, 12); } catch (_) {}
   }
-  const logoEndX = ML + (logoDataUrl ? 52 : 0);
+  const logoEndX = ML + (logoDataUrl ? 33 : 0);
 
   setD(headerDivider);
   doc.setLineWidth(0.3);
