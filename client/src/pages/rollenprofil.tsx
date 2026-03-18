@@ -1011,6 +1011,15 @@ export default function Rollenprofil() {
       clone.style.overflow = "visible";
       document.body.appendChild(clone);
 
+      const allTextEls = clone.querySelectorAll<HTMLElement>("p, span, li, div");
+      allTextEls.forEach(el => {
+        el.style.hyphens = "none";
+        (el.style as any).WebkitHyphens = "none";
+        el.style.wordBreak = "normal";
+        el.style.overflowWrap = "break-word";
+        el.style.textAlign = "left";
+      });
+
       const A4_W = 595.28;
       const A4_H = 841.89;
       const pxWidth = 794;
