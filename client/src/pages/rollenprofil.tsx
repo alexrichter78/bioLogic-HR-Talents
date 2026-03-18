@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation } from "wouter";
 import { Download, AlertTriangle, BarChart3, Briefcase, Users, Sun, Gauge, Flame } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
@@ -879,6 +879,39 @@ function buildFazit(data: ReportData): { titel: string; absaetze: string[] } {
   return { titel: t.titel, absaetze: isL ? t.mit : t.ohne };
 }
 
+function makeCircleDataUrl(
+  text: string,
+  size: number,
+  bgColor: string,
+  textColor: string,
+  fontSize: number,
+  fontWeight: number = 800,
+  shadow: boolean = false,
+): string {
+  const scale = 4;
+  const s = size * scale;
+  const c = document.createElement("canvas");
+  c.width = s;
+  c.height = s;
+  const ctx = c.getContext("2d")!;
+  if (shadow) {
+    ctx.shadowColor = "rgba(0,0,0,0.2)";
+    ctx.shadowBlur = 3 * scale;
+    ctx.shadowOffsetY = 1 * scale;
+  }
+  ctx.beginPath();
+  ctx.arc(s / 2, s / 2, s / 2 - (shadow ? 2 * scale : 0), 0, Math.PI * 2);
+  ctx.fillStyle = bgColor;
+  ctx.fill();
+  ctx.shadowColor = "transparent";
+  ctx.font = `${fontWeight} ${fontSize * scale}px Inter, Arial, sans-serif`;
+  ctx.fillStyle = textColor;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(text, s / 2, s / 2 + 0.5 * scale);
+  return c.toDataURL("image/png");
+}
+
 const MAX_BIO = 67;
 
 function ProfileBar({ label, value, color }: { label: string; value: number; color: string }) {
@@ -1114,6 +1147,15 @@ export default function Rollenprofil() {
     }
   };
 
+  const sectionCircleUrls = useMemo(() => ({
+    1: makeCircleDataUrl("01", 28, "rgba(255,255,255,0.95)", "#343A48", 12, 800, true),
+    2: makeCircleDataUrl("02", 28, "rgba(255,255,255,0.95)", "#343A48", 12, 800, true),
+    3: makeCircleDataUrl("03", 28, "rgba(255,255,255,0.95)", "#343A48", 12, 800, true),
+    4: makeCircleDataUrl("04", 28, "rgba(255,255,255,0.95)", "#343A48", 12, 800, true),
+  }), []);
+
+  const subCircleCache = useRef<Record<string, string>>({});
+
   if (!data) {
     return (
       <div className="min-h-screen" style={{ background: "#F1F5F9" }}>
@@ -1284,9 +1326,7 @@ export default function Rollenprofil() {
 
   const SectionHead = ({ num, title }: { num: number; title: string; color?: string }) => (
     <div className="bio-section-head" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, marginLeft: -44, marginRight: -44, padding: "0 18px", height: 38, background: "linear-gradient(135deg, #343A48 0%, #3d4455 50%, #464f62 100%)", boxShadow: "0 2px 6px rgba(52,58,72,0.3)" }}>
-      <div style={{ width: 28, height: 28, display: "table", background: "rgba(255,255,255,0.95)", borderRadius: "50%", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.2)", overflow: "hidden" }}>
-        <span style={{ display: "table-cell", textAlign: "center", verticalAlign: "middle", fontSize: 12, fontWeight: 800, color: "#343A48", lineHeight: 1 }}>{String(num).padStart(2, "0")}</span>
-      </div>
+      <img src={sectionCircleUrls[num as keyof typeof sectionCircleUrls]} alt={String(num).padStart(2, "0")} style={{ width: 28, height: 28, flexShrink: 0 }} />
       <span style={{ fontSize: 15, fontWeight: 700, color: "#FFFFFF", letterSpacing: "0.03em" }}>{title}</span>
     </div>
   );
@@ -1298,12 +1338,18 @@ export default function Rollenprofil() {
     fazit: "#10B981",
   };
 
+  const getSubCircle = (num: number, color: string) => {
+    const key = `${num}-${color}`;
+    if (!subCircleCache.current[key]) {
+      subCircleCache.current[key] = makeCircleDataUrl(String(num), 24, color, "#fff", 11, 800);
+    }
+    return subCircleCache.current[key];
+  };
+
   const SubHead = ({ num, title, color }: { num?: number; title: string; color: string }) => (
     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
       {num != null && (
-        <div style={{ width: 24, height: 24, display: "table", background: color, borderRadius: "50%", flexShrink: 0, overflow: "hidden" }}>
-          <span style={{ display: "table-cell", textAlign: "center", verticalAlign: "middle", fontSize: 11, fontWeight: 800, color: "#fff", lineHeight: 1 }}>{num}</span>
-        </div>
+        <img src={getSubCircle(num, color)} alt={String(num)} style={{ width: 24, height: 24, flexShrink: 0 }} />
       )}
       <div>
         <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{title}</p>
