@@ -1350,14 +1350,14 @@ export default function Rollenprofil() {
   };
 
   const SubHead = ({ num, title, color }: { num?: number; title: string; color: string }) => (
-    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-      {num != null && (
-        <img src={getSubCircle(num, color)} alt={String(num)} style={{ width: 24, height: 24, flexShrink: 0 }} />
-      )}
-      <div>
+    <div style={{ marginBottom: 12 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        {num != null && (
+          <img src={getSubCircle(num, color)} alt={String(num)} style={{ width: 24, height: 24, flexShrink: 0 }} />
+        )}
         <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{title}</p>
-        <div style={{ width: 36, height: 2.5, borderRadius: 2, background: color, marginTop: 4, opacity: 0.7 }} />
       </div>
+      <div style={{ width: 36, height: 2.5, borderRadius: 2, background: color, marginTop: 4, marginLeft: num != null ? 34 : 0, opacity: 0.7 }} />
     </div>
   );
 
