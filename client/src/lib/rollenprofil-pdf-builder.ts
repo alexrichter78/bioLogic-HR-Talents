@@ -191,54 +191,67 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
   const domColor = COMP_MAP[data.dom.key]?.color || C.analytisch;
   const dateStr = new Date().toLocaleDateString("de-CH", { day: "2-digit", month: "long", year: "numeric" });
 
-  const headerBgRgb: RGB = [52, 58, 72];
-  const headerTextDim: RGB = [160, 165, 180];
-  const headerTextSubtle: RGB = [130, 135, 148];
-  const headerDivider: RGB = [82, 87, 99];
+  const headerH = 58;
+  const headerBg1: RGB = [43, 52, 66];
+  const headerBg2: RGB = [29, 36, 48];
+  const headerKickerColor: RGB = [244, 244, 242];
+  const headerTitleColor: RGB = [244, 244, 242];
+  const headerSubtitleColor: RGB = [230, 230, 228];
+  const ringColor: RGB = [255, 255, 255];
 
-  let estH = MT + 14 + 10 + 8;
+  setF(headerBg1);
+  doc.rect(0, 0, PW, headerH, "F");
+  setF(headerBg2);
+  doc.rect(PW * 0.4, 0, PW * 0.6, headerH, "F");
 
-  setF(headerBgRgb);
-  doc.rect(0, 0, PW, estH, "F");
+  // Decorative rings (subtle)
+  setD(ringColor);
+  doc.setLineWidth(0.15);
+  doc.setDrawColor(ringColor[0], ringColor[1], ringColor[2]);
+  doc.circle(PW - 20, 28, 22, "S");
+  doc.circle(PW - 10, 35, 30, "S");
 
-  let hY = MT;
+  let hY = 10;
 
   if (logoDataUrl) {
-    try { doc.addImage(logoDataUrl, "PNG", ML, hY - 3, 30, 12); } catch (_) {}
+    try { doc.addImage(logoDataUrl, "PNG", ML, hY, 36, 14.4); } catch (_) {}
   }
-  const logoEndX = ML + (logoDataUrl ? 33 : 0);
 
-  setD(headerDivider);
-  doc.setLineWidth(0.3);
-  const dividerX = logoEndX + 3;
-  doc.line(dividerX, hY - 1, dividerX, hY + 6);
-
-  doc.setFontSize(7.5);
+  // PDF button area (decorative, top-right)
+  setF([255, 255, 255] as RGB);
+  doc.roundedRect(PW - MR - 18, hY + 1, 18, 8, 1.5, 1.5, "F");
+  doc.setFontSize(6.5);
   doc.setFont("helvetica", "bold");
-  setC(headerTextDim);
-  doc.text("STELLENANALYSE", dividerX + 4, hY + 3.5);
+  setC(headerBg1);
+  doc.text("PDF", PW - MR - 9, hY + 6, { align: "center" });
 
+  hY += 20;
+
+  // Orange bar + STELLENANALYSE kicker
+  setF([240, 162, 79] as RGB);
+  doc.rect(ML, hY, 0.8, 6, "F");
   doc.setFontSize(7);
-  doc.setFont("helvetica", "normal");
-  setC(headerTextSubtle);
-  doc.text(dateStr, PW - MR, hY + 3.5, { align: "right" });
-
-  hY += 14;
-  doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
-  setC(C.white);
-  doc.text(`Stellenprofil: ${data.beruf}`, ML, hY);
-  hY += 6;
+  setC(headerKickerColor);
+  doc.text("STELLENANALYSE", ML + 4, hY + 4.2);
 
-  if (data.bereich) {
-    doc.setFontSize(8.5);
-    doc.setFont("helvetica", "normal");
-    setC(headerTextDim);
-    doc.text(data.bereich, ML, hY);
-    hY += 4;
-  }
+  hY += 10;
 
-  y = hY + 8;
+  // Title: Stellenprofil
+  doc.setFontSize(20);
+  doc.setFont("helvetica", "bold");
+  setC(headerTitleColor);
+  doc.text("Stellenprofil", ML, hY);
+
+  hY += 8;
+
+  // Subtitle: Beruf
+  doc.setFontSize(13);
+  doc.setFont("helvetica", "normal");
+  setC(headerSubtitleColor);
+  doc.text(data.beruf, ML, hY);
+
+  y = headerH + 8;
 
   printText(data.einleitung, ML, CW, 8.5, C.dark, 4.3);
   y += 4;
