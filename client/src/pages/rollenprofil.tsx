@@ -1155,16 +1155,16 @@ export default function Rollenprofil() {
               <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 14px" }}>2. Strukturprofil der Stelle</p>
 
               <div style={{ padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)", marginBottom: 16 }}>
-                <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: "0 0 16px", fontWeight: 400 }} lang="de">
+                <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: 0, fontWeight: 400 }} lang="de">
                   {strukturprofilText}
                 </p>
-                <div style={{ maxWidth: 400 }}>
-                  <ProfileBar label="Impulsiv" value={data.gesamt.imp} color={COLORS.imp} />
-                  <div style={{ height: 8 }} />
-                  <ProfileBar label="Intuitiv" value={data.gesamt.int} color={COLORS.int} />
-                  <div style={{ height: 8 }} />
-                  <ProfileBar label="Analytisch" value={data.gesamt.ana} color={COLORS.ana} />
-                </div>
+              </div>
+              <div style={{ maxWidth: 400, marginBottom: 16 }}>
+                <ProfileBar label="Impulsiv" value={data.gesamt.imp} color={COLORS.imp} />
+                <div style={{ height: 8 }} />
+                <ProfileBar label="Intuitiv" value={data.gesamt.int} color={COLORS.int} />
+                <div style={{ height: 8 }} />
+                <ProfileBar label="Analytisch" value={data.gesamt.ana} color={COLORS.ana} />
               </div>
 
               <div style={{ marginBottom: 16 }}>
