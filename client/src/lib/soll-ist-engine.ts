@@ -638,7 +638,7 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
 
 function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapA: number, cand: string): ImpactArea {
   const maxGap = Math.max(gapI, gapA);
-  const sev = rk === ck ? severity(maxGap) : severity(rk === "analytisch" ? gapA + 5 : maxGap);
+  const sev = rk === ck ? severity(maxGap * 0.4) : severity(rk === "analytisch" ? gapA + 5 : maxGap);
   const s = Subj(cand);
 
   let roleNeed: string;
@@ -734,7 +734,7 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
 
 function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, fuehrungsArt: FuehrungsArt): ImpactArea {
   const maxGap = Math.max(gapI, gapN, gapA);
-  const sev = severity(rk !== ck ? maxGap * 0.7 : maxGap * 0.65);
+  const sev = severity(rk !== ck ? maxGap * 0.7 : maxGap * 0.4);
 
   let roleNeed: string;
   let candidatePattern: string;
@@ -799,7 +799,7 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
 }
 
 function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string): ImpactArea {
-  const sev = severity(Math.max(gapI, gapN, gapA) * 0.65);
+  const sev = severity(rk !== ck ? Math.max(gapI, gapN, gapA) * 0.65 : Math.max(gapI, gapN, gapA) * 0.4);
 
   let roleNeed: string;
   let candidatePattern: string;
