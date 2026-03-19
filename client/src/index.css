@@ -332,6 +332,11 @@ input[type="range"].bio-slider::-moz-range-track {
   text-align-last: left;
 }
 
+[data-bericht] [data-text-left] p {
+  text-align: left;
+  text-align-last: left;
+}
+
 @keyframes micPulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(255,59,48,0.4); }
   50% { box-shadow: 0 0 0 8px rgba(255,59,48,0); }
