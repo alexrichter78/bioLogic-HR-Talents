@@ -932,23 +932,65 @@ export default function TeamReport() {
 
           const teamIsDualDom = teamDom.gap1 <= 5 && teamDom.gap2 > 5;
           const candIsDualDom = candDom.gap1 <= 5 && candDom.gap2 > 5;
+          const teamClearDom = teamDom.gap1 >= 15;
 
           const teamDomKeys = teamIsBalFull ? [] : teamIsDualDom ? [teamDom.top1.key, teamDom.top2.key] : [teamDom.top1.key];
           const candDomKeys = candIsBalFull ? [] : candIsDualDom ? [candDom.top1.key, candDom.top2.key] : [candDom.top1.key];
 
+          const candMatchesTeamDual = teamIsDualDom && (candDom.top1.key === teamDom.top1.key || candDom.top1.key === teamDom.top2.key);
+          const dualKeysMatch = teamIsDualDom && candIsDualDom
+            && [teamDom.top1.key, teamDom.top2.key].includes(candDom.top1.key)
+            && [teamDom.top1.key, teamDom.top2.key].includes(candDom.top2.key);
+          const effectiveSameDomSt = sameDom || teamIsBalFull || candMatchesTeamDual;
+          const secFlipSt = effectiveSameDomSt && teamDom.top2.key !== candDom.top2.key && !dualKeysMatch;
+
+          const candSpread = candDom.top1.value - candDom.top3.value;
+
           let steuerung: "gering" | "mittel" | "erhöht";
-          if (teamIsBalFull && candIsBalFull) {
+
+          if (maxGap > 25) {
+            steuerung = "erhöht";
+          } else if (teamIsBalFull && candIsBalFull) {
             steuerung = "mittel";
-          } else if (teamIsBalFull || candIsBalFull) {
-            const other = teamIsBalFull ? candDomKeys : teamDomKeys;
-            steuerung = other.length > 1 ? "mittel" : "erhöht";
-          } else if (teamIsDualDom || candIsDualDom) {
-            if (teamIsDualDom && candIsDualDom) {
+          } else if (teamIsBalFull) {
+            if (candIsDualDom) {
+              steuerung = "mittel";
+            } else if (candSpread <= 5 || totalGap <= 8) {
+              steuerung = "mittel";
+            } else if (candSpread < 12) {
               steuerung = "mittel";
             } else {
-              const dualKeys = teamIsDualDom ? teamDomKeys : candDomKeys;
-              const singleKey = teamIsDualDom ? candDomKeys[0] : teamDomKeys[0];
-              steuerung = dualKeys.includes(singleKey) ? "mittel" : "erhöht";
+              steuerung = "erhöht";
+            }
+          } else if (candIsBalFull && !teamIsBalFull) {
+            steuerung = "erhöht";
+          } else if (teamIsDualDom && candIsDualDom) {
+            if (dualKeysMatch) {
+              steuerung = totalGap > 20 ? "mittel" : "gering";
+            } else {
+              steuerung = "mittel";
+            }
+          } else if (teamIsDualDom && !candIsDualDom) {
+            const candKeyInDual = teamDomKeys.includes(candDomKeys[0]);
+            if (!candKeyInDual) {
+              steuerung = "erhöht";
+            } else {
+              const candValForT1 = istProfile[teamDom.top1.key];
+              const candValForT2 = istProfile[teamDom.top2.key];
+              const candDualGap = Math.abs(candValForT1 - candValForT2);
+              steuerung = candDualGap > 5 ? "mittel" : "gering";
+            }
+          } else if (!teamIsDualDom && candIsDualDom) {
+            if (teamClearDom) {
+              const teamKeyInCandDual = candDomKeys.includes(teamDomKeys[0]);
+              if (!teamKeyInCandDual) {
+                steuerung = "erhöht";
+              } else {
+                steuerung = "mittel";
+              }
+            } else {
+              const teamKeyInCandDual = candDomKeys.includes(teamDomKeys[0]);
+              steuerung = teamKeyInCandDual ? "mittel" : "erhöht";
             }
           } else {
             if (sameDom) {
@@ -956,7 +998,8 @@ export default function TeamReport() {
               const secGapTeam = teamDom.gap2;
               const secGapCand = candDom.gap2;
               if (secFlip && secGapTeam > 5 && secGapCand > 5) {
-                steuerung = "erhöht";
+                const flipThreshold = teamDom.gap1 <= 5 ? 16 : 30;
+                steuerung = totalGap >= flipThreshold ? "erhöht" : "mittel";
               } else if (secFlip) {
                 steuerung = "mittel";
               } else {
@@ -966,6 +1009,9 @@ export default function TeamReport() {
               steuerung = "erhöht";
             }
           }
+
+          if (totalGap > 35 && steuerung !== "erhöht") { steuerung = "erhöht"; }
+          else if (totalGap > 15 && steuerung === "gering") { steuerung = "mittel"; }
 
           const steuerungColor = steuerung === "gering" ? "#3A9A5C" : steuerung === "mittel" ? "#E5A832" : "#D64045";
 
