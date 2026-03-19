@@ -240,6 +240,7 @@ export default function TeamCheckReportV3() {
                 {(() => {
                   const isLeadership = result.roleType === "leadership";
                   const p = result.passung;
+                  const sFit = result.strategicFit;
                   let bewertungsText = "";
                   if (p === "Passend") {
                     bewertungsText = isLeadership
@@ -253,6 +254,9 @@ export default function TeamCheckReportV3() {
                     bewertungsText = isLeadership
                       ? "Die Gesamtbewertung spricht für eine kritische Passung. Die Führungslogik weicht deutlich von der Teamstruktur ab. Eine wirksame Führung wäre nur mit erheblichem Steuerungsaufwand, klarer Rahmung und konsequenter Kommunikation realistisch."
                       : "Die Gesamtbewertung spricht für eine kritische Passung. Die strukturelle Abweichung ist deutlich, der Steuerungs- und Entwicklungsaufwand entsprechend hoch. Eine erfolgreiche Besetzung wäre nur unter klarer Führung und mit bewusstem Integrationsaufwand realistisch.";
+                  }
+                  if (sFit === "passend" && (p === "Kritisch" || p === "Bedingt passend")) {
+                    bewertungsText += " Gleichzeitig entspricht die Arbeitsweise der Person dem funktionalen Ziel der Abteilung — die bestehende Spannung ist damit strategisch gewollt und kann als gezielte Weiterentwicklung des Teams verstanden werden.";
                   }
                   return (
                     <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "14px 0 0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-gesamtbewertung">
@@ -274,12 +278,36 @@ export default function TeamCheckReportV3() {
                     <span style={{ fontSize: 13, fontWeight: 600, color: "#8E8E93" }}>Personenprofil</span>
                     <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{result.personLabel}</span>
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: result.teamGoal ? "1px solid rgba(0,0,0,0.06)" : "none" }}>
                     <span style={{ fontSize: 13, fontWeight: 600, color: "#8E8E93" }}>Team–Person-Abweichung</span>
                     <span style={{ fontSize: 15, fontWeight: 800, color: abwCol }}>{result.teamPersonAbweichung} Punkte</span>
                   </div>
+                  {result.teamGoal && (
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0" }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "#8E8E93" }}>Funktionsziel</span>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-team-goal">
+                        {result.teamGoal === "umsetzung" ? "Umsetzung und Ergebnisse" : result.teamGoal === "analyse" ? "Analyse und Struktur" : "Zusammenarbeit und Kommunikation"}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
+
+              {result.strategicText && (
+                <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: result.strategicFit === "passend" ? "rgba(52,199,89,0.06)" : result.strategicFit === "teilweise" ? "rgba(255,149,0,0.06)" : "rgba(255,59,48,0.06)", border: `1px solid ${result.strategicFit === "passend" ? "rgba(52,199,89,0.2)" : result.strategicFit === "teilweise" ? "rgba(255,149,0,0.2)" : "rgba(255,59,48,0.2)"}` }} data-testid="v3-section-strategic-fit">
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.14em", margin: 0 }}>Strategische Einordnung</p>
+                    <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 6, background: result.strategicFit === "passend" ? "rgba(52,199,89,0.15)" : result.strategicFit === "teilweise" ? "rgba(255,149,0,0.15)" : "rgba(255,59,48,0.15)", color: result.strategicFit === "passend" ? "#1B7A3D" : result.strategicFit === "teilweise" ? "#B25E00" : "#C41E3A" }} data-testid="badge-strategic-fit">
+                      {result.strategicFit === "passend" ? "Strategisch passend" : result.strategicFit === "teilweise" ? "Teilweise passend" : "Strategisch abweichend"}
+                    </span>
+                  </div>
+                  {result.strategicText.split(/\n\n+/).map((para, i) => (
+                    <p key={i} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.85, margin: i === 0 ? 0 : "8px 0 0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
+                      {para}
+                    </p>
+                  ))}
+                </div>
+              )}
 
               {/* STRUKTURKONSTELLATION */}
               <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="v3-section-strukturkonstellation">

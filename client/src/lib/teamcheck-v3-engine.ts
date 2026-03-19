@@ -58,6 +58,9 @@ export interface TeamCheckV3Result {
   personText: string;
   roleType: "leadership" | "member";
   roleLabel: string;
+  teamGoal: TeamGoal;
+  strategicFit: "passend" | "teilweise" | "abweichend" | null;
+  strategicText: string | null;
 }
 
 export interface StructureDiagnosis {
@@ -82,6 +85,8 @@ export interface IntegrationFactor {
   stabilisierung: string;
 }
 
+export type TeamGoal = "umsetzung" | "analyse" | "zusammenarbeit" | null;
+
 export interface TeamCheckV3Input {
   roleTitle: string;
   roleLevel: string;
@@ -91,6 +96,7 @@ export interface TeamCheckV3Input {
   teamProfile: Triad;
   personProfile: Triad;
   candidateName: string;
+  teamGoal?: TeamGoal;
 }
 
 export function computeTeamCheckV3(input: TeamCheckV3Input): TeamCheckV3Result {
@@ -138,10 +144,22 @@ export function computeTeamCheckV3(input: TeamCheckV3Input): TeamCheckV3Result {
   const integrationsfaktor = buildIntegrationsfaktor(input.teamProfile, input.personProfile, v2.passung, steuerungsaufwand);
   const alternativwirkung = buildAlternativwirkung(input.teamProfile, input.personProfile);
 
+  const validGoals: TeamGoal[] = ["umsetzung", "analyse", "zusammenarbeit"];
+  const safeGoal: TeamGoal = input.teamGoal && validGoals.includes(input.teamGoal) ? input.teamGoal : null;
+  const { strategicFit, strategicText } = evaluateStrategicFit(safeGoal, input.teamProfile, input.personProfile, v2.roleType);
+
   let integrationsrisiko: string;
-  if (v2.passung === "Kritisch") integrationsrisiko = "hoch";
-  else if (v2.passung === "Bedingt passend") integrationsrisiko = totalGap > 35 ? "mittel" : "gering";
-  else integrationsrisiko = "gering";
+  if (v2.passung === "Kritisch") {
+    integrationsrisiko = strategicFit === "passend" ? "mittel" : "hoch";
+  } else if (v2.passung === "Bedingt passend") {
+    if (totalGap > 35) {
+      integrationsrisiko = strategicFit === "passend" ? "mittel" : "mittel";
+    } else {
+      integrationsrisiko = strategicFit === "passend" ? "gering" : "gering";
+    }
+  } else {
+    integrationsrisiko = "gering";
+  }
 
   let erfolgsfaktor: string;
   if (v2.passung === "Kritisch") erfolgsfaktor = "klare Prioritäten, definierte Entscheidungswege und regelmäßige Feedbackschleifen.";
@@ -191,6 +209,9 @@ export function computeTeamCheckV3(input: TeamCheckV3Input): TeamCheckV3Result {
     personText: v2.personText,
     roleType: v2.roleType,
     roleLabel: v2.roleLabel,
+    teamGoal: safeGoal,
+    strategicFit,
+    strategicText,
   };
 }
 
@@ -495,4 +516,85 @@ function buildAlternativwirkung(teamProfile: Triad, personProfile: Triad): strin
   lines.push("Ob diese Veränderung zu einer nachhaltigen Verbesserung führt, hängt massgeblich davon ab, wie bewusst die unterschiedlichen Arbeitsweisen im Alltag gesteuert werden.");
 
   return lines.join("\n\n");
+}
+
+const GOAL_DOMINANT: Record<string, ComponentKey> = {
+  umsetzung: "impulsiv",
+  analyse: "analytisch",
+  zusammenarbeit: "intuitiv",
+};
+
+const GOAL_LABELS: Record<string, string> = {
+  umsetzung: "Umsetzung und Ergebnisse",
+  analyse: "Analyse und Struktur",
+  zusammenarbeit: "Zusammenarbeit und Kommunikation",
+};
+
+function evaluateStrategicFit(
+  goal: TeamGoal,
+  teamProfile: Triad,
+  personProfile: Triad,
+  roleType: "leadership" | "member",
+): { strategicFit: "passend" | "teilweise" | "abweichend" | null; strategicText: string | null } {
+  if (!goal) return { strategicFit: null, strategicText: null };
+
+  const goalKey = GOAL_DOMINANT[goal];
+  const goalLabel = GOAL_LABELS[goal];
+  const personPrimary = getPrimaryKey(personProfile);
+  const personSecondary = getSecondaryKey(personProfile);
+  const teamPrimary = getPrimaryKey(teamProfile);
+
+  const personGoalValue = personProfile[goalKey];
+  const teamGoalValue = teamProfile[goalKey];
+  const personDominantInGoal = personPrimary === goalKey;
+  const personSecondaryInGoal = personSecondary === goalKey;
+  const teamDominantInGoal = teamPrimary === goalKey;
+
+  let strategicFit: "passend" | "teilweise" | "abweichend";
+  if (personDominantInGoal) {
+    strategicFit = "passend";
+  } else if (personSecondaryInGoal && personGoalValue >= 30) {
+    strategicFit = "teilweise";
+  } else {
+    strategicFit = "abweichend";
+  }
+
+  const teamAligned = teamDominantInGoal;
+  const personAligned = strategicFit === "passend";
+
+  const lines: string[] = [];
+
+  lines.push(`Das funktionale Ziel dieser Abteilung liegt im Bereich ${goalLabel}.`);
+
+  if (teamAligned && personAligned) {
+    lines.push(`Sowohl das bestehende Teamprofil als auch die Person sind auf dieses Ziel ausgerichtet. Die Integration verstärkt die bestehende Arbeitslogik und stabilisiert die Ausrichtung des Teams.`);
+  } else if (!teamAligned && personAligned) {
+    lines.push(`Das Team arbeitet aktuell nicht primär in Richtung dieses Ziels. Die Person bringt jedoch genau die Arbeitsweise mit, die das funktionale Ziel erfordert. Damit schliesst sie eine strategische Lücke — auch wenn kurzfristig Anpassungsaufwand im Team entsteht.`);
+    if (roleType === "leadership") {
+      lines.push(`In einer Führungsrolle kann die Person als Katalysator wirken und das Team gezielt in Richtung des Funktionsziels entwickeln. Die resultierende Spannung ist dabei nicht destruktiv, sondern strategisch gewollt.`);
+    } else {
+      lines.push(`Als Teammitglied kann die Person neue Impulse setzen, braucht aber Rückendeckung durch die Führung, damit die veränderte Arbeitsweise nicht als Störung, sondern als gewollte Entwicklung wahrgenommen wird.`);
+    }
+  } else if (teamAligned && !personAligned) {
+    if (strategicFit === "teilweise") {
+      lines.push(`Das Team ist bereits auf das Funktionsziel ausgerichtet. Die Person bringt das Ziel als Nebenkomponente mit (${personGoalValue}%), was einen ergänzenden Beitrag leisten kann, ohne die bestehende Ausrichtung zu gefährden.`);
+    } else {
+      lines.push(`Das Team ist bereits auf das Funktionsziel ausgerichtet. Die Person arbeitet jedoch mit einer anderen Logik (primär ${componentBusinessNameFirst(personPrimary)}). Das kann die Teamausrichtung verwässern, wenn keine gezielte Steuerung erfolgt.`);
+    }
+  } else {
+    if (strategicFit === "teilweise") {
+      lines.push(`Weder das bestehende Team noch die Person sind primär auf das Funktionsziel ausgerichtet. Die Person bringt das Ziel als Nebenkomponente mit (${personGoalValue}%), was einen begrenzten Beitrag in diese Richtung leisten kann.`);
+    } else {
+      lines.push(`Weder das bestehende Team noch die Person sind auf das Funktionsziel ${goalLabel} ausgerichtet. Die Integration verändert die Teamdynamik, bewegt sie aber nicht in Richtung des gewünschten Ziels.`);
+    }
+  }
+
+  if (!teamAligned && personAligned) {
+    const gap = Math.abs(teamGoalValue - personGoalValue);
+    if (gap > 20) {
+      lines.push(`Der Unterschied zwischen Team und Person im Zielbereich beträgt ${gap} Prozentpunkte. Diese Differenz erzeugt Spannung, ist aber im Kontext des Funktionsziels als konstruktiv einzustufen.`);
+    }
+  }
+
+  return { strategicFit, strategicText: lines.join("\n\n") };
 }

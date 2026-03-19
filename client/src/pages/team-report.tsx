@@ -600,6 +600,7 @@ export default function TeamReport() {
   const [reportGenerated, setReportGenerated] = useState(false);
   const [matchCheckOpen, setMatchCheckOpen] = useState(true);
   const [roleTypeForCard, setRoleTypeForCard] = useState<"teammitglied" | "fuehrung">("teammitglied");
+  const [teamGoal, setTeamGoal] = useState<"umsetzung" | "analyse" | "zusammenarbeit" | "">("");
 
   const syncFromLocalStorage = useCallback(() => {
     const raw = localStorage.getItem("rollenDnaState");
@@ -753,6 +754,32 @@ export default function TeamReport() {
                 <SliderGroup title="Teamprofil" triad={teamTriad}
                   onTriadChange={updateTeamTriad} testIdPrefix="team" />
               </div>
+
+              <div style={{ marginTop: 24, padding: "16px 20px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,0,0,0.015)" }}>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, letterSpacing: "-0.01em" }}>
+                  Funktionsziel der Abteilung <span style={{ fontWeight: 400, color: "#8E8E93" }}>(optional)</span>
+                </label>
+                <p style={{ fontSize: 12, color: "#6E6E73", margin: "0 0 10px", lineHeight: 1.5 }}>
+                  Welche Arbeitsweise braucht diese Abteilung funktional? Das Funktionsziel beeinflusst die strategische Einordnung im Bericht.
+                </p>
+                <select
+                  value={teamGoal}
+                  onChange={e => setTeamGoal(e.target.value as typeof teamGoal)}
+                  data-testid="select-team-goal"
+                  style={{
+                    width: "100%", maxWidth: 400, height: 42, borderRadius: 10,
+                    border: "1px solid rgba(0,0,0,0.12)", padding: "0 12px",
+                    fontSize: 14, color: teamGoal ? "#1D1D1F" : "#8E8E93",
+                    background: "#fff", cursor: "pointer", outline: "none",
+                  }}
+                >
+                  <option value="">Kein spezifisches Funktionsziel</option>
+                  <option value="umsetzung">Umsetzung und Ergebnisse (z.B. Vertrieb, Produktion)</option>
+                  <option value="analyse">Analyse und Struktur (z.B. Software, Finanzen)</option>
+                  <option value="zusammenarbeit">Zusammenarbeit und Kommunikation (z.B. Kundenbetreuung, HR)</option>
+                </select>
+              </div>
+
               <div className="mt-8 flex justify-center gap-4">
                 <button onClick={() => setReportGenerated(true)}
                   className="inline-flex h-12 items-center gap-2 rounded-2xl bg-blue-600 px-8 text-[15px] font-semibold text-white shadow-md hover:bg-blue-700 transition-colors"
@@ -873,6 +900,7 @@ export default function TeamReport() {
                       teamProfile: teamTriad,
                       personProfile: istTriad,
                       candidateName: candidateName || "Person",
+                      teamGoal: teamGoal || null,
                     }));
                     setLocation("/teamcheck-report-v3");
                   }}
