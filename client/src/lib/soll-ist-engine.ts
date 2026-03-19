@@ -580,7 +580,10 @@ function buildDominanceShift(role: string, cand: string, rk: ComponentKey, ck: C
 function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string, gapLevel: string): StressBehavior {
   const pk = primaryKey(cConst);
   const sk = secondaryKey(cConst, ct);
+  const rest = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== pk);
+  const tk = rest.find(k => k !== sk)!;
   const d12 = ct[pk] - ct[sk];
+  const competing23 = Math.abs(ct[rest[0]] - ct[rest[1]]) <= 5 && Math.min(ct[rest[0]], ct[rest[1]]) > 15;
 
   const primaryBehavior: Record<ComponentKey, string> = {
     impulsiv: "Themen schnell voranzutreiben, Entscheidungen zügig zu treffen und Tempo zu erhöhen",
@@ -606,6 +609,8 @@ function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string,
     controlledPressure = `Steigt der Arbeitsdruck, greift ${subj(cand)} auf die situativ naheliegendste Arbeitslogik zurück. Da das Profil ausgeglichen ist, gibt es keinen klaren Automatismus. Die Reaktion hängt stärker vom Kontext und der Führung ab.`;
   } else if (cConst.includes("NEAR")) {
     controlledPressure = `Steigt der Arbeitsdruck, greift ${subj(cand)} auf die gerade führende Logik zurück. Da beide Hauptanteile fast gleich stark sind, fällt die Reaktion situationsabhängig aus: Mal wird stärker über ${compShort(pk)} gesteuert, mal über ${compShort(sk)}.`;
+  } else if (competing23) {
+    controlledPressure = `Steigt der Arbeitsdruck, verstärkt sich zunächst die Tendenz, ${primaryBehavior[pk]}. Da ${compShort(sk)} und ${compShort(tk)} fast gleich stark ausgeprägt sind, entsteht kein klarer Ausgleichsmechanismus – beide Nebenlogiken konkurrieren unter Druck.`;
   } else {
     controlledPressure = `Steigt der Arbeitsdruck, verstärkt sich zunächst die Tendenz, ${primaryBehavior[pk]}. Kurzfristig stabilisiert das die Situation, gleichzeitig steigt das Risiko, dass ${compShort(sk)} in den Hintergrund tritt.`;
   }
@@ -613,6 +618,8 @@ function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string,
   let uncontrolledStress: string;
   if (cConst === "BALANCED") {
     uncontrolledStress = `Wird der Druck sehr hoch, kann das Verhalten kippen oder wechseln, weil keine klare Hauptlogik trägt. Die Reaktion wird weniger vorhersagbar. ${sn} braucht in Stressphasen besonders klare Orientierung und Leitplanken.`;
+  } else if (competing23) {
+    uncontrolledStress = `Wird die Belastung sehr hoch, konkurrieren ${compShort(sk)} und ${compShort(tk)} als Ausweichstrategien. ${sn} wechselt situativ zwischen beiden Nebenlogiken, ohne sich auf eine festzulegen. Das Verhalten wird weniger berechenbar. Die Führungskraft muss klare Prioritäten und Leitplanken setzen.`;
   } else if (d12 <= 5) {
     uncontrolledStress = `Wird die Belastung sehr hoch, kann sich der Schwerpunkt leicht verschieben. ${sn} bleibt in der Grundlogik erkennbar, nutzt aber spürbar stärker ${compShort(sk)}. ${secondaryBehavior[sk]}. Die Arbeitsweise verändert sich, die Grundrichtung bleibt aber steuerbar.`;
   } else {
@@ -737,25 +744,40 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
 
   const sev = rk === ck ? severity(maxGap * 0.4) : severity(rk === "analytisch" ? gapA + 5 : maxGap);
 
+  const decRest = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== ck);
+  const decCompeting23 = ct ? Math.abs(ct[decRest[0]] - ct[decRest[1]]) <= 5 && Math.min(ct[decRest[0]], ct[decRest[1]]) > 15 : false;
+
   if (rk === ck) {
     if (rk === "analytisch") {
       roleNeed = "Sorgfältige, prüforientierte Entscheidungen. Optionen abwägen, Risiken prüfen, erst dann handeln.";
       candidatePattern = `${s} arbeitet ebenfalls analytisch und prüft Entscheidungen gründlich. Die Grundlogik stimmt überein.`;
-      risk = maxGap >= 8
-        ? "Die Entscheidungslogik passt in der Grundrichtung. Unterschiede in der Gewichtung der Nebenbereiche können aber dazu führen, dass Tempo oder Kommunikation unterschiedlich priorisiert werden."
-        : "Entscheidungslogik passt zur Stellenanforderung. Die Art, wie Entscheidungen getroffen werden, stimmt mit den Erwartungen überein.";
+      if (decCompeting23) {
+        risk = "Die Entscheidungslogik passt in der Grundrichtung. Da die beiden Nebenkomponenten fast gleich stark sind, kann unter Druck die Ausweichreaktion wechselnd ausfallen – mal handlungsorientierter, mal abstimmungsorientierter.";
+      } else {
+        risk = maxGap >= 8
+          ? "Die Entscheidungslogik passt in der Grundrichtung. Unterschiede in der Gewichtung der Nebenbereiche können aber dazu führen, dass Tempo oder Kommunikation unterschiedlich priorisiert werden."
+          : "Entscheidungslogik passt zur Stellenanforderung. Die Art, wie Entscheidungen getroffen werden, stimmt mit den Erwartungen überein.";
+      }
     } else if (rk === "impulsiv") {
       roleNeed = "Schnelle, ergebnisorientierte Entscheidungen. Klare Richtung und direkte Umsetzung vor langer Prüfung.";
       candidatePattern = `${s} entscheidet ebenfalls schnell und handlungsorientiert. Die Grunddynamik stimmt.`;
-      risk = maxGap >= 8
-        ? "Die Entscheidungsgeschwindigkeit passt. In Nebenbereichen wie Absicherung oder Abstimmung können sich aber unterschiedliche Gewichtungen zeigen."
-        : "Entscheidungslogik passt zur Stellenanforderung. Die Art, wie Entscheidungen getroffen werden, stimmt mit den Erwartungen überein.";
+      if (decCompeting23) {
+        risk = "Die Entscheidungsgeschwindigkeit passt. Da die Nebenkomponenten konkurrieren, schwankt die Absicherungsstrategie: Mal wird eher abgestimmt, mal eher geprüft. Das erzeugt wechselndes Verhalten im Detail.";
+      } else {
+        risk = maxGap >= 8
+          ? "Die Entscheidungsgeschwindigkeit passt. In Nebenbereichen wie Absicherung oder Abstimmung können sich aber unterschiedliche Gewichtungen zeigen."
+          : "Entscheidungslogik passt zur Stellenanforderung. Die Art, wie Entscheidungen getroffen werden, stimmt mit den Erwartungen überein.";
+      }
     } else {
       roleNeed = "Entscheidungen, die Kontext, Zusammenarbeit und zwischenmenschliche Wirkung berücksichtigen. Abstimmung im Team vor Geschwindigkeit.";
       candidatePattern = `${s} entscheidet ebenfalls kontextbezogen und bezieht das Umfeld aktiv ein. Die Grundhaltung stimmt.`;
-      risk = maxGap >= 8
-        ? "Die Kommunikationsorientierung passt. In Nebenbereichen wie Strukturklarheit oder Umsetzungstempo können aber Unterschiede auftreten."
-        : "Entscheidungslogik passt zur Stellenanforderung. Die Art, wie Entscheidungen getroffen werden, stimmt mit den Erwartungen überein.";
+      if (decCompeting23) {
+        risk = "Die Kommunikationsorientierung passt. Da die Nebenkomponenten konkurrieren, kann die Flankierung der Entscheidung wechseln – mal faktenbasierter, mal handlungsorientierter.";
+      } else {
+        risk = maxGap >= 8
+          ? "Die Kommunikationsorientierung passt. In Nebenbereichen wie Strukturklarheit oder Umsetzungstempo können aber Unterschiede auftreten."
+          : "Entscheidungslogik passt zur Stellenanforderung. Die Art, wie Entscheidungen getroffen werden, stimmt mit den Erwartungen überein.";
+      }
     }
   } else if (rk === "analytisch") {
     roleNeed = "Sorgfältige, prüforientierte Entscheidungen. Optionen abwägen, Risiken prüfen, erst dann handeln.";
@@ -946,9 +968,15 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
       risk = `Führung wirkt formal und distanziert. Erwartet werden persönliche Nähe und offene Kommunikation, geliefert werden Regeln und Prozesse.${leadershipSuffix}`;
     }
   } else {
-    risk = maxGap >= 8
-      ? "Die Führungsrichtung stimmt, aber unterschiedliche Gewichtungen in den Nebenbereichen beeinflussen, wie Orientierung gegeben wird. Regelmässiges Feedback zur Führungswirkung ist ratsam."
-      : "Führungsstil passt zur Stellenanforderung. Die Art, wie Orientierung gegeben wird, stimmt mit den Erwartungen des Teams überein.";
+    const leadRest = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== ck);
+    const leadCompeting23 = ct ? Math.abs(ct[leadRest[0]] - ct[leadRest[1]]) <= 5 && Math.min(ct[leadRest[0]], ct[leadRest[1]]) > 15 : false;
+    if (leadCompeting23) {
+      risk = "Die Führungsrichtung stimmt. Da die beiden Nebenkomponenten fast gleich stark sind, kann der Führungsstil unter Druck wechselnd wirken – situativ direkter oder empathischer. Das Team erlebt die Führung als weniger berechenbar. Regelmässiges Feedback ist besonders wichtig.";
+    } else {
+      risk = maxGap >= 8
+        ? "Die Führungsrichtung stimmt, aber unterschiedliche Gewichtungen in den Nebenbereichen beeinflussen, wie Orientierung gegeben wird. Regelmässiges Feedback zur Führungswirkung ist ratsam."
+        : "Führungsstil passt zur Stellenanforderung. Die Art, wie Orientierung gegeben wird, stimmt mit den Erwartungen des Teams überein.";
+    }
   }
 
   return { id: "leadership", label: "Führungswirkung", severity: sev, roleNeed, candidatePattern, risk };
@@ -1000,11 +1028,18 @@ function buildCommunicationImpact(rk: ComponentKey, ck: ComponentKey, gapI: numb
     candidatePattern = `${s} kommuniziert sachlich, strukturiert und faktenbasiert. Informationen werden präzise und nachvollziehbar weitergegeben.`;
   }
 
+  const commRest = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== ck);
+  const commCompeting23 = ct ? Math.abs(ct[commRest[0]] - ct[commRest[1]]) <= 5 && Math.min(ct[commRest[0]], ct[commRest[1]]) > 15 : false;
+
   let risk: string;
   if (rk === ck) {
-    risk = maxGap >= 8
-      ? "Der Kommunikationsstil passt grundsätzlich. In den Feinheiten gibt es Abweichungen, die im Alltag auffallen können. Gezielte Abstimmung empfohlen."
-      : "Kommunikationsverhalten passt zur Stellenanforderung. Die Art der Kommunikation entspricht dem, was erwartet wird.";
+    if (commCompeting23) {
+      risk = "Der Kommunikationsstil passt in der Grundrichtung. Da die beiden Nebenkomponenten fast gleich stark sind, wechselt die Kommunikation situativ – mal direkter, mal empathischer, mal sachlicher. Das kann bei Gesprächspartnern unterschiedlich ankommen.";
+    } else {
+      risk = maxGap >= 8
+        ? "Der Kommunikationsstil passt grundsätzlich. In den Feinheiten gibt es Abweichungen, die im Alltag auffallen können. Gezielte Abstimmung empfohlen."
+        : "Kommunikationsverhalten passt zur Stellenanforderung. Die Art der Kommunikation entspricht dem, was erwartet wird.";
+    }
   } else if (rk === "impulsiv" && ck === "intuitiv") {
     risk = `Die Stelle verlangt schnelle, direkte Kommunikation. ${s} investiert mehr Zeit in Dialog und Abstimmung. Entscheidungen werden verzögert kommuniziert. Klare Kommunikationserwartungen setzen.`;
   } else if (rk === "impulsiv" && ck === "analytisch") {
@@ -1089,9 +1124,15 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
     }
   } else {
     const cMaxGap = Math.max(gapI, gapN, gapA);
-    risk = cMaxGap >= 8
-      ? "Die kulturelle Grundrichtung stimmt. Da die Nebenbereiche unterschiedlich gewichtet werden, kann sich die gelebte Kultur in einzelnen Aspekten von der Stellenerwartung unterscheiden."
-      : "Kulturwirkung stimmt mit der Stellenanforderung überein. Die Art, wie das Arbeitsumfeld geprägt wird, passt zu den Erwartungen.";
+    const culRest = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== ck);
+    const culCompeting23 = ct ? Math.abs(ct[culRest[0]] - ct[culRest[1]]) <= 5 && Math.min(ct[culRest[0]], ct[culRest[1]]) > 15 : false;
+    if (culCompeting23) {
+      risk = "Die kulturelle Grundrichtung stimmt. Da die beiden Nebenkomponenten fast gleich stark sind, kann die gelebte Kultur situativ schwanken – mal dynamischer, mal empathischer, mal strukturierter. Das erzeugt ein wechselhaftes Arbeitsumfeld.";
+    } else {
+      risk = cMaxGap >= 8
+        ? "Die kulturelle Grundrichtung stimmt. Da die Nebenbereiche unterschiedlich gewichtet werden, kann sich die gelebte Kultur in einzelnen Aspekten von der Stellenerwartung unterscheiden."
+        : "Kulturwirkung stimmt mit der Stellenanforderung überein. Die Art, wie das Arbeitsumfeld geprägt wird, passt zu den Erwartungen.";
+    }
   }
 
   return { id: "culture", label: "Wirkung auf Zusammenarbeit und Teamkultur", severity: sev, roleNeed, candidatePattern, risk };
