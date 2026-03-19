@@ -148,7 +148,7 @@ export default function TeamCheckReportV3() {
 
       <div style={{ maxWidth: 820, margin: "0 auto", padding: "80px 20px 48px" }}>
 
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
+        <div style={{ marginBottom: 18 }}>
           <button
             onClick={() => navigate("/team-report")}
             style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", color: "#1A5DAB", fontWeight: 600, fontSize: 14, padding: 0 }}
@@ -156,15 +156,6 @@ export default function TeamCheckReportV3() {
           >
             <ArrowLeft size={16} />
             Zurück zum TeamCheck
-          </button>
-          <button
-            onClick={handlePdf}
-            disabled={pdfBusy}
-            style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#1A5DAB", border: "none", cursor: pdfBusy ? "wait" : "pointer", color: "#fff", fontWeight: 600, fontSize: 14, padding: "8px 18px", borderRadius: 8, opacity: pdfBusy ? 0.6 : 1, transition: "opacity 0.2s" }}
-            data-testid="button-pdf-v3"
-          >
-            {pdfBusy ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
-            PDF
           </button>
         </div>
 
@@ -175,6 +166,17 @@ export default function TeamCheckReportV3() {
             <div className="report-header report-header--auto" data-testid="v3-header">
 
               <img src={logoPath} alt="bioLogic" className="report-logo" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+
+              <button
+                onClick={handlePdf}
+                disabled={pdfBusy}
+                className="report-pdf-btn"
+                style={{ cursor: pdfBusy ? "wait" : "pointer", opacity: pdfBusy ? 0.6 : 1, transition: "all 0.15s ease" }}
+                data-testid="button-pdf-v3"
+              >
+                {pdfBusy ? <Loader2 style={{ width: 15, height: 15 }} className="animate-spin" /> : <Download style={{ width: 15, height: 15 }} />}
+                <span>{pdfBusy ? "Wird erstellt..." : "PDF"}</span>
+              </button>
 
               <div className="report-kicker">TEAMANALYSE</div>
               <h1 className="report-title report-title--flow">TeamCheck</h1>
