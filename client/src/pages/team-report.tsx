@@ -930,6 +930,32 @@ export default function TeamReport() {
           const teamFitLabel = fitLabel === "Geeignet" ? "Stabil" : fitLabel === "Bedingt geeignet" ? "Steuerbar" : "Kritisch";
           const fitColor = fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C";
 
+          const teamIsDualDom = teamDom.gap1 <= 5 && teamDom.gap2 > 5;
+          const candIsDualDom = candDom.gap1 <= 5 && candDom.gap2 > 5;
+
+          const teamDomKeys = teamIsBalFull ? [] : teamIsDualDom ? [teamDom.top1.key, teamDom.top2.key] : [teamDom.top1.key];
+          const candDomKeys = candIsBalFull ? [] : candIsDualDom ? [candDom.top1.key, candDom.top2.key] : [candDom.top1.key];
+
+          let steuerung: "gering" | "mittel" | "erhöht";
+          if (teamIsBalFull && candIsBalFull) {
+            steuerung = "mittel";
+          } else if (teamIsBalFull || candIsBalFull) {
+            const other = teamIsBalFull ? candDomKeys : teamDomKeys;
+            steuerung = other.length > 1 ? "mittel" : "erhöht";
+          } else if (teamIsDualDom || candIsDualDom) {
+            if (teamIsDualDom && candIsDualDom) {
+              steuerung = "mittel";
+            } else {
+              const dualKeys = teamIsDualDom ? teamDomKeys : candDomKeys;
+              const singleKey = teamIsDualDom ? candDomKeys[0] : teamDomKeys[0];
+              steuerung = dualKeys.includes(singleKey) ? "mittel" : "erhöht";
+            }
+          } else {
+            steuerung = sameDom ? "gering" : "erhöht";
+          }
+
+          const steuerungColor = steuerung === "gering" ? "#3A9A5C" : steuerung === "mittel" ? "#E5A832" : "#D64045";
+
           const swColor = systemwirkungLabel === "Verstärkung" ? "#3A9A5C" : systemwirkungLabel === "Ergänzung" ? "#0071E3" : systemwirkungLabel === "Spannung" ? "#E5A832" : "#D64045";
           const swDescriptions: Record<string, string> = {
             "Verstärkung": "Die Besetzung bringt eine Arbeitslogik mit, die zum Grundmuster des Teams passt. Bestehende Stärken werden weiter ausgebaut — das fördert Stabilität, Klarheit und eine schnellere Eingliederung.",
@@ -976,7 +1002,7 @@ export default function TeamReport() {
                     </div>
                     <div style={{ padding: "14px 18px", borderRadius: 14, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(0,0,0,0.05)", textAlign: "center" }}>
                       <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 8px" }}>Steuerungsaufwand</p>
-                      <span style={{ fontSize: 16, fontWeight: 700, color: fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C" }}>{fitLabel === "Nicht geeignet" ? "erhöht" : fitLabel === "Bedingt geeignet" ? "mittel" : "gering"}</span>
+                      <span style={{ fontSize: 16, fontWeight: 700, color: steuerungColor }}>{steuerung}</span>
                     </div>
                   </div>
                   <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-teamcheck-indicator">
