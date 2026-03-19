@@ -839,11 +839,48 @@ export default function SollIstBericht() {
                   const gapCol = result.totalGap > 40 ? BIO_COLORS.nichtGeeignet : result.totalGap > 20 ? BIO_COLORS.bedingt : BIO_COLORS.geeignet;
                   const personLabel = result.candidateName !== "Die Person" ? result.candidateName : "Person";
 
+                  const gesamtIntroText = (() => {
+                    const fr = result.fitRating;
+                    const ci = result.controlIntensity;
+                    const gl = result.gapLevel;
+                    const dl = result.developmentLabel;
+
+                    if (fr === "GEEIGNET") {
+                      if (ci === "gering" && gl === "gering") {
+                        return "Die Gesamtbewertung spricht für eine sehr gute Passung. Die strukturelle Übereinstimmung ist hoch, der Steuerungs- und Entwicklungsaufwand gering. Die Besetzung kann ohne besondere Maßnahmen erfolgen.";
+                      }
+                      if (ci === "mittel" || gl === "mittel") {
+                        return "Die Gesamtbewertung spricht für eine gute Passung. Die strukturelle Übereinstimmung ist gegeben, der Steuerungs- und Entwicklungsaufwand überschaubar. Eine erfolgreiche Besetzung ist mit geringem Führungsaufwand realistisch.";
+                      }
+                      return "Die Gesamtbewertung spricht für eine solide Passung. Die Arbeitslogik stimmt grundsätzlich überein. Der Entwicklungsaufwand ist begrenzt und die Besetzung kann mit normalem Führungsaufwand gelingen.";
+                    }
+
+                    if (fr === "BEDINGT") {
+                      if (ci === "hoch" || dl === "hoch") {
+                        return "Die Gesamtbewertung spricht für eine eingeschränkte Passung. Die strukturelle Abweichung ist spürbar, der Steuerungs- und Entwicklungsaufwand erhöht. Eine erfolgreiche Besetzung erfordert gezielte Führung und regelmäßige Abstimmung.";
+                      }
+                      if (gl === "gering") {
+                        return "Die Gesamtbewertung spricht für eine bedingte Passung. Die Profilabweichung ist gering, doch die Arbeitslogik unterscheidet sich in einzelnen Bereichen. Mit gezielter Führung ist eine erfolgreiche Besetzung realistisch.";
+                      }
+                      return "Die Gesamtbewertung spricht für eine bedingte Passung. Die Arbeitslogik stimmt teilweise überein, in einzelnen Bereichen bestehen jedoch relevante Abweichungen. Eine erfolgreiche Besetzung ist mit bewusster Führung und klarer Erwartungshaltung möglich.";
+                    }
+
+                    if (ci === "hoch" && (gl === "hoch" || dl === "hoch")) {
+                      return "Die Gesamtbewertung spricht für eine kritische Passung. Die strukturelle Abweichung ist deutlich, der Steuerungs- und Entwicklungsaufwand entsprechend hoch. Eine erfolgreiche Besetzung wäre nur unter klarer Führung und mit bewusstem Integrationsaufwand realistisch.";
+                    }
+                    if (ci === "mittel") {
+                      return "Die Gesamtbewertung spricht für eine unzureichende Passung. Die Arbeitslogik weicht in wesentlichen Bereichen ab. Selbst mit intensiver Führung und Entwicklungsmaßnahmen bleibt das Risiko einer Fehlbesetzung erheblich.";
+                    }
+                    return "Die Gesamtbewertung spricht für eine kritische Passung. Die strukturelle Abweichung ist erheblich und der erforderliche Führungs- und Entwicklungsaufwand sehr hoch. Eine Besetzung ist unter diesen Voraussetzungen mit hohem Risiko verbunden.";
+                  })();
+
                   return (
                     <>
+                      <p data-pdf-block style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 22px", textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-gesamt-intro">
+                        {gesamtIntroText}
+                      </p>
                       {/* SYSTEMSTATUS */}
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-systemstatus">
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 10px" }}>Gesamtbewertung</p>
                         <div style={{ display: "flex", gap: 10 }}>
                           {[
                             { label: "Grundpassung", value: result.fitLabel, color: fitCol },
