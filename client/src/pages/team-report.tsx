@@ -937,12 +937,9 @@ export default function TeamReport() {
           const teamDomKeys = teamIsBalFull ? [] : teamIsDualDom ? [teamDom.top1.key, teamDom.top2.key] : [teamDom.top1.key];
           const candDomKeys = candIsBalFull ? [] : candIsDualDom ? [candDom.top1.key, candDom.top2.key] : [candDom.top1.key];
 
-          const candMatchesTeamDual = teamIsDualDom && (candDom.top1.key === teamDom.top1.key || candDom.top1.key === teamDom.top2.key);
           const dualKeysMatch = teamIsDualDom && candIsDualDom
             && [teamDom.top1.key, teamDom.top2.key].includes(candDom.top1.key)
             && [teamDom.top1.key, teamDom.top2.key].includes(candDom.top2.key);
-          const effectiveSameDomSt = sameDom || teamIsBalFull || candMatchesTeamDual;
-          const secFlipSt = effectiveSameDomSt && teamDom.top2.key !== candDom.top2.key && !dualKeysMatch;
 
           const candSpreadSt = candDom.top1.value - candDom.top3.value;
 
