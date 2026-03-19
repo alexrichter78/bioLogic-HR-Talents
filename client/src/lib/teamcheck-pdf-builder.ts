@@ -65,6 +65,7 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
   const MB = 18;
   const CW = PW - ML - MR;
   const midX = ML + CW / 2;
+  const BOTTOM = PH - MB;
   let pageNum = 1;
   let y = MT;
 
@@ -93,7 +94,7 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
   }
 
   function checkPage(needed: number) {
-    if (y + needed > PH - MB) { newPage(); }
+    if (y + needed > BOTTOM) { newPage(); }
   }
 
   function hline(x1: number, yy: number, x2: number, color: RGB = C.line, w = 0.3) {
@@ -107,6 +108,11 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
     return doc.splitTextToSize(text, maxW) as string[];
   }
 
+  function measureText(text: string, maxW: number, fontSize: number, lineH: number): number {
+    const lines = wrap(text, maxW, fontSize);
+    return lines.length * lineH;
+  }
+
   function printText(text: string, x: number, maxW: number, fontSize: number, color: RGB, lineH: number, style: string = "normal"): number {
     doc.setFontSize(fontSize);
     doc.setFont("helvetica", style);
@@ -118,6 +124,14 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
       y += lineH;
     }
     return lines.length;
+  }
+
+  function printParagraphs(text: string, x: number, maxW: number, fontSize: number, color: RGB, lineH: number, style: string = "normal", gapBetween: number = 2) {
+    const paragraphs = text.split("\n\n").filter(p => p.trim());
+    paragraphs.forEach((p, i) => {
+      printText(p.trim(), x, maxW, fontSize, color, lineH, style);
+      if (i < paragraphs.length - 1) y += gapBetween;
+    });
   }
 
   function sectionHead(num: number, title: string, accentColor: RGB = C.analytisch) {
@@ -140,7 +154,7 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
 
   function separator(nextSectionMinH: number = 10) {
     const lineSpace = 10;
-    if (y + lineSpace + nextSectionMinH > PH - MB) {
+    if (y + lineSpace + nextSectionMinH > BOTTOM) {
       newPage();
       return;
     }
@@ -183,8 +197,19 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
     }
   }
 
+  function printLabeledBlock(label: string, text: string) {
+    const textH = measureText(text, CW, 8, 3.8);
+    checkPage(6 + textH);
+    doc.setFontSize(7);
+    doc.setFont("helvetica", "bold");
+    setC(C.light);
+    doc.text(label.toUpperCase(), ML, y);
+    y += 4;
+    printText(text, ML, CW, 8, C.dark, 3.8);
+    y += 2;
+  }
+
   const pCol = passungRgb(result.passung);
-  const pBg = passungBgRgb(result.passung);
   const sCol = steuerRgb(result.steuerungsaufwand);
   const sLabel = result.steuerungsaufwand.charAt(0).toUpperCase() + result.steuerungsaufwand.slice(1);
   const dateStr = new Date().toLocaleDateString("de-CH", { day: "2-digit", month: "long", year: "numeric" });
@@ -360,42 +385,43 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
   setC(C.black);
   doc.text(result.strukturdiagnose.personDominant, PW - MR, y, { align: "right" });
   y += 5;
+
   labelTag("STRUKTURWIRKUNG");
-  printText(result.strukturdiagnose.strukturwirkung.split("\n\n")[0], ML, CW, 8, C.dark, 4);
+  printParagraphs(result.strukturdiagnose.strukturwirkung, ML, CW, 8, C.dark, 4);
   y += 3;
 
   labelTag("MANAGEMENTKURZFAZIT");
+  const fazitH = measureText(result.managementFazit, CW - 6, 8.5, 4.3);
+  checkPage(fazitH + 4);
+  const fazitStartY = y;
+  const barTop = fazitStartY - 1;
+  printText(result.managementFazit, ML + 6, CW - 6, 8.5, C.dark, 4.3);
+  const actualBarH = y - fazitStartY + 2;
   setF(pCol);
-  doc.roundedRect(ML, y - 1, 1.5, 0.1, 0, 0, "F");
-  doc.rect(ML, y - 1, 1.5, 20, "F");
-  doc.roundedRect(ML, y - 1, 1.5, 20, 0.5, 0.5, "F");
-  printText(result.managementFazit, ML + 4, CW - 4, 8.5, C.dark, 4.3);
+  doc.roundedRect(ML, barTop, 2, actualBarH, 0.5, 0.5, "F");
   y += 3;
 
   labelTag("INTEGRATIONSFAKTOR");
-  const intPairs = [
-    { label: "Integrationsdauer", value: result.integrationsfaktor.integrationsdauer },
-    { label: "Führungsaufwand", value: result.steuerungsaufwand },
-    { label: "Erfolgsfaktor", value: result.erfolgsfaktor },
-  ];
-  intPairs.forEach(item => {
-    checkPage(6);
-    doc.setFontSize(7.5);
-    doc.setFont("helvetica", "normal");
-    setC(C.mid);
-    doc.text(item.label, ML, y);
-    doc.setFont("helvetica", "bold");
-    setC(C.black);
-    doc.text(item.value, PW - MR, y, { align: "right" });
-    y += 5;
-  });
+  printLabeledBlock("Integrationsfähigkeit", result.integrationsfaktor.integrationsfaehigkeit);
+  printLabeledBlock("Integrationsdauer", result.integrationsfaktor.integrationsdauer);
+  printLabeledBlock("Führungsaufwand", result.integrationsfaktor.fuehrungsaufwand);
+  printLabeledBlock("Stabilisierung", result.integrationsfaktor.stabilisierung);
+
+  checkPage(6);
+  doc.setFontSize(7.5);
+  doc.setFont("helvetica", "normal");
+  setC(C.mid);
+  doc.text("Erfolgsfaktor", ML, y);
+  y += 4;
+  printText(result.erfolgsfaktor, ML, CW, 8, C.dark, 3.8);
   y += 2;
 
   separator(30);
 
   sectionHead(2, "Warum dieses Ergebnis", tcCol(0));
   result.reasonLines.forEach(r => {
-    checkPage(6);
+    const rH = measureText(r, CW - 5, 8.5, 4.3);
+    checkPage(rH + 2);
     dot(ML, y, pCol);
     printText(r, ML + 5, CW - 5, 8.5, C.dark, 4.3);
     y += 1;
@@ -404,28 +430,21 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
   separator(50);
 
   sectionHead(3, "Systemwirkung", tcCol(1));
-  result.systemwirkungText.split("\n\n").forEach(p => {
-    printText(p, ML, CW, 8.5, C.dark, 4.3);
-    y += 2;
-  });
+  printParagraphs(result.systemwirkungText, ML, CW, 8.5, C.dark, 4.3);
 
-  checkPage(20);
+  y += 4;
   labelTag("Teamprofil");
-  result.teamText.split("\n\n").forEach(p => {
-    printText(p, ML, CW, 8.5, C.mid, 4.3);
-  });
+  printParagraphs(result.teamText, ML, CW, 8.5, C.mid, 4.3);
   y += 3;
   labelTag("Personenprofil");
-  result.personText.split("\n\n").forEach(p => {
-    printText(p, ML, CW, 8.5, C.mid, 4.3);
-  });
+  printParagraphs(result.personText, ML, CW, 8.5, C.mid, 4.3);
 
   separator(60);
 
   sectionHead(4, "Strukturvergleich", tcCol(2));
 
   const barMaxW = 55;
-  const barH = 5.5;
+  const barH2 = 5.5;
   const halfW = CW / 2 - 4;
   const leftBoxX = ML;
   const rightBoxX = midX + 4;
@@ -463,7 +482,7 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
     doc.setFont("helvetica", "normal");
     setC(C.mid);
     doc.text(COMP_SHORT[k], leftBoxX + boxPad, leftY + 1);
-    drawBar(leftBoxX + boxPad + 22, leftY - 2.5, barMaxW, tv, col, barH);
+    drawBar(leftBoxX + boxPad + 22, leftY - 2.5, barMaxW, tv, col, barH2);
     doc.setFontSize(7.5);
     doc.setFont("helvetica", "bold");
     if (tv > 12) {
@@ -471,7 +490,7 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
       doc.text(`${tv} %`, leftBoxX + boxPad + 22 + 3, leftY + 1.2);
     } else {
       setC(col);
-      doc.text(`${tv} %`, leftBoxX + boxPad + 22 + Math.max(barH, (tv / 100) * barMaxW) + 2, leftY + 1.2);
+      doc.text(`${tv} %`, leftBoxX + boxPad + 22 + Math.max(barH2, (tv / 100) * barMaxW) + 2, leftY + 1.2);
     }
     leftY += 11;
 
@@ -479,7 +498,7 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
     doc.setFont("helvetica", "normal");
     setC(C.mid);
     doc.text(COMP_SHORT[k], rightBoxX + boxPad, rightY + 1);
-    drawBar(rightBoxX + boxPad + 22, rightY - 2.5, barMaxW, pv, col, barH);
+    drawBar(rightBoxX + boxPad + 22, rightY - 2.5, barMaxW, pv, col, barH2);
     doc.setFontSize(7.5);
     doc.setFont("helvetica", "bold");
     if (pv > 12) {
@@ -487,14 +506,14 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
       doc.text(`${pv} %`, rightBoxX + boxPad + 22 + 3, rightY + 1.2);
     } else {
       setC(col);
-      doc.text(`${pv} %`, rightBoxX + boxPad + 22 + Math.max(barH, (pv / 100) * barMaxW) + 2, rightY + 1.2);
+      doc.text(`${pv} %`, rightBoxX + boxPad + 22 + Math.max(barH2, (pv / 100) * barMaxW) + 2, rightY + 1.2);
     }
     rightY += 11;
   }
 
   y += profileTotalH + 6;
 
-  checkPage(10);
+  checkPage(14);
   const abwCol = result.teamPersonAbweichung > 40 ? C.red : result.teamPersonAbweichung > 20 ? C.amber : C.green;
   const abwBg = result.teamPersonAbweichung > 40 ? C.redLight : result.teamPersonAbweichung > 20 ? C.amberLight : C.greenLight;
   bgBox(ML, y, CW, 10, abwBg);
@@ -508,11 +527,35 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
   doc.text(`${result.teamPersonAbweichung} Punkte`, ML + 5 + abwLabelW, y + 6.5);
   y += 14;
 
+  if (result.teamGoalAbweichung !== null || result.personGoalAbweichung !== null) {
+    checkPage(12);
+    const goalItems: { label: string; value: string }[] = [];
+    if (result.teamGoalAbweichung !== null) {
+      goalItems.push({ label: "Team–Ziel-Abweichung", value: `${result.teamGoalAbweichung} Punkte` });
+    }
+    if (result.personGoalAbweichung !== null) {
+      goalItems.push({ label: "Person–Ziel-Abweichung", value: `${result.personGoalAbweichung} Punkte` });
+    }
+    goalItems.forEach(item => {
+      doc.setFontSize(7.5);
+      doc.setFont("helvetica", "normal");
+      setC(C.mid);
+      doc.text(item.label, ML, y);
+      doc.setFont("helvetica", "bold");
+      setC(C.black);
+      doc.text(item.value, PW - MR, y, { align: "right" });
+      y += 5;
+    });
+    y += 2;
+  }
+
   separator(40);
 
   sectionHead(5, "Team-Spannungsanalyse", tcCol(3));
   result.tension.forEach((t, idx) => {
-    checkPage(30);
+    const interpH = measureText(t.interpretation, CW, 8.5, 4.3);
+    checkPage(22 + interpH);
+
     doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
     setC(C.black);
@@ -523,20 +566,20 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
     doc.setFont("helvetica", "normal");
     setC(C.mid);
     doc.text("Team", ML, y + 1);
-    drawBar(ML + 22, y - 2.5, barMaxW, t.teamValue, [158, 180, 207] as RGB, barH);
+    drawBar(ML + 22, y - 2.5, barMaxW, t.teamValue, [158, 180, 207] as RGB, barH2);
     doc.setFont("helvetica", "bold");
     setC(t.teamValue > 12 ? C.white : C.mid);
-    doc.text(`${t.teamValue} %`, t.teamValue > 12 ? ML + 22 + 3 : ML + 22 + Math.max(barH, (t.teamValue / 100) * barMaxW) + 2, y + 1.2);
+    doc.text(`${t.teamValue} %`, t.teamValue > 12 ? ML + 22 + 3 : ML + 22 + Math.max(barH2, (t.teamValue / 100) * barMaxW) + 2, y + 1.2);
     y += 8;
 
     doc.setFontSize(7.5);
     doc.setFont("helvetica", "normal");
     setC(C.mid);
     doc.text("Person", ML, y + 1);
-    drawBar(ML + 22, y - 2.5, barMaxW, t.personValue, C.analytisch, barH);
+    drawBar(ML + 22, y - 2.5, barMaxW, t.personValue, C.analytisch, barH2);
     doc.setFont("helvetica", "bold");
     setC(t.personValue > 12 ? C.white : C.analytisch);
-    doc.text(`${t.personValue} %`, t.personValue > 12 ? ML + 22 + 3 : ML + 22 + Math.max(barH, (t.personValue / 100) * barMaxW) + 2, y + 1.2);
+    doc.text(`${t.personValue} %`, t.personValue > 12 ? ML + 22 + 3 : ML + 22 + Math.max(barH2, (t.personValue / 100) * barMaxW) + 2, y + 1.2);
     y += 7;
 
     printText(t.interpretation, ML, CW, 8.5, C.mid, 4.3);
@@ -551,7 +594,8 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
 
   sectionHead(6, "Auswirkungen im Arbeitsalltag", tcCol(4));
   result.impacts.forEach((imp, idx) => {
-    checkPage(14);
+    const impH = measureText(imp.text, CW, 8.5, 4.3);
+    checkPage(6 + impH);
     doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
     setC(C.black);
@@ -575,7 +619,8 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
     { label: "Wirkung auf Ergebnisse", text: result.leistungswirkung.wirkungAufErgebnisse },
   ];
   leistungItems.forEach((item, idx) => {
-    checkPage(14);
+    const itemH = measureText(item.text, CW, 8.5, 4.3);
+    checkPage(6 + itemH);
     doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
     setC(C.black);
@@ -592,8 +637,9 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
   separator(60);
 
   sectionHead(8, "Verhalten unter Druck", tcCol(6));
-  checkPage(14);
 
+  const controlledH = measureText(result.stress.controlled, CW, 8.5, 4.3);
+  checkPage(10 + controlledH);
   setF(C.amberLight);
   doc.roundedRect(ML, y - 1, CW, 0.8, 0.4, 0.4, "F");
   y += 3;
@@ -602,12 +648,11 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
   setC(C.amber);
   doc.text("KONTROLLIERTER DRUCK", ML, y);
   y += 5;
-  result.stress.controlled.split("\n\n").forEach(p => {
-    printText(p, ML, CW, 8.5, C.dark, 4.3);
-  });
+  printParagraphs(result.stress.controlled, ML, CW, 8.5, C.dark, 4.3);
   y += 3;
 
-  checkPage(14);
+  const uncontrolledH = measureText(result.stress.uncontrolled, CW, 8.5, 4.3);
+  checkPage(10 + uncontrolledH);
   setF(C.redLight);
   doc.roundedRect(ML, y - 1, CW, 0.8, 0.4, 0.4, "F");
   y += 3;
@@ -616,9 +661,7 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
   setC(C.red);
   doc.text("UNKONTROLLIERTER STRESS", ML, y);
   y += 5;
-  result.stress.uncontrolled.split("\n\n").forEach(p => {
-    printText(p, ML, CW, 8.5, C.dark, 4.3);
-  });
+  printParagraphs(result.stress.uncontrolled, ML, CW, 8.5, C.dark, 4.3);
   y += 3;
   printText("Unter zunehmendem Arbeitsdruck können sich diese Verhaltensmuster verstärken. Dadurch entstehen im Arbeitsalltag Risiken für Abstimmung, Führung und Zusammenarbeit.", ML, CW, 8.5, C.mid, 4.3, "italic");
 
@@ -628,7 +671,8 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
   result.riskTimeline.forEach((phase, i) => {
     const phaseCol = i === 0 ? C.amber : i === 1 ? C.blue : C.green;
     const phaseBg = i === 0 ? C.amberLight : i === 1 ? [232, 240, 254] as RGB : C.greenLight;
-    checkPage(16);
+    const phaseTextH = measureText(phase.text, CW, 8.5, 4.3);
+    checkPage(10 + phaseTextH);
 
     setF(phaseBg);
     doc.roundedRect(ML, y - 3, CW, 7, 1.2, 1.2, "F");
@@ -651,7 +695,8 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
 
   sectionHead(10, "Chancen", tcCol(8));
   result.chances.forEach(c => {
-    checkPage(6);
+    const cH = measureText(c, CW - 5, 8.5, 4.3);
+    checkPage(cH + 2);
     dot(ML, y, C.green);
     printText(c, ML + 5, CW - 5, 8.5, C.dark, 4.3);
     y += 1;
@@ -661,7 +706,8 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
 
   sectionHead(11, "Risiken", tcCol(9));
   result.risks.forEach(r => {
-    checkPage(6);
+    const rH = measureText(r, CW - 5, 8.5, 4.3);
+    checkPage(rH + 2);
     dot(ML, y, C.red);
     printText(r, ML + 5, CW - 5, 8.5, C.dark, 4.3);
     y += 1;
@@ -671,7 +717,8 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
 
   sectionHead(12, "Handlungsempfehlung", tcCol(10));
   result.advice.forEach((a, idx) => {
-    checkPage(14);
+    const aH = measureText(a.text, CW, 8.5, 4.3);
+    checkPage(6 + aH);
     doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
     setC(C.black);
@@ -690,10 +737,23 @@ export async function buildTeamCheckPdf(result: TeamCheckV3Result, filename: str
   sectionHead(13, "Alternativwirkung", tcCol(11));
   printText("Neben der Frage, wie sich die Besetzung auf das Team auswirkt, ist auch relevant, welche Wirkung ohne diese Besetzung bestehen bleibt.", ML, CW, 8.5, C.mid, 4.3);
   y += 4;
-  result.alternativwirkung.split("\n\n").forEach(p => {
-    printText(p, ML, CW, 8.5, C.dark, 4.3);
-    y += 2;
-  });
+  printParagraphs(result.alternativwirkung, ML, CW, 8.5, C.dark, 4.3);
+
+  if (result.strategicText) {
+    separator(30);
+    sectionHead(14, "Strategische Einordnung", tcCol(0));
+    if (result.strategicWirkung) {
+      doc.setFontSize(7.5);
+      doc.setFont("helvetica", "bold");
+      setC(C.mid);
+      doc.text("STRATEGISCHE WIRKUNG", ML, y);
+      doc.setFont("helvetica", "bold");
+      setC(C.black);
+      doc.text(result.strategicWirkung, ML + 42, y);
+      y += 6;
+    }
+    printParagraphs(result.strategicText, ML, CW, 8.5, C.dark, 4.3);
+  }
 
   doc.save(filename);
 }
