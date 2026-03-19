@@ -1011,7 +1011,7 @@ export default function TeamReport() {
           }
 
           if (totalGap > 35 && steuerung !== "erhöht") { steuerung = "erhöht"; }
-          else if (totalGap > 15 && steuerung === "gering") { steuerung = "mittel"; }
+          else if (totalGap > 25 && steuerung === "gering") { steuerung = "mittel"; }
 
           const steuerungColor = steuerung === "gering" ? "#3A9A5C" : steuerung === "mittel" ? "#E5A832" : "#D64045";
 
