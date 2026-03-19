@@ -912,7 +912,7 @@ export default function SollIstBericht() {
                             const bg = `linear-gradient(135deg, ${m.color}10 0%, ${m.color}06 100%)`;
                             return (
                               <div key={m.label} style={{ flex: 1, minWidth: 0, padding: "14px 16px", borderRadius: 10, background: bg, border: `1px solid ${m.color}18` }}>
-                                <div style={{ fontSize: 10, color: "#1D1D1F", marginBottom: 5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>{m.label}</div>
+                                <div style={{ fontSize: 12, color: "#1D1D1F", marginBottom: 5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>{m.label}</div>
                                 <div style={{ fontSize: 15, fontWeight: 700, color: m.color }} data-testid={`status-${m.label.toLowerCase().replace(/\s/g, "-")}`}>{m.value}</div>
                               </div>
                             );
@@ -942,7 +942,7 @@ export default function SollIstBericht() {
                             <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 16px", textAlign: "center" }}>Kurzübersicht</p>
                             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: 16 }}>
                               <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.12em", margin: "0 0 10px" }}>Stelle</p>
+                                <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 10px" }}>Stelle</p>
                                 <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
                                   {roleKeys.map(k => (
                                     <div key={k} style={{ padding: "10px 20px", borderRadius: 20, background: `${BAR_HEX[k]}14`, border: `1px solid ${BAR_HEX[k]}30` }}>
@@ -955,7 +955,7 @@ export default function SollIstBericht() {
                                 <span style={{ fontSize: 18, fontWeight: 700, color: matchColor, lineHeight: 1 }}>{matchSymbol}</span>
                               </div>
                               <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.12em", margin: "0 0 10px" }}>Person</p>
+                                <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 10px" }}>Person</p>
                                 <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
                                   {candKeys.map(k => (
                                     <div key={k} style={{ padding: "10px 20px", borderRadius: 20, background: `${BAR_HEX[k]}14`, border: `1px solid ${BAR_HEX[k]}30` }}>
@@ -1088,7 +1088,7 @@ export default function SollIstBericht() {
                       <div key={kb.key} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
                         <div style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: `linear-gradient(135deg, ${kb.color}12, ${kb.color}06)`, border: `1px solid ${kb.color}20`, display: "flex", flexDirection: "column" }}>
                           <div style={{ flex: 1 }}>
-                            <span style={{ fontSize: 13, fontWeight: 700, color: kb.color, marginBottom: 8, display: "block" }}>{kb.label}</span>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: kb.color, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8, display: "block" }}>{kb.label}</span>
                             <p style={{ fontSize: 12.5, lineHeight: 1.65, margin: 0, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                               {kb.text}
                             </p>
@@ -1118,11 +1118,11 @@ export default function SollIstBericht() {
                           </div>
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
                             <div data-text-left style={{ padding: "10px 12px", borderRadius: 8, background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.05)" }}>
-                              <p style={{ fontSize: 10, fontWeight: 700, color: "#1D1D1F", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Stellenanforderung</p>
+                              <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 6px" }}>Stellenanforderung</p>
                               <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang="de">{area.roleNeed}</p>
                             </div>
                             <div data-text-left style={{ padding: "10px 12px", borderRadius: 8, background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.05)" }}>
-                              <p style={{ fontSize: 10, fontWeight: 700, color: "#1D1D1F", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Person</p>
+                              <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 6px" }}>Person</p>
                               <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang="de">{area.candidatePattern}</p>
                             </div>
                           </div>
