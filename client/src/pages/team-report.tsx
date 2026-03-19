@@ -770,22 +770,37 @@ export default function TeamReport() {
                 <p style={{ fontSize: 12, color: "#6E6E73", margin: "0 0 10px", lineHeight: 1.5 }}>
                   Welche Arbeitsweise braucht diese Abteilung funktional? Das Funktionsziel beeinflusst die strategische Einordnung im Bericht.
                 </p>
-                <select
-                  value={teamGoal}
-                  onChange={e => setTeamGoal(e.target.value as typeof teamGoal)}
-                  data-testid="select-team-goal"
-                  style={{
-                    width: "100%", maxWidth: 400, height: 42, borderRadius: 10,
-                    border: "1px solid rgba(0,0,0,0.12)", padding: "0 12px",
-                    fontSize: 14, color: teamGoal ? "#1D1D1F" : "#8E8E93",
-                    background: "#fff", cursor: "pointer", outline: "none",
-                  }}
-                >
-                  <option value="">Kein spezifisches Funktionsziel</option>
-                  <option value="umsetzung">Umsetzung und Ergebnisse (z.B. Vertrieb, Produktion)</option>
-                  <option value="analyse">Analyse und Struktur (z.B. Software, Finanzen)</option>
-                  <option value="zusammenarbeit">Zusammenarbeit und Kommunikation (z.B. Kundenbetreuung, HR)</option>
-                </select>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {([
+                    { value: "", label: "Kein spezifisches Funktionsziel" },
+                    { value: "umsetzung", label: "Umsetzung und Ergebnisse", hint: "z.B. Vertrieb, Produktion" },
+                    { value: "analyse", label: "Analyse und Struktur", hint: "z.B. Software, Finanzen" },
+                    { value: "zusammenarbeit", label: "Zusammenarbeit und Kommunikation", hint: "z.B. Kundenbetreuung, HR" },
+                  ] as { value: typeof teamGoal; label: string; hint?: string }[]).map(opt => (
+                    <label
+                      key={opt.value}
+                      data-testid={`goal-option-${opt.value || "none"}`}
+                      onClick={() => setTeamGoal(opt.value)}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 10,
+                        padding: "10px 14px", borderRadius: 10, cursor: "pointer",
+                        border: teamGoal === opt.value ? "1.5px solid #007AFF" : "1px solid rgba(0,0,0,0.1)",
+                        background: teamGoal === opt.value ? "rgba(0,122,255,0.04)" : "#fff",
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      <span style={{
+                        width: 18, height: 18, borderRadius: 9, flexShrink: 0,
+                        border: teamGoal === opt.value ? "5px solid #007AFF" : "2px solid #C7C7CC",
+                        background: "#fff", transition: "all 0.15s ease",
+                      }} />
+                      <span style={{ flex: 1 }}>
+                        <span style={{ fontSize: 14, fontWeight: 500, color: "#1D1D1F" }}>{opt.label}</span>
+                        {opt.hint && <span style={{ fontSize: 12, color: "#8E8E93", marginLeft: 6 }}>({opt.hint})</span>}
+                      </span>
+                    </label>
+                  ))}
+                </div>
               </div>
 
               <div className="mt-8 flex justify-center gap-4">
