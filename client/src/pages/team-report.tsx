@@ -944,7 +944,7 @@ export default function TeamReport() {
           const effectiveSameDomSt = sameDom || teamIsBalFull || candMatchesTeamDual;
           const secFlipSt = effectiveSameDomSt && teamDom.top2.key !== candDom.top2.key && !dualKeysMatch;
 
-          const candSpread = candDom.top1.value - candDom.top3.value;
+          const candSpreadSt = candDom.top1.value - candDom.top3.value;
 
           let steuerung: "gering" | "mittel" | "erhöht";
 
@@ -955,9 +955,9 @@ export default function TeamReport() {
           } else if (teamIsBalFull) {
             if (candIsDualDom) {
               steuerung = "mittel";
-            } else if (candSpread <= 5 || totalGap <= 8) {
+            } else if (candSpreadSt <= 5 || totalGap <= 8) {
               steuerung = "mittel";
-            } else if (candSpread < 12) {
+            } else if (candSpreadSt < 12) {
               steuerung = "mittel";
             } else {
               steuerung = "erhöht";
