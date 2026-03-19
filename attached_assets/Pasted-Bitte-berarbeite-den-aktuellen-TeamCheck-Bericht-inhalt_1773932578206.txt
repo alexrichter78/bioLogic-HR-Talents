@@ -1,0 +1,205 @@
+Bitte überarbeite den aktuellen TeamCheck-Bericht inhaltlich und sprachlich weiter. Die neue Grundlogik ist bereits richtig umgesetzt. Es geht jetzt nicht mehr um einen kompletten Neuaufbau, sondern um die gezielte Nachschärfung der bestehenden Texte.
+
+WICHTIG:
+Nicht das Layout ändern.
+Nicht das Design ändern.
+Nicht die Struktur der Kapitel grundsätzlich umbauen.
+Es geht ausschließlich um:
+- sprachliche Präzision
+- inhaltliche Konsistenz
+- realistische Rollensprache
+- Vermeidung von Widersprüchen
+- saubere Einordnung der Systemwirkung
+
+ZIEL:
+Der Bericht soll die bereits eingeführte Logik beibehalten:
+- Person kann vom Team deutlich abweichen
+- Person kann gleichzeitig näher am funktionalen Ziel der Abteilung liegen als das Team
+- dadurch entsteht nicht nur Risiko, sondern auch eine strategisch sinnvolle Ergänzung oder Korrektur
+
+Diese Logik bleibt bestehen.
+
+JETZT ZUSÄTZLICH SICHERSTELLEN:
+
+1. SYSTEMWIRKUNG PRÄZISER FORMULIEREN
+Der Wert „Ergänzung“ ist bei hoher Abweichung oft zu weich.
+Wenn die Abweichung hoch ist und gleichzeitig funktional sinnvoll wirkt, soll statt „Ergänzung“ eine präzisere Formulierung verwendet werden, zum Beispiel:
+- spannungsreiche Ergänzung
+- konstruktive Spannung
+- strategische Ergänzung
+- Korrekturimpuls
+
+Regel:
+Wenn Team–Person-Abweichung hoch ist, darf die Systemwirkung nicht zu harmlos klingen.
+
+2. SOZIALE SYSTEMWIRKUNG UND KENNZAHLEN ABGLEICHEN
+Wenn
+- Team–Person-Abweichung hoch ist
+- Steuerungsaufwand hoch ist
+dann darf im Fliesstext nicht von „moderater“ sozialer Systemwirkung gesprochen werden.
+
+Regel:
+Die sprachliche Einordnung muss zu den Kennzahlen passen.
+Mögliche Formulierungen:
+- spürbare soziale Reibung
+- erhöhte soziale Reibung
+- deutliche Reibung im Teamalltag
+
+3. ROLLENSPRACHE REALISTISCH HALTEN
+Die Texte müssen zur jeweiligen Rolle passen.
+Vermeide Formulierungen, die für bestimmte Rollen unplausibel oder zu abstrakt wirken.
+
+Beispiel:
+Wenn die Rolle „Raumpfleger“ ist, dann sind Formulierungen wie:
+- spontane Marktreaktion
+- gut vorbereitete Gespräche
+- professionelle Wirkung im Gespräch
+oft nicht passend.
+
+Stattdessen soll die Textlogik in eine rollennahe Sprache übersetzt werden.
+
+Für stärker operative Rollen sollen Formulierungen eher in diese Richtung gehen:
+- verlässliche Ausführung
+- klare Standards
+- saubere Abläufe
+- Ordnung und Nachvollziehbarkeit
+- Qualitätsstabilität
+- sorgfältige Umsetzung
+- strukturierte Arbeitsweise im Alltag
+
+WICHTIG:
+Das funktionale Ziel darf fachlich korrekt bleiben, aber sprachlich rollennäher beschrieben werden.
+
+4. FUNKTIONSZIELE BEI BEDARF ALLTAGSNÄHER ÜBERSETZEN
+Wenn ein abstraktes Funktionsziel wie
+- Analyse und Struktur
+- Umsetzung und Ergebnisse
+- Zusammenarbeit und Kommunikation
+für die konkrete Rolle zu technisch oder zu managementhaft klingt, dann soll der Bericht zusätzlich eine alltagsnahe sprachliche Übersetzung verwenden.
+
+Beispiel:
+„Analyse und Struktur“ kann je nach Rolle auch beschrieben werden als:
+- Ordnung und Qualitätsstabilität
+- strukturierte Ausführung
+- saubere Standards und verlässliche Abläufe
+
+Regel:
+Die strategische Logik bleibt erhalten, aber die Ausdrucksweise soll zur Rolle passen.
+
+5. DOPPLUNGEN REDUZIEREN
+Mehrere Abschnitte sagen aktuell in leicht anderer Form fast dasselbe.
+Bitte Dopplungen reduzieren, besonders in:
+- Chancen
+- Risiken
+- Systemwirkung
+- Warum dieses Ergebnis
+
+WICHTIG:
+Nicht Inhalte löschen, sondern ähnliche Aussagen zusammenführen und präziser machen.
+
+6. RISIKEN KONSISTENTER FORMULIEREN
+Der Bericht soll Risiken weiter benennen, aber logisch sauber.
+Vermeide Formulierungen, die der Grundlogik widersprechen.
+
+Beispiel:
+Wenn die Person eine funktionale Untergewichtung im Team ausgleicht, dann soll nicht pauschal formuliert werden:
+„Das Team könnte einseitiger werden“
+wenn damit eigentlich etwas anderes gemeint ist.
+
+Besser:
+- Es kann zu Polarisierung zwischen alter und neuer Arbeitsweise kommen.
+- Bestehende Teamstärken und neue Anforderungen müssen bewusst verbunden werden.
+- Ohne Integration stehen die Arbeitslogiken nebeneinander statt zusammen zu wirken.
+
+Regel:
+Risiken systemisch formulieren, nicht widersprüchlich.
+
+7. CHANCEN SCHÄRFER UND KNAPPER FORMULIEREN
+Der Abschnitt „Chancen“ soll gestrafft werden.
+Keine Wiederholung derselben Aussage in mehreren Varianten.
+
+Bitte auf 4 klar unterscheidbare Chancen verdichten:
+- Ausgleich einer funktionalen Untergewichtung
+- mehr Struktur / Verbindlichkeit / Ergebnisqualität
+- höhere Steuerbarkeit im Alltag
+- gezielte Weiterentwicklung des Teams in Richtung Funktionsziel
+
+8. GROSS- UND KLEINSCHREIBUNG VOLLSTÄNDIG BEREINIGEN
+Begriffe wie diese müssen korrekt und konsistent geschrieben werden:
+- Zusammenarbeit und Kommunikation
+- Struktur und Analyse
+- Ordnung und sachliche Prüfung
+- Dialog
+- persönliche Ansprache
+- Systematik und Prozesssicherheit
+- Nachvollziehbarkeit und Qualitätsorientierung
+
+Keine uneinheitliche Kleinschreibung in Fliesstexten.
+
+9. SATZBAU UND SPRACHFLUSS GLÄTTEN
+Der Bericht ist inhaltlich stark, wirkt aber an einzelnen Stellen noch wie technisch generierter Text.
+Bitte alle Abschnitte sprachlich glätten:
+- flüssiger Satzbau
+- weniger harte Wiederholungen
+- weniger gleiche Satzanfänge
+- professioneller, ruhiger Duktus
+
+10. MANAGEMENTLOGIK BEIBEHALTEN
+Die neue Hauptlogik muss vollständig erhalten bleiben:
+- Teamabweichung nicht automatisch negativ
+- Funktionsziel immer mitbewerten
+- Spannung kann konstruktiv sein
+- Führungsaufgabe ist bewusste Einordnung und Integration
+
+Diese Logik darf bei der sprachlichen Überarbeitung nicht verloren gehen.
+
+BITTE FOLGENDE ABSCHNITTE BESONDERS PRÜFEN UND NACHSCHÄRFEN:
+
+A. Gesamtbewertung
+- Ist „Systemwirkung“ stark genug formuliert?
+- Passen die Begriffe zur Höhe der Abweichung?
+
+B. Strategische Einordnung
+- sprachlich gut, aber noch etwas präziser und ruhiger formulieren
+- keine unnötigen Wiederholungen
+
+C. Systemwirkung
+- soziale und funktionale Wirkung sprachlich sauber voneinander unterscheiden
+- Kennzahlen und Textbewertung angleichen
+
+D. Personenprofil
+- rollennäher formulieren
+- keine unpassenden Aussagen für operative Rollen
+- keine branchenfremden Beispiele
+
+E. Chancen
+- straffen
+- Dopplungen entfernen
+- 4 klare Kernchancen
+
+F. Risiken
+- Widersprüche entfernen
+- Fokus auf Fehlinterpretation funktional sinnvoller Wirkung, Reibung, Integrationsverlust
+
+G. Handlungsempfehlung
+- gut aufgebaut, aber sprachlich glätten
+- Begriffe sauber großschreiben
+
+H. Alternativwirkung
+- bereits stark, aber etwas präziser und kompakter formulieren
+
+UMSETZUNGSREGEL:
+Bitte keine neue Grundstruktur erfinden.
+Bitte keine neue Methodik einführen.
+Bitte den bestehenden Bericht auf Basis der aktuellen Version sprachlich und logisch finalisieren.
+
+ENDZUSTAND:
+Der Bericht soll am Ende so wirken:
+- strategisch klar
+- managementtauglich
+- sprachlich sauber
+- rollennah
+- konsistent mit den Kennzahlen
+- ohne unnötige Wiederholungen
+- ohne Widersprüche
+- mit klarer Unterscheidung zwischen Integrationsrisiko und funktionalem Nutzen
