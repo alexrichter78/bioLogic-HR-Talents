@@ -219,7 +219,10 @@ export default function TeamCheckReportV3() {
             <div style={{ padding: "28px 32px 0" }}>
 
               <p data-pdf-block style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 16px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-einleitung">
-                Diese Teamanalyse zeigt, wie gut Person und bestehendes Team in ihrer Arbeitsweise zusammenpassen. Sie macht sichtbar, wo Übereinstimmungen bestehen, wo Abweichungen entstehen und welcher Führungs-, Integrations- oder Entwicklungsaufwand daraus im Alltag zu erwarten ist.
+                {result.teamGoal
+                  ? "Diese Teamanalyse zeigt, wie gut Person und bestehendes Team in ihrer Arbeitsweise zusammenpassen und wie diese Konstellation im Verhältnis zum funktionalen Ziel der Abteilung zu bewerten ist. Sie macht sichtbar, wo Übereinstimmungen bestehen, wo Abweichungen entstehen und ob diese im Arbeitsalltag eher Spannung, Ergänzung oder gezielte Weiterentwicklung auslösen."
+                  : "Diese Teamanalyse zeigt, wie gut Person und bestehendes Team in ihrer Arbeitsweise zusammenpassen. Sie macht sichtbar, wo Übereinstimmungen bestehen, wo Abweichungen entstehen und welcher Führungs-, Integrations- oder Entwicklungsaufwand daraus im Alltag zu erwarten ist."
+                }
               </p>
               <div data-pdf-block style={{ background: "linear-gradient(135deg, rgba(255,59,48,0.06) 0%, rgba(255,59,48,0.03) 100%)", borderRadius: 10, padding: "16px 20px", border: "1px solid rgba(255,59,48,0.2)", marginBottom: 24 }}>
                 <p style={{ fontSize: 13, fontWeight: 700, color: "#FF3B30", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
@@ -231,16 +234,24 @@ export default function TeamCheckReportV3() {
 
               {/* GESAMTBEWERTUNG – metrics + summary text */}
               <div data-testid="v3-section-gesamtbewertung" style={{ marginBottom: 22 }}>
-                <div style={{ display: "flex", gap: 10 }}>
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                   <MetricBadge label="Gesamtpassung" value={result.passung} color={pCol} />
                   <MetricBadge label="Systemwirkung" value={result.systemwirkung} />
                   <MetricBadge label="Steuerungsaufwand" value={result.steuerungsaufwand} color={sCol} />
                   <MetricBadge label="Integrationsrisiko" value={result.integrationsrisiko} color={rCol} />
+                  {result.strategicWirkung && (
+                    <MetricBadge
+                      label="Strategische Wirkung"
+                      value={result.strategicWirkung}
+                      color={result.strategicWirkung === "stabil passend" || result.strategicWirkung === "spannungsreiche Ergänzung" || result.strategicWirkung === "strategisch passende Korrektur" ? "#34C759" : result.strategicWirkung === "gezielte Ergänzung" || result.strategicWirkung === "neutral" ? "#FF9500" : "#C41E3A"}
+                    />
+                  )}
                 </div>
                 {(() => {
                   const isLeadership = result.roleType === "leadership";
                   const p = result.passung;
                   const sFit = result.strategicFit;
+                  const hasGoal = !!result.teamGoal;
                   let bewertungsText = "";
                   if (p === "Passend") {
                     bewertungsText = isLeadership
@@ -252,11 +263,15 @@ export default function TeamCheckReportV3() {
                       : "Die Gesamtbewertung spricht für eine bedingte Passung. Es bestehen sowohl Übereinstimmungen als auch relevante Abweichungen in der Arbeitsweise. Mit gezielter Steuerung und bewusster Integration kann die Besetzung gelingen, erfordert aber Aufmerksamkeit in den ersten Monaten.";
                   } else {
                     bewertungsText = isLeadership
-                      ? "Die Gesamtbewertung spricht für eine kritische Passung. Die Führungslogik weicht deutlich von der Teamstruktur ab. Eine wirksame Führung wäre nur mit erheblichem Steuerungsaufwand, klarer Rahmung und konsequenter Kommunikation realistisch."
-                      : "Die Gesamtbewertung spricht für eine kritische Passung. Die strukturelle Abweichung ist deutlich, der Steuerungs- und Entwicklungsaufwand entsprechend hoch. Eine erfolgreiche Besetzung wäre nur unter klarer Führung und mit bewusstem Integrationsaufwand realistisch.";
+                      ? "Die Gesamtbewertung spricht für eine kritische Passung im bestehenden Team. Die Führungslogik weicht deutlich von der Teamstruktur ab. Der Integrations- und Steuerungsaufwand ist entsprechend erhöht."
+                      : "Die Gesamtbewertung spricht für eine kritische Passung im bestehenden Team. Die strukturelle Abweichung ist deutlich, der Integrations- und Steuerungsaufwand entsprechend erhöht.";
                   }
-                  if (sFit === "passend" && (p === "Kritisch" || p === "Bedingt passend")) {
-                    bewertungsText += " Gleichzeitig entspricht die Arbeitsweise der Person dem funktionalen Ziel der Abteilung — die bestehende Spannung ist damit strategisch gewollt und kann als gezielte Weiterentwicklung des Teams verstanden werden.";
+                  if (hasGoal && sFit === "passend" && (p === "Kritisch" || p === "Bedingt passend")) {
+                    bewertungsText += " Gleichzeitig entspricht die Arbeitsweise der Person dem funktionalen Ziel der Abteilung in hohem Mass. Die entstehende Spannung ist daher nicht nur als Risiko, sondern auch als strategisch sinnvolle Ergänzung des Teams zu bewerten.";
+                  } else if (hasGoal && sFit === "teilweise" && p !== "Passend") {
+                    bewertungsText += " Die Person bringt das funktionale Ziel der Abteilung als Nebenkomponente mit, was einen begrenzten, aber relevanten Beitrag in Richtung des Ziels leisten kann.";
+                  } else if (hasGoal && sFit === "abweichend" && p === "Kritisch") {
+                    bewertungsText += " Auch im Verhältnis zum funktionalen Ziel der Abteilung zeigt die Person keine primäre Ausrichtung. Die Abweichung betrifft damit sowohl die teamdynamische als auch die strategische Ebene.";
                   }
                   return (
                     <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "14px 0 0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-gesamtbewertung">
@@ -283,12 +298,26 @@ export default function TeamCheckReportV3() {
                     <span style={{ fontSize: 15, fontWeight: 800, color: abwCol }}>{result.teamPersonAbweichung} Punkte</span>
                   </div>
                   {result.teamGoal && (
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0" }}>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: "#8E8E93" }}>Funktionsziel</span>
-                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-team-goal">
-                        {result.teamGoal === "umsetzung" ? "Umsetzung und Ergebnisse" : result.teamGoal === "analyse" ? "Analyse und Struktur" : "Zusammenarbeit und Kommunikation"}
-                      </span>
-                    </div>
+                    <>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: "#8E8E93" }}>Funktionsziel</span>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-team-goal">
+                          {result.teamGoal === "umsetzung" ? "Umsetzung und Ergebnisse" : result.teamGoal === "analyse" ? "Analyse und Struktur" : "Zusammenarbeit und Kommunikation"}
+                        </span>
+                      </div>
+                      {result.teamGoalAbweichung !== null && (
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: result.personGoalAbweichung !== null ? "1px solid rgba(0,0,0,0.06)" : "none" }}>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: "#8E8E93" }}>Team–Funktionsziel</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: result.teamGoalAbweichung <= 20 ? "#34C759" : result.teamGoalAbweichung <= 40 ? "#FF9500" : "#FF3B30" }} data-testid="text-team-goal-gap">{result.teamGoalAbweichung} Punkte</span>
+                        </div>
+                      )}
+                      {result.personGoalAbweichung !== null && (
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0" }}>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: "#8E8E93" }}>Person–Funktionsziel</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: result.personGoalAbweichung <= 20 ? "#34C759" : result.personGoalAbweichung <= 40 ? "#FF9500" : "#FF3B30" }} data-testid="text-person-goal-gap">{result.personGoalAbweichung} Punkte</span>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -487,7 +516,7 @@ export default function TeamCheckReportV3() {
                   </div>
                 </div>
                 <p style={{ fontSize: 13, color: "#8E8E93", lineHeight: 1.75, margin: "14px 0 0", fontStyle: "italic" }}>
-                  Unter zunehmendem Arbeitsdruck können sich diese Verhaltensmuster verstärken. Dadurch entstehen im Arbeitsalltag Risiken für Abstimmung, Führung und Zusammenarbeit.
+                  Unter zunehmendem Arbeitsdruck können sich diese Verhaltensmuster verstärken. Dabei ist zu beachten, dass die verstärkte Wirkung in kritischen Situationen sowohl funktional hilfreich als auch kulturell belastend sein kann — je nachdem, wie das Team damit umgeht.
                 </p>
               </div>
 

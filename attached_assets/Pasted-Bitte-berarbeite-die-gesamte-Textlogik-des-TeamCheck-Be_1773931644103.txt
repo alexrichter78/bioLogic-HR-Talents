@@ -1,0 +1,246 @@
+Bitte überarbeite die gesamte Textlogik des TeamCheck-Berichts. Es geht nicht um Layout, Design oder visuelle Darstellung, sondern ausschließlich um die inhaltliche Logik, die Formulierungen und den roten Faden des Berichts.
+
+WICHTIG:
+Der bisherige Bericht bewertet zu stark nur die Abweichung zwischen Person und bestehendem Team. Künftig muss der Bericht drei Ebenen gleichzeitig berücksichtigen und sprachlich sauber verbinden:
+
+1. Person ↔ bestehendes Team
+2. Person ↔ funktionales Ziel / Aufgabenlogik der Abteilung
+3. bestehendes Team ↔ funktionales Ziel / Aufgabenlogik der Abteilung
+
+Die zentrale Berichtlogik lautet:
+Eine Person kann deutlich vom bestehenden Team abweichen und dadurch Spannung erzeugen, gleichzeitig aber genau die Arbeitsweise mitbringen, die das funktionale Ziel der Abteilung erfordert. In diesem Fall ist die Spannung nicht nur Risiko, sondern potenziell eine strategisch sinnvolle und gewollte Weiterentwicklung des Teams.
+
+ZIEL:
+Der Bericht soll nicht mehr nur sagen:
+„Die Person passt oder passt nicht zum Team.“
+Sondern:
+„Wie wirkt die Person im bestehenden Team, wie passend ist sie zum funktionalen Ziel der Abteilung, und ist die entstehende Spannung eher problematisch oder als gezielte Ergänzung / Weiterentwicklung zu bewerten?“
+
+ALLGEMEINE TEXTREGELN:
+- Die Sprache soll hochwertig, klar, professionell und managementtauglich sein.
+- Keine psychologisierenden oder wertenden Formulierungen.
+- Keine starren Persönlichkeitszuschreibungen.
+- Die Analyse bleibt wertfrei und beschreibt wiederkehrende Tendenzen im Arbeitskontext.
+- Unterschiede zwischen Person und Team dürfen nie automatisch als negativ beschrieben werden.
+- Jede relevante Abweichung muss immer doppelt eingeordnet werden:
+  1. als Integrations- / Führungsrisiko
+  2. als mögliche funktionale Ergänzung im Hinblick auf das Ziel der Abteilung
+- Wiederholungen reduzieren.
+- Der Bericht soll weniger defizitorientiert und stärker systemisch formuliert werden.
+- Begriffe wie „Spannung“, „Ergänzung“, „strategisch passend“, „funktionale Lücke“, „gezielte Weiterentwicklung“, „Integrationsaufwand“ sollen sauber genutzt werden.
+- Groß- und Kleinschreibung, Grammatik und Satzfluss vollständig korrigieren.
+- Keine fehlerhaften oder verstümmelten Wörter.
+- Schweizer Rechtschreibung / deutsche Standardschreibung konsistent anwenden; wenn das System bereits mit „ss“ statt „ß“ arbeitet, dann konsistent durchhalten.
+
+NEUE KERNLOGIK FÜR DIE TEXTGENERIERUNG:
+Der Bericht muss aus den vorhandenen Daten immer folgende Leitfragen beantworten:
+A. Wie stark weicht die Person vom bestehenden Team ab?
+B. Wie gut entspricht die Person dem funktionalen Ziel der Abteilung?
+C. Wie gut entspricht das bestehende Team dem funktionalen Ziel der Abteilung?
+D. Ist die Person damit eher:
+   - stabil passend
+   - spannungsreiche Ergänzung
+   - strategisch passende Korrektur
+   - kritische Abweichung
+   - strukturelle Fehlpassung
+
+WICHTIG:
+Wenn Person und Funktionsziel eng zusammenpassen, das Team aber davon abweicht, dann darf der Bericht nicht primär negativ formuliert sein. Dann muss sprachlich klar herausgearbeitet werden:
+- Die Person passt funktional zur Aufgabe.
+- Die Spannung entsteht vor allem aus der Diskrepanz zum bestehenden Team.
+- Diese Spannung kann eine gewollte und sinnvolle Weiterentwicklung darstellen.
+- Die Führungsaufgabe liegt dann weniger in der Frage der fachlichen Eignung als in der bewussten Integration einer funktional sinnvollen, aber kulturell spannungsreichen Wirkung.
+
+BITTE FOLGENDE ABSCHNITTE INHALTLICH ÜBERARBEITEN:
+
+1. EINLEITUNG
+Die Einleitung darf nicht mehr nur Person ↔ Team beschreiben.
+Sie muss künftig klar sagen, dass die Analyse sowohl die Einfügung der Person ins bestehende Team als auch die Bewertung im Verhältnis zum funktionalen Ziel der Abteilung sichtbar macht.
+
+Verwende in diesem Stil:
+„Diese Teamanalyse zeigt, wie gut Person und bestehendes Team in ihrer Arbeitsweise zusammenpassen und wie diese Konstellation im Verhältnis zum funktionalen Ziel der Abteilung zu bewerten ist. Sie macht sichtbar, wo Übereinstimmungen bestehen, wo Abweichungen entstehen und ob diese im Arbeitsalltag eher Spannung, Ergänzung oder gezielte Weiterentwicklung auslösen.“
+
+Der zweite Absatz zur wertfreien Einordnung kann bleiben, aber sprachlich optimiert werden.
+
+2. GESAMTBEWERTUNG
+Zusätzlich zu:
+- Gesamtpassung
+- Systemwirkung
+- Steuerungsaufwand
+- Integrationsrisiko
+
+muss ein weiterer inhaltlicher Indikator eingeführt werden, z. B.:
+- Strategische Wirkung
+oder
+- Funktionale Einordnung
+
+Mögliche Werte:
+- strategisch passend
+- gezielte Ergänzung
+- funktionale Korrektur
+- neutral
+- strategisch kritisch
+
+Die Fliesstext-Zusammenfassung unter der Gesamtbewertung muss künftig immer beide Seiten enthalten:
+- die soziale / teamdynamische Bewertung
+- die funktionale / strategische Bewertung
+
+Beispielmuster:
+„Die Gesamtbewertung spricht für eine kritische Passung im bestehenden Team. Die strukturelle Abweichung ist deutlich, der Integrations- und Steuerungsaufwand entsprechend erhöht. Gleichzeitig entspricht die Arbeitsweise der Person dem funktionalen Ziel der Abteilung in hohem Mass. Die entstehende Spannung ist daher nicht nur als Risiko, sondern auch als strategisch sinnvolle Ergänzung des Teams zu bewerten.“
+
+3. SYSTEMÜBERBLICK
+Der Systemüberblick darf nicht nur Teamprofil, Personenprofil, Team–Person-Abweichung und Funktionsziel enthalten.
+
+Bitte zusätzlich logisch und textlich einbauen:
+- Team–Funktionsziel-Abweichung
+- optional Person–Funktionsziel-Abweichung, falls rechnerisch verfügbar
+
+Falls diese Werte bereits berechnet werden können, sollen sie auch textlich verwendet werden.
+Wenn die Person näher am Funktionsziel liegt als das Team, muss das sprachlich explizit benannt werden.
+
+4. STRATEGISCHE EINORDNUNG
+Dieser Abschnitt wird zu einem Pflichtabschnitt und muss inhaltlich aufgewertet werden.
+Er soll die zentrale Brücke zwischen Teamabweichung und Funktionsziel herstellen.
+
+Logik:
+- Arbeitet das Team heute bereits in Richtung des funktionalen Ziels?
+- Bringt die Person genau die fehlende Wirkung mit?
+- Entsteht dadurch eine konstruktive Spannung oder eine Fehlpassung?
+
+Textmuster:
+„Das bestehende Team bildet das funktionale Ziel der Abteilung aktuell nur teilweise ab. Die Person bringt dagegen genau die Arbeitsweise mit, die für dieses Ziel erforderlich ist. Die Abweichung zum Team ist deshalb nicht nur als Risiko zu bewerten, sondern auch als gezielte funktionale Ergänzung des bestehenden Systems. Die Herausforderung liegt weniger in der fachlichen Eignung der Person als in ihrer wirksamen Integration in das bestehende Teamgefüge.“
+
+5. MANAGEMENTKURZFAZIT
+Das Kurzfazit ist aktuell zu stark auf Abweichung = Risiko aufgebaut.
+Es muss künftig immer enthalten:
+- Teamprofil
+- Personenprofil
+- Abweichung
+- Gesamtstatus
+- und zusätzlich die funktionale Einordnung
+
+Pflichtsatzlogik:
+„Die Person weicht deutlich vom Teamprofil ab. Dadurch entstehen unterschiedliche Erwartungen an Entscheidungsrhythmus, Abstimmung und Prioritätensetzung. Gleichzeitig entspricht die Arbeitsweise der Person dem funktionalen Ziel der Abteilung stärker als die aktuelle Teamstruktur. Die Abweichung ist daher nicht nur als Integrationsrisiko, sondern auch als potenziell sinnvolle Weiterentwicklung des Teams zu bewerten.“
+
+6. WARUM DIESES ERGEBNIS
+Dieser Abschnitt darf nicht mehr nur die Unterschiede zwischen Team und Person beschreiben.
+Er muss zusätzlich die Systemursache erklären:
+Die Spannung entsteht nicht nur aus Person vs. Team, sondern auch daraus, dass das bestehende Team das funktionale Ziel der Abteilung nur teilweise abbildet.
+
+Pflichtlogik:
+- Person setzt andere Schwerpunkte als das Team
+- diese Schwerpunkte liegen aber näher am funktionalen Ziel
+- dadurch wirkt die Person im Team zunächst fremd, fachlich aber in die richtige Richtung
+
+7. SYSTEMWIRKUNG
+Bitte den Abschnitt zweistufig denken und textlich abbilden:
+A. soziale Systemwirkung
+B. funktionale Systemwirkung
+
+Soziale Systemwirkung:
+Beschreibt Reibung in Arbeitsrhythmus, Abstimmung, Erwartungshaltung, Kommunikation.
+
+Funktionale Systemwirkung:
+Beschreibt, ob die Person genau jene Wirkung verstärkt, die das Ziel der Abteilung verlangt.
+
+Wenn beides gleichzeitig zutrifft, muss genau diese Ambivalenz sprachlich gezeigt werden.
+
+8. TEAMPROFIL / PERSONENPROFIL
+Diese Abschnitte können grundsätzlich bestehen bleiben, müssen aber sprachlich gestrafft werden.
+Wiederholungen vermeiden.
+Wichtig: Im Teamprofil soll – wenn passend – nicht nur beschrieben werden, was das Team stark macht, sondern auch wo im Verhältnis zum funktionalen Ziel Untergewichtungen bestehen.
+
+Beispiel:
+„Das ist besonders wertvoll, wenn Kundennähe und Vertrauensbildung tragende Erfolgsfaktoren sind. Im Hinblick auf das funktionale Ziel der Abteilung bleibt der Bereich Umsetzung und klare Ergebnissteuerung jedoch vergleichsweise schwächer ausgeprägt.“
+
+9. TEAM-SPANNUNGSANALYSE
+Dieser Abschnitt soll nicht nur Reibung beschreiben.
+Bei jeder relevanten Abweichung muss zusätzlich bewertet werden, ob genau diese Differenz im Hinblick auf das Funktionsziel nützlich sein kann.
+
+Beispiel:
+„Die Besetzung bringt in diesem Bereich deutlich mehr ein als das Team. Hier entsteht ein klarer Veränderungsimpuls, der aktiv gesteuert werden muss. Gleichzeitig liegt genau in diesem Bereich das funktionale Ziel der Abteilung, sodass die Abweichung nicht nur Spannungsquelle, sondern auch gezielte Leistungsstärkung sein kann.“
+
+Diese doppelte Einordnung soll für die drei Bereiche Impulsiv, Intuitiv, Analytisch konsequent gelten.
+
+10. AUSWIRKUNGEN IM ARBEITSALLTAG
+Dieser Abschnitt soll weniger nur Risiko beschreiben.
+Bitte immer auch den möglichen Leistungsnutzen nennen, wenn die Wirkung gut geführt wird.
+
+Beispiel:
+Nicht nur:
+„Das kann als Druck empfunden werden.“
+Sondern:
+„Das kann als Druck empfunden werden, kann bei klarer Führung aber auch die Umsetzungsdynamik und Ergebnisverbindlichkeit des Teams spürbar erhöhen.“
+
+11. AUSWIRKUNGEN AUF LEISTUNG UND ERGEBNISSE
+Bitte stärker zwischen zwei Szenarien unterscheiden:
+- unklar geführt = Reibungsverlust
+- klar geführt = Leistungssteigerung / Schliessung funktionaler Lücken
+
+Der Bericht soll hier deutlich machen, dass abweichende Arbeitsweisen nicht nur Konfliktpotenzial, sondern auch Ergebnishebel sein können.
+
+12. VERHALTEN UNTER DRUCK
+Dieser Abschnitt kann grundsätzlich bleiben.
+Wichtig ist aber:
+Unter Druck soll nicht nur der Unterschied zum Team betont werden, sondern auch die Frage, ob genau diese verstärkte Wirkung in kritischen Situationen funktional hilfreich oder kulturell belastend ist.
+
+13. RISIKOENTWICKLUNG ÜBER ZEIT
+Diesen Abschnitt bitte so anpassen, dass nicht nur Konflikte beschrieben werden.
+Auch die Möglichkeit einer erfolgreichen Integration und Weiterentwicklung des Teams muss sichtbar werden.
+
+Beispiel:
+- kurzfristig: Reibung und Irritation
+- mittelfristig: entweder Einordnung und Wirksamkeit oder Anpassungsverlust / Konflikt
+- langfristig: entweder funktionale Weiterentwicklung des Teams oder dauerhafte Reibungsfläche
+
+14. CHANCEN
+Diesen Abschnitt deutlich schärfer und weniger allgemein formulieren.
+Nicht nur „neue Perspektiven“, sondern konkret:
+- Ausgleich einer funktionalen Untergewichtung
+- stärkere Ergebnisorientierung
+- höhere Umsetzungsdynamik
+- gezielte Weiterentwicklung des Teams in Richtung Funktionsziel
+
+15. RISIKEN
+Auch diesen Abschnitt präzisieren.
+Das grösste Risiko ist nicht nur Reibung, sondern dass eine funktional sinnvolle Wirkung im Team als Störung fehlinterpretiert und dadurch ausgebremst wird.
+
+Diesen Gedanken unbedingt einbauen.
+
+16. HANDLUNGSEMPFEHLUNG
+Bitte eine neue erste Empfehlung ergänzen:
+
+„Strategische Wirkung offen einordnen“
+Zu Beginn muss benannt werden, dass die Besetzung nicht nur auf Integration, sondern auch auf die funktionale Weiterentwicklung des Teams einzahlt. Nur wenn diese Wirkung offen eingeordnet wird, kann die entstehende Spannung als gewollte Entwicklung statt als persönliche Störung verstanden werden.
+
+Danach können die bisherigen Empfehlungen folgen:
+- Erwartungen verankern
+- Entscheidungsarchitektur klären
+- Stärken gezielt einsetzen
+- Integration aktiv steuern
+- strukturierte Feedbackschleifen
+
+17. ALTERNATIVWIRKUNG
+Diesen Abschnitt unbedingt schärfen:
+Ohne die Besetzung bleibt nicht nur die Stabilität des Teams erhalten, sondern auch die bestehende Lücke zum funktionalen Ziel.
+
+Pflichtlogik:
+„Ohne die aktuelle Besetzung bleibt die bestehende Teamlogik stabil. Gleichzeitig bleibt aber auch die funktionale Untergewichtung des Teams in zentralen Zielbereichen bestehen. Die Besetzung erzeugt daher nicht nur Anpassungsdruck, sondern bietet die Möglichkeit, das Team systematisch näher an seine eigentliche Aufgabenlogik heranzuführen.“
+
+SPRACHLICHE PFLICHTREGELN:
+- Begriffe wie „Arbeitslogik“, „Wirkung“, „Passung“, „Spannung“, „Ergänzung“, „System“, „Funktionsziel“, „Teamgefüge“, „Weiterentwicklung“, „Integrationsaufwand“, „Steuerungsaufwand“ dürfen verwendet werden.
+- Formulierungen wie „falsch“, „ungeeignet“, „stört das Team“ nur verwenden, wenn es wirklich eine klare strukturelle Fehlpassung ist.
+- Wenn Person zum Funktionsziel passt, darf trotz Teamabweichung nie rein negativ formuliert werden.
+- Immer systemisch statt persönlich formulieren.
+- Immer professionell und entscheidungsorientiert formulieren.
+- Keine Umgangssprache.
+- Keine Dopplungen in fast identischen Aussagen über mehrere Kapitel hinweg.
+
+UMSETZUNGSZIEL:
+Bitte alle bestehenden Berichtstexte des TeamCheck nach dieser Logik überarbeiten.
+Nicht nur einzelne Textblöcke austauschen, sondern die gesamte narrative Führung des Berichts anpassen.
+Der rote Faden des Berichts soll künftig überall lauten:
+
+„Die Person kann vom bestehenden Team deutlich abweichen und dadurch Spannung erzeugen. Wenn sie gleichzeitig die Arbeitsweise mitbringt, die das funktionale Ziel der Abteilung verlangt, ist diese Spannung nicht nur Risiko, sondern potenziell eine strategisch sinnvolle und gewollte Weiterentwicklung des Teams. Die Führungsaufgabe besteht dann nicht nur in Integration, sondern in der bewussten Einordnung und Steuerung dieser Wirkung.“
+
+Bitte setze diese Logik auf alle relevanten Textbausteine des TeamCheck-Berichts konsistent um.
