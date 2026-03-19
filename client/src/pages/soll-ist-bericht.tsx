@@ -185,6 +185,7 @@ export default function SollIstBericht() {
   const [reportGenerated, setReportGenerated] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
+  const subCircleCache = useRef<Record<string, string>>({});
   const [profilvergleichOpen, setProfilvergleichOpen] = useState(true);
   const [systemwirkungOpen, setSystemwirkungOpen] = useState(true);
   const [fuehrungsArt, setFuehrungsArt] = useState<FuehrungsArt>("keine");
@@ -769,6 +770,26 @@ export default function SollIstBericht() {
             </div>
           );
 
+          const getSubCircle = (num: number, color: string) => {
+            const key = `${num}-${color}`;
+            if (!subCircleCache.current[key]) {
+              subCircleCache.current[key] = makeCircleDataUrl(String(num), 24, color, "#fff", 11, 800);
+            }
+            return subCircleCache.current[key];
+          };
+
+          const SubHead = ({ num, title, color }: { num?: number; title: string; color: string }) => (
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                {num != null && (
+                  <img src={getSubCircle(num, color)} alt={String(num)} data-subhead-circle style={{ width: 24, height: 24, flexShrink: 0 }} />
+                )}
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, lineHeight: 1 }}>{title}</p>
+              </div>
+              <div data-subhead-line style={{ width: 36, height: 2.5, borderRadius: 2, background: color, marginTop: 4, marginLeft: num != null ? 34 : 0, opacity: 0.7 }} />
+            </div>
+          );
+
           return (
           <div ref={reportRef} style={{ maxWidth: 820, margin: "0 auto" }} data-testid="print-report-wrapper">
             <button
@@ -918,7 +939,7 @@ export default function SollIstBericht() {
 
                         return (
                           <div data-pdf-block style={{ marginBottom: 22, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-ueberblick">
-                            <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 16px", textAlign: "center" }}>Kurzübersicht</p>
+                            <SubHead title="Kurzübersicht" color={fitCol} />
                             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: 16 }}>
                               <div style={{ flex: 1, textAlign: "center" }}>
                                 <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.12em", margin: "0 0 10px" }}>Stelle</p>
@@ -950,7 +971,7 @@ export default function SollIstBericht() {
 
                       {/* AUSWIRKUNG IM ARBEITSALLTAG */}
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-auswirkung">
-                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Auswirkung im Arbeitsalltag</p>
+                        <SubHead num={1} title="Auswirkung im Arbeitsalltag" color={fitCol} />
                         <p style={{ margin: 0, fontSize: 14, lineHeight: 1.85, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                           {result.dominanceShiftText.split(/\n\n+/)[0]}
                         </p>
@@ -958,7 +979,7 @@ export default function SollIstBericht() {
 
                       {/* MANAGEMENTKURZFAZIT */}
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-fazit">
-                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>Managementkurzfazit</p>
+                        <SubHead num={2} title="Managementkurzfazit" color={fitCol} />
                         <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-summary-fazit">
                           {result.summaryText.split(/\n\n+/)[0]}
                         </p>
@@ -969,7 +990,7 @@ export default function SollIstBericht() {
                         <div data-pdf-block style={{ marginBottom: 0 }} data-testid="section-executive-bullets">
                           {result.executiveBullets.length > 0 && (
                             <div style={{ marginBottom: result.constellationRisks.length > 0 ? 14 : 0 }}>
-                              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Warum dieses Ergebnis</p>
+                              <SubHead num={3} title="Warum dieses Ergebnis" color={fitCol} />
                               {result.executiveBullets.map((b, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 4 }}>
                                   <span style={{ width: 5, height: 5, borderRadius: 3, background: fitCol, flexShrink: 0, marginTop: 6 }} />
@@ -980,7 +1001,7 @@ export default function SollIstBericht() {
                           )}
                           {result.constellationRisks.length > 0 && (
                             <div>
-                              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Risiken dieser Konstellation</p>
+                              <SubHead num={4} title="Risiken dieser Konstellation" color={BIO_COLORS.nichtGeeignet} />
                               {result.constellationRisks.map((r, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 4 }}>
                                   <span style={{ width: 5, height: 5, borderRadius: 3, background: BIO_COLORS.nichtGeeignet, flexShrink: 0, marginTop: 6 }} />
