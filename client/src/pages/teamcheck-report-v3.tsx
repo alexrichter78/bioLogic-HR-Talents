@@ -198,15 +198,38 @@ export default function TeamCheckReportV3() {
                 </p>
               </div>
 
-              {/* SYSTEMSTATUS – 4 key metrics */}
-              <div data-testid="v3-section-systemstatus" style={{ marginBottom: 22 }}>
-                <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 10px" }}>Systemstatus</p>
+              {/* GESAMTBEWERTUNG – metrics + summary text */}
+              <div data-testid="v3-section-gesamtbewertung" style={{ marginBottom: 22 }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 10px" }}>Gesamtbewertung</p>
                 <div style={{ display: "flex", gap: 10 }}>
                   <MetricBadge label="Gesamtpassung" value={result.passung} color={pCol} />
                   <MetricBadge label="Systemwirkung" value={result.systemwirkung} />
                   <MetricBadge label="Steuerungsaufwand" value={result.steuerungsaufwand} color={sCol} />
                   <MetricBadge label="Integrationsrisiko" value={result.integrationsrisiko} color={rCol} />
                 </div>
+                {(() => {
+                  const isLeadership = result.roleType === "leadership";
+                  const p = result.passung;
+                  let bewertungsText = "";
+                  if (p === "Passend") {
+                    bewertungsText = isLeadership
+                      ? "Die Gesamtbewertung spricht für eine gute Passung. Die Führungskraft bringt eine Arbeitsweise mit, die zum bestehenden Team passt. Der Integrations- und Steuerungsaufwand ist gering — die Voraussetzungen für eine wirksame Führung sind gegeben."
+                      : "Die Gesamtbewertung spricht für eine gute Passung. Die strukturelle Übereinstimmung ist hoch, der Steuerungs- und Entwicklungsaufwand entsprechend gering. Eine erfolgreiche Integration ist unter normalen Bedingungen gut realisierbar.";
+                  } else if (p === "Bedingt passend") {
+                    bewertungsText = isLeadership
+                      ? "Die Gesamtbewertung spricht für eine bedingte Passung. Die Führungskraft bringt Ansätze mit, die zum Team passen, zeigt aber auch Abweichungen in der Arbeitsweise. Gezielte Steuerung und bewusste Kommunikation sind notwendig, um die Führungswirkung zu entfalten."
+                      : "Die Gesamtbewertung spricht für eine bedingte Passung. Es bestehen sowohl Übereinstimmungen als auch relevante Abweichungen in der Arbeitsweise. Mit gezielter Steuerung und bewusster Integration kann die Besetzung gelingen, erfordert aber Aufmerksamkeit in den ersten Monaten.";
+                  } else {
+                    bewertungsText = isLeadership
+                      ? "Die Gesamtbewertung spricht für eine kritische Passung. Die Führungslogik weicht deutlich von der Teamstruktur ab. Eine wirksame Führung wäre nur mit erheblichem Steuerungsaufwand, klarer Rahmung und konsequenter Kommunikation realistisch."
+                      : "Die Gesamtbewertung spricht für eine kritische Passung. Die strukturelle Abweichung ist deutlich, der Steuerungs- und Entwicklungsaufwand entsprechend hoch. Eine erfolgreiche Besetzung wäre nur unter klarer Führung und mit bewusstem Integrationsaufwand realistisch.";
+                  }
+                  return (
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "14px 0 0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-gesamtbewertung">
+                      {bewertungsText}
+                    </p>
+                  );
+                })()}
               </div>
 
               {/* SYSTEMÜBERBLICK */}
