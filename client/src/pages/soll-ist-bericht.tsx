@@ -86,7 +86,7 @@ function biggestGapText(rt: Triad, ct: Triad): string {
     const g = Math.abs(rt[k] - ct[k]);
     if (g > maxGap) { maxGap = g; maxKey = k; }
   }
-  return `Die größte Abweichung liegt im Bereich ${COMP_LABELS[maxKey]}. Genau dort liegt die Kernanforderung der Stelle.`;
+  return `Die deutlichste Abweichung liegt im Bereich ${COMP_LABELS[maxKey]} und betrifft damit genau den Anforderungsbereich, der für diese Stelle von zentraler Bedeutung ist.`;
 }
 
 
