@@ -70,9 +70,9 @@ function BarRow({ label, value, color }: { label: string; value: number; color: 
 
 function MetricBadge({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
-    <div style={{ flex: 1, minWidth: 0, padding: "14px 16px", borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}>
-      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.50)", marginBottom: 5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</div>
-      <div style={{ fontSize: 15, fontWeight: 700, color: color || "rgba(255,255,255,0.90)" }} data-testid={`v3-status-${label.toLowerCase().replace(/\s/g, "-")}`}>{value}</div>
+    <div style={{ flex: 1, minWidth: 0, padding: "14px 16px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }}>
+      <div style={{ fontSize: 10, color: "#A0A0A5", marginBottom: 5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</div>
+      <div style={{ fontSize: 15, fontWeight: 700, color: color || "#1D1D1F" }} data-testid={`v3-status-${label.toLowerCase().replace(/\s/g, "-")}`}>{value}</div>
     </div>
   );
 }
@@ -182,9 +182,14 @@ export default function TeamCheckReportV3() {
 
               <div className="report-rings" />
 
+            </div>
+
+            {/* ─── CONTENT SECTIONS (below header) ─── */}
+            <div style={{ padding: "28px 32px 0" }}>
+
               {/* SYSTEMSTATUS – 4 key metrics */}
-              <div data-testid="v3-section-systemstatus" style={{ marginBottom: 22, marginLeft: 20 }}>
-                <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 10px" }}>Systemstatus</p>
+              <div data-testid="v3-section-systemstatus" style={{ marginBottom: 22 }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 10px" }}>Systemstatus</p>
                 <div style={{ display: "flex", gap: 10 }}>
                   <MetricBadge label="Gesamtpassung" value={result.passung} color={pCol} />
                   <MetricBadge label="Systemwirkung" value={result.systemwirkung} />
@@ -194,67 +199,67 @@ export default function TeamCheckReportV3() {
               </div>
 
               {/* SYSTEMÜBERBLICK */}
-              <div style={{ marginBottom: 22, marginLeft: 20, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }} data-testid="v3-section-ueberblick">
-                <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Systemüberblick</p>
+              <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="v3-section-ueberblick">
+                <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Systemüberblick</p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>Teamprofil</span>
-                    <span style={{ fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.85)" }}>{result.teamLabel}</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "#8E8E93" }}>Teamprofil</span>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{result.teamLabel}</span>
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>Personenprofil</span>
-                    <span style={{ fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.85)" }}>{result.personLabel}</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "#8E8E93" }}>Personenprofil</span>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{result.personLabel}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0" }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>Team–Person-Abweichung</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "#8E8E93" }}>Team–Person-Abweichung</span>
                     <span style={{ fontSize: 15, fontWeight: 800, color: abwCol }}>{result.teamPersonAbweichung} Punkte</span>
                   </div>
                 </div>
               </div>
 
               {/* STRUKTURKONSTELLATION */}
-              <div style={{ marginBottom: 22, marginLeft: 20, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }} data-testid="v3-section-strukturkonstellation">
-                <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Strukturkonstellation</p>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>Dominanz Team</span>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.85)" }}>{result.strukturdiagnose.teamDominant}</span>
+              <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="v3-section-strukturkonstellation">
+                <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Strukturkonstellation</p>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#8E8E93" }}>Dominanz Team</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{result.strukturdiagnose.teamDominant}</span>
                 </div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>Dominanz Person</span>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.85)" }}>{result.strukturdiagnose.personDominant}</span>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#8E8E93" }}>Dominanz Person</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{result.strukturdiagnose.personDominant}</span>
                 </div>
                 <div style={{ padding: "10px 0 4px" }}>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 6px" }}>Strukturwirkung</p>
-                  <p style={{ margin: 0, fontSize: 13, lineHeight: 1.75, color: "rgba(255,255,255,0.70)" }}>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 6px" }}>Strukturwirkung</p>
+                  <p style={{ margin: 0, fontSize: 13, lineHeight: 1.75, color: "#48484A" }}>
                     {result.strukturdiagnose.strukturwirkung.split(/\n\n+/)[0]}
                   </p>
                 </div>
               </div>
 
               {/* MANAGEMENTKURZFAZIT */}
-              <div style={{ marginBottom: 22, marginLeft: 20, padding: "16px 20px", borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", position: "relative" }} data-testid="v3-section-fazit">
+              <div style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", position: "relative" }} data-testid="v3-section-fazit">
                 <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, borderRadius: "12px 0 0 12px", background: `linear-gradient(180deg, ${pCol}, ${pCol}40)` }} />
-                <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Managementkurzfazit</p>
-                <p style={{ fontSize: 13, lineHeight: 1.85, color: "rgba(255,255,255,0.75)", margin: 0 }} data-testid="v3-text-fazit">
+                <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Managementkurzfazit</p>
+                <p style={{ fontSize: 13, lineHeight: 1.85, color: "#48484A", margin: 0 }} data-testid="v3-text-fazit">
                   {result.managementFazit}
                 </p>
               </div>
 
               {/* INTEGRATIONSFAKTOR (compact) */}
-              <div style={{ marginBottom: 0, marginLeft: 20, padding: "16px 20px 20px", borderRadius: "12px 12px 0 0", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", borderBottom: "none" }} data-testid="v3-section-integration-header">
-                <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Integrationsfaktor</p>
+              <div style={{ marginBottom: 0, padding: "16px 20px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="v3-section-integration-header">
+                <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Integrationsfaktor</p>
                 <div style={{ display: "flex", gap: 18 }}>
                   <div>
-                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.50)", fontWeight: 600 }}>Integrationsdauer</span>
-                    <p style={{ margin: "2px 0 0", fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.85)" }}>{result.integrationsfaktor.integrationsdauer}</p>
+                    <span style={{ fontSize: 12, color: "#8E8E93", fontWeight: 600 }}>Integrationsdauer</span>
+                    <p style={{ margin: "2px 0 0", fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{result.integrationsfaktor.integrationsdauer}</p>
                   </div>
                   <div>
-                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.50)", fontWeight: 600 }}>Führungsaufwand</span>
+                    <span style={{ fontSize: 12, color: "#8E8E93", fontWeight: 600 }}>Führungsaufwand</span>
                     <p style={{ margin: "2px 0 0", fontSize: 14, fontWeight: 700, color: sCol }}>{result.steuerungsaufwand}</p>
                   </div>
                   <div style={{ flex: 1 }}>
-                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.50)", fontWeight: 600 }}>Erfolgsfaktor</span>
-                    <p style={{ margin: "2px 0 0", fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,0.70)", lineHeight: 1.5 }}>{result.erfolgsfaktor}</p>
+                    <span style={{ fontSize: 12, color: "#8E8E93", fontWeight: 600 }}>Erfolgsfaktor</span>
+                    <p style={{ margin: "2px 0 0", fontSize: 13, fontWeight: 500, color: "#48484A", lineHeight: 1.5 }}>{result.erfolgsfaktor}</p>
                   </div>
                 </div>
               </div>
