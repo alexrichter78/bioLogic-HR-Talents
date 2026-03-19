@@ -951,7 +951,20 @@ export default function TeamReport() {
               steuerung = dualKeys.includes(singleKey) ? "mittel" : "erhöht";
             }
           } else {
-            steuerung = sameDom ? "gering" : "erhöht";
+            if (sameDom) {
+              const secFlip = teamDom.top2.key !== candDom.top2.key;
+              const secGapTeam = teamDom.gap2;
+              const secGapCand = candDom.gap2;
+              if (secFlip && secGapTeam > 5 && secGapCand > 5) {
+                steuerung = "erhöht";
+              } else if (secFlip) {
+                steuerung = "mittel";
+              } else {
+                steuerung = totalGap > 20 ? "mittel" : "gering";
+              }
+            } else {
+              steuerung = "erhöht";
+            }
           }
 
           const steuerungColor = steuerung === "gering" ? "#3A9A5C" : steuerung === "mittel" ? "#E5A832" : "#D64045";
