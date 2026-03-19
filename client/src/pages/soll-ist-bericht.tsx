@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
-import { AlertTriangle, Download, Loader2, ChevronLeft, ChevronDown, SlidersHorizontal, Zap, Compass, Triangle, CheckCircle2, AlertCircle, ArrowRight, Shield, Users, BarChart3, TrendingUp } from "lucide-react";
+import { AlertTriangle, Download, Loader2, ChevronLeft, ChevronDown, SlidersHorizontal, Zap, Compass, Triangle, CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { dominanceModeOf, labelComponent } from "@/lib/jobcheck-engine";
 import { computeSollIst, mapFuehrungsArt } from "@/lib/soll-ist-engine";
@@ -883,19 +883,15 @@ export default function SollIstBericht() {
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-systemstatus">
                         <div style={{ display: "flex", gap: 10 }}>
                           {[
-                            { label: "Grundpassung", value: result.fitLabel, color: fitCol, icon: Shield },
-                            { label: "Führungsaufwand", value: cLabel, color: cCol, icon: Users },
-                            { label: "Profilabweichung", value: result.gapLevel, color: gapCol, icon: BarChart3 },
-                            { label: "Entwicklungsaufwand", value: devLabel, color: devCol, icon: TrendingUp },
+                            { label: "Grundpassung", value: result.fitLabel, color: fitCol },
+                            { label: "Führungsaufwand", value: cLabel, color: cCol },
+                            { label: "Profilabweichung", value: result.gapLevel, color: gapCol },
+                            { label: "Entwicklungsaufwand", value: devLabel, color: devCol },
                           ].map(m => {
                             const bg = `linear-gradient(135deg, ${m.color}10 0%, ${m.color}06 100%)`;
-                            const Icon = m.icon;
                             return (
                               <div key={m.label} style={{ flex: 1, minWidth: 0, padding: "14px 16px", borderRadius: 10, background: bg, border: `1px solid ${m.color}18` }}>
-                                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 5 }}>
-                                  <div style={{ fontSize: 10, color: "#8E8E93", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>{m.label}</div>
-                                  <Icon style={{ width: 14, height: 14, color: m.color, opacity: 0.7 }} />
-                                </div>
+                                <div style={{ fontSize: 10, color: "#8E8E93", marginBottom: 5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>{m.label}</div>
                                 <div style={{ fontSize: 15, fontWeight: 700, color: m.color }} data-testid={`status-${m.label.toLowerCase().replace(/\s/g, "-")}`}>{m.value}</div>
                               </div>
                             );
