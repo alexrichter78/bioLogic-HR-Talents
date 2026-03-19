@@ -1261,7 +1261,7 @@ export default function SollIstBericht() {
                               <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 12 }}>
                                 {phase.items.map((item, i) => (
                                   <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                                    <div style={{ width: 5, height: 5, borderRadius: 3, background: phaseCol, flexShrink: 0, marginTop: 7 }} />
+                                    <div style={{ width: 5, height: 5, borderRadius: 3, background: phaseCol, flexShrink: 0, marginTop: 10 }} />
                                     <span style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85 }}>{item}</span>
                                   </div>
                                 ))}
@@ -1273,7 +1273,7 @@ export default function SollIstBericht() {
                                 <ul style={{ margin: 0, paddingLeft: 0, listStyle: "none" }}>
                                   {phase.fokus.bullets.map((b, bi) => (
                                     <li key={bi} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, marginBottom: 3, paddingLeft: 16, position: "relative" }}>
-                                      <span style={{ position: "absolute", left: 0, top: 8, width: 6, height: 6, borderRadius: "50%", background: phaseCol }} />
+                                      <span style={{ position: "absolute", left: 0, top: 10, width: 6, height: 6, borderRadius: "50%", background: phaseCol }} />
                                       {b}
                                     </li>
                                   ))}
