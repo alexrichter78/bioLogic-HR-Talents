@@ -814,7 +814,7 @@ export default function SollIstBericht() {
               <ChevronLeft style={{ width: 16, height: 16 }} />
               Zurück zum MatchCheck
             </button>
-            <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }} data-testid="print-report-card">
+            <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }} data-testid="print-report-card" data-bericht lang="de">
 
               {/* ─── DARK HEADER ─── */}
               <div data-pdf-block className="report-header" data-testid="section-header">
