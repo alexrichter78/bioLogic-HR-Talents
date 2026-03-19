@@ -549,7 +549,7 @@ function buildConstellationRisks(rk: ComponentKey, ck: ComponentKey, gapLevel: s
 function buildSummary(role: string, cand: string, fit: string, rk: ComponentKey, ck: ComponentKey, gap: string, rt: Triad, ct: Triad, rConst: ConstellationType, cConst: ConstellationType): string {
   const s = Subj(cand);
   if (rk === ck && gap === "gering") {
-    return `${constellationRoleText(rConst)} ${s} arbeitet nach derselben Grundlogik. Arbeitsweise und Prioritäten passen zur Stelle ${role}. Kleinere Unterschiede in der Gewichtung der sekundären Bereiche sind im Alltag gut steuerbar.`;
+    return `${constellationRoleText(rConst)} ${s} arbeitet nach demselben Grundprinzip. Arbeitsweise und Prioritäten passen zur Stelle ${role}. Kleinere Unterschiede in der Gewichtung der Nebenbereiche sind im Alltag gut steuerbar.`;
   }
 
   if (gap === "hoch") {
@@ -610,18 +610,18 @@ function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string,
   } else if (cConst.includes("NEAR")) {
     controlledPressure = `Steigt der Arbeitsdruck, greift ${subj(cand)} auf die gerade führende Logik zurück. Da beide Hauptanteile fast gleich stark sind, fällt die Reaktion situationsabhängig aus: Mal wird stärker über ${compShort(pk)} gesteuert, mal über ${compShort(sk)}.`;
   } else if (competing23) {
-    controlledPressure = `Steigt der Arbeitsdruck, verstärkt sich zunächst die Tendenz, ${primaryBehavior[pk]}. Da ${compShort(sk)} und ${compShort(tk)} fast gleich stark ausgeprägt sind, entsteht kein klarer Ausgleichsmechanismus – beide Nebenlogiken konkurrieren unter Druck.`;
+    controlledPressure = `Steigt der Arbeitsdruck, verstärkt sich zunächst die Tendenz, ${primaryBehavior[pk]}. Da ${compShort(sk)} und ${compShort(tk)} fast gleich stark ausgeprägt sind, entsteht kein klarer Ausgleich – beide Nebenkomponenten konkurrieren unter Druck.`;
   } else {
     controlledPressure = `Steigt der Arbeitsdruck, verstärkt sich zunächst die Tendenz, ${primaryBehavior[pk]}. Kurzfristig stabilisiert das die Situation, gleichzeitig steigt das Risiko, dass ${compShort(sk)} in den Hintergrund tritt.`;
   }
 
   let uncontrolledStress: string;
   if (cConst === "BALANCED") {
-    uncontrolledStress = `Wird der Druck sehr hoch, kann das Verhalten kippen oder wechseln, weil keine klare Hauptlogik trägt. Die Reaktion wird weniger vorhersagbar. ${sn} braucht in Stressphasen besonders klare Orientierung und Leitplanken.`;
+    uncontrolledStress = `Wird der Druck sehr hoch, kann das Verhalten kippen oder wechseln, weil kein klarer Schwerpunkt dominiert. Die Reaktion wird weniger vorhersagbar. ${sn} braucht in Stressphasen besonders klare Orientierung und Leitplanken.`;
   } else if (competing23) {
-    uncontrolledStress = `Wird die Belastung sehr hoch, konkurrieren ${compShort(sk)} und ${compShort(tk)} als Ausweichstrategien. ${sn} wechselt situativ zwischen beiden Nebenlogiken, ohne sich auf eine festzulegen. Das Verhalten wird weniger berechenbar. Die Führungskraft muss klare Prioritäten und Leitplanken setzen.`;
+    uncontrolledStress = `Wird die Belastung sehr hoch, konkurrieren ${compShort(sk)} und ${compShort(tk)} als Ausweichreaktionen. ${sn} wechselt zwischen beiden Nebenkomponenten, ohne sich auf eine festzulegen. Das Verhalten wird weniger berechenbar. Die Führungskraft muss klare Prioritäten und Leitplanken setzen.`;
   } else if (d12 <= 5) {
-    uncontrolledStress = `Wird die Belastung sehr hoch, kann sich der Schwerpunkt leicht verschieben. ${sn} bleibt in der Grundlogik erkennbar, nutzt aber spürbar stärker ${compShort(sk)}. ${secondaryBehavior[sk]}. Die Arbeitsweise verändert sich, die Grundrichtung bleibt aber steuerbar.`;
+    uncontrolledStress = `Wird die Belastung sehr hoch, kann sich der Schwerpunkt leicht verschieben. ${sn} bleibt im Grundverhalten erkennbar, nutzt aber spürbar stärker ${compShort(sk)}. ${secondaryBehavior[sk]}. Die Arbeitsweise verändert sich, die Grundrichtung bleibt aber steuerbar.`;
   } else {
     uncontrolledStress = `Wird die Belastung sehr hoch und treten viele Anforderungen gleichzeitig auf, verschiebt sich das Verhalten deutlich. ${compShort(sk)} tritt stärker in den Vordergrund. ${secondaryBehavior[sk]}. Entscheidungen werden ${secondaryDecision[sk]}.`;
   }
@@ -661,7 +661,7 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
         : (ct.impulsiv >= ct.intuitiv ? "impulsiv" : "intuitiv");
     const secDesc = cSecondKey === "impulsiv" ? "Handlungsorientierung" : cSecondKey === "intuitiv" ? "Einfühlungsvermögen" : "Struktur und Analyse";
 
-    const dualNote = `Die Stelle verlangt klare ${rkDesc}. ${s} teilt den Fokus jedoch zwischen ${rkDesc} und ${secDesc}. Die geteilte Aufmerksamkeit kann dazu führen, dass die Kernkompetenz nicht mit der nötigen Konsequenz eingesetzt wird.`;
+    const dualNote = `Die Stelle verlangt klare ${rkDesc}. ${s} teilt den Fokus jedoch zwischen ${rkDesc} und ${secDesc}. Die geteilte Aufmerksamkeit kann dazu führen, dass die Hauptanforderung nicht mit der nötigen Konsequenz erfüllt wird.`;
 
     for (const area of areas) {
       if (area.severity === "ok") {
@@ -687,9 +687,9 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
         if (area.severity === "ok" && affectedIds.includes(area.id)) {
           area.severity = "warning";
           if (candSecCompeting) {
-            area.risk = `Die Hauptlogik stimmt überein, aber die Nebenkomponenten der Person sind fast gleich stark. Dadurch fehlt ein klarer Schwerpunkt in der Flankierung. Unter Druck kann die Reaktion wechselnd ausfallen. Gezielte Führung empfohlen.`;
+            area.risk = `Der Hauptschwerpunkt stimmt überein, aber die Nebenkomponenten der Person sind fast gleich stark. Dadurch fehlt eine klare Abstützung. Unter Druck kann die Reaktion wechselnd ausfallen. Gezielte Führung empfohlen.`;
           } else {
-            area.risk = `Die Hauptlogik stimmt überein, aber die Gewichtung der Nebenbereiche weicht ab. Die Stelle betont ${roleSec}, ${s} setzt den Schwerpunkt anders. Das kann im Alltag zu unterschiedlichen Prioritäten und Reibung führen.`;
+            area.risk = `Der Hauptschwerpunkt stimmt überein, aber die Gewichtung der Nebenbereiche weicht ab. Die Stelle betont ${roleSec}, ${s} setzt den Schwerpunkt anders. Das kann im Alltag zu unterschiedlichen Prioritäten und Reibung führen.`;
           }
         }
       }
@@ -775,7 +775,7 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
   if (rk === ck) {
     if (rk === "analytisch") {
       roleNeed = "Sorgfältige, prüforientierte Entscheidungen. Optionen abwägen, Risiken prüfen, erst dann handeln.";
-      candidatePattern = `${s} arbeitet ebenfalls analytisch und prüft Entscheidungen gründlich. Die Grundlogik stimmt überein.`;
+      candidatePattern = `${s} arbeitet ebenfalls analytisch und prüft Entscheidungen gründlich. Der Grundansatz stimmt überein.`;
       if (decCompeting23) {
         risk = "Die Entscheidungslogik passt in der Grundrichtung. Da die beiden Nebenkomponenten fast gleich stark sind, kann unter Druck die Ausweichreaktion wechselnd ausfallen – mal handlungsorientierter, mal abstimmungsorientierter.";
       } else {
@@ -797,7 +797,7 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
       roleNeed = "Entscheidungen, die Kontext, Zusammenarbeit und zwischenmenschliche Wirkung berücksichtigen. Abstimmung im Team vor Geschwindigkeit.";
       candidatePattern = `${s} entscheidet ebenfalls kontextbezogen und bezieht das Umfeld aktiv ein. Die Grundhaltung stimmt.`;
       if (decCompeting23) {
-        risk = "Die Kommunikationsorientierung passt. Da die Nebenkomponenten konkurrieren, kann die Flankierung der Entscheidung wechseln – mal faktenbasierter, mal handlungsorientierter.";
+        risk = "Die Kommunikationsorientierung passt. Da die Nebenkomponenten konkurrieren, kann die Abstützung der Entscheidung wechseln – mal faktenbasierter, mal handlungsorientierter.";
       } else {
         risk = maxGap >= 8
           ? "Die Kommunikationsorientierung passt. In Nebenbereichen wie Strukturklarheit oder Umsetzungstempo können aber Unterschiede auftreten."
@@ -909,7 +909,7 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
     if (competing23) {
       risk = "Arbeitsweise passt grundsätzlich zur Stelle. Die konkurrierenden Nebenkomponenten können situativ zu wechselndem Arbeitsstil führen. Feinabstimmung durch Führung empfohlen.";
     } else {
-      risk = "Arbeitsweise passt grundsätzlich zur Stelle. Feinabstimmung nötig, aber die Grundlogik stimmt.";
+      risk = "Arbeitsweise passt grundsätzlich zur Stelle. Feinabstimmung nötig, aber der Grundansatz stimmt.";
     }
   }
 
@@ -1247,7 +1247,7 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
   if (rk === ck && gap === "gering") {
     return [
       { label: "Kurzfristig", period: "0 - 3 Monate", text: `Die Stelle ${role} verlangt ${compDesc(rk)}. Die Arbeitslogik passt. Die Einarbeitung verläuft voraussichtlich reibungslos. Nur in Einzelfällen muss nachgesteuert werden.` },
-      { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die Stellenanforderungen werden stabil abgedeckt. In den sekundären Bereichen treten kleinere Abweichungen auf. Regelmässige Zielgespräche helfen, diese frühzeitig zu erkennen.` },
+      { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die Stellenanforderungen werden stabil abgedeckt. In den Nebenbereichen treten kleinere Abweichungen auf. Regelmässige Zielgespräche helfen, diese frühzeitig zu erkennen.` },
       { label: "Langfristig", period: "12+ Monate", text: `Die Stellenanforderungen werden langfristig stabil erfüllt. Der Führungsaufwand bleibt gering. Halbjährliche Überprüfungen genügen.` },
     ];
   }
@@ -1255,7 +1255,7 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
   if (rk === ck && gap !== "gering") {
     return [
       { label: "Kurzfristig", period: "0 - 3 Monate", text: `Die Stelle ${role} verlangt ${compDesc(rk)}. ${Subj(cand)} arbeitet in dieselbe Richtung, gewichtet aber die Nebenbereiche anders. Bereits in der Einarbeitung sollte gezielt auf diese Unterschiede geachtet werden.` },
-      { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die Grundrichtung stimmt, aber die Abweichungen in den sekundären Bereichen werden im Alltag spürbar. Ohne gezielte Steuerung können sich diese Unterschiede verfestigen. Regelmässige Zielgespräche und klare Erwartungen sind notwendig.` },
+      { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die Grundrichtung stimmt, aber die Abweichungen in den Nebenbereichen werden im Alltag spürbar. Ohne gezielte Steuerung können sich diese Unterschiede verfestigen. Regelmässige Zielgespräche und klare Erwartungen sind notwendig.` },
       { label: "Langfristig", period: "12+ Monate", text: gap === "hoch"
           ? `Trotz gleicher Grundausrichtung bleibt der Führungsaufwand erhöht. Die Nebenbereich-Abweichungen erfordern dauerhafte Aufmerksamkeit. Es sollte geprüft werden, ob der Steuerungsaufwand langfristig tragbar ist.`
           : `Mit gezielter Führung lassen sich die Unterschiede in den Nebenbereichen dauerhaft ausgleichen. Halbjährliche Überprüfung empfohlen, um sicherzustellen, dass die Passung stabil bleibt.` },
@@ -1412,7 +1412,7 @@ function buildActions(rk: ComponentKey, ck: ComponentKey, gap: string, control: 
   const base: string[] = [];
 
   if (rk === ck) {
-    base.push("Abweichungen in den sekundären Bereichen identifizieren und gezielt ansprechen.");
+    base.push("Abweichungen in den Nebenbereichen identifizieren und gezielt ansprechen.");
     base.push("Regelmässige Zielgespräche zur Kalibrierung der Nebenbereich-Gewichtung durchführen.");
     if (rk === "analytisch") {
       base.push("Prüfen, ob Tempo und Kommunikation den Stellenanforderungen entsprechen.");
@@ -1585,7 +1585,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
     p1Items.push(`Transparenz über bestehende Abläufe, Prozesse und Qualitätsstandards.`);
     if (isLeader) p1Items.push(`Führungsrolle, Verantwortungsrahmen und Erwartungen an die Teamsteuerung definieren.`);
     p1Fokus = {
-      intro: `Die Stelle und ${s === "Die Person" ? "die Person" : cand} teilen dieselbe Grundlogik. Wichtig ist daher, schnell Klarheit zu schaffen über:`,
+      intro: `Stelle und ${s === "Die Person" ? "Person" : cand} teilen denselben Grundansatz. Wichtig ist daher, schnell Klarheit zu schaffen über:`,
       bullets: [
         `bestehende Abläufe und Schnittstellen`,
         `Entscheidungswege und Verantwortungsbereiche`,
@@ -1599,7 +1599,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
     if (isLeader) p2Items.push(`Erste Führungsentscheidungen eigenständig treffen und reflektieren.`);
     p2Items.push(`Schnittstellenarbeit mit angrenzenden Bereichen etablieren.`);
     p2Fokus = {
-      intro: `${s} arbeitet bereits in der richtigen Grundlogik. Es geht jetzt darum:`,
+      intro: `${s} arbeitet bereits nach dem richtigen Grundansatz. Es geht jetzt darum:`,
       bullets: [
         `Wirksamkeit in ${role} sichtbar zu machen`,
         `erste Arbeitsergebnisse eigenständig zu liefern`,
