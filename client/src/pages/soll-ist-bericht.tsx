@@ -1017,26 +1017,30 @@ export default function SollIstBericht() {
                     </div>
                   </div>
                 </div>
-                <div style={{ marginTop: 20 }}>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 14px", letterSpacing: "0.02em" }}>Bedeutung der Komponenten</p>
-                  {(["intuitiv", "impulsiv", "analytisch"] as const).map((k, i) => {
-                    const hex = BAR_HEX[k];
-                    const label = labelComponent(k);
-                    const meaning: Record<ComponentKey, string> = {
-                      intuitiv: "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen.",
-                      impulsiv: "Aufgaben schnell vorantreiben, Prioritäten setzen und Ergebnisse liefern.",
-                      analytisch: "Strukturen schaffen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten.",
-                    };
-                    return (
-                      <div key={k} style={{ marginBottom: i < 2 ? 14 : 0 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                          <span style={{ width: 7, height: 7, borderRadius: 4, background: hex, display: "inline-block", flexShrink: 0 }} />
-                          <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{label}</span>
+                <div data-pdf-block style={{ marginTop: 20, padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)" }}>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>Bedeutung der Komponenten</p>
+                  <div style={{ display: "flex", gap: 12 }}>
+                    {([
+                      { key: "impulsiv", label: "Impulsiv", color: BAR_HEX.impulsiv, text: "Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung.", warning: "Fehlt dieser Anteil, werden Entscheidungen verzögert und Chancen nicht genutzt." },
+                      { key: "analytisch", label: "Analytisch", color: BAR_HEX.analytisch, text: "Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe.", warning: "Fehlt dieser Anteil, entstehen Fehler in Planung, Kalkulation und Dokumentation." },
+                      { key: "intuitiv", label: "Intuitiv", color: BAR_HEX.intuitiv, text: "Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team.", warning: "Fehlt dieser Anteil, leidet die Zusammenarbeit und Vertrauen sinkt." },
+                    ] as const).map(kb => (
+                      <div key={kb.key} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                        <div style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: `linear-gradient(135deg, ${kb.color}12, ${kb.color}06)`, border: `1px solid ${kb.color}20`, display: "flex", flexDirection: "column" }}>
+                          <div style={{ flex: 1 }}>
+                            <span style={{ fontSize: 13, fontWeight: 700, color: kb.color, marginBottom: 8, display: "block" }}>{kb.label}</span>
+                            <p style={{ fontSize: 12.5, lineHeight: 1.65, margin: 0, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
+                              {kb.text}
+                            </p>
+                          </div>
+                          <div style={{ width: "100%", height: 2, background: kb.color, margin: "10px 0", borderRadius: 1, flexShrink: 0 }} />
+                          <p style={{ fontSize: 12, lineHeight: 1.6, margin: 0, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
+                            {kb.warning}
+                          </p>
                         </div>
-                        <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, paddingLeft: 13 }}>{meaning[k]}</p>
                       </div>
-                    );
-                  })}
+                    ))}
+                  </div>
                 </div>
               </div>
 
