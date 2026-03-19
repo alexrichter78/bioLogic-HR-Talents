@@ -1290,13 +1290,9 @@ export default function SollIstBericht() {
               )}
 
 
-              <div style={{ marginTop: 48, paddingTop: 20, borderTop: "1px solid rgba(0,0,0,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <img src={logoPath} alt="bioLogic" style={{ height: 28, opacity: 0.35 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                  <span style={{ fontSize: 11, fontWeight: 500, color: "#C0C0C5", letterSpacing: "0.02em" }}>Passungsanalyse</span>
-                </div>
+              <div style={{ marginTop: 48, paddingTop: 20, borderTop: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
                 <span style={{ fontSize: 11, color: "#C0C0C5" }}>
-                  {new Date().toLocaleDateString("de-CH", { day: "2-digit", month: "long", year: "numeric" })}
+                  © {new Date().getFullYear()} bioLogic Talent Navigator · Passungsanalyse · Erstellt am {new Date().toLocaleDateString("de-CH", { day: "2-digit", month: "2-digit", year: "numeric" })}
                 </span>
               </div>
 
