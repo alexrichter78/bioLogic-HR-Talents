@@ -1117,16 +1117,16 @@ export default function SollIstBericht() {
                             <span style={{ fontSize: 10, fontWeight: 700, color: sevCol, textTransform: "uppercase", letterSpacing: "0.05em", marginTop: 4 }}>{severityLabel(area.severity)}</span>
                           </div>
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
-                            <div data-text-left style={{ padding: "10px 12px", borderRadius: 8, background: `linear-gradient(180deg, ${sevCol}18 0%, ${sevCol}08 100%)`, border: `1px solid ${sevCol}22` }}>
+                            <div data-text-left style={{ padding: "10px 12px", borderRadius: 8, background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.05)" }}>
                               <p style={{ fontSize: 10, fontWeight: 700, color: "#1D1D1F", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Stelle verlangt</p>
                               <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang="de">{area.roleNeed}</p>
                             </div>
-                            <div data-text-left style={{ padding: "10px 12px", borderRadius: 8, background: `linear-gradient(180deg, ${sevCol}18 0%, ${sevCol}08 100%)`, border: `1px solid ${sevCol}22` }}>
+                            <div data-text-left style={{ padding: "10px 12px", borderRadius: 8, background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.05)" }}>
                               <p style={{ fontSize: 10, fontWeight: 700, color: "#1D1D1F", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Person bringt mit</p>
                               <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang="de">{area.candidatePattern}</p>
                             </div>
                           </div>
-                          <div style={{ display: "flex", borderRadius: 10, background: "rgba(0,0,0,0.025)", border: "1px solid rgba(0,0,0,0.06)", overflow: "hidden" }}>
+                          <div style={{ display: "flex", borderRadius: 10, background: `linear-gradient(180deg, ${sevCol}14 0%, ${sevCol}08 100%)`, border: `1px solid ${sevCol}20`, overflow: "hidden" }}>
                             <div style={{ width: 4, flexShrink: 0, background: sevCol }} />
                             <div style={{ padding: "12px 16px", flex: 1 }}>
                             <p style={{ fontSize: 14, lineHeight: 1.85, margin: 0, color: "#48484A", wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{area.risk}</p>
