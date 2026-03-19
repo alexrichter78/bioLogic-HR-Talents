@@ -907,9 +907,9 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
     }
   } else {
     if (competing23) {
-      risk = "Arbeitssteuerung passt grundsätzlich zur Stelle. Die konkurrierenden Nebenkomponenten können situativ zu wechselndem Arbeitsstil führen. Feinabstimmung durch Führung empfohlen.";
+      risk = "Arbeitsweise passt grundsätzlich zur Stelle. Die konkurrierenden Nebenkomponenten können situativ zu wechselndem Arbeitsstil führen. Feinabstimmung durch Führung empfohlen.";
     } else {
-      risk = "Arbeitssteuerung passt grundsätzlich zur Stelle. Feinabstimmung nötig, aber die Grundlogik stimmt.";
+      risk = "Arbeitsweise passt grundsätzlich zur Stelle. Feinabstimmung nötig, aber die Grundlogik stimmt.";
     }
   }
 
