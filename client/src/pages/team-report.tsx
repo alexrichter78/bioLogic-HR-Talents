@@ -795,7 +795,6 @@ export default function TeamReport() {
                         background: "#fff", transition: "all 0.15s ease",
                       }} />
                       <span style={{ fontSize: 13, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.3 }}>{opt.label}</span>
-                      {opt.hint && <span style={{ fontSize: 11, color: "#8E8E93", lineHeight: 1.2 }}>{opt.hint}</span>}
                     </label>
                   ))}
                 </div>
