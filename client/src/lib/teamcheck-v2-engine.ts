@@ -529,7 +529,7 @@ function getAdvice(roleType: string, teamProfile: Triad, personProfile: Triad, r
     },
     {
       title: "Stärken gezielt einsetzen",
-      text: `Die Besetzung sollte nicht nur am Teamprofil gemessen, sondern gezielt in den stärksten Bereichen eingesetzt werden. Im vorliegenden Fall betrifft das vor allem ${componentBusinessName(personPrimary).toLowerCase()}. Dort entsteht der größte Mehrwert für das Gesamtsystem.`,
+      text: `Die Besetzung sollte nicht nur am Teamprofil gemessen, sondern gezielt in den stärksten Bereichen eingesetzt werden. Im vorliegenden Fall betrifft das vor allem ${componentBusinessName(personPrimary).toLowerCase()}. Dort liegt der wahrscheinlichste zusätzliche Nutzen für das Team.`,
     },
     {
       title: roleType === "leadership" ? "Führungspräsenz sichtbar machen" : "Integration aktiv steuern",

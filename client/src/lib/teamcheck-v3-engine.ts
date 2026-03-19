@@ -383,17 +383,18 @@ function enrichSystemwirkungText(text: string, ctx: GoalContext, systemwirkung: 
 }
 
 function enrichTeamText(text: string, ctx: GoalContext): string {
-  if (!ctx.goal || !ctx.goalLabel) return text;
+  const fixed = fixComponentCapitalization(text);
+  if (!ctx.goal || !ctx.goalLabel) return fixed;
   if (!ctx.teamAligned) {
-    return text + `\n\nIm Hinblick auf das funktionale Ziel der Abteilung (${ctx.goalLabel}) bleibt das Team in diesem Bereich vergleichsweise schwächer ausgeprägt. Diese Untergewichtung kann durch eine gezielte Besetzung adressiert werden.`;
+    return fixed + `\n\nIm Hinblick auf das funktionale Ziel der Abteilung (${ctx.goalLabel}) bleibt das Team in diesem Bereich vergleichsweise schwächer ausgeprägt. Diese Untergewichtung kann durch eine gezielte Besetzung adressiert werden.`;
   }
-  return text + `\n\nDas Team ist bereits auf das funktionale Ziel der Abteilung (${ctx.goalLabel}) ausgerichtet. Die bestehende Arbeitslogik unterstützt die funktionalen Anforderungen.`;
+  return fixed + `\n\nDas Team ist bereits auf das funktionale Ziel der Abteilung (${ctx.goalLabel}) ausgerichtet. Die bestehende Arbeitslogik unterstützt die funktionalen Anforderungen.`;
 }
 
 function enrichPersonText(text: string, ctx: GoalContext): string {
-  if (!ctx.goal || !ctx.goalLabel) return text;
+  if (!ctx.goal || !ctx.goalLabel) return fixComponentCapitalization(text);
 
-  let adapted = text;
+  let adapted = fixComponentCapitalization(text);
   if (ctx.operative) {
     adapted = adapted
       .replace(/spontane Marktreaktion/g, "schnelle Reaktion auf veränderte Anforderungen")
@@ -424,9 +425,12 @@ function enrichPersonText(text: string, ctx: GoalContext): string {
 }
 
 function enrichTension(v2Tension: TensionItem[], ctx: GoalContext): TensionItem[] {
-  if (!ctx.goal || !ctx.goalKey || !ctx.goalLabel) return v2Tension;
+  if (!ctx.goal || !ctx.goalKey || !ctx.goalLabel) {
+    return v2Tension.map(t => ({ ...t, interpretation: fixComponentCapitalization(t.interpretation) }));
+  }
 
-  return v2Tension.map(t => {
+  return v2Tension.map(orig => {
+    const t = { ...orig, interpretation: fixComponentCapitalization(orig.interpretation) };
     const isGoalDimension = t.key === ctx.goalKey;
     const isNonGoalDimension = !isGoalDimension;
     const diff = t.personValue - t.teamValue;
@@ -555,7 +559,7 @@ function buildManagementFazit(v2: TeamCheckV2Result, v1: TeamReportResult, roleT
     } else if (ctx.personCloserToGoal) {
       lines.push(`Die Führungsaufgabe liegt weniger in der Frage der fachlichen Eignung als in der bewussten Integration einer funktional sinnvollen, aber kulturell spannungsreichen Wirkung.`);
     } else {
-      lines.push(`Ohne aktive Steuerung sind Reibung, Konflikte und Leistungseinbrüche wahrscheinlich.`);
+      lines.push(`Ohne aktive Steuerung sind Reibung, wiederkehrende Spannungen und vermeidbare Leistungsverluste wahrscheinlich.`);
     }
   } else if (v1.controlIntensity === "mittel" || v2.passung === "Bedingt passend") {
     if (ctx.personNotHelpingGoal) {
@@ -655,7 +659,7 @@ function buildRiskTimeline(v2: TeamCheckV2Result, v1: TeamReportResult, _input: 
         ? "Die Besetzung prägt das Team nachhaltig und kann die Ausrichtung in Richtung des funktionalen Ziels stärken. Bei fehlender Steuerung bleiben die Unterschiede als ungelöste Spannungsquelle bestehen."
         : ctx.personNotHelpingGoal
         ? "Die Besetzung prägt das Team nachhaltig. Die Teilqualitäten können bei gezielter Steuerung als Zusatzstärke wirken. Ohne Führung besteht das Risiko, dass die bestehende Zielausrichtung an Klarheit verliert."
-        : "Die Besetzung prägt das Team nachhaltig. Die Unterschiede können das Team breiter aufstellen oder bei fehlender Steuerung zu kultureller Drift führen.",
+        : "Die Besetzung prägt das Team nachhaltig. Die Unterschiede können das Team breiter aufstellen oder bei fehlender Steuerung zu einer schleichenden Verschiebung der Teamkultur führen.",
     });
   } else {
     phases.push({
@@ -968,7 +972,7 @@ function buildRisks(v2Risks: string[], ctx: GoalContext): string[] {
 }
 
 function enrichAdvice(v2Advice: AdviceItem[], ctx: GoalContext): AdviceItem[] {
-  const advice = [...v2Advice];
+  const advice = v2Advice.map(a => ({ ...a, text: fixComponentCapitalization(a.text) }));
 
   if (ctx.personNotHelpingGoal && ctx.goalLabel) {
     advice.unshift({
