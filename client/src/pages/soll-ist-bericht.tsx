@@ -1110,9 +1110,8 @@ export default function SollIstBericht() {
                   {result.impactAreas.map(area => {
                     const sevCol = area.severity === "critical" ? "#FF3B30" : area.severity === "warning" ? "#FF9500" : "#34C759";
                     return (
-                      <div key={area.id} style={{ display: "flex", borderRadius: 12, overflow: "hidden", background: `${sevCol}06`, border: `1px solid ${sevCol}15` }} data-testid={`impact-detail-${area.id}`}>
-                        <div style={{ width: 4, background: sevCol, flexShrink: 0 }} />
-                        <div style={{ flex: 1, padding: "14px 16px" }}>
+                      <div key={area.id} data-testid={`impact-detail-${area.id}`}>
+                        <div style={{ padding: "14px 0" }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                               <div style={{ width: 8, height: 8, borderRadius: 4, background: sevCol, boxShadow: `0 0 0 2px ${sevCol}25` }} />
