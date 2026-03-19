@@ -891,7 +891,7 @@ export default function SollIstBericht() {
                             const bg = `linear-gradient(135deg, ${m.color}10 0%, ${m.color}06 100%)`;
                             return (
                               <div key={m.label} style={{ flex: 1, minWidth: 0, padding: "14px 16px", borderRadius: 10, background: bg, border: `1px solid ${m.color}18` }}>
-                                <div style={{ fontSize: 10, color: "#8E8E93", marginBottom: 5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>{m.label}</div>
+                                <div style={{ fontSize: 10, color: "#1D1D1F", marginBottom: 5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>{m.label}</div>
                                 <div style={{ fontSize: 15, fontWeight: 700, color: m.color }} data-testid={`status-${m.label.toLowerCase().replace(/\s/g, "-")}`}>{m.value}</div>
                               </div>
                             );
