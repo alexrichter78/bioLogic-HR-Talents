@@ -1107,17 +1107,14 @@ export default function SollIstBericht() {
               <div data-pdf-block style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-impact-matrix">
                 <SectionHead num={3} title="Wirkung der Besetzung im Arbeitsalltag" />
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {result.impactAreas.map(area => {
+                  {result.impactAreas.map((area, areaIdx) => {
                     const sevCol = area.severity === "critical" ? "#FF3B30" : area.severity === "warning" ? "#FF9500" : "#34C759";
                     return (
                       <div key={area.id} data-testid={`impact-detail-${area.id}`}>
                         <div style={{ padding: "14px 0" }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                              <div style={{ width: 8, height: 8, borderRadius: 4, background: sevCol, boxShadow: `0 0 0 2px ${sevCol}25` }} />
-                              <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{area.label}</span>
-                            </div>
-                            <span style={{ fontSize: 10, fontWeight: 700, color: sevCol, textTransform: "uppercase", letterSpacing: "0.05em" }}>{severityLabel(area.severity)}</span>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                            <SubHead num={areaIdx + 1} title={area.label} color={sevCol} />
+                            <span style={{ fontSize: 10, fontWeight: 700, color: sevCol, textTransform: "uppercase", letterSpacing: "0.05em", marginTop: 4 }}>{severityLabel(area.severity)}</span>
                           </div>
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
                             <div style={{ padding: "10px 12px", borderRadius: 8, background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.05)" }}>
