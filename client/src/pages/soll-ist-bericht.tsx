@@ -941,9 +941,9 @@ export default function SollIstBericht() {
                           <div data-pdf-block style={{ marginBottom: 22, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-ueberblick">
                             <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 16px", textAlign: "center" }}>Kurzübersicht</p>
                             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: 16 }}>
-                              <div style={{ flex: 1, textAlign: "center" }}>
+                              <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
                                 <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.12em", margin: "0 0 10px" }}>Stelle</p>
-                                <div style={{ display: "inline-flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
+                                <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
                                   {roleKeys.map(k => (
                                     <div key={k} style={{ padding: "10px 20px", borderRadius: 20, background: `${BAR_HEX[k]}14`, border: `1px solid ${BAR_HEX[k]}30` }}>
                                       <span style={{ fontSize: 14, fontWeight: 700, color: BAR_HEX[k] }}>{COMP_LABELS[k]}</span>
@@ -954,9 +954,9 @@ export default function SollIstBericht() {
                               <div style={{ flexShrink: 0, marginTop: roleKeys.length > 1 ? roleKeys.length * 14 + 4 : 18, width: 36, height: 36, borderRadius: "50%", background: `${matchColor}14`, border: `2px solid ${matchColor}40`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                                 <span style={{ fontSize: 18, fontWeight: 700, color: matchColor, lineHeight: 1 }}>{matchSymbol}</span>
                               </div>
-                              <div style={{ flex: 1, textAlign: "center" }}>
+                              <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
                                 <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.12em", margin: "0 0 10px" }}>Person</p>
-                                <div style={{ display: "inline-flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
+                                <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
                                   {candKeys.map(k => (
                                     <div key={k} style={{ padding: "10px 20px", borderRadius: 20, background: `${BAR_HEX[k]}14`, border: `1px solid ${BAR_HEX[k]}30` }}>
                                       <span style={{ fontSize: 14, fontWeight: 700, color: BAR_HEX[k] }}>{COMP_LABELS[k]}</span>
