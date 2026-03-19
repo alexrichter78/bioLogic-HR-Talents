@@ -1119,14 +1119,14 @@ export default function SollIstBericht() {
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
                             <div style={{ padding: "10px 12px", borderRadius: 8, background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.05)" }}>
                               <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Stelle verlangt</p>
-                              <p style={{ fontSize: 14, lineHeight: 1.85, color: "#1D1D1F", fontWeight: 600, margin: 0, wordBreak: "break-word", overflowWrap: "break-word", hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{area.roleNeed}</p>
+                              <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{area.roleNeed}</p>
                             </div>
                             <div style={{ padding: "10px 12px", borderRadius: 8, background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.05)" }}>
                               <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Person bringt mit</p>
-                              <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word", hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{area.candidatePattern}</p>
+                              <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{area.candidatePattern}</p>
                             </div>
                           </div>
-                          <p style={{ fontSize: 14, lineHeight: 1.85, margin: 0, fontStyle: "italic", color: "#6E6E73", wordBreak: "break-word", overflowWrap: "break-word", hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{area.risk}</p>
+                          <p style={{ fontSize: 14, lineHeight: 1.85, margin: 0, color: "#48484A", wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{area.risk}</p>
                         </div>
                       </div>
                     );
