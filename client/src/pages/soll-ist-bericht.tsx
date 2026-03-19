@@ -1,12 +1,48 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
-import { AlertTriangle, Download, Loader2, ChevronLeft, ChevronDown, SlidersHorizontal, Zap, Compass, BarChart3, Triangle, Shield, Flame, Clock, TrendingUp, CheckCircle2, FileText, Award, AlertCircle, ArrowRight } from "lucide-react";
+import { AlertTriangle, Download, Loader2, ChevronLeft, ChevronDown, SlidersHorizontal, Zap, Compass, Triangle, CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { dominanceModeOf, labelComponent } from "@/lib/jobcheck-engine";
 import { computeSollIst, mapFuehrungsArt } from "@/lib/soll-ist-engine";
 import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
 import type { SollIstResult, Severity, FuehrungsArt } from "@/lib/soll-ist-engine";
 import logoPath from "@assets/LOGO_bio_1773853681939.png";
+
+function makeCircleDataUrl(
+  text: string,
+  size: number,
+  bgColor: string,
+  textColor: string,
+  fontSize: number,
+  fontWeight: number = 800,
+  shadow: boolean = false,
+): string {
+  const scale = 4;
+  const s = size * scale;
+  const c = document.createElement("canvas");
+  c.width = s;
+  c.height = s;
+  const ctx = c.getContext("2d")!;
+  if (shadow) {
+    ctx.shadowColor = "rgba(0,0,0,0.2)";
+    ctx.shadowBlur = 3 * scale;
+    ctx.shadowOffsetY = 1 * scale;
+  }
+  ctx.beginPath();
+  ctx.arc(s / 2, s / 2, s / 2 - (shadow ? 2 * scale : 0), 0, Math.PI * 2);
+  ctx.fillStyle = bgColor;
+  ctx.fill();
+  ctx.shadowColor = "transparent";
+  ctx.font = `${fontWeight} ${fontSize * scale}px Inter, Arial, sans-serif`;
+  ctx.fillStyle = textColor;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "alphabetic";
+  const m = ctx.measureText(text);
+  const textH = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
+  const yPos = s / 2 + textH / 2 - m.actualBoundingBoxDescent;
+  ctx.fillText(text, s / 2, yPos);
+  return c.toDataURL("image/png");
+}
 
 type BG = { imp: number; int: number; ana: number };
 type RoleDnaState = {
@@ -29,7 +65,7 @@ const COMP_LABELS: Record<ComponentKey, string> = {
   analytisch: "Struktur / Analyse",
 };
 
-import { COMP_HEX, SECTION_COLORS, BIO_COLORS, fitColor as bioFitColor, controlColor as bioControlColor } from "@/lib/bio-design";
+import { COMP_HEX, BIO_COLORS, fitColor as bioFitColor, controlColor as bioControlColor } from "@/lib/bio-design";
 const BAR_HEX = COMP_HEX;
 
 function bgToTriad(bg: BG | undefined): Triad {
@@ -721,17 +757,15 @@ export default function SollIstBericht() {
           const cc = BAR_HEX[result.candDomKey];
           const sep = { paddingBottom: 36, marginBottom: 36 } as const;
 
-          const SectionHead = ({ num, icon: Icon, title, iconColor }: { num: number; icon?: any; title: string; iconColor?: string }) => (
-            <div className="bio-section-head" style={{ display: "flex", alignItems: "center", gap: 0, marginBottom: 24, borderRadius: 10, overflow: "hidden", background: iconColor || "#1A5DAB" }}>
-              <div style={{ width: 38, height: 38, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.2)", flexShrink: 0 }}>
-                <span style={{ fontSize: 14, fontWeight: 800, color: "#FFF" }}>{num}</span>
-              </div>
-              {Icon && (
-                <div style={{ width: 38, height: 38, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <Icon style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
-                </div>
-              )}
-              <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", letterSpacing: "0.06em", textTransform: "uppercase", padding: "0 16px" }}>{title}</span>
+          const sectionCircleUrls: Record<number, string> = {};
+          for (let i = 1; i <= 9; i++) {
+            sectionCircleUrls[i] = makeCircleDataUrl(String(i).padStart(2, "0"), 28, "rgba(255,255,255,0.95)", "#343A48", 12, 800, true);
+          }
+
+          const SectionHead = ({ num, title }: { num: number; title: string }) => (
+            <div className="bio-section-head" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, marginLeft: -44, marginRight: -44, padding: "0 18px", height: 38, background: "linear-gradient(135deg, #343A48 0%, #3d4455 50%, #464f62 100%)", boxShadow: "0 2px 6px rgba(52,58,72,0.3)" }}>
+              <img src={sectionCircleUrls[num]} alt={String(num).padStart(2, "0")} style={{ width: 28, height: 28, flexShrink: 0, display: "block" }} />
+              <span style={{ fontSize: 15, fontWeight: 700, color: "#FFFFFF", letterSpacing: "0.03em", lineHeight: "38px", height: 38, display: "inline-block" }}>{title}</span>
             </div>
           );
 
@@ -794,6 +828,7 @@ export default function SollIstBericht() {
                     Die Aussagen beschreiben dabei keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse ist wertfrei zu verstehen und dient als Orientierung für die Einschätzung von Passung und Wirksamkeit. Da jede Person individuell ist, ersetzt sie keine Einzelfallbetrachtung, sondern ergänzt diese um eine strukturierte und fundierte Entscheidungsgrundlage.
                   </p>
                 </div>
+                <SectionHead num={1} title="Gesamtbewertung" />
                 {(() => {
                   const cCol = bioControlColor(result.controlIntensity);
                   const cLabel = result.controlIntensity === "hoch" ? "Hoch" : result.controlIntensity === "mittel" ? "Mittel" : "Gering";
@@ -926,7 +961,7 @@ export default function SollIstBericht() {
               <div style={{ padding: "36px 44px 48px" }}>
 
               <div data-pdf-block style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-comparison-bars">
-                <SectionHead num={2} icon={BarChart3} title="Vergleich der Profile" iconColor={SECTION_COLORS.sollIstProfil} />
+                <SectionHead num={2} title="Vergleich der Profile" />
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "left" } as React.CSSProperties} lang="de">
                   {biggestGapText(result.roleTriad, result.candTriad)}
                 </p>
@@ -1006,7 +1041,7 @@ export default function SollIstBericht() {
               </div>
 
               <div data-pdf-block style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-impact-matrix">
-                <SectionHead num={3} icon={Shield} title="Wirkung der Besetzung im Arbeitsalltag" iconColor={SECTION_COLORS.wirkung} />
+                <SectionHead num={3} title="Wirkung der Besetzung im Arbeitsalltag" />
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {result.impactAreas.map(area => {
                     const sevCol = area.severity === "critical" ? "#FF3B30" : area.severity === "warning" ? "#FF9500" : "#34C759";
@@ -1040,7 +1075,7 @@ export default function SollIstBericht() {
               </div>
 
               <div data-pdf-block style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-stress-behavior">
-                <SectionHead num={4} icon={Flame} title="Verhalten unter Druck" iconColor={SECTION_COLORS.druck} />
+                <SectionHead num={4} title="Verhalten unter Druck" />
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF950008", border: "1px solid #FF950018", overflow: "visible" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
@@ -1063,7 +1098,7 @@ export default function SollIstBericht() {
               </div>
 
               <div data-pdf-block style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-risk-timeline">
-                <SectionHead num={5} icon={Clock} title="Risikoprognose" iconColor={SECTION_COLORS.risiko} />
+                <SectionHead num={5} title="Risikoprognose" />
                 <div style={{ position: "relative", paddingLeft: 28 }}>
                   <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
                   <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -1108,7 +1143,7 @@ export default function SollIstBericht() {
 
                 return (
                   <div data-pdf-block style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-development">
-                    <SectionHead num={6} icon={TrendingUp} title="Gesamtbewertung" iconColor={SECTION_COLORS.gesamtbewertung} />
+                    <SectionHead num={6} title="Gesamtbewertung" />
 
                     <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
                       <div style={{ width: 16, height: 16, borderRadius: 8, background: rFitColor, flexShrink: 0, boxShadow: `0 0 0 3px ${rFitColor}20` }} />
@@ -1151,7 +1186,7 @@ export default function SollIstBericht() {
 
               {result.integrationsplan && (
                 <div data-pdf-block style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-integrationsplan">
-                  <SectionHead num={7} icon={FileText} title="30-Tage-Integrationsplan" iconColor={SECTION_COLORS.integrationsplan} />
+                  <SectionHead num={7} title="30-Tage-Integrationsplan" />
                   <div style={{ position: "relative", paddingLeft: 28 }}>
                     <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
                     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -1204,7 +1239,7 @@ export default function SollIstBericht() {
                 const fDevLabel = result.developmentLabel === "hoch" ? "Entwicklung sehr wahrscheinlich" : result.developmentLabel === "mittel" ? "Entwicklung mit Unterstützung möglich" : "Entwicklung unwahrscheinlich";
                 return (
                   <div data-pdf-block data-testid="section-final-assessment" style={{ padding: "28px", borderRadius: 16, background: `linear-gradient(135deg, ${fitCol}08, ${fitCol}03)`, border: `1px solid ${fitCol}15`, boxShadow: `0 4px 20px ${fitCol}08` }}>
-                    <SectionHead num={result.integrationsplan ? 8 : 7} icon={Award} title="Schlussbewertung" iconColor={fitCol} />
+                    <SectionHead num={result.integrationsplan ? 8 : 7} title="Schlussbewertung" />
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
                       <div style={{ padding: "14px 18px", borderRadius: 12, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(0,0,0,0.05)", textAlign: "center" }}>
                         <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 8px" }}>Grundpassung</p>
