@@ -1118,11 +1118,11 @@ export default function SollIstBericht() {
                           </div>
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
                             <div data-text-left style={{ padding: "10px 12px", borderRadius: 8, background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.05)" }}>
-                              <p style={{ fontSize: 10, fontWeight: 700, color: "#1D1D1F", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Stelle verlangt</p>
+                              <p style={{ fontSize: 10, fontWeight: 700, color: "#1D1D1F", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Stellenanforderung</p>
                               <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang="de">{area.roleNeed}</p>
                             </div>
                             <div data-text-left style={{ padding: "10px 12px", borderRadius: 8, background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.05)" }}>
-                              <p style={{ fontSize: 10, fontWeight: 700, color: "#1D1D1F", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Person bringt mit</p>
+                              <p style={{ fontSize: 10, fontWeight: 700, color: "#1D1D1F", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Person</p>
                               <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang="de">{area.candidatePattern}</p>
                             </div>
                           </div>
