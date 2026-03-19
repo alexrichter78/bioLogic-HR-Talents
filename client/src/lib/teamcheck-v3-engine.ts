@@ -250,7 +250,7 @@ export function computeTeamCheckV3(input: TeamCheckV3Input): TeamCheckV3Result {
     integrationsrisiko = "gering";
   }
 
-  if (personDivergesFromGoal && integrationsrisiko === "gering") {
+  if (personNotHelpingGoal && integrationsrisiko === "gering") {
     integrationsrisiko = "mittel";
   }
 
@@ -414,6 +414,9 @@ function enrichPersonText(text: string, ctx: GoalContext): string {
   if (ctx.personAligned && ctx.teamAligned) {
     return adapted + `\n\nDie Person ist — wie das Team — auf das funktionale Ziel (${ctx.goalLabel}) ausgerichtet. Die bestehende Arbeitslogik wird durch die Besetzung weiter verstärkt.`;
   }
+  if (!ctx.personAligned && ctx.personCloserToGoal) {
+    return adapted + `\n\nDie Person ist nicht primär auf das funktionale Ziel der Abteilung (${ctx.goalLabel}) ausgerichtet, liegt aber strukturell näher daran als das bestehende Team. Ihr Beitrag in Richtung dieses Ziels ist begrenzt, geht aber in die richtige Richtung.`;
+  }
   if (!ctx.personAligned) {
     return adapted + `\n\nDie Person ist nicht primär auf das funktionale Ziel der Abteilung (${ctx.goalLabel}) ausgerichtet. Ihr Beitrag in Richtung dieses Ziels bleibt begrenzt.`;
   }
@@ -429,7 +432,7 @@ function enrichTension(v2Tension: TensionItem[], ctx: GoalContext): TensionItem[
     const diff = t.personValue - t.teamValue;
     if (Math.abs(diff) < 10) return t;
 
-    if (isNonGoalDimension && diff > 0 && ctx.personDivergesFromGoal) {
+    if (isNonGoalDimension && diff > 0 && ctx.personNotHelpingGoal) {
       const extraSuffix = " Dieser Veränderungsimpuls liegt jedoch nicht in der primären Zielrichtung der Abteilung und ist daher als steuerungsbedürftig einzuordnen, nicht als primäre Leistungsstärkung.";
       return { ...t, interpretation: t.interpretation + extraSuffix };
     }
@@ -439,10 +442,12 @@ function enrichTension(v2Tension: TensionItem[], ctx: GoalContext): TensionItem[
     let suffix = "";
     if (diff > 0 && ctx.personAligned && !ctx.teamAligned) {
       suffix = ` Gleichzeitig liegt genau in diesem Bereich das funktionale Ziel der Abteilung (${ctx.goalLabel}), sodass die Abweichung nicht nur Spannungsquelle, sondern auch gezielte Leistungsstärkung sein kann.`;
+    } else if (diff > 0 && !ctx.personAligned && ctx.personCloserToGoal) {
+      suffix = ` Die Person liegt im Bereich ${ctx.goalLabel} strukturell näher am funktionalen Ziel als das Team. Der Impuls geht in die richtige Richtung, reicht aber allein nicht aus, um die Zielausrichtung zu verändern.`;
     } else if (diff < 0 && ctx.personDivergesFromGoal) {
       suffix = ` Da das funktionale Ziel der Abteilung (${ctx.goalLabel}) genau in diesem Bereich liegt, zeigt sich hier die eigentliche funktionale Lücke der Person. Die geringere Ausprägung muss aktiv adressiert werden.`;
-    } else if (diff < 0 && ctx.teamAligned && !ctx.personAligned) {
-      suffix = ` Da das funktionale Ziel der Abteilung (${ctx.goalLabel}) in diesem Bereich liegt, kann die geringere Ausprägung der Person eine Lücke hinterlassen, die aktiv adressiert werden muss.`;
+    } else if (diff < 0 && ctx.personNotHelpingGoal) {
+      suffix = ` Das funktionale Ziel der Abteilung (${ctx.goalLabel}) liegt in diesem Bereich. Die geringere Ausprägung der Person verstärkt die bestehende Lücke und muss aktiv adressiert werden.`;
     }
 
     if (!suffix) return t;
@@ -568,8 +573,8 @@ function buildKulturwirkung(v2: TeamCheckV2Result, input: TeamCheckV3Input, ctx:
     ? ` Gleichzeitig bringt die Besetzung genau die Arbeitsweise mit, die das funktionale Ziel der Abteilung erfordert. Die kulturelle Reibung ist damit nicht nur Belastung, sondern auch Ausdruck einer funktional sinnvollen Veränderung.`
     : "";
 
-  const divergeSuffix = ctx.personDivergesFromGoal && ctx.goalLabel
-    ? ` Die Person kann in Teilbereichen zusätzliche Qualität einbringen, unterstützt aber nicht die dominante Zielrichtung der Abteilung (${ctx.goalLabel}). Die kulturelle Wirkung ist daher ambivalent: punktuell bereichernd, in der Gesamtlogik jedoch spannungsreich.`
+  const divergeSuffix = ctx.personNotHelpingGoal && ctx.goalLabel
+    ? ` Die Person kann in Teilbereichen zusätzliche Qualität einbringen, unterstützt aber nicht die zentrale Zielrichtung der Abteilung (${ctx.goalLabel}). Die kulturelle Wirkung ist daher ambivalent: punktuell bereichernd, in der Gesamtlogik jedoch spannungsreich.`
     : "";
 
   if (v2.systemwirkung === "Transformation") {
@@ -579,9 +584,9 @@ function buildKulturwirkung(v2: TeamCheckV2Result, input: TeamCheckV3Input, ctx:
     return `Die Besetzung bringt einen anderen Arbeitsstil ein als das Team gewohnt ist. Dadurch entstehen kulturelle Reibungspunkte, die im Alltag sichtbar werden. Entscheidend ist, diese Unterschiede offen zu benennen und gemeinsame Spielregeln zu verankern.${goalSuffix}${divergeSuffix}`;
   }
   if (v2.systemwirkung === "Ergänzung") {
-    if (ctx.personDivergesFromGoal) {
+    if (ctx.personNotHelpingGoal && ctx.goalLabel) {
       const personBereich = componentBusinessNameFirst(ctx.personPrimary);
-      return `Die Besetzung bringt zusätzliche Qualität im Bereich ${personBereich} ins Team. Diese Wirkung kann in einzelnen Abläufen hilfreich sein. Sie verstärkt jedoch nicht die primäre Zielrichtung der Abteilung, die stärker auf ${ctx.goalLabel} ausgerichtet ist. Die Kulturwirkung ist deshalb insgesamt spannungsreich und nur begrenzt funktional anschlussfähig.`;
+      return `Die Besetzung bringt zusätzliche Qualität im Bereich ${personBereich} ins Team. Diese Wirkung kann in einzelnen Abläufen hilfreich sein. Sie verstärkt jedoch nicht die zentrale Zielrichtung der Abteilung (${ctx.goalLabel}). Die Kulturwirkung ist deshalb insgesamt spannungsreich und nur begrenzt funktional anschlussfähig.`;
     }
     if (refinedLabel === "Korrekturimpuls" || refinedLabel === "Spannungsreiche Ergänzung") {
       return `Die Besetzung erweitert die Teamkultur um deutlich andere Impulse. Obwohl sie eine funktional wichtige Lücke schliesst, ist die Reibung im Alltag spürbar und erfordert bewusste Steuerung.${goalSuffix}`;
@@ -702,6 +707,10 @@ function buildStrukturdiagnose(teamProfile: Triad, personProfile: Triad, roleTyp
       strukturwirkung += `\n\nDas Team ist bereits auf das funktionale Ziel (${ctx.goalLabel}) ausgerichtet. Die Person bringt eine andere Dominanz mit (${personDom}), die nicht in der primären Zielrichtung liegt. Dadurch kann die bestehende Ausrichtung verwässert werden, wenn die Unterschiede nicht bewusst gesteuert werden.`;
     } else if (!ctx.teamAligned && ctx.personAligned) {
       strukturwirkung += `\n\nIm Verhältnis zum funktionalen Ziel (${ctx.goalLabel}) zeigt das Team eine Untergewichtung. Die Person schliesst diese Lücke strukturell.`;
+    } else if (ctx.teamAligned && ctx.personAligned) {
+      strukturwirkung += `\n\nSowohl das Team als auch die Person sind auf das funktionale Ziel (${ctx.goalLabel}) ausgerichtet. Die Besetzung stärkt die bestehende Ausrichtung strukturell.`;
+    } else if (!ctx.personAligned && ctx.personCloserToGoal) {
+      strukturwirkung += `\n\nWeder das Team noch die Person sind primär auf das funktionale Ziel (${ctx.goalLabel}) ausgerichtet. Die Person liegt jedoch strukturell näher daran als das Team. Die Besetzung bewegt das System in die richtige Richtung, ohne die Lücke vollständig zu schliessen.`;
     } else if (ctx.personNotHelpingGoal) {
       strukturwirkung += `\n\nWeder das Team noch die Person sind primär auf das funktionale Ziel (${ctx.goalLabel}) ausgerichtet. Die Person bringt eine andere Dominanz mit (${personDom}), die nicht in der primären Zielrichtung liegt. Der strukturelle Beitrag zum Funktionsziel bleibt begrenzt.`;
     }
@@ -737,11 +746,21 @@ function buildLeistungswirkung(teamProfile: Triad, personProfile: Triad, ctx: Go
         : "Die Person bringt mehr operative Bewegung in Themen. Aufgaben werden schneller angestossen und Ergebnisse stärker eingefordert. Bei klarer Führung kann das die Umsetzungsdynamik und Ergebnisverbindlichkeit des Teams spürbar stärken.";
     }
   } else if (personPrimary === "analytisch") {
-    umsetzungsgeschwindigkeit = ctx.operative
-      ? "Die Person setzt stärker auf sorgfältige Vorbereitung und klare Abläufe, bevor Umsetzung startet. Das kann die Arbeitsqualität steigern, aber auch die Geschwindigkeit verlangsamen, wenn schnelle Reaktion gefragt ist."
-      : "Die Person setzt stärker auf gründliche Vorbereitung und klare Strukturen, bevor Umsetzung startet. Das kann die Ergebnisqualität steigern, aber auch die Geschwindigkeit im Team verlangsamen, wenn schnelle Entscheidungen gefragt sind.";
+    if (ctx.personNotHelpingGoal) {
+      umsetzungsgeschwindigkeit = ctx.operative
+        ? "Die Person setzt stärker auf sorgfältige Vorbereitung und klare Abläufe. Das kann die Arbeitsqualität in Teilbereichen steigern, unterstützt aber nicht automatisch die eigentliche Zielrichtung des Bereichs."
+        : "Die Person setzt stärker auf gründliche Vorbereitung und klare Strukturen. Das kann die Ergebnisqualität in einzelnen Themen steigern, unterstützt aber nicht automatisch die eigentliche Zielrichtung des Bereichs.";
+    } else {
+      umsetzungsgeschwindigkeit = ctx.operative
+        ? "Die Person setzt stärker auf sorgfältige Vorbereitung und klare Abläufe, bevor Umsetzung startet. Das kann die Arbeitsqualität steigern, aber auch die Geschwindigkeit verlangsamen, wenn schnelle Reaktion gefragt ist."
+        : "Die Person setzt stärker auf gründliche Vorbereitung und klare Strukturen, bevor Umsetzung startet. Das kann die Ergebnisqualität steigern, aber auch die Geschwindigkeit im Team verlangsamen, wenn schnelle Entscheidungen gefragt sind.";
+    }
   } else {
-    umsetzungsgeschwindigkeit = "Die Person orientiert sich an Abstimmung und gemeinsamer Ausrichtung. Umsetzung erfolgt über Einbindung statt über Tempo. Das stärkt den Teamzusammenhalt, kann aber operative Geschwindigkeit reduzieren.";
+    if (ctx.personNotHelpingGoal) {
+      umsetzungsgeschwindigkeit = "Die Person orientiert sich an Abstimmung und gemeinsamer Ausrichtung. Das kann punktuell den Teamzusammenhalt stärken, unterstützt aber nicht automatisch die eigentliche Zielrichtung des Bereichs.";
+    } else {
+      umsetzungsgeschwindigkeit = "Die Person orientiert sich an Abstimmung und gemeinsamer Ausrichtung. Umsetzung erfolgt über Einbindung statt über Tempo. Das stärkt den Teamzusammenhalt, kann aber operative Geschwindigkeit reduzieren.";
+    }
   }
 
   if (ctx.goal && ctx.goalKey && ctx.personAligned && !ctx.teamAligned) {
@@ -782,7 +801,7 @@ function buildIntegrationsfaktor(teamProfile: Triad, personProfile: Triad, passu
     integrationsfaehigkeit = "Die Integration fällt voraussichtlich leicht, da die Arbeitslogiken gut zueinander passen. Erwartungen und Prioritäten sind von Beginn an ähnlich ausgerichtet.";
   } else if (passung === "Bedingt passend") {
     integrationsfaehigkeit = "Die Integration hängt davon ab, wie bewusst die unterschiedlichen Arbeitslogiken im Alltag geführt werden. Je klarer Erwartungen und Entscheidungswege definiert sind, desto leichter gelingt die Zusammenarbeit.";
-    if (ctx.personDivergesFromGoal) {
+    if (ctx.personNotHelpingGoal) {
       integrationsfaehigkeit += " Dabei ist zu berücksichtigen, dass die Person nicht in der primären Zielrichtung der Abteilung arbeitet. Die Integration muss deshalb besonders sorgfältig gesteuert werden, damit die Teilqualitäten gezielt genutzt werden, ohne die Hauptausrichtung zu verwässern.";
     }
   } else {
@@ -813,7 +832,7 @@ function buildIntegrationsfaktor(teamProfile: Triad, personProfile: Triad, passu
   let stabilisierung: string;
   if (passung === "Passend") {
     stabilisierung = "Die bestehende Teamstabilität kann erhalten bleiben, während gleichzeitig neue Impulse aufgenommen werden.";
-  } else if (ctx.personDivergesFromGoal) {
+  } else if (ctx.personNotHelpingGoal) {
     stabilisierung = "Bewusste Integration kann die Teilqualitäten der Person als Zusatzressource nutzbar machen. Ohne gezielte Steuerung besteht das Risiko, dass die bestehende Teamausrichtung an Klarheit verliert.";
   } else {
     stabilisierung = "Bewusste Integration kann neue Stärken ins Team einbringen, ohne die bestehende Stabilität zu gefährden. Ohne Steuerung steigt das Risiko dauerhafter Spannungen.";
@@ -999,7 +1018,7 @@ function computeStrategicWirkung(
     return "stabil passend";
   }
   if (strategicFit === "teilweise") {
-    if (ctx.personDivergesFromGoal) return "begrenzt anschlussfähig";
+    if (ctx.personNotHelpingGoal) return "begrenzt anschlussfähig";
     return "gezielte Ergänzung";
   }
   if (strategicFit === "abweichend" && passung === "Kritisch") {
