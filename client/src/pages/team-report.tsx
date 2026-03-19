@@ -959,35 +959,29 @@ export default function TeamReport() {
 
                 {matchCheckOpen && (
                 <div style={{ padding: "0 32px 28px" }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
-                        <div style={{ width: 18, height: 18, borderRadius: 9, background: fitColor, flexShrink: 0, boxShadow: `0 0 0 4px ${fitColor}20` }} />
-                        <div style={{ flex: 1 }}>
-                          <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-summary-role">{roleChipLabel}</span>
-                        </div>
-                        <span style={{ fontSize: 14, fontWeight: 700, color: fitColor, letterSpacing: "0.03em" }} data-testid="badge-teamcheck-result">
-                          {teamFitLabel}
-                        </span>
-                      </div>
-                      <div style={{ background: `${fitColor}08`, borderLeft: `3px solid ${fitColor}`, borderRadius: "0 8px 8px 0", padding: "12px 16px" }}>
-                        <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: 0 }} data-testid="text-teamcheck-indicator">{indicatorText}</p>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 20 }}>
+                    <div style={{ padding: "14px 18px", borderRadius: 14, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(0,0,0,0.05)", textAlign: "center" }}>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 8px" }}>Status</p>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                        <div style={{ width: 10, height: 10, borderRadius: 5, background: fitColor, boxShadow: `0 0 0 3px ${fitColor}20` }} />
+                        <span style={{ fontSize: 16, fontWeight: 700, color: fitColor }} data-testid="badge-teamcheck-result">{teamFitLabel}</span>
                       </div>
                     </div>
-
-                    <div style={{ borderLeft: "1px solid rgba(0,0,0,0.06)", paddingLeft: 24 }}>
-                      <p style={{ fontSize: 11, fontWeight: 700, color: "#6E6E73", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 14px" }}>
-                        Systemwirkung
-                      </p>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                        <div style={{ width: 12, height: 12, borderRadius: 6, background: swColor, boxShadow: `0 0 0 3px ${swColor}20` }} />
-                        <p style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: 0 }} data-testid="text-systemwirkung-label">
-                          {systemwirkungLabel}
-                        </p>
+                    <div style={{ padding: "14px 18px", borderRadius: 14, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(0,0,0,0.05)", textAlign: "center" }}>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 8px" }}>Systemwirkung</p>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                        <div style={{ width: 10, height: 10, borderRadius: 5, background: swColor, boxShadow: `0 0 0 3px ${swColor}20` }} />
+                        <span style={{ fontSize: 16, fontWeight: 700, color: swColor }} data-testid="text-systemwirkung-label">{systemwirkungLabel}</span>
                       </div>
-                      <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: 0 }} data-testid="text-systemwirkung-description">{swDescriptions[systemwirkungLabel]}</p>
+                    </div>
+                    <div style={{ padding: "14px 18px", borderRadius: 14, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(0,0,0,0.05)", textAlign: "center" }}>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 8px" }}>Steuerungsaufwand</p>
+                      <span style={{ fontSize: 16, fontWeight: 700, color: fitLabel === "Nicht geeignet" ? "#D64045" : fitLabel === "Bedingt geeignet" ? "#E5A832" : "#3A9A5C" }}>{fitLabel === "Nicht geeignet" ? "erhöht" : fitLabel === "Bedingt geeignet" ? "mittel" : "gering"}</span>
                     </div>
                   </div>
+                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-teamcheck-indicator">
+                    {indicatorText}
+                  </p>
                 </div>
                 )}
               </div>
