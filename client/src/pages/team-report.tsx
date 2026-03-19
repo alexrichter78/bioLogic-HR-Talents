@@ -563,6 +563,7 @@ export default function TeamReport() {
 
   const [istTriad, setIstTriad] = useState({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
   const [teamTriad, setTeamTriad] = useState({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
+  const [stellenTriad, setStellenTriad] = useState<{ impulsiv: number; intuitiv: number; analytisch: number } | null>(null);
 
   const makeTriadUpdater = useCallback((setter: React.Dispatch<React.SetStateAction<{ impulsiv: number; intuitiv: number; analytisch: number }>>) => {
     return (key: ComponentKey, newVal: number) => {
@@ -613,6 +614,9 @@ export default function TeamReport() {
           if ((f.includes("führung") || f.includes("fachlich") || f.includes("disziplinarisch") || f.includes("projekt") || f.includes("koordination") || f.includes("leiter") || f.includes("lead")) && !f.includes("keine")) {
             setRoleTypeForCard("fuehrung");
           }
+        }
+        if (dna.bioGramGesamt) {
+          setStellenTriad(bgToTriad(dna.bioGramGesamt));
         }
       } catch {}
     }
@@ -749,7 +753,10 @@ export default function TeamReport() {
             transition: "max-height 400ms ease",
           }}>
             <div style={{ padding: "0 24px 24px" }}>
-              <div className="grid gap-8 md:grid-cols-2">
+              <div className={`grid gap-8 ${stellenTriad ? "md:grid-cols-3" : "md:grid-cols-2"}`}>
+                {stellenTriad && (
+                  <StaticBarGroup title="Stellenprofil (Soll)" triad={stellenTriad} />
+                )}
                 <StaticBarGroup title="Ist-Profil (Person)" triad={istTriad} />
                 <SliderGroup title="Teamprofil" triad={teamTriad}
                   onTriadChange={updateTeamTriad} testIdPrefix="team" />
