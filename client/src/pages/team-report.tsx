@@ -4,7 +4,7 @@ import { AlertTriangle, Download, Check, Users, ChevronDown, Zap } from "lucide-
 import GlobalNav from "@/components/global-nav";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeTeamReport } from "@/lib/team-report-engine";
-import { constellationLabel, detectConstellation } from "@/lib/soll-ist-engine";
+import { constellationLabel, detectConstellation, computeSollIst } from "@/lib/soll-ist-engine";
 import { getSystemwirkung } from "@/lib/teamcheck-v2-engine";
 import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
 import type { TeamReportResult, SystemwirkungResult, GesamtpassungLevel, Severity } from "@/lib/team-report-engine";
@@ -1081,14 +1081,14 @@ export default function TeamReport() {
                     let sollIstLabel = "";
                     let sollIstColor = "";
                     if (stellenTriad) {
-                      const gap = Math.round(
-                        Math.abs(istTriad.impulsiv - stellenTriad.impulsiv) +
-                        Math.abs(istTriad.intuitiv - stellenTriad.intuitiv) +
-                        Math.abs(istTriad.analytisch - stellenTriad.analytisch)
+                      const sollIstResult = computeSollIst(
+                        roleName || "Rolle",
+                        candidateName || "Person",
+                        stellenTriad,
+                        istTriad,
                       );
-                      if (gap <= 20) { sollIstLabel = "Passend"; sollIstColor = "#34C759"; }
-                      else if (gap <= 40) { sollIstLabel = "Bedingt passend"; sollIstColor = "#FF9500"; }
-                      else { sollIstLabel = "Kritisch"; sollIstColor = "#FF3B30"; }
+                      sollIstLabel = sollIstResult.fitLabel;
+                      sollIstColor = sollIstResult.fitColor;
                     }
                     const cols = stellenTriad ? "1fr 1fr 1fr 1fr" : "1fr 1fr 1fr";
                     return (
