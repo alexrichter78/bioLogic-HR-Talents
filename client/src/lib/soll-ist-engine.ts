@@ -677,13 +677,14 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
     const cSec = ct[rest[0]] >= ct[rest[1]] ? rest[0] : rest[1];
     const candSecCompeting = Math.abs(ct[rest[0]] - ct[rest[1]]) <= 5 && Math.min(ct[rest[0]], ct[rest[1]]) > 15;
     const secSwapped = rSec !== cSec;
+    const secGap = Math.abs(rt[rest[0]] - ct[rest[0]]) + Math.abs(rt[rest[1]] - ct[rest[1]]);
 
-    if (secSwapped || candSecCompeting) {
+    if ((secSwapped || candSecCompeting) && secGap >= 6) {
       const s = Subj(cand);
       const roleSec = compShort(rSec);
-      const totalGap = gapI + gapN + gapA;
+      const affectedIds = ["communication", "culture", "leadership"];
       for (const area of areas) {
-        if (area.severity === "ok" && totalGap >= 6) {
+        if (area.severity === "ok" && affectedIds.includes(area.id)) {
           area.severity = "warning";
           if (candSecCompeting) {
             area.risk = `Die Hauptlogik stimmt überein, aber die Nebenkomponenten der Person sind fast gleich stark. Dadurch fehlt ein klarer Schwerpunkt in der Flankierung. Unter Druck kann die Reaktion wechselnd ausfallen. Gezielte Führung empfohlen.`;
