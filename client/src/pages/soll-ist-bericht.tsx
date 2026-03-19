@@ -971,7 +971,7 @@ export default function SollIstBericht() {
 
                       {/* AUSWIRKUNG IM ARBEITSALLTAG */}
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-auswirkung">
-                        <SubHead num={1} title="Auswirkung im Arbeitsalltag" color={fitCol} />
+                        <SubHead num={1} title="Auswirkung im Arbeitsalltag" color="#0F3A6E" />
                         <p style={{ margin: 0, fontSize: 14, lineHeight: 1.85, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                           {result.dominanceShiftText.split(/\n\n+/)[0]}
                         </p>
@@ -979,7 +979,7 @@ export default function SollIstBericht() {
 
                       {/* MANAGEMENTKURZFAZIT */}
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-fazit">
-                        <SubHead num={2} title="Managementkurzfazit" color={fitCol} />
+                        <SubHead num={2} title="Managementkurzfazit" color="#0F3A6E" />
                         <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-summary-fazit">
                           {result.summaryText.split(/\n\n+/)[0]}
                         </p>
@@ -990,10 +990,10 @@ export default function SollIstBericht() {
                         <div data-pdf-block style={{ marginBottom: 0 }} data-testid="section-executive-bullets">
                           {result.executiveBullets.length > 0 && (
                             <div style={{ marginBottom: result.constellationRisks.length > 0 ? 14 : 0 }}>
-                              <SubHead num={3} title="Warum dieses Ergebnis" color={fitCol} />
+                              <SubHead num={3} title="Warum dieses Ergebnis" color="#0F3A6E" />
                               {result.executiveBullets.map((b, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                                  <span style={{ width: 5, height: 5, borderRadius: 3, background: fitCol, flexShrink: 0 }} />
+                                  <span style={{ width: 5, height: 5, borderRadius: 3, background: "#0F3A6E", flexShrink: 0 }} />
                                   <span style={{ fontSize: 14, lineHeight: 1.6, color: "#48484A" }}>{b}</span>
                                 </div>
                               ))}
@@ -1001,10 +1001,10 @@ export default function SollIstBericht() {
                           )}
                           {result.constellationRisks.length > 0 && (
                             <div>
-                              <SubHead num={4} title="Risiken dieser Konstellation" color={BIO_COLORS.nichtGeeignet} />
+                              <SubHead num={4} title="Risiken dieser Konstellation" color="#0F3A6E" />
                               {result.constellationRisks.map((r, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                                  <span style={{ width: 5, height: 5, borderRadius: 3, background: BIO_COLORS.nichtGeeignet, flexShrink: 0 }} />
+                                  <span style={{ width: 5, height: 5, borderRadius: 3, background: "#0F3A6E", flexShrink: 0 }} />
                                   <span style={{ fontSize: 14, lineHeight: 1.6, color: "#48484A" }}>{r}</span>
                                 </div>
                               ))}
@@ -1113,7 +1113,7 @@ export default function SollIstBericht() {
                       <div key={area.id} data-testid={`impact-detail-${area.id}`}>
                         <div style={{ padding: "14px 0" }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                            <SubHead num={areaIdx + 1} title={area.label} color={sevCol} />
+                            <SubHead num={areaIdx + 1} title={area.label} color="#0F3A6E" />
                             <span style={{ fontSize: 10, fontWeight: 700, color: sevCol, textTransform: "uppercase", letterSpacing: "0.05em", marginTop: 4 }}>{severityLabel(area.severity)}</span>
                           </div>
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
