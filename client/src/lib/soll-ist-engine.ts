@@ -783,28 +783,40 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
     roleNeed = "Sorgfältige, prüforientierte Entscheidungen. Optionen abwägen, Risiken prüfen, erst dann handeln.";
     if (ck === "impulsiv") {
       candidatePattern = `${s} entscheidet deutlich schneller und handelt oft, bevor alle Informationen vorliegen.`;
-      risk = "Prüfschritte werden verkürzt oder übersprungen. Bei komplexen Aufgaben steigt das Risiko für Fehler oder Nacharbeit.";
+      risk = decCompeting23
+        ? "Prüfschritte werden verkürzt oder übersprungen. Da die Nebenkomponenten konkurrieren, fehlt ein stabiler Ausgleich – die Absicherung schwankt zwischen Kontextgespür und Faktenprüfung, ohne eine Linie konsequent durchzuhalten."
+        : "Prüfschritte werden verkürzt oder übersprungen. Bei komplexen Aufgaben steigt das Risiko für Fehler oder Nacharbeit.";
     } else {
       candidatePattern = `${s} entscheidet stärker aus dem Kontext heraus und bezieht Stimmungen und Beziehungen ein. Datenbasierte Prüfung steht weniger im Vordergrund.`;
-      risk = "Technische Details und Risikoabwägungen kommen zu kurz, wenn zwischenmenschliche Faktoren die Entscheidung bestimmen.";
+      risk = decCompeting23
+        ? "Technische Details und Risikoabwägungen kommen zu kurz. Da die Nebenkomponenten konkurrieren, wechselt die Ausweichstrategie unter Druck – mal wird schnell gehandelt, mal stärker geprüft. Das erzeugt ein inkonsistentes Entscheidungsmuster."
+        : "Technische Details und Risikoabwägungen kommen zu kurz, wenn zwischenmenschliche Faktoren die Entscheidung bestimmen.";
     }
   } else if (rk === "impulsiv") {
     roleNeed = "Schnelle, ergebnisorientierte Entscheidungen. Klare Richtung und direkte Umsetzung vor langer Prüfung.";
     if (ck === "analytisch") {
       candidatePattern = `${s} prüft gründlich und braucht eine solide Datengrundlage vor jeder Entscheidung. Das Tempo bleibt unter dem Stellenbedarf.`;
-      risk = "In Situationen, die schnelles Handeln erfordern, entstehen Verzögerungen. Chancen werden verpasst, weil die Entscheidung zu spät fällt.";
+      risk = decCompeting23
+        ? "In Situationen, die schnelles Handeln erfordern, entstehen Verzögerungen. Da die Nebenkomponenten konkurrieren, schwankt die Reaktion unter Druck – mal wird abgestimmt, mal weiter geprüft. Klare Handlungsimpulse fehlen dauerhaft."
+        : "In Situationen, die schnelles Handeln erfordern, entstehen Verzögerungen. Chancen werden verpasst, weil die Entscheidung zu spät fällt.";
     } else {
       candidatePattern = `${s} bezieht bei Entscheidungen stark den Kontext und die beteiligten Menschen ein. Abstimmungsprozesse dauern länger als die Stelle erlaubt.`;
-      risk = "Entscheidungen, die sofort fallen müssten, verzögern sich durch Abstimmungsrunden. Das Umsetzungstempo leidet.";
+      risk = decCompeting23
+        ? "Entscheidungen verzögern sich durch Abstimmungsrunden. Da die Nebenkomponenten konkurrieren, pendelt die Absicherung zwischen Faktenprüfung und schnellem Handeln, ohne eine klare Linie zu finden. Das Umsetzungstempo leidet zusätzlich."
+        : "Entscheidungen, die sofort fallen müssten, verzögern sich durch Abstimmungsrunden. Das Umsetzungstempo leidet.";
     }
   } else {
     roleNeed = "Entscheidungen, die Kontext, Zusammenarbeit und zwischenmenschliche Wirkung berücksichtigen. Abstimmung im Team vor Geschwindigkeit.";
     if (ck === "impulsiv") {
       candidatePattern = `${s} trifft Entscheidungen schnell und handlungsorientiert. Die Wirkung auf andere wird dabei selten berücksichtigt.`;
-      risk = "Betroffene fühlen sich übergangen. Entscheidungen fallen ohne ausreichende Einbindung. Das belastet langfristig die Zusammenarbeit.";
+      risk = decCompeting23
+        ? "Betroffene fühlen sich übergangen. Da die Nebenkomponenten konkurrieren, schwankt das Verhalten unter Druck zwischen sachlicher Kontrolle und weiterem Tempodruck. Einbindung findet in keinem Fall ausreichend statt."
+        : "Betroffene fühlen sich übergangen. Entscheidungen fallen ohne ausreichende Einbindung. Das belastet langfristig die Zusammenarbeit.";
     } else {
       candidatePattern = `${s} entscheidet über Fakten und Regeln. Der zwischenmenschliche Arbeitsbereich steht weniger im Fokus.`;
-      risk = "Sachlich korrekte Entscheidungen, aber Auswirkungen auf Motivation und Teamdynamik werden unterschätzt.";
+      risk = decCompeting23
+        ? "Sachlich korrekte Entscheidungen, aber die Wirkung auf Motivation und Teamdynamik wird unterschätzt. Da die Nebenkomponenten konkurrieren, wechselt das Verhalten unter Druck zwischen Tempo und weiterer Analyse – persönliche Einbindung bleibt in beiden Fällen nachrangig."
+        : "Sachlich korrekte Entscheidungen, aber Auswirkungen auf Motivation und Teamdynamik werden unterschätzt.";
     }
   }
 
@@ -948,6 +960,8 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
   }
 
   if (rk !== ck) {
+    const leadRest2 = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== ck);
+    const leadComp23 = ct ? Math.abs(ct[leadRest2[0]] - ct[leadRest2[1]]) <= 5 && Math.min(ct[leadRest2[0]], ct[leadRest2[1]]) > 15 : false;
     const leadershipSuffix = fuehrungsArt === "disziplinarisch"
       ? " Da die Person Führungsverantwortung trägt, wirkt sich das direkt auf Teamstabilität und Zusammenarbeit aus."
       : fuehrungsArt === "fachlich"
@@ -955,17 +969,29 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
         : "";
 
     if (rk === "analytisch" && ck === "impulsiv") {
-      risk = `Dem Team fehlen klare Leitlinien und verlässliche Prioritäten. Entscheidungen wirken impulsiv statt durchdacht. Struktursuchende Mitarbeiter verlieren den Halt.${leadershipSuffix}`;
+      risk = leadComp23
+        ? `Dem Team fehlen klare Leitlinien und verlässliche Prioritäten. Da die Nebenkomponenten konkurrieren, schwankt der Führungsstil unter Druck zwischen sachlicher Kontrolle und persönlicher Einbindung – ohne eine Linie stabil durchzuhalten.${leadershipSuffix}`
+        : `Dem Team fehlen klare Leitlinien und verlässliche Prioritäten. Entscheidungen wirken impulsiv statt durchdacht. Struktursuchende Mitarbeiter verlieren den Halt.${leadershipSuffix}`;
     } else if (rk === "analytisch" && ck === "intuitiv") {
-      risk = `Führungsentscheidungen werden stärker von Beziehungsdynamik geprägt als von fachlichen Standards. Es entsteht der Eindruck, dass persönliche Nähe wichtiger ist als Leistung.${leadershipSuffix}`;
+      risk = leadComp23
+        ? `Führungsentscheidungen werden stärker von Beziehungsdynamik geprägt als von fachlichen Standards. Da die Nebenkomponenten konkurrieren, wechselt die Führung unter Druck zwischen Tempo und Analyse – beides ohne ausreichende Tiefe.${leadershipSuffix}`
+        : `Führungsentscheidungen werden stärker von Beziehungsdynamik geprägt als von fachlichen Standards. Es entsteht der Eindruck, dass persönliche Nähe wichtiger ist als Leistung.${leadershipSuffix}`;
     } else if (rk === "impulsiv" && ck === "analytisch") {
-      risk = `Das Team wartet auf klare Ansagen, die nicht schnell genug kommen. In Drucksituationen fehlt die entschlossene Führung, die erwartet wird.${leadershipSuffix}`;
+      risk = leadComp23
+        ? `Das Team wartet auf klare Ansagen, die nicht schnell genug kommen. Da die Nebenkomponenten konkurrieren, pendelt die Führung zwischen Abstimmung und noch mehr Prüfung – das Tempo bleibt dauerhaft unter dem Bedarf.${leadershipSuffix}`
+        : `Das Team wartet auf klare Ansagen, die nicht schnell genug kommen. In Drucksituationen fehlt die entschlossene Führung, die erwartet wird.${leadershipSuffix}`;
     } else if (rk === "impulsiv" && ck === "intuitiv") {
-      risk = `Statt schneller Entscheidungen wird abgestimmt. Das Team erwartet Tempo, bekommt Gesprächsrunden. Zeitkritische Situationen erzeugen Frustration.${leadershipSuffix}`;
+      risk = leadComp23
+        ? `Statt schneller Entscheidungen wird abgestimmt. Da die Nebenkomponenten konkurrieren, wechselt die Führung unter Druck zwischen Faktenprüfung und weiterer Diskussion – in keinem Fall entsteht das erwartete Tempo.${leadershipSuffix}`
+        : `Statt schneller Entscheidungen wird abgestimmt. Das Team erwartet Tempo, bekommt Gesprächsrunden. Zeitkritische Situationen erzeugen Frustration.${leadershipSuffix}`;
     } else if (rk === "intuitiv" && ck === "impulsiv") {
-      risk = `Mitarbeiter fühlen sich übergangen, weil Entscheidungen ohne ausreichende Einbindung fallen. Beziehungsarbeit kommt zu kurz, der Teamzusammenhalt leidet.${leadershipSuffix}`;
+      risk = leadComp23
+        ? `Mitarbeiter fühlen sich übergangen, weil Entscheidungen ohne ausreichende Einbindung fallen. Da die Nebenkomponenten konkurrieren, schwankt das Verhalten unter Druck zwischen sachlicher Kontrolle und weiterem Tempo – persönliche Nähe kommt in keinem Fall ausreichend vor.${leadershipSuffix}`
+        : `Mitarbeiter fühlen sich übergangen, weil Entscheidungen ohne ausreichende Einbindung fallen. Beziehungsarbeit kommt zu kurz, der Teamzusammenhalt leidet.${leadershipSuffix}`;
     } else {
-      risk = `Führung wirkt formal und distanziert. Erwartet werden persönliche Nähe und offene Kommunikation, geliefert werden Regeln und Prozesse.${leadershipSuffix}`;
+      risk = leadComp23
+        ? `Führung wirkt formal und distanziert. Da die Nebenkomponenten konkurrieren, wechselt das Verhalten unter Druck zwischen Tempodruck und noch mehr Faktenprüfung – der persönliche Dialog bleibt in beiden Fällen auf der Strecke.${leadershipSuffix}`
+        : `Führung wirkt formal und distanziert. Erwartet werden persönliche Nähe und offene Kommunikation, geliefert werden Regeln und Prozesse.${leadershipSuffix}`;
     }
   } else {
     const leadRest = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== ck);
@@ -1041,17 +1067,29 @@ function buildCommunicationImpact(rk: ComponentKey, ck: ComponentKey, gapI: numb
         : "Kommunikationsverhalten passt zur Stellenanforderung. Die Art der Kommunikation entspricht dem, was erwartet wird.";
     }
   } else if (rk === "impulsiv" && ck === "intuitiv") {
-    risk = `Die Stelle verlangt schnelle, direkte Kommunikation. ${s} investiert mehr Zeit in Dialog und Abstimmung. Entscheidungen werden verzögert kommuniziert. Klare Kommunikationserwartungen setzen.`;
+    risk = commCompeting23
+      ? `Die Stelle verlangt schnelle, direkte Kommunikation. ${s} investiert mehr Zeit in Dialog und Abstimmung. Da die Nebenkomponenten konkurrieren, wechselt die Kommunikation unter Druck zwischen sachlicher Detailtiefe und schnellem Handeln – der erwartete direkte Stil entsteht in keinem Fall.`
+      : `Die Stelle verlangt schnelle, direkte Kommunikation. ${s} investiert mehr Zeit in Dialog und Abstimmung. Entscheidungen werden verzögert kommuniziert. Klare Kommunikationserwartungen setzen.`;
   } else if (rk === "impulsiv" && ck === "analytisch") {
-    risk = `Die Stelle verlangt kurze, direkte Kommunikation. ${s} kommuniziert ausführlicher und detaillierter als nötig. Die Informationsdichte kann das Tempo bremsen.`;
+    risk = commCompeting23
+      ? `Die Stelle verlangt kurze, direkte Kommunikation. ${s} kommuniziert ausführlicher und detaillierter als nötig. Da die Nebenkomponenten konkurrieren, wechselt der Stil unter Druck zwischen persönlicher Einbindung und weiterer Analyse – die erwartete Knappheit fehlt dauerhaft.`
+      : `Die Stelle verlangt kurze, direkte Kommunikation. ${s} kommuniziert ausführlicher und detaillierter als nötig. Die Informationsdichte kann das Tempo bremsen.`;
   } else if (rk === "intuitiv" && ck === "impulsiv") {
-    risk = `Die Stelle verlangt empathische Kommunikation. ${s} kommuniziert eher direkt und knapp. Gesprächspartner können sich übergangen fühlen. Bewusstes Zuhören und Einbindung aktiv einfordern.`;
+    risk = commCompeting23
+      ? `Die Stelle verlangt empathische Kommunikation. ${s} kommuniziert eher direkt und knapp. Da die Nebenkomponenten konkurrieren, schwankt die Ausweichstrategie unter Druck zwischen sachlicher Kontrolle und weiterem Tempo – persönliche Einbindung kommt in keinem Fall ausreichend vor.`
+      : `Die Stelle verlangt empathische Kommunikation. ${s} kommuniziert eher direkt und knapp. Gesprächspartner können sich übergangen fühlen. Bewusstes Zuhören und Einbindung aktiv einfordern.`;
   } else if (rk === "intuitiv" && ck === "analytisch") {
-    risk = `Die Stelle verlangt persönlichen Dialog. ${s} kommuniziert eher sachlich und distanziert. Der zwischenmenschliche Aspekt kommt zu kurz. Gesprächsformate mit persönlichem Austausch einplanen.`;
+    risk = commCompeting23
+      ? `Die Stelle verlangt persönlichen Dialog. ${s} kommuniziert eher sachlich und distanziert. Da die Nebenkomponenten konkurrieren, wechselt die Kommunikation unter Druck zwischen Tempodruck und noch mehr Detailtiefe – der persönliche Aspekt bleibt nachrangig.`
+      : `Die Stelle verlangt persönlichen Dialog. ${s} kommuniziert eher sachlich und distanziert. Der zwischenmenschliche Aspekt kommt zu kurz. Gesprächsformate mit persönlichem Austausch einplanen.`;
   } else if (rk === "analytisch" && ck === "impulsiv") {
-    risk = `Die Stelle verlangt sachliche Präzision. ${s} kommuniziert eher kurz und handlungsorientiert. Details und Begründungen werden ausgelassen. Dokumentationserwartungen klar formulieren.`;
+    risk = commCompeting23
+      ? `Die Stelle verlangt sachliche Präzision. ${s} kommuniziert eher kurz und handlungsorientiert. Da die Nebenkomponenten konkurrieren, schwankt die Ausweichstrategie zwischen Empathie und Faktenprüfung – beides ohne die nötige Tiefe und Konsistenz.`
+      : `Die Stelle verlangt sachliche Präzision. ${s} kommuniziert eher kurz und handlungsorientiert. Details und Begründungen werden ausgelassen. Dokumentationserwartungen klar formulieren.`;
   } else {
-    risk = `Die Stelle verlangt faktenbasierte Kommunikation. ${s} kommuniziert eher beziehungsorientiert. Sachliche Tiefe und Nachvollziehbarkeit können leiden. Klare Standards für Informationsweitergabe setzen.`;
+    risk = commCompeting23
+      ? `Die Stelle verlangt faktenbasierte Kommunikation. ${s} kommuniziert eher beziehungsorientiert. Da die Nebenkomponenten konkurrieren, wechselt der Stil unter Druck zwischen Tempo und weiterer Abstimmung – sachliche Präzision entsteht in keinem Fall.`
+      : `Die Stelle verlangt faktenbasierte Kommunikation. ${s} kommuniziert eher beziehungsorientiert. Sachliche Tiefe und Nachvollziehbarkeit können leiden. Klare Standards für Informationsweitergabe setzen.`;
   }
 
   return { id: "communication", label: "Kommunikationsverhalten", severity: sev, roleNeed, candidatePattern, risk };
@@ -1109,18 +1147,32 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
   }
 
   if (rk !== ck) {
+    const culRest2 = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== ck);
+    const culComp23 = ct ? Math.abs(ct[culRest2[0]] - ct[culRest2[1]]) <= 5 && Math.min(ct[culRest2[0]], ct[culRest2[1]]) > 15 : false;
     if (rk === "analytisch" && ck === "impulsiv") {
-      risk = "Stabilität in Abläufen geht verloren, wenn Entscheidungen schneller fallen als sie strukturell abgesichert sind. Kurzfristig entsteht Zug, langfristig leidet Verlässlichkeit.";
+      risk = culComp23
+        ? "Stabilität in Abläufen geht verloren, wenn Entscheidungen schneller fallen als sie strukturell abgesichert sind. Da die Nebenkomponenten konkurrieren, schwankt die Kulturwirkung unter Druck zwischen Empathie und Faktenprüfung – beides ohne die nötige Konsistenz für stabile Abläufe."
+        : "Stabilität in Abläufen geht verloren, wenn Entscheidungen schneller fallen als sie strukturell abgesichert sind. Kurzfristig entsteht Zug, langfristig leidet Verlässlichkeit.";
     } else if (rk === "analytisch" && ck === "intuitiv") {
-      risk = "Die Kultur verschiebt sich von sachlicher Qualität hin zu persönlicher Verbindung. Standards und Regeln weichen auf, wenn Beziehungen wichtiger werden als Prozesse.";
+      risk = culComp23
+        ? "Die Kultur verschiebt sich von sachlicher Qualität hin zu persönlicher Verbindung. Da die Nebenkomponenten konkurrieren, wechselt der Einfluss unter Druck zwischen Tempo und Strukturkontrolle – Standards weichen in beiden Fällen auf."
+        : "Die Kultur verschiebt sich von sachlicher Qualität hin zu persönlicher Verbindung. Standards und Regeln weichen auf, wenn Beziehungen wichtiger werden als Prozesse.";
     } else if (rk === "impulsiv" && ck === "analytisch") {
-      risk = "Die operative Geschwindigkeit sinkt. Statt direkter Umsetzung entsteht eine Kultur der Prüfung und Absicherung. In einem dynamischen Umfeld ein Wettbewerbsnachteil.";
+      risk = culComp23
+        ? "Die operative Geschwindigkeit sinkt. Da die Nebenkomponenten konkurrieren, pendelt die Kultur unter Druck zwischen persönlicher Abstimmung und weiterem Prüfen – das erwartete Tempo entsteht in keinem Fall."
+        : "Die operative Geschwindigkeit sinkt. Statt direkter Umsetzung entsteht eine Kultur der Prüfung und Absicherung. In einem dynamischen Umfeld ein Wettbewerbsnachteil.";
     } else if (rk === "impulsiv" && ck === "intuitiv") {
-      risk = "Ergebnisorientierung weicht einer Konsenskultur. Entscheidungen werden diskutiert statt umgesetzt. Die Dynamik der Stelle geht verloren.";
+      risk = culComp23
+        ? "Ergebnisorientierung weicht einer Konsenskultur. Da die Nebenkomponenten konkurrieren, schwankt der Einfluss unter Druck zwischen Faktenprüfung und schnellem Handeln – die Dynamik der Stelle geht in beiden Richtungen verloren."
+        : "Ergebnisorientierung weicht einer Konsenskultur. Entscheidungen werden diskutiert statt umgesetzt. Die Dynamik der Stelle geht verloren.";
     } else if (rk === "intuitiv" && ck === "impulsiv") {
-      risk = "Kooperative Kultur wird durch Ergebnisorientierung verdrängt. Weniger persönliche Ansprache, mehr Leistungsdruck. Bindung und Motivation sinken.";
+      risk = culComp23
+        ? "Kooperative Kultur wird durch Ergebnisorientierung verdrängt. Da die Nebenkomponenten konkurrieren, schwankt die Kulturwirkung unter Druck zwischen sachlicher Kontrolle und weiterem Tempo – persönliche Verbindung entsteht in keinem Fall."
+        : "Kooperative Kultur wird durch Ergebnisorientierung verdrängt. Weniger persönliche Ansprache, mehr Leistungsdruck. Bindung und Motivation sinken.";
     } else {
-      risk = "Kultur wird formaler und distanzierter. Persönliche Verbindung und offener Austausch nehmen ab, das Teamgefühl leidet.";
+      risk = culComp23
+        ? "Kultur wird formaler und distanzierter. Da die Nebenkomponenten konkurrieren, wechselt der Einfluss unter Druck zwischen Tempodruck und weiterer Analyse – der persönliche Austausch bleibt dauerhaft nachrangig."
+        : "Kultur wird formaler und distanzierter. Persönliche Verbindung und offener Austausch nehmen ab, das Teamgefühl leidet.";
     }
   } else {
     const cMaxGap = Math.max(gapI, gapN, gapA);
