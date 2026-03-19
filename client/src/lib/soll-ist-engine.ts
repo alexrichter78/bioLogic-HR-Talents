@@ -1479,7 +1479,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
         },
         {
           phase: 2, title: "Wirkung & Anpassung", period: "Monat 2 – 3",
-          ziel: `Vielseitige Wirkung in ${role} zeigen und situative Flexibilität unter Beweis stellen.`,
+          ziel: `Vielseitige Wirkung als ${role} zeigen und situative Flexibilität unter Beweis stellen.`,
           items: [
             `Eigenständige Übernahme erster Aufgaben mit wechselnden Anforderungsprofilen.`,
             `Feedback zur Wirkung in allen drei Bereichen einholen.`,
@@ -1492,7 +1492,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
         },
         {
           phase: 3, title: "Stabilisierung", period: "Monat 4 – 6",
-          ziel: `Arbeitsweise in ${role} stabilisieren und langfristige Passung sichern.`,
+          ziel: `Arbeitsweise als ${role} stabilisieren und langfristige Passung sichern.`,
           items: [
             `Evaluation der bisherigen Wirkung in allen drei Bereichen.`,
             `Feinabstimmung der Zusammenarbeit mit dem direkten Umfeld.`,
@@ -1579,7 +1579,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
   let p3Fokus: IntegrationFokus;
 
   if (sameDom && !isBedingt) {
-    p1Ziel = `Stellenanforderungen in ${role} verstehen und Erwartungen abstimmen.`;
+    p1Ziel = `Stellenanforderungen der Position ${role} verstehen und Erwartungen abstimmen.`;
     p1Items.push(`Klärung der Entscheidungswege und Verantwortungsbereiche in der Stelle ${role}.`);
     p1Items.push(`Abstimmung der wichtigsten Arbeitsprioritäten mit dem direkten Umfeld.`);
     p1Items.push(`Transparenz über bestehende Abläufe, Prozesse und Qualitätsstandards.`);
@@ -1593,7 +1593,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
       ],
     };
 
-    p2Ziel = `Erste operative Verantwortung in ${role} übernehmen und Wirkung zeigen.`;
+    p2Ziel = `Erste operative Verantwortung als ${role} übernehmen und Wirkung zeigen.`;
     p2Items.push(`Eigenständige Übernahme erster Arbeitspakete mit Ergebnisprüfung.`);
     p2Items.push(`Feedback zur Wirkung auf Tempo, Qualität und Zusammenarbeit aktiv einholen.`);
     if (isLeader) p2Items.push(`Erste Führungsentscheidungen eigenständig treffen und reflektieren.`);
@@ -1607,7 +1607,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
       ],
     };
 
-    p3Ziel = `Arbeitsweise und ${isLeader ? "Führungsrhythmus" : "Arbeitsrhythmus"} in ${role} stabilisieren.`;
+    p3Ziel = `Arbeitsweise und ${isLeader ? "Führungsrhythmus" : "Arbeitsrhythmus"} als ${role} stabilisieren.`;
     p3Items.push(`Evaluation der bisherigen Wirkung auf Entscheidungsrhythmus und Belastung.`);
     p3Items.push(`Feinabstimmung der Zusammenarbeit mit dem direkten Umfeld.`);
     p3Items.push(`Prioritäten konsolidieren und Standards stabilisieren.`);
@@ -1624,7 +1624,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
   } else {
 
     if (rk === "impulsiv") {
-      p1Ziel = `Erwartungen an Tempo und Entscheidungsgeschwindigkeit in ${role} verstehen.`;
+      p1Ziel = `Erwartungen an Tempo und Entscheidungsgeschwindigkeit der Stelle ${role} verstehen.`;
       p1Items.push(`Erwartungen an Umsetzungstempo und Entscheidungsgeschwindigkeit in ${role} klären.`);
       p1Items.push(`Klare Umsetzungsfristen und Deadlines für die ersten Aufgaben definieren.`);
       p1Items.push(`Verantwortungsbereiche und Entscheidungsfreiräume abgrenzen.`);
@@ -1647,7 +1647,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
             ],
           };
 
-      p2Ziel = `Erste eigenverantwortliche Umsetzung in ${role} starten und Ergebnisse liefern.`;
+      p2Ziel = `Erste eigenverantwortliche Umsetzung als ${role} starten und Ergebnisse liefern.`;
       p2Items.push(`Erste eigenverantwortliche Umsetzungsprojekte mit messbaren Zielen starten.`);
       p2Items.push(`Entscheidungsgeschwindigkeit und Ergebnisorientierung beobachten und steuern.`);
       p2Items.push(`Feedbackschleifen verkürzen und schnelle Rückmeldungen etablieren.`);
@@ -1671,7 +1671,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
             ],
           };
 
-      p3Ziel = `Umsetzungsrhythmus und ${isLeader ? "Führungswirkung" : "Arbeitsweise"} in ${role} stabilisieren.`;
+      p3Ziel = `Umsetzungsrhythmus und ${isLeader ? "Führungswirkung" : "Arbeitsweise"} als ${role} stabilisieren.`;
       p3Items.push(`Ergebnisqualität und Tempo über die ersten 30 Tage auswerten.`);
       p3Items.push(`Nachsteuerung bei Übertaktung oder Unterforderung.`);
       p3Items.push(`Umsetzungserfolge sichtbar machen und verankern.`);
@@ -1679,7 +1679,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
       else p3Items.push(`Langfristige Meilensteine und Umsetzungsziele definieren.`);
 
     } else if (rk === "analytisch") {
-      p1Ziel = `Qualitätsstandards und Entscheidungslogik in ${role} verstehen.`;
+      p1Ziel = `Qualitätsstandards und Entscheidungslogik der Stelle ${role} verstehen.`;
       p1Items.push(`Klärung von Stelle, Erwartungshaltung und Qualitätsstandard in ${role}.`);
       p1Items.push(`Transparenz über bestehende Entscheidungs- und Dokumentationsstrukturen.`);
       p1Items.push(`Frühe Abstimmung von Prioritäten, Qualitätskriterien und Definition von 'Done'.`);
@@ -1703,7 +1703,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
             ],
           };
 
-      p2Ziel = `Erste strukturierte Arbeitsergebnisse in ${role} liefern und Standards etablieren.`;
+      p2Ziel = `Erste strukturierte Arbeitsergebnisse als ${role} liefern und Standards etablieren.`;
       p2Items.push(`Ein priorisiertes Thema strukturiert analysieren und verbessern.`);
       p2Items.push(`Feedback zur Wirkung auf Qualität, Nachvollziehbarkeit und Zusammenarbeit einholen.`);
       p2Items.push(`Einen klaren Standard (Checkliste, Playbook oder Dokumentation) einführen oder schärfen.`);
@@ -1726,7 +1726,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
             ],
           };
 
-      p3Ziel = `Qualitätsstandards und Prozesssteuerung in ${role} dauerhaft verankern.`;
+      p3Ziel = `Qualitätsstandards und Prozesssteuerung als ${role} dauerhaft verankern.`;
       p3Items.push(`Evaluation der Wirkung auf Entscheidungsrhythmus, Priorisierung und Belastung.`);
       p3Items.push(`Anpassung von Regeln, Schnittstellen und Qualitätsstandards.`);
       p3Items.push(`Prozessstabilität und Durchlaufzeiten prüfen.`);
@@ -1734,7 +1734,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
       else p3Items.push(`Langfristige Qualitätsziele und Dokumentationsstandards festlegen.`);
 
     } else {
-      p1Ziel = `Kommunikationserwartungen und Teamkultur in ${role} verstehen.`;
+      p1Ziel = `Kommunikationserwartungen und Teamkultur der Stelle ${role} verstehen.`;
       p1Items.push(`Kommunikationserwartungen und Teamkultur in ${role} transparent machen.`);
       p1Items.push(`Beziehungsaufbau mit Schlüsselpersonen aktiv einplanen.`);
       p1Items.push(`Feedback- und Gesprächsformate klären und terminieren.`);
@@ -1757,7 +1757,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
             ],
           };
 
-      p2Ziel = `Kommunikationswirkung und Beziehungsarbeit in ${role} aktiv gestalten.`;
+      p2Ziel = `Kommunikationswirkung und Beziehungsarbeit als ${role} aktiv gestalten.`;
       p2Items.push(`Regelmäßige Team-Feedbackrunden durchführen und moderieren.`);
       p2Items.push(`Kommunikationsstil und Wirkung auf das Umfeld reflektieren.`);
       p2Items.push(`Beziehungsarbeit als konkretes, messbares Ziel verfolgen.`);
@@ -1780,7 +1780,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
             ],
           };
 
-      p3Ziel = `Kommunikationsstandards und Teamwirkung in ${role} dauerhaft verankern.`;
+      p3Ziel = `Kommunikationsstandards und Teamwirkung als ${role} dauerhaft verankern.`;
       p3Items.push(`Wirkung der Kommunikation auf Teamdynamik und Zusammenarbeit bewerten.`);
       p3Items.push(`Teamzufriedenheit und Bindung erheben.`);
       p3Items.push(`Kommunikationsstandards dauerhaft verankern.`);

@@ -1256,13 +1256,13 @@ export default function SollIstBericht() {
                             </div>
                           </div>
                           <div style={{ padding: "16px 20px" }}>
-                            <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 14px", lineHeight: 1.5 }}>
-                              <span style={{ color: "#8E8E93", fontWeight: 700, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em" }}>Ziel: </span>{phase.ziel}
+                            <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 14px", lineHeight: 1.7 }}>
+                              <span style={{ fontWeight: 700 }}>Ziel: </span>{phase.ziel}
                             </p>
 
                             <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 16 }}>
                               {phase.items.map((item, i) => (
-                                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "6px 12px", borderRadius: 8, background: "rgba(0,0,0,0.02)" }}>
+                                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
                                   <div style={{ width: 6, height: 6, borderRadius: 3, background: phaseCol, flexShrink: 0, marginTop: 9 }} />
                                   <span style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7 }}>{item}</span>
                                 </div>
@@ -1270,7 +1270,7 @@ export default function SollIstBericht() {
                             </div>
 
                             <div style={{ padding: "14px 16px", borderRadius: 10, background: `${phaseCol}06`, borderLeft: `4px solid ${phaseCol}` }}>
-                              <p style={{ fontSize: 11, fontWeight: 700, color: phaseCol, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>Integrationsfokus</p>
+                              <p style={{ fontSize: 11, fontWeight: 700, color: phaseCol, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>Worauf es ankommt</p>
                               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 8px", hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{phase.fokus.intro}</p>
                               <ul style={{ margin: 0, paddingLeft: 0, listStyle: "none" }}>
                                 {phase.fokus.bullets.map((b, bi) => (
