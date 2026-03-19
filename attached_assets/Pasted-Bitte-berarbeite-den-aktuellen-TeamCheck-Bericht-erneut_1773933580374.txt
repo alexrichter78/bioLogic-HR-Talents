@@ -1,0 +1,237 @@
+Bitte überarbeite den aktuellen TeamCheck-Bericht erneut. Die Grundlogik ist jetzt deutlich besser, aber es bestehen noch inhaltliche und sprachliche Widersprüche. Es geht weiterhin nicht um Layout oder Design, sondern ausschließlich um die Textlogik, Konsistenz und sprachliche Finalisierung.
+
+WICHTIG:
+Die aktuelle Version ist in der Kernlogik näher an der richtigen Lösung, weil sie jetzt sauber zwischen Team-Passung und funktionaler / strategischer Passung unterscheidet. Genau diese Logik muss erhalten bleiben.
+
+AKTUELLE LOGIK, DIE BEIBEHALTEN WERDEN SOLL:
+- Person weicht deutlich vom bestehenden Team ab
+- Team ist dem funktionalen Ziel der Abteilung bereits relativ nah
+- Person ist dem funktionalen Ziel deutlich weniger nah
+- deshalb ist die Konstellation nicht als strategisch sinnvolle Korrektur zu beschreiben
+- sondern als teamdynamisch spannungsreiche und strategisch eher kritische Abweichung
+
+PROBLEM:
+Mehrere Textstellen klingen noch zu positiv oder widersprechen der Bewertung auf Seite 1. Besonders „Ergänzung“, „Chance“, „leistungsfähiger“ oder „funktionale Lücken schliessen“ sind in dieser konkreten Konstellation teilweise zu stark oder nicht sauber eingeordnet.
+
+ZIEL:
+Der Bericht soll am Ende vollständig konsistent sein:
+- im Kopfbereich
+- in der strategischen Einordnung
+- in der Systemwirkung
+- in Chancen / Risiken
+- in der Alternativwirkung
+- in der Handlungsempfehlung
+
+1. KOPFBEREICH KONSISTENT MACHEN
+Aktuell gibt es einen Widerspruch zwischen:
+- Systemwirkung = Spannungsreiche Ergänzung
+- Strategische Wirkung = kritische Abweichung
+
+Wenn die Person sowohl vom Team als auch vom funktionalen Ziel deutlich abweicht, darf „Ergänzung“ nicht zu positiv klingen.
+
+Bitte den Begriff „Systemwirkung“ für diesen Fall präziser und konsistenter formulieren.
+Geeignete Alternativen:
+- Kritische Spannung
+- Spannungsreiche Abweichung
+- Kritischer Strukturimpuls
+
+Regel:
+Wenn Person–Funktionsziel deutlich schlechter ist als Team–Funktionsziel, dann darf die Systemwirkung nicht wie eine primär nützliche Ergänzung klingen.
+
+2. FLIESSTEXT UNTER GESAMTBEWERTUNG AN KOPFBEGRIFFE ANGLEICHEN
+Der Fliesstext unter der Gesamtbewertung ist grundsätzlich schon näher an der richtigen Logik.
+Bitte sprachlich noch klarer machen:
+- Die Abweichung betrifft Team und Funktionsziel zugleich
+- Die Person bringt eine zusätzliche Qualität mit, aber nicht in der primären Zielrichtung der Abteilung
+- Deshalb ist die Konstellation insgesamt kritisch einzuordnen
+
+Sinngemäss:
+Die Person kann einzelne Bereiche ergänzen, unterstützt aber nicht die dominante Zielrichtung des Teams. Dadurch entsteht nicht nur Integrationsaufwand, sondern auch ein Risiko für die funktionale Klarheit des Systems.
+
+3. STRATEGISCHE EINORDNUNG SCHÄRFEN
+Die aktuelle strategische Einordnung ist grundsätzlich richtig.
+Bitte noch klarer herausarbeiten:
+- Das Team ist bereits auf das Funktionsziel ausgerichtet
+- Die Person bringt eine andere Hauptlogik mit
+- Diese Hauptlogik kann punktuell nützlich sein, ist aber nicht die primäre Zielrichtung der Abteilung
+- Ohne Steuerung kann dadurch die bestehende Ausrichtung verwässert werden
+
+WICHTIG:
+Nicht zu hart formulieren, aber klar.
+Nicht schreiben, dass die Person „falsch“ ist.
+Sondern:
+- funktional nicht primär passend
+- strategisch abweichend
+- in Teilaspekten ergänzend, in der Gesamtlogik jedoch nicht zielführend
+
+4. MANAGEMENTKURZFAZIT KONSEQUENT AUF KRITISCHE ABWEICHUNG AUSRICHTEN
+Das Kurzfazit ist bereits recht nah an der richtigen Linie.
+Bitte noch klarer machen:
+- Die Person bringt keine primäre Verstärkung der funktionalen Zielrichtung
+- Der Mehrwert liegt eher in Nebenqualitäten
+- Die Hauptwirkung ist aber Spannungsaufbau im bestehenden Zielsystem
+
+Also nicht:
+„sinnvolle Weiterentwicklung“
+sondern eher:
+„punktuelle Ergänzung ausserhalb der Hauptzielrichtung“
+
+5. ABSCHNITT „WARUM DIESES ERGEBNIS“ VERFEINERN
+Der Abschnitt ist inhaltlich okay, aber sprachlich noch roh.
+Bitte:
+- Groß-/Kleinschreibung korrigieren
+- Grammatik glätten
+- Formulierungen ruhiger machen
+- keine zu starken Wiederholungen
+
+Außerdem ergänzen:
+Die stärkere Ausprägung in Struktur und Analyse ist nicht grundsätzlich negativ, liegt aber nicht im Zentrum des funktionalen Ziels dieser Abteilung.
+
+6. ABSCHNITT „SYSTEMWIRKUNG“ KOMPLETT KONSISTENT MACHEN
+Hier liegt aktuell der größte Widerspruch.
+
+NICHT MEHR SO FORMULIEREN:
+„Die Konstellation wirkt als Ergänzung. ... Dadurch kann das Team breiter und leistungsfähiger werden.“
+
+Denn das widerspricht der Aussage:
+- Team ist bereits funktional passend
+- Person ist funktional abweichend
+
+Stattdessen soll die Logik so formuliert werden:
+- Die Person bringt eine zusätzliche Qualität in das Team ein
+- Diese Qualität liegt aber nicht in der primären Zielrichtung der Abteilung
+- Deshalb ist die Wirkung ambivalent:
+  - punktuell nützlich
+  - in der Gesamtlogik jedoch spannungsreich und begrenzt passend
+
+Beispielrichtung:
+„Die Besetzung bringt zusätzliche Struktur, Nachvollziehbarkeit und Qualitätsorientierung ins Team. Diese Wirkung kann in einzelnen Abläufen hilfreich sein. Sie verstärkt jedoch nicht die primäre Zielrichtung der Abteilung, die stärker auf Abstimmung und Zusammenarbeit ausgerichtet ist. Die Systemwirkung ist deshalb insgesamt spannungsreich und nur begrenzt funktional anschlussfähig.“
+
+WICHTIG:
+Auch die Formulierung
+„Für die Rolle Raumpfleger bedeutet das: Das Team erhält mehr Gewicht in Ordnung und sachliche Prüfung. Das ist grundsätzlich eine Chance.“
+bitte deutlich vorsichtiger formulieren.
+
+7. TEAMPROFIL UND PERSONENPROFIL FEINJUSTIEREN
+Diese Abschnitte sind schon besser.
+Bitte darauf achten:
+- keine unpassenden Überhöhungen
+- keine zu starke Idealisierung der Person
+- klare rollennahe Sprache
+
+Besonders beim Personenprofil:
+Die Person nicht zu stark als strategisch wertvoll darstellen, wenn sie zum Funktionsziel nicht primär passt.
+
+Besser:
+- bringt Verlässlichkeit
+- bringt Regelklarheit
+- bringt Nachvollziehbarkeit
+Aber:
+- unterstützt die Hauptzielrichtung nur begrenzt
+
+8. TEAM-SPANNUNGSANALYSE KONSISTENT HALTEN
+Der Abschnitt ist recht gut.
+Bitte nur noch feinschärfen:
+Im Bereich „Struktur und Analyse“ darf stehen, dass die Person deutlich mehr einbringt.
+Aber nicht automatisch:
+- Leistungsstärkung
+- klare funktionale Verbesserung
+
+sondern:
+- Veränderungsimpuls
+- mögliche Zusatzqualität
+- aktiv steuerungsbedürftig
+- nicht identisch mit der Hauptanforderung des Teams
+
+Im Bereich „Zusammenarbeit und Kommunikation“ klar belassen:
+Hier liegt die eigentliche funktionale Lücke der Person.
+
+9. AUSWIRKUNGEN AUF LEISTUNG UND ERGEBNISSE REALISTISCHER FORMULIEREN
+Einige Aussagen sind noch zu positiv für diese Konstellation.
+
+Beispiel:
+„Werden die unterschiedlichen Arbeitslogiken bewusst genutzt, kann die Konstellation sowohl Geschwindigkeit als auch Qualität stärken und funktionale Lücken im Team schliessen.“
+
+Das ist in diesem Fall zu optimistisch.
+
+Bitte ersetzen durch eine realistischere Logik:
+- punktuell mehr Struktur, Verlässlichkeit und Nachvollziehbarkeit möglich
+- gleichzeitig Risiko von Verlangsamung, Abstimmungsbrüchen oder Zielverschiebung
+- Nutzen nur in Teilaspekten, nicht als primäre Gesamtstärkung
+
+Die Konstellation darf bei diesem Fall nicht wie eine klare Leistungsverbesserung beschrieben werden.
+
+10. CHANCEN DEUTLICH ZURÜCKNEHMEN
+Der Abschnitt „Chancen“ muss stärker zur kritischen Gesamtlage passen.
+
+Bitte nur noch Chancen benennen, die in dieser Konstellation plausibel sind:
+- mehr Ordnung
+- mehr Verlässlichkeit
+- punktuelle Stärkung von Standards
+- zusätzliche Perspektive in strukturellen Fragen
+
+Aber nicht zu stark:
+- leistungsfähiger
+- widerstandsfähiger
+- funktionale Lücken schliessen
+- gezielte Weiterentwicklung Richtung Funktionsziel
+
+Denn genau das trifft in dieser Version nicht zu.
+
+11. RISIKEN SCHÄRFEN
+Der Risikoteil ist noch etwas zu allgemein.
+Bitte stärker hervorheben:
+- Die Person unterstützt die dominante Zielrichtung des Teams nur begrenzt
+- Die Hauptgefahr ist nicht nur Reibung, sondern Zielverschiebung
+- Zusätzliche Struktur kann in einem kommunikationsorientierten Team als hilfreich oder als Hemmnis erlebt werden
+- Ohne Führung kann die Abweichung das Team nicht ergänzen, sondern von seiner eigentlichen Zielrichtung wegziehen
+
+12. HANDLUNGSEMPFEHLUNG ERGÄNZEN
+Bitte wieder eine übergeordnete erste Empfehlung ergänzen:
+
+„Abweichende Wirkung klar einordnen“
+
+Sinngemäss:
+Zu Beginn sollte offen benannt werden, dass die Besetzung eine andere Arbeitslogik mitbringt, die einzelne Bereiche ergänzen kann, jedoch nicht die primäre Zielrichtung des Teams verstärkt. Nur wenn diese Abweichung klar eingeordnet wird, kann die Person gezielt eingesetzt werden, ohne die bestehende Teamlogik unnötig zu destabilisieren.
+
+Danach die bestehenden Punkte beibehalten:
+- Erwartungen verankern
+- Entscheidungsarchitektur klären
+- Stärken gezielt einsetzen
+- Integration aktiv steuern
+- strukturierte Feedbackschleifen
+
+13. ALTERNATIVWIRKUNG STÄRKER MACHEN
+Der aktuelle Abschnitt ist zu dünn.
+
+Bitte klarer formulieren:
+- Ohne die Besetzung bleibt das Team näher an seiner bisherigen funktionalen Zielrichtung
+- Zusätzliche Struktur-Impulse bleiben aus
+- Dafür entsteht aber auch kein zusätzlicher Anpassungsdruck im Bereich Zusammenarbeit und Kommunikation
+
+Beispielrichtung:
+„Ohne die aktuelle Besetzung bleibt die bestehende Teamlogik stabil und weiterhin näher am funktionalen Ziel der Abteilung. Zusätzliche Impulse in Richtung Struktur und Analyse bleiben zwar aus, gleichzeitig entsteht jedoch auch kein zusätzlicher Anpassungsdruck in der für das Team zentralen Abstimmungs- und Kommunikationslogik.“
+
+14. SPRACHLICHE FINALISIERUNG
+Bitte den gesamten Bericht sprachlich final glätten:
+- konsequente Groß- und Kleinschreibung
+- korrekte Grammatik
+- ruhiger, professioneller Satzfluss
+- weniger Wiederholungen
+- keine zu abrupten Wechsel zwischen positiver und kritischer Sprache
+- keine Widersprüche zwischen Überschriften, Kennzahlen und Fliesstext
+
+BESONDERS KORRIGIEREN:
+- „Zusammenarbeit und Kommunikation“ groß
+- „Struktur und Analyse“ groß
+- „Ordnung und sachliche Prüfung sind ...“
+- „Systematik und Prozesssicherheit“ groß
+- „Nachvollziehbarkeit und Qualitätsorientierung“ groß
+- alle ähnlichen Stellen konsistent
+
+ENDZUSTAND:
+Der Bericht soll am Ende diese Logik sauber transportieren:
+
+„Die Person weicht deutlich vom bestehenden Team ab und liegt auch nicht in der primären Zielrichtung des funktionalen Ziels der Abteilung. Sie bringt zwar einzelne zusätzliche Qualitäten mit, insbesondere im Bereich Struktur, Nachvollziehbarkeit und Qualitätsorientierung. Diese wirken jedoch nicht als zentrale Verstärkung der bestehenden Team- und Aufgabenlogik. Die Konstellation ist daher insgesamt als spannungsreich und strategisch eher kritisch zu bewerten. Die Führungsaufgabe besteht darin, die abweichende Wirkung klar einzuordnen, sinnvoll zu begrenzen und nur dort gezielt zu nutzen, wo sie dem System tatsächlich hilft.“
+
+Bitte überarbeite alle bestehenden Textbausteine des Berichts nach genau dieser Logik.

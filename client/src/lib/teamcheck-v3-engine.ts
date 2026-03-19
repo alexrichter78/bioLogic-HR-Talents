@@ -122,6 +122,23 @@ function goalLabelForRole(goalLabel: string, roleTitle: string): string {
   return goalLabel;
 }
 
+interface GoalContext {
+  goal: TeamGoal;
+  goalKey: ComponentKey | null;
+  goalLabel: string | null;
+  teamGoalAbweichung: number | null;
+  personGoalAbweichung: number | null;
+  personCloserToGoal: boolean;
+  personDivergesFromGoal: boolean;
+  teamAligned: boolean;
+  personAligned: boolean;
+  operative: boolean;
+  totalGap: number;
+  steuerungsaufwand: string;
+  personPrimary: ComponentKey;
+  teamPrimary: ComponentKey;
+}
+
 export function computeTeamCheckV3(input: TeamCheckV3Input): TeamCheckV3Result {
   const v2Input: TeamCheckV2Input = {
     roleTitle: input.roleTitle,
@@ -176,6 +193,13 @@ export function computeTeamCheckV3(input: TeamCheckV3Input): TeamCheckV3Result {
   }
 
   const operative = isOperativeRole(input.roleTitle);
+  const teamAligned = goalKey ? getPrimaryKey(input.teamProfile) === goalKey : false;
+  const personAligned = goalKey ? getPrimaryKey(input.personProfile) === goalKey : false;
+  const personCloserToGoal = (personGoalAbweichung !== null && teamGoalAbweichung !== null) ? personGoalAbweichung < teamGoalAbweichung : false;
+  const personDivergesFromGoal = !!(safeGoal && teamAligned && !personAligned);
+
+  const personPrimary = getPrimaryKey(input.personProfile);
+  const teamPrimary = getPrimaryKey(input.teamProfile);
 
   const ctx: GoalContext = {
     goal: safeGoal,
@@ -183,17 +207,20 @@ export function computeTeamCheckV3(input: TeamCheckV3Input): TeamCheckV3Result {
     goalLabel,
     teamGoalAbweichung,
     personGoalAbweichung,
-    personCloserToGoal: (personGoalAbweichung !== null && teamGoalAbweichung !== null) ? personGoalAbweichung < teamGoalAbweichung : false,
-    teamAligned: goalKey ? getPrimaryKey(input.teamProfile) === goalKey : false,
-    personAligned: goalKey ? getPrimaryKey(input.personProfile) === goalKey : false,
+    personCloserToGoal,
+    personDivergesFromGoal,
+    teamAligned,
+    personAligned,
     operative,
     totalGap,
     steuerungsaufwand,
+    personPrimary,
+    teamPrimary,
   };
 
   const { strategicFit, strategicText } = evaluateStrategicFit(safeGoal, input.teamProfile, input.personProfile, v2.roleType, ctx);
 
-  const systemwirkungLabel = refineSystemwirkungLabel(v2.systemwirkung, ctx);
+  const systemwirkungLabel = refineSystemwirkungLabel(v2.systemwirkung, ctx, strategicFit);
   const strategicWirkung = computeStrategicWirkung(ctx, strategicFit, v2.passung);
 
   const managementFazit = buildManagementFazit(v2, v1, input.roleTitle, ctx);
@@ -218,6 +245,10 @@ export function computeTeamCheckV3(input: TeamCheckV3Input): TeamCheckV3Result {
     }
   } else {
     integrationsrisiko = "gering";
+  }
+
+  if (personDivergesFromGoal && integrationsrisiko === "gering") {
+    integrationsrisiko = "mittel";
   }
 
   let erfolgsfaktor: string;
@@ -269,26 +300,18 @@ export function computeTeamCheckV3(input: TeamCheckV3Input): TeamCheckV3Result {
   };
 }
 
-interface GoalContext {
-  goal: TeamGoal;
-  goalKey: ComponentKey | null;
-  goalLabel: string | null;
-  teamGoalAbweichung: number | null;
-  personGoalAbweichung: number | null;
-  personCloserToGoal: boolean;
-  teamAligned: boolean;
-  personAligned: boolean;
-  operative: boolean;
-  totalGap: number;
-  steuerungsaufwand: string;
-}
+function refineSystemwirkungLabel(base: string, ctx: GoalContext, strategicFit: "passend" | "teilweise" | "abweichend" | null): string {
+  if (ctx.personDivergesFromGoal && base === "Ergänzung") {
+    if (strategicFit === "abweichend") return "Kritische Spannung";
+    return "Spannungsreiche Abweichung";
+  }
 
-function refineSystemwirkungLabel(base: string, ctx: GoalContext): string {
   if (base === "Ergänzung" && ctx.totalGap >= 50) {
     if (ctx.personCloserToGoal && !ctx.teamAligned) return "Korrekturimpuls";
     return "Spannungsreiche Ergänzung";
   }
   if (base === "Ergänzung" && ctx.totalGap >= 35) {
+    if (ctx.personCloserToGoal && !ctx.teamAligned) return "Strategische Ergänzung";
     return "Strategische Ergänzung";
   }
   return base;
@@ -300,7 +323,7 @@ function enrichSystemwirkungText(text: string, ctx: GoalContext, systemwirkung: 
     socialLabel = "Die soziale Systemwirkung ist deutlich: Unterschiedliche Arbeitslogiken erzeugen erhöhte Reibung in Arbeitsrhythmus, Abstimmung und Erwartungshaltung.";
   } else if (ctx.totalGap >= 30 || ctx.steuerungsaufwand === "mittel") {
     socialLabel = "Die soziale Systemwirkung ist spürbar: Im Arbeitsalltag entstehen Reibungspunkte in Abstimmung und Erwartungshaltung, die aktive Steuerung erfordern.";
-  } else if (systemwirkung === "Transformation" || systemwirkung === "Spannung" || systemwirkung === "Korrekturimpuls" || systemwirkung === "Spannungsreiche Ergänzung") {
+  } else if (systemwirkung === "Transformation" || systemwirkung === "Spannung" || systemwirkung === "Korrekturimpuls" || systemwirkung === "Spannungsreiche Ergänzung" || systemwirkung === "Kritische Spannung" || systemwirkung === "Spannungsreiche Abweichung") {
     socialLabel = "Die soziale Systemwirkung zeigt Reibungspunkte in Arbeitsrhythmus und Abstimmung.";
   } else {
     socialLabel = "Die soziale Systemwirkung ist gering: Die Besetzung fügt sich weitgehend nahtlos ein.";
@@ -311,7 +334,9 @@ function enrichSystemwirkungText(text: string, ctx: GoalContext, systemwirkung: 
   }
 
   let functionalLabel: string;
-  if (ctx.personCloserToGoal && !ctx.teamAligned) {
+  if (ctx.personDivergesFromGoal) {
+    functionalLabel = `Funktional bringt die Besetzung keine primäre Verstärkung in Richtung ${ctx.goalLabel}. Die Person kann in Teilbereichen ergänzend wirken, unterstützt aber nicht die dominante Zielrichtung der Abteilung. Die Systemwirkung ist deshalb insgesamt spannungsreich und nur begrenzt funktional anschlussfähig.`;
+  } else if (ctx.personCloserToGoal && !ctx.teamAligned) {
     functionalLabel = `Die funktionale Systemwirkung ist dagegen positiv: Die Person verstärkt genau die Wirkung, die das Ziel der Abteilung (${ctx.goalLabel}) erfordert. Soziale Reibung und funktionale Stärkung bestehen gleichzeitig und müssen als Einheit bewertet werden.`;
   } else if (ctx.personAligned && ctx.teamAligned) {
     functionalLabel = `Funktional bestätigt die Besetzung die bestehende Ausrichtung auf das Abteilungsziel (${ctx.goalLabel}). Die Wirkung ist systemstabilisierend.`;
@@ -343,6 +368,11 @@ function enrichPersonText(text: string, ctx: GoalContext): string {
       .replace(/Marktreaktion/g, "Reaktion auf veränderte Anforderungen");
   }
 
+  if (ctx.personDivergesFromGoal) {
+    const personBereich = componentBusinessNameFirst(ctx.personPrimary);
+    return adapted + `\n\nDie Person ist nicht primär auf das funktionale Ziel der Abteilung (${ctx.goalLabel}) ausgerichtet. Sie bringt Qualitäten im Bereich ${personBereich} mit, die punktuell nützlich sein können. Die Hauptzielrichtung der Abteilung wird dadurch jedoch nicht verstärkt, sondern bleibt auf die Steuerung durch das bestehende Team angewiesen.`;
+  }
+
   if (ctx.personAligned && !ctx.teamAligned) {
     return adapted + `\n\nDie Arbeitsweise der Person liegt näher am funktionalen Ziel der Abteilung (${ctx.goalLabel}) als die aktuelle Teamstruktur. Damit bringt sie eine Wirkung mit, die strategisch gewünscht ist.`;
   }
@@ -360,14 +390,22 @@ function enrichTension(v2Tension: TensionItem[], ctx: GoalContext): TensionItem[
 
   return v2Tension.map(t => {
     const isGoalDimension = t.key === ctx.goalKey;
-    if (!isGoalDimension) return t;
-
+    const isNonGoalDimension = !isGoalDimension;
     const diff = t.personValue - t.teamValue;
     if (Math.abs(diff) < 10) return t;
+
+    if (isNonGoalDimension && diff > 0 && ctx.personDivergesFromGoal) {
+      const extraSuffix = " Dieser Veränderungsimpuls liegt jedoch nicht in der primären Zielrichtung der Abteilung und ist daher als steuerungsbedürftig einzuordnen, nicht als primäre Leistungsstärkung.";
+      return { ...t, interpretation: t.interpretation + extraSuffix };
+    }
+
+    if (!isGoalDimension) return t;
 
     let suffix = "";
     if (diff > 0 && ctx.personAligned && !ctx.teamAligned) {
       suffix = ` Gleichzeitig liegt genau in diesem Bereich das funktionale Ziel der Abteilung (${ctx.goalLabel}), sodass die Abweichung nicht nur Spannungsquelle, sondern auch gezielte Leistungsstärkung sein kann.`;
+    } else if (diff < 0 && ctx.personDivergesFromGoal) {
+      suffix = ` Da das funktionale Ziel der Abteilung (${ctx.goalLabel}) genau in diesem Bereich liegt, zeigt sich hier die eigentliche funktionale Lücke der Person. Die geringere Ausprägung muss aktiv adressiert werden.`;
     } else if (diff < 0 && ctx.teamAligned && !ctx.personAligned) {
       suffix = ` Da das funktionale Ziel der Abteilung (${ctx.goalLabel}) in diesem Bereich liegt, kann die geringere Ausprägung der Person eine Lücke hinterlassen, die aktiv adressiert werden muss.`;
     }
@@ -422,7 +460,13 @@ function mergeReasons(v2Reasons: string[], v1: TeamReportResult, ctx: GoalContex
     }
   }
 
-  if (ctx.goal && ctx.goalLabel && ctx.personCloserToGoal && !ctx.teamAligned) {
+  if (ctx.personDivergesFromGoal && ctx.goalLabel) {
+    const personBereich = componentBusinessNameFirst(ctx.personPrimary);
+    const alreadyMentioned = reasons.some(r => r.toLowerCase().includes("funktional") && r.toLowerCase().includes("ziel"));
+    if (!alreadyMentioned) {
+      reasons.push(`Die stärkere Ausprägung der Person im Bereich ${personBereich} ist nicht grundsätzlich negativ, liegt aber nicht im Zentrum des funktionalen Ziels dieser Abteilung (${ctx.goalLabel}). Die Abweichung betrifft somit Team und Funktionsziel zugleich.`);
+    }
+  } else if (ctx.goal && ctx.goalLabel && ctx.personCloserToGoal && !ctx.teamAligned) {
     const alreadyMentioned = reasons.some(r => r.toLowerCase().includes("funktional") && r.toLowerCase().includes("ziel"));
     if (!alreadyMentioned) {
       reasons.push(`Die Person setzt andere Schwerpunkte als das Team, arbeitet aber näher am funktionalen Ziel der Abteilung (${ctx.goalLabel}). Sie wirkt im Team zunächst fremd, bewegt sich fachlich jedoch in die richtige Richtung.`);
@@ -444,7 +488,10 @@ function buildManagementFazit(v2: TeamCheckV2Result, v1: TeamReportResult, roleT
   }
 
   if (ctx.goal && ctx.goalLabel) {
-    if (ctx.personCloserToGoal && !ctx.teamAligned) {
+    if (ctx.personDivergesFromGoal) {
+      const personBereich = componentBusinessNameFirst(ctx.personPrimary);
+      lines.push(`Das Team ist bereits auf das funktionale Ziel (${ctx.goalLabel}) ausgerichtet. Die Person bringt eine andere Arbeitslogik mit, insbesondere im Bereich ${personBereich}. Diese kann in Teilaspekten ergänzend wirken, verstärkt aber nicht die primäre Zielrichtung der Abteilung. Dadurch entsteht nicht nur Integrationsaufwand, sondern auch ein Risiko für die funktionale Klarheit des Systems.`);
+    } else if (ctx.personCloserToGoal && !ctx.teamAligned) {
       lines.push(`Gleichzeitig entspricht die Arbeitsweise der Person dem funktionalen Ziel der Abteilung (${ctx.goalLabel}) stärker als die aktuelle Teamstruktur. Die Abweichung ist daher nicht nur als Integrationsrisiko, sondern auch als potenziell sinnvolle Weiterentwicklung des Teams zu bewerten.`);
     } else if (ctx.personAligned && ctx.teamAligned) {
       lines.push(`Sowohl das Team als auch die Person sind auf das funktionale Ziel (${ctx.goalLabel}) ausgerichtet. Die Integration stärkt die bestehende Arbeitslogik.`);
@@ -462,13 +509,19 @@ function buildManagementFazit(v2: TeamCheckV2Result, v1: TeamReportResult, roleT
   }
 
   if (v1.controlIntensity === "hoch" || v2.passung === "Kritisch") {
-    if (ctx.personCloserToGoal) {
+    if (ctx.personDivergesFromGoal) {
+      lines.push(`Ohne aktive Steuerung besteht das Risiko, dass die Abweichung die bestehende Teamlogik nicht ergänzt, sondern von ihrer eigentlichen Zielrichtung wegzieht.`);
+    } else if (ctx.personCloserToGoal) {
       lines.push(`Die Führungsaufgabe liegt weniger in der Frage der fachlichen Eignung als in der bewussten Integration einer funktional sinnvollen, aber kulturell spannungsreichen Wirkung.`);
     } else {
       lines.push(`Ohne aktive Steuerung sind Reibung, Konflikte und Leistungseinbrüche wahrscheinlich.`);
     }
   } else if (v1.controlIntensity === "mittel" || v2.passung === "Bedingt passend") {
-    lines.push(`Bei bewusster Führung kann die Konstellation produktiv wirken.`);
+    if (ctx.personDivergesFromGoal) {
+      lines.push(`Bei bewusster Führung kann die Konstellation in Teilbereichen produktiv wirken. Ohne Steuerung droht eine Verschiebung der Teamausrichtung weg vom funktionalen Ziel.`);
+    } else {
+      lines.push(`Bei bewusster Führung kann die Konstellation produktiv wirken.`);
+    }
   }
 
   return lines.join(" ");
@@ -479,13 +532,21 @@ function buildKulturwirkung(v2: TeamCheckV2Result, input: TeamCheckV3Input, ctx:
     ? ` Gleichzeitig bringt die Besetzung genau die Arbeitsweise mit, die das funktionale Ziel der Abteilung erfordert. Die kulturelle Reibung ist damit nicht nur Belastung, sondern auch Ausdruck einer funktional sinnvollen Veränderung.`
     : "";
 
+  const divergeSuffix = ctx.personDivergesFromGoal && ctx.goalLabel
+    ? ` Die Person kann in Teilbereichen zusätzliche Qualität einbringen, unterstützt aber nicht die dominante Zielrichtung der Abteilung (${ctx.goalLabel}). Die kulturelle Wirkung ist daher ambivalent: punktuell bereichernd, in der Gesamtlogik jedoch spannungsreich.`
+    : "";
+
   if (v2.systemwirkung === "Transformation") {
-    return `Die Besetzung verändert die Teamkultur grundlegend. Bestehende Arbeitsgewohnheiten, Entscheidungsmuster und Abstimmungsroutinen werden in Frage gestellt. Das verlangt klare Führung und transparente Veränderungskommunikation.${goalSuffix}`;
+    return `Die Besetzung verändert die Teamkultur grundlegend. Bestehende Arbeitsgewohnheiten, Entscheidungsmuster und Abstimmungsroutinen werden in Frage gestellt. Das verlangt klare Führung und transparente Veränderungskommunikation.${goalSuffix}${divergeSuffix}`;
   }
   if (v2.systemwirkung === "Spannung") {
-    return `Die Besetzung bringt einen anderen Arbeitsstil ein als das Team gewohnt ist. Dadurch entstehen kulturelle Reibungspunkte, die im Alltag sichtbar werden. Entscheidend ist, diese Unterschiede offen zu benennen und gemeinsame Spielregeln zu verankern.${goalSuffix}`;
+    return `Die Besetzung bringt einen anderen Arbeitsstil ein als das Team gewohnt ist. Dadurch entstehen kulturelle Reibungspunkte, die im Alltag sichtbar werden. Entscheidend ist, diese Unterschiede offen zu benennen und gemeinsame Spielregeln zu verankern.${goalSuffix}${divergeSuffix}`;
   }
   if (v2.systemwirkung === "Ergänzung") {
+    if (ctx.personDivergesFromGoal) {
+      const personBereich = componentBusinessNameFirst(ctx.personPrimary);
+      return `Die Besetzung bringt zusätzliche Qualität im Bereich ${personBereich} ins Team. Diese Wirkung kann in einzelnen Abläufen hilfreich sein. Sie verstärkt jedoch nicht die primäre Zielrichtung der Abteilung, die stärker auf ${ctx.goalLabel} ausgerichtet ist. Die Kulturwirkung ist deshalb insgesamt spannungsreich und nur begrenzt funktional anschlussfähig.`;
+    }
     if (refinedLabel === "Korrekturimpuls" || refinedLabel === "Spannungsreiche Ergänzung") {
       return `Die Besetzung erweitert die Teamkultur um deutlich andere Impulse. Obwohl sie eine funktional wichtige Lücke schliesst, ist die Reibung im Alltag spürbar und erfordert bewusste Steuerung.${goalSuffix}`;
     }
@@ -507,6 +568,8 @@ function buildRiskTimeline(v2: TeamCheckV2Result, v1: TeamReportResult, _input: 
       period: "0–3 Monate",
       text: goalPositive
         ? "Unterschiedliche Arbeitslogiken werden sichtbar. Die Person setzt andere Schwerpunkte als das Team. Diese Unterschiede können zunächst als Irritation wahrgenommen werden. Da die Person näher am funktionalen Ziel arbeitet, ist eine frühzeitige Einordnung dieser Wirkung durch die Führung entscheidend."
+        : ctx.personDivergesFromGoal
+        ? "Unterschiedliche Arbeitslogiken werden sichtbar. Die Person setzt andere Schwerpunkte als das Team, und diese liegen nicht in der primären Zielrichtung der Abteilung. Ohne frühzeitige Klärung verfestigen sich Muster, die das Team von seiner funktionalen Ausrichtung wegziehen können."
         : "Unterschiedliche Arbeitslogiken werden sichtbar. Erwartungsunterschiede an Geschwindigkeit, Abstimmungstiefe und Entscheidungsstil führen zu ersten Konflikten. Ohne frühzeitige Klärung verfestigen sich Muster.",
     });
     phases.push({
@@ -514,6 +577,8 @@ function buildRiskTimeline(v2: TeamCheckV2Result, v1: TeamReportResult, _input: 
       period: "3–12 Monate",
       text: goalPositive
         ? "Die Konstellation entscheidet sich: Werden die Unterschiede als gezielte Weiterentwicklung in Richtung des Funktionsziels eingeordnet und aktiv geführt, entsteht funktionale Wirksamkeit. Ohne diese Einordnung droht eine dauerhafte Reibungsfläche."
+        : ctx.personDivergesFromGoal
+        ? "Die Konstellation entscheidet sich: Entweder werden die Teilqualitäten der Person gezielt genutzt und klar vom Hauptziel abgegrenzt, oder die Abweichung erzeugt eine dauerhafte Reibungsfläche mit dem Risiko einer schleichenden Zielverschiebung."
         : "Entweder werden Unterschiede aktiv gesteuert und produktiv genutzt, oder es entsteht eine dauerhafte Reibungsfläche mit wiederkehrenden Konflikten und sinkendem Engagement.",
     });
     phases.push({
@@ -521,6 +586,8 @@ function buildRiskTimeline(v2: TeamCheckV2Result, v1: TeamReportResult, _input: 
       period: "12+ Monate",
       text: goalPositive
         ? "Bei erfolgreicher Integration entwickelt die Besetzung das Team langfristig in Richtung des funktionalen Ziels weiter. Die anfängliche Spannung weicht einer leistungsfähigeren Struktur. Ohne Steuerung bleibt das Risiko eines dauerhaften Kulturkonflikts."
+        : ctx.personDivergesFromGoal
+        ? "Langfristig beeinflusst die Besetzung das Arbeitsmuster des Teams. Ohne Steuerung kann die bestehende funktionale Ausrichtung verwässern. Bei gezielter Führung können die Teilqualitäten der Person als Zusatzressource genutzt werden, ohne die Hauptzielrichtung zu verändern."
         : "Langfristig beeinflusst die Besetzung das Arbeitsmuster des gesamten Teams. Das kann eine bewusste Weiterentwicklung sein, aber auch zu schleichendem Kulturkonflikt und Fluktuation führen.",
     });
   } else if (v2.passung === "Bedingt passend") {
@@ -529,18 +596,24 @@ function buildRiskTimeline(v2: TeamCheckV2Result, v1: TeamReportResult, _input: 
       period: "0–3 Monate",
       text: goalPositive
         ? "Unterschiede im Arbeitsstil werden spürbar. Die Person bringt Impulse mit, die näher am Funktionsziel liegen als die bestehende Teamstruktur. Aktive Begleitung hilft, die Wirkung richtig einzuordnen."
+        : ctx.personDivergesFromGoal
+        ? "Unterschiede im Arbeitsstil werden spürbar. Die Person bringt andere Schwerpunkte ein, die nicht in der primären Zielrichtung der Abteilung liegen. Aktive Begleitung ist wichtig, damit die Teilqualitäten gezielt genutzt und richtig eingeordnet werden."
         : "Unterschiede im Arbeitsstil werden spürbar. Die Besetzung muss sich auf die Teamlogik einstellen, das Team auf die neuen Impulse. In dieser Phase ist aktive Begleitung wichtig.",
     });
     phases.push({
       label: "Konsolidierung",
       period: "3–12 Monate",
-      text: "Bei guter Steuerung stabilisiert sich die Zusammenarbeit. Ohne Begleitung bleiben Reibungspunkte bestehen und können sich zu wiederkehrenden Spannungen entwickeln.",
+      text: ctx.personDivergesFromGoal
+        ? "Bei guter Steuerung stabilisiert sich die Zusammenarbeit, und die Teilqualitäten der Person können gezielt eingesetzt werden. Ohne Begleitung besteht das Risiko, dass die Teamausrichtung schleichend vom funktionalen Ziel abdriftet."
+        : "Bei guter Steuerung stabilisiert sich die Zusammenarbeit. Ohne Begleitung bleiben Reibungspunkte bestehen und können sich zu wiederkehrenden Spannungen entwickeln.",
     });
     phases.push({
       label: "Langfristige Wirkung",
       period: "12+ Monate",
       text: goalPositive
         ? "Die Besetzung prägt das Team nachhaltig und kann die Ausrichtung in Richtung des funktionalen Ziels stärken. Bei fehlender Steuerung bleiben die Unterschiede als ungelöste Spannungsquelle bestehen."
+        : ctx.personDivergesFromGoal
+        ? "Die Besetzung prägt das Team nachhaltig. Die Teilqualitäten können bei gezielter Steuerung als Zusatzstärke wirken. Ohne Führung besteht das Risiko, dass die bestehende Zielausrichtung an Klarheit verliert."
         : "Die Besetzung prägt das Team nachhaltig. Die Unterschiede können das Team breiter aufstellen oder bei fehlender Steuerung zu kultureller Drift führen.",
     });
   } else {
@@ -589,7 +662,9 @@ function buildStrukturdiagnose(teamProfile: Triad, personProfile: Triad, roleTyp
   }
 
   if (ctx.goal && ctx.goalLabel && ctx.goalKey) {
-    if (!ctx.teamAligned && ctx.personAligned) {
+    if (ctx.personDivergesFromGoal) {
+      strukturwirkung += `\n\nDas Team ist bereits auf das funktionale Ziel (${ctx.goalLabel}) ausgerichtet. Die Person bringt eine andere Dominanz mit (${personDom}), die nicht in der primären Zielrichtung liegt. Dadurch kann die bestehende Ausrichtung verwässert werden, wenn die Unterschiede nicht bewusst gesteuert werden.`;
+    } else if (!ctx.teamAligned && ctx.personAligned) {
       strukturwirkung += `\n\nIm Verhältnis zum funktionalen Ziel (${ctx.goalLabel}) zeigt das Team eine Untergewichtung. Die Person schliesst diese Lücke strukturell.`;
     } else if (ctx.teamAligned && !ctx.personAligned) {
       strukturwirkung += `\n\nDas Team ist bereits auf das funktionale Ziel (${ctx.goalLabel}) ausgerichtet. Die Person bringt eine andere Dominanz mit, was die bestehende Ausrichtung verändern kann.`;
@@ -643,8 +718,11 @@ function buildLeistungswirkung(teamProfile: Triad, personProfile: Triad, ctx: Go
   let wirkungAufErgebnisse: string;
   if (teamPrimary === personPrimary) {
     wirkungAufErgebnisse = "Da beide Seiten ähnliche Arbeitslogiken teilen, können Ergebnisse effizient und mit hoher Konsistenz erzielt werden. Wichtig ist, blinde Flecken bewusst zu adressieren, die durch die gemeinsame Perspektive entstehen können.";
+  } else if (ctx.personDivergesFromGoal) {
+    const personBereich = componentBusinessNameFirst(personPrimary);
+    wirkungAufErgebnisse = `Die Person kann punktuell mehr ${personBereich} in den Arbeitsalltag einbringen. Gleichzeitig besteht das Risiko von Abstimmungsbrüchen und einer schleichenden Verschiebung der Arbeitsprioritäten. Der Nutzen liegt in Teilaspekten, nicht in einer umfassenden Stärkung der Gesamtleistung. Ohne klare Führung fliesst Energie eher in Anpassungsprozesse als in Ergebnisse.`;
   } else {
-    wirkungAufErgebnisse = "Werden die unterschiedlichen Arbeitslogiken bewusst genutzt, kann die Konstellation sowohl Geschwindigkeit als auch Qualität stärken und funktionale Lücken im Team schliessen. Ohne klare Abstimmung fliesst Energie eher in Abstimmungsprozesse als in Ergebnisse.";
+    wirkungAufErgebnisse = "Werden die unterschiedlichen Arbeitslogiken bewusst genutzt, kann die Konstellation in Teilbereichen sowohl Geschwindigkeit als auch Qualität stärken. Ohne klare Abstimmung fliesst Energie eher in Abstimmungsprozesse als in Ergebnisse.";
   }
 
   return { entscheidungsqualitaet, umsetzungsgeschwindigkeit, prioritaetensetzung, wirkungAufErgebnisse };
@@ -662,6 +740,9 @@ function buildIntegrationsfaktor(teamProfile: Triad, personProfile: Triad, passu
     integrationsfaehigkeit = "Die Integration fällt voraussichtlich leicht, da die Arbeitslogiken gut zueinander passen. Erwartungen und Prioritäten sind von Beginn an ähnlich ausgerichtet.";
   } else if (passung === "Bedingt passend") {
     integrationsfaehigkeit = "Die Integration hängt davon ab, wie bewusst die unterschiedlichen Arbeitslogiken im Alltag geführt werden. Je klarer Erwartungen und Entscheidungswege definiert sind, desto leichter gelingt die Zusammenarbeit.";
+    if (ctx.personDivergesFromGoal) {
+      integrationsfaehigkeit += " Dabei ist zu berücksichtigen, dass die Person nicht in der primären Zielrichtung der Abteilung arbeitet. Die Integration muss deshalb besonders sorgfältig gesteuert werden, damit die Teilqualitäten gezielt genutzt werden, ohne die Hauptausrichtung zu verwässern.";
+    }
   } else {
     integrationsfaehigkeit = "Die Integration erfordert aktive Steuerung und bewusste Begleitung. Ohne klare Orientierung und regelmässige Abstimmung besteht das Risiko, dass Reibung und Frustration die Zusammenarbeit belasten.";
     if (ctx.personCloserToGoal) {
@@ -690,6 +771,8 @@ function buildIntegrationsfaktor(teamProfile: Triad, personProfile: Triad, passu
   let stabilisierung: string;
   if (passung === "Passend") {
     stabilisierung = "Die bestehende Teamstabilität kann erhalten bleiben, während gleichzeitig neue Impulse aufgenommen werden.";
+  } else if (ctx.personDivergesFromGoal) {
+    stabilisierung = "Bewusste Integration kann die Teilqualitäten der Person als Zusatzressource nutzbar machen. Ohne gezielte Steuerung besteht das Risiko, dass die bestehende Teamausrichtung an Klarheit verliert.";
   } else {
     stabilisierung = "Bewusste Integration kann neue Stärken ins Team einbringen, ohne die bestehende Stabilität zu gefährden. Ohne Steuerung steigt das Risiko dauerhafter Spannungen.";
   }
@@ -704,19 +787,26 @@ function buildAlternativwirkung(teamProfile: Triad, personProfile: Triad, ctx: G
 
   const lines: string[] = [];
 
-  lines.push("Ohne die aktuelle Besetzung bleibt die bestehende Arbeitslogik des Teams weitgehend stabil.");
-
-  if (ctx.goal && ctx.goalLabel && !ctx.teamAligned) {
+  if (ctx.personDivergesFromGoal && ctx.goalLabel) {
+    lines.push(`Ohne die aktuelle Besetzung bleibt die bestehende Arbeitslogik des Teams stabil und weiterhin näher am funktionalen Ziel der Abteilung (${ctx.goalLabel}).`);
+    lines.push(`Zusätzliche Impulse im Bereich ${personBereich} bleiben zwar aus. Gleichzeitig entsteht jedoch auch kein zusätzlicher Anpassungsdruck in der für das Team zentralen Arbeitslogik.`);
+    lines.push(`Die bestehende Teamausrichtung bleibt ungefährdet, aber auch unverändert. Die Frage ist, ob die zusätzliche Qualität der Person den Steuerungsaufwand und das Risiko einer Zielverschiebung rechtfertigt.`);
+  } else if (ctx.goal && ctx.goalLabel && ctx.personCloserToGoal && !ctx.teamAligned) {
+    lines.push("Ohne die aktuelle Besetzung bleibt die bestehende Arbeitslogik des Teams weitgehend stabil.");
     lines.push(`Gleichzeitig bleibt die bestehende Lücke zum funktionalen Ziel (${ctx.goalLabel}) unverändert bestehen. Die Chance auf eine gezielte Weiterentwicklung in diese Richtung würde ungenutzt bleiben.`);
-  }
-
-  if (teamPrimary !== personPrimary) {
-    lines.push(`Die Besetzung bringt eine andere Arbeitslogik ins System ein, insbesondere im Bereich ${personBereich}. Dadurch entstehen neue Impulse in Bereichen, in denen das Team bislang weniger stark aufgestellt ist.`);
+    if (teamPrimary !== personPrimary) {
+      lines.push(`Die Besetzung bringt eine andere Arbeitslogik ins System ein, insbesondere im Bereich ${personBereich}. Dadurch entstehen neue Impulse in Bereichen, in denen das Team bislang weniger stark aufgestellt ist.`);
+    }
+    lines.push("Ob diese Veränderung zu einer nachhaltigen Verbesserung führt, hängt massgeblich davon ab, wie bewusst die unterschiedlichen Arbeitsweisen im Alltag gesteuert werden.");
   } else {
-    lines.push(`Die Besetzung verstärkt die bestehende Arbeitslogik im Bereich ${personBereich}. Das festigt das vorhandene Muster, macht es aber auch einseitiger.`);
+    lines.push("Ohne die aktuelle Besetzung bleibt die bestehende Arbeitslogik des Teams weitgehend stabil.");
+    if (teamPrimary !== personPrimary) {
+      lines.push(`Die Besetzung bringt eine andere Arbeitslogik ins System ein, insbesondere im Bereich ${personBereich}. Dadurch entstehen neue Impulse in Bereichen, in denen das Team bislang weniger stark aufgestellt ist.`);
+    } else {
+      lines.push(`Die Besetzung verstärkt die bestehende Arbeitslogik im Bereich ${personBereich}. Das festigt das vorhandene Muster, macht es aber auch einseitiger.`);
+    }
+    lines.push("Ob diese Veränderung zu einer nachhaltigen Verbesserung führt, hängt massgeblich davon ab, wie bewusst die unterschiedlichen Arbeitsweisen im Alltag gesteuert werden.");
   }
-
-  lines.push("Ob diese Veränderung zu einer nachhaltigen Verbesserung führt, hängt massgeblich davon ab, wie bewusst die unterschiedlichen Arbeitsweisen im Alltag gesteuert werden.");
 
   return lines.join("\n\n");
 }
@@ -724,6 +814,20 @@ function buildAlternativwirkung(teamProfile: Triad, personProfile: Triad, ctx: G
 function buildChances(v2Chances: string[], ctx: GoalContext, personProfile: Triad): string[] {
   const personPrimary = getPrimaryKey(personProfile);
   const result: string[] = [];
+
+  if (ctx.personDivergesFromGoal) {
+    const personBereich = componentBusinessNameFirst(personPrimary);
+    if (personPrimary === "analytisch") {
+      result.push("Mehr Ordnung, klarere Standards und höhere Verlässlichkeit in einzelnen Arbeitsabläufen.");
+    } else if (personPrimary === "impulsiv") {
+      result.push("Mehr operative Geschwindigkeit und stärkere Ergebnisorientierung in einzelnen Aufgabenbereichen.");
+    } else {
+      result.push("Bessere Abstimmungsqualität und stärkerer Zusammenhalt in einzelnen Arbeitsbereichen.");
+    }
+    result.push(`Punktuelle Stärkung im Bereich ${personBereich}, die bei gezieltem Einsatz als Zusatzressource wirken kann.`);
+    result.push("Zusätzliche Perspektive, die bei bewusster Steuerung blinde Flecken im Team sichtbar machen kann.");
+    return result.slice(0, 4);
+  }
 
   if (ctx.goal && ctx.goalLabel && ctx.personCloserToGoal && !ctx.teamAligned) {
     result.push(`Ausgleich einer funktionalen Untergewichtung: Die Person stärkt gezielt den Bereich ${ctx.goalLabel}, in dem das Team bislang weniger stark aufgestellt ist.`);
@@ -780,7 +884,11 @@ function buildRisks(v2Risks: string[], ctx: GoalContext): string[] {
     result.push(specificRisk);
   }
 
-  if (ctx.goal && ctx.personCloserToGoal && !ctx.teamAligned) {
+  if (ctx.personDivergesFromGoal && ctx.goalLabel) {
+    result.push(`Die Hauptgefahr ist nicht nur Reibung, sondern eine schleichende Zielverschiebung. Die Person unterstützt die dominante Zielrichtung des Teams (${ctx.goalLabel}) nur begrenzt. Ohne Führung kann die Abweichung das Team nicht ergänzen, sondern von seiner eigentlichen Ausrichtung wegziehen.`);
+    const personBereich = componentBusinessNameFirst(ctx.personPrimary);
+    result.push(`Zusätzliche ${personBereich} kann in einem auf ${ctx.goalLabel} ausgerichteten Team als hilfreich oder als Hemmnis erlebt werden. Ohne klare Einordnung durch die Führung entsteht Verunsicherung im Team.`);
+  } else if (ctx.goal && ctx.personCloserToGoal && !ctx.teamAligned) {
     result.push("Es kann zu einer Polarisierung zwischen bestehender und neuer Arbeitsweise kommen. Bestehende Teamstärken und neue Anforderungen müssen bewusst verbunden werden, damit sie zusammenwirken statt nebeneinander stehen.");
     result.push("Das grösste Risiko besteht darin, dass eine funktional sinnvolle Wirkung als persönliche Störung fehlinterpretiert und ausgebremst wird, bevor sie ihren Beitrag entfalten kann.");
   } else {
@@ -798,12 +906,19 @@ function buildRisks(v2Risks: string[], ctx: GoalContext): string[] {
 
 function enrichAdvice(v2Advice: AdviceItem[], ctx: GoalContext): AdviceItem[] {
   const advice = [...v2Advice];
-  if (ctx.goal && ctx.goalLabel && ctx.personCloserToGoal && !ctx.teamAligned) {
+
+  if (ctx.personDivergesFromGoal && ctx.goalLabel) {
+    advice.unshift({
+      title: "Abweichende Wirkung klar einordnen",
+      text: `Zu Beginn sollte offen benannt werden, dass die Besetzung eine andere Arbeitslogik mitbringt, die einzelne Bereiche ergänzen kann, jedoch nicht die primäre Zielrichtung des Teams (${ctx.goalLabel}) verstärkt. Nur wenn diese Abweichung klar eingeordnet wird, kann die Person gezielt eingesetzt werden, ohne die bestehende Teamlogik unnötig zu destabilisieren.`,
+    });
+  } else if (ctx.goal && ctx.goalLabel && ctx.personCloserToGoal && !ctx.teamAligned) {
     advice.unshift({
       title: "Strategische Wirkung offen einordnen",
       text: `Zu Beginn muss benannt werden, dass die Besetzung nicht nur auf Integration, sondern auch auf die funktionale Weiterentwicklung des Teams in Richtung ${ctx.goalLabel} einzahlt. Nur wenn diese Wirkung offen eingeordnet wird, kann die entstehende Spannung als gewollte Entwicklung statt als persönliche Störung verstanden werden.`,
     });
   }
+
   return advice;
 }
 
@@ -840,6 +955,7 @@ function computeStrategicWirkung(
     return "stabil passend";
   }
   if (strategicFit === "teilweise") {
+    if (ctx.personDivergesFromGoal) return "begrenzt anschlussfähig";
     return "gezielte Ergänzung";
   }
   if (strategicFit === "abweichend" && passung === "Kritisch") {
@@ -898,10 +1014,11 @@ function evaluateStrategicFit(
       lines.push(`Die Herausforderung liegt weniger in der fachlichen Eignung als in der wirksamen Integration in das bestehende Teamgefüge. Als Teammitglied braucht die Person Rückendeckung durch die Führung, damit die veränderte Arbeitsweise als gewollte Entwicklung wahrgenommen wird.`);
     }
   } else if (teamAligned && !personAligned) {
+    const personBereich = componentBusinessNameFirst(personPrimary);
     if (strategicFit === "teilweise") {
-      lines.push(`Das Team ist bereits auf das Funktionsziel ausgerichtet. Die Person bringt das Ziel als Nebenkomponente mit (${personGoalValue} %), was einen ergänzenden Beitrag leisten kann, ohne die bestehende Ausrichtung zu gefährden.`);
+      lines.push(`Das Team ist bereits auf das Funktionsziel ausgerichtet. Die Person bringt das Ziel als Nebenkomponente mit (${personGoalValue} %), arbeitet aber primär mit einer anderen Logik (${personBereich}). Dadurch ist der Beitrag zum funktionalen Ziel begrenzt und muss gezielt gesteuert werden.`);
     } else {
-      lines.push(`Das Team ist bereits auf das Funktionsziel ausgerichtet. Die Person arbeitet jedoch mit einer anderen Logik (primär ${componentBusinessNameFirst(personPrimary)}). Das kann die Teamausrichtung verwässern, wenn keine gezielte Steuerung erfolgt.`);
+      lines.push(`Das Team ist bereits auf das Funktionsziel ausgerichtet. Die Person arbeitet jedoch mit einer anderen Hauptlogik (primär ${personBereich}). Diese Logik kann punktuell nützlich sein, verstärkt aber nicht die primäre Zielrichtung der Abteilung. Ohne gezielte Steuerung kann die bestehende Ausrichtung verwässert werden.`);
     }
   } else {
     if (strategicFit === "teilweise") {
