@@ -813,12 +813,45 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
     candidatePattern = `${s} arbeitet situativ und tempoorientiert. Strukturierte Planung und Dokumentation haben geringe Priorität.`;
   }
 
+  const secI = ct.impulsiv;
+  const secN = ct.intuitiv;
+  const secA = ct.analytisch;
+  const sec2 = ck === "impulsiv" ? Math.max(secN, secA) : ck === "intuitiv" ? Math.max(secI, secA) : Math.max(secI, secN);
+  const sec3 = ck === "impulsiv" ? Math.min(secN, secA) : ck === "intuitiv" ? Math.min(secI, secA) : Math.min(secI, secN);
+  const competing23 = Math.abs(sec2 - sec3) <= 5 && sec2 > 15;
+
   if (gapA >= 10 && ct.analytisch < rt.analytisch) {
-    risk = `Bei parallelen Aufgaben handelt ${subj(cand)} eher schnell statt Schritte zu prüfen. Prüfschritte werden verkürzt. Die Führungskraft muss Prozessklarheit aktiv einfordern.`;
+    if (ck === "analytisch") {
+      if (competing23) {
+        risk = `${s} arbeitet grundsätzlich strukturiert, aber die beiden Nebenkomponenten sind fast gleich stark. Unter Druck konkurrieren Handlungsimpulse und Abstimmungsbedürfnisse – die analytische Linie wird instabil. Die Führungskraft muss klare Prozessvorgaben setzen.`;
+      } else {
+        risk = `${s} arbeitet strukturiert, aber der analytische Anteil reicht nicht vollständig für die Stellenanforderung. Bei hoher Komplexität fehlt die letzte Tiefe in Prüfung und Dokumentation. Die Führungskraft sollte Qualitätsstandards klar definieren.`;
+      }
+    } else if (ck === "impulsiv") {
+      if (competing23) {
+        risk = `${s} priorisiert Tempo vor Struktur. Da die beiden Nebenkomponenten konkurrieren, fehlt ein stabiler Ausgleich zur Handlungsorientierung. Prüfschritte werden verkürzt oder übersprungen. Die Führungskraft muss Prozessklarheit aktiv einfordern.`;
+      } else {
+        risk = `Bei parallelen Aufgaben handelt ${subj(cand)} eher schnell statt Schritte zu prüfen. Prüfschritte werden verkürzt oder übersprungen. Die Führungskraft muss Prozessklarheit aktiv einfordern.`;
+      }
+    } else {
+      if (competing23) {
+        risk = `${s} steuert über Abstimmung und Kommunikation statt über Struktur. Da die beiden Nebenkomponenten konkurrieren, wechselt die Arbeitsweise situativ. Verbindliche Abläufe entstehen nicht von allein. Die Führungskraft muss Prozessrahmen vorgeben.`;
+      } else {
+        risk = `${s} arbeitet kontextbezogen und stimmt sich lieber ab, statt Abläufe strukturiert zu planen. Dokumentation und formale Prüfung haben geringe Priorität. Die Führungskraft muss Prozessstandards einfordern.`;
+      }
+    }
   } else if (gapA >= 10 && ct.analytisch > rt.analytisch) {
-    risk = `Aufgaben werden länger geprüft als notwendig. ${s} investiert mehr Zeit in Planung und Absicherung als die Stelle erlaubt. Das bremst das Gesamttempo.`;
+    if (competing23) {
+      risk = `Aufgaben werden gründlicher geprüft als die Stelle erfordert. Da die Nebenkomponenten konkurrieren, fehlt ein klarer Impuls zum Abschluss. ${s} investiert zu viel Zeit in Absicherung. Das bremst das Gesamttempo.`;
+    } else {
+      risk = `Aufgaben werden länger geprüft als notwendig. ${s} investiert mehr Zeit in Planung und Absicherung als die Stelle erlaubt. Das bremst das Gesamttempo.`;
+    }
   } else {
-    risk = "Arbeitssteuerung passt grundsätzlich zur Stelle. Feinabstimmung nötig, aber die Grundlogik stimmt.";
+    if (competing23) {
+      risk = "Arbeitssteuerung passt grundsätzlich zur Stelle. Die konkurrierenden Nebenkomponenten können situativ zu wechselndem Arbeitsstil führen. Feinabstimmung durch Führung empfohlen.";
+    } else {
+      risk = "Arbeitssteuerung passt grundsätzlich zur Stelle. Feinabstimmung nötig, aber die Grundlogik stimmt.";
+    }
   }
 
   return { id: "work_structure", label: "Arbeitsweise", severity: sev, roleNeed, candidatePattern, risk };
