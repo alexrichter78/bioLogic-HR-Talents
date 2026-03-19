@@ -1129,10 +1129,6 @@ export default function SollIstBericht() {
                           <div style={{ display: "flex", borderRadius: 10, background: "rgba(0,0,0,0.025)", border: "1px solid rgba(0,0,0,0.06)", overflow: "hidden" }}>
                             <div style={{ width: 4, flexShrink: 0, background: sevCol }} />
                             <div style={{ padding: "12px 16px", flex: 1 }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-                              <AlertTriangle style={{ width: 14, height: 14, color: "#FF9500", flexShrink: 0 }} />
-                              <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", fontStyle: "italic" }}>Mögliche Folge</span>
-                            </div>
                             <p style={{ fontSize: 14, lineHeight: 1.85, margin: 0, color: "#48484A", wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{area.risk}</p>
                             </div>
                           </div>
