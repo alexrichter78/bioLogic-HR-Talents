@@ -992,8 +992,8 @@ export default function SollIstBericht() {
                             <div style={{ marginBottom: result.constellationRisks.length > 0 ? 14 : 0 }}>
                               <SubHead num={3} title="Warum dieses Ergebnis" color={fitCol} />
                               {result.executiveBullets.map((b, i) => (
-                                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 4 }}>
-                                  <span style={{ width: 5, height: 5, borderRadius: 3, background: fitCol, flexShrink: 0, marginTop: 6 }} />
+                                <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                                  <span style={{ width: 5, height: 5, borderRadius: 3, background: fitCol, flexShrink: 0 }} />
                                   <span style={{ fontSize: 14, lineHeight: 1.6, color: "#48484A" }}>{b}</span>
                                 </div>
                               ))}
@@ -1003,8 +1003,8 @@ export default function SollIstBericht() {
                             <div>
                               <SubHead num={4} title="Risiken dieser Konstellation" color={BIO_COLORS.nichtGeeignet} />
                               {result.constellationRisks.map((r, i) => (
-                                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 4 }}>
-                                  <span style={{ width: 5, height: 5, borderRadius: 3, background: BIO_COLORS.nichtGeeignet, flexShrink: 0, marginTop: 6 }} />
+                                <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                                  <span style={{ width: 5, height: 5, borderRadius: 3, background: BIO_COLORS.nichtGeeignet, flexShrink: 0 }} />
                                   <span style={{ fontSize: 14, lineHeight: 1.6, color: "#48484A" }}>{r}</span>
                                 </div>
                               ))}
