@@ -1345,10 +1345,10 @@ export default function Rollenprofil() {
   );
 
   const SECTION_COLORS = {
-    rollenDna: domColor,
-    verhalten: "#6366F1",
-    teamwirkung: "#0EA5E9",
-    fazit: "#10B981",
+    rollenDna: "#0F3A6E",
+    verhalten: "#0F3A6E",
+    teamwirkung: "#0F3A6E",
+    fazit: "#0F3A6E",
   };
 
   const getSubCircle = (num: number, color: string) => {
