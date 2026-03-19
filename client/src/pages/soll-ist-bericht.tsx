@@ -1020,7 +1020,7 @@ export default function SollIstBericht() {
 
               <div style={{ padding: "36px 44px 48px" }}>
 
-              <div data-pdf-block style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-comparison-bars">
+              <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-comparison-bars">
                 <SectionHead num={2} title="Vergleich der Profile" />
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                   {biggestGapText(result.roleTriad, result.candTriad)}
@@ -1104,7 +1104,7 @@ export default function SollIstBericht() {
                 </div>
               </div>
 
-              <div data-pdf-block style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-impact-matrix">
+              <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-impact-matrix">
                 <SectionHead num={3} title="Wirkung der Besetzung im Arbeitsalltag" />
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {result.impactAreas.map((area, areaIdx) => {
@@ -1139,7 +1139,7 @@ export default function SollIstBericht() {
                 </div>
               </div>
 
-              <div data-pdf-block style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-stress-behavior">
+              <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-stress-behavior">
                 <SectionHead num={4} title="Verhalten unter Druck" />
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF950008", border: "1px solid #FF950018", overflow: "visible" }}>
@@ -1162,7 +1162,7 @@ export default function SollIstBericht() {
                 </p>
               </div>
 
-              <div data-pdf-block style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-risk-timeline">
+              <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-risk-timeline">
                 <SectionHead num={5} title="Risikoprognose" />
                 <div style={{ position: "relative", paddingLeft: 28 }}>
                   <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
@@ -1207,7 +1207,7 @@ export default function SollIstBericht() {
                 const rGaugeCol = rDev === 3 ? "#34C759" : rDev === 2 ? "#E5A832" : "#D64045";
 
                 return (
-                  <div data-pdf-block style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-development">
+                  <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-development">
                     <SectionHead num={6} title="Gesamtbewertung" />
 
                     <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
@@ -1241,7 +1241,7 @@ export default function SollIstBericht() {
               })()}
 
               {result.integrationsplan && (
-                <div data-pdf-block style={{ ...sep, borderBottom: "1px solid rgba(0,0,0,0.05)" }} data-testid="section-integrationsplan">
+                <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-integrationsplan">
                   <SectionHead num={7} title="30-Tage-Integrationsplan" />
                   <div style={{ position: "relative", paddingLeft: 28 }}>
                     <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
