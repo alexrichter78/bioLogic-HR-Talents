@@ -954,8 +954,7 @@ export default function SollIstBericht() {
                       </div>
 
                       {/* MANAGEMENTKURZFAZIT */}
-                      <div data-pdf-block style={{ marginBottom: 22, position: "relative", paddingLeft: 16 }} data-testid="section-fazit">
-                        <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, borderRadius: 2, background: `linear-gradient(180deg, ${fitCol}, ${fitCol}40)` }} />
+                      <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-fazit">
                         <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Managementkurzfazit</p>
                         <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-summary-fazit">
                           {result.summaryText.split(/\n\n+/)[0]}
