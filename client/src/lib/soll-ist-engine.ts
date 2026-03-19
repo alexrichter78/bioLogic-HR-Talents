@@ -671,6 +671,30 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
     }
   }
 
+  if (rk === ck && !roleIsBalFull) {
+    const rest = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== rk);
+    const rSec = rt[rest[0]] >= rt[rest[1]] ? rest[0] : rest[1];
+    const cSec = ct[rest[0]] >= ct[rest[1]] ? rest[0] : rest[1];
+    const candSecCompeting = Math.abs(ct[rest[0]] - ct[rest[1]]) <= 5 && Math.min(ct[rest[0]], ct[rest[1]]) > 15;
+    const secSwapped = rSec !== cSec;
+
+    if (secSwapped || candSecCompeting) {
+      const s = Subj(cand);
+      const roleSec = compShort(rSec);
+      const totalGap = gapI + gapN + gapA;
+      for (const area of areas) {
+        if (area.severity === "ok" && totalGap >= 6) {
+          area.severity = "warning";
+          if (candSecCompeting) {
+            area.risk = `Die Hauptlogik stimmt überein, aber die Nebenkomponenten der Person sind fast gleich stark. Dadurch fehlt ein klarer Schwerpunkt in der Flankierung. Unter Druck kann die Reaktion wechselnd ausfallen. Gezielte Führung empfohlen.`;
+          } else {
+            area.risk = `Die Hauptlogik stimmt überein, aber die Gewichtung der Nebenbereiche weicht ab. Die Stelle betont ${roleSec}, ${s} setzt den Schwerpunkt anders. Das kann im Alltag zu unterschiedlichen Prioritäten und Reibung führen.`;
+          }
+        }
+      }
+    }
+  }
+
   const rSorted = ([
     { key: "impulsiv" as ComponentKey, val: rt.impulsiv },
     { key: "intuitiv" as ComponentKey, val: rt.intuitiv },
