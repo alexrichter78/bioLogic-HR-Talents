@@ -757,7 +757,8 @@ export default function TeamReport() {
                 {stellenTriad && (
                   <StaticBarGroup title="Stellenprofil (Soll)" triad={stellenTriad} />
                 )}
-                <StaticBarGroup title="Ist-Profil (Person)" triad={istTriad} />
+                <SliderGroup title="Ist-Profil (Person)" triad={istTriad}
+                  onTriadChange={updateIstTriad} testIdPrefix="ist" />
                 <SliderGroup title="Teamprofil" triad={teamTriad}
                   onTriadChange={updateTeamTriad} testIdPrefix="team" />
               </div>
