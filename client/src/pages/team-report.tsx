@@ -1059,6 +1059,10 @@ export default function TeamReport() {
                         <span style={{ fontSize: 16, fontWeight: 700, color: swColor }} data-testid="text-systemwirkung-label">{systemwirkungLabel}</span>
                       </div>
                     </div>
+                    <div style={{ padding: "14px 18px", borderRadius: 14, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(0,0,0,0.05)", textAlign: "center" }}>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 8px" }}>Integrationsrisiko</p>
+                      <span style={{ fontSize: 16, fontWeight: 700, color: steuerungColor }} data-testid="text-integrationsrisiko">{steuerung}</span>
+                    </div>
                   </div>
                   <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-teamcheck-indicator">
                     {indicatorText}
