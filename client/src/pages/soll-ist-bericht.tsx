@@ -1235,16 +1235,7 @@ export default function SollIstBericht() {
                     </div>
                     <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, wordBreak: "break-word", overflowWrap: "break-word", hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{result.developmentText}</p>
 
-                    <div style={{ marginTop: 20, padding: "14px 18px", borderRadius: 12, background: `${rFitColor}08`, border: `1px solid ${rFitColor}18` }}>
-                      <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>Managementeinschätzung</p>
-                      <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                        {rFitLabel === "Geeignet"
-                          ? "Die Arbeitsweise der Person und die Stellenanforderungen stimmen gut überein. Eine stabile Besetzung ist ohne erhöhten Führungsaufwand möglich. Aus Managementsicht wird diese Besetzung empfohlen."
-                          : rFitLabel === "Bedingt geeignet"
-                          ? "Die Arbeitsweise der Person weicht in einzelnen Bereichen von den Stellenanforderungen ab. Eine stabile Besetzung ist mit gezielter Führung und regelmässiger Rückmeldung möglich. Aus Managementsicht ist diese Besetzung unter Voraussetzungen vertretbar."
-                          : "Die strukturelle Abweichung zwischen Stelle und Person ist deutlich. Eine stabile Besetzung wäre nur mit dauerhaft erhöhtem Führungsaufwand möglich. Aus Managementsicht wird diese Besetzung nicht empfohlen."}
-                      </p>
-                    </div>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "20px 0 0", textAlign: "justify", textAlignLast: "left" as any, wordBreak: "break-word", overflowWrap: "break-word", hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{result.finalText}</p>
                   </div>
                 );
               })()}
@@ -1297,36 +1288,6 @@ export default function SollIstBericht() {
                 </div>
               )}
 
-              {(() => {
-                const fDevLevel = result.developmentLevel;
-                const fDev = fDevLevel >= 4 ? 3 : fDevLevel >= 3 ? 2 : 1;
-                const fDevCol = fDev === 3 ? "#34C759" : fDev === 2 ? "#E5A832" : "#D64045";
-                const fDevLabel = result.developmentLabel === "hoch" ? "Entwicklung sehr wahrscheinlich" : result.developmentLabel === "mittel" ? "Entwicklung mit Unterstützung möglich" : "Entwicklung unwahrscheinlich";
-                return (
-                  <div data-pdf-block data-testid="section-final-assessment" style={{ padding: "28px", borderRadius: 16, background: `linear-gradient(135deg, ${fitCol}08, ${fitCol}03)`, border: `1px solid ${fitCol}15`, boxShadow: `0 4px 20px ${fitCol}08` }}>
-                    <SectionHead num={result.integrationsplan ? 8 : 7} title="Schlussbewertung" />
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
-                      <div style={{ padding: "14px 18px", borderRadius: 12, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(0,0,0,0.05)", textAlign: "center" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 8px" }}>Grundpassung</p>
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                          <div style={{ width: 10, height: 10, borderRadius: 5, background: fitCol, boxShadow: `0 0 0 3px ${fitCol}20` }} />
-                          <span style={{ fontSize: 16, fontWeight: 700, color: fitCol }}>{result.fitLabel}</span>
-                        </div>
-                      </div>
-                      <div style={{ padding: "14px 18px", borderRadius: 12, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(0,0,0,0.05)", textAlign: "center" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 8px" }}>Entwicklungsprognose</p>
-                        <p style={{ fontSize: 15, fontWeight: 700, color: fDevCol, margin: "0 0 10px" }}>{fDevLabel}</p>
-                        <div style={{ display: "flex", gap: 4, maxWidth: 100, margin: "0 auto" }}>
-                          {Array.from({ length: 3 }).map((_, i) => (
-                            <div key={i} style={{ flex: 1, height: 6, borderRadius: 3, background: i < fDev ? fDevCol : "rgba(0,0,0,0.06)" }} />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, wordBreak: "break-word", overflowWrap: "break-word", hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-final-rating-text">{result.finalText}</p>
-                  </div>
-                );
-              })()}
 
               <div style={{ marginTop: 48, paddingTop: 20, borderTop: "1px solid rgba(0,0,0,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
