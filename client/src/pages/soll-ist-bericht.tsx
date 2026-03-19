@@ -946,18 +946,18 @@ export default function SollIstBericht() {
                       })()}
 
                       {/* AUSWIRKUNG IM ARBEITSALLTAG */}
-                      <div data-pdf-block style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-auswirkung">
+                      <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-auswirkung">
                         <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 6px" }}>Auswirkung im Arbeitsalltag</p>
-                        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.75, color: "#48484A" }}>
+                        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.85, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any }} lang="de">
                           {result.dominanceShiftText.split(/\n\n+/)[0]}
                         </p>
                       </div>
 
                       {/* MANAGEMENTKURZFAZIT */}
-                      <div data-pdf-block style={{ marginBottom: 22, padding: "16px 20px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", position: "relative" }} data-testid="section-fazit">
-                        <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, borderRadius: "12px 0 0 12px", background: `linear-gradient(180deg, ${fitCol}, ${fitCol}40)` }} />
+                      <div data-pdf-block style={{ marginBottom: 22, position: "relative", paddingLeft: 16 }} data-testid="section-fazit">
+                        <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, borderRadius: 2, background: `linear-gradient(180deg, ${fitCol}, ${fitCol}40)` }} />
                         <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.14em", margin: "0 0 8px" }}>Managementkurzfazit</p>
-                        <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0 }} data-testid="text-summary-fazit">
+                        <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, textAlign: "justify", textAlignLast: "left" as any }} lang="de" data-testid="text-summary-fazit">
                           {result.summaryText.split(/\n\n+/)[0]}
                         </p>
                       </div>
