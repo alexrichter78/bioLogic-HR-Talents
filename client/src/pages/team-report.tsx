@@ -789,12 +789,7 @@ export default function TeamReport() {
                         transition: "all 0.15s ease",
                       }}
                     >
-                      <span style={{
-                        width: 16, height: 16, borderRadius: 8, flexShrink: 0,
-                        border: teamGoal === opt.value ? "5px solid #007AFF" : "2px solid #C7C7CC",
-                        background: "#fff", transition: "all 0.15s ease",
-                      }} />
-                      <span style={{ fontSize: 13, fontWeight: 500, color: "#1D1D1F", lineHeight: 1.3 }}>{opt.label}</span>
+                      <span style={{ fontSize: 13, fontWeight: 500, color: teamGoal === opt.value ? "#007AFF" : "#1D1D1F", lineHeight: 1.3, transition: "color 0.15s ease" }}>{opt.label}</span>
                     </label>
                   ))}
                 </div>
