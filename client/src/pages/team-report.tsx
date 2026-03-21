@@ -764,6 +764,33 @@ export default function TeamReport() {
               </div>
 
               <div style={{ marginTop: 24, padding: "16px 20px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,0,0,0.015)" }}>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#1D1D1F", marginBottom: 10, letterSpacing: "-0.01em" }}>
+                  Rolle der Person
+                </label>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 0 }}>
+                  {([
+                    { value: "fuehrung" as const, label: "Führungsperson" },
+                    { value: "teammitglied" as const, label: "Teammitglied" },
+                  ]).map(opt => (
+                    <label
+                      key={opt.value}
+                      data-testid={`role-option-${opt.value}`}
+                      onClick={() => setRoleTypeForCard(opt.value)}
+                      style={{
+                        display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
+                        padding: "10px 8px", borderRadius: 10, cursor: "pointer", textAlign: "center",
+                        border: roleTypeForCard === opt.value ? "1.5px solid #007AFF" : "1px solid rgba(0,0,0,0.1)",
+                        background: roleTypeForCard === opt.value ? "rgba(0,122,255,0.04)" : "#fff",
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      <span style={{ fontSize: 13, fontWeight: 500, color: roleTypeForCard === opt.value ? "#007AFF" : "#1D1D1F", lineHeight: 1.3, transition: "color 0.15s ease" }}>{opt.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ marginTop: 12, padding: "16px 20px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,0,0,0.015)" }}>
                 <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, letterSpacing: "-0.01em" }}>
                   Funktionsziel der Abteilung <span style={{ fontWeight: 400, color: "#8E8E93" }}>(optional)</span>
                 </label>
