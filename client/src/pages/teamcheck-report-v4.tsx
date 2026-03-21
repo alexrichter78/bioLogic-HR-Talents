@@ -194,8 +194,22 @@ export default function TeamCheckReportV4() {
                   <HintBox label="Kurzfazit" color={bCol}>
                     <p style={{ fontSize: 14, lineHeight: 1.8, color: "#48484A", margin: 0 }} data-testid="v4-kurzfazit">{result.kurzfazit}</p>
                   </HintBox>
+                  <HintBox label="Managementeinschätzung" color="#343A48">
+                    <p style={{ fontSize: 14, lineHeight: 1.8, color: "#48484A", margin: 0 }} data-testid="v4-management-einschaetzung">{result.managementEinschaetzung}</p>
+                  </HintBox>
                   <HintBox label="Erste Empfehlung" color="#1A5DAB">
                     <p style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", margin: 0 }}>{result.ersteEmpfehlung}</p>
+                  </HintBox>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <HintBox label="Grösstes Risiko" color="#FF3B30">
+                      <p style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", margin: 0 }} data-testid="v4-hauptrisiko">{result.hauptrisiko}</p>
+                    </HintBox>
+                    <HintBox label="Grösste Chance" color="#34C759">
+                      <p style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", margin: 0 }} data-testid="v4-hauptchance">{result.hauptchance}</p>
+                    </HintBox>
+                  </div>
+                  <HintBox label="Integrationsprognose" color="#6E6E73">
+                    <p style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", margin: 0 }} data-testid="v4-integrationsprognose">{result.integrationsprognose}</p>
                   </HintBox>
                 </div>
               </div>
@@ -266,14 +280,22 @@ export default function TeamCheckReportV4() {
               {/* S6 – Alltag */}
               <div style={sectionStyle} data-testid="v4-section-alltag">
                 <SectionHead num={6} title="So könnte es im Alltag aussehen" />
-                <IntroText text="Hier wird sichtbar, wo Zusammenarbeit leicht läuft und wo es im Alltag mehr Aufmerksamkeit braucht." />
+                <IntroText text={result.alltagEinleitung} />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {result.alltagBlocks.map(b => <ContentCard key={b.title} title={b.title} text={b.text} />)}
                 </div>
                 {result.alltagWarnzeichen.length > 0 && (
-                  <div style={{ marginTop: 16, padding: "16px 20px", borderRadius: 12, background: "rgba(255,149,0,0.05)", border: "1px solid rgba(255,149,0,0.15)" }}>
-                    <p style={{ fontSize: 12, fontWeight: 700, color: "#CC7700", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Warnzeichen im Alltag</p>
-                    <SimpleBulletList items={result.alltagWarnzeichen} color="#FF9500" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3" style={{ marginTop: 16 }}>
+                    <div style={{ padding: "16px 20px", borderRadius: 12, background: "rgba(255,149,0,0.05)", border: "1px solid rgba(255,149,0,0.15)" }}>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#CC7700", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Warnzeichen</p>
+                      <SimpleBulletList items={result.alltagWarnzeichen} color="#FF9500" />
+                    </div>
+                    {result.alltagPositivzeichen.length > 0 && (
+                      <div style={{ padding: "16px 20px", borderRadius: 12, background: "rgba(52,199,89,0.04)", border: "1px solid rgba(52,199,89,0.12)" }}>
+                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1B7A3D", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Positive Signale nach 2–4 Wochen</p>
+                        <SimpleBulletList items={result.alltagPositivzeichen} color="#34C759" />
+                      </div>
+                    )}
                   </div>
                 )}
                 <Kernaussage text={result.alltagKernaussage} />
@@ -282,6 +304,7 @@ export default function TeamCheckReportV4() {
               {/* S7 – Leistung */}
               <div style={sectionStyle} data-testid="v4-section-leistung">
                 <SectionHead num={7} title="Was das für Leistung und Ergebnisse bedeutet" />
+                <IntroText text={result.leistungEinleitung} />
                 <div style={{ display: "grid", gap: 12 }}>
                   {result.leistungBlocks.map(b => <ContentCard key={b.title} title={b.title} text={b.text} />)}
                 </div>

@@ -25,6 +25,10 @@ export interface TeamCheckV4Result {
   risikoImAlltag: string;
   kurzfazit: string;
   ersteEmpfehlung: string;
+  managementEinschaetzung: string;
+  hauptrisiko: string;
+  hauptchance: string;
+  integrationsprognose: string;
 
   teamProfile: Triad;
   personProfile: Triad;
@@ -52,10 +56,13 @@ export interface TeamCheckV4Result {
   ohneUngeloest: string[];
   ohneKernaussage: string;
 
+  alltagEinleitung: string;
   alltagBlocks: V4Block[];
   alltagWarnzeichen: string[];
+  alltagPositivzeichen: string[];
   alltagKernaussage: string;
 
+  leistungEinleitung: string;
   leistungBlocks: V4Block[];
   leistungKernaussage: string;
 
@@ -120,6 +127,8 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
 
   const teamGoalLabel = v3.teamGoal ? (GOAL_LABELS[v3.teamGoal] || "") : "Kein festgelegtes Funktionsziel";
 
+  const hasGoal = !!v3.teamGoal;
+
   return {
     roleTitle: v3.roleTitle,
     roleType: isLeader ? "leadership" : "member",
@@ -132,6 +141,10 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
     risikoImAlltag,
     kurzfazit: buildKurzfazit(gesamteinschaetzung, isLeader),
     ersteEmpfehlung: buildErsteEmpfehlung(gesamteinschaetzung, isLeader),
+    managementEinschaetzung: buildManagementEinschaetzung(gesamteinschaetzung, isLeader, hasGoal),
+    hauptrisiko: buildHauptrisiko(gesamteinschaetzung, isLeader),
+    hauptchance: buildHauptchance(gesamteinschaetzung, isLeader, personPrimary),
+    integrationsprognose: buildIntegrationsprognose(gesamteinschaetzung, isLeader),
     teamProfile: v3.teamProfile,
     personProfile: v3.personProfile,
     teamLabel: v3.teamLabel,
@@ -144,7 +157,7 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
     ...buildChancenRisiken(v3, isLeader, gesamteinschaetzung, sameDominance, personPrimary),
     ...buildOhne(isLeader, sameDominance, personPrimary),
     ...buildAlltag(isLeader, gesamteinschaetzung, sameDominance, teamPrimary, personPrimary),
-    ...buildLeistung(gesamteinschaetzung, isLeader),
+    ...buildLeistung(gesamteinschaetzung, isLeader, hasGoal),
     ...buildDruck(gesamteinschaetzung),
     empfehlungen: buildEmpfehlungen(isLeader),
     v3,
@@ -177,6 +190,63 @@ function buildErsteEmpfehlung(bew: string, isLeader: boolean): string {
     return "Die ersten Wochen sollten bewusst begleitet werden. Rolle, Erwartungen und Entscheidungswege müssen von Anfang an klar benannt werden.";
   }
   return "Die ersten Wochen brauchen enge Begleitung. Rolle, Erwartungen und Kommunikation müssen sofort offen geregelt werden.";
+}
+
+function buildManagementEinschaetzung(bew: string, isLeader: boolean, hasGoal: boolean): string {
+  if (bew === "Gut passend") {
+    return isLeader
+      ? "Diese Besetzung ist aus unserer Sicht empfehlenswert. Die Arbeitsweisen von Person und Team passen gut zusammen. Der Einstieg in die Rolle sollte vergleichsweise reibungsarm gelingen."
+      : "Diese Besetzung ist aus unserer Sicht empfehlenswert. Person und Team arbeiten auf eine vergleichbare Art, was den Einstieg erleichtert und die Zusammenarbeit schnell tragfähig macht.";
+  }
+  if (bew === "Teilweise passend") {
+    const goalHint = !hasGoal ? " Da kein klares Funktionsziel hinterlegt ist, kommt der bewussten Rollenklärung hier noch mehr Bedeutung zu." : "";
+    return isLeader
+      ? `Diese Besetzung ist möglich, aber anspruchsvoll. Sie sollte nur dann erfolgen, wenn der Einstieg bewusst geführt und die Zusammenarbeit aktiv begleitet wird.${goalHint}`
+      : `Diese Besetzung kann gelingen, ist aber kein Selbstläufer. Sie braucht von Anfang an klare Erwartungen und gute Begleitung.${goalHint}`;
+  }
+  const goalHint = !hasGoal ? " Da zudem kein klares Funktionsziel vorliegt, fehlt eine zusätzliche Orientierung, die den Einstieg erleichtern könnte." : "";
+  return isLeader
+    ? `Diese Besetzung ist im aktuellen Umfeld kritisch. Sie ist nur dann vertretbar, wenn der Einstieg eng begleitet wird und das Team klare Führung von oben erhält.${goalHint} Ohne diese Voraussetzungen ist das Risiko hoch, dass die Zusammenarbeit dauerhaft schwierig bleibt.`
+    : `Diese Besetzung ist im aktuellen Umfeld kritisch und nur mit enger Begleitung tragfähig.${goalHint} Ohne aktive Führung und klare Absprachen ist das Risiko hoch, dass die Person im Team nicht wirklich ankommt.`;
+}
+
+function buildHauptrisiko(bew: string, isLeader: boolean): string {
+  if (bew === "Gut passend") {
+    return isLeader
+      ? "Das grösste Risiko liegt darin, dass bei guter Passung zu wenig aktiv in den Einstieg investiert wird und stille Annahmen über Erwartungen entstehen."
+      : "Das grösste Risiko ist, dass bei guter Passung die Klärung von Rollen und Erwartungen versäumt wird, weil alles ohnehin gut zu laufen scheint.";
+  }
+  if (bew === "Teilweise passend") {
+    return isLeader
+      ? "Das grösste Risiko liegt darin, dass die Führung im Team nicht richtig ankommt und Unterschiede im Stil als dauerhafter Störfaktor erlebt werden."
+      : "Das grösste Risiko liegt nicht in der fachlichen Arbeit der Person, sondern darin, ob sie im Team wirklich gut ankommt.";
+  }
+  return isLeader
+    ? "Das grösste Risiko liegt darin, dass die Person im Team zu wenig Vertrauen aufbauen kann und Führung deshalb nicht wirksam wird. Dann entsteht dauerhaft Reibung statt Stabilität."
+    : "Das grösste Risiko liegt nicht in der Leistung der Person, sondern darin, dass sie im Team zu wenig Anschluss findet und dadurch dauerhaft Reibung entsteht.";
+}
+
+function buildHauptchance(bew: string, isLeader: boolean, personPrim: ComponentKey): string {
+  if (bew === "Gut passend") {
+    return isLeader
+      ? "Die grösste Chance liegt in einem schnellen, stabilen Führungseinstieg, der dem Team Sicherheit gibt und bestehende Stärken absichert."
+      : "Die grösste Chance liegt darin, dass die Person schnell produktiv wird und das Team ohne grössere Umstellungen stärkt.";
+  }
+  return isLeader
+    ? `Die grösste Chance liegt darin, dem Team eine klarere Richtung zu geben und Entscheidungen zu beschleunigen, wenn genau das bisher gefehlt hat.`
+    : `Die grösste Chance liegt darin, dem Team mehr ${COMP_SHORT[personPrim]} zu geben, wenn genau das bisher zu kurz gekommen ist.`;
+}
+
+function buildIntegrationsprognose(bew: string, isLeader: boolean): string {
+  if (bew === "Gut passend") {
+    return "Eine stabile Integration ist wahrscheinlich. Person und Team passen in ihrer Arbeitsweise gut zusammen, was einen schnellen und belastbaren Einstieg ermöglicht.";
+  }
+  if (bew === "Teilweise passend") {
+    return "Eine stabile Integration ist möglich, aber nicht von selbst zu erwarten. Sie hängt in diesem Fall davon ab, wie früh Zusammenarbeit, Erwartungen und Rollenklärung aktiv begleitet werden.";
+  }
+  return isLeader
+    ? "Eine stabile Integration ist nur mit enger Begleitung realistisch. Ohne aktive Führung von oben und klare Rollenklärung besteht ein hohes Risiko, dass die Zusammenarbeit dauerhaft angespannt bleibt."
+    : "Eine stabile Integration ist nur mit bewusster Begleitung realistisch. Ohne klare Erwartungen und aktive Teameinbindung besteht das Risiko, dass die Person fachlich funktioniert, aber im Team dauerhaft fremd bleibt.";
 }
 
 function buildWarum(v3: TeamCheckV3Result, isLeader: boolean, bew: string, sameDom: boolean, teamPrim: ComponentKey, personPrim: ComponentKey) {
@@ -212,7 +282,9 @@ function buildWarum(v3: TeamCheckV3Result, isLeader: boolean, bew: string, sameD
     }
     blocks.push({ title: "Was das Ziel der Abteilung bedeutet", text: goalText });
   } else {
-    blocks.push({ title: "Warum das wichtig ist", text: "Je klarer Erwartungen, Rolle und Zusammenarbeit von Anfang an geregelt sind, desto eher kann aus dem Unterschied eine Stärke werden. Bleiben diese Punkte offen, entsteht schnell Unsicherheit, die sich im Alltag unnötig aufschaukelt." });
+    blocks.push({ title: "Warum das wichtig ist", text: bew === "Gut passend"
+      ? "Je klarer Erwartungen, Rolle und Zusammenarbeit von Anfang an geregelt sind, desto stabiler wird der Einstieg. Das gilt auch bei guter Passung."
+      : "Da für die Abteilung kein klares Funktionsziel hinterlegt ist, kommt der Führung und der bewussten Rollenklärung hier noch mehr Bedeutung zu. Ohne diese Orientierung steigt das Risiko, dass Unterschiede im Arbeitsstil eher als Störung statt als Ergänzung erlebt werden." });
   }
 
   let kern: string;
@@ -386,23 +458,34 @@ function buildAlltag(isLeader: boolean, bew: string, sameDom: boolean, teamPrim:
   }
 
   const warnzeichen: string[] = [];
+  const positivzeichen: string[] = [];
   if (bew !== "Gut passend") {
     warnzeichen.push("Missverständnisse wiederholen sich");
     warnzeichen.push("Abstimmungen stocken regelmässig");
     warnzeichen.push("Spannungen werden nicht offen angesprochen");
     warnzeichen.push("Verantwortung bleibt trotz Klärungsversuchen unklar");
+    positivzeichen.push("Die Person wird aktiv in Abstimmungen einbezogen");
+    positivzeichen.push("Missverständnisse nehmen ab statt zu");
+    positivzeichen.push("Rollen werden klarer statt unklarer");
+    positivzeichen.push("Zusammenarbeit wird leichter statt anstrengender");
   }
 
+  const alltagEinleitung = bew === "Gut passend"
+    ? "Hier zeigt sich, wie Person und Team im Arbeitsalltag zusammenwirken. Bei guter Passung ist der Übergang in der Regel unkompliziert."
+    : "Hier wird sichtbar, wo Zusammenarbeit leicht läuft und wo es im Alltag mehr Aufmerksamkeit braucht. Gerade die ersten Wochen sind entscheidend.";
+
   return {
+    alltagEinleitung,
     alltagBlocks: blocks,
     alltagWarnzeichen: warnzeichen,
+    alltagPositivzeichen: positivzeichen,
     alltagKernaussage: bew === "Gut passend"
       ? "Im Alltag sollte die Zusammenarbeit reibungsarm laufen. Kleinere Unterschiede spielen sich schnell ein."
       : "Werden diese Signale früh erkannt, lässt sich gut gegensteuern. Werden sie übersehen, verfestigen sie sich meist."
   };
 }
 
-function buildLeistung(bew: string, isLeader: boolean) {
+function buildLeistung(bew: string, isLeader: boolean, hasGoal: boolean) {
   const blocks: V4Block[] = [];
 
   if (bew === "Gut passend") {
@@ -412,10 +495,15 @@ function buildLeistung(bew: string, isLeader: boolean) {
   } else {
     blocks.push({ title: "Am Anfang", text: "Kurzfristig ist mit mehr Klärung und Abstimmung zu rechnen. Die ersten Wochen sind stärker von Beobachtung und gegenseitigem Einordnen geprägt als von reibungsloser Leistung. Das ist bei spürbaren Unterschieden nicht ungewöhnlich, sollte aber bewusst eingeplant werden." });
     blocks.push({ title: "Später", text: `Wenn Erwartungen klar sind, Rollen sauber benannt werden und Rückmeldungen früh stattfinden, kann aus der Besetzung eine produktive Ergänzung werden. Die Person bringt dann etwas ein, das dem ${isLeader ? "Team" : "Umfeld"} bisher gefehlt hat. Bleiben Zusammenarbeit und Verantwortung dagegen unklar, fliesst Energie nicht in gute Ergebnisse, sondern in Missverständnisse und unnötige Abstimmung.` });
-    blocks.push({ title: "Worauf es ankommt", text: "Nicht nur die Unterschiede entscheiden, sondern der Umgang damit. Wenn das Umfeld gut mit den Unterschieden arbeiten kann, kann Leistung sogar steigen. Wenn nicht, leidet die Qualität, Tempo wird uneinheitlich und die Verlässlichkeit im Alltag sinkt." });
+    blocks.push({ title: "Fachliche Leistung vs. Teamintegration", text: "Die Herausforderung liegt hier voraussichtlich weniger in der Leistungsfähigkeit der Person als darin, ob sie im Team wirklich gut ankommt. Fachlich gute Arbeit reicht allein nicht aus, wenn die Zusammenarbeit nicht funktioniert." });
   }
 
+  const leistungEinleitung = bew === "Gut passend"
+    ? "Was bedeutet diese Besetzung konkret für Ergebnisse und Produktivität?"
+    : "Die entscheidende Frage ist nicht nur, ob die Person fachlich gut arbeiten kann, sondern ob ihre Leistung im bestehenden Umfeld auch wirklich zur Geltung kommt.";
+
   return {
+    leistungEinleitung,
     leistungBlocks: blocks,
     leistungKernaussage: bew === "Gut passend"
       ? "Leistung und Ergebnisse dürften sich schnell und stabil einstellen."
