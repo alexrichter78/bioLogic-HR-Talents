@@ -950,6 +950,69 @@ export default function TeamReport() {
                   data-testid="button-generate-test3">
                   Testbericht 3
                 </button>
+                <button onClick={() => {
+                    const ERFOLGSFOKUS_DISPLAY_LABELS = [
+                      "Ergebnisse und Zielerreichung",
+                      "Zusammenarbeit und Netzwerk",
+                      "Innovation und Weiterentwicklung",
+                      "Prozesse und Effizienz",
+                      "Fachliche Qualität und Expertise",
+                      "Strategische Wirkung",
+                    ];
+                    const AUFGABENCHARAKTER_LABELS: Record<string, string> = {
+                      "überwiegend operativ": "Praktische Umsetzung im Tagesgeschäft",
+                      "überwiegend systemisch": "Umsetzung mit strukturiertem Vorgehen",
+                      "überwiegend strategisch": "Analyse, Planung und strategische Steuerung",
+                      "Gemischt": "Ausgewogene Mischung",
+                    };
+                    const ARBEITSLOGIK_LABELS: Record<string, string> = {
+                      "Umsetzungsorientiert": "Umsetzung und Ergebnisse",
+                      "Daten-/prozessorientiert": "Analyse und Struktur",
+                      "Menschenorientiert": "Zusammenarbeit und Kommunikation",
+                      "Ausgewogen": "Ausgewogene Mischung",
+                    };
+                    const FUEHRUNG_LABELS: Record<string, string> = {
+                      "Keine": "Keine Führungsverantwortung",
+                      "Fachlich": "Fachliche Führung",
+                      "Disziplinarisch": "Führung mit Personalverantwortung",
+                      "Projektleitung": "Projektleitung / Koordination",
+                    };
+                    let roleTitle = roleName || "die Rolle";
+                    let roleLevel = "Keine Führungsverantwortung";
+                    let taskStructure = "-";
+                    let workStyle = "-";
+                    let successFocus: string[] = [];
+                    try {
+                      const dnaRaw = localStorage.getItem("rollenDnaState");
+                      if (dnaRaw) {
+                        const dna = JSON.parse(dnaRaw) as RoleDnaState;
+                        if (dna.beruf) roleTitle = dna.beruf;
+                        if (dna.fuehrung) roleLevel = FUEHRUNG_LABELS[dna.fuehrung] || dna.fuehrung;
+                        if (dna.aufgabencharakter) taskStructure = AUFGABENCHARAKTER_LABELS[dna.aufgabencharakter] || dna.aufgabencharakter;
+                        if (dna.arbeitslogik) workStyle = ARBEITSLOGIK_LABELS[dna.arbeitslogik] || dna.arbeitslogik;
+                        if (Array.isArray(dna.erfolgsfokusIndices)) {
+                          successFocus = dna.erfolgsfokusIndices.map((i: number) => ERFOLGSFOKUS_DISPLAY_LABELS[i]).filter(Boolean);
+                        }
+                      }
+                    } catch {}
+                    sessionStorage.setItem("teamcheckV4Input", JSON.stringify({
+                      roleTitle,
+                      roleLevel,
+                      taskStructure,
+                      workStyle,
+                      successFocus,
+                      teamProfile: teamTriad,
+                      personProfile: istTriad,
+                      candidateName: candidateName || "Person",
+                      teamGoal: teamGoal || null,
+                      roleType: roleTypeForCard,
+                    }));
+                    setLocation("/teamcheck-report-v4");
+                  }}
+                  className="inline-flex h-12 items-center gap-2 rounded-2xl border border-violet-400 bg-violet-50 px-8 text-[15px] font-semibold text-violet-800 shadow-sm hover:bg-violet-100 transition-colors"
+                  data-testid="button-generate-test4">
+                  Test4
+                </button>
               </div>
             </div>
           </div>

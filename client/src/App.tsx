@@ -15,6 +15,7 @@ import SollIstBericht from "@/pages/soll-ist-bericht";
 import TeamReport from "@/pages/team-report";
 import TeamCheckReportV2 from "@/pages/teamcheck-report-v2";
 import TeamCheckReportV3 from "@/pages/teamcheck-report-v3";
+import TeamCheckReportV4 from "@/pages/teamcheck-report-v4";
 
 function Router() {
   return (
@@ -30,6 +31,7 @@ function Router() {
       <Route path="/team-report" component={TeamReport} />
       <Route path="/teamcheck-report-v2" component={TeamCheckReportV2} />
       <Route path="/teamcheck-report-v3" component={TeamCheckReportV3} />
+      <Route path="/teamcheck-report-v4" component={TeamCheckReportV4} />
       <Route component={NotFound} />
     </Switch>
   );

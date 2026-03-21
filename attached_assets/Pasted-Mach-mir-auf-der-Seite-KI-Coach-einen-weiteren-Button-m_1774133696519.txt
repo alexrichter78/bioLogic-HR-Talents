@@ -1,0 +1,395 @@
+Mach mir auf der Seite KI-Coach einen weiteren Button mit den Namen Test4 . Hier soll eine Seite wie Testbericht 3 erstellt werden (übernehmen dort nur das Design) . Den Inhalt findest du hier...
+
+WICHTIG: Nutze die Aktivierten Felder unter dem Reiter TeamCheck im Menü
+
+Die Leitidee ist:
+ein Bericht, zwei Varianten, aber derselbe Aufbau.
+Nur bestimmte Textbausteine wechseln je nach Kontext:
+
+Variante A: Person als Teil eines Teams
+Variante B: Person als Führungskraft
+
+Das passt auch fachlich gut: Bei neuer Führung scheitern Konstellationen oft nicht an Fachlichkeit, sondern an Rollenklarheit, Delegation, Entscheidungssicherheit, Feedback und Vertrauen. Bei Team-Fehlpassung liegen Ursachen oft nicht nur in der Person, sondern auch in Rollenunklarheit, Führung, Onboarding und Teamnormen. Genau deshalb sollte dein Bericht nicht „testhaft“, sondern systemisch und alltagsnah aufgebaut sein.
+
+Zielbild des Berichts
+
+Der Bericht soll für eine normale Führungskraft sofort verständlich sein und diese Fragen beantworten:
+
+Passt die Person voraussichtlich in dieses System?
+Wo entstehen Reibung, Engpässe oder Führungsbedarf?
+Was bedeutet das für Alltag, Leistung und Stabilität?
+Was sollte man jetzt konkret tun?
+Empfohlener Endaufbau
+
+Ich würde den Bericht auf 8 Seiten bzw. 8 Hauptmodule setzen.
+
+Seite 1 – Einleitung + Management Summary
+1.1 Einleitung
+
+Kurzer Einführungstext, einfach und hochwertig.
+
+Ziel der Einleitung:
+Nicht Persönlichkeit bewerten, sondern erklären, warum Teamfit oder Führungsfit wichtig ist.
+
+Inhaltlich soll drinstehen:
+Dieser Bericht zeigt, wie die Arbeitsweise der Person im bestehenden Team oder in der Führungsrolle voraussichtlich wirkt. Er macht sichtbar, wo gute Anschlussfähigkeit besteht, wo Reibung entstehen kann und welcher Führungs-, Integrations- oder Klärungsaufwand im Alltag zu erwarten ist. Unterschiede sind dabei nicht automatisch negativ. Sie können Stabilität, Ergänzung oder Entwicklung bringen, verlangen aber je nach Konstellation mehr Steuerung.
+
+1.2 Management Summary
+
+Das ist die wichtigste Managementseite. Sie muss in wenigen Sekunden verständlich sein.
+
+Elemente auf der Seite:
+
+Rolle / Bereich
+Kontext: Teammitglied oder Führungskraft
+Funktionsziel der Abteilung
+Gesamtbewertung
+Systemwirkung
+Steuerungsaufwand
+Risikoindikator
+Kurzfazit
+Erste Empfehlung
+
+Empfohlene Kacheln:
+
+Gesamtbewertung
+Stimmig / Bedingt stimmig / Kritisch
+Systemwirkung
+Stabilisiert / Ergänzt / Verändert / Erzeugt Spannung
+Steuerungsaufwand
+gering / mittel / hoch
+Risikoniveau
+niedrig / erhöht / hoch
+Funktionsziel
+kein Funktionsziel / Umsetzung & Ergebnisse / Analyse & Struktur / Zusammenarbeit & Kommunikation
+
+Darunter ein Kurzfazit in 3 Sätzen:
+Beispiel:
+Die Person bringt eine Arbeitsweise mit, die in Teilen gut an das bestehende Team anschließt, an anderen Stellen aber spürbar abweicht. Dadurch entstehen sowohl Ergänzungschancen als auch erhöhter Abstimmungsbedarf. Entscheidend wird sein, ob Rolle, Erwartungen und Zusammenarbeit früh genug klar geführt werden.
+
+Seite 2 – Warum dieses Ergebnis
+
+Das ist die Erklärseite. Sie muss die Bewertung nachvollziehbar machen.
+
+Kapitelüberschrift:
+
+Warum dieses Ergebnis zustande kommt
+
+Inhaltliche Logik:
+
+Hier erklärst du in klarer Sprache:
+
+wie Person und Team grundsätzlich zueinander stehen
+wo die stärksten Übereinstimmungen liegen
+wo die größten Abweichungen liegen
+welche Bedeutung das Funktionsziel der Abteilung hat
+warum dieselbe Person in einem anderen Umfeld anders wirken könnte
+Empfohlene Unterblöcke:
+
+1. Ausgangslage
+Kurze Beschreibung von Person, Team und Funktionsziel.
+
+2. Gemeinsame Stärke
+Was verbindet Person und Team?
+
+3. Kritische Abweichung
+Wo entstehen Unterschiede mit Wirkung auf Alltag und Zusammenarbeit?
+
+4. Bedeutung des Funktionsziels
+Verstärkt das Funktionsziel die Passung oder die Reibung?
+
+Formulierungsidee:
+
+Das Ergebnis entsteht nicht nur aus der Person selbst, sondern aus dem Zusammenspiel von Person, Teamstruktur und Ziel der Abteilung. Je näher diese drei Ebenen zusammenliegen, desto leichter wird Zusammenarbeit. Je stärker sie auseinanderlaufen, desto mehr Führung, Klärung und Abstimmung werden notwendig. Das ist fachlich konsistent mit Praxisbeiträgen, die Team-Misfit eher als Zusammenspiel von Person, Rolle, Team und Führung beschreiben als als reines Personenproblem.
+
+Seite 3 – Wirkung im System
+
+Hier teilst du dann in zwei Varianten.
+
+Variante A: Person als Teil eines Teams
+Kapitelüberschrift:
+
+Was diese Person im Team auslöst
+
+Unterblöcke:
+
+1. Wirkung auf die bestehende Teamstruktur
+Bringt die Person Ruhe, Tempo, Struktur, neue Reibung oder Ergänzung?
+
+2. Wirkung auf Zusammenarbeit und Anschlussfähigkeit
+Wie leicht findet die Person Zugang zum Team?
+Wo könnte Integration stocken?
+
+3. Wirkung auf Rollen und Erwartungen
+Macht die Person Abläufe klarer oder unruhiger?
+
+4. Wirkung auf die bestehende Balance
+Verstärkt die Person eine vorhandene Teamlogik oder verschiebt sie das System?
+
+Variante B: Person als Führungskraft
+Kapitelüberschrift:
+
+Was diese Person als Führungskraft auslöst
+
+Unterblöcke:
+
+1. Voraussichtliche Führungswirkung
+Wie wird geführt: klar, strukturiert, beziehungsorientiert, schnell, direkt, analytisch?
+
+2. Anschluss an das bestehende Team
+Passt dieser Führungsstil zur Teamlogik oder nicht?
+
+3. Typische Spannungsfelder
+Zum Beispiel:
+
+zu viel operative Facharbeit
+zu wenig Rollenklarheit
+zu spätes Entscheiden
+zu wenig Feedback
+zu viel Kontrolle oder zu wenig Führung
+
+Diese Punkte sind besonders wichtig, weil genau solche Muster bei neuen Führungskräften häufig als Kernfehler beschrieben werden: im alten Arbeitsmodus bleiben, Autorität vermeiden, Entscheidungen vertagen, Feedback vermeiden und keine Unterstützung annehmen.
+
+4. Führungsbedarf des Systems
+Was braucht dieses Team wirklich von einer Führungskraft?
+
+Seite 4 – Chancen und Risiken
+
+Diese Seite sollte bewusst zweigeteilt sein.
+
+Linke Seite:
+
+Chancen
+
+Rechte Seite:
+
+Risiken
+
+Inhaltlich bei Chancen:
+Welche Ergänzung ist möglich?
+Welche Entwicklung kann angestoßen werden?
+Welche Lücke könnte die Person schließen?
+Welche positive Dynamik könnte entstehen?
+Inhaltlich bei Risiken:
+Wo drohen Missverständnisse?
+Wo ist die Integrationsfähigkeit unsicher?
+Wo steigt der Abstimmungsaufwand?
+Wo kann Vertrauen leiden?
+Wo drohen Leistungs- oder Kulturverluste?
+
+Gerade ungelöste Team-Fehlpassung kann Motivation, Vertrauen, Kultur und Leistung beschädigen; ebenso können verdeckte Konflikte und Lagerbildung entstehen, wenn das Thema zu lange ausgesessen wird.
+
+Gute Abschlussformel auf der Seite:
+
+Die Konstellation ist nicht nur mit Risiken verbunden. Entscheidend ist, ob Unterschiede aktiv geführt werden oder unklar bleiben. Frühe Klarheit erhöht die Chance, dass Ergänzung entsteht statt Reibung.
+
+Seite 5 – Was passiert, wenn die Person nicht kommt oder nicht übernimmt
+
+Das ist strategisch sehr stark und sollte unbedingt drinbleiben.
+
+Kapitelüberschrift:
+
+Was ohne diese Besetzung bestehen bleibt
+
+Teammitglied-Kontext
+
+Hier beantwortest du:
+
+Welche Lücke bleibt im Team?
+Welche Einseitigkeit bleibt bestehen?
+Welche Aufgaben oder Spannungen lösen sich dadurch nicht?
+Bleibt das Team zwar ruhiger, aber auch unvollständiger?
+Führungskraft-Kontext
+
+Hier beantwortest du:
+
+Welche Führungsdefizite bleiben bestehen?
+Bleibt Stabilität erhalten, aber ohne Entwicklung?
+Bleiben Entscheidungsstaus, Rollenunklarheit oder fehlende Richtung bestehen?
+Wird eine notwendige Veränderung vertagt?
+Wichtige Logik:
+
+Nichtbesetzen ist keine neutrale Entscheidung.
+Auch die alte Struktur hat Folgen.
+
+Das ist wichtig, weil Berichte sonst oft nur das Risiko der neuen Person zeigen, aber nicht das Risiko des Status quo.
+
+Seite 6 – Auswirkungen im Alltag
+
+Das ist eine sehr praktische Seite. Hier muss der Leser sich selbst wiedererkennen.
+
+Kapitelüberschrift:
+
+Wie sich die Konstellation im Alltag zeigen dürfte
+
+Empfohlene Unterabschnitte:
+
+Zusammenarbeit und Kommunikation
+Wie laufen Absprachen, Austausch und Reaktionen?
+
+Tempo und Prioritäten
+Wird schneller entschieden oder mehr abgesichert?
+
+Abstimmung und Verantwortlichkeit
+Wer klärt, wer entscheidet, wer hält nach?
+
+Umgang mit Regeln und Freiräumen
+Braucht die Person klare Leitplanken oder bewegt sie sich stark eigenständig?
+
+Typische Reibungspunkte
+Wo könnte es im Tagesgeschäft zuerst haken?
+
+Gute Darstellung:
+
+Nicht als langer Fließtext, sondern in 4–5 kompakten Alltagsboxen.
+
+Beispielbox:
+Im Alltag sichtbar
+Abstimmungen werden häufiger nötig, weil Person und Team unterschiedliche Erwartungen an Tempo und Vorgehen haben. Ohne klare Zuständigkeiten entstehen Missverständnisse bei Prioritäten und Verantwortung.
+
+Seite 7 – Auswirkungen auf Leistung und Ergebnisse
+
+Hier wird der Bericht managementtauglich.
+
+Kapitelüberschrift:
+
+Was das für Leistung, Qualität und Ergebnisse bedeutet
+
+Unterblöcke:
+
+1. Kurzfristige Wirkung
+Wie wirkt die Konstellation in den ersten Wochen?
+
+2. Mittelfristige Wirkung
+Was passiert, wenn Führung und Integration gut oder schlecht laufen?
+
+3. Einfluss auf Ergebnisqualität
+Steigt Qualität, Verlässlichkeit oder Fehleranfälligkeit?
+
+4. Einfluss auf Umsetzungsgeschwindigkeit
+Mehr Tempo oder mehr Abstimmung?
+
+Zentrale Logik:
+Gute Passung senkt Reibungskosten
+Ergänzende Unterschiede können Leistung steigern
+ungeklärte Unterschiede kosten Energie, Fokus und Vertrauen
+
+Das ist deckungsgleich mit Quellen, die bei Fehlpassung vor allem auf Reibungsverluste, sinkende Motivation und Vertrauensschäden hinweisen.
+
+Seite 8 – Verhalten unter Druck + Handlungsempfehlungen
+
+Diese Seite sollte sehr konkret sein.
+
+8.1 Verhalten unter Druck
+Kapitelüberschrift:
+
+Wie sich die Konstellation unter Druck verhält
+
+Inhalte:
+Wie reagiert die Person bei Zeitdruck?
+Wie reagiert das Team oder die Führungsrolle unter Unsicherheit?
+Wo verstärken sich Unterschiede?
+Wo steigt das Risiko für Konflikte, Rückzug, Kontrolle oder Aktionismus?
+
+Gerade unter Druck werden Führungsfehler sichtbar: operative Rückfälle, Entscheidungsschwäche, zu viel Kontrolle, zu wenig Feedback oder fehlende Unterstützung.
+
+8.2 Handlungsempfehlungen
+Kapitelüberschrift:
+
+Was jetzt konkret zu tun ist
+
+Ich würde hier immer maximal 5 Empfehlungen ausgeben.
+
+Standardfelder:
+Rolle klären
+Erwartungen konkret machen
+Zusammenarbeit aktiv steuern
+Frühe Feedbackpunkte setzen
+Wirkung nach 30–60 Tagen prüfen
+Bei Führungskraft zusätzlich:
+Führungsrolle vor Fachrolle priorisieren
+Entscheidungsräume sichtbar machen
+regelmäßige Einzelgespräche und Team-Check-ins fest verankern
+Bei Teammitglied zusätzlich:
+Onboarding und Anschluss aktiv begleiten
+Teamregeln und Schnittstellen explizit machen
+frühe Spannungen nicht aussitzen
+
+Das passt gut zu den Praxisquellen: frühe Gespräche, Rollenklärung, Feedback, begleitete Entwicklung und strukturierte Unterstützung sind wirksamer als Wegschauen oder reine Bauchentscheidungen.
+
+So würde ich die Textlogik für Replit aufbauen
+
+Du brauchst in Wahrheit nur drei Ebenen von Textbausteinen.
+
+Ebene 1 – Feste Standardtexte
+
+Immer gleich:
+
+Einleitung
+Kapitelüberschriften
+neutrale Erklärungstexte
+Grundlogik der Managementseite
+Ebene 2 – Kontexttexte
+
+Abhängig von:
+
+team_member
+leader
+
+Diese Ebene steuert:
+
+Wirkung im System
+Was passiert ohne die Person
+Verhalten unter Druck
+Handlungsempfehlungen
+Ebene 3 – Ergebnisintensität
+
+Abhängig von:
+
+stimmig
+bedingt stimmig
+kritisch
+
+Diese Ebene steuert:
+
+Tonalität
+Schärfe der Risiken
+Höhe des Steuerungsaufwands
+Direktheit der Empfehlungen
+Mein Vorschlag für die endgültige Seitenreihenfolge
+
+Seite 1
+Einleitung + Management Summary
+
+Seite 2
+Warum dieses Ergebnis
+
+Seite 3
+Wirkung im System
+
+Seite 4
+Chancen und Risiken
+
+Seite 5
+Was ohne diese Besetzung bleibt
+
+Seite 6
+Auswirkungen im Alltag
+
+Seite 7
+Auswirkungen auf Leistung und Ergebnisse
+
+Seite 8
+Verhalten unter Druck + Handlungsempfehlungen
+
+Mein klares Urteil
+
+So ist der Bericht:
+
+deutlich verständlicher
+näher an echter Führungsrealität
+weniger technisch
+weniger „diagnostisch“
+stärker auf Entscheidung und Wirkung ausgerichtet
+
+Und genau das brauchst du.
