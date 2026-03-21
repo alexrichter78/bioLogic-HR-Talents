@@ -1,0 +1,346 @@
+Was ich jetzt verbessern würde
+1. Seite 1 stärker als echte Managementseite bauen
+
+Im Moment ist Seite 1 noch zu textig.
+
+Problem
+
+Du hast:
+
+Einleitung
+zweiter Einleitungsabsatz
+dritter Einleitungsabsatz
+dann Managementübersicht
+dann Kurzfazit
+dann Empfehlung
+
+Das ist für die erste Seite zu viel Lauftext.
+
+Besser
+
+Seite 1 sollte sich in 3 Blöcke teilen:
+
+Oben:
+
+Titel + 2 kurze Einleitungssätze
+nicht 3 Absätze
+
+Zum Beispiel:
+
+Dieser Bericht zeigt, wie die Person im bestehenden Umfeld voraussichtlich wirken wird.
+Er macht sichtbar, wo es gut zusammenpassen kann und wo im Alltag besondere Aufmerksamkeit nötig ist.
+
+Mehr braucht es oben fast nicht.
+
+Mitte:
+
+4 Management-Kacheln
+
+Gesamteinschätzung
+Wirkung auf das Umfeld
+Begleitungsbedarf
+Risiko im Alltag
+Unten:
+
+zwei breite Boxen
+
+Kurzfazit
+Erste Empfehlung
+
+Dann wirkt die Seite sofort hochwertiger und weniger schwer.
+
+2. Einleitung kürzen
+
+Deine Einleitung ist gut geschrieben, aber für einen Bericht noch etwas lang.
+
+Aktuell sind es 3 Absätze.
+Ich würde daraus 2 kürzere Absätze oder 2 Einleitungssätze machen.
+
+Zum Beispiel so:
+
+Dieser Bericht zeigt, wie die Person im bestehenden Team oder in der Führungsrolle voraussichtlich wirken wird. Er hilft dabei, früh zu erkennen, wo Zusammenarbeit gut gelingen kann und wo im Alltag mehr Führung, Klarheit oder Begleitung nötig ist.
+
+Unterschiede sind dabei nicht automatisch negativ. Sie können ein Team sinnvoll ergänzen, brauchen aber klare Erwartungen und gute Abstimmung, damit daraus Stärke statt Reibung entsteht.
+
+Das reicht völlig.
+
+3. Kapitel 2 bis 8 nicht mehr als Volltextseiten bauen
+
+Das ist aktuell dein größter UI-Bremsklotz.
+
+Fast jede Seite besteht noch überwiegend aus Fließtext.
+Auch wenn er gut ist, wirkt er optisch schnell schwer.
+
+Besser:
+
+Jede Seite bekommt ein festes Muster:
+
+Überschrift
+ein kurzer Einleitungssatz
+2 bis 4 Inhaltsblöcke
+unten eine hervorgehobene Kernaussage
+
+Dann entsteht Rhythmus.
+
+So würde ich deine Seiten konkret umbauen
+Seite 2 – Warum wir zu dieser Einschätzung kommen
+
+Aktuell: ein längerer Fließtext
+
+Besser als 3 Blöcke:
+
+Was gut passt
+Die Person bringt genau die Stärken mit, die die Abteilung im Alltag besonders braucht. Das ist ein klarer Pluspunkt.
+
+Wo der Unterschied liegt
+Das Team arbeitet stärker über Austausch und Miteinander. Die Person setzt mehr auf Tempo und direkte Umsetzung. Das wird im Alltag spürbar sein.
+
+Warum das wichtig ist
+Je klarer Erwartungen, Rolle und Zusammenarbeit von Anfang an geregelt sind, desto eher kann aus dem Unterschied eine Stärke werden.
+
+Unten dann ein Balken:
+Kernaussage:
+Die Person passt gut zum Ziel der Abteilung, aber nicht automatisch zur gewohnten Teamkultur.
+
+Das liest sich sofort leichter.
+
+Seite 3 – So würde die Person als Führungskraft wirken
+
+Die Seite ist inhaltlich gut, aber noch zu gleichförmig.
+
+Besser als 4 Karten:
+Was die Person positiv einbringen kann
+Was das Team daran als schwierig erleben könnte
+Worauf es in den ersten Wochen ankommt
+Wann daraus Stabilität entstehen kann
+
+Jede Karte nur 3 bis 4 Sätze.
+
+Das ist viel angenehmer als eine halbe Textseite.
+
+Seite 4 – Chancen und Risiken
+
+Hier hast du schon eine gute Grundlage.
+Das ist die Seite mit dem größten UI-Potenzial.
+
+So sollte sie aussehen:
+
+Links große Box:
+Chancen
+
+Rechts große Box:
+Risiken
+
+In jeder Box:
+
+1 kurzer Einleitungssatz
+3 bis 4 kurze Punkte
+
+Wichtig:
+Die Punkte nicht einfach roh drunterklatschen, sondern visuell sauber trennen.
+
+Beispiel:
+
+Chancen
+
+bringt mehr Tempo ins Team
+setzt Dinge klarer um
+kann fehlende Klarheit ausgleichen
+passt gut zum Ziel der Abteilung
+
+Risiken
+
+höhere Reibung in der Zusammenarbeit
+unterschiedliche Erwartungen an Führung
+Vertrauen muss aktiv aufgebaut werden
+Spannungen können sich festsetzen
+
+Diese Seite darf ruhig visuell auffälliger sein.
+
+Seite 5 – Was ohne diese Besetzung bestehen bleibt
+
+Der Inhalt ist gut, aber die Seite ist zu kurz für eine Vollseite und zu lang für nur einen Fließtext.
+
+Besser:
+
+Mach daraus eine Gegenüberstellung:
+
+Was kurzfristig erhalten bleibt
+
+mehr Ruhe
+weniger direkte Reibung
+vertraute Abläufe
+
+Was weiter ungelöst bleibt
+
+fehlende Klarheit
+langsame Entscheidungen
+keine echte Entwicklung
+bestehende Lücken bleiben offen
+
+Dann hat die Seite sofort mehr Struktur.
+
+Seite 6 – So könnte es im Alltag aussehen
+
+Diese Seite ist im jetzigen Zustand noch am ehesten Textwüste.
+
+Besser als 4 Alltagskarten:
+Zusammenarbeit
+Kommunikation
+Tempo und Prioritäten
+Verantwortung und Zuständigkeit
+
+Jede Karte mit 2 bis 3 Sätzen.
+
+Ganz unten noch eine kleine Box:
+Warnzeichen im Alltag
+
+Missverständnisse wiederholen sich
+Abstimmungen stocken
+Spannungen werden nicht offen angesprochen
+Verantwortung bleibt unklar
+
+Das macht die Seite sofort deutlich stärker.
+
+Seite 7 – Leistung und Ergebnisse
+
+Aktuell solider Text, aber visuell zu gleichmäßig.
+
+Besser aufteilen in:
+
+Am Anfang
+Hier ist mit mehr Klärung und Abstimmung zu rechnen. Das ist normal, sollte aber eingeplant werden.
+
+Später
+Wenn Führung und Zusammenarbeit klar sind, kann aus der Besetzung eine Stärke werden. Bleibt das offen, leidet die Leistung.
+
+Worauf es ankommt
+Nicht nur die Unterschiede entscheiden, sondern der Umgang damit.
+
+Und dazu vielleicht 2 Mini-Kennfelder:
+
+kurzfristige Wirkung
+mittelfristige Wirkung
+Seite 8 – Unter Druck
+
+Der Text ist gut, aber zu kompakt.
+
+Besser in 3 Blöcke:
+
+Was unter Druck typischerweise passiert
+Die Person greift stärker auf ihre gewohnte Arbeitsweise zurück.
+
+Was das für das Team bedeutet
+Unterschiede werden sichtbarer und können schneller zu Reibung führen.
+
+Was dann besonders wichtig ist
+Klare Absprachen, kurze Wege, eindeutige Verantwortung.
+
+Das ist dieselbe Aussage, aber viel zugänglicher.
+
+Seite 9 – Was jetzt wichtig ist
+
+Diese Seite ist schon relativ gut, weil sie nummeriert ist.
+
+Ich würde nur noch verbessern:
+
+Nicht untereinander wie Fließtext
+
+sondern als 5 Handlungskarten
+
+Jede Karte:
+
+Nummer
+Überschrift
+2 kurze Sätze
+
+Dann wirkt das wie ein echter Maßnahmenplan und nicht wie ein letzter langer Berichtsteil.
+
+Was deinem Report insgesamt noch fehlt
+1. Mehr optische Anker
+
+Jede Seite braucht mindestens ein Element, das sofort ins Auge fällt:
+
+Kachel
+Fazitbox
+Doppelfläche
+Kurzstatement
+Warnhinweis
+Diagramm
+
+Aktuell tragen viele Seiten fast nur Text.
+
+2. Ein wiederkehrendes Seitenmuster
+
+Der Bericht wirkt ruhiger, wenn jede Seite ähnlich aufgebaut ist.
+
+Zum Beispiel immer:
+
+Titel
+1 Einordnungssatz
+2–4 Inhaltsblöcke
+1 hervorgehobene Kernaussage
+
+Dieses Muster gibt dem Leser Halt.
+
+3. Weniger Vollsätze bei Bullet-Inhalten
+
+Gerade Chancen, Risiken, Warnzeichen, Empfehlungen und Alltagssignale dürfen kürzer sein.
+
+Nicht alles muss ausgeschrieben sein.
+
+4. Der Profilvergleich sollte grafisch sehr einfach sein
+
+Der Block unten ist sinnvoll, aber bitte schlicht.
+
+Nicht zu technisch.
+Am besten:
+
+3 horizontale Balken fürs Team
+3 horizontale Balken für die Person
+daneben nur die Prozente
+
+Keine komplizierten Grafiken, keine Dominanz der Zahlen.
+
+Meine konkrete Design-Empfehlung
+Für jede Textseite
+
+Nutze dieses Raster:
+
+oben
+Überschrift + 1 kurzer Orientierungssatz
+
+mitte
+2 oder 3 Karten / Blöcke
+
+unten
+eine breite Fazitbox
+
+Damit verschwindet sofort das Textwüsten-Gefühl.
+
+Meine klare Bewertung deines aktuellen Reports
+Inhaltlich
+
+Sehr gut verbessert.
+
+Sprachlich
+
+Gut verständlich, deutlich besser als vorher.
+
+Für echte Führungskräfte
+
+Jetzt grundsätzlich lesbar.
+
+UI-seitig
+
+Noch nicht auf dem Niveau eines starken Managementreports.
+
+Der Hauptfehler ist nicht mehr die Sprache.
+Der Hauptfehler ist jetzt die Textdichte pro Abschnitt.
+
+Die 5 wichtigsten Änderungen mit dem größten Effekt
+Einleitung auf maximal 2 kurze Absätze kürzen
+Managementseite stark kachelbasiert bauen
+Seiten 2–8 jeweils in 2–4 Blöcke aufteilen statt Volltext
+Chancen/Risiken, Alltag, Druck und Empfehlungen als Karten oder Zweispalten darstellen
+Jede Seite unten mit einer hervorgehobenen Kernaussage abschließen
