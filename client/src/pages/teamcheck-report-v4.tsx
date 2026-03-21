@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
-import { computeTeamCheckV4, type TeamCheckV4Result, type V4Block } from "@/lib/teamcheck-v4-engine";
+import { computeTeamCheckV4, type TeamCheckV4Result, type V4Block, type V4Bullet } from "@/lib/teamcheck-v4-engine";
 import type { TeamCheckV3Input } from "@/lib/teamcheck-v3-engine";
 import { ArrowLeft } from "lucide-react";
 import { COMP_HEX, BIO_COLORS } from "@/lib/bio-design";
@@ -86,7 +86,7 @@ function BarRow({ label, value, color }: { label: string; value: number; color: 
   );
 }
 
-function BulletList({ items, color }: { items: string[]; color: string }) {
+function SimpleBulletList({ items, color }: { items: string[]; color: string }) {
   return (
     <ul style={{ margin: 0, padding: 0, listStyleType: "none" }}>
       {items.map((item, i) => (
@@ -96,6 +96,26 @@ function BulletList({ items, color }: { items: string[]; color: string }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+function DetailBulletList({ items, color }: { items: V4Bullet[]; color: string }) {
+  return (
+    <ul style={{ margin: 0, padding: 0, listStyleType: "none" }}>
+      {items.map((item, i) => (
+        <li key={i} style={{ fontSize: 14, lineHeight: 1.7, color: "#48484A", padding: "5px 0 5px 20px", position: "relative" }}>
+          <span style={{ position: "absolute", left: 0, top: 14, width: 6, height: 6, borderRadius: 3, background: color }} />
+          <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{item.point}:</span>{" "}
+          <span>{item.detail}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function IntroText({ text }: { text: string }) {
+  return (
+    <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: "0 0 20px" }}>{text}</p>
   );
 }
 
@@ -141,7 +161,6 @@ export default function TeamCheckReportV4() {
         <div ref={reportRef} data-testid="v4-report-wrapper">
           <div style={{ position: "relative", background: "#F8F9FB", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }}>
 
-            {/* HEADER */}
             <div className="report-header report-header--auto" data-testid="v4-header">
               <img src={logoPath} alt="bioLogic" className="report-logo" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
               <div className="report-kicker">TEAMANALYSE</div>
@@ -150,10 +169,7 @@ export default function TeamCheckReportV4() {
               <div className="report-rings" />
             </div>
 
-            {/* CONTENT */}
             <div style={{ padding: "32px 32px 0" }}>
-
-              {/* Einleitung – max 2 kurze Absätze */}
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 8px" }} data-testid="text-einleitung-v4">
                 Dieser Bericht zeigt, wie die Person {result.roleType === "leadership" ? "in der Führungsrolle" : "im bestehenden Team"} voraussichtlich wirken wird. Er hilft dabei, früh zu erkennen, wo Zusammenarbeit gut gelingen kann und wo im Alltag mehr Führung, Klarheit oder Begleitung nötig ist.
               </p>
@@ -161,23 +177,19 @@ export default function TeamCheckReportV4() {
                 Unterschiede sind dabei nicht automatisch negativ. Sie können ein Team sinnvoll ergänzen, brauchen aber klare Erwartungen und gute Abstimmung, damit daraus Stärke statt Reibung entsteht.
               </p>
 
-              {/* SECTION 1 – Managementübersicht */}
               <SectionHead num={1} title="Managementübersicht" />
-
               <div data-testid="v4-section-summary" style={{ marginBottom: 32 }}>
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
                   <Tile label="Rolle / Bereich" value={result.roleTitle || "–"} />
                   <Tile label="Kontext" value={result.roleLabel} />
                   <Tile label="Funktionsziel" value={result.teamGoalLabel} />
                 </div>
-
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
                   <Tile label="Gesamteinschätzung" value={result.gesamteinschaetzung} color={bCol} />
                   <Tile label="Wirkung auf das Umfeld" value={result.wirkungAufUmfeld} />
                   <Tile label="Begleitungsbedarf" value={result.begleitungsbedarf} color={bgColor(result.begleitungsbedarf)} />
                   <Tile label="Risiko im Alltag" value={result.risikoImAlltag} color={rColor(result.risikoImAlltag)} />
                 </div>
-
                 <div style={{ display: "grid", gap: 12 }}>
                   <HintBox label="Kurzfazit" color={bCol}>
                     <p style={{ fontSize: 14, lineHeight: 1.8, color: "#48484A", margin: 0 }} data-testid="v4-kurzfazit">{result.kurzfazit}</p>
@@ -189,15 +201,12 @@ export default function TeamCheckReportV4() {
               </div>
             </div>
 
-            {/* SECTIONS 2–9 */}
             <div style={{ padding: "12px 32px 48px" }}>
 
               {/* S2 – Warum */}
               <div style={sectionStyle} data-testid="v4-section-warum">
                 <SectionHead num={2} title="Warum wir zu dieser Einschätzung kommen" />
-                <p style={{ fontSize: 13, color: "#8E8E93", lineHeight: 1.6, margin: "0 0 16px", fontStyle: "italic" }}>
-                  Entscheidend ist das Zusammenspiel aus drei Punkten: wie die Person arbeitet, wie das Team arbeitet und was die Abteilung braucht.
-                </p>
+                <IntroText text={result.warumEinleitung} />
                 <div style={{ display: "grid", gap: 12, marginBottom: 0 }}>
                   {result.warumBlocks.map(b => <ContentCard key={b.title} title={b.title} text={b.text} />)}
                 </div>
@@ -207,12 +216,8 @@ export default function TeamCheckReportV4() {
               {/* S3 – Wirkung */}
               <div style={sectionStyle} data-testid="v4-section-wirkung">
                 <SectionHead num={3} title={result.wirkungTitle} />
-                <p style={{ fontSize: 13, color: "#8E8E93", lineHeight: 1.6, margin: "0 0 16px", fontStyle: "italic" }}>
-                  {result.roleType === "leadership"
-                    ? "Wie die Person führen würde und was das für das Team bedeutet."
-                    : "Wie die Person im Teamalltag spürbar wird."}
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <IntroText text={result.wirkungEinleitung} />
+                <div style={{ display: "grid", gap: 12 }}>
                   {result.wirkungBlocks.map(b => <ContentCard key={b.title} title={b.title} text={b.text} />)}
                 </div>
                 <Kernaussage text={result.wirkungKernaussage} />
@@ -227,16 +232,16 @@ export default function TeamCheckReportV4() {
                       <div style={{ width: 8, height: 8, borderRadius: 4, background: "#34C759" }} />
                       <p style={{ fontSize: 14, fontWeight: 700, color: "#1B7A3D", margin: 0 }}>Chancen</p>
                     </div>
-                    <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, margin: "0 0 12px" }}>{result.chancenEinleitung}</p>
-                    <BulletList items={result.chancenPunkte} color="#34C759" />
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: "0 0 14px" }}>{result.chancenEinleitung}</p>
+                    <DetailBulletList items={result.chancenPunkte} color="#34C759" />
                   </div>
                   <div style={{ ...cardBase, background: "rgba(255,59,48,0.03)", border: "1px solid rgba(255,59,48,0.12)" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                       <div style={{ width: 8, height: 8, borderRadius: 4, background: "#FF3B30" }} />
                       <p style={{ fontSize: 14, fontWeight: 700, color: "#C41E3A", margin: 0 }}>Risiken</p>
                     </div>
-                    <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, margin: "0 0 12px" }}>{result.risikenEinleitung}</p>
-                    <BulletList items={result.risikenPunkte} color="#FF3B30" />
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.75, margin: "0 0 14px" }}>{result.risikenEinleitung}</p>
+                    <DetailBulletList items={result.risikenPunkte} color="#FF3B30" />
                   </div>
                 </div>
               </div>
@@ -244,17 +249,15 @@ export default function TeamCheckReportV4() {
               {/* S5 – Ohne Besetzung */}
               <div style={sectionStyle} data-testid="v4-section-ohne">
                 <SectionHead num={5} title="Was ohne diese Besetzung bestehen bleibt" />
-                <p style={{ fontSize: 13, color: "#8E8E93", lineHeight: 1.6, margin: "0 0 16px", fontStyle: "italic" }}>
-                  Nicht zu besetzen ist keine neutrale Entscheidung.
-                </p>
+                <IntroText text="Nicht zu besetzen ist keine neutrale Entscheidung. Auch wenn kurzfristig Ruhe erhalten bleibt, bleiben bestehende Probleme weiterhin ungelöst." />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div style={cardBase}>
                     <p style={{ fontSize: 13, fontWeight: 700, color: "#34C759", margin: "0 0 12px" }}>Was kurzfristig erhalten bleibt</p>
-                    <BulletList items={result.ohneErhalten} color="#34C759" />
+                    <SimpleBulletList items={result.ohneErhalten} color="#34C759" />
                   </div>
                   <div style={cardBase}>
                     <p style={{ fontSize: 13, fontWeight: 700, color: "#FF3B30", margin: "0 0 12px" }}>Was weiter ungelöst bleibt</p>
-                    <BulletList items={result.ohneUngeloest} color="#FF3B30" />
+                    <SimpleBulletList items={result.ohneUngeloest} color="#FF3B30" />
                   </div>
                 </div>
                 <Kernaussage text={result.ohneKernaussage} color="#6E6E73" />
@@ -263,16 +266,14 @@ export default function TeamCheckReportV4() {
               {/* S6 – Alltag */}
               <div style={sectionStyle} data-testid="v4-section-alltag">
                 <SectionHead num={6} title="So könnte es im Alltag aussehen" />
-                <p style={{ fontSize: 13, color: "#8E8E93", lineHeight: 1.6, margin: "0 0 16px", fontStyle: "italic" }}>
-                  Hier wird sichtbar, wo Zusammenarbeit leicht läuft und wo Reibung entstehen kann.
-                </p>
+                <IntroText text="Hier wird sichtbar, wo Zusammenarbeit leicht läuft und wo es im Alltag mehr Aufmerksamkeit braucht." />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {result.alltagBlocks.map(b => <ContentCard key={b.title} title={b.title} text={b.text} />)}
                 </div>
                 {result.alltagWarnzeichen.length > 0 && (
                   <div style={{ marginTop: 16, padding: "16px 20px", borderRadius: 12, background: "rgba(255,149,0,0.05)", border: "1px solid rgba(255,149,0,0.15)" }}>
                     <p style={{ fontSize: 12, fontWeight: 700, color: "#CC7700", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Warnzeichen im Alltag</p>
-                    <BulletList items={result.alltagWarnzeichen} color="#FF9500" />
+                    <SimpleBulletList items={result.alltagWarnzeichen} color="#FF9500" />
                   </div>
                 )}
                 <Kernaussage text={result.alltagKernaussage} />
@@ -299,9 +300,7 @@ export default function TeamCheckReportV4() {
               {/* S9 – Empfehlungen */}
               <div style={{ marginBottom: 36 }} data-testid="v4-section-empfehlungen">
                 <SectionHead num={9} title="Was jetzt wichtig ist" />
-                <p style={{ fontSize: 13, color: "#8E8E93", lineHeight: 1.6, margin: "0 0 16px", fontStyle: "italic" }}>
-                  Nicht nur beschreiben, sondern klar sagen, was jetzt sinnvoll ist.
-                </p>
+                <IntroText text="Nicht nur beschreiben, sondern klar sagen, was jetzt sinnvoll ist." />
                 <div style={{ display: "grid", gap: 10 }}>
                   {result.empfehlungen.map((emp, i) => (
                     <div key={emp.title} style={{ ...cardBase, display: "flex", gap: 16, alignItems: "flex-start" }}>
@@ -315,7 +314,6 @@ export default function TeamCheckReportV4() {
                 </div>
               </div>
 
-              {/* Profilvergleich – klein, unterstützend */}
               <div style={{ paddingTop: 20, borderTop: "1px solid rgba(0,0,0,0.05)" }} data-testid="v4-section-struktur">
                 <p style={{ fontSize: 11, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Ergänzung</p>
                 <p style={{ fontSize: 13, color: "#8E8E93", margin: "0 0 14px" }}>Wie Team und Person im Vergleich arbeiten</p>

@@ -7,6 +7,11 @@ export interface V4Block {
   text: string;
 }
 
+export interface V4Bullet {
+  point: string;
+  detail: string;
+}
+
 export interface TeamCheckV4Result {
   roleTitle: string;
   roleType: "leadership" | "member";
@@ -29,17 +34,19 @@ export interface TeamCheckV4Result {
   teamGoalAbweichung: number | null;
   personGoalAbweichung: number | null;
 
+  warumEinleitung: string;
   warumBlocks: V4Block[];
   warumKernaussage: string;
 
   wirkungTitle: string;
+  wirkungEinleitung: string;
   wirkungBlocks: V4Block[];
   wirkungKernaussage: string;
 
-  chancenPunkte: string[];
-  risikenPunkte: string[];
   chancenEinleitung: string;
+  chancenPunkte: V4Bullet[];
   risikenEinleitung: string;
+  risikenPunkte: V4Bullet[];
 
   ohneErhalten: string[];
   ohneUngeloest: string[];
@@ -70,6 +77,12 @@ const COMP_SHORT: Record<ComponentKey, string> = {
   impulsiv: "Tempo und direkte Umsetzung",
   intuitiv: "Austausch und Miteinander",
   analytisch: "Struktur und Genauigkeit",
+};
+
+const COMP_ADJ: Record<ComponentKey, string> = {
+  impulsiv: "direkter und schneller",
+  intuitiv: "stärker über Austausch und Abstimmung",
+  analytisch: "genauer und strukturierter",
 };
 
 export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string }): TeamCheckV4Result {
@@ -127,11 +140,11 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
     teamGoalAbweichung: v3.teamGoalAbweichung,
     personGoalAbweichung: v3.personGoalAbweichung,
     ...buildWarum(v3, isLeader, gesamteinschaetzung, sameDominance, teamPrimary, personPrimary),
-    ...buildWirkung(isLeader, gesamteinschaetzung, sameDominance, personPrimary),
+    ...buildWirkung(isLeader, gesamteinschaetzung, sameDominance, teamPrimary, personPrimary),
     ...buildChancenRisiken(v3, isLeader, gesamteinschaetzung, sameDominance, personPrimary),
     ...buildOhne(isLeader, sameDominance, personPrimary),
-    ...buildAlltag(isLeader, gesamteinschaetzung, sameDominance),
-    ...buildLeistung(gesamteinschaetzung),
+    ...buildAlltag(isLeader, gesamteinschaetzung, sameDominance, teamPrimary, personPrimary),
+    ...buildLeistung(gesamteinschaetzung, isLeader),
     ...buildDruck(gesamteinschaetzung),
     empfehlungen: buildEmpfehlungen(isLeader),
     v3,
@@ -157,7 +170,7 @@ function buildKurzfazit(bew: string, isLeader: boolean): string {
 function buildErsteEmpfehlung(bew: string, isLeader: boolean): string {
   if (bew === "Gut passend") {
     return isLeader
-      ? "Die ersten Wochen sollten genutzt werden, um Rolle, Erwartungen und Zusammenarbeit sauber zu klären."
+      ? "Die ersten Wochen sollten genutzt werden, um Rolle, Erwartungen und Zusammenarbeit sauber zu klären. Das schafft eine stabile Grundlage."
       : "Auch bei guter Passung lohnt es sich, Erwartungen und Zuständigkeiten in den ersten Wochen offen zu besprechen.";
   }
   if (bew === "Teilweise passend") {
@@ -167,137 +180,158 @@ function buildErsteEmpfehlung(bew: string, isLeader: boolean): string {
 }
 
 function buildWarum(v3: TeamCheckV3Result, isLeader: boolean, bew: string, sameDom: boolean, teamPrim: ComponentKey, personPrim: ComponentKey) {
+  let einleitung: string;
+  if (bew === "Gut passend") {
+    einleitung = "Diese Einschätzung entsteht nicht aus einem einzelnen Punkt, sondern aus dem Zusammenspiel zwischen Person und Team. Entscheidend ist, wie stark sich beide in ihrer Arbeitsweise ähneln. Im vorliegenden Fall passen Person und Team in ihrer Arbeitsweise gut zusammen. Beide setzen ähnliche Schwerpunkte, was den Einstieg erleichtert und die Zusammenarbeit schnell tragfähig macht.";
+  } else if (bew === "Teilweise passend") {
+    einleitung = `Diese Einschätzung entsteht nicht aus einem einzelnen Punkt, sondern aus dem Zusammenspiel zwischen Person und Team. Entscheidend ist, wie stark sich beide in ihrer Arbeitsweise ähneln oder unterscheiden und wie gut diese Unterschiede im Alltag aufgefangen werden können. Im vorliegenden Fall arbeitet die Person in mehreren Bereichen ${COMP_ADJ[personPrim]} als das Team. Das muss nicht gegen die Besetzung sprechen, wird aber im Alltag spürbar sein.`;
+  } else {
+    einleitung = `Diese Einschätzung entsteht nicht aus einem einzelnen Punkt, sondern aus dem Zusammenspiel zwischen Person und Team. Im vorliegenden Fall arbeitet die Person deutlich ${COMP_ADJ[personPrim]} als das bestehende Team. Das Team ist stärker auf ${COMP_SHORT[teamPrim]} ausgerichtet. Genau darin liegt der zentrale Unterschied. Dieser muss nicht automatisch negativ sein, wird aber im Alltag deutlich spürbar sein und braucht von Anfang an klare Führung.`;
+  }
+
   const blocks: V4Block[] = [];
 
   if (bew === "Gut passend") {
-    blocks.push({ title: "Was gut zusammenpasst", text: "Person und Team setzen im Alltag ähnliche Schwerpunkte. Beide legen Wert auf einen vergleichbaren Arbeitsstil, was den Einstieg erleichtert und die Zusammenarbeit schnell tragfähig macht." });
-    blocks.push({ title: "Wo kleine Unterschiede liegen", text: "Auch bei guter Passung gibt es Nuancen im Stil. Diese sind aber im normalen Bereich und dürften sich schnell einspielen." });
+    blocks.push({ title: "Was gut zusammenpasst", text: "Person und Team setzen im Alltag ähnliche Schwerpunkte. Beide legen Wert auf einen vergleichbaren Arbeitsstil, was den Einstieg erleichtert und die Zusammenarbeit von Beginn an tragfähig macht. Grössere Umstellungen oder Irritationen sind nicht zu erwarten." });
+    blocks.push({ title: "Wo kleine Unterschiede liegen", text: "Auch bei guter Passung gibt es Nuancen im Stil. Diese sind aber im normalen Bereich und dürften sich in den ersten Wochen schnell einspielen. Wichtig ist trotzdem, Erwartungen offen zu besprechen, damit stille Missverständnisse gar nicht erst entstehen." });
   } else {
-    blocks.push({ title: "Was gut zusammenpasst", text: sameDom
-      ? "Person und Team teilen eine ähnliche Grundausrichtung. Das bildet eine solide Basis, auch wenn es in einzelnen Bereichen Abweichungen gibt."
-      : `Trotz unterschiedlicher Schwerpunkte bringt die Person Qualitäten mit, die das Team ergänzen können. Gerade im Bereich ${COMP_SHORT[personPrim]} kann sie einen Beitrag leisten.` });
-    blocks.push({ title: "Wo der grösste Unterschied liegt", text: `Das Team legt mehr Wert auf ${COMP_SHORT[teamPrim]}. Die Person setzt stärker auf ${COMP_SHORT[personPrim]}. Das wird im Alltag spürbar sein.` });
+    blocks.push({ title: "Was trotzdem gut zusammenpasst", text: sameDom
+      ? `Person und Team teilen eine ähnliche Grundausrichtung. Das bildet eine solide Basis, auch wenn es in einzelnen Bereichen Abweichungen gibt. Gerade dort, wo beide ähnlich arbeiten, dürfte die Zusammenarbeit schnell funktionieren.`
+      : `Trotz unterschiedlicher Schwerpunkte bringt die Person Qualitäten mit, die das Team ergänzen können. Gerade im Bereich ${COMP_SHORT[personPrim]} kann sie eine Lücke schliessen, die bisher offengeblieben ist. Ob daraus eine Stärke wird, hängt davon ab, wie gut der Einstieg begleitet wird.` });
+    blocks.push({ title: "Wo der grösste Unterschied liegt", text: `Das Team legt mehr Wert auf ${COMP_SHORT[teamPrim]}. Die Person setzt stärker auf ${COMP_SHORT[personPrim]}. Das wird im Alltag vor allem bei Abstimmungen, Entscheidungen und im Umgang mit Prioritäten spürbar sein. Genau dort braucht es früh Klarheit.` });
   }
 
   if (v3.teamGoal) {
-    let goalText = "Entscheidend ist nicht nur, ob Unterschiede vorhanden sind, sondern ob sie zu den Anforderungen des Bereichs passen.";
+    let goalText = "Entscheidend ist nicht nur, ob Unterschiede zwischen Person und Team vorhanden sind, sondern ob diese Unterschiede zu den Aufgaben und Anforderungen des Bereichs passen.";
     if (v3.strategicFit === "passend") {
-      goalText += " Die Person bringt genau die Stärken mit, die die Abteilung besonders braucht. Das ist ein klarer Pluspunkt.";
+      goalText += " In diesem Fall bringt die Person genau die Stärken mit, die die Abteilung besonders braucht. Das ist ein klarer Pluspunkt, der bei der Gesamtbewertung stark ins Gewicht fällt.";
     } else if (v3.strategicFit === "teilweise") {
-      goalText += " Die Person bringt einen Teil dessen mit, was die Abteilung braucht. Dieser Bereich gehört aber nicht zu ihren stärksten Seiten.";
+      goalText += " Die Person bringt einen Teil dessen mit, was die Abteilung braucht. Dieser Bereich gehört aber nicht zu ihren stärksten Seiten, was die Wirkung im Alltag etwas abschwächt.";
     } else if (v3.strategicFit === "abweichend") {
-      goalText += " Die stärkste Seite der Person liegt nicht in dem Bereich, den die Abteilung am meisten braucht. Das verstärkt die Abweichung.";
+      goalText += " Die stärkste Seite der Person liegt allerdings nicht in dem Bereich, den die Abteilung am meisten braucht. Das verstärkt die Abweichung zusätzlich und macht eine gute Begleitung umso wichtiger.";
     }
     blocks.push({ title: "Was das Ziel der Abteilung bedeutet", text: goalText });
   } else {
-    blocks.push({ title: "Warum das wichtig ist", text: "Je klarer Erwartungen, Rolle und Zusammenarbeit von Anfang an geregelt sind, desto eher kann aus dem Unterschied eine Stärke werden." });
+    blocks.push({ title: "Warum das wichtig ist", text: "Je klarer Erwartungen, Rolle und Zusammenarbeit von Anfang an geregelt sind, desto eher kann aus dem Unterschied eine Stärke werden. Bleiben diese Punkte offen, entsteht schnell Unsicherheit, die sich im Alltag unnötig aufschaukelt." });
   }
 
   let kern: string;
   if (bew === "Gut passend") {
-    kern = "Person und Team passen in ihrer Arbeitsweise gut zusammen. Das ist eine gute Ausgangslage.";
+    kern = "Person und Team passen in ihrer Arbeitsweise gut zusammen. Das ist eine gute Ausgangslage für eine schnelle und stabile Integration.";
   } else if (bew === "Teilweise passend") {
     kern = v3.teamGoal && v3.strategicFit === "passend"
-      ? "Die Person passt gut zum Ziel der Abteilung, aber nicht automatisch zur gewohnten Teamkultur."
-      : "Die Person bringt Stärken mit, arbeitet aber in wichtigen Punkten anders als das Team.";
+      ? "Die Person passt gut zum Ziel der Abteilung, aber nicht automatisch zur gewohnten Teamkultur. Genau das macht gute Begleitung so wichtig."
+      : "Die Person bringt Stärken mit, arbeitet aber in wichtigen Punkten anders als das Team. Daraus kann eine Ergänzung werden, wenn der Einstieg gut begleitet wird.";
   } else {
-    kern = "Der Unterschied zwischen Person und Team ist deutlich. Ohne klare Führung und Begleitung wird das im Alltag schwierig.";
+    kern = "Der Unterschied zwischen Person und Team ist deutlich. Ohne klare Führung und enge Begleitung wird das im Alltag zu spürbarer Reibung führen.";
   }
 
-  return { warumBlocks: blocks, warumKernaussage: kern };
+  return { warumEinleitung: einleitung, warumBlocks: blocks, warumKernaussage: kern };
 }
 
-function buildWirkung(isLeader: boolean, bew: string, sameDom: boolean, personPrim: ComponentKey) {
+function buildWirkung(isLeader: boolean, bew: string, sameDom: boolean, teamPrim: ComponentKey, personPrim: ComponentKey) {
+  let einleitung: string;
   const blocks: V4Block[] = [];
 
   if (isLeader) {
     if (bew === "Gut passend") {
-      blocks.push({ title: "Was die Person positiv einbringen kann", text: "Die Führungskraft arbeitet ähnlich wie das Team. Ihre Art wird im Umfeld schnell akzeptiert, was Vertrauen schafft und den Einstieg erleichtert." });
-      blocks.push({ title: "Was das Team daran erleben wird", text: "Das Team dürfte die neue Führung als passend und vertraut empfinden. Grössere Umstellungen sind nicht zu erwarten." });
-      blocks.push({ title: "Worauf es in den ersten Wochen ankommt", text: "Auch bei guter Passung müssen Erwartungen, Zuständigkeiten und Entscheidungswege früh geklärt werden. Das sichert den guten Start ab." });
-      blocks.push({ title: "Wann daraus Stabilität entsteht", text: "Wenn die ersten Wochen sauber begleitet werden, kann sich die Führung schnell etablieren und das Team stabil weiterarbeiten." });
+      einleitung = "Die Führungskraft arbeitet ähnlich wie das Team und bringt eine Art mit, die im bestehenden Umfeld schnell akzeptiert werden dürfte. Das schafft Vertrauen und erleichtert den Einstieg in die Rolle.";
     } else {
-      blocks.push({ title: "Was die Person positiv einbringen kann", text: "Eine neue Führungskraft kann Klarheit schaffen, Entscheidungen beschleunigen und dem Team neue Richtung geben. Gerade wenn bisher etwas gefehlt hat, kann eine andere Führungsart wertvoll sein." });
-      blocks.push({ title: "Was das Team daran als schwierig erleben könnte", text: "Wenn das Team eine andere Art der Führung gewohnt ist, wird der Unterschied schnell spürbar. Manche erleben das als klärend, andere als zu direkt oder zu wenig einbindend." });
-      blocks.push({ title: "Worauf es in den ersten Wochen ankommt", text: "Die Führungskraft braucht nicht nur Aufgaben und Ziele, sondern einen sauberen Einstieg ins Team. Erwartungen, Zuständigkeiten und Kommunikation müssen früh geklärt werden." });
-      blocks.push({ title: "Wann daraus Stabilität entstehen kann", text: "Je klarer die ersten Wochen gestaltet werden, desto grösser ist die Chance, dass aus anfänglicher Unsicherheit mit der Zeit Vertrauen und Stabilität werden." });
+      einleitung = `Die Person würde voraussichtlich anders führen, als das Team es bisher kennt. Sie arbeitet ${COMP_ADJ[personPrim]}, während das Team stärker auf ${COMP_SHORT[teamPrim]} ausgerichtet ist. Genau darin liegt sowohl die Chance als auch das Risiko dieser Besetzung.`;
     }
+
+    blocks.push({ title: "Was die Person positiv einbringen kann", text: bew === "Gut passend"
+      ? "Die Führungskraft bringt einen Stil mit, der gut zum Team passt. Dadurch kann sie sich schnell in die Rolle einfinden und Vertrauen aufbauen. Das Team wird die Führung voraussichtlich als stimmig und unterstützend erleben."
+      : "Eine neue Führungskraft kann Klarheit schaffen, Entscheidungen beschleunigen, Verantwortung ordnen und dem Team neue Richtung geben. Gerade dann, wenn bisher etwas gefehlt hat, kann eine andere Führungsart wertvoll sein und das Team weiterbringen." });
+
+    blocks.push({ title: "Was das Team daran als schwierig erleben könnte", text: bew === "Gut passend"
+      ? "Bei guter Passung ist mit wenig Widerstand zu rechnen. Trotzdem braucht jede neue Führungskraft eine gewisse Eingewöhnungszeit, in der das Team beobachtet, wie sie Entscheidungen trifft und Verantwortung verteilt."
+      : "Wenn das Team eine andere Art der Führung gewohnt ist, wird der Unterschied schnell spürbar. Manche Mitarbeitende erleben das als klärend und hilfreich, andere als zu direkt, zu schnell oder zu wenig einbindend. Dann geht es nicht mehr nur um Aufgaben, sondern auch um Vertrauen und Akzeptanz." });
+
+    blocks.push({ title: "Worauf es in den ersten Wochen ankommt", text: "Die Führungskraft braucht nicht nur Aufgaben und Ziele, sondern einen sauberen Einstieg in das Team. Erwartungen, Zuständigkeiten, Entscheidungswege und Kommunikation müssen früh geklärt werden. Je klarer das geschieht, desto grösser ist die Chance, dass aus anfänglicher Unsicherheit mit der Zeit echte Stabilität entsteht." });
+
     return {
       wirkungTitle: "So würde die Person als Führungskraft wirken",
+      wirkungEinleitung: einleitung,
       wirkungBlocks: blocks,
       wirkungKernaussage: bew === "Gut passend"
         ? "Die Führungsart passt zum Team. Der Einstieg dürfte reibungsarm verlaufen."
-        : "Die Person würde anders führen, als das Team es kennt. Das kann Chance und Risiko gleichzeitig sein."
+        : "Die Person kann dem Team wichtige Impulse geben, braucht aber einen klar begleiteten Einstieg."
     };
   }
 
   if (bew === "Gut passend") {
-    blocks.push({ title: "Was die Person positiv einbringen kann", text: "Person und Team arbeiten ähnlich. Die Person versteht die Erwartungen schnell und kann sich rasch einbringen." });
-    blocks.push({ title: "Was das Team daran erleben wird", text: "Der Einstieg dürfte reibungsarm verlaufen. Grössere Umstellungen oder Irritationen sind nicht zu erwarten." });
-    blocks.push({ title: "Worauf es in den ersten Wochen ankommt", text: "Auch bei guter Passung lohnt es sich, Zuständigkeiten und Zusammenarbeit offen zu besprechen. Das verhindert stille Missverständnisse." });
-    blocks.push({ title: "Wann daraus echte Stärke wird", text: "Wenn die Person gut aufgenommen wird und früh Verantwortung übernehmen kann, wird aus der guten Passung schnell eine produktive Zusammenarbeit." });
+    einleitung = "Die Person bringt eine Arbeitsweise mit, die gut zum bestehenden Team passt. Sie setzt ähnliche Schwerpunkte und dürfte sich rasch einfinden. Das Team wird den Einstieg voraussichtlich als unkompliziert und passend erleben.";
   } else {
-    blocks.push({ title: "Was die Person positiv einbringen kann", text: `Die Person kann neue Impulse bringen, andere Blickwinkel einbringen oder Lücken schliessen, die bisher nicht bewusst wahrgenommen wurden. Besonders im Bereich ${COMP_SHORT[personPrim]} kann sie das Team ergänzen.` });
-    blocks.push({ title: "Was für andere spürbar werden könnte", text: personPrim === "impulsiv"
-      ? "Die Person entscheidet schneller und handelt direkter als das Team es gewohnt ist. Das kann als erfrischend, aber auch als zu forsch wahrgenommen werden."
-      : personPrim === "intuitiv"
-        ? "Die Person setzt stärker auf Austausch und Abstimmung. Das kann als bereichernd, aber auch als zu aufwändig empfunden werden."
-        : "Die Person geht strukturierter und genauer vor. Das kann als hilfreich, aber auch als zu langsam wahrgenommen werden." });
-    blocks.push({ title: "Wo es schwierig werden könnte", text: "Dort, wo das Team einen anderen Stil gewohnt ist, entstehen leicht kleine Irritationen: unterschiedliche Erwartungen, unausgesprochene Unzufriedenheit oder das Gefühl, nicht richtig zueinander zu finden." });
-    blocks.push({ title: "Was es braucht, damit es funktioniert", text: "Wenn früh geklärt wird, wie Zusammenarbeit und Verantwortung aussehen sollen, kann aus dem Unterschied eine echte Ergänzung werden. Bleibt das offen, entsteht unnötige Reibung." });
+    einleitung = `Die Person bringt eine Arbeitsweise mit, die im Team deutlich spürbar sein wird. Sie arbeitet ${COMP_ADJ[personPrim]}, während das Team stärker auf ${COMP_SHORT[teamPrim]} setzt. Das kann das Team sinnvoll ergänzen, gleichzeitig aber auch Abläufe und Erwartungen verändern.`;
   }
+
+  blocks.push({ title: "Was die Person positiv einbringen kann", text: bew === "Gut passend"
+    ? "Person und Team arbeiten ähnlich, was den Alltag von Beginn an erleichtert. Die Person versteht die Erwartungen des Teams schnell und kann sich rasch einbringen. Grössere Umstellungen sind nicht nötig."
+    : `Die Person kann neue Impulse bringen, andere Blickwinkel einbringen oder Lücken schliessen, die bisher nicht bewusst wahrgenommen wurden. Besonders im Bereich ${COMP_SHORT[personPrim]} kann sie das Team ergänzen. Das ist vor allem dann wertvoll, wenn genau diese Qualität bisher zu kurz gekommen ist.` });
+
+  blocks.push({ title: "Was für andere spürbar werden könnte", text: bew === "Gut passend"
+    ? "Das Team wird die Person voraussichtlich als passend und unkompliziert erleben. Kleinere Unterschiede im Stil sind normal und spielen sich in der Regel schnell ein."
+    : personPrim === "impulsiv"
+      ? "Die Person entscheidet schneller und handelt direkter als das Team es gewohnt ist. Das kann als erfrischend und klärend wahrgenommen werden, aber auch als ungeduldig oder zu forsch. Gerade in der Anfangsphase kann das zu Irritationen führen, die sich bei guter Klärung aber auflösen lassen."
+      : personPrim === "intuitiv"
+        ? "Die Person setzt stärker auf Austausch, Abstimmung und gemeinsames Arbeiten. Das kann als bereichernd und verbindend erlebt werden, aber auch als zu aufwändig oder zu langsam. Gerade dort, wo das Team eher schnell entscheidet, braucht es Klärung."
+        : "Die Person geht strukturierter und genauer vor als das Team es gewohnt ist. Das kann als hilfreich und verlässlich wahrgenommen werden, aber auch als zu detailliert oder zu langsam. Gerade bei zeitkritischen Themen braucht es klare Absprachen." });
+
+  blocks.push({ title: "Worauf es ankommt, damit es funktioniert", text: 'Darum kommt es weniger darauf an, ob die Person \u201Erichtig\u201C oder \u201Efalsch\u201C ist, sondern darauf, wie gut die Zusammenarbeit von Anfang an gekl\u00E4rt wird. Wenn Erwartungen, Rollen und Zust\u00E4ndigkeiten offen besprochen werden, kann aus dem Unterschied eine Erg\u00E4nzung werden. Bleibt das offen, steigt die Reibung im Alltag schnell an.' });
 
   return {
     wirkungTitle: "So würde die Person im Team wirken",
+    wirkungEinleitung: einleitung,
     wirkungBlocks: blocks,
     wirkungKernaussage: bew === "Gut passend"
       ? "Die Person passt gut ins Team und wird sich schnell einfinden."
-      : "Die Person bringt andere Stärken mit als das Team. Das kann bereichern, braucht aber Begleitung."
+      : "Die Person kann dem Team wichtige Impulse geben, braucht aber einen klar begleiteten Einstieg."
   };
 }
 
 function buildChancenRisiken(v3: TeamCheckV3Result, isLeader: boolean, bew: string, sameDom: boolean, personPrim: ComponentKey) {
   let chancenEinleitung: string;
-  const chancenPunkte: string[] = [];
+  const chancenPunkte: V4Bullet[] = [];
 
   if (sameDom) {
-    chancenEinleitung = "Die Person verstärkt, was das Team bereits gut kann. Das bringt Verlässlichkeit und Stabilität.";
-    chancenPunkte.push("Schneller Anschluss durch ähnliche Arbeitsweise");
-    chancenPunkte.push("Stärkung der bestehenden Teamstärken");
-    chancenPunkte.push("Weniger Einarbeitungsaufwand");
+    chancenEinleitung = "Die Person verstärkt, was das Team bereits gut kann. Das bringt mehr Verlässlichkeit und Stabilität in den Alltag. Gerade dort, wo das Team seine Stärken hat, wird die Person schnell produktiv beitragen können.";
+    chancenPunkte.push({ point: "Schneller Anschluss", detail: "Die ähnliche Arbeitsweise erleichtert den Einstieg und reduziert Reibung." });
+    chancenPunkte.push({ point: "Mehr Stabilität", detail: "Die bestehenden Teamstärken werden verstärkt und abgesichert." });
+    chancenPunkte.push({ point: "Weniger Einarbeitungsaufwand", detail: "Das Team muss sich weniger umstellen, was Zeit und Energie spart." });
   } else {
-    chancenEinleitung = `Die Person kann etwas einbringen, das dem Team bisher gefehlt hat: mehr ${COMP_SHORT[personPrim]}.`;
-    chancenPunkte.push("Neue Impulse und andere Blickwinkel");
-    chancenPunkte.push(`Ergänzung durch ${COMP_SHORT[personPrim]}`);
-    chancenPunkte.push("Blinde Flecken können sichtbar werden");
+    chancenEinleitung = `Die Person kann dem Team Qualitäten bringen, die bisher zu wenig vorhanden waren. Gerade mehr ${COMP_SHORT[personPrim]} kann hilfreich sein, wenn Themen bislang zu lange offen bleiben oder bestimmte Impulse fehlen.`;
+    chancenPunkte.push({ point: "Neue Impulse", detail: "Die Person kann eingefahrene Muster aufbrechen und andere Blickwinkel einbringen." });
+    chancenPunkte.push({ point: `Mehr ${COMP_SHORT[personPrim]}`, detail: "Themen, die bisher zu kurz kamen, werden stärker berücksichtigt." });
+    chancenPunkte.push({ point: "Sinnvolle Ergänzung", detail: "Fehlende Dynamik oder Klarheit im Team kann ausgeglichen werden." });
   }
   if (v3.strategicFit === "passend") {
-    chancenPunkte.push("Stärken passen zum Ziel der Abteilung");
+    chancenPunkte.push({ point: "Passt zum Ziel der Abteilung", detail: "Die Stärken der Person liegen genau dort, wo die Abteilung sie am meisten braucht." });
   }
 
   let risikenEinleitung: string;
-  const risikenPunkte: string[] = [];
+  const risikenPunkte: V4Bullet[] = [];
 
   if (bew === "Kritisch") {
-    risikenEinleitung = "Der Unterschied ist deutlich. Ohne gute Begleitung entstehen schnell Missverständnisse und Frust.";
-    risikenPunkte.push("Wiederkehrende Missverständnisse wahrscheinlich");
-    risikenPunkte.push("Frust und sinkendes Vertrauen möglich");
-    risikenPunkte.push("Spannungen können sich schnell verfestigen");
+    risikenEinleitung = "Der Unterschied zur bestehenden Teamkultur ist deutlich. Ohne gute Begleitung entstehen daraus schnell Missverständnisse, Frust und das Gefühl, nicht richtig zueinander zu passen.";
+    risikenPunkte.push({ point: "Missverständnisse im Alltag", detail: "Erwartungen an Abstimmung und Kommunikation gehen deutlich auseinander." });
+    risikenPunkte.push({ point: "Sinkendes Vertrauen", detail: "Wenn Irritationen nicht früh angesprochen werden, leidet das gegenseitige Vertrauen." });
+    risikenPunkte.push({ point: "Verfestigte Spannungen", detail: "Kleine Irritationen können sich schnell aufbauen und zu dauerhaften Problemen werden." });
   } else if (bew === "Teilweise passend") {
-    risikenEinleitung = "Der Unterschied ist spürbar. Wenn er nicht aufgefangen wird, entstehen unnötige Reibung und Abstimmungsprobleme.";
-    risikenPunkte.push("Mehr Abstimmung in den ersten Monaten nötig");
-    risikenPunkte.push("Unterschiedliche Erwartungen können frustrieren");
-    risikenPunkte.push("Rollen müssen aktiv geklärt werden");
+    risikenEinleitung = "Der Unterschied ist spürbar, aber nicht unlösbar. Wenn er im Alltag nicht gut aufgefangen wird, entstehen allerdings unnötige Reibung und Abstimmungsprobleme.";
+    risikenPunkte.push({ point: "Mehr Abstimmungsbedarf", detail: "In den ersten Monaten braucht es mehr Klärung als bei einer ähnlicheren Besetzung." });
+    risikenPunkte.push({ point: "Unterschiedliche Erwartungen", detail: "Was die eine Seite als selbstverständlich sieht, muss für die andere erst besprochen werden." });
+    risikenPunkte.push({ point: "Rollen müssen aktiv geklärt werden", detail: "Ohne klare Zuständigkeiten entsteht schnell Unsicherheit auf beiden Seiten." });
   } else {
-    risikenEinleitung = "Bei guter Passung sind die Risiken gering. Trotzdem sollten Erwartungen früh besprochen werden.";
-    risikenPunkte.push("Zu viel Gleichförmigkeit kann Innovation bremsen");
-    risikenPunkte.push("Blinde Flecken werden nicht automatisch sichtbar");
+    risikenEinleitung = "Bei guter Passung sind die Risiken gering. Trotzdem sollten Erwartungen und Zusammenarbeit von Anfang an bewusst besprochen werden.";
+    risikenPunkte.push({ point: "Zu viel Gleichförmigkeit", detail: "Ähnlichkeit bringt Stabilität, kann aber Innovation und neue Perspektiven bremsen." });
+    risikenPunkte.push({ point: "Blinde Flecken", detail: "Was dem Team bisher fehlt, wird durch eine ähnliche Person nicht automatisch sichtbar." });
   }
 
   if (isLeader) {
-    risikenPunkte.push("Führung kommt möglicherweise nicht im Team an");
+    risikenPunkte.push({ point: "Schwieriger Führungseinstieg", detail: "Auch bei fachlicher Passung kann es dauern, bis die Führung im Team wirklich ankommt." });
   } else {
-    risikenPunkte.push("Person findet möglicherweise schwer Anschluss");
+    risikenPunkte.push({ point: "Schwieriger Anschluss", detail: "Die Person könnte fachlich gute Arbeit leisten, im Team aber schwerer ankommen." });
   }
 
   return { chancenEinleitung, chancenPunkte, risikenEinleitung, risikenPunkte };
@@ -328,23 +362,27 @@ function buildOhne(isLeader: boolean, sameDom: boolean, personPrim: ComponentKey
   return {
     ohneErhalten: erhalten,
     ohneUngeloest: ungeloest,
-    ohneKernaussage: "Die Frage ist nicht nur, ob diese Person ideal passt. Genauso wichtig ist, was es kostet, wenn nichts verändert wird.",
+    ohneKernaussage: "Die Frage ist nicht nur, ob diese Person ideal passt. Genauso wichtig ist, was es für Team und Abteilung bedeutet, wenn nichts verändert wird.",
   };
 }
 
-function buildAlltag(isLeader: boolean, bew: string, sameDom: boolean) {
+function buildAlltag(isLeader: boolean, bew: string, sameDom: boolean, teamPrim: ComponentKey, personPrim: ComponentKey) {
   const blocks: V4Block[] = [];
 
   if (bew === "Gut passend") {
-    blocks.push({ title: "Zusammenarbeit", text: "Dürfte von Beginn an gut funktionieren. Person und Team setzen ähnliche Schwerpunkte." });
-    blocks.push({ title: "Kommunikation", text: "Wenig Reibung zu erwarten. Der Kommunikationsstil passt zum Team." });
-    blocks.push({ title: "Tempo und Prioritäten", text: "Ähnliches Tempo und ähnliche Prioritäten erleichtern den Alltag." });
-    blocks.push({ title: "Verantwortung", text: "Zuständigkeiten sollten trotzdem klar benannt werden, auch wenn die Passung gut ist." });
+    blocks.push({ title: "Zusammenarbeit", text: "Im Alltag dürfte die Zusammenarbeit von Beginn an gut funktionieren. Person und Team setzen ähnliche Schwerpunkte, was Abstimmungen erleichtert und das Miteinander schnell eingespielt wirken lässt. Grössere Anpassungen sind wahrscheinlich nicht nötig." });
+    blocks.push({ title: "Kommunikation", text: "Auch in der Kommunikation sind wenig Irritationen zu erwarten. Beide Seiten dürften sich schnell auf einen gemeinsamen Stil einstellen. Kleinere Unterschiede in Tonalität oder Ausführlichkeit sind normal und dürften sich rasch einspielen." });
+    blocks.push({ title: "Tempo und Prioritäten", text: "Tempo und Prioritäten liegen voraussichtlich nah beieinander. Das macht den Alltag einfacher, weil weniger Klärungsbedarf entsteht und Entscheidungen ähnlich vorbereitet werden." });
+    blocks.push({ title: "Verantwortung", text: "Zuständigkeiten sollten trotzdem klar benannt werden, auch wenn die Passung gut ist. So wird verhindert, dass stille Annahmen irgendwann zu Missverständnissen werden." });
   } else {
-    blocks.push({ title: "Zusammenarbeit", text: "Person und Team setzen nicht automatisch dieselben Schwerpunkte. Abstimmung wird anfangs mehr Zeit brauchen." });
-    blocks.push({ title: "Kommunikation", text: "Erwartungen an Kommunikation können unterschiedlich sein. Was für die eine Seite reicht, kann der anderen zu wenig oder zu viel sein." });
-    blocks.push({ title: "Tempo und Prioritäten", text: "Entscheidungen werden möglicherweise unterschiedlich vorbereitet, Prioritäten verschieden eingeschätzt." });
-    blocks.push({ title: "Verantwortung", text: "Wenn nicht klar ist, wer entscheidet und wie viel Eigenständigkeit gewünscht ist, entsteht schnell Unsicherheit." });
+    blocks.push({ title: "Zusammenarbeit", text: `Im Alltag wird schnell sichtbar werden, dass Person und Team nicht automatisch dieselben Schwerpunkte setzen. Während das Team stärker über ${COMP_SHORT[teamPrim]} arbeitet, geht die Person eher in Richtung ${COMP_SHORT[personPrim]}. Dadurch braucht Zusammenarbeit am Anfang mehr bewusste Klärung.` });
+    blocks.push({ title: "Kommunikation", text: personPrim === "impulsiv"
+      ? "Auch in der Kommunikation können Unterschiede spürbar werden. Was die Person als klar und effizient erlebt, kann für das Team zu direkt oder zu knapp wirken. Umgekehrt kann der Person manches zu ausführlich oder zu langsam erscheinen."
+      : personPrim === "intuitiv"
+        ? "In der Kommunikation setzt die Person stärker auf Austausch und Dialog. Das Team empfindet das möglicherweise als bereichernd, teilweise aber auch als zusätzlichen Aufwand. Hier braucht es eine gemeinsame Ebene."
+        : "Die Person kommuniziert möglicherweise sachlicher und strukturierter als das Team es gewohnt ist. Das kann als klar und verlässlich wahrgenommen werden, aber auch als distanziert. Hier lohnt es sich, den Stil früh abzustimmen." });
+    blocks.push({ title: "Tempo und Prioritäten", text: "Wahrscheinlich werden Themen unterschiedlich gewichtet. Die Person wird andere Schwerpunkte setzen als das Team. Daraus können Spannungen entstehen, wenn Prioritäten nicht gemeinsam geklärt und Entscheidungen nicht transparent vorbereitet werden." });
+    blocks.push({ title: "Verantwortung", text: "Besonders wichtig ist Klarheit bei Zuständigkeiten. Wenn nicht eindeutig ist, wer entscheidet, wer abstimmt und wo Eigenständigkeit gewünscht ist, wächst die Unsicherheit schnell. Das ist gerade in der Anfangsphase einer der häufigsten Auslöser für unnötige Reibung." });
   }
 
   const warnzeichen: string[] = [];
@@ -352,7 +390,7 @@ function buildAlltag(isLeader: boolean, bew: string, sameDom: boolean) {
     warnzeichen.push("Missverständnisse wiederholen sich");
     warnzeichen.push("Abstimmungen stocken regelmässig");
     warnzeichen.push("Spannungen werden nicht offen angesprochen");
-    warnzeichen.push("Verantwortung bleibt unklar");
+    warnzeichen.push("Verantwortung bleibt trotz Klärungsversuchen unklar");
   }
 
   return {
@@ -360,38 +398,38 @@ function buildAlltag(isLeader: boolean, bew: string, sameDom: boolean) {
     alltagWarnzeichen: warnzeichen,
     alltagKernaussage: bew === "Gut passend"
       ? "Im Alltag sollte die Zusammenarbeit reibungsarm laufen. Kleinere Unterschiede spielen sich schnell ein."
-      : "Werden Warnsignale früh erkannt, lässt sich gut gegensteuern. Werden sie übersehen, verfestigen sie sich meist."
+      : "Werden diese Signale früh erkannt, lässt sich gut gegensteuern. Werden sie übersehen, verfestigen sie sich meist."
   };
 }
 
-function buildLeistung(bew: string) {
+function buildLeistung(bew: string, isLeader: boolean) {
   const blocks: V4Block[] = [];
 
   if (bew === "Gut passend") {
-    blocks.push({ title: "Am Anfang", text: "Die Person kann sich rasch einarbeiten und produktiv beitragen. Es entsteht wenig unnötiger Klärungsbedarf." });
-    blocks.push({ title: "Später", text: "Mittelfristig stabilisiert die Person das Umfeld und trägt verlässlich zu guten Ergebnissen bei." });
-    blocks.push({ title: "Worauf es ankommt", text: "Auch bei guter Passung sollten Erwartungen und Rückmeldungen regelmässig stattfinden." });
+    blocks.push({ title: "Am Anfang", text: "Die Person kann sich voraussichtlich rasch einarbeiten und produktiv beitragen. Da Person und Team ähnlich arbeiten, entsteht wenig unnötiger Klärungsbedarf. Die ersten Wochen dürften vergleichsweise reibungslos verlaufen." });
+    blocks.push({ title: "Später", text: "Mittelfristig stabilisiert die Person das bestehende Umfeld und trägt verlässlich zu guten Ergebnissen bei. Qualität und Tempo bleiben auf einem gleichmässig hohen Niveau. Auch unter wechselnden Anforderungen dürfte die Zusammenarbeit stabil bleiben." });
+    blocks.push({ title: "Worauf es ankommt", text: "Auch bei guter Passung sollten Erwartungen und Rückmeldungen regelmässig stattfinden. Das sichert ab, dass die gute Ausgangslage auch langfristig genutzt wird und sich keine stillen Missverständnisse einschleichen." });
   } else {
-    blocks.push({ title: "Am Anfang", text: "Es ist mit mehr Klärung und Abstimmung zu rechnen. Die ersten Wochen sind stärker von gegenseitigem Einordnen geprägt als von reibungsloser Leistung. Das ist normal, sollte aber eingeplant werden." });
-    blocks.push({ title: "Später", text: "Wenn Erwartungen klar sind und Rückmeldungen früh stattfinden, kann aus der Besetzung eine produktive Ergänzung werden. Bleibt das offen, leidet die Leistung." });
-    blocks.push({ title: "Worauf es ankommt", text: "Nicht nur die Unterschiede entscheiden, sondern der Umgang damit. Energie muss in gute Ergebnisse fliessen, nicht in Absicherung und unnötige Abstimmung." });
+    blocks.push({ title: "Am Anfang", text: "Kurzfristig ist mit mehr Klärung und Abstimmung zu rechnen. Die ersten Wochen sind stärker von Beobachtung und gegenseitigem Einordnen geprägt als von reibungsloser Leistung. Das ist bei spürbaren Unterschieden nicht ungewöhnlich, sollte aber bewusst eingeplant werden." });
+    blocks.push({ title: "Später", text: `Wenn Erwartungen klar sind, Rollen sauber benannt werden und Rückmeldungen früh stattfinden, kann aus der Besetzung eine produktive Ergänzung werden. Die Person bringt dann etwas ein, das dem ${isLeader ? "Team" : "Umfeld"} bisher gefehlt hat. Bleiben Zusammenarbeit und Verantwortung dagegen unklar, fliesst Energie nicht in gute Ergebnisse, sondern in Missverständnisse und unnötige Abstimmung.` });
+    blocks.push({ title: "Worauf es ankommt", text: "Nicht nur die Unterschiede entscheiden, sondern der Umgang damit. Wenn das Umfeld gut mit den Unterschieden arbeiten kann, kann Leistung sogar steigen. Wenn nicht, leidet die Qualität, Tempo wird uneinheitlich und die Verlässlichkeit im Alltag sinkt." });
   }
 
   return {
     leistungBlocks: blocks,
     leistungKernaussage: bew === "Gut passend"
-      ? "Leistung und Ergebnisse dürften sich schnell einstellen."
-      : "Ob aus der Besetzung eine Stärke oder ein Problem wird, hängt von der Begleitung ab."
+      ? "Leistung und Ergebnisse dürften sich schnell und stabil einstellen."
+      : "Ob aus der Besetzung eine Stärke oder ein Problem wird, hängt vor allem von der Begleitung in den ersten Wochen ab."
   };
 }
 
 function buildDruck(bew: string) {
   const blocks: V4Block[] = [
-    { title: "Was unter Druck typischerweise passiert", text: "Die Person greift noch stärker auf ihre gewohnte Arbeitsweise zurück. Was sonst noch ausgeglichen wird, tritt dann klarer hervor." },
+    { title: "Was unter Druck typischerweise passiert", text: "Unter Druck zeigt sich die natürliche Arbeitsweise eines Menschen meist deutlicher als im Normalbetrieb. Was sonst noch ausgeglichen oder angepasst wird, tritt dann klarer hervor. Die Person greift stärker auf ihre gewohnte Art zurück und zeigt ihre Stärken, aber auch ihre Grenzen deutlicher." },
     { title: "Was das für das Umfeld bedeutet", text: bew === "Gut passend"
-      ? "Da Person und Team ähnlich arbeiten, ist das Risiko unter Druck gering. Die Zusammenarbeit dürfte auch in intensiven Phasen stabil bleiben."
-      : "Unter Druck werden Unterschiede meist nicht kleiner, sondern grösser. Was im Alltag noch tragbar ist, kann in intensiven Phasen schneller zu Reibung führen." },
-    { title: "Was dann besonders wichtig ist", text: "Klare Absprachen, kurze Wege und eindeutige Verantwortung. Gerade in belasteten Phasen braucht es Klarheit, nicht zusätzliche Abstimmung." },
+      ? "Da Person und Team ähnlich arbeiten, ist das Risiko unter Druck gering. Die Zusammenarbeit dürfte auch in intensiven Phasen stabil bleiben, weil beide Seiten ähnlich reagieren und sich gegenseitig stützen können."
+      : "Unter Druck werden Unterschiede meist nicht kleiner, sondern grösser. Was im Alltag noch tragbar erscheint, kann in intensiven Phasen schneller zu Reibung, Unsicherheit oder Missverständnissen führen. Das Team und die Person reagieren dann unterschiedlich, was die Abstimmung erschwert." },
+    { title: "Was dann besonders wichtig ist", text: "Klare Absprachen, kurze Wege und eindeutige Verantwortung. Gerade in belasteten Phasen braucht es Klarheit statt zusätzlicher Abstimmung. Wer in solchen Momenten weiss, wer entscheidet und wer informiert werden muss, reduziert unnötige Reibung erheblich." },
   ];
 
   return {
@@ -404,16 +442,16 @@ function buildDruck(bew: string) {
 
 function buildEmpfehlungen(isLeader: boolean): V4Block[] {
   const items: V4Block[] = [
-    { title: "Rolle und Erwartungen früh klären", text: "Was wird erwartet, woran wird Erfolg gemessen und welche Verantwortung liegt tatsächlich bei der Person?" },
-    { title: "Zusammenarbeit nicht dem Zufall überlassen", text: "Wie sollen Kommunikation, Abstimmung und Zusammenarbeit im Alltag aussehen? Was nicht besprochen wird, wird still interpretiert." },
-    { title: "Früh Rückmeldung geben", text: "Die Wirkung einer Person zeigt sich oft früher als ihre Ergebnisse. Beobachtungen früh und klar ansprechen." },
-    { title: "Nach den ersten Wochen bewusst prüfen", text: "Nach 30 bis 60 Tagen gezielt schauen: Was läuft gut? Wo gibt es Reibung? Was muss angepasst werden?" },
+    { title: "Rolle und Erwartungen früh klären", text: "Von Anfang an sollte klar sein, was genau von der Person erwartet wird, woran Erfolg gemessen wird und welche Verantwortung tatsächlich bei ihr liegt. Unklare Rollen sind einer der häufigsten Gründe für spätere Spannungen." },
+    { title: "Zusammenarbeit nicht dem Zufall überlassen", text: "Gerade in den ersten Wochen sollte bewusst besprochen werden, wie Kommunikation, Abstimmung und Zusammenarbeit im Alltag aussehen sollen. Was nicht offen besprochen wird, wird meist still interpretiert." },
+    { title: "Früh Rückmeldung geben", text: "Die Wirkung einer Person zeigt sich oft früher als ihre Ergebnisse. Deshalb sind frühe, offene Rückmeldungen besonders wichtig. Nicht erst warten, bis Spannungen fest sitzen." },
+    { title: "Nach den ersten Wochen bewusst prüfen", text: "Nach 30 bis 60 Tagen sollte gezielt geschaut werden: Was läuft gut? Wo gibt es Reibung? Was muss angepasst werden? Diese Reflexion verhindert, dass aus einem schwierigen Start ein dauerhaftes Problem wird." },
   ];
 
   if (isLeader) {
-    items.push({ title: "Auf Vertrauen und Akzeptanz achten", text: "Kommt die Führung im Team an? Entsteht Vertrauen? Kann die Person in der Rolle ankommen?" });
+    items.push({ title: "Auf Vertrauen und Akzeptanz achten", text: "Bei einer Führungsrolle reicht es nicht, nur auf Ziele und Aufgaben zu schauen. Ebenso wichtig ist die Frage, ob die Führung im Team wirklich ankommt, ob Vertrauen entsteht und ob die Person in der Rolle ankommen kann." });
   } else {
-    items.push({ title: "Anschluss ans Team aktiv begleiten", text: "Nicht nur Aufgaben zuweisen, sondern auch den Zugang zum Team aktiv fördern. Teamregeln und Schnittstellen offen benennen." });
+    items.push({ title: "Anschluss ans Team aktiv begleiten", text: "Gerade bei einem neuen Teammitglied sollte darauf geachtet werden, dass die Person nicht nur Aufgaben bekommt, sondern auch Zugang zum Team findet. Teamregeln und Schnittstellen sollten offen benannt werden." });
   }
 
   return items;
