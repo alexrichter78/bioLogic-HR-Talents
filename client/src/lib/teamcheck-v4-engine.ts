@@ -1,4 +1,4 @@
-import type { Triad, ComponentKey } from "./jobcheck-engine";
+import type { Triad, ComponentKey } from "./bio-types";
 import { computeTeamCheckV3, type TeamCheckV3Input, type TeamCheckV3Result, type TeamGoal } from "./teamcheck-v3-engine";
 import { getPrimaryKey, getSecondaryKey } from "./teamcheck-v2-engine";
 

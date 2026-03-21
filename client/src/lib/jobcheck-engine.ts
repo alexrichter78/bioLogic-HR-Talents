@@ -1,8 +1,6 @@
-export type ComponentKey = "impulsiv" | "intuitiv" | "analytisch";
+export type { ComponentKey, Triad } from "./bio-types";
 export type FitStatus = "SUITABLE" | "CONDITIONAL" | "NOT_SUITABLE";
 export type ControlIntensity = "LOW" | "MEDIUM" | "HIGH";
-
-export type Triad = Record<ComponentKey, number>;
 
 type RoleTerms = {
   kpiExamples: string;

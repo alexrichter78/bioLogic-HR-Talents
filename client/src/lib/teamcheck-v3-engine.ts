@@ -1,4 +1,4 @@
-import type { Triad, ComponentKey } from "./jobcheck-engine";
+import type { Triad, ComponentKey } from "./bio-types";
 import { computeTeamReport } from "./team-report-engine";
 import type { TeamReportResult } from "./team-report-engine";
 import { computeTeamCheckV2, getPrimaryKey, getSecondaryKey, componentBusinessNameFirst } from "./teamcheck-v2-engine";
