@@ -1,0 +1,370 @@
+Der Bericht darf nicht wie ein Dokument aussehen, das man durcharbeiten muss.
+Er muss wirken wie etwas, das man schnell erfassen kann.
+
+Gerade bei Führungskräften, HR und Headhuntern gilt:
+Sie lesen keine langen Textblöcke von oben bis unten.
+Sie scannen zuerst. Erst wenn etwas wichtig wirkt, lesen sie genauer.
+
+Darum sollte dein UI so gebaut sein, dass es auf drei Ebenen funktioniert:
+
+sofort erfassbar
+leicht lesbar
+bei Bedarf vertiefbar
+1. Pro Seite nur eine klare Hauptaussage
+
+Viele Berichte wirken wie Textwüsten, weil auf einer Seite zu viele Botschaften gleichzeitig stehen.
+
+Besser:
+
+eine Seite = ein Kerngedanke
+oben eine klare Überschrift
+darunter ein kurzer Einführungssatz
+dann 2 bis 4 gut getrennte Blöcke
+
+Beispiel:
+Nicht eine Seite mit
+„Warum dieses Ergebnis / Chancen / Risiken / Alltag / Leistung“
+
+sondern getrennt:
+
+Warum wir so einschätzen
+Chancen und Risiken
+So zeigt es sich im Alltag
+
+Dadurch wirkt alles ruhiger.
+
+2. Lange Fließtexte aufbrechen
+
+Sobald du einen Block mit mehr als 5 bis 6 Zeilen hast, wirkt es schnell schwer.
+
+Darum:
+
+kurze Absätze
+viel Weißraum
+Zwischenüberschriften
+einzelne Aussagen hervorheben
+
+Also nicht ein langer Textblock, sondern:
+
+Warum das wichtig ist
+Kurzer Absatz.
+
+Wo es gut passen kann
+Kurzer Absatz.
+
+Wo es schwierig werden kann
+Kurzer Absatz.
+
+Das allein macht schon sehr viel aus.
+
+3. Mit Karten statt mit Textblöcken arbeiten
+
+Gerade die Managementseite sollte aus Kacheln bestehen, nicht aus Fließtext.
+
+Zum Beispiel 4 kleine Boxen nebeneinander oder in 2 Reihen:
+
+Gesamteinschätzung
+Wirkung auf das Team
+Begleitungsbedarf
+Risiko im Alltag
+
+Darunter:
+
+Kurzfazit
+Erste Empfehlung
+
+So sieht der Leser sofort:
+„Aha, kritisch, hohe Begleitung, Risiko erhöht.“
+
+Er muss nicht erst lesen, um zu verstehen.
+
+Gute Kachelregel:
+
+Eine Kachel sollte nur enthalten:
+
+eine kleine Überschrift
+einen starken Wert oder Begriff
+optional einen sehr kurzen Zusatz
+
+Zum Beispiel:
+
+Gesamteinschätzung
+Kritisch
+
+Begleitungsbedarf
+Hoch
+
+Nicht noch zwei Sätze in jede Kachel packen.
+
+4. Text und Bewertung optisch trennen
+
+Ein häufiger Fehler:
+Bewertungsdaten und Erklärungstext stehen optisch gleichwertig nebeneinander. Dadurch wirkt alles gleich wichtig.
+
+Besser:
+
+Zahlen, Einstufungen, Labels klar kompakt oben
+Erläuterung darunter ruhiger und breiter
+
+Also:
+erst scannen,
+dann verstehen.
+
+5. Mit Hervorhebungsboxen arbeiten
+
+Nicht alles darf gleich aussehen.
+
+Sehr hilfreich sind kleine Hinweisboxen wie:
+
+Das spricht dafür
+Darauf sollte man achten
+Im Alltag zeigt sich das hier
+Wichtig in den ersten Wochen
+
+Diese Boxen lockern auf und machen den Bericht viel „führbarer“.
+
+Gerade auf Textseiten kannst du eine linke Hauptspalte mit Fließtext machen und rechts eine schmale Box:
+Auf einen Blick
+mit 3 Kurzpunkten.
+
+Das nimmt sofort Schwere raus.
+
+6. Ampeln sparsam einsetzen
+
+Ampeln können helfen, aber nur wenn sie nicht alles dominieren.
+
+Gut geeignet für:
+
+Gesamteinschätzung
+Risiko
+Begleitungsbedarf
+
+Nicht für jeden Unterpunkt.
+Zu viele Farben machen den Bericht unruhig und billig.
+
+Die Farbe soll nur Orientierung geben, nicht das Layout übernehmen.
+
+7. Eine klare visuelle Hierarchie schaffen
+
+Viele Textwüsten entstehen nicht wegen zu viel Inhalt, sondern wegen fehlender Hierarchie.
+
+Du brauchst mindestens 4 Ebenen:
+
+Seitentitel
+Abschnittsüberschrift
+Zwischenüberschrift
+Lesetext
+
+Wenn alles fast gleich groß und gleich fett ist, weiß das Auge nicht, wo es beginnen soll.
+
+Eine gute Hierarchie macht den Bericht sofort leichter.
+
+Zum Beispiel:
+
+Seitentitel deutlich groß
+Abschnittsüberschrift mittelgroß
+Zwischenüberschrift kurz und fett
+Text normal und luftig
+8. Pro Abschnitt mit Einstiegszeile arbeiten
+
+Sehr wirksam ist eine kleine Einleitungszeile direkt unter der Überschrift.
+
+Beispiel:
+
+So könnte es im Alltag aussehen
+Hier wird sichtbar, wo Zusammenarbeit leicht läuft und wo Reibung entstehen kann.
+
+Danach erst die eigentlichen Unterblöcke.
+
+Das gibt dem Leser sofort Orientierung und wirkt viel hochwertiger.
+
+9. Nicht alles als Fließtext schreiben
+
+Manche Inhalte funktionieren besser als kurze Listen oder Mikroblöcke.
+
+Zum Beispiel statt eines langen Absatzes zu Chancen und Risiken:
+
+Chancen
+bringt neue Impulse
+schafft mehr Klarheit
+ergänzt das Team sinnvoll
+Risiken
+mehr Abstimmungsbedarf
+Missverständnisse im Alltag
+Unsicherheit in den ersten Wochen
+
+Natürlich nicht zu viel Listenoptik. Aber gezielt eingesetzt entlastet das enorm.
+
+10. „Lesebalken“ oder Kurzfazit-Bänder nutzen
+
+Sehr gut für Managementberichte:
+Ein horizontaler Balken oder ein breites Panel mit einem einzigen Kerngedanken.
+
+Zum Beispiel:
+
+Kurz gesagt:
+Die Person kann das Umfeld sinnvoll ergänzen, braucht aber in der Anfangsphase klare Führung und enge Abstimmung.
+
+So ein Element unterbricht die Seite angenehm und hilft beim Erfassen.
+
+11. Diagramme klein, einfach und unterstützend
+
+Wenn du Profile oder Vergleiche zeigst:
+
+nicht zu technisch
+nicht zu viele Zahlen
+nicht zu viele Achsen
+nicht als Hauptdarsteller
+
+Besser:
+
+einfache Balken
+klare Prozentwerte
+maximal 3 Vergleichsobjekte
+immer mit kurzer Erklärung daneben
+
+Also nicht:
+„Team-Person-Abweichung 44 Punkte“ groß in den Mittelpunkt
+
+sondern:
+klein unterstützend unter
+Wie Team und Person arbeiten
+
+Denn für viele Leser ist nicht die Zahl wichtig, sondern die Bedeutung.
+
+12. Jede Seite braucht einen sichtbaren „Anker“
+
+Der Leser sollte auf jeder Seite sofort einen Fixpunkt finden.
+
+Das kann sein:
+
+eine Kachelgruppe
+ein Kurzfazit
+ein hervorgehobener Satz
+eine Grafik
+eine Chancen/Risiken-Zweispalte
+
+Wenn eine Seite nur aus gleichförmigem Text besteht, wirkt sie automatisch schwer.
+
+13. Maximal zwei Spalten – und nur mit klarer Funktion
+
+Zweispaltigkeit kann gut helfen, aber nur dann, wenn sie sinnvoll ist.
+
+Gut:
+
+links Erklärung, rechts Hinweise
+links Chancen, rechts Risiken
+links Alltag, rechts Warnzeichen
+
+Nicht gut:
+
+zwei gleich lange Fließtexte nebeneinander
+
+Das sieht gedrängt aus und liest sich schlecht.
+
+14. Weißraum ist kein verschwendeter Platz
+
+Das ist einer der häufigsten Denkfehler.
+
+Viele machen Berichte zu voll, weil sie glauben, jede Fläche müsse genutzt werden.
+Aber gerade bei Managementreports ist Weißraum wichtig, weil er:
+
+Struktur schafft
+Lesen erleichtert
+Wertigkeit erzeugt
+Stress rausnimmt
+
+Ein luftiger Bericht wirkt fast immer hochwertiger als ein vollgestopfter.
+
+15. Standardseiten mit festem Muster bauen
+
+Sehr hilfreich für dein Tool:
+Jede Textseite bekommt dasselbe Grundraster.
+
+Zum Beispiel:
+
+Überschrift
+1 kurzer Einleitungssatz
+2 bis 4 inhaltliche Blöcke
+1 hervorgehobene Kernaussage unten
+
+Dann wirkt der ganze Bericht ruhig und konsistent.
+
+Konkrete UI-Ideen für deinen Check
+Managementseite
+
+Oben:
+4 Kacheln in einer Reihe oder 2x2
+
+Darunter:
+
+Kurzfazit in breiter Box
+Erste Empfehlung in schmaler Hinweisbox
+
+Unten:
+kleiner Strukturvergleich als einfache Balken
+
+So wirkt die Seite sofort „managementtauglich“.
+
+Warum dieses Ergebnis
+
+Nicht ein langer Text.
+
+Sondern drei Boxen:
+
+Was gut zusammenpasst
+Wo der Unterschied liegt
+Warum das im Alltag wichtig ist
+
+Unten ein kurzer zusammenfassender Satz.
+
+Wirkung im Alltag
+
+Sehr gut als 4 Alltagskarten:
+
+Zusammenarbeit
+Tempo
+Entscheidungen
+Verantwortung
+
+Jede Karte mit 2 bis 3 Sätzen.
+Nicht mehr.
+
+Chancen und Risiken
+
+Ideal als linke/rechte Doppelseite oder zwei große Panels:
+
+links Chance
+rechts Risiko
+
+Jeweils mit kurzem Einführungssatz und 3 bis 4 Punkten.
+
+Handlungsempfehlungen
+
+Nicht als langer Textblock.
+
+Sondern als nummerierte Handlungskarten:
+
+Rolle klären
+Erwartungen besprechen
+Rückmeldung geben
+Wirkung prüfen
+
+Das sieht sofort konkreter und nutzbarer aus.
+
+Die wichtigste Gestaltungsregel überhaupt
+
+Bei jedem Abschnitt solltest du dich fragen:
+
+Kann man die Kernaussage in 5 Sekunden erfassen, ohne alles lesen zu müssen?
+
+Wenn nein, ist es noch zu textlastig.
+
+Meine 7 stärksten UI-Tipps in ganz kurz
+Pro Seite nur ein Kerngedanke
+Lange Texte immer in kurze Blöcke aufteilen
+Managementinfos in Kacheln, nicht in Fließtext
+Chancen und Risiken visuell trennen
+Jede Seite braucht ein hervorgehobenes Kurzfazit
+Viel Weißraum zulassen
+Diagramme nur unterstützend, nicht führend einsetzen
