@@ -225,6 +225,25 @@ function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string):
   const personTop2Gap = personSorted[0].value - personSorted[1].value;
   if (personTop2Gap <= 5) score -= 5;
 
+  const teamSecondary = getSecondaryKey(teamProfile);
+  const personSecondary = getSecondaryKey(personProfile);
+  if (teamPrimary === personPrimary && teamSecondary !== personSecondary) {
+    const teamSecGap = sortProfile(teamProfile)[0].value - sortProfile(teamProfile)[1].value;
+    const personSecGap = personSorted[0].value - personSorted[1].value;
+    if (teamSecGap > 5 && personSecGap > 5) score -= 5;
+  }
+
+  const maxDimGap = Math.max(
+    diff(teamProfile.impulsiv, personProfile.impulsiv),
+    diff(teamProfile.intuitiv, personProfile.intuitiv),
+    diff(teamProfile.analytisch, personProfile.analytisch),
+  );
+  if (maxDimGap > 25) score -= 5;
+
+  const teamRange = sortProfile(teamProfile)[0].value - sortProfile(teamProfile)[2].value;
+  const personRange = personSorted[0].value - personSorted[2].value;
+  if ((teamRange <= 8 && personRange > 20) || (personRange <= 8 && teamRange > 20)) score -= 4;
+
   if (roleType === "leadership") {
     if (systemwirkung === "Transformation") score -= 8;
     if (diff(teamProfile.analytisch, personProfile.analytisch) > 25) score -= 6;
