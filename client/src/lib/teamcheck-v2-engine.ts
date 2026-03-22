@@ -222,13 +222,20 @@ function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string):
   if (systemwirkung === "Ergänzung") score -= 4;
 
   const personSorted = sortProfile(personProfile);
+  const teamSorted = sortProfile(teamProfile);
   const personTop2Gap = personSorted[0].value - personSorted[1].value;
-  if (personTop2Gap <= 5) score -= 5;
+  if (personTop2Gap <= 5) {
+    const personTop2Keys = new Set([personSorted[0].key, personSorted[1].key]);
+    const teamTop2Keys = new Set([teamSorted[0].key, teamSorted[1].key]);
+    const sameTop2 = personTop2Keys.size === teamTop2Keys.size &&
+      [...personTop2Keys].every(k => teamTop2Keys.has(k));
+    if (!sameTop2) score -= 5;
+  }
 
   const teamSecondary = getSecondaryKey(teamProfile);
   const personSecondary = getSecondaryKey(personProfile);
   if (teamPrimary === personPrimary && teamSecondary !== personSecondary) {
-    const teamSecGap = sortProfile(teamProfile)[0].value - sortProfile(teamProfile)[1].value;
+    const teamSecGap = teamSorted[0].value - teamSorted[1].value;
     const personSecGap = personSorted[0].value - personSorted[1].value;
     if (teamSecGap > 5 && personSecGap > 5) score -= 5;
   }
@@ -240,7 +247,7 @@ function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string):
   );
   if (maxDimGap > 25) score -= 5;
 
-  const teamRange = sortProfile(teamProfile)[0].value - sortProfile(teamProfile)[2].value;
+  const teamRange = teamSorted[0].value - teamSorted[2].value;
   const personRange = personSorted[0].value - personSorted[2].value;
   if ((teamRange <= 8 && personRange > 20) || (personRange <= 8 && teamRange > 20)) score -= 4;
 
