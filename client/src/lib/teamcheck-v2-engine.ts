@@ -207,9 +207,6 @@ export function getSystemwirkung(teamProfile: Triad, personProfile: Triad): stri
     const sameTop2 = teamTop2.size === personTop2.size &&
       [...teamTop2].every(k => personTop2.has(k));
     if (sameTop2 && distance <= 50) return "Verstärkung";
-
-    const teamWeakest = teamSorted[2].key;
-    if (personPrimary === teamWeakest) return "Ergänzung";
   }
 
   if (distance >= 70) return "Transformation";
@@ -227,7 +224,6 @@ function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string):
   if (teamPrimary !== personPrimary) score -= 8;
   if (systemwirkung === "Spannung") score -= 10;
   if (systemwirkung === "Transformation") score -= 18;
-  if (systemwirkung === "Ergänzung") score -= 4;
 
   const personSorted = sortProfile(personProfile);
   const teamSorted = sortProfile(teamProfile);
