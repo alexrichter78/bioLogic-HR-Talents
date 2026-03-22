@@ -917,31 +917,18 @@ export default function TeamReport() {
                   : p.gesamteinschaetzung === "Kritisch" ? "rgba(196,30,58,0.06)" : "rgba(204,119,0,0.06)";
                 const borderCol = p.gesamteinschaetzung === "Gut passend" ? "rgba(27,122,61,0.15)"
                   : p.gesamteinschaetzung === "Kritisch" ? "rgba(196,30,58,0.15)" : "rgba(204,119,0,0.15)";
-                const bgLevel = (v: string) => v === "gering" ? "#1B7A3D" : v === "mittel" ? "#CC7700" : "#C41E3A";
-                const levelW = p.begleitungsbedarf === "gering" ? 1 : p.begleitungsbedarf === "mittel" ? 2 : 3;
                 return (
                   <div style={{ marginTop: 20, padding: "18px 20px", borderRadius: 14, border: `1px solid ${borderCol}`, background: bgCol }} data-testid="v4-preview">
-                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 24, marginBottom: 14 }}>
-                      <div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                          <Zap style={{ width: 16, height: 16, color: bCol }} />
-                          <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>TeamCheck{roleName ? `: ${roleName}` : ""}</span>
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <div style={{ width: 8, height: 8, borderRadius: 4, background: bCol }} />
-                          <span style={{ fontSize: 15, fontWeight: 700, color: bCol }}>{p.gesamteinschaetzung}</span>
-                        </div>
-                        <p style={{ fontSize: 12.5, color: "#6E6E73", margin: "4px 0 0", lineHeight: 1.5 }}>{p.kurzfazit}</p>
+                    <div style={{ marginBottom: 14 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                        <Zap style={{ width: 16, height: 16, color: bCol }} />
+                        <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>TeamCheck{roleName ? `: ${roleName}` : ""}</span>
                       </div>
-                      <div style={{ minWidth: 180, flexShrink: 0 }}>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: "#1D1D1F", marginBottom: 6 }}>Begleitungsbedarf</div>
-                        <div style={{ display: "flex", gap: 3, marginBottom: 4 }}>
-                          {[1, 2, 3].map(step => (
-                            <div key={step} style={{ height: 6, flex: 1, borderRadius: 3, background: step <= levelW ? bgLevel(p.begleitungsbedarf) : "rgba(0,0,0,0.06)" }} />
-                          ))}
-                        </div>
-                        <div style={{ fontSize: 11, color: "#6E6E73", textAlign: "right" }}>{p.begleitungsbedarf}</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div style={{ width: 8, height: 8, borderRadius: 4, background: bCol }} />
+                        <span style={{ fontSize: 15, fontWeight: 700, color: bCol }}>{p.gesamteinschaetzung}</span>
                       </div>
+                      <p style={{ fontSize: 12.5, color: "#6E6E73", margin: "4px 0 0", lineHeight: 1.5 }}>{p.kurzfazit}</p>
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                       <div style={{ padding: "10px 14px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.05)" }}>
