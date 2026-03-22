@@ -917,8 +917,8 @@ export default function TeamReport() {
                   : p.gesamteinschaetzung === "Kritisch" ? "rgba(196,30,58,0.06)" : "rgba(204,119,0,0.06)";
                 const borderCol = p.gesamteinschaetzung === "Gut passend" ? "rgba(27,122,61,0.15)"
                   : p.gesamteinschaetzung === "Kritisch" ? "rgba(196,30,58,0.15)" : "rgba(204,119,0,0.15)";
-                const bgLevel = (v: string) => v === "niedrig" ? "#1B7A3D" : v === "mittel" || v === "erh\u00F6ht" ? "#CC7700" : "#C41E3A";
-                const levelW = p.begleitungsbedarf === "niedrig" ? 25 : p.begleitungsbedarf === "mittel" ? 50 : p.begleitungsbedarf === "hoch" ? 75 : 100;
+                const bgLevel = (v: string) => v === "gering" ? "#1B7A3D" : v === "mittel" ? "#CC7700" : "#C41E3A";
+                const levelW = p.begleitungsbedarf === "gering" ? 1 : p.begleitungsbedarf === "mittel" ? 2 : 3;
                 return (
                   <div style={{ marginTop: 20, padding: "18px 20px", borderRadius: 14, border: `1px solid ${borderCol}`, background: bgCol }} data-testid="v4-preview">
                     <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 24, marginBottom: 14 }}>
@@ -936,7 +936,7 @@ export default function TeamReport() {
                       <div style={{ minWidth: 180, flexShrink: 0 }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color: "#1D1D1F", marginBottom: 6 }}>Begleitungsbedarf</div>
                         <div style={{ display: "flex", gap: 3, marginBottom: 4 }}>
-                          {[25, 50, 75, 100].map(step => (
+                          {[1, 2, 3].map(step => (
                             <div key={step} style={{ height: 6, flex: 1, borderRadius: 3, background: step <= levelW ? bgLevel(p.begleitungsbedarf) : "rgba(0,0,0,0.06)" }} />
                           ))}
                         </div>
