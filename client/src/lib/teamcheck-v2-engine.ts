@@ -200,7 +200,15 @@ export function getSystemwirkung(teamProfile: Triad, personProfile: Triad): stri
   if (teamPrimary === personPrimary && distance <= 42) return "Verstärkung";
 
   if (teamPrimary !== personPrimary) {
-    const teamWeakest = sortProfile(teamProfile)[2].key;
+    const teamSorted = sortProfile(teamProfile);
+    const personSorted = sortProfile(personProfile);
+    const teamTop2 = new Set([teamSorted[0].key, teamSorted[1].key]);
+    const personTop2 = new Set([personSorted[0].key, personSorted[1].key]);
+    const sameTop2 = teamTop2.size === personTop2.size &&
+      [...teamTop2].every(k => personTop2.has(k));
+    if (sameTop2 && distance <= 50) return "Verstärkung";
+
+    const teamWeakest = teamSorted[2].key;
     if (personPrimary === teamWeakest) return "Ergänzung";
   }
 
