@@ -196,7 +196,7 @@ export function getSystemwirkung(teamProfile: Triad, personProfile: Triad): stri
   const personPrimary = getPrimaryKey(personProfile);
   const distance = getDistanceScore(teamProfile, personProfile);
 
-  if (distance <= 24) return "Verstärkung";
+  if (distance <= 16) return "Verstärkung";
   if (teamPrimary === personPrimary && distance <= 42) return "Verstärkung";
 
   if (teamPrimary !== personPrimary) {
