@@ -221,6 +221,10 @@ function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string):
   if (systemwirkung === "Transformation") score -= 18;
   if (systemwirkung === "Ergänzung") score -= 4;
 
+  const personSorted = sortProfile(personProfile);
+  const personTop2Gap = personSorted[0].value - personSorted[1].value;
+  if (personTop2Gap <= 5) score -= 5;
+
   if (roleType === "leadership") {
     if (systemwirkung === "Transformation") score -= 8;
     if (diff(teamProfile.analytisch, personProfile.analytisch) > 25) score -= 6;
