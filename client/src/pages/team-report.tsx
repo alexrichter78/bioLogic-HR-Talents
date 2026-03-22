@@ -764,6 +764,42 @@ export default function TeamReport() {
               </div>
 
               <div style={{ marginTop: 24, padding: "16px 20px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,0,0,0.015)" }}>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, letterSpacing: "-0.01em" }}>
+                  Rollenbezeichnung <span style={{ fontWeight: 400, color: "#8E8E93" }}>(optional)</span>
+                </label>
+                <p style={{ fontSize: 12, color: "#6E6E73", margin: "0 0 10px", lineHeight: 1.5 }}>
+                  Ohne Angabe wird die Passung rein auf Basis der Teamdynamik bewertet.
+                </p>
+                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <input
+                    type="text"
+                    value={roleName}
+                    onChange={e => setRoleName(e.target.value)}
+                    placeholder="z.B. Projektleiter, Teamleitung HR"
+                    data-testid="input-role-name"
+                    style={{
+                      flex: 1, height: 38, padding: "0 14px", borderRadius: 10,
+                      border: "1px solid rgba(0,0,0,0.12)", fontSize: 13, color: "#1D1D1F",
+                      background: "#fff", outline: "none",
+                    }}
+                    onFocus={e => { e.target.style.borderColor = "#007AFF"; }}
+                    onBlur={e => { e.target.style.borderColor = "rgba(0,0,0,0.12)"; }}
+                  />
+                  {roleName && (
+                    <button
+                      onClick={() => setRoleName("")}
+                      data-testid="button-clear-role-name"
+                      style={{
+                        background: "none", border: "none", cursor: "pointer",
+                        fontSize: 18, color: "#8E8E93", padding: "0 4px", lineHeight: 1,
+                      }}
+                      title="Rollenbezeichnung entfernen"
+                    >{"\u00D7"}</button>
+                  )}
+                </div>
+              </div>
+
+              <div style={{ marginTop: 12, padding: "16px 20px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,0,0,0.015)" }}>
                 <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#1D1D1F", marginBottom: 10, letterSpacing: "-0.01em" }}>
                   Rolle der Person
                 </label>
@@ -978,7 +1014,7 @@ export default function TeamReport() {
                       "Disziplinarisch": "Führung mit Personalverantwortung",
                       "Projektleitung": "Projektleitung / Koordination",
                     };
-                    let roleTitle = roleName || "die Rolle";
+                    const roleTitle = roleName || "";
                     let roleLevel = "Keine Führungsverantwortung";
                     let taskStructure = "-";
                     let workStyle = "-";
@@ -987,7 +1023,6 @@ export default function TeamReport() {
                       const dnaRaw = localStorage.getItem("rollenDnaState");
                       if (dnaRaw) {
                         const dna = JSON.parse(dnaRaw) as RoleDnaState;
-                        if (dna.beruf) roleTitle = dna.beruf;
                         if (dna.fuehrung) roleLevel = FUEHRUNG_LABELS[dna.fuehrung] || dna.fuehrung;
                         if (dna.aufgabencharakter) taskStructure = AUFGABENCHARAKTER_LABELS[dna.aufgabencharakter] || dna.aufgabencharakter;
                         if (dna.arbeitslogik) workStyle = ARBEITSLOGIK_LABELS[dna.arbeitslogik] || dna.arbeitslogik;
