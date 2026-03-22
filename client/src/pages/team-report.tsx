@@ -768,7 +768,7 @@ export default function TeamReport() {
                   Rollenbezeichnung <span style={{ fontWeight: 400, color: "#8E8E93" }}>(optional)</span>
                 </label>
                 <p style={{ fontSize: 12, color: "#6E6E73", margin: "0 0 10px", lineHeight: 1.5 }}>
-                  Ohne Angabe wird die Passung rein auf Basis der Teamdynamik bewertet.
+                  F{"\u00FC"}r welche Rolle oder Position wird die Person betrachtet?
                 </p>
                 <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                   <input
