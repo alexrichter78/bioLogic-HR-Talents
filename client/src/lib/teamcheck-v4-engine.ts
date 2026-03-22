@@ -120,7 +120,9 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
   const beitragZurAufgabe = funktionsFit;
 
   let gesamteinschaetzung: string;
-  if (teamFitRaw === "hoch") {
+  if (teamFitRaw === "hoch" && funktionsFit === "gering") {
+    gesamteinschaetzung = "Teilweise passend";
+  } else if (teamFitRaw === "hoch") {
     gesamteinschaetzung = "Gut passend";
   } else if (teamFitRaw === "gering" && (funktionsFit === "hoch" || funktionsFit === "mittel")) {
     gesamteinschaetzung = "Strategisch sinnvoll, aber anspruchsvoll";
@@ -145,6 +147,12 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
   if (v3.steuerungsaufwand === "gering") begleitungsbedarf = "gering";
   else if (v3.steuerungsaufwand === "mittel") begleitungsbedarf = "mittel";
   else begleitungsbedarf = "hoch";
+
+  if (v3.integrationsrisiko === "hoch" && begleitungsbedarf !== "hoch") {
+    begleitungsbedarf = "hoch";
+  } else if (v3.integrationsrisiko === "mittel" && begleitungsbedarf === "gering") {
+    begleitungsbedarf = "mittel";
+  }
 
   let risikoImAlltag: string;
   if (v3.integrationsrisiko === "gering") risikoImAlltag = "niedrig";
