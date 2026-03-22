@@ -225,11 +225,7 @@ function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string):
   const teamSorted = sortProfile(teamProfile);
   const personTop2Gap = personSorted[0].value - personSorted[1].value;
   if (personTop2Gap <= 5) {
-    const personTop2Keys = new Set([personSorted[0].key, personSorted[1].key]);
-    const teamTop2Keys = new Set([teamSorted[0].key, teamSorted[1].key]);
-    const sameTop2 = personTop2Keys.size === teamTop2Keys.size &&
-      [...personTop2Keys].every(k => teamTop2Keys.has(k));
-    if (!sameTop2) score -= 5;
+    score -= 5;
   }
 
   const teamSecondary = getSecondaryKey(teamProfile);
