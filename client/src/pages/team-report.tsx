@@ -796,6 +796,7 @@ export default function TeamReport() {
                 </label>
                 <p style={{ fontSize: 12, color: "#6E6E73", margin: "0 0 10px", lineHeight: 1.5 }}>
                   Welche Arbeitsweise braucht diese Abteilung funktional? Das Funktionsziel beeinflusst die strategische Einordnung im Bericht.
+                  {" "}Ohne Funktionsziel wird die Passung rein auf Basis der Teamdynamik bewertet.
                 </p>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
                   {([

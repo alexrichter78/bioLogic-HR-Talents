@@ -173,7 +173,7 @@ export default function TeamCheckReportV4() {
               <img src={logoPath} alt="bioLogic" className="report-logo" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
               <div className="report-kicker">TEAMANALYSE</div>
               <h1 className="report-title report-title--flow">Integrationsanalyse</h1>
-              <div className="report-subtitle report-subtitle--flow">{result.roleTitle || "Bericht"}</div>
+              <div className="report-subtitle report-subtitle--flow">{result.roleTitle || "Teamsimulation"}</div>
               <div className="report-rings" />
             </div>
 
@@ -192,10 +192,12 @@ export default function TeamCheckReportV4() {
                     <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Passung zum Team</div>
                     <div style={{ fontSize: 17, fontWeight: 700, color: axisColor(result.passungZumTeam) }} data-testid="v4-passung-team">{axisLabel(result.passungZumTeam)}</div>
                   </div>
-                  <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${axisColor(result.beitragZurAufgabe)}08`, border: `1px solid ${axisColor(result.beitragZurAufgabe)}25` }}>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Beitrag zur Aufgabe</div>
-                    <div style={{ fontSize: 17, fontWeight: 700, color: axisColor(result.beitragZurAufgabe) }} data-testid="v4-beitrag-aufgabe">{axisLabel(result.beitragZurAufgabe)}</div>
-                  </div>
+                  {result.beitragZurAufgabe !== "nicht bewertbar" && (
+                    <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${axisColor(result.beitragZurAufgabe)}08`, border: `1px solid ${axisColor(result.beitragZurAufgabe)}25` }}>
+                      <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Beitrag zur Aufgabe</div>
+                      <div style={{ fontSize: 17, fontWeight: 700, color: axisColor(result.beitragZurAufgabe) }} data-testid="v4-beitrag-aufgabe">{axisLabel(result.beitragZurAufgabe)}</div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -235,7 +237,9 @@ export default function TeamCheckReportV4() {
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
                   <Tile label="Rolle / Bereich" value={result.roleTitle || "\u2013"} />
                   <Tile label="Kontext" value={result.roleLabel} />
-                  <Tile label="Funktionsziel" value={result.teamGoalLabel} />
+                  {result.teamGoalLabel && result.teamGoalLabel !== "Kein festgelegtes Funktionsziel" && (
+                    <Tile label="Funktionsziel" value={result.teamGoalLabel} />
+                  )}
                 </div>
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
                   <Tile label="Wirkung auf das Umfeld" value={result.wirkungAufUmfeld} />
