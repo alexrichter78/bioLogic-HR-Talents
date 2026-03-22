@@ -4,7 +4,7 @@ import { AlertTriangle, Download, Check, Users, ChevronDown, Zap } from "lucide-
 import GlobalNav from "@/components/global-nav";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeTeamReport } from "@/lib/team-report-engine";
-import { constellationLabel, detectConstellation, computeSollIst } from "@/lib/soll-ist-engine";
+import { constellationLabel, detectConstellation } from "@/lib/soll-ist-engine";
 import { getSystemwirkung } from "@/lib/teamcheck-v2-engine";
 import { computeTeamCheckV4 } from "@/lib/teamcheck-v4-engine";
 import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
@@ -229,57 +229,6 @@ function Prose({ text }: { text: string }) {
   );
 }
 
-function StaticBarGroup({ title, triad }: {
-  title: string;
-  triad: { impulsiv: number; intuitiv: number; analytisch: number };
-}) {
-  const dom = dominanceModeOf(triad);
-  return (
-    <div>
-      <div className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500 mb-2">{title}</div>
-      <div className="text-xs text-slate-500 mb-4">{dominanceLabel(dom)}</div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-        {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(key => {
-          const val = triad[key];
-          const hex = BAR_HEX[key];
-          const widthPct = (val / 67) * 100;
-          const isSmall = widthPct < 18;
-          return (
-            <div key={key} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>
-                {labelComponent(key)}
-              </span>
-              <div style={{ flex: 1, position: "relative", height: 26 }}>
-                <div style={{
-                  position: "absolute", inset: 0,
-                  borderRadius: 13, background: "rgba(0,0,0,0.06)",
-                }} />
-                <div style={{
-                  position: "absolute", left: 0, top: 0, bottom: 0,
-                  width: `${Math.min(Math.max(widthPct, 4), 100)}%`,
-                  borderRadius: 13, background: hex,
-                  transition: "width 600ms ease",
-                  display: "flex", alignItems: "center", paddingLeft: 10,
-                  minWidth: isSmall ? 8 : 50,
-                }}>
-                  {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>}
-                </div>
-                {isSmall && (
-                  <span style={{
-                    position: "absolute", top: "50%", transform: "translateY(-50%)",
-                    left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
-                    fontSize: 14, fontWeight: 600, color: "#48484A", whiteSpace: "nowrap",
-                    transition: "left 600ms ease",
-                  }}>{val} %</span>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
 
 function SliderGroup({
   title, triad, onTriadChange, testIdPrefix,
@@ -564,7 +513,6 @@ export default function TeamReport() {
 
   const [istTriad, setIstTriad] = useState({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
   const [teamTriad, setTeamTriad] = useState({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
-  const [stellenTriad, setStellenTriad] = useState<{ impulsiv: number; intuitiv: number; analytisch: number } | null>(null);
 
   const makeTriadUpdater = useCallback((setter: React.Dispatch<React.SetStateAction<{ impulsiv: number; intuitiv: number; analytisch: number }>>) => {
     return (key: ComponentKey, newVal: number) => {
@@ -615,9 +563,6 @@ export default function TeamReport() {
           if ((f.includes("führung") || f.includes("fachlich") || f.includes("disziplinarisch") || f.includes("projekt") || f.includes("koordination") || f.includes("leiter") || f.includes("lead")) && !f.includes("keine")) {
             setRoleTypeForCard("fuehrung");
           }
-        }
-        if (dna.bioGramGesamt) {
-          setStellenTriad(bgToTriad(dna.bioGramGesamt));
         }
       } catch {}
     }
@@ -813,10 +758,7 @@ export default function TeamReport() {
             transition: "max-height 400ms ease",
           }}>
             <div style={{ padding: "0 24px 24px" }}>
-              <div className={`grid gap-8 ${stellenTriad ? "md:grid-cols-3" : "md:grid-cols-2"}`}>
-                {stellenTriad && (
-                  <StaticBarGroup title="Stellenprofil (Soll)" triad={stellenTriad} />
-                )}
+              <div className="grid gap-8 md:grid-cols-2">
                 <SliderGroup title="Ist-Profil (Person)" triad={istTriad}
                   onTriadChange={updateIstTriad} testIdPrefix="ist" />
                 <SliderGroup title="Teamprofil" triad={teamTriad}
@@ -1180,19 +1122,7 @@ export default function TeamReport() {
                 {matchCheckOpen && (
                 <div style={{ padding: "0 32px 28px" }}>
                   {(() => {
-                    let sollIstLabel = "";
-                    let sollIstColor = "";
-                    if (stellenTriad) {
-                      const sollIstResult = computeSollIst(
-                        roleName || "Rolle",
-                        candidateName || "Person",
-                        stellenTriad,
-                        istTriad,
-                      );
-                      sollIstLabel = sollIstResult.fitLabel;
-                      sollIstColor = sollIstResult.fitColor;
-                    }
-                    const cols = stellenTriad ? "1fr 1fr 1fr 1fr" : "1fr 1fr 1fr";
+                    const cols = "1fr 1fr 1fr";
                     return (
                       <div style={{ display: "grid", gridTemplateColumns: cols, gap: 12, marginBottom: 20 }}>
                         <div style={{ padding: "14px 18px", borderRadius: 14, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(0,0,0,0.05)", textAlign: "center" }}>
@@ -1213,15 +1143,6 @@ export default function TeamReport() {
                           <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 8px" }}>Integrationsrisiko</p>
                           <span style={{ fontSize: 16, fontWeight: 700, color: steuerungColor }} data-testid="text-integrationsrisiko">{steuerung}</span>
                         </div>
-                        {stellenTriad && (
-                          <div style={{ padding: "14px 18px", borderRadius: 14, background: "rgba(255,255,255,0.8)", border: "1px solid rgba(0,0,0,0.05)", textAlign: "center" }}>
-                            <p style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 8px" }}>Passung Soll–Ist</p>
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                              <div style={{ width: 10, height: 10, borderRadius: 5, background: sollIstColor, boxShadow: `0 0 0 3px ${sollIstColor}20` }} />
-                              <span style={{ fontSize: 16, fontWeight: 700, color: sollIstColor }} data-testid="text-soll-ist-passung">{sollIstLabel}</span>
-                            </div>
-                          </div>
-                        )}
                       </div>
                     );
                   })()}
