@@ -124,6 +124,8 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
     gesamteinschaetzung = "Teilweise passend";
   } else if (teamFitRaw === "hoch") {
     gesamteinschaetzung = "Gut passend";
+  } else if (teamFitRaw === "mittel" && funktionsFit === "hoch") {
+    gesamteinschaetzung = "F\u00FCr die Aufgabe passend, im Team herausfordernd";
   } else if (teamFitRaw === "gering" && (funktionsFit === "hoch" || funktionsFit === "mittel")) {
     gesamteinschaetzung = "Strategisch sinnvoll, aber anspruchsvoll";
   } else if (teamFitRaw === "mittel") {
@@ -132,7 +134,9 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
     gesamteinschaetzung = "Kritisch";
   }
 
-  const bewForLogic = gesamteinschaetzung === "Strategisch sinnvoll, aber anspruchsvoll" ? "Kritisch" : gesamteinschaetzung;
+  const bewForLogic = gesamteinschaetzung === "Strategisch sinnvoll, aber anspruchsvoll" ? "Kritisch"
+    : gesamteinschaetzung === "F\u00FCr die Aufgabe passend, im Team herausfordernd" ? "Teilweise passend"
+    : gesamteinschaetzung;
 
   let wirkungAufUmfeld: string;
   if (bewForLogic === "Gut passend") {
@@ -214,6 +218,11 @@ function buildKurzfazit(gesamt: string, bew: string, isLeader: boolean): string 
       ? "Die Person bringt St\u00E4rken mit, arbeitet aber in einigen Punkten anders als das Team es kennt. Ob die F\u00FChrung gut ankommt, h\u00E4ngt davon ab, wie bewusst die ersten Wochen gestaltet werden."
       : "Die Person passt in Teilen gut zum Team, weicht in anderen Punkten aber sp\u00FCrbar ab. Das kann neue Impulse bringen, braucht aber klare Absprachen.";
   }
+  if (gesamt === "F\u00FCr die Aufgabe passend, im Team herausfordernd") {
+    return isLeader
+      ? "Die Person erf\u00FCllt die fachlichen Anforderungen der Rolle gut, arbeitet aber anders als das Team es gewohnt ist. Die F\u00FChrung kann wirksam sein, wenn die Unterschiede fr\u00FCh angesprochen und aktiv gesteuert werden."
+      : "Die Person bringt genau das mit, was die Aufgabe erfordert. Im Teamalltag wird es aber Reibung geben, weil die Arbeitsweise nicht zur bisherigen Kultur passt. Mit klaren Absprachen kann das gelingen.";
+  }
   if (gesamt === "Strategisch sinnvoll, aber anspruchsvoll") {
     return isLeader
       ? "Die Person passt nur begrenzt zur bisherigen Teamkultur, bringt aber genau die St\u00E4rke mit, die die Abteilung f\u00FCr ihre Aufgabe braucht. Der Einstieg ist anspruchsvoll, kann aber bei aktiver F\u00FChrung sehr sinnvoll sein."
@@ -251,6 +260,11 @@ function buildManagementEinschaetzung(gesamt: string, bew: string, isLeader: boo
     return isLeader
       ? `Diese Besetzung ist m\u00F6glich, aber anspruchsvoll. Sie sollte nur dann erfolgen, wenn der Einstieg bewusst gef\u00FChrt und die Zusammenarbeit aktiv begleitet wird.${goalHint}`
       : `Diese Besetzung kann gelingen, ist aber kein Selbstl\u00E4ufer. Sie braucht von Anfang an klare Erwartungen und gute Begleitung.${goalHint}`;
+  }
+  if (gesamt === "F\u00FCr die Aufgabe passend, im Team herausfordernd") {
+    return isLeader
+      ? "Die Person erf\u00FCllt die fachlichen Anforderungen gut und bringt die richtige St\u00E4rke f\u00FCr die Aufgabe mit. Die Zusammenarbeit mit dem Team ist jedoch nicht reibungsfrei. Die Besetzung kann gelingen, wenn die Unterschiede fr\u00FCh angesprochen und die Erwartungen klar geregelt werden."
+      : "Die Person bringt fachlich genau das mit, was die Aufgabe verlangt. Im Team wird es aber Reibung geben, weil sich die Arbeitsweisen sp\u00FCrbar unterscheiden. Mit bewusster Begleitung und klaren Absprachen kann die Besetzung trotzdem gut funktionieren.";
   }
   if (gesamt === "Strategisch sinnvoll, aber anspruchsvoll") {
     const goalHint = !hasGoal ? " Da kein klares Funktionsziel hinterlegt ist, l\u00E4sst sich der funktionale Beitrag nicht abschliessend bewerten." : "";
