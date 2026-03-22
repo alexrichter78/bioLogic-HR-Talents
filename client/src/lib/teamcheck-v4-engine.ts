@@ -180,14 +180,14 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
     teamPersonAbweichung: v3.teamPersonAbweichung,
     teamGoalAbweichung: v3.teamGoalAbweichung,
     personGoalAbweichung: v3.personGoalAbweichung,
-    ...buildWarum(v3, isLeader, bewForLogic, sameDominance, teamPrimary, personPrimary),
-    ...buildWirkung(isLeader, bewForLogic, sameDominance, teamPrimary, personPrimary),
-    ...buildChancenRisiken(v3, isLeader, bewForLogic, sameDominance, personPrimary),
-    ...buildOhne(isLeader, bewForLogic, sameDominance, personPrimary),
-    ...buildAlltag(isLeader, bewForLogic, sameDominance, teamPrimary, personPrimary),
-    ...buildLeistung(bewForLogic, isLeader, hasGoal),
-    ...buildDruck(bewForLogic, isLeader, personPrimary),
-    empfehlungen: buildEmpfehlungen(isLeader, bewForLogic),
+    ...buildWarum(v3, isLeader, bewForLogic, sameDominance, teamPrimary, personPrimary, teamGoalLabel),
+    ...buildWirkung(isLeader, gesamteinschaetzung, bewForLogic, sameDominance, teamPrimary, personPrimary),
+    ...buildChancenRisiken(v3, isLeader, bewForLogic, sameDominance, personPrimary, teamGoalLabel),
+    ...buildOhne(isLeader, bewForLogic, sameDominance, personPrimary, teamPrimary, hasGoal, teamGoalLabel),
+    ...buildAlltag(isLeader, gesamteinschaetzung, bewForLogic, sameDominance, teamPrimary, personPrimary, hasGoal, teamGoalLabel),
+    ...buildLeistung(gesamteinschaetzung, bewForLogic, isLeader, hasGoal, teamGoalLabel, sameDominance, personPrimary),
+    ...buildDruck(gesamteinschaetzung, bewForLogic, isLeader, personPrimary, sameDominance),
+    empfehlungen: buildEmpfehlungen(isLeader, bewForLogic, hasGoal, teamGoalLabel),
     teamKontext: sameDominance
       ? `Team und Person setzen beide auf ${COMP_SHORT[teamPrimary]}. Ihre Arbeitsweisen liegen nah beieinander.`
       : `Das Team arbeitet mit Schwerpunkt auf ${COMP_SHORT[teamPrimary]}. Die Person setzt st\u00E4rker auf ${COMP_SHORT[personPrimary]}.`,
@@ -308,7 +308,7 @@ function buildIntegrationsprognose(gesamt: string, bew: string, isLeader: boolea
     : "Eine stabile Integration ist nur mit bewusster Begleitung realistisch. Vor allem in den ersten Wochen braucht es klare Erwartungen und aktive Teameinbindung. Ohne diese Begleitung besteht nicht nur das Risiko eines schwierigen Starts, sondern einer dauerhaften Fehlpassung im Teamalltag.";
 }
 
-function buildWarum(v3: TeamCheckV3Result, isLeader: boolean, bew: string, sameDom: boolean, teamPrim: ComponentKey, personPrim: ComponentKey) {
+function buildWarum(v3: TeamCheckV3Result, isLeader: boolean, bew: string, sameDom: boolean, teamPrim: ComponentKey, personPrim: ComponentKey, teamGoalLabel: string) {
   let einleitung: string;
   if (bew === "Gut passend") {
     einleitung = isLeader
@@ -347,148 +347,198 @@ function buildWarum(v3: TeamCheckV3Result, isLeader: boolean, bew: string, sameD
   }
 
   if (v3.teamGoal) {
-    let goalText = "Entscheidend ist nicht nur, ob Unterschiede zwischen Person und Team vorhanden sind, sondern ob diese Unterschiede zu den Aufgaben und Anforderungen des Bereichs passen.";
+    let goalText = `Das Funktionsziel \u201E${teamGoalLabel}\u201C gibt eine zus\u00E4tzliche Orientierung: Entscheidend ist nicht nur, ob Unterschiede vorhanden sind, sondern ob sie zu den Anforderungen des Bereichs passen.`;
     if (v3.strategicFit === "passend") {
-      goalText += " In diesem Fall bringt die Person genau die Stärken mit, die die Abteilung besonders braucht. Das ist ein klarer Pluspunkt, der bei der Gesamtbewertung stark ins Gewicht fällt.";
+      goalText += ` Die Person bringt genau die St\u00E4rken mit, die f\u00FCr \u201E${teamGoalLabel}\u201C besonders gebraucht werden. Das ist ein klarer Pluspunkt, der bei der Gesamtbewertung stark ins Gewicht f\u00E4llt.`;
     } else if (v3.strategicFit === "teilweise") {
-      goalText += " Die Person bringt einen Teil dessen mit, was die Abteilung braucht. Dieser Bereich gehört aber nicht zu ihren stärksten Seiten, was die Wirkung im Alltag etwas abschwächt.";
+      goalText += ` Die Person bringt einen Teil dessen mit, was f\u00FCr \u201E${teamGoalLabel}\u201C gebraucht wird. Dieser Bereich geh\u00F6rt aber nicht zu ihren st\u00E4rksten Seiten, was die Wirkung im Alltag etwas abschw\u00E4cht.`;
     } else if (v3.strategicFit === "abweichend") {
-      goalText += " Die stärkste Seite der Person liegt allerdings nicht in dem Bereich, den die Abteilung am meisten braucht. Das verstärkt die Abweichung zusätzlich und macht eine gute Begleitung umso wichtiger.";
+      goalText += ` Die st\u00E4rkste Seite der Person liegt allerdings nicht im Bereich \u201E${teamGoalLabel}\u201C. Das verst\u00E4rkt die Abweichung zus\u00E4tzlich und macht eine gute Begleitung umso wichtiger.`;
     }
     blocks.push({ title: "Was das Ziel der Abteilung bedeutet", text: goalText });
   } else {
     blocks.push({ title: "Warum das wichtig ist", text: bew === "Gut passend"
       ? "Je klarer Erwartungen, Rolle und Zusammenarbeit von Anfang an geregelt sind, desto stabiler wird der Einstieg. Das gilt auch bei guter Passung."
-      : "Da für die Abteilung kein klares Funktionsziel hinterlegt ist, kommt der Führung und der bewussten Rollenklärung hier noch mehr Bedeutung zu. Ohne diese Orientierung steigt das Risiko, dass Unterschiede im Arbeitsstil eher als Störung statt als Ergänzung erlebt werden." });
+      : "Da f\u00FCr die Abteilung kein klares Funktionsziel hinterlegt ist, kommt der F\u00FChrung und der bewussten Rollenkl\u00E4rung hier noch mehr Bedeutung zu. Ohne diese Orientierung steigt das Risiko, dass Unterschiede im Arbeitsstil eher als St\u00F6rung statt als Erg\u00E4nzung erlebt werden." });
   }
 
   let kern: string;
   if (bew === "Gut passend") {
-    kern = "Person und Team passen in ihrer Arbeitsweise gut zusammen. Das ist eine gute Ausgangslage für eine schnelle und stabile Integration.";
+    kern = isLeader
+      ? "F\u00FChrungskraft und Team passen in ihrer Arbeitsweise gut zusammen. Das ist eine gute Ausgangslage f\u00FCr einen stabilen F\u00FChrungseinstieg."
+      : "Person und Team passen in ihrer Arbeitsweise gut zusammen. Das ist eine gute Ausgangslage f\u00FCr eine schnelle und stabile Integration.";
   } else if (bew === "Teilweise passend") {
-    kern = v3.teamGoal && v3.strategicFit === "passend"
-      ? "Die Person passt gut zum Ziel der Abteilung, aber nicht automatisch zur gewohnten Teamkultur. Genau das macht gute Begleitung so wichtig."
-      : "Die Person bringt Stärken mit, arbeitet aber in wichtigen Punkten anders als das Team. Daraus kann eine Ergänzung werden, wenn der Einstieg gut begleitet wird.";
+    kern = isLeader
+      ? (v3.teamGoal && v3.strategicFit === "passend"
+        ? `Die F\u00FChrungskraft passt gut zum Ziel \u201E${teamGoalLabel}\u201C, f\u00FChrt aber anders als das Team es kennt. Genau das macht eine bewusste Begleitung des F\u00FChrungseinstiegs so wichtig.`
+        : "Die F\u00FChrungskraft bringt St\u00E4rken mit, f\u00FChrt aber in wichtigen Punkten anders als das Team es kennt. Daraus kann eine Chance werden, wenn der Einstieg gut begleitet wird.")
+      : (v3.teamGoal && v3.strategicFit === "passend"
+        ? `Die Person passt gut zum Ziel \u201E${teamGoalLabel}\u201C, aber nicht automatisch zur gewohnten Teamkultur. Genau das macht gute Begleitung so wichtig.`
+        : "Die Person bringt St\u00E4rken mit, arbeitet aber in wichtigen Punkten anders als das Team. Daraus kann eine Erg\u00E4nzung werden, wenn der Einstieg gut begleitet wird.");
   } else {
-    kern = "Der Unterschied zwischen Person und Team ist deutlich. Ohne klare Führung und enge Begleitung wird das im Alltag zu spürbarer Reibung führen.";
+    kern = isLeader
+      ? "Der Unterschied zwischen F\u00FChrungskraft und Team ist deutlich. Ohne klare F\u00FChrung von oben und enge Begleitung wird das im Alltag zu sp\u00FCrbarer Reibung f\u00FChren."
+      : "Der Unterschied zwischen Person und Team ist deutlich. Ohne klare F\u00FChrung und enge Begleitung wird das im Alltag zu sp\u00FCrbarer Reibung f\u00FChren.";
   }
 
   return { warumEinleitung: einleitung, warumBlocks: blocks, warumKernaussage: kern };
 }
 
-function buildWirkung(isLeader: boolean, bew: string, sameDom: boolean, teamPrim: ComponentKey, personPrim: ComponentKey) {
+function buildWirkung(isLeader: boolean, gesamt: string, bew: string, sameDom: boolean, teamPrim: ComponentKey, personPrim: ComponentKey) {
   let einleitung: string;
   const blocks: V4Block[] = [];
 
   if (isLeader) {
     if (bew === "Gut passend") {
-      einleitung = "Die Führungskraft arbeitet ähnlich wie das Team und bringt eine Art mit, die im bestehenden Umfeld schnell akzeptiert werden dürfte. Das schafft Vertrauen und erleichtert den Einstieg in die Rolle.";
+      einleitung = "Die F\u00FChrungskraft arbeitet \u00E4hnlich wie das Team und bringt eine Art mit, die im bestehenden Umfeld schnell akzeptiert werden d\u00FCrfte. Das schafft Vertrauen und erleichtert den Einstieg in die Rolle.";
+    } else if (bew === "Teilweise passend") {
+      einleitung = `Die Person w\u00FCrde voraussichtlich etwas anders f\u00FChren, als das Team es bisher kennt. Sie arbeitet ${COMP_ADJ[personPrim]}, w\u00E4hrend das Team st\u00E4rker auf ${COMP_SHORT[teamPrim]} ausgerichtet ist. Das muss kein Nachteil sein, braucht aber Aufmerksamkeit.`;
+    } else if (gesamt === "Strategisch sinnvoll, aber anspruchsvoll") {
+      einleitung = `Die Person w\u00FCrde deutlich anders f\u00FChren, als das Team es kennt. Das ist anspruchsvoll, kann aber strategisch genau richtig sein, weil die F\u00FChrungskraft eine Qualit\u00E4t einbringt, die der Abteilung bisher gefehlt hat.`;
     } else {
-      einleitung = `Die Person würde voraussichtlich anders führen, als das Team es bisher kennt. Sie arbeitet ${COMP_ADJ[personPrim]}, während das Team stärker auf ${COMP_SHORT[teamPrim]} ausgerichtet ist. Genau darin liegt sowohl die Chance als auch das Risiko dieser Besetzung.`;
+      einleitung = `Die Person w\u00FCrde deutlich anders f\u00FChren, als das Team es bisher kennt. Sie arbeitet ${COMP_ADJ[personPrim]}, w\u00E4hrend das Team st\u00E4rker auf ${COMP_SHORT[teamPrim]} ausgerichtet ist. Genau darin liegt sowohl die Chance als auch das Risiko dieser Besetzung.`;
     }
 
     blocks.push({ title: "Was die Person positiv einbringen kann", text: bew === "Gut passend"
-      ? "Die Führungskraft bringt einen Stil mit, der gut zum Team passt. Dadurch kann sie sich schnell in die Rolle einfinden und Vertrauen aufbauen. Das Team wird die Führung voraussichtlich als stimmig und unterstützend erleben."
-      : "Eine neue Führungskraft kann Klarheit schaffen, Entscheidungen beschleunigen, Verantwortung ordnen und dem Team neue Richtung geben. Gerade dann, wenn bisher etwas gefehlt hat, kann eine andere Führungsart wertvoll sein und das Team weiterbringen." });
+      ? "Die F\u00FChrungskraft bringt einen Stil mit, der gut zum Team passt. Dadurch kann sie sich schnell in die Rolle einfinden und Vertrauen aufbauen. Das Team wird die F\u00FChrung voraussichtlich als stimmig und unterst\u00FCtzend erleben."
+      : bew === "Teilweise passend"
+        ? "Die F\u00FChrungskraft kann neue Akzente setzen und dem Team Orientierung geben. Gerade dort, wo bisher etwas gefehlt hat, kann ein anderer F\u00FChrungsstil hilfreich sein."
+        : "Eine neue F\u00FChrungskraft kann Klarheit schaffen, Entscheidungen beschleunigen, Verantwortung ordnen und dem Team neue Richtung geben. Gerade dann, wenn bisher etwas gefehlt hat, kann eine andere F\u00FChrungsart wertvoll sein und das Team weiterbringen." });
 
-    blocks.push({ title: "Was das Team daran als schwierig erleben könnte", text: bew === "Gut passend"
-      ? "Bei guter Passung ist mit wenig Widerstand zu rechnen. Trotzdem braucht jede neue Führungskraft eine gewisse Eingewöhnungszeit, in der das Team beobachtet, wie sie Entscheidungen trifft und Verantwortung verteilt."
-      : "Wenn das Team eine andere Art der Führung gewohnt ist, wird der Unterschied schnell spürbar. Manche Mitarbeitende erleben das als klärend und hilfreich, andere als zu direkt, zu schnell oder zu wenig einbindend. Dann geht es nicht mehr nur um Aufgaben, sondern auch um Vertrauen und Akzeptanz." });
+    blocks.push({ title: "Was das Team daran als schwierig erleben k\u00F6nnte", text: bew === "Gut passend"
+      ? "Bei guter Passung ist mit wenig Widerstand zu rechnen. Trotzdem braucht jede neue F\u00FChrungskraft eine gewisse Eingew\u00F6hnungszeit, in der das Team beobachtet, wie sie Entscheidungen trifft und Verantwortung verteilt."
+      : bew === "Teilweise passend"
+        ? "Das Team wird sp\u00FCren, dass die F\u00FChrungskraft in manchen Bereichen anders arbeitet. Das kann anfangs Unsicherheit ausl\u00F6sen, l\u00E4sst sich aber gut auffangen, wenn Fr\u00FChzeitig dar\u00FCber gesprochen wird."
+        : "Wenn das Team eine andere Art der F\u00FChrung gewohnt ist, wird der Unterschied schnell sp\u00FCrbar. Manche Mitarbeitende erleben das als kl\u00E4rend und hilfreich, andere als zu direkt, zu schnell oder zu wenig einbindend. Dann geht es nicht mehr nur um Aufgaben, sondern auch um Vertrauen und Akzeptanz." });
 
-    blocks.push({ title: "Worauf es in den ersten Wochen ankommt", text: "Die Führungskraft braucht nicht nur Aufgaben und Ziele, sondern einen sauberen Einstieg in das Team. Erwartungen, Zuständigkeiten, Entscheidungswege und Kommunikation müssen früh geklärt werden. Je klarer das geschieht, desto grösser ist die Chance, dass aus anfänglicher Unsicherheit mit der Zeit echte Stabilität entsteht." });
+    blocks.push({ title: "Worauf es in den ersten Wochen ankommt", text: bew === "Gut passend"
+      ? "Auch bei guter Passung sollte die F\u00FChrungskraft fr\u00FCh kl\u00E4ren, wie sie f\u00FChrt, was sie erwartet und wie Entscheidungen getroffen werden. Das schafft eine stabile Basis."
+      : "Die F\u00FChrungskraft braucht nicht nur Aufgaben und Ziele, sondern einen sauberen Einstieg in das Team. Erwartungen, Zust\u00E4ndigkeiten, Entscheidungswege und Kommunikation m\u00FCssen fr\u00FCh gekl\u00E4rt werden. Je klarer das geschieht, desto gr\u00F6sser ist die Chance, dass aus anf\u00E4nglicher Unsicherheit mit der Zeit echte Stabilit\u00E4t entsteht." });
 
     return {
-      wirkungTitle: "So würde die Person als Führungskraft wirken",
+      wirkungTitle: "So w\u00FCrde die Person als F\u00FChrungskraft wirken",
       wirkungEinleitung: einleitung,
       wirkungBlocks: blocks,
       wirkungKernaussage: bew === "Gut passend"
-        ? "Die Führungsart passt zum Team. Der Einstieg dürfte reibungsarm verlaufen."
-        : "Die Person kann dem Team wichtige Impulse geben, braucht aber einen klar begleiteten Einstieg."
+        ? "Die F\u00FChrungsart passt zum Team. Der Einstieg d\u00FCrfte reibungsarm verlaufen."
+        : bew === "Teilweise passend"
+          ? "Die F\u00FChrungskraft kann dem Team neue Impulse geben. Mit bewusster Begleitung wird daraus eine St\u00E4rke."
+          : "Die Person kann dem Team wichtige Impulse geben, braucht aber einen klar begleiteten Einstieg."
     };
   }
 
   if (bew === "Gut passend") {
-    einleitung = "Die Person bringt eine Arbeitsweise mit, die gut zum bestehenden Team passt. Sie setzt ähnliche Schwerpunkte und dürfte sich rasch einfinden. Das Team wird den Einstieg voraussichtlich als unkompliziert und passend erleben.";
+    einleitung = "Die Person bringt eine Arbeitsweise mit, die gut zum bestehenden Team passt. Sie setzt \u00E4hnliche Schwerpunkte und d\u00FCrfte sich rasch einfinden. Das Team wird den Einstieg voraussichtlich als unkompliziert und passend erleben.";
+  } else if (bew === "Teilweise passend") {
+    einleitung = `Die Person bringt eine Arbeitsweise mit, die im Team sp\u00FCrbar sein wird. Sie arbeitet ${COMP_ADJ[personPrim]}, w\u00E4hrend das Team st\u00E4rker auf ${COMP_SHORT[teamPrim]} setzt. Das kann das Team sinnvoll erg\u00E4nzen, braucht aber bewusste Abstimmung.`;
+  } else if (gesamt === "Strategisch sinnvoll, aber anspruchsvoll") {
+    einleitung = `Die Person arbeitet deutlich anders als das Team, bringt aber eine Qualit\u00E4t mit, die f\u00FCr die Aufgabe der Abteilung besonders wertvoll ist. Der Unterschied wird im Team sp\u00FCrbar sein, kann aber bei guter Begleitung gezielt genutzt werden.`;
   } else {
-    einleitung = `Die Person bringt eine Arbeitsweise mit, die im Team deutlich spürbar sein wird. Sie arbeitet ${COMP_ADJ[personPrim]}, während das Team stärker auf ${COMP_SHORT[teamPrim]} setzt. Das kann das Team sinnvoll ergänzen, gleichzeitig aber auch Abläufe und Erwartungen verändern.`;
+    einleitung = `Die Person bringt eine Arbeitsweise mit, die im Team deutlich sp\u00FCrbar sein wird. Sie arbeitet ${COMP_ADJ[personPrim]}, w\u00E4hrend das Team st\u00E4rker auf ${COMP_SHORT[teamPrim]} setzt. Das kann das Team sinnvoll erg\u00E4nzen, gleichzeitig aber auch Abl\u00E4ufe und Erwartungen ver\u00E4ndern.`;
   }
 
   blocks.push({ title: "Was die Person positiv einbringen kann", text: bew === "Gut passend"
-    ? "Person und Team arbeiten ähnlich, was den Alltag von Beginn an erleichtert. Die Person versteht die Erwartungen des Teams schnell und kann sich rasch einbringen. Grössere Umstellungen sind nicht nötig."
-    : `Die Person kann neue Impulse bringen, andere Blickwinkel einbringen oder Lücken schliessen, die bisher nicht bewusst wahrgenommen wurden. Besonders im Bereich ${COMP_SHORT[personPrim]} kann sie das Team ergänzen. Das ist vor allem dann wertvoll, wenn genau diese Qualität bisher zu kurz gekommen ist.` });
+    ? "Person und Team arbeiten \u00E4hnlich, was den Alltag von Beginn an erleichtert. Die Person versteht die Erwartungen des Teams schnell und kann sich rasch einbringen. Gr\u00F6ssere Umstellungen sind nicht n\u00F6tig."
+    : bew === "Teilweise passend"
+      ? `Die Person kann neue Impulse bringen und das Team dort erg\u00E4nzen, wo es bisher weniger stark aufgestellt war. Besonders im Bereich ${COMP_SHORT[personPrim]} kann sie einen Beitrag leisten.`
+      : `Die Person kann neue Impulse bringen, andere Blickwinkel einbringen oder L\u00FCcken schliessen, die bisher nicht bewusst wahrgenommen wurden. Besonders im Bereich ${COMP_SHORT[personPrim]} kann sie das Team erg\u00E4nzen. Das ist vor allem dann wertvoll, wenn genau diese Qualit\u00E4t bisher zu kurz gekommen ist.` });
 
-  blocks.push({ title: "Was für andere spürbar werden könnte", text: bew === "Gut passend"
+  blocks.push({ title: "Was f\u00FCr andere sp\u00FCrbar werden k\u00F6nnte", text: bew === "Gut passend"
     ? "Das Team wird die Person voraussichtlich als passend und unkompliziert erleben. Kleinere Unterschiede im Stil sind normal und spielen sich in der Regel schnell ein."
     : personPrim === "impulsiv"
-      ? "Die Person entscheidet schneller und handelt direkter als das Team es gewohnt ist. Das kann als erfrischend und klärend wahrgenommen werden, aber auch als ungeduldig oder zu forsch. Gerade in der Anfangsphase kann das zu Irritationen führen, die sich bei guter Klärung aber auflösen lassen."
+      ? (bew === "Teilweise passend"
+        ? "Die Person entscheidet etwas schneller und handelt direkter als das Team es gewohnt ist. Das kann als erfrischend erlebt werden, anfangs aber auch als ungeduldig wirken."
+        : "Die Person entscheidet schneller und handelt direkter als das Team es gewohnt ist. Das kann als erfrischend und kl\u00E4rend wahrgenommen werden, aber auch als ungeduldig oder zu forsch. Gerade in der Anfangsphase kann das zu Irritationen f\u00FChren, die sich bei guter Kl\u00E4rung aber aufl\u00F6sen lassen.")
       : personPrim === "intuitiv"
-        ? "Die Person setzt stärker auf Austausch, Abstimmung und gemeinsames Arbeiten. Das kann als bereichernd und verbindend erlebt werden, aber auch als zu aufwändig oder zu langsam. Gerade dort, wo das Team eher schnell entscheidet, braucht es Klärung."
-        : "Die Person geht strukturierter und genauer vor als das Team es gewohnt ist. Das kann als hilfreich und verlässlich wahrgenommen werden, aber auch als zu detailliert oder zu langsam. Gerade bei zeitkritischen Themen braucht es klare Absprachen." });
+        ? (bew === "Teilweise passend"
+          ? "Die Person setzt st\u00E4rker auf Austausch und gemeinsames Arbeiten. Das kann als bereichernd erlebt werden, teilweise aber auch als zus\u00E4tzlicher Aufwand."
+          : "Die Person setzt st\u00E4rker auf Austausch, Abstimmung und gemeinsames Arbeiten. Das kann als bereichernd und verbindend erlebt werden, aber auch als zu aufw\u00E4ndig oder zu langsam. Gerade dort, wo das Team eher schnell entscheidet, braucht es Kl\u00E4rung.")
+        : (bew === "Teilweise passend"
+          ? "Die Person geht strukturierter und genauer vor als das Team es gewohnt ist. Das kann als hilfreich erlebt werden, anfangs aber auch als etwas zu detailliert."
+          : "Die Person geht strukturierter und genauer vor als das Team es gewohnt ist. Das kann als hilfreich und verl\u00E4sslich wahrgenommen werden, aber auch als zu detailliert oder zu langsam. Gerade bei zeitkritischen Themen braucht es klare Absprachen.") });
 
-  blocks.push({ title: "Worauf es ankommt, damit es funktioniert", text: 'Darum kommt es weniger darauf an, ob die Person \u201Erichtig\u201C oder \u201Efalsch\u201C ist, sondern darauf, wie gut die Zusammenarbeit von Anfang an gekl\u00E4rt wird. Wenn Erwartungen, Rollen und Zust\u00E4ndigkeiten offen besprochen werden, kann aus dem Unterschied eine Erg\u00E4nzung werden. Bleibt das offen, steigt die Reibung im Alltag schnell an.' });
+  blocks.push({ title: "Worauf es ankommt, damit es funktioniert", text: bew === "Gut passend"
+    ? "Auch bei guter Passung lohnt es sich, Erwartungen und Zusammenarbeit offen zu besprechen. Das verhindert, dass stille Annahmen irgendwann zu Missverst\u00E4ndnissen werden."
+    : 'Darum kommt es weniger darauf an, ob die Person \u201Erichtig\u201C oder \u201Efalsch\u201C ist, sondern darauf, wie gut die Zusammenarbeit von Anfang an gekl\u00E4rt wird. Wenn Erwartungen, Rollen und Zust\u00E4ndigkeiten offen besprochen werden, kann aus dem Unterschied eine Erg\u00E4nzung werden. Bleibt das offen, steigt die Reibung im Alltag schnell an.' });
 
   return {
-    wirkungTitle: "So würde die Person im Team wirken",
+    wirkungTitle: "So w\u00FCrde die Person im Team wirken",
     wirkungEinleitung: einleitung,
     wirkungBlocks: blocks,
     wirkungKernaussage: bew === "Gut passend"
       ? "Die Person passt gut ins Team und wird sich schnell einfinden."
-      : "Die Person kann dem Team wichtige Impulse geben, braucht aber einen klar begleiteten Einstieg."
+      : bew === "Teilweise passend"
+        ? "Die Person kann das Team erg\u00E4nzen. Mit bewusster Abstimmung wird daraus eine St\u00E4rke."
+        : "Die Person kann dem Team wichtige Impulse geben, braucht aber einen klar begleiteten Einstieg."
   };
 }
 
-function buildChancenRisiken(v3: TeamCheckV3Result, isLeader: boolean, bew: string, sameDom: boolean, personPrim: ComponentKey) {
+function buildChancenRisiken(v3: TeamCheckV3Result, isLeader: boolean, bew: string, sameDom: boolean, personPrim: ComponentKey, teamGoalLabel: string) {
   let chancenEinleitung: string;
   const chancenPunkte: V4Bullet[] = [];
 
   if (sameDom) {
-    chancenEinleitung = "Die Person verstärkt, was das Team bereits gut kann. Das bringt mehr Verlässlichkeit und Stabilität in den Alltag. Gerade dort, wo das Team seine Stärken hat, wird die Person schnell produktiv beitragen können.";
-    chancenPunkte.push({ point: "Schneller Anschluss", detail: "Die ähnliche Arbeitsweise erleichtert den Einstieg und reduziert Reibung." });
-    chancenPunkte.push({ point: "Mehr Stabilität", detail: "Die bestehenden Teamstärken werden verstärkt und abgesichert." });
+    chancenEinleitung = isLeader
+      ? "Die F\u00FChrungskraft verst\u00E4rkt, was das Team bereits gut kann. Das bringt Stabilit\u00E4t und erleichtert den Einstieg in die Rolle. Das Team wird die F\u00FChrung voraussichtlich schnell als passend erleben."
+      : "Die Person verst\u00E4rkt, was das Team bereits gut kann. Das bringt mehr Verl\u00E4sslichkeit und Stabilit\u00E4t in den Alltag. Gerade dort, wo das Team seine St\u00E4rken hat, wird die Person schnell produktiv beitragen k\u00F6nnen.";
+    chancenPunkte.push({ point: "Schneller Anschluss", detail: isLeader
+      ? "Die \u00E4hnliche Arbeitsweise erleichtert den F\u00FChrungseinstieg und schafft schnell Vertrauen."
+      : "Die \u00E4hnliche Arbeitsweise erleichtert den Einstieg und reduziert Reibung." });
+    chancenPunkte.push({ point: "Mehr Stabilit\u00E4t", detail: "Die bestehenden Teamst\u00E4rken werden verst\u00E4rkt und abgesichert." });
     chancenPunkte.push({ point: "Weniger Einarbeitungsaufwand", detail: "Das Team muss sich weniger umstellen, was Zeit und Energie spart." });
   } else {
-    chancenEinleitung = `Die Person kann dem Team Qualitäten bringen, die bisher zu wenig vorhanden waren. Gerade mehr ${COMP_SHORT[personPrim]} kann hilfreich sein, wenn Themen bislang zu lange offen bleiben oder bestimmte Impulse fehlen.`;
-    chancenPunkte.push({ point: "Neue Impulse", detail: "Die Person kann eingefahrene Muster aufbrechen und andere Blickwinkel einbringen." });
+    chancenEinleitung = isLeader
+      ? `Die F\u00FChrungskraft kann dem Team eine Qualit\u00E4t geben, die bisher zu wenig vorhanden war. Gerade mehr ${COMP_SHORT[personPrim]} in der F\u00FChrung kann hilfreich sein, wenn bisher Klarheit oder Richtung gefehlt haben.`
+      : `Die Person kann dem Team Qualit\u00E4ten bringen, die bisher zu wenig vorhanden waren. Gerade mehr ${COMP_SHORT[personPrim]} kann hilfreich sein, wenn Themen bislang zu lange offen bleiben oder bestimmte Impulse fehlen.`;
+    chancenPunkte.push({ point: "Neue Impulse", detail: isLeader
+      ? "Die F\u00FChrungskraft kann eingefahrene Muster aufbrechen und dem Team neue Richtung geben."
+      : "Die Person kann eingefahrene Muster aufbrechen und andere Blickwinkel einbringen." });
     chancenPunkte.push({ point: `Mehr ${COMP_SHORT[personPrim]}`, detail: personPrim === "analytisch"
       ? "Themen werden sauberer vorbereitet, klarer bearbeitet und verl\u00E4sslicher nachgehalten."
       : personPrim === "impulsiv"
         ? "Entscheidungen werden schneller getroffen und konsequenter umgesetzt."
         : "Zusammenarbeit und Austausch werden lebendiger und verbindlicher." });
-    chancenPunkte.push({ point: "Sinnvolle Erg\u00E4nzung", detail: `Was dem Team bisher an ${COMP_SHORT[personPrim]} gefehlt hat, kann durch die Person gezielt gest\u00E4rkt werden.` });
+    chancenPunkte.push({ point: "Sinnvolle Erg\u00E4nzung", detail: `Was dem Team bisher an ${COMP_SHORT[personPrim]} gefehlt hat, kann ${isLeader ? "durch die F\u00FChrungskraft" : "durch die Person"} gezielt gest\u00E4rkt werden.` });
   }
   if (v3.strategicFit === "passend") {
-    chancenPunkte.push({ point: "Passt zum Ziel der Abteilung", detail: "Die Stärken der Person liegen genau dort, wo die Abteilung sie am meisten braucht." });
+    chancenPunkte.push({ point: `Passt zum Ziel \u201E${teamGoalLabel}\u201C`, detail: `Die St\u00E4rken der Person liegen genau dort, wo die Abteilung sie f\u00FCr \u201E${teamGoalLabel}\u201C am meisten braucht.` });
   }
 
   let risikenEinleitung: string;
   const risikenPunkte: V4Bullet[] = [];
 
   if (bew === "Kritisch") {
-    risikenEinleitung = "Der Unterschied zur bestehenden Teamkultur ist deutlich. Ohne gute Begleitung entstehen daraus schnell Missverständnisse, Frust und das Gefühl, nicht richtig zueinander zu passen.";
-    risikenPunkte.push({ point: "Missverständnisse im Alltag", detail: "Erwartungen an Abstimmung und Kommunikation gehen deutlich auseinander." });
-    risikenPunkte.push({ point: "Sinkendes Vertrauen", detail: "Wenn Irritationen nicht früh angesprochen werden, leidet das gegenseitige Vertrauen." });
-    risikenPunkte.push({ point: "Verfestigte Spannungen", detail: "Kleine Irritationen können sich schnell aufbauen und zu dauerhaften Problemen werden." });
+    risikenEinleitung = isLeader
+      ? "Der Unterschied zur bestehenden Teamkultur ist deutlich. Ohne gute Begleitung entstehen daraus schnell Akzeptanzprobleme, Widerstand und das Gef\u00FChl, dass die F\u00FChrung nicht zum Team passt."
+      : "Der Unterschied zur bestehenden Teamkultur ist deutlich. Ohne gute Begleitung entstehen daraus schnell Missverst\u00E4ndnisse, Frust und das Gef\u00FChl, nicht richtig zueinander zu passen.";
+    risikenPunkte.push({ point: "Missverst\u00E4ndnisse im Alltag", detail: "Erwartungen an Abstimmung und Kommunikation gehen deutlich auseinander." });
+    risikenPunkte.push({ point: "Sinkendes Vertrauen", detail: "Wenn Irritationen nicht fr\u00FCh angesprochen werden, leidet das gegenseitige Vertrauen." });
+    risikenPunkte.push({ point: "Verfestigte Spannungen", detail: "Kleine Irritationen k\u00F6nnen sich schnell aufbauen und zu dauerhaften Problemen werden." });
   } else if (bew === "Teilweise passend") {
-    risikenEinleitung = "Der Unterschied ist spürbar, aber nicht unlösbar. Wenn er im Alltag nicht gut aufgefangen wird, entstehen allerdings unnötige Reibung und Abstimmungsprobleme.";
-    risikenPunkte.push({ point: "Mehr Abstimmungsbedarf", detail: "In den ersten Monaten braucht es mehr Klärung als bei einer ähnlicheren Besetzung." });
-    risikenPunkte.push({ point: "Unterschiedliche Erwartungen", detail: "Was die eine Seite als selbstverständlich sieht, muss für die andere erst besprochen werden." });
-    risikenPunkte.push({ point: "Rollen müssen aktiv geklärt werden", detail: "Ohne klare Zuständigkeiten entsteht schnell Unsicherheit auf beiden Seiten." });
+    risikenEinleitung = isLeader
+      ? "Der Unterschied ist sp\u00FCrbar, aber nicht unl\u00F6sbar. Wenn er im F\u00FChrungsalltag nicht gut aufgefangen wird, entstehen allerdings unn\u00F6tige Reibung und Akzeptanzprobleme."
+      : "Der Unterschied ist sp\u00FCrbar, aber nicht unl\u00F6sbar. Wenn er im Alltag nicht gut aufgefangen wird, entstehen allerdings unn\u00F6tige Reibung und Abstimmungsprobleme.";
+    risikenPunkte.push({ point: "Mehr Abstimmungsbedarf", detail: "In den ersten Monaten braucht es mehr Kl\u00E4rung als bei einer \u00E4hnlicheren Besetzung." });
+    risikenPunkte.push({ point: "Unterschiedliche Erwartungen", detail: "Was die eine Seite als selbstverst\u00E4ndlich sieht, muss f\u00FCr die andere erst besprochen werden." });
+    risikenPunkte.push({ point: "Rollen m\u00FCssen aktiv gekl\u00E4rt werden", detail: "Ohne klare Zust\u00E4ndigkeiten entsteht schnell Unsicherheit auf beiden Seiten." });
   } else {
-    risikenEinleitung = "Bei guter Passung sind die Risiken gering. Trotzdem sollten Erwartungen und Zusammenarbeit von Anfang an bewusst besprochen werden.";
-    risikenPunkte.push({ point: "Zu viel Gleichförmigkeit", detail: "Ähnlichkeit bringt Stabilität, kann aber Innovation und neue Perspektiven bremsen." });
-    risikenPunkte.push({ point: "Blinde Flecken", detail: "Was dem Team bisher fehlt, wird durch eine ähnliche Person nicht automatisch sichtbar." });
+    risikenEinleitung = isLeader
+      ? "Bei guter Passung sind die Risiken gering. Trotzdem sollten F\u00FChrungsrolle und Erwartungen von Anfang an bewusst besprochen werden."
+      : "Bei guter Passung sind die Risiken gering. Trotzdem sollten Erwartungen und Zusammenarbeit von Anfang an bewusst besprochen werden.";
+    risikenPunkte.push({ point: "Zu viel Gleichf\u00F6rmigkeit", detail: "\u00C4hnlichkeit bringt Stabilit\u00E4t, kann aber Innovation und neue Perspektiven bremsen." });
+    risikenPunkte.push({ point: "Blinde Flecken", detail: "Was dem Team bisher fehlt, wird durch eine \u00E4hnliche Person nicht automatisch sichtbar." });
   }
 
   if (isLeader) {
-    risikenPunkte.push({ point: "Schwieriger Führungseinstieg", detail: "Auch bei fachlicher Passung kann es dauern, bis die Führung im Team wirklich ankommt." });
+    risikenPunkte.push({ point: "Schwieriger F\u00FChrungseinstieg", detail: "Auch bei fachlicher Passung kann es dauern, bis die F\u00FChrung im Team wirklich ankommt." });
   } else {
-    risikenPunkte.push({ point: "Schwieriger Anschluss", detail: "Die Person könnte fachlich gute Arbeit leisten, im Team aber schwerer ankommen." });
+    risikenPunkte.push({ point: "Schwieriger Anschluss", detail: "Die Person k\u00F6nnte fachlich gute Arbeit leisten, im Team aber schwerer ankommen." });
   }
 
   return { chancenEinleitung, chancenPunkte, risikenEinleitung, risikenPunkte };
 }
 
-function buildOhne(isLeader: boolean, bew: string, sameDom: boolean, personPrim: ComponentKey) {
+function buildOhne(isLeader: boolean, bew: string, sameDom: boolean, personPrim: ComponentKey, teamPrim: ComponentKey, hasGoal: boolean, teamGoalLabel: string) {
   const erhalten: string[] = [];
   const ungeloest: string[] = [];
 
@@ -496,6 +546,10 @@ function buildOhne(isLeader: boolean, bew: string, sameDom: boolean, personPrim:
     erhalten.push("Keine Ver\u00E4nderung im Teamgef\u00FCge");
     erhalten.push("Vertraute Abl\u00E4ufe bleiben bestehen");
     erhalten.push("Kein zus\u00E4tzlicher Einarbeitungsaufwand");
+  } else if (bew === "Teilweise passend") {
+    erhalten.push("Weniger Anpassungsbedarf im Team");
+    erhalten.push("Vertraute Abl\u00E4ufe bleiben bestehen");
+    erhalten.push("Kein Risiko durch schwierigen Einstieg");
   } else {
     erhalten.push("Mehr Ruhe im Team");
     erhalten.push("Weniger direkte Reibung");
@@ -503,8 +557,16 @@ function buildOhne(isLeader: boolean, bew: string, sameDom: boolean, personPrim:
   }
 
   if (isLeader) {
-    ungeloest.push("Fehlende F\u00FChrungsklarheit bleibt bestehen");
-    ungeloest.push("Langsame oder unklare Entscheidungen \u00E4ndern sich nicht");
+    if (personPrim === "impulsiv") {
+      ungeloest.push("Fehlende Entscheidungsgeschwindigkeit in der F\u00FChrung bleibt bestehen");
+      ungeloest.push("Klare Richtungsvorgaben fehlen weiterhin");
+    } else if (personPrim === "intuitiv") {
+      ungeloest.push("Fehlender Austausch und Dialog in der F\u00FChrung bleibt bestehen");
+      ungeloest.push("Mangelnde Einbindung des Teams \u00E4ndert sich nicht");
+    } else {
+      ungeloest.push("Fehlende Struktur und Klarheit in der F\u00FChrung bleibt bestehen");
+      ungeloest.push("Unzureichende Vorbereitung von Entscheidungen \u00E4ndert sich nicht");
+    }
     ungeloest.push("Bestehende Entwicklungsdefizite im Team bleiben");
     ungeloest.push("Unklare Zust\u00E4ndigkeiten l\u00F6sen sich nicht von selbst");
   } else {
@@ -516,6 +578,10 @@ function buildOhne(isLeader: boolean, bew: string, sameDom: boolean, personPrim:
     ungeloest.push("Keine echte Ver\u00E4nderung oder Weiterentwicklung");
   }
 
+  if (hasGoal) {
+    ungeloest.push(`Fortschritt im Bereich \u201E${teamGoalLabel}\u201C bleibt aus`);
+  }
+
   return {
     ohneErhalten: erhalten,
     ohneUngeloest: ungeloest,
@@ -525,7 +591,7 @@ function buildOhne(isLeader: boolean, bew: string, sameDom: boolean, personPrim:
   };
 }
 
-function buildAlltag(isLeader: boolean, bew: string, sameDom: boolean, teamPrim: ComponentKey, personPrim: ComponentKey) {
+function buildAlltag(isLeader: boolean, gesamt: string, bew: string, sameDom: boolean, teamPrim: ComponentKey, personPrim: ComponentKey, hasGoal: boolean, teamGoalLabel: string) {
   const blocks: V4Block[] = [];
 
   if (bew === "Gut passend") {
@@ -541,10 +607,37 @@ function buildAlltag(isLeader: boolean, bew: string, sameDom: boolean, teamPrim:
     blocks.push({ title: "Verantwortung", text: isLeader
       ? `Auch bei guter Passung sollten F\u00FChrungsverantwortung, Entscheidungswege und Zust\u00E4ndigkeiten klar benannt werden. So wird verhindert, dass stille Annahmen irgendwann zu Missverst\u00E4ndnissen werden.`
       : `Zust\u00E4ndigkeiten sollten trotzdem klar benannt werden, auch wenn die Passung gut ist. So wird verhindert, dass stille Annahmen irgendwann zu Missverst\u00E4ndnissen werden.` });
-  } else {
+  } else if (bew === "Teilweise passend") {
     blocks.push({ title: "Zusammenarbeit", text: isLeader
-      ? `Im F\u00FChrungsalltag wird schnell sichtbar werden, dass die F\u00FChrungskraft andere Schwerpunkte setzt als das Team es gewohnt ist. W\u00E4hrend das Team st\u00E4rker \u00FCber ${COMP_SHORT[teamPrim]} arbeitet, f\u00FChrt die Person eher in Richtung ${COMP_SHORT[personPrim]}. Das braucht von Anfang an klare Kommunikation.`
-      : `Im Alltag wird schnell sichtbar werden, dass Person und Team nicht automatisch dieselben Schwerpunkte setzen. W\u00E4hrend das Team st\u00E4rker \u00FCber ${COMP_SHORT[teamPrim]} arbeitet, geht die Person eher in Richtung ${COMP_SHORT[personPrim]}. Dadurch braucht Zusammenarbeit am Anfang mehr bewusste Kl\u00E4rung.` });
+      ? (sameDom
+        ? `Im F\u00FChrungsalltag teilen F\u00FChrungskraft und Team eine \u00E4hnliche Grundrichtung. In einzelnen Bereichen wird die F\u00FChrung aber andere Schwerpunkte setzen, was Abstimmung braucht.`
+        : `Im F\u00FChrungsalltag wird sp\u00FCrbar werden, dass die F\u00FChrungskraft etwas andere Schwerpunkte setzt als das Team es gewohnt ist. W\u00E4hrend das Team st\u00E4rker \u00FCber ${COMP_SHORT[teamPrim]} arbeitet, f\u00FChrt die Person eher in Richtung ${COMP_SHORT[personPrim]}. Das braucht bewusste Abstimmung.`)
+      : (sameDom
+        ? `Im Alltag teilen Person und Team eine \u00E4hnliche Grundrichtung. In einzelnen Bereichen arbeitet die Person aber anders, was Abstimmung braucht.`
+        : `Im Alltag wird sp\u00FCrbar werden, dass Person und Team nicht automatisch dieselben Schwerpunkte setzen. W\u00E4hrend das Team st\u00E4rker \u00FCber ${COMP_SHORT[teamPrim]} arbeitet, geht die Person eher in Richtung ${COMP_SHORT[personPrim]}. Daraus entsteht Kl\u00E4rungsbedarf.`) });
+    blocks.push({ title: "Kommunikation", text: isLeader
+      ? (personPrim === "impulsiv"
+        ? `Die F\u00FChrungskraft kommuniziert voraussichtlich etwas direkter und knapper als das Team es kennt. Das l\u00E4sst sich gut auffangen, wenn fr\u00FCh dar\u00FCber gesprochen wird.`
+        : personPrim === "intuitiv"
+          ? `Die F\u00FChrungskraft setzt st\u00E4rker auf Austausch und Dialog. Das Team empfindet das m\u00F6glicherweise als bereichernd, teilweise aber auch als zus\u00E4tzlichen Aufwand.`
+          : `Die F\u00FChrungskraft kommuniziert m\u00F6glicherweise etwas sachlicher als das Team es gewohnt ist. Das kann als klar wahrgenommen werden, wirkt anfangs aber m\u00F6glicherweise distanziert.`)
+      : (personPrim === "impulsiv"
+        ? `In der Kommunikation k\u00F6nnen Unterschiede sp\u00FCrbar werden. Was die Person als klar und effizient erlebt, kann f\u00FCr das Team etwas zu direkt wirken. Hier lohnt es sich, den Stil fr\u00FCh abzustimmen.`
+        : personPrim === "intuitiv"
+          ? `In der Kommunikation setzt die Person st\u00E4rker auf Austausch und Dialog. Das Team empfindet das m\u00F6glicherweise als bereichernd, teilweise aber auch als zus\u00E4tzlichen Aufwand.`
+          : `Die Person kommuniziert m\u00F6glicherweise etwas sachlicher als das Team es gewohnt ist. Das kann als klar wahrgenommen werden, wirkt anfangs aber m\u00F6glicherweise distanziert. Hier lohnt es sich, den Stil fr\u00FCh abzustimmen.`) });
+    blocks.push({ title: "Tempo und Priorit\u00E4ten", text: isLeader
+      ? `Die F\u00FChrungskraft wird in manchen Bereichen andere Priorit\u00E4ten setzen. Das kann das Team weiterbringen, braucht aber transparente Entscheidungswege.`
+      : `Wahrscheinlich werden manche Themen unterschiedlich gewichtet. Das l\u00E4sst sich auffangen, wenn Priorit\u00E4ten fr\u00FCh besprochen und Entscheidungen transparent vorbereitet werden.` });
+    blocks.push({ title: "Verantwortung", text: isLeader
+      ? `Entscheidungswege und F\u00FChrungsverantwortung sollten fr\u00FCh gekl\u00E4rt werden. So entsteht keine Unsicherheit im Team.`
+      : `Zust\u00E4ndigkeiten sollten klar benannt werden, damit keine Unsicherheit entsteht. Gerade in der Anfangsphase ist das besonders wichtig.` });
+  } else {
+    const strategischHint = gesamt === "Strategisch sinnvoll, aber anspruchsvoll"
+      ? " Strategisch ist das sinnvoll, braucht aber im Alltag besondere Aufmerksamkeit." : "";
+    blocks.push({ title: "Zusammenarbeit", text: isLeader
+      ? `Im F\u00FChrungsalltag wird schnell sichtbar werden, dass die F\u00FChrungskraft andere Schwerpunkte setzt als das Team es gewohnt ist. W\u00E4hrend das Team st\u00E4rker \u00FCber ${COMP_SHORT[teamPrim]} arbeitet, f\u00FChrt die Person eher in Richtung ${COMP_SHORT[personPrim]}.${strategischHint} Das braucht von Anfang an klare Kommunikation.`
+      : `Im Alltag wird schnell sichtbar werden, dass Person und Team nicht automatisch dieselben Schwerpunkte setzen. W\u00E4hrend das Team st\u00E4rker \u00FCber ${COMP_SHORT[teamPrim]} arbeitet, geht die Person eher in Richtung ${COMP_SHORT[personPrim]}.${strategischHint} Dadurch braucht Zusammenarbeit am Anfang mehr bewusste Kl\u00E4rung.` });
     blocks.push({ title: "Kommunikation", text: isLeader
       ? (personPrim === "impulsiv"
         ? `Die F\u00FChrungskraft kommuniziert voraussichtlich direkter und knapper als das Team es kennt. Das kann als kl\u00E4rend erlebt werden, aber auch als zu schnell oder zu wenig einbindend.`
@@ -564,9 +657,31 @@ function buildAlltag(isLeader: boolean, bew: string, sameDom: boolean, teamPrim:
       : `Besonders wichtig ist Klarheit bei Zust\u00E4ndigkeiten. Wenn nicht eindeutig ist, wer entscheidet, wer abstimmt und wo Eigenst\u00E4ndigkeit gew\u00FCnscht ist, w\u00E4chst die Unsicherheit schnell. Das ist gerade in der Anfangsphase einer der h\u00E4ufigsten Ausl\u00F6ser f\u00FCr unn\u00F6tige Reibung.` });
   }
 
+  if (hasGoal && bew !== "Gut passend") {
+    blocks.push({ title: `Bezug zum Funktionsziel \u201E${teamGoalLabel}\u201C`, text: isLeader
+      ? `Im Alltag sollte das Funktionsziel \u201E${teamGoalLabel}\u201C als Orientierung f\u00FCr F\u00FChrungsentscheidungen dienen. Das gibt dem Team Klarheit dar\u00FCber, wof\u00FCr die F\u00FChrung steht.`
+      : `Im Alltag sollte das Funktionsziel \u201E${teamGoalLabel}\u201C als Orientierung dienen. Das hilft, Unterschiede im Arbeitsstil besser einzuordnen und Priorit\u00E4ten gemeinsam zu setzen.` });
+  }
+
   const warnzeichen: string[] = [];
   const positivzeichen: string[] = [];
-  if (bew !== "Gut passend") {
+  if (bew === "Teilweise passend") {
+    if (isLeader) {
+      warnzeichen.push("Die F\u00FChrung wird vom Team als wenig hilfreich erlebt");
+      warnzeichen.push("Entscheidungen der F\u00FChrungskraft werden hinterfragt oder verz\u00F6gert");
+      warnzeichen.push("Abstimmung bleibt trotz Kl\u00E4rung aufw\u00E4ndig");
+      positivzeichen.push("Das Team akzeptiert die F\u00FChrung zunehmend");
+      positivzeichen.push("Entscheidungen werden getragen");
+      positivzeichen.push("Rollen werden klarer statt unklarer");
+    } else {
+      warnzeichen.push("Missverst\u00E4ndnisse wiederholen sich");
+      warnzeichen.push("Abstimmungen bleiben aufw\u00E4ndig");
+      warnzeichen.push("Die Person bleibt eher am Rand des Teams");
+      positivzeichen.push("Die Person wird aktiv in Abstimmungen einbezogen");
+      positivzeichen.push("Missverst\u00E4ndnisse nehmen ab");
+      positivzeichen.push("Zusammenarbeit wird sp\u00FCrbar leichter");
+    }
+  } else if (bew === "Kritisch") {
     if (isLeader) {
       warnzeichen.push("Die F\u00FChrung wird vom Team nicht als hilfreich erlebt");
       warnzeichen.push("Entscheidungen der F\u00FChrungskraft werden umgangen oder verz\u00F6gert");
@@ -592,9 +707,13 @@ function buildAlltag(isLeader: boolean, bew: string, sameDom: boolean, teamPrim:
     ? (isLeader
       ? `Hier zeigt sich, wie die F\u00FChrungskraft und das Team im Arbeitsalltag zusammenwirken. Bei guter Passung ist der \u00DCbergang in der Regel unkompliziert.`
       : `Hier zeigt sich, wie Person und Team im Arbeitsalltag zusammenwirken. Bei guter Passung ist der \u00DCbergang in der Regel unkompliziert.`)
-    : (isLeader
-      ? `Hier wird sichtbar, wo die F\u00FChrung im Alltag gut ankommt und wo es mehr Aufmerksamkeit braucht. Gerade die ersten Wochen sind entscheidend.`
-      : `Hier wird sichtbar, wo Zusammenarbeit leicht l\u00E4uft und wo es im Alltag mehr Aufmerksamkeit braucht. Gerade die ersten Wochen sind entscheidend.`);
+    : bew === "Teilweise passend"
+      ? (isLeader
+        ? `Hier wird sichtbar, wo die F\u00FChrung im Alltag gut ankommt und wo es Aufmerksamkeit braucht. Die ersten Wochen entscheiden, ob sich die Zusammenarbeit einspielt.`
+        : `Hier wird sichtbar, wo Zusammenarbeit leicht l\u00E4uft und wo es Aufmerksamkeit braucht. Die ersten Wochen entscheiden, ob sich das Miteinander einspielt.`)
+      : (isLeader
+        ? `Hier wird sichtbar, wo die F\u00FChrung im Alltag auf Widerstand stossen k\u00F6nnte und wo es besondere Aufmerksamkeit braucht. Gerade die ersten Wochen sind entscheidend.`
+        : `Hier wird sichtbar, wo Zusammenarbeit schwierig werden k\u00F6nnte und wo es im Alltag besondere Aufmerksamkeit braucht. Gerade die ersten Wochen sind entscheidend.`);
 
   return {
     alltagEinleitung,
@@ -605,16 +724,18 @@ function buildAlltag(isLeader: boolean, bew: string, sameDom: boolean, teamPrim:
       ? (isLeader
         ? `Im F\u00FChrungsalltag sollte die Zusammenarbeit reibungsarm laufen. Kleinere Unterschiede spielen sich schnell ein.`
         : `Im Alltag sollte die Zusammenarbeit reibungsarm laufen. Kleinere Unterschiede spielen sich schnell ein.`)
-      : `Werden diese Signale fr\u00FCh erkannt, l\u00E4sst sich gut gegensteuern. Werden sie \u00FCbersehen, verfestigen sie sich meist.`
+      : bew === "Teilweise passend"
+        ? `Werden die Unterschiede fr\u00FCh besprochen und Rollen gekl\u00E4rt, l\u00E4sst sich ein guter Arbeitsalltag aufbauen.`
+        : `Werden diese Signale fr\u00FCh erkannt, l\u00E4sst sich gut gegensteuern. Werden sie \u00FCbersehen, verfestigen sie sich meist.`
   };
 }
 
-function buildLeistung(bew: string, isLeader: boolean, hasGoal: boolean) {
+function buildLeistung(gesamt: string, bew: string, isLeader: boolean, hasGoal: boolean, teamGoalLabel: string, sameDom: boolean, personPrim: ComponentKey) {
   const blocks: V4Block[] = [];
 
   if (bew === "Gut passend") {
     blocks.push({ title: "Am Anfang", text: isLeader
-      ? `Die F\u00FChrungskraft kann sich voraussichtlich rasch in die Rolle einfinden und das Team produktiv f\u00FChren. Da F\u00FChrungsstil und Team\u00E4hnlich ausgerichtet sind, entsteht wenig unn\u00F6tiger Kl\u00E4rungsbedarf. Die ersten Wochen d\u00FCrften vergleichsweise reibungslos verlaufen.`
+      ? `Die F\u00FChrungskraft kann sich voraussichtlich rasch in die Rolle einfinden und das Team produktiv f\u00FChren. Da F\u00FChrungsstil und Team \u00E4hnlich ausgerichtet sind, entsteht wenig unn\u00F6tiger Kl\u00E4rungsbedarf. Die ersten Wochen d\u00FCrften vergleichsweise reibungslos verlaufen.`
       : `Die Person kann sich voraussichtlich rasch einarbeiten und produktiv beitragen. Da Person und Team \u00E4hnlich arbeiten, entsteht wenig unn\u00F6tiger Kl\u00E4rungsbedarf. Die ersten Wochen d\u00FCrften vergleichsweise reibungslos verlaufen.` });
     blocks.push({ title: "Sp\u00E4ter", text: isLeader
       ? `Mittelfristig stabilisiert die F\u00FChrungskraft das Team und tr\u00E4gt verl\u00E4sslich zu guten Ergebnissen bei. Entscheidungen werden getragen und das Team arbeitet unter klarer F\u00FChrung stabil.`
@@ -622,10 +743,26 @@ function buildLeistung(bew: string, isLeader: boolean, hasGoal: boolean) {
     blocks.push({ title: "Worauf es ankommt", text: isLeader
       ? `Auch bei guter Passung sollten Erwartungen an die F\u00FChrungsrolle und R\u00FCckmeldungen regelm\u00E4ssig stattfinden. Das sichert ab, dass die gute Ausgangslage auch langfristig genutzt wird.`
       : `Auch bei guter Passung sollten Erwartungen und R\u00FCckmeldungen regelm\u00E4ssig stattfinden. Das sichert ab, dass die gute Ausgangslage auch langfristig genutzt wird und sich keine stillen Missverst\u00E4ndnisse einschleichen.` });
-  } else {
+  } else if (bew === "Teilweise passend") {
     blocks.push({ title: "Am Anfang", text: isLeader
-      ? `Kurzfristig ist mit mehr Kl\u00E4rung und Abstimmung zu rechnen. Die ersten Wochen sind st\u00E4rker davon gepr\u00E4gt, ob die F\u00FChrung im Team ankommt, als von sofortiger Produktivit\u00E4t. Das sollte bewusst eingeplant werden.`
-      : `Kurzfristig ist mit mehr Kl\u00E4rung und Abstimmung zu rechnen. Die ersten Wochen sind st\u00E4rker von Beobachtung und gegenseitigem Einordnen gepr\u00E4gt als von reibungsloser Leistung. Das ist bei sp\u00FCrbaren Unterschieden nicht ungew\u00F6hnlich, sollte aber bewusst eingeplant werden.` });
+      ? (sameDom
+        ? `Kurzfristig d\u00FCrfte der Einstieg in die F\u00FChrungsrolle vergleichsweise gut gelingen, weil die Grundrichtung stimmt. In einzelnen Bereichen braucht es aber mehr Kl\u00E4rung als bei einer vollst\u00E4ndig passenden Besetzung.`
+        : `Kurzfristig ist mit etwas mehr Kl\u00E4rung zu rechnen. Die ersten Wochen sind davon gepr\u00E4gt, ob die F\u00FChrung im Team ankommt. Das sollte bewusst begleitet werden.`)
+      : (sameDom
+        ? `Kurzfristig d\u00FCrfte der Einstieg vergleichsweise gut gelingen, weil die Grundrichtung stimmt. In einzelnen Bereichen braucht es aber mehr Abstimmung als bei einer vollst\u00E4ndig passenden Besetzung.`
+        : `Kurzfristig ist mit etwas mehr Kl\u00E4rung und Abstimmung zu rechnen. Die ersten Wochen sind st\u00E4rker von Beobachtung und gegenseitigem Einordnen gepr\u00E4gt. Das sollte bewusst eingeplant werden.`) });
+    blocks.push({ title: "Sp\u00E4ter", text: isLeader
+      ? `Wenn die F\u00FChrungsrolle klar ist und Entscheidungswege sauber benannt werden, kann aus der Besetzung eine produktive F\u00FChrungssituation werden. Die F\u00FChrungskraft bringt Qualit\u00E4ten mit, die das Team erg\u00E4nzen k\u00F6nnen.`
+      : `Wenn Erwartungen klar sind und Rollen sauber benannt werden, kann aus der Besetzung eine produktive Erg\u00E4nzung werden. Die Person bringt Qualit\u00E4ten mit, die das Team erg\u00E4nzen k\u00F6nnen.` });
+    blocks.push({ title: isLeader ? "F\u00FChrungswirkung vs. Teamakzeptanz" : "Fachliche Leistung vs. Teamintegration", text: isLeader
+      ? `Die Herausforderung liegt hier weniger in der fachlichen Kompetenz als darin, ob die F\u00FChrung im Team akzeptiert wird. Mit klarer Rollengestaltung ist das gut erreichbar.`
+      : `Die Herausforderung liegt hier weniger in der Leistungsf\u00E4higkeit als darin, ob die Person im Team gut ankommt. Mit klarer Abstimmung ist das gut erreichbar.` });
+  } else {
+    const strategischHint = gesamt === "Strategisch sinnvoll, aber anspruchsvoll"
+      ? ` Strategisch ist die Besetzung sinnvoll, weil die Person genau die Qualit\u00E4t im Bereich ${COMP_SHORT[personPrim]} mitbringt, die bisher gefehlt hat.` : "";
+    blocks.push({ title: "Am Anfang", text: isLeader
+      ? `Kurzfristig ist mit mehr Kl\u00E4rung und Abstimmung zu rechnen. Die ersten Wochen sind st\u00E4rker davon gepr\u00E4gt, ob die F\u00FChrung im Team ankommt, als von sofortiger Produktivit\u00E4t.${strategischHint} Das sollte bewusst eingeplant werden.`
+      : `Kurzfristig ist mit mehr Kl\u00E4rung und Abstimmung zu rechnen. Die ersten Wochen sind st\u00E4rker von Beobachtung und gegenseitigem Einordnen gepr\u00E4gt als von reibungsloser Leistung.${strategischHint} Das sollte bewusst eingeplant werden.` });
     blocks.push({ title: "Sp\u00E4ter", text: isLeader
       ? `Wenn die F\u00FChrungsrolle klar ist und Entscheidungswege sauber benannt werden, kann aus der Besetzung eine produktive und stabile F\u00FChrungssituation werden. Die F\u00FChrungskraft bringt dann etwas ein, das dem Team bisher gefehlt hat. Bleibt die Rollenklarheit dagegen aus, fliesst Energie nicht in gute Ergebnisse, sondern in Unsicherheit und Widerstand.`
       : `Wenn Erwartungen klar sind, Rollen sauber benannt werden und R\u00FCckmeldungen fr\u00FCh stattfinden, kann aus der Besetzung eine produktive Erg\u00E4nzung werden. Die Person bringt dann etwas ein, das dem Umfeld bisher gefehlt hat. Bleiben Zusammenarbeit und Verantwortung dagegen unklar, fliesst Energie nicht in gute Ergebnisse, sondern in Missverst\u00E4ndnisse und unn\u00F6tige Abstimmung.` });
@@ -634,13 +771,23 @@ function buildLeistung(bew: string, isLeader: boolean, hasGoal: boolean) {
       : `Die Herausforderung liegt hier voraussichtlich weniger in der Leistungsf\u00E4higkeit der Person als darin, ob sie im Team wirklich gut ankommt. Fachlich gute Arbeit reicht allein nicht aus, wenn die Zusammenarbeit nicht funktioniert.` });
   }
 
+  if (hasGoal && bew !== "Gut passend") {
+    blocks.push({ title: `Bezug zum Funktionsziel \u201E${teamGoalLabel}\u201C`, text: isLeader
+      ? `Ob die F\u00FChrungskraft im Bereich \u201E${teamGoalLabel}\u201C wirksam wird, h\u00E4ngt davon ab, ob sie im Team genug Akzeptanz aufbauen kann, um ihre St\u00E4rken einzubringen.`
+      : `Ob die Person im Bereich \u201E${teamGoalLabel}\u201C wirksam beitragen kann, h\u00E4ngt davon ab, ob die Zusammenarbeit gut genug l\u00E4uft, um ihre St\u00E4rken zur Geltung kommen zu lassen.` });
+  }
+
   const leistungEinleitung = bew === "Gut passend"
     ? (isLeader
       ? `Was bedeutet diese Besetzung konkret f\u00FCr die F\u00FChrung und die Ergebnisse des Teams?`
       : `Was bedeutet diese Besetzung konkret f\u00FCr Ergebnisse und Produktivit\u00E4t?`)
-    : (isLeader
-      ? `Die entscheidende Frage ist nicht nur, ob die F\u00FChrungskraft fachlich gut arbeiten kann, sondern ob ihre F\u00FChrung im bestehenden Team auch wirklich ankommt.`
-      : `Die entscheidende Frage ist nicht nur, ob die Person fachlich gut arbeiten kann, sondern ob ihre Leistung im bestehenden Umfeld auch wirklich zur Geltung kommt.`);
+    : bew === "Teilweise passend"
+      ? (isLeader
+        ? `Die Frage ist nicht nur, ob die F\u00FChrungskraft fachlich gut arbeiten kann, sondern ob ihre F\u00FChrung im bestehenden Team auch ankommt. Bei bewusster Begleitung ist das erreichbar.`
+        : `Die Frage ist nicht nur, ob die Person fachlich gut arbeiten kann, sondern ob ihre Leistung im bestehenden Umfeld auch zur Geltung kommt. Bei bewusster Begleitung ist das erreichbar.`)
+      : (isLeader
+        ? `Die entscheidende Frage ist nicht nur, ob die F\u00FChrungskraft fachlich gut arbeiten kann, sondern ob ihre F\u00FChrung im bestehenden Team auch wirklich ankommt.`
+        : `Die entscheidende Frage ist nicht nur, ob die Person fachlich gut arbeiten kann, sondern ob ihre Leistung im bestehenden Umfeld auch wirklich zur Geltung kommt.`);
 
   return {
     leistungEinleitung,
@@ -649,28 +796,50 @@ function buildLeistung(bew: string, isLeader: boolean, hasGoal: boolean) {
       ? (isLeader
         ? `F\u00FChrung und Ergebnisse d\u00FCrften sich schnell und stabil einstellen.`
         : `Leistung und Ergebnisse d\u00FCrften sich schnell und stabil einstellen.`)
-      : (isLeader
-        ? `Ob aus der Besetzung eine St\u00E4rke oder ein Problem wird, h\u00E4ngt vor allem davon ab, ob die F\u00FChrung im Team ankommt.`
-        : `Ob aus der Besetzung eine St\u00E4rke oder ein Problem wird, h\u00E4ngt vor allem von der Begleitung in den ersten Wochen ab.`)
+      : bew === "Teilweise passend"
+        ? (isLeader
+          ? `Bei klarer Rollengestaltung kann die F\u00FChrungskraft produktiv wirken und das Team st\u00E4rken.`
+          : `Bei guter Begleitung kann die Person produktiv beitragen und das Team erg\u00E4nzen.`)
+        : (isLeader
+          ? `Ob aus der Besetzung eine St\u00E4rke oder ein Problem wird, h\u00E4ngt vor allem davon ab, ob die F\u00FChrung im Team ankommt.`
+          : `Ob aus der Besetzung eine St\u00E4rke oder ein Problem wird, h\u00E4ngt vor allem von der Begleitung in den ersten Wochen ab.`)
   };
 }
 
-function buildDruck(bew: string, isLeader: boolean, personPrim: ComponentKey) {
+function buildDruck(gesamt: string, bew: string, isLeader: boolean, personPrim: ComponentKey, sameDom: boolean) {
   const blocks: V4Block[] = [
     { title: "Was unter Druck typischerweise passiert", text: isLeader
       ? `Unter Druck zeigt sich der nat\u00FCrliche F\u00FChrungsstil einer Person meist deutlicher als im Normalbetrieb. Die F\u00FChrungskraft greift st\u00E4rker auf ihre gewohnte Art zur\u00FCck und zeigt ihre St\u00E4rken, aber auch ihre Grenzen deutlicher.`
       : `Unter Druck zeigt sich die nat\u00FCrliche Arbeitsweise eines Menschen meist deutlicher als im Normalbetrieb. Was sonst noch ausgeglichen oder angepasst wird, tritt dann klarer hervor. Die Person greift st\u00E4rker auf ihre gewohnte Art zur\u00FCck und zeigt ihre St\u00E4rken, aber auch ihre Grenzen deutlicher.` },
-    { title: "Was das f\u00FCr das Umfeld bedeutet", text: bew === "Gut passend"
-      ? (isLeader
-        ? `Da F\u00FChrungskraft und Team \u00E4hnlich arbeiten, ist das Risiko unter Druck gering. Die F\u00FChrung d\u00FCrfte auch in intensiven Phasen stabil bleiben und das Team st\u00FCtzen k\u00F6nnen.`
-        : `Da Person und Team \u00E4hnlich arbeiten, ist das Risiko unter Druck gering. Die Zusammenarbeit d\u00FCrfte auch in intensiven Phasen stabil bleiben, weil beide Seiten \u00E4hnlich reagieren und sich gegenseitig st\u00FCtzen k\u00F6nnen.`)
-      : (isLeader
-        ? `Unter Druck werden Unterschiede im F\u00FChrungsstil meist nicht kleiner, sondern gr\u00F6sser. ${personPrim === "impulsiv" ? "Die F\u00FChrungskraft wird voraussichtlich noch direkter und schneller entscheiden, was das Team als \u00FCbergehend erleben kann." : personPrim === "intuitiv" ? "Die F\u00FChrungskraft wird voraussichtlich noch st\u00E4rker auf Austausch und Abstimmung setzen, was das Team als verz\u00F6gernd erleben kann." : "Die F\u00FChrungskraft wird voraussichtlich noch genauer und kontrollierter arbeiten, was das Team als bremsend erleben kann."}`
-        : `Unter Druck werden Unterschiede meist nicht kleiner, sondern gr\u00F6sser. ${personPrim === "impulsiv" ? "Die Person wird voraussichtlich noch schneller und direkter handeln, was zu Irritationen f\u00FChren kann." : personPrim === "intuitiv" ? "Die Person wird voraussichtlich noch st\u00E4rker auf Austausch setzen, was als Verz\u00F6gerung erlebt werden kann." : "Die Person wird voraussichtlich noch genauer und vorsichtiger vorgehen, was als Bremsen erlebt werden kann."}`) },
-    { title: "Was dann besonders wichtig ist", text: isLeader
-      ? `Klare Entscheidungswege, kurze Kommunikationswege und eindeutige F\u00FChrungsverantwortung. In belasteten Phasen muss das Team wissen, wer entscheidet und wie informiert wird.`
-      : `Klare Absprachen, kurze Wege und eindeutige Verantwortung. Gerade in belasteten Phasen braucht es Klarheit statt zus\u00E4tzlicher Abstimmung. Wer in solchen Momenten weiss, wer entscheidet und wer informiert werden muss, reduziert unn\u00F6tige Reibung erheblich.` },
   ];
+
+  if (bew === "Gut passend") {
+    blocks.push({ title: "Was das f\u00FCr das Umfeld bedeutet", text: isLeader
+      ? (sameDom
+        ? `Da F\u00FChrungskraft und Team \u00E4hnlich arbeiten und denselben Schwerpunkt teilen, ist das Risiko unter Druck gering. Die F\u00FChrung d\u00FCrfte auch in intensiven Phasen stabil bleiben.`
+        : `Da F\u00FChrungskraft und Team \u00E4hnlich arbeiten, ist das Risiko unter Druck gering. Die F\u00FChrung d\u00FCrfte auch in intensiven Phasen stabil bleiben und das Team st\u00FCtzen k\u00F6nnen.`)
+      : (sameDom
+        ? `Da Person und Team denselben Schwerpunkt teilen, ist das Risiko unter Druck gering. Die Zusammenarbeit d\u00FCrfte auch in intensiven Phasen stabil bleiben.`
+        : `Da Person und Team \u00E4hnlich arbeiten, ist das Risiko unter Druck gering. Die Zusammenarbeit d\u00FCrfte auch in intensiven Phasen stabil bleiben, weil beide Seiten \u00E4hnlich reagieren und sich gegenseitig st\u00FCtzen k\u00F6nnen.`) });
+  } else if (bew === "Teilweise passend") {
+    blocks.push({ title: "Was das f\u00FCr das Umfeld bedeutet", text: isLeader
+      ? (sameDom
+        ? `Unter Druck k\u00F6nnen kleinere Unterschiede im F\u00FChrungsstil sp\u00FCrbarer werden, auch wenn die Grundrichtung stimmt. ${personPrim === "impulsiv" ? "Die F\u00FChrungskraft wird etwas schneller und direkter entscheiden." : personPrim === "intuitiv" ? "Die F\u00FChrungskraft wird st\u00E4rker auf Austausch setzen." : "Die F\u00FChrungskraft wird genauer und kontrollierter arbeiten."} Das l\u00E4sst sich mit klaren Absprachen gut auffangen.`
+        : `Unter Druck werden Unterschiede im F\u00FChrungsstil sp\u00FCrbarer. ${personPrim === "impulsiv" ? "Die F\u00FChrungskraft wird voraussichtlich direkter und schneller entscheiden, was das Team als zu forsch erleben kann." : personPrim === "intuitiv" ? "Die F\u00FChrungskraft wird voraussichtlich st\u00E4rker auf Austausch setzen, was das Team als verz\u00F6gernd erleben kann." : "Die F\u00FChrungskraft wird voraussichtlich genauer und kontrollierter arbeiten, was das Team als bremsend erleben kann."} Fr\u00FChe Absprachen helfen, das aufzufangen.`)
+      : (sameDom
+        ? `Unter Druck k\u00F6nnen kleinere Unterschiede sp\u00FCrbarer werden, auch wenn die Grundrichtung stimmt. ${personPrim === "impulsiv" ? "Die Person wird etwas schneller und direkter handeln." : personPrim === "intuitiv" ? "Die Person wird st\u00E4rker auf Austausch setzen." : "Die Person wird genauer und vorsichtiger vorgehen."} Das l\u00E4sst sich mit klaren Absprachen gut auffangen.`
+        : `Unter Druck werden Unterschiede sp\u00FCrbarer. ${personPrim === "impulsiv" ? "Die Person wird voraussichtlich schneller und direkter handeln, was zu Irritationen f\u00FChren kann." : personPrim === "intuitiv" ? "Die Person wird voraussichtlich st\u00E4rker auf Austausch setzen, was als Verz\u00F6gerung erlebt werden kann." : "Die Person wird voraussichtlich genauer und vorsichtiger vorgehen, was als Bremsen erlebt werden kann."} Fr\u00FChe Absprachen helfen, das aufzufangen.`) });
+  } else {
+    const strategischHint = gesamt === "Strategisch sinnvoll, aber anspruchsvoll"
+      ? " Gerade weil die Besetzung strategisch sinnvoll ist, lohnt es sich, Drucksituationen besonders gut vorzubereiten." : "";
+    blocks.push({ title: "Was das f\u00FCr das Umfeld bedeutet", text: isLeader
+      ? `Unter Druck werden Unterschiede im F\u00FChrungsstil meist nicht kleiner, sondern gr\u00F6sser. ${personPrim === "impulsiv" ? "Die F\u00FChrungskraft wird voraussichtlich noch direkter und schneller entscheiden, was das Team als \u00FCbergehend erleben kann." : personPrim === "intuitiv" ? "Die F\u00FChrungskraft wird voraussichtlich noch st\u00E4rker auf Austausch und Abstimmung setzen, was das Team als verz\u00F6gernd erleben kann." : "Die F\u00FChrungskraft wird voraussichtlich noch genauer und kontrollierter arbeiten, was das Team als bremsend erleben kann."}${strategischHint}`
+      : `Unter Druck werden Unterschiede meist nicht kleiner, sondern gr\u00F6sser. ${personPrim === "impulsiv" ? "Die Person wird voraussichtlich noch schneller und direkter handeln, was zu Irritationen f\u00FChren kann." : personPrim === "intuitiv" ? "Die Person wird voraussichtlich noch st\u00E4rker auf Austausch setzen, was als Verz\u00F6gerung erlebt werden kann." : "Die Person wird voraussichtlich noch genauer und vorsichtiger vorgehen, was als Bremsen erlebt werden kann."}${strategischHint}` });
+  }
+
+  blocks.push({ title: "Was dann besonders wichtig ist", text: isLeader
+    ? `Klare Entscheidungswege, kurze Kommunikationswege und eindeutige F\u00FChrungsverantwortung. In belasteten Phasen muss das Team wissen, wer entscheidet und wie informiert wird.`
+    : `Klare Absprachen, kurze Wege und eindeutige Verantwortung. Gerade in belasteten Phasen braucht es Klarheit statt zus\u00E4tzlicher Abstimmung. Wer in solchen Momenten weiss, wer entscheidet und wer informiert werden muss, reduziert unn\u00F6tige Reibung erheblich.` });
 
   return {
     druckBlocks: blocks,
@@ -678,42 +847,46 @@ function buildDruck(bew: string, isLeader: boolean, personPrim: ComponentKey) {
       ? (isLeader
         ? `Auch unter Druck d\u00FCrfte die F\u00FChrung stabil bleiben und das Team st\u00FCtzen.`
         : `Auch unter Druck d\u00FCrfte die Zusammenarbeit stabil bleiben.`)
-      : (isLeader
-        ? `Unter Druck werden Unterschiede im F\u00FChrungsstil sichtbarer. Klare Entscheidungswege sind dann besonders wichtig.`
-        : `Unter Druck werden Unterschiede sichtbarer. Klare Absprachen sind dann besonders wichtig.`)
+      : bew === "Teilweise passend"
+        ? (isLeader
+          ? `Unter Druck werden Unterschiede im F\u00FChrungsstil sp\u00FCrbarer. Klare Absprachen helfen, das aufzufangen.`
+          : `Unter Druck werden Unterschiede sp\u00FCrbarer. Klare Absprachen helfen, das aufzufangen.`)
+        : (isLeader
+          ? `Unter Druck werden Unterschiede im F\u00FChrungsstil deutlich sichtbarer. Klare Entscheidungswege sind dann besonders wichtig.`
+          : `Unter Druck werden Unterschiede deutlich sichtbarer. Klare Absprachen sind dann besonders wichtig.`)
   };
 }
 
-function buildEmpfehlungen(isLeader: boolean, bew: string): V4Block[] {
+function buildEmpfehlungen(isLeader: boolean, bew: string, hasGoal: boolean, teamGoalLabel: string): V4Block[] {
   const items: V4Block[] = [];
 
   if (isLeader) {
-    items.push({ title: "F\u00FChrungsrolle und Erwartungen fr\u00FCh kl\u00E4ren", text: bew === "Gut passend"
-      ? "Von Anfang an sollte klar sein, welche Erwartungen an die F\u00FChrung bestehen, woran Erfolg gemessen wird und welche Entscheidungsfreiheit die F\u00FChrungskraft hat. Auch bei guter Passung verhindert das stille Missverst\u00E4ndnisse."
+    items.push({ title: bew === "Gut passend" ? "F\u00FChrungsrolle und Erwartungen besprechen" : "F\u00FChrungsrolle und Erwartungen fr\u00FCh kl\u00E4ren", text: bew === "Gut passend"
+      ? "Auch bei guter Passung lohnt es sich, von Anfang an zu kl\u00E4ren, welche Erwartungen an die F\u00FChrung bestehen und welche Entscheidungsfreiheit die F\u00FChrungskraft hat. Das verhindert stille Missverst\u00E4ndnisse."
       : "Von Anfang an muss klar sein, welche Erwartungen an die F\u00FChrung bestehen, woran Erfolg gemessen wird und welche Entscheidungsfreiheit die F\u00FChrungskraft hat. Unklare Rollen sind einer der h\u00E4ufigsten Gr\u00FCnde f\u00FCr sp\u00E4tere Spannungen." });
   } else {
-    items.push({ title: "Rolle und Erwartungen fr\u00FCh kl\u00E4ren", text: bew === "Gut passend"
-      ? "Von Anfang an sollte klar sein, was genau von der Person erwartet wird und welche Verantwortung bei ihr liegt. Auch bei guter Passung verhindert das stille Missverst\u00E4ndnisse."
+    items.push({ title: bew === "Gut passend" ? "Rolle und Erwartungen besprechen" : "Rolle und Erwartungen fr\u00FCh kl\u00E4ren", text: bew === "Gut passend"
+      ? "Auch bei guter Passung lohnt es sich, von Anfang an zu kl\u00E4ren, was genau erwartet wird und welche Verantwortung bei der Person liegt. Das verhindert stille Missverst\u00E4ndnisse."
       : "Von Anfang an muss klar sein, was genau von der Person erwartet wird, woran Erfolg gemessen wird und welche Verantwortung tats\u00E4chlich bei ihr liegt. Unklare Rollen sind einer der h\u00E4ufigsten Gr\u00FCnde f\u00FCr sp\u00E4tere Spannungen." });
   }
 
-  items.push({ title: "Zusammenarbeit nicht dem Zufall \u00FCberlassen", text: isLeader
+  items.push({ title: bew === "Gut passend" ? "Zusammenarbeit bewusst gestalten" : "Zusammenarbeit nicht dem Zufall \u00FCberlassen", text: isLeader
     ? (bew === "Gut passend"
-      ? "Gerade in den ersten Wochen sollte besprochen werden, wie F\u00FChrung, Kommunikation und Entscheidungswege im Alltag aussehen sollen. Das schafft Klarheit f\u00FCr alle Beteiligten."
+      ? "In den ersten Wochen sollte besprochen werden, wie F\u00FChrung, Kommunikation und Entscheidungswege im Alltag aussehen sollen. Das schafft Klarheit f\u00FCr alle Beteiligten."
       : "Gerade in den ersten Wochen muss bewusst besprochen werden, wie F\u00FChrung, Kommunikation und Entscheidungswege im Alltag aussehen sollen. Was nicht offen gekl\u00E4rt wird, wird meist still interpretiert und f\u00FChrt zu Widerstand.")
     : (bew === "Gut passend"
-      ? "Gerade in den ersten Wochen sollte besprochen werden, wie Kommunikation, Abstimmung und Zusammenarbeit im Alltag aussehen sollen. Das schafft Klarheit und beugt Missverst\u00E4ndnissen vor."
+      ? "In den ersten Wochen sollte besprochen werden, wie Kommunikation, Abstimmung und Zusammenarbeit im Alltag aussehen sollen. Das schafft Klarheit und beugt Missverst\u00E4ndnissen vor."
       : "Gerade in den ersten Wochen muss bewusst besprochen werden, wie Kommunikation, Abstimmung und Zusammenarbeit im Alltag aussehen sollen. Was nicht offen besprochen wird, wird meist still interpretiert.") });
 
-  items.push({ title: "Fr\u00FCh R\u00FCckmeldung geben", text: isLeader
+  items.push({ title: bew === "Gut passend" ? "R\u00FCckmeldungen einplanen" : "Fr\u00FCh R\u00FCckmeldung geben", text: isLeader
     ? (bew === "Gut passend"
-      ? "Die Wirkung einer F\u00FChrungskraft zeigt sich oft fr\u00FCher als ihre Ergebnisse. Fr\u00FChe, offene R\u00FCckmeldungen helfen, den guten Start abzusichern."
+      ? "Die Wirkung einer F\u00FChrungskraft zeigt sich oft fr\u00FCher als ihre Ergebnisse. Fr\u00FChe R\u00FCckmeldungen helfen, den guten Start abzusichern."
       : "Die Wirkung einer F\u00FChrungskraft zeigt sich oft fr\u00FCher als ihre Ergebnisse. Fr\u00FChe, offene R\u00FCckmeldungen sind besonders wichtig, damit Spannungen nicht fest werden.")
     : (bew === "Gut passend"
       ? "Die Wirkung einer Person zeigt sich oft fr\u00FCher als ihre Ergebnisse. Fr\u00FChe R\u00FCckmeldungen helfen, den guten Start abzusichern."
       : "Die Wirkung einer Person zeigt sich oft fr\u00FCher als ihre Ergebnisse. Fr\u00FChe, offene R\u00FCckmeldungen sind besonders wichtig. Nicht erst warten, bis Spannungen fest sitzen.") });
 
-  items.push({ title: "Nach den ersten Wochen bewusst pr\u00FCfen", text: bew === "Gut passend"
+  items.push({ title: bew === "Gut passend" ? "Kurze Reflexion nach 30 bis 60 Tagen" : "Nach den ersten Wochen bewusst pr\u00FCfen", text: bew === "Gut passend"
     ? "Nach 30 bis 60 Tagen sollte kurz geschaut werden: L\u00E4uft alles wie erwartet? Gibt es stille Irritationen? Eine kurze Reflexion sichert die gute Ausgangslage ab."
     : "Nach 30 bis 60 Tagen sollte gezielt geschaut werden: Was l\u00E4uft gut? Wo gibt es Reibung? Was muss angepasst werden? Diese Reflexion verhindert, dass aus einem schwierigen Start ein dauerhaftes Problem wird." });
 
@@ -727,7 +900,15 @@ function buildEmpfehlungen(isLeader: boolean, bew: string): V4Block[] {
       : "Gerade bei einem neuen Teammitglied sollte darauf geachtet werden, dass die Person nicht nur Aufgaben bekommt, sondern auch Zugang zum Team findet. Teamregeln und Schnittstellen sollten offen benannt werden." });
   }
 
-  items.push({ title: "Verantwortung klar benennen", text: "Diese Begleitung sollte nicht dem Zufall \u00FCberlassen werden, sondern klar durch die direkte F\u00FChrungskraft verantwortet sein. Sie sollte die Integration in den ersten Wochen aktiv steuern und sichtbar \u00FCbernehmen." });
+  if (hasGoal && bew !== "Gut passend") {
+    items.push({ title: `Funktionsziel \u201E${teamGoalLabel}\u201C als Orientierung nutzen`, text: isLeader
+      ? `Das Funktionsziel \u201E${teamGoalLabel}\u201C kann helfen, den F\u00FChrungseinstieg zu rahmen. Wenn klar ist, wof\u00FCr die F\u00FChrung steht und welche Richtung erwartet wird, gibt das dem Team Orientierung.`
+      : `Das Funktionsziel \u201E${teamGoalLabel}\u201C kann helfen, die Erwartungen an die Person zu rahmen. Wenn klar ist, welchen Beitrag sie leisten soll, gibt das beiden Seiten Orientierung.` });
+  }
+
+  items.push({ title: "Verantwortung klar benennen", text: bew === "Gut passend"
+    ? "Die Begleitung des Einstiegs sollte durch die direkte F\u00FChrungskraft verantwortet sein. Auch bei guter Passung lohnt es sich, den Einstieg aktiv zu gestalten."
+    : "Diese Begleitung sollte nicht dem Zufall \u00FCberlassen werden, sondern klar durch die direkte F\u00FChrungskraft verantwortet sein. Sie sollte die Integration in den ersten Wochen aktiv steuern und sichtbar \u00FCbernehmen." });
 
   return items;
 }
