@@ -20,6 +20,8 @@ export interface TeamCheckV4Result {
   teamGoalLabel: string;
 
   gesamteinschaetzung: string;
+  passungZumTeam: string;
+  beitragZurAufgabe: string;
   wirkungAufUmfeld: string;
   begleitungsbedarf: string;
   risikoImAlltag: string;
@@ -105,16 +107,38 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
   const personPrimary = getPrimaryKey(input.personProfile);
   const sameDominance = teamPrimary === personPrimary;
 
-  const gesamteinschaetzung = v3.passung === "Passend" ? "Gut passend"
-    : v3.passung === "Bedingt passend" ? "Teilweise passend" : "Kritisch";
+  const teamFitRaw = v3.passung === "Passend" ? "hoch"
+    : v3.passung === "Bedingt passend" ? "mittel" : "gering";
+
+  let funktionsFit: string;
+  if (v3.strategicFit === "passend") funktionsFit = "hoch";
+  else if (v3.strategicFit === "teilweise") funktionsFit = "mittel";
+  else if (v3.strategicFit === "abweichend") funktionsFit = "gering";
+  else funktionsFit = "nicht bewertbar";
+
+  const passungZumTeam = teamFitRaw;
+  const beitragZurAufgabe = funktionsFit;
+
+  let gesamteinschaetzung: string;
+  if (teamFitRaw === "hoch") {
+    gesamteinschaetzung = "Gut passend";
+  } else if (teamFitRaw === "gering" && (funktionsFit === "hoch" || funktionsFit === "mittel")) {
+    gesamteinschaetzung = "Strategisch sinnvoll, aber anspruchsvoll";
+  } else if (teamFitRaw === "mittel") {
+    gesamteinschaetzung = "Teilweise passend";
+  } else {
+    gesamteinschaetzung = "Kritisch";
+  }
+
+  const bewForLogic = gesamteinschaetzung === "Strategisch sinnvoll, aber anspruchsvoll" ? "Kritisch" : gesamteinschaetzung;
 
   let wirkungAufUmfeld: string;
-  if (gesamteinschaetzung === "Gut passend") {
-    wirkungAufUmfeld = sameDominance ? "eher stabilisierend" : "eher ergänzend";
-  } else if (gesamteinschaetzung === "Teilweise passend") {
-    wirkungAufUmfeld = sameDominance ? "eher ergänzend" : "eher verändernd";
+  if (bewForLogic === "Gut passend") {
+    wirkungAufUmfeld = sameDominance ? "eher stabilisierend" : "eher erg\u00E4nzend";
+  } else if (bewForLogic === "Teilweise passend") {
+    wirkungAufUmfeld = sameDominance ? "eher erg\u00E4nzend" : "eher ver\u00E4ndernd";
   } else {
-    wirkungAufUmfeld = "eher spannungsanfällig";
+    wirkungAufUmfeld = "eher spannungsanf\u00E4llig";
   }
 
   let begleitungsbedarf: string;
@@ -138,15 +162,17 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
     teamGoal: v3.teamGoal,
     teamGoalLabel,
     gesamteinschaetzung,
+    passungZumTeam,
+    beitragZurAufgabe,
     wirkungAufUmfeld,
     begleitungsbedarf,
     risikoImAlltag,
-    kurzfazit: buildKurzfazit(gesamteinschaetzung, isLeader),
-    ersteEmpfehlung: buildErsteEmpfehlung(gesamteinschaetzung, isLeader),
-    managementEinschaetzung: buildManagementEinschaetzung(gesamteinschaetzung, isLeader, hasGoal),
-    hauptrisiko: buildHauptrisiko(gesamteinschaetzung, isLeader),
-    hauptchance: buildHauptchance(gesamteinschaetzung, isLeader, personPrimary),
-    integrationsprognose: buildIntegrationsprognose(gesamteinschaetzung, isLeader),
+    kurzfazit: buildKurzfazit(gesamteinschaetzung, bewForLogic, isLeader),
+    ersteEmpfehlung: buildErsteEmpfehlung(bewForLogic, isLeader),
+    managementEinschaetzung: buildManagementEinschaetzung(gesamteinschaetzung, bewForLogic, isLeader, hasGoal),
+    hauptrisiko: buildHauptrisiko(bewForLogic, isLeader),
+    hauptchance: buildHauptchance(bewForLogic, isLeader, personPrimary),
+    integrationsprognose: buildIntegrationsprognose(gesamteinschaetzung, bewForLogic, isLeader),
     teamProfile: v3.teamProfile,
     personProfile: v3.personProfile,
     teamLabel: v3.teamLabel,
@@ -154,13 +180,13 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
     teamPersonAbweichung: v3.teamPersonAbweichung,
     teamGoalAbweichung: v3.teamGoalAbweichung,
     personGoalAbweichung: v3.personGoalAbweichung,
-    ...buildWarum(v3, isLeader, gesamteinschaetzung, sameDominance, teamPrimary, personPrimary),
-    ...buildWirkung(isLeader, gesamteinschaetzung, sameDominance, teamPrimary, personPrimary),
-    ...buildChancenRisiken(v3, isLeader, gesamteinschaetzung, sameDominance, personPrimary),
+    ...buildWarum(v3, isLeader, bewForLogic, sameDominance, teamPrimary, personPrimary),
+    ...buildWirkung(isLeader, bewForLogic, sameDominance, teamPrimary, personPrimary),
+    ...buildChancenRisiken(v3, isLeader, bewForLogic, sameDominance, personPrimary),
     ...buildOhne(isLeader, sameDominance, personPrimary),
-    ...buildAlltag(isLeader, gesamteinschaetzung, sameDominance, teamPrimary, personPrimary),
-    ...buildLeistung(gesamteinschaetzung, isLeader, hasGoal),
-    ...buildDruck(gesamteinschaetzung),
+    ...buildAlltag(isLeader, bewForLogic, sameDominance, teamPrimary, personPrimary),
+    ...buildLeistung(bewForLogic, isLeader, hasGoal),
+    ...buildDruck(bewForLogic),
     empfehlungen: buildEmpfehlungen(isLeader),
     teamKontext: sameDominance
       ? `Team und Person setzen beide auf ${COMP_SHORT[teamPrimary]}. Ihre Arbeitsweisen liegen nah beieinander.`
@@ -169,20 +195,25 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
   };
 }
 
-function buildKurzfazit(bew: string, isLeader: boolean): string {
+function buildKurzfazit(gesamt: string, bew: string, isLeader: boolean): string {
   if (bew === "Gut passend") {
     return isLeader
-      ? "Die Person bringt eine Arbeitsweise mit, die gut zum bestehenden Team passt. Der Einstieg in die Führungsrolle dürfte vergleichsweise reibungsarm verlaufen."
-      : "Die Person passt gut zum bestehenden Team. Der Einstieg dürfte reibungsarm verlaufen und die Zusammenarbeit kann sich schnell einspielen.";
+      ? "Die Person bringt eine Arbeitsweise mit, die gut zum bestehenden Team passt. Der Einstieg in die F\u00FChrungsrolle d\u00FCrfte vergleichsweise reibungsarm verlaufen."
+      : "Die Person passt gut zum bestehenden Team. Der Einstieg d\u00FCrfte reibungsarm verlaufen und die Zusammenarbeit kann sich schnell einspielen.";
   }
   if (bew === "Teilweise passend") {
     return isLeader
-      ? "Die Person bringt Stärken mit, arbeitet aber in einigen Punkten anders als das Team es kennt. Ob die Führung gut ankommt, hängt davon ab, wie bewusst die ersten Wochen gestaltet werden."
-      : "Die Person passt in Teilen gut zum Team, weicht in anderen Punkten aber spürbar ab. Das kann neue Impulse bringen, braucht aber klare Absprachen.";
+      ? "Die Person bringt St\u00E4rken mit, arbeitet aber in einigen Punkten anders als das Team es kennt. Ob die F\u00FChrung gut ankommt, h\u00E4ngt davon ab, wie bewusst die ersten Wochen gestaltet werden."
+      : "Die Person passt in Teilen gut zum Team, weicht in anderen Punkten aber sp\u00FCrbar ab. Das kann neue Impulse bringen, braucht aber klare Absprachen.";
+  }
+  if (gesamt === "Strategisch sinnvoll, aber anspruchsvoll") {
+    return isLeader
+      ? "Die Person passt nur begrenzt zur bisherigen Teamkultur, bringt aber genau die St\u00E4rke mit, die die Abteilung f\u00FCr ihre Aufgabe braucht. Der Einstieg ist anspruchsvoll, kann aber bei aktiver F\u00FChrung sehr sinnvoll sein."
+      : "Die Person passt nur begrenzt zur bisherigen Teamkultur, bringt aber genau die St\u00E4rke mit, die die Abteilung f\u00FCr ihre Aufgabe braucht. Die Besetzung ist deshalb nicht leicht, kann aber strategisch sinnvoll sein.";
   }
   return isLeader
-    ? "Die Person würde deutlich anders führen, als das Team es braucht. Ohne aktive Begleitung ist mit Spannungen und schwächeren Ergebnissen zu rechnen."
-    : "Die Person arbeitet deutlich anders als das Team. Ohne Begleitung ist mit Reibung und Missverständnissen zu rechnen.";
+    ? "Die Person w\u00FCrde deutlich anders f\u00FChren, als das Team es kennt. Ohne aktive Begleitung ist mit Spannungen und schw\u00E4cheren Ergebnissen zu rechnen."
+    : "Die Person arbeitet deutlich anders als das Team. Ohne Begleitung ist mit Reibung und Missverst\u00E4ndnissen zu rechnen.";
 }
 
 function buildErsteEmpfehlung(bew: string, isLeader: boolean): string {
@@ -197,22 +228,28 @@ function buildErsteEmpfehlung(bew: string, isLeader: boolean): string {
   return "Die ersten Wochen brauchen enge Begleitung. Rolle, Erwartungen und Kommunikation müssen sofort offen geregelt werden.";
 }
 
-function buildManagementEinschaetzung(bew: string, isLeader: boolean, hasGoal: boolean): string {
+function buildManagementEinschaetzung(gesamt: string, bew: string, isLeader: boolean, hasGoal: boolean): string {
   if (bew === "Gut passend") {
     return isLeader
       ? "Diese Besetzung ist aus unserer Sicht empfehlenswert. Die Arbeitsweisen von Person und Team passen gut zusammen. Der Einstieg in die Rolle sollte vergleichsweise reibungsarm gelingen."
-      : "Diese Besetzung ist aus unserer Sicht empfehlenswert. Person und Team arbeiten auf eine vergleichbare Art, was den Einstieg erleichtert und die Zusammenarbeit schnell tragfähig macht.";
+      : "Diese Besetzung ist aus unserer Sicht empfehlenswert. Person und Team arbeiten auf eine vergleichbare Art, was den Einstieg erleichtert und die Zusammenarbeit schnell tragf\u00E4hig macht.";
   }
   if (bew === "Teilweise passend") {
-    const goalHint = !hasGoal ? " Da kein klares Funktionsziel hinterlegt ist, kommt der bewussten Rollenklärung hier noch mehr Bedeutung zu." : "";
+    const goalHint = !hasGoal ? " Da kein klares Funktionsziel hinterlegt ist, kommt der bewussten Rollenkl\u00E4rung hier noch mehr Bedeutung zu." : "";
     return isLeader
-      ? `Diese Besetzung ist möglich, aber anspruchsvoll. Sie sollte nur dann erfolgen, wenn der Einstieg bewusst geführt und die Zusammenarbeit aktiv begleitet wird.${goalHint}`
-      : `Diese Besetzung kann gelingen, ist aber kein Selbstläufer. Sie braucht von Anfang an klare Erwartungen und gute Begleitung.${goalHint}`;
+      ? `Diese Besetzung ist m\u00F6glich, aber anspruchsvoll. Sie sollte nur dann erfolgen, wenn der Einstieg bewusst gef\u00FChrt und die Zusammenarbeit aktiv begleitet wird.${goalHint}`
+      : `Diese Besetzung kann gelingen, ist aber kein Selbstl\u00E4ufer. Sie braucht von Anfang an klare Erwartungen und gute Begleitung.${goalHint}`;
+  }
+  if (gesamt === "Strategisch sinnvoll, aber anspruchsvoll") {
+    const goalHint = !hasGoal ? " Da kein klares Funktionsziel hinterlegt ist, l\u00E4sst sich der funktionale Beitrag nicht abschliessend bewerten." : "";
+    return isLeader
+      ? `Diese Besetzung ist im bestehenden Team nicht leicht, kann f\u00FCr die Aufgabe der Abteilung aber sehr sinnvoll sein. Die Person bringt genau die St\u00E4rke mit, die bisher gefehlt hat. Entscheidend ist, dass die Integration in den ersten Wochen aktiv gef\u00FChrt wird.${goalHint} Ohne klare F\u00FChrung \u00FCberwiegen die Reibungen. Mit guter Begleitung kann die Besetzung dem Team jedoch genau die Qualit\u00E4t geben, die es braucht.`
+      : `Diese Besetzung ist im bestehenden Team nicht leicht, kann f\u00FCr die Aufgabe der Abteilung aber sehr sinnvoll sein. Die Person bringt genau die St\u00E4rke mit, die bisher gefehlt hat. Entscheidend ist, dass die Integration aktiv gef\u00FChrt wird.${goalHint} Ohne Begleitung \u00FCberwiegen die Reibungen. Mit guter F\u00FChrung kann die Besetzung dem Team jedoch genau die Qualit\u00E4t geben, die es braucht.`;
   }
   const goalHint = !hasGoal ? " Da zudem kein klares Funktionsziel vorliegt, fehlt eine zus\u00E4tzliche Orientierung, die den Einstieg erleichtern k\u00F6nnte." : "";
   return isLeader
-    ? `Diese Besetzung ist im aktuellen Umfeld kritisch. Sie ist nur dann vertretbar, wenn der Einstieg eng begleitet wird und das Team klare F\u00FChrung von oben erh\u00E4lt.${goalHint} Ohne diese Voraussetzungen ist das Risiko hoch, dass die Zusammenarbeit dauerhaft schwierig bleibt. Diese Besetzung kann sinnvoll sein, wenn die zus\u00E4tzliche Qualit\u00E4t aktuell wirklich gebraucht wird und die n\u00F6tige Begleitung sichergestellt werden kann.`
-    : `Diese Besetzung ist im aktuellen Umfeld kritisch und nur mit enger Begleitung tragf\u00E4hig.${goalHint} Ohne aktive F\u00FChrung und klare Absprachen ist das Risiko hoch, dass die Person im Team nicht wirklich ankommt. Diese Besetzung kann sinnvoll sein, wenn die zus\u00E4tzliche Qualit\u00E4t aktuell wirklich gebraucht wird und die n\u00F6tige Begleitung sichergestellt werden kann.`;
+    ? `Diese Besetzung ist im aktuellen Umfeld kritisch. Sie ist nur dann vertretbar, wenn der Einstieg eng begleitet wird und das Team klare F\u00FChrung von oben erh\u00E4lt.${goalHint} Ohne diese Voraussetzungen ist das Risiko hoch, dass die Zusammenarbeit dauerhaft schwierig bleibt.`
+    : `Diese Besetzung ist im aktuellen Umfeld kritisch und nur mit enger Begleitung tragf\u00E4hig.${goalHint} Ohne aktive F\u00FChrung und klare Absprachen ist das Risiko hoch, dass die Person im Team nicht wirklich ankommt.`;
 }
 
 function buildHauptrisiko(bew: string, isLeader: boolean): string {
@@ -246,12 +283,17 @@ function buildHauptchance(bew: string, isLeader: boolean, personPrim: ComponentK
   return chanceSatz;
 }
 
-function buildIntegrationsprognose(bew: string, isLeader: boolean): string {
+function buildIntegrationsprognose(gesamt: string, bew: string, isLeader: boolean): string {
   if (bew === "Gut passend") {
-    return "Eine stabile Integration ist wahrscheinlich. Person und Team passen in ihrer Arbeitsweise gut zusammen, was einen schnellen und belastbaren Einstieg ermöglicht.";
+    return "Eine stabile Integration ist wahrscheinlich. Person und Team passen in ihrer Arbeitsweise gut zusammen, was einen schnellen und belastbaren Einstieg erm\u00F6glicht.";
   }
   if (bew === "Teilweise passend") {
     return "Eine stabile Integration ist m\u00F6glich, aber nicht von selbst zu erwarten. Vor allem in den ersten Wochen ist aktive Begleitung entscheidend. Erst wenn Zusammenarbeit, Erwartungen und Rollen klar sind, kann daraus eine dauerhaft tragf\u00E4hige Zusammenarbeit entstehen.";
+  }
+  if (gesamt === "Strategisch sinnvoll, aber anspruchsvoll") {
+    return isLeader
+      ? "Die Integration wird anspruchsvoll, ist aber bei aktiver F\u00FChrung realistisch. Die Person bringt funktional genau das mit, was gebraucht wird. Vor allem in den ersten Wochen ist enge Begleitung entscheidend. Gelingt der Einstieg, kann daraus eine produktive und stabile Zusammenarbeit werden."
+      : "Die Integration wird anspruchsvoll, ist aber bei guter Begleitung realistisch. Die Person bringt funktional genau das mit, was gebraucht wird. Vor allem in den ersten Wochen braucht es klare Erwartungen und aktive Einbindung. Gelingt der Einstieg, kann daraus eine wertvolle Erg\u00E4nzung werden.";
   }
   return isLeader
     ? "Eine stabile Integration ist nur mit enger Begleitung realistisch. Vor allem in den ersten Wochen ist aktive F\u00FChrung von oben entscheidend. Ohne diese Begleitung besteht nicht nur das Risiko eines schwierigen Starts, sondern einer dauerhaften Fehlpassung im Teamalltag."

@@ -7,7 +7,9 @@ import { ArrowLeft, Printer } from "lucide-react";
 import { COMP_HEX, BIO_COLORS } from "@/lib/bio-design";
 import logoPath from "@assets/LOGO_bio_1773853681939.png";
 
-const bewColor = (b: string) => b === "Gut passend" ? BIO_COLORS.geeignet : b === "Teilweise passend" ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
+const bewColor = (b: string) => b === "Gut passend" ? BIO_COLORS.geeignet : b === "Teilweise passend" ? BIO_COLORS.bedingt : b === "Strategisch sinnvoll, aber anspruchsvoll" ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
+const axisColor = (v: string) => v === "hoch" ? BIO_COLORS.geeignet : v === "mittel" ? BIO_COLORS.bedingt : v === "gering" ? BIO_COLORS.nichtGeeignet : "#94a3b8";
+const axisLabel = (v: string) => v === "hoch" ? "Hoch" : v === "mittel" ? "Mittel" : v === "gering" ? "Gering" : "Nicht bewertbar";
 const bgColor = (s: string) => s === "gering" ? BIO_COLORS.geeignet : s === "mittel" ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
 const rColor = (r: string) => r === "niedrig" ? BIO_COLORS.geeignet : r === "erh\u00F6ht" ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
 
@@ -180,10 +182,21 @@ export default function TeamCheckReportV4() {
               <div style={{ margin: "0 0 24px", padding: "28px 28px 24px", borderRadius: 16, background: `${bCol}0A`, border: `2px solid ${bCol}30`, position: "relative", overflow: "hidden" }} data-testid="v4-hero-bewertung">
                 <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 5, background: bCol }} />
                 <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em" }}>Gesamteinsch\u00E4tzung</div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em" }}>Gesamteinsch{"\u00E4"}tzung</div>
                 </div>
                 <div style={{ fontSize: 28, fontWeight: 800, color: bCol, marginBottom: 10, letterSpacing: "-0.02em" }}>{result.gesamteinschaetzung}</div>
                 <p style={{ fontSize: 15, lineHeight: 1.75, color: "#48484A", margin: 0 }} data-testid="v4-kurzfazit">{result.kurzfazit}</p>
+
+                <div style={{ display: "flex", gap: 16, marginTop: 20, paddingTop: 18, borderTop: "1px solid rgba(0,0,0,0.06)" }} data-testid="v4-two-axis">
+                  <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${axisColor(result.passungZumTeam)}08`, border: `1px solid ${axisColor(result.passungZumTeam)}25` }}>
+                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Passung zum Team</div>
+                    <div style={{ fontSize: 17, fontWeight: 700, color: axisColor(result.passungZumTeam) }} data-testid="v4-passung-team">{axisLabel(result.passungZumTeam)}</div>
+                  </div>
+                  <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${axisColor(result.beitragZurAufgabe)}08`, border: `1px solid ${axisColor(result.beitragZurAufgabe)}25` }}>
+                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Beitrag zur Aufgabe</div>
+                    <div style={{ fontSize: 17, fontWeight: 700, color: axisColor(result.beitragZurAufgabe) }} data-testid="v4-beitrag-aufgabe">{axisLabel(result.beitragZurAufgabe)}</div>
+                  </div>
+                </div>
               </div>
 
               {/* Team-Kontext */}
