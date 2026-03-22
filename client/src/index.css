@@ -517,3 +517,33 @@ input[type="range"].bio-slider::-moz-range-track {
   margin-left: 20px;
   margin-bottom: 20px;
 }
+
+@media print {
+  .v4-report-page {
+    background: #FFF !important;
+  }
+  .v4-report-page .no-print,
+  .v4-report-page nav {
+    display: none !important;
+  }
+  .v4-report-page > div {
+    padding-top: 0 !important;
+  }
+  .v4-report-page [data-testid="v4-report-wrapper"] > div {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+  .v4-report-page [data-testid="v4-section-warum"],
+  .v4-report-page [data-testid="v4-section-wirkung"],
+  .v4-report-page [data-testid="v4-section-chancen-risiken"],
+  .v4-report-page [data-testid="v4-section-ohne"],
+  .v4-report-page [data-testid="v4-section-alltag"],
+  .v4-report-page [data-testid="v4-section-leistung"],
+  .v4-report-page [data-testid="v4-section-druck"],
+  .v4-report-page [data-testid="v4-section-empfehlungen"] {
+    break-inside: avoid;
+  }
+  .v4-report-page [data-testid="v4-footer"] {
+    break-before: avoid;
+  }
+}

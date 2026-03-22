@@ -71,6 +71,8 @@ export interface TeamCheckV4Result {
 
   empfehlungen: V4Block[];
 
+  teamKontext: string;
+
   v3: TeamCheckV3Result;
 }
 
@@ -160,6 +162,9 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
     ...buildLeistung(gesamteinschaetzung, isLeader, hasGoal),
     ...buildDruck(gesamteinschaetzung),
     empfehlungen: buildEmpfehlungen(isLeader),
+    teamKontext: sameDominance
+      ? `Team und Person setzen beide auf ${COMP_SHORT[teamPrimary]}. Ihre Arbeitsweisen liegen nah beieinander.`
+      : `Das Team arbeitet mit Schwerpunkt auf ${COMP_SHORT[teamPrimary]}. Die Person setzt st\u00E4rker auf ${COMP_SHORT[personPrimary]}.`,
     v3,
   };
 }
