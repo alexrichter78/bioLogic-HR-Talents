@@ -228,8 +228,8 @@ function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string):
   const personSorted = sortProfile(personProfile);
   const teamSorted = sortProfile(teamProfile);
   const personTop2Gap = personSorted[0].value - personSorted[1].value;
-  if (personTop2Gap <= 5) {
-    score -= 5;
+  if (personTop2Gap < 12) {
+    score -= Math.min(5, Math.ceil((12 - personTop2Gap) / 2));
   }
 
   const teamSecondary = getSecondaryKey(teamProfile);
@@ -246,10 +246,6 @@ function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string):
     diff(teamProfile.analytisch, personProfile.analytisch),
   );
   if (maxDimGap > 25) score -= 5;
-
-  const teamRange = teamSorted[0].value - teamSorted[2].value;
-  const personRange = personSorted[0].value - personSorted[2].value;
-  if ((teamRange <= 8 && personRange > 20) || (personRange <= 8 && teamRange > 20)) score -= 4;
 
   if (roleType === "leadership") {
     if (systemwirkung === "Transformation") score -= 8;
