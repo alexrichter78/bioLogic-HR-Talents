@@ -763,99 +763,89 @@ export default function TeamReport() {
                   onTriadChange={updateTeamTriad} testIdPrefix="team" />
               </div>
 
-              <div style={{ marginTop: 24, padding: "16px 20px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,0,0,0.015)" }}>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, letterSpacing: "-0.01em" }}>
-                  Rollenbezeichnung <span style={{ fontWeight: 400, color: "#8E8E93" }}>(optional)</span>
-                </label>
-                <p style={{ fontSize: 12, color: "#6E6E73", margin: "0 0 10px", lineHeight: 1.5 }}>
-                  F{"\u00FC"}r welche Rolle oder Position wird die Person betrachtet?
-                </p>
-                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  <input
-                    type="text"
-                    value={roleName}
-                    onChange={e => setRoleName(e.target.value)}
-                    placeholder="z.B. Projektleiter, Teamleitung HR"
-                    data-testid="input-role-name"
-                    style={{
-                      flex: 1, height: 38, padding: "0 14px", borderRadius: 10,
-                      border: "1px solid rgba(0,0,0,0.12)", fontSize: 13, color: "#1D1D1F",
-                      background: "#fff", outline: "none",
-                    }}
-                    onFocus={e => { e.target.style.borderColor = "#007AFF"; }}
-                    onBlur={e => { e.target.style.borderColor = "rgba(0,0,0,0.12)"; }}
-                  />
-                  {roleName && (
-                    <button
-                      onClick={() => setRoleName("")}
-                      data-testid="button-clear-role-name"
-                      style={{
-                        background: "none", border: "none", cursor: "pointer",
-                        fontSize: 18, color: "#8E8E93", padding: "0 4px", lineHeight: 1,
-                      }}
-                      title="Rollenbezeichnung entfernen"
-                    >{"\u00D7"}</button>
-                  )}
-                </div>
-              </div>
+              <div style={{ marginTop: 24, padding: "20px 20px 18px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,0,0,0.015)" }}>
 
-              <div style={{ marginTop: 12, padding: "16px 20px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,0,0,0.015)" }}>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#1D1D1F", marginBottom: 10, letterSpacing: "-0.01em" }}>
-                  Rolle der Person
-                </label>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 0 }}>
-                  {([
-                    { value: "fuehrung" as const, label: "Führungsperson" },
-                    { value: "teammitglied" as const, label: "Teammitglied" },
-                  ]).map(opt => (
-                    <label
-                      key={opt.value}
-                      data-testid={`role-option-${opt.value}`}
-                      onClick={() => setRoleTypeForCard(opt.value)}
-                      style={{
-                        display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
-                        padding: "10px 8px", borderRadius: 10, cursor: "pointer", textAlign: "center",
-                        border: roleTypeForCard === opt.value ? "1.5px solid #007AFF" : "1px solid rgba(0,0,0,0.1)",
-                        background: roleTypeForCard === opt.value ? "rgba(0,122,255,0.04)" : "#fff",
-                        transition: "all 0.15s ease",
-                      }}
-                    >
-                      <span style={{ fontSize: 13, fontWeight: 500, color: roleTypeForCard === opt.value ? "#007AFF" : "#1D1D1F", lineHeight: 1.3, transition: "color 0.15s ease" }}>{opt.label}</span>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 12, alignItems: "center", marginBottom: 18 }}>
+                  <div>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
+                      Rollenbezeichnung
                     </label>
-                  ))}
+                    <div style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 6 }}>
+                      <input
+                        type="text"
+                        value={roleName}
+                        onChange={e => setRoleName(e.target.value)}
+                        placeholder="optional, z.B. Projektleiter"
+                        data-testid="input-role-name"
+                        style={{
+                          width: "100%", height: 34, padding: "0 12px", borderRadius: 8,
+                          border: "1px solid rgba(0,0,0,0.1)", fontSize: 13, color: "#1D1D1F",
+                          background: "#fff", outline: "none",
+                        }}
+                        onFocus={e => { e.target.style.borderColor = "#007AFF"; }}
+                        onBlur={e => { e.target.style.borderColor = "rgba(0,0,0,0.1)"; }}
+                      />
+                      {roleName && (
+                        <button
+                          onClick={() => setRoleName("")}
+                          data-testid="button-clear-role-name"
+                          style={{ background: "none", border: "none", cursor: "pointer", fontSize: 17, color: "#8E8E93", padding: "0 2px", lineHeight: 1 }}
+                          title="Entfernen"
+                        >{"\u00D7"}</button>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
+                      Rolle
+                    </label>
+                    <div style={{ display: "flex", gap: 4, marginTop: 6 }}>
+                      {([
+                        { value: "teammitglied" as const, label: "Teammitglied" },
+                        { value: "fuehrung" as const, label: "F\u00FChrungskraft" },
+                      ]).map(opt => (
+                        <button
+                          key={opt.value}
+                          data-testid={`role-option-${opt.value}`}
+                          onClick={() => setRoleTypeForCard(opt.value)}
+                          style={{
+                            height: 34, padding: "0 14px", borderRadius: 8, cursor: "pointer",
+                            fontSize: 13, fontWeight: 500, border: "none",
+                            color: roleTypeForCard === opt.value ? "#007AFF" : "#6E6E73",
+                            background: roleTypeForCard === opt.value ? "rgba(0,122,255,0.08)" : "rgba(0,0,0,0.04)",
+                            transition: "all 0.15s ease",
+                          }}
+                        >{opt.label}</button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              <div style={{ marginTop: 12, padding: "16px 20px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,0,0,0.015)" }}>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, letterSpacing: "-0.01em" }}>
-                  Funktionsziel der Abteilung <span style={{ fontWeight: 400, color: "#8E8E93" }}>(optional)</span>
-                </label>
-                <p style={{ fontSize: 12, color: "#6E6E73", margin: "0 0 10px", lineHeight: 1.5 }}>
-                  Welche Arbeitsweise braucht diese Abteilung funktional? Das Funktionsziel beeinflusst die strategische Einordnung im Bericht.
-                  {" "}Ohne Funktionsziel wird die Passung rein auf Basis der Teamdynamik bewertet.
-                </p>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
-                  {([
-                    { value: "", label: "Kein Funktionsziel" },
-                    { value: "umsetzung", label: "Umsetzung & Ergebnisse", hint: "z.B. Vertrieb" },
-                    { value: "analyse", label: "Analyse & Struktur", hint: "z.B. Software" },
-                    { value: "zusammenarbeit", label: "Zusammenarbeit & Kommunikation", hint: "z.B. HR" },
-                  ] as { value: typeof teamGoal; label: string; hint?: string }[]).map(opt => (
-                    <label
-                      key={opt.value}
-                      data-testid={`goal-option-${opt.value || "none"}`}
-                      onClick={() => setTeamGoal(opt.value)}
-                      style={{
-                        display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
-                        padding: "10px 8px", borderRadius: 10, cursor: "pointer", textAlign: "center",
-                        border: teamGoal === opt.value ? "1.5px solid #007AFF" : "1px solid rgba(0,0,0,0.1)",
-                        background: teamGoal === opt.value ? "rgba(0,122,255,0.04)" : "#fff",
-                        transition: "all 0.15s ease",
-                      }}
-                    >
-                      <span style={{ fontSize: 13, fontWeight: 500, color: teamGoal === opt.value ? "#007AFF" : "#1D1D1F", lineHeight: 1.3, transition: "color 0.15s ease" }}>{opt.label}</span>
-                    </label>
-                  ))}
+                <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 14 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
+                    Funktionsziel <span style={{ fontWeight: 400, textTransform: "none" as const, letterSpacing: 0 }}>(optional)</span>
+                  </label>
+                  <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                    {([
+                      { value: "", label: "Keins" },
+                      { value: "umsetzung", label: "Umsetzung" },
+                      { value: "analyse", label: "Analyse" },
+                      { value: "zusammenarbeit", label: "Zusammenarbeit" },
+                    ] as { value: typeof teamGoal; label: string }[]).map(opt => (
+                      <button
+                        key={opt.value}
+                        data-testid={`goal-option-${opt.value || "none"}`}
+                        onClick={() => setTeamGoal(opt.value)}
+                        style={{
+                          height: 32, padding: "0 14px", borderRadius: 8, cursor: "pointer",
+                          fontSize: 13, fontWeight: 500, border: "none",
+                          color: teamGoal === opt.value ? "#007AFF" : "#6E6E73",
+                          background: teamGoal === opt.value ? "rgba(0,122,255,0.08)" : "rgba(0,0,0,0.04)",
+                          transition: "all 0.15s ease",
+                        }}
+                      >{opt.label}</button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
