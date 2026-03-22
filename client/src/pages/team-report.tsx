@@ -827,6 +827,9 @@ export default function TeamReport() {
                   <label style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
                     Funktionsziel <span style={{ fontWeight: 400, textTransform: "none" as const, letterSpacing: 0 }}>(optional)</span>
                   </label>
+                  <p style={{ fontSize: 12, color: "#8E8E93", margin: "4px 0 0", lineHeight: 1.5 }}>
+                    Was steht f\u00FCr das Team im Vordergrund? <b>Umsetzung</b> = Tempo und Ergebnisse, <b>Analyse</b> = Struktur und Genauigkeit, <b>Zusammenarbeit</b> = Austausch und Miteinander.
+                  </p>
                   <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
                     {([
                       { value: "", label: "Keins" },
