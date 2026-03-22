@@ -7,7 +7,15 @@ import { ArrowLeft, Printer } from "lucide-react";
 import { COMP_HEX, BIO_COLORS } from "@/lib/bio-design";
 import logoPath from "@assets/LOGO_bio_1773853681939.png";
 
-const bewColor = (b: string) => b === "Gut passend" ? BIO_COLORS.geeignet : b === "Teilweise passend" ? BIO_COLORS.bedingt : b === "Strategisch sinnvoll, aber anspruchsvoll" ? BIO_COLORS.bedingt : b === "F\u00FCr die Aufgabe passend, im Team herausfordernd" ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
+const bewColor = (b: string) => {
+  if (b === "Gut passend") return BIO_COLORS.geeignet;
+  if (b === "Im Team passend, f\u00FCr die Aufgabe weniger geeignet") return BIO_COLORS.bedingt;
+  if (b === "Teilweise passend") return BIO_COLORS.bedingt;
+  if (b === "F\u00FCr die Aufgabe passend, im Team herausfordernd") return BIO_COLORS.bedingt;
+  if (b === "Eingeschr\u00E4nkt passend") return BIO_COLORS.bedingt;
+  if (b === "Strategisch sinnvoll, aber anspruchsvoll") return BIO_COLORS.bedingt;
+  return BIO_COLORS.nichtGeeignet;
+};
 const axisColor = (v: string) => v === "hoch" ? BIO_COLORS.geeignet : v === "mittel" ? BIO_COLORS.bedingt : v === "gering" ? BIO_COLORS.nichtGeeignet : "#94a3b8";
 const axisLabel = (v: string) => v === "hoch" ? "Hoch" : v === "mittel" ? "Mittel" : v === "gering" ? "Gering" : "Nicht bewertbar";
 const bgColor = (s: string) => s === "gering" ? BIO_COLORS.geeignet : s === "mittel" ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;

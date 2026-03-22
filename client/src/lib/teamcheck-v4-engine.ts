@@ -121,11 +121,13 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
 
   let gesamteinschaetzung: string;
   if (teamFitRaw === "hoch" && funktionsFit === "gering") {
-    gesamteinschaetzung = "Teilweise passend";
+    gesamteinschaetzung = "Im Team passend, f\u00FCr die Aufgabe weniger geeignet";
   } else if (teamFitRaw === "hoch") {
     gesamteinschaetzung = "Gut passend";
   } else if (teamFitRaw === "mittel" && funktionsFit === "hoch") {
     gesamteinschaetzung = "F\u00FCr die Aufgabe passend, im Team herausfordernd";
+  } else if (teamFitRaw === "mittel" && funktionsFit === "gering") {
+    gesamteinschaetzung = "Eingeschr\u00E4nkt passend";
   } else if (teamFitRaw === "gering" && (funktionsFit === "hoch" || funktionsFit === "mittel")) {
     gesamteinschaetzung = "Strategisch sinnvoll, aber anspruchsvoll";
   } else if (teamFitRaw === "mittel") {
@@ -136,6 +138,8 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
 
   const bewForLogic = gesamteinschaetzung === "Strategisch sinnvoll, aber anspruchsvoll" ? "Kritisch"
     : gesamteinschaetzung === "F\u00FCr die Aufgabe passend, im Team herausfordernd" ? "Teilweise passend"
+    : gesamteinschaetzung === "Im Team passend, f\u00FCr die Aufgabe weniger geeignet" ? "Gut passend"
+    : gesamteinschaetzung === "Eingeschr\u00E4nkt passend" ? "Teilweise passend"
     : gesamteinschaetzung;
 
   let wirkungAufUmfeld: string;
@@ -218,10 +222,20 @@ function buildKurzfazit(gesamt: string, bew: string, isLeader: boolean): string 
       ? "Die Person bringt St\u00E4rken mit, arbeitet aber in einigen Punkten anders als das Team es kennt. Ob die F\u00FChrung gut ankommt, h\u00E4ngt davon ab, wie bewusst die ersten Wochen gestaltet werden."
       : "Die Person passt in Teilen gut zum Team, weicht in anderen Punkten aber sp\u00FCrbar ab. Das kann neue Impulse bringen, braucht aber klare Absprachen.";
   }
+  if (gesamt === "Im Team passend, f\u00FCr die Aufgabe weniger geeignet") {
+    return isLeader
+      ? "Die Person passt gut ins Team und wird sich schnell einfinden. F\u00FCr die konkreten Anforderungen der Rolle bringt sie aber nicht die ideale St\u00E4rke mit. Das Team bleibt stabil, kann aber bei der Aufgabe an Grenzen sto\u00DFen."
+      : "Die Person f\u00FCgt sich gut in das bestehende Team ein. Die Zusammenarbeit wird reibungsarm verlaufen. F\u00FCr die konkreten Anforderungen der Aufgabe bringt sie aber nicht die ideale St\u00E4rke mit.";
+  }
   if (gesamt === "F\u00FCr die Aufgabe passend, im Team herausfordernd") {
     return isLeader
       ? "Die Person erf\u00FCllt die fachlichen Anforderungen der Rolle gut, arbeitet aber anders als das Team es gewohnt ist. Die F\u00FChrung kann wirksam sein, wenn die Unterschiede fr\u00FCh angesprochen und aktiv gesteuert werden."
       : "Die Person bringt genau das mit, was die Aufgabe erfordert. Im Teamalltag wird es aber Reibung geben, weil die Arbeitsweise nicht zur bisherigen Kultur passt. Mit klaren Absprachen kann das gelingen.";
+  }
+  if (gesamt === "Eingeschr\u00E4nkt passend") {
+    return isLeader
+      ? "Die Person passt nur bedingt zum Team und erf\u00FCllt die fachlichen Anforderungen der Rolle ebenfalls nicht ideal. Ohne gezielte Begleitung und klare Rahmensetzung wird die Besetzung schwierig."
+      : "Die Person passt nur bedingt zum Team und bringt f\u00FCr die konkrete Aufgabe nicht die ideale St\u00E4rke mit. Die Besetzung braucht bewusste Begleitung und klare Erwartungen, um funktionieren zu k\u00F6nnen.";
   }
   if (gesamt === "Strategisch sinnvoll, aber anspruchsvoll") {
     return isLeader
@@ -261,10 +275,20 @@ function buildManagementEinschaetzung(gesamt: string, bew: string, isLeader: boo
       ? `Diese Besetzung ist m\u00F6glich, aber anspruchsvoll. Sie sollte nur dann erfolgen, wenn der Einstieg bewusst gef\u00FChrt und die Zusammenarbeit aktiv begleitet wird.${goalHint}`
       : `Diese Besetzung kann gelingen, ist aber kein Selbstl\u00E4ufer. Sie braucht von Anfang an klare Erwartungen und gute Begleitung.${goalHint}`;
   }
+  if (gesamt === "Im Team passend, f\u00FCr die Aufgabe weniger geeignet") {
+    return isLeader
+      ? "Die Person wird sich im Team gut zurechtfinden. F\u00FCr die konkreten fachlichen Anforderungen der Rolle bringt sie aber nicht die optimale St\u00E4rke mit. Es empfiehlt sich, die Aufgabenverteilung so zu gestalten, dass die St\u00E4rken der Person zum Tragen kommen und die Ziele des Teams trotzdem erreicht werden."
+      : "Die Person wird sich im Team gut einfinden und schnell Teil der Zusammenarbeit werden. F\u00FCr die konkreten Anforderungen der Aufgabe bringt sie allerdings nicht die ideale Ausrichtung mit. Es lohnt sich, den Aufgabenzuschnitt zu pr\u00FCfen, damit die St\u00E4rken der Person trotzdem zum Tragen kommen.";
+  }
   if (gesamt === "F\u00FCr die Aufgabe passend, im Team herausfordernd") {
     return isLeader
       ? "Die Person erf\u00FCllt die fachlichen Anforderungen gut und bringt die richtige St\u00E4rke f\u00FCr die Aufgabe mit. Die Zusammenarbeit mit dem Team ist jedoch nicht reibungsfrei. Die Besetzung kann gelingen, wenn die Unterschiede fr\u00FCh angesprochen und die Erwartungen klar geregelt werden."
       : "Die Person bringt fachlich genau das mit, was die Aufgabe verlangt. Im Team wird es aber Reibung geben, weil sich die Arbeitsweisen sp\u00FCrbar unterscheiden. Mit bewusster Begleitung und klaren Absprachen kann die Besetzung trotzdem gut funktionieren.";
+  }
+  if (gesamt === "Eingeschr\u00E4nkt passend") {
+    return isLeader
+      ? "Die Person passt nur bedingt zum Team und erf\u00FCllt die fachlichen Anforderungen ebenfalls nicht ideal. Die Besetzung ist nur dann sinnvoll, wenn gezielte Begleitung und klare Rahmensetzung von Anfang an gew\u00E4hrleistet sind. Ohne diese Voraussetzungen ist das Risiko erheblich, dass weder die Zusammenarbeit noch die Ergebnisse stimmen."
+      : "Die Person passt nur bedingt zum Team und bringt f\u00FCr die Aufgabe nicht die ideale Ausrichtung mit. Die Besetzung kann nur dann gelingen, wenn von Anfang an klare Erwartungen gesetzt und die Zusammenarbeit aktiv begleitet wird. Ohne das ist das Risiko hoch, dass die Person weder fachlich noch im Teamalltag wirklich ankommt.";
   }
   if (gesamt === "Strategisch sinnvoll, aber anspruchsvoll") {
     const goalHint = !hasGoal ? " Da kein klares Funktionsziel hinterlegt ist, l\u00E4sst sich der funktionale Beitrag nicht abschliessend bewerten." : "";
