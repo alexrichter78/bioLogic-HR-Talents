@@ -285,17 +285,20 @@ export default function TeamCheckReportV4() {
                   {result.alltagBlocks.map(b => <ContentCard key={b.title} title={b.title} text={b.text} />)}
                 </div>
                 {result.alltagWarnzeichen.length > 0 && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3" style={{ marginTop: 16 }}>
-                    <div style={{ padding: "16px 20px", borderRadius: 12, background: "rgba(255,149,0,0.05)", border: "1px solid rgba(255,149,0,0.15)" }}>
-                      <p style={{ fontSize: 12, fontWeight: 700, color: "#CC7700", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Warnzeichen</p>
-                      <SimpleBulletList items={result.alltagWarnzeichen} color="#FF9500" />
-                    </div>
-                    {result.alltagPositivzeichen.length > 0 && (
-                      <div style={{ padding: "16px 20px", borderRadius: 12, background: "rgba(52,199,89,0.04)", border: "1px solid rgba(52,199,89,0.12)" }}>
-                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1B7A3D", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Positive Signale nach 2–4 Wochen</p>
-                        <SimpleBulletList items={result.alltagPositivzeichen} color="#34C759" />
+                  <div style={{ marginTop: 16 }}>
+                    <p style={{ fontSize: 14, lineHeight: 1.6, color: "#6B7280", margin: "0 0 8px", fontStyle: "italic" }}>{"Bleiben die folgenden Signale \u00FCber mehrere Wochen bestehen, spricht das daf\u00FCr, dass die Integration nicht stabil verl\u00E4uft und aktiv nachgesteuert werden muss."}</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div style={{ padding: "16px 20px", borderRadius: 12, background: "rgba(255,149,0,0.05)", border: "1px solid rgba(255,149,0,0.15)" }}>
+                        <p style={{ fontSize: 12, fontWeight: 700, color: "#CC7700", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Warnzeichen</p>
+                        <SimpleBulletList items={result.alltagWarnzeichen} color="#FF9500" />
                       </div>
-                    )}
+                      {result.alltagPositivzeichen.length > 0 && (
+                        <div style={{ padding: "16px 20px", borderRadius: 12, background: "rgba(52,199,89,0.04)", border: "1px solid rgba(52,199,89,0.12)" }}>
+                          <p style={{ fontSize: 12, fontWeight: 700, color: "#1B7A3D", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Positive Signale nach 2–4 Wochen</p>
+                          <SimpleBulletList items={result.alltagPositivzeichen} color="#34C759" />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
                 <Kernaussage text={result.alltagKernaussage} />

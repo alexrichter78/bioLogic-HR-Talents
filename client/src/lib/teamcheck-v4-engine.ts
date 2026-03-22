@@ -204,10 +204,10 @@ function buildManagementEinschaetzung(bew: string, isLeader: boolean, hasGoal: b
       ? `Diese Besetzung ist möglich, aber anspruchsvoll. Sie sollte nur dann erfolgen, wenn der Einstieg bewusst geführt und die Zusammenarbeit aktiv begleitet wird.${goalHint}`
       : `Diese Besetzung kann gelingen, ist aber kein Selbstläufer. Sie braucht von Anfang an klare Erwartungen und gute Begleitung.${goalHint}`;
   }
-  const goalHint = !hasGoal ? " Da zudem kein klares Funktionsziel vorliegt, fehlt eine zusätzliche Orientierung, die den Einstieg erleichtern könnte." : "";
+  const goalHint = !hasGoal ? " Da zudem kein klares Funktionsziel vorliegt, fehlt eine zus\u00E4tzliche Orientierung, die den Einstieg erleichtern k\u00F6nnte." : "";
   return isLeader
-    ? `Diese Besetzung ist im aktuellen Umfeld kritisch. Sie ist nur dann vertretbar, wenn der Einstieg eng begleitet wird und das Team klare Führung von oben erhält.${goalHint} Ohne diese Voraussetzungen ist das Risiko hoch, dass die Zusammenarbeit dauerhaft schwierig bleibt.`
-    : `Diese Besetzung ist im aktuellen Umfeld kritisch und nur mit enger Begleitung tragfähig.${goalHint} Ohne aktive Führung und klare Absprachen ist das Risiko hoch, dass die Person im Team nicht wirklich ankommt.`;
+    ? `Diese Besetzung ist im aktuellen Umfeld kritisch. Sie ist nur dann vertretbar, wenn der Einstieg eng begleitet wird und das Team klare F\u00FChrung von oben erh\u00E4lt.${goalHint} Ohne diese Voraussetzungen ist das Risiko hoch, dass die Zusammenarbeit dauerhaft schwierig bleibt. Diese Besetzung kann sinnvoll sein, wenn die zus\u00E4tzliche Qualit\u00E4t aktuell wirklich gebraucht wird und die n\u00F6tige Begleitung sichergestellt werden kann.`
+    : `Diese Besetzung ist im aktuellen Umfeld kritisch und nur mit enger Begleitung tragf\u00E4hig.${goalHint} Ohne aktive F\u00FChrung und klare Absprachen ist das Risiko hoch, dass die Person im Team nicht wirklich ankommt. Diese Besetzung kann sinnvoll sein, wenn die zus\u00E4tzliche Qualit\u00E4t aktuell wirklich gebraucht wird und die n\u00F6tige Begleitung sichergestellt werden kann.`;
 }
 
 function buildHauptrisiko(bew: string, isLeader: boolean): string {
@@ -222,8 +222,8 @@ function buildHauptrisiko(bew: string, isLeader: boolean): string {
       : "Das grösste Risiko liegt nicht in der fachlichen Arbeit der Person, sondern darin, ob sie im Team wirklich gut ankommt.";
   }
   return isLeader
-    ? "Das grösste Risiko liegt darin, dass die Person im Team zu wenig Vertrauen aufbauen kann und Führung deshalb nicht wirksam wird. Dann entsteht dauerhaft Reibung statt Stabilität."
-    : "Das grösste Risiko liegt nicht in der Leistung der Person, sondern darin, dass sie im Team zu wenig Anschluss findet und dadurch dauerhaft Reibung entsteht.";
+    ? "Das gr\u00F6sste Risiko liegt darin, dass die Person im Team zu wenig Vertrauen aufbauen kann und F\u00FChrung deshalb nicht wirksam wird. Ohne aktive Begleitung besteht hier nicht nur ein Startproblem, sondern das Risiko einer dauerhaften Fehlpassung."
+    : "Das gr\u00F6sste Risiko liegt nicht in der Leistung der Person, sondern darin, dass sie im Team zu wenig Anschluss findet. Ohne aktive Begleitung besteht hier nicht nur ein Startproblem, sondern das Risiko einer dauerhaften Fehlpassung im Teamalltag.";
 }
 
 function buildHauptchance(bew: string, isLeader: boolean, personPrim: ComponentKey): string {
@@ -232,9 +232,13 @@ function buildHauptchance(bew: string, isLeader: boolean, personPrim: ComponentK
       ? "Die grösste Chance liegt in einem schnellen, stabilen Führungseinstieg, der dem Team Sicherheit gibt und bestehende Stärken absichert."
       : "Die grösste Chance liegt darin, dass die Person schnell produktiv wird und das Team ohne grössere Umstellungen stärkt.";
   }
-  return isLeader
-    ? `Die grösste Chance liegt darin, dem Team eine klarere Richtung zu geben und Entscheidungen zu beschleunigen, wenn genau das bisher gefehlt hat.`
-    : `Die grösste Chance liegt darin, dem Team mehr ${COMP_SHORT[personPrim]} zu geben, wenn genau das bisher zu kurz gekommen ist.`;
+  const chanceSatz = isLeader
+    ? `Die gr\u00F6sste Chance liegt darin, dem Team eine klarere Richtung zu geben und Entscheidungen zu beschleunigen, wenn genau das bisher gefehlt hat.`
+    : `Die gr\u00F6sste Chance liegt darin, dem Team mehr ${COMP_SHORT[personPrim]} zu geben, wenn genau das bisher zu kurz gekommen ist.`;
+  if (bew === "Kritisch") {
+    return chanceSatz + " Diese Chance wird aber nur dann wirksam, wenn die Integration aktiv gef\u00FChrt wird. Ohne Begleitung \u00FCberwiegen die Risiken klar.";
+  }
+  return chanceSatz;
 }
 
 function buildIntegrationsprognose(bew: string, isLeader: boolean): string {
@@ -242,11 +246,11 @@ function buildIntegrationsprognose(bew: string, isLeader: boolean): string {
     return "Eine stabile Integration ist wahrscheinlich. Person und Team passen in ihrer Arbeitsweise gut zusammen, was einen schnellen und belastbaren Einstieg ermöglicht.";
   }
   if (bew === "Teilweise passend") {
-    return "Eine stabile Integration ist möglich, aber nicht von selbst zu erwarten. Sie hängt in diesem Fall davon ab, wie früh Zusammenarbeit, Erwartungen und Rollenklärung aktiv begleitet werden.";
+    return "Eine stabile Integration ist m\u00F6glich, aber nicht von selbst zu erwarten. Vor allem in den ersten Wochen ist aktive Begleitung entscheidend. Erst wenn Zusammenarbeit, Erwartungen und Rollen klar sind, kann daraus eine dauerhaft tragf\u00E4hige Zusammenarbeit entstehen.";
   }
   return isLeader
-    ? "Eine stabile Integration ist nur mit enger Begleitung realistisch. Ohne aktive Führung von oben und klare Rollenklärung besteht ein hohes Risiko, dass die Zusammenarbeit dauerhaft angespannt bleibt."
-    : "Eine stabile Integration ist nur mit bewusster Begleitung realistisch. Ohne klare Erwartungen und aktive Teameinbindung besteht das Risiko, dass die Person fachlich funktioniert, aber im Team dauerhaft fremd bleibt.";
+    ? "Eine stabile Integration ist nur mit enger Begleitung realistisch. Vor allem in den ersten Wochen ist aktive F\u00FChrung von oben entscheidend. Ohne diese Begleitung besteht nicht nur das Risiko eines schwierigen Starts, sondern einer dauerhaften Fehlpassung im Teamalltag."
+    : "Eine stabile Integration ist nur mit bewusster Begleitung realistisch. Vor allem in den ersten Wochen braucht es klare Erwartungen und aktive Teameinbindung. Ohne diese Begleitung besteht nicht nur das Risiko eines schwierigen Starts, sondern einer dauerhaften Fehlpassung im Teamalltag.";
 }
 
 function buildWarum(v3: TeamCheckV3Result, isLeader: boolean, bew: string, sameDom: boolean, teamPrim: ComponentKey, personPrim: ComponentKey) {
@@ -374,8 +378,12 @@ function buildChancenRisiken(v3: TeamCheckV3Result, isLeader: boolean, bew: stri
   } else {
     chancenEinleitung = `Die Person kann dem Team Qualitäten bringen, die bisher zu wenig vorhanden waren. Gerade mehr ${COMP_SHORT[personPrim]} kann hilfreich sein, wenn Themen bislang zu lange offen bleiben oder bestimmte Impulse fehlen.`;
     chancenPunkte.push({ point: "Neue Impulse", detail: "Die Person kann eingefahrene Muster aufbrechen und andere Blickwinkel einbringen." });
-    chancenPunkte.push({ point: `Mehr ${COMP_SHORT[personPrim]}`, detail: "Themen, die bisher zu kurz kamen, werden stärker berücksichtigt." });
-    chancenPunkte.push({ point: "Sinnvolle Ergänzung", detail: "Fehlende Dynamik oder Klarheit im Team kann ausgeglichen werden." });
+    chancenPunkte.push({ point: `Mehr ${COMP_SHORT[personPrim]}`, detail: personPrim === "analytisch"
+      ? "Themen werden sauberer vorbereitet, klarer bearbeitet und verl\u00E4sslicher nachgehalten."
+      : personPrim === "impulsiv"
+        ? "Entscheidungen werden schneller getroffen und konsequenter umgesetzt."
+        : "Zusammenarbeit und Austausch werden lebendiger und verbindlicher." });
+    chancenPunkte.push({ point: "Sinnvolle Erg\u00E4nzung", detail: `Was dem Team bisher an ${COMP_SHORT[personPrim]} gefehlt hat, kann durch die Person gezielt gest\u00E4rkt werden.` });
   }
   if (v3.strategicFit === "passend") {
     chancenPunkte.push({ point: "Passt zum Ziel der Abteilung", detail: "Die Stärken der Person liegen genau dort, wo die Abteilung sie am meisten braucht." });
@@ -537,10 +545,12 @@ function buildEmpfehlungen(isLeader: boolean): V4Block[] {
   ];
 
   if (isLeader) {
-    items.push({ title: "Auf Vertrauen und Akzeptanz achten", text: "Bei einer Führungsrolle reicht es nicht, nur auf Ziele und Aufgaben zu schauen. Ebenso wichtig ist die Frage, ob die Führung im Team wirklich ankommt, ob Vertrauen entsteht und ob die Person in der Rolle ankommen kann." });
+    items.push({ title: "Auf Vertrauen und Akzeptanz achten", text: "Bei einer F\u00FChrungsrolle reicht es nicht, nur auf Ziele und Aufgaben zu schauen. Ebenso wichtig ist die Frage, ob die F\u00FChrung im Team wirklich ankommt, ob Vertrauen entsteht und ob die Person in der Rolle ankommen kann." });
   } else {
     items.push({ title: "Anschluss ans Team aktiv begleiten", text: "Gerade bei einem neuen Teammitglied sollte darauf geachtet werden, dass die Person nicht nur Aufgaben bekommt, sondern auch Zugang zum Team findet. Teamregeln und Schnittstellen sollten offen benannt werden." });
   }
+
+  items.push({ title: "Verantwortung klar benennen", text: "Diese Begleitung sollte nicht dem Zufall \u00FCberlassen werden, sondern klar durch die direkte F\u00FChrungskraft verantwortet sein. Sie sollte die Integration in den ersten Wochen aktiv steuern und sichtbar \u00FCbernehmen." });
 
   return items;
 }
