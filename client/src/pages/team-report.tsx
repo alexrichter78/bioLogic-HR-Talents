@@ -676,12 +676,54 @@ export default function TeamReport() {
 
   const v4Preview = useMemo(() => {
     try {
+      const ERFOLGSFOKUS_DISPLAY_LABELS = [
+        "Ergebnisse und Zielerreichung",
+        "Zusammenarbeit und Netzwerk",
+        "Innovation und Weiterentwicklung",
+        "Prozesse und Effizienz",
+        "Fachliche Qualit\u00E4t und Expertise",
+        "Strategische Wirkung",
+      ];
+      const AUFGABENCHARAKTER_LABELS: Record<string, string> = {
+        "\u00FCberwiegend operativ": "Praktische Umsetzung im Tagesgesch\u00E4ft",
+        "\u00FCberwiegend systemisch": "Umsetzung mit strukturiertem Vorgehen",
+        "\u00FCberwiegend strategisch": "Analyse, Planung und strategische Steuerung",
+        "Gemischt": "Ausgewogene Mischung",
+      };
+      const ARBEITSLOGIK_LABELS: Record<string, string> = {
+        "Umsetzungsorientiert": "Umsetzung und Ergebnisse",
+        "Daten-/prozessorientiert": "Analyse und Struktur",
+        "Menschenorientiert": "Zusammenarbeit und Kommunikation",
+        "Ausgewogen": "Ausgewogene Mischung",
+      };
+      const FUEHRUNG_LABELS: Record<string, string> = {
+        "Keine": "Keine F\u00FChrungsverantwortung",
+        "Fachlich": "Fachliche F\u00FChrung",
+        "Disziplinarisch": "F\u00FChrung mit Personalverantwortung",
+        "Projektleitung": "Projektleitung / Koordination",
+      };
+      let roleLevel = "Keine F\u00FChrungsverantwortung";
+      let taskStructure = "-";
+      let workStyle = "-";
+      let successFocus: string[] = [];
+      try {
+        const dnaRaw = localStorage.getItem("rollenDnaState");
+        if (dnaRaw) {
+          const dna = JSON.parse(dnaRaw) as RoleDnaState;
+          if (dna.fuehrung) roleLevel = FUEHRUNG_LABELS[dna.fuehrung] || dna.fuehrung;
+          if (dna.aufgabencharakter) taskStructure = AUFGABENCHARAKTER_LABELS[dna.aufgabencharakter] || dna.aufgabencharakter;
+          if (dna.arbeitslogik) workStyle = ARBEITSLOGIK_LABELS[dna.arbeitslogik] || dna.arbeitslogik;
+          if (Array.isArray(dna.erfolgsfokusIndices)) {
+            successFocus = dna.erfolgsfokusIndices.map((i: number) => ERFOLGSFOKUS_DISPLAY_LABELS[i]).filter(Boolean);
+          }
+        }
+      } catch {}
       return computeTeamCheckV4({
         roleTitle: roleName || "",
-        roleLevel: "Keine F\u00FChrungsverantwortung",
-        taskStructure: "-",
-        workStyle: "-",
-        successFocus: [],
+        roleLevel,
+        taskStructure,
+        workStyle,
+        successFocus,
         teamProfile: teamTriad,
         personProfile: istTriad,
         candidateName: candidateName || "Person",
