@@ -206,8 +206,8 @@ export default function TeamCheckReportV4() {
               <SectionHead num={1} title="Gesamtbewertung" id="gesamtbewertung" />
 
               <div style={{ margin: "0 0 24px" }} data-testid="v4-hero-bewertung">
-                <div style={{ fontSize: 28, fontWeight: 800, color: bCol, marginBottom: 10, letterSpacing: "-0.02em" }}>{result.gesamteinschaetzung}</div>
-                <p style={{ fontSize: 15, lineHeight: 1.75, color: "#48484A", margin: 0 }} data-testid="v4-kurzfazit">{result.kurzfazit}</p>
+                <p style={{ fontSize: 15, lineHeight: 1.75, color: "#48484A", margin: "0 0 16px" }} data-testid="v4-kurzfazit">{result.kurzfazit}</p>
+                <div style={{ fontSize: 28, fontWeight: 800, color: bCol, marginBottom: 0, letterSpacing: "-0.02em" }}>{result.gesamteinschaetzung}</div>
 
                 <div style={{ display: "flex", gap: 16, marginTop: 20, paddingTop: 18, borderTop: "1px solid rgba(0,0,0,0.06)" }} data-testid="v4-two-axis">
                   <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${axisColor(result.passungZumTeam)}08`, border: `1px solid ${axisColor(result.passungZumTeam)}25` }}>
