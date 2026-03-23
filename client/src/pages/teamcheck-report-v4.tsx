@@ -169,25 +169,31 @@ export default function TeamCheckReportV4() {
               {/* === Section 4: Chancen und Risiken === */}
               <div style={sectionStyle} data-testid="v4-section-chancen-risiken">
                 <SectionHead num={4} title="Chancen und Risiken dieser Besetzung" id="chancen-risiken" />
-                <div style={{ marginBottom: 28 }}>
-                  <SubHead num={1} title="Chancen" color="#1B7A3D" />
-                  {result.chancen.map((ch, i) => (
-                    <div key={i} style={{ marginBottom: 14, paddingLeft: 20, position: "relative" }}>
-                      <span style={{ position: "absolute", left: 0, top: 8, width: 6, height: 6, borderRadius: 3, background: "#34C759" }} />
-                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 2px" }}>{ch.title}</p>
-                      <p style={{ ...bodyText, margin: 0 }}>{ch.text}</p>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
+                  <div style={{ padding: "20px", borderRadius: 12, background: "rgba(52,199,89,0.04)", border: "1px solid rgba(52,199,89,0.15)" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+                      <span style={{ width: 22, height: 22, borderRadius: 11, background: "#1B7A3D", color: "#FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700 }}>+</span>
+                      <span style={{ fontSize: 15, fontWeight: 700, color: "#1B7A3D" }}>Chancen</span>
                     </div>
-                  ))}
-                </div>
-                <div style={{ marginBottom: 28 }}>
-                  <SubHead num={2} title="Risiken" color="#C41E3A" />
-                  {result.risiken.map((ri, i) => (
-                    <div key={i} style={{ marginBottom: 14, paddingLeft: 20, position: "relative" }}>
-                      <span style={{ position: "absolute", left: 0, top: 8, width: 6, height: 6, borderRadius: 3, background: "#FF3B30" }} />
-                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 2px" }}>{ri.title}</p>
-                      <p style={{ ...bodyText, margin: 0 }}>{ri.text}</p>
+                    {result.chancen.map((ch, i) => (
+                      <div key={i} style={{ marginBottom: i < result.chancen.length - 1 ? 16 : 0, paddingBottom: i < result.chancen.length - 1 ? 16 : 0, borderBottom: i < result.chancen.length - 1 ? "1px solid rgba(52,199,89,0.12)" : "none" }}>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>{ch.title}</p>
+                        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#6E6E73", margin: 0 }}>{ch.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ padding: "20px", borderRadius: 12, background: "rgba(255,59,48,0.03)", border: "1px solid rgba(255,59,48,0.12)" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+                      <span style={{ width: 22, height: 22, borderRadius: 11, background: "#C41E3A", color: "#FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700 }}>–</span>
+                      <span style={{ fontSize: 15, fontWeight: 700, color: "#C41E3A" }}>Risiken</span>
                     </div>
-                  ))}
+                    {result.risiken.map((ri, i) => (
+                      <div key={i} style={{ marginBottom: i < result.risiken.length - 1 ? 16 : 0, paddingBottom: i < result.risiken.length - 1 ? 16 : 0, borderBottom: i < result.risiken.length - 1 ? "1px solid rgba(255,59,48,0.08)" : "none" }}>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>{ri.title}</p>
+                        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#6E6E73", margin: 0 }}>{ri.text}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 <div style={{ padding: "14px 20px", borderRadius: 10, background: "rgba(0,0,0,0.02)", borderLeft: "3px solid rgba(0,0,0,0.08)" }}>
                   <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, fontStyle: "italic" }} data-testid="v4-chancen-einordnung">{result.chancenRisikenEinordnung}</p>
@@ -203,12 +209,17 @@ export default function TeamCheckReportV4() {
               {/* === Section 6: Was jetzt wichtig ist === */}
               <div style={{ marginBottom: 36 }} data-testid="v4-section-empfehlungen">
                 <SectionHead num={6} title="Was jetzt wichtig ist" id="empfehlungen" />
-                {result.empfehlungen.map((emp, i) => (
-                  <div key={emp.title} style={{ marginBottom: 22 }}>
-                    <SubHead num={i + 1} title={emp.title} color="#1A5DAB" />
-                    <p style={bodyText}>{emp.text}</p>
-                  </div>
-                ))}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                  {result.empfehlungen.map((emp, i) => (
+                    <div key={emp.title} style={{ padding: "18px 20px", borderRadius: 12, background: "#FFF", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} data-testid={`v4-empfehlung-${i}`}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                        <span style={{ width: 22, height: 22, borderRadius: 11, background: "#1A5DAB", color: "#FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</span>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", lineHeight: 1.35 }}>{emp.title}</span>
+                      </div>
+                      <p style={{ fontSize: 13, lineHeight: 1.75, color: "#6E6E73", margin: 0 }}>{emp.text}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div style={{ padding: "24px 0", borderTop: "1px solid rgba(0,0,0,0.06)" }} data-testid="v4-footer">
