@@ -856,44 +856,43 @@ export default function TeamReport() {
 
               {v4Preview && (() => {
                 const p = v4Preview;
-                const bCol = p.gesamteinschaetzung === "Gut passend" ? "#1B7A3D"
-                  : p.gesamteinschaetzung === "Kritisch" ? "#C41E3A" : "#CC7700";
-                const bgCol = p.gesamteinschaetzung === "Gut passend" ? "rgba(27,122,61,0.06)"
-                  : p.gesamteinschaetzung === "Kritisch" ? "rgba(196,30,58,0.06)" : "rgba(204,119,0,0.06)";
-                const borderCol = p.gesamteinschaetzung === "Gut passend" ? "rgba(27,122,61,0.15)"
-                  : p.gesamteinschaetzung === "Kritisch" ? "rgba(196,30,58,0.15)" : "rgba(204,119,0,0.15)";
+                const barLevels = [
+                  { key: "passend", label: "Passend", color: "#1B7A3D" },
+                  { key: "teilweise", label: "Teilweise passend", color: "#CC7700" },
+                  { key: "kritisch", label: "Kritisch", color: "#C41E3A" },
+                ];
+                const teamLevel = p.passungZumTeam === "hoch" ? "passend" : p.passungZumTeam === "mittel" ? "teilweise" : "kritisch";
+                const funcLevel = p.beitragZurAufgabe === "hoch" ? "passend" : p.beitragZurAufgabe === "mittel" ? "teilweise" : p.beitragZurAufgabe === "gering" ? "kritisch" : null;
+                const renderBars = (active: string) => (
+                  <div style={{ display: "flex", gap: 4, marginTop: 8 }}>
+                    {barLevels.map(b => {
+                      const isActive = b.key === active;
+                      return (
+                        <div key={b.key} style={{ flex: 1, textAlign: "center" }}>
+                          <div style={{ height: 6, borderRadius: 3, background: isActive ? b.color : "rgba(0,0,0,0.06)", transition: "background 0.2s" }} />
+                          <span style={{ fontSize: 10, fontWeight: isActive ? 700 : 500, color: isActive ? b.color : "#C7C7CC", marginTop: 3, display: "block" }}>{b.label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
                 return (
-                  <div style={{ marginTop: 20, padding: "18px 20px", borderRadius: 14, border: `1px solid ${borderCol}`, background: bgCol }} data-testid="v4-preview">
-                    <div style={{ marginBottom: 14 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                        <Zap style={{ width: 16, height: 16, color: bCol }} />
-                        <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>TeamCheck{roleName ? `: ${roleName}` : ""}</span>
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <div style={{ width: 8, height: 8, borderRadius: 4, background: bCol }} />
-                        <span style={{ fontSize: 15, fontWeight: 700, color: bCol }}>{p.gesamteinschaetzung}</span>
-                      </div>
-                      <p style={{ fontSize: 12.5, color: "#6E6E73", margin: "4px 0 0", lineHeight: 1.5 }}>{p.kurzfazit}</p>
+                  <div style={{ marginTop: 20, padding: "18px 20px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(255,255,255,0.7)" }} data-testid="v4-preview">
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                      <Zap style={{ width: 16, height: 16, color: "#3A9A5C" }} />
+                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>TeamCheck{roleName ? `: ${roleName}` : ""}</span>
                     </div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                      <div style={{ padding: "10px 14px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.05)" }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: "#6E6E73", marginBottom: 6 }}>{p.gesamteinschaetzung === "Kritisch" ? "Risiken" : "Einsch\u00E4tzung"}</div>
-                        {p.risikenPunkte.slice(0, 3).map((r, i) => (
-                          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 6, marginBottom: 3 }}>
-                            <span style={{ fontSize: 11, color: "#C41E3A", marginTop: 1, flexShrink: 0 }}>{"\u26A0"}</span>
-                            <span style={{ fontSize: 12, color: "#48484A", lineHeight: 1.4 }}>{r.point}</span>
-                          </div>
-                        ))}
+                    <div style={{ display: "grid", gridTemplateColumns: funcLevel ? "1fr 1fr" : "1fr", gap: 12 }}>
+                      <div style={{ padding: "10px 14px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.05)" }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: "#6E6E73" }}>Passung zum Teamprofil</div>
+                        {renderBars(teamLevel)}
                       </div>
-                      <div style={{ padding: "10px 14px", borderRadius: 10, background: "rgba(255,255,255,0.7)", border: "1px solid rgba(0,0,0,0.05)" }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: "#6E6E73", marginBottom: 6 }}>Chancen</div>
-                        {p.chancenPunkte.slice(0, 3).map((c, i) => (
-                          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 6, marginBottom: 3 }}>
-                            <span style={{ fontSize: 11, color: "#1B7A3D", marginTop: 1, flexShrink: 0 }}>{"\u2713"}</span>
-                            <span style={{ fontSize: 12, color: "#48484A", lineHeight: 1.4 }}>{c.point}</span>
-                          </div>
-                        ))}
-                      </div>
+                      {funcLevel && (
+                        <div style={{ padding: "10px 14px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.05)" }}>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: "#6E6E73" }}>Passung zum Funktionsziel</div>
+                          {renderBars(funcLevel)}
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
