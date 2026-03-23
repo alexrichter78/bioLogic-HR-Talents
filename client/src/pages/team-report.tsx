@@ -877,16 +877,18 @@ export default function TeamReport() {
                       <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>TeamCheck{roleName ? `: ${roleName}` : ""}</span>
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: funcLevel !== null ? "1fr 1fr" : "1fr", gap: 20 }}>
-                      <div>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: "#48484A", marginBottom: 8 }}>Person zum Team</div>
-                        {renderBar(teamLevel)}
-                      </div>
                       {funcLevel !== null && (
                         <div>
-                          <div style={{ fontSize: 12, fontWeight: 600, color: "#48484A", marginBottom: 8 }}>Stelle zum Funktionsziel</div>
+                          <div style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 2 }}>1. Bewertung</div>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: "#48484A", marginBottom: 8 }}>Person vs Funktionsziel</div>
                           {renderBar(funcLevel)}
                         </div>
                       )}
+                      <div>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 2 }}>{funcLevel !== null ? "2. Bewertung" : "Bewertung"}</div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: "#48484A", marginBottom: 8 }}>Person zum Team</div>
+                        {renderBar(teamLevel)}
+                      </div>
                     </div>
                   </div>
                 );
