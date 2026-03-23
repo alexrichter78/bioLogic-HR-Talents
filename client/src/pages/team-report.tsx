@@ -1019,9 +1019,8 @@ export default function TeamReport() {
                       </div>
                     )}
 
-                    <div style={{ padding: "14px 16px", borderRadius: 14, border: `1px solid ${empfColor.border}`, background: empfColor.bg }} data-testid="v4-card-empfehlung">
-                      <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Empfehlung</p>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: empfColor.text, margin: "0 0 12px", lineHeight: 1.5 }}>{empfText}</p>
+                    <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }} data-testid="v4-card-empfehlung">
+                      <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>Empfehlung</p>
                       {empfBullets.map((b, i) => (
                         <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                           <CheckCircle2 style={{ width: 15, height: 15, color: empfColor.text, flexShrink: 0 }} />
