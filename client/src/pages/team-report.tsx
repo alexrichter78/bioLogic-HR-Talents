@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation } from "wouter";
-import { AlertTriangle, Download, Check, Users, ChevronDown, Zap, BarChart3, Handshake, Rocket } from "lucide-react";
+import { AlertTriangle, Download, Check, Users, ChevronDown, Zap, BarChart3, Handshake, Rocket, Settings } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeTeamReport } from "@/lib/team-report-engine";
@@ -737,8 +737,8 @@ export default function TeamReport() {
             data-testid="accordion-teamcheck-toggle"
           >
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ width: 26, height: 26, borderRadius: 13, background: "#3478F6", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>1</div>
-              <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-teamcheck-label">Profilvergleich Rolle vs. Team</span>
+              <div style={{ width: 30, height: 30, borderRadius: 15, background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Users style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} /></div>
+              <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-teamcheck-label">{"Profilvergleich:"} <span style={{ fontWeight: 400 }}>Rolle vs. Team</span></span>
             </div>
             <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: configOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
           </button>
@@ -764,8 +764,8 @@ export default function TeamReport() {
               data-testid="accordion-kontext-toggle"
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 26, height: 26, borderRadius: 13, background: "#3478F6", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>2</div>
-                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }}>Team-Kontext festlegen</span>
+                <div style={{ width: 30, height: 30, borderRadius: 15, background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Settings style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} /></div>
+                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }}>{"Team-Kontext:"} <span style={{ fontWeight: 400 }}>festlegen</span></span>
               </div>
               <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: kontextOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
             </button>
@@ -945,8 +945,8 @@ export default function TeamReport() {
                         data-testid="accordion-ergebnis-toggle"
                       >
                         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <div style={{ width: 26, height: 26, borderRadius: 13, background: "#3478F6", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>3</div>
-                          <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }}>TeamCheck-Ergebnis</span>
+                          <div style={{ width: 30, height: 30, borderRadius: 15, background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Zap style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} /></div>
+                          <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }}>{"TeamCheck:"} <span style={{ fontWeight: 400 }}>Ergebnis</span></span>
                         </div>
                         <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: ergebnisOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
                       </button>
