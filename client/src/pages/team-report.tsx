@@ -931,16 +931,30 @@ export default function TeamReport() {
                   ? "Teilweise Passung zum Team, Doppeldominanz vorhanden."
                   : "Sichtbare Abweichung von der bestehenden Teamlogik und Arbeitsweise.";
 
-                const empfTags: string[] = [];
-                if (teamFit === "gering" || funcFit === "gering") empfTags.push("F\u00FChrung n\u00F6tig");
-                if (teamFit !== "hoch" || funcFit === "gering") empfTags.push("Mentoring");
-                if (teamFit !== "hoch") empfTags.push("Onboarding");
+                const empfBullets: string[] = [];
+                if (p.gesamteinschaetzung === "Gut passend") {
+                  empfBullets.push("Die Person kann direkt produktiv eingesetzt werden.");
+                  empfBullets.push("Kein besonderer Begleitungsaufwand notwendig.");
+                  if (teamFit === "hoch") empfBullets.push("Gute Voraussetzungen für schnelle Integration ins Team.");
+                  if (funcFit === "hoch") empfBullets.push("Hohe Übereinstimmung mit dem aktuellen Funktionsziel.");
+                } else if (p.gesamteinschaetzung === "Kritisch") {
+                  empfBullets.push("Einsatz nur mit klarer Führung und aktiver Begleitung sinnvoll.");
+                  empfBullets.push("Regelmässige Abstimmung und enge Führung einplanen.");
+                  empfBullets.push("Erwartungen frühzeitig klären und Rückmeldung aktiv einholen.");
+                  if (teamFit === "gering") empfBullets.push("Teamdynamik beobachten — Spannungsfelder sind wahrscheinlich.");
+                } else {
+                  empfBullets.push("Gezielte Begleitung empfohlen, um die Integration zu sichern.");
+                  if (teamFit !== "hoch") empfBullets.push("Strukturiertes Onboarding mit klaren Erwartungen planen.");
+                  if (teamFit === "gering" || funcFit === "gering") empfBullets.push("Führungskraft sollte die Einarbeitung aktiv begleiten.");
+                  if (teamFit !== "hoch" || funcFit === "gering") empfBullets.push("Mentoring durch ein erfahrenes Teammitglied empfohlen.");
+                  empfBullets.push("Regelmässige Check-ins in den ersten Wochen einplanen.");
+                }
 
                 const empfText = p.gesamteinschaetzung === "Gut passend"
-                  ? "Gute Voraussetzungen f\u00FCr eine erfolgreiche Integration."
+                  ? "Gute Voraussetzungen für eine erfolgreiche Integration."
                   : p.gesamteinschaetzung === "Kritisch"
-                  ? "Nur mit klarer F\u00FChrung & aktiver Integration einsetzen."
-                  : "Gezielte Begleitung empfohlen, um die Integration zu sichern.";
+                  ? "Erhöhter Begleitungsaufwand — nur mit aktiver Führung einsetzen."
+                  : "Teilweise passend — gezielte Massnahmen empfohlen.";
 
                 const empfColor = p.gesamteinschaetzung === "Gut passend" ? { bg: "#E8F5E9", border: "#A5D6A7", text: "#1B7A3D" }
                   : p.gesamteinschaetzung === "Kritisch" ? { bg: "#FFEBEE", border: "#EF9A9A", text: "#C41E3A" }
@@ -969,61 +983,55 @@ export default function TeamReport() {
                       {ergebnisOpen && (
                       <div style={{ padding: "0 32px 28px" }}>
 
-                    <div style={{ display: "grid", gridTemplateColumns: fColors ? "1fr 1fr" : "1fr", gap: 10, marginBottom: 10 }}>
-                      {fColors && (
-                        <div style={{ padding: "14px 16px", borderRadius: 12, border: `1px solid ${fColors.border}`, background: `${fColors.bg}` }} data-testid="v4-card-func">
-                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                              <Zap style={{ width: 14, height: 14, color: fColors.text }} />
-                              <span style={{ fontSize: 12.5, fontWeight: 700, color: "#1D1D1F" }}>Passung zum Funktionsziel</span>
-                            </div>
-                            <span style={{ fontSize: 11, fontWeight: 700, color: fColors.text, background: `${fColors.text}12`, padding: "2px 8px", borderRadius: 6 }}>{"\u25CF"} {badgeLabels[funcFit]}</span>
-                          </div>
-                          <p style={{ fontSize: 11.5, color: "#6E6E73", margin: "6px 0 0", lineHeight: 1.5 }}>{funcText}</p>
-                        </div>
-                      )}
-                      <div style={{ padding: "14px 16px", borderRadius: 12, border: `1px solid ${tColors.border}`, background: `${tColors.bg}` }} data-testid="v4-card-team">
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+                      <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${tColors.border}`, background: tColors.bg }} data-testid="v4-card-team">
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            <Zap style={{ width: 14, height: 14, color: tColors.text }} />
-                            <span style={{ fontSize: 12.5, fontWeight: 700, color: "#1D1D1F" }}>Passung zum Team</span>
+                            <Users style={{ width: 14, height: 14, color: tColors.text }} />
+                            <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Teampassung</span>
                           </div>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: tColors.text, background: `${tColors.text}12`, padding: "2px 8px", borderRadius: 6 }}>{"\u25CF"} {badgeLabels[teamFit]}</span>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: tColors.text, background: `${tColors.text}12`, padding: "2px 10px", borderRadius: 6 }}>{badgeLabels[teamFit]}</span>
                         </div>
-                        <p style={{ fontSize: 11.5, color: "#6E6E73", margin: "6px 0 0", lineHeight: 1.5 }}>{teamText}</p>
+                        <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{teamText}</p>
+                      </div>
+                      <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${bBg.border}`, background: bBg.bg }} data-testid="v4-card-integration">
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <Zap style={{ width: 14, height: 14, color: bBg.text }} />
+                            <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Integrationsaufwand</span>
+                          </div>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: bBg.text, background: `${bBg.text}12`, padding: "2px 10px", borderRadius: 6 }}>{bLabel}</span>
+                        </div>
+                        <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{bDesc}</p>
                       </div>
                     </div>
 
-                    <div style={{ padding: "12px 16px", borderRadius: 12, border: `1px solid ${empfColor.border}`, background: empfColor.bg, marginBottom: 10 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                        <Zap style={{ width: 14, height: 14, color: empfColor.text }} />
-                        <span style={{ fontSize: 12.5, fontWeight: 700, color: "#1D1D1F" }}>Empfehlung</span>
-                      </div>
-                      <p style={{ fontSize: 11.5, color: "#48484A", margin: "0 0 8px", lineHeight: 1.5 }}>{empfText}</p>
-                      {empfTags.length > 0 && (
-                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                          {empfTags.map((t, i) => (
-                            <span key={i} style={{ fontSize: 10.5, fontWeight: 600, color: empfColor.text, background: `${empfColor.text}10`, padding: "3px 10px", borderRadius: 8, border: `1px solid ${empfColor.text}20` }}>{"\u2713"} {t}</span>
-                          ))}
+                    {fColors && (
+                      <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${fColors.border}`, background: fColors.bg, marginBottom: 12 }} data-testid="v4-card-func">
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <Zap style={{ width: 14, height: 14, color: fColors.text }} />
+                            <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Passung zum Funktionsziel</span>
+                          </div>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: fColors.text, background: `${fColors.text}12`, padding: "2px 10px", borderRadius: 6 }}>{badgeLabels[funcFit]}</span>
                         </div>
-                      )}
-                    </div>
+                        <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{funcText}</p>
+                      </div>
+                    )}
 
-                    <div style={{ display: "grid", gridTemplateColumns: fColors ? "1fr 1fr 1fr" : "1fr 1fr", gap: 10 }}>
-                      {fColors && (
-                        <div style={{ padding: "12px 14px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
-                          <div style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>Funktionsziel</div>
-                          <div style={{ fontSize: 16, fontWeight: 800, color: fColors.text }}>{badgeLabels[funcFit]}</div>
-                        </div>
-                      )}
-                      <div style={{ padding: "12px 14px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
-                        <div style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>Team-Passung</div>
-                        <div style={{ fontSize: 16, fontWeight: 800, color: tColors.text }}>{badgeLabels[teamFit]}</div>
+                    <div style={{ padding: "18px 20px", borderRadius: 14, border: `1px solid ${empfColor.border}`, background: empfColor.bg }} data-testid="v4-card-empfehlung">
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
+                        <Check style={{ width: 15, height: 15, color: empfColor.text }} />
+                        <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>Empfehlung</span>
                       </div>
-                      <div style={{ padding: "12px 14px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
-                        <div style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>Integrationsaufwand</div>
-                        <div style={{ fontSize: 16, fontWeight: 800, color: bBg.text }}>{bLabel}</div>
-                        <div style={{ fontSize: 10, color: "#8E8E93", marginTop: 2 }}>{bDesc}</div>
+                      <p style={{ fontSize: 12.5, fontWeight: 600, color: empfColor.text, margin: "0 0 10px", lineHeight: 1.5 }}>{empfText}</p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                        {empfBullets.map((b, i) => (
+                          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                            <span style={{ fontSize: 11, color: empfColor.text, marginTop: 2, flexShrink: 0 }}>{"\u2713"}</span>
+                            <span style={{ fontSize: 12, color: "#48484A", lineHeight: 1.5 }}>{b}</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
 
