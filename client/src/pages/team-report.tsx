@@ -737,13 +737,7 @@ export default function TeamReport() {
             data-testid="accordion-teamcheck-toggle"
           >
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{
-                width: 36, height: 36, borderRadius: 12,
-                background: "linear-gradient(135deg, rgba(52,199,89,0.15), rgba(52,199,89,0.08))",
-                display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-              }}>
-                <Users style={{ width: 18, height: 18, color: "#34C759", strokeWidth: 2 }} />
-              </div>
+              <div style={{ width: 26, height: 26, borderRadius: 13, background: "#3478F6", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>1</div>
               <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", color: "#1D1D1F" }} data-testid="text-teamcheck-label">Profilvergleich Rolle vs. Team</span>
             </div>
             <ChevronDown style={{
@@ -766,6 +760,11 @@ export default function TeamReport() {
               </div>
 
               <div style={{ marginTop: 24, padding: "20px 20px 18px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,0,0,0.015)" }}>
+
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                  <div style={{ width: 26, height: 26, borderRadius: 13, background: "#3478F6", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>2</div>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>Team-Kontext festlegen</span>
+                </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 12, alignItems: "center", marginBottom: 18 }}>
                   <div>
