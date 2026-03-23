@@ -900,6 +900,79 @@ export default function TeamReport() {
                     })}
                   </div>
                 </div>
+
+                <div className="mt-6 flex items-center justify-end">
+                  <button onClick={() => {
+                    const ERFOLGSFOKUS_DISPLAY_LABELS = [
+                      "Ergebnisse und Zielerreichung",
+                      "Zusammenarbeit und Netzwerk",
+                      "Innovation und Weiterentwicklung",
+                      "Prozesse und Effizienz",
+                      "Fachliche Qualit\u00E4t und Expertise",
+                      "Strategische Wirkung",
+                    ];
+                    const AUFGABENCHARAKTER_LABELS: Record<string, string> = {
+                      "\u00FCberwiegend operativ": "Praktische Umsetzung im Tagesgesch\u00E4ft",
+                      "\u00FCberwiegend systemisch": "Umsetzung mit strukturiertem Vorgehen",
+                      "\u00FCberwiegend strategisch": "Analyse, Planung und strategische Steuerung",
+                      "Gemischt": "Ausgewogene Mischung",
+                    };
+                    const ARBEITSLOGIK_LABELS: Record<string, string> = {
+                      "Umsetzungsorientiert": "Umsetzung und Ergebnisse",
+                      "Daten-/prozessorientiert": "Analyse und Struktur",
+                      "Menschenorientiert": "Zusammenarbeit und Kommunikation",
+                      "Ausgewogen": "Ausgewogene Mischung",
+                    };
+                    const FUEHRUNG_LABELS: Record<string, string> = {
+                      "Keine": "Keine F\u00FChrungsverantwortung",
+                      "Fachlich": "Fachliche F\u00FChrung",
+                      "Disziplinarisch": "F\u00FChrung mit Personalverantwortung",
+                      "Projektleitung": "Projektleitung / Koordination",
+                    };
+                    const roleTitle = roleName || "";
+                    let roleLevel = "Keine F\u00FChrungsverantwortung";
+                    let taskStructure = "-";
+                    let workStyle = "-";
+                    let successFocus: string[] = [];
+                    try {
+                      const dnaRaw = localStorage.getItem("rollenDnaState");
+                      if (dnaRaw) {
+                        const dna = JSON.parse(dnaRaw) as RoleDnaState;
+                        if (dna.fuehrung) roleLevel = FUEHRUNG_LABELS[dna.fuehrung] || dna.fuehrung;
+                        if (dna.aufgabencharakter) taskStructure = AUFGABENCHARAKTER_LABELS[dna.aufgabencharakter] || dna.aufgabencharakter;
+                        if (dna.arbeitslogik) workStyle = ARBEITSLOGIK_LABELS[dna.arbeitslogik] || dna.arbeitslogik;
+                        if (Array.isArray(dna.erfolgsfokusIndices)) {
+                          successFocus = dna.erfolgsfokusIndices.map((i: number) => ERFOLGSFOKUS_DISPLAY_LABELS[i]).filter(Boolean);
+                        }
+                      }
+                    } catch {}
+                    sessionStorage.setItem("teamcheckV4Input", JSON.stringify({
+                      roleTitle,
+                      roleLevel,
+                      taskStructure,
+                      workStyle,
+                      successFocus,
+                      teamProfile: teamTriad,
+                      personProfile: istTriad,
+                      candidateName: candidateName || "Person",
+                      teamGoal: teamGoal || null,
+                      roleType: roleTypeForCard,
+                    }));
+                    setLocation("/teamcheck-report-v4");
+                  }}
+                  style={{
+                    height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
+                    borderRadius: 14, border: "none", cursor: "pointer",
+                    background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
+                    boxShadow: "0 4px 16px rgba(0,113,227,0.3)", transition: "all 200ms ease",
+                    display: "inline-flex", alignItems: "center", gap: 8,
+                  }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)"; }}
+                  data-testid="button-generate-report">
+                    Bericht erstellen
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -1035,80 +1108,6 @@ export default function TeamReport() {
                   </div>
                 );
               })()}
-
-        <div className="mt-8 flex justify-center">
-                <button onClick={() => {
-                    const ERFOLGSFOKUS_DISPLAY_LABELS = [
-                      "Ergebnisse und Zielerreichung",
-                      "Zusammenarbeit und Netzwerk",
-                      "Innovation und Weiterentwicklung",
-                      "Prozesse und Effizienz",
-                      "Fachliche Qualit\u00E4t und Expertise",
-                      "Strategische Wirkung",
-                    ];
-                    const AUFGABENCHARAKTER_LABELS: Record<string, string> = {
-                      "\u00FCberwiegend operativ": "Praktische Umsetzung im Tagesgesch\u00E4ft",
-                      "\u00FCberwiegend systemisch": "Umsetzung mit strukturiertem Vorgehen",
-                      "\u00FCberwiegend strategisch": "Analyse, Planung und strategische Steuerung",
-                      "Gemischt": "Ausgewogene Mischung",
-                    };
-                    const ARBEITSLOGIK_LABELS: Record<string, string> = {
-                      "Umsetzungsorientiert": "Umsetzung und Ergebnisse",
-                      "Daten-/prozessorientiert": "Analyse und Struktur",
-                      "Menschenorientiert": "Zusammenarbeit und Kommunikation",
-                      "Ausgewogen": "Ausgewogene Mischung",
-                    };
-                    const FUEHRUNG_LABELS: Record<string, string> = {
-                      "Keine": "Keine F\u00FChrungsverantwortung",
-                      "Fachlich": "Fachliche F\u00FChrung",
-                      "Disziplinarisch": "F\u00FChrung mit Personalverantwortung",
-                      "Projektleitung": "Projektleitung / Koordination",
-                    };
-                    const roleTitle = roleName || "";
-                    let roleLevel = "Keine F\u00FChrungsverantwortung";
-                    let taskStructure = "-";
-                    let workStyle = "-";
-                    let successFocus: string[] = [];
-                    try {
-                      const dnaRaw = localStorage.getItem("rollenDnaState");
-                      if (dnaRaw) {
-                        const dna = JSON.parse(dnaRaw) as RoleDnaState;
-                        if (dna.fuehrung) roleLevel = FUEHRUNG_LABELS[dna.fuehrung] || dna.fuehrung;
-                        if (dna.aufgabencharakter) taskStructure = AUFGABENCHARAKTER_LABELS[dna.aufgabencharakter] || dna.aufgabencharakter;
-                        if (dna.arbeitslogik) workStyle = ARBEITSLOGIK_LABELS[dna.arbeitslogik] || dna.arbeitslogik;
-                        if (Array.isArray(dna.erfolgsfokusIndices)) {
-                          successFocus = dna.erfolgsfokusIndices.map((i: number) => ERFOLGSFOKUS_DISPLAY_LABELS[i]).filter(Boolean);
-                        }
-                      }
-                    } catch {}
-                    sessionStorage.setItem("teamcheckV4Input", JSON.stringify({
-                      roleTitle,
-                      roleLevel,
-                      taskStructure,
-                      workStyle,
-                      successFocus,
-                      teamProfile: teamTriad,
-                      personProfile: istTriad,
-                      candidateName: candidateName || "Person",
-                      teamGoal: teamGoal || null,
-                      roleType: roleTypeForCard,
-                    }));
-                    setLocation("/teamcheck-report-v4");
-                  }}
-                  style={{
-                    display: "inline-flex", alignItems: "center", justifyContent: "center",
-                    height: 52, padding: "0 40px", borderRadius: 16, border: "none", cursor: "pointer",
-                    background: "linear-gradient(135deg, #00AAFF 0%, #0071E3 100%)",
-                    color: "#fff", fontSize: 16, fontWeight: 700, letterSpacing: "-0.01em",
-                    boxShadow: "0 4px 16px rgba(0,113,227,0.3), 0 1px 3px rgba(0,0,0,0.08)",
-                    transition: "all 200ms ease",
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 6px 24px rgba(0,113,227,0.4), 0 2px 6px rgba(0,0,0,0.1)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,113,227,0.3), 0 1px 3px rgba(0,0,0,0.08)"; e.currentTarget.style.transform = "translateY(0)"; }}
-                  data-testid="button-generate-report">
-                  Bericht erstellen
-                </button>
-        </div>
 
         {/* Old V1 Systemwirkung and report sections removed — V4 report is now the only output */}
         {false && (() => {
