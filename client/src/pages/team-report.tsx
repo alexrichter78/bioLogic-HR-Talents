@@ -545,6 +545,8 @@ export default function TeamReport() {
   const updateIstTriad = useMemo(() => makeTriadUpdater(setIstTriad), [makeTriadUpdater]);
   const updateTeamTriad = useMemo(() => makeTriadUpdater(setTeamTriad), [makeTriadUpdater]);
   const [configOpen, setConfigOpen] = useState(true);
+  const [kontextOpen, setKontextOpen] = useState(true);
+  const [ergebnisOpen, setErgebnisOpen] = useState(true);
   const [roleName, setRoleName] = useState("");
   const [candidateName, setCandidateName] = useState("");
   const [reportGenerated, setReportGenerated] = useState(false);
@@ -726,31 +728,21 @@ export default function TeamReport() {
 
       <div className="mx-auto px-5" style={{ maxWidth: 1100, paddingTop: 135, paddingBottom: 40 }}>
 
-        <div className="mb-8 rounded-[20px] border border-slate-200 bg-white shadow-sm overflow-hidden" data-testid="accordion-teamcheck">
+        <div style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }} data-testid="accordion-teamcheck">
           <button
             onClick={() => setConfigOpen(!configOpen)}
-            style={{
-              width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
-              padding: "18px 24px", background: "none", border: "none", cursor: "pointer",
-              gap: 12,
-            }}
+            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#FFFFFF"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
             data-testid="accordion-teamcheck-toggle"
           >
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ width: 26, height: 26, borderRadius: 13, background: "#3478F6", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>1</div>
-              <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", color: "#1D1D1F" }} data-testid="text-teamcheck-label">Profilvergleich Rolle vs. Team</span>
+              <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-teamcheck-label">Profilvergleich Rolle vs. Team</span>
             </div>
-            <ChevronDown style={{
-              width: 18, height: 18, color: "#8E8E93", strokeWidth: 2,
-              transition: "transform 300ms ease",
-              transform: configOpen ? "rotate(180deg)" : "rotate(0deg)",
-            }} />
+            <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: configOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
           </button>
-          <div style={{
-            maxHeight: configOpen ? 5000 : 0,
-            overflow: "hidden",
-            transition: "max-height 400ms ease",
-          }}>
+          <div style={{ overflow: "hidden", transition: "max-height 400ms ease", maxHeight: configOpen ? 5000 : 0 }}>
             <div style={{ padding: "0 24px 24px" }}>
               <div className="grid gap-8 md:grid-cols-2">
                 <SliderGroup title="Ist-Profil (Person)" triad={istTriad}
@@ -758,13 +750,27 @@ export default function TeamReport() {
                 <SliderGroup title="Teamprofil" triad={teamTriad}
                   onTriadChange={updateTeamTriad} testIdPrefix="team" />
               </div>
+            </div>
+          </div>
+        </div>
 
-              <div style={{ marginTop: 24, padding: "20px 20px 18px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,0,0,0.015)" }}>
-
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                  <div style={{ width: 26, height: 26, borderRadius: 13, background: "#3478F6", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>2</div>
-                  <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>Team-Kontext festlegen</span>
-                </div>
+        <div style={{ marginTop: 16 }}>
+          <div style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }}>
+            <button
+              onClick={() => setKontextOpen(!kontextOpen)}
+              style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#FFFFFF"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+              data-testid="accordion-kontext-toggle"
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 26, height: 26, borderRadius: 13, background: "#3478F6", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>2</div>
+                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }}>Team-Kontext festlegen</span>
+              </div>
+              <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: kontextOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
+            </button>
+            <div style={{ overflow: "hidden", transition: "max-height 400ms ease", maxHeight: kontextOpen ? 5000 : 0 }}>
+              <div style={{ padding: "0 24px 20px" }}>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 12, alignItems: "center", marginBottom: 18 }}>
                   <div>
@@ -878,7 +884,10 @@ export default function TeamReport() {
                     })}
                   </div>
                 </div>
-              </div>
+            </div>
+            </div>
+          </div>
+        </div>
 
               {v4Preview && (() => {
                 const p = v4Preview;
@@ -926,11 +935,23 @@ export default function TeamReport() {
                 const bDesc = p.begleitungsbedarf === "gering" ? "Wenig Begleitung n\u00F6tig" : p.begleitungsbedarf === "mittel" ? "Begleitung empfohlen" : "Intensiv betreuungsbed\u00FCrftig";
 
                 return (
-                  <div style={{ marginTop: 24 }} data-testid="v4-preview">
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                      <div style={{ width: 24, height: 24, borderRadius: 12, background: "#3478F6", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>3</div>
-                      <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>TeamCheck-Ergebnis</span>
-                    </div>
+                  <div style={{ marginTop: 20 }} data-testid="v4-preview">
+                    <div style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }}>
+                      <button
+                        onClick={() => setErgebnisOpen(!ergebnisOpen)}
+                        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#FFFFFF"; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+                        data-testid="accordion-ergebnis-toggle"
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <div style={{ width: 26, height: 26, borderRadius: 13, background: "#3478F6", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>3</div>
+                          <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }}>TeamCheck-Ergebnis</span>
+                        </div>
+                        <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: ergebnisOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
+                      </button>
+                      <div style={{ overflow: "hidden", transition: "max-height 400ms ease", maxHeight: ergebnisOpen ? 5000 : 0 }}>
+                      <div style={{ padding: "0 24px 20px" }}>
 
                     <div style={{ display: "grid", gridTemplateColumns: fColors ? "1fr 1fr" : "1fr", gap: 10, marginBottom: 10 }}>
                       {fColors && (
@@ -989,11 +1010,15 @@ export default function TeamReport() {
                         <div style={{ fontSize: 10, color: "#8E8E93", marginTop: 2 }}>{bDesc}</div>
                       </div>
                     </div>
+
+                      </div>
+                      </div>
+                    </div>
                   </div>
                 );
               })()}
 
-              <div className="mt-8 flex justify-center">
+        <div className="mt-8 flex justify-center">
                 <button onClick={() => {
                     const ERFOLGSFOKUS_DISPLAY_LABELS = [
                       "Ergebnisse und Zielerreichung",
@@ -1056,9 +1081,6 @@ export default function TeamReport() {
                   data-testid="button-generate-report">
                   Bericht erstellen
                 </button>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Old V1 Systemwirkung and report sections removed — V4 report is now the only output */}
