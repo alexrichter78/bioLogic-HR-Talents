@@ -614,16 +614,13 @@ export default function TeamReport() {
   }, [syncFromLocalStorage]);
 
   useEffect(() => {
-    const onFocus = () => syncFromLocalStorage(true);
     const onStorage = (e: StorageEvent) => {
       if (e.key === "jobcheckCandProfile" || e.key === "jobcheckCandSliders" || e.key === "teamProfile" || e.key === "rollenDnaState") {
         syncFromLocalStorage(true);
       }
     };
-    window.addEventListener("focus", onFocus);
     window.addEventListener("storage", onStorage);
     return () => {
-      window.removeEventListener("focus", onFocus);
       window.removeEventListener("storage", onStorage);
     };
   }, [syncFromLocalStorage]);
