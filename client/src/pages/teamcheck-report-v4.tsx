@@ -196,6 +196,12 @@ export default function TeamCheckReportV4() {
                 {"Unterschiede sind dabei nicht automatisch negativ. Sie k\u00F6nnen ein Team sinnvoll erg\u00E4nzen, brauchen aber klare Erwartungen und gute Abstimmung, damit daraus St\u00E4rke statt Reibung entsteht."}
               </p>
 
+              <div data-pdf-block style={{ background: "linear-gradient(135deg, rgba(255,59,48,0.06) 0%, rgba(255,59,48,0.03) 100%)", borderRadius: 10, padding: "16px 20px", border: "1px solid rgba(255,59,48,0.2)", marginBottom: 24 }}>
+                <p style={{ fontSize: 13, fontWeight: 700, color: "#FF3B30", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
+                  Die Aussagen beschreiben dabei keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse ist wertfrei zu verstehen und dient als Orientierung für die Einschätzung von Passung und Wirksamkeit. Da jede Person individuell ist, ersetzt sie keine Einzelfallbetrachtung, sondern ergänzt diese um eine strukturierte und fundierte Entscheidungsgrundlage.
+                </p>
+              </div>
+
               <div style={{ margin: "0 0 24px" }} data-testid="v4-hero-bewertung">
                 <div style={{ fontSize: 28, fontWeight: 800, color: bCol, marginBottom: 10, letterSpacing: "-0.02em" }}>{result.gesamteinschaetzung}</div>
                 <p style={{ fontSize: 15, lineHeight: 1.75, color: "#48484A", margin: 0 }} data-testid="v4-kurzfazit">{result.kurzfazit}</p>
