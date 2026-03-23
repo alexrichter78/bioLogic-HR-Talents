@@ -801,24 +801,35 @@ export default function TeamReport() {
                     <label style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
                       Rolle
                     </label>
-                    <div style={{ display: "flex", gap: 4, marginTop: 6 }}>
+                    <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
                       {([
                         { value: "teammitglied" as const, label: "Teammitglied" },
                         { value: "fuehrung" as const, label: "F\u00FChrungskraft" },
-                      ]).map(opt => (
-                        <button
-                          key={opt.value}
-                          data-testid={`role-option-${opt.value}`}
-                          onClick={() => setRoleTypeForCard(opt.value)}
-                          style={{
-                            height: 34, padding: "0 14px", borderRadius: 8, cursor: "pointer",
-                            fontSize: 13, fontWeight: 500, border: "none",
-                            color: roleTypeForCard === opt.value ? "#007AFF" : "#6E6E73",
-                            background: roleTypeForCard === opt.value ? "rgba(0,122,255,0.08)" : "rgba(0,0,0,0.04)",
-                            transition: "all 0.15s ease",
-                          }}
-                        >{opt.label}</button>
-                      ))}
+                      ]).map(opt => {
+                        const active = roleTypeForCard === opt.value;
+                        return (
+                          <button
+                            key={opt.value}
+                            data-testid={`role-option-${opt.value}`}
+                            onClick={() => setRoleTypeForCard(opt.value)}
+                            style={{
+                              height: 36, padding: "0 16px", borderRadius: 12, cursor: "pointer",
+                              fontSize: 13, fontWeight: 600,
+                              border: active ? "1.5px solid #0071E3" : "1.5px solid rgba(0,0,0,0.12)",
+                              color: active ? "#0071E3" : "#48484A",
+                              background: "transparent",
+                              boxShadow: active ? "0 2px 8px rgba(0,113,227,0.15)" : "none",
+                              transition: "all 200ms ease",
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!active) (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,113,227,0.04)";
+                            }}
+                            onMouseLeave={(e) => {
+                              (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+                            }}
+                          >{opt.label}</button>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
