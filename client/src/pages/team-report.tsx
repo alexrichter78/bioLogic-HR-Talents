@@ -233,7 +233,7 @@ function Prose({ text }: { text: string }) {
 function SliderGroup({
   title, triad, onTriadChange, testIdPrefix,
 }: {
-  title: string;
+  title: React.ReactNode;
   triad: { impulsiv: number; intuitiv: number; analytisch: number };
   onTriadChange: (key: ComponentKey, val: number) => void;
   testIdPrefix: string;
@@ -764,10 +764,10 @@ export default function TeamReport() {
           </button>
           <div style={{ overflow: "hidden", transition: "max-height 400ms ease", maxHeight: configOpen ? 5000 : 0 }}>
             <div style={{ padding: "0 32px 28px" }}>
-              <div className="grid gap-8 md:grid-cols-2">
-                <SliderGroup title="Ist-Profil (Person)" triad={istTriad}
+              <div className="grid gap-6 grid-cols-2">
+                <SliderGroup title={<>Ist-Profil <span style={{ fontWeight: 400, color: "#8E8E93" }}>(Person)</span></>} triad={istTriad}
                   onTriadChange={updateIstTriad} testIdPrefix="ist" />
-                <SliderGroup title="Teamprofil" triad={teamTriad}
+                <SliderGroup title={<>Teamprofil <span style={{ fontWeight: 400, color: "#8E8E93" }}>(Team)</span></>} triad={teamTriad}
                   onTriadChange={updateTeamTriad} testIdPrefix="team" />
               </div>
             </div>
