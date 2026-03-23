@@ -1077,7 +1077,16 @@ export default function TeamReport() {
                     }));
                     setLocation("/teamcheck-report-v4");
                   }}
-                  className="inline-flex h-12 items-center gap-2 rounded-2xl bg-blue-600 px-8 text-[15px] font-semibold text-white shadow-md hover:bg-blue-700 transition-colors"
+                  style={{
+                    display: "inline-flex", alignItems: "center", justifyContent: "center",
+                    height: 52, padding: "0 40px", borderRadius: 16, border: "none", cursor: "pointer",
+                    background: "linear-gradient(135deg, #00AAFF 0%, #0071E3 100%)",
+                    color: "#fff", fontSize: 16, fontWeight: 700, letterSpacing: "-0.01em",
+                    boxShadow: "0 4px 16px rgba(0,113,227,0.3), 0 1px 3px rgba(0,0,0,0.08)",
+                    transition: "all 200ms ease",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 6px 24px rgba(0,113,227,0.4), 0 2px 6px rgba(0,0,0,0.1)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,113,227,0.3), 0 1px 3px rgba(0,0,0,0.08)"; e.currentTarget.style.transform = "translateY(0)"; }}
                   data-testid="button-generate-report">
                   Bericht erstellen
                 </button>
