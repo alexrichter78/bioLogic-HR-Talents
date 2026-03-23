@@ -511,8 +511,14 @@ function selectIndicatorText(roleType: string, reason: ClassificationReason, fit
 export default function TeamReport() {
   const [, setLocation] = useLocation();
 
-  const [istTriad, setIstTriad] = useState({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
-  const [teamTriad, setTeamTriad] = useState({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
+  const [istTriad, setIstTriad] = useState(() => {
+    try { const s = sessionStorage.getItem("tc_istTriad"); if (s) return JSON.parse(s); } catch {}
+    return { impulsiv: 33, intuitiv: 34, analytisch: 33 };
+  });
+  const [teamTriad, setTeamTriad] = useState(() => {
+    try { const s = sessionStorage.getItem("tc_teamTriad"); if (s) return JSON.parse(s); } catch {}
+    return { impulsiv: 33, intuitiv: 34, analytisch: 33 };
+  });
 
   const makeTriadUpdater = useCallback((setter: React.Dispatch<React.SetStateAction<{ impulsiv: number; intuitiv: number; analytisch: number }>>) => {
     return (key: ComponentKey, newVal: number) => {
@@ -547,12 +553,25 @@ export default function TeamReport() {
   const [configOpen, setConfigOpen] = useState(true);
   const [kontextOpen, setKontextOpen] = useState(true);
   const [ergebnisOpen, setErgebnisOpen] = useState(true);
-  const [roleName, setRoleName] = useState("");
-  const [candidateName, setCandidateName] = useState("");
+  const [roleName, setRoleName] = useState(() => sessionStorage.getItem("tc_roleName") || "");
+  const [candidateName, setCandidateName] = useState(() => sessionStorage.getItem("tc_candidateName") || "");
   const [reportGenerated, setReportGenerated] = useState(false);
   const [matchCheckOpen, setMatchCheckOpen] = useState(true);
-  const [roleTypeForCard, setRoleTypeForCard] = useState<"teammitglied" | "fuehrung">("teammitglied");
-  const [teamGoal, setTeamGoal] = useState<"umsetzung" | "analyse" | "zusammenarbeit" | "">("");
+  const [roleTypeForCard, setRoleTypeForCard] = useState<"teammitglied" | "fuehrung">(() => {
+    const v = sessionStorage.getItem("tc_roleType");
+    return v === "fuehrung" ? "fuehrung" : "teammitglied";
+  });
+  const [teamGoal, setTeamGoal] = useState<"umsetzung" | "analyse" | "zusammenarbeit" | "">(() => {
+    const v = sessionStorage.getItem("tc_teamGoal");
+    return (v === "umsetzung" || v === "analyse" || v === "zusammenarbeit") ? v : "";
+  });
+
+  useEffect(() => { sessionStorage.setItem("tc_istTriad", JSON.stringify(istTriad)); }, [istTriad]);
+  useEffect(() => { sessionStorage.setItem("tc_teamTriad", JSON.stringify(teamTriad)); }, [teamTriad]);
+  useEffect(() => { sessionStorage.setItem("tc_roleName", roleName); }, [roleName]);
+  useEffect(() => { sessionStorage.setItem("tc_candidateName", candidateName); }, [candidateName]);
+  useEffect(() => { sessionStorage.setItem("tc_roleType", roleTypeForCard); }, [roleTypeForCard]);
+  useEffect(() => { sessionStorage.setItem("tc_teamGoal", teamGoal); }, [teamGoal]);
 
   const syncFromLocalStorage = useCallback(() => {
     const raw = localStorage.getItem("rollenDnaState");
