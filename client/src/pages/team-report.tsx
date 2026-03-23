@@ -241,9 +241,9 @@ function SliderGroup({
   const dom = dominanceModeOf(triad);
 
   return (
-    <div style={{ padding: "20px 24px", borderRadius: 16, border: "1px solid rgba(0,0,0,0.07)", background: "#fff" }}>
-      <div style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", marginBottom: 16 }}>{title}</div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+    <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
+      <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>{title}</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(key => {
           const val = triad[key];
           const hex = BAR_HEX[key];
@@ -254,18 +254,19 @@ function SliderGroup({
               <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>
                 {labelComponent(key)}
               </span>
-              <div style={{ flex: 1, position: "relative", height: 26 }}>
+              <div style={{ flex: 1, position: "relative", height: 28 }}>
                 <div style={{
                   position: "absolute", inset: 0,
-                  borderRadius: 13, background: "rgba(0,0,0,0.06)",
+                  borderRadius: 14, background: "rgba(0,0,0,0.05)",
                 }} />
-                <div style={{
+                <div className="bio-bar-animate" style={{
                   position: "absolute", left: 0, top: 0, bottom: 0,
                   width: `${Math.min(Math.max(widthPct, 4), 100)}%`,
-                  borderRadius: 13, background: hex,
+                  borderRadius: 14, background: `linear-gradient(90deg, ${hex}, ${hex}CC)`,
                   transition: "width 150ms ease",
                   display: "flex", alignItems: "center", paddingLeft: 10,
                   minWidth: isSmall ? 8 : 50,
+                  boxShadow: `0 2px 8px ${hex}30`,
                 }}>
                   {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>}
                 </div>
