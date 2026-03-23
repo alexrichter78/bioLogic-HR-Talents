@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation } from "wouter";
-import { AlertTriangle, Download, Check, Users, ChevronDown, Zap, BarChart3, Handshake, Rocket, Settings } from "lucide-react";
+import { AlertTriangle, Download, Check, CheckCircle2, Users, ChevronDown, Zap, BarChart3, Handshake, Rocket, Settings } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeTeamReport } from "@/lib/team-report-engine";
@@ -1019,20 +1019,15 @@ export default function TeamReport() {
                       </div>
                     )}
 
-                    <div style={{ padding: "18px 20px", borderRadius: 14, border: `1px solid ${empfColor.border}`, background: empfColor.bg }} data-testid="v4-card-empfehlung">
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
-                        <Check style={{ width: 15, height: 15, color: empfColor.text }} />
-                        <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>Empfehlung</span>
-                      </div>
-                      <p style={{ fontSize: 12.5, fontWeight: 600, color: empfColor.text, margin: "0 0 10px", lineHeight: 1.5 }}>{empfText}</p>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                        {empfBullets.map((b, i) => (
-                          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                            <span style={{ fontSize: 11, color: empfColor.text, marginTop: 2, flexShrink: 0 }}>{"\u2713"}</span>
-                            <span style={{ fontSize: 12, color: "#48484A", lineHeight: 1.5 }}>{b}</span>
-                          </div>
-                        ))}
-                      </div>
+                    <div style={{ padding: "14px 16px", borderRadius: 14, border: `1px solid ${empfColor.border}`, background: empfColor.bg }} data-testid="v4-card-empfehlung">
+                      <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Empfehlung</p>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: empfColor.text, margin: "0 0 12px", lineHeight: 1.5 }}>{empfText}</p>
+                      {empfBullets.map((b, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                          <CheckCircle2 style={{ width: 15, height: 15, color: empfColor.text, flexShrink: 0 }} />
+                          <span style={{ fontSize: 14, color: "#48484A", lineHeight: 1.5 }}>{b}</span>
+                        </div>
+                      ))}
                     </div>
 
                       </div>
