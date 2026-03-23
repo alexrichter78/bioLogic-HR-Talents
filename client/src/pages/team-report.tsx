@@ -573,7 +573,8 @@ export default function TeamReport() {
   useEffect(() => { sessionStorage.setItem("tc_roleType", roleTypeForCard); }, [roleTypeForCard]);
   useEffect(() => { sessionStorage.setItem("tc_teamGoal", teamGoal); }, [teamGoal]);
 
-  const syncFromLocalStorage = useCallback(() => {
+  const syncFromLocalStorage = useCallback((force = false) => {
+    if (!force && sessionStorage.getItem("tc_istTriad")) return;
     const raw = localStorage.getItem("rollenDnaState");
     if (raw) {
       try {
@@ -613,10 +614,10 @@ export default function TeamReport() {
   }, [syncFromLocalStorage]);
 
   useEffect(() => {
-    const onFocus = () => syncFromLocalStorage();
+    const onFocus = () => syncFromLocalStorage(true);
     const onStorage = (e: StorageEvent) => {
       if (e.key === "jobcheckCandProfile" || e.key === "jobcheckCandSliders" || e.key === "teamProfile" || e.key === "rollenDnaState") {
-        syncFromLocalStorage();
+        syncFromLocalStorage(true);
       }
     };
     window.addEventListener("focus", onFocus);
