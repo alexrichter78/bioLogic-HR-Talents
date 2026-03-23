@@ -241,9 +241,9 @@ function SliderGroup({
   const dom = dominanceModeOf(triad);
 
   return (
-    <div>
-      <div className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500 mb-2">{title}</div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 8 }}>
+    <div style={{ padding: "20px 24px", borderRadius: 16, border: "1px solid rgba(0,0,0,0.07)", background: "#fff" }}>
+      <div style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", marginBottom: 16 }}>{title}</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(key => {
           const val = triad[key];
           const hex = BAR_HEX[key];
