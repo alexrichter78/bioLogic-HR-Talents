@@ -856,41 +856,35 @@ export default function TeamReport() {
 
               {v4Preview && (() => {
                 const p = v4Preview;
-                const barLevels = [
-                  { key: "passend", label: "Passend", color: "#1B7A3D" },
-                  { key: "teilweise", label: "Teilweise passend", color: "#CC7700" },
-                  { key: "kritisch", label: "Kritisch", color: "#C41E3A" },
-                ];
-                const teamLevel = p.passungZumTeam === "hoch" ? "passend" : p.passungZumTeam === "mittel" ? "teilweise" : "kritisch";
-                const funcLevel = p.beitragZurAufgabe === "hoch" ? "passend" : p.beitragZurAufgabe === "mittel" ? "teilweise" : p.beitragZurAufgabe === "gering" ? "kritisch" : null;
-                const renderBars = (active: string) => (
-                  <div style={{ display: "flex", gap: 4, marginTop: 8 }}>
-                    {barLevels.map(b => {
-                      const isActive = b.key === active;
-                      return (
-                        <div key={b.key} style={{ flex: 1, textAlign: "center" }}>
-                          <div style={{ height: 6, borderRadius: 3, background: isActive ? b.color : "rgba(0,0,0,0.06)", transition: "background 0.2s" }} />
-                          <span style={{ fontSize: 10, fontWeight: isActive ? 700 : 500, color: isActive ? b.color : "#C7C7CC", marginTop: 3, display: "block" }}>{b.label}</span>
-                        </div>
-                      );
-                    })}
+                const teamLevel = p.passungZumTeam === "hoch" ? 0 : p.passungZumTeam === "mittel" ? 1 : 2;
+                const funcLevel = p.beitragZurAufgabe === "hoch" ? 0 : p.beitragZurAufgabe === "mittel" ? 1 : p.beitragZurAufgabe === "gering" ? 2 : null;
+                const segColors = ["#1B7A3D", "#CC7700", "#C41E3A"];
+                const segLabels = ["passend", "teilweise passend", "kritisch"];
+                const renderBar = (activeIdx: number) => (
+                  <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
+                    <div style={{ display: "flex", gap: 3, flex: 1 }}>
+                      {[0, 1, 2].map(i => (
+                        <div key={i} style={{ flex: 1, height: 7, borderRadius: 3.5, background: i === activeIdx ? segColors[activeIdx] : "rgba(0,0,0,0.07)" }} />
+                      ))}
+                    </div>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: segColors[activeIdx], marginLeft: 10, whiteSpace: "nowrap" }}>{segLabels[activeIdx]}</span>
                   </div>
                 );
                 return (
                   <div style={{ marginTop: 20, padding: "18px 20px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(255,255,255,0.7)" }} data-testid="v4-preview">
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
                       <Zap style={{ width: 16, height: 16, color: "#3A9A5C" }} />
                       <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>TeamCheck{roleName ? `: ${roleName}` : ""}</span>
                     </div>
-                    <div style={{ display: "grid", gridTemplateColumns: funcLevel ? "1fr 1fr" : "1fr", gap: 12 }}>
-                      <div style={{ padding: "10px 14px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.05)" }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: "#6E6E73" }}>Passung zum Teamprofil</div>
-                        {renderBars(teamLevel)}
+                    <div style={{ display: "grid", gridTemplateColumns: funcLevel !== null ? "1fr 1fr" : "1fr", gap: 20 }}>
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: "#48484A", marginBottom: 8 }}>Person zum Team</div>
+                        {renderBar(teamLevel)}
                       </div>
-                      {funcLevel && (
-                        <div style={{ padding: "10px 14px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.05)" }}>
-                          <div style={{ fontSize: 11, fontWeight: 600, color: "#6E6E73" }}>Passung zum Funktionsziel</div>
-                          {renderBars(funcLevel)}
+                      {funcLevel !== null && (
+                        <div>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: "#48484A", marginBottom: 8 }}>Stelle zum Funktionsziel</div>
+                          {renderBar(funcLevel)}
                         </div>
                       )}
                     </div>
