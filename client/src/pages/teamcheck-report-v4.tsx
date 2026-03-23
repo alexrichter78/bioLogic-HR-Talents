@@ -185,8 +185,17 @@ export default function TeamCheckReportV4() {
               <div className="report-rings" />
             </div>
 
-            {/* === HERO: Gesamteinsch\u00E4tzung prominent === */}
+            {/* === Intro === */}
             <div style={{ padding: "28px 32px 0" }}>
+              <p style={{ fontSize: 14.5, color: "#48484A", lineHeight: 1.85, margin: "0 0 8px" }} data-testid="text-einleitung-v4">
+                {"Dieser Bericht zeigt, wie die Person "}
+                {result.roleType === "leadership" ? "in der F\u00FChrungsrolle" : "im bestehenden Team"}
+                {" voraussichtlich wirken wird. Er hilft dabei, fr\u00FCh zu erkennen, wo Zusammenarbeit gut gelingen kann und wo im Alltag mehr F\u00FChrung, Klarheit oder Begleitung n\u00F6tig ist."}
+              </p>
+              <p style={{ fontSize: 14.5, color: "#48484A", lineHeight: 1.85, margin: "0 0 24px" }}>
+                {"Unterschiede sind dabei nicht automatisch negativ. Sie k\u00F6nnen ein Team sinnvoll erg\u00E4nzen, brauchen aber klare Erwartungen und gute Abstimmung, damit daraus St\u00E4rke statt Reibung entsteht."}
+              </p>
+
               <div style={{ margin: "0 0 24px" }} data-testid="v4-hero-bewertung">
                 <div style={{ fontSize: 28, fontWeight: 800, color: bCol, marginBottom: 10, letterSpacing: "-0.02em" }}>{result.gesamteinschaetzung}</div>
                 <p style={{ fontSize: 15, lineHeight: 1.75, color: "#48484A", margin: 0 }} data-testid="v4-kurzfazit">{result.kurzfazit}</p>
@@ -211,16 +220,8 @@ export default function TeamCheckReportV4() {
               </div>
             </div>
 
-            {/* === Intro + TOC === */}
+            {/* === TOC === */}
             <div style={{ padding: "0 32px 0" }}>
-              <p style={{ fontSize: 14.5, color: "#48484A", lineHeight: 1.85, margin: "0 0 8px" }} data-testid="text-einleitung-v4">
-                {"Dieser Bericht zeigt, wie die Person "}
-                {result.roleType === "leadership" ? "in der F\u00FChrungsrolle" : "im bestehenden Team"}
-                {" voraussichtlich wirken wird. Er hilft dabei, fr\u00FCh zu erkennen, wo Zusammenarbeit gut gelingen kann und wo im Alltag mehr F\u00FChrung, Klarheit oder Begleitung n\u00F6tig ist."}
-              </p>
-              <p style={{ fontSize: 14.5, color: "#48484A", lineHeight: 1.85, margin: "0 0 24px" }}>
-                {"Unterschiede sind dabei nicht automatisch negativ. Sie k\u00F6nnen ein Team sinnvoll erg\u00E4nzen, brauchen aber klare Erwartungen und gute Abstimmung, damit daraus St\u00E4rke statt Reibung entsteht."}
-              </p>
 
               {/* Inhaltsverzeichnis */}
               <div style={{ padding: "16px 20px", borderRadius: 12, background: "#FFF", border: "1px solid rgba(0,0,0,0.06)", marginBottom: 32 }} className="no-print" data-testid="v4-toc">
