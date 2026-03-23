@@ -552,8 +552,6 @@ export default function TeamReport() {
   const [configOpen, setConfigOpen] = useState(true);
   const [kontextOpen, setKontextOpen] = useState(true);
   const [ergebnisOpen, setErgebnisOpen] = useState(true);
-  const [enableTransitions, setEnableTransitions] = useState(false);
-  useEffect(() => { const t = requestAnimationFrame(() => { requestAnimationFrame(() => { setEnableTransitions(true); }); }); return () => cancelAnimationFrame(t); }, []);
   const [roleName, setRoleName] = useState(() => sessionStorage.getItem("tc_roleName") || "");
   const [candidateName, setCandidateName] = useState(() => sessionStorage.getItem("tc_candidateName") || "");
   const [reportGenerated, setReportGenerated] = useState(false);
@@ -760,7 +758,7 @@ export default function TeamReport() {
             </div>
             <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: configOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
           </button>
-          <div style={{ overflow: "hidden", transition: enableTransitions ? "max-height 400ms ease" : "none", maxHeight: configOpen ? 5000 : 0 }}>
+          {configOpen && (
             <div style={{ padding: "0 32px 28px" }}>
               <div className="grid gap-6 grid-cols-2">
                 <SliderGroup title={<>Ist-Profil <span style={{ fontWeight: 400, color: "#8E8E93" }}>(Person)</span></>} triad={istTriad}
@@ -769,7 +767,7 @@ export default function TeamReport() {
                   onTriadChange={updateTeamTriad} testIdPrefix="team" />
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div style={{ marginTop: 16 }}>
@@ -787,7 +785,7 @@ export default function TeamReport() {
               </div>
               <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: kontextOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
             </button>
-            <div style={{ overflow: "hidden", transition: enableTransitions ? "max-height 400ms ease" : "none", maxHeight: kontextOpen ? 5000 : 0 }}>
+            {kontextOpen && (
               <div style={{ padding: "0 32px 28px" }}>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 12, alignItems: "center", marginBottom: 18 }}>
@@ -902,8 +900,8 @@ export default function TeamReport() {
                     })}
                   </div>
                 </div>
-            </div>
-            </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -968,7 +966,7 @@ export default function TeamReport() {
                         </div>
                         <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: ergebnisOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
                       </button>
-                      <div style={{ overflow: "hidden", transition: enableTransitions ? "max-height 400ms ease" : "none", maxHeight: ergebnisOpen ? 5000 : 0 }}>
+                      {ergebnisOpen && (
                       <div style={{ padding: "0 32px 28px" }}>
 
                     <div style={{ display: "grid", gridTemplateColumns: fColors ? "1fr 1fr" : "1fr", gap: 10, marginBottom: 10 }}>
@@ -1030,7 +1028,7 @@ export default function TeamReport() {
                     </div>
 
                       </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                 );
