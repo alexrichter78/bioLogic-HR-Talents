@@ -126,8 +126,18 @@ function IntroText({ text }: { text: string }) {
   );
 }
 
+function SubHead({ num, title, color }: { num: number; title: string; color?: string }) {
+  const c = color || "#0F3A6E";
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+      <span style={{ width: 24, height: 24, borderRadius: 12, background: c, color: "#FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>{num}</span>
+      <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", textDecoration: "underline", textUnderlineOffset: 3 }}>{title}</span>
+    </div>
+  );
+}
+
+const bodyText: React.CSSProperties = { fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: "0 0 12px", textAlign: "justify", textAlignLast: "left", hyphens: "auto", WebkitHyphens: "auto" } as any;
 const sectionStyle = { paddingBottom: 40, marginBottom: 40, borderBottom: "1px solid rgba(0,0,0,0.05)" } as const;
-const cardBase = { padding: "20px 24px", borderRadius: 14, background: "#FFF", border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" } as const;
 
 export default function TeamCheckReportV4() {
   const [, navigate] = useLocation();
@@ -259,150 +269,116 @@ export default function TeamCheckReportV4() {
 
             <div style={{ padding: "0 32px 48px" }}>
 
-              {/* S2 */}
+              {/* S3 – Einschätzung */}
               <div style={sectionStyle} data-testid="v4-section-warum">
                 <SectionHead num={3} title={"Warum wir zu dieser Einsch\u00E4tzung kommen"} id="warum" />
-                <IntroText text={result.warumEinleitung} />
-                <div style={{ display: "grid", gap: 12 }}>
-                  {result.warumBlocks.map(b => <ContentCard key={b.title} title={b.title} text={b.text} />)}
-                </div>
-                <Kernaussage text={result.warumKernaussage} />
+                <p style={bodyText}>{result.warumEinleitung}</p>
+                {result.warumBlocks.map((b, i) => (
+                  <div key={b.title} style={{ marginBottom: 22 }}>
+                    <SubHead num={i + 1} title={b.title} />
+                    <p style={bodyText}>{b.text}</p>
+                  </div>
+                ))}
               </div>
 
-              {/* S3 */}
+              {/* S4 – Wirkung */}
               <div style={sectionStyle} data-testid="v4-section-wirkung">
                 <SectionHead num={4} title={result.wirkungTitle} id="wirkung" />
-                <IntroText text={result.wirkungEinleitung} />
-                <div style={{ display: "grid", gap: 12 }}>
-                  {result.wirkungBlocks.map(b => <ContentCard key={b.title} title={b.title} text={b.text} />)}
-                </div>
-                <Kernaussage text={result.wirkungKernaussage} />
+                <p style={bodyText}>{result.wirkungEinleitung}</p>
+                {result.wirkungBlocks.map((b, i) => (
+                  <div key={b.title} style={{ marginBottom: 22 }}>
+                    <SubHead num={i + 1} title={b.title} />
+                    <p style={bodyText}>{b.text}</p>
+                  </div>
+                ))}
               </div>
 
-              {/* S4 */}
+              {/* S5 – Chancen & Risiken */}
               <div style={sectionStyle} data-testid="v4-section-chancen-risiken">
                 <SectionHead num={5} title="Chancen und Risiken dieser Besetzung" id="chancen-risiken" />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div style={{ ...cardBase, background: "rgba(52,199,89,0.05)", border: "1px solid rgba(52,199,89,0.15)" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                      <div style={{ width: 8, height: 8, borderRadius: 4, background: "#34C759" }} />
-                      <p style={{ fontSize: 15, fontWeight: 700, color: "#1B7A3D", margin: 0 }}>Chancen</p>
-                    </div>
-                    <p style={{ fontSize: 14.5, color: "#48484A", lineHeight: 1.75, margin: "0 0 14px" }}>{result.chancenEinleitung}</p>
-                    <DetailBulletList items={result.chancenPunkte} color="#34C759" />
-                  </div>
-                  <div style={{ ...cardBase, background: "rgba(255,59,48,0.05)", border: "1px solid rgba(255,59,48,0.15)" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                      <div style={{ width: 8, height: 8, borderRadius: 4, background: "#FF3B30" }} />
-                      <p style={{ fontSize: 15, fontWeight: 700, color: "#C41E3A", margin: 0 }}>Risiken</p>
-                    </div>
-                    <p style={{ fontSize: 14.5, color: "#48484A", lineHeight: 1.75, margin: "0 0 14px" }}>{result.risikenEinleitung}</p>
-                    <DetailBulletList items={result.risikenPunkte} color="#FF3B30" />
-                  </div>
+                <div style={{ marginBottom: 22 }}>
+                  <SubHead num={1} title="Chancen" color="#1B7A3D" />
+                  <p style={bodyText}>{result.chancenEinleitung}</p>
+                  <DetailBulletList items={result.chancenPunkte} color="#34C759" />
+                </div>
+                <div style={{ marginBottom: 0 }}>
+                  <SubHead num={2} title="Risiken" color="#C41E3A" />
+                  <p style={bodyText}>{result.risikenEinleitung}</p>
+                  <DetailBulletList items={result.risikenPunkte} color="#FF3B30" />
                 </div>
               </div>
 
-              {/* S5 */}
+              {/* S6 – Ohne Besetzung */}
               <div style={sectionStyle} data-testid="v4-section-ohne">
                 <SectionHead num={6} title="Was ohne diese Besetzung bestehen bleibt" id="ohne" />
-                <IntroText text={"Nicht zu besetzen ist keine neutrale Entscheidung. Auch wenn kurzfristig Ruhe erhalten bleibt, bleiben bestehende Probleme weiterhin ungel\u00F6st."} />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div style={cardBase}>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: "#34C759", margin: "0 0 12px" }}>Was kurzfristig erhalten bleibt</p>
-                    <SimpleBulletList items={result.ohneErhalten} color="#34C759" />
-                  </div>
-                  <div style={cardBase}>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: "#FF3B30", margin: "0 0 12px" }}>{"Was weiter ungel\u00F6st bleibt"}</p>
-                    <SimpleBulletList items={result.ohneUngeloest} color="#FF3B30" />
-                  </div>
+                <p style={bodyText}>{"Nicht zu besetzen ist keine neutrale Entscheidung. Auch wenn kurzfristig Ruhe erhalten bleibt, bleiben bestehende Probleme weiterhin ungel\u00F6st."}</p>
+                <div style={{ marginBottom: 22 }}>
+                  <SubHead num={1} title="Was kurzfristig erhalten bleibt" color="#1B7A3D" />
+                  <SimpleBulletList items={result.ohneErhalten} color="#34C759" />
                 </div>
-                <Kernaussage text={result.ohneKernaussage} color="#6E6E73" />
+                <div style={{ marginBottom: 0 }}>
+                  <SubHead num={2} title="Was weiter ungelöst bleibt" color="#C41E3A" />
+                  <SimpleBulletList items={result.ohneUngeloest} color="#FF3B30" />
+                </div>
               </div>
 
-              {/* S6 */}
+              {/* S7 – Alltag */}
               <div style={sectionStyle} data-testid="v4-section-alltag">
                 <SectionHead num={7} title={"So k\u00F6nnte es im Alltag aussehen"} id="alltag" />
-                <IntroText text={result.alltagEinleitung} />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {result.alltagBlocks.map(b => <ContentCard key={b.title} title={b.title} text={b.text} />)}
-                </div>
+                <p style={bodyText}>{result.alltagEinleitung}</p>
+                {result.alltagBlocks.map((b, i) => (
+                  <div key={b.title} style={{ marginBottom: 22 }}>
+                    <SubHead num={i + 1} title={b.title} />
+                    <p style={bodyText}>{b.text}</p>
+                  </div>
+                ))}
                 {result.alltagWarnzeichen.length > 0 && (
-                  <div style={{ marginTop: 16 }}>
-                    <p style={{ fontSize: 14, lineHeight: 1.6, color: "#6B7280", margin: "0 0 8px", fontStyle: "italic" }}>{"Bleiben die folgenden Signale \u00FCber mehrere Wochen bestehen, spricht das daf\u00FCr, dass die Integration nicht stabil verl\u00E4uft und aktiv nachgesteuert werden muss."}</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div style={{ padding: "16px 20px", borderRadius: 12, background: "rgba(255,149,0,0.07)", border: "1px solid rgba(255,149,0,0.18)" }}>
-                        <p style={{ fontSize: 12, fontWeight: 700, color: "#CC7700", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Warnzeichen</p>
-                        <SimpleBulletList items={result.alltagWarnzeichen} color="#FF9500" />
+                  <div style={{ marginTop: 4 }}>
+                    <SubHead num={result.alltagBlocks.length + 1} title="Warnzeichen" color="#CC7700" />
+                    <p style={{ ...bodyText, fontStyle: "italic", color: "#6B7280" }}>{"Bleiben die folgenden Signale \u00FCber mehrere Wochen bestehen, spricht das daf\u00FCr, dass die Integration nicht stabil verl\u00E4uft und aktiv nachgesteuert werden muss."}</p>
+                    <SimpleBulletList items={result.alltagWarnzeichen} color="#FF9500" />
+                    {result.alltagPositivzeichen.length > 0 && (
+                      <div style={{ marginTop: 18 }}>
+                        <SubHead num={result.alltagBlocks.length + 2} title="Positive Signale nach 2–4 Wochen" color="#1B7A3D" />
+                        <SimpleBulletList items={result.alltagPositivzeichen} color="#34C759" />
                       </div>
-                      {result.alltagPositivzeichen.length > 0 && (
-                        <div style={{ padding: "16px 20px", borderRadius: 12, background: "rgba(52,199,89,0.06)", border: "1px solid rgba(52,199,89,0.15)" }}>
-                          <p style={{ fontSize: 12, fontWeight: 700, color: "#1B7A3D", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.08em" }}>{"Positive Signale nach 2\u20134 Wochen"}</p>
-                          <SimpleBulletList items={result.alltagPositivzeichen} color="#34C759" />
-                        </div>
-                      )}
-                    </div>
+                    )}
                   </div>
                 )}
-                <Kernaussage text={result.alltagKernaussage} />
               </div>
 
-              {/* S7 */}
+              {/* S8 – Leistung */}
               <div style={sectionStyle} data-testid="v4-section-leistung">
                 <SectionHead num={8} title={"Was das f\u00FCr Leistung und Ergebnisse bedeutet"} id="leistung" />
-                <IntroText text={result.leistungEinleitung} />
-                <div style={{ display: "grid", gap: 12 }}>
-                  {result.leistungBlocks.map(b => <ContentCard key={b.title} title={b.title} text={b.text} />)}
-                </div>
-                <Kernaussage text={result.leistungKernaussage} />
+                <p style={bodyText}>{result.leistungEinleitung}</p>
+                {result.leistungBlocks.map((b, i) => (
+                  <div key={b.title} style={{ marginBottom: 22 }}>
+                    <SubHead num={i + 1} title={b.title} />
+                    <p style={bodyText}>{b.text}</p>
+                  </div>
+                ))}
               </div>
 
-              {/* S8 */}
+              {/* S9 – Unter Druck */}
               <div style={sectionStyle} data-testid="v4-section-druck">
                 <SectionHead num={9} title={"Wie sich die Besetzung unter Druck zeigen d\u00FCrfte"} id="druck" />
-                <div style={{ display: "grid", gap: 12 }}>
-                  {result.druckBlocks.map(b => <ContentCard key={b.title} title={b.title} text={b.text} />)}
-                </div>
-                <Kernaussage text={result.druckKernaussage} />
+                {result.druckBlocks.map((b, i) => (
+                  <div key={b.title} style={{ marginBottom: 22 }}>
+                    <SubHead num={i + 1} title={b.title} />
+                    <p style={bodyText}>{b.text}</p>
+                  </div>
+                ))}
               </div>
 
-              {/* S9 */}
-              <div style={{ marginBottom: 36, padding: "28px 24px", borderRadius: 16, background: "rgba(26,93,171,0.04)", border: "1px solid rgba(26,93,171,0.10)" }} data-testid="v4-section-empfehlungen">
+              {/* S10 – Empfehlungen */}
+              <div style={{ marginBottom: 36 }} data-testid="v4-section-empfehlungen">
                 <SectionHead num={10} title="Was jetzt wichtig ist" id="empfehlungen" />
-
-                <div style={{ display: "grid", gap: 10 }}>
-                  {result.empfehlungen.map((emp, i) => (
-                    <div key={emp.title} style={{ ...cardBase, display: "flex", gap: 16, alignItems: "flex-start" }}>
-                      <div style={{ flexShrink: 0, width: 30, height: 30, borderRadius: 15, background: "#1A5DAB", color: "#FFF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, marginTop: 1 }}>{i + 1}</div>
-                      <div>
-                        <p style={{ fontSize: 14.5, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>{emp.title}</p>
-                        <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.75, color: "#48484A" }}>{emp.text}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Profilvergleich kompakt */}
-              <div style={{ padding: "20px 24px", borderRadius: 14, background: "#FFF", border: "1px solid rgba(0,0,0,0.06)", marginBottom: 36 }} data-testid="v4-section-struktur">
-                <p style={{ fontSize: 11, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 14px" }}>{"Erg\u00E4nzung \u2013 Wie Team und Person im Vergleich arbeiten"}</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}>Team</p>
-                    <div style={{ display: "grid", gap: 8 }}>
-                      <BarRow label="Impulsiv" value={Math.round(result.teamProfile.impulsiv)} color={COMP_HEX.impulsiv} />
-                      <BarRow label="Intuitiv" value={Math.round(result.teamProfile.intuitiv)} color={COMP_HEX.intuitiv} />
-                      <BarRow label="Analytisch" value={Math.round(result.teamProfile.analytisch)} color={COMP_HEX.analytisch} />
-                    </div>
+                {result.empfehlungen.map((emp, i) => (
+                  <div key={emp.title} style={{ marginBottom: 22 }}>
+                    <SubHead num={i + 1} title={emp.title} color="#1A5DAB" />
+                    <p style={bodyText}>{emp.text}</p>
                   </div>
-                  <div>
-                    <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}>Person</p>
-                    <div style={{ display: "grid", gap: 8 }}>
-                      <BarRow label="Impulsiv" value={Math.round(result.personProfile.impulsiv)} color={COMP_HEX.impulsiv} />
-                      <BarRow label="Intuitiv" value={Math.round(result.personProfile.intuitiv)} color={COMP_HEX.intuitiv} />
-                      <BarRow label="Analytisch" value={Math.round(result.personProfile.analytisch)} color={COMP_HEX.analytisch} />
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
 
               {/* Footer */}
