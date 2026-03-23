@@ -243,8 +243,7 @@ function SliderGroup({
   return (
     <div>
       <div className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500 mb-2">{title}</div>
-      <div className="text-xs text-slate-500 mb-4">{dominanceLabel(dom)}</div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 8 }}>
         {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(key => {
           const val = triad[key];
           const hex = BAR_HEX[key];
