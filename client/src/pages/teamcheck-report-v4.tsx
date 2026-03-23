@@ -234,37 +234,21 @@ export default function TeamCheckReportV4() {
               {/* S1 */}
               <SectionHead num={2} title={"Management\u00FCbersicht"} id="summary" />
               <div data-testid="v4-section-summary" style={{ marginBottom: 32 }}>
-                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
-                  <Tile label="Rolle / Bereich" value={result.roleTitle || "\u2013"} />
-                  <Tile label="Kontext" value={result.roleLabel} />
-                  {result.teamGoalLabel && result.teamGoalLabel !== "Kein festgelegtes Funktionsziel" && (
-                    <Tile label="Funktionsziel" value={result.teamGoalLabel} />
-                  )}
-                </div>
-                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
-                  <Tile label="Wirkung auf das Umfeld" value={result.wirkungAufUmfeld} />
-                  <Tile label="Begleitungsbedarf" value={result.begleitungsbedarf} color={bgColor(result.begleitungsbedarf)} />
-                  <Tile label="Risiko im Alltag" value={result.risikoImAlltag} color={rColor(result.risikoImAlltag)} />
-                </div>
-                <div style={{ display: "grid", gap: 12 }}>
-                  <HintBox label={"Managementeinsch\u00E4tzung"} color="#343A48">
-                    <p style={{ fontSize: 14.5, lineHeight: 1.8, color: "#48484A", margin: 0 }} data-testid="v4-management-einschaetzung">{result.managementEinschaetzung}</p>
-                  </HintBox>
-                  <HintBox label="Erste Empfehlung" color="#1A5DAB">
-                    <p style={{ fontSize: 14.5, lineHeight: 1.75, color: "#48484A", margin: 0 }}>{result.ersteEmpfehlung}</p>
-                  </HintBox>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <HintBox label={"Gr\u00F6sstes Risiko"} color="#FF3B30">
-                      <p style={{ fontSize: 14.5, lineHeight: 1.75, color: "#48484A", margin: 0 }} data-testid="v4-hauptrisiko">{result.hauptrisiko}</p>
-                    </HintBox>
-                    <HintBox label={"Gr\u00F6sste Chance"} color="#34C759">
-                      <p style={{ fontSize: 14.5, lineHeight: 1.75, color: "#48484A", margin: 0 }} data-testid="v4-hauptchance">{result.hauptchance}</p>
-                    </HintBox>
+                {[
+                  { num: 1, title: "Managementeinschätzung", text: result.managementEinschaetzung, testId: "v4-management-einschaetzung" },
+                  { num: 2, title: "Erste Empfehlung", text: result.ersteEmpfehlung, testId: "v4-erste-empfehlung" },
+                  { num: 3, title: "Grösstes Risiko", text: result.hauptrisiko, testId: "v4-hauptrisiko" },
+                  { num: 4, title: "Grösste Chance", text: result.hauptchance, testId: "v4-hauptchance" },
+                  { num: 5, title: "Integrationsprognose", text: result.integrationsprognose, testId: "v4-integrationsprognose" },
+                ].map(item => (
+                  <div key={item.num} style={{ marginBottom: 28 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                      <span style={{ width: 24, height: 24, borderRadius: 12, background: "#343A48", color: "#FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>{item.num}</span>
+                      <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>{item.title}</span>
+                    </div>
+                    <p style={{ fontSize: 14.5, lineHeight: 1.85, color: "#48484A", margin: 0 }} data-testid={item.testId}>{item.text}</p>
                   </div>
-                  <HintBox label="Integrationsprognose" color="#6E6E73">
-                    <p style={{ fontSize: 14.5, lineHeight: 1.75, color: "#48484A", margin: 0 }} data-testid="v4-integrationsprognose">{result.integrationsprognose}</p>
-                  </HintBox>
-                </div>
+                ))}
               </div>
 
               {/* \u00DCbergang */}
