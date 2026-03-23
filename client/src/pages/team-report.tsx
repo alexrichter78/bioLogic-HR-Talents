@@ -241,7 +241,7 @@ function SliderGroup({
   const dom = dominanceModeOf(triad);
 
   return (
-    <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
+    <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "#FFFFFF", padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
       <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>{title}</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(key => {
