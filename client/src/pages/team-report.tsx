@@ -856,38 +856,111 @@ export default function TeamReport() {
 
               {v4Preview && (() => {
                 const p = v4Preview;
-                const teamLevel = p.passungZumTeam === "hoch" ? 0 : p.passungZumTeam === "mittel" ? 1 : 2;
-                const funcLevel = p.beitragZurAufgabe === "hoch" ? 0 : p.beitragZurAufgabe === "mittel" ? 1 : p.beitragZurAufgabe === "gering" ? 2 : null;
-                const segColors = ["#1B7A3D", "#CC7700", "#C41E3A"];
-                const segLabels = ["passend", "teilweise passend", "kritisch"];
-                const renderBar = (activeIdx: number) => (
-                  <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
-                    <div style={{ display: "flex", gap: 3, flex: 1 }}>
-                      {[0, 1, 2].map(i => (
-                        <div key={i} style={{ flex: 1, height: 7, borderRadius: 3.5, background: i === activeIdx ? segColors[activeIdx] : "rgba(0,0,0,0.07)" }} />
-                      ))}
-                    </div>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: segColors[activeIdx], marginLeft: 10, whiteSpace: "nowrap" }}>{segLabels[activeIdx]}</span>
-                  </div>
-                );
+                const badgeColors: Record<string, { bg: string; text: string; border: string }> = {
+                  hoch: { bg: "#E8F5E9", text: "#1B7A3D", border: "#A5D6A7" },
+                  mittel: { bg: "#FFF3E0", text: "#CC7700", border: "#FFCC80" },
+                  gering: { bg: "#FFEBEE", text: "#C41E3A", border: "#EF9A9A" },
+                };
+                const badgeLabels: Record<string, string> = { hoch: "Passend", mittel: "Teilweise passend", gering: "Kritisch" };
+                const teamFit = p.passungZumTeam;
+                const funcFit = p.beitragZurAufgabe;
+                const tColors = badgeColors[teamFit] || badgeColors.gering;
+                const fColors = funcFit !== "nicht bewertbar" ? (badgeColors[funcFit] || badgeColors.gering) : null;
+
+                const funcText = funcFit === "hoch"
+                  ? "Die Person passt gut zum aktuellen Funktionsziel des Teams."
+                  : funcFit === "mittel"
+                  ? "Eingeschr\u00E4nkte Passung zum Funktionsziel durch Doppeldominanz."
+                  : funcFit === "gering"
+                  ? "Die Person arbeitet deutlich anders als das aktuelle Funktionsziel des Teams."
+                  : "";
+                const teamText = teamFit === "hoch"
+                  ? "Die Person passt gut zur bestehenden Teamlogik und Arbeitsweise."
+                  : teamFit === "mittel"
+                  ? "Teilweise Passung zum Team, Doppeldominanz vorhanden."
+                  : "Sichtbare Abweichung von der bestehenden Teamlogik und Arbeitsweise.";
+
+                const empfTags: string[] = [];
+                if (teamFit === "gering" || funcFit === "gering") empfTags.push("F\u00FChrung n\u00F6tig");
+                if (teamFit !== "hoch" || funcFit === "gering") empfTags.push("Mentoring");
+                if (teamFit !== "hoch") empfTags.push("Onboarding");
+
+                const empfText = p.gesamteinschaetzung === "Gut passend"
+                  ? "Gute Voraussetzungen f\u00FCr eine erfolgreiche Integration."
+                  : p.gesamteinschaetzung === "Kritisch"
+                  ? "Nur mit klarer F\u00FChrung & aktiver Integration einsetzen."
+                  : "Gezielte Begleitung empfohlen, um die Integration zu sichern.";
+
+                const empfColor = p.gesamteinschaetzung === "Gut passend" ? { bg: "#E8F5E9", border: "#A5D6A7", text: "#1B7A3D" }
+                  : p.gesamteinschaetzung === "Kritisch" ? { bg: "#FFEBEE", border: "#EF9A9A", text: "#C41E3A" }
+                  : { bg: "#FFF3E0", border: "#FFCC80", text: "#CC7700" };
+
+                const bBg = p.begleitungsbedarf === "gering" ? badgeColors.hoch : p.begleitungsbedarf === "mittel" ? badgeColors.mittel : badgeColors.gering;
+                const bLabel = p.begleitungsbedarf === "gering" ? "Gering" : p.begleitungsbedarf === "mittel" ? "Mittel" : "Hoch";
+                const bDesc = p.begleitungsbedarf === "gering" ? "Wenig Begleitung n\u00F6tig" : p.begleitungsbedarf === "mittel" ? "Begleitung empfohlen" : "Intensiv betreuungsbed\u00FCrftig";
+
                 return (
-                  <div style={{ marginTop: 20, padding: "18px 20px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(255,255,255,0.7)" }} data-testid="v4-preview">
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-                      <Zap style={{ width: 16, height: 16, color: "#3A9A5C" }} />
-                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>TeamCheck{roleName ? `: ${roleName}` : ""}</span>
+                  <div style={{ marginTop: 24 }} data-testid="v4-preview">
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                      <div style={{ width: 24, height: 24, borderRadius: 12, background: "#3478F6", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>3</div>
+                      <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>TeamCheck-Ergebnis</span>
                     </div>
-                    <div style={{ display: "grid", gridTemplateColumns: funcLevel !== null ? "1fr 1fr" : "1fr", gap: 20 }}>
-                      {funcLevel !== null && (
-                        <div>
-                          <div style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 2 }}>1. Bewertung</div>
-                          <div style={{ fontSize: 12, fontWeight: 600, color: "#48484A", marginBottom: 8 }}>Person vs Funktionsziel</div>
-                          {renderBar(funcLevel)}
+
+                    <div style={{ display: "grid", gridTemplateColumns: fColors ? "1fr 1fr" : "1fr", gap: 10, marginBottom: 10 }}>
+                      {fColors && (
+                        <div style={{ padding: "14px 16px", borderRadius: 12, border: `1px solid ${fColors.border}`, background: `${fColors.bg}` }} data-testid="v4-card-func">
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                              <Zap style={{ width: 14, height: 14, color: fColors.text }} />
+                              <span style={{ fontSize: 12.5, fontWeight: 700, color: "#1D1D1F" }}>Passung zum Funktionsziel</span>
+                            </div>
+                            <span style={{ fontSize: 11, fontWeight: 700, color: fColors.text, background: `${fColors.text}12`, padding: "2px 8px", borderRadius: 6 }}>{"\u25CF"} {badgeLabels[funcFit]}</span>
+                          </div>
+                          <p style={{ fontSize: 11.5, color: "#6E6E73", margin: "6px 0 0", lineHeight: 1.5 }}>{funcText}</p>
                         </div>
                       )}
-                      <div>
-                        <div style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 2 }}>{funcLevel !== null ? "2. Bewertung" : "Bewertung"}</div>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: "#48484A", marginBottom: 8 }}>Person zum Team</div>
-                        {renderBar(teamLevel)}
+                      <div style={{ padding: "14px 16px", borderRadius: 12, border: `1px solid ${tColors.border}`, background: `${tColors.bg}` }} data-testid="v4-card-team">
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <Zap style={{ width: 14, height: 14, color: tColors.text }} />
+                            <span style={{ fontSize: 12.5, fontWeight: 700, color: "#1D1D1F" }}>Passung zum Team</span>
+                          </div>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: tColors.text, background: `${tColors.text}12`, padding: "2px 8px", borderRadius: 6 }}>{"\u25CF"} {badgeLabels[teamFit]}</span>
+                        </div>
+                        <p style={{ fontSize: 11.5, color: "#6E6E73", margin: "6px 0 0", lineHeight: 1.5 }}>{teamText}</p>
+                      </div>
+                    </div>
+
+                    <div style={{ padding: "12px 16px", borderRadius: 12, border: `1px solid ${empfColor.border}`, background: empfColor.bg, marginBottom: 10 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                        <Zap style={{ width: 14, height: 14, color: empfColor.text }} />
+                        <span style={{ fontSize: 12.5, fontWeight: 700, color: "#1D1D1F" }}>Empfehlung</span>
+                      </div>
+                      <p style={{ fontSize: 11.5, color: "#48484A", margin: "0 0 8px", lineHeight: 1.5 }}>{empfText}</p>
+                      {empfTags.length > 0 && (
+                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                          {empfTags.map((t, i) => (
+                            <span key={i} style={{ fontSize: 10.5, fontWeight: 600, color: empfColor.text, background: `${empfColor.text}10`, padding: "3px 10px", borderRadius: 8, border: `1px solid ${empfColor.text}20` }}>{"\u2713"} {t}</span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: fColors ? "1fr 1fr 1fr" : "1fr 1fr", gap: 10 }}>
+                      {fColors && (
+                        <div style={{ padding: "12px 14px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
+                          <div style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>Funktionsziel</div>
+                          <div style={{ fontSize: 16, fontWeight: 800, color: fColors.text }}>{badgeLabels[funcFit]}</div>
+                        </div>
+                      )}
+                      <div style={{ padding: "12px 14px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>Team-Passung</div>
+                        <div style={{ fontSize: 16, fontWeight: 800, color: tColors.text }}>{badgeLabels[teamFit]}</div>
+                      </div>
+                      <div style={{ padding: "12px 14px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: "#A0A0A5", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>Integrationsaufwand</div>
+                        <div style={{ fontSize: 16, fontWeight: 800, color: bBg.text }}>{bLabel}</div>
+                        <div style={{ fontSize: 10, color: "#8E8E93", marginTop: 2 }}>{bDesc}</div>
                       </div>
                     </div>
                   </div>
