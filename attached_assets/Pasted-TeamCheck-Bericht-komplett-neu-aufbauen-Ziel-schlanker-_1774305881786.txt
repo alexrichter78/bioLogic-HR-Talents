@@ -1,0 +1,472 @@
+TeamCheck Bericht komplett neu aufbauen
+Ziel: schlanker, verständlicher, hochwertiger PDF-Bericht
+
+Wir bauen den bisherigen TeamCheck / Integrationsanalyse-Bericht neu.
+Der bisherige Bericht ist inhaltlich grundsätzlich richtig, aber:
+
+zu lang in der Seitenanzahl
+zu viele Kapitel mit ähnlichem Inhalt
+an manchen Stellen zu kurze Texte
+zu viel Wiederholung
+für normale Führungskräfte teilweise zu technisch oder zu zerstückelt
+
+Der neue Bericht soll deshalb:
+
+nur noch 6 Inhaltsseiten haben
+klarer strukturiert sein
+weniger Wiederholungen enthalten
+pro Seite einen echten Zweck haben
+sprachlich einfach, hochwertig und verständlich sein
+für normale Führungskräfte, HR und Geschäftsführung gut lesbar sein
+in PDF optisch ruhig, klar und professionell wirken
+1. BERICHTSNAME
+
+Verwende als Titel:
+
+Integrationsanalyse
+
+Untertitel bzw. Rollenname z. B.:
+
+Fachinformatiker
+
+2. EINLEITUNG AUF SEITE 1
+
+Direkt unter Titel und Rollenname diese Einleitung anzeigen:
+
+Dieser Bericht zeigt, wie die Person im bestehenden Team voraussichtlich wirken wird. Er hilft dabei, früh zu erkennen, wo Zusammenarbeit gut gelingen kann und wo im Alltag mehr Führung, Klarheit oder Begleitung nötig ist.
+
+Unterschiede sind dabei nicht automatisch negativ. Sie können ein Team sinnvoll ergänzen, brauchen aber klare Erwartungen und gute Abstimmung, damit daraus Stärke statt Reibung entsteht.
+
+Die Aussagen beschreiben dabei keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse ist wertfrei zu verstehen und dient als Orientierung für die Einschätzung von Passung und Wirksamkeit. Da jede Person individuell ist, ersetzt sie keine Einzelfallbetrachtung, sondern ergänzt diese um eine strukturierte und fundierte Entscheidungsgrundlage.
+3. NEUE BERICHTSSTRUKTUR
+
+Der Bericht soll künftig genau diese 6 Hauptseiten / Kapitel enthalten:
+
+Gesamtbewertung
+Warum dieses Ergebnis entsteht
+Wirkung im Arbeitsalltag
+Chancen und Risiken dieser Besetzung
+Verhalten unter Druck und in belasteten Phasen
+Was jetzt wichtig ist
+
+Wichtig:
+
+Keine weiteren Hauptkapitel mehr
+Keine zusätzliche Managementübersicht als eigene Seite
+Kein Kapitel „Was ohne diese Besetzung bestehen bleibt“ im Standardbericht
+Kein künstliches Aufblasen mit Mini-Unterkapiteln
+Lieber weniger Kapitel, dafür bessere Absätze
+4. SPRACHSTIL
+
+Der Bericht soll sprachlich folgende Regeln einhalten:
+
+Stilregeln
+verständlich für normale Führungskräfte
+keine unnötig technischen Begriffe
+keine psychologischen Fachwörter
+keine abgehackten Sätze
+keine KI-typische Worthülse
+hochwertig, klar, ruhig, professionell
+nicht überkompliziert
+nicht belehrend
+keine ständige Wiederholung derselben Aussage
+eher natürliche Business-Sprache
+Wichtig
+
+Nicht ständig Begriffe wie:
+
+Dominanzstruktur
+Ausprägungsdifferenz
+Strukturkonstellation
+psychodynamisch
+systemische Passungsachse
+
+verwenden.
+
+Stattdessen lieber:
+
+Arbeitsweise
+Schwerpunkt
+Passung
+Zusammenarbeit
+Aufgabenanforderung
+Wirkung im Alltag
+Führung und Begleitung
+5. TEXTLOGIK DES BERICHTS
+
+Der Bericht basiert auf zwei Kernaussagen:
+
+A
+
+Passung der Person zum Team
+
+B
+
+Passung der Person zum Funktionsziel / zur Aufgabe
+
+Beides muss sauber getrennt werden.
+
+Es muss im Bericht klar verständlich sein:
+
+Eine Person kann gut zum Team passen
+und gleichzeitig nur bedingt oder wenig zur eigentlichen Aufgabenanforderung passen
+
+Genau diese Differenz ist der Kern des Berichts.
+
+6. SEITE 1 – GESAMTBEWERTUNG
+Überschrift
+
+1. Gesamtbewertung
+
+Ziel dieser Seite
+
+Der Leser muss nach dieser Seite sofort verstehen:
+
+Passt die Person ins Team?
+Passt die Person zur Aufgabe?
+Wo liegt die Hauptstärke?
+Wo liegt die Hauptabweichung?
+Aufbau
+
+Auf Seite 1 sollen stehen:
+
+A. Haupttext
+
+Ein zusammenhängender Absatz von ca. 2 bis 4 Absätzen.
+
+B. Kurzüberblick / Kennzahlenblock
+
+Mit 4 Zeilen:
+
+Passung zum Team
+Beitrag zur Aufgabe
+Hauptstärke
+Hauptabweichung
+Textvorlage für dieses konkrete Beispiel
+
+Für den konkreten Fall bitte folgenden Text verwenden:
+
+Die Person fügt sich voraussichtlich gut in das bestehende Team ein. Die Zusammenarbeit dürfte im Alltag reibungsarm verlaufen, weil Person und Team in ihrer Grundausrichtung ähnliche Schwerpunkte setzen. Der Einstieg wird dadurch erleichtert und die Integration in das bestehende Umfeld ist grundsätzlich positiv zu bewerten.
+
+Für die konkreten Anforderungen der Aufgabe bringt die Person jedoch nicht die ideale Stärke mit. Das Team profitiert von der Besetzung vor allem in der Zusammenarbeit und im Anschluss an bestehende Abläufe. Im eigentlichen Funktionsziel des Bereichs, hier mit dem Schwerpunkt Analyse und Struktur, ist die Passung dagegen geringer ausgeprägt.
+
+Damit ergibt sich ein gemischtes, aber gut einordbares Bild: Im Team passend, für die zentrale Aufgabenanforderung nur eingeschränkt ideal. Die Besetzung kann funktionieren, sollte fachlich aber nicht sich selbst überlassen werden. Gerade dort, wo systematisches Vorgehen, saubere Prüfung, klare Struktur und analytische Absicherung wichtig sind, braucht es bewusste Führung und klare Erwartungen.
+Kurzüberblick
+Passung zum Team: hoch
+Beitrag zur Aufgabe: gering
+Hauptstärke: gute Anschlussfähigkeit im bestehenden Team
+Hauptabweichung: geringe natürliche Nähe zum Funktionsziel „Analyse und Struktur“
+7. SEITE 2 – WARUM DIESES ERGEBNIS ENTSTEHT
+Überschrift
+
+2. Warum dieses Ergebnis entsteht
+
+Ziel
+
+Hier soll erklärt werden, warum Team-Passung und Aufgaben-Passung auseinanderfallen.
+
+Struktur
+
+Diese Seite soll 3 inhaltliche Blöcke haben:
+
+1. Was zwischen Person und Team gut zusammenpasst
+2. Wo die Abweichung zur Aufgabe liegt
+3. Warum Team-Passung und Aufgaben-Passung auseinanderfallen
+Textvorlage
+Diese Einschätzung entsteht aus dem Zusammenspiel zwischen Person, Team und Funktionsziel. Dabei zeigt sich ein klares Muster: Die Person passt in ihrer Arbeitsweise gut zum bestehenden Team, trifft aber die zentrale Anforderung der Aufgabe nicht in idealer Weise.
+
+Person und Team setzen in ihrer Grundausrichtung ähnliche Schwerpunkte. Dadurch ist zu erwarten, dass der Einstieg in das Team vergleichsweise leicht gelingt. Zusammenarbeit, Abstimmung und täglicher Austausch dürften ohne grössere Reibung möglich sein. Die Person wird im bestehenden Umfeld voraussichtlich nicht als Fremdkörper wirken, sondern rasch Anschluss finden.
+
+Das Funktionsziel des Bereichs liegt im Schwerpunkt Analyse und Struktur. Genau dort liegt jedoch nicht die stärkste natürliche Seite der Person. Das bedeutet nicht, dass die Aufgabe grundsätzlich nicht erfüllt werden kann. Es bedeutet aber, dass die Rolle an einer Stelle besonders viel verlangt, in der die Person ihre stärkste Wirkung nicht automatisch mitbringt.
+
+Für eine Rolle wie Fachinformatiker ist das relevant. In diesem Umfeld geht es häufig um strukturiertes Vorgehen, saubere Prüfung, systematische Fehlersuche, klare Nachvollziehbarkeit, verlässliche Dokumentation und analytische Absicherung. Wenn diese Punkte im Arbeitsalltag zentral sind, braucht es eine Person, die sich genau in diesem Funktionsziel besonders natürlich bewegt. Im vorliegenden Fall ist diese Nähe nur eingeschränkt vorhanden.
+
+Genau daraus ergibt sich die gemischte Gesamteinschätzung. Die Person kann im Team gut funktionieren und dennoch nicht ideal zur eigentlichen Kernanforderung der Aufgabe passen. Das ist kein Widerspruch, sondern ein häufiger Fall in der Praxis.
+
+Sozial und strukturell im Team kann die Besetzung passend sein. Fachlich-funktional kann dennoch ein Schwerpunkt fehlen. Deshalb ist diese Besetzung nicht pauschal kritisch zu sehen, aber auch nicht einfach nur gut passend. Sie ist im Team anschlussfähig, braucht aber im fachlichen Aufgabenkern mehr Führung, Klarheit und bewusste Steuerung.
+8. SEITE 3 – WIRKUNG IM ARBEITSALLTAG
+Überschrift
+
+3. Wirkung im Arbeitsalltag
+
+Ziel
+
+Der Leser soll verstehen, wie sich diese Besetzung im normalen Alltag zeigen wird.
+
+Inhalt
+
+Diese Seite bündelt:
+
+Zusammenarbeit
+Kommunikation
+Tempo und Prioritäten
+Verantwortung
+Bezug zur konkreten Rolle
+
+Nicht in 5 Mini-Kästen, sondern in 2 bis 4 guten Absätzen.
+
+Textvorlage
+Im normalen Arbeitsalltag dürfte die Person schnell Anschluss an das bestehende Team finden. Abstimmungen werden voraussichtlich unkompliziert verlaufen, weil Person und Team ähnliche Schwerpunkte setzen und sich im täglichen Miteinander relativ schnell aufeinander einstellen können. Das reduziert Reibung, erleichtert die Zusammenarbeit und macht den Einstieg insgesamt belastbar.
+
+Auch in der Kommunikation sind zunächst keine grösseren Irritationen zu erwarten. Die Person dürfte vom Team eher als passend, verständlich und anschlussfähig wahrgenommen werden. Gerade in den ersten Wochen ist das ein klarer Vorteil, weil sich weniger Missverständnisse aus der Art der Zusammenarbeit ergeben als bei einer deutlich abweichenden Besetzung.
+
+Im Aufgabenkern zeigt sich jedoch eine zweite Seite. Dort, wo die Rolle vor allem strukturiertes Arbeiten, analytische Tiefe, saubere Prüfung und klare Nachvollziehbarkeit verlangt, könnte die Person weniger natürliche Stärke mitbringen, als die Aufgabe eigentlich fordert. Das muss nicht sofort sichtbar werden, weil eine gute Teamintegration diesen Punkt anfangs leicht überdecken kann. Gerade deshalb ist es wichtig, Alltag und Aufgabenanforderung bewusst auseinanderzuhalten.
+
+Für die Rolle als Fachinformatiker heisst das konkret: Im Teamgefüge ist die Besetzung wahrscheinlich unkompliziert. Im fachlichen Alltag kann es jedoch Situationen geben, in denen mehr Präzision, mehr systematische Durcharbeitung oder mehr analytische Absicherung nötig ist, als die Person von sich aus einbringt. Besonders bei komplexeren Analysen, sauberer Dokumentation, strukturiertem Prüfen oder konsequenter Fehlerverfolgung sollte Führung deshalb bewusst hinschauen.
+
+Auch bei Tempo und Prioritäten kann das relevant werden. Wenn Aufgaben unter Zeitdruck erledigt werden müssen, besteht die Gefahr, dass eher auf pragmatische Lösung und zügige Umsetzung gesetzt wird, während die Rolle zugleich ein höheres Mass an Struktur und analytischer Sorgfalt verlangt. Genau an dieser Stelle entscheidet sich dann, ob die gute Integration im Team auch zu stabiler Leistung im eigentlichen Aufgabenfokus führt.
+9. SEITE 4 – CHANCEN UND RISIKEN DIESER BESETZUNG
+Überschrift
+
+4. Chancen und Risiken dieser Besetzung
+
+Ziel
+
+Klarer Management-Mehrwert.
+
+Aufbau
+
+Seite in zwei Abschnitte teilen:
+
+Chancen
+
+3 Punkte
+
+Risiken
+
+3 Punkte
+
+Danach ein kurzer Einordnungstext.
+
+Textvorlage
+Chancen
+
+1. Schneller Anschluss an das Team
+Die Person bringt gute Voraussetzungen mit, um im bestehenden Team rasch anzukommen. Das erleichtert die ersten Wochen und reduziert unnötige Reibung im Einstieg.
+
+2. Stabile Zusammenarbeit im Alltag
+Da Person und Team ähnliche Schwerpunkte setzen, ist die Wahrscheinlichkeit hoch, dass Abstimmung, Miteinander und tägliche Zusammenarbeit tragfähig verlaufen. Das entlastet Führung und Team im Integrationsprozess.
+
+3. Geringerer sozialer Integrationsaufwand
+Die Besetzung braucht voraussichtlich weniger Energie im zwischenmenschlichen Anschluss als eine deutlich abweichende Person. Das schafft Ruhe und Stabilität im Teamgefüge.
+
+Risiken
+
+1. Die Hauptanforderung der Aufgabe wird nicht ideal verstärkt
+Das Funktionsziel Analyse und Struktur wird durch die Besetzung nicht in optimaler Weise unterstützt. Gerade dort, wo die Rolle besondere Sorgfalt und analytische Tiefe verlangt, bleibt eine Lücke möglich.
+
+2. Gute Teamintegration kann fachliche Schwächen verdecken
+Weil die Person im Team voraussichtlich gut ankommt, kann leicht übersehen werden, dass die eigentliche Aufgabenpassung nur begrenzt gegeben ist. Das Risiko liegt also nicht primär in der Zusammenarbeit, sondern in einer zu positiven Gesamtwahrnehmung durch die gute Integration.
+
+3. Das Team wird eher stabilisiert als gezielt ergänzt
+Die Besetzung stärkt eher das, was im Team bereits gut funktioniert. Das bringt Verlässlichkeit, löst aber nicht automatisch die Anforderung, die im Bereich aktuell besonders gebraucht wird. Was strukturell oder analytisch fehlt, wird durch eine ähnliche Person nicht automatisch ergänzt.
+
+Einordnung
+
+Die Chancen dieser Besetzung liegen klar auf der Integrationsseite. Die Risiken liegen stärker auf der Leistungs- und Aufgabenebene. Genau deshalb ist die Besetzung nicht grundsätzlich falsch, aber auch nicht einfach nur unkritisch. Sie braucht eine Führung, die den Unterschied zwischen guter Teamwirkung und voller Aufgabenpassung sauber im Blick behält.
+10. SEITE 5 – VERHALTEN UNTER DRUCK UND IN BELASTETEN PHASEN
+Überschrift
+
+5. Verhalten unter Druck und in belasteten Phasen
+
+Ziel
+
+Belastungssituationen gesondert beschreiben.
+
+Textvorlage
+Unter Druck zeigt sich die natürliche Arbeitsweise eines Menschen meist deutlicher als im Normalbetrieb. Was im Alltag noch ausgeglichen oder angepasst wirkt, tritt dann klarer hervor. Stärken werden sichtbarer, aber auch Grenzen.
+
+Im vorliegenden Fall ist davon auszugehen, dass die Zusammenarbeit im Team auch unter Belastung vergleichsweise stabil bleibt. Da Person und Team in ihrer Grundausrichtung ähnlich arbeiten, ist das Risiko akuter Teamreibung nicht besonders hoch. Gerade in intensiven Phasen kann das ein Vorteil sein, weil Abstimmungswege und gegenseitiges Verständnis nicht erst mühsam hergestellt werden müssen.
+
+Die anspruchsvollere Seite liegt erneut im Aufgabenkern. Wenn unter Druck nicht nur Tempo, sondern zugleich analytische Sorgfalt, strukturierte Prüfung und saubere Absicherung gefragt sind, steigt die Anforderung an Führung deutlich. In solchen Situationen reicht gute Teamanschlussfähigkeit allein nicht aus. Dann braucht es klare Prioritäten, eindeutige Verantwortlichkeiten und eine bewusste Sicherung von Qualität und Struktur.
+
+Für die Praxis bedeutet das: Unter Belastung sollte besonders klar definiert sein, was zuerst sauber geprüft werden muss, wo keine Abkürzungen entstehen dürfen und welche Standards auch unter Zeitdruck gelten. Gerade in fachlich sensiblen oder fehleranfälligen Bereichen ist es wichtig, dass Führung nicht nur auf Geschwindigkeit achtet, sondern bewusst auch auf Nachvollziehbarkeit, Vollständigkeit und analytische Absicherung.
+
+Dort zeigt sich am deutlichsten, ob die Person die Rolle wirklich tragen kann oder ob sie im Aufgabenkern dauerhaft zu viel Führung und Nachsteuerung benötigt.
+11. SEITE 6 – WAS JETZT WICHTIG IST
+Überschrift
+
+6. Was jetzt wichtig ist
+
+Ziel
+
+Abschluss mit klaren Handlungsempfehlungen.
+
+Aufbau
+
+6 nummerierte Empfehlungen.
+
+Textvorlage
+1. Erwartungen an die Rolle früh klären
+Von Beginn an sollte klar besprochen werden, was in der Rolle fachlich besonders wichtig ist. Nicht nur Zusammenarbeit und Teamanschluss, sondern vor allem auch Struktur, Analyse, Sorgfalt und Nachvollziehbarkeit müssen klar benannt werden.
+
+2. Analytische Anforderungen bewusst absichern
+Dort, wo die Rolle eine hohe Qualität in Prüfung, Dokumentation, Fehleranalyse oder strukturiertem Vorgehen verlangt, sollten klare Standards gesetzt werden. Die Person sollte wissen, woran gute Arbeit in diesem Bereich konkret gemessen wird.
+
+3. Gute Integration nicht mit voller Eignung gleichsetzen
+Wenn der Einstieg im Team gut läuft, entsteht schnell der Eindruck, die Besetzung passe insgesamt vollständig. Genau hier sollte Führung bewusst unterscheiden: soziale Integration ist ein Vorteil, ersetzt aber nicht automatisch die Passung zum eigentlichen Funktionsziel.
+
+4. Früh Rückmeldung geben
+Nach etwa 30 bis 45 Tagen sollte nicht nur gefragt werden, ob die Zusammenarbeit gut läuft, sondern auch, wie sich die Person im fachlichen Kern der Rolle zeigt. Gerade dort ist eine frühe Standortbestimmung wichtig.
+
+5. Qualität und Struktur aktiv führen
+Wenn die Rolle analytische Sorgfalt verlangt, sollte Führung diesen Bereich aktiv begleiten. Das kann durch klare Vorgaben, definierte Prüfschritte, verbindliche Standards oder engere Rückkopplung geschehen.
+
+6. Entwicklung realistisch einschätzen
+Die Besetzung kann im Team gut funktionieren und trotzdem im Aufgabenkern länger brauchen oder bewusste Unterstützung benötigen. Diese Einschätzung sollte weder zu kritisch noch zu optimistisch sein, sondern nüchtern geführt werden.
+12. ABSCHLUSS IM FOOTER
+
+Am Ende des Berichts immer anzeigen:
+
+bioLogic · Integrationsanalyse
+Erstellt am [DATUM]
+
+Diese Analyse basiert auf dem bioLogic-Modell und ergänzt die persönliche Einschätzung. Sie ersetzt kein Gespräch und keine individuelle Beurteilung.
+13. WICHTIGE LAYOUT-REGELN FÜR PDF
+Allgemein
+weißer Hintergrund
+ruhiges Layout
+klare Typografie
+keine überladenen Boxen
+nicht zu viele Icons
+genügend Weißraum
+professionell und hochwertig
+kein „bunter KI-Look“
+Seitenlogik
+
+Jede Seite soll oben haben:
+
+Seitenzahl
+Kapitelüberschrift
+optional kleiner Untertitel
+Typografie
+Titel groß und klar
+Fließtext gut lesbar
+ausreichend Zeilenabstand
+keine zu langen Textblöcke ohne Absatz
+keine mini-kleinen Texte
+Inhaltliche Gestaltung
+keine Seite nur mit 2 Mini-Sätzen
+keine Seite mit fünf fast identischen Unterpunkten
+lieber 2 bis 4 gute Absätze
+nummerierte Punkte nur dort, wo es sinnvoll ist
+14. WAS AUS DEM ALTEN BERICHT ENTFERNT WERDEN SOLL
+
+Folgende Kapitel oder Elemente im Standardbericht bitte entfernen oder nicht mehr als eigene Seite darstellen:
+
+Managementübersicht als eigenes Kapitel
+So würde die Person im Team wirken als eigene Seite
+Was ohne diese Besetzung bestehen bleibt
+Am Anfang / später als eigene Untermini-Kapitel
+zu viele kleine Einzelüberschriften mit fast gleichem Inhalt
+Wiederholungen derselben Kernaussage
+15. LOGIK FÜR DYNAMISCHE TEXTGENERIERUNG
+
+Der Bericht soll künftig grundsätzlich immer nach folgendem Muster generiert werden:
+
+Wenn Team-Passung hoch, Aufgabenpassung gering:
+sozial stabile Integration betonen
+fachliche Lücke im Funktionsziel betonen
+Führung / Begleitung / Klarheit empfehlen
+Wenn Team-Passung hoch, Aufgabenpassung hoch:
+sehr gute Gesamtpassung
+schneller Anschluss
+geringe Reibung
+Fokus auf sauberes Onboarding und Erwartungsklarheit
+Wenn Team-Passung gering, Aufgabenpassung hoch:
+fachlich passend, aber Integrationsrisiko
+Teamdynamik kritisch
+Führung und Integration sehr wichtig
+Wenn Team-Passung gering, Aufgabenpassung gering:
+klare kritische Passung
+hohe Reibung und geringe Zielnähe
+nur mit erheblicher Führung oder nicht empfehlen
+
+Wichtig:
+Texte dürfen nicht plump schematisch klingen.
+Die Logik soll klar sein, aber die Sprache natürlich.
+
+16. SPEZIFISCHER FALL DIESES BERICHTS
+
+Für den aktuell vorliegenden Fall gelten inhaltlich diese Aussagen:
+
+Rolle: Fachinformatiker
+Person passt gut zum bestehenden Team
+Person passt weniger gut zum Funktionsziel „Analyse und Struktur“
+die soziale und teambezogene Integration ist eher positiv
+die eigentliche fachlich-strukturelle Hauptanforderung wird nicht ideal getroffen
+deshalb: gute Teamwirkung, aber begrenzte Passung zur eigentlichen Aufgabenlogik
+entscheidend ist bewusste Führung im fachlichen Kern
+
+Diese Logik muss sich durch den ganzen Bericht konsistent ziehen.
+
+17. TECHNISCHE UMSETZUNGSHINWEISE FÜR REPLIT
+Ziel
+
+Bitte die Berichtserstellung so anpassen, dass:
+
+nur noch diese 6 Kapitel gerendert werden
+die Textblöcke sauber seitenweise verteilt werden
+keine unnötigen Seitenumbrüche entstehen
+Absätze sinnvoll zusammenbleiben
+lange Abschnitte sauber umbrechen
+Footer auf jeder Seite sauber sitzt
+Titel und Kapitelüberschriften einheitlich gestaltet sind
+Falls HTML zu PDF genutzt wird
+
+Bitte besonders achten auf:
+
+page-break-inside: avoid bei wichtigen Blöcken
+konsistente margin, line-height, font-size
+keine abgeschnittenen Boxen
+kein Umbruch mitten in Überschrift + erstem Absatz
+Footer nicht über Text legen
+Falls React / HTML Template genutzt wird
+
+Bitte den Bericht modular aufbauen:
+
+ReportHeader
+IntroBlock
+SectionPage
+SummaryBox
+Footer
+18. OPTIONAL: KURZBOXEN AUF SEITE 1
+
+Falls optisch gewünscht, können auf Seite 1 vier kleine Boxen oder Zeilen eingebaut werden:
+
+Passung zum Team
+Beitrag zur Aufgabe
+Hauptstärke
+Hauptabweichung
+
+Aber bitte schlicht und nicht überladen.
+
+19. WAS NICHT PASSIEREN DARF
+Bericht wieder auf 9 bis 10 Seiten aufblasen
+gleiche Aussage in 4 Kapiteln wiederholen
+zu viele Miniboxen
+zu viel technische Sprache
+zu kurze Texte pro Kapitel
+Floskeln ohne Praxisbezug
+generische Aussagen, die auf jede Rolle passen würden
+PDF optisch überladen machen
+20. ENDZIEL
+
+Der neue Bericht soll sich lesen wie:
+
+klar
+ruhig
+hochwertig
+verständlich
+entscheidungsrelevant
+praxisnah
+nicht zu lang
+nicht zu dünn
+
+Er soll für Führungskräfte sofort greifbar machen:
+
+Wie wirkt diese Person im Team?
+Wie gut passt sie zur Aufgabe?
+Wo liegt die Stärke?
+Wo liegt die Grenze?
+Was ist jetzt konkret zu tun?
