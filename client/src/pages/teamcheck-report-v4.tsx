@@ -188,9 +188,6 @@ export default function TeamCheckReportV4() {
             {/* === HERO: Gesamteinsch\u00E4tzung prominent === */}
             <div style={{ padding: "28px 32px 0" }}>
               <div style={{ margin: "0 0 24px" }} data-testid="v4-hero-bewertung">
-                <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em" }}>Gesamteinsch{"\u00E4"}tzung</div>
-                </div>
                 <div style={{ fontSize: 28, fontWeight: 800, color: bCol, marginBottom: 10, letterSpacing: "-0.02em" }}>{result.gesamteinschaetzung}</div>
                 <p style={{ fontSize: 15, lineHeight: 1.75, color: "#48484A", margin: 0 }} data-testid="v4-kurzfazit">{result.kurzfazit}</p>
 
