@@ -1057,9 +1057,16 @@ function evaluateStrategicFit(
 
   let strategicFit: "passend" | "teilweise" | "abweichend";
   if (personDominantInGoal) {
-    strategicFit = "passend";
-  } else if (personSecondaryInGoal && personGoalValue >= 30) {
-    strategicFit = "teilweise";
+    const sorted = Object.entries(personProfile)
+      .sort(([, a], [, b]) => b - a);
+    const gap = sorted[0][1] - sorted[1][1];
+    if (gap >= 12) {
+      strategicFit = "passend";
+    } else if (gap > 5) {
+      strategicFit = "teilweise";
+    } else {
+      strategicFit = "abweichend";
+    }
   } else {
     strategicFit = "abweichend";
   }
