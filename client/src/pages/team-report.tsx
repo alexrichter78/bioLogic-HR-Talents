@@ -742,7 +742,7 @@ export default function TeamReport() {
         </div>
       </div>
 
-      <div className="mx-auto px-5" style={{ maxWidth: 1100, paddingTop: 135, paddingBottom: 40 }}>
+      <div className="mx-auto px-6" style={{ maxWidth: 1100, paddingTop: 135, paddingBottom: 40 }}>
 
         <div style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }} data-testid="accordion-teamcheck">
           <button
