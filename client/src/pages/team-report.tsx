@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation } from "wouter";
-import { AlertTriangle, Download, Check, Users, ChevronDown, Zap } from "lucide-react";
+import { AlertTriangle, Download, Check, Users, ChevronDown, Zap, BarChart3, Handshake, Rocket } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeTeamReport } from "@/lib/team-report-engine";
@@ -832,24 +832,33 @@ export default function TeamReport() {
                   </p>
                   <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
                     {([
-                      { value: "", label: "Keins" },
-                      { value: "umsetzung", label: "Umsetzung" },
-                      { value: "analyse", label: "Analyse" },
-                      { value: "zusammenarbeit", label: "Zusammenarbeit" },
-                    ] as { value: typeof teamGoal; label: string }[]).map(opt => (
-                      <button
-                        key={opt.value}
-                        data-testid={`goal-option-${opt.value || "none"}`}
-                        onClick={() => setTeamGoal(opt.value)}
-                        style={{
-                          height: 32, padding: "0 14px", borderRadius: 8, cursor: "pointer",
-                          fontSize: 13, fontWeight: 500, border: "none",
-                          color: teamGoal === opt.value ? "#007AFF" : "#6E6E73",
-                          background: teamGoal === opt.value ? "rgba(0,122,255,0.08)" : "rgba(0,0,0,0.04)",
-                          transition: "all 0.15s ease",
-                        }}
-                      >{opt.label}</button>
-                    ))}
+                      { value: "" as typeof teamGoal, label: "Keins", icon: null },
+                      { value: "umsetzung" as typeof teamGoal, label: "Umsetzung", icon: Rocket },
+                      { value: "analyse" as typeof teamGoal, label: "Analyse", icon: BarChart3 },
+                      { value: "zusammenarbeit" as typeof teamGoal, label: "Zusammenarbeit", icon: Handshake },
+                    ]).map(opt => {
+                      const active = teamGoal === opt.value;
+                      const Icon = opt.icon;
+                      return (
+                        <button
+                          key={opt.value}
+                          data-testid={`goal-option-${opt.value || "none"}`}
+                          onClick={() => setTeamGoal(opt.value)}
+                          style={{
+                            height: 34, padding: "0 14px", borderRadius: 10, cursor: "pointer",
+                            fontSize: 13, fontWeight: active ? 600 : 500,
+                            border: active ? "1.5px solid #007AFF" : "1px solid rgba(0,0,0,0.1)",
+                            color: active ? "#007AFF" : "#48484A",
+                            background: active ? "rgba(0,122,255,0.04)" : "#fff",
+                            transition: "all 0.15s ease",
+                            display: "flex", alignItems: "center", gap: 5,
+                          }}
+                        >
+                          {Icon && <Icon style={{ width: 14, height: 14 }} />}
+                          {opt.label}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
