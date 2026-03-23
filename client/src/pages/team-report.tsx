@@ -830,7 +830,7 @@ export default function TeamReport() {
                   <p style={{ fontSize: 12, color: "#8E8E93", margin: "4px 0 0", lineHeight: 1.5 }}>
                     {"Was steht f\u00FCr das Team im Vordergrund? "}<b>Umsetzung</b>{" = Tempo und Ergebnisse, "}<b>Analyse</b>{" = Struktur und Genauigkeit, "}<b>Zusammenarbeit</b>{" = Austausch und Miteinander."}
                   </p>
-                  <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                  <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
                     {([
                       { value: "" as typeof teamGoal, label: "Keins", icon: null },
                       { value: "umsetzung" as typeof teamGoal, label: "Umsetzung", icon: Rocket },
@@ -845,13 +845,20 @@ export default function TeamReport() {
                           data-testid={`goal-option-${opt.value || "none"}`}
                           onClick={() => setTeamGoal(opt.value)}
                           style={{
-                            height: 34, padding: "0 14px", borderRadius: 10, cursor: "pointer",
-                            fontSize: 13, fontWeight: active ? 600 : 500,
-                            border: active ? "1.5px solid #007AFF" : "1px solid rgba(0,0,0,0.1)",
-                            color: active ? "#007AFF" : "#48484A",
-                            background: active ? "rgba(0,122,255,0.04)" : "#fff",
-                            transition: "all 0.15s ease",
-                            display: "flex", alignItems: "center", gap: 5,
+                            height: 36, padding: "0 16px", borderRadius: 12, cursor: "pointer",
+                            fontSize: 13, fontWeight: 600,
+                            border: active ? "1.5px solid #0071E3" : "1.5px solid rgba(0,0,0,0.12)",
+                            color: active ? "#0071E3" : "#48484A",
+                            background: active ? "transparent" : "transparent",
+                            boxShadow: active ? "0 2px 8px rgba(0,113,227,0.15)" : "none",
+                            transition: "all 200ms ease",
+                            display: "flex", alignItems: "center", gap: 6,
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!active) (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,113,227,0.04)";
+                          }}
+                          onMouseLeave={(e) => {
+                            (e.currentTarget as HTMLButtonElement).style.background = "transparent";
                           }}
                         >
                           {Icon && <Icon style={{ width: 14, height: 14 }} />}
