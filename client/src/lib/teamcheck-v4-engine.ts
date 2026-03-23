@@ -225,37 +225,37 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
 function buildKurzfazit(gesamt: string, bew: string, isLeader: boolean): string {
   if (bew === "Gut passend") {
     return isLeader
-      ? "Die Person bringt eine Arbeitsweise mit, die gut zum bestehenden Team passt. Der Einstieg in die F\u00FChrungsrolle d\u00FCrfte vergleichsweise reibungsarm verlaufen."
-      : "Die Person passt gut zum bestehenden Team. Der Einstieg d\u00FCrfte reibungsarm verlaufen und die Zusammenarbeit kann sich schnell einspielen.";
+      ? "Die Person bringt eine Arbeitsweise mit, die gut zum bestehenden Team passt. Der Einstieg in die Führungsrolle dürfte vergleichsweise reibungsarm verlaufen. Das Team wird die Führung voraussichtlich gut annehmen, weil Stil und Erwartung zusammenpassen. Damit kann sich Vertrauen früh aufbauen und die Zusammenarbeit schnell produktiv werden."
+      : "Die Person passt gut zum bestehenden Team. Der Einstieg dürfte reibungsarm verlaufen und die Zusammenarbeit kann sich schnell einspielen. Die Arbeitsweise fügt sich gut in die bestehende Teamkultur ein, sodass weder große Anpassungen nötig sind noch Spannungen zu erwarten sind. Das Team kann sich auf die eigentliche Arbeit konzentrieren.";
   }
   if (bew === "Teilweise passend") {
     return isLeader
-      ? "Die Person bringt St\u00E4rken mit, arbeitet aber in einigen Punkten anders als das Team es kennt. Ob die F\u00FChrung gut ankommt, h\u00E4ngt davon ab, wie bewusst die ersten Wochen gestaltet werden."
-      : "Die Person passt in Teilen gut zum Team, weicht in anderen Punkten aber sp\u00FCrbar ab. Das kann neue Impulse bringen, braucht aber klare Absprachen.";
+      ? "Die Person bringt Stärken mit, arbeitet aber in einigen Punkten anders als das Team es kennt. Ob die Führung gut ankommt, hängt davon ab, wie bewusst die ersten Wochen gestaltet werden. Einzelne Unterschiede lassen sich gut überbrücken, wenn Erwartungen früh geklärt und die Zusammenarbeit aktiv gesteuert wird. Ohne diese Klarheit könnten sich Missverständnisse aufbauen."
+      : "Die Person passt in Teilen gut zum Team, weicht in anderen Punkten aber spürbar ab. Das kann neue Impulse bringen, braucht aber klare Absprachen. Die Unterschiede sind nicht grundsätzlich problematisch, sollten aber von Anfang an offen benannt werden, damit sich das Team darauf einstellen kann und Zusammenarbeit gelingt.";
   }
-  if (gesamt === "Im Team passend, f\u00FCr die Aufgabe weniger geeignet") {
+  if (gesamt === "Im Team passend, für die Aufgabe weniger geeignet") {
     return isLeader
-      ? "Die Person passt gut ins Team und wird sich schnell einfinden. F\u00FCr die konkreten Anforderungen der Rolle bringt sie aber nicht die ideale St\u00E4rke mit. Das Team bleibt stabil, kann aber bei der Aufgabe an Grenzen sto\u00DFen."
-      : "Die Person f\u00FCgt sich gut in das bestehende Team ein. Die Zusammenarbeit wird reibungsarm verlaufen. F\u00FCr die konkreten Anforderungen der Aufgabe bringt sie aber nicht die ideale St\u00E4rke mit.";
+      ? "Die Person passt gut ins Team und wird sich schnell einfinden. Für die konkreten Anforderungen der Rolle bringt sie aber nicht die ideale Stärke mit. Das Team bleibt stabil und die Führung wird angenommen, allerdings könnte es bei spezifischen Aufgaben an Tiefe oder Durchsetzung fehlen. Es empfiehlt sich, die Rollenerwartungen frühzeitig anzupassen."
+      : "Die Person fügt sich gut in das bestehende Team ein. Die Zusammenarbeit wird reibungsarm verlaufen. Für die konkreten Anforderungen der Aufgabe bringt sie aber nicht die ideale Stärke mit. Die Teamdynamik profitiert von der Besetzung, während bei der Aufgabe selbst gezielt unterstützt werden sollte.";
   }
-  if (gesamt === "F\u00FCr die Aufgabe passend, im Team herausfordernd") {
+  if (gesamt === "Für die Aufgabe passend, im Team herausfordernd") {
     return isLeader
-      ? "Die Person erf\u00FCllt die fachlichen Anforderungen der Rolle gut, arbeitet aber anders als das Team es gewohnt ist. Die F\u00FChrung kann wirksam sein, wenn die Unterschiede fr\u00FCh angesprochen und aktiv gesteuert werden."
-      : "Die Person bringt genau das mit, was die Aufgabe erfordert. Im Teamalltag wird es aber Reibung geben, weil die Arbeitsweise nicht zur bisherigen Kultur passt. Mit klaren Absprachen kann das gelingen.";
+      ? "Die Person erfüllt die fachlichen Anforderungen der Rolle gut, arbeitet aber anders als das Team es gewohnt ist. Die Führung kann wirksam sein, wenn die Unterschiede früh angesprochen und aktiv gesteuert werden. Ohne bewusste Gestaltung der ersten Wochen besteht die Gefahr, dass fachliche Stärke durch zwischenmenschliche Reibung überlagert wird."
+      : "Die Person bringt genau das mit, was die Aufgabe erfordert. Im Teamalltag wird es aber Reibung geben, weil die Arbeitsweise nicht zur bisherigen Kultur passt. Mit klaren Absprachen und bewusster Begleitung kann das gelingen. Entscheidend ist, dass die fachliche Stärke nicht durch alltägliche Spannungen verloren geht.";
   }
-  if (gesamt === "Eingeschr\u00E4nkt passend") {
+  if (gesamt === "Eingeschränkt passend") {
     return isLeader
-      ? "Die Person passt nur bedingt zum Team und erf\u00FCllt die fachlichen Anforderungen der Rolle ebenfalls nicht ideal. Ohne gezielte Begleitung und klare Rahmensetzung wird die Besetzung schwierig."
-      : "Die Person passt nur bedingt zum Team und bringt f\u00FCr die konkrete Aufgabe nicht die ideale St\u00E4rke mit. Die Besetzung braucht bewusste Begleitung und klare Erwartungen, um funktionieren zu k\u00F6nnen.";
+      ? "Die Person passt nur bedingt zum Team und erfüllt die fachlichen Anforderungen der Rolle ebenfalls nicht ideal. Ohne gezielte Begleitung und klare Rahmensetzung wird die Besetzung schwierig. Die Unterschiede betreffen sowohl die Zusammenarbeit als auch die inhaltliche Ausrichtung. Das erfordert von Anfang an enge Abstimmung und realistische Erwartungen."
+      : "Die Person passt nur bedingt zum Team und bringt für die konkrete Aufgabe nicht die ideale Stärke mit. Die Besetzung braucht bewusste Begleitung und klare Erwartungen, um funktionieren zu können. Sowohl im Miteinander als auch bei der Aufgabe selbst sind Reibungspunkte wahrscheinlich, die aktiv gesteuert werden müssen.";
   }
   if (gesamt === "Strategisch sinnvoll, aber anspruchsvoll") {
     return isLeader
-      ? "Die Person passt nur begrenzt zur bisherigen Teamkultur, bringt aber genau die St\u00E4rke mit, die die Abteilung f\u00FCr ihre Aufgabe braucht. Der Einstieg ist anspruchsvoll, kann aber bei aktiver F\u00FChrung sehr sinnvoll sein."
-      : "Die Person passt nur begrenzt zur bisherigen Teamkultur, bringt aber genau die St\u00E4rke mit, die die Abteilung f\u00FCr ihre Aufgabe braucht. Die Besetzung ist deshalb nicht leicht, kann aber strategisch sinnvoll sein.";
+      ? "Die Person passt nur begrenzt zur bisherigen Teamkultur, bringt aber genau die Stärke mit, die die Abteilung für ihre Aufgabe braucht. Der Einstieg ist anspruchsvoll, kann aber bei aktiver Führung sehr sinnvoll sein. Die Herausforderung besteht darin, die fachliche Passung zu nutzen und gleichzeitig die Zusammenarbeit im Team tragfähig zu gestalten."
+      : "Die Person passt nur begrenzt zur bisherigen Teamkultur, bringt aber genau die Stärke mit, die die Abteilung für ihre Aufgabe braucht. Die Besetzung ist deshalb nicht leicht, kann aber strategisch sinnvoll sein. Entscheidend wird sein, ob das Team bereit ist, sich auf eine andere Arbeitsweise einzulassen, und ob es die nötige Begleitung dafür erhält.";
   }
   return isLeader
-    ? "Die Person w\u00FCrde deutlich anders f\u00FChren, als das Team es kennt. Ohne aktive Begleitung ist mit Spannungen und schw\u00E4cheren Ergebnissen zu rechnen."
-    : "Die Person arbeitet deutlich anders als das Team. Ohne Begleitung ist mit Reibung und Missverst\u00E4ndnissen zu rechnen.";
+    ? "Die Person würde deutlich anders führen, als das Team es kennt. Ohne aktive Begleitung ist mit Spannungen und schwächeren Ergebnissen zu rechnen. Die Unterschiede in Arbeitsweise und Erwartung sind so groß, dass eine erfolgreiche Zusammenarbeit nur mit engmaschiger Steuerung und klarer Rahmensetzung von Beginn an möglich ist."
+    : "Die Person arbeitet deutlich anders als das Team. Ohne Begleitung ist mit Reibung und Missverständnissen zu rechnen. Die Unterschiede betreffen grundlegende Arbeitsweisen und Erwartungen, sodass ohne bewusste Steuerung und enge Abstimmung eine produktive Zusammenarbeit kaum gelingen kann.";
 }
 
 function buildErsteEmpfehlung(bew: string, isLeader: boolean): string {
