@@ -1062,7 +1062,7 @@ function evaluateStrategicFit(
     const gap = sorted[0][1] - sorted[1][1];
     if (gap >= 12) {
       strategicFit = "passend";
-    } else if (gap > 5) {
+    } else if (gap <= 5) {
       strategicFit = "teilweise";
     } else {
       strategicFit = "abweichend";
