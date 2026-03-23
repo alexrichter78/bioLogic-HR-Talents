@@ -754,7 +754,7 @@ export default function TeamReport() {
           >
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ width: 30, height: 30, borderRadius: 15, background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Users style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} /></div>
-              <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-teamcheck-label">{"Profilvergleich:"} <span style={{ fontWeight: 400 }}>Rolle vs. Team</span></span>
+              <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-teamcheck-label">{"Profilvergleich:"} <span style={{ fontWeight: 400 }}>Person vs. Team</span></span>
             </div>
             <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: configOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
           </button>
@@ -781,7 +781,7 @@ export default function TeamReport() {
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <div style={{ width: 30, height: 30, borderRadius: 15, background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Settings style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} /></div>
-                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }}>{"Team-Kontext:"} <span style={{ fontWeight: 400 }}>festlegen</span></span>
+                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }}>{"Team-Kontext:"} <span style={{ fontWeight: 400 }}>Stelle vs. Rolle vs. Teamziel</span></span>
               </div>
               <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: kontextOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
             </button>
@@ -860,7 +860,7 @@ export default function TeamReport() {
                     Teamziel <span style={{ fontWeight: 400, textTransform: "none" as const, letterSpacing: 0 }}>(optional)</span>
                   </label>
                   <p style={{ fontSize: 12, color: "#8E8E93", margin: "4px 0 0", lineHeight: 1.5 }}>
-                    {"Was braucht das Team aktuell am meisten? "}<b>Umsetzung</b>{" = Tempo und Ergebnisse, "}<b>Analyse</b>{" = Struktur und Genauigkeit, "}<b>Zusammenarbeit</b>{" = Austausch und Miteinander."}
+                    {"Was braucht das Team aktuell am meisten?"}
                   </p>
                   <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
                     {([
