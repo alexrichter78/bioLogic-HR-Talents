@@ -1,38 +1,19 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
-import { computeTeamCheckV4, type TeamCheckV4Result, type V4Block, type V4Bullet } from "@/lib/teamcheck-v4-engine";
+import { computeTeamCheckV4, type TeamCheckV4Result, type V4Block } from "@/lib/teamcheck-v4-engine";
 import type { TeamCheckV3Input } from "@/lib/teamcheck-v3-engine";
 import { ArrowLeft, Printer } from "lucide-react";
-import { COMP_HEX, BIO_COLORS } from "@/lib/bio-design";
+import { BIO_COLORS } from "@/lib/bio-design";
 import logoPath from "@assets/LOGO_bio_1773853681939.png";
 
 const bewColor = (b: string) => {
   if (b === "Gut passend") return BIO_COLORS.geeignet;
-  if (b === "Im Team passend, f\u00FCr die Aufgabe weniger geeignet") return BIO_COLORS.bedingt;
-  if (b === "Teilweise passend") return BIO_COLORS.bedingt;
-  if (b === "F\u00FCr die Aufgabe passend, im Team herausfordernd") return BIO_COLORS.bedingt;
-  if (b === "Eingeschr\u00E4nkt passend") return BIO_COLORS.bedingt;
-  if (b === "Strategisch sinnvoll, aber anspruchsvoll") return BIO_COLORS.bedingt;
-  return BIO_COLORS.nichtGeeignet;
+  if (b === "Kritisch") return BIO_COLORS.nichtGeeignet;
+  return BIO_COLORS.bedingt;
 };
 const axisColor = (v: string) => v === "hoch" ? BIO_COLORS.geeignet : v === "mittel" ? BIO_COLORS.bedingt : v === "gering" ? BIO_COLORS.nichtGeeignet : "#94a3b8";
 const axisLabel = (v: string) => v === "hoch" ? "Hoch" : v === "mittel" ? "Mittel" : v === "gering" ? "Gering" : "Nicht bewertbar";
-const bgColor = (s: string) => s === "gering" ? BIO_COLORS.geeignet : s === "mittel" ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
-const rColor = (r: string) => r === "niedrig" ? BIO_COLORS.geeignet : r === "erh\u00F6ht" ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
-
-const SECTIONS = [
-  { id: "gesamtbewertung", num: 1, label: "Gesamtbewertung" },
-  { id: "summary", num: 2, label: "Management\u00FCbersicht" },
-  { id: "warum", num: 3, label: "Einsch\u00E4tzung" },
-  { id: "wirkung", num: 4, label: "Wirkung" },
-  { id: "chancen-risiken", num: 5, label: "Chancen & Risiken" },
-  { id: "ohne", num: 6, label: "Ohne Besetzung" },
-  { id: "alltag", num: 7, label: "Alltag" },
-  { id: "leistung", num: 8, label: "Leistung" },
-  { id: "druck", num: 9, label: "Unter Druck" },
-  { id: "empfehlungen", num: 10, label: "Empfehlungen" },
-];
 
 function SectionHead({ num, title, id }: { num: number; title: string; id: string }) {
   return (
@@ -43,89 +24,6 @@ function SectionHead({ num, title, id }: { num: number; title: string; id: strin
   );
 }
 
-function Tile({ label, value, color }: { label: string; value: string; color?: string }) {
-  return (
-    <div style={{ flex: 1, minWidth: 130, padding: "14px 16px", borderRadius: 12, background: "#FFF", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }} data-testid={`v4-tile-${label.toLowerCase().replace(/[\s\/]/g, "-")}`}>
-      <div style={{ fontSize: 11, color: "#8E8E93", marginBottom: 5, fontWeight: 600, letterSpacing: "0.02em" }}>{label}</div>
-      <div style={{ fontSize: 15, fontWeight: 700, color: color || "#1D1D1F" }}>{value}</div>
-    </div>
-  );
-}
-
-function Kernaussage({ text, color }: { text: string; color?: string }) {
-  const c = color || "#1A5DAB";
-  return (
-    <div style={{ marginTop: 20, padding: "14px 20px", borderRadius: 10, background: `${c}0D`, borderLeft: `3px solid ${c}` }}>
-      <p style={{ fontSize: 10, fontWeight: 700, color: c, textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 4px" }}>Kurz gesagt</p>
-      <p style={{ fontSize: 14, lineHeight: 1.7, color: "#48484A", margin: 0, fontWeight: 500 }}>{text}</p>
-    </div>
-  );
-}
-
-function ContentCard({ title, text }: { title: string; text: string }) {
-  return (
-    <div style={{ padding: "18px 20px", borderRadius: 12, background: "#FFF", border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
-      <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>{title}</p>
-      <p style={{ fontSize: 14.5, lineHeight: 1.8, color: "#48484A", margin: 0 }}>{text}</p>
-    </div>
-  );
-}
-
-function HintBox({ label, color, children }: { label: string; color: string; children: React.ReactNode }) {
-  return (
-    <div style={{ padding: "16px 20px", borderRadius: 12, background: `${color}0D`, border: `1px solid ${color}20`, position: "relative" }}>
-      <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, borderRadius: "12px 0 0 12px", background: color }} />
-      <p style={{ fontSize: 10, fontWeight: 700, color, textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 6px" }}>{label}</p>
-      {children}
-    </div>
-  );
-}
-
-function BarRow({ label, value, color }: { label: string; value: number; color: string }) {
-  return (
-    <div style={{ display: "grid", gridTemplateColumns: "90px 1fr 46px", gap: 10, alignItems: "center" }}>
-      <div style={{ fontSize: 13, color: "#6E6E73", fontWeight: 600 }}>{label}</div>
-      <div style={{ position: "relative", height: 14, borderRadius: 999, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: 0, left: 0, height: "100%", borderRadius: 999, background: `linear-gradient(90deg, ${color}, ${color}CC)`, width: `${value}%`, transition: "width 0.6s ease" }} />
-      </div>
-      <div style={{ textAlign: "right", fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{value}%</div>
-    </div>
-  );
-}
-
-function SimpleBulletList({ items, color }: { items: string[]; color: string }) {
-  return (
-    <ul style={{ margin: 0, padding: 0, listStyleType: "none" }}>
-      {items.map((item, i) => (
-        <li key={i} style={{ fontSize: 14, lineHeight: 1.8, color: "#48484A", padding: "3px 0 3px 20px", position: "relative" }}>
-          <span style={{ position: "absolute", left: 0, top: 14, width: 6, height: 6, borderRadius: 3, background: color }} />
-          {item}
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function DetailBulletList({ items, color }: { items: V4Bullet[]; color: string }) {
-  return (
-    <ul style={{ margin: 0, padding: 0, listStyleType: "none" }}>
-      {items.map((item, i) => (
-        <li key={i} style={{ fontSize: 14, lineHeight: 1.7, color: "#48484A", padding: "5px 0 5px 20px", position: "relative" }}>
-          <span style={{ position: "absolute", left: 0, top: 14, width: 6, height: 6, borderRadius: 3, background: color }} />
-          <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{item.point}:</span>{" "}
-          <span>{item.detail}</span>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function IntroText({ text }: { text: string }) {
-  return (
-    <p style={{ fontSize: 14.5, lineHeight: 1.85, color: "#48484A", margin: "0 0 20px" }}>{text}</p>
-  );
-}
-
 function SubHead({ num, title, color }: { num: number; title: string; color?: string }) {
   const c = color || "#0F3A6E";
   return (
@@ -133,6 +31,16 @@ function SubHead({ num, title, color }: { num: number; title: string; color?: st
       <span style={{ width: 24, height: 24, borderRadius: 12, background: c, color: "#FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>{num}</span>
       <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", textDecoration: "underline", textUnderlineOffset: 3 }}>{title}</span>
     </div>
+  );
+}
+
+function TextBlock({ text }: { text: string }) {
+  return (
+    <>
+      {text.split("\n\n").map((para, i) => (
+        <p key={i} style={bodyText}>{para}</p>
+      ))}
+    </>
   );
 }
 
@@ -155,10 +63,6 @@ export default function TeamCheckReportV4() {
 
   const handlePrint = useCallback(() => { window.print(); }, []);
 
-  const scrollTo = useCallback((id: string) => {
-    document.getElementById(`s-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, []);
-
   if (!result) {
     return (
       <div style={{ minHeight: "100vh", background: "#f5f7fb" }}>
@@ -178,7 +82,7 @@ export default function TeamCheckReportV4() {
       <div style={{ maxWidth: 820, margin: "0 auto", padding: "80px 20px 48px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }} className="no-print">
           <button onClick={() => navigate("/team-report")} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", color: "#1A5DAB", fontWeight: 600, fontSize: 14, padding: 0 }} data-testid="button-back-v4">
-            <ArrowLeft size={16} /> {"Zur\u00FCck zum TeamCheck"}
+            <ArrowLeft size={16} /> Zurück zum TeamCheck
           </button>
           <button onClick={handlePrint} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#343A48", border: "none", cursor: "pointer", color: "#FFF", fontWeight: 600, fontSize: 13, padding: "8px 16px", borderRadius: 8 }} data-testid="button-print-v4">
             <Printer size={14} /> Drucken / PDF
@@ -196,15 +100,12 @@ export default function TeamCheckReportV4() {
               <div className="report-rings" />
             </div>
 
-            {/* === Intro === */}
             <div style={{ padding: "28px 32px 0" }}>
               <p style={{ fontSize: 14.5, color: "#48484A", lineHeight: 1.85, margin: "0 0 8px" }} data-testid="text-einleitung-v4">
-                {"Dieser Bericht zeigt, wie die Person "}
-                {result.roleType === "leadership" ? "in der F\u00FChrungsrolle" : "im bestehenden Team"}
-                {" voraussichtlich wirken wird. Er hilft dabei, fr\u00FCh zu erkennen, wo Zusammenarbeit gut gelingen kann und wo im Alltag mehr F\u00FChrung, Klarheit oder Begleitung n\u00F6tig ist."}
+                Dieser Bericht zeigt, wie die Person {result.roleType === "leadership" ? "in der Führungsrolle" : "im bestehenden Team"} voraussichtlich wirken wird. Er hilft dabei, früh zu erkennen, wo Zusammenarbeit gut gelingen kann und wo im Alltag mehr Führung, Klarheit oder Begleitung nötig ist.
               </p>
               <p style={{ fontSize: 14.5, color: "#48484A", lineHeight: 1.85, margin: "0 0 24px" }}>
-                {"Unterschiede sind dabei nicht automatisch negativ. Sie k\u00F6nnen ein Team sinnvoll erg\u00E4nzen, brauchen aber klare Erwartungen und gute Abstimmung, damit daraus St\u00E4rke statt Reibung entsteht."}
+                Unterschiede sind dabei nicht automatisch negativ. Sie können ein Team sinnvoll ergänzen, brauchen aber klare Erwartungen und gute Abstimmung, damit daraus Stärke statt Reibung entsteht.
               </p>
 
               <div data-pdf-block style={{ background: "linear-gradient(135deg, rgba(255,59,48,0.06) 0%, rgba(255,59,48,0.03) 100%)", borderRadius: 10, padding: "16px 20px", border: "1px solid rgba(255,59,48,0.2)", marginBottom: 24 }}>
@@ -213,11 +114,13 @@ export default function TeamCheckReportV4() {
                 </p>
               </div>
 
+              {/* === Section 1: Gesamtbewertung === */}
               <SectionHead num={1} title="Gesamtbewertung" id="gesamtbewertung" />
 
               <div style={{ margin: "0 0 24px" }} data-testid="v4-hero-bewertung">
-                <p style={{ fontSize: 15, lineHeight: 1.75, color: "#48484A", margin: "0 0 16px" }} data-testid="v4-kurzfazit">{result.kurzfazit}</p>
-                <div style={{ fontSize: 28, fontWeight: 800, color: bCol, marginBottom: 0, letterSpacing: "-0.02em" }}>{result.gesamteinschaetzung}</div>
+                <TextBlock text={result.gesamtbewertungText} />
+
+                <div style={{ fontSize: 28, fontWeight: 800, color: bCol, margin: "20px 0 0", letterSpacing: "-0.02em" }} data-testid="v4-gesamt-label">{result.gesamteinschaetzung}</div>
 
                 <div style={{ display: "flex", gap: 16, marginTop: 20, paddingTop: 18, borderTop: "1px solid rgba(0,0,0,0.06)" }} data-testid="v4-two-axis">
                   <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${axisColor(result.passungZumTeam)}08`, border: `1px solid ${axisColor(result.passungZumTeam)}25` }}>
@@ -231,148 +134,75 @@ export default function TeamCheckReportV4() {
                     </div>
                   )}
                 </div>
+
+                <div style={{ display: "flex", gap: 16, marginTop: 16 }} data-testid="v4-kurzueberblick">
+                  <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(26,93,171,0.04)", border: "1px solid rgba(26,93,171,0.12)" }}>
+                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Hauptstärke</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="v4-hauptstaerke">{result.hauptstaerke}</div>
+                  </div>
+                  <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(255,149,0,0.04)", border: "1px solid rgba(255,149,0,0.15)" }}>
+                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Hauptabweichung</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="v4-hauptabweichung">{result.hauptabweichung}</div>
+                  </div>
+                </div>
               </div>
 
-              {/* Team-Kontext */}
               <div style={{ padding: "12px 18px", borderRadius: 10, background: "rgba(26,93,171,0.05)", border: "1px solid rgba(26,93,171,0.1)", marginBottom: 20 }}>
                 <p style={{ fontSize: 13, lineHeight: 1.7, color: "#48484A", margin: 0 }} data-testid="v4-team-kontext">{result.teamKontext}</p>
               </div>
             </div>
 
-            <div style={{ padding: "0 32px 0" }}>
-
-              {/* S1 */}
-              <SectionHead num={2} title={"Management\u00FCbersicht"} id="summary" />
-              <div data-testid="v4-section-summary" style={{ marginBottom: 32 }}>
-                {[
-                  { num: 1, title: "Managementeinschätzung", text: result.managementEinschaetzung, testId: "v4-management-einschaetzung" },
-                  { num: 2, title: "Erste Empfehlung", text: result.ersteEmpfehlung, testId: "v4-erste-empfehlung" },
-                  { num: 3, title: "Grösstes Risiko", text: result.hauptrisiko, testId: "v4-hauptrisiko" },
-                  { num: 4, title: "Grösste Chance", text: result.hauptchance, testId: "v4-hauptchance" },
-                  { num: 5, title: "Integrationsprognose", text: result.integrationsprognose, testId: "v4-integrationsprognose" },
-                ].map(item => (
-                  <div key={item.num} style={{ marginBottom: 28 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                      <span style={{ width: 24, height: 24, borderRadius: 12, background: "#343A48", color: "#FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>{item.num}</span>
-                      <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>{item.title}</span>
-                    </div>
-                    <p style={{ fontSize: 14.5, lineHeight: 1.85, color: "#48484A", margin: 0 }} data-testid={item.testId}>{item.text}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* \u00DCbergang */}
-              <div style={{ padding: "14px 20px", borderRadius: 10, background: "rgba(0,0,0,0.02)", marginBottom: 40, borderLeft: "3px solid rgba(0,0,0,0.08)" }}>
-                <p style={{ fontSize: 14, lineHeight: 1.7, color: "#6E6E73", margin: 0, fontStyle: "italic" }}>{"Die folgenden Abschnitte erl\u00E4utern im Detail, wie wir zu dieser Einsch\u00E4tzung kommen und was sie konkret f\u00FCr den Alltag bedeutet."}</p>
-              </div>
-            </div>
-
             <div style={{ padding: "0 32px 48px" }}>
 
-              {/* S3 – Einschätzung */}
+              {/* === Section 2: Warum dieses Ergebnis entsteht === */}
               <div style={sectionStyle} data-testid="v4-section-warum">
-                <SectionHead num={3} title={"Warum wir zu dieser Einsch\u00E4tzung kommen"} id="warum" />
-                <p style={bodyText}>{result.warumEinleitung}</p>
-                {result.warumBlocks.map((b, i) => (
-                  <div key={b.title} style={{ marginBottom: 22 }}>
-                    <SubHead num={i + 1} title={b.title} />
-                    <p style={bodyText}>{b.text}</p>
-                  </div>
-                ))}
+                <SectionHead num={2} title="Warum dieses Ergebnis entsteht" id="warum" />
+                <TextBlock text={result.warumText} />
               </div>
 
-              {/* S4 – Wirkung */}
+              {/* === Section 3: Wirkung im Arbeitsalltag === */}
               <div style={sectionStyle} data-testid="v4-section-wirkung">
-                <SectionHead num={4} title={result.wirkungTitle} id="wirkung" />
-                <p style={bodyText}>{result.wirkungEinleitung}</p>
-                {result.wirkungBlocks.map((b, i) => (
-                  <div key={b.title} style={{ marginBottom: 22 }}>
-                    <SubHead num={i + 1} title={b.title} />
-                    <p style={bodyText}>{b.text}</p>
-                  </div>
-                ))}
+                <SectionHead num={3} title="Wirkung im Arbeitsalltag" id="wirkung" />
+                <TextBlock text={result.wirkungAlltagText} />
               </div>
 
-              {/* S5 – Chancen & Risiken */}
+              {/* === Section 4: Chancen und Risiken === */}
               <div style={sectionStyle} data-testid="v4-section-chancen-risiken">
-                <SectionHead num={5} title="Chancen und Risiken dieser Besetzung" id="chancen-risiken" />
-                <div style={{ marginBottom: 22 }}>
+                <SectionHead num={4} title="Chancen und Risiken dieser Besetzung" id="chancen-risiken" />
+                <div style={{ marginBottom: 28 }}>
                   <SubHead num={1} title="Chancen" color="#1B7A3D" />
-                  <p style={bodyText}>{result.chancenEinleitung}</p>
-                  <DetailBulletList items={result.chancenPunkte} color="#34C759" />
+                  {result.chancen.map((ch, i) => (
+                    <div key={i} style={{ marginBottom: 14, paddingLeft: 20, position: "relative" }}>
+                      <span style={{ position: "absolute", left: 0, top: 8, width: 6, height: 6, borderRadius: 3, background: "#34C759" }} />
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 2px" }}>{ch.title}</p>
+                      <p style={{ ...bodyText, margin: 0 }}>{ch.text}</p>
+                    </div>
+                  ))}
                 </div>
-                <div style={{ marginBottom: 0 }}>
+                <div style={{ marginBottom: 28 }}>
                   <SubHead num={2} title="Risiken" color="#C41E3A" />
-                  <p style={bodyText}>{result.risikenEinleitung}</p>
-                  <DetailBulletList items={result.risikenPunkte} color="#FF3B30" />
+                  {result.risiken.map((ri, i) => (
+                    <div key={i} style={{ marginBottom: 14, paddingLeft: 20, position: "relative" }}>
+                      <span style={{ position: "absolute", left: 0, top: 8, width: 6, height: 6, borderRadius: 3, background: "#FF3B30" }} />
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 2px" }}>{ri.title}</p>
+                      <p style={{ ...bodyText, margin: 0 }}>{ri.text}</p>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ padding: "14px 20px", borderRadius: 10, background: "rgba(0,0,0,0.02)", borderLeft: "3px solid rgba(0,0,0,0.08)" }}>
+                  <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, fontStyle: "italic" }} data-testid="v4-chancen-einordnung">{result.chancenRisikenEinordnung}</p>
                 </div>
               </div>
 
-              {/* S6 – Ohne Besetzung */}
-              <div style={sectionStyle} data-testid="v4-section-ohne">
-                <SectionHead num={6} title="Was ohne diese Besetzung bestehen bleibt" id="ohne" />
-                <p style={bodyText}>{"Nicht zu besetzen ist keine neutrale Entscheidung. Auch wenn kurzfristig Ruhe erhalten bleibt, bleiben bestehende Probleme weiterhin ungel\u00F6st."}</p>
-                <div style={{ marginBottom: 22 }}>
-                  <SubHead num={1} title="Was kurzfristig erhalten bleibt" color="#1B7A3D" />
-                  <SimpleBulletList items={result.ohneErhalten} color="#34C759" />
-                </div>
-                <div style={{ marginBottom: 0 }}>
-                  <SubHead num={2} title="Was weiter ungelöst bleibt" color="#C41E3A" />
-                  <SimpleBulletList items={result.ohneUngeloest} color="#FF3B30" />
-                </div>
-              </div>
-
-              {/* S7 – Alltag */}
-              <div style={sectionStyle} data-testid="v4-section-alltag">
-                <SectionHead num={7} title={"So k\u00F6nnte es im Alltag aussehen"} id="alltag" />
-                <p style={bodyText}>{result.alltagEinleitung}</p>
-                {result.alltagBlocks.map((b, i) => (
-                  <div key={b.title} style={{ marginBottom: 22 }}>
-                    <SubHead num={i + 1} title={b.title} />
-                    <p style={bodyText}>{b.text}</p>
-                  </div>
-                ))}
-                {result.alltagWarnzeichen.length > 0 && (
-                  <div style={{ marginTop: 4 }}>
-                    <SubHead num={result.alltagBlocks.length + 1} title="Warnzeichen" color="#CC7700" />
-                    <p style={{ ...bodyText, fontStyle: "italic", color: "#6B7280" }}>{"Bleiben die folgenden Signale \u00FCber mehrere Wochen bestehen, spricht das daf\u00FCr, dass die Integration nicht stabil verl\u00E4uft und aktiv nachgesteuert werden muss."}</p>
-                    <SimpleBulletList items={result.alltagWarnzeichen} color="#FF9500" />
-                    {result.alltagPositivzeichen.length > 0 && (
-                      <div style={{ marginTop: 18 }}>
-                        <SubHead num={result.alltagBlocks.length + 2} title="Positive Signale nach 2–4 Wochen" color="#1B7A3D" />
-                        <SimpleBulletList items={result.alltagPositivzeichen} color="#34C759" />
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* S8 – Leistung */}
-              <div style={sectionStyle} data-testid="v4-section-leistung">
-                <SectionHead num={8} title={"Was das f\u00FCr Leistung und Ergebnisse bedeutet"} id="leistung" />
-                <p style={bodyText}>{result.leistungEinleitung}</p>
-                {result.leistungBlocks.map((b, i) => (
-                  <div key={b.title} style={{ marginBottom: 22 }}>
-                    <SubHead num={i + 1} title={b.title} />
-                    <p style={bodyText}>{b.text}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* S9 – Unter Druck */}
+              {/* === Section 5: Verhalten unter Druck === */}
               <div style={sectionStyle} data-testid="v4-section-druck">
-                <SectionHead num={9} title={"Wie sich die Besetzung unter Druck zeigen d\u00FCrfte"} id="druck" />
-                {result.druckBlocks.map((b, i) => (
-                  <div key={b.title} style={{ marginBottom: 22 }}>
-                    <SubHead num={i + 1} title={b.title} />
-                    <p style={bodyText}>{b.text}</p>
-                  </div>
-                ))}
+                <SectionHead num={5} title="Verhalten unter Druck" id="druck" />
+                <TextBlock text={result.druckText} />
               </div>
 
-              {/* S10 – Empfehlungen */}
+              {/* === Section 6: Was jetzt wichtig ist === */}
               <div style={{ marginBottom: 36 }} data-testid="v4-section-empfehlungen">
-                <SectionHead num={10} title="Was jetzt wichtig ist" id="empfehlungen" />
+                <SectionHead num={6} title="Was jetzt wichtig ist" id="empfehlungen" />
                 {result.empfehlungen.map((emp, i) => (
                   <div key={emp.title} style={{ marginBottom: 22 }}>
                     <SubHead num={i + 1} title={emp.title} color="#1A5DAB" />
@@ -381,13 +211,12 @@ export default function TeamCheckReportV4() {
                 ))}
               </div>
 
-              {/* Footer */}
               <div style={{ padding: "24px 0", borderTop: "1px solid rgba(0,0,0,0.06)" }} data-testid="v4-footer">
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
                   <div>
-                    <p style={{ fontSize: 12, color: "#A0A0A5", margin: "0 0 4px", fontWeight: 600 }}>{"bioLogic \u00B7 Integrationsanalyse"}</p>
-                    <p style={{ fontSize: 12, color: "#B0B0B5", margin: "0 0 4px" }}>{"Erstellt am " + today}</p>
-                    <p style={{ fontSize: 11, color: "#B0B0B5", margin: 0, lineHeight: 1.6 }}>{"Diese Analyse basiert auf dem bioLogic-Modell und erg\u00E4nzt die pers\u00F6nliche Einsch\u00E4tzung. Sie ersetzt kein Gespr\u00E4ch und keine individuelle Beurteilung."}</p>
+                    <p style={{ fontSize: 12, color: "#A0A0A5", margin: "0 0 4px", fontWeight: 600 }}>bioLogic · Integrationsanalyse</p>
+                    <p style={{ fontSize: 12, color: "#B0B0B5", margin: "0 0 4px" }}>Erstellt am {today}</p>
+                    <p style={{ fontSize: 11, color: "#B0B0B5", margin: 0, lineHeight: 1.6 }}>Diese Analyse basiert auf dem bioLogic-Modell und ergänzt die persönliche Einschätzung. Sie ersetzt kein Gespräch und keine individuelle Beurteilung.</p>
                   </div>
                   <img src={logoPath} alt="bioLogic" style={{ height: 28, opacity: 0.3 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                 </div>

@@ -52,7 +52,7 @@ Preferred communication style: Simple, everyday language.
 -   **Passungsbericht (JobCheck)**: Includes an Executive Decision Page with system status metrics, overview, structural constellation, and a management summary, followed by detailed sections. PDF export mirrors this layout.
 -   **Spannungsmatrix**: Includes dedicated MIX-cells for balanced profiles.
 -   **Führungskontext Card**: Provides contextual narrative based on profile data.
--   **TeamCheck Reports (V2, V3, V4)**: Various iterations providing comprehensive team system reports, including executive summaries, impact analyses, and actionable recommendations. V3 features 3-dimensional text logic evaluating Person↔Team, Person↔Funktionsziel, Team↔Funktionsziel. V4 focuses on integration analysis.
+-   **TeamCheck Reports (V2, V3, V4)**: Various iterations providing comprehensive team system reports. V3 features 3-dimensional text logic evaluating Person↔Team, Person↔Funktionsziel, Team↔Funktionsziel. V4 uses a 6-section structure: (1) Gesamtbewertung with Hauptstärke/Hauptabweichung badges, (2) Warum dieses Ergebnis entsteht, (3) Wirkung im Arbeitsalltag, (4) Chancen und Risiken, (5) Verhalten unter Druck, (6) Was jetzt wichtig ist. Engine generates flowing paragraph text (no blocks/cards). Template uses SubHead + bodyText style with justified text.
 -   **Shared Design Constants**: `client/src/lib/bio-design.ts` serves as a single source of truth for all bioLogic brand colors, used across UI reports and PDF builders.
 
 ### Technical Implementations
