@@ -368,7 +368,7 @@ export default function TeamCheckReportV4() {
               {/* S9 */}
               <div style={{ marginBottom: 36, padding: "28px 24px", borderRadius: 16, background: "rgba(26,93,171,0.04)", border: "1px solid rgba(26,93,171,0.10)" }} data-testid="v4-section-empfehlungen">
                 <SectionHead num={10} title="Was jetzt wichtig ist" id="empfehlungen" />
-                <IntroText text={"Nicht nur beschreiben, sondern klar sagen, was jetzt sinnvoll ist."} />
+
                 <div style={{ display: "grid", gap: 10 }}>
                   {result.empfehlungen.map((emp, i) => (
                     <div key={emp.title} style={{ ...cardBase, display: "flex", gap: 16, alignItems: "flex-start" }}>
