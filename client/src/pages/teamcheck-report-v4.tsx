@@ -22,15 +22,16 @@ const bgColor = (s: string) => s === "gering" ? BIO_COLORS.geeignet : s === "mit
 const rColor = (r: string) => r === "niedrig" ? BIO_COLORS.geeignet : r === "erh\u00F6ht" ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
 
 const SECTIONS = [
-  { id: "summary", num: 1, label: "Management\u00FCbersicht" },
-  { id: "warum", num: 2, label: "Einsch\u00E4tzung" },
-  { id: "wirkung", num: 3, label: "Wirkung" },
-  { id: "chancen-risiken", num: 4, label: "Chancen & Risiken" },
-  { id: "ohne", num: 5, label: "Ohne Besetzung" },
-  { id: "alltag", num: 6, label: "Alltag" },
-  { id: "leistung", num: 7, label: "Leistung" },
-  { id: "druck", num: 8, label: "Unter Druck" },
-  { id: "empfehlungen", num: 9, label: "Empfehlungen" },
+  { id: "gesamtbewertung", num: 1, label: "Gesamtbewertung" },
+  { id: "summary", num: 2, label: "Management\u00FCbersicht" },
+  { id: "warum", num: 3, label: "Einsch\u00E4tzung" },
+  { id: "wirkung", num: 4, label: "Wirkung" },
+  { id: "chancen-risiken", num: 5, label: "Chancen & Risiken" },
+  { id: "ohne", num: 6, label: "Ohne Besetzung" },
+  { id: "alltag", num: 7, label: "Alltag" },
+  { id: "leistung", num: 8, label: "Leistung" },
+  { id: "druck", num: 9, label: "Unter Druck" },
+  { id: "empfehlungen", num: 10, label: "Empfehlungen" },
 ];
 
 function SectionHead({ num, title, id }: { num: number; title: string; id: string }) {
@@ -228,24 +229,10 @@ export default function TeamCheckReportV4() {
               </div>
             </div>
 
-            {/* === TOC === */}
             <div style={{ padding: "0 32px 0" }}>
 
-              {/* Inhaltsverzeichnis */}
-              <div style={{ padding: "16px 20px", borderRadius: 12, background: "#FFF", border: "1px solid rgba(0,0,0,0.06)", marginBottom: 32 }} className="no-print" data-testid="v4-toc">
-                <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 10px" }}>Inhalt</p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 4px" }}>
-                  {SECTIONS.map(s => (
-                    <button key={s.id} onClick={() => scrollTo(s.id)} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 8, padding: "5px 12px", cursor: "pointer", fontSize: 13, color: "#48484A", fontWeight: 500, transition: "background 0.15s" }} onMouseEnter={e => (e.currentTarget.style.background = "rgba(0,0,0,0.03)")} onMouseLeave={e => (e.currentTarget.style.background = "none")} data-testid={`toc-link-${s.id}`}>
-                      <span style={{ width: 20, height: 20, borderRadius: 10, background: "#343A48", color: "#FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{s.num}</span>
-                      {s.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* S1 */}
-              <SectionHead num={1} title={"Management\u00FCbersicht"} id="summary" />
+              <SectionHead num={2} title={"Management\u00FCbersicht"} id="summary" />
               <div data-testid="v4-section-summary" style={{ marginBottom: 32 }}>
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
                   <Tile label="Rolle / Bereich" value={result.roleTitle || "\u2013"} />
@@ -290,7 +277,7 @@ export default function TeamCheckReportV4() {
 
               {/* S2 */}
               <div style={sectionStyle} data-testid="v4-section-warum">
-                <SectionHead num={2} title={"Warum wir zu dieser Einsch\u00E4tzung kommen"} id="warum" />
+                <SectionHead num={3} title={"Warum wir zu dieser Einsch\u00E4tzung kommen"} id="warum" />
                 <IntroText text={result.warumEinleitung} />
                 <div style={{ display: "grid", gap: 12 }}>
                   {result.warumBlocks.map(b => <ContentCard key={b.title} title={b.title} text={b.text} />)}
@@ -300,7 +287,7 @@ export default function TeamCheckReportV4() {
 
               {/* S3 */}
               <div style={sectionStyle} data-testid="v4-section-wirkung">
-                <SectionHead num={3} title={result.wirkungTitle} id="wirkung" />
+                <SectionHead num={4} title={result.wirkungTitle} id="wirkung" />
                 <IntroText text={result.wirkungEinleitung} />
                 <div style={{ display: "grid", gap: 12 }}>
                   {result.wirkungBlocks.map(b => <ContentCard key={b.title} title={b.title} text={b.text} />)}
@@ -310,7 +297,7 @@ export default function TeamCheckReportV4() {
 
               {/* S4 */}
               <div style={sectionStyle} data-testid="v4-section-chancen-risiken">
-                <SectionHead num={4} title="Chancen und Risiken dieser Besetzung" id="chancen-risiken" />
+                <SectionHead num={5} title="Chancen und Risiken dieser Besetzung" id="chancen-risiken" />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div style={{ ...cardBase, background: "rgba(52,199,89,0.05)", border: "1px solid rgba(52,199,89,0.15)" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
@@ -333,7 +320,7 @@ export default function TeamCheckReportV4() {
 
               {/* S5 */}
               <div style={sectionStyle} data-testid="v4-section-ohne">
-                <SectionHead num={5} title="Was ohne diese Besetzung bestehen bleibt" id="ohne" />
+                <SectionHead num={6} title="Was ohne diese Besetzung bestehen bleibt" id="ohne" />
                 <IntroText text={"Nicht zu besetzen ist keine neutrale Entscheidung. Auch wenn kurzfristig Ruhe erhalten bleibt, bleiben bestehende Probleme weiterhin ungel\u00F6st."} />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div style={cardBase}>
@@ -350,7 +337,7 @@ export default function TeamCheckReportV4() {
 
               {/* S6 */}
               <div style={sectionStyle} data-testid="v4-section-alltag">
-                <SectionHead num={6} title={"So k\u00F6nnte es im Alltag aussehen"} id="alltag" />
+                <SectionHead num={7} title={"So k\u00F6nnte es im Alltag aussehen"} id="alltag" />
                 <IntroText text={result.alltagEinleitung} />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {result.alltagBlocks.map(b => <ContentCard key={b.title} title={b.title} text={b.text} />)}
@@ -377,7 +364,7 @@ export default function TeamCheckReportV4() {
 
               {/* S7 */}
               <div style={sectionStyle} data-testid="v4-section-leistung">
-                <SectionHead num={7} title={"Was das f\u00FCr Leistung und Ergebnisse bedeutet"} id="leistung" />
+                <SectionHead num={8} title={"Was das f\u00FCr Leistung und Ergebnisse bedeutet"} id="leistung" />
                 <IntroText text={result.leistungEinleitung} />
                 <div style={{ display: "grid", gap: 12 }}>
                   {result.leistungBlocks.map(b => <ContentCard key={b.title} title={b.title} text={b.text} />)}
@@ -387,7 +374,7 @@ export default function TeamCheckReportV4() {
 
               {/* S8 */}
               <div style={sectionStyle} data-testid="v4-section-druck">
-                <SectionHead num={8} title={"Wie sich die Besetzung unter Druck zeigen d\u00FCrfte"} id="druck" />
+                <SectionHead num={9} title={"Wie sich die Besetzung unter Druck zeigen d\u00FCrfte"} id="druck" />
                 <div style={{ display: "grid", gap: 12 }}>
                   {result.druckBlocks.map(b => <ContentCard key={b.title} title={b.title} text={b.text} />)}
                 </div>
@@ -396,7 +383,7 @@ export default function TeamCheckReportV4() {
 
               {/* S9 */}
               <div style={{ marginBottom: 36, padding: "28px 24px", borderRadius: 16, background: "rgba(26,93,171,0.04)", border: "1px solid rgba(26,93,171,0.10)" }} data-testid="v4-section-empfehlungen">
-                <SectionHead num={9} title="Was jetzt wichtig ist" id="empfehlungen" />
+                <SectionHead num={10} title="Was jetzt wichtig ist" id="empfehlungen" />
                 <IntroText text={"Nicht nur beschreiben, sondern klar sagen, was jetzt sinnvoll ist."} />
                 <div style={{ display: "grid", gap: 10 }}>
                   {result.empfehlungen.map((emp, i) => (
