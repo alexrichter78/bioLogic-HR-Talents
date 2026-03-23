@@ -750,7 +750,7 @@ export default function TeamReport() {
         <div style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }} data-testid="accordion-teamcheck">
           <button
             onClick={() => setConfigOpen(!configOpen)}
-            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
+            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#FFFFFF"; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
             data-testid="accordion-teamcheck-toggle"
@@ -762,7 +762,7 @@ export default function TeamReport() {
             <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: configOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
           </button>
           <div style={{ overflow: "hidden", transition: "max-height 400ms ease", maxHeight: configOpen ? 5000 : 0 }}>
-            <div style={{ padding: "0 24px 24px" }}>
+            <div style={{ padding: "0 32px 28px" }}>
               <div className="grid gap-8 md:grid-cols-2">
                 <SliderGroup title="Ist-Profil (Person)" triad={istTriad}
                   onTriadChange={updateIstTriad} testIdPrefix="ist" />
@@ -777,7 +777,7 @@ export default function TeamReport() {
           <div style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }}>
             <button
               onClick={() => setKontextOpen(!kontextOpen)}
-              style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
+              style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#FFFFFF"; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
               data-testid="accordion-kontext-toggle"
@@ -789,7 +789,7 @@ export default function TeamReport() {
               <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: kontextOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
             </button>
             <div style={{ overflow: "hidden", transition: "max-height 400ms ease", maxHeight: kontextOpen ? 5000 : 0 }}>
-              <div style={{ padding: "0 24px 20px" }}>
+              <div style={{ padding: "0 32px 28px" }}>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 12, alignItems: "center", marginBottom: 18 }}>
                   <div>
@@ -958,7 +958,7 @@ export default function TeamReport() {
                     <div style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }}>
                       <button
                         onClick={() => setErgebnisOpen(!ergebnisOpen)}
-                        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
+                        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
                         onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#FFFFFF"; }}
                         onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
                         data-testid="accordion-ergebnis-toggle"
@@ -970,7 +970,7 @@ export default function TeamReport() {
                         <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: ergebnisOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
                       </button>
                       <div style={{ overflow: "hidden", transition: "max-height 400ms ease", maxHeight: ergebnisOpen ? 5000 : 0 }}>
-                      <div style={{ padding: "0 24px 20px" }}>
+                      <div style={{ padding: "0 32px 28px" }}>
 
                     <div style={{ display: "grid", gridTemplateColumns: fColors ? "1fr 1fr" : "1fr", gap: 10, marginBottom: 10 }}>
                       {fColors && (
