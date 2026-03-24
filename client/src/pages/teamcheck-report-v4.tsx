@@ -246,16 +246,6 @@ export default function TeamCheckReportV4() {
           <button onClick={() => navigate("/team-report")} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", color: "#1A5DAB", fontWeight: 600, fontSize: 14, padding: 0 }} data-testid="button-back-v4">
             <ArrowLeft size={16} /> Zurück zum TeamCheck
           </button>
-          <button
-            onClick={exportPdf}
-            disabled={isExportingPdf}
-            data-testid="button-export-pdf-v4"
-            className="report-pdf-btn"
-            style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#343A48", border: "none", cursor: isExportingPdf ? "wait" : "pointer", color: "#FFF", fontWeight: 600, fontSize: 13, padding: "8px 16px", borderRadius: 8, opacity: isExportingPdf ? 0.6 : 1, transition: "all 0.15s ease" }}
-          >
-            {isExportingPdf ? <Loader2 style={{ width: 15, height: 15, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 15, height: 15 }} />}
-            <span>PDF</span>
-          </button>
         </div>
 
         <div ref={reportRef} data-testid="v4-report-wrapper">
@@ -267,6 +257,16 @@ export default function TeamCheckReportV4() {
               <h1 className="report-title report-title--flow">Integrationsanalyse</h1>
               <div className="report-subtitle report-subtitle--flow">{result.roleTitle || "Teamsimulation"}</div>
               <div className="report-rings" />
+              <button
+                onClick={exportPdf}
+                disabled={isExportingPdf}
+                data-testid="button-export-pdf-v4"
+                className="report-pdf-btn"
+                style={{ cursor: isExportingPdf ? "wait" : "pointer", opacity: isExportingPdf ? 0.6 : 1, transition: "all 0.15s ease" }}
+              >
+                {isExportingPdf ? <Loader2 style={{ width: 15, height: 15, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 15, height: 15 }} />}
+                <span>PDF</span>
+              </button>
             </div>
 
             <div style={{ padding: "28px 32px 0" }}>
