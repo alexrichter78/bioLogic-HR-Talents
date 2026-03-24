@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
 import { computeTeamCheckV4, type TeamCheckV4Result, type V4Block } from "@/lib/teamcheck-v4-engine";
 import type { TeamCheckV3Input } from "@/lib/teamcheck-v3-engine";
-import { ArrowLeft, Download, Loader2 } from "lucide-react";
+import { ArrowLeft, Download, Loader2, Printer } from "lucide-react";
 import { BIO_COLORS, COMP_HEX } from "@/lib/bio-design";
 import type { ComponentKey } from "@/lib/bio-types";
 import logoPath from "@assets/LOGO_bio_1773853681939.png";
@@ -272,16 +272,27 @@ export default function TeamCheckReportV4() {
               <h1 className="report-title report-title--flow">Integrationsanalyse</h1>
               <div className="report-subtitle report-subtitle--flow">{result.roleTitle || "Teamsimulation"}</div>
               <div className="report-rings" />
-              <button
-                onClick={exportPdf}
-                disabled={isExportingPdf}
-                data-testid="button-export-pdf-v4"
-                className="report-pdf-btn"
-                style={{ cursor: isExportingPdf ? "wait" : "pointer", opacity: isExportingPdf ? 0.6 : 1, transition: "all 0.15s ease" }}
-              >
-                {isExportingPdf ? <Loader2 style={{ width: 15, height: 15, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 15, height: 15 }} />}
-                <span>PDF</span>
-              </button>
+              <div style={{ position: "absolute", top: 18, right: 18, display: "flex", gap: 8 }}>
+                <button
+                  onClick={() => window.print()}
+                  data-testid="button-print-v4"
+                  className="report-header-btn"
+                  title="1:1 Qualität — im Druckdialog 'Als PDF speichern' wählen"
+                >
+                  <Printer style={{ width: 15, height: 15 }} />
+                  <span>Drucken</span>
+                </button>
+                <button
+                  onClick={exportPdf}
+                  disabled={isExportingPdf}
+                  data-testid="button-export-pdf-v4"
+                  className="report-header-btn"
+                  style={{ cursor: isExportingPdf ? "wait" : "pointer", opacity: isExportingPdf ? 0.6 : 1 }}
+                >
+                  {isExportingPdf ? <Loader2 style={{ width: 15, height: 15, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 15, height: 15 }} />}
+                  <span>PDF</span>
+                </button>
+              </div>
             </div>
 
             <div style={{ padding: "28px 32px 0" }}>

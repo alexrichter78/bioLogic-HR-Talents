@@ -396,6 +396,28 @@ input[type="range"].bio-slider::-moz-range-track {
   backdrop-filter: blur(6px);
 }
 
+.report-header-btn {
+  height: 40px;
+  min-width: 86px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.report-header-btn:hover {
+  background: rgba(255,255,255,0.12);
+}
+
 .report-kicker {
   position: absolute;
   left: 44px;
@@ -523,7 +545,9 @@ input[type="range"].bio-slider::-moz-range-track {
     background: #FFF !important;
   }
   .v4-report-page .no-print,
-  .v4-report-page nav {
+  .v4-report-page nav,
+  .v4-report-page .report-pdf-btn,
+  .v4-report-page .report-header-btn {
     display: none !important;
   }
   .v4-report-page > div {
