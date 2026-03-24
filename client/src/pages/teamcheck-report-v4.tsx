@@ -212,12 +212,12 @@ export default function TeamCheckReportV4() {
                   <SectionHead num={6} title="Was als Führungskraft für dieses Team wichtig ist" id="fuehrung" />
                   <div style={{ display: "grid", gridTemplateColumns: result.fuehrungshinweis.length <= 3 ? "1fr" : "1fr 1fr", gap: 14 }}>
                     {result.fuehrungshinweis.map((item, i) => (
-                      <div key={item.title} style={{ padding: "20px 22px", borderRadius: 12, background: "#2C3240", color: "#E8EAF0", border: "1px solid rgba(255,255,255,0.06)", boxShadow: "0 2px 8px rgba(0,0,0,0.10)" }} data-testid={`v4-fuehrung-${i}`}>
+                      <div key={item.title} style={{ padding: "18px 20px", borderRadius: 12, background: "#FFF", borderLeft: "3px solid #343A48", border: "1px solid rgba(0,0,0,0.06)", borderLeftWidth: 3, borderLeftColor: "#343A48", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} data-testid={`v4-fuehrung-${i}`}>
                         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                          <span style={{ width: 22, height: 22, borderRadius: 11, background: "rgba(255,255,255,0.15)", color: "#FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</span>
-                          <span style={{ fontSize: 14, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.35 }}>{item.title}</span>
+                          <span style={{ width: 22, height: 22, borderRadius: 11, background: "#343A48", color: "#FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", lineHeight: 1.35 }}>{item.title}</span>
                         </div>
-                        <p style={{ fontSize: 13, lineHeight: 1.75, color: "rgba(255,255,255,0.72)", margin: 0 }}>{item.text}</p>
+                        <p style={{ fontSize: 13, lineHeight: 1.75, color: "#6E6E73", margin: 0 }}>{item.text}</p>
                       </div>
                     ))}
                   </div>
