@@ -303,7 +303,6 @@ export default function TeamCheckReportV4() {
 .report-header-btn,.no-print,nav{display:none!important}
 *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 [data-pdf-block]{break-inside:avoid!important}
-[data-testid="v4-section-vergleich"]{break-before:page!important;break-inside:avoid!important}
 [data-testid^="v4-integration-phase-"],[data-testid="v4-integration-warnsignale"],[data-testid="v4-integration-leitfragen"],[data-testid="v4-integration-verantwortung"]{break-inside:avoid!important}
 [data-pill]{white-space:nowrap!important}
 .quote-filler{text-align:center;padding:28px 32px;border-top:1px solid rgba(0,0,0,0.04);border-bottom:1px solid rgba(0,0,0,0.04);background:rgba(0,0,0,0.015);break-inside:avoid}
@@ -469,7 +468,7 @@ export default function TeamCheckReportV4() {
                   );
                 };
                 return (
-                  <div style={{ ...sectionStyle, breakInside: "avoid" }} data-testid="v4-section-vergleich">
+                  <div style={sectionStyle} data-testid="v4-section-vergleich">
                     <SectionHead num={2} title="Vergleich der Profile" id="vergleich" />
                     <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{gapText}</p>
                     <div data-pdf-block style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 14 }}>
