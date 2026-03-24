@@ -467,7 +467,7 @@ export default function TeamCheckReportV4() {
                   );
                 };
                 return (
-                  <div style={sectionStyle} data-testid="v4-section-vergleich">
+                  <div style={{ ...sectionStyle, breakInside: "avoid" }} data-testid="v4-section-vergleich">
                     <SectionHead num={2} title="Vergleich der Profile" id="vergleich" />
                     <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{gapText}</p>
                     <div data-pdf-block style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 14 }}>
