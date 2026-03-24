@@ -37,9 +37,15 @@ function SubHead({ num, title, color }: { num: number; title: string; color?: st
 function TextBlock({ text }: { text: string }) {
   return (
     <>
-      {text.split("\n\n").map((para, i) => (
-        <p key={i} style={bodyText}>{para}</p>
-      ))}
+      {text.split("\n\n").map((para, i) =>
+        para.startsWith("Die Kernaussage") ? (
+          <div key={i} style={{ padding: "14px 20px", borderRadius: 10, background: "rgba(0,0,0,0.02)", borderLeft: "3px solid #1D1D1F", margin: "16px 0" }}>
+            <p style={{ ...bodyText, margin: 0, fontWeight: 600, color: "#1D1D1F" }}>{para}</p>
+          </div>
+        ) : (
+          <p key={i} style={bodyText}>{para}</p>
+        )
+      )}
     </>
   );
 }
