@@ -444,7 +444,7 @@ function calcControlIntensity(role: RoleAnalysis, cand: CandidateInput): { point
 function gapDesc(diff: number): string {
   if (diff <= 3) return "nahezu identisch";
   if (diff <= 8) return "eine kleine Abweichung";
-  if (diff <= 15) return "eine spürbare Abweichung";
+  if (diff <= 15) return "eine merkliche Abweichung";
   if (diff <= 25) return "eine deutliche Abweichung";
   return "eine große Diskrepanz";
 }
@@ -452,7 +452,7 @@ function gapDesc(diff: number): string {
 function gapAdj(diff: number): string {
   if (diff <= 3) return "nahezu identisch";
   if (diff <= 8) return "leicht abweichend";
-  if (diff <= 15) return "spürbar abweichend";
+  if (diff <= 15) return "erkennbar abweichend";
   if (diff <= 25) return "deutlich abweichend";
   return "stark abweichend";
 }
@@ -638,7 +638,7 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
     reasoning: competitionStatus === "SUITABLE"
       ? `Tempo und Reaktionsfähigkeit passen zur Stelle${compMarket ? " – auch unter hohem Marktdruck" : ""}. ${t.resultMetric} bleiben stabil.`
       : competitionStatus === "NOT_SUITABLE"
-        ? `${compMarket ? "Hoher Marktdruck: " : ""}Es gibt ${gapDesc(Math.abs(compImpGap))} beim Tempo. Der nötige Antrieb fehlt – Aufgaben werden eher geprüft als zügig umgesetzt. ${t.resultMetric} werden spürbar geschwächt.`
+        ? `${compMarket ? "Hoher Marktdruck: " : ""}Es gibt ${gapDesc(Math.abs(compImpGap))} beim Tempo. Der nötige Antrieb fehlt – Aufgaben werden eher geprüft als zügig umgesetzt. ${t.resultMetric} werden merklich geschwächt.`
         : `Es gibt ${gapDesc(Math.abs(compImpGap))} beim Tempo. ${t.tempoContext} und Durchsetzungskraft sind machbar, wenn Prioritäten, Fristen und klare Zielvorgaben fest stehen. Ohne diese Struktur verschiebt sich die Dynamik Richtung Absicherung statt Handlung.`,
   });
 
@@ -881,7 +881,7 @@ function developmentFromControl(control: ControlIntensity, points: number, criti
   }
   if (control === "MEDIUM") {
     text = sameDom
-      ? `Die Stelle verlangt ${rLabel}. Die Grundrichtung stimmt, aber im Bereich "${criticalLabel}" ist gezielte Nachsteuerung nötig.`
+      ? `Die Stelle verlangt ${rLabel}. Die Grundrichtung stimmt, aber im Bereich "${criticalLabel}" ist gezielte Nachjustierung nötig.`
       : `Die Stelle verlangt ${rLabel}. Die Anpassung von ${cLabel} erfordert gezielte Führung im Bereich "${criticalLabel}".`;
     return { likelihood: "mittel" as const, timeframe: "6-12 Monate", text };
   }
@@ -1055,11 +1055,11 @@ function constellationCandText(c: ConstellationType, cand: string): string {
     B_GT_H: `${s} wirkt vor allem über Vertrauen und Einfühlungsvermögen, kann aber bei Bedarf schnell entscheiden und handeln.`,
     B_GT_S: `${s} ist stark in Beziehungsgestaltung und situativem Gespür und nutzt gleichzeitig analytische Absicherung als Fundament.`,
     S_GT_H: `${s} arbeitet vorwiegend analytisch und systematisch, kann aber bei Bedarf schnell umschalten und handeln.`,
-    S_GT_B: `${s} legt Wert auf Analyse, Ordnung und Verlässlichkeit. Gleichzeitig sorgt ein spürbarer Beziehungsanteil dafür, dass Ergebnisse auch kommunikativ vermittelt werden.`,
+    S_GT_B: `${s} legt Wert auf Analyse, Ordnung und Verlässlichkeit. Gleichzeitig sorgt ein erkennbarer Beziehungsanteil dafür, dass Ergebnisse auch kommunikativ vermittelt werden.`,
     H_NEAR_B: `Bei ${sLower} wechseln sich starke Umsetzungsenergie und hohe soziale Beweglichkeit je nach Situation ab.`,
     H_NEAR_S: `Bei ${sLower} stehen Umsetzungskraft und Strukturorientierung fast gleichwertig nebeneinander. Je nach Situation wird entweder schnell gehandelt oder gründlich geprüft.`,
     B_NEAR_S: `Bei ${sLower} stehen Beziehungsgestaltung und analytisches Denken fast gleichwertig nebeneinander. Je nach Situation wird moderiert oder systematisch geordnet.`,
-    BALANCED: `${s} zeigt ein ausgeglichenes Profil ohne klare Einseitigkeit. Das Verhalten passt sich situativ an, ist aber weniger eindeutig steuerbar.`,
+    BALANCED: `${s} zeigt ein ausgeglichenes Profil ohne klare Einseitigkeit. Das Verhalten passt sich situativ an, ist aber weniger eindeutig vorhersagbar.`,
   };
   return texts[c];
 }
@@ -1155,7 +1155,7 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
       return `${roleDesc} Die für ${jobTitle} entscheidende ${rL}-Arbeitslogik wird nicht abgebildet. ${candDesc} Entscheidungen, Prioritäten und stabile Abläufe sind kritisch betroffen.`;
     }
     if (overallFit === "SUITABLE") {
-      return `${roleDesc} ${s} arbeitet nach derselben Grundlogik. Arbeitsweise und Prioritäten passen zur Stelle ${jobTitle}. Kleinere Unterschiede in der Gewichtung der sekundären Bereiche sind im Alltag gut steuerbar.`;
+      return `${roleDesc} ${s} arbeitet nach derselben Grundlogik. Arbeitsweise und Prioritäten passen zur Stelle ${jobTitle}. Kleinere Unterschiede in der Gewichtung der sekundären Bereiche sind im Alltag gut handhabbar.`;
     }
     if (secondaryFlipped && overallFit === "NOT_SUITABLE") {
       const roleSecL = labelComponent(roleDom.top2.key);
@@ -1165,7 +1165,7 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
     if (secondaryFlipped && sameDom && overallFit === "CONDITIONAL") {
       const roleSecL = labelComponent(roleDom.top2.key);
       const candSecL = labelComponent(candDom.top2.key);
-      return `${roleDesc} Die Stelle braucht ${roleSecL} als zweite Stärke. ${s} arbeitet ${rL}-orientiert wie gefordert, zeigt aber eine Mischung aus ${roleSecL} und ${candSecL} als Zweitstärke. Mit gezielter Führung steuerbar.`;
+      return `${roleDesc} Die Stelle braucht ${roleSecL} als zweite Stärke. ${s} arbeitet ${rL}-orientiert wie gefordert, zeigt aber eine Mischung aus ${roleSecL} und ${candSecL} als Zweitstärke. Mit gezielter Führung gut handhabbar.`;
     }
     if (sameDom && overallFit === "CONDITIONAL") {
       return `${roleDesc} ${s} bringt die geforderte Arbeitslogik grundsätzlich mit, aber die Ausprägung liegt unter dem, was ${jobTitle} braucht. ${candDesc} Die Unterschiede sind erkennbar, lassen sich aber bei gezielter Führung und klaren Erwartungen ausgleichen.`;
@@ -1187,7 +1187,7 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
     } else if (sameDom && secondaryFlipped && candDom.gap2 > 5) {
       domLine = `${roleDesc} Beide Profile sind ${rL}-geprägt, aber die Sekundärausrichtung passt nicht zur Stelle. ${candDesc} Arbeitsstil und Prioritätensetzung weichen strukturell ab.`;
     } else if (sameDom && secondaryFlipped) {
-      domLine = `${roleDesc} Beide Profile sind ${rL}-geprägt. Die Sekundärausrichtung weicht leicht von den Stellenanforderungen ab. Mit Führung steuerbar.`;
+      domLine = `${roleDesc} Beide Profile sind ${rL}-geprägt. Die Sekundärausrichtung weicht leicht von den Stellenanforderungen ab. Mit Führung gut überbrückbar.`;
     } else if (sameDom) {
       domLine = `${roleDesc} Arbeitsweise und Prioritäten passen zur Stelle. Beide Profile setzen auf dieselbe Arbeitslogik und sind ${gapAdj(mainDiff)}.`;
     } else {
@@ -1216,7 +1216,7 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
 
     const text = `Die Hauptausrichtung stimmt überein (${rL}). Die Stelle braucht ${roleSecDesc.label} als Zweitstärke (${roleSecDesc.focus}). Die Person bringt jedoch ${candSecDesc.label} als Zweitstärke mit (${candSecDesc.focus}). Im Alltag unauffällig, unter Druck reagiert die Person eher mit ${candSecDesc.stressBehavior} statt mit ${roleSecDesc.stressBehavior}.`;
 
-    const stressText = `Unter Stress: Die Stelle erwartet ${roleSecDesc.stressBehavior}. Die Person greift stattdessen auf ${candSecDesc.stressBehavior} zurück. Im Team und in den Abläufen ist das situativ spürbar.`;
+    const stressText = `Unter Stress: Die Stelle erwartet ${roleSecDesc.stressBehavior}. Die Person greift stattdessen auf ${candSecDesc.stressBehavior} zurück. Im Team und in den Abläufen wird das situativ bemerkbar.`;
 
     return {
       detected: true,

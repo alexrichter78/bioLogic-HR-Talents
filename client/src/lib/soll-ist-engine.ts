@@ -451,11 +451,11 @@ export function constellationCandText(c: ConstellationType, cand: string): strin
     B_GT_H: `${s} wirkt vor allem über Vertrauen und Einfühlungsvermögen, kann aber bei Bedarf schnell entscheiden und handeln.`,
     B_GT_S: `${s} ist stark in Beziehungsgestaltung und situativem Gespür und nutzt gleichzeitig analytische Absicherung als Fundament.`,
     S_GT_H: `${s} arbeitet vorwiegend analytisch und systematisch, kann aber bei Bedarf schnell umschalten und handeln.`,
-    S_GT_B: `${s} legt Wert auf Analyse, Ordnung und Verlässlichkeit. Gleichzeitig sorgt ein spürbarer Beziehungsanteil dafür, dass Ergebnisse auch kommunikativ vermittelt werden.`,
+    S_GT_B: `${s} legt Wert auf Analyse, Ordnung und Verlässlichkeit. Gleichzeitig sorgt ein erkennbarer Beziehungsanteil dafür, dass Ergebnisse auch kommunikativ vermittelt werden.`,
     H_NEAR_B: `Bei ${subj(cand)} wechseln sich hohe Ergebnisdynamik und soziale Beweglichkeit je nach Situation ab.`,
     H_NEAR_S: `Bei ${subj(cand)} stehen Umsetzungskraft und Strukturorientierung fast gleichwertig nebeneinander. Je nach Situation wird entweder schnell gehandelt oder gründlich geprüft.`,
     B_NEAR_S: `Bei ${subj(cand)} stehen Beziehungsgestaltung und analytisches Denken fast gleichwertig nebeneinander. Je nach Situation wird moderiert oder systematisch geordnet.`,
-    BALANCED: `${s} zeigt ein ausgeglichenes Profil ohne klare Einseitigkeit. Das Verhalten passt sich situativ an, ist aber weniger eindeutig steuerbar.`,
+    BALANCED: `${s} zeigt ein ausgeglichenes Profil ohne klare Einseitigkeit. Das Verhalten passt sich situativ an, ist aber weniger eindeutig vorhersagbar.`,
   };
   return texts[c];
 }
@@ -469,7 +469,7 @@ function buildExecutiveBullets(rk: ComponentKey, ck: ComponentKey, gapLevel: str
   const roleDesc = isDualDomRole && rk2 ? dualRoleDesc(rk, rk2) : compDesc(rk);
 
   if (rk === ck) {
-    bullets.push(`Die Stelle erfordert ${roleDesc}. ${Subj(cand)} bringt dieselbe Grundausrichtung mit.`);
+    bullets.push(`Die Stelle erfordert ${roleDesc}. ${Subj(cand)} bringt dieselbe Arbeitsweise mit.`);
   } else if (isDualDomRole && rk2 && (ck === rk || ck === rk2)) {
     bullets.push(`Die Stelle erfordert ${roleDesc}. ${Subj(cand)} bringt ${compDesc(ck)} als Schwerpunkt mit – deckt damit einen der beiden Kernbereiche ab.`);
   } else {
@@ -549,7 +549,7 @@ function buildConstellationRisks(rk: ComponentKey, ck: ComponentKey, gapLevel: s
 function buildSummary(role: string, cand: string, fit: string, rk: ComponentKey, ck: ComponentKey, gap: string, rt: Triad, ct: Triad, rConst: ConstellationType, cConst: ConstellationType): string {
   const s = Subj(cand);
   if (rk === ck && gap === "gering") {
-    return `${constellationRoleText(rConst)} ${s} arbeitet nach demselben Grundprinzip. Arbeitsweise und Prioritäten passen zur Stelle ${role}. Kleinere Unterschiede in der Gewichtung der Nebenbereiche sind im Alltag gut steuerbar.`;
+    return `${constellationRoleText(rConst)} ${s} arbeitet nach demselben Grundprinzip. Arbeitsweise und Prioritäten passen zur Stelle ${role}. Kleinere Unterschiede in der Gewichtung der Nebenbereiche sind im Alltag gut handhabbar.`;
   }
 
   if (gap === "hoch") {
@@ -610,7 +610,7 @@ function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string,
   } else if (cConst.includes("NEAR")) {
     controlledPressure = `Steigt der Arbeitsdruck, greift ${subj(cand)} auf die gerade führende Logik zurück. Da beide Hauptanteile fast gleich stark sind, fällt die Reaktion situationsabhängig aus: Mal wird stärker über ${compShort(pk)} gesteuert, mal über ${compShort(sk)}.`;
   } else if (competing23) {
-    controlledPressure = `Steigt der Arbeitsdruck, verstärkt sich zunächst die Tendenz, ${primaryBehavior[pk]}. Da ${compShort(sk)} und ${compShort(tk)} fast gleich stark ausgeprägt sind, entsteht kein klarer Ausgleich – beide Nebenkomponenten konkurrieren unter Druck.`;
+    controlledPressure = `Steigt der Arbeitsdruck, verstärkt sich zunächst die Tendenz, ${primaryBehavior[pk]}. Da ${compShort(sk)} und ${compShort(tk)} fast gleich stark ausgeprägt sind, entsteht kein klarer Ausgleich – beide Nebenbereiche konkurrieren unter Druck.`;
   } else {
     controlledPressure = `Steigt der Arbeitsdruck, verstärkt sich zunächst die Tendenz, ${primaryBehavior[pk]}. Kurzfristig stabilisiert das die Situation, gleichzeitig steigt das Risiko, dass ${compShort(sk)} in den Hintergrund tritt.`;
   }
@@ -619,9 +619,9 @@ function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string,
   if (cConst === "BALANCED") {
     uncontrolledStress = `Wird der Druck sehr hoch, kann das Verhalten kippen oder wechseln, weil kein klarer Schwerpunkt dominiert. Die Reaktion wird weniger vorhersagbar. ${sn} braucht in Stressphasen besonders klare Orientierung und Leitplanken.`;
   } else if (competing23) {
-    uncontrolledStress = `Wird die Belastung sehr hoch, konkurrieren ${compShort(sk)} und ${compShort(tk)} als Ausweichreaktionen. ${sn} wechselt zwischen beiden Nebenkomponenten, ohne sich auf eine festzulegen. Das Verhalten wird weniger berechenbar. Die Führungskraft muss klare Prioritäten und Leitplanken setzen.`;
+    uncontrolledStress = `Wird die Belastung sehr hoch, konkurrieren ${compShort(sk)} und ${compShort(tk)} als Ausweichreaktionen. ${sn} wechselt zwischen beiden Nebenbereiche, ohne sich auf eine festzulegen. Das Verhalten wird weniger berechenbar. Die Führungskraft muss klare Prioritäten und Leitplanken setzen.`;
   } else if (d12 <= 5) {
-    uncontrolledStress = `Wird die Belastung sehr hoch, kann sich der Schwerpunkt leicht verschieben. ${sn} bleibt im Grundverhalten erkennbar, nutzt aber spürbar stärker ${compShort(sk)}. ${secondaryBehavior[sk]}. Die Arbeitsweise verändert sich, die Grundrichtung bleibt aber steuerbar.`;
+    uncontrolledStress = `Wird die Belastung sehr hoch, kann sich der Schwerpunkt leicht verschieben. ${sn} bleibt im Grundverhalten erkennbar, nutzt aber merklich stärker ${compShort(sk)}. ${secondaryBehavior[sk]}. Die Arbeitsweise verändert sich, die Grundrichtung bleibt aber erkennbar.`;
   } else {
     uncontrolledStress = `Wird die Belastung sehr hoch und treten viele Anforderungen gleichzeitig auf, verschiebt sich das Verhalten deutlich. ${compShort(sk)} tritt stärker in den Vordergrund. ${secondaryBehavior[sk]}. Entscheidungen werden ${secondaryDecision[sk]}.`;
   }
@@ -687,7 +687,7 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
         if (area.severity === "ok" && affectedIds.includes(area.id)) {
           area.severity = "warning";
           if (candSecCompeting) {
-            area.risk = `Der Hauptschwerpunkt stimmt überein, aber die Nebenkomponenten der Person sind fast gleich stark. Dadurch fehlt eine klare Abstützung. Unter Druck kann die Reaktion wechselnd ausfallen. Gezielte Führung empfohlen.`;
+            area.risk = `Der Hauptschwerpunkt stimmt überein, aber die Nebenbereiche der Person sind fast gleich stark. Dadurch fehlt eine klare Abstützung. Unter Druck kann die Reaktion wechselnd ausfallen. Gezielte Führung empfohlen.`;
           } else {
             area.risk = `Der Hauptschwerpunkt stimmt überein, aber die Gewichtung der Nebenbereiche weicht ab. Die Stelle betont ${roleSec}, ${s} setzt den Schwerpunkt anders. Das kann im Alltag zu unterschiedlichen Prioritäten und Reibung führen.`;
           }
@@ -752,7 +752,7 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
     if (ct && Math.max(ct.impulsiv, ct.intuitiv, ct.analytisch) - Math.min(ct.impulsiv, ct.intuitiv, ct.analytisch) <= 10) {
       candidatePattern = `${s} bringt ebenfalls eine breite Entscheidungsbasis mit. Die Vielseitigkeit passt zur Stellenanforderung.`;
       risk = totalGap >= 15
-        ? "Die Grundausrichtung passt, aber die Gewichtung der drei Entscheidungslogiken unterscheidet sich. In einzelnen Situationen kann die Reaktion anders ausfallen als erwartet."
+        ? "Die Grundrichtung passt, aber die Gewichtung der drei Entscheidungslogiken unterscheidet sich. In einzelnen Situationen kann die Reaktion anders ausfallen als erwartet."
         : "Die Entscheidungslogik passt zur Stellenanforderung. Sowohl Stelle als auch Person arbeiten situativ und vielseitig.";
     } else {
       const ckLabel = ck === "impulsiv" ? "schnelle, handlungsorientierte" : ck === "intuitiv" ? "kontextbezogene, abstimmungsorientierte" : "analytische, prüfungsorientierte";
@@ -777,7 +777,7 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
       roleNeed = "Sorgfältige, prüforientierte Entscheidungen. Optionen abwägen, Risiken prüfen, erst dann handeln.";
       candidatePattern = `${s} arbeitet ebenfalls analytisch und prüft Entscheidungen gründlich. Der Grundansatz stimmt überein.`;
       if (decCompeting23) {
-        risk = "Die Entscheidungslogik passt in der Grundrichtung. Da die beiden Nebenkomponenten fast gleich stark sind, kann unter Druck die Ausweichreaktion wechselnd ausfallen – mal handlungsorientierter, mal abstimmungsorientierter.";
+        risk = "Die Entscheidungslogik passt in der Grundrichtung. Da die beiden Nebenbereiche fast gleich stark sind, kann unter Druck die Ausweichreaktion wechselnd ausfallen – mal handlungsorientierter, mal abstimmungsorientierter.";
       } else {
         risk = maxGap >= 8
           ? "Die Entscheidungslogik passt in der Grundrichtung. Unterschiede in der Gewichtung der Nebenbereiche können aber dazu führen, dass Tempo oder Kommunikation unterschiedlich priorisiert werden."
@@ -787,7 +787,7 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
       roleNeed = "Schnelle, ergebnisorientierte Entscheidungen. Klare Richtung und direkte Umsetzung vor langer Prüfung.";
       candidatePattern = `${s} entscheidet ebenfalls schnell und handlungsorientiert. Die Grunddynamik stimmt.`;
       if (decCompeting23) {
-        risk = "Die Entscheidungsgeschwindigkeit passt. Da die Nebenkomponenten konkurrieren, schwankt die Absicherungsstrategie: Mal wird eher abgestimmt, mal eher geprüft. Das erzeugt wechselndes Verhalten im Detail.";
+        risk = "Die Entscheidungsgeschwindigkeit passt. Da die Nebenbereiche konkurrieren, schwankt die Absicherungsstrategie: Mal wird eher abgestimmt, mal eher geprüft. Das erzeugt wechselndes Verhalten im Detail.";
       } else {
         risk = maxGap >= 8
           ? "Die Entscheidungsgeschwindigkeit passt. In Nebenbereichen wie Absicherung oder Abstimmung können sich aber unterschiedliche Gewichtungen zeigen."
@@ -797,7 +797,7 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
       roleNeed = "Entscheidungen, die Kontext, Zusammenarbeit und zwischenmenschliche Wirkung berücksichtigen. Abstimmung im Team vor Geschwindigkeit.";
       candidatePattern = `${s} entscheidet ebenfalls kontextbezogen und bezieht das Umfeld aktiv ein. Die Grundhaltung stimmt.`;
       if (decCompeting23) {
-        risk = "Die Kommunikationsorientierung passt. Da die Nebenkomponenten konkurrieren, kann die Abstützung der Entscheidung wechseln – mal faktenbasierter, mal handlungsorientierter.";
+        risk = "Die Kommunikationsorientierung passt. Da die Nebenbereiche konkurrieren, kann die Abstützung der Entscheidung wechseln – mal faktenbasierter, mal handlungsorientierter.";
       } else {
         risk = maxGap >= 8
           ? "Die Kommunikationsorientierung passt. In Nebenbereichen wie Strukturklarheit oder Umsetzungstempo können aber Unterschiede auftreten."
@@ -809,12 +809,12 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
     if (ck === "impulsiv") {
       candidatePattern = `${s} entscheidet deutlich schneller und handelt oft, bevor alle Informationen vorliegen.`;
       risk = decCompeting23
-        ? "Prüfschritte werden verkürzt oder übersprungen. Da die Nebenkomponenten konkurrieren, fehlt ein stabiler Ausgleich – die Absicherung schwankt zwischen Kontextgespür und Faktenprüfung, ohne eine Linie konsequent durchzuhalten."
+        ? "Prüfschritte werden verkürzt oder übersprungen. Da die Nebenbereiche konkurrieren, fehlt ein stabiler Ausgleich – die Absicherung schwankt zwischen Kontextgespür und Faktenprüfung, ohne eine Linie konsequent durchzuhalten."
         : "Prüfschritte werden verkürzt oder übersprungen. Bei komplexen Aufgaben steigt das Risiko für Fehler oder Nacharbeit.";
     } else {
       candidatePattern = `${s} entscheidet stärker aus dem Kontext heraus und bezieht Stimmungen und Beziehungen ein. Datenbasierte Prüfung steht weniger im Vordergrund.`;
       risk = decCompeting23
-        ? "Technische Details und Risikoabwägungen kommen zu kurz. Da die Nebenkomponenten konkurrieren, wechselt die Ausweichstrategie unter Druck – mal wird schnell gehandelt, mal stärker geprüft. Das erzeugt ein inkonsistentes Entscheidungsmuster."
+        ? "Technische Details und Risikoabwägungen kommen zu kurz. Da die Nebenbereiche konkurrieren, wechselt die Ausweichstrategie unter Druck – mal wird schnell gehandelt, mal stärker geprüft. Das erzeugt ein inkonsistentes Entscheidungsmuster."
         : "Technische Details und Risikoabwägungen kommen zu kurz, wenn zwischenmenschliche Faktoren die Entscheidung bestimmen.";
     }
   } else if (rk === "impulsiv") {
@@ -822,12 +822,12 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
     if (ck === "analytisch") {
       candidatePattern = `${s} prüft gründlich und braucht eine solide Datengrundlage vor jeder Entscheidung. Das Tempo bleibt unter dem Stellenbedarf.`;
       risk = decCompeting23
-        ? "In Situationen, die schnelles Handeln erfordern, entstehen Verzögerungen. Da die Nebenkomponenten konkurrieren, schwankt die Reaktion unter Druck – mal wird abgestimmt, mal weiter geprüft. Klare Handlungsimpulse fehlen dauerhaft."
+        ? "In Situationen, die schnelles Handeln erfordern, entstehen Verzögerungen. Da die Nebenbereiche konkurrieren, schwankt die Reaktion unter Druck – mal wird abgestimmt, mal weiter geprüft. Klare Handlungsimpulse fehlen dauerhaft."
         : "In Situationen, die schnelles Handeln erfordern, entstehen Verzögerungen. Chancen werden verpasst, weil die Entscheidung zu spät fällt.";
     } else {
       candidatePattern = `${s} bezieht bei Entscheidungen stark den Kontext und die beteiligten Menschen ein. Abstimmungsprozesse dauern länger als die Stelle erlaubt.`;
       risk = decCompeting23
-        ? "Entscheidungen verzögern sich durch Abstimmungsrunden. Da die Nebenkomponenten konkurrieren, pendelt die Absicherung zwischen Faktenprüfung und schnellem Handeln, ohne eine klare Linie zu finden. Das Umsetzungstempo leidet zusätzlich."
+        ? "Entscheidungen verzögern sich durch Abstimmungsrunden. Da die Nebenbereiche konkurrieren, pendelt die Absicherung zwischen Faktenprüfung und schnellem Handeln, ohne eine klare Linie zu finden. Das Umsetzungstempo leidet zusätzlich."
         : "Entscheidungen, die sofort fallen müssten, verzögern sich durch Abstimmungsrunden. Das Umsetzungstempo leidet.";
     }
   } else {
@@ -835,12 +835,12 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
     if (ck === "impulsiv") {
       candidatePattern = `${s} trifft Entscheidungen schnell und handlungsorientiert. Die Wirkung auf andere wird dabei selten berücksichtigt.`;
       risk = decCompeting23
-        ? "Betroffene fühlen sich übergangen. Da die Nebenkomponenten konkurrieren, schwankt das Verhalten unter Druck zwischen sachlicher Kontrolle und weiterem Tempodruck. Einbindung findet in keinem Fall ausreichend statt."
+        ? "Betroffene fühlen sich übergangen. Da die Nebenbereiche konkurrieren, schwankt das Verhalten unter Druck zwischen sachlicher Kontrolle und weiterem Tempodruck. Einbindung findet in keinem Fall ausreichend statt."
         : "Betroffene fühlen sich übergangen. Entscheidungen fallen ohne ausreichende Einbindung. Das belastet langfristig die Zusammenarbeit.";
     } else {
       candidatePattern = `${s} entscheidet über Fakten und Regeln. Der zwischenmenschliche Arbeitsbereich steht weniger im Fokus.`;
       risk = decCompeting23
-        ? "Sachlich korrekte Entscheidungen, aber die Wirkung auf Motivation und Teamdynamik wird unterschätzt. Da die Nebenkomponenten konkurrieren, wechselt das Verhalten unter Druck zwischen Tempo und weiterer Analyse – persönliche Einbindung bleibt in beiden Fällen nachrangig."
+        ? "Sachlich korrekte Entscheidungen, aber die Wirkung auf Motivation und Teamdynamik wird unterschätzt. Da die Nebenbereiche konkurrieren, wechselt das Verhalten unter Druck zwischen Tempo und weiterer Analyse – persönliche Einbindung bleibt in beiden Fällen nachrangig."
         : "Sachlich korrekte Entscheidungen, aber Auswirkungen auf Motivation und Teamdynamik werden unterschätzt.";
     }
   }
@@ -882,32 +882,32 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
   if (gapA >= 10 && ct.analytisch < rt.analytisch) {
     if (ck === "analytisch") {
       if (competing23) {
-        risk = `${s} arbeitet grundsätzlich strukturiert, aber die beiden Nebenkomponenten sind fast gleich stark. Unter Druck konkurrieren Handlungsimpulse und Abstimmungsbedürfnisse – die analytische Linie wird instabil. Die Führungskraft muss klare Prozessvorgaben setzen.`;
+        risk = `${s} arbeitet grundsätzlich strukturiert, aber die beiden Nebenbereiche sind fast gleich stark. Unter Druck konkurrieren Handlungsimpulse und Abstimmungsbedürfnisse – die analytische Linie wird instabil. Die Führungskraft muss klare Prozessvorgaben setzen.`;
       } else {
         risk = `${s} arbeitet strukturiert, aber der analytische Anteil reicht nicht vollständig für die Stellenanforderung. Bei hoher Komplexität fehlt die letzte Tiefe in Prüfung und Dokumentation. Die Führungskraft sollte Qualitätsstandards klar definieren.`;
       }
     } else if (ck === "impulsiv") {
       if (competing23) {
-        risk = `${s} priorisiert Tempo vor Struktur. Da die beiden Nebenkomponenten konkurrieren, fehlt ein stabiler Ausgleich zur Handlungsorientierung. Prüfschritte werden verkürzt oder übersprungen. Die Führungskraft muss Prozessklarheit aktiv einfordern.`;
+        risk = `${s} priorisiert Tempo vor Struktur. Da die beiden Nebenbereiche konkurrieren, fehlt ein stabiler Ausgleich zur Handlungsorientierung. Prüfschritte werden verkürzt oder übersprungen. Die Führungskraft muss Prozessklarheit aktiv einfordern.`;
       } else {
         risk = `Bei parallelen Aufgaben handelt ${subj(cand)} eher schnell statt Schritte zu prüfen. Prüfschritte werden verkürzt oder übersprungen. Die Führungskraft muss Prozessklarheit aktiv einfordern.`;
       }
     } else {
       if (competing23) {
-        risk = `${s} steuert über Abstimmung und Kommunikation statt über Struktur. Da die beiden Nebenkomponenten konkurrieren, wechselt die Arbeitsweise situativ. Verbindliche Abläufe entstehen nicht von allein. Die Führungskraft muss Prozessrahmen vorgeben.`;
+        risk = `${s} steuert über Abstimmung und Kommunikation statt über Struktur. Da die beiden Nebenbereiche konkurrieren, wechselt die Arbeitsweise situativ. Verbindliche Abläufe entstehen nicht von allein. Die Führungskraft muss Prozessrahmen vorgeben.`;
       } else {
         risk = `${s} arbeitet kontextbezogen und stimmt sich lieber ab, statt Abläufe strukturiert zu planen. Dokumentation und formale Prüfung haben geringe Priorität. Die Führungskraft muss Prozessstandards einfordern.`;
       }
     }
   } else if (gapA >= 10 && ct.analytisch > rt.analytisch) {
     if (competing23) {
-      risk = `Aufgaben werden gründlicher geprüft als die Stelle erfordert. Da die Nebenkomponenten konkurrieren, fehlt ein klarer Impuls zum Abschluss. ${s} investiert zu viel Zeit in Absicherung. Das bremst das Gesamttempo.`;
+      risk = `Aufgaben werden gründlicher geprüft als die Stelle erfordert. Da die Nebenbereiche konkurrieren, fehlt ein klarer Impuls zum Abschluss. ${s} investiert zu viel Zeit in Absicherung. Das bremst das Gesamttempo.`;
     } else {
       risk = `Aufgaben werden länger geprüft als notwendig. ${s} investiert mehr Zeit in Planung und Absicherung als die Stelle erlaubt. Das bremst das Gesamttempo.`;
     }
   } else {
     if (competing23) {
-      risk = "Arbeitsweise passt grundsätzlich zur Stelle. Die konkurrierenden Nebenkomponenten können situativ zu wechselndem Arbeitsstil führen. Feinabstimmung durch Führung empfohlen.";
+      risk = "Arbeitsweise passt grundsätzlich zur Stelle. Die konkurrierenden Nebenbereiche können situativ zu wechselndem Arbeitsstil führen. Feinabstimmung durch Führung empfohlen.";
     } else {
       risk = "Arbeitsweise passt grundsätzlich zur Stelle. Feinabstimmung nötig, aber der Grundansatz stimmt.";
     }
@@ -935,7 +935,7 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
     if (ct && Math.max(ct.impulsiv, ct.intuitiv, ct.analytisch) - Math.min(ct.impulsiv, ct.intuitiv, ct.analytisch) <= 10) {
       candidatePattern = `${s} bringt ebenfalls eine breite Führungsbasis mit und kann situativ zwischen verschiedenen Stilen wechseln.`;
       risk = totalGap >= 15
-        ? "Die Grundausrichtung passt, aber die Gewichtung der Führungsebenen unterscheidet sich. In bestimmten Situationen kann die Führungswirkung anders ausfallen als erwartet."
+        ? "Die Grundrichtung passt, aber die Gewichtung der Führungsebenen unterscheidet sich. In bestimmten Situationen kann die Führungswirkung anders ausfallen als erwartet."
         : "Führungsstil passt zur Stellenanforderung. Die Vielseitigkeit wird abgedeckt.";
     } else {
       const ckStyle = ck === "impulsiv" ? "Tempo und direkte Ansprache" : ck === "intuitiv" ? "persönliche Nähe und Dialog" : "Systematik und klare Regeln";
@@ -995,34 +995,34 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
 
     if (rk === "analytisch" && ck === "impulsiv") {
       risk = leadComp23
-        ? `Dem Team fehlen klare Leitlinien und verlässliche Prioritäten. Da die Nebenkomponenten konkurrieren, schwankt der Führungsstil unter Druck zwischen sachlicher Kontrolle und persönlicher Einbindung – ohne eine Linie stabil durchzuhalten.${leadershipSuffix}`
+        ? `Dem Team fehlen klare Leitlinien und verlässliche Prioritäten. Da die Nebenbereiche konkurrieren, schwankt der Führungsstil unter Druck zwischen sachlicher Kontrolle und persönlicher Einbindung – ohne eine Linie stabil durchzuhalten.${leadershipSuffix}`
         : `Dem Team fehlen klare Leitlinien und verlässliche Prioritäten. Entscheidungen wirken impulsiv statt durchdacht. Struktursuchende Mitarbeiter verlieren den Halt.${leadershipSuffix}`;
     } else if (rk === "analytisch" && ck === "intuitiv") {
       risk = leadComp23
-        ? `Führungsentscheidungen werden stärker von Beziehungsdynamik geprägt als von fachlichen Standards. Da die Nebenkomponenten konkurrieren, wechselt die Führung unter Druck zwischen Tempo und Analyse – beides ohne ausreichende Tiefe.${leadershipSuffix}`
+        ? `Führungsentscheidungen werden stärker von Beziehungsdynamik geprägt als von fachlichen Standards. Da die Nebenbereiche konkurrieren, wechselt die Führung unter Druck zwischen Tempo und Analyse – beides ohne ausreichende Tiefe.${leadershipSuffix}`
         : `Führungsentscheidungen werden stärker von Beziehungsdynamik geprägt als von fachlichen Standards. Es entsteht der Eindruck, dass persönliche Nähe wichtiger ist als Leistung.${leadershipSuffix}`;
     } else if (rk === "impulsiv" && ck === "analytisch") {
       risk = leadComp23
-        ? `Das Team wartet auf klare Ansagen, die nicht schnell genug kommen. Da die Nebenkomponenten konkurrieren, pendelt die Führung zwischen Abstimmung und noch mehr Prüfung – das Tempo bleibt dauerhaft unter dem Bedarf.${leadershipSuffix}`
+        ? `Das Team wartet auf klare Ansagen, die nicht schnell genug kommen. Da die Nebenbereiche konkurrieren, pendelt die Führung zwischen Abstimmung und noch mehr Prüfung – das Tempo bleibt dauerhaft unter dem Bedarf.${leadershipSuffix}`
         : `Das Team wartet auf klare Ansagen, die nicht schnell genug kommen. In Drucksituationen fehlt die entschlossene Führung, die erwartet wird.${leadershipSuffix}`;
     } else if (rk === "impulsiv" && ck === "intuitiv") {
       risk = leadComp23
-        ? `Statt schneller Entscheidungen wird abgestimmt. Da die Nebenkomponenten konkurrieren, wechselt die Führung unter Druck zwischen Faktenprüfung und weiterer Diskussion – in keinem Fall entsteht das erwartete Tempo.${leadershipSuffix}`
+        ? `Statt schneller Entscheidungen wird abgestimmt. Da die Nebenbereiche konkurrieren, wechselt die Führung unter Druck zwischen Faktenprüfung und weiterer Diskussion – in keinem Fall entsteht das erwartete Tempo.${leadershipSuffix}`
         : `Statt schneller Entscheidungen wird abgestimmt. Das Team erwartet Tempo, bekommt Gesprächsrunden. Zeitkritische Situationen erzeugen Frustration.${leadershipSuffix}`;
     } else if (rk === "intuitiv" && ck === "impulsiv") {
       risk = leadComp23
-        ? `Mitarbeiter fühlen sich übergangen, weil Entscheidungen ohne ausreichende Einbindung fallen. Da die Nebenkomponenten konkurrieren, schwankt das Verhalten unter Druck zwischen sachlicher Kontrolle und weiterem Tempo – persönliche Nähe kommt in keinem Fall ausreichend vor.${leadershipSuffix}`
+        ? `Mitarbeiter fühlen sich übergangen, weil Entscheidungen ohne ausreichende Einbindung fallen. Da die Nebenbereiche konkurrieren, schwankt das Verhalten unter Druck zwischen sachlicher Kontrolle und weiterem Tempo – persönliche Nähe kommt in keinem Fall ausreichend vor.${leadershipSuffix}`
         : `Mitarbeiter fühlen sich übergangen, weil Entscheidungen ohne ausreichende Einbindung fallen. Beziehungsarbeit kommt zu kurz, der Teamzusammenhalt leidet.${leadershipSuffix}`;
     } else {
       risk = leadComp23
-        ? `Führung wirkt formal und distanziert. Da die Nebenkomponenten konkurrieren, wechselt das Verhalten unter Druck zwischen Tempodruck und noch mehr Faktenprüfung – der persönliche Dialog bleibt in beiden Fällen auf der Strecke.${leadershipSuffix}`
+        ? `Führung wirkt formal und distanziert. Da die Nebenbereiche konkurrieren, wechselt das Verhalten unter Druck zwischen Tempodruck und noch mehr Faktenprüfung – der persönliche Dialog bleibt in beiden Fällen auf der Strecke.${leadershipSuffix}`
         : `Führung wirkt formal und distanziert. Erwartet werden persönliche Nähe und offene Kommunikation, geliefert werden Regeln und Prozesse.${leadershipSuffix}`;
     }
   } else {
     const leadRest = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== ck);
     const leadCompeting23 = ct ? Math.abs(ct[leadRest[0]] - ct[leadRest[1]]) <= 5 && Math.min(ct[leadRest[0]], ct[leadRest[1]]) > 15 : false;
     if (leadCompeting23) {
-      risk = "Die Führungsrichtung stimmt. Da die beiden Nebenkomponenten fast gleich stark sind, kann der Führungsstil unter Druck wechselnd wirken – situativ direkter oder empathischer. Das Team erlebt die Führung als weniger berechenbar. Regelmässiges Feedback ist besonders wichtig.";
+      risk = "Die Führungsrichtung stimmt. Da die beiden Nebenbereiche fast gleich stark sind, kann der Führungsstil unter Druck wechselnd wirken – situativ direkter oder empathischer. Das Team erlebt die Führung als weniger berechenbar. Regelmässiges Feedback ist besonders wichtig.";
     } else {
       risk = maxGap >= 8
         ? "Die Führungsrichtung stimmt, aber unterschiedliche Gewichtungen in den Nebenbereichen beeinflussen, wie Orientierung gegeben wird. Regelmässiges Feedback zur Führungswirkung ist ratsam."
@@ -1085,7 +1085,7 @@ function buildCommunicationImpact(rk: ComponentKey, ck: ComponentKey, gapI: numb
   let risk: string;
   if (rk === ck) {
     if (commCompeting23) {
-      risk = "Der Kommunikationsstil passt in der Grundrichtung. Da die beiden Nebenkomponenten fast gleich stark sind, wechselt die Kommunikation situativ – mal direkter, mal empathischer, mal sachlicher. Das kann bei Gesprächspartnern unterschiedlich ankommen.";
+      risk = "Der Kommunikationsstil passt in der Grundrichtung. Da die beiden Nebenbereiche fast gleich stark sind, wechselt die Kommunikation situativ – mal direkter, mal empathischer, mal sachlicher. Das kann bei Gesprächspartnern unterschiedlich ankommen.";
     } else {
       risk = maxGap >= 8
         ? "Der Kommunikationsstil passt grundsätzlich. In den Feinheiten gibt es Abweichungen, die im Alltag auffallen können. Gezielte Abstimmung empfohlen."
@@ -1093,27 +1093,27 @@ function buildCommunicationImpact(rk: ComponentKey, ck: ComponentKey, gapI: numb
     }
   } else if (rk === "impulsiv" && ck === "intuitiv") {
     risk = commCompeting23
-      ? `Die Stelle verlangt schnelle, direkte Kommunikation. ${s} investiert mehr Zeit in Dialog und Abstimmung. Da die Nebenkomponenten konkurrieren, wechselt die Kommunikation unter Druck zwischen sachlicher Detailtiefe und schnellem Handeln – der erwartete direkte Stil entsteht in keinem Fall.`
+      ? `Die Stelle verlangt schnelle, direkte Kommunikation. ${s} investiert mehr Zeit in Dialog und Abstimmung. Da die Nebenbereiche konkurrieren, wechselt die Kommunikation unter Druck zwischen sachlicher Detailtiefe und schnellem Handeln – der erwartete direkte Stil entsteht in keinem Fall.`
       : `Die Stelle verlangt schnelle, direkte Kommunikation. ${s} investiert mehr Zeit in Dialog und Abstimmung. Entscheidungen werden verzögert kommuniziert. Klare Kommunikationserwartungen setzen.`;
   } else if (rk === "impulsiv" && ck === "analytisch") {
     risk = commCompeting23
-      ? `Die Stelle verlangt kurze, direkte Kommunikation. ${s} kommuniziert ausführlicher und detaillierter als nötig. Da die Nebenkomponenten konkurrieren, wechselt der Stil unter Druck zwischen persönlicher Einbindung und weiterer Analyse – die erwartete Knappheit fehlt dauerhaft.`
+      ? `Die Stelle verlangt kurze, direkte Kommunikation. ${s} kommuniziert ausführlicher und detaillierter als nötig. Da die Nebenbereiche konkurrieren, wechselt der Stil unter Druck zwischen persönlicher Einbindung und weiterer Analyse – die erwartete Knappheit fehlt dauerhaft.`
       : `Die Stelle verlangt kurze, direkte Kommunikation. ${s} kommuniziert ausführlicher und detaillierter als nötig. Die Informationsdichte kann das Tempo bremsen.`;
   } else if (rk === "intuitiv" && ck === "impulsiv") {
     risk = commCompeting23
-      ? `Die Stelle verlangt empathische Kommunikation. ${s} kommuniziert eher direkt und knapp. Da die Nebenkomponenten konkurrieren, schwankt die Ausweichstrategie unter Druck zwischen sachlicher Kontrolle und weiterem Tempo – persönliche Einbindung kommt in keinem Fall ausreichend vor.`
+      ? `Die Stelle verlangt empathische Kommunikation. ${s} kommuniziert eher direkt und knapp. Da die Nebenbereiche konkurrieren, schwankt die Ausweichstrategie unter Druck zwischen sachlicher Kontrolle und weiterem Tempo – persönliche Einbindung kommt in keinem Fall ausreichend vor.`
       : `Die Stelle verlangt empathische Kommunikation. ${s} kommuniziert eher direkt und knapp. Gesprächspartner können sich übergangen fühlen. Bewusstes Zuhören und Einbindung aktiv einfordern.`;
   } else if (rk === "intuitiv" && ck === "analytisch") {
     risk = commCompeting23
-      ? `Die Stelle verlangt persönlichen Dialog. ${s} kommuniziert eher sachlich und distanziert. Da die Nebenkomponenten konkurrieren, wechselt die Kommunikation unter Druck zwischen Tempodruck und noch mehr Detailtiefe – der persönliche Aspekt bleibt nachrangig.`
+      ? `Die Stelle verlangt persönlichen Dialog. ${s} kommuniziert eher sachlich und distanziert. Da die Nebenbereiche konkurrieren, wechselt die Kommunikation unter Druck zwischen Tempodruck und noch mehr Detailtiefe – der persönliche Aspekt bleibt nachrangig.`
       : `Die Stelle verlangt persönlichen Dialog. ${s} kommuniziert eher sachlich und distanziert. Der zwischenmenschliche Aspekt kommt zu kurz. Gesprächsformate mit persönlichem Austausch einplanen.`;
   } else if (rk === "analytisch" && ck === "impulsiv") {
     risk = commCompeting23
-      ? `Die Stelle verlangt sachliche Präzision. ${s} kommuniziert eher kurz und handlungsorientiert. Da die Nebenkomponenten konkurrieren, schwankt die Ausweichstrategie zwischen Empathie und Faktenprüfung – beides ohne die nötige Tiefe und Konsistenz.`
+      ? `Die Stelle verlangt sachliche Präzision. ${s} kommuniziert eher kurz und handlungsorientiert. Da die Nebenbereiche konkurrieren, schwankt die Ausweichstrategie zwischen Empathie und Faktenprüfung – beides ohne die nötige Tiefe und Konsistenz.`
       : `Die Stelle verlangt sachliche Präzision. ${s} kommuniziert eher kurz und handlungsorientiert. Details und Begründungen werden ausgelassen. Dokumentationserwartungen klar formulieren.`;
   } else {
     risk = commCompeting23
-      ? `Die Stelle verlangt faktenbasierte Kommunikation. ${s} kommuniziert eher beziehungsorientiert. Da die Nebenkomponenten konkurrieren, wechselt der Stil unter Druck zwischen Tempo und weiterer Abstimmung – sachliche Präzision entsteht in keinem Fall.`
+      ? `Die Stelle verlangt faktenbasierte Kommunikation. ${s} kommuniziert eher beziehungsorientiert. Da die Nebenbereiche konkurrieren, wechselt der Stil unter Druck zwischen Tempo und weiterer Abstimmung – sachliche Präzision entsteht in keinem Fall.`
       : `Die Stelle verlangt faktenbasierte Kommunikation. ${s} kommuniziert eher beziehungsorientiert. Sachliche Tiefe und Nachvollziehbarkeit können leiden. Klare Standards für Informationsweitergabe setzen.`;
   }
 
@@ -1176,27 +1176,27 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
     const culComp23 = ct ? Math.abs(ct[culRest2[0]] - ct[culRest2[1]]) <= 5 && Math.min(ct[culRest2[0]], ct[culRest2[1]]) > 15 : false;
     if (rk === "analytisch" && ck === "impulsiv") {
       risk = culComp23
-        ? "Stabilität in Abläufen geht verloren, wenn Entscheidungen schneller fallen als sie strukturell abgesichert sind. Da die Nebenkomponenten konkurrieren, schwankt die Kulturwirkung unter Druck zwischen Empathie und Faktenprüfung – beides ohne die nötige Konsistenz für stabile Abläufe."
+        ? "Stabilität in Abläufen geht verloren, wenn Entscheidungen schneller fallen als sie strukturell abgesichert sind. Da die Nebenbereiche konkurrieren, schwankt die Kulturwirkung unter Druck zwischen Empathie und Faktenprüfung – beides ohne die nötige Konsistenz für stabile Abläufe."
         : "Stabilität in Abläufen geht verloren, wenn Entscheidungen schneller fallen als sie strukturell abgesichert sind. Kurzfristig entsteht Zug, langfristig leidet Verlässlichkeit.";
     } else if (rk === "analytisch" && ck === "intuitiv") {
       risk = culComp23
-        ? "Die Kultur verschiebt sich von sachlicher Qualität hin zu persönlicher Verbindung. Da die Nebenkomponenten konkurrieren, wechselt der Einfluss unter Druck zwischen Tempo und Strukturkontrolle – Standards weichen in beiden Fällen auf."
+        ? "Die Kultur verschiebt sich von sachlicher Qualität hin zu persönlicher Verbindung. Da die Nebenbereiche konkurrieren, wechselt der Einfluss unter Druck zwischen Tempo und Strukturkontrolle – Standards weichen in beiden Fällen auf."
         : "Die Kultur verschiebt sich von sachlicher Qualität hin zu persönlicher Verbindung. Standards und Regeln weichen auf, wenn Beziehungen wichtiger werden als Prozesse.";
     } else if (rk === "impulsiv" && ck === "analytisch") {
       risk = culComp23
-        ? "Die operative Geschwindigkeit sinkt. Da die Nebenkomponenten konkurrieren, pendelt die Kultur unter Druck zwischen persönlicher Abstimmung und weiterem Prüfen – das erwartete Tempo entsteht in keinem Fall."
+        ? "Die operative Geschwindigkeit sinkt. Da die Nebenbereiche konkurrieren, pendelt die Kultur unter Druck zwischen persönlicher Abstimmung und weiterem Prüfen – das erwartete Tempo entsteht in keinem Fall."
         : "Die operative Geschwindigkeit sinkt. Statt direkter Umsetzung entsteht eine Kultur der Prüfung und Absicherung. In einem dynamischen Umfeld ein Wettbewerbsnachteil.";
     } else if (rk === "impulsiv" && ck === "intuitiv") {
       risk = culComp23
-        ? "Ergebnisorientierung weicht einer Konsenskultur. Da die Nebenkomponenten konkurrieren, schwankt der Einfluss unter Druck zwischen Faktenprüfung und schnellem Handeln – die Dynamik der Stelle geht in beiden Richtungen verloren."
+        ? "Ergebnisorientierung weicht einer Konsenskultur. Da die Nebenbereiche konkurrieren, schwankt der Einfluss unter Druck zwischen Faktenprüfung und schnellem Handeln – die Dynamik der Stelle geht in beiden Richtungen verloren."
         : "Ergebnisorientierung weicht einer Konsenskultur. Entscheidungen werden diskutiert statt umgesetzt. Die Dynamik der Stelle geht verloren.";
     } else if (rk === "intuitiv" && ck === "impulsiv") {
       risk = culComp23
-        ? "Kooperative Kultur wird durch Ergebnisorientierung verdrängt. Da die Nebenkomponenten konkurrieren, schwankt die Kulturwirkung unter Druck zwischen sachlicher Kontrolle und weiterem Tempo – persönliche Verbindung entsteht in keinem Fall."
+        ? "Kooperative Kultur wird durch Ergebnisorientierung verdrängt. Da die Nebenbereiche konkurrieren, schwankt die Kulturwirkung unter Druck zwischen sachlicher Kontrolle und weiterem Tempo – persönliche Verbindung entsteht in keinem Fall."
         : "Kooperative Kultur wird durch Ergebnisorientierung verdrängt. Weniger persönliche Ansprache, mehr Leistungsdruck. Bindung und Motivation sinken.";
     } else {
       risk = culComp23
-        ? "Kultur wird formaler und distanzierter. Da die Nebenkomponenten konkurrieren, wechselt der Einfluss unter Druck zwischen Tempodruck und weiterer Analyse – der persönliche Austausch bleibt dauerhaft nachrangig."
+        ? "Kultur wird formaler und distanzierter. Da die Nebenbereiche konkurrieren, wechselt der Einfluss unter Druck zwischen Tempodruck und weiterer Analyse – der persönliche Austausch bleibt dauerhaft nachrangig."
         : "Kultur wird formaler und distanzierter. Persönliche Verbindung und offener Austausch nehmen ab, das Teamgefühl leidet.";
     }
   } else {
@@ -1204,7 +1204,7 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
     const culRest = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== ck);
     const culCompeting23 = ct ? Math.abs(ct[culRest[0]] - ct[culRest[1]]) <= 5 && Math.min(ct[culRest[0]], ct[culRest[1]]) > 15 : false;
     if (culCompeting23) {
-      risk = "Die kulturelle Grundrichtung stimmt. Da die beiden Nebenkomponenten fast gleich stark sind, kann die gelebte Kultur situativ schwanken – mal dynamischer, mal empathischer, mal strukturierter. Das erzeugt ein wechselhaftes Arbeitsumfeld.";
+      risk = "Die kulturelle Grundrichtung stimmt. Da die beiden Nebenbereiche fast gleich stark sind, kann die gelebte Kultur situativ schwanken – mal dynamischer, mal empathischer, mal strukturierter. Das erzeugt ein wechselhaftes Arbeitsumfeld.";
     } else {
       risk = cMaxGap >= 8
         ? "Die kulturelle Grundrichtung stimmt. Da die Nebenbereiche unterschiedlich gewichtet werden, kann sich die gelebte Kultur in einzelnen Aspekten von der Stellenerwartung unterscheiden."
@@ -1225,7 +1225,7 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
     if (candBalanced) {
       return [
         { label: "Kurzfristig", period: "0 - 3 Monate", text: `Die Stelle ${role} verlangt Vielseitigkeit in der Arbeitsweise. ${s} bringt ein ausgeglichenes Profil mit. Die Einarbeitung verläuft voraussichtlich reibungslos.` },
-        { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die vielseitige Grundausrichtung passt zur Stellenanforderung. Kleinere Gewichtungsunterschiede bleiben im Alltag gut steuerbar. Regelmässige Zielgespräche sichern die Passung.` },
+        { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die vielseitige Arbeitsweise passt zur Stellenanforderung. Kleinere Gewichtungsunterschiede bleiben im Alltag gut handhabbar. Regelmässige Zielgespräche sichern die Passung.` },
         { label: "Langfristig", period: "12+ Monate", text: `Die Stellenanforderungen werden langfristig stabil abgedeckt. Der Führungsaufwand bleibt gering. Halbjährliche Überprüfungen genügen.` },
       ];
     }
@@ -1237,7 +1237,7 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
 
     return [
       { label: "Kurzfristig", period: "0 - 3 Monate", text: `Die Stelle ${role} verlangt eine vielseitige Arbeitsweise über alle drei Bereiche. ${s} arbeitet bevorzugt über ${domDesc}. Bereits in der Einarbeitung sollte auf die einseitige Schwerpunktsetzung geachtet werden.` },
-      { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die einseitige Ausrichtung wird im Alltag deutlicher spürbar. ${weakDescs} werden nicht ausreichend abgedeckt. Ohne gezielte Steuerung verschiebt sich die Stellenausübung in eine einzelne Richtung. Regelmässige Zielgespräche und klare Erwartungen sind notwendig.` },
+      { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die einseitige Ausrichtung wird im Alltag zunehmend bemerkbar. ${weakDescs} werden nicht ausreichend abgedeckt. Ohne gezielte Steuerung verschiebt sich die Stellenausübung in eine einzelne Richtung. Regelmässige Zielgespräche und klare Erwartungen sind notwendig.` },
       { label: "Langfristig", period: "12+ Monate", text: totalGap > 40
         ? `Die Vielseitigkeitsanforderung der Stelle wird dauerhaft verfehlt. Die einseitige Prägung erschwert die Wirkung in allen geforderten Bereichen. Es muss entschieden werden, ob der Führungsaufwand langfristig tragbar ist.`
         : `Mit gezielter Führung lässt sich die einseitige Ausrichtung teilweise kompensieren. Halbjährliche Überprüfung empfohlen, um sicherzustellen, dass die Vielseitigkeit gewährleistet bleibt.` },
@@ -1246,7 +1246,7 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
 
   if (rk === ck && gap === "gering") {
     return [
-      { label: "Kurzfristig", period: "0 - 3 Monate", text: `Die Stelle ${role} verlangt ${compDesc(rk)}. Die Arbeitslogik passt. Die Einarbeitung verläuft voraussichtlich reibungslos. Nur in Einzelfällen muss nachgesteuert werden.` },
+      { label: "Kurzfristig", period: "0 - 3 Monate", text: `Die Stelle ${role} verlangt ${compDesc(rk)}. Die Arbeitslogik passt. Die Einarbeitung verläuft voraussichtlich reibungslos. Nur in Einzelfällen ist Nachjustierung nötig.` },
       { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die Stellenanforderungen werden stabil abgedeckt. In den Nebenbereichen treten kleinere Abweichungen auf. Regelmässige Zielgespräche helfen, diese frühzeitig zu erkennen.` },
       { label: "Langfristig", period: "12+ Monate", text: `Die Stellenanforderungen werden langfristig stabil erfüllt. Der Führungsaufwand bleibt gering. Halbjährliche Überprüfungen genügen.` },
     ];
@@ -1255,17 +1255,17 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
   if (rk === ck && gap !== "gering") {
     return [
       { label: "Kurzfristig", period: "0 - 3 Monate", text: `Die Stelle ${role} verlangt ${compDesc(rk)}. ${Subj(cand)} arbeitet in dieselbe Richtung, gewichtet aber die Nebenbereiche anders. Bereits in der Einarbeitung sollte gezielt auf diese Unterschiede geachtet werden.` },
-      { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die Grundrichtung stimmt, aber die Abweichungen in den Nebenbereichen werden im Alltag spürbar. Ohne gezielte Steuerung können sich diese Unterschiede verfestigen. Regelmässige Zielgespräche und klare Erwartungen sind notwendig.` },
+      { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die Grundrichtung stimmt, aber die Abweichungen in den Nebenbereichen werden im Alltag bemerkbar. Ohne gezielte Steuerung können sich diese Unterschiede verfestigen. Regelmässige Zielgespräche und klare Erwartungen sind notwendig.` },
       { label: "Langfristig", period: "12+ Monate", text: gap === "hoch"
-          ? `Trotz gleicher Grundausrichtung bleibt der Führungsaufwand erhöht. Die Nebenbereich-Abweichungen erfordern dauerhafte Aufmerksamkeit. Es sollte geprüft werden, ob der Steuerungsaufwand langfristig tragbar ist.`
+          ? `Trotz gleicher Arbeitsweise bleibt der Führungsaufwand erhöht. Die Nebenbereich-Abweichungen erfordern dauerhafte Aufmerksamkeit. Es sollte geprüft werden, ob der Steuerungsaufwand langfristig tragbar ist.`
           : `Mit gezielter Führung lassen sich die Unterschiede in den Nebenbereichen dauerhaft ausgleichen. Halbjährliche Überprüfung empfohlen, um sicherzustellen, dass die Passung stabil bleibt.` },
     ];
   }
 
   if (gap === "gering") {
     return [
-      { label: "Kurzfristig", period: "0 - 3 Monate", text: `Die Stelle ${role} verlangt ${compDesc(rk)}. ${Subj(cand)} bringt eine andere Grundausrichtung mit, die Abweichungen sind aber gering. Die Einarbeitung verläuft voraussichtlich ohne grössere Reibung.` },
-      { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die geringen Abweichungen bleiben im Alltag gut steuerbar. Regelmässiges Feedback hilft, die Passung dauerhaft zu sichern.` },
+      { label: "Kurzfristig", period: "0 - 3 Monate", text: `Die Stelle ${role} verlangt ${compDesc(rk)}. ${Subj(cand)} bringt eine andere Arbeitsweise mit, die Abweichungen sind aber gering. Die Einarbeitung verläuft voraussichtlich ohne grössere Reibung.` },
+      { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die geringen Abweichungen bleiben im Alltag gut handhabbar. Regelmässiges Feedback hilft, die Passung dauerhaft zu sichern.` },
       { label: "Langfristig", period: "12+ Monate", text: `Die Stellenanforderungen werden langfristig stabil abgedeckt. Der Führungsaufwand bleibt überschaubar. Halbjährliche Überprüfungen genügen.` },
     ];
   }
@@ -1473,7 +1473,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
             ...(isLeader ? [`Führungsrolle und Verantwortungsrahmen definieren.`] : []),
           ],
           fokus: {
-            intro: `Die Stelle und ${candLower} teilen eine vielseitige Grundausrichtung. Wichtig ist, schnell Klarheit zu schaffen über:`,
+            intro: `Die Stelle und ${candLower} teilen eine vielseitige Arbeitsweise. Wichtig ist, schnell Klarheit zu schaffen über:`,
             bullets: [`situative Gewichtung der drei Bereiche`, `Entscheidungswege und Verantwortungsbereiche`, `Qualitätsstandards und Erwartungshaltung`],
           },
         },
@@ -1673,7 +1673,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
 
       p3Ziel = `Umsetzungsrhythmus und ${isLeader ? "Führungswirkung" : "Arbeitsweise"} als ${role} stabilisieren.`;
       p3Items.push(`Ergebnisqualität und Tempo über die ersten 30 Tage auswerten.`);
-      p3Items.push(`Nachsteuerung bei Übertaktung oder Unterforderung.`);
+      p3Items.push(`Nachjustierung bei Übertaktung oder Unterforderung.`);
       p3Items.push(`Umsetzungserfolge sichtbar machen und verankern.`);
       if (isLeader) p3Items.push(`Führungswirkung auf Teamdynamik und Ergebnisqualität evaluieren.`);
       else p3Items.push(`Langfristige Meilensteine und Umsetzungsziele definieren.`);
@@ -1833,7 +1833,7 @@ function buildFinal(role: string, cand: string, fit: string, control: string, rk
     if (fit === "Geeignet") {
       return candBalanced
         ? `Die Stelle ${role} erfordert Vielseitigkeit über alle drei Bereiche. ${s} bringt ein ausgeglichenes Profil mit. Der Führungsaufwand ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich.`
-        : `Die Stelle ${role} erfordert Vielseitigkeit. ${s} bringt eine einseitige Ausrichtung mit, die Abweichungen sind aber steuerbar. Der Führungsaufwand ist ${control}. Mit gezielter Begleitung ist eine stabile Besetzung möglich.`;
+        : `Die Stelle ${role} erfordert Vielseitigkeit. ${s} bringt eine einseitige Ausrichtung mit, die Abweichungen sind aber handhabbar. Der Führungsaufwand ist ${control}. Mit gezielter Begleitung ist eine stabile Besetzung möglich.`;
     }
     if (fit === "Bedingt geeignet") {
       const domKey: ComponentKey = ct.impulsiv >= ct.intuitiv && ct.impulsiv >= ct.analytisch ? "impulsiv" : ct.intuitiv >= ct.analytisch ? "intuitiv" : "analytisch";
@@ -1845,7 +1845,7 @@ function buildFinal(role: string, cand: string, fit: string, control: string, rk
 
   const roleDesc = isDualDomRole && rk2 ? dualRoleDesc(rk, rk2) : compDesc(rk);
   if (fit === "Geeignet") {
-    return `Die Stelle ${role} erfordert ${roleDesc}. ${s} bringt diese Grundausrichtung mit. Der Führungsaufwand ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich.`;
+    return `Die Stelle ${role} erfordert ${roleDesc}. ${s} bringt diese Arbeitsweise mit. Der Führungsaufwand ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich.`;
   }
   if (fit === "Bedingt geeignet") {
     return `Die Stelle ${role} erfordert ${roleDesc}. ${s} weicht in einzelnen Bereichen von der Stellenanforderung ab. Mit gezielter Führung und klarer Struktur lässt sich die Zusammenarbeit stabilisieren. Der Führungsaufwand ist ${control}.${leadSuffix}`;
