@@ -900,23 +900,30 @@ export default function SollIstBericht() {
                       <p data-pdf-block style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 22px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-gesamt-intro">
                         {gesamtIntroText}
                       </p>
-                      {/* SYSTEMSTATUS */}
+                      <div style={{ fontSize: 28, fontWeight: 800, color: fitCol, margin: "20px 0 0", letterSpacing: "-0.02em" }} data-testid="si-gesamt-label">
+                        {result.fitLabel}
+                      </div>
+
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-systemstatus">
-                        <div style={{ display: "flex", gap: 10 }}>
-                          {[
-                            { label: "Grundpassung", value: result.fitLabel, color: fitCol },
-                            { label: "Führungsaufwand", value: cLabel, color: cCol },
-                            { label: "Profilabweichung", value: result.gapLevel, color: gapCol },
-                            { label: "Entwicklungsaufwand", value: devLabel, color: devCol },
-                          ].map(m => {
-                            const bg = `linear-gradient(135deg, ${m.color}10 0%, ${m.color}06 100%)`;
-                            return (
-                              <div key={m.label} style={{ flex: 1, minWidth: 0, padding: "14px 16px", borderRadius: 10, background: bg, border: `1px solid ${m.color}18` }}>
-                                <div style={{ fontSize: 12, color: "#1D1D1F", marginBottom: 5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>{m.label}</div>
-                                <div style={{ fontSize: 15, fontWeight: 700, color: m.color }} data-testid={`status-${m.label.toLowerCase().replace(/\s/g, "-")}`}>{m.value}</div>
-                              </div>
-                            );
-                          })}
+                        <div style={{ display: "flex", gap: 16, marginTop: 20, paddingTop: 18, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+                          <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${fitCol}08`, border: `1px solid ${fitCol}25` }}>
+                            <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Grundpassung</div>
+                            <div style={{ fontSize: 17, fontWeight: 700, color: fitCol }} data-testid="status-grundpassung">{result.fitLabel}</div>
+                          </div>
+                          <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${cCol}08`, border: `1px solid ${cCol}25` }}>
+                            <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Führungsaufwand</div>
+                            <div style={{ fontSize: 17, fontWeight: 700, color: cCol }} data-testid="status-führungsaufwand">{cLabel}</div>
+                          </div>
+                        </div>
+                        <div style={{ display: "flex", gap: 16, marginTop: 16 }}>
+                          <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${gapCol}08`, border: `1px solid ${gapCol}25` }}>
+                            <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Profilabweichung</div>
+                            <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="status-profilabweichung">{result.gapLevel}</div>
+                          </div>
+                          <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${devCol}08`, border: `1px solid ${devCol}25` }}>
+                            <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Entwicklungsaufwand</div>
+                            <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="status-entwicklungsaufwand">{devLabel}</div>
+                          </div>
                         </div>
                       </div>
 
