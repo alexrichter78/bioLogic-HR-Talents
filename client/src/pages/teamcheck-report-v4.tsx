@@ -150,18 +150,18 @@ export default function TeamCheckReportV4() {
                       <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 16px", textAlign: "center" }}>Kurzübersicht</p>
                       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: 16 }}>
                         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
-                          <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 10px" }}>Team</p>
-                          <div style={{ padding: "10px 20px", borderRadius: 20, background: `${COMP_HEX[result.teamPrimary]}14`, border: `1px solid ${COMP_HEX[result.teamPrimary]}30` }}>
-                            <span style={{ fontSize: 14, fontWeight: 700, color: COMP_HEX[result.teamPrimary] }}>{COMP_LABEL[result.teamPrimary]}</span>
+                          <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 10px" }}>Person</p>
+                          <div style={{ padding: "10px 20px", borderRadius: 20, background: `${COMP_HEX[result.personPrimary]}14`, border: `1px solid ${COMP_HEX[result.personPrimary]}30` }}>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: COMP_HEX[result.personPrimary] }}>{COMP_LABEL[result.personPrimary]}</span>
                           </div>
                         </div>
                         <div style={{ flexShrink: 0, marginTop: 18, width: 36, height: 36, borderRadius: "50%", background: `${matchColor}14`, border: `2px solid ${matchColor}40`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                           <span style={{ fontSize: 18, fontWeight: 700, color: matchColor, lineHeight: 1 }}>{matchSymbol}</span>
                         </div>
                         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
-                          <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 10px" }}>Person</p>
-                          <div style={{ padding: "10px 20px", borderRadius: 20, background: `${COMP_HEX[result.personPrimary]}14`, border: `1px solid ${COMP_HEX[result.personPrimary]}30` }}>
-                            <span style={{ fontSize: 14, fontWeight: 700, color: COMP_HEX[result.personPrimary] }}>{COMP_LABEL[result.personPrimary]}</span>
+                          <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 10px" }}>Team</p>
+                          <div style={{ padding: "10px 20px", borderRadius: 20, background: `${COMP_HEX[result.teamPrimary]}14`, border: `1px solid ${COMP_HEX[result.teamPrimary]}30` }}>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: COMP_HEX[result.teamPrimary] }}>{COMP_LABEL[result.teamPrimary]}</span>
                           </div>
                         </div>
                       </div>
