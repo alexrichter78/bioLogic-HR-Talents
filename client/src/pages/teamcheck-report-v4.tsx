@@ -123,6 +123,20 @@ export default function TeamCheckReportV4() {
         el.style.display = "none";
       });
 
+      const kurzBox = clone.querySelector<HTMLElement>("[data-testid='v4-kurzuebersicht-dominanz']");
+      if (kurzBox) {
+        kurzBox.querySelectorAll<HTMLElement>("[data-pill]").forEach(pill => {
+          pill.style.display = "table";
+          pill.style.height = "40px";
+          const span = pill.querySelector("span");
+          if (span) {
+            span.style.display = "table-cell";
+            span.style.verticalAlign = "middle";
+            span.style.textAlign = "center";
+          }
+        });
+      }
+
       const cardEl = clone.firstElementChild as HTMLElement | null;
       if (cardEl) {
         cardEl.style.overflow = "visible";
@@ -315,7 +329,7 @@ export default function TeamCheckReportV4() {
                       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: 16 }}>
                         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
                           <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 10px" }}>Person</p>
-                          <div style={{ padding: "0 20px", borderRadius: 20, background: `${COMP_HEX[result.personPrimary]}14`, border: `1px solid ${COMP_HEX[result.personPrimary]}30`, height: 40, lineHeight: "40px", textAlign: "center" }}>
+                          <div data-pill style={{ padding: "0 20px", borderRadius: 20, background: `${COMP_HEX[result.personPrimary]}14`, border: `1px solid ${COMP_HEX[result.personPrimary]}30`, height: 40, lineHeight: "40px", textAlign: "center" }}>
                             <span style={{ fontSize: 14, fontWeight: 700, color: COMP_HEX[result.personPrimary], lineHeight: "40px", verticalAlign: "middle" }}>{COMP_LABEL[result.personPrimary]}</span>
                           </div>
                         </div>
@@ -324,7 +338,7 @@ export default function TeamCheckReportV4() {
                         </div>
                         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
                           <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 10px" }}>Team</p>
-                          <div style={{ padding: "0 20px", borderRadius: 20, background: `${COMP_HEX[result.teamPrimary]}14`, border: `1px solid ${COMP_HEX[result.teamPrimary]}30`, height: 40, lineHeight: "40px", textAlign: "center" }}>
+                          <div data-pill style={{ padding: "0 20px", borderRadius: 20, background: `${COMP_HEX[result.teamPrimary]}14`, border: `1px solid ${COMP_HEX[result.teamPrimary]}30`, height: 40, lineHeight: "40px", textAlign: "center" }}>
                             <span style={{ fontSize: 14, fontWeight: 700, color: COMP_HEX[result.teamPrimary], lineHeight: "40px", verticalAlign: "middle" }}>{COMP_LABEL[result.teamPrimary]}</span>
                           </div>
                         </div>
