@@ -101,18 +101,18 @@ export default function TeamCheckReportV4() {
             </div>
 
             <div style={{ padding: "28px 32px 0" }}>
-              <p style={{ fontSize: 14.5, color: "#48484A", lineHeight: 1.85, margin: "0 0 8px" }} data-testid="text-einleitung-v4">
-                Dieser Bericht zeigt, wie die Person {result.roleType === "leadership" ? "in der Führungsrolle" : "im bestehenden Team"} voraussichtlich wirken wird. Er hilft dabei, früh zu erkennen, wo Zusammenarbeit gut gelingen kann und wo im Alltag mehr Führung, Klarheit oder Begleitung nötig ist.
-              </p>
-              <p style={{ fontSize: 14.5, color: "#48484A", lineHeight: 1.85, margin: "0 0 24px" }}>
-                Unterschiede sind dabei nicht automatisch negativ. Sie können ein Team sinnvoll ergänzen, brauchen aber klare Erwartungen und gute Abstimmung, damit daraus Stärke statt Reibung entsteht.
-              </p>
-
-              <div data-pdf-block style={{ background: "linear-gradient(135deg, rgba(255,59,48,0.06) 0%, rgba(255,59,48,0.03) 100%)", borderRadius: 10, padding: "16px 20px", border: "1px solid rgba(255,59,48,0.2)", marginBottom: 24 }}>
-                <p style={{ fontSize: 13, fontWeight: 700, color: "#FF3B30", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                  Die Aussagen beschreiben dabei keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse ist wertfrei zu verstehen und dient als Orientierung für die Einschätzung von Passung und Wirksamkeit. Da jede Person individuell ist, ersetzt sie keine Einzelfallbetrachtung, sondern ergänzt diese um eine strukturierte und fundierte Entscheidungsgrundlage.
-                </p>
-              </div>
+              {result.introText.split("\n\n").map((p, i, arr) => {
+                if (i < arr.length - 1) {
+                  return <p key={i} style={{ fontSize: 14.5, color: "#48484A", lineHeight: 1.85, margin: "0 0 8px" }} data-testid={`text-einleitung-v4${i === 0 ? "" : `-${i}`}`}>{p}</p>;
+                }
+                return (
+                  <div key={i} data-pdf-block style={{ background: "linear-gradient(135deg, rgba(255,59,48,0.06) 0%, rgba(255,59,48,0.03) 100%)", borderRadius: 10, padding: "16px 20px", border: "1px solid rgba(255,59,48,0.2)", marginBottom: 24 }}>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "#FF3B30", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
+                      {p}
+                    </p>
+                  </div>
+                );
+              })}
 
               {/* === Section 1: Gesamtbewertung === */}
               <SectionHead num={1} title="Gesamtbewertung" id="gesamtbewertung" />
@@ -344,8 +344,10 @@ export default function TeamCheckReportV4() {
                 return (
                   <div style={{ marginBottom: 36 }} data-testid="v4-section-schlussfazit">
                     <SectionHead num={fazitNum} title="Fazit" id="schlussfazit" />
-                    <div style={{ padding: "20px 24px", borderRadius: 14, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)" }}>
-                      <p style={{ fontSize: 14, lineHeight: 1.85, color: "#1D1D1F", margin: 0, textAlign: "justify", textAlignLast: "left", hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="v4-schlussfazit-text">{result.schlussfazit}</p>
+                    <div style={{ padding: "20px 24px", borderRadius: 14, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="v4-schlussfazit-text">
+                      {result.schlussfazit.split("\n\n").map((p, i, arr) => (
+                        <p key={i} style={{ fontSize: 14, lineHeight: 1.85, color: "#1D1D1F", margin: i < arr.length - 1 ? "0 0 12px" : 0, textAlign: "justify", textAlignLast: "left", hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{p}</p>
+                      ))}
                     </div>
                   </div>
                 );
