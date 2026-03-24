@@ -200,8 +200,7 @@ function buildIntroText(c: Ctx): string {
     ? "Dieser Bericht zeigt, wie die Person in einer Führungsrolle im bestehenden Team voraussichtlich wirken wird. Er hilft dabei, früh zu erkennen, wo Zusammenarbeit gut gelingen kann und wo im Alltag mehr Führung, Klarheit oder Begleitung nötig ist."
     : "Dieser Bericht zeigt, wie die Person im bestehenden Team voraussichtlich wirken wird. Er hilft dabei, früh zu erkennen, wo Zusammenarbeit gut gelingen kann und wo im Alltag mehr Klarheit oder Begleitung nötig ist.";
   const p2 = "Unterschiede sind dabei nicht automatisch negativ. Sie können ein Team sinnvoll ergänzen, brauchen aber klare Erwartungen, gute Abstimmung und bewusste Führung, damit daraus Stärke statt Reibung entsteht.";
-  const p3 = "Die Aussagen beschreiben keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse ist wertfrei zu verstehen und dient als Orientierung für die Einschätzung von Passung, Wirkung und Führungsbedarf. Da jede Person individuell ist, ersetzt sie keine Einzelfallbetrachtung, sondern ergänzt diese um eine strukturierte und fundierte Entscheidungsgrundlage.";
-  return `${p1}\n\n${p2}\n\n${p3}`;
+  return `${p1}\n\n${p2}`;
 }
 
 function buildGesamtbewertungText(c: Ctx): string {
