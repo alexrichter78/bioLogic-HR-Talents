@@ -583,6 +583,9 @@ input[type="range"].bio-slider::-moz-range-track {
   .v4-report-page [data-testid^="v4-fuehrung-"],
   .v4-report-page [data-testid^="v4-risk-"],
   .v4-report-page [data-testid="v4-chancen-einordnung"],
+  .v4-report-page [data-testid="v4-integration-warnsignale"],
+  .v4-report-page [data-testid="v4-integration-leitfragen"],
+  .v4-report-page [data-testid="v4-integration-verantwortung"],
   .v4-report-page [data-testid="v4-footer"] {
     break-inside: avoid !important;
   }
