@@ -510,7 +510,7 @@ export default function TeamCheckReportV4() {
                   <SectionHead num={7} title="Was als Führungskraft für dieses Team wichtig ist" id="fuehrung" />
                   <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 14 }}>
                     {result.fuehrungshinweis.map((item, i) => (
-                      <div key={item.title} style={{ padding: "18px 20px", borderRadius: 12, background: "#FFF", borderLeft: "3px solid #343A48", border: "1px solid rgba(0,0,0,0.06)", borderLeftWidth: 3, borderLeftColor: "#343A48", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} data-testid={`v4-fuehrung-${i}`}>
+                      <div key={item.title} data-pdf-block style={{ padding: "18px 20px", borderRadius: 12, background: "#FFF", borderLeft: "3px solid #343A48", border: "1px solid rgba(0,0,0,0.06)", borderLeftWidth: 3, borderLeftColor: "#343A48", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} data-testid={`v4-fuehrung-${i}`}>
                         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                           <span style={{ width: 22, height: 22, borderRadius: 11, background: "#343A48", color: "#FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</span>
                           <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", lineHeight: 1.35 }}>{item.title}</span>
@@ -532,7 +532,7 @@ export default function TeamCheckReportV4() {
                       {result.integrationsplan.map(phase => {
                         const phaseCol = phase.num === 1 ? "#0071E3" : phase.num === 2 ? "#F39200" : "#34C759";
                         return (
-                          <div key={phase.num} data-testid={`v4-integration-phase-${phase.num}`} style={{ borderRadius: 14, overflow: "hidden", border: `1px solid ${phaseCol}20`, breakInside: "avoid" }}>
+                          <div key={phase.num} data-pdf-block data-testid={`v4-integration-phase-${phase.num}`} style={{ borderRadius: 14, overflow: "hidden", border: `1px solid ${phaseCol}20` }}>
                             <div style={{ padding: "12px 20px", background: `${phaseCol}10`, borderBottom: `1px solid ${phaseCol}15`, display: "flex", alignItems: "center", gap: 10 }}>
                               <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 26, height: 26, borderRadius: 13, background: phaseCol, color: "#fff", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{phase.num}</span>
                               <div>
@@ -585,7 +585,7 @@ export default function TeamCheckReportV4() {
                         {result.risikoprognose.map((phase, i) => {
                           const phaseCol = i === 0 ? "#34C759" : i === 1 ? "#FF9500" : "#C41E3A";
                           return (
-                            <div key={i} style={{ position: "relative" }} data-testid={`v4-risk-${i}`}>
+                            <div key={i} data-pdf-block style={{ position: "relative" }} data-testid={`v4-risk-${i}`}>
                               <div style={{ position: "absolute", left: -22, top: 14, width: 10, height: 10, borderRadius: 5, background: phaseCol, boxShadow: `0 0 0 3px ${phaseCol}20` }} />
                               <div style={{ padding: "12px 16px", borderRadius: 12, background: `${phaseCol}06`, border: `1px solid ${phaseCol}15` }}>
                                 <p style={{ fontSize: 12, fontWeight: 700, color: phaseCol, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>{phase.label} <span style={{ fontWeight: 500, textTransform: "none", letterSpacing: "0" }}>{phase.period}</span></p>

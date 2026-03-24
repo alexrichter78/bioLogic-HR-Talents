@@ -569,18 +569,10 @@ input[type="range"].bio-slider::-moz-range-track {
     box-shadow: none !important;
     border-radius: 0 !important;
   }
-  .v4-report-page [data-testid="v4-section-vergleich"],
-  .v4-report-page [data-testid="v4-section-warum"],
-  .v4-report-page [data-testid="v4-section-wirkung"],
-  .v4-report-page [data-testid="v4-section-ohne"],
-  .v4-report-page [data-testid="v4-section-alltag"],
-  .v4-report-page [data-testid="v4-section-leistung"],
-  .v4-report-page [data-testid="v4-section-druck"],
-  .v4-report-page [data-testid="v4-section-empfehlungen"],
-  .v4-report-page [data-testid="v4-section-team-ohne-person"],
-  .v4-report-page [data-testid="v4-section-schlussfazit"] {
-    break-inside: avoid;
+  .v4-report-page [data-pdf-block] {
+    break-inside: avoid !important;
   }
+  .v4-report-page [data-testid="v4-section-gesamtbewertung"],
   .v4-report-page [data-testid="v4-two-axis"],
   .v4-report-page [data-testid="v4-kurzuebersicht-dominanz"],
   .v4-report-page [data-testid="v4-kurzueberblick"],
@@ -588,16 +580,12 @@ input[type="range"].bio-slider::-moz-range-track {
   .v4-report-page [data-testid^="v4-integration-phase-"],
   .v4-report-page [data-testid^="v4-fuehrung-"],
   .v4-report-page [data-testid^="v4-risk-"],
-  .v4-report-page [data-testid="v4-chancen-einordnung"] {
-    break-inside: avoid;
-  }
+  .v4-report-page [data-testid="v4-chancen-einordnung"],
+  .v4-report-page [data-testid="v4-section-vergleich"],
   .v4-report-page [data-testid="v4-footer"] {
-    break-before: avoid;
+    break-inside: avoid !important;
   }
   .v4-report-page [data-pill] {
     white-space: nowrap !important;
-  }
-  .v4-report-page [data-testid="v4-section-gesamtbewertung"] {
-    break-inside: avoid;
   }
 }
