@@ -311,21 +311,22 @@ export default function TeamCheckReportV4() {
                     printWin.document.close();
                     setTimeout(() => {
                       const A4_H = 1122;
-                      const blocks = printWin.document.querySelectorAll<HTMLElement>("[data-pdf-block]");
+                      const sectionDividers = printWin.document.querySelectorAll<HTMLElement>("[data-testid^='v4-section-']");
                       let qi = 0;
-                      blocks.forEach(block => {
+                      sectionDividers.forEach(section => {
                         if (qi >= quotes.length) return;
-                        const rect = block.getBoundingClientRect();
-                        const blockEnd = rect.top + rect.height;
-                        const pageNum = Math.floor(blockEnd / A4_H);
+                        const rect = section.getBoundingClientRect();
+                        const sectionEnd = rect.top + rect.height;
+                        const pageNum = Math.floor(sectionEnd / A4_H);
                         const pageBottom = (pageNum + 1) * A4_H;
-                        const gap = pageBottom - blockEnd;
-                        if (gap > 180 && gap < 500) {
+                        const gap = pageBottom - sectionEnd;
+                        if (gap > 250 && gap < 600) {
                           const q = quotes[qi++];
                           const div = printWin.document.createElement("div");
                           div.className = "quote-filler";
+                          div.setAttribute("data-pdf-block", "");
                           div.innerHTML = `<p class="qt">\u201E${q.text}\u201C</p><p class="qa">\u2014 ${q.author}</p>`;
-                          block.parentNode?.insertBefore(div, block.nextSibling);
+                          section.parentNode?.insertBefore(div, section.nextSibling);
                         }
                       });
                       printWin.print();
