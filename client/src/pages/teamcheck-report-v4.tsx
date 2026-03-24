@@ -182,7 +182,7 @@ export default function TeamCheckReportV4() {
               </div>
 
               <div style={{ padding: "12px 18px", borderRadius: 10, background: "rgba(26,93,171,0.05)", border: "1px solid rgba(26,93,171,0.1)", borderLeft: "3px solid #1A5DAB", marginBottom: 20 }}>
-                <p style={{ fontSize: 13, lineHeight: 1.7, color: "#48484A", margin: 0 }} data-testid="v4-team-kontext">{result.teamKontext}</p>
+                <p style={{ fontSize: 13, lineHeight: 1.7, color: "#48484A", margin: 0, fontWeight: 600 }} data-testid="v4-team-kontext">{result.teamKontext}</p>
               </div>
             </div>
 
