@@ -572,6 +572,9 @@ input[type="range"].bio-slider::-moz-range-track {
   .v4-report-page [data-pdf-block] {
     break-inside: avoid !important;
   }
+  .v4-report-page [data-testid="v4-header"] {
+    break-after: avoid !important;
+  }
   .v4-report-page [data-testid="v4-section-gesamtbewertung"],
   .v4-report-page [data-testid="v4-two-axis"],
   .v4-report-page [data-testid="v4-kurzuebersicht-dominanz"],

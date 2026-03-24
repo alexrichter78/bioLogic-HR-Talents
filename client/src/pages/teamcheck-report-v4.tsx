@@ -274,7 +274,22 @@ export default function TeamCheckReportV4() {
               <div className="report-rings" />
               <div style={{ position: "absolute", top: 18, right: 18, display: "flex", gap: 8 }}>
                 <button
-                  onClick={() => window.print()}
+                  onClick={() => {
+                    const printWin = window.open("", "_blank");
+                    if (!printWin) return;
+                    const reportEl = reportRef.current;
+                    if (!reportEl) return;
+                    const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+                      .map(el => el.outerHTML).join("\n");
+                    printWin.document.write(`<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>TeamCheck – ${result.roleTitle || "Bericht"}</title>${styles}<style>body{margin:0;padding:20px 0;background:#fff}
+.report-header-btn,.no-print,nav{display:none!important}
+*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+[data-pdf-block]{break-inside:avoid!important}
+[data-pill]{white-space:nowrap!important}
+</style></head><body class="v4-report-page">${reportEl.outerHTML}</body></html>`);
+                    printWin.document.close();
+                    setTimeout(() => { printWin.print(); }, 600);
+                  }}
                   data-testid="button-print-v4"
                   className="report-header-btn"
                   title="1:1 Qualität — im Druckdialog 'Als PDF speichern' wählen"
