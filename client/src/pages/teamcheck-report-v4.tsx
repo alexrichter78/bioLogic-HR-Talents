@@ -164,6 +164,21 @@ export default function TeamCheckReportV4() {
                 </div>
 
                 <div style={{ fontSize: 28, fontWeight: 800, color: bCol, margin: "20px 0 0", letterSpacing: "-0.02em" }} data-testid="v4-gesamt-label">{result.gesamteinschaetzung}</div>
+                {result.gesamteinschaetzung === "Kritisch" && (
+                  <p style={{ fontSize: 13, lineHeight: 1.6, color: "#6E6E73", margin: "6px 0 0" }} data-testid="v4-kritisch-erklaerung">
+                    Arbeitsweise und Prioritäten von Person und Team passen strukturell nicht zusammen. Die Zusammenarbeit erfordert intensive Führung und bleibt mit hohem Risiko verbunden.
+                  </p>
+                )}
+                {result.gesamteinschaetzung === "Teilweise passend" && (
+                  <p style={{ fontSize: 13, lineHeight: 1.6, color: "#6E6E73", margin: "6px 0 0" }} data-testid="v4-teilweise-erklaerung">
+                    Die Person passt in Teilen zum Team. Mit gezielter Führung und klaren Rahmenbedingungen kann die Zusammenarbeit gelingen.
+                  </p>
+                )}
+                {result.gesamteinschaetzung === "Gut passend" && (
+                  <p style={{ fontSize: 13, lineHeight: 1.6, color: "#6E6E73", margin: "6px 0 0" }} data-testid="v4-gut-erklaerung">
+                    Arbeitsweise und Prioritäten stimmen überein. Die Zusammenarbeit funktioniert ohne besonderen Führungsaufwand.
+                  </p>
+                )}
 
                 <div style={{ display: "flex", gap: 16, marginTop: 20, paddingTop: 18, borderTop: "1px solid rgba(0,0,0,0.06)" }} data-testid="v4-two-axis">
                   <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${axisColor(result.passungZumTeam)}08`, border: `1px solid ${axisColor(result.passungZumTeam)}25` }}>
