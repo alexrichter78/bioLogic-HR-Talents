@@ -120,14 +120,14 @@ export default function TeamCheckReportV4() {
               <div style={{ margin: "0 0 24px" }} data-testid="v4-hero-bewertung">
                 <TextBlock text={result.gesamtbewertungText} />
 
-                <div style={{ display: "flex", gap: 16, marginTop: 16 }} data-testid="v4-kurzueberblick">
-                  <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }}>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Hauptstärke</div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="v4-hauptstaerke">{result.hauptstaerke}</div>
+                <div style={{ display: "flex", gap: 16, marginTop: 16 }} data-testid="v4-two-axis">
+                  <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${bCol}08`, border: `1px solid ${bCol}25` }} data-testid="v4-gesamt-card">
+                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Gesamteinschätzung</div>
+                    <div style={{ fontSize: 17, fontWeight: 700, color: bCol }} data-testid="v4-gesamt-label">{result.gesamteinschaetzung}</div>
                   </div>
-                  <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }}>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Hauptabweichung</div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="v4-hauptabweichung">{result.hauptabweichung}</div>
+                  <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${axisColor(result.passungZumTeam)}08`, border: `1px solid ${axisColor(result.passungZumTeam)}25` }}>
+                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Passung zum Team</div>
+                    <div style={{ fontSize: 17, fontWeight: 700, color: axisColor(result.passungZumTeam) }} data-testid="v4-passung-team">{axisLabel(result.passungZumTeam)}</div>
                   </div>
                 </div>
 
@@ -140,7 +140,7 @@ export default function TeamCheckReportV4() {
                   const matchSymbol = result.sameDominance ? "=" : "⚡";
                   const matchColor = result.sameDominance ? "#34C759" : "#D64045";
                   return (
-                    <div style={{ marginTop: 20, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="v4-kurzuebersicht-dominanz">
+                    <div style={{ marginTop: 16, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="v4-kurzuebersicht-dominanz">
                       <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 16px", textAlign: "center" }}>Kurzübersicht</p>
                       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: 16 }}>
                         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -163,22 +163,15 @@ export default function TeamCheckReportV4() {
                   );
                 })()}
 
-                <div style={{ padding: "12px 16px", borderRadius: 10, background: `${bCol}08`, border: `1px solid ${bCol}25`, marginTop: 20 }} data-testid="v4-gesamt-card">
-                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Gesamteinschätzung</div>
-                  <div style={{ fontSize: 17, fontWeight: 700, color: bCol }} data-testid="v4-gesamt-label">{result.gesamteinschaetzung}</div>
-                </div>
-
-                <div style={{ display: "flex", gap: 16, marginTop: 16 }} data-testid="v4-two-axis">
-                  <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${axisColor(result.passungZumTeam)}08`, border: `1px solid ${axisColor(result.passungZumTeam)}25` }}>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Passung zum Team</div>
-                    <div style={{ fontSize: 17, fontWeight: 700, color: axisColor(result.passungZumTeam) }} data-testid="v4-passung-team">{axisLabel(result.passungZumTeam)}</div>
+                <div style={{ display: "flex", gap: 16, marginTop: 16 }} data-testid="v4-kurzueberblick">
+                  <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }}>
+                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Hauptstärke</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="v4-hauptstaerke">{result.hauptstaerke}</div>
                   </div>
-                  {result.beitragZurAufgabe !== "nicht bewertbar" && (
-                    <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${axisColor(result.beitragZurAufgabe)}08`, border: `1px solid ${axisColor(result.beitragZurAufgabe)}25` }}>
-                      <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Beitrag zur Aufgabe</div>
-                      <div style={{ fontSize: 17, fontWeight: 700, color: axisColor(result.beitragZurAufgabe) }} data-testid="v4-beitrag-aufgabe">{axisLabel(result.beitragZurAufgabe)}</div>
-                    </div>
-                  )}
+                  <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }}>
+                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Hauptabweichung</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="v4-hauptabweichung">{result.hauptabweichung}</div>
+                  </div>
                 </div>
               </div>
 
