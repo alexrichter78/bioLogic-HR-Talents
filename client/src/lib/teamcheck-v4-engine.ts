@@ -432,7 +432,7 @@ function buildDruckText(c: Ctx): string {
   const { isLeader, sameDominance, personPrimary, passungZumTeam, beitragZurAufgabe, hasGoal, teamGoalLabel, roleName } = c;
   const paras: string[] = [];
 
-  paras.push("Unter Druck zeigt sich die natürliche Arbeitsweise eines Menschen klarer als im Normalbetrieb. Was im Alltag noch ausgeglichen oder angepasst wirkt, tritt unter Belastung stärker hervor. Stärken werden sichtbarer, aber auch Grenzen treten offener zutage.");
+  paras.push("Unter Druck zeigt sich die natürliche Arbeitsweise eines Menschen klarer als im ruhigen Arbeitsalltag. Was im Alltag noch ausgeglichen oder angepasst wirkt, tritt unter Belastung stärker hervor. Stärken werden sichtbarer, aber auch Grenzen treten offener zutage.");
 
   if (passungZumTeam === "hoch") {
     paras.push(isLeader
