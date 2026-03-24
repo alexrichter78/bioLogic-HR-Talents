@@ -32,6 +32,8 @@ export interface TeamCheckV4Result {
 
   druckText: string;
 
+  fuehrungshinweis: V4Block[] | null;
+
   empfehlungen: V4Block[];
 
   teamKontext: string;
@@ -135,6 +137,7 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
     wirkungAlltagText: buildWirkungAlltagText(ctx),
     ...buildChancenRisiken(ctx),
     druckText: buildDruckText(ctx),
+    fuehrungshinweis: isLeader ? buildFuehrungshinweis(ctx) : null,
     empfehlungen: buildEmpfehlungen(ctx),
     teamKontext: sameDominance
       ? `Team und Person setzen beide auf ${COMP_SHORT[teamPrimary]}. Ihre Arbeitsweisen liegen nah beieinander.`
@@ -425,6 +428,41 @@ function buildDruckText(c: Ctx): string {
   }
 
   return paras.join("\n\n");
+}
+
+function buildFuehrungshinweis(c: Ctx): V4Block[] {
+  const { sameDominance, teamPrimary, personPrimary, passungZumTeam, beitragZurAufgabe, hasGoal, teamGoalLabel } = c;
+  const items: V4Block[] = [];
+
+  if (passungZumTeam === "hoch") {
+    items.push({ title: "Was das Team von der Führung erwartet", text: `Dieses Team arbeitet bevorzugt über ${COMP_SHORT[teamPrimary]}. Da die Führungskraft ähnlich arbeitet, wird sie voraussichtlich schnell als passend erlebt. Trotzdem muss die Rolle aktiv gestaltet werden. Das Team wird nicht automatisch differenzieren zwischen „passt gut zu uns" und „führt uns gut". Genau das muss die Führungskraft bewusst klären: Wo gehe ich mit dem Team, und wo setze ich eigene Akzente?` });
+    items.push({ title: "Worauf die Führungskraft achten sollte", text: "Bei hoher Ähnlichkeit besteht das Risiko, dass die Führung zu wenig Richtung gibt. Das Team fühlt sich wohl, aber es fehlt der Impuls, Dinge anders oder besser zu machen. Die Führungskraft sollte früh klären, wo sie bewusst Orientierung gibt und wo sie dem Team Raum lässt." });
+    if (beitragZurAufgabe === "gering") {
+      items.push({ title: "Führung im Aufgabenkern absichern", text: hasGoal
+        ? `Gerade im Bereich ${teamGoalLabel} sollte die Führungskraft nicht nur delegieren, sondern aktiv Standards setzen. Wenn die eigene Stärke dort nicht liegt, braucht es klare Vorgaben, definierte Prüfpunkte oder jemanden im Team, der diesen Bereich fachlich absichert.`
+        : "Gerade im fachlichen Kern der Rolle sollte die Führungskraft nicht nur delegieren, sondern aktiv Standards setzen. Wenn die eigene Stärke dort nicht liegt, braucht es klare Vorgaben, definierte Prüfpunkte oder jemanden im Team, der diesen Bereich fachlich absichert." });
+    }
+  } else {
+    items.push({ title: "Wie das Team auf diese Führung reagieren wird", text: sameDominance
+      ? `Das Team teilt mit der Führungskraft eine ähnliche Grundrichtung, erlebt aber in Einzelbereichen eine andere Gewichtung. Anfangs kann das als Bereicherung wahrgenommen werden. Wenn es jedoch zu lange unklar bleibt, wofür die Führung steht, entsteht Verunsicherung. Die Führungskraft sollte deshalb früh klarmachen, was sich ändert und was bleibt.`
+      : `Das Team ist stärker auf ${COMP_SHORT[teamPrimary]} ausgerichtet. Die Führungskraft setzt auf ${COMP_SHORT[personPrimary]}. Das Team wird diesen Unterschied spüren, bevor er benannt wird. Manche erleben das als klärend und hilfreich, andere als fremd oder verunsichernd. Genau deshalb ist es wichtig, dass die Führungskraft den eigenen Stil früh erklärt und Brücken baut.` });
+
+    items.push({ title: "Wo die grösste Führungsherausforderung liegt", text: personPrimary === "impulsiv"
+      ? "Die Führungskraft entscheidet schneller und direkter als das Team es gewohnt ist. Das kann Tempo bringen, aber auch Widerstand auslösen. Die Herausforderung liegt darin, das Team mitzunehmen, ohne den eigenen Stil aufzugeben. Transparenz bei Entscheidungen ist der Schlüssel."
+      : personPrimary === "intuitiv"
+        ? "Die Führungskraft setzt stärker auf Dialog und gemeinsame Abstimmung. Das Team, das eher an andere Wege gewohnt ist, kann das anfangs als Umweg erleben. Die Herausforderung liegt darin, den Mehrwert von Austausch sichtbar zu machen, ohne Entscheidungen unnötig zu verzögern."
+        : "Die Führungskraft geht strukturierter und gründlicher vor als das Team es kennt. Das kann Klarheit schaffen, aber auch als Kontrolle oder Langsamkeit erlebt werden. Die Herausforderung liegt darin, Struktur einzuführen, ohne das Team zu bremsen." });
+
+    items.push({ title: "Was die Führungskraft in den ersten Wochen tun sollte", text: passungZumTeam === "gering"
+      ? "Vor allem: zuhören, beobachten, und dann erst steuern. Das Team muss verstehen, wofür die neue Führung steht. Dafür braucht es frühe Einzelgespräche, klare Ansagen zu Entscheidungswegen und sichtbare Präsenz. Erst wenn das Team weiss, woran es ist, kann echte Führung greifen."
+      : "In den ersten Wochen sollte die Führungskraft bewusst klären: Wie will ich führen? Was erwarte ich? Was kann das Team von mir erwarten? Dieses Gespräch muss aktiv geführt werden, es findet nicht von alleine statt. Je früher es stattfindet, desto weniger Raum bleibt für Interpretationen und stille Widerstände." });
+  }
+
+  if (hasGoal && beitragZurAufgabe !== "gering") {
+    items.push({ title: `Führung im Kontext von ${teamGoalLabel}`, text: `Das Funktionsziel ${teamGoalLabel} gibt der Führungsarbeit eine klare Richtung. Die Führungskraft sollte dieses Ziel aktiv nutzen, um Erwartungen zu rahmen, Prioritäten zu setzen und dem Team Orientierung zu geben. Das hilft besonders dann, wenn Unterschiede im Stil auftreten, weil die gemeinsame Aufgabe als verbindende Klammer wirkt.` });
+  }
+
+  return items;
 }
 
 function buildEmpfehlungen(c: Ctx): V4Block[] {

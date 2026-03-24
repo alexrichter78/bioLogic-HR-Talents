@@ -206,9 +206,22 @@ export default function TeamCheckReportV4() {
                 <TextBlock text={result.druckText} />
               </div>
 
-              {/* === Section 6: Was jetzt wichtig ist === */}
+              {/* === Section 6 (only Führungskraft): Führungshinweis === */}
+              {result.fuehrungshinweis && (
+                <div style={sectionStyle} data-testid="v4-section-fuehrung">
+                  <SectionHead num={6} title="Was als Führungskraft für dieses Team wichtig ist" id="fuehrung" />
+                  {result.fuehrungshinweis.map((item, i) => (
+                    <div key={item.title} style={{ marginBottom: 22 }}>
+                      <SubHead num={i + 1} title={item.title} color="#343A48" />
+                      <p style={bodyText}>{item.text}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* === Section 6/7: Was jetzt wichtig ist === */}
               <div style={{ marginBottom: 36 }} data-testid="v4-section-empfehlungen">
-                <SectionHead num={6} title="Was jetzt wichtig ist" id="empfehlungen" />
+                <SectionHead num={result.fuehrungshinweis ? 7 : 6} title="Was jetzt wichtig ist" id="empfehlungen" />
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
                   {result.empfehlungen.map((emp, i) => (
                     <div key={emp.title} style={{ padding: "18px 20px", borderRadius: 12, background: "#FFF", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} data-testid={`v4-empfehlung-${i}`}>
