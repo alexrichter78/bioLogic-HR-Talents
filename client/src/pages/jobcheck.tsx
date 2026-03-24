@@ -1169,38 +1169,41 @@ export default function JobCheck() {
                       </div>
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Gesamtbewertung</span>
                     </div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
-                      <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>Grundpassung</p>
-                        <p style={{ fontSize: 15, fontWeight: 700, color: fitColor(engine.overallFit), margin: 0 }}>{statusLabel(engine.overallFit)}</p>
+                    <div style={{ fontSize: 28, fontWeight: 800, color: fitColor(engine.overallFit), margin: "20px 0 0", letterSpacing: "-0.02em" }} data-testid="jc-gesamt-label">
+                      {statusLabel(engine.overallFit)}
+                    </div>
+
+                    <div style={{ display: "flex", gap: 16, marginTop: 20, paddingTop: 18, borderTop: "1px solid rgba(0,0,0,0.06)" }} data-testid="jc-two-axis">
+                      <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${fitColor(engine.overallFit)}08`, border: `1px solid ${fitColor(engine.overallFit)}25` }}>
+                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Grundpassung</div>
+                        <div style={{ fontSize: 17, fontWeight: 700, color: fitColor(engine.overallFit) }} data-testid="jc-grundpassung">{statusLabel(engine.overallFit)}</div>
                       </div>
-                      <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>Führungsaufwand</p>
-                        <p style={{ fontSize: 15, fontWeight: 700, color: controlColor(engine.controlIntensity), margin: 0 }}>{controlLabel(engine.controlIntensity)}</p>
-                      </div>
-                      <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>Kritischer Bereich</p>
-                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{engine.criticalAreaLabel}</p>
-                      </div>
-                      <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>Empfehlung</p>
-                        <p style={{ fontSize: 13, fontWeight: 700, color: "#0071E3", margin: 0 }}>
-                          {engine.overallFit === "SUITABLE" ? "Besetzung strukturell passend" : engine.overallFit === "CONDITIONAL" ? "Besetzung möglich mit Integrations-Setup" : "Für diese Stelle nicht strukturgerecht"}
-                        </p>
+                      <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${controlColor(engine.controlIntensity)}08`, border: `1px solid ${controlColor(engine.controlIntensity)}25` }}>
+                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Führungsaufwand</div>
+                        <div style={{ fontSize: 17, fontWeight: 700, color: controlColor(engine.controlIntensity) }} data-testid="jc-fuehrungsaufwand">{controlLabel(engine.controlIntensity)}</div>
                       </div>
                     </div>
 
-                    <div style={{
-                      padding: "18px 22px", borderRadius: 18,
-                      background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(52,170,220,0.04))",
-                      border: "1px solid rgba(0,113,227,0.12)",
-                    }}>
-                      <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.85, margin: 0, fontWeight: 500, textAlign: "justify", textAlignLast: "left" } as React.CSSProperties} lang="de">
+                    <div style={{ display: "flex", gap: 16, marginTop: 16 }} data-testid="jc-detail-cards">
+                      <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(255,149,0,0.04)", border: "1px solid rgba(255,149,0,0.15)" }}>
+                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Kritischer Bereich</div>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="jc-kritischer-bereich">{engine.criticalAreaLabel}</div>
+                      </div>
+                      <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(26,93,171,0.04)", border: "1px solid rgba(26,93,171,0.12)" }}>
+                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Empfehlung</div>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="jc-empfehlung">
+                          {engine.overallFit === "SUITABLE" ? "Besetzung strukturell passend" : engine.overallFit === "CONDITIONAL" ? "Besetzung möglich mit Integrations-Setup" : "Für diese Stelle nicht strukturgerecht"}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ padding: "12px 18px", borderRadius: 10, background: `${fitColor(engine.overallFit)}08`, border: `1px solid ${fitColor(engine.overallFit)}15`, marginTop: 16 }}>
+                      <p style={{ fontSize: 13, lineHeight: 1.7, color: "#48484A", margin: 0 }} data-testid="jc-zusammenfassung">
                         {hyphenateText(engine.overallFit === "SUITABLE"
                           ? "Die Besetzung passt zur Stelle. Fokus auf saubere Umsetzung und klare Arbeitsroutinen."
                           : engine.overallFit === "CONDITIONAL"
-                            ? "Die Besetzung ist nicht risikofrei, aber entwicklungsfähig. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und höherem Führungsaufwand führen. Mit klaren Erwartungen und Rahmenvorgaben lässt sich die Zusammenarbeit stabilisieren."
-                            : "Die Arbeitsweise der Person passt nicht zur Grundlogik dieser Stelle. Die unterschiedlichen Arbeitslogiken können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen. Eine stabile Besetzung ist unter diesen Bedingungen unwahrscheinlich."
+                            ? "Die Besetzung ist nicht risikofrei, aber entwicklungsfähig. Die unterschiedlichen Arbeitsweisen können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und höherem Führungsaufwand führen. Mit klaren Erwartungen und Rahmenvorgaben lässt sich die Zusammenarbeit stabilisieren."
+                            : "Die Arbeitsweise der Person passt nicht zur Grundlogik dieser Stelle. Die unterschiedlichen Arbeitsweisen können im Alltag zu erhöhtem Abstimmungsbedarf, Konflikten im Team und erheblich höherem Führungsaufwand führen. Eine stabile Besetzung ist unter diesen Bedingungen unwahrscheinlich."
                         )}
                       </p>
                     </div>
