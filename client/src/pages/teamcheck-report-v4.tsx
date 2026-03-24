@@ -310,6 +310,7 @@ export default function TeamCheckReportV4() {
               })}
 
               {/* === Section 1: Gesamtbewertung === */}
+              <div data-testid="v4-section-gesamtbewertung">
               <SectionHead num={1} title="Gesamtbewertung" id="gesamtbewertung" />
 
               <div style={{ margin: "0 0 24px" }} data-testid="v4-hero-bewertung">
@@ -373,6 +374,7 @@ export default function TeamCheckReportV4() {
               <div data-pdf-block style={{ padding: "12px 18px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", borderLeft: "3px solid #8E8E93", marginBottom: 20, breakInside: "avoid" }}>
                 <p style={{ fontSize: 13, lineHeight: 1.7, color: "#48484A", margin: 0, fontWeight: 600 }} data-testid="v4-team-kontext">{result.teamKontext}</p>
               </div>
+            </div>
             </div>
 
             <div style={{ padding: "0 32px 48px" }}>

@@ -582,4 +582,10 @@ input[type="range"].bio-slider::-moz-range-track {
   .v4-report-page [data-testid="v4-footer"] {
     break-before: avoid;
   }
+  .v4-report-page [data-pill] {
+    white-space: nowrap !important;
+  }
+  .v4-report-page [data-testid="v4-section-gesamtbewertung"] {
+    break-inside: avoid;
+  }
 }
