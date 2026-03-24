@@ -530,13 +530,13 @@ function buildConstellationRisks(rk: ComponentKey, ck: ComponentKey, gapLevel: s
   } else if (rk === "intuitiv" && ck === "analytisch") {
     risks.push("Zwischenmenschliche Wirkung tritt hinter formale Prozesse zurück");
     risks.push("Teamdynamik leidet unter zu sachlicher Kommunikation");
-    risks.push("Persönliche Ansprache muss bewusst eingefordert werden");
+    risks.push("Persönliche Ansprache muss aktiv eingefordert werden");
   } else if (rk === ck) {
     if (gapI >= 10 || gapN >= 10 || gapA >= 10) {
       risks.push("Grundrichtung stimmt, aber die Gewichtung der Nebenbereiche weicht ab");
       if (gapA >= 10) risks.push("Unterschiedliches Mass an Strukturorientierung erfordert Abstimmung");
       if (gapI >= 10) risks.push("Unterschiedliches Umsetzungstempo erfordert klare Erwartungen");
-      if (gapN >= 10) risks.push("Unterschiedlicher Kommunikationsstil erfordert bewusste Führung");
+      if (gapN >= 10) risks.push("Unterschiedlicher Kommunikationsstil erfordert gezielte Führung");
     } else {
       risks.push("Feinabstimmung in den Nebenbereichen nötig");
       risks.push("Regelmässiges Feedback sichert die Passung langfristig");
@@ -623,7 +623,7 @@ function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string,
   } else if (d12 <= 5) {
     uncontrolledStress = `Wird die Belastung sehr hoch, kann sich der Schwerpunkt leicht verschieben. ${sn} bleibt im Grundverhalten erkennbar, nutzt aber merklich stärker ${compShort(sk)}. ${secondaryBehavior[sk]}. Die Arbeitsweise verändert sich, die Grundrichtung bleibt aber erkennbar.`;
   } else {
-    uncontrolledStress = `Wird die Belastung sehr hoch und treten viele Anforderungen gleichzeitig auf, verschiebt sich das Verhalten deutlich. ${compShort(sk)} tritt stärker in den Vordergrund. ${secondaryBehavior[sk]}. Entscheidungen werden ${secondaryDecision[sk]}.`;
+    uncontrolledStress = `Wird die Belastung sehr hoch und treten viele Anforderungen gleichzeitig auf, verschiebt sich das Verhalten merklich. ${compShort(sk)} tritt stärker in den Vordergrund. ${secondaryBehavior[sk]}. Entscheidungen werden ${secondaryDecision[sk]}.`;
   }
 
   return { controlledPressure, uncontrolledStress };
@@ -760,7 +760,7 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
       if (ct && ct.impulsiv < 20) weakAreas.push("Handlungstempo");
       if (ct && ct.intuitiv < 20) weakAreas.push("Kontextgespür");
       if (ct && ct.analytisch < 20) weakAreas.push("Analysefähigkeit");
-      const weakStr = weakAreas.length > 0 ? ` Besonders ${weakAreas.join(" und ")} liegt deutlich unter der Stellenanforderung.` : "";
+      const weakStr = weakAreas.length > 0 ? ` Besonders ${weakAreas.join(" und ")} liegt erheblich unter der Stellenanforderung.` : "";
       candidatePattern = `${s} entscheidet bevorzugt über ${ckLabel} Logik. Die Stelle verlangt jedoch Vielseitigkeit, nicht Spezialisierung.`;
       risk = `Die einseitige Entscheidungslogik führt dazu, dass bestimmte Situationen nicht mit der passenden Herangehensweise bearbeitet werden.${weakStr} Die Führungskraft muss gezielt gegensteuern.`;
     }
@@ -807,7 +807,7 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
   } else if (rk === "analytisch") {
     roleNeed = "Sorgfältige, prüforientierte Entscheidungen. Optionen abwägen, Risiken prüfen, erst dann handeln.";
     if (ck === "impulsiv") {
-      candidatePattern = `${s} entscheidet deutlich schneller und handelt oft, bevor alle Informationen vorliegen.`;
+      candidatePattern = `${s} entscheidet wesentlich schneller und handelt oft, bevor alle Informationen vorliegen.`;
       risk = decCompeting23
         ? "Prüfschritte werden verkürzt oder übersprungen. Da die Nebenbereiche konkurrieren, fehlt ein stabiler Ausgleich – die Absicherung schwankt zwischen Kontextgespür und Faktenprüfung, ohne eine Linie konsequent durchzuhalten."
         : "Prüfschritte werden verkürzt oder übersprungen. Bei komplexen Aufgaben steigt das Risiko für Fehler oder Nacharbeit.";
@@ -944,8 +944,8 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
       if (ct && ct.intuitiv < 20) weakAreas.push("persönliche Nähe und Teamgespür");
       if (ct && ct.analytisch < 20) weakAreas.push("strukturierte Verlässlichkeit");
       const weakStr = weakAreas.length > 0 ? ` ${weakAreas.join(" und ")} fehlt dabei deutlich.` : "";
-      candidatePattern = `${s} führt primär über ${ckStyle}. Die Stelle verlangt jedoch ein breites Führungsrepertoire.`;
-      risk = `Die einseitige Führungswirkung deckt nur einen Teil der Stellenanforderung ab.${weakStr} Ohne bewusste Steuerung entstehen blinde Flecken in der Führung.`;
+      candidatePattern = `${s} führt vorrangig über ${ckStyle}. Die Stelle verlangt jedoch ein breites Führungsrepertoire.`;
+      risk = `Die einseitige Führungswirkung deckt nur einen Teil der Stellenanforderung ab.${weakStr} Ohne gezielte Steuerung entstehen blinde Flecken in der Führung.`;
     }
     return { id: "leadership", label: "Führungswirkung", severity: sev, roleNeed, candidatePattern, risk };
   }
@@ -999,8 +999,8 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
         : `Dem Team fehlen klare Leitlinien und verlässliche Prioritäten. Entscheidungen wirken impulsiv statt durchdacht. Struktursuchende Mitarbeiter verlieren den Halt.${leadershipSuffix}`;
     } else if (rk === "analytisch" && ck === "intuitiv") {
       risk = leadComp23
-        ? `Führungsentscheidungen werden stärker von Beziehungsdynamik geprägt als von fachlichen Standards. Da die Nebenbereiche konkurrieren, wechselt die Führung unter Druck zwischen Tempo und Analyse – beides ohne ausreichende Tiefe.${leadershipSuffix}`
-        : `Führungsentscheidungen werden stärker von Beziehungsdynamik geprägt als von fachlichen Standards. Es entsteht der Eindruck, dass persönliche Nähe wichtiger ist als Leistung.${leadershipSuffix}`;
+        ? `Führungsentscheidungen folgen stärker der Beziehungsdynamik als fachlichen Standards. Da die Nebenbereiche konkurrieren, wechselt die Führung unter Druck zwischen Tempo und Analyse – beides ohne ausreichende Tiefe.${leadershipSuffix}`
+        : `Führungsentscheidungen folgen stärker der Beziehungsdynamik als fachlichen Standards. Es entsteht der Eindruck, dass persönliche Nähe wichtiger ist als Leistung.${leadershipSuffix}`;
     } else if (rk === "impulsiv" && ck === "analytisch") {
       risk = leadComp23
         ? `Das Team wartet auf klare Ansagen, die nicht schnell genug kommen. Da die Nebenbereiche konkurrieren, pendelt die Führung zwischen Abstimmung und noch mehr Prüfung – das Tempo bleibt dauerhaft unter dem Bedarf.${leadershipSuffix}`
@@ -1143,7 +1143,7 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
       if (ct && ct.intuitiv < 20) weakAreas.push("Teamverbundenheit");
       if (ct && ct.analytisch < 20) weakAreas.push("Verlässlichkeit und Struktur");
       const weakStr = weakAreas.length > 0 ? ` ${weakAreas.join(" und ")} wird dabei kaum gelebt.` : "";
-      candidatePattern = `${s} prägt die Kultur primär über ${ckCulture}. Die Stelle erwartet jedoch eine ausgewogene Kulturwirkung.`;
+      candidatePattern = `${s} beeinflusst die Kultur vorrangig über ${ckCulture}. Die Stelle erwartet jedoch eine ausgewogene Kulturwirkung.`;
       risk = `Die einseitige Kulturprägung verschiebt das Arbeitsumfeld in eine Richtung, die nur einen Teil der Stellenanforderung abdeckt.${weakStr}`;
     }
     return { id: "culture", label: "Wirkung auf Zusammenarbeit und Teamkultur", severity: sev, roleNeed, candidatePattern, risk };
@@ -1208,7 +1208,7 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
     } else {
       risk = cMaxGap >= 8
         ? "Die kulturelle Grundrichtung stimmt. Da die Nebenbereiche unterschiedlich gewichtet werden, kann sich die gelebte Kultur in einzelnen Aspekten von der Stellenerwartung unterscheiden."
-        : "Kulturwirkung stimmt mit der Stellenanforderung überein. Die Art, wie das Arbeitsumfeld geprägt wird, passt zu den Erwartungen.";
+        : "Kulturwirkung stimmt mit der Stellenanforderung überein. Die Art, wie das Arbeitsumfeld gestaltet wird, passt zu den Erwartungen.";
     }
   }
 
@@ -1321,7 +1321,7 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
       label: "Langfristig",
       period: "12+ Monate",
       text: gap === "hoch"
-        ? `Die Stellenanforderungen können dauerhaft verfehlt werden. Qualitäts- und Führungsrisiken steigen deutlich. Eine Korrektur wird mit der Zeit schwieriger. Es muss entschieden werden, ob der Führungsaufwand langfristig tragbar ist.`
+        ? `Die Stellenanforderungen können dauerhaft verfehlt werden. Qualitäts- und Führungsrisiken steigen erheblich. Eine Korrektur wird mit der Zeit schwieriger. Es muss entschieden werden, ob der Führungsaufwand langfristig tragbar ist.`
         : `Ohne gezielte Führung kann sich die Stellenausübung allmählich verschieben. Halbjährliche Überprüfung der Stellenanforderungen ist ratsam.`,
     },
   ];
@@ -1538,7 +1538,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
         ],
         fokus: {
           intro: `Der Schwerpunkt liegt auf dem Aufbau fehlender Fähigkeiten:`,
-          bullets: [`${weakDescs} aktiv einfordern und begleiten`, `Komfortzone bewusst erweitern`, `Ergebnisse regelmässig überprüfen`],
+          bullets: [`${weakDescs} aktiv einfordern und begleiten`, `Komfortzone gezielt erweitern`, `Ergebnisse regelmässig überprüfen`],
         },
       },
       {
@@ -1655,7 +1655,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
       else p2Items.push(`Priorisierung zwischen Schnelligkeit und Sorgfalt kalibrieren.`);
       p2Fokus = isBedingt
         ? {
-            intro: `${s} sollte bewusst darauf achten, Entscheidungen aktiv zu treiben. Konkret bedeutet das:`,
+            intro: `${s} sollte gezielt darauf achten, Entscheidungen aktiv zu treiben. Konkret bedeutet das:`,
             bullets: [
               `Entscheidungen nicht zu lange prüfen`,
               `Umsetzung aktiv vorantreiben`,
@@ -1710,7 +1710,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
       p2Items.push(`Fehlerquellen identifizieren und systematisch beheben.`);
       p2Fokus = isBedingt
         ? {
-            intro: `${s} sollte bewusst auf analytische Tiefe achten. Konkret bedeutet das:`,
+            intro: `${s} sollte verstärkt auf analytische Tiefe achten. Konkret bedeutet das:`,
             bullets: [
               `Ergebnisse sauber dokumentieren`,
               `analytische Prüfung nicht umgehen`,
@@ -1764,7 +1764,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
       p2Items.push(`Konfliktsituationen proaktiv ansprechen und lösen.`);
       p2Fokus = isBedingt
         ? {
-            intro: `${s} sollte Kommunikation und Abstimmung bewusst priorisieren. Konkret bedeutet das:`,
+            intro: `${s} sollte Kommunikation und Abstimmung aktiv priorisieren. Konkret bedeutet das:`,
             bullets: [
               `Kommunikation nicht als Nebensache behandeln`,
               `aktive Beziehungsarbeit als Erfolgsfaktor verstehen`,

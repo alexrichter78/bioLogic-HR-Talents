@@ -662,7 +662,7 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
     reasoning: cultureStatus === "SUITABLE"
       ? `Die kulturelle Wirkung passt zur Stelle. Teamzusammenhalt, Motivation und Bindung bleiben stabil, ohne die Stellenanforderungen zu beeinträchtigen.`
       : cultureStatus === "NOT_SUITABLE"
-        ? `Die kulturelle Wirkung verschiebt sich deutlich. Ergebnisorientierung und klare Leistungsunterschiede werden geschwächt. Die Stelle verlangt Leistungsfokus, die Person setzt eher auf Beziehungspflege.`
+        ? `Die kulturelle Wirkung verschiebt sich merklich. Ergebnisorientierung und klare Leistungsunterschiede werden geschwächt. Die Stelle verlangt Leistungsfokus, die Person setzt eher auf Beziehungspflege.`
         : `Es gibt ${gapDesc(cultIntDiff)} in der kulturellen Wirkung. Es besteht das Risiko einer Kulturverschiebung. Machbar, wenn klare Ziele, Leistungserwartungen und Ergebnisorientierung fest verankert werden.`,
   });
 
@@ -811,12 +811,12 @@ function buildRisks(role: RoleAnalysis, cand: CandidateInput, engine: { overallF
   }
 
   if (critical.id === "conflict") {
-    midTerm.push(`Die Stelle ${jobTitle} erfordert klares Eingreifen bei Zielabweichungen. Stattdessen wird eher vermittelt. Leistungsunterschiede im Team werden nicht deutlich angesprochen.`);
+    midTerm.push(`Die Stelle ${jobTitle} erfordert klares Eingreifen bei Zielabweichungen. Stattdessen wird eher vermittelt. Leistungsunterschiede im Team werden nicht klar angesprochen.`);
     longTerm.push(`Die Stelle braucht konsequente Korrekturen. Ohne diese verwischt der Unterschied zwischen starken und schwachen Leistungen. Qualität und Ergebnisse sinken.`);
   }
   if (critical.id === "decision_logic") {
     midTerm.push(`Die Stelle ${jobTitle} braucht zügige Entscheidungen. Stattdessen wird stärker abgesichert. Operative Abläufe verlangsamen sich.`);
-    longTerm.push(`Die Stelle verlangt Tempo bei Zielkonflikten. Unter Zeitdruck sinkt die Reaktionsgeschwindigkeit deutlich. ${t.forecastTerm} und stabile Abläufe leiden.`);
+    longTerm.push(`Die Stelle verlangt Tempo bei Zielkonflikten. Unter Zeitdruck sinkt die Reaktionsgeschwindigkeit erheblich. ${t.forecastTerm} und stabile Abläufe leiden.`);
   }
   if (critical.id === "kpi_work") {
     midTerm.push(`Die Stelle ${jobTitle} erfordert verlässliches Reporting (${t.reportingDesc}). Die Disziplin wird voraussichtlich ungleichmässig sein. Kennzahlen verlieren ihre Aussagekraft.`);
@@ -837,7 +837,7 @@ function buildRisks(role: RoleAnalysis, cand: CandidateInput, engine: { overallF
 
   if (candEqualDist) {
     midTerm.push(`Vollsymmetrie-Risiko: Die Stelle ${jobTitle} braucht unter Stress eine klare Leitstruktur. Diese fehlt. Das Verhalten wird sprunghaft, Entscheidungen werden widersprüchlich oder bleiben aus.`);
-    longTerm.push(`Die Stelle braucht vorhersagbare Stressreaktionen. Die fehlende Leitstruktur verhindert das. Langfristige Führung und Entwicklung für ${jobTitle} werden deutlich schwieriger.`);
+    longTerm.push(`Die Stelle braucht vorhersagbare Stressreaktionen. Die fehlende Leitstruktur verhindert das. Langfristige Führung und Entwicklung für ${jobTitle} werden wesentlich schwieriger.`);
   }
 
   if (tags.market_pressure === "hoch")
@@ -1152,7 +1152,7 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
       return `${roleDesc} Die Stelle verlangt eine eindeutige ${rL}-Ausrichtung. ${s} bringt diese Arbeitsweise grundsätzlich mit, allerdings konkurriert sie mit einer gleich starken ${competingL}-Prägung. Die nötige Eindeutigkeit fehlt. Prioritäten und ${t.qualityMetric} werden instabil.`;
     }
     if (dualConflict && !roleKeyInDual) {
-      return `${roleDesc} Die für ${jobTitle} entscheidende ${rL}-Arbeitslogik wird nicht abgebildet. ${candDesc} Entscheidungen, Prioritäten und stabile Abläufe sind kritisch betroffen.`;
+      return `${roleDesc} Die für ${jobTitle} entscheidende ${rL}-Arbeitsweise wird nicht abgebildet. ${candDesc} Entscheidungen, Prioritäten und stabile Abläufe sind kritisch betroffen.`;
     }
     if (overallFit === "SUITABLE") {
       return `${roleDesc} ${s} arbeitet nach derselben Grundlogik. Arbeitsweise und Prioritäten passen zur Stelle ${jobTitle}. Kleinere Unterschiede in der Gewichtung der sekundären Bereiche sind im Alltag gut handhabbar.`;
@@ -1168,12 +1168,12 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
       return `${roleDesc} Die Stelle braucht ${roleSecL} als zweite Stärke. ${s} arbeitet ${rL}-orientiert wie gefordert, zeigt aber eine Mischung aus ${roleSecL} und ${candSecL} als Zweitstärke. Mit gezielter Führung gut handhabbar.`;
     }
     if (sameDom && overallFit === "CONDITIONAL") {
-      return `${roleDesc} ${s} bringt die geforderte Arbeitslogik grundsätzlich mit, aber die Ausprägung liegt unter dem, was ${jobTitle} braucht. ${candDesc} Die Unterschiede sind erkennbar, lassen sich aber bei gezielter Führung und klaren Erwartungen ausgleichen.`;
+      return `${roleDesc} ${s} bringt die geforderte Arbeitsweise grundsätzlich mit, aber die Ausprägung liegt unter dem, was ${jobTitle} braucht. ${candDesc} Die Unterschiede sind erkennbar, lassen sich aber bei gezielter Führung und klaren Erwartungen ausgleichen.`;
     }
     if (overallFit === "CONDITIONAL") {
-      return `${roleDesc} ${s} bringt eine andere Arbeitslogik mit als ${jobTitle} erfordert. ${candDesc} Im Alltag kann das zu erhöhtem Abstimmungsbedarf und höherem Führungsaufwand führen. Mit gezielter Führung und klaren Erwartungen lassen sich die Unterschiede ausgleichen.`;
+      return `${roleDesc} ${s} bringt eine andere Arbeitsweise mit als ${jobTitle} erfordert. ${candDesc} Im Alltag kann das zu erhöhtem Abstimmungsbedarf und höherem Führungsaufwand führen. Mit gezielter Führung und klaren Erwartungen lassen sich die Unterschiede ausgleichen.`;
     }
-    return `${roleDesc} ${candDesc} Stelle und ${subjName(candName)} arbeiten nach unterschiedlichen Prinzipien. Im Alltag führt das zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand.`;
+    return `${roleDesc} ${candDesc} Stelle und ${subjName(candName)} arbeiten nach unterschiedlichen Prinzipien. Im Alltag führt das zu erhöhtem Abstimmungsbedarf, Konflikten im Team und erheblich höherem Führungsaufwand.`;
   })();
 
   const execSummary = (() => {
@@ -1189,9 +1189,9 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
     } else if (sameDom && secondaryFlipped) {
       domLine = `${roleDesc} Beide Profile sind ${rL}-geprägt. Die Sekundärausrichtung weicht leicht von den Stellenanforderungen ab. Mit Führung gut überbrückbar.`;
     } else if (sameDom) {
-      domLine = `${roleDesc} Arbeitsweise und Prioritäten passen zur Stelle. Beide Profile setzen auf dieselbe Arbeitslogik und sind ${gapAdj(mainDiff)}.`;
+      domLine = `${roleDesc} Arbeitsweise und Prioritäten passen zur Stelle. Beide Profile setzen auf dieselbe Arbeitsweise und sind ${gapAdj(mainDiff)}.`;
     } else {
-      domLine = `${roleDesc} ${candDesc} Die Arbeitslogik weicht von den Stellenanforderungen ab. Entscheidungen und Prioritäten brauchen Führung.`;
+      domLine = `${roleDesc} ${candDesc} Die Arbeitsweise weicht von den Stellenanforderungen ab. Entscheidungen und Prioritäten brauchen Führung.`;
     }
     return [intro, fitLine, domLine].join("\n");
   })();
