@@ -224,36 +224,9 @@ export default function TeamCheckReportV4() {
                 </div>
               )}
 
-              {/* === Risikoprognose === */}
-              {(() => {
-                const riskNum = result.fuehrungshinweis ? 7 : 6;
-                return (
-                  <div style={sectionStyle} data-testid="v4-section-risikoprognose">
-                    <SectionHead num={riskNum} title="Risikoprognose" id="risikoprognose" />
-                    <div style={{ position: "relative", paddingLeft: 28 }}>
-                      <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
-                      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                        {result.risikoprognose.map((phase, i) => {
-                          const phaseCol = i === 0 ? "#34C759" : i === 1 ? "#FF9500" : "#C41E3A";
-                          return (
-                            <div key={i} style={{ position: "relative" }} data-testid={`v4-risk-${i}`}>
-                              <div style={{ position: "absolute", left: -22, top: 14, width: 10, height: 10, borderRadius: 5, background: phaseCol, boxShadow: `0 0 0 3px ${phaseCol}20` }} />
-                              <div style={{ padding: "12px 16px", borderRadius: 12, background: `${phaseCol}06`, border: `1px solid ${phaseCol}15` }}>
-                                <p style={{ fontSize: 12, fontWeight: 700, color: phaseCol, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>{phase.label} <span style={{ fontWeight: 500, textTransform: "none", letterSpacing: "0" }}>{phase.period}</span></p>
-                                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left", hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{phase.text}</p>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
-
               {/* === 30-Tage-Integrationsplan === */}
               {(() => {
-                const planNum = result.fuehrungshinweis ? 8 : 7;
+                const planNum = result.fuehrungshinweis ? 7 : 6;
                 return (
                   <div style={sectionStyle} data-testid="v4-section-integrationsplan">
                     <SectionHead num={planNum} title="30-Tage-Integrationsplan" id="integrationsplan" />
@@ -302,17 +275,46 @@ export default function TeamCheckReportV4() {
                 );
               })()}
 
+              {/* === Risikoprognose === */}
+              {(() => {
+                const riskNum = result.fuehrungshinweis ? 8 : 7;
+                return (
+                  <div style={sectionStyle} data-testid="v4-section-risikoprognose">
+                    <SectionHead num={riskNum} title="Risikoprognose" id="risikoprognose" />
+                    <div style={{ position: "relative", paddingLeft: 28 }}>
+                      <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
+                      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                        {result.risikoprognose.map((phase, i) => {
+                          const phaseCol = i === 0 ? "#34C759" : i === 1 ? "#FF9500" : "#C41E3A";
+                          return (
+                            <div key={i} style={{ position: "relative" }} data-testid={`v4-risk-${i}`}>
+                              <div style={{ position: "absolute", left: -22, top: 14, width: 10, height: 10, borderRadius: 5, background: phaseCol, boxShadow: `0 0 0 3px ${phaseCol}20` }} />
+                              <div style={{ padding: "12px 16px", borderRadius: 12, background: `${phaseCol}06`, border: `1px solid ${phaseCol}15` }}>
+                                <p style={{ fontSize: 12, fontWeight: 700, color: phaseCol, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>{phase.label} <span style={{ fontWeight: 500, textTransform: "none", letterSpacing: "0" }}>{phase.period}</span></p>
+                                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left", hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{phase.text}</p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+
               {/* === Was jetzt wichtig ist === */}
               <div style={{ marginBottom: 36 }} data-testid="v4-section-empfehlungen">
                 <SectionHead num={result.fuehrungshinweis ? 9 : 8} title="Was jetzt wichtig ist" id="empfehlungen" />
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   {result.empfehlungen.map((emp, i) => (
-                    <div key={emp.title} style={{ padding: "18px 20px", borderRadius: 12, background: "#FFF", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} data-testid={`v4-empfehlung-${i}`}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                        <span style={{ width: 22, height: 22, borderRadius: 11, background: "#1A5DAB", color: "#FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</span>
-                        <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", lineHeight: 1.35 }}>{emp.title}</span>
+                    <div key={emp.title} style={{ padding: "16px 20px", borderRadius: 12, background: "#FFF", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} data-testid={`v4-empfehlung-${i}`}>
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                        <span style={{ width: 24, height: 24, borderRadius: 12, background: "#1A5DAB", color: "#FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{i + 1}</span>
+                        <div>
+                          <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px", lineHeight: 1.4 }}>{emp.title}</p>
+                          <p style={{ fontSize: 13, lineHeight: 1.75, color: "#6E6E73", margin: 0 }}>{emp.text}</p>
+                        </div>
                       </div>
-                      <p style={{ fontSize: 13, lineHeight: 1.75, color: "#6E6E73", margin: 0 }}>{emp.text}</p>
                     </div>
                   ))}
                 </div>
