@@ -127,7 +127,7 @@ export default function TeamCheckReportV4() {
               <div style={{ margin: "0 0 24px" }} data-testid="v4-hero-bewertung">
                 <TextBlock text={result.gesamtbewertungText} />
 
-                <div style={{ display: "flex", gap: 16, marginTop: 16 }} data-testid="v4-two-axis">
+                <div style={{ display: "flex", gap: 16, marginTop: 16, breakInside: "avoid" }} data-testid="v4-two-axis">
                   <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${bCol}08`, border: `1px solid ${bCol}25` }} data-testid="v4-gesamt-card">
                     <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Gesamteinschätzung</div>
                     <div style={{ fontSize: 17, fontWeight: 700, color: bCol }} data-testid="v4-gesamt-label">{result.gesamteinschaetzung}</div>
@@ -147,7 +147,7 @@ export default function TeamCheckReportV4() {
                   const matchSymbol = result.sameDominance ? "=" : "⚡";
                   const matchColor = result.sameDominance ? "#34C759" : "#D64045";
                   return (
-                    <div style={{ marginTop: 16, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="v4-kurzuebersicht-dominanz">
+                    <div style={{ marginTop: 16, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", breakInside: "avoid" }} data-testid="v4-kurzuebersicht-dominanz">
                       <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 16px", textAlign: "center" }}>Kurzübersicht</p>
                       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: 16 }}>
                         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -170,7 +170,7 @@ export default function TeamCheckReportV4() {
                   );
                 })()}
 
-                <div style={{ display: "flex", gap: 16, marginTop: 16 }} data-testid="v4-kurzueberblick">
+                <div style={{ display: "flex", gap: 16, marginTop: 16, breakInside: "avoid" }} data-testid="v4-kurzueberblick">
                   <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }}>
                     <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Stärke der Besetzung</div>
                     <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="v4-hauptstaerke">{result.hauptstaerke}</div>
@@ -182,7 +182,7 @@ export default function TeamCheckReportV4() {
                 </div>
               </div>
 
-              <div style={{ padding: "12px 18px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", borderLeft: "3px solid #8E8E93", marginBottom: 20 }}>
+              <div style={{ padding: "12px 18px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", borderLeft: "3px solid #8E8E93", marginBottom: 20, breakInside: "avoid" }}>
                 <p style={{ fontSize: 13, lineHeight: 1.7, color: "#48484A", margin: 0, fontWeight: 600 }} data-testid="v4-team-kontext">{result.teamKontext}</p>
               </div>
             </div>
@@ -220,7 +220,7 @@ export default function TeamCheckReportV4() {
                   );
                 };
                 return (
-                  <div style={sectionStyle} data-testid="v4-section-vergleich">
+                  <div style={{ ...sectionStyle, breakInside: "avoid" }} data-testid="v4-section-vergleich">
                     <SectionHead num={2} title="Vergleich der Profile" id="vergleich" />
                     <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{gapText}</p>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 14 }}>
