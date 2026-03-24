@@ -210,12 +210,17 @@ export default function TeamCheckReportV4() {
               {result.fuehrungshinweis && (
                 <div style={sectionStyle} data-testid="v4-section-fuehrung">
                   <SectionHead num={6} title="Was als Führungskraft für dieses Team wichtig ist" id="fuehrung" />
-                  {result.fuehrungshinweis.map((item, i) => (
-                    <div key={item.title} style={{ marginBottom: 22 }}>
-                      <SubHead num={i + 1} title={item.title} color="#343A48" />
-                      <p style={bodyText}>{item.text}</p>
-                    </div>
-                  ))}
+                  <div style={{ display: "grid", gridTemplateColumns: result.fuehrungshinweis.length <= 3 ? "1fr" : "1fr 1fr", gap: 14 }}>
+                    {result.fuehrungshinweis.map((item, i) => (
+                      <div key={item.title} style={{ padding: "20px 22px", borderRadius: 12, background: "#2C3240", color: "#E8EAF0", border: "1px solid rgba(255,255,255,0.06)", boxShadow: "0 2px 8px rgba(0,0,0,0.10)" }} data-testid={`v4-fuehrung-${i}`}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                          <span style={{ width: 22, height: 22, borderRadius: 11, background: "rgba(255,255,255,0.15)", color: "#FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.35 }}>{item.title}</span>
+                        </div>
+                        <p style={{ fontSize: 13, lineHeight: 1.75, color: "rgba(255,255,255,0.72)", margin: 0 }}>{item.text}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
