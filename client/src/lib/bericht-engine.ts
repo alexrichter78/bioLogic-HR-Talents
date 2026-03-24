@@ -238,7 +238,7 @@ function buildRahmenbedingungen(beruf: string, rahmen: BG, rahmenDom: ReturnType
   const logikText = arbeitslogik ? ` Die Arbeitslogik ist ${arbeitslogik.toLowerCase()}.` : "";
   const fuehrText = isLeadership ? ` Die Rolle umfasst ${fuehrungstyp.toLowerCase()}.` : " Die Rolle hat keine direkte Führungsverantwortung.";
 
-  const beschreibung = `Die Rahmenbedingungen der Rolle ${beruf} sind geprägt durch ${kompLabel(rahmenDom.key)}. ${aufgText}${logikText}${fuehrText}\n\nDie strukturellen Anforderungen verlangen eine klare Ausrichtung auf ${kompShort(rahmenDom.key)} im täglichen Arbeitsumfeld. Entscheidungswege, Prioritäten und Qualitätsmaßstäbe werden durch diese Rahmenbedingungen definiert.`;
+  const beschreibung = `Die Rahmenbedingungen der Rolle ${beruf} stehen im Zeichen von ${kompLabel(rahmenDom.key)}. ${aufgText}${logikText}${fuehrText}\n\nDie strukturellen Anforderungen verlangen eine klare Ausrichtung auf ${kompShort(rahmenDom.key)} im täglichen Arbeitsumfeld. Entscheidungswege, Prioritäten und Qualitätsmaßstäbe werden durch diese Rahmenbedingungen definiert.`;
 
   const verantwortungsfelder = [
     `Steuerung und Priorisierung der operativen ${kompAdj(rahmenDom.key)}en Aufgaben`,
@@ -285,7 +285,7 @@ function buildFuehrungskontext(beruf: string, fuehrung: BG, fuehrungstyp: string
   if (isLeadership) {
     const fDom = dominant(fuehrung);
     const fSec = secondary(fuehrung);
-    const beschreibung = `Die Rolle ${beruf} umfasst ${fuehrungstyp}. Die Führungskompetenz ist geprägt durch ${kompLabel(fDom.key)}. Die Führungswirkung entsteht primär über ${kompShort(fDom.key)}, ergänzt durch ${kompShort(fSec.key)}.\n\nDas bedeutet: ${fDom.key === "imp"
+    const beschreibung = `Die Rolle ${beruf} umfasst ${fuehrungstyp}. Die Führungskompetenz zeigt sich vor allem in ${kompLabel(fDom.key)}. Die Führungswirkung entsteht primär über ${kompShort(fDom.key)}, ergänzt durch ${kompShort(fSec.key)}.\n\nDas bedeutet: ${fDom.key === "imp"
       ? "Die Führungskraft steuert über klare Vorgaben, schnelle Entscheidungen und verbindliche Ergebnisorientierung. Das Team erlebt eine direktive, tempoorientierte Führung."
       : fDom.key === "int"
         ? "Die Führungskraft steuert über Beziehungsgestaltung, Vertrauen und Konsensbildung. Das Team erlebt eine partizipative, empathische Führung."
@@ -329,9 +329,9 @@ function buildKompetenzanalyse(beruf: string, haupt: BG, neben: BG, hauptDom: Re
   let taetigkeiten_text: string;
   if (hochHaupt.length > 0) {
     const namen = hochHaupt.map((t: any) => t.name).join(", ");
-    taetigkeiten_text = `Das Tätigkeitsprofil der Rolle ${beruf} ist geprägt durch ${kompLabel(hauptDom.key)}. Besonders kritisch für den Rollenerfolg sind: ${namen}. Diese Tätigkeiten erfordern eine individuelle Eignungsprüfung und sind im Besetzungsprozess entscheidend.\n\nDie weiteren Tätigkeiten ergänzen das Profil auf Standardniveau und sind grundsätzlich erlernbar.`;
+    taetigkeiten_text = `Das Tätigkeitsprofil der Rolle ${beruf} wird bestimmt von ${kompLabel(hauptDom.key)}. Besonders kritisch für den Rollenerfolg sind: ${namen}. Diese Tätigkeiten erfordern eine individuelle Eignungsprüfung und sind im Besetzungsprozess entscheidend.\n\nDie weiteren Tätigkeiten ergänzen das Profil auf Standardniveau und sind grundsätzlich erlernbar.`;
   } else {
-    taetigkeiten_text = `Das Tätigkeitsprofil der Rolle ${beruf} ist geprägt durch ${kompLabel(hauptDom.key)}. Die Anforderungen verteilen sich auf Standardniveau und verlangen eine solide Grundkompetenz in den definierten Bereichen.\n\nKeine einzelne Tätigkeit wurde als besonders kritisch eingestuft, was auf ein breites, aber nicht hochspezialisiertes Anforderungsprofil hinweist.`;
+    taetigkeiten_text = `Das Tätigkeitsprofil der Rolle ${beruf} wird bestimmt von ${kompLabel(hauptDom.key)}. Die Anforderungen verteilen sich auf Standardniveau und verlangen eine solide Grundkompetenz in den definierten Bereichen.\n\nKeine einzelne Tätigkeit wurde als besonders kritisch eingestuft, was auf ein breites, aber nicht hochspezialisiertes Anforderungsprofil hinweist.`;
   }
 
   const taetigkeiten_anforderungen = hauptTaetigkeiten.slice(0, 5).map((t: any) =>
@@ -345,9 +345,9 @@ function buildKompetenzanalyse(beruf: string, haupt: BG, neben: BG, hauptDom: Re
   let human_text: string;
   if (hochNeben.length > 0) {
     const namen = hochNeben.map((t: any) => t.name).join(", ");
-    human_text = `Die Humankompetenzen der Rolle sind geprägt durch ${kompLabel(nebenDom.key)}. Besonders kritisch sind: ${namen}. Diese sozialen und persönlichen Fähigkeiten sind für die Wirksamkeit in der Rolle unverzichtbar.\n\n${isLeadership ? "Als Führungskraft" : "In der Zusammenarbeit"} entscheiden diese Kompetenzen darüber, wie effektiv die fachlichen Fähigkeiten im Team zur Wirkung kommen.`;
+    human_text = `Die Humankompetenzen der Rolle basieren auf ${kompLabel(nebenDom.key)}. Besonders kritisch sind: ${namen}. Diese sozialen und persönlichen Fähigkeiten sind für die Wirksamkeit in der Rolle unverzichtbar.\n\n${isLeadership ? "Als Führungskraft" : "In der Zusammenarbeit"} entscheiden diese Kompetenzen darüber, wie effektiv die fachlichen Fähigkeiten im Team zur Wirkung kommen.`;
   } else {
-    human_text = `Die Humankompetenzen der Rolle sind geprägt durch ${kompLabel(nebenDom.key)}. Die Anforderungen liegen auf Standardniveau und verlangen eine solide Grundlage im zwischenmenschlichen Bereich.\n\n${isLeadership ? "Als Führungskraft" : "Im Arbeitsalltag"} sind diese Kompetenzen die Basis für konstruktive Zusammenarbeit und stabile Arbeitsbeziehungen.`;
+    human_text = `Die Humankompetenzen der Rolle basieren auf ${kompLabel(nebenDom.key)}. Die Anforderungen liegen auf Standardniveau und verlangen eine solide Grundlage im zwischenmenschlichen Bereich.\n\n${isLeadership ? "Als Führungskraft" : "Im Arbeitsalltag"} sind diese Kompetenzen die Basis für konstruktive Zusammenarbeit und stabile Arbeitsbeziehungen.`;
   }
 
   const human_anforderungen = nebenTaetigkeiten.slice(0, 5).map((t: any) =>
@@ -395,7 +395,7 @@ function buildRisikobewertung(profileType: ProfileType, dom: ReturnType<typeof d
         "Vernachlässigung von Prozessen und Standards zugunsten von Geschwindigkeit",
         isLeadership ? "Team kann das Tempo nicht mithalten, Frustration entsteht" : "Abstimmungsdefizite durch zu eigenständiges Vorgehen",
       ],
-      alltagssatz: `Im Alltag entsteht das Risiko, dass ${kompShort("imp")} zur Gewohnheit wird und notwendige Reflexionsphasen übersprungen werden.`,
+      alltagssatz: `Im Arbeitsalltag besteht die Gefahr, dass ${kompShort("imp")} zur Gewohnheit wird und notwendige Reflexionsphasen übersprungen werden.`,
     });
   }
 
@@ -407,7 +407,7 @@ function buildRisikobewertung(profileType: ProfileType, dom: ReturnType<typeof d
         isLeadership ? "Team fühlt sich nicht ausreichend gehört oder wertgeschätzt" : "Zusammenarbeit leidet unter fehlender Beziehungspflege",
         "Konflikte eskalieren, weil frühe Signale übersehen werden",
       ],
-      alltagssatz: `Im Alltag entsteht das Risiko, dass sachliche Korrektheit über Beziehungsstabilität gestellt wird, bis Teamkonflikte offen ausbrechen.`,
+      alltagssatz: `Konkret zeigt sich das darin, dass sachliche Korrektheit über Beziehungsstabilität gestellt wird, bis Teamkonflikte offen ausbrechen.`,
     });
   }
 
@@ -419,7 +419,7 @@ function buildRisikobewertung(profileType: ProfileType, dom: ReturnType<typeof d
         "Prozesse werden umgangen oder improvisiert",
         isLeadership ? "Qualitätsstandards werden nicht konsistent eingehalten" : "Fehlende Systematik führt zu wiederholten Fehlern",
       ],
-      alltagssatz: `Im Alltag entsteht das Risiko, dass fehlende Struktur zunächst als Flexibilität interpretiert wird, bis Qualitätsprobleme sichtbar werden.`,
+      alltagssatz: `In der Praxis bedeutet das, dass fehlende Struktur zunächst als Flexibilität interpretiert wird, bis Qualitätsprobleme sichtbar werden.`,
     });
   }
 
@@ -431,7 +431,7 @@ function buildRisikobewertung(profileType: ProfileType, dom: ReturnType<typeof d
         "Zu viel Analyse oder Abstimmung bremst die Umsetzung",
         isLeadership ? "Team wartet auf klare Ansagen, die ausbleiben" : "Wichtige Aufgaben werden nicht rechtzeitig priorisiert",
       ],
-      alltagssatz: `Im Alltag entsteht das Risiko, dass Gründlichkeit zum Selbstzweck wird und die operative Geschwindigkeit leidet.`,
+      alltagssatz: `Auf Dauer besteht die Gefahr, dass Gründlichkeit zum Selbstzweck wird und die operative Geschwindigkeit leidet.`,
     });
   }
 
