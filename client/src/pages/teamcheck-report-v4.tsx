@@ -39,7 +39,7 @@ function TextBlock({ text }: { text: string }) {
     <>
       {text.split("\n\n").map((para, i) =>
         (para.startsWith("Die Kernaussage") || para.startsWith("Konkret bedeutet das")) ? (
-          <div key={i} style={{ padding: "14px 20px", borderRadius: 10, background: "rgba(52,199,89,0.05)", borderLeft: "3px solid #34C759", margin: "16px 0" }}>
+          <div key={i} style={{ padding: "14px 20px", borderRadius: 10, background: "rgba(0,0,0,0.02)", borderLeft: "3px solid #8E8E93", margin: "16px 0" }}>
             <p style={{ ...bodyText, margin: 0, fontWeight: 600, color: "#1D1D1F" }}>{para}</p>
           </div>
         ) : (
@@ -181,7 +181,7 @@ export default function TeamCheckReportV4() {
                 </div>
               </div>
 
-              <div style={{ padding: "12px 18px", borderRadius: 10, background: "rgba(52,199,89,0.05)", border: "1px solid rgba(52,199,89,0.12)", borderLeft: "3px solid #34C759", marginBottom: 20 }}>
+              <div style={{ padding: "12px 18px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", borderLeft: "3px solid #8E8E93", marginBottom: 20 }}>
                 <p style={{ fontSize: 13, lineHeight: 1.7, color: "#48484A", margin: 0, fontWeight: 600 }} data-testid="v4-team-kontext">{result.teamKontext}</p>
               </div>
             </div>
