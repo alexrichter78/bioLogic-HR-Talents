@@ -604,7 +604,6 @@ input[type="range"].bio-slider::-moz-range-track {
   .v4-report-page [data-testid="v4-kurzuebersicht-dominanz"],
   .v4-report-page [data-testid="v4-kurzueberblick"],
   .v4-report-page [data-testid="v4-team-kontext"],
-  .v4-report-page [data-testid^="v4-integration-phase-"],
   .v4-report-page [data-testid^="v4-fuehrung-"],
   .v4-report-page [data-testid^="v4-risk-"],
   .v4-report-page [data-testid="v4-chancen-einordnung"],
