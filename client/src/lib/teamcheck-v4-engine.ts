@@ -7,6 +7,21 @@ export interface V4Block {
   text: string;
 }
 
+export interface V4RiskPhase {
+  label: string;
+  period: string;
+  text: string;
+}
+
+export interface V4IntegrationPhase {
+  num: number;
+  title: string;
+  period: string;
+  ziel: string;
+  items: string[];
+  fokus: { intro: string; bullets: string[] };
+}
+
 export interface TeamCheckV4Result {
   roleTitle: string;
   roleType: "leadership" | "member";
@@ -33,6 +48,9 @@ export interface TeamCheckV4Result {
   druckText: string;
 
   fuehrungshinweis: V4Block[] | null;
+
+  risikoprognose: V4RiskPhase[];
+  integrationsplan: V4IntegrationPhase[];
 
   empfehlungen: V4Block[];
 
@@ -138,6 +156,8 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
     ...buildChancenRisiken(ctx),
     druckText: buildDruckText(ctx),
     fuehrungshinweis: isLeader ? buildFuehrungshinweis(ctx) : null,
+    risikoprognose: buildRisikoprognose(ctx),
+    integrationsplan: buildIntegrationsplan(ctx),
     empfehlungen: buildEmpfehlungen(ctx),
     teamKontext: sameDominance
       ? `Team und Person setzen beide auf ${COMP_SHORT[teamPrimary]}. Ihre Arbeitsweisen liegen nah beieinander.`
@@ -463,6 +483,195 @@ function buildFuehrungshinweis(c: Ctx): V4Block[] {
   }
 
   return items;
+}
+
+function buildRisikoprognose(c: Ctx): V4RiskPhase[] {
+  const { isLeader, sameDominance, teamPrimary, personPrimary, passungZumTeam, beitragZurAufgabe, hasGoal, teamGoalLabel, roleName } = c;
+
+  if (passungZumTeam === "hoch" && beitragZurAufgabe === "hoch") {
+    return [
+      { label: "Kurzfristig", period: "0 – 3 Monate", text: `Der Einstieg als ${roleName} verläuft voraussichtlich reibungsarm. Person und Team arbeiten ähnlich und die fachliche Passung ist gegeben. In dieser Phase sind keine grösseren Risiken zu erwarten.` },
+      { label: "Mittelfristig", period: "3 – 12 Monate", text: "Die Zusammenarbeit stabilisiert sich. Das Risiko besteht darin, dass die hohe Ähnlichkeit zu wenig Entwicklungsimpulse setzt. Führung sollte bewusst darauf achten, ob das Team neue Impulse braucht." },
+      { label: "Langfristig", period: "12+ Monate", text: "Die Besetzung ist langfristig tragfähig. Der Führungsaufwand bleibt gering. Halbjährliche Standortgespräche genügen, um die Passung zu überprüfen." },
+    ];
+  }
+
+  if (passungZumTeam === "hoch" && beitragZurAufgabe === "gering") {
+    return [
+      { label: "Kurzfristig", period: "0 – 3 Monate", text: `Der Einstieg ins Team verläuft wahrscheinlich gut, weil die Arbeitsweisen ähnlich sind. Das eigentliche Risiko zeigt sich noch nicht, weil die fachlichen Anforderungen${hasGoal ? ` im Bereich ${teamGoalLabel}` : ""} erst nach einigen Wochen sichtbar greifen.` },
+      { label: "Mittelfristig", period: "3 – 12 Monate", text: isLeader
+        ? `Die gute Integration täuscht über fachliche Lücken hinweg. Entscheidungen im Aufgabenkern werden zunehmend von der natürlichen Stärke der Person geprägt, nicht von dem, was die Rolle eigentlich verlangt. Ohne aktive Steuerung verschiebt sich die Führungswirkung.`
+        : `Die gute Integration täuscht über fachliche Lücken hinweg. Im Aufgabenkern zeigen sich zunehmend Situationen, in denen die Person nicht das einbringt, was die Rolle eigentlich verlangt. Ohne klare Standards erodiert die Qualität schrittweise.` },
+      { label: "Langfristig", period: "12+ Monate", text: `Wenn die fachliche Lücke nicht aktiv kompensiert wird, verfestigt sich eine Arbeitsweise, die im Team gut funktioniert, aber die eigentlichen Anforderungen der Rolle dauerhaft verfehlt. Der Führungsaufwand steigt, je länger die Korrektur ausbleibt.` },
+    ];
+  }
+
+  const personDesc = COMP_SHORT[personPrimary];
+  const teamDesc = COMP_SHORT[teamPrimary];
+
+  if (passungZumTeam !== "hoch" && beitragZurAufgabe === "hoch") {
+    return [
+      { label: "Kurzfristig", period: "0 – 3 Monate", text: isLeader
+        ? `Die Person bringt fachlich das Richtige mit, wird aber im Team auf Widerstand stossen. Die Arbeitsweise – stärker auf ${personDesc} ausgerichtet – unterscheidet sich spürbar von der Teamkultur. Erste Irritationen entstehen in Abstimmungen und Entscheidungswegen.`
+        : `Die Person bringt fachlich das Richtige mit, arbeitet aber anders als das Team. Der Unterschied zwischen ${personDesc} und ${teamDesc} wird in den ersten Wochen spürbar. Missverständnisse und Reibung sind wahrscheinlich.` },
+      { label: "Mittelfristig", period: "3 – 12 Monate", text: `Ohne aktive Begleitung kann die Person fachlich liefern, aber im Team isoliert werden. Die unterschiedlichen Arbeitsweisen verfestigen sich. Das Team entwickelt Workarounds statt echter Zusammenarbeit. Die fachliche Stärke kommt nicht voll zum Tragen.` },
+      { label: "Langfristig", period: "12+ Monate", text: `Wenn die Integration nicht gelingt, geht der fachliche Mehrwert verloren. Die Person arbeitet zunehmend neben dem Team statt mit dem Team. Die Besetzung kann trotzdem funktionieren, wenn Führung die Brücke dauerhaft aktiv gestaltet.` },
+    ];
+  }
+
+  if (passungZumTeam === "mittel") {
+    return [
+      { label: "Kurzfristig", period: "0 – 3 Monate", text: isLeader
+        ? `Die Person wird als ${roleName} teilweise anders arbeiten als das Team es kennt. Der Unterschied zwischen ${personDesc} und ${teamDesc} wird in Abstimmungen sichtbar. Einzelne Irritationen sind wahrscheinlich, aber steuerbar.`
+        : `Im Einstieg wird spürbar, dass Person und Team nicht automatisch gleich arbeiten. Der Unterschied zwischen ${personDesc} und ${teamDesc} zeigt sich in Abstimmungen und Erwartungen. Mit bewusster Klärung bleibt das Risiko beherrschbar.` },
+      { label: "Mittelfristig", period: "3 – 12 Monate", text: `Die Unterschiede in der Arbeitsweise werden Teil des Alltags. Wenn sie nicht aktiv besprochen werden, entstehen stille Missverständnisse.${beitragZurAufgabe === "gering" && hasGoal ? ` Im Bereich ${teamGoalLabel} zeigt sich zusätzlich, dass die Person dort nicht die volle Stärke mitbringt.` : ""} Regelmässige Abstimmung ist nötig.` },
+      { label: "Langfristig", period: "12+ Monate", text: `Mit gezielter Führung kann die Besetzung dauerhaft funktionieren. Ohne diese Steuerung besteht das Risiko, dass sich Unterschiede verfestigen und die Zusammenarbeit oberflächlich bleibt. Halbjährliche Überprüfung empfohlen.` },
+    ];
+  }
+
+  return [
+    { label: "Kurzfristig", period: "0 – 3 Monate", text: isLeader
+      ? `Die Person wird als ${roleName} deutlich anders arbeiten als das Team es kennt. Die Arbeitsweisen unterscheiden sich in wesentlichen Bereichen. Bereits in den ersten Wochen sind Spannungen und Missverständnisse wahrscheinlich. Ohne enge Begleitung entstehen schnell Konflikte.`
+      : `Person und Team setzen grundlegend unterschiedliche Schwerpunkte. Die Person arbeitet über ${personDesc}, das Team über ${teamDesc}. Bereits in den ersten Wochen entstehen Reibungen in Abstimmung, Kommunikation und Erwartungen.` },
+    { label: "Mittelfristig", period: "3 – 12 Monate", text: isLeader
+      ? `Ohne aktive Steuerung verliert die Führung an Wirkung. Das Team folgt der Führung nicht, weil der Stil als fremd erlebt wird. Entscheidungen werden umgangen oder verzögert. Die Person kann fachlich nicht das einbringen, was sie mitbringt.`
+      : `Die Unterschiede verfestigen sich. Die Person wird im Team zunehmend als Fremdkörper erlebt. Workarounds ersetzen echte Zusammenarbeit. Ohne klare Rahmensetzung sinken Motivation und Ergebnisse auf beiden Seiten.` },
+    { label: "Langfristig", period: "12+ Monate", text: `Die Besetzung ist nur mit dauerhaft hohem Führungsaufwand tragfähig. Ohne diesen Aufwand ist das Risiko erheblich, dass weder die Zusammenarbeit noch die Ergebnisse stimmen. Es sollte geprüft werden, ob der Aufwand langfristig gerechtfertigt ist.` },
+  ];
+}
+
+function buildIntegrationsplan(c: Ctx): V4IntegrationPhase[] {
+  const { isLeader, sameDominance, teamPrimary, personPrimary, passungZumTeam, beitragZurAufgabe, hasGoal, teamGoalLabel, roleName } = c;
+
+  const teamDesc = COMP_SHORT[teamPrimary];
+  const personDesc = COMP_SHORT[personPrimary];
+
+  if (passungZumTeam === "hoch") {
+    return [
+      {
+        num: 1, title: "Orientierung und Erwartungsklärung", period: "Tag 1 – 10",
+        ziel: isLeader
+          ? `Führungsrolle als ${roleName} im Team verankern und gegenseitige Erwartungen klären.`
+          : `Als ${roleName} im Team ankommen und Arbeitsweise abstimmen.`,
+        items: [
+          "Bestehende Abläufe, Schnittstellen und Entscheidungswege kennenlernen.",
+          isLeader ? "Erwartungen des Teams an die Führung aktiv erfragen." : "Erwartungen des Teams an die Zusammenarbeit aktiv erfragen.",
+          isLeader ? "Eigene Führungsprioritäten transparent machen." : "Eigene Arbeitsweise und Stärken sichtbar machen.",
+          ...(beitragZurAufgabe === "gering" && hasGoal ? [`Anforderungen im Bereich ${teamGoalLabel} gezielt klären.`] : []),
+        ],
+        fokus: {
+          intro: `Die Arbeitsweisen passen gut zusammen. Trotzdem muss in den ersten Tagen geklärt werden:`,
+          bullets: [
+            "Welche Erwartungen bestehen konkret an diese Rolle?",
+            isLeader ? "Wie will die Führungskraft führen und entscheiden?" : "Wie soll die Zusammenarbeit im Alltag aussehen?",
+            "Wo liegen die wichtigsten Schnittstellen und Prioritäten?",
+          ],
+        },
+      },
+      {
+        num: 2, title: "Erste Wirkung und Rückmeldung", period: "Tag 11 – 20",
+        ziel: isLeader
+          ? `Erste Führungswirkung als ${roleName} zeigen und Rückmeldung einholen.`
+          : `Erste Arbeitsergebnisse als ${roleName} liefern und Feedback einholen.`,
+        items: [
+          isLeader ? "Erste eigene Entscheidungen treffen und transparent kommunizieren." : "Erste Aufgaben eigenständig übernehmen und abschliessen.",
+          "Aktiv Rückmeldung zur eigenen Wirkung einholen.",
+          ...(beitragZurAufgabe === "gering" ? ["Im fachlichen Kern der Rolle bewusst auf Qualität und Standards achten."] : []),
+          isLeader ? "Zusammenarbeit mit dem Team bewusst gestalten." : "Zusammenarbeit mit Teamkollegen aktiv aufbauen.",
+        ],
+        fokus: {
+          intro: `Die Integration verläuft voraussichtlich reibungsarm. Jetzt geht es darum:`,
+          bullets: [
+            "Erste Ergebnisse sichtbar zu machen",
+            "Rückmeldung aktiv einzuholen, bevor sich Gewohnheiten festigen",
+            ...(beitragZurAufgabe === "gering" ? [`Fachliche Anforderungen${hasGoal ? ` im Bereich ${teamGoalLabel}` : ""} nicht aus den Augen zu verlieren`] : []),
+          ],
+        },
+      },
+      {
+        num: 3, title: "Verankerung und Standortbestimmung", period: "Tag 21 – 30",
+        ziel: `Arbeitsweise als ${roleName} stabilisieren und erste Standortbestimmung durchführen.`,
+        items: [
+          "Zusammenfassendes Feedback-Gespräch mit der direkten Führung.",
+          isLeader ? "Führungsrhythmus und Entscheidungswege überprüfen." : "Arbeitsrhythmus und Prioritäten überprüfen.",
+          "Offene Punkte identifizieren und nächste Schritte vereinbaren.",
+          ...(beitragZurAufgabe === "gering" ? ["Bewusste Standortbestimmung im fachlichen Kern der Rolle."] : []),
+        ],
+        fokus: {
+          intro: `Nach 30 Tagen sollte klar sein:`,
+          bullets: [
+            "Funktioniert die Zusammenarbeit im Alltag wie erwartet?",
+            isLeader ? "Wird die Führung vom Team angenommen?" : "Ist die Person im Team angekommen?",
+            "Wo braucht es Nachjustierung?",
+          ],
+        },
+      },
+    ];
+  }
+
+  return [
+    {
+      num: 1, title: "Orientierung und Brücken bauen", period: "Tag 1 – 10",
+      ziel: isLeader
+        ? `Als ${roleName} im Team Vertrauen aufbauen und Unterschiede in der Arbeitsweise aktiv ansprechen.`
+        : `Als ${roleName} ankommen und die Unterschiede zwischen eigener Arbeitsweise und Teamkultur verstehen.`,
+      items: [
+        `Bestehende Teamkultur und Arbeitsweise (Schwerpunkt ${teamDesc}) kennenlernen.`,
+        isLeader ? "Eigenen Führungsstil erklären und Brücken zur Teamkultur bauen." : "Eigene Arbeitsweise erklären und Gemeinsamkeiten betonen.",
+        isLeader ? "Einzelgespräche mit jedem Teammitglied in der ersten Woche." : "Gespräche mit wichtigen Teamkollegen und Schnittstellen suchen.",
+        `Unterschiede zwischen ${personDesc} und ${teamDesc} offen ansprechen.`,
+        ...(hasGoal ? [`Anforderungen im Bereich ${teamGoalLabel} gezielt klären.`] : []),
+      ],
+      fokus: {
+        intro: `Die Arbeitsweisen unterscheiden sich. Deshalb ist in den ersten Tagen besonders wichtig:`,
+        bullets: [
+          "Wie arbeitet das Team und warum?",
+          isLeader ? "Was erwartet das Team von der Führung?" : "Was erwartet das Team von neuen Teammitgliedern?",
+          "Wo entstehen die ersten Reibungspunkte und wie lassen sie sich entschärfen?",
+        ],
+      },
+    },
+    {
+      num: 2, title: "Unterschiede produktiv machen", period: "Tag 11 – 20",
+      ziel: isLeader
+        ? `Den eigenen Führungsstil mit der Teamkultur verbinden und erste Ergebnisse erzielen.`
+        : `Die eigene Stärke einbringen und gleichzeitig die Teamkultur respektieren.`,
+      items: [
+        isLeader ? "Erste Führungsentscheidungen treffen und dem Team die Logik dahinter erklären." : "Erste Aufgaben eigenständig umsetzen und Ergebnisse zeigen.",
+        `Bewusst Situationen schaffen, in denen ${personDesc} dem Team hilft.`,
+        "Aktiv Rückmeldung einholen: Wie wird die eigene Arbeitsweise erlebt?",
+        ...(beitragZurAufgabe === "gering" && hasGoal ? [`Im Bereich ${teamGoalLabel} bewusst Standards einhalten und nachfragen.`] : []),
+        isLeader ? "Teamregeln und Entscheidungswege gemeinsam vereinbaren." : "Abstimmungsrhythmus mit dem Team finden.",
+      ],
+      fokus: {
+        intro: `Die erste Orientierung ist abgeschlossen. Jetzt muss die Person zeigen:`,
+        bullets: [
+          "Dass die eigene Stärke dem Team einen Mehrwert bringt",
+          "Dass Unterschiede kein Hindernis sind, sondern bewusst genutzt werden",
+          isLeader ? "Dass Führung Richtung gibt, ohne die Teamkultur zu überfahren" : "Dass Zusammenarbeit trotz unterschiedlicher Arbeitsweisen funktioniert",
+        ],
+      },
+    },
+    {
+      num: 3, title: "Standortbestimmung und Weichenstellung", period: "Tag 21 – 30",
+      ziel: `Ehrliche Bestandsaufnahme nach 30 Tagen: Funktioniert die Integration?`,
+      items: [
+        "Strukturiertes Feedback-Gespräch mit der direkten Führung.",
+        isLeader ? "Rückmeldung aus dem Team zur Führungswirkung einholen." : "Rückmeldung aus dem Team zur Zusammenarbeit einholen.",
+        `Bewerten: Sind die Unterschiede zwischen ${personDesc} und ${teamDesc} produktiv oder belastend?`,
+        "Konkrete Massnahmen für die nächsten 60 Tage vereinbaren.",
+        ...(beitragZurAufgabe === "gering" ? ["Fachliche Standortbestimmung im Aufgabenkern der Rolle."] : []),
+      ],
+      fokus: {
+        intro: `Nach 30 Tagen muss ehrlich bewertet werden:`,
+        bullets: [
+          isLeader ? "Akzeptiert das Team die Führung?" : "Ist die Person im Team angekommen?",
+          "Werden die Unterschiede als Bereicherung oder als Belastung erlebt?",
+          "Welche Massnahmen braucht es für die nächsten Wochen?",
+        ],
+      },
+    },
+  ];
 }
 
 function buildEmpfehlungen(c: Ctx): V4Block[] {
