@@ -38,7 +38,7 @@ function TextBlock({ text }: { text: string }) {
   return (
     <>
       {text.split("\n\n").map((para, i) =>
-        (para.startsWith("Die Kernaussage") || para.startsWith("Konkret bedeutet das")) ? (
+        (para.startsWith("Die Kernaussage") || para.startsWith("Konkret bedeutet das") || para.startsWith("Für die Praxis bedeutet das")) ? (
           <div key={i} style={{ padding: "14px 20px", borderRadius: 10, background: "rgba(0,0,0,0.02)", borderLeft: "3px solid #8E8E93", margin: "16px 0" }}>
             <p style={{ ...bodyText, margin: 0, fontWeight: 600, color: "#1D1D1F" }}>{para}</p>
           </div>
