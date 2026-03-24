@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
 import { computeTeamCheckV4, type TeamCheckV4Result, type V4Block } from "@/lib/teamcheck-v4-engine";
 import type { TeamCheckV3Input } from "@/lib/teamcheck-v3-engine";
-import { ArrowLeft, Printer } from "lucide-react";
+import { ArrowLeft, Download, Loader2 } from "lucide-react";
 import { BIO_COLORS, COMP_HEX } from "@/lib/bio-design";
 import type { ComponentKey } from "@/lib/bio-types";
 import logoPath from "@assets/LOGO_bio_1773853681939.png";
@@ -58,6 +58,7 @@ export default function TeamCheckReportV4() {
   const [, navigate] = useLocation();
   const [result, setResult] = useState<TeamCheckV4Result | null>(null);
   const reportRef = useRef<HTMLDivElement>(null);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
 
   useEffect(() => {
     const raw = sessionStorage.getItem("teamcheckV4Input");
@@ -68,7 +69,161 @@ export default function TeamCheckReportV4() {
     } catch { navigate("/team-report"); }
   }, [navigate]);
 
-  const handlePrint = useCallback(() => { window.print(); }, []);
+  const exportPdf = useCallback(async () => {
+    if (!result || isExportingPdf || !reportRef.current) return;
+    setIsExportingPdf(true);
+    let clone: HTMLElement | null = null;
+    let pdfBtn: HTMLElement | null = null;
+    let backBtn: HTMLElement | null = null;
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const { default: jsPDF } = await import("jspdf");
+
+      const source = reportRef.current;
+      pdfBtn = source.querySelector("[data-testid='button-export-pdf-v4']") as HTMLElement | null;
+      backBtn = source.closest("[data-testid='v4-report-wrapper']")?.parentElement?.querySelector("[data-testid='button-back-v4']") as HTMLElement | null;
+      if (pdfBtn) pdfBtn.style.display = "none";
+      if (backBtn) backBtn.style.display = "none";
+
+      clone = source.cloneNode(true) as HTMLElement;
+      clone.style.position = "absolute";
+      clone.style.left = "-9999px";
+      clone.style.top = "0";
+      clone.style.width = "794px";
+      clone.style.borderRadius = "0";
+      clone.style.boxShadow = "none";
+      clone.style.overflow = "visible";
+      document.body.appendChild(clone);
+
+      const allTextEls = clone.querySelectorAll<HTMLElement>("p, span, li, div");
+      allTextEls.forEach(el => {
+        el.style.hyphens = "none";
+        (el.style as any).WebkitHyphens = "none";
+        el.style.wordBreak = "normal";
+        el.style.overflowWrap = "break-word";
+        el.style.textAlign = "left";
+      });
+
+      clone.querySelectorAll<HTMLElement>(".bio-section-head").forEach(sh => {
+        sh.style.justifyContent = "flex-start";
+        sh.style.gap = "0";
+      });
+
+      const animatedSections = clone.querySelectorAll<HTMLElement>(
+        ".bio-bar-animate, [data-testid='v4-report-wrapper'] > div > div"
+      );
+      animatedSections.forEach(el => {
+        el.style.animation = "none";
+        el.style.opacity = "1";
+        el.style.transform = "none";
+        el.style.transition = "none";
+      });
+
+      clone.querySelectorAll<HTMLElement>(".no-print").forEach(el => {
+        el.style.display = "none";
+      });
+
+      const cardEl = clone.firstElementChild as HTMLElement | null;
+      if (cardEl) {
+        cardEl.style.overflow = "visible";
+        cardEl.style.borderRadius = "0";
+      }
+
+      const A4_W = 595.28;
+      const A4_H = 841.89;
+      const TOP_MARGIN_PT = 28.35;
+      const pxWidth = 794;
+      const usablePageH = A4_H - TOP_MARGIN_PT;
+      const pxPageH = Math.floor((usablePageH / A4_W) * pxWidth);
+
+      const cloneTop = clone.getBoundingClientRect().top;
+      const allBlocks = clone.querySelectorAll<HTMLElement>("[data-pdf-block]");
+      const breakPoints: number[] = [0];
+      allBlocks.forEach(b => {
+        const r = b.getBoundingClientRect();
+        const top = r.top - cloneTop;
+        const bottom = r.bottom - cloneTop;
+        if (top > 0) breakPoints.push(top);
+        if (bottom > 0) breakPoints.push(bottom);
+      });
+      breakPoints.sort((a, b) => a - b);
+
+      const contentH = clone.scrollHeight;
+      const scale = contentH > 8000 ? 1.5 : 2;
+
+      const canvas = await html2canvas(clone, {
+        scale,
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: "#FFFFFF",
+        width: pxWidth,
+        windowWidth: pxWidth,
+      });
+
+      document.body.removeChild(clone);
+      clone = null;
+      if (pdfBtn) { pdfBtn.style.display = ""; pdfBtn = null; }
+      if (backBtn) { backBtn.style.display = ""; backBtn = null; }
+
+      const totalH = canvas.height / scale;
+      const doc = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
+
+      const pageCuts: number[] = [0];
+      let cursor = 0;
+      while (cursor < totalH) {
+        const ideal = cursor + pxPageH;
+        if (ideal >= totalH) {
+          pageCuts.push(totalH);
+          break;
+        }
+        let bestCut = ideal;
+        for (let i = breakPoints.length - 1; i >= 0; i--) {
+          if (breakPoints[i] <= ideal && breakPoints[i] > cursor + pxPageH * 0.3) {
+            bestCut = breakPoints[i];
+            break;
+          }
+        }
+        pageCuts.push(bestCut);
+        cursor = bestCut;
+      }
+
+      for (let p = 0; p < pageCuts.length - 1; p++) {
+        if (p > 0) doc.addPage();
+        const yStart = pageCuts[p];
+        const sliceH = pageCuts[p + 1] - yStart;
+
+        const pageCanvas = document.createElement("canvas");
+        pageCanvas.width = pxWidth * scale;
+        pageCanvas.height = sliceH * scale;
+        const ctx = pageCanvas.getContext("2d")!;
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+        ctx.drawImage(
+          canvas,
+          0, yStart * scale,
+          pxWidth * scale, sliceH * scale,
+          0, 0,
+          pxWidth * scale, sliceH * scale
+        );
+
+        const imgData = pageCanvas.toDataURL("image/jpeg", 0.92);
+        const imgW = A4_W;
+        const imgH = (sliceH / pxWidth) * A4_W;
+        doc.addImage(imgData, "JPEG", 0, TOP_MARGIN_PT, imgW, imgH);
+      }
+
+      const safeName = (result.roleTitle || "TeamCheck").replace(/[^a-zA-Z0-9äöüÄÖÜß\s-]/g, "").replace(/\s+/g, "_");
+      doc.save(`TeamCheck_${safeName}.pdf`);
+    } catch (e) {
+      console.error("PDF error:", e);
+      alert("PDF-Export fehlgeschlagen. Bitte versuchen Sie es erneut.");
+    } finally {
+      if (clone && clone.parentNode) clone.parentNode.removeChild(clone);
+      if (pdfBtn) pdfBtn.style.display = "";
+      if (backBtn) backBtn.style.display = "";
+      setIsExportingPdf(false);
+    }
+  }, [isExportingPdf, result]);
 
   if (!result) {
     return (
@@ -91,15 +246,22 @@ export default function TeamCheckReportV4() {
           <button onClick={() => navigate("/team-report")} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", color: "#1A5DAB", fontWeight: 600, fontSize: 14, padding: 0 }} data-testid="button-back-v4">
             <ArrowLeft size={16} /> Zurück zum TeamCheck
           </button>
-          <button onClick={handlePrint} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#343A48", border: "none", cursor: "pointer", color: "#FFF", fontWeight: 600, fontSize: 13, padding: "8px 16px", borderRadius: 8 }} data-testid="button-print-v4">
-            <Printer size={14} /> Drucken / PDF
+          <button
+            onClick={exportPdf}
+            disabled={isExportingPdf}
+            data-testid="button-export-pdf-v4"
+            className="report-pdf-btn"
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#343A48", border: "none", cursor: isExportingPdf ? "wait" : "pointer", color: "#FFF", fontWeight: 600, fontSize: 13, padding: "8px 16px", borderRadius: 8, opacity: isExportingPdf ? 0.6 : 1, transition: "all 0.15s ease" }}
+          >
+            {isExportingPdf ? <Loader2 style={{ width: 15, height: 15, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 15, height: 15 }} />}
+            <span>PDF</span>
           </button>
         </div>
 
         <div ref={reportRef} data-testid="v4-report-wrapper">
           <div style={{ position: "relative", background: "#F8F9FB", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }}>
 
-            <div className="report-header report-header--auto" data-testid="v4-header">
+            <div data-pdf-block className="report-header report-header--auto" data-testid="v4-header">
               <img src={logoPath} alt="bioLogic" className="report-logo" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
               <div className="report-kicker">TEAMANALYSE</div>
               <h1 className="report-title report-title--flow">Integrationsanalyse</h1>
@@ -127,7 +289,7 @@ export default function TeamCheckReportV4() {
               <div style={{ margin: "0 0 24px" }} data-testid="v4-hero-bewertung">
                 <TextBlock text={result.gesamtbewertungText} />
 
-                <div style={{ display: "flex", gap: 16, marginTop: 16, breakInside: "avoid" }} data-testid="v4-two-axis">
+                <div data-pdf-block style={{ display: "flex", gap: 16, marginTop: 16, breakInside: "avoid" }} data-testid="v4-two-axis">
                   <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${bCol}08`, border: `1px solid ${bCol}25` }} data-testid="v4-gesamt-card">
                     <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Gesamteinschätzung</div>
                     <div style={{ fontSize: 17, fontWeight: 700, color: bCol }} data-testid="v4-gesamt-label">{result.gesamteinschaetzung}</div>
@@ -147,7 +309,7 @@ export default function TeamCheckReportV4() {
                   const matchSymbol = result.sameDominance ? "=" : "⚡";
                   const matchColor = result.sameDominance ? "#34C759" : "#D64045";
                   return (
-                    <div style={{ marginTop: 16, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", breakInside: "avoid" }} data-testid="v4-kurzuebersicht-dominanz">
+                    <div data-pdf-block style={{ marginTop: 16, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", breakInside: "avoid" }} data-testid="v4-kurzuebersicht-dominanz">
                       <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 16px", textAlign: "center" }}>Kurzübersicht</p>
                       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: 16 }}>
                         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -170,7 +332,7 @@ export default function TeamCheckReportV4() {
                   );
                 })()}
 
-                <div style={{ display: "flex", gap: 16, marginTop: 16, breakInside: "avoid" }} data-testid="v4-kurzueberblick">
+                <div data-pdf-block style={{ display: "flex", gap: 16, marginTop: 16, breakInside: "avoid" }} data-testid="v4-kurzueberblick">
                   <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }}>
                     <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Stärke der Besetzung</div>
                     <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="v4-hauptstaerke">{result.hauptstaerke}</div>
@@ -182,7 +344,7 @@ export default function TeamCheckReportV4() {
                 </div>
               </div>
 
-              <div style={{ padding: "12px 18px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", borderLeft: "3px solid #8E8E93", marginBottom: 20, breakInside: "avoid" }}>
+              <div data-pdf-block style={{ padding: "12px 18px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", borderLeft: "3px solid #8E8E93", marginBottom: 20, breakInside: "avoid" }}>
                 <p style={{ fontSize: 13, lineHeight: 1.7, color: "#48484A", margin: 0, fontWeight: 600 }} data-testid="v4-team-kontext">{result.teamKontext}</p>
               </div>
             </div>
@@ -263,19 +425,19 @@ export default function TeamCheckReportV4() {
               })()}
 
               {/* === Section 3: Warum dieses Ergebnis entsteht === */}
-              <div style={sectionStyle} data-testid="v4-section-warum">
+              <div data-pdf-block style={sectionStyle} data-testid="v4-section-warum">
                 <SectionHead num={3} title="Warum dieses Ergebnis entsteht" id="warum" />
                 <TextBlock text={result.warumText} />
               </div>
 
               {/* === Section 4: Wirkung im Arbeitsalltag === */}
-              <div style={sectionStyle} data-testid="v4-section-wirkung">
+              <div data-pdf-block style={sectionStyle} data-testid="v4-section-wirkung">
                 <SectionHead num={4} title="Wirkung im Arbeitsalltag" id="wirkung" />
                 <TextBlock text={result.wirkungAlltagText} />
               </div>
 
               {/* === Section 5: Chancen und Risiken === */}
-              <div style={sectionStyle} data-testid="v4-section-chancen-risiken">
+              <div data-pdf-block style={sectionStyle} data-testid="v4-section-chancen-risiken">
                 <SectionHead num={5} title="Chancen und Risiken dieser Besetzung" id="chancen-risiken" />
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
                   <div style={{ padding: "20px", borderRadius: 12, background: "rgba(52,199,89,0.04)", border: "1px solid rgba(52,199,89,0.15)" }}>
@@ -309,14 +471,14 @@ export default function TeamCheckReportV4() {
               </div>
 
               {/* === Section 5: Verhalten unter Druck === */}
-              <div style={sectionStyle} data-testid="v4-section-druck">
+              <div data-pdf-block style={sectionStyle} data-testid="v4-section-druck">
                 <SectionHead num={6} title="Verhalten unter Druck" id="druck" />
                 <TextBlock text={result.druckText} />
               </div>
 
               {/* === Section 6 (only Führungskraft): Führungshinweis === */}
               {result.fuehrungshinweis && (
-                <div style={sectionStyle} data-testid="v4-section-fuehrung">
+                <div data-pdf-block style={sectionStyle} data-testid="v4-section-fuehrung">
                   <SectionHead num={7} title="Was als Führungskraft für dieses Team wichtig ist" id="fuehrung" />
                   <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 14 }}>
                     {result.fuehrungshinweis.map((item, i) => (
@@ -336,7 +498,7 @@ export default function TeamCheckReportV4() {
               {(() => {
                 const planNum = result.fuehrungshinweis ? 8 : 7;
                 return (
-                  <div style={sectionStyle} data-testid="v4-section-integrationsplan">
+                  <div data-pdf-block style={sectionStyle} data-testid="v4-section-integrationsplan">
                     <SectionHead num={planNum} title="30-Tage-Integrationsplan" id="integrationsplan" />
                     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
                       {result.integrationsplan.map(phase => {
@@ -387,7 +549,7 @@ export default function TeamCheckReportV4() {
               {(() => {
                 const riskNum = result.fuehrungshinweis ? 9 : 8;
                 return (
-                  <div style={sectionStyle} data-testid="v4-section-risikoprognose">
+                  <div data-pdf-block style={sectionStyle} data-testid="v4-section-risikoprognose">
                     <SectionHead num={riskNum} title="Risikoprognose" id="risikoprognose" />
                     <div style={{ position: "relative", paddingLeft: 28 }}>
                       <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
@@ -414,7 +576,7 @@ export default function TeamCheckReportV4() {
               {(() => {
                 const ohneNum = result.fuehrungshinweis ? 10 : 9;
                 return (
-                  <div style={sectionStyle} data-testid="v4-section-team-ohne-person">
+                  <div data-pdf-block style={sectionStyle} data-testid="v4-section-team-ohne-person">
                     <SectionHead num={ohneNum} title="Was passiert, wenn das Team so bleibt" id="team-ohne-person" />
                     {result.teamOhnePersonText.split("\n\n").map((p, i) => (
                       <p key={i} style={bodyText}>{p}</p>
@@ -427,7 +589,7 @@ export default function TeamCheckReportV4() {
               {(() => {
                 const empNum = result.fuehrungshinweis ? 11 : 10;
                 return (
-                  <div style={sectionStyle} data-testid="v4-section-empfehlungen">
+                  <div data-pdf-block style={sectionStyle} data-testid="v4-section-empfehlungen">
                     <SectionHead num={empNum} title="Was jetzt wichtig ist" id="empfehlungen" />
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                       {result.empfehlungen.map((emp, i) => (
@@ -450,7 +612,7 @@ export default function TeamCheckReportV4() {
               {(() => {
                 const fazitNum = result.fuehrungshinweis ? 12 : 11;
                 return (
-                  <div style={{ marginBottom: 36 }} data-testid="v4-section-schlussfazit">
+                  <div data-pdf-block style={{ marginBottom: 36 }} data-testid="v4-section-schlussfazit">
                     <SectionHead num={fazitNum} title="Fazit" id="schlussfazit" />
                     <div style={{ padding: "20px 24px", borderRadius: 14, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="v4-schlussfazit-text">
                       {result.schlussfazit.split("\n\n").map((p, i, arr) => (
