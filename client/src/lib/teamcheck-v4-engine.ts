@@ -204,11 +204,11 @@ function buildGesamtbewertungText(c: Ctx): string {
 
   if (passungZumTeam === "hoch" && beitragZurAufgabe === "gering") {
     paras.push(isLeader
-      ? `Die Person fügt sich voraussichtlich gut in das bestehende Team ein. Die Zusammenarbeit dürfte im Führungsalltag reibungsarm verlaufen, weil Person und Team in ihrer Grundausrichtung ähnliche Schwerpunkte setzen. Der Einstieg in die Führungsrolle wird dadurch erleichtert und die Integration in das bestehende Umfeld ist grundsätzlich positiv zu bewerten.`
-      : `Die Person fügt sich voraussichtlich gut in das bestehende Team ein. Die Zusammenarbeit dürfte im Alltag reibungsarm verlaufen, weil Person und Team in ihrer Grundausrichtung ähnliche Schwerpunkte setzen. Der Einstieg wird dadurch erleichtert und die Integration in das bestehende Umfeld ist grundsätzlich positiv zu bewerten.`);
+      ? `Die Person fügt sich voraussichtlich gut in das bestehende Team ein. Die Zusammenarbeit dürfte im Führungsalltag reibungsarm verlaufen, weil Person und Team in ihrer Arbeitsweise ähnliche Schwerpunkte setzen. Der Einstieg in die Führungsrolle wird dadurch erleichtert und die Integration in das bestehende Umfeld ist positiv zu bewerten.`
+      : `Die Person fügt sich voraussichtlich gut in das bestehende Team ein. Die Zusammenarbeit dürfte im Alltag reibungsarm verlaufen, weil Person und Team in ihrer Arbeitsweise ähnliche Schwerpunkte setzen. Der Einstieg wird dadurch erleichtert und die Integration in das bestehende Umfeld ist positiv zu bewerten.`);
     paras.push(hasGoal
-      ? `Für die konkreten Anforderungen der Aufgabe bringt die Person jedoch nicht die ideale Stärke mit. Im Funktionsziel ${teamGoalLabel} ist die Passung geringer ausgeprägt. Das ergibt ein gemischtes Bild: Im Team passend, für den Aufgabenkern nur eingeschränkt ideal. Die Besetzung kann funktionieren, sollte fachlich aber nicht sich selbst überlassen werden.`
-      : `Für die konkreten Anforderungen der Aufgabe bringt die Person jedoch nicht die ideale Stärke mit. Im eigentlichen Aufgabenkern ist die Passung geringer ausgeprägt. Das ergibt ein gemischtes Bild: Im Team passend, für den Aufgabenkern nur eingeschränkt ideal. Die Besetzung kann funktionieren, sollte fachlich aber nicht sich selbst überlassen werden.`);
+      ? `Für die konkreten Anforderungen der Aufgabe bringt die Person jedoch nicht die ideale Stärke mit. Im Funktionsziel ${teamGoalLabel} ist die Passung nur eingeschränkt gegeben. Das ergibt ein gemischtes Bild: Im Team passend, für den Aufgabenkern nur eingeschränkt ideal. Die Besetzung kann funktionieren, sollte fachlich aber nicht sich selbst überlassen werden.`
+      : `Für die konkreten Anforderungen der Aufgabe bringt die Person jedoch nicht die ideale Stärke mit. Im eigentlichen Aufgabenkern ist die Passung nur eingeschränkt gegeben. Das ergibt ein gemischtes Bild: Im Team passend, für den Aufgabenkern nur eingeschränkt ideal. Die Besetzung kann funktionieren, sollte fachlich aber nicht sich selbst überlassen werden.`);
   } else if (passungZumTeam === "hoch") {
     paras.push(isLeader
       ? `Die Person passt in ihrer Arbeitsweise gut zum bestehenden Team. Der Einstieg in die Führungsrolle dürfte vergleichsweise reibungsarm verlaufen, weil Führungsstil und Teamkultur ähnliche Schwerpunkte setzen. Das Team wird die Führung voraussichtlich gut annehmen.`
@@ -224,12 +224,12 @@ function buildGesamtbewertungText(c: Ctx): string {
   } else if (gesamteinschaetzung === "Für die Aufgabe passend, im Team herausfordernd") {
     paras.push(isLeader
       ? `Die Person erfüllt die fachlichen Anforderungen der Rolle gut und bringt die richtige Stärke für die Aufgabe mit. Die Zusammenarbeit mit dem Team ist jedoch nicht reibungsfrei. Die Person führt ${COMP_ADJ[c.personPrimary]}, als das Team es gewohnt ist.`
-      : `Die Person bringt fachlich genau das mit, was die Aufgabe verlangt. Im Team wird es aber Reibung geben, weil sich die Arbeitsweisen spürbar unterscheiden. Die Person arbeitet ${COMP_ADJ[c.personPrimary]}, während das Team stärker auf ${COMP_SHORT[c.teamPrimary]} setzt.`);
+      : `Die Person bringt fachlich genau das mit, was die Aufgabe verlangt. Im Team wird es aber Reibung geben, weil sich die Arbeitsweisen merklich unterscheiden. Die Person arbeitet ${COMP_ADJ[c.personPrimary]}, während das Team stärker auf ${COMP_SHORT[c.teamPrimary]} setzt.`);
     paras.push(`Das ergibt eine anspruchsvolle, aber machbare Ausgangslage. Die fachliche Passung ist gegeben, die Integration braucht aber bewusste Führung. Die Besetzung kann gelingen, wenn die Unterschiede früh angesprochen und die Erwartungen klar geregelt werden.${hasGoal ? ` Ob der Beitrag im Bereich ${teamGoalLabel} zum Tragen kommt, hängt davon ab, wie gut die Integration ins Team gelingt.` : ""}`);
   } else if (gesamteinschaetzung === "Eingeschränkt passend") {
     paras.push(isLeader
       ? `Die Person passt nur bedingt zum Team und erfüllt die fachlichen Anforderungen der Rolle ebenfalls nicht ideal. Die Führungskraft arbeitet ${COMP_ADJ[c.personPrimary]}, während das Team stärker auf ${COMP_SHORT[c.teamPrimary]} setzt.`
-      : `Die Person passt nur bedingt zum Team und bringt für die konkrete Aufgabe nicht die ideale Stärke mit. Die Arbeitsweisen unterscheiden sich spürbar.`);
+      : `Die Person passt nur bedingt zum Team und bringt für die konkrete Aufgabe nicht die ideale Stärke mit. Die Arbeitsweisen weichen merklich voneinander ab.`);
     paras.push(`Die Besetzung ist nur dann sinnvoll, wenn von Anfang an gezielte Begleitung und klare Rahmensetzung gewährleistet sind. Ohne diese Voraussetzungen ist das Risiko erheblich, dass weder die Zusammenarbeit noch die Ergebnisse stimmen. Die Unterschiede betreffen sowohl die tägliche Zusammenarbeit als auch die inhaltliche Ausrichtung.`);
   } else if (gesamteinschaetzung === "Strategisch sinnvoll, aber anspruchsvoll") {
     paras.push(isLeader
@@ -244,12 +244,12 @@ function buildGesamtbewertungText(c: Ctx): string {
   } else if (gesamteinschaetzung === "Teilweise passend") {
     paras.push(isLeader
       ? `Die Person bringt Stärken mit, arbeitet aber in einigen Punkten anders als das Team es kennt. Ob die Führung gut ankommt, hängt davon ab, wie bewusst die ersten Wochen gestaltet werden.`
-      : `Die Person passt in Teilen gut zum Team, weicht in anderen Punkten aber spürbar ab. Das kann neue Impulse bringen, braucht aber klare Absprachen.`);
-    paras.push(`Einzelne Unterschiede lassen sich gut überbrücken, wenn Erwartungen früh geklärt und die Zusammenarbeit bewusst gestaltet wird. Ohne diese Klarheit könnten sich Missverständnisse aufbauen. Die Besetzung kann gelingen, ist aber kein Selbstläufer.`);
+      : `Die Person passt in Teilen gut zum Team, weicht in anderen Punkten aber erkennbar ab. Das kann neue Impulse bringen, braucht aber klare Absprachen.`);
+    paras.push(`Einzelne Unterschiede lassen sich gut überbrücken, wenn Erwartungen früh geklärt und die Zusammenarbeit gezielt gestaltet wird. Ohne diese Klarheit könnten sich Missverständnisse aufbauen. Die Besetzung kann gelingen, ist aber kein Selbstläufer.`);
   } else {
     paras.push(isLeader
       ? `Die Person würde deutlich anders führen, als das Team es kennt. Die Arbeitsweisen unterscheiden sich in wesentlichen Bereichen. Ohne aktive Begleitung ist mit Spannungen und schwächeren Ergebnissen zu rechnen.`
-      : `Die Person arbeitet deutlich anders als das Team. Die Unterschiede betreffen grundlegende Arbeitsweisen und Erwartungen. Ohne bewusste Begleitung und enge Abstimmung ist eine produktive Zusammenarbeit kaum zu erwarten.`);
+      : `Die Person arbeitet deutlich anders als das Team. Die Unterschiede betreffen grundlegende Arbeitsweisen und Erwartungen. Ohne aktive Begleitung und enge Abstimmung ist eine produktive Zusammenarbeit kaum zu erwarten.`);
     paras.push(`Die Besetzung ist im aktuellen Umfeld kritisch und nur mit enger Begleitung tragfähig. Ohne aktive Führung und klare Absprachen ist das Risiko hoch, dass die Person weder fachlich noch im Teamalltag wirklich ankommt. Die Unterschiede in Arbeitsweise und Erwartung sind so gross, dass eine erfolgreiche Zusammenarbeit nur mit engmaschiger Begleitung und klarer Rahmensetzung von Beginn an möglich ist.`);
   }
 
@@ -289,19 +289,19 @@ function buildWarumText(c: Ctx): string {
   paras.push(`Diese Einschätzung entsteht aus dem Zusammenspiel von Person, Team und ${hasGoal ? "Funktionsziel" : "Aufgabe"}. ${passungZumTeam === "hoch" && beitragZurAufgabe === "gering"
     ? "Dabei zeigt sich ein klares Muster: Die Person passt in ihrer Arbeitsweise gut zum bestehenden Team, trifft aber die zentrale Anforderung der Aufgabe nicht in idealer Weise."
     : passungZumTeam === "hoch"
-      ? "Dabei zeigt sich ein stimmiges Bild: Die Person passt in ihrer Arbeitsweise gut zum bestehenden Team."
+      ? "Das Bild ist stimmig: Die Person passt in ihrer Arbeitsweise gut zum bestehenden Team."
       : passungZumTeam === "gering" && beitragZurAufgabe !== "gering"
-        ? "Dabei zeigt sich eine klare Spannung: Die Person bringt fachlich genau die Qualität mit, die im Bereich gebraucht wird, weicht in ihrer Arbeitsweise und Führungswirkung jedoch deutlich von der bestehenden Teamkultur ab."
-        : "Dabei zeigen sich relevante Abweichungen, die im Alltag spürbar sein werden."}`);
+        ? "Dabei entsteht eine klare Spannung: Die Person bringt fachlich genau die Qualität mit, die im Bereich gebraucht wird, weicht in ihrer Arbeitsweise und Führungswirkung jedoch merklich von der bestehenden Teamkultur ab."
+        : "Es gibt relevante Unterschiede, die im Alltag bemerkbar sein werden."}`);
 
   if (sameDominance) {
     paras.push(isLeader
-      ? `Person und Team setzen in ihrer Grundausrichtung ähnliche Schwerpunkte. Dadurch ist zu erwarten, dass der Einstieg in die Führungsrolle vergleichsweise leicht gelingt. Zusammenarbeit, Abstimmung und täglicher Austausch dürften ohne grössere Reibung möglich sein. Die Person wird im bestehenden Umfeld voraussichtlich nicht als Fremdkörper wirken, sondern rasch Akzeptanz finden.`
-      : `Person und Team setzen in ihrer Grundausrichtung ähnliche Schwerpunkte. Dadurch ist zu erwarten, dass der Einstieg in das Team vergleichsweise leicht gelingt. Zusammenarbeit, Abstimmung und täglicher Austausch dürften ohne grössere Reibung möglich sein. Die Person wird im bestehenden Umfeld voraussichtlich nicht als Fremdkörper wirken, sondern rasch Anschluss finden.`);
+      ? `Person und Team arbeiten grundsätzlich mit ähnlichen Schwerpunkten. Dadurch ist zu erwarten, dass der Einstieg in die Führungsrolle vergleichsweise leicht gelingt. Zusammenarbeit, Abstimmung und täglicher Austausch dürften ohne grössere Reibung möglich sein. Die Person wird im bestehenden Umfeld voraussichtlich nicht als Fremdkörper wirken, sondern rasch Akzeptanz finden.`
+      : `Person und Team arbeiten grundsätzlich mit ähnlichen Schwerpunkten. Dadurch ist zu erwarten, dass der Einstieg in das Team vergleichsweise leicht gelingt. Zusammenarbeit, Abstimmung und täglicher Austausch dürften ohne grössere Reibung möglich sein. Die Person wird im bestehenden Umfeld voraussichtlich nicht als Fremdkörper wirken, sondern rasch Anschluss finden.`);
   } else {
     paras.push(isLeader
-      ? `Das Team ist stärker auf ${COMP_SHORT[teamPrimary]} ausgerichtet. Die Person setzt stärker auf ${COMP_SHORT[personPrimary]}. Dieser Unterschied wird im Führungsalltag vor allem dort spürbar, wo Entscheidungen getroffen, Prioritäten gesetzt, Standards eingehalten und Zusammenarbeit geführt werden müssen. Je deutlicher diese Abweichung ist, desto bewusster muss die Zusammenarbeit gestaltet werden.`
-      : `Das Team arbeitet mit Schwerpunkt auf ${COMP_SHORT[teamPrimary]}. Die Person setzt stärker auf ${COMP_SHORT[personPrimary]}. Dieser Unterschied wird im Alltag vor allem bei Abstimmungen, Entscheidungen und im Umgang mit Prioritäten spürbar sein. Je deutlicher die Abweichung, desto bewusster muss die Zusammenarbeit gestaltet werden.`);
+      ? `Das Team ist stärker auf ${COMP_SHORT[teamPrimary]} ausgerichtet. Die Person setzt stärker auf ${COMP_SHORT[personPrimary]}. Dieser Unterschied wird im Führungsalltag vor allem dort wirksam, wo Entscheidungen getroffen, Prioritäten gesetzt, Standards eingehalten und Zusammenarbeit geführt werden müssen. Je grösser dieser Unterschied, desto gezielter muss die Zusammenarbeit gestaltet werden.`
+      : `Das Team arbeitet mit Schwerpunkt auf ${COMP_SHORT[teamPrimary]}. Die Person setzt stärker auf ${COMP_SHORT[personPrimary]}. Dieser Unterschied wird im Alltag vor allem bei Abstimmungen, Entscheidungen und im Umgang mit Prioritäten bemerkbar sein. Je grösser die Abweichung, desto gezielter muss die Zusammenarbeit gestaltet werden.`);
   }
 
   if (hasGoal) {
@@ -339,14 +339,14 @@ function buildWirkungAlltagText(c: Ctx): string {
       : `Auch in der Kommunikation sind zunächst keine grösseren Irritationen zu erwarten. Die Person dürfte vom Team eher als passend und verständlich wahrgenommen werden. Gerade in den ersten Wochen ist das ein klarer Vorteil, weil sich weniger Missverständnisse aus der Art der Zusammenarbeit ergeben als bei einer deutlich abweichenden Besetzung.`);
   } else if (passungZumTeam === "mittel") {
     paras.push(isLeader
-      ? `Im Arbeitsalltag wird spürbar werden, dass die Person in manchen Bereichen etwas anders arbeitet als das Team es gewohnt ist. Sie setzt stärker auf ${COMP_SHORT[personPrimary]}, während das Team stärker über ${COMP_SHORT[teamPrimary]} arbeitet. Das muss kein Nachteil sein, braucht aber bewusste Abstimmung, besonders in den ersten Wochen.`
-      : `Im Arbeitsalltag wird spürbar werden, dass die Person in manchen Bereichen etwas anders arbeitet als das Team es gewohnt ist. Sie setzt stärker auf ${COMP_SHORT[personPrimary]}, während das Team stärker über ${COMP_SHORT[teamPrimary]} arbeitet. Das kann das Team sinnvoll ergänzen, braucht aber klare Absprachen.`);
-    paras.push(`In der Kommunikation können Unterschiede spürbar werden. ${personPrimary === "impulsiv" ? "Was die Person als klar und effizient erlebt, kann für das Team etwas zu direkt wirken." : personPrimary === "intuitiv" ? "Die Person setzt stärker auf Austausch und Dialog, was teilweise als bereichernd, aber auch als zusätzlicher Aufwand empfunden werden kann." : "Die Person kommuniziert möglicherweise etwas sachlicher als das Team es gewohnt ist, was anfangs als distanziert wirken kann."} Hier lohnt es sich, den Stil früh abzustimmen.`);
+      ? `Im Arbeitsalltag wird sich zeigen, dass die Person in manchen Bereichen etwas anders arbeitet als das Team es gewohnt ist. Sie setzt stärker auf ${COMP_SHORT[personPrimary]}, während das Team stärker über ${COMP_SHORT[teamPrimary]} arbeitet. Das muss kein Nachteil sein, braucht aber gezielte Abstimmung, besonders in den ersten Wochen.`
+      : `Im Arbeitsalltag wird sich zeigen, dass die Person in manchen Bereichen etwas anders arbeitet als das Team es gewohnt ist. Sie setzt stärker auf ${COMP_SHORT[personPrimary]}, während das Team stärker über ${COMP_SHORT[teamPrimary]} arbeitet. Das kann das Team sinnvoll ergänzen, braucht aber klare Absprachen.`);
+    paras.push(`In der Kommunikation können Unterschiede auftreten. ${personPrimary === "impulsiv" ? "Was die Person als klar und effizient erlebt, kann für das Team etwas zu direkt wirken." : personPrimary === "intuitiv" ? "Die Person setzt stärker auf Austausch und Dialog, was teilweise als bereichernd, aber auch als zusätzlicher Aufwand empfunden werden kann." : "Die Person kommuniziert möglicherweise etwas sachlicher als das Team es gewohnt ist, was anfangs als distanziert wirken kann."} Hier lohnt es sich, den Stil früh abzustimmen.`);
   } else {
     paras.push(isLeader
-      ? `Im Arbeitsalltag wird sich voraussichtlich schnell zeigen, dass die Person andere Schwerpunkte setzt als das Team es bisher kennt. Zusammenarbeit, Führung und Abstimmung werden strukturierter, genauer und verbindlicher erlebt werden. Gerade Entscheidungswege, Prioritätensetzung und der Umgang mit offenen Themen dürften sich dadurch spürbar verändern.`
-      : `Im Arbeitsalltag wird schnell sichtbar werden, dass Person und Team nicht automatisch dieselben Schwerpunkte setzen. Die Person arbeitet ${COMP_ADJ[personPrimary]}, während das Team stärker auf ${COMP_SHORT[teamPrimary]} setzt. Das kann das Team sinnvoll ergänzen, braucht aber von Anfang an bewusste Klärung und aktive Begleitung.`);
-    paras.push(`Auch in der Kommunikation werden Unterschiede deutlich werden. ${personPrimary === "impulsiv" ? "Die Person entscheidet schneller und handelt direkter als das Team es gewohnt ist. Das kann als klärend erlebt werden, aber auch als zu forsch." : personPrimary === "intuitiv" ? "Die Person setzt stärker auf Austausch und gemeinsames Arbeiten. Das Team empfindet das möglicherweise als bereichernd, aber teilweise auch als zu aufwändig." : "Die Person wird voraussichtlich genauer, systematischer und sorgfältiger vorgehen, als das Team es gewohnt ist. Das kann einerseits als verlässlich, klar und hilfreich erlebt werden, andererseits aber auch als zu detailliert, zu streng oder zu langsam."} Besonders in der Anfangsphase braucht es deshalb klare Absprachen darüber, wie geführt, entschieden und kommuniziert wird.`);
+      ? `Im Arbeitsalltag wird sich voraussichtlich schnell zeigen, dass die Person andere Schwerpunkte setzt als das Team es bisher kennt. Zusammenarbeit, Führung und Abstimmung werden strukturierter, genauer und verbindlicher erlebt werden. Gerade Entscheidungswege, Prioritätensetzung und der Umgang mit offenen Themen dürften sich dadurch merklich verändern.`
+      : `Im Arbeitsalltag wird schnell auffallen, dass Person und Team nicht automatisch dieselben Schwerpunkte setzen. Die Person arbeitet ${COMP_ADJ[personPrimary]}, während das Team stärker auf ${COMP_SHORT[teamPrimary]} setzt. Das kann das Team sinnvoll ergänzen, braucht aber von Anfang an klare Absprachen und aktive Begleitung.`);
+    paras.push(`Auch in der Kommunikation werden Unterschiede sichtbar. ${personPrimary === "impulsiv" ? "Die Person entscheidet schneller und handelt direkter als das Team es gewohnt ist. Das kann als klärend erlebt werden, aber auch als zu forsch." : personPrimary === "intuitiv" ? "Die Person setzt stärker auf Austausch und gemeinsames Arbeiten. Das Team empfindet das möglicherweise als bereichernd, aber teilweise auch als zu aufwändig." : "Die Person wird voraussichtlich genauer, systematischer und sorgfältiger vorgehen, als das Team es gewohnt ist. Das kann einerseits als verlässlich, klar und hilfreich erlebt werden, andererseits aber auch als zu detailliert, zu streng oder zu langsam."} Besonders in der Anfangsphase braucht es deshalb klare Absprachen darüber, wie geführt, entschieden und kommuniziert wird.`);
   }
 
   if (beitragZurAufgabe === "gering" && hasGoal) {
@@ -403,7 +403,7 @@ function buildChancenRisiken(c: Ctx): { chancen: V4Block[]; risiken: V4Block[]; 
     risiken.push({ title: "Blinde Flecken bleiben bestehen", text: "Was dem Team bisher fehlt, wird durch eine ähnliche Person nicht automatisch sichtbar oder gelöst." });
     risiken.push({ title: "Erwartungsklärung wird vernachlässigt", text: "Bei guter Passung entsteht schnell der Eindruck, alles laufe von allein. Genau dann werden wichtige Klärungen versäumt." });
   } else if (passungZumTeam === "gering") {
-    risiken.push({ title: "Höheres Integrationsrisiko", text: "Der Unterschied zur bestehenden Teamkultur ist deutlich. Ohne gute Begleitung können daraus schnell Missverständnisse, Unsicherheit und das Gefühl entstehen, nicht richtig zusammenzupassen." });
+    risiken.push({ title: "Höheres Integrationsrisiko", text: "Der Unterschied zur bestehenden Teamkultur ist erheblich. Ohne gute Begleitung können daraus schnell Missverständnisse, Unsicherheit und das Gefühl entstehen, nicht richtig zusammenzupassen." });
     risiken.push({ title: "Sinkendes Vertrauen bei fehlender Klärung", text: "Wenn Irritationen nicht früh angesprochen und eingeordnet werden, kann das gegenseitige Vertrauen leiden. Kleine Spannungen bauen sich dann oft schrittweise auf und wirken später grösser, als sie anfangs waren." });
     risiken.push({ title: "Hoher Führungsaufwand im Einstieg", text: isLeader
       ? "Auch bei klarer fachlicher Passung kann es Zeit brauchen, bis die Führung im Team wirklich ankommt und akzeptiert wird. Gerade die ersten Wochen und Monate verlangen deshalb mehr Präsenz, Erklärung und bewusste Steuerung."
@@ -418,7 +418,7 @@ function buildChancenRisiken(c: Ctx): { chancen: V4Block[]; risiken: V4Block[]; 
   if (passungZumTeam === "hoch" && beitragZurAufgabe === "gering") {
     einordnung = "Die Chancen dieser Besetzung liegen klar auf der Integrationsseite. Die Risiken liegen stärker auf der Leistungs- und Aufgabenebene. Genau deshalb ist die Besetzung nicht grundsätzlich falsch, aber auch nicht einfach nur unkritisch. Sie braucht eine Führung, die den Unterschied zwischen guter Teamwirkung und voller Aufgabenpassung sauber im Blick behält.";
   } else if (passungZumTeam === "hoch") {
-    einordnung = "Die Chancen überwiegen bei dieser Besetzung deutlich. Die Risiken sind gering und betreffen eher die langfristige Entwicklung als den kurzfristigen Einstieg. Trotzdem lohnt es sich, die Klärung von Erwartungen nicht zu vernachlässigen.";
+    einordnung = "Die Chancen überwiegen bei dieser Besetzung klar. Die Risiken sind gering und betreffen eher die langfristige Entwicklung als den kurzfristigen Einstieg. Trotzdem lohnt es sich, die Klärung von Erwartungen nicht zu vernachlässigen.";
   } else if (beitragZurAufgabe === "hoch") {
     einordnung = "Die fachliche Passung ist ein klarer Pluspunkt. Die Risiken liegen nicht in der Kompetenz der Person, sondern in der Teamintegration und im täglichen Miteinander. Genau deshalb ist diese Besetzung strategisch sinnvoll, im Alltag aber anspruchsvoll.";
   } else {
@@ -432,20 +432,20 @@ function buildDruckText(c: Ctx): string {
   const { isLeader, sameDominance, personPrimary, passungZumTeam, beitragZurAufgabe, hasGoal, teamGoalLabel, roleName } = c;
   const paras: string[] = [];
 
-  paras.push("Unter Druck zeigt sich die natürliche Arbeitsweise eines Menschen meist deutlicher als im Normalbetrieb. Was im Alltag noch ausgeglichen oder angepasst wirkt, tritt unter Belastung klarer hervor. Stärken werden sichtbarer, gleichzeitig zeigen sich aber auch Grenzen deutlicher.");
+  paras.push("Unter Druck zeigt sich die natürliche Arbeitsweise eines Menschen klarer als im Normalbetrieb. Was im Alltag noch ausgeglichen oder angepasst wirkt, tritt unter Belastung stärker hervor. Stärken werden sichtbarer, aber auch Grenzen treten offener zutage.");
 
   if (passungZumTeam === "hoch") {
     paras.push(isLeader
-      ? `Im vorliegenden Fall ist davon auszugehen, dass die Zusammenarbeit im Team auch unter Belastung vergleichsweise stabil bleibt. Da Person und Team in ihrer Grundausrichtung ähnlich arbeiten, ist das Risiko akuter Teamreibung nicht besonders hoch. Gerade in intensiven Phasen kann das ein Vorteil sein, weil Abstimmungswege und gegenseitiges Verständnis nicht erst mühsam hergestellt werden müssen.`
-      : `Im vorliegenden Fall ist davon auszugehen, dass die Zusammenarbeit im Team auch unter Belastung vergleichsweise stabil bleibt. Da Person und Team in ihrer Grundausrichtung ähnlich arbeiten, ist das Risiko akuter Teamreibung nicht besonders hoch. Gerade in intensiven Phasen kann das ein Vorteil sein, weil Abstimmungswege und gegenseitiges Verständnis nicht erst mühsam hergestellt werden müssen.`);
+      ? `Hier ist davon auszugehen, dass die Zusammenarbeit auch unter Belastung vergleichsweise stabil bleibt. Da Person und Team ähnlich arbeiten, ist das Risiko akuter Teamreibung gering. Gerade in intensiven Phasen kann das ein Vorteil sein, weil Abstimmungswege und gegenseitiges Verständnis bereits vorhanden sind.`
+      : `Hier ist davon auszugehen, dass die Zusammenarbeit auch unter Belastung vergleichsweise stabil bleibt. Da Person und Team ähnlich arbeiten, ist das Risiko akuter Teamreibung gering. Gerade in intensiven Phasen kann das ein Vorteil sein, weil Abstimmungswege und gegenseitiges Verständnis bereits vorhanden sind.`);
   } else if (passungZumTeam === "mittel") {
-    paras.push(`Unter Druck können die vorhandenen Unterschiede zwischen Person und Team spürbarer werden. ${personPrimary === "impulsiv" ? "Die Person wird voraussichtlich schneller und direkter handeln, was zu Irritationen führen kann." : personPrimary === "intuitiv" ? "Die Person wird voraussichtlich stärker auf Austausch setzen, was als Verzögerung erlebt werden kann." : "Die Person wird voraussichtlich genauer und vorsichtiger vorgehen, was als Bremsen erlebt werden kann."} Frühe Absprachen helfen, das aufzufangen. Im Kern bleibt die Zusammenarbeit aber tragfähig, wenn die Rollen klar sind.`);
+    paras.push(`Unter Druck können die vorhandenen Unterschiede zwischen Person und Team stärker hervortreten. ${personPrimary === "impulsiv" ? "Die Person wird voraussichtlich schneller und direkter handeln, was zu Irritationen führen kann." : personPrimary === "intuitiv" ? "Die Person wird voraussichtlich stärker auf Austausch setzen, was als Verzögerung erlebt werden kann." : "Die Person wird voraussichtlich genauer und vorsichtiger vorgehen, was als Bremsen erlebt werden kann."} Frühe Absprachen helfen, das aufzufangen. Im Kern bleibt die Zusammenarbeit aber tragfähig, wenn die Rollen klar sind.`);
   } else {
-    paras.push(`In dieser Konstellation werden die Unterschiede zwischen Person und Team unter Druck eher grösser als kleiner. ${personPrimary === "impulsiv" ? "Die Person wird voraussichtlich noch schneller und direkter handeln, was das Team als übergehend erleben kann." : personPrimary === "intuitiv" ? "Die Person wird voraussichtlich noch stärker auf Austausch und Abstimmung setzen, was das Team als verzögernd erleben kann." : "Die Person wird unter Belastung voraussichtlich noch genauer, kontrollierter und standardsicherer arbeiten. Das kann aus ihrer Sicht notwendig und sinnvoll sein, kann im Team aber auch als bremsend, zu streng oder wenig flexibel erlebt werden."} Gerade in solchen Situationen entscheidet sich, ob die Zusammenarbeit tragfähig bleibt oder ob sich Spannungen verstärken.`);
+    paras.push(`Bei dieser Besetzung werden die Unterschiede zwischen Person und Team unter Druck eher grösser als kleiner. ${personPrimary === "impulsiv" ? "Die Person wird voraussichtlich noch schneller und direkter handeln, was das Team als übergehend erleben kann." : personPrimary === "intuitiv" ? "Die Person wird voraussichtlich noch stärker auf Austausch und Abstimmung setzen, was das Team als verzögernd erleben kann." : "Die Person wird unter Belastung voraussichtlich noch genauer, kontrollierter und standardsicherer arbeiten. Das kann aus ihrer Sicht notwendig und sinnvoll sein, kann im Team aber auch als bremsend, zu streng oder wenig flexibel erlebt werden."} Gerade in solchen Situationen entscheidet sich, ob die Zusammenarbeit tragfähig bleibt oder ob sich Spannungen verstärken.`);
   }
 
   if (beitragZurAufgabe === "gering") {
-    paras.push(`Die anspruchsvollere Seite liegt erneut im Aufgabenkern. Wenn unter Druck nicht nur Tempo, sondern zugleich ${hasGoal ? `${teamGoalLabel}` : "fachliche Sorgfalt und Qualität"} gefragt ${hasGoal ? "ist" : "sind"}, steigt die Anforderung an Führung deutlich. In solchen Situationen reicht gute Teampassung allein nicht aus. Dann braucht es klare Prioritäten, eindeutige Verantwortlichkeiten und eine bewusste Sicherung von Qualität und Struktur.`);
+    paras.push(`Die anspruchsvollere Seite liegt erneut im Aufgabenkern. Wenn unter Druck nicht nur Tempo, sondern zugleich ${hasGoal ? `${teamGoalLabel}` : "fachliche Sorgfalt und Qualität"} gefragt ${hasGoal ? "ist" : "sind"}, steigt die Anforderung an Führung erheblich. In solchen Situationen reicht gute Teampassung allein nicht aus. Dann braucht es klare Prioritäten, eindeutige Verantwortlichkeiten und eine bewusste Sicherung von Qualität und Struktur.`);
   }
 
   paras.push(`Für die Praxis bedeutet das: Unter Belastung sollte besonders klar definiert sein, was zuerst erledigt werden muss, ${beitragZurAufgabe !== "gering" ? "welche Standards nicht aufgeweicht werden dürfen, wo Tempo wichtig ist und wo Genauigkeit Vorrang hat. " : "wo keine Abkürzungen entstehen dürfen und welche Standards auch unter Zeitdruck gelten. "}${beitragZurAufgabe === "gering"
@@ -521,8 +521,8 @@ function buildRisikoprognose(c: Ctx): V4RiskPhase[] {
   if (passungZumTeam !== "hoch" && beitragZurAufgabe === "hoch") {
     return [
       { label: "Kurzfristig", period: "0 – 3 Monate", text: isLeader
-        ? `Die Person bringt fachlich genau das mit, was die Aufgabe braucht, wird im Team aber voraussichtlich auf spürbare Irritationen stossen. Die Arbeitsweise, stärker auf ${personDesc} ausgerichtet, unterscheidet sich deutlich von der bestehenden Teamkultur. Erste Spannungen entstehen meist dort, wo Abstimmung, Prioritätensetzung und Entscheidungswege neu erlebt werden.`
-        : `Die Person bringt fachlich das Richtige mit, arbeitet aber anders als das Team. Der Unterschied zwischen ${personDesc} und ${teamDesc} wird in den ersten Wochen spürbar. Missverständnisse und Reibung sind wahrscheinlich.` },
+        ? `Die Person bringt fachlich genau das mit, was die Aufgabe braucht, wird im Team aber voraussichtlich auf Irritationen stossen. Die Arbeitsweise, stärker auf ${personDesc} ausgerichtet, unterscheidet sich deutlich von der bestehenden Teamkultur. Erste Spannungen entstehen meist dort, wo Abstimmung, Prioritätensetzung und Entscheidungswege neu erlebt werden.`
+        : `Die Person bringt fachlich das Richtige mit, arbeitet aber anders als das Team. Der Unterschied zwischen ${personDesc} und ${teamDesc} wird in den ersten Wochen bemerkbar. Missverständnisse und Reibung sind wahrscheinlich.` },
       { label: "Mittelfristig", period: "3 – 12 Monate", text: isLeader
         ? `Ohne aktive Begleitung kann die Person fachlich solide arbeiten, im Team aber an Anschluss verlieren. Unterschiedliche Arbeitsweisen verfestigen sich dann zunehmend. Das Team entwickelt eher Umgehungslösungen und informelle Muster, statt echte Zusammenarbeit mit der Führung aufzubauen. Dadurch kommt die fachliche Stärke der Person nicht voll zur Wirkung.`
         : `Ohne aktive Begleitung kann die Person fachlich liefern, aber im Team isoliert werden. Die unterschiedlichen Arbeitsweisen verfestigen sich. Das Team entwickelt Umgehungslösungen statt echter Zusammenarbeit. Die fachliche Stärke kommt nicht voll zum Tragen.` },
@@ -536,7 +536,7 @@ function buildRisikoprognose(c: Ctx): V4RiskPhase[] {
     return [
       { label: "Kurzfristig", period: "0 – 3 Monate", text: isLeader
         ? `Die Person wird als ${roleName} teilweise anders arbeiten als das Team es kennt. Der Unterschied zwischen ${personDesc} und ${teamDesc} wird in Abstimmungen sichtbar. Einzelne Irritationen sind wahrscheinlich, aber gut handhabbar.`
-        : `Im Einstieg wird spürbar, dass Person und Team nicht automatisch gleich arbeiten. Der Unterschied zwischen ${personDesc} und ${teamDesc} zeigt sich in Abstimmungen und Erwartungen. Mit bewusster Klärung bleibt das Risiko beherrschbar.` },
+        : `Im Einstieg wird sich zeigen, dass Person und Team nicht automatisch gleich arbeiten. Der Unterschied zwischen ${personDesc} und ${teamDesc} zeigt sich in Abstimmungen und Erwartungen. Mit klarer Abstimmung bleibt das Risiko beherrschbar.` },
       { label: "Mittelfristig", period: "3 – 12 Monate", text: `Die Unterschiede in der Arbeitsweise werden Teil des Alltags. Wenn sie nicht aktiv besprochen werden, entstehen stille Missverständnisse.${beitragZurAufgabe === "gering" && hasGoal ? ` Im Bereich ${teamGoalLabel} zeigt sich zusätzlich, dass die Person dort nicht die volle Stärke mitbringt.` : ""} Regelmässige Abstimmung ist nötig.` },
       { label: "Langfristig", period: "12+ Monate", text: `Mit gezielter Führung kann die Besetzung dauerhaft funktionieren. Ohne diese Begleitung besteht das Risiko, dass sich Unterschiede verfestigen und die Zusammenarbeit oberflächlich bleibt. Halbjährliche Überprüfung empfohlen.` },
     ];
@@ -589,8 +589,8 @@ function buildIntegrationsplan(c: Ctx): V4IntegrationPhase[] {
         items: [
           isLeader ? "Erste eigene Entscheidungen treffen und transparent kommunizieren." : "Erste Aufgaben eigenständig übernehmen und abschliessen.",
           "Aktiv Rückmeldung zur eigenen Wirkung einholen.",
-          ...(beitragZurAufgabe === "gering" ? ["Im fachlichen Kern der Rolle bewusst auf Qualität und Standards achten."] : []),
-          isLeader ? "Zusammenarbeit mit dem Team bewusst gestalten." : "Zusammenarbeit mit Teamkollegen aktiv aufbauen.",
+          ...(beitragZurAufgabe === "gering" ? ["Im fachlichen Kern der Rolle gezielt auf Qualität und Standards achten."] : []),
+          isLeader ? "Zusammenarbeit mit dem Team aktiv gestalten." : "Zusammenarbeit mit Teamkollegen aktiv aufbauen.",
         ],
         fokus: {
           intro: `Die Integration verläuft voraussichtlich reibungsarm. Jetzt geht es darum:`,
@@ -605,7 +605,7 @@ function buildIntegrationsplan(c: Ctx): V4IntegrationPhase[] {
         num: 3, title: "Verankerung und Standortbestimmung", period: "Tag 21 – 30",
         ziel: `Arbeitsweise als ${roleName} stabilisieren und erste Standortbestimmung durchführen.`,
         items: [
-          "Zusammenfassendes Feedback-Gespräch mit der direkten Führung.",
+          "Zusammenfassendes Feedbackgespräch mit der direkten Führung.",
           isLeader ? "Führungsrhythmus und Entscheidungswege überprüfen." : "Arbeitsrhythmus und Prioritäten überprüfen.",
           "Offene Punkte identifizieren und nächste Schritte vereinbaren.",
           ...(beitragZurAufgabe === "gering" ? ["Bewusste Standortbestimmung im fachlichen Kern der Rolle."] : []),
@@ -700,7 +700,7 @@ function buildEmpfehlungen(c: Ctx): V4Block[] {
       ? "Die gute Teampassung erleichtert den Einstieg. Trotzdem sollten die konkreten Anforderungen der Führungsrolle von Anfang an klar benannt werden, damit aus einem guten Start auch stabile Ergebnisse entstehen."
       : "Die gute Teampassung erleichtert den Einstieg. Trotzdem sollten die konkreten Anforderungen der Rolle von Anfang an klar benannt werden, damit aus einem guten Start auch stabile Ergebnisse entstehen.")
     : (isLeader
-      ? "Die Arbeitsweisen unterscheiden sich deutlich. Deshalb sollte in den ersten Tagen offen besprochen werden, wie Führung, Kommunikation, Entscheidungswege und Zusammenarbeit im Alltag konkret aussehen sollen."
+      ? "Die Arbeitsweisen unterscheiden sich erheblich. Deshalb sollte in den ersten Tagen offen besprochen werden, wie Führung, Kommunikation, Entscheidungswege und Zusammenarbeit im Alltag konkret aussehen sollen."
       : "Die Arbeitsweisen unterscheiden sich. Deshalb sollte in den ersten Tagen offen besprochen werden, wie Kommunikation, Abstimmung und Zusammenarbeit im Alltag aussehen sollen.");
 
   let item2Title: string;
@@ -710,18 +710,18 @@ function buildEmpfehlungen(c: Ctx): V4Block[] {
     item2Text = `Im Aufgabenkern der Rolle braucht es klare Standards. Die Person sollte wissen, woran gute Arbeit im Bereich ${teamGoalLabel} konkret gemessen wird.`;
   } else if (passungZumTeam !== "hoch") {
     item2Title = "Integration ins Team aktiv gestalten";
-    item2Text = "Es sollte bewusst darauf geachtet werden, dass die Person nicht nur Aufgaben übernimmt, sondern auch im Team Anschluss findet. Unterschiede in der Arbeitsweise sollten offen benannt, erklärt und aktiv überbrückt werden.";
+    item2Text = "Es sollte aktiv darauf geachtet werden, dass die Person nicht nur Aufgaben übernimmt, sondern auch im Team Anschluss findet. Unterschiede in der Arbeitsweise sollten offen benannt, erklärt und aktiv überbrückt werden.";
   } else {
-    item2Title = "Zusammenarbeit bewusst gestalten";
+    item2Title = "Zusammenarbeit aktiv gestalten";
     item2Text = isLeader
-      ? "Auch bei guter Passung sollte die Führungswirkung nach den ersten Wochen bewusst überprüft werden. Gute Integration bedeutet nicht automatisch, dass alle Erwartungen erfüllt sind."
-      : "Auch bei guter Passung sollte die Zusammenarbeit nach den ersten Wochen bewusst überprüft werden. Gute Integration bedeutet nicht automatisch, dass alle Erwartungen erfüllt sind.";
+      ? "Auch bei guter Passung sollte die Führungswirkung nach den ersten Wochen gezielt überprüft werden. Gute Integration bedeutet nicht automatisch, dass alle Erwartungen erfüllt sind."
+      : "Auch bei guter Passung sollte die Zusammenarbeit nach den ersten Wochen gezielt überprüft werden. Gute Integration bedeutet nicht automatisch, dass alle Erwartungen erfüllt sind.";
   }
 
   const item3Title = "Standortbestimmung nach 30 Tagen";
   const item3Text = beitragZurAufgabe === "gering"
-    ? "Nach 30 Tagen bewusst bewerten: Läuft die Zusammenarbeit? Und stimmt die Leistung im fachlichen Kern der Rolle? Diese beiden Fragen getrennt beantworten."
-    : "Nach 30 Tagen bewusst bewerten: Funktioniert die Zusammenarbeit wie erwartet? Wo braucht es Nachjustierung? Eine ehrliche Standortbestimmung sichert den langfristigen Erfolg der Besetzung.";
+    ? "Nach 30 Tagen ehrlich bewerten: Läuft die Zusammenarbeit? Und stimmt die Leistung im fachlichen Kern der Rolle? Diese beiden Fragen getrennt beantworten."
+    : "Nach 30 Tagen ehrlich bewerten: Funktioniert die Zusammenarbeit wie erwartet? Wo braucht es Nachjustierung? Eine ehrliche Standortbestimmung sichert den langfristigen Erfolg der Besetzung.";
 
   return [
     { title: item1Title, text: item1Text },
@@ -744,10 +744,10 @@ function buildTeamOhnePerson(c: Ctx): string {
   } else {
     paras.push(`Ohne diese Besetzung bleibt das Team in seiner bisherigen Form bestehen. Die bestehende Arbeitsweise mit Schwerpunkt auf ${COMP_SHORT[teamPrimary]} wird sich voraussichtlich nicht wesentlich verändern. Neue Impulse in Richtung ${COMP_SHORT[personPrimary]} und stärkere ${isLeader ? `${personPrimary === "analytisch" ? "analytische" : personPrimary === "impulsiv" ? "umsetzungsorientierte" : "dialogorientierte"} Führung` : `${personPrimary === "analytisch" ? "analytische" : personPrimary === "impulsiv" ? "umsetzungsorientierte" : "dialogorientierte"} Impulse`} bleiben damit aus.`);
     if (passungZumTeam !== "hoch") {
-      paras.push(`Das hat den Vorteil, dass keine zusätzliche Integrationsarbeit nötig ist. Es entsteht keine Reibung durch eine deutlich andere Arbeitsweise, keine aufwendige Einführung einer neuen Führungswirkung und kein zusätzlicher Steuerungsaufwand in der Anfangsphase. Die Zusammenarbeit bleibt vertraut und eingespielt.`);
+      paras.push(`Das hat den Vorteil, dass keine zusätzliche Integrationsarbeit nötig ist. Es entsteht keine Reibung durch eine merklich andere Arbeitsweise, keine aufwendige Einführung einer neuen Führungswirkung und kein zusätzlicher Steuerungsaufwand in der Anfangsphase. Die Zusammenarbeit bleibt vertraut und eingespielt.`);
     }
     if (beitragZurAufgabe === "hoch" && hasGoal) {
-      paras.push(`Gleichzeitig verzichtet das Team damit auf eine Person, die im Bereich ${teamGoalLabel} genau die Stärke mitgebracht hätte, die für Aufgabe und Bereich fachlich wertvoll wäre. Ob diese Lücke anderweitig geschlossen werden kann oder ob sie bestehen bleibt, sollte bewusst geprüft werden.`);
+      paras.push(`Gleichzeitig verzichtet das Team damit auf eine Person, die im Bereich ${teamGoalLabel} genau die Stärke mitgebracht hätte, die für Aufgabe und Bereich fachlich wertvoll wäre. Ob diese Lücke anderweitig geschlossen werden kann oder ob sie bestehen bleibt, sollte gezielt geprüft werden.`);
     } else if (beitragZurAufgabe === "gering" && hasGoal) {
       paras.push(`Im Bereich ${teamGoalLabel} ändert sich ebenfalls nichts. Allerdings war die fachliche Passung der Person in diesem Bereich ohnehin nicht stark, sodass der Verzicht hier weniger ins Gewicht fällt.`);
     }
