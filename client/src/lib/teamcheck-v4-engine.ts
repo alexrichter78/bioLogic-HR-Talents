@@ -63,6 +63,8 @@ export interface TeamCheckV4Result {
   teamPrimary: ComponentKey;
   personPrimary: ComponentKey;
   sameDominance: boolean;
+  teamTriad: Triad;
+  personTriad: Triad;
   v3: TeamCheckV3Result;
 }
 
@@ -176,6 +178,8 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
     teamPrimary,
     personPrimary,
     sameDominance,
+    teamTriad: { ...input.teamProfile },
+    personTriad: { ...input.personProfile },
     v3,
   };
 }

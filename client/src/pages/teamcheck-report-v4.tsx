@@ -5,6 +5,7 @@ import { computeTeamCheckV4, type TeamCheckV4Result, type V4Block } from "@/lib/
 import type { TeamCheckV3Input } from "@/lib/teamcheck-v3-engine";
 import { ArrowLeft, Printer } from "lucide-react";
 import { BIO_COLORS, COMP_HEX } from "@/lib/bio-design";
+import type { ComponentKey } from "@/lib/bio-types";
 import logoPath from "@assets/LOGO_bio_1773853681939.png";
 
 const bewColor = (b: string) => {
@@ -188,21 +189,94 @@ export default function TeamCheckReportV4() {
 
             <div style={{ padding: "0 32px 48px" }}>
 
-              {/* === Section 2: Warum dieses Ergebnis entsteht === */}
+              {/* === Section 2: Vergleich der Profile === */}
+              {(() => {
+                const COMP_LABEL_FULL: Record<string, string> = { impulsiv: "Impulsiv", intuitiv: "Intuitiv", analytisch: "Analytisch" };
+                const COMP_LABEL_AREA: Record<string, string> = { impulsiv: "Umsetzung / Tempo", intuitiv: "Zusammenarbeit / Kommunikation", analytisch: "Struktur / Analyse" };
+                const keys: ComponentKey[] = ["impulsiv", "intuitiv", "analytisch"];
+                let maxGap = 0, maxKey: ComponentKey = "analytisch";
+                for (const k of keys) {
+                  const g = Math.abs(result.teamTriad[k] - result.personTriad[k]);
+                  if (g > maxGap) { maxGap = g; maxKey = k; }
+                }
+                const gapText = `Die größte Abweichung zwischen Team und Person liegt im Bereich ${COMP_LABEL_AREA[maxKey]}. Hier unterscheiden sich die Arbeitsweisen am stärksten.`;
+                const renderBar = (k: ComponentKey, val: number) => {
+                  const hex = COMP_HEX[k];
+                  const widthPct = (val / 67) * 100;
+                  const isSmall = widthPct < 18;
+                  return (
+                    <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>{COMP_LABEL_FULL[k]}</span>
+                      <div style={{ flex: 1, position: "relative", height: 28 }}>
+                        <div style={{ position: "absolute", inset: 0, borderRadius: 14, background: "rgba(0,0,0,0.05)" }} />
+                        <div className="bio-bar-animate" style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 14, background: `linear-gradient(90deg, ${hex}, ${hex}CC)`, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50, boxShadow: `0 2px 8px ${hex}30`, transition: "width 800ms cubic-bezier(0.34, 1.56, 0.64, 1)" }}>
+                          {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>}
+                        </div>
+                        {isSmall && (
+                          <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap" }}>{val} %</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                };
+                return (
+                  <div style={sectionStyle} data-testid="v4-section-vergleich">
+                    <SectionHead num={2} title="Vergleich der Profile" id="vergleich" />
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{gapText}</p>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 14 }}>
+                      <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
+                        <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>Team-Profil</p>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                          {keys.map(k => renderBar(k, Math.round(result.teamTriad[k])))}
+                        </div>
+                      </div>
+                      <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
+                        <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>Personen-Profil</p>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                          {keys.map(k => renderBar(k, Math.round(result.personTriad[k])))}
+                        </div>
+                      </div>
+                    </div>
+                    <div data-pdf-block style={{ marginTop: 20, padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)" }}>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>Bedeutung der Komponenten</p>
+                      <div style={{ display: "flex", gap: 12 }}>
+                        {([
+                          { key: "impulsiv" as ComponentKey, label: "Impulsiv", color: COMP_HEX.impulsiv, text: "Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung.", warning: "Fehlt dieser Anteil, werden Entscheidungen verzögert und Chancen nicht genutzt." },
+                          { key: "analytisch" as ComponentKey, label: "Analytisch", color: COMP_HEX.analytisch, text: "Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe.", warning: "Fehlt dieser Anteil, entstehen Fehler in Planung, Kalkulation und Dokumentation." },
+                          { key: "intuitiv" as ComponentKey, label: "Intuitiv", color: COMP_HEX.intuitiv, text: "Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team.", warning: "Fehlt dieser Anteil, leidet die Zusammenarbeit und Vertrauen sinkt." },
+                        ]).map(kb => (
+                          <div key={kb.key} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                            <div style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: `linear-gradient(135deg, ${kb.color}12, ${kb.color}06)`, border: `1px solid ${kb.color}20`, display: "flex", flexDirection: "column" }}>
+                              <div style={{ flex: 1 }}>
+                                <span style={{ fontSize: 12, fontWeight: 700, color: kb.color, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8, display: "block" }}>{kb.label}</span>
+                                <p style={{ fontSize: 12.5, lineHeight: 1.65, margin: 0, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{kb.text}</p>
+                              </div>
+                              <div style={{ width: "100%", height: 2, background: kb.color, margin: "10px 0", borderRadius: 1, flexShrink: 0 }} />
+                              <p style={{ fontSize: 12, lineHeight: 1.6, margin: 0, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{kb.warning}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* === Section 3: Warum dieses Ergebnis entsteht === */}
               <div style={sectionStyle} data-testid="v4-section-warum">
-                <SectionHead num={2} title="Warum dieses Ergebnis entsteht" id="warum" />
+                <SectionHead num={3} title="Warum dieses Ergebnis entsteht" id="warum" />
                 <TextBlock text={result.warumText} />
               </div>
 
-              {/* === Section 3: Wirkung im Arbeitsalltag === */}
+              {/* === Section 4: Wirkung im Arbeitsalltag === */}
               <div style={sectionStyle} data-testid="v4-section-wirkung">
-                <SectionHead num={3} title="Wirkung im Arbeitsalltag" id="wirkung" />
+                <SectionHead num={4} title="Wirkung im Arbeitsalltag" id="wirkung" />
                 <TextBlock text={result.wirkungAlltagText} />
               </div>
 
-              {/* === Section 4: Chancen und Risiken === */}
+              {/* === Section 5: Chancen und Risiken === */}
               <div style={sectionStyle} data-testid="v4-section-chancen-risiken">
-                <SectionHead num={4} title="Chancen und Risiken dieser Besetzung" id="chancen-risiken" />
+                <SectionHead num={5} title="Chancen und Risiken dieser Besetzung" id="chancen-risiken" />
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
                   <div style={{ padding: "20px", borderRadius: 12, background: "rgba(52,199,89,0.04)", border: "1px solid rgba(52,199,89,0.15)" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
@@ -236,14 +310,14 @@ export default function TeamCheckReportV4() {
 
               {/* === Section 5: Verhalten unter Druck === */}
               <div style={sectionStyle} data-testid="v4-section-druck">
-                <SectionHead num={5} title="Verhalten unter Druck" id="druck" />
+                <SectionHead num={6} title="Verhalten unter Druck" id="druck" />
                 <TextBlock text={result.druckText} />
               </div>
 
               {/* === Section 6 (only Führungskraft): Führungshinweis === */}
               {result.fuehrungshinweis && (
                 <div style={sectionStyle} data-testid="v4-section-fuehrung">
-                  <SectionHead num={6} title="Was als Führungskraft für dieses Team wichtig ist" id="fuehrung" />
+                  <SectionHead num={7} title="Was als Führungskraft für dieses Team wichtig ist" id="fuehrung" />
                   <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 14 }}>
                     {result.fuehrungshinweis.map((item, i) => (
                       <div key={item.title} style={{ padding: "18px 20px", borderRadius: 12, background: "#FFF", borderLeft: "3px solid #343A48", border: "1px solid rgba(0,0,0,0.06)", borderLeftWidth: 3, borderLeftColor: "#343A48", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} data-testid={`v4-fuehrung-${i}`}>
@@ -260,7 +334,7 @@ export default function TeamCheckReportV4() {
 
               {/* === 30-Tage-Integrationsplan === */}
               {(() => {
-                const planNum = result.fuehrungshinweis ? 7 : 6;
+                const planNum = result.fuehrungshinweis ? 8 : 7;
                 return (
                   <div style={sectionStyle} data-testid="v4-section-integrationsplan">
                     <SectionHead num={planNum} title="30-Tage-Integrationsplan" id="integrationsplan" />
@@ -311,7 +385,7 @@ export default function TeamCheckReportV4() {
 
               {/* === Risikoprognose === */}
               {(() => {
-                const riskNum = result.fuehrungshinweis ? 8 : 7;
+                const riskNum = result.fuehrungshinweis ? 9 : 8;
                 return (
                   <div style={sectionStyle} data-testid="v4-section-risikoprognose">
                     <SectionHead num={riskNum} title="Risikoprognose" id="risikoprognose" />
@@ -338,7 +412,7 @@ export default function TeamCheckReportV4() {
 
               {/* === Was passiert, wenn das Team so bleibt === */}
               {(() => {
-                const ohneNum = result.fuehrungshinweis ? 9 : 8;
+                const ohneNum = result.fuehrungshinweis ? 10 : 9;
                 return (
                   <div style={sectionStyle} data-testid="v4-section-team-ohne-person">
                     <SectionHead num={ohneNum} title="Was passiert, wenn das Team so bleibt" id="team-ohne-person" />
@@ -351,7 +425,7 @@ export default function TeamCheckReportV4() {
 
               {/* === Was jetzt wichtig ist === */}
               {(() => {
-                const empNum = result.fuehrungshinweis ? 10 : 9;
+                const empNum = result.fuehrungshinweis ? 11 : 10;
                 return (
                   <div style={sectionStyle} data-testid="v4-section-empfehlungen">
                     <SectionHead num={empNum} title="Was jetzt wichtig ist" id="empfehlungen" />
@@ -374,7 +448,7 @@ export default function TeamCheckReportV4() {
 
               {/* === Schlussfazit === */}
               {(() => {
-                const fazitNum = result.fuehrungshinweis ? 11 : 10;
+                const fazitNum = result.fuehrungshinweis ? 12 : 11;
                 return (
                   <div style={{ marginBottom: 36 }} data-testid="v4-section-schlussfazit">
                     <SectionHead num={fazitNum} title="Fazit" id="schlussfazit" />
