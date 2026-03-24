@@ -4,7 +4,7 @@ import GlobalNav from "@/components/global-nav";
 import { computeTeamCheckV4, type TeamCheckV4Result, type V4Block } from "@/lib/teamcheck-v4-engine";
 import type { TeamCheckV3Input } from "@/lib/teamcheck-v3-engine";
 import { ArrowLeft, Printer } from "lucide-react";
-import { BIO_COLORS } from "@/lib/bio-design";
+import { BIO_COLORS, COMP_HEX } from "@/lib/bio-design";
 import logoPath from "@assets/LOGO_bio_1773853681939.png";
 
 const bewColor = (b: string) => {
@@ -119,6 +119,38 @@ export default function TeamCheckReportV4() {
 
               <div style={{ margin: "0 0 24px" }} data-testid="v4-hero-bewertung">
                 <TextBlock text={result.gesamtbewertungText} />
+
+                {(() => {
+                  const COMP_LABEL: Record<string, string> = {
+                    impulsiv: "Umsetzung / Tempo",
+                    intuitiv: "Zusammenarbeit / Kommunikation",
+                    analytisch: "Struktur / Analyse",
+                  };
+                  const matchSymbol = result.sameDominance ? "=" : "⚡";
+                  const matchColor = result.sameDominance ? "#34C759" : "#D64045";
+                  return (
+                    <div style={{ marginTop: 20, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="v4-kurzuebersicht-dominanz">
+                      <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 16px", textAlign: "center" }}>Kurzübersicht</p>
+                      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: 16 }}>
+                        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                          <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 10px" }}>Team</p>
+                          <div style={{ padding: "10px 20px", borderRadius: 20, background: `${COMP_HEX[result.teamPrimary]}14`, border: `1px solid ${COMP_HEX[result.teamPrimary]}30` }}>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: COMP_HEX[result.teamPrimary] }}>{COMP_LABEL[result.teamPrimary]}</span>
+                          </div>
+                        </div>
+                        <div style={{ flexShrink: 0, marginTop: 18, width: 36, height: 36, borderRadius: "50%", background: `${matchColor}14`, border: `2px solid ${matchColor}40`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <span style={{ fontSize: 18, fontWeight: 700, color: matchColor, lineHeight: 1 }}>{matchSymbol}</span>
+                        </div>
+                        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                          <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 10px" }}>Person</p>
+                          <div style={{ padding: "10px 20px", borderRadius: 20, background: `${COMP_HEX[result.personPrimary]}14`, border: `1px solid ${COMP_HEX[result.personPrimary]}30` }}>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: COMP_HEX[result.personPrimary] }}>{COMP_LABEL[result.personPrimary]}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 <div style={{ fontSize: 28, fontWeight: 800, color: bCol, margin: "20px 0 0", letterSpacing: "-0.02em" }} data-testid="v4-gesamt-label">{result.gesamteinschaetzung}</div>
 

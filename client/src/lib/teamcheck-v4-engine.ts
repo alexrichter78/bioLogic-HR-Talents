@@ -60,6 +60,9 @@ export interface TeamCheckV4Result {
   schlussfazit: string;
 
   teamKontext: string;
+  teamPrimary: ComponentKey;
+  personPrimary: ComponentKey;
+  sameDominance: boolean;
   v3: TeamCheckV3Result;
 }
 
@@ -170,6 +173,9 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
     teamKontext: sameDominance
       ? `Team und Person setzen beide auf ${COMP_SHORT[teamPrimary]}. Ihre Arbeitsweisen liegen nah beieinander.`
       : `Das Team arbeitet mit Schwerpunkt auf ${COMP_SHORT[teamPrimary]}. Die Person setzt stärker auf ${COMP_SHORT[personPrimary]}.`,
+    teamPrimary,
+    personPrimary,
+    sameDominance,
     v3,
   };
 }
