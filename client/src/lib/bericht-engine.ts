@@ -113,7 +113,7 @@ function kompAdj(k: string): string {
 function intensityAdj(intensity: Intensity): string {
   switch (intensity) {
     case "strong": return "klar dominiert";
-    case "clear": return "deutlich geprägt";
+    case "clear": return "deutlich ausgerichtet";
     case "light": return "erkennbar ausgerichtet";
     case "balanced": return "vielseitig angelegt";
   }
@@ -196,12 +196,12 @@ function buildDominanteKomponente(profileType: ProfileType, dom: ReturnType<type
 }
 
 function buildEinleitung(beruf: string, bereich: string, dom: ReturnType<typeof dominant>, sec: ReturnType<typeof secondary>, intensity: Intensity, isLeadership: boolean, aufgabencharakter: string): string {
-  const p1 = `Die Wirksamkeit ${isLeadership ? "einer Führungskraft" : "einer Fachkraft"} in der Rolle ${beruf}${bereich ? ` (${bereich})` : ""} entscheidet sich nicht allein über fachliches Wissen oder Berufserfahrung. Entscheidend ist, ob die strukturelle Arbeitslogik der Person zur Rollenanforderung passt.`;
+  const p1 = `Die Wirkung ${isLeadership ? "einer Führungskraft" : "einer Fachkraft"} in der Rolle ${beruf}${bereich ? ` (${bereich})` : ""} entscheidet sich nicht allein über fachliches Wissen oder Berufserfahrung. Entscheidend ist, ob die Arbeitsweise der Person zur Rollenanforderung passt.`;
 
   const aufgChar = aufgabencharakter ? ` Der Aufgabencharakter ist ${aufgabencharakter.toLowerCase()}.` : "";
-  const p2 = `Diese Rolle ist ${intensityAdj(intensity)} durch ${kompLabel(dom.key)} und verlangt eine Persönlichkeit, die ${kompShort(dom.key)} als natürliche Stärke mitbringt.${aufgChar} Ergänzend wird ${kompLabel(sec.key)} benötigt, um die Rolle vollständig auszufüllen.`;
+  const p2 = `Diese Rolle ist ${intensityAdj(intensity)} auf ${kompLabel(dom.key)} und verlangt eine Persönlichkeit, die ${kompShort(dom.key)} als natürliche Stärke mitbringt.${aufgChar} Ergänzend wird ${kompLabel(sec.key)} benötigt, um die Rolle vollständig auszufüllen.`;
 
-  const p3 = `Passt die strukturelle Arbeitslogik nicht zur Rolle, zeigt sich das im Alltag durch steigenden Abstimmungsbedarf, Konflikte im Team und wachsenden Führungsaufwand. Eine Fehlbesetzung wird damit nicht nur zum personellen, sondern zum wirtschaftlichen Risiko.`;
+  const p3 = `Passt die Arbeitsweise nicht zur Rolle, zeigt sich das im Alltag durch steigenden Abstimmungsbedarf, Konflikte im Team und wachsenden Führungsaufwand. Eine Fehlbesetzung wird damit nicht nur zum personellen, sondern zum wirtschaftlichen Risiko.`;
 
   const p4 = `Dieser Bericht beschreibt die strukturellen Anforderungen der Rolle, unabhängig von Lebenslauf, Branchenerfahrung oder bisherigen Leistungskennzahlen.`;
 
@@ -215,8 +215,8 @@ function buildGesamtprofil(gesamt: BG, dom: ReturnType<typeof dominant>, sec: Re
   } else if (profileType.startsWith("hybrid_")) {
     p1 = `Das Gesamtprofil zeigt eine Doppelstruktur: ${dom.label} und ${sec.label} bilden ein gleichwertiges Tandem. Beide Kompetenzen sind nahezu gleichauf und prägen die Rollenanforderung gemeinsam. ${wk.label} ist erkennbar nachrangig und spielt eine ergänzende Rolle.`;
   } else {
-    const adj = intensity === "strong" ? "klar dominiert" : intensity === "clear" ? "deutlich geprägt" : "erkennbar ausgerichtet";
-    p1 = `Das Gesamtprofil der Rolle ist ${adj} durch ${kompLabel(dom.key)}. Mit einem Anteil von ${dom.value} Prozent bildet die ${dom.label.toLowerCase()}e Komponente den strukturellen Kern der Rollenanforderung.`;
+    const adj = intensityAdj(intensity);
+    p1 = `Das Gesamtprofil der Rolle ist ${adj} auf ${kompLabel(dom.key)}. Mit einem Anteil von ${dom.value} Prozent bildet die ${dom.label.toLowerCase()}e Komponente den Kern der Rollenanforderung.`;
   }
 
   let p2: string;
@@ -227,8 +227,8 @@ function buildGesamtprofil(gesamt: BG, dom: ReturnType<typeof dominant>, sec: Re
   }
 
   const p3 = profileType === "balanced_all"
-    ? `Wirksamkeit entsteht über die Fähigkeit, situativ zwischen allen drei Arbeitslogiken zu wechseln und je nach Anforderung das passende Vorgehen zu wählen.`
-    : `Wirksamkeit entsteht primär über ${kompShort(dom.key)}, ergänzt durch ${kompShort(sec.key)} als stabilisierende Komponente.`;
+    ? `Leistungsfähigkeit entsteht über die Fähigkeit, situativ zwischen allen drei Arbeitsweisen zu wechseln und je nach Anforderung das passende Vorgehen zu wählen.`
+    : `Leistungsfähigkeit entsteht in erster Linie über ${kompShort(dom.key)}, ergänzt durch ${kompShort(sec.key)} als ausgleichende Komponente.`;
 
   return `${p1}\n\n${p2}\n\n${p3}`;
 }
@@ -238,7 +238,7 @@ function buildRahmenbedingungen(beruf: string, rahmen: BG, rahmenDom: ReturnType
   const logikText = arbeitslogik ? ` Die Arbeitslogik ist ${arbeitslogik.toLowerCase()}.` : "";
   const fuehrText = isLeadership ? ` Die Rolle umfasst ${fuehrungstyp.toLowerCase()}.` : " Die Rolle hat keine direkte Führungsverantwortung.";
 
-  const beschreibung = `Die Rahmenbedingungen der Rolle ${beruf} stehen im Zeichen von ${kompLabel(rahmenDom.key)}. ${aufgText}${logikText}${fuehrText}\n\nDie strukturellen Anforderungen verlangen eine klare Ausrichtung auf ${kompShort(rahmenDom.key)} im täglichen Arbeitsumfeld. Entscheidungswege, Prioritäten und Qualitätsmaßstäbe werden durch diese Rahmenbedingungen definiert.`;
+  const beschreibung = `Die Rahmenbedingungen der Rolle ${beruf} stehen im Zeichen von ${kompLabel(rahmenDom.key)}. ${aufgText}${logikText}${fuehrText}\n\nDie Anforderungen verlangen eine klare Ausrichtung auf ${kompShort(rahmenDom.key)} im täglichen Arbeitsumfeld. Entscheidungswege, Prioritäten und Qualitätsmaßstäbe werden durch diese Rahmenbedingungen definiert.`;
 
   const verantwortungsfelder = [
     `Steuerung und Priorisierung der operativen ${kompAdj(rahmenDom.key)}en Aufgaben`,
@@ -285,11 +285,11 @@ function buildFuehrungskontext(beruf: string, fuehrung: BG, fuehrungstyp: string
   if (isLeadership) {
     const fDom = dominant(fuehrung);
     const fSec = secondary(fuehrung);
-    const beschreibung = `Die Rolle ${beruf} umfasst ${fuehrungstyp}. Die Führungskompetenz zeigt sich vor allem in ${kompLabel(fDom.key)}. Die Führungswirkung entsteht primär über ${kompShort(fDom.key)}, ergänzt durch ${kompShort(fSec.key)}.\n\nDas bedeutet: ${fDom.key === "imp"
-      ? "Die Führungskraft steuert über klare Vorgaben, schnelle Entscheidungen und verbindliche Ergebnisorientierung. Das Team erlebt eine direktive, tempoorientierte Führung."
+    const beschreibung = `Die Rolle ${beruf} umfasst ${fuehrungstyp}. Die Führungskompetenz zeigt sich vor allem in ${kompLabel(fDom.key)}. Die Führungswirkung entsteht vorrangig über ${kompShort(fDom.key)}, ergänzt durch ${kompShort(fSec.key)}.\n\nDas bedeutet: ${fDom.key === "imp"
+      ? "Die Führungskraft setzt auf klare Vorgaben, schnelle Entscheidungen und verbindliche Ergebnisorientierung. Das Team erlebt eine direktive, tempoorientierte Führung."
       : fDom.key === "int"
-        ? "Die Führungskraft steuert über Beziehungsgestaltung, Vertrauen und Konsensbildung. Das Team erlebt eine partizipative, empathische Führung."
-        : "Die Führungskraft steuert über Strukturen, Prozesse und fachliche Expertise. Das Team erlebt eine methodische, standardorientierte Führung."
+        ? "Die Führungskraft wirkt über Beziehungsgestaltung, Vertrauen und Konsensbildung. Das Team erlebt eine partizipative, empathische Führung."
+        : "Die Führungskraft arbeitet über Strukturen, Prozesse und fachliche Expertise. Das Team erlebt eine methodische, standardorientierte Führung."
     }`;
 
     const wirkungshebel = fDom.key === "imp"
@@ -304,11 +304,11 @@ function buildFuehrungskontext(beruf: string, fuehrung: BG, fuehrungstyp: string
       `Strukturierte Feedbackprozesse mit dem Team`,
     ];
 
-    const schlusssatz = `Ohne diese Führungsstruktur fehlt dem Team die ${kompShort(fDom.key)} als Orientierung. Die Folge: Unsicherheit, fehlende Priorisierung und sinkende Ergebnisqualität.`;
+    const schlusssatz = `Fehlt diese Führungsstruktur, verliert das Team die ${kompShort(fDom.key)} als Orientierung. Die Folge: Unsicherheit, fehlende Priorisierung und sinkende Ergebnisqualität.`;
 
     return { beschreibung, wirkungshebel, analytische_anforderungen, schlusssatz };
   } else {
-    const beschreibung = `Die Rolle ${beruf} hat keine direkte Führungsverantwortung. Einfluss und Wirkung entstehen nicht über hierarchische Steuerung, sondern über fachliche Kompetenz, Zuverlässigkeit und die Qualität der Zusammenarbeit.\n\nDie Rolle wirkt über ${kompShort(dom.key)} als primären Wirkungshebel. Ohne Führungsbefugnis konzentriert sich die Rolleninhaberin bzw. der Rolleninhaber auf direkte Leistung und indirekte Einflussnahme.`;
+    const beschreibung = `Die Rolle ${beruf} hat keine direkte Führungsverantwortung. Einfluss und Wirkung entstehen nicht über hierarchische Steuerung, sondern über fachliche Kompetenz, Zuverlässigkeit und die Qualität der Zusammenarbeit.\n\nDer zentrale Wirkungshebel der Rolle ist ${kompShort(dom.key)}. Die Rolleninhaberin bzw. der Rolleninhaber konzentriert sich auf direkte Leistung und indirekte Einflussnahme.`;
 
     const wirkungshebel = [
       "Fachliche Überzeugungskraft und Expertise",
@@ -316,7 +316,7 @@ function buildFuehrungskontext(beruf: string, fuehrung: BG, fuehrungstyp: string
       "Konstruktive Zusammenarbeit mit Schnittstellen",
     ];
 
-    const schlusssatz = `Ohne Führungshebel konzentriert sich die Wirksamkeit der Rolle auf direkte Leistung, Expertise und die Fähigkeit, über fachliche Qualität Einfluss zu nehmen.`;
+    const schlusssatz = `Die Wirkung der Rolle konzentriert sich auf direkte Leistung, Expertise und die Fähigkeit, über fachliche Qualität Einfluss zu nehmen.`;
 
     return { beschreibung, wirkungshebel, schlusssatz };
   }
@@ -340,7 +340,7 @@ function buildKompetenzanalyse(beruf: string, haupt: BG, neben: BG, hauptDom: Re
 
   const taetigkeiten_schluss = hochHaupt.length >= 3
     ? `Die Kombination mehrerer hochpriorisierter Tätigkeiten macht das Anforderungsprofil besonders anspruchsvoll. Fehlende Passung in einem dieser Bereiche wirkt sich unmittelbar auf die Rollenleistung aus.`
-    : `Die Tätigkeitsstruktur erfordert eine Persönlichkeit mit ${kompShort(hauptDom.key)} als primärer Stärke.`;
+    : `Die Tätigkeitsstruktur erfordert eine Persönlichkeit mit ${kompShort(hauptDom.key)} als zentraler Stärke.`;
 
   let human_text: string;
   if (hochNeben.length > 0) {
@@ -354,7 +354,7 @@ function buildKompetenzanalyse(beruf: string, haupt: BG, neben: BG, hauptDom: Re
     `${t.name} (${t.kompetenz}${t.niveau === "Hoch" ? ", hohe Priorität" : ""})`
   );
 
-  const human_schluss = `Die Humankompetenzen sind kein Zusatz, sondern struktureller Bestandteil der Rollenwirksamkeit. Ohne ${kompShort(nebenDom.key)} als Basis fehlt der Rolle die notwendige soziale Verankerung.`;
+  const human_schluss = `Die Humankompetenzen sind kein Zusatz, sondern fester Bestandteil der Rollenwirkung. Fehlt ${kompShort(nebenDom.key)} als Basis, verliert die Rolle ihre soziale Verankerung.`;
 
   return { taetigkeiten_text, taetigkeiten_anforderungen, taetigkeiten_schluss, human_text, human_anforderungen, human_schluss };
 }
@@ -447,16 +447,16 @@ function buildFazit(beruf: string, dom: ReturnType<typeof dominant>, sec: Return
   }
 
   const persoenlichkeit = [
-    `${kompShort(dom.key)} als primäre Arbeitslogik lebt und authentisch verkörpert`,
+    `${kompShort(dom.key)} als zentrale Arbeitsweise lebt und authentisch verkörpert`,
     `${kompShort(sec.key)} als ergänzende Kompetenz bewusst einsetzt`,
     ...(hoch.length > 0 ? [`die kritischen Anforderungen (${hoch.slice(0, 3).map((t: any) => t.name).join(", ")}) auf hohem Niveau erfüllt`] : []),
     isLeadership ? `Führungswirkung über ${kompShort(dom.key)} entfaltet und dabei das Team mitnimmt` : `eigenverantwortlich arbeitet und über fachliche Qualität Einfluss nimmt`,
     `bewusst mit dem eigenen Entwicklungsfeld ${kompShort(wk.key)} umgeht`,
   ];
 
-  const fehlbesetzung = `Eine Fehlbesetzung zeigt sich nicht sofort, sondern schleichend: Zunächst kompensiert die Person über Erfahrung und Anpassung. Nach wenigen Monaten werden strukturelle Passungsprobleme sichtbar, wenn die natürliche Arbeitslogik nicht zur Rollenanforderung passt. Die Folge sind steigende Steuerungskosten, sinkende Ergebnisqualität und wachsende Unzufriedenheit auf beiden Seiten.`;
+  const fehlbesetzung = `Eine Fehlbesetzung zeigt sich nicht sofort, sondern schleichend: Zunächst kompensiert die Person über Erfahrung und Anpassung. Nach wenigen Monaten werden Passungsprobleme sichtbar, wenn die natürliche Arbeitsweise nicht zur Rollenanforderung passt. Die Folge sind steigende Steuerungskosten, sinkende Ergebnisqualität und wachsende Unzufriedenheit auf beiden Seiten.`;
 
-  const schlusssatz = `Eine strukturell passende Besetzung der Rolle ${beruf} sichert nachhaltige Wirksamkeit, reduziert Führungsaufwand und schafft die Grundlage für stabile Leistung. Die bioLogic Strukturanalyse liefert die Entscheidungsgrundlage, um genau diese Passung zu erkennen.`;
+  const schlusssatz = `Eine passende Besetzung der Rolle ${beruf} sichert nachhaltige Leistungsfähigkeit, reduziert Führungsaufwand und schafft die Grundlage für stabile Ergebnisse. Die bioLogic Strukturanalyse liefert die Entscheidungsgrundlage, um genau diese Passung zu erkennen.`;
 
   return { kernsatz, persoenlichkeit, fehlbesetzung, schlusssatz };
 }
