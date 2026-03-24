@@ -541,6 +541,11 @@ input[type="range"].bio-slider::-moz-range-track {
 }
 
 @media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
   .v4-report-page {
     background: #FFF !important;
   }
