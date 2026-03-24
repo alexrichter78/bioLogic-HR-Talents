@@ -54,6 +54,17 @@ function TextBlock({ text }: { text: string }) {
 const bodyText: React.CSSProperties = { fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: "0 0 12px", textAlign: "justify", textAlignLast: "left", hyphens: "auto", WebkitHyphens: "auto" } as any;
 const sectionStyle = { paddingBottom: 40, marginBottom: 40, borderBottom: "1px solid rgba(0,0,0,0.05)" } as const;
 
+function QuoteDivider({ text, author }: { text: string; author: string }) {
+  return (
+    <div data-pdf-block style={{ padding: "28px 32px", margin: "8px 0 32px", textAlign: "center", borderTop: "1px solid rgba(0,0,0,0.04)", borderBottom: "1px solid rgba(0,0,0,0.04)", background: "rgba(0,0,0,0.015)" }}>
+      <p style={{ fontSize: 14.5, fontStyle: "italic", color: "#6E6E73", lineHeight: 1.75, margin: "0 0 6px", maxWidth: 540, marginLeft: "auto", marginRight: "auto" }}>
+        &bdquo;{text}&ldquo;
+      </p>
+      <p style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", margin: 0, letterSpacing: "0.03em" }}>— {author}</p>
+    </div>
+  );
+}
+
 export default function TeamCheckReportV4() {
   const [, navigate] = useLocation();
   const [result, setResult] = useState<TeamCheckV4Result | null>(null);
@@ -467,6 +478,8 @@ export default function TeamCheckReportV4() {
                 );
               })()}
 
+              <QuoteDivider text="Nicht weil es schwer ist, wagen wir es nicht – sondern weil wir es nicht wagen, ist es schwer." author="Seneca" />
+
               {/* === Section 3: Warum dieses Ergebnis entsteht === */}
               <div data-pdf-block style={sectionStyle} data-testid="v4-section-warum">
                 <SectionHead num={3} title="Warum dieses Ergebnis entsteht" id="warum" />
@@ -478,6 +491,8 @@ export default function TeamCheckReportV4() {
                 <SectionHead num={4} title="Wirkung im Arbeitsalltag" id="wirkung" />
                 <TextBlock text={result.wirkungAlltagText} />
               </div>
+
+              <QuoteDivider text="Zusammenkommen ist ein Beginn, Zusammenbleiben ein Fortschritt, Zusammenarbeiten ein Erfolg." author="Henry Ford" />
 
               {/* === Section 5: Chancen und Risiken === */}
               <div data-pdf-block style={sectionStyle} data-testid="v4-section-chancen-risiken">
@@ -536,6 +551,8 @@ export default function TeamCheckReportV4() {
                   </div>
                 </div>
               )}
+
+              <QuoteDivider text="Wer Menschen führen will, muss hinter ihnen gehen." author="Laozi" />
 
               {/* === 30-Tage-Integrationsplan === */}
               {(() => {
@@ -629,6 +646,8 @@ export default function TeamCheckReportV4() {
               })()}
 
               {/* === Was jetzt wichtig ist === */}
+              <QuoteDivider text="Der beste Weg, die Zukunft vorherzusagen, ist, sie zu gestalten." author="Peter Drucker" />
+
               {(() => {
                 const empNum = result.fuehrungshinweis ? 11 : 10;
                 return (
