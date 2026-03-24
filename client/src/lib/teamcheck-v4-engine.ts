@@ -18,7 +18,10 @@ export interface V4IntegrationPhase {
   title: string;
   period: string;
   ziel: string;
-  items: string[];
+  beschreibung: string;
+  praxis: string[];
+  signale: string[];
+  fuehrungstipp: string;
   fokus: { intro: string; bullets: string[] };
 }
 
@@ -53,6 +56,9 @@ export interface TeamCheckV4Result {
 
   risikoprognose: V4RiskPhase[];
   integrationsplan: V4IntegrationPhase[];
+  intWarnsignale: string[];
+  intLeitfragen: string[];
+  intVerantwortung: string;
 
   empfehlungen: V4Block[];
 
@@ -169,6 +175,7 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
     fuehrungshinweis: isLeader ? buildFuehrungshinweis(ctx) : null,
     risikoprognose: buildRisikoprognose(ctx),
     integrationsplan: buildIntegrationsplan(ctx),
+    ...buildIntegrationZusatz(ctx),
     empfehlungen: buildEmpfehlungen(ctx),
     teamOhnePersonText: buildTeamOhnePerson(ctx),
     schlussfazit: buildSchlussfazit(ctx),
@@ -571,65 +578,98 @@ function buildIntegrationsplan(c: Ctx): V4IntegrationPhase[] {
   if (passungZumTeam === "hoch") {
     return [
       {
-        num: 1, title: "Orientierung und Erwartungsklärung", period: "Tag 1 – 10",
+        num: 1, title: "Ankommen und Team verstehen", period: "Tag 1 – 10",
         ziel: isLeader
-          ? `Führungsrolle als ${roleName} im Team verankern, gegenseitige Erwartungen klären und ein gemeinsames Verständnis der Zusammenarbeit aufbauen.`
-          : `Als ${roleName} im Team ankommen, bestehende Abläufe verstehen und die eigene Arbeitsweise mit dem Team abstimmen.`,
-        items: [
-          "Bestehende Abläufe, Schnittstellen und Entscheidungswege systematisch kennenlernen.",
-          isLeader ? "Erwartungen des Teams an die Führung in Einzelgesprächen aktiv erfragen und dokumentieren." : "Erwartungen des Teams an die Zusammenarbeit in persönlichen Gesprächen aktiv erfragen.",
-          isLeader ? "Eigene Führungsprioritäten und den bevorzugten Entscheidungsstil transparent machen." : "Eigene Arbeitsweise, Stärken und bevorzugte Kommunikationsform sichtbar machen.",
-          "Klären, welche informellen Regeln und ungeschriebenen Vereinbarungen im Team gelten.",
-          ...(beitragZurAufgabe === "gering" && hasGoal ? [`Anforderungen und Qualitätsstandards im Bereich ${teamGoalLabel} gezielt klären.`] : []),
+          ? `Die Führungskraft soll im Team ankommen, die Arbeitsweise und Erwartungen verstehen und früh Sicherheit in der Zusammenarbeit aufbauen.`
+          : `Die Person soll im Team ankommen, die Stimmung und Arbeitsweise verstehen und früh Sicherheit in der Zusammenarbeit gewinnen.`,
+        beschreibung: isLeader
+          ? `In den ersten Tagen geht es nicht darum, sofort Führung zu zeigen oder Veränderungen anzustossen. Zuerst muss klar werden, wie das Team arbeitet, welche Abläufe funktionieren und worauf die Teammitglieder Wert legen.\n\nDazu gehört, die wichtigsten Personen im Team kennenzulernen, bestehende Entscheidungswege zu verstehen und zu beobachten, wie kommuniziert, abgestimmt und entschieden wird. Auch wenn die Arbeitsweisen gut zusammenpassen, gibt es in jedem Team ungeschriebene Regeln, die erst im Alltag sichtbar werden.\n\nHilfreich ist, wenn die Führungskraft den eigenen Führungsstil früh erklärt. Nicht als Ansage, sondern damit das Team einordnen kann, wie geführt, entschieden und kommuniziert wird. Das schafft Klarheit und verhindert Missverständnisse.`
+          : `In den ersten Tagen geht es nicht darum, sofort alles zu verändern oder sich schnell zu beweisen. Zuerst muss klar werden, wie das Team arbeitet, was im Alltag gut funktioniert und worauf Kolleginnen und Kollegen Wert legen.\n\nDazu gehört, die wichtigsten Personen im Team kennenzulernen, die Abläufe zu verstehen und darauf zu achten, wie im Team gesprochen, entschieden und zusammengearbeitet wird. Auch wenn die Arbeitsweisen gut zusammenpassen, gibt es in jedem Team eigene Gewohnheiten und ungeschriebene Regeln.\n\nHilfreich ist auch, wenn die Person die eigene Arbeitsweise offen erklärt. Nicht im Sinn von Rechtfertigung, sondern damit das Team einordnen kann, wie sie denkt, entscheidet und arbeitet. Das schafft Klarheit und verhindert Missverständnisse.`,
+        praxis: [
+          isLeader ? "In den ersten Tagen Einzelgespräche mit jedem Teammitglied führen" : "In den ersten Tagen gezielt Einzelgespräche mit wichtigen Teamkollegen führen",
+          "Fragen, wie die Zusammenarbeit bisher funktioniert hat und was im Team wichtig ist",
+          "Beobachten, wie Besprechungen ablaufen: sachlich, ausführlich, spontan oder eher abwartend",
+          "Klären, worüber das Team offen spricht und wo es empfindlich reagiert",
+          "Nicht vorschnell bewerten, sondern erst verstehen, warum das Team so arbeitet, wie es arbeitet",
         ],
+        signale: [
+          isLeader ? "Das Team reagiert offen auf die neue Führungskraft" : "Die Person findet schnell Zugang zu den Kollegen",
+          "Es entstehen erste offene Gespräche",
+          "Missverständnisse werden früh geklärt",
+          isLeader ? "Das Team erlebt die Führungskraft als interessiert und zugänglich" : "Das Team erlebt die Person als interessiert und anschlussfähig",
+          isLeader ? "Die Führungskraft versteht, worauf sie im Umgang mit dem Team achten muss" : "Die Person versteht, worauf sie im Umgang achten muss",
+        ],
+        fuehrungstipp: isLeader
+          ? `In dieser Phase sollte die Führungskraft besonders darauf achten, nicht zu früh mit Veränderungen oder neuen Strukturen einzusteigen. Auch bei guter Passung entstehen viele Irritationen nicht aus Sachthemen, sondern aus Tempo, Ton oder Erwartungshaltung.`
+          : `Die Führungskraft sollte in dieser Phase beobachten, ob die Person eher zuhört und versteht oder ob sie zu früh mit Tempo, Bewertung oder Eigeninitiative einsteigt. Auch bei guter Passung braucht es anfangs Begleitung.`,
         fokus: {
-          intro: `Die Arbeitsweisen passen gut zusammen. Trotzdem muss in den ersten Tagen konkret geklärt werden:`,
+          intro: `Die Arbeitsweisen passen gut zusammen. Trotzdem muss in den ersten Tagen geklärt werden:`,
           bullets: [
-            "Welche Erwartungen bestehen an diese Rolle und wie wird Erfolg gemessen?",
-            isLeader ? "Wie will die Führungskraft führen, kommunizieren und entscheiden?" : "Wie soll die tägliche Zusammenarbeit, Abstimmung und Kommunikation aussehen?",
-            "Wo liegen die wichtigsten Schnittstellen, Abhängigkeiten und Prioritäten?",
+            "Welche Erwartungen bestehen konkret an diese Rolle?",
+            isLeader ? "Wie will die Führungskraft führen und entscheiden?" : "Wie soll die Zusammenarbeit im Alltag aussehen?",
+            "Wo liegen die wichtigsten Schnittstellen und Prioritäten?",
           ],
         },
       },
       {
-        num: 2, title: "Erste Wirkung und Rückmeldung", period: "Tag 11 – 20",
+        num: 2, title: "Eigene Stärken sinnvoll einbringen", period: "Tag 11 – 20",
         ziel: isLeader
-          ? `Erste sichtbare Führungswirkung als ${roleName} entfalten, Entscheidungen nachvollziehbar treffen und gezielt Rückmeldung zur eigenen Wirkung einholen.`
-          : `Erste eigenständige Arbeitsergebnisse als ${roleName} liefern, sich im Teamgefüge positionieren und strukturiert Feedback einholen.`,
-        items: [
-          isLeader ? "Erste eigene Entscheidungen treffen, die Logik dahinter transparent kommunizieren und das Team einbinden." : "Erste Aufgaben eigenständig und sichtbar abschliessen und die Ergebnisse im Team teilen.",
-          "Gezielt Rückmeldung zur eigenen Wirkung und Arbeitsweise einholen, bevor sich Gewohnheiten festigen.",
-          isLeader ? "Zusammenarbeit mit dem Team durch regelmässige kurze Abstimmungen aktiv gestalten." : "Zusammenarbeit mit Teamkollegen durch eigene Initiative und Verlässlichkeit aktiv aufbauen.",
-          ...(beitragZurAufgabe === "gering" ? ["Im fachlichen Kern der Rolle gezielt auf Qualität, Standards und Nachvollziehbarkeit achten."] : []),
-          "Prüfen, ob die eigenen Annahmen über die Teamkultur mit der Realität übereinstimmen.",
+          ? `Die Führungskraft soll zeigen, dass sie dem Team Orientierung gibt, verlässlich entscheidet und Führung so gestaltet, dass Zusammenarbeit leichter wird.`
+          : `Die Person soll zeigen, dass sie dem Team hilft, verlässlich arbeitet und ihre Stärken so einbringt, dass Zusammenarbeit leichter und nicht schwieriger wird.`,
+        beschreibung: isLeader
+          ? `Nach der ersten Orientierung reicht reines Kennenlernen nicht mehr aus. Jetzt muss sichtbar werden, dass die Führungskraft einen guten Beitrag leistet. Entscheidend ist dabei nicht nur das Ergebnis, sondern auch die Art, wie geführt wird.\n\nDie Führungskraft sollte erste Entscheidungen treffen und diese so kommunizieren, dass das Team die Logik dahinter versteht. Gleichzeitig sollte sie darauf achten, wie der eigene Führungsstil wirkt.\n\nDeshalb ist es in dieser Phase wichtig, Rückmeldung einzuholen. Nicht nur zur Entscheidungsqualität, sondern auch zur Zusammenarbeit: Ist die Abstimmung klar? Fühlen sich die Teammitglieder mitgenommen? Entsteht Vertrauen?`
+          : `Nach der ersten Orientierung reicht reines Kennenlernen nicht mehr aus. Jetzt muss sichtbar werden, dass die Person einen guten Beitrag leistet. Entscheidend ist dabei nicht nur das Ergebnis, sondern auch die Art, wie sie vorgeht.\n\nDie Person sollte erste Aufgaben eigenständig übernehmen und diese so erledigen, dass das Team Sicherheit gewinnt. Gleichzeitig sollte sie darauf achten, wie ihre Arbeitsweise wirkt. Eine Stärke bringt nur dann etwas, wenn sie im Team auch anschlussfähig ist.\n\nDeshalb ist es in dieser Phase wichtig, Rückmeldung einzuholen. Nicht nur zur Leistung, sondern auch zur Zusammenarbeit: Ist die Abstimmung klar? Fühlen sich andere mitgenommen? Entsteht Vertrauen? Wird die Person als zuverlässig erlebt?`,
+        praxis: [
+          isLeader ? "Erste Führungsentscheidungen treffen und die Begründung transparent machen" : "Eine erste Aufgabe oder ein kleines Projekt verantwortlich übernehmen",
+          "Ergebnisse transparent machen, statt still für sich zu arbeiten",
+          "Bei wichtigen Themen kurz rückkoppeln, statt einfach durchzuziehen",
+          "Im Teamgespräch aktiv nachfragen, ob Abstimmung und Zusammenarbeit passen",
+          isLeader ? "Zeigen, dass der eigene Führungsstil dem Team Orientierung gibt" : "Zeigen, dass die eigene Art zu arbeiten dem Team nutzt und nicht gegen das Team läuft",
         ],
+        signale: [
+          isLeader ? "Die Führungskraft trifft Entscheidungen, die nachvollziehbar sind" : "Die Person liefert erste brauchbare Ergebnisse",
+          "Kollegen beziehen sie zunehmend selbstverständlich ein",
+          "Die Kommunikation wird klarer und einfacher",
+          "Unterschiede in der Arbeitsweise führen nicht zu Reibung",
+          "Das Vertrauen wächst sichtbar",
+        ],
+        fuehrungstipp: isLeader
+          ? `In dieser Phase sollte die übergeordnete Führung genau hinschauen, ob die neue Führungskraft zwar Entscheidungen trifft, aber das Team dabei verliert. Häufig wirkt eine Integration von aussen zunächst gut, weil Ergebnisse kommen. In Wirklichkeit gibt es aber schon erste Spannungen in Kommunikation, Tempo oder Erwartungshaltung. Diese Signale sollten jetzt ernst genommen werden.`
+          : `Die Führungskraft sollte in dieser Phase genau hinschauen, ob die Person zwar fachlich liefert, aber sozial noch nicht richtig andockt. Häufig wirkt eine Integration von aussen zunächst gut, weil Aufgaben erledigt werden. In Wirklichkeit gibt es aber schon erste Spannungen in Kommunikation, Tempo, Abstimmung oder Erwartungshaltung. Diese Signale sollten jetzt ernst genommen werden.`,
         fokus: {
-          intro: `Die Integration verläuft voraussichtlich reibungsarm. Jetzt geht es darum:`,
+          intro: `Die Integration verläuft voraussichtlich reibungsarm. Die wichtige Frage ist jetzt:`,
           bullets: [
-            "Erste Ergebnisse sichtbar zu machen und Vertrauen durch Verlässlichkeit aufzubauen",
-            "Rückmeldung aktiv einzuholen, bevor sich Muster verfestigen",
-            ...(beitragZurAufgabe === "gering" ? [`Fachliche Anforderungen${hasGoal ? ` im Bereich ${teamGoalLabel}` : ""} nicht aus den Augen zu verlieren`] : []),
+            isLeader ? "Liefert die Führungskraft nicht nur Entscheidungen, sondern auch Orientierung?" : "Liefert die Person nicht nur Ergebnisse, sondern auch gute Zusammenarbeit?",
+            "Wie erlebt das Team die Zusammenarbeit im Alltag?",
+            "Wo braucht es Nachjustierung, bevor sich Muster verfestigen?",
           ],
         },
       },
       {
-        num: 3, title: "Standortbestimmung und Weichenstellung", period: "Tag 21 – 30",
-        ziel: `Ehrliche Bestandsaufnahme nach 30 Tagen: Funktioniert die Integration als ${roleName} wie erwartet, und wo braucht es Anpassungen?`,
-        items: [
-          "Strukturiertes Feedbackgespräch mit der direkten Führung führen.",
-          isLeader ? "Rückmeldungen aus dem Team zur Führungswirkung und zum Führungsrhythmus einholen." : "Rückmeldung aus dem Team zur Zusammenarbeit, Kommunikation und Verlässlichkeit einholen.",
-          isLeader ? "Entscheidungswege und Führungsrhythmus auf Wirksamkeit überprüfen." : "Arbeitsrhythmus, Prioritäten und Abstimmungswege auf Wirksamkeit überprüfen.",
-          "Bewerten, ob die Zusammenarbeit im Alltag tragfähig ist oder ob Anpassungen nötig sind.",
-          "Konkrete Massnahmen und Entwicklungsziele für die nächsten 60 Tage vereinbaren.",
-          "Offene Punkte identifizieren, Verantwortlichkeiten klären und nächste Schritte festlegen.",
-          ...(beitragZurAufgabe === "gering" ? ["Fachliche Standortbestimmung im Aufgabenkern der Rolle durchführen."] : []),
+        num: 3, title: "Nach 30 Tagen klar prüfen", period: "Tag 21 – 30",
+        ziel: `Nach 30 Tagen soll klar sein, ob die Integration im Alltag tragfähig ist und welche nächsten Schritte notwendig sind.`,
+        beschreibung: `Nach einem Monat sollte nicht nur ein allgemeines Gefühl bewertet werden, sondern möglichst konkret geschaut werden, was gut funktioniert und was noch nicht stabil ist.\n\nDazu braucht es ein offenes Gespräch zwischen Führungskraft und ${isLeader ? "der übergeordneten Leitung" : "Person"}. Zusätzlich sollte auch die Wahrnehmung aus dem Team einbezogen werden. Wichtig ist dabei, nicht nur nach Sympathie zu fragen, sondern nach konkreten Punkten: Zusammenarbeit, Kommunikation, Verlässlichkeit, Umgang mit Abstimmung, Tempo und Erwartungen.\n\nWenn es Unterschiede in der Arbeitsweise gibt, ist jetzt der richtige Zeitpunkt zu prüfen, ob diese Unterschiede schon gut genutzt werden oder ob sie im Alltag eher Kraft kosten.`,
+        praxis: [
+          "Ein strukturiertes 30-Tage-Gespräch mit klaren Fragen führen",
+          "Rückmeldungen aus dem Team sammeln, nicht nur Einzelmeinungen",
+          "Gemeinsam besprechen, wo es schon gut läuft und wo noch Unsicherheit besteht",
+          "Für die nächsten 30 bis 60 Tage klare Ziele festlegen",
+          isLeader ? "Vereinbaren, was die Führungskraft selbst ändern soll und wo Unterstützung nötig ist" : "Vereinbaren, was die Person selbst ändern soll und wo die Führung unterstützen muss",
         ],
+        signale: [
+          isLeader ? "Die Führungskraft wird zunehmend als Teil des Teams akzeptiert" : "Die Person wird zunehmend als Teil des Teams gesehen",
+          "Die Zusammenarbeit wird berechenbarer",
+          "Es gibt weniger Missverständnisse",
+          "Unterschiede werden nicht mehr als Störung erlebt",
+          "Die nächsten Schritte sind klar und verbindlich vereinbart",
+        ],
+        fuehrungstipp: `Wenn nach 30 Tagen immer noch unklar ist, wie die Zusammenarbeit eigentlich läuft, wurde meist zu wenig offen angesprochen. Dann braucht es mehr Führung, mehr Klarheit und oft auch konkretere Erwartungen. Je früher das benannt wird, desto besser lässt sich die Integration stabilisieren.`,
         fokus: {
           intro: `Nach 30 Tagen sollte ehrlich bewertet werden:`,
           bullets: [
+            isLeader ? "Wird die Führung vom Team angenommen?" : "Ist die Person im Team angekommen?",
             "Funktioniert die Zusammenarbeit im Alltag wie erwartet?",
-            isLeader ? "Wird die Führung vom Team akzeptiert und als hilfreich erlebt?" : "Ist die Person im Team angekommen und wird als Teammitglied wahrgenommen?",
-            "Welche konkreten Massnahmen sind nötig, damit die Integration in den nächsten Wochen stabil weitergeht?",
+            "Welche konkreten Massnahmen sind nötig, damit die Integration stabil weitergeht?",
           ],
         },
       },
@@ -638,72 +678,141 @@ function buildIntegrationsplan(c: Ctx): V4IntegrationPhase[] {
 
   return [
     {
-      num: 1, title: "Orientierung und Brücken bauen", period: "Tag 1 – 10",
+      num: 1, title: "Ankommen und Team verstehen", period: "Tag 1 – 10",
       ziel: isLeader
-        ? `In der Führungsrolle Vertrauen aufbauen, die bestehende Teamkultur verstehen und Unterschiede in der Arbeitsweise früh, offen und wertschätzend ansprechen.`
-        : `Als ${roleName} ankommen, die bestehende Teamkultur kennenlernen und die Unterschiede zwischen eigener Arbeitsweise und Teamdynamik verstehen.`,
-      items: [
-        `Bestehende Teamkultur, Kommunikationswege und Arbeitsrhythmus mit Schwerpunkt auf ${teamDesc} systematisch kennenlernen.`,
-        isLeader ? "Eigenen Führungsstil erklären und Brücken zur bestehenden Teamkultur bauen, ohne bestehende Stärken zu entwerten." : "Eigene Arbeitsweise erklären, Gemeinsamkeiten betonen und Offenheit für die Teamkultur zeigen.",
-        isLeader ? "Einzelgespräche mit jedem Teammitglied in der ersten Woche führen, um Erwartungen, Sorgen und Wünsche zu verstehen." : "Gespräche mit wichtigen Teamkollegen und Schnittstellen aktiv suchen und Beziehungen aufbauen.",
-        `Unterschiede zwischen ${personDesc} einerseits sowie ${teamDesc} andererseits offen und ohne Wertung ansprechen.`,
-        "Klären, welche ungeschriebenen Regeln, Gewohnheiten und Empfindlichkeiten im Team bestehen.",
-        ...(hasGoal ? [`Anforderungen, Standards und Erwartungen im Bereich ${teamGoalLabel} gezielt klären.`] : []),
+        ? `Die Führungskraft soll im Team ankommen, die bestehende Teamkultur verstehen und Unterschiede in der Arbeitsweise früh erkennen, ohne vorschnell zu bewerten.`
+        : `Die Person soll im Team ankommen, die Stimmung und Arbeitsweise verstehen und früh Sicherheit in der Zusammenarbeit gewinnen.`,
+      beschreibung: isLeader
+        ? `In den ersten Tagen geht es nicht darum, sofort Führung zu zeigen oder Veränderungen anzustossen. Zuerst muss klar werden, wie das Team arbeitet, was im Alltag funktioniert und worauf die Teammitglieder Wert legen.\n\nDas Team arbeitet mit Schwerpunkt auf ${teamDesc}. Die Führungskraft bringt eine Arbeitsweise mit, die stärker auf ${personDesc} setzt. Diese Unterschiede sollte die Führungskraft früh erkennen, damit sie nicht unbeabsichtigt aneckt oder das Team überfordert.\n\nHilfreich ist, wenn die Führungskraft den eigenen Führungsstil offen erklärt. Nicht als Ansage, sondern damit das Team einordnen kann, wie geführt, entschieden und kommuniziert wird. Das schafft Klarheit und verhindert Missverständnisse, die sonst in den ersten Wochen schnell entstehen.`
+        : `In den ersten Tagen geht es nicht darum, sofort alles zu verändern oder sich schnell zu beweisen. Zuerst muss klar werden, wie das Team arbeitet, was im Alltag gut funktioniert und worauf Kolleginnen und Kollegen Wert legen.\n\nDas Team arbeitet mit Schwerpunkt auf ${teamDesc}. Die Person bringt eine Arbeitsweise mit, die stärker auf ${personDesc} setzt. Diese Unterschiede sollte die Person früh erkennen, damit sie nicht unbeabsichtigt aneckt.\n\nHilfreich ist auch, wenn die Person die eigene Arbeitsweise offen erklärt. Nicht im Sinn von Rechtfertigung, sondern damit das Team einordnen kann, wie sie denkt, entscheidet und arbeitet. Das schafft Klarheit und verhindert Missverständnisse.`,
+      praxis: [
+        isLeader ? "In den ersten Tagen Einzelgespräche mit jedem Teammitglied führen" : "In den ersten Tagen gezielt Einzelgespräche mit wichtigen Teamkollegen führen",
+        "Fragen, wie die Zusammenarbeit bisher funktioniert hat und was im Team wichtig ist",
+        "Beobachten, wie Besprechungen ablaufen: direkt, sachlich, vorsichtig, ausführlich oder eher spontan",
+        "Klären, worüber das Team offen spricht und wo es empfindlich reagiert",
+        "Nicht vorschnell bewerten, sondern erst verstehen, warum das Team sich so entwickelt hat",
+        ...(hasGoal ? [`Anforderungen im Bereich ${teamGoalLabel} gezielt erfragen und verstehen`] : []),
       ],
+      signale: [
+        isLeader ? "Das Team reagiert offen auf die neue Führungskraft" : "Die Person findet schneller Zugang zu den Kollegen",
+        "Es entstehen erste offene Gespräche",
+        "Missverständnisse werden früh geklärt",
+        isLeader ? "Das Team erlebt die Führungskraft als interessiert und nicht als bewertend" : "Das Team erlebt die Person als interessiert und anschlussfähig",
+        isLeader ? "Die Führungskraft versteht, wo Unterschiede liegen und wo sie aufpassen muss" : "Die Person versteht besser, worauf sie im Umgang achten muss",
+      ],
+      fuehrungstipp: isLeader
+        ? `Die übergeordnete Führung sollte in dieser Phase besonders beobachten, ob die neue Führungskraft eher zuhört und versteht oder ob sie zu früh mit Veränderung, Tempo oder Bewertung einsteigt. Gerade bei unterschiedlichen Arbeitsweisen entstehen viele Reibungen nicht aus böser Absicht, sondern weil Arbeitsstile verschieden sind.`
+        : `Die Führungskraft sollte in dieser Phase besonders beobachten, ob die Person eher zuhört und versteht oder ob sie zu früh mit Veränderung, Tempo oder Bewertung einsteigt. Gerade bei unterschiedlichen Arbeitsweisen entstehen viele Reibungen nicht aus böser Absicht, sondern weil Arbeitsstile verschieden sind.`,
       fokus: {
         intro: `Die Arbeitsweisen unterscheiden sich. Deshalb ist in den ersten Tagen besonders wichtig:`,
         bullets: [
-          "Wie arbeitet das Team, warum hat sich diese Arbeitsweise entwickelt und was funktioniert gut?",
-          isLeader ? "Was erwartet das Team von Führung und wo liegen mögliche Empfindlichkeiten?" : "Was erwartet das Team von neuen Teammitgliedern und wie wird Vertrauen aufgebaut?",
-          "Wo entstehen erste Reibungspunkte und wie lassen sie sich früh, offen und konstruktiv entschärfen?",
+          "Wie arbeitet das Team und warum?",
+          isLeader ? "Was erwartet das Team von Führung?" : "Was erwartet das Team von neuen Teammitgliedern?",
+          "Wo entstehen erste Reibungspunkte und wie lassen sie sich früh entschärfen?",
         ],
       },
     },
     {
-      num: 2, title: "Unterschiede produktiv machen", period: "Tag 11 – 20",
+      num: 2, title: "Eigene Stärken sinnvoll einbringen", period: "Tag 11 – 20",
       ziel: isLeader
-        ? `Den eigenen Führungsstil mit der bestehenden Teamkultur verbinden, erste sichtbare Wirkung erzielen und zeigen, dass Unterschiede kein Hindernis, sondern eine Chance sind.`
-        : `Die eigene Stärke gezielt einbringen, gleichzeitig die Teamkultur respektieren und durch konkrete Beiträge Vertrauen aufbauen.`,
-      items: [
-        isLeader ? "Erste Führungsentscheidungen treffen, die Logik dahinter erklären und das Team in die Umsetzung einbinden." : "Erste Aufgaben eigenständig und sichtbar umsetzen und Ergebnisse mit dem Team teilen.",
-        `Gezielt Situationen schaffen, in denen ${personDesc} dem Team konkret und spürbar helfen.`,
-        "Aktiv und strukturiert Rückmeldung einholen, wie die eigene Arbeitsweise vom Team erlebt wird.",
-        isLeader ? "Teamregeln, Entscheidungswege und Verantwortlichkeiten gemeinsam klären und dokumentieren." : "Einen verlässlichen Abstimmungsrhythmus mit dem Team finden und einhalten.",
-        ...(beitragZurAufgabe === "gering" && hasGoal ? [`Im Bereich ${teamGoalLabel} gezielt Standards einhalten, nachfragen und Qualität sicherstellen.`] : []),
-        `Sichtbar machen, wie die unterschiedlichen Stärken – fachliche Sorgfalt und Teamorientierung – zusammenwirken und sich ergänzen können.`,
+        ? `Die Führungskraft soll zeigen, dass sie dem Team Orientierung gibt und die Unterschiede in der Arbeitsweise nicht als Hindernis, sondern als Chance nutzt.`
+        : `Die Person soll zeigen, dass sie dem Team hilft, verlässlich arbeitet und ihre Stärken so einbringt, dass Zusammenarbeit leichter und nicht schwieriger wird.`,
+      beschreibung: isLeader
+        ? `Nach der ersten Orientierung reicht reines Kennenlernen nicht mehr aus. Jetzt muss sichtbar werden, dass die Führungskraft einen guten Beitrag leistet. Entscheidend ist dabei nicht nur die Entscheidungsqualität, sondern auch die Art, wie geführt wird.\n\nDie Führungskraft sollte erste Entscheidungen treffen und diese so kommunizieren, dass das Team die Logik dahinter versteht. Dabei sollte sie darauf achten, dass der eigene Stil auf ${personDesc} das Team nicht überfordert, das stärker auf ${teamDesc} ausgerichtet ist.\n\nDeshalb ist es in dieser Phase wichtig, Rückmeldung einzuholen. Nicht nur zur Führungswirkung, sondern auch zur Zusammenarbeit: Fühlen sich die Teammitglieder mitgenommen? Passt das Tempo? Entsteht Vertrauen oder eher Unsicherheit?`
+        : `Nach der ersten Orientierung reicht reines Kennenlernen nicht mehr aus. Jetzt muss sichtbar werden, dass die Person einen guten Beitrag leistet. Entscheidend ist dabei nicht nur das Ergebnis, sondern auch die Art, wie sie vorgeht.\n\nDie Person sollte erste Aufgaben eigenständig übernehmen und diese so erledigen, dass das Team Sicherheit gewinnt. Gleichzeitig sollte sie darauf achten, wie ihre Arbeitsweise wirkt. Die Stärke im Bereich ${personDesc} bringt nur dann etwas, wenn sie im Team, das auf ${teamDesc} setzt, auch anschlussfähig ist.\n\nDeshalb ist es in dieser Phase wichtig, Rückmeldung einzuholen. Nicht nur zur Leistung, sondern auch zur Zusammenarbeit: Ist die Abstimmung klar? Fühlen sich andere mitgenommen? Entsteht Vertrauen? Wird die Person als zuverlässig erlebt?`,
+      praxis: [
+        isLeader ? "Erste Führungsentscheidungen treffen und die Begründung transparent machen" : "Eine erste Aufgabe oder ein kleines Projekt verantwortlich übernehmen",
+        "Ergebnisse transparent machen, statt still für sich zu arbeiten",
+        "Bei wichtigen Themen kurz rückkoppeln, statt einfach durchzuziehen",
+        "Im Teamgespräch aktiv nachfragen, ob Abstimmung und Zusammenarbeit passen",
+        isLeader ? "Zeigen, dass Führung Orientierung gibt, ohne die bestehende Teamkultur zu überfahren" : "Zeigen, dass die eigene Art zu arbeiten dem Team nutzt und nicht gegen das Team läuft",
       ],
+      signale: [
+        isLeader ? "Die Führungskraft trifft nachvollziehbare Entscheidungen" : "Die Person liefert erste brauchbare Ergebnisse",
+        "Kollegen beziehen sie zunehmend selbstverständlich ein",
+        "Die Kommunikation wird klarer und einfacher",
+        "Unterschiede in der Arbeitsweise führen nicht sofort zu Reibung",
+        "Das Vertrauen wächst sichtbar",
+      ],
+      fuehrungstipp: isLeader
+        ? `Hier sollte die übergeordnete Führung genau hinschauen, ob die neue Führungskraft zwar Entscheidungen trifft, aber das Team dabei verliert. Häufig wirkt eine Integration von aussen zunächst gut, weil Ergebnisse kommen. In Wirklichkeit gibt es aber schon erste Spannungen in Kommunikation, Tempo oder Erwartungshaltung. Diese Signale sollten jetzt ernst genommen werden.`
+        : `Die Führungskraft sollte in dieser Phase genau hinschauen, ob die Person zwar fachlich liefert, aber sozial noch nicht richtig andockt. Häufig wirkt eine Integration von aussen zunächst gut, weil Aufgaben erledigt werden. In Wirklichkeit gibt es aber schon erste Spannungen in Kommunikation, Tempo, Abstimmung oder Erwartungshaltung. Diese Signale sollten jetzt ernst genommen werden.`,
       fokus: {
-        intro: `Die erste Orientierung ist abgeschlossen. Jetzt muss ${isLeader ? "die Führungskraft" : "die Person"} zeigen:`,
+        intro: `Die erste Orientierung ist abgeschlossen. Die wichtige Frage ist jetzt:`,
         bullets: [
-          "Dass die eigene Stärke dem Team einen echten, spürbaren Mehrwert bringt",
-          "Dass Unterschiede kein Hindernis sein müssen, sondern aktiv und produktiv genutzt werden können",
-          isLeader ? "Dass Führung Orientierung und Richtung gibt, ohne die bestehende Teamkultur unnötig zu überfahren" : "Dass eine vertrauensvolle Zusammenarbeit trotz unterschiedlicher Arbeitsweisen funktioniert und wächst",
+          isLeader ? "Liefert die Führungskraft Ergebnisse und nimmt das Team dabei mit?" : "Liefert die Person Ergebnisse und kommt gleichzeitig im Team an?",
+          "Wie erlebt das Team die Zusammenarbeit im Alltag wirklich?",
+          isLeader ? "Wo braucht es mehr Erklärung, mehr Geduld oder mehr Brücken?" : "Wo braucht es Nachjustierung, damit Unterschiede produktiv werden?",
         ],
       },
     },
     {
-      num: 3, title: "Standortbestimmung und Weichenstellung", period: "Tag 21 – 30",
-      ziel: isLeader
-        ? `Ehrliche Bestandsaufnahme nach 30 Tagen: Verläuft die Integration in der Führungsrolle tragfähig, und wo muss nachgesteuert werden?`
-        : `Ehrliche Bestandsaufnahme nach 30 Tagen: Funktioniert die Integration, und was braucht es für die nächsten Wochen?`,
-      items: [
-        "Strukturiertes Feedbackgespräch mit der direkten Führung führen.",
-        isLeader ? "Rückmeldungen aus dem Team zur Führungswirkung, zum Entscheidungsstil und zur Zusammenarbeit einholen." : "Rückmeldung aus dem Team zur Zusammenarbeit, zur Kommunikation und zur Verlässlichkeit einholen.",
-        `Bewerten, ob die Unterschiede zwischen ${personDesc} einerseits sowie ${teamDesc} andererseits bereits produktiv wirken oder eher belasten.`,
-        "Konkrete Massnahmen, Entwicklungsziele und Verantwortlichkeiten für die nächsten 60 Tage vereinbaren.",
-        isLeader ? "Entscheiden, wo nachgesteuert, klarer kommuniziert oder enger begleitet werden muss." : "Offene Punkte identifizieren, Prioritäten setzen und nächste Schritte verbindlich klären.",
-        ...(beitragZurAufgabe === "gering" ? ["Fachliche Standortbestimmung im Aufgabenkern der Rolle durchführen und Lücken benennen."] : []),
+      num: 3, title: "Nach 30 Tagen klar prüfen", period: "Tag 21 – 30",
+      ziel: `Nach 30 Tagen soll klar sein, ob die Integration im Alltag tragfähig ist und welche nächsten Schritte notwendig sind.`,
+      beschreibung: `Nach einem Monat sollte nicht nur ein allgemeines Gefühl bewertet werden, sondern möglichst konkret geschaut werden, was gut funktioniert und was noch nicht stabil ist.\n\nDazu braucht es ein offenes Gespräch zwischen Führungskraft und ${isLeader ? "der übergeordneten Leitung" : "Person"}. Zusätzlich sollte auch die Wahrnehmung aus dem Team einbezogen werden. Wichtig ist dabei, nicht nur nach Sympathie zu fragen, sondern nach konkreten Punkten: Zusammenarbeit, Kommunikation, Verlässlichkeit, Umgang mit Abstimmung, Tempo und Erwartungen.\n\nDie Unterschiede zwischen ${personDesc} und ${teamDesc} sind in diesem Fall erheblich. Jetzt ist der richtige Zeitpunkt zu prüfen, ob diese Unterschiede schon produktiv genutzt werden oder ob sie im Alltag eher Kraft kosten.`,
+      praxis: [
+        "Ein strukturiertes 30-Tage-Gespräch mit klaren Fragen führen",
+        "Rückmeldungen aus dem Team sammeln, nicht nur Einzelmeinungen",
+        "Gemeinsam besprechen, wo es schon gut läuft und wo noch Unsicherheit besteht",
+        `Bewerten, ob die Unterschiede zwischen ${personDesc} und ${teamDesc} bereits produktiv wirken oder eher belasten`,
+        "Für die nächsten 30 bis 60 Tage klare Ziele festlegen",
+        isLeader ? "Vereinbaren, wo die Führungskraft nachsteuern muss und wo Unterstützung nötig ist" : "Vereinbaren, was die Person selbst ändern soll und wo die Führung unterstützen muss",
       ],
+      signale: [
+        isLeader ? "Die Führungskraft wird zunehmend als Teil des Teams akzeptiert" : "Die Person wird zunehmend als Teil des Teams gesehen",
+        "Die Zusammenarbeit wird berechenbarer",
+        "Es gibt weniger Missverständnisse",
+        "Unterschiede werden nicht mehr als Störung erlebt",
+        "Die nächsten Schritte sind klar und verbindlich vereinbart",
+      ],
+      fuehrungstipp: `Wenn nach 30 Tagen immer noch unklar ist, wie die Zusammenarbeit eigentlich läuft, wurde meist zu wenig offen angesprochen. Dann braucht es mehr Führung, mehr Klarheit und oft auch konkretere Erwartungen. Je früher das benannt wird, desto besser lässt sich die Integration stabilisieren.`,
       fokus: {
         intro: `Nach 30 Tagen sollte ehrlich bewertet werden:`,
         bullets: [
-          isLeader ? "Akzeptiert das Team die Führung und wird sie als hilfreich erlebt?" : "Ist die Person im Team angekommen und wird sie als Teil des Teams wahrgenommen?",
-          "Werden die Unterschiede in der Arbeitsweise eher als Bereicherung oder als Belastung erlebt?",
-          "Welche konkreten Massnahmen sind nötig, damit die Integration in den nächsten Wochen stabil und nachhaltig weitergeht?",
+          isLeader ? "Akzeptiert das Team die Führung?" : "Ist die Person im Team angekommen?",
+          "Werden die Unterschiede eher als Bereicherung oder als Belastung erlebt?",
+          "Welche Massnahmen sind nötig, damit die Integration in den nächsten Wochen stabil weitergeht?",
         ],
       },
     },
   ];
+}
+
+function buildIntegrationZusatz(c: Ctx): { intWarnsignale: string[]; intLeitfragen: string[]; intVerantwortung: string } {
+  const { isLeader, passungZumTeam } = c;
+
+  const warnsignale = passungZumTeam === "hoch"
+    ? [
+        isLeader ? "Die Führungskraft trifft Entscheidungen, ohne das Team einzubeziehen" : "Die Person arbeitet für sich, aber findet keinen echten Anschluss ans Team",
+        "Kollegen reagieren höflich, aber zurückhaltend",
+        "Absprachen werden unterschiedlich verstanden",
+        isLeader ? "Das Team wartet ab, statt aktiv mitzuarbeiten" : "Tempo, Kommunikationsstil oder Entscheidungsverhalten führen zu Irritationen",
+        "Rückmeldungen werden vermieden statt offen angesprochen",
+        isLeader ? "Die übergeordnete Führung hat das Gefühl, vermitteln zu müssen" : "Die Führungskraft hat das Gefühl, ständig vermitteln zu müssen",
+      ]
+    : [
+        isLeader ? "Die Führungskraft führt an der Teamkultur vorbei" : "Die Person arbeitet für sich, aber findet keinen echten Anschluss ans Team",
+        "Kollegen reagieren höflich, aber zurückhaltend",
+        "Absprachen werden unterschiedlich verstanden",
+        "Tempo, Kommunikationsstil oder Entscheidungsverhalten führen zu Irritationen",
+        "Rückmeldungen werden vermieden statt offen angesprochen",
+        isLeader ? "Die übergeordnete Führung hat das Gefühl, ständig zwischen Team und Führungskraft vermitteln zu müssen" : "Die Führungskraft hat das Gefühl, ständig vermitteln zu müssen",
+      ];
+
+  const leitfragen = [
+    "Was ist in der Zusammenarbeit bisher gut gelungen?",
+    "Wo gab es Unsicherheiten oder Missverständnisse?",
+    isLeader ? "Wie erlebt das Team die neue Führungskraft im Alltag?" : "Wie erlebt das Team die neue Person im Alltag?",
+    "Wo passt die Arbeitsweise bereits gut, wo noch nicht?",
+    isLeader ? "Welche Unterstützung braucht die Führungskraft jetzt?" : "Welche Unterstützung braucht die Person jetzt?",
+    "Was soll in den nächsten 30 Tagen gezielt besser werden?",
+  ];
+
+  const verantwortung = isLeader
+    ? `Integration ist nicht nur Aufgabe der neuen Führungskraft. Auch die übergeordnete Leitung muss in den ersten 30 Tagen Orientierung geben, Erwartungen klären, Rückmeldung einholen und bei ersten Spannungen früh steuern. Je klarer diese Begleitung ist, desto stabiler gelingt der Einstieg in die Führungsrolle.`
+    : `Integration ist nicht nur Aufgabe der neuen Person. Auch die direkte Führungskraft muss in den ersten 30 Tagen Orientierung geben, Erwartungen klären, Rückmeldung einholen und bei ersten Spannungen früh steuern. Je klarer diese Begleitung ist, desto stabiler gelingt die Zusammenarbeit.`;
+
+  return { intWarnsignale: warnsignale, intLeitfragen: leitfragen, intVerantwortung: verantwortung };
 }
 
 function buildEmpfehlungen(c: Ctx): V4Block[] {

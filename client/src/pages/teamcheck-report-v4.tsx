@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
 import { computeTeamCheckV4, type TeamCheckV4Result, type V4Block } from "@/lib/teamcheck-v4-engine";
 import type { TeamCheckV3Input } from "@/lib/teamcheck-v3-engine";
-import { ArrowLeft, Download, Loader2, Printer } from "lucide-react";
+import { ArrowLeft, Download, Loader2, Printer, AlertTriangle } from "lucide-react";
 import { BIO_COLORS, COMP_HEX } from "@/lib/bio-design";
 import type { ComponentKey } from "@/lib/bio-types";
 import logoPath from "@assets/LOGO_bio_1773853681939.png";
@@ -601,15 +601,45 @@ export default function TeamCheckReportV4() {
                               <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 14px", lineHeight: 1.7 }}>
                                 <span style={{ fontWeight: 700 }}>Ziel: </span>{phase.ziel}
                               </p>
-                              <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 16 }}>
-                                {phase.items.map((item, idx) => (
-                                  <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                                    <div style={{ width: 6, height: 6, borderRadius: 3, background: phaseCol, flexShrink: 0, marginTop: 9 }} />
-                                    <span style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7 }}>{item}</span>
-                                  </div>
+
+                              <div style={{ marginBottom: 20 }}>
+                                <p style={{ fontSize: 11, fontWeight: 700, color: "#1D1D1F", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>Was jetzt konkret wichtig ist</p>
+                                {phase.beschreibung.split("\n\n").map((para, pi) => (
+                                  <p key={pi} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 10px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{para}</p>
                                 ))}
                               </div>
-                              <div style={{ padding: "14px 16px", borderRadius: 10, background: `${phaseCol}06`, borderLeft: `4px solid ${phaseCol}` }}>
+
+                              <div data-pdf-block style={{ marginBottom: 20 }}>
+                                <p style={{ fontSize: 11, fontWeight: 700, color: "#1D1D1F", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>Praxisbezug im Alltag</p>
+                                <p style={{ fontSize: 13, color: "#6E6E73", margin: "0 0 8px", fontStyle: "italic" }}>Das kann zum Beispiel heissen:</p>
+                                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                                  {phase.praxis.map((item, idx) => (
+                                    <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                                      <div style={{ width: 6, height: 6, borderRadius: 3, background: phaseCol, flexShrink: 0, marginTop: 9 }} />
+                                      <span style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7 }}>{item}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <div data-pdf-block style={{ marginBottom: 20 }}>
+                                <p style={{ fontSize: 11, fontWeight: 700, color: "#34C759", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>Woran man merkt, dass es gut läuft</p>
+                                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                                  {phase.signale.map((s, si) => (
+                                    <div key={si} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                                      <span style={{ color: "#34C759", flexShrink: 0, marginTop: 2, fontSize: 14 }}>✓</span>
+                                      <span style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7 }}>{s}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <div data-pdf-block style={{ padding: "14px 16px", borderRadius: 10, background: "rgba(0,0,0,0.02)", borderLeft: "3px solid #8E8E93", marginBottom: 16 }}>
+                                <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>Worauf die Führungskraft achten sollte</p>
+                                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{phase.fuehrungstipp}</p>
+                              </div>
+
+                              <div data-pdf-block style={{ padding: "14px 16px", borderRadius: 10, background: `${phaseCol}06`, borderLeft: `4px solid ${phaseCol}` }}>
                                 <p style={{ fontSize: 11, fontWeight: 700, color: phaseCol, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>Worauf es ankommt</p>
                                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 8px", hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{phase.fokus.intro}</p>
                                 <ul style={{ margin: 0, paddingLeft: 0, listStyle: "none" }}>
@@ -625,6 +655,35 @@ export default function TeamCheckReportV4() {
                           </div>
                         );
                       })}
+                    </div>
+
+                    <div data-pdf-block style={{ marginTop: 28, padding: "18px 20px", borderRadius: 12, background: "#FFF5F5", border: "1px solid rgba(196,30,58,0.12)" }} data-testid="v4-integration-warnsignale">
+                      <p style={{ fontSize: 11, fontWeight: 700, color: "#C41E3A", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}>Typische Warnsignale in den ersten 30 Tagen</p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        {result.intWarnsignale.map((w, wi) => (
+                          <div key={wi} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                            <AlertTriangle size={14} style={{ color: "#C41E3A", flexShrink: 0, marginTop: 4 }} />
+                            <span style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7 }}>{w}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div data-pdf-block style={{ marginTop: 16, padding: "18px 20px", borderRadius: 12, background: "rgba(0,113,227,0.03)", border: "1px solid rgba(0,113,227,0.12)" }} data-testid="v4-integration-leitfragen">
+                      <p style={{ fontSize: 11, fontWeight: 700, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}>Leitfragen für das 30-Tage-Gespräch</p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        {result.intLeitfragen.map((q, qi) => (
+                          <div key={qi} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                            <span style={{ color: "#0071E3", flexShrink: 0, marginTop: 2, fontSize: 13 }}>→</span>
+                            <span style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7 }}>{q}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div data-pdf-block style={{ marginTop: 16, padding: "16px 18px", borderRadius: 10, background: "rgba(0,0,0,0.02)", borderLeft: "3px solid #8E8E93" }} data-testid="v4-integration-verantwortung">
+                      <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>Wichtig</p>
+                      <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{result.intVerantwortung}</p>
                     </div>
                   </div>
                 );
