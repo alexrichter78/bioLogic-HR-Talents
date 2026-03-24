@@ -127,6 +127,7 @@ export default function TeamCheckReportV4() {
       if (cardEl) {
         cardEl.style.overflow = "visible";
         cardEl.style.borderRadius = "0";
+        cardEl.style.background = "#FFFFFF";
       }
 
       const A4_W = 595.28;
