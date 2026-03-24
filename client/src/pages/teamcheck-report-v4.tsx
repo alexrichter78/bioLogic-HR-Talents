@@ -302,33 +302,59 @@ export default function TeamCheckReportV4() {
                 );
               })()}
 
-              {/* === Was jetzt wichtig ist === */}
-              <div style={{ marginBottom: 36 }} data-testid="v4-section-empfehlungen">
-                <SectionHead num={result.fuehrungshinweis ? 9 : 8} title="Was jetzt wichtig ist" id="empfehlungen" />
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  {result.empfehlungen.map((emp, i) => (
-                    <div key={emp.title} style={{ padding: "16px 20px", borderRadius: 12, background: "#FFF", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} data-testid={`v4-empfehlung-${i}`}>
-                      <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
-                        <span style={{ width: 24, height: 24, borderRadius: 12, background: "#1A5DAB", color: "#FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{i + 1}</span>
-                        <div>
-                          <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px", lineHeight: 1.4 }}>{emp.title}</p>
-                          <p style={{ fontSize: 13, lineHeight: 1.75, color: "#6E6E73", margin: 0 }}>{emp.text}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div style={{ padding: "24px 0", borderTop: "1px solid rgba(0,0,0,0.06)" }} data-testid="v4-footer">
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
-                  <div>
-                    <p style={{ fontSize: 12, color: "#A0A0A5", margin: "0 0 4px", fontWeight: 600 }}>bioLogic · Integrationsanalyse</p>
-                    <p style={{ fontSize: 12, color: "#B0B0B5", margin: "0 0 4px" }}>Erstellt am {today}</p>
-                    <p style={{ fontSize: 11, color: "#B0B0B5", margin: 0, lineHeight: 1.6 }}>Diese Analyse basiert auf dem bioLogic-Modell und ergänzt die persönliche Einschätzung. Sie ersetzt kein Gespräch und keine individuelle Beurteilung.</p>
+              {/* === Was passiert, wenn das Team so bleibt === */}
+              {(() => {
+                const ohneNum = result.fuehrungshinweis ? 9 : 8;
+                return (
+                  <div style={sectionStyle} data-testid="v4-section-team-ohne-person">
+                    <SectionHead num={ohneNum} title="Was passiert, wenn das Team so bleibt" id="team-ohne-person" />
+                    {result.teamOhnePersonText.split("\n\n").map((p, i) => (
+                      <p key={i} style={bodyText}>{p}</p>
+                    ))}
                   </div>
-                  <img src={logoPath} alt="bioLogic" style={{ height: 28, opacity: 0.3 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                </div>
+                );
+              })()}
+
+              {/* === Was jetzt wichtig ist === */}
+              {(() => {
+                const empNum = result.fuehrungshinweis ? 10 : 9;
+                return (
+                  <div style={sectionStyle} data-testid="v4-section-empfehlungen">
+                    <SectionHead num={empNum} title="Was jetzt wichtig ist" id="empfehlungen" />
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                      {result.empfehlungen.map((emp, i) => (
+                        <div key={emp.title} style={{ padding: "16px 20px", borderRadius: 12, background: "#FFF", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} data-testid={`v4-empfehlung-${i}`}>
+                          <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                            <span style={{ width: 24, height: 24, borderRadius: 12, background: "#1A5DAB", color: "#FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{i + 1}</span>
+                            <div>
+                              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px", lineHeight: 1.4 }}>{emp.title}</p>
+                              <p style={{ fontSize: 13, lineHeight: 1.75, color: "#6E6E73", margin: 0 }}>{emp.text}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* === Schlussfazit === */}
+              {(() => {
+                const fazitNum = result.fuehrungshinweis ? 11 : 10;
+                return (
+                  <div style={{ marginBottom: 36 }} data-testid="v4-section-schlussfazit">
+                    <SectionHead num={fazitNum} title="Fazit" id="schlussfazit" />
+                    <div style={{ padding: "20px 24px", borderRadius: 14, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)" }}>
+                      <p style={{ fontSize: 14, lineHeight: 1.85, color: "#1D1D1F", margin: 0, textAlign: "justify", textAlignLast: "left", hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="v4-schlussfazit-text">{result.schlussfazit}</p>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              <div style={{ padding: "24px 0", borderTop: "1px solid rgba(0,0,0,0.08)" }} data-testid="v4-footer">
+                <p style={{ fontSize: 12, color: "#B0B0B5", margin: 0, textAlign: "center", lineHeight: 1.6 }}>
+                  © {new Date().getFullYear()} bioLogic Talent Navigator · Passungsanalyse · Erstellt am {today}
+                </p>
               </div>
 
             </div>

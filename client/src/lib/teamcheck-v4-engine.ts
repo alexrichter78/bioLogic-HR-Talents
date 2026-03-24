@@ -54,6 +54,9 @@ export interface TeamCheckV4Result {
 
   empfehlungen: V4Block[];
 
+  teamOhnePersonText: string;
+  schlussfazit: string;
+
   teamKontext: string;
   v3: TeamCheckV3Result;
 }
@@ -159,6 +162,8 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
     risikoprognose: buildRisikoprognose(ctx),
     integrationsplan: buildIntegrationsplan(ctx),
     empfehlungen: buildEmpfehlungen(ctx),
+    teamOhnePersonText: buildTeamOhnePerson(ctx),
+    schlussfazit: buildSchlussfazit(ctx),
     teamKontext: sameDominance
       ? `Team und Person setzen beide auf ${COMP_SHORT[teamPrimary]}. Ihre Arbeitsweisen liegen nah beieinander.`
       : `Das Team arbeitet mit Schwerpunkt auf ${COMP_SHORT[teamPrimary]}. Die Person setzt stärker auf ${COMP_SHORT[personPrimary]}.`,
@@ -696,4 +701,70 @@ function buildEmpfehlungen(c: Ctx): V4Block[] {
     { title: item2Title, text: item2Text },
     { title: item3Title, text: item3Text },
   ];
+}
+
+function buildTeamOhnePerson(c: Ctx): string {
+  const { isLeader, sameDominance, teamPrimary, personPrimary, hasGoal, teamGoalLabel, passungZumTeam, beitragZurAufgabe } = c;
+  const paras: string[] = [];
+
+  if (sameDominance) {
+    paras.push(`Ohne diese Besetzung bleibt das Team in seiner bisherigen Ausrichtung stabil. Die Arbeitsweise mit Schwerpunkt auf ${COMP_SHORT[teamPrimary]} wird sich fortsetzen. Das bedeutet Kontinuität, aber auch, dass bestehende blinde Flecken bestehen bleiben.`);
+    if (hasGoal && beitragZurAufgabe === "gering") {
+      paras.push(`Besonders im Bereich ${teamGoalLabel} fehlt dem Team weiterhin eine natürliche Verstärkung. Die bisherige Lücke wird nicht geschlossen. Ob das kritisch ist, hängt davon ab, wie stark die Anforderungen in diesem Bereich steigen.`);
+    } else if (hasGoal && beitragZurAufgabe === "hoch") {
+      paras.push(`Im Bereich ${teamGoalLabel} bleibt die aktuelle Stärke erhalten. Allerdings verzichtet das Team auf eine Person, die genau dort einen echten Beitrag hätte leisten können.`);
+    }
+  } else {
+    paras.push(`Ohne diese Besetzung bleibt das Team in seiner bisherigen Form bestehen. Die Arbeitsweise mit Schwerpunkt auf ${COMP_SHORT[teamPrimary]} wird sich nicht verändern. Neue Impulse in Richtung ${COMP_SHORT[personPrimary]} bleiben aus.`);
+    if (passungZumTeam !== "hoch") {
+      paras.push(`Das hat den Vorteil, dass keine Integrationsarbeit nötig ist. Es gibt keine Reibung durch unterschiedliche Arbeitsweisen, keine aufwändige Einarbeitung und keinen zusätzlichen Führungsaufwand. Die Zusammenarbeit bleibt eingespielt.`);
+    }
+    if (beitragZurAufgabe === "hoch" && hasGoal) {
+      paras.push(`Gleichzeitig verzichtet das Team auf eine Person, die im Bereich ${teamGoalLabel} genau die richtige Stärke mitgebracht hätte. Ob diese fachliche Lücke anderweitig geschlossen werden kann, sollte geprüft werden.`);
+    } else if (beitragZurAufgabe === "gering" && hasGoal) {
+      paras.push(`Im Bereich ${teamGoalLabel} ändert sich ebenfalls nichts. Allerdings war die fachliche Passung der Person in diesem Bereich ohnehin nicht stark, sodass der Verzicht hier weniger ins Gewicht fällt.`);
+    }
+  }
+
+  paras.push(isLeader
+    ? "Für die Führung bedeutet das: Kein zusätzlicher Aufwand, aber auch keine neue Dynamik. Ob das Team in seiner jetzigen Zusammensetzung langfristig die richtigen Ergebnisse liefert, sollte unabhängig von dieser Besetzungsentscheidung bewertet werden."
+    : "Für das Team bedeutet das: Die bisherige Dynamik bleibt erhalten. Ob das ausreicht, um die anstehenden Anforderungen zu bewältigen, sollte unabhängig von dieser Besetzungsentscheidung bewertet werden.");
+
+  return paras.join("\n\n");
+}
+
+function buildSchlussfazit(c: Ctx): string {
+  const { isLeader, passungZumTeam, beitragZurAufgabe, hasGoal, teamGoalLabel, gesamteinschaetzung } = c;
+
+  if (gesamteinschaetzung === "Gut passend") {
+    return isLeader
+      ? "Die Besetzung ist aus unserer Sicht empfehlenswert. Person und Führungsrolle passen gut zusammen, die Teamintegration dürfte reibungsarm verlaufen. Mit klaren Erwartungen von Anfang an kann diese Besetzung schnell produktiv werden."
+      : "Die Besetzung ist aus unserer Sicht empfehlenswert. Person und Team passen gut zusammen. Mit klaren Erwartungen und einem bewussten Einstieg kann die Zusammenarbeit schnell produktiv werden.";
+  }
+
+  if (passungZumTeam === "hoch" && beitragZurAufgabe === "gering") {
+    return `Die Person passt gut ins Team, bringt aber im Aufgabenkern${hasGoal ? ` (${teamGoalLabel})` : ""} nicht die volle Stärke mit. Die Besetzung kann funktionieren, wenn fachliche Erwartungen von Anfang an klar formuliert und regelmässig überprüft werden. Ohne diese Klarheit besteht das Risiko, dass gute Integration über fachliche Lücken hinwegtäuscht.`;
+  }
+
+  if (passungZumTeam !== "hoch" && beitragZurAufgabe === "hoch") {
+    return `Die Person bringt fachlich genau das Richtige mit${hasGoal ? ` für den Bereich ${teamGoalLabel}` : ""}. Die Integration ins Team ist allerdings anspruchsvoll. Die Besetzung lohnt sich, wenn Führung bereit ist, die ersten Monate aktiv zu begleiten und die Verbindung zwischen Person und Team bewusst zu gestalten.`;
+  }
+
+  if (gesamteinschaetzung === "Teilweise passend") {
+    return "Die Besetzung ist machbar, aber kein Selbstläufer. Einzelne Unterschiede in der Arbeitsweise sind überbrückbar, wenn Erwartungen früh geklärt werden. Entscheidend ist, ob Führung bereit ist, den Einstieg aktiv zu begleiten.";
+  }
+
+  if (gesamteinschaetzung === "Eingeschränkt passend") {
+    return "Die Besetzung birgt erhebliche Risiken, sowohl in der Teamintegration als auch im fachlichen Kern der Rolle. Sie ist nur dann sinnvoll, wenn von Anfang an gezielte Begleitung und klare Rahmensetzung gewährleistet sind.";
+  }
+
+  if (gesamteinschaetzung === "Kritisch") {
+    return isLeader
+      ? "Die Besetzung ist in der aktuellen Zusammensetzung kritisch. Die Unterschiede zwischen Führungsstil und Teamkultur sind so gross, dass ohne dauerhaft hohen Führungsaufwand weder die Integration noch die Ergebnisse gesichert sind. Es sollte geprüft werden, ob eine alternative Besetzung sinnvoller wäre."
+      : "Die Besetzung ist in der aktuellen Zusammensetzung kritisch. Die Unterschiede zwischen Person und Team sind so gross, dass ohne dauerhaft enge Begleitung weder die Zusammenarbeit noch die Ergebnisse stimmen werden. Eine alternative Besetzung sollte ernsthaft geprüft werden.";
+  }
+
+  return isLeader
+    ? "Die Besetzung ist unter bestimmten Voraussetzungen tragfähig. Entscheidend ist, ob Führung bereit ist, die Integration aktiv zu begleiten und die fachlichen Anforderungen klar zu formulieren. Ohne diesen Einsatz bleibt das Ergebnis unsicher."
+    : "Die Besetzung ist unter bestimmten Voraussetzungen tragfähig. Entscheidend ist, wie bewusst der Einstieg gestaltet wird und ob die Unterschiede in der Arbeitsweise offen besprochen werden. Ohne aktive Begleitung bleibt das Ergebnis unsicher.";
 }
