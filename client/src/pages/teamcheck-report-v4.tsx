@@ -303,6 +303,8 @@ export default function TeamCheckReportV4() {
 .report-header-btn,.no-print,nav{display:none!important}
 *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 [data-pdf-block]{break-inside:avoid!important}
+[data-testid="v4-section-vergleich"]{break-before:page!important;break-inside:avoid!important}
+[data-testid^="v4-integration-phase-"],[data-testid="v4-integration-warnsignale"],[data-testid="v4-integration-leitfragen"],[data-testid="v4-integration-verantwortung"]{break-inside:avoid!important}
 [data-pill]{white-space:nowrap!important}
 .quote-filler{text-align:center;padding:28px 32px;border-top:1px solid rgba(0,0,0,0.04);border-bottom:1px solid rgba(0,0,0,0.04);background:rgba(0,0,0,0.015);break-inside:avoid}
 .quote-filler p.qt{font-size:14.5px;font-style:italic;color:#6E6E73;line-height:1.75;margin:0 auto 6px;max-width:540px}
