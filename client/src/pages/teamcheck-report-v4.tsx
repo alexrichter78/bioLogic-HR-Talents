@@ -292,14 +292,44 @@ export default function TeamCheckReportV4() {
                     if (!reportEl) return;
                     const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
                       .map(el => el.outerHTML).join("\n");
-                    printWin.document.write(`<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>TeamCheck – ${result.roleTitle || "Bericht"}</title>${styles}<style>body{margin:0;padding:20px 0;background:#fff}
+                    const quotes = [
+                      { text: "Nicht weil es schwer ist, wagen wir es nicht \u2013 sondern weil wir es nicht wagen, ist es schwer.", author: "Seneca" },
+                      { text: "Zusammenkommen ist ein Beginn, Zusammenbleiben ein Fortschritt, Zusammenarbeiten ein Erfolg.", author: "Henry Ford" },
+                      { text: "Wer Menschen f\u00fchren will, muss hinter ihnen gehen.", author: "Laozi" },
+                      { text: "Der beste Weg, die Zukunft vorherzusagen, ist, sie zu gestalten.", author: "Peter Drucker" },
+                      { text: "Einzeln sind wir W\u00f6rter, zusammen ein Gedicht.", author: "Georg Bydlinski" },
+                    ];
+                    printWin.document.write(`<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>TeamCheck \u2013 ${result.roleTitle || "Bericht"}</title>${styles}<style>body{margin:0;padding:20px 0;background:#fff}
 .report-header-btn,.no-print,nav{display:none!important}
 *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 [data-pdf-block]{break-inside:avoid!important}
 [data-pill]{white-space:nowrap!important}
+.quote-filler{text-align:center;padding:28px 32px;border-top:1px solid rgba(0,0,0,0.04);border-bottom:1px solid rgba(0,0,0,0.04);background:rgba(0,0,0,0.015);break-inside:avoid}
+.quote-filler p.qt{font-size:14.5px;font-style:italic;color:#6E6E73;line-height:1.75;margin:0 auto 6px;max-width:540px}
+.quote-filler p.qa{font-size:12px;font-weight:600;color:#8E8E93;margin:0;letter-spacing:0.03em}
 </style></head><body class="v4-report-page">${reportEl.outerHTML}</body></html>`);
                     printWin.document.close();
-                    setTimeout(() => { printWin.print(); }, 600);
+                    setTimeout(() => {
+                      const A4_H = 1122;
+                      const blocks = printWin.document.querySelectorAll<HTMLElement>("[data-pdf-block]");
+                      let qi = 0;
+                      blocks.forEach(block => {
+                        if (qi >= quotes.length) return;
+                        const rect = block.getBoundingClientRect();
+                        const blockEnd = rect.top + rect.height;
+                        const pageNum = Math.floor(blockEnd / A4_H);
+                        const pageBottom = (pageNum + 1) * A4_H;
+                        const gap = pageBottom - blockEnd;
+                        if (gap > 180 && gap < 500) {
+                          const q = quotes[qi++];
+                          const div = printWin.document.createElement("div");
+                          div.className = "quote-filler";
+                          div.innerHTML = `<p class="qt">\u201E${q.text}\u201C</p><p class="qa">\u2014 ${q.author}</p>`;
+                          block.parentNode?.insertBefore(div, block.nextSibling);
+                        }
+                      });
+                      printWin.print();
+                    }, 600);
                   }}
                   data-testid="button-print-v4"
                   className="report-header-btn"
@@ -478,8 +508,6 @@ export default function TeamCheckReportV4() {
                 );
               })()}
 
-              <QuoteDivider text="Nicht weil es schwer ist, wagen wir es nicht – sondern weil wir es nicht wagen, ist es schwer." author="Seneca" />
-
               {/* === Section 3: Warum dieses Ergebnis entsteht === */}
               <div data-pdf-block style={sectionStyle} data-testid="v4-section-warum">
                 <SectionHead num={3} title="Warum dieses Ergebnis entsteht" id="warum" />
@@ -491,8 +519,6 @@ export default function TeamCheckReportV4() {
                 <SectionHead num={4} title="Wirkung im Arbeitsalltag" id="wirkung" />
                 <TextBlock text={result.wirkungAlltagText} />
               </div>
-
-              <QuoteDivider text="Zusammenkommen ist ein Beginn, Zusammenbleiben ein Fortschritt, Zusammenarbeiten ein Erfolg." author="Henry Ford" />
 
               {/* === Section 5: Chancen und Risiken === */}
               <div data-pdf-block style={sectionStyle} data-testid="v4-section-chancen-risiken">
@@ -551,8 +577,6 @@ export default function TeamCheckReportV4() {
                   </div>
                 </div>
               )}
-
-              <QuoteDivider text="Wer Menschen führen will, muss hinter ihnen gehen." author="Laozi" />
 
               {/* === 30-Tage-Integrationsplan === */}
               {(() => {
@@ -646,8 +670,6 @@ export default function TeamCheckReportV4() {
               })()}
 
               {/* === Was jetzt wichtig ist === */}
-              <QuoteDivider text="Der beste Weg, die Zukunft vorherzusagen, ist, sie zu gestalten." author="Peter Drucker" />
-
               {(() => {
                 const empNum = result.fuehrungshinweis ? 11 : 10;
                 return (
