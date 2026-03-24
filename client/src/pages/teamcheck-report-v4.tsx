@@ -210,7 +210,7 @@ export default function TeamCheckReportV4() {
               {result.fuehrungshinweis && (
                 <div style={sectionStyle} data-testid="v4-section-fuehrung">
                   <SectionHead num={6} title="Was als Führungskraft für dieses Team wichtig ist" id="fuehrung" />
-                  <div style={{ display: "grid", gridTemplateColumns: result.fuehrungshinweis.length <= 3 ? "1fr" : "1fr 1fr", gap: 14 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 14 }}>
                     {result.fuehrungshinweis.map((item, i) => (
                       <div key={item.title} style={{ padding: "18px 20px", borderRadius: 12, background: "#FFF", borderLeft: "3px solid #343A48", border: "1px solid rgba(0,0,0,0.06)", borderLeftWidth: 3, borderLeftColor: "#343A48", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} data-testid={`v4-fuehrung-${i}`}>
                         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
