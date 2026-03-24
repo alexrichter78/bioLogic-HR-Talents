@@ -569,6 +569,31 @@ input[type="range"].bio-slider::-moz-range-track {
     box-shadow: none !important;
     border-radius: 0 !important;
   }
+  .v4-report-page [data-testid="v4-section-gesamtbewertung"],
+  .v4-report-page [data-testid="v4-section-vergleich"],
+  .v4-report-page [data-testid="v4-section-warum"],
+  .v4-report-page [data-testid="v4-section-alltag"],
+  .v4-report-page [data-testid="v4-section-chancen"],
+  .v4-report-page [data-testid="v4-section-druck"],
+  .v4-report-page [data-testid="v4-section-fuehrung"],
+  .v4-report-page [data-testid="v4-section-integrationsplan"],
+  .v4-report-page [data-testid="v4-section-risikoprognose"],
+  .v4-report-page [data-testid="v4-section-empfehlungen"],
+  .v4-report-page [data-testid="v4-section-team-ohne-person"],
+  .v4-report-page [data-testid="v4-section-schlussbewertung"] {
+    padding-bottom: 20px !important;
+    margin-bottom: 20px !important;
+  }
+  .v4-report-page [data-testid="v4-hero-bewertung"] {
+    margin-bottom: 14px !important;
+  }
+  .v4-report-page [data-testid="v4-kurzuebersicht-dominanz"] {
+    padding: 14px 18px !important;
+    margin-top: 10px !important;
+  }
+  .v4-report-page [data-testid="v4-kurzueberblick"] {
+    margin-top: 10px !important;
+  }
   .v4-report-page [data-pdf-block] {
     break-inside: avoid !important;
   }
