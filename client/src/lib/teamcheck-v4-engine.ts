@@ -573,58 +573,63 @@ function buildIntegrationsplan(c: Ctx): V4IntegrationPhase[] {
       {
         num: 1, title: "Orientierung und Erwartungsklärung", period: "Tag 1 – 10",
         ziel: isLeader
-          ? `Führungsrolle als ${roleName} im Team verankern und gegenseitige Erwartungen klären.`
-          : `Als ${roleName} im Team ankommen und Arbeitsweise abstimmen.`,
+          ? `Führungsrolle als ${roleName} im Team verankern, gegenseitige Erwartungen klären und ein gemeinsames Verständnis der Zusammenarbeit aufbauen.`
+          : `Als ${roleName} im Team ankommen, bestehende Abläufe verstehen und die eigene Arbeitsweise mit dem Team abstimmen.`,
         items: [
-          "Bestehende Abläufe, Schnittstellen und Entscheidungswege kennenlernen.",
-          isLeader ? "Erwartungen des Teams an die Führung aktiv erfragen." : "Erwartungen des Teams an die Zusammenarbeit aktiv erfragen.",
-          isLeader ? "Eigene Führungsprioritäten transparent machen." : "Eigene Arbeitsweise und Stärken sichtbar machen.",
-          ...(beitragZurAufgabe === "gering" && hasGoal ? [`Anforderungen im Bereich ${teamGoalLabel} gezielt klären.`] : []),
+          "Bestehende Abläufe, Schnittstellen und Entscheidungswege systematisch kennenlernen.",
+          isLeader ? "Erwartungen des Teams an die Führung in Einzelgesprächen aktiv erfragen und dokumentieren." : "Erwartungen des Teams an die Zusammenarbeit in persönlichen Gesprächen aktiv erfragen.",
+          isLeader ? "Eigene Führungsprioritäten und den bevorzugten Entscheidungsstil transparent machen." : "Eigene Arbeitsweise, Stärken und bevorzugte Kommunikationsform sichtbar machen.",
+          "Klären, welche informellen Regeln und ungeschriebenen Vereinbarungen im Team gelten.",
+          ...(beitragZurAufgabe === "gering" && hasGoal ? [`Anforderungen und Qualitätsstandards im Bereich ${teamGoalLabel} gezielt klären.`] : []),
         ],
         fokus: {
-          intro: `Die Arbeitsweisen passen gut zusammen. Trotzdem muss in den ersten Tagen geklärt werden:`,
+          intro: `Die Arbeitsweisen passen gut zusammen. Trotzdem muss in den ersten Tagen konkret geklärt werden:`,
           bullets: [
-            "Welche Erwartungen bestehen konkret an diese Rolle?",
-            isLeader ? "Wie will die Führungskraft führen und entscheiden?" : "Wie soll die Zusammenarbeit im Alltag aussehen?",
-            "Wo liegen die wichtigsten Schnittstellen und Prioritäten?",
+            "Welche Erwartungen bestehen an diese Rolle und wie wird Erfolg gemessen?",
+            isLeader ? "Wie will die Führungskraft führen, kommunizieren und entscheiden?" : "Wie soll die tägliche Zusammenarbeit, Abstimmung und Kommunikation aussehen?",
+            "Wo liegen die wichtigsten Schnittstellen, Abhängigkeiten und Prioritäten?",
           ],
         },
       },
       {
         num: 2, title: "Erste Wirkung und Rückmeldung", period: "Tag 11 – 20",
         ziel: isLeader
-          ? `Erste Führungswirkung als ${roleName} zeigen und Rückmeldung einholen.`
-          : `Erste Arbeitsergebnisse als ${roleName} liefern und Feedback einholen.`,
+          ? `Erste sichtbare Führungswirkung als ${roleName} entfalten, Entscheidungen nachvollziehbar treffen und gezielt Rückmeldung zur eigenen Wirkung einholen.`
+          : `Erste eigenständige Arbeitsergebnisse als ${roleName} liefern, sich im Teamgefüge positionieren und strukturiert Feedback einholen.`,
         items: [
-          isLeader ? "Erste eigene Entscheidungen treffen und transparent kommunizieren." : "Erste Aufgaben eigenständig übernehmen und abschliessen.",
-          "Aktiv Rückmeldung zur eigenen Wirkung einholen.",
-          ...(beitragZurAufgabe === "gering" ? ["Im fachlichen Kern der Rolle gezielt auf Qualität und Standards achten."] : []),
-          isLeader ? "Zusammenarbeit mit dem Team aktiv gestalten." : "Zusammenarbeit mit Teamkollegen aktiv aufbauen.",
+          isLeader ? "Erste eigene Entscheidungen treffen, die Logik dahinter transparent kommunizieren und das Team einbinden." : "Erste Aufgaben eigenständig und sichtbar abschliessen und die Ergebnisse im Team teilen.",
+          "Gezielt Rückmeldung zur eigenen Wirkung und Arbeitsweise einholen, bevor sich Gewohnheiten festigen.",
+          isLeader ? "Zusammenarbeit mit dem Team durch regelmässige kurze Abstimmungen aktiv gestalten." : "Zusammenarbeit mit Teamkollegen durch eigene Initiative und Verlässlichkeit aktiv aufbauen.",
+          ...(beitragZurAufgabe === "gering" ? ["Im fachlichen Kern der Rolle gezielt auf Qualität, Standards und Nachvollziehbarkeit achten."] : []),
+          "Prüfen, ob die eigenen Annahmen über die Teamkultur mit der Realität übereinstimmen.",
         ],
         fokus: {
           intro: `Die Integration verläuft voraussichtlich reibungsarm. Jetzt geht es darum:`,
           bullets: [
-            "Erste Ergebnisse sichtbar zu machen",
-            "Rückmeldung aktiv einzuholen, bevor sich Gewohnheiten festigen",
+            "Erste Ergebnisse sichtbar zu machen und Vertrauen durch Verlässlichkeit aufzubauen",
+            "Rückmeldung aktiv einzuholen, bevor sich Muster verfestigen",
             ...(beitragZurAufgabe === "gering" ? [`Fachliche Anforderungen${hasGoal ? ` im Bereich ${teamGoalLabel}` : ""} nicht aus den Augen zu verlieren`] : []),
           ],
         },
       },
       {
-        num: 3, title: "Verankerung und Standortbestimmung", period: "Tag 21 – 30",
-        ziel: `Arbeitsweise als ${roleName} stabilisieren und erste Standortbestimmung durchführen.`,
+        num: 3, title: "Standortbestimmung und Weichenstellung", period: "Tag 21 – 30",
+        ziel: `Ehrliche Bestandsaufnahme nach 30 Tagen: Funktioniert die Integration als ${roleName} wie erwartet, und wo braucht es Anpassungen?`,
         items: [
-          "Zusammenfassendes Feedbackgespräch mit der direkten Führung.",
-          isLeader ? "Führungsrhythmus und Entscheidungswege überprüfen." : "Arbeitsrhythmus und Prioritäten überprüfen.",
-          "Offene Punkte identifizieren und nächste Schritte vereinbaren.",
-          ...(beitragZurAufgabe === "gering" ? ["Bewusste Standortbestimmung im fachlichen Kern der Rolle."] : []),
+          "Strukturiertes Feedbackgespräch mit der direkten Führung führen.",
+          isLeader ? "Rückmeldungen aus dem Team zur Führungswirkung und zum Führungsrhythmus einholen." : "Rückmeldung aus dem Team zur Zusammenarbeit, Kommunikation und Verlässlichkeit einholen.",
+          isLeader ? "Entscheidungswege und Führungsrhythmus auf Wirksamkeit überprüfen." : "Arbeitsrhythmus, Prioritäten und Abstimmungswege auf Wirksamkeit überprüfen.",
+          "Bewerten, ob die Zusammenarbeit im Alltag tragfähig ist oder ob Anpassungen nötig sind.",
+          "Konkrete Massnahmen und Entwicklungsziele für die nächsten 60 Tage vereinbaren.",
+          "Offene Punkte identifizieren, Verantwortlichkeiten klären und nächste Schritte festlegen.",
+          ...(beitragZurAufgabe === "gering" ? ["Fachliche Standortbestimmung im Aufgabenkern der Rolle durchführen."] : []),
         ],
         fokus: {
-          intro: `Nach 30 Tagen sollte klar sein:`,
+          intro: `Nach 30 Tagen sollte ehrlich bewertet werden:`,
           bullets: [
             "Funktioniert die Zusammenarbeit im Alltag wie erwartet?",
-            isLeader ? "Wird die Führung vom Team angenommen?" : "Ist die Person im Team angekommen?",
-            "Wo braucht es Nachjustierung?",
+            isLeader ? "Wird die Führung vom Team akzeptiert und als hilfreich erlebt?" : "Ist die Person im Team angekommen und wird als Teammitglied wahrgenommen?",
+            "Welche konkreten Massnahmen sind nötig, damit die Integration in den nächsten Wochen stabil weitergeht?",
           ],
         },
       },
@@ -635,65 +640,66 @@ function buildIntegrationsplan(c: Ctx): V4IntegrationPhase[] {
     {
       num: 1, title: "Orientierung und Brücken bauen", period: "Tag 1 – 10",
       ziel: isLeader
-        ? `In der Führungsrolle im Team Vertrauen aufbauen und Unterschiede in der Arbeitsweise früh und offen ansprechen.`
-        : `Als ${roleName} ankommen und die Unterschiede zwischen eigener Arbeitsweise und Teamkultur verstehen.`,
+        ? `In der Führungsrolle Vertrauen aufbauen, die bestehende Teamkultur verstehen und Unterschiede in der Arbeitsweise früh, offen und wertschätzend ansprechen.`
+        : `Als ${roleName} ankommen, die bestehende Teamkultur kennenlernen und die Unterschiede zwischen eigener Arbeitsweise und Teamdynamik verstehen.`,
       items: [
-        `Bestehende Teamkultur und Arbeitsweise mit Schwerpunkt auf ${teamDesc} kennenlernen.`,
-        isLeader ? "Eigenen Führungsstil erklären und bewusst Brücken zur bestehenden Teamkultur bauen." : "Eigene Arbeitsweise erklären und Gemeinsamkeiten betonen.",
-        isLeader ? "Einzelgespräche mit jedem Teammitglied in der ersten Woche führen." : "Gespräche mit wichtigen Teamkollegen und Schnittstellen suchen.",
-        `Unterschiede zwischen ${personDesc} einerseits sowie ${teamDesc} andererseits offen ansprechen.`,
-        ...(hasGoal ? [`Anforderungen im Bereich ${teamGoalLabel} gezielt klären.`] : []),
+        `Bestehende Teamkultur, Kommunikationswege und Arbeitsrhythmus mit Schwerpunkt auf ${teamDesc} systematisch kennenlernen.`,
+        isLeader ? "Eigenen Führungsstil erklären und Brücken zur bestehenden Teamkultur bauen, ohne bestehende Stärken zu entwerten." : "Eigene Arbeitsweise erklären, Gemeinsamkeiten betonen und Offenheit für die Teamkultur zeigen.",
+        isLeader ? "Einzelgespräche mit jedem Teammitglied in der ersten Woche führen, um Erwartungen, Sorgen und Wünsche zu verstehen." : "Gespräche mit wichtigen Teamkollegen und Schnittstellen aktiv suchen und Beziehungen aufbauen.",
+        `Unterschiede zwischen ${personDesc} einerseits sowie ${teamDesc} andererseits offen und ohne Wertung ansprechen.`,
+        "Klären, welche ungeschriebenen Regeln, Gewohnheiten und Empfindlichkeiten im Team bestehen.",
+        ...(hasGoal ? [`Anforderungen, Standards und Erwartungen im Bereich ${teamGoalLabel} gezielt klären.`] : []),
       ],
       fokus: {
         intro: `Die Arbeitsweisen unterscheiden sich. Deshalb ist in den ersten Tagen besonders wichtig:`,
         bullets: [
-          "Wie arbeitet das Team und warum?",
-          isLeader ? "Was erwartet das Team von Führung?" : "Was erwartet das Team von neuen Teammitgliedern?",
-          "Wo entstehen erste Reibungspunkte und wie lassen sie sich früh entschärfen?",
+          "Wie arbeitet das Team, warum hat sich diese Arbeitsweise entwickelt und was funktioniert gut?",
+          isLeader ? "Was erwartet das Team von Führung und wo liegen mögliche Empfindlichkeiten?" : "Was erwartet das Team von neuen Teammitgliedern und wie wird Vertrauen aufgebaut?",
+          "Wo entstehen erste Reibungspunkte und wie lassen sie sich früh, offen und konstruktiv entschärfen?",
         ],
       },
     },
     {
       num: 2, title: "Unterschiede produktiv machen", period: "Tag 11 – 20",
       ziel: isLeader
-        ? `Den eigenen Führungsstil mit der Teamkultur verbinden und erste sichtbare Wirkung erzielen.`
-        : `Die eigene Stärke einbringen und gleichzeitig die Teamkultur respektieren.`,
+        ? `Den eigenen Führungsstil mit der bestehenden Teamkultur verbinden, erste sichtbare Wirkung erzielen und zeigen, dass Unterschiede kein Hindernis, sondern eine Chance sind.`
+        : `Die eigene Stärke gezielt einbringen, gleichzeitig die Teamkultur respektieren und durch konkrete Beiträge Vertrauen aufbauen.`,
       items: [
-        isLeader ? "Erste Führungsentscheidungen treffen und dem Team die Logik dahinter erklären." : "Erste Aufgaben eigenständig umsetzen und Ergebnisse zeigen.",
-        `Bewusst Situationen schaffen, in denen ${personDesc} dem Team konkret helfen.`,
-        "Aktiv Rückmeldung einholen, wie die eigene Arbeitsweise erlebt wird.",
-        isLeader ? "Teamregeln, Entscheidungswege und Verantwortlichkeiten gemeinsam klären." : "Abstimmungsrhythmus mit dem Team finden.",
-        ...(beitragZurAufgabe === "gering" && hasGoal ? [`Im Bereich ${teamGoalLabel} gezielt Standards einhalten und nachfragen.`] : []),
-        `Sichtbar machen, wie fachliche Sorgfalt und Teamorientierung zusammenwirken können.`,
+        isLeader ? "Erste Führungsentscheidungen treffen, die Logik dahinter erklären und das Team in die Umsetzung einbinden." : "Erste Aufgaben eigenständig und sichtbar umsetzen und Ergebnisse mit dem Team teilen.",
+        `Gezielt Situationen schaffen, in denen ${personDesc} dem Team konkret und spürbar helfen.`,
+        "Aktiv und strukturiert Rückmeldung einholen, wie die eigene Arbeitsweise vom Team erlebt wird.",
+        isLeader ? "Teamregeln, Entscheidungswege und Verantwortlichkeiten gemeinsam klären und dokumentieren." : "Einen verlässlichen Abstimmungsrhythmus mit dem Team finden und einhalten.",
+        ...(beitragZurAufgabe === "gering" && hasGoal ? [`Im Bereich ${teamGoalLabel} gezielt Standards einhalten, nachfragen und Qualität sicherstellen.`] : []),
+        `Sichtbar machen, wie die unterschiedlichen Stärken – fachliche Sorgfalt und Teamorientierung – zusammenwirken und sich ergänzen können.`,
       ],
       fokus: {
         intro: `Die erste Orientierung ist abgeschlossen. Jetzt muss ${isLeader ? "die Führungskraft" : "die Person"} zeigen:`,
         bullets: [
-          "Dass die eigene Stärke dem Team einen echten Mehrwert bringt",
-          "Dass Unterschiede kein Hindernis sein müssen, sondern produktiv genutzt werden können",
-          isLeader ? "Dass Führung Richtung gibt, ohne die bestehende Teamkultur unnötig zu überfahren" : "Dass Zusammenarbeit trotz unterschiedlicher Arbeitsweisen funktioniert",
+          "Dass die eigene Stärke dem Team einen echten, spürbaren Mehrwert bringt",
+          "Dass Unterschiede kein Hindernis sein müssen, sondern aktiv und produktiv genutzt werden können",
+          isLeader ? "Dass Führung Orientierung und Richtung gibt, ohne die bestehende Teamkultur unnötig zu überfahren" : "Dass eine vertrauensvolle Zusammenarbeit trotz unterschiedlicher Arbeitsweisen funktioniert und wächst",
         ],
       },
     },
     {
       num: 3, title: "Standortbestimmung und Weichenstellung", period: "Tag 21 – 30",
       ziel: isLeader
-        ? `Nach 30 Tagen ehrlich bewerten, ob die Integration in der Führungsrolle tragfähig verläuft.`
-        : `Ehrliche Bestandsaufnahme nach 30 Tagen: Funktioniert die Integration?`,
+        ? `Ehrliche Bestandsaufnahme nach 30 Tagen: Verläuft die Integration in der Führungsrolle tragfähig, und wo muss nachgesteuert werden?`
+        : `Ehrliche Bestandsaufnahme nach 30 Tagen: Funktioniert die Integration, und was braucht es für die nächsten Wochen?`,
       items: [
         "Strukturiertes Feedbackgespräch mit der direkten Führung führen.",
-        isLeader ? "Rückmeldungen aus dem Team zur Führungswirkung einholen." : "Rückmeldung aus dem Team zur Zusammenarbeit einholen.",
+        isLeader ? "Rückmeldungen aus dem Team zur Führungswirkung, zum Entscheidungsstil und zur Zusammenarbeit einholen." : "Rückmeldung aus dem Team zur Zusammenarbeit, zur Kommunikation und zur Verlässlichkeit einholen.",
         `Bewerten, ob die Unterschiede zwischen ${personDesc} einerseits sowie ${teamDesc} andererseits bereits produktiv wirken oder eher belasten.`,
-        "Konkrete Massnahmen für die nächsten 60 Tage vereinbaren.",
-        isLeader ? "Früh entscheiden, wo nachgesteuert, erklärt oder enger begleitet werden muss." : "Offene Punkte identifizieren und nächste Schritte klären.",
-        ...(beitragZurAufgabe === "gering" ? ["Fachliche Standortbestimmung im Aufgabenkern der Rolle."] : []),
+        "Konkrete Massnahmen, Entwicklungsziele und Verantwortlichkeiten für die nächsten 60 Tage vereinbaren.",
+        isLeader ? "Entscheiden, wo nachgesteuert, klarer kommuniziert oder enger begleitet werden muss." : "Offene Punkte identifizieren, Prioritäten setzen und nächste Schritte verbindlich klären.",
+        ...(beitragZurAufgabe === "gering" ? ["Fachliche Standortbestimmung im Aufgabenkern der Rolle durchführen und Lücken benennen."] : []),
       ],
       fokus: {
         intro: `Nach 30 Tagen sollte ehrlich bewertet werden:`,
         bullets: [
-          isLeader ? "Akzeptiert das Team die Führung?" : "Ist die Person im Team angekommen?",
-          "Werden die Unterschiede eher als Bereicherung oder als Belastung erlebt?",
-          "Welche Massnahmen sind nötig, damit die Integration in den nächsten Wochen stabil weitergeht?",
+          isLeader ? "Akzeptiert das Team die Führung und wird sie als hilfreich erlebt?" : "Ist die Person im Team angekommen und wird sie als Teil des Teams wahrgenommen?",
+          "Werden die Unterschiede in der Arbeitsweise eher als Bereicherung oder als Belastung erlebt?",
+          "Welche konkreten Massnahmen sind nötig, damit die Integration in den nächsten Wochen stabil und nachhaltig weitergeht?",
         ],
       },
     },
