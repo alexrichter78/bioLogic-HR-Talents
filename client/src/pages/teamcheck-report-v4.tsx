@@ -39,7 +39,7 @@ function TextBlock({ text }: { text: string }) {
     <>
       {text.split("\n\n").map((para, i) =>
         para.startsWith("Die Kernaussage") ? (
-          <div key={i} style={{ padding: "14px 20px", borderRadius: 10, background: "rgba(0,0,0,0.02)", borderLeft: "3px solid #1A5DAB", margin: "16px 0" }}>
+          <div key={i} style={{ padding: "14px 20px", borderRadius: 10, background: "rgba(52,199,89,0.05)", borderLeft: "3px solid #34C759", margin: "16px 0" }}>
             <p style={{ ...bodyText, margin: 0, fontWeight: 600, color: "#1D1D1F" }}>{para}</p>
           </div>
         ) : (
