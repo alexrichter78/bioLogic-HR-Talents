@@ -603,6 +603,9 @@ input[type="range"].bio-slider::-moz-range-track {
   .v4-report-page [data-testid="v4-section-integrationsplan"] > div:first-child {
     break-after: avoid !important;
   }
+  .v4-report-page [data-testid="v4-integration-phase-3"] {
+    break-before: page !important;
+  }
   .v4-report-page [data-testid="v4-two-axis"],
   .v4-report-page [data-testid="v4-kurzuebersicht-dominanz"],
   .v4-report-page [data-testid="v4-kurzueberblick"],
