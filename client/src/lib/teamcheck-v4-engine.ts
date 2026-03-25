@@ -589,13 +589,12 @@ function buildIntegrationsplan(c: Ctx): V4IntegrationPhase[] {
           ? `Die Führungskraft soll im Team ankommen, die Arbeitsweise verstehen und früh Sicherheit in der Zusammenarbeit aufbauen.`
           : `Die Person soll im Team ankommen, die Arbeitsweise verstehen und erste Sicherheit in der Zusammenarbeit gewinnen.`,
         beschreibung: isLeader
-          ? `In den ersten Tagen geht es nicht darum, sofort Führung zu zeigen oder Veränderungen anzustossen. Entscheidend ist zuerst zu verstehen, wie das Team arbeitet, was im Alltag funktioniert und worauf die Teammitglieder Wert legen.\n\nTeam und Führungskraft arbeiten beide stärker über ${teamDesc}. Die Arbeitsweisen liegen nah beieinander. Trotzdem hat jedes Team eigene Gewohnheiten und ungeschriebene Regeln, die erst im Alltag sichtbar werden.\n\nWer zuerst beobachtet, zuhört und versteht, schafft Vertrauen und gewinnt schneller das Team.`
-          : `In den ersten Tagen geht es nicht darum, sofort etwas zu verändern. Entscheidend ist zuerst zu verstehen, wie das Team arbeitet, was im Alltag gut funktioniert und worauf Kolleginnen und Kollegen Wert legen.\n\nTeam und Person arbeiten beide stärker über ${teamDesc}. Die Arbeitsweisen liegen nah beieinander. Trotzdem hat jedes Team eigene Gewohnheiten und ungeschriebene Regeln, die erst im Alltag sichtbar werden.\n\nWer zuerst beobachtet, zuhört und versteht, schafft Vertrauen und verhindert unnötige Missverständnisse.`,
+          ? `In den ersten Tagen geht es nicht darum, sofort Führung zu zeigen oder Veränderungen anzustossen. Entscheidend ist zuerst zu verstehen, wie das Team arbeitet, was im Alltag funktioniert und worauf die Teammitglieder Wert legen.\n\nTeam und Führungskraft arbeiten beide stärker über ${teamDesc}. Die Arbeitsweisen liegen nah beieinander. Trotzdem hat jedes Team eigene Gewohnheiten und ungeschriebene Regeln, die erst im Alltag sichtbar werden. Wer zuerst beobachtet, zuhört und versteht, schafft Vertrauen und gewinnt schneller das Team.`
+          : `In den ersten Tagen geht es nicht darum, sofort etwas zu verändern. Entscheidend ist zuerst zu verstehen, wie das Team arbeitet, was im Alltag gut funktioniert und worauf Kolleginnen und Kollegen Wert legen.\n\nTeam und Person arbeiten beide stärker über ${teamDesc}. Die Arbeitsweisen liegen nah beieinander. Trotzdem hat jedes Team eigene Gewohnheiten und ungeschriebene Regeln, die erst im Alltag sichtbar werden. Wer zuerst beobachtet, zuhört und versteht, schafft Vertrauen und verhindert unnötige Missverständnisse.`,
         praxis: [
           isLeader ? "Gespräche mit jedem Teammitglied führen" : "Gespräche mit wichtigen Teamkollegen führen",
           "Nachfragen, wie Zusammenarbeit bisher gut funktioniert hat",
           "Beobachten, wie Besprechungen und Abstimmungen ablaufen",
-          "Darauf achten, worauf das Team sensibel reagiert",
           isLeader ? "Erwartungen an Führung verstehen, bevor etwas verändert wird" : "Unterschiede erst verstehen, bevor etwas verändert wird",
         ],
         signale: [
@@ -688,13 +687,12 @@ function buildIntegrationsplan(c: Ctx): V4IntegrationPhase[] {
         ? `Die Führungskraft soll im Team ankommen, die Arbeitsweise verstehen und Unterschiede früh erkennen, ohne vorschnell zu bewerten.`
         : `Die Person soll im Team ankommen, die Arbeitsweise verstehen und erste Sicherheit in der Zusammenarbeit gewinnen.`,
       beschreibung: isLeader
-        ? `In den ersten Tagen geht es nicht darum, sofort Führung zu zeigen oder Veränderungen anzustossen. Entscheidend ist zuerst zu verstehen, wie das Team arbeitet, was im Alltag funktioniert und worauf die Teammitglieder Wert legen.\n\nDas Team arbeitet stärker über ${teamDesc}. Die Führungskraft bringt eher eine ${COMP_ADJ_AW[personPrimary]} Arbeitsweise mit. Deshalb ist es wichtig, Unterschiede früh zu erkennen, ohne sie vorschnell zu bewerten.\n\nWer zuerst beobachtet, zuhört und versteht, schafft Vertrauen und verhindert unnötige Missverständnisse.`
-        : `In den ersten Tagen geht es nicht darum, sofort etwas zu verändern. Entscheidend ist zuerst zu verstehen, wie das Team arbeitet, was im Alltag gut funktioniert und worauf Kolleginnen und Kollegen Wert legen.\n\nDas Team arbeitet stärker über ${teamDesc}. Die Person bringt eher eine ${COMP_ADJ_AW[personPrimary]} Arbeitsweise mit. Deshalb ist es wichtig, Unterschiede früh zu erkennen, ohne sie vorschnell zu bewerten.\n\nWer zuerst beobachtet, zuhört und versteht, schafft Vertrauen und verhindert unnötige Missverständnisse.`,
+        ? `In den ersten Tagen geht es nicht darum, sofort Führung zu zeigen oder Veränderungen anzustossen. Entscheidend ist zuerst zu verstehen, wie das Team arbeitet, was im Alltag funktioniert und worauf die Teammitglieder Wert legen.\n\nDas Team arbeitet stärker über ${teamDesc}. Die Führungskraft bringt eher eine ${COMP_ADJ_AW[personPrimary]} Arbeitsweise mit. Deshalb ist es wichtig, Unterschiede früh zu erkennen, ohne sie vorschnell zu bewerten. Wer zuerst beobachtet, zuhört und versteht, schafft Vertrauen und verhindert unnötige Missverständnisse.`
+        : `In den ersten Tagen geht es nicht darum, sofort etwas zu verändern. Entscheidend ist zuerst zu verstehen, wie das Team arbeitet, was im Alltag gut funktioniert und worauf Kolleginnen und Kollegen Wert legen.\n\nDas Team arbeitet stärker über ${teamDesc}. Die Person bringt eher eine ${COMP_ADJ_AW[personPrimary]} Arbeitsweise mit. Deshalb ist es wichtig, Unterschiede früh zu erkennen, ohne sie vorschnell zu bewerten. Wer zuerst beobachtet, zuhört und versteht, schafft Vertrauen und verhindert unnötige Missverständnisse.`,
       praxis: [
         isLeader ? "Gespräche mit jedem Teammitglied führen" : "Gespräche mit wichtigen Teamkollegen führen",
         "Nachfragen, wie Zusammenarbeit bisher gut funktioniert hat",
         "Beobachten, wie Besprechungen und Abstimmungen ablaufen",
-        "Darauf achten, worauf das Team sensibel reagiert",
         isLeader ? "Unterschiede in der Führung erst verstehen, bevor etwas verändert wird" : "Unterschiede erst verstehen, bevor etwas verändert wird",
         ...(hasGoal ? [`Anforderungen im Bereich ${teamGoalLabel} gezielt erfragen und verstehen`] : []),
       ],
