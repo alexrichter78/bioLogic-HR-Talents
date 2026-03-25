@@ -92,6 +92,12 @@ const COMP_ADJ: Record<ComponentKey, string> = {
   analytisch: "genauer und strukturierter",
 };
 
+const COMP_ADJ_AW: Record<ComponentKey, string> = {
+  impulsiv: "direktere und schnellere",
+  intuitiv: "stärker auf Austausch und Miteinander ausgerichtete",
+  analytisch: "genauere und strukturiertere",
+};
+
 const COMP_NOUN: Record<ComponentKey, string> = {
   impulsiv: "schnelle Umsetzung und direkte Entscheidungen",
   intuitiv: "Austausch, Abstimmung und Zusammenarbeit",
@@ -580,34 +586,33 @@ function buildIntegrationsplan(c: Ctx): V4IntegrationPhase[] {
       {
         num: 1, title: "Ankommen und Team verstehen", period: "Tag 1 – 10",
         ziel: isLeader
-          ? `Die Führungskraft soll im Team ankommen, die Arbeitsweise und Erwartungen verstehen und früh Sicherheit in der Zusammenarbeit aufbauen.`
-          : `Die Person soll im Team ankommen, die Stimmung und Arbeitsweise verstehen und früh Sicherheit in der Zusammenarbeit gewinnen.`,
+          ? `Die Führungskraft soll im Team ankommen, die Arbeitsweise verstehen und früh Sicherheit in der Zusammenarbeit aufbauen.`
+          : `Die Person soll im Team ankommen, die Arbeitsweise verstehen und erste Sicherheit in der Zusammenarbeit gewinnen.`,
         beschreibung: isLeader
-          ? `In den ersten Tagen geht es nicht darum, sofort Führung zu zeigen oder Veränderungen anzustossen. Zuerst muss klar werden, wie das Team arbeitet, welche Abläufe funktionieren und worauf die Teammitglieder Wert legen.\n\nDazu gehört, die wichtigsten Personen im Team kennenzulernen, bestehende Entscheidungswege zu verstehen und zu beobachten, wie kommuniziert, abgestimmt und entschieden wird. Auch wenn die Arbeitsweisen gut zusammenpassen, gibt es in jedem Team ungeschriebene Regeln, die erst im Alltag sichtbar werden.\n\nHilfreich ist, wenn die Führungskraft den eigenen Führungsstil früh erklärt. Nicht als Ansage, sondern damit das Team einordnen kann, wie geführt, entschieden und kommuniziert wird. Das schafft Klarheit und verhindert Missverständnisse.`
-          : `In den ersten Tagen geht es nicht darum, sofort alles zu verändern oder sich schnell zu beweisen. Zuerst muss klar werden, wie das Team arbeitet, was im Alltag gut funktioniert und worauf Kolleginnen und Kollegen Wert legen.\n\nDazu gehört, die wichtigsten Personen im Team kennenzulernen, die Abläufe zu verstehen und darauf zu achten, wie im Team gesprochen, entschieden und zusammengearbeitet wird. Auch wenn die Arbeitsweisen gut zusammenpassen, gibt es in jedem Team eigene Gewohnheiten und ungeschriebene Regeln.\n\nHilfreich ist auch, wenn die Person die eigene Arbeitsweise offen erklärt. Nicht im Sinn von Rechtfertigung, sondern damit das Team einordnen kann, wie sie denkt, entscheidet und arbeitet. Das schafft Klarheit und verhindert Missverständnisse.`,
+          ? `In den ersten Tagen geht es nicht darum, sofort Führung zu zeigen oder Veränderungen anzustossen. Entscheidend ist zuerst zu verstehen, wie das Team arbeitet, was im Alltag funktioniert und worauf die Teammitglieder Wert legen.\n\nTeam und Führungskraft arbeiten beide stärker über ${teamDesc}. Die Arbeitsweisen liegen nah beieinander. Trotzdem hat jedes Team eigene Gewohnheiten und ungeschriebene Regeln, die erst im Alltag sichtbar werden.\n\nWer zuerst beobachtet, zuhört und versteht, schafft Vertrauen und gewinnt schneller das Team.`
+          : `In den ersten Tagen geht es nicht darum, sofort etwas zu verändern. Entscheidend ist zuerst zu verstehen, wie das Team arbeitet, was im Alltag gut funktioniert und worauf Kolleginnen und Kollegen Wert legen.\n\nTeam und Person arbeiten beide stärker über ${teamDesc}. Die Arbeitsweisen liegen nah beieinander. Trotzdem hat jedes Team eigene Gewohnheiten und ungeschriebene Regeln, die erst im Alltag sichtbar werden.\n\nWer zuerst beobachtet, zuhört und versteht, schafft Vertrauen und verhindert unnötige Missverständnisse.`,
         praxis: [
-          isLeader ? "In den ersten Tagen Einzelgespräche mit jedem Teammitglied führen" : "In den ersten Tagen gezielt Einzelgespräche mit wichtigen Teamkollegen führen",
-          "Fragen, wie die Zusammenarbeit bisher funktioniert hat und was im Team wichtig ist",
-          "Beobachten, wie Besprechungen ablaufen: sachlich, ausführlich, spontan oder eher abwartend",
-          "Klären, worüber das Team offen spricht und wo es empfindlich reagiert",
-          "Nicht vorschnell bewerten, sondern erst verstehen, warum das Team so arbeitet, wie es arbeitet",
+          isLeader ? "Gespräche mit jedem Teammitglied führen" : "Gespräche mit wichtigen Teamkollegen führen",
+          "Nachfragen, wie Zusammenarbeit bisher gut funktioniert hat",
+          "Beobachten, wie Besprechungen und Abstimmungen ablaufen",
+          "Darauf achten, worauf das Team sensibel reagiert",
+          isLeader ? "Erwartungen an Führung verstehen, bevor etwas verändert wird" : "Unterschiede erst verstehen, bevor etwas verändert wird",
         ],
         signale: [
-          isLeader ? "Das Team reagiert offen auf die neue Führungskraft" : "Die Person findet schnell Zugang zu den Kollegen",
-          "Es entstehen erste offene Gespräche",
-          "Missverständnisse werden früh geklärt",
+          isLeader ? "Die Führungskraft findet schnell Zugang zum Team" : "Die Person findet schneller Zugang zum Team",
+          "Erste offene Gespräche entstehen",
+          "Missverständnisse werden früh vermieden",
           isLeader ? "Das Team erlebt die Führungskraft als interessiert und zugänglich" : "Das Team erlebt die Person als interessiert und anschlussfähig",
-          isLeader ? "Die Führungskraft versteht, worauf sie im Umgang mit dem Team achten muss" : "Die Person versteht, worauf sie im Umgang achten muss",
         ],
         fuehrungstipp: isLeader
-          ? `In dieser Phase sollte die Führungskraft besonders darauf achten, nicht zu früh mit Veränderungen oder neuen Strukturen einzusteigen. Auch bei guter Passung entstehen viele Irritationen nicht aus Sachthemen, sondern aus Tempo, Ton oder Erwartungshaltung.`
-          : `Die Führungskraft sollte in dieser Phase beobachten, ob die Person eher zuhört und versteht oder ob sie zu früh mit Tempo, Bewertung oder Eigeninitiative einsteigt. Auch bei guter Passung braucht es anfangs Begleitung.`,
+          ? `In dieser Phase sollte die übergeordnete Führung darauf achten, ob die neue Führungskraft erst versteht und dann handelt oder ob sie zu früh eigene Strukturen einführen will. Auch bei guter Passung entstehen sonst schnell Reibungen.`
+          : `Die Führungskraft sollte in dieser Phase darauf achten, ob die Person erst versteht und dann handelt oder ob sie zu früh bewertet und verändern will. Auch bei guter Passung braucht es anfangs Begleitung.`,
         fokus: {
           intro: `Die Arbeitsweisen passen gut zusammen. Trotzdem muss in den ersten Tagen geklärt werden:`,
           bullets: [
-            "Welche Erwartungen bestehen konkret an diese Rolle?",
-            isLeader ? "Wie will die Führungskraft führen und entscheiden?" : "Wie soll die Zusammenarbeit im Alltag aussehen?",
-            "Wo liegen die wichtigsten Schnittstellen und Prioritäten?",
+            isLeader ? "Wie arbeitet das Team und was erwartet es von Führung?" : "Wie arbeitet das Team heute?",
+            isLeader ? "Wie will die Führungskraft führen und entscheiden?" : "Was erwartet das Team von neuen Kollegen?",
+            "Wo können erste Reibungen entstehen?",
           ],
         },
       },
@@ -680,35 +685,34 @@ function buildIntegrationsplan(c: Ctx): V4IntegrationPhase[] {
     {
       num: 1, title: "Ankommen und Team verstehen", period: "Tag 1 – 10",
       ziel: isLeader
-        ? `Die Führungskraft soll im Team ankommen, die bestehende Teamkultur verstehen und Unterschiede in der Arbeitsweise früh erkennen, ohne vorschnell zu bewerten.`
-        : `Die Person soll im Team ankommen, die Stimmung und Arbeitsweise verstehen und früh Sicherheit in der Zusammenarbeit gewinnen.`,
+        ? `Die Führungskraft soll im Team ankommen, die Arbeitsweise verstehen und Unterschiede früh erkennen, ohne vorschnell zu bewerten.`
+        : `Die Person soll im Team ankommen, die Arbeitsweise verstehen und erste Sicherheit in der Zusammenarbeit gewinnen.`,
       beschreibung: isLeader
-        ? `In den ersten Tagen geht es nicht darum, sofort Führung zu zeigen oder Veränderungen anzustossen. Zuerst muss klar werden, wie das Team arbeitet, was im Alltag funktioniert und worauf die Teammitglieder Wert legen.\n\nDas Team arbeitet mit Schwerpunkt auf ${teamDesc}. Die Führungskraft bringt eine Arbeitsweise mit, die stärker auf ${personDesc} setzt. Diese Unterschiede sollte die Führungskraft früh erkennen, damit sie nicht unbeabsichtigt aneckt oder das Team überfordert.\n\nHilfreich ist, wenn die Führungskraft den eigenen Führungsstil offen erklärt. Nicht als Ansage, sondern damit das Team einordnen kann, wie geführt, entschieden und kommuniziert wird. Das schafft Klarheit und verhindert Missverständnisse, die sonst in den ersten Wochen schnell entstehen.`
-        : `In den ersten Tagen geht es nicht darum, sofort alles zu verändern oder sich schnell zu beweisen. Zuerst muss klar werden, wie das Team arbeitet, was im Alltag gut funktioniert und worauf Kolleginnen und Kollegen Wert legen.\n\nDas Team arbeitet mit Schwerpunkt auf ${teamDesc}. Die Person bringt eine Arbeitsweise mit, die stärker auf ${personDesc} setzt. Diese Unterschiede sollte die Person früh erkennen, damit sie nicht unbeabsichtigt aneckt.\n\nHilfreich ist auch, wenn die Person die eigene Arbeitsweise offen erklärt. Nicht im Sinn von Rechtfertigung, sondern damit das Team einordnen kann, wie sie denkt, entscheidet und arbeitet. Das schafft Klarheit und verhindert Missverständnisse.`,
+        ? `In den ersten Tagen geht es nicht darum, sofort Führung zu zeigen oder Veränderungen anzustossen. Entscheidend ist zuerst zu verstehen, wie das Team arbeitet, was im Alltag funktioniert und worauf die Teammitglieder Wert legen.\n\nDas Team arbeitet stärker über ${teamDesc}. Die Führungskraft bringt eher eine ${COMP_ADJ_AW[personPrimary]} Arbeitsweise mit. Deshalb ist es wichtig, Unterschiede früh zu erkennen, ohne sie vorschnell zu bewerten.\n\nWer zuerst beobachtet, zuhört und versteht, schafft Vertrauen und verhindert unnötige Missverständnisse.`
+        : `In den ersten Tagen geht es nicht darum, sofort etwas zu verändern. Entscheidend ist zuerst zu verstehen, wie das Team arbeitet, was im Alltag gut funktioniert und worauf Kolleginnen und Kollegen Wert legen.\n\nDas Team arbeitet stärker über ${teamDesc}. Die Person bringt eher eine ${COMP_ADJ_AW[personPrimary]} Arbeitsweise mit. Deshalb ist es wichtig, Unterschiede früh zu erkennen, ohne sie vorschnell zu bewerten.\n\nWer zuerst beobachtet, zuhört und versteht, schafft Vertrauen und verhindert unnötige Missverständnisse.`,
       praxis: [
-        isLeader ? "In den ersten Tagen Einzelgespräche mit jedem Teammitglied führen" : "In den ersten Tagen gezielt Einzelgespräche mit wichtigen Teamkollegen führen",
-        "Fragen, wie die Zusammenarbeit bisher funktioniert hat und was im Team wichtig ist",
-        "Beobachten, wie Besprechungen ablaufen: direkt, sachlich, vorsichtig, ausführlich oder eher spontan",
-        "Klären, worüber das Team offen spricht und wo es empfindlich reagiert",
-        "Nicht vorschnell bewerten, sondern erst verstehen, warum das Team sich so entwickelt hat",
+        isLeader ? "Gespräche mit jedem Teammitglied führen" : "Gespräche mit wichtigen Teamkollegen führen",
+        "Nachfragen, wie Zusammenarbeit bisher gut funktioniert hat",
+        "Beobachten, wie Besprechungen und Abstimmungen ablaufen",
+        "Darauf achten, worauf das Team sensibel reagiert",
+        isLeader ? "Unterschiede in der Führung erst verstehen, bevor etwas verändert wird" : "Unterschiede erst verstehen, bevor etwas verändert wird",
         ...(hasGoal ? [`Anforderungen im Bereich ${teamGoalLabel} gezielt erfragen und verstehen`] : []),
       ],
       signale: [
-        isLeader ? "Das Team reagiert offen auf die neue Führungskraft" : "Die Person findet schneller Zugang zu den Kollegen",
-        "Es entstehen erste offene Gespräche",
-        "Missverständnisse werden früh geklärt",
+        isLeader ? "Die Führungskraft findet schneller Zugang zum Team" : "Die Person findet schneller Zugang zum Team",
+        "Erste offene Gespräche entstehen",
+        "Missverständnisse werden früh vermieden",
         isLeader ? "Das Team erlebt die Führungskraft als interessiert und nicht als bewertend" : "Das Team erlebt die Person als interessiert und anschlussfähig",
-        isLeader ? "Die Führungskraft versteht, wo Unterschiede liegen und wo sie aufpassen muss" : "Die Person versteht besser, worauf sie im Umgang achten muss",
       ],
       fuehrungstipp: isLeader
-        ? `Die übergeordnete Führung sollte in dieser Phase besonders beobachten, ob die neue Führungskraft eher zuhört und versteht oder ob sie zu früh mit Veränderung, Tempo oder Bewertung einsteigt. Gerade bei unterschiedlichen Arbeitsweisen entstehen viele Reibungen nicht aus böser Absicht, sondern weil Arbeitsstile verschieden sind.`
-        : `Die Führungskraft sollte in dieser Phase besonders beobachten, ob die Person eher zuhört und versteht oder ob sie zu früh mit Veränderung, Tempo oder Bewertung einsteigt. Gerade bei unterschiedlichen Arbeitsweisen entstehen viele Reibungen nicht aus böser Absicht, sondern weil Arbeitsstile verschieden sind.`,
+        ? `Die übergeordnete Führung sollte in dieser Phase darauf achten, ob die neue Führungskraft erst versteht und dann handelt oder ob sie zu früh mit Veränderung oder Tempo einsteigt. Gerade hier entstehen sonst schnell Reibungen.`
+        : `Die Führungskraft sollte in dieser Phase darauf achten, ob die Person erst versteht und dann handelt oder ob sie zu früh bewertet und verändern will. Gerade hier entstehen sonst schnell Reibungen.`,
       fokus: {
         intro: `Die Arbeitsweisen unterscheiden sich. Deshalb ist in den ersten Tagen besonders wichtig:`,
         bullets: [
-          "Wie arbeitet das Team und warum?",
-          isLeader ? "Was erwartet das Team von Führung?" : "Was erwartet das Team von neuen Teammitgliedern?",
-          "Wo entstehen erste Reibungspunkte und wie lassen sie sich früh entschärfen?",
+          "Wie arbeitet das Team heute?",
+          isLeader ? "Was erwartet das Team von Führung?" : "Was erwartet das Team von neuen Kollegen?",
+          "Wo können erste Reibungen entstehen?",
         ],
       },
     },
