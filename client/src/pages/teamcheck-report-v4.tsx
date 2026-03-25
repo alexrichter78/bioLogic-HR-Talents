@@ -374,7 +374,7 @@ export default function TeamCheckReportV4() {
               })}
 
               {/* === Section 1: Gesamtbewertung === */}
-              <div data-testid="v4-section-gesamtbewertung">
+              <div style={sectionStyle} data-testid="v4-section-gesamtbewertung">
               <SectionHead num={1} title="Gesamtbewertung" id="gesamtbewertung" />
 
               <div style={{ margin: "0 0 24px" }} data-testid="v4-hero-bewertung">
