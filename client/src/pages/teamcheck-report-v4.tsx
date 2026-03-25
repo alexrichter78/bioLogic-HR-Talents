@@ -18,7 +18,7 @@ const axisLabel = (v: string) => v === "hoch" ? "Hoch" : v === "mittel" ? "Mitte
 
 function SectionHead({ num, title, id }: { num: number; title: string; id: string }) {
   return (
-    <div id={`s-${id}`} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20, paddingBottom: 12, borderBottom: "2px solid rgba(0,0,0,0.06)", scrollMarginTop: 80 }}>
+    <div id={`s-${id}`} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 28, paddingBottom: 12, borderBottom: "2px solid rgba(0,0,0,0.06)", scrollMarginTop: 80 }}>
       <div style={{ width: 32, height: 32, borderRadius: 16, background: "#343A48", color: "#FFF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, flexShrink: 0 }}>{num}</div>
       <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>{title}</span>
     </div>
