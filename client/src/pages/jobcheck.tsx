@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useLocation } from "wouter";
-import { FileText, AlertTriangle, Check, TrendingUp, Zap, Scale, ChevronRight, ChevronDown, CircleAlert, CircleCheck, CircleMinus, Lightbulb, CalendarDays, ClipboardCheck, BarChart3, CheckCircle2, Briefcase, LayoutGrid, Wrench, Target, UserCheck, Hash, Compass, Shield, Gauge, Award, ArrowUpRight, Layers } from "lucide-react";
+import { FileText, AlertTriangle, Check, TrendingUp, Zap, Scale, ChevronRight, ChevronDown, CircleAlert, CircleCheck, CircleMinus, Lightbulb, CalendarDays, ClipboardCheck, BarChart3, CheckCircle2, Briefcase, LayoutGrid, Wrench, Target, UserCheck, Hash, Compass, Shield, Gauge, Award, ArrowUpRight, Layers, Printer } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { hyphenateText } from "@/lib/hyphenate";
 import { BERUFE } from "@/data/berufe";
@@ -477,6 +477,7 @@ export default function JobCheck() {
   });
   const [reportGenerated, setReportGenerated] = useState(false);
   const [reportKey, setReportKey] = useState(0);
+  const jobcheckContentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const raw = localStorage.getItem("rollenDnaState");
@@ -612,9 +613,34 @@ export default function JobCheck() {
         </div>
 
         <div className="mx-auto px-6" style={{ maxWidth: 1100, paddingTop: 135, paddingBottom: 40 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div ref={jobcheckContentRef} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
             <GlassCard testId="jobcheck-header" style={{ padding: "28px 32px", position: "relative", overflow: "hidden" }}>
+              <button
+                onClick={() => {
+                  const printWin = window.open("", "_blank");
+                  if (!printWin) return;
+                  const contentEl = jobcheckContentRef.current;
+                  if (!contentEl) return;
+                  const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+                    .map(el => el.outerHTML).join("\n");
+                  const jobTitle = roleAnalysis?.job_title || "JobCheck";
+                  printWin.document.write(`<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>JobCheck – ${jobTitle}</title>${styles}<style>body{margin:0;padding:20px 32px;background:#fff;font-family:Inter,Arial,Helvetica,sans-serif}
+.no-print{display:none!important}
+*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+[data-pdf-block]{break-inside:avoid!important}
+</style></head><body>${contentEl.outerHTML}</body></html>`);
+                  printWin.document.close();
+                  setTimeout(() => { printWin.print(); }, 600);
+                }}
+                className="no-print"
+                data-testid="button-print-jobcheck"
+                title="Im Druckdialog 'Als PDF speichern' wählen"
+                style={{ position: "absolute", top: 16, right: 16, height: 36, padding: "0 14px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,0,0,0.03)", color: "#1D1D1F", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.15s ease", zIndex: 2 }}
+              >
+                <Printer style={{ width: 14, height: 14 }} />
+                <span>Drucken</span>
+              </button>
 
               {dnaSummary && (
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }} data-testid="dna-summary-grid">

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
-import { AlertTriangle, Download, Loader2, ChevronLeft, ChevronDown, SlidersHorizontal, Zap, Compass, Triangle, CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
+import { AlertTriangle, Download, Loader2, ChevronLeft, ChevronDown, SlidersHorizontal, Zap, Compass, Triangle, CheckCircle2, AlertCircle, ArrowRight, Printer } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { dominanceModeOf, labelComponent } from "@/lib/jobcheck-engine";
 import { computeSollIst, mapFuehrungsArt } from "@/lib/soll-ist-engine";
@@ -821,16 +821,42 @@ export default function SollIstBericht() {
 
                 <img src={logoPath} alt="bioLogic" className="report-logo" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
 
-                <button
-                  onClick={exportPdf}
-                  disabled={isExportingPdf}
-                  data-testid="button-export-pdf"
-                  className="report-pdf-btn"
-                  style={{ cursor: isExportingPdf ? "wait" : "pointer", opacity: isExportingPdf ? 0.6 : 1, transition: "all 0.15s ease" }}
-                >
-                  {isExportingPdf ? <Loader2 style={{ width: 15, height: 15, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 15, height: 15 }} />}
-                  <span>PDF</span>
-                </button>
+                <div style={{ position: "absolute", top: 18, right: 18, display: "flex", gap: 8 }}>
+                  <button
+                    onClick={() => {
+                      const printWin = window.open("", "_blank");
+                      if (!printWin) return;
+                      const reportEl = reportRef.current;
+                      if (!reportEl) return;
+                      const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+                        .map(el => el.outerHTML).join("\n");
+                      printWin.document.write(`<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>MatchCheck – ${result.roleName || "Bericht"}</title>${styles}<style>body{margin:0;padding:20px 0;background:#fff}
+.report-header-btn,.report-pdf-btn,.no-print,nav{display:none!important}
+*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+[data-pdf-block]{break-inside:avoid!important}
+[data-testid="print-report-card"]{overflow:visible!important;border-radius:0!important;box-shadow:none!important}
+</style></head><body>${reportEl.outerHTML}</body></html>`);
+                      printWin.document.close();
+                      setTimeout(() => { printWin.print(); }, 600);
+                    }}
+                    data-testid="button-print-soll-ist"
+                    className="report-header-btn"
+                    title="Im Druckdialog 'Als PDF speichern' wählen"
+                  >
+                    <Printer style={{ width: 15, height: 15 }} />
+                    <span>Drucken</span>
+                  </button>
+                  <button
+                    onClick={exportPdf}
+                    disabled={isExportingPdf}
+                    data-testid="button-export-pdf"
+                    className="report-header-btn"
+                    style={{ cursor: isExportingPdf ? "wait" : "pointer", opacity: isExportingPdf ? 0.6 : 1 }}
+                  >
+                    {isExportingPdf ? <Loader2 style={{ width: 15, height: 15, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 15, height: 15 }} />}
+                    <span>PDF</span>
+                  </button>
+                </div>
 
                 <div className="report-kicker">PASSUNGSANALYSE</div>
                 <h1 className="report-title" data-testid="text-page-title">MatchCheck</h1>
