@@ -305,7 +305,7 @@ export default function TeamCheckReportV4() {
 [data-pdf-block]{break-inside:avoid!important}
 [data-testid="v4-section-integrationsplan"]>div:first-child{break-after:avoid!important}
 [data-testid="v4-integration-phase-3"]{break-before:page!important}
-[data-testid^="v4-section-"]{padding-bottom:20px!important;margin-bottom:20px!important}
+[data-testid^="v4-section-"]{padding-bottom:20px!important;margin-bottom:32px!important}
 [data-testid="v4-hero-bewertung"]{margin-bottom:14px!important}
 [data-testid="v4-kurzuebersicht-dominanz"]{padding:14px 18px!important;margin-top:10px!important}
 [data-testid="v4-kurzueberblick"]{margin-top:10px!important}
