@@ -191,6 +191,34 @@ export default function SollIstBericht() {
   const [fuehrungsArt, setFuehrungsArt] = useState<FuehrungsArt>("keine");
   const [matchCheckFit, setMatchCheckFit] = useState<string | undefined>(undefined);
   const [matchCheckControl, setMatchCheckControl] = useState<string | undefined>(undefined);
+  const updateRoleTriad = useCallback((key: ComponentKey, newVal: number) => {
+    setMatchCheckFit(undefined);
+    setMatchCheckControl(undefined);
+    setRoleTriad(prev => {
+      if (!prev) return prev;
+      const clamped = Math.max(5, Math.min(67, Math.round(newVal)));
+      const others = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== key);
+      const remaining = 100 - clamped;
+      const otherSum = prev[others[0]] + prev[others[1]];
+      let o1: number, o2: number;
+      if (otherSum === 0) {
+        o1 = Math.round(remaining / 2);
+        o2 = remaining - o1;
+      } else {
+        o1 = Math.round((prev[others[0]] / otherSum) * remaining);
+        o2 = remaining - o1;
+      }
+      o1 = Math.max(5, Math.min(67, o1));
+      o2 = Math.max(5, Math.min(67, o2));
+      const total = clamped + o1 + o2;
+      if (total !== 100) {
+        const diff = 100 - total;
+        if (o2 + diff >= 5 && o2 + diff <= 67) o2 += diff;
+        else if (o1 + diff >= 5 && o1 + diff <= 67) o1 += diff;
+      }
+      return { [key]: clamped, [others[0]]: o1, [others[1]]: o2 } as Triad;
+    });
+  }, []);
 
   useEffect(() => {
     const raw = localStorage.getItem("rollenDnaState");
@@ -468,14 +496,16 @@ export default function SollIstBericht() {
               <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="card-soll-profil">
                 <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Stelle)</span></p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                  {roleProfile.map(item => {
-                    const hex = item.hex;
-                    const widthPct = (item.value / 67) * 100;
+                  {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+                    const val = roleTriad[k];
+                    const hex = BAR_HEX[k];
+                    const pct = Math.round(val);
+                    const widthPct = (val / 67) * 100;
                     const isSmall = widthPct < 18;
                     return (
-                      <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12, height: 26 }}>
+                      <div key={k} style={{ display: "flex", alignItems: "center", gap: 12, height: 26 }} data-testid={`soll-slider-row-${k}`}>
                         <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0, lineHeight: "26px" }}>
-                          {item.label}
+                          {labelComponent(k)}
                         </span>
                         <div style={{ flex: 1, position: "relative", height: 26 }}>
                           <div style={{
@@ -486,19 +516,58 @@ export default function SollIstBericht() {
                             position: "absolute", left: 0, top: 0, bottom: 0,
                             width: `${Math.min(Math.max(widthPct, 4), 100)}%`,
                             borderRadius: 13, background: hex,
-                            transition: "width 600ms ease",
+                            transition: "width 150ms ease",
                             display: "flex", alignItems: "center", paddingLeft: 10,
                             minWidth: isSmall ? 8 : 50,
                           }}>
-                            {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap", lineHeight: "26px" }}>{Math.round(item.value)} %</span>}
+                            {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap", lineHeight: "26px" }}>{pct} %</span>}
                           </div>
+                          <div
+                            data-testid={`soll-slider-${k}`}
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              const track = e.currentTarget.parentElement!;
+                              const rect = track.getBoundingClientRect();
+                              const move = (ev: MouseEvent) => {
+                                const ratio = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
+                                const raw = Math.round(ratio * 67);
+                                updateRoleTriad(k, raw);
+                              };
+                              const up = () => {
+                                window.removeEventListener("mousemove", move);
+                                window.removeEventListener("mouseup", up);
+                              };
+                              window.addEventListener("mousemove", move);
+                              window.addEventListener("mouseup", up);
+                            }}
+                            onTouchStart={(e) => {
+                              const track = e.currentTarget.parentElement!;
+                              const rect = track.getBoundingClientRect();
+                              const move = (ev: TouchEvent) => {
+                                const t = ev.touches[0];
+                                const ratio = Math.max(0, Math.min(1, (t.clientX - rect.left) / rect.width));
+                                const raw = Math.round(ratio * 67);
+                                updateRoleTriad(k, raw);
+                              };
+                              const up = () => {
+                                window.removeEventListener("touchmove", move);
+                                window.removeEventListener("touchend", up);
+                              };
+                              window.addEventListener("touchmove", move);
+                              window.addEventListener("touchend", up);
+                            }}
+                            style={{
+                              position: "absolute", inset: 0,
+                              borderRadius: 13, cursor: "pointer",
+                            }}
+                          />
                           {isSmall && (
                             <span style={{
                               position: "absolute", top: "50%", transform: "translateY(-50%)",
                               left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
                               fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
-                              transition: "left 600ms ease", lineHeight: "26px",
-                            }}>{Math.round(item.value)} %</span>
+                              transition: "left 150ms ease", lineHeight: "26px",
+                            }}>{pct} %</span>
                           )}
                         </div>
                       </div>
