@@ -570,8 +570,8 @@ input[type="range"].bio-slider::-moz-range-track {
     border-radius: 0 !important;
   }
   .v4-report-page [data-testid^="v4-section-"] {
-    padding-bottom: 20px !important;
-    margin-bottom: 32px !important;
+    padding-bottom: 14px !important;
+    margin-bottom: 24px !important;
   }
   .v4-report-page [data-testid="v4-hero-bewertung"] {
     margin-bottom: 14px !important;
