@@ -692,9 +692,8 @@ function buildIntegrationsplan(c: Ctx): V4IntegrationPhase[] {
       praxis: [
         isLeader ? "Gespräche mit jedem Teammitglied führen" : "Gespräche mit wichtigen Teamkollegen führen",
         "Nachfragen, wie Zusammenarbeit bisher gut funktioniert hat",
-        "Beobachten, wie Besprechungen und Abstimmungen ablaufen",
+        hasGoal ? `Anforderungen im Bereich ${teamGoalLabel} gezielt erfragen und verstehen` : "Beobachten, wie Besprechungen und Abstimmungen ablaufen",
         isLeader ? "Unterschiede in der Führung erst verstehen, bevor etwas verändert wird" : "Unterschiede erst verstehen, bevor etwas verändert wird",
-        ...(hasGoal ? [`Anforderungen im Bereich ${teamGoalLabel} gezielt erfragen und verstehen`] : []),
       ],
       signale: [
         isLeader ? "Die Führungskraft findet schneller Zugang zum Team" : "Die Person findet schneller Zugang zum Team",

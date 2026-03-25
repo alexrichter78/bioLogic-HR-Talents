@@ -303,6 +303,7 @@ export default function TeamCheckReportV4() {
 .report-header-btn,.no-print,nav{display:none!important}
 *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 [data-pdf-block]{break-inside:avoid!important}
+[data-testid="v4-section-integrationsplan"]>div:first-child{break-after:avoid!important}
 [data-testid^="v4-section-"]{padding-bottom:20px!important;margin-bottom:20px!important}
 [data-testid="v4-hero-bewertung"]{margin-bottom:14px!important}
 [data-testid="v4-kurzuebersicht-dominanz"]{padding:14px 18px!important;margin-top:10px!important}
@@ -588,13 +589,13 @@ export default function TeamCheckReportV4() {
               {(() => {
                 const planNum = result.fuehrungshinweis ? 8 : 7;
                 return (
-                  <div data-pdf-block style={sectionStyle} data-testid="v4-section-integrationsplan">
+                  <div style={sectionStyle} data-testid="v4-section-integrationsplan">
                     <SectionHead num={planNum} title="30-Tage-Integrationsplan" id="integrationsplan" />
                     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
                       {result.integrationsplan.map(phase => {
                         const phaseCol = phase.num === 1 ? "#0071E3" : phase.num === 2 ? "#F39200" : "#34C759";
                         return (
-                          <div key={phase.num} data-pdf-block data-testid={`v4-integration-phase-${phase.num}`} style={{ borderRadius: 14, overflow: "hidden", border: `1px solid ${phaseCol}20` }}>
+                          <div key={phase.num} data-testid={`v4-integration-phase-${phase.num}`} style={{ borderRadius: 14, overflow: "hidden", border: `1px solid ${phaseCol}20` }}>
                             <div style={{ padding: "12px 20px", background: `${phaseCol}10`, borderBottom: `1px solid ${phaseCol}15`, display: "flex", alignItems: "center", gap: 10 }}>
                               <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 26, height: 26, borderRadius: 13, background: phaseCol, color: "#fff", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{phase.num}</span>
                               <div>
@@ -616,7 +617,6 @@ export default function TeamCheckReportV4() {
 
                               <div data-pdf-block style={{ marginBottom: 20 }}>
                                 <p style={{ fontSize: 11, fontWeight: 700, color: "#1D1D1F", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>Praxisbezug im Alltag</p>
-                                <p style={{ fontSize: 13, color: "#6E6E73", margin: "0 0 8px", fontStyle: "italic" }}>Das kann zum Beispiel heissen:</p>
                                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                                   {phase.praxis.map((item, idx) => (
                                     <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
