@@ -52,7 +52,7 @@ function TextBlock({ text }: { text: string }) {
 }
 
 const bodyText: React.CSSProperties = { fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: "0 0 12px", textAlign: "justify", textAlignLast: "left", hyphens: "auto", WebkitHyphens: "auto" } as any;
-const sectionStyle = { paddingBottom: 40, marginBottom: 52, borderBottom: "1px solid rgba(0,0,0,0.05)" } as const;
+const sectionStyle = { paddingBottom: 40, marginBottom: 72, borderBottom: "1px solid rgba(0,0,0,0.05)" } as const;
 
 function QuoteDivider({ text, author }: { text: string; author: string }) {
   return (
