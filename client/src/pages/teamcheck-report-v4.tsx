@@ -54,16 +54,7 @@ function TextBlock({ text }: { text: string }) {
 const bodyText: React.CSSProperties = { fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: "0 0 12px", textAlign: "justify", textAlignLast: "left", hyphens: "auto", WebkitHyphens: "auto" } as any;
 const sectionStyle = { paddingBottom: 40, marginBottom: 72, borderBottom: "1px solid rgba(0,0,0,0.05)" } as const;
 
-function QuoteDivider({ text, author }: { text: string; author: string }) {
-  return (
-    <div data-pdf-block style={{ padding: "28px 32px", margin: "8px 0 32px", textAlign: "center", borderTop: "1px solid rgba(0,0,0,0.04)", borderBottom: "1px solid rgba(0,0,0,0.04)", background: "rgba(0,0,0,0.015)" }}>
-      <p style={{ fontSize: 14.5, fontStyle: "italic", color: "#6E6E73", lineHeight: 1.75, margin: "0 0 6px", maxWidth: 540, marginLeft: "auto", marginRight: "auto" }}>
-        &bdquo;{text}&ldquo;
-      </p>
-      <p style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", margin: 0, letterSpacing: "0.03em" }}>— {author}</p>
-    </div>
-  );
-}
+
 
 export default function TeamCheckReportV4() {
   const [, navigate] = useLocation();
@@ -292,13 +283,6 @@ export default function TeamCheckReportV4() {
                     if (!reportEl) return;
                     const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
                       .map(el => el.outerHTML).join("\n");
-                    const quotes = [
-                      { text: "Nicht weil es schwer ist, wagen wir es nicht \u2013 sondern weil wir es nicht wagen, ist es schwer.", author: "Seneca" },
-                      { text: "Zusammenkommen ist ein Beginn, Zusammenbleiben ein Fortschritt, Zusammenarbeiten ein Erfolg.", author: "Henry Ford" },
-                      { text: "Wer Menschen f\u00fchren will, muss hinter ihnen gehen.", author: "Laozi" },
-                      { text: "Der beste Weg, die Zukunft vorherzusagen, ist, sie zu gestalten.", author: "Peter Drucker" },
-                      { text: "Einzeln sind wir W\u00f6rter, zusammen ein Gedicht.", author: "Georg Bydlinski" },
-                    ];
                     printWin.document.write(`<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>TeamCheck \u2013 ${result.roleTitle || "Bericht"}</title>${styles}<style>body{margin:0;padding:20px 0;background:#fff}
 .report-header-btn,.no-print,nav{display:none!important}
 *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
@@ -311,31 +295,9 @@ export default function TeamCheckReportV4() {
 [data-testid="v4-kurzueberblick"]{margin-top:10px!important}
 [data-testid="v4-integration-warnsignale"],[data-testid="v4-integration-leitfragen"],[data-testid="v4-integration-verantwortung"]{break-inside:avoid!important}
 [data-pill]{white-space:nowrap!important}
-.quote-filler{text-align:center;padding:28px 32px;border-top:1px solid rgba(0,0,0,0.04);border-bottom:1px solid rgba(0,0,0,0.04);background:rgba(0,0,0,0.015);break-inside:avoid}
-.quote-filler p.qt{font-size:14.5px;font-style:italic;color:#6E6E73;line-height:1.75;margin:0 auto 6px;max-width:540px}
-.quote-filler p.qa{font-size:12px;font-weight:600;color:#8E8E93;margin:0;letter-spacing:0.03em}
 </style></head><body class="v4-report-page">${reportEl.outerHTML}</body></html>`);
                     printWin.document.close();
                     setTimeout(() => {
-                      const A4_H = 1122;
-                      const sectionDividers = printWin.document.querySelectorAll<HTMLElement>("[data-testid^='v4-section-']");
-                      let qi = 0;
-                      sectionDividers.forEach(section => {
-                        if (qi >= quotes.length) return;
-                        const rect = section.getBoundingClientRect();
-                        const sectionEnd = rect.top + rect.height;
-                        const pageNum = Math.floor(sectionEnd / A4_H);
-                        const pageBottom = (pageNum + 1) * A4_H;
-                        const gap = pageBottom - sectionEnd;
-                        if (gap > 250 && gap < 600) {
-                          const q = quotes[qi++];
-                          const div = printWin.document.createElement("div");
-                          div.className = "quote-filler";
-                          div.setAttribute("data-pdf-block", "");
-                          div.innerHTML = `<p class="qt">\u201E${q.text}\u201C</p><p class="qa">\u2014 ${q.author}</p>`;
-                          section.parentNode?.insertBefore(div, section.nextSibling);
-                        }
-                      });
                       printWin.print();
                     }, 600);
                   }}
