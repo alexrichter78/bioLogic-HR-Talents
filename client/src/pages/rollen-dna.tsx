@@ -2149,9 +2149,9 @@ export default function RollenDNA() {
                         fontSize: 16,
                         fontWeight: 600,
                         borderRadius: 14,
-                        background: step2Valid ? "linear-gradient(135deg, #34C759, #30D158)" : undefined,
+                        background: step2Valid ? "linear-gradient(135deg, #0071E3, #34AADC)" : undefined,
                         border: "none",
-                        boxShadow: step2Valid ? "0 4px 16px rgba(52,199,89,0.3)" : undefined,
+                        boxShadow: step2Valid ? "0 4px 16px rgba(0,113,227,0.3)" : undefined,
                       }}
                       className="gap-2"
                       data-testid="button-step-2-weiter"
