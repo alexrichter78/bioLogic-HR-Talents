@@ -2011,6 +2011,9 @@ export default function RollenDNA() {
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {SECTION_SUBTITLES.aufgabencharakter}
                         </p>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
+                          (Bitte ein Feld auswählen)
+                        </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroup
                             options={AUFGABENCHARAKTER_OPTIONS}
@@ -2034,6 +2037,9 @@ export default function RollenDNA() {
                         </div>
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {SECTION_SUBTITLES.arbeitslogik}
+                        </p>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
+                          (Bitte ein Feld auswählen)
                         </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroup
@@ -2059,6 +2065,9 @@ export default function RollenDNA() {
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {SECTION_SUBTITLES.erfolgsfokus}
                         </p>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
+                          (Bitte zwei Felder auswählen)
+                        </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroupIndexed
                             options={ERFOLGSFOKUS_DISPLAY}
@@ -2082,6 +2091,9 @@ export default function RollenDNA() {
                         </div>
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {SECTION_SUBTITLES.fuehrung}
+                        </p>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
+                          (Bitte ein Feld auswählen)
                         </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroup
