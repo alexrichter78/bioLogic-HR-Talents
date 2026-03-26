@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { PlusCircle, FolderOpen, DoorOpen, Bot, CheckCircle, Sparkles } from "lucide-react";
+import { PlusCircle, FolderOpen, Bot, CheckCircle, Sparkles } from "lucide-react";
 import { useLocation } from "wouter";
 import logoSrc from "@assets/1_1773849007741.png";
 import illustrationRollenanalyse from "@assets/stellenanalyse_v3.png";
@@ -351,20 +351,6 @@ export default function Home() {
         />
       )}
 
-      <button
-        onClick={() => setLocation("/analyse")}
-        style={{
-          position: "fixed", bottom: 16, left: 16, width: 32, height: 32,
-          borderRadius: 8, border: "none", background: "transparent", cursor: "pointer",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          opacity: 0.15, transition: "opacity 200ms ease", zIndex: 50,
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.4"; }}
-        onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.15"; }}
-        data-testid="button-hidden-analyse"
-      >
-        <DoorOpen style={{ width: 16, height: 16, color: "#8E8E93" }} />
-      </button>
     </div>
   );
 }
