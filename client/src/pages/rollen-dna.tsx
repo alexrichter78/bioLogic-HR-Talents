@@ -2009,7 +2009,7 @@ export default function RollenDNA() {
                       <div data-testid="section-aufgabencharakter" className="relative">
                         <SectionNumber num={1} isComplete={aufgabencharakter.length > 0} />
                         <div className="flex items-center gap-3">
-                          <Layers style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
+                          <Layers style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
                             Art der Aufgaben
                           </h3>
@@ -2037,7 +2037,7 @@ export default function RollenDNA() {
                       <div data-testid="section-arbeitslogik" className="relative">
                         <SectionNumber num={2} isComplete={arbeitslogik.length > 0} />
                         <div className="flex items-center gap-3">
-                          <Activity style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
+                          <Activity style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
                             Arbeitsweise der Stelle
                           </h3>
@@ -2065,7 +2065,7 @@ export default function RollenDNA() {
                       <div data-testid="section-erfolgsfokus" className="relative">
                         <SectionNumber num={3} isComplete={erfolgsfokusIndices.length > 0} />
                         <div className="flex items-center gap-3">
-                          <Target style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
+                          <Target style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
                             Erfolgsfokus
                           </h3>
@@ -2093,7 +2093,7 @@ export default function RollenDNA() {
                       <div data-testid="section-fuehrung" className="relative">
                         <SectionNumber num={4} isComplete={fuehrung.length > 0} />
                         <div className="flex items-center gap-3">
-                          <Users style={{ width: 20, height: 20, color: "#6E6E73", strokeWidth: 1.5 }} />
+                          <Users style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
                             Führungsverantwortung
                           </h3>
