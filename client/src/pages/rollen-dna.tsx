@@ -691,11 +691,14 @@ function DescriptiveOptionGroup({
   options,
   selectedValue,
   onSelect,
+  accentColor = "#0071E3",
 }: {
   options: DescOption[];
   selectedValue: string;
   onSelect: (value: string) => void;
+  accentColor?: string;
 }) {
+  const bgAlpha = accentColor === "#34C759" ? "rgba(52,199,89,0.06)" : "rgba(0,113,227,0.06)";
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: 4 }}>
       {options.map((opt, idx) => {
@@ -711,8 +714,8 @@ function DescriptiveOptionGroup({
               textAlign: "left",
               padding: "14px 18px",
               borderRadius: 14,
-              border: isSelected ? "2px solid #0071E3" : "2px solid rgba(0,0,0,0.08)",
-              background: isSelected ? "rgba(0,113,227,0.06)" : "transparent",
+              border: isSelected ? `2px solid ${accentColor}` : "2px solid rgba(0,0,0,0.08)",
+              background: isSelected ? bgAlpha : "transparent",
               cursor: "pointer",
               transition: "background 180ms ease, border-color 180ms ease",
             }}
@@ -731,7 +734,7 @@ function DescriptiveOptionGroup({
             <span style={{
               fontSize: 15,
               fontWeight: 600,
-              color: isSelected ? "#0071E3" : "#1D1D1F",
+              color: isSelected ? accentColor : "#1D1D1F",
               lineHeight: 1.3,
             }}>{opt.label}</span>
             <span style={{
@@ -751,11 +754,14 @@ function DescriptiveOptionGroupIndexed({
   options,
   selectedIndices,
   onSelectIndex,
+  accentColor = "#0071E3",
 }: {
   options: { label: string; desc: string }[];
   selectedIndices: number[];
   onSelectIndex: (idx: number) => void;
+  accentColor?: string;
 }) {
+  const bgAlpha = accentColor === "#34C759" ? "rgba(52,199,89,0.06)" : "rgba(0,113,227,0.06)";
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: 4 }}>
       {options.map((opt, idx) => {
@@ -771,8 +777,8 @@ function DescriptiveOptionGroupIndexed({
               textAlign: "left",
               padding: "14px 18px",
               borderRadius: 14,
-              border: isSelected ? "2px solid #0071E3" : "2px solid rgba(0,0,0,0.08)",
-              background: isSelected ? "rgba(0,113,227,0.06)" : "transparent",
+              border: isSelected ? `2px solid ${accentColor}` : "2px solid rgba(0,0,0,0.08)",
+              background: isSelected ? bgAlpha : "transparent",
               cursor: "pointer",
               transition: "background 180ms ease, border-color 180ms ease",
             }}
@@ -791,7 +797,7 @@ function DescriptiveOptionGroupIndexed({
             <span style={{
               fontSize: 15,
               fontWeight: 600,
-              color: isSelected ? "#0071E3" : "#1D1D1F",
+              color: isSelected ? accentColor : "#1D1D1F",
               lineHeight: 1.3,
             }}>{opt.label}</span>
             <span style={{
@@ -819,7 +825,7 @@ function SectionNumber({ num, isComplete }: { num: number; isComplete: boolean }
       pointerEvents: "none",
       userSelect: "none",
       transition: "color 500ms ease",
-      color: isComplete ? "rgba(0,113,227,0.06)" : "rgba(0,0,0,0.03)",
+      color: isComplete ? "rgba(52,199,89,0.08)" : "rgba(0,0,0,0.03)",
     }}>
       {num}
     </div>
@@ -841,7 +847,7 @@ function MiniProgressBar({ filled, total }: { filled: number; total: number }) {
           width: `${pct}%`,
           height: "100%",
           borderRadius: 2,
-          background: "linear-gradient(90deg, #0071E3, #34AADC)",
+          background: "linear-gradient(90deg, #34C759, #30D158)",
           transition: "width 500ms cubic-bezier(0.4, 0, 0.2, 1)",
         }} />
       </div>
@@ -2019,6 +2025,7 @@ export default function RollenDNA() {
                             options={AUFGABENCHARAKTER_OPTIONS}
                             selectedValue={aufgabencharakter}
                             onSelect={handleAufgabencharakter}
+                            accentColor="#34C759"
                           />
                         </div>
                       </div>
@@ -2046,6 +2053,7 @@ export default function RollenDNA() {
                             options={ARBEITSLOGIK_OPTIONS}
                             selectedValue={arbeitslogik}
                             onSelect={handleArbeitslogik}
+                            accentColor="#34C759"
                           />
                         </div>
                       </div>
@@ -2073,6 +2081,7 @@ export default function RollenDNA() {
                             options={ERFOLGSFOKUS_DISPLAY}
                             selectedIndices={erfolgsfokusIndices}
                             onSelectIndex={handleErfolgsfokus}
+                            accentColor="#34C759"
                           />
                         </div>
                       </div>
@@ -2100,6 +2109,7 @@ export default function RollenDNA() {
                             options={FUEHRUNG_OPTIONS}
                             selectedValue={fuehrung}
                             onSelect={handleFuehrung}
+                            accentColor="#34C759"
                           />
                         </div>
                       </div>
@@ -2139,9 +2149,9 @@ export default function RollenDNA() {
                         fontSize: 16,
                         fontWeight: 600,
                         borderRadius: 14,
-                        background: step2Valid ? "linear-gradient(135deg, #0071E3, #34AADC)" : undefined,
+                        background: step2Valid ? "linear-gradient(135deg, #34C759, #30D158)" : undefined,
                         border: "none",
-                        boxShadow: step2Valid ? "0 4px 16px rgba(0,113,227,0.3)" : undefined,
+                        boxShadow: step2Valid ? "0 4px 16px rgba(52,199,89,0.3)" : undefined,
                       }}
                       className="gap-2"
                       data-testid="button-step-2-weiter"
