@@ -128,11 +128,11 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
             })}
           </nav>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 4, minWidth: 28 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 28 }}>
             {rightSlot}
             <div ref={regionRef} style={{ position: "relative" }}>
               <button
-                onClick={() => setRegionOpen(!regionOpen)}
+                onClick={(e) => { e.stopPropagation(); setRegionOpen(!regionOpen); }}
                 data-testid="nav-region-toggle"
                 title={`Sprachregion: ${REGION_OPTIONS.find(r => r.value === region)?.label}`}
                 style={{
@@ -162,7 +162,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                   {REGION_OPTIONS.map(opt => (
                     <button
                       key={opt.value}
-                      onClick={() => { setRegion(opt.value); setRegionOpen(false); }}
+                      onClick={(e) => { e.stopPropagation(); setRegion(opt.value); setRegionOpen(false); }}
                       data-testid={`nav-region-${opt.value.toLowerCase()}`}
                       style={{
                         width: "100%", display: "flex", alignItems: "center", gap: 10,
