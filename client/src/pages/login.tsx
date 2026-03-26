@@ -25,6 +25,13 @@ export default function Login() {
   return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #f0f4f8 0%, #e8edf3 50%, #f5f7fb 100%)", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
       <div style={{ width: "100%", maxWidth: 400, padding: 24 }}>
+        <div style={{ background: "rgba(0,113,227,0.05)", border: "1px solid rgba(0,113,227,0.12)", borderRadius: 12, padding: "12px 16px", marginBottom: 16, fontSize: 12, color: "#3A3A3C", lineHeight: 1.5 }} data-testid="login-test-hint">
+          <span style={{ fontWeight: 700, color: "#0071E3", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em" }}>Testzugang</span>
+          <br />
+          E-Mail: <span style={{ fontWeight: 600 }}>test@test.de</span>
+          <br />
+          Passwort: <span style={{ fontWeight: 600 }}>bio1!</span>
+        </div>
         <div style={{ background: "#fff", borderRadius: 20, padding: "40px 32px", boxShadow: "0 8px 40px rgba(0,0,0,0.08)", border: "1px solid rgba(0,0,0,0.04)" }}>
           <div style={{ textAlign: "center", marginBottom: 32 }}>
             <img src={logoPath} alt="bioLogic" style={{ height: 32, marginBottom: 16 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
