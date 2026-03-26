@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation } from "wouter";
-import { Download, AlertTriangle, BarChart3, Briefcase, Users, Sun, Gauge, Flame } from "lucide-react";
+import { Download, AlertTriangle, BarChart3, Briefcase, Users, Sun, Gauge, Flame, Printer } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { useRegion } from "@/lib/region";
 import { BERUFE } from "@/data/berufe";
@@ -1385,16 +1385,41 @@ export default function Rollenprofil() {
 
             <img src={logoSrc} alt="bioLogic" className="report-logo" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
 
-            <button
-              onClick={handlePDF}
-              disabled={pdfLoading}
-              data-testid="button-pdf-export"
-              className="report-pdf-btn"
-              style={{ cursor: pdfLoading ? "wait" : "pointer", opacity: pdfLoading ? 0.6 : 1, transition: "all 0.15s ease" }}
-            >
-              <Download style={{ width: 15, height: 15 }} />
-              <span>{pdfLoading ? "Wird erstellt..." : "PDF"}</span>
-            </button>
+            <div style={{ position: "absolute", top: 18, right: 18, display: "flex", gap: 8 }}>
+              <button
+                onClick={() => {
+                  const printWin = window.open("", "_blank");
+                  if (!printWin) return;
+                  const reportEl = reportRef.current;
+                  if (!reportEl) return;
+                  const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+                    .map(el => el.outerHTML).join("\n");
+                  printWin.document.write(`<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>Stellenprofil – ${data.beruf || "Bericht"}</title>${styles}<style>body{margin:0;padding:20px 0;background:#fff}
+.report-header-btn,.report-pdf-btn,.no-print,nav{display:none!important}
+*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+[data-pdf-block]{break-inside:avoid!important}
+</style></head><body>${reportEl.outerHTML}</body></html>`);
+                  printWin.document.close();
+                  setTimeout(() => { printWin.print(); }, 600);
+                }}
+                data-testid="button-print-stellenprofil"
+                className="report-header-btn"
+                title="1:1 Qualität — im Druckdialog 'Als PDF speichern' wählen"
+              >
+                <Printer style={{ width: 15, height: 15 }} />
+                <span>Drucken</span>
+              </button>
+              <button
+                onClick={handlePDF}
+                disabled={pdfLoading}
+                data-testid="button-pdf-export"
+                className="report-header-btn"
+                style={{ cursor: pdfLoading ? "wait" : "pointer", opacity: pdfLoading ? 0.6 : 1, transition: "all 0.15s ease" }}
+              >
+                <Download style={{ width: 15, height: 15 }} />
+                <span>{pdfLoading ? "Wird erstellt..." : "PDF"}</span>
+              </button>
+            </div>
 
             <div className="report-kicker">STELLENANALYSE</div>
             <h1 className="report-title" data-testid="text-report-title">Stellenprofil</h1>
