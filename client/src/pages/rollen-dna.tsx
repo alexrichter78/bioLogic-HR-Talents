@@ -2806,29 +2806,36 @@ export default function RollenDNA() {
                                 height: 24,
                                 borderRadius: 12,
                                 background: "rgba(0,0,0,0.04)",
-                                overflow: "hidden",
                                 position: "relative",
                               }}>
                                 <div style={{
-                                  width: bar.value === 0 ? "0%" : `${Math.max(bar.value, 2)}%`,
-                                  height: "100%",
+                                  position: "absolute", left: 0, top: 0, bottom: 0,
+                                  width: bar.value === 0 ? "0%" : `${Math.max(bar.value, 4)}%`,
                                   borderRadius: 12,
                                   background: bar.color,
                                   transition: "width 600ms ease",
                                   display: "flex",
                                   alignItems: "center",
                                   paddingLeft: 8,
-                                  minWidth: bar.value === 0 ? 0 : 40,
+                                  minWidth: bar.value === 0 ? 0 : (bar.value < 18 ? 8 : 40),
                                 }}>
-                                  <span style={{
+                                  {bar.value >= 18 && <span style={{
                                     fontSize: 11,
                                     fontWeight: 700,
                                     color: "#FFFFFF",
                                     whiteSpace: "nowrap",
                                   }}>
                                     {Math.round(bar.value)}%
-                                  </span>
+                                  </span>}
                                 </div>
+                                {bar.value > 0 && bar.value < 18 && (
+                                  <span style={{
+                                    position: "absolute", top: "50%", transform: "translateY(-50%)",
+                                    left: `calc(${Math.max(bar.value, 4)}% + 6px)`,
+                                    fontSize: 11, fontWeight: 600, color: "#6E6E73", whiteSpace: "nowrap",
+                                    transition: "left 600ms ease",
+                                  }}>{Math.round(bar.value)}%</span>
+                                )}
                               </div>
                             </div>
                           ))}
@@ -3311,29 +3318,36 @@ export default function RollenDNA() {
                                 height: 24,
                                 borderRadius: 12,
                                 background: "rgba(0,0,0,0.04)",
-                                overflow: "hidden",
                                 position: "relative",
                               }}>
                                 <div style={{
-                                  width: bar.value === 0 ? "0%" : `${Math.max(bar.value, 2)}%`,
-                                  height: "100%",
+                                  position: "absolute", left: 0, top: 0, bottom: 0,
+                                  width: bar.value === 0 ? "0%" : `${Math.max(bar.value, 4)}%`,
                                   borderRadius: 12,
                                   background: bar.color,
                                   transition: "width 600ms ease",
                                   display: "flex",
                                   alignItems: "center",
                                   paddingLeft: 8,
-                                  minWidth: bar.value === 0 ? 0 : 40,
+                                  minWidth: bar.value === 0 ? 0 : (bar.value < 18 ? 8 : 40),
                                 }}>
-                                  <span style={{
+                                  {bar.value >= 18 && <span style={{
                                     fontSize: 11,
                                     fontWeight: 700,
                                     color: "#FFFFFF",
                                     whiteSpace: "nowrap",
                                   }}>
                                     {Math.round(bar.value)}%
-                                  </span>
+                                  </span>}
                                 </div>
+                                {bar.value > 0 && bar.value < 18 && (
+                                  <span style={{
+                                    position: "absolute", top: "50%", transform: "translateY(-50%)",
+                                    left: `calc(${Math.max(bar.value, 4)}% + 6px)`,
+                                    fontSize: 11, fontWeight: 600, color: "#6E6E73", whiteSpace: "nowrap",
+                                    transition: "left 600ms ease",
+                                  }}>{Math.round(bar.value)}%</span>
+                                )}
                               </div>
                             </div>
                           ))}
