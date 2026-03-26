@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
-import { Plus, Trash2, Pencil, X, Save, Users, CalendarDays, Shield, Building2 } from "lucide-react";
+import { Plus, Trash2, Pencil, X, Save, Users, CalendarDays, Shield, Building2, Search, ArrowUpDown, ChevronUp, ChevronDown } from "lucide-react";
 
 interface UserWithSub {
   id: number;
@@ -66,6 +66,60 @@ export default function Admin() {
   const [form, setForm] = useState<UserForm>(emptyForm);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [search, setSearch] = useState("");
+  const [sortField, setSortField] = useState<"name" | "email" | "company" | "accessUntil" | "status">("name");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+
+  const filteredUsers = useMemo(() => {
+    const q = search.toLowerCase().trim();
+    let list = users;
+    if (q) {
+      list = users.filter(u =>
+        `${u.firstName} ${u.lastName}`.toLowerCase().includes(q) ||
+        u.email.toLowerCase().includes(q) ||
+        u.companyName.toLowerCase().includes(q) ||
+        (u.subscription?.plan || "").toLowerCase().includes(q) ||
+        (u.role === "admin" && "admin".includes(q))
+      );
+    }
+    list = [...list].sort((a, b) => {
+      let cmp = 0;
+      switch (sortField) {
+        case "name":
+          cmp = `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`, "de");
+          break;
+        case "email":
+          cmp = a.email.localeCompare(b.email, "de");
+          break;
+        case "company":
+          cmp = (a.companyName || "").localeCompare(b.companyName || "", "de");
+          break;
+        case "accessUntil": {
+          const da = a.subscription?.accessUntil ? new Date(a.subscription.accessUntil).getTime() : 0;
+          const db2 = b.subscription?.accessUntil ? new Date(b.subscription.accessUntil).getTime() : 0;
+          cmp = da - db2;
+          break;
+        }
+        case "status": {
+          const sa = a.isActive && a.subscription?.status === "active" ? 1 : 0;
+          const sb = b.isActive && b.subscription?.status === "active" ? 1 : 0;
+          cmp = sa - sb;
+          break;
+        }
+      }
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+    return list;
+  }, [users, search, sortField, sortDir]);
+
+  function toggleSort(field: typeof sortField) {
+    if (sortField === field) {
+      setSortDir(d => d === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDir("asc");
+    }
+  }
 
   useEffect(() => {
     if (user?.role !== "admin") {
@@ -281,7 +335,7 @@ export default function Admin() {
               <Shield style={{ width: 22, height: 22, color: "#1A5DAB" }} />
               Benutzerverwaltung
             </h1>
-            <p style={{ fontSize: 14, color: "#6E6E73", margin: 0 }}>{users.length} Benutzer registriert</p>
+            <p style={{ fontSize: 14, color: "#6E6E73", margin: 0 }}>{users.length} Benutzer registriert{search && filteredUsers.length !== users.length ? ` · ${filteredUsers.length} angezeigt` : ""}</p>
           </div>
           <button onClick={startCreate} data-testid="button-create-user" style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, border: "none", background: "#1D1D1F", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
             <Plus style={{ width: 16, height: 16 }} />
@@ -291,11 +345,53 @@ export default function Admin() {
 
         {(showCreate || editId) && renderForm()}
 
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+          <div style={{ position: "relative", flex: 1 }}>
+            <Search style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 15, height: 15, color: "#8E8E93", pointerEvents: "none" }} />
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Name, E-Mail, Firma oder Plan suchen..."
+              data-testid="input-search-users"
+              style={{ width: "100%", padding: "9px 12px 9px 36px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.08)", fontSize: 13, outline: "none", background: "#fff", color: "#1D1D1F", boxSizing: "border-box" }}
+            />
+          </div>
+          {(["name", "email", "company", "accessUntil", "status"] as const).map(f => {
+            const labels: Record<string, string> = { name: "Name", email: "E-Mail", company: "Firma", accessUntil: "Zugang", status: "Status" };
+            const active = sortField === f;
+            return (
+              <button
+                key={f}
+                onClick={() => toggleSort(f)}
+                data-testid={`sort-${f}`}
+                style={{
+                  display: "flex", alignItems: "center", gap: 3,
+                  padding: "7px 10px", borderRadius: 8,
+                  border: active ? "1px solid rgba(0,113,227,0.2)" : "1px solid rgba(0,0,0,0.06)",
+                  background: active ? "rgba(0,113,227,0.06)" : "#fff",
+                  cursor: "pointer", fontSize: 12, fontWeight: active ? 600 : 500,
+                  color: active ? "#0071E3" : "#636366",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {labels[f]}
+                {active ? (sortDir === "asc" ? <ChevronUp style={{ width: 12, height: 12 }} /> : <ChevronDown style={{ width: 12, height: 12 }} />) : null}
+              </button>
+            );
+          })}
+        </div>
+
         {loading ? (
           <p style={{ textAlign: "center", color: "#8E8E93", padding: 40 }}>Laden...</p>
+        ) : filteredUsers.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "48px 20px", color: "#8E8E93" }}>
+            <Search style={{ width: 32, height: 32, color: "#D1D1D6", margin: "0 auto 12px" }} />
+            <p style={{ fontSize: 14, margin: 0 }}>Keine Benutzer gefunden für &laquo;{search}&raquo;</p>
+          </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {users.map(u => {
+            {filteredUsers.map(u => {
               const isExpired = u.subscription ? new Date(u.subscription.accessUntil) < new Date() : true;
               const subActive = u.subscription?.status === "active" && !isExpired;
               return (
