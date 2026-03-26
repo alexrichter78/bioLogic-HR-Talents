@@ -8,6 +8,7 @@ interface AuthUser {
   lastName: string;
   companyName: string;
   role: string;
+  accessUntil: string | null;
 }
 
 interface AuthContextType {

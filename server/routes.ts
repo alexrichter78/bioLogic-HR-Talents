@@ -98,6 +98,11 @@ export async function registerRoutes(
         return res.status(403).json({ error: "Zugang abgelaufen" });
       }
     }
+    let accessUntil: string | null = null;
+    if (user.role !== "admin") {
+      const sub = await storage.getActiveSubscription(user.id);
+      if (sub) accessUntil = sub.accessUntil.toISOString().split("T")[0];
+    }
     res.json({
       id: user.id,
       email: user.email,
@@ -105,6 +110,7 @@ export async function registerRoutes(
       lastName: user.lastName,
       companyName: user.companyName,
       role: user.role,
+      accessUntil,
     });
   });
 

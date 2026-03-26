@@ -107,6 +107,22 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
 
           <div style={{ display: "flex", alignItems: "center", gap: 4, minWidth: 28 }}>
             {rightSlot}
+            {user?.accessUntil && user.role !== "admin" && (
+              <span
+                data-testid="nav-access-until"
+                style={{
+                  fontSize: 10, color: "#8E8E93", whiteSpace: "nowrap",
+                  padding: "4px 8px", borderRadius: 6,
+                  background: "rgba(0,0,0,0.02)",
+                  lineHeight: 1.3,
+                }}
+              >
+                Freigeschaltet bis:&nbsp;
+                <span style={{ fontWeight: 600, color: "#636366" }}>
+                  {new Date(user.accessUntil).toLocaleDateString("de-CH", { day: "2-digit", month: "2-digit", year: "numeric" })}
+                </span>
+              </span>
+            )}
             {user?.role === "admin" && (
               <button
                 onClick={() => setLocation("/admin")}
