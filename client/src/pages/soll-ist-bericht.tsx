@@ -1325,7 +1325,7 @@ export default function SollIstBericht() {
 
               <div style={{ marginTop: 48, paddingTop: 20, borderTop: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
                 <span style={{ fontSize: 11, color: "#C0C0C5" }}>
-                  © {new Date().getFullYear()} bioLogic Talent Navigator · Passungsanalyse · Erstellt am {new Date().toLocaleDateString("de-CH", { day: "2-digit", month: "2-digit", year: "numeric" })}
+                  © {new Date().getFullYear()} bioLogic Talent Navigator · Passungsanalyse · Erstellt am {new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
                 </span>
               </div>
 

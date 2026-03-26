@@ -194,7 +194,7 @@ export default function KICoach() {
 
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
-    recognition.lang = "de-CH";
+    recognition.lang = "de-DE";
     recognition.continuous = true;
     recognition.interimResults = true;
 

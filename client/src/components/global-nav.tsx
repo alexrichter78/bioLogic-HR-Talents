@@ -119,7 +119,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
               >
                 Freigeschaltet bis:&nbsp;
                 <span style={{ fontWeight: 600, color: "#636366" }}>
-                  {new Date(user.accessUntil).toLocaleDateString("de-CH", { day: "2-digit", month: "2-digit", year: "numeric" })}
+                  {new Date(user.accessUntil).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
                 </span>
               </span>
             )}
