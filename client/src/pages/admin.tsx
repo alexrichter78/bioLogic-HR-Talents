@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
-import { Plus, Trash2, Pencil, X, Save, Users, CalendarDays, Shield, Building2, Search, ArrowUpDown, ChevronUp, ChevronDown } from "lucide-react";
+import { Plus, Trash2, Pencil, X, Save, Users, CalendarDays, Shield, Building2, Search, ArrowUpDown, ChevronUp, ChevronDown, Database } from "lucide-react";
 
 interface UserWithSub {
   id: number;
@@ -337,10 +337,16 @@ export default function Admin() {
             </h1>
             <p style={{ fontSize: 14, color: "#6E6E73", margin: 0 }}>{users.length} Benutzer registriert{search && filteredUsers.length !== users.length ? ` · ${filteredUsers.length} angezeigt` : ""}</p>
           </div>
-          <button onClick={startCreate} data-testid="button-create-user" style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, border: "none", background: "#1D1D1F", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
-            <Plus style={{ width: 16, height: 16 }} />
-            Neuer Benutzer
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <button onClick={() => setLocation("/analyse")} data-testid="button-stammdaten" title="Stammdaten" style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.1)", background: "#fff", color: "#1D1D1F", fontSize: 14, fontWeight: 600, cursor: "pointer", transition: "all 200ms ease" }} onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.03)"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; }}>
+              <Database style={{ width: 16, height: 16 }} />
+              Stammdaten
+            </button>
+            <button onClick={startCreate} data-testid="button-create-user" style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, border: "none", background: "#1D1D1F", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+              <Plus style={{ width: 16, height: 16 }} />
+              Neuer Benutzer
+            </button>
+          </div>
         </div>
 
         {(showCreate || editId) && renderForm()}
