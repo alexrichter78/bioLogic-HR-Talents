@@ -1187,8 +1187,13 @@ export default function RollenDNA() {
   }, []);
 
   const handleSave = () => {
+    let candidateData = null;
+    let teamData = null;
+    try { const c = localStorage.getItem("jobcheckCandProfile"); if (c) candidateData = JSON.parse(c); } catch {}
+    try { const cs = localStorage.getItem("jobcheckCandSliders"); if (cs) candidateData = { ...candidateData, sliders: JSON.parse(cs) }; } catch {}
+    try { const t = localStorage.getItem("teamProfile"); if (t) teamData = JSON.parse(t); } catch {}
     const exportData = {
-      version: 1,
+      version: 2,
       exportedAt: new Date().toISOString(),
       beruf,
       fuehrung,
@@ -1199,13 +1204,15 @@ export default function RollenDNA() {
       zusatzInfo,
       taetigkeiten,
       nextId,
+      matchCheck: candidateData,
+      teamCheck: teamData,
     };
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     const safeName = beruf ? beruf.replace(/[^a-zA-Z0-9äöüÄÖÜß\-_ ]/g, "").trim().replace(/\s+/g, "_") : "Rollenprofil";
-    a.download = `${safeName}_RollenDNA.json`;
+    a.download = `${safeName}_bioLogic.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -1262,6 +1269,20 @@ export default function RollenDNA() {
             zusatzInfo: loadedZusatz,
           });
           localStorage.setItem("kompetenzenCache", JSON.stringify({ key: cacheKey, taetigkeiten: loadedTaetigkeiten }));
+        }
+
+        if (data.matchCheck) {
+          const mc = data.matchCheck;
+          if (mc.sliders) {
+            localStorage.setItem("jobcheckCandSliders", JSON.stringify(mc.sliders));
+          }
+          const { sliders, ...profileData } = mc;
+          if (Object.keys(profileData).length > 0) {
+            localStorage.setItem("jobcheckCandProfile", JSON.stringify(profileData));
+          }
+        }
+        if (data.teamCheck) {
+          localStorage.setItem("teamProfile", JSON.stringify(data.teamCheck));
         }
       } catch {
         alert("Die Datei konnte nicht gelesen werden.");
