@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { PlusCircle, FolderOpen, DoorOpen, Bot, CheckCircle, Sparkles } from "lucide-react";
 import { useLocation } from "wouter";
 import logoSrc from "@assets/1_1773849007741.png";
-import illustrationRollenanalyse from "@assets/angepasstes_bild_v4_1773672738168.png";
+import illustrationRollenanalyse from "@assets/stellenanalyse_illustration.png";
 import illustrationKiCoach from "@assets/ki_coach_v5.png";
 
 import GlobalNav from "@/components/global-nav";
