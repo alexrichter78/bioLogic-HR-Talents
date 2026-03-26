@@ -5,6 +5,7 @@ import {
   CalendarDays, Zap, FileText,
 } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
+import { useRegion } from "@/lib/region";
 import { hyphenateText } from "@/lib/hyphenate";
 import {
   type Triad, type ComponentKey,
@@ -306,6 +307,7 @@ function ReadOnlyBars({ triad }: { triad: Triad }) {
 }
 
 export default function Teamdynamik() {
+  const { region } = useRegion();
   const [teamName, setTeamName] = useState("Projektteam");
   const [teamProfile, setTeamProfile] = useState<Triad>({ impulsiv: 30, intuitiv: 50, analytisch: 20 });
   const [personProfile, setPersonProfile] = useState<Triad>(() => {
@@ -403,7 +405,7 @@ export default function Teamdynamik() {
       const res = await fetch("/api/generate-team-report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...payload, region }),
       });
       if (!res.ok) throw new Error("Fehler");
       const data = await res.json();
@@ -416,7 +418,7 @@ export default function Teamdynamik() {
     } finally {
       setReportLoading(false);
     }
-  }, [input, result]);
+  }, [input, result, region]);
 
   const copyReport = async () => {
     if (!reportRef.current) return;

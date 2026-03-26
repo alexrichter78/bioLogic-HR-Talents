@@ -9,6 +9,22 @@ const openai = new OpenAI({
   baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
 });
 
+function getRegionInstruction(region?: string, options?: { skipAddress?: boolean }): string {
+  const addressLine = options?.skipAddress ? "" : `\n- Verwende die formelle Anrede "Sie".`;
+  if (region === "CH") {
+    return `\n\n## SPRACHREGION: SCHWEIZ
+Schreibe ALLE Texte in Schweizer Hochdeutsch:
+- Verwende NIEMALS das scharfe S (ß). Ersetze es IMMER durch "ss" (z.B. "Strasse" statt "Straße", "Massnahme" statt "Maßnahme", "regelmässig" statt "regelmäßig", "schliesslich" statt "schließlich").
+- Verwende Schweizer Begriffe wo üblich (z.B. "Mitarbeitende" statt "Mitarbeiter", "Bewerbungsdossier" statt "Bewerbungsmappe").${addressLine}\n`;
+  }
+  if (region === "AT") {
+    return `\n\n## SPRACHREGION: ÖSTERREICH
+Schreibe ALLE Texte in österreichischem Hochdeutsch:
+- Verwende österreichische Begriffe wo üblich (z.B. "Jänner" statt "Januar", "heuer" statt "dieses Jahr").${addressLine}\n`;
+  }
+  return "";
+}
+
 function requireAuth(req: Request, res: Response, next: NextFunction) {
   if (!req.session.userId) {
     return res.status(401).json({ error: "Nicht angemeldet" });
@@ -232,7 +248,7 @@ export async function registerRoutes(
 
   app.post("/api/generate-kompetenzen", async (req, res) => {
     try {
-      const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik, zusatzInfo, analyseTexte } = req.body;
+      const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik, zusatzInfo, analyseTexte, region } = req.body;
       if (!beruf) {
         return res.status(400).json({ error: "Beruf ist erforderlich" });
       }
@@ -257,7 +273,7 @@ export async function registerRoutes(
       }
 
       const prompt = `Du bist ein Experte für Berufsprofile und Kompetenzanalyse im deutschsprachigen Raum.
-${analyseKontext}
+${getRegionInstruction(region)}${analyseKontext}
 ## ROLLENPROFIL – GESAMTKONTEXT
 
 **Rolle/Beruf:** ${beruf}
@@ -366,7 +382,7 @@ Antworte ausschließlich als JSON:
 
   app.post("/api/reclassify-kompetenzen", async (req, res) => {
     try {
-      const { beruf, fuehrung, aufgabencharakter, arbeitslogik, items } = req.body;
+      const { beruf, fuehrung, aufgabencharakter, arbeitslogik, items, region } = req.body;
       if (!items || items.length === 0) {
         return res.status(400).json({ error: "Keine Einträge zum Neubewerten" });
       }
@@ -376,6 +392,7 @@ Antworte ausschließlich als JSON:
       ).join("\n");
 
       const prompt = `Du bist ein Experte für Kompetenzanalyse. Bewerte die folgenden Tätigkeits-/Kompetenzbeschreibungen NEU nach der Sachverhalt-Methodik.
+${getRegionInstruction(region)}
 
 ## ROLLENKONTEXT
 **Rolle/Beruf:** ${beruf || "Nicht angegeben"}
@@ -435,7 +452,7 @@ Beispiel für 3 Einträge:
         beruf, bereich, fuehrungstyp, aufgabencharakter, arbeitslogik,
         erfolgsfokusLabels, taetigkeiten,
         gesamt, haupt, neben, fuehrungBG, rahmen,
-        profileType, intensity, isLeadership
+        profileType, intensity, isLeadership, region
       } = req.body;
 
       if (!beruf) {
@@ -521,7 +538,7 @@ Beispiel für 3 Einträge:
       const profileDescription = PROFILE_TYPE_DESCRIPTIONS[profileType || "balanced_all"] || PROFILE_TYPE_DESCRIPTIONS["balanced_all"];
 
       const prompt = `Du bist ein Experte für strukturelle Rollenanalyse und Besetzungsentscheidungen im deutschsprachigen Raum.
-
+${getRegionInstruction(region)}
 ## AUFGABE
 
 Erstelle einen vollständigen Entscheidungsbericht (Strukturanalyse) für die Rolle "${beruf}" im Bereich "${bereich || "Nicht angegeben"}".
@@ -682,7 +699,7 @@ Antworte ausschließlich als JSON mit exakt dieser Struktur:
 
   app.post("/api/generate-analyse", async (req, res) => {
     try {
-      const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik, taetigkeiten } = req.body;
+      const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik, taetigkeiten, region } = req.body;
       if (!beruf || !taetigkeiten || taetigkeiten.length === 0) {
         return res.status(400).json({ error: "Profildaten sind erforderlich" });
       }
@@ -696,6 +713,7 @@ Antworte ausschließlich als JSON mit exakt dieser Struktur:
       ).join("\n");
 
       const prompt = `Du bist ein Experte für Rollenanalyse und Kompetenzprofile. Analysiere das folgende Rollenprofil im GESAMTKONTEXT und erstelle drei Analysebereiche.
+${getRegionInstruction(region)}
 
 ## ROLLENPROFIL – GESAMTKONTEXT
 
@@ -760,7 +778,7 @@ Antworte als JSON:
 
   app.post("/api/generate-team-report", async (req, res) => {
     try {
-      const { context, profiles, computed, levers } = req.body;
+      const { context, profiles, computed, levers, region } = req.body;
       if (!profiles?.team || !profiles?.person) {
         return res.status(400).json({ error: "Team- und Personenprofil erforderlich" });
       }
@@ -783,6 +801,7 @@ Antworte als JSON:
       const systemPrompt = `Du erstellst einen einheitlichen Team-Systemreport (bioLogic) als Managementdokument.
 Die Leser kennen das Modell nicht. Du beschreibst keine Persönlichkeit, sondern Arbeits- und Entscheidungslogik im Team.
 Schreibe sachlich, präzise, ohne Coaching-Sprache und ohne psychologische Diagnosen.
+${getRegionInstruction(region)}
 
 WICHTIG – Rollenunterscheidung:
 Die neue Person ist eine ${personRole}. Das verändert die gesamte Analyse grundlegend:
@@ -861,7 +880,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
 
   app.post("/api/ki-coach", async (req, res) => {
     try {
-      const { messages, stammdaten } = req.body;
+      const { messages, stammdaten, region } = req.body;
       if (!Array.isArray(messages) || messages.length === 0) {
         return res.status(400).json({ error: "Keine Nachrichten" });
       }
@@ -906,7 +925,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
       }
 
       const systemPrompt = `Du bist ein erfahrener bioLogic-Coach und Personalberater mit jahrelanger Praxiserfahrung.
-
+${getRegionInstruction(region, { skipAddress: true })}
 DEIN TON & MENSCHLICHKEIT:
 Du klingst wie ein echter Mensch – ein erfahrener Coach, der nachdenkt, bevor er spricht. Du duzt den Nutzer. Du bist auf Augenhöhe, nie belehrend. Du darfst auch mal kurz innehalten: "Hmm, da muss ich kurz ausholen...", "Das ist eine Konstellation, die ich so ähnlich schon oft gesehen habe...", "Lass mich mal überlegen, was hier wirklich dahintersteckt..."
 - Starte Antworten UNTERSCHIEDLICH. Nie zweimal den gleichen Einstieg. Variiere: Mal mit einer Beobachtung, mal mit einer Rückfrage, mal mit einer Einordnung, mal direkt mit dem Kern.
@@ -1406,7 +1425,7 @@ Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und 
 
   app.post("/api/generate-kandidatenprofil", async (req, res) => {
     try {
-      const { beruf, bereich, taetigkeiten, fuehrungstyp, aufgabencharakter, arbeitslogik } = req.body;
+      const { beruf, bereich, taetigkeiten, fuehrungstyp, aufgabencharakter, arbeitslogik, region } = req.body;
       if (!beruf || typeof beruf !== "string") {
         return res.status(400).json({ error: "Beruf ist erforderlich" });
       }
@@ -1434,6 +1453,7 @@ Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und 
         .slice(0, 8);
 
       const prompt = `Du bist ein erfahrener Personalberater. Beschreibe in 2-3 Sätzen, aus welchen Rollen und Arbeitsumfeldern typische Personen für die Position "${safeBeruf}"${safeBereich ? ` (${safeBereich})` : ""} kommen.
+${getRegionInstruction(region)}
 
 Kontext:
 - Kerntätigkeiten: ${alleTaetigkeiten.join(", ") || "nicht spezifiziert"}

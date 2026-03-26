@@ -44,6 +44,12 @@ Preferred communication style: Simple, everyday language.
 3.  **Express 5**: Utilizes latest Express features including native async error handling.
 4.  **Vite as dev middleware**: Single port for both API and frontend during development.
 
+### Region Switcher
+-   **Context**: `client/src/lib/region.tsx` provides `RegionProvider` and `useRegion()` hook. Supports DE (Germany), CH (Switzerland), AT (Austria). Persisted in localStorage.
+-   **Frontend**: Flag emoji dropdown (🇩🇪/🇨🇭/🇦🇹) in `global-nav.tsx`. All pages with AI calls pass `region` in their API request body.
+-   **Backend**: `getRegionInstruction(region, options?)` in `server/routes.ts` generates prompt instructions per region. CH: replaces ß→ss, uses Swiss terms. AT: uses Austrian terms. Both default to formal "Sie" except KI-Coach which uses `skipAddress: true` to preserve its informal "Du" tone.
+-   **Endpoints with region support**: generate-kompetenzen, reclassify-kompetenzen, generate-bericht, generate-analyse, generate-team-report, ki-coach, generate-kandidatenprofil.
+
 ### UI/UX Decisions
 -   **Global Navigation**: Unified navigation component with 6 main items.
 -   **Rollen-DNA Completion**: Toggles visibility of "Rollenkontext" and "Erfolgsfokus" sections.

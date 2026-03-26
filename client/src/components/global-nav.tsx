@@ -1,6 +1,8 @@
+import { useState, useRef, useEffect } from "react";
 import { useLocation } from "wouter";
-import { Home, Briefcase, GitCompareArrows, Users, Bot, Settings, LogOut } from "lucide-react";
+import { Home, Briefcase, GitCompareArrows, Users, Bot, Settings, LogOut, Globe } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { useRegion, type Region } from "@/lib/region";
 import logoSrc from "@assets/1_1773849007741.png";
 
 const NAV_ITEMS = [
@@ -20,9 +22,30 @@ const RESET_KEYS = [
 
 const NAV_HEIGHT = 56;
 
+const REGION_OPTIONS: { value: Region; label: string; flag: string }[] = [
+  { value: "DE", label: "Deutschland", flag: "🇩🇪" },
+  { value: "CH", label: "Schweiz", flag: "🇨🇭" },
+  { value: "AT", label: "Österreich", flag: "🇦🇹" },
+];
+
 export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }) {
   const [location, setLocation] = useLocation();
   const { user, logout } = useAuth();
+  const { region, setRegion } = useRegion();
+  const [regionOpen, setRegionOpen] = useState(false);
+  const regionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (regionRef.current && !regionRef.current.contains(e.target as Node)) {
+        setRegionOpen(false);
+      }
+    }
+    if (regionOpen) document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [regionOpen]);
+
+  const currentFlag = REGION_OPTIONS.find(r => r.value === region)?.flag || "🇩🇪";
 
   const handleNav = (item: typeof NAV_ITEMS[0]) => {
     if (location === item.path || location.startsWith(item.path + "/")) {
@@ -107,6 +130,58 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
 
           <div style={{ display: "flex", alignItems: "center", gap: 4, minWidth: 28 }}>
             {rightSlot}
+            <div ref={regionRef} style={{ position: "relative" }}>
+              <button
+                onClick={() => setRegionOpen(!regionOpen)}
+                data-testid="nav-region-toggle"
+                title={`Sprachregion: ${REGION_OPTIONS.find(r => r.value === region)?.label}`}
+                style={{
+                  width: 32, height: 32, borderRadius: 8,
+                  border: regionOpen ? "1px solid rgba(0,113,227,0.2)" : "1px solid transparent",
+                  cursor: "pointer",
+                  background: regionOpen ? "rgba(0,113,227,0.06)" : "transparent",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  transition: "all 200ms ease",
+                  fontSize: 16, lineHeight: 1,
+                }}
+                onMouseEnter={(e) => { if (!regionOpen) e.currentTarget.style.background = "rgba(0,0,0,0.03)"; }}
+                onMouseLeave={(e) => { if (!regionOpen) e.currentTarget.style.background = "transparent"; }}
+              >
+                {currentFlag}
+              </button>
+              {regionOpen && (
+                <div style={{
+                  position: "absolute", top: "calc(100% + 6px)", right: 0,
+                  background: "#FFFFFF", borderRadius: 12,
+                  boxShadow: "0 8px 30px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06)",
+                  padding: 4, minWidth: 170, zIndex: 9999,
+                }}>
+                  <div style={{ padding: "6px 12px 4px", fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    Sprachregion
+                  </div>
+                  {REGION_OPTIONS.map(opt => (
+                    <button
+                      key={opt.value}
+                      onClick={() => { setRegion(opt.value); setRegionOpen(false); }}
+                      data-testid={`nav-region-${opt.value.toLowerCase()}`}
+                      style={{
+                        width: "100%", display: "flex", alignItems: "center", gap: 10,
+                        padding: "8px 12px", borderRadius: 8, border: "none", cursor: "pointer",
+                        background: region === opt.value ? "rgba(0,113,227,0.08)" : "transparent",
+                        transition: "all 150ms ease", textAlign: "left",
+                      }}
+                      onMouseEnter={(e) => { if (region !== opt.value) e.currentTarget.style.background = "rgba(0,0,0,0.03)"; }}
+                      onMouseLeave={(e) => { if (region !== opt.value) e.currentTarget.style.background = "transparent"; }}
+                    >
+                      <span style={{ fontSize: 18 }}>{opt.flag}</span>
+                      <span style={{ fontSize: 13, fontWeight: region === opt.value ? 600 : 450, color: region === opt.value ? "#0071E3" : "#1D1D1F" }}>
+                        {opt.label}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             {user?.accessUntil && user.role !== "admin" && (
               <span
                 data-testid="nav-access-until"

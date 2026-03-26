@@ -7,6 +7,7 @@ import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRig
 import logoSrc from "@assets/1_1773849007741.png";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE, type BerufLand } from "@/data/berufe";
+import { useRegion } from "@/lib/region";
 
 type KompetenzTyp = "Impulsiv" | "Intuitiv" | "Analytisch";
 type Niveau = "Niedrig" | "Mittel" | "Hoch";
@@ -1056,6 +1057,7 @@ function loadSavedState() {
 
 export default function RollenDNA() {
   const [, setLocation] = useLocation();
+  const { region } = useRegion();
   const saved = useRef(loadSavedState());
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
@@ -1413,6 +1415,7 @@ export default function RollenDNA() {
           aufgabencharakter,
           arbeitslogik,
           items: changed.map(t => ({ name: t.name, kategorie: t.kategorie })),
+          region,
         }),
       });
       if (!resp.ok) throw new Error("Reclassify failed");
@@ -1537,7 +1540,7 @@ export default function RollenDNA() {
       const resp = await fetch("/api/generate-kompetenzen", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ beruf, fuehrung, erfolgsfokus: erfolgsfokusText, aufgabencharakter, arbeitslogik, zusatzInfo, analyseTexte }),
+        body: JSON.stringify({ beruf, fuehrung, erfolgsfokus: erfolgsfokusText, aufgabencharakter, arbeitslogik, zusatzInfo, analyseTexte, region }),
       });
       if (!resp.ok) throw new Error("Fehler bei der Generierung");
       const data = await resp.json();

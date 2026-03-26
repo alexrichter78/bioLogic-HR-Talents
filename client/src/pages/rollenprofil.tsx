@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation } from "wouter";
 import { Download, AlertTriangle, BarChart3, Briefcase, Users, Sun, Gauge, Flame } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
+import { useRegion } from "@/lib/region";
 import { BERUFE } from "@/data/berufe";
 import logoSrc from "@assets/LOGO_bio_1773853681939.png";
 
@@ -939,6 +940,7 @@ function ProfileBar({ label, value, color }: { label: string; value: number; col
 
 export default function Rollenprofil() {
   const [, setLocation] = useLocation();
+  const { region } = useRegion();
   const [data, setData] = useState<ReportData | null>(null);
   const reportRef = useRef<HTMLDivElement>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
@@ -1003,7 +1005,7 @@ export default function Rollenprofil() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             beruf, bereich, taetigkeiten,
-            fuehrungstyp, aufgabencharakter, arbeitslogik,
+            fuehrungstyp, aufgabencharakter, arbeitslogik, region,
           }),
         })
           .then(r => {

@@ -6,6 +6,7 @@ import GlobalNav from "@/components/global-nav";
 import { BERUFE } from "@/data/berufe";
 import { apiRequest } from "@/lib/queryClient";
 import { hyphenateText } from "@/lib/hyphenate";
+import { useRegion } from "@/lib/region";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 const SOFT = { imp: "#FDEAED", int: "#FEF3E2", ana: "#E8F0FA" };
@@ -497,6 +498,7 @@ function SpannungsfeldPill({ text }: { text: string }) {
 
 export default function Bericht() {
   const [, setLocation] = useLocation();
+  const { region } = useRegion();
   const [profileData, setProfileData] = useState<{
     beruf: string; bereich: string; isLeadership: boolean;
     gesamt: BG; haupt: BG; neben: BG; fuehrung: BG; rahmen: BG;
@@ -609,7 +611,7 @@ export default function Bericht() {
         haupt: profileData.haupt, neben: profileData.neben,
         fuehrungBG: profileData.fuehrung, rahmen: profileData.rahmen,
         profileType: profileData.profileType, intensity: profileData.intensity,
-        isLeadership: profileData.isLeadership,
+        isLeadership: profileData.isLeadership, region,
       });
       const data = await res.json();
       setBericht(data);

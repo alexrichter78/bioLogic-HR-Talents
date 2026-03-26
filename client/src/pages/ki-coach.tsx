@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImageIcon, Mic, MicOff } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
+import { useRegion } from "@/lib/region";
 
 type Message = {
   role: "user" | "assistant";
@@ -171,6 +172,7 @@ function formatMessage(text: string) {
 }
 
 export default function KICoach() {
+  const { region } = useRegion();
   const [messages, setMessages] = useState<Message[]>([WELCOME_MSG]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -298,7 +300,7 @@ export default function KICoach() {
       const res = await fetch("/api/ki-coach", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: chatHistory, ...(hasStammdaten ? { stammdaten } : {}) }),
+        body: JSON.stringify({ messages: chatHistory, ...(hasStammdaten ? { stammdaten } : {}), region }),
       });
 
       if (!res.ok) throw new Error("Fehler");
