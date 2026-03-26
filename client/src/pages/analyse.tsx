@@ -70,26 +70,6 @@ NICHT Analytisch:
 - Durchsetzung von Entscheidungen gegen Widerstände (→ Impulsiv)
 - Verhandlungen mit Ergebnisdruck (→ Impulsiv)`;
 
-const DEFAULT_BIOCHECK_INTRO = `Diese Auswertung beschreibt die Wirklogik einer Rolle. Die Anforderungen werden den drei Dimensionen Impulsiv, Intuitiv und Analytisch zugeordnet. So wird erkennbar, welche Form von Wirksamkeit die Rolle bestimmt.
-
-Impulsiv steht für Umsetzung, Entscheidung und Ergebnisverantwortung.
-
-Intuitiv beschreibt die Qualität der Zusammenarbeit und das Handeln im jeweiligen Kontext.
-
-Analytisch kennzeichnet Struktur, Planung und fachliche Präzision.`;
-
-function loadBioCheckText(): { generated: string; override: string | null } {
-  try {
-    const gen = localStorage.getItem("bioCheckTextGenerated");
-    const ovr = localStorage.getItem("bioCheckTextOverride");
-    return {
-      generated: gen ? JSON.parse(gen) : "",
-      override: ovr ? JSON.parse(ovr) : null,
-    };
-  } catch { return { generated: "", override: null }; }
-}
-
-
 function loadSaved() {
   try {
     const raw = localStorage.getItem("analyseTexte");
@@ -113,18 +93,6 @@ export default function Analyse() {
   const [bereich3, setBereich3] = useState(initial.bereich3);
   const [saved, setSaved] = useState(true);
 
-  const bioCheckData = loadBioCheckText();
-  const [bioCheckText, setBioCheckText] = useState(bioCheckData.override ?? bioCheckData.generated);
-  const [bioCheckEdited, setBioCheckEdited] = useState(false);
-
-  const [bioCheckIntro, setBioCheckIntro] = useState(() => {
-    try {
-      const saved = localStorage.getItem("bioCheckIntroOverride");
-      return saved ? JSON.parse(saved) : DEFAULT_BIOCHECK_INTRO;
-    } catch { return DEFAULT_BIOCHECK_INTRO; }
-  });
-  const [bioCheckIntroEdited, setBioCheckIntroEdited] = useState(false);
-
   const handleChange = (setter: (v: string) => void) => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setter(e.target.value);
     setSaved(false);
@@ -133,28 +101,6 @@ export default function Analyse() {
   const handleSave = () => {
     localStorage.setItem("analyseTexte", JSON.stringify({ bereich1, bereich2, bereich3 }));
     setSaved(true);
-  };
-
-  const handleBioCheckSave = () => {
-    localStorage.setItem("bioCheckTextOverride", JSON.stringify(bioCheckText));
-    setBioCheckEdited(false);
-  };
-
-  const handleBioCheckReset = () => {
-    localStorage.removeItem("bioCheckTextOverride");
-    setBioCheckText(bioCheckData.generated);
-    setBioCheckEdited(false);
-  };
-
-  const handleBioCheckIntroSave = () => {
-    localStorage.setItem("bioCheckIntroOverride", JSON.stringify(bioCheckIntro));
-    setBioCheckIntroEdited(false);
-  };
-
-  const handleBioCheckIntroReset = () => {
-    localStorage.removeItem("bioCheckIntroOverride");
-    setBioCheckIntro(DEFAULT_BIOCHECK_INTRO);
-    setBioCheckIntroEdited(false);
   };
 
   const textareaStyle: React.CSSProperties = {
@@ -207,110 +153,6 @@ export default function Analyse() {
           </div>
 
           <div className="flex flex-col gap-6">
-            <div style={cardStyle}>
-              <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-biocheck-intro">
-                bioCheck-Einleitungstext (statisch)
-              </label>
-              <textarea
-                value={bioCheckIntro}
-                onChange={(e) => { setBioCheckIntro(e.target.value); setBioCheckIntroEdited(true); }}
-                rows={8}
-                style={textareaStyle}
-                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(0,113,227,0.4)"; }}
-                onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; }}
-                data-testid="textarea-biocheck-intro"
-              />
-              <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
-                <button
-                  onClick={handleBioCheckIntroSave}
-                  disabled={!bioCheckIntroEdited}
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 600,
-                    padding: "6px 16px",
-                    borderRadius: 8,
-                    border: "none",
-                    background: bioCheckIntroEdited ? "#0071E3" : "rgba(0,0,0,0.06)",
-                    color: bioCheckIntroEdited ? "#fff" : "#8E8E93",
-                    cursor: bioCheckIntroEdited ? "pointer" : "default",
-                    transition: "all 200ms ease",
-                  }}
-                  data-testid="button-biocheck-intro-save"
-                >
-                  Übernehmen
-                </button>
-                <button
-                  onClick={handleBioCheckIntroReset}
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 500,
-                    padding: "6px 16px",
-                    borderRadius: 8,
-                    border: "1px solid rgba(0,0,0,0.1)",
-                    background: "transparent",
-                    color: "#6E6E73",
-                    cursor: "pointer",
-                    transition: "all 200ms ease",
-                  }}
-                  data-testid="button-biocheck-intro-reset"
-                >
-                  Zurücksetzen
-                </button>
-              </div>
-            </div>
-
-            <div style={cardStyle}>
-              <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-biocheck-text">
-                bioCheck-Text der Stellenanforderung
-              </label>
-              <textarea
-                value={bioCheckText}
-                onChange={(e) => { setBioCheckText(e.target.value); setBioCheckEdited(true); }}
-                rows={4}
-                style={textareaStyle}
-                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(0,113,227,0.4)"; }}
-                onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; }}
-                data-testid="textarea-biocheck-text"
-              />
-              <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
-                <button
-                  onClick={handleBioCheckSave}
-                  disabled={!bioCheckEdited}
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 600,
-                    padding: "6px 16px",
-                    borderRadius: 8,
-                    border: "none",
-                    background: bioCheckEdited ? "#0071E3" : "rgba(0,0,0,0.06)",
-                    color: bioCheckEdited ? "#fff" : "#8E8E93",
-                    cursor: bioCheckEdited ? "pointer" : "default",
-                    transition: "all 200ms ease",
-                  }}
-                  data-testid="button-biocheck-save"
-                >
-                  Übernehmen
-                </button>
-                <button
-                  onClick={handleBioCheckReset}
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 500,
-                    padding: "6px 16px",
-                    borderRadius: 8,
-                    border: "1px solid rgba(0,0,0,0.1)",
-                    background: "transparent",
-                    color: "#6E6E73",
-                    cursor: "pointer",
-                    transition: "all 200ms ease",
-                  }}
-                  data-testid="button-biocheck-reset"
-                >
-                  Zurücksetzen
-                </button>
-              </div>
-            </div>
-
             <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-bereich1">
                 Impulsive Daten
