@@ -1,6 +1,7 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import bcrypt from "bcryptjs";
 import OpenAI from "openai";
 
 const openai = new OpenAI({
@@ -8,10 +9,220 @@ const openai = new OpenAI({
   baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
 });
 
+function requireAuth(req: Request, res: Response, next: NextFunction) {
+  if (!req.session.userId) {
+    return res.status(401).json({ error: "Nicht angemeldet" });
+  }
+  next();
+}
+
+function requireAdmin(req: Request, res: Response, next: NextFunction) {
+  if (!req.session.userId || req.session.userRole !== "admin") {
+    return res.status(403).json({ error: "Kein Zugriff" });
+  }
+  next();
+}
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      if (!email || !password) {
+        return res.status(400).json({ error: "E-Mail und Passwort erforderlich" });
+      }
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(401).json({ error: "Ungültige Anmeldedaten" });
+      }
+
+      if (!user.isActive) {
+        return res.status(403).json({ error: "Konto deaktiviert" });
+      }
+
+      const valid = await bcrypt.compare(password, user.passwordHash);
+      if (!valid) {
+        return res.status(401).json({ error: "Ungültige Anmeldedaten" });
+      }
+
+      const sub = await storage.getActiveSubscription(user.id);
+      if (!sub && user.role !== "admin") {
+        return res.status(403).json({ error: "Zugang abgelaufen. Bitte wenden Sie sich an Ihren Administrator." });
+      }
+
+      await storage.updateLastLogin(user.id);
+
+      req.session.userId = user.id;
+      req.session.userRole = user.role;
+
+      res.json({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        companyName: user.companyName,
+        role: user.role,
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ error: "Anmeldung fehlgeschlagen" });
+    }
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    req.session.destroy(() => {
+      res.json({ ok: true });
+    });
+  });
+
+  app.get("/api/auth/me", async (req, res) => {
+    if (!req.session.userId) {
+      return res.status(401).json({ error: "Nicht angemeldet" });
+    }
+    const user = await storage.getUserById(req.session.userId);
+    if (!user) {
+      return res.status(401).json({ error: "Benutzer nicht gefunden" });
+    }
+    if (!user.isActive) {
+      req.session.destroy(() => {});
+      return res.status(403).json({ error: "Konto deaktiviert" });
+    }
+    if (user.role !== "admin") {
+      const sub = await storage.getActiveSubscription(user.id);
+      if (!sub) {
+        req.session.destroy(() => {});
+        return res.status(403).json({ error: "Zugang abgelaufen" });
+      }
+    }
+    res.json({
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      companyName: user.companyName,
+      role: user.role,
+    });
+  });
+
+  app.get("/api/admin/users", requireAdmin, async (_req, res) => {
+    const allUsers = await storage.listUsers();
+    const allSubs = await storage.listSubscriptions();
+    const result = allUsers.map(u => ({
+      ...u,
+      passwordHash: undefined,
+      subscription: allSubs.find(s => s.userId === u.id) || null,
+    }));
+    res.json(result);
+  });
+
+  app.post("/api/admin/users", requireAdmin, async (req, res) => {
+    try {
+      const { email, password, firstName, lastName, companyName, role, isActive, accessUntil, plan, notes } = req.body;
+      if (!email || !password) {
+        return res.status(400).json({ error: "E-Mail und Passwort erforderlich" });
+      }
+      const existing = await storage.getUserByEmail(email);
+      if (existing) {
+        return res.status(409).json({ error: "E-Mail bereits vergeben" });
+      }
+      const hash = await bcrypt.hash(password, 10);
+      const user = await storage.createUser({
+        email,
+        passwordHash: hash,
+        firstName: firstName || "",
+        lastName: lastName || "",
+        companyName: companyName || "",
+        role: role || "user",
+        isActive: isActive !== false,
+        emailVerified: false,
+      });
+      if (accessUntil) {
+        await storage.createSubscription({
+          userId: user.id,
+          plan: plan || "premium",
+          source: "manual",
+          status: "active",
+          startsAt: new Date(),
+          accessUntil: new Date(accessUntil),
+          cancelAtPeriodEnd: false,
+          notes: notes || null,
+          canceledAt: null,
+          stripeCustomerId: null,
+          stripeSubscriptionId: null,
+        });
+      }
+      res.json({ id: user.id });
+    } catch (error) {
+      console.error("Create user error:", error);
+      res.status(500).json({ error: "Benutzer konnte nicht erstellt werden" });
+    }
+  });
+
+  app.patch("/api/admin/users/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { email, password, firstName, lastName, companyName, role, isActive, accessUntil, plan, notes, subscriptionStatus } = req.body;
+      const updateData: any = {};
+      if (email !== undefined) updateData.email = email;
+      if (firstName !== undefined) updateData.firstName = firstName;
+      if (lastName !== undefined) updateData.lastName = lastName;
+      if (companyName !== undefined) updateData.companyName = companyName;
+      if (role !== undefined) updateData.role = role;
+      if (isActive !== undefined) updateData.isActive = isActive;
+      if (password) updateData.passwordHash = await bcrypt.hash(password, 10);
+
+      const user = await storage.updateUser(id, updateData);
+      if (!user) return res.status(404).json({ error: "Benutzer nicht gefunden" });
+
+      const existingSub = await storage.getSubscriptionByUserId(id);
+      if (accessUntil !== undefined || plan !== undefined || notes !== undefined || subscriptionStatus !== undefined) {
+        if (existingSub) {
+          const subUpdate: any = {};
+          if (accessUntil !== undefined) subUpdate.accessUntil = new Date(accessUntil);
+          if (plan !== undefined) subUpdate.plan = plan;
+          if (notes !== undefined) subUpdate.notes = notes;
+          if (subscriptionStatus !== undefined) subUpdate.status = subscriptionStatus;
+          await storage.updateSubscription(existingSub.id, subUpdate);
+        } else if (accessUntil) {
+          await storage.createSubscription({
+            userId: id,
+            plan: plan || "premium",
+            source: "manual",
+            status: subscriptionStatus || "active",
+            startsAt: new Date(),
+            accessUntil: new Date(accessUntil),
+            cancelAtPeriodEnd: false,
+            notes: notes || null,
+            canceledAt: null,
+            stripeCustomerId: null,
+            stripeSubscriptionId: null,
+          });
+        }
+      }
+      res.json({ ok: true });
+    } catch (error) {
+      console.error("Update user error:", error);
+      res.status(500).json({ error: "Benutzer konnte nicht aktualisiert werden" });
+    }
+  });
+
+  app.delete("/api/admin/users/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (req.session.userId === id) {
+        return res.status(400).json({ error: "Eigenen Account kann nicht gelöscht werden" });
+      }
+      await storage.deleteUser(id);
+      res.json({ ok: true });
+    } catch (error) {
+      console.error("Delete user error:", error);
+      res.status(500).json({ error: "Benutzer konnte nicht gelöscht werden" });
+    }
+  });
 
   app.post("/api/generate-kompetenzen", async (req, res) => {
     try {

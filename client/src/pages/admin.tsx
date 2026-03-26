@@ -1,0 +1,350 @@
+import { useState, useEffect } from "react";
+import { useAuth } from "@/lib/auth";
+import { useLocation } from "wouter";
+import GlobalNav from "@/components/global-nav";
+import { Plus, Trash2, Pencil, X, Save, Users, CalendarDays, Shield, Building2 } from "lucide-react";
+
+interface UserWithSub {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  companyName: string;
+  role: string;
+  isActive: boolean;
+  createdAt: string;
+  lastLoginAt: string | null;
+  subscription: {
+    id: number;
+    plan: string;
+    status: string;
+    accessUntil: string;
+    notes: string | null;
+  } | null;
+}
+
+interface UserForm {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  companyName: string;
+  role: string;
+  isActive: boolean;
+  accessUntil: string;
+  plan: string;
+  notes: string;
+  subscriptionStatus: string;
+}
+
+const emptyForm: UserForm = {
+  email: "",
+  password: "",
+  firstName: "",
+  lastName: "",
+  companyName: "",
+  role: "user",
+  isActive: true,
+  accessUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+  plan: "premium",
+  notes: "",
+  subscriptionStatus: "active",
+};
+
+function formatDate(d: string | null) {
+  if (!d) return "—";
+  return new Date(d).toLocaleDateString("de-CH", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
+export default function Admin() {
+  const { user } = useAuth();
+  const [, setLocation] = useLocation();
+  const [users, setUsers] = useState<UserWithSub[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editId, setEditId] = useState<number | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
+  const [form, setForm] = useState<UserForm>(emptyForm);
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (user?.role !== "admin") {
+      setLocation("/");
+      return;
+    }
+    loadUsers();
+  }, [user, setLocation]);
+
+  async function loadUsers() {
+    setLoading(true);
+    const res = await fetch("/api/admin/users");
+    if (res.ok) setUsers(await res.json());
+    setLoading(false);
+  }
+
+  function startEdit(u: UserWithSub) {
+    setEditId(u.id);
+    setShowCreate(false);
+    setError("");
+    setForm({
+      email: u.email,
+      password: "",
+      firstName: u.firstName,
+      lastName: u.lastName,
+      companyName: u.companyName,
+      role: u.role,
+      isActive: u.isActive,
+      accessUntil: u.subscription?.accessUntil ? new Date(u.subscription.accessUntil).toISOString().split("T")[0] : "",
+      plan: u.subscription?.plan || "premium",
+      notes: u.subscription?.notes || "",
+      subscriptionStatus: u.subscription?.status || "active",
+    });
+  }
+
+  function startCreate() {
+    setEditId(null);
+    setShowCreate(true);
+    setError("");
+    setForm(emptyForm);
+  }
+
+  async function handleSave() {
+    setError("");
+    setSaving(true);
+    try {
+      if (showCreate) {
+        if (!form.email || !form.password) {
+          setError("E-Mail und Passwort erforderlich");
+          setSaving(false);
+          return;
+        }
+        const res = await fetch("/api/admin/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          setError(err.error || "Fehler beim Erstellen");
+          setSaving(false);
+          return;
+        }
+        setShowCreate(false);
+      } else if (editId) {
+        const payload: any = { ...form };
+        if (!payload.password) delete payload.password;
+        const res = await fetch(`/api/admin/users/${editId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          setError(err.error || "Fehler beim Speichern");
+          setSaving(false);
+          return;
+        }
+        setEditId(null);
+      }
+      await loadUsers();
+    } catch {
+      setError("Verbindungsfehler");
+    }
+    setSaving(false);
+  }
+
+  async function handleDelete(id: number) {
+    if (!confirm("Benutzer wirklich löschen?")) return;
+    await fetch(`/api/admin/users/${id}`, { method: "DELETE" });
+    await loadUsers();
+  }
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "8px 12px",
+    borderRadius: 8,
+    border: "1px solid rgba(0,0,0,0.1)",
+    fontSize: 13,
+    outline: "none",
+    boxSizing: "border-box",
+    background: "#FAFBFC",
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: 12,
+    fontWeight: 600,
+    color: "#48484A",
+    display: "block",
+    marginBottom: 4,
+  };
+
+  function renderForm() {
+    return (
+      <div style={{ background: "#fff", borderRadius: 16, padding: 24, border: "1px solid rgba(0,0,0,0.06)", marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.03)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
+            {showCreate ? "Neuen Benutzer anlegen" : "Benutzer bearbeiten"}
+          </h3>
+          <button onClick={() => { setEditId(null); setShowCreate(false); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }} data-testid="button-cancel-form">
+            <X style={{ width: 18, height: 18, color: "#8E8E93" }} />
+          </button>
+        </div>
+
+        {error && (
+          <div style={{ padding: "8px 12px", borderRadius: 8, background: "rgba(255,59,48,0.06)", border: "1px solid rgba(255,59,48,0.15)", marginBottom: 12, fontSize: 13, color: "#C41E3A", fontWeight: 500 }} data-testid="admin-form-error">
+            {error}
+          </div>
+        )}
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div>
+            <label style={labelStyle}>E-Mail *</label>
+            <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} style={inputStyle} data-testid="input-admin-email" />
+          </div>
+          <div>
+            <label style={labelStyle}>{showCreate ? "Passwort *" : "Neues Passwort (leer = unverändert)"}</label>
+            <input type="password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} style={inputStyle} data-testid="input-admin-password" />
+          </div>
+          <div>
+            <label style={labelStyle}>Vorname</label>
+            <input type="text" value={form.firstName} onChange={e => setForm({ ...form, firstName: e.target.value })} style={inputStyle} data-testid="input-admin-firstname" />
+          </div>
+          <div>
+            <label style={labelStyle}>Nachname</label>
+            <input type="text" value={form.lastName} onChange={e => setForm({ ...form, lastName: e.target.value })} style={inputStyle} data-testid="input-admin-lastname" />
+          </div>
+          <div>
+            <label style={labelStyle}>Firma</label>
+            <input type="text" value={form.companyName} onChange={e => setForm({ ...form, companyName: e.target.value })} style={inputStyle} data-testid="input-admin-company" />
+          </div>
+          <div>
+            <label style={labelStyle}>Rolle</label>
+            <select value={form.role} onChange={e => setForm({ ...form, role: e.target.value })} style={inputStyle} data-testid="select-admin-role">
+              <option value="user">Benutzer</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Zugang bis</label>
+            <input type="date" value={form.accessUntil} onChange={e => setForm({ ...form, accessUntil: e.target.value })} style={inputStyle} data-testid="input-admin-access-until" />
+          </div>
+          <div>
+            <label style={labelStyle}>Plan</label>
+            <select value={form.plan} onChange={e => setForm({ ...form, plan: e.target.value })} style={inputStyle} data-testid="select-admin-plan">
+              <option value="premium">Premium</option>
+              <option value="basic">Basic</option>
+              <option value="trial">Trial</option>
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Status</label>
+            <select value={form.subscriptionStatus} onChange={e => setForm({ ...form, subscriptionStatus: e.target.value })} style={inputStyle} data-testid="select-admin-sub-status">
+              <option value="active">Aktiv</option>
+              <option value="expired">Abgelaufen</option>
+              <option value="canceled">Gekündigt</option>
+            </select>
+          </div>
+          <div style={{ display: "flex", alignItems: "end", gap: 8 }}>
+            <label style={{ ...labelStyle, display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
+              <input type="checkbox" checked={form.isActive} onChange={e => setForm({ ...form, isActive: e.target.checked })} data-testid="input-admin-active" />
+              Konto aktiv
+            </label>
+          </div>
+          <div style={{ gridColumn: "1 / -1" }}>
+            <label style={labelStyle}>Notizen</label>
+            <input type="text" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} style={inputStyle} placeholder="Optional" data-testid="input-admin-notes" />
+          </div>
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
+          <button onClick={() => { setEditId(null); setShowCreate(false); }} style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid rgba(0,0,0,0.1)", background: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }} data-testid="button-cancel">
+            Abbrechen
+          </button>
+          <button onClick={handleSave} disabled={saving} data-testid="button-save-user" style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#1D1D1F", color: "#fff", fontSize: 13, fontWeight: 600, cursor: saving ? "wait" : "pointer", display: "flex", alignItems: "center", gap: 6 }}>
+            <Save style={{ width: 14, height: 14 }} />
+            {saving ? "Speichern..." : "Speichern"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (user?.role !== "admin") return null;
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#f5f7fb", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
+      <GlobalNav />
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: "80px 20px 48px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+          <div>
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px", display: "flex", alignItems: "center", gap: 10 }} data-testid="text-admin-title">
+              <Shield style={{ width: 22, height: 22, color: "#1A5DAB" }} />
+              Benutzerverwaltung
+            </h1>
+            <p style={{ fontSize: 14, color: "#6E6E73", margin: 0 }}>{users.length} Benutzer registriert</p>
+          </div>
+          <button onClick={startCreate} data-testid="button-create-user" style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, border: "none", background: "#1D1D1F", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+            <Plus style={{ width: 16, height: 16 }} />
+            Neuer Benutzer
+          </button>
+        </div>
+
+        {(showCreate || editId) && renderForm()}
+
+        {loading ? (
+          <p style={{ textAlign: "center", color: "#8E8E93", padding: 40 }}>Laden...</p>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {users.map(u => {
+              const isExpired = u.subscription ? new Date(u.subscription.accessUntil) < new Date() : true;
+              const subActive = u.subscription?.status === "active" && !isExpired;
+              return (
+                <div key={u.id} style={{ background: "#fff", borderRadius: 14, padding: "16px 20px", border: "1px solid rgba(0,0,0,0.05)", display: "flex", alignItems: "center", gap: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.02)" }} data-testid={`admin-user-row-${u.id}`}>
+                  <div style={{ width: 36, height: 36, borderRadius: 10, background: u.role === "admin" ? "linear-gradient(135deg, #1A5DAB, #0071E3)" : "linear-gradient(135deg, #E5E5EA, #D1D1D6)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    {u.role === "admin" ? <Shield style={{ width: 16, height: 16, color: "#fff" }} /> : <Users style={{ width: 16, height: 16, color: "#636366" }} />}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F" }}>{u.firstName} {u.lastName}</span>
+                      {!u.isActive && <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, background: "rgba(255,59,48,0.08)", color: "#C41E3A", fontWeight: 600 }}>Deaktiviert</span>}
+                      {u.role === "admin" && <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, background: "rgba(0,113,227,0.08)", color: "#0071E3", fontWeight: 600 }}>Admin</span>}
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 12, color: "#8E8E93" }}>
+                      <span>{u.email}</span>
+                      {u.companyName && <span style={{ display: "flex", alignItems: "center", gap: 3 }}><Building2 style={{ width: 11, height: 11 }} />{u.companyName}</span>}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "right", minWidth: 120 }}>
+                    {u.subscription ? (
+                      <>
+                        <div style={{ display: "flex", alignItems: "center", gap: 4, justifyContent: "flex-end", marginBottom: 2 }}>
+                          <CalendarDays style={{ width: 12, height: 12, color: subActive ? "#34C759" : "#FF3B30" }} />
+                          <span style={{ fontSize: 12, fontWeight: 600, color: subActive ? "#1B7A3D" : "#C41E3A" }}>
+                            {formatDate(u.subscription.accessUntil)}
+                          </span>
+                        </div>
+                        <span style={{ fontSize: 11, color: "#8E8E93" }}>{u.subscription.plan}</span>
+                      </>
+                    ) : (
+                      <span style={{ fontSize: 12, color: "#8E8E93" }}>Kein Abo</span>
+                    )}
+                  </div>
+                  <div style={{ display: "flex", gap: 4 }}>
+                    <button onClick={() => startEdit(u)} style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid rgba(0,0,0,0.06)", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} data-testid={`button-edit-user-${u.id}`}>
+                      <Pencil style={{ width: 14, height: 14, color: "#636366" }} />
+                    </button>
+                    {u.id !== user?.id && (
+                      <button onClick={() => handleDelete(u.id)} style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid rgba(255,59,48,0.1)", background: "rgba(255,59,48,0.03)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} data-testid={`button-delete-user-${u.id}`}>
+                        <Trash2 style={{ width: 14, height: 14, color: "#FF3B30" }} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

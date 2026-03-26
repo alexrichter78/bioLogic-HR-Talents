@@ -1,5 +1,6 @@
 import { useLocation } from "wouter";
-import { Home, Briefcase, GitCompareArrows, Users, Bot } from "lucide-react";
+import { Home, Briefcase, GitCompareArrows, Users, Bot, Settings, LogOut } from "lucide-react";
+import { useAuth } from "@/lib/auth";
 import logoSrc from "@assets/1_1773849007741.png";
 
 const NAV_ITEMS = [
@@ -21,6 +22,7 @@ const NAV_HEIGHT = 56;
 
 export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }) {
   const [location, setLocation] = useLocation();
+  const { user, logout } = useAuth();
 
   const handleNav = (item: typeof NAV_ITEMS[0]) => {
     if (location === item.path || location.startsWith(item.path + "/")) {
@@ -103,8 +105,42 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
             })}
           </nav>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 28 }}>
-            {rightSlot || <div style={{ width: 28 }} />}
+          <div style={{ display: "flex", alignItems: "center", gap: 4, minWidth: 28 }}>
+            {rightSlot}
+            {user?.role === "admin" && (
+              <button
+                onClick={() => setLocation("/admin")}
+                data-testid="nav-admin"
+                title="Benutzerverwaltung"
+                style={{
+                  width: 32, height: 32, borderRadius: 8,
+                  border: "none", cursor: "pointer",
+                  background: location === "/admin" ? "rgba(0,113,227,0.08)" : "transparent",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  transition: "all 200ms ease",
+                }}
+                onMouseEnter={(e) => { if (location !== "/admin") e.currentTarget.style.background = "rgba(0,113,227,0.05)"; }}
+                onMouseLeave={(e) => { if (location !== "/admin") e.currentTarget.style.background = "transparent"; }}
+              >
+                <Settings style={{ width: 15, height: 15, color: location === "/admin" ? "#0071E3" : "#86868B", strokeWidth: 1.8 }} />
+              </button>
+            )}
+            <button
+              onClick={logout}
+              data-testid="nav-logout"
+              title="Abmelden"
+              style={{
+                width: 32, height: 32, borderRadius: 8,
+                border: "none", cursor: "pointer",
+                background: "transparent",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                transition: "all 200ms ease",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,59,48,0.06)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+            >
+              <LogOut style={{ width: 15, height: 15, color: "#86868B", strokeWidth: 1.8 }} />
+            </button>
           </div>
         </div>
       </div>

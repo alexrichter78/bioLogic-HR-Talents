@@ -3,8 +3,11 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider, useAuth } from "@/lib/auth";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
+import Login from "@/pages/login";
+import Admin from "@/pages/admin";
 import RollenDNA from "@/pages/rollen-dna";
 import Analyse from "@/pages/analyse";
 import Rollenprofil from "@/pages/rollenprofil";
@@ -17,10 +20,25 @@ import TeamCheckReportV2 from "@/pages/teamcheck-report-v2";
 import TeamCheckReportV3 from "@/pages/teamcheck-report-v3";
 import TeamCheckReportV4 from "@/pages/teamcheck-report-v4";
 
-function Router() {
+function AppRoutes() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f5f7fb", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
+        <p style={{ color: "#8E8E93", fontSize: 14 }}>Laden...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Login />;
+  }
+
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/admin" component={Admin} />
       <Route path="/rollen-dna" component={RollenDNA} />
       <Route path="/analyse" component={Analyse} />
       <Route path="/bericht" component={Rollenprofil} />
@@ -41,8 +59,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Router />
+        <AuthProvider>
+          <Toaster />
+          <AppRoutes />
+        </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
