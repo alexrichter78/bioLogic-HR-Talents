@@ -1,11 +1,36 @@
 import { storage } from "./storage";
 import bcrypt from "bcryptjs";
+import pg from "pg";
+
+async function ensureSchema() {
+  const client = new pg.Client({ connectionString: process.env.DATABASE_URL });
+  await client.connect();
+  try {
+    await client.query(`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS username TEXT DEFAULT '';
+      CREATE UNIQUE INDEX IF NOT EXISTS users_username_idx ON users(username) WHERE username != '';
+      UPDATE users SET username = LOWER(email) WHERE username IS NULL OR username = '';
+      CREATE TABLE IF NOT EXISTS password_reset_tokens (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        token TEXT NOT NULL UNIQUE,
+        expires_at TIMESTAMP NOT NULL,
+        used_at TIMESTAMP,
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+    `);
+  } finally {
+    await client.end();
+  }
+}
 
 export async function seedAdmin() {
   const adminUsername = process.env.ADMIN_USERNAME || "admin";
   const adminPassword = process.env.ADMIN_PASSWORD || "Admin2024!";
 
   try {
+    await ensureSchema();
+
     const existing = await storage.getUserByUsername(adminUsername);
     const passwordHash = await bcrypt.hash(adminPassword, 10);
 
