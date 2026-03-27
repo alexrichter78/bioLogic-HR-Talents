@@ -84,10 +84,14 @@ export async function registerRoutes(
         companyName: user.companyName,
         role: user.role,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login error:", error);
-      res.status(500).json({ error: "Anmeldung fehlgeschlagen" });
+      res.status(500).json({ error: "Anmeldung fehlgeschlagen", detail: error?.message || "unknown" });
     }
+  });
+
+  app.get("/api/debug/version", (_req, res) => {
+    res.json({ version: "2026-03-27-v3", node_env: process.env.NODE_ENV });
   });
 
   app.post("/api/auth/logout", (req, res) => {
