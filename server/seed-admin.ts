@@ -3,13 +3,27 @@ import bcrypt from "bcryptjs";
 import pg from "pg";
 
 async function ensureSchema() {
-  const client = new pg.Client({ connectionString: process.env.DATABASE_URL });
+  const ssl = process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false;
+  const client = new pg.Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl,
+  });
   await client.connect();
   try {
     await client.query(`
       ALTER TABLE users ADD COLUMN IF NOT EXISTS username TEXT DEFAULT '';
-      CREATE UNIQUE INDEX IF NOT EXISTS users_username_idx ON users(username) WHERE username != '';
+    `);
+    await client.query(`
       UPDATE users SET username = LOWER(email) WHERE username IS NULL OR username = '';
+    `);
+    await client.query(`
+      DO $$ BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'users_username_idx') THEN
+          CREATE UNIQUE INDEX users_username_idx ON users(username) WHERE username != '';
+        END IF;
+      END $$;
+    `);
+    await client.query(`
       CREATE TABLE IF NOT EXISTS password_reset_tokens (
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL REFERENCES users(id),
@@ -19,6 +33,9 @@ async function ensureSchema() {
         created_at TIMESTAMP NOT NULL DEFAULT NOW()
       );
     `);
+    console.log("Schema migration completed successfully");
+  } catch (err) {
+    console.error("Schema migration error:", err);
   } finally {
     await client.end();
   }

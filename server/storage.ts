@@ -4,7 +4,10 @@ import pkg from "pg";
 const { Pool } = pkg;
 import { users, subscriptions, passwordResetTokens, type User, type InsertUser, type Subscription, type InsertSubscription, type PasswordResetToken } from "@shared/schema";
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+});
 export const db = drizzle(pool);
 
 export interface IStorage {
