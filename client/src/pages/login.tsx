@@ -25,13 +25,10 @@ export default function Login() {
   return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #f0f4f8 0%, #e8edf3 50%, #f5f7fb 100%)", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
       <div style={{ width: "100%", maxWidth: 420, padding: 24 }}>
-        <div style={{ textAlign: "center", marginBottom: 28 }}>
-          <img src={logoPath} alt="bioLogic" style={{ height: 72, marginBottom: 16 }} data-testid="img-login-logo" />
-          <h2 style={{ fontSize: 18, fontWeight: 600, color: "#48484A", margin: 0, letterSpacing: "0.01em" }} data-testid="text-login-subtitle">HR Talents</h2>
-        </div>
-
-        <div style={{ background: "#fff", borderRadius: 20, padding: "36px 32px", boxShadow: "0 8px 40px rgba(0,0,0,0.08)", border: "1px solid rgba(0,0,0,0.04)" }}>
-          <div style={{ textAlign: "center", marginBottom: 28 }}>
+        <div style={{ background: "#fff", borderRadius: 20, padding: "40px 32px", boxShadow: "0 8px 40px rgba(0,0,0,0.08)", border: "1px solid rgba(0,0,0,0.04)" }}>
+          <div style={{ textAlign: "center", marginBottom: 32 }}>
+            <img src={logoPath} alt="bioLogic" style={{ height: 64, marginBottom: 12 }} data-testid="img-login-logo" />
+            <h2 style={{ fontSize: 17, fontWeight: 600, color: "#48484A", margin: "0 0 24px", letterSpacing: "0.01em" }} data-testid="text-login-subtitle">HR Talents</h2>
             <h1 style={{ fontSize: 22, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.02em" }} data-testid="text-login-title">Anmelden</h1>
             <p style={{ fontSize: 14, color: "#6E6E73", margin: 0 }}>Melden Sie sich mit Ihren Zugangsdaten an</p>
           </div>
