@@ -228,14 +228,14 @@ export default function Login() {
                 padding: "13px 0",
                 borderRadius: 12,
                 border: "none",
-                background: loading ? "#9CA3AF" : "linear-gradient(135deg, #1F2937 0%, #374151 100%)",
+                background: loading ? "#9CA3AF" : "linear-gradient(135deg, #0071E3, #34AADC)",
                 color: "#fff",
                 fontSize: 15,
                 fontWeight: 600,
                 cursor: loading ? "wait" : "pointer",
                 transition: "all 0.2s ease",
                 letterSpacing: "0.02em",
-                boxShadow: loading ? "none" : "0 2px 8px rgba(31,41,55,0.25)",
+                boxShadow: loading ? "none" : "0 2px 8px rgba(0,113,227,0.3)",
               }}
             >
               {loading ? "Anmelden..." : "Anmelden"}
