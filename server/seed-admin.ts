@@ -7,11 +7,14 @@ export async function seedAdmin() {
 
   try {
     const existing = await storage.getUserByUsername(adminUsername);
+    const passwordHash = await bcrypt.hash(adminPassword, 10);
+
     if (existing) {
+      await storage.updateUser(existing.id, { passwordHash });
+      console.log(`Admin password updated for: ${adminUsername}`);
       return;
     }
 
-    const passwordHash = await bcrypt.hash(adminPassword, 10);
     await storage.createUser({
       username: adminUsername,
       email: process.env.ADMIN_EMAIL || "admin@biologic.app",
