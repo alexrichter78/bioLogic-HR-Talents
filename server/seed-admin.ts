@@ -2,18 +2,19 @@ import { storage } from "./storage";
 import bcrypt from "bcryptjs";
 
 export async function seedAdmin() {
-  const adminEmail = process.env.ADMIN_EMAIL || "admin@biologic.app";
+  const adminUsername = process.env.ADMIN_USERNAME || "admin";
   const adminPassword = process.env.ADMIN_PASSWORD || "Admin2024!";
 
   try {
-    const existing = await storage.getUserByEmail(adminEmail);
+    const existing = await storage.getUserByUsername(adminUsername);
     if (existing) {
       return;
     }
 
     const passwordHash = await bcrypt.hash(adminPassword, 10);
     await storage.createUser({
-      email: adminEmail,
+      username: adminUsername,
+      email: process.env.ADMIN_EMAIL || "admin@biologic.app",
       passwordHash,
       firstName: "Admin",
       lastName: "",
@@ -23,7 +24,7 @@ export async function seedAdmin() {
       emailVerified: true,
     });
 
-    console.log(`Admin account created: ${adminEmail}`);
+    console.log(`Admin account created: ${adminUsername}`);
   } catch (error) {
     console.error("Failed to seed admin:", error);
   }

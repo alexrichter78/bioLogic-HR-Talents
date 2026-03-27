@@ -20,6 +20,7 @@ import TeamReport from "@/pages/team-report";
 import TeamCheckReportV2 from "@/pages/teamcheck-report-v2";
 import TeamCheckReportV3 from "@/pages/teamcheck-report-v3";
 import TeamCheckReportV4 from "@/pages/teamcheck-report-v4";
+import ResetPassword from "@/pages/reset-password";
 
 function AppRoutes() {
   const { user, loading } = useAuth();
@@ -30,6 +31,10 @@ function AppRoutes() {
         <p style={{ color: "#8E8E93", fontSize: 14 }}>Laden...</p>
       </div>
     );
+  }
+
+  if (window.location.pathname === "/reset-password") {
+    return <ResetPassword />;
   }
 
   if (!user) {

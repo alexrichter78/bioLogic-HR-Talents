@@ -2,6 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import OpenAI from "openai";
 
 const openai = new OpenAI({
@@ -45,12 +46,12 @@ export async function registerRoutes(
 
   app.post("/api/auth/login", async (req, res) => {
     try {
-      const { email, password } = req.body;
-      if (!email || !password) {
-        return res.status(400).json({ error: "E-Mail und Passwort erforderlich" });
+      const { username, password } = req.body;
+      if (!username || !password) {
+        return res.status(400).json({ error: "Benutzername und Passwort erforderlich" });
       }
 
-      const user = await storage.getUserByEmail(email);
+      const user = await storage.getUserByUsername(username);
       if (!user) {
         return res.status(401).json({ error: "Ungültige Anmeldedaten" });
       }
@@ -76,6 +77,7 @@ export async function registerRoutes(
 
       res.json({
         id: user.id,
+        username: user.username,
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
@@ -120,6 +122,7 @@ export async function registerRoutes(
     }
     res.json({
       id: user.id,
+      username: user.username,
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
@@ -142,17 +145,18 @@ export async function registerRoutes(
 
   app.post("/api/admin/users", requireAdmin, async (req, res) => {
     try {
-      const { email, password, firstName, lastName, companyName, role, isActive, accessUntil, plan, notes } = req.body;
-      if (!email || !password) {
-        return res.status(400).json({ error: "E-Mail und Passwort erforderlich" });
+      const { username, email, password, firstName, lastName, companyName, role, isActive, accessUntil, plan, notes } = req.body;
+      if (!username || !password) {
+        return res.status(400).json({ error: "Benutzername und Passwort erforderlich" });
       }
-      const existing = await storage.getUserByEmail(email);
+      const existing = await storage.getUserByUsername(username);
       if (existing) {
-        return res.status(409).json({ error: "E-Mail bereits vergeben" });
+        return res.status(409).json({ error: "Benutzername bereits vergeben" });
       }
       const hash = await bcrypt.hash(password, 10);
       const user = await storage.createUser({
-        email,
+        username,
+        email: email || "",
         passwordHash: hash,
         firstName: firstName || "",
         lastName: lastName || "",
@@ -183,11 +187,82 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/admin/users/:id/reset-link", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const user = await storage.getUserById(id);
+      if (!user) return res.status(404).json({ error: "Benutzer nicht gefunden" });
+      const token = crypto.randomBytes(32).toString("hex");
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      await storage.createPasswordResetToken(user.id, token, expiresAt);
+      res.json({ token, expiresAt: expiresAt.toISOString() });
+    } catch (error) {
+      console.error("Reset link error:", error);
+      res.status(500).json({ error: "Fehler beim Erstellen des Reset-Links" });
+    }
+  });
+
+  app.post("/api/auth/request-reset", async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ error: "E-Mail erforderlich" });
+      }
+      const user = await storage.getUserByEmail(email);
+      if (user) {
+        const token = crypto.randomBytes(32).toString("hex");
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        await storage.createPasswordResetToken(user.id, token, expiresAt);
+        console.log(`Password reset token for ${email}: ${token}`);
+      }
+      res.json({ ok: true, message: "Falls ein Konto mit dieser E-Mail existiert, wurde ein Reset-Link gesendet." });
+    } catch (error) {
+      console.error("Request reset error:", error);
+      res.status(500).json({ error: "Fehler bei der Anfrage" });
+    }
+  });
+
+  app.get("/api/auth/verify-reset/:token", async (req, res) => {
+    try {
+      const resetToken = await storage.getPasswordResetToken(req.params.token);
+      if (!resetToken || resetToken.usedAt || new Date() > resetToken.expiresAt) {
+        return res.status(400).json({ error: "Ungültiger oder abgelaufener Link" });
+      }
+      res.json({ ok: true });
+    } catch (error) {
+      res.status(500).json({ error: "Fehler bei der Verifizierung" });
+    }
+  });
+
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { token, password } = req.body;
+      if (!token || !password) {
+        return res.status(400).json({ error: "Token und Passwort erforderlich" });
+      }
+      if (password.length < 4) {
+        return res.status(400).json({ error: "Passwort muss mindestens 4 Zeichen lang sein" });
+      }
+      const resetToken = await storage.getPasswordResetToken(token);
+      if (!resetToken || resetToken.usedAt || new Date() > resetToken.expiresAt) {
+        return res.status(400).json({ error: "Ungültiger oder abgelaufener Link" });
+      }
+      const hash = await bcrypt.hash(password, 10);
+      await storage.updateUser(resetToken.userId, { passwordHash: hash });
+      await storage.markTokenUsed(resetToken.id);
+      res.json({ ok: true });
+    } catch (error) {
+      console.error("Reset password error:", error);
+      res.status(500).json({ error: "Fehler beim Zurücksetzen" });
+    }
+  });
+
   app.patch("/api/admin/users/:id", requireAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const { email, password, firstName, lastName, companyName, role, isActive, accessUntil, plan, notes, subscriptionStatus } = req.body;
+      const { username, email, password, firstName, lastName, companyName, role, isActive, accessUntil, plan, notes, subscriptionStatus } = req.body;
       const updateData: any = {};
+      if (username !== undefined) updateData.username = username;
       if (email !== undefined) updateData.email = email;
       if (firstName !== undefined) updateData.firstName = firstName;
       if (lastName !== undefined) updateData.lastName = lastName;

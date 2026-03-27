@@ -2,10 +2,11 @@ import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
-import { Plus, Trash2, Pencil, X, Save, Users, CalendarDays, Shield, Building2, Search, ArrowUpDown, ChevronUp, ChevronDown, Database } from "lucide-react";
+import { Plus, Trash2, Pencil, X, Save, Users, CalendarDays, Shield, Building2, Search, ChevronUp, ChevronDown, Database, KeyRound, Copy, Check } from "lucide-react";
 
 interface UserWithSub {
   id: number;
+  username: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -24,6 +25,7 @@ interface UserWithSub {
 }
 
 interface UserForm {
+  username: string;
   email: string;
   password: string;
   firstName: string;
@@ -38,6 +40,7 @@ interface UserForm {
 }
 
 const emptyForm: UserForm = {
+  username: "",
   email: "",
   password: "",
   firstName: "",
@@ -67,8 +70,10 @@ export default function Admin() {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
-  const [sortField, setSortField] = useState<"name" | "email" | "company" | "accessUntil" | "status">("name");
+  const [sortField, setSortField] = useState<"name" | "username" | "company" | "accessUntil" | "status">("name");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [resetLink, setResetLink] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const filteredUsers = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -76,6 +81,7 @@ export default function Admin() {
     if (q) {
       list = users.filter(u =>
         `${u.firstName} ${u.lastName}`.toLowerCase().includes(q) ||
+        u.username.toLowerCase().includes(q) ||
         u.email.toLowerCase().includes(q) ||
         u.companyName.toLowerCase().includes(q) ||
         (u.subscription?.plan || "").toLowerCase().includes(q) ||
@@ -88,8 +94,8 @@ export default function Admin() {
         case "name":
           cmp = `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`, "de");
           break;
-        case "email":
-          cmp = a.email.localeCompare(b.email, "de");
+        case "username":
+          cmp = a.username.localeCompare(b.username, "de");
           break;
         case "company":
           cmp = (a.companyName || "").localeCompare(b.companyName || "", "de");
@@ -140,7 +146,9 @@ export default function Admin() {
     setEditId(u.id);
     setShowCreate(false);
     setError("");
+    setResetLink(null);
     setForm({
+      username: u.username,
       email: u.email,
       password: "",
       firstName: u.firstName,
@@ -159,6 +167,7 @@ export default function Admin() {
     setEditId(null);
     setShowCreate(true);
     setError("");
+    setResetLink(null);
     setForm(emptyForm);
   }
 
@@ -167,8 +176,8 @@ export default function Admin() {
     setSaving(true);
     try {
       if (showCreate) {
-        if (!form.email || !form.password) {
-          setError("E-Mail und Passwort erforderlich");
+        if (!form.username || !form.password) {
+          setError("Benutzername und Passwort erforderlich");
           setSaving(false);
           return;
         }
@@ -213,6 +222,28 @@ export default function Admin() {
     await loadUsers();
   }
 
+  async function handleGenerateResetLink(userId: number) {
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/reset-link`, { method: "POST" });
+      if (res.ok) {
+        const data = await res.json();
+        const baseUrl = window.location.origin;
+        setResetLink(`${baseUrl}/reset-password?token=${data.token}`);
+        setCopied(false);
+      }
+    } catch {
+      setError("Fehler beim Erstellen des Reset-Links");
+    }
+  }
+
+  function copyResetLink() {
+    if (resetLink) {
+      navigator.clipboard.writeText(resetLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  }
+
   const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "8px 12px",
@@ -239,7 +270,7 @@ export default function Admin() {
           <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
             {showCreate ? "Neuen Benutzer anlegen" : "Benutzer bearbeiten"}
           </h3>
-          <button onClick={() => { setEditId(null); setShowCreate(false); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }} data-testid="button-cancel-form">
+          <button onClick={() => { setEditId(null); setShowCreate(false); setResetLink(null); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }} data-testid="button-cancel-form">
             <X style={{ width: 18, height: 18, color: "#8E8E93" }} />
           </button>
         </div>
@@ -252,12 +283,20 @@ export default function Admin() {
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <div>
-            <label style={labelStyle}>E-Mail *</label>
-            <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} style={inputStyle} data-testid="input-admin-email" />
+            <label style={labelStyle}>Benutzername *</label>
+            <input type="text" value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} style={inputStyle} data-testid="input-admin-username" placeholder="z.B. jmueller" />
           </div>
           <div>
             <label style={labelStyle}>{showCreate ? "Passwort *" : "Neues Passwort (leer = unverändert)"}</label>
             <input type="password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} style={inputStyle} data-testid="input-admin-password" />
+          </div>
+          <div>
+            <label style={labelStyle}>E-Mail</label>
+            <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} style={inputStyle} data-testid="input-admin-email" placeholder="Für Passwort-Reset" />
+          </div>
+          <div>
+            <label style={labelStyle}>Firma</label>
+            <input type="text" value={form.companyName} onChange={e => setForm({ ...form, companyName: e.target.value })} style={inputStyle} data-testid="input-admin-company" />
           </div>
           <div>
             <label style={labelStyle}>Vorname</label>
@@ -266,10 +305,6 @@ export default function Admin() {
           <div>
             <label style={labelStyle}>Nachname</label>
             <input type="text" value={form.lastName} onChange={e => setForm({ ...form, lastName: e.target.value })} style={inputStyle} data-testid="input-admin-lastname" />
-          </div>
-          <div>
-            <label style={labelStyle}>Firma</label>
-            <input type="text" value={form.companyName} onChange={e => setForm({ ...form, companyName: e.target.value })} style={inputStyle} data-testid="input-admin-company" />
           </div>
           <div>
             <label style={labelStyle}>Rolle</label>
@@ -310,8 +345,37 @@ export default function Admin() {
           </div>
         </div>
 
+        {editId && (
+          <div style={{ marginTop: 16, padding: "12px 16px", borderRadius: 10, background: "#F9FAFB", border: "1px solid #E5E7EB" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: resetLink ? 8 : 0 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: "#48484A" }}>Passwort-Reset-Link</span>
+              <button
+                onClick={() => handleGenerateResetLink(editId)}
+                data-testid="button-generate-reset-link"
+                style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 8, border: "1px solid rgba(59,130,246,0.2)", background: "rgba(59,130,246,0.06)", color: "#3B82F6", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+              >
+                <KeyRound style={{ width: 13, height: 13 }} />
+                Link generieren
+              </button>
+            </div>
+            {resetLink && (
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8 }}>
+                <input type="text" value={resetLink} readOnly style={{ ...inputStyle, fontSize: 11, flex: 1, color: "#6B7280" }} data-testid="input-reset-link" />
+                <button
+                  onClick={copyResetLink}
+                  data-testid="button-copy-reset-link"
+                  style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 10px", borderRadius: 6, border: "1px solid rgba(0,0,0,0.1)", background: copied ? "#ECFDF5" : "#fff", cursor: "pointer", fontSize: 12, fontWeight: 500, color: copied ? "#059669" : "#374151", whiteSpace: "nowrap" }}
+                >
+                  {copied ? <Check style={{ width: 13, height: 13 }} /> : <Copy style={{ width: 13, height: 13 }} />}
+                  {copied ? "Kopiert" : "Kopieren"}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
-          <button onClick={() => { setEditId(null); setShowCreate(false); }} style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid rgba(0,0,0,0.1)", background: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }} data-testid="button-cancel">
+          <button onClick={() => { setEditId(null); setShowCreate(false); setResetLink(null); }} style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid rgba(0,0,0,0.1)", background: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }} data-testid="button-cancel">
             Abbrechen
           </button>
           <button onClick={handleSave} disabled={saving} data-testid="button-save-user" style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#1D1D1F", color: "#fff", fontSize: 13, fontWeight: 600, cursor: saving ? "wait" : "pointer", display: "flex", alignItems: "center", gap: 6 }}>
@@ -358,13 +422,13 @@ export default function Admin() {
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Name, E-Mail, Firma oder Plan suchen..."
+              placeholder="Name, Benutzer, Firma oder Plan suchen..."
               data-testid="input-search-users"
               style={{ width: "100%", padding: "9px 12px 9px 36px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.08)", fontSize: 13, outline: "none", background: "#fff", color: "#1D1D1F", boxSizing: "border-box" }}
             />
           </div>
-          {(["name", "email", "company", "accessUntil", "status"] as const).map(f => {
-            const labels: Record<string, string> = { name: "Name", email: "E-Mail", company: "Firma", accessUntil: "Zugang", status: "Status" };
+          {(["name", "username", "company", "accessUntil", "status"] as const).map(f => {
+            const labels: Record<string, string> = { name: "Name", username: "Benutzer", company: "Firma", accessUntil: "Zugang", status: "Status" };
             const active = sortField === f;
             return (
               <button
@@ -412,7 +476,7 @@ export default function Admin() {
                       {u.role === "admin" && <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, background: "rgba(0,113,227,0.08)", color: "#0071E3", fontWeight: 600 }}>Admin</span>}
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 12, color: "#8E8E93" }}>
-                      <span>{u.email}</span>
+                      <span style={{ fontWeight: 500 }}>@{u.username}</span>
                       {u.companyName && <span style={{ display: "flex", alignItems: "center", gap: 3 }}><Building2 style={{ width: 11, height: 11 }} />{u.companyName}</span>}
                     </div>
                   </div>
