@@ -24,59 +24,63 @@ export default function Login() {
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #f0f4f8 0%, #e8edf3 50%, #f5f7fb 100%)", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
-      <div style={{ width: "100%", maxWidth: 420, padding: 24 }}>
-        <div style={{ background: "#fff", borderRadius: 20, padding: "40px 32px", boxShadow: "0 8px 40px rgba(0,0,0,0.08)", border: "1px solid rgba(0,0,0,0.04)" }}>
-          <div style={{ textAlign: "center", marginBottom: 32 }}>
-            <img src={logoPath} alt="bioLogic" style={{ height: 64, marginBottom: 12 }} data-testid="img-login-logo" />
-            <h2 style={{ fontSize: 17, fontWeight: 600, color: "#48484A", margin: "0 0 24px", letterSpacing: "0.01em" }} data-testid="text-login-subtitle">HR Talents</h2>
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.02em" }} data-testid="text-login-title">Anmelden</h1>
-            <p style={{ fontSize: 14, color: "#6E6E73", margin: 0 }}>Melden Sie sich mit Ihren Zugangsdaten an</p>
+      <div style={{ width: "100%", maxWidth: 400, padding: 24 }}>
+        <div style={{ background: "#fff", borderRadius: 20, padding: "48px 36px 40px", boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 12px 48px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.04)" }}>
+
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 36 }}>
+            <img src={logoPath} alt="bioLogic" style={{ height: 56, objectFit: "contain", marginBottom: 14 }} data-testid="img-login-logo" />
+            <div style={{ width: 40, height: 1, background: "linear-gradient(90deg, transparent, #D1D5DB, transparent)", marginBottom: 14 }} />
+            <span style={{ fontSize: 14, fontWeight: 500, color: "#6B7280", letterSpacing: "0.08em", textTransform: "uppercase" }} data-testid="text-login-subtitle">HR Talents</span>
           </div>
 
           {error && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 16px", borderRadius: 10, background: "rgba(255,59,48,0.06)", border: "1px solid rgba(255,59,48,0.15)", marginBottom: 20 }} data-testid="login-error">
-              <AlertCircle style={{ width: 16, height: 16, color: "#FF3B30", flexShrink: 0 }} />
+            <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", borderRadius: 10, background: "rgba(255,59,48,0.06)", border: "1px solid rgba(255,59,48,0.12)", marginBottom: 20 }} data-testid="login-error">
+              <AlertCircle style={{ width: 15, height: 15, color: "#FF3B30", flexShrink: 0 }} />
               <span style={{ fontSize: 13, color: "#C41E3A", fontWeight: 500 }}>{error}</span>
             </div>
           )}
 
           <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 13, fontWeight: 600, color: "#48484A", display: "block", marginBottom: 6 }}>E-Mail</label>
+            <div style={{ marginBottom: 18 }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: "#6B7280", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.04em" }}>E-Mail</label>
               <div style={{ position: "relative" }}>
-                <Mail style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#8E8E93" }} />
+                <Mail style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#9CA3AF" }} />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   data-testid="input-email"
-                  style={{ width: "100%", padding: "10px 12px 10px 38px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.1)", fontSize: 14, outline: "none", boxSizing: "border-box", background: "#FAFBFC", transition: "border-color 0.15s" }}
+                  style={{ width: "100%", padding: "12px 14px 12px 42px", borderRadius: 12, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box", background: "#F9FAFB", transition: "border-color 0.2s, box-shadow 0.2s", color: "#1F2937" }}
                   placeholder="name@firma.de"
+                  onFocus={(e) => { e.target.style.borderColor = "#3B82F6"; e.target.style.boxShadow = "0 0 0 3px rgba(59,130,246,0.1)"; }}
+                  onBlur={(e) => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
                 />
               </div>
             </div>
 
-            <div style={{ marginBottom: 24 }}>
-              <label style={{ fontSize: 13, fontWeight: 600, color: "#48484A", display: "block", marginBottom: 6 }}>Passwort</label>
+            <div style={{ marginBottom: 28 }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: "#6B7280", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.04em" }}>Passwort</label>
               <div style={{ position: "relative" }}>
-                <Lock style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#8E8E93" }} />
+                <Lock style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#9CA3AF" }} />
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   data-testid="input-password"
-                  style={{ width: "100%", padding: "10px 40px 10px 38px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.1)", fontSize: 14, outline: "none", boxSizing: "border-box", background: "#FAFBFC", transition: "border-color 0.15s" }}
+                  style={{ width: "100%", padding: "12px 42px 12px 42px", borderRadius: 12, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box", background: "#F9FAFB", transition: "border-color 0.2s, box-shadow 0.2s", color: "#1F2937" }}
                   placeholder="Passwort eingeben"
+                  onFocus={(e) => { e.target.style.borderColor = "#3B82F6"; e.target.style.boxShadow = "0 0 0 3px rgba(59,130,246,0.1)"; }}
+                  onBlur={(e) => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", padding: 2 }}
+                  style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex", alignItems: "center", justifyContent: "center" }}
                   data-testid="button-toggle-password"
                 >
-                  {showPassword ? <EyeOff style={{ width: 16, height: 16, color: "#8E8E93" }} /> : <Eye style={{ width: 16, height: 16, color: "#8E8E93" }} />}
+                  {showPassword ? <EyeOff style={{ width: 16, height: 16, color: "#9CA3AF" }} /> : <Eye style={{ width: 16, height: 16, color: "#9CA3AF" }} />}
                 </button>
               </div>
             </div>
@@ -87,15 +91,17 @@ export default function Login() {
               data-testid="button-login"
               style={{
                 width: "100%",
-                padding: "12px 0",
+                padding: "13px 0",
                 borderRadius: 12,
                 border: "none",
-                background: loading ? "#8E8E93" : "#1D1D1F",
+                background: loading ? "#9CA3AF" : "linear-gradient(135deg, #1F2937 0%, #374151 100%)",
                 color: "#fff",
                 fontSize: 15,
                 fontWeight: 600,
                 cursor: loading ? "wait" : "pointer",
-                transition: "all 0.15s ease",
+                transition: "all 0.2s ease",
+                letterSpacing: "0.02em",
+                boxShadow: loading ? "none" : "0 2px 8px rgba(31,41,55,0.25)",
               }}
             >
               {loading ? "Anmelden..." : "Anmelden"}
