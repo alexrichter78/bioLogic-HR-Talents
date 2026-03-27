@@ -308,16 +308,6 @@ export default function TeamCheckReportV4() {
                   <Printer style={{ width: 15, height: 15 }} />
                   <span>Drucken</span>
                 </button>
-                <button
-                  onClick={exportPdf}
-                  disabled={isExportingPdf}
-                  data-testid="button-export-pdf-v4"
-                  className="report-header-btn"
-                  style={{ cursor: isExportingPdf ? "wait" : "pointer", opacity: isExportingPdf ? 0.6 : 1 }}
-                >
-                  {isExportingPdf ? <Loader2 style={{ width: 15, height: 15, animation: "spin 1s linear infinite" }} /> : <Download style={{ width: 15, height: 15 }} />}
-                  <span>PDF</span>
-                </button>
               </div>
             </div>
 

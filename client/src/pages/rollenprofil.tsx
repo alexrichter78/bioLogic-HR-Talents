@@ -1409,16 +1409,6 @@ export default function Rollenprofil() {
                 <Printer style={{ width: 15, height: 15 }} />
                 <span>Drucken</span>
               </button>
-              <button
-                onClick={handlePDF}
-                disabled={pdfLoading}
-                data-testid="button-pdf-export"
-                className="report-header-btn"
-                style={{ cursor: pdfLoading ? "wait" : "pointer", opacity: pdfLoading ? 0.6 : 1, transition: "all 0.15s ease" }}
-              >
-                <Download style={{ width: 15, height: 15 }} />
-                <span>{pdfLoading ? "Wird erstellt..." : "PDF"}</span>
-              </button>
             </div>
 
             <div className="report-kicker">STELLENANALYSE</div>
