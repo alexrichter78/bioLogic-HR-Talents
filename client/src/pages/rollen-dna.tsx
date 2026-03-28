@@ -1888,6 +1888,22 @@ export default function RollenDNA() {
 
 
                     <div style={{ marginTop: 28 }}>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 6px" }}>Optionale Ergänzungen</p>
+                      <p style={{ fontSize: 13, color: "#6E6E73", margin: "0 0 12px" }}>
+                        Was macht diese Stelle in Ihrem Unternehmen besonders? Je konkreter, desto genauer die Analyse.
+                      </p>
+                      <textarea
+                        value={zusatzInfo}
+                        onChange={(e) => setZusatzInfo(e.target.value)}
+                        placeholder="z.B. Schwerpunkt Key Account, hoher Reiseanteil, Schichtmodell, Branche Pharma, ..."
+                        className="w-full border border-border/40 focus:border-primary/40 rounded-lg px-3 py-2 text-sm resize-none placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all"
+                        style={{ background: "rgba(255, 248, 225, 0.5)" }}
+                        rows={2}
+                        data-testid="input-zusatzinfo"
+                      />
+                    </div>
+
+                    <div style={{ marginTop: 32, borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 24 }}>
                       <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 2px" }}>Arbeitsmarkt</p>
                       <p style={{ fontSize: 13, color: "#6E6E73", margin: "0 0 8px" }}>
                         Vorschläge werden für die aktiven Länder angezeigt. Zum Ein- oder Ausschalten einfach klicken.
@@ -1921,22 +1937,6 @@ export default function RollenDNA() {
                           );
                         })}
                       </div>
-                    </div>
-
-                    <div style={{ marginTop: 32, borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 24 }}>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 6px" }}>Optionale Ergänzungen</p>
-                      <p style={{ fontSize: 13, color: "#6E6E73", margin: "0 0 12px" }}>
-                        Was macht diese Stelle in Ihrem Unternehmen besonders? Je konkreter, desto genauer die Analyse.
-                      </p>
-                      <textarea
-                        value={zusatzInfo}
-                        onChange={(e) => setZusatzInfo(e.target.value)}
-                        placeholder="z.B. Schwerpunkt Key Account, hoher Reiseanteil, Schichtmodell, Branche Pharma, ..."
-                        className="w-full border border-border/40 focus:border-primary/40 rounded-lg px-3 py-2 text-sm resize-none placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all"
-                        style={{ background: "rgba(255, 248, 225, 0.5)" }}
-                        rows={2}
-                        data-testid="input-zusatzinfo"
-                      />
                     </div>
 
                   </div>
