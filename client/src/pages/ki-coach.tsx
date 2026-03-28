@@ -129,14 +129,19 @@ const EXAMPLE_PROMPTS: { category: string; prompts: string[]; requiresAnalysis?:
 function formatMessage(text: string) {
   const lines = text.split("\n");
   const elements: React.ReactNode[] = [];
-  let listItems: string[] = [];
+  let listItems: { text: string; indent: boolean }[] = [];
 
   const flushList = () => {
     if (listItems.length > 0) {
       elements.push(
-        <ul key={`list-${elements.length}`} style={{ margin: "6px 0", paddingLeft: 20 }}>
+        <ul key={`list-${elements.length}`} style={{ margin: "8px 0", paddingLeft: 18, listStyle: "none" }}>
           {listItems.map((item, i) => (
-            <li key={i} style={{ marginBottom: 3, lineHeight: 1.6 }}>{renderBold(item)}</li>
+            <li key={i} style={{
+              marginBottom: 6, lineHeight: 1.65, position: "relative", paddingLeft: item.indent ? 16 : 0,
+            }}>
+              <span style={{ position: "absolute", left: item.indent ? 0 : -16, color: "#0071E3", fontWeight: 600 }}>•</span>
+              {renderInline(item.text)}
+            </li>
           ))}
         </ul>
       );
@@ -144,25 +149,73 @@ function formatMessage(text: string) {
     }
   };
 
-  const renderBold = (str: string): React.ReactNode => {
-    const parts = str.split(/\*\*(.+?)\*\*/g);
+  const renderInline = (str: string): React.ReactNode => {
+    const parts = str.split(/(\*\*.*?\*\*|".*?")/g);
     if (parts.length === 1) return str;
-    return parts.map((part, i) =>
-      i % 2 === 1 ? <strong key={i}>{part}</strong> : part
-    );
+    return parts.map((part, i) => {
+      if (part.startsWith("**") && part.endsWith("**")) {
+        return <strong key={i} style={{ fontWeight: 700 }}>{part.slice(2, -2)}</strong>;
+      }
+      if (part.startsWith('"') && part.endsWith('"') && part.length > 10) {
+        return <span key={i} style={{ fontStyle: "italic", color: "#3A3A3C" }}>{part}</span>;
+      }
+      return part;
+    });
   };
 
-  for (const line of lines) {
-    const trimmed = line.trim();
+  for (let idx = 0; idx < lines.length; idx++) {
+    const raw = lines[idx];
+    const trimmed = raw.trim();
+    const isIndented = raw.startsWith("    ") || raw.startsWith("\t");
+
     if (trimmed.startsWith("- ") || trimmed.startsWith("• ") || /^\d+\.\s/.test(trimmed)) {
-      listItems.push(trimmed.replace(/^[-•]\s*/, "").replace(/^\d+\.\s*/, ""));
+      listItems.push({
+        text: trimmed.replace(/^[-•]\s*/, "").replace(/^\d+\.\s*/, ""),
+        indent: isIndented,
+      });
     } else {
       flushList();
       if (trimmed === "") {
-        elements.push(<div key={`sp-${elements.length}`} style={{ height: 8 }} />);
+        elements.push(<div key={`sp-${elements.length}`} style={{ height: 10 }} />);
+      } else if (trimmed.endsWith(":") && trimmed.length < 80 && !trimmed.startsWith('"')) {
+        elements.push(
+          <p key={`h-${elements.length}`} style={{
+            margin: elements.length > 0 ? "16px 0 6px" : "0 0 6px",
+            lineHeight: 1.5,
+            fontWeight: 700,
+            fontSize: 14,
+            color: "#0071E3",
+            borderBottom: "1px solid rgba(0,113,227,0.12)",
+            paddingBottom: 4,
+          }}>{renderInline(trimmed.slice(0, -1))}</p>
+        );
+      } else if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
+        elements.push(
+          <div key={`q-${elements.length}`} style={{
+            margin: "10px 0",
+            padding: "10px 14px",
+            borderLeft: "3px solid #0071E3",
+            background: "rgba(0,113,227,0.04)",
+            borderRadius: "0 8px 8px 0",
+            fontStyle: "italic",
+            lineHeight: 1.65,
+            color: "#1D1D1F",
+          }}>{renderInline(trimmed)}</div>
+        );
+      } else if (isIndented) {
+        elements.push(
+          <div key={`indent-${elements.length}`} style={{
+            margin: "6px 0",
+            padding: "8px 14px",
+            background: "rgba(0,0,0,0.025)",
+            borderRadius: 8,
+            borderLeft: "3px solid rgba(0,0,0,0.08)",
+            lineHeight: 1.65,
+          }}>{renderInline(trimmed)}</div>
+        );
       } else {
         elements.push(
-          <p key={`p-${elements.length}`} style={{ margin: "0 0 4px", lineHeight: 1.6 }}>{renderBold(trimmed)}</p>
+          <p key={`p-${elements.length}`} style={{ margin: "0 0 6px", lineHeight: 1.65 }}>{renderInline(trimmed)}</p>
         );
       }
     }
