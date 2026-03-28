@@ -2518,7 +2518,7 @@ export default function RollenDNA() {
                     )}
                   </div>
 
-                  {canAddMore ? (
+                  {canAddMore && !isGenerating ? (
                     <div style={{
                       marginTop: 24,
                       paddingTop: 24,
@@ -2558,12 +2558,14 @@ export default function RollenDNA() {
                     </div>
                   ) : null}
 
-                  <p style={{ fontSize: 12, color: "#AEAEB2", textAlign: "center", marginTop: 16 }}>
-                    {currentTabCount >= currentTabMax
-                      ? `Maximum von ${currentTabMax} erreicht`
-                      : `Maximal ${currentTabMax} ${activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"}`
-                    }
-                  </p>
+                  {!isGenerating && (
+                    <p style={{ fontSize: 12, color: "#AEAEB2", textAlign: "center", marginTop: 16 }}>
+                      {currentTabCount >= currentTabMax
+                        ? `Maximum von ${currentTabMax} erreicht`
+                        : `Maximal ${currentTabMax} ${activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"}`
+                      }
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between" style={{ marginTop: 24 }}>
