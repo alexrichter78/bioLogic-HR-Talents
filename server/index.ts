@@ -40,11 +40,16 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 
+import pg from "pg";
 const PgSession = connectPgSimple(session);
+const sessionPool = new pg.Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+});
 app.use(
   session({
     store: new PgSession({
-      conString: process.env.DATABASE_URL,
+      pool: sessionPool,
       createTableIfMissing: true,
     }),
     secret: process.env.SESSION_SECRET || "biologic-session-secret-change-me",
