@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
+import { useAuth } from "@/lib/auth";
 
 const DEFAULT_BEREICH1 = `IMPULSIV = Handlungs- und Umsetzungskompetenz (MACHEN & DURCHSETZEN)
 
@@ -87,6 +89,14 @@ function loadSaved() {
 
 
 export default function Analyse() {
+  const { user } = useAuth();
+  const [, setLocation] = useLocation();
+
+  if (user?.role !== "admin") {
+    setLocation("/");
+    return null;
+  }
+
   const initial = loadSaved();
   const [bereich1, setBereich1] = useState(initial.bereich1);
   const [bereich2, setBereich2] = useState(initial.bereich2);
