@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
 import { useAuth } from "@/lib/auth";
@@ -92,10 +92,13 @@ export default function Analyse() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
 
-  if (user?.role !== "admin") {
-    setLocation("/");
-    return null;
-  }
+  useEffect(() => {
+    if (user && user.role !== "admin") {
+      setLocation("/");
+    }
+  }, [user, setLocation]);
+
+  if (!user || user.role !== "admin") return null;
 
   const initial = loadSaved();
   const [bereich1, setBereich1] = useState(initial.bereich1);
