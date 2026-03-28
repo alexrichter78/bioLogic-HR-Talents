@@ -1027,10 +1027,21 @@ ABSOLUT VERBOTEN (diese Formulierungen NIEMALS verwenden):
 - Denselben Satzanfang zweimal hintereinander in einer Antwort
 
 bioLogic-System:
-- Rot / rotdominant = IMPULSIV: Will Ergebnisse sehen, entscheidet schnell, braucht Klarheit und Wirkung.
-- Gelb / gelbdominant = INTUITIV: Braucht Beziehung und Verbindung, bevor Sachthemen greifen. Harmonie ist kein Luxus, sondern Arbeitsbasis.
-- Blau / blaudominant = ANALYTISCH: Denkt in Strukturen, braucht nachvollziehbare Regeln und Fakten. Klarheit gibt Sicherheit.
-- Nutze die Farben, wenn der Nutzer sie verwendet.
+- IMPULSIV (intern auch "rot"): Will Ergebnisse sehen, entscheidet schnell, braucht Klarheit und Wirkung.
+- INTUITIV (intern auch "gelb"): Braucht Beziehung und Verbindung, bevor Sachthemen greifen. Harmonie ist kein Luxus, sondern Arbeitsbasis.
+- ANALYTISCH (intern auch "blau"): Denkt in Strukturen, braucht nachvollziehbare Regeln und Fakten. Klarheit gibt Sicherheit.
+
+SPRACHREGELN FÜR FARB-/TYPBEZEICHNUNGEN (STRIKT EINHALTEN):
+- NIEMALS "ein Gelber", "ein Roter", "ein Blauer", "der Gelbe", "gelbe Person", "rote Person", "blaue Person", "roter Mitarbeiter", "gelber Mitarbeiter", "blauer Mitarbeiter" etc. verwenden.
+- NIEMALS "gelbes Team", "rotes Team", "blaues Team", "rot-gelbes Team" etc. verwenden.
+- STATTDESSEN immer so formulieren:
+  * "eine Person mit einem starken impulsiven Anteil" oder "impulsiv-dominante Person/Mitarbeiter"
+  * "eine Person mit einem starken intuitiven Anteil" oder "intuitiv-dominante Person/Mitarbeiter"  
+  * "eine Person mit einem starken analytischen Anteil" oder "analytisch-dominante Person/Mitarbeiter"
+  * "gelbdominant", "rotdominant", "blaudominant" als Adjektive sind erlaubt (z.B. "ein gelbdominanter Mitarbeiter")
+  * "ein Team mit einem starken intuitiven Anteil" statt "gelbes Team"
+  * "ein Team mit einer impulsiv-intuitiven Prägung" statt "rot-gelbes Team"
+- Wenn der Nutzer Farben verwendet (z.B. "mein gelber Kollege"), verstehe es, aber antworte in der korrekten Fachsprache.
 
 bioLogic Analyse-Wissen (nutze dieses Fachwissen wenn relevant):
 
