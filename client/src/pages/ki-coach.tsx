@@ -402,9 +402,7 @@ export default function KICoach() {
         let streamedOverlaySubtitle: string | undefined;
         let buffer = "";
 
-        const streamingMsg: Message = { role: "assistant", content: "" };
-        setMessages(prev => [...prev, streamingMsg]);
-        setLoading(false);
+        let streamingStarted = false;
 
         while (true) {
           const { done, value } = await reader.read();
@@ -420,7 +418,12 @@ export default function KICoach() {
               if (event.type === "status") {
                 setLoadingStatus(event.message || "");
               } else if (event.type === "text") {
-                setLoadingStatus("");
+                if (!streamingStarted) {
+                  streamingStarted = true;
+                  setMessages(prev => [...prev, { role: "assistant", content: "" }]);
+                  setLoading(false);
+                  setLoadingStatus("");
+                }
                 streamedText += event.text;
                 setMessages(prev => {
                   const updated = [...prev];
@@ -428,6 +431,12 @@ export default function KICoach() {
                   return updated;
                 });
               } else if (event.type === "image") {
+                if (!streamingStarted) {
+                  streamingStarted = true;
+                  setMessages(prev => [...prev, { role: "assistant", content: "" }]);
+                  setLoading(false);
+                  setLoadingStatus("");
+                }
                 streamedImage = `data:image/png;base64,${event.image}`;
                 streamedOverlayTitle = event.overlayTitle;
                 streamedOverlaySubtitle = event.overlaySubtitle;
@@ -467,15 +476,114 @@ export default function KICoach() {
   }, []);
 
   const sendQuickReply = useCallback((text: string) => {
-    setInput(text);
-    setTimeout(() => {
-      setInput(text);
-      const fakeMsg = { ...messages[messages.length - 1] };
-      if (fakeMsg) {
-        setInput(text);
+    if (loading) return;
+    const userMsg: Message = { role: "user", content: text };
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
+    setInput("");
+    setLoading(true);
+
+    const chatHistory = newMessages
+      .filter(m => m !== WELCOME_MSG)
+      .map(m => ({ role: m.role, content: m.content }));
+
+    (async () => {
+      try {
+        const stammdaten: Record<string, any> = {};
+        try {
+          const savedAnalyse = localStorage.getItem("analyseState");
+          if (savedAnalyse) {
+            const a = JSON.parse(savedAnalyse);
+            if (a.bereich1) stammdaten.impulsiveDaten = a.bereich1;
+            if (a.bereich2) stammdaten.intuitiveDaten = a.bereich2;
+            if (a.bereich3) stammdaten.analytischeDaten = a.bereich3;
+          }
+        } catch {}
+
+        const hasStammdaten = Object.keys(stammdaten).length > 0;
+        const body = JSON.stringify({ messages: chatHistory, ...(hasStammdaten ? { stammdaten } : {}), region });
+
+        const res = await fetch("/api/ki-coach?stream=1", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body,
+        });
+
+        if (!res.ok) throw new Error("Fehler");
+
+        if (res.headers.get("content-type")?.includes("text/event-stream")) {
+          const reader = res.body!.getReader();
+          const decoder = new TextDecoder();
+          let streamedText = "";
+          let buffer = "";
+          let streamingStarted = false;
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split("\n");
+            buffer = lines.pop() || "";
+
+            for (const line of lines) {
+              if (!line.startsWith("data: ")) continue;
+              try {
+                const event = JSON.parse(line.slice(6));
+                if (event.type === "status") {
+                  setLoadingStatus(event.message || "");
+                } else if (event.type === "text") {
+                  if (!streamingStarted) {
+                    streamingStarted = true;
+                    setMessages(prev => [...prev, { role: "assistant", content: "" }]);
+                    setLoading(false);
+                    setLoadingStatus("");
+                  }
+                  streamedText += event.text;
+                  setMessages(prev => {
+                    const updated = [...prev];
+                    updated[updated.length - 1] = { ...updated[updated.length - 1], content: streamedText };
+                    return updated;
+                  });
+                } else if (event.type === "image") {
+                  if (!streamingStarted) {
+                    streamingStarted = true;
+                    setMessages(prev => [...prev, { role: "assistant", content: "" }]);
+                    setLoading(false);
+                    setLoadingStatus("");
+                  }
+                  setMessages(prev => {
+                    const updated = [...prev];
+                    updated[updated.length - 1] = {
+                      ...updated[updated.length - 1],
+                      image: `data:image/png;base64,${event.image}`,
+                      overlayTitle: event.overlayTitle,
+                      overlaySubtitle: event.overlaySubtitle,
+                    };
+                    return updated;
+                  });
+                } else if (event.type === "done") {
+                  break;
+                }
+              } catch {}
+            }
+          }
+        } else {
+          const data = await res.json();
+          const assistantMsg: Message = { role: "assistant", content: data.reply };
+          if (data.image) assistantMsg.image = `data:image/png;base64,${data.image}`;
+          setMessages(prev => [...prev, assistantMsg]);
+        }
+      } catch {
+        setMessages(prev => [...prev, {
+          role: "assistant",
+          content: "Entschuldigung, es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+        }]);
+      } finally {
+        setLoading(false);
+        setLoadingStatus("");
       }
-    }, 50);
-  }, [messages]);
+    })();
+  }, [loading, messages, region]);
 
   const extractQuickReplies = useCallback((content: string, msgIndex: number, totalMessages: number): string[] => {
     if (msgIndex !== totalMessages - 1) return [];
@@ -794,13 +902,7 @@ export default function KICoach() {
                         {extractQuickReplies(msg.content, i, messages.length).map((reply, ri) => (
                           <button
                             key={ri}
-                            onClick={() => {
-                              setInput(reply);
-                              setTimeout(() => {
-                                const el = inputRef.current;
-                                if (el) { el.focus(); }
-                              }, 50);
-                            }}
+                            onClick={() => sendQuickReply(reply)}
                             data-testid={`quick-reply-${ri}`}
                             style={{
                               padding: "8px 16px",

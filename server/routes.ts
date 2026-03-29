@@ -1402,29 +1402,46 @@ Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und 
         res.setHeader("Connection", "keep-alive");
         res.flushHeaders();
 
-        res.write(`data: ${JSON.stringify({ type: "status", message: "Analysiere Ihre Frage..." })}\n\n`);
-
-        const initialResponse = await openai.chat.completions.create({
+        const stream = await openai.chat.completions.create({
           model: "gpt-4.1",
           messages: apiMessages as any,
           tools: [webSearchTool, generateImageTool],
           tool_choice: "auto",
           temperature: 0.4,
           max_tokens: 2000,
+          stream: true,
         });
 
-        const initialMsg = initialResponse.choices[0]?.message;
+        let collectedContent = "";
+        let toolCallId = "";
+        let toolCallName = "";
+        let toolCallArgs = "";
+        let hasToolCall = false;
 
-        if (initialMsg?.tool_calls && initialMsg.tool_calls.length > 0) {
-          const toolCall = initialMsg.tool_calls[0];
+        for await (const chunk of stream) {
+          const delta = chunk.choices[0]?.delta;
+          if (delta?.tool_calls && delta.tool_calls.length > 0) {
+            hasToolCall = true;
+            const tc = delta.tool_calls[0];
+            if (tc.id) toolCallId = tc.id;
+            if (tc.function?.name) toolCallName = tc.function.name;
+            if (tc.function?.arguments) toolCallArgs += tc.function.arguments;
+          }
+          if (delta?.content) {
+            res.write(`data: ${JSON.stringify({ type: "text", text: delta.content })}\n\n`);
+            collectedContent += delta.content;
+          }
+        }
+
+        if (hasToolCall) {
           let toolResult = "";
           let localImageBase64: string | null = null;
           let localOverlayTitle: string | null = null;
           let localOverlaySubtitle: string | null = null;
 
-          if (toolCall.function.name === "web_search") {
+          if (toolCallName === "web_search") {
             let searchQuery = "";
-            try { searchQuery = JSON.parse(toolCall.function.arguments).query || ""; } catch {}
+            try { searchQuery = JSON.parse(toolCallArgs).query || ""; } catch {}
             res.write(`data: ${JSON.stringify({ type: "status", message: "Recherchiert im Internet..." })}\n\n`);
             try {
               const searchResponse = await fetch(`https://search.replit.com/search?q=${encodeURIComponent(searchQuery)}`).catch(() => null);
@@ -1438,12 +1455,12 @@ Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und 
               const fb = await openai.chat.completions.create({ model: "gpt-4.1", messages: [{ role: "system", content: "Du bist ein Recherche-Assistent." }, { role: "user", content: `Recherche: ${searchQuery}` }], temperature: 0.3, max_tokens: 800 });
               toolResult = fb.choices[0]?.message?.content || "Keine Ergebnisse.";
             }
-          } else if (toolCall.function.name === "generate_image") {
+          } else if (toolCallName === "generate_image") {
             res.write(`data: ${JSON.stringify({ type: "status", message: "Erstellt Bild..." })}\n\n`);
             let imagePrompt = "";
             let imageFormat: "1536x1024" | "1024x1536" = "1536x1024";
             try {
-              const args = JSON.parse(toolCall.function.arguments);
+              const args = JSON.parse(toolCallArgs);
               imagePrompt = args.prompt || "";
               if (args.overlayTitle) localOverlayTitle = args.overlayTitle;
               if (args.overlaySubtitle) localOverlaySubtitle = args.overlaySubtitle;
@@ -1463,8 +1480,9 @@ Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und 
             }
           }
 
-          (apiMessages as any[]).push({ role: "assistant", content: null, tool_calls: initialMsg.tool_calls });
-          (apiMessages as any[]).push({ role: "tool", content: toolResult, tool_call_id: toolCall.id });
+          const toolCalls = [{ id: toolCallId, type: "function" as const, function: { name: toolCallName, arguments: toolCallArgs } }];
+          (apiMessages as any[]).push({ role: "assistant", content: collectedContent || null, tool_calls: toolCalls });
+          (apiMessages as any[]).push({ role: "tool", content: toolResult, tool_call_id: toolCallId });
 
           if (localImageBase64) {
             res.write(`data: ${JSON.stringify({ type: "image", image: localImageBase64, overlayTitle: localOverlayTitle, overlaySubtitle: localOverlaySubtitle })}\n\n`);
@@ -1472,7 +1490,7 @@ Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und 
 
           res.write(`data: ${JSON.stringify({ type: "status", message: "Formuliert Antwort..." })}\n\n`);
 
-          const stream = await openai.chat.completions.create({
+          const followUpStream = await openai.chat.completions.create({
             model: "gpt-4.1",
             messages: apiMessages as any,
             temperature: 0.4,
@@ -1480,36 +1498,10 @@ Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und 
             stream: true,
           });
 
-          for await (const chunk of stream) {
+          for await (const chunk of followUpStream) {
             const delta = chunk.choices[0]?.delta?.content;
             if (delta) {
               res.write(`data: ${JSON.stringify({ type: "text", text: delta })}\n\n`);
-            }
-          }
-        } else {
-          (apiMessages as any[]).pop();
-
-          const stream = await openai.chat.completions.create({
-            model: "gpt-4.1",
-            messages: apiMessages as any,
-            tools: [webSearchTool, generateImageTool],
-            tool_choice: "auto",
-            temperature: 0.4,
-            max_tokens: 2000,
-            stream: true,
-          });
-
-          let collectedToolCalls: any[] = [];
-          let hasToolCalls = false;
-
-          for await (const chunk of stream) {
-            const delta = chunk.choices[0]?.delta;
-            if (delta?.tool_calls) {
-              hasToolCalls = true;
-              break;
-            }
-            if (delta?.content) {
-              res.write(`data: ${JSON.stringify({ type: "text", text: delta.content })}\n\n`);
             }
           }
         }
