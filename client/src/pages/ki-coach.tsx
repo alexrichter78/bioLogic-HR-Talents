@@ -169,7 +169,21 @@ function formatMessage(text: string) {
     const trimmed = raw.trim();
     const isIndented = raw.startsWith("    ") || raw.startsWith("\t");
 
-    if (trimmed.startsWith("- ") || trimmed.startsWith("• ") || /^\d+\.\s/.test(trimmed)) {
+    if (/^#{1,4}\s+/.test(trimmed)) {
+      flushList();
+      const headingText = trimmed.replace(/^#{1,4}\s+/, "").replace(/:$/, "");
+      elements.push(
+        <p key={`h-${elements.length}`} style={{
+          margin: elements.length > 0 ? "16px 0 6px" : "0 0 6px",
+          lineHeight: 1.5,
+          fontWeight: 700,
+          fontSize: 14,
+          color: "#0071E3",
+          borderBottom: "1px solid rgba(0,113,227,0.12)",
+          paddingBottom: 4,
+        }}>{renderInline(headingText)}</p>
+      );
+    } else if (trimmed.startsWith("- ") || trimmed.startsWith("• ") || /^\d+\.\s/.test(trimmed)) {
       listItems.push({
         text: trimmed.replace(/^[-•]\s*/, "").replace(/^\d+\.\s*/, ""),
         indent: isIndented,
