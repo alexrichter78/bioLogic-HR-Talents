@@ -1267,6 +1267,20 @@ ZUSAMMENFASSUNGEN:
 - Wenn das Gespräch länger wird (ab ca. 6+ Nachrichten), biete an, die wichtigsten Punkte zusammenzufassen. Beispiel: "Soll ich dir die drei wichtigsten Punkte aus unserem Gespräch kurz zusammenfassen – zum Mitnehmen?"
 - Wenn der Nutzer explizit nach einer Zusammenfassung fragt, liefere 3-5 klare Handlungspunkte mit bioLogic-Begründung.
 
+BIOLOGIC-PROFIL NACHFRAGEN (HÖCHSTE PRIORITÄT – VOR JEDER RECHERCHE):
+Wenn der Nutzer eine allgemeine Frage zu Führung, Teamdynamik, Kommunikation oder ähnlichem stellt (z.B. "Ich bin neue Führungskraft, was muss ich beachten?", "Wie gehe ich mit Konflikten um?") und du KEINE bioLogic-Analysedaten im Kontext hast (keine Stammdaten/Wissensbasis vorhanden), dann frage ZUERST nach dem bioLogic-Profil. FÜHRE KEINE WEB-SUCHE DURCH, bevor du diese Frage gestellt hast!
+
+Antworte in diesem Fall NUR mit dieser Nachfrage (kein Tool-Call, keine Recherche):
+"Gute Frage! Bevor ich dir gezielt helfe: Weißt du, wie dein bioLogic-Profil aussieht? Bist du eher impulsiv-dominant, analytisch-dominant, intuitiv-dominant – oder hast du eine Doppeldominanz (z.B. impulsiv-intuitiv)? Wenn du es weißt, kann ich meine Tipps genau auf deinen Typ zuschneiden. Wenn nicht, gebe ich dir gerne eine allgemeine Antwort."
+
+REGELN:
+- Frage NUR beim ERSTEN thematischen Einstieg, nicht bei Folgefragen im selben Gespräch
+- KEINE web_search aufrufen, wenn du zuerst nach dem Profil fragen musst
+- Wenn der Nutzer sein Profil nennt (z.B. "rotdominant", "impulsiv-analytisch"), nutze es für alle weiteren Antworten und DANN darfst du auch recherchieren
+- Wenn der Nutzer sagt "allgemein" oder "weiß ich nicht", gib eine allgemeine Antwort (mit Recherche wenn sinnvoll)
+- Wenn bereits bioLogic-Analysedaten im Kontext sind (Stammdaten/Wissensbasis), frage NICHT nach – nutze die vorhandenen Daten
+- Wenn der Nutzer in einer früheren Nachricht im Gespräch bereits sein Profil genannt hat, frage NICHT erneut
+
 QUELLENBASIERTE BERATUNG (PROAKTIVE RECHERCHE):
 Nutze die web_search-Funktion EIGENSTÄNDIG bei folgenden Themenfeldern – du musst NICHT darauf warten, dass der Nutzer nach Quellen fragt:
 - Führungswechsel, erste 100 Tage, neue Führungskraft
@@ -1398,9 +1412,15 @@ Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und 
 
       if (useStreaming) {
         res.setHeader("Content-Type", "text/event-stream");
-        res.setHeader("Cache-Control", "no-cache");
+        res.setHeader("Cache-Control", "no-cache, no-transform");
         res.setHeader("Connection", "keep-alive");
+        res.setHeader("X-Accel-Buffering", "no");
         res.flushHeaders();
+
+        const flushWrite = (data: string) => {
+          res.write(data);
+          if (typeof (res as any).flush === "function") (res as any).flush();
+        };
 
         const stream = await openai.chat.completions.create({
           model: "gpt-4.1",
@@ -1428,7 +1448,7 @@ Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und 
             if (tc.function?.arguments) toolCallArgs += tc.function.arguments;
           }
           if (delta?.content) {
-            res.write(`data: ${JSON.stringify({ type: "text", text: delta.content })}\n\n`);
+            flushWrite(`data: ${JSON.stringify({ type: "text", text: delta.content })}\n\n`);
             collectedContent += delta.content;
           }
         }
@@ -1442,7 +1462,7 @@ Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und 
           if (toolCallName === "web_search") {
             let searchQuery = "";
             try { searchQuery = JSON.parse(toolCallArgs).query || ""; } catch {}
-            res.write(`data: ${JSON.stringify({ type: "status", message: "Recherchiert im Internet..." })}\n\n`);
+            flushWrite(`data: ${JSON.stringify({ type: "status", message: "Recherchiert im Internet..." })}\n\n`);
             try {
               const searchResponse = await fetch(`https://search.replit.com/search?q=${encodeURIComponent(searchQuery)}`).catch(() => null);
               if (searchResponse && searchResponse.ok) {
@@ -1456,7 +1476,7 @@ Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und 
               toolResult = fb.choices[0]?.message?.content || "Keine Ergebnisse.";
             }
           } else if (toolCallName === "generate_image") {
-            res.write(`data: ${JSON.stringify({ type: "status", message: "Erstellt Bild..." })}\n\n`);
+            flushWrite(`data: ${JSON.stringify({ type: "status", message: "Erstellt Bild..." })}\n\n`);
             let imagePrompt = "";
             let imageFormat: "1536x1024" | "1024x1536" = "1536x1024";
             try {
@@ -1485,10 +1505,10 @@ Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und 
           (apiMessages as any[]).push({ role: "tool", content: toolResult, tool_call_id: toolCallId });
 
           if (localImageBase64) {
-            res.write(`data: ${JSON.stringify({ type: "image", image: localImageBase64, overlayTitle: localOverlayTitle, overlaySubtitle: localOverlaySubtitle })}\n\n`);
+            flushWrite(`data: ${JSON.stringify({ type: "image", image: localImageBase64, overlayTitle: localOverlayTitle, overlaySubtitle: localOverlaySubtitle })}\n\n`);
           }
 
-          res.write(`data: ${JSON.stringify({ type: "status", message: "Formuliert Antwort..." })}\n\n`);
+          flushWrite(`data: ${JSON.stringify({ type: "status", message: "Formuliert Antwort..." })}\n\n`);
 
           const followUpStream = await openai.chat.completions.create({
             model: "gpt-4.1",
@@ -1501,12 +1521,12 @@ Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und 
           for await (const chunk of followUpStream) {
             const delta = chunk.choices[0]?.delta?.content;
             if (delta) {
-              res.write(`data: ${JSON.stringify({ type: "text", text: delta })}\n\n`);
+              flushWrite(`data: ${JSON.stringify({ type: "text", text: delta })}\n\n`);
             }
           }
         }
 
-        res.write(`data: ${JSON.stringify({ type: "done" })}\n\n`);
+        flushWrite(`data: ${JSON.stringify({ type: "done" })}\n\n`);
         res.end();
         return;
       }
