@@ -1361,9 +1361,127 @@ Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und 
         },
       };
 
+      const useStreaming = req.query.stream === "1";
       let generatedImageBase64: string | null = null;
       let imageOverlayTitle: string | null = null;
       let imageOverlaySubtitle: string | null = null;
+
+      if (useStreaming) {
+        res.setHeader("Content-Type", "text/event-stream");
+        res.setHeader("Cache-Control", "no-cache");
+        res.setHeader("Connection", "keep-alive");
+        res.flushHeaders();
+
+        const initialResponse = await openai.chat.completions.create({
+          model: "gpt-4.1",
+          messages: apiMessages as any,
+          tools: [webSearchTool, generateImageTool],
+          tool_choice: "auto",
+          temperature: 0.4,
+          max_tokens: 2000,
+        });
+
+        const initialMsg = initialResponse.choices[0]?.message;
+
+        if (initialMsg?.tool_calls && initialMsg.tool_calls.length > 0) {
+          const toolCall = initialMsg.tool_calls[0];
+          let toolResult = "";
+          let localImageBase64: string | null = null;
+          let localOverlayTitle: string | null = null;
+          let localOverlaySubtitle: string | null = null;
+
+          if (toolCall.function.name === "web_search") {
+            let searchQuery = "";
+            try { searchQuery = JSON.parse(toolCall.function.arguments).query || ""; } catch {}
+            try {
+              const searchResponse = await fetch(`https://search.replit.com/search?q=${encodeURIComponent(searchQuery)}`).catch(() => null);
+              if (searchResponse && searchResponse.ok) {
+                toolResult = JSON.stringify(await searchResponse.json()).slice(0, 3000);
+              } else {
+                const fb = await openai.chat.completions.create({ model: "gpt-4.1", messages: [{ role: "system", content: "Du bist ein Recherche-Assistent. Fasse dein aktuelles Wissen zusammen." }, { role: "user", content: `Recherche: ${searchQuery}` }], temperature: 0.3, max_tokens: 800 });
+                toolResult = fb.choices[0]?.message?.content || "Keine Ergebnisse.";
+              }
+            } catch {
+              const fb = await openai.chat.completions.create({ model: "gpt-4.1", messages: [{ role: "system", content: "Du bist ein Recherche-Assistent." }, { role: "user", content: `Recherche: ${searchQuery}` }], temperature: 0.3, max_tokens: 800 });
+              toolResult = fb.choices[0]?.message?.content || "Keine Ergebnisse.";
+            }
+          } else if (toolCall.function.name === "generate_image") {
+            let imagePrompt = "";
+            let imageFormat: "1536x1024" | "1024x1536" = "1536x1024";
+            try {
+              const args = JSON.parse(toolCall.function.arguments);
+              imagePrompt = args.prompt || "";
+              if (args.overlayTitle) localOverlayTitle = args.overlayTitle;
+              if (args.overlaySubtitle) localOverlaySubtitle = args.overlaySubtitle;
+              if (args.format === "portrait") imageFormat = "1024x1536";
+            } catch {}
+            if (imagePrompt && !imagePrompt.toLowerCase().includes("no text")) imagePrompt += " Absolutely no text, no letters, no words, no watermarks, no labels in the image.";
+            if (imagePrompt && !imagePrompt.toLowerCase().includes("photorealistic")) imagePrompt = "Professional stock photography, photorealistic, high resolution, 8K quality, sharp focus. " + imagePrompt;
+            toolResult = "Bild wurde erfolgreich generiert." + (localOverlayTitle ? ` Der Stellentitel "${localOverlayTitle}" wird als Text-Overlay angezeigt.` : "") + " WICHTIG: Liefere zusätzlich eine marketing-fertige Beschreibung mit bioLogic-optimierten Bullet-Points.";
+            if (imagePrompt) {
+              try {
+                const { generateImageBuffer } = await import("./replit_integrations/image/client");
+                const buffer = await generateImageBuffer(imagePrompt, imageFormat);
+                const b64 = buffer.toString("base64");
+                if (b64 && b64.length > 100) localImageBase64 = b64;
+                else toolResult = "Bildgenerierung fehlgeschlagen.";
+              } catch { toolResult = "Fehler bei der Bildgenerierung."; }
+            }
+          }
+
+          (apiMessages as any[]).push({ role: "assistant", content: null, tool_calls: initialMsg.tool_calls });
+          (apiMessages as any[]).push({ role: "tool", content: toolResult, tool_call_id: toolCall.id });
+
+          if (localImageBase64) {
+            res.write(`data: ${JSON.stringify({ type: "image", image: localImageBase64, overlayTitle: localOverlayTitle, overlaySubtitle: localOverlaySubtitle })}\n\n`);
+          }
+
+          const stream = await openai.chat.completions.create({
+            model: "gpt-4.1",
+            messages: apiMessages as any,
+            temperature: 0.4,
+            max_tokens: 2000,
+            stream: true,
+          });
+
+          for await (const chunk of stream) {
+            const delta = chunk.choices[0]?.delta?.content;
+            if (delta) {
+              res.write(`data: ${JSON.stringify({ type: "text", text: delta })}\n\n`);
+            }
+          }
+        } else {
+          (apiMessages as any[]).pop();
+
+          const stream = await openai.chat.completions.create({
+            model: "gpt-4.1",
+            messages: apiMessages as any,
+            tools: [webSearchTool, generateImageTool],
+            tool_choice: "auto",
+            temperature: 0.4,
+            max_tokens: 2000,
+            stream: true,
+          });
+
+          let collectedToolCalls: any[] = [];
+          let hasToolCalls = false;
+
+          for await (const chunk of stream) {
+            const delta = chunk.choices[0]?.delta;
+            if (delta?.tool_calls) {
+              hasToolCalls = true;
+              break;
+            }
+            if (delta?.content) {
+              res.write(`data: ${JSON.stringify({ type: "text", text: delta.content })}\n\n`);
+            }
+          }
+        }
+
+        res.write(`data: ${JSON.stringify({ type: "done" })}\n\n`);
+        res.end();
+        return;
+      }
 
       let response = await openai.chat.completions.create({
         model: "gpt-4.1",

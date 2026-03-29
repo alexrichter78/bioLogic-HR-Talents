@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImageIcon, Mic, MicOff } from "lucide-react";
+import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImageIcon, Mic, MicOff, ThumbsUp, ThumbsDown } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { useRegion } from "@/lib/region";
 
@@ -9,6 +9,7 @@ type Message = {
   image?: string;
   overlayTitle?: string;
   overlaySubtitle?: string;
+  feedback?: "up" | "down";
 };
 
 const WELCOME_MSG: Message = {
@@ -367,22 +368,70 @@ export default function KICoach() {
       } catch {}
 
       const hasStammdaten = Object.keys(stammdaten).length > 0;
+      const body = JSON.stringify({ messages: chatHistory, ...(hasStammdaten ? { stammdaten } : {}), region });
 
-      const res = await fetch("/api/ki-coach", {
+      const res = await fetch("/api/ki-coach?stream=1", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: chatHistory, ...(hasStammdaten ? { stammdaten } : {}), region }),
+        body,
       });
 
       if (!res.ok) throw new Error("Fehler");
-      const data = await res.json();
-      const assistantMsg: Message = { role: "assistant", content: data.reply };
-      if (data.image) {
-        assistantMsg.image = `data:image/png;base64,${data.image}`;
+
+      if (res.headers.get("content-type")?.includes("text/event-stream")) {
+        const reader = res.body!.getReader();
+        const decoder = new TextDecoder();
+        let streamedText = "";
+        let streamedImage: string | undefined;
+        let streamedOverlayTitle: string | undefined;
+        let streamedOverlaySubtitle: string | undefined;
+        let buffer = "";
+
+        const streamingMsg: Message = { role: "assistant", content: "" };
+        setMessages(prev => [...prev, streamingMsg]);
+        setLoading(false);
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() || "";
+
+          for (const line of lines) {
+            if (!line.startsWith("data: ")) continue;
+            try {
+              const event = JSON.parse(line.slice(6));
+              if (event.type === "text") {
+                streamedText += event.text;
+                setMessages(prev => {
+                  const updated = [...prev];
+                  updated[updated.length - 1] = { ...updated[updated.length - 1], content: streamedText };
+                  return updated;
+                });
+              } else if (event.type === "image") {
+                streamedImage = `data:image/png;base64,${event.image}`;
+                streamedOverlayTitle = event.overlayTitle;
+                streamedOverlaySubtitle = event.overlaySubtitle;
+                setMessages(prev => {
+                  const updated = [...prev];
+                  updated[updated.length - 1] = { ...updated[updated.length - 1], image: streamedImage, overlayTitle: streamedOverlayTitle, overlaySubtitle: streamedOverlaySubtitle };
+                  return updated;
+                });
+              } else if (event.type === "done") {
+                break;
+              }
+            } catch {}
+          }
+        }
+      } else {
+        const data = await res.json();
+        const assistantMsg: Message = { role: "assistant", content: data.reply };
+        if (data.image) assistantMsg.image = `data:image/png;base64,${data.image}`;
+        if (data.overlayTitle) assistantMsg.overlayTitle = data.overlayTitle;
+        if (data.overlaySubtitle) assistantMsg.overlaySubtitle = data.overlaySubtitle;
+        setMessages(prev => [...prev, assistantMsg]);
       }
-      if (data.overlayTitle) assistantMsg.overlayTitle = data.overlayTitle;
-      if (data.overlaySubtitle) assistantMsg.overlaySubtitle = data.overlaySubtitle;
-      setMessages(prev => [...prev, assistantMsg]);
     } catch {
       setMessages(prev => [...prev, {
         role: "assistant",
@@ -393,6 +442,41 @@ export default function KICoach() {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [input, loading, messages, isListening]);
+
+  const setFeedback = useCallback((index: number, value: "up" | "down") => {
+    setMessages(prev => prev.map((msg, i) => i === index ? { ...msg, feedback: msg.feedback === value ? undefined : value } : msg));
+  }, []);
+
+  const sendQuickReply = useCallback((text: string) => {
+    setInput(text);
+    setTimeout(() => {
+      setInput(text);
+      const fakeMsg = { ...messages[messages.length - 1] };
+      if (fakeMsg) {
+        setInput(text);
+      }
+    }, 50);
+  }, [messages]);
+
+  const extractQuickReplies = useCallback((content: string, msgIndex: number, totalMessages: number): string[] => {
+    if (msgIndex !== totalMessages - 1) return [];
+    const lastParagraph = content.trim().split(/\n\n/).pop() || "";
+    const hasQuestion = /\?\s*$/.test(lastParagraph.trim()) || /interesse\s*\??/i.test(lastParagraph);
+    if (!hasQuestion) return [];
+    if (/durchspielen|rollenspiel|simulier|übernehme.*rolle|üben|ausprobier/i.test(lastParagraph)) {
+      return ["Ja, lass uns das durchspielen!", "Nein, andere Frage"];
+    }
+    if (/zusammenfass|mitnehm|was nimmst du/i.test(lastParagraph)) {
+      return ["Ja, bitte zusammenfassen", "Nein, ich habe noch eine Frage"];
+    }
+    if (/wie reagierst du|was sagst du/i.test(lastParagraph)) {
+      return [];
+    }
+    if (/interesse|wollen wir|soll ich|willst du|möchtest du/i.test(lastParagraph)) {
+      return ["Ja, gerne!", "Nein, andere Frage"];
+    }
+    return [];
+  }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -658,6 +742,68 @@ export default function KICoach() {
                     </div>
                   )}
                 </div>
+                {msg.role === "assistant" && msg !== WELCOME_MSG && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 6 }}>
+                    <div style={{ display: "flex", gap: 4 }}>
+                      <button
+                        onClick={() => setFeedback(i, "up")}
+                        data-testid={`feedback-up-${i}`}
+                        style={{
+                          width: 28, height: 28, borderRadius: 8, border: "none",
+                          background: msg.feedback === "up" ? "rgba(0,113,227,0.12)" : "rgba(0,0,0,0.03)",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          cursor: "pointer", transition: "all 200ms ease",
+                        }}
+                      >
+                        <ThumbsUp style={{ width: 13, height: 13, color: msg.feedback === "up" ? "#0071E3" : "#AEAEB2" }} />
+                      </button>
+                      <button
+                        onClick={() => setFeedback(i, "down")}
+                        data-testid={`feedback-down-${i}`}
+                        style={{
+                          width: 28, height: 28, borderRadius: 8, border: "none",
+                          background: msg.feedback === "down" ? "rgba(255,59,48,0.12)" : "rgba(0,0,0,0.03)",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          cursor: "pointer", transition: "all 200ms ease",
+                        }}
+                      >
+                        <ThumbsDown style={{ width: 13, height: 13, color: msg.feedback === "down" ? "#FF3B30" : "#AEAEB2" }} />
+                      </button>
+                    </div>
+                    {!loading && extractQuickReplies(msg.content, i, messages.length).length > 0 && (
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        {extractQuickReplies(msg.content, i, messages.length).map((reply, ri) => (
+                          <button
+                            key={ri}
+                            onClick={() => {
+                              setInput(reply);
+                              setTimeout(() => {
+                                const el = inputRef.current;
+                                if (el) { el.focus(); }
+                              }, 50);
+                            }}
+                            data-testid={`quick-reply-${ri}`}
+                            style={{
+                              padding: "8px 16px",
+                              borderRadius: 999,
+                              border: "1.5px solid rgba(0,113,227,0.25)",
+                              background: "rgba(0,113,227,0.04)",
+                              color: "#0071E3",
+                              fontSize: 13,
+                              fontWeight: 600,
+                              cursor: "pointer",
+                              transition: "all 200ms ease",
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.background = "rgba(0,113,227,0.10)"; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = "rgba(0,113,227,0.04)"; }}
+                          >
+                            {reply}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
 
