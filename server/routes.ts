@@ -1402,6 +1402,8 @@ Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und 
         res.setHeader("Connection", "keep-alive");
         res.flushHeaders();
 
+        res.write(`data: ${JSON.stringify({ type: "status", message: "Analysiere Ihre Frage..." })}\n\n`);
+
         const initialResponse = await openai.chat.completions.create({
           model: "gpt-4.1",
           messages: apiMessages as any,
@@ -1423,6 +1425,7 @@ Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und 
           if (toolCall.function.name === "web_search") {
             let searchQuery = "";
             try { searchQuery = JSON.parse(toolCall.function.arguments).query || ""; } catch {}
+            res.write(`data: ${JSON.stringify({ type: "status", message: "Recherchiert im Internet..." })}\n\n`);
             try {
               const searchResponse = await fetch(`https://search.replit.com/search?q=${encodeURIComponent(searchQuery)}`).catch(() => null);
               if (searchResponse && searchResponse.ok) {
@@ -1436,6 +1439,7 @@ Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und 
               toolResult = fb.choices[0]?.message?.content || "Keine Ergebnisse.";
             }
           } else if (toolCall.function.name === "generate_image") {
+            res.write(`data: ${JSON.stringify({ type: "status", message: "Erstellt Bild..." })}\n\n`);
             let imagePrompt = "";
             let imageFormat: "1536x1024" | "1024x1536" = "1536x1024";
             try {
@@ -1465,6 +1469,8 @@ Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und 
           if (localImageBase64) {
             res.write(`data: ${JSON.stringify({ type: "image", image: localImageBase64, overlayTitle: localOverlayTitle, overlaySubtitle: localOverlaySubtitle })}\n\n`);
           }
+
+          res.write(`data: ${JSON.stringify({ type: "status", message: "Formuliert Antwort..." })}\n\n`);
 
           const stream = await openai.chat.completions.create({
             model: "gpt-4.1",

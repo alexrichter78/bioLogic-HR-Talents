@@ -248,6 +248,7 @@ export default function KICoach() {
   const [messages, setMessages] = useState<Message[]>([WELCOME_MSG]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState("");
   const [showPrompts, setShowPrompts] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [isListening, setIsListening] = useState(false);
@@ -402,7 +403,10 @@ export default function KICoach() {
             if (!line.startsWith("data: ")) continue;
             try {
               const event = JSON.parse(line.slice(6));
-              if (event.type === "text") {
+              if (event.type === "status") {
+                setLoadingStatus(event.message || "");
+              } else if (event.type === "text") {
+                setLoadingStatus("");
                 streamedText += event.text;
                 setMessages(prev => {
                   const updated = [...prev];
@@ -439,6 +443,7 @@ export default function KICoach() {
       }]);
     } finally {
       setLoading(false);
+      setLoadingStatus("");
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [input, loading, messages, isListening]);
@@ -584,7 +589,7 @@ export default function KICoach() {
                   padding: "12px 16px",
                   borderRadius: msg.role === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
                   background: msg.role === "user"
-                    ? "linear-gradient(135deg, #0071E3, #34AADC)"
+                    ? "#1D1D1F"
                     : "rgba(0,0,0,0.04)",
                   color: msg.role === "user" ? "#FFFFFF" : "#1D1D1F",
                   fontSize: 14, lineHeight: 1.6,
@@ -821,7 +826,7 @@ export default function KICoach() {
                   background: "rgba(0,0,0,0.04)", display: "flex", alignItems: "center", gap: 8,
                 }}>
                   <Loader2 style={{ width: 16, height: 16, color: "#8E8E93", animation: "spin 1s linear infinite" }} />
-                  <span style={{ fontSize: 13, color: "#6E6E73" }} data-testid="text-loading">Antwort wird erstellt...</span>
+                  <span style={{ fontSize: 13, color: "#6E6E73" }} data-testid="text-loading">{loadingStatus || "Antwort wird erstellt..."}</span>
                 </div>
               </div>
             )}
