@@ -221,6 +221,24 @@ function formatMessage(text: string) {
     }
   }
   flushList();
+
+  let lastTextIdx = -1;
+  for (let i = elements.length - 1; i >= 0; i--) {
+    const el = elements[i] as React.ReactElement;
+    if (el && el.type === "p" && el.key && (el.key as string).startsWith("p-")) {
+      lastTextIdx = i;
+      break;
+    }
+  }
+  if (lastTextIdx >= 0) {
+    const el = elements[lastTextIdx] as React.ReactElement;
+    elements[lastTextIdx] = (
+      <p key={el.key} style={{ ...el.props.style, fontWeight: 700 }}>
+        {el.props.children}
+      </p>
+    );
+  }
+
   return <>{elements}</>;
 }
 
