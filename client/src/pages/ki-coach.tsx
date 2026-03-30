@@ -204,7 +204,7 @@ function formatMessage(text: string) {
   };
 
   const renderInline = (str: string): React.ReactNode => {
-    const parts = str.split(/(\*\*.*?\*\*|".*?")/g);
+    const parts = str.split(/(\*\*.*?\*\*|".*?"|\[.*?\]\(https?:\/\/[^\s)]+\)|https?:\/\/[^\s),]+)/g);
     if (parts.length === 1) return str;
     return parts.map((part, i) => {
       if (part.startsWith("**") && part.endsWith("**")) {
@@ -212,6 +212,16 @@ function formatMessage(text: string) {
       }
       if (part.startsWith('"') && part.endsWith('"') && part.length > 10) {
         return <span key={i} style={{ fontStyle: "italic", color: "#3A3A3C" }}>{part}</span>;
+      }
+      const mdLink = part.match(/^\[(.*?)\]\((https?:\/\/[^\s)]+)\)$/);
+      if (mdLink) {
+        return <a key={i} href={mdLink[2]} target="_blank" rel="noopener noreferrer" style={{ color: "#0071E3", textDecoration: "underline" }}>{mdLink[1]}</a>;
+      }
+      if (/^https?:\/\/[^\s),]+$/.test(part)) {
+        const cleanUrl = part.replace(/[.;:!?]+$/, "");
+        const displayUrl = cleanUrl.replace(/^https?:\/\/(www\.)?/, "").replace(/\/+$/, "");
+        const shortDisplay = displayUrl.length > 40 ? displayUrl.slice(0, 37) + "..." : displayUrl;
+        return <a key={i} href={cleanUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#0071E3", textDecoration: "underline", fontSize: "0.92em" }}>{shortDisplay}</a>;
       }
       return part;
     });

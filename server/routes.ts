@@ -1299,7 +1299,8 @@ ABLAUF:
 2. Führe eine gezielte Web-Suche durch (englisch oder deutsch, je nach Thema)
 3. Verknüpfe die gefundenen Erkenntnisse mit der bioLogic-Perspektive
 4. Nenne die Quelle im Text – z.B. "Laut einer Gallup-Studie...", "Eine McKinsey-Analyse zeigt...", "Harvard Business Review berichtet..."
-5. Zeige dann, was die bioLogic-Methodik ergänzend dazu sagt
+5. Wenn du echte URLs aus den Suchergebnissen hast, formatiere sie als Markdown-Links: [Quellenname](https://url). Wenn du keine URLs hast, nenne nur den Quellennamen und das Jahr
+6. Zeige dann, was die bioLogic-Methodik ergänzend dazu sagt
 
 BEISPIEL:
 Frage: "Ich bin neue Führungskraft in einem bestehenden Team. Was muss ich beachten?"
@@ -1504,13 +1505,22 @@ VERBOTENES WORT "TYP":
             try {
               const searchResponse = await fetch(`https://search.replit.com/search?q=${encodeURIComponent(searchQuery)}`).catch(() => null);
               if (searchResponse && searchResponse.ok) {
-                toolResult = JSON.stringify(await searchResponse.json()).slice(0, 3000);
+                const data = await searchResponse.json();
+                const results = Array.isArray(data?.results) ? data.results : (Array.isArray(data) ? data : []);
+                if (results.length > 0) {
+                  toolResult = results.slice(0, 6).map((r: any) => {
+                    const snippet = (r.snippet || r.description || r.content || "").slice(0, 400);
+                    return `- ${(r.title || r.name || "").slice(0, 120)}: ${snippet} (Quelle: ${r.url || r.link || ""})`;
+                  }).join("\n").slice(0, 3500);
+                } else {
+                  toolResult = JSON.stringify(data).slice(0, 3000);
+                }
               } else {
-                const fb = await openai.chat.completions.create({ model: "gpt-4.1", messages: [{ role: "system", content: "Du bist ein Recherche-Assistent. Fasse dein aktuelles Wissen zusammen." }, { role: "user", content: `Recherche: ${searchQuery}` }], temperature: 0.3, max_tokens: 800 });
+                const fb = await openai.chat.completions.create({ model: "gpt-4.1", messages: [{ role: "system", content: "Du bist ein Recherche-Assistent. Gib konkrete Fakten, Studien, Statistiken und Quellen an (mit Quellenname und Jahr). Formatiere Quellen als: 'Laut [Quellenname] ([Jahr])...' oder 'Eine Studie von [Organisation] zeigt...'." }, { role: "user", content: `Recherche: ${searchQuery}` }], temperature: 0.3, max_tokens: 1000 });
                 toolResult = fb.choices[0]?.message?.content || "Keine Ergebnisse.";
               }
             } catch {
-              const fb = await openai.chat.completions.create({ model: "gpt-4.1", messages: [{ role: "system", content: "Du bist ein Recherche-Assistent." }, { role: "user", content: `Recherche: ${searchQuery}` }], temperature: 0.3, max_tokens: 800 });
+              const fb = await openai.chat.completions.create({ model: "gpt-4.1", messages: [{ role: "system", content: "Du bist ein Recherche-Assistent. Gib konkrete Fakten, Studien, Statistiken und Quellen an (mit Quellenname und Jahr). Formatiere Quellen als: 'Laut [Quellenname] ([Jahr])...' oder 'Eine Studie von [Organisation] zeigt...'." }, { role: "user", content: `Recherche: ${searchQuery}` }], temperature: 0.3, max_tokens: 1000 });
               toolResult = fb.choices[0]?.message?.content || "Keine Ergebnisse.";
             }
           } else if (toolCallName === "generate_image") {
@@ -1592,21 +1602,28 @@ VERBOTENES WORT "TYP":
           let searchResult = "Keine Ergebnisse gefunden.";
           if (searchQuery) {
             try {
-              const searchUrl = `https://www.googleapis.com/customsearch/v1?key=none&q=${encodeURIComponent(searchQuery)}`;
               const searchResponse = await fetch(`https://search.replit.com/search?q=${encodeURIComponent(searchQuery)}`).catch(() => null);
               
               if (searchResponse && searchResponse.ok) {
                 const data = await searchResponse.json();
-                searchResult = JSON.stringify(data).slice(0, 3000);
+                const results = Array.isArray(data?.results) ? data.results : (Array.isArray(data) ? data : []);
+                if (results.length > 0) {
+                  searchResult = results.slice(0, 6).map((r: any) => {
+                    const snippet = (r.snippet || r.description || r.content || "").slice(0, 400);
+                    return `- ${(r.title || r.name || "").slice(0, 120)}: ${snippet} (Quelle: ${r.url || r.link || ""})`;
+                  }).join("\n").slice(0, 3500);
+                } else {
+                  searchResult = JSON.stringify(data).slice(0, 3000);
+                }
               } else {
                 const fallbackResponse = await openai.chat.completions.create({
                   model: "gpt-4.1",
                   messages: [
-                    { role: "system", content: "Du bist ein Recherche-Assistent. Fasse dein aktuelles Wissen zu folgender Anfrage zusammen. Gib konkrete Fakten, Studien, Methoden oder Best Practices an, die du kennst. Antworte sachlich und kompakt." },
+                    { role: "system", content: "Du bist ein Recherche-Assistent. Gib konkrete Fakten, Studien, Statistiken und Quellen an (mit Quellenname und Jahr). Formatiere Quellen als: 'Laut [Quellenname] ([Jahr])...' oder 'Eine Studie von [Organisation] zeigt...'. Antworte sachlich und kompakt." },
                     { role: "user", content: `Recherche: ${searchQuery}` },
                   ],
                   temperature: 0.3,
-                  max_tokens: 800,
+                  max_tokens: 1000,
                 });
                 searchResult = fallbackResponse.choices[0]?.message?.content || "Keine Ergebnisse.";
               }
@@ -1614,11 +1631,11 @@ VERBOTENES WORT "TYP":
               const fallbackResponse = await openai.chat.completions.create({
                 model: "gpt-4.1",
                 messages: [
-                  { role: "system", content: "Du bist ein Recherche-Assistent. Fasse dein aktuelles Wissen zu folgender Anfrage zusammen. Gib konkrete Fakten, Studien, Methoden oder Best Practices an, die du kennst. Antworte sachlich und kompakt." },
+                  { role: "system", content: "Du bist ein Recherche-Assistent. Gib konkrete Fakten, Studien, Statistiken und Quellen an (mit Quellenname und Jahr). Formatiere Quellen als: 'Laut [Quellenname] ([Jahr])...' oder 'Eine Studie von [Organisation] zeigt...'. Antworte sachlich und kompakt." },
                   { role: "user", content: `Recherche: ${searchQuery}` },
                 ],
                 temperature: 0.3,
-                max_tokens: 800,
+                max_tokens: 1000,
               });
               searchResult = fallbackResponse.choices[0]?.message?.content || "Keine Ergebnisse.";
             }
