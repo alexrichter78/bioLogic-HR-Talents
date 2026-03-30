@@ -219,16 +219,57 @@ function formatMessage(text: string) {
   };
 
   let inDialogueBlock = false;
+  let dialogueLines: string[] = [];
+
+  const flushDialogue = () => {
+    if (dialogueLines.length === 0) return;
+    elements.push(
+      <div key={`q-${elements.length}`} style={{
+        margin: "10px 0",
+        padding: "10px 14px",
+        borderLeft: "3px solid #0071E3",
+        background: "rgba(0,113,227,0.04)",
+        borderRadius: "0 8px 8px 0",
+        fontStyle: "italic",
+        lineHeight: 1.65,
+        color: "#1D1D1F",
+      }}>
+        {dialogueLines.map((dl, di) => (
+          <p key={di} style={{ margin: di === 0 ? 0 : "8px 0 0" }}>{renderInline(dl)}</p>
+        ))}
+      </div>
+    );
+    dialogueLines = [];
+    inDialogueBlock = false;
+  };
+
+  const isDialogueLine = (t: string) => {
+    return (t.startsWith('"') && t.endsWith('"')) ||
+      (t.startsWith('„') && (t.endsWith('"') || t.endsWith('"'))) ||
+      (t.startsWith('>') && t.length > 2) ||
+      (t.startsWith('[') && t.endsWith(']') && t.length > 4) ||
+      /^\[.*?\]\s*.+/.test(t);
+  };
 
   for (let idx = 0; idx < lines.length; idx++) {
     const raw = lines[idx];
     const trimmed = raw.trim();
     const isIndented = raw.startsWith("    ") || raw.startsWith("\t");
 
-    if (trimmed === "") inDialogueBlock = false;
+    if (trimmed === "" && inDialogueBlock) {
+      const nextNonEmpty = lines.slice(idx + 1).find(l => l.trim() !== "");
+      if (nextNonEmpty && (isDialogueLine(nextNonEmpty.trim()) || inDialogueBlock)) {
+        continue;
+      }
+      flushDialogue();
+      continue;
+    }
+    if (trimmed === "" && dialogueLines.length > 0) {
+      flushDialogue();
+    }
 
     if (trimmed.startsWith("|") && trimmed.endsWith("|")) {
-      flushList();
+      flushList(); flushDialogue();
       const cells = trimmed.slice(1, -1).split("|");
       tableRows.push(cells);
       continue;
@@ -237,10 +278,10 @@ function formatMessage(text: string) {
     }
 
     if (/^---+$/.test(trimmed) || /^\*\*\*+$/.test(trimmed)) {
-      flushList();
+      flushList(); flushDialogue();
       elements.push(<hr key={`hr-${elements.length}`} style={{ border: "none", borderTop: "1px solid rgba(0,0,0,0.08)", margin: "14px 0" }} />);
     } else if (/^#{1,4}\s+/.test(trimmed)) {
-      flushList();
+      flushList(); flushDialogue();
       const headingText = trimmed.replace(/^#{1,4}\s+/, "").replace(/:$/, "");
       elements.push(
         <p key={`h-${elements.length}`} style={{
@@ -287,30 +328,12 @@ function formatMessage(text: string) {
             paddingBottom: 4,
           }}>{renderInline(trimmed.slice(0, -1))}</p>
         );
-      } else if (
-        (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-        (trimmed.startsWith('„') && (trimmed.endsWith('"') || trimmed.endsWith('"'))) ||
-        (trimmed.startsWith('>') && trimmed.length > 2) ||
-        (trimmed.startsWith('[') && trimmed.endsWith(']') && trimmed.length > 4) ||
-        /^\[.*?\]\s*.+/.test(trimmed) ||
-        inDialogueBlock
-      ) {
+      } else if (isDialogueLine(trimmed) || inDialogueBlock) {
         if (trimmed.startsWith('[') && (trimmed.endsWith(']') || /^\[.*?\]\s/.test(trimmed))) {
           inDialogueBlock = true;
         }
         const displayText = trimmed.startsWith('>') ? trimmed.slice(1).trim() : trimmed;
-        elements.push(
-          <div key={`q-${elements.length}`} style={{
-            margin: inDialogueBlock && !(trimmed.startsWith('[')) ? "0" : "10px 0 0",
-            padding: "10px 14px",
-            borderLeft: "3px solid #0071E3",
-            background: "rgba(0,113,227,0.04)",
-            borderRadius: "0 8px 8px 0",
-            fontStyle: "italic",
-            lineHeight: 1.65,
-            color: "#1D1D1F",
-          }}>{renderInline(displayText)}</div>
-        );
+        dialogueLines.push(displayText);
       } else if (isIndented) {
         elements.push(
           <div key={`indent-${elements.length}`} style={{
@@ -323,6 +346,7 @@ function formatMessage(text: string) {
           }}>{renderInline(trimmed)}</div>
         );
       } else {
+        flushDialogue();
         elements.push(
           <p key={`p-${elements.length}`} style={{ margin: "0 0 6px", lineHeight: 1.65 }}>{renderInline(trimmed)}</p>
         );
@@ -331,6 +355,7 @@ function formatMessage(text: string) {
   }
   flushList();
   flushTable();
+  flushDialogue();
 
   {
     let lastTextIdx = -1;
