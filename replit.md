@@ -10,7 +10,7 @@ Key capabilities include:
 -   **Entscheidungsbericht (Decision Report)**: Combines deterministic structural analysis with AI-generated insights.
 -   **bioLogic JobCheck**: Assesses candidate-role fit, including dominance shift analysis and risk assessments.
 -   **Teamdynamik (Team Dynamics)**: A dashboard offering 13 deterministic system variants for team-person constellations, with CEO/HR/Teamleitung views, steering levers, and stress simulation. Includes a "Führungskontext" card for leadership role analysis.
--   **KI-Coach (AI Coach)**: A conversational AI for leadership, HR, assessment, recruiting, and communication.
+-   **KI-Coach (AI Coach)**: A conversational AI for leadership, HR, assessment, recruiting, and communication. Features SSE streaming with blinking cursor, enhanced markdown rendering (tables, ordered lists, horizontal rules, bold headings), context-aware quick reply suggestions (only on latest message), a "Profil aktiv" badge when user data is loaded, and structured interview guide generation ("Gesprächsleitfäden"). Sends extended context to the AI including Rollen-DNA, JobCheck results, and Teamdynamik data from localStorage.
 
 ## User Preferences
 

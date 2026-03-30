@@ -121,6 +121,17 @@ const EXAMPLE_PROMPTS: { category: string; prompts: string[]; requiresAnalysis?:
     ],
   },
   {
+    category: "Gesprächsleitfäden generieren",
+    requiresAnalysis: true,
+    prompts: [
+      "Erstelle mir einen kompletten Interview-Leitfaden für die analysierte Stelle. Mit Einstieg, Kernfragen, bioLogic-spezifischen Beobachtungspunkten und Bewertungskriterien.",
+      "Generiere einen strukturierten Gesprächsleitfaden für ein Erstgespräch mit einem Kandidaten für diese Rolle. Berücksichtige die Rollen-DNA.",
+      "Erstelle mir einen Onboarding-Gesprächsleitfaden für die ersten 90 Tage basierend auf dem Stellenprofil.",
+      "Erstelle einen Feedbackgespräch-Leitfaden, der auf das bioLogic-Profil der Stelle zugeschnitten ist.",
+      "Generiere einen Leitfaden für ein Probezeitgespräch basierend auf der Rollen-DNA und den Anforderungen.",
+    ],
+  },
+  {
     category: "Zusammenfassungen",
     prompts: [
       "Fasse mir die wichtigsten Punkte aus unserem bisherigen Gespräch zusammen.",
@@ -128,27 +139,69 @@ const EXAMPLE_PROMPTS: { category: string; prompts: string[]; requiresAnalysis?:
   },
 ];
 
-function formatMessage(text: string) {
+function formatMessage(text: string, isStreaming?: boolean) {
   const lines = text.split("\n");
   const elements: React.ReactNode[] = [];
-  let listItems: { text: string; indent: boolean }[] = [];
+  let listItems: { text: string; indent: boolean; ordered: boolean; number?: number }[] = [];
+  let tableRows: string[][] = [];
 
   const flushList = () => {
     if (listItems.length > 0) {
+      const isOrdered = listItems[0].ordered;
+      const Tag = isOrdered ? "ol" : "ul";
       elements.push(
-        <ul key={`list-${elements.length}`} style={{ margin: "8px 0", paddingLeft: 18, listStyle: "none" }}>
+        <Tag key={`list-${elements.length}`} style={{ margin: "8px 0", paddingLeft: isOrdered ? 22 : 18, listStyle: isOrdered ? "decimal" : "none" }}>
           {listItems.map((item, i) => (
             <li key={i} style={{
-              marginBottom: 6, lineHeight: 1.65, position: "relative", paddingLeft: item.indent ? 16 : 0,
+              marginBottom: 6, lineHeight: 1.65, position: "relative",
+              paddingLeft: item.indent ? 16 : (isOrdered ? 0 : 0),
+              ...(isOrdered ? { color: "#0071E3", fontWeight: 500 } : {}),
             }}>
-              <span style={{ position: "absolute", left: item.indent ? 0 : -16, color: "#0071E3", fontWeight: 600 }}>•</span>
-              {renderInline(item.text)}
+              {!isOrdered && (
+                <span style={{ position: "absolute", left: item.indent ? 0 : -16, color: "#0071E3", fontWeight: 600 }}>•</span>
+              )}
+              <span style={isOrdered ? { color: "#1D1D1F", fontWeight: 400 } : undefined}>{renderInline(item.text)}</span>
             </li>
           ))}
-        </ul>
+        </Tag>
       );
       listItems = [];
     }
+  };
+
+  const flushTable = () => {
+    if (tableRows.length >= 2) {
+      const header = tableRows[0];
+      const body = tableRows.slice(1).filter(r => !r.every(c => /^[-:]+$/.test(c.trim())));
+      elements.push(
+        <div key={`tbl-${elements.length}`} style={{ margin: "10px 0", overflowX: "auto", borderRadius: 10 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, lineHeight: 1.5 }}>
+            <thead>
+              <tr>
+                {header.map((cell, ci) => (
+                  <th key={ci} style={{
+                    padding: "8px 12px", textAlign: "left", fontWeight: 700, color: "#0071E3",
+                    borderBottom: "2px solid rgba(0,113,227,0.2)", background: "rgba(0,113,227,0.04)",
+                  }}>{renderInline(cell.trim())}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {body.map((row, ri) => (
+                <tr key={ri}>
+                  {row.map((cell, ci) => (
+                    <td key={ci} style={{
+                      padding: "6px 12px", borderBottom: "1px solid rgba(0,0,0,0.06)",
+                    }}>{renderInline(cell.trim())}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+    tableRows = [];
   };
 
   const renderInline = (str: string): React.ReactNode => {
@@ -170,7 +223,19 @@ function formatMessage(text: string) {
     const trimmed = raw.trim();
     const isIndented = raw.startsWith("    ") || raw.startsWith("\t");
 
-    if (/^#{1,4}\s+/.test(trimmed)) {
+    if (trimmed.startsWith("|") && trimmed.endsWith("|")) {
+      flushList();
+      const cells = trimmed.slice(1, -1).split("|");
+      tableRows.push(cells);
+      continue;
+    } else if (tableRows.length > 0) {
+      flushTable();
+    }
+
+    if (/^---+$/.test(trimmed) || /^\*\*\*+$/.test(trimmed)) {
+      flushList();
+      elements.push(<hr key={`hr-${elements.length}`} style={{ border: "none", borderTop: "1px solid rgba(0,0,0,0.08)", margin: "14px 0" }} />);
+    } else if (/^#{1,4}\s+/.test(trimmed)) {
       flushList();
       const headingText = trimmed.replace(/^#{1,4}\s+/, "").replace(/:$/, "");
       elements.push(
@@ -184,10 +249,23 @@ function formatMessage(text: string) {
           paddingBottom: 4,
         }}>{renderInline(headingText)}</p>
       );
-    } else if (trimmed.startsWith("- ") || trimmed.startsWith("• ") || /^\d+\.\s/.test(trimmed)) {
+    } else if (/^\d+\.\s/.test(trimmed)) {
+      if (listItems.length > 0 && !listItems[0].ordered) flushList();
+      const numMatch = trimmed.match(/^(\d+)\.\s(.*)/);
+      if (numMatch) {
+        listItems.push({
+          text: numMatch[2],
+          indent: isIndented,
+          ordered: true,
+          number: parseInt(numMatch[1]),
+        });
+      }
+    } else if (trimmed.startsWith("- ") || trimmed.startsWith("• ")) {
+      if (listItems.length > 0 && listItems[0].ordered) flushList();
       listItems.push({
-        text: trimmed.replace(/^[-•]\s*/, "").replace(/^\d+\.\s*/, ""),
+        text: trimmed.replace(/^[-•]\s*/, ""),
         indent: isIndented,
+        ordered: false,
       });
     } else {
       flushList();
@@ -237,21 +315,33 @@ function formatMessage(text: string) {
     }
   }
   flushList();
+  flushTable();
 
-  let lastTextIdx = -1;
-  for (let i = elements.length - 1; i >= 0; i--) {
-    const el = elements[i] as React.ReactElement;
-    if (el && el.type === "p" && el.key && (el.key as string).startsWith("p-")) {
-      lastTextIdx = i;
-      break;
+  if (!isStreaming) {
+    let lastTextIdx = -1;
+    for (let i = elements.length - 1; i >= 0; i--) {
+      const el = elements[i] as React.ReactElement;
+      if (el && el.type === "p" && el.key && (el.key as string).startsWith("p-")) {
+        lastTextIdx = i;
+        break;
+      }
+    }
+    if (lastTextIdx >= 0) {
+      const el = elements[lastTextIdx] as React.ReactElement;
+      elements[lastTextIdx] = (
+        <p key={el.key} style={{ ...el.props.style, fontWeight: 700 }}>
+          {el.props.children}
+        </p>
+      );
     }
   }
-  if (lastTextIdx >= 0) {
-    const el = elements[lastTextIdx] as React.ReactElement;
-    elements[lastTextIdx] = (
-      <p key={el.key} style={{ ...el.props.style, fontWeight: 700 }}>
-        {el.props.children}
-      </p>
+
+  if (isStreaming) {
+    elements.push(
+      <span key="cursor" className="streaming-cursor" style={{
+        display: "inline-block", width: 2, height: 16, background: "#0071E3",
+        marginLeft: 2, verticalAlign: "text-bottom", borderRadius: 1,
+      }} />
     );
   }
 
@@ -265,6 +355,7 @@ export default function KICoach() {
   const [loading, setLoading] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState("");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [streamingIndex, setStreamingIndex] = useState<number | null>(null);
   const isMobile = useIsMobile();
   const [showPrompts, setShowPrompts] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
@@ -331,9 +422,15 @@ export default function KICoach() {
 
   const hasAnalysisData = useCallback(() => {
     try {
-      const analyseRaw = localStorage.getItem("analyseTexte");
-      const rollenDna = localStorage.getItem("rollenDnaState");
-      return !!(analyseRaw || rollenDna);
+      return !!(
+        localStorage.getItem("analyseTexte") ||
+        localStorage.getItem("rollenDnaState") ||
+        localStorage.getItem("bioCheckIntroOverride") ||
+        localStorage.getItem("bioCheckTextOverride") ||
+        localStorage.getItem("bioCheckTextGenerated") ||
+        localStorage.getItem("jobcheckLastResult") ||
+        localStorage.getItem("teamdynamikState")
+      );
     } catch { return false; }
   }, []);
 
@@ -363,7 +460,7 @@ export default function KICoach() {
     try {
       const chatHistory = newMessages.filter(m => m !== WELCOME_MSG);
 
-      let stammdaten: Record<string, string> = {};
+      const stammdaten: Record<string, string> = {};
       try {
         const analyseRaw = localStorage.getItem("analyseTexte");
         if (analyseRaw) {
@@ -382,6 +479,21 @@ export default function KICoach() {
           if (dna.beruf) stammdaten.beruf = dna.beruf;
           if (dna.fuehrung) stammdaten.fuehrung = dna.fuehrung;
           if (dna.taetigkeiten) stammdaten.taetigkeiten = dna.taetigkeiten.join(", ");
+          if (dna.bereich) stammdaten.bereich = dna.bereich;
+          if (dna.spiegel) stammdaten.profilSpiegel = JSON.stringify(dna.spiegel);
+        }
+        const jobcheckResult = localStorage.getItem("jobcheckLastResult");
+        if (jobcheckResult) {
+          const jc = JSON.parse(jobcheckResult);
+          if (jc.fitStatus) stammdaten.jobcheckFit = jc.fitStatus;
+          if (jc.controlIntensity) stammdaten.jobcheckSteuerung = jc.controlIntensity;
+        }
+        const teamState = localStorage.getItem("teamdynamikState");
+        if (teamState) {
+          const ts = JSON.parse(teamState);
+          if (ts.teamName) stammdaten.teamName = ts.teamName;
+          if (ts.teamProfile) stammdaten.teamProfil = JSON.stringify(ts.teamProfile);
+          if (ts.personProfile) stammdaten.personProfil = JSON.stringify(ts.personProfile);
         }
       } catch {}
 
@@ -423,7 +535,7 @@ export default function KICoach() {
               } else if (event.type === "text") {
                 if (!streamingStarted) {
                   streamingStarted = true;
-                  setMessages(prev => [...prev, { role: "assistant", content: "" }]);
+                  setMessages(prev => { setStreamingIndex(prev.length); return [...prev, { role: "assistant", content: "" }]; });
                   setLoading(false);
                   setLoadingStatus("");
                 }
@@ -436,7 +548,7 @@ export default function KICoach() {
               } else if (event.type === "image") {
                 if (!streamingStarted) {
                   streamingStarted = true;
-                  setMessages(prev => [...prev, { role: "assistant", content: "" }]);
+                  setMessages(prev => { setStreamingIndex(prev.length); return [...prev, { role: "assistant", content: "" }]; });
                   setLoading(false);
                   setLoadingStatus("");
                 }
@@ -470,6 +582,7 @@ export default function KICoach() {
     } finally {
       setLoading(false);
       setLoadingStatus("");
+      setStreamingIndex(null);
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [input, loading, messages, isListening]);
@@ -537,7 +650,7 @@ export default function KICoach() {
                 } else if (event.type === "text") {
                   if (!streamingStarted) {
                     streamingStarted = true;
-                    setMessages(prev => [...prev, { role: "assistant", content: "" }]);
+                    setMessages(prev => { setStreamingIndex(prev.length); return [...prev, { role: "assistant", content: "" }]; });
                     setLoading(false);
                     setLoadingStatus("");
                   }
@@ -550,7 +663,7 @@ export default function KICoach() {
                 } else if (event.type === "image") {
                   if (!streamingStarted) {
                     streamingStarted = true;
-                    setMessages(prev => [...prev, { role: "assistant", content: "" }]);
+                    setMessages(prev => { setStreamingIndex(prev.length); return [...prev, { role: "assistant", content: "" }]; });
                     setLoading(false);
                     setLoadingStatus("");
                   }
@@ -584,30 +697,41 @@ export default function KICoach() {
       } finally {
         setLoading(false);
         setLoadingStatus("");
+        setStreamingIndex(null);
       }
     })();
   }, [loading, messages, region]);
 
-  const extractQuickReplies = useCallback((content: string, _msgIndex: number, _totalMessages: number): string[] => {
+  const extractQuickReplies = useCallback((content: string, msgIndex: number, totalMessages: number): string[] => {
+    const isLastAssistant = msgIndex === totalMessages - 1;
+    if (!isLastAssistant) return [];
     const lastParagraph = content.trim().split(/\n\n/).pop() || "";
     const hasQuestion = /\?\s*$/.test(lastParagraph.trim()) || /interesse\s*\??/i.test(lastParagraph);
-    if (!hasQuestion) return [];
-    if (/durchspielen|rollenspiel|simulier|übernehme.*rolle|üben|ausprobier/i.test(lastParagraph)) {
+    if (/durchspielen|rollenspiel|simulier|übernehme.*rolle|üben|ausprobier/i.test(lastParagraph) && hasQuestion) {
       return ["Ja, lass uns das durchspielen!", "Nein, andere Frage"];
     }
-    if (/zusammenfass|mitnehm|was nimmst du/i.test(lastParagraph)) {
+    if (/zusammenfass|mitnehm|was nimmst du/i.test(lastParagraph) && hasQuestion) {
       return ["Ja, bitte zusammenfassen", "Nein, ich habe noch eine Frage"];
     }
     if (/wie reagierst du|was sagst du/i.test(lastParagraph)) {
       return [];
     }
-    if (/bioLogic.*Profil|impulsiv.*analytisch.*intuitiv|Doppeldominanz|Persönlichkeitstyp.*zuschneid/i.test(content)) {
+    if (/bioLogic.*Profil|impulsiv.*analytisch.*intuitiv|Doppeldominanz|Persönlichkeitstyp.*zuschneid/i.test(content) && hasQuestion) {
       return ["Ich bin impulsiv-dominant", "Ich bin intuitiv-dominant", "Ich bin analytisch-dominant", "Ich habe eine Doppeldominanz", "Allgemeine Antwort bitte"];
     }
-    if (/interesse|wollen wir|soll ich|willst du|möchtest du/i.test(lastParagraph)) {
+    if (hasQuestion && /interesse|wollen wir|soll ich|willst du|möchtest du/i.test(lastParagraph)) {
       return ["Ja, gerne!", "Nein, andere Frage"];
     }
-    if (/\?\s*$/.test(lastParagraph.trim())) {
+    if (content.length > 200 && !hasQuestion) {
+      const replies: string[] = [];
+      if (/technik|methode|regel|strategie/i.test(content)) replies.push("Gib mir ein konkretes Beispiel dazu");
+      if (/gespräch|formulierung|satz|sagen/i.test(content)) replies.push("Lass uns das durchspielen");
+      if (content.length > 500) replies.push("Fasse die wichtigsten Punkte zusammen");
+      if (replies.length === 0) replies.push("Erkläre das genauer");
+      replies.push("Erstelle einen Gesprächsleitfaden dazu");
+      return replies;
+    }
+    if (hasQuestion) {
       return ["Ja, gerne!", "Nein, andere Frage"];
     }
     return [];
@@ -672,7 +796,16 @@ export default function KICoach() {
             </div>
             <div style={{ flex: 1 }}>
               <h1 style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">bioLogic KI-Coach</h1>
-              <p style={{ fontSize: 11, color: "#6E6E73", margin: "2px 0 0" }}>Führung · Personal · Assessment · Kommunikation</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
+                <p style={{ fontSize: 11, color: "#6E6E73", margin: 0 }}>Führung · Personal · Assessment · Kommunikation</p>
+                {hasAnalysisData() && (
+                  <span data-testid="badge-context-active" style={{
+                    fontSize: 10, fontWeight: 600, color: "#34C759",
+                    background: "rgba(52,199,89,0.1)", border: "1px solid rgba(52,199,89,0.25)",
+                    borderRadius: 6, padding: "1px 7px", whiteSpace: "nowrap",
+                  }}>Profil aktiv</span>
+                )}
+              </div>
             </div>
             <button
               onClick={exportChat}
@@ -724,7 +857,7 @@ export default function KICoach() {
                   color: msg.role === "user" ? "#FFFFFF" : "#1D1D1F",
                   fontSize: 14, lineHeight: 1.6,
                 }}>
-                  {formatMessage(msg.content)}
+                  {formatMessage(msg.content, streamingIndex === i)}
                   {msg.image && (
                     <div style={{ marginTop: 12 }}>
                       <div style={{ position: "relative", display: "inline-block", maxWidth: 520, width: "100%" }}>

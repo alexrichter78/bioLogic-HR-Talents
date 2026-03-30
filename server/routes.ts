@@ -1332,6 +1332,22 @@ FORMAT-ERKENNUNG:
 
 Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und overlaySubtitle (z.B. "Jetzt bewerben!", Standort, "Vollzeit" etc.).
 
+GESPRÄCHSLEITFÄDEN GENERIEREN:
+Wenn der Nutzer einen Gesprächsleitfaden anfordert (Interview, Onboarding, Feedback, Probezeitgespräch etc.), erstelle einen strukturierten, druckfertigen Leitfaden:
+1. **Gesprächsziel** – Was soll am Ende des Gesprächs erreicht sein?
+2. **Vorbereitung** – Was muss der Interviewer/Führungskraft vorab wissen oder vorbereiten?
+3. **Einstieg** (2-3 Sätze) – Konkreter Gesprächseinstieg, angepasst an den bioLogic-Typ des Gegenübers.
+4. **Kernfragen** (5-8 Fragen) – Jede Frage mit:
+   - Der konkreten Formulierung
+   - Was die Frage aufdecken soll (bioLogic-Bezug)
+   - Worauf bei der Antwort zu achten ist (Beobachtungspunkte)
+5. **bioLogic-Signale** – Wie erkenne ich während des Gesprächs, ob die Person eher impulsiv, intuitiv oder analytisch reagiert?
+6. **Abschluss** – Konkreter Gesprächsabschluss mit nächsten Schritten.
+7. **Bewertungsmatrix** – Einfache Tabelle mit Kriterien und Bewertungsskala.
+
+Nutze Markdown-Tabellen für die Bewertungsmatrix. Der Leitfaden soll so konkret sein, dass eine Führungskraft ihn 1:1 ausdrucken und verwenden kann.
+Wenn bioLogic-Analysedaten vorhanden sind, passe den Leitfaden an das Stellenprofil an.
+
 - Deutsch.`;
 
       let fullSystemPrompt = systemPrompt;
@@ -1343,8 +1359,14 @@ Nutze IMMER overlayTitle für Stellenanzeigen-Bilder (mit dem Stellentitel) und 
         if (stammdaten.intuitiveDaten) contextBlock += `\n\nIntuitive Dimension (Gelb) – Details:\n${stammdaten.intuitiveDaten}`;
         if (stammdaten.analytischeDaten) contextBlock += `\n\nAnalytische Dimension (Blau) – Details:\n${stammdaten.analytischeDaten}`;
         if (stammdaten.beruf) contextBlock += `\n\nAktuelle Rolle: ${stammdaten.beruf}`;
+        if (stammdaten.bereich) contextBlock += `\nBereich: ${stammdaten.bereich}`;
         if (stammdaten.fuehrung) contextBlock += `\nFührungsverantwortung: ${stammdaten.fuehrung}`;
         if (stammdaten.taetigkeiten) contextBlock += `\nKerntätigkeiten: ${stammdaten.taetigkeiten}`;
+        if (stammdaten.profilSpiegel) contextBlock += `\nProfil-Spiegel (Triade): ${stammdaten.profilSpiegel}`;
+        if (stammdaten.jobcheckFit) contextBlock += `\n\nJobCheck-Ergebnis: Fit-Status = ${stammdaten.jobcheckFit}, Steuerungsintensität = ${stammdaten.jobcheckSteuerung || "unbekannt"}`;
+        if (stammdaten.teamName) contextBlock += `\n\nTeamdynamik-Kontext: Team "${stammdaten.teamName}"`;
+        if (stammdaten.teamProfil) contextBlock += `\nTeam-Profil (Triade): ${stammdaten.teamProfil}`;
+        if (stammdaten.personProfil) contextBlock += `\nPerson-Profil (Triade): ${stammdaten.personProfil}`;
         fullSystemPrompt += contextBlock;
       }
 
