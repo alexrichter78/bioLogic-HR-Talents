@@ -474,6 +474,15 @@ export default function KICoach() {
     setIsListening(true);
   }, [isListening, speechSupported]);
 
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+        recognitionRef.current = null;
+      }
+    };
+  }, []);
+
   const hasAnalysisData = useCallback(() => {
     try {
       return !!(
@@ -554,13 +563,17 @@ export default function KICoach() {
       const hasStammdaten = Object.keys(stammdaten).length > 0;
       const body = JSON.stringify({ messages: chatHistory, ...(hasStammdaten ? { stammdaten } : {}), region });
 
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 120000);
+
       const res = await fetch("/api/ki-coach?stream=1", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body,
+        signal: controller.signal,
       });
 
-      if (!res.ok) throw new Error("Fehler");
+      if (!res.ok) { clearTimeout(timeout); throw new Error("Fehler"); }
 
       if (res.headers.get("content-type")?.includes("text/event-stream")) {
         const reader = res.body!.getReader();
@@ -628,10 +641,15 @@ export default function KICoach() {
         if (data.overlaySubtitle) assistantMsg.overlaySubtitle = data.overlaySubtitle;
         setMessages(prev => [...prev, assistantMsg]);
       }
-    } catch {
+      clearTimeout(timeout);
+    } catch (err: any) {
+      clearTimeout(timeout);
+      const isTimeout = err?.name === "AbortError";
       setMessages(prev => [...prev, {
         role: "assistant",
-        content: "Entschuldigung, es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+        content: isTimeout
+          ? "Die Anfrage hat zu lange gedauert. Bitte versuche es erneut – bei komplexen Fragen kann es helfen, die Frage kürzer zu formulieren."
+          : "Entschuldigung, es ist ein Fehler aufgetreten. Bitte versuche es erneut.",
       }]);
     } finally {
       setLoading(false);
@@ -639,7 +657,7 @@ export default function KICoach() {
 
       setTimeout(() => inputRef.current?.focus(), 100);
     }
-  }, [input, loading, messages, isListening]);
+  }, [input, loading, messages, isListening, region]);
 
   const setFeedback = useCallback((index: number, value: "up" | "down") => {
     setMessages(prev => prev.map((msg, i) => i === index ? { ...msg, feedback: msg.feedback === value ? undefined : value } : msg));
@@ -699,13 +717,17 @@ export default function KICoach() {
         const hasStammdaten = Object.keys(stammdaten).length > 0;
         const body = JSON.stringify({ messages: chatHistory, ...(hasStammdaten ? { stammdaten } : {}), region });
 
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 120000);
+
         const res = await fetch("/api/ki-coach?stream=1", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body,
+          signal: controller.signal,
         });
 
-        if (!res.ok) throw new Error("Fehler");
+        if (!res.ok) { clearTimeout(timeout); throw new Error("Fehler"); }
 
         if (res.headers.get("content-type")?.includes("text/event-stream")) {
           const reader = res.body!.getReader();
@@ -771,10 +793,15 @@ export default function KICoach() {
           if (data.overlaySubtitle) assistantMsg.overlaySubtitle = data.overlaySubtitle;
           setMessages(prev => [...prev, assistantMsg]);
         }
-      } catch {
+        clearTimeout(timeout);
+      } catch (err: any) {
+        clearTimeout(timeout);
+        const isTimeout = err?.name === "AbortError";
         setMessages(prev => [...prev, {
           role: "assistant",
-          content: "Entschuldigung, es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+          content: isTimeout
+            ? "Die Anfrage hat zu lange gedauert. Bitte versuche es erneut."
+            : "Entschuldigung, es ist ein Fehler aufgetreten. Bitte versuche es erneut.",
         }]);
       } finally {
         setLoading(false);
