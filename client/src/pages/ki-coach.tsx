@@ -755,6 +755,30 @@ export default function KICoach() {
     })();
   }, [loading, messages, region]);
 
+  const extractOptionsFromText = useCallback((text: string): string[] => {
+    const sentences = text.split(/(?<=[.?!])\s+/);
+    const questionSentences = sentences.filter(s => s.trim().endsWith("?"));
+    if (questionSentences.length === 0) return [];
+
+    const combined = questionSentences.join(" ");
+    const oderParts = combined.split(/\s+[Oo]der\s+/);
+    if (oderParts.length >= 2) {
+      const options: string[] = [];
+      for (const part of oderParts) {
+        let clean = part.replace(/^\*\*|\*\*$/g, "").trim();
+        clean = clean.replace(/\?+\s*$/, "").trim();
+        clean = clean.replace(/^(willst du|möchtest du|soll ich|wollen wir|magst du|sollen wir)\s+/i, "");
+        clean = clean.replace(/^(noch\s+)?(dir\s+)?(mal\s+)?/i, "").trim();
+        if (clean.length > 3 && clean.length <= 60) {
+          const label = clean.charAt(0).toUpperCase() + clean.slice(1);
+          options.push(label);
+        }
+      }
+      if (options.length >= 2 && options.length <= 4) return options;
+    }
+    return [];
+  }, []);
+
   const extractQuickReplies = useCallback((content: string, msgIndex: number, totalMessages: number): string[] => {
     const isLastAssistant = msgIndex === totalMessages - 1;
     if (!isLastAssistant) return [];
@@ -763,20 +787,23 @@ export default function KICoach() {
     const hasQuestion = /\?\s*$/.test(lastTwo.trim()) || /\?["\u201C\u201D\u201E)]*\s*$/m.test(lastTwo);
     const asksForInput = /magst du|interesse|wollen wir|soll ich|willst du|möchtest du|beschreib.*mir|nenn.*mir|sag.*mir.*bescheid|gib.*mir.*info|teil.*mir.*mit/i.test(lastTwo);
 
-    if (/durchspielen|rollenspiel|simulier|übernehme.*rolle|üben|ausprobier/i.test(lastTwo) && hasQuestion) {
-      return ["Ja, lass uns das durchspielen!", "Nein, andere Frage"];
-    }
-    if (/zusammenfass|mitnehm|was nimmst du/i.test(lastTwo) && hasQuestion) {
-      return ["Ja, bitte zusammenfassen", "Nein, ich habe noch eine Frage"];
-    }
     if (/wie reagierst du|was sagst du/i.test(lastTwo)) {
       return [];
     }
     if (/bioLogic.*Prägung|bioLogic.*Profil|bioLogic.*Typ|impulsiv.*intuitiv.*analytisch|impulsiv.*analytisch.*intuitiv|Doppeldominanz|Persönlichkeitstyp.*zuschneid/i.test(content) && (hasQuestion || asksForInput)) {
       return ["Ich bin impulsiv-dominant", "Ich bin intuitiv-dominant", "Ich bin analytisch-dominant", "Ich habe eine Doppeldominanz", "Allgemeine Antwort bitte"];
     }
-    if ((hasQuestion || asksForInput) && /interesse|wollen wir|soll ich|willst du|möchtest du|magst du/i.test(lastTwo)) {
-      return ["Ja, gerne!", "Nein, andere Frage"];
+
+    if (hasQuestion || asksForInput) {
+      const contextOptions = extractOptionsFromText(lastTwo);
+      if (contextOptions.length >= 2) return contextOptions;
+    }
+
+    if (/durchspielen|rollenspiel|simulier|übernehme.*rolle|üben|ausprobier/i.test(lastTwo) && hasQuestion) {
+      return ["Ja, lass uns das durchspielen!", "Nein, andere Frage"];
+    }
+    if (/zusammenfass|mitnehm|was nimmst du/i.test(lastTwo) && hasQuestion) {
+      return ["Ja, bitte zusammenfassen", "Nein, ich habe noch eine Frage"];
     }
     if (content.length > 200 && !hasQuestion && !asksForInput) {
       const replies: string[] = [];
@@ -791,7 +818,7 @@ export default function KICoach() {
       return ["Ja, gerne!", "Nein, andere Frage"];
     }
     return [];
-  }, []);
+  }, [extractOptionsFromText]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
