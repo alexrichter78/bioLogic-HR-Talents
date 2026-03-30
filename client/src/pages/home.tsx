@@ -245,7 +245,15 @@ export default function Home() {
 
               </div>
             </div>
-            <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 20, margin: "0 32px 0" }}>
+          </FadeIn>
+          <FadeIn delay={200}>
+            <div style={{
+              background: "#FFFFFF",
+              borderRadius: 20, padding: isMobile ? "16px" : "20px 32px",
+              boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+              border: "1px solid rgba(0,0,0,0.04)",
+              marginBottom: 16, marginTop: -8,
+            }}>
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: "8px 24px" }}>
                 {[
                   "Wissenschaftlich fundierte Methodik",
