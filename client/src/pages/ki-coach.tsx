@@ -785,12 +785,12 @@ export default function KICoach() {
     const paragraphs = content.trim().split(/\n\n/);
     const lastTwo = paragraphs.slice(-2).join("\n\n");
     const hasQuestion = /\?\s*$/.test(lastTwo.trim()) || /\?["\u201C\u201D\u201E)]*\s*$/m.test(lastTwo);
-    const asksForInput = /magst du|interesse|wollen wir|soll ich|willst du|möchtest du|beschreib.*mir|nenn.*mir|sag.*mir.*bescheid|gib.*mir.*info|teil.*mir.*mit/i.test(lastTwo);
+    const asksForInput = /magst du|interesse|wollen wir|soll ich|willst du|möchtest du|weißt du|kennst du|beschreib.*mir|nenn.*mir|sag.*mir.*bescheid|gib.*mir.*info|teil.*mir.*mit/i.test(lastTwo);
 
     if (/wie reagierst du|was sagst du/i.test(lastTwo)) {
       return [];
     }
-    if (/bioLogic.*Prägung|bioLogic.*Profil|bioLogic.*Typ|impulsiv.*intuitiv.*analytisch|impulsiv.*analytisch.*intuitiv|Doppeldominanz|Persönlichkeitstyp.*zuschneid/i.test(content) && (hasQuestion || asksForInput)) {
+    if (/bioLogic.*Prägung|bioLogic.*Profil|bioLogic.*Typ|impulsiv.{0,20}dominant|analytisch.{0,20}dominant|intuitiv.{0,20}dominant|Doppeldominanz|Persönlichkeitstyp.*zuschneid|Prägung zuschneiden/i.test(content) && /impulsiv|analytisch|intuitiv|Doppeldominanz/i.test(content)) {
       return ["Ich bin impulsiv-dominant", "Ich bin intuitiv-dominant", "Ich bin analytisch-dominant", "Ich habe eine Doppeldominanz", "Allgemeine Antwort bitte"];
     }
 
@@ -807,14 +807,24 @@ export default function KICoach() {
     }
     if (content.length > 200 && !hasQuestion && !asksForInput) {
       const replies: string[] = [];
-      if (/technik|methode|regel|strategie/i.test(content)) replies.push("Gib mir ein konkretes Beispiel dazu");
-      if (/gespräch|formulierung|satz|sagen/i.test(content)) replies.push("Lass uns das durchspielen");
+      if (/quelle|studie|forschung|gallup|mckinsey|harvard|deloitte|source/i.test(content)) {
+        replies.push("Gibt es dazu weitere Studien?");
+      }
+      if (/technik|methode|regel|strategie|modell|framework/i.test(content)) replies.push("Gib mir ein konkretes Beispiel dazu");
+      if (/gespräch|formulierung|satz|sagen|dialog/i.test(content)) replies.push("Lass uns das durchspielen");
+      if (/führung|management|team|mitarbeiter/i.test(content) && !/durchspielen/.test(replies.join(""))) {
+        replies.push("Wie setze ich das in der Praxis um?");
+      }
       if (content.length > 500) replies.push("Fasse die wichtigsten Punkte zusammen");
       if (replies.length === 0) replies.push("Erkläre das genauer");
-      replies.push("Erstelle einen Gesprächsleitfaden dazu");
-      return replies;
+      if (!/bioLogic.*Prägung|auf deine.*Prägung/i.test(content)) {
+        replies.push("Beziehe das auf meine bioLogic-Prägung");
+      }
+      return replies.slice(0, 4);
     }
     if (hasQuestion) {
+      const contextOptions = extractOptionsFromText(lastTwo);
+      if (contextOptions.length >= 2) return contextOptions;
       return ["Ja, gerne!", "Nein, andere Frage"];
     }
     return [];
