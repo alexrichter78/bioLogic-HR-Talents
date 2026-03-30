@@ -585,8 +585,7 @@ export default function KICoach() {
     })();
   }, [loading, messages, region]);
 
-  const extractQuickReplies = useCallback((content: string, msgIndex: number, totalMessages: number): string[] => {
-    if (msgIndex !== totalMessages - 1) return [];
+  const extractQuickReplies = useCallback((content: string, _msgIndex: number, _totalMessages: number): string[] => {
     const lastParagraph = content.trim().split(/\n\n/).pop() || "";
     const hasQuestion = /\?\s*$/.test(lastParagraph.trim()) || /interesse\s*\??/i.test(lastParagraph);
     if (!hasQuestion) return [];
@@ -599,7 +598,13 @@ export default function KICoach() {
     if (/wie reagierst du|was sagst du/i.test(lastParagraph)) {
       return [];
     }
+    if (/bioLogic.*Profil|impulsiv.*analytisch.*intuitiv|Doppeldominanz|Persönlichkeitstyp.*zuschneid/i.test(content)) {
+      return ["Ich bin impulsiv-dominant", "Ich bin intuitiv-dominant", "Ich bin analytisch-dominant", "Ich habe eine Doppeldominanz", "Allgemeine Antwort bitte"];
+    }
     if (/interesse|wollen wir|soll ich|willst du|möchtest du/i.test(lastParagraph)) {
+      return ["Ja, gerne!", "Nein, andere Frage"];
+    }
+    if (/\?\s*$/.test(lastParagraph.trim())) {
       return ["Ja, gerne!", "Nein, andere Frage"];
     }
     return [];
