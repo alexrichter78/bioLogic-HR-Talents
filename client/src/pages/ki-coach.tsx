@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImageIcon, Mic, MicOff, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImageIcon, Mic, MicOff, ThumbsUp, ThumbsDown, Copy, Check } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { useRegion } from "@/lib/region";
 
@@ -263,6 +263,7 @@ export default function KICoach() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState("");
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [showPrompts, setShowPrompts] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [isListening, setIsListening] = useState(false);
@@ -877,6 +878,26 @@ export default function KICoach() {
                 {msg.role === "assistant" && msg !== WELCOME_MSG && (
                   <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 6 }}>
                     <div style={{ display: "flex", gap: 4 }}>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(msg.content);
+                          setCopiedIndex(i);
+                          setTimeout(() => setCopiedIndex(null), 2000);
+                        }}
+                        data-testid={`copy-${i}`}
+                        title="Antwort kopieren"
+                        style={{
+                          width: 28, height: 28, borderRadius: 8, border: "none",
+                          background: copiedIndex === i ? "rgba(52,199,89,0.12)" : "rgba(0,0,0,0.03)",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          cursor: "pointer", transition: "all 200ms ease",
+                        }}
+                      >
+                        {copiedIndex === i
+                          ? <Check style={{ width: 13, height: 13, color: "#34C759" }} />
+                          : <Copy style={{ width: 13, height: 13, color: "#AEAEB2" }} />
+                        }
+                      </button>
                       <button
                         onClick={() => setFeedback(i, "up")}
                         data-testid={`feedback-up-${i}`}
