@@ -712,8 +712,8 @@ export default function KICoach() {
                     : <Bot style={{ width: 15, height: 15, color: "#0071E3" }} />
                   }
                 </div>
+                <div style={{ maxWidth: "75%", display: "flex", flexDirection: "column" }}>
                 <div style={{
-                  maxWidth: "75%",
                   padding: "12px 16px",
                   borderRadius: msg.role === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
                   background: msg.role === "user"
@@ -875,8 +875,8 @@ export default function KICoach() {
                     </div>
                   )}
                 </div>
-                {msg.role === "assistant" && msg !== WELCOME_MSG && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 6 }}>
+                {msg.role === "assistant" && msg !== WELCOME_MSG && msg.content && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 6, paddingLeft: 4 }}>
                     <div style={{ display: "flex", gap: 4 }}>
                       <button
                         onClick={() => {
@@ -951,6 +951,7 @@ export default function KICoach() {
                     )}
                   </div>
                 )}
+                </div>
               </div>
             ))}
 
