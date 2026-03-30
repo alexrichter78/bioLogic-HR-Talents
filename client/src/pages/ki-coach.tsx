@@ -380,24 +380,21 @@ function formatMessage(text: string) {
   flushDialogue();
 
   {
-    let lastTextIdx = -1;
-    for (let i = elements.length - 1; i >= 0; i--) {
-      const el = elements[i] as React.ReactElement;
-      if (el && el.type === "p" && el.key && (el.key as string).startsWith("p-")) {
-        lastTextIdx = i;
-        break;
-      }
-    }
-    if (lastTextIdx >= 0) {
-      const el = elements[lastTextIdx] as React.ReactElement;
-      const childText = typeof el.props.children === "string" ? el.props.children : "";
-      const isActionable = /\?\s*$/.test(childText) || /soll ich|willst du|möchtest du|wollen wir|wie reagierst|magst du|lass uns|probier/i.test(childText);
+    const lastLine = lines.filter(l => l.trim().length > 0).pop()?.trim() || "";
+    if (lastLine) {
+      const isActionable = /\?\s*$/.test(lastLine) || /soll ich|willst du|möchtest du|wollen wir|wie reagierst|magst du|lass uns|probier/i.test(lastLine);
       if (isActionable) {
-        elements[lastTextIdx] = (
-          <p key={el.key} style={{ ...el.props.style, fontWeight: 700 }}>
-            {el.props.children}
-          </p>
-        );
+        for (let i = elements.length - 1; i >= 0; i--) {
+          const el = elements[i] as React.ReactElement;
+          if (el && el.type === "p" && el.key && (el.key as string).startsWith("p-")) {
+            elements[i] = (
+              <p key={el.key} style={{ ...el.props.style, fontWeight: 700 }}>
+                {el.props.children}
+              </p>
+            );
+            break;
+          }
+        }
       }
     }
   }
@@ -662,14 +659,40 @@ export default function KICoach() {
 
     (async () => {
       try {
-        const stammdaten: Record<string, any> = {};
+        const stammdaten: Record<string, string> = {};
         try {
-          const savedAnalyse = localStorage.getItem("analyseState");
-          if (savedAnalyse) {
-            const a = JSON.parse(savedAnalyse);
+          const analyseRaw = localStorage.getItem("analyseTexte");
+          if (analyseRaw) {
+            const a = JSON.parse(analyseRaw);
             if (a.bereich1) stammdaten.impulsiveDaten = a.bereich1;
             if (a.bereich2) stammdaten.intuitiveDaten = a.bereich2;
             if (a.bereich3) stammdaten.analytischeDaten = a.bereich3;
+          }
+          const bioCheckIntro = localStorage.getItem("bioCheckIntroOverride");
+          if (bioCheckIntro) stammdaten.bioCheckIntro = JSON.parse(bioCheckIntro);
+          const bioCheckText = localStorage.getItem("bioCheckTextOverride") || localStorage.getItem("bioCheckTextGenerated");
+          if (bioCheckText) stammdaten.bioCheckText = JSON.parse(bioCheckText);
+          const rollenDna = localStorage.getItem("rollenDnaState");
+          if (rollenDna) {
+            const dna = JSON.parse(rollenDna);
+            if (dna.beruf) stammdaten.beruf = dna.beruf;
+            if (dna.fuehrung) stammdaten.fuehrung = dna.fuehrung;
+            if (dna.taetigkeiten) stammdaten.taetigkeiten = dna.taetigkeiten.join(", ");
+            if (dna.bereich) stammdaten.bereich = dna.bereich;
+            if (dna.spiegel) stammdaten.profilSpiegel = JSON.stringify(dna.spiegel);
+          }
+          const jobcheckResult = localStorage.getItem("jobcheckLastResult");
+          if (jobcheckResult) {
+            const jc = JSON.parse(jobcheckResult);
+            if (jc.fitStatus) stammdaten.jobcheckFit = jc.fitStatus;
+            if (jc.controlIntensity) stammdaten.jobcheckSteuerung = jc.controlIntensity;
+          }
+          const teamState = localStorage.getItem("teamdynamikState");
+          if (teamState) {
+            const ts = JSON.parse(teamState);
+            if (ts.teamName) stammdaten.teamName = ts.teamName;
+            if (ts.teamProfile) stammdaten.teamProfil = JSON.stringify(ts.teamProfile);
+            if (ts.personProfile) stammdaten.personProfil = JSON.stringify(ts.personProfile);
           }
         } catch {}
 
@@ -821,17 +844,28 @@ export default function KICoach() {
       return [];
     }
     if (/bioLogic.*Prägung|bioLogic.*Profil|bioLogic.*Typ|impulsiv.{0,20}dominant|analytisch.{0,20}dominant|intuitiv.{0,20}dominant|Doppeldominanz|Persönlichkeitstyp.*zuschneid|Prägung zuschneiden/i.test(content) && /impulsiv|analytisch|intuitiv|Doppeldominanz/i.test(content)) {
+      const profileButtons: string[] = [];
       if (/welche Doppeldominanz|deine Doppeldominanz|Doppeldominanz.*nenn|Doppeldominanz.*sag|Doppeldominanz.*hast/i.test(content)) {
-        return [
-          "Impulsiv-intuitiv", "Impulsiv-analytisch", "Intuitiv-analytisch",
-          "Intuitiv-impulsiv", "Analytisch-impulsiv", "Analytisch-intuitiv",
-        ];
+        profileButtons.push(
+          "Rot-Gelb (impulsiv-intuitiv)", "Rot-Blau (impulsiv-analytisch)",
+          "Gelb-Rot (intuitiv-impulsiv)", "Gelb-Blau (intuitiv-analytisch)",
+          "Blau-Rot (analytisch-impulsiv)", "Blau-Gelb (analytisch-intuitiv)",
+        );
+      } else {
+        profileButtons.push(
+          "Rot / impulsiv-dominant", "Gelb / intuitiv-dominant", "Blau / analytisch-dominant",
+          "Rot-Gelb (impulsiv-intuitiv)", "Rot-Blau (impulsiv-analytisch)", "Gelb-Blau (intuitiv-analytisch)",
+          "Allgemeine Antwort bitte",
+        );
       }
-      return [
-        "Impulsiv-dominant", "Intuitiv-dominant", "Analytisch-dominant",
-        "Impulsiv-intuitiv", "Impulsiv-analytisch", "Intuitiv-analytisch",
-        "Allgemeine Antwort bitte",
-      ];
+      const oderAlternative = extractOptionsFromText(lastTwo);
+      if (oderAlternative.length === 2) {
+        const altOption = oderAlternative[1];
+        if (altOption && !/impulsiv|intuitiv|analytisch|Doppeldominanz|profil|prägung/i.test(altOption)) {
+          profileButtons.push(altOption);
+        }
+      }
+      return profileButtons;
     }
 
     if (hasQuestion || asksForInput) {
