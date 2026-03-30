@@ -311,6 +311,22 @@ export default function Home() {
                   </button>
                 </div>
 
+                <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 16 }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 10px" }}>Typische Einsatzbereiche</p>
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "6px 24px" }}>
+                    {[
+                      "Recruiting und Stellenanzeigen",
+                      "Gesprächsvorbereitung",
+                      "Analyse von Teamkonstellationen",
+                      "Konfliktmuster erkennen und lösen",
+                    ].map((text, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <CheckCircle style={{ width: 12, height: 12, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
+                        <span style={{ fontSize: 14, color: "#48484A", fontWeight: 450 }}>{text}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </FadeIn>
