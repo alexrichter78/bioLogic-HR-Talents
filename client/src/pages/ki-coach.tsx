@@ -382,7 +382,7 @@ function formatMessage(text: string) {
   {
     const lastLine = lines.filter(l => l.trim().length > 0).pop()?.trim() || "";
     if (lastLine) {
-      const isActionable = /\?\s*$/.test(lastLine) || /soll ich|willst du|möchtest du|wollen wir|wie reagierst|magst du|lass uns|probier/i.test(lastLine);
+      const isActionable = /\?\s*\**\s*$/.test(lastLine) || /soll ich|willst du|möchtest du|wollen wir|wie reagierst|magst du|lass uns|probier/i.test(lastLine);
       if (isActionable) {
         for (let i = elements.length - 1; i >= 0; i--) {
           const el = elements[i] as React.ReactElement;
@@ -811,7 +811,8 @@ export default function KICoach() {
   }, [loading, messages, region]);
 
   const extractOptionsFromText = useCallback((text: string): string[] => {
-    const sentences = text.split(/(?<=[.?!])\s+/);
+    const normalized = text.replace(/\*\*/g, "");
+    const sentences = normalized.split(/(?<=[.?!])\s+/);
     const questionSentences = sentences.filter(s => s.trim().endsWith("?"));
     if (questionSentences.length === 0) return [];
 
@@ -833,7 +834,7 @@ export default function KICoach() {
     const cleanOption = (part: string) => {
       let clean = part.replace(/^\*\*|\*\*$/g, "").trim();
       clean = clean.replace(/\?+\s*$/, "").trim();
-      clean = clean.replace(/[–—-]+\s*$/, "").trim();
+      clean = clean.replace(/[–—,;:]+\s*$/, "").trim();
       clean = clean.replace(/^(willst du|möchtest du|soll ich|wollen wir|magst du|sollen wir)\s+/i, "");
       clean = clean.replace(/^(noch\s+)?(dir\s+)?(mal\s+)?(uns\s+)?/i, "").trim();
       clean = clean.replace(/^(das\s+)?(einmal\s+)?(eher\s+)?/i, "").trim();
@@ -872,7 +873,7 @@ export default function KICoach() {
     const isLastAssistant = msgIndex === totalMessages - 1;
     if (!isLastAssistant) return [];
     const paragraphs = content.trim().split(/\n\n/);
-    const lastTwo = paragraphs.slice(-2).join("\n\n");
+    const lastTwo = paragraphs.slice(-2).join("\n\n").replace(/\*\*/g, "");
     const hasQuestion = /\?\s*$/.test(lastTwo.trim()) || /\?["\u201C\u201D\u201E)]*\s*$/m.test(lastTwo);
     const asksForInput = /magst du|interesse|wollen wir|soll ich|willst du|möchtest du|weißt du|kennst du|beschreib.*mir|nenn.*mir|sag.*mir.*bescheid|gib.*mir.*info|teil.*mir.*mit/i.test(lastTwo);
 
@@ -886,8 +887,8 @@ export default function KICoach() {
       /dein.{0,15}bioLogic.{0,15}(Profil|Prägung)/i.test(lastTwo) ||
       /welche.{0,20}(Prägung|Doppeldominanz).{0,20}hast du/i.test(lastTwo) ||
       /deine.{0,15}(Prägung|Profil).{0,20}zuschneid/i.test(lastTwo) ||
-      /weißt du.{0,30}(impulsiv|intuitiv|analytisch|Prägung|Profil)/i.test(lastTwo) ||
-      /eher.{0,10}(rot|gelb|blau).{0,5}(rot|gelb|blau|oder)/i.test(lastTwo)
+      /weißt du.{0,15}(dein|deine).{0,20}(Prägung|Profil)/i.test(lastTwo) ||
+      /(bist du|du eher).{0,10}(rot|gelb|blau)/i.test(lastTwo)
     );
 
     if (isAskingUserProfile) {
@@ -923,7 +924,7 @@ export default function KICoach() {
     if (/durchspielen|rollenspiel|simulier|übernehme.*rolle|üben|ausprobier/i.test(lastTwo) && hasQuestion) {
       return ["Ja, lass uns das durchspielen!", "Nein, andere Frage"];
     }
-    if (/zusammenfass|mitnehm|was nimmst du/i.test(lastTwo) && hasQuestion) {
+    if (/zusammenfass/i.test(lastTwo) && !/was nimmst du|was wirst du/i.test(lastTwo) && hasQuestion) {
       return ["Ja, bitte zusammenfassen", "Nein, ich habe noch eine Frage"];
     }
     if (/auf deine.*Prägung bezieh|auf.*bioLogic.*Prägung|bioLogic-Perspektive.*zuschneid/i.test(lastTwo) && hasQuestion) {
@@ -960,7 +961,7 @@ export default function KICoach() {
       const contextOptions = extractOptionsFromText(lastTwo);
       if (contextOptions.length >= 2) return contextOptions;
 
-      const isOpenEnded = /was nimmst du|was wirst du|was davon|welchen punkt|was hast du|was fällt dir|wie würdest du|was ist dir|worauf achtest du|was planst du|was denkst du|was bedeutet das für dich/i.test(lastTwo);
+      const isOpenEnded = /was nimmst du|was wirst du|was davon|welchen punkt|was hast du|was fällt dir|wie würdest du|was ist dir|worauf achtest du|was planst du|was denkst du|was bedeutet das für dich|was möchtest du mitnehmen|was kannst du daraus/i.test(lastTwo);
       if (isOpenEnded) {
         const replies: string[] = [];
         if (/ausprobier|umsetzen|anwend|konkret/i.test(lastTwo)) replies.push("Ich probiere die Formulierung aus");
