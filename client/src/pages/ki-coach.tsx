@@ -248,9 +248,8 @@ function formatMessage(text: string) {
   };
 
   const isRoleplayLine = (t: string) => {
-    return (t.startsWith('[') && t.endsWith(']') && t.length > 4) ||
-      /^\[Als\s/i.test(t) ||
-      /^\[.*?(Person|gereizt|ungeduldig|eingeschüchtert|betroffen|sachlich|emotional|ruhig|aufgebracht)/i.test(t);
+    return /^\[Als\s/i.test(t) ||
+      /^\[.*?(Person|Stimme|Ton|gereizt|ungeduldig|eingeschüchtert|betroffen|sachlich|emotional|ruhig|aufgebracht|fordernd|dominant|ärgerlich|wütend|genervt|skeptisch|verunsichert|impulsiv|lauter|leiser|geprägt|Mitarbeiter|Kollege|Kollegin|Chef|Vorgesetzte|Gegenüber)/i.test(t);
   };
 
   const isDialogueLine = (t: string) => {
@@ -341,6 +340,9 @@ function formatMessage(text: string) {
       } else if (isDialogueLine(trimmed) || inDialogueBlock) {
         if (trimmed.startsWith('[') && (trimmed.endsWith(']') || /^\[.*?\]\s/.test(trimmed))) {
           inDialogueBlock = true;
+          if (isRoleplayLine(trimmed)) {
+            dialogueIsRoleplay = true;
+          }
         }
         const displayText = trimmed.startsWith('>') ? trimmed.slice(1).trim() : trimmed;
         dialogueLines.push(displayText);
