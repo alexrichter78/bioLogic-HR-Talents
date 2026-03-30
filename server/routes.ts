@@ -199,7 +199,8 @@ export async function registerRoutes(
       const token = crypto.randomBytes(32).toString("hex");
       const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
       await storage.createPasswordResetToken(user.id, token, expiresAt);
-      res.json({ token, expiresAt: expiresAt.toISOString() });
+      const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
+      res.json({ token, resetUrl: `${baseUrl}/reset-password?token=${token}`, expiresAt: expiresAt.toISOString() });
     } catch (error) {
       console.error("Reset link error:", error);
       res.status(500).json({ error: "Fehler beim Erstellen des Reset-Links" });

@@ -229,8 +229,7 @@ export default function Admin() {
       const res = await fetch(`/api/admin/users/${userId}/reset-link`, { method: "POST" });
       if (res.ok) {
         const data = await res.json();
-        const baseUrl = window.location.origin;
-        setResetLink(`${baseUrl}/reset-password?token=${data.token}`);
+        setResetLink(data.resetUrl);
         setCopied(false);
       }
     } catch {
