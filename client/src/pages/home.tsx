@@ -244,13 +244,13 @@ export default function Home() {
                 </div>
 
                 <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 20 }}>
-                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "8px 24px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: "8px 24px" }}>
                     {[
                       "Wissenschaftlich fundierte Methodik",
-                      "Transparente Ergebnislogik",
                       "Klare Entscheidungsstruktur",
-                      "Reduziert Fehlbesetzungsrisiken",
                       "Objektive Personalentscheidungen",
+                      "Transparente Ergebnislogik",
+                      "Reduziert Fehlbesetzungsrisiken",
                       "Passgenaue Rollenbesetzung",
                     ].map((text, i) => (
                       <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
