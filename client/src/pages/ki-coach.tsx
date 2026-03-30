@@ -705,24 +705,27 @@ export default function KICoach() {
   const extractQuickReplies = useCallback((content: string, msgIndex: number, totalMessages: number): string[] => {
     const isLastAssistant = msgIndex === totalMessages - 1;
     if (!isLastAssistant) return [];
-    const lastParagraph = content.trim().split(/\n\n/).pop() || "";
-    const hasQuestion = /\?\s*$/.test(lastParagraph.trim()) || /interesse\s*\??/i.test(lastParagraph);
-    if (/durchspielen|rollenspiel|simulier|übernehme.*rolle|üben|ausprobier/i.test(lastParagraph) && hasQuestion) {
+    const paragraphs = content.trim().split(/\n\n/);
+    const lastTwo = paragraphs.slice(-2).join("\n\n");
+    const hasQuestion = /\?\s*$/.test(lastTwo.trim()) || /\?["\u201C\u201D\u201E)]*\s*$/m.test(lastTwo);
+    const asksForInput = /magst du|interesse|wollen wir|soll ich|willst du|möchtest du|beschreib.*mir|nenn.*mir|sag.*mir.*bescheid|gib.*mir.*info|teil.*mir.*mit/i.test(lastTwo);
+
+    if (/durchspielen|rollenspiel|simulier|übernehme.*rolle|üben|ausprobier/i.test(lastTwo) && hasQuestion) {
       return ["Ja, lass uns das durchspielen!", "Nein, andere Frage"];
     }
-    if (/zusammenfass|mitnehm|was nimmst du/i.test(lastParagraph) && hasQuestion) {
+    if (/zusammenfass|mitnehm|was nimmst du/i.test(lastTwo) && hasQuestion) {
       return ["Ja, bitte zusammenfassen", "Nein, ich habe noch eine Frage"];
     }
-    if (/wie reagierst du|was sagst du/i.test(lastParagraph)) {
+    if (/wie reagierst du|was sagst du/i.test(lastTwo)) {
       return [];
     }
-    if (/bioLogic.*Profil|impulsiv.*analytisch.*intuitiv|Doppeldominanz|Persönlichkeitstyp.*zuschneid/i.test(content) && hasQuestion) {
+    if (/bioLogic.*Prägung|bioLogic.*Profil|bioLogic.*Typ|impulsiv.*intuitiv.*analytisch|impulsiv.*analytisch.*intuitiv|Doppeldominanz|Persönlichkeitstyp.*zuschneid/i.test(content) && (hasQuestion || asksForInput)) {
       return ["Ich bin impulsiv-dominant", "Ich bin intuitiv-dominant", "Ich bin analytisch-dominant", "Ich habe eine Doppeldominanz", "Allgemeine Antwort bitte"];
     }
-    if (hasQuestion && /interesse|wollen wir|soll ich|willst du|möchtest du/i.test(lastParagraph)) {
+    if ((hasQuestion || asksForInput) && /interesse|wollen wir|soll ich|willst du|möchtest du|magst du/i.test(lastTwo)) {
       return ["Ja, gerne!", "Nein, andere Frage"];
     }
-    if (content.length > 200 && !hasQuestion) {
+    if (content.length > 200 && !hasQuestion && !asksForInput) {
       const replies: string[] = [];
       if (/technik|methode|regel|strategie/i.test(content)) replies.push("Gib mir ein konkretes Beispiel dazu");
       if (/gespräch|formulierung|satz|sagen/i.test(content)) replies.push("Lass uns das durchspielen");
