@@ -719,7 +719,7 @@ export default function KICoach() {
                   padding: "12px 16px",
                   borderRadius: msg.role === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
                   background: msg.role === "user"
-                    ? "#1D1D1F"
+                    ? "#0071E3"
                     : "rgba(0,0,0,0.04)",
                   color: msg.role === "user" ? "#FFFFFF" : "#1D1D1F",
                   fontSize: 14, lineHeight: 1.6,
