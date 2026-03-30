@@ -820,19 +820,33 @@ export default function KICoach() {
     const oderSentences = topLevelParts.filter(s => /\b[Oo]der\b/.test(s));
     const target = oderSentences.length > 0 ? oderSentences[oderSentences.length - 1] : combined;
 
+    const commaOderMatch = target.match(/(?::\s*|ist\s*:\s*|sind\s*:\s*)?([\wäöüÄÖÜß-]+(?:\s+[\wäöüÄÖÜß-]+)*),\s+([\wäöüÄÖÜß-]+(?:\s+[\wäöüÄÖÜß-]+)*)\s+[Oo]der\s+([\wäöüÄÖÜß-]+(?:\s+[\wäöüÄÖÜß-]+)*)\??\s*$/);
+    if (commaOderMatch) {
+      const items = [commaOderMatch[1], commaOderMatch[2], commaOderMatch[3]].map(
+        s => s.replace(/\?+\s*$/, "").trim()
+      ).filter(s => s.length >= 2 && s.length <= 40);
+      if (items.length === 3) {
+        return items.map(s => s.charAt(0).toUpperCase() + s.slice(1));
+      }
+    }
+
+    const cleanOption = (part: string) => {
+      let clean = part.replace(/^\*\*|\*\*$/g, "").trim();
+      clean = clean.replace(/\?+\s*$/, "").trim();
+      clean = clean.replace(/[–—-]+\s*$/, "").trim();
+      clean = clean.replace(/^(willst du|möchtest du|soll ich|wollen wir|magst du|sollen wir)\s+/i, "");
+      clean = clean.replace(/^(noch\s+)?(dir\s+)?(mal\s+)?(uns\s+)?/i, "").trim();
+      clean = clean.replace(/^(das\s+)?(einmal\s+)?(eher\s+)?/i, "").trim();
+      return clean;
+    };
+
     const oderParts = target.split(/\s+[Oo]der\s+/);
     if (oderParts.length === 2) {
       const options: string[] = [];
       for (const part of oderParts) {
-        let clean = part.replace(/^\*\*|\*\*$/g, "").trim();
-        clean = clean.replace(/\?+\s*$/, "").trim();
-        clean = clean.replace(/[–—-]+\s*$/, "").trim();
-        clean = clean.replace(/^(willst du|möchtest du|soll ich|wollen wir|magst du|sollen wir)\s+/i, "");
-        clean = clean.replace(/^(noch\s+)?(dir\s+)?(mal\s+)?(uns\s+)?/i, "").trim();
-        clean = clean.replace(/^(das\s+)?(einmal\s+)?(eher\s+)?/i, "").trim();
+        const clean = cleanOption(part);
         if (clean.length > 3 && clean.length <= 70) {
-          const label = clean.charAt(0).toUpperCase() + clean.slice(1);
-          options.push(label);
+          options.push(clean.charAt(0).toUpperCase() + clean.slice(1));
         }
       }
       if (options.length === 2) return options;
@@ -844,15 +858,9 @@ export default function KICoach() {
       const condensed = [firstAndSecond, last];
       const options: string[] = [];
       for (const part of condensed) {
-        let clean = part.replace(/^\*\*|\*\*$/g, "").trim();
-        clean = clean.replace(/\?+\s*$/, "").trim();
-        clean = clean.replace(/[–—-]+\s*$/, "").trim();
-        clean = clean.replace(/^(willst du|möchtest du|soll ich|wollen wir|magst du|sollen wir)\s+/i, "");
-        clean = clean.replace(/^(noch\s+)?(dir\s+)?(mal\s+)?(uns\s+)?/i, "").trim();
-        clean = clean.replace(/^(das\s+)?(einmal\s+)?(eher\s+)?/i, "").trim();
+        const clean = cleanOption(part);
         if (clean.length > 3 && clean.length <= 70) {
-          const label = clean.charAt(0).toUpperCase() + clean.slice(1);
-          options.push(label);
+          options.push(clean.charAt(0).toUpperCase() + clean.slice(1));
         }
       }
       if (options.length === 2) return options;
@@ -871,9 +879,20 @@ export default function KICoach() {
     if (/wie reagierst du|was sagst du|was antwortest du|wie gehst du vor|was würdest du sagen|was sagst du als nächstes|was sagst du dazu|wie antwortest du|was entgegnest du|sag.*deinen.*satz|formulier.*deinen/i.test(lastTwo)) {
       return [];
     }
-    if (/bioLogic.*Prägung|bioLogic.*Profil|bioLogic.*Typ|impulsiv.{0,20}dominant|analytisch.{0,20}dominant|intuitiv.{0,20}dominant|Doppeldominanz|Persönlichkeitstyp.*zuschneid|Prägung zuschneiden/i.test(content) && /impulsiv|analytisch|intuitiv|Doppeldominanz/i.test(content)) {
+    const isAskingUserProfile = hasQuestion && (
+      /bist du eher.{0,30}(impulsiv|intuitiv|analytisch)/i.test(lastTwo) ||
+      /wie ist deine.{0,20}(Prägung|Profil)/i.test(lastTwo) ||
+      /wie bist du.{0,15}geprägt/i.test(lastTwo) ||
+      /dein.{0,15}bioLogic.{0,15}(Profil|Prägung)/i.test(lastTwo) ||
+      /welche.{0,20}(Prägung|Doppeldominanz).{0,20}hast du/i.test(lastTwo) ||
+      /deine.{0,15}(Prägung|Profil).{0,20}zuschneid/i.test(lastTwo) ||
+      /weißt du.{0,30}(impulsiv|intuitiv|analytisch|Prägung|Profil)/i.test(lastTwo) ||
+      /eher.{0,10}(rot|gelb|blau).{0,5}(rot|gelb|blau|oder)/i.test(lastTwo)
+    );
+
+    if (isAskingUserProfile) {
       const profileButtons: string[] = [];
-      if (/welche Doppeldominanz|deine Doppeldominanz|Doppeldominanz.*nenn|Doppeldominanz.*sag|Doppeldominanz.*hast/i.test(content)) {
+      if (/welche.{0,20}Doppeldominanz|deine Doppeldominanz|Doppeldominanz.{0,20}(nenn|sag|hast)/i.test(lastTwo)) {
         profileButtons.push(
           "Rot-Gelb (impulsiv-intuitiv)", "Rot-Blau (impulsiv-analytisch)",
           "Gelb-Rot (intuitiv-impulsiv)", "Gelb-Blau (intuitiv-analytisch)",
