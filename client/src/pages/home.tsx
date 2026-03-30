@@ -312,7 +312,6 @@ export default function Home() {
                 </div>
 
                 <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 16 }}>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 10px" }}>Typische Einsatzbereiche</p>
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "6px 24px" }}>
                     {[
                       "Recruiting und Stellenanzeigen",
