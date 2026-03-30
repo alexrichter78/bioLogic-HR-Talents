@@ -218,10 +218,14 @@ function formatMessage(text: string, isStreaming?: boolean) {
     });
   };
 
+  let inDialogueBlock = false;
+
   for (let idx = 0; idx < lines.length; idx++) {
     const raw = lines[idx];
     const trimmed = raw.trim();
     const isIndented = raw.startsWith("    ") || raw.startsWith("\t");
+
+    if (trimmed === "") inDialogueBlock = false;
 
     if (trimmed.startsWith("|") && trimmed.endsWith("|")) {
       flushList();
@@ -283,10 +287,21 @@ function formatMessage(text: string, isStreaming?: boolean) {
             paddingBottom: 4,
           }}>{renderInline(trimmed.slice(0, -1))}</p>
         );
-      } else if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
+      } else if (
+        (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+        (trimmed.startsWith('„') && (trimmed.endsWith('"') || trimmed.endsWith('"'))) ||
+        (trimmed.startsWith('>') && trimmed.length > 2) ||
+        (trimmed.startsWith('[') && trimmed.endsWith(']') && trimmed.length > 4) ||
+        /^\[.*?\]\s*.+/.test(trimmed) ||
+        inDialogueBlock
+      ) {
+        if (trimmed.startsWith('[') && (trimmed.endsWith(']') || /^\[.*?\]\s/.test(trimmed))) {
+          inDialogueBlock = true;
+        }
+        const displayText = trimmed.startsWith('>') ? trimmed.slice(1).trim() : trimmed;
         elements.push(
           <div key={`q-${elements.length}`} style={{
-            margin: "10px 0",
+            margin: inDialogueBlock && !(trimmed.startsWith('[')) ? "0" : "10px 0 0",
             padding: "10px 14px",
             borderLeft: "3px solid #0071E3",
             background: "rgba(0,113,227,0.04)",
@@ -294,7 +309,7 @@ function formatMessage(text: string, isStreaming?: boolean) {
             fontStyle: "italic",
             lineHeight: 1.65,
             color: "#1D1D1F",
-          }}>{renderInline(trimmed)}</div>
+          }}>{renderInline(displayText)}</div>
         );
       } else if (isIndented) {
         elements.push(
