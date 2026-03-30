@@ -354,13 +354,6 @@ input[type="range"].bio-slider::-moz-range-track {
   50% { box-shadow: 0 0 0 8px rgba(255,59,48,0); }
 }
 
-@keyframes cursorBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-.streaming-cursor {
-  animation: cursorBlink 0.8s ease-in-out infinite;
-}
 
 .report-header {
   width: 100%;

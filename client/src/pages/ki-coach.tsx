@@ -139,7 +139,7 @@ const EXAMPLE_PROMPTS: { category: string; prompts: string[]; requiresAnalysis?:
   },
 ];
 
-function formatMessage(text: string, isStreaming?: boolean) {
+function formatMessage(text: string) {
   const lines = text.split("\n");
   const elements: React.ReactNode[] = [];
   let listItems: { text: string; indent: boolean; ordered: boolean; number?: number }[] = [];
@@ -332,7 +332,7 @@ function formatMessage(text: string, isStreaming?: boolean) {
   flushList();
   flushTable();
 
-  if (!isStreaming) {
+  {
     let lastTextIdx = -1;
     for (let i = elements.length - 1; i >= 0; i--) {
       const el = elements[i] as React.ReactElement;
@@ -351,14 +351,6 @@ function formatMessage(text: string, isStreaming?: boolean) {
     }
   }
 
-  if (isStreaming) {
-    elements.push(
-      <span key="cursor" className="streaming-cursor" style={{
-        display: "inline-block", width: 2, height: 16, background: "#0071E3",
-        marginLeft: 2, verticalAlign: "text-bottom", borderRadius: 1,
-      }} />
-    );
-  }
 
   return <>{elements}</>;
 }
@@ -370,7 +362,6 @@ export default function KICoach() {
   const [loading, setLoading] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState("");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const [streamingIndex, setStreamingIndex] = useState<number | null>(null);
   const isMobile = useIsMobile();
   const [showPrompts, setShowPrompts] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
@@ -550,7 +541,7 @@ export default function KICoach() {
               } else if (event.type === "text") {
                 if (!streamingStarted) {
                   streamingStarted = true;
-                  setMessages(prev => { setStreamingIndex(prev.length); return [...prev, { role: "assistant", content: "" }]; });
+                  setMessages(prev => [...prev, { role: "assistant", content: "" }]);
                   setLoading(false);
                   setLoadingStatus("");
                 }
@@ -563,7 +554,7 @@ export default function KICoach() {
               } else if (event.type === "image") {
                 if (!streamingStarted) {
                   streamingStarted = true;
-                  setMessages(prev => { setStreamingIndex(prev.length); return [...prev, { role: "assistant", content: "" }]; });
+                  setMessages(prev => [...prev, { role: "assistant", content: "" }]);
                   setLoading(false);
                   setLoadingStatus("");
                 }
@@ -597,7 +588,7 @@ export default function KICoach() {
     } finally {
       setLoading(false);
       setLoadingStatus("");
-      setStreamingIndex(null);
+
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [input, loading, messages, isListening]);
@@ -665,7 +656,7 @@ export default function KICoach() {
                 } else if (event.type === "text") {
                   if (!streamingStarted) {
                     streamingStarted = true;
-                    setMessages(prev => { setStreamingIndex(prev.length); return [...prev, { role: "assistant", content: "" }]; });
+                    setMessages(prev => [...prev, { role: "assistant", content: "" }]);
                     setLoading(false);
                     setLoadingStatus("");
                   }
@@ -678,7 +669,7 @@ export default function KICoach() {
                 } else if (event.type === "image") {
                   if (!streamingStarted) {
                     streamingStarted = true;
-                    setMessages(prev => { setStreamingIndex(prev.length); return [...prev, { role: "assistant", content: "" }]; });
+                    setMessages(prev => [...prev, { role: "assistant", content: "" }]);
                     setLoading(false);
                     setLoadingStatus("");
                   }
@@ -712,7 +703,7 @@ export default function KICoach() {
       } finally {
         setLoading(false);
         setLoadingStatus("");
-        setStreamingIndex(null);
+  
       }
     })();
   }, [loading, messages, region]);
@@ -875,7 +866,7 @@ export default function KICoach() {
                   color: msg.role === "user" ? "#FFFFFF" : "#1D1D1F",
                   fontSize: 14, lineHeight: 1.6,
                 }}>
-                  {formatMessage(msg.content, streamingIndex === i)}
+                  {formatMessage(msg.content)}
                   {msg.image && (
                     <div style={{ marginTop: 12 }}>
                       <div style={{ position: "relative", display: "inline-block", maxWidth: 520, width: "100%" }}>
