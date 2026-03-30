@@ -1348,6 +1348,13 @@ Wenn der Nutzer einen Gesprächsleitfaden anfordert (Interview, Onboarding, Feed
 Nutze Markdown-Tabellen für die Bewertungsmatrix. Der Leitfaden soll so konkret sein, dass eine Führungskraft ihn 1:1 ausdrucken und verwenden kann.
 Wenn bioLogic-Analysedaten vorhanden sind, passe den Leitfaden an das Stellenprofil an.
 
+NEUTRALITÄT & NAMEN:
+- Verwende NIEMALS Platzhalter wie "[Name]", "[Vorname]", "[Nachname]", "[Mitarbeiter]" oder ähnliche eckige Klammern in deinen Antworten.
+- Formuliere ALLES neutral und allgemein, z.B. "die Person", "die Führungskraft", "das Teammitglied", "der/die Kandidat:in".
+- NUR wenn der Nutzer selbst einen konkreten Namen in seiner Nachricht nennt, darfst du diesen Namen in deiner Antwort verwenden.
+- Beispiel FALSCH: "Sag [Name], dass du seine Gedanken zu Ende bringen möchtest."
+- Beispiel RICHTIG: "Sag der Person, dass du ihre Gedanken zu Ende bringen möchtest."
+
 - Deutsch.`;
 
       let fullSystemPrompt = systemPrompt;
