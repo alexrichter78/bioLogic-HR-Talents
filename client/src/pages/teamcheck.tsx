@@ -6,6 +6,7 @@ import {
   CalendarDays, Award, Gauge, Heart, Brain,
 } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { hyphenateText } from "@/lib/hyphenate";
 import {
   type TeamCheckInput, type TeamCheckResult, type UrteilBadge,
@@ -176,6 +177,7 @@ function BulletList({ items, color, icon }: { items: string[]; color?: string; i
 }
 
 export default function TeamCheck() {
+  const isMobile = useIsMobile();
   const [soll, setSoll] = useState<Triad>({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
   const [kandidat, setKandidat] = useState<Triad>({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
   const [team, setTeam] = useState<Triad>({ impulsiv: 30, intuitiv: 50, analytisch: 20 });
@@ -904,7 +906,7 @@ export default function TeamCheck() {
       <GlobalNav />
 
       <div style={{
-        position: "sticky", top: 48, zIndex: 90,
+        position: "sticky", top: isMobile ? 48 : 56, zIndex: 90,
         background: "rgba(255,255,255,0.82)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
         borderBottom: "1px solid rgba(0,0,0,0.06)",
         padding: "8px 20px",
@@ -938,7 +940,7 @@ export default function TeamCheck() {
         </button>
       </div>
 
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 20px 80px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: isMobile ? "16px 12px 80px" : "32px 20px 48px" }}>
 
         {/* ═══ META HEADER ═══ */}
         <div style={{

@@ -5,6 +5,7 @@ import {
   CalendarDays, Zap, FileText,
 } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useRegion } from "@/lib/region";
 import { hyphenateText } from "@/lib/hyphenate";
 import {
@@ -308,6 +309,7 @@ function ReadOnlyBars({ triad }: { triad: Triad }) {
 
 export default function Teamdynamik() {
   const { region } = useRegion();
+  const isMobile = useIsMobile();
   const [teamName, setTeamName] = useState("Projektteam");
   const [teamProfile, setTeamProfile] = useState<Triad>({ impulsiv: 30, intuitiv: 50, analytisch: 20 });
   const [personProfile, setPersonProfile] = useState<Triad>(() => {
@@ -433,7 +435,7 @@ export default function Teamdynamik() {
     <div className="min-h-screen" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 40%, #F5F7FA 100%)" }} lang="de">
       <GlobalNav />
 
-      <main style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 16px 80px" }}>
+      <main style={{ maxWidth: 1100, margin: "0 auto", padding: isMobile ? "16px 12px 80px" : "24px 16px 48px" }}>
 
         {/* ═══ TAB 1: ANALYSE ═══ */}
         <GlassCard style={{ marginBottom: 20 }} data-testid="tab-analyse">

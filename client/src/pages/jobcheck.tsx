@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useLocation } from "wouter";
 import { FileText, AlertTriangle, Check, TrendingUp, Zap, Scale, ChevronRight, ChevronDown, CircleAlert, CircleCheck, CircleMinus, Lightbulb, CalendarDays, ClipboardCheck, BarChart3, CheckCircle2, Briefcase, LayoutGrid, Wrench, Target, UserCheck, Hash, Compass, Shield, Gauge, Award, ArrowUpRight, Layers, Printer } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { hyphenateText } from "@/lib/hyphenate";
 import { BERUFE } from "@/data/berufe";
 import {
@@ -459,6 +460,7 @@ function controlColor(c: ControlIntensity): string {
 
 export default function JobCheck() {
   const [, setLocation] = useLocation();
+  const isMobile = useIsMobile();
   const [analyseOpen, setAnalyseOpen] = useState(true);
   const [berichtOpen, setBerichtOpen] = useState(false);
   const [roleAnalysis, setRoleAnalysis] = useState<RoleAnalysis | null>(null);
@@ -597,9 +599,9 @@ export default function JobCheck() {
       <div className="relative z-10">
         <GlobalNav />
 
-        <div style={{ position: "fixed", top: 56, left: 0, right: 0, zIndex: 8999 }}>
+        <div style={{ position: "fixed", top: isMobile ? 48 : 56, left: 0, right: 0, zIndex: 8999 }}>
           <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: "5px 0 10px", minHeight: 62 }}>
-            <div className="w-full mx-auto px-6" style={{ maxWidth: 1100 }}>
+            <div className="w-full mx-auto" style={{ maxWidth: 1100, paddingLeft: isMobile ? 12 : 24, paddingRight: isMobile ? 12 : 24 }}>
               <div className="text-center">
                 <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-jobcheck-title">
                   bioLogic JobCheck
@@ -612,7 +614,7 @@ export default function JobCheck() {
           </div>
         </div>
 
-        <div className="mx-auto px-6" style={{ maxWidth: 1100, paddingTop: 135, paddingBottom: 40 }}>
+        <div className="mx-auto" style={{ maxWidth: 1100, paddingTop: isMobile ? 120 : 135, paddingBottom: isMobile ? 80 : 40, paddingLeft: isMobile ? 12 : 24, paddingRight: isMobile ? 12 : 24 }}>
           <div ref={jobcheckContentRef} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
             <GlassCard testId="jobcheck-header" style={{ padding: "28px 32px", position: "relative", overflow: "hidden" }}>

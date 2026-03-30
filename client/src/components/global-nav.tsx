@@ -4,6 +4,7 @@ import { Home, Briefcase, GitCompareArrows, Users, Bot, Settings, LogOut, Globe 
 import { useAuth } from "@/lib/auth";
 import { useRegion, type Region } from "@/lib/region";
 import logoSrc from "@assets/1_1773849007741.png";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const NAV_ITEMS = [
   { label: "Home", subtitle: "", path: "/", icon: Home, disabled: false },
@@ -21,6 +22,7 @@ const RESET_KEYS = [
 ];
 
 const NAV_HEIGHT = 56;
+const MOBILE_NAV_HEIGHT = 60;
 
 const REGION_OPTIONS: { value: Region; label: string; flag: string }[] = [
   { value: "DE", label: "Deutschland", flag: "🇩🇪" },
@@ -34,6 +36,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
   const { region, setRegion } = useRegion();
   const [regionOpen, setRegionOpen] = useState(false);
   const regionRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -58,6 +61,151 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
     if (item.path === "/") return location === "/";
     return location.startsWith(item.path);
   };
+
+  if (isMobile) {
+    return (
+      <>
+        <div style={{
+          position: "fixed", top: 0, left: 0, right: 0, zIndex: 9000,
+          background: "#FFFFFF",
+          borderBottom: "1px solid rgba(0,0,0,0.06)",
+        }}>
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            padding: "0 12px", height: 48,
+          }}>
+            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>
+              bioLogic
+            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              {rightSlot}
+              <div ref={regionRef} style={{ position: "relative" }}>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setRegionOpen(!regionOpen); }}
+                  data-testid="nav-region-toggle"
+                  title={`Sprachregion: ${REGION_OPTIONS.find(r => r.value === region)?.label}`}
+                  style={{
+                    width: 32, height: 32, borderRadius: 8,
+                    border: regionOpen ? "1px solid rgba(0,113,227,0.2)" : "1px solid transparent",
+                    cursor: "pointer",
+                    background: regionOpen ? "rgba(0,113,227,0.06)" : "transparent",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    transition: "all 200ms ease",
+                    fontSize: 16, lineHeight: 1,
+                  }}
+                >
+                  {currentFlag}
+                </button>
+                {regionOpen && (
+                  <div style={{
+                    position: "absolute", top: "calc(100% + 6px)", right: 0,
+                    background: "#FFFFFF", borderRadius: 12,
+                    boxShadow: "0 8px 30px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06)",
+                    padding: 4, minWidth: 170, zIndex: 9999,
+                  }}>
+                    <div style={{ padding: "6px 12px 4px", fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      Sprachregion
+                    </div>
+                    {REGION_OPTIONS.map(opt => (
+                      <button
+                        key={opt.value}
+                        onClick={(e) => { e.stopPropagation(); setRegion(opt.value); setRegionOpen(false); }}
+                        data-testid={`nav-region-${opt.value.toLowerCase()}`}
+                        style={{
+                          width: "100%", display: "flex", alignItems: "center", gap: 10,
+                          padding: "8px 12px", borderRadius: 8, border: "none", cursor: "pointer",
+                          background: region === opt.value ? "rgba(0,113,227,0.08)" : "transparent",
+                          transition: "all 150ms ease", textAlign: "left",
+                        }}
+                      >
+                        <span style={{ fontSize: 18 }}>{opt.flag}</span>
+                        <span style={{ fontSize: 13, fontWeight: region === opt.value ? 600 : 450, color: region === opt.value ? "#0071E3" : "#1D1D1F" }}>
+                          {opt.label}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {user?.role === "admin" && (
+                <button
+                  onClick={() => setLocation("/admin")}
+                  data-testid="nav-admin"
+                  style={{
+                    width: 32, height: 32, borderRadius: 8,
+                    border: "none", cursor: "pointer",
+                    background: location === "/admin" ? "rgba(0,113,227,0.08)" : "transparent",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}
+                >
+                  <Settings style={{ width: 15, height: 15, color: location === "/admin" ? "#0071E3" : "#86868B", strokeWidth: 1.8 }} />
+                </button>
+              )}
+              <button
+                onClick={logout}
+                data-testid="nav-logout"
+                style={{
+                  width: 32, height: 32, borderRadius: 8,
+                  border: "none", cursor: "pointer",
+                  background: "transparent",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}
+              >
+                <LogOut style={{ width: 15, height: 15, color: "#86868B", strokeWidth: 1.8 }} />
+              </button>
+            </div>
+          </div>
+        </div>
+        <div style={{ height: 48 }} />
+
+        <div style={{
+          position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 9000,
+          background: "rgba(255,255,255,0.92)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+          borderTop: "1px solid rgba(0,0,0,0.08)",
+          paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        }}>
+          <nav style={{
+            display: "flex", alignItems: "center", justifyContent: "space-around",
+            height: MOBILE_NAV_HEIGHT, padding: "0 4px",
+          }} data-testid="global-nav">
+            {NAV_ITEMS.map((item) => {
+              const active = isActive(item);
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.label}
+                  onClick={() => !item.disabled && handleNav(item)}
+                  disabled={item.disabled}
+                  data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
+                  style={{
+                    display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
+                    padding: "6px 8px", borderRadius: 10,
+                    background: "transparent",
+                    border: "none", cursor: item.disabled ? "default" : "pointer",
+                    opacity: item.disabled ? 0.35 : 1,
+                    minWidth: 0, flex: 1,
+                  }}
+                >
+                  <Icon style={{
+                    width: 20, height: 20, strokeWidth: 1.8,
+                    color: active ? "#0071E3" : "#86868B",
+                  }} />
+                  <span style={{
+                    fontSize: 10, fontWeight: active ? 600 : 500,
+                    color: active ? "#0071E3" : "#86868B",
+                    whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                    maxWidth: "100%",
+                  }}>
+                    {item.label}
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>

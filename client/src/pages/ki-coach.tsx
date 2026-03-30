@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImageIcon, Mic, MicOff, ThumbsUp, ThumbsDown, Copy, Check } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { useRegion } from "@/lib/region";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type Message = {
   role: "user" | "assistant";
@@ -264,6 +265,7 @@ export default function KICoach() {
   const [loading, setLoading] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState("");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const isMobile = useIsMobile();
   const [showPrompts, setShowPrompts] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [isListening, setIsListening] = useState(false);
@@ -648,7 +650,7 @@ export default function KICoach() {
     <div className="min-h-screen" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 40%, #F5F7FA 100%)", display: "flex", flexDirection: "column" }} lang="de">
       <GlobalNav />
 
-      <main style={{ flex: 1, maxWidth: 1100, width: "100%", margin: "0 auto", padding: "24px 16px 24px", display: "flex", flexDirection: "column" }}>
+      <main style={{ flex: 1, maxWidth: 1100, width: "100%", margin: "0 auto", padding: isMobile ? "8px 6px 80px" : "24px 16px 24px", display: "flex", flexDirection: "column" }}>
         <div style={{
           background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
           borderRadius: 20, flex: 1, display: "flex", flexDirection: "column",
@@ -657,9 +659,9 @@ export default function KICoach() {
           minHeight: "calc(100vh - 140px)",
         }}>
           <div style={{
-            padding: "20px 28px 16px",
+            padding: isMobile ? "12px 14px 10px" : "20px 28px 16px",
             borderBottom: "1px solid rgba(0,0,0,0.06)",
-            display: "flex", alignItems: "center", gap: 14,
+            display: "flex", alignItems: "center", gap: isMobile ? 10 : 14,
           }}>
             <div style={{
               width: 40, height: 40, borderRadius: 12,
@@ -693,7 +695,7 @@ export default function KICoach() {
           </div>
 
           <div style={{
-            flex: 1, overflowY: "auto", padding: "20px 28px",
+            flex: 1, overflowY: "auto", padding: isMobile ? "12px 10px" : "20px 28px",
             display: "flex", flexDirection: "column", gap: 16,
           }} data-testid="chat-messages">
             {messages.map((msg, i) => (
@@ -712,7 +714,7 @@ export default function KICoach() {
                     : <Bot style={{ width: 15, height: 15, color: "#0071E3" }} />
                   }
                 </div>
-                <div style={{ maxWidth: "75%", display: "flex", flexDirection: "column" }}>
+                <div style={{ maxWidth: isMobile ? "88%" : "75%", display: "flex", flexDirection: "column" }}>
                 <div style={{
                   padding: "12px 16px",
                   borderRadius: msg.role === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
@@ -978,7 +980,7 @@ export default function KICoach() {
           </div>
 
           <div style={{
-            padding: "16px 28px 20px",
+            padding: isMobile ? "10px 10px 14px" : "16px 28px 20px",
             borderTop: "1px solid rgba(0,0,0,0.06)",
             background: "rgba(255,255,255,0.5)",
           }}>
@@ -1077,7 +1079,7 @@ export default function KICoach() {
               borderTop: "1px solid rgba(0,0,0,0.06)",
               background: "rgba(248,250,252,0.95)",
               maxHeight: 360, overflowY: "auto",
-              padding: "12px 28px 16px",
+              padding: isMobile ? "8px 10px 12px" : "12px 28px 16px",
             }} data-testid="panel-example-prompts">
               {EXAMPLE_PROMPTS.map((cat) => {
                 const isDisabled = cat.requiresAnalysis && !hasAnalysisData();

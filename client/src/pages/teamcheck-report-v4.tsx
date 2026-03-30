@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { computeTeamCheckV4, type TeamCheckV4Result, type V4Block } from "@/lib/teamcheck-v4-engine";
 import type { TeamCheckV3Input } from "@/lib/teamcheck-v3-engine";
 import { ArrowLeft, Download, Loader2, Printer, AlertTriangle } from "lucide-react";
@@ -58,6 +59,7 @@ const sectionStyle = { paddingBottom: 40, marginBottom: 72, borderBottom: "1px s
 
 export default function TeamCheckReportV4() {
   const [, navigate] = useLocation();
+  const isMobile = useIsMobile();
   const [result, setResult] = useState<TeamCheckV4Result | null>(null);
   const reportRef = useRef<HTMLDivElement>(null);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
@@ -258,7 +260,7 @@ export default function TeamCheckReportV4() {
     <div style={{ minHeight: "100vh", background: "#f5f7fb", fontFamily: "Inter, Arial, Helvetica, sans-serif", color: "#1D1D1F", lineHeight: 1.6 }} className="v4-report-page">
       <GlobalNav />
 
-      <div style={{ maxWidth: 820, margin: "0 auto", padding: "80px 20px 48px" }}>
+      <div style={{ maxWidth: 820, margin: "0 auto", padding: isMobile ? "64px 12px 80px" : "80px 20px 48px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }} className="no-print">
           <button onClick={() => navigate("/team-report")} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", color: "#1A5DAB", fontWeight: 600, fontSize: 14, padding: 0 }} data-testid="button-back-v4">
             <ArrowLeft size={16} /> Zurück zum TeamCheck

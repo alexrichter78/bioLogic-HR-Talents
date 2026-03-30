@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
 import { useAuth } from "@/lib/auth";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const DEFAULT_BEREICH1 = `IMPULSIV = Handlungs- und Umsetzungskompetenz (MACHEN & DURCHSETZEN)
 
@@ -91,6 +92,7 @@ function loadSaved() {
 export default function Analyse() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (user && user.role !== "admin") {
@@ -155,7 +157,7 @@ export default function Analyse() {
       <div className="relative z-10 flex flex-col min-h-screen">
         <GlobalNav />
 
-        <main className="flex-1 w-full mx-auto px-6 pb-20" style={{ maxWidth: 1100 }}>
+        <main className="flex-1 w-full mx-auto pb-20" style={{ maxWidth: 1100, paddingLeft: isMobile ? 8 : 24, paddingRight: isMobile ? 8 : 24, paddingBottom: isMobile ? 100 : 80 }}>
           <div className="text-center mt-8 mb-10">
             <h1
               className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground/90 mb-2"

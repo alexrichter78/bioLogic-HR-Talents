@@ -8,6 +8,7 @@ import logoSrc from "@assets/1_1773849007741.png";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE, type BerufLand } from "@/data/berufe";
 import { useRegion } from "@/lib/region";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type KompetenzTyp = "Impulsiv" | "Intuitiv" | "Analytisch";
 type Niveau = "Niedrig" | "Mittel" | "Hoch";
@@ -1064,6 +1065,7 @@ function loadSavedState() {
 export default function RollenDNA() {
   const [, setLocation] = useLocation();
   const { region } = useRegion();
+  const isMobile = useIsMobile();
   const saved = useRef(loadSavedState());
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
@@ -1727,9 +1729,9 @@ export default function RollenDNA() {
           data-testid="input-file-load"
         />
         <GlobalNav />
-        <div style={{ position: "fixed", top: 56, left: 0, right: 0, zIndex: 8999 }}>
-          <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: "5px 0 10px", minHeight: 62 }}>
-            <div className="w-full mx-auto px-6" style={{ maxWidth: 1100 }}>
+        <div style={{ position: "fixed", top: isMobile ? 48 : 56, left: 0, right: 0, zIndex: 8999 }}>
+          <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: isMobile ? "4px 0 6px" : "5px 0 10px", minHeight: isMobile ? 48 : 62 }}>
+            <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
               <div className="text-center">
                 <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-rollen-dna-title">
                   Stellenprofil definieren
@@ -1743,12 +1745,12 @@ export default function RollenDNA() {
           </div>
         </div>
 
-        <main className="flex-1 w-full mx-auto px-6 pb-20" style={{ maxWidth: 1100, paddingTop: 135 }}>
+        <main className="flex-1 w-full mx-auto pb-20" style={{ maxWidth: 1100, paddingTop: isMobile ? 110 : 135, paddingLeft: isMobile ? 8 : 24, paddingRight: isMobile ? 8 : 24, paddingBottom: isMobile ? 100 : 80 }}>
           <div className="space-y-5">
 
             {allCollapsed ? null : currentStep === 1 ? (
               <Card className="bg-white dark:bg-card border-card-border animate-in fade-in slide-in-from-bottom-2 duration-400" style={{ overflow: "visible", position: "relative", zIndex: 100 }} data-testid="card-step-1">
-                <div style={{ padding: "32px 32px 28px", overflow: "visible" }}>
+                <div style={{ padding: isMobile ? "16px 14px 14px" : "32px 32px 28px", overflow: "visible" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
                     <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "#34C759", color: "#fff" }}>1</div>
                     <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>2</div>
@@ -1995,7 +1997,7 @@ export default function RollenDNA() {
                   style={{
                     background: "#FFFFFF",
                     borderRadius: 20,
-                    padding: "28px 32px",
+                    padding: isMobile ? "16px 14px" : "28px 32px",
                     boxShadow: "0 8px 30px rgba(0,0,0,0.04)",
                     border: "1px solid rgba(0,0,0,0.04)",
                   }}
@@ -2211,7 +2213,7 @@ export default function RollenDNA() {
                   style={{
                     background: "#FFFFFF",
                     borderRadius: 20,
-                    padding: "28px 32px",
+                    padding: isMobile ? "16px 14px" : "28px 32px",
                     boxShadow: "0 8px 30px rgba(0,0,0,0.04)",
                     border: "1px solid rgba(0,0,0,0.04)",
                   }}
@@ -2633,7 +2635,7 @@ export default function RollenDNA() {
                   style={{
                     background: "#FFFFFF",
                     borderRadius: 20,
-                    padding: "28px 32px",
+                    padding: isMobile ? "16px 14px" : "28px 32px",
                     boxShadow: "0 8px 30px rgba(0,0,0,0.04)",
                     border: "1px solid rgba(0,0,0,0.04)",
                     marginTop: 28,
@@ -2705,7 +2707,7 @@ export default function RollenDNA() {
                           {roleRequirementText.intro.join(" ")}
                         </p>
 
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                           {[
                             { label: "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: "Umsetzung, Entscheidung und Ergebnisverantwortung" },
                             { label: "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: "Zusammenarbeit und kontextbezogenes Handeln" },
@@ -2758,7 +2760,7 @@ export default function RollenDNA() {
                       );
                     })()}
 
-                    <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                    <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 10 : 16 }}>
                       {[
                         { title: "Tätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
                         { title: "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben, icon: Heart },
@@ -2982,7 +2984,7 @@ export default function RollenDNA() {
                 {summaryOpen && (
                   <>
                 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }} data-testid="dna-summary-grid">
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }} data-testid="dna-summary-grid">
                   {[
                     { icon: Briefcase, label: "Stelle / Bezeichnung", value: beruf },
                     { icon: LayoutGrid, label: "Aufgabenstruktur", value: AUFGABENCHARAKTER_OPTIONS.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter },
@@ -3213,7 +3215,7 @@ export default function RollenDNA() {
                         {roleRequirementText.intro.join(" ")}
                       </p>
 
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                         {[
                           { label: "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: "Umsetzung, Entscheidung und Ergebnisverantwortung" },
                           { label: "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: "Zusammenarbeit und kontextbezogenes Handeln" },
@@ -3268,7 +3270,7 @@ export default function RollenDNA() {
                   })()}
 
                   <div style={{ marginTop: 16 }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 10 : 16 }}>
                       {[
                         { title: "Tätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
                         { title: "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben, icon: Heart },

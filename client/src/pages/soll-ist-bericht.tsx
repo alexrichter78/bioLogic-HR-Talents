@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
 import { AlertTriangle, Download, Loader2, ChevronLeft, ChevronDown, SlidersHorizontal, Zap, Compass, Triangle, CheckCircle2, AlertCircle, ArrowRight, Printer } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { dominanceModeOf, labelComponent } from "@/lib/jobcheck-engine";
 import { computeSollIst, mapFuehrungsArt } from "@/lib/soll-ist-engine";
 import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
@@ -149,6 +150,7 @@ function TriangleChart({ role, candidate }: { role: Triad; candidate: Triad }) {
 
 export default function SollIstBericht() {
   const [, setLocation] = useLocation();
+  const isMobile = useIsMobile();
   const [candidateName, setCandidateName] = useState("");
   const [candTriad, setCandTriad] = useState<{impulsiv: number; intuitiv: number; analytisch: number}>({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
 
@@ -426,9 +428,9 @@ export default function SollIstBericht() {
       <GlobalNav />
 
       {!reportGenerated && (
-        <div style={{ position: "fixed", top: 56, left: 0, right: 0, zIndex: 8999 }}>
-          <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: "5px 0 10px", minHeight: 62 }}>
-            <div className="w-full mx-auto px-6" style={{ maxWidth: 1100 }}>
+        <div style={{ position: "fixed", top: isMobile ? 48 : 56, left: 0, right: 0, zIndex: 8999 }}>
+          <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: isMobile ? "4px 0 6px" : "5px 0 10px", minHeight: isMobile ? 48 : 62 }}>
+            <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
               <div className="text-center">
                 <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-matchcheck-title">
                   Passungsanalyse konfigurieren
@@ -442,14 +444,14 @@ export default function SollIstBericht() {
         </div>
       )}
 
-      <div className="mx-auto px-6" style={{ maxWidth: 1100, paddingTop: !reportGenerated ? 135 : 40, paddingBottom: 40 }}>
+      <div className="mx-auto" style={{ maxWidth: 1100, paddingTop: !reportGenerated ? (isMobile ? 110 : 135) : 40, paddingBottom: isMobile ? 100 : 40, paddingLeft: isMobile ? 8 : 24, paddingRight: isMobile ? 8 : 24 }}>
 
         {/* === INPUT: Slider area before report === */}
         {!reportGenerated && (<>
           <div style={{ background: "#FFFFFF", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden", marginBottom: 32 }}>
             <button
               onClick={() => setProfilvergleichOpen(!profilvergleichOpen)}
-              style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
+              style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMobile ? "14px 14px" : "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#FFFFFF"; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
               data-testid="button-toggle-profilvergleich"
@@ -463,8 +465,8 @@ export default function SollIstBericht() {
               <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${profilvergleichOpen ? "rotate-180" : ""}`} />
             </button>
 
-            {profilvergleichOpen && (<div style={{ padding: "0 32px 32px" }}>
-            <div className="grid gap-6 grid-cols-2">
+            {profilvergleichOpen && (<div style={{ padding: isMobile ? "0 14px 14px" : "0 32px 32px" }}>
+            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
               <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="card-soll-profil">
                 <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Stelle)</span></p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -689,7 +691,7 @@ export default function SollIstBericht() {
                 <div style={{ background: "#FFFFFF", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }}>
                   <button
                     onClick={() => setSystemwirkungOpen(!systemwirkungOpen)}
-                    style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
+                    style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMobile ? "14px 14px" : "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#FFFFFF"; }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
                     data-testid="button-toggle-systemwirkung"
@@ -704,7 +706,7 @@ export default function SollIstBericht() {
                   </button>
 
                   {systemwirkungOpen && (
-                  <div style={{ padding: "0 32px 28px" }}>
+                  <div style={{ padding: isMobile ? "0 14px 14px" : "0 32px 28px" }}>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px 32px" }}>
 
                       <div>
@@ -1048,7 +1050,7 @@ export default function SollIstBericht() {
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                   {biggestGapText(result.roleTriad, result.candTriad)}
                 </p>
-                <div className="grid gap-6 grid-cols-2" style={{ marginBottom: 14 }}>
+                <div className="grid gap-6 grid-cols-1 sm:grid-cols-2" style={{ marginBottom: 14 }}>
                   <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
                     <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>Soll-Profil <span style={{ fontWeight: 400, color: "#8E8E93" }}>(Stelle)</span></p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>

@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   computeTeamCheckV3,
   type TeamCheckV3Input,
@@ -119,6 +120,7 @@ function OverviewRow({ label, value, valueColor }: { label: string; value: strin
 
 export default function TeamCheckReportV3() {
   const [, navigate] = useLocation();
+  const isMobile = useIsMobile();
   const [result, setResult] = useState<TeamCheckV3Result | null>(null);
   const [input, setInput] = useState<TeamCheckV3Input | null>(null);
   const [pdfBusy, setPdfBusy] = useState(false);
@@ -175,7 +177,7 @@ export default function TeamCheckReportV3() {
     <div style={{ minHeight: "100vh", background: "#f5f7fb", fontFamily: "Inter, Arial, Helvetica, sans-serif", color: "#1D1D1F", lineHeight: 1.6 }}>
       <GlobalNav />
 
-      <div style={{ maxWidth: 820, margin: "0 auto", padding: "80px 20px 48px" }}>
+      <div style={{ maxWidth: 820, margin: "0 auto", padding: isMobile ? "64px 12px 80px" : "80px 20px 48px" }}>
 
         <div style={{ marginBottom: 18 }}>
           <button

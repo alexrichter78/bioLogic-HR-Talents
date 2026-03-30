@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { BarChart3, Briefcase, Heart, Shield, AlertTriangle, FileText, Check, Settings, RefreshCw, Loader2, Zap, Brain, Users, Target, TrendingUp, Lightbulb, Star, Activity, Download, Compass, Layers, Award, Crosshair, ArrowUpRight, Gauge, ShieldCheck } from "lucide-react";
 import logoSrc from "@assets/LOGO_bio_1773853681939.png";
 import GlobalNav from "@/components/global-nav";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { BERUFE } from "@/data/berufe";
 import { apiRequest } from "@/lib/queryClient";
 import { hyphenateText } from "@/lib/hyphenate";
@@ -499,6 +500,7 @@ function SpannungsfeldPill({ text }: { text: string }) {
 export default function Bericht() {
   const [, setLocation] = useLocation();
   const { region } = useRegion();
+  const isMobile = useIsMobile();
   const [profileData, setProfileData] = useState<{
     beruf: string; bereich: string; isLeadership: boolean;
     gesamt: BG; haupt: BG; neben: BG; fuehrung: BG; rahmen: BG;
@@ -665,7 +667,7 @@ export default function Bericht() {
     <div className="min-h-screen" style={{ background: "#F1F5F9" }} data-bericht lang="de">
       <GlobalNav />
 
-      <main className="flex-1 w-full mx-auto px-5 pb-24 pt-10" style={{ maxWidth: 820 }}>
+      <main className="flex-1 w-full mx-auto pb-24 pt-10" style={{ maxWidth: 820, paddingLeft: isMobile ? 12 : 20, paddingRight: isMobile ? 12 : 20, paddingBottom: isMobile ? 80 : 96 }}>
 
         {isGenerating && (
           <div style={{ textAlign: "center", paddingTop: 80 }}>

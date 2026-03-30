@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Plus, Trash2, Pencil, X, Save, Users, CalendarDays, Shield, Building2, Search, ChevronUp, ChevronDown, Database, KeyRound, Copy, Check } from "lucide-react";
 
 interface UserWithSub {
@@ -62,6 +63,7 @@ function formatDate(d: string | null) {
 export default function Admin() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
+  const isMobile = useIsMobile();
   const [users, setUsers] = useState<UserWithSub[]>([]);
   const [loading, setLoading] = useState(true);
   const [editId, setEditId] = useState<number | null>(null);
@@ -392,7 +394,7 @@ export default function Admin() {
   return (
     <div style={{ minHeight: "100vh", background: "#f5f7fb", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
       <GlobalNav />
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "80px 20px 48px" }}>
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: isMobile ? "64px 12px 80px" : "80px 20px 48px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px", display: "flex", alignItems: "center", gap: 10 }} data-testid="text-admin-title">

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation } from "wouter";
 import { Download, AlertTriangle, BarChart3, Briefcase, Users, Sun, Gauge, Flame, Printer } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useRegion } from "@/lib/region";
 import { BERUFE } from "@/data/berufe";
 import logoSrc from "@assets/LOGO_bio_1773853681939.png";
@@ -941,6 +942,7 @@ function ProfileBar({ label, value, color }: { label: string; value: number; col
 export default function Rollenprofil() {
   const [, setLocation] = useLocation();
   const { region } = useRegion();
+  const isMobile = useIsMobile();
   const [data, setData] = useState<ReportData | null>(null);
   const reportRef = useRef<HTMLDivElement>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
@@ -1377,7 +1379,7 @@ export default function Rollenprofil() {
     <div className="min-h-screen" style={{ background: "#F1F5F9" }} lang="de">
       <GlobalNav />
 
-      <main style={{ maxWidth: 820, margin: "0 auto", padding: "24px 16px 80px" }}>
+      <main style={{ maxWidth: 820, margin: "0 auto", padding: isMobile ? "16px 12px 80px" : "24px 16px 48px" }}>
         <div ref={reportRef} style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }}>
 
           {/* ── DARK HEADER ── */}

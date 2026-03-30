@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   computeTeamCheckV2,
   type TeamCheckV2Input,
@@ -29,6 +30,7 @@ function Paragraphs({ text }: { text: string }) {
 
 export default function TeamCheckReportV2() {
   const [, navigate] = useLocation();
+  const isMobile = useIsMobile();
   const [result, setResult] = useState<TeamCheckV2Result | null>(null);
   const [input, setInput] = useState<TeamCheckV2Input | null>(null);
 
@@ -64,7 +66,7 @@ export default function TeamCheckReportV2() {
     <div style={{ minHeight: "100vh", background: "#f5f7fb", fontFamily: "Inter, Arial, Helvetica, sans-serif", color: "#1f2937", lineHeight: 1.6 }}>
       <GlobalNav />
 
-      <div style={{ maxWidth: 1120, margin: "0 auto", padding: "80px 20px 48px" }}>
+      <div style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "64px 12px 80px" : "80px 20px 48px" }}>
 
         <button
           onClick={() => navigate("/team-report")}

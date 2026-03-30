@@ -35,6 +35,18 @@ input[type="range"].bio-slider::-moz-range-track {
   cursor: ew-resize;
 }
 
+@media (max-width: 767px) {
+  .mobile-stack { flex-direction: column !important; }
+  .mobile-gap-16 { gap: 16px !important; }
+  .mobile-p-16 { padding: 16px !important; }
+  .mobile-p-12 { padding: 12px !important; }
+  .mobile-grid-1 { grid-template-columns: 1fr !important; }
+  .mobile-hide { display: none !important; }
+  .mobile-full-w { max-width: 100% !important; }
+  .mobile-text-sm { font-size: 13px !important; }
+  .mobile-h-auto { height: auto !important; }
+}
+
 /* LIGHT MODE */
 :root {
   --button-outline: rgba(0,0,0, .10);

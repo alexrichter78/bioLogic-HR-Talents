@@ -6,6 +6,7 @@ import illustrationRollenanalyse from "@assets/stellenanalyse_v3.png";
 import illustrationKiCoach from "@assets/ki_coach_v5.png";
 
 import GlobalNav from "@/components/global-nav";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   const [visible, setVisible] = useState(false);
@@ -88,6 +89,7 @@ export default function Home() {
   const [, setLocation] = useLocation();
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isMobile = useIsMobile();
 
   const handleFileLoad = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -174,18 +176,18 @@ export default function Home() {
       <div style={{ position: "relative", zIndex: 10 }}>
         <GlobalNav />
 
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 80px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: isMobile ? "24px 12px 100px" : "48px 24px 80px" }}>
 
           {/* ROLLENANALYSE CARD */}
           <FadeIn delay={200}>
             <div
               style={{
                 background: "#FFFFFF",
-                borderRadius: 20, padding: "28px 32px",
+                borderRadius: 20, padding: isMobile ? "20px 16px" : "28px 32px",
                 boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
                 border: "1px solid rgba(0,0,0,0.04)",
                 marginBottom: 16,
-                display: "flex", alignItems: "center", gap: 32,
+                display: "flex", flexDirection: isMobile ? "column" as const : "row" as const, alignItems: isMobile ? "stretch" : "center", gap: isMobile ? 16 : 32,
               }}
               data-testid="card-profile"
             >
@@ -242,7 +244,7 @@ export default function Home() {
                 </div>
 
                 <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 20 }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 24px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "8px 24px" }}>
                     {[
                       "Wissenschaftlich fundierte Methodik",
                       "Transparente Ergebnislogik",
@@ -265,10 +267,10 @@ export default function Home() {
             <div
               style={{
                 background: "#FFFFFF",
-                borderRadius: 20, padding: "28px 32px",
+                borderRadius: 20, padding: isMobile ? "20px 16px" : "28px 32px",
                 boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
                 border: "1px solid rgba(0,0,0,0.04)",
-                display: "flex", alignItems: "center", gap: 32,
+                display: "flex", flexDirection: isMobile ? "column" as const : "row" as const, alignItems: isMobile ? "stretch" : "center", gap: isMobile ? 16 : 32,
               }}
               data-testid="card-ki-coach"
             >
@@ -311,7 +313,7 @@ export default function Home() {
 
                 <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 16 }}>
                   <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 10px" }}>Typische Einsatzbereiche</p>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 24px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "6px 24px" }}>
                     {[
                       "Recruiting und Stellenanzeigen",
                       "Gesprächsvorbereitung",

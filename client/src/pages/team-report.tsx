@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation } from "wouter";
 import { AlertTriangle, Download, Check, CheckCircle2, Users, ChevronDown, Zap, BarChart3, Handshake, Rocket, Settings } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeTeamReport } from "@/lib/team-report-engine";
 import { constellationLabel, detectConstellation } from "@/lib/soll-ist-engine";
@@ -509,6 +510,7 @@ function selectIndicatorText(roleType: string, reason: ClassificationReason, fit
 
 export default function TeamReport() {
   const [, setLocation] = useLocation();
+  const isMobile = useIsMobile();
 
   const [istTriad, setIstTriad] = useState(() => {
     try { const s = sessionStorage.getItem("tc_istTriad"); if (s) return JSON.parse(s); } catch {}
@@ -727,9 +729,9 @@ export default function TeamReport() {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <GlobalNav />
 
-      <div style={{ position: "fixed", top: 56, left: 0, right: 0, zIndex: 8999, background: "#F1F5F9" }}>
-        <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: "5px 0 10px" }}>
-          <div className="w-full mx-auto px-6" style={{ maxWidth: 1100 }}>
+      <div style={{ position: "fixed", top: isMobile ? 48 : 56, left: 0, right: 0, zIndex: 8999, background: "#F1F5F9" }}>
+        <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: isMobile ? "4px 0 6px" : "5px 0 10px" }}>
+          <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
             <div className="text-center">
               <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-teamreport-title">
                 Teamstruktur analysieren
@@ -742,12 +744,12 @@ export default function TeamReport() {
         </div>
       </div>
 
-      <div className="mx-auto px-6" style={{ maxWidth: 1100, paddingTop: 135, paddingBottom: 40 }}>
+      <div className="mx-auto" style={{ maxWidth: 1100, paddingTop: isMobile ? 110 : 135, paddingBottom: isMobile ? 100 : 40, paddingLeft: isMobile ? 8 : 24, paddingRight: isMobile ? 8 : 24 }}>
 
         <div style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }} data-testid="accordion-teamcheck">
           <button
             onClick={() => setConfigOpen(!configOpen)}
-            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
+            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMobile ? "14px 14px" : "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#FFFFFF"; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
             data-testid="accordion-teamcheck-toggle"
@@ -759,8 +761,8 @@ export default function TeamReport() {
             <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: configOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
           </button>
           {configOpen && (
-            <div style={{ padding: "0 32px 28px" }}>
-              <div className="grid gap-6 grid-cols-2">
+            <div style={{ padding: isMobile ? "0 14px 14px" : "0 32px 28px" }}>
+              <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
                 <SliderGroup title={<>Ist-Profil <span style={{ fontWeight: 400, color: "#8E8E93" }}>(Person)</span></>} triad={istTriad}
                   onTriadChange={updateIstTriad} testIdPrefix="ist" />
                 <SliderGroup title={<>Teamprofil <span style={{ fontWeight: 400, color: "#8E8E93" }}>(Team)</span></>} triad={teamTriad}
@@ -774,7 +776,7 @@ export default function TeamReport() {
           <div style={{ background: "#FFFFFF", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }}>
             <button
               onClick={() => setKontextOpen(!kontextOpen)}
-              style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
+              style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMobile ? "14px 14px" : "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#FFFFFF"; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
               data-testid="accordion-kontext-toggle"
@@ -786,7 +788,7 @@ export default function TeamReport() {
               <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: kontextOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
             </button>
             {kontextOpen && (
-              <div style={{ padding: "0 32px 28px" }}>
+              <div style={{ padding: isMobile ? "0 14px 14px" : "0 32px 28px" }}>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 12, alignItems: "center", marginBottom: 18 }}>
                   <div>
@@ -1042,7 +1044,7 @@ export default function TeamReport() {
                     <div style={{ background: "#FFFFFF", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }}>
                       <button
                         onClick={() => setErgebnisOpen(!ergebnisOpen)}
-                        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
+                        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMobile ? "14px 14px" : "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
                         onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#FFFFFF"; }}
                         onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
                         data-testid="accordion-ergebnis-toggle"
@@ -1054,7 +1056,7 @@ export default function TeamReport() {
                         <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: ergebnisOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
                       </button>
                       {ergebnisOpen && (
-                      <div style={{ padding: "0 32px 28px" }}>
+                      <div style={{ padding: isMobile ? "0 14px 14px" : "0 32px 28px" }}>
 
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
                       <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${tColors.border}`, background: tColors.bg }} data-testid="v4-card-team">
@@ -1250,7 +1252,7 @@ export default function TeamReport() {
               <div style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden" }}>
                 <button
                   onClick={() => setMatchCheckOpen(!matchCheckOpen)}
-                  style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
+                  style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMobile ? "14px 14px" : "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#FFFFFF"; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
                   data-testid="button-toggle-matchcheck-team"
@@ -1265,7 +1267,7 @@ export default function TeamReport() {
                 </button>
 
                 {matchCheckOpen && (
-                <div style={{ padding: "0 32px 28px" }}>
+                <div style={{ padding: isMobile ? "0 14px 14px" : "0 32px 28px" }}>
                   {(() => {
                     const cols = "1fr 1fr 1fr";
                     return (
