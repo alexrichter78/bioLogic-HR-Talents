@@ -767,6 +767,8 @@ export default function KICoach() {
           const data = await res.json();
           const assistantMsg: Message = { role: "assistant", content: data.reply };
           if (data.image) assistantMsg.image = `data:image/png;base64,${data.image}`;
+          if (data.overlayTitle) assistantMsg.overlayTitle = data.overlayTitle;
+          if (data.overlaySubtitle) assistantMsg.overlaySubtitle = data.overlaySubtitle;
           setMessages(prev => [...prev, assistantMsg]);
         }
       } catch {
@@ -777,7 +779,6 @@ export default function KICoach() {
       } finally {
         setLoading(false);
         setLoadingStatus("");
-  
       }
     })();
   }, [loading, messages, region]);
@@ -840,7 +841,7 @@ export default function KICoach() {
     const hasQuestion = /\?\s*$/.test(lastTwo.trim()) || /\?["\u201C\u201D\u201E)]*\s*$/m.test(lastTwo);
     const asksForInput = /magst du|interesse|wollen wir|soll ich|willst du|möchtest du|weißt du|kennst du|beschreib.*mir|nenn.*mir|sag.*mir.*bescheid|gib.*mir.*info|teil.*mir.*mit/i.test(lastTwo);
 
-    if (/wie reagierst du|was sagst du/i.test(lastTwo)) {
+    if (/wie reagierst du|was sagst du|was antwortest du|wie gehst du vor|was würdest du sagen|was sagst du als nächstes|was sagst du dazu|wie antwortest du|was entgegnest du|sag.*deinen.*satz|formulier.*deinen/i.test(lastTwo)) {
       return [];
     }
     if (/bioLogic.*Prägung|bioLogic.*Profil|bioLogic.*Typ|impulsiv.{0,20}dominant|analytisch.{0,20}dominant|intuitiv.{0,20}dominant|Doppeldominanz|Persönlichkeitstyp.*zuschneid|Prägung zuschneiden/i.test(content) && /impulsiv|analytisch|intuitiv|Doppeldominanz/i.test(content)) {
@@ -912,6 +913,16 @@ export default function KICoach() {
     if (hasQuestion) {
       const contextOptions = extractOptionsFromText(lastTwo);
       if (contextOptions.length >= 2) return contextOptions;
+
+      const isOpenEnded = /was nimmst du|was wirst du|was davon|welchen punkt|was hast du|was fällt dir|wie würdest du|was ist dir|worauf achtest du|was planst du|was denkst du|was bedeutet das für dich/i.test(lastTwo);
+      if (isOpenEnded) {
+        const replies: string[] = [];
+        if (/ausprobier|umsetzen|anwend|konkret/i.test(lastTwo)) replies.push("Ich probiere die Formulierung aus");
+        if (/mitnehm|lernen|erkenntnis/i.test(lastTwo)) replies.push("Die wichtigste Erkenntnis war...");
+        if (content.length > 500) replies.push("Fasse die Kernpunkte zusammen");
+        replies.push("Ich habe noch eine Frage dazu");
+        return replies.slice(0, 3);
+      }
 
       const lastQuestion = lastTwo.match(/[^.!?]*\?\s*$/)?.[0]?.trim() || "";
       if (/soll ich|willst du|möchtest du|wollen wir|magst du/i.test(lastQuestion)) {
