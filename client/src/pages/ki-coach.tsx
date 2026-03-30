@@ -821,7 +821,17 @@ export default function KICoach() {
       return [];
     }
     if (/bioLogic.*Prägung|bioLogic.*Profil|bioLogic.*Typ|impulsiv.{0,20}dominant|analytisch.{0,20}dominant|intuitiv.{0,20}dominant|Doppeldominanz|Persönlichkeitstyp.*zuschneid|Prägung zuschneiden/i.test(content) && /impulsiv|analytisch|intuitiv|Doppeldominanz/i.test(content)) {
-      return ["Ich bin impulsiv-dominant", "Ich bin intuitiv-dominant", "Ich bin analytisch-dominant", "Ich habe eine Doppeldominanz", "Allgemeine Antwort bitte"];
+      if (/welche Doppeldominanz|deine Doppeldominanz|Doppeldominanz.*nenn|Doppeldominanz.*sag|Doppeldominanz.*hast/i.test(content)) {
+        return [
+          "Impulsiv-intuitiv", "Impulsiv-analytisch", "Intuitiv-analytisch",
+          "Intuitiv-impulsiv", "Analytisch-impulsiv", "Analytisch-intuitiv",
+        ];
+      }
+      return [
+        "Impulsiv-dominant", "Intuitiv-dominant", "Analytisch-dominant",
+        "Impulsiv-intuitiv", "Impulsiv-analytisch", "Intuitiv-analytisch",
+        "Allgemeine Antwort bitte",
+      ];
     }
 
     if (hasQuestion || asksForInput) {
