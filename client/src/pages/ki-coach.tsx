@@ -390,11 +390,15 @@ function formatMessage(text: string) {
     }
     if (lastTextIdx >= 0) {
       const el = elements[lastTextIdx] as React.ReactElement;
-      elements[lastTextIdx] = (
-        <p key={el.key} style={{ ...el.props.style, fontWeight: 700 }}>
-          {el.props.children}
-        </p>
-      );
+      const childText = typeof el.props.children === "string" ? el.props.children : "";
+      const isActionable = /\?\s*$/.test(childText) || /soll ich|willst du|möchtest du|wollen wir|wie reagierst|magst du|lass uns|probier/i.test(childText);
+      if (isActionable) {
+        elements[lastTextIdx] = (
+          <p key={el.key} style={{ ...el.props.style, fontWeight: 700 }}>
+            {el.props.children}
+          </p>
+        );
+      }
     }
   }
 
@@ -761,20 +765,46 @@ export default function KICoach() {
     if (questionSentences.length === 0) return [];
 
     const combined = questionSentences.join(" ");
-    const oderParts = combined.split(/\s+[Oo]der\s+/);
-    if (oderParts.length >= 2) {
+    const topLevelParts = combined.split(/(?:^|\.\s+|\?\s+)/).filter(Boolean);
+    const oderSentences = topLevelParts.filter(s => /\b[Oo]der\b/.test(s));
+    const target = oderSentences.length > 0 ? oderSentences[oderSentences.length - 1] : combined;
+
+    const oderParts = target.split(/\s+[Oo]der\s+/);
+    if (oderParts.length === 2) {
       const options: string[] = [];
       for (const part of oderParts) {
         let clean = part.replace(/^\*\*|\*\*$/g, "").trim();
         clean = clean.replace(/\?+\s*$/, "").trim();
+        clean = clean.replace(/[–—-]+\s*$/, "").trim();
         clean = clean.replace(/^(willst du|möchtest du|soll ich|wollen wir|magst du|sollen wir)\s+/i, "");
-        clean = clean.replace(/^(noch\s+)?(dir\s+)?(mal\s+)?/i, "").trim();
-        if (clean.length > 3 && clean.length <= 60) {
+        clean = clean.replace(/^(noch\s+)?(dir\s+)?(mal\s+)?(uns\s+)?/i, "").trim();
+        clean = clean.replace(/^(das\s+)?(einmal\s+)?(eher\s+)?/i, "").trim();
+        if (clean.length > 3 && clean.length <= 70) {
           const label = clean.charAt(0).toUpperCase() + clean.slice(1);
           options.push(label);
         }
       }
-      if (options.length >= 2 && options.length <= 4) return options;
+      if (options.length === 2) return options;
+    }
+
+    if (oderParts.length > 2) {
+      const firstAndSecond = oderParts[0] + " oder " + oderParts.slice(1, -1).join(" oder ");
+      const last = oderParts[oderParts.length - 1];
+      const condensed = [firstAndSecond, last];
+      const options: string[] = [];
+      for (const part of condensed) {
+        let clean = part.replace(/^\*\*|\*\*$/g, "").trim();
+        clean = clean.replace(/\?+\s*$/, "").trim();
+        clean = clean.replace(/[–—-]+\s*$/, "").trim();
+        clean = clean.replace(/^(willst du|möchtest du|soll ich|wollen wir|magst du|sollen wir)\s+/i, "");
+        clean = clean.replace(/^(noch\s+)?(dir\s+)?(mal\s+)?(uns\s+)?/i, "").trim();
+        clean = clean.replace(/^(das\s+)?(einmal\s+)?(eher\s+)?/i, "").trim();
+        if (clean.length > 3 && clean.length <= 70) {
+          const label = clean.charAt(0).toUpperCase() + clean.slice(1);
+          options.push(label);
+        }
+      }
+      if (options.length === 2) return options;
     }
     return [];
   }, []);
@@ -805,6 +835,19 @@ export default function KICoach() {
     if (/zusammenfass|mitnehm|was nimmst du/i.test(lastTwo) && hasQuestion) {
       return ["Ja, bitte zusammenfassen", "Nein, ich habe noch eine Frage"];
     }
+    if (/auf deine.*Prägung bezieh|auf.*bioLogic.*Prägung|bioLogic-Perspektive.*zuschneid/i.test(lastTwo) && hasQuestion) {
+      return ["Ja, beziehe das auf meine Prägung", "Nein, die allgemeine Antwort reicht"];
+    }
+    if (/gesprächsleitfaden|leitfaden.*erstell|interview.*leitfaden/i.test(lastTwo) && hasQuestion) {
+      return ["Ja, erstelle einen Leitfaden", "Nein, andere Frage"];
+    }
+    if (/formulierung.*verbessern|satz.*umformulier|anders.*formulier/i.test(lastTwo) && hasQuestion) {
+      return ["Ja, verbessere die Formulierung", "Nein, der Satz passt so"];
+    }
+    if (/pause.*machen|hier.*stoppen|aufhören|beenden/i.test(lastTwo) && hasQuestion) {
+      return ["Ja, fasse zusammen", "Nein, weiter üben"];
+    }
+
     if (content.length > 200 && !hasQuestion && !asksForInput) {
       const replies: string[] = [];
       if (/quelle|studie|forschung|gallup|mckinsey|harvard|deloitte|source/i.test(content)) {
@@ -825,6 +868,20 @@ export default function KICoach() {
     if (hasQuestion) {
       const contextOptions = extractOptionsFromText(lastTwo);
       if (contextOptions.length >= 2) return contextOptions;
+
+      const lastQuestion = lastTwo.match(/[^.!?]*\?\s*$/)?.[0]?.trim() || "";
+      if (/soll ich|willst du|möchtest du|wollen wir|magst du/i.test(lastQuestion)) {
+        const subject = lastQuestion
+          .replace(/^.*?(soll ich|willst du|möchtest du|wollen wir|magst du)\s+/i, "")
+          .replace(/\?+\s*$/, "")
+          .replace(/^(dir\s+|noch\s+|mal\s+|das\s+)*/i, "")
+          .trim();
+        if (subject.length > 5 && subject.length <= 50) {
+          const label = "Ja, " + subject.charAt(0).toLowerCase() + subject.slice(1);
+          return [label, "Nein, andere Frage"];
+        }
+      }
+
       return ["Ja, gerne!", "Nein, andere Frage"];
     }
     return [];
@@ -1151,32 +1208,36 @@ export default function KICoach() {
                         <ThumbsDown style={{ width: 13, height: 13, color: msg.feedback === "down" ? "#FF3B30" : "#AEAEB2" }} />
                       </button>
                     </div>
-                    {!loading && extractQuickReplies(msg.content, i, messages.length).length > 0 && (
-                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                        {extractQuickReplies(msg.content, i, messages.length).map((reply, ri) => (
-                          <button
-                            key={ri}
-                            onClick={() => sendQuickReply(reply)}
-                            data-testid={`quick-reply-${ri}`}
-                            style={{
-                              padding: "8px 16px",
-                              borderRadius: 999,
-                              border: "1.5px solid rgba(0,113,227,0.25)",
-                              background: "rgba(0,113,227,0.04)",
-                              color: "#0071E3",
-                              fontSize: 13,
-                              fontWeight: 600,
-                              cursor: "pointer",
-                              transition: "all 200ms ease",
-                            }}
-                            onMouseEnter={e => { e.currentTarget.style.background = "rgba(0,113,227,0.10)"; }}
-                            onMouseLeave={e => { e.currentTarget.style.background = "rgba(0,113,227,0.04)"; }}
-                          >
-                            {reply}
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                    {!loading && (() => {
+                      const replies = extractQuickReplies(msg.content, i, messages.length);
+                      if (replies.length === 0) return null;
+                      return (
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                          {replies.map((reply, ri) => (
+                            <button
+                              key={ri}
+                              onClick={() => sendQuickReply(reply)}
+                              data-testid={`quick-reply-${ri}`}
+                              style={{
+                                padding: "8px 16px",
+                                borderRadius: 999,
+                                border: "1.5px solid rgba(0,113,227,0.25)",
+                                background: "rgba(0,113,227,0.04)",
+                                color: "#0071E3",
+                                fontSize: 13,
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                transition: "all 200ms ease",
+                              }}
+                              onMouseEnter={e => { e.currentTarget.style.background = "rgba(0,113,227,0.10)"; }}
+                              onMouseLeave={e => { e.currentTarget.style.background = "rgba(0,113,227,0.04)"; }}
+                            >
+                              {reply}
+                            </button>
+                          ))}
+                        </div>
+                      );
+                    })()}
                   </div>
                 )}
                 </div>
