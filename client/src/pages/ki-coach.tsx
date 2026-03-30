@@ -154,13 +154,12 @@ function formatMessage(text: string) {
           {listItems.map((item, i) => (
             <li key={i} style={{
               marginBottom: 6, lineHeight: 1.65, position: "relative",
-              paddingLeft: item.indent ? 16 : (isOrdered ? 0 : 0),
-              ...(isOrdered ? { color: "#0071E3", fontWeight: 500 } : {}),
+              paddingLeft: item.indent ? 16 : 0,
             }}>
               {!isOrdered && (
                 <span style={{ position: "absolute", left: item.indent ? 0 : -16, color: "#0071E3", fontWeight: 600 }}>•</span>
               )}
-              <span style={isOrdered ? { color: "#1D1D1F", fontWeight: 400 } : undefined}>{renderInline(item.text)}</span>
+              {renderInline(item.text)}
             </li>
           ))}
         </Tag>
@@ -220,15 +219,19 @@ function formatMessage(text: string) {
 
   let inDialogueBlock = false;
   let dialogueLines: string[] = [];
+  let dialogueIsRoleplay = false;
 
   const flushDialogue = () => {
     if (dialogueLines.length === 0) return;
+    const isBlue = dialogueIsRoleplay;
+    const color = isBlue ? "#0071E3" : "#34C759";
+    const bg = isBlue ? "rgba(0,113,227,0.04)" : "rgba(52,199,89,0.04)";
     elements.push(
       <div key={`q-${elements.length}`} style={{
         margin: "10px 0",
         padding: "10px 14px",
-        borderLeft: "3px solid #0071E3",
-        background: "rgba(0,113,227,0.04)",
+        borderLeft: `3px solid ${color}`,
+        background: bg,
         borderRadius: "0 8px 8px 0",
         fontStyle: "italic",
         lineHeight: 1.65,
@@ -241,6 +244,13 @@ function formatMessage(text: string) {
     );
     dialogueLines = [];
     inDialogueBlock = false;
+    dialogueIsRoleplay = false;
+  };
+
+  const isRoleplayLine = (t: string) => {
+    return (t.startsWith('[') && t.endsWith(']') && t.length > 4) ||
+      /^\[Als\s/i.test(t) ||
+      /^\[.*?(Person|gereizt|ungeduldig|eingeschüchtert|betroffen|sachlich|emotional|ruhig|aufgebracht)/i.test(t);
   };
 
   const isDialogueLine = (t: string) => {
