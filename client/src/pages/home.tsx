@@ -187,79 +187,80 @@ export default function Home() {
                 boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
                 border: "1px solid rgba(0,0,0,0.04)",
                 marginBottom: 16,
-                display: "flex", flexDirection: isMobile ? "column" as const : "row" as const, alignItems: isMobile ? "stretch" : "center", gap: isMobile ? 16 : 32,
               }}
               data-testid="card-profile"
             >
-              <div style={{ flexShrink: 0, width: 180, height: 180, display: "flex", alignItems: "center", justifyContent: "center" }} className="home-illustration-hide-mobile">
-                <img src={illustrationRollenanalyse} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-              </div>
-
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ marginBottom: 12 }}>
-                  <h2 style={{ fontSize: 24, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em", margin: 0 }} data-testid="text-no-profile">
-                    Stellenanalyse
-                  </h2>
-                  <p style={{ fontSize: 14, color: "#48484A", margin: "3px 0 0", fontWeight: 450 }}>
-                    Strukturelle Passung für sichere Besetzungsentscheidungen
-                  </p>
+              <div style={{ display: "flex", flexDirection: isMobile ? "column" as const : "row" as const, alignItems: isMobile ? "stretch" : "center", gap: isMobile ? 16 : 32 }}>
+                <div style={{ flexShrink: 0, width: 180, height: 180, display: "flex", alignItems: "center", justifyContent: "center" }} className="home-illustration-hide-mobile">
+                  <img src={illustrationRollenanalyse} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                 </div>
 
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: "0 0 28px", fontWeight: 600 }} data-testid="text-profile-desc">
-                  Definieren Sie eine Stelle und analysieren Sie die strukturelle Passung. Die Analyse liefert klare Handlungsempfehlungen für Besetzung, Führung und Zusammenarbeit.
-                </p>
-
-                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, flexWrap: "wrap" }}>
-                  <button
-                    onClick={handleNewAnalyse}
-                    style={{
-                      height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
-                      borderRadius: 14, border: "none", cursor: "pointer",
-                      background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
-                      boxShadow: "0 4px 16px rgba(0,113,227,0.3)", transition: "all 200ms ease",
-                      display: "flex", alignItems: "center", gap: 8,
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)"; }}
-                    data-testid="button-analyse-starten"
-                  >
-                    <PlusCircle style={{ width: 17, height: 17 }} />
-                    Neue Analyse
-                  </button>
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    style={{
-                      height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
-                      borderRadius: 14, border: "1.5px solid rgba(0,0,0,0.10)", cursor: "pointer",
-                      background: "rgba(255,255,255,0.8)", color: "#1D1D1F", transition: "all 200ms ease",
-                      display: "flex", alignItems: "center", gap: 8,
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.04)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.8)"; e.currentTarget.style.transform = "translateY(0)"; }}
-                    data-testid="button-analyse-oeffnen"
-                  >
-                    <FolderOpen style={{ width: 17, height: 17 }} />
-                    Analyse öffnen
-                  </button>
-                </div>
-
-              </div>
-            </div>
-            <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 16, marginTop: 4 }}>
-              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: "8px 24px" }}>
-                {[
-                  "Wissenschaftlich fundierte Methodik",
-                  "Klare Entscheidungsstruktur",
-                  "Objektive Personalentscheidungen",
-                  "Transparente Ergebnislogik",
-                  "Reduziert Fehlbesetzungsrisiken",
-                  "Passgenaue Rollenbesetzung",
-                ].map((text, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <CheckCircle style={{ width: 13, height: 13, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
-                    <span style={{ fontSize: 14, color: "#48484A", fontWeight: 450 }}>{text}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ marginBottom: 12 }}>
+                    <h2 style={{ fontSize: 24, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em", margin: 0 }} data-testid="text-no-profile">
+                      Stellenanalyse
+                    </h2>
+                    <p style={{ fontSize: 14, color: "#48484A", margin: "3px 0 0", fontWeight: 450 }}>
+                      Strukturelle Passung für sichere Besetzungsentscheidungen
+                    </p>
                   </div>
-                ))}
+
+                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: "0 0 28px", fontWeight: 600 }} data-testid="text-profile-desc">
+                    Definieren Sie eine Stelle und analysieren Sie die strukturelle Passung. Die Analyse liefert klare Handlungsempfehlungen für Besetzung, Führung und Zusammenarbeit.
+                  </p>
+
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                    <button
+                      onClick={handleNewAnalyse}
+                      style={{
+                        height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
+                        borderRadius: 14, border: "none", cursor: "pointer",
+                        background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
+                        boxShadow: "0 4px 16px rgba(0,113,227,0.3)", transition: "all 200ms ease",
+                        display: "flex", alignItems: "center", gap: 8,
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)"; }}
+                      data-testid="button-analyse-starten"
+                    >
+                      <PlusCircle style={{ width: 17, height: 17 }} />
+                      Neue Analyse
+                    </button>
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      style={{
+                        height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
+                        borderRadius: 14, border: "1.5px solid rgba(0,0,0,0.10)", cursor: "pointer",
+                        background: "rgba(255,255,255,0.8)", color: "#1D1D1F", transition: "all 200ms ease",
+                        display: "flex", alignItems: "center", gap: 8,
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.04)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.8)"; e.currentTarget.style.transform = "translateY(0)"; }}
+                      data-testid="button-analyse-oeffnen"
+                    >
+                      <FolderOpen style={{ width: 17, height: 17 }} />
+                      Analyse öffnen
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 16, marginTop: 20 }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: "8px 24px" }}>
+                  {[
+                    "Wissenschaftlich fundierte Methodik",
+                    "Klare Entscheidungsstruktur",
+                    "Objektive Personalentscheidungen",
+                    "Transparente Ergebnislogik",
+                    "Reduziert Fehlbesetzungsrisiken",
+                    "Passgenaue Rollenbesetzung",
+                  ].map((text, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <CheckCircle style={{ width: 13, height: 13, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
+                      <span style={{ fontSize: 14, color: "#48484A", fontWeight: 450 }}>{text}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </FadeIn>
