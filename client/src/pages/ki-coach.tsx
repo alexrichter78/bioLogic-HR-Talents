@@ -869,13 +869,13 @@ export default function KICoach() {
     return [];
   }, []);
 
-  const extractQuickReplies = useCallback((content: string, msgIndex: number, totalMessages: number): string[] => {
+  const extractQuickReplies = useCallback((content: string, msgIndex: number, totalMessages: number, hasImage?: boolean): string[] => {
     const isLastAssistant = msgIndex === totalMessages - 1;
     if (!isLastAssistant) return [];
     const paragraphs = content.trim().split(/\n\n/);
     const lastTwo = paragraphs.slice(-2).join("\n\n").replace(/\*\*/g, "");
     const hasQuestion = /\?\s*$/.test(lastTwo.trim()) || /\?["\u201C\u201D\u201E)]*\s*$/m.test(lastTwo);
-    const asksForInput = /magst du|interesse|wollen wir|soll ich|willst du|möchtest du|weißt du|kennst du|beschreib.*mir|nenn.*mir|sag.*mir.*bescheid|gib.*mir.*info|teil.*mir.*mit/i.test(lastTwo);
+    const asksForInput = /magst du|interesse|wollen wir|soll ich|willst du|möchtest du|weißt du|kennst du|beschreib.*mir|nenn.*mir|sag.*mir.*bescheid|gib.*mir.*info|teil.*mir.*mit|sag.{0,10}(einfach|mir).{0,15}was du/i.test(lastTwo);
 
     if (/wie reagierst du|was sagst du|was antwortest du|wie gehst du vor|was würdest du sagen|was sagst du als nächstes|was sagst du dazu|wie antwortest du|was entgegnest du|sag.*deinen.*satz|formulier.*deinen/i.test(lastTwo)) {
       return [];
@@ -938,6 +938,38 @@ export default function KICoach() {
     }
     if (/pause.*machen|hier.*stoppen|aufhören|beenden/i.test(lastTwo) && hasQuestion) {
       return ["Ja, fasse zusammen", "Nein, weiter üben"];
+    }
+
+    const isImageCreativeResponse = hasImage || /stellenanzeige.*bild|bild.*erstell|bild.*generier|visual.*erstell|social.media.teaser|teaser.*formulier|bild.*bereitstellen|job.?ad|plakat|posting.*bild|anderes format|hochformat|querformat/i.test(lastTwo);
+    if (isImageCreativeResponse) {
+      const replies: string[] = [];
+      if (/teaser|linkedin|xing|social.media/i.test(lastTwo)) replies.push("Ja, erstelle einen Social-Media-Teaser");
+      if (/format|hochformat|querformat|bereitstellen/i.test(lastTwo)) replies.push("Anderes Format generieren");
+      if (/stellenanzeige/i.test(content)) replies.push("Stellenanzeige anders formulieren");
+      if (replies.length === 0) replies.push("Nochmal anders generieren");
+      replies.push("Neues Thema starten");
+      return replies.slice(0, 4);
+    }
+
+    if (asksForInput && !hasQuestion) {
+      const contextOptions = extractOptionsFromText(lastTwo);
+      if (contextOptions.length >= 2) return contextOptions;
+      const replies: string[] = [];
+      if (/oder/i.test(lastTwo)) {
+        const oderParts = lastTwo.split(/\boder\b/i);
+        if (oderParts.length === 2) {
+          const a = oderParts[0].replace(/.*,\s*/, "").trim();
+          const b = oderParts[1].replace(/[.!?,;]+$/, "").replace(/,.*$/, "").trim();
+          if (a.length > 3 && a.length < 60) replies.push(a.charAt(0).toUpperCase() + a.slice(1));
+          if (b.length > 3 && b.length < 60) replies.push(b.charAt(0).toUpperCase() + b.slice(1));
+        }
+      }
+      if (replies.length < 2) {
+        replies.length = 0;
+        replies.push("Ja, gerne!");
+        replies.push("Nein, andere Frage");
+      }
+      return replies;
     }
 
     if (content.length > 200 && !hasQuestion && !asksForInput) {
@@ -1311,7 +1343,7 @@ export default function KICoach() {
                       </button>
                     </div>
                     {!loading && (() => {
-                      const replies = extractQuickReplies(msg.content, i, messages.length);
+                      const replies = extractQuickReplies(msg.content, i, messages.length, !!msg.image);
                       if (replies.length === 0) return null;
                       return (
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
