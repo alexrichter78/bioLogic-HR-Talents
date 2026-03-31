@@ -467,8 +467,20 @@ export default function KICoach() {
           interim += transcript;
         }
       }
+      const raw = finalTranscript + interim;
+      const cleaned = raw
+        .replace(/\s*[Pp]unkt\s*/g, ". ")
+        .replace(/\s*[Kk]omma\s*/g, ", ")
+        .replace(/\s*[Aa]usrufezeichen\s*/g, "! ")
+        .replace(/\s*[Ff]ragezeichen\s*/g, "? ")
+        .replace(/\s*[Dd]oppelpunkt\s*/g, ": ")
+        .replace(/\s*[Ss]emikolon\s*/g, "; ")
+        .replace(/\s*[Nn]eue [Zz]eile\s*/g, "\n")
+        .replace(/([.!?])\s+(\w)/g, (_, p, c) => p + " " + c.toUpperCase())
+        .replace(/\s{2,}/g, " ")
+        .trim();
       const prefix = baseText ? baseText + " " : "";
-      setInput(prefix + finalTranscript + interim);
+      setInput(prefix + cleaned);
     };
 
     recognition.onend = () => {
