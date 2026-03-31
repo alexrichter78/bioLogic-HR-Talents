@@ -452,11 +452,14 @@ export default function KICoach() {
     recognition.continuous = true;
     recognition.interimResults = true;
 
+    let baseText = "";
+    setInput(prev => { baseText = prev; return prev; });
     let finalTranscript = "";
 
     recognition.onresult = (event: any) => {
       let interim = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
+      finalTranscript = "";
+      for (let i = 0; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript;
         if (event.results[i].isFinal) {
           finalTranscript += transcript;
@@ -464,10 +467,8 @@ export default function KICoach() {
           interim += transcript;
         }
       }
-      setInput(prev => {
-        const base = prev.endsWith(finalTranscript) ? prev : (prev ? prev + " " : "") + finalTranscript;
-        return interim ? base + interim : base;
-      });
+      const prefix = baseText ? baseText + " " : "";
+      setInput(prefix + finalTranscript + interim);
     };
 
     recognition.onend = () => {
