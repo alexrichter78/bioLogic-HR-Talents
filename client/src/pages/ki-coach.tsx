@@ -1320,7 +1320,7 @@ export default function KICoach() {
             </>);
           })()}
 
-          <div style={{ padding: isMobile ? "0 20px" : "0 60px", margin: "6px 0 0" }}>
+          <div style={{ padding: isMobile ? "0 20px" : "0 60px", margin: "18px 0 12px" }}>
             <div style={{ height: 1, background: "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.08) 30%, rgba(0,0,0,0.08) 70%, transparent 100%)" }} />
           </div>
 
