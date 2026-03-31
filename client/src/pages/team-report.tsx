@@ -1261,7 +1261,7 @@ export default function TeamReport() {
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <Zap style={{ width: 22, height: 22, color: "#3A9A5C", flexShrink: 0 }} />
-                    <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
+                    <span style={{ fontSize: 20, fontWeight: 700, color: "#34C759" }}>
                       TeamCheck — Systemwirkung
                     </span>
                   </div>

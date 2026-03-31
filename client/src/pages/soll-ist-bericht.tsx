@@ -700,7 +700,7 @@ export default function SollIstBericht() {
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                       <Zap style={{ width: 22, height: 22, color: "#34C759", flexShrink: 0 }} />
-                      <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
+                      <span style={{ fontSize: 20, fontWeight: 700, color: "#34C759" }}>
                         MatchCheck: {roleName || "Stelle"}
                       </span>
                     </div>
