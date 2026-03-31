@@ -3079,32 +3079,32 @@ export default function RollenDNA() {
                     }}
                     style={{
                       height: 48,
-                      paddingLeft: 20,
-                      paddingRight: 20,
+                      paddingLeft: 24,
+                      paddingRight: 24,
                       fontSize: 14,
-                      fontWeight: 500,
+                      fontWeight: 600,
                       borderRadius: 14,
-                      border: "none",
+                      border: "1.5px solid #0071E3",
                       cursor: "pointer",
                       background: "transparent",
-                      color: "#2563EB",
+                      color: "#0071E3",
                       transition: "all 200ms ease",
                       display: "flex",
                       alignItems: "center",
-                      gap: 6,
+                      gap: 8,
+                      flex: 1,
                       justifyContent: "center",
+                      width: "100%",
                     }}
                     onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.color = "#1D4ED8";
-                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(37,99,235,0.06)";
+                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,113,227,0.06)";
                     }}
                     onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.color = "#2563EB";
                       (e.currentTarget as HTMLButtonElement).style.background = "transparent";
                     }}
                     data-testid="button-rolle-bearbeiten"
                   >
-                    <RefreshCw className="w-3.5 h-3.5" />
+                    <RefreshCw className="w-4 h-4" />
                     Stellenprofil ändern
                   </button>
                   <button
