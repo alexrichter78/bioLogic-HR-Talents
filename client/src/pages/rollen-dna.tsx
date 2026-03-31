@@ -2792,24 +2792,23 @@ export default function RollenDNA() {
                       const analysis = getRoleAnalysis(bioGramGesamt.imp, bioGramGesamt.int, bioGramGesamt.ana);
                       const rt = roleResultTexts[analysis.resultKey];
                       return (
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 18, marginBottom: 10 }}>
+                          <div style={{
+                            width: 28, height: 28, borderRadius: "50%",
+                            background: "linear-gradient(135deg, rgba(0,113,227,0.12), rgba(52,170,220,0.12))",
+                            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                          }}>
+                            <Lightbulb size={14} style={{ color: "#0071E3" }} />
+                          </div>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.04em" }}>Ergebnis der Analyse</span>
+                        </div>
                         <div style={{
-                          marginTop: 18,
                           padding: "16px 18px",
                           borderRadius: 14,
                           background: "#FFFFFF",
                           border: "1px solid rgba(0,0,0,0.06)",
                         }} data-testid="box-biocheck-description">
-                          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                            <div style={{
-                              width: 28, height: 28, borderRadius: "50%",
-                              background: "linear-gradient(135deg, rgba(0,113,227,0.12), rgba(52,170,220,0.12))",
-                              display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                            }}>
-                              <Lightbulb size={14} style={{ color: "#0071E3" }} />
-                            </div>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.04em" }}>Ergebnis der Analyse</span>
-                          </div>
-                          <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px 0", display: "flex", alignItems: "center", gap: 6 }} data-testid="text-biocheck-line-0"><Target style={{ width: 14, height: 14, color: "#0071E3", flexShrink: 0 }} />{rt.headline}</h3>
+                          <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px 0" }} data-testid="text-biocheck-line-0">{rt.headline}</h3>
                           <p lang="de" style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: 0, ...reportTextStyle }} data-testid="text-biocheck-body">
                             {localizeText([...rt.body, ...(isLeadershipRole ? [rt.leadership] : [])].join(" "))}
                           </p>
@@ -3307,7 +3306,7 @@ export default function RollenDNA() {
                           </div>
                           <span style={{ fontSize: 12, fontWeight: 600, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.04em" }}>Ergebnis der Analyse</span>
                         </div>
-                        <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px 0", display: "flex", alignItems: "center", gap: 6 }} data-testid="text-biocheck-collapsed-line-0"><Target style={{ width: 14, height: 14, color: "#0071E3", flexShrink: 0 }} />{rt.headline}</h3>
+                        <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px 0" }} data-testid="text-biocheck-collapsed-line-0">{rt.headline}</h3>
                         <p lang="de" style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: 0, ...reportTextStyle }} data-testid="text-biocheck-collapsed-body">
                           {localizeText([...rt.body, ...(isLeadershipRole ? [rt.leadership] : [])].join(" "))}
                         </p>
