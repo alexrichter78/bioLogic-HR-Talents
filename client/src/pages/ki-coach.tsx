@@ -1113,6 +1113,106 @@ export default function KICoach() {
             </button>
           </div>
 
+          {(() => {
+            const searchTerm = promptSearch.trim().toLowerCase();
+            const isSearching = searchTerm.length > 0;
+
+            const highlightMatch = (text: string) => {
+              if (!isSearching) return t(text);
+              const localized = t(text);
+              const escaped = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+              const parts = localized.split(new RegExp(`(${escaped})`, "gi"));
+              if (parts.length === 1) return localized;
+              return <>{parts.map((part, i) => part.toLowerCase() === searchTerm ? <mark key={i} style={{ background: "rgba(0,113,227,0.15)", color: "#0071E3", borderRadius: 2, padding: "0 1px" }}>{part}</mark> : part)}</>;
+            };
+
+            const matchesSearch = (text: string) => {
+              return t(text).toLowerCase().includes(searchTerm) || text.toLowerCase().includes(searchTerm);
+            };
+
+            const allPrompts = isSearching ? EXAMPLE_PROMPTS.filter(cat => !(cat.requiresAnalysis && !hasAnalysisData())).flatMap(cat => {
+              const catMatch = cat.category.toLowerCase().includes(searchTerm);
+              const matching = cat.prompts.filter(p => matchesSearch(p));
+              if (catMatch) return cat.prompts.map(p => ({ prompt: p, category: cat.category }));
+              return matching.map(p => ({ prompt: p, category: cat.category }));
+            }) : [];
+
+            return (
+            <div style={{
+              padding: isMobile ? "10px 10px 0" : "14px 28px 0",
+              borderBottom: isSearching && allPrompts.length > 0 ? "1px solid rgba(0,0,0,0.06)" : "none",
+              position: "relative",
+            }} data-testid="card-prompt-search">
+              <div style={{ position: "relative" }}>
+                <Search style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 15, height: 15, color: "#8E8E93", pointerEvents: "none" }} />
+                <input
+                  type="text"
+                  value={promptSearch}
+                  onChange={e => setPromptSearch(e.target.value)}
+                  placeholder="Musterprompt suchen… z.B. Konflikt, Onboarding, Feedback"
+                  data-testid="input-prompt-search"
+                  style={{
+                    width: "100%", padding: "10px 36px 10px 36px",
+                    border: "1px solid rgba(0,0,0,0.08)", borderRadius: 12,
+                    fontSize: 13, color: "#1D1D1F", background: "rgba(0,0,0,0.02)",
+                    outline: "none", boxSizing: "border-box",
+                    transition: "border-color 200ms ease",
+                  }}
+                  onFocus={e => { e.currentTarget.style.borderColor = "rgba(0,113,227,0.4)"; e.currentTarget.style.background = "#FFFFFF"; }}
+                  onBlur={e => { setTimeout(() => { e.target.style.borderColor = "rgba(0,0,0,0.08)"; e.target.style.background = "rgba(0,0,0,0.02)"; }, 200); }}
+                />
+                {promptSearch && (
+                  <button
+                    onClick={() => setPromptSearch("")}
+                    data-testid="button-clear-prompt-search"
+                    style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,0.06)", border: "none", borderRadius: "50%", width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", padding: 0 }}
+                  >
+                    <X style={{ width: 11, height: 11, color: "#8E8E93" }} />
+                  </button>
+                )}
+              </div>
+
+              {isSearching && (
+                <div style={{
+                  marginTop: 8, maxHeight: 260, overflowY: "auto",
+                  borderRadius: 12, background: "rgba(248,250,252,0.98)",
+                  border: allPrompts.length > 0 ? "1px solid rgba(0,0,0,0.06)" : "none",
+                  padding: allPrompts.length > 0 ? 6 : 0,
+                }}>
+                  {allPrompts.length === 0 && (
+                    <p style={{ fontSize: 13, color: "#8E8E93", textAlign: "center", padding: "12px 0" }} data-testid="text-no-prompt-results">Keine Prompts gefunden für „{promptSearch}"</p>
+                  )}
+                  {allPrompts.map((item, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setInput(item.prompt);
+                        setPromptSearch("");
+                        setTimeout(() => inputRef.current?.focus(), 50);
+                      }}
+                      data-testid={`search-result-${idx}`}
+                      style={{
+                        width: "100%", textAlign: "left", padding: "8px 12px",
+                        border: "none", borderRadius: 8, cursor: "pointer",
+                        background: "transparent",
+                        fontSize: 12.5, lineHeight: 1.5, color: "#3A3A3C",
+                        transition: "all 150ms ease",
+                        display: "block",
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = "rgba(0,113,227,0.06)"; e.currentTarget.style.color = "#0071E3"; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#3A3A3C"; }}
+                    >
+                      <span style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.04em" }}>{item.category}</span>
+                      <br />
+                      {highlightMatch(item.prompt)}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            );
+          })()}
+
           <div style={{
             flex: 1, overflowY: "auto", padding: isMobile ? "12px 10px" : "20px 28px",
             display: "flex", flexDirection: "column", gap: 16,
@@ -1476,7 +1576,7 @@ export default function KICoach() {
             </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", margin: "10px 0 0", gap: 8 }}>
               <button
-                onClick={() => { setShowPrompts(v => !v); if (showPrompts) { setExpandedCategory(null); setPromptSearch(""); } }}
+                onClick={() => { setShowPrompts(v => !v); if (showPrompts) setExpandedCategory(null); }}
                 data-testid="button-example-prompts"
                 style={{
                   display: "flex", alignItems: "center", gap: 7,
@@ -1497,91 +1597,28 @@ export default function KICoach() {
             </div>
           </div>
 
-          {showPrompts && (() => {
-            const searchTerm = promptSearch.trim().toLowerCase();
-            const isSearching = searchTerm.length > 0;
-
-            const highlightMatch = (text: string) => {
-              if (!isSearching) return t(text);
-              const localized = t(text);
-              const escaped = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-              const parts = localized.split(new RegExp(`(${escaped})`, "gi"));
-              if (parts.length === 1) return localized;
-              return <>{parts.map((part, i) => part.toLowerCase() === searchTerm ? <mark key={i} style={{ background: "rgba(0,113,227,0.15)", color: "#0071E3", borderRadius: 2, padding: "0 1px" }}>{part}</mark> : part)}</>;
-            };
-
-            const matchesSearch = (text: string) => {
-              return t(text).toLowerCase().includes(searchTerm) || text.toLowerCase().includes(searchTerm);
-            };
-
-            const filteredCategories = EXAMPLE_PROMPTS.map(cat => {
-              if (cat.requiresAnalysis && !hasAnalysisData()) {
-                if (!isSearching) return { ...cat, filteredPrompts: cat.prompts };
-                return null;
-              }
-              if (!isSearching) return { ...cat, filteredPrompts: cat.prompts };
-              const catMatch = cat.category.toLowerCase().includes(searchTerm);
-              const matchingPrompts = cat.prompts.filter(p => matchesSearch(p));
-              if (catMatch) return { ...cat, filteredPrompts: cat.prompts };
-              if (matchingPrompts.length > 0) return { ...cat, filteredPrompts: matchingPrompts };
-              return null;
-            }).filter(Boolean) as (typeof EXAMPLE_PROMPTS[0] & { filteredPrompts: string[] })[];
-
-            return (
+          {showPrompts && (
             <div style={{
               borderTop: "1px solid rgba(0,0,0,0.06)",
               background: "rgba(248,250,252,0.95)",
-              maxHeight: 420, overflowY: "auto",
+              maxHeight: 360, overflowY: "auto",
               padding: isMobile ? "8px 10px 12px" : "12px 28px 16px",
             }} data-testid="panel-example-prompts">
-              <div style={{ position: "relative", marginBottom: 10 }}>
-                <Search style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", width: 14, height: 14, color: "#8E8E93", pointerEvents: "none" }} />
-                <input
-                  type="text"
-                  value={promptSearch}
-                  onChange={e => setPromptSearch(e.target.value)}
-                  placeholder="Prompts durchsuchen…"
-                  data-testid="input-prompt-search"
-                  style={{
-                    width: "100%", padding: "9px 32px 9px 32px",
-                    border: "1px solid rgba(0,0,0,0.1)", borderRadius: 10,
-                    fontSize: 13, color: "#1D1D1F", background: "#FFFFFF",
-                    outline: "none", boxSizing: "border-box",
-                  }}
-                  onFocus={e => { e.currentTarget.style.borderColor = "rgba(0,113,227,0.4)"; }}
-                  onBlur={e => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.1)"; }}
-                />
-                {promptSearch && (
-                  <button
-                    onClick={() => setPromptSearch("")}
-                    data-testid="button-clear-prompt-search"
-                    style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,0.06)", border: "none", borderRadius: "50%", width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", padding: 0 }}
-                  >
-                    <X style={{ width: 11, height: 11, color: "#8E8E93" }} />
-                  </button>
-                )}
-              </div>
-
-              {filteredCategories.length === 0 && (
-                <p style={{ fontSize: 13, color: "#8E8E93", textAlign: "center", padding: "16px 0" }} data-testid="text-no-prompt-results">Keine Prompts gefunden für „{promptSearch}"</p>
-              )}
-
-              {filteredCategories.map((cat) => {
+              {EXAMPLE_PROMPTS.map((cat) => {
                 const isDisabled = cat.requiresAnalysis && !hasAnalysisData();
-                const isExpanded = isSearching || expandedCategory === cat.category;
                 return (
                 <div key={cat.category} style={{ marginBottom: 4 }}>
                   <button
-                    onClick={() => !isDisabled && !isSearching && setExpandedCategory(expandedCategory === cat.category ? null : cat.category)}
+                    onClick={() => !isDisabled && setExpandedCategory(expandedCategory === cat.category ? null : cat.category)}
                     data-testid={`category-${cat.category.replace(/\s+/g, "-").toLowerCase()}`}
                     style={{
                       width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
                       padding: "10px 12px", border: "none",
-                      cursor: isDisabled ? "default" : isSearching ? "default" : "pointer",
+                      cursor: isDisabled ? "default" : "pointer",
                       opacity: isDisabled ? 0.4 : 1,
-                      background: isExpanded ? "rgba(0,113,227,0.06)" : "transparent",
+                      background: expandedCategory === cat.category ? "rgba(0,113,227,0.06)" : "transparent",
                       borderRadius: 10, fontSize: 13, fontWeight: 600,
-                      color: isExpanded ? "#0071E3" : "#1D1D1F",
+                      color: expandedCategory === cat.category ? "#0071E3" : "#1D1D1F",
                       transition: "all 150ms ease",
                     }}
                     title={isDisabled ? "Bitte zuerst eine Stelle analysieren" : undefined}
@@ -1589,24 +1626,21 @@ export default function KICoach() {
                     <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       {cat.category}
                       {isDisabled && <span style={{ fontSize: 11, fontWeight: 400, color: "#8E8E93" }}>(Stelle erforderlich)</span>}
-                      {isSearching && <span style={{ fontSize: 11, fontWeight: 400, color: "#8E8E93" }}>({cat.filteredPrompts.length})</span>}
                     </span>
-                    {!isSearching && (
-                      isExpanded
-                        ? <ChevronUp style={{ width: 14, height: 14, color: "#8E8E93" }} />
-                        : <ChevronDown style={{ width: 14, height: 14, color: "#C7C7CC" }} />
-                    )}
+                    {expandedCategory === cat.category
+                      ? <ChevronUp style={{ width: 14, height: 14, color: "#8E8E93" }} />
+                      : <ChevronDown style={{ width: 14, height: 14, color: "#C7C7CC" }} />
+                    }
                   </button>
-                  {isExpanded && !isDisabled && (
+                  {expandedCategory === cat.category && !isDisabled && (
                     <div style={{ padding: "4px 0 8px 8px", display: "flex", flexDirection: "column", gap: 4 }}>
-                      {cat.filteredPrompts.map((prompt, pi) => (
+                      {cat.prompts.map((prompt, pi) => (
                         <button
                           key={pi}
                           onClick={() => {
                             setInput(prompt);
                             setShowPrompts(false);
                             setExpandedCategory(null);
-                            setPromptSearch("");
                             setTimeout(() => inputRef.current?.focus(), 50);
                           }}
                           data-testid={`prompt-${cat.category.replace(/\s+/g, "-").toLowerCase()}-${pi}`}
@@ -1629,7 +1663,7 @@ export default function KICoach() {
                             e.currentTarget.style.color = "#3A3A3C";
                           }}
                         >
-                          {highlightMatch(prompt)}
+                          {t(prompt)}
                         </button>
                       ))}
                     </div>
@@ -1638,8 +1672,7 @@ export default function KICoach() {
                 );
               })}
             </div>
-            );
-          })()}
+          )}
         </div>
       </main>
     </div>
