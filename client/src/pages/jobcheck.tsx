@@ -965,8 +965,8 @@ export default function JobCheck() {
                           <div style={{ width: 30, height: 30, borderRadius: 10, flexShrink: 0, background: "rgba(0,113,227,0.10)", display: "flex", alignItems: "center", justifyContent: "center", marginRight: 10 }}>
                             <Layers style={{ width: 14, height: 14, color: "#0071E3", strokeWidth: 2 }} />
                           </div>
-                          <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>
-                            {sectionTitle}
+                          <span style={{ fontSize: 20, fontWeight: 700, color: "#34C759" }}>
+                            {sectionTitle}:
                           </span>
                         </div>
 
