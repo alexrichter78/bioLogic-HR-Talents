@@ -2247,7 +2247,7 @@ export default function RollenDNA() {
                       <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>✓</div>
                       <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "#34C759", color: "#fff" }}>3</div>
                     </div>
-                    <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-3-title">
+                    <h2 style={{ fontSize: 28, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-3-title">
                       Tätigkeiten & Kompetenzen
                     </h2>
                     <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 4 }}>
