@@ -2755,7 +2755,13 @@ export default function RollenDNA() {
                         ))}
                       </div>
 
-                      <div style={{ marginTop: 14 }} data-testid="card-anforderungsprofil">
+                      <div style={{
+                        marginTop: 14,
+                        padding: "16px 18px",
+                        borderRadius: 14,
+                        background: "rgba(0,0,0,0.02)",
+                        border: "1px solid rgba(0,0,0,0.04)",
+                      }} data-testid="card-anforderungsprofil">
                         <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0" }}>Anforderungsprofil der Stelle</h3>
                         <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px 0", ...reportTextStyle }}>
                           {localizeText(roleRequirementText.intro.join(" "))}
@@ -3246,7 +3252,13 @@ export default function RollenDNA() {
                       ))}
                     </div>
 
-                    <div style={{ marginTop: 14 }} data-testid="card-anforderungsprofil-collapsed">
+                    <div style={{
+                      marginTop: 14,
+                      padding: "16px 18px",
+                      borderRadius: 14,
+                      background: "rgba(0,0,0,0.02)",
+                      border: "1px solid rgba(0,0,0,0.04)",
+                    }} data-testid="card-anforderungsprofil-collapsed">
                       <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0" }}>Anforderungsprofil der Stelle</h3>
                       <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px 0", ...reportTextStyle }}>
                         {localizeText(roleRequirementText.intro.join(" "))}
