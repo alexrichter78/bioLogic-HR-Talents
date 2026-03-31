@@ -807,10 +807,10 @@ export default function TeamReport() {
                         style={{
                           width: "100%", height: 34, padding: "0 12px", borderRadius: 8,
                           border: "1px solid rgba(0,0,0,0.1)", fontSize: 13, color: "#1D1D1F",
-                          background: "#fff", outline: "none",
+                          background: "rgba(255, 248, 225, 0.5)", outline: "none",
                         }}
-                        onFocus={e => { e.target.style.borderColor = "#007AFF"; }}
-                        onBlur={e => { e.target.style.borderColor = "rgba(0,0,0,0.1)"; }}
+                        onFocus={e => { e.target.style.borderColor = "#007AFF"; e.target.style.background = "#FFFFFF"; }}
+                        onBlur={e => { e.target.style.borderColor = "rgba(0,0,0,0.1)"; e.target.style.background = "rgba(255, 248, 225, 0.5)"; }}
                       />
                       {roleName && (
                         <button
