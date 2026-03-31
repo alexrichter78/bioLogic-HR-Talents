@@ -157,7 +157,7 @@ function formatMessage(text: string) {
               paddingLeft: item.indent ? 16 : 0,
             }}>
               {!isOrdered && (
-                <span style={{ position: "absolute", left: item.indent ? 0 : -16, color: "#0071E3", fontWeight: 600 }}>•</span>
+                <span style={{ position: "absolute", left: item.indent ? 0 : -16, color: "currentColor", fontWeight: 600 }}>•</span>
               )}
               {renderInline(item.text)}
             </li>
