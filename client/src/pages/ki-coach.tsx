@@ -1606,6 +1606,10 @@ export default function KICoach() {
             borderTop: "1px solid rgba(0,0,0,0.06)",
             background: "rgba(255,255,255,0.5)",
           }}>
+            <div style={{ textAlign: "center", padding: "0 0 10px" }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 3px" }} data-testid="text-input-title">Ihre Frage an den KI-Coach</p>
+              <p style={{ fontSize: 11.5, color: "#8E8E93", margin: 0 }} data-testid="text-input-desc">Stellen Sie eine Frage zu Führung, Teamdynamik, Kommunikation oder nutzen Sie einen Musterprompt.</p>
+            </div>
             <div style={{
               display: "flex", gap: 10, alignItems: "flex-end",
               background: "rgba(0,0,0,0.03)",
@@ -1672,10 +1676,6 @@ export default function KICoach() {
                   color: input.trim() && !loading ? "#FFFFFF" : "#C7C7CC",
                 }} />
               </button>
-            </div>
-            <div style={{ textAlign: "center", padding: "8px 0 2px" }}>
-              <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 3px" }} data-testid="text-input-title">Ihre Frage an den KI-Coach</p>
-              <p style={{ fontSize: 11.5, color: "#8E8E93", margin: 0 }} data-testid="text-input-desc">Stellen Sie eine Frage zu Führung, Teamdynamik, Kommunikation oder nutzen Sie einen Musterprompt.</p>
             </div>
           </div>
         </div>
