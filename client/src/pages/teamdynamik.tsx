@@ -442,7 +442,7 @@ export default function Teamdynamik() {
         <GlassCard style={{ marginBottom: 20 }} data-testid="tab-analyse">
           <div style={{ textAlign: "center", marginBottom: 28 }}>
             <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 4px" }}>bioLogic TeamCheck</p>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">Teamanalyse</h1>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#34C759", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">Teamanalyse</h1>
           </div>
 
           {sollProfile && (

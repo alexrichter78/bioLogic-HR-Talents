@@ -1792,7 +1792,7 @@ export default function RollenDNA() {
                   <h2 style={{ fontSize: 28, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em", margin: "0 0 8px" }} data-testid="text-step-1-title">
                     Welche Stelle möchten Sie analysieren?
                   </h2>
-                  <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6, margin: "0 0 28px" }}>
+                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, margin: "0 0 28px" }}>
                     Geben Sie die Berufsbezeichnung oder Stellenbezeichnung ein, z.B. „Vertriebsleiter", „HR Business Partner" oder „Projektmanager IT".
                     <br />
                     Kein passender Vorschlag? Einfach ausschreiben – wir erkennen die Stelle automatisch.
@@ -2021,7 +2021,7 @@ export default function RollenDNA() {
                   <h2 style={{ fontSize: 28, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-2-title">
                     Rahmenbedingungen der Stelle
                   </h2>
-                  <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6 }}>
+                  <p style={{ fontSize: 14, color: "#48484A", marginTop: 6 }}>
                     Definieren Sie die grundlegenden Merkmale dieser Stelle. Die Angaben helfen dabei, die strukturelle Stellenlogik zu bestimmen.
                   </p>
                 </div>
@@ -2250,7 +2250,7 @@ export default function RollenDNA() {
                     <h2 style={{ fontSize: 28, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-3-title">
                       Tätigkeiten & Kompetenzen
                     </h2>
-                    <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 4 }}>
+                    <p style={{ fontSize: 14, color: "#48484A", marginTop: 4 }}>
                       Formen Sie die konkrete Struktur dieser Stelle.
                     </p>
                   </div>
