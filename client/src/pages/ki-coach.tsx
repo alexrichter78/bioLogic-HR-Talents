@@ -1181,8 +1181,7 @@ export default function KICoach() {
               padding: isMobile ? "10px 10px 0" : "14px 28px 0",
               textAlign: "center",
             }}>
-              <h2 style={{ fontSize: 24, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em", margin: 0 }} data-testid="text-input-title">Ihre Frage an den KI-Coach</h2>
-              <p style={{ fontSize: 14, color: "#48484A", margin: "6px 0 0", fontWeight: 600, lineHeight: 1.65 }} data-testid="text-input-desc">Stellen Sie eine Frage zu Führung, Teamdynamik, Kommunikation oder nutzen Sie einen Musterprompt.</p>
+              <p style={{ fontSize: 14, color: "#48484A", margin: 0, fontWeight: 600, lineHeight: 1.65 }} data-testid="text-input-desc">Stellen Sie eine Frage zu Führung, Teamdynamik, Kommunikation oder nutzen Sie einen Musterprompt.</p>
             </div>
             <div style={{
               padding: isMobile ? "12px 10px 0" : "12px 28px 0",
