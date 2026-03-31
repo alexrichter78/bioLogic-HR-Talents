@@ -2804,12 +2804,9 @@ export default function RollenDNA() {
                             <span style={{ fontSize: 12, fontWeight: 600, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.04em" }}>Ergebnis der Analyse</span>
                           </div>
                           <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px 0" }} data-testid="text-biocheck-line-0">{rt.headline}</h3>
-                          {rt.body.map((paragraph, i) => (
-                            <p key={i} lang="de" style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: i < rt.body.length - 1 ? "0 0 6px 0" : "0", ...reportTextStyle }} data-testid={`text-biocheck-line-${i + 1}`}>{localizeText(paragraph)}</p>
-                          ))}
-                          {isLeadershipRole && (
-                            <p lang="de" style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "6px 0 0 0", ...reportTextStyle }} data-testid="text-biocheck-line-leadership">{localizeText(rt.leadership)}</p>
-                          )}
+                          <p lang="de" style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: 0, ...reportTextStyle }} data-testid="text-biocheck-body">
+                            {localizeText([...rt.body, ...(isLeadershipRole ? [rt.leadership] : [])].join(" "))}
+                          </p>
                         </div>
                       );
                     })()}
@@ -3299,12 +3296,9 @@ export default function RollenDNA() {
                           <span style={{ fontSize: 12, fontWeight: 600, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.04em" }}>Ergebnis der Analyse</span>
                         </div>
                         <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px 0" }} data-testid="text-biocheck-collapsed-line-0">{rt.headline}</h3>
-                        {rt.body.map((paragraph, i) => (
-                          <p key={i} lang="de" style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: i < rt.body.length - 1 ? "0 0 6px 0" : "0", ...reportTextStyle }} data-testid={`text-biocheck-collapsed-line-${i + 1}`}>{localizeText(paragraph)}</p>
-                        ))}
-                        {isLeadershipRole && (
-                          <p lang="de" style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "6px 0 0 0", ...reportTextStyle }} data-testid="text-biocheck-collapsed-line-leadership">{localizeText(rt.leadership)}</p>
-                        )}
+                        <p lang="de" style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: 0, ...reportTextStyle }} data-testid="text-biocheck-collapsed-body">
+                          {localizeText([...rt.body, ...(isLeadershipRole ? [rt.leadership] : [])].join(" "))}
+                        </p>
                       </div>
                     );
                   })()}
