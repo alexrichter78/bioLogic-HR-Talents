@@ -1605,7 +1605,7 @@ export default function KICoach() {
                               data-testid={`quick-reply-${ri}`}
                               style={{
                                 padding: "8px 16px",
-                                borderRadius: 999,
+                                borderRadius: 18,
                                 border: "1.5px solid rgba(0,113,227,0.25)",
                                 background: "rgba(0,113,227,0.04)",
                                 color: "#0071E3",
@@ -1613,6 +1613,9 @@ export default function KICoach() {
                                 fontWeight: 600,
                                 cursor: "pointer",
                                 transition: "all 200ms ease",
+                                textAlign: "left",
+                                lineHeight: 1.4,
+                                maxWidth: "100%",
                               }}
                               onMouseEnter={e => { e.currentTarget.style.background = "rgba(0,113,227,0.10)"; }}
                               onMouseLeave={e => { e.currentTarget.style.background = "rgba(0,113,227,0.04)"; }}
