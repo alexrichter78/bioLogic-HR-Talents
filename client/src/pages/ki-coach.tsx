@@ -1177,12 +1177,12 @@ export default function KICoach() {
                     style={{
                       width: "100%", padding: "10px 36px 10px 36px",
                       border: "1px solid rgba(0,0,0,0.08)", borderRadius: 12,
-                      fontSize: 13, color: "#1D1D1F", background: "rgba(0,0,0,0.02)",
+                      fontSize: 13, color: "#1D1D1F", background: "rgba(255, 248, 225, 0.5)",
                       outline: "none", boxSizing: "border-box",
                       transition: "border-color 200ms ease",
                     }}
                     onFocus={e => { e.currentTarget.style.borderColor = "rgba(0,113,227,0.4)"; e.currentTarget.style.background = "#FFFFFF"; }}
-                    onBlur={e => { setTimeout(() => { e.target.style.borderColor = "rgba(0,0,0,0.08)"; e.target.style.background = "rgba(0,0,0,0.02)"; }, 200); }}
+                    onBlur={e => { setTimeout(() => { e.target.style.borderColor = "rgba(0,0,0,0.08)"; e.target.style.background = "rgba(255, 248, 225, 0.5)"; }, 200); }}
                   />
                   {promptSearch && (
                     <button
@@ -1635,7 +1635,7 @@ export default function KICoach() {
           }}>
             <div style={{
               display: "flex", gap: 10, alignItems: "flex-end",
-              background: "rgba(0,0,0,0.03)",
+              background: "rgba(255, 248, 225, 0.5)",
               borderRadius: 20, padding: "10px 12px 10px 18px",
               border: "1px solid rgba(0,0,0,0.06)",
             }}>
