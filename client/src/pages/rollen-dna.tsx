@@ -1766,10 +1766,10 @@ export default function RollenDNA() {
           <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: isMobile ? "4px 0 6px" : "5px 0 10px", minHeight: isMobile ? 48 : 62 }}>
             <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
               <div className="text-center">
-                <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-rollen-dna-title">
+                <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#34C759" }} data-testid="text-rollen-dna-title">
                   Stellenprofil definieren
                 </h1>
-                <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-rollen-dna-subtitle">
+                <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-rollen-dna-subtitle">
                   Erfassen Sie die Anforderungen und Arbeitslogik der Stelle als Grundlage für den Entscheidungsbericht, die Passungsanalyse sowie den TeamCheck.
                 </p>
               </div>
