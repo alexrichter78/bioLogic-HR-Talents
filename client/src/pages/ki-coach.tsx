@@ -841,46 +841,44 @@ export default function KICoach() {
   }, [loading, messages, region]);
 
   const extractOptionsFromText = useCallback((text: string): string[] => {
-    const normalized = text.replace(/\*\*/g, "");
+    const normalized = text.replace(/\*\*/g, "").trim();
 
     const cleanOption = (part: string) => {
-      let clean = part.replace(/^\*\*|\*\*$/g, "").trim();
+      let clean = part.trim();
       clean = clean.replace(/\?+\s*$/, "").trim();
-      clean = clean.replace(/[–—,;:]+\s*$/, "").trim();
-      clean = clean.replace(/^(willst du|möchtest du|soll ich|wollen wir|magst du|sollen wir)\s+/i, "");
+      clean = clean.replace(/[.!]+\s*$/, "").trim();
+      clean = clean.replace(/^(willst du|möchtest du|soll ich|wollen wir|magst du|sollen wir|hast du|kannst du|kann ich)\s+/i, "");
       clean = clean.replace(/^(noch\s+)?(dir\s+)?(mal\s+)?(uns\s+)?/i, "").trim();
       clean = clean.replace(/^(das\s+)?(einmal\s+)?(eher\s+)?/i, "").trim();
+      clean = clean.replace(/^(wenn du magst,?\s*)/i, "").trim();
+      clean = clean.replace(/^(zum Beispiel\s+)/i, "").trim();
+      clean = clean.replace(/^,\s*/, "").trim();
+      clean = clean.replace(/^(dir\s+)?(zeigen|erklären|sagen|beschreiben),?\s*/i, "").trim();
+      if (clean.length === 0) {
+        clean = part.trim().replace(/[.!?]+\s*$/, "").trim();
+      }
+      if (clean.length > 55) {
+        const dashCut = clean.match(/^(.{15,55}?)[\s]*[–—\-][\s]/);
+        if (dashCut) clean = dashCut[1].trim();
+      }
+      if (clean.length > 55) {
+        const commaCut = clean.match(/^(.{15,50}?),\s/);
+        if (commaCut) clean = commaCut[1].trim();
+      }
+      if (clean.length > 60) {
+        const wordCut = clean.slice(0, 55).replace(/\s+\S*$/, "");
+        clean = wordCut + "…";
+      }
+      if (clean.length > 0) clean = clean.charAt(0).toUpperCase() + clean.slice(1);
       return clean;
     };
 
-    const crossSentenceMatch = normalized.match(/([^.!?]*(?:kann ich|soll ich|möchtest du|willst du|magst du|wollen wir)[^.!?]*)[.!]\s*[Oo]der\s+([^.!?]*\?)\s*$/);
-    if (crossSentenceMatch) {
-      const optA = cleanOption(crossSentenceMatch[1].replace(/^.*?(?:kann ich|soll ich|möchtest du|willst du|magst du|wollen wir)\s+/i, ""));
-      const optB = cleanOption(crossSentenceMatch[2]);
-      if (optA.length > 3 && optA.length <= 70 && optB.length > 3 && optB.length <= 70) {
-        return [
-          optA.charAt(0).toUpperCase() + optA.slice(1),
-          optB.charAt(0).toUpperCase() + optB.slice(1),
-        ];
-      }
-    }
-
-    const oderSentenceMatch = normalized.match(/[^.!?]*[.!]\s*[Oo]der\s+([^.!?]*\?)\s*$/);
-    if (oderSentenceMatch) {
-      const prevSentences = normalized.slice(0, normalized.indexOf(oderSentenceMatch[0]) + oderSentenceMatch[0].indexOf("der") - 1).split(/[.!?]\s+/);
-      const prevSentence = prevSentences[prevSentences.length - 1]?.trim() || "";
-      if (prevSentence.length > 10) {
-        let optA = prevSentence.replace(/^.*?–\s*/, "").replace(/[.!?]+$/, "").trim();
-        optA = optA.replace(/^(wenn du magst,?\s*)/i, "").trim();
-        optA = optA.replace(/^(zum [Bb]eispiel\s+)/i, "").trim();
-        optA = cleanOption(optA);
-        const optB = cleanOption(oderSentenceMatch[1]);
-        if (optA.length > 3 && optA.length <= 70 && optB.length > 3 && optB.length <= 70) {
-          return [
-            optA.charAt(0).toUpperCase() + optA.slice(1),
-            optB.charAt(0).toUpperCase() + optB.slice(1),
-          ];
-        }
+    const oderBoundary = normalized.match(/([^.!?]+[.!?])\s*[Oo]der\s+([^.!?]+\?)\s*$/);
+    if (oderBoundary) {
+      const optA = cleanOption(oderBoundary[1]);
+      const optB = cleanOption(oderBoundary[2]);
+      if (optA.length > 5 && optA.length <= 60 && optB.length > 5 && optB.length <= 60) {
+        return [optA, optB];
       }
     }
 
@@ -888,46 +886,27 @@ export default function KICoach() {
     const questionSentences = sentences.filter(s => s.trim().endsWith("?"));
     if (questionSentences.length === 0) return [];
 
-    const combined = questionSentences.join(" ");
-    const topLevelParts = combined.split(/(?:^|\.\s+|\?\s+)/).filter(Boolean);
-    const oderSentences2 = topLevelParts.filter(s => /\b[Oo]der\b/.test(s));
-    const target = oderSentences2.length > 0 ? oderSentences2[oderSentences2.length - 1] : combined;
-
-    const commaOderMatch = target.match(/(?::\s*|ist\s*:\s*|sind\s*:\s*)?([\wäöüÄÖÜß-]+(?:\s+[\wäöüÄÖÜß-]+)*),\s+([\wäöüÄÖÜß-]+(?:\s+[\wäöüÄÖÜß-]+)*)\s+[Oo]der\s+([\wäöüÄÖÜß-]+(?:\s+[\wäöüÄÖÜß-]+)*)\??\s*$/);
-    if (commaOderMatch) {
-      const items = [commaOderMatch[1], commaOderMatch[2], commaOderMatch[3]].map(
-        s => s.replace(/\?+\s*$/, "").trim()
-      ).filter(s => s.length >= 2 && s.length <= 40);
-      if (items.length === 3) {
-        return items.map(s => s.charAt(0).toUpperCase() + s.slice(1));
-      }
-    }
-
-    const oderParts = target.split(/\s+[Oo]der\s+/);
+    const lastQ = questionSentences[questionSentences.length - 1];
+    const oderParts = lastQ.split(/\s+oder\s+/i);
     if (oderParts.length === 2) {
-      const options: string[] = [];
-      for (const part of oderParts) {
-        const clean = cleanOption(part);
-        if (clean.length > 3 && clean.length <= 70) {
-          options.push(clean.charAt(0).toUpperCase() + clean.slice(1));
-        }
+      const optA = cleanOption(oderParts[0]);
+      const optB = cleanOption(oderParts[1]);
+      if (optA.length > 3 && optA.length <= 60 && optB.length > 3 && optB.length <= 60) {
+        return [optA, optB];
       }
-      if (options.length === 2) return options;
     }
 
-    if (oderParts.length > 2) {
-      const firstAndSecond = oderParts[0] + " oder " + oderParts.slice(1, -1).join(" oder ");
-      const last = oderParts[oderParts.length - 1];
-      const condensed = [firstAndSecond, last];
-      const options: string[] = [];
-      for (const part of condensed) {
-        const clean = cleanOption(part);
-        if (clean.length > 3 && clean.length <= 70) {
-          options.push(clean.charAt(0).toUpperCase() + clean.slice(1));
-        }
+    if (oderParts.length >= 2) {
+      const firstPart = oderParts[0];
+      const commaParts = firstPart.split(/,\s+/);
+      if (commaParts.length >= 2) {
+        const items = [...commaParts, ...oderParts.slice(1)]
+          .map(s => cleanOption(s))
+          .filter(s => s.length >= 2 && s.length <= 40);
+        if (items.length >= 3) return items.slice(0, 4);
       }
-      if (options.length === 2) return options;
     }
+
     return [];
   }, []);
 
