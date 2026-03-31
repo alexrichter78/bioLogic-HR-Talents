@@ -699,7 +699,6 @@ function DescriptiveOptionGroup({
   onSelect: (value: string) => void;
   accentColor?: string;
 }) {
-  const bgAlpha = accentColor === "#34C759" ? "rgba(52,199,89,0.06)" : "rgba(0,113,227,0.06)";
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: 4 }}>
       {options.map((opt, idx) => {
@@ -716,7 +715,7 @@ function DescriptiveOptionGroup({
               padding: "14px 18px",
               borderRadius: 14,
               border: isSelected ? `2px solid ${accentColor}` : "2px solid rgba(0,0,0,0.08)",
-              background: isSelected ? bgAlpha : "transparent",
+              background: isSelected ? "rgba(0,0,0,0.03)" : "transparent",
               cursor: "pointer",
               transition: "background 180ms ease, border-color 180ms ease",
             }}
@@ -762,7 +761,6 @@ function DescriptiveOptionGroupIndexed({
   onSelectIndex: (idx: number) => void;
   accentColor?: string;
 }) {
-  const bgAlpha = accentColor === "#34C759" ? "rgba(52,199,89,0.06)" : "rgba(0,113,227,0.06)";
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: 4 }}>
       {options.map((opt, idx) => {
@@ -779,7 +777,7 @@ function DescriptiveOptionGroupIndexed({
               padding: "14px 18px",
               borderRadius: 14,
               border: isSelected ? `2px solid ${accentColor}` : "2px solid rgba(0,0,0,0.08)",
-              background: isSelected ? bgAlpha : "transparent",
+              background: isSelected ? "rgba(0,0,0,0.03)" : "transparent",
               cursor: "pointer",
               transition: "background 180ms ease, border-color 180ms ease",
             }}
