@@ -957,9 +957,6 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
         </span>
       </div>
 
-      <p style={{ fontSize: 13.5, color: "#6E6E73", lineHeight: 1.6, margin: "0 0 8px" }}>
-        So lässt sich die Stelle aktuell beschreiben:
-      </p>
       <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "0 0 4px" }}>
         Die Stelle {rollenName} {aufgText}.
         {" "}Im Alltag geht es vor allem darum, {arbText}.
