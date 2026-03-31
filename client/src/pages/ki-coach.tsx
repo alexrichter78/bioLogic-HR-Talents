@@ -1202,7 +1202,7 @@ export default function KICoach() {
                       onMouseEnter={e => { e.currentTarget.style.background = "rgba(0,113,227,0.06)"; e.currentTarget.style.color = "#0071E3"; }}
                       onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#3A3A3C"; }}
                     >
-                      <span style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.04em" }}>{item.category}</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: "#34C759", letterSpacing: "0.02em" }}>{item.category}</span>
                       <br />
                       {highlightMatch(item.prompt)}
                     </button>
