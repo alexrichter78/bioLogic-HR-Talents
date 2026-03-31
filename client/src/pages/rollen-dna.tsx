@@ -2875,10 +2875,10 @@ export default function RollenDNA() {
                                   transition: "width 600ms ease",
                                   display: "flex",
                                   alignItems: "center",
-                                  justifyContent: bar.value >= 18 ? "center" : "flex-start",
-                                  minWidth: bar.value === 0 ? 0 : (bar.value < 18 ? 8 : 40),
+                                  paddingLeft: 8,
+                                  minWidth: bar.value === 0 ? 0 : 44,
                                 }}>
-                                  {bar.value >= 18 && <span style={{
+                                  {bar.value > 0 && <span style={{
                                     fontSize: 11,
                                     fontWeight: 700,
                                     color: "#FFFFFF",
@@ -2888,11 +2888,6 @@ export default function RollenDNA() {
                                   </span>}
                                 </div>
                               </div>
-                              {bar.value > 0 && bar.value < 18 && (
-                                <span style={{
-                                  fontSize: 11, fontWeight: 700, color: "#48484A", whiteSpace: "nowrap", flexShrink: 0,
-                                }}>{Math.round(bar.value)}%</span>
-                              )}
                             </div>
                           ))}
                         </div>
@@ -2925,7 +2920,6 @@ export default function RollenDNA() {
                           <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
                             {bars.map((bar) => {
                               const widthPct = (bar.value / 67) * 100;
-                              const isSmall = widthPct < 18;
                               return (
                                 <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
                                   <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>
@@ -2939,18 +2933,10 @@ export default function RollenDNA() {
                                       borderRadius: 13, background: bar.color,
                                       transition: "width 600ms ease",
                                       display: "flex", alignItems: "center", paddingLeft: 10,
-                                      minWidth: bar.value === 0 ? 0 : (isSmall ? 8 : 50),
+                                      minWidth: bar.value === 0 ? 0 : 50,
                                     }}>
-                                      {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(bar.value)} %</span>}
+                                      {bar.value > 0 && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(bar.value)} %</span>}
                                     </div>
-                                    {isSmall && bar.value > 0 && (
-                                      <span style={{
-                                        position: "absolute", top: "50%", transform: "translateY(-50%)",
-                                        left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
-                                        fontSize: 13, fontWeight: 600, color: "#6E6E73", whiteSpace: "nowrap",
-                                        transition: "left 600ms ease",
-                                      }}>{Math.round(bar.value)} %</span>
-                                    )}
                                   </div>
                                 </div>
                               );
@@ -3385,10 +3371,10 @@ export default function RollenDNA() {
                                   transition: "width 600ms ease",
                                   display: "flex",
                                   alignItems: "center",
-                                  justifyContent: bar.value >= 18 ? "center" : "flex-start",
-                                  minWidth: bar.value === 0 ? 0 : (bar.value < 18 ? 8 : 40),
+                                  paddingLeft: 8,
+                                  minWidth: bar.value === 0 ? 0 : 44,
                                 }}>
-                                  {bar.value >= 18 && <span style={{
+                                  {bar.value > 0 && <span style={{
                                     fontSize: 11,
                                     fontWeight: 700,
                                     color: "#FFFFFF",
@@ -3398,11 +3384,6 @@ export default function RollenDNA() {
                                   </span>}
                                 </div>
                               </div>
-                              {bar.value > 0 && bar.value < 18 && (
-                                <span style={{
-                                  fontSize: 11, fontWeight: 700, color: "#48484A", whiteSpace: "nowrap", flexShrink: 0,
-                                }}>{Math.round(bar.value)}%</span>
-                              )}
                             </div>
                           ))}
                         </div>
@@ -3435,7 +3416,6 @@ export default function RollenDNA() {
                           <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
                             {bars.map((bar) => {
                               const widthPct = (bar.value / 67) * 100;
-                              const isSmall = widthPct < 18;
                               return (
                                 <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
                                   <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>
@@ -3449,18 +3429,10 @@ export default function RollenDNA() {
                                       borderRadius: 13, background: bar.color,
                                       transition: "width 600ms ease",
                                       display: "flex", alignItems: "center", paddingLeft: 10,
-                                      minWidth: bar.value === 0 ? 0 : (isSmall ? 8 : 50),
+                                      minWidth: bar.value === 0 ? 0 : 50,
                                     }}>
-                                      {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(bar.value)} %</span>}
+                                      {bar.value > 0 && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(bar.value)} %</span>}
                                     </div>
-                                    {isSmall && bar.value > 0 && (
-                                      <span style={{
-                                        position: "absolute", top: "50%", transform: "translateY(-50%)",
-                                        left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
-                                        fontSize: 13, fontWeight: 600, color: "#6E6E73", whiteSpace: "nowrap",
-                                        transition: "left 600ms ease",
-                                      }}>{Math.round(bar.value)} %</span>
-                                    )}
                                   </div>
                                 </div>
                               );
