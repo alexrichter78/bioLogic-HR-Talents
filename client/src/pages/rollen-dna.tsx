@@ -857,13 +857,15 @@ function MiniProgressBar({ filled, total }: { filled: number; total: number }) {
   );
 }
 
-function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, arbeitslogik }: {
+function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, arbeitslogik, region }: {
   beruf: string;
   fuehrung: string;
   erfolgsfokusIndices: number[];
   aufgabencharakter: string;
   arbeitslogik: string;
+  region: string;
 }) {
+  const localizeText = (text: string) => region === "CH" ? text.replace(/ß/g, "ss") : text;
   const arbeitsOpt = ARBEITSLOGIK_OPTIONS.find(o => o.value === arbeitslogik);
   const fuehrungOpt = FUEHRUNG_OPTIONS.find(o => o.value === fuehrung);
   const fokusLabels = erfolgsfokusIndices.map(i => ERFOLGSFOKUS_DISPLAY[i]?.label).filter(Boolean);
@@ -957,13 +959,12 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
         </span>
       </div>
 
-      <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "0 0 4px" }}>
-        Die Stelle {rollenName} {aufgText}.
-        {" "}Im Alltag geht es vor allem darum, {arbText}.
+      <p lang="de" style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "0 0 4px", ...reportTextStyle }}>
+        {localizeText(`Die Stelle ${rollenName} ${aufgText}. Im Alltag geht es vor allem darum, ${arbText}.`)}
       </p>
       {fokusSatz && (
-        <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "8px 0 0" }}>
-          {fokusSatz}
+        <p lang="de" style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "8px 0 0", ...reportTextStyle }}>
+          {localizeText(fokusSatz)}
         </p>
       )}
 
@@ -996,8 +997,8 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
           }}>
             {arbeitsOpt?.label}
           </p>
-          <p style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.6, margin: 0 }}>
-            {arbDetail[0]}
+          <p lang="de" style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.6, margin: 0, ...reportTextStyle }}>
+            {localizeText(arbDetail[0])}
           </p>
         </div>
 
@@ -1016,16 +1017,16 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
             }}>
               <Users style={{ width: 17, height: 17, color: "#34C759", strokeWidth: 2 }} />
             </div>
-            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>Führungsrolle</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>{localizeText("Führungsrolle")}</span>
           </div>
           <p style={{
             fontSize: 14, fontWeight: 600, color: "#1D1D1F",
             lineHeight: 1.4, margin: "0 0 6px",
           }}>
-            {fuehrungOpt?.label}
+            {localizeText(fuehrungOpt?.label || "")}
           </p>
-          <p style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.6, margin: 0 }}>
-            {fuehDetail}
+          <p lang="de" style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.6, margin: 0, ...reportTextStyle }}>
+            {localizeText(fuehDetail)}
           </p>
         </div>
       </div>
@@ -1086,9 +1087,17 @@ function loadSavedState() {
   return null;
 }
 
+const reportTextStyle: React.CSSProperties = {
+  textAlign: "justify",
+  hyphens: "auto",
+  WebkitHyphens: "auto",
+  wordBreak: "break-word",
+};
+
 export default function RollenDNA() {
   const [, setLocation] = useLocation();
   const { region } = useRegion();
+  const localizeText = (text: string) => region === "CH" ? text.replace(/ß/g, "ss") : text;
   const isMobile = useIsMobile();
   const saved = useRef(loadSavedState());
 
@@ -2160,6 +2169,7 @@ export default function RollenDNA() {
                         erfolgsfokusIndices={erfolgsfokusIndices}
                         aufgabencharakter={aufgabencharakter}
                         arbeitslogik={arbeitslogik}
+                        region={region}
                       />
                     </div>
                   )}
@@ -2728,8 +2738,8 @@ export default function RollenDNA() {
 
                   {bioCheckOpen && (<>
                     {bioCheckIntroOverride ? (
-                      <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8, marginTop: 14, whiteSpace: "pre-line" }} data-testid="text-biocheck-intro">
-                        {bioCheckIntroOverride}
+                      <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8, marginTop: 14, whiteSpace: "pre-line", ...reportTextStyle }} data-testid="text-biocheck-intro">
+                        {localizeText(bioCheckIntroOverride)}
                       </p>
                     ) : (<>
                       <div style={{
@@ -2741,14 +2751,14 @@ export default function RollenDNA() {
                       }} data-testid="card-grundprinzip">
                         <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0" }}>{analysisPrincipleText.title}</h3>
                         {analysisPrincipleText.body.map((line, i) => (
-                          <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: i === 0 ? 0 : "6px 0 0 0" }}>{line}</p>
+                          <p key={i} lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: i === 0 ? 0 : "6px 0 0 0", ...reportTextStyle }}>{localizeText(line)}</p>
                         ))}
                       </div>
 
                       <div style={{ marginTop: 14 }} data-testid="card-anforderungsprofil">
                         <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0" }}>Anforderungsprofil der Stelle</h3>
-                        <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px 0" }}>
-                          {roleRequirementText.intro.join(" ")}
+                        <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px 0", ...reportTextStyle }}>
+                          {localizeText(roleRequirementText.intro.join(" "))}
                         </p>
 
                         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
@@ -2764,7 +2774,7 @@ export default function RollenDNA() {
                               padding: "10px 12px",
                             }}>
                               <p style={{ fontSize: 14, fontWeight: 700, color: d.color, margin: "0 0 4px 0" }}>{d.label}</p>
-                              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.5, margin: 0 }}>{d.desc}</p>
+                              <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.5, margin: 0, ...reportTextStyle }}>{localizeText(d.desc)}</p>
                             </div>
                           ))}
                         </div>
@@ -2795,10 +2805,10 @@ export default function RollenDNA() {
                           </div>
                           <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px 0" }} data-testid="text-biocheck-line-0">{rt.headline}</h3>
                           {rt.body.map((paragraph, i) => (
-                            <p key={i} style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: i < rt.body.length - 1 ? "0 0 6px 0" : "0" }} data-testid={`text-biocheck-line-${i + 1}`}>{paragraph}</p>
+                            <p key={i} lang="de" style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: i < rt.body.length - 1 ? "0 0 6px 0" : "0", ...reportTextStyle }} data-testid={`text-biocheck-line-${i + 1}`}>{localizeText(paragraph)}</p>
                           ))}
                           {isLeadershipRole && (
-                            <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "6px 0 0 0" }} data-testid="text-biocheck-line-leadership">{rt.leadership}</p>
+                            <p lang="de" style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "6px 0 0 0", ...reportTextStyle }} data-testid="text-biocheck-line-leadership">{localizeText(rt.leadership)}</p>
                           )}
                         </div>
                       );
@@ -3236,8 +3246,8 @@ export default function RollenDNA() {
 
                 {bioCheckOpen && (<>
                   {bioCheckIntroOverride ? (
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8, marginTop: 14, whiteSpace: "pre-line" }} data-testid="text-biocheck-intro-collapsed">
-                      {bioCheckIntroOverride}
+                    <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.8, marginTop: 14, whiteSpace: "pre-line", ...reportTextStyle }} data-testid="text-biocheck-intro-collapsed">
+                      {localizeText(bioCheckIntroOverride)}
                     </p>
                   ) : (<>
                     <div style={{
@@ -3249,14 +3259,14 @@ export default function RollenDNA() {
                     }} data-testid="card-grundprinzip-collapsed">
                       <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0" }}>{analysisPrincipleText.title}</h3>
                       {analysisPrincipleText.body.map((line, i) => (
-                        <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: i === 0 ? 0 : "6px 0 0 0" }}>{line}</p>
+                        <p key={i} lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: i === 0 ? 0 : "6px 0 0 0", ...reportTextStyle }}>{localizeText(line)}</p>
                       ))}
                     </div>
 
                     <div style={{ marginTop: 14 }} data-testid="card-anforderungsprofil-collapsed">
                       <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0" }}>Anforderungsprofil der Stelle</h3>
-                      <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px 0" }}>
-                        {roleRequirementText.intro.join(" ")}
+                      <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px 0", ...reportTextStyle }}>
+                        {localizeText(roleRequirementText.intro.join(" "))}
                       </p>
 
                       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
@@ -3272,12 +3282,12 @@ export default function RollenDNA() {
                             padding: "10px 12px",
                           }}>
                             <p style={{ fontSize: 14, fontWeight: 700, color: d.color, margin: "0 0 4px 0" }}>{d.label}</p>
-                            <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.5, margin: 0 }}>{d.desc}</p>
+                            <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.5, margin: 0, ...reportTextStyle }}>{localizeText(d.desc)}</p>
                           </div>
                         ))}
                       </div>
 
-                      <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, margin: "12px 0 0 0" }}>{roleRequirementText.outro}</p>
+                      <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, margin: "12px 0 0 0", ...reportTextStyle }}>{localizeText(roleRequirementText.outro)}</p>
                     </div>
                   </>)}
 
@@ -3304,10 +3314,10 @@ export default function RollenDNA() {
                         </div>
                         <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px 0" }} data-testid="text-biocheck-collapsed-line-0">{rt.headline}</h3>
                         {rt.body.map((paragraph, i) => (
-                          <p key={i} style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: i < rt.body.length - 1 ? "0 0 6px 0" : "0" }} data-testid={`text-biocheck-collapsed-line-${i + 1}`}>{paragraph}</p>
+                          <p key={i} lang="de" style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: i < rt.body.length - 1 ? "0 0 6px 0" : "0", ...reportTextStyle }} data-testid={`text-biocheck-collapsed-line-${i + 1}`}>{localizeText(paragraph)}</p>
                         ))}
                         {isLeadershipRole && (
-                          <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "6px 0 0 0" }} data-testid="text-biocheck-collapsed-line-leadership">{rt.leadership}</p>
+                          <p lang="de" style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.7, margin: "6px 0 0 0", ...reportTextStyle }} data-testid="text-biocheck-collapsed-line-leadership">{localizeText(rt.leadership)}</p>
                         )}
                       </div>
                     );
