@@ -614,6 +614,15 @@ export default function TeamReport() {
 
   useEffect(() => {
     syncFromLocalStorage();
+    if (!roleName) {
+      try {
+        const raw = localStorage.getItem("rollenDnaState");
+        if (raw) {
+          const dna = JSON.parse(raw) as RoleDnaState;
+          if (dna.beruf) setRoleName(dna.beruf);
+        }
+      } catch {}
+    }
   }, [syncFromLocalStorage]);
 
   useEffect(() => {
