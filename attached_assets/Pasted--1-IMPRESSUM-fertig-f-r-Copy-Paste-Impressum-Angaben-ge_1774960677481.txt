@@ -1,0 +1,159 @@
+✅ 1. IMPRESSUM (fertig für Copy & Paste)
+
+Impressum
+
+Angaben gemäß § 5 TMG
+
+foresMind® GmbH
+Sonnenhang 4
+87674 Ruderatshofen
+Deutschland
+
+Vertreten durch die Geschäftsführer:
+Alexander Richter, Wolfgang Drexler
+
+Kontakt
+Telefon: +49 (0)8343 / 338 998 – 1
+E-Mail: info@foresmind.de
+
+Registereintrag
+Eintragung im Handelsregister
+Registergericht: Amtsgericht Kempten
+Registernummer: HRB 13751
+
+Umsatzsteuer-ID
+Umsatzsteuer-Identifikationsnummer gemäß § 27 a Umsatzsteuergesetz:
+DE292672216
+
+Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV
+Alexander Richter
+
+✅ 2. DATENSCHUTZERKLÄRUNG (SaaS + KI + DSGVO optimiert)
+
+Ich habe das direkt auf dein Geschäftsmodell (Software + bioLogic + KI) zugeschnitten:
+
+Datenschutzerklärung
+1. Verantwortlicher
+
+Verantwortlich für die Datenverarbeitung ist:
+
+foresMind® GmbH
+Sonnenhang 4
+87674 Ruderatshofen
+Deutschland
+E-Mail: info@foresmind.de
+
+2. Allgemeine Hinweise
+
+Diese Software dient der Analyse von Arbeitsweisen, Rollenanforderungen und Teamkonstellationen.
+
+Die Auswertungen stellen keine automatisierten Entscheidungen im rechtlichen Sinne dar und entfalten keine rechtliche Wirkung gegenüber betroffenen Personen.
+
+Die Ergebnisse dienen ausschließlich als unterstützende Entscheidungsgrundlage.
+
+3. Art der verarbeiteten Daten
+
+Im Rahmen der Nutzung können folgende Daten verarbeitet werden:
+
+Eingaben zur Rolle (z. B. Tätigkeiten, Anforderungen)
+Eingaben zur Person (z. B. Einschätzungen von Arbeitsweisen)
+Systemgenerierte Analyse-Ergebnisse
+
+👉 Wichtig (dein Vorteil):
+Diese Daten werden nicht personenbezogen gespeichert, sofern keine explizite Speicherung durch den Nutzer erfolgt.
+
+4. Keine dauerhafte Speicherung (empfohlen – passt zu deinem Setup)
+
+Die Verarbeitung erfolgt in der Regel:
+
+temporär (Session-basiert)
+ohne dauerhafte Speicherung personenbezogener Daten
+
+Eine Identifizierung einzelner Personen durch den Anbieter erfolgt nicht.
+
+5. Nutzung der Software (SaaS)
+
+Die Anwendung ist öffentlich zugänglich und wird von Kunden eigenständig genutzt.
+
+Die Verantwortung für die Eingabe personenbezogener Daten liegt beim jeweiligen Nutzer bzw. Unternehmen.
+
+6. Einsatz von KI (sehr wichtig für dich!)
+
+Zur Generierung von Auswertungen und Empfehlungen wird künstliche Intelligenz eingesetzt, insbesondere Dienste von:
+
+OpenAI
+
+Dabei gilt:
+
+Es erfolgt keine eigenständige Profilbildung durch den Anbieter
+Die Verarbeitung dient ausschließlich der Erstellung von Textvorschlägen und Analysen
+Es werden keine Entscheidungen automatisiert getroffen
+7. Hosting
+
+Die Software wird über externe Hosting-Dienstleister betrieben (z. B. Render / Replit oder vergleichbare Anbieter).
+
+Diese verarbeiten Daten ausschließlich im Rahmen der technischen Bereitstellung der Anwendung.
+
+8. Rechtsgrundlagen
+
+Die Verarbeitung erfolgt gemäß Art. 6 DSGVO:
+
+Art. 6 Abs. 1 lit. b DSGVO (Vertrag / Nutzung der Software)
+Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an stabiler Bereitstellung)
+9. Weitergabe von Daten
+
+Eine Weitergabe von Daten erfolgt nur:
+
+an technisch notwendige Dienstleister
+im Rahmen der Nutzung externer Systeme (z. B. KI-Dienste)
+
+Eine darüber hinausgehende Weitergabe erfolgt nicht.
+
+10. Cookies
+
+Die Anwendung kann technisch notwendige Cookies verwenden, um:
+
+Sitzungen zu verwalten
+die Nutzung der Anwendung zu ermöglichen
+
+Es werden keine Cookies zu Marketingzwecken eingesetzt (wenn du das so hältst → ideal!).
+
+11. Rechte der Nutzer
+
+Nutzer haben das Recht auf:
+
+Auskunft
+Berichtigung
+Löschung
+Einschränkung der Verarbeitung
+Widerspruch
+12. Wichtiger Haftungs- und Einordnungshinweis (perfekt für bioLogic)
+
+Die bereitgestellten Analysen:
+
+beschreiben wiederkehrende Muster im Arbeitskontext
+sind wertfrei zu verstehen
+stellen keine festen Persönlichkeitsprofile dar
+
+Sie ersetzen keine individuelle Bewertung oder Entscheidung, sondern dienen ausschließlich als Orientierung.
+
+🔥 WICHTIG – mein klares Feedback (strategisch)
+
+Du bist aktuell extrem gut aufgestellt, weil:
+
+👉 du (so wie du es willst) keine personenbezogenen Daten speicherst
+👉 du keine automatisierten Entscheidungen triffst
+👉 du es als Entscheidungshilfe positionierst
+
+Das ist DSGVO-technisch Gold wert.
+
+👉 Was ich dir als nächstes empfehlen würde
+
+Wenn du es wirklich sauber machen willst (für Verkauf + Vertrauen):
+
+Ich kann dir noch bauen:
+
+✅ Cookie-Banner Text (rechtssicher)
+✅ AGB für SaaS (monatliche Zahlung / Kündigung / Zugriff sperren)
+✅ KI-Haftungstext (sehr wichtig für Vertrieb!)
+✅ Datenschutzhinweis direkt in deiner App (UX integriert)

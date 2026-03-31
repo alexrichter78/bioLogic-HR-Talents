@@ -140,6 +140,11 @@ export default function Login() {
               </>
             )}
           </div>
+
+          <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 20 }}>
+            <a href="/impressum" data-testid="link-impressum-reset" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Impressum</a>
+            <a href="/datenschutz" data-testid="link-datenschutz-reset" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Datenschutz</a>
+          </div>
         </div>
       </div>
     );
@@ -241,6 +246,11 @@ export default function Login() {
               {loading ? "Anmelden..." : "Anmelden"}
             </button>
           </form>
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 20 }}>
+          <a href="/impressum" data-testid="link-impressum" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Impressum</a>
+          <a href="/datenschutz" data-testid="link-datenschutz" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Datenschutz</a>
         </div>
       </div>
     </div>

@@ -21,6 +21,8 @@ import TeamCheckReportV2 from "@/pages/teamcheck-report-v2";
 import TeamCheckReportV3 from "@/pages/teamcheck-report-v3";
 import TeamCheckReportV4 from "@/pages/teamcheck-report-v4";
 import ResetPassword from "@/pages/reset-password";
+import Impressum from "@/pages/impressum";
+import Datenschutz from "@/pages/datenschutz";
 
 function AppRoutes() {
   const { user, loading } = useAuth();
@@ -35,6 +37,14 @@ function AppRoutes() {
 
   if (window.location.pathname === "/reset-password") {
     return <ResetPassword />;
+  }
+
+  if (window.location.pathname === "/impressum") {
+    return <Impressum />;
+  }
+
+  if (window.location.pathname === "/datenschutz") {
+    return <Datenschutz />;
   }
 
   if (!user) {
@@ -56,6 +66,8 @@ function AppRoutes() {
       <Route path="/teamcheck-report-v2" component={TeamCheckReportV2} />
       <Route path="/teamcheck-report-v3" component={TeamCheckReportV3} />
       <Route path="/teamcheck-report-v4" component={TeamCheckReportV4} />
+      <Route path="/impressum" component={Impressum} />
+      <Route path="/datenschutz" component={Datenschutz} />
       <Route component={NotFound} />
     </Switch>
   );
