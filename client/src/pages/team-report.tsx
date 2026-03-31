@@ -614,15 +614,18 @@ export default function TeamReport() {
 
   useEffect(() => {
     syncFromLocalStorage();
-    if (!roleName) {
-      try {
-        const raw = localStorage.getItem("rollenDnaState");
-        if (raw) {
-          const dna = JSON.parse(raw) as RoleDnaState;
-          if (dna.beruf) setRoleName(dna.beruf);
+    try {
+      const raw = localStorage.getItem("rollenDnaState");
+      if (raw) {
+        const dna = JSON.parse(raw) as RoleDnaState;
+        if (!roleName && dna.beruf) setRoleName(dna.beruf);
+        if (dna.fuehrung) {
+          const f = dna.fuehrung.toLowerCase();
+          const isFuehrung = (f.includes("führung") || f.includes("fachlich") || f.includes("disziplinarisch") || f.includes("projekt") || f.includes("koordination") || f.includes("leiter") || f.includes("lead")) && !f.includes("keine");
+          setRoleTypeForCard(isFuehrung ? "fuehrung" : "teammitglied");
         }
-      } catch {}
-    }
+      }
+    } catch {}
   }, [syncFromLocalStorage]);
 
   useEffect(() => {
