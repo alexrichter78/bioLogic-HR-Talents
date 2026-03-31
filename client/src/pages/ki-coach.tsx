@@ -1320,6 +1320,10 @@ export default function KICoach() {
             </>);
           })()}
 
+          <div style={{ padding: isMobile ? "0 20px" : "0 60px", margin: "6px 0 0" }}>
+            <div style={{ height: 1, background: "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.08) 30%, rgba(0,0,0,0.08) 70%, transparent 100%)" }} />
+          </div>
+
           <div style={{
             flex: 1, overflowY: "auto", padding: isMobile ? "12px 10px" : "20px 28px",
             display: "flex", flexDirection: "column", gap: 16,
