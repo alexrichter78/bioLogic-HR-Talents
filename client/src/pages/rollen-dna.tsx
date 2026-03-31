@@ -3246,7 +3246,7 @@ export default function RollenDNA() {
                       background: "#FFFFFF",
                       border: "1px solid rgba(0,0,0,0.06)",
                     }} data-testid="card-grundprinzip-collapsed">
-                      <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0" }}>{analysisPrincipleText.title}</h3>
+                      <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Info style={{ width: 14, height: 14, color: "#0071E3", flexShrink: 0 }} />{analysisPrincipleText.title}</h3>
                       {analysisPrincipleText.body.map((line, i) => (
                         <p key={i} lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: i === 0 ? 0 : "6px 0 0 0", ...reportTextStyle }}>{localizeText(line)}</p>
                       ))}
