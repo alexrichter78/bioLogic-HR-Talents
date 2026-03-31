@@ -1890,7 +1890,7 @@ export default function RollenDNA() {
 
 
                     <div style={{ marginTop: 28 }}>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: "#34C759", margin: "0 0 6px" }}>Optionale Ergänzungen</p>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 6px" }}>Optionale Ergänzungen</p>
                       <p style={{ fontSize: 13, color: "#6E6E73", margin: "0 0 12px" }}>
                         Was macht diese Stelle in Ihrem Unternehmen besonders? Je konkreter, desto genauer die Analyse.
                       </p>
