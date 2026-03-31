@@ -329,6 +329,77 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/admin/enroll-course", requireAdmin, async (req, res) => {
+    try {
+      const { participants } = req.body;
+      if (!Array.isArray(participants) || participants.length === 0) {
+        return res.status(400).json({ error: "Mindestens ein Teilnehmer erforderlich" });
+      }
+      const results: { email: string; status: string }[] = [];
+      for (const p of participants) {
+        const { firstName, lastName, email } = p;
+        if (!firstName || !lastName || !email) {
+          results.push({ email: email || "unbekannt", status: "Fehlende Daten" });
+          continue;
+        }
+        const existing = await storage.getUserByEmail(email);
+        if (existing) {
+          await storage.updateUser(existing.id, { courseAccess: true });
+          const existingSub = await storage.getSubscriptionByUserId(existing.id);
+          if (!existingSub || existingSub.status !== "active") {
+            await storage.createSubscription({
+              userId: existing.id,
+              plan: existingSub?.plan || "kurs",
+              source: "manual",
+              status: "active",
+              startsAt: new Date(),
+              accessUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+              cancelAtPeriodEnd: false,
+              notes: "Kursfreischaltung durch Admin",
+              canceledAt: null,
+              stripeCustomerId: null,
+              stripeSubscriptionId: null,
+            });
+          }
+          results.push({ email, status: "Aktualisiert" });
+        } else {
+          const username = email.toLowerCase().split("@")[0] + "_" + Date.now().toString(36);
+          const hash = await bcrypt.hash(email + Date.now(), 10);
+          const newUser = await storage.createUser({
+            username,
+            email,
+            passwordHash: hash,
+            firstName,
+            lastName,
+            companyName: "",
+            role: "user",
+            isActive: true,
+            courseAccess: true,
+            emailVerified: false,
+          });
+          await storage.createSubscription({
+            userId: newUser.id,
+            plan: "kurs",
+            source: "manual",
+            status: "active",
+            startsAt: new Date(),
+            accessUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+            cancelAtPeriodEnd: false,
+            notes: "Kursfreischaltung durch Admin",
+            canceledAt: null,
+            stripeCustomerId: null,
+            stripeSubscriptionId: null,
+          });
+          results.push({ email, status: "Erstellt" });
+        }
+      }
+      res.json({ ok: true, results });
+    } catch (error) {
+      console.error("Enroll course error:", error);
+      res.status(500).json({ error: "Freischaltung fehlgeschlagen" });
+    }
+  });
+
   app.post("/api/generate-kompetenzen", async (req, res) => {
     try {
       const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik, zusatzInfo, analyseTexte, region } = req.body;
