@@ -9,6 +9,7 @@ interface AuthUser {
   lastName: string;
   companyName: string;
   role: string;
+  courseAccess: boolean;
   accessUntil: string | null;
 }
 

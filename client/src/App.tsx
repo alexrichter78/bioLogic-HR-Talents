@@ -20,6 +20,7 @@ import TeamReport from "@/pages/team-report";
 import TeamCheckReportV2 from "@/pages/teamcheck-report-v2";
 import TeamCheckReportV3 from "@/pages/teamcheck-report-v3";
 import TeamCheckReportV4 from "@/pages/teamcheck-report-v4";
+import Kurs from "@/pages/kurs";
 import ResetPassword from "@/pages/reset-password";
 import Impressum from "@/pages/impressum";
 import Datenschutz from "@/pages/datenschutz";
@@ -66,6 +67,7 @@ function AppRoutes() {
       <Route path="/jobcheck" component={JobCheck} />
       <Route path="/teamcheck" component={TeamCheck} />
       <Route path="/ki-coach" component={KICoach} />
+      <Route path="/kurs" component={Kurs} />
       <Route path="/soll-ist" component={SollIstBericht} />
       <Route path="/team-report" component={TeamReport} />
       <Route path="/teamcheck-report-v2" component={TeamCheckReportV2} />

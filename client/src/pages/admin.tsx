@@ -14,6 +14,7 @@ interface UserWithSub {
   companyName: string;
   role: string;
   isActive: boolean;
+  courseAccess: boolean;
   createdAt: string;
   lastLoginAt: string | null;
   subscription: {
@@ -34,6 +35,7 @@ interface UserForm {
   companyName: string;
   role: string;
   isActive: boolean;
+  courseAccess: boolean;
   accessUntil: string;
   plan: string;
   notes: string;
@@ -49,6 +51,7 @@ const emptyForm: UserForm = {
   companyName: "",
   role: "user",
   isActive: true,
+  courseAccess: false,
   accessUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
   plan: "premium",
   notes: "",
@@ -158,6 +161,7 @@ export default function Admin() {
       companyName: u.companyName,
       role: u.role,
       isActive: u.isActive,
+      courseAccess: u.courseAccess,
       accessUntil: u.subscription?.accessUntil ? new Date(u.subscription.accessUntil).toISOString().split("T")[0] : "",
       plan: u.subscription?.plan || "premium",
       notes: u.subscription?.notes || "",
@@ -334,10 +338,14 @@ export default function Admin() {
               <option value="canceled">Gekündigt</option>
             </select>
           </div>
-          <div style={{ display: "flex", alignItems: "end", gap: 8 }}>
+          <div style={{ display: "flex", alignItems: "end", gap: 16 }}>
             <label style={{ ...labelStyle, display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
               <input type="checkbox" checked={form.isActive} onChange={e => setForm({ ...form, isActive: e.target.checked })} data-testid="input-admin-active" />
               Konto aktiv
+            </label>
+            <label style={{ ...labelStyle, display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
+              <input type="checkbox" checked={form.courseAccess} onChange={e => setForm({ ...form, courseAccess: e.target.checked })} data-testid="input-admin-course-access" />
+              Kursfreischaltung
             </label>
           </div>
           <div style={{ gridColumn: "1 / -1" }}>

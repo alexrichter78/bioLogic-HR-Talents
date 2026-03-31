@@ -24,6 +24,9 @@ async function ensureSchema() {
       END $$;
     `);
     await client.query(`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS course_access BOOLEAN NOT NULL DEFAULT false;
+    `);
+    await client.query(`
       CREATE TABLE IF NOT EXISTS password_reset_tokens (
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL REFERENCES users(id),

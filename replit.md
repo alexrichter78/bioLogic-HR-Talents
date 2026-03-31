@@ -52,7 +52,7 @@ Preferred communication style: Simple, everyday language.
 
 ### UI/UX Decisions
 -   **Responsive Design**: All pages are mobile-responsive. On mobile (<768px), the top navigation converts to a bottom tab bar, card paddings reduce, 2/3-column grids collapse to single-column, and message bubbles widen. Uses `useIsMobile()` hook from `@/hooks/use-mobile` for inline style conditionals and CSS media queries in `index.css` for utility classes (`.mobile-stack`, `.mobile-grid-1`, etc.).
--   **Global Navigation**: Unified navigation component with 6 main items. On mobile, renders as a bottom tab bar with icons and labels.
+-   **Global Navigation**: Unified navigation component with dynamic items. On mobile, renders as a bottom tab bar with icons and labels. "Kursbereich" nav item appears only when `user.courseAccess === true`.
 -   **Rollen-DNA Completion**: Toggles visibility of "Rollenkontext" and "Erfolgsfokus" sections.
 -   **Teamdynamik Page**: Features 4 dashboard modules, CEO/HR/Teamleitung view modes, 6 steering levers, and stress simulation.
 -   **Strukturanalyse / Entscheidungsbericht**: Features a dark anthrazit header, specific badge displays, and a structured body with colored section bars.

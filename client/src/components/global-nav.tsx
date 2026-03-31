@@ -1,18 +1,20 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
-import { Home, Briefcase, GitCompareArrows, Users, Bot, Settings, LogOut, Globe } from "lucide-react";
+import { Home, Briefcase, GitCompareArrows, Users, Bot, GraduationCap, Settings, LogOut, Globe } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useRegion, type Region } from "@/lib/region";
 import logoSrc from "@assets/1_1773849007741.png";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-const NAV_ITEMS = [
+const BASE_NAV_ITEMS = [
   { label: "Home", subtitle: "", path: "/", icon: Home, disabled: false },
   { label: "JobCheck", subtitle: "Stellenanalyse", path: "/rollen-dna", icon: Briefcase, disabled: false },
   { label: "MatchCheck", subtitle: "Stelle \u2194 Person", path: "/soll-ist", icon: GitCompareArrows, disabled: false },
   { label: "TeamCheck", subtitle: "Teamstruktur", path: "/team-report", icon: Users, disabled: false },
   { label: "bioLogic KI-Coach", subtitle: "Führung & Entwicklung", path: "/ki-coach", icon: Bot, disabled: false },
 ];
+
+const COURSE_NAV_ITEM = { label: "Kursbereich", subtitle: "Lernmodule", path: "/kurs", icon: GraduationCap, disabled: false };
 
 const RESET_KEYS = [
   "rollenDnaState",
@@ -37,6 +39,14 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
   const [regionOpen, setRegionOpen] = useState(false);
   const regionRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+
+  const NAV_ITEMS = useMemo(() => {
+    const items = [...BASE_NAV_ITEMS];
+    if (user?.courseAccess) {
+      items.push(COURSE_NAV_ITEM);
+    }
+    return items;
+  }, [user?.courseAccess]);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {

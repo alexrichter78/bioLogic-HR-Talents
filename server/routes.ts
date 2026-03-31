@@ -83,6 +83,7 @@ export async function registerRoutes(
         lastName: user.lastName,
         companyName: user.companyName,
         role: user.role,
+        courseAccess: user.courseAccess,
       });
     } catch (error: any) {
       console.error("Login error:", error);
@@ -132,6 +133,7 @@ export async function registerRoutes(
       lastName: user.lastName,
       companyName: user.companyName,
       role: user.role,
+      courseAccess: user.courseAccess,
       accessUntil,
     });
   });
@@ -149,7 +151,7 @@ export async function registerRoutes(
 
   app.post("/api/admin/users", requireAdmin, async (req, res) => {
     try {
-      const { username, email, password, firstName, lastName, companyName, role, isActive, accessUntil, plan, notes } = req.body;
+      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, accessUntil, plan, notes } = req.body;
       if (!username || !password) {
         return res.status(400).json({ error: "Benutzername und Passwort erforderlich" });
       }
@@ -167,6 +169,7 @@ export async function registerRoutes(
         companyName: companyName || "",
         role: role || "user",
         isActive: isActive !== false,
+        courseAccess: courseAccess === true,
         emailVerified: false,
       });
       if (accessUntil) {
@@ -265,7 +268,7 @@ export async function registerRoutes(
   app.patch("/api/admin/users/:id", requireAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const { username, email, password, firstName, lastName, companyName, role, isActive, accessUntil, plan, notes, subscriptionStatus } = req.body;
+      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, accessUntil, plan, notes, subscriptionStatus } = req.body;
       const updateData: any = {};
       if (username !== undefined) updateData.username = username;
       if (email !== undefined) updateData.email = email;
@@ -274,6 +277,7 @@ export async function registerRoutes(
       if (companyName !== undefined) updateData.companyName = companyName;
       if (role !== undefined) updateData.role = role;
       if (isActive !== undefined) updateData.isActive = isActive;
+      if (courseAccess !== undefined) updateData.courseAccess = courseAccess;
       if (password) updateData.passwordHash = await bcrypt.hash(password, 10);
 
       const user = await storage.updateUser(id, updateData);
