@@ -43,3 +43,8 @@ export function useRegion() {
   if (!ctx) throw new Error("useRegion must be used within RegionProvider");
   return ctx;
 }
+
+export function useLocalizedText() {
+  const { region } = useRegion();
+  return (text: string) => region === "CH" ? text.replace(/ß/g, "ss") : text;
+}

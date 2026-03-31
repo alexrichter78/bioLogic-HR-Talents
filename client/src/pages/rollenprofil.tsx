@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Download, AlertTriangle, BarChart3, Briefcase, Users, Sun, Gauge, Flame, Printer } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useRegion } from "@/lib/region";
+import { useRegion, useLocalizedText } from "@/lib/region";
 import { BERUFE } from "@/data/berufe";
 import logoSrc from "@assets/LOGO_bio_1773853681939.png";
 
@@ -942,6 +942,7 @@ function ProfileBar({ label, value, color }: { label: string; value: number; col
 export default function Rollenprofil() {
   const [, setLocation] = useLocation();
   const { region } = useRegion();
+  const t = useLocalizedText();
   const isMobile = useIsMobile();
   const [data, setData] = useState<ReportData | null>(null);
   const reportRef = useRef<HTMLDivElement>(null);
@@ -1201,27 +1202,30 @@ export default function Rollenprofil() {
     );
   }
 
-  const stress = buildStressTexts(data.gesamt, data.isLeadership, data.fuehrungstyp);
-  const teamwirkung = buildTeamwirkung(data);
+  const stressRaw = buildStressTexts(data.gesamt, data.isLeadership, data.fuehrungstyp);
+  const stress = { controlled: t(stressRaw.controlled), uncontrolled: t(stressRaw.uncontrolled) };
+  const teamwirkung = t(buildTeamwirkung(data));
   const spannungsfelderResult = buildSpannungsfelder(data);
-  const spannungsfelder = spannungsfelderResult.fields;
-  const spannungsfazit = spannungsfelderResult.fazit;
-  const fehlbesetzung = buildFehlbesetzung(data);
-  const fazit = buildFazit(data);
+  const spannungsfelder = spannungsfelderResult.fields.map(f => t(f));
+  const spannungsfazit = t(spannungsfelderResult.fazit);
+  const fehlbesetzung = buildFehlbesetzung(data).map(f => ({ ...f, label: t(f.label), bullets: f.bullets.map(b => t(b)) }));
+  const fazitRaw = buildFazit(data);
+  const fazit = { titel: t(fazitRaw.titel), absaetze: fazitRaw.absaetze.map(a => t(a)) };
 
   const hauptTaetigkeiten = (data.taetigkeiten || []).filter((t: any) => t.kategorie === "haupt");
   const hochItems = hauptTaetigkeiten.filter((t: any) => t.niveau === "Hoch");
   const erfolgsfokusLabels = data.erfolgsfokusIndices.map(i => ERFOLGSFOKUS_LABELS[i]).filter(Boolean);
   const profilherkunft = buildProfilherkunft(data);
-  const rahmenText = buildRahmenText(data);
-  const erfolgsfokusText = buildErfolgsfokusText(data, erfolgsfokusLabels);
-  const profilkonflikt = buildProfilkonflikt(data);
+  const rahmenText = t(buildRahmenText(data));
+  const erfolgsfokusText = t(buildErfolgsfokusText(data, erfolgsfokusLabels));
+  const profilkonfliktRaw = buildProfilkonflikt(data);
+  const profilkonflikt = profilkonfliktRaw ? t(profilkonfliktRaw) : null;
 
-  const komponentenBedeutung = buildKomponentenBedeutung(data);
+  const komponentenBedeutung = buildKomponentenBedeutung(data).map(k => ({ ...k, text: t(k.text), warning: t(k.warning) }));
 
   const topTaetigkeiten = hauptTaetigkeiten.slice(0, 3).map((t: any) => cleanTaskName(t.name));
 
-  const rollenBeschreibungIntro = (() => {
+  const rollenBeschreibungIntro = t((() => {
     const fk = data.isLeadership;
     const pt = data.profileType;
     if (pt === "balanced_all") {
@@ -1243,9 +1247,9 @@ export default function Rollenprofil() {
       return `Diese Anforderungen erfordern eine Persönlichkeit, die zügig entscheidet, klar priorisiert und Ergebnisse konsequent vorantreibt. Entscheidend sind Entschlusskraft, Handlungsorientierung und die Fähigkeit, auch bei unvollständiger Informationslage wirksam zu agieren.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team entschlossen zu führen und Verantwortung für dessen Ergebnisse zu übernehmen." : ""}`;
     }
     return `Diese Anforderungen verlangen eine Persönlichkeit, die strukturiert, sorgfältig und verlässlich arbeitet, klare Standards einhält und auch bei wiederkehrenden Abläufen mit hoher Präzision vorgeht. Entscheidend sind ein ausgeprägtes Qualitätsbewusstsein, ein methodisches Vorgehen und die Fähigkeit, Aufgaben konsequent und gewissenhaft umzusetzen.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team methodisch zu führen und für nachvollziehbare Abläufe und einheitliche Standards zu sorgen." : ""}`;
-  })();
+  })());
 
-  const rollenBeschreibungErgaenzung = (() => {
+  const rollenBeschreibungErgaenzung = t((() => {
     const pt = data.profileType;
     if (pt === "balanced_all") {
       return "Da alle drei Anforderungsbereiche nahezu gleich gewichtet sind, gibt es keine eindeutige Ergänzungsanforderung. Die Person muss in allen Dimensionen – Handlung, Kommunikation und Analyse – ein solides Grundniveau mitbringen und situativ den richtigen Schwerpunkt setzen.";
@@ -1272,9 +1276,9 @@ export default function Rollenprofil() {
     return data.sec.key === "int"
       ? "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Abstimmung und Kommunikationsfähigkeit, um Abläufe im Team verlässlich zu unterstützen, Rückmeldungen verständlich weiterzugeben und eine reibungslose Zusammenarbeit sicherzustellen."
       : "Darüber hinaus erfordert die Stelle ein ausreichendes Maß an Handlungsfähigkeit und Umsetzungsstärke, um Analyseergebnisse in konkrete Maßnahmen zu überführen, Entscheidungen zeitnah zu treffen und den Fortschritt aktiv voranzutreiben.";
-  })();
+  })());
 
-  const arbeitslogikText = (() => {
+  const arbeitslogikText = t((() => {
     const fk = data.isLeadership;
     const pt = data.profileType;
     if (pt === "balanced_all") {
@@ -1296,9 +1300,9 @@ export default function Rollenprofil() {
       return `Die Wirksamkeit dieser Stelle entsteht vor allem durch entschlossenes Handeln und klare Priorisierung. ${fk ? "Als Führungskraft gibt sie das Tempo vor und treibt Ergebnisse aktiv und verbindlich voran." : "Aufgaben und Themen werden eigenständig vorangetrieben, ohne auf detaillierte Anweisungen zu warten."} ${data.sec.key === "int" ? "Dabei darf der Blick für das Team und die zwischenmenschliche Ebene nicht verloren gehen. Nachhaltige Ergebnisse entstehen nur, wenn auch die Beziehungsebene gepflegt wird." : "Dabei erfordert die Stelle zugleich analytische Sorgfalt, damit Qualität, Nachhaltigkeit und fundierte Entscheidungsgrundlagen gewährleistet bleiben."}`;
     }
     return `Die Wirksamkeit dieser Stelle entsteht durch systematische Analyse, klar definierte Prozesse und fundierte Entscheidungsgrundlagen. ${fk ? "Als Führungskraft setzt sie auf nachvollziehbare Qualitätsstandards und eine transparente, methodische Steuerung." : "Fachliche Tiefe und eine sorgfältige Arbeitsweise schaffen Vertrauen, Verlässlichkeit und Orientierung."} ${data.sec.key === "int" ? "Zugleich verlangt die Stelle, Erkenntnisse verständlich zu kommunizieren, im Team zu verankern und eine konstruktive Zusammenarbeit aktiv zu fördern." : "Zugleich müssen Analyseergebnisse in konkretes Handeln überführt werden. Fundierte Erkenntnis allein erzeugt noch keine Wirkung."}`;
-  })();
+  })());
 
-  const alltagsverhalten = (() => {
+  const alltagsverhalten = t((() => {
     const hochNamen = hochItems.slice(0, 3).map((t: any) => cleanTaskName(t.name));
     const hochRef = hochNamen.length > 0 ? `Besonders kritisch sind dabei ${hochNamen.join(", ")}. ` : "";
     const fk = data.isLeadership;
@@ -1323,9 +1327,9 @@ export default function Rollenprofil() {
       return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vorwiegend durch klare Priorisierung und konsequente Umsetzung. ${person} treibt Ergebnisse eher zielgerichtet voran und bleibt auch bei Widerständen handlungsfähig. ${hochRef}${data.sec.key === "int" ? "Damit dies gelingt, erfordert die Stelle zugleich Sensibilität für zwischenmenschliche Dynamiken. Wer ausschließlich auf Tempo setzt, riskiert den Rückhalt im Team." : "Damit dies gelingt, erfordert die Stelle zugleich analytische Sorgfalt und Qualitätsbewusstsein. Auch zügig getroffene Entscheidungen müssen auf einer fundierten Grundlage beruhen."}`;
     }
     return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vorwiegend durch methodisches Arbeiten, präzise Dokumentation und eine konsequente Qualitätsorientierung. ${person} überzeugt eher durch fachliche Tiefe und nachvollziehbare Ergebnisse. ${hochRef}${data.sec.key === "int" ? "Damit dies gelingt, erfordert die Stelle zugleich kommunikatives Geschick. Fachlich fundierte Ergebnisse müssen verständlich aufbereitet und im Team verankert werden." : "Damit dies gelingt, erfordert die Stelle zugleich Handlungsbereitschaft und Umsetzungsstärke. Wer ausschließlich analysiert, ohne Entscheidungen herbeizuführen, hemmt den Fortschritt."}`;
-  })();
+  })());
 
-  const strukturprofilText = (() => {
+  const strukturprofilText = t((() => {
     if (data.profileType === "balanced_all") {
       return "Diese Stelle erfordert keine eindeutige Spezialisierung. Sie verlangt eine Persönlichkeit, die situativ zwischen zügigem Handeln, persönlichem Kontakt und sorgfältigem Arbeiten wechseln kann. Das macht die Besetzung besonders anspruchsvoll – die Person muss vielseitig agieren, ohne dabei an Verlässlichkeit und Verbindlichkeit zu verlieren.";
     }
@@ -1336,7 +1340,7 @@ export default function Rollenprofil() {
     }
     const domBehav = data.dom.key === "imp" ? "entschlossenes Handeln und klare Prioritätensetzung" : data.dom.key === "int" ? "persönlichen Kontakt und die Fähigkeit, Vertrauen und Nähe herzustellen" : "Gründlichkeit, Verlässlichkeit und ein konsequent sorgfältiges Vorgehen";
     return `Das Profil dieser Stelle wird maßgeblich geprägt durch ${domBehav}. Dies bildet die zentrale Anforderung an die Person. ${data.sec.key === "ana" ? "Ergänzend dazu braucht es eine ordentliche und gewissenhafte Arbeitsweise, damit Abläufe stabil bleiben und Ergebnisse den geforderten Qualitätsstandards entsprechen." : data.sec.key === "int" ? "Ergänzend dazu braucht es die Fähigkeit, sich im Team abzustimmen, verständlich zu kommunizieren und ein konstruktives Miteinander zu fördern." : "Ergänzend dazu braucht es Umsetzungsstärke und Eigeninitiative, damit Aufgaben nicht nur geplant, sondern auch zuverlässig erledigt werden."}`;
-  })();
+  })());
 
 
   const domColor = COLORS[data.dom.key as keyof typeof COLORS] || "#1A5DAB";

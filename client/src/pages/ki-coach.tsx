@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImageIcon, Mic, MicOff, ThumbsUp, ThumbsDown, Copy, Check } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
-import { useRegion } from "@/lib/region";
+import { useRegion, useLocalizedText } from "@/lib/region";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 type Message = {
@@ -405,6 +405,7 @@ function formatMessage(text: string) {
 
 export default function KICoach() {
   const { region } = useRegion();
+  const t = useLocalizedText();
   const [messages, setMessages] = useState<Message[]>([WELCOME_MSG]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -1561,7 +1562,7 @@ export default function KICoach() {
                             e.currentTarget.style.color = "#3A3A3C";
                           }}
                         >
-                          {prompt}
+                          {t(prompt)}
                         </button>
                       ))}
                     </div>

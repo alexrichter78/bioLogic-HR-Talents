@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useRegion } from "@/lib/region";
+import { useRegion, useLocalizedText } from "@/lib/region";
 import { hyphenateText } from "@/lib/hyphenate";
 import {
   type Triad, type ComponentKey,
@@ -309,6 +309,7 @@ function ReadOnlyBars({ triad }: { triad: Triad }) {
 
 export default function Teamdynamik() {
   const { region } = useRegion();
+  const t = useLocalizedText();
   const isMobile = useIsMobile();
   const [teamName, setTeamName] = useState("Projektteam");
   const [teamProfile, setTeamProfile] = useState<Triad>({ impulsiv: 30, intuitiv: 50, analytisch: 20 });
@@ -501,10 +502,10 @@ export default function Teamdynamik() {
             </div>
 
             <div style={{ flex: 1, minWidth: 200 }}>
-              <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Teamgröße</p>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>{t("Teamgröße")}</p>
               <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3 }}>
                 {(["KLEIN", "MITTEL", "GROSS"] as TeamSize[]).map(size => {
-                  const labels: Record<TeamSize, string> = { KLEIN: "Klein (2–5)", MITTEL: "Mittel (6–12)", GROSS: "Groß (13+)" };
+                  const labels: Record<TeamSize, string> = { KLEIN: "Klein (2–5)", MITTEL: "Mittel (6–12)", GROSS: t("Groß (13+)") };
                   const active = teamSize === size;
                   return (
                     <button key={size} onClick={() => setTeamSize(size)} data-testid={`toggle-size-${size.toLowerCase()}`} style={{
@@ -519,7 +520,7 @@ export default function Teamdynamik() {
                 })}
               </div>
               <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 6 }}>
-                {teamSize === "KLEIN" ? "Kleine Teams: Jede Person hat hohen Einfluss auf die Dynamik." : teamSize === "GROSS" ? "Große Teams: Einzelpersonen verändern die Gesamtdynamik weniger stark." : "Mittlere Teams: Spürbarer, aber begrenzter Einfluss pro Person."}
+                {teamSize === "KLEIN" ? "Kleine Teams: Jede Person hat hohen Einfluss auf die Dynamik." : teamSize === "GROSS" ? t("Große Teams: Einzelpersonen verändern die Gesamtdynamik weniger stark.") : "Mittlere Teams: Spürbarer, aber begrenzter Einfluss pro Person."}
               </p>
             </div>
           </div>
@@ -605,7 +606,7 @@ export default function Teamdynamik() {
                     "Widerstand, Rückzug oder Lagerbildung sind möglich.",
                   ],
                   recLabel: "Was ist zu tun?",
-                  rec: "Klare Standards, feste Entscheidungsregeln und regelmäßige Reviews sind zwingend.",
+                  rec: t("Klare Standards, feste Entscheidungsregeln und regelmäßige Reviews sind zwingend."),
                 },
                 YELLOW: {
                   title: "Unterschiedliche Arbeitsweisen – aktiv steuern",
@@ -621,7 +622,7 @@ export default function Teamdynamik() {
                 },
                 GREEN: {
                   title: "Stabil – passt gut zusammen",
-                  desc: "Arbeitsweisen sind kompatibel. Keine besonderen Maßnahmen notwendig.",
+                  desc: t("Arbeitsweisen sind kompatibel. Keine besonderen Maßnahmen notwendig."),
                   label: "Was bedeutet das konkret?",
                   bullets: [
                     "Entscheidungen werden schnell verstanden und akzeptiert.",
@@ -629,7 +630,7 @@ export default function Teamdynamik() {
                     "Tempo und Qualität bleiben stabil.",
                   ],
                   recLabel: "Was ist zu tun?",
-                  rec: "Normale Führung und regelmäßige Abstimmung reichen aus.",
+                  rec: t("Normale Führung und regelmäßige Abstimmung reichen aus."),
                 },
               };
 
@@ -846,7 +847,7 @@ export default function Teamdynamik() {
                   <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 10px", lineHeight: 1.6, fontWeight: 500 }}>{result.activeMatrixCell.systemlage}</p>
                   <p style={{ fontSize: 11, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>Alltagswirkung</p>
                   <p style={{ fontSize: 12, color: "#48484A", margin: "0 0 10px", lineHeight: 1.6 }}>{result.activeMatrixCell.alltag}</p>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>Maßnahmen</p>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>{t("Maßnahmen")}</p>
                   <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{result.activeMatrixCell.tun}</p>
                 </div>
               </div>
@@ -1195,7 +1196,7 @@ export default function Teamdynamik() {
               <Zap style={{ width: 14, height: 14, color: "#FF9500" }} />
               <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Führungshebel</p>
             </div>
-            <p style={{ fontSize: 11, color: "#8E8E93", margin: "-8px 0 12px", lineHeight: 1.4 }}>Konkrete Steuerungsmaßnahmen für diese Führungskraft-Team-Kombination</p>
+            <p style={{ fontSize: 11, color: "#8E8E93", margin: "-8px 0 12px", lineHeight: 1.4 }}>{t("Konkrete Steuerungsmaßnahmen für diese Führungskraft-Team-Kombination")}</p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }} data-testid="leadership-levers-section">
               {result.leadershipContext.leadershipLevers.map((lever, i) => {

@@ -6,6 +6,7 @@ import {
   CalendarDays, Award, Gauge, Heart, Brain,
 } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
+import { useLocalizedText } from "@/lib/region";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { hyphenateText } from "@/lib/hyphenate";
 import {
@@ -178,6 +179,7 @@ function BulletList({ items, color, icon }: { items: string[]; color?: string; i
 
 export default function TeamCheck() {
   const isMobile = useIsMobile();
+  const t = useLocalizedText();
   const [soll, setSoll] = useState<Triad>({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
   const [kandidat, setKandidat] = useState<Triad>({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
   const [team, setTeam] = useState<Triad>({ impulsiv: 30, intuitiv: 50, analytisch: 20 });
@@ -1024,10 +1026,10 @@ export default function TeamCheck() {
               </div>
 
               <div style={{ flex: 1, minWidth: 200 }}>
-                <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Teamgröße</p>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>{t("Teamgröße")}</p>
                 <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, marginBottom: 6 }}>
                   {(["KLEIN", "MITTEL", "GROSS"] as TeamSize[]).map(size => {
-                    const labels: Record<TeamSize, string> = { KLEIN: "Klein (2–5)", MITTEL: "Mittel (6–12)", GROSS: "Groß (13+)" };
+                    const labels: Record<TeamSize, string> = { KLEIN: "Klein (2–5)", MITTEL: "Mittel (6–12)", GROSS: t("Groß (13+)") };
                     const active = teamSize === size;
                     return (
                       <button key={size} onClick={() => setTeamSize(size)} data-testid={`toggle-size-${size.toLowerCase()}`} style={{
@@ -1042,7 +1044,7 @@ export default function TeamCheck() {
                   })}
                 </div>
                 <p style={{ fontSize: 12, color: "#8E8E93", margin: 0 }}>
-                  {teamSize === "KLEIN" ? "Kleine Teams: Jede Person hat hohen Einfluss auf die Dynamik." : teamSize === "GROSS" ? "Große Teams: Einzelpersonen verändern die Gesamtdynamik weniger stark." : "Mittlere Teams: Spürbarer, aber begrenzter Einfluss pro Person."}
+                  {teamSize === "KLEIN" ? "Kleine Teams: Jede Person hat hohen Einfluss auf die Dynamik." : teamSize === "GROSS" ? t("Große Teams: Einzelpersonen verändern die Gesamtdynamik weniger stark.") : "Mittlere Teams: Spürbarer, aber begrenzter Einfluss pro Person."}
                 </p>
               </div>
             </div>
@@ -1075,7 +1077,7 @@ export default function TeamCheck() {
                     "Widerstand, Rückzug oder Lagerbildung sind möglich.",
                   ],
                   recLabel: "Was ist zu tun?",
-                  rec: "Klare Standards, feste Entscheidungsregeln und regelmäßige Reviews sind zwingend.",
+                  rec: t("Klare Standards, feste Entscheidungsregeln und regelmäßige Reviews sind zwingend."),
                 },
                 YELLOW: {
                   title: "Unterschiedliche Arbeitsweisen – aktiv steuern",
@@ -1090,14 +1092,14 @@ export default function TeamCheck() {
                 },
                 GREEN: {
                   title: "Stabil – passt gut zusammen",
-                  desc: "Arbeitsweisen sind kompatibel. Keine besonderen Maßnahmen notwendig.",
+                  desc: t("Arbeitsweisen sind kompatibel. Keine besonderen Maßnahmen notwendig."),
                   bullets: [
                     "Entscheidungen werden schnell verstanden und akzeptiert.",
                     "Abstimmungen laufen reibungslos.",
                     "Tempo und Qualität bleiben stabil.",
                   ],
                   recLabel: "Was ist zu tun?",
-                  rec: "Normale Führung und regelmäßige Abstimmung reichen aus.",
+                  rec: t("Normale Führung und regelmäßige Abstimmung reichen aus."),
                 },
               };
               const d = detail[tlKey];
@@ -1274,7 +1276,7 @@ export default function TeamCheck() {
               {detailTab === "hebel" && (
                 <div data-testid="content-hebel">
                   <SectionHeader num={3} title="FÜHRUNGSHEBEL" icon={Flame} />
-                  <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 18px", fontWeight: 500 }}>Konkrete Steuerungsmaßnahmen für diese Führungskraft-Team-Kombination</p>
+                  <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 18px", fontWeight: 500 }}>{t("Konkrete Steuerungsmaßnahmen für diese Führungskraft-Team-Kombination")}</p>
 
                   {isLeading && tdResult.leadershipContext && tdResult.leadershipContext.leadershipLevers.length > 0 ? (
                     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
