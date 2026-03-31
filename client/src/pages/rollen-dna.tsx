@@ -929,227 +929,79 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
   const arbDetail = arbeitsDetail[arbeitslogik] || ["Die Arbeitsweise ist vielseitig und situationsabhängig.", ""];
   const fuehDetail = fuehrungDetail[fuehrung] || fuehrungOpt?.desc || "";
 
-  const aufgabenOpt = AUFGABENCHARAKTER_OPTIONS.find(o => o.value === aufgabencharakter);
-
-  const aufgabenKurz: Record<string, string> = {
-    "überwiegend operativ": "operative Rolle",
-    "überwiegend systemisch": "systemisch-strukturierte Rolle",
-    "überwiegend strategisch": "strategische Rolle",
-    "Gemischt": "ausgewogene Rolle",
-  };
-  const fuehrungKurz: Record<string, string> = {
-    "Keine": "ohne Führungsverantwortung",
-    "Projekt-/Teamkoordination": "mit koordinativem Schwerpunkt",
-    "Fachliche Führung": "mit fachlicher Führung",
-    "Disziplinarische Führung mit Ergebnisverantwortung": "mit Personalverantwortung",
-  };
-  const arbeitsKurz: Record<string, string> = {
-    "Umsetzungsorientiert": "umsetzungsorientiertem Fokus",
-    "Daten-/prozessorientiert": "analytischem Fokus",
-    "Menschenorientiert": "kommunikativem Fokus",
-    "Ausgewogen": "ausgewogenem Profil",
-  };
-
-  const titlePart1 = aufgabenKurz[aufgabencharakter] || "Stellenprofil";
-  const titlePart2 = fuehrungKurz[fuehrung] || "";
-  const summaryTitle = titlePart1.charAt(0).toUpperCase() + titlePart1.slice(1) + (titlePart2 ? ` ${titlePart2}` : "");
-  const summarySubtitle = `Fokus auf ${arbeitsKurz[arbeitslogik] || "vielseitigem Profil"}, ${rollenName}.`;
-
-  const pillIcon = (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
-      <circle cx="8" cy="8" r="8" fill="#E8A830" />
+  const subHeadingIcon = (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
+      <circle cx="8" cy="8" r="8" fill="#34C759" />
       <path d="M5 8.2L7.2 10.4L11 5.6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
-  const cardIcon = (color: string) => (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
-      <circle cx="9" cy="9" r="9" fill={color} opacity="0.15" />
-      <circle cx="9" cy="9" r="5" fill={color} />
-    </svg>
-  );
-
-  const pillTags = [
-    arbeitsOpt?.label,
-    fuehrungOpt?.label,
-    ...(fokusLabels.length > 0 ? [fokusLabels.join(" & ")] : []),
-  ].filter(Boolean);
-
-  const arbeitsStichpunkte: Record<string, string[]> = {
-    "Umsetzungsorientiert": ["Umsetzung & Ergebnisse", "handlungsorientiert", "praxisnah", "zielgerichtet"],
-    "Daten-/prozessorientiert": ["Analyse & Struktur", "datenbasiert", "systematisch", "klar geplant"],
-    "Menschenorientiert": ["Zusammenarbeit & Kommunikation", "beziehungsorientiert", "empathisch", "vernetzend"],
-    "Ausgewogen": ["Ausgewogene Mischung", "vielseitig", "flexibel", "situativ"],
-  };
-  const fuehrungStichpunkte: Record<string, string[]> = {
-    "Keine": ["Eigenverantwortliches Arbeiten", "keine direkte Führung", "fachliche Mitarbeit"],
-    "Projekt-/Teamkoordination": ["Projekte und Abläufe", "Abstimmung und Struktur", "reibungsloses Teamwork"],
-    "Fachliche Führung": ["Fachliche Steuerung", "Qualitätssicherung", "Teamunterstützung"],
-    "Disziplinarische Führung mit Ergebnisverantwortung": ["Personalverantwortung", "Mitarbeiterentwicklung", "Ergebnissteuerung"],
-  };
-  const fokusStichpunkte = fokusLabels.length > 0
-    ? fokusLabels.map(l => {
-        const kurz: Record<string, string> = {
-          "Ergebnisse und Zielerreichung": "messbare Ergebnisse",
-          "Zusammenarbeit und Netzwerk": "stabile Zusammenarbeit",
-          "Innovation und Weiterentwicklung": "kontinuierliche Entwicklung",
-          "Prozesse und Effizienz": "effiziente Prozesse",
-          "Fachliche Qualität und Expertise": "fachliche Exzellenz",
-          "Strategische Wirkung": "strategische Wirkung",
-        };
-        return kurz[l] || l;
-      })
-    : ["nicht definiert"];
 
   return (
     <div
       data-testid="summary-bar"
       style={{
-        background: "linear-gradient(135deg, rgba(245,247,250,0.95), rgba(240,243,248,0.9))",
+        background: "rgba(245,247,250,0.9)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
-        borderRadius: 20,
-        padding: "32px 28px 28px",
+        borderRadius: 18,
+        padding: "28px 28px 24px",
         marginTop: 32,
         border: "1px solid rgba(0,0,0,0.05)",
-        boxShadow: "0 4px 24px rgba(0,0,0,0.04)",
+        boxShadow: "0 2px 16px rgba(0,0,0,0.03)",
       }}
     >
-      <h3 style={{
-        fontSize: 20,
-        fontWeight: 700,
-        color: "#1D1D1F",
-        letterSpacing: "-0.02em",
-        margin: "0 0 6px",
-        textAlign: "center",
-        lineHeight: 1.35,
-      }}>
-        {summaryTitle}
-      </h3>
-      <p style={{
-        fontSize: 13.5,
-        color: "#6E6E73",
-        margin: "0 0 18px",
-        textAlign: "center",
-        lineHeight: 1.5,
-      }}>
-        {summarySubtitle}
-      </p>
-
-      <div style={{
-        display: "flex",
-        justifyContent: "center",
-        gap: 10,
-        flexWrap: "wrap",
-        marginBottom: 24,
-      }}>
-        {pillTags.map((tag, i) => (
-          <span key={i} style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-            padding: "7px 16px",
-            borderRadius: 20,
-            background: "#fff",
-            border: "1px solid rgba(0,0,0,0.08)",
-            fontSize: 13,
-            fontWeight: 600,
-            color: "#3A3A3C",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-          }}>
-            {pillIcon}
-            {tag}
-          </span>
-        ))}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+        <div style={{
+          width: 28, height: 28, borderRadius: "50%",
+          background: "linear-gradient(135deg, #34C759, #30B350)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          boxShadow: "0 2px 8px rgba(52,199,89,0.3)",
+        }}>
+          <CheckCircle2 style={{ width: 16, height: 16, color: "#fff", strokeWidth: 2.5 }} />
+        </div>
+        <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>
+          Zusammenfassung
+        </span>
       </div>
 
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
-        gap: 14,
-      }}>
-        <div style={{
-          background: "#fff",
-          borderRadius: 16,
-          padding: "20px 18px",
-          border: "1px solid rgba(0,0,0,0.05)",
-          boxShadow: "0 2px 12px rgba(0,0,0,0.03)",
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-            {cardIcon("#0071E3")}
-            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>Arbeitsweise</span>
-          </div>
-          <ul style={{ margin: 0, padding: "0 0 0 8px", listStyle: "none" }}>
-            {(arbeitsStichpunkte[arbeitslogik] || ["Vielseitig", "flexibel", "situativ"]).map((item, i) => (
-              <li key={i} style={{
-                fontSize: 13.5,
-                color: "#3A3A3C",
-                lineHeight: 1.6,
-                paddingLeft: 12,
-                position: "relative",
-                marginBottom: 2,
-              }}>
-                <span style={{ position: "absolute", left: 0, color: "#0071E3", fontWeight: 700 }}>·</span>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
+      <p style={{ fontSize: 13.5, color: "#6E6E73", lineHeight: 1.6, margin: "0 0 8px" }}>
+        So lässt sich die Stelle aktuell beschreiben:
+      </p>
+      <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "0 0 4px" }}>
+        Die Stelle {rollenName} {aufgText}.
+        {" "}Im Alltag geht es vor allem darum, {arbText}.
+      </p>
+      {fokusSatz && (
+        <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "8px 0 0" }}>
+          {fokusSatz}
+        </p>
+      )}
 
-        <div style={{
-          background: "#fff",
-          borderRadius: 16,
-          padding: "20px 18px",
-          border: "1px solid rgba(0,0,0,0.05)",
-          boxShadow: "0 2px 12px rgba(0,0,0,0.03)",
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-            {cardIcon("#E8A830")}
-            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>Führungsrolle</span>
-          </div>
-          <ul style={{ margin: 0, padding: "0 0 0 8px", listStyle: "none" }}>
-            {(fuehrungStichpunkte[fuehrung] || ["Eigenständig", "verantwortungsvoll"]).map((item, i) => (
-              <li key={i} style={{
-                fontSize: 13.5,
-                color: "#3A3A3C",
-                lineHeight: 1.6,
-                paddingLeft: 12,
-                position: "relative",
-                marginBottom: 2,
-              }}>
-                <span style={{ position: "absolute", left: 0, color: "#E8A830", fontWeight: 700 }}>·</span>
-                {item}
-              </li>
-            ))}
-          </ul>
+      <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", marginTop: 20, paddingTop: 16, marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+          {subHeadingIcon}
+          <span style={{ fontSize: 15, fontWeight: 650, color: "#1D1D1F" }}>Arbeitsweise</span>
         </div>
+        <p style={{ fontSize: 14, fontWeight: 600, color: "#3A3A3C", lineHeight: 1.5, margin: "0 0 4px" }}>
+          {arbeitsOpt?.label}
+        </p>
+        <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: 0 }}>
+          {arbDetail[0]}
+          {arbDetail[1] ? <><br />{arbDetail[1]}</> : null}
+        </p>
+      </div>
 
-        <div style={{
-          background: "#fff",
-          borderRadius: 16,
-          padding: "20px 18px",
-          border: "1px solid rgba(0,0,0,0.05)",
-          boxShadow: "0 2px 12px rgba(0,0,0,0.03)",
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-            {cardIcon("#34C759")}
-            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>Erfolgslogik</span>
-          </div>
-          <ul style={{ margin: 0, padding: "0 0 0 8px", listStyle: "none" }}>
-            {fokusStichpunkte.map((item, i) => (
-              <li key={i} style={{
-                fontSize: 13.5,
-                color: "#3A3A3C",
-                lineHeight: 1.6,
-                paddingLeft: 12,
-                position: "relative",
-                marginBottom: 2,
-              }}>
-                <span style={{ position: "absolute", left: 0, color: "#34C759", fontWeight: 700 }}>·</span>
-                {item}
-              </li>
-            ))}
-          </ul>
+      <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+          {subHeadingIcon}
+          <span style={{ fontSize: 15, fontWeight: 650, color: "#1D1D1F" }}>Führungsrolle</span>
         </div>
+        <p style={{ fontSize: 14, fontWeight: 600, color: "#3A3A3C", lineHeight: 1.5, margin: "0 0 4px" }}>
+          {fuehrungOpt?.label}
+        </p>
+        <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: 0 }}>
+          {fuehDetail}
+        </p>
       </div>
     </div>
   );
