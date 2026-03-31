@@ -1137,9 +1137,16 @@ export default function KICoach() {
               return matching.map(p => ({ prompt: p, category: cat.category }));
             }) : [];
 
-            return (
+            return (<>
             <div style={{
               padding: isMobile ? "10px 10px 0" : "14px 28px 0",
+              textAlign: "center",
+            }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 3px" }} data-testid="text-input-title">Ihre Frage an den KI-Coach</p>
+              <p style={{ fontSize: 11.5, color: "#8E8E93", margin: "0 0 12px" }} data-testid="text-input-desc">Stellen Sie eine Frage zu Führung, Teamdynamik, Kommunikation oder nutzen Sie einen Musterprompt.</p>
+            </div>
+            <div style={{
+              padding: isMobile ? "0 10px 0" : "0 28px 0",
               borderBottom: isSearching && allPrompts.length > 0 ? "1px solid rgba(0,0,0,0.06)" : "none",
               position: "relative",
             }} data-testid="card-prompt-search">
@@ -1309,7 +1316,7 @@ export default function KICoach() {
                 </div>
               )}
             </div>
-            );
+            </>);
           })()}
 
           <div style={{
@@ -1606,10 +1613,6 @@ export default function KICoach() {
             borderTop: "1px solid rgba(0,0,0,0.06)",
             background: "rgba(255,255,255,0.5)",
           }}>
-            <div style={{ textAlign: "center", padding: "0 0 10px" }}>
-              <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 3px" }} data-testid="text-input-title">Ihre Frage an den KI-Coach</p>
-              <p style={{ fontSize: 11.5, color: "#8E8E93", margin: 0 }} data-testid="text-input-desc">Stellen Sie eine Frage zu Führung, Teamdynamik, Kommunikation oder nutzen Sie einen Musterprompt.</p>
-            </div>
             <div style={{
               display: "flex", gap: 10, alignItems: "flex-end",
               background: "rgba(0,0,0,0.03)",
