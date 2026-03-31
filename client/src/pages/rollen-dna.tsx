@@ -714,7 +714,7 @@ function DescriptiveOptionGroup({
               textAlign: "left",
               padding: "14px 18px",
               borderRadius: 14,
-              border: isSelected ? `2px solid ${accentColor}` : "2px solid rgba(0,0,0,0.08)",
+              border: isSelected ? "2px solid rgba(0,0,0,0.15)" : "2px solid rgba(0,0,0,0.08)",
               background: isSelected ? "rgba(0,0,0,0.03)" : "transparent",
               cursor: "pointer",
               transition: "background 180ms ease, border-color 180ms ease",
@@ -734,7 +734,7 @@ function DescriptiveOptionGroup({
             <span style={{
               fontSize: 15,
               fontWeight: 600,
-              color: isSelected ? accentColor : "#1D1D1F",
+              color: "#1D1D1F",
               lineHeight: 1.3,
             }}>{opt.label}</span>
             <span style={{
@@ -776,7 +776,7 @@ function DescriptiveOptionGroupIndexed({
               textAlign: "left",
               padding: "14px 18px",
               borderRadius: 14,
-              border: isSelected ? `2px solid ${accentColor}` : "2px solid rgba(0,0,0,0.08)",
+              border: isSelected ? "2px solid rgba(0,0,0,0.15)" : "2px solid rgba(0,0,0,0.08)",
               background: isSelected ? "rgba(0,0,0,0.03)" : "transparent",
               cursor: "pointer",
               transition: "background 180ms ease, border-color 180ms ease",
@@ -796,7 +796,7 @@ function DescriptiveOptionGroupIndexed({
             <span style={{
               fontSize: 15,
               fontWeight: 600,
-              color: isSelected ? accentColor : "#1D1D1F",
+              color: "#1D1D1F",
               lineHeight: 1.3,
             }}>{opt.label}</span>
             <span style={{
