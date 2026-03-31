@@ -991,7 +991,7 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
             <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>Arbeitsweise</span>
           </div>
           <p style={{
-            fontSize: 14, fontWeight: 600, color: "#0071E3",
+            fontSize: 14, fontWeight: 600, color: "#1D1D1F",
             lineHeight: 1.4, margin: "0 0 6px",
           }}>
             {arbeitsOpt?.label}
@@ -1019,7 +1019,7 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
             <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>Führungsrolle</span>
           </div>
           <p style={{
-            fontSize: 14, fontWeight: 600, color: "#34C759",
+            fontSize: 14, fontWeight: 600, color: "#1D1D1F",
             lineHeight: 1.4, margin: "0 0 6px",
           }}>
             {fuehrungOpt?.label}
