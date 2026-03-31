@@ -954,6 +954,13 @@ export default function KICoach() {
     );
 
     if (isAskingUserProfile) {
+      const oderAlternative = extractOptionsFromText(lastTwo);
+      if (oderAlternative.length >= 2) {
+        const hasNonProfileOption = oderAlternative.some(opt => !/impulsiv|intuitiv|analytisch|Doppeldominanz|rot\s|gelb\s|blau\s|profil|prägung/i.test(opt));
+        if (hasNonProfileOption) {
+          return oderAlternative;
+        }
+      }
       const profileButtons: string[] = [];
       if (/welche.{0,20}Doppeldominanz|deine Doppeldominanz|Doppeldominanz.{0,20}(nenn|sag|hast)/i.test(lastTwo)) {
         profileButtons.push(
@@ -967,13 +974,6 @@ export default function KICoach() {
           "Rot-Gelb (impulsiv-intuitiv)", "Rot-Blau (impulsiv-analytisch)", "Gelb-Blau (intuitiv-analytisch)",
           "Allgemeine Antwort bitte",
         );
-      }
-      const oderAlternative = extractOptionsFromText(lastTwo);
-      if (oderAlternative.length === 2) {
-        const altOption = oderAlternative[1];
-        if (altOption && !/impulsiv|intuitiv|analytisch|Doppeldominanz|profil|prägung/i.test(altOption)) {
-          profileButtons.push(altOption);
-        }
       }
       return profileButtons;
     }
