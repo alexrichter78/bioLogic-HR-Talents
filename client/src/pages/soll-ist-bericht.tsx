@@ -460,8 +460,8 @@ export default function SollIstBericht() {
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <SlidersHorizontal style={{ width: 22, height: 22, color: "#34C759", flexShrink: 0 }} />
-                <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
-                  Profilvergleich
+                <span style={{ fontSize: 20, fontWeight: 700, color: "#34C759" }}>
+                  Profilvergleich:
                 </span>
               </div>
               <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${profilvergleichOpen ? "rotate-180" : ""}`} />

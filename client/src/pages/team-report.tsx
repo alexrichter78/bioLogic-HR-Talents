@@ -785,7 +785,7 @@ export default function TeamReport() {
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <div style={{ width: 30, height: 30, borderRadius: 15, background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Settings style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} /></div>
-                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }}>{"Team-Kontext:"} <span style={{ fontWeight: 400 }}>Stelle vs. Rolle vs. Teamziel</span></span>
+                <span style={{ fontSize: 20, fontWeight: 700, color: "#34C759" }}>{"Team-Kontext:"}</span> <span style={{ fontSize: 20, fontWeight: 400, color: "#1D1D1F" }}>Stelle vs. Rolle vs. Teamziel</span>
               </div>
               <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: kontextOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
             </button>
