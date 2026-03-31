@@ -758,7 +758,7 @@ export default function TeamReport() {
           >
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ width: 30, height: 30, borderRadius: 15, background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Users style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} /></div>
-              <span style={{ fontSize: 20, fontWeight: 700, color: "#34C759" }} data-testid="text-teamcheck-label">{"Profilvergleich:"}</span> <span style={{ fontSize: 20, fontWeight: 400, color: "#1D1D1F" }}>Person vs. Team</span>
+              <span style={{ display: "flex", alignItems: "baseline", gap: 6 }}><span style={{ fontSize: 20, fontWeight: 700, color: "#34C759", flexShrink: 0 }} data-testid="text-teamcheck-label">Profilvergleich:</span> <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>Person vs. Team</span></span>
             </div>
             <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: configOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
           </button>
@@ -785,7 +785,7 @@ export default function TeamReport() {
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <div style={{ width: 30, height: 30, borderRadius: 15, background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Settings style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} /></div>
-                <span style={{ fontSize: 20, fontWeight: 700, color: "#34C759" }}>{"Team-Kontext:"}</span> <span style={{ fontSize: 20, fontWeight: 400, color: "#1D1D1F" }}>Stelle vs. Rolle vs. Teamziel</span>
+                <span style={{ display: "flex", alignItems: "baseline", gap: 6 }}><span style={{ fontSize: 20, fontWeight: 700, color: "#34C759", flexShrink: 0 }}>Team-Kontext:</span> <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>Stelle vs. Rolle vs. Teamziel</span></span>
               </div>
               <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: kontextOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
             </button>
@@ -1260,9 +1260,12 @@ export default function TeamReport() {
                   data-testid="button-toggle-matchcheck-team"
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <Zap style={{ width: 22, height: 22, color: "#3A9A5C", flexShrink: 0 }} />
-                    <span style={{ fontSize: 20, fontWeight: 700, color: "#34C759" }}>
-                      TeamCheck — Systemwirkung
+                    <div style={{ width: 30, height: 30, borderRadius: "50%", background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <Zap style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
+                    </div>
+                    <span style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+                      <span style={{ fontSize: 20, fontWeight: 700, color: "#34C759", flexShrink: 0 }}>TeamCheck:</span>
+                      <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>Systemwirkung</span>
                     </span>
                   </div>
                   <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${matchCheckOpen ? "rotate-180" : ""}`} />

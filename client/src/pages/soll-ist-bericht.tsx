@@ -459,9 +459,12 @@ export default function SollIstBericht() {
               data-testid="button-toggle-profilvergleich"
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <SlidersHorizontal style={{ width: 22, height: 22, color: "#34C759", flexShrink: 0 }} />
-                <span style={{ fontSize: 20, fontWeight: 700, color: "#34C759" }}>
-                  Profilvergleich
+                <div style={{ width: 30, height: 30, borderRadius: "50%", background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <SlidersHorizontal style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
+                </div>
+                <span style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+                  <span style={{ fontSize: 20, fontWeight: 700, color: "#34C759", flexShrink: 0 }}>Profilvergleich:</span>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>{roleName || "Stelle"}</span>
                 </span>
               </div>
               <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${profilvergleichOpen ? "rotate-180" : ""}`} />
@@ -699,9 +702,12 @@ export default function SollIstBericht() {
                     data-testid="button-toggle-systemwirkung"
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <Zap style={{ width: 22, height: 22, color: "#34C759", flexShrink: 0 }} />
-                      <span style={{ fontSize: 20, fontWeight: 700, color: "#34C759" }}>
-                        MatchCheck: {roleName || "Stelle"}
+                      <div style={{ width: 30, height: 30, borderRadius: "50%", background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <Zap style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
+                      </div>
+                      <span style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+                        <span style={{ fontSize: 20, fontWeight: 700, color: "#34C759", flexShrink: 0 }}>MatchCheck:</span>
+                        <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>{roleName || "Stelle"}</span>
                       </span>
                     </div>
                     <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${systemwirkungOpen ? "rotate-180" : ""}`} />
