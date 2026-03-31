@@ -1150,33 +1150,56 @@ export default function KICoach() {
               borderBottom: isSearching && allPrompts.length > 0 ? "1px solid rgba(0,0,0,0.06)" : "none",
               position: "relative",
             }} data-testid="card-prompt-search">
-              <div style={{ position: "relative" }}>
-                <Search style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 15, height: 15, color: "#8E8E93", pointerEvents: "none" }} />
-                <input
-                  type="text"
-                  value={promptSearch}
-                  onChange={e => setPromptSearch(e.target.value)}
-                  placeholder="Musterprompt suchen… z.B. Konflikt, Onboarding, Feedback"
-                  data-testid="input-prompt-search"
+              <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                <div style={{ position: "relative", flex: 1 }}>
+                  <Search style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 15, height: 15, color: "#8E8E93", pointerEvents: "none" }} />
+                  <input
+                    type="text"
+                    value={promptSearch}
+                    onChange={e => setPromptSearch(e.target.value)}
+                    placeholder="Musterprompt suchen…"
+                    data-testid="input-prompt-search"
+                    style={{
+                      width: "100%", padding: "10px 36px 10px 36px",
+                      border: "1px solid rgba(0,0,0,0.08)", borderRadius: 12,
+                      fontSize: 13, color: "#1D1D1F", background: "rgba(0,0,0,0.02)",
+                      outline: "none", boxSizing: "border-box",
+                      transition: "border-color 200ms ease",
+                    }}
+                    onFocus={e => { e.currentTarget.style.borderColor = "rgba(0,113,227,0.4)"; e.currentTarget.style.background = "#FFFFFF"; }}
+                    onBlur={e => { setTimeout(() => { e.target.style.borderColor = "rgba(0,0,0,0.08)"; e.target.style.background = "rgba(0,0,0,0.02)"; }, 200); }}
+                  />
+                  {promptSearch && (
+                    <button
+                      onClick={() => setPromptSearch("")}
+                      data-testid="button-clear-prompt-search"
+                      style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,0.06)", border: "none", borderRadius: "50%", width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", padding: 0 }}
+                    >
+                      <X style={{ width: 11, height: 11, color: "#8E8E93" }} />
+                    </button>
+                  )}
+                </div>
+                <button
+                  onClick={() => { setShowPrompts(v => !v); if (showPrompts) setExpandedCategory(null); }}
+                  data-testid="button-example-prompts"
                   style={{
-                    width: "100%", padding: "10px 36px 10px 36px",
-                    border: "1px solid rgba(0,0,0,0.08)", borderRadius: 12,
-                    fontSize: 13, color: "#1D1D1F", background: "rgba(0,0,0,0.02)",
-                    outline: "none", boxSizing: "border-box",
-                    transition: "border-color 200ms ease",
+                    display: "flex", alignItems: "center", gap: 7,
+                    background: "linear-gradient(135deg, #0071E3, #34AADC)",
+                    border: "none",
+                    borderRadius: 12, padding: "10px 20px",
+                    cursor: "pointer", fontSize: 13, color: "#FFFFFF",
+                    fontWeight: 600, transition: "all 200ms ease",
+                    boxShadow: "0 4px 12px rgba(0,113,227,0.25)",
+                    flexShrink: 0, whiteSpace: "nowrap",
                   }}
-                  onFocus={e => { e.currentTarget.style.borderColor = "rgba(0,113,227,0.4)"; e.currentTarget.style.background = "#FFFFFF"; }}
-                  onBlur={e => { setTimeout(() => { e.target.style.borderColor = "rgba(0,0,0,0.08)"; e.target.style.background = "rgba(0,0,0,0.02)"; }, 200); }}
-                />
-                {promptSearch && (
-                  <button
-                    onClick={() => setPromptSearch("")}
-                    data-testid="button-clear-prompt-search"
-                    style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,0.06)", border: "none", borderRadius: "50%", width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", padding: 0 }}
-                  >
-                    <X style={{ width: 11, height: 11, color: "#8E8E93" }} />
-                  </button>
-                )}
+                >
+                  <Lightbulb style={{ width: 15, height: 15 }} />
+                  Musterprompts
+                  {showPrompts
+                    ? <ChevronUp style={{ width: 12, height: 12 }} />
+                    : <ChevronDown style={{ width: 12, height: 12 }} />
+                  }
+                </button>
               </div>
 
               {isSearching && (
@@ -1216,28 +1239,6 @@ export default function KICoach() {
                   ))}
                 </div>
               )}
-              <div style={{ display: "flex", justifyContent: "center", marginTop: 10, marginBottom: 4 }}>
-                <button
-                  onClick={() => { setShowPrompts(v => !v); if (showPrompts) setExpandedCategory(null); }}
-                  data-testid="button-example-prompts"
-                  style={{
-                    display: "flex", alignItems: "center", gap: 7,
-                    background: "linear-gradient(135deg, #0071E3, #34AADC)",
-                    border: "none",
-                    borderRadius: 12, padding: "9px 22px",
-                    cursor: "pointer", fontSize: 13, color: "#FFFFFF",
-                    fontWeight: 600, transition: "all 200ms ease",
-                    boxShadow: "0 4px 12px rgba(0,113,227,0.25)",
-                  }}
-                >
-                  <Lightbulb style={{ width: 15, height: 15 }} />
-                  Musterprompts
-                  {showPrompts
-                    ? <ChevronUp style={{ width: 12, height: 12 }} />
-                    : <ChevronDown style={{ width: 12, height: 12 }} />
-                  }
-                </button>
-              </div>
 
               {showPrompts && (
                 <div style={{
