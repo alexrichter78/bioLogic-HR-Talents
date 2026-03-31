@@ -1185,7 +1185,7 @@ export default function KICoach() {
               <p style={{ fontSize: 14, color: "#48484A", margin: "6px 0 0", fontWeight: 600, lineHeight: 1.65 }} data-testid="text-input-desc">Stellen Sie eine Frage zu Führung, Teamdynamik, Kommunikation oder nutzen Sie einen Musterprompt.</p>
             </div>
             <div style={{
-              padding: isMobile ? "0 10px 0" : "0 28px 0",
+              padding: isMobile ? "12px 10px 0" : "12px 28px 0",
               borderBottom: isSearching && allPrompts.length > 0 ? "1px solid rgba(0,0,0,0.06)" : "none",
               position: "relative",
             }} data-testid="card-prompt-search">
