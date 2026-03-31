@@ -249,88 +249,92 @@ export default function Kurs() {
                 </div>
               )}
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div style={{
+                borderRadius: 16, background: "#FFFFFF",
+                border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 2px 12px rgba(0,0,0,0.03)",
+                overflow: "hidden",
+              }}>
+                {!isMobile && (
+                  <div style={{
+                    display: "grid", gridTemplateColumns: "40px 1fr 1fr 1.3fr 40px",
+                    gap: 12, padding: "12px 16px",
+                    borderBottom: "1px solid rgba(0,0,0,0.06)", background: "#FAFBFC",
+                  }}>
+                    <span />
+                    <span style={labelStyle}>Vorname</span>
+                    <span style={labelStyle}>Nachname</span>
+                    <span style={labelStyle}>E-Mail-Adresse</span>
+                    <span />
+                  </div>
+                )}
+
                 {participants.map((p, idx) => (
                   <div
                     key={p.id}
-                    data-testid={`card-participant-${p.id}`}
+                    data-testid={`row-participant-${p.id}`}
                     style={{
-                      padding: isMobile ? 16 : 24, borderRadius: 16, background: "#FFFFFF",
-                      border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 2px 12px rgba(0,0,0,0.03)",
+                      display: isMobile ? "flex" : "grid",
+                      flexDirection: isMobile ? "column" : undefined,
+                      gridTemplateColumns: isMobile ? undefined : "40px 1fr 1fr 1.3fr 40px",
+                      gap: isMobile ? 10 : 12,
+                      padding: isMobile ? 16 : "12px 16px",
+                      alignItems: isMobile ? "stretch" : "center",
+                      borderBottom: idx < participants.length - 1 ? "1px solid rgba(0,0,0,0.04)" : "none",
                     }}
                   >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <div style={{
-                          width: 30, height: 30, borderRadius: "50%",
-                          background: "linear-gradient(135deg, #34C759, #30B350)",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                        }}>
-                          <UserPlus style={{ width: 15, height: 15, color: "#FFF" }} />
+                    {isMobile && (
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <div style={{
+                            width: 26, height: 26, borderRadius: "50%",
+                            background: "linear-gradient(135deg, #34C759, #30B350)",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            fontSize: 12, fontWeight: 700, color: "#FFF",
+                          }}>
+                            {idx + 1}
+                          </div>
+                          <span style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F" }}>Teilnehmer {idx + 1}</span>
                         </div>
-                        <span style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F" }}>
-                          Teilnehmer {idx + 1}
-                        </span>
+                        {participants.length > 1 && (
+                          <button type="button" onClick={() => removeParticipant(p.id)} data-testid={`button-remove-participant-${p.id}`}
+                            style={{ background: "none", border: "none", cursor: "pointer", color: "#FF3B30", padding: 4, display: "flex", alignItems: "center" }}>
+                            <Trash2 style={{ width: 15, height: 15 }} />
+                          </button>
+                        )}
                       </div>
-                      {participants.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeParticipant(p.id)}
-                          data-testid={`button-remove-participant-${p.id}`}
-                          style={{
-                            background: "none", border: "none", cursor: "pointer",
-                            color: "#FF3B30", padding: 4, borderRadius: 6,
-                            display: "flex", alignItems: "center",
-                          }}
-                        >
-                          <Trash2 style={{ width: 16, height: 16 }} />
-                        </button>
-                      )}
-                    </div>
+                    )}
 
-                    <div style={{
-                      display: "grid",
-                      gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-                      gap: 12,
-                      marginBottom: 12,
-                    }}>
-                      <div>
-                        <label style={labelStyle}>Vorname</label>
-                        <input
-                          type="text"
-                          value={p.firstName}
-                          onChange={e => updateParticipant(p.id, "firstName", e.target.value)}
-                          placeholder="Vorname"
-                          style={inputStyle}
-                          required
-                          data-testid={`input-firstname-${p.id}`}
-                        />
+                    {!isMobile && (
+                      <div style={{
+                        width: 26, height: 26, borderRadius: "50%",
+                        background: "linear-gradient(135deg, #34C759, #30B350)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 12, fontWeight: 700, color: "#FFF",
+                      }}>
+                        {idx + 1}
                       </div>
-                      <div>
-                        <label style={labelStyle}>Nachname</label>
-                        <input
-                          type="text"
-                          value={p.lastName}
-                          onChange={e => updateParticipant(p.id, "lastName", e.target.value)}
-                          placeholder="Nachname"
-                          style={inputStyle}
-                          required
-                          data-testid={`input-lastname-${p.id}`}
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label style={labelStyle}>E-Mail-Adresse</label>
-                      <input
-                        type="email"
-                        value={p.email}
-                        onChange={e => updateParticipant(p.id, "email", e.target.value)}
-                        placeholder="E-Mail-Adresse"
-                        style={inputStyle}
-                        required
-                        data-testid={`input-email-${p.id}`}
-                      />
-                    </div>
+                    )}
+
+                    {isMobile && <label style={labelStyle}>Vorname</label>}
+                    <input type="text" value={p.firstName} onChange={e => updateParticipant(p.id, "firstName", e.target.value)}
+                      placeholder="Vorname" style={inputStyle} required data-testid={`input-firstname-${p.id}`} />
+
+                    {isMobile && <label style={labelStyle}>Nachname</label>}
+                    <input type="text" value={p.lastName} onChange={e => updateParticipant(p.id, "lastName", e.target.value)}
+                      placeholder="Nachname" style={inputStyle} required data-testid={`input-lastname-${p.id}`} />
+
+                    {isMobile && <label style={labelStyle}>E-Mail-Adresse</label>}
+                    <input type="email" value={p.email} onChange={e => updateParticipant(p.id, "email", e.target.value)}
+                      placeholder="E-Mail-Adresse" style={inputStyle} required data-testid={`input-email-${p.id}`} />
+
+                    {!isMobile && (
+                      participants.length > 1 ? (
+                        <button type="button" onClick={() => removeParticipant(p.id)} data-testid={`button-remove-participant-${p.id}`}
+                          style={{ background: "none", border: "none", cursor: "pointer", color: "#FF3B30", padding: 4, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <Trash2 style={{ width: 15, height: 15 }} />
+                        </button>
+                      ) : <span />
+                    )}
                   </div>
                 ))}
               </div>
