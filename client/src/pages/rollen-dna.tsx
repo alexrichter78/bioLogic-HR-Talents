@@ -1756,7 +1756,7 @@ export default function RollenDNA() {
                     <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>2</div>
                     <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>3</div>
                   </div>
-                  <h2 style={{ fontSize: 20, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em", margin: "0 0 8px" }} data-testid="text-step-1-title">
+                  <h2 style={{ fontSize: 28, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em", margin: "0 0 8px" }} data-testid="text-step-1-title">
                     Welche Stelle möchten Sie analysieren?
                   </h2>
                   <p style={{ fontSize: 13, color: "#6E6E73", lineHeight: 1.6, margin: "0 0 28px" }}>
