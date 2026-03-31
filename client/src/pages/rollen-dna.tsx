@@ -929,13 +929,6 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
   const arbDetail = arbeitsDetail[arbeitslogik] || ["Die Arbeitsweise ist vielseitig und situationsabhängig.", ""];
   const fuehDetail = fuehrungDetail[fuehrung] || fuehrungOpt?.desc || "";
 
-  const subHeadingIcon = (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
-      <circle cx="8" cy="8" r="8" fill="#34C759" />
-      <path d="M5 8.2L7.2 10.4L11 5.6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-
   return (
     <div
       data-testid="summary-bar"
@@ -977,31 +970,67 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
         </p>
       )}
 
-      <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", marginTop: 20, paddingTop: 16, marginBottom: 16 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-          {subHeadingIcon}
-          <span style={{ fontSize: 15, fontWeight: 650, color: "#1D1D1F" }}>Arbeitsweise</span>
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gap: 14,
+        marginTop: 22,
+      }}>
+        <div style={{
+          background: "#fff",
+          borderRadius: 14,
+          padding: "18px 20px",
+          border: "1px solid rgba(0,0,0,0.06)",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.03)",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+            <div style={{
+              width: 32, height: 32, borderRadius: 10,
+              background: "rgba(0,113,227,0.08)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <Activity style={{ width: 17, height: 17, color: "#0071E3", strokeWidth: 2 }} />
+            </div>
+            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>Arbeitsweise</span>
+          </div>
+          <p style={{
+            fontSize: 14, fontWeight: 600, color: "#0071E3",
+            lineHeight: 1.4, margin: "0 0 6px",
+          }}>
+            {arbeitsOpt?.label}
+          </p>
+          <p style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.6, margin: 0 }}>
+            {arbDetail[0]}
+          </p>
         </div>
-        <p style={{ fontSize: 14, fontWeight: 600, color: "#3A3A3C", lineHeight: 1.5, margin: "0 0 4px" }}>
-          {arbeitsOpt?.label}
-        </p>
-        <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: 0 }}>
-          {arbDetail[0]}
-          {arbDetail[1] ? <><br />{arbDetail[1]}</> : null}
-        </p>
-      </div>
 
-      <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 16 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-          {subHeadingIcon}
-          <span style={{ fontSize: 15, fontWeight: 650, color: "#1D1D1F" }}>Führungsrolle</span>
+        <div style={{
+          background: "#fff",
+          borderRadius: 14,
+          padding: "18px 20px",
+          border: "1px solid rgba(0,0,0,0.06)",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.03)",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+            <div style={{
+              width: 32, height: 32, borderRadius: 10,
+              background: "rgba(52,199,89,0.08)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <Users style={{ width: 17, height: 17, color: "#34C759", strokeWidth: 2 }} />
+            </div>
+            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>Führungsrolle</span>
+          </div>
+          <p style={{
+            fontSize: 14, fontWeight: 600, color: "#34C759",
+            lineHeight: 1.4, margin: "0 0 6px",
+          }}>
+            {fuehrungOpt?.label}
+          </p>
+          <p style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.6, margin: 0 }}>
+            {fuehDetail}
+          </p>
         </div>
-        <p style={{ fontSize: 14, fontWeight: 600, color: "#3A3A3C", lineHeight: 1.5, margin: "0 0 4px" }}>
-          {fuehrungOpt?.label}
-        </p>
-        <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: 0 }}>
-          {fuehDetail}
-        </p>
       </div>
     </div>
   );
