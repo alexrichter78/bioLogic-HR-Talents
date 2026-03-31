@@ -2750,9 +2750,7 @@ export default function RollenDNA() {
                         border: "1px solid rgba(0,0,0,0.06)",
                       }} data-testid="card-grundprinzip">
                         <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Info style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{analysisPrincipleText.title}</h3>
-                        {analysisPrincipleText.body.map((line, i) => (
-                          <p key={i} lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: i === 0 ? 0 : "6px 0 0 0", ...reportTextStyle }}>{localizeText(line)}</p>
-                        ))}
+                        <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }}>{localizeText(analysisPrincipleText.body.join(" "))}</p>
                       </div>
 
                       <div style={{
@@ -2800,11 +2798,9 @@ export default function RollenDNA() {
                           border: "1px solid rgba(0,0,0,0.06)",
                         }} data-testid="box-biocheck-description">
                           <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Lightbulb style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />Ergebnis der Analyse</h3>
-                          {[...rt.body, ...(isLeadershipRole ? [rt.leadership] : [])].map((line, i) => (
-                            <p key={i} lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: i === 0 ? 0 : "6px 0 0 0", ...reportTextStyle }} data-testid={`text-biocheck-body-${i}`}>
-                              {localizeText(line)}
-                            </p>
-                          ))}
+                          <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }} data-testid="text-biocheck-body">
+                            {localizeText([...rt.body, ...(isLeadershipRole ? [rt.leadership] : [])].join(" "))}
+                          </p>
                         </div>
                       );
                     })()}
@@ -3239,9 +3235,7 @@ export default function RollenDNA() {
                       border: "1px solid rgba(0,0,0,0.06)",
                     }} data-testid="card-grundprinzip-collapsed">
                       <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Info style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{analysisPrincipleText.title}</h3>
-                      {analysisPrincipleText.body.map((line, i) => (
-                        <p key={i} lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: i === 0 ? 0 : "6px 0 0 0", ...reportTextStyle }}>{localizeText(line)}</p>
-                      ))}
+                      <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }}>{localizeText(analysisPrincipleText.body.join(" "))}</p>
                     </div>
 
                     <div style={{
@@ -3290,11 +3284,9 @@ export default function RollenDNA() {
                         border: "1px solid rgba(0,0,0,0.06)",
                       }} data-testid="box-biocheck-description-collapsed">
                         <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Lightbulb style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />Ergebnis der Analyse</h3>
-                        {[...rt.body, ...(isLeadershipRole ? [rt.leadership] : [])].map((line, i) => (
-                          <p key={i} lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: i === 0 ? 0 : "6px 0 0 0", ...reportTextStyle }} data-testid={`text-biocheck-collapsed-body-${i}`}>
-                            {localizeText(line)}
-                          </p>
-                        ))}
+                        <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }} data-testid="text-biocheck-collapsed-body">
+                          {localizeText([...rt.body, ...(isLeadershipRole ? [rt.leadership] : [])].join(" "))}
+                        </p>
                       </div>
                     );
                   })()}
