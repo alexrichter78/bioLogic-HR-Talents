@@ -361,6 +361,7 @@ export default function Home() {
       <div style={{ display: "flex", justifyContent: "center", gap: 20, padding: "24px 0 16px", marginTop: 16 }}>
         <a href="/impressum" data-testid="link-impressum-home" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Impressum</a>
         <a href="/datenschutz" data-testid="link-datenschutz-home" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Datenschutz</a>
+        <a href="/disclaimer" data-testid="link-disclaimer-home" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Disclaimer</a>
       </div>
     </div>
   );

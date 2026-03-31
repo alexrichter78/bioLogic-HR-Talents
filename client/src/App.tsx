@@ -23,6 +23,7 @@ import TeamCheckReportV4 from "@/pages/teamcheck-report-v4";
 import ResetPassword from "@/pages/reset-password";
 import Impressum from "@/pages/impressum";
 import Datenschutz from "@/pages/datenschutz";
+import Disclaimer from "@/pages/disclaimer";
 
 function AppRoutes() {
   const { user, loading } = useAuth();
@@ -47,6 +48,10 @@ function AppRoutes() {
     return <Datenschutz />;
   }
 
+  if (window.location.pathname === "/disclaimer") {
+    return <Disclaimer />;
+  }
+
   if (!user) {
     return <Login />;
   }
@@ -68,6 +73,7 @@ function AppRoutes() {
       <Route path="/teamcheck-report-v4" component={TeamCheckReportV4} />
       <Route path="/impressum" component={Impressum} />
       <Route path="/datenschutz" component={Datenschutz} />
+      <Route path="/disclaimer" component={Disclaimer} />
       <Route component={NotFound} />
     </Switch>
   );
