@@ -2713,7 +2713,7 @@ export default function RollenDNA() {
                         <FileText style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                       </div>
                       <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
-                        <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Kurzprofil der Stelle:</span>
+                        <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>Kurzprofil der Stelle:</span>
                         <span style={{ fontSize: 16 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}</span>
                       </span>
                     </div>
@@ -2992,7 +2992,7 @@ export default function RollenDNA() {
                       <Briefcase style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                     </div>
                     <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
-                      <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Stellendefinition:</span>
+                      <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>Stellendefinition:</span>
                       <span style={{ fontSize: 16 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}</span>
                     </span>
                   </div>
@@ -3221,7 +3221,7 @@ export default function RollenDNA() {
                       <Lightbulb style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                     </div>
                     <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
-                      <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0 }}>Kurzprofil der Stelle:</span>
+                      <span style={{ fontSize: 20, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>Kurzprofil der Stelle:</span>
                       <span style={{ fontSize: 16 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}</span>
                     </span>
                   </div>
