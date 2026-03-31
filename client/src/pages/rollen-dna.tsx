@@ -2774,7 +2774,7 @@ export default function RollenDNA() {
                               padding: "10px 12px",
                             }}>
                               <p style={{ fontSize: 14, fontWeight: 700, color: d.color, margin: "0 0 4px 0" }}>{d.label}</p>
-                              <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.5, margin: 0, ...reportTextStyle }}>{localizeText(d.desc)}</p>
+                              <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.5, margin: 0, hyphens: "auto", WebkitHyphens: "auto", wordBreak: "break-word" }}>{localizeText(d.desc)}</p>
                             </div>
                           ))}
                         </div>
@@ -3265,7 +3265,7 @@ export default function RollenDNA() {
                             padding: "10px 12px",
                           }}>
                             <p style={{ fontSize: 14, fontWeight: 700, color: d.color, margin: "0 0 4px 0" }}>{d.label}</p>
-                            <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.5, margin: 0, ...reportTextStyle }}>{localizeText(d.desc)}</p>
+                            <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.5, margin: 0, hyphens: "auto", WebkitHyphens: "auto", wordBreak: "break-word" }}>{localizeText(d.desc)}</p>
                           </div>
                         ))}
                       </div>
