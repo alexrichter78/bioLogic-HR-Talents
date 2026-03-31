@@ -42,11 +42,11 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
 
   const NAV_ITEMS = useMemo(() => {
     const items = [...BASE_NAV_ITEMS];
-    if (user?.courseAccess) {
+    if (user?.courseAccess || user?.role === "admin") {
       items.push(COURSE_NAV_ITEM);
     }
     return items;
-  }, [user?.courseAccess]);
+  }, [user?.courseAccess, user?.role]);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {

@@ -9,7 +9,7 @@ export default function Kurs() {
   const [, setLocation] = useLocation();
   const isMobile = useIsMobile();
 
-  if (!user?.courseAccess) {
+  if (!user?.courseAccess && user?.role !== "admin") {
     return (
       <>
         <GlobalNav />
