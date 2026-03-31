@@ -416,6 +416,21 @@ export default function KICoach() {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [promptSearch, setPromptSearch] = useState("");
   const [isListening, setIsListening] = useState(false);
+
+  useEffect(() => {
+    if (!promptSearch.trim()) return;
+    const term = promptSearch.trim().toLowerCase();
+    const hasMatch = EXAMPLE_PROMPTS.some(cat => {
+      if (cat.requiresAnalysis && !hasAnalysisData()) return false;
+      if (cat.category.toLowerCase().includes(term)) return true;
+      return cat.prompts.some(p => p.toLowerCase().includes(term));
+    });
+    if (!hasMatch && showPrompts) {
+      setShowPrompts(false);
+      setExpandedCategory(null);
+    }
+  }, [promptSearch]);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<any>(null);
