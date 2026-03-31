@@ -2140,7 +2140,27 @@ export default function RollenDNA() {
                     </div>
                   )}
 
-                  <div className="flex justify-end" style={{ marginTop: 40 }}>
+                  <div className="flex justify-between" style={{ marginTop: 40 }}>
+                    <Button
+                      variant="outline"
+                      onClick={() => goToStep(1)}
+                      style={{
+                        height: 52,
+                        paddingLeft: 28,
+                        paddingRight: 28,
+                        fontSize: 16,
+                        fontWeight: 600,
+                        borderRadius: 14,
+                        border: "1.5px solid #D1D1D6",
+                        color: "#1D1D1F",
+                        background: "#fff",
+                      }}
+                      className="gap-2"
+                      data-testid="button-step-2-zurueck"
+                    >
+                      <ArrowLeft className="w-5 h-5" />
+                      Zurück
+                    </Button>
                     <Button
                       disabled={!step2Valid}
                       onClick={() => editingFromOverview ? returnToOverview() : goToStep(3)}
