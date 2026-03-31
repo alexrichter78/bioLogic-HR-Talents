@@ -1985,7 +1985,7 @@ export default function RollenDNA() {
                     <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "#34C759", color: "#fff" }}>2</div>
                     <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>3</div>
                   </div>
-                  <h2 style={{ fontSize: 28, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-2-title">
+                  <h2 style={{ fontSize: 28, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-2-title">
                     Rahmenbedingungen der Stelle
                   </h2>
                   <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6 }}>
@@ -2012,7 +2012,7 @@ export default function RollenDNA() {
                         <SectionNumber num={1} isComplete={aufgabencharakter.length > 0} />
                         <div className="flex items-center gap-3">
                           <Layers style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
-                          <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
+                          <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
                             Art der Aufgaben
                           </h3>
                         </div>
@@ -2040,7 +2040,7 @@ export default function RollenDNA() {
                         <SectionNumber num={2} isComplete={arbeitslogik.length > 0} />
                         <div className="flex items-center gap-3">
                           <Activity style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
-                          <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
+                          <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
                             Arbeitsweise der Stelle
                           </h3>
                         </div>
@@ -2068,7 +2068,7 @@ export default function RollenDNA() {
                         <SectionNumber num={3} isComplete={erfolgsfokusIndices.length > 0} />
                         <div className="flex items-center gap-3">
                           <Target style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
-                          <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
+                          <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
                             Erfolgsfokus
                           </h3>
                         </div>
@@ -2096,7 +2096,7 @@ export default function RollenDNA() {
                         <SectionNumber num={4} isComplete={fuehrung.length > 0} />
                         <div className="flex items-center gap-3">
                           <Users style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
-                          <h3 style={{ fontSize: 22, fontWeight: 600, color: "#1D1D1F" }} className="dark:text-foreground/90">
+                          <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
                             Führungsverantwortung
                           </h3>
                         </div>
