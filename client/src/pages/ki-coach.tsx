@@ -1209,6 +1209,105 @@ export default function KICoach() {
                   ))}
                 </div>
               )}
+              <div style={{ display: "flex", justifyContent: "center", marginTop: 10, marginBottom: 4 }}>
+                <button
+                  onClick={() => { setShowPrompts(v => !v); if (showPrompts) setExpandedCategory(null); }}
+                  data-testid="button-example-prompts"
+                  style={{
+                    display: "flex", alignItems: "center", gap: 7,
+                    background: "linear-gradient(135deg, #0071E3, #34AADC)",
+                    border: "none",
+                    borderRadius: 12, padding: "9px 22px",
+                    cursor: "pointer", fontSize: 13, color: "#FFFFFF",
+                    fontWeight: 600, transition: "all 200ms ease",
+                    boxShadow: "0 4px 12px rgba(0,113,227,0.25)",
+                  }}
+                >
+                  <Lightbulb style={{ width: 15, height: 15 }} />
+                  Musterprompts
+                  {showPrompts
+                    ? <ChevronUp style={{ width: 12, height: 12 }} />
+                    : <ChevronDown style={{ width: 12, height: 12 }} />
+                  }
+                </button>
+              </div>
+
+              {showPrompts && (
+                <div style={{
+                  marginTop: 8, maxHeight: 320, overflowY: "auto",
+                  borderRadius: 12, background: "rgba(248,250,252,0.98)",
+                  border: "1px solid rgba(0,0,0,0.06)",
+                  padding: 6,
+                }} data-testid="panel-example-prompts">
+                  {EXAMPLE_PROMPTS.map((cat) => {
+                    const isDisabled = cat.requiresAnalysis && !hasAnalysisData();
+                    return (
+                    <div key={cat.category} style={{ marginBottom: 4 }}>
+                      <button
+                        onClick={() => !isDisabled && setExpandedCategory(expandedCategory === cat.category ? null : cat.category)}
+                        data-testid={`category-${cat.category.replace(/\s+/g, "-").toLowerCase()}`}
+                        style={{
+                          width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
+                          padding: "10px 12px", border: "none",
+                          cursor: isDisabled ? "default" : "pointer",
+                          opacity: isDisabled ? 0.4 : 1,
+                          background: expandedCategory === cat.category ? "rgba(0,113,227,0.06)" : "transparent",
+                          borderRadius: 10, fontSize: 13, fontWeight: 600,
+                          color: expandedCategory === cat.category ? "#0071E3" : "#1D1D1F",
+                          transition: "all 150ms ease",
+                        }}
+                        title={isDisabled ? "Bitte zuerst eine Stelle analysieren" : undefined}
+                      >
+                        <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          {cat.category}
+                          {isDisabled && <span style={{ fontSize: 11, fontWeight: 400, color: "#8E8E93" }}>(Stelle erforderlich)</span>}
+                        </span>
+                        {expandedCategory === cat.category
+                          ? <ChevronUp style={{ width: 14, height: 14, color: "#8E8E93" }} />
+                          : <ChevronDown style={{ width: 14, height: 14, color: "#C7C7CC" }} />
+                        }
+                      </button>
+                      {expandedCategory === cat.category && !isDisabled && (
+                        <div style={{ padding: "4px 0 8px 8px", display: "flex", flexDirection: "column", gap: 4 }}>
+                          {cat.prompts.map((prompt, pi) => (
+                            <button
+                              key={pi}
+                              onClick={() => {
+                                setInput(prompt);
+                                setShowPrompts(false);
+                                setExpandedCategory(null);
+                                setTimeout(() => inputRef.current?.focus(), 50);
+                              }}
+                              data-testid={`prompt-${cat.category.replace(/\s+/g, "-").toLowerCase()}-${pi}`}
+                              style={{
+                                textAlign: "left", padding: "8px 12px",
+                                border: "1px solid rgba(0,0,0,0.05)",
+                                borderRadius: 10, cursor: "pointer",
+                                background: "rgba(255,255,255,0.8)",
+                                fontSize: 12.5, lineHeight: 1.5, color: "#3A3A3C",
+                                transition: "all 150ms ease",
+                              }}
+                              onMouseEnter={e => {
+                                e.currentTarget.style.background = "rgba(0,113,227,0.06)";
+                                e.currentTarget.style.borderColor = "rgba(0,113,227,0.15)";
+                                e.currentTarget.style.color = "#0071E3";
+                              }}
+                              onMouseLeave={e => {
+                                e.currentTarget.style.background = "rgba(255,255,255,0.8)";
+                                e.currentTarget.style.borderColor = "rgba(0,0,0,0.05)";
+                                e.currentTarget.style.color = "#3A3A3C";
+                              }}
+                            >
+                              {t(prompt)}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
             );
           })()}
@@ -1574,105 +1673,11 @@ export default function KICoach() {
                 }} />
               </button>
             </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", margin: "10px 0 0", gap: 8 }}>
-              <button
-                onClick={() => { setShowPrompts(v => !v); if (showPrompts) setExpandedCategory(null); }}
-                data-testid="button-example-prompts"
-                style={{
-                  display: "flex", alignItems: "center", gap: 7,
-                  background: showPrompts ? "rgba(220,53,69,0.1)" : "rgba(220,53,69,0.06)",
-                  border: showPrompts ? "1px solid rgba(220,53,69,0.3)" : "1px solid rgba(220,53,69,0.2)",
-                  borderRadius: 12, padding: "8px 18px",
-                  cursor: "pointer", fontSize: 14, color: "#DC3545",
-                  fontWeight: 600, transition: "all 200ms ease",
-                }}
-              >
-                <Lightbulb style={{ width: 15, height: 15 }} />
-                Musterprompts
-                {showPrompts
-                  ? <ChevronUp style={{ width: 12, height: 12 }} />
-                  : <ChevronDown style={{ width: 12, height: 12 }} />
-                }
-              </button>
+            <div style={{ textAlign: "center", padding: "8px 0 2px" }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 3px" }} data-testid="text-input-title">Ihre Frage an den KI-Coach</p>
+              <p style={{ fontSize: 11.5, color: "#8E8E93", margin: 0 }} data-testid="text-input-desc">Stellen Sie eine Frage zu Führung, Teamdynamik, Kommunikation oder nutzen Sie einen Musterprompt.</p>
             </div>
           </div>
-
-          {showPrompts && (
-            <div style={{
-              borderTop: "1px solid rgba(0,0,0,0.06)",
-              background: "rgba(248,250,252,0.95)",
-              maxHeight: 360, overflowY: "auto",
-              padding: isMobile ? "8px 10px 12px" : "12px 28px 16px",
-            }} data-testid="panel-example-prompts">
-              {EXAMPLE_PROMPTS.map((cat) => {
-                const isDisabled = cat.requiresAnalysis && !hasAnalysisData();
-                return (
-                <div key={cat.category} style={{ marginBottom: 4 }}>
-                  <button
-                    onClick={() => !isDisabled && setExpandedCategory(expandedCategory === cat.category ? null : cat.category)}
-                    data-testid={`category-${cat.category.replace(/\s+/g, "-").toLowerCase()}`}
-                    style={{
-                      width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
-                      padding: "10px 12px", border: "none",
-                      cursor: isDisabled ? "default" : "pointer",
-                      opacity: isDisabled ? 0.4 : 1,
-                      background: expandedCategory === cat.category ? "rgba(0,113,227,0.06)" : "transparent",
-                      borderRadius: 10, fontSize: 13, fontWeight: 600,
-                      color: expandedCategory === cat.category ? "#0071E3" : "#1D1D1F",
-                      transition: "all 150ms ease",
-                    }}
-                    title={isDisabled ? "Bitte zuerst eine Stelle analysieren" : undefined}
-                  >
-                    <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      {cat.category}
-                      {isDisabled && <span style={{ fontSize: 11, fontWeight: 400, color: "#8E8E93" }}>(Stelle erforderlich)</span>}
-                    </span>
-                    {expandedCategory === cat.category
-                      ? <ChevronUp style={{ width: 14, height: 14, color: "#8E8E93" }} />
-                      : <ChevronDown style={{ width: 14, height: 14, color: "#C7C7CC" }} />
-                    }
-                  </button>
-                  {expandedCategory === cat.category && !isDisabled && (
-                    <div style={{ padding: "4px 0 8px 8px", display: "flex", flexDirection: "column", gap: 4 }}>
-                      {cat.prompts.map((prompt, pi) => (
-                        <button
-                          key={pi}
-                          onClick={() => {
-                            setInput(prompt);
-                            setShowPrompts(false);
-                            setExpandedCategory(null);
-                            setTimeout(() => inputRef.current?.focus(), 50);
-                          }}
-                          data-testid={`prompt-${cat.category.replace(/\s+/g, "-").toLowerCase()}-${pi}`}
-                          style={{
-                            textAlign: "left", padding: "8px 12px",
-                            border: "1px solid rgba(0,0,0,0.05)",
-                            borderRadius: 10, cursor: "pointer",
-                            background: "rgba(255,255,255,0.8)",
-                            fontSize: 12.5, lineHeight: 1.5, color: "#3A3A3C",
-                            transition: "all 150ms ease",
-                          }}
-                          onMouseEnter={e => {
-                            e.currentTarget.style.background = "rgba(0,113,227,0.06)";
-                            e.currentTarget.style.borderColor = "rgba(0,113,227,0.15)";
-                            e.currentTarget.style.color = "#0071E3";
-                          }}
-                          onMouseLeave={e => {
-                            e.currentTarget.style.background = "rgba(255,255,255,0.8)";
-                            e.currentTarget.style.borderColor = "rgba(0,0,0,0.05)";
-                            e.currentTarget.style.color = "#3A3A3C";
-                          }}
-                        >
-                          {t(prompt)}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                );
-              })}
-            </div>
-          )}
         </div>
       </main>
     </div>
