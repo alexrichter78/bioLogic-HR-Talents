@@ -1995,7 +1995,7 @@ export default function RollenDNA() {
                       }}
                       data-testid="button-step-1-weiter"
                     >
-                      {editingFromOverview ? "Übernehmen" : "Rolle analysieren"}
+                      {editingFromOverview ? "Übernehmen" : "Stelle analysieren"}
                       <ArrowRight className="w-4 h-4" />
                     </Button>
                   </div>
