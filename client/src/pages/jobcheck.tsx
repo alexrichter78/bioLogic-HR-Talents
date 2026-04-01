@@ -274,7 +274,7 @@ function SoftBar({ items }: { items: { label: string; value: number; color: stri
                 <span style={{
                   position: "absolute", top: "50%", transform: "translateY(-50%)",
                   left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
-                  fontSize: 13, fontWeight: 600, color: "#6E6E73", whiteSpace: "nowrap",
+                  fontSize: 13, fontWeight: 600, color: "#48484A", whiteSpace: "nowrap",
                   transition: "left 600ms ease",
                 }}>{bar.value} %</span>
               )}
@@ -323,7 +323,7 @@ function BarSlider({ label, value, color, onChange }: { label: string; value: nu
           <span style={{
             position: "absolute", top: "50%", transform: "translateY(-50%)",
             left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
-            fontSize: 13, fontWeight: 600, color: "#6E6E73", whiteSpace: "nowrap",
+            fontSize: 13, fontWeight: 600, color: "#48484A", whiteSpace: "nowrap",
             transition: "left 150ms ease", zIndex: 1,
           }}>{Math.round(value)} %</span>
         )}

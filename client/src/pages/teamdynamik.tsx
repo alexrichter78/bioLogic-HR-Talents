@@ -65,11 +65,12 @@ function BarSlider({ label, value, color, onChange }: { label: string; value: nu
             height: "100%", borderRadius: 6, background: color,
             transition: "width 150ms ease",
             display: "flex", alignItems: "center", paddingLeft: 8,
-            minWidth: value === 0 ? 0 : 40,
+            minWidth: value === 0 ? 0 : (widthPct < 18 ? 8 : 40),
           }}>
-            <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>
+            {widthPct >= 18 && <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>}
           </div>
         </div>
+        {widthPct < 18 && value > 0 && <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 5), 100)}% + 6px)`, fontSize: 11, fontWeight: 700, color: "#48484A", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>}
         <input
           type="range" min={0} max={MAX_BIO} value={value}
           onChange={e => onChange(Number(e.target.value))}
@@ -290,15 +291,16 @@ function ReadOnlyBars({ triad }: { triad: Triad }) {
         return (
           <div key={b.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <span style={{ fontSize: 12, color: "#6E6E73", width: 62, flexShrink: 0 }}>{b.label}</span>
-            <div style={{ flex: 1, height: 24, borderRadius: 6, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
+            <div style={{ flex: 1, height: 24, borderRadius: 6, background: "rgba(0,0,0,0.04)", position: "relative" }}>
               <div style={{
                 width: b.value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 5), 100)}%`,
                 height: "100%", borderRadius: 6, background: b.color,
                 display: "flex", alignItems: "center", paddingLeft: 8,
-                minWidth: b.value === 0 ? 0 : 40,
+                minWidth: b.value === 0 ? 0 : (widthPct < 18 ? 8 : 40),
               }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(b.value)} %</span>
+                {widthPct >= 18 && <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(b.value)} %</span>}
               </div>
+              {widthPct < 18 && b.value > 0 && <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 5), 100)}% + 6px)`, fontSize: 11, fontWeight: 700, color: "#48484A", whiteSpace: "nowrap" }}>{Math.round(b.value)} %</span>}
             </div>
           </div>
         );

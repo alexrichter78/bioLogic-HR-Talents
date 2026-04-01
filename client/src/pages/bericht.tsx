@@ -301,16 +301,17 @@ function SoftBar({ bg }: { bg: BG }) {
         return (
           <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <span style={{ fontSize: 12, color: "#6E6E73", width: 62, flexShrink: 0 }}>{bar.label}</span>
-            <div style={{ flex: 1, height: 24, borderRadius: 6, background: "rgba(0,0,0,0.04)", overflow: "hidden", position: "relative" }}>
+            <div style={{ flex: 1, height: 24, borderRadius: 6, background: "rgba(0,0,0,0.04)", position: "relative" }}>
               <div style={{
                 width: bar.value === 0 ? "0%" : `${Math.min(Math.max(widthPct, 3), 100)}%`,
                 height: "100%", borderRadius: 6, background: bar.color,
                 transition: "width 600ms ease",
                 display: "flex", alignItems: "center", paddingLeft: 8,
-                minWidth: bar.value === 0 ? 0 : 40,
+                minWidth: bar.value === 0 ? 0 : (widthPct < 18 ? 8 : 40),
               }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(bar.value)}%</span>
+                {widthPct >= 18 && <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(bar.value)}%</span>}
               </div>
+              {widthPct < 18 && bar.value > 0 && <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 3), 100)}% + 6px)`, fontSize: 11, fontWeight: 700, color: "#48484A", whiteSpace: "nowrap" }}>{Math.round(bar.value)}%</span>}
             </div>
           </div>
         );
