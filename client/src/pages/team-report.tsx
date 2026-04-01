@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { AlertTriangle, Download, Check, CheckCircle2, Users, ChevronDown, Zap, BarChart3, Handshake, Rocket, Settings } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useLocalizedText } from "@/lib/region";
+import { useLocalizedText, localizeDeep, useRegion } from "@/lib/region";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeTeamReport } from "@/lib/team-report-engine";
 import { constellationLabel, detectConstellation } from "@/lib/soll-ist-engine";
@@ -513,6 +513,7 @@ export default function TeamReport() {
   const [, setLocation] = useLocation();
   const isMobile = useIsMobile();
   const t = useLocalizedText();
+  const { region } = useRegion();
 
   const [istTriad, setIstTriad] = useState(() => {
     try { const s = sessionStorage.getItem("tc_istTriad"); if (s) return JSON.parse(s); } catch {}
@@ -661,8 +662,9 @@ export default function TeamReport() {
   const teamConstLabel = constellationLabel(detectConstellation(teamProfileN));
 
   const liveResult: TeamReportResult = useMemo(() => {
-    return computeTeamReport(roleName || "Rolle", candidateName || "Person", istProfile, teamProfileN);
-  }, [roleName, candidateName, istProfile.impulsiv, istProfile.intuitiv, istProfile.analytisch, teamProfileN.impulsiv, teamProfileN.intuitiv, teamProfileN.analytisch]);
+    const raw = computeTeamReport(roleName || "Rolle", candidateName || "Person", istProfile, teamProfileN);
+    return localizeDeep(raw, region);
+  }, [roleName, candidateName, istProfile.impulsiv, istProfile.intuitiv, istProfile.analytisch, teamProfileN.impulsiv, teamProfileN.intuitiv, teamProfileN.analytisch, region]);
 
   const v4Preview = useMemo(() => {
     try {
@@ -1039,7 +1041,7 @@ export default function TeamReport() {
                   if (funcFit === "hoch") empfBullets.push("Hohe Übereinstimmung mit dem aktuellen Funktionsziel.");
                 } else if (p.gesamteinschaetzung === "Kritisch") {
                   empfBullets.push("Einsatz nur mit klarer Führung und aktiver Begleitung sinnvoll.");
-                  empfBullets.push(t("Regelmäßige Abstimmung und enge Führung einplanen."));
+                  empfBullets.push(t("Regelmässige Abstimmung und enge Führung einplanen."));
                   empfBullets.push("Erwartungen frühzeitig klären und Rückmeldung aktiv einholen.");
                   if (teamFit === "gering") empfBullets.push("Teamdynamik beobachten — Spannungsfelder sind wahrscheinlich.");
                 } else {
@@ -1047,14 +1049,14 @@ export default function TeamReport() {
                   if (teamFit !== "hoch") empfBullets.push("Strukturiertes Onboarding mit klaren Erwartungen planen.");
                   if (teamFit === "gering" || funcFit === "gering") empfBullets.push("Führungskraft sollte die Einarbeitung aktiv begleiten.");
                   if (teamFit !== "hoch" || funcFit === "gering") empfBullets.push("Mentoring durch ein erfahrenes Teammitglied empfohlen.");
-                  empfBullets.push(t("Regelmäßige Check-ins in den ersten Wochen einplanen."));
+                  empfBullets.push(t("Regelmässige Check-ins in den ersten Wochen einplanen."));
                 }
 
                 const empfText = p.gesamteinschaetzung === "Gut passend"
                   ? "Gute Voraussetzungen für eine erfolgreiche Integration."
                   : p.gesamteinschaetzung === "Kritisch"
                   ? "Erhöhter Begleitungsaufwand — nur mit aktiver Führung einsetzen."
-                  : t("Teilweise passend — gezielte Maßnahmen empfohlen.");
+                  : t("Teilweise passend — gezielte Massnahmen empfohlen.");
 
                 const empfColor = p.gesamteinschaetzung === "Gut passend" ? { bg: "#E8F5E9", border: "#A5D6A7", text: "#1B7A3D" }
                   : p.gesamteinschaetzung === "Kritisch" ? { bg: "#FFEBEE", border: "#EF9A9A", text: "#C41E3A" }
@@ -1655,7 +1657,7 @@ export default function TeamReport() {
               <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
                 <div>
                   <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Gesamtbewertung</p>
-                  <h3 className="mt-2 text-2xl font-semibold text-slate-950">{t("Abschließende Empfehlung")}</h3>
+                  <h3 className="mt-2 text-2xl font-semibold text-slate-950">{t("Abschliessende Empfehlung")}</h3>
                   <div className="mt-4 max-w-3xl">
                     <Prose text={result.systemfazit} />
                   </div>

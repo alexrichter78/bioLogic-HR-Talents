@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
+import { useRegion, localizeDeep } from "@/lib/region";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   computeTeamCheckV2,
@@ -31,6 +32,7 @@ function Paragraphs({ text }: { text: string }) {
 export default function TeamCheckReportV2() {
   const [, navigate] = useLocation();
   const isMobile = useIsMobile();
+  const { region } = useRegion();
   const [result, setResult] = useState<TeamCheckV2Result | null>(null);
   const [input, setInput] = useState<TeamCheckV2Input | null>(null);
 
@@ -43,11 +45,11 @@ export default function TeamCheckReportV2() {
     try {
       const parsed = JSON.parse(raw) as TeamCheckV2Input;
       setInput(parsed);
-      setResult(computeTeamCheckV2(parsed));
+      setResult(localizeDeep(computeTeamCheckV2(parsed), region));
     } catch {
       navigate("/team-report");
     }
-  }, [navigate]);
+  }, [navigate, region]);
 
   if (!result || !input) {
     return (

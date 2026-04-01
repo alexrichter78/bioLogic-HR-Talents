@@ -49,6 +49,7 @@ Preferred communication style: Simple, everyday language.
 -   **Frontend**: Flag emoji dropdown (🇩🇪/🇨🇭/🇦🇹) in `global-nav.tsx`. All pages with AI calls pass `region` in their API request body.
 -   **Backend**: `getRegionInstruction(region, options?)` in `server/routes.ts` generates prompt instructions per region. CH: replaces ß→ss, uses Swiss terms. AT: uses Austrian terms. Both default to formal "Sie" except KI-Coach which uses `skipAddress: true` to preserve its informal "Du" tone.
 -   **Endpoints with region support**: generate-kompetenzen, reclassify-kompetenzen, generate-bericht, generate-analyse, generate-team-report, ki-coach, generate-kandidatenprofil.
+-   **Deterministic text localization**: All engine/data files use "ss" as neutral base text. `ssToSz()` in `region.tsx` converts ss→ß for DE/AT via regex `SS_RULES`. `localizeDeep<T>(obj, region)` recursively walks objects to localize all strings. Applied in: soll-ist-bericht, team-report, teamdynamik, jobcheck, teamcheck (all versions V1–V4), rollen-dna, rollenprofil.
 
 ### UI/UX Decisions
 -   **Responsive Design**: All pages are mobile-responsive. On mobile (<768px), the top navigation converts to a bottom tab bar, card paddings reduce, 2/3-column grids collapse to single-column, and message bubbles widen. Uses `useIsMobile()` hook from `@/hooks/use-mobile` for inline style conditionals and CSS media queries in `index.css` for utility classes (`.mobile-stack`, `.mobile-grid-1`, etc.).

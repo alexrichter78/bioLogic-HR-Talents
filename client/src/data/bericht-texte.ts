@@ -114,14 +114,14 @@ export const PROFILE_TEXTS: Record<string, ProfileTexts> = {
       balanced: {
         intro: "Er zeigt, wie Entscheidungen vorbereitet werden, wie Zusammenarbeit stattfindet und wie stark Struktur im Arbeitsalltag gefordert ist.",
         overall: "Das Rollenbild ist ausgewogen. Die Funktion verlangt sowohl verlässliche Organisation als auch passende Abstimmung im Umfeld. Umsetzung ist notwendig, ohne dass Geschwindigkeit allein zum Treiber wird. Die drei Anforderungsbereiche – zielorientiertes Handeln, kontextbezogene Zusammenarbeit und strukturierte Vorgehensweise – stehen in einem stabilen Gleichgewicht zueinander. Es gibt keinen einzelnen Schwerpunkt, der die Rolle dominiert.",
-        tasks: "Die Aufgaben verbinden geordnete Arbeitsweise mit situationsgerechter Abstimmung. Es geht darum, zuverlässig zu liefern und gleichzeitig anschlussfähig im Arbeitskontext zu bleiben. Weder reines Abarbeiten noch dauerhafte Rücksprache sind zielführend – die Aufgaben verlangen beides in einem gesunden Maß.",
+        tasks: "Die Aufgaben verbinden geordnete Arbeitsweise mit situationsgerechter Abstimmung. Es geht darum, zuverlässig zu liefern und gleichzeitig anschlussfähig im Arbeitskontext zu bleiben. Weder reines Abarbeiten noch dauerhafte Rücksprache sind zielführend – die Aufgaben verlangen beides in einem gesunden Mass.",
         human: "Gefordert ist ein ruhiges, strukturiertes Vorgehen mit der Fähigkeit, unterschiedliche Anforderungen einzuordnen und sauber zu priorisieren. Die Person sollte belastbar, anpassungsfähig und kooperationsbereit sein – ohne dabei den eigenen Qualitätsanspruch aufzugeben.",
         overweight: {
           structure_over: { bullets: ["Entscheidungen werden stärker geprüft", "Detailtiefe nimmt über das Nötige hinaus zu", "Anpassungsfähigkeit sinkt spürbar", "Abstimmung tritt in den Hintergrund"], text: "Im Alltag bleibt die Arbeit sauber und korrekt, jedoch sinkt die Beweglichkeit in wechselnden Situationen. Die Rolle wird starr, wo sie eigentlich flexibel wirken sollte." },
           collaboration_over: { bullets: ["Abstimmung wird priorisiert über Ergebnis", "Prioritäten werden zu situativ angepasst", "Verbindlichkeit kann schleichend abnehmen", "Struktur verliert an Schärfe und Klarheit"], text: "Im Alltag funktioniert das Miteinander, gleichzeitig kann Klarheit in Planung und Zuständigkeit nachlassen. Die Rolle wird harmonisch, aber weniger wirksam." },
           speed_over: { bullets: ["Entscheidungen werden beschleunigt ohne Absicherung", "Prozesse werden verkürzt", "Prioritäten wechseln häufiger als tragbar", "Ordnung und Qualität nehmen ab"], text: "Im Alltag steigt die Dynamik, während Ordnung und Abstimmung an Stabilität verlieren können. Die Rolle gewinnt Tempo, aber verliert Bodenhaftung." },
         },
-        conclusion: "Die Rolle ist auf Balance angelegt. Sie verlangt klare Organisation, saubere Abstimmung und verlässliche Umsetzung im gleichen Maß. Erfolgreich wird, wer alle drei Bereiche bedient, ohne einen auf Kosten der anderen zu überdehnen.",
+        conclusion: "Die Rolle ist auf Balance angelegt. Sie verlangt klare Organisation, saubere Abstimmung und verlässliche Umsetzung im gleichen Mass. Erfolgreich wird, wer alle drei Bereiche bedient, ohne einen auf Kosten der anderen zu überdehnen.",
       },
     },
     leadership: {
@@ -136,7 +136,7 @@ export const PROFILE_TEXTS: Record<string, ProfileTexts> = {
           structure_over: { bullets: ["Entscheidungen werden zunehmend verzögert", "Kontrolle nimmt spürbar zu", "Reaktionsgeschwindigkeit sinkt", "Chancen werden verpasst oder zu spät erkannt"], text: "Im Alltag steigt die Absicherung, jedoch verliert die Führung an Dynamik und Gestaltungskraft." },
           collaboration_over: { bullets: ["Konsens wird priorisiert über Richtung", "Konflikte werden vertagt statt gelöst", "Leistungsorientierung verwässert", "Verbindlichkeit nimmt ab"], text: "Im Alltag bleibt das Klima stabil, jedoch sinkt die Klarheit in Ziel und Konsequenz. Die Führung wirkt ausgleichend, aber nicht mehr richtungsgebend." },
         },
-        conclusion: "Die Führungsrolle verlangt Balance. Sie verbindet klare Steuerung, stabile Zusammenarbeit und verlässliche Umsetzung. Wirksamkeit entsteht, wenn alle drei Bereiche gleichmäßig bedient werden.",
+        conclusion: "Die Führungsrolle verlangt Balance. Sie verbindet klare Steuerung, stabile Zusammenarbeit und verlässliche Umsetzung. Wirksamkeit entsteht, wenn alle drei Bereiche gleichmässig bedient werden.",
       },
     },
   },
@@ -147,14 +147,14 @@ export const PROFILE_TEXTS: Record<string, ProfileTexts> = {
         intro: "Im Mittelpunkt steht, wie konsequent umgesetzt wird, wie entschieden wird und wie stark Ziele den Alltag bestimmen.",
         overall: "Die Rolle ist eindeutig auf Ergebnis und Umsetzung ausgerichtet. Entscheidungen werden schnell getroffen und konsequent verfolgt. Struktur unterstützt die Zielerreichung, bleibt aber Mittel zum Zweck. Zusammenarbeit ist vorhanden, jedoch klar nachgeordnet. Der Schwerpunkt ist eindeutig: Diese Funktion lebt von Tempo, Entschlossenheit und der Bereitschaft, Verantwortung sofort zu übernehmen.",
         tasks: "Die Aufgaben sind stark handlungsorientiert. Es geht um Tempo, Konsequenz und Nachverfolgung. Planung dient der Steuerung, nicht der Absicherung. Operative Ergebnisse stehen im Vordergrund – wer zögert, verliert an Wirksamkeit. Die Tätigkeit verlangt schnelle Reaktionsfähigkeit und die Bereitschaft, auch unter Unsicherheit zu entscheiden.",
-        human: "Gefordert sind Entschlossenheit, Verantwortungsübernahme und ein klarer Fokus auf Ergebnisse. Prioritäten werden gesetzt und gehalten. Die Person muss Druck aushalten, Widerstände überwinden und dabei handlungsfähig bleiben. Zögern oder übermäßiges Absichern sind in dieser Rolle kontraproduktiv.",
+        human: "Gefordert sind Entschlossenheit, Verantwortungsübernahme und ein klarer Fokus auf Ergebnisse. Prioritäten werden gesetzt und gehalten. Die Person muss Druck aushalten, Widerstände überwinden und dabei handlungsfähig bleiben. Zögern oder übermässiges Absichern sind in dieser Rolle kontraproduktiv.",
         overweight: imp_overweight_noLead,
         conclusion: "Die Rolle ist klar auf konsequente Umsetzung und Ergebnisverantwortung angelegt. Struktur dient der Steuerung, nicht der Verzögerung. Die Anforderung ist eindeutig ausgeprägt.",
       },
       clear: {
         intro: "Im Mittelpunkt steht, wie zielgerichtet umgesetzt wird und wie stark ergebnisorientiertes Handeln den Arbeitsalltag prägt.",
         overall: "Die Rolle ist deutlich auf Ergebnis und Umsetzung ausgerichtet. Entscheidungen werden zügig getroffen und konsequent verfolgt. Struktur unterstützt den Arbeitsprozess, ohne ihn zu dominieren. Zusammenarbeit spielt eine Rolle, ist jedoch nicht der primäre Treiber. Die Ausrichtung ist klar erkennbar: Wirksamkeit entsteht durch Handeln, nicht durch Absichern.",
-        tasks: "Die Aufgaben sind handlungsorientiert und verlangen ein hohes Maß an Eigeninitiative. Tempo und Konsequenz in der Umsetzung sind entscheidend. Planung erfolgt pragmatisch und dient der Zielerreichung, nicht der Kontrolle. Ergebnisse werden sichtbar gemacht und aktiv nachverfolgt.",
+        tasks: "Die Aufgaben sind handlungsorientiert und verlangen ein hohes Mass an Eigeninitiative. Tempo und Konsequenz in der Umsetzung sind entscheidend. Planung erfolgt pragmatisch und dient der Zielerreichung, nicht der Kontrolle. Ergebnisse werden sichtbar gemacht und aktiv nachverfolgt.",
         human: "Gefordert sind Eigenverantwortung, Entscheidungsfreude und die Fähigkeit, unter Druck handlungsfähig zu bleiben. Prioritäten werden selbstständig gesetzt und gehalten. Wer abwartet statt handelt, wird dieser Rolle nicht gerecht.",
         overweight: imp_overweight_noLead,
         conclusion: "Die Rolle ist deutlich auf Umsetzung und Ergebnis ausgerichtet. Struktur dient als Leitplanke, nicht als Bremse. Die Ausrichtung ist klar erkennbar.",
@@ -174,7 +174,7 @@ export const PROFILE_TEXTS: Record<string, ProfileTexts> = {
         overall: "Die Rolle ist eindeutig ergebnis- und steuerungsorientiert. Führung erfolgt über klare Erwartungen, konsequentes Nachhalten und schnelle Entscheidungen. Struktur ist notwendig, um Transparenz zu sichern. Zusammenarbeit ist wichtig, bleibt aber klar nachgeordnet. Die Anforderung ist eindeutig: Wirksamkeit entsteht über Richtung, Tempo und konsequente Umsetzung.",
         tasks: "Die Aufgaben verlangen klare Steuerung der Aktivitäten und konsequentes Einfordern von Ergebnissen. Zielerreichung wird messbar gemacht und aktiv nachgehalten. Abweichungen werden direkt adressiert, nicht vertagt.",
         human: "Gefordert sind Durchsetzung, Entscheidungsstärke und die Fähigkeit, Verantwortung eindeutig zuzuordnen. Die Person muss Klarheit schaffen, auch wenn das unbequem ist. Konfliktvermeidung ist kontraproduktiv.",
-        leadership_section: "Führung entsteht über Richtung und Konsequenz. Ziele sind messbar, Prioritäten eindeutig und Verantwortlichkeit klar geregelt. Das Team weiß, was erwartet wird – und was passiert, wenn Ergebnisse ausbleiben. Die Führungskraft steuert aktiv, nicht reaktiv.",
+        leadership_section: "Führung entsteht über Richtung und Konsequenz. Ziele sind messbar, Prioritäten eindeutig und Verantwortlichkeit klar geregelt. Das Team weiss, was erwartet wird – und was passiert, wenn Ergebnisse ausbleiben. Die Führungskraft steuert aktiv, nicht reaktiv.",
         overweight: imp_overweight_lead,
         conclusion: "Die Führungsrolle ist eindeutig auf Richtung, Ergebnis und konsequente Umsetzung ausgelegt. Struktur sichert Transparenz, ersetzt aber nicht Entscheidung.",
       },
@@ -204,7 +204,7 @@ export const PROFILE_TEXTS: Record<string, ProfileTexts> = {
       strong: {
         intro: "Im Vordergrund stehen Ordnung, Präzision und planbares Vorgehen als zentrale Erfolgsfaktoren.",
         overall: "Die Rolle ist eindeutig auf Struktur und Genauigkeit ausgerichtet. Entscheidungen werden sorgfältig vorbereitet und nachvollziehbar abgesichert. Umsetzung erfolgt konsequent, jedoch strikt innerhalb klarer Abläufe. Zusammenarbeit unterstützt die Funktion, steht aber deutlich nicht im Zentrum. Die Anforderung ist eindeutig: Qualität entsteht durch Systematik, nicht durch Improvisation.",
-        tasks: "Die Aufgaben verlangen saubere Planung, lückenlose Dokumentation und konsequente Qualitätssicherung. Abweichungen werden erkannt, analysiert und systematisch bearbeitet. Die Tätigkeit lebt von Vorhersagbarkeit, Ordnung und einem hohen Maß an fachlicher Tiefe.",
+        tasks: "Die Aufgaben verlangen saubere Planung, lückenlose Dokumentation und konsequente Qualitätssicherung. Abweichungen werden erkannt, analysiert und systematisch bearbeitet. Die Tätigkeit lebt von Vorhersagbarkeit, Ordnung und einem hohen Mass an fachlicher Tiefe.",
         human: "Gefordert sind Sorgfalt, Verlässlichkeit und ein klares Qualitätsverständnis. Prioritäten werden strukturiert gesetzt und konsequent eingehalten. Die Person muss Komplexität ordnen können, ohne den Überblick zu verlieren. Schnellschüsse und oberflächliche Lösungen sind kontraproduktiv.",
         overweight: ana_overweight_noLead,
         conclusion: "Die Rolle ist eindeutig auf klare Abläufe, Präzision und verlässliche Qualität ausgelegt. Entscheidungen sollen nachvollziehbar und stabil sein. Die Anforderung ist klar ausgeprägt.",
@@ -239,7 +239,7 @@ export const PROFILE_TEXTS: Record<string, ProfileTexts> = {
       clear: {
         intro: "Im Vordergrund stehen klare Struktur, verlässliche Prozesse und nachvollziehbare Steuerung.",
         overall: "Führung in dieser Rolle erfolgt deutlich über Ordnung und Planung. Erwartungen werden klar formuliert und systematisch nachgehalten. Umsetzung erfolgt innerhalb definierter Standards. Die Ausrichtung ist klar erkennbar: Wirksamkeit entsteht über Verlässlichkeit.",
-        tasks: "Die Aufgaben verlangen Prozessklarheit, Qualitätssicherung und strukturierte Steuerung. Ergebnisse werden gegen definierte Maßstäbe geprüft.",
+        tasks: "Die Aufgaben verlangen Prozessklarheit, Qualitätssicherung und strukturierte Steuerung. Ergebnisse werden gegen definierte Massstäbe geprüft.",
         human: "Gefordert sind Sorgfalt, analytisches Denken und die Fähigkeit, komplexe Sachverhalte zu ordnen und klar zu kommunizieren.",
         leadership_section: "Führung entsteht durch klare Rahmenbedingungen und definierte Zuständigkeiten. Das Team erhält Orientierung über nachvollziehbare Strukturen und verlässliche Standards.",
         overweight: ana_overweight_lead,
@@ -270,7 +270,7 @@ export const PROFILE_TEXTS: Record<string, ProfileTexts> = {
       clear: {
         intro: "Im Vordergrund stehen Zusammenarbeit, situationsgerechtes Handeln und tragfähige Abstimmung im Arbeitsumfeld.",
         overall: "Die Rolle ist deutlich auf Zusammenarbeit und Kontextsensibilität ausgerichtet. Entscheidungen sollen anschlussfähig sein. Struktur unterstützt den Arbeitsprozess, dominiert ihn aber nicht. Umsetzung erfolgt über Einbindung, nicht über Tempo. Die Ausrichtung ist klar erkennbar.",
-        tasks: "Die Aufgaben verlangen regelmäßige Abstimmung und ein gutes Gespür für Situationen. Schnittstellenarbeit und Kommunikation stehen im Vordergrund.",
+        tasks: "Die Aufgaben verlangen regelmässige Abstimmung und ein gutes Gespür für Situationen. Schnittstellenarbeit und Kommunikation stehen im Vordergrund.",
         human: "Gefordert sind Kommunikationsstärke, Kooperationsfähigkeit und die Fähigkeit, unterschiedliche Perspektiven zusammenzuführen.",
         overweight: int_overweight_noLead,
         conclusion: "Die Rolle ist deutlich auf Zusammenarbeit und situationsgerechtes Handeln ausgerichtet. Die Ausrichtung ist klar erkennbar.",
@@ -319,15 +319,15 @@ export const PROFILE_TEXTS: Record<string, ProfileTexts> = {
     noLeadership: {
       strong: {
         intro: "Im Mittelpunkt stehen konsequente Umsetzung und klare Struktur – beide Bereiche sind in dieser Rolle eindeutig gefordert.",
-        overall: "Die Rolle ist eindeutig auf das Zusammenspiel von Ergebnisorientierung und planbarer Steuerung ausgerichtet. Entscheidungen werden schnell getroffen, aber strikt entlang klarer Prioritäten und Kennzahlen. Umsetzung erfolgt kompromisslos, ohne dass Ordnung und Nachvollziehbarkeit verloren gehen. Zusammenarbeit unterstützt die Funktion, steht jedoch klar nicht im Zentrum. Die Anforderung ist eindeutig: Tempo und Systematik müssen gleichermaßen ausgeprägt sein.",
+        overall: "Die Rolle ist eindeutig auf das Zusammenspiel von Ergebnisorientierung und planbarer Steuerung ausgerichtet. Entscheidungen werden schnell getroffen, aber strikt entlang klarer Prioritäten und Kennzahlen. Umsetzung erfolgt kompromisslos, ohne dass Ordnung und Nachvollziehbarkeit verloren gehen. Zusammenarbeit unterstützt die Funktion, steht jedoch klar nicht im Zentrum. Die Anforderung ist eindeutig: Tempo und Systematik müssen gleichermassen ausgeprägt sein.",
         tasks: "Die Aufgaben verlangen hohe Geschwindigkeit in der Umsetzung und gleichzeitig saubere Steuerung über klare Vorgaben und messbare Ziele. Wer nur schnell oder nur genau arbeitet, wird der Rolle nicht gerecht – beides muss auf höchstem Niveau parallel funktionieren. Es gibt keinen Spielraum für Nachlässigkeit in einem der beiden Bereiche.",
         human: "Gefordert sind ausgeprägte Entschlossenheit und Strukturfähigkeit. Prioritäten werden klar gesetzt und konsequent eingehalten. Die Person muss unter Druck handeln und gleichzeitig Ordnung halten können – ohne sich in einem der beiden Bereiche zu verlieren. Schnelle Entscheidungen und saubere Dokumentation sind kein Widerspruch, sondern Voraussetzung.",
         overweight: {
           speed_over: { bullets: ["Absicherung sinkt spürbar und schnell", "Abstimmung wird verkürzt oder komplett übergangen", "Fehlerquote steigt überproportional", "Nacharbeit und Korrekturen belasten die Produktivität"], text: "Im Alltag steigt die Dynamik, gleichzeitig sinkt die Verlässlichkeit der Steuerung massiv. Die strukturelle Komponente der Rolle wird untergraben – und damit die Grundlage für nachhaltige Ergebnisse." },
           structure_over: { bullets: ["Tempo sinkt deutlich unter das nötige Niveau", "Entscheidungen dauern deutlich länger als vertretbar", "Chancen werden verpasst oder zu spät erkannt", "Wirksamkeit verzögert sich bis zur Irrelevanz"], text: "Im Alltag steigt die Ordnung, jedoch verliert die Rolle ihre Abschlussstärke und Handlungsfähigkeit vollständig. Die Funktion wird kontrollierend, aber nicht mehr wirksam." },
-          collaboration_over: { bullets: ["Konsens dominiert über Ergebnis und Sachlogik", "Konsequenz sinkt, Entscheidungen werden weich", "Ziele werden verhandelbar statt verbindlich gehalten", "Prioritäten wechseln situativ statt plangemäß"], text: "Im Alltag bleibt das Umfeld eingebunden, jedoch sinkt Klarheit und Abschlussgeschwindigkeit dramatisch. Beide Kernstärken der Rolle werden gleichzeitig geschwächt." },
+          collaboration_over: { bullets: ["Konsens dominiert über Ergebnis und Sachlogik", "Konsequenz sinkt, Entscheidungen werden weich", "Ziele werden verhandelbar statt verbindlich gehalten", "Prioritäten wechseln situativ statt plangemäss"], text: "Im Alltag bleibt das Umfeld eingebunden, jedoch sinkt Klarheit und Abschlussgeschwindigkeit dramatisch. Beide Kernstärken der Rolle werden gleichzeitig geschwächt." },
         },
-        conclusion: "Die Rolle ist eindeutig auf das Zusammenspiel von konsequenter Umsetzung und klarer Steuerung angelegt. Ergebnis und Struktur sind in gleichem Maß gefordert – Stärke entsteht nur, wenn beide Bereiche auf hohem Niveau funktionieren.",
+        conclusion: "Die Rolle ist eindeutig auf das Zusammenspiel von konsequenter Umsetzung und klarer Steuerung angelegt. Ergebnis und Struktur sind in gleichem Mass gefordert – Stärke entsteht nur, wenn beide Bereiche auf hohem Niveau funktionieren.",
       },
       clear: {
         intro: "Im Vordergrund stehen konsequente Umsetzung und klare Struktur als gleichwertige Erfolgsfaktoren.",
@@ -339,7 +339,7 @@ export const PROFILE_TEXTS: Record<string, ProfileTexts> = {
           structure_over: { bullets: ["Tempo sinkt merklich", "Entscheidungen dauern länger als nötig", "Chancen werden später genutzt", "Wirksamkeit verzögert sich"], text: "Im Alltag steigt die Ordnung, jedoch verliert die Rolle an Abschlussstärke und Handlungsfähigkeit." },
           collaboration_over: { bullets: ["Konsens dominiert über Ergebnis", "Konsequenz sinkt", "Ziele werden verhandelbar statt verbindlich", "Prioritäten wechseln häufiger"], text: "Im Alltag bleibt das Umfeld eingebunden, jedoch sinkt Klarheit und Abschlussgeschwindigkeit." },
         },
-        conclusion: "Die Rolle verbindet konsequente Umsetzung mit klarer Steuerung. Sie ist auf Ergebnis und Struktur im gleichen Maß angelegt – Stärke entsteht aus dem Zusammenspiel.",
+        conclusion: "Die Rolle verbindet konsequente Umsetzung mit klarer Steuerung. Sie ist auf Ergebnis und Struktur im gleichen Mass angelegt – Stärke entsteht aus dem Zusammenspiel.",
       },
       light: {
         intro: "Im Vordergrund steht ein erkennbares Zusammenspiel von Umsetzungsstärke und Strukturorientierung – ohne einseitige Dominanz.",
@@ -401,9 +401,9 @@ export const PROFILE_TEXTS: Record<string, ProfileTexts> = {
     noLeadership: {
       strong: {
         intro: "Im Mittelpunkt stehen klare Organisation und tragfähige Abstimmung – beide Bereiche sind in dieser Rolle eindeutig gefordert.",
-        overall: "Die Rolle ist eindeutig auf das Zusammenspiel von Struktur und Kontextsensibilität ausgerichtet. Entscheidungen werden sorgfältig vorbereitet und zugleich so gestaltet, dass sie im Arbeitsumfeld funktionieren. Ordnung und Abstimmung stehen als gleichwertige Anforderungen nebeneinander. Umsetzung erfolgt verlässlich, ohne dass Geschwindigkeit zum Treiber wird. Die Anforderung ist eindeutig: Systematik und Kooperation müssen gleichermaßen ausgeprägt sein.",
-        tasks: "Die Aufgaben verlangen saubere Organisation, klare Prozesse und intensive regelmäßige Abstimmung. Anforderungen werden eingeordnet und planbar bearbeitet. Weder reine Sachlogik noch dauerhafte Rücksprache allein sind zielführend – die Aufgaben verlangen beides auf hohem Niveau. Es gibt keinen Spielraum für Nachlässigkeit in einem der beiden Bereiche.",
-        human: "Gefordert sind ausgeprägte Genauigkeit und Kommunikationsklarheit. Die Rolle verlangt ein strukturiertes Vorgehen und die ausgeprägte Fähigkeit, Erwartungen sauber zu klären. Die Person muss ordnen und kommunizieren können – in gleichem Maß und auf höchstem Niveau.",
+        overall: "Die Rolle ist eindeutig auf das Zusammenspiel von Struktur und Kontextsensibilität ausgerichtet. Entscheidungen werden sorgfältig vorbereitet und zugleich so gestaltet, dass sie im Arbeitsumfeld funktionieren. Ordnung und Abstimmung stehen als gleichwertige Anforderungen nebeneinander. Umsetzung erfolgt verlässlich, ohne dass Geschwindigkeit zum Treiber wird. Die Anforderung ist eindeutig: Systematik und Kooperation müssen gleichermassen ausgeprägt sein.",
+        tasks: "Die Aufgaben verlangen saubere Organisation, klare Prozesse und intensive regelmässige Abstimmung. Anforderungen werden eingeordnet und planbar bearbeitet. Weder reine Sachlogik noch dauerhafte Rücksprache allein sind zielführend – die Aufgaben verlangen beides auf hohem Niveau. Es gibt keinen Spielraum für Nachlässigkeit in einem der beiden Bereiche.",
+        human: "Gefordert sind ausgeprägte Genauigkeit und Kommunikationsklarheit. Die Rolle verlangt ein strukturiertes Vorgehen und die ausgeprägte Fähigkeit, Erwartungen sauber zu klären. Die Person muss ordnen und kommunizieren können – in gleichem Mass und auf höchstem Niveau.",
         overweight: {
           structure_over: { bullets: ["Entscheidungen werden deutlich starrer", "Flexibilität sinkt spürbar bis zur Unbeweglichkeit", "Abstimmung tritt vollständig in den Hintergrund", "Anschlussfähigkeit im Umfeld geht verloren"], text: "Im Alltag steigt Ordnung, jedoch sinkt die Fähigkeit, Situationen flexibel einzuordnen, massiv. Die kooperative Komponente wird untergraben – und damit die Tragfähigkeit der Entscheidungen." },
           collaboration_over: { bullets: ["Abstimmung dominiert komplett über Sachlogik", "Prioritäten werden rein situativ gehandhabt", "Verbindlichkeit sinkt spürbar", "Prozessklarheit geht verloren"], text: "Im Alltag bleibt das Miteinander stabil, jedoch sinkt die Verlässlichkeit in Planung und Ablauf massiv. Die strukturelle Komponente wird untergraben." },
@@ -414,8 +414,8 @@ export const PROFILE_TEXTS: Record<string, ProfileTexts> = {
       clear: {
         intro: "Im Vordergrund stehen klare Organisation und tragfähige Abstimmung als gleichwertige Erfolgsfaktoren.",
         overall: "Die Rolle verbindet Struktur mit Kontextsensibilität. Entscheidungen sollen nachvollziehbar vorbereitet werden und zugleich im Arbeitsumfeld funktionieren. Ordnung und Abstimmung stehen gleichwertig nebeneinander. Umsetzung erfolgt verlässlich, ohne dass Geschwindigkeit zum Haupttreiber wird. Die Wirkung entsteht, wenn Systematik und Kooperation zusammenwirken.",
-        tasks: "Die Aufgaben verlangen saubere Organisation, klare Prozesse und regelmäßige Abstimmung. Anforderungen werden eingeordnet und planbar bearbeitet. Weder reine Sachlogik noch dauerhafte Rücksprache sind zielführend – die Aufgaben verlangen beides.",
-        human: "Gefordert sind Genauigkeit und Kommunikationsklarheit. Die Rolle verlangt ein strukturiertes Vorgehen und die Fähigkeit, Erwartungen sauber zu klären. Die Person muss ordnen und kommunizieren können – in gleichem Maß.",
+        tasks: "Die Aufgaben verlangen saubere Organisation, klare Prozesse und regelmässige Abstimmung. Anforderungen werden eingeordnet und planbar bearbeitet. Weder reine Sachlogik noch dauerhafte Rücksprache sind zielführend – die Aufgaben verlangen beides.",
+        human: "Gefordert sind Genauigkeit und Kommunikationsklarheit. Die Rolle verlangt ein strukturiertes Vorgehen und die Fähigkeit, Erwartungen sauber zu klären. Die Person muss ordnen und kommunizieren können – in gleichem Mass.",
         overweight: {
           structure_over: { bullets: ["Entscheidungen werden starrer", "Flexibilität sinkt spürbar", "Abstimmung tritt in den Hintergrund", "Anschlussfähigkeit im Umfeld sinkt"], text: "Im Alltag steigt Ordnung, jedoch sinkt die Fähigkeit, Situationen flexibel einzuordnen. Die kooperative Komponente wird geschwächt." },
           collaboration_over: { bullets: ["Abstimmung dominiert über Sachlogik", "Prioritäten werden zu situativ", "Verbindlichkeit sinkt", "Prozessklarheit nimmt spürbar ab"], text: "Im Alltag bleibt das Miteinander stabil, jedoch sinkt die Verlässlichkeit in Planung und Ablauf. Die strukturelle Komponente wird geschwächt." },
@@ -440,9 +440,9 @@ export const PROFILE_TEXTS: Record<string, ProfileTexts> = {
       strong: {
         intro: "Im Mittelpunkt stehen Orientierung über Struktur und Stabilität über Zusammenarbeit als eindeutige Säulen der Führungsarbeit.",
         overall: "Führung in dieser Rolle ist eindeutig auf das Zusammenspiel von klaren Rahmenbedingungen und tragfähiger Abstimmung ausgerichtet. Entscheidungen müssen nachvollziehbar sein und im Team funktionieren. Steuerung erfolgt strikt über klare Prioritäten, ergänzt durch intensive, stabile Kommunikation. Die Anforderung ist eindeutig: Die Führungskraft muss ordnen und einbinden – beides auf höchstem Niveau.",
-        tasks: "Die Aufgaben verlangen kompromisslose Prozessklarheit, saubere Organisation und intensive, regelmäßige Einbindung des Umfelds. Die Führungskraft muss steuern und einbinden können – parallel und auf hohem Niveau.",
+        tasks: "Die Aufgaben verlangen kompromisslose Prozessklarheit, saubere Organisation und intensive, regelmässige Einbindung des Umfelds. Die Führungskraft muss steuern und einbinden können – parallel und auf hohem Niveau.",
         human: "Gefordert sind ausgeprägte Struktur und Kommunikationsfähigkeit, mit der Fähigkeit, Erwartungen sauber zu klären und Ordnung zu sichern. Die Person muss systematisch denken und gleichzeitig beziehungsstark sein – auf höchstem Niveau.",
-        leadership_section: "Führung entsteht durch klare Regeln, saubere Abstimmung und verlässliche Prioritäten. Das Team erhält Orientierung über Struktur und Einbindung gleichermaßen. Die Führungskraft wirkt als Ordner und Verbinder zugleich – mit eindeutiger Ausprägung in beiden Bereichen.",
+        leadership_section: "Führung entsteht durch klare Regeln, saubere Abstimmung und verlässliche Prioritäten. Das Team erhält Orientierung über Struktur und Einbindung gleichermassen. Die Führungskraft wirkt als Ordner und Verbinder zugleich – mit eindeutiger Ausprägung in beiden Bereichen.",
         overweight: {
           structure_over: { bullets: ["Kontrolle steigt bis zur Lähmung", "Flexibilität sinkt gefährlich", "Team fühlt sich massiv eingeengt", "Entscheidungen verzögern sich deutlich"], text: "Im Alltag steigt Ordnung, jedoch sinkt Beweglichkeit und Anschlussfähigkeit im Team massiv." },
           collaboration_over: { bullets: ["Konsens dominiert über jede Sachlogik", "Verbindlichkeit sinkt spürbar", "Prioritäten werden beliebig verhandelbar", "Tempo sinkt deutlich"], text: "Im Alltag bleibt das Klima stabil, jedoch sinkt die Klarheit in Ziel und Umsetzung dramatisch." },
@@ -453,9 +453,9 @@ export const PROFILE_TEXTS: Record<string, ProfileTexts> = {
       clear: {
         intro: "Im Vordergrund stehen Orientierung über Struktur und Stabilität über Zusammenarbeit als gleichwertige Führungsprinzipien.",
         overall: "Führung in dieser Rolle verbindet klare Rahmenbedingungen mit tragfähiger Abstimmung. Entscheidungen sollen nachvollziehbar sein und im Team funktionieren. Steuerung erfolgt über klare Prioritäten, ergänzt durch stabile Kommunikation. Die Wirkung entsteht, wenn Ordnung und Einbindung zusammenwirken.",
-        tasks: "Die Aufgaben verlangen Prozessklarheit, saubere Organisation und regelmäßige Einbindung des Umfelds. Die Führungskraft muss steuern und einbinden können – parallel.",
+        tasks: "Die Aufgaben verlangen Prozessklarheit, saubere Organisation und regelmässige Einbindung des Umfelds. Die Führungskraft muss steuern und einbinden können – parallel.",
         human: "Gefordert sind Struktur und Kommunikationsfähigkeit, mit der Fähigkeit, Erwartungen zu klären und Ordnung zu sichern. Die Person muss systematisch denken und gleichzeitig beziehungsfähig sein.",
-        leadership_section: "Führung entsteht durch klare Regeln, saubere Abstimmung und verlässliche Prioritäten. Das Team erhält Orientierung über Struktur und Einbindung gleichermaßen.",
+        leadership_section: "Führung entsteht durch klare Regeln, saubere Abstimmung und verlässliche Prioritäten. Das Team erhält Orientierung über Struktur und Einbindung gleichermassen.",
         overweight: {
           structure_over: { bullets: ["Kontrolle steigt überproportional", "Flexibilität sinkt", "Team fühlt sich eingeengt", "Entscheidungen verzögern sich"], text: "Im Alltag steigt Ordnung, jedoch sinkt Beweglichkeit und Anschlussfähigkeit im Team." },
           collaboration_over: { bullets: ["Konsens dominiert", "Verbindlichkeit sinkt", "Prioritäten werden verhandelbar", "Tempo sinkt"], text: "Im Alltag bleibt das Klima stabil, jedoch sinkt die Klarheit in Ziel und Umsetzung." },
@@ -466,7 +466,7 @@ export const PROFILE_TEXTS: Record<string, ProfileTexts> = {
       light: {
         intro: "Im Vordergrund steht ein erkennbares Zusammenspiel von Strukturorientierung und Teameinbindung in der Führung.",
         overall: "Die Rolle zeigt eine erkennbare Doppelausrichtung auf Ordnung und Abstimmung in der Führung. Entscheidungen werden bevorzugt vorbereitet und im Team verankert. Ergebnisorientierung spielt eine Rolle, steht aber nicht im Mittelpunkt. Der Schwerpunkt ist erkennbar, jedoch nicht exklusiv.",
-        tasks: "Die Aufgaben verlangen Prozessklarheit und regelmäßige Einbindung des Umfelds, ergänzt durch ergebnisorientierte Steuerung. Die Führungskraft muss ordnen und einbinden – in einem ausgewogenen Verhältnis.",
+        tasks: "Die Aufgaben verlangen Prozessklarheit und regelmässige Einbindung des Umfelds, ergänzt durch ergebnisorientierte Steuerung. Die Führungskraft muss ordnen und einbinden – in einem ausgewogenen Verhältnis.",
         human: "Gefordert sind Strukturfähigkeit und Kommunikationsbereitschaft, ergänzt durch Entscheidungsfreude und Pragmatismus.",
         leadership_section: "Führung entsteht durch Rahmensetzung und Teameinbindung. Klare Regeln und offene Abstimmung ergänzen einander, ohne dass einer der Bereiche dominiert.",
         overweight: {
@@ -483,7 +483,7 @@ export const PROFILE_TEXTS: Record<string, ProfileTexts> = {
     noLeadership: {
       strong: {
         intro: "Im Mittelpunkt stehen konsequente Umsetzung und tragfähige Zusammenarbeit – beide Bereiche sind in dieser Rolle eindeutig gefordert.",
-        overall: "Die Rolle ist eindeutig auf das Zusammenspiel von Handlungsfähigkeit und enger Abstimmung ausgerichtet. Entscheidungen werden schnell getroffen und umgesetzt, müssen aber zwingend im Umfeld funktionieren. Geschwindigkeit ist zentral, darf aber keinesfalls zulasten von Anschlussfähigkeit gehen. Struktur unterstützt die Arbeit, steht jedoch klar nicht im Zentrum. Die Anforderung ist eindeutig: Konsequenz und Kooperation müssen gleichermaßen auf höchstem Niveau ausgeprägt sein.",
+        overall: "Die Rolle ist eindeutig auf das Zusammenspiel von Handlungsfähigkeit und enger Abstimmung ausgerichtet. Entscheidungen werden schnell getroffen und umgesetzt, müssen aber zwingend im Umfeld funktionieren. Geschwindigkeit ist zentral, darf aber keinesfalls zulasten von Anschlussfähigkeit gehen. Struktur unterstützt die Arbeit, steht jedoch klar nicht im Zentrum. Die Anforderung ist eindeutig: Konsequenz und Kooperation müssen gleichermassen auf höchstem Niveau ausgeprägt sein.",
         tasks: "Die Aufgaben verlangen hohe Umsetzungsgeschwindigkeit und gleichzeitig intensive, laufende Abstimmung. Schnittstellen und Kommunikation sind absolut zentral. Wer nur umsetzt ohne abzustimmen, oder nur abstimmt ohne umzusetzen, wird der Rolle nicht gerecht. Beide Bereiche müssen parallel auf höchstem Niveau funktionieren.",
         human: "Gefordert sind ausgeprägte Eigeninitiative und Kommunikationsklarheit. Die Rolle verlangt kompromisslose Konsequenz in der Umsetzung und ausgeprägte Stabilität in der Zusammenarbeit. Die Person muss unter Druck handeln und gleichzeitig im Dialog bleiben – ohne eines von beiden zu opfern.",
         overweight: {
@@ -524,7 +524,7 @@ export const PROFILE_TEXTS: Record<string, ProfileTexts> = {
         overall: "Führung in dieser Rolle ist eindeutig auf das Zusammenspiel von Richtung und Einbindung ausgerichtet. Entscheidungen werden getroffen und umgesetzt, müssen aber zwingend im Team getragen werden. Struktur unterstützt die Steuerung, ohne zum Treiber zu werden. Die Anforderung ist eindeutig: Die Führungskraft muss steuern und verbinden – beides auf höchstem Niveau.",
         tasks: "Die Aufgaben verlangen klare Steuerung und kompromissloses Nachhalten, ergänzt durch intensive, aktive Kommunikation im Team und an Schnittstellen. Die Führungskraft muss steuern und einbinden – parallel und auf höchstem Niveau.",
         human: "Gefordert sind ausgeprägte Durchsetzung und Kommunikationsstärke. Die Rolle verlangt kompromisslose Konsequenz in Ziel und ausgeprägte Stabilität im Miteinander. Die Person muss führen und gleichzeitig verbinden – ohne eines zu opfern.",
-        leadership_section: "Führung entsteht durch klare Richtung und verlässliche Zusammenarbeit. Entscheidungen werden konsequent getroffen und zugleich tragfähig im Team verankert. Das Team spürt Führung und Einbindung gleichermaßen – mit eindeutiger Ausprägung in beiden Bereichen.",
+        leadership_section: "Führung entsteht durch klare Richtung und verlässliche Zusammenarbeit. Entscheidungen werden konsequent getroffen und zugleich tragfähig im Team verankert. Das Team spürt Führung und Einbindung gleichermassen – mit eindeutiger Ausprägung in beiden Bereichen.",
         overweight: {
           speed_over: { bullets: ["Druck steigt massiv im Team", "Konflikte nehmen überproportional zu", "Abstimmung sinkt gefährlich", "Akzeptanz und Vertrauen schwinden"], text: "Im Alltag steigt Tempo, während Teamstabilität massiv nachlässt. Die Führung wirkt getrieben statt verbindend." },
           collaboration_over: { bullets: ["Konsens dominiert über jede Richtung", "Konsequenz sinkt bis zur Unwirksamkeit", "Ziele werden beliebig verhandelbar", "Leistung verliert jede Schärfe"], text: "Im Alltag bleibt das Klima stabil, jedoch sinkt die Klarheit in Ziel und Ergebnis dramatisch." },
@@ -537,7 +537,7 @@ export const PROFILE_TEXTS: Record<string, ProfileTexts> = {
         overall: "Führung in dieser Rolle verbindet Richtung und Tempo mit Einbindung. Entscheidungen werden getroffen und umgesetzt, müssen jedoch im Team getragen werden. Struktur unterstützt die Steuerung, ohne zum Haupttreiber zu werden. Die Wirkung entsteht, wenn Konsequenz und Teamarbeit zusammenwirken.",
         tasks: "Die Aufgaben verlangen klare Steuerung und konsequentes Nachhalten, ergänzt durch aktive Kommunikation im Team und an Schnittstellen. Die Führungskraft muss steuern und einbinden – parallel.",
         human: "Gefordert sind Durchsetzung und Kommunikationsstärke. Die Rolle verlangt Konsequenz in Ziel und Stabilität im Miteinander. Die Person muss führen und gleichzeitig verbinden können.",
-        leadership_section: "Führung entsteht durch klare Richtung und verlässliche Zusammenarbeit. Entscheidungen sollen konsequent und zugleich tragfähig sein. Das Team spürt Führung und Einbindung gleichermaßen.",
+        leadership_section: "Führung entsteht durch klare Richtung und verlässliche Zusammenarbeit. Entscheidungen sollen konsequent und zugleich tragfähig sein. Das Team spürt Führung und Einbindung gleichermassen.",
         overweight: {
           speed_over: { bullets: ["Druck steigt im Team", "Konflikte nehmen zu", "Abstimmung sinkt", "Akzeptanz sinkt"], text: "Im Alltag steigt Tempo, während Teamstabilität nachlassen kann." },
           collaboration_over: { bullets: ["Konsens dominiert", "Konsequenz sinkt", "Ziele werden verhandelbar", "Leistung verliert Schärfe"], text: "Im Alltag bleibt das Klima stabil, jedoch sinkt die Klarheit in Ziel und Ergebnis." },

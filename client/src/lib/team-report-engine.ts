@@ -278,7 +278,7 @@ function buildTeamImpactAreas(
     id: "communication",
     label: "Kommunikation",
     severity: kommSev,
-    teamExpectation: team.intuitiv >= 35 ? "Das Team lebt stark vom direkten Kontakt und reibungsarmer Zusammenarbeit." : "Das Team braucht ein grundlegendes Maß an Kommunikation und Abstimmung.",
+    teamExpectation: team.intuitiv >= 35 ? "Das Team lebt stark vom direkten Kontakt und reibungsarmer Zusammenarbeit." : "Das Team braucht ein grundlegendes Mass an Kommunikation und Abstimmung.",
     candidatePattern: ist.intuitiv >= 35 ? `${Subj(cand)} baut schnell Vertrauen auf und sorgt für reibungsarme Zusammenarbeit.` : ist.intuitiv <= 25 ? `${Subj(cand)} kommuniziert sachlich und knapp. Beziehungsorientierte Abstimmung hat geringe Priorität.` : `${Subj(cand)} kommuniziert situativ angemessen.`,
     risk: teamGapN >= 12 ? `Kommunikationslogik weicht ab. Im Team kann das zu Missverständnissen führen.` : "Kommunikationslogik passt zum Team.",
   });
@@ -304,7 +304,7 @@ function buildTeamRiskTimeline(
   if (rk === tk && teamIstGap <= 20) {
     return [
       { label: "Kurzfristig", period: "0 - 3 Monate", text: "Reibungslose Einarbeitung. Arbeitslogiken stimmen überein. Nur punktuelle Steuerung nötig." },
-      { label: "Mittelfristig", period: "3 - 12 Monate", text: "Stabile Leistung erwartbar. Regelmäßige Zielgespräche sichern die Feinsteuerung." },
+      { label: "Mittelfristig", period: "3 - 12 Monate", text: "Stabile Leistung erwartbar. Regelmässige Zielgespräche sichern die Feinsteuerung." },
       { label: "Langfristig", period: "12+ Monate", text: "Nachhaltige Besetzung wahrscheinlich. Halbjährliche Überprüfung genügt." },
     ];
   }
@@ -349,7 +349,7 @@ function buildTeamDevelopment(
     return {
       level: 3,
       label: "mittel",
-      text: `Eine Entwicklung in Richtung besserer Teamkompatibilität ist möglich. Sie erfordert gezielte Führung und regelmäßige Rückmeldung. Der Zeitraum beträgt 6 bis 12 Monate.`,
+      text: `Eine Entwicklung in Richtung besserer Teamkompatibilität ist möglich. Sie erfordert gezielte Führung und regelmässige Rückmeldung. Der Zeitraum beträgt 6 bis 12 Monate.`,
     };
   }
   if (teamIstGap <= 45) {
@@ -372,7 +372,7 @@ function buildTeamActions(
 ): string[] {
   if (teamIstGap <= 15) {
     return [
-      "Regelmäßige Zielvereinbarungen zur Feinsteuerung durchführen.",
+      "Regelmässige Zielvereinbarungen zur Feinsteuerung durchführen.",
       "Halbjährliche Überprüfung der Teampassung sicherstellen.",
     ];
   }
@@ -394,7 +394,7 @@ function buildTeamActions(
     base.push("Klare Umsetzungsfristen und Entscheidungsdeadlines definieren.");
     base.push("Ergebnisorientierte KPIs statt Prozess-KPIs verwenden.");
   } else if (tk === "intuitiv" && rk !== "intuitiv") {
-    base.push("Regelmäßige Team-Feedbackrunden und Kommunikationsformate einrichten.");
+    base.push("Regelmässige Team-Feedbackrunden und Kommunikationsformate einrichten.");
     base.push("Beziehungsarbeit als explizites Ziel in die Leistungsbewertung aufnehmen.");
   }
 
@@ -486,7 +486,7 @@ export function buildTeamIntegrationsplanPhasen(
   phase3Items.push("Prioritäten konsolidieren und Standards stabilisieren.");
 
   if (teamIstGap > 25) {
-    phase3Items.push("Langfristiges Steuerungskonzept festlegen. Regelmäßige Checkpoints einplanen.");
+    phase3Items.push("Langfristiges Steuerungskonzept festlegen. Regelmässige Checkpoints einplanen.");
   }
 
   const ziel1 = rk !== tk
@@ -495,7 +495,7 @@ export function buildTeamIntegrationsplanPhasen(
   const fokus1 = teamIstGap > 30
     ? "Erwartungen aktiv klären, Buddy-System etablieren, erste Reibungspunkte offen benennen."
     : "Raum für Beobachtung geben, Grundregeln klären und Kommunikationswege transparent machen.";
-  const erfolg1 = "Die Besetzung kennt die Teamlogik und weiß, wo Unterschiede bestehen. Das Team versteht die Arbeitsweise der Besetzung. Es gibt keine verdeckten Erwartungskonflikte.";
+  const erfolg1 = "Die Besetzung kennt die Teamlogik und weiss, wo Unterschiede bestehen. Das Team versteht die Arbeitsweise der Besetzung. Es gibt keine verdeckten Erwartungskonflikte.";
 
   const ziel2 = rk !== tk
     ? "Erste sichtbare Ergebnisse erzielen. Stärken der Besetzung gezielt in Aufgaben überführen und Brücken zur Teamlogik bauen."
@@ -507,7 +507,7 @@ export function buildTeamIntegrationsplanPhasen(
 
   const ziel3 = "Zusammenarbeit stabilisieren, Standards konsolidieren und langfristige Steuerungsarchitektur verankern.";
   const fokus3 = teamIstGap > 25
-    ? "Langfristiges Steuerungskonzept festlegen, regelmäßige Checkpoints einplanen, Nachhaltigkeit sicherstellen."
+    ? "Langfristiges Steuerungskonzept festlegen, regelmässige Checkpoints einplanen, Nachhaltigkeit sicherstellen."
     : "Feinabstimmung der Zusammenarbeit, Standardisierung der Routinen, Fokus auf Nachhaltigkeit.";
   const erfolg3 = "Die Zusammenarbeit läuft stabil. Entscheidungswege sind klar. Die Besetzung wird als integrierter Teil des Teams wahrgenommen.";
 
@@ -680,7 +680,7 @@ function buildManagementSummary(
   if (status === "gruen") {
     lines.push(`${s} passt strukturell zum bestehenden Team. Die Arbeitslogiken sind kompatibel. Die Integration wird voraussichtlich reibungsarm verlaufen.`);
   } else if (status === "gelb") {
-    lines.push(`${s} zeigt Abweichungen zum Teamprofil. Die Integration ist steuerbar, erfordert aber gezielte Aufmerksamkeit in den ersten Wochen. Entscheidend sind klare Erwartungen und regelmäßige Abstimmung.`);
+    lines.push(`${s} zeigt Abweichungen zum Teamprofil. Die Integration ist steuerbar, erfordert aber gezielte Aufmerksamkeit in den ersten Wochen. Entscheidend sind klare Erwartungen und regelmässige Abstimmung.`);
   } else {
     lines.push(`${s} weicht deutlich vom Teamprofil ab. Ohne aktive Steuerung sind Reibung, Konflikte und Leistungseinbrüche wahrscheinlich. Die ersten 30 Tage sind entscheidend.`);
   }
@@ -797,7 +797,7 @@ function buildTeamdynamikAlltag(
   } else if (teamIstGap <= 30) {
     lines.push(`In der Kommunikation sind Abstimmungsverluste möglich. ${s} betont andere Aspekte als das Team. Klare Kommunikationsregeln helfen, Missverständnisse zu vermeiden.`);
   } else {
-    lines.push(`Die Kommunikationslogiken weichen deutlich voneinander ab. Was ${sn} als wichtig einstuft, priorisiert das Team anders. Ohne bewusste Steuerung entstehen regelmäßig Missverständnisse und Frustrationen.`);
+    lines.push(`Die Kommunikationslogiken weichen deutlich voneinander ab. Was ${sn} als wichtig einstuft, priorisiert das Team anders. Ohne bewusste Steuerung entstehen regelmässig Missverständnisse und Frustrationen.`);
   }
 
   lines.push("");
@@ -966,7 +966,7 @@ function buildFuehrungshebel(
   const items: string[] = [];
 
   if (teamIstGap > 15) {
-    items.push(`Erwartungsklärung: In der ersten Woche ein Kick-off mit dem gesamten Team durchführen. Prioritäten, Entscheidungswege und Qualitätsmaßstäbe transparent machen. ${Subj(cand)} und das Team müssen verstehen, was voneinander erwartet wird.`);
+    items.push(`Erwartungsklärung: In der ersten Woche ein Kick-off mit dem gesamten Team durchführen. Prioritäten, Entscheidungswege und Qualitätsmassstäbe transparent machen. ${Subj(cand)} und das Team müssen verstehen, was voneinander erwartet wird.`);
   }
 
   if (rk !== tk) {
@@ -1066,7 +1066,7 @@ function buildSystemfazit(
     lines.push("");
     lines.push(`Die Integration stellt eine erhebliche Herausforderung dar. Die Arbeitslogiken von ${subj(cand)} und dem Team sind grundlegend verschieden. Die ersten 30 Tage sind entscheidend: Klare Kommunikation, definierte Entscheidungswege und aktives Erwartungsmanagement sind Pflicht.`);
     lines.push("");
-    lines.push(`Empfehlung: Nur mit Steuerungskonzept und aktiver Führungsbegleitung einsetzen. Regelmäßige Checkpoints einplanen. Eskalationsmechanismen vorab klären.`);
+    lines.push(`Empfehlung: Nur mit Steuerungskonzept und aktiver Führungsbegleitung einsetzen. Regelmässige Checkpoints einplanen. Eskalationsmechanismen vorab klären.`);
   }
 
   return lines.join("\n");

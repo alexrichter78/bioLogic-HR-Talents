@@ -446,7 +446,7 @@ function gapDesc(diff: number): string {
   if (diff <= 8) return "eine kleine Abweichung";
   if (diff <= 15) return "eine merkliche Abweichung";
   if (diff <= 25) return "eine deutliche Abweichung";
-  return "eine große Diskrepanz";
+  return "eine grosse Diskrepanz";
 }
 
 function gapAdj(diff: number): string {
@@ -497,7 +497,7 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
         ? `Die Arbeitsweise passt: Beide Profile sind ${rLabel}-geprägt und ${gapAdj(domDiff)}. Die Stelle wird in ihren Kernanforderungen gut abgebildet – Entscheidungen, Prioritäten und Arbeitsweise bleiben konsistent.`
         : dominanceStatus === "CONDITIONAL"
           ? (sameDominant
-            ? `Gleiche Arbeitsweise (${rLabel}), aber es gibt ${gapDesc(domDiff)} in der Ausprägung. In Drucksituationen kann die Umsetzung schwächer ausfallen als gefordert. Klare Ziele und regelmäßige Abstimmungen helfen hier.`
+            ? `Gleiche Arbeitsweise (${rLabel}), aber es gibt ${gapDesc(domDiff)} in der Ausprägung. In Drucksituationen kann die Umsetzung schwächer ausfallen als gefordert. Klare Ziele und regelmässige Abstimmungen helfen hier.`
             : `Verschiebung von ${rLabel} zu ${cLabel}: Die Arbeitsweise verändert sich. Entscheidungen und Prioritäten folgen einer anderen Logik. Mit klaren Zielvorgaben und festen Entscheidungsfristen lässt sich das steuern.`)
           : `Deutliche Verschiebung von ${rLabel} zu ${cLabel}. Die zentrale Arbeitsweise der Stelle wird nicht abgebildet. Die Art, wie Entscheidungen getroffen und Prioritäten gesetzt werden, weicht grundlegend von dem ab, was die Stelle verlangt.`,
   });
@@ -588,7 +588,7 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
         ? `Die Führungsanforderung ist ${lLabel}-geprägt – die Person bringt eine passende Ausprägung mit. Zielklarheit, Delegation und Durchsetzungsfähigkeit passen zur Stelle. Das Team bekommt die Führung, die es braucht.`
         : leadershipStatus === "NOT_SUITABLE"
           ? `Die Stelle braucht ${lLabel}-betonte Führung. Es gibt ${gapDesc(leadDiffVal)} zwischen Anforderung und Person. Klare Zielsetzung, Konfliktfähigkeit und Durchsetzung unter Druck sind zu schwach ausgeprägt. Der Führungsaufwand für die nächste Ebene steigt erheblich.`
-          : `Die Führungsanforderung ist ${lLabel}-geprägt. Es gibt ${gapDesc(leadDiffVal)} zwischen Anforderung und Person. Führungswirkung ist machbar, wenn klare Ziele, Eskalationswege und regelmäßige Reviews für ${t.kpiExamples} definiert werden.`,
+          : `Die Führungsanforderung ist ${lLabel}-geprägt. Es gibt ${gapDesc(leadDiffVal)} zwischen Anforderung und Person. Führungswirkung ist machbar, wenn klare Ziele, Eskalationswege und regelmässige Reviews für ${t.kpiExamples} definiert werden.`,
     });
   }
 
@@ -691,7 +691,7 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
       reasoning: regStatus === "SUITABLE"
         ? `Die Genauigkeit reicht für regulierte Umfelder aus. Compliance, Auditfähigkeit und Prozessqualität lassen sich stabil aufsetzen.`
         : regStatus === "CONDITIONAL"
-          ? `In regulierten Umfeldern braucht es durchgehend klare Standards, Freigabeprozesse und regelmäßige Kontrollen. Ohne diese Struktur steigt das Risiko für Abweichungen.`
+          ? `In regulierten Umfeldern braucht es durchgehend klare Standards, Freigabeprozesse und regelmässige Kontrollen. Ohne diese Struktur steigt das Risiko für Abweichungen.`
           : `In regulierten Bereichen kann diese Lücke zu Qualitäts-, Haftungs- oder Auditproblemen führen. Sorgfalt und Regeltreue sind ohne intensive Begleitung nicht gewährleistet.`,
     });
   }
@@ -730,7 +730,7 @@ function buildMatrix(role: RoleAnalysis, cand: CandidateInput, t: RoleTerms): Ma
             : "Die Kundenorientierung passt zur geforderten Dynamik.")
         : custStatus === "CONDITIONAL"
           ? (ct === "B2C"
-            ? `Im B2C-Umfeld: Die Abschlussstärke ist vorhanden, braucht aber klare Ziele und regelmäßige Führung, um wirksam zu werden. Ohne das sinkt die Abschlussquote.`
+            ? `Im B2C-Umfeld: Die Abschlussstärke ist vorhanden, braucht aber klare Ziele und regelmässige Führung, um wirksam zu werden. Ohne das sinkt die Abschlussquote.`
             : `Im B2B-Umfeld: Beziehungsfähigkeit ist vorhanden, aber die Balance zwischen Beziehungspflege und Ergebnisorientierung muss aktiv gehalten werden. ${t.pipelineTerm} braucht Führung.`)
           : (ct === "B2C"
             ? `Im B2C-Umfeld: Tempo und Abschlussquote werden voraussichtlich unter dem liegen, was die Stelle braucht. Der nötige Antrieb für schnelle Abschlüsse fehlt.`
@@ -916,7 +916,7 @@ function integrationPlan(role: RoleAnalysis, criticalArea: MatrixAreaId, control
     phase_30_60.push(`Reporting-Disziplin prüfen: Werden Kennzahlen (${t.kpiExamples}) vollständig, pünktlich und ohne Nachfragen geliefert? ${t.forecastTerm} prüfen.`);
     phase_60_90.push(`Prüfung: Ist die Transparenz über Zielerreichung und ${t.pipelineTerm} stabil und verlässlich?`);
   } else if (criticalArea === "leadership_effect") {
-    phase_0_30.push(`Führungsanforderung für ${jobTitle} festhalten: Ziele, Delegation, Eskalationswege und regelmäßige Reviews für ${t.kpiExamples} definieren.`);
+    phase_0_30.push(`Führungsanforderung für ${jobTitle} festhalten: Ziele, Delegation, Eskalationswege und regelmässige Reviews für ${t.kpiExamples} definieren.`);
     phase_30_60.push("Führungswirkung beobachten: Setzt die Person die richtigen Prioritäten? Gibt sie klare, ergebnisorientierte Rückmeldungen? Teamdynamik beobachten.");
     phase_60_90.push(`Prüfung ${t.qualityMetric}: Hat das Team klare Richtung, stabile Prioritäten und messbare Ziele?`);
   } else if (criticalArea === "competition") {
@@ -928,7 +928,7 @@ function integrationPlan(role: RoleAnalysis, criticalArea: MatrixAreaId, control
     phase_30_60.push("Kulturelle Wirkung beobachten: Passt die Wirkung der Person zur geforderten Leistungs- und Ergebniskultur? Teamdynamik beobachten.");
     phase_60_90.push(`Prüfung ${t.qualityMetric}: Bleibt die Leistungskultur stabil oder verschiebt sich die Teamdynamik in eine unkontrollierte Richtung?`);
   } else {
-    phase_30_60.push(`Die zentralen Herausforderungen der Stelle ${jobTitle} aktiv begleiten: Klare Prioritäten, feste Ziele und regelmäßige Review-Gespräche.`);
+    phase_30_60.push(`Die zentralen Herausforderungen der Stelle ${jobTitle} aktiv begleiten: Klare Prioritäten, feste Ziele und regelmässige Review-Gespräche.`);
     phase_60_90.push(`Prüfung ${t.qualityMetric}: Zeigt die Person die geforderte Wirkung in Tempo, Zielklarheit und ${t.qualityMetric}?`);
   }
 

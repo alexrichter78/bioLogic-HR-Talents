@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
+import { useRegion, localizeDeep } from "@/lib/region";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { computeTeamCheckV4, type TeamCheckV4Result, type V4Block } from "@/lib/teamcheck-v4-engine";
 import type { TeamCheckV3Input } from "@/lib/teamcheck-v3-engine";
@@ -60,6 +61,7 @@ const sectionStyle = { paddingBottom: 40, marginBottom: 72, borderBottom: "1px s
 export default function TeamCheckReportV4() {
   const [, navigate] = useLocation();
   const isMobile = useIsMobile();
+  const { region } = useRegion();
   const [result, setResult] = useState<TeamCheckV4Result | null>(null);
   const reportRef = useRef<HTMLDivElement>(null);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
@@ -69,9 +71,9 @@ export default function TeamCheckReportV4() {
     if (!raw) { navigate("/team-report"); return; }
     try {
       const parsed = JSON.parse(raw) as TeamCheckV3Input;
-      setResult(computeTeamCheckV4(parsed));
+      setResult(localizeDeep(computeTeamCheckV4(parsed), region));
     } catch { navigate("/team-report"); }
-  }, [navigate]);
+  }, [navigate, region]);
 
   const exportPdf = useCallback(async () => {
     if (!result || isExportingPdf || !reportRef.current) return;
@@ -407,7 +409,7 @@ export default function TeamCheckReportV4() {
                   const g = Math.abs(result.teamTriad[k] - result.personTriad[k]);
                   if (g > maxGap) { maxGap = g; maxKey = k; }
                 }
-                const gapText = `Die größte Abweichung zwischen Team und Person liegt im Bereich ${COMP_LABEL_AREA[maxKey]}. Hier unterscheiden sich die Arbeitsweisen am stärksten.`;
+                const gapText = `Die grösste Abweichung zwischen Team und Person liegt im Bereich ${COMP_LABEL_AREA[maxKey]}. Hier unterscheiden sich die Arbeitsweisen am stärksten.`;
                 const renderBar = (k: ComponentKey, val: number) => {
                   const hex = COMP_HEX[k];
                   const widthPct = (val / 67) * 100;

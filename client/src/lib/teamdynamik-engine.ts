@@ -254,10 +254,10 @@ export type TeamDynamikResult = {
 const DEFAULT_LEVERS: Lever[] = [
   { id: "timebox", label: "Entscheidungszeitfenster definiert", description: "Klare Fristen für Entscheidungen verhindern Endlosschleifen und Konsensverschleppung.", enabled: false },
   { id: "8020", label: "80/20-Qualitätsstandard festgelegt", description: "Definierter Qualitätsstandard verhindert Über-Perfektionierung und hält das Tempo.", enabled: false },
-  { id: "weekly_review", label: "Wöchentlicher Priorisierungsreview", description: "Regelmäßige Überprüfung schafft Steuerungssicherheit und verhindert stille Abweichungen.", enabled: false },
+  { id: "weekly_review", label: "Wöchentlicher Priorisierungsreview", description: "Regelmässige Überprüfung schafft Steuerungssicherheit und verhindert stille Abweichungen.", enabled: false },
   { id: "role_boundaries", label: "Entscheidungs- und Verantwortungsgrenzen", description: "Klare Rollen- und Entscheidungsgrenzen reduzieren Konflikte und Doppelarbeit.", enabled: false },
   { id: "comm_rules", label: "Sach-/Beziehungsebene, Feedbackregeln", description: "Feste Kommunikationsregeln trennen Sachfragen von Beziehungsdynamik.", enabled: false },
-  { id: "pulse_check", label: "Teamtemperatur-Check", description: "Regelmäßiger Pulse-Check macht Stimmung und Belastung messbar.", enabled: false },
+  { id: "pulse_check", label: "Teamtemperatur-Check", description: "Regelmässiger Pulse-Check macht Stimmung und Belastung messbar.", enabled: false },
 ];
 
 const MATRIX_CELLS: MatrixCell[] = [
@@ -276,7 +276,7 @@ const MATRIX_CELLS: MatrixCell[] = [
   { id: "IMP-MIX", label: "Tempo trifft Hybrid", micro: "Druck vs Flexibel", systemlage: "Tempo und Durchsetzung treffen auf ein ausgeglichenes Team ohne klare Dominanz. Umsetzungsdruck fehlt ein stabiler Gegenpol.", alltag: "Führungsdruck wird unterschiedlich aufgenommen. Teile des Teams folgen, andere reagieren mit Rückzug oder Widerstand.", tun: "Teamstruktur klären, Rollen und Verantwortungen explizit machen, Entscheidungslogik vereinheitlichen." },
   { id: "INT-MIX", label: "Beziehung trifft Hybrid", micro: "Konsens vs Flexibel", systemlage: "Beziehungsorientierung trifft auf ein ausgeglichenes Team. Konsenssuche kann bei fehlender Teamstruktur zu Endlosschleifen führen.", alltag: "Abstimmungsrunden dauern länger, weil kein klarer Gegenpol existiert. Entscheidungen werden aufgeschoben.", tun: "Entscheidungsfristen setzen, klare Verantwortlichkeiten definieren, Ergebnisorientierung stärken." },
   { id: "ANA-MIX", label: "Struktur trifft Hybrid", micro: "Absicherung vs Flexibel", systemlage: "Strukturorientierung trifft auf ein ausgeglichenes Team. Prozessanforderungen können als Übersteuerung wahrgenommen werden.", alltag: "Teile des Teams akzeptieren Strukturvorgaben, andere empfinden sie als Einengung. Inkonsistente Reaktion auf Standards.", tun: "Strukturrahmen klar, aber flexibel gestalten. Entscheidungsautonomie in definierten Grenzen ermöglichen." },
-  { id: "MIX-MIX", label: "Doppelte Hybridlage", micro: "Flexibel trifft Flexibel", systemlage: "Beide Seiten haben kein klares Profil. Entscheidungslogik und Prioritäten wechseln situativ – Vorhersagbarkeit ist gering.", alltag: "Hohe Anpassungsfähigkeit, aber keine stabile Arbeitsweise. Richtungswechsel sind häufig, klare Leitplanken fehlen.", tun: "Feste Entscheidungsregeln und Standards definieren. Prioritäten regelmäßig reviewen. Klare Verantwortungsstrukturen setzen." },
+  { id: "MIX-MIX", label: "Doppelte Hybridlage", micro: "Flexibel trifft Flexibel", systemlage: "Beide Seiten haben kein klares Profil. Entscheidungslogik und Prioritäten wechseln situativ – Vorhersagbarkeit ist gering.", alltag: "Hohe Anpassungsfähigkeit, aber keine stabile Arbeitsweise. Richtungswechsel sind häufig, klare Leitplanken fehlen.", tun: "Feste Entscheidungsregeln und Standards definieren. Prioritäten regelmässig reviewen. Klare Verantwortungsstrukturen setzen." },
 ];
 
 function dominanceType(p: Triad): DominanceType {
@@ -459,7 +459,7 @@ function buildHeadline(st: ShiftType, domTeam: DominanceType, domPerson: Dominan
     case "REIBUNG": return `Unterschiedliche Arbeitsweisen treffen aufeinander. ${role} arbeitet anders als das Team es gewohnt ist. Das führt zu mehr Abstimmung und gelegentlichen Spannungen.`;
     case "SPANNUNG":
     case "TRANSFORMATION": return isLeading
-      ? `Die neue Führung verändert die bisherige Arbeitsweise deutlich. Entscheidungen, Prioritäten und Qualitätsmaßstäbe werden anders gesetzt als bisher.`
+      ? `Die neue Führung verändert die bisherige Arbeitsweise deutlich. Entscheidungen, Prioritäten und Qualitätsmassstäbe werden anders gesetzt als bisher.`
       : `Arbeitslogiken unterscheiden sich stark. Ohne Führung entstehen Leistungs- und Konfliktrisiken.`;
     case "HYBRID": return `Unterschiedliche Arbeitsweisen treffen aufeinander. ${role} arbeitet anders als das Team es gewohnt ist. Mehr Abstimmungsbedarf im Alltag.`;
   }
@@ -574,7 +574,7 @@ function buildIntegrationPlan(st: ShiftType, isLeading: boolean): { phaseId: str
     { phaseId: "P3", title: "Stabilisieren", days: "20–30 Tage", actions: [
       "Übersteuerung vermeiden, Kontrollgrad anpassen.",
       "Belastung und Stimmung evaluieren.",
-      "Steuerungsmaßnahmen verstetigen.",
+      "Steuerungsmassnahmen verstetigen.",
       "Gesamtbewertung der Integration.",
     ]},
   ];
@@ -630,9 +630,9 @@ function buildLeadershipLevers(domPerson: DominanceType, domTeam: DominanceType,
   } else if (domPerson === domTeam) {
     levers.push(
       { title: "Diversität bewusst einbauen", description: "Gleiche Dominanz verstärkt sich. Bewusst Gegenperspektiven einholen, z.B. durch externe Sparringspartner oder Rollen-Rotation.", priority: "hoch" },
-      { title: "Blinde Flecken identifizieren", description: "Gemeinsam benennen, welche Kompetenzen im System fehlen. Entwicklungsmaßnahmen gezielt auf schwächere Bereiche ausrichten.", priority: "hoch" },
+      { title: "Blinde Flecken identifizieren", description: "Gemeinsam benennen, welche Kompetenzen im System fehlen. Entwicklungsmassnahmen gezielt auf schwächere Bereiche ausrichten.", priority: "hoch" },
       { title: "Korrektiv-Rolle definieren", description: "Eine Person im Team als bewusstes Korrektiv benennen, die andere Perspektiven einbringt.", priority: "mittel" },
-      { title: "Regelmäßige Systemreflexion", description: "Quartalsweise prüfen, ob einseitige Verstärkung zu Fehlentwicklungen führt.", priority: "niedrig" },
+      { title: "Regelmässige Systemreflexion", description: "Quartalsweise prüfen, ob einseitige Verstärkung zu Fehlentwicklungen führt.", priority: "niedrig" },
     );
   } else {
     levers.push(
@@ -644,7 +644,7 @@ function buildLeadershipLevers(domPerson: DominanceType, domTeam: DominanceType,
   }
 
   if (shiftT === "TRANSFORMATION" || shiftT === "SPANNUNG") {
-    levers.push({ title: "Change-Kommunikation etablieren", description: "Bei hoher Systemveränderung: Regelmäßig den Stand kommunizieren, Unsicherheiten adressieren, Widerstände ernst nehmen.", priority: "hoch" });
+    levers.push({ title: "Change-Kommunikation etablieren", description: "Bei hoher Systemveränderung: Regelmässig den Stand kommunizieren, Unsicherheiten adressieren, Widerstände ernst nehmen.", priority: "hoch" });
   }
 
   return levers;
@@ -691,9 +691,9 @@ function buildIntegrationPlan30(domPerson: DominanceType, domTeam: DominanceType
 
   const phase3Actions: string[] = [
     "Reflexion: Was funktioniert, was nicht? Ehrliche Selbsteinschätzung und Team-Feedback einholen.",
-    "Übersteuerung vermeiden – Kontrollgrad auf das notwendige Maß zurückfahren.",
+    "Übersteuerung vermeiden – Kontrollgrad auf das notwendige Mass zurückfahren.",
     "Teamdynamik evaluieren: Hat sich das Zusammenspiel stabilisiert oder gibt es weiterhin Reibung?",
-    "Steuerungsmaßnahmen aus Phase 1-2 verstetigen oder anpassen.",
+    "Steuerungsmassnahmen aus Phase 1-2 verstetigen oder anpassen.",
     "30-Tage-Bilanz ziehen: Integration bewertet, nächste Quartals-Ziele definieren.",
   ];
   if (needsIntensiveSteering) {
@@ -847,7 +847,7 @@ function buildLeadershipContext(domPerson: DominanceType, domTeam: DominanceType
         fit: "Die Führungskraft priorisiert Fakten und Struktur. Das Team lebt über Beziehung und Kommunikation. Sachlichkeit trifft auf Nähe-Bedürfnis.",
         challenge: "Das Team nimmt emotionale Distanz wahr. Faktenorientierung wird als Kälte empfunden. Bindungsverlust ist ein reales Risiko.",
         chance: "Wenn Sachlichkeit mit bewusster Beziehungspflege kombiniert wird, entsteht ein professionelles und gleichzeitig menschliches Arbeitsumfeld.",
-        action: "Beziehungsebene ritualisieren, regelmäßiges Feedback einführen, emotionale Anschlussfähigkeit bewusst gestalten.",
+        action: "Beziehungsebene ritualisieren, regelmässiges Feedback einführen, emotionale Anschlussfähigkeit bewusst gestalten.",
       },
     };
 
@@ -952,7 +952,7 @@ function buildLeadershipContext(domPerson: DominanceType, domTeam: DominanceType
         fitStatement = `Der Erfolgsfokus (${fokusLabels.join(", ")}) verlangt ${domLabels[fokusDomsUnique[0]]}. Das Profil der Führungskraft deckt diese Anforderung ab – sie kann den Erfolgsfokus aus eigener Stärke heraus bedienen.`;
       } else if (personCovers.length > 0) {
         const missing = fokusDomsUnique.filter(d => d !== domPerson).map(d => domLabels[d]);
-        fitStatement = `Der Erfolgsfokus (${fokusLabels.join(", ")}) erfordert teilweise Kompetenzen außerhalb des Führungsprofils. Die Führungskraft deckt einen Teil ab, aber ${missing.join(" und ")} muss sie aktiv steuern oder delegieren.`;
+        fitStatement = `Der Erfolgsfokus (${fokusLabels.join(", ")}) erfordert teilweise Kompetenzen ausserhalb des Führungsprofils. Die Führungskraft deckt einen Teil ab, aber ${missing.join(" und ")} muss sie aktiv steuern oder delegieren.`;
       } else {
         fitStatement = `Der Erfolgsfokus (${fokusLabels.join(", ")}) verlangt ${fokusDomsUnique.map(d => domLabels[d]).join(" und ")}. Die Führungskraft bringt diese Schwerpunkte nicht natürlich mit – sie muss den Erfolg über bewusste Steuerung und Teamressourcen sicherstellen.`;
       }
@@ -963,7 +963,7 @@ function buildLeadershipContext(domPerson: DominanceType, domTeam: DominanceType
         const teamMissing = fokusDomsUnique.filter(d => d !== domTeam).map(d => domLabels[d]);
         teamAlignment = `Das Team deckt den Erfolgsfokus teilweise ab. ${teamMissing.join(" und ")} ist im Team weniger ausgeprägt und muss gezielt gestärkt werden.`;
       } else {
-        teamAlignment = `Der Erfolgsfokus liegt außerhalb der natürlichen Teamstärke. Die Führungskraft muss die fehlende Kompetenz entweder selbst einbringen oder durch Strukturmaßnahmen kompensieren.`;
+        teamAlignment = `Der Erfolgsfokus liegt ausserhalb der natürlichen Teamstärke. Die Führungskraft muss die fehlende Kompetenz entweder selbst einbringen oder durch Strukturmassnahmen kompensieren.`;
       }
 
       if (personCovers.length === fokusDomsUnique.length && teamCovers.length === fokusDomsUnique.length) {
@@ -971,7 +971,7 @@ function buildLeadershipContext(domPerson: DominanceType, domTeam: DominanceType
       } else if (personCovers.length === 0 && teamCovers.length === 0) {
         steeringHint = `Weder Führungskraft noch Team passen natürlich zum Erfolgsfokus. Hoher Steuerungsbedarf: Externe Kompetenz, klare Prozesse und enge Zielverfolgung notwendig.`;
       } else {
-        steeringHint = `Teilweise Abdeckung des Erfolgsfokus vorhanden. Steuerungsbedarf: Lücken gezielt schließen – durch Delegation, Entwicklung oder Prozessanpassung.`;
+        steeringHint = `Teilweise Abdeckung des Erfolgsfokus vorhanden. Steuerungsbedarf: Lücken gezielt schliessen – durch Delegation, Entwicklung oder Prozessanpassung.`;
       }
 
       erfolgsfokusCtx = { labels: fokusLabels, fitStatement, teamAlignment, steeringHint };
@@ -1324,7 +1324,7 @@ export function getViewContent(viewMode: ViewMode, result: TeamDynamikResult, se
         { title: "Führungsverhalten", text: result.leadershipBehavior.statement },
         { title: "Spannungsfeld", text: result.leadershipBehavior.possiblePerception },
         { title: "Alltagswirkung", text: selectedCell.alltag },
-        { title: "Konkrete Maßnahmen", text: selectedCell.tun },
+        { title: "Konkrete Massnahmen", text: selectedCell.tun },
       ],
       risks: result.risks,
       chances: result.chances,

@@ -211,7 +211,7 @@ function buildEinleitung(beruf: string, bereich: string, dom: ReturnType<typeof 
 function buildGesamtprofil(gesamt: BG, dom: ReturnType<typeof dominant>, sec: ReturnType<typeof secondary>, wk: ReturnType<typeof weakest>, intensity: Intensity, profileType: ProfileType, beruf: string): string {
   let p1: string;
   if (profileType === "balanced_all") {
-    p1 = `Das Gesamtprofil der Rolle ${beruf} zeigt eine ausgeglichene Verteilung aller drei Kompetenzbereiche. Keine einzelne Kompetenz dominiert, stattdessen wird eine breite Vielseitigkeit gefordert. Die Rolle verlangt gleichermaßen Handlungsfähigkeit, Beziehungsgestaltung und analytisches Denken.`;
+    p1 = `Das Gesamtprofil der Rolle ${beruf} zeigt eine ausgeglichene Verteilung aller drei Kompetenzbereiche. Keine einzelne Kompetenz dominiert, stattdessen wird eine breite Vielseitigkeit gefordert. Die Rolle verlangt gleichermassen Handlungsfähigkeit, Beziehungsgestaltung und analytisches Denken.`;
   } else if (profileType.startsWith("hybrid_")) {
     p1 = `Das Gesamtprofil zeigt eine Doppelstruktur: ${dom.label} und ${sec.label} bilden ein gleichwertiges Tandem. Beide Kompetenzen sind nahezu gleichauf und prägen die Rollenanforderung gemeinsam. ${wk.label} ist erkennbar nachrangig und spielt eine ergänzende Rolle.`;
   } else {
@@ -238,7 +238,7 @@ function buildRahmenbedingungen(beruf: string, rahmen: BG, rahmenDom: ReturnType
   const logikText = arbeitslogik ? ` Die Arbeitslogik ist ${arbeitslogik.toLowerCase()}.` : "";
   const fuehrText = isLeadership ? ` Die Rolle umfasst ${fuehrungstyp.toLowerCase()}.` : " Die Rolle hat keine direkte Führungsverantwortung.";
 
-  const beschreibung = `Die Rahmenbedingungen der Rolle ${beruf} stehen im Zeichen von ${kompLabel(rahmenDom.key)}. ${aufgText}${logikText}${fuehrText}\n\nDie Anforderungen verlangen eine klare Ausrichtung auf ${kompShort(rahmenDom.key)} im täglichen Arbeitsumfeld. Entscheidungswege, Prioritäten und Qualitätsmaßstäbe werden durch diese Rahmenbedingungen definiert.`;
+  const beschreibung = `Die Rahmenbedingungen der Rolle ${beruf} stehen im Zeichen von ${kompLabel(rahmenDom.key)}. ${aufgText}${logikText}${fuehrText}\n\nDie Anforderungen verlangen eine klare Ausrichtung auf ${kompShort(rahmenDom.key)} im täglichen Arbeitsumfeld. Entscheidungswege, Prioritäten und Qualitätsmassstäbe werden durch diese Rahmenbedingungen definiert.`;
 
   const verantwortungsfelder = [
     `Steuerung und Priorisierung der operativen ${kompAdj(rahmenDom.key)}en Aufgaben`,
@@ -299,7 +299,7 @@ function buildFuehrungskontext(beruf: string, fuehrung: BG, fuehrungstyp: string
         : ["Prozessklarheit und Strukturvorgaben", "Fachliche Qualitätssicherung", "Datenbasierte Entscheidungsfindung", "Systematische Leistungssteuerung"];
 
     const analytische_anforderungen = [
-      `Regelmäßige Reflexion der eigenen Führungswirkung`,
+      `Regelmässige Reflexion der eigenen Führungswirkung`,
       `Bewusster Ausgleich der ${kompShort(weakest(fuehrung).key)} als Entwicklungsfeld`,
       `Strukturierte Feedbackprozesse mit dem Team`,
     ];

@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
+import { useRegion, localizeDeep } from "@/lib/region";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   computeTeamCheckV3,
@@ -121,6 +122,7 @@ function OverviewRow({ label, value, valueColor }: { label: string; value: strin
 export default function TeamCheckReportV3() {
   const [, navigate] = useLocation();
   const isMobile = useIsMobile();
+  const { region } = useRegion();
   const [result, setResult] = useState<TeamCheckV3Result | null>(null);
   const [input, setInput] = useState<TeamCheckV3Input | null>(null);
   const [pdfBusy, setPdfBusy] = useState(false);
@@ -150,11 +152,11 @@ export default function TeamCheckReportV3() {
     try {
       const parsed = JSON.parse(raw) as TeamCheckV3Input;
       setInput(parsed);
-      setResult(computeTeamCheckV3(parsed));
+      setResult(localizeDeep(computeTeamCheckV3(parsed), region));
     } catch {
       navigate("/team-report");
     }
-  }, [navigate]);
+  }, [navigate, region]);
 
   if (!result || !input) {
     return (

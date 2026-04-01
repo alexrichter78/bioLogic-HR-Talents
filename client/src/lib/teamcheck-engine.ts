@@ -413,7 +413,7 @@ function buildQualitaetsWirkung(domK: DominanceType, domT: DominanceType): { pos
     },
     "MIX-IMPULSIV": {
       positiv: ["Situative Qualitätsanpassung möglich"],
-      negativ: ["Wechselnde Qualitätsmaßstäbe irritieren", "Standards nicht durchsetzbar"],
+      negativ: ["Wechselnde Qualitätsmassstäbe irritieren", "Standards nicht durchsetzbar"],
     },
     "MIX-INTUITIV": {
       positiv: ["Flexible Qualitätsbewertung"],
@@ -437,7 +437,7 @@ function buildQualitaetsWirkung(domK: DominanceType, domT: DominanceType): { pos
     },
     "MIX-MIX": {
       positiv: ["Situative Qualitätsanpassung", "Flexible Standards"],
-      negativ: ["Inkonsistente Qualitätsmaßstäbe", "Wechselnde Prioritäten bei Prüftiefe"],
+      negativ: ["Inkonsistente Qualitätsmassstäbe", "Wechselnde Prioritäten bei Prüftiefe"],
     },
   };
   return catalog[domPair(domK, domT)]!;
@@ -698,7 +698,7 @@ function buildTopHebel(domK: DominanceType, domT: DominanceType): string[] {
     "ANALYTISCH-IMPULSIV": [
       "Entscheidungsfenster definieren (z.B. gleicher Tag)",
       "80/20-Standard festlegen",
-      "Regelmäßige Reviews für Priorisierung (alle 14 Tage)",
+      "Regelmässige Reviews für Priorisierung (alle 14 Tage)",
     ],
     "IMPULSIV-ANALYTISCH": [
       "Qualitäts-Gates vor kritischen Entscheidungen einführen",
@@ -746,7 +746,7 @@ function buildTopHebel(domK: DominanceType, domT: DominanceType): string[] {
     "IMPULSIV-MIX": ["Teamstruktur klären", "Rollen explizit machen", "Entscheidungslogik vereinheitlichen"],
     "INTUITIV-MIX": ["Entscheidungsfristen setzen", "Verantwortlichkeiten definieren", "Ergebnisorientierung stärken"],
     "ANALYTISCH-MIX": ["Strukturrahmen klar aber flexibel", "Entscheidungsautonomie in Grenzen", "Standards minimal aber verbindlich"],
-    "MIX-MIX": ["Feste Entscheidungsregeln definieren", "Prioritäten regelmäßig reviewen", "Klare Verantwortungsstrukturen setzen"],
+    "MIX-MIX": ["Feste Entscheidungsregeln definieren", "Prioritäten regelmässig reviewen", "Klare Verantwortungsstrukturen setzen"],
   };
   return catalog[domPair(domK, domT)]!;
 }
@@ -788,7 +788,7 @@ function buildSteuerbarkeit(domK: DominanceType, domT: DominanceType, intensity:
     "Entscheidungszeitfenster klar definiert sind",
     "80/20-Qualitätsstandards verbindlich festgelegt werden",
     "Verantwortlichkeiten eindeutig geregelt sind",
-    "Regelmäßige Review-Routinen etabliert werden",
+    "Regelmässige Review-Routinen etabliert werden",
   ];
 
   return { bewertung, bedingungen };
@@ -1130,7 +1130,7 @@ export function generateDetailReport(input: TeamCheckInput, result: TeamCheckRes
           "Festlegung von Verantwortlichkeiten",
           "Definition von Qualitätsstandards",
           "Transparente Kommunikation der eigenen Führungslogik",
-          "Einführung eines regelmäßigen Priorisierungsformats",
+          "Einführung eines regelmässigen Priorisierungsformats",
           "Dokumentation aller vereinbarten Regeln",
         ],
       },
@@ -1345,7 +1345,7 @@ export function generateExecutiveReport(input: TeamCheckInput, result: TeamCheck
         ],
       },
       {
-        title: "Abschließendes Urteil",
+        title: "Abschliessendes Urteil",
         paragraphs: [result.gesamturteil.einschaetzung],
         highlight: input.isLeading
           ? "Bei aktiver Führung entsteht ein leistungsfähigeres, strukturierteres System. Ohne klare Rahmensetzung entsteht Spannungsdynamik."

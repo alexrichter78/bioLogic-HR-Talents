@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useLocation } from "wouter";
 import { FileText, AlertTriangle, Check, TrendingUp, Zap, Scale, ChevronRight, ChevronDown, CircleAlert, CircleCheck, CircleMinus, Lightbulb, CalendarDays, ClipboardCheck, BarChart3, CheckCircle2, Briefcase, LayoutGrid, Wrench, Target, UserCheck, Hash, Compass, Shield, Gauge, Award, ArrowUpRight, Layers, Printer } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
+import { useRegion, localizeDeep } from "@/lib/region";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { hyphenateText } from "@/lib/hyphenate";
 import { BERUFE } from "@/data/berufe";
@@ -461,6 +462,7 @@ function controlColor(c: ControlIntensity): string {
 export default function JobCheck() {
   const [, setLocation] = useLocation();
   const isMobile = useIsMobile();
+  const { region } = useRegion();
   const [analyseOpen, setAnalyseOpen] = useState(true);
   const [berichtOpen, setBerichtOpen] = useState(false);
   const [roleAnalysis, setRoleAnalysis] = useState<RoleAnalysis | null>(null);
@@ -526,8 +528,8 @@ export default function JobCheck() {
       candidate_name: snapshotName || "Person",
       candidate_profile: snapshotCand,
     };
-    return runEngine(roleAnalysis, cand);
-  }, [roleAnalysis, snapshotCand, snapshotName, reportGenerated, reportKey]);
+    return localizeDeep(runEngine(roleAnalysis, cand), region);
+  }, [roleAnalysis, snapshotCand, snapshotName, reportGenerated, reportKey, region]);
 
   useEffect(() => {
     if (engine) {

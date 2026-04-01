@@ -29,7 +29,7 @@ function dominantLabel(counts: { imp: number; int: number; ana: number }): strin
   if (imp === int && imp > ana) return "Handlungs- und Beziehungskompetenz (Impulsiv-Intuitiv)";
   if (imp === ana && imp > int) return "Handlungs- und Fachkompetenz (Impulsiv-Analytisch)";
   if (int === ana && int > imp) return "Beziehungs- und Fachkompetenz (Intuitiv-Analytisch)";
-  return "allen drei Kompetenzbereichen gleichmäßig";
+  return "allen drei Kompetenzbereichen gleichmässig";
 }
 
 function shortLabel(k: string): string {
@@ -71,7 +71,7 @@ export function generateAnalyseLocal(params: {
 
   let bereich1: string;
   if (isBalanced) {
-    bereich1 = `Die Kompetenzverteilung der Rolle ${beruf} zeigt ein ausgeglichenes Profil. Alle drei Kompetenzbereiche sind nahezu gleichmäßig vertreten (Impulsiv ${impPct}%, Intuitiv ${intPct}%, Analytisch ${anaPct}%). Dies deutet auf eine vielseitige Rolle hin, die keine einzelne Arbeitslogik klar dominiert. `;
+    bereich1 = `Die Kompetenzverteilung der Rolle ${beruf} zeigt ein ausgeglichenes Profil. Alle drei Kompetenzbereiche sind nahezu gleichmässig vertreten (Impulsiv ${impPct}%, Intuitiv ${intPct}%, Analytisch ${anaPct}%). Dies deutet auf eine vielseitige Rolle hin, die keine einzelne Arbeitslogik klar dominiert. `;
     bereich1 += aufgabencharakter ? `Der Aufgabencharakter ist ${aufgabencharakter.toLowerCase()}, ` : "";
     bereich1 += arbeitslogik ? `die Arbeitslogik ${arbeitslogik.toLowerCase()}. ` : "";
     bereich1 += `Für die Besetzung bedeutet das: Gesucht wird eine Persönlichkeit mit breiter Kompetenz, die situativ zwischen verschiedenen Arbeitslogiken wechseln kann. Einseitige Spezialisierung wäre für diese Rolle problematisch.`;
@@ -93,7 +93,7 @@ export function generateAnalyseLocal(params: {
     const hochKompetenz = countByKompetenz(hochItems);
     const hochDom = dominantLabel(hochKompetenz);
     bereich2 = `Die kritischen Anforderungen der Rolle konzentrieren sich auf: ${hochNamen}. Diese Tätigkeiten wurden als besonders erfolgskritisch eingestuft und erfordern eine individuelle Eignungsprüfung. `;
-    bereich2 += `Die hochpriorisierten Anforderungen liegen schwerpunktmäßig im Bereich ${hochDom}. `;
+    bereich2 += `Die hochpriorisierten Anforderungen liegen schwerpunktmässig im Bereich ${hochDom}. `;
     if (hochItems.length >= 3) {
       bereich2 += `Die Kombination von ${hochItems.length} hochkritischen Tätigkeiten macht das Anforderungsprofil besonders anspruchsvoll. `;
     }

@@ -93,7 +93,7 @@ const EXAMPLE_PROMPTS: { category: string; prompts: string[]; requiresAnalysis?:
     category: "Konfliktmuster erkennen",
     prompts: [
       "Zwei Kollegen geraten ständig aneinander: einer will schnelle Entscheidungen, der andere braucht mehr Daten. Was steckt dahinter?",
-      "In meinem Team gibt es eine Person, die immer alles persönlich nimmt, und eine, die nur sachlich argumentiert. Warum eskaliert das regelmäßig?",
+      "In meinem Team gibt es eine Person, die immer alles persönlich nimmt, und eine, die nur sachlich argumentiert. Warum eskaliert das regelmässig?",
       "Mein Stellvertreter und ich blockieren uns gegenseitig. Ich habe einen starken intuitiven Anteil, er einen starken impulsiven. Wie durchbreche ich das Muster?",
       "Es gibt einen Dauerkonflikt zwischen Vertrieb (überwiegend impulsiv geprägt) und Qualitätssicherung (überwiegend analytisch geprägt). Wie löse ich das strukturell?",
       "Immer wenn wir unter Zeitdruck stehen, zerfällt mein Team in Lager. Was ist das bioLogic-Muster dahinter?",
@@ -916,7 +916,7 @@ export default function KICoach() {
     const paragraphs = content.trim().split(/\n\n/);
     const lastTwo = paragraphs.slice(-2).join("\n\n").replace(/\*\*/g, "");
     const hasQuestion = /\?\s*$/.test(lastTwo.trim()) || /\?["\u201C\u201D\u201E)]*\s*$/m.test(lastTwo);
-    const asksForInput = /magst du|interesse|wollen wir|soll ich|willst du|möchtest du|weißt du|kennst du|beschreib.*mir|nenn.*mir|sag.*mir.*bescheid|gib.*mir.*info|teil.*mir.*mit|sag.{0,10}(einfach|mir).{0,15}was du/i.test(lastTwo);
+    const asksForInput = /magst du|interesse|wollen wir|soll ich|willst du|möchtest du|weisst du|kennst du|beschreib.*mir|nenn.*mir|sag.*mir.*bescheid|gib.*mir.*info|teil.*mir.*mit|sag.{0,10}(einfach|mir).{0,15}was du/i.test(lastTwo);
 
     if (/wie reagierst du|was sagst du|was antwortest du|wie gehst du vor|was würdest du sagen|was sagst du als nächstes|was sagst du dazu|wie antwortest du|was entgegnest du|sag.*deinen.*satz|formulier.*deinen/i.test(lastTwo)) {
       return [];
@@ -928,7 +928,7 @@ export default function KICoach() {
       /dein.{0,15}bioLogic.{0,15}(Profil|Prägung)/i.test(lastTwo) ||
       /welche.{0,20}(Prägung|Doppeldominanz).{0,20}hast du/i.test(lastTwo) ||
       /deine.{0,15}(Prägung|Profil).{0,20}zuschneid/i.test(lastTwo) ||
-      /weißt du.{0,15}(dein|deine).{0,20}(Prägung|Profil)/i.test(lastTwo) ||
+      /weisst du.{0,15}(dein|deine).{0,20}(Prägung|Profil)/i.test(lastTwo) ||
       /(bist du|du eher).{0,10}(rot|gelb|blau)/i.test(lastTwo)
     );
 

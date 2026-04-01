@@ -32,22 +32,22 @@ export default function Disclaimer() {
 
             <h2 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>1. Keine individuelle Beratung</h2>
             <p style={{ margin: "0 0 20px" }}>
-              {t("Die Inhalte und Auswertungen dieser Software dienen ausschließlich der allgemeinen, abstrakten Orientierung und stellen weder eine individuelle Personenbewertung noch eine Rechts-, Personal-, psychologische, medizinische oder sonstige Fachberatung dar. Sie begründen keine verbindliche Aussage über Eignung, Leistung, Verhalten, Persönlichkeit, Entwicklungsfähigkeit oder künftige Wirksamkeit einer konkreten Person.")}
+              {t("Die Inhalte und Auswertungen dieser Software dienen ausschliesslich der allgemeinen, abstrakten Orientierung und stellen weder eine individuelle Personenbewertung noch eine Rechts-, Personal-, psychologische, medizinische oder sonstige Fachberatung dar. Sie begründen keine verbindliche Aussage über Eignung, Leistung, Verhalten, Persönlichkeit, Entwicklungsfähigkeit oder künftige Wirksamkeit einer konkreten Person.")}
             </p>
 
             <h2 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>2. Typisierte Strukturmodelle</h2>
             <p style={{ margin: "0 0 20px" }}>
-              {t("Die dargestellten Inhalte beschreiben ausschließlich allgemeine, typisierte und wertfrei zu verstehende Struktur- und Tendenzmodelle. Sie ersetzen weder die eigenständige Prüfung des Einzelfalls noch eine sachgerechte Würdigung aller im konkreten Entscheidungszusammenhang relevanten Umstände.")}
+              {t("Die dargestellten Inhalte beschreiben ausschliesslich allgemeine, typisierte und wertfrei zu verstehende Struktur- und Tendenzmodelle. Sie ersetzen weder die eigenständige Prüfung des Einzelfalls noch eine sachgerechte Würdigung aller im konkreten Entscheidungszusammenhang relevanten Umstände.")}
             </p>
 
             <h2 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>{t("3. Ausschluss als alleinige Entscheidungsgrundlage")}</h2>
             <p style={{ margin: "0 0 20px" }}>
-              {t("Eine Verwendung der Inhalte als alleinige Grundlage für personelle, wirtschaftliche, organisatorische, rechtliche oder sonstige Entscheidungen wird ausdrücklich ausgeschlossen. Jede Anwendung auf konkrete Personen, Beschäftigte, Bewerber oder sonstige Einzelfälle erfolgt ausschließlich in der Verantwortung des jeweiligen Anwenders.")}
+              {t("Eine Verwendung der Inhalte als alleinige Grundlage für personelle, wirtschaftliche, organisatorische, rechtliche oder sonstige Entscheidungen wird ausdrücklich ausgeschlossen. Jede Anwendung auf konkrete Personen, Beschäftigte, Bewerber oder sonstige Einzelfälle erfolgt ausschliesslich in der Verantwortung des jeweiligen Anwenders.")}
             </p>
 
             <h2 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>{t("4. Keine Gewähr und Haftungsausschluss")}</h2>
             <p style={{ margin: "0 0 20px" }}>
-              {t("Der Anbieter übernimmt keine Gewähr dafür, dass die Inhalte für einen bestimmten Einzelfall geeignet, vollständig oder abschließend sind. Eine Haftung für Entscheidungen, Maßnahmen oder Folgewirkungen, die auf einer konkreten Anwendung, Übertragung oder Interpretation der bereitgestellten Inhalte beruhen, ist im gesetzlich zulässigen Umfang ausgeschlossen.")}
+              {t("Der Anbieter übernimmt keine Gewähr dafür, dass die Inhalte für einen bestimmten Einzelfall geeignet, vollständig oder abschliessend sind. Eine Haftung für Entscheidungen, Massnahmen oder Folgewirkungen, die auf einer konkreten Anwendung, Übertragung oder Interpretation der bereitgestellten Inhalte beruhen, ist im gesetzlich zulässigen Umfang ausgeschlossen.")}
             </p>
 
             <h2 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>{t("5. Hinweis zur KI-gestützten Auswertung")}</h2>
@@ -67,7 +67,7 @@ export default function Disclaimer() {
 
             <h2 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>8. Keine Diskriminierung</h2>
             <p style={{ margin: "0 0 20px" }}>
-              {t("Die Software ist darauf ausgelegt, keine diskriminierenden Aussagen zu treffen. Die Analyse bezieht sich ausschließlich auf abstrakte Arbeitsweisen und Rollenmuster. Merkmale wie Geschlecht, Alter, Herkunft, Religion, Behinderung oder sexuelle Orientierung fließen nicht in die Auswertung ein und dürfen auch nicht aus den Ergebnissen abgeleitet werden.")}
+              {t("Die Software ist darauf ausgelegt, keine diskriminierenden Aussagen zu treffen. Die Analyse bezieht sich ausschliesslich auf abstrakte Arbeitsweisen und Rollenmuster. Merkmale wie Geschlecht, Alter, Herkunft, Religion, Behinderung oder sexuelle Orientierung fliessen nicht in die Auswertung ein und dürfen auch nicht aus den Ergebnissen abgeleitet werden.")}
             </p>
 
             <p style={{ margin: "24px 0 0", fontSize: 13, color: "#8E8E93" }}>

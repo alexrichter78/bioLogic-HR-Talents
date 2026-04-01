@@ -7,7 +7,7 @@ import { Search, Plus, ArrowLeft, Save, FolderOpen, Check, ChevronDown, ArrowRig
 import logoSrc from "@assets/1_1773849007741.png";
 import GlobalNav from "@/components/global-nav";
 import { BERUFE, type BerufLand } from "@/data/berufe";
-import { useRegion } from "@/lib/region";
+import { useRegion, localizeStr } from "@/lib/region";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 type KompetenzTyp = "Impulsiv" | "Intuitiv" | "Analytisch";
@@ -866,7 +866,7 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
   arbeitslogik: string;
   region: string;
 }) {
-  const localizeText = (text: string) => region === "CH" ? text.replace(/ß/g, "ss") : text;
+  const localizeText = (text: string) => localizeStr(text, region as any);
   const arbeitsOpt = ARBEITSLOGIK_OPTIONS.find(o => o.value === arbeitslogik);
   const fuehrungOpt = FUEHRUNG_OPTIONS.find(o => o.value === fuehrung);
   const fokusLabels = erfolgsfokusIndices.map(i => ERFOLGSFOKUS_DISPLAY[i]?.label).filter(Boolean);
@@ -1036,11 +1036,11 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
 }
 
 const DEFAULT_TAETIGKEITEN: Taetigkeit[] = [
-  { id: 1, name: "Kundenberatung und persönliche Bedarfsanalyse, um maßgeschneiderte Lösungen vorzuschlagen", kategorie: "haupt", kompetenz: "Intuitiv", niveau: "Mittel" },
+  { id: 1, name: "Kundenberatung und persönliche Bedarfsanalyse, um massgeschneiderte Lösungen vorzuschlagen", kategorie: "haupt", kompetenz: "Intuitiv", niveau: "Mittel" },
   { id: 2, name: "Unabhängige Bewertung und Vergleich von Produkten verschiedener Anbieter für Kunden", kategorie: "haupt", kompetenz: "Analytisch", niveau: "Mittel" },
   { id: 3, name: "Erstellung detaillierter Angebote und Erläuterung der Konditionen und Leistungen", kategorie: "haupt", kompetenz: "Analytisch", niveau: "Mittel" },
   { id: 4, name: "Unterstützung von Kunden bei Vertragsabschlüssen und Dokumentation aller relevanten Daten", kategorie: "haupt", kompetenz: "Analytisch", niveau: "Mittel" },
-  { id: 5, name: "Regelmäßige Überprüfung bestehender Verträge und Anpassung an veränderte Lebensumstände", kategorie: "haupt", kompetenz: "Analytisch", niveau: "Mittel" },
+  { id: 5, name: "Regelmässige Überprüfung bestehender Verträge und Anpassung an veränderte Lebensumstände", kategorie: "haupt", kompetenz: "Analytisch", niveau: "Mittel" },
   { id: 6, name: "Beratung zu Schadensfällen und Hilfestellung bei der Schadensabwicklung", kategorie: "neben", kompetenz: "Intuitiv", niveau: "Mittel" },
   { id: 7, name: "Schulung und Aufklärung von Kunden über Risiken und notwendige Absicherungen", kategorie: "neben", kompetenz: "Intuitiv", niveau: "Mittel" },
   { id: 8, name: "Mitarbeiter entwickeln und fördern", kategorie: "fuehrung", kompetenz: "Intuitiv", niveau: "Hoch" },
@@ -1098,7 +1098,7 @@ const reportTextStyle: React.CSSProperties = {
 export default function RollenDNA() {
   const [, setLocation] = useLocation();
   const { region } = useRegion();
-  const localizeText = (text: string) => region === "CH" ? text.replace(/ß/g, "ss") : text;
+  const localizeText = (text: string) => localizeStr(text, region);
   const isMobile = useIsMobile();
   const saved = useRef(loadSavedState());
 
