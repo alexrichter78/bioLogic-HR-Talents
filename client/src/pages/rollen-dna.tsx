@@ -2720,7 +2720,7 @@ export default function RollenDNA() {
                         width: 28,
                         height: 28,
                         borderRadius: "50%",
-                        background: "linear-gradient(135deg, #0071E3, #34AADC)",
+                        background: "linear-gradient(135deg, #34C759, #30B350)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
