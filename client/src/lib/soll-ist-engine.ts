@@ -373,6 +373,13 @@ export function computeSollIst(
   const stressBehavior = buildStressBehavior(cConst, ct, cn, gapLevel);
   const roleIsBalFull = rDom.gap1 <= 5 && rDom.gap2 <= 5;
   const impactAreas = buildImpactAreas(rk, ck, rt, ct, cn, fuehrungsArt, roleIsBalFull);
+  if (fitRating === "NICHT_GEEIGNET") {
+    for (const area of impactAreas) {
+      if (area.severity === "ok") {
+        area.severity = "warning";
+      }
+    }
+  }
   const riskTimeline = buildRiskTimeline(roleName, cn, rk, ck, gapLevel, roleIsBalFull, rt, ct);
   const devGap = fitRating === "NICHT_GEEIGNET" ? "hoch" : (matchCheckFit ? controlIntensity : gapLevel);
   const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildDevelopment(devGap, rk, ck, controlIntensity, cn, isDualDomRole, rk2, roleIsBalFull, ct);
@@ -849,7 +856,9 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
 }
 
 function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, gapA: number, cand: string): ImpactArea {
-  const sev = severity(gapA);
+  const maxGapAll = Math.max(Math.abs(rt.impulsiv - ct.impulsiv), Math.abs(rt.intuitiv - ct.intuitiv), gapA);
+  const structureBoost = rk !== ck ? Math.min(maxGapAll * 0.65, gapA + 10) : 0;
+  const sev = severity(rk !== ck ? Math.max(gapA, structureBoost) : gapA);
 
   let roleNeed: string;
   let candidatePattern: string;
@@ -906,10 +915,18 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
       risk = `Aufgaben werden länger geprüft als notwendig. ${s} investiert mehr Zeit in Planung und Absicherung als die Stelle erlaubt. Das bremst das Gesamttempo.`;
     }
   } else {
-    if (competing23) {
-      risk = "Arbeitsweise passt grundsätzlich zur Stelle. Die konkurrierenden Nebenbereiche können situativ zu wechselndem Arbeitsstil führen. Feinabstimmung durch Führung empfohlen.";
+    if (rk !== ck) {
+      if (competing23) {
+        risk = "Die strukturelle Arbeitsweise weicht nicht stark ab, aber die unterschiedliche Grunddynamik beeinflusst Tempo und Prioritäten. Die konkurrierenden Nebenbereiche können situativ zu wechselndem Arbeitsstil führen. Führung muss Erwartungen klar setzen.";
+      } else {
+        risk = "Die strukturelle Arbeitsweise weicht nicht stark ab, aber die unterschiedliche Grunddynamik beeinflusst, wie Aufgaben priorisiert und umgesetzt werden. Feinabstimmung durch Führung nötig.";
+      }
     } else {
-      risk = "Arbeitsweise passt grundsätzlich zur Stelle. Feinabstimmung nötig, aber der Grundansatz stimmt.";
+      if (competing23) {
+        risk = "Arbeitsweise passt grundsätzlich zur Stelle. Die konkurrierenden Nebenbereiche können situativ zu wechselndem Arbeitsstil führen. Feinabstimmung durch Führung empfohlen.";
+      } else {
+        risk = "Arbeitsweise passt grundsätzlich zur Stelle. Feinabstimmung nötig, aber der Grundansatz stimmt.";
+      }
     }
   }
 
