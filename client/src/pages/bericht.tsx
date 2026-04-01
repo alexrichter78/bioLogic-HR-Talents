@@ -311,7 +311,7 @@ function SoftBar({ bg }: { bg: BG }) {
               }}>
                 {widthPct >= 18 && <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(bar.value)}%</span>}
               </div>
-              {widthPct < 18 && <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 3), 100)}% + 6px)`, fontSize: 11, fontWeight: 700, color: "#48484A", whiteSpace: "nowrap" }}>{Math.round(bar.value)}%</span>}
+              {widthPct < 18 && <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 3), 100)}% + 10px)`, fontSize: 11, fontWeight: 700, color: "#48484A", whiteSpace: "nowrap" }}>{Math.round(bar.value)}%</span>}
             </div>
           </div>
         );

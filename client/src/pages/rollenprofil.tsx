@@ -934,7 +934,7 @@ function ProfileBar({ label, value, color }: { label: string; value: number; col
         }}>
           {widthPct >= 18 && <span style={{ fontSize: 12, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap", lineHeight: "30px", height: 30, display: "inline-block" }}>{Math.round(value)} %</span>}
         </div>
-        {widthPct < 18 && <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 5), 100)}% + 6px)`, fontSize: 12, fontWeight: 700, color: "#48484A", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>}
+        {widthPct < 18 && <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 5), 100)}% + 10px)`, fontSize: 12, fontWeight: 700, color: "#48484A", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>}
       </div>
     </div>
   );
