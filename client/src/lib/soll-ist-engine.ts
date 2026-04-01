@@ -1059,7 +1059,7 @@ function buildCommunicationImpact(rk: ComponentKey, ck: ComponentKey, gapI: numb
     return { id: "communication", label: "Kommunikationsverhalten", severity: sev, roleNeed, candidatePattern, risk };
   }
 
-  const sev = severity(rk !== ck ? maxGap * 0.55 : maxGap * 0.35);
+  const sev = severity(rk !== ck ? maxGap * 0.7 : maxGap * 0.35);
 
   let roleNeed: string;
   if (rk === "impulsiv") {
