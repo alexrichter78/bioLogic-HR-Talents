@@ -534,6 +534,10 @@ Antworte ausschließlich als JSON:
 
       const content = response.choices[0]?.message?.content || "{}";
       const data = JSON.parse(content);
+      const allItems = [...(data.haupt || []), ...(data.neben || []), ...(data.fuehrung || [])];
+      allItems.forEach((item: any, i: number) => {
+        console.log(`[CONFIDENCE] ${i + 1}. "${item.name}" → ${item.kompetenz} (${item.confidence}%)`);
+      });
       res.json(data);
     } catch (error) {
       console.error("Error generating Kompetenzen:", error);
