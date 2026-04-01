@@ -736,7 +736,7 @@ export default function SollIstBericht() {
                       </div>
 
                       <div>
-                        <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Entwicklungsaufwand {devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch"} {devScore === 1 ? "(Ergebnis unsicher)" : devScore === 2 ? "(Gezielte Führung nötig)" : "(Wenig Aufwand)"}</p>
+                        <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Entwicklungsaufwand <span style={{ color: devGaugeColor }}>{devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch"} {devScore === 1 ? "(Ergebnis unsicher)" : devScore === 2 ? "(gezielte Führung nötig)" : "(wenig Aufwand)"}</span></p>
                         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                           <div style={{ display: "flex", gap: 5, flex: 1 }}>
                             {Array.from({ length: 3 }).map((_, i) => {
