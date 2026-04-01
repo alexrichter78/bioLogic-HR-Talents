@@ -744,7 +744,6 @@ export default function SollIstBericht() {
                               return <div key={i} style={{ flex: 1, height: 12, borderRadius: 4, background: i < barCount ? devGaugeColor : "rgba(0,0,0,0.08)" }} />;
                             })}
                           </div>
-                          <span style={{ fontSize: 14, fontWeight: 700, color: devGaugeColor, flexShrink: 0 }}>{devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch"}</span>
                         </div>
                       </div>
 
