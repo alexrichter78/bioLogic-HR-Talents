@@ -20,6 +20,7 @@ interface Taetigkeit {
   kategorie: TaetigkeitKategorie;
   kompetenz: KompetenzTyp;
   niveau: Niveau;
+  confidence?: number;
 }
 
 const KOMPETENZ_COLORS: Record<KompetenzTyp, string> = {
@@ -1461,7 +1462,7 @@ export default function RollenDNA() {
       });
       if (!resp.ok) throw new Error("Reclassify failed");
       const data = await resp.json();
-      const results: { kompetenz?: KompetenzTyp }[] = data.results || [];
+      const results: { kompetenz?: KompetenzTyp; confidence?: number }[] = data.results || [];
       setTaetigkeiten(prev => {
         const updated = [...prev];
         const validValues = ["Impulsiv", "Intuitiv", "Analytisch"];
@@ -1477,7 +1478,7 @@ export default function RollenDNA() {
           if (resolved) {
             const idx = updated.findIndex(u => u.id === t.id);
             if (idx !== -1) {
-              updated[idx] = { ...updated[idx], kompetenz: resolved as KompetenzTyp };
+              updated[idx] = { ...updated[idx], kompetenz: resolved as KompetenzTyp, confidence: results[i]?.confidence };
             }
             originalNames.current.set(t.id, t.name);
           }
@@ -1595,13 +1596,13 @@ export default function RollenDNA() {
       let id = nextId;
       const generated: Taetigkeit[] = [];
       for (const item of data.haupt || []) {
-        generated.push({ id: id++, name: item.name, kategorie: "haupt", kompetenz: item.kompetenz, niveau: item.niveau });
+        generated.push({ id: id++, name: item.name, kategorie: "haupt", kompetenz: item.kompetenz, niveau: item.niveau, confidence: item.confidence });
       }
       for (const item of data.neben || []) {
-        generated.push({ id: id++, name: item.name, kategorie: "neben", kompetenz: item.kompetenz, niveau: item.niveau });
+        generated.push({ id: id++, name: item.name, kategorie: "neben", kompetenz: item.kompetenz, niveau: item.niveau, confidence: item.confidence });
       }
       for (const item of data.fuehrung || []) {
-        generated.push({ id: id++, name: item.name, kategorie: "fuehrung", kompetenz: item.kompetenz, niveau: item.niveau });
+        generated.push({ id: id++, name: item.name, kategorie: "fuehrung", kompetenz: item.kompetenz, niveau: item.niveau, confidence: item.confidence });
       }
       setTaetigkeiten(generated);
       setNextId(id);
@@ -2433,15 +2434,19 @@ export default function RollenDNA() {
                               padding: "20px 0",
                             }}
                           >
-                            <span style={{
-                              fontSize: 14,
-                              fontWeight: 500,
-                              color: changedIds.includes(t.id) ? "#D97706" : "#AEAEB2",
-                              minWidth: 24,
-                              paddingTop: 2,
-                            }}>
-                              {idx + 1}.
-                            </span>
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: 24, gap: 4 }}>
+                              <span style={{
+                                fontSize: 14,
+                                fontWeight: 500,
+                                color: changedIds.includes(t.id) ? "#D97706" : "#AEAEB2",
+                                paddingTop: 2,
+                              }}>
+                                {idx + 1}.
+                              </span>
+                              {t.confidence != null && t.confidence < 55 && (
+                                <span style={{ color: "#FF3B30", fontSize: 18, fontWeight: 700, lineHeight: 1 }} title={`KI-Konfidenz: ${t.confidence}%`} data-testid={`confidence-warning-${t.id}`}>!</span>
+                              )}
+                            </div>
 
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div className="flex items-start justify-between gap-3">

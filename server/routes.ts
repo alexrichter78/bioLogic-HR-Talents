@@ -511,11 +511,18 @@ ${hasFuehrung ? `3. **Führungskompetenzen (fuehrung)**: Genau 10 relevante Füh
 - "Mittel": Wichtig, aber nicht Kernprofil
 - "Niedrig": Wird benötigt, ist aber nicht zentral
 
+## KONFIDENZ-BEWERTUNG
+
+Für JEDE Tätigkeit/Kompetenz: Gib zusätzlich einen "confidence"-Wert (0–100) an, der angibt, wie eindeutig die Zuordnung zum gewählten Kompetenzbereich ist.
+- 80–100: Sehr eindeutig, klar einem Bereich zuzuordnen
+- 55–79: Überwiegend eindeutig, leichte Anteile anderer Bereiche
+- 0–54: Uneindeutig, die Tätigkeit hat starke Anteile aus mehreren Bereichen
+
 Antworte ausschließlich als JSON:
 {
-  "haupt": [{"name": "...", "kompetenz": "Impulsiv|Intuitiv|Analytisch", "niveau": "Niedrig|Mittel|Hoch"}],
-  "neben": [{"name": "...", "kompetenz": "Impulsiv|Intuitiv|Analytisch", "niveau": "Niedrig|Mittel|Hoch"}]${hasFuehrung ? `,
-  "fuehrung": [{"name": "...", "kompetenz": "Impulsiv|Intuitiv|Analytisch", "niveau": "Niedrig|Mittel|Hoch"}]` : ""}
+  "haupt": [{"name": "...", "kompetenz": "Impulsiv|Intuitiv|Analytisch", "niveau": "Niedrig|Mittel|Hoch", "confidence": 0-100}],
+  "neben": [{"name": "...", "kompetenz": "Impulsiv|Intuitiv|Analytisch", "niveau": "Niedrig|Mittel|Hoch", "confidence": 0-100}]${hasFuehrung ? `,
+  "fuehrung": [{"name": "...", "kompetenz": "Impulsiv|Intuitiv|Analytisch", "niveau": "Niedrig|Mittel|Hoch", "confidence": 0-100}]` : ""}
 }`;
 
       const response = await openai.chat.completions.create({
@@ -573,11 +580,17 @@ Braucht diese Tätigkeit primär DURCHSETZUNGSKRAFT – Entscheidungen unter Uns
 ## ZU BEWERTENDE EINTRÄGE
 ${itemsList}
 
+## KONFIDENZ-BEWERTUNG
+Für JEDE Tätigkeit: Gib zusätzlich einen "confidence"-Wert (0–100) an, der angibt, wie eindeutig die Zuordnung ist.
+- 80–100: Sehr eindeutig
+- 55–79: Überwiegend eindeutig
+- 0–54: Uneindeutig, starke Anteile aus mehreren Bereichen
+
 Antworte als JSON-Objekt mit einem "results" Array mit exakt ${items.length} Einträgen in der gleichen Reihenfolge.
 Jeder Eintrag hat GENAU EINEN Wert für "kompetenz" - entweder "Impulsiv" ODER "Intuitiv" ODER "Analytisch". Niemals mehrere Werte kombinieren!
 
 Beispiel für 3 Einträge:
-{"results": [{"kompetenz": "Analytisch"}, {"kompetenz": "Impulsiv"}, {"kompetenz": "Intuitiv"}]}`;
+{"results": [{"kompetenz": "Analytisch", "confidence": 85}, {"kompetenz": "Impulsiv", "confidence": 45}, {"kompetenz": "Intuitiv", "confidence": 72}]}`;
 
       const response = await openai.chat.completions.create({
         model: "gpt-4.1",
