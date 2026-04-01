@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { PlusCircle, FolderOpen, Bot, CheckCircle, Sparkles, Users } from "lucide-react";
+import { PlusCircle, FolderOpen, Bot, CheckCircle, Sparkles } from "lucide-react";
 import { useLocation } from "wouter";
 import logoSrc from "@assets/1_1773849007741.png";
 import illustrationRollenanalyse from "@assets/stellenanalyse_v3.png";
@@ -21,64 +21,6 @@ function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
       transition: "opacity 700ms cubic-bezier(0.4, 0, 0.2, 1), transform 700ms cubic-bezier(0.4, 0, 0.2, 1)",
     }}>
       {children}
-    </div>
-  );
-}
-
-function HoverCard({ children, isMobile, testId }: { children: React.ReactNode; isMobile: boolean; testId: string }) {
-  return (
-    <div
-      data-testid={testId}
-      style={{
-        background: "#FFFFFF",
-        borderRadius: 20, padding: isMobile ? "20px 16px" : "28px 32px",
-        boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
-        border: "1px solid rgba(0,0,0,0.04)",
-        marginBottom: 16,
-        transition: "transform 400ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 400ms cubic-bezier(0.4, 0, 0.2, 1)",
-        cursor: "default",
-      }}
-      onMouseEnter={(e) => {
-        if (!isMobile) {
-          e.currentTarget.style.transform = "translateY(-3px)";
-          e.currentTarget.style.boxShadow = "0 16px 48px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(255,255,255,0.5)";
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!isMobile) {
-          e.currentTarget.style.transform = "translateY(0)";
-          e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)";
-        }
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function TeamCheckIllustration() {
-  return (
-    <div style={{
-      width: 180, height: 180, display: "flex", alignItems: "center", justifyContent: "center",
-      position: "relative",
-    }}>
-      <div style={{
-        width: 130, height: 130, borderRadius: "50%",
-        background: "linear-gradient(135deg, rgba(52,199,89,0.08), rgba(0,113,227,0.06))",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        position: "relative",
-      }}>
-        <Users style={{ width: 48, height: 48, color: "#34C759", strokeWidth: 1.3 }} />
-        <div style={{
-          position: "absolute", top: 8, right: 8,
-          width: 28, height: 28, borderRadius: "50%",
-          background: "linear-gradient(135deg, #34C759, #30B350)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 2px 8px rgba(52,199,89,0.3)",
-        }}>
-          <Sparkles style={{ width: 14, height: 14, color: "#fff" }} />
-        </div>
-      </div>
     </div>
   );
 }
@@ -119,11 +61,8 @@ function ConfirmResetModal({ onConfirm, onCancel }: { onConfirm: () => void; onC
             style={{
               height: 44, paddingLeft: 24, paddingRight: 24, fontSize: 14, fontWeight: 600,
               borderRadius: 12, border: "1.5px solid rgba(0,0,0,0.12)",
-              background: "transparent", color: "#1D1D1F", cursor: "pointer",
-              transition: "all 250ms cubic-bezier(0.4, 0, 0.2, 1)",
+              background: "transparent", color: "#1D1D1F", cursor: "pointer", transition: "all 150ms ease",
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.04)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.transform = "translateY(0)"; }}
             data-testid="button-cancel-reset"
           >
             Abbrechen
@@ -134,11 +73,8 @@ function ConfirmResetModal({ onConfirm, onCancel }: { onConfirm: () => void; onC
               height: 44, paddingLeft: 24, paddingRight: 24, fontSize: 14, fontWeight: 600,
               borderRadius: 12, border: "none",
               background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
-              cursor: "pointer", boxShadow: "0 4px 12px rgba(0,113,227,0.3)",
-              transition: "all 250ms cubic-bezier(0.4, 0, 0.2, 1)",
+              cursor: "pointer", boxShadow: "0 4px 12px rgba(0,113,227,0.3)", transition: "all 150ms ease",
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,113,227,0.3)"; }}
             data-testid="button-confirm-reset"
           >
             Weiter
@@ -146,46 +82,6 @@ function ConfirmResetModal({ onConfirm, onCancel }: { onConfirm: () => void; onC
         </div>
       </div>
     </>
-  );
-}
-
-function PrimaryButton({ onClick, children, testId }: { onClick: () => void; children: React.ReactNode; testId: string }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
-        borderRadius: 14, border: "none", cursor: "pointer",
-        background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
-        boxShadow: "0 4px 16px rgba(0,113,227,0.25)", transition: "all 300ms cubic-bezier(0.4, 0, 0.2, 1)",
-        display: "flex", alignItems: "center", gap: 8,
-      }}
-      onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,113,227,0.3)"; }}
-      onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,113,227,0.25)"; }}
-      data-testid={testId}
-    >
-      {children}
-    </button>
-  );
-}
-
-function SecondaryButton({ onClick, children, testId }: { onClick: () => void; children: React.ReactNode; testId: string }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
-        borderRadius: 14, border: "1.5px solid rgba(0,0,0,0.10)", cursor: "pointer",
-        background: "rgba(255,255,255,0.8)", color: "#1D1D1F",
-        transition: "all 300ms cubic-bezier(0.4, 0, 0.2, 1)",
-        display: "flex", alignItems: "center", gap: 8,
-      }}
-      onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.04)"; e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.06)"; }}
-      onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.8)"; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
-      data-testid={testId}
-    >
-      {children}
-    </button>
   );
 }
 
@@ -261,6 +157,11 @@ export default function Home() {
           50% { opacity: 1; }
           100% { opacity: 0.85; }
         }
+        @media (max-width: 600px) {
+          .home-illustration-hide-mobile {
+            display: none !important;
+          }
+        }
       `}</style>
 
       <input
@@ -277,10 +178,20 @@ export default function Home() {
 
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: isMobile ? "24px 12px 100px" : "48px 24px 80px" }}>
 
+          {/* ROLLENANALYSE CARD */}
           <FadeIn delay={200}>
-            <HoverCard isMobile={isMobile} testId="card-profile">
+            <div
+              style={{
+                background: "#FFFFFF",
+                borderRadius: 20, padding: isMobile ? "20px 16px" : "28px 32px",
+                boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+                border: "1px solid rgba(0,0,0,0.04)",
+                marginBottom: 16,
+              }}
+              data-testid="card-profile"
+            >
               <div style={{ display: "flex", flexDirection: isMobile ? "column" as const : "row" as const, alignItems: isMobile ? "stretch" : "center", gap: isMobile ? 16 : 32 }}>
-                <div style={{ flexShrink: 0, width: isMobile ? 80 : 180, height: isMobile ? 80 : 180, display: "flex", alignItems: "center", justifyContent: "center", margin: isMobile ? "0 auto" : undefined }}>
+                <div style={{ flexShrink: 0, width: 180, height: 180, display: "flex", alignItems: "center", justifyContent: "center" }} className="home-illustration-hide-mobile">
                   <img src={illustrationRollenanalyse} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                 </div>
 
@@ -299,14 +210,37 @@ export default function Home() {
                   </p>
 
                   <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-                    <PrimaryButton onClick={handleNewAnalyse} testId="button-analyse-starten">
+                    <button
+                      onClick={handleNewAnalyse}
+                      style={{
+                        height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
+                        borderRadius: 14, border: "none", cursor: "pointer",
+                        background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
+                        boxShadow: "0 4px 16px rgba(0,113,227,0.3)", transition: "all 200ms ease",
+                        display: "flex", alignItems: "center", gap: 8,
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)"; }}
+                      data-testid="button-analyse-starten"
+                    >
                       <PlusCircle style={{ width: 17, height: 17 }} />
                       Neue Analyse
-                    </PrimaryButton>
-                    <SecondaryButton onClick={() => fileInputRef.current?.click()} testId="button-analyse-oeffnen">
+                    </button>
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      style={{
+                        height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
+                        borderRadius: 14, border: "1.5px solid rgba(0,0,0,0.10)", cursor: "pointer",
+                        background: "rgba(255,255,255,0.8)", color: "#1D1D1F", transition: "all 200ms ease",
+                        display: "flex", alignItems: "center", gap: 8,
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.04)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.8)"; e.currentTarget.style.transform = "translateY(0)"; }}
+                      data-testid="button-analyse-oeffnen"
+                    >
                       <FolderOpen style={{ width: 17, height: 17 }} />
                       Analyse öffnen
-                    </SecondaryButton>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -328,63 +262,22 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-            </HoverCard>
+            </div>
           </FadeIn>
 
+          {/* KI-COACH CARD */}
           <FadeIn delay={400}>
-            <HoverCard isMobile={isMobile} testId="card-teamcheck">
+            <div
+              style={{
+                background: "#FFFFFF",
+                borderRadius: 20, padding: isMobile ? "20px 16px" : "28px 32px",
+                boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+                border: "1px solid rgba(0,0,0,0.04)",
+              }}
+              data-testid="card-ki-coach"
+            >
               <div style={{ display: "flex", flexDirection: isMobile ? "column" as const : "row" as const, alignItems: isMobile ? "stretch" : "center", gap: isMobile ? 16 : 32 }}>
-                <div style={{ flexShrink: 0, width: isMobile ? 80 : 180, height: isMobile ? 80 : 180, display: "flex", alignItems: "center", justifyContent: "center", margin: isMobile ? "0 auto" : undefined }}>
-                  <TeamCheckIllustration />
-                </div>
-
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ marginBottom: 12 }}>
-                    <h3 style={{ fontSize: 24, fontWeight: 700, color: "#34C759", margin: 0, letterSpacing: "-0.02em" }}>
-                      TeamCheck
-                    </h3>
-                    <p style={{ fontSize: 14, color: "#48484A", margin: "3px 0 0", fontWeight: 450 }}>
-                      Teamstruktur, Dynamik und Passungsanalyse
-                    </p>
-                  </div>
-
-                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: "0 0 24px", fontWeight: 600 }}>
-                    Analysieren Sie die Teamdynamik, prüfen Sie die Passung neuer Teammitglieder und erhalten Sie konkrete Empfehlungen für optimale Zusammenarbeit.
-                  </p>
-
-                  <div>
-                    <PrimaryButton onClick={() => setLocation("/team-report")} testId="button-teamcheck">
-                      <Users style={{ width: 17, height: 17 }} />
-                      TeamCheck starten
-                    </PrimaryButton>
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 16, marginTop: 20 }}>
-                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: "8px 24px" }}>
-                  {[
-                    "Teamstruktur-Analyse",
-                    "Dynamik-Simulation",
-                    "Passungsprüfung für neue Mitglieder",
-                    "Risikoprognose",
-                    "Führungsempfehlungen",
-                    "30-Tage-Integrationsplan",
-                  ].map((text, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <CheckCircle style={{ width: 13, height: 13, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
-                      <span style={{ fontSize: 14, color: "#48484A", fontWeight: 450 }}>{text}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </HoverCard>
-          </FadeIn>
-
-          <FadeIn delay={600}>
-            <HoverCard isMobile={isMobile} testId="card-ki-coach">
-              <div style={{ display: "flex", flexDirection: isMobile ? "column" as const : "row" as const, alignItems: isMobile ? "stretch" : "center", gap: isMobile ? 16 : 32 }}>
-                <div style={{ flexShrink: 0, width: isMobile ? 80 : 180, height: isMobile ? 80 : 180, borderRadius: 20, background: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", padding: isMobile ? 0 : 12, margin: isMobile ? "0 auto" : undefined }}>
+                <div style={{ flexShrink: 0, width: 180, height: 180, borderRadius: 20, background: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", padding: 12 }} className="home-illustration-hide-mobile">
                   <img src={illustrationKiCoach} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                 </div>
 
@@ -403,10 +296,22 @@ export default function Home() {
                   </p>
 
                   <div>
-                    <PrimaryButton onClick={() => setLocation("/ki-coach")} testId="button-ki-coach">
+                    <button
+                      onClick={() => setLocation("/ki-coach")}
+                      style={{
+                        height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
+                        borderRadius: 14, border: "none", cursor: "pointer",
+                        background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
+                        boxShadow: "0 4px 16px rgba(0,113,227,0.3)", transition: "all 200ms ease",
+                        display: "flex", alignItems: "center", gap: 8,
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 18px rgba(0,113,227,0.3)"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(0,113,227,0.25)"; }}
+                      data-testid="button-ki-coach"
+                    >
                       <Bot style={{ width: 17, height: 17 }} />
                       KI-Coach öffnen
-                    </PrimaryButton>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -428,7 +333,7 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-            </HoverCard>
+            </div>
           </FadeIn>
         </div>
       </div>
@@ -454,9 +359,9 @@ export default function Home() {
       )}
 
       <div style={{ display: "flex", justifyContent: "center", gap: 20, padding: "24px 0 16px", marginTop: 16 }}>
-        <a href="/impressum" data-testid="link-impressum-home" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none", transition: "color 200ms" }} onMouseEnter={(e) => { e.currentTarget.style.color = "#636366"; }} onMouseLeave={(e) => { e.currentTarget.style.color = "#8E8E93"; }}>Impressum</a>
-        <a href="/datenschutz" data-testid="link-datenschutz-home" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none", transition: "color 200ms" }} onMouseEnter={(e) => { e.currentTarget.style.color = "#636366"; }} onMouseLeave={(e) => { e.currentTarget.style.color = "#8E8E93"; }}>Datenschutz</a>
-        <a href="/disclaimer" data-testid="link-disclaimer-home" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none", transition: "color 200ms" }} onMouseEnter={(e) => { e.currentTarget.style.color = "#636366"; }} onMouseLeave={(e) => { e.currentTarget.style.color = "#8E8E93"; }}>Disclaimer</a>
+        <a href="/impressum" data-testid="link-impressum-home" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Impressum</a>
+        <a href="/datenschutz" data-testid="link-datenschutz-home" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Datenschutz</a>
+        <a href="/disclaimer" data-testid="link-disclaimer-home" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Disclaimer</a>
       </div>
     </div>
   );
