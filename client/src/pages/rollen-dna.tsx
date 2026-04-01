@@ -2351,7 +2351,7 @@ export default function RollenDNA() {
                           margin: "0 auto 16px",
                         }} />
                         <p style={{ fontSize: 15, color: "#0071E3", fontWeight: 500 }}>
-                          KI erstellt Kompetenzprofil für „{beruf}“
+                          KI erstellt Stellenprofil für „{beruf}“
                         </p>
                         <p style={{ fontSize: 13, color: "#6E6E73", marginTop: 4, marginBottom: 20 }}>
                           Das kann einige Sekunden dauern.
