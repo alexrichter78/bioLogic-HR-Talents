@@ -559,6 +559,10 @@ function buildSummary(role: string, cand: string, fit: string, rk: ComponentKey,
     return `${constellationRoleText(rConst)} ${s} arbeitet nach demselben Grundprinzip. Arbeitsweise und Prioritäten passen zur Stelle ${role}. Kleinere Unterschiede in der Gewichtung der Nebenbereiche sind im Alltag gut handhabbar.`;
   }
 
+  if (rk === ck && gap === "hoch") {
+    return `${constellationRoleText(rConst)} ${s} arbeitet in dieselbe Richtung, aber die Gewichtung der Nebenbereiche weicht erheblich ab. Im Alltag führt das zu Reibung bei Tempo, Kommunikation und Arbeitsstruktur. Der Führungsaufwand ist hoch.`;
+  }
+
   if (gap === "hoch") {
     return `${constellationRoleText(rConst)} ${constellationCandText(cConst, cand)} Stelle und ${subj(cand)} arbeiten nach unterschiedlichen Prinzipien. Im Alltag führt das zu Reibung bei Entscheidungen, Arbeitsweise und Zusammenarbeit.`;
   }
@@ -1023,9 +1027,13 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
         ? `Das Team wartet auf klare Ansagen, die nicht schnell genug kommen. Da die Nebenbereiche konkurrieren, pendelt die Führung zwischen Abstimmung und noch mehr Prüfung – das Tempo bleibt dauerhaft unter dem Bedarf.${leadershipSuffix}`
         : `Das Team wartet auf klare Ansagen, die nicht schnell genug kommen. In Drucksituationen fehlt die entschlossene Führung, die erwartet wird.${leadershipSuffix}`;
     } else if (rk === "impulsiv" && ck === "intuitiv") {
-      risk = leadComp23
-        ? `Statt schneller Entscheidungen wird abgestimmt. Da die Nebenbereiche konkurrieren, wechselt die Führung unter Druck zwischen Faktenprüfung und weiterer Diskussion – in keinem Fall entsteht das erwartete Tempo.${leadershipSuffix}`
-        : `Statt schneller Entscheidungen wird abgestimmt. Das Team erwartet Tempo, bekommt Gesprächsrunden. Zeitkritische Situationen erzeugen Frustration.${leadershipSuffix}`;
+      if (leadComp23) {
+        risk = `Statt schneller Entscheidungen wird abgestimmt. Da die Nebenbereiche konkurrieren, wechselt die Führung unter Druck zwischen Faktenprüfung und weiterer Diskussion – in keinem Fall entsteht das erwartete Tempo.${leadershipSuffix}`;
+      } else if (maxGap >= 15) {
+        risk = `Statt schneller Entscheidungen wird abgestimmt. Das Team erwartet Tempo, bekommt Gesprächsrunden. Zeitkritische Situationen erzeugen Frustration. Die Führungskraft muss das direkt korrigieren.${leadershipSuffix}`;
+      } else {
+        risk = `Statt schneller Entscheidungen wird abgestimmt. Das Team erwartet Tempo, bekommt Gesprächsrunden. Die Führungskraft sollte klare Entscheidungserwartungen setzen, um das Tempo zu sichern.${leadershipSuffix}`;
+      }
     } else if (rk === "intuitiv" && ck === "impulsiv") {
       risk = leadComp23
         ? `Mitarbeiter fühlen sich übergangen, weil Entscheidungen ohne ausreichende Einbindung fallen. Da die Nebenbereiche konkurrieren, schwankt das Verhalten unter Druck zwischen sachlicher Kontrolle und weiterem Tempo – persönliche Nähe kommt in keinem Fall ausreichend vor.${leadershipSuffix}`
@@ -1204,9 +1212,14 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
         ? "Die operative Geschwindigkeit sinkt. Da die Nebenbereiche konkurrieren, pendelt die Kultur unter Druck zwischen persönlicher Abstimmung und weiterem Prüfen – das erwartete Tempo entsteht in keinem Fall."
         : "Die operative Geschwindigkeit sinkt. Statt direkter Umsetzung entsteht eine Kultur der Prüfung und Absicherung. In einem dynamischen Umfeld ein Wettbewerbsnachteil.";
     } else if (rk === "impulsiv" && ck === "intuitiv") {
-      risk = culComp23
-        ? "Ergebnisorientierung weicht einer Konsenskultur. Da die Nebenbereiche konkurrieren, schwankt der Einfluss unter Druck zwischen Faktenprüfung und schnellem Handeln – die Dynamik der Stelle geht in beiden Richtungen verloren."
-        : "Ergebnisorientierung weicht einer Konsenskultur. Entscheidungen werden diskutiert statt umgesetzt. Die Dynamik der Stelle geht verloren.";
+      const cMaxGap = Math.max(gapI, gapN, gapA);
+      if (culComp23) {
+        risk = "Ergebnisorientierung weicht einer Konsenskultur. Da die Nebenbereiche konkurrieren, schwankt der Einfluss unter Druck zwischen Faktenprüfung und schnellem Handeln – die Dynamik der Stelle geht in beiden Richtungen verloren.";
+      } else if (cMaxGap >= 15) {
+        risk = "Ergebnisorientierung weicht einer Konsenskultur. Entscheidungen werden diskutiert statt umgesetzt. Die Dynamik der Stelle geht verloren.";
+      } else {
+        risk = "Ergebnisorientierung weicht teilweise einer Konsenskultur. Entscheidungen werden diskutiert statt umgesetzt. Die Dynamik der Stelle kann darunter leiden. Klare Ergebnisvorgaben helfen, den Fokus zu halten.";
+      }
     } else if (rk === "intuitiv" && ck === "impulsiv") {
       risk = culComp23
         ? "Kooperative Kultur wird durch Ergebnisorientierung verdrängt. Da die Nebenbereiche konkurrieren, schwankt die Kulturwirkung unter Druck zwischen sachlicher Kontrolle und weiterem Tempo – persönliche Verbindung entsteht in keinem Fall."
@@ -1276,6 +1289,14 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
       { label: "Langfristig", period: "12+ Monate", text: gap === "hoch"
           ? `Trotz gleicher Arbeitsweise bleibt der Führungsaufwand erhöht. Die Nebenbereich-Abweichungen erfordern dauerhafte Aufmerksamkeit. Es sollte geprüft werden, ob der Steuerungsaufwand langfristig tragbar ist.`
           : `Mit gezielter Führung lassen sich die Unterschiede in den Nebenbereichen dauerhaft ausgleichen. Halbjährliche Überprüfung empfohlen, um sicherzustellen, dass die Passung stabil bleibt.` },
+    ];
+  }
+
+  if (gap === "gering" && rk !== ck) {
+    return [
+      { label: "Kurzfristig", period: "0 - 3 Monate", text: `Die Stelle ${role} verlangt ${compDesc(rk)}. ${Subj(cand)} bringt eine andere Grundausrichtung mit. Auch wenn die numerischen Abweichungen gering sind, zeigt sich der unterschiedliche Schwerpunkt in der Art, wie Aufgaben angegangen werden. Frühzeitiges Alignment empfohlen.` },
+      { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die unterschiedliche Grundausrichtung wird im Alltag spürbar. Gezielte Führung und regelmässiges Feedback sind nötig, um sicherzustellen, dass Prioritäten im Sinne der Stelle gesetzt werden.` },
+      { label: "Langfristig", period: "12+ Monate", text: `Die Grundausrichtung bleibt unterschiedlich. Der Führungsaufwand ist zwar handhabbar, aber dauerhafte Aufmerksamkeit ist nötig. Halbjährliche Überprüfungen empfohlen.` },
     ];
   }
 
@@ -1421,7 +1442,7 @@ function buildActions(rk: ComponentKey, ck: ComponentKey, gap: string, control: 
 
   if (gap === "gering") {
     return [
-      "Regelmäßige Zielvereinbarungen zur Feinsteuerung durchführen.",
+      "Regelmässige Zielvereinbarungen zur Feinsteuerung durchführen.",
       "Halbjährliche Überprüfung der Stellenpassung sicherstellen.",
     ];
   }
@@ -1450,7 +1471,7 @@ function buildActions(rk: ComponentKey, ck: ComponentKey, gap: string, control: 
     base.push("Ergebnisorientierte KPIs statt Prozess-KPIs verwenden.");
     base.push("Wöchentliche Fortschrittsreviews mit messbaren Meilensteinen einführen.");
   } else if (rk === "intuitiv") {
-    base.push("Regelmäßige Team-Feedbackrunden fest im Kalender verankern.");
+    base.push("Regelmässige Team-Feedbackrunden fest im Kalender verankern.");
     base.push("Kommunikationserwartungen klar und schriftlich formulieren.");
     base.push("Beziehungsarbeit als explizites Ziel in die Leistungsbewertung aufnehmen.");
     base.push("Monatliche Einzelgespräche zur Reflexion der Teamdynamik einrichten.");
@@ -1668,7 +1689,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
       p2Items.push(`Erste eigenverantwortliche Umsetzungsprojekte mit messbaren Zielen starten.`);
       p2Items.push(`Entscheidungsgeschwindigkeit und Ergebnisorientierung beobachten und steuern.`);
       p2Items.push(`Feedbackschleifen verkürzen und schnelle Rückmeldungen etablieren.`);
-      if (isLeader) p2Items.push(`Erste Vertriebsentscheidungen eigenständig treffen und auswerten.`);
+      if (isLeader) p2Items.push(`Erste Führungsentscheidungen eigenständig treffen und auswerten.`);
       else p2Items.push(`Priorisierung zwischen Schnelligkeit und Sorgfalt kalibrieren.`);
       p2Fokus = isBedingt
         ? {
@@ -1676,7 +1697,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
             bullets: [
               `Entscheidungen nicht zu lange prüfen`,
               `Umsetzung aktiv vorantreiben`,
-              `regelmäßig Feedback zum Rhythmus einholen`,
+              `regelmässig Feedback zum Rhythmus einholen`,
             ],
           }
         : {
@@ -1775,7 +1796,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
           };
 
       p2Ziel = `Kommunikationswirkung und Beziehungsarbeit als ${role} aktiv gestalten.`;
-      p2Items.push(`Regelmäßige Team-Feedbackrunden durchführen und moderieren.`);
+      p2Items.push(`Regelmässige Team-Feedbackrunden durchführen und moderieren.`);
       p2Items.push(`Kommunikationsstil und Wirkung auf das Umfeld reflektieren.`);
       p2Items.push(`Beziehungsarbeit als konkretes, messbares Ziel verfolgen.`);
       p2Items.push(`Konfliktsituationen proaktiv ansprechen und lösen.`);
@@ -1785,7 +1806,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
             bullets: [
               `Kommunikation nicht als Nebensache behandeln`,
               `aktive Beziehungsarbeit als Erfolgsfaktor verstehen`,
-              `regelmäßig Feedback zur Wirkung einholen`,
+              `regelmässig Feedback zur Wirkung einholen`,
             ],
           }
         : {
@@ -1802,7 +1823,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
       p3Items.push(`Teamzufriedenheit und Bindung erheben.`);
       p3Items.push(`Kommunikationsstandards dauerhaft verankern.`);
       if (isLeader) p3Items.push(`Führungswirkung auf Teamklima und Mitarbeiterbindung evaluieren.`);
-      else p3Items.push(`Offene Punkte in der Beziehungsarbeit klären und abschließen.`);
+      else p3Items.push(`Offene Punkte in der Beziehungsarbeit klären und abschliessen.`);
     }
 
     if (control === "hoch") {
