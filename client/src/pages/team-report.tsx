@@ -626,6 +626,17 @@ export default function TeamReport() {
         }
       }
     } catch {}
+
+    try {
+      const candRaw = localStorage.getItem("jobcheckCandProfile");
+      if (candRaw) {
+        const cand = JSON.parse(candRaw);
+        if (cand.impulsiv != null && cand.intuitiv != null && cand.analytisch != null) {
+          setIstTriad({ impulsiv: cand.impulsiv, intuitiv: cand.intuitiv, analytisch: cand.analytisch });
+        }
+        if (cand.name) setCandidateName(cand.name);
+      }
+    } catch {}
   }, [syncFromLocalStorage]);
 
   useEffect(() => {

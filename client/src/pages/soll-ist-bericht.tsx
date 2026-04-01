@@ -227,6 +227,16 @@ export default function SollIstBericht() {
     if (savedControl) setMatchCheckControl(savedControl);
   }, []);
 
+  useEffect(() => {
+    const existing = localStorage.getItem("jobcheckCandProfile");
+    let data: Record<string, unknown> = {};
+    if (existing) { try { data = JSON.parse(existing); } catch {} }
+    data.impulsiv = candTriad.impulsiv;
+    data.intuitiv = candTriad.intuitiv;
+    data.analytisch = candTriad.analytisch;
+    localStorage.setItem("jobcheckCandProfile", JSON.stringify(data));
+  }, [candTriad]);
+
   const candidateProfile = candTriad;
   const candDom = dominanceModeOf(candidateProfile);
 
