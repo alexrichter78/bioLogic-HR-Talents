@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth";
 import { Lock, User, Eye, EyeOff, AlertCircle, ArrowLeft, Mail, CheckCircle } from "lucide-react";
 import logoPath from "@assets/Logo_bioLogic_1774652440525.gif";
@@ -15,6 +15,12 @@ export default function Login() {
   const [resetSent, setResetSent] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
   const [resetError, setResetError] = useState("");
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setVisible(true), 100);
+    return () => clearTimeout(t);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,14 +55,48 @@ export default function Login() {
     setResetLoading(false);
   };
 
+  const bgStyle: React.CSSProperties = {
+    minHeight: "100vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+    overflow: "hidden",
+    background: "linear-gradient(135deg, #f0f4f8 0%, #e8edf3 50%, #f5f7fb 100%)",
+    fontFamily: "Inter, Arial, Helvetica, sans-serif",
+  };
+
+  const cardFadeStyle: React.CSSProperties = {
+    opacity: visible ? 1 : 0,
+    transform: visible ? "translateY(0)" : "translateY(20px)",
+    transition: "opacity 600ms cubic-bezier(0.4, 0, 0.2, 1), transform 600ms cubic-bezier(0.4, 0, 0.2, 1)",
+  };
+
   if (showReset) {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #f0f4f8 0%, #e8edf3 50%, #f5f7fb 100%)", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
-        <div style={{ width: "100%", maxWidth: 400, padding: 24 }}>
-          <div style={{ background: "#fff", borderRadius: 20, padding: "48px 36px 40px", boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 12px 48px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.04)" }}>
+      <div style={bgStyle}>
+        <div
+          style={{
+            position: "absolute", inset: 0, pointerEvents: "none",
+            background:
+              "radial-gradient(ellipse 100% 80% at 30% 70%, rgba(52,199,89,0.12) 0%, transparent 50%), " +
+              "radial-gradient(ellipse 90% 60% at 70% 20%, rgba(0,113,227,0.10) 0%, transparent 50%), " +
+              "radial-gradient(ellipse 80% 50% at 50% 90%, rgba(186,220,248,0.15) 0%, transparent 50%)",
+            animation: "loginGradientPulse 10s ease-in-out infinite alternate",
+          }}
+        />
+        <style>{`
+          @keyframes loginGradientPulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+          }
+        `}</style>
+        <div style={{ width: "100%", maxWidth: 400, padding: 24, position: "relative", zIndex: 1, ...cardFadeStyle }}>
+          <div style={{ background: "rgba(255,255,255,0.85)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderRadius: 24, padding: "48px 36px 40px", boxShadow: "0 8px 40px rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)" }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 32 }}>
-              <img src={logoPath} alt="bioLogic" style={{ height: 56, objectFit: "contain", marginBottom: 14 }} data-testid="img-reset-logo" />
-              <div style={{ width: 40, height: 1, background: "linear-gradient(90deg, transparent, #D1D5DB, transparent)", marginBottom: 14 }} />
+              <img src={logoPath} alt="bioLogic" style={{ height: 72, objectFit: "contain", marginBottom: 16 }} data-testid="img-reset-logo" />
+              <div style={{ width: 48, height: 1.5, background: "linear-gradient(90deg, transparent, #34C759, transparent)", marginBottom: 14 }} />
               <span style={{ fontSize: 14, fontWeight: 500, color: "#6B7280", letterSpacing: "0.08em", textTransform: "uppercase" }}>HR Talents</span>
             </div>
 
@@ -70,7 +110,9 @@ export default function Login() {
                 <button
                   onClick={() => { setShowReset(false); setResetSent(false); setResetEmail(""); }}
                   data-testid="button-back-to-login"
-                  style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 600, color: "#3B82F6", background: "none", border: "none", cursor: "pointer" }}
+                  style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 600, color: "#34C759", background: "none", border: "none", cursor: "pointer", transition: "color 200ms ease" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = "#2da44e"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = "#34C759"; }}
                 >
                   <ArrowLeft style={{ width: 16, height: 16 }} />
                   Zurück zur Anmeldung
@@ -101,9 +143,9 @@ export default function Login() {
                         onChange={(e) => setResetEmail(e.target.value)}
                         required
                         data-testid="input-reset-email"
-                        style={{ width: "100%", padding: "12px 14px 12px 42px", borderRadius: 12, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box", background: "#F9FAFB", transition: "border-color 0.2s, box-shadow 0.2s", color: "#1F2937" }}
+                        style={{ width: "100%", padding: "12px 14px 12px 42px", borderRadius: 12, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box", background: "rgba(249,250,251,0.8)", transition: "border-color 0.2s, box-shadow 0.2s", color: "#1F2937" }}
                         placeholder="name@firma.de"
-                        onFocus={(e) => { e.target.style.borderColor = "#3B82F6"; e.target.style.boxShadow = "0 0 0 3px rgba(59,130,246,0.1)"; }}
+                        onFocus={(e) => { e.target.style.borderColor = "#34C759"; e.target.style.boxShadow = "0 0 0 3px rgba(52,199,89,0.1)"; }}
                         onBlur={(e) => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
                       />
                     </div>
@@ -115,13 +157,15 @@ export default function Login() {
                     data-testid="button-send-reset"
                     style={{
                       width: "100%", padding: "13px 0", borderRadius: 12, border: "none",
-                      background: resetLoading ? "#9CA3AF" : "linear-gradient(135deg, #1F2937 0%, #374151 100%)",
+                      background: resetLoading ? "#9CA3AF" : "linear-gradient(135deg, #0071E3, #34AADC)",
                       color: "#fff", fontSize: 15, fontWeight: 600,
                       cursor: resetLoading ? "wait" : "pointer",
-                      transition: "all 0.2s ease", letterSpacing: "0.02em",
-                      boxShadow: resetLoading ? "none" : "0 2px 8px rgba(31,41,55,0.25)",
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)", letterSpacing: "0.02em",
+                      boxShadow: resetLoading ? "none" : "0 4px 14px rgba(0,113,227,0.25)",
                       marginBottom: 16,
                     }}
+                    onMouseEnter={(e) => { if (!resetLoading) { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,113,227,0.3)"; } }}
+                    onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = resetLoading ? "none" : "0 4px 14px rgba(0,113,227,0.25)"; }}
                   >
                     {resetLoading ? "Senden..." : "Link anfordern"}
                   </button>
@@ -131,7 +175,9 @@ export default function Login() {
                   <button
                     onClick={() => { setShowReset(false); setResetError(""); }}
                     data-testid="button-back-to-login-form"
-                    style={{ fontSize: 13, fontWeight: 600, color: "#3B82F6", background: "none", border: "none", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}
+                    style={{ fontSize: 13, fontWeight: 600, color: "#34C759", background: "none", border: "none", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4, transition: "color 200ms ease" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = "#2da44e"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = "#34C759"; }}
                   >
                     <ArrowLeft style={{ width: 14, height: 14 }} />
                     Zurück zur Anmeldung
@@ -142,9 +188,9 @@ export default function Login() {
           </div>
 
           <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 20 }}>
-            <a href="/impressum" data-testid="link-impressum-reset" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Impressum</a>
-            <a href="/datenschutz" data-testid="link-datenschutz-reset" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Datenschutz</a>
-            <a href="/disclaimer" data-testid="link-disclaimer-reset" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Disclaimer</a>
+            <a href="/impressum" data-testid="link-impressum-reset" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none", transition: "color 200ms" }} onMouseEnter={(e) => { e.currentTarget.style.color = "#636366"; }} onMouseLeave={(e) => { e.currentTarget.style.color = "#8E8E93"; }}>Impressum</a>
+            <a href="/datenschutz" data-testid="link-datenschutz-reset" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none", transition: "color 200ms" }} onMouseEnter={(e) => { e.currentTarget.style.color = "#636366"; }} onMouseLeave={(e) => { e.currentTarget.style.color = "#8E8E93"; }}>Datenschutz</a>
+            <a href="/disclaimer" data-testid="link-disclaimer-reset" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none", transition: "color 200ms" }} onMouseEnter={(e) => { e.currentTarget.style.color = "#636366"; }} onMouseLeave={(e) => { e.currentTarget.style.color = "#8E8E93"; }}>Disclaimer</a>
           </div>
         </div>
       </div>
@@ -152,13 +198,30 @@ export default function Login() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #f0f4f8 0%, #e8edf3 50%, #f5f7fb 100%)", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
-      <div style={{ width: "100%", maxWidth: 400, padding: 24 }}>
-        <div style={{ background: "#fff", borderRadius: 20, padding: "48px 36px 40px", boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 12px 48px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.04)" }}>
+    <div style={bgStyle}>
+      <div
+        style={{
+          position: "absolute", inset: 0, pointerEvents: "none",
+          background:
+            "radial-gradient(ellipse 100% 80% at 30% 70%, rgba(52,199,89,0.12) 0%, transparent 50%), " +
+            "radial-gradient(ellipse 90% 60% at 70% 20%, rgba(0,113,227,0.10) 0%, transparent 50%), " +
+            "radial-gradient(ellipse 80% 50% at 50% 90%, rgba(186,220,248,0.15) 0%, transparent 50%)",
+          animation: "loginGradientPulse 10s ease-in-out infinite alternate",
+        }}
+      />
+      <style>{`
+        @keyframes loginGradientPulse {
+          0% { opacity: 0.7; }
+          50% { opacity: 1; }
+          100% { opacity: 0.7; }
+        }
+      `}</style>
+      <div style={{ width: "100%", maxWidth: 400, padding: 24, position: "relative", zIndex: 1, ...cardFadeStyle }}>
+        <div style={{ background: "rgba(255,255,255,0.85)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderRadius: 24, padding: "48px 36px 40px", boxShadow: "0 8px 40px rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.6)", border: "1px solid rgba(0,0,0,0.04)" }}>
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 36 }}>
-            <img src={logoPath} alt="bioLogic" style={{ height: 56, objectFit: "contain", marginBottom: 14 }} data-testid="img-login-logo" />
-            <div style={{ width: 40, height: 1, background: "linear-gradient(90deg, transparent, #D1D5DB, transparent)", marginBottom: 14 }} />
+            <img src={logoPath} alt="bioLogic" style={{ height: 72, objectFit: "contain", marginBottom: 16 }} data-testid="img-login-logo" />
+            <div style={{ width: 48, height: 1.5, background: "linear-gradient(90deg, transparent, #34C759, transparent)", marginBottom: 14 }} />
             <span style={{ fontSize: 14, fontWeight: 500, color: "#6B7280", letterSpacing: "0.08em", textTransform: "uppercase" }} data-testid="text-login-subtitle">HR Talents</span>
           </div>
 
@@ -180,9 +243,9 @@ export default function Login() {
                   onChange={(e) => setUsername(e.target.value)}
                   required
                   data-testid="input-username"
-                  style={{ width: "100%", padding: "12px 14px 12px 42px", borderRadius: 12, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box", background: "#F9FAFB", transition: "border-color 0.2s, box-shadow 0.2s", color: "#1F2937" }}
+                  style={{ width: "100%", padding: "12px 14px 12px 42px", borderRadius: 12, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box", background: "rgba(249,250,251,0.8)", transition: "border-color 0.2s, box-shadow 0.2s", color: "#1F2937" }}
                   placeholder="Benutzername"
-                  onFocus={(e) => { e.target.style.borderColor = "#3B82F6"; e.target.style.boxShadow = "0 0 0 3px rgba(59,130,246,0.1)"; }}
+                  onFocus={(e) => { e.target.style.borderColor = "#34C759"; e.target.style.boxShadow = "0 0 0 3px rgba(52,199,89,0.1)"; }}
                   onBlur={(e) => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
                 />
               </div>
@@ -198,9 +261,9 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   data-testid="input-password"
-                  style={{ width: "100%", padding: "12px 42px 12px 42px", borderRadius: 12, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box", background: "#F9FAFB", transition: "border-color 0.2s, box-shadow 0.2s", color: "#1F2937" }}
+                  style={{ width: "100%", padding: "12px 42px 12px 42px", borderRadius: 12, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box", background: "rgba(249,250,251,0.8)", transition: "border-color 0.2s, box-shadow 0.2s", color: "#1F2937" }}
                   placeholder="Passwort eingeben"
-                  onFocus={(e) => { e.target.style.borderColor = "#3B82F6"; e.target.style.boxShadow = "0 0 0 3px rgba(59,130,246,0.1)"; }}
+                  onFocus={(e) => { e.target.style.borderColor = "#34C759"; e.target.style.boxShadow = "0 0 0 3px rgba(52,199,89,0.1)"; }}
                   onBlur={(e) => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
                 />
                 <button
@@ -219,7 +282,9 @@ export default function Login() {
                 type="button"
                 onClick={() => setShowReset(true)}
                 data-testid="button-forgot-password"
-                style={{ fontSize: 13, fontWeight: 500, color: "#3B82F6", background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                style={{ fontSize: 13, fontWeight: 500, color: "#34C759", background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 200ms ease" }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "#2da44e"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "#34C759"; }}
               >
                 Passwort vergessen?
               </button>
@@ -239,10 +304,12 @@ export default function Login() {
                 fontSize: 15,
                 fontWeight: 600,
                 cursor: loading ? "wait" : "pointer",
-                transition: "all 0.2s ease",
+                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                 letterSpacing: "0.02em",
-                boxShadow: loading ? "none" : "0 2px 8px rgba(0,113,227,0.3)",
+                boxShadow: loading ? "none" : "0 4px 14px rgba(0,113,227,0.25)",
               }}
+              onMouseEnter={(e) => { if (!loading) { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,113,227,0.3)"; } }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = loading ? "none" : "0 4px 14px rgba(0,113,227,0.25)"; }}
             >
               {loading ? "Anmelden..." : "Anmelden"}
             </button>
@@ -250,9 +317,9 @@ export default function Login() {
         </div>
 
         <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 20 }}>
-          <a href="/impressum" data-testid="link-impressum" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Impressum</a>
-          <a href="/datenschutz" data-testid="link-datenschutz" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Datenschutz</a>
-          <a href="/disclaimer" data-testid="link-disclaimer" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Disclaimer</a>
+          <a href="/impressum" data-testid="link-impressum" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none", transition: "color 200ms" }} onMouseEnter={(e) => { e.currentTarget.style.color = "#636366"; }} onMouseLeave={(e) => { e.currentTarget.style.color = "#8E8E93"; }}>Impressum</a>
+          <a href="/datenschutz" data-testid="link-datenschutz" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none", transition: "color 200ms" }} onMouseEnter={(e) => { e.currentTarget.style.color = "#636366"; }} onMouseLeave={(e) => { e.currentTarget.style.color = "#8E8E93"; }}>Datenschutz</a>
+          <a href="/disclaimer" data-testid="link-disclaimer" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none", transition: "color 200ms" }} onMouseEnter={(e) => { e.currentTarget.style.color = "#636366"; }} onMouseLeave={(e) => { e.currentTarget.style.color = "#8E8E93"; }}>Disclaimer</a>
         </div>
       </div>
     </div>
