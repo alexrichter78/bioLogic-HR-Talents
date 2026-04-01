@@ -70,7 +70,7 @@ function BarSlider({ label, value, color, onChange }: { label: string; value: nu
             {widthPct >= 18 && <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>}
           </div>
         </div>
-        {widthPct < 18 && value > 0 && <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 5), 100)}% + 6px)`, fontSize: 11, fontWeight: 700, color: "#48484A", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>}
+        {widthPct < 18 && <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 5), 100)}% + 6px)`, fontSize: 11, fontWeight: 700, color: "#48484A", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>}
         <input
           type="range" min={0} max={MAX_BIO} value={value}
           onChange={e => onChange(Number(e.target.value))}
@@ -300,7 +300,7 @@ function ReadOnlyBars({ triad }: { triad: Triad }) {
               }}>
                 {widthPct >= 18 && <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{Math.round(b.value)} %</span>}
               </div>
-              {widthPct < 18 && b.value > 0 && <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 5), 100)}% + 6px)`, fontSize: 11, fontWeight: 700, color: "#48484A", whiteSpace: "nowrap" }}>{Math.round(b.value)} %</span>}
+              {widthPct < 18 && b.value >= 0 && <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 5), 100)}% + 6px)`, fontSize: 11, fontWeight: 700, color: "#48484A", whiteSpace: "nowrap" }}>{Math.round(b.value)} %</span>}
             </div>
           </div>
         );
