@@ -2683,7 +2683,7 @@ export default function RollenDNA() {
                           localStorage.setItem("rollenDnaCompleted", "true");
                         }}
                       >
-                        Stellendefinition
+                        zur Stellendefinition
                         <ChevronRight className="w-5 h-5" />
                       </Button>
                     );
