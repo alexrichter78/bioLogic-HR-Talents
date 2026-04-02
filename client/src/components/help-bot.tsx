@@ -187,17 +187,35 @@ export default function HelpBot() {
                 </div>
               </div>
             )}
-          </div>
-
-          <div style={{ padding: "8px 12px 12px", borderTop: "1px solid rgba(0,0,0,0.06)", flexShrink: 0 }}>
+            {showEscalate && !emailSent && (
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 10 }}>
+                <button
+                  onClick={handleEscalate}
+                  disabled={escalateLoading}
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    padding: "8px 16px", borderRadius: 10, border: "1px solid rgba(0,113,227,0.2)",
+                    background: "rgba(0,113,227,0.06)", color: "#0071E3",
+                    fontSize: 13, fontWeight: 600, cursor: "pointer",
+                  }}
+                  data-testid="button-help-escalate"
+                >
+                  {escalateLoading ? <Loader2 style={{ width: 14, height: 14, animation: "spin 1s linear infinite" }} /> : <Mail style={{ width: 14, height: 14 }} />}
+                  Anfrage an Support senden
+                </button>
+              </div>
+            )}
             {emailSent && (
-              <div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}>
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 10 }}>
                 <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "#34C759", fontWeight: 600 }}>
                   <CheckCircle2 style={{ width: 14, height: 14 }} /> E-Mail wurde gesendet
                 </span>
               </div>
             )}
-            <div style={{ display: "flex", alignItems: "flex-end", gap: 6 }}>
+          </div>
+
+          <div style={{ padding: "8px 12px 12px", borderTop: "1px solid rgba(0,0,0,0.06)", flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "flex-end", gap: 8 }}>
               <textarea
                 ref={inputRef}
                 value={input}
@@ -215,23 +233,6 @@ export default function HelpBot() {
                 onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; }}
                 data-testid="input-help-message"
               />
-              {!emailSent && (
-                <button
-                  onClick={handleEscalate}
-                  disabled={escalateLoading}
-                  title="Anfrage an Support senden"
-                  style={{
-                    width: 38, height: 38, borderRadius: 10, border: "1px solid rgba(0,113,227,0.15)",
-                    background: "rgba(0,113,227,0.06)",
-                    cursor: "pointer",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    transition: "background 200ms ease", flexShrink: 0,
-                  }}
-                  data-testid="button-help-escalate"
-                >
-                  {escalateLoading ? <Loader2 style={{ width: 16, height: 16, color: "#0071E3", animation: "spin 1s linear infinite" }} /> : <Mail style={{ width: 16, height: 16, color: "#0071E3" }} />}
-                </button>
-              )}
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || loading}
