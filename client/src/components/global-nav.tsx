@@ -26,10 +26,10 @@ const RESET_KEYS = [
 const NAV_HEIGHT = 56;
 const MOBILE_NAV_HEIGHT = 60;
 
-const REGION_OPTIONS: { value: Region; label: string; flag: string }[] = [
-  { value: "DE", label: "Deutschland", flag: "🇩🇪" },
-  { value: "CH", label: "Schweiz", flag: "🇨🇭" },
-  { value: "AT", label: "Österreich", flag: "🇦🇹" },
+const REGION_OPTIONS: { value: Region; label: string }[] = [
+  { value: "DE", label: "Deutschland" },
+  { value: "CH", label: "Schweiz" },
+  { value: "AT", label: "Österreich" },
 ];
 
 export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }) {
@@ -58,7 +58,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
     return () => document.removeEventListener("mousedown", handleClick);
   }, [regionOpen]);
 
-  const currentFlag = REGION_OPTIONS.find(r => r.value === region)?.flag || "🇩🇪";
+  const currentLabel = REGION_OPTIONS.find(r => r.value === region)?.value || "DE";
 
   const handleNav = (item: typeof NAV_ITEMS[0]) => {
     if (location === item.path || location.startsWith(item.path + "/")) {
@@ -95,16 +95,17 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                   data-testid="nav-region-toggle"
                   title={`Sprachregion: ${REGION_OPTIONS.find(r => r.value === region)?.label}`}
                   style={{
-                    width: 32, height: 32, borderRadius: 8,
+                    height: 32, paddingLeft: 8, paddingRight: 10, borderRadius: 8,
                     border: regionOpen ? "1px solid rgba(0,113,227,0.2)" : "1px solid transparent",
                     cursor: "pointer",
                     background: regionOpen ? "rgba(0,113,227,0.06)" : "transparent",
-                    display: "flex", alignItems: "center", justifyContent: "center",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
                     transition: "all 200ms ease",
-                    fontSize: 16, lineHeight: 1,
+                    lineHeight: 1,
                   }}
                 >
-                  {currentFlag}
+                  <Globe style={{ width: 14, height: 14, color: "#86868B", strokeWidth: 1.8 }} />
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#636366" }}>{currentLabel}</span>
                 </button>
                 {regionOpen && (
                   <div style={{
@@ -128,7 +129,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                           transition: "all 150ms ease", textAlign: "left",
                         }}
                       >
-                        <span style={{ fontSize: 18 }}>{opt.flag}</span>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: region === opt.value ? "#0071E3" : "#86868B", width: 22 }}>{opt.value}</span>
                         <span style={{ fontSize: 13, fontWeight: region === opt.value ? 600 : 450, color: region === opt.value ? "#0071E3" : "#1D1D1F" }}>
                           {opt.label}
                         </span>
