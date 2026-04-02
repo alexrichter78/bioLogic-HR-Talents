@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { Switch, Route, useLocation } from "wouter";
+import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -26,13 +25,6 @@ import ResetPassword from "@/pages/reset-password";
 import Impressum from "@/pages/impressum";
 import Datenschutz from "@/pages/datenschutz";
 import Disclaimer from "@/pages/disclaimer";
-
-function PageTransition({ children }: { children: React.ReactNode }) {
-  const [location] = useLocation();
-  const [key, setKey] = useState(location);
-  useEffect(() => { setKey(location); }, [location]);
-  return <div key={key} className="page-fade-in">{children}</div>;
-}
 
 function AppRoutes() {
   const { user, loading } = useAuth();
@@ -67,8 +59,7 @@ function AppRoutes() {
   }
 
   return (
-    <PageTransition>
-      <Switch>
+    <Switch>
         <Route path="/" component={Home} />
         <Route path="/admin" component={Admin} />
         <Route path="/rollen-dna" component={RollenDNA} />
@@ -88,7 +79,6 @@ function AppRoutes() {
         <Route path="/disclaimer" component={Disclaimer} />
         <Route component={NotFound} />
       </Switch>
-    </PageTransition>
   );
 }
 
