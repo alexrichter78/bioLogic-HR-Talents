@@ -1122,7 +1122,7 @@ export default function KICoach() {
             <div style={{ flex: 1 }}>
               <h1 style={{ fontSize: 20, fontWeight: 700, color: "#34C759", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">Louis</h1>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
-                <p style={{ fontSize: 13, color: "#48484A", margin: 0 }}>Coach für Entscheidungen im richtigen Moment</p>
+                <p style={{ fontSize: 13, color: "#48484A", margin: 0 }}>Ihr KI-Coach für Entscheidungen im richtigen Moment</p>
                 {hasAnalysisData() && (
                   <span data-testid="badge-context-active" style={{
                     fontSize: 10, fontWeight: 600, color: "#34C759",
