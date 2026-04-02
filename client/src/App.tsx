@@ -25,6 +25,7 @@ import ResetPassword from "@/pages/reset-password";
 import Impressum from "@/pages/impressum";
 import Datenschutz from "@/pages/datenschutz";
 import Disclaimer from "@/pages/disclaimer";
+import HelpBot from "@/components/help-bot";
 
 function AppRoutes() {
   const { user, loading } = useAuth();
@@ -90,6 +91,7 @@ function App() {
           <RegionProvider>
             <Toaster />
             <AppRoutes />
+            <HelpBot />
           </RegionProvider>
         </AuthProvider>
       </TooltipProvider>

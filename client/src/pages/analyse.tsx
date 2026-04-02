@@ -82,10 +82,11 @@ function loadSaved() {
         bereich1: data.bereich1 ?? DEFAULT_BEREICH1,
         bereich2: data.bereich2 ?? DEFAULT_BEREICH2,
         bereich3: data.bereich3 ?? DEFAULT_BEREICH3,
+        supportEmail: data.supportEmail ?? "alexander.richter@foresmind.de",
       };
     }
   } catch {}
-  return { bereich1: DEFAULT_BEREICH1, bereich2: DEFAULT_BEREICH2, bereich3: DEFAULT_BEREICH3 };
+  return { bereich1: DEFAULT_BEREICH1, bereich2: DEFAULT_BEREICH2, bereich3: DEFAULT_BEREICH3, supportEmail: "alexander.richter@foresmind.de" };
 }
 
 
@@ -106,15 +107,22 @@ export default function Analyse() {
   const [bereich1, setBereich1] = useState(initial.bereich1);
   const [bereich2, setBereich2] = useState(initial.bereich2);
   const [bereich3, setBereich3] = useState(initial.bereich3);
+  const [supportEmail, setSupportEmail] = useState(initial.supportEmail);
   const [saved, setSaved] = useState(true);
 
-  const handleChange = (setter: (v: string) => void) => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleChange = (setter: (v: string) => void) => (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     setter(e.target.value);
     setSaved(false);
   };
 
   const handleSave = () => {
-    localStorage.setItem("analyseTexte", JSON.stringify({ bereich1, bereich2, bereich3 }));
+    localStorage.setItem("analyseTexte", JSON.stringify({ bereich1, bereich2, bereich3, supportEmail }));
+    fetch("/api/settings/support-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ email: supportEmail }),
+    }).catch(() => {});
     setSaved(true);
   };
 
@@ -210,6 +218,28 @@ export default function Analyse() {
                 onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(0,113,227,0.4)"; }}
                 onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; }}
                 data-testid="textarea-bereich3"
+              />
+            </div>
+
+            <div style={cardStyle}>
+              <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-support-email">
+                Support E-Mail (Hilfe-Bot Eskalation)
+              </label>
+              <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 8px" }}>
+                An diese Adresse werden Anfragen weitergeleitet, wenn der Hilfe-Bot nicht weiterhelfen kann.
+              </p>
+              <input
+                type="email"
+                value={supportEmail}
+                onChange={handleChange(setSupportEmail)}
+                style={{
+                  ...textareaStyle,
+                  height: 42,
+                  resize: "none" as const,
+                }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(0,113,227,0.4)"; }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; }}
+                data-testid="input-support-email"
               />
             </div>
 

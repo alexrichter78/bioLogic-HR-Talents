@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import OpenAI from "openai";
+import { Resend } from "resend";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -1889,6 +1890,125 @@ Wichtig:
       console.error("Error generating Personenprofil:", error);
       res.status(500).json({ error: "Fehler bei der Generierung" });
     }
+  });
+
+  app.post("/api/help-bot", async (req: Request, res: Response) => {
+    try {
+      const { messages } = req.body;
+      if (!messages || !Array.isArray(messages)) {
+        return res.status(400).json({ error: "Messages required" });
+      }
+
+      const systemPrompt = `Du bist der bioLogic Hilfe-Assistent. Du beantwortest Fragen zur bioLogic HR Talents Plattform.
+
+ÜBER DIE PLATTFORM:
+- bioLogic HR Talents ist eine HR-Kompetenzanalyse-Plattform
+- JobCheck: Analysiert Stellenprofile und erstellt Rollenprofile basierend auf der bioLogic-Systematik (impulsiv, intuitiv, analytisch)
+- MatchCheck (Soll-Ist): Vergleicht ein Stellenprofil mit einem Personenprofil um die strukturelle Passung zu analysieren
+- TeamCheck: Analysiert die Teamstruktur und Teamdynamik
+- Louis (KI-Coach): Ein KI-gestützter Coach für Fragen zu Führung, Personal, Assessment und Kommunikation
+- Kursbereich: Lernmodule für die bioLogic-Systematik (nur für freigeschaltete Nutzer)
+- Stammdaten (Analysehilfe): Admin-Bereich zum Konfigurieren der Analyse-Basistexte
+
+NUTZUNG:
+- Über die obere Navigation erreicht man alle Bereiche
+- Profile werden mit einem Dreieck (impulsiv/intuitiv/analytisch) dargestellt
+- Berichte können als PDF exportiert werden
+- Die Plattform unterstützt Regionen: Deutschland (DE), Schweiz (CH), Österreich (AT)
+
+WICHTIGE REGELN:
+- Antworte kurz und hilfreich auf Deutsch
+- Wenn du eine Frage NICHT beantworten kannst (z.B. technische Probleme, Abrechnungsfragen, Bugs, oder Anfragen die über die Plattform-Hilfe hinausgehen), sage dem Nutzer freundlich, dass du hier leider nicht weiterhelfen kannst und biete an, die Anfrage an das Support-Team weiterzuleiten
+- Wenn du nicht weiterhelfen kannst, füge am Ende deiner Antwort GENAU diese Markierung hinzu: [CANNOT_HELP]
+- Füge [CANNOT_HELP] NUR hinzu wenn du wirklich nicht helfen kannst — nicht bei normalen Plattform-Fragen`;
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4.1-mini",
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...messages.slice(-10).map((m: { role: string; content: string }) => ({
+            role: m.role as "user" | "assistant",
+            content: m.content,
+          })),
+        ],
+        temperature: 0.4,
+        max_tokens: 500,
+      });
+
+      const reply = completion.choices[0]?.message?.content || "Es tut mir leid, ich konnte keine Antwort generieren.";
+      const cannotHelp = reply.includes("[CANNOT_HELP]");
+      const cleanReply = reply.replace(/\s*\[CANNOT_HELP\]\s*/g, "").trim();
+
+      res.json({ reply: cleanReply, cannotHelp });
+    } catch (error) {
+      console.error("Help bot error:", error);
+      res.status(500).json({ error: "Fehler bei der Verarbeitung" });
+    }
+  });
+
+  app.post("/api/help-bot/escalate", async (req: Request, res: Response) => {
+    try {
+      const { userName, userEmail, conversation } = req.body;
+      if (!conversation) {
+        return res.status(400).json({ error: "Conversation required" });
+      }
+
+      const supportEmail = req.body.supportEmail || "alexander.richter@foresmind.de";
+
+      const resendKey = process.env.RESEND_API_KEY;
+      if (!resendKey) {
+        return res.status(500).json({ error: "E-Mail-Dienst nicht konfiguriert" });
+      }
+
+      const resend = new Resend(resendKey);
+
+      const now = new Date();
+      const dateStr = now.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
+      const timeStr = now.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+
+      await resend.emails.send({
+        from: "bioLogic Support <onboarding@resend.dev>",
+        to: supportEmail,
+        subject: `Support-Anfrage von ${userName || "Unbekannt"} – bioLogic HR Talents`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #0071E3, #34AADC); padding: 24px; border-radius: 12px 12px 0 0;">
+              <h1 style="color: #fff; margin: 0; font-size: 20px;">bioLogic Support-Anfrage</h1>
+            </div>
+            <div style="background: #f8f9fa; padding: 24px; border: 1px solid #e9ecef;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr><td style="padding: 8px 0; font-weight: bold; color: #495057;">Kunde:</td><td style="padding: 8px 0;">${userName || "Nicht angegeben"}</td></tr>
+                <tr><td style="padding: 8px 0; font-weight: bold; color: #495057;">E-Mail:</td><td style="padding: 8px 0;"><a href="mailto:${userEmail}">${userEmail || "Nicht angegeben"}</a></td></tr>
+                <tr><td style="padding: 8px 0; font-weight: bold; color: #495057;">Datum:</td><td style="padding: 8px 0;">${dateStr} um ${timeStr}</td></tr>
+              </table>
+            </div>
+            <div style="background: #fff; padding: 24px; border: 1px solid #e9ecef; border-top: none; border-radius: 0 0 12px 12px;">
+              <h2 style="font-size: 16px; color: #1D1D1F; margin: 0 0 16px;">Gesprächsverlauf</h2>
+              <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: #495057; background: #f8f9fa; padding: 16px; border-radius: 8px;">${conversation}</div>
+            </div>
+          </div>
+        `,
+      });
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Help bot escalation error:", error);
+      res.status(500).json({ error: "E-Mail konnte nicht gesendet werden" });
+    }
+  });
+
+  app.get("/api/settings/support-email", requireAuth, requireAdmin, (_req: Request, res: Response) => {
+    const email = (global as any).__supportEmail || "alexander.richter@foresmind.de";
+    res.json({ email });
+  });
+
+  app.post("/api/settings/support-email", requireAuth, requireAdmin, (req: Request, res: Response) => {
+    const { email } = req.body;
+    if (!email || typeof email !== "string") {
+      return res.status(400).json({ error: "E-Mail erforderlich" });
+    }
+    (global as any).__supportEmail = email;
+    res.json({ success: true, email });
   });
 
   return httpServer;
