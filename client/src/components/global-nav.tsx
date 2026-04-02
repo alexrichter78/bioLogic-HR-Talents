@@ -101,10 +101,10 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                     background: regionOpen ? "rgba(0,113,227,0.06)" : "transparent",
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
                     transition: "all 200ms ease",
-                    fontSize: 16, lineHeight: 1,
+                    fontSize: 12, lineHeight: 1,
                   }}
                 >
-                  {currentFlag}
+                  <Globe style={{ width: 14, height: 14, color: "#86868B", strokeWidth: 1.8 }} />
                   <span style={{ fontSize: 11, fontWeight: 600, color: "#636366", letterSpacing: "0.02em" }}>{region}</span>
                 </button>
                 {regionOpen && (
