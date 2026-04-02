@@ -95,17 +95,16 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                   data-testid="nav-region-toggle"
                   title={`Sprachregion: ${REGION_OPTIONS.find(r => r.value === region)?.label}`}
                   style={{
-                    height: 32, paddingLeft: 8, paddingRight: 10, borderRadius: 8,
+                    width: 32, height: 32, borderRadius: 8,
                     border: regionOpen ? "1px solid rgba(0,113,227,0.2)" : "1px solid transparent",
                     cursor: "pointer",
                     background: regionOpen ? "rgba(0,113,227,0.06)" : "transparent",
-                    display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
+                    display: "flex", alignItems: "center", justifyContent: "center",
                     transition: "all 200ms ease",
-                    fontSize: 12, lineHeight: 1,
+                    fontSize: 16, lineHeight: 1,
                   }}
                 >
-                  <Globe style={{ width: 14, height: 14, color: "#86868B", strokeWidth: 1.8 }} />
-                  <span style={{ fontSize: 11, fontWeight: 600, color: "#636366", letterSpacing: "0.02em" }}>{region}</span>
+                  {currentFlag}
                 </button>
                 {regionOpen && (
                   <div style={{
