@@ -11,7 +11,7 @@ const BASE_NAV_ITEMS = [
   { label: "JobCheck", subtitle: "Stellenanalyse", path: "/rollen-dna", icon: Briefcase, disabled: false },
   { label: "MatchCheck", subtitle: "Stelle \u2194 Person", path: "/soll-ist", icon: GitCompareArrows, disabled: false },
   { label: "TeamCheck", subtitle: "Teamstruktur", path: "/team-report", icon: Users, disabled: false },
-  { label: "Louis (KI-Coach)", subtitle: "Ihr KI-Coach für Entscheidungen im richtigen Moment", path: "/ki-coach", icon: Bot, disabled: false },
+  { label: "Louis (KI-Coach)", subtitle: "Führung & Entwicklung", path: "/ki-coach", icon: Bot, disabled: false },
 ];
 
 const COURSE_NAV_ITEM = { label: "Kursbereich", subtitle: "Lernmodule", path: "/kurs", icon: GraduationCap, disabled: false };
