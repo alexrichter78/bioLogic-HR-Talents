@@ -320,8 +320,8 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                 onMouseEnter={(e) => { if (!regionOpen) e.currentTarget.style.background = "rgba(0,0,0,0.03)"; }}
                 onMouseLeave={(e) => { if (!regionOpen) e.currentTarget.style.background = "transparent"; }}
               >
-                {currentFlag}
-                <span style={{ fontSize: 11, fontWeight: 600, color: "#636366", letterSpacing: "0.02em" }}>{region}</span>
+                <Globe style={{ width: 14, height: 14, color: "#86868B", strokeWidth: 1.8 }} />
+                <span style={{ fontSize: 12, fontWeight: 600, color: "#636366" }}>{currentLabel}</span>
               </button>
               {regionOpen && (
                 <div style={{
@@ -347,7 +347,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                       onMouseEnter={(e) => { if (region !== opt.value) e.currentTarget.style.background = "rgba(0,0,0,0.03)"; }}
                       onMouseLeave={(e) => { if (region !== opt.value) e.currentTarget.style.background = "transparent"; }}
                     >
-                      <span style={{ fontSize: 18 }}>{opt.flag}</span>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: region === opt.value ? "#0071E3" : "#86868B", width: 22 }}>{opt.value}</span>
                       <span style={{ fontSize: 13, fontWeight: region === opt.value ? 600 : 450, color: region === opt.value ? "#0071E3" : "#1D1D1F" }}>
                         {opt.label}
                       </span>
