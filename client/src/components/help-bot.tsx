@@ -187,7 +187,7 @@ export default function HelpBot() {
                 </div>
               </div>
             )}
-            {showEscalate && !emailSent && (
+            {!emailSent && messages.length > 1 && (
               <div style={{ display: "flex", justifyContent: "center", marginBottom: 10 }}>
                 <button
                   onClick={handleEscalate}
