@@ -760,10 +760,10 @@ export default function TeamReport() {
         <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: isMobile ? "4px 0 6px" : "5px 0 10px" }}>
           <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
             <div className="text-center">
-              <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#34C759" }} data-testid="text-teamreport-title">
+              <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-teamreport-title">
                 Teamstruktur analysieren
               </h1>
-              <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0 }} data-testid="text-teamreport-subtitle">
+              <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0 }} data-testid="text-teamreport-subtitle">
                 Analysieren Sie die Zusammensetzung des Teams und erkennen Sie systemische Wirkungen, Entscheidungslogiken und mögliche Spannungsfelder.
               </p>
             </div>
@@ -783,7 +783,7 @@ export default function TeamReport() {
           >
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ width: 30, height: 30, borderRadius: 15, background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Users style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} /></div>
-              <span style={{ display: "flex", alignItems: "baseline", gap: 6 }}><span style={{ fontSize: 20, fontWeight: 700, color: "#34C759", flexShrink: 0 }} data-testid="text-teamcheck-label">Profilvergleich:</span> <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>Person vs. Team</span></span>
+              <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-teamcheck-label">{"Profilvergleich:"} <span style={{ fontWeight: 400 }}>Person vs. Team</span></span>
             </div>
             <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: configOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
           </button>
@@ -810,7 +810,7 @@ export default function TeamReport() {
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <div style={{ width: 30, height: 30, borderRadius: 15, background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Settings style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} /></div>
-                <span style={{ display: "flex", alignItems: "baseline", gap: 6 }}><span style={{ fontSize: 20, fontWeight: 700, color: "#34C759", flexShrink: 0 }}>Team-Kontext:</span> <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>Stelle vs. Rolle vs. Teamziel</span></span>
+                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }}>{"Team-Kontext:"} <span style={{ fontWeight: 400 }}>Stelle vs. Rolle vs. Teamziel</span></span>
               </div>
               <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: kontextOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
             </button>
@@ -819,7 +819,7 @@ export default function TeamReport() {
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 12, alignItems: "center", marginBottom: 18 }}>
                   <div>
-                    <label style={{ fontSize: 14, fontWeight: 600, color: "#48484A", letterSpacing: "-0.01em" }}>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
                       Stelle / Bezeichnung
                     </label>
                     <div style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 6 }}>
@@ -832,10 +832,10 @@ export default function TeamReport() {
                         style={{
                           width: "100%", height: 34, padding: "0 12px", borderRadius: 8,
                           border: "1px solid rgba(0,0,0,0.1)", fontSize: 13, color: "#1D1D1F",
-                          background: "rgba(255, 248, 225, 0.5)", outline: "none",
+                          background: "#fff", outline: "none",
                         }}
-                        onFocus={e => { e.target.style.borderColor = "#007AFF"; e.target.style.background = "#FFFFFF"; }}
-                        onBlur={e => { e.target.style.borderColor = "rgba(0,0,0,0.1)"; e.target.style.background = "rgba(255, 248, 225, 0.5)"; }}
+                        onFocus={e => { e.target.style.borderColor = "#007AFF"; }}
+                        onBlur={e => { e.target.style.borderColor = "rgba(0,0,0,0.1)"; }}
                       />
                       {roleName && (
                         <button
@@ -848,7 +848,7 @@ export default function TeamReport() {
                     </div>
                   </div>
                   <div>
-                    <label style={{ fontSize: 14, fontWeight: 600, color: "#48484A", letterSpacing: "-0.01em" }}>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
                       Rolle
                     </label>
                     <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
@@ -885,10 +885,10 @@ export default function TeamReport() {
                 </div>
 
                 <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 14 }}>
-                  <label style={{ fontSize: 14, fontWeight: 600, color: "#48484A", letterSpacing: "-0.01em" }}>
-                    Teamziel <span style={{ fontWeight: 400 }}>(optional)</span>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
+                    Teamziel <span style={{ fontWeight: 400, textTransform: "none" as const, letterSpacing: 0 }}>(optional)</span>
                   </label>
-                  <p style={{ fontSize: 13, color: "#8E8E93", margin: "4px 0 0", lineHeight: 1.5 }}>
+                  <p style={{ fontSize: 12, color: "#8E8E93", margin: "4px 0 0", lineHeight: 1.5 }}>
                     {"Was braucht das Team aktuell am meisten?"}
                   </p>
                   <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
@@ -1285,12 +1285,9 @@ export default function TeamReport() {
                   data-testid="button-toggle-matchcheck-team"
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <div style={{ width: 30, height: 30, borderRadius: "50%", background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <Zap style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
-                    </div>
-                    <span style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-                      <span style={{ fontSize: 20, fontWeight: 700, color: "#34C759", flexShrink: 0 }}>TeamCheck:</span>
-                      <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>Systemwirkung</span>
+                    <Zap style={{ width: 22, height: 22, color: "#3A9A5C", flexShrink: 0 }} />
+                    <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
+                      TeamCheck — Systemwirkung
                     </span>
                   </div>
                   <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${matchCheckOpen ? "rotate-180" : ""}`} />

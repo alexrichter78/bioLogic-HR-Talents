@@ -446,10 +446,10 @@ export default function SollIstBericht() {
           <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: isMobile ? "4px 0 6px" : "5px 0 10px", minHeight: isMobile ? 48 : 62 }}>
             <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
               <div className="text-center">
-                <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#34C759" }} data-testid="text-matchcheck-title">
+                <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-matchcheck-title">
                   Passungsanalyse konfigurieren
                 </h1>
-                <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-matchcheck-subtitle">
+                <p style={{ fontSize: 13, color: "#8E8E93", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-matchcheck-subtitle">
                   Vergleichen Sie das Stellenprofil mit dem Personenprofil, um die strukturelle Passung für diese Stelle zu analysieren.
                 </p>
               </div>
@@ -471,12 +471,9 @@ export default function SollIstBericht() {
               data-testid="button-toggle-profilvergleich"
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 30, height: 30, borderRadius: "50%", background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <SlidersHorizontal style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
-                </div>
-                <span style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-                  <span style={{ fontSize: 20, fontWeight: 700, color: "#34C759", flexShrink: 0 }}>Profilvergleich:</span>
-                  <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>{roleName || "Stelle"}</span>
+                <SlidersHorizontal style={{ width: 22, height: 22, color: "#34C759", flexShrink: 0 }} />
+                <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
+                  Profilvergleich
                 </span>
               </div>
               <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${profilvergleichOpen ? "rotate-180" : ""}`} />
@@ -515,7 +512,7 @@ export default function SollIstBericht() {
                             <span style={{
                               position: "absolute", top: "50%", transform: "translateY(-50%)",
                               left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
-                              fontSize: 13, fontWeight: 600, color: "#48484A", whiteSpace: "nowrap",
+                              fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
                               transition: "left 600ms ease", lineHeight: "26px",
                             }}>{Math.round(item.value)} %</span>
                           )}
@@ -606,7 +603,7 @@ export default function SollIstBericht() {
                             <span style={{
                               position: "absolute", top: "50%", transform: "translateY(-50%)",
                               left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 20px)`,
-                              fontSize: 13, fontWeight: 600, color: "#48484A", whiteSpace: "nowrap",
+                              fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
                               transition: "left 150ms ease",
                               zIndex: 4,
                             }}>{pct} %</span>
@@ -657,7 +654,7 @@ export default function SollIstBericht() {
 
             const devLevel = effective.developmentLevel;
             const devScore = devLevel >= 4 ? 3 : devLevel >= 3 ? 2 : 1;
-            const devGaugeColor = devScore === 3 ? "#3A9A5C" : devScore === 2 ? "#E5A832" : "#D64045";
+            const devGaugeColor = devScore === 3 ? "#34C759" : devScore === 2 ? "#E5A832" : "#D64045";
             const devShort = devScore === 3 ? "Gute Aussichten · Wenig Aufwand" : devScore === 2 ? "Machbar · Gezielte Führung nötig" : "Hoher Aufwand · Ergebnis unsicher";
 
             const bulletCol = fitLabel === "Geeignet" ? "#34C759" : fitLabel === "Bedingt geeignet" ? "#FF9500" : "#D64045";
@@ -714,12 +711,9 @@ export default function SollIstBericht() {
                     data-testid="button-toggle-systemwirkung"
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <div style={{ width: 30, height: 30, borderRadius: "50%", background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <Zap style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
-                      </div>
-                      <span style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-                        <span style={{ fontSize: 20, fontWeight: 700, color: "#34C759", flexShrink: 0 }}>MatchCheck:</span>
-                        <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>{roleName || "Stelle"}</span>
+                      <Zap style={{ width: 22, height: 22, color: "#34C759", flexShrink: 0 }} />
+                      <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
+                        MatchCheck: {roleName || "Stelle"}
                       </span>
                     </div>
                     <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${systemwirkungOpen ? "rotate-180" : ""}`} />
@@ -738,15 +732,16 @@ export default function SollIstBericht() {
                       </div>
 
                       <div>
-                        <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}><span style={{ color: devGaugeColor }}>{devScore === 3 ? "niedriger Führungsaufwand (wenig Aufwand)" : devScore === 2 ? "mittlerer Führungsaufwand (gezielte Führung nötig)" : "hoher Führungsaufwand (Ergebnis unsicher)"}</span></p>
-                        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Entwicklungsaufwand</p>
+                        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
                           <div style={{ display: "flex", gap: 5, flex: 1 }}>
-                            {Array.from({ length: 3 }).map((_, i) => {
-                              const barCount = devScore === 3 ? 1 : devScore === 2 ? 2 : 3;
-                              return <div key={i} style={{ flex: 1, height: 12, borderRadius: 4, background: i < barCount ? devGaugeColor : "rgba(0,0,0,0.08)" }} />;
-                            })}
+                            {Array.from({ length: 3 }).map((_, i) => (
+                              <div key={i} style={{ flex: 1, height: 12, borderRadius: 4, background: i < devScore ? devGaugeColor : "rgba(0,0,0,0.08)" }} />
+                            ))}
                           </div>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: devGaugeColor, flexShrink: 0 }}>{devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch"}</span>
                         </div>
+                        <p style={{ fontSize: 14, color: "#6E6E73", margin: 0 }} data-testid="text-dev-short">{devShort}</p>
                       </div>
 
                       <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
@@ -1087,7 +1082,7 @@ export default function SollIstBericht() {
                                 {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>}
                               </div>
                               {isSmall && (
-                                <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#48484A", whiteSpace: "nowrap" }}>{val} %</span>
+                                <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap" }}>{val} %</span>
                               )}
                             </div>
                           </div>
@@ -1112,7 +1107,7 @@ export default function SollIstBericht() {
                                 {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{val} %</span>}
                               </div>
                               {isSmall && (
-                                <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#48484A", whiteSpace: "nowrap" }}>{val} %</span>
+                                <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap" }}>{val} %</span>
                               )}
                             </div>
                           </div>

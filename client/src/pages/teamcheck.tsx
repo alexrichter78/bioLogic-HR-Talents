@@ -143,7 +143,7 @@ function ProfileCard({ title, num, triad, dominanz, color, onChange, testIdPrefi
                   <span style={{
                     position: "absolute", top: "50%", transform: "translateY(-50%)",
                     left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
-                    fontSize: 10, fontWeight: 600, color: "#48484A", whiteSpace: "nowrap",
+                    fontSize: 10, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
                     transition: "left 150ms ease",
                   }}>{Math.round(val)} %</span>
                 )}

@@ -275,7 +275,7 @@ function SoftBar({ items }: { items: { label: string; value: number; color: stri
                 <span style={{
                   position: "absolute", top: "50%", transform: "translateY(-50%)",
                   left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
-                  fontSize: 13, fontWeight: 600, color: "#48484A", whiteSpace: "nowrap",
+                  fontSize: 13, fontWeight: 600, color: "#6E6E73", whiteSpace: "nowrap",
                   transition: "left 600ms ease",
                 }}>{bar.value} %</span>
               )}
@@ -324,7 +324,7 @@ function BarSlider({ label, value, color, onChange }: { label: string; value: nu
           <span style={{
             position: "absolute", top: "50%", transform: "translateY(-50%)",
             left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
-            fontSize: 13, fontWeight: 600, color: "#48484A", whiteSpace: "nowrap",
+            fontSize: 13, fontWeight: 600, color: "#6E6E73", whiteSpace: "nowrap",
             transition: "left 150ms ease", zIndex: 1,
           }}>{Math.round(value)} %</span>
         )}
@@ -605,10 +605,10 @@ export default function JobCheck() {
           <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: "5px 0 10px", minHeight: 62 }}>
             <div className="w-full mx-auto" style={{ maxWidth: 1100, paddingLeft: isMobile ? 12 : 24, paddingRight: isMobile ? 12 : 24 }}>
               <div className="text-center">
-                <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#34C759" }} data-testid="text-jobcheck-title">
+                <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-jobcheck-title">
                   bioLogic JobCheck
                 </h1>
-                <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-jobcheck-subtitle">
+                <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-jobcheck-subtitle">
                   Bewerten Sie die strukturelle Passung zwischen Stellenprofil und Personenprofil.
                 </p>
               </div>
@@ -967,8 +967,8 @@ export default function JobCheck() {
                           <div style={{ width: 30, height: 30, borderRadius: 10, flexShrink: 0, background: "rgba(0,113,227,0.10)", display: "flex", alignItems: "center", justifyContent: "center", marginRight: 10 }}>
                             <Layers style={{ width: 14, height: 14, color: "#0071E3", strokeWidth: 2 }} />
                           </div>
-                          <span style={{ fontSize: 20, fontWeight: 700, color: "#34C759" }}>
-                            {sectionTitle}:
+                          <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>
+                            {sectionTitle}
                           </span>
                         </div>
 
