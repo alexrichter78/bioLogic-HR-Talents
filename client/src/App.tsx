@@ -1,4 +1,5 @@
-import { Switch, Route } from "wouter";
+import { useState, useEffect } from "react";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -26,13 +27,21 @@ import Impressum from "@/pages/impressum";
 import Datenschutz from "@/pages/datenschutz";
 import Disclaimer from "@/pages/disclaimer";
 
+function PageTransition({ children }: { children: React.ReactNode }) {
+  const [location] = useLocation();
+  const [key, setKey] = useState(location);
+  useEffect(() => { setKey(location); }, [location]);
+  return <div key={key} className="page-fade-in">{children}</div>;
+}
+
 function AppRoutes() {
   const { user, loading } = useAuth();
 
   if (loading) {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f5f7fb", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
-        <p style={{ color: "#8E8E93", fontSize: 14 }}>Laden...</p>
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#f5f7fb", fontFamily: "Inter, Arial, Helvetica, sans-serif", gap: 14 }}>
+        <div className="bio-spinner" />
+        <p style={{ color: "#8E8E93", fontSize: 13, fontWeight: 500 }}>Laden...</p>
       </div>
     );
   }
@@ -58,26 +67,28 @@ function AppRoutes() {
   }
 
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/admin" component={Admin} />
-      <Route path="/rollen-dna" component={RollenDNA} />
-      <Route path="/analyse" component={Analyse} />
-      <Route path="/bericht" component={Rollenprofil} />
-      <Route path="/jobcheck" component={JobCheck} />
-      <Route path="/teamcheck" component={TeamCheck} />
-      <Route path="/ki-coach" component={KICoach} />
-      <Route path="/kurs" component={Kurs} />
-      <Route path="/soll-ist" component={SollIstBericht} />
-      <Route path="/team-report" component={TeamReport} />
-      <Route path="/teamcheck-report-v2" component={TeamCheckReportV2} />
-      <Route path="/teamcheck-report-v3" component={TeamCheckReportV3} />
-      <Route path="/teamcheck-report-v4" component={TeamCheckReportV4} />
-      <Route path="/impressum" component={Impressum} />
-      <Route path="/datenschutz" component={Datenschutz} />
-      <Route path="/disclaimer" component={Disclaimer} />
-      <Route component={NotFound} />
-    </Switch>
+    <PageTransition>
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route path="/admin" component={Admin} />
+        <Route path="/rollen-dna" component={RollenDNA} />
+        <Route path="/analyse" component={Analyse} />
+        <Route path="/bericht" component={Rollenprofil} />
+        <Route path="/jobcheck" component={JobCheck} />
+        <Route path="/teamcheck" component={TeamCheck} />
+        <Route path="/ki-coach" component={KICoach} />
+        <Route path="/kurs" component={Kurs} />
+        <Route path="/soll-ist" component={SollIstBericht} />
+        <Route path="/team-report" component={TeamReport} />
+        <Route path="/teamcheck-report-v2" component={TeamCheckReportV2} />
+        <Route path="/teamcheck-report-v3" component={TeamCheckReportV3} />
+        <Route path="/teamcheck-report-v4" component={TeamCheckReportV4} />
+        <Route path="/impressum" component={Impressum} />
+        <Route path="/datenschutz" component={Datenschutz} />
+        <Route path="/disclaimer" component={Disclaimer} />
+        <Route component={NotFound} />
+      </Switch>
+    </PageTransition>
   );
 }
 

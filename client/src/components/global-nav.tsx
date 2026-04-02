@@ -95,16 +95,17 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                   data-testid="nav-region-toggle"
                   title={`Sprachregion: ${REGION_OPTIONS.find(r => r.value === region)?.label}`}
                   style={{
-                    width: 32, height: 32, borderRadius: 8,
+                    height: 32, paddingLeft: 8, paddingRight: 10, borderRadius: 8,
                     border: regionOpen ? "1px solid rgba(0,113,227,0.2)" : "1px solid transparent",
                     cursor: "pointer",
                     background: regionOpen ? "rgba(0,113,227,0.06)" : "transparent",
-                    display: "flex", alignItems: "center", justifyContent: "center",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
                     transition: "all 200ms ease",
                     fontSize: 16, lineHeight: 1,
                   }}
                 >
                   {currentFlag}
+                  <span style={{ fontSize: 11, fontWeight: 600, color: "#636366", letterSpacing: "0.02em" }}>{region}</span>
                 </button>
                 {regionOpen && (
                   <div style={{
@@ -146,7 +147,10 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                     border: "none", cursor: "pointer",
                     background: location === "/admin" ? "rgba(0,113,227,0.08)" : "transparent",
                     display: "flex", alignItems: "center", justifyContent: "center",
+                    transition: "all 200ms ease",
                   }}
+                  onMouseEnter={(e) => { if (location !== "/admin") e.currentTarget.style.background = "rgba(0,0,0,0.03)"; }}
+                  onMouseLeave={(e) => { if (location !== "/admin") e.currentTarget.style.background = "transparent"; }}
                 >
                   <Settings style={{ width: 15, height: 15, color: location === "/admin" ? "#0071E3" : "#86868B", strokeWidth: 1.8 }} />
                 </button>
@@ -159,7 +163,10 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                   border: "none", cursor: "pointer",
                   background: "transparent",
                   display: "flex", alignItems: "center", justifyContent: "center",
+                  transition: "all 200ms ease",
                 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,59,48,0.06)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
               >
                 <LogOut style={{ width: 15, height: 15, color: "#86868B", strokeWidth: 1.8 }} />
               </button>
@@ -247,6 +254,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                     whiteSpace: "nowrap",
                     opacity: item.disabled ? 0.35 : 1,
                     pointerEvents: item.disabled ? "none" : "auto",
+                    position: "relative",
                   }}
                   onMouseEnter={(e) => {
                     if (!active && !item.disabled) {
@@ -281,6 +289,13 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                       </span>
                     )}
                   </div>
+                  {active && (
+                    <div style={{
+                      position: "absolute", bottom: -2, left: 12, right: 12,
+                      height: 2, borderRadius: 1,
+                      background: "#0071E3",
+                    }} />
+                  )}
                 </button>
               );
             })}
@@ -294,11 +309,11 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                 data-testid="nav-region-toggle"
                 title={`Sprachregion: ${REGION_OPTIONS.find(r => r.value === region)?.label}`}
                 style={{
-                  width: 32, height: 32, borderRadius: 8,
+                  height: 32, paddingLeft: 8, paddingRight: 10, borderRadius: 8,
                   border: regionOpen ? "1px solid rgba(0,113,227,0.2)" : "1px solid transparent",
                   cursor: "pointer",
                   background: regionOpen ? "rgba(0,113,227,0.06)" : "transparent",
-                  display: "flex", alignItems: "center", justifyContent: "center",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
                   transition: "all 200ms ease",
                   fontSize: 16, lineHeight: 1,
                 }}
@@ -306,6 +321,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                 onMouseLeave={(e) => { if (!regionOpen) e.currentTarget.style.background = "transparent"; }}
               >
                 {currentFlag}
+                <span style={{ fontSize: 11, fontWeight: 600, color: "#636366", letterSpacing: "0.02em" }}>{region}</span>
               </button>
               {regionOpen && (
                 <div style={{

@@ -181,6 +181,7 @@ export default function Home() {
           {/* ROLLENANALYSE CARD */}
           <FadeIn delay={200}>
             <div
+              className="card-lift"
               style={{
                 background: "#FFFFFF",
                 borderRadius: 20, padding: isMobile ? "20px 16px" : "28px 32px",
@@ -268,6 +269,7 @@ export default function Home() {
           {/* KI-COACH CARD */}
           <FadeIn delay={400}>
             <div
+              className="card-lift"
               style={{
                 background: "#FFFFFF",
                 borderRadius: 20, padding: isMobile ? "20px 16px" : "28px 32px",
@@ -359,9 +361,9 @@ export default function Home() {
       )}
 
       <div style={{ display: "flex", justifyContent: "center", gap: 20, padding: "24px 0 16px", marginTop: 16 }}>
-        <a href="/impressum" data-testid="link-impressum-home" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Impressum</a>
-        <a href="/datenschutz" data-testid="link-datenschutz-home" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Datenschutz</a>
-        <a href="/disclaimer" data-testid="link-disclaimer-home" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Disclaimer</a>
+        <a href="/impressum" data-testid="link-impressum-home" className="footer-link">Impressum</a>
+        <a href="/datenschutz" data-testid="link-datenschutz-home" className="footer-link">Datenschutz</a>
+        <a href="/disclaimer" data-testid="link-disclaimer-home" className="footer-link">Disclaimer</a>
       </div>
     </div>
   );

@@ -51,7 +51,7 @@ export default function Login() {
 
   if (showReset) {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #f0f4f8 0%, #e8edf3 50%, #f5f7fb 100%)", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #f0f4f8 0%, #e8edf3 25%, #f5f7fb 50%, #eef2f7 75%, #f0f4f8 100%)", backgroundSize: "300% 300%", animation: "loginBgShift 16s ease-in-out infinite", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
         <div style={{ width: "100%", maxWidth: 400, padding: 24 }}>
           <div style={{ background: "#fff", borderRadius: 20, padding: "48px 36px 40px", boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 12px 48px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.04)" }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 32 }}>
@@ -142,9 +142,9 @@ export default function Login() {
           </div>
 
           <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 20 }}>
-            <a href="/impressum" data-testid="link-impressum-reset" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Impressum</a>
-            <a href="/datenschutz" data-testid="link-datenschutz-reset" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Datenschutz</a>
-            <a href="/disclaimer" data-testid="link-disclaimer-reset" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Disclaimer</a>
+            <a href="/impressum" data-testid="link-impressum-reset" className="footer-link">Impressum</a>
+            <a href="/datenschutz" data-testid="link-datenschutz-reset" className="footer-link">Datenschutz</a>
+            <a href="/disclaimer" data-testid="link-disclaimer-reset" className="footer-link">Disclaimer</a>
           </div>
         </div>
       </div>
@@ -152,7 +152,7 @@ export default function Login() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #f0f4f8 0%, #e8edf3 50%, #f5f7fb 100%)", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #f0f4f8 0%, #e8edf3 25%, #f5f7fb 50%, #eef2f7 75%, #f0f4f8 100%)", backgroundSize: "300% 300%", animation: "loginBgShift 16s ease-in-out infinite", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
       <div style={{ width: "100%", maxWidth: 400, padding: 24 }}>
         <div style={{ background: "#fff", borderRadius: 20, padding: "48px 36px 40px", boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 12px 48px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.04)" }}>
 
@@ -242,17 +242,21 @@ export default function Login() {
                 transition: "all 0.2s ease",
                 letterSpacing: "0.02em",
                 boxShadow: loading ? "none" : "0 2px 8px rgba(0,113,227,0.3)",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
               }}
+              onMouseEnter={(e) => { if (!loading) { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(0,113,227,0.35)"; } }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = loading ? "none" : "0 2px 8px rgba(0,113,227,0.3)"; }}
             >
+              {loading && <div className="bio-spinner" style={{ width: 16, height: 16, borderWidth: 2 }} />}
               {loading ? "Anmelden..." : "Anmelden"}
             </button>
           </form>
         </div>
 
         <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 20 }}>
-          <a href="/impressum" data-testid="link-impressum" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Impressum</a>
-          <a href="/datenschutz" data-testid="link-datenschutz" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Datenschutz</a>
-          <a href="/disclaimer" data-testid="link-disclaimer" style={{ fontSize: 12, color: "#8E8E93", textDecoration: "none" }}>Disclaimer</a>
+          <a href="/impressum" data-testid="link-impressum" className="footer-link">Impressum</a>
+          <a href="/datenschutz" data-testid="link-datenschutz" className="footer-link">Datenschutz</a>
+          <a href="/disclaimer" data-testid="link-disclaimer" className="footer-link">Disclaimer</a>
         </div>
       </div>
     </div>
