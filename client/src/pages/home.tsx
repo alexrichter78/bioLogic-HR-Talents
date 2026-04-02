@@ -286,15 +286,15 @@ export default function Home() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ marginBottom: 12 }}>
                     <h3 style={{ fontSize: 24, fontWeight: 700, color: "#34C759", margin: 0, letterSpacing: "-0.02em" }}>
-                      KI-Coach
+                      Louis
                     </h3>
                     <p style={{ fontSize: 14, color: "#48484A", margin: "3px 0 0", fontWeight: 450 }}>
-                      Coaching und Beratung auf Basis der bioLogic-Systematik
+                      Coach für Entscheidungen im richtigen Moment
                     </p>
                   </div>
 
                   <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: "0 0 24px", fontWeight: 600 }}>
-                    Nutzen Sie den KI-Coach für Recruiting, Teamfragen, Gesprächsvorbereitung und konkrete Handlungsempfehlungen – jederzeit, auch ohne Analyse.
+                    Nutzen Sie Louis für Recruiting, Teamfragen, Gesprächsvorbereitung und konkrete Handlungsempfehlungen – jederzeit, auch ohne Analyse.
                   </p>
 
                   <div>
@@ -312,7 +312,7 @@ export default function Home() {
                       data-testid="button-ki-coach"
                     >
                       <Bot style={{ width: 17, height: 17 }} />
-                      KI-Coach öffnen
+                      Louis öffnen
                     </button>
                   </div>
                 </div>

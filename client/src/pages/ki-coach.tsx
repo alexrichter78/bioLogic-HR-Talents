@@ -15,7 +15,7 @@ type Message = {
 
 const WELCOME_MSG: Message = {
   role: "assistant",
-  content: "Willkommen beim bioLogic KI-Coach.\n\nIch unterstütze dich bei Fragen rund um Führung, Personalentscheidungen, Assessment, Bewerbungsgespräche und Kommunikation.\n\nWie kann ich dir helfen?",
+  content: "Willkommen bei Louis – deinem bioLogic Coach für Entscheidungen im richtigen Moment.\n\nIch unterstütze dich bei Fragen rund um Führung, Personalentscheidungen, Assessment, Bewerbungsgespräche und Kommunikation.\n\nWie kann ich dir helfen?",
 };
 
 const EXAMPLE_PROMPTS: { category: string; prompts: string[]; requiresAnalysis?: boolean }[] = [
@@ -1075,7 +1075,7 @@ export default function KICoach() {
     const now = new Date();
     const dateStr = now.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
     const timeStr = now.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
-    let text = `bioLogic KI-Coach – Gesprächsprotokoll\n`;
+    let text = `Louis – Gesprächsprotokoll\n`;
     text += `Exportiert am ${dateStr} um ${timeStr}\n`;
     text += `${"─".repeat(50)}\n\n`;
     for (const msg of chatMessages) {
@@ -1120,9 +1120,9 @@ export default function KICoach() {
               <Bot style={{ width: 20, height: 20, color: "#0071E3" }} />
             </div>
             <div style={{ flex: 1 }}>
-              <h1 style={{ fontSize: 20, fontWeight: 700, color: "#34C759", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">bioLogic KI-Coach</h1>
+              <h1 style={{ fontSize: 20, fontWeight: 700, color: "#34C759", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">Louis</h1>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
-                <p style={{ fontSize: 13, color: "#48484A", margin: 0 }}>Führung · Personal · Assessment · Kommunikation</p>
+                <p style={{ fontSize: 13, color: "#48484A", margin: 0 }}>Coach für Entscheidungen im richtigen Moment</p>
                 {hasAnalysisData() && (
                   <span data-testid="badge-context-active" style={{
                     fontSize: 10, fontWeight: 600, color: "#34C759",
