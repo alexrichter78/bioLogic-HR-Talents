@@ -181,7 +181,7 @@ export default function TeamCheckReportV3() {
 
       <div style={{ maxWidth: 820, margin: "0 auto", padding: isMobile ? "64px 12px 80px" : "80px 20px 48px" }}>
 
-        <div style={{ marginBottom: 18 }}>
+        <div style={{ marginBottom: 18 }} className="no-print">
           <button
             onClick={() => navigate("/team-report")}
             style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", color: "#1A5DAB", fontWeight: 600, fontSize: 14, padding: 0 }}

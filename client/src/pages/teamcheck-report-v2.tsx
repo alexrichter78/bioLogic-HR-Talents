@@ -71,6 +71,7 @@ export default function TeamCheckReportV2() {
       <div style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "64px 12px 80px" : "80px 20px 48px" }}>
 
         <button
+          className="no-print"
           onClick={() => navigate("/team-report")}
           style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", color: "#224a7a", fontWeight: 600, fontSize: 14, marginBottom: 18, padding: 0 }}
           data-testid="button-back-team-report"
