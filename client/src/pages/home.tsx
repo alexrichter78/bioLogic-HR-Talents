@@ -181,7 +181,6 @@ export default function Home() {
           {/* ROLLENANALYSE CARD */}
           <FadeIn delay={200}>
             <div
-              className="card-lift"
               style={{
                 background: "#FFFFFF",
                 borderRadius: 20, padding: isMobile ? "20px 16px" : "28px 32px",
@@ -220,8 +219,6 @@ export default function Home() {
                         boxShadow: "0 4px 16px rgba(0,113,227,0.3)", transition: "all 200ms ease",
                         display: "flex", alignItems: "center", gap: 8,
                       }}
-                      onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)"; }}
                       data-testid="button-analyse-starten"
                     >
                       <PlusCircle style={{ width: 17, height: 17 }} />
@@ -235,8 +232,6 @@ export default function Home() {
                         background: "rgba(255,255,255,0.8)", color: "#1D1D1F", transition: "all 200ms ease",
                         display: "flex", alignItems: "center", gap: 8,
                       }}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.04)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.8)"; e.currentTarget.style.transform = "translateY(0)"; }}
                       data-testid="button-analyse-oeffnen"
                     >
                       <FolderOpen style={{ width: 17, height: 17 }} />
@@ -269,7 +264,6 @@ export default function Home() {
           {/* KI-COACH CARD */}
           <FadeIn delay={400}>
             <div
-              className="card-lift"
               style={{
                 background: "#FFFFFF",
                 borderRadius: 20, padding: isMobile ? "20px 16px" : "28px 32px",
@@ -307,8 +301,6 @@ export default function Home() {
                         boxShadow: "0 4px 16px rgba(0,113,227,0.3)", transition: "all 200ms ease",
                         display: "flex", alignItems: "center", gap: 8,
                       }}
-                      onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 18px rgba(0,113,227,0.3)"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(0,113,227,0.25)"; }}
                       data-testid="button-ki-coach"
                     >
                       <Bot style={{ width: 17, height: 17 }} />
