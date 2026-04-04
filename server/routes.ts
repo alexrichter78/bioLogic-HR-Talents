@@ -1627,35 +1627,67 @@ VERBOTENES WORT "TYP":
         const olderMessages = conversationMessages.slice(0, -6);
         const recentMessages = conversationMessages.slice(-6);
 
-        const userTopics: string[] = [];
-        const userProfile: string[] = [];
-        const keyDecisions: string[] = [];
-
-        for (const msg of olderMessages) {
-          if (msg.role === "user") {
-            const c = msg.content;
-            if (/impulsiv|intuitiv|analytisch|rot|gelb|blau|profil|prägung/i.test(c)) {
-              userProfile.push(c.slice(0, 150));
-            }
-            userTopics.push(c.slice(0, 100));
-          }
-          if (msg.role === "assistant") {
-            const keyPoints = msg.content.match(/\*\*[^*]+\*\*/g);
-            if (keyPoints) keyDecisions.push(...keyPoints.slice(0, 3));
-          }
-        }
-
-        const summaryParts: string[] = [];
-        if (userProfile.length > 0) summaryParts.push(`Nutzerprofil-Hinweise: ${userProfile.slice(-2).join(" | ")}`);
-        summaryParts.push(`Bisherige Themen (${olderMessages.filter(m => m.role === "user").length} Fragen): ${userTopics.slice(-5).join(" → ")}`);
-        if (keyDecisions.length > 0) summaryParts.push(`Wichtige Punkte: ${keyDecisions.slice(-5).join(", ")}`);
-
-        const summaryMsg = {
-          role: "system" as const,
-          content: `GESPRÄCHSZUSAMMENFASSUNG (bisheriger Verlauf, ${olderMessages.length} Nachrichten):\n${summaryParts.join("\n")}\n\nNutze diese Zusammenfassung als Kontext. Wiederhole keine Punkte, die du bereits gemacht hast. Baue auf dem bisherigen Gespräch auf.`,
+        const topicKeywords: Record<string, string[]> = {
+          "führung": ["führung", "chef", "leadership", "leitung", "vorgesetzter", "management"],
+          "konflikt": ["konflikt", "streit", "spannung", "reibung"],
+          "recruiting": ["recruiting", "bewerbung", "stellenanzeige", "kandidat", "interview"],
+          "team": ["team", "teamdynamik", "zusammenarbeit", "konstellation"],
+          "kommunikation": ["kommunikation", "gespräch", "feedback", "formulierung"],
+          "onboarding": ["onboarding", "einarbeitung", "neuer mitarbeiter"],
+          "verkauf": ["verkauf", "vertrieb", "verhandlung", "kunde"],
+          "rollenspiel": ["durchspielen", "rollenspiel", "simulier", "üben"],
         };
 
-        conversationMessages = [summaryMsg as any, ...recentMessages];
+        const detectTopics = (text: string): string[] => {
+          const lower = text.toLowerCase();
+          return Object.entries(topicKeywords)
+            .filter(([, kws]) => kws.some(k => lower.includes(k)))
+            .map(([topic]) => topic);
+        };
+
+        const latestUserMsg = recentMessages.filter(m => m.role === "user").pop();
+        const latestTopics = latestUserMsg ? detectTopics(latestUserMsg.content) : [];
+
+        const olderUserMsgs = olderMessages.filter(m => m.role === "user");
+        const olderTopics = olderUserMsgs.length > 0
+          ? detectTopics(olderUserMsgs.slice(-3).map(m => m.content).join(" "))
+          : [];
+
+        const hasTopicOverlap = latestTopics.length === 0 || latestTopics.some(t => olderTopics.includes(t));
+
+        if (hasTopicOverlap) {
+          const userTopics: string[] = [];
+          const userProfile: string[] = [];
+          const keyDecisions: string[] = [];
+
+          for (const msg of olderMessages) {
+            if (msg.role === "user") {
+              const c = msg.content;
+              if (/impulsiv|intuitiv|analytisch|rot|gelb|blau|profil|prägung/i.test(c)) {
+                userProfile.push(c.slice(0, 150));
+              }
+              userTopics.push(c.slice(0, 100));
+            }
+            if (msg.role === "assistant") {
+              const keyPoints = msg.content.match(/\*\*[^*]+\*\*/g);
+              if (keyPoints) keyDecisions.push(...keyPoints.slice(0, 3));
+            }
+          }
+
+          const summaryParts: string[] = [];
+          if (userProfile.length > 0) summaryParts.push(`Nutzerprofil-Hinweise: ${userProfile.slice(-2).join(" | ")}`);
+          summaryParts.push(`Bisherige Themen (${olderUserMsgs.length} Fragen): ${userTopics.slice(-5).join(" → ")}`);
+          if (keyDecisions.length > 0) summaryParts.push(`Wichtige Punkte: ${keyDecisions.slice(-5).join(", ")}`);
+
+          const summaryMsg = {
+            role: "system" as const,
+            content: `GESPRÄCHSZUSAMMENFASSUNG (bisheriger Verlauf, ${olderMessages.length} Nachrichten):\n${summaryParts.join("\n")}\n\nNutze diese Zusammenfassung als Kontext. Wiederhole keine Punkte, die du bereits gemacht hast. Baue auf dem bisherigen Gespräch auf.`,
+          };
+
+          conversationMessages = [summaryMsg as any, ...recentMessages];
+        } else {
+          conversationMessages = recentMessages;
+        }
       }
 
       const apiMessages: { role: "system" | "user" | "assistant" | "tool"; content: string; tool_call_id?: string }[] = [
