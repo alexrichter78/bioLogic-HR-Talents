@@ -1202,6 +1202,12 @@ ABSOLUT VERBOTEN (diese Formulierungen NIEMALS verwenden):
 - "Stell dir vor...", "Ist gar nicht so schlimm"
 - Jeden Ton, der nach Kumpel, Buddy oder lockerem Kollegen klingt
 - Denselben Satzanfang zweimal hintereinander in einer Antwort
+- "In der Tat", "Tatsächlich", "Genau das", "Exakt", "Perfekt", "Wunderbar", "Fantastisch"
+- "Hier sind einige Tipps", "Hier sind meine Empfehlungen", "Folgende Punkte sind wichtig"
+- "Es ist wichtig zu verstehen, dass...", "Man muss bedenken, dass..."
+- "Zusammenfassend lässt sich sagen", "Abschließend möchte ich"
+- Jede Art von nummerierter Liste mit fettgedruckten Überschriften (z.B. "**1. Verständnis zeigen** ... **2. Grenzen setzen**") – das ist das häufigste KI-Muster. Schreibe stattdessen fließenden Text mit natürlichen Übergängen.
+- Phrasen, die nach Textbaustein klingen: "nicht zu unterschätzen", "ein wichtiger Aspekt", "spielt eine zentrale Rolle"
 
 bioLogic-System:
 - IMPULSIV (intern auch "rot"): Will Ergebnisse sehen, entscheidet schnell, braucht Klarheit und Wirkung.
@@ -1612,12 +1618,49 @@ VERBOTENES WORT "TYP":
         fullSystemPrompt += contextBlock;
       }
 
+      let conversationMessages = messages.map((m: { role: string; content: string }) => ({
+        role: m.role as "user" | "assistant",
+        content: m.content,
+      }));
+
+      if (conversationMessages.length > 10) {
+        const olderMessages = conversationMessages.slice(0, -6);
+        const recentMessages = conversationMessages.slice(-6);
+
+        const userTopics: string[] = [];
+        const userProfile: string[] = [];
+        const keyDecisions: string[] = [];
+
+        for (const msg of olderMessages) {
+          if (msg.role === "user") {
+            const c = msg.content;
+            if (/impulsiv|intuitiv|analytisch|rot|gelb|blau|profil|prägung/i.test(c)) {
+              userProfile.push(c.slice(0, 150));
+            }
+            userTopics.push(c.slice(0, 100));
+          }
+          if (msg.role === "assistant") {
+            const keyPoints = msg.content.match(/\*\*[^*]+\*\*/g);
+            if (keyPoints) keyDecisions.push(...keyPoints.slice(0, 3));
+          }
+        }
+
+        const summaryParts: string[] = [];
+        if (userProfile.length > 0) summaryParts.push(`Nutzerprofil-Hinweise: ${userProfile.slice(-2).join(" | ")}`);
+        summaryParts.push(`Bisherige Themen (${olderMessages.filter(m => m.role === "user").length} Fragen): ${userTopics.slice(-5).join(" → ")}`);
+        if (keyDecisions.length > 0) summaryParts.push(`Wichtige Punkte: ${keyDecisions.slice(-5).join(", ")}`);
+
+        const summaryMsg = {
+          role: "system" as const,
+          content: `GESPRÄCHSZUSAMMENFASSUNG (bisheriger Verlauf, ${olderMessages.length} Nachrichten):\n${summaryParts.join("\n")}\n\nNutze diese Zusammenfassung als Kontext. Wiederhole keine Punkte, die du bereits gemacht hast. Baue auf dem bisherigen Gespräch auf.`,
+        };
+
+        conversationMessages = [summaryMsg as any, ...recentMessages];
+      }
+
       const apiMessages: { role: "system" | "user" | "assistant" | "tool"; content: string; tool_call_id?: string }[] = [
         { role: "system" as const, content: fullSystemPrompt },
-        ...messages.slice(-20).map((m: { role: string; content: string }) => ({
-          role: m.role as "user" | "assistant",
-          content: m.content,
-        })),
+        ...conversationMessages.slice(-20),
       ];
 
       const webSearchTool = {
@@ -1669,6 +1712,30 @@ VERBOTENES WORT "TYP":
         },
       };
 
+      const lastUserMsg = (messages[messages.length - 1]?.content || "").toLowerCase();
+      const roleplayExit = /rollenspiel beenden|simulation beenden|stopp|raus aus der rolle|lass uns aufhören|genug geübt|zurück zum coaching|andere frage/i.test(lastUserMsg);
+
+      const recentMessages = messages.slice(-4);
+      const isRoleplay = !roleplayExit && (
+        recentMessages.some((m: any) => m.role === "user" && /durchspielen|rollenspiel|simulier|übernimm.*rolle|spiel.*rolle|üben|du bist jetzt|du bist mein|reagiere als/i.test(m.content)) ||
+        recentMessages.some((m: any) => m.role === "assistant" && /\*\*coach-feedback:?\*\*|wie reagierst du\??|was sagst du als nächstes\??|was antwortest du\??/i.test(m.content))
+      );
+
+      if (isRoleplay) {
+        const roleplayBoost = `\nAKTIVER ROLLENSPIEL-MODUS:
+Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
+- Du BIST die andere Person. Antworte AUS DEREN PERSPEKTIVE, nicht als Coach.
+- Deine Reaktion muss authentisch, emotional und realistisch sein – basierend auf der bioLogic-Prägung dieser Person.
+- Mach es dem Nutzer NICHT zu leicht. Ein reales Gegenüber wäre auch nicht sofort einverstanden.
+- Zeige typische Verhaltensmuster der jeweiligen Prägung unter Druck: Rote werden lauter/direkter, Gelbe weichen aus/werden emotional, Blaue werden sachlicher/kälter.
+- TRENNE klar: Erst deine Reaktion IN DER ROLLE (ohne Markierung), dann nach einem Absatz "**Coach-Feedback:**" mit 2-4 Sätzen Analyse.
+- Beende jede Runde mit einer Aufforderung an den Nutzer: "Wie reagierst du?" oder "Was sagst du jetzt?"
+- VERLASSE die Rolle NICHT, es sei denn der Nutzer sagt explizit, dass er aufhören will.\n`;
+        apiMessages[0].content += roleplayBoost;
+      }
+
+      const coachTemperature = isRoleplay ? 0.65 : 0.55;
+
       const useStreaming = req.query.stream === "1";
       let generatedImageBase64: string | null = null;
       let imageOverlayTitle: string | null = null;
@@ -1691,7 +1758,7 @@ VERBOTENES WORT "TYP":
           messages: apiMessages as any,
           tools: [webSearchTool, generateImageTool],
           tool_choice: "auto",
-          temperature: 0.4,
+          temperature: coachTemperature,
           max_tokens: 2000,
           stream: true,
         });
@@ -1786,7 +1853,7 @@ VERBOTENES WORT "TYP":
           const followUpStream = await openai.chat.completions.create({
             model: "gpt-4.1",
             messages: apiMessages as any,
-            temperature: 0.4,
+            temperature: coachTemperature,
             max_tokens: 2000,
             stream: true,
           });
@@ -1809,7 +1876,7 @@ VERBOTENES WORT "TYP":
         messages: apiMessages as any,
         tools: [webSearchTool, generateImageTool],
         tool_choice: "auto",
-        temperature: 0.4,
+        temperature: coachTemperature,
         max_tokens: 2000,
       });
 
@@ -1880,7 +1947,7 @@ VERBOTENES WORT "TYP":
           response = await openai.chat.completions.create({
             model: "gpt-4.1",
             messages: apiMessages as any,
-            temperature: 0.4,
+            temperature: coachTemperature,
             max_tokens: 2000,
           });
           assistantMessage = response.choices[0]?.message;
@@ -1935,7 +2002,7 @@ VERBOTENES WORT "TYP":
           response = await openai.chat.completions.create({
             model: "gpt-4.1",
             messages: apiMessages as any,
-            temperature: 0.4,
+            temperature: coachTemperature,
             max_tokens: 2000,
           });
           assistantMessage = response.choices[0]?.message;
