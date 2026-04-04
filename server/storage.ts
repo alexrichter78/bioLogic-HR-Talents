@@ -51,12 +51,6 @@ export interface IStorage {
 
   getCoachSystemPrompt(): Promise<string | null>;
   saveCoachSystemPrompt(promptText: string): Promise<void>;
-  getDashboardStats(userId: number): Promise<{
-    recentTopics: { topic: string; date: Date }[];
-    totalTopics: number;
-    feedback: { up: number; down: number; total: number };
-    topTopics: { topic: string; count: number }[];
-  }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -378,38 +372,6 @@ export class DatabaseStorage implements IStorage {
     } else {
       await pool.query("INSERT INTO coach_system_prompt (prompt_text) VALUES ($1)", [promptText]);
     }
-  }
-
-  async getDashboardStats(userId: number) {
-    const recentResult = await pool.query(
-      "SELECT topic, created_at FROM coach_topics WHERE user_id = $1 ORDER BY created_at DESC LIMIT 8",
-      [userId]
-    );
-    const countResult = await pool.query(
-      "SELECT COUNT(*) as count FROM coach_topics WHERE user_id = $1",
-      [userId]
-    );
-    const feedbackResult = await pool.query(
-      "SELECT feedback_type, COUNT(*) as count FROM coach_feedback WHERE user_id = $1 GROUP BY feedback_type",
-      [userId]
-    );
-    const totalFeedback = await pool.query(
-      "SELECT COUNT(*) as count FROM coach_feedback WHERE user_id = $1",
-      [userId]
-    );
-    const topTopicsResult = await pool.query(
-      "SELECT topic, COUNT(*) as count FROM coach_topics WHERE user_id = $1 GROUP BY topic ORDER BY count DESC LIMIT 5",
-      [userId]
-    );
-    const feedbackMap: Record<string, number> = {};
-    feedbackResult.rows.forEach((r: any) => { feedbackMap[r.feedback_type] = parseInt(r.count); });
-
-    return {
-      recentTopics: recentResult.rows.map((r: any) => ({ topic: r.topic, date: r.created_at })),
-      totalTopics: parseInt(countResult.rows[0]?.count || "0"),
-      feedback: { up: feedbackMap["up"] || 0, down: feedbackMap["down"] || 0, total: parseInt(totalFeedback.rows[0]?.count || "0") },
-      topTopics: topTopicsResult.rows.map((r: any) => ({ topic: r.topic, count: parseInt(r.count) })),
-    };
   }
 }
 
