@@ -2367,6 +2367,16 @@ WICHTIGE REGELN:
     }
   });
 
+  app.get("/api/dashboard-stats", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = (req.session as any).userId;
+      const stats = await storage.getDashboardStats(userId);
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Dashboard-Statistiken konnten nicht geladen werden" });
+    }
+  });
+
   app.get("/api/coach-system-prompt", requireAuth, requireAdmin, async (_req: Request, res: Response) => {
     try {
       const prompt = await storage.getCoachSystemPrompt();
