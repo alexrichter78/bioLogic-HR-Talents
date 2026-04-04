@@ -172,17 +172,135 @@ export class DatabaseStorage implements IStorage {
   async searchKnowledgeDocuments(query: string): Promise<KnowledgeDocument[]> {
     const allDocs = await db.select().from(knowledgeDocuments);
     const queryLower = query.toLowerCase();
-    const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2);
-    return allDocs
-      .map(doc => {
-        const textLower = (doc.title + " " + doc.content + " " + doc.category).toLowerCase();
-        const matchCount = queryWords.filter(w => textLower.includes(w)).length;
-        return { doc, matchCount };
-      })
-      .filter(item => item.matchCount > 0)
-      .sort((a, b) => b.matchCount - a.matchCount)
-      .slice(0, 3)
-      .map(item => item.doc);
+
+    const SYNONYM_MAP: Record<string, string[]> = {
+      "streit": ["konflikt", "auseinandersetzung", "meinungsverschiedenheit", "spannung"],
+      "konflikt": ["streit", "auseinandersetzung", "spannung", "reibung"],
+      "chef": ["führung", "führungskraft", "vorgesetzter", "leitung", "leader", "leadership"],
+      "führung": ["chef", "führungskraft", "vorgesetzter", "leitung", "leader", "management"],
+      "führungskraft": ["chef", "führung", "vorgesetzter", "leitung", "leader"],
+      "mitarbeiter": ["personal", "team", "teammitglied", "angestellter", "kollege", "belegschaft"],
+      "team": ["mitarbeiter", "gruppe", "mannschaft", "teamdynamik", "zusammenarbeit"],
+      "bewerbung": ["recruiting", "einstellung", "kandidat", "bewerber", "stellenanzeige", "vorstellungsgespräch"],
+      "recruiting": ["bewerbung", "einstellung", "kandidat", "bewerber", "personalsuche"],
+      "einstellen": ["recruiting", "bewerbung", "einstellung", "kandidat", "anstellung"],
+      "interview": ["vorstellungsgespräch", "bewerbungsgespräch", "gespräch", "assessment"],
+      "stress": ["belastung", "druck", "überlastung", "burnout", "stressor", "komfortzone"],
+      "burnout": ["stress", "überlastung", "erschöpfung", "belastung"],
+      "motivation": ["antrieb", "motive", "engagement", "produktivität", "demotivation"],
+      "kommunikation": ["gespräch", "ansprache", "reden", "dialog", "austausch"],
+      "gespräch": ["kommunikation", "dialog", "unterhaltung", "austausch", "gesprächsleitfaden"],
+      "verkauf": ["vertrieb", "sales", "verkaufen", "kunde", "akquise"],
+      "kunde": ["verkauf", "vertrieb", "klient", "auftraggeber", "kundenbeziehung"],
+      "rot": ["impulsiv", "dominant", "dynamisch", "temperamentvoll"],
+      "gelb": ["intuitiv", "empathisch", "kreativ", "harmonisch"],
+      "blau": ["analytisch", "strukturiert", "rational", "logisch"],
+      "impulsiv": ["rot", "dominant", "dynamisch", "temperamentvoll", "spontan"],
+      "intuitiv": ["gelb", "empathisch", "kreativ", "harmonisch", "einfühlsam"],
+      "analytisch": ["blau", "strukturiert", "rational", "logisch", "sachlich"],
+      "aufschieben": ["prokrastination", "aufschieberitis", "verzögern"],
+      "prokrastination": ["aufschieben", "aufschieberitis", "verzögern"],
+      "produktiv": ["produktivität", "effizienz", "leistung", "flow"],
+      "resilienz": ["widerstandsfähigkeit", "belastbarkeit", "krisenfestigkeit", "stärke"],
+      "onboarding": ["einarbeitung", "einführung", "integration", "einstieg"],
+      "fehlbesetzung": ["kündigung", "fluktuation", "falschbesetzung", "fehlentscheidung"],
+      "entscheidung": ["entscheidungsfindung", "entscheiden", "entscheidungsverhalten", "wahl"],
+      "veränderung": ["wandel", "transformation", "change", "umstrukturierung"],
+      "wertschätzung": ["anerkennung", "lob", "feedback", "respekt"],
+      "persönlichkeit": ["charakter", "temperament", "profil", "triade", "biologic"],
+      "profil": ["persönlichkeit", "triade", "konstellation", "struktur"],
+    };
+
+    const CATEGORY_KEYWORDS: Record<string, string[]> = {
+      "methodik": ["triade", "konstellation", "profil", "biologic", "methode", "persönlichkeit", "komponente", "wissenschaft", "erkennung", "motive", "entscheidung", "stress"],
+      "recruiting": ["bewerbung", "recruiting", "stellenanzeige", "interview", "einstellung", "kandidat", "onboarding", "einarbeitung", "fehlbesetzung", "assessment", "biocheck"],
+      "fuehrung": ["führung", "chef", "team", "leadership", "management", "leitung", "vorgesetzter", "teamführung"],
+      "teamdynamik": ["team", "zusammenarbeit", "dynamik", "synergie", "ergänzung", "teamdynamik"],
+      "kommunikation": ["kommunikation", "gespräch", "dialog", "ansprache", "verkauf", "vertrieb", "kunde", "reden"],
+      "allgemein": ["prokrastination", "aufschieben", "produktivität", "resilienz", "stress", "alltag", "selbstentwicklung"],
+    };
+
+    const STOP_WORDS = new Set(["der", "die", "das", "den", "dem", "des", "ein", "eine", "einen", "einem", "einer", "und", "oder", "aber", "als", "auch", "auf", "aus", "bei", "bis", "für", "hat", "ich", "ist", "mit", "nach", "nicht", "noch", "nur", "sie", "sind", "über", "von", "vor", "wie", "wird", "wurde", "zum", "zur", "kann", "muss", "soll", "will", "habe", "haben", "sein", "sehr", "mehr", "wenn", "dann", "denn", "weil", "dass", "sich", "mir", "dir", "ihm", "ihr", "uns", "was", "wer", "wen", "wem"]);
+
+    const expandedWords = new Set<string>();
+    const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2 && !STOP_WORDS.has(w));
+    for (const word of queryWords) {
+      expandedWords.add(word);
+      for (const [key, synonyms] of Object.entries(SYNONYM_MAP)) {
+        if (word === key) {
+          synonyms.forEach(s => expandedWords.add(s));
+        }
+      }
+    }
+
+    const matchedCategories = new Set<string>();
+    for (const word of queryWords) {
+      for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+        if (keywords.some(k => word === k)) {
+          matchedCategories.add(cat);
+        }
+      }
+    }
+
+    const expandedArray = Array.from(expandedWords);
+
+    const scored = allDocs.map(doc => {
+      const titleLower = doc.title.toLowerCase();
+      const contentLower = doc.content.toLowerCase();
+      const catLower = doc.category.toLowerCase();
+      const textLower = titleLower + " " + contentLower;
+
+      let score = 0;
+
+      for (const word of queryWords) {
+        if (titleLower.includes(word)) score += 5;
+        if (contentLower.includes(word)) score += 2;
+      }
+
+      for (const word of expandedArray) {
+        if (!queryWords.includes(word)) {
+          if (titleLower.includes(word)) score += 2;
+          if (contentLower.includes(word)) score += 1;
+        }
+      }
+
+      if (matchedCategories.has(catLower)) score += 3;
+
+      const phraseMatch = queryWords.length >= 2;
+      if (phraseMatch) {
+        for (let i = 0; i < queryWords.length - 1; i++) {
+          const bigram = queryWords[i] + " " + queryWords[i + 1];
+          if (textLower.includes(bigram)) score += 4;
+        }
+      }
+
+      return { doc, score };
+    });
+
+    const results = scored
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score);
+
+    if (matchedCategories.size > 1) {
+      const seen = new Set<string>();
+      const diverse: typeof results = [];
+      for (const item of results) {
+        if (diverse.length >= 5) break;
+        if (!seen.has(item.doc.category)) {
+          diverse.push(item);
+          seen.add(item.doc.category);
+        }
+      }
+      for (const item of results) {
+        if (diverse.length >= 5) break;
+        if (!diverse.includes(item)) {
+          diverse.push(item);
+        }
+      }
+      return diverse.map(item => item.doc);
+    }
+
+    return results.slice(0, 5).map(item => item.doc);
   }
 }
 
