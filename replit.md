@@ -68,6 +68,10 @@ Preferred communication style: Simple, everyday language.
 -   **Teamdynamik Engine**: Calculates metrics like Distribution Gap, Dominance Clash, Role Gap, Transformation Score, and Conflict Index, including stress simulation.
 -   **Rollen-DNA to Dominance Mapping**: Maps role attributes to dominance types for fit analysis.
 -   **AI Integration**: Utilizes OpenAI for AI-generated reports and the KI-Coach, including function calling for web search and image generation.
+-   **KI-Coach Conversation Modes**: Supports specialized modes (Interview-Vorbereitung, Konfliktlösung, Stellenanzeige erstellen, Gesprächsleitfaden) with tailored system prompts per mode. Mode is selected via UI buttons before conversation starts and sent as `mode` parameter to `/api/ki-coach`.
+-   **Coach Feedback System**: Thumbs up/down feedback on coach responses is persisted to `coach_feedback` table. Admin can review all feedback under the "Coach-Feedback" tab in the admin panel.
+-   **Knowledge Base (RAG)**: Admin can create/edit/delete knowledge documents via "Wissensdatenbank" tab. Documents are stored in `knowledge_documents` table. On each KI-Coach request, relevant documents are found via keyword matching and injected into the system prompt as additional context.
+-   **Topic Filter**: KI-Coach only answers questions related to HR, recruiting, leadership, teams, communication, marketing, and bioLogic methodology. Off-topic questions are politely declined.
 
 ## External Dependencies
 

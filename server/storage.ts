@@ -2,7 +2,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { eq, and, gte } from "drizzle-orm";
 import pkg from "pg";
 const { Pool } = pkg;
-import { users, subscriptions, passwordResetTokens, type User, type InsertUser, type Subscription, type InsertSubscription, type PasswordResetToken } from "@shared/schema";
+import { users, subscriptions, passwordResetTokens, coachFeedback, knowledgeDocuments, type User, type InsertUser, type Subscription, type InsertSubscription, type PasswordResetToken, type CoachFeedback, type InsertCoachFeedback, type KnowledgeDocument, type InsertKnowledgeDocument } from "@shared/schema";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -31,6 +31,15 @@ export interface IStorage {
   getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined>;
   markTokenUsed(id: number): Promise<void>;
   deletePasswordResetTokensByUserId(userId: number): Promise<void>;
+
+  createCoachFeedback(data: InsertCoachFeedback): Promise<CoachFeedback>;
+  listCoachFeedback(): Promise<CoachFeedback[]>;
+
+  createKnowledgeDocument(data: InsertKnowledgeDocument): Promise<KnowledgeDocument>;
+  updateKnowledgeDocument(id: number, data: Partial<InsertKnowledgeDocument>): Promise<KnowledgeDocument | undefined>;
+  deleteKnowledgeDocument(id: number): Promise<void>;
+  listKnowledgeDocuments(): Promise<KnowledgeDocument[]>;
+  searchKnowledgeDocuments(query: string): Promise<KnowledgeDocument[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -131,6 +140,49 @@ export class DatabaseStorage implements IStorage {
 
   async deletePasswordResetTokensByUserId(userId: number): Promise<void> {
     await db.delete(passwordResetTokens).where(eq(passwordResetTokens.userId, userId));
+  }
+
+  async createCoachFeedback(data: InsertCoachFeedback): Promise<CoachFeedback> {
+    const [row] = await db.insert(coachFeedback).values(data).returning();
+    return row;
+  }
+
+  async listCoachFeedback(): Promise<CoachFeedback[]> {
+    return db.select().from(coachFeedback).orderBy(coachFeedback.createdAt);
+  }
+
+  async createKnowledgeDocument(data: InsertKnowledgeDocument): Promise<KnowledgeDocument> {
+    const [row] = await db.insert(knowledgeDocuments).values(data).returning();
+    return row;
+  }
+
+  async updateKnowledgeDocument(id: number, data: Partial<InsertKnowledgeDocument>): Promise<KnowledgeDocument | undefined> {
+    const [row] = await db.update(knowledgeDocuments).set({ ...data, updatedAt: new Date() } as any).where(eq(knowledgeDocuments.id, id)).returning();
+    return row;
+  }
+
+  async deleteKnowledgeDocument(id: number): Promise<void> {
+    await db.delete(knowledgeDocuments).where(eq(knowledgeDocuments.id, id));
+  }
+
+  async listKnowledgeDocuments(): Promise<KnowledgeDocument[]> {
+    return db.select().from(knowledgeDocuments);
+  }
+
+  async searchKnowledgeDocuments(query: string): Promise<KnowledgeDocument[]> {
+    const allDocs = await db.select().from(knowledgeDocuments);
+    const queryLower = query.toLowerCase();
+    const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2);
+    return allDocs
+      .map(doc => {
+        const textLower = (doc.title + " " + doc.content + " " + doc.category).toLowerCase();
+        const matchCount = queryWords.filter(w => textLower.includes(w)).length;
+        return { doc, matchCount };
+      })
+      .filter(item => item.matchCount > 0)
+      .sort((a, b) => b.matchCount - a.matchCount)
+      .slice(0, 3)
+      .map(item => item.doc);
   }
 }
 

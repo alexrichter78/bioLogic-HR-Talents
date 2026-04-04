@@ -3,7 +3,7 @@ import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Plus, Trash2, Pencil, X, Save, Users, CalendarDays, Shield, Building2, Search, ChevronUp, ChevronDown, Database, KeyRound, Copy, Check } from "lucide-react";
+import { Plus, Trash2, Pencil, X, Save, Users, CalendarDays, Shield, Building2, Search, ChevronUp, ChevronDown, Database, KeyRound, Copy, Check, ThumbsUp, ThumbsDown, BookOpen, FileText } from "lucide-react";
 
 interface UserWithSub {
   id: number;
@@ -79,6 +79,66 @@ export default function Admin() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [resetLink, setResetLink] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState<"users" | "feedback" | "knowledge">("users");
+  const [feedbackList, setFeedbackList] = useState<any[]>([]);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [knowledgeDocs, setKnowledgeDocs] = useState<any[]>([]);
+  const [knowledgeLoading, setKnowledgeLoading] = useState(false);
+  const [showKnowledgeForm, setShowKnowledgeForm] = useState(false);
+  const [knowledgeForm, setKnowledgeForm] = useState({ title: "", content: "", category: "allgemein" });
+  const [editingDocId, setEditingDocId] = useState<number | null>(null);
+
+  const loadFeedback = async () => {
+    setFeedbackLoading(true);
+    try {
+      const res = await fetch("/api/coach-feedback", { credentials: "include" });
+      if (res.ok) setFeedbackList(await res.json());
+    } catch {}
+    setFeedbackLoading(false);
+  };
+
+  const loadKnowledgeDocs = async () => {
+    setKnowledgeLoading(true);
+    try {
+      const res = await fetch("/api/knowledge-documents", { credentials: "include" });
+      if (res.ok) setKnowledgeDocs(await res.json());
+    } catch {}
+    setKnowledgeLoading(false);
+  };
+
+  useEffect(() => {
+    if (activeTab === "feedback") loadFeedback();
+    if (activeTab === "knowledge") loadKnowledgeDocs();
+  }, [activeTab]);
+
+  const saveKnowledgeDoc = async () => {
+    if (!knowledgeForm.title || !knowledgeForm.content) return;
+    try {
+      if (editingDocId) {
+        await fetch(`/api/knowledge-documents/${editingDocId}`, {
+          method: "PATCH", credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(knowledgeForm),
+        });
+      } else {
+        await fetch("/api/knowledge-documents", {
+          method: "POST", credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(knowledgeForm),
+        });
+      }
+      setShowKnowledgeForm(false);
+      setEditingDocId(null);
+      setKnowledgeForm({ title: "", content: "", category: "allgemein" });
+      loadKnowledgeDocs();
+    } catch {}
+  };
+
+  const deleteKnowledgeDoc = async (id: number) => {
+    if (!confirm("Dokument wirklich löschen?")) return;
+    await fetch(`/api/knowledge-documents/${id}`, { method: "DELETE", credentials: "include" });
+    loadKnowledgeDocs();
+  };
 
   const filteredUsers = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -402,6 +462,33 @@ export default function Admin() {
     <div style={{ minHeight: "100vh", background: "#f5f7fb", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
       <GlobalNav />
       <div style={{ maxWidth: 900, margin: "0 auto", padding: isMobile ? "64px 12px 80px" : "80px 20px 48px" }}>
+        <div style={{ display: "flex", gap: 4, marginBottom: 20, background: "rgba(0,0,0,0.03)", borderRadius: 12, padding: 4 }}>
+          {[
+            { id: "users" as const, label: "Benutzer", icon: Users },
+            { id: "feedback" as const, label: "Coach-Feedback", icon: ThumbsUp },
+            { id: "knowledge" as const, label: "Wissensdatenbank", icon: BookOpen },
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              style={{
+                flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                padding: "10px 12px", borderRadius: 10, border: "none", fontSize: 13, fontWeight: 600,
+                background: activeTab === tab.id ? "#fff" : "transparent",
+                color: activeTab === tab.id ? "#1D1D1F" : "#8E8E93",
+                cursor: "pointer", transition: "all 150ms ease",
+                boxShadow: activeTab === tab.id ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+              }}
+              data-testid={`tab-${tab.id}`}
+            >
+              <tab.icon style={{ width: 15, height: 15 }} />
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {activeTab === "users" && (
+        <>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px", display: "flex", alignItems: "center", gap: 10 }} data-testid="text-admin-title">
@@ -411,7 +498,7 @@ export default function Admin() {
             <p style={{ fontSize: 14, color: "#6E6E73", margin: 0 }}>{users.length} Benutzer registriert{search && filteredUsers.length !== users.length ? ` · ${filteredUsers.length} angezeigt` : ""}</p>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <button onClick={() => setLocation("/analyse")} data-testid="button-stammdaten" title="Stammdaten" style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.1)", background: "#fff", color: "#1D1D1F", fontSize: 14, fontWeight: 600, cursor: "pointer", transition: "all 200ms ease" }} onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.03)"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; }}>
+            <button onClick={() => setLocation("/analyse")} data-testid="button-stammdaten" title="Stammdaten" style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.1)", background: "#fff", color: "#1D1D1F", fontSize: 14, fontWeight: 600, cursor: "pointer", transition: "all 200ms ease" }}>
               <Database style={{ width: 16, height: 16 }} />
               Stammdaten
             </button>
@@ -517,6 +604,179 @@ export default function Admin() {
                 </div>
               );
             })}
+          </div>
+        )}
+        </>
+        )}
+
+        {activeTab === "feedback" && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+              <div>
+                <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px", display: "flex", alignItems: "center", gap: 8 }}>
+                  <ThumbsUp style={{ width: 20, height: 20, color: "#1A5DAB" }} />
+                  Coach-Feedback
+                </h2>
+                <p style={{ fontSize: 14, color: "#6E6E73", margin: 0 }}>
+                  {feedbackList.length} Bewertungen · {feedbackList.filter(f => f.feedbackType === "up").length} positiv · {feedbackList.filter(f => f.feedbackType === "down").length} negativ
+                </p>
+              </div>
+            </div>
+            {feedbackLoading ? (
+              <p style={{ color: "#8E8E93", textAlign: "center", padding: 40 }}>Wird geladen...</p>
+            ) : feedbackList.length === 0 ? (
+              <div style={{ textAlign: "center", padding: 60, color: "#8E8E93" }}>
+                <ThumbsUp style={{ width: 32, height: 32, marginBottom: 12, opacity: 0.4 }} />
+                <p>Noch kein Feedback vorhanden</p>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {[...feedbackList].reverse().map((f, i) => (
+                  <div key={i} style={{ background: "#fff", borderRadius: 14, padding: "16px 20px", border: "1px solid rgba(0,0,0,0.06)" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                      <div style={{
+                        display: "inline-flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 8,
+                        background: f.feedbackType === "up" ? "rgba(52,199,89,0.1)" : "rgba(255,59,48,0.1)",
+                        color: f.feedbackType === "up" ? "#1B7A3D" : "#C41E3A",
+                        fontSize: 12, fontWeight: 600,
+                      }}>
+                        {f.feedbackType === "up" ? <ThumbsUp style={{ width: 12, height: 12 }} /> : <ThumbsDown style={{ width: 12, height: 12 }} />}
+                        {f.feedbackType === "up" ? "Positiv" : "Negativ"}
+                      </div>
+                      <span style={{ fontSize: 11, color: "#8E8E93" }}>
+                        {new Date(f.createdAt).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                    </div>
+                    <div style={{ marginBottom: 8 }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase" as const, letterSpacing: 0.5 }}>Nutzerfrage</span>
+                      <p style={{ fontSize: 13, color: "#1D1D1F", margin: "2px 0 0", lineHeight: 1.5 }}>{f.userMessage.slice(0, 200)}{f.userMessage.length > 200 ? "..." : ""}</p>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase" as const, letterSpacing: 0.5 }}>Coach-Antwort</span>
+                      <p style={{ fontSize: 13, color: "#48484A", margin: "2px 0 0", lineHeight: 1.5 }}>{f.assistantMessage.slice(0, 300)}{f.assistantMessage.length > 300 ? "..." : ""}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === "knowledge" && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+              <div>
+                <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px", display: "flex", alignItems: "center", gap: 8 }}>
+                  <BookOpen style={{ width: 20, height: 20, color: "#1A5DAB" }} />
+                  Wissensdatenbank
+                </h2>
+                <p style={{ fontSize: 14, color: "#6E6E73", margin: 0 }}>{knowledgeDocs.length} Dokumente · Der KI-Coach nutzt diese Inhalte für seine Antworten</p>
+              </div>
+              <button
+                onClick={() => { setShowKnowledgeForm(true); setEditingDocId(null); setKnowledgeForm({ title: "", content: "", category: "allgemein" }); }}
+                style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, border: "none", background: "#1D1D1F", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}
+                data-testid="button-add-knowledge"
+              >
+                <Plus style={{ width: 16, height: 16 }} />
+                Neues Dokument
+              </button>
+            </div>
+
+            {showKnowledgeForm && (
+              <div style={{ background: "#fff", borderRadius: 14, padding: 24, border: "1px solid rgba(0,0,0,0.08)", marginBottom: 16 }}>
+                <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: "#48484A", marginBottom: 4, display: "block" }}>Titel</label>
+                    <input
+                      value={knowledgeForm.title}
+                      onChange={(e) => setKnowledgeForm(f => ({ ...f, title: e.target.value }))}
+                      placeholder="z.B. bioLogic Grundlagen"
+                      style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.1)", fontSize: 14, outline: "none" }}
+                      data-testid="input-knowledge-title"
+                    />
+                  </div>
+                  <div style={{ width: 180 }}>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: "#48484A", marginBottom: 4, display: "block" }}>Kategorie</label>
+                    <select
+                      value={knowledgeForm.category}
+                      onChange={(e) => setKnowledgeForm(f => ({ ...f, category: e.target.value }))}
+                      style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.1)", fontSize: 14, outline: "none", background: "#fff" }}
+                      data-testid="select-knowledge-category"
+                    >
+                      <option value="allgemein">Allgemein</option>
+                      <option value="methodik">Methodik</option>
+                      <option value="fuehrung">Führung</option>
+                      <option value="recruiting">Recruiting</option>
+                      <option value="teamdynamik">Teamdynamik</option>
+                      <option value="kommunikation">Kommunikation</option>
+                    </select>
+                  </div>
+                </div>
+                <div style={{ marginBottom: 12 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: "#48484A", marginBottom: 4, display: "block" }}>Inhalt</label>
+                  <textarea
+                    value={knowledgeForm.content}
+                    onChange={(e) => setKnowledgeForm(f => ({ ...f, content: e.target.value }))}
+                    placeholder="Hier den Wissensinhalt eingeben, den der KI-Coach nutzen soll..."
+                    rows={8}
+                    style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.1)", fontSize: 14, outline: "none", resize: "vertical", lineHeight: 1.6 }}
+                    data-testid="textarea-knowledge-content"
+                  />
+                </div>
+                <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+                  <button onClick={() => { setShowKnowledgeForm(false); setEditingDocId(null); }} style={{ padding: "8px 20px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.1)", background: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+                    Abbrechen
+                  </button>
+                  <button onClick={saveKnowledgeDoc} style={{ padding: "8px 20px", borderRadius: 10, border: "none", background: "#1D1D1F", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }} data-testid="button-save-knowledge">
+                    <Save style={{ width: 14, height: 14, display: "inline", verticalAlign: "middle", marginRight: 6 }} />
+                    {editingDocId ? "Aktualisieren" : "Speichern"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {knowledgeLoading ? (
+              <p style={{ color: "#8E8E93", textAlign: "center", padding: 40 }}>Wird geladen...</p>
+            ) : knowledgeDocs.length === 0 && !showKnowledgeForm ? (
+              <div style={{ textAlign: "center", padding: 60, color: "#8E8E93" }}>
+                <BookOpen style={{ width: 32, height: 32, marginBottom: 12, opacity: 0.4 }} />
+                <p>Noch keine Dokumente vorhanden</p>
+                <p style={{ fontSize: 13 }}>Fügen Sie Wissensartikel hinzu, die der KI-Coach für bessere Antworten nutzen kann.</p>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {knowledgeDocs.map(doc => (
+                  <div key={doc.id} style={{ background: "#fff", borderRadius: 14, padding: "16px 20px", border: "1px solid rgba(0,0,0,0.06)", display: "flex", alignItems: "flex-start", gap: 14 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(0,113,227,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <FileText style={{ width: 16, height: 16, color: "#0071E3" }} />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                        <h3 style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: 0 }}>{doc.title}</h3>
+                        <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 6, background: "rgba(0,0,0,0.04)", color: "#636366", fontWeight: 500 }}>{doc.category}</span>
+                      </div>
+                      <p style={{ fontSize: 13, color: "#48484A", margin: 0, lineHeight: 1.5 }}>{doc.content.slice(0, 150)}{doc.content.length > 150 ? "..." : ""}</p>
+                    </div>
+                    <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+                      <button
+                        onClick={() => { setEditingDocId(doc.id); setKnowledgeForm({ title: doc.title, content: doc.content, category: doc.category }); setShowKnowledgeForm(true); }}
+                        style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid rgba(0,0,0,0.06)", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                        data-testid={`button-edit-doc-${doc.id}`}
+                      >
+                        <Pencil style={{ width: 14, height: 14, color: "#636366" }} />
+                      </button>
+                      <button
+                        onClick={() => deleteKnowledgeDoc(doc.id)}
+                        style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid rgba(255,59,48,0.1)", background: "rgba(255,59,48,0.03)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                        data-testid={`button-delete-doc-${doc.id}`}
+                      >
+                        <Trash2 style={{ width: 14, height: 14, color: "#FF3B30" }} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

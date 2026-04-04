@@ -1052,7 +1052,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
 
   app.post("/api/ki-coach", async (req, res) => {
     try {
-      const { messages, stammdaten, region } = req.body;
+      const { messages, stammdaten, region, mode } = req.body;
       if (!Array.isArray(messages) || messages.length === 0) {
         return res.status(400).json({ error: "Keine Nachrichten" });
       }
@@ -1096,8 +1096,57 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
         });
       }
 
+      let knowledgeContext = "";
+      try {
+        const relevantDocs = await storage.searchKnowledgeDocuments(lastMsg);
+        if (relevantDocs.length > 0) {
+          knowledgeContext = "\n\nWISSENSBASIS (nutze diese Inhalte wenn relevant für die Antwort):\n" +
+            relevantDocs.map(d => `--- ${d.title} (${d.category}) ---\n${d.content}`).join("\n\n");
+        }
+      } catch (e) {
+        console.error("Knowledge search error:", e);
+      }
+
+      const modeInstructions: Record<string, string> = {
+        "interview": `MODUS: INTERVIEW-VORBEREITUNG
+Du führst den Nutzer Schritt für Schritt durch eine Interview-Vorbereitung. Frage zuerst nach der Stelle und dem Kandidatenprofil (bioLogic). Dann:
+1. Erstelle einen strukturierten Gesprächsleitfaden mit passenden Fragen für das bioLogic-Profil
+2. Erkläre, worauf bei den Antworten zu achten ist
+3. Gib Warnsignale und Positivindikatoren an
+4. Biete an, das Gespräch im Rollenspiel durchzuspielen
+Halte dich an diesen strukturierten Ablauf, weiche nicht ab.`,
+        "konflikt": `MODUS: KONFLIKTLÖSUNG
+Du hilfst dem Nutzer systematisch einen Konflikt zu lösen. Gehe so vor:
+1. Kläre die Situation: Wer ist beteiligt? Was ist passiert? Wie lange schon?
+2. Analysiere die bioLogic-Konstellation der Beteiligten
+3. Erkläre, warum der Konflikt aus bioLogic-Sicht entsteht
+4. Gib eine konkrete Schritt-für-Schritt-Strategie zur Lösung
+5. Liefere fertige Formulierungen für das Klärungsgespräch
+Frage aktiv nach fehlenden Informationen, bevor du Lösungen gibst.`,
+        "stellenanzeige": `MODUS: STELLENANZEIGE ERSTELLEN
+Du erstellst mit dem Nutzer Schritt für Schritt eine professionelle Stellenanzeige. Ablauf:
+1. Frage nach der Position, den Kernaufgaben und dem gewünschten bioLogic-Profil
+2. Erstelle eine Stellenanzeige mit: Einleitung, Aufgaben, Anforderungen, Benefits
+3. Passe Ton und Ansprache an das gesuchte bioLogic-Profil an (impulsiv = direkt/ergebnisorientiert, intuitiv = teamorientiert/wertschätzend, analytisch = strukturiert/faktenbasiert)
+4. Biete Varianten oder Optimierungen an
+Liefere die Anzeige als fertigen, kopierbaren Text.`,
+        "gespraechsleitfaden": `MODUS: GESPRÄCHSLEITFADEN
+Du erstellst einen massgeschneiderten Gesprächsleitfaden. Frage zuerst:
+1. Art des Gesprächs (Feedback, Kündigung, Zielvereinbarung, Gehalt, Kritik, etc.)
+2. bioLogic-Profil des Gegenübers (wenn bekannt)
+3. Besondere Umstände oder Vorgeschichte
+Dann liefere einen strukturierten Leitfaden mit:
+- Gesprächseröffnung (konkreter Satz)
+- Kernbotschaft (was muss rüberkommen)
+- Reaktionsmuster des Gegenübers und wie darauf reagieren
+- Gesprächsabschluss und nächste Schritte
+Alles mit fertigen Formulierungen, die 1:1 übernommen werden können.`,
+      };
+
+      const modePrompt = mode && modeInstructions[mode] ? "\n\n" + modeInstructions[mode] : "";
+
       const systemPrompt = `Du bist Louis – der bioLogic Coach für Entscheidungen im richtigen Moment. Du bist ein erfahrener Personalberater mit jahrelanger Praxiserfahrung.
-${getRegionInstruction(region, { skipAddress: true })}
+${getRegionInstruction(region, { skipAddress: true })}${modePrompt}${knowledgeContext}
 DEIN TON & MENSCHLICHKEIT:
 Du klingst wie ein echter Mensch – ein erfahrener Coach, der nachdenkt, bevor er spricht. Du duzt den Nutzer. Du bist auf Augenhöhe, nie belehrend. Du darfst auch mal kurz innehalten: "Hmm, da muss ich kurz ausholen...", "Das ist eine Konstellation, die ich so ähnlich schon oft gesehen habe...", "Lass mich mal überlegen, was hier wirklich dahintersteckt..."
 - Starte Antworten UNTERSCHIEDLICH. Nie zweimal den gleichen Einstieg. Variiere: Mal mit einer Beobachtung, mal mit einer Rückfrage, mal mit einer Einordnung, mal direkt mit dem Kern.
@@ -2022,6 +2071,88 @@ WICHTIGE REGELN:
     }
     (global as any).__supportEmail = email;
     res.json({ success: true, email });
+  });
+
+  app.post("/api/coach-feedback", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { userMessage, assistantMessage, feedbackType } = req.body;
+      if (!userMessage || !assistantMessage || !feedbackType) {
+        return res.status(400).json({ error: "Alle Felder erforderlich" });
+      }
+      if (feedbackType !== "up" && feedbackType !== "down") {
+        return res.status(400).json({ error: "Ungültiger Feedback-Typ" });
+      }
+      const userId = req.session.userId || null;
+      const feedback = await storage.createCoachFeedback({
+        userId,
+        userMessage: String(userMessage).slice(0, 2000),
+        assistantMessage: String(assistantMessage).slice(0, 5000),
+        feedbackType,
+      });
+      res.json(feedback);
+    } catch (error) {
+      console.error("Coach feedback error:", error);
+      res.status(500).json({ error: "Feedback konnte nicht gespeichert werden" });
+    }
+  });
+
+  app.get("/api/coach-feedback", requireAuth, requireAdmin, async (_req: Request, res: Response) => {
+    try {
+      const feedbackList = await storage.listCoachFeedback();
+      res.json(feedbackList);
+    } catch (error) {
+      console.error("Coach feedback list error:", error);
+      res.status(500).json({ error: "Feedback konnte nicht geladen werden" });
+    }
+  });
+
+  app.get("/api/knowledge-documents", requireAuth, requireAdmin, async (_req: Request, res: Response) => {
+    try {
+      const docs = await storage.listKnowledgeDocuments();
+      res.json(docs);
+    } catch (error) {
+      res.status(500).json({ error: "Dokumente konnten nicht geladen werden" });
+    }
+  });
+
+  app.post("/api/knowledge-documents", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const { title, content, category } = req.body;
+      if (!title || typeof title !== "string" || !content || typeof content !== "string") {
+        return res.status(400).json({ error: "Titel und Inhalt erforderlich" });
+      }
+      if (title.length > 200) {
+        return res.status(400).json({ error: "Titel darf maximal 200 Zeichen haben" });
+      }
+      if (content.length > 50000) {
+        return res.status(400).json({ error: "Inhalt darf maximal 50.000 Zeichen haben" });
+      }
+      const doc = await storage.createKnowledgeDocument({ title: title.trim(), content: content.trim(), category: category || "allgemein" });
+      res.json(doc);
+    } catch (error) {
+      res.status(500).json({ error: "Dokument konnte nicht erstellt werden" });
+    }
+  });
+
+  app.patch("/api/knowledge-documents/:id", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const doc = await storage.updateKnowledgeDocument(id, req.body);
+      if (!doc) return res.status(404).json({ error: "Dokument nicht gefunden" });
+      res.json(doc);
+    } catch (error) {
+      res.status(500).json({ error: "Dokument konnte nicht aktualisiert werden" });
+    }
+  });
+
+  app.delete("/api/knowledge-documents/:id", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteKnowledgeDocument(id);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Dokument konnte nicht gelöscht werden" });
+    }
   });
 
   return httpServer;

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImageIcon, Mic, MicOff, ThumbsUp, ThumbsDown, Copy, Check, Search, X } from "lucide-react";
+import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImageIcon, Mic, MicOff, ThumbsUp, ThumbsDown, Copy, Check, Search, X, MessageCircle, Swords, FileText, BookOpen, Sparkles } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { useRegion, useLocalizedText } from "@/lib/region";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -416,6 +416,15 @@ export default function KICoach() {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [promptSearch, setPromptSearch] = useState("");
   const [isListening, setIsListening] = useState(false);
+  const [coachMode, setCoachMode] = useState<string>("");
+
+  const COACH_MODES = [
+    { id: "", label: "Allgemeines Coaching", icon: MessageCircle, desc: "Freies Gespräch zu allen Themen" },
+    { id: "interview", label: "Interview-Vorbereitung", icon: BookOpen, desc: "Bewerbungsgespräche vorbereiten" },
+    { id: "konflikt", label: "Konfliktlösung", icon: Swords, desc: "Konflikte analysieren und lösen" },
+    { id: "stellenanzeige", label: "Stellenanzeige erstellen", icon: FileText, desc: "Professionelle Anzeigen erstellen" },
+    { id: "gespraechsleitfaden", label: "Gesprächsleitfaden", icon: Sparkles, desc: "Leitfaden für schwierige Gespräche" },
+  ];
 
   useEffect(() => {
     if (!promptSearch.trim()) return;
@@ -591,7 +600,7 @@ export default function KICoach() {
       } catch {}
 
       const hasStammdaten = Object.keys(stammdaten).length > 0;
-      const body = JSON.stringify({ messages: chatHistory, ...(hasStammdaten ? { stammdaten } : {}), region });
+      const body = JSON.stringify({ messages: chatHistory, ...(hasStammdaten ? { stammdaten } : {}), region, ...(coachMode ? { mode: coachMode } : {}) });
 
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 120000);
@@ -690,7 +699,23 @@ export default function KICoach() {
   }, [input, loading, messages, isListening, region]);
 
   const setFeedback = useCallback((index: number, value: "up" | "down") => {
-    setMessages(prev => prev.map((msg, i) => i === index ? { ...msg, feedback: msg.feedback === value ? undefined : value } : msg));
+    setMessages(prev => {
+      const updated = prev.map((msg, i) => i === index ? { ...msg, feedback: msg.feedback === value ? undefined : value } : msg);
+      const msg = updated[index];
+      if (msg && msg.feedback === value) {
+        const userMsg = [...updated].slice(0, index).reverse().find(m => m.role === "user");
+        fetch("/api/coach-feedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userMessage: userMsg?.content || "",
+            assistantMessage: msg.content,
+            feedbackType: value,
+          }),
+        }).catch(() => {});
+      }
+      return updated;
+    });
   }, []);
 
   const sendQuickReply = useCallback((text: string) => {
@@ -745,7 +770,7 @@ export default function KICoach() {
         } catch {}
 
         const hasStammdaten = Object.keys(stammdaten).length > 0;
-        const body = JSON.stringify({ messages: chatHistory, ...(hasStammdaten ? { stammdaten } : {}), region });
+        const body = JSON.stringify({ messages: chatHistory, ...(hasStammdaten ? { stammdaten } : {}), region, ...(coachMode ? { mode: coachMode } : {}) });
 
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 120000);
@@ -1361,6 +1386,40 @@ export default function KICoach() {
           <div style={{ padding: isMobile ? "0 20px" : "0 60px", margin: "18px 0 12px" }}>
             <div style={{ height: 1, background: "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.08) 30%, rgba(0,0,0,0.08) 70%, transparent 100%)" }} />
           </div>
+
+          {messages.length <= 1 && (
+            <div style={{ padding: isMobile ? "8px 10px 0" : "12px 28px 0" }}>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
+                {COACH_MODES.map(m => {
+                  const Icon = m.icon;
+                  const active = coachMode === m.id;
+                  return (
+                    <button
+                      key={m.id}
+                      onClick={() => setCoachMode(m.id)}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 6,
+                        padding: "8px 14px", borderRadius: 12, fontSize: 13, fontWeight: 550,
+                        border: active ? "1.5px solid #0071E3" : "1.5px solid rgba(0,0,0,0.08)",
+                        background: active ? "rgba(0,113,227,0.08)" : "rgba(255,255,255,0.8)",
+                        color: active ? "#0071E3" : "#48484A",
+                        cursor: "pointer", transition: "all 150ms ease",
+                      }}
+                      data-testid={`mode-${m.id || "general"}`}
+                    >
+                      <Icon style={{ width: 14, height: 14 }} />
+                      {m.label}
+                    </button>
+                  );
+                })}
+              </div>
+              {coachMode && (
+                <p style={{ textAlign: "center", fontSize: 12, color: "#8E8E93", marginTop: 6 }}>
+                  {COACH_MODES.find(m => m.id === coachMode)?.desc}
+                </p>
+              )}
+            </div>
+          )}
 
           <div style={{
             flex: 1, overflowY: "auto", padding: isMobile ? "12px 10px" : "20px 28px",
