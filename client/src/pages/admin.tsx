@@ -498,10 +498,10 @@ export default function Admin() {
         <div style={{ display: "flex", gap: 4, marginBottom: 20, background: "rgba(0,0,0,0.03)", borderRadius: 12, padding: 4 }}>
           {[
             { id: "users" as const, label: "Benutzer", icon: Users },
+            { id: "topics" as const, label: "Themen", icon: Database },
             { id: "feedback" as const, label: "Feedback", icon: ThumbsUp },
             { id: "golden" as const, label: "Goldene Antworten", icon: Check },
             { id: "knowledge" as const, label: "Wissen", icon: BookOpen },
-            { id: "topics" as const, label: "Themen", icon: Database },
           ].map(tab => (
             <button
               key={tab.id}
