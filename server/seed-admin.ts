@@ -36,6 +36,13 @@ async function ensureSchema() {
         created_at TIMESTAMP NOT NULL DEFAULT NOW()
       );
     `);
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS coach_system_prompt (
+        id SERIAL PRIMARY KEY,
+        prompt_text TEXT NOT NULL,
+        updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+    `);
     console.log("Schema migration completed successfully");
   } catch (err) {
     console.error("Schema migration error:", err);

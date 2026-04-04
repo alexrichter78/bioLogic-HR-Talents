@@ -3,7 +3,7 @@ import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Plus, Trash2, Pencil, X, Save, Users, CalendarDays, Shield, Building2, Search, ChevronUp, ChevronDown, Database, KeyRound, Copy, Check, ThumbsUp, ThumbsDown, BookOpen, FileText } from "lucide-react";
+import { Plus, Trash2, Pencil, X, Save, Users, CalendarDays, Shield, Building2, Search, ChevronUp, ChevronDown, Database, KeyRound, Copy, Check, ThumbsUp, ThumbsDown, BookOpen, FileText, MessageSquare, RotateCcw } from "lucide-react";
 
 interface UserWithSub {
   id: number;
@@ -79,7 +79,7 @@ export default function Admin() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [resetLink, setResetLink] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState<"users" | "feedback" | "knowledge" | "golden" | "topics">("users");
+  const [activeTab, setActiveTab] = useState<"users" | "feedback" | "knowledge" | "golden" | "topics" | "prompt">("users");
   const [feedbackList, setFeedbackList] = useState<any[]>([]);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [knowledgeDocs, setKnowledgeDocs] = useState<any[]>([]);
@@ -91,6 +91,10 @@ export default function Admin() {
   const [goldenLoading, setGoldenLoading] = useState(false);
   const [topicStats, setTopicStats] = useState<{ topic: string; count: number }[]>([]);
   const [topicsLoading, setTopicsLoading] = useState(false);
+  const [promptText, setPromptText] = useState("");
+  const [promptLoading, setPromptLoading] = useState(false);
+  const [promptSaving, setPromptSaving] = useState(false);
+  const [promptSaved, setPromptSaved] = useState(false);
 
   const loadFeedback = async () => {
     setFeedbackLoading(true);
@@ -128,6 +132,52 @@ export default function Admin() {
     setTopicsLoading(false);
   };
 
+  const loadPrompt = async () => {
+    setPromptLoading(true);
+    try {
+      const res = await fetch("/api/coach-system-prompt", { credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        setPromptText(data.prompt || "");
+      }
+    } catch {}
+    setPromptLoading(false);
+  };
+
+  const savePrompt = async () => {
+    setPromptSaving(true);
+    setPromptSaved(false);
+    try {
+      const res = await fetch("/api/coach-system-prompt", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ prompt: promptText }),
+      });
+      if (res.ok) {
+        setPromptSaved(true);
+        setTimeout(() => setPromptSaved(false), 3000);
+      }
+    } catch {}
+    setPromptSaving(false);
+  };
+
+  const resetPrompt = async () => {
+    if (!confirm("Prompt auf Standard zurücksetzen? Deine Änderungen gehen verloren.")) return;
+    try {
+      const res = await fetch("/api/coach-system-prompt/reset", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setPromptText(data.prompt || "");
+        setPromptSaved(true);
+        setTimeout(() => setPromptSaved(false), 3000);
+      }
+    } catch {}
+  };
+
   const deleteGoldenAnswer = async (id: number) => {
     try {
       const res = await fetch(`/api/golden-answers/${id}`, { method: "DELETE", credentials: "include" });
@@ -142,6 +192,7 @@ export default function Admin() {
     if (activeTab === "knowledge") loadKnowledgeDocs();
     if (activeTab === "golden") loadGoldenAnswers();
     if (activeTab === "topics") loadTopicStats();
+    if (activeTab === "prompt") loadPrompt();
   }, [activeTab]);
 
   const saveKnowledgeDoc = async () => {
@@ -502,6 +553,7 @@ export default function Admin() {
             { id: "feedback" as const, label: "Feedback", icon: ThumbsUp },
             { id: "golden" as const, label: "Goldene Antworten", icon: Check },
             { id: "knowledge" as const, label: "Wissen", icon: BookOpen },
+            { id: "prompt" as const, label: "Prompt", icon: MessageSquare },
           ].map(tab => (
             <button
               key={tab.id}
@@ -871,6 +923,77 @@ export default function Admin() {
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === "prompt" && (
+          <div>
+            <div style={{ marginBottom: 20 }}>
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px", display: "flex", alignItems: "center", gap: 8 }}>
+                <MessageSquare style={{ width: 20, height: 20, color: "#1A5DAB" }} />
+                Louis System-Prompt
+              </h2>
+              <p style={{ fontSize: 14, color: "#6E6E73", margin: 0 }}>
+                Der vollständige Prompt, der Louis' Verhalten, Ton und Regeln steuert. Änderungen wirken sofort.
+              </p>
+            </div>
+            {promptLoading ? (
+              <p style={{ color: "#8E8E93", textAlign: "center", padding: 40 }} data-testid="prompt-loading">Wird geladen...</p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <textarea
+                  data-testid="prompt-textarea"
+                  value={promptText}
+                  onChange={e => { setPromptText(e.target.value); setPromptSaved(false); }}
+                  style={{
+                    width: "100%", minHeight: 500, padding: 16, fontSize: 13, lineHeight: 1.6,
+                    fontFamily: "'SF Mono', 'Fira Code', 'Consolas', monospace",
+                    border: "1px solid rgba(0,0,0,0.12)", borderRadius: 12,
+                    background: "#FAFAFA", color: "#1D1D1F", resize: "vertical",
+                    outline: "none",
+                  }}
+                  onFocus={e => { e.target.style.borderColor = "#1A5DAB"; }}
+                  onBlur={e => { e.target.style.borderColor = "rgba(0,0,0,0.12)"; }}
+                />
+                <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                  <button
+                    data-testid="prompt-save"
+                    onClick={savePrompt}
+                    disabled={promptSaving}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 8, padding: "10px 24px",
+                      background: "#1A5DAB", color: "#fff", border: "none", borderRadius: 10,
+                      fontSize: 14, fontWeight: 600, cursor: promptSaving ? "wait" : "pointer",
+                      opacity: promptSaving ? 0.7 : 1,
+                    }}
+                  >
+                    <Save style={{ width: 16, height: 16 }} />
+                    {promptSaving ? "Speichert..." : "Speichern"}
+                  </button>
+                  <button
+                    data-testid="prompt-reset"
+                    onClick={resetPrompt}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 8, padding: "10px 20px",
+                      background: "transparent", color: "#8E8E93", border: "1px solid rgba(0,0,0,0.1)",
+                      borderRadius: 10, fontSize: 14, fontWeight: 500, cursor: "pointer",
+                    }}
+                  >
+                    <RotateCcw style={{ width: 15, height: 15 }} />
+                    Standard wiederherstellen
+                  </button>
+                  {promptSaved && (
+                    <span style={{ color: "#34C759", fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }} data-testid="prompt-saved-indicator">
+                      <Check style={{ width: 15, height: 15 }} />
+                      Gespeichert
+                    </span>
+                  )}
+                </div>
+                <div style={{ padding: 14, background: "rgba(26,93,171,0.06)", borderRadius: 10, fontSize: 13, color: "#6E6E73", lineHeight: 1.5 }}>
+                  <strong style={{ color: "#1D1D1F" }}>Hinweis:</strong> Der Prompt-Kopf ("Du bist Louis – der bioLogic Coach...") und dynamische Teile (Region, Modus, Wissensbasis-Dokumente) werden automatisch hinzugefügt. Hier bearbeitest du den Hauptteil mit Ton, Regeln und Verhalten.
+                </div>
               </div>
             )}
           </div>

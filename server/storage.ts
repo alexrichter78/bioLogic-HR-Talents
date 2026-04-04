@@ -48,6 +48,9 @@ export interface IStorage {
 
   createCoachTopic(data: { topic: string; userId: number | null }): Promise<CoachTopic>;
   getTopicStats(): Promise<{ topic: string; count: number }[]>;
+
+  getCoachSystemPrompt(): Promise<string | null>;
+  saveCoachSystemPrompt(promptText: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -356,6 +359,19 @@ export class DatabaseStorage implements IStorage {
     return Object.entries(counts)
       .map(([topic, count]) => ({ topic, count }))
       .sort((a, b) => b.count - a.count);
+  }
+  async getCoachSystemPrompt(): Promise<string | null> {
+    const result = await pool.query("SELECT prompt_text FROM coach_system_prompt ORDER BY id DESC LIMIT 1");
+    return result.rows[0]?.prompt_text || null;
+  }
+
+  async saveCoachSystemPrompt(promptText: string): Promise<void> {
+    const existing = await pool.query("SELECT id FROM coach_system_prompt LIMIT 1");
+    if (existing.rows.length > 0) {
+      await pool.query("UPDATE coach_system_prompt SET prompt_text = $1, updated_at = NOW() WHERE id = $2", [promptText, existing.rows[0].id]);
+    } else {
+      await pool.query("INSERT INTO coach_system_prompt (prompt_text) VALUES ($1)", [promptText]);
+    }
   }
 }
 
