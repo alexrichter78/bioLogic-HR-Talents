@@ -1034,12 +1034,8 @@ export default function KICoach() {
           if (b.length > 3 && b.length < 60) replies.push(b.charAt(0).toUpperCase() + b.slice(1));
         }
       }
-      if (replies.length < 2) {
-        replies.length = 0;
-        replies.push("Ja, gerne!");
-        replies.push("Nein, andere Frage");
-      }
-      return replies;
+      if (replies.length >= 2) return replies;
+      return [];
     }
 
     if (content.length > 400 && !hasQuestion && !asksForInput) {
@@ -1057,14 +1053,9 @@ export default function KICoach() {
       const contextOptions = extractOptionsFromText(lastTwo);
       if (contextOptions.length >= 2) return contextOptions;
 
-      const isOpenEnded = /was nimmst du|was wirst du|was davon|welchen punkt|was hast du|was fällt dir|wie würdest du|was ist dir|worauf achtest du|was planst du|was denkst du|was bedeutet das für dich|was möchtest du mitnehmen|was kannst du daraus/i.test(lastTwo);
-      if (isOpenEnded) {
-        const replies: string[] = [];
-        if (/ausprobier|umsetzen|anwend|konkret/i.test(lastTwo)) replies.push("Ich probiere die Formulierung aus");
-        if (/mitnehm|lernen|erkenntnis/i.test(lastTwo)) replies.push("Die wichtigste Erkenntnis war...");
-        if (content.length > 500) replies.push("Fasse die Kernpunkte zusammen");
-        replies.push("Ich habe noch eine Frage dazu");
-        return replies.slice(0, 3);
+      const isCoachingReflection = /was geht dir.{0,20}durch den kopf|was davon wirst du|was nimmst du.{0,15}mit|was wirst du.{0,15}(ausprobier|anders mach|umsetzen|ändern)|was ist dir.{0,15}(wichtig|aufgefallen|klar geworden)|worüber denkst du|was denkst du.{0,15}(darüber|dazu)|was fällt dir.{0,15}(auf|ein|dazu)|was bedeutet das für dich|was möchtest du.{0,15}mitnehmen|was kannst du daraus|wie fühlst du dich|was hat dich.{0,15}(überrascht|bewegt)|welchen punkt|was planst du|worauf achtest du|wie siehst du das|was wäre.*nächste.{0,10}schritt/i.test(lastTwo);
+      if (isCoachingReflection) {
+        return [];
       }
 
       const lastQuestion = lastTwo.match(/[^.!?]*\?\s*$/)?.[0]?.trim() || "";
@@ -1080,7 +1071,18 @@ export default function KICoach() {
         }
       }
 
-      return ["Ja, gerne!", "Nein, andere Frage"];
+      if (/oder/i.test(lastQuestion) && lastQuestion.length > 15) {
+        const oderParts = lastQuestion.split(/\s+oder\s+/i);
+        if (oderParts.length === 2) {
+          const a = oderParts[0].replace(/.*[.!?]\s*/, "").trim();
+          const b = oderParts[1].replace(/\?+\s*$/, "").trim();
+          if (a.length > 3 && a.length < 60 && b.length > 3 && b.length < 60) {
+            return [a.charAt(0).toUpperCase() + a.slice(1), b.charAt(0).toUpperCase() + b.slice(1)];
+          }
+        }
+      }
+
+      return [];
     }
     return [];
   }, [extractOptionsFromText]);
