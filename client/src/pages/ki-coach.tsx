@@ -938,6 +938,10 @@ export default function KICoach() {
   const extractQuickReplies = useCallback((content: string, msgIndex: number, totalMessages: number, hasImage?: boolean): string[] => {
     const isLastAssistant = msgIndex === totalMessages - 1;
     if (!isLastAssistant) return [];
+
+    const isDecline = /außerhalb meines Fachgebiets|liegt leider außerhalb|kann ich dir.*nicht.*weiterhelfen|nicht mein Fachgebiet|dazu kann ich.*nichts sagen|fällt nicht in meinen Bereich|bin.*nicht.*zuständig|kann ich leider nicht beantworten|gehört nicht zu meinen Themen/i.test(content);
+    if (isDecline) return [];
+
     const paragraphs = content.trim().split(/\n\n/);
     const lastTwo = paragraphs.slice(-2).join("\n\n").replace(/\*\*/g, "");
     const hasQuestion = /\?\s*$/.test(lastTwo.trim()) || /\?["\u201C\u201D\u201E)]*\s*$/m.test(lastTwo);
@@ -1038,22 +1042,16 @@ export default function KICoach() {
       return replies;
     }
 
-    if (content.length > 200 && !hasQuestion && !asksForInput) {
+    if (content.length > 400 && !hasQuestion && !asksForInput) {
       const replies: string[] = [];
       if (/quelle|studie|forschung|gallup|mckinsey|harvard|deloitte|source/i.test(content)) {
         replies.push("Gibt es dazu weitere Studien?");
       }
       if (/technik|methode|regel|strategie|modell|framework/i.test(content)) replies.push("Gib mir ein konkretes Beispiel dazu");
       if (/gespräch|formulierung|satz|sagen|dialog/i.test(content)) replies.push("Lass uns das durchspielen");
-      if (/führung|management|team|mitarbeiter/i.test(content) && !/durchspielen/.test(replies.join(""))) {
-        replies.push("Wie setze ich das in der Praxis um?");
-      }
-      if (content.length > 500) replies.push("Fasse die wichtigsten Punkte zusammen");
-      if (replies.length === 0) replies.push("Erkläre das genauer");
-      if (!/bioLogic.*Prägung|auf deine.*Prägung/i.test(content)) {
-        replies.push("Beziehe das auf meine bioLogic-Prägung");
-      }
-      return replies.slice(0, 4);
+      if (content.length > 800) replies.push("Fasse die wichtigsten Punkte zusammen");
+      if (replies.length > 0) return replies.slice(0, 3);
+      return [];
     }
     if (hasQuestion) {
       const contextOptions = extractOptionsFromText(lastTwo);
