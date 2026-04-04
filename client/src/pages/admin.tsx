@@ -79,7 +79,7 @@ export default function Admin() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [resetLink, setResetLink] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState<"users" | "feedback" | "knowledge">("users");
+  const [activeTab, setActiveTab] = useState<"users" | "feedback" | "knowledge" | "golden" | "topics">("users");
   const [feedbackList, setFeedbackList] = useState<any[]>([]);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [knowledgeDocs, setKnowledgeDocs] = useState<any[]>([]);
@@ -87,6 +87,10 @@ export default function Admin() {
   const [showKnowledgeForm, setShowKnowledgeForm] = useState(false);
   const [knowledgeForm, setKnowledgeForm] = useState({ title: "", content: "", category: "allgemein" });
   const [editingDocId, setEditingDocId] = useState<number | null>(null);
+  const [goldenAnswers, setGoldenAnswers] = useState<any[]>([]);
+  const [goldenLoading, setGoldenLoading] = useState(false);
+  const [topicStats, setTopicStats] = useState<{ topic: string; count: number }[]>([]);
+  const [topicsLoading, setTopicsLoading] = useState(false);
 
   const loadFeedback = async () => {
     setFeedbackLoading(true);
@@ -106,9 +110,38 @@ export default function Admin() {
     setKnowledgeLoading(false);
   };
 
+  const loadGoldenAnswers = async () => {
+    setGoldenLoading(true);
+    try {
+      const res = await fetch("/api/golden-answers", { credentials: "include" });
+      if (res.ok) setGoldenAnswers(await res.json());
+    } catch {}
+    setGoldenLoading(false);
+  };
+
+  const loadTopicStats = async () => {
+    setTopicsLoading(true);
+    try {
+      const res = await fetch("/api/coach-topics", { credentials: "include" });
+      if (res.ok) setTopicStats(await res.json());
+    } catch {}
+    setTopicsLoading(false);
+  };
+
+  const deleteGoldenAnswer = async (id: number) => {
+    try {
+      const res = await fetch(`/api/golden-answers/${id}`, { method: "DELETE", credentials: "include" });
+      if (res.ok) {
+        setGoldenAnswers(prev => prev.filter(a => a.id !== id));
+      }
+    } catch {}
+  };
+
   useEffect(() => {
     if (activeTab === "feedback") loadFeedback();
     if (activeTab === "knowledge") loadKnowledgeDocs();
+    if (activeTab === "golden") loadGoldenAnswers();
+    if (activeTab === "topics") loadTopicStats();
   }, [activeTab]);
 
   const saveKnowledgeDoc = async () => {
@@ -465,8 +498,10 @@ export default function Admin() {
         <div style={{ display: "flex", gap: 4, marginBottom: 20, background: "rgba(0,0,0,0.03)", borderRadius: 12, padding: 4 }}>
           {[
             { id: "users" as const, label: "Benutzer", icon: Users },
-            { id: "feedback" as const, label: "Coach-Feedback", icon: ThumbsUp },
-            { id: "knowledge" as const, label: "Wissensdatenbank", icon: BookOpen },
+            { id: "feedback" as const, label: "Feedback", icon: ThumbsUp },
+            { id: "golden" as const, label: "Goldene Antworten", icon: Check },
+            { id: "knowledge" as const, label: "Wissen", icon: BookOpen },
+            { id: "topics" as const, label: "Themen", icon: Database },
           ].map(tab => (
             <button
               key={tab.id}
@@ -775,6 +810,112 @@ export default function Admin() {
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === "golden" && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+              <div>
+                <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px", display: "flex", alignItems: "center", gap: 8 }}>
+                  <Check style={{ width: 20, height: 20, color: "#34C759" }} />
+                  Goldene Antworten
+                </h2>
+                <p style={{ fontSize: 14, color: "#6E6E73", margin: 0 }}>
+                  {goldenAnswers.length} bewährte Antworten · Werden als Qualitäts-Vorbilder für Louis genutzt
+                </p>
+              </div>
+            </div>
+            {goldenLoading ? (
+              <p style={{ color: "#8E8E93", textAlign: "center", padding: 40 }}>Wird geladen...</p>
+            ) : goldenAnswers.length === 0 ? (
+              <div style={{ textAlign: "center", padding: 60, color: "#8E8E93" }}>
+                <Check style={{ width: 32, height: 32, marginBottom: 12, opacity: 0.4 }} />
+                <p style={{ fontWeight: 600 }}>Noch keine goldenen Antworten</p>
+                <p style={{ fontSize: 13, maxWidth: 400, margin: "0 auto" }}>Wenn Nutzer eine Coach-Antwort mit Daumen hoch bewerten, wird sie automatisch als goldene Antwort gespeichert. Louis nutzt diese dann als Qualitäts-Vorbilder.</p>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {[...goldenAnswers].reverse().map((a) => (
+                  <div key={a.id} style={{ background: "#fff", borderRadius: 14, padding: "16px 20px", border: "1px solid rgba(52,199,89,0.15)" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{
+                          display: "inline-flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 8,
+                          background: "rgba(52,199,89,0.1)", color: "#1B7A3D", fontSize: 12, fontWeight: 600,
+                        }}>
+                          <Check style={{ width: 12, height: 12 }} />
+                          {a.category}
+                        </span>
+                        <span style={{ fontSize: 11, color: "#8E8E93" }}>
+                          {new Date(a.createdAt).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => deleteGoldenAnswer(a.id)}
+                        style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid rgba(255,59,48,0.1)", background: "rgba(255,59,48,0.03)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                        data-testid={`button-delete-golden-${a.id}`}
+                      >
+                        <Trash2 style={{ width: 12, height: 12, color: "#FF3B30" }} />
+                      </button>
+                    </div>
+                    <div style={{ marginBottom: 8 }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase" as const, letterSpacing: 0.5 }}>Nutzerfrage</span>
+                      <p style={{ fontSize: 13, color: "#1D1D1F", margin: "2px 0 0", lineHeight: 1.5 }}>{a.userMessage.slice(0, 200)}{a.userMessage.length > 200 ? "..." : ""}</p>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase" as const, letterSpacing: 0.5 }}>Goldene Antwort</span>
+                      <p style={{ fontSize: 13, color: "#48484A", margin: "2px 0 0", lineHeight: 1.5 }}>{a.assistantMessage.slice(0, 400)}{a.assistantMessage.length > 400 ? "..." : ""}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === "topics" && (
+          <div>
+            <div style={{ marginBottom: 20 }}>
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px", display: "flex", alignItems: "center", gap: 8 }}>
+                <Database style={{ width: 20, height: 20, color: "#1A5DAB" }} />
+                Themen-Tracking
+              </h2>
+              <p style={{ fontSize: 14, color: "#6E6E73", margin: 0 }}>
+                Welche Themen fragen die Nutzer am häufigsten? · {topicStats.reduce((sum, t) => sum + t.count, 0)} Anfragen gesamt
+              </p>
+            </div>
+            {topicsLoading ? (
+              <p style={{ color: "#8E8E93", textAlign: "center", padding: 40 }}>Wird geladen...</p>
+            ) : topicStats.length === 0 ? (
+              <div style={{ textAlign: "center", padding: 60, color: "#8E8E93" }}>
+                <Database style={{ width: 32, height: 32, marginBottom: 12, opacity: 0.4 }} />
+                <p style={{ fontWeight: 600 }}>Noch keine Daten</p>
+                <p style={{ fontSize: 13 }}>Sobald Nutzer mit Louis sprechen, siehst du hier die beliebtesten Themen.</p>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {topicStats.map((t, i) => {
+                  const maxCount = topicStats[0]?.count || 1;
+                  const percentage = Math.round((t.count / maxCount) * 100);
+                  const colors = ["#1A5DAB", "#34C759", "#FF9500", "#FF3B30", "#AF52DE", "#5856D6", "#007AFF", "#FF2D55", "#5AC8FA", "#FFD60A"];
+                  return (
+                    <div key={t.topic} style={{ background: "#fff", borderRadius: 14, padding: "14px 20px", border: "1px solid rgba(0,0,0,0.06)" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                        <span style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F" }}>{t.topic}</span>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: colors[i % colors.length] }}>{t.count} Anfragen</span>
+                      </div>
+                      <div style={{ height: 8, background: "rgba(0,0,0,0.04)", borderRadius: 4, overflow: "hidden" }}>
+                        <div style={{
+                          height: "100%", width: `${percentage}%`, background: colors[i % colors.length],
+                          borderRadius: 4, transition: "width 300ms ease",
+                        }} />
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

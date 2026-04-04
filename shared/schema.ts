@@ -64,6 +64,21 @@ export const knowledgeDocuments = pgTable("knowledge_documents", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+export const goldenAnswers = pgTable("golden_answers", {
+  id: serial("id").primaryKey(),
+  userMessage: text("user_message").notNull(),
+  assistantMessage: text("assistant_message").notNull(),
+  category: text("category").notNull().default("allgemein"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const coachTopics = pgTable("coach_topics", {
+  id: serial("id").primaryKey(),
+  topic: text("topic").notNull(),
+  userId: integer("user_id").references(() => users.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
@@ -97,3 +112,5 @@ export type CoachFeedback = typeof coachFeedback.$inferSelect;
 export type InsertCoachFeedback = z.infer<typeof insertCoachFeedbackSchema>;
 export type KnowledgeDocument = typeof knowledgeDocuments.$inferSelect;
 export type InsertKnowledgeDocument = z.infer<typeof insertKnowledgeDocumentSchema>;
+export type GoldenAnswer = typeof goldenAnswers.$inferSelect;
+export type CoachTopic = typeof coachTopics.$inferSelect;

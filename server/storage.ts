@@ -2,7 +2,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { eq, and, gte } from "drizzle-orm";
 import pkg from "pg";
 const { Pool } = pkg;
-import { users, subscriptions, passwordResetTokens, coachFeedback, knowledgeDocuments, type User, type InsertUser, type Subscription, type InsertSubscription, type PasswordResetToken, type CoachFeedback, type InsertCoachFeedback, type KnowledgeDocument, type InsertKnowledgeDocument } from "@shared/schema";
+import { users, subscriptions, passwordResetTokens, coachFeedback, knowledgeDocuments, goldenAnswers, coachTopics, type User, type InsertUser, type Subscription, type InsertSubscription, type PasswordResetToken, type CoachFeedback, type InsertCoachFeedback, type KnowledgeDocument, type InsertKnowledgeDocument, type GoldenAnswer, type CoachTopic } from "@shared/schema";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -40,6 +40,14 @@ export interface IStorage {
   deleteKnowledgeDocument(id: number): Promise<void>;
   listKnowledgeDocuments(): Promise<KnowledgeDocument[]>;
   searchKnowledgeDocuments(query: string): Promise<KnowledgeDocument[]>;
+
+  createGoldenAnswer(data: { userMessage: string; assistantMessage: string; category: string }): Promise<GoldenAnswer>;
+  listGoldenAnswers(): Promise<GoldenAnswer[]>;
+  deleteGoldenAnswer(id: number): Promise<void>;
+  searchGoldenAnswers(query: string): Promise<GoldenAnswer[]>;
+
+  createCoachTopic(data: { topic: string; userId: number | null }): Promise<CoachTopic>;
+  getTopicStats(): Promise<{ topic: string; count: number }[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -301,6 +309,53 @@ export class DatabaseStorage implements IStorage {
     }
 
     return results.slice(0, 5).map(item => item.doc);
+  }
+
+  async createGoldenAnswer(data: { userMessage: string; assistantMessage: string; category: string }): Promise<GoldenAnswer> {
+    const [answer] = await db.insert(goldenAnswers).values(data).returning();
+    return answer;
+  }
+
+  async listGoldenAnswers(): Promise<GoldenAnswer[]> {
+    return db.select().from(goldenAnswers);
+  }
+
+  async deleteGoldenAnswer(id: number): Promise<void> {
+    await db.delete(goldenAnswers).where(eq(goldenAnswers.id, id));
+  }
+
+  async searchGoldenAnswers(query: string): Promise<GoldenAnswer[]> {
+    const allAnswers = await db.select().from(goldenAnswers);
+    if (allAnswers.length === 0) return [];
+    const queryLower = query.toLowerCase();
+    const queryWords = queryLower.split(/\s+/).filter(w => w.length > 3);
+    if (queryWords.length === 0) return allAnswers.slice(0, 2);
+    return allAnswers
+      .map(a => {
+        const text = (a.userMessage + " " + a.category).toLowerCase();
+        const score = queryWords.filter(w => text.includes(w)).length;
+        return { a, score };
+      })
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 2)
+      .map(item => item.a);
+  }
+
+  async createCoachTopic(data: { topic: string; userId: number | null }): Promise<CoachTopic> {
+    const [topic] = await db.insert(coachTopics).values(data).returning();
+    return topic;
+  }
+
+  async getTopicStats(): Promise<{ topic: string; count: number }[]> {
+    const all = await db.select().from(coachTopics);
+    const counts: Record<string, number> = {};
+    for (const t of all) {
+      counts[t.topic] = (counts[t.topic] || 0) + 1;
+    }
+    return Object.entries(counts)
+      .map(([topic, count]) => ({ topic, count }))
+      .sort((a, b) => b.count - a.count);
   }
 }
 

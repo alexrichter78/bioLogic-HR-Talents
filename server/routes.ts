@@ -1105,9 +1105,41 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
           knowledgeContext = "\n\nWISSENSBASIS (nutze diese Inhalte als Grundlage für deine Antwort – kombiniere Wissen aus mehreren Dokumenten wenn die Frage mehrere Themen berührt):\n" +
             relevantDocs.map(d => `--- ${d.title} (${d.category}) ---\n${d.content}`).join("\n\n");
         }
+
+        const goldenExamples = await storage.searchGoldenAnswers(searchTerms);
+        if (goldenExamples.length > 0) {
+          knowledgeContext += "\n\nBEISPIELHAFTE ANTWORTEN (orientiere dich an Stil und Qualität dieser bewährten Antworten, aber kopiere sie NICHT wörtlich – passe sie an die aktuelle Frage an):\n" +
+            goldenExamples.map(g => `Frage: ${g.userMessage.slice(0, 300)}\nAntwort: ${g.assistantMessage.slice(0, 800)}`).join("\n\n---\n\n");
+        }
       } catch (e) {
         console.error("Knowledge search error:", e);
       }
+
+      const TOPIC_KEYWORDS: Record<string, string[]> = {
+        "Führung": ["führung", "führungskraft", "chef", "leadership", "management", "leitung", "vorgesetzter"],
+        "Konfliktlösung": ["konflikt", "streit", "spannung", "reibung", "auseinandersetzung", "meinungsverschiedenheit"],
+        "Recruiting": ["recruiting", "bewerbung", "stellenanzeige", "kandidat", "einstellung", "interview", "assessment", "bewerber"],
+        "Teamdynamik": ["team", "teamdynamik", "zusammenarbeit", "teamkonstellation", "gruppe"],
+        "Kommunikation": ["kommunikation", "gespräch", "dialog", "ansprache", "feedback", "reden"],
+        "Onboarding": ["onboarding", "einarbeitung", "einführung", "neuer mitarbeiter", "integration"],
+        "Verkauf": ["verkauf", "vertrieb", "sales", "kunde", "akquise", "verhandlung"],
+        "Persönlichkeit": ["profil", "triade", "impulsiv", "intuitiv", "analytisch", "prägung", "biologic", "persönlichkeit"],
+        "Stress & Resilienz": ["stress", "burnout", "resilienz", "belastung", "überforderung", "druck"],
+        "Motivation": ["motivation", "produktivität", "prokrastination", "engagement", "demotivation", "aufschieben"],
+      };
+      try {
+        const topicSearchText = lastMsg.toLowerCase();
+        const matchedTopics: string[] = [];
+        for (const [topic, keywords] of Object.entries(TOPIC_KEYWORDS)) {
+          if (keywords.some(k => topicSearchText.includes(k))) {
+            matchedTopics.push(topic);
+          }
+        }
+        const topicToSave = matchedTopics.length > 0 ? matchedTopics[0] : "Sonstiges";
+        const userId = req.session?.userId || null;
+        storage.createCoachTopic({ topic: topicToSave, userId }).catch(() => {});
+      } catch {}
+
 
       const modeInstructions: Record<string, string> = {
         "interview": `MODUS: INTERVIEW-VORBEREITUNG
@@ -1306,6 +1338,15 @@ REGELN:
 - Wenn Spielregeln oder Maßnahmen empfohlen werden: Benenne 2-3 konkrete Regeln.
 - Wenn der Nutzer Angst/Unsicherheit beschreibt: Erkläre aus seiner bioLogic WARUM er sich schwertut und gib eine Technik.
 - Auch bei Verkauf, Verhandlung oder privaten Situationen: bioLogic anwenden.
+
+SELBST-REFLEXION (QUALITÄTSSICHERUNG):
+Bevor du deine Antwort formulierst, prüfe intern:
+1. Ist meine Aussage konsistent mit der bioLogic-Wissensbasis? Widerspreche ich den Grundprinzipien (Triade, Konstellationen, Gleichwertigkeit der Prägungen)?
+2. Verwende ich die korrekten Begriffe? (Prägung statt Typ, korrekte Farbzuordnungen rot=impulsiv, gelb=intuitiv, blau=analytisch)
+3. Sind meine Empfehlungen praxistauglich und konkret genug für den Arbeitsalltag?
+4. Habe ich die Wissensbasis-Dokumente korrekt interpretiert und nicht verfälscht?
+Wenn du dir bei einer bioLogic-Aussage unsicher bist, formuliere vorsichtiger: "Aus bioLogic-Sicht würde man hier..." statt absolute Behauptungen.
+bioLogic ist IMMER die Grundlage – deine Antworten dürfen nie im Widerspruch zur Wissensbasis stehen.
 
 TEAMKONSTELLATIONS-BERATUNG:
 - Wenn der Nutzer sein Team beschreibt (z.B. "3 Blaue, 1 Roter, 2 Gelbe" oder "mein Team ist eher analytisch"), analysiere die Konstellation systematisch:
@@ -2108,6 +2149,47 @@ WICHTIGE REGELN:
         assistantMessage: String(assistantMessage).slice(0, 5000),
         feedbackType,
       });
+
+      if (feedbackType === "up") {
+        try {
+          const assistantText = String(assistantMessage);
+          const suspiciousPatterns = [
+            /ignore.*(?:previous|above|prior).*instructions/i,
+            /system\s*prompt/i,
+            /you\s+are\s+now/i,
+            /forget\s+(?:all|everything)/i,
+            /\bact\s+as\b/i,
+            /\bnew\s+instructions?\b/i,
+          ];
+          const isSuspicious = suspiciousPatterns.some(p => p.test(assistantText) || p.test(String(userMessage)));
+          if (isSuspicious) {
+            console.warn("Skipped golden answer: suspicious content detected");
+          } else {
+          const msgLower = String(userMessage).toLowerCase();
+          const topicMap: Record<string, string[]> = {
+            "führung": ["führung", "chef", "leadership", "leitung"],
+            "konflikt": ["konflikt", "streit", "spannung"],
+            "recruiting": ["recruiting", "bewerbung", "stellenanzeige", "kandidat"],
+            "team": ["team", "teamdynamik", "zusammenarbeit"],
+            "kommunikation": ["kommunikation", "gespräch", "dialog"],
+            "onboarding": ["onboarding", "einarbeitung"],
+            "verkauf": ["verkauf", "vertrieb", "sales", "kunde"],
+          };
+          let cat = "allgemein";
+          for (const [category, keywords] of Object.entries(topicMap)) {
+            if (keywords.some(k => msgLower.includes(k))) { cat = category; break; }
+          }
+          await storage.createGoldenAnswer({
+            userMessage: String(userMessage).slice(0, 2000),
+            assistantMessage: String(assistantMessage).slice(0, 5000),
+            category: cat,
+          });
+          }
+        } catch (e) {
+          console.error("Golden answer save error:", e);
+        }
+      }
+
       res.json(feedback);
     } catch (error) {
       console.error("Coach feedback error:", error);
@@ -2171,6 +2253,35 @@ WICHTIGE REGELN:
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Dokument konnte nicht gelöscht werden" });
+    }
+  });
+
+  app.get("/api/golden-answers", requireAuth, requireAdmin, async (_req: Request, res: Response) => {
+    try {
+      const answers = await storage.listGoldenAnswers();
+      res.json(answers);
+    } catch (error) {
+      res.status(500).json({ error: "Goldene Antworten konnten nicht geladen werden" });
+    }
+  });
+
+  app.delete("/api/golden-answers/:id", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ error: "Ungültige ID" });
+      await storage.deleteGoldenAnswer(id);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Konnte nicht gelöscht werden" });
+    }
+  });
+
+  app.get("/api/coach-topics", requireAuth, requireAdmin, async (_req: Request, res: Response) => {
+    try {
+      const stats = await storage.getTopicStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Themen-Statistiken konnten nicht geladen werden" });
     }
   });
 
