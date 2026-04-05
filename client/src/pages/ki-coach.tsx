@@ -1047,6 +1047,29 @@ export default function KICoach() {
         }
       }
       if (replies.length >= 2) return replies;
+
+      const hasOfferPattern = /willst du.{0,40}\?|soll ich.{0,40}\?|möchtest du.{0,40}\?|sag.{0,10}bescheid|gib.{0,10}bescheid|lass.{0,10}(es )?mich wissen|meld dich/i.test(lastTwo);
+      if (hasOfferPattern) {
+        if (/formulierung|satz|konkreten satz|gesprächseinstieg|gesprächsöffner/i.test(lastTwo)) {
+          return ["Ja, gib mir eine Formulierung", "Nein, andere Frage"];
+        }
+        if (/gespräch.{0,15}(führst|vorbereit|aufbau|strukturier|planung)/i.test(lastTwo)) {
+          return ["Ja, zeig mir wie", "Nein, andere Frage"];
+        }
+        if (/leitfaden|checkliste|schritt.{0,5}für.{0,5}schritt/i.test(lastTwo)) {
+          return ["Ja, erstelle einen Leitfaden", "Nein, andere Frage"];
+        }
+        if (/beispiel|konkret|praxis/i.test(lastTwo)) {
+          return ["Ja, gib mir ein Beispiel", "Nein, andere Frage"];
+        }
+        if (/durchspielen|üben|rollenspiel|simulier/i.test(lastTwo)) {
+          return ["Ja, lass uns das üben", "Nein, andere Frage"];
+        }
+        if (/tiefer|detail|genauer|vertief/i.test(lastTwo)) {
+          return ["Ja, gerne vertiefen", "Nein, andere Frage"];
+        }
+        return ["Ja, bitte!", "Nein, andere Frage"];
+      }
       return [];
     }
 
