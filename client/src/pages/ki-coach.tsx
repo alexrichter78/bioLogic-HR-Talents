@@ -873,8 +873,9 @@ export default function KICoach() {
       clean = clean.replace(/\?+\s*$/, "").trim();
       clean = clean.replace(/[.!]+\s*$/, "").trim();
       clean = clean.replace(/^(willst du|möchtest du|soll ich|wollen wir|magst du|sollen wir|hast du|kannst du|kann ich)\s+/i, "");
-      clean = clean.replace(/^(noch\s+)?(dir\s+)?(mal\s+)?(uns\s+)?/i, "").trim();
+      clean = clean.replace(/^(also\s+)?(noch\s+)?(dir\s+)?(mal\s+)?(uns\s+)?/i, "").trim();
       clean = clean.replace(/^(das\s+)?(einmal\s+)?(eher\s+)?/i, "").trim();
+      clean = clean.replace(/^(auch\s+)?/i, "").trim();
       clean = clean.replace(/^(wenn du magst,?\s*)/i, "").trim();
       clean = clean.replace(/^(zum Beispiel\s+)/i, "").trim();
       clean = clean.replace(/^,\s*/, "").trim();
@@ -898,11 +899,15 @@ export default function KICoach() {
       return clean;
     };
 
+    const isOnlyProfileTrait = (opt: string) =>
+      /^(eher\s+)?(impulsiv|intuitiv|analytisch|rot|gelb|blau)([,\s-]+(impulsiv|intuitiv|analytisch|rot|gelb|blau|dominant))*\s*$/i.test(opt.trim());
+
     const oderBoundary = normalized.match(/([^.!?]+[.!?])\s*[Oo]der\s+([^.!?]+\?)\s*$/);
     if (oderBoundary) {
       const optA = cleanOption(oderBoundary[1]);
       const optB = cleanOption(oderBoundary[2]);
       if (optA.length > 5 && optA.length <= 60 && optB.length > 5 && optB.length <= 60) {
+        if (isOnlyProfileTrait(optA) && isOnlyProfileTrait(optB)) return [];
         return [optA, optB];
       }
     }
@@ -917,6 +922,7 @@ export default function KICoach() {
       const optA = cleanOption(oderParts[0]);
       const optB = cleanOption(oderParts[1]);
       if (optA.length > 3 && optA.length <= 60 && optB.length > 3 && optB.length <= 60) {
+        if (isOnlyProfileTrait(optA) && isOnlyProfileTrait(optB)) return [];
         return [optA, optB];
       }
     }
@@ -928,7 +934,10 @@ export default function KICoach() {
         const items = [...commaParts, ...oderParts.slice(1)]
           .map(s => cleanOption(s))
           .filter(s => s.length >= 2 && s.length <= 40);
-        if (items.length >= 3) return items.slice(0, 4);
+        if (items.length >= 3) {
+          if (items.every(i => isOnlyProfileTrait(i))) return [];
+          return items.slice(0, 4);
+        }
       }
     }
 
@@ -953,12 +962,15 @@ export default function KICoach() {
     const isAskingUserProfile = hasQuestion && (
       /bist du eher.{0,30}(impulsiv|intuitiv|analytisch)/i.test(lastTwo) ||
       /wie ist deine.{0,20}(Prägung|Profil)/i.test(lastTwo) ||
+      /wie.{0,10}deine.{0,20}(Prägung|Profil).{0,10}ist/i.test(lastTwo) ||
       /wie bist du.{0,15}geprägt/i.test(lastTwo) ||
       /dein.{0,15}bioLogic.{0,15}(Profil|Prägung)/i.test(lastTwo) ||
       /welche.{0,20}(Prägung|Doppeldominanz).{0,20}hast du/i.test(lastTwo) ||
       /deine.{0,15}(Prägung|Profil).{0,20}zuschneid/i.test(lastTwo) ||
       /weisst du.{0,15}(dein|deine).{0,20}(Prägung|Profil)/i.test(lastTwo) ||
-      /(bist du|du eher).{0,10}(rot|gelb|blau)/i.test(lastTwo)
+      /wei(ss|ß)t du.{0,30}(Prägung|Profil|geprägt)/i.test(lastTwo) ||
+      /(bist du|du eher).{0,10}(rot|gelb|blau)/i.test(lastTwo) ||
+      /eher.{0,15}(impulsiv|intuitiv|analytisch).{0,20}oder.{0,20}(impulsiv|intuitiv|analytisch)/i.test(lastTwo)
     );
 
     if (isAskingUserProfile) {
