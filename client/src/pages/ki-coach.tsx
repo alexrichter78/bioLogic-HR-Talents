@@ -560,7 +560,10 @@ export default function KICoach() {
     }
 
     try {
-      const chatHistory = newMessages.filter(m => m !== WELCOME_MSG);
+      const chatHistory = newMessages.filter(m => m !== WELCOME_MSG).map(m => ({
+        ...m,
+        content: stripButtonMarker(m.content),
+      }));
 
       const stammdaten: Record<string, string> = {};
       try {
@@ -728,7 +731,7 @@ export default function KICoach() {
 
     const chatHistory = newMessages
       .filter(m => m !== WELCOME_MSG)
-      .map(m => ({ role: m.role, content: m.content }));
+      .map(m => ({ role: m.role, content: stripButtonMarker(m.content) }));
 
     (async () => {
       try {
@@ -865,262 +868,33 @@ export default function KICoach() {
     })();
   }, [loading, messages, region]);
 
-  const extractOptionsFromText = useCallback((text: string): string[] => {
-    const normalized = text.replace(/\*\*/g, "").trim();
-
-    const cleanOption = (part: string) => {
-      let clean = part.trim();
-      clean = clean.replace(/\?+\s*$/, "").trim();
-      clean = clean.replace(/[.!]+\s*$/, "").trim();
-      clean = clean.replace(/^(willst du|möchtest du|soll ich|wollen wir|magst du|sollen wir|hast du|kannst du|kann ich)\s+/i, "");
-      clean = clean.replace(/^(also\s+)?(noch\s+)?(dir\s+)?(mal\s+)?(uns\s+)?/i, "").trim();
-      clean = clean.replace(/^(das\s+)?(einmal\s+)?(eher\s+)?/i, "").trim();
-      clean = clean.replace(/^(auch\s+)?/i, "").trim();
-      clean = clean.replace(/^(wenn du magst,?\s*)/i, "").trim();
-      clean = clean.replace(/^(zum Beispiel\s+)/i, "").trim();
-      clean = clean.replace(/^,\s*/, "").trim();
-      clean = clean.replace(/^(dir\s+)?(zeigen|erklären|sagen|beschreiben),?\s*/i, "").trim();
-      if (clean.length === 0) {
-        clean = part.trim().replace(/[.!?]+\s*$/, "").trim();
-      }
-      if (clean.length > 55) {
-        const dashCut = clean.match(/^(.{15,55}?)[\s]*[–—\-][\s]/);
-        if (dashCut) clean = dashCut[1].trim();
-      }
-      if (clean.length > 55) {
-        const commaCut = clean.match(/^(.{15,50}?),\s/);
-        if (commaCut) clean = commaCut[1].trim();
-      }
-      if (clean.length > 60) {
-        const wordCut = clean.slice(0, 55).replace(/\s+\S*$/, "");
-        clean = wordCut + "…";
-      }
-      if (clean.length > 0) clean = clean.charAt(0).toUpperCase() + clean.slice(1);
-      return clean;
-    };
-
-    const isOnlyProfileTrait = (opt: string) =>
-      /^(eher\s+)?(impulsiv|intuitiv|analytisch|rot|gelb|blau)([,\s-]+(impulsiv|intuitiv|analytisch|rot|gelb|blau|dominant))*\s*$/i.test(opt.trim());
-
-    const oderBoundary = normalized.match(/([^.!?]+[.!?])\s*[Oo]der\s+([^.!?]+\?)\s*$/);
-    if (oderBoundary) {
-      const optA = cleanOption(oderBoundary[1]);
-      const optB = cleanOption(oderBoundary[2]);
-      if (optA.length > 5 && optA.length <= 60 && optB.length > 5 && optB.length <= 60) {
-        if (isOnlyProfileTrait(optA) && isOnlyProfileTrait(optB)) return [];
-        return [optA, optB];
-      }
-    }
-
-    const sentences = normalized.split(/(?<=[.?!])\s+/);
-    const questionSentences = sentences.filter(s => s.trim().endsWith("?"));
-    if (questionSentences.length === 0) return [];
-
-    const lastQ = questionSentences[questionSentences.length - 1];
-    const oderParts = lastQ.split(/\s+oder\s+/i);
-    if (oderParts.length === 2) {
-      const optA = cleanOption(oderParts[0]);
-      const optB = cleanOption(oderParts[1]);
-      if (optA.length > 3 && optA.length <= 60 && optB.length > 3 && optB.length <= 60) {
-        if (isOnlyProfileTrait(optA) && isOnlyProfileTrait(optB)) return [];
-        return [optA, optB];
-      }
-    }
-
-    if (oderParts.length >= 2) {
-      const firstPart = oderParts[0];
-      const commaParts = firstPart.split(/,\s+/);
-      if (commaParts.length >= 2) {
-        const items = [...commaParts, ...oderParts.slice(1)]
-          .map(s => cleanOption(s))
-          .filter(s => s.length >= 2 && s.length <= 40);
-        if (items.length >= 3) {
-          if (items.every(i => isOnlyProfileTrait(i))) return [];
-          return items.slice(0, 4);
-        }
-      }
-    }
-
-    return [];
+  const stripButtonMarker = useCallback((content: string): string => {
+    return content.replace(/\s*<<BUTTONS:[\s\S]*?>>\s*$/, "").replace(/\s*<<BUTTONS:[\s\S]*$/, "").trim();
   }, []);
 
-  const extractQuickReplies = useCallback((content: string, msgIndex: number, totalMessages: number, hasImage?: boolean): string[] => {
+  const parseButtonsFromContent = useCallback((content: string): { cleanContent: string; buttons: string[] } => {
+    const buttonMatch = content.match(/<<BUTTONS:\s*([\s\S]+?)>>\s*$/);
+    if (buttonMatch) {
+      const cleanContent = content.replace(/\s*<<BUTTONS:[\s\S]+?>>\s*$/, "").trim();
+      const raw = buttonMatch[1].replace(/\n/g, " ");
+      const buttons = raw
+        .split("|")
+        .map(b => b.trim().replace(/^[\u201E\u201C\u201D""„]/g, "").replace(/[\u201E\u201C\u201D""„]$/g, "").trim())
+        .filter(b => b.length > 0 && b.length <= 50);
+      return { cleanContent, buttons: buttons.slice(0, 4) };
+    }
+    if (/<<BUTTONS:/.test(content)) {
+      return { cleanContent: content.replace(/\s*<<BUTTONS:[\s\S]*$/, "").trim(), buttons: [] };
+    }
+    return { cleanContent: content, buttons: [] };
+  }, []);
+
+  const extractQuickReplies = useCallback((content: string, msgIndex: number, totalMessages: number, _hasImage?: boolean): string[] => {
     const isLastAssistant = msgIndex === totalMessages - 1;
-    if (!isLastAssistant) return [];
-
-    const isDecline = /außerhalb meines Fachgebiets|liegt leider außerhalb|kann ich dir.*nicht.*weiterhelfen|nicht mein Fachgebiet|dazu kann ich.*nichts sagen|fällt nicht in meinen Bereich|bin.*nicht.*zuständig|kann ich leider nicht beantworten|gehört nicht zu meinen Themen/i.test(content);
-    if (isDecline) return [];
-
-    const paragraphs = content.trim().split(/\n\n/);
-    const lastTwo = paragraphs.slice(-2).join("\n\n").replace(/\*\*/g, "");
-    const hasQuestion = /\?\s*$/.test(lastTwo.trim()) || /\?["\u201C\u201D\u201E)]*\s*$/m.test(lastTwo);
-    const asksForInput = /magst du|interesse|wollen wir|soll ich|willst du|möchtest du|weisst du|kennst du|beschreib.*mir|nenn.*mir|sag.*mir.*bescheid|gib.*mir.*info|teil.*mir.*mit|sag.{0,10}(einfach|mir).{0,15}was du/i.test(lastTwo);
-
-    if (/wie reagierst du|was sagst du|was antwortest du|wie gehst du vor|was würdest du sagen|was sagst du als nächstes|was sagst du dazu|wie antwortest du|was entgegnest du|sag.*deinen.*satz|formulier.*deinen/i.test(lastTwo)) {
-      return [];
-    }
-    const isAskingUserProfile = hasQuestion && (
-      /bist du eher.{0,30}(impulsiv|intuitiv|analytisch)/i.test(lastTwo) ||
-      /wie ist deine.{0,20}(Prägung|Profil)/i.test(lastTwo) ||
-      /wie.{0,10}deine.{0,20}(Prägung|Profil).{0,10}ist/i.test(lastTwo) ||
-      /wie bist du.{0,15}geprägt/i.test(lastTwo) ||
-      /dein.{0,15}bioLogic.{0,15}(Profil|Prägung)/i.test(lastTwo) ||
-      /welche.{0,20}(Prägung|Doppeldominanz).{0,20}hast du/i.test(lastTwo) ||
-      /deine.{0,15}(Prägung|Profil).{0,20}zuschneid/i.test(lastTwo) ||
-      /weisst du.{0,15}(dein|deine).{0,20}(Prägung|Profil)/i.test(lastTwo) ||
-      /wei(ss|ß)t du.{0,30}(Prägung|Profil|geprägt)/i.test(lastTwo) ||
-      /(bist du|du eher).{0,10}(rot|gelb|blau)/i.test(lastTwo) ||
-      /eher.{0,15}(impulsiv|intuitiv|analytisch).{0,20}oder.{0,20}(impulsiv|intuitiv|analytisch)/i.test(lastTwo)
-    );
-
-    if (isAskingUserProfile) {
-      const oderAlternative = extractOptionsFromText(lastTwo);
-      if (oderAlternative.length >= 2) {
-        const hasNonProfileOption = oderAlternative.some(opt => !/impulsiv|intuitiv|analytisch|Doppeldominanz|rot\s|gelb\s|blau\s|profil|prägung/i.test(opt));
-        if (hasNonProfileOption) {
-          return oderAlternative;
-        }
-      }
-      const profileButtons: string[] = [];
-      if (/welche.{0,20}Doppeldominanz|deine Doppeldominanz|Doppeldominanz.{0,20}(nenn|sag|hast)/i.test(lastTwo)) {
-        profileButtons.push(
-          "Rot-Gelb (impulsiv-intuitiv)", "Rot-Blau (impulsiv-analytisch)",
-          "Gelb-Rot (intuitiv-impulsiv)", "Gelb-Blau (intuitiv-analytisch)",
-          "Blau-Rot (analytisch-impulsiv)", "Blau-Gelb (analytisch-intuitiv)",
-        );
-      } else {
-        profileButtons.push(
-          "Rot / impulsiv-dominant", "Gelb / intuitiv-dominant", "Blau / analytisch-dominant",
-          "Rot-Gelb (impulsiv-intuitiv)", "Rot-Blau (impulsiv-analytisch)", "Gelb-Blau (intuitiv-analytisch)",
-          "Allgemeine Antwort bitte",
-        );
-      }
-      return profileButtons;
-    }
-
-    if (hasQuestion || asksForInput) {
-      const contextOptions = extractOptionsFromText(lastTwo);
-      if (contextOptions.length >= 2) return contextOptions;
-    }
-
-    if (/durchspielen|rollenspiel|simulier|übernehme.*rolle|üben|ausprobier/i.test(lastTwo) && hasQuestion) {
-      return ["Ja, lass uns das durchspielen!", "Nein, andere Frage"];
-    }
-    if (/zusammenfass/i.test(lastTwo) && !/was nimmst du|was wirst du/i.test(lastTwo) && hasQuestion) {
-      return ["Ja, bitte zusammenfassen", "Nein, ich habe noch eine Frage"];
-    }
-    if (/auf deine.*Prägung bezieh|auf.*bioLogic.*Prägung|bioLogic-Perspektive.*zuschneid/i.test(lastTwo) && hasQuestion) {
-      return ["Ja, beziehe das auf meine Prägung", "Nein, die allgemeine Antwort reicht"];
-    }
-    if (/gesprächsleitfaden|leitfaden.*erstell|interview.*leitfaden/i.test(lastTwo) && hasQuestion) {
-      return ["Ja, erstelle einen Leitfaden", "Nein, andere Frage"];
-    }
-    if (/formulierung.*verbessern|satz.*umformulier|anders.*formulier/i.test(lastTwo) && hasQuestion) {
-      return ["Ja, verbessere die Formulierung", "Nein, der Satz passt so"];
-    }
-    if (/pause.*machen|hier.*stoppen|aufhören|beenden/i.test(lastTwo) && hasQuestion) {
-      return ["Ja, fasse zusammen", "Nein, weiter üben"];
-    }
-
-    const isImageCreativeResponse = hasImage || /stellenanzeige.*bild|bild.*erstell|bild.*generier|visual.*erstell|social.media.teaser|teaser.*formulier|bild.*bereitstellen|job.?ad|plakat|posting.*bild|anderes format|hochformat|querformat/i.test(lastTwo);
-    if (isImageCreativeResponse) {
-      const replies: string[] = [];
-      if (/teaser|linkedin|xing|social.media/i.test(lastTwo)) replies.push("Ja, erstelle einen Social-Media-Teaser");
-      if (/format|hochformat|querformat|bereitstellen/i.test(lastTwo)) replies.push("Anderes Format generieren");
-      if (/stellenanzeige/i.test(content)) replies.push("Stellenanzeige anders formulieren");
-      if (replies.length === 0) replies.push("Nochmal anders generieren");
-      replies.push("Neues Thema starten");
-      return replies.slice(0, 4);
-    }
-
-    if (asksForInput && !hasQuestion) {
-      const contextOptions = extractOptionsFromText(lastTwo);
-      if (contextOptions.length >= 2) return contextOptions;
-      const replies: string[] = [];
-      if (/oder/i.test(lastTwo)) {
-        const oderParts = lastTwo.split(/\boder\b/i);
-        if (oderParts.length === 2) {
-          const a = oderParts[0].replace(/.*,\s*/, "").trim();
-          const b = oderParts[1].replace(/[.!?,;]+$/, "").replace(/,.*$/, "").trim();
-          if (a.length > 3 && a.length < 60) replies.push(a.charAt(0).toUpperCase() + a.slice(1));
-          if (b.length > 3 && b.length < 60) replies.push(b.charAt(0).toUpperCase() + b.slice(1));
-        }
-      }
-      if (replies.length >= 2) return replies;
-
-      const hasOfferPattern = /willst du.{0,40}\?|soll ich.{0,40}\?|möchtest du.{0,40}\?|sag.{0,10}bescheid|gib.{0,10}bescheid|lass.{0,10}(es )?mich wissen|meld dich/i.test(lastTwo);
-      if (hasOfferPattern) {
-        if (/formulierung|satz|konkreten satz|gesprächseinstieg|gesprächsöffner/i.test(lastTwo)) {
-          return ["Ja, gib mir eine Formulierung", "Nein, andere Frage"];
-        }
-        if (/gespräch.{0,15}(führst|vorbereit|aufbau|strukturier|planung)/i.test(lastTwo)) {
-          return ["Ja, zeig mir wie", "Nein, andere Frage"];
-        }
-        if (/leitfaden|checkliste|schritt.{0,5}für.{0,5}schritt/i.test(lastTwo)) {
-          return ["Ja, erstelle einen Leitfaden", "Nein, andere Frage"];
-        }
-        if (/beispiel|konkret|praxis/i.test(lastTwo)) {
-          return ["Ja, gib mir ein Beispiel", "Nein, andere Frage"];
-        }
-        if (/durchspielen|üben|rollenspiel|simulier/i.test(lastTwo)) {
-          return ["Ja, lass uns das üben", "Nein, andere Frage"];
-        }
-        if (/tiefer|detail|genauer|vertief/i.test(lastTwo)) {
-          return ["Ja, gerne vertiefen", "Nein, andere Frage"];
-        }
-        return ["Ja, bitte!", "Nein, andere Frage"];
-      }
-      return [];
-    }
-
-    if (content.length > 400 && !hasQuestion && !asksForInput) {
-      const replies: string[] = [];
-      if (/quelle|studie|forschung|gallup|mckinsey|harvard|deloitte|source/i.test(content)) {
-        replies.push("Gibt es dazu weitere Studien?");
-      }
-      if (/technik|methode|regel|strategie|modell|framework/i.test(content)) replies.push("Gib mir ein konkretes Beispiel dazu");
-      if (/gespräch|formulierung|satz|sagen|dialog/i.test(content)) replies.push("Lass uns das durchspielen");
-      if (content.length > 800) replies.push("Fasse die wichtigsten Punkte zusammen");
-      if (replies.length > 0) return replies.slice(0, 3);
-      return [];
-    }
-    if (hasQuestion) {
-      const contextOptions = extractOptionsFromText(lastTwo);
-      if (contextOptions.length >= 2) return contextOptions;
-
-      const isCoachingReflection = /was geht dir.{0,20}durch den kopf|was davon wirst du|was nimmst du.{0,15}mit|was wirst du.{0,15}(ausprobier|anders mach|umsetzen|ändern)|was ist dir.{0,15}(wichtig|aufgefallen|klar geworden)|worüber denkst du|was denkst du.{0,15}(darüber|dazu)|was fällt dir.{0,15}(auf|ein|dazu)|was bedeutet das für dich|was möchtest du.{0,15}mitnehmen|was kannst du daraus|wie fühlst du dich|was hat dich.{0,15}(überrascht|bewegt)|welchen punkt|was planst du|worauf achtest du|wie siehst du das|was wäre.*nächste.{0,10}schritt/i.test(lastTwo);
-      if (isCoachingReflection) {
-        return [];
-      }
-
-      const lastQuestion = lastTwo.match(/[^.!?]*\?\s*$/)?.[0]?.trim() || "";
-      if (/soll ich|willst du|möchtest du|wollen wir|magst du/i.test(lastQuestion)) {
-        const subject = lastQuestion
-          .replace(/^.*?(soll ich|willst du|möchtest du|wollen wir|magst du)\s+/i, "")
-          .replace(/\?+\s*$/, "")
-          .replace(/^(dir\s+|noch\s+|mal\s+|das\s+)*/i, "")
-          .trim();
-        if (subject.length > 5 && subject.length <= 50) {
-          const label = "Ja, " + subject.charAt(0).toLowerCase() + subject.slice(1);
-          return [label, "Nein, andere Frage"];
-        }
-      }
-
-      if (/oder/i.test(lastQuestion) && lastQuestion.length > 15) {
-        const oderParts = lastQuestion.split(/\s+oder\s+/i);
-        if (oderParts.length === 2) {
-          const a = oderParts[0].replace(/.*[.!?]\s*/, "").trim();
-          const b = oderParts[1].replace(/\?+\s*$/, "").trim();
-          if (a.length > 3 && a.length < 60 && b.length > 3 && b.length < 60) {
-            return [a.charAt(0).toUpperCase() + a.slice(1), b.charAt(0).toUpperCase() + b.slice(1)];
-          }
-        }
-      }
-
-      return [];
-    }
-    return [];
-  }, [extractOptionsFromText]);
+    if (!isLastAssistant || loading) return [];
+    const { buttons } = parseButtonsFromContent(content);
+    return buttons;
+  }, [parseButtonsFromContent, loading]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -1140,7 +914,7 @@ export default function KICoach() {
     text += `${"─".repeat(50)}\n\n`;
     for (const msg of chatMessages) {
       const label = msg.role === "user" ? "Frage" : "Coach";
-      text += `${label}:\n${msg.content}\n`;
+      text += `${label}:\n${parseButtonsFromContent(msg.content).cleanContent}\n`;
       if (msg.image) {
         text += `[KI-generiertes Bild wurde in diesem Schritt erstellt]\n`;
       }
@@ -1486,7 +1260,7 @@ export default function KICoach() {
                   color: msg.role === "user" ? "#FFFFFF" : "#1D1D1F",
                   fontSize: 14, lineHeight: 1.6,
                 }}>
-                  {formatMessage(msg.content)}
+                  {formatMessage(parseButtonsFromContent(msg.content).cleanContent)}
                   {msg.image && (
                     <div style={{ marginTop: 12 }}>
                       <div style={{ position: "relative", display: "inline-block", maxWidth: 520, width: "100%" }}>
@@ -1644,7 +1418,7 @@ export default function KICoach() {
                     <div style={{ display: "flex", gap: 4 }}>
                       <button
                         onClick={() => {
-                          navigator.clipboard.writeText(msg.content);
+                          navigator.clipboard.writeText(parseButtonsFromContent(msg.content).cleanContent);
                           setCopiedIndex(i);
                           setTimeout(() => setCopiedIndex(null), 2000);
                         }}
