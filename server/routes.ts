@@ -138,13 +138,13 @@ Du beantwortest AUSSCHLIESSLICH Fragen zu diesen Themenbereichen:
 - Recruiting, Stellenanzeigen, Bewerbung, Personalauswahl, Assessment
 - Führung, Leadership, Selbstführung, Management
 - Teams, Teamdynamik, Teamkonstellation, Zusammenarbeit
-- Kommunikation, Gesprächsführung, Konflikte, Verhandlung, Verkauf
+- Kommunikation, Gesprächsführung, Konflikte, Verhandlung
 - Marketing, Employer Branding, Personalmarketing
 - Mitarbeitende, Mitarbeiterentwicklung, Onboarding, Personalentwicklung
 - bioLogic-Analyse, Rollenprofile, Kompetenzanalyse, Soll-Ist-Vergleich
 - Zwischenmenschliche Situationen im beruflichen oder privaten Kontext, wenn bioLogic relevant ist
 
-Wenn eine Frage NICHT in diese Themenbereiche fällt (z.B. Wetter, Kochen, Sport, Technik, Politik, Geschichte, Mathematik, Programmierung, allgemeines Wissen oder sonstige themenfremde Fragen):
+Wenn eine Frage NICHT in diese Themenbereiche fällt (z.B. Wetter, Kochen, Sport, Technik, Politik, Geschichte, Mathematik, Programmierung, Verkauf/Vertrieb/Sales, allgemeines Wissen oder sonstige themenfremde Fragen):
 → Lehne die Frage FREUNDLICH ab. Sage sinngemäss: "Das liegt leider ausserhalb meines Fachgebiets. Ich bin spezialisiert auf Recruiting, Führung, Teamdynamik, Kommunikation und Personalthemen. Stell mir gerne eine Frage aus diesen Bereichen – da kann ich dir wirklich weiterhelfen."
 → Beantworte die themenfremde Frage NICHT, auch nicht teilweise. Leite NICHT in das Thema über. Biete KEINE Alternative an, die die ursprüngliche Frage beantwortet.
 
@@ -184,7 +184,8 @@ REGELN:
 - Geh auf das KONKRETE Problem ein. Nicht allgemein bleiben. Der Nutzer hat dir eine spezifische Situation geschildert.
 - Formulierungen müssen im echten Arbeitsalltag bestehen – nicht in einem Lehrbuch.
 - Wenn der Nutzer unsicher ist: Erkläre aus seiner Prägung, WARUM er sich schwertut.
-- Auch bei Verkauf, Verhandlung, privaten Situationen: bioLogic anwenden.
+- Auch bei Verhandlung und privaten Situationen: bioLogic anwenden.
+- Verkauf, Vertrieb und Sales-Themen gehören NICHT zu deinem Fachgebiet. Lehne Verkaufsfragen freundlich ab.
 
 SELBST-REFLEXION (QUALITÄTSSICHERUNG):
 Bevor du deine Antwort formulierst, prüfe intern:
@@ -1504,7 +1505,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
         "motivation", "leistung", "ziel", "delegation", "verantwortung",
         "kultur", "werte", "vertrauen", "zusammenarbeit",
         "struktur", "organisation", "prozess", "entscheidung",
-        "verkauf", "verkaufen", "verhandlung", "verhandeln", "abschluss", "angebot", "preis", "kunde", "käufer", "kaeufer",
+        "verhandlung", "verhandeln",
         "angst", "unsicher", "unsicherheit", "überwindung", "ueberwindung", "hemmung", "blockade", "trau", "traue",
         "selbstführung", "selbstfuehrung", "selbstmanagement",
         "impulsiv", "intuitiv", "analytisch", "dominanz", "triade",
@@ -1553,7 +1554,6 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
         "Teamdynamik": ["team", "teamdynamik", "zusammenarbeit", "teamkonstellation", "gruppe"],
         "Kommunikation": ["kommunikation", "gespräch", "dialog", "ansprache", "feedback", "reden"],
         "Onboarding": ["onboarding", "einarbeitung", "einführung", "neuer mitarbeiter", "integration"],
-        "Verkauf": ["verkauf", "vertrieb", "sales", "kunde", "akquise", "verhandlung"],
         "Persönlichkeit": ["profil", "triade", "impulsiv", "intuitiv", "analytisch", "prägung", "biologic", "persönlichkeit"],
         "Stress & Resilienz": ["stress", "burnout", "resilienz", "belastung", "überforderung", "druck"],
         "Motivation": ["motivation", "produktivität", "prokrastination", "engagement", "demotivation", "aufschieben"],
@@ -1653,7 +1653,6 @@ ${customPrompt}
           "team": ["team", "teamdynamik", "zusammenarbeit", "konstellation"],
           "kommunikation": ["kommunikation", "gespräch", "feedback", "formulierung"],
           "onboarding": ["onboarding", "einarbeitung", "neuer mitarbeiter"],
-          "verkauf": ["verkauf", "vertrieb", "verhandlung", "kunde"],
           "rollenspiel": ["durchspielen", "rollenspiel", "simulier", "üben"],
         };
 
@@ -2293,7 +2292,6 @@ WICHTIGE REGELN:
             "team": ["team", "teamdynamik", "zusammenarbeit"],
             "kommunikation": ["kommunikation", "gespräch", "dialog"],
             "onboarding": ["onboarding", "einarbeitung"],
-            "verkauf": ["verkauf", "vertrieb", "sales", "kunde"],
           };
           let cat = "allgemein";
           for (const [category, keywords] of Object.entries(topicMap)) {
