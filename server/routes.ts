@@ -2100,7 +2100,15 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
       res.json(responseData);
     } catch (error) {
       console.error("Error in KI-Coach:", error);
-      res.status(500).json({ error: "Fehler bei der Verarbeitung" });
+      if (res.headersSent) {
+        try {
+          res.write(`data: ${JSON.stringify({ type: "text", text: "\n\nEntschuldigung, es ist ein Fehler aufgetreten. Bitte versuche es erneut." })}\n\n`);
+          res.write(`data: ${JSON.stringify({ type: "done" })}\n\n`);
+          res.end();
+        } catch {}
+      } else {
+        res.status(500).json({ error: "Fehler bei der Verarbeitung" });
+      }
     }
   });
 
