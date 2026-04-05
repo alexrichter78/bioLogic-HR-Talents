@@ -1640,15 +1640,14 @@ Alles mit fertigen Formulierungen, die 1:1 übernommen werden können.`,
       const modePrompt = mode && modeInstructions[mode] ? "\n\n" + modeInstructions[mode] : "";
 
       const customPrompt = await storage.getCoachSystemPrompt() || getDefaultCoachPrompt();
+      const promptEndsWithDeutsch = customPrompt.trim().endsWith("- Deutsch.");
       const systemPrompt = `Du bist Louis – der bioLogic Coach für Entscheidungen im richtigen Moment. Du bist ein erfahrener Personalberater mit jahrelanger Praxiserfahrung.
 ${getRegionInstruction(region, { skipAddress: true })}${modePrompt}${knowledgeContext}
-${customPrompt}
-
-- Deutsch.`;
+${customPrompt}${promptEndsWithDeutsch ? "" : "\n\n- Deutsch."}`;
 
       let fullSystemPrompt = systemPrompt;
       if (stammdaten && typeof stammdaten === "object" && Object.keys(stammdaten).length > 0) {
-        let contextBlock = "\n\nWISSENSBASIS (Daten aus der bioLogic-Stellenanalyse – das ist NICHT das persönliche Profil des Nutzers, sondern das Anforderungsprofil der analysierten Stelle und die Analyse des Stelleninhabers/Kandidaten. Nutze dieses Wissen, um deine Antworten zur Besetzung, Teamdynamik und Führung präziser zu machen):";
+        let contextBlock = "\n\nSTELLENANALYSE-DATEN (Daten aus der bioLogic-Stellenanalyse – das ist NICHT das persönliche Profil des Nutzers, sondern das Anforderungsprofil der analysierten Stelle und die Analyse des Stelleninhabers/Kandidaten. Nutze dieses Wissen, um deine Antworten zur Besetzung, Teamdynamik und Führung präziser zu machen):";
         if (stammdaten.bioCheckIntro) contextBlock += `\n\nbioLogic-Grundlagen:\n${stammdaten.bioCheckIntro}`;
         if (stammdaten.bioCheckText) contextBlock += `\n\nbioCheck-Stellenanforderung:\n${stammdaten.bioCheckText}`;
         if (stammdaten.impulsiveDaten) contextBlock += `\n\nImpulsive Dimension (Rot) – Details:\n${stammdaten.impulsiveDaten}`;
@@ -1702,38 +1701,41 @@ ${customPrompt}
 
         const hasTopicOverlap = latestTopics.length === 0 || latestTopics.some(t => olderTopics.includes(t));
 
-        if (hasTopicOverlap) {
-          const userTopics: string[] = [];
-          const userProfile: string[] = [];
-          const keyDecisions: string[] = [];
+        const userTopics: string[] = [];
+        const userProfile: string[] = [];
+        const keyDecisions: string[] = [];
 
-          for (const msg of olderMessages) {
-            if (msg.role === "user") {
-              const c = msg.content;
-              if (/impulsiv|intuitiv|analytisch|rot|gelb|blau|profil|prägung/i.test(c)) {
-                userProfile.push(c.slice(0, 150));
-              }
-              userTopics.push(c.slice(0, 100));
+        for (const msg of olderMessages) {
+          if (msg.role === "user") {
+            const c = msg.content;
+            if (/impulsiv|intuitiv|analytisch|rot|gelb|blau|profil|prägung/i.test(c)) {
+              userProfile.push(c.slice(0, 150));
             }
-            if (msg.role === "assistant") {
-              const keyPoints = msg.content.match(/\*\*[^*]+\*\*/g);
-              if (keyPoints) keyDecisions.push(...keyPoints.slice(0, 3));
-            }
+            userTopics.push(c.slice(0, 100));
           }
+          if (msg.role === "assistant") {
+            const keyPoints = msg.content.match(/\*\*[^*]+\*\*/g);
+            if (keyPoints) keyDecisions.push(...keyPoints.slice(0, 3));
+          }
+        }
 
-          const summaryParts: string[] = [];
-          if (userProfile.length > 0) summaryParts.push(`Nutzerprofil-Hinweise: ${userProfile.slice(-2).join(" | ")}`);
-          summaryParts.push(`Bisherige Themen (${olderUserMsgs.length} Fragen): ${userTopics.slice(-5).join(" → ")}`);
-          if (keyDecisions.length > 0) summaryParts.push(`Wichtige Punkte: ${keyDecisions.slice(-5).join(", ")}`);
+        const summaryParts: string[] = [];
+        if (userProfile.length > 0) summaryParts.push(`Nutzerprofil-Hinweise: ${userProfile.slice(-2).join(" | ")}`);
+        summaryParts.push(`Bisherige Themen (${olderUserMsgs.length} Fragen): ${userTopics.slice(-5).join(" → ")}`);
+        if (keyDecisions.length > 0) summaryParts.push(`Wichtige Punkte: ${keyDecisions.slice(-5).join(", ")}`);
 
+        if (hasTopicOverlap) {
           const summaryMsg = {
             role: "system" as const,
             content: `GESPRÄCHSZUSAMMENFASSUNG (bisheriger Verlauf, ${olderMessages.length} Nachrichten):\n${summaryParts.join("\n")}\n\nNutze diese Zusammenfassung als Kontext. Wiederhole keine Punkte, die du bereits gemacht hast. Baue auf dem bisherigen Gespräch auf.`,
           };
-
           conversationMessages = [summaryMsg as any, ...recentMessages];
         } else {
-          conversationMessages = recentMessages;
+          const summaryMsg = {
+            role: "system" as const,
+            content: `GESPRÄCHSZUSAMMENFASSUNG (Themenwechsel erkannt – der Nutzer wechselt zu einem neuen Thema, aber behalte den Kontext):\n${summaryParts.join("\n")}\n\nDer Nutzer hat das Thema gewechselt. Beantworte die neue Frage, aber behalte das Nutzerprofil und die bisherigen Erkenntnisse im Hinterkopf.`,
+          };
+          conversationMessages = [summaryMsg as any, ...recentMessages];
         }
       }
 
