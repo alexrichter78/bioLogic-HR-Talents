@@ -508,6 +508,7 @@ ANTWORT-OPTIONEN (BUTTONS):
 
 function requireAuth(req: Request, res: Response, next: NextFunction) {
   if (!req.session.userId) {
+    console.log(`[auth] Blocked ${req.method} ${req.path} - no session`);
     return res.status(401).json({ error: "Nicht angemeldet" });
   }
   next();
@@ -515,6 +516,7 @@ function requireAuth(req: Request, res: Response, next: NextFunction) {
 
 function requireAdmin(req: Request, res: Response, next: NextFunction) {
   if (!req.session.userId || req.session.userRole !== "admin") {
+    console.log(`[auth] Blocked ${req.method} ${req.path} - not admin (role: ${req.session.userRole})`);
     return res.status(403).json({ error: "Kein Zugriff" });
   }
   next();
@@ -2386,8 +2388,10 @@ WICHTIGE REGELN:
   app.get("/api/knowledge-documents", requireAuth, requireAdmin, async (_req: Request, res: Response) => {
     try {
       const docs = await storage.listKnowledgeDocuments();
+      console.log(`[knowledge-documents] Returning ${docs.length} documents`);
       res.json(docs);
     } catch (error) {
+      console.error("[knowledge-documents] Error:", error);
       res.status(500).json({ error: "Dokumente konnten nicht geladen werden" });
     }
   });
