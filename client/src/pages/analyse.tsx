@@ -151,18 +151,8 @@ export default function Analyse() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse 120% 80% at 20% 60%, rgba(252,205,210,0.35) 0%, transparent 50%), " +
-            "radial-gradient(ellipse 100% 70% at 80% 30%, rgba(186,220,248,0.35) 0%, transparent 50%), " +
-            "radial-gradient(ellipse 80% 60% at 50% 80%, rgba(200,235,210,0.3) 0%, transparent 50%)",
-        }}
-      />
-
-      <div className="relative z-10 flex flex-col min-h-screen">
+    <div className="page-gradient-bg">
+      <div className="flex flex-col min-h-screen">
         <GlobalNav />
 
         <main className="flex-1 w-full mx-auto pb-20" style={{ maxWidth: 1100, paddingLeft: isMobile ? 8 : 24, paddingRight: isMobile ? 8 : 24, paddingBottom: isMobile ? 100 : 80 }}>

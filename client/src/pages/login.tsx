@@ -51,17 +51,8 @@ export default function Login() {
 
   if (showReset) {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
-        <div style={{
-          position: "absolute", inset: 0, pointerEvents: "none",
-          background:
-            "radial-gradient(ellipse 120% 80% at 20% 60%, rgba(252,205,210,0.30) 0%, transparent 50%), " +
-            "radial-gradient(ellipse 100% 70% at 80% 30%, rgba(186,220,248,0.30) 0%, transparent 50%), " +
-            "radial-gradient(ellipse 80% 60% at 50% 80%, rgba(200,235,210,0.25) 0%, transparent 50%), " +
-            "linear-gradient(135deg, #f0f4f8 0%, #e8edf3 50%, #f5f7fb 100%)",
-          animation: "loginBgPulse 12s ease-in-out infinite alternate",
-        }} />
-      <div style={{ position: "relative", zIndex: 1, width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div className="page-gradient-bg" style={{ display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
+      <div style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ width: "100%", maxWidth: 400, padding: 24 }}>
           <div style={{ background: "#fff", borderRadius: 20, padding: "48px 36px 40px", boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 12px 48px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.04)" }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 32 }}>
@@ -163,17 +154,8 @@ export default function Login() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
-      <div style={{
-        position: "absolute", inset: 0, pointerEvents: "none",
-        background:
-          "radial-gradient(ellipse 120% 80% at 20% 60%, rgba(252,205,210,0.30) 0%, transparent 50%), " +
-          "radial-gradient(ellipse 100% 70% at 80% 30%, rgba(186,220,248,0.30) 0%, transparent 50%), " +
-          "radial-gradient(ellipse 80% 60% at 50% 80%, rgba(200,235,210,0.25) 0%, transparent 50%), " +
-          "linear-gradient(135deg, #f0f4f8 0%, #e8edf3 50%, #f5f7fb 100%)",
-        animation: "loginBgPulse 12s ease-in-out infinite alternate",
-      }} />
-      <div style={{ position: "relative", zIndex: 1, width: "100%", maxWidth: 400, padding: 24 }}>
+    <div className="page-gradient-bg" style={{ display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
+      <div style={{ width: "100%", maxWidth: 400, padding: 24 }}>
         <div style={{ background: "#fff", borderRadius: 20, padding: "48px 36px 40px", boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 12px 48px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.04)" }}>
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 36 }}>

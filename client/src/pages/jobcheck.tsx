@@ -552,7 +552,7 @@ export default function JobCheck() {
 
   if (!roleAnalysis) {
     return (
-      <div className="min-h-screen" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 40%, #F5F7FA 100%)" }}>
+      <div className="page-gradient-bg">
         <GlobalNav />
         <div className="flex items-center justify-center" style={{ minHeight: "calc(100vh - 60px)" }}>
           <GlassCard testId="jobcheck-no-data">
@@ -577,23 +577,8 @@ export default function JobCheck() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-x-hidden" lang="de" data-testid="jobcheck-page">
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse 120% 80% at 20% 60%, rgba(252,205,210,0.35) 0%, transparent 50%), " +
-            "radial-gradient(ellipse 100% 70% at 80% 30%, rgba(186,220,248,0.35) 0%, transparent 50%), " +
-            "radial-gradient(ellipse 80% 60% at 50% 80%, rgba(200,235,210,0.3) 0%, transparent 50%)",
-          animation: "gradientShift 20s ease-in-out infinite alternate",
-        }}
-      />
+    <div className="page-gradient-bg" lang="de" data-testid="jobcheck-page">
       <style>{`
-        @keyframes gradientShift {
-          0% { opacity: 0.85; }
-          50% { opacity: 1; }
-          100% { opacity: 0.85; }
-        }
         input[type="range"]::-webkit-slider-runnable-track { height: 24px; cursor: ew-resize; background: transparent; }
         input[type="range"]::-moz-range-track { height: 24px; cursor: ew-resize; background: transparent; }
       `}</style>
@@ -602,7 +587,7 @@ export default function JobCheck() {
         <GlobalNav />
 
         <div style={{ position: "fixed", top: isMobile ? 48 : 56, left: 0, right: 0, zIndex: 8999 }}>
-          <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: "5px 0 10px", minHeight: 62 }}>
+          <div className="dark:!bg-background" style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: "5px 0 10px", minHeight: 62 }}>
             <div className="w-full mx-auto" style={{ maxWidth: 1100, paddingLeft: isMobile ? 12 : 24, paddingRight: isMobile ? 12 : 24 }}>
               <div className="text-center">
                 <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-jobcheck-title">

@@ -634,7 +634,7 @@ export default function Bericht() {
 
   if (!profileData) {
     return (
-      <div className="min-h-screen" style={{ background: "#F1F5F9" }}>
+      <div className="page-gradient-bg">
         <GlobalNav />
         <div className="flex items-center justify-center" style={{ minHeight: "calc(100vh - 60px)" }}>
           <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "60px 48px", boxShadow: "0 4px 40px rgba(0,0,0,0.08)", textAlign: "center" }} data-testid="bericht-no-data">
@@ -665,7 +665,7 @@ export default function Bericht() {
   const sep = { paddingBottom: 36, marginBottom: 36, borderBottom: "1px solid rgba(0,0,0,0.05)" } as const;
 
   return (
-    <div className="min-h-screen" style={{ background: "#F1F5F9" }} data-bericht lang="de">
+    <div className="page-gradient-bg" data-bericht lang="de">
       <GlobalNav />
 
       <main className="flex-1 w-full mx-auto pb-24 pt-10" style={{ maxWidth: 820, paddingLeft: isMobile ? 12 : 20, paddingRight: isMobile ? 12 : 20, paddingBottom: isMobile ? 80 : 96 }}>

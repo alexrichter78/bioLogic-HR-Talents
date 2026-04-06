@@ -60,7 +60,7 @@ export default function ResetPassword() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #f0f4f8 0%, #e8edf3 50%, #f5f7fb 100%)", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
+    <div className="page-gradient-bg" style={{ display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
       <div style={{ width: "100%", maxWidth: 400, padding: 24 }}>
         <div style={{ background: "#fff", borderRadius: 20, padding: "48px 36px 40px", boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 12px 48px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.04)" }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 32 }}>

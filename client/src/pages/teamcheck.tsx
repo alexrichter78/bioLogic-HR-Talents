@@ -280,7 +280,7 @@ export default function TeamCheck() {
 
   if (reportView !== "none") {
     return (
-      <div style={{ minHeight: "100vh", background: "linear-gradient(180deg, #F5F5F7 0%, #FBFBFD 40%, #F5F5F7 100%)" }}>
+      <div className="page-gradient-bg">
         <div style={{
           position: "sticky", top: 0, zIndex: 100,
           background: "rgba(255,255,255,0.85)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
@@ -905,7 +905,7 @@ export default function TeamCheck() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(180deg, #F5F5F7 0%, #FBFBFD 40%, #F5F5F7 100%)" }}>
+    <div className="page-gradient-bg">
       <GlobalNav />
 
       <div style={{

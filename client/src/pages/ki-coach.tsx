@@ -930,7 +930,7 @@ export default function KICoach() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 40%, #F5F7FA 100%)", display: "flex", flexDirection: "column" }} lang="de">
+    <div className="page-gradient-bg" style={{ display: "flex", flexDirection: "column" }} lang="de">
       <GlobalNav />
 
       <main style={{ flex: 1, maxWidth: 1100, width: "100%", margin: "0 auto", padding: isMobile ? "8px 6px 80px" : "24px 16px 24px", display: "flex", flexDirection: "column" }}>

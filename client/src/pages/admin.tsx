@@ -551,7 +551,7 @@ export default function Admin() {
   if (user?.role !== "admin") return null;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f5f7fb", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
+    <div className="page-gradient-bg" style={{ fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
       <GlobalNav />
       <div style={{ maxWidth: 900, margin: "0 auto", padding: isMobile ? "64px 12px 80px" : "80px 20px 48px" }}>
         <div style={{ display: "flex", gap: 4, marginBottom: 20, background: "rgba(0,0,0,0.03)", borderRadius: 12, padding: 4 }}>

@@ -435,7 +435,7 @@ export default function Teamdynamik() {
   const parsedSections = useMemo(() => reportText ? parseReport(reportText) : [], [reportText]);
 
   return (
-    <div className="min-h-screen" style={{ background: "linear-gradient(160deg, #EDF3FC 0%, #F0F4F8 40%, #F5F7FA 100%)" }} lang="de">
+    <div className="page-gradient-bg" lang="de">
       <GlobalNav />
 
       <main style={{ maxWidth: 1100, margin: "0 auto", padding: isMobile ? "16px 12px 80px" : "24px 16px 48px" }}>

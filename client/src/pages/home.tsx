@@ -140,23 +140,8 @@ export default function Home() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", position: "relative", overflow: "hidden" }}>
-      <div
-        style={{
-          position: "absolute", inset: 0, pointerEvents: "none",
-          background:
-            "radial-gradient(ellipse 120% 80% at 20% 60%, rgba(252,205,210,0.35) 0%, transparent 50%), " +
-            "radial-gradient(ellipse 100% 70% at 80% 30%, rgba(186,220,248,0.35) 0%, transparent 50%), " +
-            "radial-gradient(ellipse 80% 60% at 50% 80%, rgba(200,235,210,0.3) 0%, transparent 50%)",
-          animation: "homeGradientPulse 12s ease-in-out infinite alternate",
-        }}
-      />
+    <div className="page-gradient-bg">
       <style>{`
-        @keyframes homeGradientPulse {
-          0% { opacity: 0.85; }
-          50% { opacity: 1; }
-          100% { opacity: 0.85; }
-        }
         @media (max-width: 600px) {
           .home-illustration-hide-mobile {
             display: none !important;

@@ -6,7 +6,7 @@ export default function Datenschutz() {
   const t = useLocalizedText();
 
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #f0f4f8 0%, #e8edf3 50%, #f5f7fb 100%)", fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
+    <div className="page-gradient-bg" style={{ fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
       <div style={{ maxWidth: 720, margin: "0 auto", padding: "40px 20px 60px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
           <button

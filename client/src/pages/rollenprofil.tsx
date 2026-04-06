@@ -1177,7 +1177,7 @@ export default function Rollenprofil() {
 
   if (!data) {
     return (
-      <div className="min-h-screen" style={{ background: "#F1F5F9" }}>
+      <div className="page-gradient-bg">
         <GlobalNav />
         <main style={{ maxWidth: 800, margin: "0 auto", padding: "60px 20px", textAlign: "center" }}>
           <div style={{ background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", borderRadius: 20, padding: "28px 32px", boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)" }}>
@@ -1381,7 +1381,7 @@ export default function Rollenprofil() {
   );
 
   return (
-    <div className="min-h-screen" style={{ background: "#F1F5F9" }} lang="de">
+    <div className="page-gradient-bg" lang="de">
       <GlobalNav />
 
       <main style={{ maxWidth: 820, margin: "0 auto", padding: isMobile ? "16px 12px 80px" : "24px 16px 48px" }}>

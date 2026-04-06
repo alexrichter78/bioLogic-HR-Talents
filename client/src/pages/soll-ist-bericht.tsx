@@ -410,7 +410,7 @@ export default function SollIstBericht() {
 
   if (!hasRollenDna || !roleTriad) {
     return (
-      <div className="min-h-screen bg-slate-50 text-slate-900">
+      <div className="page-gradient-bg">
         <GlobalNav />
         <div className="mx-auto max-w-3xl px-6 py-20 text-center">
           <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-amber-500" />
@@ -438,12 +438,12 @@ export default function SollIstBericht() {
   }));
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="page-gradient-bg">
       <GlobalNav />
 
       {!reportGenerated && (
         <div style={{ position: "fixed", top: isMobile ? 48 : 56, left: 0, right: 0, zIndex: 8999 }}>
-          <div className="dark:!bg-background" style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: isMobile ? "4px 0 6px" : "5px 0 10px", minHeight: isMobile ? 48 : 62 }}>
+          <div className="dark:!bg-background" style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: isMobile ? "4px 0 6px" : "5px 0 10px", minHeight: isMobile ? 48 : 62 }}>
             <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
               <div className="text-center">
                 <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-matchcheck-title">
