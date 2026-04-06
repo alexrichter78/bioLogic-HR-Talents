@@ -895,6 +895,7 @@ export async function registerRoutes(
           if (r && (r.status === "Erstellt" || r.status === "Aktualisiert")) {
             try {
               const params = new URLSearchParams();
+              params.append("hookId", "enroll-course");
               params.append("firstName", p.firstName);
               params.append("lastName", p.lastName);
               params.append("email", p.email);
