@@ -1,6 +1,9 @@
-import { storage } from "./storage";
+import { storage, db } from "./storage";
 import bcrypt from "bcryptjs";
 import pg from "pg";
+import * as fs from "fs";
+import * as path from "path";
+import { coachTopics, knowledgeDocuments, goldenAnswers } from "@shared/schema";
 
 async function ensureSchema() {
   const ssl = process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false;
@@ -64,23 +67,89 @@ export async function seedAdmin() {
     if (existing) {
       await storage.updateUser(existing.id, { passwordHash });
       console.log(`Admin password updated for: ${adminUsername}`);
-      return;
+    } else {
+      await storage.createUser({
+        username: adminUsername,
+        email: process.env.ADMIN_EMAIL || "admin@biologic.app",
+        passwordHash,
+        firstName: "Admin",
+        lastName: "",
+        companyName: "",
+        role: "admin",
+        isActive: true,
+        emailVerified: true,
+      });
+      console.log(`Admin account created: ${adminUsername}`);
     }
-
-    await storage.createUser({
-      username: adminUsername,
-      email: process.env.ADMIN_EMAIL || "admin@biologic.app",
-      passwordHash,
-      firstName: "Admin",
-      lastName: "",
-      companyName: "",
-      role: "admin",
-      isActive: true,
-      emailVerified: true,
-    });
-
-    console.log(`Admin account created: ${adminUsername}`);
   } catch (error) {
     console.error("Failed to seed admin:", error);
+  }
+
+  const resolveSeedFile = (filename: string): string | null => {
+    const p1 = path.resolve(path.join(__dirname, filename));
+    if (fs.existsSync(p1)) return p1;
+    const p2 = path.resolve("server/" + filename);
+    if (fs.existsSync(p2)) return p2;
+    return null;
+  };
+
+  try {
+    const existingDocs = await storage.listKnowledgeDocuments();
+    if (existingDocs.length === 0) {
+      const seedFile = resolveSeedFile("knowledge-seed-data.json");
+      if (seedFile) {
+        const seedData: { title: string; category: string; content: string }[] = JSON.parse(fs.readFileSync(seedFile, "utf-8"));
+        await db.transaction(async (tx) => {
+          for (const doc of seedData) {
+            await tx.insert(knowledgeDocuments).values({ title: doc.title, content: doc.content, category: doc.category });
+          }
+        });
+        console.log(`Knowledge base seeded: ${seedData.length} documents`);
+      } else {
+        console.warn("Knowledge seed file not found, skipping");
+      }
+    }
+  } catch (error) {
+    console.error("Failed to seed knowledge base:", error);
+  }
+
+  try {
+    const existingGolden = await storage.listGoldenAnswers();
+    if (existingGolden.length === 0) {
+      const seedFile = resolveSeedFile("golden-answers-seed.json");
+      if (seedFile) {
+        const seedData: { user_message: string; assistant_message: string; category: string }[] = JSON.parse(fs.readFileSync(seedFile, "utf-8"));
+        await db.transaction(async (tx) => {
+          for (const ga of seedData) {
+            await tx.insert(goldenAnswers).values({ userMessage: ga.user_message, assistantMessage: ga.assistant_message, category: ga.category });
+          }
+        });
+        console.log(`Golden answers seeded: ${seedData.length} entries`);
+      } else {
+        console.warn("Golden answers seed file not found, skipping");
+      }
+    }
+  } catch (error) {
+    console.error("Failed to seed golden answers:", error);
+  }
+
+  try {
+    const existingTopics = await db.select().from(coachTopics);
+    if (existingTopics.length === 0) {
+      const seedFile = resolveSeedFile("coach-topics-seed.json");
+      if (seedFile) {
+        const seedData: { topic: string }[] = JSON.parse(fs.readFileSync(seedFile, "utf-8"));
+        await db.transaction(async (tx) => {
+          for (const t of seedData) {
+            await tx.insert(coachTopics).values({ topic: t.topic, userId: null });
+          }
+        });
+        console.log(`Coach topics seeded: ${seedData.length} entries`);
+      } else {
+        console.warn("Coach topics seed file not found, skipping");
+      }
+    }
+  } catch (error) {
+    console.error("Failed to seed coach topics:", error);
   }
 }
