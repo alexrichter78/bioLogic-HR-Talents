@@ -828,6 +828,8 @@ export async function registerRoutes(
       if (!Array.isArray(participants) || participants.length === 0) {
         return res.status(400).json({ error: "Mindestens ein Teilnehmer erforderlich" });
       }
+      const adminUser = await storage.getUser(req.session.userId!);
+      const adminCompany = adminUser?.companyName || "";
       const results: { email: string; status: string }[] = [];
       for (const p of participants) {
         const { firstName, lastName, email } = p;
@@ -864,7 +866,7 @@ export async function registerRoutes(
             passwordHash: hash,
             firstName,
             lastName,
-            companyName: "",
+            companyName: adminCompany,
             role: "user",
             isActive: true,
             courseAccess: true,
@@ -899,6 +901,7 @@ export async function registerRoutes(
                   firstName: p.firstName,
                   lastName: p.lastName,
                   email: p.email,
+                  company: adminCompany,
                   status: r.status,
                   enrolledAt: new Date().toISOString(),
                 }),
