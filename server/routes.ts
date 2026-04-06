@@ -527,6 +527,16 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
 
+  app.get("/api/health-check", async (_req, res) => {
+    try {
+      const docs = await storage.listKnowledgeDocuments();
+      const goldenList = await storage.listGoldenAnswers();
+      res.json({ knowledge: docs.length, golden: goldenList.length, status: "ok" });
+    } catch (error: any) {
+      res.json({ status: "error", message: error.message });
+    }
+  });
+
   app.post("/api/auth/login", async (req, res) => {
     try {
       const { username, password } = req.body;
