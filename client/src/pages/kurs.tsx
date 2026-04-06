@@ -98,9 +98,23 @@ export default function Kurs() {
 
   if (!user?.courseAccess && user?.role !== "admin") {
     return (
-      <div style={{ minHeight: "100vh", background: "linear-gradient(180deg, #F5F5F7 0%, #FBFBFD 40%, #F5F5F7 100%)" }}>
+      <div className="min-h-screen bg-slate-50 text-slate-900">
         <GlobalNav />
-        <div style={{ maxWidth: 600, margin: "0 auto", padding: isMobile ? "32px 16px" : "80px 24px", textAlign: "center" }}>
+        <div style={{ position: "fixed", top: isMobile ? 48 : 56, left: 0, right: 0, zIndex: 8999, background: "#F1F5F9" }}>
+          <div style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: isMobile ? "4px 0 6px" : "5px 0 10px" }}>
+            <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
+              <div className="text-center">
+                <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }}>
+                  Kursbereich
+                </h1>
+                <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0 }}>
+                  Lernmodule zu Führung, Teamdynamik und bioLogic-Kompetenzanalyse.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style={{ maxWidth: 600, margin: "0 auto", paddingTop: isMobile ? 130 : 160, padding: isMobile ? "130px 16px 40px" : "160px 24px 40px", textAlign: "center" }}>
           <div style={{
             background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
             borderRadius: 20, padding: isMobile ? "32px 20px" : "48px 40px",
@@ -134,22 +148,23 @@ export default function Kurs() {
 
   if (!isAdmin) {
     return (
-      <div style={{ minHeight: "100vh", background: "linear-gradient(180deg, #F5F5F7 0%, #FBFBFD 40%, #F5F5F7 100%)" }}>
+      <div className="min-h-screen bg-slate-50 text-slate-900">
         <GlobalNav />
-        <div style={{ maxWidth: 900, margin: "0 auto", padding: isMobile ? "16px 12px 80px" : "32px 20px 48px" }}>
-          <div style={{
-            textAlign: "center",
-            padding: isMobile ? "24px 16px 20px" : "32px 32px 24px",
-            marginBottom: 28,
-          }} data-testid="meta-header">
-            <h1 style={{ fontSize: isMobile ? 16 : 17, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.01em" }} data-testid="text-kurs-title">
-              Kursbereich
-            </h1>
-            <p style={{ fontSize: 12, color: "#8E8E93", margin: 0, fontWeight: 400 }}>
-              Willkommen im Lernbereich. Hier finden Sie bald Kursmodule zu Führung, Teamdynamik und bioLogic-Kompetenzanalyse.
-            </p>
+        <div style={{ position: "fixed", top: isMobile ? 48 : 56, left: 0, right: 0, zIndex: 8999, background: "#F1F5F9" }}>
+          <div style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: isMobile ? "4px 0 6px" : "5px 0 10px" }}>
+            <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
+              <div className="text-center">
+                <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-kurs-title">
+                  Kursbereich
+                </h1>
+                <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0 }}>
+                  Willkommen im Lernbereich. Hier finden Sie Kursmodule zu Führung, Teamdynamik und bioLogic-Kompetenzanalyse.
+                </p>
+              </div>
+            </div>
           </div>
-          <div style={{ height: 1, background: "rgba(0,0,0,0.06)", marginBottom: 28 }} />
+        </div>
+        <div className="mx-auto" style={{ maxWidth: 1100, paddingTop: isMobile ? 110 : 135, paddingBottom: isMobile ? 100 : 40, paddingLeft: isMobile ? 8 : 24, paddingRight: isMobile ? 8 : 24 }}>
 
           <KursWidget isMobile={isMobile} />
 
@@ -237,24 +252,25 @@ export default function Kurs() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(180deg, #F5F5F7 0%, #FBFBFD 40%, #F5F5F7 100%)" }}>
+    <div className="min-h-screen bg-slate-50 text-slate-900">
       <GlobalNav />
 
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: isMobile ? "16px 12px 80px" : "32px 20px 48px" }}>
-
-        <div style={{
-          textAlign: "center",
-          padding: isMobile ? "24px 16px 20px" : "32px 32px 24px",
-          marginBottom: 28,
-        }} data-testid="meta-header">
-          <h1 style={{ fontSize: isMobile ? 16 : 17, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.01em" }} data-testid="text-kurs-title">
-            Kurszugänge freischalten
-          </h1>
-          <p style={{ fontSize: 12, color: "#8E8E93", margin: 0, fontWeight: 400 }}>
-            Hier können Sie mehrere Personen für den bioLogic-Kursbereich freischalten. Fügen Sie alle Teilnehmer hinzu und starten Sie die Freischaltung gesammelt.
-          </p>
+      <div style={{ position: "fixed", top: isMobile ? 48 : 56, left: 0, right: 0, zIndex: 8999, background: "#F1F5F9" }}>
+        <div style={{ background: "#F1F5F9", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: isMobile ? "4px 0 6px" : "5px 0 10px" }}>
+          <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
+            <div className="text-center">
+              <h1 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-kurs-title">
+                Kurszugänge freischalten
+              </h1>
+              <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0 }}>
+                Hier können Sie mehrere Personen für den bioLogic-Kursbereich freischalten. Fügen Sie alle Teilnehmer hinzu und starten Sie die Freischaltung gesammelt.
+              </p>
+            </div>
+          </div>
         </div>
-        <div style={{ height: 1, background: "rgba(0,0,0,0.06)", marginBottom: 28 }} />
+      </div>
+
+      <div className="mx-auto" style={{ maxWidth: 1100, paddingTop: isMobile ? 110 : 135, paddingBottom: isMobile ? 100 : 40, paddingLeft: isMobile ? 8 : 24, paddingRight: isMobile ? 8 : 24 }}>
 
         <KursWidget isMobile={isMobile} />
 
