@@ -37,17 +37,49 @@ function LearningSuiteBadge() {
   }, []);
 
   return (
-    <div style={{ marginBottom: 24 }} ref={containerRef}>
-      <div
-        className="learningsuite-widget"
-        data-locale="de-DE"
-        data-size="large"
-        style={{ width: "100%" }}
-        data-badge-id="cmnnqqj9g00u7e101zrwupdtq"
-      >
-        <a href="https://learningsuite.io/marketing-badge#cmnnqqj9g00u7e101zrwupdtq" target="_blank" rel="noopener">
-          LearningSuite
-        </a>
+    <div style={{ marginBottom: 24 }} ref={containerRef} data-testid="widget-learningsuite">
+      <div style={{
+        background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
+        borderRadius: 20, padding: "28px 32px",
+        boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+        border: "1px solid rgba(0,0,0,0.04)",
+      }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "center", marginBottom: 20 }}>
+          <div style={{
+            display: "flex", alignItems: "center", gap: 8,
+            padding: "8px 18px", borderRadius: 12,
+            background: "rgba(0,113,227,0.06)",
+          }}>
+            <GraduationCap style={{ width: 16, height: 16, color: "#0071E3" }} />
+            <span style={{ fontSize: 14, fontWeight: 600, color: "#0071E3" }}>3 Module mit 15 Lektionen</span>
+          </div>
+          <div style={{
+            display: "flex", alignItems: "center", gap: 8,
+            padding: "8px 18px", borderRadius: 12,
+            background: "rgba(0,113,227,0.06)",
+          }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0071E3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="#0071E3" stroke="none"/></svg>
+            <span style={{ fontSize: 14, fontWeight: 600, color: "#0071E3" }}>3 Stunden Video-Material</span>
+          </div>
+        </div>
+
+        <div
+          className="learningsuite-widget"
+          data-locale="de-DE"
+          data-size="large"
+          style={{ width: "100%" }}
+          data-badge-id="cmnnqqj9g00u7e101zrwupdtq"
+        >
+          <a href="https://learningsuite.io/marketing-badge#cmnnqqj9g00u7e101zrwupdtq" target="_blank" rel="noopener">
+            LearningSuite
+          </a>
+        </div>
+
+        <div style={{ textAlign: "center", marginTop: 16 }}>
+          <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>
+            Einführung in die bioLogic
+          </span>
+        </div>
       </div>
     </div>
   );
