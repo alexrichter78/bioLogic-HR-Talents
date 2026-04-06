@@ -1,9 +1,12 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import GlobalNav from "@/components/global-nav";
-import { GraduationCap, Lock, Plus, Trash2, Send, CheckCircle2, AlertCircle } from "lucide-react";
+import { GraduationCap, Lock, Plus, Trash2, Send, CheckCircle2, AlertCircle, BookOpen, PlayCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import { useIsMobile } from "@/hooks/use-mobile";
+import imgKompaktkurs from "@assets/image_1775513714925.png";
+import imgLeadership from "@assets/image_1775513748106.png";
+import imgRecruiting from "@assets/image_1775513775908.png";
 
 interface Participant {
   id: number;
@@ -18,67 +21,65 @@ function createEmptyParticipant(): Participant {
   return { id: nextId++, firstName: "", lastName: "", email: "" };
 }
 
-function LearningSuiteBadge() {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const scriptId = "ls-badge-embed-script";
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement("script");
-      script.id = scriptId;
-      script.src = "//embed.learningsuite.io/ls-badge-embed.js";
-      script.async = true;
-      document.body.appendChild(script);
-    } else {
-      if ((window as any).LearningSuiteBadge) {
-        (window as any).LearningSuiteBadge.init?.();
-      }
-    }
-  }, []);
+function KursWidget({ isMobile }: { isMobile: boolean }) {
+  const modules = [
+    { img: imgKompaktkurs, title: "bioLogic Kompaktkurs" },
+    { img: imgLeadership, title: "bioLogic Leadership" },
+    { img: imgRecruiting, title: "bioLogic Recruiting" },
+  ];
 
   return (
-    <div style={{ marginBottom: 24 }} ref={containerRef} data-testid="widget-learningsuite">
+    <div style={{ marginBottom: 24 }} data-testid="widget-kursmodule">
       <div style={{
         background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
-        borderRadius: 20, padding: "28px 32px",
+        borderRadius: 20, padding: isMobile ? "20px 16px" : "28px 32px",
         boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
         border: "1px solid rgba(0,0,0,0.04)",
       }}>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "center", marginBottom: 20 }}>
-          <div style={{
-            display: "flex", alignItems: "center", gap: 8,
-            padding: "8px 18px", borderRadius: 12,
-            background: "rgba(0,113,227,0.06)",
-          }}>
-            <GraduationCap style={{ width: 16, height: 16, color: "#0071E3" }} />
-            <span style={{ fontSize: 14, fontWeight: 600, color: "#0071E3" }}>3 Module mit 15 Lektionen</span>
-          </div>
-          <div style={{
-            display: "flex", alignItems: "center", gap: 8,
-            padding: "8px 18px", borderRadius: 12,
-            background: "rgba(0,113,227,0.06)",
-          }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0071E3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="#0071E3" stroke="none"/></svg>
-            <span style={{ fontSize: 14, fontWeight: 600, color: "#0071E3" }}>3 Stunden Video-Material</span>
-          </div>
-        </div>
-
-        <div
-          className="learningsuite-widget"
-          data-locale="de-DE"
-          data-size="large"
-          style={{ width: "100%" }}
-          data-badge-id="cmnnqqj9g00u7e101zrwupdtq"
-        >
-          <a href="https://learningsuite.io/marketing-badge#cmnnqqj9g00u7e101zrwupdtq" target="_blank" rel="noopener">
-            LearningSuite
-          </a>
-        </div>
-
-        <div style={{ textAlign: "center", marginTop: 16 }}>
-          <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }}>
+        <div style={{ textAlign: "center", marginBottom: 20 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px", letterSpacing: "-0.02em" }}>
             Einführung in die bioLogic
-          </span>
+          </h2>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center" }}>
+            <div style={{
+              display: "flex", alignItems: "center", gap: 8,
+              padding: "7px 16px", borderRadius: 10,
+              background: "rgba(0,113,227,0.06)",
+            }}>
+              <BookOpen style={{ width: 15, height: 15, color: "#0071E3" }} />
+              <span style={{ fontSize: 13, fontWeight: 600, color: "#0071E3" }}>3 Module mit 15 Lektionen</span>
+            </div>
+            <div style={{
+              display: "flex", alignItems: "center", gap: 8,
+              padding: "7px 16px", borderRadius: 10,
+              background: "rgba(0,113,227,0.06)",
+            }}>
+              <PlayCircle style={{ width: 15, height: 15, color: "#0071E3" }} />
+              <span style={{ fontSize: 13, fontWeight: 600, color: "#0071E3" }}>3 Stunden Video-Material</span>
+            </div>
+          </div>
+        </div>
+
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr",
+          gap: 16,
+        }}>
+          {modules.map((m, i) => (
+            <div key={i} style={{
+              borderRadius: 14, overflow: "hidden",
+              border: "1px solid rgba(0,0,0,0.06)",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
+              transition: "transform 200ms ease, box-shadow 200ms ease",
+              cursor: "default",
+            }} data-testid={`card-module-${i}`}>
+              <img
+                src={m.img}
+                alt={m.title}
+                style={{ width: "100%", height: "auto", display: "block" }}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -152,7 +153,7 @@ export default function Kurs() {
             </p>
           </div>
 
-          <LearningSuiteBadge />
+          <KursWidget isMobile={isMobile} />
 
           <div style={{
             background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
@@ -259,7 +260,7 @@ export default function Kurs() {
           </p>
         </div>
 
-        <LearningSuiteBadge />
+        <KursWidget isMobile={isMobile} />
 
         {submitted ? (
           <div style={{
