@@ -894,17 +894,17 @@ export async function registerRoutes(
           const r = results.find((r) => r.email === p.email);
           if (r && (r.status === "Erstellt" || r.status === "Aktualisiert")) {
             try {
+              const params = new URLSearchParams();
+              params.append("firstName", p.firstName);
+              params.append("lastName", p.lastName);
+              params.append("email", p.email);
+              params.append("company", adminCompany);
+              params.append("status", r.status);
+              params.append("enrolledAt", new Date().toISOString());
               await fetch(zapierUrl, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  firstName: p.firstName,
-                  lastName: p.lastName,
-                  email: p.email,
-                  company: adminCompany,
-                  status: r.status,
-                  enrolledAt: new Date().toISOString(),
-                }),
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: params.toString(),
               });
             } catch (webhookErr) {
               console.error("Zapier webhook error for", p.email, webhookErr);
