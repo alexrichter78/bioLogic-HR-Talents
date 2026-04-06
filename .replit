@@ -52,3 +52,4 @@ integrations = ["javascript_openai_ai_integrations:2.0.0"]
 
 [userenv.shared]
 ADMIN_EMAIL = "info@biologic.de"
+ZAPIER_WEBHOOK_ENROLL = "https://hooks.zapier.com/hooks/catch/19864960/u7405ve/"

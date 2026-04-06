@@ -886,6 +886,30 @@ export async function registerRoutes(
           results.push({ email, status: "Erstellt" });
         }
       }
+      const zapierUrl = process.env.ZAPIER_WEBHOOK_ENROLL;
+      if (zapierUrl) {
+        for (const p of participants) {
+          const r = results.find((r) => r.email === p.email);
+          if (r && (r.status === "Erstellt" || r.status === "Aktualisiert")) {
+            try {
+              await fetch(zapierUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  firstName: p.firstName,
+                  lastName: p.lastName,
+                  email: p.email,
+                  status: r.status,
+                  enrolledAt: new Date().toISOString(),
+                }),
+              });
+            } catch (webhookErr) {
+              console.error("Zapier webhook error for", p.email, webhookErr);
+            }
+          }
+        }
+      }
+
       res.json({ ok: true, results });
     } catch (error) {
       console.error("Enroll course error:", error);
