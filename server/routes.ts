@@ -828,7 +828,7 @@ export async function registerRoutes(
       if (!Array.isArray(participants) || participants.length === 0) {
         return res.status(400).json({ error: "Mindestens ein Teilnehmer erforderlich" });
       }
-      const adminUser = await storage.getUser(req.session.userId!);
+      const adminUser = await storage.getUserById(req.session.userId!);
       const adminCompany = adminUser?.companyName || "";
       const results: { email: string; status: string }[] = [];
       for (const p of participants) {
