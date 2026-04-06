@@ -1,6 +1,6 @@
 import { useState } from "react";
 import GlobalNav from "@/components/global-nav";
-import { GraduationCap, Lock, Plus, Trash2, Send, CheckCircle2, AlertCircle, Users } from "lucide-react";
+import { GraduationCap, Lock, Plus, Trash2, Send, CheckCircle2, AlertCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -70,26 +70,19 @@ export default function Kurs() {
         <GlobalNav />
         <div style={{ maxWidth: 900, margin: "0 auto", padding: isMobile ? "16px 12px 80px" : "32px 20px 48px" }}>
           <div style={{
-            padding: isMobile ? "24px 16px" : "28px 32px", borderRadius: 20, marginBottom: 24,
-            background: "linear-gradient(135deg, rgba(0,0,0,0.025), rgba(0,0,0,0.015))",
-            border: "1px solid rgba(0,0,0,0.06)",
+            textAlign: "center",
+            padding: isMobile ? "20px 16px" : "28px 32px",
+            marginBottom: 24,
+            background: "rgba(0,0,0,0.02)",
+            borderBottom: "1px solid rgba(0,0,0,0.06)",
+            borderRadius: 0,
           }} data-testid="meta-header">
-            <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 8 }}>
-              <div style={{
-                width: 40, height: 40, borderRadius: 12,
-                background: "linear-gradient(135deg, #0071E3, #0071E3CC)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                boxShadow: "0 4px 12px rgba(0,113,227,0.2)",
-              }}>
-                <GraduationCap style={{ width: 20, height: 20, color: "#FFF" }} />
-              </div>
-              <div>
-                <h1 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", margin: 0 }} data-testid="text-kurs-title">
-                  Kursbereich
-                </h1>
-                <p style={{ fontSize: 13, color: "#8E8E93", margin: 0 }}>Lernmodule</p>
-              </div>
-            </div>
+            <h1 style={{ fontSize: isMobile ? 18 : 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.02em" }} data-testid="text-kurs-title">
+              Kursbereich
+            </h1>
+            <p style={{ fontSize: 13, color: "#6E6E73", margin: 0 }}>
+              Willkommen im Lernbereich. Hier finden Sie bald Kursmodule zu Führung, Teamdynamik und bioLogic-Kompetenzanalyse.
+            </p>
           </div>
 
           <div style={{
@@ -182,26 +175,19 @@ export default function Kurs() {
       <div style={{ maxWidth: 900, margin: "0 auto", padding: isMobile ? "16px 12px 80px" : "32px 20px 48px" }}>
 
         <div style={{
-          padding: isMobile ? "24px 16px" : "28px 32px", borderRadius: 20, marginBottom: 24,
-          background: "linear-gradient(135deg, rgba(0,0,0,0.025), rgba(0,0,0,0.015))",
-          border: "1px solid rgba(0,0,0,0.06)",
+          textAlign: "center",
+          padding: isMobile ? "20px 16px" : "28px 32px",
+          marginBottom: 24,
+          background: "rgba(0,0,0,0.02)",
+          borderBottom: "1px solid rgba(0,0,0,0.06)",
+          borderRadius: 0,
         }} data-testid="meta-header">
-          <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 8 }}>
-            <div style={{
-              width: 40, height: 40, borderRadius: 12,
-              background: "linear-gradient(135deg, #0071E3, #0071E3CC)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: "0 4px 12px rgba(0,113,227,0.2)",
-            }}>
-              <GraduationCap style={{ width: 20, height: 20, color: "#FFF" }} />
-            </div>
-            <div>
-              <h1 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", margin: 0 }} data-testid="text-kurs-title">
-                Kurszugänge freischalten
-              </h1>
-              <p style={{ fontSize: 13, color: "#8E8E93", margin: 0 }}>Teilnehmer für den Kursbereich verwalten</p>
-            </div>
-          </div>
+          <h1 style={{ fontSize: isMobile ? 18 : 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.02em" }} data-testid="text-kurs-title">
+            Kurszugänge freischalten
+          </h1>
+          <p style={{ fontSize: 13, color: "#6E6E73", margin: 0 }}>
+            Hier können Sie mehrere Personen für den bioLogic-Kursbereich freischalten. Fügen Sie alle Teilnehmer hinzu und starten Sie die Freischaltung gesammelt.
+          </p>
         </div>
 
         {submitted ? (
