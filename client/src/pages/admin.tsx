@@ -53,7 +53,7 @@ const emptyForm: UserForm = {
   isActive: true,
   courseAccess: false,
   accessUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-  plan: "premium",
+  plan: "trial",
   notes: "",
   subscriptionStatus: "active",
 };
@@ -476,9 +476,10 @@ export default function Admin() {
           <div>
             <label style={labelStyle}>Plan</label>
             <select value={form.plan} onChange={e => setForm({ ...form, plan: e.target.value })} style={inputStyle} data-testid="select-admin-plan">
-              <option value="premium">Premium</option>
-              <option value="basic">Basic</option>
               <option value="trial">Trial</option>
+              <option value="basis">Basis</option>
+              <option value="pro">Pro</option>
+              <option value="premium">Premium</option>
             </select>
           </div>
           <div>
