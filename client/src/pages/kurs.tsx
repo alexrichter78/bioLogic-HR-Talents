@@ -139,19 +139,17 @@ export default function Kurs() {
         <div style={{ maxWidth: 900, margin: "0 auto", padding: isMobile ? "16px 12px 80px" : "32px 20px 48px" }}>
           <div style={{
             textAlign: "center",
-            padding: isMobile ? "20px 16px" : "28px 32px",
-            marginBottom: 24,
-            background: "rgba(0,0,0,0.02)",
-            borderBottom: "1px solid rgba(0,0,0,0.06)",
-            borderRadius: 0,
+            padding: isMobile ? "24px 16px 20px" : "32px 32px 24px",
+            marginBottom: 28,
           }} data-testid="meta-header">
-            <h1 style={{ fontSize: isMobile ? 18 : 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.02em" }} data-testid="text-kurs-title">
+            <h1 style={{ fontSize: isMobile ? 16 : 17, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.01em" }} data-testid="text-kurs-title">
               Kursbereich
             </h1>
-            <p style={{ fontSize: 13, color: "#6E6E73", margin: 0 }}>
+            <p style={{ fontSize: 12, color: "#8E8E93", margin: 0, fontWeight: 400 }}>
               Willkommen im Lernbereich. Hier finden Sie bald Kursmodule zu Führung, Teamdynamik und bioLogic-Kompetenzanalyse.
             </p>
           </div>
+          <div style={{ height: 1, background: "rgba(0,0,0,0.06)", marginBottom: 28 }} />
 
           <KursWidget isMobile={isMobile} />
 
@@ -246,19 +244,17 @@ export default function Kurs() {
 
         <div style={{
           textAlign: "center",
-          padding: isMobile ? "20px 16px" : "28px 32px",
-          marginBottom: 24,
-          background: "rgba(0,0,0,0.02)",
-          borderBottom: "1px solid rgba(0,0,0,0.06)",
-          borderRadius: 0,
+          padding: isMobile ? "24px 16px 20px" : "32px 32px 24px",
+          marginBottom: 28,
         }} data-testid="meta-header">
-          <h1 style={{ fontSize: isMobile ? 18 : 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.02em" }} data-testid="text-kurs-title">
+          <h1 style={{ fontSize: isMobile ? 16 : 17, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px", letterSpacing: "-0.01em" }} data-testid="text-kurs-title">
             Kurszugänge freischalten
           </h1>
-          <p style={{ fontSize: 13, color: "#6E6E73", margin: 0 }}>
+          <p style={{ fontSize: 12, color: "#8E8E93", margin: 0, fontWeight: 400 }}>
             Hier können Sie mehrere Personen für den bioLogic-Kursbereich freischalten. Fügen Sie alle Teilnehmer hinzu und starten Sie die Freischaltung gesammelt.
           </p>
         </div>
+        <div style={{ height: 1, background: "rgba(0,0,0,0.06)", marginBottom: 28 }} />
 
         <KursWidget isMobile={isMobile} />
 
