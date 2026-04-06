@@ -109,8 +109,15 @@ export default function Admin() {
     setKnowledgeLoading(true);
     try {
       const res = await fetch("/api/knowledge-documents", { credentials: "include" });
-      if (res.ok) setKnowledgeDocs(await res.json());
-    } catch {}
+      if (res.ok) {
+        const data = await res.json();
+        setKnowledgeDocs(data);
+      } else {
+        console.error("Knowledge docs load failed:", res.status, await res.text());
+      }
+    } catch (err) {
+      console.error("Knowledge docs fetch error:", err);
+    }
     setKnowledgeLoading(false);
   };
 
