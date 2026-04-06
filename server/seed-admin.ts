@@ -15,6 +15,24 @@ async function ensureSchema() {
   await client.connect();
   try {
     await client.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username TEXT NOT NULL DEFAULT '' UNIQUE,
+        email TEXT NOT NULL DEFAULT '',
+        password_hash TEXT NOT NULL,
+        first_name TEXT NOT NULL DEFAULT '',
+        last_name TEXT NOT NULL DEFAULT '',
+        company_name TEXT NOT NULL DEFAULT '',
+        role TEXT NOT NULL DEFAULT 'user',
+        is_active BOOLEAN NOT NULL DEFAULT true,
+        course_access BOOLEAN NOT NULL DEFAULT false,
+        email_verified BOOLEAN NOT NULL DEFAULT false,
+        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        last_login_at TIMESTAMP
+      );
+    `);
+    await client.query(`
       ALTER TABLE users ADD COLUMN IF NOT EXISTS username TEXT DEFAULT '';
     `);
     await client.query(`
@@ -45,6 +63,61 @@ async function ensureSchema() {
         id SERIAL PRIMARY KEY,
         prompt_text TEXT NOT NULL,
         updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS subscriptions (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        plan TEXT NOT NULL DEFAULT 'premium',
+        source TEXT NOT NULL DEFAULT 'manual',
+        status TEXT NOT NULL DEFAULT 'active',
+        starts_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        access_until TIMESTAMP NOT NULL,
+        cancel_at_period_end BOOLEAN NOT NULL DEFAULT false,
+        canceled_at TIMESTAMP,
+        stripe_customer_id TEXT,
+        stripe_subscription_id TEXT,
+        notes TEXT,
+        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS coach_feedback (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id),
+        user_message TEXT NOT NULL,
+        assistant_message TEXT NOT NULL,
+        feedback_type TEXT NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS knowledge_documents (
+        id SERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        content TEXT NOT NULL,
+        category TEXT NOT NULL DEFAULT 'allgemein',
+        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS golden_answers (
+        id SERIAL PRIMARY KEY,
+        user_message TEXT NOT NULL,
+        assistant_message TEXT NOT NULL,
+        category TEXT NOT NULL DEFAULT 'allgemein',
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS coach_topics (
+        id SERIAL PRIMARY KEY,
+        topic TEXT NOT NULL,
+        user_id INTEGER REFERENCES users(id),
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
       );
     `);
     console.log("Schema migration completed successfully");
