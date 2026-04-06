@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import GlobalNav from "@/components/global-nav";
 import { GraduationCap, Lock, Plus, Trash2, Send, CheckCircle2, AlertCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth";
@@ -16,6 +16,41 @@ let nextId = 1;
 
 function createEmptyParticipant(): Participant {
   return { id: nextId++, firstName: "", lastName: "", email: "" };
+}
+
+function LearningSuiteBadge() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const scriptId = "ls-badge-embed-script";
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.src = "//embed.learningsuite.io/ls-badge-embed.js";
+      script.async = true;
+      document.body.appendChild(script);
+    } else {
+      if ((window as any).LearningSuiteBadge) {
+        (window as any).LearningSuiteBadge.init?.();
+      }
+    }
+  }, []);
+
+  return (
+    <div style={{ marginBottom: 24 }} ref={containerRef}>
+      <div
+        className="learningsuite-widget"
+        data-locale="de-DE"
+        data-size="large"
+        style={{ width: "100%" }}
+        data-badge-id="cmnnqqj9g00u7e101zrwupdtq"
+      >
+        <a href="https://learningsuite.io/marketing-badge#cmnnqqj9g00u7e101zrwupdtq" target="_blank" rel="noopener">
+          LearningSuite
+        </a>
+      </div>
+    </div>
+  );
 }
 
 export default function Kurs() {
@@ -84,6 +119,8 @@ export default function Kurs() {
               Willkommen im Lernbereich. Hier finden Sie bald Kursmodule zu Führung, Teamdynamik und bioLogic-Kompetenzanalyse.
             </p>
           </div>
+
+          <LearningSuiteBadge />
 
           <div style={{
             background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
@@ -189,6 +226,8 @@ export default function Kurs() {
             Hier können Sie mehrere Personen für den bioLogic-Kursbereich freischalten. Fügen Sie alle Teilnehmer hinzu und starten Sie die Freischaltung gesammelt.
           </p>
         </div>
+
+        <LearningSuiteBadge />
 
         {submitted ? (
           <div style={{
