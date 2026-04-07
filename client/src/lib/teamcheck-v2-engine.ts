@@ -219,22 +219,28 @@ function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string):
   const teamPrimary = getPrimaryKey(teamProfile);
   const personPrimary = getPrimaryKey(personProfile);
 
-  let score = 100;
-  score -= Math.min(distance, 80) * 0.65;
-  if (teamPrimary !== personPrimary) score -= 12;
-  if (systemwirkung === "Spannung") score -= 10;
-  if (systemwirkung === "Transformation") score -= 18;
-
   const personSorted = sortProfile(personProfile);
   const teamSorted = sortProfile(teamProfile);
   const personTop2Gap = personSorted[0].value - personSorted[1].value;
+  const personTop3Gap = personSorted[0].value - personSorted[2].value;
+  const personIsBalanced = personTop3Gap <= 5;
+
+  let score = 100;
+  score -= Math.min(distance, 80) * 0.65;
+  if (teamPrimary !== personPrimary || personIsBalanced) score -= 12;
+  if (systemwirkung === "Spannung") score -= 10;
+  if (systemwirkung === "Transformation") score -= 18;
+
   if (personTop2Gap < 12) {
     score -= Math.min(5, Math.ceil((12 - personTop2Gap) / 2));
+  }
+  if (personTop2Gap < 5) {
+    score -= 5;
   }
 
   const teamSecondary = getSecondaryKey(teamProfile);
   const personSecondary = getSecondaryKey(personProfile);
-  if (teamPrimary === personPrimary && teamSecondary !== personSecondary) {
+  if (teamPrimary === personPrimary && !personIsBalanced && teamSecondary !== personSecondary) {
     const teamSecGap = teamSorted[0].value - teamSorted[1].value;
     const personSecGap = personSorted[0].value - personSorted[1].value;
     if (teamSecGap > 5 && personSecGap > 5) score -= 5;
