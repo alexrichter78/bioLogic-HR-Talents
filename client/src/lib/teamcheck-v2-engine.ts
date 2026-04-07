@@ -199,17 +199,19 @@ export function getSystemwirkung(teamProfile: Triad, personProfile: Triad): stri
   const personSorted = sortProfile(personProfile);
   const personTop2Gap = personSorted[0].value - personSorted[1].value;
   const personTop2Keys = new Set([personSorted[0].key, personSorted[1].key]);
+  const teamSorted = sortProfile(teamProfile);
+  const teamTop2Gap = teamSorted[0].value - teamSorted[1].value;
+  const teamTop2Keys = new Set([teamSorted[0].key, teamSorted[1].key]);
   const effectiveSamePrimary = teamPrimary === personPrimary ||
-    (personTop2Gap < 3 && personTop2Keys.has(teamPrimary));
+    (personTop2Gap < 3 && personTop2Keys.has(teamPrimary)) ||
+    (teamTop2Gap < 3 && teamTop2Keys.has(personPrimary));
 
   if (distance <= 16) return "Verstärkung";
   if (effectiveSamePrimary && distance <= 42) return "Verstärkung";
 
   if (!effectiveSamePrimary) {
-    const teamSorted = sortProfile(teamProfile);
-    const teamTop2 = new Set([teamSorted[0].key, teamSorted[1].key]);
-    const sameTop2 = teamTop2.size === personTop2Keys.size &&
-      [...teamTop2].every(k => personTop2Keys.has(k));
+    const sameTop2 = teamTop2Keys.size === personTop2Keys.size &&
+      [...teamTop2Keys].every(k => personTop2Keys.has(k));
     if (sameTop2 && distance <= 50) return "Verstärkung";
   }
 
@@ -230,17 +232,20 @@ function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string):
   const personIsBalanced = personTop3Gap <= 5;
 
   const personTop2Keys = new Set([personSorted[0].key, personSorted[1].key]);
-  const unclearPrimary = personTop2Gap < 3 && !personIsBalanced;
-  const unclearMatchesTeam = unclearPrimary && personTop2Keys.has(teamPrimary);
+  const teamTop2Gap = teamSorted[0].value - teamSorted[1].value;
+  const teamTop2Keys = new Set([teamSorted[0].key, teamSorted[1].key]);
+  const eitherUnclear = (personTop2Gap < 3 && !personIsBalanced) || teamTop2Gap < 3;
+  const unclearOverlap = eitherUnclear &&
+    (personTop2Keys.has(teamPrimary) || teamTop2Keys.has(personPrimary));
 
   let score = 100;
   score -= Math.min(distance, 80) * 0.65;
   if (personIsBalanced) {
     score -= 12;
   } else if (teamPrimary !== personPrimary) {
-    score -= unclearMatchesTeam ? 6 : 12;
+    score -= unclearOverlap ? 6 : 12;
   }
-  if (systemwirkung === "Spannung") score -= unclearMatchesTeam ? 5 : 10;
+  if (systemwirkung === "Spannung") score -= unclearOverlap ? 5 : 10;
   if (systemwirkung === "Transformation") score -= 18;
 
   if (personTop2Gap < 12) {
