@@ -1,0 +1,257 @@
+// leadershipSystemImpact.ts
+
+type ComponentKey = "impulsiv" | "intuitiv" | "analytisch";
+type RoleType = "Teammitglied" | "Führungskraft";
+
+type Profile = {
+  impulsiv: number;
+  intuitiv: number;
+  analytisch: number;
+};
+
+type ProfileKind = "BALANCED" | "CLEAR" | "MIXED";
+type SystemImpactLabel = "Verstärkung" | "Spannung" | "Transformation";
+
+type SystemImpactResult = {
+  show: boolean;
+  label: SystemImpactLabel | null;
+  text: string | null;
+  variant: "success" | "warning" | "danger" | null;
+  reasons: string[];
+  metrics: {
+    totalGap: number;
+    maxGap: number;
+    personTop: ComponentKey;
+    teamTop: ComponentKey;
+    personTopGap: number;
+    teamTopGap: number;
+    sameTop: boolean;
+    personSpread: number;
+    teamSpread: number;
+    personKind: ProfileKind;
+    teamKind: ProfileKind;
+    bothBalanced: boolean;
+    bothClear: boolean;
+    bothClearDifferentTop: boolean;
+    bothClearSameTop: boolean;
+  } | null;
+};
+
+function clampPercent(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(100, Math.round(value)));
+}
+
+function normalizeProfile(profile: Profile): Profile {
+  return {
+    impulsiv: clampPercent(profile.impulsiv),
+    intuitiv: clampPercent(profile.intuitiv),
+    analytisch: clampPercent(profile.analytisch),
+  };
+}
+
+function getSortedComponents(profile: Profile): Array<{ key: ComponentKey; value: number }> {
+  return [
+    { key: "impulsiv", value: profile.impulsiv },
+    { key: "intuitiv", value: profile.intuitiv },
+    { key: "analytisch", value: profile.analytisch },
+  ].sort((a, b) => b.value - a.value);
+}
+
+function getTopComponent(profile: Profile): ComponentKey {
+  return getSortedComponents(profile)[0].key;
+}
+
+function getTopGap(profile: Profile): number {
+  const sorted = getSortedComponents(profile);
+  return sorted[0].value - sorted[1].value;
+}
+
+function getSpread(profile: Profile): number {
+  const values = [profile.impulsiv, profile.intuitiv, profile.analytisch];
+  return Math.max(...values) - Math.min(...values);
+}
+
+function getProfileKind(profile: Profile): ProfileKind {
+  const spread = getSpread(profile);
+  const topGap = getTopGap(profile);
+
+  if (spread <= 10) return "BALANCED";
+  if (topGap >= 8) return "CLEAR";
+  return "MIXED";
+}
+
+function getGapMetrics(person: Profile, team: Profile) {
+  const gapImpulsiv = Math.abs(person.impulsiv - team.impulsiv);
+  const gapIntuitiv = Math.abs(person.intuitiv - team.intuitiv);
+  const gapAnalytisch = Math.abs(person.analytisch - team.analytisch);
+
+  const totalGap = gapImpulsiv + gapIntuitiv + gapAnalytisch;
+  const maxGap = Math.max(gapImpulsiv, gapIntuitiv, gapAnalytisch);
+
+  return {
+    gapImpulsiv,
+    gapIntuitiv,
+    gapAnalytisch,
+    totalGap,
+    maxGap,
+  };
+}
+
+/**
+ * Nur für Führungskraft.
+ *
+ * Logik:
+ * Verstärkung:
+ * - sehr nah am Team
+ * - oder gleiche klare Hauptlogik bei überschaubarer Distanz
+ *
+ * Transformation:
+ * - klare Gegenlogik
+ * - oder deutliche Gesamtdistanz
+ *
+ * Spannung:
+ * - alles dazwischen
+ */
+export function calculateLeadershipSystemImpact(
+  personProfile: Profile,
+  teamProfile: Profile,
+  role: RoleType
+): SystemImpactResult {
+  if (role !== "Führungskraft") {
+    return {
+      show: false,
+      label: null,
+      text: null,
+      variant: null,
+      reasons: [],
+      metrics: null,
+    };
+  }
+
+  const person = normalizeProfile(personProfile);
+  const team = normalizeProfile(teamProfile);
+
+  const gaps = getGapMetrics(person, team);
+
+  const personTop = getTopComponent(person);
+  const teamTop = getTopComponent(team);
+
+  const personTopGap = getTopGap(person);
+  const teamTopGap = getTopGap(team);
+
+  const personSpread = getSpread(person);
+  const teamSpread = getSpread(team);
+
+  const personKind = getProfileKind(person);
+  const teamKind = getProfileKind(team);
+
+  const sameTop = personTop === teamTop;
+
+  const bothBalanced = personKind === "BALANCED" && teamKind === "BALANCED";
+  const bothClear = personKind === "CLEAR" && teamKind === "CLEAR";
+  const bothClearDifferentTop = bothClear && !sameTop;
+  const bothClearSameTop = bothClear && sameTop;
+
+  let label: SystemImpactLabel;
+  const reasons: string[] = [];
+
+  // 1. Verstärkung
+  if (
+    (bothBalanced && gaps.maxGap <= 6 && gaps.totalGap <= 15) ||
+    (sameTop && gaps.totalGap <= 18 && gaps.maxGap <= 8) ||
+    (bothClearSameTop && gaps.totalGap <= 24 && gaps.maxGap <= 12)
+  ) {
+    label = "Verstärkung";
+    reasons.push("Die Führungskraft liegt strukturell nah an der bestehenden Teamlogik.");
+    if (sameTop) {
+      reasons.push("Die Hauptprägung der Führungskraft entspricht der Hauptprägung des Teams.");
+    }
+  }
+
+  // 2. Transformation
+  else if (
+    bothClearDifferentTop ||
+    gaps.totalGap >= 34 ||
+    gaps.maxGap >= 16 ||
+    (!sameTop && gaps.totalGap >= 24)
+  ) {
+    label = "Transformation";
+    reasons.push("Die Führungskraft bringt eine deutlich andere Arbeits- und Führungslogik in das Team.");
+    if (bothClearDifferentTop) {
+      reasons.push("Sowohl Team als auch Führungskraft haben eine klare, aber unterschiedliche Hauptprägung.");
+    }
+  }
+
+  // 3. Spannung
+  else {
+    label = "Spannung";
+    reasons.push("Die Führungskraft setzt spürbar andere Akzente, ohne die Teamlogik vollständig zu drehen.");
+  }
+
+  const text =
+    label === "Verstärkung"
+      ? "Die Führungskraft wird die bestehende Teamlogik voraussichtlich eher stabilisieren und verstärken."
+      : label === "Spannung"
+      ? "Die Führungskraft wird voraussichtlich andere Akzente setzen und damit spürbare Reibung, aber auch Entwicklung auslösen."
+      : "Die Führungskraft wird das Team voraussichtlich deutlich verändern und eine neue Arbeitslogik hineinbringen.";
+
+  const variant =
+    label === "Verstärkung"
+      ? "success"
+      : label === "Spannung"
+      ? "warning"
+      : "danger";
+
+  return {
+    show: true,
+    label,
+    text,
+    variant,
+    reasons,
+    metrics: {
+      totalGap: gaps.totalGap,
+      maxGap: gaps.maxGap,
+      personTop,
+      teamTop,
+      personTopGap,
+      teamTopGap,
+      sameTop,
+      personSpread,
+      teamSpread,
+      personKind,
+      teamKind,
+      bothBalanced,
+      bothClear,
+      bothClearDifferentTop,
+      bothClearSameTop,
+    },
+  };
+}
+
+/**
+ * Optional: kurze UI-Helfer
+ */
+export function getLeadershipSystemImpactText(label: SystemImpactLabel): string {
+  switch (label) {
+    case "Verstärkung":
+      return "Die Führungskraft wird die bestehende Teamlogik voraussichtlich eher stabilisieren und verstärken.";
+    case "Spannung":
+      return "Die Führungskraft wird voraussichtlich andere Akzente setzen und damit spürbare Reibung, aber auch Entwicklung auslösen.";
+    case "Transformation":
+      return "Die Führungskraft wird das Team voraussichtlich deutlich verändern und eine neue Arbeitslogik hineinbringen.";
+  }
+}
+
+export function getLeadershipSystemImpactVariant(
+  label: SystemImpactLabel
+): "success" | "warning" | "danger" {
+  switch (label) {
+    case "Verstärkung":
+      return "success";
+    case "Spannung":
+      return "warning";
+    case "Transformation":
+      return "danger";
+  }
+}
