@@ -1,0 +1,461 @@
+// teamCheckLogic.ts
+
+type ComponentKey = "impulsiv" | "intuitiv" | "analytisch";
+type RoleType = "Teammitglied" | "Führungskraft";
+
+type Profile = {
+  impulsiv: number;
+  intuitiv: number;
+  analytisch: number;
+};
+
+type TeamFitLabel = "Passend" | "Bedingt passend" | "Kritisch";
+type EffortLabel = "Niedrig" | "Mittel" | "Hoch";
+
+type ProfileKind = "BALANCED" | "CLEAR" | "MIXED";
+
+type TeamCheckMetrics = {
+  gapImpulsiv: number;
+  gapIntuitiv: number;
+  gapAnalytisch: number;
+  totalGap: number;
+  maxGap: number;
+
+  personTop: ComponentKey;
+  teamTop: ComponentKey;
+
+  personTopGap: number;
+  teamTopGap: number;
+
+  personSpread: number;
+  teamSpread: number;
+
+  sameTop: boolean;
+  oppositeTop: boolean;
+
+  personKind: ProfileKind;
+  teamKind: ProfileKind;
+
+  personIsBalanced: boolean;
+  teamIsBalanced: boolean;
+
+  bothBalanced: boolean;
+  oneBalanced: boolean;
+  bothClear: boolean;
+  bothClearDifferentTop: boolean;
+  bothClearSameTop: boolean;
+};
+
+type TeamCheckResult = {
+  teamFit: TeamFitLabel;
+  integrationEffort: EffortLabel;
+  metrics: TeamCheckMetrics;
+  reasons: string[];
+};
+
+function clampPercent(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(100, Math.round(value)));
+}
+
+function normalizeProfile(profile: Profile): Profile {
+  return {
+    impulsiv: clampPercent(profile.impulsiv),
+    intuitiv: clampPercent(profile.intuitiv),
+    analytisch: clampPercent(profile.analytisch),
+  };
+}
+
+function getSortedComponents(profile: Profile): Array<{ key: ComponentKey; value: number }> {
+  return [
+    { key: "impulsiv", value: profile.impulsiv },
+    { key: "intuitiv", value: profile.intuitiv },
+    { key: "analytisch", value: profile.analytisch },
+  ].sort((a, b) => b.value - a.value);
+}
+
+function getTopComponent(profile: Profile): ComponentKey {
+  return getSortedComponents(profile)[0].key;
+}
+
+function getTopGap(profile: Profile): number {
+  const sorted = getSortedComponents(profile);
+  return sorted[0].value - sorted[1].value;
+}
+
+function getSpread(profile: Profile): number {
+  const values = [profile.impulsiv, profile.intuitiv, profile.analytisch];
+  return Math.max(...values) - Math.min(...values);
+}
+
+/**
+ * BALANCED:
+ * stärkste - schwächste Komponente <= 10
+ *
+ * CLEAR:
+ * nicht balanced und Top1-Top2 > 5
+ *
+ * MIXED:
+ * alles dazwischen
+ */
+function getProfileKind(profile: Profile): ProfileKind {
+  const spread = getSpread(profile);
+  const topGap = getTopGap(profile);
+
+  if (spread <= 10) return "BALANCED";
+  if (topGap > 5) return "CLEAR";
+  return "MIXED";
+}
+
+function getGapMetrics(person: Profile, team: Profile) {
+  const gapImpulsiv = Math.abs(person.impulsiv - team.impulsiv);
+  const gapIntuitiv = Math.abs(person.intuitiv - team.intuitiv);
+  const gapAnalytisch = Math.abs(person.analytisch - team.analytisch);
+
+  const totalGap = gapImpulsiv + gapIntuitiv + gapAnalytisch;
+  const maxGap = Math.max(gapImpulsiv, gapIntuitiv, gapAnalytisch);
+
+  return {
+    gapImpulsiv,
+    gapIntuitiv,
+    gapAnalytisch,
+    totalGap,
+    maxGap,
+  };
+}
+
+function buildMetrics(personProfile: Profile, teamProfile: Profile): TeamCheckMetrics {
+  const person = normalizeProfile(personProfile);
+  const team = normalizeProfile(teamProfile);
+
+  const gaps = getGapMetrics(person, team);
+
+  const personTop = getTopComponent(person);
+  const teamTop = getTopComponent(team);
+
+  const personTopGap = getTopGap(person);
+  const teamTopGap = getTopGap(team);
+
+  const personSpread = getSpread(person);
+  const teamSpread = getSpread(team);
+
+  const personKind = getProfileKind(person);
+  const teamKind = getProfileKind(team);
+
+  const personIsBalanced = personKind === "BALANCED";
+  const teamIsBalanced = teamKind === "BALANCED";
+
+  const sameTop = personTop === teamTop;
+  const oppositeTop = personTop !== teamTop;
+
+  const bothBalanced = personIsBalanced && teamIsBalanced;
+  const oneBalanced = personIsBalanced !== teamIsBalanced;
+  const bothClear = personKind === "CLEAR" && teamKind === "CLEAR";
+  const bothClearDifferentTop = bothClear && !sameTop;
+  const bothClearSameTop = bothClear && sameTop;
+
+  return {
+    ...gaps,
+    personTop,
+    teamTop,
+    personTopGap,
+    teamTopGap,
+    personSpread,
+    teamSpread,
+    sameTop,
+    oppositeTop,
+    personKind,
+    teamKind,
+    personIsBalanced,
+    teamIsBalanced,
+    bothBalanced,
+    oneBalanced,
+    bothClear,
+    bothClearDifferentTop,
+    bothClearSameTop,
+  };
+}
+
+function calculateTeamFit(metrics: TeamCheckMetrics): { label: TeamFitLabel; reasons: string[] } {
+  const reasons: string[] = [];
+
+  /**
+   * 1) Eigene Logik für BALANCED / BALANCED
+   *
+   * Vorgabe:
+   * Wenn alle drei Komponenten praktisch gleich sind (Spread <= 10),
+   * dann eigene Logik.
+   *
+   * Sobald hier eine Einzelabweichung > 5 ist, nicht mehr "Passend".
+   */
+  if (metrics.bothBalanced) {
+    if (metrics.maxGap <= 5 && metrics.totalGap <= 12) {
+      reasons.push("Beide Profile sind ausgeglichen und liegen sehr nah beieinander.");
+      return { label: "Passend", reasons };
+    }
+
+    if (metrics.maxGap <= 10 && metrics.totalGap <= 24) {
+      reasons.push("Beide Profile sind ausgeglichen, weichen aber sichtbar voneinander ab.");
+      reasons.push("Bei ausgeglichenen Profilen führt eine Einzelabweichung über 5 zu bedingter Passung.");
+      return { label: "Bedingt passend", reasons };
+    }
+
+    reasons.push("Trotz ausgeglichener Grundstruktur ist die Abweichung insgesamt zu deutlich.");
+    return { label: "Kritisch", reasons };
+  }
+
+  /**
+   * 2) Eigene Logik für BALANCED / nicht BALANCED
+   *
+   * Auch hier:
+   * > 5 Einzelabweichung => nicht mehr "Passend"
+   */
+  if (metrics.oneBalanced) {
+    if (metrics.maxGap <= 5 && metrics.totalGap <= 15) {
+      reasons.push("Ein Profil ist ausgeglichen, das andere liegt dennoch sehr nah daran.");
+      return { label: "Passend", reasons };
+    }
+
+    if (metrics.maxGap <= 10 && metrics.totalGap <= 30) {
+      reasons.push("Ein Profil ist ausgeglichen, das andere setzt bereits erkennbare Schwerpunkte.");
+      reasons.push("Die Integration ist möglich, aber nicht völlig reibungsfrei.");
+      return { label: "Bedingt passend", reasons };
+    }
+
+    reasons.push("Ein ausgeglichenes Profil trifft auf ein deutlich anders strukturiertes Gegenprofil.");
+    return { label: "Kritisch", reasons };
+  }
+
+  /**
+   * 3) Beide klar dominant und unterschiedliche Hauptkomponente
+   *
+   * Das ist der wichtige Stress-Fall:
+   * z. B. Person analytisch, Team impulsiv.
+   */
+  if (metrics.bothClearDifferentTop) {
+    // sehr harter Gegenlauf
+    if (metrics.totalGap >= 24 || metrics.maxGap >= 12) {
+      reasons.push("Beide Profile haben eine klare, aber unterschiedliche Hauptprägung.");
+      reasons.push("Die Arbeitslogik läuft damit in unterschiedliche Richtungen.");
+      return { label: "Kritisch", reasons };
+    }
+
+    reasons.push("Unterschiedliche klare Hauptprägung erzeugt sichtbare Reibung.");
+    return { label: "Bedingt passend", reasons };
+  }
+
+  /**
+   * 4) Beide klar dominant und gleiche Hauptkomponente
+   */
+  if (metrics.bothClearSameTop) {
+    if (metrics.totalGap <= 24 && metrics.maxGap <= 12) {
+      reasons.push("Beide Profile folgen derselben Hauptlogik.");
+      reasons.push("Die strukturelle Abweichung ist insgesamt überschaubar.");
+      return { label: "Passend", reasons };
+    }
+
+    if (metrics.totalGap >= 40 || metrics.maxGap >= 20) {
+      reasons.push("Trotz gleicher Hauptlogik ist die strukturelle Abweichung zu groß.");
+      return { label: "Kritisch", reasons };
+    }
+
+    reasons.push("Gleiche Hauptlogik, aber sichtbare Unterschiede in der Ausprägung.");
+    return { label: "Bedingt passend", reasons };
+  }
+
+  /**
+   * 5) Gemischte / unklare Fälle
+   *
+   * Hier keine harte Gegenlogik wie bei CLEAR vs CLEAR,
+   * aber weiterhin über totalGap und maxGap prüfen.
+   */
+  if (metrics.sameTop) {
+    if (metrics.totalGap <= 24 && metrics.maxGap <= 12) {
+      reasons.push("Gleiche Haupttendenz bei moderater Abweichung.");
+      return { label: "Passend", reasons };
+    }
+
+    if (metrics.totalGap >= 40 || metrics.maxGap >= 20) {
+      reasons.push("Die Abweichung ist trotz ähnlicher Richtung insgesamt zu hoch.");
+      return { label: "Kritisch", reasons };
+    }
+
+    reasons.push("Ähnliche Richtung, aber keine stabile enge Passung.");
+    return { label: "Bedingt passend", reasons };
+  }
+
+  /**
+   * 6) Unterschiedliche Haupttendenz, aber nicht beide CLEAR
+   */
+  if (metrics.totalGap >= 34 || metrics.maxGap >= 16) {
+    reasons.push("Unterschiedliche Haupttendenz bei bereits deutlicher Abweichung.");
+    return { label: "Kritisch", reasons };
+  }
+
+  reasons.push("Unterschiedliche Tendenz, aber noch im handhabbaren Bereich.");
+  return { label: "Bedingt passend", reasons };
+}
+
+function calculateIntegrationEffort(
+  metrics: TeamCheckMetrics,
+  teamFit: TeamFitLabel,
+  role: RoleType
+): { label: EffortLabel; reasons: string[] } {
+  const reasons: string[] = [];
+
+  /**
+   * Grundlogik
+   */
+  let label: EffortLabel;
+
+  if (metrics.bothBalanced) {
+    if (metrics.maxGap <= 5 && metrics.totalGap <= 12) {
+      label = "Niedrig";
+      reasons.push("Sehr geringe Abweichung zwischen zwei ausgeglichenen Profilen.");
+    } else if (metrics.maxGap <= 10 && metrics.totalGap <= 24) {
+      label = "Mittel";
+      reasons.push("Bei ausgeglichenen Profilen ist sichtbare Abweichung aktiv zu begleiten.");
+    } else {
+      label = "Hoch";
+      reasons.push("Trotz ausgeglichener Profile ist die Distanz für die Integration hoch.");
+    }
+  } else if (metrics.oneBalanced) {
+    if (metrics.maxGap <= 5 && metrics.totalGap <= 15) {
+      label = "Niedrig";
+      reasons.push("Ein ausgeglichenes Profil kann kleine Unterschiede gut aufnehmen.");
+    } else if (metrics.maxGap <= 10 && metrics.totalGap <= 30) {
+      label = "Mittel";
+      reasons.push("Ein Profil ist ausgeglichen, das andere setzt klare Schwerpunkte.");
+    } else {
+      label = "Hoch";
+      reasons.push("Ausgeglichenes und deutlich strukturiertes Profil erfordern viel Abstimmung.");
+    }
+  } else if (metrics.bothClearDifferentTop) {
+    if (metrics.totalGap >= 24 || metrics.maxGap >= 12) {
+      label = "Hoch";
+      reasons.push("Unterschiedliche klare Hauptlogik erzeugt hohen Führungs- und Abstimmungsbedarf.");
+    } else {
+      label = "Mittel";
+      reasons.push("Unterschiedliche klare Hauptlogik ist sichtbar, aber noch begrenzt handhabbar.");
+    }
+  } else {
+    if (metrics.totalGap <= 24 && metrics.maxGap <= 10) {
+      label = "Niedrig";
+      reasons.push("Die Abweichung zum Teamprofil ist gering.");
+    } else if (metrics.totalGap >= 40 || metrics.maxGap >= 20) {
+      label = "Hoch";
+      reasons.push("Die Integration wird voraussichtlich intensiv betreuungsbedürftig.");
+    } else {
+      label = "Mittel";
+      reasons.push("Es besteht spürbarer, aber grundsätzlich handhabbarer Integrationsbedarf.");
+    }
+  }
+
+  /**
+   * Führungsrolle verschärft
+   */
+  if (
+    role === "Führungskraft" &&
+    (teamFit === "Kritisch" || metrics.bothClearDifferentTop || metrics.totalGap >= 30)
+  ) {
+    label = "Hoch";
+    reasons.push("In einer Führungsrolle wirken strukturelle Unterschiede stärker ins gesamte Team.");
+  }
+
+  /**
+   * Sicherheitsnetz:
+   * Kritische Teampassung soll nicht mit niedrigem Aufwand enden.
+   */
+  if (teamFit === "Kritisch" && label === "Niedrig") {
+    label = "Mittel";
+    reasons.push("Kritische Teampassung schließt niedrigen Integrationsaufwand aus.");
+  }
+
+  if (teamFit === "Kritisch" && (metrics.bothClearDifferentTop || metrics.totalGap >= 24)) {
+    label = "Hoch";
+  }
+
+  return { label, reasons };
+}
+
+export function calculateTeamCheck(
+  personProfile: Profile,
+  teamProfile: Profile,
+  role: RoleType = "Teammitglied"
+): TeamCheckResult {
+  const metrics = buildMetrics(personProfile, teamProfile);
+  const fit = calculateTeamFit(metrics);
+  const effort = calculateIntegrationEffort(metrics, fit.label, role);
+
+  return {
+    teamFit: fit.label,
+    integrationEffort: effort.label,
+    metrics,
+    reasons: [...fit.reasons, ...effort.reasons],
+  };
+}
+
+/**
+ * Optional: kurze Texte für deine bestehenden Boxen
+ */
+export function getTeamFitText(label: TeamFitLabel): string {
+  switch (label) {
+    case "Passend":
+      return "Die Person passt gut zur bestehenden Teamlogik und Arbeitsweise.";
+    case "Bedingt passend":
+      return "Die Person weicht in Teilen vom Teamprofil ab und ist nur mit bewusster Begleitung integrierbar.";
+    case "Kritisch":
+      return "Die Person weicht deutlich von der bestehenden Teamlogik und Arbeitsweise ab.";
+  }
+}
+
+export function getIntegrationEffortText(label: EffortLabel): string {
+  switch (label) {
+    case "Niedrig":
+      return "Voraussichtlich mit geringem Begleitungsbedarf integrierbar.";
+    case "Mittel":
+      return "Begleitung empfohlen.";
+    case "Hoch":
+      return "Intensiv betreuungsbedürftig.";
+  }
+}
+
+/**
+ * Optional: Farblogik / Varianten
+ */
+export function getTeamFitVariant(label: TeamFitLabel): "success" | "warning" | "danger" {
+  switch (label) {
+    case "Passend":
+      return "success";
+    case "Bedingt passend":
+      return "warning";
+    case "Kritisch":
+      return "danger";
+  }
+}
+
+export function getEffortVariant(label: EffortLabel): "success" | "warning" | "danger" {
+  switch (label) {
+    case "Niedrig":
+      return "success";
+    case "Mittel":
+      return "warning";
+    case "Hoch":
+      return "danger";
+  }
+}
+
+/**
+ * Beispiel:
+ *
+ * const result = calculateTeamCheck(
+ *   { impulsiv: 28, intuitiv: 30, analytisch: 42 },
+ *   { impulsiv: 39, intuitiv: 32, analytisch: 29 },
+ *   "Teammitglied"
+ * );
+ *
+ * console.log(result.teamFit);
+ * console.log(result.integrationEffort);
+ * console.log(result.metrics);
+ * console.log(result.reasons);
+ */
