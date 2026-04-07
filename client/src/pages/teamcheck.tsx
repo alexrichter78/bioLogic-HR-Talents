@@ -588,6 +588,13 @@ export default function TeamCheck() {
                             <BulletList items={phase.signale} color="#34C759" icon="check" />
                           </div>
                         )}
+                        {phase.fokus && (phase.fokus.intro || phase.fokus.bullets.length > 0) && (
+                          <div style={{ marginTop: 10, padding: "10px 14px", borderRadius: 10, background: `${pc}06`, border: `1px solid ${pc}10` }}>
+                            <p style={{ fontSize: 11, fontWeight: 600, color: pc, margin: "0 0 4px", textTransform: "uppercase" }}>Worauf es ankommt</p>
+                            {phase.fokus.intro && <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 6px", lineHeight: 1.55 }} lang="de">{hyphenateText(phase.fokus.intro)}</p>}
+                            {phase.fokus.bullets.length > 0 && <BulletList items={phase.fokus.bullets} color={pc} icon="dot" />}
+                          </div>
+                        )}
                         <div style={{ marginTop: 10, padding: "10px 14px", borderRadius: 10, background: `${pc}08`, border: `1px solid ${pc}12` }}>
                           <p style={{ fontSize: 11, fontWeight: 600, color: pc, margin: "0 0 4px", textTransform: "uppercase" }}>Führungstipp</p>
                           <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.55 }} lang="de">{hyphenateText(phase.fuehrungstipp)}</p>
