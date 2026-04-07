@@ -1,4 +1,4 @@
-import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "./jobcheck-engine";
+import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent, computeCoreFit } from "./jobcheck-engine";
 import type { Triad, ComponentKey } from "./jobcheck-engine";
 
 export type FitRating = "GEEIGNET" | "BEDINGT" | "NICHT_GEEIGNET";
@@ -239,9 +239,7 @@ export function computeSollIst(
   candidateName: string,
   roleProfile: Triad,
   candProfile: Triad,
-  fuehrungsArt: FuehrungsArt = "keine",
-  matchCheckFit?: string,
-  matchCheckControl?: string
+  fuehrungsArt: FuehrungsArt = "keine"
 ): SollIstResult {
   resetVariants();
   const rt = normalizeTriad(roleProfile);
@@ -250,7 +248,8 @@ export function computeSollIst(
   const cDom = dominanceModeOf(ct);
 
   const totalGap = Math.abs(rt.impulsiv - ct.impulsiv) + Math.abs(rt.intuitiv - ct.intuitiv) + Math.abs(rt.analytisch - ct.analytisch);
-  const sameDom = rDom.top1.key === cDom.top1.key;
+
+  const coreFit = computeCoreFit(roleProfile, candProfile);
 
   let fitRating: FitRating;
   let fitLabel: string;
@@ -258,104 +257,11 @@ export function computeSollIst(
   let gapLevel: "gering" | "mittel" | "hoch";
   let controlIntensity: "gering" | "mittel" | "hoch";
 
-  if (matchCheckFit) {
-    if (matchCheckFit === "SUITABLE") { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; gapLevel = "gering"; }
-    else if (matchCheckFit === "CONDITIONAL") { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; gapLevel = "mittel"; }
-    else { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; gapLevel = "hoch"; }
+  if (coreFit.overallFit === "SUITABLE") { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; gapLevel = "gering"; }
+  else if (coreFit.overallFit === "CONDITIONAL") { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; gapLevel = "mittel"; }
+  else { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; gapLevel = "hoch"; }
 
-    if (matchCheckControl) {
-      controlIntensity = matchCheckControl === "HIGH" ? "hoch" : matchCheckControl === "MEDIUM" ? "mittel" : "gering";
-    } else {
-      controlIntensity = fitRating === "NICHT_GEEIGNET" ? "hoch" : fitRating === "BEDINGT" ? "mittel" : "gering";
-    }
-  } else {
-    const candIsBalFull = cDom.gap1 <= 5 && cDom.gap2 <= 5;
-    const roleIsBalFull = rDom.gap1 <= 5 && rDom.gap2 <= 5;
-    const roleClearDominance = rDom.gap1 >= 15;
-    const roleDualDom = rDom.gap1 <= 5 && rDom.gap2 > 5;
-    const candDualDominance = !candIsBalFull && cDom.gap1 <= 5;
-    const maxGapVal = Math.max(
-      Math.abs(rt.impulsiv - ct.impulsiv),
-      Math.abs(rt.intuitiv - ct.intuitiv),
-      Math.abs(rt.analytisch - ct.analytisch)
-    );
-    const candMatchesDualDom = roleDualDom && (cDom.top1.key === rDom.top1.key || cDom.top1.key === rDom.top2.key);
-    const dualDomKeysMatch = roleDualDom
-      && [rDom.top1.key, rDom.top2.key].includes(cDom.top1.key)
-      && [rDom.top1.key, rDom.top2.key].includes(cDom.top2.key);
-    const effectiveSameDom = sameDom || roleIsBalFull || candMatchesDualDom;
-    const secondaryFlip = effectiveSameDom && rDom.top2.key !== cDom.top2.key && !dualDomKeysMatch;
-    const candSecGap = cDom.gap2;
-    const geignetLimit = effectiveSameDom ? 28 : 20;
-    gapLevel = totalGap > 40 ? "hoch" : totalGap > geignetLimit ? "mittel" : "gering";
-
-    const roleIsBalFull2 = rDom.gap1 <= 5 && rDom.gap2 <= 5;
-    const candSpreadVal = cDom.top1.value - cDom.top3.value;
-    if (roleIsBalFull2) {
-      if (candSpreadVal <= 5 || totalGap <= 8) { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; }
-      else if (candSpreadVal < 12) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
-      else { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
-    } else {
-      if (totalGap > 40) { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
-      else if (totalGap > geignetLimit) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
-      else { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; }
-
-      if (candIsBalFull && !roleIsBalFull) {
-        fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
-      }
-
-      if (!effectiveSameDom && fitRating !== "NICHT_GEEIGNET") {
-        fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
-      }
-
-      if (maxGapVal > 25 && fitRating !== "NICHT_GEEIGNET") {
-        fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
-      }
-
-      if (candDualDominance && roleClearDominance && fitRating !== "NICHT_GEEIGNET") {
-        const roleKeyInDual = cDom.top1.key === rDom.top1.key || cDom.top2.key === rDom.top1.key;
-        if (!roleKeyInDual) {
-          fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045";
-        } else if (fitRating === "GEEIGNET") {
-          fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
-        }
-      }
-
-      if (fitLabel === "Geeignet") {
-        if (secondaryFlip && candSecGap > 5 && rDom.gap2 > 5) {
-          const flipThreshold = rDom.gap1 <= 5 ? 16 : 30;
-          if (totalGap >= flipThreshold) { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
-          else { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
-        } else if (secondaryFlip) {
-          fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
-        } else if (effectiveSameDom && candSecGap <= 5) {
-          fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832";
-        }
-      }
-
-      if (fitLabel === "Geeignet") {
-        if (maxGapVal > 18) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
-        else if (cDom.gap1 <= 5 && rDom.gap1 > 5) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
-      }
-
-      if (fitLabel === "Geeignet" && roleDualDom) {
-        const candValForR1 = ct[rDom.top1.key];
-        const candValForR2 = ct[rDom.top2.key];
-        const candDualGap = Math.abs(candValForR1 - candValForR2);
-        if (candDualGap > 5) { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
-      }
-
-      if (rDom.gap1 <= 5 && cDom.gap1 > 12 && fitRating !== "NICHT_GEEIGNET") {
-        if (totalGap >= 18) { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; }
-        else { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; }
-      }
-    }
-
-    controlIntensity = totalGap > 35 ? "hoch" : totalGap > 15 ? "mittel" : "gering";
-
-    if (fitRating === "NICHT_GEEIGNET") { gapLevel = "hoch"; controlIntensity = "hoch"; }
-    else if (fitRating === "BEDINGT" && gapLevel === "gering") { gapLevel = "mittel"; controlIntensity = controlIntensity === "gering" ? "mittel" : controlIntensity; }
-  }
+  controlIntensity = coreFit.controlIntensity === "HIGH" ? "hoch" : coreFit.controlIntensity === "MEDIUM" ? "mittel" : "gering";
 
   const rk = rDom.top1.key;
   const rk2 = rDom.top2.key;
@@ -381,7 +287,7 @@ export function computeSollIst(
     }
   }
   const riskTimeline = buildRiskTimeline(roleName, cn, rk, ck, gapLevel, roleIsBalFull, rt, ct);
-  const devGap = fitRating === "NICHT_GEEIGNET" ? "hoch" : (matchCheckFit ? controlIntensity : gapLevel);
+  const devGap = fitRating === "NICHT_GEEIGNET" ? "hoch" : controlIntensity;
   const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildDevelopment(devGap, rk, ck, controlIntensity, cn, isDualDomRole, rk2, roleIsBalFull, ct);
   const actions = buildActions(rk, ck, gapLevel, controlIntensity, roleIsBalFull, ct);
   const integrationsplan = buildIntegrationsplan(roleName, cn, fitLabel, rk, ck, gapLevel, controlIntensity, fuehrungsArt, rt, ct, roleIsBalFull);

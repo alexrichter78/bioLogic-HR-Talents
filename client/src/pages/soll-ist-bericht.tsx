@@ -158,8 +158,6 @@ export default function SollIstBericht() {
   const [candTriad, setCandTriad] = useState<{impulsiv: number; intuitiv: number; analytisch: number}>({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
 
   const updateCandTriad = useCallback((key: ComponentKey, newVal: number) => {
-    setMatchCheckFit(undefined);
-    setMatchCheckControl(undefined);
     setCandTriad(prev => {
       const clamped = Math.max(5, Math.min(67, Math.round(newVal)));
       const others = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== key);
@@ -194,9 +192,6 @@ export default function SollIstBericht() {
   const [profilvergleichOpen, setProfilvergleichOpen] = useState(true);
   const [systemwirkungOpen, setSystemwirkungOpen] = useState(true);
   const [fuehrungsArt, setFuehrungsArt] = useState<FuehrungsArt>("keine");
-  const [matchCheckFit, setMatchCheckFit] = useState<string | undefined>(undefined);
-  const [matchCheckControl, setMatchCheckControl] = useState<string | undefined>(undefined);
-
   useEffect(() => {
     const raw = localStorage.getItem("rollenDnaState");
     if (raw) {
@@ -221,11 +216,6 @@ export default function SollIstBericht() {
         }
       } catch {}
     }
-
-    const savedFit = localStorage.getItem("jobcheckOverallFit");
-    if (savedFit) setMatchCheckFit(savedFit);
-    const savedControl = localStorage.getItem("jobcheckControlIntensity");
-    if (savedControl) setMatchCheckControl(savedControl);
   }, []);
 
   useEffect(() => {
@@ -243,9 +233,9 @@ export default function SollIstBericht() {
 
   const result: SollIstResult | null = useMemo(() => {
     if (!roleTriad || !reportGenerated) return null;
-    const raw = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, matchCheckFit, matchCheckControl);
+    const raw = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt);
     return localizeDeep(raw, region);
-  }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated, fuehrungsArt, matchCheckFit, matchCheckControl, region]);
+  }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated, fuehrungsArt, region]);
 
   const exportPdf = useCallback(async () => {
     if (!result || isExportingPdf || !roleTriad || !reportRef.current) return;
@@ -637,7 +627,7 @@ export default function SollIstBericht() {
           </div>
 
           {(() => {
-            const effective = result || (roleTriad ? localizeDeep(computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, matchCheckFit, matchCheckControl), region) : null);
+            const effective = result || (roleTriad ? localizeDeep(computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt), region) : null);
             if (!effective) return null;
 
             const fitLabel = effective.fitLabel;

@@ -1064,6 +1064,84 @@ function constellationCandText(c: ConstellationType, cand: string): string {
   return texts[c];
 }
 
+export function computeCoreFit(roleTriad: Triad, candTriad: Triad): { overallFit: FitStatus; controlIntensity: ControlIntensity; controlPoints: number; mismatchScore: number; koTriggered: boolean } {
+  const rN = normalizeTriad(roleTriad);
+  const cN = normalizeTriad(candTriad);
+  const roleDom = dominanceModeOf(rN);
+  const candDom = dominanceModeOf(cN);
+
+  let ko = false;
+  if ((roleDom.mode === "EXTREME_I" && cN.impulsiv <= 35 && rN.impulsiv >= 65) ||
+      (roleDom.mode === "EXTREME_N" && cN.intuitiv <= 30 && rN.intuitiv >= 55) ||
+      (roleDom.mode === "EXTREME_A" && cN.analytisch <= 35 && rN.analytisch >= 65)) ko = true;
+  if (!ko && roleDom.top1.key !== candDom.top1.key) {
+    const mainDiff = Math.abs(rN[roleDom.top1.key] - cN[roleDom.top1.key]);
+    if (mainDiff >= 18) ko = true;
+    if (!ko && roleDom.gap1 >= 20 && mainDiff >= 15) ko = true;
+  }
+  if (!ko && roleDom.mode.startsWith("DUAL")) {
+    const domKeys: ComponentKey[] = [roleDom.top1.key, roleDom.top2.key];
+    for (const k of domKeys) { if (cN[k] < rN[k] * 0.75) { ko = true; break; } }
+  }
+
+  const mismatch = weightedMismatch(roleTriad, candTriad);
+  const sameDom = roleDom.top1.key === candDom.top1.key;
+  const candEqualDist = candDom.mode === "BAL_FULL";
+  const candDualDominance = !candEqualDist && candDom.gap1 <= 5;
+  const roleClearDominance = roleDom.gap1 >= 15;
+  const dualConflict = candDualDominance && roleClearDominance;
+  const equalDistConflict = candEqualDist && roleClearDominance;
+  const roleKeyInDual = dualConflict && (candDom.top1.key === roleDom.top1.key || candDom.top2.key === roleDom.top1.key);
+
+  let overallFit: FitStatus = ko ? "NOT_SUITABLE" : overallFitFromScore(mismatch, sameDom);
+  if (equalDistConflict && !ko) {
+    overallFit = "NOT_SUITABLE";
+  } else if (dualConflict && !ko) {
+    if (roleKeyInDual) {
+      if (overallFit === "SUITABLE") overallFit = "CONDITIONAL";
+    } else {
+      overallFit = "NOT_SUITABLE";
+    }
+  }
+  const candIsBalFull = candDom.gap1 <= 5 && candDom.gap2 <= 5;
+  const roleIsBalFull = roleDom.gap1 <= 5 && roleDom.gap2 <= 5;
+  const effectiveSameDom = sameDom || roleIsBalFull;
+  const maxGapVal = Math.max(Math.abs(rN.impulsiv - cN.impulsiv), Math.abs(rN.intuitiv - cN.intuitiv), Math.abs(rN.analytisch - cN.analytisch));
+  const candSpread = candDom.top1.value - candDom.top3.value;
+  if (roleIsBalFull && !ko) {
+    if (candSpread <= 5) overallFit = "SUITABLE";
+    else if (candSpread < 12) overallFit = "CONDITIONAL";
+    else overallFit = "NOT_SUITABLE";
+  } else {
+    if (!effectiveSameDom && !ko) overallFit = "NOT_SUITABLE";
+    if (candIsBalFull && !roleIsBalFull && !ko) overallFit = "NOT_SUITABLE";
+    if (maxGapVal > 25 && !ko) overallFit = "NOT_SUITABLE";
+    const secondaryFlipped = effectiveSameDom && roleDom.top2.key !== candDom.top2.key;
+    if (overallFit === "SUITABLE" && !ko) {
+      if (secondaryFlipped && candDom.gap2 > 5 && roleDom.gap2 > 5) overallFit = "NOT_SUITABLE";
+      else if (secondaryFlipped) overallFit = "CONDITIONAL";
+      else if (effectiveSameDom && candDom.gap2 <= 5) overallFit = "CONDITIONAL";
+    }
+    if (overallFit === "SUITABLE" && !ko) {
+      if (maxGapVal > 18) overallFit = "CONDITIONAL";
+      else if (candDom.gap1 <= 5) overallFit = "CONDITIONAL";
+    }
+  }
+
+  let points = 0;
+  if (roleDom.top1.key !== candDom.top1.key || roleDom.mode.startsWith("DUAL") !== candDom.mode.startsWith("DUAL")) points += 2;
+  if (roleDom.mode.startsWith("EXTREME")) points += 1;
+  if (roleDom.gap1 >= 12) points += 1;
+  const mainDiff = Math.abs(rN[roleDom.top1.key] - cN[roleDom.top1.key]);
+  if (mainDiff >= 25) points += 3;
+  else if (mainDiff >= 15) points += 2;
+  let level: ControlIntensity = "LOW";
+  if (points >= 6) level = "HIGH";
+  else if (points >= 3) level = "MEDIUM";
+
+  return { overallFit, controlIntensity: level, controlPoints: points, mismatchScore: mismatch, koTriggered: ko };
+}
+
 export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResult {
   const roleDom = dominanceModeOf(role.role_profile);
   const candDom = dominanceModeOf(cand.candidate_profile);
