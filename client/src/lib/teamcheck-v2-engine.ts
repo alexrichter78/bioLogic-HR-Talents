@@ -247,17 +247,6 @@ function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string):
     score -= Math.round((12 - personTop2Gap) * 10 / 12);
   }
 
-  const teamSecondary = getSecondaryKey(teamProfile);
-  const personSecondary = getSecondaryKey(personProfile);
-  if (teamPrimary === personPrimary && !personIsBalanced && teamSecondary !== personSecondary) {
-    const teamSecGap = teamSorted[0].value - teamSorted[1].value;
-    const personSecGap = personSorted[0].value - personSorted[1].value;
-    const secClarity = Math.min(teamSecGap, personSecGap);
-    if (secClarity > 3) {
-      score -= secClarity > 8 ? 5 : Math.round((secClarity - 3) * 5 / 5);
-    }
-  }
-
   const maxDimGap = Math.max(
     diff(teamProfile.impulsiv, personProfile.impulsiv),
     diff(teamProfile.intuitiv, personProfile.intuitiv),
