@@ -123,13 +123,13 @@ export function generateDiagnoseSummary(kandidat: Triad, team: Triad, isLeading:
 }
 
 function dominanceType(p: Triad): DominanceType {
-  const maxVal = Math.max(p.impulsiv, p.intuitiv, p.analytisch);
-  const winners: DominanceType[] = [];
-  if (p.impulsiv === maxVal) winners.push("IMPULSIV");
-  if (p.intuitiv === maxVal) winners.push("INTUITIV");
-  if (p.analytisch === maxVal) winners.push("ANALYTISCH");
-  if (winners.length >= 2) return "MIX";
-  return winners[0];
+  const vals = [
+    { key: "IMPULSIV" as DominanceType, v: p.impulsiv },
+    { key: "INTUITIV" as DominanceType, v: p.intuitiv },
+    { key: "ANALYTISCH" as DominanceType, v: p.analytisch },
+  ].sort((a, b) => b.v - a.v);
+  if (vals[0].v - vals[1].v <= 5) return "MIX";
+  return vals[0].key;
 }
 
 function dominanceLabelDe(d: DominanceType): string {
