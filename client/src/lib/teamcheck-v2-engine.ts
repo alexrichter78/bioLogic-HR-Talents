@@ -196,16 +196,20 @@ export function getSystemwirkung(teamProfile: Triad, personProfile: Triad): stri
   const personPrimary = getPrimaryKey(personProfile);
   const distance = getDistanceScore(teamProfile, personProfile);
 
-  if (distance <= 16) return "Verstärkung";
-  if (teamPrimary === personPrimary && distance <= 42) return "Verstärkung";
+  const personSorted = sortProfile(personProfile);
+  const personTop2Gap = personSorted[0].value - personSorted[1].value;
+  const personTop2Keys = new Set([personSorted[0].key, personSorted[1].key]);
+  const effectiveSamePrimary = teamPrimary === personPrimary ||
+    (personTop2Gap < 3 && personTop2Keys.has(teamPrimary));
 
-  if (teamPrimary !== personPrimary) {
+  if (distance <= 16) return "Verstärkung";
+  if (effectiveSamePrimary && distance <= 42) return "Verstärkung";
+
+  if (!effectiveSamePrimary) {
     const teamSorted = sortProfile(teamProfile);
-    const personSorted = sortProfile(personProfile);
     const teamTop2 = new Set([teamSorted[0].key, teamSorted[1].key]);
-    const personTop2 = new Set([personSorted[0].key, personSorted[1].key]);
-    const sameTop2 = teamTop2.size === personTop2.size &&
-      [...teamTop2].every(k => personTop2.has(k));
+    const sameTop2 = teamTop2.size === personTop2Keys.size &&
+      [...teamTop2].every(k => personTop2Keys.has(k));
     if (sameTop2 && distance <= 50) return "Verstärkung";
   }
 
@@ -240,10 +244,7 @@ function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string):
   if (systemwirkung === "Transformation") score -= 18;
 
   if (personTop2Gap < 12) {
-    score -= Math.min(5, Math.ceil((12 - personTop2Gap) / 2));
-  }
-  if (personTop2Gap < 5) {
-    score -= 5;
+    score -= Math.round((12 - personTop2Gap) * 10 / 12);
   }
 
   const teamSecondary = getSecondaryKey(teamProfile);
@@ -251,7 +252,10 @@ function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string):
   if (teamPrimary === personPrimary && !personIsBalanced && teamSecondary !== personSecondary) {
     const teamSecGap = teamSorted[0].value - teamSorted[1].value;
     const personSecGap = personSorted[0].value - personSorted[1].value;
-    if (teamSecGap > 5 && personSecGap > 5) score -= 5;
+    const secClarity = Math.min(teamSecGap, personSecGap);
+    if (secClarity > 3) {
+      score -= secClarity > 8 ? 5 : Math.round((secClarity - 3) * 5 / 5);
+    }
   }
 
   const maxDimGap = Math.max(
@@ -259,11 +263,16 @@ function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string):
     diff(teamProfile.intuitiv, personProfile.intuitiv),
     diff(teamProfile.analytisch, personProfile.analytisch),
   );
-  if (maxDimGap > 25) score -= 5;
+  if (maxDimGap > 20) {
+    score -= Math.min(5, Math.round((maxDimGap - 20) * 5 / 10));
+  }
 
   if (roleType === "leadership") {
     if (systemwirkung === "Transformation") score -= 8;
-    if (diff(teamProfile.analytisch, personProfile.analytisch) > 25) score -= 6;
+    const anaDiff = diff(teamProfile.analytisch, personProfile.analytisch);
+    if (anaDiff > 20) {
+      score -= Math.min(6, Math.round((anaDiff - 20) * 6 / 10));
+    }
   }
 
   if (score >= 76) return "Passend";

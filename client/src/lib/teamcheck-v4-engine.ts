@@ -115,7 +115,15 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
   const teamPrimary = getPrimaryKey(input.teamProfile);
   const personPrimary = getPrimaryKey(input.personProfile);
   const personSecondary = getSecondaryKey(input.personProfile);
-  const sameDominance = teamPrimary === personPrimary;
+  const pSorted = [
+    { key: "impulsiv" as ComponentKey, value: input.personProfile.impulsiv },
+    { key: "intuitiv" as ComponentKey, value: input.personProfile.intuitiv },
+    { key: "analytisch" as ComponentKey, value: input.personProfile.analytisch },
+  ].sort((a, b) => b.value - a.value);
+  const pTop2Gap = pSorted[0].value - pSorted[1].value;
+  const pTop2Keys = new Set([pSorted[0].key, pSorted[1].key]);
+  const sameDominance = teamPrimary === personPrimary ||
+    (pTop2Gap < 3 && pTop2Keys.has(teamPrimary));
 
   const teamFitRaw = v3.passung === "Passend" ? "hoch"
     : v3.passung === "Bedingt passend" ? "mittel" : "gering";

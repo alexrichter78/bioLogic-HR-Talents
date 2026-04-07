@@ -195,12 +195,22 @@ export function computeTeamCheckV3(input: TeamCheckV3Input): TeamCheckV3Result {
 
   const operative = isOperativeRole(input.roleTitle);
   const teamAligned = goalKey ? getPrimaryKey(input.teamProfile) === goalKey : false;
-  const personAligned = goalKey ? getPrimaryKey(input.personProfile) === goalKey : false;
+  const rawPersonPrimary = getPrimaryKey(input.personProfile);
+  const pSrt = [
+    { key: "impulsiv" as const, value: input.personProfile.impulsiv },
+    { key: "intuitiv" as const, value: input.personProfile.intuitiv },
+    { key: "analytisch" as const, value: input.personProfile.analytisch },
+  ].sort((a, b) => b.value - a.value);
+  const pGap2 = pSrt[0].value - pSrt[1].value;
+  const pTop2Set = new Set([pSrt[0].key, pSrt[1].key]);
+  const personAligned = goalKey
+    ? (rawPersonPrimary === goalKey || (pGap2 < 3 && pTop2Set.has(goalKey)))
+    : false;
   const personCloserToGoal = (personGoalAbweichung !== null && teamGoalAbweichung !== null) ? personGoalAbweichung < teamGoalAbweichung : false;
   const personDivergesFromGoal = !!(safeGoal && teamAligned && !personAligned);
   const personNotHelpingGoal = !!(safeGoal && !personAligned && !personCloserToGoal);
 
-  const personPrimary = getPrimaryKey(input.personProfile);
+  const personPrimary = rawPersonPrimary;
   const teamPrimary = getPrimaryKey(input.teamProfile);
 
   const ctx: GoalContext = {
@@ -1051,8 +1061,6 @@ function evaluateStrategicFit(
 
   const personGoalValue = personProfile[goalKey];
   const teamGoalValue = teamProfile[goalKey];
-  const personDominantInGoal = personPrimary === goalKey;
-  const personSecondaryInGoal = personSecondary === goalKey;
   const teamDominantInGoal = teamPrimary === goalKey;
 
   let strategicFit: "passend" | "teilweise" | "abweichend";
@@ -1061,8 +1069,14 @@ function evaluateStrategicFit(
   const gap = sorted[0][1] - sorted[1][1];
   const top2Keys = new Set([sorted[0][0], sorted[1][0]]);
   const goalInTop2 = top2Keys.has(goalKey);
-  if (personDominantInGoal) {
+  const personDominantInGoal = personPrimary === goalKey ||
+    (gap < 3 && goalInTop2 && sorted[0][0] !== goalKey);
+  const personSecondaryInGoal = personSecondary === goalKey ||
+    (gap < 3 && goalInTop2);
+  if (personPrimary === goalKey && gap >= 3) {
     strategicFit = "passend";
+  } else if (personDominantInGoal) {
+    strategicFit = "teilweise";
   } else if (gap <= 5 && goalInTop2) {
     strategicFit = "teilweise";
   } else if (personSecondaryInGoal) {
