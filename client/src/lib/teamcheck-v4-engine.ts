@@ -2,6 +2,16 @@ import type { Triad, ComponentKey } from "./bio-types";
 import { computeTeamCheckV3, type TeamCheckV3Input, type TeamCheckV3Result, type TeamGoal } from "./teamcheck-v3-engine";
 import { getPrimaryKey, getSecondaryKey } from "./teamcheck-v2-engine";
 
+function normalizeTriadLocal(t: Triad): Triad {
+  const sum = t.impulsiv + t.intuitiv + t.analytisch;
+  if (sum === 0) return { impulsiv: 33, intuitiv: 34, analytisch: 33 };
+  const f = 100 / sum;
+  const imp = Math.round(t.impulsiv * f);
+  const int = Math.round(t.intuitiv * f);
+  const ana = 100 - imp - int;
+  return { impulsiv: imp, intuitiv: int, analytisch: ana };
+}
+
 export interface V4Block {
   title: string;
   text: string;
@@ -37,6 +47,7 @@ export interface TeamCheckV4Result {
   gesamteinschaetzung: string;
   passungZumTeam: string;
   beitragZurAufgabe: string;
+  begleitungsbedarf: string;
 
   gesamtbewertungText: string;
   hauptstaerke: string;
@@ -111,12 +122,15 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
   const isLeader = inputRoleType === "fuehrung" ? true : inputRoleType === "teammitglied" ? false : v3.roleType === "leadership";
   const roleLabel = isLeader ? "Führungskraft" : "Teammitglied";
 
-  const teamPrimary = getPrimaryKey(input.teamProfile);
-  const personPrimary = getPrimaryKey(input.personProfile);
-  const personSecondary = getSecondaryKey(input.personProfile);
+  const normTeam = normalizeTriadLocal(input.teamProfile);
+  const normPerson = normalizeTriadLocal(input.personProfile);
+
+  const teamPrimary = getPrimaryKey(normTeam);
+  const personPrimary = getPrimaryKey(normPerson);
+  const personSecondary = getSecondaryKey(normPerson);
   const sameDominance = teamPrimary === personPrimary;
 
-  const personSorted = Object.entries(input.personProfile)
+  const personSorted = Object.entries(normPerson)
     .sort(([, a], [, b]) => b - a);
   const personGap = personSorted[0][1] - personSorted[1][1];
 
@@ -137,6 +151,15 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
 
   const passungZumTeam = teamFitRaw;
   const beitragZurAufgabe = funktionsFit;
+
+  let begleitungsbedarf: string;
+  if (teamFitRaw === "hoch") {
+    begleitungsbedarf = "gering";
+  } else if (teamFitRaw === "mittel") {
+    begleitungsbedarf = "mittel";
+  } else {
+    begleitungsbedarf = "hoch";
+  }
 
   let gesamteinschaetzung: string;
   if (teamFitRaw === "hoch" && funktionsFit === "gering") {
@@ -171,6 +194,7 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
     gesamteinschaetzung,
     passungZumTeam,
     beitragZurAufgabe,
+    begleitungsbedarf,
     gesamtbewertungText: buildGesamtbewertungText(ctx),
     hauptstaerke: buildHauptstaerke(ctx),
     hauptabweichung: buildHauptabweichung(ctx),
@@ -191,8 +215,8 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
     teamPrimary,
     personPrimary,
     sameDominance,
-    teamTriad: { ...input.teamProfile },
-    personTriad: { ...input.personProfile },
+    teamTriad: { ...normTeam },
+    personTriad: { ...normPerson },
     v3,
   };
 }
