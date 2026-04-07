@@ -1,0 +1,273 @@
+// functionGoalLogic.ts
+
+type ComponentKey = "impulsiv" | "intuitiv" | "analytisch";
+type TeamGoal = "Umsetzung" | "Analyse" | "Zusammenarbeit" | "Keins";
+type GoalFitLabel = "Passend" | "Teilweise passend" | "Kritisch";
+
+type Profile = {
+  impulsiv: number;
+  intuitiv: number;
+  analytisch: number;
+};
+
+type GoalFitResult = {
+  label: GoalFitLabel;
+  score: number;
+  targetComponent: ComponentKey | null;
+  dominantComponent: ComponentKey;
+  targetValue: number | null;
+  dominantValue: number;
+  targetGapToTop: number | null;
+  reasons: string[];
+};
+
+function clampPercent(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(100, Math.round(value)));
+}
+
+function normalizeProfile(profile: Profile): Profile {
+  return {
+    impulsiv: clampPercent(profile.impulsiv),
+    intuitiv: clampPercent(profile.intuitiv),
+    analytisch: clampPercent(profile.analytisch),
+  };
+}
+
+function getSortedComponents(profile: Profile): Array<{ key: ComponentKey; value: number }> {
+  return [
+    { key: "impulsiv", value: profile.impulsiv },
+    { key: "intuitiv", value: profile.intuitiv },
+    { key: "analytisch", value: profile.analytisch },
+  ].sort((a, b) => b.value - a.value);
+}
+
+function getDominantComponent(profile: Profile): ComponentKey {
+  return getSortedComponents(profile)[0].key;
+}
+
+function getGoalComponent(goal: TeamGoal): ComponentKey | null {
+  switch (goal) {
+    case "Umsetzung":
+      return "impulsiv";
+    case "Analyse":
+      return "analytisch";
+    case "Zusammenarbeit":
+      return "intuitiv";
+    case "Keins":
+    default:
+      return null;
+  }
+}
+
+function getGoalTexts(goal: TeamGoal, label: GoalFitLabel, profile: Profile): string[] {
+  const reasons: string[] = [];
+  const dominant = getDominantComponent(profile);
+
+  if (goal === "Analyse") {
+    if (label === "Passend") {
+      reasons.push("Die Person passt gut zum aktuellen Funktionsziel des Teams.");
+    } else if (label === "Teilweise passend") {
+      reasons.push("Die Person unterstützt das Funktionsziel grundsätzlich, arbeitet aber nicht durchgehend in derselben Logik.");
+    } else {
+      reasons.push("Die Person arbeitet deutlich anders als das aktuelle Funktionsziel des Teams es erfordert.");
+    }
+  }
+
+  if (goal === "Umsetzung") {
+    if (label === "Passend") {
+      reasons.push("Die Person bringt eine zum Funktionsziel passende Umsetzungsorientierung mit.");
+    } else if (label === "Teilweise passend") {
+      reasons.push("Die Person unterstützt das Funktionsziel nur teilweise, da ihre Arbeitsweise nicht konsequent auf Tempo und direkte Umsetzung ausgerichtet ist.");
+    } else {
+      reasons.push("Die Person arbeitet deutlich anders als das aktuelle Funktionsziel des Teams.");
+    }
+  }
+
+  if (goal === "Zusammenarbeit") {
+    if (label === "Passend") {
+      reasons.push("Die Person passt gut zum aktuellen Funktionsziel des Teams.");
+    } else if (label === "Teilweise passend") {
+      reasons.push("Die Person unterstützt das Funktionsziel nur teilweise, da ihre Arbeitsweise stärker von einer anderen Logik geprägt ist.");
+    } else {
+      reasons.push("Die Person arbeitet deutlich anders als das aktuelle Funktionsziel des Teams.");
+    }
+  }
+
+  if (label !== "Passend") {
+    if (goal === "Analyse" && dominant !== "analytisch") {
+      reasons.push("Die analytische Ausrichtung ist nicht die tragende Hauptlogik der Person.");
+    }
+    if (goal === "Umsetzung" && dominant !== "impulsiv") {
+      reasons.push("Die Umsetzungsorientierung ist nicht die tragende Hauptlogik der Person.");
+    }
+    if (goal === "Zusammenarbeit" && dominant !== "intuitiv") {
+      reasons.push("Die Zusammenarbeit wird nicht von einer klar beziehungs- und abstimmungsorientierten Hauptlogik getragen.");
+    }
+  }
+
+  return reasons;
+}
+
+/**
+ * Bewertungslogik:
+ *
+ * 1. Zielkomponente bestimmen
+ * 2. Prüfen, wie stark diese Komponente ausgeprägt ist
+ * 3. Prüfen, ob sie dominant ist
+ * 4. Prüfen, wie weit sie von der dominanten Komponente entfernt ist
+ *
+ * Score grob:
+ * - Zielwert selbst zählt am stärksten
+ * - Dominanz des Zielwerts zählt zusätzlich
+ * - große Distanz zur dominanten Gegenlogik verschlechtert
+ */
+export function calculateFunctionGoalFit(
+  personProfile: Profile,
+  teamGoal: TeamGoal
+): GoalFitResult {
+  const profile = normalizeProfile(personProfile);
+  const dominantComponent = getDominantComponent(profile);
+  const dominantValue = profile[dominantComponent];
+  const targetComponent = getGoalComponent(teamGoal);
+
+  if (!targetComponent) {
+    return {
+      label: "Teilweise passend",
+      score: 0,
+      targetComponent: null,
+      dominantComponent,
+      targetValue: null,
+      dominantValue,
+      targetGapToTop: null,
+      reasons: ["Es wurde kein aktuelles Funktionsziel für das Team ausgewählt."],
+    };
+  }
+
+  const targetValue = profile[targetComponent];
+  const targetGapToTop = dominantValue - targetValue;
+  const targetIsDominant = dominantComponent === targetComponent;
+
+  let score = 0;
+
+  // 1. Stärke der Zielkomponente
+  // max 60 Punkte
+  score += Math.min(60, Math.round((targetValue / 100) * 60));
+
+  // 2. Zielkomponente ist dominant
+  // +25 Punkte
+  if (targetIsDominant) {
+    score += 25;
+  }
+
+  // 3. Zielkomponente liegt nur knapp hinter der Dominanz
+  // +10 Punkte
+  if (!targetIsDominant && targetGapToTop <= 5) {
+    score += 10;
+  }
+
+  // 4. Zielkomponente liegt sichtbar hinter der Hauptlogik
+  // Malus bis -20
+  if (targetGapToTop > 5) {
+    score -= Math.min(20, Math.round((targetGapToTop - 5) * 2));
+  }
+
+  // 5. Zielabhängige Gegenlogik bestrafen
+  // Umsetzung leidet besonders unter sehr hohem analytisch
+  if (teamGoal === "Umsetzung" && profile.analytisch >= 45 && profile.impulsiv < 35) {
+    score -= 12;
+  }
+
+  // Analyse leidet besonders unter sehr hohem impulsiv
+  if (teamGoal === "Analyse" && profile.impulsiv >= 40 && profile.analytisch < 40) {
+    score -= 12;
+  }
+
+  // Zusammenarbeit leidet besonders unter starker Einseitigkeit in Analyse oder Umsetzung
+  if (
+    teamGoal === "Zusammenarbeit" &&
+    dominantComponent !== "intuitiv" &&
+    dominantValue >= 45 &&
+    profile.intuitiv < 35
+  ) {
+    score -= 12;
+  }
+
+  // clamp
+  score = Math.max(0, Math.min(100, score));
+
+  let label: GoalFitLabel;
+
+  /**
+   * Harte Logik zuerst
+   */
+  if (teamGoal === "Umsetzung") {
+    if (profile.impulsiv < 28 && dominantComponent !== "impulsiv") {
+      label = "Kritisch";
+    } else if (targetIsDominant && profile.impulsiv >= 36) {
+      label = "Passend";
+    } else if (score >= 62) {
+      label = "Passend";
+    } else if (score >= 42) {
+      label = "Teilweise passend";
+    } else {
+      label = "Kritisch";
+    }
+  } else if (teamGoal === "Analyse") {
+    if (profile.analytisch < 30 && dominantComponent !== "analytisch") {
+      label = "Kritisch";
+    } else if (targetIsDominant && profile.analytisch >= 40) {
+      label = "Passend";
+    } else if (score >= 62) {
+      label = "Passend";
+    } else if (score >= 42) {
+      label = "Teilweise passend";
+    } else {
+      label = "Kritisch";
+    }
+  } else {
+    // Zusammenarbeit
+    if (profile.intuitiv < 28 && dominantComponent !== "intuitiv") {
+      label = "Kritisch";
+    } else if (targetIsDominant && profile.intuitiv >= 36) {
+      label = "Passend";
+    } else if (score >= 62) {
+      label = "Passend";
+    } else if (score >= 42) {
+      label = "Teilweise passend";
+    } else {
+      label = "Kritisch";
+    }
+  }
+
+  const reasons = getGoalTexts(teamGoal, label, profile);
+
+  return {
+    label,
+    score,
+    targetComponent,
+    dominantComponent,
+    targetValue,
+    dominantValue,
+    targetGapToTop,
+    reasons,
+  };
+}
+
+/**
+ * Optional: kurzer Text für UI
+ */
+export function getFunctionGoalFitText(label: GoalFitLabel, teamGoal: TeamGoal): string {
+  if (teamGoal === "Keins") {
+    return "Für das Team wurde aktuell kein Funktionsziel ausgewählt.";
+  }
+
+  switch (label) {
+    case "Passend":
+      return "Die Person passt gut zum aktuellen Funktionsziel des Teams.";
+    case "Teilweise passend":
+      return "Die Person unterstützt das aktuelle Funktionsziel nur teilweise.";
+    case "Kritisch":
+      return "Die Person arbeitet deutlich anders als das aktuelle Funktionsziel des Teams.";
+  }
+}
