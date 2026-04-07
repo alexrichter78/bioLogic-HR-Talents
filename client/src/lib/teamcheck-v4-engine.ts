@@ -134,9 +134,18 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
     .sort(([, a], [, b]) => b - a);
   const personGap = personSorted[0][1] - personSorted[1][1];
 
+  const profileDelta =
+    Math.abs(normPerson.impulsiv - normTeam.impulsiv) +
+    Math.abs(normPerson.intuitiv - normTeam.intuitiv) +
+    Math.abs(normPerson.analytisch - normTeam.analytisch);
+
   let teamFitRaw: string;
   if (personPrimary === teamPrimary) {
-    teamFitRaw = personGap <= 5 ? "mittel" : "hoch";
+    if (profileDelta <= 10) {
+      teamFitRaw = "hoch";
+    } else {
+      teamFitRaw = personGap <= 5 ? "mittel" : "hoch";
+    }
   } else if (personSecondary === teamPrimary && personGap <= 5) {
     teamFitRaw = "mittel";
   } else {
