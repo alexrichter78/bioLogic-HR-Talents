@@ -1,0 +1,445 @@
+// leadershipAssessment.ts
+
+type ComponentKey = "impulsiv" | "intuitiv" | "analytisch";
+type RoleType = "Teammitglied" | "Führungskraft";
+type TeamGoal = "Keins" | "Umsetzung" | "Analyse" | "Zusammenarbeit";
+
+type Profile = {
+  impulsiv: number;
+  intuitiv: number;
+  analytisch: number;
+};
+
+type ProfileKind = "BALANCED" | "CLEAR" | "MIXED";
+
+type SystemImpactLabel = "Verstärkung" | "Spannung" | "Transformation";
+type EffortLabel = "Niedrig" | "Mittel" | "Hoch";
+type GoalFitLabel = "Passend" | "Teilweise passend" | "Kritisch" | "Kein Ziel gewählt";
+
+type LeadershipAssessmentResult = {
+  show: boolean;
+  systemImpact: {
+    label: SystemImpactLabel | null;
+    text: string | null;
+    variant: "success" | "warning" | "danger" | null;
+    reasons: string[];
+  };
+  integrationEffort: {
+    label: EffortLabel | null;
+    text: string | null;
+    variant: "success" | "warning" | "danger" | null;
+    reasons: string[];
+  };
+  teamGoalImpact: {
+    label: GoalFitLabel | null;
+    text: string | null;
+    variant: "success" | "warning" | "danger" | "neutral" | null;
+    reasons: string[];
+    selectedGoal: TeamGoal;
+  };
+  metrics: {
+    totalGap: number;
+    maxGap: number;
+    personTop: ComponentKey;
+    teamTop: ComponentKey;
+    personTopGap: number;
+    teamTopGap: number;
+    sameTop: boolean;
+    personSpread: number;
+    teamSpread: number;
+    personKind: ProfileKind;
+    teamKind: ProfileKind;
+    bothBalanced: boolean;
+    bothClear: boolean;
+    bothClearDifferentTop: boolean;
+    bothClearSameTop: boolean;
+  } | null;
+};
+
+function clampPercent(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(100, Math.round(value)));
+}
+
+function normalizeProfile(profile: Profile): Profile {
+  return {
+    impulsiv: clampPercent(profile.impulsiv),
+    intuitiv: clampPercent(profile.intuitiv),
+    analytisch: clampPercent(profile.analytisch),
+  };
+}
+
+function getSortedComponents(profile: Profile): Array<{ key: ComponentKey; value: number }> {
+  return [
+    { key: "impulsiv", value: profile.impulsiv },
+    { key: "intuitiv", value: profile.intuitiv },
+    { key: "analytisch", value: profile.analytisch },
+  ].sort((a, b) => b.value - a.value);
+}
+
+function getTopComponent(profile: Profile): ComponentKey {
+  return getSortedComponents(profile)[0].key;
+}
+
+function getTopGap(profile: Profile): number {
+  const sorted = getSortedComponents(profile);
+  return sorted[0].value - sorted[1].value;
+}
+
+function getSpread(profile: Profile): number {
+  const values = [profile.impulsiv, profile.intuitiv, profile.analytisch];
+  return Math.max(...values) - Math.min(...values);
+}
+
+function getProfileKind(profile: Profile): ProfileKind {
+  const spread = getSpread(profile);
+  const topGap = getTopGap(profile);
+
+  if (spread <= 10) return "BALANCED";
+  if (topGap >= 8) return "CLEAR";
+  return "MIXED";
+}
+
+function getGapMetrics(person: Profile, team: Profile) {
+  const gapImpulsiv = Math.abs(person.impulsiv - team.impulsiv);
+  const gapIntuitiv = Math.abs(person.intuitiv - team.intuitiv);
+  const gapAnalytisch = Math.abs(person.analytisch - team.analytisch);
+
+  const totalGap = gapImpulsiv + gapIntuitiv + gapAnalytisch;
+  const maxGap = Math.max(gapImpulsiv, gapIntuitiv, gapAnalytisch);
+
+  return {
+    gapImpulsiv,
+    gapIntuitiv,
+    gapAnalytisch,
+    totalGap,
+    maxGap,
+  };
+}
+
+function getGoalComponent(goal: TeamGoal): ComponentKey | null {
+  switch (goal) {
+    case "Umsetzung":
+      return "impulsiv";
+    case "Analyse":
+      return "analytisch";
+    case "Zusammenarbeit":
+      return "intuitiv";
+    default:
+      return null;
+  }
+}
+
+function getSystemImpactText(label: SystemImpactLabel): string {
+  switch (label) {
+    case "Verstärkung":
+      return "Die Führungskraft wird die bestehende Teamlogik voraussichtlich eher stabilisieren und verstärken.";
+    case "Spannung":
+      return "Die Führungskraft wird voraussichtlich andere Akzente setzen und damit spürbare Reibung, aber auch Entwicklung auslösen.";
+    case "Transformation":
+      return "Die Führungskraft wird das Team voraussichtlich deutlich verändern und eine neue Arbeitslogik hineinbringen.";
+  }
+}
+
+function getEffortText(label: EffortLabel): string {
+  switch (label) {
+    case "Niedrig":
+      return "Voraussichtlich mit geringem Begleitungsbedarf integrierbar.";
+    case "Mittel":
+      return "Begleitung empfohlen.";
+    case "Hoch":
+      return "Intensiv betreuungsbedürftig.";
+  }
+}
+
+function getGoalFitText(label: GoalFitLabel, goal: TeamGoal): string {
+  if (goal === "Keins") {
+    return "Für das Team wurde aktuell kein Funktionsziel ausgewählt.";
+  }
+
+  switch (label) {
+    case "Passend":
+      return "Die Führungskraft passt gut zum aktuellen Teamziel.";
+    case "Teilweise passend":
+      return "Die Führungskraft unterstützt das aktuelle Teamziel nur teilweise.";
+    case "Kritisch":
+      return "Die Führungskraft arbeitet deutlich anders als das aktuelle Teamziel es erfordert.";
+    case "Kein Ziel gewählt":
+      return "Für das Team wurde aktuell kein Funktionsziel ausgewählt.";
+  }
+}
+
+export function calculateLeadershipAssessment(
+  personProfile: Profile,
+  teamProfile: Profile,
+  role: RoleType,
+  teamGoal: TeamGoal = "Keins"
+): LeadershipAssessmentResult {
+  if (role !== "Führungskraft") {
+    return {
+      show: false,
+      systemImpact: {
+        label: null,
+        text: null,
+        variant: null,
+        reasons: [],
+      },
+      integrationEffort: {
+        label: null,
+        text: null,
+        variant: null,
+        reasons: [],
+      },
+      teamGoalImpact: {
+        label: null,
+        text: null,
+        variant: null,
+        reasons: [],
+        selectedGoal: teamGoal,
+      },
+      metrics: null,
+    };
+  }
+
+  const person = normalizeProfile(personProfile);
+  const team = normalizeProfile(teamProfile);
+
+  const gaps = getGapMetrics(person, team);
+
+  const personTop = getTopComponent(person);
+  const teamTop = getTopComponent(team);
+
+  const personTopGap = getTopGap(person);
+  const teamTopGap = getTopGap(team);
+
+  const personSpread = getSpread(person);
+  const teamSpread = getSpread(team);
+
+  const personKind = getProfileKind(person);
+  const teamKind = getProfileKind(team);
+
+  const sameTop = personTop === teamTop;
+
+  const bothBalanced = personKind === "BALANCED" && teamKind === "BALANCED";
+  const bothClear = personKind === "CLEAR" && teamKind === "CLEAR";
+  const bothClearDifferentTop = bothClear && !sameTop;
+  const bothClearSameTop = bothClear && sameTop;
+
+  // 1) Systemwirkung
+  let systemImpactLabel: SystemImpactLabel;
+  const systemReasons: string[] = [];
+
+  if (
+    (bothBalanced && gaps.maxGap <= 6 && gaps.totalGap <= 15) ||
+    (sameTop && gaps.totalGap <= 18 && gaps.maxGap <= 8) ||
+    (bothClearSameTop && gaps.totalGap <= 24 && gaps.maxGap <= 12)
+  ) {
+    systemImpactLabel = "Verstärkung";
+    systemReasons.push("Die Führungskraft liegt strukturell nah an der bestehenden Teamlogik.");
+    if (sameTop) {
+      systemReasons.push("Die Hauptprägung der Führungskraft entspricht der Hauptprägung des Teams.");
+    }
+  } else if (
+    bothClearDifferentTop ||
+    gaps.totalGap >= 34 ||
+    gaps.maxGap >= 16 ||
+    (!sameTop && gaps.totalGap >= 24)
+  ) {
+    systemImpactLabel = "Transformation";
+    systemReasons.push("Die Führungskraft bringt eine deutlich andere Arbeits- und Führungslogik in das Team.");
+    if (bothClearDifferentTop) {
+      systemReasons.push("Sowohl Team als auch Führungskraft haben eine klare, aber unterschiedliche Hauptprägung.");
+    }
+  } else {
+    systemImpactLabel = "Spannung";
+    systemReasons.push("Die Führungskraft setzt spürbar andere Akzente, ohne die Teamlogik vollständig zu drehen.");
+  }
+
+  // 2) Integrationsaufwand
+  let effortLabel: EffortLabel;
+  const effortReasons: string[] = [];
+
+  if (systemImpactLabel === "Verstärkung" && gaps.totalGap <= 18 && gaps.maxGap <= 8) {
+    effortLabel = "Niedrig";
+    effortReasons.push("Die Führungskraft liegt nah an der bestehenden Teamlogik.");
+  } else if (
+    systemImpactLabel === "Transformation" ||
+    gaps.totalGap >= 34 ||
+    gaps.maxGap >= 16
+  ) {
+    effortLabel = "Hoch";
+    effortReasons.push("Die Integration der Führungskraft wird voraussichtlich intensiven Abstimmungs- und Begleitungsbedarf erzeugen.");
+  } else {
+    effortLabel = "Mittel";
+    effortReasons.push("Die Integration ist möglich, sollte aber aktiv begleitet werden.");
+  }
+
+  // 3) Wirkung auf Teamziel
+  let goalLabel: GoalFitLabel;
+  const goalReasons: string[] = [];
+
+  if (teamGoal === "Keins") {
+    goalLabel = "Kein Ziel gewählt";
+    goalReasons.push("Es wurde kein aktuelles Teamziel ausgewählt.");
+  } else {
+    const targetComponent = getGoalComponent(teamGoal)!;
+    const dominant = getTopComponent(person);
+    const dominantValue = person[dominant];
+    const targetValue = person[targetComponent];
+    const targetGapToTop = dominantValue - targetValue;
+    const targetIsDominant = dominant === targetComponent;
+
+    let score = 0;
+
+    score += Math.min(60, Math.round((targetValue / 100) * 60));
+
+    if (targetIsDominant) score += 25;
+    if (!targetIsDominant && targetGapToTop <= 5) score += 10;
+    if (targetGapToTop > 5) score -= Math.min(20, Math.round((targetGapToTop - 5) * 2));
+
+    if (teamGoal === "Umsetzung" && person.analytisch >= 45 && person.impulsiv < 35) {
+      score -= 12;
+    }
+
+    if (teamGoal === "Analyse" && person.impulsiv >= 40 && person.analytisch < 40) {
+      score -= 12;
+    }
+
+    if (
+      teamGoal === "Zusammenarbeit" &&
+      dominant !== "intuitiv" &&
+      dominantValue >= 45 &&
+      person.intuitiv < 35
+    ) {
+      score -= 12;
+    }
+
+    score = Math.max(0, Math.min(100, score));
+
+    if (teamGoal === "Umsetzung") {
+      if (person.impulsiv < 28 && dominant !== "impulsiv") {
+        goalLabel = "Kritisch";
+      } else if (targetIsDominant && person.impulsiv >= 36) {
+        goalLabel = "Passend";
+      } else if (score >= 62) {
+        goalLabel = "Passend";
+      } else if (score >= 42) {
+        goalLabel = "Teilweise passend";
+      } else {
+        goalLabel = "Kritisch";
+      }
+    } else if (teamGoal === "Analyse") {
+      if (person.analytisch < 30 && dominant !== "analytisch") {
+        goalLabel = "Kritisch";
+      } else if (targetIsDominant && person.analytisch >= 40) {
+        goalLabel = "Passend";
+      } else if (score >= 62) {
+        goalLabel = "Passend";
+      } else if (score >= 42) {
+        goalLabel = "Teilweise passend";
+      } else {
+        goalLabel = "Kritisch";
+      }
+    } else {
+      // Zusammenarbeit
+      if (person.intuitiv < 28 && dominant !== "intuitiv") {
+        goalLabel = "Kritisch";
+      } else if (targetIsDominant && person.intuitiv >= 36) {
+        goalLabel = "Passend";
+      } else if (score >= 62) {
+        goalLabel = "Passend";
+      } else if (score >= 42) {
+        goalLabel = "Teilweise passend";
+      } else {
+        goalLabel = "Kritisch";
+      }
+    }
+
+    if (teamGoal === "Umsetzung") {
+      if (goalLabel === "Passend") {
+        goalReasons.push("Die Führungskraft bringt eine zum aktuellen Teamziel passende Umsetzungsorientierung mit.");
+      } else if (goalLabel === "Teilweise passend") {
+        goalReasons.push("Die Führungskraft unterstützt das Teamziel nur teilweise, da ihre Arbeitsweise nicht konsequent auf Tempo und direkte Umsetzung ausgerichtet ist.");
+      } else {
+        goalReasons.push("Die Führungskraft arbeitet deutlich anders als das aktuelle Teamziel des Teams.");
+      }
+    }
+
+    if (teamGoal === "Analyse") {
+      if (goalLabel === "Passend") {
+        goalReasons.push("Die Führungskraft passt gut zum aktuellen Teamziel des Teams.");
+      } else if (goalLabel === "Teilweise passend") {
+        goalReasons.push("Die Führungskraft unterstützt das Teamziel grundsätzlich, arbeitet aber nicht durchgehend in derselben Logik.");
+      } else {
+        goalReasons.push("Die Führungskraft arbeitet deutlich anders als das aktuelle Teamziel des Teams.");
+      }
+    }
+
+    if (teamGoal === "Zusammenarbeit") {
+      if (goalLabel === "Passend") {
+        goalReasons.push("Die Führungskraft passt gut zum aktuellen Teamziel des Teams.");
+      } else if (goalLabel === "Teilweise passend") {
+        goalReasons.push("Die Führungskraft unterstützt das Teamziel nur teilweise, da ihre Arbeitsweise stärker von einer anderen Logik geprägt ist.");
+      } else {
+        goalReasons.push("Die Führungskraft arbeitet deutlich anders als das aktuelle Teamziel des Teams.");
+      }
+    }
+  }
+
+  return {
+    show: true,
+    systemImpact: {
+      label: systemImpactLabel,
+      text: getSystemImpactText(systemImpactLabel),
+      variant:
+        systemImpactLabel === "Verstärkung"
+          ? "success"
+          : systemImpactLabel === "Spannung"
+          ? "warning"
+          : "danger",
+      reasons: systemReasons,
+    },
+    integrationEffort: {
+      label: effortLabel,
+      text: getEffortText(effortLabel),
+      variant:
+        effortLabel === "Niedrig"
+          ? "success"
+          : effortLabel === "Mittel"
+          ? "warning"
+          : "danger",
+      reasons: effortReasons,
+    },
+    teamGoalImpact: {
+      label: goalLabel,
+      text: getGoalFitText(goalLabel, teamGoal),
+      variant:
+        goalLabel === "Passend"
+          ? "success"
+          : goalLabel === "Teilweise passend"
+          ? "warning"
+          : goalLabel === "Kritisch"
+          ? "danger"
+          : "neutral",
+      reasons: goalReasons,
+      selectedGoal: teamGoal,
+    },
+    metrics: {
+      totalGap: gaps.totalGap,
+      maxGap: gaps.maxGap,
+      personTop,
+      teamTop,
+      personTopGap,
+      teamTopGap,
+      sameTop,
+      personSpread,
+      teamSpread,
+      personKind,
+      teamKind,
+      bothBalanced,
+      bothClear,
+      bothClearDifferentTop,
+      bothClearSameTop,
+    },
+  };
+}
