@@ -1033,39 +1033,68 @@ export default function TeamReport() {
                   ? "Teilweise Passung zum Team, Doppeldominanz vorhanden."
                   : "Sichtbare Abweichung von der bestehenden Teamlogik und Arbeitsweise.";
 
+                const isLeaderRole = roleTypeForCard === "fuehrung";
                 const empfBullets: string[] = [];
                 if (p.gesamteinschaetzung === "Gut passend") {
-                  empfBullets.push("Die Person kann direkt produktiv eingesetzt werden.");
+                  empfBullets.push(isLeaderRole
+                    ? "Die Person kann die Führungsrolle direkt wirksam übernehmen."
+                    : "Die Person kann direkt produktiv eingesetzt werden.");
                   if (p.begleitungsbedarf === "gering") {
                     empfBullets.push("Kein besonderer Begleitungsaufwand notwendig.");
                   } else if (p.begleitungsbedarf === "mittel") {
-                    empfBullets.push("Moderate Begleitung empfohlen, um die Integration optimal zu gestalten.");
+                    empfBullets.push(isLeaderRole
+                      ? "Moderate Begleitung empfohlen, um die Führungswirkung gezielt zu verankern."
+                      : "Moderate Begleitung empfohlen, um die Integration optimal zu gestalten.");
                   } else {
-                    empfBullets.push("Trotz guter Passung ist eine aktive Begleitung in der Einarbeitungsphase wichtig.");
+                    empfBullets.push(isLeaderRole
+                      ? "Trotz guter Passung sollte die Führungswirkung in den ersten Wochen aktiv begleitet werden."
+                      : "Trotz guter Passung ist eine aktive Begleitung in der Einarbeitungsphase wichtig.");
                   }
                   if (teamFit === "hoch") empfBullets.push("Gute Voraussetzungen für schnelle Integration ins Team.");
                   if (funcFit === "hoch") empfBullets.push("Hohe Übereinstimmung mit dem aktuellen Funktionsziel.");
                   if (funcFit === "mittel" && p.begleitungsbedarf !== "gering") empfBullets.push("Funktionsziel gezielt in den Onboarding-Prozess einbinden.");
                 } else if (p.gesamteinschaetzung === "Kritisch") {
-                  empfBullets.push("Einsatz nur mit klarer Führung und aktiver Begleitung sinnvoll.");
-                  empfBullets.push(t("Regelmässige Abstimmung und enge Führung einplanen."));
-                  empfBullets.push("Erwartungen frühzeitig klären und Rückmeldung aktiv einholen.");
+                  if (isLeaderRole) {
+                    empfBullets.push("Die Führungswirkung wird stark von der Teamkultur abweichen — nur mit externer Begleitung und klarer Rahmensetzung einsetzen.");
+                    empfBullets.push("Führungserwartungen und Entscheidungswege von Anfang an transparent machen.");
+                    empfBullets.push("Teamreaktion auf den neuen Führungsstil aktiv beobachten und frühzeitig gegensteuern.");
+                  } else {
+                    empfBullets.push("Einsatz nur mit klarer Führung und aktiver Begleitung sinnvoll.");
+                    empfBullets.push(t("Regelmässige Abstimmung und enge Führung einplanen."));
+                    empfBullets.push("Erwartungen frühzeitig klären und Rückmeldung aktiv einholen.");
+                  }
                   if (teamFit === "gering") empfBullets.push("Teamdynamik beobachten — Spannungsfelder sind wahrscheinlich.");
                 } else {
-                  empfBullets.push("Gezielte Begleitung empfohlen, um die Integration zu sichern.");
-                  if (teamFit !== "hoch") empfBullets.push("Strukturiertes Onboarding mit klaren Erwartungen planen.");
-                  if (teamFit === "gering" || funcFit === "gering") empfBullets.push("Führungskraft sollte die Einarbeitung aktiv begleiten.");
-                  if (teamFit !== "hoch" || funcFit === "gering") empfBullets.push("Mentoring durch ein erfahrenes Teammitglied empfohlen.");
-                  empfBullets.push(t("Regelmässige Check-ins in den ersten Wochen einplanen."));
+                  empfBullets.push(isLeaderRole
+                    ? "Gezielte Begleitung empfohlen, um die Führungswirkung im Team zu verankern."
+                    : "Gezielte Begleitung empfohlen, um die Integration zu sichern.");
+                  if (teamFit !== "hoch") empfBullets.push(isLeaderRole
+                    ? "Führungsstil und Teamkultur frühzeitig abgleichen und Erwartungen klären."
+                    : "Strukturiertes Onboarding mit klaren Erwartungen planen.");
+                  if (teamFit === "gering" || funcFit === "gering") empfBullets.push(isLeaderRole
+                    ? "Externe Begleitung oder Sparring für die Führungskraft empfohlen."
+                    : "Führungskraft sollte die Einarbeitung aktiv begleiten.");
+                  if (teamFit !== "hoch" || funcFit === "gering") empfBullets.push(isLeaderRole
+                    ? "Vertrauensaufbau im Team gezielt priorisieren."
+                    : "Mentoring durch ein erfahrenes Teammitglied empfohlen.");
+                  empfBullets.push(isLeaderRole
+                    ? t("Regelmässige Reflexion der Führungswirkung in den ersten Wochen einplanen.")
+                    : t("Regelmässige Check-ins in den ersten Wochen einplanen."));
                 }
 
                 const empfText = p.gesamteinschaetzung === "Gut passend"
                   ? (p.begleitungsbedarf === "gering"
                     ? "Gute Voraussetzungen für eine erfolgreiche Integration."
-                    : "Gute Teampassung — Begleitung beim Funktionsziel empfohlen.")
+                    : isLeaderRole
+                      ? "Gute Teampassung — Führungswirkung gezielt begleiten."
+                      : "Gute Teampassung — Begleitung beim Funktionsziel empfohlen.")
                   : p.gesamteinschaetzung === "Kritisch"
-                  ? "Erhöhter Begleitungsaufwand — nur mit aktiver Führung einsetzen."
-                  : t("Teilweise passend — gezielte Massnahmen empfohlen.");
+                  ? (isLeaderRole
+                    ? "Hoher Steuerungsaufwand — Führungswirkung weicht stark von der Teamkultur ab."
+                    : "Erhöhter Begleitungsaufwand — nur mit aktiver Führung einsetzen.")
+                  : isLeaderRole
+                    ? t("Teilweise passend — Führungsintegration gezielt begleiten.")
+                    : t("Teilweise passend — gezielte Massnahmen empfohlen.");
 
                 const empfColor = p.gesamteinschaetzung === "Gut passend" ? { bg: "#E8F5E9", border: "#A5D6A7", text: "#1B7A3D" }
                   : p.gesamteinschaetzung === "Kritisch" ? { bg: "#FFEBEE", border: "#EF9A9A", text: "#C41E3A" }
