@@ -243,7 +243,7 @@ function getProfileKind(profile: Triad): ProfileKind {
   const spread = getSpread(profile);
   const topGap = sortProfile(profile)[0].value - sortProfile(profile)[1].value;
   if (spread <= 10) return "BALANCED";
-  if (topGap > 5) return "CLEAR";
+  if (topGap >= 8) return "CLEAR";
   return "MIXED";
 }
 
@@ -271,7 +271,7 @@ function getPassung(teamProfile: Triad, personProfile: Triad, _roleType: string)
 
   if (m.oneBalanced) {
     if (m.maxGap <= 5 && m.totalGap <= 15) return "Passend";
-    if (m.maxGap <= 10 && m.totalGap <= 30) return "Bedingt passend";
+    if (m.maxGap <= 10 && m.totalGap <= 26) return "Bedingt passend";
     return "Kritisch";
   }
 
@@ -281,18 +281,18 @@ function getPassung(teamProfile: Triad, personProfile: Triad, _roleType: string)
   }
 
   if (m.bothClearSameTop) {
-    if (m.totalGap <= 24 && m.maxGap <= 12) return "Passend";
-    if (m.totalGap >= 40 || m.maxGap >= 20) return "Kritisch";
-    return "Bedingt passend";
+    if (m.totalGap <= 20 && m.maxGap <= 10) return "Passend";
+    if (m.totalGap <= 30 && m.maxGap <= 14) return "Bedingt passend";
+    return "Kritisch";
   }
 
   if (m.sameTop) {
-    if (m.totalGap <= 24 && m.maxGap <= 12) return "Passend";
-    if (m.totalGap >= 40 || m.maxGap >= 20) return "Kritisch";
-    return "Bedingt passend";
+    if (m.totalGap <= 20 && m.maxGap <= 10) return "Passend";
+    if (m.totalGap <= 30 && m.maxGap <= 14) return "Bedingt passend";
+    return "Kritisch";
   }
 
-  if (m.totalGap >= 34 || m.maxGap >= 16) return "Kritisch";
+  if (m.totalGap >= 30 || m.maxGap >= 14) return "Kritisch";
   return "Bedingt passend";
 }
 
@@ -309,15 +309,15 @@ function getIntegrationEffort(teamProfile: Triad, personProfile: Triad, roleType
     else label = "hoch";
   } else if (m.oneBalanced) {
     if (m.maxGap <= 5 && m.totalGap <= 15) label = "gering";
-    else if (m.maxGap <= 10 && m.totalGap <= 30) label = "mittel";
+    else if (m.maxGap <= 10 && m.totalGap <= 26) label = "mittel";
     else label = "hoch";
   } else if (m.bothClearDifferentTop) {
     if (m.totalGap >= 24 || m.maxGap >= 12) label = "hoch";
     else label = "mittel";
   } else {
-    if (m.totalGap <= 24 && m.maxGap <= 10) label = "gering";
-    else if (m.totalGap >= 40 || m.maxGap >= 20) label = "hoch";
-    else label = "mittel";
+    if (m.totalGap <= 20 && m.maxGap <= 10) label = "gering";
+    else if (m.totalGap <= 30 && m.maxGap <= 14) label = "mittel";
+    else label = "hoch";
   }
 
   if (isLeader && (teamFit === "Kritisch" || m.bothClearDifferentTop || m.totalGap >= 30)) {
