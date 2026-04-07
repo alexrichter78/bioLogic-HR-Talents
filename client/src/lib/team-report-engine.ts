@@ -131,7 +131,7 @@ function ampelText(a: "gruen" | "gelb" | "rot"): string {
 }
 
 function totalGapOf(a: Triad, b: Triad): number {
-  return Math.abs(a.impulsiv - b.impulsiv) + Math.abs(a.intuitiv - b.intuitiv) + Math.abs(a.analytisch - b.analytisch);
+  return Math.round(Math.abs(a.impulsiv - b.impulsiv) + Math.abs(a.intuitiv - b.intuitiv) + Math.abs(a.analytisch - b.analytisch));
 }
 
 function weakestKey(t: Triad): ComponentKey {
