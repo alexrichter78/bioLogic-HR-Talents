@@ -1168,7 +1168,7 @@ export default function TeamReport() {
 
                 const bBg = p.begleitungsbedarf === "gering" ? badgeColors.hoch : p.begleitungsbedarf === "mittel" ? badgeColors.mittel : badgeColors.gering;
                 const bLabel = p.begleitungsbedarf === "gering" ? "Gering" : p.begleitungsbedarf === "mittel" ? "Mittel" : "Hoch";
-                const bDesc = p.begleitungsbedarf === "gering" ? "Wenig Begleitung n\u00F6tig" : p.begleitungsbedarf === "mittel" ? "Begleitung empfohlen" : "Intensiv betreuungsbed\u00FCrftig";
+                const bDesc = p.begleitungsbedarf === "gering" ? "Die Person passt gut zur bestehenden Teamlogik und Arbeitsweise. Die Integration verläuft voraussichtlich reibungsarm." : p.begleitungsbedarf === "mittel" ? "Die Integration ist machbar, sollte aber gezielt begleitet werden. Regelmässige Abstimmung und klare Erwartungen beschleunigen den Prozess." : "Die Integration erfordert intensive Begleitung. Strukturierte Onboarding-Massnahmen und aktive Führungssteuerung sind notwendig.";
 
                 return (
                   <div style={{ marginTop: 20 }} data-testid="v4-preview">
