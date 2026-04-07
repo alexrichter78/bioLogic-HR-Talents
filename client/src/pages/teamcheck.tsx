@@ -1,24 +1,24 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import {
   CheckCircle, AlertTriangle, Shield, TrendingUp, Clock, Target,
-  Zap, BarChart3, FileDown, ChevronRight, X, FileText, Briefcase,
-  ArrowLeft, Lightbulb, Activity, Users, Crosshair, Flame,
-  CalendarDays, Award, Gauge, Heart, Brain,
+  BarChart3, FileDown, FileText, Briefcase,
+  ArrowLeft, Lightbulb, Activity, Users, Flame,
+  CalendarDays, Award, Rocket, Handshake,
 } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
-import { useLocalizedText, useRegion, localizeDeep, localizeStr } from "@/lib/region";
+import { useLocalizedText, useRegion, localizeDeep } from "@/lib/region";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { hyphenateText } from "@/lib/hyphenate";
 import {
-  type TeamCheckInput, type TeamCheckResult, type UrteilBadge,
-  type ReportSection, type ExecutivePage,
-  computeTeamCheck, generateDetailReport, generateExecutiveReport, generateDiagnoseSummary,
-} from "@/lib/teamcheck-engine";
+  computeTeamCheckV4,
+  type TeamCheckV4Result, type V4Block,
+} from "@/lib/teamcheck-v4-engine";
+import type { TeamCheckV3Input, TeamGoal } from "@/lib/teamcheck-v3-engine";
 import {
   computeTeamDynamics, getDefaultLevers,
   type TrafficLight, type TeamDynamikInput, type TeamSize,
 } from "@/lib/teamdynamik-engine";
-import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
+import type { Triad, ComponentKey } from "@/lib/bio-types";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 const MAX_BIO = 67;
@@ -28,6 +28,29 @@ const TL_COLORS: Record<TrafficLight, { bg: string; fill: string; label: string 
   YELLOW: { bg: "rgba(255,149,0,0.08)", fill: "#FF9500", label: "Steuerbar" },
   RED: { bg: "rgba(255,59,48,0.08)", fill: "#FF3B30", label: "Spannungsfeld" },
 };
+
+const BEW_COLOR: Record<string, string> = {
+  "Gut passend": "#34C759",
+  "Teilweise passend": "#FF9500",
+  "Im Team passend, für die Aufgabe weniger geeignet": "#FF9500",
+  "Für die Aufgabe passend, im Team herausfordernd": "#FF9500",
+  "Strategisch sinnvoll, aber anspruchsvoll": "#FF9500",
+  "Eingeschränkt passend": "#FF3B30",
+  "Kritisch": "#FF3B30",
+};
+const bewCol = (b: string) => BEW_COLOR[b] || "#FF9500";
+const axisColor = (v: string) => v === "hoch" ? "#34C759" : v === "mittel" ? "#FF9500" : v === "gering" ? "#FF3B30" : "#8E8E93";
+const axisLabel = (v: string) => v === "hoch" ? "Hoch" : v === "mittel" ? "Mittel" : v === "gering" ? "Gering" : "–";
+
+function getDominanceLabel(t: Triad): string {
+  const sorted = [
+    { k: "Impulsiv", v: t.impulsiv },
+    { k: "Intuitiv", v: t.intuitiv },
+    { k: "Analytisch", v: t.analytisch },
+  ].sort((a, b) => b.v - a.v);
+  if (sorted[0].v - sorted[1].v <= 5) return "Ausgeglichen";
+  return sorted[0].k;
+}
 
 function TrafficLightAmpel({ tl }: { tl: TrafficLight }) {
   const order: TrafficLight[] = ["RED", "YELLOW", "GREEN"];
@@ -44,12 +67,6 @@ function TrafficLightAmpel({ tl }: { tl: TrafficLight }) {
     </div>
   );
 }
-
-const BADGE_CONFIG: Record<UrteilBadge, { label: string; color: string; bg: string }> = {
-  STRATEGISCH_CHANCEN: { label: "Strategisch Chancen", color: "#34C759", bg: "rgba(52,199,89,0.10)" },
-  ENTWICKLUNGSFAEHIG: { label: "Entwicklungsfähig", color: "#FF9500", bg: "rgba(255,149,0,0.10)" },
-  NO_GO: { label: "No Go", color: "#FF3B30", bg: "rgba(255,59,48,0.10)" },
-};
 
 function GlassCard({ children, style, ...props }: { children: React.ReactNode; style?: React.CSSProperties; [k: string]: any }) {
   return (
@@ -81,8 +98,8 @@ function SectionHeader({ num, title, icon: Icon }: { num: number; title: string;
   );
 }
 
-function ProfileCard({ title, num, triad, dominanz, color, onChange, testIdPrefix }: {
-  title: string; num: number; triad: Triad; dominanz: string; color: string;
+function ProfileCard({ title, num, triad, color, onChange, testIdPrefix }: {
+  title: string; num: number; triad: Triad; color: string;
   onChange?: (t: Triad) => void; testIdPrefix?: string;
 }) {
   return (
@@ -177,6 +194,63 @@ function BulletList({ items, color, icon }: { items: string[]; color?: string; i
   );
 }
 
+function Paragraphs({ text, highlight }: { text: string; highlight?: boolean }) {
+  const paras = text.split("\n\n").filter(Boolean);
+  if (paras.length === 0) return null;
+  if (highlight) {
+    return (
+      <>
+        <div style={{
+          padding: "16px 20px", borderRadius: 18,
+          background: "linear-gradient(135deg, rgba(0,113,227,0.08), rgba(0,113,227,0.03))",
+          border: "1px solid rgba(0,113,227,0.12)",
+          display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14,
+        }}>
+          <Lightbulb style={{ width: 16, height: 16, color: "#0071E3", strokeWidth: 2, flexShrink: 0, marginTop: 2 }} />
+          <p style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.75, margin: 0, fontWeight: 450 }} lang="de">{hyphenateText(paras[0])}</p>
+        </div>
+        {paras.slice(1).map((p, i) => (
+          <p key={i} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.9, margin: "0 0 10px" }} lang="de">{hyphenateText(p)}</p>
+        ))}
+      </>
+    );
+  }
+  return (
+    <>
+      {paras.map((p, i) => (
+        <p key={i} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.9, margin: "0 0 10px" }} lang="de">{hyphenateText(p)}</p>
+      ))}
+    </>
+  );
+}
+
+function V4BlockList({ items, accentColor }: { items: V4Block[]; accentColor?: string }) {
+  const c = accentColor || "#0071E3";
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      {items.map((item, i) => (
+        <div key={i} style={{
+          padding: "16px 18px", borderRadius: 16,
+          background: `${c}06`, border: `1px solid ${c}12`,
+        }}>
+          <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{item.title}</p>
+          <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(item.text)}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function safeTriad(obj: unknown, fallback: Triad): Triad {
+  if (!obj || typeof obj !== "object") return fallback;
+  const o = obj as Record<string, unknown>;
+  const imp = Number(o.impulsiv ?? o.imp);
+  const int = Number(o.intuitiv ?? o.int);
+  const ana = Number(o.analytisch ?? o.ana);
+  if (!Number.isFinite(imp) || !Number.isFinite(int) || !Number.isFinite(ana)) return fallback;
+  return { impulsiv: Math.round(imp), intuitiv: Math.round(int), analytisch: Math.round(ana) };
+}
+
 export default function TeamCheck() {
   const isMobile = useIsMobile();
   const t = useLocalizedText();
@@ -191,7 +265,8 @@ export default function TeamCheck() {
   const [erfolgsfokusLabels, setErfolgsfokusLabels] = useState<string[]>([]);
   const [isLeading, setIsLeading] = useState(true);
   const [teamSize, setTeamSize] = useState<TeamSize>("MITTEL");
-  const [detailTab, setDetailTab] = useState<"system" | "stress" | "hebel" | "prognose" | "empfehlung" | "urteil">("system");
+  const [teamGoal, setTeamGoal] = useState<TeamGoal | "">("");
+  const [detailTab, setDetailTab] = useState<"bewertung" | "alltag" | "chancen" | "hebel" | "prognose" | "empfehlung">("bewertung");
   const [reportView, setReportView] = useState<"none" | "detail" | "executive">("none");
   const reportRef = useRef<HTMLDivElement>(null);
 
@@ -220,9 +295,8 @@ export default function TeamCheck() {
           if (ef.length > 0) setErfolgsfokusLabels(ef);
 
           const p = state.profil || state.profile;
-          if (p && p.impulsiv != null) {
-            setSoll({ impulsiv: p.impulsiv, intuitiv: p.intuitiv, analytisch: p.analytisch });
-          }
+          const parsed = safeTriad(p, soll);
+          if (p) setSoll(parsed);
         }
       }
     } catch {}
@@ -230,20 +304,16 @@ export default function TeamCheck() {
     try {
       const saved = localStorage.getItem("jobcheckCandProfile");
       if (saved) {
-        const p = JSON.parse(saved);
-        if (p.impulsiv != null && p.intuitiv != null && p.analytisch != null) {
-          setKandidat({ impulsiv: p.impulsiv, intuitiv: p.intuitiv, analytisch: p.analytisch });
-        }
+        const parsed = safeTriad(JSON.parse(saved), kandidat);
+        setKandidat(parsed);
       }
     } catch {}
 
     try {
       const savedTeam = localStorage.getItem("teamProfile");
       if (savedTeam) {
-        const tp = JSON.parse(savedTeam);
-        if (tp.impulsiv != null && tp.intuitiv != null && tp.analytisch != null) {
-          setTeam({ impulsiv: tp.impulsiv, intuitiv: tp.intuitiv, analytisch: tp.analytisch });
-        }
+        const parsed = safeTriad(JSON.parse(savedTeam), team);
+        setTeam(parsed);
       }
     } catch {}
   }, []);
@@ -252,11 +322,34 @@ export default function TeamCheck() {
     localStorage.setItem("teamProfile", JSON.stringify({ impulsiv: team.impulsiv, intuitiv: team.intuitiv, analytisch: team.analytisch }));
   }, [team.impulsiv, team.intuitiv, team.analytisch]);
 
-  const input: TeamCheckInput = useMemo(() => ({
-    soll, kandidat, team, beruf, bereich, fuehrungstyp, isLeading,
-  }), [soll, kandidat, team, beruf, bereich, fuehrungstyp, isLeading]);
-
-  const result: TeamCheckResult = useMemo(() => localizeDeep(computeTeamCheck(input), region), [input, region]);
+  const v4Result: TeamCheckV4Result = useMemo(() => {
+    let roleLevel = isLeading ? "Führung" : "Teammitglied";
+    let taskStructure = aufgabencharakter || "";
+    let workStyle = "";
+    let successFocus = erfolgsfokusLabels;
+    try {
+      const dnaRaw = localStorage.getItem("rollenDnaState");
+      if (dnaRaw) {
+        const dna = JSON.parse(dnaRaw);
+        if (dna.fuehrung && dna.fuehrung !== "Keine") roleLevel = dna.fuehrung;
+        if (dna.aufgabencharakter) taskStructure = dna.aufgabencharakter;
+        if (dna.arbeitslogik) workStyle = dna.arbeitslogik;
+      }
+    } catch {}
+    const input: TeamCheckV3Input & { roleType?: "fuehrung" | "teammitglied" } = {
+      roleTitle: beruf || "Neue Stelle",
+      roleLevel,
+      taskStructure,
+      workStyle,
+      successFocus,
+      teamProfile: team,
+      personProfile: kandidat,
+      candidateName: "Person",
+      teamGoal: teamGoal || undefined,
+      roleType: isLeading ? "fuehrung" : "teammitglied",
+    };
+    return localizeDeep(computeTeamCheckV4(input), region);
+  }, [beruf, isLeading, aufgabencharakter, erfolgsfokusLabels, team, kandidat, teamGoal, region]);
 
   const tdInput: TeamDynamikInput = useMemo(() => ({
     teamName: beruf || "Team",
@@ -274,9 +367,10 @@ export default function TeamCheck() {
   const tl = TL_COLORS[tdResult.trafficLight];
 
   const rolleLabel = isLeading ? "Neue Führungskraft" : "Neues Teammitglied";
-
-  const detailReport = useMemo(() => localizeDeep(generateDetailReport(input, result), region), [input, result, region]);
-  const execReport = useMemo(() => localizeDeep(generateExecutiveReport(input, result), region), [input, result, region]);
+  const sollDom = getDominanceLabel(soll);
+  const kandDom = getDominanceLabel(kandidat);
+  const teamDom = getDominanceLabel(team);
+  const bc = bewCol(v4Result.gesamteinschaetzung);
 
   if (reportView !== "none") {
     return (
@@ -297,7 +391,7 @@ export default function TeamCheck() {
             Zurück
           </button>
           <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: "#1D1D1F", textAlign: "center" }}>
-            {reportView === "detail" ? "Detailbericht" : "Executive Summary"}
+            {reportView === "detail" ? "TeamCheck-Bericht (V4)" : "Executive Summary"}
           </span>
           <button onClick={() => window.print()} data-testid="btn-print-report" style={{
             display: "flex", alignItems: "center", gap: 6,
@@ -314,17 +408,15 @@ export default function TeamCheck() {
         <div ref={reportRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 24px 80px", display: "flex", flexDirection: "column", gap: 20 }}>
           {reportView === "detail" ? (
             <>
-              {/* Hero Header */}
               <GlassCard style={{ padding: "36px 32px 30px", textAlign: "center", position: "relative", overflow: "hidden" }} data-testid="report-header">
                 <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(52,170,220,0.04))", pointerEvents: "none" }} />
-                <div style={{ position: "absolute", bottom: -20, left: -20, width: 80, height: 80, borderRadius: "50%", background: "linear-gradient(135deg, rgba(0,113,227,0.04), rgba(52,170,220,0.03))", pointerEvents: "none" }} />
                 <div style={{
                   display: "inline-flex", alignItems: "center", gap: 6,
                   background: "linear-gradient(135deg, rgba(0,113,227,0.1), rgba(52,170,220,0.06))",
                   borderRadius: 20, padding: "5px 14px", marginBottom: 14,
                 }}>
                   <FileText style={{ width: 12, height: 12, color: "#0071E3" }} />
-                  <span style={{ fontSize: 10, fontWeight: 700, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.12em" }}>Entscheidungsgrundlage</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.12em" }}>TeamCheck-Bericht</span>
                 </div>
                 <h1 style={{ fontSize: 28, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.15, marginBottom: 6 }}>{beruf}</h1>
                 <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 16 }}>{bereich || "Systemische Analyse zur Besetzung"}</p>
@@ -332,572 +424,373 @@ export default function TeamCheck() {
                   <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10 }}>
                     {isLeading ? "Führungsposition" : "Teammitglied"}
                   </span>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10 }}>
-                    {result.diagnose.kandidatDominanz}
+                  <span style={{ fontSize: 12, fontWeight: 700, color: bc, background: `${bc}10`, padding: "6px 14px", borderRadius: 10 }}>
+                    {v4Result.gesamteinschaetzung}
                   </span>
                 </div>
               </GlassCard>
 
-              {(() => {
-                const SECTION_META: Record<number, { icon: typeof Target; color: string }> = {
-                  1: { icon: Target, color: "#0071E3" },
-                  2: { icon: Users, color: "#0071E3" },
-                  3: { icon: Activity, color: "#FF9500" },
-                  4: { icon: Zap, color: "#5856D6" },
-                  5: { icon: Flame, color: "#FF3B30" },
-                  6: { icon: CalendarDays, color: "#34C759" },
-                  7: { icon: TrendingUp, color: "#34C759" },
-                  8: { icon: AlertTriangle, color: "#FF9500" },
-                  9: { icon: Shield, color: "#0071E3" },
-                  10: { icon: CalendarDays, color: "#5856D6" },
-                  11: { icon: Award, color: "#0071E3" },
-                };
-
-                const renderBullets = (bullets: string[]) => (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {bullets.map((b, i) => {
-                      const isPos = b.startsWith("✓ ");
-                      const isWarn = b.startsWith("⚠ ");
-                      const text = (isPos || isWarn) ? b.slice(2) : b;
-                      const c = isPos ? "#34C759" : isWarn ? "#FF9500" : "#6E6E73";
-                      return (
-                        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                          {isPos ? (
-                            <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                              <CheckCircle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
-                            </div>
-                          ) : isWarn ? (
-                            <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                              <AlertTriangle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
-                            </div>
-                          ) : (
-                            <div style={{ width: 6, height: 6, borderRadius: "50%", background: c, marginTop: 7, flexShrink: 0, opacity: 0.5 }} />
-                          )}
-                          <span style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.7 }} lang="de">{hyphenateText(text)}</span>
-                        </div>
-                      );
-                    })}
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                {[
+                  { label: "Passung zum Team", value: axisLabel(v4Result.passungZumTeam), color: axisColor(v4Result.passungZumTeam) },
+                  { label: "Beitrag zur Aufgabe", value: axisLabel(v4Result.beitragZurAufgabe), color: axisColor(v4Result.beitragZurAufgabe) },
+                  { label: "Begleitungsbedarf", value: axisLabel(v4Result.begleitungsbedarf), color: axisColor(v4Result.begleitungsbedarf === "gering" ? "hoch" : v4Result.begleitungsbedarf === "hoch" ? "gering" : "mittel") },
+                ].map((kpi, i) => (
+                  <div key={i} style={{
+                    flex: 1, minWidth: 140, textAlign: "center",
+                    background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)",
+                    borderRadius: 22, padding: "18px 18px",
+                    boxShadow: "0 2px 16px rgba(0,0,0,0.03)",
+                    border: "1px solid rgba(255,255,255,0.7)",
+                  }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 3px" }}>{kpi.label}</p>
+                    <p style={{ fontSize: 15, fontWeight: 700, color: kpi.color, margin: 0 }}>{kpi.value}</p>
                   </div>
-                );
+                ))}
+              </div>
 
-                const renderProfileBars = (label: string, triad: Triad, accent: string) => (
-                  <div style={{ flex: 1, minWidth: 200 }}>
-                    <p style={{ fontSize: 11, fontWeight: 700, color: accent, textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 12px" }}>{label}</p>
-                    {(["impulsiv", "intuitiv", "analytisch"] as const).map(k => {
-                      const val = triad[k];
-                      const color = k === "impulsiv" ? "#C41E3A" : k === "intuitiv" ? "#F39200" : "#1A5DAB";
-                      const lbl = k === "impulsiv" ? "Impulsiv" : k === "intuitiv" ? "Intuitiv" : "Analytisch";
-                      return (
-                        <div key={k} style={{ marginBottom: 8 }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-                            <span style={{ fontSize: 11, fontWeight: 500, color: "#6E6E73" }}>{lbl}</span>
-                            <span style={{ fontSize: 11, fontWeight: 700, color }}>{Math.round(val)} %</span>
-                          </div>
-                          <div style={{ height: 7, borderRadius: 4, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
-                            <div style={{ height: "100%", borderRadius: 4, background: `linear-gradient(90deg, ${color}, ${color}BB)`, width: `${(val / MAX_BIO) * 100}%` }} />
-                          </div>
-                        </div>
-                      );
-                    })}
+              {v4Result.introText && (
+                <div style={{
+                  padding: "16px 22px", borderRadius: 16, marginBottom: 4,
+                  background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(0,113,227,0.02))",
+                  border: "1px solid rgba(0,113,227,0.12)",
+                }}>
+                  <Paragraphs text={v4Result.introText} />
+                </div>
+              )}
+
+              {/* S1: Gesamtbewertung */}
+              <GlassCard data-testid="report-section-1">
+                <SectionHeader num={1} title="Gesamtbewertung" icon={Target} />
+                <div style={{
+                  display: "flex", gap: 12, marginBottom: 18, flexWrap: "wrap",
+                }}>
+                  <div style={{ flex: 1, minWidth: 180, padding: "14px 18px", borderRadius: 16, background: "rgba(52,199,89,0.05)", border: "1px solid rgba(52,199,89,0.12)" }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Hauptstärke</p>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: "#34C759", margin: 0 }}>{v4Result.hauptstaerke}</p>
                   </div>
-                );
+                  <div style={{ flex: 1, minWidth: 180, padding: "14px 18px", borderRadius: 16, background: "rgba(255,149,0,0.05)", border: "1px solid rgba(255,149,0,0.12)" }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Hauptabweichung</p>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: "#FF9500", margin: 0 }}>{v4Result.hauptabweichung}</p>
+                  </div>
+                </div>
+                <Paragraphs text={v4Result.gesamtbewertungText} highlight />
+              </GlassCard>
 
-                return detailReport.map((sec) => {
-                  const meta = SECTION_META[sec.num] || { icon: Target, color: "#0071E3" };
-                  const Icon = meta.icon;
+              {/* S2: Warum */}
+              <GlassCard data-testid="report-section-2">
+                <SectionHeader num={2} title="Warum diese Bewertung" icon={Lightbulb} />
+                <Paragraphs text={v4Result.warumText} />
+              </GlassCard>
 
-                  return (
-                    <GlassCard key={sec.num} style={{ padding: "30px 28px" }} data-testid={`report-section-${sec.num}`}>
-                      <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
-                        <div style={{
-                          width: 36, height: 36, borderRadius: 12,
-                          background: `linear-gradient(135deg, ${meta.color}, ${meta.color}CC)`,
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          marginRight: 14, flexShrink: 0,
-                          boxShadow: `0 4px 12px ${meta.color}30`,
-                        }}>
-                          <Icon style={{ width: 16, height: 16, color: "#FFF", strokeWidth: 2.2 }} />
-                        </div>
-                        <div>
-                          <span style={{ fontSize: 10, fontWeight: 700, color: meta.color, textTransform: "uppercase", letterSpacing: "0.1em" }}>{String(sec.num).padStart(2, "0")}</span>
-                          <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>{sec.title}</h2>
-                        </div>
-                      </div>
+              {/* S3: Wirkung im Alltag */}
+              <GlassCard data-testid="report-section-3">
+                <SectionHeader num={3} title="Wirkung im Alltag" icon={Activity} />
+                <Paragraphs text={v4Result.wirkungAlltagText} />
+              </GlassCard>
 
-                      {sec.num === 2 && (
-                        <div style={{
-                          display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 20,
-                          background: "rgba(255,255,255,0.7)", borderRadius: 22, padding: "20px 22px",
-                          border: "1px solid rgba(0,0,0,0.05)",
-                        }}>
-                          {renderProfileBars(isLeading ? "Führungskraft" : "Teammitglied", kandidat, "#F39200")}
-                          <div style={{ width: 1, background: "rgba(0,0,0,0.06)", margin: "0 4px", alignSelf: "stretch" }} />
-                          {renderProfileBars("Team", team, "#34C759")}
-                        </div>
-                      )}
+              {/* S4: Chancen & Risiken */}
+              <GlassCard data-testid="report-section-4">
+                <SectionHeader num={4} title="Chancen & Risiken" icon={TrendingUp} />
+                <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 16 }}>
+                  <div style={{ flex: 1, minWidth: 220 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                      <CheckCircle style={{ width: 15, height: 15, color: "#34C759", strokeWidth: 2.5 }} />
+                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>Chancen</span>
+                    </div>
+                    <V4BlockList items={v4Result.chancen} accentColor="#34C759" />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 220 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                      <AlertTriangle style={{ width: 15, height: 15, color: "#FF3B30", strokeWidth: 2.5 }} />
+                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>Risiken</span>
+                    </div>
+                    <V4BlockList items={v4Result.risiken} accentColor="#FF3B30" />
+                  </div>
+                </div>
+                <Paragraphs text={v4Result.chancenRisikenEinordnung} />
+              </GlassCard>
 
-                      {sec.num === 3 && (
-                        <div style={{
-                          display: "flex", gap: 12, marginBottom: 18, flexWrap: "wrap",
-                        }}>
-                          {[
-                            { label: isLeading ? "Führungskraft" : "Teammitglied", value: result.diagnose.kandidatDominanz, color: "#F39200" },
-                            { label: "Verschiebung", value: result.diagnose.verschiebungLabel, color: result.diagnose.verschiebung === "VERSTAERKUNG" ? "#34C759" : result.diagnose.verschiebung === "ERGAENZUNG" ? "#0071E3" : "#FF9500" },
-                            { label: "Team", value: result.diagnose.teamDominanz, color: "#34C759" },
-                          ].map((item, i) => (
-                            <div key={i} style={{
-                              flex: 1, minWidth: 120, padding: "14px 16px", borderRadius: 16,
-                              background: `linear-gradient(135deg, ${item.color}08, ${item.color}03)`,
-                              border: `1px solid ${item.color}15`,
-                              textAlign: "center",
-                            }}>
-                              <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>{item.label}</p>
-                              <p style={{ fontSize: 15, fontWeight: 700, color: item.color, margin: 0 }}>{item.value}</p>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+              {/* S5: Unter Druck */}
+              <GlassCard data-testid="report-section-5">
+                <SectionHeader num={5} title="Verhalten unter Druck" icon={Flame} />
+                <Paragraphs text={v4Result.druckText} />
+              </GlassCard>
 
-                      {sec.num === 5 && (
-                        <div style={{
-                          display: "flex", gap: 8, marginBottom: 18,
-                        }}>
-                          {[
-                            { label: "Normal", icon: CheckCircle, color: "#34C759", bg: "rgba(52,199,89,0.08)" },
-                            { label: "Kontrollierter Stress", icon: Activity, color: "#FF9500", bg: "rgba(255,149,0,0.08)" },
-                            { label: "Unkontrollierter Stress", icon: Flame, color: "#FF3B30", bg: "rgba(255,59,48,0.08)" },
-                          ].map((phase, i) => (
-                            <div key={i} style={{
-                              flex: 1, padding: "10px 12px", borderRadius: 14, background: phase.bg,
-                              display: "flex", alignItems: "center", gap: 8, border: `1px solid ${phase.color}15`,
-                            }}>
-                              <phase.icon style={{ width: 14, height: 14, color: phase.color, strokeWidth: 2.2, flexShrink: 0 }} />
-                              <span style={{ fontSize: 11, fontWeight: 600, color: phase.color }}>{phase.label}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+              {/* S6: Führungshinweis (only for leaders) */}
+              {v4Result.fuehrungshinweis && (
+                <GlassCard data-testid="report-section-6">
+                  <SectionHeader num={6} title="Führungshinweis" icon={Shield} />
+                  <V4BlockList items={v4Result.fuehrungshinweis} accentColor="#5856D6" />
+                </GlassCard>
+              )}
 
-                      {sec.num === 6 && sec.subsections && (
-                        <div style={{
-                          position: "relative", paddingLeft: 24, marginBottom: 16,
-                          borderLeft: "3px solid linear-gradient(180deg, #34C759, #0071E3, #5856D6)",
-                        }}>
-                          <div style={{ position: "absolute", left: -2, top: 0, bottom: 0, width: 3, borderRadius: 2, background: "linear-gradient(180deg, #34C759, #0071E3, #5856D6)" }} />
-                          {sec.subsections.map((phase, pi) => {
-                            const phaseColors = ["#34C759", "#0071E3", "#5856D6"];
-                            const phaseIcons = [Target, Zap, Award];
-                            const PhIcon = phaseIcons[pi] || Target;
-                            const pColor = phaseColors[pi] || "#0071E3";
-                            return (
-                              <div key={pi} style={{ marginBottom: pi < sec.subsections!.length - 1 ? 20 : 0, position: "relative" }}>
-                                <div style={{
-                                  position: "absolute", left: -33, top: 2,
-                                  width: 20, height: 20, borderRadius: "50%",
-                                  background: pColor, display: "flex", alignItems: "center", justifyContent: "center",
-                                  boxShadow: `0 2px 8px ${pColor}40`,
-                                }}>
-                                  <PhIcon style={{ width: 10, height: 10, color: "#FFF", strokeWidth: 2.5 }} />
-                                </div>
-                                <h4 style={{ fontSize: 14, fontWeight: 700, color: pColor, margin: "0 0 6px" }}>{phase.title}</h4>
-                                {phase.paragraphs?.map((p, ppi) => (
-                                  <p key={ppi} style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: "0 0 8px" }} lang="de">{hyphenateText(p)}</p>
-                                ))}
-                                {phase.bullets && renderBullets(phase.bullets)}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-
-                      {(sec.num === 7 || sec.num === 8) && sec.bullets && (
-                        <div style={{
-                          background: sec.num === 7 ? "rgba(52,199,89,0.04)" : "rgba(255,149,0,0.04)",
-                          borderRadius: 18, padding: "18px 20px", marginBottom: 12,
-                          border: `1px solid ${sec.num === 7 ? "rgba(52,199,89,0.12)" : "rgba(255,149,0,0.12)"}`,
-                        }}>
-                          {renderBullets(sec.bullets)}
-                        </div>
-                      )}
-
-                      {sec.num === 10 && sec.subsections && (
-                        <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 14 }}>
-                          {sec.subsections.map((phase, pi) => {
-                            const phaseColors = ["#34C759", "#0071E3", "#5856D6"];
-                            const pColor = phaseColors[pi] || "#0071E3";
-                            return (
-                              <div key={pi} style={{
-                                borderRadius: 18, padding: "18px 20px 14px",
-                                background: `linear-gradient(135deg, ${pColor}06, ${pColor}02)`,
-                                border: `1px solid ${pColor}15`,
-                              }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                                  <div style={{
-                                    width: 24, height: 24, borderRadius: 8,
-                                    background: `${pColor}15`, display: "flex", alignItems: "center", justifyContent: "center",
-                                  }}>
-                                    <span style={{ fontSize: 11, fontWeight: 800, color: pColor }}>{pi + 1}</span>
-                                  </div>
-                                  <h4 style={{ fontSize: 13, fontWeight: 700, color: pColor, margin: 0 }}>{phase.title}</h4>
-                                </div>
-                                {phase.paragraphs?.map((p, ppi) => (
-                                  <p key={ppi} style={{ fontSize: 12, color: "#48484A", lineHeight: 1.7, margin: "0 0 6px" }} lang="de">{hyphenateText(p)}</p>
-                                ))}
-                                {phase.bullets && (
-                                  <div style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: 6 }}>
-                                    {phase.bullets.map((b, bi) => (
-                                      <div key={bi} style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
-                                        <div style={{ width: 4, height: 4, borderRadius: "50%", background: pColor, marginTop: 6, flexShrink: 0, opacity: 0.5 }} />
-                                        <span style={{ fontSize: 11.5, color: "#3A3A3C", lineHeight: 1.6 }}>{b}</span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-
-                      {sec.num === 11 && (
-                        <div style={{
-                          display: "flex", alignItems: "center", gap: 16, padding: "16px 20px",
-                          borderRadius: 18, marginBottom: 16,
-                          background: `linear-gradient(135deg, ${tl.fill}08, ${tl.fill}03)`,
-                          border: `1px solid ${tl.fill}18`,
-                        }}>
-                          <div style={{
-                            width: 48, height: 48, borderRadius: 16,
-                            background: `linear-gradient(135deg, ${tl.fill}20, ${tl.fill}08)`,
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            boxShadow: `0 4px 16px ${tl.fill}20`,
-                          }}>
-                            <TrafficLightAmpel tl={tdResult.trafficLight} />
+              {/* S7: Risikoprognose */}
+              <GlassCard data-testid="report-section-7">
+                <SectionHeader num={v4Result.fuehrungshinweis ? 7 : 6} title="Risikoprognose" icon={CalendarDays} />
+                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                  {v4Result.risikoprognose.map((phase, i) => {
+                    const phaseColors = ["#FF9500", "#0071E3", "#34C759"];
+                    const pc = phaseColors[i] || "#0071E3";
+                    return (
+                      <div key={i} style={{
+                        padding: "18px 20px", borderRadius: 18,
+                        background: `${pc}06`, border: `1px solid ${pc}12`,
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                          <div style={{ width: 28, height: 28, borderRadius: 9, background: pc, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: "#FFF" }}>{phase.label.charAt(0)}</span>
                           </div>
                           <div>
-                            <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 2px" }}>Gesamtbewertung</p>
-                            <p style={{ fontSize: 16, fontWeight: 700, color: tl.fill, margin: 0 }}>{tl.label}</p>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{phase.label}</span>
+                            <span style={{ fontSize: 11, color: "#8E8E93", marginLeft: 8 }}>{phase.period}</span>
                           </div>
                         </div>
-                      )}
-
-                      {![6, 7, 8, 10].includes(sec.num) && sec.paragraphs && sec.paragraphs.length > 0 && (() => {
-                        const first = sec.paragraphs[0];
-                        const rest = sec.paragraphs.slice(1);
-                        return (
-                          <>
-                            <div style={{
-                              padding: "16px 20px", borderRadius: 18,
-                              background: `linear-gradient(135deg, ${meta.color}0A, ${meta.color}04)`,
-                              border: `1px solid ${meta.color}15`,
-                              display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14,
-                            }}>
-                              <div style={{
-                                width: 28, height: 28, borderRadius: 9, flexShrink: 0,
-                                background: `${meta.color}14`, display: "flex", alignItems: "center", justifyContent: "center",
-                              }}>
-                                <Lightbulb style={{ width: 14, height: 14, color: meta.color, strokeWidth: 2 }} />
-                              </div>
-                              <p style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.75, margin: 0, fontWeight: 450 }} lang="de">{hyphenateText(first)}</p>
-                            </div>
-                            {rest.map((p, i) => (
-                              <p key={i} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.9, margin: "0 0 10px" }} lang="de">{hyphenateText(p)}</p>
-                            ))}
-                          </>
-                        );
-                      })()}
-
-                      {(sec.num === 7 || sec.num === 8) && sec.paragraphs?.map((p, i) => (
-                        <p key={i} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.9, margin: "0 0 10px" }} lang="de">{hyphenateText(p)}</p>
-                      ))}
-
-                      {![7, 8].includes(sec.num) && sec.bullets && (
-                        <div style={{ marginTop: 6, marginBottom: 12 }}>
-                          {renderBullets(sec.bullets)}
-                        </div>
-                      )}
-
-                      {sec.num !== 6 && sec.num !== 10 && sec.subsections?.map((sub, si) => (
-                        <div key={si} style={{ marginTop: sub.title ? 18 : 10 }}>
-                          {sub.title && (
-                            <h3 style={{ fontSize: 15, fontWeight: 650, color: "#1D1D1F", margin: "0 0 10px" }}>{sub.title}</h3>
-                          )}
-                          {sub.paragraphs?.map((p, pi) => (
-                            <p key={pi} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.9, margin: "0 0 10px" }} lang="de">{hyphenateText(p)}</p>
-                          ))}
-                          {sub.bullets && <div style={{ marginBottom: 10 }}>{renderBullets(sub.bullets)}</div>}
-                          {sub.highlight && (
-                            <div style={{
-                              padding: "16px 20px", borderRadius: 18, marginTop: 12,
-                              background: `linear-gradient(135deg, ${meta.color}08, ${meta.color}03)`,
-                              border: `1px solid ${meta.color}12`,
-                              borderLeft: `4px solid ${meta.color}`,
-                            }}>
-                              <p style={{ fontSize: 13.5, color: "#1D1D1F", lineHeight: 1.75, margin: 0, fontWeight: 550 }} lang="de">{hyphenateText(sub.highlight)}</p>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </GlassCard>
-                  );
-                });
-              })()}
-            </>
-          ) : (
-            <>{(() => {
-              const EXEC_SEC_META: { icon: typeof Target; color: string }[][] = [
-                [
-                  { icon: Users, color: "#0071E3" },
-                  { icon: Zap, color: "#5856D6" },
-                  { icon: Flame, color: "#FF3B30" },
-                  { icon: TrendingUp, color: "#34C759" },
-                  { icon: AlertTriangle, color: "#FF9500" },
-                  { icon: Award, color: "#0071E3" },
-                ],
-                [
-                  { icon: CalendarDays, color: "#34C759" },
-                  { icon: Gauge, color: "#5856D6" },
-                  { icon: Shield, color: "#0071E3" },
-                  { icon: Target, color: "#34C759" },
-                  { icon: Award, color: "#0071E3" },
-                ],
-              ];
-
-              const renderExecBullets = (bullets: string[]) => (
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {bullets.map((b, i) => {
-                    const isPos = b.startsWith("✓ ");
-                    const isWarn = b.startsWith("⚠ ");
-                    const text = (isPos || isWarn) ? b.slice(2) : b;
-                    const c = isPos ? "#34C759" : isWarn ? "#FF9500" : "#6E6E73";
-                    return (
-                      <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                        {isPos ? (
-                          <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <CheckCircle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
-                          </div>
-                        ) : isWarn ? (
-                          <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1, background: `${c}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <AlertTriangle style={{ width: 11, height: 11, color: c, strokeWidth: 2.5 }} />
-                          </div>
-                        ) : (
-                          <div style={{ width: 6, height: 6, borderRadius: "50%", background: c, marginTop: 7, flexShrink: 0, opacity: 0.5 }} />
-                        )}
-                        <span style={{ fontSize: 13.5, color: "#3A3A3C", lineHeight: 1.7 }} lang="de">{hyphenateText(text)}</span>
+                        <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(phase.text)}</p>
                       </div>
                     );
                   })}
                 </div>
-              );
+              </GlassCard>
 
-              return (
-                <>
-                  {/* Executive Hero */}
-                  <GlassCard style={{ padding: "36px 32px 30px", textAlign: "center", position: "relative", overflow: "hidden" }} data-testid="exec-header">
-                    <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "linear-gradient(135deg, rgba(52,199,89,0.06), rgba(52,170,220,0.04))", pointerEvents: "none" }} />
-                    <div style={{ position: "absolute", bottom: -20, left: -20, width: 80, height: 80, borderRadius: "50%", background: "linear-gradient(135deg, rgba(0,113,227,0.04), rgba(52,170,220,0.03))", pointerEvents: "none" }} />
-                    <div style={{
-                      display: "inline-flex", alignItems: "center", gap: 6,
-                      background: "linear-gradient(135deg, rgba(52,199,89,0.1), rgba(52,199,89,0.05))",
-                      borderRadius: 20, padding: "5px 14px", marginBottom: 14,
-                    }}>
-                      <Briefcase style={{ width: 12, height: 12, color: "#34C759" }} />
-                      <span style={{ fontSize: 10, fontWeight: 700, color: "#34C759", textTransform: "uppercase", letterSpacing: "0.12em" }}>Executive Summary</span>
-                    </div>
-                    <h1 style={{ fontSize: 28, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.15, marginBottom: 6 }}>{beruf}</h1>
-                    <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 18 }}>{bereich || "Systemische Analyse zur Besetzung"}</p>
-
-                    <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap", marginBottom: 18 }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10 }}>
-                        {isLeading ? "Führungsposition" : "Teammitglied"}
-                      </span>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10 }}>
-                        {result.diagnose.kandidatDominanz}
-                      </span>
-                    </div>
-
-                    <div style={{
-                      display: "inline-flex", alignItems: "center", gap: 12,
-                      padding: "10px 20px", borderRadius: 16,
-                      background: `${tl.bg}`,
-                      border: `1px solid ${tl.fill}20`,
-                    }}>
-                      <TrafficLightAmpel tl={tdResult.trafficLight} />
-                      <span style={{ fontSize: 14, fontWeight: 700, color: tl.fill }}>{tl.label}</span>
-                    </div>
-                  </GlassCard>
-
-                  {/* Quick KPI strip */}
-                  <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                    {[
-                      { label: isLeading ? "Führungskraft" : "Person", value: result.diagnose.kandidatDominanz, color: "#F39200", icon: Users },
-                      { label: "Verschiebung", value: result.diagnose.verschiebungLabel, color: result.diagnose.verschiebung === "VERSTAERKUNG" ? "#34C759" : result.diagnose.verschiebung === "ERGAENZUNG" ? "#0071E3" : "#FF9500", icon: Activity },
-                      { label: "Team", value: result.diagnose.teamDominanz, color: "#34C759", icon: Users },
-                    ].map((kpi, i) => (
+              {/* S8: Integrationsplan */}
+              <GlassCard data-testid="report-section-8">
+                <SectionHeader num={v4Result.fuehrungshinweis ? 8 : 7} title="Integrationsplan" icon={CalendarDays} />
+                <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                  {v4Result.integrationsplan.map((phase, i) => {
+                    const phaseColors = ["#34C759", "#0071E3", "#5856D6"];
+                    const pc = phaseColors[i] || "#0071E3";
+                    return (
                       <div key={i} style={{
-                        flex: 1, minWidth: 140,
-                        background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)",
-                        borderRadius: 22, padding: "18px 18px",
-                        boxShadow: "0 2px 16px rgba(0,0,0,0.03)",
-                        border: "1px solid rgba(255,255,255,0.7)",
-                        textAlign: "center",
+                        padding: "20px 22px", borderRadius: 18,
+                        background: `${pc}04`, border: `1px solid ${pc}10`,
                       }}>
-                        <div style={{
-                          width: 32, height: 32, borderRadius: 10, margin: "0 auto 8px",
-                          background: `${kpi.color}12`, display: "flex", alignItems: "center", justifyContent: "center",
-                        }}>
-                          <kpi.icon style={{ width: 15, height: 15, color: kpi.color, strokeWidth: 2.2 }} />
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                          <div style={{ width: 28, height: 28, borderRadius: 9, background: pc, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <span style={{ fontSize: 11, fontWeight: 700, color: "#FFF" }}>{phase.num}</span>
+                          </div>
+                          <div>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{phase.title}</span>
+                            <span style={{ fontSize: 11, color: "#8E8E93", marginLeft: 8 }}>{phase.period}</span>
+                          </div>
                         </div>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 3px" }}>{kpi.label}</p>
-                        <p style={{ fontSize: 15, fontWeight: 700, color: kpi.color, margin: 0 }}>{kpi.value}</p>
+                        <p style={{ fontSize: 12, fontWeight: 600, color: pc, margin: "0 0 6px" }}>Ziel: {phase.ziel}</p>
+                        <Paragraphs text={phase.beschreibung} />
+                        {phase.praxis.length > 0 && (
+                          <div style={{ marginTop: 10 }}>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 6px", textTransform: "uppercase" }}>Praxis</p>
+                            <BulletList items={phase.praxis} color={pc} icon="check" />
+                          </div>
+                        )}
+                        {phase.signale.length > 0 && (
+                          <div style={{ marginTop: 10 }}>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 6px", textTransform: "uppercase" }}>Positive Signale</p>
+                            <BulletList items={phase.signale} color="#34C759" icon="check" />
+                          </div>
+                        )}
+                        <div style={{ marginTop: 10, padding: "10px 14px", borderRadius: 10, background: `${pc}08`, border: `1px solid ${pc}12` }}>
+                          <p style={{ fontSize: 11, fontWeight: 600, color: pc, margin: "0 0 4px", textTransform: "uppercase" }}>Führungstipp</p>
+                          <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.55 }} lang="de">{hyphenateText(phase.fuehrungstipp)}</p>
+                        </div>
                       </div>
-                    ))}
+                    );
+                  })}
+                </div>
+                {v4Result.intWarnsignale.length > 0 && (
+                  <div style={{ marginTop: 20 }}>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "#FF9500", margin: "0 0 10px" }}>Warnsignale</p>
+                    <BulletList items={v4Result.intWarnsignale} color="#FF9500" icon="warning" />
                   </div>
+                )}
+                {v4Result.intLeitfragen.length > 0 && (
+                  <div style={{ marginTop: 20 }}>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "#0071E3", margin: "0 0 10px" }}>Leitfragen</p>
+                    <BulletList items={v4Result.intLeitfragen} color="#0071E3" icon="dot" />
+                  </div>
+                )}
+                {v4Result.intVerantwortung && (
+                  <div style={{ marginTop: 16 }}>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "#3A3A3C", margin: "0 0 6px" }}>Verantwortung</p>
+                    <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(v4Result.intVerantwortung)}</p>
+                  </div>
+                )}
+              </GlassCard>
 
-                  {execReport.map((page) => (
-                    <div key={page.pageNum} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                      {page.pageNum === 2 && (
-                        <div style={{ height: 1, margin: "12px 28px", background: "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.06) 30%, rgba(0,0,0,0.06) 70%, transparent 100%)" }} />
-                      )}
-                      {page.pageNum === 2 && (
-                        <GlassCard style={{ padding: "20px 28px", textAlign: "center" }}>
-                          <h2 style={{ fontSize: 20, fontWeight: 750, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>{page.title}</h2>
-                        </GlassCard>
-                      )}
+              {/* S9: Empfehlungen */}
+              <GlassCard data-testid="report-section-9">
+                <SectionHeader num={v4Result.fuehrungshinweis ? 9 : 8} title="Empfehlungen" icon={Target} />
+                <V4BlockList items={v4Result.empfehlungen} accentColor="#0071E3" />
+              </GlassCard>
 
-                      {page.sections.map((sec, si) => {
-                        const meta = EXEC_SEC_META[page.pageNum - 1]?.[si] || { icon: Target, color: "#0071E3" };
-                        const SIcon = meta.icon;
-                        const isChancen = sec.title === "Chancen";
-                        const isRisiken = sec.title === "Risiken";
-                        const isStress = sec.title === "Verhalten unter Druck";
-                        const isGesamt = sec.title === "Gesamtbewertung" || sec.title === "Abschliessendes Urteil";
-                        const isPrognose = sec.title === "Prognose";
-                        const isKPI = sec.title === "Messbare Steuerungsindikatoren";
+              {/* S10: Team ohne Person */}
+              <GlassCard data-testid="report-section-10">
+                <SectionHeader num={v4Result.fuehrungshinweis ? 10 : 9} title="Team ohne diese Besetzung" icon={Users} />
+                <Paragraphs text={v4Result.teamOhnePersonText} />
+              </GlassCard>
 
-                        return (
-                          <GlassCard key={si} style={{ padding: "26px 26px" }} data-testid={`exec-section-${page.pageNum}-${si}`}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-                              <div style={{
-                                width: 32, height: 32, borderRadius: 10,
-                                background: `linear-gradient(135deg, ${meta.color}, ${meta.color}CC)`,
-                                display: "flex", alignItems: "center", justifyContent: "center",
-                                boxShadow: `0 3px 10px ${meta.color}25`, flexShrink: 0,
-                              }}>
-                                <SIcon style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
-                              </div>
-                              <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{sec.title}</h3>
-                            </div>
+              {/* S11: Fazit */}
+              <GlassCard data-testid="report-section-11">
+                <SectionHeader num={v4Result.fuehrungshinweis ? 11 : 10} title="Schlussfazit" icon={Award} />
+                <div style={{
+                  padding: "20px 24px", borderRadius: 18,
+                  background: `linear-gradient(135deg, ${bc}08, ${bc}03)`,
+                  border: `1px solid ${bc}15`,
+                }}>
+                  <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.75, margin: 0, fontWeight: 550 }} lang="de">{hyphenateText(v4Result.schlussfazit)}</p>
+                </div>
+              </GlassCard>
+            </>
+          ) : (
+            /* ═══ EXECUTIVE SUMMARY ═══ */
+            <>
+              <GlassCard style={{ padding: "36px 32px 30px", textAlign: "center", position: "relative", overflow: "hidden" }} data-testid="exec-header">
+                <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "linear-gradient(135deg, rgba(52,199,89,0.06), rgba(52,170,220,0.04))", pointerEvents: "none" }} />
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  background: "linear-gradient(135deg, rgba(52,199,89,0.1), rgba(52,199,89,0.05))",
+                  borderRadius: 20, padding: "5px 14px", marginBottom: 14,
+                }}>
+                  <Briefcase style={{ width: 12, height: 12, color: "#34C759" }} />
+                  <span style={{ fontSize: 10, fontWeight: 700, color: "#34C759", textTransform: "uppercase", letterSpacing: "0.12em" }}>Executive Summary</span>
+                </div>
+                <h1 style={{ fontSize: 28, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.15, marginBottom: 6 }}>{beruf}</h1>
+                <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 18 }}>{bereich || "Systemische Analyse zur Besetzung"}</p>
+                <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap", marginBottom: 18 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10 }}>
+                    {isLeading ? "Führungsposition" : "Teammitglied"}
+                  </span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: bc, background: `${bc}10`, padding: "6px 14px", borderRadius: 10 }}>
+                    {v4Result.gesamteinschaetzung}
+                  </span>
+                </div>
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 12,
+                  padding: "10px 20px", borderRadius: 16,
+                  background: `${tl.bg}`, border: `1px solid ${tl.fill}20`,
+                }}>
+                  <TrafficLightAmpel tl={tdResult.trafficLight} />
+                  <span style={{ fontSize: 14, fontWeight: 700, color: tl.fill }}>{tl.label}</span>
+                </div>
+              </GlassCard>
 
-                            {isStress && (
-                              <div style={{ display: "flex", gap: 6, marginBottom: 14, flexWrap: "wrap" }}>
-                                {[
-                                  { label: "Normal", color: "#34C759", icon: CheckCircle },
-                                  { label: "Kontrolliert", color: "#FF9500", icon: Activity },
-                                  { label: "Unkontrolliert", color: "#FF3B30", icon: Flame },
-                                ].map((ph, pi) => (
-                                  <div key={pi} style={{
-                                    flex: 1, minWidth: 100, padding: "8px 10px", borderRadius: 12,
-                                    background: `${ph.color}08`, border: `1px solid ${ph.color}15`,
-                                    display: "flex", alignItems: "center", gap: 6,
-                                  }}>
-                                    <ph.icon style={{ width: 12, height: 12, color: ph.color, strokeWidth: 2.2, flexShrink: 0 }} />
-                                    <span style={{ fontSize: 10, fontWeight: 600, color: ph.color }}>{ph.label}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-
-                            {isPrognose && sec.paragraphs && (
-                              <div style={{ position: "relative", paddingLeft: 20, marginBottom: 12 }}>
-                                <div style={{ position: "absolute", left: -1, top: 0, bottom: 0, width: 3, borderRadius: 2, background: "linear-gradient(180deg, #34C759, #0071E3, #5856D6)" }} />
-                                {sec.paragraphs.map((p, pi) => {
-                                  const phColors = ["#34C759", "#0071E3", "#5856D6"];
-                                  const pCol = phColors[pi] || "#0071E3";
-                                  return (
-                                    <div key={pi} style={{ position: "relative", marginBottom: pi < sec.paragraphs!.length - 1 ? 14 : 0 }}>
-                                      <div style={{
-                                        position: "absolute", left: -27, top: 3,
-                                        width: 14, height: 14, borderRadius: "50%",
-                                        background: pCol, boxShadow: `0 2px 6px ${pCol}40`,
-                                      }} />
-                                      <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: 0, fontWeight: 450 }} lang="de">{hyphenateText(p)}</p>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            )}
-
-                            {isKPI && sec.bullets && (
-                              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
-                                {sec.bullets.map((b, bi) => (
-                                  <div key={bi} style={{
-                                    flex: "1 1 calc(50% - 5px)", minWidth: 160,
-                                    padding: "12px 14px", borderRadius: 14,
-                                    background: "rgba(88,86,214,0.05)", border: "1px solid rgba(88,86,214,0.10)",
-                                    display: "flex", alignItems: "center", gap: 8,
-                                  }}>
-                                    <div style={{
-                                      width: 20, height: 20, borderRadius: 6,
-                                      background: "rgba(88,86,214,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                                    }}>
-                                      <Gauge style={{ width: 10, height: 10, color: "#5856D6", strokeWidth: 2.5 }} />
-                                    </div>
-                                    <span style={{ fontSize: 12, color: "#3A3A3C", lineHeight: 1.5, fontWeight: 500 }}>{b}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-
-                            {(isChancen || isRisiken) && sec.bullets && (
-                              <div style={{
-                                background: isChancen ? "rgba(52,199,89,0.04)" : "rgba(255,149,0,0.04)",
-                                borderRadius: 16, padding: "16px 18px", marginBottom: 10,
-                                border: `1px solid ${isChancen ? "rgba(52,199,89,0.12)" : "rgba(255,149,0,0.12)"}`,
-                              }}>
-                                {renderExecBullets(sec.bullets)}
-                              </div>
-                            )}
-
-                            {isGesamt && (
-                              <div style={{
-                                display: "flex", alignItems: "center", gap: 14, padding: "14px 18px",
-                                borderRadius: 16, marginBottom: 12,
-                                background: `${tl.bg}`, border: `1px solid ${tl.fill}18`,
-                              }}>
-                                <TrafficLightAmpel tl={tdResult.trafficLight} />
-                                <span style={{ fontSize: 14, fontWeight: 700, color: tl.fill }}>{tl.label}</span>
-                              </div>
-                            )}
-
-                            {!isPrognose && !isKPI && sec.paragraphs?.map((p, pi) => (
-                              <p key={pi} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.8, margin: "0 0 8px" }} lang="de">{hyphenateText(p)}</p>
-                            ))}
-
-                            {!isChancen && !isRisiken && !isKPI && sec.bullets && (
-                              <div style={{ marginTop: 8 }}>
-                                {renderExecBullets(sec.bullets)}
-                              </div>
-                            )}
-
-                            {sec.highlight && (
-                              <div style={{
-                                padding: "16px 20px", borderRadius: 18, marginTop: 14,
-                                background: `linear-gradient(135deg, ${meta.color}08, ${meta.color}03)`,
-                                border: `1px solid ${meta.color}12`,
-                                borderLeft: `4px solid ${meta.color}`,
-                              }}>
-                                <p style={{ fontSize: 13.5, color: "#1D1D1F", lineHeight: 1.7, margin: 0, fontWeight: 600 }} lang="de">{hyphenateText(sec.highlight)}</p>
-                              </div>
-                            )}
-                          </GlassCard>
-                        );
-                      })}
+              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                {[
+                  { label: "Passung zum Team", value: axisLabel(v4Result.passungZumTeam), color: axisColor(v4Result.passungZumTeam), icon: Users },
+                  { label: "Beitrag zur Aufgabe", value: axisLabel(v4Result.beitragZurAufgabe), color: axisColor(v4Result.beitragZurAufgabe), icon: Target },
+                  { label: "Begleitungsbedarf", value: axisLabel(v4Result.begleitungsbedarf), color: axisColor(v4Result.begleitungsbedarf === "gering" ? "hoch" : v4Result.begleitungsbedarf === "hoch" ? "gering" : "mittel"), icon: Shield },
+                ].map((kpi, i) => (
+                  <div key={i} style={{
+                    flex: 1, minWidth: 140,
+                    background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)",
+                    borderRadius: 22, padding: "18px 18px",
+                    boxShadow: "0 2px 16px rgba(0,0,0,0.03)",
+                    border: "1px solid rgba(255,255,255,0.7)",
+                    textAlign: "center",
+                  }}>
+                    <div style={{
+                      width: 32, height: 32, borderRadius: 10, margin: "0 auto 8px",
+                      background: `${kpi.color}12`, display: "flex", alignItems: "center", justifyContent: "center",
+                    }}>
+                      <kpi.icon style={{ width: 15, height: 15, color: kpi.color, strokeWidth: 2.2 }} />
                     </div>
-                  ))}
-                </>
-              );
-            })()}</>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 3px" }}>{kpi.label}</p>
+                    <p style={{ fontSize: 15, fontWeight: 700, color: kpi.color, margin: 0 }}>{kpi.value}</p>
+                  </div>
+                ))}
+              </div>
+
+              <GlassCard data-testid="exec-bewertung">
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 10, background: "linear-gradient(135deg, #0071E3, #0071E3CC)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Target style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
+                  </div>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Gesamtbewertung</h3>
+                </div>
+                <div style={{ display: "flex", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
+                  <div style={{ flex: 1, minWidth: 160, padding: "12px 16px", borderRadius: 14, background: "rgba(52,199,89,0.05)", border: "1px solid rgba(52,199,89,0.12)" }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 3px" }}>Hauptstärke</p>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: "#34C759", margin: 0 }}>{v4Result.hauptstaerke}</p>
+                  </div>
+                  <div style={{ flex: 1, minWidth: 160, padding: "12px 16px", borderRadius: 14, background: "rgba(255,149,0,0.05)", border: "1px solid rgba(255,149,0,0.12)" }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 3px" }}>Hauptabweichung</p>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: "#FF9500", margin: 0 }}>{v4Result.hauptabweichung}</p>
+                  </div>
+                </div>
+                {v4Result.gesamtbewertungText.split("\n\n").slice(0, 2).map((p, i) => (
+                  <p key={i} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.8, margin: "0 0 8px" }} lang="de">{hyphenateText(p)}</p>
+                ))}
+              </GlassCard>
+
+              <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                <GlassCard style={{ flex: 1, minWidth: 260 }} data-testid="exec-chancen">
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                    <CheckCircle style={{ width: 15, height: 15, color: "#34C759", strokeWidth: 2.5 }} />
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>Chancen</span>
+                  </div>
+                  <BulletList items={v4Result.chancen.map(c => c.title)} color="#34C759" icon="check" />
+                </GlassCard>
+                <GlassCard style={{ flex: 1, minWidth: 260 }} data-testid="exec-risiken">
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                    <AlertTriangle style={{ width: 15, height: 15, color: "#FF3B30", strokeWidth: 2.5 }} />
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>Risiken</span>
+                  </div>
+                  <BulletList items={v4Result.risiken.map(r => r.title)} color="#FF3B30" icon="warning" />
+                </GlassCard>
+              </div>
+
+              <GlassCard data-testid="exec-prognose">
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 10, background: "linear-gradient(135deg, #5856D6, #5856D6CC)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <CalendarDays style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
+                  </div>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Risikoprognose</h3>
+                </div>
+                <div style={{ position: "relative", paddingLeft: 20, marginBottom: 12 }}>
+                  <div style={{ position: "absolute", left: -1, top: 0, bottom: 0, width: 3, borderRadius: 2, background: "linear-gradient(180deg, #FF9500, #0071E3, #34C759)" }} />
+                  {v4Result.risikoprognose.map((phase, i) => {
+                    const phColors = ["#FF9500", "#0071E3", "#34C759"];
+                    const pCol = phColors[i] || "#0071E3";
+                    return (
+                      <div key={i} style={{ position: "relative", marginBottom: i < v4Result.risikoprognose.length - 1 ? 14 : 0 }}>
+                        <div style={{
+                          position: "absolute", left: -27, top: 3,
+                          width: 14, height: 14, borderRadius: "50%",
+                          background: pCol, boxShadow: `0 2px 6px ${pCol}40`,
+                        }} />
+                        <p style={{ fontSize: 11, fontWeight: 700, color: pCol, margin: "0 0 2px" }}>{phase.label} ({phase.period})</p>
+                        <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: 0, fontWeight: 450 }} lang="de">{hyphenateText(phase.text)}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </GlassCard>
+
+              <GlassCard data-testid="exec-empfehlungen">
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 10, background: "linear-gradient(135deg, #34C759, #34C759CC)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Target style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
+                  </div>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Empfehlungen</h3>
+                </div>
+                <V4BlockList items={v4Result.empfehlungen} accentColor="#0071E3" />
+              </GlassCard>
+
+              <GlassCard data-testid="exec-fazit">
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 10, background: "linear-gradient(135deg, #0071E3, #0071E3CC)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Award style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
+                  </div>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Fazit</h3>
+                </div>
+                <div style={{
+                  padding: "16px 20px", borderRadius: 18,
+                  background: `linear-gradient(135deg, ${bc}08, ${bc}03)`,
+                  border: `1px solid ${bc}15`,
+                }}>
+                  <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.75, margin: 0, fontWeight: 600 }} lang="de">{hyphenateText(v4Result.schlussfazit)}</p>
+                </div>
+              </GlassCard>
+            </>
           )}
         </div>
       </div>
@@ -926,7 +819,7 @@ export default function TeamCheck() {
           }}
         >
           <FileText style={{ width: 13, height: 13, strokeWidth: 2.5 }} />
-          Detailanalyse
+          Detailbericht
         </button>
         <button
           data-testid="btn-exec-report"
@@ -968,7 +861,7 @@ export default function TeamCheck() {
             Als PDF exportieren
           </button>
           <h2 style={{ fontSize: 20, fontWeight: 800, color: "#1D1D1F", margin: "0 0 2px", letterSpacing: "-0.02em" }}>bioLogic-TeamCheck</h2>
-          <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 18px", fontWeight: 500 }}>Recruiting-Entscheidungsgrundlage – Level 2</p>
+          <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 18px", fontWeight: 500 }}>Recruiting-Entscheidungsgrundlage – V4</p>
           <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", rowGap: 6, columnGap: 16, fontSize: 13 }}>
             <span style={{ color: "#8E8E93", fontWeight: 500 }}>Stelle:</span>
             <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-position">{beruf}</span>
@@ -994,7 +887,7 @@ export default function TeamCheck() {
           border: "1px solid rgba(0,113,227,0.12)",
         }} data-testid="headline-callout">
           <p style={{ fontSize: 14, fontWeight: 500, color: "#1D1D1F", margin: 0, lineHeight: 1.7 }} lang="de">
-            {hyphenateText(result.systemwirkung.headline)}
+            {hyphenateText(v4Result.teamKontext)}
           </p>
         </div>
 
@@ -1004,7 +897,6 @@ export default function TeamCheck() {
           <GlassCard data-testid="section-diagnose">
             <SectionHeader num={1} title="DIAGNOSE" icon={BarChart3} />
 
-            {/* Rolle + Teamgrösse */}
             <div style={{ display: "flex", gap: 24, flexWrap: "wrap", marginBottom: 20 }}>
               <div style={{ flex: 1, minWidth: 200 }}>
                 <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Rolle der neuen Person</p>
@@ -1050,10 +942,40 @@ export default function TeamCheck() {
               </div>
             </div>
 
+            {/* Funktionsziel */}
+            <div style={{ marginBottom: 20 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Funktionsziel des Bereichs</p>
+              <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3 }}>
+                {([
+                  { value: "" as typeof teamGoal, label: "Keins", icon: null },
+                  { value: "umsetzung" as typeof teamGoal, label: "Umsetzung", icon: Rocket },
+                  { value: "analyse" as typeof teamGoal, label: "Analyse", icon: BarChart3 },
+                  { value: "zusammenarbeit" as typeof teamGoal, label: "Zusammenarbeit", icon: Handshake },
+                ]).map(opt => {
+                  const active = teamGoal === opt.value;
+                  const OptIcon = opt.icon;
+                  return (
+                    <button key={opt.value} onClick={() => setTeamGoal(opt.value)} data-testid={`toggle-goal-${opt.value || "none"}`} style={{
+                      flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: active ? 700 : 500,
+                      background: active ? "#fff" : "transparent",
+                      boxShadow: active ? "0 1px 6px rgba(0,0,0,0.06)" : "none",
+                      border: "none", cursor: "pointer",
+                      color: active ? "#0071E3" : "#8E8E93",
+                      transition: "all 200ms ease",
+                      display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
+                    }}>
+                      {OptIcon && <OptIcon style={{ width: 12, height: 12, strokeWidth: 2.5 }} />}
+                      {opt.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
-              <ProfileCard title="Rollen-DNA (Soll)" num={1} triad={soll} dominanz={result.diagnose.sollDominanz} color="#0071E3" />
-              <ProfileCard title="Personenprofil (Ist)" num={2} triad={kandidat} dominanz={result.diagnose.kandidatDominanz} color="#F39200" onChange={setKandidat} testIdPrefix="slider-kand" />
-              <ProfileCard title="Teamprofil (Ist)" num={3} triad={team} dominanz={result.diagnose.teamDominanz} color="#34C759" onChange={setTeam} testIdPrefix="slider-team" />
+              <ProfileCard title={`Rollen-DNA (Soll) · ${sollDom}`} num={1} triad={soll} color="#0071E3" />
+              <ProfileCard title={`Personenprofil (Ist) · ${kandDom}`} num={2} triad={kandidat} color="#F39200" onChange={setKandidat} testIdPrefix="slider-kand" />
+              <ProfileCard title={`Teamprofil (Ist) · ${teamDom}`} num={3} triad={team} color="#34C759" onChange={setTeam} testIdPrefix="slider-team" />
             </div>
 
             <div data-testid="diagnose-summary" style={{
@@ -1061,11 +983,11 @@ export default function TeamCheck() {
               background: "rgba(142,142,147,0.08)",
             }}>
               <p style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: 0, fontWeight: 450 }} lang="de">
-                {hyphenateText(localizeStr(generateDiagnoseSummary(kandidat, team, isLeading), region))}
+                {hyphenateText(v4Result.teamKontext)}
               </p>
             </div>
 
-            {/* Executive Header – Ampel + Headline + Detail */}
+            {/* Executive Header – Ampel + Bewertung */}
             {(() => {
               const tlKey = tdResult.trafficLight;
               const detail: Record<TrafficLight, { title: string; desc: string; bullets: string[]; recLabel: string; rec: string }> = {
@@ -1146,21 +1068,37 @@ export default function TeamCheck() {
                       <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.55 }} data-testid="rec-text">{d.rec}</p>
                     </div>
                   </div>
+
+                  {/* V4 Gesamteinschätzung badge */}
+                  <div style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
+                    <div style={{ padding: "8px 16px", borderRadius: 10, background: `${bc}10`, border: `1px solid ${bc}25` }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: bc }}>{v4Result.gesamteinschaetzung}</span>
+                    </div>
+                    {[
+                      { label: "Team", value: axisLabel(v4Result.passungZumTeam), color: axisColor(v4Result.passungZumTeam) },
+                      { label: "Aufgabe", value: axisLabel(v4Result.beitragZurAufgabe), color: axisColor(v4Result.beitragZurAufgabe) },
+                    ].map((ind, i) => (
+                      <div key={i} style={{ padding: "8px 12px", borderRadius: 10, background: `${ind.color}08`, border: `1px solid ${ind.color}15` }}>
+                        <span style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", marginRight: 6 }}>{ind.label}</span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: ind.color }}>{ind.value}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               );
             })()}
           </GlassCard>
 
-          {/* SECTIONS 2–6: Tabbed Detail Card */}
+          {/* SECTIONS: Tabbed Detail Card */}
           <GlassCard data-testid="section-detail-tabs">
             <div style={{ display: "flex", gap: 3, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, marginBottom: 26 }}>
               {([
-                ["system", "Systemwirkung", Zap],
-                ["stress", "Stressprofil", AlertTriangle],
+                ["bewertung", "Bewertung", Target],
+                ["alltag", "Alltag & Druck", Activity],
+                ["chancen", "Chancen/Risiken", TrendingUp],
                 ["hebel", "Führungshebel", Flame],
                 ["prognose", "Prognose", Clock],
-                ["empfehlung", "Empfehlungen", Target],
-                ["urteil", "Gesamturteil", Shield],
+                ["empfehlung", "Empfehlungen", Shield],
               ] as const).map(([key, label, Icon]) => {
                 const active = detailTab === key;
                 return (
@@ -1183,100 +1121,110 @@ export default function TeamCheck() {
 
             <div style={{ minHeight: 380 }}>
 
-              {/* TAB: SYSTEMWIRKUNG */}
-              {detailTab === "system" && (
-                <div data-testid="content-system">
-                  <SectionHeader num={2} title="SYSTEMWIRKUNG" icon={Zap} />
+              {/* TAB: GESAMTBEWERTUNG */}
+              {detailTab === "bewertung" && (
+                <div data-testid="content-bewertung">
+                  <SectionHeader num={1} title="GESAMTBEWERTUNG" icon={Target} />
 
-                  <div style={{ marginBottom: 24 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-                      <CheckCircle style={{ width: 16, height: 16, color: "#34C759", strokeWidth: 2.5 }} />
-                      <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Entscheidungslogik</h3>
+                  <div style={{ display: "flex", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
+                    <div style={{ flex: 1, minWidth: 180, padding: "14px 18px", borderRadius: 16, background: "rgba(52,199,89,0.05)", border: "1px solid rgba(52,199,89,0.12)" }}>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Hauptstärke</p>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: "#34C759", margin: 0 }}>{v4Result.hauptstaerke}</p>
                     </div>
-                    <div style={{ flex: 1, minWidth: 200 }}>
-                      <p style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 6px", letterSpacing: "0.04em" }}>Bisher</p>
-                      <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(result.systemwirkung.entscheidungslogik.bisher)}</p>
-                      <p style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", margin: "14px 0 6px", letterSpacing: "0.04em" }}>Mit {isLeading ? "der neuen Führungskraft" : "dem neuen Teammitglied"}</p>
-                      <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(result.systemwirkung.entscheidungslogik.mitNeu)}</p>
-                      <p style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", margin: "14px 0 6px", letterSpacing: "0.04em" }}>Für {isLeading ? "die Führungskraft" : "das Teammitglied"}</p>
-                      <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(result.systemwirkung.entscheidungslogik.fuerFK)}</p>
+                    <div style={{ flex: 1, minWidth: 180, padding: "14px 18px", borderRadius: 16, background: "rgba(255,149,0,0.05)", border: "1px solid rgba(255,149,0,0.12)" }}>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Hauptabweichung</p>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: "#FF9500", margin: 0 }}>{v4Result.hauptabweichung}</p>
                     </div>
                   </div>
 
-                  <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "0 0 24px" }} />
+                  <Paragraphs text={v4Result.gesamtbewertungText} highlight />
 
-                  <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-                    <div style={{ flex: 1, minWidth: 220 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-                        <CheckCircle style={{ width: 16, height: 16, color: "#34C759", strokeWidth: 2.5 }} />
-                        <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Prozesswirkung</h3>
-                      </div>
-                      <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-                        <div style={{ flex: 1, minWidth: 140 }}>
-                          <BulletList items={result.systemwirkung.prozessWirkung.positiv} color="#34C759" icon="dot" />
-                        </div>
-                        <div style={{ flex: 1, minWidth: 140 }}>
-                          <BulletList items={result.systemwirkung.prozessWirkung.negativ} color="#FF9500" icon="dot" />
-                        </div>
-                      </div>
-                    </div>
+                  <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "20px 0" }} />
+
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                    <Lightbulb style={{ width: 16, height: 16, color: "#0071E3", strokeWidth: 2.5 }} />
+                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Warum diese Bewertung</h3>
                   </div>
-
-                  <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "24px 0" }} />
-
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-                      <CheckCircle style={{ width: 16, height: 16, color: "#34C759", strokeWidth: 2.5 }} />
-                      <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Qualitäts- und Fehlerwirkung</h3>
-                    </div>
-                    <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-                      <div style={{ flex: 1, minWidth: 140 }}>
-                        <BulletList items={result.systemwirkung.qualitaetsWirkung.positiv} color="#34C759" icon="dot" />
-                      </div>
-                      <div style={{ flex: 1, minWidth: 140 }}>
-                        <BulletList items={result.systemwirkung.qualitaetsWirkung.negativ} color="#FF9500" icon="dot" />
-                      </div>
-                    </div>
-                  </div>
+                  <Paragraphs text={v4Result.warumText} />
                 </div>
               )}
 
-              {/* TAB: STRESSPROFIL */}
-              {detailTab === "stress" && (
-                <div data-testid="content-stress">
-                  <SectionHeader num={3} title="STRESSPROFIL" icon={AlertTriangle} />
-                  <p style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.75, margin: "0 0 18px" }} lang="de">
-                    {hyphenateText(result.stressprofil.normalState)}
-                  </p>
+              {/* TAB: ALLTAG & DRUCK */}
+              {detailTab === "alltag" && (
+                <div data-testid="content-alltag">
+                  <SectionHeader num={2} title="WIRKUNG IM ALLTAG" icon={Activity} />
+                  <Paragraphs text={v4Result.wirkungAlltagText} highlight />
+
+                  <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "24px 0" }} />
+
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                    <Flame style={{ width: 16, height: 16, color: "#FF3B30", strokeWidth: 2.5 }} />
+                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Verhalten unter Druck</h3>
+                  </div>
                   <div style={{
                     padding: "16px 20px", borderRadius: 16,
                     background: "rgba(255,59,48,0.04)", border: "1px solid rgba(255,59,48,0.10)",
-                    marginBottom: 16,
                   }}>
-                    <p style={{ fontSize: 11, fontWeight: 700, color: "#FF3B30", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                      Unkontrollierter Stress
-                    </p>
-                    <BulletList items={result.stressprofil.unkontrolliert} color="#FF3B30" icon="warning" />
+                    <Paragraphs text={v4Result.druckText} />
                   </div>
-                  <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px" }} lang="de">
-                    {hyphenateText(result.stressprofil.zweitKomponente)}
-                  </p>
-                  <div style={{
-                    padding: "14px 18px", borderRadius: 14,
-                    background: "rgba(0,113,227,0.04)", border: "1px solid rgba(0,113,227,0.10)",
-                  }}>
-                    <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", margin: "0 0 6px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Steuerung</p>
-                    <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">
-                      {hyphenateText(result.stressprofil.steuerung)}
-                    </p>
+
+                  {v4Result.fuehrungshinweis && (
+                    <>
+                      <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "24px 0" }} />
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                        <Shield style={{ width: 16, height: 16, color: "#5856D6", strokeWidth: 2.5 }} />
+                        <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Führungshinweis</h3>
+                      </div>
+                      <V4BlockList items={v4Result.fuehrungshinweis} accentColor="#5856D6" />
+                    </>
+                  )}
+                </div>
+              )}
+
+              {/* TAB: CHANCEN & RISIKEN */}
+              {detailTab === "chancen" && (
+                <div data-testid="content-chancen">
+                  <SectionHeader num={3} title="CHANCEN & RISIKEN" icon={TrendingUp} />
+                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 20 }}>
+                    <div style={{
+                      flex: 1, minWidth: 220, padding: "18px 16px", borderRadius: 18,
+                      background: "rgba(52,199,89,0.04)", border: "1px solid rgba(52,199,89,0.10)",
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                        <CheckCircle style={{ width: 15, height: 15, color: "#34C759", strokeWidth: 2.5 }} />
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Chancen</span>
+                      </div>
+                      {v4Result.chancen.map((c, i) => (
+                        <div key={i} style={{ marginBottom: i < v4Result.chancen.length - 1 ? 10 : 0 }}>
+                          <p style={{ fontSize: 12, fontWeight: 700, color: "#34C759", margin: "0 0 3px" }}>{c.title}</p>
+                          <p style={{ fontSize: 12, color: "#48484A", lineHeight: 1.6, margin: 0 }} lang="de">{hyphenateText(c.text)}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{
+                      flex: 1, minWidth: 220, padding: "18px 16px", borderRadius: 18,
+                      background: "rgba(255,59,48,0.04)", border: "1px solid rgba(255,59,48,0.10)",
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                        <AlertTriangle style={{ width: 15, height: 15, color: "#FF3B30", strokeWidth: 2.5 }} />
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Risiken</span>
+                      </div>
+                      {v4Result.risiken.map((r, i) => (
+                        <div key={i} style={{ marginBottom: i < v4Result.risiken.length - 1 ? 10 : 0 }}>
+                          <p style={{ fontSize: 12, fontWeight: 700, color: "#FF3B30", margin: "0 0 3px" }}>{r.title}</p>
+                          <p style={{ fontSize: 12, color: "#48484A", lineHeight: 1.6, margin: 0 }} lang="de">{hyphenateText(r.text)}</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
+                  <Paragraphs text={v4Result.chancenRisikenEinordnung} />
                 </div>
               )}
 
               {/* TAB: FÜHRUNGSHEBEL */}
               {detailTab === "hebel" && (
                 <div data-testid="content-hebel">
-                  <SectionHeader num={3} title="FÜHRUNGSHEBEL" icon={Flame} />
+                  <SectionHeader num={4} title="FÜHRUNGSHEBEL" icon={Flame} />
                   <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 18px", fontWeight: 500 }}>{t("Konkrete Steuerungsmassnahmen für diese Führungskraft-Team-Kombination")}</p>
 
                   {isLeading && tdResult.leadershipContext && tdResult.leadershipContext.leadershipLevers.length > 0 ? (
@@ -1320,32 +1268,34 @@ export default function TeamCheck() {
               {/* TAB: PROGNOSE */}
               {detailTab === "prognose" && (
                 <div data-testid="content-prognose">
-                  <SectionHeader num={4} title="PROGNOSE (90-TAGE-PERSPEKTIVE)" icon={Clock} />
+                  <SectionHeader num={5} title="RISIKOPROGNOSE" icon={Clock} />
                   <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-                    {result.prognose.phases.map((phase, i) => (
-                      <div key={i} style={{
-                        padding: "18px 20px", borderRadius: 18,
-                        background: i === 0 ? "rgba(255,149,0,0.04)" : i === 1 ? "rgba(0,113,227,0.04)" : "rgba(52,199,89,0.04)",
-                        border: `1px solid ${i === 0 ? "rgba(255,149,0,0.10)" : i === 1 ? "rgba(0,113,227,0.10)" : "rgba(52,199,89,0.10)"}`,
-                      }} data-testid={`prognose-phase-${i}`}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                          <div style={{
-                            width: 28, height: 28, borderRadius: 9,
-                            background: i === 0 ? "#FF9500" : i === 1 ? "#0071E3" : "#34C759",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                          }}>
-                            <span style={{ fontSize: 10, fontWeight: 700, color: "#FFF" }}>P{i + 1}</span>
+                    {v4Result.risikoprognose.map((phase, i) => {
+                      const phaseColors = ["#FF9500", "#0071E3", "#34C759"];
+                      const pc = phaseColors[i] || "#0071E3";
+                      return (
+                        <div key={i} style={{
+                          padding: "18px 20px", borderRadius: 18,
+                          background: `${pc}06`, border: `1px solid ${pc}12`,
+                        }} data-testid={`prognose-phase-${i}`}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                            <div style={{
+                              width: 28, height: 28, borderRadius: 9,
+                              background: pc, display: "flex", alignItems: "center", justifyContent: "center",
+                            }}>
+                              <span style={{ fontSize: 10, fontWeight: 700, color: "#FFF" }}>{phase.label.charAt(0)}</span>
+                            </div>
+                            <div>
+                              <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{phase.label}</span>
+                              <span style={{ fontSize: 11, color: "#8E8E93", marginLeft: 8 }}>{phase.period}</span>
+                            </div>
                           </div>
-                          <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{phase.label}</span>
+                          <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">
+                            {hyphenateText(phase.text)}
+                          </p>
                         </div>
-                        <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: "0 0 8px" }} lang="de">
-                          {hyphenateText(phase.description)}
-                        </p>
-                        {phase.bullets.length > 0 && (
-                          <BulletList items={phase.bullets} color={i === 0 ? "#FF9500" : i === 1 ? "#0071E3" : "#34C759"} icon="dot" />
-                        )}
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -1353,127 +1303,22 @@ export default function TeamCheck() {
               {/* TAB: EMPFEHLUNGEN */}
               {detailTab === "empfehlung" && (
                 <div data-testid="content-empfehlung">
-                  <SectionHeader num={5} title="HANDLUNGSEMPFEHLUNGEN" icon={Target} />
-                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 24 }}>
-                    <div style={{
-                      flex: 1, minWidth: 180, padding: "18px 16px", borderRadius: 18,
-                      background: "rgba(52,199,89,0.04)", border: "1px solid rgba(52,199,89,0.10)",
-                    }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                        <CheckCircle style={{ width: 15, height: 15, color: "#34C759", strokeWidth: 2.5 }} />
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Kernchancen</span>
-                      </div>
-                      <BulletList items={result.handlungsempfehlungen.kernchancen} color="#34C759" icon="dot" />
-                    </div>
-                    <div style={{
-                      flex: 1, minWidth: 180, padding: "18px 16px", borderRadius: 18,
-                      background: "rgba(255,59,48,0.04)", border: "1px solid rgba(255,59,48,0.10)",
-                    }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                        <AlertTriangle style={{ width: 15, height: 15, color: "#FF3B30", strokeWidth: 2.5 }} />
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Risiken</span>
-                      </div>
-                      <BulletList items={result.handlungsempfehlungen.kernrisiken} color="#FF3B30" icon="dot" />
-                    </div>
-                    <div style={{
-                      flex: 1, minWidth: 180, padding: "18px 16px", borderRadius: 18,
-                      background: "rgba(0,113,227,0.04)", border: "1px solid rgba(0,113,227,0.10)",
-                    }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                        <Zap style={{ width: 15, height: 15, color: "#0071E3", strokeWidth: 2.5 }} />
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Top 3 Hebel</span>
-                      </div>
-                      <BulletList items={result.handlungsempfehlungen.topHebel} color="#0071E3" icon="check" />
-                    </div>
+                  <SectionHeader num={6} title="EMPFEHLUNGEN" icon={Shield} />
+                  <V4BlockList items={v4Result.empfehlungen} accentColor="#0071E3" />
+
+                  <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "24px 0" }} />
+
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                    <Award style={{ width: 16, height: 16, color: "#0071E3", strokeWidth: 2.5 }} />
+                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Schlussfazit</h3>
                   </div>
-
-                  <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "0 0 24px" }} />
-
-                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-                    <div style={{
-                      flex: 1, minWidth: 220, padding: "16px 18px", borderRadius: 16,
-                      background: "rgba(255,149,0,0.04)", border: "1px solid rgba(255,149,0,0.10)",
-                    }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                        <AlertTriangle style={{ width: 15, height: 15, color: "#FF9500", strokeWidth: 2.5 }} />
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Eskalationsrisiko: {result.eskalationsrisiko.level}</span>
-                      </div>
-                      <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: "0 0 10px" }} lang="de">{hyphenateText(result.eskalationsrisiko.description)}</p>
-                      {result.eskalationsrisiko.triggers.length > 0 && (
-                        <BulletList items={result.eskalationsrisiko.triggers} color="#FF9500" icon="warning" />
-                      )}
-                    </div>
-                    <div style={{
-                      flex: 1, minWidth: 220, padding: "16px 18px", borderRadius: 16,
-                      background: "rgba(0,113,227,0.04)", border: "1px solid rgba(0,113,227,0.10)",
-                    }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                        <Shield style={{ width: 15, height: 15, color: "#0071E3", strokeWidth: 2.5 }} />
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Steuerbarkeit: {result.steuerbarkeit.bewertung}</span>
-                      </div>
-                      {result.steuerbarkeit.bedingungen.length > 0 && (
-                        <BulletList items={result.steuerbarkeit.bedingungen} color="#0071E3" icon="check" />
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB: GESAMTURTEIL */}
-              {detailTab === "urteil" && (
-                <div data-testid="content-urteil">
-                  <SectionHeader num={6} title="GESAMTURTEIL" icon={Shield} />
-
-                  <div style={{ display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
-                    {(["STRATEGISCH_CHANCEN", "ENTWICKLUNGSFAEHIG", "NO_GO"] as UrteilBadge[]).map(badge => {
-                      const active = result.gesamturteil.badges.includes(badge);
-                      const cfg = BADGE_CONFIG[badge];
-                      return (
-                        <div key={badge} style={{
-                          padding: "8px 18px", borderRadius: 10,
-                          background: active ? cfg.bg : "rgba(0,0,0,0.03)",
-                          border: `1px solid ${active ? cfg.color + "25" : "rgba(0,0,0,0.06)"}`,
-                          display: "flex", alignItems: "center", gap: 6,
-                        }} data-testid={`badge-${badge.toLowerCase()}`}>
-                          <CheckCircle style={{ width: 14, height: 14, color: active ? cfg.color : "#C7C7CC", strokeWidth: 2.5 }} />
-                          <span style={{ fontSize: 13, fontWeight: active ? 700 : 400, color: active ? cfg.color : "#C7C7CC" }}>{cfg.label}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 20 }}>
-                    {[
-                      { label: "Einschätzung", text: result.gesamturteil.einschaetzung, icon: "✓", color: "#34C759" },
-                      { label: "Eskalationsrisiko", text: result.gesamturteil.eskalationsrisiko, icon: "⚠", color: "#FF9500" },
-                      { label: "Risikoindikator", text: result.gesamturteil.risikoindikator, icon: "◉", color: "#FF3B30" },
-                      { label: "Empfehlung", text: result.gesamturteil.empfehlung, icon: "→", color: "#0071E3" },
-                    ].map((item, i) => (
-                      <div key={i} style={{
-                        display: "flex", alignItems: "flex-start", gap: 12,
-                        padding: "12px 16px", borderRadius: 14,
-                        background: `${item.color}06`, border: `1px solid ${item.color}12`,
-                      }}>
-                        <span style={{ fontSize: 14, marginTop: 1, flexShrink: 0 }}>{item.icon}</span>
-                        <div>
-                          <span style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", display: "block", marginBottom: 3 }}>{item.label}</span>
-                          <span style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65 }} lang="de">{hyphenateText(item.text)}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
                   <div style={{
                     padding: "16px 20px", borderRadius: 16,
                     background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(52,199,89,0.04))",
                     border: "1px solid rgba(0,113,227,0.10)",
                   }}>
-                    <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", margin: "0 0 6px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Fazit</p>
-                    <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">
-                      {hyphenateText(isLeading
-                        ? "Die Konstellation ist kein strukturelles No-Go, sondern ein klarer Entwicklungs- und Führungsfall. Entscheidend ist, ob die Steuerungsbereitschaft vorhanden ist und die ersten 90 Tage aktiv gestaltet werden."
-                        : "Die Konstellation ist kein strukturelles No-Go, sondern ein klarer Integrations- und Entwicklungsfall. Entscheidend ist, ob die Einbindung aktiv gestaltet wird und die ersten 90 Tage bewusst begleitet werden."
-                      )}
+                    <p style={{ fontSize: 13, color: "#1D1D1F", lineHeight: 1.75, margin: 0, fontWeight: 550 }} lang="de">
+                      {hyphenateText(v4Result.schlussfazit)}
                     </p>
                   </div>
                 </div>
