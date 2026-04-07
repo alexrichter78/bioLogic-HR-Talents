@@ -2,16 +2,6 @@ import type { Triad, ComponentKey } from "./bio-types";
 import { computeTeamCheckV3, type TeamCheckV3Input, type TeamCheckV3Result, type TeamGoal } from "./teamcheck-v3-engine";
 import { getPrimaryKey, getSecondaryKey } from "./teamcheck-v2-engine";
 
-function normalizeTriadLocal(t: Triad): Triad {
-  const sum = t.impulsiv + t.intuitiv + t.analytisch;
-  if (sum === 0) return { impulsiv: 33, intuitiv: 34, analytisch: 33 };
-  const f = 100 / sum;
-  const imp = Math.round(t.impulsiv * f);
-  const int = Math.round(t.intuitiv * f);
-  const ana = 100 - imp - int;
-  return { impulsiv: imp, intuitiv: int, analytisch: ana };
-}
-
 export interface V4Block {
   title: string;
   text: string;
@@ -122,35 +112,13 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
   const isLeader = inputRoleType === "fuehrung" ? true : inputRoleType === "teammitglied" ? false : v3.roleType === "leadership";
   const roleLabel = isLeader ? "Führungskraft" : "Teammitglied";
 
-  const normTeam = normalizeTriadLocal(input.teamProfile);
-  const normPerson = normalizeTriadLocal(input.personProfile);
-
-  const teamPrimary = getPrimaryKey(normTeam);
-  const personPrimary = getPrimaryKey(normPerson);
-  const personSecondary = getSecondaryKey(normPerson);
+  const teamPrimary = getPrimaryKey(input.teamProfile);
+  const personPrimary = getPrimaryKey(input.personProfile);
+  const personSecondary = getSecondaryKey(input.personProfile);
   const sameDominance = teamPrimary === personPrimary;
 
-  const personSorted = Object.entries(normPerson)
-    .sort(([, a], [, b]) => b - a);
-  const personGap = personSorted[0][1] - personSorted[1][1];
-
-  const profileDelta =
-    Math.abs(normPerson.impulsiv - normTeam.impulsiv) +
-    Math.abs(normPerson.intuitiv - normTeam.intuitiv) +
-    Math.abs(normPerson.analytisch - normTeam.analytisch);
-
-  let teamFitRaw: string;
-  if (personPrimary === teamPrimary) {
-    if (profileDelta <= 10) {
-      teamFitRaw = "hoch";
-    } else {
-      teamFitRaw = personGap <= 5 ? "mittel" : "hoch";
-    }
-  } else if (personSecondary === teamPrimary && personGap <= 5) {
-    teamFitRaw = "mittel";
-  } else {
-    teamFitRaw = "gering";
-  }
+  const teamFitRaw = v3.passung === "Passend" ? "hoch"
+    : v3.passung === "Bedingt passend" ? "mittel" : "gering";
 
   let funktionsFit: string;
   if (v3.strategicFit === "passend") funktionsFit = "hoch";
@@ -162,23 +130,13 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
   const beitragZurAufgabe = funktionsFit;
 
   let begleitungsbedarf: string;
-  if (teamFitRaw === "hoch") {
-    begleitungsbedarf = "gering";
-  } else if (teamFitRaw === "mittel") {
-    begleitungsbedarf = "mittel";
-  } else {
-    begleitungsbedarf = "hoch";
-  }
+  if (v3.steuerungsaufwand === "gering") begleitungsbedarf = "gering";
+  else if (v3.steuerungsaufwand === "mittel") begleitungsbedarf = "mittel";
+  else begleitungsbedarf = "hoch";
 
   let gesamteinschaetzung: string;
-  if (teamFitRaw === "hoch" && funktionsFit === "gering") {
-    gesamteinschaetzung = "Im Team passend, für die Aufgabe weniger geeignet";
-  } else if (teamFitRaw === "hoch") {
+  if (teamFitRaw === "hoch") {
     gesamteinschaetzung = "Gut passend";
-  } else if (teamFitRaw === "mittel" && funktionsFit === "hoch") {
-    gesamteinschaetzung = "Für die Aufgabe passend, im Team herausfordernd";
-  } else if (teamFitRaw === "mittel" && funktionsFit === "gering") {
-    gesamteinschaetzung = "Eingeschränkt passend";
   } else if (teamFitRaw === "gering" && (funktionsFit === "hoch" || funktionsFit === "mittel")) {
     gesamteinschaetzung = "Strategisch sinnvoll, aber anspruchsvoll";
   } else if (teamFitRaw === "mittel") {
@@ -224,8 +182,8 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
     teamPrimary,
     personPrimary,
     sameDominance,
-    teamTriad: { ...normTeam },
-    personTriad: { ...normPerson },
+    teamTriad: { ...input.teamProfile },
+    personTriad: { ...input.personProfile },
     v3,
   };
 }
