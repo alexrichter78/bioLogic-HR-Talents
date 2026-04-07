@@ -1036,9 +1036,16 @@ export default function TeamReport() {
                 const empfBullets: string[] = [];
                 if (p.gesamteinschaetzung === "Gut passend") {
                   empfBullets.push("Die Person kann direkt produktiv eingesetzt werden.");
-                  empfBullets.push("Kein besonderer Begleitungsaufwand notwendig.");
+                  if (p.begleitungsbedarf === "gering") {
+                    empfBullets.push("Kein besonderer Begleitungsaufwand notwendig.");
+                  } else if (p.begleitungsbedarf === "mittel") {
+                    empfBullets.push("Moderate Begleitung empfohlen, um die Integration optimal zu gestalten.");
+                  } else {
+                    empfBullets.push("Trotz guter Passung ist eine aktive Begleitung in der Einarbeitungsphase wichtig.");
+                  }
                   if (teamFit === "hoch") empfBullets.push("Gute Voraussetzungen für schnelle Integration ins Team.");
                   if (funcFit === "hoch") empfBullets.push("Hohe Übereinstimmung mit dem aktuellen Funktionsziel.");
+                  if (funcFit === "mittel" && p.begleitungsbedarf !== "gering") empfBullets.push("Funktionsziel gezielt in den Onboarding-Prozess einbinden.");
                 } else if (p.gesamteinschaetzung === "Kritisch") {
                   empfBullets.push("Einsatz nur mit klarer Führung und aktiver Begleitung sinnvoll.");
                   empfBullets.push(t("Regelmässige Abstimmung und enge Führung einplanen."));
@@ -1053,7 +1060,9 @@ export default function TeamReport() {
                 }
 
                 const empfText = p.gesamteinschaetzung === "Gut passend"
-                  ? "Gute Voraussetzungen für eine erfolgreiche Integration."
+                  ? (p.begleitungsbedarf === "gering"
+                    ? "Gute Voraussetzungen für eine erfolgreiche Integration."
+                    : "Gute Teampassung — Begleitung beim Funktionsziel empfohlen.")
                   : p.gesamteinschaetzung === "Kritisch"
                   ? "Erhöhter Begleitungsaufwand — nur mit aktiver Führung einsetzen."
                   : t("Teilweise passend — gezielte Massnahmen empfohlen.");
