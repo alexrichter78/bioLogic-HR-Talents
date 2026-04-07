@@ -1,0 +1,155 @@
+Mein Fazit
+
+Ja:
+
+Im 3. Card kann bei Führungskraft das Feld „Teampassung“ weg.
+Das obere „Integrationsaufwand“-Feld sollte auch weg.
+Es sollte bei Führungskraft nur einen einzigen Integrationsaufwand geben.
+
+Wenn du willst, schreibe ich dir jetzt die genaue If-Else-Logik für die Anzeige, also welche Felder bei Teammitglied und welche bei Führungskraft sichtbar sein sollen.
+
+ja
+
+Ja. So würde ich die Anzeige logisch trennen:
+
+// Sichtbarkeitslogik für Card 3
+
+const isLeader = role === "Führungskraft";
+
+// TEAMMITGLIED
+const showTeamFit = !isLeader;
+const showMemberIntegrationEffort = !isLeader;
+const showFunctionGoalFit = !isLeader;
+
+// FÜHRUNGSKRAFT
+const showSystemImpact = isLeader;
+const showLeaderIntegrationEffort = isLeader;
+const showLeaderTeamGoalImpact = isLeader;
+Praktisch in der Card
+{role !== "Führungskraft" && (
+  <>
+    <ResultCard
+      title="Teampassung"
+      label={teamCheck.teamFit}
+      text={getTeamFitText(teamCheck.teamFit)}
+      variant={getTeamFitVariant(teamCheck.teamFit)}
+    />
+
+    <ResultCard
+      title="Integrationsaufwand"
+      label={teamCheck.integrationEffort}
+      text={getIntegrationEffortText(teamCheck.integrationEffort)}
+      variant={getEffortVariant(teamCheck.integrationEffort)}
+    />
+
+    <ResultCard
+      title="Passung zum Funktionsziel"
+      label={functionGoalFit.label}
+      text={getFunctionGoalFitText(functionGoalFit.label, teamGoal)}
+      variant={getFunctionGoalFitVariant(functionGoalFit.label)}
+    />
+  </>
+)}
+
+{role === "Führungskraft" && leadershipResult.show && (
+  <>
+    <ResultCard
+      title="Systemwirkung"
+      label={leadershipResult.systemImpact.label!}
+      text={leadershipResult.systemImpact.text!}
+      variant={leadershipResult.systemImpact.variant!}
+    />
+
+    <ResultCard
+      title="Integrationsaufwand"
+      label={leadershipResult.integrationEffort.label!}
+      text={leadershipResult.integrationEffort.text!}
+      variant={leadershipResult.integrationEffort.variant!}
+    />
+
+    <ResultCard
+      title="Wirkung auf Teamziel"
+      label={leadershipResult.teamGoalImpact.label!}
+      text={leadershipResult.teamGoalImpact.text!}
+      variant={leadershipResult.teamGoalImpact.variant === "neutral" ? "default" : leadershipResult.teamGoalImpact.variant!}
+    />
+  </>
+)}
+Das Ergebnis ist dann:
+Wenn Teammitglied
+
+Card 3 zeigt nur:
+
+Teampassung
+Integrationsaufwand
+Passung zum Funktionsziel
+Wenn Führungskraft
+
+Card 3 zeigt nur:
+
+Systemwirkung
+Integrationsaufwand
+Wirkung auf Teamziel
+Wenn du es noch kompakter willst
+
+Dann kannst du auch einfach zentral ein Array bauen:
+
+const resultCards =
+  role === "Führungskraft"
+    ? [
+        {
+          title: "Systemwirkung",
+          label: leadershipResult.systemImpact.label,
+          text: leadershipResult.systemImpact.text,
+          variant: leadershipResult.systemImpact.variant,
+        },
+        {
+          title: "Integrationsaufwand",
+          label: leadershipResult.integrationEffort.label,
+          text: leadershipResult.integrationEffort.text,
+          variant: leadershipResult.integrationEffort.variant,
+        },
+        {
+          title: "Wirkung auf Teamziel",
+          label: leadershipResult.teamGoalImpact.label,
+          text: leadershipResult.teamGoalImpact.text,
+          variant:
+            leadershipResult.teamGoalImpact.variant === "neutral"
+              ? "default"
+              : leadershipResult.teamGoalImpact.variant,
+        },
+      ]
+    : [
+        {
+          title: "Teampassung",
+          label: teamCheck.teamFit,
+          text: getTeamFitText(teamCheck.teamFit),
+          variant: getTeamFitVariant(teamCheck.teamFit),
+        },
+        {
+          title: "Integrationsaufwand",
+          label: teamCheck.integrationEffort,
+          text: getIntegrationEffortText(teamCheck.integrationEffort),
+          variant: getEffortVariant(teamCheck.integrationEffort),
+        },
+        {
+          title: "Passung zum Funktionsziel",
+          label: functionGoalFit.label,
+          text: getFunctionGoalFitText(functionGoalFit.label, teamGoal),
+          variant: getFunctionGoalFitVariant(functionGoalFit.label),
+        },
+      ];
+
+Dann nur noch rendern:
+
+<div className="grid gap-4 md:grid-cols-3">
+  {resultCards.map((card) => (
+    <ResultCard
+      key={card.title}
+      title={card.title}
+      label={card.label}
+      text={card.text}
+      variant={card.variant}
+    />
+  ))}
+</div>

@@ -1146,89 +1146,45 @@ export default function TeamReport() {
                     {(() => {
                       const la = leadershipAssessment;
                       const isFK = la.show;
-                      const showFunc = !!fColors;
 
-                      if (isFK) {
-                        const siColors = la.systemImpact.variant === "success" ? badgeColors.hoch : la.systemImpact.variant === "warning" ? badgeColors.mittel : badgeColors.gering;
-                        const ieColors = la.integrationEffort.variant === "success" ? badgeColors.hoch : la.integrationEffort.variant === "warning" ? badgeColors.mittel : badgeColors.gering;
-                        const hasGoal = la.teamGoalImpact.selectedGoal && la.teamGoalImpact.label !== "Kein Ziel gewählt";
-                        const tgColors = hasGoal ? (la.teamGoalImpact.variant === "success" ? badgeColors.hoch : la.teamGoalImpact.variant === "warning" ? badgeColors.mittel : badgeColors.gering) : null;
+                      const variantToColors = (v: string | null) =>
+                        v === "success" ? badgeColors.hoch : v === "warning" ? badgeColors.mittel : badgeColors.gering;
 
-                        return (
-                          <div style={{ display: "grid", gridTemplateColumns: hasGoal ? "1fr 1fr 1fr" : "1fr 1fr", gap: 12, marginBottom: 12 }}>
-                            <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${siColors.border}`, background: siColors.bg }} data-testid="v4-card-system-impact">
-                              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                  <Zap style={{ width: 14, height: 14, color: siColors.text }} />
-                                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Systemwirkung</span>
-                                </div>
-                                <span style={{ fontSize: 11, fontWeight: 700, color: siColors.text, background: `${siColors.text}12`, padding: "2px 10px", borderRadius: 6 }}>{la.systemImpact.label}</span>
-                              </div>
-                              <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{la.systemImpact.text}</p>
-                            </div>
-                            <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${ieColors.border}`, background: ieColors.bg }} data-testid="v4-card-integration-effort">
-                              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                  <Zap style={{ width: 14, height: 14, color: ieColors.text }} />
-                                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Integrationsaufwand</span>
-                                </div>
-                                <span style={{ fontSize: 11, fontWeight: 700, color: ieColors.text, background: `${ieColors.text}12`, padding: "2px 10px", borderRadius: 6 }}>{la.integrationEffort.label}</span>
-                              </div>
-                              <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{la.integrationEffort.text}</p>
-                            </div>
-                            {hasGoal && tgColors && (
-                              <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${tgColors.border}`, background: tgColors.bg }} data-testid="v4-card-goal-impact">
-                                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                    <Zap style={{ width: 14, height: 14, color: tgColors.text }} />
-                                    <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Wirkung aufs Teamziel</span>
-                                  </div>
-                                  <span style={{ fontSize: 11, fontWeight: 700, color: tgColors.text, background: `${tgColors.text}12`, padding: "2px 10px", borderRadius: 6 }}>{la.teamGoalImpact.label}</span>
-                                </div>
-                                <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{la.teamGoalImpact.reasons[0] || la.teamGoalImpact.text}</p>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      }
+                      type ResultCard = { title: string; label: string; text: string; colors: { bg: string; text: string; border: string }; testId: string };
+
+                      const resultCards: ResultCard[] = isFK
+                        ? [
+                            { title: "Systemwirkung", label: la.systemImpact.label!, text: la.systemImpact.text!, colors: variantToColors(la.systemImpact.variant), testId: "v4-card-system-impact" },
+                            { title: "Integrationsaufwand", label: la.integrationEffort.label!, text: la.integrationEffort.text!, colors: variantToColors(la.integrationEffort.variant), testId: "v4-card-integration-effort" },
+                            ...(la.teamGoalImpact.selectedGoal && la.teamGoalImpact.label !== "Kein Ziel gewählt"
+                              ? [{ title: "Wirkung aufs Teamziel", label: la.teamGoalImpact.label!, text: la.teamGoalImpact.reasons[0] || la.teamGoalImpact.text!, colors: variantToColors(la.teamGoalImpact.variant), testId: "v4-card-goal-impact" }]
+                              : []),
+                          ]
+                        : [
+                            { title: "Teampassung", label: badgeLabels[teamFit], text: teamText, colors: tColors, testId: "v4-card-team" },
+                            { title: "Integrationsaufwand", label: bLabel, text: bDesc, colors: bBg, testId: "v4-card-integration" },
+                            ...(fColors
+                              ? [{ title: "Passung zum Funktionsziel", label: badgeLabels[funcFit], text: funcText, colors: fColors, testId: "v4-card-func" }]
+                              : []),
+                          ];
+
+                      const cols = resultCards.length === 3 ? "1fr 1fr 1fr" : resultCards.length === 2 ? "1fr 1fr" : "1fr";
 
                       return (
-                        <>
-                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
-                            <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${tColors.border}`, background: tColors.bg }} data-testid="v4-card-team">
+                        <div style={{ display: "grid", gridTemplateColumns: cols, gap: 12, marginBottom: 12 }}>
+                          {resultCards.map((card) => (
+                            <div key={card.title} style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${card.colors.border}`, background: card.colors.bg }} data-testid={card.testId}>
                               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                  <Users style={{ width: 14, height: 14, color: tColors.text }} />
-                                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Teampassung</span>
+                                  <Zap style={{ width: 14, height: 14, color: card.colors.text }} />
+                                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{card.title}</span>
                                 </div>
-                                <span style={{ fontSize: 11, fontWeight: 700, color: tColors.text, background: `${tColors.text}12`, padding: "2px 10px", borderRadius: 6 }}>{badgeLabels[teamFit]}</span>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: card.colors.text, background: `${card.colors.text}12`, padding: "2px 10px", borderRadius: 6 }}>{card.label}</span>
                               </div>
-                              <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{teamText}</p>
+                              <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{card.text}</p>
                             </div>
-                            <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${bBg.border}`, background: bBg.bg }} data-testid="v4-card-integration">
-                              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                  <Zap style={{ width: 14, height: 14, color: bBg.text }} />
-                                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Integrationsaufwand</span>
-                                </div>
-                                <span style={{ fontSize: 11, fontWeight: 700, color: bBg.text, background: `${bBg.text}12`, padding: "2px 10px", borderRadius: 6 }}>{bLabel}</span>
-                              </div>
-                              <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{bDesc}</p>
-                            </div>
-                          </div>
-                          {showFunc && (
-                            <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${fColors!.border}`, background: fColors!.bg, marginBottom: 12 }} data-testid="v4-card-func">
-                              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                  <Zap style={{ width: 14, height: 14, color: fColors!.text }} />
-                                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Passung zum Funktionsziel</span>
-                                </div>
-                                <span style={{ fontSize: 11, fontWeight: 700, color: fColors!.text, background: `${fColors!.text}12`, padding: "2px 10px", borderRadius: 6 }}>{badgeLabels[funcFit]}</span>
-                              </div>
-                              <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{funcText}</p>
-                            </div>
-                          )}
-                        </>
+                          ))}
+                        </div>
                       );
                     })()}
 
