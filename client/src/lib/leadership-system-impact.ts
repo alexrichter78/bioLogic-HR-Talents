@@ -268,10 +268,10 @@ export function calculateLeadershipAssessment(
 
   const effortText =
     effortLabel === "Niedrig"
-      ? "Voraussichtlich mit geringem Begleitungsbedarf integrierbar."
+      ? "Die Integration verläuft voraussichtlich reibungsarm. Geringer Begleitungsbedarf, normale Führungssteuerung ist ausreichend."
       : effortLabel === "Mittel"
-      ? "Begleitung empfohlen."
-      : "Intensiv betreuungsbedürftig.";
+      ? "Die Integration ist machbar, sollte aber gezielt begleitet werden. Regelmässige Abstimmung und klare Erwartungen beschleunigen den Prozess."
+      : "Die Integration erfordert intensive Begleitung. Strukturierte Onboarding-Massnahmen, enge Abstimmung und aktive Führungssteuerung sind notwendig.";
 
   const goalText =
     goalLabel === "Kein Ziel gewählt"
