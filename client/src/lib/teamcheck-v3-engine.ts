@@ -1059,14 +1059,10 @@ function evaluateStrategicFit(
   const sorted = Object.entries(personProfile)
     .sort(([, a], [, b]) => b - a);
   const gap = sorted[0][1] - sorted[1][1];
-  if (personDominantInGoal) {
-    if (gap <= 5) {
-      strategicFit = "teilweise";
-    } else {
-      strategicFit = "passend";
-    }
-  } else if (personSecondaryInGoal && gap <= 5) {
+  if (gap <= 5) {
     strategicFit = "teilweise";
+  } else if (personDominantInGoal) {
+    strategicFit = "passend";
   } else {
     strategicFit = "abweichend";
   }
