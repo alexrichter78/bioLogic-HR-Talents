@@ -9,8 +9,7 @@ import { computeTeamReport } from "@/lib/team-report-engine";
 import { constellationLabel, detectConstellation } from "@/lib/soll-ist-engine";
 import { getSystemwirkung } from "@/lib/teamcheck-v2-engine";
 import { computeTeamCheckV4 } from "@/lib/teamcheck-v4-engine";
-import { calculateLeadershipSystemImpact } from "@/lib/leadership-system-impact";
-import type { SystemImpactResult } from "@/lib/leadership-system-impact";
+import { calculateLeadershipAssessment } from "@/lib/leadership-system-impact";
 import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
 import type { TeamReportResult, SystemwirkungResult, GesamtpassungLevel, Severity } from "@/lib/team-report-engine";
 
@@ -727,9 +726,9 @@ export default function TeamReport() {
     } catch { return null; }
   }, [roleName, candidateName, istTriad.impulsiv, istTriad.intuitiv, istTriad.analytisch, teamTriad.impulsiv, teamTriad.intuitiv, teamTriad.analytisch, teamGoal, roleTypeForCard]);
 
-  const leadershipImpact = useMemo(() => {
-    return calculateLeadershipSystemImpact(istTriad, teamTriad, roleTypeForCard);
-  }, [istTriad.impulsiv, istTriad.intuitiv, istTriad.analytisch, teamTriad.impulsiv, teamTriad.intuitiv, teamTriad.analytisch, roleTypeForCard]);
+  const leadershipAssessment = useMemo(() => {
+    return calculateLeadershipAssessment(istTriad, teamTriad, roleTypeForCard, teamGoal || null);
+  }, [istTriad.impulsiv, istTriad.intuitiv, istTriad.analytisch, teamTriad.impulsiv, teamTriad.intuitiv, teamTriad.analytisch, roleTypeForCard, teamGoal]);
 
   const result: TeamReportResult | null = reportGenerated ? liveResult : null;
 
@@ -1168,39 +1167,50 @@ export default function TeamReport() {
                     </div>
 
                     {(() => {
+                      const la = leadershipAssessment;
                       const showFunc = !!fColors;
-                      const showImpact = leadershipImpact.show;
-                      const impactColors = showImpact ? (
-                        leadershipImpact.variant === "success" ? badgeColors.hoch
-                        : leadershipImpact.variant === "warning" ? badgeColors.mittel
-                        : badgeColors.gering
-                      ) : null;
+                      const isFK = la.show;
 
-                      if (!showFunc && !showImpact) return null;
+                      if (isFK) {
+                        const siColors = la.systemImpact.variant === "success" ? badgeColors.hoch : la.systemImpact.variant === "warning" ? badgeColors.mittel : badgeColors.gering;
+                        const ieColors = la.integrationEffort.variant === "success" ? badgeColors.hoch : la.integrationEffort.variant === "warning" ? badgeColors.mittel : badgeColors.gering;
+                        const hasGoal = la.teamGoalImpact.selectedGoal && la.teamGoalImpact.label !== "Kein Ziel gewählt";
+                        const tgColors = hasGoal ? (la.teamGoalImpact.variant === "success" ? badgeColors.hoch : la.teamGoalImpact.variant === "warning" ? badgeColors.mittel : badgeColors.gering) : null;
 
-                      if (showFunc && showImpact) {
                         return (
-                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
-                            <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${fColors!.border}`, background: fColors!.bg }} data-testid="v4-card-func">
+                          <div style={{ display: "grid", gridTemplateColumns: hasGoal ? "1fr 1fr 1fr" : "1fr 1fr", gap: 12, marginBottom: 12 }}>
+                            <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${siColors.border}`, background: siColors.bg }} data-testid="v4-card-system-impact">
                               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                  <Zap style={{ width: 14, height: 14, color: fColors!.text }} />
-                                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Passung zum Funktionsziel</span>
+                                  <Zap style={{ width: 14, height: 14, color: siColors.text }} />
+                                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Systemwirkung</span>
                                 </div>
-                                <span style={{ fontSize: 11, fontWeight: 700, color: fColors!.text, background: `${fColors!.text}12`, padding: "2px 10px", borderRadius: 6 }}>{badgeLabels[funcFit]}</span>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: siColors.text, background: `${siColors.text}12`, padding: "2px 10px", borderRadius: 6 }}>{la.systemImpact.label}</span>
                               </div>
-                              <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{funcText}</p>
+                              <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{la.systemImpact.text}</p>
                             </div>
-                            <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${impactColors!.border}`, background: impactColors!.bg }} data-testid="v4-card-system-impact">
+                            <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${ieColors.border}`, background: ieColors.bg }} data-testid="v4-card-integration-effort">
                               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                  <Zap style={{ width: 14, height: 14, color: impactColors!.text }} />
-                                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Systemwirkung Führung</span>
+                                  <Zap style={{ width: 14, height: 14, color: ieColors.text }} />
+                                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Integrationsaufwand</span>
                                 </div>
-                                <span style={{ fontSize: 11, fontWeight: 700, color: impactColors!.text, background: `${impactColors!.text}12`, padding: "2px 10px", borderRadius: 6 }}>{leadershipImpact.label}</span>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: ieColors.text, background: `${ieColors.text}12`, padding: "2px 10px", borderRadius: 6 }}>{la.integrationEffort.label}</span>
                               </div>
-                              <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{leadershipImpact.text}</p>
+                              <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{la.integrationEffort.text}</p>
                             </div>
+                            {hasGoal && tgColors && (
+                              <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${tgColors.border}`, background: tgColors.bg }} data-testid="v4-card-goal-impact">
+                                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                    <Zap style={{ width: 14, height: 14, color: tgColors.text }} />
+                                    <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Wirkung aufs Teamziel</span>
+                                  </div>
+                                  <span style={{ fontSize: 11, fontWeight: 700, color: tgColors.text, background: `${tgColors.text}12`, padding: "2px 10px", borderRadius: 6 }}>{la.teamGoalImpact.label}</span>
+                                </div>
+                                <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{la.teamGoalImpact.reasons[0] || la.teamGoalImpact.text}</p>
+                              </div>
+                            )}
                           </div>
                         );
                       }
@@ -1220,18 +1230,7 @@ export default function TeamReport() {
                         );
                       }
 
-                      return (
-                        <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${impactColors!.border}`, background: impactColors!.bg, marginBottom: 12 }} data-testid="v4-card-system-impact">
-                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                              <Zap style={{ width: 14, height: 14, color: impactColors!.text }} />
-                              <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Systemwirkung Führung</span>
-                            </div>
-                            <span style={{ fontSize: 11, fontWeight: 700, color: impactColors!.text, background: `${impactColors!.text}12`, padding: "2px 10px", borderRadius: 6 }}>{leadershipImpact.label}</span>
-                          </div>
-                          <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{leadershipImpact.text}</p>
-                        </div>
-                      );
+                      return null;
                     })()}
 
                     <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }} data-testid="v4-card-empfehlung">
