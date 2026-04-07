@@ -229,7 +229,7 @@ function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string):
   const teamSorted = sortProfile(teamProfile);
   const personTop2Gap = personSorted[0].value - personSorted[1].value;
   const personTop3Gap = personSorted[0].value - personSorted[2].value;
-  const personIsBalanced = personTop3Gap <= 5;
+  const personIsBalanced = personTop3Gap <= 8;
 
   const personTop2Keys = new Set([personSorted[0].key, personSorted[1].key]);
   const teamTop2Gap = teamSorted[0].value - teamSorted[1].value;
