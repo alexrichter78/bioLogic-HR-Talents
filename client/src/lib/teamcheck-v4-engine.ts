@@ -137,16 +137,7 @@ export function computeTeamCheckV4(input: TeamCheckV3Input & { roleType?: string
   const passungZumTeam = teamFitRaw;
   const beitragZurAufgabe = funktionsFit;
 
-  let begleitungsbedarf: string;
-  if (v3.steuerungsaufwand === "gering") begleitungsbedarf = "gering";
-  else if (v3.steuerungsaufwand === "mittel") begleitungsbedarf = "mittel";
-  else begleitungsbedarf = "hoch";
-
-  if (v3.integrationsrisiko === "hoch" && begleitungsbedarf !== "hoch") {
-    begleitungsbedarf = "hoch";
-  } else if (v3.integrationsrisiko === "mittel" && begleitungsbedarf === "gering") {
-    begleitungsbedarf = "mittel";
-  }
+  let begleitungsbedarf: string = v3.integrationEffort || "mittel";
 
   let gesamteinschaetzung: string;
   if (teamFitRaw === "hoch" && funktionsFit === "gering") {

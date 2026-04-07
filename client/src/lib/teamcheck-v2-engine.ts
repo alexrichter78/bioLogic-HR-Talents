@@ -31,6 +31,7 @@ export interface AdviceItem {
 
 export interface TeamCheckV2Result {
   passung: string;
+  integrationEffort: string;
   systemwirkung: string;
   teamLabel: string;
   personLabel: string;
@@ -222,60 +223,92 @@ export function getSystemwirkung(teamProfile: Triad, personProfile: Triad): stri
   return "Spannung";
 }
 
-function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string): string {
-  const distance = getDistanceScore(teamProfile, personProfile);
-  const systemwirkung = getSystemwirkung(teamProfile, personProfile);
-  const teamPrimary = getPrimaryKey(teamProfile);
-  const personPrimary = getPrimaryKey(personProfile);
+function getGapMetrics(person: Triad, team: Triad) {
+  const gapImpulsiv = diff(person.impulsiv, team.impulsiv);
+  const gapIntuitiv = diff(person.intuitiv, team.intuitiv);
+  const gapAnalytisch = diff(person.analytisch, team.analytisch);
+  const totalGap = gapImpulsiv + gapIntuitiv + gapAnalytisch;
+  const maxGap = Math.max(gapImpulsiv, gapIntuitiv, gapAnalytisch);
+  return { gapImpulsiv, gapIntuitiv, gapAnalytisch, totalGap, maxGap };
+}
 
-  const personSorted = sortProfile(personProfile);
-  const teamSorted = sortProfile(teamProfile);
-  const personTop2Gap = personSorted[0].value - personSorted[1].value;
-  const personTop3Gap = personSorted[0].value - personSorted[2].value;
-  const personIsBalanced = personTop3Gap <= 8;
+function getPassung(teamProfile: Triad, personProfile: Triad, _roleType: string): string {
+  const { totalGap, maxGap } = getGapMetrics(personProfile, teamProfile);
+  const personTop = getPrimaryKey(personProfile);
+  const teamTop = getPrimaryKey(teamProfile);
+  const sameDom = personTop === teamTop;
+  const personTopGap = sortProfile(personProfile)[0].value - sortProfile(personProfile)[1].value;
+  const teamTopGap = sortProfile(teamProfile)[0].value - sortProfile(teamProfile)[1].value;
+  const personIsBalanced = personTopGap <= 5;
+  const teamIsBalanced = teamTopGap <= 5;
 
-  const personTop2Keys = new Set([personSorted[0].key, personSorted[1].key]);
-  const teamTop2Gap = teamSorted[0].value - teamSorted[1].value;
-  const teamTop2Keys = new Set([teamSorted[0].key, teamSorted[1].key]);
-  const eitherUnclear = (personTop2Gap < 3 && !personIsBalanced) || teamTop2Gap < 3;
-  const unclearOverlap = eitherUnclear &&
-    (personTop2Keys.has(teamPrimary) || teamTop2Keys.has(personPrimary));
+  let label: string;
 
-  let score = 100;
-  score -= Math.min(distance, 80) * 0.65;
-  if (personIsBalanced) {
-    score -= 12;
-  } else if (teamPrimary !== personPrimary) {
-    score -= unclearOverlap ? 6 : 12;
-  }
-  if (systemwirkung === "Spannung") score -= unclearOverlap ? 5 : 10;
-  if (systemwirkung === "Transformation") score -= 18;
-
-  if (personTop2Gap < 12) {
-    score -= Math.round((12 - personTop2Gap) * 10 / 12);
+  if (totalGap <= 24 && maxGap <= 12) {
+    label = "Passend";
+  } else if (totalGap >= 40 || maxGap >= 20) {
+    label = "Kritisch";
+  } else {
+    label = "Bedingt passend";
   }
 
-  const maxDimGap = Math.max(
-    diff(teamProfile.impulsiv, personProfile.impulsiv),
-    diff(teamProfile.intuitiv, personProfile.intuitiv),
-    diff(teamProfile.analytisch, personProfile.analytisch),
-  );
-  if (maxDimGap > 20) {
-    score -= Math.min(5, Math.round((maxDimGap - 20) * 5 / 10));
+  if (
+    label === "Bedingt passend" &&
+    sameDom &&
+    totalGap <= 30 &&
+    maxGap <= 14
+  ) {
+    label = "Passend";
   }
 
-  if (roleType === "leadership") {
-    if (systemwirkung === "Transformation") score -= 8;
-    const anaDiff = diff(teamProfile.analytisch, personProfile.analytisch);
-    if (anaDiff > 20) {
-      score -= Math.min(6, Math.round((anaDiff - 20) * 6 / 10));
-    }
+  if (
+    label === "Bedingt passend" &&
+    !sameDom &&
+    !personIsBalanced &&
+    !teamIsBalanced &&
+    totalGap >= 34
+  ) {
+    label = "Kritisch";
   }
 
-  if (score >= 76 && personTop2Gap > 5) return "Passend";
-  if (score >= 76) return "Bedingt passend";
-  if (score >= 60) return "Bedingt passend";
-  return "Kritisch";
+  return label;
+}
+
+function getIntegrationEffort(teamProfile: Triad, personProfile: Triad, roleType: string): string {
+  const { totalGap, maxGap } = getGapMetrics(personProfile, teamProfile);
+  const personTop = getPrimaryKey(personProfile);
+  const teamTop = getPrimaryKey(teamProfile);
+  const sameDom = personTop === teamTop;
+  const personTopGap = sortProfile(personProfile)[0].value - sortProfile(personProfile)[1].value;
+  const teamTopGap = sortProfile(teamProfile)[0].value - sortProfile(teamProfile)[1].value;
+  const personIsBalanced = personTopGap <= 5;
+  const teamIsBalanced = teamTopGap <= 5;
+
+  let label: string;
+
+  if (totalGap <= 24 && maxGap <= 10) {
+    label = "gering";
+  } else if (totalGap >= 40 || maxGap >= 20) {
+    label = "hoch";
+  } else {
+    label = "mittel";
+  }
+
+  if (roleType === "leadership" && (totalGap >= 36 || maxGap >= 18)) {
+    label = "hoch";
+  }
+
+  if (
+    label === "mittel" &&
+    !sameDom &&
+    !personIsBalanced &&
+    !teamIsBalanced &&
+    totalGap >= 32
+  ) {
+    label = "hoch";
+  }
+
+  return label;
 }
 
 function normalizeRoleLevel(value: string): "leadership" | "member" {
@@ -605,6 +638,7 @@ export function computeTeamCheckV2(input: TeamCheckV2Input): TeamCheckV2Result {
   resetVariants();
   const roleType = normalizeRoleLevel(input.roleLevel);
   const passung = getPassung(input.teamProfile, input.personProfile, roleType);
+  const integrationEffort = getIntegrationEffort(input.teamProfile, input.personProfile, roleType);
   const systemwirkung = getSystemwirkung(input.teamProfile, input.personProfile);
   const teamLabel = getProfileLabel(input.teamProfile);
   const personLabel = getProfileLabel(input.personProfile);
@@ -623,6 +657,7 @@ export function computeTeamCheckV2(input: TeamCheckV2Input): TeamCheckV2Result {
 
   return {
     passung,
+    integrationEffort,
     systemwirkung,
     teamLabel,
     personLabel,

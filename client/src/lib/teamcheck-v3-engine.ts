@@ -18,6 +18,7 @@ export interface V3StressBehavior {
 export interface TeamCheckV3Result {
   roleTitle: string;
   passung: string;
+  integrationEffort: string;
   systemwirkung: string;
   teamLabel: string;
   personLabel: string;
@@ -276,6 +277,7 @@ export function computeTeamCheckV3(input: TeamCheckV3Input): TeamCheckV3Result {
   return {
     roleTitle: input.roleTitle,
     passung: v2.passung,
+    integrationEffort: v2.integrationEffort,
     systemwirkung: systemwirkungLabel,
     teamLabel: v2.teamLabel,
     personLabel: v2.personLabel,

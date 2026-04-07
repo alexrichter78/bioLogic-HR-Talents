@@ -1,0 +1,328 @@
+// teamCheckLogic.ts
+
+type ComponentKey = "impulsiv" | "intuitiv" | "analytisch";
+type RoleType = "Teammitglied" | "Führungskraft";
+
+type Profile = {
+  impulsiv: number;
+  intuitiv: number;
+  analytisch: number;
+};
+
+type TeamFitLabel = "Passend" | "Bedingt passend" | "Kritisch";
+type EffortLabel = "Niedrig" | "Mittel" | "Hoch";
+
+type TeamCheckResult = {
+  teamFit: TeamFitLabel;
+  integrationEffort: EffortLabel;
+
+  metrics: {
+    gapImpulsiv: number;
+    gapIntuitiv: number;
+    gapAnalytisch: number;
+    totalGap: number;
+    maxGap: number;
+
+    personTop: ComponentKey;
+    teamTop: ComponentKey;
+
+    personTopGap: number;
+    teamTopGap: number;
+
+    sameDom: boolean;
+    personIsBalanced: boolean;
+    teamIsBalanced: boolean;
+  };
+
+  reasons: string[];
+};
+
+function clampPercent(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(100, Math.round(value)));
+}
+
+function normalizeProfile(profile: Profile): Profile {
+  return {
+    impulsiv: clampPercent(profile.impulsiv),
+    intuitiv: clampPercent(profile.intuitiv),
+    analytisch: clampPercent(profile.analytisch),
+  };
+}
+
+function getSortedComponents(profile: Profile): Array<{ key: ComponentKey; value: number }> {
+  return [
+    { key: "impulsiv", value: profile.impulsiv },
+    { key: "intuitiv", value: profile.intuitiv },
+    { key: "analytisch", value: profile.analytisch },
+  ].sort((a, b) => b.value - a.value);
+}
+
+function getTopComponent(profile: Profile): ComponentKey {
+  return getSortedComponents(profile)[0].key;
+}
+
+function getTopGap(profile: Profile): number {
+  const sorted = getSortedComponents(profile);
+  return sorted[0].value - sorted[1].value;
+}
+
+function getGapMetrics(person: Profile, team: Profile) {
+  const gapImpulsiv = Math.abs(person.impulsiv - team.impulsiv);
+  const gapIntuitiv = Math.abs(person.intuitiv - team.intuitiv);
+  const gapAnalytisch = Math.abs(person.analytisch - team.analytisch);
+
+  const totalGap = gapImpulsiv + gapIntuitiv + gapAnalytisch;
+  const maxGap = Math.max(gapImpulsiv, gapIntuitiv, gapAnalytisch);
+
+  return {
+    gapImpulsiv,
+    gapIntuitiv,
+    gapAnalytisch,
+    totalGap,
+    maxGap,
+  };
+}
+
+/**
+ * TEAMPASSUNG
+ *
+ * Kernlogik:
+ * - Passend: geringe Gesamtabweichung und keine starke Einzelabweichung
+ * - Kritisch: deutliche Gesamtabweichung oder sehr starke Einzelabweichung
+ * - Dazwischen: bedingt passend
+ *
+ * Zusatzlogik:
+ * - gleiche Hauptkomponente kann Grenzfall positiv stabilisieren
+ * - unterschiedliche klare Hauptkomponente kann Grenzfall verschärfen
+ */
+function calculateTeamFit(
+  person: Profile,
+  team: Profile
+): {
+  label: TeamFitLabel;
+  reasons: string[];
+  metrics: ReturnType<typeof getGapMetrics> & {
+    personTop: ComponentKey;
+    teamTop: ComponentKey;
+    personTopGap: number;
+    teamTopGap: number;
+    sameDom: boolean;
+    personIsBalanced: boolean;
+    teamIsBalanced: boolean;
+  };
+} {
+  const normalizedPerson = normalizeProfile(person);
+  const normalizedTeam = normalizeProfile(team);
+
+  const gapMetrics = getGapMetrics(normalizedPerson, normalizedTeam);
+
+  const personTop = getTopComponent(normalizedPerson);
+  const teamTop = getTopComponent(normalizedTeam);
+
+  const personTopGap = getTopGap(normalizedPerson);
+  const teamTopGap = getTopGap(normalizedTeam);
+
+  const sameDom = personTop === teamTop;
+
+  // "balanciert" bewusst eher eng gesetzt
+  const personIsBalanced = personTopGap <= 5;
+  const teamIsBalanced = teamTopGap <= 5;
+
+  let label: TeamFitLabel;
+  const reasons: string[] = [];
+
+  // 1. Grundlogik
+  if (gapMetrics.totalGap <= 24 && gapMetrics.maxGap <= 12) {
+    label = "Passend";
+    reasons.push("Geringe Gesamtabweichung zum Teamprofil.");
+    reasons.push("Keine starke Einzelabweichung in einer Komponente.");
+  } else if (gapMetrics.totalGap >= 40 || gapMetrics.maxGap >= 20) {
+    label = "Kritisch";
+    reasons.push("Deutliche strukturelle Abweichung vom Teamprofil.");
+    if (gapMetrics.maxGap >= 20) {
+      reasons.push("Mindestens eine Komponente weicht sehr stark ab.");
+    }
+  } else {
+    label = "Bedingt passend";
+    reasons.push("Spürbare Abweichung vom Teamprofil, aber grundsätzlich integrierbar.");
+  }
+
+  // 2. Positive Grenzfall-Korrektur
+  // Nur wenn derzeit "Bedingt passend" und insgesamt noch relativ nah
+  if (
+    label === "Bedingt passend" &&
+    sameDom &&
+    gapMetrics.totalGap <= 30 &&
+    gapMetrics.maxGap <= 14
+  ) {
+    label = "Passend";
+    reasons.push("Gleiche Hauptkomponente stabilisiert den Grenzfall positiv.");
+  }
+
+  // 3. Negative Grenzfall-Korrektur
+  // Nur wenn beide Seiten eine klare, unterschiedliche Dominanz haben
+  if (
+    label === "Bedingt passend" &&
+    !sameDom &&
+    !personIsBalanced &&
+    !teamIsBalanced &&
+    gapMetrics.totalGap >= 34
+  ) {
+    label = "Kritisch";
+    reasons.push("Unterschiedliche klare Hauptlogik verschärft den Grenzfall.");
+  }
+
+  return {
+    label,
+    reasons,
+    metrics: {
+      ...gapMetrics,
+      personTop,
+      teamTop,
+      personTopGap,
+      teamTopGap,
+      sameDom,
+      personIsBalanced,
+      teamIsBalanced,
+    },
+  };
+}
+
+/**
+ * INTEGRATIONSAUFWAND
+ *
+ * Nicht 1:1 aus der Teampassung abgeleitet.
+ * Bewertet, wie viel Führung, Abstimmung und Begleitung voraussichtlich nötig ist.
+ */
+function calculateIntegrationEffort(
+  role: RoleType,
+  metrics: {
+    totalGap: number;
+    maxGap: number;
+    sameDom: boolean;
+    personIsBalanced: boolean;
+    teamIsBalanced: boolean;
+  }
+): { label: EffortLabel; reasons: string[] } {
+  let label: EffortLabel;
+  const reasons: string[] = [];
+
+  // 1. Grundlogik
+  if (metrics.totalGap <= 24 && metrics.maxGap <= 10) {
+    label = "Niedrig";
+    reasons.push("Geringe Abweichung zum Teamprofil.");
+  } else if (metrics.totalGap >= 40 || metrics.maxGap >= 20) {
+    label = "Hoch";
+    reasons.push("Deutlich erhöhter Abstimmungs- und Begleitungsbedarf.");
+  } else {
+    label = "Mittel";
+    reasons.push("Spürbarer, aber handhabbarer Integrationsbedarf.");
+  }
+
+  // 2. Führungsrolle verschärft
+  if (role === "Führungskraft" && (metrics.totalGap >= 36 || metrics.maxGap >= 18)) {
+    label = "Hoch";
+    reasons.push("In einer Führungsrolle wirken strukturelle Abweichungen stärker ins Team.");
+  }
+
+  // 3. Unterschiedliche klare Dominanz kann Aufwand erhöhen
+  if (
+    label === "Mittel" &&
+    !metrics.sameDom &&
+    !metrics.personIsBalanced &&
+    !metrics.teamIsBalanced &&
+    metrics.totalGap >= 32
+  ) {
+    label = "Hoch";
+    reasons.push("Unterschiedliche klare Hauptlogik erhöht den Führungs- und Abstimmungsbedarf.");
+  }
+
+  return { label, reasons };
+}
+
+/**
+ * Hauptfunktion für deinen TeamCheck
+ */
+export function calculateTeamCheck(
+  personProfile: Profile,
+  teamProfile: Profile,
+  role: RoleType = "Teammitglied"
+): TeamCheckResult {
+  const fit = calculateTeamFit(personProfile, teamProfile);
+  const effort = calculateIntegrationEffort(role, fit.metrics);
+
+  return {
+    teamFit: fit.label,
+    integrationEffort: effort.label,
+    metrics: fit.metrics,
+    reasons: [...fit.reasons, ...effort.reasons],
+  };
+}
+
+/**
+ * Optional: kurze UI-Texte für deine bestehenden Boxen
+ * Kannst du nutzen, musst du aber nicht.
+ */
+export function getTeamFitText(label: TeamFitLabel): string {
+  switch (label) {
+    case "Passend":
+      return "Die Person passt gut zur bestehenden Teamlogik und Arbeitsweise.";
+    case "Bedingt passend":
+      return "Die Person weicht in Teilen vom Teamprofil ab, ist aber grundsätzlich integrierbar.";
+    case "Kritisch":
+      return "Sichtbare Abweichung von der bestehenden Teamlogik und Arbeitsweise.";
+  }
+}
+
+export function getIntegrationEffortText(label: EffortLabel): string {
+  switch (label) {
+    case "Niedrig":
+      return "Voraussichtlich mit geringem Begleitungsbedarf integrierbar.";
+    case "Mittel":
+      return "Erfordert spürbare Abstimmung und begleitende Führung.";
+    case "Hoch":
+      return "Intensiv betreuungsbedürftig.";
+  }
+}
+
+/**
+ * Optional: Badge-Farben oder Statusnamen, falls du intern schon mit keys arbeitest
+ */
+export function getTeamFitVariant(label: TeamFitLabel): "success" | "warning" | "danger" {
+  switch (label) {
+    case "Passend":
+      return "success";
+    case "Bedingt passend":
+      return "warning";
+    case "Kritisch":
+      return "danger";
+  }
+}
+
+export function getEffortVariant(label: EffortLabel): "success" | "warning" | "danger" {
+  switch (label) {
+    case "Niedrig":
+      return "success";
+    case "Mittel":
+      return "warning";
+    case "Hoch":
+      return "danger";
+  }
+}
+
+/**
+ * Beispielnutzung:
+ *
+ * const result = calculateTeamCheck(
+ *   { impulsiv: 22, intuitiv: 55, analytisch: 23 },
+ *   { impulsiv: 25, intuitiv: 24, analytisch: 51 },
+ *   "Teammitglied"
+ * );
+ *
+ * console.log(result.teamFit); // "Kritisch"
+ * console.log(result.integrationEffort); // "Hoch"
+ * console.log(result.metrics);
+ * console.log(getTeamFitText(result.teamFit));
+ * console.log(getIntegrationEffortText(result.integrationEffort));
+ */
