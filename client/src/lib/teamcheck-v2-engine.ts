@@ -269,7 +269,8 @@ function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string):
     }
   }
 
-  if (score >= 76) return "Passend";
+  if (score >= 76 && personTop2Gap > 5) return "Passend";
+  if (score >= 76) return "Bedingt passend";
   if (score >= 60) return "Bedingt passend";
   return "Kritisch";
 }
