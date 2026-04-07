@@ -221,7 +221,7 @@ function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string):
 
   let score = 100;
   score -= Math.min(distance, 80) * 0.65;
-  if (teamPrimary !== personPrimary) score -= 8;
+  if (teamPrimary !== personPrimary) score -= 12;
   if (systemwirkung === "Spannung") score -= 10;
   if (systemwirkung === "Transformation") score -= 18;
 
@@ -253,7 +253,7 @@ function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string):
   }
 
   if (score >= 76) return "Passend";
-  if (score >= 56) return "Bedingt passend";
+  if (score >= 60) return "Bedingt passend";
   return "Kritisch";
 }
 
