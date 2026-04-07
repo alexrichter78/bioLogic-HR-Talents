@@ -663,9 +663,55 @@ export default function TeamReport() {
   const teamConstLabel = constellationLabel(detectConstellation(teamProfileN));
 
   const liveResult: TeamReportResult = useMemo(() => {
-    const raw = computeTeamReport(roleName || "Rolle", candidateName || "Person", istProfile, teamProfileN);
+    let roleLevel = "-";
+    let taskStructure = "-";
+    let workStyle = "-";
+    let successFocus: string[] = [];
+    try {
+      const ERFOLGSFOKUS_DISPLAY_LABELS_R = [
+        "Ergebnisse und Zielerreichung",
+        "Zusammenarbeit und Netzwerk",
+        "Innovation und Weiterentwicklung",
+        "Prozesse und Effizienz",
+        "Fachliche Qualit\u00E4t und Expertise",
+        "Strategische Wirkung",
+      ];
+      const AUFGABENCHARAKTER_LABELS_R: Record<string, string> = {
+        "\u00FCberwiegend operativ": "Praktische Umsetzung im Tagesgesch\u00E4ft",
+        "\u00FCberwiegend systemisch": "Umsetzung mit strukturiertem Vorgehen",
+        "\u00FCberwiegend strategisch": "Analyse, Planung und strategische Steuerung",
+        "Gemischt": "Ausgewogene Mischung",
+      };
+      const ARBEITSLOGIK_LABELS_R: Record<string, string> = {
+        "Umsetzungsorientiert": "Umsetzung und Ergebnisse",
+        "Daten-/prozessorientiert": "Analyse und Struktur",
+        "Menschenorientiert": "Zusammenarbeit und Kommunikation",
+      };
+      const FUEHRUNG_LABELS_R: Record<string, string> = {
+        fuehrung: "Führungskraft",
+        teammitglied: "Teammitglied",
+      };
+      const dnaRaw = localStorage.getItem("rollenDnaState");
+      if (dnaRaw) {
+        const dna = JSON.parse(dnaRaw) as RoleDnaState;
+        if (dna.fuehrung) roleLevel = FUEHRUNG_LABELS_R[dna.fuehrung] || dna.fuehrung;
+        if (dna.aufgabencharakter) taskStructure = AUFGABENCHARAKTER_LABELS_R[dna.aufgabencharakter] || dna.aufgabencharakter;
+        if (dna.arbeitslogik) workStyle = ARBEITSLOGIK_LABELS_R[dna.arbeitslogik] || dna.arbeitslogik;
+        if (Array.isArray(dna.erfolgsfokusIndices)) {
+          successFocus = dna.erfolgsfokusIndices.map((i: number) => ERFOLGSFOKUS_DISPLAY_LABELS_R[i]).filter(Boolean);
+        }
+      }
+    } catch {}
+    const raw = computeTeamReport(roleName || "Rolle", candidateName || "Person", istProfile, teamProfileN, {
+      teamGoal: teamGoal || null,
+      roleType: roleTypeForCard,
+      roleLevel,
+      taskStructure,
+      workStyle,
+      successFocus,
+    });
     return localizeDeep(raw, region);
-  }, [roleName, candidateName, istProfile.impulsiv, istProfile.intuitiv, istProfile.analytisch, teamProfileN.impulsiv, teamProfileN.intuitiv, teamProfileN.analytisch, region]);
+  }, [roleName, candidateName, istProfile.impulsiv, istProfile.intuitiv, istProfile.analytisch, teamProfileN.impulsiv, teamProfileN.intuitiv, teamProfileN.analytisch, region, teamGoal, roleTypeForCard]);
 
   const v4Preview = useMemo(() => {
     try {

@@ -2,6 +2,9 @@ import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from 
 import type { Triad, ComponentKey } from "./jobcheck-engine";
 import { detectConstellation, constellationLabel, subj, Subj } from "./soll-ist-engine";
 import type { ConstellationType } from "./soll-ist-engine";
+import { computeTeamCheckV4 } from "./teamcheck-v4-engine";
+import { calculateLeadershipAssessment } from "./leadership-system-impact";
+import type { LeadershipAssessmentResult } from "./leadership-system-impact";
 
 export type SystemwirkungType = "verstaerkung" | "ergaenzung" | "ausgleich" | "verschiebung" | "polarisierung" | "uebersteuerung";
 
@@ -79,6 +82,22 @@ export type TeamReportResult = {
   integrationsplanPhasen: IntegrationPhase[];
   istConstellationLabel: string;
   teamConstellationLabel: string;
+  leadershipAssessment?: LeadershipAssessmentResult;
+  v4Passung?: string;
+  v4Beitrag?: string;
+  v4Begleitung?: string;
+  v4GesamtLabel?: string;
+  teamGoalLabel?: string;
+  isFK?: boolean;
+};
+
+export type TeamReportOptions = {
+  teamGoal?: string | null;
+  roleType?: string | null;
+  roleLevel?: string;
+  taskStructure?: string;
+  workStyle?: string;
+  successFocus?: string[];
 };
 
 function compDesc(k: ComponentKey): string {
@@ -518,11 +537,221 @@ export function buildTeamIntegrationsplanPhasen(
   ];
 }
 
+function laToSystemwirkungResult(
+  la: LeadershipAssessmentResult, cn: string,
+  rk: ComponentKey, tk: ComponentKey, teamIstGap: number
+): SystemwirkungResult {
+  const siLabel = la.systemImpact.label || "Spannung";
+  let type: SystemwirkungType;
+  let label: string;
+  let description: string;
+  let chancen: string[];
+  let risiken: string[];
+
+  if (siLabel === "Verstärkung") {
+    type = "verstaerkung";
+    label = "Verstärkung";
+    description = la.systemImpact.text || `${cn} bringt die gleiche Arbeitslogik wie das Team. Die vorhandene Dynamik wird stärker.`;
+    chancen = ["Hohe Stabilität und klare Teamidentität", "Schnelle Integration ohne Reibungsverluste", "Verstärkung der Kernkompetenz des Teams"];
+    risiken = ["Blinde Flecken im schwächsten Bereich werden nicht ausgeglichen", "Geringe Veränderungsfähigkeit", "Einseitige Entscheidungslogik"];
+  } else if (siLabel === "Transformation") {
+    type = "polarisierung";
+    label = "Transformation";
+    description = la.systemImpact.text || `${cn} bringt eine grundlegend andere Arbeitslogik mit. Das Team wird strukturell verändert.`;
+    chancen = ["Neue Perspektiven und Innovationskraft", "Ausgleich struktureller Schwächen", "Weiterentwicklung der Teamkultur"];
+    risiken = ["Hohe Reibung in der Anfangsphase", "Konflikte durch gegensätzliche Arbeitslogiken", "Risiko der Fragmentierung"];
+  } else {
+    type = "verschiebung";
+    label = "Spannung";
+    description = la.systemImpact.text || `${cn} erzeugt eine spürbare Veränderung im Team. Die Dynamik verschiebt sich, bleibt aber steuerbar.`;
+    chancen = ["Produktive Reibung fördert Qualität", "Neue Impulse ohne radikale Veränderung", "Erweiterung des Handlungsspektrums"];
+    risiken = ["Abstimmungsbedarf steigt", "Prioritätenkonflikte im Alltag", "Führung muss aktiv moderieren"];
+  }
+
+  const intensity: "gering" | "mittel" | "hoch" = teamIstGap <= 15 ? "gering" : teamIstGap <= 30 ? "mittel" : "hoch";
+  const intensityLabel = intensity === "gering"
+    ? "Die Veränderung ist subtil und gut integrierbar."
+    : intensity === "mittel"
+    ? "Die Veränderung ist deutlich spürbar, bleibt jedoch steuerbar."
+    : "Die Veränderung ist stark. Aktive Steuerung durch die Führungskraft ist notwendig.";
+
+  const narrative = `Systemwirkung: ${label}. ${description} Intensität: ${intensity}. ${intensityLabel}`;
+
+  return { type, label, description, intensity, intensityLabel, chancen, risiken, narrative };
+}
+
+function buildSystemwirkungTextFromLA(
+  cand: string, role: string,
+  la: LeadershipAssessmentResult,
+  teamIstGap: number,
+  rk: ComponentKey, tk: ComponentKey
+): string {
+  const lines: string[] = [];
+  const sn = subj(cand);
+
+  if (la.systemImpact.text) {
+    lines.push(la.systemImpact.text);
+  }
+
+  if (la.systemImpact.reasons.length > 0) {
+    lines.push("");
+    for (const r of la.systemImpact.reasons) {
+      lines.push(`• ${r}`);
+    }
+  }
+
+  lines.push("");
+  lines.push("Abgleich mit Teamprofil:");
+  lines.push("");
+
+  if (teamIstGap <= 15) {
+    lines.push(`Die Arbeitslogik von ${sn} liegt nahe am Teamprofil. Die Integration verläuft voraussichtlich reibungsarm.`);
+  } else if (teamIstGap <= 30) {
+    lines.push(`Die Arbeitslogik von ${sn} weicht erkennbar vom Teamprofil ab (${teamIstGap} Punkte). In einzelnen Bereichen muss gezielt nachgesteuert werden.`);
+  } else {
+    lines.push(`Die Arbeitslogik von ${sn} weicht deutlich vom Teamprofil ab (${teamIstGap} Punkte). Ohne aktive Steuerung wird die Teamdynamik spürbar verändert.`);
+  }
+
+  if (la.integrationEffort.text) {
+    lines.push("");
+    lines.push(`Integrationsaufwand: ${la.integrationEffort.label || ""}`);
+    lines.push(la.integrationEffort.text);
+  }
+
+  if (la.teamGoalImpact.label && la.teamGoalImpact.text) {
+    lines.push("");
+    lines.push(`Wirkung aufs Teamziel: ${la.teamGoalImpact.label}`);
+    lines.push(la.teamGoalImpact.text);
+  }
+
+  return lines.join("\n");
+}
+
+function buildManagementSummaryV2(
+  role: string, cand: string,
+  ist: Triad, team: Triad,
+  teamIstGap: number, teamIstLevel: string,
+  rk: ComponentKey, tk: ComponentKey,
+  istLabel: string, teamLabel: string,
+  gesamtpassung: GesamtpassungLevel, gesamtpassungLabel: string,
+  v4: import("./teamcheck-v4-engine").TeamCheckV4Result | null,
+  la: LeadershipAssessmentResult | undefined,
+  isFK: boolean,
+  teamGoal: import("./teamcheck-v3-engine").TeamGoal
+): string {
+  const lines: string[] = [];
+  lines.push(`Rolle: ${role}`);
+  lines.push(`Person: ${cand}`);
+  lines.push(`Personenprofil: ${istLabel} (I ${ist.impulsiv}% / N ${ist.intuitiv}% / A ${ist.analytisch}%)`);
+  lines.push(`Teamprofil: ${teamLabel} (I ${team.impulsiv}% / N ${team.intuitiv}% / A ${team.analytisch}%)`);
+  if (isFK) lines.push("Rolle: Führungskraft");
+
+  lines.push("");
+  lines.push(`Abweichung Team vs. Person: ${teamIstGap} Punkte (${teamIstLevel})`);
+  lines.push(`Gesamtbewertung: ${gesamtpassungLabel}`);
+
+  if (v4) {
+    lines.push(`Teampassung: ${v4.passungZumTeam}`);
+    lines.push(`Beitrag zur Aufgabe: ${v4.beitragZurAufgabe}`);
+    lines.push(`Begleitungsbedarf: ${v4.begleitungsbedarf}`);
+  }
+
+  if (isFK && la?.show) {
+    if (la.systemImpact.label) lines.push(`Systemwirkung (FK): ${la.systemImpact.label}`);
+    if (la.integrationEffort.label) lines.push(`Integrationsaufwand (FK): ${la.integrationEffort.label}`);
+    if (la.teamGoalImpact.label) lines.push(`Wirkung aufs Teamziel: ${la.teamGoalImpact.label}`);
+  }
+
+  lines.push("");
+
+  const s = Subj(cand);
+  if (gesamtpassung === "geeignet") {
+    lines.push(`${s} passt strukturell zum bestehenden Team. Die Arbeitslogiken sind kompatibel. Die Integration wird voraussichtlich reibungsarm verlaufen.`);
+  } else if (gesamtpassung === "bedingt") {
+    lines.push(`${s} zeigt Abweichungen zum Teamprofil. Die Integration ist steuerbar, erfordert aber gezielte Aufmerksamkeit in den ersten Wochen. Entscheidend sind klare Erwartungen und regelmässige Abstimmung.`);
+  } else {
+    lines.push(`${s} weicht deutlich vom Teamprofil ab. Ohne aktive Steuerung sind Reibung, Konflikte und Leistungseinbrüche wahrscheinlich. Die ersten 30 Tage sind entscheidend.`);
+  }
+
+  if (teamGoal && v4) {
+    const GOAL_LABELS: Record<string, string> = { umsetzung: "Umsetzung und Ergebnisse", analyse: "Analyse und Struktur", zusammenarbeit: "Zusammenarbeit und Kommunikation" };
+    const gl = GOAL_LABELS[teamGoal] || teamGoal;
+    lines.push("");
+    lines.push(`Funktionsziel „${gl}": ${v4.beitragZurAufgabe}`);
+  }
+
+  return lines.join("\n");
+}
+
+function buildSystemfazitV2(
+  role: string, cand: string,
+  ist: Triad, team: Triad,
+  teamIstGap: number,
+  rk: ComponentKey, tk: ComponentKey,
+  gesamtpassung: GesamtpassungLevel,
+  v4: import("./teamcheck-v4-engine").TeamCheckV4Result | null,
+  la: LeadershipAssessmentResult | undefined,
+  isFK: boolean,
+  teamGoal: import("./teamcheck-v3-engine").TeamGoal
+): string {
+  const lines: string[] = [];
+  const s = Subj(cand);
+  const sn = subj(cand);
+
+  if (gesamtpassung === "geeignet") {
+    lines.push(`${s} passt strukturell zum bestehenden Team. Die Arbeitslogiken sind kompatibel. Die Integration wird voraussichtlich reibungsarm verlaufen. Normale Führungssteuerung ist ausreichend.`);
+    lines.push("");
+    lines.push(`Fokuspunkte: Teamkultur bestätigen, Ergänzungspotenziale bewusst nutzen, Feedbackschleifen einbauen.`);
+  } else if (gesamtpassung === "bedingt") {
+    lines.push(`${s} ist steuerbar ins Team integrierbar. Es gibt erkennbare Abweichungen zum Team (${teamIstGap} Punkte), die mit gezielter Steuerung ausgeglichen werden können.`);
+    lines.push("");
+    lines.push(`Entscheidend sind die ersten 30 Tage: Klare Erwartungen setzen, Kommunikation bewusst steuern, Feedback strukturiert einholen. Wenn die Integration aktiv begleitet wird, kann ${sn} die Rolle wirksam ausfüllen.`);
+    if (rk !== tk) {
+      lines.push("");
+      lines.push(`Die unterschiedliche Arbeitslogik (${compShort(rk)} vs. ${compShort(tk)}) ist kein Ausschlusskriterium, erfordert aber bewusste Steuerung. In Drucksituationen muss die Führung aktiv moderieren.`);
+    }
+  } else {
+    lines.push(`${s} zeigt deutliche Abweichungen zum Team (${teamIstGap} Punkte). Ohne aktive und konsequente Steuerung sind Reibung, Konflikte und Leistungseinbrüche wahrscheinlich.`);
+    lines.push("");
+    lines.push(`Die Integration stellt eine erhebliche Herausforderung dar. Die Arbeitslogiken von ${sn} und dem Team sind grundlegend verschieden. Die ersten 30 Tage sind entscheidend: Klare Kommunikation, definierte Entscheidungswege und aktives Erwartungsmanagement sind Pflicht.`);
+    lines.push("");
+    lines.push(`Empfehlung: Nur mit Steuerungskonzept und aktiver Führungsbegleitung einsetzen. Regelmässige Checkpoints einplanen. Eskalationsmechanismen vorab klären.`);
+  }
+
+  if (isFK && la?.show) {
+    lines.push("");
+    lines.push("--- Führungskraft-spezifisch ---");
+    if (la.systemImpact.label && la.systemImpact.text) {
+      lines.push("");
+      lines.push(`Systemwirkung: ${la.systemImpact.label}`);
+      lines.push(la.systemImpact.text);
+    }
+    if (la.integrationEffort.label && la.integrationEffort.text) {
+      lines.push("");
+      lines.push(`Integrationsaufwand: ${la.integrationEffort.label}`);
+      lines.push(la.integrationEffort.text);
+    }
+    if (la.teamGoalImpact.label && la.teamGoalImpact.text) {
+      lines.push("");
+      lines.push(`Wirkung aufs Teamziel: ${la.teamGoalImpact.label}`);
+      lines.push(la.teamGoalImpact.text);
+    }
+  } else if (teamGoal && v4) {
+    const GOAL_LABELS: Record<string, string> = { umsetzung: "Umsetzung und Ergebnisse", analyse: "Analyse und Struktur", zusammenarbeit: "Zusammenarbeit und Kommunikation" };
+    const gl = GOAL_LABELS[teamGoal] || teamGoal;
+    lines.push("");
+    lines.push(`Funktionsziel „${gl}": ${v4.beitragZurAufgabe}`);
+  }
+
+  return lines.join("\n");
+}
+
 export function computeTeamReport(
   roleName: string,
   candidateName: string,
   istProfile: Triad,
-  teamProfile: Triad
+  teamProfile: Triad,
+  options?: TeamReportOptions
 ): TeamReportResult {
   const ist = normalizeTriad(istProfile);
   const team = normalizeTriad(teamProfile);
@@ -539,23 +768,75 @@ export function computeTeamReport(
   const teamIstGap = totalGapOf(team, ist);
   const teamIstLevel = gapLabel(teamIstGap);
 
-  const status = ampel(teamIstGap);
-
   const cn = candidateName || "Die neue Person";
   const rk = istDom.top1.key;
   const tk = teamDom.top1.key;
 
-  const gesamtpassung: GesamtpassungLevel = status === "gruen" ? "geeignet" : status === "gelb" ? "bedingt" : "kritisch";
-  const gesamtpassungLabel = gesamtpassung === "geeignet" ? "Geeignet" : gesamtpassung === "bedingt" ? "Bedingt geeignet" : "Kritisch";
+  const isFK = options?.roleType === "fuehrung" || options?.roleType === "Führungskraft" || options?.roleType === "leadership";
+  const teamGoalRaw = (options?.teamGoal || null) as import("./teamcheck-v3-engine").TeamGoal;
+
+  let v4Result: import("./teamcheck-v4-engine").TeamCheckV4Result | null = null;
+  let laResult: LeadershipAssessmentResult | undefined;
+
+  if (options) {
+    try {
+      v4Result = computeTeamCheckV4({
+        roleTitle: roleName || "",
+        roleLevel: options.roleLevel || "-",
+        taskStructure: options.taskStructure || "-",
+        workStyle: options.workStyle || "-",
+        successFocus: options.successFocus || [],
+        teamProfile: team,
+        personProfile: ist,
+        candidateName: cn,
+        teamGoal: teamGoalRaw,
+        roleType: isFK ? "fuehrung" : "teammitglied",
+      });
+    } catch {}
+
+    if (isFK) {
+      laResult = calculateLeadershipAssessment(ist, team, "fuehrung", teamGoalRaw);
+    }
+  }
+
+  let gesamtpassung: GesamtpassungLevel;
+  let gesamtpassungLabel: string;
+  if (v4Result) {
+    const ge = v4Result.gesamteinschaetzung;
+    if (ge === "Gut passend") { gesamtpassung = "geeignet"; gesamtpassungLabel = "Gut passend"; }
+    else if (ge === "Kritisch") { gesamtpassung = "kritisch"; gesamtpassungLabel = "Kritisch"; }
+    else { gesamtpassung = "bedingt"; gesamtpassungLabel = ge || "Bedingt passend"; }
+  } else {
+    const status = ampel(teamIstGap);
+    gesamtpassung = status === "gruen" ? "geeignet" : status === "gelb" ? "bedingt" : "kritisch";
+    gesamtpassungLabel = gesamtpassung === "geeignet" ? "Geeignet" : gesamtpassung === "bedingt" ? "Bedingt geeignet" : "Kritisch";
+  }
+
+  let controlIntensity: "gering" | "mittel" | "hoch";
+  if (v4Result) {
+    const bb = v4Result.begleitungsbedarf.toLowerCase();
+    controlIntensity = bb === "hoch" ? "hoch" : bb === "gering" ? "gering" : "mittel";
+  } else {
+    controlIntensity = teamIstGap > 40 ? "hoch" : teamIstGap > 20 ? "mittel" : "gering";
+  }
+
+  const status = ampel(teamIstGap);
   const entscheidungsfaktoren = buildEntscheidungsfaktoren(cn, ist, team, teamIstGap, rk, tk);
 
-  const controlIntensity: "gering" | "mittel" | "hoch" = teamIstGap > 40 ? "hoch" : teamIstGap > 20 ? "mittel" : "gering";
-
-  const managementSummary = buildManagementSummary(roleName, cn, ist, team, teamIstGap, teamIstLevel, status, rk, tk, istLabel, teamLabel);
+  const managementSummary = buildManagementSummaryV2(roleName, cn, ist, team, teamIstGap, teamIstLevel, rk, tk, istLabel, teamLabel, gesamtpassung, gesamtpassungLabel, v4Result, laResult, isFK, teamGoalRaw);
   const teamstruktur = buildTeamstruktur(team, teamDom, teamConst, teamLabel, tk);
   const fuehrungsprofil = buildFuehrungsprofil(cn, ist, istDom, istConst, istLabel, rk);
-  const systemwirkungResult = detectSystemwirkung(ist, team, cn, rk, tk, teamIstGap, istConst, teamConst);
-  const systemwirkung = buildSystemwirkungText(cn, roleName, ist, team, rk, tk, teamIstGap, istConst, teamConst, systemwirkungResult);
+
+  let systemwirkungResult: SystemwirkungResult;
+  let systemwirkung: string;
+  if (isFK && laResult?.show && laResult.systemImpact.label) {
+    systemwirkungResult = laToSystemwirkungResult(laResult, cn, rk, tk, teamIstGap);
+    systemwirkung = buildSystemwirkungTextFromLA(cn, roleName, laResult, teamIstGap, rk, tk);
+  } else {
+    systemwirkungResult = detectSystemwirkung(ist, team, cn, rk, tk, teamIstGap, istConst, teamConst);
+    systemwirkung = buildSystemwirkungText(cn, roleName, ist, team, rk, tk, teamIstGap, istConst, teamConst, systemwirkungResult);
+  }
+
   const teamdynamikAlltag = buildTeamdynamikAlltag(cn, ist, team, rk, tk, teamIstGap);
   const chancen = buildChancen(cn, ist, team, rk, tk, teamIstGap);
   const risiken = buildRisiken(cn, ist, team, rk, tk, teamIstGap);
@@ -563,7 +844,7 @@ export function computeTeamReport(
   const kulturwirkung = buildKulturwirkung(cn, ist, team, rk, tk, teamIstGap);
   const fuehrungshebel = buildFuehrungshebel(cn, rk, tk, teamIstGap);
   const integrationsplan = buildIntegrationsplan(cn, rk, tk, teamIstGap);
-  const systemfazit = buildSystemfazit(roleName, cn, ist, team, teamIstGap, status, rk, tk);
+  const systemfazit = buildSystemfazitV2(roleName, cn, ist, team, teamIstGap, rk, tk, gesamtpassung, v4Result, laResult, isFK, teamGoalRaw);
 
   const impactAreas = buildTeamImpactAreas(rk, tk, ist, team, cn);
   const riskTimeline = buildTeamRiskTimeline(roleName, cn, rk, tk, teamIstGap);
@@ -571,6 +852,12 @@ export function computeTeamReport(
   const actions = buildTeamActions(rk, tk, teamIstGap, cn);
   const stressBehavior = buildTeamStressBehavior(ist, team, cn, rk, tk, istConst, teamIstGap);
   const integrationsplanPhasen = buildTeamIntegrationsplanPhasen(cn, rk, tk, teamIstGap);
+
+  const GOAL_LABELS: Record<string, string> = {
+    umsetzung: "Umsetzung und Ergebnisse",
+    analyse: "Analyse und Struktur",
+    zusammenarbeit: "Zusammenarbeit und Kommunikation",
+  };
 
   return {
     gesamtpassung,
@@ -601,6 +888,13 @@ export function computeTeamReport(
     integrationsplanPhasen,
     istConstellationLabel: istLabel,
     teamConstellationLabel: teamLabel,
+    leadershipAssessment: laResult,
+    v4Passung: v4Result?.passungZumTeam || undefined,
+    v4Beitrag: v4Result?.beitragZurAufgabe || undefined,
+    v4Begleitung: v4Result?.begleitungsbedarf || undefined,
+    v4GesamtLabel: v4Result?.gesamteinschaetzung || undefined,
+    teamGoalLabel: teamGoalRaw ? (GOAL_LABELS[teamGoalRaw] || teamGoalRaw) : undefined,
+    isFK,
   };
 }
 
@@ -658,35 +952,6 @@ function buildEntscheidungsfaktoren(
   return combined.slice(0, 3).map(f => f.text);
 }
 
-function buildManagementSummary(
-  role: string, cand: string,
-  ist: Triad, team: Triad,
-  teamIstGap: number, teamIstLevel: string,
-  status: "gruen" | "gelb" | "rot",
-  rk: ComponentKey, tk: ComponentKey,
-  istLabel: string, teamLabel: string
-): string {
-  const lines: string[] = [];
-  lines.push(`Rolle: ${role}`);
-  lines.push(`Person: ${cand}`);
-  lines.push(`Personenprofil: ${istLabel} (I ${ist.impulsiv}% / N ${ist.intuitiv}% / A ${ist.analytisch}%)`);
-  lines.push(`Teamprofil: ${teamLabel} (I ${team.impulsiv}% / N ${team.intuitiv}% / A ${team.analytisch}%)`);
-  lines.push("");
-  lines.push(`Abweichung Team vs. Person: ${teamIstGap} Punkte (${teamIstLevel})`);
-  lines.push(`Gesamtstatus: ${ampelText(status)}`);
-  lines.push("");
-
-  const s = Subj(cand);
-  if (status === "gruen") {
-    lines.push(`${s} passt strukturell zum bestehenden Team. Die Arbeitslogiken sind kompatibel. Die Integration wird voraussichtlich reibungsarm verlaufen.`);
-  } else if (status === "gelb") {
-    lines.push(`${s} zeigt Abweichungen zum Teamprofil. Die Integration ist steuerbar, erfordert aber gezielte Aufmerksamkeit in den ersten Wochen. Entscheidend sind klare Erwartungen und regelmässige Abstimmung.`);
-  } else {
-    lines.push(`${s} weicht deutlich vom Teamprofil ab. Ohne aktive Steuerung sind Reibung, Konflikte und Leistungseinbrüche wahrscheinlich. Die ersten 30 Tage sind entscheidend.`);
-  }
-
-  return lines.join("\n");
-}
 
 function buildTeamstruktur(
   team: Triad, teamDom: ReturnType<typeof dominanceModeOf>,
@@ -1037,37 +1302,3 @@ function buildIntegrationsplan(
   return lines.join("\n");
 }
 
-function buildSystemfazit(
-  role: string, cand: string,
-  ist: Triad, team: Triad,
-  teamIstGap: number,
-  status: "gruen" | "gelb" | "rot",
-  rk: ComponentKey, tk: ComponentKey
-): string {
-  const lines: string[] = [];
-
-  if (status === "gruen") {
-    const s = Subj(cand);
-    lines.push(`${s} passt strukturell zum bestehenden Team. Die Arbeitslogiken sind kompatibel. Die Integration wird voraussichtlich reibungsarm verlaufen. Normale Führungssteuerung ist ausreichend.`);
-    lines.push("");
-    lines.push(`Fokuspunkte: Teamkultur bestätigen, Ergänzungspotenziale bewusst nutzen, Feedbackschleifen einbauen.`);
-  } else if (status === "gelb") {
-    const s = Subj(cand);
-    lines.push(`${s} ist steuerbar ins Team integrierbar. Es gibt erkennbare Abweichungen zum Team (${teamIstGap} Punkte), die mit gezielter Steuerung ausgeglichen werden können.`);
-    lines.push("");
-    lines.push(`Entscheidend sind die ersten 30 Tage: Klare Erwartungen setzen, Kommunikation bewusst steuern, Feedback strukturiert einholen. Wenn die Integration aktiv begleitet wird, kann ${subj(cand)} die Rolle wirksam ausfüllen.`);
-    if (rk !== tk) {
-      lines.push("");
-      lines.push(`Die unterschiedliche Arbeitslogik (${compShort(rk)} vs. ${compShort(tk)}) ist kein Ausschlusskriterium, erfordert aber bewusste Steuerung. In Drucksituationen muss die Führung aktiv moderieren.`);
-    }
-  } else {
-    const s = Subj(cand);
-    lines.push(`${s} zeigt deutliche Abweichungen zum Team (${teamIstGap} Punkte). Ohne aktive und konsequente Steuerung sind Reibung, Konflikte und Leistungseinbrüche wahrscheinlich.`);
-    lines.push("");
-    lines.push(`Die Integration stellt eine erhebliche Herausforderung dar. Die Arbeitslogiken von ${subj(cand)} und dem Team sind grundlegend verschieden. Die ersten 30 Tage sind entscheidend: Klare Kommunikation, definierte Entscheidungswege und aktives Erwartungsmanagement sind Pflicht.`);
-    lines.push("");
-    lines.push(`Empfehlung: Nur mit Steuerungskonzept und aktiver Führungsbegleitung einsetzen. Regelmässige Checkpoints einplanen. Eskalationsmechanismen vorab klären.`);
-  }
-
-  return lines.join("\n");
-}

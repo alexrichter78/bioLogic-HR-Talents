@@ -64,6 +64,7 @@ Preferred communication style: Simple, everyday language.
 -   **Shared Design Constants**: `client/src/lib/bio-design.ts` serves as a single source of truth for all bioLogic brand colors, used across UI reports and PDF builders.
 
 ### Technical Implementations
+-   **Integrationsanalyse-Bericht (team-report-engine.ts)**: `computeTeamReport()` now accepts optional `TeamReportOptions` (teamGoal, roleType, roleLevel, taskStructure, workStyle, successFocus). When options are provided, it internally runs V4 engine for `gesamtpassung`/`begleitungsbedarf` and for FK roles uses `calculateLeadershipAssessment` for systemwirkung (3 types: Verstärkung/Spannung/Transformation). Without options (legacy/V3 internal calls), falls back to old totalGap-based logic to avoid recursion. This ensures Preview Cards and Bericht show consistent assessments.
 -   **Leader-Team Match Engine**: Provides evaluations for leadership roles, generating ratings and scores.
 -   **Teamdynamik Engine**: Calculates metrics like Distribution Gap, Dominance Clash, Role Gap, Transformation Score, and Conflict Index, including stress simulation.
 -   **Rollen-DNA to Dominance Mapping**: Maps role attributes to dominance types for fit analysis.
