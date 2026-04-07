@@ -391,10 +391,10 @@ export default function TeamCheck() {
                         <div key={k} style={{ marginBottom: 8 }}>
                           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
                             <span style={{ fontSize: 11, fontWeight: 500, color: "#6E6E73" }}>{lbl}</span>
-                            <span style={{ fontSize: 11, fontWeight: 700, color }}>{Math.round(val)}</span>
+                            <span style={{ fontSize: 11, fontWeight: 700, color }}>{Math.round(val)} %</span>
                           </div>
                           <div style={{ height: 7, borderRadius: 4, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
-                            <div style={{ height: "100%", borderRadius: 4, background: `linear-gradient(90deg, ${color}, ${color}BB)`, width: `${(val / 67) * 100}%` }} />
+                            <div style={{ height: "100%", borderRadius: 4, background: `linear-gradient(90deg, ${color}, ${color}BB)`, width: `${(val / MAX_BIO) * 100}%` }} />
                           </div>
                         </div>
                       );
@@ -442,7 +442,7 @@ export default function TeamCheck() {
                         }}>
                           {[
                             { label: isLeading ? "Führungskraft" : "Teammitglied", value: result.diagnose.kandidatDominanz, color: "#F39200" },
-                            { label: "Verschiebung", value: result.diagnose.kandidatDominanz === result.diagnose.teamDominanz ? "Verstärkung" : "Strukturwechsel", color: result.diagnose.kandidatDominanz === result.diagnose.teamDominanz ? "#34C759" : "#FF9500" },
+                            { label: "Verschiebung", value: result.diagnose.verschiebungLabel, color: result.diagnose.verschiebung === "VERSTAERKUNG" ? "#34C759" : result.diagnose.verschiebung === "ERGAENZUNG" ? "#0071E3" : "#FF9500" },
                             { label: "Team", value: result.diagnose.teamDominanz, color: "#34C759" },
                           ].map((item, i) => (
                             <div key={i} style={{
@@ -731,7 +731,7 @@ export default function TeamCheck() {
                   <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                     {[
                       { label: isLeading ? "Führungskraft" : "Person", value: result.diagnose.kandidatDominanz, color: "#F39200", icon: Users },
-                      { label: "Verschiebung", value: result.diagnose.kandidatDominanz === result.diagnose.teamDominanz ? "Verstärkung" : "Strukturwechsel", color: result.diagnose.kandidatDominanz === result.diagnose.teamDominanz ? "#34C759" : "#FF9500", icon: Activity },
+                      { label: "Verschiebung", value: result.diagnose.verschiebungLabel, color: result.diagnose.verschiebung === "VERSTAERKUNG" ? "#34C759" : result.diagnose.verschiebung === "ERGAENZUNG" ? "#0071E3" : "#FF9500", icon: Activity },
                       { label: "Team", value: result.diagnose.teamDominanz, color: "#34C759", icon: Users },
                     ].map((kpi, i) => (
                       <div key={i} style={{

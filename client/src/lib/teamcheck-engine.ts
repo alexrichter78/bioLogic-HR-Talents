@@ -1,5 +1,5 @@
 import {
-  type ComponentKey, type Triad,
+  type ComponentKey, type Triad, normalizeTriad,
 } from "./jobcheck-engine";
 
 export type DominanceType = "IMPULSIV" | "INTUITIV" | "ANALYTISCH" | "MIX";
@@ -90,8 +90,8 @@ export type TeamCheckResult = {
 };
 
 export function generateDiagnoseSummary(kandidat: Triad, team: Triad, isLeading: boolean): string {
-  const domK = dominanceType(kandidat);
-  const domT = dominanceType(team);
+  const domK = dominanceType(normalizeTriad(kandidat));
+  const domT = dominanceType(normalizeTriad(team));
   const same = domK === domT;
   const rolle = isLeading ? "Die Führungskraft" : "Das Teammitglied";
 
@@ -162,7 +162,8 @@ function computeDelta(kandidat: Triad, team: Triad): number {
 }
 
 function computeVerschiebung(domK: DominanceType, domT: DominanceType, delta: number): { type: VerschiebungType; label: string } {
-  if (domK === domT) return { type: "VERSTAERKUNG", label: "Verstärkung" };
+  if (domK === domT && delta < 5) return { type: "VERSTAERKUNG", label: "Verstärkung" };
+  if (domK === domT && delta <= 15) return { type: "ERGAENZUNG", label: "Ergänzung" };
   if (delta <= 10) return { type: "ERGAENZUNG", label: "Ergänzung" };
   if (delta <= 20) return { type: "REIBUNG", label: "Reibungsfall" };
   if (delta <= 35) return { type: "SPANNUNG", label: "Spannungsfall" };
@@ -874,9 +875,11 @@ export type ReportSection = {
 };
 
 export function generateDetailReport(input: TeamCheckInput, result: TeamCheckResult): ReportSection[] {
-  const domK = dominanceType(input.kandidat);
-  const domT = dominanceType(input.team);
-  const delta = computeDelta(input.kandidat, input.team);
+  const nKandidat = normalizeTriad(input.kandidat);
+  const nTeam = normalizeTriad(input.team);
+  const domK = dominanceType(nKandidat);
+  const domT = dominanceType(nTeam);
+  const delta = computeDelta(nKandidat, nTeam);
   const intensity = computeIntensitaet(delta);
   const rolleNom = input.isLeading ? "die Führungskraft" : "das neue Teammitglied";
   const rolleGen = input.isLeading ? "der Führungskraft" : "des neuen Teammitglieds";
@@ -993,17 +996,18 @@ export function generateDetailReport(input: TeamCheckInput, result: TeamCheckRes
     ],
   });
 
+  const isVerstaerkung = result.diagnose.verschiebung === "VERSTAERKUNG";
   sections.push({
     num: 3,
     title: "Zentrale Verschiebung",
     paragraphs: [
       `Mit ${rolleDat} trifft eine ${plainAdj(domK)}e Arbeitsweise auf ein ${plainAdj(domT)}es System.`,
-      "Diese Konstellation erzeugt eine " + (domK === domT ? "Verstärkung der bestehenden Dynamik." : `deutliche Verschiebung im Entscheidungs- und Arbeitsrhythmus.`),
+      "Diese Konstellation erzeugt eine " + (isVerstaerkung ? "Verstärkung der bestehenden Dynamik." : `deutliche Verschiebung im Entscheidungs- und Arbeitsrhythmus.`),
       `Die Intensität dieser Verschiebung ist ${intensityLabel}.`,
     ],
     subsections: [{
       title: "",
-      highlight: domK === domT
+      highlight: isVerstaerkung
         ? "Das ist eine Verstärkung, kein Spannungsfall. Es bedeutet jedoch, dass Gegengewichte bewusst gesetzt werden müssen."
         : input.isLeading
           ? "Das ist kein grundsätzliches Problem. Es bedeutet jedoch, dass Führung aktiv gestaltet werden muss."
@@ -1239,9 +1243,11 @@ export type ExecutivePage = {
 };
 
 export function generateExecutiveReport(input: TeamCheckInput, result: TeamCheckResult): ExecutivePage[] {
-  const domK = dominanceType(input.kandidat);
-  const domT = dominanceType(input.team);
-  const delta = computeDelta(input.kandidat, input.team);
+  const nKandidat = normalizeTriad(input.kandidat);
+  const nTeam = normalizeTriad(input.team);
+  const domK = dominanceType(nKandidat);
+  const domT = dominanceType(nTeam);
+  const delta = computeDelta(nKandidat, nTeam);
   const intensity = computeIntensitaet(delta);
   const rolleNom = input.isLeading ? "die neue Führungskraft" : "das neue Teammitglied";
   const rolleDat = input.isLeading ? "der neuen Führungskraft" : "dem neuen Teammitglied";
@@ -1358,10 +1364,13 @@ export function generateExecutiveReport(input: TeamCheckInput, result: TeamCheck
 }
 
 export function computeTeamCheck(input: TeamCheckInput): TeamCheckResult {
-  const domK = dominanceType(input.kandidat);
-  const domT = dominanceType(input.team);
-  const domS = dominanceType(input.soll);
-  const delta = computeDelta(input.kandidat, input.team);
+  const nKandidat = normalizeTriad(input.kandidat);
+  const nTeam = normalizeTriad(input.team);
+  const nSoll = normalizeTriad(input.soll);
+  const domK = dominanceType(nKandidat);
+  const domT = dominanceType(nTeam);
+  const domS = dominanceType(nSoll);
+  const delta = computeDelta(nKandidat, nTeam);
   const versch = computeVerschiebung(domK, domT, delta);
   const intensity = computeIntensitaet(delta);
 
@@ -1386,7 +1395,7 @@ export function computeTeamCheck(input: TeamCheckInput): TeamCheckResult {
     qualitaetsWirkung: buildQualitaetsWirkung(domK, domT),
   };
 
-  const stressprofil = buildStressprofil(domK, input.kandidat);
+  const stressprofil = buildStressprofil(domK, nKandidat);
   const prognose = buildPrognose(domK, domT, intensity);
 
   const handlungsempfehlungen: HandlungsempfehlungenResult = {
