@@ -1069,10 +1069,11 @@ function evaluateStrategicFit(
   const gap = sorted[0][1] - sorted[1][1];
   const top2Keys = new Set([sorted[0][0], sorted[1][0]]);
   const goalInTop2 = top2Keys.has(goalKey);
+  const secTerGap = sorted[1][1] - sorted[2][1];
   const personDominantInGoal = personPrimary === goalKey ||
     (gap < 3 && goalInTop2 && sorted[0][0] !== goalKey);
-  const personSecondaryInGoal = personSecondary === goalKey ||
-    (gap < 3 && goalInTop2);
+  const personSecondaryInGoal = (personSecondary === goalKey && secTerGap >= 5) ||
+    (gap < 3 && goalInTop2 && secTerGap >= 5);
   if (personPrimary === goalKey && gap >= 3) {
     strategicFit = "passend";
   } else if (personDominantInGoal) {
