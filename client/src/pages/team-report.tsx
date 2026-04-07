@@ -1023,14 +1023,14 @@ export default function TeamReport() {
                 const funcText = funcFit === "hoch"
                   ? "Die Person passt gut zum aktuellen Funktionsziel des Teams."
                   : funcFit === "mittel"
-                  ? "Eingeschr\u00E4nkte Passung zum Funktionsziel durch Doppeldominanz."
+                  ? "Die Person unterstützt das Funktionsziel nur teilweise."
                   : funcFit === "gering"
-                  ? "Die Person arbeitet deutlich anders als das aktuelle Funktionsziel des Teams."
+                  ? "Die Person arbeitet deutlich anders als das aktuelle Funktionsziel des Teams es erfordert."
                   : "";
                 const teamText = teamFit === "hoch"
                   ? "Die Person passt gut zur bestehenden Teamlogik und Arbeitsweise."
                   : teamFit === "mittel"
-                  ? "Teilweise Passung zum Team, Doppeldominanz vorhanden."
+                  ? "Die Person weicht in Teilen vom Teamprofil ab, ist aber grundsätzlich integrierbar."
                   : "Sichtbare Abweichung von der bestehenden Teamlogik und Arbeitsweise.";
 
                 const isLeaderRole = roleTypeForCard === "fuehrung";
