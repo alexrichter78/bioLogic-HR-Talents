@@ -1074,8 +1074,10 @@ function evaluateStrategicFit(
     (gap < 3 && goalInTop2 && sorted[0][0] !== goalKey);
   const personSecondaryInGoal = (personSecondary === goalKey && secTerGap >= 5) ||
     (gap < 3 && goalInTop2 && secTerGap >= 5);
-  if (personPrimary === goalKey && gap >= 3) {
+  if (personPrimary === goalKey && gap > 5) {
     strategicFit = "passend";
+  } else if (personPrimary === goalKey && gap > 0) {
+    strategicFit = "teilweise";
   } else if (personDominantInGoal) {
     strategicFit = "teilweise";
   } else if (gap <= 5 && goalInTop2) {
