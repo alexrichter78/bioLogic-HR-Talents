@@ -1020,13 +1020,28 @@ export default function TeamReport() {
                 const tColors = badgeColors[teamFit] || badgeColors.gering;
                 const fColors = funcFit !== "nicht bewertbar" ? (badgeColors[funcFit] || badgeColors.gering) : null;
 
-                const funcText = funcFit === "hoch"
-                  ? "Die Person passt gut zum aktuellen Funktionsziel des Teams."
-                  : funcFit === "mittel"
-                  ? "Die Person unterstützt das Funktionsziel nur teilweise."
-                  : funcFit === "gering"
-                  ? "Die Person arbeitet deutlich anders als das aktuelle Funktionsziel des Teams es erfordert."
-                  : "";
+                const activeGoal = teamGoal || p.teamGoal;
+                const funcText = (() => {
+                  if (activeGoal === "analyse") {
+                    if (funcFit === "hoch") return "Die Person passt gut zum aktuellen Funktionsziel des Teams.";
+                    if (funcFit === "mittel") return "Die Person unterstützt das Funktionsziel grundsätzlich, arbeitet aber nicht durchgehend in derselben Logik.";
+                    return "Die Person arbeitet deutlich anders als das aktuelle Funktionsziel des Teams es erfordert.";
+                  }
+                  if (activeGoal === "umsetzung") {
+                    if (funcFit === "hoch") return "Die Person bringt eine zum Funktionsziel passende Umsetzungsorientierung mit.";
+                    if (funcFit === "mittel") return "Die Person unterstützt das Funktionsziel nur teilweise, da ihre Arbeitsweise nicht konsequent auf Tempo und direkte Umsetzung ausgerichtet ist.";
+                    return "Die Person arbeitet deutlich anders als das aktuelle Funktionsziel des Teams.";
+                  }
+                  if (activeGoal === "zusammenarbeit") {
+                    if (funcFit === "hoch") return "Die Person passt gut zum aktuellen Funktionsziel des Teams.";
+                    if (funcFit === "mittel") return "Die Person unterstützt das Funktionsziel nur teilweise, da ihre Arbeitsweise stärker von einer anderen Logik geprägt ist.";
+                    return "Die Person arbeitet deutlich anders als das aktuelle Funktionsziel des Teams.";
+                  }
+                  if (funcFit === "hoch") return "Die Person passt gut zum aktuellen Funktionsziel des Teams.";
+                  if (funcFit === "mittel") return "Die Person unterstützt das Funktionsziel nur teilweise.";
+                  if (funcFit === "gering") return "Die Person arbeitet deutlich anders als das aktuelle Funktionsziel des Teams es erfordert.";
+                  return "";
+                })();
                 const teamText = teamFit === "hoch"
                   ? "Die Person passt gut zur bestehenden Teamlogik und Arbeitsweise."
                   : teamFit === "mittel"

@@ -197,19 +197,12 @@ export function computeTeamCheckV3(input: TeamCheckV3Input): TeamCheckV3Result {
   const operative = isOperativeRole(input.roleTitle);
   const teamAligned = goalKey ? getPrimaryKey(input.teamProfile) === goalKey : false;
   const rawPersonPrimary = getPrimaryKey(input.personProfile);
-  const pSrt = [
-    { key: "impulsiv" as const, value: input.personProfile.impulsiv },
-    { key: "intuitiv" as const, value: input.personProfile.intuitiv },
-    { key: "analytisch" as const, value: input.personProfile.analytisch },
-  ].sort((a, b) => b.value - a.value);
-  const pGap2 = pSrt[0].value - pSrt[1].value;
-  const pTop2Set = new Set([pSrt[0].key, pSrt[1].key]);
-  const personAligned = goalKey
-    ? (rawPersonPrimary === goalKey || (pGap2 < 3 && pTop2Set.has(goalKey)))
-    : false;
+
+  const goalScoreResult = safeGoal ? calculateFunctionGoalScore(input.personProfile, safeGoal) : null;
+  const personAligned = goalScoreResult ? goalScoreResult.fit === "passend" : false;
   const personCloserToGoal = (personGoalAbweichung !== null && teamGoalAbweichung !== null) ? personGoalAbweichung < teamGoalAbweichung : false;
   const personDivergesFromGoal = !!(safeGoal && teamAligned && !personAligned);
-  const personNotHelpingGoal = !!(safeGoal && !personAligned && !personCloserToGoal);
+  const personNotHelpingGoal = !!(safeGoal && goalScoreResult?.fit === "abweichend");
 
   const personPrimary = rawPersonPrimary;
   const teamPrimary = getPrimaryKey(input.teamProfile);
@@ -1046,6 +1039,96 @@ function computeStrategicWirkung(
   return "neutral";
 }
 
+function calculateFunctionGoalScore(
+  personProfile: Triad,
+  goal: TeamGoal,
+): { fit: "passend" | "teilweise" | "abweichend"; score: number } {
+  if (!goal) return { fit: "teilweise", score: 0 };
+
+  const targetKey = GOAL_DOMINANT[goal];
+  const sorted = ([
+    { key: "impulsiv" as ComponentKey, value: personProfile.impulsiv },
+    { key: "intuitiv" as ComponentKey, value: personProfile.intuitiv },
+    { key: "analytisch" as ComponentKey, value: personProfile.analytisch },
+  ] as Array<{ key: ComponentKey; value: number }>).sort((a, b) => b.value - a.value);
+
+  const dominantKey = sorted[0].key;
+  const dominantValue = sorted[0].value;
+  const targetValue = personProfile[targetKey];
+  const targetGapToTop = dominantValue - targetValue;
+  const targetIsDominant = dominantKey === targetKey;
+
+  let score = 0;
+
+  score += Math.min(60, Math.round((targetValue / 100) * 60));
+
+  if (targetIsDominant) {
+    score += 25;
+  }
+
+  if (!targetIsDominant && targetGapToTop <= 5) {
+    score += 10;
+  }
+
+  if (targetGapToTop > 5) {
+    score -= Math.min(20, Math.round((targetGapToTop - 5) * 2));
+  }
+
+  if (goal === "umsetzung" && personProfile.analytisch >= 45 && personProfile.impulsiv < 35) {
+    score -= 12;
+  }
+  if (goal === "analyse" && personProfile.impulsiv >= 40 && personProfile.analytisch < 40) {
+    score -= 12;
+  }
+  if (goal === "zusammenarbeit" && dominantKey !== "intuitiv" && dominantValue >= 45 && personProfile.intuitiv < 35) {
+    score -= 12;
+  }
+
+  score = Math.max(0, Math.min(100, score));
+
+  let fit: "passend" | "teilweise" | "abweichend";
+
+  if (goal === "umsetzung") {
+    if (personProfile.impulsiv < 28 && dominantKey !== "impulsiv") {
+      fit = "abweichend";
+    } else if (targetIsDominant && personProfile.impulsiv >= 36) {
+      fit = "passend";
+    } else if (score >= 62) {
+      fit = "passend";
+    } else if (score >= 42) {
+      fit = "teilweise";
+    } else {
+      fit = "abweichend";
+    }
+  } else if (goal === "analyse") {
+    if (personProfile.analytisch < 30 && dominantKey !== "analytisch") {
+      fit = "abweichend";
+    } else if (targetIsDominant && personProfile.analytisch >= 40) {
+      fit = "passend";
+    } else if (score >= 62) {
+      fit = "passend";
+    } else if (score >= 42) {
+      fit = "teilweise";
+    } else {
+      fit = "abweichend";
+    }
+  } else {
+    if (personProfile.intuitiv < 28 && dominantKey !== "intuitiv") {
+      fit = "abweichend";
+    } else if (targetIsDominant && personProfile.intuitiv >= 36) {
+      fit = "passend";
+    } else if (score >= 62) {
+      fit = "passend";
+    } else if (score >= 42) {
+      fit = "teilweise";
+    } else {
+      fit = "abweichend";
+    }
+  }
+
+  return { fit, score };
+}
+
 function evaluateStrategicFit(
   goal: TeamGoal,
   teamProfile: Triad,
@@ -1058,37 +1141,13 @@ function evaluateStrategicFit(
   const goalKey = GOAL_DOMINANT[goal];
   const goalLabel = ctx.goalLabel || GOAL_LABELS[goal];
   const personPrimary = getPrimaryKey(personProfile);
-  const personSecondary = getSecondaryKey(personProfile);
   const teamPrimary = getPrimaryKey(teamProfile);
 
   const personGoalValue = personProfile[goalKey];
   const teamGoalValue = teamProfile[goalKey];
   const teamDominantInGoal = teamPrimary === goalKey;
 
-  let strategicFit: "passend" | "teilweise" | "abweichend";
-  const sorted = Object.entries(personProfile)
-    .sort(([, a], [, b]) => b - a);
-  const gap = sorted[0][1] - sorted[1][1];
-  const top2Keys = new Set([sorted[0][0], sorted[1][0]]);
-  const goalInTop2 = top2Keys.has(goalKey);
-  const secTerGap = sorted[1][1] - sorted[2][1];
-  const personDominantInGoal = personPrimary === goalKey ||
-    (gap < 3 && goalInTop2 && sorted[0][0] !== goalKey);
-  const personSecondaryInGoal = (personSecondary === goalKey && secTerGap >= 5) ||
-    (gap < 3 && goalInTop2 && secTerGap >= 5);
-  if (personPrimary === goalKey && gap > 5) {
-    strategicFit = "passend";
-  } else if (personPrimary === goalKey && gap > 0) {
-    strategicFit = "teilweise";
-  } else if (personDominantInGoal) {
-    strategicFit = "teilweise";
-  } else if (gap <= 5 && goalInTop2) {
-    strategicFit = "teilweise";
-  } else if (personSecondaryInGoal) {
-    strategicFit = "teilweise";
-  } else {
-    strategicFit = "abweichend";
-  }
+  const { fit: strategicFit } = calculateFunctionGoalScore(personProfile, goal);
 
   const teamAligned = teamDominantInGoal;
   const personAligned = strategicFit === "passend";
@@ -1122,9 +1181,9 @@ function evaluateStrategicFit(
   }
 
   if (!teamAligned && personAligned) {
-    const gap = Math.abs(teamGoalValue - personGoalValue);
-    if (gap > 20) {
-      lines.push(`Der Unterschied zwischen Team und Person im Zielbereich beträgt ${gap} Prozentpunkte. Diese Differenz erzeugt Spannung, ist aber im Kontext des Funktionsziels als konstruktiv einzustufen.`);
+    const gapVal = Math.abs(teamGoalValue - personGoalValue);
+    if (gapVal > 20) {
+      lines.push(`Der Unterschied zwischen Team und Person im Zielbereich beträgt ${gapVal} Prozentpunkte. Diese Differenz erzeugt Spannung, ist aber im Kontext des Funktionsziels als konstruktiv einzustufen.`);
     }
   }
 
