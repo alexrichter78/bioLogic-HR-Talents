@@ -1143,33 +1143,10 @@ export default function TeamReport() {
                       {ergebnisOpen && (
                       <div style={{ padding: isMobile ? "0 14px 14px" : "0 32px 28px" }}>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
-                      <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${tColors.border}`, background: tColors.bg }} data-testid="v4-card-team">
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            <Users style={{ width: 14, height: 14, color: tColors.text }} />
-                            <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Teampassung</span>
-                          </div>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: tColors.text, background: `${tColors.text}12`, padding: "2px 10px", borderRadius: 6 }}>{badgeLabels[teamFit]}</span>
-                        </div>
-                        <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{teamText}</p>
-                      </div>
-                      <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${bBg.border}`, background: bBg.bg }} data-testid="v4-card-integration">
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            <Zap style={{ width: 14, height: 14, color: bBg.text }} />
-                            <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Integrationsaufwand</span>
-                          </div>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: bBg.text, background: `${bBg.text}12`, padding: "2px 10px", borderRadius: 6 }}>{bLabel}</span>
-                        </div>
-                        <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{bDesc}</p>
-                      </div>
-                    </div>
-
                     {(() => {
                       const la = leadershipAssessment;
-                      const showFunc = !!fColors;
                       const isFK = la.show;
+                      const showFunc = !!fColors;
 
                       if (isFK) {
                         const siColors = la.systemImpact.variant === "success" ? badgeColors.hoch : la.systemImpact.variant === "warning" ? badgeColors.mittel : badgeColors.gering;
@@ -1215,22 +1192,44 @@ export default function TeamReport() {
                         );
                       }
 
-                      if (showFunc) {
-                        return (
-                          <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${fColors!.border}`, background: fColors!.bg, marginBottom: 12 }} data-testid="v4-card-func">
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                <Zap style={{ width: 14, height: 14, color: fColors!.text }} />
-                                <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Passung zum Funktionsziel</span>
+                      return (
+                        <>
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+                            <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${tColors.border}`, background: tColors.bg }} data-testid="v4-card-team">
+                              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                  <Users style={{ width: 14, height: 14, color: tColors.text }} />
+                                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Teampassung</span>
+                                </div>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: tColors.text, background: `${tColors.text}12`, padding: "2px 10px", borderRadius: 6 }}>{badgeLabels[teamFit]}</span>
                               </div>
-                              <span style={{ fontSize: 11, fontWeight: 700, color: fColors!.text, background: `${fColors!.text}12`, padding: "2px 10px", borderRadius: 6 }}>{badgeLabels[funcFit]}</span>
+                              <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{teamText}</p>
                             </div>
-                            <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{funcText}</p>
+                            <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${bBg.border}`, background: bBg.bg }} data-testid="v4-card-integration">
+                              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                  <Zap style={{ width: 14, height: 14, color: bBg.text }} />
+                                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Integrationsaufwand</span>
+                                </div>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: bBg.text, background: `${bBg.text}12`, padding: "2px 10px", borderRadius: 6 }}>{bLabel}</span>
+                              </div>
+                              <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{bDesc}</p>
+                            </div>
                           </div>
-                        );
-                      }
-
-                      return null;
+                          {showFunc && (
+                            <div style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${fColors!.border}`, background: fColors!.bg, marginBottom: 12 }} data-testid="v4-card-func">
+                              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                  <Zap style={{ width: 14, height: 14, color: fColors!.text }} />
+                                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Passung zum Funktionsziel</span>
+                                </div>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: fColors!.text, background: `${fColors!.text}12`, padding: "2px 10px", borderRadius: 6 }}>{badgeLabels[funcFit]}</span>
+                              </div>
+                              <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{funcText}</p>
+                            </div>
+                          )}
+                        </>
+                      );
                     })()}
 
                     <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }} data-testid="v4-card-empfehlung">
