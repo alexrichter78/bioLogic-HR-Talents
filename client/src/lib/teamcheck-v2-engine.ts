@@ -225,10 +225,18 @@ function getPassung(teamProfile: Triad, personProfile: Triad, roleType: string):
   const personTop3Gap = personSorted[0].value - personSorted[2].value;
   const personIsBalanced = personTop3Gap <= 5;
 
+  const personTop2Keys = new Set([personSorted[0].key, personSorted[1].key]);
+  const unclearPrimary = personTop2Gap < 3 && !personIsBalanced;
+  const unclearMatchesTeam = unclearPrimary && personTop2Keys.has(teamPrimary);
+
   let score = 100;
   score -= Math.min(distance, 80) * 0.65;
-  if (teamPrimary !== personPrimary || personIsBalanced) score -= 12;
-  if (systemwirkung === "Spannung") score -= 10;
+  if (personIsBalanced) {
+    score -= 12;
+  } else if (teamPrimary !== personPrimary) {
+    score -= unclearMatchesTeam ? 6 : 12;
+  }
+  if (systemwirkung === "Spannung") score -= unclearMatchesTeam ? 5 : 10;
   if (systemwirkung === "Transformation") score -= 18;
 
   if (personTop2Gap < 12) {
