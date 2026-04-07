@@ -232,79 +232,102 @@ function getGapMetrics(person: Triad, team: Triad) {
   return { gapImpulsiv, gapIntuitiv, gapAnalytisch, totalGap, maxGap };
 }
 
+type ProfileKind = "BALANCED" | "CLEAR" | "MIXED";
+
+function getSpread(profile: Triad): number {
+  const values = [round(profile.impulsiv), round(profile.intuitiv), round(profile.analytisch)];
+  return Math.max(...values) - Math.min(...values);
+}
+
+function getProfileKind(profile: Triad): ProfileKind {
+  const spread = getSpread(profile);
+  const topGap = sortProfile(profile)[0].value - sortProfile(profile)[1].value;
+  if (spread <= 10) return "BALANCED";
+  if (topGap > 5) return "CLEAR";
+  return "MIXED";
+}
+
+function buildFitMetrics(personProfile: Triad, teamProfile: Triad) {
+  const g = getGapMetrics(personProfile, teamProfile);
+  const personKind = getProfileKind(personProfile);
+  const teamKind = getProfileKind(teamProfile);
+  const sameTop = getPrimaryKey(personProfile) === getPrimaryKey(teamProfile);
+  const bothBalanced = personKind === "BALANCED" && teamKind === "BALANCED";
+  const oneBalanced = (personKind === "BALANCED") !== (teamKind === "BALANCED");
+  const bothClear = personKind === "CLEAR" && teamKind === "CLEAR";
+  const bothClearDifferentTop = bothClear && !sameTop;
+  const bothClearSameTop = bothClear && sameTop;
+  return { ...g, personKind, teamKind, sameTop, bothBalanced, oneBalanced, bothClear, bothClearDifferentTop, bothClearSameTop };
+}
+
 function getPassung(teamProfile: Triad, personProfile: Triad, _roleType: string): string {
-  const { totalGap, maxGap } = getGapMetrics(personProfile, teamProfile);
-  const personTop = getPrimaryKey(personProfile);
-  const teamTop = getPrimaryKey(teamProfile);
-  const sameDom = personTop === teamTop;
-  const personTopGap = sortProfile(personProfile)[0].value - sortProfile(personProfile)[1].value;
-  const teamTopGap = sortProfile(teamProfile)[0].value - sortProfile(teamProfile)[1].value;
-  const personIsBalanced = personTopGap <= 5;
-  const teamIsBalanced = teamTopGap <= 5;
+  const m = buildFitMetrics(personProfile, teamProfile);
 
-  let label: string;
-
-  if (totalGap <= 24 && maxGap <= 12) {
-    label = "Passend";
-  } else if (totalGap >= 40 || maxGap >= 20) {
-    label = "Kritisch";
-  } else {
-    label = "Bedingt passend";
+  if (m.bothBalanced) {
+    if (m.maxGap <= 5 && m.totalGap <= 12) return "Passend";
+    if (m.maxGap <= 10 && m.totalGap <= 24) return "Bedingt passend";
+    return "Kritisch";
   }
 
-  if (
-    label === "Bedingt passend" &&
-    sameDom &&
-    totalGap <= 30 &&
-    maxGap <= 14
-  ) {
-    label = "Passend";
+  if (m.oneBalanced) {
+    if (m.maxGap <= 5 && m.totalGap <= 15) return "Passend";
+    if (m.maxGap <= 10 && m.totalGap <= 30) return "Bedingt passend";
+    return "Kritisch";
   }
 
-  if (
-    label === "Bedingt passend" &&
-    !sameDom &&
-    !personIsBalanced &&
-    !teamIsBalanced &&
-    totalGap >= 34
-  ) {
-    label = "Kritisch";
+  if (m.bothClearDifferentTop) {
+    if (m.totalGap >= 24 || m.maxGap >= 12) return "Kritisch";
+    return "Bedingt passend";
   }
 
-  return label;
+  if (m.bothClearSameTop) {
+    if (m.totalGap <= 24 && m.maxGap <= 12) return "Passend";
+    if (m.totalGap >= 40 || m.maxGap >= 20) return "Kritisch";
+    return "Bedingt passend";
+  }
+
+  if (m.sameTop) {
+    if (m.totalGap <= 24 && m.maxGap <= 12) return "Passend";
+    if (m.totalGap >= 40 || m.maxGap >= 20) return "Kritisch";
+    return "Bedingt passend";
+  }
+
+  if (m.totalGap >= 34 || m.maxGap >= 16) return "Kritisch";
+  return "Bedingt passend";
 }
 
 function getIntegrationEffort(teamProfile: Triad, personProfile: Triad, roleType: string): string {
-  const { totalGap, maxGap } = getGapMetrics(personProfile, teamProfile);
-  const personTop = getPrimaryKey(personProfile);
-  const teamTop = getPrimaryKey(teamProfile);
-  const sameDom = personTop === teamTop;
-  const personTopGap = sortProfile(personProfile)[0].value - sortProfile(personProfile)[1].value;
-  const teamTopGap = sortProfile(teamProfile)[0].value - sortProfile(teamProfile)[1].value;
-  const personIsBalanced = personTopGap <= 5;
-  const teamIsBalanced = teamTopGap <= 5;
+  const m = buildFitMetrics(personProfile, teamProfile);
+  const teamFit = getPassung(teamProfile, personProfile, roleType);
+  const isLeader = roleType === "leadership";
 
   let label: string;
 
-  if (totalGap <= 24 && maxGap <= 10) {
-    label = "gering";
-  } else if (totalGap >= 40 || maxGap >= 20) {
-    label = "hoch";
+  if (m.bothBalanced) {
+    if (m.maxGap <= 5 && m.totalGap <= 12) label = "gering";
+    else if (m.maxGap <= 10 && m.totalGap <= 24) label = "mittel";
+    else label = "hoch";
+  } else if (m.oneBalanced) {
+    if (m.maxGap <= 5 && m.totalGap <= 15) label = "gering";
+    else if (m.maxGap <= 10 && m.totalGap <= 30) label = "mittel";
+    else label = "hoch";
+  } else if (m.bothClearDifferentTop) {
+    if (m.totalGap >= 24 || m.maxGap >= 12) label = "hoch";
+    else label = "mittel";
   } else {
+    if (m.totalGap <= 24 && m.maxGap <= 10) label = "gering";
+    else if (m.totalGap >= 40 || m.maxGap >= 20) label = "hoch";
+    else label = "mittel";
+  }
+
+  if (isLeader && (teamFit === "Kritisch" || m.bothClearDifferentTop || m.totalGap >= 30)) {
+    label = "hoch";
+  }
+
+  if (teamFit === "Kritisch" && label === "gering") {
     label = "mittel";
   }
-
-  if (roleType === "leadership" && (totalGap >= 36 || maxGap >= 18)) {
-    label = "hoch";
-  }
-
-  if (
-    label === "mittel" &&
-    !sameDom &&
-    !personIsBalanced &&
-    !teamIsBalanced &&
-    totalGap >= 32
-  ) {
+  if (teamFit === "Kritisch" && (m.bothClearDifferentTop || m.totalGap >= 24)) {
     label = "hoch";
   }
 
