@@ -150,10 +150,10 @@ export default function ResetPassword() {
                   data-testid="button-set-password"
                   style={{
                     width: "100%", padding: "13px 0", borderRadius: 12, border: "none",
-                    background: loading ? "#9CA3AF" : "linear-gradient(135deg, #1F2937 0%, #374151 100%)",
+                    background: loading ? "#9CA3AF" : "linear-gradient(135deg, #0071E3, #34AADC)",
                     color: "#fff", fontSize: 15, fontWeight: 600,
                     cursor: loading ? "wait" : "pointer",
-                    boxShadow: loading ? "none" : "0 2px 8px rgba(31,41,55,0.25)",
+                    boxShadow: loading ? "none" : "0 2px 8px rgba(0,113,227,0.25)",
                   }}
                 >
                   {loading ? "Speichern..." : "Passwort setzen"}
@@ -174,9 +174,9 @@ export default function ResetPassword() {
                 data-testid="button-to-login"
                 style={{
                   padding: "12px 32px", borderRadius: 12, border: "none",
-                  background: "linear-gradient(135deg, #1F2937 0%, #374151 100%)",
+                  background: "linear-gradient(135deg, #0071E3, #34AADC)",
                   color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer",
-                  boxShadow: "0 2px 8px rgba(31,41,55,0.25)",
+                  boxShadow: "0 2px 8px rgba(0,113,227,0.25)",
                 }}
               >
                 Zur Anmeldung
