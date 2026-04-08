@@ -1034,8 +1034,9 @@ export async function registerRoutes(
       const id = parseInt(req.params.id);
       if (isNaN(id)) return res.status(400).json({ error: "Ungültige ID" });
       const since = req.query.since ? new Date(req.query.since as string) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-      const stats = await storage.getUsageStatsByOrg(id, since);
-      res.json(stats);
+      const totals = await storage.getUsageStatsByOrg(id, since);
+      const perUser = await storage.getUsageBreakdownByOrg(id, since);
+      res.json({ totals, perUser });
     } catch (error) {
       console.error("Org usage stats error:", error);
       res.status(500).json({ error: "Nutzungsstatistiken nicht verfügbar" });
@@ -1049,11 +1050,13 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Keine Organisation zugewiesen" });
       }
       const since = req.query.since ? new Date(req.query.since as string) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-      const stats = await storage.getUsageStatsByOrg(user.organizationId, since);
+      const totals = await storage.getUsageStatsByOrg(user.organizationId, since);
+      const perUser = await storage.getUsageBreakdownByOrg(user.organizationId, since);
       const org = await storage.getOrganizationById(user.organizationId);
       res.json({
         organization: org ? { id: org.id, name: org.name, aiRequestLimit: org.aiRequestLimit, aiRequestsUsed: org.aiRequestsUsed, currentPeriodStart: org.currentPeriodStart } : null,
-        usage: stats,
+        totals,
+        perUser,
       });
     } catch (error) {
       console.error("Subadmin usage error:", error);
@@ -1066,6 +1069,13 @@ export async function registerRoutes(
       const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik, zusatzInfo, analyseTexte, region } = req.body;
       if (!beruf) {
         return res.status(400).json({ error: "Beruf ist erforderlich" });
+      }
+
+      if (req.session.userId) {
+        const limitCheck = await checkOrgAiLimit(req.session.userId);
+        if (!limitCheck.allowed) {
+          return res.status(429).json({ error: limitCheck.reason });
+        }
       }
 
       const hasFuehrung = fuehrung && fuehrung !== "Keine" && fuehrung !== "";
@@ -1200,6 +1210,7 @@ Antworte ausschließlich als JSON:
         console.log(`[CONFIDENCE] ${i + 1}. "${item.name}" → ${item.kompetenz} (${item.confidence}%)`);
       });
       res.json(data);
+      if (req.session.userId) trackUsageEvent(req.session.userId, "rollendna");
     } catch (error) {
       console.error("Error generating Kompetenzen:", error);
       res.status(500).json({ error: "Fehler bei der KI-Generierung" });
@@ -1211,6 +1222,13 @@ Antworte ausschließlich als JSON:
       const { beruf, fuehrung, aufgabencharakter, arbeitslogik, items, region } = req.body;
       if (!items || items.length === 0) {
         return res.status(400).json({ error: "Keine Einträge zum Neubewerten" });
+      }
+
+      if (req.session.userId) {
+        const limitCheck = await checkOrgAiLimit(req.session.userId);
+        if (!limitCheck.allowed) {
+          return res.status(429).json({ error: limitCheck.reason });
+        }
       }
 
       const itemsList = items.map((item: any, i: number) =>
@@ -1272,6 +1290,7 @@ Beispiel für 3 Einträge:
         results = firstArray || [];
       }
       res.json({ results });
+      if (req.session.userId) trackUsageEvent(req.session.userId, "rollendna");
     } catch (error) {
       console.error("Error reclassifying:", error);
       res.status(500).json({ error: "Fehler bei der Neubewertung" });
@@ -1530,7 +1549,7 @@ Antworte ausschließlich als JSON mit exakt dieser Struktur:
       const content = response.choices[0]?.message?.content || "{}";
       const data = JSON.parse(content);
       res.json(data);
-      if (req.session.userId) trackUsageEvent(req.session.userId, "generate_bericht");
+      if (req.session.userId) trackUsageEvent(req.session.userId, "rollendna");
     } catch (error) {
       console.error("Error generating Bericht:", error);
       res.status(500).json({ error: "Fehler bei der Bericht-Generierung" });
@@ -1617,7 +1636,7 @@ Antworte als JSON:
       const content = response.choices[0]?.message?.content || "{}";
       const data = JSON.parse(content);
       res.json(data);
-      if (req.session.userId) trackUsageEvent(req.session.userId, "generate_analyse");
+      if (req.session.userId) trackUsageEvent(req.session.userId, "rollendna");
     } catch (error) {
       console.error("Error generating Analyse:", error);
       res.status(500).json({ error: "Fehler bei der Analyse-Generierung" });
@@ -1629,6 +1648,13 @@ Antworte als JSON:
       const { context, profiles, computed, levers, region } = req.body;
       if (!profiles?.team || !profiles?.person) {
         return res.status(400).json({ error: "Team- und Personenprofil erforderlich" });
+      }
+
+      if (req.session.userId) {
+        const limitCheck = await checkOrgAiLimit(req.session.userId);
+        if (!limitCheck.allowed) {
+          return res.status(429).json({ error: limitCheck.reason });
+        }
       }
 
       const isTriad = (t: any) => t && typeof t.impulsiv === "number" && typeof t.intuitiv === "number" && typeof t.analytisch === "number";
@@ -1720,6 +1746,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
 
       const report = response.choices[0]?.message?.content || "";
       res.json({ report });
+      if (req.session.userId) trackUsageEvent(req.session.userId, "teamdynamik");
     } catch (error) {
       console.error("Error generating team report:", error);
       res.status(500).json({ error: "Fehler bei der Report-Generierung" });
@@ -2344,6 +2371,13 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
       if (!beruf || typeof beruf !== "string") {
         return res.status(400).json({ error: "Beruf ist erforderlich" });
       }
+
+      if (req.session.userId) {
+        const limitCheck = await checkOrgAiLimit(req.session.userId);
+        if (!limitCheck.allowed) {
+          return res.status(429).json({ error: limitCheck.reason });
+        }
+      }
       const safeBeruf = beruf.slice(0, 120);
       const safeBereich = typeof bereich === "string" ? bereich.slice(0, 120) : "";
       const safeFuehrungstyp = typeof fuehrungstyp === "string" ? fuehrungstyp.slice(0, 80) : "";
@@ -2390,6 +2424,7 @@ Wichtig:
 
       const text = response.choices[0]?.message?.content?.trim() || "";
       res.json({ text });
+      if (req.session.userId) trackUsageEvent(req.session.userId, "matchcheck");
     } catch (error) {
       console.error("Error generating Personenprofil:", error);
       res.status(500).json({ error: "Fehler bei der Generierung" });

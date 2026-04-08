@@ -63,6 +63,7 @@ export interface IStorage {
   createUsageEvent(data: InsertUsageEvent): Promise<UsageEvent>;
   getUsageStatsByOrg(orgId: number, since: Date): Promise<{ eventType: string; count: number }[]>;
   getUsageStatsByUser(userId: number, since: Date): Promise<{ eventType: string; count: number }[]>;
+  getUsageBreakdownByOrg(orgId: number, since: Date): Promise<{ userId: number; eventType: string; count: number }[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -456,6 +457,24 @@ export class DatabaseStorage implements IStorage {
       counts[e.eventType] = (counts[e.eventType] || 0) + 1;
     }
     return Object.entries(counts).map(([eventType, count]) => ({ eventType, count }));
+  }
+
+  async getUsageBreakdownByOrg(orgId: number, since: Date): Promise<{ userId: number; eventType: string; count: number }[]> {
+    const events = await db.select().from(usageEvents)
+      .where(and(eq(usageEvents.organizationId, orgId), gte(usageEvents.createdAt, since)));
+    const counts: Record<string, Record<string, number>> = {};
+    for (const e of events) {
+      const key = e.userId;
+      if (!counts[key]) counts[key] = {};
+      counts[key][e.eventType] = (counts[key][e.eventType] || 0) + 1;
+    }
+    const result: { userId: number; eventType: string; count: number }[] = [];
+    for (const [userId, types] of Object.entries(counts)) {
+      for (const [eventType, count] of Object.entries(types)) {
+        result.push({ userId: parseInt(userId), eventType, count });
+      }
+    }
+    return result;
   }
 }
 
