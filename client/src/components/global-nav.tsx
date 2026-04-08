@@ -42,7 +42,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
 
   const NAV_ITEMS = useMemo(() => {
     const items = [...BASE_NAV_ITEMS];
-    if (user?.courseAccess || user?.role === "admin" || user?.role === "subadmin") {
+    if ((user?.courseAccess || user?.role === "subadmin") && user?.role !== "admin") {
       items.push(COURSE_NAV_ITEM);
     }
     return items;
