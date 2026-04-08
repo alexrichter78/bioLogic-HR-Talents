@@ -536,6 +536,7 @@ async function trackUsageEvent(userId: number, eventType: string): Promise<void>
     const user = await storage.getUserById(userId);
     const orgId = user?.organizationId ?? undefined;
     await storage.createUsageEvent({ userId, organizationId: orgId ?? null, eventType });
+    await storage.incrementUserAiUsage(userId);
     if (orgId) {
       await storage.incrementOrgAiUsage(orgId);
     }
@@ -544,28 +545,39 @@ async function trackUsageEvent(userId: number, eventType: string): Promise<void>
   }
 }
 
-async function autoResetIfNewMonth(org: { id: number; currentPeriodStart: Date | null }): Promise<void> {
-  const periodStart = org.currentPeriodStart ? new Date(org.currentPeriodStart) : null;
-  if (!periodStart) return;
+function isNewMonth(periodStart: Date | null): boolean {
+  if (!periodStart) return false;
+  const d = new Date(periodStart);
   const now = new Date();
-  if (now.getFullYear() !== periodStart.getFullYear() || now.getMonth() !== periodStart.getMonth()) {
-    await storage.resetOrgAiUsage(org.id);
-  }
+  return now.getFullYear() !== d.getFullYear() || now.getMonth() !== d.getMonth();
 }
 
-async function checkOrgAiLimit(userId: number): Promise<{ allowed: boolean; reason?: string }> {
+async function checkAiLimit(userId: number): Promise<{ allowed: boolean; reason?: string }> {
   try {
-    const user = await storage.getUserById(userId);
-    if (!user?.organizationId) return { allowed: true };
-    let org = await storage.getOrganizationById(user.organizationId);
-    if (!org) return { allowed: true };
-    await autoResetIfNewMonth(org);
-    org = await storage.getOrganizationById(user.organizationId);
-    if (!org) return { allowed: true };
-    if (org.aiRequestLimit === null) return { allowed: true };
-    if (org.aiRequestsUsed >= org.aiRequestLimit) {
-      return { allowed: false, reason: `KI-Kontingent erschöpft (${org.aiRequestsUsed}/${org.aiRequestLimit} Anfragen). Bitte kontaktieren Sie Ihren Administrator.` };
+    let user = await storage.getUserById(userId);
+    if (!user) return { allowed: true };
+
+    if (isNewMonth(user.aiPeriodStart)) {
+      await storage.resetUserAiUsage(user.id);
+      user = (await storage.getUserById(user.id))!;
     }
+    if (user.aiRequestLimit !== null && user.aiRequestsUsed >= user.aiRequestLimit) {
+      return { allowed: false, reason: `Persönliches KI-Kontingent erschöpft (${user.aiRequestsUsed}/${user.aiRequestLimit} Anfragen pro Monat). Bitte kontaktieren Sie Ihren Administrator.` };
+    }
+
+    if (user.organizationId) {
+      let org = await storage.getOrganizationById(user.organizationId);
+      if (org) {
+        if (isNewMonth(org.currentPeriodStart)) {
+          await storage.resetOrgAiUsage(org.id);
+          org = (await storage.getOrganizationById(org.id))!;
+        }
+        if (org.aiRequestLimit !== null && org.aiRequestsUsed >= org.aiRequestLimit) {
+          return { allowed: false, reason: `KI-Kontingent der Organisation erschöpft (${org.aiRequestsUsed}/${org.aiRequestLimit} Anfragen). Bitte kontaktieren Sie Ihren Administrator.` };
+        }
+      }
+    }
+
     return { allowed: true };
   } catch {
     return { allowed: true };
@@ -696,7 +708,7 @@ export async function registerRoutes(
 
   app.post("/api/admin/users", requireAdmin, async (req, res) => {
     try {
-      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, accessUntil, plan, notes, organizationId } = req.body;
+      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, accessUntil, plan, notes, organizationId, aiRequestLimit } = req.body;
       if (!username || !password) {
         return res.status(400).json({ error: "Benutzername und Passwort erforderlich" });
       }
@@ -717,6 +729,7 @@ export async function registerRoutes(
         courseAccess: courseAccess === true,
         emailVerified: false,
         organizationId: organizationId ?? null,
+        aiRequestLimit: aiRequestLimit !== undefined && aiRequestLimit !== null && aiRequestLimit !== "" ? parseInt(aiRequestLimit) : 1000,
       });
       if (accessUntil) {
         await storage.createSubscription({
@@ -814,7 +827,7 @@ export async function registerRoutes(
   app.patch("/api/admin/users/:id", requireAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, accessUntil, plan, notes, subscriptionStatus, organizationId } = req.body;
+      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, accessUntil, plan, notes, subscriptionStatus, organizationId, aiRequestLimit } = req.body;
       const updateData: any = {};
       if (username !== undefined) updateData.username = username;
       if (email !== undefined) updateData.email = email;
@@ -825,6 +838,7 @@ export async function registerRoutes(
       if (isActive !== undefined) updateData.isActive = isActive;
       if (courseAccess !== undefined) updateData.courseAccess = courseAccess;
       if (organizationId !== undefined) updateData.organizationId = organizationId;
+      if (aiRequestLimit !== undefined) updateData.aiRequestLimit = aiRequestLimit === null || aiRequestLimit === "" ? 1000 : parseInt(aiRequestLimit);
       if (password) updateData.passwordHash = await bcrypt.hash(password, 10);
 
       const user = await storage.updateUser(id, updateData);
@@ -1121,7 +1135,7 @@ export async function registerRoutes(
       }
 
       if (req.session.userId) {
-        const limitCheck = await checkOrgAiLimit(req.session.userId);
+        const limitCheck = await checkAiLimit(req.session.userId);
         if (!limitCheck.allowed) {
           return res.status(429).json({ error: limitCheck.reason });
         }
@@ -1274,7 +1288,7 @@ Antworte ausschließlich als JSON:
       }
 
       if (req.session.userId) {
-        const limitCheck = await checkOrgAiLimit(req.session.userId);
+        const limitCheck = await checkAiLimit(req.session.userId);
         if (!limitCheck.allowed) {
           return res.status(429).json({ error: limitCheck.reason });
         }
@@ -1360,7 +1374,7 @@ Beispiel für 3 Einträge:
       }
 
       if (req.session.userId) {
-        const limitCheck = await checkOrgAiLimit(req.session.userId);
+        const limitCheck = await checkAiLimit(req.session.userId);
         if (!limitCheck.allowed) {
           return res.status(429).json({ error: limitCheck.reason });
         }
@@ -1613,7 +1627,7 @@ Antworte ausschließlich als JSON mit exakt dieser Struktur:
       }
 
       if (req.session.userId) {
-        const limitCheck = await checkOrgAiLimit(req.session.userId);
+        const limitCheck = await checkAiLimit(req.session.userId);
         if (!limitCheck.allowed) {
           return res.status(429).json({ error: limitCheck.reason });
         }
@@ -1700,7 +1714,7 @@ Antworte als JSON:
       }
 
       if (req.session.userId) {
-        const limitCheck = await checkOrgAiLimit(req.session.userId);
+        const limitCheck = await checkAiLimit(req.session.userId);
         if (!limitCheck.allowed) {
           return res.status(429).json({ error: limitCheck.reason });
         }
@@ -1810,7 +1824,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
       }
 
       if (req.session.userId) {
-        const limitCheck = await checkOrgAiLimit(req.session.userId);
+        const limitCheck = await checkAiLimit(req.session.userId);
         if (!limitCheck.allowed) {
           return res.status(429).json({ error: limitCheck.reason });
         }
@@ -2422,7 +2436,7 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
       }
 
       if (req.session.userId) {
-        const limitCheck = await checkOrgAiLimit(req.session.userId);
+        const limitCheck = await checkAiLimit(req.session.userId);
         if (!limitCheck.allowed) {
           return res.status(429).json({ error: limitCheck.reason });
         }

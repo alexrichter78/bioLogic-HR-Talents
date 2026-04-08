@@ -31,6 +31,9 @@ export const users = pgTable("users", {
   companyName: text("company_name").notNull().default(""),
   role: text("role").notNull().default("user"),
   organizationId: integer("organization_id").references(() => organizations.id),
+  aiRequestLimit: integer("ai_request_limit").notNull().default(1000),
+  aiRequestsUsed: integer("ai_requests_used").notNull().default(0),
+  aiPeriodStart: timestamp("ai_period_start").notNull().defaultNow(),
   isActive: boolean("is_active").notNull().default(true),
   courseAccess: boolean("course_access").notNull().default(false),
   emailVerified: boolean("email_verified").notNull().default(false),
@@ -108,6 +111,8 @@ export const usageEvents = pgTable("usage_events", {
 
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
+  aiRequestsUsed: true,
+  aiPeriodStart: true,
   createdAt: true,
   updatedAt: true,
   lastLoginAt: true,

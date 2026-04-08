@@ -59,6 +59,8 @@ export interface IStorage {
   listOrganizations(): Promise<Organization[]>;
   incrementOrgAiUsage(orgId: number): Promise<void>;
   resetOrgAiUsage(orgId: number): Promise<void>;
+  incrementUserAiUsage(userId: number): Promise<void>;
+  resetUserAiUsage(userId: number): Promise<void>;
 
   createUsageEvent(data: InsertUsageEvent): Promise<UsageEvent>;
   getUsageStatsByOrg(orgId: number, since: Date): Promise<{ eventType: string; count: number }[]>;
@@ -432,6 +434,18 @@ export class DatabaseStorage implements IStorage {
     await db.update(organizations)
       .set({ aiRequestsUsed: 0, currentPeriodStart: new Date(), updatedAt: new Date() })
       .where(eq(organizations.id, orgId));
+  }
+
+  async incrementUserAiUsage(userId: number): Promise<void> {
+    await db.update(users)
+      .set({ aiRequestsUsed: sql`${users.aiRequestsUsed} + 1`, updatedAt: new Date() })
+      .where(eq(users.id, userId));
+  }
+
+  async resetUserAiUsage(userId: number): Promise<void> {
+    await db.update(users)
+      .set({ aiRequestsUsed: 0, aiPeriodStart: new Date(), updatedAt: new Date() })
+      .where(eq(users.id, userId));
   }
 
   async createUsageEvent(data: InsertUsageEvent): Promise<UsageEvent> {

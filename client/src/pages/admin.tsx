@@ -18,6 +18,8 @@ interface UserWithSub {
   createdAt: string;
   lastLoginAt: string | null;
   organizationId: number | null;
+  aiRequestLimit: number;
+  aiRequestsUsed: number;
   subscription: {
     id: number;
     plan: string;
@@ -42,6 +44,7 @@ interface UserForm {
   notes: string;
   subscriptionStatus: string;
   organizationId: number | null;
+  aiRequestLimit: string;
 }
 
 const emptyForm: UserForm = {
@@ -59,6 +62,7 @@ const emptyForm: UserForm = {
   notes: "",
   subscriptionStatus: "active",
   organizationId: null,
+  aiRequestLimit: "1000",
 };
 
 function formatDate(d: string | null) {
@@ -392,6 +396,7 @@ export default function Admin() {
       notes: u.subscription?.notes || "",
       subscriptionStatus: u.subscription?.status || "active",
       organizationId: u.organizationId ?? null,
+      aiRequestLimit: String(u.aiRequestLimit ?? 1000),
     });
   }
 
@@ -553,6 +558,10 @@ export default function Admin() {
                 <option key={org.id} value={org.id}>{org.name}</option>
               ))}
             </select>
+          </div>
+          <div>
+            <label style={labelStyle}>KI-Limit pro Monat</label>
+            <input type="number" value={form.aiRequestLimit} onChange={e => setForm({ ...form, aiRequestLimit: e.target.value })} style={inputStyle} data-testid="input-admin-ai-limit" placeholder="1000" min="0" />
           </div>
           <div>
             <label style={labelStyle}>Zugang bis</label>
@@ -757,6 +766,7 @@ export default function Admin() {
                       <span style={{ fontWeight: 500 }}>@{u.username}</span>
                       {u.companyName && <span style={{ display: "flex", alignItems: "center", gap: 3 }}><Building2 style={{ width: 11, height: 11 }} />{u.companyName}</span>}
                       {u.organizationId && (() => { const org = orgsList.find((o: any) => o.id === u.organizationId); return org ? <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, background: "rgba(0,113,227,0.06)", color: "#0071E3", fontWeight: 500 }}>{org.name}</span> : null; })()}
+                      <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, background: u.aiRequestsUsed >= u.aiRequestLimit ? "rgba(255,59,48,0.08)" : "rgba(52,199,89,0.08)", color: u.aiRequestsUsed >= u.aiRequestLimit ? "#FF3B30" : "#34C759", fontWeight: 500 }}>KI: {u.aiRequestsUsed}/{u.aiRequestLimit}</span>
                     </div>
                   </div>
                   <div style={{ textAlign: "right", minWidth: 120 }}>
