@@ -389,6 +389,42 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                 </div>
               )}
             </div>
+            {(user?.role === "admin" || user?.role === "subadmin") && (
+              <button
+                onClick={() => setLocation("/firma-dashboard")}
+                data-testid="nav-firma-dashboard"
+                title="Firmen-Dashboard"
+                style={{
+                  width: 32, height: 32, borderRadius: 8,
+                  border: "none", cursor: "pointer",
+                  background: location === "/firma-dashboard" ? "rgba(0,113,227,0.08)" : "transparent",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  transition: "all 200ms ease",
+                }}
+                onMouseEnter={(e) => { if (location !== "/firma-dashboard") e.currentTarget.style.background = "rgba(0,113,227,0.05)"; }}
+                onMouseLeave={(e) => { if (location !== "/firma-dashboard") e.currentTarget.style.background = "transparent"; }}
+              >
+                <Building2 style={{ width: 15, height: 15, color: location === "/firma-dashboard" ? "#0071E3" : "#86868B", strokeWidth: 1.8 }} />
+              </button>
+            )}
+            {user?.role === "admin" && (
+              <button
+                onClick={() => setLocation("/admin")}
+                data-testid="nav-admin"
+                title="Benutzerverwaltung"
+                style={{
+                  width: 32, height: 32, borderRadius: 8,
+                  border: "none", cursor: "pointer",
+                  background: location === "/admin" ? "rgba(0,113,227,0.08)" : "transparent",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  transition: "all 200ms ease",
+                }}
+                onMouseEnter={(e) => { if (location !== "/admin") e.currentTarget.style.background = "rgba(0,113,227,0.05)"; }}
+                onMouseLeave={(e) => { if (location !== "/admin") e.currentTarget.style.background = "transparent"; }}
+              >
+                <Settings style={{ width: 15, height: 15, color: location === "/admin" ? "#0071E3" : "#86868B", strokeWidth: 1.8 }} />
+              </button>
+            )}
             {user && user.role !== "admin" && (() => {
               const remaining = Math.max(0, user.aiRequestLimit - user.aiRequestsUsed);
               const pct = user.aiRequestLimit > 0 ? (user.aiRequestsUsed / user.aiRequestLimit) * 100 : 0;
@@ -430,42 +466,6 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                 </div>
               );
             })()}
-            {(user?.role === "admin" || user?.role === "subadmin") && (
-              <button
-                onClick={() => setLocation("/firma-dashboard")}
-                data-testid="nav-firma-dashboard"
-                title="Firmen-Dashboard"
-                style={{
-                  width: 32, height: 32, borderRadius: 8,
-                  border: "none", cursor: "pointer",
-                  background: location === "/firma-dashboard" ? "rgba(0,113,227,0.08)" : "transparent",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  transition: "all 200ms ease",
-                }}
-                onMouseEnter={(e) => { if (location !== "/firma-dashboard") e.currentTarget.style.background = "rgba(0,113,227,0.05)"; }}
-                onMouseLeave={(e) => { if (location !== "/firma-dashboard") e.currentTarget.style.background = "transparent"; }}
-              >
-                <Building2 style={{ width: 15, height: 15, color: location === "/firma-dashboard" ? "#0071E3" : "#86868B", strokeWidth: 1.8 }} />
-              </button>
-            )}
-            {user?.role === "admin" && (
-              <button
-                onClick={() => setLocation("/admin")}
-                data-testid="nav-admin"
-                title="Benutzerverwaltung"
-                style={{
-                  width: 32, height: 32, borderRadius: 8,
-                  border: "none", cursor: "pointer",
-                  background: location === "/admin" ? "rgba(0,113,227,0.08)" : "transparent",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  transition: "all 200ms ease",
-                }}
-                onMouseEnter={(e) => { if (location !== "/admin") e.currentTarget.style.background = "rgba(0,113,227,0.05)"; }}
-                onMouseLeave={(e) => { if (location !== "/admin") e.currentTarget.style.background = "transparent"; }}
-              >
-                <Settings style={{ width: 15, height: 15, color: location === "/admin" ? "#0071E3" : "#86868B", strokeWidth: 1.8 }} />
-              </button>
-            )}
             <button
               onClick={logout}
               data-testid="nav-logout"
