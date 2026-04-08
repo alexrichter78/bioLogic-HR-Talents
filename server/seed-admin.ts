@@ -135,12 +135,13 @@ export async function seedAdmin() {
   try {
     await ensureSchema();
 
+    console.log(`[seed] ADMIN_PASSWORD env set: ${!!process.env.ADMIN_PASSWORD}, using password length: ${adminPassword.length}`);
     const existing = await storage.getUserByUsername(adminUsername);
     const passwordHash = await bcrypt.hash(adminPassword, 10);
 
     if (existing) {
       await storage.updateUser(existing.id, { passwordHash });
-      console.log(`Admin password updated for: ${adminUsername}`);
+      console.log(`[seed] Admin password updated for: ${adminUsername} (id=${existing.id}, role=${existing.role}, isActive=${existing.isActive})`);
     } else {
       await storage.createUser({
         username: adminUsername,
@@ -153,10 +154,16 @@ export async function seedAdmin() {
         isActive: true,
         emailVerified: true,
       });
-      console.log(`Admin account created: ${adminUsername}`);
+      console.log(`[seed] Admin account created: ${adminUsername}`);
+    }
+
+    const verify = await storage.getUserByUsername(adminUsername);
+    if (verify) {
+      const testMatch = await bcrypt.compare(adminPassword, verify.passwordHash);
+      console.log(`[seed] Password verify after seed: ${testMatch ? "OK" : "FAILED"}`);
     }
   } catch (error) {
-    console.error("Failed to seed admin:", error);
+    console.error("[seed] Failed to seed admin:", error);
   }
 
   try {
