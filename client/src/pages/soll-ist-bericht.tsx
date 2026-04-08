@@ -1190,29 +1190,29 @@ export default function SollIstBericht() {
 
               <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-impact-matrix">
                 <SectionHead num={3} title="Wirkung der Besetzung im Arbeitsalltag" />
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
                   {result.impactAreas.map((area, areaIdx) => {
                     const sevCol = area.severity === "critical" ? "#FF3B30" : area.severity === "warning" ? "#FF9500" : "#34C759";
                     return (
-                      <div key={area.id} data-testid={`impact-detail-${area.id}`}>
-                        <div style={{ padding: "14px 0" }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                      <div key={area.id} data-testid={`impact-detail-${area.id}`} style={{ borderTop: areaIdx > 0 ? "1px solid rgba(0,0,0,0.06)" : "none" }}>
+                        <div style={{ padding: "18px 0 16px" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
                             <SubHead num={areaIdx + 1} title={area.label} color="#0F3A6E" />
-                            <span style={{ fontSize: 14, fontWeight: 700, color: sevCol, textTransform: "uppercase", letterSpacing: "0.05em", marginTop: 4 }}>{severityLabel(area.severity)}</span>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: sevCol, textTransform: "uppercase", letterSpacing: "0.05em", marginTop: 4 }}>{severityLabel(area.severity)}</span>
                           </div>
-                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
-                            <div data-text-left style={{ padding: "10px 12px", borderRadius: 8, background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.05)" }}>
-                              <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 6px" }}>Stellenanforderung</p>
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 12 }}>
+                            <div data-text-left>
+                              <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 4px" }}>Stellenanforderung</p>
                               <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang="de">{area.roleNeed}</p>
                             </div>
-                            <div data-text-left style={{ padding: "10px 12px", borderRadius: 8, background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.05)" }}>
-                              <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 6px" }}>Person</p>
+                            <div data-text-left>
+                              <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 4px" }}>Person</p>
                               <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang="de">{area.candidatePattern}</p>
                             </div>
                           </div>
-                          <div style={{ display: "flex", borderRadius: 10, background: `linear-gradient(180deg, ${sevCol}14 0%, ${sevCol}08 100%)`, border: `1px solid ${sevCol}20`, overflow: "hidden" }}>
-                            <div style={{ width: 4, flexShrink: 0, background: sevCol }} />
-                            <div style={{ padding: "12px 16px", flex: 1 }}>
+                          <div style={{ display: "flex", borderRadius: 8, overflow: "hidden" }}>
+                            <div style={{ width: 3, flexShrink: 0, background: sevCol }} />
+                            <div style={{ padding: "10px 14px", flex: 1, background: `${sevCol}08` }}>
                             <p style={{ fontSize: 14, lineHeight: 1.85, margin: 0, color: "#48484A", wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{area.risk}</p>
                             </div>
                           </div>
