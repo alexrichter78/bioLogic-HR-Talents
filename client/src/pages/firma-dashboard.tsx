@@ -27,25 +27,25 @@ interface PerUserUsage {
   count: number;
 }
 
-const EVENT_LABELS: Record<string, string> = {
-  ki_coach: "KI-Coach",
-  rollendna: "JobCheck",
-  teamdynamik: "TeamCheck",
-  matchcheck: "MatchCheck",
-};
+const EVENT_LABELS: [string, string][] = [
+  ["ki_coach", "KI-Coach"],
+  ["rollendna", "JobCheck"],
+  ["matchcheck", "MatchCheck"],
+  ["teamdynamik", "TeamCheck"],
+];
 
 const EVENT_ICONS: Record<string, typeof Bot> = {
   ki_coach: Bot,
   rollendna: Briefcase,
-  teamdynamik: Users,
   matchcheck: GitCompareArrows,
+  teamdynamik: Users,
 };
 
 const EVENT_COLORS: Record<string, string> = {
   ki_coach: "#0071E3",
   rollendna: "#34C759",
-  teamdynamik: "#AF52DE",
   matchcheck: "#FF3B30",
+  teamdynamik: "#AF52DE",
 };
 
 const PERIOD_OPTIONS = [
@@ -200,7 +200,7 @@ export default function FirmaDashboard() {
             )}
 
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 10, marginBottom: 16 }}>
-              {Object.entries(EVENT_LABELS).map(([key, label]) => {
+              {EVENT_LABELS.map(([key, label]) => {
                 const count = mergedTotals.find(t => t.eventType === key)?.count || 0;
                 const Icon = EVENT_ICONS[key] || BarChart3;
                 const color = EVENT_COLORS[key] || "#636366";
@@ -231,7 +231,7 @@ export default function FirmaDashboard() {
                     <thead>
                       <tr>
                         <th style={{ textAlign: "left", padding: "8px 12px", fontWeight: 600, color: "#636366", borderBottom: "2px solid rgba(0,0,0,0.06)", fontSize: 12 }}>Benutzer</th>
-                        {Object.entries(EVENT_LABELS).map(([key, label]) => (
+                        {EVENT_LABELS.map(([key, label]) => (
                           <th key={key} style={{ textAlign: "center", padding: "8px 8px", fontWeight: 600, color: EVENT_COLORS[key], borderBottom: "2px solid rgba(0,0,0,0.06)", fontSize: 11, whiteSpace: "nowrap" }}>{label}</th>
                         ))}
                         <th style={{ textAlign: "center", padding: "8px 12px", fontWeight: 700, color: "#1D1D1F", borderBottom: "2px solid rgba(0,0,0,0.06)", fontSize: 12 }}>Gesamt</th>
@@ -244,7 +244,7 @@ export default function FirmaDashboard() {
                             <div style={{ fontWeight: 600, color: "#1D1D1F" }}>{u.firstName} {u.lastName}</div>
                             <div style={{ fontSize: 11, color: "#8E8E93" }}>@{u.username}</div>
                           </td>
-                          {Object.keys(EVENT_LABELS).map(key => (
+                          {EVENT_LABELS.map(([key]) => (
                             <td key={key} style={{ textAlign: "center", padding: "10px 8px", borderBottom: "1px solid rgba(0,0,0,0.04)", fontWeight: 500, color: (u.events[key] || 0) > 0 ? "#1D1D1F" : "#D1D1D6" }}>
                               {u.events[key] || 0}
                             </td>
@@ -258,8 +258,8 @@ export default function FirmaDashboard() {
                     <tfoot>
                       <tr>
                         <td style={{ padding: "10px 12px", fontWeight: 700, color: "#1D1D1F" }}>Gesamt</td>
-                        {Object.keys(EVENT_LABELS).map(key => {
-                          const sum = totals.find(t => t.eventType === key)?.count || 0;
+                        {EVENT_LABELS.map(([key]) => {
+                          const sum = mergedTotals.find(t => t.eventType === key)?.count || 0;
                           return (
                             <td key={key} style={{ textAlign: "center", padding: "10px 8px", fontWeight: 700, color: EVENT_COLORS[key] }}>
                               {Number(sum)}
