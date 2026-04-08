@@ -620,6 +620,7 @@ export async function registerRoutes(
 
       const valid = await bcrypt.compare(password, user.passwordHash);
       if (!valid) {
+        console.log(`Login failed for user "${user.username}" – password mismatch`);
         return res.status(401).json({ error: "Ungültige Anmeldedaten" });
       }
 
