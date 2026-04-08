@@ -770,16 +770,19 @@ export default function SollIstBericht() {
                   <div style={{ padding: isMobile ? "0 14px 14px" : "0 32px 28px" }}>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px 32px" }}>
 
-                      <div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                          <div style={{ width: 14, height: 14, borderRadius: 7, background: fitColor, flexShrink: 0 }} />
-                          <span style={{ fontSize: 15, fontWeight: 700, color: fitColor }} data-testid="text-summary-fit">{fitLabel}</span>
+                      <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                          <div style={{ width: 10, height: 10, borderRadius: 5, background: fitColor, flexShrink: 0 }} />
+                          <span style={{ fontSize: 14, fontWeight: 700, color: fitColor }} data-testid="text-summary-fit">{fitLabel}</span>
                         </div>
-                        <p style={{ fontSize: 14, fontWeight: 500, color: "#6E6E73", margin: 0 }} data-testid="text-summary-fazit">{shortFazit}</p>
+                        <p style={{ fontSize: 13, fontWeight: 500, color: "#6E6E73", margin: 0, lineHeight: 1.6 }} data-testid="text-summary-fazit">{shortFazit}</p>
                       </div>
 
-                      <div>
-                        <p style={{ fontSize: 15, fontWeight: 700, color: devGaugeColor, margin: "0 0 10px" }}>Entwicklungsaufwand: {devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch"}</p>
+                      <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                          <div style={{ width: 10, height: 10, borderRadius: 5, background: devGaugeColor, flexShrink: 0 }} />
+                          <span style={{ fontSize: 14, fontWeight: 700, color: devGaugeColor }}>Entwicklungsaufwand: {devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch"}</span>
+                        </div>
                         <div style={{ display: "flex", gap: 5 }}>
                           {Array.from({ length: 3 }).map((_, i) => {
                             const filledBars = 4 - devScore;
@@ -789,14 +792,14 @@ export default function SollIstBericht() {
                       </div>
 
                       <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
-                        <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>{kritischLabel}</p>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>{kritischLabel}</p>
                         {kritischBullets.map((b, i) => (
                           <BulletItem key={i} text={b} color={bulletCol} />
                         ))}
                       </div>
 
                       <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
-                        <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>Auswirkung</p>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>Auswirkung</p>
                         {auswirkungBullets.map((b, i) => (
                           <BulletItem key={i} text={b} color={bulletCol} />
                         ))}

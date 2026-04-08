@@ -1219,15 +1219,12 @@ export default function TeamReport() {
                       return (
                         <div style={{ display: "grid", gridTemplateColumns: cols, gap: 12, marginBottom: 12 }}>
                           {resultCards.map((card) => (
-                            <div key={card.title} style={{ padding: "16px 18px", borderRadius: 14, border: `1px solid ${card.colors.border}`, background: card.colors.bg }} data-testid={card.testId}>
-                              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                  <Zap style={{ width: 14, height: 14, color: card.colors.text }} />
-                                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{card.title}</span>
-                                </div>
-                                <span style={{ fontSize: 11, fontWeight: 700, color: card.colors.text, background: `${card.colors.text}12`, padding: "2px 10px", borderRadius: 6 }}>{card.label}</span>
+                            <div key={card.title} style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "none" }} data-testid={card.testId}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                                <div style={{ width: 10, height: 10, borderRadius: 5, background: card.colors.text, flexShrink: 0 }} />
+                                <span style={{ fontSize: 14, fontWeight: 700, color: card.colors.text }}>{card.title}: {card.label}</span>
                               </div>
-                              <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{card.text}</p>
+                              <p style={{ fontSize: 13, color: "#6E6E73", margin: 0, lineHeight: 1.6, fontWeight: 500 }}>{card.text}</p>
                             </div>
                           ))}
                         </div>
