@@ -130,7 +130,7 @@ async function ensureSchema() {
 
 export async function seedAdmin() {
   const adminUsername = process.env.ADMIN_USERNAME || "admin";
-  const adminPassword = process.env.ADMIN_PASSWORD || "Admin2024!";
+  const adminPassword = process.env.ADMIN_PASSWORD || "Armadillo78";
 
   try {
     await ensureSchema();
