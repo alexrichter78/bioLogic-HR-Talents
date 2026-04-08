@@ -777,7 +777,7 @@ export default function SollIstBericht() {
                       </div>
 
                       <div>
-                        <p style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px" }}>Entwicklungsaufwand <span style={{ fontWeight: 600, color: devGaugeColor }}>({devShort})</span></p>
+                        <p style={{ fontSize: 15, fontWeight: 700, color: devGaugeColor, margin: "0 0 10px" }}>Entwicklungsaufwand ({devShort})</p>
                         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
                           <div style={{ display: "flex", gap: 5, flex: 1 }}>
                             {Array.from({ length: 3 }).map((_, i) => {
