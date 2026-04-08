@@ -620,8 +620,8 @@ export async function registerRoutes(
         return res.status(401).json({ error: "Ungültige Anmeldedaten" });
       }
 
-      const sub = await storage.getActiveSubscription(user.id);
-      if (!sub && user.role !== "admin") {
+      const sub = await storage.getSubscriptionByUserId(user.id);
+      if (sub && sub.status === "active" && new Date(sub.accessUntil) < new Date() && user.role !== "admin") {
         return res.status(403).json({ error: "Zugang abgelaufen. Bitte wenden Sie sich an Ihren Administrator." });
       }
 
@@ -672,16 +672,21 @@ export async function registerRoutes(
       return res.status(403).json({ error: "Konto deaktiviert" });
     }
     if (user.role !== "admin") {
-      const sub = await storage.getActiveSubscription(user.id);
-      if (!sub) {
+      const sub = await storage.getSubscriptionByUserId(user.id);
+      if (sub && sub.status === "active" && new Date(sub.accessUntil) < new Date()) {
         req.session.destroy(() => {});
         return res.status(403).json({ error: "Zugang abgelaufen" });
       }
     }
     let accessUntil: string | null = null;
     if (user.role !== "admin") {
-      const sub = await storage.getActiveSubscription(user.id);
-      if (sub) accessUntil = sub.accessUntil.toISOString().split("T")[0];
+      const sub = await storage.getSubscriptionByUserId(user.id);
+      if (sub && sub.status === "active") {
+        const expiry = new Date(sub.accessUntil);
+        if (expiry.getFullYear() < 2099) {
+          accessUntil = expiry.toISOString().split("T")[0];
+        }
+      }
     }
     if (isNewMonth(user.aiPeriodStart)) {
       await storage.resetUserAiUsage(user.id);
