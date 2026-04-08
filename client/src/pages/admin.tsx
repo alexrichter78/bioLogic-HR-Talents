@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
@@ -77,6 +77,7 @@ export default function Admin() {
   const [users, setUsers] = useState<UserWithSub[]>([]);
   const [loading, setLoading] = useState(true);
   const [editId, setEditId] = useState<number | null>(null);
+  const formRef = useRef<HTMLDivElement>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState<UserForm>(emptyForm);
   const [error, setError] = useState("");
@@ -398,6 +399,7 @@ export default function Admin() {
       organizationId: u.organizationId ?? null,
       aiRequestLimit: String(u.aiRequestLimit ?? 1000),
     });
+    setTimeout(() => formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
   }
 
   function startCreate() {
@@ -501,7 +503,7 @@ export default function Admin() {
 
   function renderForm() {
     return (
-      <div style={{ background: "#fff", borderRadius: 16, padding: 24, border: "1px solid rgba(0,0,0,0.06)", marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.03)" }}>
+      <div ref={formRef} style={{ background: "#fff", borderRadius: 16, padding: 24, border: "1px solid rgba(0,0,0,0.06)", marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.03)" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
           <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
             {showCreate ? "Neuen Benutzer anlegen" : "Benutzer bearbeiten"}
