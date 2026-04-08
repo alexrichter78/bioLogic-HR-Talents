@@ -299,7 +299,9 @@ export function computeSollIst(
     }
   }
   const riskTimeline = buildRiskTimeline(roleName, cn, rk, ck, gapLevel, roleIsBalFull, rt, ct);
-  const devGap = fitRating === "NICHT_GEEIGNET" ? "hoch" : baseControlStr;
+  const devGap: "gering" | "mittel" | "hoch" = fitRating === "NICHT_GEEIGNET" ? "hoch"
+    : fitRating === "BEDINGT" && baseControlStr === "gering" ? "mittel"
+    : baseControlStr;
   const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildDevelopment(devGap, rk, ck, controlIntensity, cn, isDualDomRole, rk2, roleIsBalFull, ct);
   const actions = buildActions(rk, ck, gapLevel, controlIntensity, roleIsBalFull, ct);
   const integrationsplan = buildIntegrationsplan(roleName, cn, fitLabel, rk, ck, gapLevel, controlIntensity, fuehrungsArt, rt, ct, roleIsBalFull);

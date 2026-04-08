@@ -1381,7 +1381,8 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   if (secondaryTension) {
     risks.midTerm.push(secondaryTension.stressText);
   }
-  const dev = developmentFromControl(ctrl.level, ctrl.points, critical.label, t, roleDom, candDom);
+  const devControl: ControlIntensity = overallFit === "CONDITIONAL" && ctrl.level === "LOW" ? "MEDIUM" : ctrl.level;
+  const dev = developmentFromControl(devControl, ctrl.points, critical.label, t, roleDom, candDom);
   const plan = integrationPlan(role, critical.id, ctrl.level, t);
 
   return {
