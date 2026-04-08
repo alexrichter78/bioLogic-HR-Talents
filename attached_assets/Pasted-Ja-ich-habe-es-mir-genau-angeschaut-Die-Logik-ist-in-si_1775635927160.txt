@@ -1,0 +1,254 @@
+Ja, ich habe es mir genau angeschaut. Die Logik ist in sich schon gut gedacht, aber sie hat aktuell ein paar harte Widersprüche, Überschneidungen und Prioritätsprobleme. So wie sie jetzt steht, kann es passieren, dass dieselbe Konstellation auf mehreren Wegen zu unterschiedlichen Ergebnissen kommt.
+
+Der Kernfehler ist:
+Du hast KO-Regeln, dann Mismatch-Score, dann Sonderfälle, die Schritt 2 überschreiben. Genau dort entstehen Konflikte.
+
+Was daran gut ist
+
+Gut gelöst sind vor allem diese Punkte:
+
+klare KO-Fälle bei extremen Rollenprofilen
+Trennung zwischen Eignung und Führungs-/Kontrollaufwand
+Sonderlogik für BAL_FULL
+Berücksichtigung von Dual-/Fast-Dual-Konstellationen
+Sekundärflip als eigener Risikofaktor
+
+Das ist fachlich deutlich stärker als eine reine Prozent-Abweichungslogik.
+
+Wo es logisch knallt
+1. Verschiedene Primärdominanz ist einmal erlaubt und einmal verboten
+
+In Schritt 2 steht:
+
+Andere Primärdominanz UND Mismatch ≤ 10 → Geeignet
+Andere Primärdominanz UND Mismatch ≤ 18 → Bedingt geeignet
+
+In Schritt 3 steht aber:
+
+Verschiedene Primärdominanz → Nicht geeignet
+
+Das widerspricht sich direkt.
+
+Folge:
+Schritt 2 macht die Prüfung auf andere Primärdominanz überhaupt erst möglich, Schritt 3 verbietet sie pauschal wieder.
+
+Entscheidung nötig:
+Entweder:
+
+Variante A: andere Primärdominanz kann in seltenen Fällen trotzdem geeignet sein
+oder
+Variante B: andere Primärdominanz ist grundsätzlich nicht geeignet
+
+Beides gleichzeitig geht nicht.
+
+2. Person = BAL_FULL ist doppelt und hart geregelt
+
+Du hast:
+
+Person = BAL_FULL, Rolle nicht → Nicht geeignet
+Person = BAL_FULL, Rolle klar → Nicht geeignet
+
+Das ist praktisch dieselbe Aussage zweimal, nur einmal allgemein und einmal spezieller.
+
+Besser:
+Nur eine saubere Regel:
+
+Person BAL_FULL + Rolle nicht BAL_FULL → Nicht geeignet
+
+Dann ist das eindeutig.
+
+3. Große Einzelabweichung ist doppelt und unscharf
+
+Du hast:
+
+max. Einzeldifferenz > 25 → Nicht geeignet
+max. Einzeldiff > 18 → Bedingt geeignet
+
+Das ist zwar formal nicht falsch, aber unsauber formuliert, weil >25 automatisch auch >18 ist.
+
+Sauberer wäre:
+
+maxDiff 19–25 → maximal bedingt geeignet
+maxDiff >25 → nicht geeignet
+
+Dann ist die Logik geschlossen.
+
+4. Person fast-Dual ist doppelt definiert
+
+Du hast:
+
+Person fast-Dual, gap2 ≤ 5 → Bedingt geeignet
+Person fast-Dual, gap1 ≤ 5 → Bedingt geeignet
+
+Hier ist unklar, was für dich überhaupt fast-Dual bedeutet.
+
+Normalerweise wäre:
+
+gap1 ≤ 5 = obere zwei Komponenten fast gleich → fast-Dual
+
+gap2 ≤ 5 beschreibt eher, dass die zweite und dritte Komponente eng beieinander liegen. Das ist etwas völlig anderes.
+
+Also hier musst du definieren:
+
+fast-Dual = gap1 ≤ 5
+unklare Sekundärstruktur = gap2 ≤ 5
+
+Sonst vermischst du zwei verschiedene Muster.
+
+5. Sekundärflip kollidiert mit "gleiche Primärdominanz"
+
+Beispiel:
+
+gleiche Primärdominanz
+kleiner Mismatch
+eigentlich Schritt 2 → Geeignet
+aber dann Sekundärflip mit gap2 > 5 → Nicht geeignet
+
+Das kann fachlich Sinn ergeben. Aber dann muss klar sein:
+
+Sekundärflip ist eine harte Override-Regel mit höherer Priorität als der Mismatch-Score.
+
+Sonst versteht später niemand, warum ein eigentlich guter Zahlenmatch plötzlich nicht geeignet ist.
+
+6. Rolle = BAL_FULL und "Person Spread ≤ 5" ist sehr eng
+
+Du schreibst:
+
+Rolle BAL_FULL + Person Spread ≤ 5 → Geeignet
+Rolle BAL_FULL + Person Spread 6–11 → Bedingt geeignet
+Rolle BAL_FULL + Person Spread ≥ 12 → Nicht geeignet
+
+Das ist stringent, aber sehr streng.
+Du sagst damit praktisch:
+
+Eine ausgeglichene Rolle kann nur mit einer ebenfalls sehr ausgeglichenen Person wirklich gut passen.
+
+Das passt zu deiner bisherigen bioLogic-Logik. Aber dann darfst du BAL_FULL nicht gleichzeitig als flexible Universalrolle darstellen. Das ist eine strategische Grundsatzentscheidung.
+
+7. Dual-Dominanz Untergrenze ist rechnerisch noch unklar
+
+Du schreibst:
+
+Rolle = DUAL UND Person < 75% der Rollenwerte in den Dual-Komponenten → KO
+
+Hier fehlen klare Rechenregeln:
+
+Vergleich pro Komponente einzeln?
+beide Dual-Komponenten müssen erfüllt sein?
+Prozent von welchem Zahlenwert?
+was ist bei gerundeten Werten?
+
+Beispiel:
+Rolle 40 / 38 / 22
+75% davon wären 30 / 28,5
+
+Muss Person dann bei beiden Dual-Komponenten darüber liegen?
+Oder reicht eine?
+
+Das muss formalisiert werden, sonst wird es im Code schwammig.
+
+Größtes strukturelles Problem
+
+Die Logik ist aktuell nicht als Prioritätskette, sondern eher als Sammlung von Regeln gebaut.
+
+Für Software brauchst du aber eine eindeutige Reihenfolge:
+
+Saubere Reihenfolge wäre:
+Profiltyp der Rolle bestimmen
+EXTREME / DUAL / BAL_FULL / klar dominant
+Profiltyp der Person bestimmen
+BAL_FULL / DUAL / fast-Dual / klar dominant
+KO-Regeln prüfen
+extreme Fehlpassung
+harte Dominanzwechsel
+Führungs-KO
+BAL_FULL-Person bei nicht-ausgeglichener Rolle
+klarer Sekundärflip
+maxDiff > 25
+Grundrating bestimmen
+gleiche Dominanz
+andere Dominanz
+BAL_FULL-Sonderlogik
+DUAL-Sonderlogik
+Rating deckeln
+große Einzelabweichung max. bedingt
+fast-Dual max. bedingt
+unklare Sekundärstruktur max. bedingt
+Kontrollintensität berechnen
+Entwicklungsaufwand daraus ableiten
+
+So wird es programmierbar und nachvollziehbar.
+
+Mein fachliches Urteil
+
+Deine Logik ist nicht schlecht, aber aktuell noch zu überlagert.
+Sie ist eher ein Regelpaket aus mehreren Entwicklungsständen als eine endgültig saubere Match-Engine.
+
+Vor allem diese Punkte würde ich sofort bereinigen:
+
+andere Primärdominanz: erlaubt oder verboten
+fast-Dual sauber definieren
+Einzelabweichung als Bereichsregel formulieren
+BAL_FULL-Person-Regel nur einmal
+Sonderfälle als Override-Hierarchie statt lose Liste
+Meine klare Empfehlung
+
+Ich würde daraus jetzt eine kanonische Version 2 machen mit exakt diesen Ebenen:
+
+A. Profilklassifikation
+Rolle: EXTREME / DUAL / BAL_FULL / KLAR
+Person: BAL_FULL / DUAL / FAST_DUAL / KLAR
+B. Harte KO-Regeln
+extreme Rollenabweichung
+Führungs-KO
+klarer Dominanzwechsel
+Person BAL_FULL bei nicht-BAL_FULL-Rolle
+harter Sekundärflip
+maxDiff > 25
+C. Grundrating
+gleiche Dominanz
+DUAL passend / nicht passend
+BAL_FULL passend / bedingt / nicht passend
+D. Deckelungsregeln
+maxDiff 19–25 → höchstens bedingt
+fast-Dual → höchstens bedingt
+unklare Sekundärstruktur → höchstens bedingt
+E. Führungsaufwand
+
+separat
+
+F. Entwicklungsaufwand
+
+aus Fit + Führungsaufwand
+
+Noch etwas Wichtiges
+
+Deine frühere, von dir festgelegte bioLogic-Logik war einfacher und sauberer:
+
+totalGap
+maxGap
+sameDom / effectiveSameDom
+BAL_FULL-Regel
+secondaryFlip
+candIsBalFull
+devScore-Clamping
+
+Die jetzige Logik ist feingranularer, aber auch deutlich fehleranfälliger.
+Das heißt:
+
+für interne Beratung: gut
+für stabile Softwarelogik: noch zu widersprüchlich
+für Textgenerierung: gefährlich, weil gleiche Fälle unterschiedliche Labels erzeugen könnten
+Mein Fazit
+
+Inhaltlich stark, formal noch nicht final.
+Ich würde sie so noch nicht 1:1 in Software gießen, weil du sonst Grenzfälle bekommst, die nicht sauber entschieden werden.
+
+Am sinnvollsten wäre jetzt:
+
+Widersprüche raus
+Prioritäten festlegen
+jede Regel in eindeutige if / else if / else-Reihenfolge bringen
+dann erst Textlogik darauf aufbauen
+
+Ich kann dir als Nächstes daraus eine komplett bereinigte Endlogik in sauberer Reihenfolge machen, so dass du sie direkt für Replit bzw. als Pseudocode verwenden kannst.
