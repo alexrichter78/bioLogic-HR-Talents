@@ -144,9 +144,9 @@ export default function Kurs() {
     );
   }
 
-  const isAdmin = user?.role === "admin";
+  const canManage = user?.role === "admin" || user?.role === "subadmin";
 
-  if (!isAdmin) {
+  if (!canManage) {
     return (
       <div className="page-gradient-bg">
         <GlobalNav />
