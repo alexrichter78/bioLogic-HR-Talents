@@ -396,38 +396,40 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
               const nextReset = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1);
               const resetStr = nextReset.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
               return (
-                <span
-                  data-testid="nav-ai-quota"
-                  title={`${user.aiRequestsUsed} von ${user.aiRequestLimit} KI-Anfragen genutzt\nAutomatische Zurücksetzung am ${resetStr}`}
-                  style={{
-                    fontSize: 10, color: "#8E8E93", whiteSpace: "nowrap",
-                    padding: "4px 8px", borderRadius: 6,
-                    background: pct >= 100 ? "rgba(255,59,48,0.06)" : "rgba(0,0,0,0.02)",
-                    lineHeight: 1.3, display: "flex", alignItems: "center", gap: 4,
-                  }}
-                >
-                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} />
-                  KI:&nbsp;<span style={{ fontWeight: 600, color: pct >= 100 ? "#FF3B30" : "#636366" }}>{remaining}</span>
-                  &nbsp;übrig
-                </span>
+                <div style={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "flex-end" }}>
+                  <span
+                    data-testid="nav-ai-quota"
+                    title={`${user.aiRequestsUsed} von ${user.aiRequestLimit} KI-Anfragen genutzt\nAutomatische Zurücksetzung am ${resetStr}`}
+                    style={{
+                      fontSize: 10, color: "#8E8E93", whiteSpace: "nowrap",
+                      padding: "4px 8px", borderRadius: 6,
+                      background: pct >= 100 ? "rgba(255,59,48,0.06)" : "rgba(0,0,0,0.02)",
+                      lineHeight: 1.3, display: "flex", alignItems: "center", gap: 4,
+                    }}
+                  >
+                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} />
+                    KI:&nbsp;<span style={{ fontWeight: 600, color: pct >= 100 ? "#FF3B30" : "#636366" }}>{remaining}</span>
+                    &nbsp;übrig
+                  </span>
+                  {user.accessUntil && (
+                    <span
+                      data-testid="nav-access-until"
+                      style={{
+                        fontSize: 10, color: "#8E8E93", whiteSpace: "nowrap",
+                        padding: "4px 8px", borderRadius: 6,
+                        background: "rgba(0,0,0,0.02)",
+                        lineHeight: 1.3,
+                      }}
+                    >
+                      Freigeschaltet bis:&nbsp;
+                      <span style={{ fontWeight: 600, color: "#636366" }}>
+                        {new Date(user.accessUntil).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
+                      </span>
+                    </span>
+                  )}
+                </div>
               );
             })()}
-            {user?.accessUntil && user.role !== "admin" && (
-              <span
-                data-testid="nav-access-until"
-                style={{
-                  fontSize: 10, color: "#8E8E93", whiteSpace: "nowrap",
-                  padding: "4px 8px", borderRadius: 6,
-                  background: "rgba(0,0,0,0.02)",
-                  lineHeight: 1.3,
-                }}
-              >
-                Freigeschaltet bis:&nbsp;
-                <span style={{ fontWeight: 600, color: "#636366" }}>
-                  {new Date(user.accessUntil).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
-                </span>
-              </span>
-            )}
             {(user?.role === "admin" || user?.role === "subadmin") && (
               <button
                 onClick={() => setLocation("/firma-dashboard")}
