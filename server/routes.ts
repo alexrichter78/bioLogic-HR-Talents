@@ -522,6 +522,44 @@ function requireAdmin(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
+function requireSubadmin(req: Request, res: Response, next: NextFunction) {
+  const role = req.session.userRole;
+  if (!req.session.userId || (role !== "admin" && role !== "subadmin")) {
+    console.log(`[auth] Blocked ${req.method} ${req.path} - not subadmin/admin (role: ${role})`);
+    return res.status(403).json({ error: "Kein Zugriff" });
+  }
+  next();
+}
+
+async function trackUsageEvent(userId: number, eventType: string): Promise<void> {
+  try {
+    const user = await storage.getUserById(userId);
+    const orgId = user?.organizationId ?? undefined;
+    await storage.createUsageEvent({ userId, organizationId: orgId ?? null, eventType });
+    if (orgId) {
+      await storage.incrementOrgAiUsage(orgId);
+    }
+  } catch (e) {
+    console.error("[usage] Failed to track event:", e);
+  }
+}
+
+async function checkOrgAiLimit(userId: number): Promise<{ allowed: boolean; reason?: string }> {
+  try {
+    const user = await storage.getUserById(userId);
+    if (!user?.organizationId) return { allowed: true };
+    const org = await storage.getOrganizationById(user.organizationId);
+    if (!org) return { allowed: true };
+    if (org.aiRequestLimit === null) return { allowed: true };
+    if (org.aiRequestsUsed >= org.aiRequestLimit) {
+      return { allowed: false, reason: `KI-Kontingent erschöpft (${org.aiRequestsUsed}/${org.aiRequestLimit} Anfragen). Bitte kontaktieren Sie Ihren Administrator.` };
+    }
+    return { allowed: true };
+  } catch {
+    return { allowed: true };
+  }
+}
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -577,6 +615,7 @@ export async function registerRoutes(
         companyName: user.companyName,
         role: user.role,
         courseAccess: user.courseAccess,
+        organizationId: user.organizationId,
       });
     } catch (error: any) {
       console.error("Login error:", error);
@@ -627,6 +666,7 @@ export async function registerRoutes(
       companyName: user.companyName,
       role: user.role,
       courseAccess: user.courseAccess,
+      organizationId: user.organizationId,
       accessUntil,
     });
   });
@@ -644,7 +684,7 @@ export async function registerRoutes(
 
   app.post("/api/admin/users", requireAdmin, async (req, res) => {
     try {
-      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, accessUntil, plan, notes } = req.body;
+      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, accessUntil, plan, notes, organizationId } = req.body;
       if (!username || !password) {
         return res.status(400).json({ error: "Benutzername und Passwort erforderlich" });
       }
@@ -664,6 +704,7 @@ export async function registerRoutes(
         isActive: isActive !== false,
         courseAccess: courseAccess === true,
         emailVerified: false,
+        organizationId: organizationId ?? null,
       });
       if (accessUntil) {
         await storage.createSubscription({
@@ -761,7 +802,7 @@ export async function registerRoutes(
   app.patch("/api/admin/users/:id", requireAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, accessUntil, plan, notes, subscriptionStatus } = req.body;
+      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, accessUntil, plan, notes, subscriptionStatus, organizationId } = req.body;
       const updateData: any = {};
       if (username !== undefined) updateData.username = username;
       if (email !== undefined) updateData.email = email;
@@ -771,6 +812,7 @@ export async function registerRoutes(
       if (role !== undefined) updateData.role = role;
       if (isActive !== undefined) updateData.isActive = isActive;
       if (courseAccess !== undefined) updateData.courseAccess = courseAccess;
+      if (organizationId !== undefined) updateData.organizationId = organizationId;
       if (password) updateData.passwordHash = await bcrypt.hash(password, 10);
 
       const user = await storage.updateUser(id, updateData);
@@ -918,6 +960,104 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Enroll course error:", error);
       res.status(500).json({ error: "Freischaltung fehlgeschlagen" });
+    }
+  });
+
+  app.get("/api/admin/organizations", requireAuth, requireAdmin, async (_req, res) => {
+    try {
+      const orgs = await storage.listOrganizations();
+      res.json(orgs);
+    } catch (error) {
+      console.error("List orgs error:", error);
+      res.status(500).json({ error: "Fehler beim Laden der Organisationen" });
+    }
+  });
+
+  app.post("/api/admin/organizations", requireAuth, requireAdmin, async (req, res) => {
+    try {
+      const { name, aiRequestLimit } = req.body;
+      if (!name || typeof name !== "string") {
+        return res.status(400).json({ error: "Name ist erforderlich" });
+      }
+      const org = await storage.createOrganization({ name, aiRequestLimit: aiRequestLimit ?? null });
+      res.json(org);
+    } catch (error) {
+      console.error("Create org error:", error);
+      res.status(500).json({ error: "Organisation konnte nicht erstellt werden" });
+    }
+  });
+
+  app.patch("/api/admin/organizations/:id", requireAuth, requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ error: "Ungültige ID" });
+      const { name, aiRequestLimit } = req.body;
+      const updates: any = {};
+      if (name !== undefined) updates.name = name;
+      if (aiRequestLimit !== undefined) updates.aiRequestLimit = aiRequestLimit;
+      const org = await storage.updateOrganization(id, updates);
+      if (!org) return res.status(404).json({ error: "Organisation nicht gefunden" });
+      res.json(org);
+    } catch (error) {
+      console.error("Update org error:", error);
+      res.status(500).json({ error: "Organisation konnte nicht aktualisiert werden" });
+    }
+  });
+
+  app.delete("/api/admin/organizations/:id", requireAuth, requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ error: "Ungültige ID" });
+      await storage.deleteOrganization(id);
+      res.json({ ok: true });
+    } catch (error) {
+      console.error("Delete org error:", error);
+      res.status(500).json({ error: "Organisation konnte nicht gelöscht werden" });
+    }
+  });
+
+  app.post("/api/admin/organizations/:id/reset-usage", requireAuth, requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ error: "Ungültige ID" });
+      await storage.resetOrgAiUsage(id);
+      const org = await storage.getOrganizationById(id);
+      res.json(org);
+    } catch (error) {
+      console.error("Reset usage error:", error);
+      res.status(500).json({ error: "Kontingent konnte nicht zurückgesetzt werden" });
+    }
+  });
+
+  app.get("/api/admin/organizations/:id/usage", requireAuth, requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ error: "Ungültige ID" });
+      const since = req.query.since ? new Date(req.query.since as string) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      const stats = await storage.getUsageStatsByOrg(id, since);
+      res.json(stats);
+    } catch (error) {
+      console.error("Org usage stats error:", error);
+      res.status(500).json({ error: "Nutzungsstatistiken nicht verfügbar" });
+    }
+  });
+
+  app.get("/api/subadmin/usage", requireAuth, requireSubadmin, async (req, res) => {
+    try {
+      const user = await storage.getUserById(req.session.userId!);
+      if (!user?.organizationId) {
+        return res.status(400).json({ error: "Keine Organisation zugewiesen" });
+      }
+      const since = req.query.since ? new Date(req.query.since as string) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      const stats = await storage.getUsageStatsByOrg(user.organizationId, since);
+      const org = await storage.getOrganizationById(user.organizationId);
+      res.json({
+        organization: org ? { id: org.id, name: org.name, aiRequestLimit: org.aiRequestLimit, aiRequestsUsed: org.aiRequestsUsed, currentPeriodStart: org.currentPeriodStart } : null,
+        usage: stats,
+      });
+    } catch (error) {
+      console.error("Subadmin usage error:", error);
+      res.status(500).json({ error: "Nutzungsstatistiken nicht verfügbar" });
     }
   });
 
@@ -1149,6 +1289,13 @@ Beispiel für 3 Einträge:
 
       if (!beruf) {
         return res.status(400).json({ error: "Beruf ist erforderlich" });
+      }
+
+      if (req.session.userId) {
+        const limitCheck = await checkOrgAiLimit(req.session.userId);
+        if (!limitCheck.allowed) {
+          return res.status(429).json({ error: limitCheck.reason });
+        }
       }
 
       const hauptItems = (taetigkeiten || []).filter((t: any) => t.kategorie === "haupt");
@@ -1383,6 +1530,7 @@ Antworte ausschließlich als JSON mit exakt dieser Struktur:
       const content = response.choices[0]?.message?.content || "{}";
       const data = JSON.parse(content);
       res.json(data);
+      if (req.session.userId) trackUsageEvent(req.session.userId, "generate_bericht");
     } catch (error) {
       console.error("Error generating Bericht:", error);
       res.status(500).json({ error: "Fehler bei der Bericht-Generierung" });
@@ -1394,6 +1542,13 @@ Antworte ausschließlich als JSON mit exakt dieser Struktur:
       const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik, taetigkeiten, region } = req.body;
       if (!beruf || !taetigkeiten || taetigkeiten.length === 0) {
         return res.status(400).json({ error: "Profildaten sind erforderlich" });
+      }
+
+      if (req.session.userId) {
+        const limitCheck = await checkOrgAiLimit(req.session.userId);
+        if (!limitCheck.allowed) {
+          return res.status(429).json({ error: limitCheck.reason });
+        }
       }
 
       const haupt = taetigkeiten.filter((t: any) => t.kategorie === "haupt");
@@ -1462,6 +1617,7 @@ Antworte als JSON:
       const content = response.choices[0]?.message?.content || "{}";
       const data = JSON.parse(content);
       res.json(data);
+      if (req.session.userId) trackUsageEvent(req.session.userId, "generate_analyse");
     } catch (error) {
       console.error("Error generating Analyse:", error);
       res.status(500).json({ error: "Fehler bei der Analyse-Generierung" });
@@ -1575,6 +1731,13 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
       const { messages, stammdaten, region, mode } = req.body;
       if (!Array.isArray(messages) || messages.length === 0) {
         return res.status(400).json({ error: "Keine Nachrichten" });
+      }
+
+      if (req.session.userId) {
+        const limitCheck = await checkOrgAiLimit(req.session.userId);
+        if (!limitCheck.allowed) {
+          return res.json({ reply: limitCheck.reason, filtered: true });
+        }
       }
 
       const lastMsg = messages[messages.length - 1]?.content?.toLowerCase() || "";
@@ -2008,6 +2171,7 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
 
         flushWrite(`data: ${JSON.stringify({ type: "done" })}\n\n`);
         res.end();
+        if (req.session.userId) trackUsageEvent(req.session.userId, "ki_coach");
         return;
       }
 
@@ -2159,6 +2323,7 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
       if (imageOverlayTitle) responseData.overlayTitle = imageOverlayTitle;
       if (imageOverlaySubtitle) responseData.overlaySubtitle = imageOverlaySubtitle;
       res.json(responseData);
+      if (req.session.userId) trackUsageEvent(req.session.userId, "ki_coach");
     } catch (error) {
       console.error("Error in KI-Coach:", error);
       if (res.headersSent) {

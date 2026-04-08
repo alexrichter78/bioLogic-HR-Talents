@@ -3,6 +3,16 @@ import { pgTable, text, varchar, boolean, timestamp, serial, integer } from "dri
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+export const organizations = pgTable("organizations", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  aiRequestLimit: integer("ai_request_limit"),
+  aiRequestsUsed: integer("ai_requests_used").notNull().default(0),
+  currentPeriodStart: timestamp("current_period_start").notNull().defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
@@ -12,6 +22,7 @@ export const users = pgTable("users", {
   lastName: text("last_name").notNull().default(""),
   companyName: text("company_name").notNull().default(""),
   role: text("role").notNull().default("user"),
+  organizationId: integer("organization_id").references(() => organizations.id),
   isActive: boolean("is_active").notNull().default(true),
   courseAccess: boolean("course_access").notNull().default(false),
   emailVerified: boolean("email_verified").notNull().default(false),
@@ -79,6 +90,14 @@ export const coachTopics = pgTable("coach_topics", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const usageEvents = pgTable("usage_events", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  organizationId: integer("organization_id").references(() => organizations.id),
+  eventType: text("event_type").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
@@ -103,6 +122,19 @@ export const insertKnowledgeDocumentSchema = createInsertSchema(knowledgeDocumen
   updatedAt: true,
 });
 
+export const insertOrganizationSchema = createInsertSchema(organizations).omit({
+  id: true,
+  aiRequestsUsed: true,
+  currentPeriodStart: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertUsageEventSchema = createInsertSchema(usageEvents).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertSubscription = z.infer<typeof insertSubscriptionSchema>;
@@ -114,3 +146,7 @@ export type KnowledgeDocument = typeof knowledgeDocuments.$inferSelect;
 export type InsertKnowledgeDocument = z.infer<typeof insertKnowledgeDocumentSchema>;
 export type GoldenAnswer = typeof goldenAnswers.$inferSelect;
 export type CoachTopic = typeof coachTopics.$inferSelect;
+export type Organization = typeof organizations.$inferSelect;
+export type InsertOrganization = z.infer<typeof insertOrganizationSchema>;
+export type UsageEvent = typeof usageEvents.$inferSelect;
+export type InsertUsageEvent = z.infer<typeof insertUsageEventSchema>;

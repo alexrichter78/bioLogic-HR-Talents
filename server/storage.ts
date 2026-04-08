@@ -1,8 +1,8 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import { eq, and, gte } from "drizzle-orm";
+import { eq, and, gte, sql } from "drizzle-orm";
 import pkg from "pg";
 const { Pool } = pkg;
-import { users, subscriptions, passwordResetTokens, coachFeedback, knowledgeDocuments, goldenAnswers, coachTopics, type User, type InsertUser, type Subscription, type InsertSubscription, type PasswordResetToken, type CoachFeedback, type InsertCoachFeedback, type KnowledgeDocument, type InsertKnowledgeDocument, type GoldenAnswer, type CoachTopic } from "@shared/schema";
+import { users, subscriptions, passwordResetTokens, coachFeedback, knowledgeDocuments, goldenAnswers, coachTopics, organizations, usageEvents, type User, type InsertUser, type Subscription, type InsertSubscription, type PasswordResetToken, type CoachFeedback, type InsertCoachFeedback, type KnowledgeDocument, type InsertKnowledgeDocument, type GoldenAnswer, type CoachTopic, type Organization, type InsertOrganization, type UsageEvent, type InsertUsageEvent } from "@shared/schema";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -51,6 +51,18 @@ export interface IStorage {
 
   getCoachSystemPrompt(): Promise<string | null>;
   saveCoachSystemPrompt(promptText: string): Promise<void>;
+
+  createOrganization(data: InsertOrganization): Promise<Organization>;
+  getOrganizationById(id: number): Promise<Organization | undefined>;
+  updateOrganization(id: number, data: Partial<InsertOrganization>): Promise<Organization | undefined>;
+  deleteOrganization(id: number): Promise<void>;
+  listOrganizations(): Promise<Organization[]>;
+  incrementOrgAiUsage(orgId: number): Promise<void>;
+  resetOrgAiUsage(orgId: number): Promise<void>;
+
+  createUsageEvent(data: InsertUsageEvent): Promise<UsageEvent>;
+  getUsageStatsByOrg(orgId: number, since: Date): Promise<{ eventType: string; count: number }[]>;
+  getUsageStatsByUser(userId: number, since: Date): Promise<{ eventType: string; count: number }[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -87,6 +99,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteUser(id: number): Promise<void> {
+    await db.delete(usageEvents).where(eq(usageEvents.userId, id));
     await db.delete(passwordResetTokens).where(eq(passwordResetTokens.userId, id));
     await db.delete(subscriptions).where(eq(subscriptions.userId, id));
     await db.delete(users).where(eq(users.id, id));
@@ -381,6 +394,68 @@ export class DatabaseStorage implements IStorage {
     } else {
       await pool.query("INSERT INTO coach_system_prompt (prompt_text) VALUES ($1)", [promptText]);
     }
+  }
+
+  async createOrganization(data: InsertOrganization): Promise<Organization> {
+    const [org] = await db.insert(organizations).values(data).returning();
+    return org;
+  }
+
+  async getOrganizationById(id: number): Promise<Organization | undefined> {
+    const [org] = await db.select().from(organizations).where(eq(organizations.id, id));
+    return org;
+  }
+
+  async updateOrganization(id: number, data: Partial<InsertOrganization>): Promise<Organization | undefined> {
+    const [org] = await db.update(organizations).set({ ...data, updatedAt: new Date() } as any).where(eq(organizations.id, id)).returning();
+    return org;
+  }
+
+  async deleteOrganization(id: number): Promise<void> {
+    await db.update(users).set({ organizationId: null }).where(eq(users.organizationId, id));
+    await db.delete(usageEvents).where(eq(usageEvents.organizationId, id));
+    await db.delete(organizations).where(eq(organizations.id, id));
+  }
+
+  async listOrganizations(): Promise<Organization[]> {
+    return db.select().from(organizations);
+  }
+
+  async incrementOrgAiUsage(orgId: number): Promise<void> {
+    await db.update(organizations)
+      .set({ aiRequestsUsed: sql`${organizations.aiRequestsUsed} + 1`, updatedAt: new Date() })
+      .where(eq(organizations.id, orgId));
+  }
+
+  async resetOrgAiUsage(orgId: number): Promise<void> {
+    await db.update(organizations)
+      .set({ aiRequestsUsed: 0, currentPeriodStart: new Date(), updatedAt: new Date() })
+      .where(eq(organizations.id, orgId));
+  }
+
+  async createUsageEvent(data: InsertUsageEvent): Promise<UsageEvent> {
+    const [event] = await db.insert(usageEvents).values(data).returning();
+    return event;
+  }
+
+  async getUsageStatsByOrg(orgId: number, since: Date): Promise<{ eventType: string; count: number }[]> {
+    const events = await db.select().from(usageEvents)
+      .where(and(eq(usageEvents.organizationId, orgId), gte(usageEvents.createdAt, since)));
+    const counts: Record<string, number> = {};
+    for (const e of events) {
+      counts[e.eventType] = (counts[e.eventType] || 0) + 1;
+    }
+    return Object.entries(counts).map(([eventType, count]) => ({ eventType, count }));
+  }
+
+  async getUsageStatsByUser(userId: number, since: Date): Promise<{ eventType: string; count: number }[]> {
+    const events = await db.select().from(usageEvents)
+      .where(and(eq(usageEvents.userId, userId), gte(usageEvents.createdAt, since)));
+    const counts: Record<string, number> = {};
+    for (const e of events) {
+      counts[e.eventType] = (counts[e.eventType] || 0) + 1;
+    }
+    return Object.entries(counts).map(([eventType, count]) => ({ eventType, count }));
   }
 }
 
