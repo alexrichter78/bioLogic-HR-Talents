@@ -138,28 +138,6 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                   </div>
                 )}
               </div>
-              {user && user.role !== "admin" && (() => {
-                const remaining = Math.max(0, user.aiRequestLimit - user.aiRequestsUsed);
-                const pct = user.aiRequestLimit > 0 ? (user.aiRequestsUsed / user.aiRequestLimit) * 100 : 0;
-                const color = pct >= 100 ? "#FF3B30" : pct >= 80 ? "#FF9500" : "#34C759";
-                const nextReset = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1);
-                const resetStr = nextReset.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
-                return (
-                  <span
-                    data-testid="nav-ai-quota-mobile"
-                    title={`${user.aiRequestsUsed} von ${user.aiRequestLimit} KI-Anfragen genutzt\nAutomatische Zurücksetzung am ${resetStr}`}
-                    style={{
-                      fontSize: 10, color: "#8E8E93", whiteSpace: "nowrap",
-                      padding: "4px 8px", borderRadius: 6,
-                      background: pct >= 100 ? "rgba(255,59,48,0.06)" : "rgba(0,0,0,0.02)",
-                      lineHeight: 1.3, display: "flex", alignItems: "center", gap: 4,
-                    }}
-                  >
-                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} />
-                    KI:&nbsp;<span style={{ fontWeight: 600, color: pct >= 100 ? "#FF3B30" : "#636366" }}>{remaining}</span>
-                  </span>
-                );
-              })()}
               {(user?.role === "admin" || user?.role === "subadmin") && (
                 <button
                   onClick={() => setLocation("/firma-dashboard")}
@@ -425,47 +403,6 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                 <Settings style={{ width: 15, height: 15, color: location === "/admin" ? "#0071E3" : "#86868B", strokeWidth: 1.8 }} />
               </button>
             )}
-            {user && user.role !== "admin" && (() => {
-              const remaining = Math.max(0, user.aiRequestLimit - user.aiRequestsUsed);
-              const pct = user.aiRequestLimit > 0 ? (user.aiRequestsUsed / user.aiRequestLimit) * 100 : 0;
-              const color = pct >= 100 ? "#FF3B30" : pct >= 80 ? "#FF9500" : "#34C759";
-              const nextReset = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1);
-              const resetStr = nextReset.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
-              return (
-                <div style={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "flex-end" }}>
-                  <span
-                    data-testid="nav-ai-quota"
-                    title={`${user.aiRequestsUsed} von ${user.aiRequestLimit} KI-Anfragen genutzt\nAutomatische Zurücksetzung am ${resetStr}`}
-                    style={{
-                      fontSize: 10, color: "#8E8E93", whiteSpace: "nowrap",
-                      padding: "4px 8px", borderRadius: 6,
-                      background: pct >= 100 ? "rgba(255,59,48,0.06)" : "rgba(0,0,0,0.02)",
-                      lineHeight: 1.3, display: "flex", alignItems: "center", gap: 4,
-                    }}
-                  >
-                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} />
-                    KI:&nbsp;<span style={{ fontWeight: 600, color: pct >= 100 ? "#FF3B30" : "#636366" }}>{remaining}</span>
-                    &nbsp;übrig
-                  </span>
-                  {user.accessUntil && (
-                    <span
-                      data-testid="nav-access-until"
-                      style={{
-                        fontSize: 10, color: "#8E8E93", whiteSpace: "nowrap",
-                        padding: "4px 8px", borderRadius: 6,
-                        background: "rgba(0,0,0,0.02)",
-                        lineHeight: 1.3,
-                      }}
-                    >
-                      Freigeschaltet bis:&nbsp;
-                      <span style={{ fontWeight: 600, color: "#636366" }}>
-                        {new Date(user.accessUntil).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
-                      </span>
-                    </span>
-                  )}
-                </div>
-              );
-            })()}
             <button
               onClick={logout}
               data-testid="nav-logout"
@@ -487,5 +424,52 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
       </div>
       <div style={{ height: NAV_HEIGHT }} />
     </>
+  );
+}
+
+export function StatusFooter() {
+  const { user } = useAuth();
+  if (!user || user.role === "admin") return null;
+
+  const remaining = Math.max(0, user.aiRequestLimit - user.aiRequestsUsed);
+  const pct = user.aiRequestLimit > 0 ? (user.aiRequestsUsed / user.aiRequestLimit) * 100 : 0;
+  const color = pct >= 100 ? "#FF3B30" : pct >= 80 ? "#FF9500" : "#34C759";
+  const nextReset = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1);
+  const resetStr = nextReset.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
+
+  return (
+    <div
+      data-testid="status-footer"
+      style={{
+        position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 90,
+        display: "flex", alignItems: "center", justifyContent: "center", gap: 16,
+        padding: "6px 16px",
+        background: "rgba(255,255,255,0.85)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+        borderTop: "1px solid rgba(0,0,0,0.06)",
+        fontSize: 11, color: "#8E8E93",
+      }}
+    >
+      <span
+        data-testid="footer-ai-quota"
+        title={`${user.aiRequestsUsed} von ${user.aiRequestLimit} KI-Anfragen genutzt\nAutomatische Zurücksetzung am ${resetStr}`}
+        style={{ display: "flex", alignItems: "center", gap: 5, cursor: "default" }}
+      >
+        <span style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} />
+        <span>KI:&nbsp;<span style={{ fontWeight: 600, color: pct >= 100 ? "#FF3B30" : "#636366" }}>{remaining}</span>&nbsp;von {user.aiRequestLimit} übrig</span>
+        <span style={{ color: "#C7C7CC" }}>·</span>
+        <span>Reset am {resetStr}</span>
+      </span>
+      {user.accessUntil && (
+        <>
+          <span style={{ color: "#C7C7CC" }}>|</span>
+          <span data-testid="footer-access-until">
+            Freigeschaltet bis:&nbsp;
+            <span style={{ fontWeight: 600, color: "#636366" }}>
+              {new Date(user.accessUntil).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
+            </span>
+          </span>
+        </>
+      )}
+    </div>
   );
 }
