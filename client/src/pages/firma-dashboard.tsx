@@ -80,13 +80,7 @@ export default function FirmaDashboard() {
       return;
     }
     loadData();
-  }, [user, setLocation]);
-
-  useEffect(() => {
-    if (user && (user.role === "admin" || user.role === "subadmin")) {
-      loadData();
-    }
-  }, [period]);
+  }, [user, setLocation, period]);
 
   async function loadData() {
     setLoading(true);
