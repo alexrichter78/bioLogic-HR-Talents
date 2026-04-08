@@ -1080,70 +1080,172 @@ function constellationCandText(c: ConstellationType, cand: string): string {
   return texts[c];
 }
 
-export function computeCoreFit(roleTriad: Triad, candTriad: Triad): { overallFit: FitStatus; controlIntensity: ControlIntensity; controlPoints: number; mismatchScore: number; koTriggered: boolean } {
+export type FitReason = {
+  rule: string;
+  effect: "KO" | "OVERRIDE" | "CAP" | "BASE";
+};
+
+export type CoreFitResult = {
+  overallFit: FitStatus;
+  controlIntensity: ControlIntensity;
+  controlPoints: number;
+  mismatchScore: number;
+  koTriggered: boolean;
+  reasons: FitReason[];
+  flags: {
+    sameDom: boolean;
+    effectiveSameDom: boolean;
+    roleIsBalFull: boolean;
+    candIsBalFull: boolean;
+    equalDistConflict: boolean;
+    dualConflict: boolean;
+    roleKeyInDual: boolean;
+    secondaryFlipped: boolean;
+    maxGapVal: number;
+    candSpread: number;
+  };
+};
+
+export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: boolean): CoreFitResult {
   const rN = normalizeTriad(roleTriad);
   const cN = normalizeTriad(candTriad);
   const roleDom = dominanceModeOf(rN);
   const candDom = dominanceModeOf(cN);
+  const reasons: FitReason[] = [];
 
-  let ko = false;
-  if ((roleDom.mode === "EXTREME_I" && cN.impulsiv <= 35 && rN.impulsiv >= 65) ||
-      (roleDom.mode === "EXTREME_N" && cN.intuitiv <= 30 && rN.intuitiv >= 55) ||
-      (roleDom.mode === "EXTREME_A" && cN.analytisch <= 35 && rN.analytisch >= 65)) ko = true;
-  if (!ko && roleDom.top1.key !== candDom.top1.key) {
-    const mainDiff = Math.abs(rN[roleDom.top1.key] - cN[roleDom.top1.key]);
-    if (mainDiff >= 18) ko = true;
-    if (!ko && roleDom.gap1 >= 20 && mainDiff >= 15) ko = true;
+  // ── A. KO-Regeln ──────────────────────────────────────
+  let ko = externalKo === true;
+
+  if (!ko) {
+    if (roleDom.mode === "EXTREME_I" && cN.impulsiv <= 35 && rN.impulsiv >= 65) {
+      ko = true; reasons.push({ rule: "Extreme Abweichung I (Rolle Imp≥65, Person Imp≤35)", effect: "KO" });
+    } else if (roleDom.mode === "EXTREME_N" && cN.intuitiv <= 30 && rN.intuitiv >= 55) {
+      ko = true; reasons.push({ rule: "Extreme Abweichung N (Rolle Int≥55, Person Int≤30)", effect: "KO" });
+    } else if (roleDom.mode === "EXTREME_A" && cN.analytisch <= 35 && rN.analytisch >= 65) {
+      ko = true; reasons.push({ rule: "Extreme Abweichung A (Rolle Ana≥65, Person Ana≤35)", effect: "KO" });
+    }
   }
+
+  if (!ko && roleDom.top1.key !== candDom.top1.key) {
+    const diff = Math.abs(rN[roleDom.top1.key] - cN[roleDom.top1.key]);
+    if (diff >= 18) {
+      ko = true; reasons.push({ rule: `Dominanzwechsel gross (mainDiff=${diff}≥18)`, effect: "KO" });
+    } else if (roleDom.gap1 >= 20 && diff >= 15) {
+      ko = true; reasons.push({ rule: `Dominanzwechsel + klare Rolle (gap1=${roleDom.gap1}≥20, mainDiff=${diff}≥15)`, effect: "KO" });
+    }
+  }
+
   if (!ko && roleDom.mode.startsWith("DUAL")) {
     const domKeys: ComponentKey[] = [roleDom.top1.key, roleDom.top2.key];
-    for (const k of domKeys) { if (cN[k] < rN[k] * 0.75) { ko = true; break; } }
+    for (const k of domKeys) {
+      if (cN[k] < rN[k] * 0.75) {
+        ko = true; reasons.push({ rule: `Dual-Untergrenze (Person ${k}=${cN[k].toFixed(0)} < 75% von Rolle ${rN[k].toFixed(0)})`, effect: "KO" });
+        break;
+      }
+    }
   }
 
+  if (externalKo && reasons.every(r => r.effect !== "KO")) {
+    reasons.push({ rule: "Externes KO (Führungs-KO oder erweitertes Rollenprofil)", effect: "KO" });
+  }
+
+  // ── B. Strukturanalyse ────────────────────────────────
   const mismatch = weightedMismatch(roleTriad, candTriad);
   const sameDom = roleDom.top1.key === candDom.top1.key;
+  const candIsBalFull = candDom.gap1 <= 5 && candDom.gap2 <= 5;
+  const roleIsBalFull = roleDom.gap1 <= 5 && roleDom.gap2 <= 5;
+  const effectiveSameDom = sameDom || roleIsBalFull;
   const candEqualDist = candDom.mode === "BAL_FULL";
   const candDualDominance = !candEqualDist && candDom.gap1 <= 5;
   const roleClearDominance = roleDom.gap1 >= 15;
   const dualConflict = candDualDominance && roleClearDominance;
   const equalDistConflict = candEqualDist && roleClearDominance;
   const roleKeyInDual = dualConflict && (candDom.top1.key === roleDom.top1.key || candDom.top2.key === roleDom.top1.key);
-
-  let overallFit: FitStatus = ko ? "NOT_SUITABLE" : overallFitFromScore(mismatch, sameDom);
-  if (equalDistConflict && !ko) {
-    overallFit = "NOT_SUITABLE";
-  } else if (dualConflict && !ko) {
-    if (roleKeyInDual) {
-      if (overallFit === "SUITABLE") overallFit = "CONDITIONAL";
-    } else {
-      overallFit = "NOT_SUITABLE";
-    }
-  }
-  const candIsBalFull = candDom.gap1 <= 5 && candDom.gap2 <= 5;
-  const roleIsBalFull = roleDom.gap1 <= 5 && roleDom.gap2 <= 5;
-  const effectiveSameDom = sameDom || roleIsBalFull;
   const maxGapVal = Math.max(Math.abs(rN.impulsiv - cN.impulsiv), Math.abs(rN.intuitiv - cN.intuitiv), Math.abs(rN.analytisch - cN.analytisch));
   const candSpread = candDom.top1.value - candDom.top3.value;
-  if (roleIsBalFull && !ko) {
-    if (candSpread <= 5) overallFit = "SUITABLE";
-    else if (candSpread < 12) overallFit = "CONDITIONAL";
-    else overallFit = "NOT_SUITABLE";
+  const secondaryFlipped = effectiveSameDom && roleDom.top2.key !== candDom.top2.key;
+
+  // ── C. Grundrating aus Mismatch ───────────────────────
+  let overallFit: FitStatus;
+  if (ko) {
+    overallFit = "NOT_SUITABLE";
   } else {
-    if (!effectiveSameDom && !ko) overallFit = "NOT_SUITABLE";
-    if (candIsBalFull && !roleIsBalFull && !ko) overallFit = "NOT_SUITABLE";
-    if (maxGapVal > 25 && !ko) overallFit = "NOT_SUITABLE";
-    const secondaryFlipped = effectiveSameDom && roleDom.top2.key !== candDom.top2.key;
-    if (overallFit === "SUITABLE" && !ko) {
-      if (secondaryFlipped && candDom.gap2 > 5 && roleDom.gap2 > 5) overallFit = "NOT_SUITABLE";
-      else if (secondaryFlipped) overallFit = "CONDITIONAL";
-      else if (effectiveSameDom && candDom.gap2 <= 5) overallFit = "CONDITIONAL";
-    }
-    if (overallFit === "SUITABLE" && !ko) {
-      if (maxGapVal > 18) overallFit = "CONDITIONAL";
-      else if (candDom.gap1 <= 5) overallFit = "CONDITIONAL";
+    overallFit = overallFitFromScore(mismatch, sameDom);
+    reasons.push({ rule: `Mismatch-Score ${mismatch.toFixed(1)} (sameDom=${sameDom}) → ${overallFit}`, effect: "BASE" });
+  }
+
+  // ── D. Sonderlogik: Rolle BAL_FULL ────────────────────
+  if (roleIsBalFull && !ko) {
+    if (candSpread <= 5) {
+      overallFit = "SUITABLE";
+      reasons.push({ rule: `Rolle BAL_FULL + Person Spread≤5 (${candSpread.toFixed(0)})`, effect: "OVERRIDE" });
+    } else if (candSpread < 12) {
+      overallFit = "CONDITIONAL";
+      reasons.push({ rule: `Rolle BAL_FULL + Person Spread 6-11 (${candSpread.toFixed(0)})`, effect: "OVERRIDE" });
+    } else {
+      overallFit = "NOT_SUITABLE";
+      reasons.push({ rule: `Rolle BAL_FULL + Person Spread≥12 (${candSpread.toFixed(0)})`, effect: "OVERRIDE" });
     }
   }
 
+  // ── E. Strukturelle Overrides (nicht BAL_FULL-Rolle) ──
+  if (!roleIsBalFull && !ko) {
+    if (equalDistConflict) {
+      overallFit = "NOT_SUITABLE";
+      reasons.push({ rule: "Person BAL_FULL + Rolle klar dominant (gap1≥15)", effect: "OVERRIDE" });
+    } else if (dualConflict) {
+      if (roleKeyInDual) {
+        if (overallFit === "SUITABLE") { overallFit = "CONDITIONAL"; }
+        reasons.push({ rule: "Person Dual + Rolle klar, Rollendominanz in Dual enthalten → max CONDITIONAL", effect: "OVERRIDE" });
+      } else {
+        overallFit = "NOT_SUITABLE";
+        reasons.push({ rule: "Person Dual + Rolle klar, Rollendominanz NICHT in Dual", effect: "OVERRIDE" });
+      }
+    }
+
+    if (!effectiveSameDom) {
+      overallFit = "NOT_SUITABLE";
+      reasons.push({ rule: "Verschiedene Primärdominanz (nicht BAL_FULL-Rolle)", effect: "OVERRIDE" });
+    }
+
+    if (candIsBalFull) {
+      overallFit = "NOT_SUITABLE";
+      reasons.push({ rule: "Person BAL_FULL + Rolle nicht BAL_FULL", effect: "OVERRIDE" });
+    }
+
+    if (maxGapVal > 25) {
+      overallFit = "NOT_SUITABLE";
+      reasons.push({ rule: `Einzelwert-Abweichung >25 (maxGap=${maxGapVal.toFixed(0)})`, effect: "OVERRIDE" });
+    }
+
+    if (secondaryFlipped && candDom.gap2 > 5 && roleDom.gap2 > 5) {
+      overallFit = "NOT_SUITABLE";
+      reasons.push({ rule: `Sekundärflip mit klarem gap2 beidseitig (Rolle gap2=${roleDom.gap2.toFixed(0)}, Person gap2=${candDom.gap2.toFixed(0)})`, effect: "OVERRIDE" });
+    }
+  }
+
+  // ── F. Deckelungsregeln (max CONDITIONAL) ─────────────
+  if (!roleIsBalFull && !ko && overallFit === "SUITABLE") {
+    if (secondaryFlipped) {
+      overallFit = "CONDITIONAL";
+      reasons.push({ rule: "Sekundärflip (leicht, gap2≤5 bei einer Seite) → max CONDITIONAL", effect: "CAP" });
+    } else if (effectiveSameDom && candDom.gap2 <= 5) {
+      overallFit = "CONDITIONAL";
+      reasons.push({ rule: "Schwache Sekundärstruktur (Person gap2≤5) → max CONDITIONAL", effect: "CAP" });
+    }
+
+    if (overallFit === "SUITABLE" && maxGapVal > 18) {
+      overallFit = "CONDITIONAL";
+      reasons.push({ rule: `Grosse Einzelabweichung 19-25 (maxGap=${maxGapVal.toFixed(0)}) → max CONDITIONAL`, effect: "CAP" });
+    }
+
+    if (overallFit === "SUITABLE" && candDom.gap1 <= 5) {
+      overallFit = "CONDITIONAL";
+      reasons.push({ rule: "Person fast-Dual (gap1≤5) → max CONDITIONAL", effect: "CAP" });
+    }
+  }
+
+  // ── G. Basis-Kontrollintensität ───────────────────────
   let points = 0;
   if (roleDom.top1.key !== candDom.top1.key || roleDom.mode.startsWith("DUAL") !== candDom.mode.startsWith("DUAL")) points += 2;
   if (roleDom.mode.startsWith("EXTREME")) points += 1;
@@ -1155,76 +1257,28 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad): { overallFit
   if (points >= 6) level = "HIGH";
   else if (points >= 3) level = "MEDIUM";
 
-  return { overallFit, controlIntensity: level, controlPoints: points, mismatchScore: mismatch, koTriggered: ko };
+  return {
+    overallFit, controlIntensity: level, controlPoints: points, mismatchScore: mismatch, koTriggered: ko, reasons,
+    flags: { sameDom, effectiveSameDom, roleIsBalFull, candIsBalFull, equalDistConflict, dualConflict, roleKeyInDual, secondaryFlipped, maxGapVal, candSpread },
+  };
 }
 
 export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResult {
   const roleDom = dominanceModeOf(role.role_profile);
   const candDom = dominanceModeOf(cand.candidate_profile);
+
   const ko = koRuleTriggered(role, cand);
-  const mismatch = weightedMismatch(role.role_profile, cand.candidate_profile);
-  const sameDom = roleDom.top1.key === candDom.top1.key;
-  const candEqualDist = candDom.mode === "BAL_FULL";
-  const candDualDominance = !candEqualDist && candDom.gap1 <= 5;
-  const roleClearDominance = roleDom.gap1 >= 15;
-  const dualConflict = candDualDominance && roleClearDominance;
-  const equalDistConflict = candEqualDist && roleClearDominance;
-  const roleKeyInDual = dualConflict && (candDom.top1.key === roleDom.top1.key || candDom.top2.key === roleDom.top1.key);
-  let overallFit: FitStatus = ko ? "NOT_SUITABLE" : overallFitFromScore(mismatch, sameDom);
-  if (equalDistConflict && !ko) {
-    overallFit = "NOT_SUITABLE";
-  } else if (dualConflict && !ko) {
-    if (roleKeyInDual) {
-      if (overallFit === "SUITABLE") overallFit = "CONDITIONAL";
-    } else {
-      overallFit = "NOT_SUITABLE";
-    }
-  }
-  const candIsBalFull = candDom.gap1 <= 5 && candDom.gap2 <= 5;
-  const roleIsBalFull = roleDom.gap1 <= 5 && roleDom.gap2 <= 5;
-  const effectiveSameDom = sameDom || roleIsBalFull;
-  const rN = normalizeTriad(role.role_profile);
-  const cN = normalizeTriad(cand.candidate_profile);
-  const maxGapVal = Math.max(Math.abs(rN.impulsiv - cN.impulsiv), Math.abs(rN.intuitiv - cN.intuitiv), Math.abs(rN.analytisch - cN.analytisch));
-  const candSpread = candDom.top1.value - candDom.top3.value;
-  if (roleIsBalFull && !ko) {
-    if (candSpread <= 5) {
-      overallFit = "SUITABLE";
-    } else if (candSpread < 12) {
-      overallFit = "CONDITIONAL";
-    } else {
-      overallFit = "NOT_SUITABLE";
-    }
-  } else {
-    if (!effectiveSameDom && !ko) {
-      overallFit = "NOT_SUITABLE";
-    }
-    if (candIsBalFull && !roleIsBalFull && !ko) {
-      overallFit = "NOT_SUITABLE";
-    }
-    if (maxGapVal > 25 && !ko) {
-      overallFit = "NOT_SUITABLE";
-    }
-    const secondaryFlipped = effectiveSameDom && roleDom.top2.key !== candDom.top2.key;
-    if (overallFit === "SUITABLE" && !ko) {
-      if (secondaryFlipped && candDom.gap2 > 5 && roleDom.gap2 > 5) {
-        overallFit = "NOT_SUITABLE";
-      } else if (secondaryFlipped) {
-        overallFit = "CONDITIONAL";
-      } else if (effectiveSameDom && candDom.gap2 <= 5) {
-        overallFit = "CONDITIONAL";
-      }
-    }
-    if (overallFit === "SUITABLE" && !ko) {
-      if (maxGapVal > 18) overallFit = "CONDITIONAL";
-      else if (candDom.gap1 <= 5) overallFit = "CONDITIONAL";
-    }
-  }
+  const coreFit = computeCoreFit(role.role_profile, cand.candidate_profile, ko);
+  const { overallFit, mismatchScore: mismatch, flags } = coreFit;
+  const { sameDom, equalDistConflict, dualConflict, roleKeyInDual, secondaryFlipped } = flags;
+
   const t = resolveRoleTerms(role);
   const ctrl = calcControlIntensity(role, cand);
   const matrix = buildMatrix(role, cand, t);
   const critical = criticalAreaFromMatrix(matrix);
 
+  const rN = normalizeTriad(role.role_profile);
+  const cN = normalizeTriad(cand.candidate_profile);
   const rL = labelComponent(roleDom.top1.key);
   const cL = labelComponent(candDom.top1.key);
   const mainDiff = Math.abs(rN[roleDom.top1.key] - cN[roleDom.top1.key]);
@@ -1332,7 +1386,7 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
 
   return {
     roleDominance: roleDom, candDominance: candDom,
-    overallFit, mismatchScore: mismatch, koTriggered: ko,
+    overallFit, mismatchScore: mismatch, koTriggered: coreFit.koTriggered,
     controlIntensity: ctrl.level, controlPoints: ctrl.points,
     criticalArea: critical.id, criticalAreaLabel: critical.label,
     equalDistribution: equalDistConflict,

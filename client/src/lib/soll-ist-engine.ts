@@ -250,7 +250,17 @@ export function computeSollIst(
 
   const totalGap = Math.abs(rt.impulsiv - ct.impulsiv) + Math.abs(rt.intuitiv - ct.intuitiv) + Math.abs(rt.analytisch - ct.analytisch);
 
-  const coreFit = computeCoreFit(roleProfile, candProfile);
+  let externalKo = false;
+  let effectiveControlLevel: "LOW" | "MEDIUM" | "HIGH" | undefined;
+  if (roleAnalysis) {
+    const candInput: CandidateInput = { candidate_name: candidateName, candidate_profile: candProfile };
+    externalKo = koRuleTriggered(roleAnalysis, candInput);
+    effectiveControlLevel = calcControlIntensity(roleAnalysis, candInput).level;
+  }
+
+  const coreFit = computeCoreFit(roleProfile, candProfile, externalKo);
+  const baseControlLevel = coreFit.controlIntensity;
+  if (!effectiveControlLevel) effectiveControlLevel = coreFit.controlIntensity;
 
   let fitRating: FitRating;
   let fitLabel: string;
@@ -258,20 +268,8 @@ export function computeSollIst(
   let gapLevel: "gering" | "mittel" | "hoch";
   let controlIntensity: "gering" | "mittel" | "hoch";
 
-  let effectiveOverallFit = coreFit.overallFit;
-  let effectiveControlLevel = coreFit.controlIntensity;
-  const baseControlLevel = coreFit.controlIntensity;
-
-  if (roleAnalysis) {
-    const candInput: CandidateInput = { candidate_name: candidateName, candidate_profile: candProfile };
-    const ko = koRuleTriggered(roleAnalysis, candInput);
-    if (ko && effectiveOverallFit !== "NOT_SUITABLE") effectiveOverallFit = "NOT_SUITABLE";
-    const ctrl = calcControlIntensity(roleAnalysis, candInput);
-    effectiveControlLevel = ctrl.level;
-  }
-
-  if (effectiveOverallFit === "SUITABLE") { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; gapLevel = "gering"; }
-  else if (effectiveOverallFit === "CONDITIONAL") { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; gapLevel = "mittel"; }
+  if (coreFit.overallFit === "SUITABLE") { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; gapLevel = "gering"; }
+  else if (coreFit.overallFit === "CONDITIONAL") { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; gapLevel = "mittel"; }
   else { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; gapLevel = "hoch"; }
 
   controlIntensity = effectiveControlLevel === "HIGH" ? "hoch" : effectiveControlLevel === "MEDIUM" ? "mittel" : "gering";
