@@ -7,13 +7,11 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { hyphenateText } from "@/lib/hyphenate";
 import { BERUFE } from "@/data/berufe";
 import {
-  type RoleAnalysis, type CandidateInput, type Triad, type FitStatus, type ControlIntensity, type EngineResult, type MatrixRow as EngineMatrixRow, type ComponentKey,
-  runEngine, normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent, statusLabel, controlLabel,
+  type RoleAnalysis, type CandidateInput, type Triad, type FitStatus, type ControlIntensity, type EngineResult, type MatrixRow as EngineMatrixRow, type ComponentKey, type BG,
+  runEngine, normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent, statusLabel, controlLabel, buildRoleAnalysisFromState,
 } from "@/lib/jobcheck-engine";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
-
-type BG = { imp: number; int: number; ana: number };
 
 type RollenDnaSummary = {
   beruf: string;
@@ -135,36 +133,11 @@ function bgToTriad(bg: BG): Triad {
 }
 
 function buildRoleAnalysis(state: any): RoleAnalysis | null {
-  try {
-    const beruf = state.beruf || "Unbenannte Stelle";
-    const found = BERUFE.find(b => b.name === beruf);
-    const bereich = found?.kategorie || "";
-    const fuehrungstyp = state.fuehrung || "Keine";
-    const isLeadership = fuehrungstyp !== "Keine";
-    const taetigkeiten = state.taetigkeiten || [];
-
-    const haupt = state.bioGramHaupt || calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "haupt"));
-    const neben = state.bioGramNeben || calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "neben"));
-    const fuehrungBG = state.bioGramFuehrung || calcBioGram(taetigkeiten.filter((t: any) => t.kategorie === "fuehrung"));
-    const rahmen = state.bioGramRahmen || computeRahmen(state);
-    const gesamt = state.bioGramGesamt || computeGesamt(haupt, neben, fuehrungBG, rahmen);
-
-    return {
-      job_title: beruf,
-      job_family: bereich,
-      role_profile: bgToTriad(gesamt),
-      frame_profile: bgToTriad(rahmen),
-      leadership: {
-        required: isLeadership,
-        profile: isLeadership ? bgToTriad(fuehrungBG) : undefined,
-        type: fuehrungstyp.startsWith("Disziplinarische") ? "disziplinarisch" : fuehrungstyp === "Fachliche Führung" ? "fachlich" : undefined,
-      },
-      tasks_profile: bgToTriad(haupt),
-      human_profile: bgToTriad(neben),
-      success_metrics: [],
-      tension_fields: [],
-    };
-  } catch { return null; }
+  const ra = buildRoleAnalysisFromState(state);
+  if (!ra) return null;
+  const found = BERUFE.find(b => b.name === (state.beruf || ""));
+  if (found) ra.job_family = found.kategorie || "";
+  return ra;
 }
 
 function GlassCard({ children, style, testId }: { children: React.ReactNode; style?: React.CSSProperties; testId?: string }) {

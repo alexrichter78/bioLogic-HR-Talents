@@ -2,6 +2,22 @@ export type { ComponentKey, Triad } from "./bio-types";
 export type FitStatus = "SUITABLE" | "CONDITIONAL" | "NOT_SUITABLE";
 export type ControlIntensity = "LOW" | "MEDIUM" | "HIGH";
 
+export type BG = { imp: number; int: number; ana: number };
+
+export type RoleDnaStateInput = {
+  beruf: string;
+  fuehrung?: string;
+  erfolgsfokusIndices?: number[];
+  aufgabencharakter?: string;
+  arbeitslogik?: string;
+  taetigkeiten?: { id: number; name: string; kategorie: string; kompetenz?: string; niveau?: string }[];
+  bioGramGesamt?: BG;
+  bioGramHaupt?: BG;
+  bioGramNeben?: BG;
+  bioGramFuehrung?: BG;
+  bioGramRahmen?: BG;
+};
+
 type RoleTerms = {
   kpiExamples: string;
   forecastTerm: string;
@@ -363,7 +379,7 @@ function weightedMismatch(role: Triad, cand: Triad) {
   return +(wI * dI + wN * dN + wA * dA).toFixed(2);
 }
 
-function koRuleTriggered(role: RoleAnalysis, cand: CandidateInput): boolean {
+export function koRuleTriggered(role: RoleAnalysis, cand: CandidateInput): boolean {
   const r = normalizeTriad(role.role_profile);
   const c = normalizeTriad(cand.candidate_profile);
   const roleDom = dominanceModeOf(r);
@@ -400,7 +416,7 @@ function overallFitFromScore(mismatch: number, sameDominance: boolean): FitStatu
   return "NOT_SUITABLE";
 }
 
-function calcControlIntensity(role: RoleAnalysis, cand: CandidateInput): { points: number; level: ControlIntensity } {
+export function calcControlIntensity(role: RoleAnalysis, cand: CandidateInput): { points: number; level: ControlIntensity } {
   const r = normalizeTriad(role.role_profile);
   const c = normalizeTriad(cand.candidate_profile);
   const rDom = dominanceModeOf(r);
@@ -1324,4 +1340,114 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
     keyReason, executiveSummary: execSummary,
     matrix, risks, development: dev, integrationPlan90: plan,
   };
+}
+
+function roundPct(p1: number, p2: number, p3: number): [number, number, number] {
+  const factor = 10;
+  const raw = [p1 * factor, p2 * factor, p3 * factor];
+  const flo = [Math.floor(raw[0]), Math.floor(raw[1]), Math.floor(raw[2])];
+  const rest = [raw[0] - flo[0], raw[1] - flo[1], raw[2] - flo[2]];
+  const targetSum = 100 * factor;
+  let missing = targetSum - (flo[0] + flo[1] + flo[2]);
+  while (missing > 0) {
+    let maxIdx = 0;
+    if (rest[1] > rest[maxIdx]) maxIdx = 1;
+    if (rest[2] > rest[maxIdx]) maxIdx = 2;
+    flo[maxIdx] += 1;
+    rest[maxIdx] = 0;
+    missing -= 1;
+  }
+  return [flo[0] / factor, flo[1] / factor, flo[2] / factor];
+}
+
+function calcBG(taetigkeiten: any[]): BG {
+  if (!taetigkeiten.length) return { imp: 33.3, int: 33.3, ana: 33.4 };
+  const weights: Record<string, number> = { Niedrig: 0.6, Mittel: 1.0, Hoch: 1.8 };
+  let sI = 0, sN = 0, sA = 0;
+  for (const t of taetigkeiten) {
+    const w = weights[t.niveau] || 1.0;
+    if (t.kompetenz === "Impulsiv") sI += w;
+    else if (t.kompetenz === "Intuitiv") sN += w;
+    else sA += w;
+  }
+  const total = sI + sN + sA;
+  if (total <= 0) return { imp: 33.3, int: 33.3, ana: 33.4 };
+  const [imp, int, ana] = roundPct((sI / total) * 100, (sN / total) * 100, (sA / total) * 100);
+  return { imp, int, ana };
+}
+
+function calcRahmen(state: RoleDnaStateInput): BG {
+  let sI = 0, sN = 0, sA = 0;
+  const f = state.fuehrung || "";
+  if (f === "Fachliche Führung") sA += 1;
+  else if (f === "Projekt-/Teamkoordination") sN += 1;
+  else if (f.startsWith("Disziplinarische")) sI += 1;
+  for (const idx of (state.erfolgsfokusIndices || [])) {
+    if (idx === 0 || idx === 2) sI += 1;
+    else if (idx === 1 || idx === 5) sN += 1;
+    else if (idx === 3 || idx === 4) sA += 1;
+  }
+  if (state.aufgabencharakter === "überwiegend operativ") sI += 1;
+  else if (state.aufgabencharakter === "überwiegend systemisch") sN += 1;
+  else if (state.aufgabencharakter === "überwiegend strategisch") sA += 1;
+  if (state.arbeitslogik === "Umsetzungsorientiert") sI += 1;
+  else if (state.arbeitslogik === "Menschenorientiert") sN += 1;
+  else if (state.arbeitslogik === "Daten-/prozessorientiert") sA += 1;
+  const total = sI + sN + sA;
+  if (total <= 0) return { imp: 33.3, int: 33.3, ana: 33.4 };
+  const [imp, int, ana] = roundPct((sI / total) * 100, (sN / total) * 100, (sA / total) * 100);
+  return { imp, int, ana };
+}
+
+function calcGesamt(haupt: BG, neben: BG, fuehrung: BG, rahmen: BG): BG {
+  const all = [haupt, neben, fuehrung, rahmen];
+  let vals = [
+    all.reduce((s, g) => s + g.imp, 0) / 4,
+    all.reduce((s, g) => s + g.int, 0) / 4,
+    all.reduce((s, g) => s + g.ana, 0) / 4,
+  ];
+  const MAX = 67;
+  const peak = Math.max(...vals);
+  if (peak > MAX) {
+    const scale = MAX / peak;
+    vals = vals.map(v => v * scale);
+  }
+  const [imp, int, ana] = roundPct(vals[0], vals[1], vals[2]);
+  return { imp, int, ana };
+}
+
+function bgToTriadShared(bg: BG | undefined): { impulsiv: number; intuitiv: number; analytisch: number } {
+  if (!bg) return { impulsiv: 33, intuitiv: 33, analytisch: 34 };
+  return { impulsiv: Math.round(bg.imp), intuitiv: Math.round(bg.int), analytisch: Math.round(bg.ana) };
+}
+
+export function buildRoleAnalysisFromState(state: RoleDnaStateInput): RoleAnalysis | null {
+  try {
+    const beruf = state.beruf || "Unbenannte Stelle";
+    const fuehrungstyp = state.fuehrung || "Keine";
+    const isLeadership = fuehrungstyp !== "Keine";
+    const taetigkeiten = state.taetigkeiten || [];
+
+    const haupt = state.bioGramHaupt || calcBG(taetigkeiten.filter((t: any) => t.kategorie === "haupt"));
+    const neben = state.bioGramNeben || calcBG(taetigkeiten.filter((t: any) => t.kategorie === "neben"));
+    const fuehrungBG = state.bioGramFuehrung || calcBG(taetigkeiten.filter((t: any) => t.kategorie === "fuehrung"));
+    const rahmen = state.bioGramRahmen || calcRahmen(state);
+    const gesamt = state.bioGramGesamt || calcGesamt(haupt, neben, fuehrungBG, rahmen);
+
+    return {
+      job_title: beruf,
+      job_family: "",
+      role_profile: bgToTriadShared(gesamt),
+      frame_profile: bgToTriadShared(rahmen),
+      leadership: {
+        required: isLeadership,
+        profile: isLeadership ? bgToTriadShared(fuehrungBG) : undefined,
+        type: fuehrungstyp.startsWith("Disziplinarische") ? "disziplinarisch" : fuehrungstyp === "Fachliche Führung" ? "fachlich" : undefined,
+      },
+      tasks_profile: bgToTriadShared(haupt),
+      human_profile: bgToTriadShared(neben),
+      success_metrics: [],
+      tension_fields: [],
+    };
+  } catch { return null; }
 }

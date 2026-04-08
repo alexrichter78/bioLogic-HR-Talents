@@ -4,9 +4,9 @@ import { AlertTriangle, Download, Loader2, ChevronLeft, ChevronDown, SlidersHori
 import GlobalNav from "@/components/global-nav";
 import { useLocalizedText, localizeDeep, useRegion } from "@/lib/region";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { dominanceModeOf, labelComponent } from "@/lib/jobcheck-engine";
+import { dominanceModeOf, labelComponent, buildRoleAnalysisFromState } from "@/lib/jobcheck-engine";
 import { computeSollIst, mapFuehrungsArt } from "@/lib/soll-ist-engine";
-import type { Triad, ComponentKey } from "@/lib/jobcheck-engine";
+import type { Triad, ComponentKey, RoleAnalysis } from "@/lib/jobcheck-engine";
 import type { SollIstResult, Severity, FuehrungsArt } from "@/lib/soll-ist-engine";
 import logoPath from "@assets/LOGO_bio_1773853681939.png";
 
@@ -184,6 +184,7 @@ export default function SollIstBericht() {
   }, []);
   const [roleName, setRoleName] = useState("");
   const [roleTriad, setRoleTriad] = useState<Triad | null>(null);
+  const [roleAnalysisObj, setRoleAnalysisObj] = useState<RoleAnalysis | undefined>(undefined);
   const [hasRollenDna, setHasRollenDna] = useState(false);
   const [reportGenerated, setReportGenerated] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
@@ -202,6 +203,7 @@ export default function SollIstBericht() {
           setRoleName(dna.beruf);
           setRoleTriad(bgToTriad(dna.bioGramGesamt));
           if (dna.fuehrung) setFuehrungsArt(mapFuehrungsArt(dna.fuehrung));
+          setRoleAnalysisObj(buildRoleAnalysisFromState(dna) || undefined);
         }
       } catch {}
     }
@@ -233,9 +235,9 @@ export default function SollIstBericht() {
 
   const result: SollIstResult | null = useMemo(() => {
     if (!roleTriad || !reportGenerated) return null;
-    const raw = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt);
+    const raw = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj);
     return localizeDeep(raw, region);
-  }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated, fuehrungsArt, region]);
+  }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated, fuehrungsArt, region, roleAnalysisObj]);
 
   const exportPdf = useCallback(async () => {
     if (!result || isExportingPdf || !roleTriad || !reportRef.current) return;
@@ -627,7 +629,7 @@ export default function SollIstBericht() {
           </div>
 
           {(() => {
-            const effective = result || (roleTriad ? localizeDeep(computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt), region) : null);
+            const effective = result || (roleTriad ? localizeDeep(computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj), region) : null);
             if (!effective) return null;
 
             const fitLabel = effective.fitLabel;

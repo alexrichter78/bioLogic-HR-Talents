@@ -1,5 +1,5 @@
-import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent, computeCoreFit } from "./jobcheck-engine";
-import type { Triad, ComponentKey } from "./jobcheck-engine";
+import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent, computeCoreFit, calcControlIntensity, koRuleTriggered } from "./jobcheck-engine";
+import type { Triad, ComponentKey, RoleAnalysis, CandidateInput } from "./jobcheck-engine";
 
 export type FitRating = "GEEIGNET" | "BEDINGT" | "NICHT_GEEIGNET";
 export type Severity = "ok" | "warning" | "critical";
@@ -239,7 +239,8 @@ export function computeSollIst(
   candidateName: string,
   roleProfile: Triad,
   candProfile: Triad,
-  fuehrungsArt: FuehrungsArt = "keine"
+  fuehrungsArt: FuehrungsArt = "keine",
+  roleAnalysis?: RoleAnalysis
 ): SollIstResult {
   resetVariants();
   const rt = normalizeTriad(roleProfile);
@@ -257,11 +258,22 @@ export function computeSollIst(
   let gapLevel: "gering" | "mittel" | "hoch";
   let controlIntensity: "gering" | "mittel" | "hoch";
 
-  if (coreFit.overallFit === "SUITABLE") { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; gapLevel = "gering"; }
-  else if (coreFit.overallFit === "CONDITIONAL") { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; gapLevel = "mittel"; }
+  let effectiveOverallFit = coreFit.overallFit;
+  let effectiveControlLevel = coreFit.controlIntensity;
+
+  if (roleAnalysis) {
+    const candInput: CandidateInput = { candidate_name: candidateName, candidate_profile: candProfile };
+    const ko = koRuleTriggered(roleAnalysis, candInput);
+    if (ko && effectiveOverallFit !== "NOT_SUITABLE") effectiveOverallFit = "NOT_SUITABLE";
+    const ctrl = calcControlIntensity(roleAnalysis, candInput);
+    effectiveControlLevel = ctrl.level;
+  }
+
+  if (effectiveOverallFit === "SUITABLE") { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; gapLevel = "gering"; }
+  else if (effectiveOverallFit === "CONDITIONAL") { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; gapLevel = "mittel"; }
   else { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; gapLevel = "hoch"; }
 
-  controlIntensity = coreFit.controlIntensity === "HIGH" ? "hoch" : coreFit.controlIntensity === "MEDIUM" ? "mittel" : "gering";
+  controlIntensity = effectiveControlLevel === "HIGH" ? "hoch" : effectiveControlLevel === "MEDIUM" ? "mittel" : "gering";
 
   const rk = rDom.top1.key;
   const rk2 = rDom.top2.key;
