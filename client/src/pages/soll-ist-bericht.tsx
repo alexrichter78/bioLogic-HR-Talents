@@ -646,10 +646,10 @@ export default function SollIstBericht() {
 
             const devLevel = effective.developmentLevel;
             const devScore = devLevel >= 4 ? 3 : devLevel >= 3 ? 2 : 1;
-            const devGaugeColor = devScore === 3 ? "#34C759" : devScore === 2 ? "#E5A832" : "#D64045";
+            const devGaugeColor = devScore === 3 ? BIO_COLORS.geeignet : devScore === 2 ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
             const devShort = devScore === 3 ? "Gute Aussichten · Wenig Aufwand" : devScore === 2 ? "Machbar · Gezielte Führung nötig" : "Hoher Aufwand · Ergebnis unsicher";
 
-            const bulletCol = fitLabel === "Geeignet" ? "#34C759" : fitLabel === "Bedingt geeignet" ? "#FF9500" : "#D64045";
+            const bulletCol = fitLabel === "Geeignet" ? BIO_COLORS.geeignet : fitLabel === "Bedingt geeignet" ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
 
             const samePrimary = effective.roleDomKey === effective.candDomKey;
             const sameSecondary = effective.roleDom2Key === effective.candDom2Key;
