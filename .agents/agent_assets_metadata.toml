@@ -6,3 +6,9 @@ id = "R0TTLSGbAcmv56UfY8nMT"
 uri = "file://attached_assets/systemwirkung-texte.md"
 type = "text"
 title = "Systemwirkung-Texte - Alle Konstellationen"
+
+[[outputs]]
+id = "ZH4OBwxY7B0XXKMRPST73"
+uri = "file://MatchCheck_Berechnungslogik.md"
+type = "text"
+title = "MatchCheck – Berechnungslogik (Tabellen)"
