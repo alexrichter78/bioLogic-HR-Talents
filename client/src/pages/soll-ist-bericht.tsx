@@ -779,15 +779,12 @@ export default function SollIstBericht() {
                       </div>
 
                       <div>
-                        <p style={{ fontSize: 15, fontWeight: 700, color: devGaugeColor, margin: "0 0 10px" }}>Entwicklungsaufwand ({devShort})</p>
-                        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-                          <div style={{ display: "flex", gap: 5, flex: 1 }}>
-                            {Array.from({ length: 3 }).map((_, i) => {
-                              const filledBars = 4 - devScore;
-                              return <div key={i} style={{ flex: 1, height: 12, borderRadius: 4, background: i < filledBars ? devGaugeColor : "rgba(0,0,0,0.08)" }} />;
-                            })}
-                          </div>
-                          <span style={{ fontSize: 14, fontWeight: 700, color: devGaugeColor, flexShrink: 0 }}>{devScore === 3 ? "niedriger Entwicklungsaufwand" : devScore === 2 ? "mittlerer Entwicklungsaufwand" : "hoher Entwicklungsaufwand"}</span>
+                        <p style={{ fontSize: 15, fontWeight: 700, color: devGaugeColor, margin: "0 0 10px" }}>Entwicklungsaufwand: {devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch"}</p>
+                        <div style={{ display: "flex", gap: 5 }}>
+                          {Array.from({ length: 3 }).map((_, i) => {
+                            const filledBars = 4 - devScore;
+                            return <div key={i} style={{ flex: 1, height: 12, borderRadius: 4, background: i < filledBars ? devGaugeColor : "rgba(0,0,0,0.08)" }} />;
+                          })}
                         </div>
                       </div>
 
@@ -934,7 +931,7 @@ export default function SollIstBericht() {
                   const cLabel = result.controlIntensity === "hoch" ? "Hoch" : result.controlIntensity === "mittel" ? "Mittel" : "Gering";
                   const devLevel = result.developmentLevel;
                   const devScore = devLevel >= 4 ? 3 : devLevel >= 3 ? 2 : 1;
-                  const devLabel = devScore === 3 ? "niedriger Entwicklungsaufwand" : devScore === 2 ? "mittlerer Entwicklungsaufwand" : "hoher Entwicklungsaufwand";
+                  const devLabel = devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch";
                   const devCol = devScore === 3 ? BIO_COLORS.geeignet : devScore === 2 ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
                   const gapCol = result.totalGap > 40 ? BIO_COLORS.nichtGeeignet : result.totalGap > 20 ? BIO_COLORS.bedingt : BIO_COLORS.geeignet;
                   const personLabel = result.candidateName !== "Die Person" ? result.candidateName : "Person";
