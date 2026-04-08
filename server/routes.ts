@@ -544,11 +544,23 @@ async function trackUsageEvent(userId: number, eventType: string): Promise<void>
   }
 }
 
+async function autoResetIfNewMonth(org: { id: number; currentPeriodStart: Date | null }): Promise<void> {
+  const periodStart = org.currentPeriodStart ? new Date(org.currentPeriodStart) : null;
+  if (!periodStart) return;
+  const now = new Date();
+  if (now.getFullYear() !== periodStart.getFullYear() || now.getMonth() !== periodStart.getMonth()) {
+    await storage.resetOrgAiUsage(org.id);
+  }
+}
+
 async function checkOrgAiLimit(userId: number): Promise<{ allowed: boolean; reason?: string }> {
   try {
     const user = await storage.getUserById(userId);
     if (!user?.organizationId) return { allowed: true };
-    const org = await storage.getOrganizationById(user.organizationId);
+    let org = await storage.getOrganizationById(user.organizationId);
+    if (!org) return { allowed: true };
+    await autoResetIfNewMonth(org);
+    org = await storage.getOrganizationById(user.organizationId);
     if (!org) return { allowed: true };
     if (org.aiRequestLimit === null) return { allowed: true };
     if (org.aiRequestsUsed >= org.aiRequestLimit) {
