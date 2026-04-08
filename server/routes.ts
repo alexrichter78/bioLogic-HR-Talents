@@ -1064,14 +1064,22 @@ export async function registerRoutes(
     }
   });
 
+  const trackUsageRateLimit = new Map<number, number>();
   app.post("/api/track-usage", requireAuth, async (req, res) => {
     try {
       const { eventType } = req.body;
-      const validTypes = ["ki_coach", "rollendna", "teamdynamik", "teamcheck", "matchcheck"];
-      if (!eventType || !validTypes.includes(eventType)) {
+      const allowedClientTypes = ["teamcheck"];
+      if (!eventType || !allowedClientTypes.includes(eventType)) {
         return res.status(400).json({ error: "Ungültiger Ereignistyp" });
       }
-      await trackUsageEvent(req.session.userId!, eventType);
+      const userId = req.session.userId!;
+      const now = Date.now();
+      const lastCall = trackUsageRateLimit.get(userId) || 0;
+      if (now - lastCall < 5000) {
+        return res.status(429).json({ error: "Zu viele Anfragen" });
+      }
+      trackUsageRateLimit.set(userId, now);
+      await trackUsageEvent(userId, eventType);
       res.json({ ok: true });
     } catch (error) {
       console.error("Track usage error:", error);
