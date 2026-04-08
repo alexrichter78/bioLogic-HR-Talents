@@ -356,12 +356,16 @@ export class DatabaseStorage implements IStorage {
     const allAnswers = await db.select().from(goldenAnswers);
     if (allAnswers.length === 0) return [];
     const queryLower = query.toLowerCase();
-    const queryWords = queryLower.split(/\s+/).filter(w => w.length > 3);
+    const stopWords = new Set(["und", "oder", "der", "die", "das", "ein", "eine", "ist", "hat", "ich", "mein", "meine", "wie", "was", "kann", "mit", "von", "für", "nicht", "sich", "dass", "auch", "aber", "noch", "schon", "sehr", "hier", "dort", "dann", "wenn", "weil", "wird", "sein", "sind", "haben", "werden", "nach", "über", "bei", "aus", "vor", "zum", "zur"]);
+    const queryWords = queryLower.split(/\s+/).filter(w => w.length > 3 && !stopWords.has(w));
     if (queryWords.length === 0) return allAnswers.slice(0, 2);
     return allAnswers
       .map(a => {
-        const text = (a.userMessage + " " + a.category).toLowerCase();
-        const score = queryWords.filter(w => text.includes(w)).length;
+        const userText = a.userMessage.toLowerCase();
+        const categoryText = a.category.toLowerCase();
+        const userScore = queryWords.filter(w => userText.includes(w)).length * 2;
+        const categoryScore = queryWords.filter(w => categoryText.includes(w)).length * 3;
+        const score = userScore + categoryScore;
         return { a, score };
       })
       .filter(item => item.score > 0)
