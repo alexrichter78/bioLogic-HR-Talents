@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
-import { Home, Briefcase, GitCompareArrows, Users, Bot, GraduationCap, Settings, LogOut, Globe } from "lucide-react";
+import { Home, Briefcase, GitCompareArrows, Users, Bot, GraduationCap, Settings, LogOut, Globe, Building2 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useRegion, type Region } from "@/lib/region";
 import logoSrc from "@assets/1_1773849007741.png";
@@ -138,6 +138,21 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                   </div>
                 )}
               </div>
+              {(user?.role === "admin" || user?.role === "subadmin") && (
+                <button
+                  onClick={() => setLocation("/firma-dashboard")}
+                  data-testid="nav-firma-dashboard-mobile"
+                  style={{
+                    width: 32, height: 32, borderRadius: 8,
+                    border: "none", cursor: "pointer",
+                    background: location === "/firma-dashboard" ? "rgba(0,113,227,0.08)" : "transparent",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    transition: "all 200ms ease",
+                  }}
+                >
+                  <Building2 style={{ width: 15, height: 15, color: location === "/firma-dashboard" ? "#0071E3" : "#86868B", strokeWidth: 1.8 }} />
+                </button>
+              )}
               {user?.role === "admin" && (
                 <button
                   onClick={() => setLocation("/admin")}
@@ -149,8 +164,6 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                     display: "flex", alignItems: "center", justifyContent: "center",
                     transition: "all 200ms ease",
                   }}
-                  onMouseEnter={(e) => { if (location !== "/admin") e.currentTarget.style.background = "rgba(0,0,0,0.03)"; }}
-                  onMouseLeave={(e) => { if (location !== "/admin") e.currentTarget.style.background = "transparent"; }}
                 >
                   <Settings style={{ width: 15, height: 15, color: location === "/admin" ? "#0071E3" : "#86868B", strokeWidth: 1.8 }} />
                 </button>
@@ -165,8 +178,6 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                   display: "flex", alignItems: "center", justifyContent: "center",
                   transition: "all 200ms ease",
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,59,48,0.06)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
               >
                 <LogOut style={{ width: 15, height: 15, color: "#86868B", strokeWidth: 1.8 }} />
               </button>
@@ -371,6 +382,24 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                   {new Date(user.accessUntil).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
                 </span>
               </span>
+            )}
+            {(user?.role === "admin" || user?.role === "subadmin") && (
+              <button
+                onClick={() => setLocation("/firma-dashboard")}
+                data-testid="nav-firma-dashboard"
+                title="Firmen-Dashboard"
+                style={{
+                  width: 32, height: 32, borderRadius: 8,
+                  border: "none", cursor: "pointer",
+                  background: location === "/firma-dashboard" ? "rgba(0,113,227,0.08)" : "transparent",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  transition: "all 200ms ease",
+                }}
+                onMouseEnter={(e) => { if (location !== "/firma-dashboard") e.currentTarget.style.background = "rgba(0,113,227,0.05)"; }}
+                onMouseLeave={(e) => { if (location !== "/firma-dashboard") e.currentTarget.style.background = "transparent"; }}
+              >
+                <Building2 style={{ width: 15, height: 15, color: location === "/firma-dashboard" ? "#0071E3" : "#86868B", strokeWidth: 1.8 }} />
+              </button>
             )}
             {user?.role === "admin" && (
               <button

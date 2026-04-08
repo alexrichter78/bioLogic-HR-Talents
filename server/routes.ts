@@ -1035,7 +1035,14 @@ export async function registerRoutes(
       if (isNaN(id)) return res.status(400).json({ error: "Ungültige ID" });
       const since = req.query.since ? new Date(req.query.since as string) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       const totals = await storage.getUsageStatsByOrg(id, since);
-      const perUser = await storage.getUsageBreakdownByOrg(id, since);
+      const perUserRaw = await storage.getUsageBreakdownByOrg(id, since);
+      const userIds = [...new Set(perUserRaw.map(p => p.userId))];
+      const userCache = new Map<number, { username: string; firstName: string; lastName: string }>();
+      for (const uid of userIds) {
+        const u = await storage.getUserById(uid);
+        if (u) userCache.set(uid, { username: u.username, firstName: u.firstName, lastName: u.lastName });
+      }
+      const perUser = perUserRaw.map(p => ({ ...p, ...(userCache.get(p.userId) || { username: "unknown", firstName: "", lastName: "" }) }));
       res.json({ totals, perUser });
     } catch (error) {
       console.error("Org usage stats error:", error);
@@ -1051,8 +1058,15 @@ export async function registerRoutes(
       }
       const since = req.query.since ? new Date(req.query.since as string) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       const totals = await storage.getUsageStatsByOrg(user.organizationId, since);
-      const perUser = await storage.getUsageBreakdownByOrg(user.organizationId, since);
+      const perUserRaw = await storage.getUsageBreakdownByOrg(user.organizationId, since);
       const org = await storage.getOrganizationById(user.organizationId);
+      const userIds = [...new Set(perUserRaw.map(p => p.userId))];
+      const userCache = new Map<number, { username: string; firstName: string; lastName: string }>();
+      for (const uid of userIds) {
+        const u = await storage.getUserById(uid);
+        if (u) userCache.set(uid, { username: u.username, firstName: u.firstName, lastName: u.lastName });
+      }
+      const perUser = perUserRaw.map(p => ({ ...p, ...(userCache.get(p.userId) || { username: "unknown", firstName: "", lastName: "" }) }));
       res.json({
         organization: org ? { id: org.id, name: org.name, aiRequestLimit: org.aiRequestLimit, aiRequestsUsed: org.aiRequestsUsed, currentPeriodStart: org.currentPeriodStart } : null,
         totals,
@@ -1786,7 +1800,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
       if (req.session.userId) {
         const limitCheck = await checkOrgAiLimit(req.session.userId);
         if (!limitCheck.allowed) {
-          return res.json({ reply: limitCheck.reason, filtered: true });
+          return res.status(429).json({ error: limitCheck.reason });
         }
       }
 

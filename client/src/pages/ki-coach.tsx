@@ -615,7 +615,15 @@ export default function KICoach() {
         signal: controller.signal,
       });
 
-      if (!res.ok) { clearTimeout(timeout); throw new Error("Fehler"); }
+      if (!res.ok) {
+        clearTimeout(timeout);
+        if (res.status === 429) {
+          let detail = "";
+          try { const errData = await res.json(); detail = errData.error || ""; } catch {}
+          throw new Error("LIMIT_REACHED:" + detail);
+        }
+        throw new Error("Fehler");
+      }
 
       if (res.headers.get("content-type")?.includes("text/event-stream")) {
         const reader = res.body!.getReader();
@@ -687,11 +695,18 @@ export default function KICoach() {
     } catch (err: any) {
       clearTimeout(timeout);
       const isTimeout = err?.name === "AbortError";
+      const isLimit = err?.message?.startsWith("LIMIT_REACHED:");
+      let errorContent: string;
+      if (isLimit) {
+        errorContent = "Das KI-Kontingent eurer Organisation ist leider aufgebraucht. Bitte wende dich an euren Administrator, um das Limit zu erhöhen oder den Zähler zurückzusetzen.";
+      } else if (isTimeout) {
+        errorContent = "Die Anfrage hat zu lange gedauert. Bitte versuche es erneut – bei komplexen Fragen kann es helfen, die Frage kürzer zu formulieren.";
+      } else {
+        errorContent = "Entschuldigung, es ist ein Fehler aufgetreten. Bitte versuche es erneut.";
+      }
       setMessages(prev => [...prev, {
         role: "assistant",
-        content: isTimeout
-          ? "Die Anfrage hat zu lange gedauert. Bitte versuche es erneut – bei komplexen Fragen kann es helfen, die Frage kürzer zu formulieren."
-          : "Entschuldigung, es ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+        content: errorContent,
       }]);
     } finally {
       setLoading(false);
@@ -785,7 +800,15 @@ export default function KICoach() {
           signal: controller.signal,
         });
 
-        if (!res.ok) { clearTimeout(timeout); throw new Error("Fehler"); }
+        if (!res.ok) {
+        clearTimeout(timeout);
+        if (res.status === 429) {
+          let detail = "";
+          try { const errData = await res.json(); detail = errData.error || ""; } catch {}
+          throw new Error("LIMIT_REACHED:" + detail);
+        }
+        throw new Error("Fehler");
+      }
 
         if (res.headers.get("content-type")?.includes("text/event-stream")) {
           const reader = res.body!.getReader();
@@ -855,11 +878,18 @@ export default function KICoach() {
       } catch (err: any) {
         clearTimeout(timeout);
         const isTimeout = err?.name === "AbortError";
+        const isLimit = err?.message?.startsWith("LIMIT_REACHED:");
+        let errorContent: string;
+        if (isLimit) {
+          errorContent = "Das KI-Kontingent eurer Organisation ist leider aufgebraucht. Bitte wende dich an euren Administrator, um das Limit zu erhöhen oder den Zähler zurückzusetzen.";
+        } else if (isTimeout) {
+          errorContent = "Die Anfrage hat zu lange gedauert. Bitte versuche es erneut.";
+        } else {
+          errorContent = "Entschuldigung, es ist ein Fehler aufgetreten. Bitte versuche es erneut.";
+        }
         setMessages(prev => [...prev, {
           role: "assistant",
-          content: isTimeout
-            ? "Die Anfrage hat zu lange gedauert. Bitte versuche es erneut."
-            : "Entschuldigung, es ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+          content: errorContent,
         }]);
       } finally {
         setLoading(false);

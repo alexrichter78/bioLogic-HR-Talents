@@ -11,6 +11,7 @@ interface AuthUser {
   role: string;
   courseAccess: boolean;
   accessUntil: string | null;
+  organizationId: number | null;
 }
 
 interface AuthContextType {

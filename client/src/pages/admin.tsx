@@ -17,6 +17,7 @@ interface UserWithSub {
   courseAccess: boolean;
   createdAt: string;
   lastLoginAt: string | null;
+  organizationId: number | null;
   subscription: {
     id: number;
     plan: string;
@@ -40,6 +41,7 @@ interface UserForm {
   plan: string;
   notes: string;
   subscriptionStatus: string;
+  organizationId: number | null;
 }
 
 const emptyForm: UserForm = {
@@ -56,6 +58,7 @@ const emptyForm: UserForm = {
   plan: "trial",
   notes: "",
   subscriptionStatus: "active",
+  organizationId: null,
 };
 
 function formatDate(d: string | null) {
@@ -79,7 +82,7 @@ export default function Admin() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [resetLink, setResetLink] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState<"users" | "feedback" | "knowledge" | "golden" | "topics" | "prompt">("users");
+  const [activeTab, setActiveTab] = useState<"users" | "feedback" | "knowledge" | "golden" | "topics" | "prompt" | "orgs">("users");
   const [feedbackList, setFeedbackList] = useState<any[]>([]);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [knowledgeDocs, setKnowledgeDocs] = useState<any[]>([]);
@@ -95,6 +98,72 @@ export default function Admin() {
   const [promptLoading, setPromptLoading] = useState(false);
   const [promptSaving, setPromptSaving] = useState(false);
   const [promptSaved, setPromptSaved] = useState(false);
+  const [orgsList, setOrgsList] = useState<any[]>([]);
+  const [orgsLoading, setOrgsLoading] = useState(false);
+  const [showOrgForm, setShowOrgForm] = useState(false);
+  const [editingOrgId, setEditingOrgId] = useState<number | null>(null);
+  const [orgForm, setOrgForm] = useState({ name: "", aiRequestLimit: "" });
+  const [orgUsage, setOrgUsage] = useState<{ orgId: number; totals: any[]; perUser: any[] } | null>(null);
+  const [orgUsageLoading, setOrgUsageLoading] = useState(false);
+
+  const loadOrgs = async () => {
+    setOrgsLoading(true);
+    try {
+      const res = await fetch("/api/admin/organizations", { credentials: "include" });
+      if (res.ok) setOrgsList(await res.json());
+    } catch {}
+    setOrgsLoading(false);
+  };
+
+  const saveOrg = async () => {
+    if (!orgForm.name) return;
+    try {
+      const payload: any = { name: orgForm.name };
+      if (orgForm.aiRequestLimit) payload.aiRequestLimit = parseInt(orgForm.aiRequestLimit);
+      else payload.aiRequestLimit = null;
+      if (editingOrgId) {
+        await fetch(`/api/admin/organizations/${editingOrgId}`, {
+          method: "PATCH", credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      } else {
+        await fetch("/api/admin/organizations", {
+          method: "POST", credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      }
+      setShowOrgForm(false);
+      setEditingOrgId(null);
+      setOrgForm({ name: "", aiRequestLimit: "" });
+      loadOrgs();
+    } catch {}
+  };
+
+  const deleteOrg = async (id: number) => {
+    if (!confirm("Organisation wirklich löschen? Alle zugewiesenen Benutzer werden von der Organisation getrennt.")) return;
+    await fetch(`/api/admin/organizations/${id}`, { method: "DELETE", credentials: "include" });
+    loadOrgs();
+  };
+
+  const resetOrgUsage = async (id: number) => {
+    if (!confirm("Kontingent zurücksetzen?")) return;
+    await fetch(`/api/admin/organizations/${id}/reset-usage`, { method: "POST", credentials: "include" });
+    loadOrgs();
+  };
+
+  const loadOrgUsage = async (orgId: number) => {
+    setOrgUsageLoading(true);
+    try {
+      const res = await fetch(`/api/admin/organizations/${orgId}/usage`, { credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        setOrgUsage({ orgId, totals: data.totals, perUser: data.perUser });
+      }
+    } catch {}
+    setOrgUsageLoading(false);
+  };
 
   const loadFeedback = async () => {
     setFeedbackLoading(true);
@@ -200,6 +269,7 @@ export default function Admin() {
     if (activeTab === "golden") loadGoldenAnswers();
     if (activeTab === "topics") loadTopicStats();
     if (activeTab === "prompt") loadPrompt();
+    if (activeTab === "orgs") loadOrgs();
   }, [activeTab]);
 
   const saveKnowledgeDoc = async () => {
@@ -296,6 +366,10 @@ export default function Admin() {
     const res = await fetch("/api/admin/users");
     if (res.ok) setUsers(await res.json());
     setLoading(false);
+    try {
+      const orgRes = await fetch("/api/admin/organizations", { credentials: "include" });
+      if (orgRes.ok) setOrgsList(await orgRes.json());
+    } catch {}
   }
 
   function startEdit(u: UserWithSub) {
@@ -317,6 +391,7 @@ export default function Admin() {
       plan: u.subscription?.plan || "premium",
       notes: u.subscription?.notes || "",
       subscriptionStatus: u.subscription?.status || "active",
+      organizationId: u.organizationId ?? null,
     });
   }
 
@@ -466,7 +541,17 @@ export default function Admin() {
             <label style={labelStyle}>Rolle</label>
             <select value={form.role} onChange={e => setForm({ ...form, role: e.target.value })} style={inputStyle} data-testid="select-admin-role">
               <option value="user">Benutzer</option>
+              <option value="subadmin">Subadmin</option>
               <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Organisation</label>
+            <select value={form.organizationId ?? ""} onChange={e => setForm({ ...form, organizationId: e.target.value ? parseInt(e.target.value) : null })} style={inputStyle} data-testid="select-admin-org">
+              <option value="">Keine Organisation</option>
+              {orgsList.map(org => (
+                <option key={org.id} value={org.id}>{org.name}</option>
+              ))}
             </select>
           </div>
           <div>
@@ -557,6 +642,7 @@ export default function Admin() {
         <div style={{ display: "flex", gap: 4, marginBottom: 20, background: "rgba(0,0,0,0.03)", borderRadius: 12, padding: 4 }}>
           {[
             { id: "users" as const, label: "Benutzer", icon: Users },
+            { id: "orgs" as const, label: "Organisationen", icon: Building2 },
             { id: "topics" as const, label: "Themen", icon: Database },
             { id: "feedback" as const, label: "Feedback", icon: ThumbsUp },
             { id: "golden" as const, label: "Goldene Antworten", icon: Check },
@@ -657,18 +743,20 @@ export default function Admin() {
               const subActive = u.subscription?.status === "active" && !isExpired;
               return (
                 <div key={u.id} style={{ background: "#fff", borderRadius: 14, padding: "16px 20px", border: "1px solid rgba(0,0,0,0.05)", display: "flex", alignItems: "center", gap: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.02)" }} data-testid={`admin-user-row-${u.id}`}>
-                  <div style={{ width: 36, height: 36, borderRadius: 10, background: u.role === "admin" ? "linear-gradient(135deg, #1A5DAB, #0071E3)" : "linear-gradient(135deg, #E5E5EA, #D1D1D6)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    {u.role === "admin" ? <Shield style={{ width: 16, height: 16, color: "#fff" }} /> : <Users style={{ width: 16, height: 16, color: "#636366" }} />}
+                  <div style={{ width: 36, height: 36, borderRadius: 10, background: u.role === "admin" ? "linear-gradient(135deg, #1A5DAB, #0071E3)" : u.role === "subadmin" ? "linear-gradient(135deg, #AF52DE, #DA70D6)" : "linear-gradient(135deg, #E5E5EA, #D1D1D6)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    {u.role === "admin" ? <Shield style={{ width: 16, height: 16, color: "#fff" }} /> : u.role === "subadmin" ? <Building2 style={{ width: 16, height: 16, color: "#fff" }} /> : <Users style={{ width: 16, height: 16, color: "#636366" }} />}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
                       <span style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F" }}>{u.firstName} {u.lastName}</span>
                       {!u.isActive && <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, background: "rgba(255,59,48,0.08)", color: "#C41E3A", fontWeight: 600 }}>Deaktiviert</span>}
                       {u.role === "admin" && <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, background: "rgba(0,113,227,0.08)", color: "#0071E3", fontWeight: 600 }}>Admin</span>}
+                      {u.role === "subadmin" && <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, background: "rgba(175,82,222,0.08)", color: "#AF52DE", fontWeight: 600 }}>Subadmin</span>}
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 12, color: "#8E8E93" }}>
                       <span style={{ fontWeight: 500 }}>@{u.username}</span>
                       {u.companyName && <span style={{ display: "flex", alignItems: "center", gap: 3 }}><Building2 style={{ width: 11, height: 11 }} />{u.companyName}</span>}
+                      {u.organizationId && (() => { const org = orgsList.find((o: any) => o.id === u.organizationId); return org ? <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, background: "rgba(0,113,227,0.06)", color: "#0071E3", fontWeight: 500 }}>{org.name}</span> : null; })()}
                     </div>
                   </div>
                   <div style={{ textAlign: "right", minWidth: 120 }}>
@@ -702,6 +790,145 @@ export default function Admin() {
           </div>
         )}
         </>
+        )}
+
+        {activeTab === "orgs" && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+              <div>
+                <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px", display: "flex", alignItems: "center", gap: 8 }} data-testid="text-orgs-title">
+                  <Building2 style={{ width: 20, height: 20, color: "#1A5DAB" }} />
+                  Organisationen
+                </h2>
+                <p style={{ fontSize: 14, color: "#6E6E73", margin: 0 }}>{orgsList.length} Organisationen</p>
+              </div>
+              <button
+                onClick={() => { setShowOrgForm(true); setEditingOrgId(null); setOrgForm({ name: "", aiRequestLimit: "" }); }}
+                data-testid="button-create-org"
+                style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, border: "none", background: "#1D1D1F", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}
+              >
+                <Plus style={{ width: 16, height: 16 }} />
+                Neue Organisation
+              </button>
+            </div>
+
+            {showOrgForm && (
+              <div style={{ background: "#fff", borderRadius: 14, padding: 24, border: "1px solid rgba(0,0,0,0.08)", marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.03)" }}>
+                <h3 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 16px", color: "#1D1D1F" }}>{editingOrgId ? "Organisation bearbeiten" : "Neue Organisation"}</h3>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  <div>
+                    <label style={labelStyle}>Name *</label>
+                    <input value={orgForm.name} onChange={e => setOrgForm(f => ({ ...f, name: e.target.value }))} style={inputStyle} data-testid="input-org-name" placeholder="z.B. Muster GmbH" />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>KI-Limit (leer = unbegrenzt)</label>
+                    <input type="number" value={orgForm.aiRequestLimit} onChange={e => setOrgForm(f => ({ ...f, aiRequestLimit: e.target.value }))} style={inputStyle} data-testid="input-org-limit" placeholder="z.B. 500" />
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 16 }}>
+                  <button onClick={() => { setShowOrgForm(false); setEditingOrgId(null); }} style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid rgba(0,0,0,0.1)", background: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }} data-testid="button-cancel-org">Abbrechen</button>
+                  <button onClick={saveOrg} style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#1D1D1F", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }} data-testid="button-save-org">
+                    <Save style={{ width: 14, height: 14 }} />
+                    Speichern
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {orgsLoading ? (
+              <p style={{ textAlign: "center", color: "#8E8E93", padding: 40 }}>Laden...</p>
+            ) : orgsList.length === 0 && !showOrgForm ? (
+              <div style={{ textAlign: "center", padding: 60, color: "#8E8E93" }}>
+                <Building2 style={{ width: 32, height: 32, marginBottom: 12, opacity: 0.4 }} />
+                <p>Noch keine Organisationen vorhanden</p>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {orgsList.map(org => {
+                  const quotaPercent = org.aiRequestLimit ? Math.min(100, Math.round((org.aiRequestsUsed / org.aiRequestLimit) * 100)) : null;
+                  const showUsage = orgUsage?.orgId === org.id;
+                  return (
+                    <div key={org.id} style={{ background: "#fff", borderRadius: 14, border: "1px solid rgba(0,0,0,0.06)", overflow: "hidden" }} data-testid={`org-card-${org.id}`}>
+                      <div style={{ padding: "16px 20px", display: "flex", alignItems: "center", gap: 14 }}>
+                        <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg, #1A5DAB, #0071E3)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <Building2 style={{ width: 16, height: 16, color: "#fff" }} />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F" }}>{org.name}</div>
+                          <div style={{ fontSize: 12, color: "#8E8E93", marginTop: 2 }}>
+                            {org.aiRequestLimit ? `${org.aiRequestsUsed} / ${org.aiRequestLimit} KI-Anfragen` : `${org.aiRequestsUsed} KI-Anfragen (unbegrenzt)`}
+                          </div>
+                          {quotaPercent !== null && (
+                            <div style={{ height: 4, borderRadius: 2, background: "rgba(0,0,0,0.06)", marginTop: 6, maxWidth: 200, overflow: "hidden" }}>
+                              <div style={{ height: "100%", borderRadius: 2, width: `${quotaPercent}%`, background: quotaPercent >= 90 ? "#FF3B30" : quotaPercent >= 70 ? "#FF9500" : "#34C759" }} />
+                            </div>
+                          )}
+                        </div>
+                        <div style={{ display: "flex", gap: 4 }}>
+                          <button onClick={() => { if (showUsage) { setOrgUsage(null); } else { loadOrgUsage(org.id); } }} style={{ padding: "6px 10px", borderRadius: 8, border: "1px solid rgba(0,113,227,0.15)", background: showUsage ? "rgba(0,113,227,0.08)" : "#fff", cursor: "pointer", fontSize: 11, fontWeight: 600, color: "#0071E3", whiteSpace: "nowrap" }} data-testid={`button-usage-org-${org.id}`}>
+                            Nutzung
+                          </button>
+                          <button onClick={() => resetOrgUsage(org.id)} style={{ padding: "6px 10px", borderRadius: 8, border: "1px solid rgba(0,0,0,0.08)", background: "#fff", cursor: "pointer", fontSize: 11, fontWeight: 600, color: "#636366", display: "flex", alignItems: "center", gap: 4 }} data-testid={`button-reset-org-${org.id}`}>
+                            <RotateCcw style={{ width: 11, height: 11 }} />
+                            Reset
+                          </button>
+                          <button onClick={() => { setEditingOrgId(org.id); setOrgForm({ name: org.name, aiRequestLimit: org.aiRequestLimit ? String(org.aiRequestLimit) : "" }); setShowOrgForm(true); }} style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid rgba(0,0,0,0.06)", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} data-testid={`button-edit-org-${org.id}`}>
+                            <Pencil style={{ width: 14, height: 14, color: "#636366" }} />
+                          </button>
+                          <button onClick={() => deleteOrg(org.id)} style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid rgba(255,59,48,0.1)", background: "rgba(255,59,48,0.03)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} data-testid={`button-delete-org-${org.id}`}>
+                            <Trash2 style={{ width: 14, height: 14, color: "#FF3B30" }} />
+                          </button>
+                        </div>
+                      </div>
+
+                      {showUsage && (
+                        <div style={{ padding: "0 20px 16px", borderTop: "1px solid rgba(0,0,0,0.04)" }}>
+                          {orgUsageLoading ? (
+                            <p style={{ textAlign: "center", color: "#8E8E93", padding: 16, fontSize: 13 }}>Laden...</p>
+                          ) : (
+                            <>
+                              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", padding: "12px 0" }}>
+                                {(orgUsage?.totals || []).map((t: any) => (
+                                  <div key={t.eventType} style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(0,113,227,0.06)", fontSize: 12, fontWeight: 600, color: "#0071E3" }}>
+                                    {t.eventType}: {t.count}
+                                  </div>
+                                ))}
+                                {(!orgUsage?.totals || orgUsage.totals.length === 0) && (
+                                  <span style={{ fontSize: 12, color: "#8E8E93" }}>Keine Nutzung im Zeitraum</span>
+                                )}
+                              </div>
+                              {orgUsage?.perUser && orgUsage.perUser.length > 0 && (
+                                <div style={{ fontSize: 12 }}>
+                                  <div style={{ fontWeight: 600, color: "#636366", marginBottom: 6 }}>Pro Benutzer:</div>
+                                  {(() => {
+                                    const uMap = new Map<number, { name: string; events: Record<string, number> }>();
+                                    for (const pu of orgUsage.perUser) {
+                                      if (!uMap.has(pu.userId)) uMap.set(pu.userId, { name: `${pu.firstName} ${pu.lastName}`, events: {} });
+                                      uMap.get(pu.userId)!.events[pu.eventType] = Number(pu.count);
+                                    }
+                                    return Array.from(uMap.entries()).map(([uid, u]) => (
+                                      <div key={uid} style={{ display: "flex", gap: 8, alignItems: "center", padding: "4px 0", flexWrap: "wrap" }}>
+                                        <span style={{ fontWeight: 500, color: "#1D1D1F", minWidth: 120 }}>{u.name}</span>
+                                        {Object.entries(u.events).map(([evt, cnt]) => (
+                                          <span key={evt} style={{ padding: "2px 8px", borderRadius: 6, background: "rgba(0,0,0,0.04)", fontSize: 11, color: "#636366" }}>
+                                            {evt}: {cnt}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    ));
+                                  })()}
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         )}
 
         {activeTab === "feedback" && (

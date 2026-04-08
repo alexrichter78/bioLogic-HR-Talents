@@ -85,6 +85,9 @@ Preferred communication style: Simple, everyday language.
 -   **Usage Tracking**: `usage_events` table logs every AI call with userId, organizationId, and canonical eventType (`ki_coach`, `rollendna`, `teamdynamik`, `matchcheck`). Tracked fire-and-forget after successful responses on all AI endpoints: ki-coach, generate-kompetenzen, reclassify-kompetenzen, generate-bericht, generate-analyse, generate-team-report, generate-kandidatenprofil. Admin can query org usage (totals + per-user breakdown) at `/api/admin/organizations/:id/usage?since=`. Subadmins can query their own org at `/api/subadmin/usage`.
 -   **KI Limit Enforcement**: Before any AI call (all 7 tracked endpoints), `checkOrgAiLimit()` verifies the user's org hasn't exceeded its `aiRequestLimit`. If exceeded, returns HTTP 429 with German-language error (or filtered reply for ki-coach). Orgs with `aiRequestLimit=null` have unlimited access.
 -   **Subadmin Role**: `requireSubadmin` middleware allows both admin and subadmin roles. Subadmins see their own org's usage stats (totals + per-user breakdown) via `/api/subadmin/usage`.
+-   **Firmen-Dashboard**: `/firma-dashboard` page for subadmins and admins. Shows org KI quota bar, per-feature usage stats (KI-Coach, Rollen-DNA, Teamdynamik, TeamCheck, MatchCheck), per-user breakdown table, and period filter (7d/30d/90d/all). Route-guarded for admin/subadmin roles. Nav icon (Building2) in global nav for subadmin/admin.
+-   **Admin Organizations Tab**: "Organisationen" tab in admin panel. Full CRUD for orgs (name, KI-limit). Usage stats per org (expandable per-org detail). Reset usage counter. User-to-org assignment via org dropdown in user edit form. Subadmin badge display in user list.
+-   **KI-Coach Limit Feedback**: When org KI quota is exhausted (HTTP 429), the coach shows a friendly German message explaining the limit and suggesting contacting the admin, instead of a generic error.
 
 ## External Dependencies
 
