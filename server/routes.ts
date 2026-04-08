@@ -793,7 +793,43 @@ export async function registerRoutes(
         const token = crypto.randomBytes(32).toString("hex");
         const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
         await storage.createPasswordResetToken(user.id, token, expiresAt);
-        console.log(`Password reset token for ${email}: ${token}`);
+        const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
+        const resetUrl = `${baseUrl}/reset-password?token=${token}`;
+        const resendKey = process.env.RESEND_API_KEY;
+        if (resendKey) {
+          const resend = new Resend(resendKey);
+          await resend.emails.send({
+            from: "bioLogic HR Talents <onboarding@resend.dev>",
+            to: email,
+            subject: "Passwort zurücksetzen – bioLogic HR Talents",
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <div style="background: linear-gradient(135deg, #0071E3, #34AADC); padding: 24px; border-radius: 12px 12px 0 0;">
+                  <h1 style="color: #fff; margin: 0; font-size: 20px;">Passwort zurücksetzen</h1>
+                </div>
+                <div style="background: #f8f9fa; padding: 24px; border: 1px solid #e9ecef; border-radius: 0 0 12px 12px;">
+                  <p style="color: #333; font-size: 15px; line-height: 1.6;">
+                    Hallo${user.firstName ? ` ${user.firstName}` : ""},
+                  </p>
+                  <p style="color: #333; font-size: 15px; line-height: 1.6;">
+                    Sie haben eine Anfrage zum Zurücksetzen Ihres Passworts gestellt. Klicken Sie auf den Button, um ein neues Passwort festzulegen:
+                  </p>
+                  <div style="text-align: center; margin: 24px 0;">
+                    <a href="${resetUrl}" style="background: #0071E3; color: #fff; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px; display: inline-block;">
+                      Neues Passwort festlegen
+                    </a>
+                  </div>
+                  <p style="color: #666; font-size: 13px; line-height: 1.5;">
+                    Dieser Link ist 24 Stunden gültig. Falls Sie diese Anfrage nicht gestellt haben, können Sie diese E-Mail ignorieren.
+                  </p>
+                </div>
+              </div>
+            `,
+          });
+          console.log(`Password reset email sent to ${email}`);
+        } else {
+          console.log(`Password reset token for ${email}: ${token} (no email service configured)`);
+        }
       }
       res.json({ ok: true, message: "Falls ein Konto mit dieser E-Mail existiert, wurde ein Reset-Link gesendet." });
     } catch (error) {
@@ -859,14 +895,19 @@ export async function registerRoutes(
 
       const existingSub = await storage.getSubscriptionByUserId(id);
       if (accessUntil !== undefined || plan !== undefined || notes !== undefined || subscriptionStatus !== undefined) {
+        const hasValidDate = accessUntil && accessUntil !== "" && !isNaN(new Date(accessUntil).getTime());
         if (existingSub) {
           const subUpdate: any = {};
-          if (accessUntil !== undefined) subUpdate.accessUntil = new Date(accessUntil);
-          if (plan !== undefined) subUpdate.plan = plan;
-          if (notes !== undefined) subUpdate.notes = notes;
-          if (subscriptionStatus !== undefined) subUpdate.status = subscriptionStatus;
-          await storage.updateSubscription(existingSub.id, subUpdate);
-        } else if (accessUntil) {
+          if (hasValidDate) subUpdate.accessUntil = new Date(accessUntil);
+          if (!hasValidDate && accessUntil === "") {
+            await storage.deleteSubscription(existingSub.id);
+          } else {
+            if (plan !== undefined) subUpdate.plan = plan;
+            if (notes !== undefined) subUpdate.notes = notes;
+            if (subscriptionStatus !== undefined) subUpdate.status = subscriptionStatus;
+            if (Object.keys(subUpdate).length > 0) await storage.updateSubscription(existingSub.id, subUpdate);
+          }
+        } else if (hasValidDate) {
           await storage.createSubscription({
             userId: id,
             plan: plan || "premium",
