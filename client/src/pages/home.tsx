@@ -337,11 +337,7 @@ export default function Home() {
         />
       )}
 
-      <div style={{ display: "flex", justifyContent: "center", gap: 20, padding: "24px 0 16px", marginTop: 16 }}>
-        <a href="/impressum" data-testid="link-impressum-home" className="footer-link">Impressum</a>
-        <a href="/datenschutz" data-testid="link-datenschutz-home" className="footer-link">Datenschutz</a>
-        <a href="/disclaimer" data-testid="link-disclaimer-home" className="footer-link">Disclaimer</a>
-      </div>
+      <div style={{ height: 32 }} />
     </div>
   );
 }

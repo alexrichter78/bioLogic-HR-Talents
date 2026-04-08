@@ -429,8 +429,9 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
 
 export function StatusFooter() {
   const { user } = useAuth();
-  if (!user || user.role === "admin") return null;
+  if (!user) return null;
 
+  const isAdmin = user.role === "admin";
   const remaining = Math.max(0, user.aiRequestLimit - user.aiRequestsUsed);
   const pct = user.aiRequestLimit > 0 ? (user.aiRequestsUsed / user.aiRequestLimit) * 100 : 0;
   const color = pct >= 100 ? "#FF3B30" : pct >= 80 ? "#FF9500" : "#34C759";
@@ -449,17 +450,19 @@ export function StatusFooter() {
         fontSize: 11, color: "#8E8E93",
       }}
     >
-      <span
-        data-testid="footer-ai-quota"
-        title={`${user.aiRequestsUsed} von ${user.aiRequestLimit} KI-Anfragen genutzt\nAutomatische Zurücksetzung am ${resetStr}`}
-        style={{ display: "flex", alignItems: "center", gap: 5, cursor: "default" }}
-      >
-        <span style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} />
-        <span>KI:&nbsp;<span style={{ fontWeight: 600, color: pct >= 100 ? "#FF3B30" : "#636366" }}>{remaining}</span>&nbsp;von {user.aiRequestLimit} übrig</span>
-        <span style={{ color: "#C7C7CC" }}>·</span>
-        <span>Reset am {resetStr}</span>
-      </span>
-      {user.accessUntil && (
+      {!isAdmin && (
+        <span
+          data-testid="footer-ai-quota"
+          title={`${user.aiRequestsUsed} von ${user.aiRequestLimit} KI-Anfragen genutzt\nAutomatische Zurücksetzung am ${resetStr}`}
+          style={{ display: "flex", alignItems: "center", gap: 5, cursor: "default" }}
+        >
+          <span style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} />
+          <span>KI:&nbsp;<span style={{ fontWeight: 600, color: pct >= 100 ? "#FF3B30" : "#636366" }}>{remaining}</span>&nbsp;von {user.aiRequestLimit} übrig</span>
+          <span style={{ color: "#C7C7CC" }}>·</span>
+          <span>Reset am {resetStr}</span>
+        </span>
+      )}
+      {!isAdmin && user.accessUntil && (
         <>
           <span style={{ color: "#C7C7CC" }}>|</span>
           <span data-testid="footer-access-until">
@@ -470,7 +473,7 @@ export function StatusFooter() {
           </span>
         </>
       )}
-      <span style={{ color: "#C7C7CC" }}>|</span>
+      {!isAdmin && <span style={{ color: "#C7C7CC" }}>|</span>}
       <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <a href="/impressum" data-testid="footer-link-impressum" className="footer-link" style={{ fontSize: 11 }}>Impressum</a>
         <a href="/datenschutz" data-testid="footer-link-datenschutz" className="footer-link" style={{ fontSize: 11 }}>Datenschutz</a>
