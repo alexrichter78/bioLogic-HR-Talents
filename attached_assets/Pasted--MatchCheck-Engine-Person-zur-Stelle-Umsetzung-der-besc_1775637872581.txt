@@ -1,0 +1,805 @@
+/**
+ * MatchCheck Engine
+ * Person zur Stelle
+ *
+ * Umsetzung der beschriebenen MatchCheck-Logik
+ * für Node / Replit / JavaScript.
+ *
+ * INPUT-BEISPIEL:
+ * const result = evaluateMatch({
+ *   role: { imp: 62, int: 23, ana: 15 },
+ *   person: { imp: 41, int: 38, ana: 21 },
+ *   leadershipRequired: true,
+ *   leadershipProfile: { imp: 60, int: 25, ana: 15 }, // optional
+ *   frameProfile: { imp: 78, int: 12, ana: 10 }       // optional
+ * });
+ *
+ * console.log(JSON.stringify(result, null, 2));
+ */
+
+// --------------------------------------------------
+// Konstanten / Labels
+// --------------------------------------------------
+
+const FIT = {
+  SUITABLE: "Geeignet",
+  CONDITIONAL: "Bedingt geeignet",
+  UNSUITABLE: "Nicht geeignet",
+};
+
+const CONTROL = {
+  LOW: "LOW",
+  MEDIUM: "MEDIUM",
+  HIGH: "HIGH",
+};
+
+const DEV_GAP = {
+  LOW: "gering",
+  MEDIUM: "mittel",
+  HIGH: "hoch",
+};
+
+const PROFILE = {
+  EXTREME_I: "EXTREME_I",
+  EXTREME_N: "EXTREME_N",
+  EXTREME_A: "EXTREME_A",
+  BAL_FULL: "BAL_FULL",
+  DUAL: "DUAL",
+  CLEAR: "CLEAR",
+};
+
+const DOM = {
+  IMP: "imp",
+  INT: "int",
+  ANA: "ana",
+};
+
+// --------------------------------------------------
+// Hilfsfunktionen
+// --------------------------------------------------
+
+function clampNumber(value) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function normalizeProfile(p) {
+  return {
+    imp: clampNumber(p?.imp),
+    int: clampNumber(p?.int),
+    ana: clampNumber(p?.ana),
+  };
+}
+
+function getSortedComponents(profile) {
+  return [
+    { key: DOM.IMP, value: profile.imp },
+    { key: DOM.INT, value: profile.int },
+    { key: DOM.ANA, value: profile.ana },
+  ].sort((a, b) => b.value - a.value);
+}
+
+function getProfileMeta(profile) {
+  const sorted = getSortedComponents(profile);
+  const top1 = sorted[0];
+  const top2 = sorted[1];
+  const top3 = sorted[2];
+
+  const gap1 = top1.value - top2.value;
+  const gap2 = top2.value - top3.value;
+  const spread = top1.value - top3.value;
+
+  return {
+    sorted,
+    top1Key: top1.key,
+    top1Value: top1.value,
+    top2Key: top2.key,
+    top2Value: top2.value,
+    top3Key: top3.key,
+    top3Value: top3.value,
+    gap1,
+    gap2,
+    spread,
+  };
+}
+
+function classifyRole(role) {
+  const meta = getProfileMeta(role);
+
+  if (role.imp >= 65) return PROFILE.EXTREME_I;
+  if (role.int >= 55) return PROFILE.EXTREME_N;
+  if (role.ana >= 65) return PROFILE.EXTREME_A;
+
+  if (meta.spread <= 5) return PROFILE.BAL_FULL;
+  if (meta.gap1 <= 5) return PROFILE.DUAL;
+
+  return PROFILE.CLEAR;
+}
+
+function classifyPerson(person) {
+  const meta = getProfileMeta(person);
+
+  if (meta.spread <= 5) return PROFILE.BAL_FULL;
+  if (meta.gap1 <= 5) return PROFILE.DUAL;
+
+  return PROFILE.CLEAR;
+}
+
+function getSingleDiffs(role, person) {
+  return {
+    imp: Math.abs(role.imp - person.imp),
+    int: Math.abs(role.int - person.int),
+    ana: Math.abs(role.ana - person.ana),
+  };
+}
+
+function getMaxSingleDiff(role, person) {
+  const d = getSingleDiffs(role, person);
+  return Math.max(d.imp, d.int, d.ana);
+}
+
+function getMismatch(role, person) {
+  const d = getSingleDiffs(role, person);
+  return d.imp + d.int + d.ana;
+}
+
+function getMainDiff(role, person) {
+  const roleMeta = getProfileMeta(role);
+  return Math.abs(role[roleMeta.top1Key] - person[roleMeta.top1Key]);
+}
+
+function hasSamePrimaryDominance(role, person) {
+  const roleMeta = getProfileMeta(role);
+  const personMeta = getProfileMeta(person);
+  return roleMeta.top1Key === personMeta.top1Key;
+}
+
+function isFastDual(profile) {
+  const meta = getProfileMeta(profile);
+  return meta.gap1 <= 5;
+}
+
+function hasSecondaryFlip(role, person) {
+  const roleMeta = getProfileMeta(role);
+  const personMeta = getProfileMeta(person);
+
+  return roleMeta.top2Key !== personMeta.top2Key;
+}
+
+function dualContainsRoleDominance(role, person) {
+  const roleMeta = getProfileMeta(role);
+  const personMeta = getProfileMeta(person);
+
+  return (
+    personMeta.top1Key === roleMeta.top1Key ||
+    personMeta.top2Key === roleMeta.top1Key
+  );
+}
+
+function labelFromScore(score) {
+  if (score <= 2) return CONTROL.LOW;
+  if (score <= 5) return CONTROL.MEDIUM;
+  return CONTROL.HIGH;
+}
+
+function controlToDevGap(controlLabel) {
+  switch (controlLabel) {
+    case CONTROL.LOW:
+      return DEV_GAP.LOW;
+    case CONTROL.MEDIUM:
+      return DEV_GAP.MEDIUM;
+    default:
+      return DEV_GAP.HIGH;
+  }
+}
+
+function devOutputFromGap(devGap) {
+  if (devGap === DEV_GAP.LOW) {
+    return {
+      devGap: DEV_GAP.LOW,
+      devLevel: 4,
+      devScore: 3,
+      display: "niedrig (Wenig Aufwand)",
+      bars: "■ □ □",
+      color: "Grün",
+    };
+  }
+
+  if (devGap === DEV_GAP.MEDIUM) {
+    return {
+      devGap: DEV_GAP.MEDIUM,
+      devLevel: 3,
+      devScore: 2,
+      display: "mittel (Machbar)",
+      bars: "■ ■ □",
+      color: "Gelb",
+    };
+  }
+
+  return {
+    devGap: DEV_GAP.HIGH,
+    devLevel: 1,
+    devScore: 1,
+    display: "hoch (Ergebnis unsicher)",
+    bars: "■ ■ ■",
+    color: "Rot",
+  };
+}
+
+// --------------------------------------------------
+// KO-Regeln
+// --------------------------------------------------
+
+function checkKoRules({
+  role,
+  person,
+  roleType,
+  leadershipRequired = false,
+  leadershipProfile = null,
+}) {
+  const reasons = [];
+  const roleMeta = getProfileMeta(role);
+  const personMeta = getProfileMeta(person);
+  const samePrimary = hasSamePrimaryDominance(role, person);
+  const mainDiff = getMainDiff(role, person);
+
+  // Extreme Abweichungen
+  if (roleType === PROFILE.EXTREME_I && person.imp <= 35) {
+    reasons.push("Extreme Abweichung I");
+  }
+
+  if (roleType === PROFILE.EXTREME_N && person.int <= 30) {
+    reasons.push("Extreme Abweichung N");
+  }
+
+  if (roleType === PROFILE.EXTREME_A && person.ana <= 35) {
+    reasons.push("Extreme Abweichung A");
+  }
+
+  // Dominanzwechsel groß
+  if (!samePrimary && mainDiff >= 18) {
+    reasons.push("Dominanzwechsel groß");
+  }
+
+  // Dominanzwechsel + klare Rolle
+  if (!samePrimary && roleMeta.gap1 >= 20 && mainDiff >= 15) {
+    reasons.push("Dominanzwechsel + klare Rolle");
+  }
+
+  // Dual-Dominanz Untergrenze
+  // Interpretation:
+  // Bei DUAL-Rolle muss die Person in BEIDEN Dual-Komponenten mind. 75% der Rollenwerte erreichen.
+  if (roleType === PROFILE.DUAL) {
+    const dual1 = roleMeta.top1Key;
+    const dual2 = roleMeta.top2Key;
+
+    const cond1 = person[dual1] < role[dual1] * 0.75;
+    const cond2 = person[dual2] < role[dual2] * 0.75;
+
+    if (cond1 || cond2) {
+      reasons.push("Dual-Dominanz Untergrenze");
+    }
+  }
+
+  // Führungs-KO
+  if (leadershipRequired) {
+    const profileToUse = leadershipProfile ? normalizeProfile(leadershipProfile) : null;
+
+    if (profileToUse) {
+      if (profileToUse.imp >= 60 && person.imp <= 35) {
+        reasons.push("Führungs-KO");
+      }
+    } else {
+      // falls kein Führungsprofil vorhanden ist, nehme ich die Rollenstruktur als Annäherung
+      if (role.imp >= 60 && person.imp <= 35) {
+        reasons.push("Führungs-KO (aus Rollenprofil abgeleitet)");
+      }
+    }
+  }
+
+  if (reasons.length > 0) {
+    return {
+      ko: true,
+      fitRating: FIT.UNSUITABLE,
+      reasons,
+    };
+  }
+
+  return {
+    ko: false,
+    fitRating: null,
+    reasons: [],
+  };
+}
+
+// --------------------------------------------------
+// Schritt 2: Grundrating aus Mismatch
+// --------------------------------------------------
+
+function baseFitFromMismatch(role, person) {
+  const samePrimary = hasSamePrimaryDominance(role, person);
+  const mismatch = getMismatch(role, person);
+
+  if (samePrimary) {
+    if (mismatch <= 12) return { fitRating: FIT.SUITABLE, reason: "Gleiche Primärdominanz UND Mismatch ≤ 12" };
+    if (mismatch <= 20) return { fitRating: FIT.CONDITIONAL, reason: "Gleiche Primärdominanz UND Mismatch ≤ 20" };
+    return { fitRating: FIT.UNSUITABLE, reason: "Gleiche Primärdominanz UND Mismatch > 20" };
+  }
+
+  if (mismatch <= 10) return { fitRating: FIT.SUITABLE, reason: "Andere Primärdominanz UND Mismatch ≤ 10" };
+  if (mismatch <= 18) return { fitRating: FIT.CONDITIONAL, reason: "Andere Primärdominanz UND Mismatch ≤ 18" };
+  return { fitRating: FIT.UNSUITABLE, reason: "Andere Primärdominanz UND Mismatch > 18" };
+}
+
+// --------------------------------------------------
+// Schritt 3: Sonderfälle / Overrides
+// --------------------------------------------------
+
+function applySpecialOverrides({
+  role,
+  person,
+  roleType,
+  personType,
+  currentFit,
+}) {
+  const reasons = [];
+  let fit = currentFit;
+
+  const roleMeta = getProfileMeta(role);
+  const personMeta = getProfileMeta(person);
+  const samePrimary = hasSamePrimaryDominance(role, person);
+  const maxSingleDiff = getMaxSingleDiff(role, person);
+  const secondaryFlip = hasSecondaryFlip(role, person);
+
+  // Rolle = BAL_FULL
+  if (roleType === PROFILE.BAL_FULL) {
+    if (personMeta.spread <= 5) {
+      fit = FIT.SUITABLE;
+      reasons.push("Rolle = BAL_FULL, Person Spread ≤ 5");
+    } else if (personMeta.spread >= 6 && personMeta.spread <= 11) {
+      fit = FIT.CONDITIONAL;
+      reasons.push("Rolle = BAL_FULL, Person Spread 6–11");
+    } else if (personMeta.spread >= 12) {
+      fit = FIT.UNSUITABLE;
+      reasons.push("Rolle = BAL_FULL, Person Spread ≥ 12");
+    }
+  }
+
+  // Person = BAL_FULL, Rolle nicht
+  if (personType === PROFILE.BAL_FULL && roleType !== PROFILE.BAL_FULL) {
+    fit = FIT.UNSUITABLE;
+    reasons.push("Person = BAL_FULL, Rolle nicht");
+  }
+
+  // Verschiedene Primärdominanz
+  // Diese Regel überschreibt hier bewusst Schritt 2,
+  // weil sie in deiner Logik als Sonderfall genannt ist.
+  if (!samePrimary && roleType !== PROFILE.BAL_FULL) {
+    fit = FIT.UNSUITABLE;
+    reasons.push("Verschiedene Primärdominanz");
+  }
+
+  // Einzelwert-Abweichung > 25
+  if (maxSingleDiff > 25) {
+    fit = FIT.UNSUITABLE;
+    reasons.push("Einzelwert-Abweichung > 25");
+  }
+
+  // Person Dual, Rolle klar
+  if (personType === PROFILE.DUAL && roleType === PROFILE.CLEAR) {
+    if (dualContainsRoleDominance(role, person)) {
+      if (fit !== FIT.UNSUITABLE) {
+        fit = FIT.CONDITIONAL;
+      }
+      reasons.push("Person Dual, Rolle klar, Rollendominanz in Persons Dual enthalten");
+    } else {
+      fit = FIT.UNSUITABLE;
+      reasons.push("Person Dual, Rolle klar, Rollendominanz NICHT in Persons Dual");
+    }
+  }
+
+  // Sekundärflip
+  if (secondaryFlip) {
+    if (roleMeta.gap2 > 5 && personMeta.gap2 > 5) {
+      fit = FIT.UNSUITABLE;
+      reasons.push("Sekundärflip mit gap2 > 5 bei beiden Seiten");
+    } else {
+      if (fit !== FIT.UNSUITABLE) {
+        fit = FIT.CONDITIONAL;
+      }
+      reasons.push("Sekundärflip mit gap2 ≤ 5 bei einer Seite");
+    }
+  }
+
+  // Person fast-Dual: gap2 ≤ 5
+  if (personMeta.gap2 <= 5) {
+    if (fit === FIT.SUITABLE) {
+      fit = FIT.CONDITIONAL;
+    }
+    reasons.push("Person fast-Dual (gap2 ≤ 5)");
+  }
+
+  // Große Einzelabweichung > 18
+  if (maxSingleDiff > 18 && maxSingleDiff <= 25) {
+    if (fit === FIT.SUITABLE) {
+      fit = FIT.CONDITIONAL;
+    }
+    reasons.push("Große Einzelabweichung > 18");
+  }
+
+  // Person fast-Dual: gap1 ≤ 5
+  if (personMeta.gap1 <= 5) {
+    if (fit === FIT.SUITABLE) {
+      fit = FIT.CONDITIONAL;
+    }
+    reasons.push("Person fast-Dual (gap1 ≤ 5)");
+  }
+
+  return {
+    fitRating: fit,
+    reasons,
+  };
+}
+
+// --------------------------------------------------
+// Kontrollintensität / Führungsaufwand
+// --------------------------------------------------
+
+function calculateBaseControl({
+  role,
+  person,
+  roleType,
+}) {
+  let score = 0;
+  const reasons = [];
+
+  const roleMeta = getProfileMeta(role);
+  const personMeta = getProfileMeta(person);
+  const samePrimary = hasSamePrimaryDominance(role, person);
+  const mainDiff = getMainDiff(role, person);
+
+  const roleIsDualish = roleType === PROFILE.DUAL;
+  const personIsDualish = personMeta.gap1 <= 5 || personMeta.spread <= 5;
+
+  // Dominanzwechsel oder Dual-Unterschied
+  if (!samePrimary || (roleIsDualish !== personIsDualish)) {
+    score += 2;
+    reasons.push("Dominanzwechsel oder Dual-Unterschied (+2)");
+  }
+
+  // Extreme Rolle
+  if (
+    roleType === PROFILE.EXTREME_I ||
+    roleType === PROFILE.EXTREME_N ||
+    roleType === PROFILE.EXTREME_A
+  ) {
+    score += 1;
+    reasons.push("Extreme Rolle (+1)");
+  }
+
+  // Klare Rollendominanz
+  if (roleMeta.gap1 >= 12) {
+    score += 1;
+    reasons.push("Klare Rollendominanz (+1)");
+  }
+
+  // Große Hauptdifferenz
+  if (mainDiff >= 25) {
+    score += 3;
+    reasons.push("Große Hauptdifferenz (+3)");
+  } else if (mainDiff >= 15) {
+    score += 2;
+    reasons.push("Mittlere Hauptdifferenz (+2)");
+  }
+
+  return {
+    score,
+    label: labelFromScore(score),
+    reasons,
+  };
+}
+
+function calculateExtendedControl({
+  role,
+  person,
+  baseControl,
+  leadershipRequired = false,
+  leadershipProfile = null,
+  frameProfile = null,
+}) {
+  let score = baseControl.score;
+  const reasons = [...baseControl.reasons];
+
+  const personMeta = getProfileMeta(person);
+
+  // Führungsprofil-Abweichung
+  if (leadershipRequired) {
+    if (leadershipProfile) {
+      const leadership = normalizeProfile(leadershipProfile);
+      const leadershipMeta = getProfileMeta(leadership);
+      const mainDiff = Math.abs(
+        leadership[leadershipMeta.top1Key] - person[leadershipMeta.top1Key]
+      );
+
+      if (mainDiff >= 15) {
+        score += 2;
+        reasons.push("Führungsprofil-Abweichung Hauptdiff ≥ 15 (+2)");
+      }
+    } else {
+      score += 1;
+      reasons.push("Führung gefordert, kein Profil (+1)");
+    }
+  }
+
+  // Rahmenprofil
+  if (frameProfile) {
+    const frame = normalizeProfile(frameProfile);
+    const frameMeta = getProfileMeta(frame);
+    const differentDominance = frameMeta.top1Key !== personMeta.top1Key;
+
+    if (differentDominance) {
+      if (frameMeta.top1Value >= 75) {
+        score += 2;
+        reasons.push("Starkes Rahmenprofil (+2)");
+      } else if (frameMeta.top1Value >= 65) {
+        score += 1;
+        reasons.push("Deutliches Rahmenprofil (+1)");
+      }
+    }
+  }
+
+  return {
+    score,
+    label: labelFromScore(score),
+    reasons,
+  };
+}
+
+// --------------------------------------------------
+// Entwicklungsaufwand
+// --------------------------------------------------
+
+function calculateDevelopmentEffort({
+  fitRating,
+  baseControlLabel,
+  roleType,
+  person,
+}) {
+  const personMeta = getProfileMeta(person);
+
+  // Nicht geeignet => immer hoch
+  if (fitRating === FIT.UNSUITABLE) {
+    return devOutputFromGap(DEV_GAP.HIGH);
+  }
+
+  // Sonderfall: Rolle = BAL_FULL
+  if (roleType === PROFILE.BAL_FULL) {
+    if (personMeta.spread <= 10) {
+      return {
+        devGap: DEV_GAP.LOW,
+        devLevel: 4,
+        devScore: 3,
+        display: "niedrig",
+        bars: "■ □ □",
+        color: "Grün",
+      };
+    }
+
+    const mappedGap = controlToDevGap(baseControlLabel);
+
+    if (mappedGap === DEV_GAP.HIGH) {
+      return {
+        devGap: DEV_GAP.HIGH,
+        devLevel: 1,
+        devScore: 1,
+        display: "hoch",
+        bars: "■ ■ ■",
+        color: "Rot",
+      };
+    }
+
+    return {
+      devGap: mappedGap,
+      devLevel: 3,
+      devScore: 2,
+      display: "mittel",
+      bars: "■ ■ □",
+      color: "Gelb",
+    };
+  }
+
+  // Normalfall
+  const devGap = controlToDevGap(baseControlLabel);
+  return devOutputFromGap(devGap);
+}
+
+// --------------------------------------------------
+// Hauptfunktion
+// --------------------------------------------------
+
+function evaluateMatch(input) {
+  const role = normalizeProfile(input.role);
+  const person = normalizeProfile(input.person);
+  const leadershipRequired = Boolean(input.leadershipRequired);
+  const leadershipProfile = input.leadershipProfile
+    ? normalizeProfile(input.leadershipProfile)
+    : null;
+  const frameProfile = input.frameProfile
+    ? normalizeProfile(input.frameProfile)
+    : null;
+
+  const roleMeta = getProfileMeta(role);
+  const personMeta = getProfileMeta(person);
+
+  const roleType = classifyRole(role);
+  const personType = classifyPerson(person);
+
+  const mismatch = getMismatch(role, person);
+  const mainDiff = getMainDiff(role, person);
+  const maxSingleDiff = getMaxSingleDiff(role, person);
+  const samePrimary = hasSamePrimaryDominance(role, person);
+
+  // 1) KO
+  const koCheck = checkKoRules({
+    role,
+    person,
+    roleType,
+    leadershipRequired,
+    leadershipProfile,
+  });
+
+  let fitRating;
+  const fitReasons = [];
+
+  if (koCheck.ko) {
+    fitRating = FIT.UNSUITABLE;
+    fitReasons.push(...koCheck.reasons);
+  } else {
+    // 2) Grundrating
+    const baseFit = baseFitFromMismatch(role, person);
+    fitRating = baseFit.fitRating;
+    fitReasons.push(baseFit.reason);
+
+    // 3) Sonderfälle / Overrides
+    const override = applySpecialOverrides({
+      role,
+      person,
+      roleType,
+      personType,
+      currentFit: fitRating,
+    });
+
+    fitRating = override.fitRating;
+    fitReasons.push(...override.reasons);
+  }
+
+  // 4) Kontrollintensität
+  const baseControl = calculateBaseControl({
+    role,
+    person,
+    roleType,
+  });
+
+  const extendedControl = calculateExtendedControl({
+    role,
+    person,
+    baseControl,
+    leadershipRequired,
+    leadershipProfile,
+    frameProfile,
+  });
+
+  // 5) Entwicklungsaufwand
+  const development = calculateDevelopmentEffort({
+    fitRating,
+    baseControlLabel: baseControl.label,
+    roleType,
+    person,
+  });
+
+  return {
+    input: {
+      role,
+      person,
+      leadershipRequired,
+      leadershipProfile,
+      frameProfile,
+    },
+    profileAnalysis: {
+      roleType,
+      personType,
+      roleMeta,
+      personMeta,
+      samePrimaryDominance: samePrimary,
+      mismatch,
+      mainDiff,
+      maxSingleDiff,
+      singleDiffs: getSingleDiffs(role, person),
+      secondaryFlip: hasSecondaryFlip(role, person),
+    },
+    fitRating: {
+      label: fitRating,
+      reasons: fitReasons,
+    },
+    baseControl: {
+      score: baseControl.score,
+      label:
+        baseControl.label === CONTROL.LOW
+          ? "Gering"
+          : baseControl.label === CONTROL.MEDIUM
+          ? "Mittel"
+          : "Hoch",
+      code: baseControl.label,
+      reasons: baseControl.reasons,
+    },
+    extendedControl: {
+      score: extendedControl.score,
+      label:
+        extendedControl.label === CONTROL.LOW
+          ? "Gering"
+          : extendedControl.label === CONTROL.MEDIUM
+          ? "Mittel"
+          : "Hoch",
+      code: extendedControl.label,
+      reasons: extendedControl.reasons,
+    },
+    development,
+  };
+}
+
+// --------------------------------------------------
+// Beispielaufrufe
+// --------------------------------------------------
+
+function runExamples() {
+  const examples = [
+    {
+      name: "Beispiel 1: gleiche Dominanz, relativ nah",
+      data: {
+        role: { imp: 58, int: 24, ana: 18 },
+        person: { imp: 54, int: 26, ana: 20 },
+        leadershipRequired: false,
+      },
+    },
+    {
+      name: "Beispiel 2: BAL_FULL Rolle, eher einseitige Person",
+      data: {
+        role: { imp: 34, int: 33, ana: 33 },
+        person: { imp: 50, int: 28, ana: 22 },
+        leadershipRequired: false,
+      },
+    },
+    {
+      name: "Beispiel 3: Führungsrolle mit hohem Impulsiv-Anteil",
+      data: {
+        role: { imp: 62, int: 23, ana: 15 },
+        person: { imp: 34, int: 41, ana: 25 },
+        leadershipRequired: true,
+        leadershipProfile: { imp: 60, int: 25, ana: 15 },
+        frameProfile: { imp: 76, int: 14, ana: 10 },
+      },
+    },
+  ];
+
+  for (const ex of examples) {
+    console.log("\n====================================================");
+    console.log(ex.name);
+    console.log("====================================================");
+    console.log(JSON.stringify(evaluateMatch(ex.data), null, 2));
+  }
+}
+
+// Nur ausführen, wenn Datei direkt gestartet wird
+if (require.main === module) {
+  runExamples();
+}
+
+module.exports = {
+  evaluateMatch,
+  classifyRole,
+  classifyPerson,
+  getProfileMeta,
+  getMismatch,
+  getMainDiff,
+  getMaxSingleDiff,
+};
