@@ -1383,7 +1383,9 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
     risks.midTerm.push(secondaryTension.stressText);
   }
   const baseControl = coreFit.controlIntensity;
+  const secondaryFlipHard = coreFit.flags.secondaryFlipped && roleDom.gap2 >= 8;
   const devControl: ControlIntensity = overallFit === "NOT_SUITABLE" ? "HIGH"
+    : secondaryFlipHard ? "HIGH"
     : overallFit === "CONDITIONAL" && baseControl === "LOW" ? "MEDIUM"
     : baseControl;
   const dev = developmentFromControl(devControl, coreFit.controlPoints, critical.label, t, roleDom, candDom);
