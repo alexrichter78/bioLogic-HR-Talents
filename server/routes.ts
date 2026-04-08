@@ -606,7 +606,10 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Benutzername und Passwort erforderlich" });
       }
 
-      const user = await storage.getUserByUsername(username);
+      let user = await storage.getUserByUsername(username);
+      if (!user) {
+        user = await storage.getUserByUsername(username.toLowerCase());
+      }
       if (!user) {
         return res.status(401).json({ error: "Ungültige Anmeldedaten" });
       }
