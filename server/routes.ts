@@ -688,23 +688,24 @@ export async function registerRoutes(
         }
       }
     }
+    let currentUser = user;
     if (isNewMonth(user.aiPeriodStart)) {
       await storage.resetUserAiUsage(user.id);
-      user = (await storage.getUserById(req.session.userId!))!;
+      currentUser = (await storage.getUserById(req.session.userId!))!;
     }
     res.json({
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      companyName: user.companyName,
-      role: user.role,
-      courseAccess: user.courseAccess,
-      organizationId: user.organizationId,
+      id: currentUser.id,
+      username: currentUser.username,
+      email: currentUser.email,
+      firstName: currentUser.firstName,
+      lastName: currentUser.lastName,
+      companyName: currentUser.companyName,
+      role: currentUser.role,
+      courseAccess: currentUser.courseAccess,
+      organizationId: currentUser.organizationId,
       accessUntil,
-      aiRequestLimit: user.aiRequestLimit,
-      aiRequestsUsed: user.aiRequestsUsed,
+      aiRequestLimit: currentUser.aiRequestLimit,
+      aiRequestsUsed: currentUser.aiRequestsUsed,
     });
   });
 
