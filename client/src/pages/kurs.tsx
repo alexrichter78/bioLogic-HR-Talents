@@ -386,9 +386,9 @@ export default function Kurs() {
                     borderBottom: "1px solid rgba(0,0,0,0.06)", background: "rgba(0,0,0,0.02)",
                   }}>
                     <span />
-                    <span style={labelStyle}>Vorname</span>
-                    <span style={labelStyle}>Nachname</span>
-                    <span style={labelStyle}>E-Mail-Adresse</span>
+                    <span style={{ ...labelStyle, paddingLeft: 14 }}>Vorname</span>
+                    <span style={{ ...labelStyle, paddingLeft: 14 }}>Nachname</span>
+                    <span style={{ ...labelStyle, paddingLeft: 14 }}>E-Mail-Adresse</span>
                     <span />
                   </div>
                 )}
