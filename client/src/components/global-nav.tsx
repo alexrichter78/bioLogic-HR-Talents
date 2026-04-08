@@ -470,6 +470,12 @@ export function StatusFooter() {
           </span>
         </>
       )}
+      <span style={{ color: "#C7C7CC" }}>|</span>
+      <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <a href="/impressum" data-testid="footer-link-impressum" className="footer-link" style={{ fontSize: 11 }}>Impressum</a>
+        <a href="/datenschutz" data-testid="footer-link-datenschutz" className="footer-link" style={{ fontSize: 11 }}>Datenschutz</a>
+        <a href="/disclaimer" data-testid="footer-link-disclaimer" className="footer-link" style={{ fontSize: 11 }}>Disclaimer</a>
+      </span>
     </div>
   );
 }
