@@ -83,11 +83,11 @@ const DEPARTMENT_CATALOG: Record<DepartmentType, DepartmentInfo> = {
   },
 };
 
-export function getDepartmentCatalog(): DepartmentInfo[] {
+function getDepartmentCatalog(): DepartmentInfo[] {
   return Object.values(DEPARTMENT_CATALOG);
 }
 
-export function getDepartmentInfo(type: DepartmentType): DepartmentInfo {
+function getDepartmentInfo(type: DepartmentType): DepartmentInfo {
   return DEPARTMENT_CATALOG[type] || DEPARTMENT_CATALOG.ALLGEMEIN;
 }
 

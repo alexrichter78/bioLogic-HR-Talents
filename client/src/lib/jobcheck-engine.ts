@@ -1,8 +1,9 @@
+import type { ComponentKey, Triad } from "./bio-types";
 export type { ComponentKey, Triad } from "./bio-types";
 export type FitStatus = "SUITABLE" | "CONDITIONAL" | "NOT_SUITABLE";
 export type ControlIntensity = "LOW" | "MEDIUM" | "HIGH";
 
-export type BG = { imp: number; int: number; ana: number };
+type BG = { imp: number; int: number; ana: number };
 
 export type RoleDnaStateInput = {
   beruf: string;
@@ -242,7 +243,7 @@ export type DominanceResult = {
   gap2: number;
 };
 
-export type MatrixAreaId =
+type MatrixAreaId =
   | "dominance" | "decision_logic" | "kpi_work" | "leadership_effect"
   | "conflict" | "competition" | "culture"
   | "strategy_complexity" | "regulatory_precision" | "customer_orientation";
@@ -1080,7 +1081,7 @@ function constellationCandText(c: ConstellationType, cand: string): string {
   return texts[c];
 }
 
-export type FitReason = {
+type FitReason = {
   rule: string;
   effect: "KO" | "OVERRIDE" | "CAP" | "BASE";
 };

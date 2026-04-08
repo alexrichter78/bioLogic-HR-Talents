@@ -31,12 +31,12 @@ export type StressBehavior = {
   uncontrolledStress: string;
 };
 
-export type IntegrationFokus = {
+type IntegrationFokus = {
   intro: string;
   bullets: string[];
 };
 
-export type IntegrationPhase = {
+type IntegrationPhase = {
   num: number;
   title: string;
   period: string;
@@ -348,7 +348,7 @@ export function computeSollIst(
   };
 }
 
-export function constellationRoleText(c: ConstellationType): string {
+function constellationRoleText(c: ConstellationType): string {
   const texts: Record<ConstellationType, string> = {
     H_DOM: "Diese Stelle wirkt vor allem über Geschwindigkeit, klare Priorisierung und direkte Umsetzung. Entscheidungen werden zügig getroffen, Themen schnell in Bewegung gebracht.",
     B_DOM: "Diese Stelle lebt vom direkten Kontakt mit Menschen, vom Gespür für Situationen und von tragfähiger Zusammenarbeit. Wirksamkeit entsteht über Vertrauen und Beziehungsarbeit.",
@@ -367,7 +367,7 @@ export function constellationRoleText(c: ConstellationType): string {
   return texts[c];
 }
 
-export function constellationCandText(c: ConstellationType, cand: string): string {
+function constellationCandText(c: ConstellationType, cand: string): string {
   const s = Subj(cand);
   const texts: Record<ConstellationType, string> = {
     H_DOM: `${s} arbeitet mit hoher Umsetzungsenergie, trifft Entscheidungen zügig und bringt Themen schnell ins Handeln.`,

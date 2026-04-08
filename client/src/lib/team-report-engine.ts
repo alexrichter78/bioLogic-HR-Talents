@@ -6,7 +6,7 @@ import { computeTeamCheckV4 } from "./teamcheck-v4-engine";
 import { calculateLeadershipAssessment } from "./leadership-system-impact";
 import type { LeadershipAssessmentResult } from "./leadership-system-impact";
 
-export type SystemwirkungType = "verstaerkung" | "ergaenzung" | "ausgleich" | "verschiebung" | "polarisierung" | "uebersteuerung";
+type SystemwirkungType = "verstaerkung" | "ergaenzung" | "ausgleich" | "verschiebung" | "polarisierung" | "uebersteuerung";
 
 export type SystemwirkungResult = {
   type: SystemwirkungType;
@@ -146,7 +146,7 @@ function strongestKey(t: Triad): ComponentKey {
   return "analytisch";
 }
 
-export function detectSystemwirkung(
+function detectSystemwirkung(
   ist: Triad, team: Triad, cn: string,
   rk: ComponentKey, tk: ComponentKey,
   teamIstGap: number, istConst: ConstellationType, teamConst: ConstellationType
@@ -466,7 +466,7 @@ function buildTeamStressBehavior(
   return { controlledPressure, uncontrolledStress };
 }
 
-export function buildTeamIntegrationsplanPhasen(
+function buildTeamIntegrationsplanPhasen(
   cand: string, rk: ComponentKey, tk: ComponentKey,
   teamIstGap: number
 ): IntegrationPhase[] {
