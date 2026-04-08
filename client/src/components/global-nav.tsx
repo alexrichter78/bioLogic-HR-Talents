@@ -138,6 +138,25 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                   </div>
                 )}
               </div>
+              {user && user.role !== "admin" && (() => {
+                const remaining = Math.max(0, user.aiRequestLimit - user.aiRequestsUsed);
+                const pct = user.aiRequestLimit > 0 ? (user.aiRequestsUsed / user.aiRequestLimit) * 100 : 0;
+                const color = pct >= 100 ? "#FF3B30" : pct >= 80 ? "#FF9500" : "#34C759";
+                return (
+                  <span
+                    data-testid="nav-ai-quota-mobile"
+                    style={{
+                      fontSize: 10, color: "#8E8E93", whiteSpace: "nowrap",
+                      padding: "4px 8px", borderRadius: 6,
+                      background: pct >= 100 ? "rgba(255,59,48,0.06)" : "rgba(0,0,0,0.02)",
+                      lineHeight: 1.3, display: "flex", alignItems: "center", gap: 4,
+                    }}
+                  >
+                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} />
+                    KI:&nbsp;<span style={{ fontWeight: 600, color: pct >= 100 ? "#FF3B30" : "#636366" }}>{remaining}</span>
+                  </span>
+                );
+              })()}
               {(user?.role === "admin" || user?.role === "subadmin") && (
                 <button
                   onClick={() => setLocation("/firma-dashboard")}
@@ -367,6 +386,27 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                 </div>
               )}
             </div>
+            {user && user.role !== "admin" && (() => {
+              const remaining = Math.max(0, user.aiRequestLimit - user.aiRequestsUsed);
+              const pct = user.aiRequestLimit > 0 ? (user.aiRequestsUsed / user.aiRequestLimit) * 100 : 0;
+              const color = pct >= 100 ? "#FF3B30" : pct >= 80 ? "#FF9500" : "#34C759";
+              return (
+                <span
+                  data-testid="nav-ai-quota"
+                  title={`${user.aiRequestsUsed} von ${user.aiRequestLimit} KI-Anfragen genutzt`}
+                  style={{
+                    fontSize: 10, color: "#8E8E93", whiteSpace: "nowrap",
+                    padding: "4px 8px", borderRadius: 6,
+                    background: pct >= 100 ? "rgba(255,59,48,0.06)" : "rgba(0,0,0,0.02)",
+                    lineHeight: 1.3, display: "flex", alignItems: "center", gap: 4,
+                  }}
+                >
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} />
+                  KI:&nbsp;<span style={{ fontWeight: 600, color: pct >= 100 ? "#FF3B30" : "#636366" }}>{remaining}</span>
+                  &nbsp;übrig
+                </span>
+              );
+            })()}
             {user?.accessUntil && user.role !== "admin" && (
               <span
                 data-testid="nav-access-until"

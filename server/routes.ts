@@ -640,6 +640,8 @@ export async function registerRoutes(
         role: user.role,
         courseAccess: user.courseAccess,
         organizationId: user.organizationId,
+        aiRequestLimit: user.aiRequestLimit,
+        aiRequestsUsed: user.aiRequestsUsed,
       });
     } catch (error: any) {
       console.error("Login error:", error);
@@ -681,6 +683,10 @@ export async function registerRoutes(
       const sub = await storage.getActiveSubscription(user.id);
       if (sub) accessUntil = sub.accessUntil.toISOString().split("T")[0];
     }
+    if (isNewMonth(user.aiPeriodStart)) {
+      await storage.resetUserAiUsage(user.id);
+      user = (await storage.getUserById(req.session.userId!))!;
+    }
     res.json({
       id: user.id,
       username: user.username,
@@ -692,6 +698,8 @@ export async function registerRoutes(
       courseAccess: user.courseAccess,
       organizationId: user.organizationId,
       accessUntil,
+      aiRequestLimit: user.aiRequestLimit,
+      aiRequestsUsed: user.aiRequestsUsed,
     });
   });
 

@@ -12,6 +12,8 @@ interface AuthUser {
   courseAccess: boolean;
   accessUntil: string | null;
   organizationId: number | null;
+  aiRequestLimit: number;
+  aiRequestsUsed: number;
 }
 
 interface AuthContextType {
@@ -45,6 +47,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     refresh();
+    const interval = setInterval(refresh, 60000);
+    return () => clearInterval(interval);
   }, [refresh]);
 
   const login = async (username: string, password: string) => {
