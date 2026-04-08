@@ -1,6 +1,6 @@
 import { useState } from "react";
 import GlobalNav from "@/components/global-nav";
-import { GraduationCap, Lock, Plus, Trash2, Send, CheckCircle2, AlertCircle, BookOpen, PlayCircle } from "lucide-react";
+import { GraduationCap, Lock, Plus, Trash2, Send, CheckCircle2, AlertCircle, BookOpen, PlayCircle, ChevronDown } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -103,6 +103,7 @@ export default function Kurs() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [results, setResults] = useState<{ email: string; status: string }[]>([]);
+  const [cardOpen, setCardOpen] = useState(true);
 
   if (!user?.courseAccess && user?.role !== "subadmin") {
     return (
@@ -287,6 +288,25 @@ export default function Kurs() {
           border: "1px solid rgba(0,0,0,0.04)",
           overflow: "hidden",
         }} data-testid="card-kurs-main">
+
+          <button
+            onClick={() => setCardOpen(!cardOpen)}
+            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMobile ? "14px 16px" : "20px 32px", border: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.02)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+            data-testid="button-toggle-kurs-card"
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <GraduationCap style={{ width: 22, height: 22, color: "#0071E3", flexShrink: 0 }} />
+              <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
+                Kurszugänge freischalten
+              </span>
+            </div>
+            <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${cardOpen ? "rotate-180" : ""}`} />
+          </button>
+
+          {cardOpen && (<>
+          <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }} />
 
           <div style={{ padding: isMobile ? "20px 16px" : "28px 32px" }}>
             <KursWidgetInner isMobile={isMobile} />
@@ -482,6 +502,7 @@ export default function Kurs() {
               </div>
             </form>
           )}
+          </>)}
 
         </div>
 
