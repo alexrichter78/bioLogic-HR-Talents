@@ -898,11 +898,19 @@ export default function Admin() {
                           ) : (
                             <>
                               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", padding: "12px 0" }}>
-                                {(orgUsage?.totals || []).map((t: any) => (
-                                  <div key={t.eventType} style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(0,113,227,0.06)", fontSize: 12, fontWeight: 600, color: "#0071E3" }}>
-                                    {t.eventType}: {t.count}
-                                  </div>
-                                ))}
+                                {(() => {
+                                  const labelMap: Record<string, string> = { ki_coach: "KI-Coach", rollendna: "JobCheck", teamdynamik: "TeamCheck", matchcheck: "MatchCheck" };
+                                  const merged = new Map<string, number>();
+                                  for (const t of (orgUsage?.totals || [])) {
+                                    const key = t.eventType === "teamcheck" ? "teamdynamik" : t.eventType;
+                                    merged.set(key, (merged.get(key) || 0) + Number(t.count));
+                                  }
+                                  return Array.from(merged.entries()).map(([key, count]) => (
+                                    <div key={key} style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(0,113,227,0.06)", fontSize: 12, fontWeight: 600, color: "#0071E3" }}>
+                                      {labelMap[key] || key}: {count}
+                                    </div>
+                                  ));
+                                })()}
                                 {(!orgUsage?.totals || orgUsage.totals.length === 0) && (
                                   <span style={{ fontSize: 12, color: "#8E8E93" }}>Keine Nutzung im Zeitraum</span>
                                 )}
@@ -912,16 +920,19 @@ export default function Admin() {
                                   <div style={{ fontWeight: 600, color: "#636366", marginBottom: 6 }}>Pro Benutzer:</div>
                                   {(() => {
                                     const uMap = new Map<number, { name: string; events: Record<string, number> }>();
+                                    const evtLabelMap: Record<string, string> = { ki_coach: "KI-Coach", rollendna: "JobCheck", teamdynamik: "TeamCheck", matchcheck: "MatchCheck" };
                                     for (const pu of orgUsage.perUser) {
                                       if (!uMap.has(pu.userId)) uMap.set(pu.userId, { name: `${pu.firstName} ${pu.lastName}`, events: {} });
-                                      uMap.get(pu.userId)!.events[pu.eventType] = Number(pu.count);
+                                      const evtKey = pu.eventType === "teamcheck" ? "teamdynamik" : pu.eventType;
+                                      const entry = uMap.get(pu.userId)!;
+                                      entry.events[evtKey] = (entry.events[evtKey] || 0) + Number(pu.count);
                                     }
                                     return Array.from(uMap.entries()).map(([uid, u]) => (
                                       <div key={uid} style={{ display: "flex", gap: 8, alignItems: "center", padding: "4px 0", flexWrap: "wrap" }}>
                                         <span style={{ fontWeight: 500, color: "#1D1D1F", minWidth: 120 }}>{u.name}</span>
                                         {Object.entries(u.events).map(([evt, cnt]) => (
                                           <span key={evt} style={{ padding: "2px 8px", borderRadius: 6, background: "rgba(0,0,0,0.04)", fontSize: 11, color: "#636366" }}>
-                                            {evt}: {cnt}
+                                            {evtLabelMap[evt] || evt}: {cnt}
                                           </span>
                                         ))}
                                       </div>

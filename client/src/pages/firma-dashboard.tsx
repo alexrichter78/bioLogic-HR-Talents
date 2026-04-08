@@ -3,7 +3,7 @@ import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Building2, BarChart3, Users, Bot, Briefcase, GitCompareArrows, Target, Loader2 } from "lucide-react";
+import { Building2, BarChart3, Users, Bot, Briefcase, GitCompareArrows, Loader2 } from "lucide-react";
 
 interface OrgInfo {
   id: number;
@@ -29,9 +29,8 @@ interface PerUserUsage {
 
 const EVENT_LABELS: Record<string, string> = {
   ki_coach: "KI-Coach",
-  rollendna: "Rollen-DNA",
-  teamdynamik: "Teamdynamik",
-  teamcheck: "TeamCheck",
+  rollendna: "JobCheck",
+  teamdynamik: "TeamCheck",
   matchcheck: "MatchCheck",
 };
 
@@ -39,15 +38,13 @@ const EVENT_ICONS: Record<string, typeof Bot> = {
   ki_coach: Bot,
   rollendna: Briefcase,
   teamdynamik: Users,
-  teamcheck: Target,
   matchcheck: GitCompareArrows,
 };
 
 const EVENT_COLORS: Record<string, string> = {
   ki_coach: "#0071E3",
   rollendna: "#34C759",
-  teamdynamik: "#FF9500",
-  teamcheck: "#AF52DE",
+  teamdynamik: "#AF52DE",
   matchcheck: "#FF3B30",
 };
 
@@ -106,7 +103,19 @@ export default function FirmaDashboard() {
 
   if (!user || (user.role !== "admin" && user.role !== "subadmin")) return null;
 
-  const totalRequests = totals.reduce((sum, t) => sum + Number(t.count), 0);
+  function normalizeEventType(et: string): string {
+    if (et === "teamcheck") return "teamdynamik";
+    return et;
+  }
+
+  const mergedTotals: { eventType: string; count: number }[] = [];
+  for (const t of totals) {
+    const key = normalizeEventType(t.eventType);
+    const existing = mergedTotals.find(m => m.eventType === key);
+    if (existing) existing.count += Number(t.count);
+    else mergedTotals.push({ eventType: key, count: Number(t.count) });
+  }
+  const totalRequests = mergedTotals.reduce((sum, t) => sum + t.count, 0);
 
   const userMap = new Map<number, { username: string; firstName: string; lastName: string; events: Record<string, number>; total: number }>();
   for (const pu of perUser) {
@@ -114,7 +123,8 @@ export default function FirmaDashboard() {
       userMap.set(pu.userId, { username: pu.username, firstName: pu.firstName, lastName: pu.lastName, events: {}, total: 0 });
     }
     const u = userMap.get(pu.userId)!;
-    u.events[pu.eventType] = Number(pu.count);
+    const key = normalizeEventType(pu.eventType);
+    u.events[key] = (u.events[key] || 0) + Number(pu.count);
     u.total += Number(pu.count);
   }
   const userList = Array.from(userMap.entries()).sort((a, b) => b[1].total - a[1].total);
@@ -189,9 +199,9 @@ export default function FirmaDashboard() {
               </div>
             )}
 
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(5, 1fr)", gap: 10, marginBottom: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 10, marginBottom: 16 }}>
               {Object.entries(EVENT_LABELS).map(([key, label]) => {
-                const count = totals.find(t => t.eventType === key)?.count || 0;
+                const count = mergedTotals.find(t => t.eventType === key)?.count || 0;
                 const Icon = EVENT_ICONS[key] || BarChart3;
                 const color = EVENT_COLORS[key] || "#636366";
                 return (
