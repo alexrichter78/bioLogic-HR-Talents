@@ -1064,6 +1064,21 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/track-usage", requireAuth, async (req, res) => {
+    try {
+      const { eventType } = req.body;
+      const validTypes = ["ki_coach", "rollendna", "teamdynamik", "teamcheck", "matchcheck"];
+      if (!eventType || !validTypes.includes(eventType)) {
+        return res.status(400).json({ error: "Ungültiger Ereignistyp" });
+      }
+      await trackUsageEvent(req.session.userId!, eventType);
+      res.json({ ok: true });
+    } catch (error) {
+      console.error("Track usage error:", error);
+      res.status(500).json({ error: "Tracking fehlgeschlagen" });
+    }
+  });
+
   app.post("/api/generate-kompetenzen", async (req, res) => {
     try {
       const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik, zusatzInfo, analyseTexte, region } = req.body;

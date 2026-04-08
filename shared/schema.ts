@@ -1,7 +1,15 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, boolean, timestamp, serial, integer } from "drizzle-orm/pg-core";
+import { pgTable, pgEnum, text, varchar, boolean, timestamp, serial, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+
+export const usageEventTypeEnum = pgEnum("usage_event_type", [
+  "ki_coach",
+  "rollendna",
+  "teamdynamik",
+  "teamcheck",
+  "matchcheck",
+]);
 
 export const organizations = pgTable("organizations", {
   id: serial("id").primaryKey(),
@@ -94,7 +102,7 @@ export const usageEvents = pgTable("usage_events", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
   organizationId: integer("organization_id").references(() => organizations.id),
-  eventType: text("event_type").notNull(),
+  eventType: usageEventTypeEnum("event_type").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
