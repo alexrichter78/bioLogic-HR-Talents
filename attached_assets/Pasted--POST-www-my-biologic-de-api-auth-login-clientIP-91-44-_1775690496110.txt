@@ -1,0 +1,105 @@
+[POST]
+www.my-biologic.de/api/auth/login clientIP="91.44.132.10" requestID="9dc2b762-ed73-421c" responseTimeMS=1101 responseBytes=351 userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0"
+    at async Lb.getUserByUsername (/opt/render/project/src/dist/index.cjs:102:102528)
+    at async /opt/render/project/src/dist/index.cjs:590:2301 {
+  length: 116,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '103',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3822',
+  routine: 'errorMissingColumn'
+}
+11:18:52 PM [express] POST /api/auth/login 500 in 319ms :: {"error":"Anmeldung fehlgeschlagen","detail":"column \"organization_id\" does not exist"}
+[POST]
+www.my-biologic.de/api/auth/login clientIP="91.44.132.10" requestID="670c74a7-5ab3-4d18" responseTimeMS=427 responseBytes=351 userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0"
+Login error: error: column "organization_id" does not exist
+    at /opt/render/project/src/dist/index.cjs:74:13326
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /opt/render/project/src/dist/index.cjs:102:31389
+    at async Lb.getUserByUsername (/opt/render/project/src/dist/index.cjs:102:102528)
+    at async /opt/render/project/src/dist/index.cjs:590:2301 {
+  length: 116,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '103',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3822',
+  routine: 'errorMissingColumn'
+}
+11:18:56 PM [express] POST /api/auth/login 500 in 421ms :: {"error":"Anmeldung fehlgeschlagen","detail":"column \"organization_id\" does not exist"}
+Internal Server Error: error: column "organization_id" does not exist
+    at /opt/render/project/src/dist/index.cjs:74:13326
+[GET]
+www.my-biologic.de/api/auth/me clientIP="91.44.132.10" requestID="f80b827d-d63e-40f9" responseTimeMS=923 responseBytes=324 userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0"
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /opt/render/project/src/dist/index.cjs:102:31389
+    at async Lb.getUserById (/opt/render/project/src/dist/index.cjs:102:102338)
+    at async /opt/render/project/src/dist/index.cjs:590:3600 {
+  length: 116,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+Menu
+  hint: undefined,
+  position: '103',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3822',
+  routine: 'errorMissingColumn'
+}
+11:19:50 PM [express] GET /api/auth/me 500 in 322ms :: {"message":"column \"organization_id\" does not exist"}
+[GET]
+www.my-biologic.de/api/auth/me clientIP="91.44.132.10" requestID="ae95e1ed-fcb8-4179" responseTimeMS=651 responseBytes=324 userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0"
+Internal Server Error: error: column "organization_id" does not exist
+    at /opt/render/project/src/dist/index.cjs:74:13326
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /opt/render/project/src/dist/index.cjs:102:31389
+    at async Lb.getUserById (/opt/render/project/src/dist/index.cjs:102:102338)
+    at async /opt/render/project/src/dist/index.cjs:590:3600 {
+  length: 116,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '103',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3822',
+  routine: 'errorMissingColumn'
+}
+11:20:50 PM [express] GET /api/auth/me 500 in 316ms :: {"message":"column \"organization_id\" does not exist"}

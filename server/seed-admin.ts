@@ -49,6 +49,19 @@ async function ensureSchema() {
       ALTER TABLE users ADD COLUMN IF NOT EXISTS course_access BOOLEAN NOT NULL DEFAULT false;
     `);
     await client.query(`
+      CREATE TABLE IF NOT EXISTS organizations (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        ai_request_limit INTEGER,
+        ai_requests_used INTEGER NOT NULL DEFAULT 0,
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS organization_id INTEGER REFERENCES organizations(id);`);
+    await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS ai_request_limit INTEGER NOT NULL DEFAULT 1000;`);
+    await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS ai_requests_used INTEGER NOT NULL DEFAULT 0;`);
+    await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS ai_period_start TIMESTAMP NOT NULL DEFAULT NOW();`);
+    await client.query(`
       CREATE TABLE IF NOT EXISTS password_reset_tokens (
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL REFERENCES users(id),
@@ -117,6 +130,22 @@ async function ensureSchema() {
         id SERIAL PRIMARY KEY,
         topic TEXT NOT NULL,
         user_id INTEGER REFERENCES users(id),
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`
+      DO $$ BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'usage_event_type') THEN
+          CREATE TYPE usage_event_type AS ENUM ('ki_coach', 'rollendna', 'teamdynamik', 'teamcheck', 'matchcheck');
+        END IF;
+      END $$;
+    `);
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS usage_events (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        organization_id INTEGER REFERENCES organizations(id),
+        event_type usage_event_type NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT NOW()
       );
     `);
