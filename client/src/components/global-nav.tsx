@@ -142,9 +142,12 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                 const remaining = Math.max(0, user.aiRequestLimit - user.aiRequestsUsed);
                 const pct = user.aiRequestLimit > 0 ? (user.aiRequestsUsed / user.aiRequestLimit) * 100 : 0;
                 const color = pct >= 100 ? "#FF3B30" : pct >= 80 ? "#FF9500" : "#34C759";
+                const nextReset = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1);
+                const resetStr = nextReset.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
                 return (
                   <span
                     data-testid="nav-ai-quota-mobile"
+                    title={`${user.aiRequestsUsed} von ${user.aiRequestLimit} KI-Anfragen genutzt\nAutomatische Zurücksetzung am ${resetStr}`}
                     style={{
                       fontSize: 10, color: "#8E8E93", whiteSpace: "nowrap",
                       padding: "4px 8px", borderRadius: 6,
@@ -390,10 +393,12 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
               const remaining = Math.max(0, user.aiRequestLimit - user.aiRequestsUsed);
               const pct = user.aiRequestLimit > 0 ? (user.aiRequestsUsed / user.aiRequestLimit) * 100 : 0;
               const color = pct >= 100 ? "#FF3B30" : pct >= 80 ? "#FF9500" : "#34C759";
+              const nextReset = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1);
+              const resetStr = nextReset.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
               return (
                 <span
                   data-testid="nav-ai-quota"
-                  title={`${user.aiRequestsUsed} von ${user.aiRequestLimit} KI-Anfragen genutzt`}
+                  title={`${user.aiRequestsUsed} von ${user.aiRequestLimit} KI-Anfragen genutzt\nAutomatische Zurücksetzung am ${resetStr}`}
                   style={{
                     fontSize: 10, color: "#8E8E93", whiteSpace: "nowrap",
                     padding: "4px 8px", borderRadius: 6,
