@@ -124,12 +124,6 @@ function ampel(totalGap: number): "gruen" | "gelb" | "rot" {
   return "rot";
 }
 
-function ampelText(a: "gruen" | "gelb" | "rot"): string {
-  if (a === "gruen") return "Stabil";
-  if (a === "gelb") return "Steuerbar";
-  return "Spannungsfeld";
-}
-
 function totalGapOf(a: Triad, b: Triad): number {
   return Math.round(Math.abs(a.impulsiv - b.impulsiv) + Math.abs(a.intuitiv - b.intuitiv) + Math.abs(a.analytisch - b.analytisch));
 }
@@ -228,7 +222,8 @@ function buildTeamImpactAreas(
 
   const areas: ImpactArea[] = [];
 
-  const decSev = severity(tk === "analytisch" && rk !== "analytisch" ? teamGapA + 5 : Math.max(teamGapI, teamGapA));
+  const maxTeamGap = Math.max(teamGapI, teamGapA, teamGapN);
+  const decSev = severity(tk === "analytisch" && rk !== "analytisch" ? Math.max(maxTeamGap, teamGapA + 5) : maxTeamGap);
   let decTeam: string;
   let decCandPattern: string;
   let decRisk: string;
