@@ -88,7 +88,19 @@ function biggestGapText(rt: Triad, ct: Triad): string {
     const g = Math.abs(rt[k] - ct[k]);
     if (g > maxGap) { maxGap = g; maxKey = k; }
   }
-  return `Die deutlichste Abweichung liegt im Bereich ${COMP_LABELS[maxKey]} und betrifft damit genau den Anforderungsbereich, der für diese Stelle von zentraler Bedeutung ist.`;
+  if (maxGap <= 3) {
+    return "Die Profile weichen in keinem der drei Bereiche wesentlich voneinander ab. Die Grundstruktur passt.";
+  }
+  const sorted = keys.slice().sort((a, b) => rt[b] - rt[a]);
+  const roleRange = rt[sorted[0]] - rt[sorted[2]];
+  if (roleRange <= 8) {
+    return `Die deutlichste Abweichung liegt im Bereich ${COMP_LABELS[maxKey]}. Da die Stelle ein ausgeglichenes Profil erfordert, wirkt sich jede Abweichung auf die Gesamtpassung aus.`;
+  }
+  const primaryKey = sorted[0];
+  if (maxKey === primaryKey) {
+    return `Die deutlichste Abweichung liegt im Bereich ${COMP_LABELS[maxKey]} – und damit genau im Kernbereich der Stellenanforderung.`;
+  }
+  return `Die deutlichste Abweichung liegt im Bereich ${COMP_LABELS[maxKey]}. Der Kernbereich der Stelle (${COMP_LABELS[primaryKey]}) ist davon weniger betroffen.`;
 }
 
 

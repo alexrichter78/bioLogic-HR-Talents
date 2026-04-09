@@ -692,7 +692,7 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
 }
 
 function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapA: number, gapN: number, cand: string, roleIsBalFull = false, ct?: Triad): ImpactArea {
-  const maxGap = Math.max(gapI, gapA);
+  const maxGap = Math.max(gapI, gapA, gapN);
   const s = Subj(cand);
 
   let roleNeed: string;
@@ -721,7 +721,7 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
     return { id: "decision", label: "Entscheidungsverhalten", severity: sev, roleNeed, candidatePattern, risk };
   }
 
-  const sev = rk === ck ? severity(maxGap * 0.4) : severity(rk === "analytisch" ? gapA + 5 : maxGap);
+  const sev = rk === ck ? severity(maxGap * 0.4) : severity(rk === "analytisch" ? Math.max(maxGap, gapA + 5) : maxGap);
 
   const decRest = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== ck);
   const decCompeting23 = ct ? Math.abs(ct[decRest[0]] - ct[decRest[1]]) <= 5 && Math.min(ct[decRest[0]], ct[decRest[1]]) > 15 : false;
@@ -1243,14 +1243,6 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
     ];
   }
 
-  if (gap === "gering") {
-    return [
-      { label: "Kurzfristig", period: "0 - 3 Monate", text: `Die Stelle ${role} verlangt ${compDesc(rk)}. ${Subj(cand)} bringt eine andere Arbeitsweise mit, die Abweichungen sind aber gering. Die Einarbeitung verläuft voraussichtlich ohne grössere Reibung.` },
-      { label: "Mittelfristig", period: "3 - 12 Monate", text: `Die geringen Abweichungen bleiben im Alltag gut handhabbar. Regelmässiges Feedback hilft, die Passung dauerhaft zu sichern.` },
-      { label: "Langfristig", period: "12+ Monate", text: `Die Stellenanforderungen werden langfristig stabil abgedeckt. Der Führungsaufwand bleibt überschaubar. Halbjährliche Überprüfungen genügen.` },
-    ];
-  }
-
   const shortRisks: Record<ComponentKey, Record<ComponentKey, string>> = {
     impulsiv: {
       intuitiv: `Die Stelle verlangt schnelle Umsetzung und operative Geschwindigkeit. ${Subj(cand)} investiert stattdessen mehr Zeit in Abstimmung. Erste Verzögerungen werden sichtbar. Ergebnisorientierung muss aktiv eingefordert werden.`,
@@ -1445,7 +1437,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
     if (candBalanced) {
       return [
         {
-          phase: 1, title: "Orientierung & Erwartungsabgleich", period: "Woche 1 – 4",
+          num: 1, title: "Orientierung & Erwartungsabgleich", period: "Woche 1 – 4",
           ziel: `Vielseitige Anforderungen der Stelle ${role} verstehen und Erwartungen abstimmen.`,
           items: [
             `Klärung, wie die drei Bereiche (Tempo, Dialog, Struktur) in ${role} gewichtet werden.`,
@@ -1459,7 +1451,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
           },
         },
         {
-          phase: 2, title: "Wirkung & Anpassung", period: "Monat 2 – 3",
+          num: 2, title: "Wirkung & Anpassung", period: "Monat 2 – 3",
           ziel: `Vielseitige Wirkung als ${role} zeigen und situative Flexibilität unter Beweis stellen.`,
           items: [
             `Eigenständige Übernahme erster Aufgaben mit wechselnden Anforderungsprofilen.`,
@@ -1472,7 +1464,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
           },
         },
         {
-          phase: 3, title: "Stabilisierung", period: "Monat 4 – 6",
+          num: 3, title: "Stabilisierung", period: "Monat 4 – 6",
           ziel: `Arbeitsweise als ${role} stabilisieren und langfristige Passung sichern.`,
           items: [
             `Evaluation der bisherigen Wirkung in allen drei Bereichen.`,
@@ -1495,7 +1487,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
 
     return [
       {
-        phase: 1, title: "Orientierung & Erwartungsabgleich", period: "Woche 1 – 4",
+        num: 1, title: "Orientierung & Erwartungsabgleich", period: "Woche 1 – 4",
         ziel: `Vielseitige Anforderungen der Stelle ${role} verstehen und eigene Einseitigkeit erkennen.`,
         items: [
           `Klärung, dass die Stelle Vielseitigkeit verlangt – nicht nur ${domDesc}.`,
@@ -1509,7 +1501,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
         },
       },
       {
-        phase: 2, title: "Gezielter Ausgleich", period: "Monat 2 – 3",
+        num: 2, title: "Gezielter Ausgleich", period: "Monat 2 – 3",
         ziel: `Gezielte Entwicklung der untervertretenen Bereiche (${weakDescs}).`,
         items: [
           `Konkrete Aufgaben, die ${weakDescs} erfordern, gezielt zuweisen.`,
@@ -1523,7 +1515,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
         },
       },
       {
-        phase: 3, title: "Stabilisierung & Entscheid", period: "Monat 4 – 6",
+        num: 3, title: "Stabilisierung & Entscheid", period: "Monat 4 – 6",
         ziel: `Bewerten, ob die vielseitige Stellenanforderung dauerhaft erfüllt werden kann.`,
         items: [
           `Evaluation, ob die untervertretenen Bereiche ausreichend abgedeckt werden.`,
