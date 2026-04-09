@@ -2,10 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-*:focus, *:focus-visible {
+* {
   outline: none !important;
   --tw-ring-shadow: 0 0 #0000 !important;
   --tw-ring-offset-shadow: 0 0 #0000 !important;
+}
+
+html, body, #root, .page-gradient-bg {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 html {
