@@ -424,7 +424,10 @@ export function calcControlIntensity(role: RoleAnalysis, cand: CandidateInput): 
   const cDom = dominanceModeOf(c);
   let points = 0;
 
-  if (rDom.top1.key !== cDom.top1.key || rDom.mode.startsWith("DUAL") !== cDom.mode.startsWith("DUAL")) points += 2;
+  const rIsDual = rDom.gap1 <= 4 && rDom.gap2 >= 6;
+  const cPrimaryInRDual = rIsDual && (cDom.top1.key === rDom.top1.key || cDom.top1.key === rDom.top2.key);
+  const effSameDom = rDom.top1.key === cDom.top1.key || cPrimaryInRDual;
+  if (!effSameDom || rDom.mode.startsWith("DUAL") !== cDom.mode.startsWith("DUAL")) points += 2;
   if (rDom.mode.startsWith("EXTREME")) points += 1;
   if (rDom.gap1 >= 12) points += 1;
 
@@ -1155,7 +1158,11 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
   const sameDom = roleDom.top1.key === candDom.top1.key;
   const candIsBalFull = candDom.gap1 <= 5 && candDom.gap2 <= 5;
   const roleIsBalFull = roleDom.gap1 <= 5 && roleDom.gap2 <= 5;
-  const effectiveSameDom = sameDom || roleIsBalFull;
+  const roleIsDual = !roleIsBalFull && roleDom.gap1 <= 4 && roleDom.gap2 >= 6;
+  const candPrimaryInRoleDual = roleIsDual && (candDom.top1.key === roleDom.top1.key || candDom.top1.key === roleDom.top2.key);
+  const dualPairKeys = roleIsDual ? new Set([roleDom.top1.key, roleDom.top2.key]) : null;
+  const candMatchesDualPair = dualPairKeys !== null && dualPairKeys.has(candDom.top1.key) && dualPairKeys.has(candDom.top2.key);
+  const effectiveSameDom = sameDom || roleIsBalFull || candPrimaryInRoleDual;
   const candEqualDist = candDom.mode === "BAL_FULL";
   const candDualDominance = !candEqualDist && candDom.gap1 <= 5;
   const roleClearDominance = roleDom.gap1 >= 15;
@@ -1164,7 +1171,7 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
   const roleKeyInDual = dualConflict && (candDom.top1.key === roleDom.top1.key || candDom.top2.key === roleDom.top1.key);
   const maxGapVal = Math.max(Math.abs(rN.impulsiv - cN.impulsiv), Math.abs(rN.intuitiv - cN.intuitiv), Math.abs(rN.analytisch - cN.analytisch));
   const candSpread = candDom.top1.value - candDom.top3.value;
-  const secondaryFlipped = effectiveSameDom && roleDom.top2.key !== candDom.top2.key;
+  const secondaryFlipped = effectiveSameDom && !candMatchesDualPair && roleDom.top2.key !== candDom.top2.key;
 
   // ── C. Grundrating aus Mismatch ───────────────────────
   let overallFit: FitStatus;
@@ -1227,7 +1234,7 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
 
   // ── F. Deckelungsregeln (max CONDITIONAL) ─────────────
   if (!roleIsBalFull && !ko && overallFit === "SUITABLE") {
-    if (secondaryFlipped) {
+    if (secondaryFlipped && (roleDom.gap2 > 5 || candDom.gap2 > 5)) {
       overallFit = "CONDITIONAL";
       reasons.push({ rule: "Sekundärflip (leicht, gap2≤5 bei einer Seite) → max CONDITIONAL", effect: "CAP" });
     } else if (effectiveSameDom && candDom.gap2 <= 5 && roleDom.gap2 > 5) {
@@ -1240,15 +1247,15 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
       reasons.push({ rule: `Grosse Einzelabweichung 19-25 (maxGap=${maxGapVal.toFixed(0)}) → max CONDITIONAL`, effect: "CAP" });
     }
 
-    if (overallFit === "SUITABLE" && candDom.gap1 <= 5) {
+    if (overallFit === "SUITABLE" && candDom.gap1 <= 5 && roleDom.gap1 > 5) {
       overallFit = "CONDITIONAL";
-      reasons.push({ rule: "Person fast-Dual (gap1≤5) → max CONDITIONAL", effect: "CAP" });
+      reasons.push({ rule: "Person fast-Dual (gap1≤5, Rolle gap1>5) → max CONDITIONAL", effect: "CAP" });
     }
   }
 
   // ── G. Basis-Kontrollintensität ───────────────────────
   let points = 0;
-  if (roleDom.top1.key !== candDom.top1.key || roleDom.mode.startsWith("DUAL") !== candDom.mode.startsWith("DUAL")) points += 2;
+  if ((!sameDom && !candPrimaryInRoleDual) || roleDom.mode.startsWith("DUAL") !== candDom.mode.startsWith("DUAL")) points += 2;
   if (roleDom.mode.startsWith("EXTREME")) points += 1;
   if (roleDom.gap1 >= 12) points += 1;
   const mainDiff = Math.abs(rN[roleDom.top1.key] - cN[roleDom.top1.key]);
