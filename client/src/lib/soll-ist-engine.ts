@@ -268,7 +268,7 @@ export function computeSollIst(
   let gapLevel: "gering" | "mittel" | "hoch";
   let controlIntensity: "gering" | "mittel" | "hoch";
 
-  if (coreFit.overallFit === "SUITABLE") { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#3A9A5C"; gapLevel = "gering"; }
+  if (coreFit.overallFit === "SUITABLE") { fitRating = "GEEIGNET"; fitLabel = "Geeignet"; fitColor = "#34C759"; gapLevel = "gering"; }
   else if (coreFit.overallFit === "CONDITIONAL") { fitRating = "BEDINGT"; fitLabel = "Bedingt geeignet"; fitColor = "#E5A832"; gapLevel = "mittel"; }
   else { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; gapLevel = "hoch"; }
 
@@ -595,11 +595,11 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
     const secDesc = cSecondKey === "impulsiv" ? "Handlungsorientierung" : cSecondKey === "intuitiv" ? "Einfühlungsvermögen" : "Struktur und Analyse";
 
     const dualNotes: Record<string, string> = {
-      decision: `Die Stelle verlangt klare ${rkDesc} in Entscheidungen. ${s} teilt den Fokus zwischen ${rkDesc} und ${secDesc}. Dadurch können Entscheidungen weniger konsequent ausfallen als die Stelle erfordert.`,
-      work_structure: `Die Stelle verlangt eine klare Arbeitsweise geprägt von ${rkDesc}. ${s} wechselt situativ zwischen ${rkDesc} und ${secDesc}. Das kann zu wechselnden Arbeitsprioritäten führen.`,
-      leadership: `Die Stelle erwartet Führung mit klarer ${rkDesc}. ${s} führt jedoch mit geteiltem Fokus zwischen ${rkDesc} und ${secDesc}. Die Führungslinie kann dadurch weniger eindeutig wirken.`,
-      communication: `Die Stelle erwartet Kommunikation geprägt von ${rkDesc}. ${s} kommuniziert wechselnd zwischen ${rkDesc} und ${secDesc}. Gesprächspartner erleben dadurch keinen einheitlichen Kommunikationsstil.`,
-      culture: `Die Stelle verlangt eine Kulturwirkung über klare ${rkDesc}. ${s} prägt das Umfeld jedoch wechselnd durch ${rkDesc} und ${secDesc}. Die kulturelle Wirkung bleibt dadurch diffuser als erwartet.`,
+      decision: `Die Stelle verlangt Entscheidungen, die klar von ${rkDesc} geprägt sind. ${s} teilt den Fokus jedoch zwischen ${rkDesc} und ${secDesc}. Dadurch können Entscheidungen weniger konsequent ausfallen als die Stelle erfordert.`,
+      work_structure: `Die Stelle verlangt eine Arbeitsweise, die klar von ${rkDesc} geprägt ist. ${s} wechselt situativ zwischen ${rkDesc} und ${secDesc}. Das kann zu wechselnden Arbeitsprioritäten führen.`,
+      leadership: `Die Stelle erwartet Führung, die klar von ${rkDesc} geprägt ist. ${s} führt jedoch mit geteiltem Fokus zwischen ${rkDesc} und ${secDesc}. Die Führungslinie kann dadurch weniger eindeutig wirken.`,
+      communication: `Die Stelle erwartet Kommunikation, die von ${rkDesc} geprägt ist. ${s} kommuniziert jedoch wechselnd zwischen ${rkDesc} und ${secDesc}. Gesprächspartner erleben dadurch keinen einheitlichen Kommunikationsstil.`,
+      culture: `Die Stelle erwartet eine Kulturwirkung, die von ${rkDesc} geprägt ist. ${s} prägt das Umfeld jedoch wechselnd durch ${rkDesc} und ${secDesc}. Die kulturelle Wirkung bleibt dadurch diffuser als erwartet.`,
     };
 
     for (const area of areas) {
