@@ -1269,6 +1269,11 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
       overallFit = "CONDITIONAL";
       reasons.push({ rule: "Person fast-Dual (gap1≤5, Rolle gap1>5) → max CONDITIONAL", effect: "CAP" });
     }
+
+    if (overallFit === "SUITABLE" && candIsDual && candDualMatchesRoleDom && !roleIsDual) {
+      overallFit = "CONDITIONAL";
+      reasons.push({ rule: "Person Dual + Rolle klar dominant (Rollenschwerpunkt in Dual-Paar, aber Person nicht fokussiert) → max CONDITIONAL", effect: "CAP" });
+    }
   }
 
   // ── G. Basis-Kontrollintensität ───────────────────────
