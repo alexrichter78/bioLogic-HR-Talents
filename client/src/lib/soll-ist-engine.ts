@@ -605,7 +605,7 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
     for (const area of areas) {
       if (area.severity === "ok") {
         area.severity = "warning";
-        area.risk = dualNotes[area.id] || `Die Stelle verlangt klare ${rkDesc}. ${s} teilt den Fokus jedoch zwischen ${rkDesc} und ${secDesc}. Die geteilte Aufmerksamkeit kann dazu führen, dass die Hauptanforderung nicht mit der nötigen Konsequenz erfüllt wird.`;
+        area.risk = dualNotes[area.id] || `Die Stelle ist klar von ${rkDesc} geprägt. ${s} teilt den Fokus jedoch zwischen ${rkDesc} und ${secDesc}. Die geteilte Aufmerksamkeit kann dazu führen, dass die Hauptanforderung nicht mit der nötigen Konsequenz erfüllt wird.`;
       }
     }
   }
