@@ -4,7 +4,7 @@ export const BIO_COLORS = {
   impulsiv: "#C41E3A",
   intuitiv: "#F39200",
   analytisch: "#1A5DAB",
-  geeignet: "#3A9A5C",
+  geeignet: "#34C759",
   bedingt: "#E5A832",
   nichtGeeignet: "#D64045",
 
