@@ -1196,6 +1196,8 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
     }
   }
 
+  const totalGapVal = Math.abs(rN.impulsiv - cN.impulsiv) + Math.abs(rN.intuitiv - cN.intuitiv) + Math.abs(rN.analytisch - cN.analytisch);
+
   // ── E. Strukturelle Overrides (nicht BAL_FULL-Rolle) ──
   if (!roleIsBalFull && !ko) {
     if (equalDistConflict) {
@@ -1219,6 +1221,11 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
     if (candIsBalFull) {
       overallFit = "NOT_SUITABLE";
       reasons.push({ rule: "Person BAL_FULL + Rolle nicht BAL_FULL", effect: "OVERRIDE" });
+    }
+
+    if (totalGapVal > 24) {
+      overallFit = "NOT_SUITABLE";
+      reasons.push({ rule: `Gesamtabweichung zu gross (totalGap=${totalGapVal.toFixed(0)}>24)`, effect: "OVERRIDE" });
     }
 
     if (maxGapVal > 25) {
@@ -1248,6 +1255,11 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
     if (overallFit === "SUITABLE" && maxGapVal > 18) {
       overallFit = "CONDITIONAL";
       reasons.push({ rule: `Grosse Einzelabweichung 19-25 (maxGap=${maxGapVal.toFixed(0)}) → max CONDITIONAL`, effect: "CAP" });
+    }
+
+    if (overallFit === "SUITABLE" && totalGapVal > 18) {
+      overallFit = "CONDITIONAL";
+      reasons.push({ rule: `Relevante Gesamtabweichung (totalGap=${totalGapVal.toFixed(0)}>18) → max CONDITIONAL`, effect: "CAP" });
     }
 
     if (overallFit === "SUITABLE" && candDom.gap1 <= 5 && roleDom.gap1 > 5) {
