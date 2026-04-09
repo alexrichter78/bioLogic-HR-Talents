@@ -197,46 +197,58 @@ export async function seedAdmin() {
 
   try {
     const existingDocs = await storage.listKnowledgeDocuments();
-    if (existingDocs.length === 0) {
-      const seedData = knowledgeSeedData as { title: string; category: string; content: string }[];
+    const seedData = knowledgeSeedData as { title: string; category: string; content: string }[];
+    const existingTitles = new Set(existingDocs.map(d => d.title));
+    const missing = seedData.filter(d => !existingTitles.has(d.title));
+    if (missing.length > 0) {
       await db.transaction(async (tx) => {
-        for (const doc of seedData) {
+        for (const doc of missing) {
           await tx.insert(knowledgeDocuments).values({ title: doc.title, content: doc.content, category: doc.category });
         }
       });
-      console.log(`Knowledge base seeded: ${seedData.length} documents`);
+      console.log(`[seed] Knowledge base: ${missing.length} new docs added (total seed: ${seedData.length}, existing: ${existingDocs.length})`);
+    } else {
+      console.log(`[seed] Knowledge base up to date: ${existingDocs.length} docs`);
     }
   } catch (error) {
-    console.error("Failed to seed knowledge base:", error);
+    console.error("[seed] Failed to seed knowledge base:", error);
   }
 
   try {
     const existingGolden = await storage.listGoldenAnswers();
-    if (existingGolden.length === 0) {
-      const seedData = goldenAnswersSeedData as { user_message: string; assistant_message: string; category: string }[];
+    const seedData = goldenAnswersSeedData as { user_message: string; assistant_message: string; category: string }[];
+    const existingMsgs = new Set(existingGolden.map(g => g.userMessage));
+    const missing = seedData.filter(g => !existingMsgs.has(g.user_message));
+    if (missing.length > 0) {
       await db.transaction(async (tx) => {
-        for (const ga of seedData) {
+        for (const ga of missing) {
           await tx.insert(goldenAnswers).values({ userMessage: ga.user_message, assistantMessage: ga.assistant_message, category: ga.category });
         }
       });
-      console.log(`Golden answers seeded: ${seedData.length} entries`);
+      console.log(`[seed] Golden answers: ${missing.length} new entries added (total seed: ${seedData.length}, existing: ${existingGolden.length})`);
+    } else {
+      console.log(`[seed] Golden answers up to date: ${existingGolden.length} entries`);
     }
   } catch (error) {
-    console.error("Failed to seed golden answers:", error);
+    console.error("[seed] Failed to seed golden answers:", error);
   }
 
   try {
     const existingTopics = await db.select().from(coachTopics);
-    if (existingTopics.length === 0) {
-      const seedData = coachTopicsSeedData as { topic: string }[];
+    const seedData = coachTopicsSeedData as { topic: string }[];
+    const existingSet = new Set(existingTopics.map(t => t.topic));
+    const missing = seedData.filter(t => !existingSet.has(t.topic));
+    if (missing.length > 0) {
       await db.transaction(async (tx) => {
-        for (const t of seedData) {
+        for (const t of missing) {
           await tx.insert(coachTopics).values({ topic: t.topic, userId: null });
         }
       });
-      console.log(`Coach topics seeded: ${seedData.length} entries`);
+      console.log(`[seed] Coach topics: ${missing.length} new entries added`);
+    } else {
+      console.log(`[seed] Coach topics up to date: ${existingTopics.length} entries`);
     }
   } catch (error) {
-    console.error("Failed to seed coach topics:", error);
+    console.error("[seed] Failed to seed coach topics:", error);
   }
 }
