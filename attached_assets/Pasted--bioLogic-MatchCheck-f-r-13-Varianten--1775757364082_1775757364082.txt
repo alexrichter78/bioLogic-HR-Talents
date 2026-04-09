@@ -1,0 +1,401 @@
+// ==========================================
+// bioLogic MatchCheck für 13 Varianten
+// ==========================================
+
+const EPS = 5;
+
+// ------------------------------------------
+// Hilfsfunktionen
+// ------------------------------------------
+
+function abs(n) {
+  return Math.abs(n);
+}
+
+function max3(a, b, c) {
+  return Math.max(a, b, c);
+}
+
+function min3(a, b, c) {
+  return Math.min(a, b, c);
+}
+
+function sortProfile(profile) {
+  return [
+    { key: "I", value: profile.I },
+    { key: "N", value: profile.N },
+    { key: "A", value: profile.A }
+  ].sort((x, y) => y.value - x.value);
+}
+
+function isClose(a, b, eps = EPS) {
+  return abs(a - b) <= eps;
+}
+
+function isGreater(a, b, eps = EPS) {
+  return (a - b) > eps;
+}
+
+// ------------------------------------------
+// 13 Varianten klassifizieren
+// ------------------------------------------
+
+function classifyVariant(profile, eps = EPS) {
+  const { I, N, A } = profile;
+  const sorted = sortProfile(profile);
+
+  const top1 = sorted[0];
+  const top2 = sorted[1];
+  const top3 = sorted[2];
+
+  const gap1 = top1.value - top2.value;
+  const gap2 = top2.value - top3.value;
+  const spread = top1.value - top3.value;
+
+  const balFull = spread <= eps;
+
+  let type = "";
+  let variant = 0;
+  let domSet = [];
+  let primary = null;
+  let secondaryOrder = [];
+
+  // Variante 13: I = N = A
+  if (balFull) {
+    type = "BAL_FULL";
+    variant = 13;
+    domSet = ["I", "N", "A"];
+    primary = null;
+    secondaryOrder = [];
+    return {
+      type,
+      variant,
+      domSet,
+      primary,
+      secondaryOrder,
+      gap1,
+      gap2,
+      spread,
+      secondGap: gap2,
+      sorted
+    };
+  }
+
+  // Doppelschwerpunkt oben: X = Y > Z
+  if (gap1 <= eps && gap2 > eps) {
+    type = "DUAL_TOP";
+    domSet = [top1.key, top2.key];
+    primary = null;
+    secondaryOrder = [top1.key, top2.key, top3.key];
+
+    const pair = [...domSet].sort().join("");
+
+    if (pair === "IN") variant = 7;   // I = N > A
+    if (pair === "AI") variant = 8;   // I = A > N
+    if (pair === "AN") variant = 9;   // N = A > I
+
+    return {
+      type,
+      variant,
+      domSet,
+      primary,
+      secondaryOrder,
+      gap1,
+      gap2,
+      spread,
+      secondGap: gap2,
+      sorted
+    };
+  }
+
+  // Gleichstand unten: X > Y = Z
+  if (gap1 > eps && gap2 <= eps) {
+    type = "DUAL_BOTTOM";
+    domSet = [top1.key];
+    primary = top1.key;
+    secondaryOrder = [top1.key, top2.key, top3.key];
+
+    if (top1.key === "I") variant = 10; // I > N = A
+    if (top1.key === "N") variant = 11; // N > I = A
+    if (top1.key === "A") variant = 12; // A > I = N
+
+    return {
+      type,
+      variant,
+      domSet,
+      primary,
+      secondaryOrder,
+      gap1,
+      gap2,
+      spread,
+      secondGap: gap2,
+      sorted
+    };
+  }
+
+  // Klare Reihenfolge: 1 bis 6
+  type = "CLEAR";
+  domSet = [top1.key];
+  primary = top1.key;
+  secondaryOrder = [top1.key, top2.key, top3.key];
+
+  const order = secondaryOrder.join("");
+
+  if (order === "INA") variant = 1;
+  if (order === "IAN") variant = 2;
+  if (order === "NIA") variant = 3;
+  if (order === "NAI") variant = 4;
+  if (order === "AIN") variant = 5;
+  if (order === "ANI") variant = 6;
+
+  return {
+    type,
+    variant,
+    domSet,
+    primary,
+    secondaryOrder,
+    gap1,
+    gap2,
+    spread,
+    secondGap: gap2,
+    sorted
+  };
+}
+
+// ------------------------------------------
+// Prüfen, ob Dominanz kompatibel ist
+// ------------------------------------------
+
+function hasCompatibleDominance(roleMeta, candMeta) {
+  // vollbalancierte Rolle: kein harter Primärschwerpunkt nötig
+  if (roleMeta.type === "BAL_FULL") return true;
+
+  // Rolle mit klarem Primärschwerpunkt
+  if (roleMeta.type === "CLEAR" || roleMeta.type === "DUAL_BOTTOM") {
+    const rolePrimary = roleMeta.primary;
+
+    if (candMeta.type === "BAL_FULL") return false;
+
+    if (candMeta.type === "CLEAR" || candMeta.type === "DUAL_BOTTOM") {
+      return candMeta.primary === rolePrimary;
+    }
+
+    if (candMeta.type === "DUAL_TOP") {
+      return candMeta.domSet.includes(rolePrimary);
+    }
+  }
+
+  // Rolle mit Doppelschwerpunkt oben
+  if (roleMeta.type === "DUAL_TOP") {
+    if (candMeta.type === "BAL_FULL") return false;
+
+    if (candMeta.type === "CLEAR" || candMeta.type === "DUAL_BOTTOM") {
+      return roleMeta.domSet.includes(candMeta.primary);
+    }
+
+    if (candMeta.type === "DUAL_TOP") {
+      return candMeta.domSet.some(k => roleMeta.domSet.includes(k));
+    }
+  }
+
+  return false;
+}
+
+// ------------------------------------------
+// Secondary Flip erkennen
+// ------------------------------------------
+
+function detectSecondaryFlip(roleMeta, candMeta, eps = EPS) {
+  // Nur relevant, wenn die Grunddominanz kompatibel ist
+  if (!hasCompatibleDominance(roleMeta, candMeta) && roleMeta.type !== "BAL_FULL") {
+    return false;
+  }
+
+  // Für Vollbalance nicht sinnvoll
+  if (roleMeta.type === "BAL_FULL" || candMeta.type === "BAL_FULL") {
+    return false;
+  }
+
+  // Nur bei klarer innerer Reihenfolge robust bewertbar
+  const roleOrder = roleMeta.secondaryOrder;
+  const candOrder = candMeta.secondaryOrder;
+
+  if (!roleOrder.length || !candOrder.length) return false;
+
+  // Fall 1: Rolle klar / Kandidat klar
+  if (
+    (roleMeta.type === "CLEAR" || roleMeta.type === "DUAL_BOTTOM") &&
+    (candMeta.type === "CLEAR" || candMeta.type === "DUAL_BOTTOM")
+  ) {
+    if (roleMeta.primary !== candMeta.primary) return false;
+
+    const roleRest = roleOrder.slice(1);
+    const candRest = candOrder.slice(1);
+
+    return roleRest[0] === candRest[1] && roleRest[1] === candRest[0];
+  }
+
+  // Fall 2: Rolle DUAL_TOP und Kandidat klar
+  // z.B. Rolle I=N>A, Kandidat I>A>N oder N>A>I
+  // hier kein harter Flip, eher Unschärfe
+  if (roleMeta.type === "DUAL_TOP") {
+    return false;
+  }
+
+  // Fall 3: Rolle klar, Kandidat DUAL_TOP
+  // ebenfalls eher Unschärfe statt echter Flip
+  if (candMeta.type === "DUAL_TOP") {
+    return false;
+  }
+
+  return false;
+}
+
+// ------------------------------------------
+// Optional: Entwicklungsaufwand ableiten
+// ------------------------------------------
+
+function getDevelopmentLevel(totalGap, maxGap, secondaryFlip) {
+  if (secondaryFlip || totalGap > 24 || maxGap > 14) return "hoch";
+  if (totalGap > 18 || maxGap > 10) return "mittel";
+  return "gering";
+}
+
+// ------------------------------------------
+// Hauptfunktion: FitLabel berechnen
+// ------------------------------------------
+
+function getMatchCheck(role, cand, eps = EPS) {
+  const dI = abs(role.I - cand.I);
+  const dN = abs(role.N - cand.N);
+  const dA = abs(role.A - cand.A);
+
+  const totalGap = dI + dN + dA;
+  const maxGap = max3(dI, dN, dA);
+
+  const roleMeta = classifyVariant(role, eps);
+  const candMeta = classifyVariant(cand, eps);
+
+  const roleIsBalFull = roleMeta.type === "BAL_FULL";
+  const candIsBalFull = candMeta.type === "BAL_FULL";
+
+  const sameDom = hasCompatibleDominance(roleMeta, candMeta);
+  const effectiveSameDom = sameDom || roleIsBalFull;
+
+  const secondaryFlip = detectSecondaryFlip(roleMeta, candMeta, eps);
+  const roleSecGap = roleMeta.secondGap ?? 0;
+
+  let fitLabel = "Bedingt geeignet";
+  let reasons = [];
+
+  // --------------------------------------
+  // KO-Regeln = Nicht geeignet
+  // --------------------------------------
+
+  // 1) Person vollbalanciert, Rolle aber nicht
+  if (candIsBalFull && !roleIsBalFull) {
+    fitLabel = "Nicht geeignet";
+    reasons.push("Person ist zu ausgeglichen für eine klar geprägte Rolle");
+  }
+
+  // 2) Dominanz nicht kompatibel
+  else if (!effectiveSameDom && !roleIsBalFull) {
+    fitLabel = "Nicht geeignet";
+    reasons.push("Grundlogik der Person passt nicht zur dominanten Anforderung der Rolle");
+  }
+
+  // 3) Secondary Flip bei klarer Rollenstruktur
+  else if (secondaryFlip && roleSecGap > eps) {
+    fitLabel = "Nicht geeignet";
+    reasons.push("Sekundärstruktur kippt gegen die Rollenlogik");
+  }
+
+  // 4) Zu große Einzelabweichung
+  else if (maxGap > 18) {
+    fitLabel = "Nicht geeignet";
+    reasons.push("Mindestens eine Komponente weicht zu stark ab");
+  }
+
+  // 5) Zu große Gesamtabweichung
+  else if (totalGap > 30) {
+    fitLabel = "Nicht geeignet";
+    reasons.push("Gesamtprofil weicht zu stark von der Rolle ab");
+  }
+
+  // --------------------------------------
+  // Bedingt geeignet
+  // --------------------------------------
+  else if (roleIsBalFull && candIsBalFull) {
+    fitLabel = "Bedingt geeignet";
+    reasons.push("Beide Profile sind sehr ausgeglichen, aber ohne klaren Funktionsschwerpunkt");
+  }
+
+  else if (secondaryFlip && roleSecGap <= eps) {
+    fitLabel = "Bedingt geeignet";
+    reasons.push("Grundrichtung passt, aber die innere Struktur ist nicht ganz sauber");
+  }
+
+  else if (maxGap > 10) {
+    fitLabel = "Bedingt geeignet";
+    reasons.push("Mindestens eine relevante Abweichung ist entwicklungsrelevant");
+  }
+
+  else if (totalGap > 18) {
+    fitLabel = "Bedingt geeignet";
+    reasons.push("Die Passung ist grundsätzlich da, aber nicht stabil genug für ein klares Geeignet");
+  }
+
+  // Speziell: Rolle mit Doppelschwerpunkt oben
+  else if (roleMeta.type === "DUAL_TOP") {
+    // Kandidat trägt nur einen Teil des Doppelschwerpunkts
+    if (
+      (candMeta.type === "CLEAR" || candMeta.type === "DUAL_BOTTOM") &&
+      roleMeta.domSet.includes(candMeta.primary)
+    ) {
+      fitLabel = "Bedingt geeignet";
+      reasons.push("Ein Schwerpunkt passt, die zweite notwendige Ausrichtung ist jedoch schwächer");
+    } else {
+      fitLabel = "Geeignet";
+      reasons.push("Doppelschwerpunkt der Rolle wird ausreichend getroffen");
+    }
+  }
+
+  // --------------------------------------
+  // Geeignet
+  // --------------------------------------
+  else {
+    fitLabel = "Geeignet";
+    reasons.push("Dominanz, Struktur und Gesamtabweichung passen zur Rolle");
+  }
+
+  const devLevel = getDevelopmentLevel(totalGap, maxGap, secondaryFlip);
+
+  return {
+    fitLabel,
+    development: devLevel,
+    metrics: {
+      dI,
+      dN,
+      dA,
+      totalGap,
+      maxGap,
+      sameDom,
+      effectiveSameDom,
+      secondaryFlip,
+      roleSecGap
+    },
+    roleVariant: roleMeta,
+    candVariant: candMeta,
+    reasons
+  };
+}
+
+// ------------------------------------------
+// Beispiel aus deinem Screenshot
+// ------------------------------------------
+
+const role = { I: 31, N: 42, A: 28 };
+const cand = { I: 27, N: 38, A: 35 };
+
+const result = getMatchCheck(role, cand);
+console.log(result);
