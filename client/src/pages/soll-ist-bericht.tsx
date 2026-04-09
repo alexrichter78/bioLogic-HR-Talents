@@ -620,6 +620,62 @@ export default function SollIstBericht() {
               </div>
             </div>
 
+            {(() => {
+              const rN = roleTriad;
+              const cN = candTriad;
+              if (!rN) return null;
+              const keys: ComponentKey[] = ["impulsiv", "intuitiv", "analytisch"];
+              const sorted = (t: typeof rN) => keys.map(k => ({ key: k, value: t[k] })).sort((a, b) => b.value - a.value);
+              const rs = sorted(rN);
+              const cs = sorted(cN);
+              const rGap1 = rs[0].value - rs[1].value;
+              const rGap2 = rs[1].value - rs[2].value;
+              const cGap1 = cs[0].value - cs[1].value;
+              const cGap2 = cs[1].value - cs[2].value;
+              const rBal = rGap1 <= 5 && rGap2 <= 5;
+              const rDualTop = !rBal && rGap1 <= 4;
+              const rDualBot = !rBal && !rDualTop && rGap2 <= 5;
+              const cBal = cGap1 <= 5 && cGap2 <= 5;
+              const cDualTop = !cBal && cGap1 <= 4;
+              const cDualBot = !cBal && !cDualTop && cGap2 <= 5;
+
+              const items: { icon: string; text: string; active: boolean }[] = [
+                {
+                  icon: "≈",
+                  text: "Alle drei Anteile liegen nah beieinander (max. 5% Unterschied) — keine klare Hauptrichtung erkennbar",
+                  active: rBal || cBal,
+                },
+                {
+                  icon: "⇆",
+                  text: "Zwei Anteile sind fast gleich stark und bilden gemeinsam den Schwerpunkt (Doppelschwerpunkt oben)",
+                  active: rDualTop || cDualTop,
+                },
+                {
+                  icon: "⇊",
+                  text: "Ein Anteil führt klar, die anderen beiden liegen nah beieinander (Gleichstand unten)",
+                  active: rDualBot || cDualBot,
+                },
+              ];
+
+              if (!items.some(i => i.active)) return null;
+
+              return (
+                <div style={{
+                  marginTop: 16, padding: "12px 16px",
+                  background: "#F5F5F7", borderRadius: 12,
+                  fontSize: 13, color: "#636366", lineHeight: 1.5,
+                }} data-testid="profile-legend">
+                  <p style={{ fontWeight: 600, color: "#48484A", marginBottom: 6, fontSize: 13 }}>Profil-Hinweis</p>
+                  {items.filter(i => i.active).map((item, idx) => (
+                    <div key={idx} style={{ display: "flex", gap: 8, marginBottom: idx < items.filter(i => i.active).length - 1 ? 4 : 0 }}>
+                      <span style={{ fontSize: 15, lineHeight: "20px", flexShrink: 0 }}>{item.icon}</span>
+                      <span>{item.text}</span>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+
             <div className="mt-8 flex items-center justify-end">
               <button
                 onClick={() => setReportGenerated(true)}
