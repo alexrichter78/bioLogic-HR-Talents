@@ -626,7 +626,7 @@ export default function SollIstBericht() {
                 data-testid="button-generate-report"
                 style={{
                   height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
-                  borderRadius: 14, border: "none", cursor: "pointer",
+                  borderRadius: 14, border: "none", outline: "none", cursor: "pointer",
                   background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
                   boxShadow: "0 4px 16px rgba(0,113,227,0.3)", transition: "all 200ms ease",
                   display: "inline-flex", alignItems: "center", gap: 8,
@@ -875,6 +875,7 @@ export default function SollIstBericht() {
                 gap: 6,
                 background: "none",
                 border: "none",
+                outline: "none",
                 cursor: "pointer",
                 fontSize: 14,
                 fontWeight: 500,

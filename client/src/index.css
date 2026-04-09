@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+button:focus, button:focus-visible {
+  outline: none;
+}
+
 html {
   overflow-x: hidden;
   max-width: 100vw;
