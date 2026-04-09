@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-button:focus, button:focus-visible {
-  outline: none;
+*:focus, *:focus-visible {
+  outline: none !important;
 }
 
 html {
