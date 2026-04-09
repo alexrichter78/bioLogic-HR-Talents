@@ -857,7 +857,12 @@ export default function Admin() {
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {orgsList.map(org => {
-                  const quotaPercent = org.aiRequestLimit ? Math.min(100, Math.round((org.aiRequestsUsed / org.aiRequestLimit) * 100)) : null;
+                  const orgMembers = users.filter((u: any) => u.organizationId === org.id);
+                  const memberUsedSum = orgMembers.reduce((s: number, u: any) => s + (u.aiRequestsUsed || 0), 0);
+                  const memberLimitSum = orgMembers.length > 0 ? orgMembers.reduce((s: number, u: any) => s + (u.aiRequestLimit || 0), 0) : 0;
+                  const effectiveUsed = org.aiRequestLimit ? org.aiRequestsUsed : memberUsedSum;
+                  const effectiveLimit = org.aiRequestLimit || (orgMembers.length > 0 ? memberLimitSum : null);
+                  const quotaPercent = effectiveLimit ? Math.min(100, Math.round((effectiveUsed / effectiveLimit) * 100)) : null;
                   const showUsage = orgUsage?.orgId === org.id;
                   return (
                     <div key={org.id} style={{ background: "#fff", borderRadius: 14, border: "1px solid rgba(0,0,0,0.06)", overflow: "hidden" }} data-testid={`org-card-${org.id}`}>
@@ -868,7 +873,8 @@ export default function Admin() {
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F" }}>{org.name}</div>
                           <div style={{ fontSize: 12, color: "#8E8E93", marginTop: 2 }}>
-                            {org.aiRequestLimit ? `${org.aiRequestsUsed} / ${org.aiRequestLimit} KI-Anfragen` : `${org.aiRequestsUsed} KI-Anfragen (unbegrenzt)`}
+                            {effectiveLimit ? `${effectiveUsed} / ${effectiveLimit} KI-Anfragen` : `${effectiveUsed} KI-Anfragen (unbegrenzt)`}
+                            {!org.aiRequestLimit && orgMembers.length > 0 && effectiveLimit ? ` (${orgMembers.length} Nutzer)` : ""}
                           </div>
                           {quotaPercent !== null && (
                             <div style={{ height: 4, borderRadius: 2, background: "rgba(0,0,0,0.06)", marginTop: 6, maxWidth: 200, overflow: "hidden" }}>
