@@ -620,6 +620,7 @@ export default function SollIstBericht() {
               </div>
             </div>
 
+            <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "flex-end", gap: 16, marginTop: 16 }}>
             {(() => {
               const rN = roleTriad;
               const cN = candTriad;
@@ -657,26 +658,25 @@ export default function SollIstBericht() {
                 },
               ];
 
-              if (!items.some(i => i.active)) return null;
+              const activeItems = items.filter(i => i.active);
+              if (activeItems.length === 0) return null;
 
               return (
                 <div style={{
-                  marginTop: 16, padding: "12px 16px",
+                  flex: 1, minWidth: 0, padding: "10px 14px",
                   background: "#F5F5F7", borderRadius: 12,
-                  fontSize: 13, color: "#636366", lineHeight: 1.5,
+                  fontSize: 12, color: "#636366", lineHeight: 1.45,
                 }} data-testid="profile-legend">
-                  <p style={{ fontWeight: 600, color: "#48484A", marginBottom: 6, fontSize: 13 }}>Profil-Hinweis</p>
-                  {items.filter(i => i.active).map((item, idx) => (
-                    <div key={idx} style={{ display: "flex", gap: 8, marginBottom: idx < items.filter(i => i.active).length - 1 ? 4 : 0 }}>
-                      <span style={{ fontSize: 15, lineHeight: "20px", flexShrink: 0 }}>{item.icon}</span>
+                  <p style={{ fontWeight: 600, color: "#48484A", marginBottom: 4, fontSize: 12 }}>Profil-Hinweis</p>
+                  {activeItems.map((item, idx) => (
+                    <div key={idx} style={{ display: "flex", gap: 6, marginBottom: idx < activeItems.length - 1 ? 3 : 0 }}>
+                      <span style={{ fontSize: 13, lineHeight: "17px", flexShrink: 0 }}>{item.icon}</span>
                       <span>{item.text}</span>
                     </div>
                   ))}
                 </div>
               );
             })()}
-
-            <div className="mt-8 flex items-center justify-end">
               <button
                 onClick={() => setReportGenerated(true)}
                 data-testid="button-generate-report"
@@ -685,7 +685,7 @@ export default function SollIstBericht() {
                   borderRadius: 14, border: "none", outline: "none", cursor: "pointer",
                   background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
                   boxShadow: "0 4px 16px rgba(0,113,227,0.3)", transition: "all 200ms ease",
-                  display: "inline-flex", alignItems: "center", gap: 8,
+                  display: "inline-flex", alignItems: "center", gap: 8, flexShrink: 0,
                 }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)"; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)"; }}
