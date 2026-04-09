@@ -808,8 +808,23 @@ export default function TeamCheck() {
     <div className="page-gradient-bg">
       <GlobalNav />
 
+      <div style={{ position: "fixed", top: isMobile ? 48 : 56, left: 0, right: 0, zIndex: 8999 }}>
+        <div className="dark:!bg-background" style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: isMobile ? "4px 0 6px" : "5px 0 10px", minHeight: isMobile ? 48 : 62 }}>
+          <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
+            <div className="text-center">
+              <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#34C759" }} data-testid="text-teamcheck-title">
+                Teamstruktur analysieren
+              </h1>
+              <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-teamcheck-subtitle">
+                Analysieren Sie die strukturelle Passung zwischen Kandidat und bestehendem Team.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div style={{
-        position: "sticky", top: isMobile ? 48 : 56, zIndex: 90,
+        position: "sticky", top: isMobile ? (48 + 62) : (56 + 62), zIndex: 90,
         background: "rgba(255,255,255,0.82)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
         borderBottom: "1px solid rgba(0,0,0,0.06)",
         padding: "8px 20px",
@@ -843,7 +858,7 @@ export default function TeamCheck() {
         </button>
       </div>
 
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: isMobile ? "16px 12px 80px" : "32px 20px 48px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: isMobile ? "16px 12px 80px" : "32px 20px 48px", paddingTop: isMobile ? 16 : 32 }}>
 
         {/* ═══ META HEADER ═══ */}
         <div style={{
