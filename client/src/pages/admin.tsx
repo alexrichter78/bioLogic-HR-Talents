@@ -923,26 +923,35 @@ export default function Admin() {
                                   <span style={{ fontSize: 12, color: "#8E8E93" }}>Keine Nutzung im Zeitraum</span>
                                 )}
                               </div>
-                              {orgUsage?.perUser && orgUsage.perUser.length > 0 && (
+                              {orgMembers.length > 0 && (
                                 <div style={{ fontSize: 12 }}>
                                   <div style={{ fontWeight: 600, color: "#636366", marginBottom: 6 }}>Pro Benutzer:</div>
                                   {(() => {
-                                    const uMap = new Map<number, { name: string; events: Record<string, number> }>();
+                                    const uMap = new Map<number, { name: string; events: Record<string, number>; limit: number; used: number }>();
                                     const evtLabelMap: Record<string, string> = { ki_coach: "KI-Coach", rollendna: "JobCheck", teamdynamik: "TeamCheck", matchcheck: "MatchCheck" };
-                                    for (const pu of orgUsage.perUser) {
-                                      if (!uMap.has(pu.userId)) uMap.set(pu.userId, { name: `${pu.firstName} ${pu.lastName}`, events: {} });
+                                    for (const m of orgMembers) {
+                                      uMap.set(m.id, { name: `${m.firstName || ""} ${m.lastName || ""}`.trim() || m.username, events: {}, limit: m.aiRequestLimit || 0, used: m.aiRequestsUsed || 0 });
+                                    }
+                                    for (const pu of (orgUsage?.perUser || [])) {
                                       const evtKey = pu.eventType === "teamcheck" ? "teamdynamik" : pu.eventType;
-                                      const entry = uMap.get(pu.userId)!;
-                                      entry.events[evtKey] = (entry.events[evtKey] || 0) + Number(pu.count);
+                                      const entry = uMap.get(pu.userId);
+                                      if (entry) {
+                                        entry.events[evtKey] = (entry.events[evtKey] || 0) + Number(pu.count);
+                                      }
                                     }
                                     return Array.from(uMap.entries()).map(([uid, u]) => (
                                       <div key={uid} style={{ display: "flex", gap: 8, alignItems: "center", padding: "4px 0", flexWrap: "wrap" }}>
                                         <span style={{ fontWeight: 500, color: "#1D1D1F", minWidth: 120 }}>{u.name}</span>
-                                        {Object.entries(u.events).map(([evt, cnt]) => (
+                                        <span style={{ padding: "2px 8px", borderRadius: 6, background: "rgba(0,113,227,0.06)", fontSize: 11, color: "#0071E3", fontWeight: 500 }}>
+                                          {u.used} / {u.limit}
+                                        </span>
+                                        {Object.keys(u.events).length > 0 ? Object.entries(u.events).map(([evt, cnt]) => (
                                           <span key={evt} style={{ padding: "2px 8px", borderRadius: 6, background: "rgba(0,0,0,0.04)", fontSize: 11, color: "#636366" }}>
                                             {evtLabelMap[evt] || evt}: {cnt}
                                           </span>
-                                        ))}
+                                        )) : (
+                                          <span style={{ fontSize: 11, color: "#8E8E93" }}>Keine Nutzung</span>
+                                        )}
                                       </div>
                                     ));
                                   })()}
