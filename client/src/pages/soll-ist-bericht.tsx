@@ -1000,8 +1000,16 @@ export default function SollIstBericht() {
                             <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="status-profilabweichung">{result.gapLevel}</div>
                           </div>
                           <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${devCol}08`, border: `1px solid ${devCol}25` }}>
-                            <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Entwicklungsaufwand</div>
-                            <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="status-entwicklungsaufwand">{devLabel}</div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                              <div style={{ width: 10, height: 10, borderRadius: 5, background: devCol, flexShrink: 0 }} />
+                              <span style={{ fontSize: 14, fontWeight: 700, color: devCol }} data-testid="status-entwicklungsaufwand">Entwicklungsaufwand: {devLabel}</span>
+                            </div>
+                            <div style={{ display: "flex", gap: 5 }}>
+                              {Array.from({ length: 3 }).map((_, i) => {
+                                const filledBars = devScore === 3 ? 1 : devScore === 2 ? 2 : 3;
+                                return <div key={i} style={{ flex: 1, height: 12, borderRadius: 4, background: i < filledBars ? devCol : "rgba(0,0,0,0.08)" }} />;
+                              })}
+                            </div>
                           </div>
                         </div>
                       </div>
