@@ -1240,6 +1240,9 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
     } else if (effectiveSameDom && candDom.gap2 <= 5 && roleDom.gap2 > 5) {
       overallFit = "CONDITIONAL";
       reasons.push({ rule: "Schwache Sekundärstruktur (Person gap2≤5, Rolle gap2>5) → max CONDITIONAL", effect: "CAP" });
+    } else if (effectiveSameDom && roleDom.gap2 <= 5 && candDom.gap2 > 5) {
+      overallFit = "CONDITIONAL";
+      reasons.push({ rule: "Rolle ausgewogene Sekundärstruktur (gap2≤5), Person klare Sekundärtendenz (gap2>5) → max CONDITIONAL", effect: "CAP" });
     }
 
     if (overallFit === "SUITABLE" && maxGapVal > 18) {
