@@ -594,12 +594,18 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
         : (ct.impulsiv >= ct.intuitiv ? "impulsiv" : "intuitiv");
     const secDesc = cSecondKey === "impulsiv" ? "Handlungsorientierung" : cSecondKey === "intuitiv" ? "Einfühlungsvermögen" : "Struktur und Analyse";
 
-    const dualNote = `Die Stelle verlangt klare ${rkDesc}. ${s} teilt den Fokus jedoch zwischen ${rkDesc} und ${secDesc}. Die geteilte Aufmerksamkeit kann dazu führen, dass die Hauptanforderung nicht mit der nötigen Konsequenz erfüllt wird.`;
+    const dualNotes: Record<string, string> = {
+      decision: `Die Stelle verlangt klare ${rkDesc} in Entscheidungen. ${s} teilt den Fokus zwischen ${rkDesc} und ${secDesc}. Dadurch können Entscheidungen weniger konsequent ausfallen als die Stelle erfordert.`,
+      work_structure: `Die Stelle verlangt eine klare Arbeitsweise geprägt von ${rkDesc}. ${s} wechselt situativ zwischen ${rkDesc} und ${secDesc}. Das kann zu wechselnden Arbeitsprioritäten führen.`,
+      leadership: `Die Stelle erwartet Führung mit klarer ${rkDesc}. ${s} führt jedoch mit geteiltem Fokus zwischen ${rkDesc} und ${secDesc}. Die Führungslinie kann dadurch weniger eindeutig wirken.`,
+      communication: `Die Stelle erwartet Kommunikation geprägt von ${rkDesc}. ${s} kommuniziert wechselnd zwischen ${rkDesc} und ${secDesc}. Gesprächspartner erleben dadurch keinen einheitlichen Kommunikationsstil.`,
+      culture: `Die Stelle verlangt eine Kulturwirkung über klare ${rkDesc}. ${s} prägt das Umfeld jedoch wechselnd durch ${rkDesc} und ${secDesc}. Die kulturelle Wirkung bleibt dadurch diffuser als erwartet.`,
+    };
 
     for (const area of areas) {
       if (area.severity === "ok") {
         area.severity = "warning";
-        area.risk = dualNote;
+        area.risk = dualNotes[area.id] || `Die Stelle verlangt klare ${rkDesc}. ${s} teilt den Fokus jedoch zwischen ${rkDesc} und ${secDesc}. Die geteilte Aufmerksamkeit kann dazu führen, dass die Hauptanforderung nicht mit der nötigen Konsequenz erfüllt wird.`;
       }
     }
   }
@@ -615,14 +621,23 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
     if ((secSwapped || candSecCompeting) && secGap >= 6) {
       const s = Subj(cand);
       const roleSec = compShort(rSec);
-      const affectedIds = ["communication", "culture", "leadership"];
       for (const area of areas) {
-        if (area.severity === "ok" && affectedIds.includes(area.id)) {
+        if (area.severity === "ok" && ["communication", "culture", "leadership"].includes(area.id)) {
           area.severity = "warning";
           if (candSecCompeting) {
-            area.risk = `Der Hauptschwerpunkt stimmt überein, aber die Nebenbereiche der Person sind fast gleich stark. Dadurch fehlt eine klare Abstützung. Unter Druck kann die Reaktion wechselnd ausfallen. Gezielte Führung empfohlen.`;
+            const secNotes: Record<string, string> = {
+              communication: `Der Kommunikationsstil passt in der Hauptrichtung, aber die Nebenbereiche sind fast gleich stark. Unter Druck kann die Kommunikation wechselnd wirken – mal direkter, mal empathischer, mal sachlicher.`,
+              culture: `Die kulturelle Grundrichtung stimmt, aber die Nebenbereiche sind fast gleich stark. Die gelebte Kultur kann situativ schwanken und im Team als weniger berechenbar wahrgenommen werden.`,
+              leadership: `Die Führungsrichtung stimmt, aber die Nebenbereiche sind fast gleich stark. Der Führungsstil kann unter Druck wechselnd wirken. Klare Erwartungssteuerung ist besonders wichtig.`,
+            };
+            area.risk = secNotes[area.id] || `Der Hauptschwerpunkt stimmt überein, aber die Nebenbereiche sind fast gleich stark. Unter Druck kann die Reaktion wechselnd ausfallen.`;
           } else {
-            area.risk = `Der Hauptschwerpunkt stimmt überein, aber die Gewichtung der Nebenbereiche weicht ab. Die Stelle betont ${roleSec}, ${s} setzt den Schwerpunkt anders. Das kann im Alltag zu unterschiedlichen Prioritäten und Reibung führen.`;
+            const swapNotes: Record<string, string> = {
+              communication: `Der Kommunikationsstil passt in der Hauptrichtung, aber die Gewichtung der Nebenbereiche weicht ab. Die Stelle betont ${roleSec} in der Kommunikation, ${s} setzt andere Akzente. Im Alltag können unterschiedliche Kommuniksprioritäten entstehen.`,
+              culture: `Die kulturelle Grundrichtung stimmt, aber die Gewichtung der Nebenbereiche weicht ab. Die Stelle betont ${roleSec} als kulturellen Nebenwert, ${s} prägt das Umfeld anders. Das kann die Teamkultur subtil verschieben.`,
+              leadership: `Die Führungsrichtung stimmt, aber die Gewichtung der Nebenbereiche weicht ab. Die Stelle betont ${roleSec} als Führungsnebenwert, ${s} setzt den Schwerpunkt anders. In Drucksituationen zeigt sich das als unterschiedliche Prioritätensetzung.`,
+            };
+            area.risk = swapNotes[area.id] || `Der Hauptschwerpunkt stimmt überein, aber die Gewichtung der Nebenbereiche weicht ab. Die Stelle betont ${roleSec}, ${s} setzt den Schwerpunkt anders.`;
           }
         }
       }
@@ -656,12 +671,18 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
       const dom1Desc = compShort(rDom1);
       const dom2Desc = compShort(rDom2);
 
-      const dualRoleNote = `Die Stelle verlangt gleichermassen ${dom1Desc} und ${dom2Desc}. ${s} deckt ${coveredDesc} ab, bringt aber zu wenig ${missingDesc} mit. Eine der beiden Kernanforderungen wird nicht ausreichend bedient.`;
+      const dualRoleNotes: Record<string, string> = {
+        decision: `Die Stelle verlangt gleichermassen ${dom1Desc} und ${dom2Desc} bei Entscheidungen. ${s} deckt ${coveredDesc} ab, aber ${missingDesc} fehlt. Entscheidungen fallen dadurch einseitig aus.`,
+        work_structure: `Die Stelle erfordert eine Arbeitsweise, die ${dom1Desc} und ${dom2Desc} kombiniert. ${s} arbeitet vorrangig mit ${coveredDesc}. Der Anteil ${missingDesc} bleibt im Arbeitsstil unterrepräsentiert.`,
+        leadership: `Die Stelle verlangt Führung, die ${dom1Desc} und ${dom2Desc} verbindet. ${s} führt vorrangig über ${coveredDesc}. ${missingDesc} als Führungsaspekt bleibt unterentwickelt.`,
+        communication: `Die Stelle erwartet Kommunikation, die ${dom1Desc} und ${dom2Desc} verbindet. ${s} kommuniziert vorrangig über ${coveredDesc}. Der Aspekt ${missingDesc} kommt in der Kommunikation zu kurz.`,
+        culture: `Die Stelle erwartet eine Kulturwirkung, die ${dom1Desc} und ${dom2Desc} verbindet. ${s} prägt das Umfeld vorrangig durch ${coveredDesc}. Die kulturelle Wirkung von ${missingDesc} fehlt.`,
+      };
 
       for (const area of areas) {
         if (area.severity === "ok") {
           area.severity = "warning";
-          area.risk = dualRoleNote;
+          area.risk = dualRoleNotes[area.id] || `Die Stelle verlangt gleichermassen ${dom1Desc} und ${dom2Desc}. ${s} deckt ${coveredDesc} ab, bringt aber zu wenig ${missingDesc} mit.`;
         }
       }
     }
