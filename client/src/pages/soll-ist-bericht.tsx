@@ -77,8 +77,8 @@ function bgToTriad(bg: BG | undefined): Triad {
 
 function severityLabel(s: Severity) {
   if (s === "critical") return "kritisch";
-  if (s === "warning") return "bedingt";
-  return "passend";
+  if (s === "warning") return "mit Abweichung";
+  return "weitgehend passend";
 }
 
 function biggestGapText(rt: Triad, ct: Triad): string {

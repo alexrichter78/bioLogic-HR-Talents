@@ -1,0 +1,353 @@
+Teil A ist inzwischen recht sauber. Teil B ist noch nicht sauber an Teil A gekoppelt. Genau daraus entstehen später diese Widersprüche im Bericht.
+
+Ich gehe auf die kritischen Punkte.
+
+1. Teil A: Fit-Engine ist im Kern stimmig
+
+Die Logik in Teil A passt jetzt grundsätzlich:
+
+13 Varianten
+Paarrelationen
+EXACT / SOFT / HARD
+externe KO-Regeln vorab
+Bewertung:
+EXACT + maxDiff ≤ 5 = geeignet
+EXACT + 6–10 = bedingt geeignet
+SOFT + ≤ 10 = bedingt geeignet
+HARD / KO / >10 = nicht geeignet
+
+Das ist konsistent.
+
+2. Größter Fehler in Teil B: Berichtslogik ist nicht an das Fit-Ergebnis gebunden
+
+Das ist dein Hauptproblem.
+
+Du hast oben eine klare Engine-Logik, aber darunter berechnen die Impact Areas ihre eigene Severity mit ganz anderen Regeln:
+
+severity(maxGap)
+severity(gapA)
+Multiplikatoren
+Boosts
+Floor-Regeln
+Sonderfälle BalFull / DualDom
+
+Das führt dazu, dass ein Fall oben „bedingt geeignet“ sein kann, während unten 4 von 5 Bereichen „Passend“ sind.
+
+Warum das problematisch ist
+
+Weil die Berichtsebene nicht mehr dieselbe Frage beantwortet wie die Engine.
+
+Engine fragt:
+
+Passt die Person insgesamt zur Stelle?
+
+Impact Areas fragen:
+
+Ist dieser Einzelbereich in sich noch nah genug?
+
+Beides darf es geben — aber dann musst du es sichtbar trennen.
+
+Aktuell klingt „Passend“ im Bericht zu stark, fast wie ein Gegenurteil zur Gesamtbewertung.
+
+3. Der Begriff „Passend“ in den Impact Areas ist zu hart positiv
+
+Deine Severity-Logik sagt:
+
+ok → Passend
+warning → Bedingt
+critical → Kritisch
+
+Das ist sprachlich zu stark.
+
+Denn ok in einer Teilfläche heißt nicht automatisch:
+
+„dieser Bereich ist ohne Einschränkung passend“
+
+sondern eher:
+
+„in diesem Bereich liegt keine starke Abweichung vor“
+
+Besser wäre
+ok → weitgehend passend
+warning → mit Abweichung
+critical → kritisch
+
+Sonst erzeugst du genau das Problem, das du schon gesehen hast:
+oben gelb, unten fast alles grün.
+
+4. Die Severity-Schwellen in Teil B sind nicht sauber mit Teil A abgestimmt
+
+In Teil A gilt:
+
+bis 5 = geeignet
+6–10 = bedingt
+über 10 = nicht geeignet
+
+In Teil B gilt aber:
+
+< 8 = ok
+8–14 = warning
+≥ 15 = critical
+
+Das ist ein echter Systembruch.
+
+Beispiel
+
+Ein Gesamtfall mit maxDiff = 6 ist laut Engine bedingt geeignet.
+
+Aber ein Bereich mit Gap 6 wird in Teil B noch ok / passend.
+
+Das ist rechnerisch möglich, aber kommunikativ gefährlich.
+Denn dann erklärt der Bericht nicht das Engine-Ergebnis, sondern verwässert es.
+
+Empfehlung
+
+Du brauchst eine klare Koppelung:
+
+Entweder:
+
+Impact Areas dürfen eigene Schwellen haben, aber dann nie schärfer formulieren als das Gesamturteil.
+
+Oder besser:
+
+Die Berichts-Severity orientiert sich näher an der Engine:
+
+0–5 = ok
+6–10 = warning
+>10 = critical
+
+Das wäre sauberer.
+
+5. rk ≠ ck Floor-Regel ist logisch sinnvoll, aber in Kombination mit Sonderfällen riskant
+
+Die Regel:
+
+Wenn Rollenhauptprägung und Kandidatenhauptprägung nicht gleich sind, werden alle ok-Areas auf warning angehoben.
+
+Grundidee: gut.
+Aber dann kommen viele Ausnahmen:
+
+nicht bei roleIsBalFull
+nicht bei candIsBalFull
+nicht bei candDualMatchesRole
+
+Dadurch wird die Logik sehr schwer vorhersehbar.
+
+Problem
+
+Du hast oben in Teil A eine sehr einfache, robuste Strukturprüfung.
+Dann führst du unten wieder ein kompliziertes Sonderregelsystem ein, das teilweise diese Klarheit auflöst.
+
+Mein Urteil
+
+Die Floor-Regel ist als Berichts-Korrektiv okay, aber sie darf nicht stärker sein als das Fit-Ergebnis und sollte nicht der Haupttreiber der Textlogik werden.
+
+6. candIsBalFull und candIsDualDom können die Berichtswirkung zu stark glätten
+
+Du dämpfst Severity mit Faktoren wie:
+
+totalGap × 0.35
+maxGap × 0.45
+
+Das macht Textbereiche schnell harmloser, obwohl das Gesamturteil gelb ist.
+
+Beispiel
+
+Eine Person ist dual-dominant, passt formal zur Rolle über eine der beiden Stärken, weicht aber in der Intensität spürbar ab.
+Dann wird in Teil A korrekt bedingt geeignet.
+In Teil B wird aber durch Multiplikator 0.45 vieles zu ok / passend heruntergedämpft.
+
+Genau daraus entstehen „zu schöne“ Berichte.
+
+Empfehlung
+
+Diese Multiplikatoren sollten nicht direkt auf die Severity wirken, sondern eher auf die Formulierung des Risikos, nicht auf die Farbe.
+
+Also:
+
+Farbe / Label näher an der Engine
+Text kann dann sagen: „grundsätzlich anschlussfähig über eine der beiden Stärken“
+7. Größter formaler Fehler: Entwicklungspotenzial-Mapping ist verdreht
+
+Hier ist ein klarer Fehler drin:
+
+devGap   Level   Label
+gering   4       hoch
+mittel   3       mittel
+hoch     1       niedrig
+
+Das ist offensichtlich falsch herum.
+
+Wenn devGap = gering, kann das Label nicht hoch sein.
+Wenn devGap = hoch, kann das Label nicht niedrig sein.
+
+Richtig müsste es ungefähr sein:
+devGap   Level   Label
+gering   4       hoch
+mittel   3       mittel
+hoch     1       niedrig
+
+Wenn du mit Entwicklungspotenzial die Entwickelbarkeit / Machbarkeit meinst, dann ist das oben sogar möglicherweise absichtlich so gemeint, aber falsch benannt.
+
+Dann wäre nämlich:
+
+geringes Defizit → hohes Entwicklungspotenzial
+mittleres Defizit → mittleres Entwicklungspotenzial
+hohes Defizit → niedriges Entwicklungspotenzial
+Dann musst du es aber anders schreiben:
+
+Nicht devGap, sondern z. B.:
+
+developmentNeed
+oder
+fitGap
+
+Denn aktuell ist die Semantik verdreht.
+
+8. Integrationsplan-Regel ist unsauber
+
+Du schreibst:
+
+Wird nur generiert wenn fitLabel ≠ "Nicht geeignet" ODER gapLevel = "mittel"
+
+Das ist logisch unsauber.
+
+Denn wenn fitLabel = nicht geeignet, aber gapLevel = mittel, dann würdest du trotzdem einen Integrationsplan erzeugen.
+
+Das wirkt widersprüchlich.
+
+Sauberer wäre:
+Integrationsplan nur bei geeignet oder bedingt geeignet
+bei nicht geeignet höchstens:
+kein Integrationsplan
+oder „nur bei bewusster Entwicklungsentscheidung“
+
+Also z. B.:
+
+generateIntegrationsplan = fitLabel === "Geeignet" || fitLabel === "Bedingt geeignet"
+
+Optional mit einem Sonderfall:
+
+wenn bewusst Entwicklungsbesetzung geplant ist
+9. Profiltyp-Erkennung in Teil B läuft parallel zur 13er-Logik aus Teil A
+
+In Teil B führst du noch einmal eine andere Typisierung ein:
+
+BALANCED
+H_DOM / B_DOM / S_DOM
+H_NEAR_B / H_NEAR_S / B_NEAR_S
+H_GT_B usw.
+
+Das kann für Texte sinnvoll sein, aber es ist ein zweites Klassifikationssystem.
+
+Risiko
+
+Wenn diese Typisierung nicht 1:1 sauber aus denselben Normalisierungsregeln gespeist wird, entstehen neue Widersprüche:
+
+Engine sagt exact/soft/hard
+Textlogik denkt in anderen Kategorien
+Empfehlung
+
+Diese Konstellationstypen nur als Textlayer nutzen, nie als zweite Bewertungslogik.
+
+10. Führungswirkung nur bei fuehrungsArt ≠ "keine" ist richtig, aber Berichtskonsistenz beachten
+
+Das ist an sich sinnvoll.
+Aber wenn die Führungswirkung entfällt, hast du nur noch 4 Impact Areas. Dann darf die Gesamterzählung nicht so wirken, als seien „4 von 5 passend“, obwohl eine komplette Dimension fehlt.
+
+Das ist eher ein UX-Punkt, aber wichtig.
+
+11. Kontrollintensität Basis und Erweitert sind noch nicht sauber priorisiert
+
+Du hast:
+
+Basis-Kontrollintensität
+erweiterte calcControlIntensity()
+
+Unklar bleibt, welche am Ende im Bericht dominiert.
+
+Im Datenfluss steht:
+
+calcControlIntensity() → effectiveControlLevel
+computeCoreFit() → Fit-Ergebnis
+
+Das ist okay. Aber dann muss klar definiert sein:
+
+Was steuert was?
+FitLabel steuert nur Gesamtpassung
+effectiveControlLevel steuert Führungsaufwand
+Impact Areas dürfen das FitLabel nicht implizit überschreiben
+
+Wenn diese Trennung nicht strikt bleibt, entstehen wieder Mischsignale.
+
+12. Rechenlogik und Textlogik haben noch keinen gemeinsamen Master-Grundsatz
+
+Der fehlt in der Doku ausdrücklich.
+
+Ich würde ihn so festziehen:
+
+Master-Regel
+
+Kein Textblock im Bericht darf positiver klingen als das Gesamturteil.
+
+Das heißt:
+
+Wenn Gesamtfit = geeignet
+Teilbereiche dürfen passend oder weitgehend passend sein
+Wenn Gesamtfit = bedingt geeignet
+Teilbereiche dürfen höchstens weitgehend passend oder mit Abweichung sein
+nicht mehrfach klar grün „Passend“, außer mit Zusatz wie „grundsätzlich passend“
+Wenn Gesamtfit = nicht geeignet
+kein Teilbereich sollte schlicht „Passend“ heißen
+
+Das fehlt aktuell. Genau deshalb kippt die Berichtswirkung.
+
+Mein Gesamturteil
+Teil A
+
+gut und weitgehend sauber
+
+Teil B
+
+noch nicht sauber genug an Teil A gekoppelt
+
+Die größten Fehler sind:
+
+Kritisch
+Severity-Schwellen in Teil B passen nicht sauber zu Teil A
+Impact-Area-Label „Passend“ ist zu stark
+Entwicklungspotenzial-Mapping ist semantisch verdreht
+Integrationsplan-Regel ist logisch unsauber
+Mittlere Probleme
+zu viele Dämpfungsfaktoren bei DualDom / BalFull
+Floor-Regel plus Ausnahmen machen die Berichtswirkung schwer vorhersagbar
+zweites Typisierungssystem in Teil B kann neue Inkonsistenzen erzeugen
+Meine klare Empfehlung für die finale Version
+1. Teil A als alleinige Wahrheitsquelle festziehen
+fitLabel
+controlLevel
+externalKo
+2. Teil B nur noch als Interpretationslayer
+
+Nicht neu bewerten, sondern erklären.
+
+3. Severity-Schwellen an Teil A annähern
+
+Am besten:
+
+0–5 = ok
+6–10 = warning
+>10 = critical
+4. Impact-Area-Labels abschwächen
+Passend → weitgehend passend
+Bedingt → mit Abweichung
+Kritisch → kritisch
+5. Entwicklungspotenzial sauber umbenennen
+
+Entweder:
+
+Entwicklungsaufwand
+oder
+Entwicklungspotenzial
+
+Aber nicht beides in vertauschter Semantik.

@@ -1,0 +1,1254 @@
+export type TriadKey = 'I' | 'N' | 'A';
+export type FitLabel = 'Geeignet' | 'Bedingt geeignet' | 'Nicht geeignet';
+export type StructureRelationType = 'EXACT' | 'SOFT_CONFLICT' | 'HARD_CONFLICT';
+export type VariantType = 'ALL_EQUAL' | 'TOP_PAIR' | 'BOTTOM_PAIR' | 'ORDER';
+export type Severity = 'ok' | 'warning' | 'critical';
+export type ControlLevel = 'LOW' | 'MEDIUM' | 'HIGH';
+export type DevelopmentLabel = 'niedrig' | 'mittel' | 'hoch';
+export type ProfileConstellation =
+  | 'BALANCED'
+  | 'I_DOM'
+  | 'N_DOM'
+  | 'A_DOM'
+  | 'I_NEAR_N'
+  | 'I_NEAR_A'
+  | 'N_NEAR_A'
+  | 'I_GT_N'
+  | 'I_GT_A'
+  | 'N_GT_I'
+  | 'N_GT_A'
+  | 'A_GT_I'
+  | 'A_GT_N';
+
+export interface TriadProfile {
+  I: number;
+  N: number;
+  A: number;
+}
+
+export interface LeadershipProfile {
+  I?: number;
+  N?: number;
+  A?: number;
+}
+
+export interface FrameProfile {
+  I?: number;
+  N?: number;
+  A?: number;
+}
+
+export interface RoleAnalysis {
+  role_profile?: Partial<TriadProfile>;
+  leadership?: {
+    profile?: LeadershipProfile;
+    required?: boolean;
+  };
+  frame_profile?: FrameProfile;
+  marketPressure?: 'low' | 'medium' | 'high';
+  regulation?: 'low' | 'medium' | 'high';
+  changeRate?: 'low' | 'medium' | 'high';
+}
+
+export interface Thresholds {
+  eqTol: number;
+  goodTol: number;
+  condTol: number;
+}
+
+export interface DominanceMeta {
+  sorted: Array<{ key: TriadKey; value: number }>;
+  top: TriadKey;
+  second: TriadKey;
+  third: TriadKey;
+  gap1: number;
+  gap2: number;
+  spread: number;
+}
+
+export interface VariantInfo {
+  type: VariantType;
+  code: string;
+  dominance: DominanceMeta;
+}
+
+export interface PairRelations {
+  I_N: -1 | 0 | 1;
+  I_A: -1 | 0 | 1;
+  N_A: -1 | 0 | 1;
+}
+
+export interface StructureRelation {
+  type: StructureRelationType;
+  mismatchCount: number;
+  directFlip: boolean;
+  mismatches: Array<{ pair: keyof PairRelations; soll: -1 | 0 | 1; ist: -1 | 0 | 1 }>;
+  reason: string;
+}
+
+export interface ExternalKoResult {
+  triggered: boolean;
+  reason?: string;
+  code?: string;
+}
+
+export interface ImpactArea {
+  key: 'decision' | 'workstyle' | 'leadership' | 'communication' | 'culture';
+  title: string;
+  severity: Severity;
+  label: 'Weitgehend passend' | 'Mit Abweichung' | 'Kritisch';
+  roleNeed: string;
+  candidatePattern: string;
+  risk: string;
+}
+
+export interface DevelopmentResult {
+  fitGap: 'gering' | 'mittel' | 'hoch';
+  level: 1 | 3 | 4;
+  label: DevelopmentLabel;
+  headline: string;
+  text: string;
+}
+
+export interface StressBehavior {
+  controlledPressure: string;
+  uncontrolledStress: string;
+}
+
+export interface ActionItem {
+  title: string;
+  text: string;
+}
+
+export interface IntegrationPhase {
+  phase: 1 | 2 | 3 | 4;
+  timeframe: string;
+  title: string;
+  focus: string;
+  items: string[];
+}
+
+export interface MatchResult {
+  fitLabel: FitLabel;
+  fitColor: 'green' | 'yellow' | 'red';
+  structureRelation: StructureRelation;
+  sollVariant: VariantInfo;
+  istVariant: VariantInfo;
+  sollRelations: PairRelations;
+  istRelations: PairRelations;
+  diffs: TriadProfile;
+  maxDiff: number;
+  totalGap: number;
+  externalKo: ExternalKoResult;
+  baseControl: { points: number; level: ControlLevel };
+  effectiveControl: { points: number; level: ControlLevel };
+  summary: string;
+  executiveBullets: string[];
+  constellationRisks: string[];
+  dominanceShift: string;
+  stress: StressBehavior;
+  impactAreas: ImpactArea[];
+  timeline: string[];
+  development: DevelopmentResult;
+  actions: ActionItem[];
+  integrationPlan: IntegrationPhase[];
+  finalText: string;
+  debug: Record<string, unknown>;
+}
+
+export interface ComputeSollIstParams {
+  roleName: string;
+  candName: string;
+  roleProfile: TriadProfile;
+  candProfile: TriadProfile;
+  fuehrungsArt?: 'keine' | 'fachlich' | 'disziplinarisch';
+  roleAnalysis?: RoleAnalysis;
+  thresholds?: Partial<Thresholds>;
+}
+
+const DEFAULT_THRESHOLDS: Thresholds = {
+  eqTol: 5,
+  goodTol: 5,
+  condTol: 10,
+};
+
+const TRIAD_KEYS: TriadKey[] = ['I', 'N', 'A'];
+const COMPONENT_LABEL: Record<TriadKey, string> = {
+  I: 'Impulsiv',
+  N: 'Intuitiv',
+  A: 'Analytisch',
+};
+const COMPONENT_SHORT: Record<TriadKey, string> = {
+  I: 'Tempo und Umsetzung',
+  N: 'Zusammenarbeit und Kommunikation',
+  A: 'Struktur und Analyse',
+};
+
+const TEXT_VARIANTS: Record<TriadKey, string[]> = {
+  I: [
+    'Entscheidungsstärke und Umsetzung',
+    'Tempo und direkte Ergebnisorientierung',
+    'schnelle Entscheidungen und operative Durchsetzung',
+    'Handlungsorientierung und Umsetzungskraft',
+  ],
+  N: [
+    'Beziehungsgestaltung und Kommunikation',
+    'Austausch und persönliche Ansprache',
+    'Zusammenarbeit und situatives Gespür',
+    'Abstimmung und zwischenmenschliche Wirkung',
+  ],
+  A: [
+    'Struktur und Analyse',
+    'Sorgfalt und systematische Prüfung',
+    'Ordnung und verlässliche Prozesse',
+    'analytische Tiefe und Qualitätssicherung',
+  ],
+};
+
+const variantState: Record<TriadKey, number> = { I: 0, N: 0, A: 0 };
+
+export function resetVariants(): void {
+  variantState.I = 0;
+  variantState.N = 0;
+  variantState.A = 0;
+}
+
+export function compDesc(key: TriadKey): string {
+  const arr = TEXT_VARIANTS[key];
+  const idx = variantState[key] % arr.length;
+  variantState[key] += 1;
+  return arr[idx];
+}
+
+export function normalizeTriad(profile: Partial<TriadProfile>): TriadProfile {
+  const I = Number(profile.I ?? 0);
+  const N = Number(profile.N ?? 0);
+  const A = Number(profile.A ?? 0);
+  const sum = I + N + A;
+
+  if (sum <= 0) {
+    throw new Error('TriadProfile ist leer oder ungültig.');
+  }
+
+  if (Math.abs(sum - 100) <= 0.001) {
+    return { I, N, A };
+  }
+
+  const nI = Number(((I / sum) * 100).toFixed(2));
+  const nN = Number(((N / sum) * 100).toFixed(2));
+  const nA = Number((100 - nI - nN).toFixed(2));
+  return { I: nI, N: nN, A: nA };
+}
+
+export function dominanceModeOf(profile: TriadProfile): DominanceMeta {
+  const sorted = TRIAD_KEYS.map((key) => ({ key, value: profile[key] })).sort((a, b) => {
+    if (b.value !== a.value) return b.value - a.value;
+    return a.key.localeCompare(b.key);
+  });
+
+  const [p1, p2, p3] = sorted;
+  return {
+    sorted,
+    top: p1.key,
+    second: p2.key,
+    third: p3.key,
+    gap1: p1.value - p2.value,
+    gap2: p2.value - p3.value,
+    spread: p1.value - p3.value,
+  };
+}
+
+export function getVariant(profile: TriadProfile, thresholds: Thresholds = DEFAULT_THRESHOLDS): VariantInfo {
+  const dom = dominanceModeOf(profile);
+  const { eqTol } = thresholds;
+
+  if (dom.gap1 <= eqTol && dom.gap2 <= eqTol) {
+    return { type: 'ALL_EQUAL', code: 'ALL_EQUAL', dominance: dom };
+  }
+
+  if (dom.gap1 <= eqTol && dom.gap2 > eqTol) {
+    const pair = [dom.top, dom.second].sort().join('');
+    return { type: 'TOP_PAIR', code: `TOP_PAIR_${pair}_${dom.third}`, dominance: dom };
+  }
+
+  if (dom.gap1 > eqTol && dom.gap2 <= eqTol) {
+    const pair = [dom.second, dom.third].sort().join('');
+    return { type: 'BOTTOM_PAIR', code: `BOTTOM_PAIR_${dom.top}_${pair}`, dominance: dom };
+  }
+
+  return {
+    type: 'ORDER',
+    code: `ORDER_${dom.top}${dom.second}${dom.third}`,
+    dominance: dom,
+  };
+}
+
+export function getPairRelations(profile: TriadProfile, thresholds: Thresholds = DEFAULT_THRESHOLDS): PairRelations {
+  const classify = (a: number, b: number): -1 | 0 | 1 => {
+    const diff = a - b;
+    if (Math.abs(diff) <= thresholds.eqTol) return 0;
+    return diff > 0 ? 1 : -1;
+  };
+
+  return {
+    I_N: classify(profile.I, profile.N),
+    I_A: classify(profile.I, profile.A),
+    N_A: classify(profile.N, profile.A),
+  };
+}
+
+export function compareStructures(soll: PairRelations, ist: PairRelations): StructureRelation {
+  const keys: Array<keyof PairRelations> = ['I_N', 'I_A', 'N_A'];
+  const mismatches: StructureRelation['mismatches'] = [];
+  let directFlip = false;
+
+  for (const key of keys) {
+    if (soll[key] !== ist[key]) {
+      mismatches.push({ pair: key, soll: soll[key], ist: ist[key] });
+      if ((soll[key] === 1 && ist[key] === -1) || (soll[key] === -1 && ist[key] === 1)) {
+        directFlip = true;
+      }
+    }
+  }
+
+  if (mismatches.length === 0) {
+    return {
+      type: 'EXACT',
+      mismatchCount: 0,
+      directFlip: false,
+      mismatches,
+      reason: 'Die Paarrelationen sind identisch.',
+    };
+  }
+
+  if (mismatches.length === 1 && !directFlip) {
+    return {
+      type: 'SOFT_CONFLICT',
+      mismatchCount: 1,
+      directFlip: false,
+      mismatches,
+      reason: 'Genau eine Paarrelation kippt an der Gleichheitsgrenze.',
+    };
+  }
+
+  return {
+    type: 'HARD_CONFLICT',
+    mismatchCount: mismatches.length,
+    directFlip,
+    mismatches,
+    reason: 'Mehrere Paarrelationen weichen ab oder es liegt ein direkter Strukturflip vor.',
+  };
+}
+
+function triadDiffs(soll: TriadProfile, ist: TriadProfile): TriadProfile {
+  return {
+    I: Math.abs(soll.I - ist.I),
+    N: Math.abs(soll.N - ist.N),
+    A: Math.abs(soll.A - ist.A),
+  };
+}
+
+function maxTriadValue(profile: TriadProfile): number {
+  return Math.max(profile.I, profile.N, profile.A);
+}
+
+function totalTriadGap(profile: TriadProfile): number {
+  return profile.I + profile.N + profile.A;
+}
+
+function sameMainDominance(a: DominanceMeta, b: DominanceMeta): boolean {
+  return a.top === b.top;
+}
+
+function isExtreme(profile: TriadProfile): TriadKey | null {
+  if (profile.I >= 65) return 'I';
+  if (profile.N >= 55) return 'N';
+  if (profile.A >= 65) return 'A';
+  return null;
+}
+
+function isDualRole(dom: DominanceMeta, thresholds: Thresholds): boolean {
+  return dom.gap1 <= thresholds.eqTol && dom.gap2 > thresholds.eqTol;
+}
+
+export function koRuleTriggered(
+  roleProfile: TriadProfile,
+  candProfile: TriadProfile,
+  roleAnalysis?: RoleAnalysis,
+  fuehrungsArt: 'keine' | 'fachlich' | 'disziplinarisch' = 'keine',
+  thresholds: Thresholds = DEFAULT_THRESHOLDS,
+): ExternalKoResult {
+  const roleDom = dominanceModeOf(roleProfile);
+  const candDom = dominanceModeOf(candProfile);
+  const mainDiff = Math.abs(roleProfile[roleDom.top] - candProfile[roleDom.top]);
+  const extreme = isExtreme(roleProfile);
+
+  if (extreme === 'I' && candProfile.I <= 35) {
+    return { triggered: true, code: 'EXTREME_I', reason: 'Extreme Tempo-Stelle, Kandidat liegt im impulsiven Anteil zu niedrig.' };
+  }
+  if (extreme === 'N' && candProfile.N <= 30) {
+    return { triggered: true, code: 'EXTREME_N', reason: 'Extreme Beziehungs-Stelle, Kandidat liegt im intuitiven Anteil zu niedrig.' };
+  }
+  if (extreme === 'A' && candProfile.A <= 35) {
+    return { triggered: true, code: 'EXTREME_A', reason: 'Extreme Analyse-Stelle, Kandidat liegt im analytischen Anteil zu niedrig.' };
+  }
+
+  if (!sameMainDominance(roleDom, candDom) && mainDiff >= 18) {
+    return { triggered: true, code: 'MAIN_DOM_18', reason: 'Fundamentaler Richtungswechsel bei der Hauptprägung.' };
+  }
+
+  if (roleDom.gap1 >= 20 && !sameMainDominance(roleDom, candDom) && mainDiff >= 15) {
+    return { triggered: true, code: 'MAIN_DOM_20', reason: 'Starke Einzeldominanz der Rolle wird vom Kandidaten nicht abgebildet.' };
+  }
+
+  if (isDualRole(roleDom, thresholds)) {
+    const first = roleDom.sorted[0];
+    const second = roleDom.sorted[1];
+    const firstMin = first.value * 0.75;
+    const secondMin = second.value * 0.75;
+    if (candProfile[first.key] < firstMin || candProfile[second.key] < secondMin) {
+      return { triggered: true, code: 'DUAL_75', reason: 'Doppelschwerpunkt der Rolle wird in mindestens einer Komponente nicht getragen.' };
+    }
+  }
+
+  const leadershipI = roleAnalysis?.leadership?.profile?.I ?? 0;
+  const leadershipRequired = fuehrungsArt !== 'keine' || roleAnalysis?.leadership?.required === true;
+  if (leadershipRequired && leadershipI >= 60 && candProfile.I <= 35) {
+    return { triggered: true, code: 'LEAD_I_60', reason: 'Führungsanforderung verlangt einen deutlich stärkeren impulsiven Anteil.' };
+  }
+
+  return { triggered: false };
+}
+
+export function computeCoreFit(
+  roleProfile: TriadProfile,
+  candProfile: TriadProfile,
+  externalKo: ExternalKoResult,
+  thresholds: Thresholds = DEFAULT_THRESHOLDS,
+): {
+  fitLabel: FitLabel;
+  fitColor: 'green' | 'yellow' | 'red';
+  structureRelation: StructureRelation;
+  sollVariant: VariantInfo;
+  istVariant: VariantInfo;
+  sollRelations: PairRelations;
+  istRelations: PairRelations;
+  diffs: TriadProfile;
+  maxDiff: number;
+  totalGap: number;
+} {
+  const sollVariant = getVariant(roleProfile, thresholds);
+  const istVariant = getVariant(candProfile, thresholds);
+  const sollRelations = getPairRelations(roleProfile, thresholds);
+  const istRelations = getPairRelations(candProfile, thresholds);
+  const structureRelation = compareStructures(sollRelations, istRelations);
+  const diffs = triadDiffs(roleProfile, candProfile);
+  const maxDiff = maxTriadValue(diffs);
+  const totalGap = totalTriadGap(diffs);
+
+  let fitLabel: FitLabel;
+
+  if (externalKo.triggered) {
+    fitLabel = 'Nicht geeignet';
+  } else if (structureRelation.type === 'HARD_CONFLICT') {
+    fitLabel = 'Nicht geeignet';
+  } else if (structureRelation.type === 'SOFT_CONFLICT') {
+    fitLabel = maxDiff <= thresholds.condTol ? 'Bedingt geeignet' : 'Nicht geeignet';
+  } else {
+    if (maxDiff <= thresholds.goodTol) fitLabel = 'Geeignet';
+    else if (maxDiff <= thresholds.condTol) fitLabel = 'Bedingt geeignet';
+    else fitLabel = 'Nicht geeignet';
+  }
+
+  const fitColor = fitLabel === 'Geeignet' ? 'green' : fitLabel === 'Bedingt geeignet' ? 'yellow' : 'red';
+
+  return {
+    fitLabel,
+    fitColor,
+    structureRelation,
+    sollVariant,
+    istVariant,
+    sollRelations,
+    istRelations,
+    diffs,
+    maxDiff,
+    totalGap,
+  };
+}
+
+export function calcBaseControlIntensity(
+  structureRelation: StructureRelation,
+  maxDiff: number,
+  roleVariant: VariantInfo,
+  thresholds: Thresholds = DEFAULT_THRESHOLDS,
+): { points: number; level: ControlLevel } {
+  let points = 0;
+
+  if (structureRelation.type === 'HARD_CONFLICT') points += 3;
+  else if (structureRelation.type === 'SOFT_CONFLICT') points += 2;
+
+  if (maxDiff > thresholds.condTol) points += 2;
+  else if (maxDiff > thresholds.goodTol) points += 1;
+
+  if ((roleVariant.type === 'ORDER' || roleVariant.type === 'BOTTOM_PAIR') && roleVariant.dominance.gap1 > 10) {
+    points += 1;
+  }
+
+  return { points, level: mapControlLevel(points) };
+}
+
+function mapControlLevel(points: number): ControlLevel {
+  if (points <= 2) return 'LOW';
+  if (points <= 5) return 'MEDIUM';
+  return 'HIGH';
+}
+
+export function calcControlIntensity(
+  roleProfile: TriadProfile,
+  candProfile: TriadProfile,
+  roleAnalysis?: RoleAnalysis,
+  fuehrungsArt: 'keine' | 'fachlich' | 'disziplinarisch' = 'keine',
+): { points: number; level: ControlLevel } {
+  let points = 0;
+  const rDom = dominanceModeOf(roleProfile);
+  const cDom = dominanceModeOf(candProfile);
+  const mainDiff = Math.abs(roleProfile[rDom.top] - candProfile[rDom.top]);
+  const roleDual = rDom.gap1 <= 5 && rDom.gap2 > 5;
+  const candDual = cDom.gap1 <= 5 && cDom.gap2 > 5;
+
+  if (rDom.top !== cDom.top || roleDual !== candDual) points += 2;
+  if (isExtreme(roleProfile)) points += 1;
+  if (rDom.gap1 >= 12) points += 1;
+  if (mainDiff >= 25) points += 3;
+  else if (mainDiff >= 15) points += 2;
+
+  const leadershipProfile = roleAnalysis?.leadership?.profile;
+  if (fuehrungsArt !== 'keine' && leadershipProfile) {
+    const leadDiff = Math.max(
+      Math.abs((leadershipProfile.I ?? 0) - candProfile.I),
+      Math.abs((leadershipProfile.N ?? 0) - candProfile.N),
+      Math.abs((leadershipProfile.A ?? 0) - candProfile.A),
+    );
+    if (leadDiff >= 15) points += 2;
+  }
+
+  const frame = roleAnalysis?.frame_profile;
+  if (frame) {
+    const frameNorm = normalizeTriad({ I: frame.I ?? 0, N: frame.N ?? 0, A: frame.A ?? 0 });
+    const fDom = dominanceModeOf(frameNorm);
+    if (fDom.sorted[0].value >= 75 && fDom.top !== cDom.top) points += 2;
+    else if (fDom.sorted[0].value >= 65 && fDom.top !== cDom.top) points += 1;
+  }
+
+  if (roleAnalysis?.marketPressure === 'high' && roleProfile.I - candProfile.I >= 15) points += 1;
+  if (roleAnalysis?.regulation === 'high' && roleProfile.A - candProfile.A >= 15) points += 1;
+  if (roleAnalysis?.changeRate === 'high' && candProfile.A - roleProfile.A >= 15) points += 1;
+
+  return { points, level: mapControlLevel(points) };
+}
+
+function detectConstellation(profile: TriadProfile): ProfileConstellation {
+  const dom = dominanceModeOf(profile);
+  const range = dom.spread;
+  const d12 = dom.gap1;
+
+  if (range <= 8) return 'BALANCED';
+
+  if (d12 >= 15) {
+    if (dom.top === 'I') return 'I_DOM';
+    if (dom.top === 'N') return 'N_DOM';
+    return 'A_DOM';
+  }
+
+  if (d12 <= 5) {
+    const pair = [dom.top, dom.second].sort().join('');
+    if (pair === 'IN') return 'I_NEAR_N';
+    if (pair === 'IA') return 'I_NEAR_A';
+    return 'N_NEAR_A';
+  }
+
+  if (dom.top === 'I' && dom.second === 'N') return 'I_GT_N';
+  if (dom.top === 'I' && dom.second === 'A') return 'I_GT_A';
+  if (dom.top === 'N' && dom.second === 'I') return 'N_GT_I';
+  if (dom.top === 'N' && dom.second === 'A') return 'N_GT_A';
+  if (dom.top === 'A' && dom.second === 'I') return 'A_GT_I';
+  return 'A_GT_N';
+}
+
+function severityFromGap(gap: number): Severity {
+  if (gap > 10) return 'critical';
+  if (gap > 5) return 'warning';
+  return 'ok';
+}
+
+function severityLabel(sev: Severity): ImpactArea['label'] {
+  if (sev === 'ok') return 'Weitgehend passend';
+  if (sev === 'warning') return 'Mit Abweichung';
+  return 'Kritisch';
+}
+
+function candidatePatternSingle(key: TriadKey, prefix = 'Die Person'): string {
+  if (key === 'I') return `${prefix} entscheidet schnell, handelt direkt und sucht wenig Abstimmung.`;
+  if (key === 'N') return `${prefix} entscheidet kontextbezogen, sucht Austausch und bezieht das Umfeld ein.`;
+  return `${prefix} entscheidet analytisch, wägt ab und prüft Optionen sorgfältig.`;
+}
+
+function communicationPatternSingle(key: TriadKey, prefix = 'Die Person'): string {
+  if (key === 'I') return `${prefix} kommuniziert direkt, knapp und ergebnisorientiert.`;
+  if (key === 'N') return `${prefix} kommuniziert offen, persönlich und situativ.`;
+  return `${prefix} kommuniziert sachlich, präzise und faktenbasiert.`;
+}
+
+function dualPairKey(a: TriadKey, b: TriadKey): 'I_N' | 'I_A' | 'N_A' {
+  const pair = [a, b].sort().join('_') as 'I_A' | 'I_N' | 'N_A';
+  return pair;
+}
+
+const dualCandDecision: Record<'I_N' | 'I_A' | 'N_A', string> = {
+  I_N: 'Die Person entscheidet sowohl schnell und handlungsorientiert als auch kontextbezogen und abstimmungsorientiert. Je nach Situation überwiegt Tempo oder Einbindung.',
+  I_A: 'Die Person entscheidet sowohl schnell und handlungsorientiert als auch analytisch und prüforientiert. Je nach Situation überwiegt Tempo oder Sorgfalt.',
+  N_A: 'Die Person entscheidet sowohl kontextbezogen und abstimmungsorientiert als auch analytisch und prüforientiert. Je nach Situation überwiegt Einbindung oder Sorgfalt.',
+};
+const dualCandLeadership: Record<'I_N' | 'I_A' | 'N_A', string> = {
+  I_N: 'Die Person führt sowohl über Tempo und direkte Ansprache als auch über Dialog und Einbindung. Der Führungsstil wechselt situativ.',
+  I_A: 'Die Person führt sowohl über Tempo und Entscheidungskraft als auch über Systematik und klare Vorgaben. Der Führungsstil wechselt situativ.',
+  N_A: 'Die Person führt sowohl über Dialog und Vertrauen als auch über Systematik und Struktur. Der Führungsstil wechselt situativ.',
+};
+const dualCandCommunication: Record<'I_N' | 'I_A' | 'N_A', string> = {
+  I_N: 'Die Person kommuniziert sowohl direkt und ergebnisorientiert als auch dialogorientiert und empathisch. Der Kommunikationsstil wechselt situativ.',
+  I_A: 'Die Person kommuniziert sowohl direkt und knapp als auch sachlich und faktenbasiert. Der Kommunikationsstil wechselt situativ.',
+  N_A: 'Die Person kommuniziert sowohl dialogorientiert und empathisch als auch sachlich und faktenbasiert. Der Kommunikationsstil wechselt situativ.',
+};
+const dualCandCulture: Record<'I_N' | 'I_A' | 'N_A', string> = {
+  I_N: 'Die Person prägt die Kultur über Dynamik und Tempo einerseits, Zusammenhalt und Beziehungsarbeit andererseits. Beide Seiten wechseln sich ab.',
+  I_A: 'Die Person prägt die Kultur über Dynamik und Tempo einerseits, Strukturklarheit und Verlässlichkeit andererseits. Beide Seiten stehen nebeneinander.',
+  N_A: 'Die Person prägt die Kultur über Zusammenhalt und Beziehungsarbeit einerseits, Ordnung und Verlässlichkeit andererseits. Beide Seiten stehen nebeneinander.',
+};
+
+function buildSummary(roleName: string, roleProfile: TriadProfile, candProfile: TriadProfile, fitLabel: FitLabel): string {
+  const rDom = dominanceModeOf(roleProfile);
+  const cDom = dominanceModeOf(candProfile);
+  const base = `Die Stelle ${roleName} setzt vor allem auf ${COMPONENT_SHORT[rDom.top]}. Die Person bringt schwerpunktmäßig ${COMPONENT_SHORT[cDom.top]} ein.`;
+  if (fitLabel === 'Geeignet') {
+    return `${base} Die Grundausrichtung stimmt, die Abweichungen bleiben in einem gut tragbaren Rahmen.`;
+  }
+  if (fitLabel === 'Bedingt geeignet') {
+    return `${base} Die Grundausrichtung ist anschlussfähig, in der Ausprägung bestehen jedoch erkennbare Abweichungen. Mit klaren Erwartungen und Führung ist die Besetzung tragfähig.`;
+  }
+  return `${base} Die Arbeitslogik weicht deutlich von der Stellenanforderung ab. Ohne intensive Steuerung ist eine stabile Passung nicht zu erwarten.`;
+}
+
+function buildExecutiveBullets(
+  core: ReturnType<typeof computeCoreFit>,
+  roleProfile: TriadProfile,
+  candProfile: TriadProfile,
+): string[] {
+  const bullets: string[] = [];
+  const rDom = dominanceModeOf(roleProfile);
+  const cDom = dominanceModeOf(candProfile);
+
+  if (core.structureRelation.type === 'EXACT') {
+    bullets.push('Die strukturelle Arbeitslogik stimmt mit der Rolle überein.');
+  } else if (core.structureRelation.type === 'SOFT_CONFLICT') {
+    bullets.push('Die Arbeitslogik ist grundsätzlich anschlussfähig, kippt aber an einer Stelle an der Gleichheitsgrenze.');
+  } else {
+    bullets.push('Die Arbeitslogik unterscheidet sich strukturell klar von der Rolle.');
+  }
+
+  bullets.push(`Die größte Einzelabweichung liegt bei ${core.maxDiff.toFixed(2)} Punkten.`);
+
+  if (rDom.top !== cDom.top) {
+    bullets.push(`Die Hauptprägung verschiebt sich von ${COMPONENT_LABEL[rDom.top]} zu ${COMPONENT_LABEL[cDom.top]}.`);
+  } else {
+    bullets.push(`Die Hauptprägung bleibt bei ${COMPONENT_LABEL[rDom.top]}.`);
+  }
+
+  return bullets;
+}
+
+function buildConstellationRisks(roleProfile: TriadProfile, candProfile: TriadProfile, fitLabel: FitLabel): string[] {
+  const risks: string[] = [];
+  const rDom = dominanceModeOf(roleProfile);
+  const cDom = dominanceModeOf(candProfile);
+
+  if (rDom.top !== cDom.top) {
+    risks.push('Die Stelle und die Person setzen im Alltag unterschiedliche Schwerpunkte.');
+  }
+  if (candProfile.A < roleProfile.A - 10) {
+    risks.push('Prüfschritte und Dokumentation können unter Zeitdruck verkürzt werden.');
+  }
+  if (candProfile.A > roleProfile.A + 10) {
+    risks.push('Die Person kann strukturierter arbeiten als die Rolle verlangt und dadurch Tempo bremsen.');
+  }
+  if (candProfile.N > roleProfile.N + 10) {
+    risks.push('Abstimmung und persönliche Einbindung können wichtiger werden als fachliche Zuspitzung.');
+  }
+  if (fitLabel === 'Nicht geeignet' && risks.length === 0) {
+    risks.push('Die Unterschiede sind so deutlich, dass der Arbeitsalltag spürbar von der Rollenerwartung abweichen wird.');
+  }
+  if (risks.length === 0) {
+    risks.push('Die Risiken liegen eher in Feinabstimmung und Konsequenz als in einem grundlegenden Richtungsfehler.');
+  }
+  return risks;
+}
+
+function buildDominanceShift(roleProfile: TriadProfile, candProfile: TriadProfile): string {
+  const rDom = dominanceModeOf(roleProfile);
+  const cDom = dominanceModeOf(candProfile);
+  if (rDom.top === cDom.top) {
+    return `Die Person verstärkt den bestehenden Schwerpunkt ${COMPONENT_SHORT[rDom.top]} und verschiebt vor allem die Intensität.`;
+  }
+  return `Die Person verschiebt den Fokus der Rolle von ${COMPONENT_SHORT[rDom.top]} in Richtung ${COMPONENT_SHORT[cDom.top]}.`;
+}
+
+function buildStressBehavior(roleProfile: TriadProfile, candProfile: TriadProfile): StressBehavior {
+  const cConst = detectConstellation(candProfile);
+  const cDom = dominanceModeOf(candProfile);
+  const second = cDom.second;
+
+  let controlledPressure = '';
+  if (cConst === 'BALANCED') {
+    controlledPressure = 'Unter moderatem Druck gibt es keinen klaren Automatismus. Die Person reagiert je nach Situation flexibel, aber weniger vorhersehbar.';
+  } else if (cConst === 'I_NEAR_N' || cConst === 'I_NEAR_A' || cConst === 'N_NEAR_A') {
+    controlledPressure = `Unter moderatem Druck fällt die Reaktion situationsabhängig aus. Mal rückt ${COMPONENT_SHORT[cDom.top]} stärker nach vorn, mal ${COMPONENT_SHORT[second]}.`;
+  } else {
+    controlledPressure = `Unter moderatem Druck greift die Person stärker auf ${COMPONENT_SHORT[cDom.top]} zurück. Die Grundtendenz verstärkt sich.`;
+  }
+
+  let uncontrolledStress = '';
+  if (cConst === 'BALANCED') {
+    uncontrolledStress = 'Unter hoher Belastung kann das Verhalten stärker kippen. Die Reaktion bleibt vielseitig, aber deutlich weniger berechenbar.';
+  } else if (cConst === 'I_NEAR_N' || cConst === 'I_NEAR_A' || cConst === 'N_NEAR_A') {
+    uncontrolledStress = `Unter hoher Belastung verschiebt sich der Schwerpunkt leicht. Die Grundrichtung bleibt erkennbar, der Wechsel zwischen ${COMPONENT_LABEL[cDom.top]} und ${COMPONENT_LABEL[second]} wird aber deutlicher.`;
+  } else if (second === 'I') {
+    uncontrolledStress = 'Unter hoher Belastung werden Entscheidungen schneller, aber oft weniger abgesichert.';
+  } else if (second === 'N') {
+    uncontrolledStress = 'Unter hoher Belastung wird das Verhalten kontextbezogener und einbindender, aber oft weniger faktenbasiert.';
+  } else {
+    uncontrolledStress = 'Unter hoher Belastung wird das Verhalten gründlicher und kontrollierter, aber meist langsamer.';
+  }
+
+  return { controlledPressure, uncontrolledStress };
+}
+
+function buildDecisionImpact(roleProfile: TriadProfile, candProfile: TriadProfile, core: ReturnType<typeof computeCoreFit>): ImpactArea {
+  const rk = dominanceModeOf(roleProfile).top;
+  const ck = dominanceModeOf(candProfile).top;
+  const candDom = dominanceModeOf(candProfile);
+  const candIsBalFull = candDom.spread <= 5;
+  const candIsDualDom = candDom.gap1 <= 5 && candDom.gap2 > 5 && !candIsBalFull;
+  const pairKey = dualPairKey(candDom.top, candDom.second);
+
+  const roleNeed = rk === 'I'
+    ? 'Die Stelle verlangt schnelle, ergebnisorientierte Entscheidungen mit klarer Richtung und direkter Umsetzung.'
+    : rk === 'N'
+      ? 'Die Stelle verlangt Entscheidungen, die Kontext, Zusammenarbeit und zwischenmenschliche Wirkung berücksichtigen.'
+      : 'Die Stelle verlangt sorgfältige, prüforientierte Entscheidungen. Optionen sollen abgewogen und Risiken geprüft werden.';
+
+  const candidatePattern = candIsBalFull
+    ? 'Die Person entscheidet situativ und vielseitig. Je nach Anforderung wird flexibel reagiert.'
+    : candIsDualDom
+      ? dualCandDecision[pairKey]
+      : candidatePatternSingle(ck);
+
+  const sev = severityFromGap(core.maxDiff);
+  let risk = '';
+  if (rk === ck) {
+    risk = 'Die Grundlogik passt. Unter Druck kann sich der Entscheidungsstil jedoch in den Nebenbereich verschieben.';
+  } else if (candIsBalFull) {
+    risk = 'Die Person ist vielseitig, braucht aber klare Führung, damit die Entscheidungsrichtung stabil bleibt.';
+  } else if (candIsDualDom) {
+    risk = 'Die Person kann über eine von zwei Stärken anschließen. Die Konsequenz im Entscheidungsstil kann jedoch schwanken.';
+  } else {
+    risk = 'Die Person nutzt eine andere Entscheidungslogik als die Stelle eigentlich verlangt. Das erhöht den Abstimmungsbedarf.';
+  }
+
+  return {
+    key: 'decision',
+    title: 'Entscheidungsverhalten',
+    severity: sev,
+    label: severityLabel(sev),
+    roleNeed,
+    candidatePattern,
+    risk,
+  };
+}
+
+function buildWorkStructureImpact(roleProfile: TriadProfile, candProfile: TriadProfile): ImpactArea {
+  const gapA = Math.abs(roleProfile.A - candProfile.A);
+  const sev = severityFromGap(gapA);
+  const roleNeed = roleProfile.A > 40
+    ? 'Die Stelle verlangt ein hohes Maß an Struktur, Planung und systematischer Qualitätssicherung.'
+    : roleProfile.A > 30
+      ? 'Die Stelle verlangt ein solides Maß an Struktur, das Effizienz und Nachvollziehbarkeit absichert.'
+      : 'Die Stelle verlangt eher pragmatische Struktur: so viel wie nötig, so wenig wie möglich.';
+
+  let risk = 'Die Arbeitsweise liegt grundsätzlich nah an der Rolle.';
+  if (gapA > 10 && candProfile.A < roleProfile.A) {
+    risk = 'Die Person bringt weniger Struktur mit als gefordert. Prüfschritte und Nachvollziehbarkeit können leiden.';
+  } else if (gapA > 10 && candProfile.A > roleProfile.A) {
+    risk = 'Die Person arbeitet strukturierter als die Rolle verlangt. Das kann Tempo und Flexibilität bremsen.';
+  }
+
+  const candidatePattern = candProfile.A >= 40
+    ? 'Die Person arbeitet strukturiert, sorgfältig und mit hoher Nachvollziehbarkeit.'
+    : candProfile.A >= 30
+      ? 'Die Person arbeitet geordnet und planvoll, ohne übermäßig formal zu werden.'
+      : 'Die Person arbeitet eher pragmatisch und situationsbezogen als streng prozessorientiert.';
+
+  return {
+    key: 'workstyle',
+    title: 'Arbeitsweise',
+    severity: sev,
+    label: severityLabel(sev),
+    roleNeed,
+    candidatePattern,
+    risk,
+  };
+}
+
+function buildLeadershipImpact(
+  roleProfile: TriadProfile,
+  candProfile: TriadProfile,
+  fuehrungsArt: 'keine' | 'fachlich' | 'disziplinarisch',
+  core: ReturnType<typeof computeCoreFit>,
+): ImpactArea | null {
+  if (fuehrungsArt === 'keine') return null;
+  const rk = dominanceModeOf(roleProfile).top;
+  const ck = dominanceModeOf(candProfile).top;
+  const cDom = dominanceModeOf(candProfile);
+  const candIsDualDom = cDom.gap1 <= 5 && cDom.gap2 > 5 && cDom.spread > 5;
+
+  const roleNeed = fuehrungsArt === 'disziplinarisch'
+    ? rk === 'A'
+      ? 'Die Rolle verlangt Führung über klare Standards, verlässliche Struktur und nachvollziehbare Entscheidungen.'
+      : rk === 'I'
+        ? 'Die Rolle verlangt Führung über Richtung, Tempo und sichtbare Entscheidungskraft.'
+        : 'Die Rolle verlangt Führung über Einbindung, Abstimmung und tragfähige Teambeziehungen.'
+    : rk === 'A'
+      ? 'Die Rolle verlangt fachliche Führung mit Systematik, Priorisierung und klaren Qualitätsmaßstäben.'
+      : rk === 'I'
+        ? 'Die Rolle verlangt fachliche Führung mit schneller Orientierung und klarer Richtung.'
+        : 'Die Rolle verlangt fachliche Führung mit guter Abstimmung und tragfähiger Kommunikation.';
+
+  const candidatePattern = candIsDualDom
+    ? dualCandLeadership[dualPairKey(cDom.top, cDom.second)]
+    : ck === 'I'
+      ? 'Die Person führt eher über Tempo, Direktheit und klare Setzung.'
+      : ck === 'N'
+        ? 'Die Person führt eher über Dialog, Einbindung und Beziehung.'
+        : 'Die Person führt eher über Struktur, Systematik und klare Standards.';
+
+  const sev = severityFromGap(core.maxDiff);
+  const risk = rk === ck
+    ? 'Die Führungsrichtung passt grundsätzlich. Unter Druck kann sie jedoch einseitiger oder schärfer werden.'
+    : 'Der Führungsansatz der Person weicht von der erwarteten Führungswirkung der Rolle ab. Das kann im Team zu Irritationen führen.';
+
+  return {
+    key: 'leadership',
+    title: 'Führungswirkung',
+    severity: sev,
+    label: severityLabel(sev),
+    roleNeed,
+    candidatePattern,
+    risk,
+  };
+}
+
+function buildCommunicationImpact(roleProfile: TriadProfile, candProfile: TriadProfile, core: ReturnType<typeof computeCoreFit>): ImpactArea {
+  const rk = dominanceModeOf(roleProfile).top;
+  const ck = dominanceModeOf(candProfile).top;
+  const cDom = dominanceModeOf(candProfile);
+  const candIsDualDom = cDom.gap1 <= 5 && cDom.gap2 > 5 && cDom.spread > 5;
+
+  const roleNeed = rk === 'I'
+    ? 'Die Stelle verlangt klare, direkte Kommunikation mit kurzen Wegen und ergebnisorientierter Abstimmung.'
+    : rk === 'N'
+      ? 'Die Stelle verlangt empathische, dialogorientierte Kommunikation mit aktiver Einbindung.'
+      : 'Die Stelle verlangt sachliche, faktenbasierte Kommunikation mit klarer Argumentation.';
+
+  const candidatePattern = candIsDualDom
+    ? dualCandCommunication[dualPairKey(cDom.top, cDom.second)]
+    : communicationPatternSingle(ck);
+
+  const sev = severityFromGap(core.maxDiff);
+  const risk = rk === ck
+    ? 'Die Kommunikationsrichtung passt grundsätzlich. Unter Druck kann sie schärfer oder einseitiger werden.'
+    : 'Die Person kommuniziert in einer anderen Grundrichtung als die Rolle verlangt. Das erhöht das Risiko für Missverständnisse.';
+
+  return {
+    key: 'communication',
+    title: 'Kommunikationsverhalten',
+    severity: sev,
+    label: severityLabel(sev),
+    roleNeed,
+    candidatePattern,
+    risk,
+  };
+}
+
+function buildCultureImpact(roleProfile: TriadProfile, candProfile: TriadProfile, core: ReturnType<typeof computeCoreFit>): ImpactArea {
+  const rk = dominanceModeOf(roleProfile).top;
+  const ck = dominanceModeOf(candProfile).top;
+  const cDom = dominanceModeOf(candProfile);
+  const candIsDualDom = cDom.gap1 <= 5 && cDom.gap2 > 5 && cDom.spread > 5;
+
+  const roleNeed = rk === 'I'
+    ? 'Die Stelle verlangt eine leistungs- und ergebnisorientierte Kultur mit hohem Fokus auf Tempo und Wirkung.'
+    : rk === 'N'
+      ? 'Die Stelle verlangt eine kooperative, beziehungsorientierte Kultur mit starkem Zusammenhalt.'
+      : 'Die Stelle verlangt Verlässlichkeit, Ruhe und nachvollziehbare Qualität in stabilen Abläufen.';
+
+  const candidatePattern = candIsDualDom
+    ? dualCandCulture[dualPairKey(cDom.top, cDom.second)]
+    : ck === 'I'
+      ? 'Die Person prägt Kultur über Dynamik, Tempo und klare Setzung.'
+      : ck === 'N'
+        ? 'Die Person prägt Kultur über Einbindung, Nähe und Zusammenarbeit.'
+        : 'Die Person prägt Kultur über Struktur, Verlässlichkeit und klare Standards.';
+
+  const sev = severityFromGap(core.maxDiff);
+  const risk = rk === ck
+    ? 'Die kulturelle Grundrichtung passt. Ohne bewusste Führung kann die Ausprägung jedoch einseitig werden.'
+    : 'Die kulturelle Wirkung der Person unterscheidet sich von der Rollenerwartung. Das Team wird diesen Unterschied spüren.';
+
+  return {
+    key: 'culture',
+    title: 'Wirkung auf Teamkultur',
+    severity: sev,
+    label: severityLabel(sev),
+    roleNeed,
+    candidatePattern,
+    risk,
+  };
+}
+
+function applyAreaFloor(
+  areas: ImpactArea[],
+  roleProfile: TriadProfile,
+  candProfile: TriadProfile,
+  thresholds: Thresholds,
+): ImpactArea[] {
+  const rDom = dominanceModeOf(roleProfile);
+  const cDom = dominanceModeOf(candProfile);
+  const roleIsBalFull = rDom.gap1 <= thresholds.eqTol && rDom.gap2 <= thresholds.eqTol;
+  const candIsBalFull = cDom.spread <= thresholds.eqTol;
+  const candIsDualDom = cDom.gap1 <= thresholds.eqTol && cDom.gap2 > thresholds.eqTol && !candIsBalFull;
+  const candDualMatchesRole = candIsDualDom && (rDom.top === cDom.top || rDom.top === cDom.second);
+
+  if (rDom.top === cDom.top || roleIsBalFull || candIsBalFull || candDualMatchesRole) {
+    return areas;
+  }
+
+  return areas.map((area) => {
+    if (area.severity === 'ok') {
+      return { ...area, severity: 'warning', label: severityLabel('warning') };
+    }
+    return area;
+  });
+}
+
+function buildImpactAreas(
+  roleProfile: TriadProfile,
+  candProfile: TriadProfile,
+  core: ReturnType<typeof computeCoreFit>,
+  fuehrungsArt: 'keine' | 'fachlich' | 'disziplinarisch',
+  thresholds: Thresholds,
+): ImpactArea[] {
+  const areas: ImpactArea[] = [
+    buildDecisionImpact(roleProfile, candProfile, core),
+    buildWorkStructureImpact(roleProfile, candProfile),
+    buildCommunicationImpact(roleProfile, candProfile, core),
+    buildCultureImpact(roleProfile, candProfile, core),
+  ];
+
+  const leadArea = buildLeadershipImpact(roleProfile, candProfile, fuehrungsArt, core);
+  if (leadArea) areas.splice(2, 0, leadArea);
+
+  const floored = applyAreaFloor(areas, roleProfile, candProfile, thresholds);
+
+  // Wichtige Klammer: Teilbereiche dürfen nicht positiver sein als das Gesamtfit.
+  if (core.fitLabel === 'Bedingt geeignet') {
+    return floored.map((area) =>
+      area.severity === 'ok'
+        ? { ...area, severity: 'warning', label: severityLabel('warning') }
+        : area,
+    );
+  }
+  if (core.fitLabel === 'Nicht geeignet') {
+    return floored.map((area) =>
+      area.severity === 'ok'
+        ? { ...area, severity: 'warning', label: severityLabel('warning') }
+        : area,
+    );
+  }
+
+  return floored;
+}
+
+function buildRiskTimeline(core: ReturnType<typeof computeCoreFit>, roleProfile: TriadProfile, candProfile: TriadProfile): string[] {
+  const items: string[] = [];
+  if (core.fitLabel === 'Geeignet') {
+    items.push('Kurzfristig: Die Zusammenarbeit startet mit geringer Reibung.');
+    items.push('Mittelfristig: Feinabstimmung und Priorisierung bleiben die wichtigsten Steuerungshebel.');
+    items.push('Langfristig: Bei klaren Standards ist eine stabile Besetzung gut realistisch.');
+    return items;
+  }
+
+  if (candProfile.A < roleProfile.A) {
+    items.push('Kurzfristig: Qualität und Prüftiefe müssen aktiv eingefordert werden.');
+    items.push('Mittelfristig: Ohne klare Standards können Entscheidungen zu stark vereinfacht werden.');
+  } else {
+    items.push('Kurzfristig: Die Person braucht Klarheit, wie viel Struktur die Rolle tatsächlich verlangt.');
+    items.push('Mittelfristig: Zu viel Absicherung kann Tempo und Pragmatismus bremsen.');
+  }
+
+  if (core.fitLabel === 'Bedingt geeignet') {
+    items.push('Langfristig: Mit klarer Führung kann sich die Zusammenarbeit stabilisieren.');
+  } else {
+    items.push('Langfristig: Ohne intensive Führung droht eine schleichende Verschiebung der Rollenausübung.');
+  }
+
+  return items;
+}
+
+function buildDevelopment(
+  fitLabel: FitLabel,
+  roleProfile: TriadProfile,
+  candProfile: TriadProfile,
+): DevelopmentResult {
+  const rDom = dominanceModeOf(roleProfile);
+  const cDom = dominanceModeOf(candProfile);
+  const roleIsBalFull = rDom.gap1 <= 5 && rDom.gap2 <= 5;
+  const candIsBalFull = cDom.spread <= 5;
+  const candIsDualDom = cDom.gap1 <= 5 && cDom.gap2 > 5 && !candIsBalFull;
+  const candDualMatchesRole = candIsDualDom && (rDom.top === cDom.top || rDom.top === cDom.second);
+
+  const fitGap: 'gering' | 'mittel' | 'hoch' = fitLabel === 'Geeignet' ? 'gering' : fitLabel === 'Bedingt geeignet' ? 'mittel' : 'hoch';
+
+  let level: 1 | 3 | 4;
+  let label: DevelopmentLabel;
+  if (fitGap === 'gering') {
+    level = 4;
+    label = 'hoch';
+  } else if (fitGap === 'mittel') {
+    level = 3;
+    label = 'mittel';
+  } else {
+    level = 1;
+    label = 'niedrig';
+  }
+
+  let headline = 'Entwicklungspotenzial';
+  let text = '';
+
+  if (roleIsBalFull && candIsBalFull) {
+    text = fitGap === 'gering'
+      ? 'Grundlage stimmt. Es geht vor allem um Feinabstimmung und klare Prioritäten.'
+      : fitGap === 'mittel'
+        ? 'Die Vielseitigkeit ist vorhanden, braucht aber Führung und Zielklarheit.'
+        : 'Die Arbeitslogik weicht deutlich ab. Eine stabile Entwicklung ist nur schwer planbar.';
+  } else if (candIsDualDom && candDualMatchesRole) {
+    text = fitGap === 'gering'
+      ? 'Die Person deckt die Rolle über eine von zwei Stärken gut ab. Entwicklung ist gut möglich.'
+      : fitGap === 'mittel'
+        ? 'Die Person passt über eine ihrer beiden Stärken, braucht aber Führung für mehr Konsequenz.'
+        : 'Die Richtung stimmt teilweise, reicht aber in der aktuellen Ausprägung nicht aus.';
+  } else if (candIsDualDom) {
+    text = fitGap === 'gering'
+      ? 'Die Person ist entwickelbar, obwohl keine der beiden Stärken sauber zur Rolle führt.'
+      : fitGap === 'mittel'
+        ? 'Keiner der beiden Schwerpunkte passt klar. Entwicklung ist möglich, aber anspruchsvoll.'
+        : 'Die Arbeitsweise weicht in beiden Schwerpunkten von der Rolle ab. Entwicklung ist unsicher.';
+  } else if (rDom.top === cDom.top) {
+    text = fitGap === 'gering'
+      ? 'Die Grundrichtung stimmt. Es geht vor allem um Feinabstimmung in der Ausprägung.'
+      : fitGap === 'mittel'
+        ? 'Die Richtung stimmt, die Person muss jedoch an Konsequenz und Rollentiefe arbeiten.'
+        : 'Die Richtung ist erkennbar, reicht aber in der aktuellen Form nicht aus.';
+  } else {
+    text = fitGap === 'gering'
+      ? 'Trotz anderer Hauptprägung ist die Passung überraschend tragfähig. Feinabstimmung bleibt nötig.'
+      : fitGap === 'mittel'
+        ? 'Die Person arbeitet in einer anderen Grundrichtung. Entwicklung ist möglich, braucht aber Führung.'
+        : 'Es treffen zwei unterschiedliche Arbeitsweisen aufeinander. Entwicklung ist nur eingeschränkt realistisch.';
+  }
+
+  return { fitGap, level, label, headline, text };
+}
+
+function buildActions(core: ReturnType<typeof computeCoreFit>, roleProfile: TriadProfile, candProfile: TriadProfile): ActionItem[] {
+  const actions: ActionItem[] = [];
+  if (candProfile.A < roleProfile.A) {
+    actions.push({ title: 'Standards klären', text: 'Prüfkriterien, Dokumentation und Qualitätsmaßstäbe früh und verbindlich festlegen.' });
+  }
+  if (candProfile.I < roleProfile.I) {
+    actions.push({ title: 'Tempo steuern', text: 'Entscheidungsfristen, Prioritäten und Abschlussverantwortung klar definieren.' });
+  }
+  if (candProfile.N > roleProfile.N) {
+    actions.push({ title: 'Abstimmung fokussieren', text: 'Einbindung bewusst nutzen, aber Sachentscheidung und Prüftiefe nicht aufweichen.' });
+  }
+  if (core.fitLabel !== 'Geeignet') {
+    actions.push({ title: 'Regelmäßige Check-ins', text: 'Frühe Feedback-Schleifen einplanen, um Rollenausübung und Wirkung eng zu kalibrieren.' });
+  }
+  if (actions.length === 0) {
+    actions.push({ title: 'Feinabstimmung sichern', text: 'Die Rolle klar halten und Prioritäten regelmäßig spiegeln, damit die Passung stabil bleibt.' });
+  }
+  return actions;
+}
+
+function buildIntegrationsPlan(
+  fitLabel: FitLabel,
+  roleProfile: TriadProfile,
+  candProfile: TriadProfile,
+  control: { level: ControlLevel },
+): IntegrationPhase[] {
+  if (fitLabel === 'Nicht geeignet') {
+    return [];
+  }
+
+  const emphasis = candProfile.A < roleProfile.A ? 'Qualitätsstandards und Prüftiefe' : 'Prioritäten und pragmatische Umsetzung';
+  const closeLead = control.level !== 'LOW';
+
+  return [
+    {
+      phase: 1,
+      timeframe: 'Woche 1–2',
+      title: 'Orientierung',
+      focus: 'Erwartungen, Rolle und Arbeitslogik gemeinsam klären.',
+      items: [
+        'Ziele, Prioritäten und Qualitätsmaßstäbe konkret abstimmen.',
+        'Schnittstellen und Entscheidungswege sichtbar machen.',
+        `Klären, wie ${emphasis} im Alltag konkret aussehen soll.`,
+      ],
+    },
+    {
+      phase: 2,
+      timeframe: 'Monat 1–3',
+      title: 'Stabilisierung',
+      focus: 'Erste Ergebnisse liefern und Führungsfeedback eng nutzen.',
+      items: [
+        'Ein priorisiertes Thema sichtbar und nachvollziehbar umsetzen.',
+        'Wirkung auf Tempo, Qualität und Zusammenarbeit spiegeln.',
+        closeLead ? 'Kurze Feedback-Schleifen fest einplanen.' : 'Regelmäßige Feinabstimmung beibehalten.',
+      ],
+    },
+    {
+      phase: 3,
+      timeframe: 'Monat 4–6',
+      title: 'Vertiefung',
+      focus: 'Eigenverantwortung steigern und typische Abweichungen gezielt bearbeiten.',
+      items: [
+        'Wiederkehrende Fehlerquellen und Reibungspunkte systematisch angehen.',
+        'Arbeitsstil dort nachschärfen, wo die größte Abweichung sichtbar wird.',
+        'Verantwortungsbereiche schrittweise erweitern.',
+      ],
+    },
+    {
+      phase: 4,
+      timeframe: 'Monat 7–12',
+      title: 'Verstetigung',
+      focus: 'Langfristige Tragfähigkeit und Selbststeuerung prüfen.',
+      items: [
+        'Dauerhafte Stabilität von Qualität, Tempo und Kommunikation bewerten.',
+        'Prüfen, ob der Führungsaufwand langfristig tragbar ist.',
+        'Rollenprofil und tatsächliche Ausübung bei Bedarf nachjustieren.',
+      ],
+    },
+  ];
+}
+
+function buildFinal(
+  roleName: string,
+  fitLabel: FitLabel,
+  control: { level: ControlLevel },
+): string {
+  if (fitLabel === 'Geeignet') {
+    return `Die Person passt in ihrer Arbeitslogik gut zur Rolle ${roleName}. Die Besetzung wirkt insgesamt tragfähig.`;
+  }
+  if (fitLabel === 'Bedingt geeignet') {
+    return `Die Person ist für die Rolle ${roleName} bedingt geeignet. Die Grundrichtung ist anschlussfähig, braucht aber klare Führung und Erwartungsklarheit.`;
+  }
+  return `Die Person ist für die Rolle ${roleName} nicht geeignet. Die Unterschiede in Arbeitslogik und Ausprägung sind für eine stabile Besetzung zu groß.`;
+}
+
+export function computeSollIst(params: ComputeSollIstParams): MatchResult {
+  resetVariants();
+
+  const thresholds: Thresholds = {
+    ...DEFAULT_THRESHOLDS,
+    ...(params.thresholds ?? {}),
+  };
+
+  const roleProfile = normalizeTriad(params.roleProfile);
+  const candProfile = normalizeTriad(params.candProfile);
+  const fuehrungsArt = params.fuehrungsArt ?? 'keine';
+
+  const externalKo = koRuleTriggered(roleProfile, candProfile, params.roleAnalysis, fuehrungsArt, thresholds);
+  const core = computeCoreFit(roleProfile, candProfile, externalKo, thresholds);
+  const baseControl = calcBaseControlIntensity(core.structureRelation, core.maxDiff, core.sollVariant, thresholds);
+  const extraControl = calcControlIntensity(roleProfile, candProfile, params.roleAnalysis, fuehrungsArt);
+  const effectiveControl = {
+    points: baseControl.points + extraControl.points,
+    level: mapControlLevel(baseControl.points + extraControl.points),
+  };
+
+  const summary = buildSummary(params.roleName, roleProfile, candProfile, core.fitLabel);
+  const executiveBullets = buildExecutiveBullets(core, roleProfile, candProfile);
+  const constellationRisks = buildConstellationRisks(roleProfile, candProfile, core.fitLabel);
+  const dominanceShift = buildDominanceShift(roleProfile, candProfile);
+  const stress = buildStressBehavior(roleProfile, candProfile);
+  const impactAreas = buildImpactAreas(roleProfile, candProfile, core, fuehrungsArt, thresholds);
+  const timeline = buildRiskTimeline(core, roleProfile, candProfile);
+  const development = buildDevelopment(core.fitLabel, roleProfile, candProfile);
+  const actions = buildActions(core, roleProfile, candProfile);
+  const integrationPlan = buildIntegrationsPlan(core.fitLabel, roleProfile, candProfile, effectiveControl);
+  const finalText = buildFinal(params.roleName, core.fitLabel, effectiveControl);
+
+  return {
+    fitLabel: core.fitLabel,
+    fitColor: core.fitColor,
+    structureRelation: core.structureRelation,
+    sollVariant: core.sollVariant,
+    istVariant: core.istVariant,
+    sollRelations: core.sollRelations,
+    istRelations: core.istRelations,
+    diffs: core.diffs,
+    maxDiff: core.maxDiff,
+    totalGap: core.totalGap,
+    externalKo,
+    baseControl,
+    effectiveControl,
+    summary,
+    executiveBullets,
+    constellationRisks,
+    dominanceShift,
+    stress,
+    impactAreas,
+    timeline,
+    development,
+    actions,
+    integrationPlan,
+    finalText,
+    debug: {
+      thresholds,
+      roleConstellation: detectConstellation(roleProfile),
+      candConstellation: detectConstellation(candProfile),
+      roleProfile,
+      candProfile,
+    },
+  };
+}
+
+// Einfacher Beispielaufruf für Replit / Node:
+if (require.main === module) {
+  const result = computeSollIst({
+    roleName: 'Fachinformatiker Systemintegration',
+    candName: 'Max Mustermann',
+    roleProfile: { I: 25, N: 35, A: 40 },
+    candProfile: { I: 19, N: 40, A: 41 },
+    fuehrungsArt: 'fachlich',
+  });
+
+  console.log(JSON.stringify(result, null, 2));
+}

@@ -142,8 +142,8 @@ export function Subj(name: string): string {
 }
 
 function severity(gap: number): Severity {
-  if (gap >= 15) return "critical";
-  if (gap >= 8) return "warning";
+  if (gap > 10) return "critical";
+  if (gap > 5) return "warning";
   return "ok";
 }
 
@@ -321,12 +321,12 @@ export function computeSollIst(
   const dominanceShiftText = buildDominanceShift(roleName, cn, rk, ck, rt, ct, rConst, cConst);
   const stressBehavior = buildStressBehavior(cConst, ct, cn, gapLevel);
   const roleIsBalFull = rDom.gap1 <= 5 && rDom.gap2 <= 5;
-  const impactAreas = buildImpactAreas(rk, ck, rt, ct, cn, fuehrungsArt, roleIsBalFull);
+  const impactAreas = buildImpactAreas(rk, ck, rt, ct, cn, fuehrungsArt, roleIsBalFull, fitLabel);
   const riskTimeline = buildRiskTimeline(roleName, cn, rk, ck, gapLevel, roleIsBalFull, rt, ct);
-  const devGap: "gering" | "mittel" | "hoch" = fitRating === "NICHT_GEEIGNET" ? "hoch"
+  const fitGap: "gering" | "mittel" | "hoch" = fitRating === "NICHT_GEEIGNET" ? "hoch"
     : fitRating === "BEDINGT" ? "mittel"
     : "gering";
-  const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildDevelopment(devGap, rk, ck, controlIntensity, cn, isDualDomRole, rk2, roleIsBalFull, ct, candIsDualDomMain, ck2Main);
+  const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildDevelopment(fitGap, rk, ck, controlIntensity, cn, isDualDomRole, rk2, roleIsBalFull, ct, candIsDualDomMain, ck2Main);
   const actions = buildActions(rk, ck, gapLevel, controlIntensity, roleIsBalFull, ct);
   const integrationsplan = buildIntegrationsplan(roleName, cn, fitLabel, rk, ck, gapLevel, controlIntensity, fuehrungsArt, rt, ct, roleIsBalFull);
   const finalText = buildFinal(roleName, cn, fitLabel, controlIntensity, rk, ck, fuehrungsArt, isDualDomRole, rk2, roleIsBalFull, ct);
@@ -584,7 +584,7 @@ function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string,
   return { controlledPressure, uncontrolledStress };
 }
 
-function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, cand: string, fuehrungsArt: FuehrungsArt, roleIsBalFull = false): ImpactArea[] {
+function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, cand: string, fuehrungsArt: FuehrungsArt, roleIsBalFull = false, fitLabel = ""): ImpactArea[] {
   const gapI = Math.abs(rt.impulsiv - ct.impulsiv);
   const gapN = Math.abs(rt.intuitiv - ct.intuitiv);
   const gapA = Math.abs(rt.analytisch - ct.analytisch);
@@ -618,6 +618,25 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
     for (const area of areas) {
       if (area.severity === "ok") {
         area.severity = "warning";
+      }
+    }
+  }
+
+  if (fitLabel === "Nicht geeignet") {
+    for (const area of areas) {
+      if (area.severity === "ok") {
+        area.severity = "warning";
+      }
+    }
+  } else if (fitLabel === "Bedingt geeignet") {
+    const okCount = areas.filter(a => a.severity === "ok").length;
+    if (okCount > 2) {
+      let lifted = 0;
+      for (let i = areas.length - 1; i >= 0 && lifted < okCount - 2; i--) {
+        if (areas[i].severity === "ok") {
+          areas[i].severity = "warning";
+          lifted++;
+        }
       }
     }
   }
