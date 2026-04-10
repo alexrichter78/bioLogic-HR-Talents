@@ -557,20 +557,22 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
   const gapI = Math.abs(rt.impulsiv - ct.impulsiv);
   const gapN = Math.abs(rt.intuitiv - ct.intuitiv);
   const gapA = Math.abs(rt.analytisch - ct.analytisch);
+  const candSpread = Math.max(ct.impulsiv, ct.intuitiv, ct.analytisch) - Math.min(ct.impulsiv, ct.intuitiv, ct.analytisch);
+  const candIsBalFull = candSpread <= 5;
 
   const areas: ImpactArea[] = [
-    buildDecisionImpact(rk, ck, gapI, gapA, gapN, cand, roleIsBalFull, ct),
-    buildWorkStructureImpact(rk, ck, rt, ct, gapA, cand),
+    buildDecisionImpact(rk, ck, gapI, gapA, gapN, cand, roleIsBalFull, ct, candIsBalFull),
+    buildWorkStructureImpact(rk, ck, rt, ct, gapA, cand, candIsBalFull),
   ];
 
   if (fuehrungsArt !== "keine") {
-    areas.push(buildLeadershipImpact(rk, ck, gapI, gapN, gapA, cand, fuehrungsArt, roleIsBalFull, ct));
+    areas.push(buildLeadershipImpact(rk, ck, gapI, gapN, gapA, cand, fuehrungsArt, roleIsBalFull, ct, candIsBalFull));
   }
 
-  areas.push(buildCommunicationImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct));
-  areas.push(buildCultureImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct));
+  areas.push(buildCommunicationImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct, candIsBalFull));
+  areas.push(buildCultureImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct, candIsBalFull));
 
-  if (rk !== ck && !roleIsBalFull) {
+  if (rk !== ck && !roleIsBalFull && !candIsBalFull) {
     for (const area of areas) {
       if (area.severity === "ok") {
         area.severity = "warning";
@@ -581,13 +583,29 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
   return areas;
 }
 
-function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapA: number, gapN: number, cand: string, roleIsBalFull = false, ct?: Triad): ImpactArea {
+function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapA: number, gapN: number, cand: string, roleIsBalFull = false, ct?: Triad, candIsBalFull = false): ImpactArea {
   const maxGap = Math.max(gapI, gapA, gapN);
   const s = Subj(cand);
 
   let roleNeed: string;
   let candidatePattern: string;
   let risk: string;
+
+  if (candIsBalFull && !roleIsBalFull) {
+    const totalGap = gapI + gapN + gapA;
+    const sev = severity(totalGap * 0.35);
+    const rkLabel = rk === "impulsiv" ? "schnelle, handlungsorientierte" : rk === "intuitiv" ? "kontextbezogene, abstimmungsorientierte" : "analytische, prüforientierte";
+    roleNeed = rk === "impulsiv"
+      ? "Schnelle, ergebnisorientierte Entscheidungen. Klare Richtung und direkte Umsetzung vor langer Prüfung."
+      : rk === "intuitiv"
+        ? "Entscheidungen, die Kontext, Zusammenarbeit und zwischenmenschliche Wirkung berücksichtigen. Abstimmung im Team vor Geschwindigkeit."
+        : "Sorgfältige, prüforientierte Entscheidungen. Optionen abwägen, Risiken prüfen, erst dann handeln.";
+    candidatePattern = `${s} entscheidet situativ und vielseitig – je nach Kontext analytisch, handlungsorientiert oder abstimmungsorientiert. Keine einzelne Entscheidungslogik dominiert.`;
+    risk = totalGap >= 15
+      ? `Die Stelle erfordert ${rkLabel} Entscheidungen. ${s} verteilt die Entscheidungslogik gleichmässig und verfolgt den geforderten Schwerpunkt nicht konsequent genug. Gezielte Führung nötig.`
+      : `${s} bringt eine vielseitige Entscheidungsbasis mit. Die Stellenanforderung wird grundsätzlich abgedeckt, auch wenn kein klarer Schwerpunkt erkennbar ist.`;
+    return { id: "decision", label: "Entscheidungsverhalten", severity: sev, roleNeed, candidatePattern, risk };
+  }
 
   if (roleIsBalFull) {
     const totalGap = gapI + gapN + gapA;
@@ -692,10 +710,10 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
   return { id: "decision", label: "Entscheidungsverhalten", severity: sev, roleNeed, candidatePattern, risk };
 }
 
-function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, gapA: number, cand: string): ImpactArea {
+function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, gapA: number, cand: string, candIsBalFull = false): ImpactArea {
   const maxGapAll = Math.max(Math.abs(rt.impulsiv - ct.impulsiv), Math.abs(rt.intuitiv - ct.intuitiv), gapA);
-  const structureBoost = rk !== ck ? Math.min(maxGapAll * 0.65, gapA + 10) : 0;
-  const sev = severity(rk !== ck ? Math.max(gapA, structureBoost) : gapA);
+  const structureBoost = (rk !== ck && !candIsBalFull) ? Math.min(maxGapAll * 0.65, gapA + 10) : 0;
+  const sev = severity((rk !== ck && !candIsBalFull) ? Math.max(gapA, structureBoost) : gapA);
 
   let roleNeed: string;
   let candidatePattern: string;
@@ -710,7 +728,9 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
   }
 
   const s = Subj(cand);
-  if (ct.analytisch >= 35) {
+  if (candIsBalFull) {
+    candidatePattern = `${s} arbeitet situativ und vielseitig. Je nach Anforderung wird strukturiert, tempoorientiert oder abstimmungsorientiert gearbeitet. Kein einzelner Arbeitsstil dominiert.`;
+  } else if (ct.analytisch >= 35) {
     candidatePattern = `${s} arbeitet strukturiert mit klaren Abläufen und festen Arbeitsschritten. Planung hat hohe Priorität.`;
   } else if (ct.analytisch >= 25) {
     candidatePattern = `${s} arbeitet grundlegend strukturiert, lässt aber Raum für situative Anpassungen.`;
@@ -725,7 +745,15 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
   const sec3 = ck === "impulsiv" ? Math.min(secN, secA) : ck === "intuitiv" ? Math.min(secI, secA) : Math.min(secI, secN);
   const competing23 = Math.abs(sec2 - sec3) <= 5 && sec2 > 15;
 
-  if (gapA >= 10 && ct.analytisch < rt.analytisch) {
+  if (candIsBalFull) {
+    if (gapA >= 10 && ct.analytisch < rt.analytisch) {
+      risk = `Die Stelle erfordert ein klares Mass an Struktur. ${s} arbeitet vielseitig und kann sich anpassen, liefert aber nicht die konsequente Strukturtiefe, die erwartet wird. Die Führungskraft sollte Prozessstandards vorgeben.`;
+    } else if (gapA >= 10 && ct.analytisch > rt.analytisch) {
+      risk = `${s} bringt mehr Strukturorientierung mit als die Stelle erfordert. Das kann das Tempo bremsen, wird aber durch die vielseitige Arbeitsweise teilweise kompensiert.`;
+    } else {
+      risk = `${s} arbeitet vielseitig und passt sich der Situation an. Die Arbeitsweise deckt die Stellenanforderung grundsätzlich ab. Feinabstimmung durch Führung empfohlen.`;
+    }
+  } else if (gapA >= 10 && ct.analytisch < rt.analytisch) {
     if (ck === "analytisch") {
       if (competing23) {
         risk = `${s} arbeitet grundsätzlich strukturiert, aber die beiden Nebenbereiche sind fast gleich stark. Unter Druck konkurrieren Handlungsimpulse und Abstimmungsbedürfnisse – die analytische Linie wird instabil. Die Führungskraft muss klare Prozessvorgaben setzen.`;
@@ -752,7 +780,7 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
       risk = `Aufgaben werden länger geprüft als notwendig. ${s} investiert mehr Zeit in Planung und Absicherung als die Stelle erlaubt. Das bremst das Gesamttempo.`;
     }
   } else {
-    if (rk !== ck) {
+    if (rk !== ck && !candIsBalFull) {
       if (competing23) {
         risk = "Die strukturelle Arbeitsweise weicht nicht stark ab, aber die unterschiedliche Grunddynamik beeinflusst Tempo und Prioritäten. Die konkurrierenden Nebenbereiche können situativ zu wechselndem Arbeitsstil führen. Führung muss Erwartungen klar setzen.";
       } else {
@@ -770,9 +798,37 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
   return { id: "work_structure", label: "Arbeitsweise", severity: sev, roleNeed, candidatePattern, risk };
 }
 
-function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, fuehrungsArt: FuehrungsArt, roleIsBalFull = false, ct?: Triad): ImpactArea {
+function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, fuehrungsArt: FuehrungsArt, roleIsBalFull = false, ct?: Triad, candIsBalFull = false): ImpactArea {
   const maxGap = Math.max(gapI, gapN, gapA);
   const s = Subj(cand);
+
+  if (candIsBalFull && !roleIsBalFull && ct) {
+    const totalGap = gapI + gapN + gapA;
+    const sev = severity(totalGap * 0.35);
+    const roleNeed = fuehrungsArt === "disziplinarisch"
+      ? (rk === "analytisch"
+        ? "Führung über klare Standards, verlässliche Struktur und nachvollziehbare Entscheidungen. Das Team braucht konsistente Prioritäten und Orientierung."
+        : rk === "impulsiv"
+          ? "Führung über Entscheidungskraft, klare Richtung und operative Geschwindigkeit. Das Team erwartet sichtbare Ergebnisorientierung."
+          : "Führung über persönliche Ansprache, offene Kommunikation und ein Gespür für Teamdynamik. Das Team braucht Nähe und Vertrauen.")
+      : fuehrungsArt === "fachlich"
+        ? (rk === "analytisch"
+          ? "Fachliche Führung mit klarer Einschätzung, Qualitätssicherheit und verlässlicher Priorisierung."
+          : rk === "impulsiv"
+            ? "Fachliche Führung mit schneller Orientierung, praxisnahen Entscheidungen und klarer Richtung."
+            : "Fachliche Führung über Dialog, Austausch und gemeinsame Lösungsfindung.")
+        : (rk === "analytisch"
+          ? "Orientierung über Struktur, Standards und klare Vorgaben."
+          : rk === "impulsiv"
+            ? "Wirkung über schnelle Entscheidungen, klare Richtung und hohe Ergebnisdynamik."
+            : "Wirkung über Kommunikation, Zusammenarbeit und situatives Gespür.");
+    const candidatePattern = `${s} führt situativ und vielseitig. Je nach Kontext wird über Tempo, Dialog oder Systematik geführt. Kein einzelner Führungsstil dominiert.`;
+    const rkStyle = rk === "impulsiv" ? "operative Geschwindigkeit und Entscheidungskraft" : rk === "intuitiv" ? "persönliche Nähe und Einbindung" : "strukturierte Verlässlichkeit und klare Standards";
+    const risk = totalGap >= 15
+      ? `Die Stelle erfordert Führung über ${rkStyle}. ${s} verteilt die Führungswirkung gleichmässig und verfolgt den geforderten Schwerpunkt nicht konsequent genug. Gezielte Steuerung durch die nächsthöhere Führungsebene nötig.`
+      : `${s} bringt ein breites Führungsrepertoire mit. Die Stellenanforderung wird grundsätzlich abgedeckt, auch wenn kein klarer Führungsschwerpunkt erkennbar ist.`;
+    return { id: "leadership", label: "Führungswirkung", severity: sev, roleNeed, candidatePattern, risk };
+  }
 
   if (roleIsBalFull) {
     const totalGap = gapI + gapN + gapA;
@@ -891,9 +947,25 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
   return { id: "leadership", label: "Führungswirkung", severity: sev, roleNeed, candidatePattern, risk };
 }
 
-function buildCommunicationImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, roleIsBalFull = false, ct?: Triad): ImpactArea {
+function buildCommunicationImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, roleIsBalFull = false, ct?: Triad, candIsBalFull = false): ImpactArea {
   const s = Subj(cand);
   const maxGap = Math.max(gapI, gapN, gapA);
+
+  if (candIsBalFull && !roleIsBalFull) {
+    const totalGap = gapI + gapN + gapA;
+    const sev = severity(totalGap * 0.35);
+    const roleNeed = rk === "impulsiv"
+      ? "Klare, direkte Kommunikation. Kurze Wege, schnelle Abstimmung, ergebnisorientierter Austausch."
+      : rk === "intuitiv"
+        ? "Empathische, dialogorientierte Kommunikation. Aktives Zuhören, Einbindung und persönliche Ansprache."
+        : "Sachliche, faktenbasierte Kommunikation. Klare Argumentation, strukturierte Informationsweitergabe.";
+    const candidatePattern = `${s} kommuniziert situativ und flexibel. Je nach Kontext wird direkt, empathisch oder sachlich kommuniziert. Kein einzelner Kommunikationsstil dominiert.`;
+    const rkComm = rk === "impulsiv" ? "direkte, knappe Kommunikation" : rk === "intuitiv" ? "empathische, dialogorientierte Kommunikation" : "sachliche, faktenbasierte Kommunikation";
+    const risk = totalGap >= 15
+      ? `Die Stelle erfordert ${rkComm}. ${s} verteilt den Kommunikationsstil gleichmässig und verfolgt den geforderten Schwerpunkt nicht konsequent genug. Klare Kommunikationserwartungen setzen.`
+      : `${s} bringt einen vielseitigen Kommunikationsstil mit. Die Stellenanforderung wird grundsätzlich abgedeckt, auch wenn kein klarer Schwerpunkt erkennbar ist.`;
+    return { id: "communication", label: "Kommunikationsverhalten", severity: sev, roleNeed, candidatePattern, risk };
+  }
 
   if (roleIsBalFull && ct) {
     const maxSingleGap = Math.max(gapI, gapN, gapA);
@@ -978,8 +1050,24 @@ function buildCommunicationImpact(rk: ComponentKey, ck: ComponentKey, gapI: numb
   return { id: "communication", label: "Kommunikationsverhalten", severity: sev, roleNeed, candidatePattern, risk };
 }
 
-function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, roleIsBalFull = false, ct?: Triad): ImpactArea {
+function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, roleIsBalFull = false, ct?: Triad, candIsBalFull = false): ImpactArea {
   const s = Subj(cand);
+
+  if (candIsBalFull && !roleIsBalFull) {
+    const totalGap = gapI + gapN + gapA;
+    const sev = severity(totalGap * 0.35);
+    const roleNeed = rk === "impulsiv"
+      ? "Leistungsorientierte Kultur mit Tempo, Wettbewerb und sichtbaren Ergebnissen."
+      : rk === "intuitiv"
+        ? "Kultur geprägt von Zusammenarbeit, persönlicher Verbindung und Teamzusammenhalt."
+        : "Kultur geprägt von Qualität, Verlässlichkeit und regelbasierter Zusammenarbeit.";
+    const candidatePattern = `${s} bringt eine vielseitige Kulturprägung mit. Je nach Umfeld wird über Dynamik, Zusammenarbeit oder Verlässlichkeit gesteuert. Kein einzelner Kulturaspekt dominiert.`;
+    const rkCult = rk === "impulsiv" ? "Leistungsdynamik und Ergebnisorientierung" : rk === "intuitiv" ? "persönliche Verbindung und Teamzusammenhalt" : "Qualität, Ordnung und Verlässlichkeit";
+    const risk = totalGap >= 15
+      ? `Die Stelle erfordert eine klare Kulturwirkung über ${rkCult}. ${s} verteilt die Kulturprägung gleichmässig und verfolgt den geforderten Schwerpunkt nicht konsequent genug.`
+      : `${s} bringt eine vielseitige Kulturwirkung mit. Die Stellenanforderung wird grundsätzlich abgedeckt, auch wenn kein klarer kultureller Schwerpunkt erkennbar ist.`;
+    return { id: "culture", label: "Wirkung auf Zusammenarbeit und Teamkultur", severity: sev, roleNeed, candidatePattern, risk };
+  }
 
   if (roleIsBalFull) {
     const totalGap = gapI + gapN + gapA;
@@ -1233,29 +1321,36 @@ function buildDevelopment(gap: string, rk: ComponentKey, ck: ComponentKey, contr
     };
   }
 
+  const candIsBalanced = ct ? Math.max(ct.impulsiv, ct.intuitiv, ct.analytisch) - Math.min(ct.impulsiv, ct.intuitiv, ct.analytisch) <= 5 : false;
   const roleDesc = isDualDomRole && rk2 ? dualRoleDesc(rk, rk2) : compDesc(rk);
   if (gap === "gering") {
     return {
       level: 4,
       label: "hoch",
-      text: `Die Stelle verlangt ${roleDesc}. ${s} bringt genau das mit. In einzelnen Bereichen ist Feinabstimmung nötig, aber die Grundlage stimmt. Mit klaren Erwartungen und guter Einarbeitung ist eine stabile Entwicklung realistisch.`,
+      text: candIsBalanced
+        ? `Die Stelle verlangt ${roleDesc}. ${s} bringt ein ausgeglichenes Profil mit und kann sich flexibel anpassen. Die Grundlage stimmt. Mit klaren Erwartungen ist eine stabile Entwicklung realistisch.`
+        : `Die Stelle verlangt ${roleDesc}. ${s} bringt genau das mit. In einzelnen Bereichen ist Feinabstimmung nötig, aber die Grundlage stimmt. Mit klaren Erwartungen und guter Einarbeitung ist eine stabile Entwicklung realistisch.`,
     };
   }
   if (gap === "mittel") {
     return {
       level: 3,
       label: "mittel",
-      text: rk === ck
-        ? `Die Stelle verlangt ${roleDesc}. ${s} arbeitet in dieselbe Richtung, muss aber in einzelnen Bereichen noch gezielt dazulernen. Mit klaren Zielen und regelmässigem Feedback ist das gut machbar.`
-        : `Die Stelle verlangt ${roleDesc}. ${s} arbeitet eher über ${compDesc(ck)}. Die Anpassung ist möglich, braucht aber klare Führung und konkrete Ziele über mehrere Monate.`,
+      text: candIsBalanced
+        ? `Die Stelle verlangt ${roleDesc}. ${s} bringt ein ausgeglichenes Profil ohne klaren Schwerpunkt mit. Die Vielseitigkeit ermöglicht eine Anpassung, braucht aber klare Führung und konkrete Ziele.`
+        : rk === ck
+          ? `Die Stelle verlangt ${roleDesc}. ${s} arbeitet in dieselbe Richtung, muss aber in einzelnen Bereichen noch gezielt dazulernen. Mit klaren Zielen und regelmässigem Feedback ist das gut machbar.`
+          : `Die Stelle verlangt ${roleDesc}. ${s} arbeitet eher über ${compDesc(ck)}. Die Anpassung ist möglich, braucht aber klare Führung und konkrete Ziele über mehrere Monate.`,
     };
   }
   return {
     level: 1,
     label: "niedrig",
-    text: rk === ck
-      ? `Die Stelle verlangt ${roleDesc} – deutlich stärker, als ${subj(cand)} es mitbringt. Die Richtung passt zwar, reicht aber nicht aus. Es bräuchte intensive Begleitung über längere Zeit. Ob sich dieser Aufwand lohnt, sollte ehrlich geprüft werden.`
-      : `Die Stelle verlangt ${roleDesc}. ${s} setzt auf ${compDesc(ck)}. Das sind zwei unterschiedliche Arbeitsweisen. Die Anpassung wäre aufwendig, langwierig und im Ergebnis unsicher.`,
+    text: candIsBalanced
+      ? `Die Stelle verlangt ${roleDesc}. ${s} bringt ein ausgeglichenes Profil mit, aber die Arbeitslogik weicht in wesentlichen Bereichen ab. Der geforderte Schwerpunkt lässt sich aus einem vielseitigen Profil nur schwer konsequent aufbauen.`
+      : rk === ck
+        ? `Die Stelle verlangt ${roleDesc} – deutlich stärker, als ${subj(cand)} es mitbringt. Die Richtung passt zwar, reicht aber nicht aus. Es bräuchte intensive Begleitung über längere Zeit. Ob sich dieser Aufwand lohnt, sollte ehrlich geprüft werden.`
+        : `Die Stelle verlangt ${roleDesc}. ${s} setzt auf ${compDesc(ck)}. Das sind zwei unterschiedliche Arbeitsweisen. Die Anpassung wäre aufwendig, langwierig und im Ergebnis unsicher.`,
   };
 }
 
