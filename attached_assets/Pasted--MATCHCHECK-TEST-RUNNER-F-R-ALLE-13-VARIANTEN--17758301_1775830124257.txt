@@ -1,0 +1,401 @@
+/*************************************************
+ * MATCHCHECK TEST-RUNNER FÜR ALLE 13 VARIANTEN
+ * ---------------------------------------------
+ * Voraussetzung:
+ * - Funktion evaluateMatch(soll, ist, options?)
+ *   muss vorhanden sein
+ *
+ * Dieser Runner:
+ * - erzeugt 13 Soll-/Ist-Referenzprofile
+ * - testet alle 13 x 13 Kombinationen
+ * - prüft erkannte Varianten
+ * - prüft Grenzfälle
+ *************************************************/
+
+const EQ_TOL = 5;
+
+/* =================================================
+   1. REFERENZPROFILE FÜR ALLE 13 VARIANTEN
+   ================================================= */
+
+const variantProfiles = {
+  ALL_EQUAL: { I: 34, N: 33, A: 33 },
+
+  TOP_PAIR_IN_A: { I: 40, N: 40, A: 20 },
+  TOP_PAIR_IA_N: { I: 40, N: 20, A: 40 },
+  TOP_PAIR_NA_I: { I: 20, N: 40, A: 40 },
+
+  BOTTOM_PAIR_I_NA: { I: 50, N: 25, A: 25 },
+  BOTTOM_PAIR_N_IA: { I: 25, N: 50, A: 25 },
+  BOTTOM_PAIR_A_IN: { I: 25, N: 25, A: 50 },
+
+  ORDER_INA: { I: 50, N: 30, A: 20 },
+  ORDER_IAN: { I: 50, N: 20, A: 30 },
+  ORDER_NIA: { I: 30, N: 50, A: 20 },
+  ORDER_NAI: { I: 20, N: 50, A: 30 },
+  ORDER_AIN: { I: 30, N: 20, A: 50 },
+  ORDER_ANI: { I: 20, N: 30, A: 50 },
+};
+
+/* Erwartete Variantencodes im Stil des Evaluators */
+const expectedVariantCodes = {
+  ALL_EQUAL: "ALL_EQUAL",
+
+  TOP_PAIR_IN_A: "TOP_PAIR_IN_A",
+  TOP_PAIR_IA_N: "TOP_PAIR_AI_N",
+  TOP_PAIR_NA_I: "TOP_PAIR_AN_I",
+
+  BOTTOM_PAIR_I_NA: "BOTTOM_PAIR_I_AN",
+  BOTTOM_PAIR_N_IA: "BOTTOM_PAIR_N_AI",
+  BOTTOM_PAIR_A_IN: "BOTTOM_PAIR_A_IN",
+
+  ORDER_INA: "ORDER_INA",
+  ORDER_IAN: "ORDER_IAN",
+  ORDER_NIA: "ORDER_NIA",
+  ORDER_NAI: "ORDER_NAI",
+  ORDER_AIN: "ORDER_AIN",
+  ORDER_ANI: "ORDER_ANI",
+};
+
+/* =================================================
+   2. HILFSFUNKTIONEN
+   ================================================= */
+
+function clone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+function profileToString(p) {
+  return `I=${p.I}, N=${p.N}, A=${p.A}`;
+}
+
+function normalizeVariantCode(code) {
+  // Falls dein Evaluator andere Reihenfolgen für Paar-Codes liefert,
+  // kannst du hier anpassen.
+  return code;
+}
+
+function expect(condition, message) {
+  if (!condition) {
+    throw new Error(message);
+  }
+}
+
+function pad(str, len) {
+  str = String(str);
+  return str.length >= len ? str : str + " ".repeat(len - str.length);
+}
+
+/* =================================================
+   3. VARIANTEN-SELBSTTEST
+   Prüft: erkennt evaluateMatch die 13 Referenzprofile korrekt?
+   ================================================= */
+
+function runVariantRecognitionTest(evaluateMatch) {
+  console.log("\n=== 1) VARIANTEN-ERKENNUNG TESTEN ===");
+
+  const failures = [];
+
+  for (const [label, profile] of Object.entries(variantProfiles)) {
+    const result = evaluateMatch(profile, profile);
+    const sollVariant = normalizeVariantCode(result.sollVariant);
+    const istVariant = normalizeVariantCode(result.istVariant);
+    const expected = expectedVariantCodes[label];
+
+    const okSoll = sollVariant === expected;
+    const okIst = istVariant === expected;
+
+    console.log(
+      `${pad(label, 18)} | SOLL=${pad(sollVariant, 18)} | IST=${pad(istVariant, 18)} | erwartet=${expected}`
+    );
+
+    if (!okSoll || !okIst) {
+      failures.push({
+        label,
+        profile,
+        expected,
+        gotSoll: sollVariant,
+        gotIst: istVariant,
+      });
+    }
+  }
+
+  if (failures.length === 0) {
+    console.log("✅ Varianten-Erkennung: alle 13 korrekt erkannt");
+  } else {
+    console.log(`❌ Varianten-Erkennung: ${failures.length} Fehler`);
+    console.table(
+      failures.map((f) => ({
+        label: f.label,
+        profile: profileToString(f.profile),
+        expected: f.expected,
+        gotSoll: f.gotSoll,
+        gotIst: f.gotIst,
+      }))
+    );
+  }
+
+  return failures;
+}
+
+/* =================================================
+   4. 13 x 13 MATRIX-TEST
+   Prüft:
+   - gleiche Struktur + gleiche Werte => geeignet
+   - unterschiedliche Struktur => nicht automatisch immer passend
+   ================================================= */
+
+function runVariantMatrixTest(evaluateMatch) {
+  console.log("\n=== 2) 13 x 13 MATRIX TESTEN ===");
+
+  const labels = Object.keys(variantProfiles);
+  const rows = [];
+  const anomalies = [];
+
+  for (const sollLabel of labels) {
+    const row = { SOLL: sollLabel };
+
+    for (const istLabel of labels) {
+      const soll = clone(variantProfiles[sollLabel]);
+      const ist = clone(variantProfiles[istLabel]);
+
+      const result = evaluateMatch(soll, ist);
+
+      row[istLabel] = `${result.fitLabel} / ${result.structureRelation?.type ?? "-"}`;
+
+      // Minimaler Plausibilitätscheck:
+      // gleiche Referenzprofile müssen geeignet sein
+      if (sollLabel === istLabel) {
+        if (result.fitLabel !== "geeignet") {
+          anomalies.push({
+            type: "SELF_MATCH_NOT_GEEIGNET",
+            sollLabel,
+            istLabel,
+            soll,
+            ist,
+            result,
+          });
+        }
+      }
+    }
+
+    rows.push(row);
+  }
+
+  console.table(rows);
+
+  if (anomalies.length === 0) {
+    console.log("✅ Matrix-Selbstprüfung: alle identischen Varianten sind geeignet");
+  } else {
+    console.log(`❌ Matrix-Selbstprüfung: ${anomalies.length} Fehler`);
+    for (const a of anomalies) {
+      console.log({
+        sollLabel: a.sollLabel,
+        istLabel: a.istLabel,
+        soll: a.soll,
+        ist: a.ist,
+        result: a.result,
+      });
+    }
+  }
+
+  return anomalies;
+}
+
+/* =================================================
+   5. GRENZFALL-TESTS AN DER 5ER-SCHWELLE
+   Genau dort entstehen die meisten Fehler.
+   ================================================= */
+
+function runBoundaryTests(evaluateMatch) {
+  console.log("\n=== 3) GRENZFALL-TESTS ===");
+
+  const tests = [
+    {
+      name: "BOTTOM_PAIR muss geeignet sein",
+      soll: { I: 27, N: 26, A: 47 },
+      ist:  { I: 29, N: 28, A: 43 },
+      expectedFit: "geeignet",
+      expectedSollVariant: "BOTTOM_PAIR_A_IN",
+      expectedIstVariant: "BOTTOM_PAIR_A_IN",
+    },
+    {
+      name: "TOP_PAIR muss geeignet sein",
+      soll: { I: 38, N: 41, A: 22 },
+      ist:  { I: 35, N: 36, A: 29 },
+      expectedFit: "bedingt geeignet", // A weicht um 7 ab
+      expectedSollVariant: "TOP_PAIR_IN_A",
+      expectedIstVariant: "TOP_PAIR_IN_A",
+    },
+    {
+      name: "ORDER bleibt ORDER und geeignet",
+      soll: { I: 42, N: 35, A: 23 },
+      ist:  { I: 44, N: 34, A: 22 },
+      expectedFit: "geeignet",
+      expectedSollVariant: "ORDER_INA",
+      expectedIstVariant: "ORDER_INA",
+    },
+    {
+      name: "Sekundärflip muss hart sein",
+      soll: { I: 50, N: 30, A: 20 },
+      ist:  { I: 50, N: 20, A: 30 },
+      expectedFit: "nicht geeignet",
+      expectedSollVariant: "ORDER_INA",
+      expectedIstVariant: "ORDER_IAN",
+    },
+    {
+      name: "ALL_EQUAL gegen klares ORDER darf nicht geeignet sein",
+      soll: { I: 34, N: 33, A: 33 },
+      ist:  { I: 50, N: 30, A: 20 },
+      expectedFit: "nicht geeignet",
+      expectedSollVariant: "ALL_EQUAL",
+      expectedIstVariant: "ORDER_INA",
+    },
+    {
+      name: "TOP_PAIR vs ORDER am Rand prüfen",
+      soll: { I: 40, N: 40, A: 20 },
+      ist:  { I: 46, N: 40, A: 14 },
+      // Hier muss dein Modell konsistent reagieren.
+      // Je nach Soft-Conflict-Logik meist 'bedingt geeignet' oder 'nicht geeignet'.
+      expectedFit: null,
+      expectedSollVariant: "TOP_PAIR_IN_A",
+      expectedIstVariant: "ORDER_INA",
+    },
+  ];
+
+  const failures = [];
+
+  for (const t of tests) {
+    const result = evaluateMatch(t.soll, t.ist);
+
+    const gotSoll = normalizeVariantCode(result.sollVariant);
+    const gotIst = normalizeVariantCode(result.istVariant);
+
+    const okSoll = gotSoll === t.expectedSollVariant;
+    const okIst = gotIst === t.expectedIstVariant;
+    const okFit = t.expectedFit ? result.fitLabel === t.expectedFit : true;
+
+    console.log(`\n${t.name}`);
+    console.log(`SOLL: ${profileToString(t.soll)} -> ${gotSoll}`);
+    console.log(`IST : ${profileToString(t.ist)} -> ${gotIst}`);
+    console.log(`FIT : ${result.fitLabel}`);
+    console.log(`REL : ${result.structureRelation?.type}`);
+    console.log(`DIFF:`, result.diffs, `maxDiff=${result.maxDiff}`);
+
+    if (!okSoll || !okIst || !okFit) {
+      failures.push({
+        test: t.name,
+        expectedFit: t.expectedFit,
+        gotFit: result.fitLabel,
+        expectedSollVariant: t.expectedSollVariant,
+        gotSoll,
+        expectedIstVariant: t.expectedIstVariant,
+        gotIst,
+        structureRelation: result.structureRelation?.type,
+      });
+    }
+  }
+
+  if (failures.length === 0) {
+    console.log("\n✅ Grenzfall-Tests: alle erwarteten Fälle korrekt");
+  } else {
+    console.log(`\n❌ Grenzfall-Tests: ${failures.length} Fehler`);
+    console.table(failures);
+  }
+
+  return failures;
+}
+
+/* =================================================
+   6. OPTIONAL: ALLE PROFILE LEICHT VARIIEREN
+   Prüft Robustheit innerhalb derselben Variante
+   ================================================= */
+
+function runRobustnessTests(evaluateMatch) {
+  console.log("\n=== 4) ROBUSTHEITS-TESTS INNERHALB DER VARIANTEN ===");
+
+  const failures = [];
+
+  const variantsToMutate = [
+    { label: "ALL_EQUAL", base: { I: 34, N: 33, A: 33 }, mutations: [
+      { I: 35, N: 32, A: 33 },
+      { I: 36, N: 31, A: 33 },
+    ]},
+    { label: "TOP_PAIR_IN_A", base: { I: 40, N: 40, A: 20 }, mutations: [
+      { I: 41, N: 39, A: 20 },
+      { I: 42, N: 40, A: 18 },
+    ]},
+    { label: "BOTTOM_PAIR_A_IN", base: { I: 25, N: 25, A: 50 }, mutations: [
+      { I: 27, N: 23, A: 50 },
+      { I: 29, N: 24, A: 47 },
+    ]},
+    { label: "ORDER_INA", base: { I: 50, N: 30, A: 20 }, mutations: [
+      { I: 49, N: 31, A: 20 },
+      { I: 47, N: 32, A: 21 },
+    ]},
+  ];
+
+  for (const block of variantsToMutate) {
+    for (const mut of block.mutations) {
+      const result = evaluateMatch(block.base, mut);
+
+      console.log(
+        `${pad(block.label, 18)} | base=${profileToString(block.base)} | mut=${profileToString(mut)} | fit=${result.fitLabel} | rel=${result.structureRelation?.type}`
+      );
+
+      if (result.fitLabel === "nicht geeignet") {
+        failures.push({
+          variant: block.label,
+          base: profileToString(block.base),
+          mut: profileToString(mut),
+          fit: result.fitLabel,
+          rel: result.structureRelation?.type,
+        });
+      }
+    }
+  }
+
+  if (failures.length === 0) {
+    console.log("✅ Robustheit: kleine Variationen bleiben plausibel");
+  } else {
+    console.log(`❌ Robustheit: ${failures.length} auffällige Fälle`);
+    console.table(failures);
+  }
+
+  return failures;
+}
+
+/* =================================================
+   7. MASTER-RUNNER
+   ================================================= */
+
+function runAllMatchTests(evaluateMatch) {
+  console.log("======================================");
+  console.log("MATCHCHECK TEST-RUNNER START");
+  console.log("======================================");
+
+  const results = {
+    recognitionFailures: runVariantRecognitionTest(evaluateMatch),
+    matrixFailures: runVariantMatrixTest(evaluateMatch),
+    boundaryFailures: runBoundaryTests(evaluateMatch),
+    robustnessFailures: runRobustnessTests(evaluateMatch),
+  };
+
+  const totalFailures =
+    results.recognitionFailures.length +
+    results.matrixFailures.length +
+    results.boundaryFailures.length +
+    results.robustnessFailures.length;
+
+  console.log("\n======================================");
+  console.log("GESAMTERGEBNIS");
+  console.log("======================================");
+
+  if (totalFailures === 0) {
+    console.log("✅ Alle Tests erfolgreich");
+  } else {
+    console.log(`❌ Insgesamt ${totalFailures} Auffälligkeiten gefunden`);
+  }
+
+  return results;
+}

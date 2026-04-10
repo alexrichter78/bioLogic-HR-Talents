@@ -89,6 +89,11 @@ Preferred communication style: Simple, everyday language.
 -   **Admin Organizations Tab**: "Organisationen" tab in admin panel. Full CRUD for orgs (name, KI-limit). Usage stats per org (expandable per-org detail). Reset usage counter. User-to-org assignment via org dropdown in user edit form. Subadmin badge display in user list.
 -   **KI-Coach Limit Feedback**: When org KI quota is exhausted (HTTP 429), the coach shows a friendly German message explaining the limit and suggesting contacting the admin, instead of a generic error.
 
+### MatchCheck Test-Runner
+-   **Location**: `tests/matchcheck-runner.ts`
+-   **Run**: `npx tsx tests/matchcheck-runner.ts`
+-   **Coverage**: 5 test groups – variant recognition (13 profiles), self-match (diagonal), cross-variant structural conflicts (HARD/SOFT), boundary cases (incl. 27/26/47 case), robustness (small variations). Colored console output with specific error diagnostics. Exit code 0 on success, 1 on failure.
+
 ## External Dependencies
 
 ### Database
