@@ -570,6 +570,14 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
   areas.push(buildCommunicationImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct));
   areas.push(buildCultureImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct));
 
+  if (rk !== ck && !roleIsBalFull) {
+    for (const area of areas) {
+      if (area.severity === "ok") {
+        area.severity = "warning";
+      }
+    }
+  }
+
   return areas;
 }
 
