@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MatchCheck – Vollständige Soll-Ist-Logik</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; color: #1d1d1f; line-height: 1.7; padding: 0; }
+  .container { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; color: #1d1d1f; }
+  h2 { font-size: 22px; font-weight: 600; margin-top: 48px; margin-bottom: 16px; color: #1d1d1f; padding-bottom: 8px; border-bottom: 2px solid #e5e5ea; }
+  h3 { font-size: 17px; font-weight: 600; margin-top: 24px; margin-bottom: 8px; color: #48484a; }
+  p { margin-bottom: 12px; font-size: 15px; }
+  .subtitle { color: #636366; font-size: 15px; margin-bottom: 32px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 14px; }
+  th { background: #1d1d1f; color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; }
+  td { padding: 10px 14px; border-bottom: 1px solid #e5e5ea; }
+  tr:nth-child(even) td { background: #f2f2f7; }
+  .code { background: #1d1d1f; color: #e5e5ea; padding: 16px 20px; border-radius: 10px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; line-height: 1.6; overflow-x: auto; margin: 12px 0 24px; white-space: pre; }
+  .card { background: #fff; border-radius: 12px; padding: 24px; margin: 16px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .tag { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-right: 6px; }
+  .tag-green { background: #d1f5d3; color: #1b7a2b; }
+  .tag-yellow { background: #fff3cd; color: #856404; }
+  .tag-red { background: #f8d7da; color: #721c24; }
+  .tag-blue { background: #d1ecf1; color: #0c5460; }
+  .highlight { background: #fffde7; border-left: 4px solid #e5a832; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 14px; }
+  .flow-box { background: #fff; border: 2px solid #e5e5ea; border-radius: 10px; padding: 16px; margin: 8px 0; text-align: center; font-weight: 600; font-size: 14px; }
+  .flow-arrow { text-align: center; font-size: 20px; color: #636366; margin: 4px 0; }
+  .flow-row { display: flex; gap: 12px; margin: 8px 0; }
+  .flow-row > div { flex: 1; }
+  .separator { height: 1px; background: #e5e5ea; margin: 40px 0; }
+  strong { font-weight: 600; }
+  .example-title { font-weight: 600; color: #1d1d1f; margin-bottom: 4px; }
+  .toc { background: #fff; border-radius: 12px; padding: 20px 24px; margin: 24px 0 40px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .toc a { color: #007aff; text-decoration: none; display: block; padding: 4px 0; font-size: 14px; }
+  .toc a:hover { text-decoration: underline; }
+  @media (max-width: 600px) {
+    .container { padding: 20px 16px 60px; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 18px; }
+    table { font-size: 12px; }
+    th, td { padding: 8px 10px; }
+    .flow-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>MatchCheck – Vollständige Soll-Ist-Logik</h1>
+<p class="subtitle">Deterministische Bewertung der Passung zwischen Stelle (Soll) und Person (Ist)</p>
+
+<div class="toc">
+  <strong>Inhalt</strong>
+  <a href="#ueberblick">Überblick</a>
+  <a href="#schritt1">Schritt 1: Variante erkennen (13 Muster)</a>
+  <a href="#schritt2">Schritt 2: Paarrelationen bilden</a>
+  <a href="#schritt3">Schritt 3: Strukturvergleich</a>
+  <a href="#schritt4">Schritt 4: Abweichungsprüfung</a>
+  <a href="#entscheidungsbaum">Entscheidungsbaum</a>
+  <a href="#ko">Externes KO (koRuleTriggered)</a>
+  <a href="#kontrolle">Kontrollintensität / Führungsaufwand</a>
+  <a href="#kontrolle-erweitert">Erweiterte Kontrollintensität</a>
+  <a href="#entwicklung">Entwicklungsaufwand</a>
+  <a href="#beispiele">Rechenbeispiele</a>
+  <a href="#schwellenwerte">Schwellenwerte</a>
+  <a href="#datenfluss">Datenfluss</a>
+</div>
+
+<h2 id="ueberblick">Überblick</h2>
+<p>Der MatchCheck vergleicht ein <strong>Soll-Profil</strong> (Stelle) mit einem <strong>Ist-Profil</strong> (Person). Beide Profile bestehen aus drei Komponenten, die zusammen immer 100 ergeben:</p>
+
+<table>
+  <tr><th>Kürzel</th><th>Komponente</th><th>Bedeutung</th></tr>
+  <tr><td><strong>I</strong></td><td>Impulsiv</td><td>Tempo, Ergebnisorientierung, direkte Umsetzung</td></tr>
+  <tr><td><strong>N</strong></td><td>Intuitiv</td><td>Beziehungsarbeit, Dialog, Gespür für Situationen</td></tr>
+  <tr><td><strong>A</strong></td><td>Analytisch</td><td>Struktur, Analyse, systematisches Vorgehen</td></tr>
+</table>
+
+<div class="separator"></div>
+
+<h2 id="schritt1">Schritt 1: Variante erkennen (13 Muster)</h2>
+<p>Jedes Profil wird anhand der Abstände zwischen den sortierten Werten in eine von <strong>13 Strukturvarianten</strong> eingeordnet. Die Gleichheits-Toleranz beträgt <strong>EQ_TOL = 5</strong>.</p>
+
+<h3>Sortierung</h3>
+<p>Die drei Werte werden absteigend sortiert: <code>[höchster, mittlerer, niedrigster]</code></p>
+
+<h3>Abstände berechnen</h3>
+<div class="code">d1 = höchster − mittlerer
+d2 = mittlerer − niedrigster</div>
+
+<h3>Klassifikation</h3>
+<table>
+  <tr><th>Bedingung</th><th>Variante</th><th>Muster</th><th>Anzahl</th></tr>
+  <tr><td>d1 ≤ 5 <strong>und</strong> d2 ≤ 5</td><td><code>ALL_EQUAL</code></td><td>I ≈ N ≈ A</td><td>1</td></tr>
+  <tr><td>d1 ≤ 5 <strong>und</strong> d2 &gt; 5</td><td><code>TOP_PAIR</code></td><td>z.B. I ≈ N &gt; A</td><td>3</td></tr>
+  <tr><td>d1 &gt; 5 <strong>und</strong> d2 ≤ 5</td><td><code>BOTTOM_PAIR</code></td><td>z.B. I &gt; N ≈ A</td><td>3</td></tr>
+  <tr><td>d1 &gt; 5 <strong>und</strong> d2 &gt; 5</td><td><code>ORDER</code></td><td>z.B. I &gt; N &gt; A</td><td>6</td></tr>
+</table>
+<p><strong>Total: 1 + 3 + 3 + 6 = 13 Varianten</strong></p>
+
+<div class="separator"></div>
+
+<h2 id="schritt2">Schritt 2: Paarrelationen bilden</h2>
+<p>Für jedes Profil werden <strong>3 Paarvergleiche</strong> gebildet:</p>
+
+<table>
+  <tr><th>Paar</th><th>Berechnung</th></tr>
+  <tr><td>I vs N</td><td>Differenz I − N</td></tr>
+  <tr><td>I vs A</td><td>Differenz I − A</td></tr>
+  <tr><td>N vs A</td><td>Differenz N − A</td></tr>
+</table>
+
+<p>Jeder Vergleich ergibt einen Wert:</p>
+
+<table>
+  <tr><th>Differenz</th><th>Relation</th><th>Bedeutung</th></tr>
+  <tr><td>|diff| ≤ 5</td><td><strong>0</strong></td><td>Gleich stark</td></tr>
+  <tr><td>diff &gt; 5</td><td><strong>+1</strong></td><td>Erste Komponente klar stärker</td></tr>
+  <tr><td>diff &lt; −5</td><td><strong>−1</strong></td><td>Zweite Komponente klar stärker</td></tr>
+</table>
+
+<div class="card">
+  <p class="example-title">Beispiel:</p>
+  <div class="code">I = N > A  (I=40, N=40, A=20)
+→ I:N = 0,  I:A = 1,  N:A = 1
+
+I > N > A  (I=50, N=30, A=20)
+→ I:N = 1,  I:A = 1,  N:A = 1</div>
+</div>
+
+<div class="separator"></div>
+
+<h2 id="schritt3">Schritt 3: Strukturvergleich über Paarrelationen</h2>
+<p>Die 3 Paarrelationen von Soll und Ist werden verglichen:</p>
+
+<div class="card">
+  <h3>A. Exakt (EXACT) <span class="tag tag-green">Struktur identisch</span></h3>
+  <p>Alle 3 Relationen sind identisch.</p>
+  <p>→ Weiter zur Abweichungsprüfung.</p>
+</div>
+
+<div class="card">
+  <h3>B. Weicher Strukturkonflikt (SOFT_CONFLICT) <span class="tag tag-yellow">1 Abweichung</span></h3>
+  <p><strong>Genau 1</strong> der 3 Relationen ist unterschiedlich <strong>und</strong> es ist kein direkter Flip (1 ↔ −1).</p>
+  <p>Erlaubte Übergänge:</p>
+  <ul style="margin: 8px 0 8px 20px; font-size: 14px;">
+    <li>0 ↔ 1 (Gleichheit kippt leicht nach oben)</li>
+    <li>0 ↔ −1 (Gleichheit kippt leicht nach unten)</li>
+  </ul>
+  <p>→ Weiter zur Abweichungsprüfung, aber <strong>maximal "bedingt geeignet"</strong>.</p>
+</div>
+
+<div class="card">
+  <h3>C. Harter Strukturkonflikt (HARD_CONFLICT) <span class="tag tag-red">Sofort KO</span></h3>
+  <p>Sobald:</p>
+  <ul style="margin: 8px 0 8px 20px; font-size: 14px;">
+    <li><strong>Mehr als 1</strong> Relation abweicht, oder</li>
+    <li>Irgendwo ein <strong>direkter Flip</strong> 1 ↔ −1 vorkommt</li>
+  </ul>
+  <p>→ <strong>Sofort "nicht geeignet".</strong></p>
+</div>
+
+<h3>Warum Paarrelationen besser sind als Variantentyp-Vergleiche</h3>
+<table>
+  <tr><th>Fall</th><th>Alt (Variantentypen)</th><th>Neu (Paarrelationen)</th><th>Korrekt?</th></tr>
+  <tr><td>ALL_EQUAL ↔ BOTTOM_PAIR</td><td>Fälschlich weich</td><td>Hart (2 Relationen kippen)</td><td>Neu ✓</td></tr>
+  <tr><td>ALL_EQUAL ↔ TOP_PAIR</td><td>Fälschlich weich</td><td>Hart (2 Relationen kippen)</td><td>Neu ✓</td></tr>
+  <tr><td>TOP_PAIR (I=N>A) ↔ ORDER (N>I>A)</td><td>Fälschlich hart</td><td>Weich (nur I:N kippt 0→−1)</td><td>Neu ✓</td></tr>
+  <tr><td>Sekundärflip (I>N>A ↔ I>A>N)</td><td>Korrekt hart</td><td>Hart (N:A flippt 1→−1)</td><td>Beide ✓</td></tr>
+</table>
+
+<div class="separator"></div>
+
+<h2 id="schritt4">Schritt 4: Abweichungsprüfung</h2>
+<p>Wenn kein harter Strukturkonflikt vorliegt:</p>
+
+<div class="code">diffI = |Soll_I − Ist_I|
+diffN = |Soll_N − Ist_N|
+diffA = |Soll_A − Ist_A|
+maxDiff = grösster Wert davon</div>
+
+<h3>Bei exakter Strukturgleichheit (EXACT)</h3>
+<table>
+  <tr><th>maxDiff</th><th>Ergebnis</th></tr>
+  <tr><td>≤ 5</td><td><span class="tag tag-green">Geeignet</span></td></tr>
+  <tr><td>&gt; 5 und ≤ 10</td><td><span class="tag tag-yellow">Bedingt geeignet</span></td></tr>
+  <tr><td>&gt; 10</td><td><span class="tag tag-red">Nicht geeignet</span></td></tr>
+</table>
+
+<h3>Bei weichem Strukturkonflikt (SOFT_CONFLICT)</h3>
+<table>
+  <tr><th>maxDiff</th><th>Ergebnis</th></tr>
+  <tr><td>≤ 10</td><td><span class="tag tag-yellow">Bedingt geeignet</span></td></tr>
+  <tr><td>&gt; 10</td><td><span class="tag tag-red">Nicht geeignet</span></td></tr>
+</table>
+
+<div class="highlight"><strong>Wichtig:</strong> Bei weichem Strukturkonflikt gibt es nie "geeignet".</div>
+
+<div class="separator"></div>
+
+<h2 id="entscheidungsbaum">Entscheidungsbaum</h2>
+
+<div class="flow-box" style="border-color: #636366;">Externes KO? (koRuleTriggered)</div>
+<div class="flow-arrow">↓</div>
+<div class="flow-row">
+  <div class="flow-box" style="border-color: #d64045; background: #fff5f5;">ja → <span class="tag tag-red">NICHT GEEIGNET</span></div>
+  <div class="flow-box" style="border-color: #34c759;">nein → weiter</div>
+</div>
+<div class="flow-arrow">↓</div>
+<div class="flow-box">Paarrelationen bilden (Soll + Ist)</div>
+<div class="flow-arrow">↓</div>
+<div class="flow-box">Relationen vergleichen</div>
+<div class="flow-arrow">↓</div>
+<div class="flow-row">
+  <div class="flow-box" style="border-color: #d64045; background: #fff5f5;">
+    <strong>HARD</strong><br>&gt;1 Diff oder Flip<br><span class="tag tag-red">NICHT GEEIGNET</span>
+  </div>
+  <div class="flow-box" style="border-color: #e5a832; background: #fffde7;">
+    <strong>SOFT</strong><br>1 Diff, kein Flip<br>maxDiff prüfen
+  </div>
+  <div class="flow-box" style="border-color: #34c759; background: #f0fff0;">
+    <strong>EXACT</strong><br>0 Diff<br>maxDiff prüfen
+  </div>
+</div>
+<div class="flow-arrow">↓</div>
+<div class="flow-row">
+  <div></div>
+  <div class="flow-box" style="border-color: #e5a832;">
+    ≤ 10: <span class="tag tag-yellow">BEDINGT</span><br>
+    &gt; 10: <span class="tag tag-red">NICHT</span>
+  </div>
+  <div class="flow-box" style="border-color: #34c759;">
+    ≤ 5: <span class="tag tag-green">GEEIGNET</span><br>
+    ≤ 10: <span class="tag tag-yellow">BEDINGT</span><br>
+    &gt; 10: <span class="tag tag-red">NICHT</span>
+  </div>
+</div>
+
+<div class="separator"></div>
+
+<h2 id="ko">Externes KO (koRuleTriggered)</h2>
+<p>Vor dem Paarrelationen-Vergleich prüft das System, ob ein <strong>sofortiges KO</strong> aus der erweiterten Rollenanalyse vorliegt. Diese Prüfung überschreibt jedes andere Ergebnis mit "Nicht geeignet".</p>
+
+<table>
+  <tr><th>#</th><th>Bedingung</th><th>Erklärung</th></tr>
+  <tr><td>1</td><td>Rolle EXTREME_I (I ≥ 65) und Kandidat I ≤ 35</td><td>Extreme Tempo-Stelle, Kandidat zu langsam</td></tr>
+  <tr><td>2</td><td>Rolle EXTREME_N (N ≥ 55) und Kandidat N ≤ 30</td><td>Extreme Beziehungs-Stelle, Kandidat zu sachorientiert</td></tr>
+  <tr><td>3</td><td>Rolle EXTREME_A (A ≥ 65) und Kandidat A ≤ 35</td><td>Extreme Analyse-Stelle, Kandidat zu unstrukturiert</td></tr>
+  <tr><td>4</td><td>Verschiedene Hauptprägung UND Hauptdifferenz ≥ 18</td><td>Fundamentaler Richtungswechsel</td></tr>
+  <tr><td>5</td><td>Rolle gap1 ≥ 20 UND verschiedene Hauptprägung UND Hauptdifferenz ≥ 15</td><td>Starke Einzeldominanz wird nicht abgebildet</td></tr>
+  <tr><td>6</td><td>Rolle ist DUAL UND Kandidat erreicht bei einem Dual-Wert &lt; 75% des Soll</td><td>Doppelschwerpunkt wird nicht getragen</td></tr>
+  <tr><td>7</td><td>Führung erforderlich UND Führungsprofil I ≥ 60 UND Kandidat I ≤ 35</td><td>Impulsive Führung verlangt, Kandidat kann nicht liefern</td></tr>
+</table>
+
+<div class="highlight">
+  <strong>Slider-Synchronisation:</strong> Wenn der User den Soll-Profil-Slider bewegt, wird <code>roleAnalysis.role_profile</code> automatisch mit den neuen Slider-Werten synchronisiert. Dadurch arbeiten die KO-Regeln immer mit den angezeigten Werten. Die übrigen Profile (frame_profile, leadership.profile, tasks_profile) bleiben unverändert.
+</div>
+
+<div class="separator"></div>
+
+<h2 id="kontrolle">Kontrollintensität (Führungsaufwand) – Basis</h2>
+
+<table>
+  <tr><th>Bedingung</th><th>Punkte</th></tr>
+  <tr><td>Harter Strukturkonflikt</td><td>+3</td></tr>
+  <tr><td>Weicher Strukturkonflikt</td><td>+2</td></tr>
+  <tr><td>Exakte Strukturgleichheit</td><td>+0</td></tr>
+  <tr><td>maxDiff &gt; 10</td><td>+2</td></tr>
+  <tr><td>maxDiff &gt; 5 und ≤ 10</td><td>+1</td></tr>
+  <tr><td>Rolle hat klare Einzeldominanz (ORDER/BOTTOM_PAIR mit d1 &gt; 10)</td><td>+1</td></tr>
+</table>
+
+<table>
+  <tr><th>Punkte</th><th>Stufe</th></tr>
+  <tr><td>0–2</td><td><span class="tag tag-green">Gering</span></td></tr>
+  <tr><td>3–4</td><td><span class="tag tag-yellow">Mittel</span></td></tr>
+  <tr><td>≥ 5</td><td><span class="tag tag-red">Hoch</span></td></tr>
+</table>
+
+<div class="separator"></div>
+
+<h2 id="kontrolle-erweitert">Erweiterte Kontrollintensität (calcControlIntensity)</h2>
+<p>Wenn ein <code>roleAnalysis</code>-Objekt vorhanden ist, wird die Kontrollintensität zusätzlich durch diese Faktoren beeinflusst:</p>
+
+<table>
+  <tr><th>Bedingung</th><th>Punkte</th></tr>
+  <tr><td>Verschiedene Hauptprägung ODER Dual/Nicht-Dual-Mismatch</td><td>+2</td></tr>
+  <tr><td>Rolle ist EXTREME</td><td>+1</td></tr>
+  <tr><td>Rolle hat gap1 ≥ 12</td><td>+1</td></tr>
+  <tr><td>Hauptdifferenz ≥ 25</td><td>+3</td></tr>
+  <tr><td>Hauptdifferenz ≥ 15</td><td>+2</td></tr>
+  <tr><td>Führung erforderlich, Führungsprofil-Differenz ≥ 15</td><td>+2</td></tr>
+  <tr><td>Rahmen-Profil dominant (≥ 75%) und Kandidat hat andere Hauptprägung</td><td>+2</td></tr>
+  <tr><td>Rahmen-Profil stark (≥ 65%) und Kandidat hat andere Hauptprägung</td><td>+1</td></tr>
+  <tr><td>Marktdruck hoch und Rolle-I − Kandidat-I ≥ 15</td><td>+1</td></tr>
+  <tr><td>Regulierung hoch und Rolle-A − Kandidat-A ≥ 15</td><td>+1</td></tr>
+  <tr><td>Change-Rate hoch und Kandidat-A − Rolle-A ≥ 15</td><td>+1</td></tr>
+</table>
+
+<p>Stufen: 0–2 = <span class="tag tag-green">LOW</span>, 3–5 = <span class="tag tag-yellow">MEDIUM</span>, ≥ 6 = <span class="tag tag-red">HIGH</span></p>
+
+<div class="separator"></div>
+
+<h2 id="entwicklung">Entwicklungsaufwand</h2>
+<table>
+  <tr><th>Fit-Ergebnis</th><th>Kontrolle</th><th>Entwicklungsaufwand</th></tr>
+  <tr><td><span class="tag tag-red">Nicht geeignet</span></td><td>(egal)</td><td><strong>Hoch</strong></td></tr>
+  <tr><td><span class="tag tag-yellow">Bedingt geeignet</span></td><td>(egal)</td><td><strong>Mittel</strong></td></tr>
+  <tr><td><span class="tag tag-green">Geeignet</span></td><td>gering</td><td><strong>Niedrig</strong></td></tr>
+  <tr><td><span class="tag tag-green">Geeignet</span></td><td>mittel / hoch</td><td><strong>Mittel</strong></td></tr>
+</table>
+
+<div class="separator"></div>
+
+<h2 id="beispiele">Rechenbeispiele</h2>
+
+<div class="card">
+  <h3>Beispiel 1: <span class="tag tag-green">Geeignet</span> (EXACT)</h3>
+  <div class="code">Soll: I=42  N=35  A=23
+Ist:  I=44  N=34  A=22
+
+Soll-Relationen: I:N=1,  I:A=1,  N:A=1
+Ist-Relationen:  I:N=1,  I:A=1,  N:A=1
+→ EXACT (0 Abweichungen)
+
+maxDiff = MAX(2, 1, 1) = 2 ≤ 5 → GEEIGNET</div>
+</div>
+
+<div class="card">
+  <h3>Beispiel 2: <span class="tag tag-green">Geeignet</span> (EXACT – Doppelschwerpunkt)</h3>
+  <div class="code">Soll: I=24  N=38  A=38
+Ist:  I=22  N=39  A=39
+
+Soll-Relationen: I:N=−1, I:A=−1, N:A=0
+Ist-Relationen:  I:N=−1, I:A=−1, N:A=0
+→ EXACT (0 Abweichungen)
+
+maxDiff = MAX(2, 1, 1) = 2 ≤ 5 → GEEIGNET</div>
+</div>
+
+<div class="card">
+  <h3>Beispiel 3: <span class="tag tag-green">Geeignet</span> (EXACT – BOTTOM_PAIR)</h3>
+  <div class="code">Soll: I=27  N=26  A=47
+Ist:  I=29  N=28  A=43
+
+Soll-Relationen: I:N=0,  I:A=−1, N:A=−1
+Ist-Relationen:  I:N=0,  I:A=−1, N:A=−1
+→ EXACT (0 Abweichungen)
+
+maxDiff = MAX(2, 2, 4) = 4 ≤ 5 → GEEIGNET</div>
+</div>
+
+<div class="card">
+  <h3>Beispiel 4: <span class="tag tag-yellow">Bedingt geeignet</span> (SOFT_CONFLICT)</h3>
+  <div class="code">Soll: I=40  N=40  A=20  (I ≈ N > A)
+Ist:  I=34  N=40  A=26  (N > I > A)
+
+Soll-Relationen: I:N=0,  I:A=1,  N:A=1
+Ist-Relationen:  I:N=−1, I:A=1,  N:A=1
+→ SOFT_CONFLICT (1 Abweichung: I:N kippt 0→−1, kein Flip)
+
+maxDiff = MAX(6, 0, 6) = 6 ≤ 10 → BEDINGT GEEIGNET</div>
+</div>
+
+<div class="card">
+  <h3>Beispiel 5: <span class="tag tag-red">Nicht geeignet</span> (HARD_CONFLICT – Sekundärflip)</h3>
+  <div class="code">Soll: I=50  N=30  A=20  (I > N > A)
+Ist:  I=50  N=20  A=30  (I > A > N)
+
+Soll-Relationen: I:N=1,  I:A=1,  N:A=1
+Ist-Relationen:  I:N=1,  I:A=1,  N:A=−1
+→ HARD_CONFLICT (N:A flippt direkt 1→−1)
+
+→ NICHT GEEIGNET</div>
+</div>
+
+<div class="card">
+  <h3>Beispiel 6: <span class="tag tag-red">Nicht geeignet</span> (HARD_CONFLICT – ALL_EQUAL vs BOTTOM_PAIR)</h3>
+  <div class="code">Soll: I=35  N=33  A=32  (ALL_EQUAL)
+Ist:  I=41  N=30  A=29  (BOTTOM_PAIR)
+
+Soll-Relationen: I:N=0,  I:A=0,  N:A=0
+Ist-Relationen:  I:N=1,  I:A=1,  N:A=0
+→ HARD_CONFLICT (2 Relationen kippen – nicht nur 1)
+
+→ NICHT GEEIGNET</div>
+</div>
+
+<div class="card">
+  <h3>Beispiel 7: <span class="tag tag-yellow">Bedingt geeignet</span> (SOFT_CONFLICT – BOTTOM_PAIR vs ORDER)</h3>
+  <div class="code">Soll: I=46  N=28  A=26  (BOTTOM_PAIR)
+Ist:  I=46  N=30  A=24  (ORDER)
+
+Soll-Relationen: I:N=1,  I:A=1,  N:A=0
+Ist-Relationen:  I:N=1,  I:A=1,  N:A=1
+→ SOFT_CONFLICT (1 Abweichung: N:A kippt 0→1, kein Flip)
+
+maxDiff = MAX(0, 2, 2) = 2 ≤ 10 → BEDINGT GEEIGNET</div>
+</div>
+
+<div class="separator"></div>
+
+<h2 id="schwellenwerte">Schwellenwerte im Überblick</h2>
+<table>
+  <tr><th>Parameter</th><th>Wert</th><th>Verwendung</th></tr>
+  <tr><td>EQ_TOL</td><td>5</td><td>Wann gelten zwei Werte als "gleich" (Paarrelation = 0)?</td></tr>
+  <tr><td>GOOD_TOL</td><td>5</td><td>Max. Abweichung für "geeignet" (nur bei EXACT)</td></tr>
+  <tr><td>COND_TOL</td><td>10</td><td>Max. Abweichung für "bedingt geeignet"</td></tr>
+</table>
+
+<div class="separator"></div>
+
+<h2 id="datenfluss">Kurzfassung der finalen Regel</h2>
+<table>
+  <tr><th>Ergebnis</th><th>Bedingung</th></tr>
+  <tr><td><span class="tag tag-red">Nicht geeignet</span></td><td>Externes KO, Harter Strukturkonflikt, oder maxDiff &gt; 10</td></tr>
+  <tr><td><span class="tag tag-yellow">Bedingt geeignet</span></td><td>Weicher Strukturkonflikt mit maxDiff ≤ 10, oder exakte Struktur mit maxDiff 6–10</td></tr>
+  <tr><td><span class="tag tag-green">Geeignet</span></td><td>Kein KO, exakte Struktur und maxDiff ≤ 5</td></tr>
+</table>
+
+<div style="text-align: center; margin-top: 48px; color: #8e8e93; font-size: 13px;">
+  bioLogic RoleDynamics – MatchCheck Logik-Dokumentation
+</div>
+
+</div>
+</body>
+</html>
