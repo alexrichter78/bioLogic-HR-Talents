@@ -209,6 +209,18 @@ maxDiff = grösster Wert davon
 
 Direkte 1:1-Zuordnung, keine Sonderfälle.
 
+### Individuelle Bereichsbewertung (Impact Areas)
+
+Die 5 Bereiche im Bericht (Entscheidungsverhalten, Arbeitsweise, Führungswirkung, Kommunikation, Teamkultur) werden **unabhängig** vom Gesamtergebnis bewertet. Jeder Bereich berechnet seine eigene Severity basierend auf den relevanten Komponentenlücken:
+
+| Severity | Label | Bedeutung |
+|----------|-------|-----------|
+| ok | Passend | Bereich liegt nah an der Stellenanforderung |
+| warning | Bedingt | Erkennbare Abweichung, steuerbar mit Führung |
+| critical | Kritisch | Deutliche Abweichung, hoher Aufwand nötig |
+
+Beispiel: Gesamtergebnis "Nicht geeignet", aber Arbeitsweise kann "Passend" sein wenn der analytische Gap klein ist.
+
 ---
 
 ## Kurzfassung der finalen Regel

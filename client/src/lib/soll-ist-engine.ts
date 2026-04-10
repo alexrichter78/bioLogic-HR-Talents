@@ -291,13 +291,6 @@ export function computeSollIst(
   const stressBehavior = buildStressBehavior(cConst, ct, cn, gapLevel);
   const roleIsBalFull = rDom.gap1 <= 5 && rDom.gap2 <= 5;
   const impactAreas = buildImpactAreas(rk, ck, rt, ct, cn, fuehrungsArt, roleIsBalFull);
-  if (fitRating === "NICHT_GEEIGNET") {
-    for (const area of impactAreas) {
-      if (area.severity === "ok") {
-        area.severity = "warning";
-      }
-    }
-  }
   const riskTimeline = buildRiskTimeline(roleName, cn, rk, ck, gapLevel, roleIsBalFull, rt, ct);
   const devGap: "gering" | "mittel" | "hoch" = fitRating === "NICHT_GEEIGNET" ? "hoch"
     : fitRating === "BEDINGT" ? "mittel"
