@@ -52,40 +52,67 @@ Bei TOP_PAIR und BOTTOM_PAIR werden die gleichwertigen Komponenten alphabetisch 
 
 ---
 
-## Schritt 2: Varianten vergleichen (Strukturprüfung)
+## Schritt 2: Strukturprüfung (3 Stufen)
 
-```
-sollVariante === istVariante ?
-```
+Die Varianten werden verglichen. Es gibt drei mögliche Ergebnisse:
 
-**Wenn NEIN → „Nicht geeignet"** (Strukturkonflikt, keine weitere Prüfung nötig)
+### A. Exakte Strukturgleichheit (EXACT)
 
-Die Grundstruktur der Arbeitsweise muss identisch sein. Beispiele für Strukturkonflikte:
+Die Varianten-Codes sind identisch. → Weiter zur Abweichungsprüfung.
 
-| Soll | Ist | Ergebnis |
-|------|-----|----------|
-| I > N > A | I > A > N | Nicht geeignet (Sekundärflip) |
-| I = N > A | I > N > A | Nicht geeignet (Paar vs. Einzeldominanz) |
-| ALL_EQUAL | I > N = A | Nicht geeignet (Balance vs. Schwerpunkt) |
-| I > N = A | I > N > A | Nicht geeignet (Gleichstand unten vs. klar) |
+### B. Weicher Strukturkonflikt (SOFT_CONFLICT)
+
+Die Variante ist nicht identisch, aber nur wegen eines Grenzfalls rund um die 5er-Toleranz. → Weiter zur Abweichungsprüfung, aber **maximal "bedingt geeignet"**.
+
+Typische Fälle:
+
+| Kombination | Bedingung |
+|-------------|-----------|
+| TOP_PAIR ↔ ORDER | Gleiche Top- und Zweitkomponente |
+| BOTTOM_PAIR ↔ ORDER | Gleiche komplette Reihenfolge (top, second, third) |
+| ALL_EQUAL ↔ TOP_PAIR | Immer weich (nahe an balanced) |
+| ALL_EQUAL ↔ BOTTOM_PAIR | Immer weich (nahe an balanced) |
+
+### C. Harter Strukturkonflikt (HARD_CONFLICT)
+
+Die Denklogik kippt wirklich. → **Sofort "nicht geeignet"**.
+
+Typische Fälle:
+- Andere Hauptkomponente
+- Anderer echter Doppelschwerpunkt oben
+- Reihenfolge kippt klar (I>N>A vs I>A>N = Sekundärflip)
+- ALL_EQUAL gegen klare ORDER-Dominanz
+- TOP_PAIR ↔ BOTTOM_PAIR
 
 ---
 
-## Schritt 3: Abweichung prüfen (wenn Struktur passt)
+## Schritt 3: Abweichungsprüfung
 
-Wenn die Varianten übereinstimmen, wird die **grösste Einzelabweichung** (maxDiff) geprüft:
+Wenn kein harter Strukturkonflikt vorliegt:
 
 ```
-maxDiff = MAX(|Soll_I - Ist_I|, |Soll_N - Ist_N|, |Soll_A - Ist_A|)
+diffI = |Soll_I - Ist_I|
+diffN = |Soll_N - Ist_N|
+diffA = |Soll_A - Ist_A|
+maxDiff = grösster Wert davon
 ```
 
-### Schwellen
+### Bei exakter Strukturgleichheit (EXACT)
 
-| maxDiff | Ergebnis | Bedeutung |
-|---------|----------|-----------|
-| ≤ 5 | **Geeignet** | Arbeitsweise passt zur Stelle |
-| > 5 und ≤ 10 | **Bedingt geeignet** | Arbeitsweise passt teilweise zur Stelle |
-| > 10 | **Nicht geeignet** | Abweichung zu gross trotz gleicher Struktur |
+| maxDiff | Ergebnis |
+|---------|----------|
+| ≤ 5 | **Geeignet** |
+| > 5 und ≤ 10 | **Bedingt geeignet** |
+| > 10 | **Nicht geeignet** |
+
+### Bei weichem Strukturkonflikt (SOFT_CONFLICT)
+
+| maxDiff | Ergebnis |
+|---------|----------|
+| ≤ 10 | **Bedingt geeignet** |
+| > 10 | **Nicht geeignet** |
+
+**Wichtig:** Bei weichem Strukturkonflikt gibt es nie "geeignet", weil die Struktur nicht ganz sauber passt.
 
 ---
 
@@ -98,84 +125,70 @@ maxDiff = MAX(|Soll_I - Ist_I|, |Soll_N - Ist_N|, |Soll_A - Ist_A|)
                     └────────┬────────────┘
                              │
                     ┌────────▼────────────┐
-                    │ ja                  │
-                    │ → NICHT GEEIGNET    │
+                    │ ja → NICHT GEEIGNET │
                     └─────────────────────┘
                              │ nein
                     ┌────────▼────────────┐
-                    │ Soll-Variante       │
-                    │ bestimmen           │
+                    │ Soll- und Ist-      │
+                    │ Variante bestimmen  │
                     └────────┬────────────┘
                              │
-                    ┌────────▼────────────┐
-                    │ Ist-Variante        │
-                    │ bestimmen           │
-                    └────────┬────────────┘
-                             │
-                    ┌────────▼────────────┐
-                    │ Varianten           │
-                    │ identisch?          │
-                    └────┬───────────┬────┘
-                         │           │
-                    ┌────▼───┐  ┌────▼────────────┐
-                    │ NEIN   │  │ JA               │
-                    │→ NICHT │  │ maxDiff prüfen   │
-                    │GEEIGNET│  └────┬─────────────┘
-                    └────────┘       │
-                              ┌──────▼──────────┐
-                              │ ≤ 5: GEEIGNET   │
-                              │ ≤10: BEDINGT    │
-                              │ >10: NICHT GEE. │
-                              └─────────────────┘
+                ┌────────────▼────────────────┐
+                │ Strukturbeziehung prüfen    │
+                └───┬──────────┬──────────┬───┘
+                    │          │          │
+              ┌─────▼────┐ ┌──▼───────┐ ┌▼──────────┐
+              │ HARD     │ │ SOFT     │ │ EXACT     │
+              │→ NICHT   │ │ maxDiff  │ │ maxDiff   │
+              │ GEEIGNET │ │ prüfen   │ │ prüfen    │
+              └──────────┘ └──┬───────┘ └──┬────────┘
+                              │            │
+                         ┌────▼─────┐ ┌────▼──────────┐
+                         │≤10:BEDINGT│ │ ≤ 5: GEEIGNET │
+                         │>10:NICHT  │ │ ≤10: BEDINGT  │
+                         └──────────┘ │ >10: NICHT GEE.│
+                                      └───────────────┘
 ```
 
 ---
 
 ## Kontrollintensität (Führungsaufwand)
 
-Unabhängig vom Fit-Ergebnis wird eine **Kontrollintensität** berechnet, die den erwarteten Führungsaufwand beschreibt:
-
-| Punkte | Stufe |
-|--------|-------|
-| 0–2 | Gering |
-| 3–5 | Mittel |
-| ≥ 6 | Hoch |
+Unabhängig vom Fit-Ergebnis wird eine **Kontrollintensität** berechnet:
 
 ### Punkteberechnung
 
 | Bedingung | Punkte |
 |-----------|--------|
-| Struktur passt nicht | +3 |
+| Harter Strukturkonflikt | +3 |
+| Weicher Strukturkonflikt | +2 |
+| Exakte Strukturgleichheit | +0 |
 | maxDiff > 10 | +2 |
 | maxDiff > 5 und ≤ 10 | +1 |
-| Rolle hat klare Dominanz (gap1 ≥ 12) | +1 |
+| Rolle hat klare Einzeldominanz (d1 > 10) | +1 |
+
+### Stufen
+
+| Punkte | Stufe |
+|--------|-------|
+| 0–2 | Gering |
+| 3–4 | Mittel |
+| ≥ 5 | Hoch |
 
 ---
 
 ## Entwicklungsaufwand
 
-Der Entwicklungsaufwand leitet sich aus dem Fit-Ergebnis und der Kontrollintensität ab:
+Einfach und sauber:
 
-### Bestimmung devGap
+| Fit-Ergebnis | Kontrolle | Entwicklungsaufwand | Level |
+|-------------|-----------|---------------------|-------|
+| Nicht geeignet | (egal) | Hoch | 3 |
+| Bedingt geeignet | (egal) | Mittel | 2 |
+| Geeignet | gering | Niedrig | 1 |
+| Geeignet | mittel/hoch | Mittel | 2 |
 
-```
-Nicht geeignet           → devGap = "hoch"
-Sekundärflip (hart)      → devGap = "hoch"
-Bedingt + Kontrolle gering → devGap = "mittel"
-Sonst                    → devGap = Kontrollintensität
-```
-
-### Ergebnis
-
-| devGap | Entwicklungsaufwand | Level |
-|--------|---------------------|-------|
-| gering | Niedrig | 4 |
-| mittel | Mittel | 3 |
-| hoch | Hoch | 1 |
-
-Bei einer **Balanced-Rolle** (ALL_EQUAL) wird zusätzlich der Spread der Person geprüft:
-- Person auch balanced (Spread ≤ 10): devGap entscheidet
-- Person nicht balanced: mindestens "mittel", bei devGap "hoch" → "hoch"
+Keine Sonderfälle. Kein Sekundärflip-Override. Keine BAL_FULL-Speziallogik.
 
 ---
 
@@ -184,55 +197,85 @@ Bei einer **Balanced-Rolle** (ALL_EQUAL) wird zusätzlich der Spread der Person 
 | Parameter | Wert | Verwendung |
 |-----------|------|------------|
 | EQ_TOL | 5 | Wann gelten zwei Werte als "gleich"? |
-| GOOD_TOL | 5 | Max. Abweichung für "geeignet" |
+| GOOD_TOL | 5 | Max. Abweichung für "geeignet" (nur bei EXACT) |
 | COND_TOL | 10 | Max. Abweichung für "bedingt geeignet" |
 
-**Eine einzige, einheitliche Schwellenlogik für alle 13 Varianten.**
+---
+
+## Kurzfassung der finalen Regel
+
+| Ergebnis | Bedingung |
+|----------|-----------|
+| **Nicht geeignet** | Harter Strukturkonflikt, oder maxDiff > 10 |
+| **Bedingt geeignet** | Weicher Strukturkonflikt mit maxDiff ≤ 10, oder exakte Struktur mit maxDiff 6–10 |
+| **Geeignet** | Nur bei exakter Struktur und maxDiff ≤ 5 |
 
 ---
 
 ## Rechenbeispiele
 
-### Beispiel 1: Geeignet
+### Beispiel 1: Geeignet (EXACT)
 ```
 Soll: I=42  N=35  A=23   → ORDER_impulsivintuitivanalytisch
 Ist:  I=44  N=34  A=22   → ORDER_impulsivintuitivanalytisch
-Varianten identisch ✓
-maxDiff = MAX(|42-44|, |35-34|, |23-22|) = MAX(2, 1, 1) = 2
+Strukturbeziehung: EXACT
+maxDiff = MAX(2, 1, 1) = 2
 2 ≤ 5 → GEEIGNET
+Kontrollintensität: 0 Punkte → gering
+Entwicklungsaufwand: geeignet + gering → niedrig
 ```
 
-### Beispiel 2: Bedingt geeignet
+### Beispiel 2: Bedingt geeignet (SOFT_CONFLICT)
 ```
-Soll: I=45  N=32  A=23   → ORDER_impulsivintuitivanalytisch
-Ist:  I=38  N=35  A=27   → ORDER_impulsivintuitivanalytisch
-Varianten identisch ✓
-maxDiff = MAX(|45-38|, |32-35|, |23-27|) = MAX(7, 3, 4) = 7
-7 > 5 und ≤ 10 → BEDINGT GEEIGNET
-```
-
-### Beispiel 3: Nicht geeignet (Strukturkonflikt)
-```
-Soll: I=46  N=28  A=26   → BOTTOM_PAIR_impulsiv_analytischintuitiv
-Ist:  I=49  N=29  A=22   → ORDER_impulsivintuitivanalytisch
-Varianten NICHT identisch (BOTTOM_PAIR ≠ ORDER)
-→ NICHT GEEIGNET
+Soll: I=45  N=32  A=23   → ORDER_impulsivintuitivanalytisch (d1=13, d2=9)
+Ist:  I=38  N=35  A=27   → TOP_PAIR_impulsivintuitiv_analytisch (d1=3, d2=8)
+Strukturbeziehung: SOFT_CONFLICT (TOP_PAIR↔ORDER, gleiche Top+Second)
+maxDiff = MAX(7, 3, 4) = 7
+7 ≤ 10 → BEDINGT GEEIGNET
+Kontrollintensität: 2+1 = 3 Punkte → mittel
+Entwicklungsaufwand: bedingt → mittel
 ```
 
-### Beispiel 4: Nicht geeignet (Sekundärflip)
+### Beispiel 3: Nicht geeignet (HARD_CONFLICT – Sekundärflip)
 ```
 Soll: I=50  N=30  A=20   → ORDER_impulsivintuitivanalytisch
 Ist:  I=50  A=30  N=20   → ORDER_impulsivanalytischintuitiv
-Varianten NICHT identisch (andere Reihenfolge)
+Strukturbeziehung: HARD_CONFLICT (andere Reihenfolge)
 → NICHT GEEIGNET
+Kontrollintensität: 3+2 = 5 Punkte → hoch
+Entwicklungsaufwand: nicht geeignet → hoch
 ```
 
-### Beispiel 5: Nicht geeignet (Balanced vs. Schwerpunkt)
+### Beispiel 4: Bedingt geeignet (SOFT_CONFLICT – Grenzfall)
 ```
-Soll: I=35  N=33  A=32   → ALL_EQUAL
-Ist:  I=32  N=39  A=29   → BOTTOM_PAIR_intuitiv_analytischimpulsiv
-Varianten NICHT identisch (ALL_EQUAL ≠ BOTTOM_PAIR)
+Soll: I=40  N=35  A=25   → TOP_PAIR_impulsivintuitiv_analytisch (d1=5, d2=10)
+Ist:  I=40  N=34  A=26   → ORDER_impulsivintuitivanalytisch (d1=6, d2=8)
+Strukturbeziehung: SOFT_CONFLICT (TOP_PAIR↔ORDER, gleiche Top+Second)
+maxDiff = MAX(0, 1, 1) = 1
+1 ≤ 10 → BEDINGT GEEIGNET
+Kontrollintensität: 2 Punkte → gering
+Entwicklungsaufwand: bedingt → mittel
+```
+
+### Beispiel 5: Nicht geeignet (HARD_CONFLICT – ALL_EQUAL vs ORDER)
+```
+Soll: I=34  N=33  A=33   → ALL_EQUAL
+Ist:  I=50  N=30  A=20   → ORDER_impulsivintuitivanalytisch
+Strukturbeziehung: HARD_CONFLICT (ALL_EQUAL vs ORDER)
 → NICHT GEEIGNET
+Kontrollintensität: 3+2+1 = 6 Punkte → hoch
+Entwicklungsaufwand: nicht geeignet → hoch
+```
+
+### Beispiel 6: Bedingt geeignet (SOFT_CONFLICT – ALL_EQUAL vs TOP_PAIR)
+```
+Soll: I=34  N=33  A=33   → ALL_EQUAL
+Ist:  I=37  N=35  A=28   → TOP_PAIR_impulsivintuitiv_analytisch
+Strukturbeziehung: SOFT_CONFLICT (ALL_EQUAL↔TOP_PAIR, immer weich)
+maxDiff = MAX(3, 2, 5) = 5
+5 ≤ 10 → BEDINGT GEEIGNET
+Kontrollintensität: 2 Punkte → gering
+Entwicklungsaufwand: bedingt → mittel
 ```
 
 ---
@@ -241,6 +284,6 @@ Varianten NICHT identisch (ALL_EQUAL ≠ BOTTOM_PAIR)
 
 | Datei | Inhalt |
 |-------|--------|
-| `client/src/lib/jobcheck-engine.ts` | `getVariant()`, `computeCoreFit()` — Kernlogik |
+| `client/src/lib/jobcheck-engine.ts` | `getVariantMeta()`, `isSoftConflict()`, `computeCoreFit()` — Kernlogik |
 | `client/src/lib/soll-ist-engine.ts` | `computeSollIst()` — Berichtsaufbau, Texte, Entwicklungsaufwand |
 | `client/src/pages/soll-ist-bericht.tsx` | UI-Komponente mit Slidern und Berichtsdarstellung |

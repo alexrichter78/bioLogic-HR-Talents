@@ -1,0 +1,440 @@
+Korrigierte Endlogik
+Grundidee
+
+Es gibt 3 Prüfebenen:
+
+1. Externes KO
+
+Falls du externe KO-Regeln hast, greifen diese zuerst.
+
+Dann sofort:
+
+nicht geeignet
+2. Strukturprüfung
+
+Hier wird geprüft, wie ähnlich die Grundstruktur von Soll und Ist ist.
+
+Dabei gibt es 3 Fälle:
+
+A. Exakte Strukturgleichheit
+
+Die Varianten sind identisch.
+
+Dann weiter zu den Abweichungen.
+
+B. Weicher Strukturkonflikt
+
+Die Variante ist nicht identisch, aber nur wegen eines Grenzfalls rund um die 5er-Toleranz.
+
+Typische Fälle:
+
+TOP_PAIR ↔ ORDER
+BOTTOM_PAIR ↔ ORDER
+ALL_EQUAL ↔ TOP_PAIR
+ALL_EQUAL ↔ BOTTOM_PAIR
+
+Das ist nicht sofort ungeeignet.
+
+Dann weiter zu den Abweichungen, aber maximal bedingt geeignet.
+
+C. Harter Strukturkonflikt
+
+Die Denklogik kippt wirklich.
+
+Typische Fälle:
+
+andere Hauptkomponente
+anderer echter Doppelschwerpunkt oben
+Reihenfolge kippt klar (I>N>A vs I>A>N)
+ALL_EQUAL gegen klare Dominanz
+
+Dann sofort:
+
+nicht geeignet
+3. Abweichungsprüfung
+
+Wenn kein harter Strukturkonflikt vorliegt:
+
+diffI = |Soll.I - Ist.I|
+diffN = |Soll.N - Ist.N|
+diffA = |Soll.A - Ist.A|
+maxDiff = größter Wert davon
+Bewertung bei exakter Strukturgleichheit
+maxDiff <= 5 → geeignet
+maxDiff > 5 und <= 10 → bedingt geeignet
+maxDiff > 10 → nicht geeignet
+Bewertung bei weichem Strukturkonflikt
+maxDiff <= 10 → bedingt geeignet
+maxDiff > 10 → nicht geeignet
+
+Wichtig:
+Bei weichem Strukturkonflikt gibt es nie „geeignet“, weil die Struktur nicht ganz sauber passt.
+
+Kontrollintensität
+
+Die Kontrollintensität beschreibt den Führungs- oder Steuerungsaufwand.
+
+Punkte
+harter Strukturkonflikt: +3
+weicher Strukturkonflikt: +2
+exakte Strukturgleichheit: +0
+
+Zusätzlich:
+
+maxDiff > 10 → +2
+maxDiff > 5 und <= 10 → +1
+
+Zusätzlich:
+
+Rolle hat klare Einzeldominanz (gap1 > 10) → +1
+Stufen
+0–2 → gering
+3–4 → mittel
+>=5 → hoch
+Entwicklungsaufwand
+
+Einfach und sauber:
+
+geeignet + Kontrolle gering → niedrig
+geeignet + Kontrolle mittel/hoch → mittel
+bedingt geeignet → mittel
+nicht geeignet → hoch
+
+Optional als Level:
+
+niedrig = 1
+mittel = 2
+hoch = 3
+Warum diese Logik besser ist
+
+Sie behebt die Fehler aus der alten Fassung:
+
+nicht jede kleine Variantenabweichung führt sofort zu „nicht geeignet“
+Grenzfälle an der 5er-Schwelle werden sauber abgefangen
+Sekundärflip bleibt hart
+ALL_EQUAL bleibt sauber
+keine redundanten Sonderregeln mehr
+JavaScript-Code
+function evaluateMatch(soll, ist, options = {}) {
+  const EQ_TOL = options.eqTolerance ?? 5;
+  const GOOD_TOL = options.goodTolerance ?? 5;
+  const COND_TOL = options.condTolerance ?? 10;
+
+  const KEYS = ["I", "N", "A"];
+
+  function abs(n) {
+    return Math.abs(n);
+  }
+
+  function diff(a, b) {
+    return abs(a - b);
+  }
+
+  function sortProfile(profile) {
+    return KEYS
+      .map((key) => ({ key, value: profile[key] }))
+      .sort((a, b) => {
+        if (b.value !== a.value) return b.value - a.value;
+        return a.key.localeCompare(b.key);
+      });
+  }
+
+  function getProfileMeta(profile) {
+    const sorted = sortProfile(profile);
+    const [p1, p2, p3] = sorted;
+
+    const d1 = p1.value - p2.value;
+    const d2 = p2.value - p3.value;
+
+    let variantType;
+    let variantCode;
+
+    if (d1 <= EQ_TOL && d2 <= EQ_TOL) {
+      variantType = "ALL_EQUAL";
+      variantCode = "ALL_EQUAL";
+    } else if (d1 <= EQ_TOL && d2 > EQ_TOL) {
+      variantType = "TOP_PAIR";
+      const pair = [p1.key, p2.key].sort().join("");
+      variantCode = `TOP_PAIR_${pair}_${p3.key}`;
+    } else if (d1 > EQ_TOL && d2 <= EQ_TOL) {
+      variantType = "BOTTOM_PAIR";
+      const pair = [p2.key, p3.key].sort().join("");
+      variantCode = `BOTTOM_PAIR_${p1.key}_${pair}`;
+    } else {
+      variantType = "ORDER";
+      variantCode = `ORDER_${p1.key}${p2.key}${p3.key}`;
+    }
+
+    return {
+      sorted,
+      top: p1.key,
+      second: p2.key,
+      third: p3.key,
+      d1,
+      d2,
+      spread: p1.value - p3.value,
+      variantType,
+      variantCode,
+    };
+  }
+
+  function getValueDiffs(soll, ist) {
+    return {
+      I: diff(soll.I, ist.I),
+      N: diff(soll.N, ist.N),
+      A: diff(soll.A, ist.A),
+    };
+  }
+
+  function getMaxDiff(diffs) {
+    return Math.max(diffs.I, diffs.N, diffs.A);
+  }
+
+  function hasSameTopPair(metaA, metaB) {
+    if (metaA.variantType !== "TOP_PAIR" || metaB.variantType !== "TOP_PAIR") {
+      return false;
+    }
+    const a = [metaA.sorted[0].key, metaA.sorted[1].key].sort().join("|");
+    const b = [metaB.sorted[0].key, metaB.sorted[1].key].sort().join("|");
+    return a === b;
+  }
+
+  function hasSameBottomPair(metaA, metaB) {
+    if (
+      metaA.variantType !== "BOTTOM_PAIR" ||
+      metaB.variantType !== "BOTTOM_PAIR"
+    ) {
+      return false;
+    }
+    const a = [metaA.sorted[1].key, metaA.sorted[2].key].sort().join("|");
+    const b = [metaB.sorted[1].key, metaB.sorted[2].key].sort().join("|");
+    return a === b;
+  }
+
+  function isSoftConflict(sollMeta, istMeta) {
+    if (sollMeta.variantCode === istMeta.variantCode) return false;
+
+    // TOP_PAIR <-> ORDER:
+    // gleiche Top-Komponente und gleiche zweite Komponente,
+    // nur die "Gleichheit oben" kippt knapp an der EQ-Grenze
+    if (
+      (sollMeta.variantType === "TOP_PAIR" && istMeta.variantType === "ORDER") ||
+      (sollMeta.variantType === "ORDER" && istMeta.variantType === "TOP_PAIR")
+    ) {
+      return (
+        sollMeta.top === istMeta.top &&
+        sollMeta.second === istMeta.second
+      );
+    }
+
+    // BOTTOM_PAIR <-> ORDER:
+    // gleiche komplette Reihenfolge oben/unten,
+    // nur die "Gleichheit unten" kippt knapp an der EQ-Grenze
+    if (
+      (sollMeta.variantType === "BOTTOM_PAIR" && istMeta.variantType === "ORDER") ||
+      (sollMeta.variantType === "ORDER" && istMeta.variantType === "BOTTOM_PAIR")
+    ) {
+      return (
+        sollMeta.top === istMeta.top &&
+        sollMeta.second === istMeta.second &&
+        sollMeta.third === istMeta.third
+      );
+    }
+
+    // ALL_EQUAL <-> TOP_PAIR:
+    // noch nah an Balanced, aber leichtes Paar sichtbar
+    if (
+      (sollMeta.variantType === "ALL_EQUAL" && istMeta.variantType === "TOP_PAIR") ||
+      (sollMeta.variantType === "TOP_PAIR" && istMeta.variantType === "ALL_EQUAL")
+    ) {
+      return true;
+    }
+
+    // ALL_EQUAL <-> BOTTOM_PAIR:
+    // ebenfalls noch nah an Balanced
+    if (
+      (sollMeta.variantType === "ALL_EQUAL" && istMeta.variantType === "BOTTOM_PAIR") ||
+      (sollMeta.variantType === "BOTTOM_PAIR" && istMeta.variantType === "ALL_EQUAL")
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  function getStructureRelation(sollMeta, istMeta) {
+    if (sollMeta.variantCode === istMeta.variantCode) {
+      return {
+        type: "EXACT",
+        reason: "Soll- und Ist-Struktur sind identisch.",
+      };
+    }
+
+    if (isSoftConflict(sollMeta, istMeta)) {
+      return {
+        type: "SOFT_CONFLICT",
+        reason: "Es liegt ein Grenzfall an der Toleranzschwelle vor.",
+      };
+    }
+
+    return {
+      type: "HARD_CONFLICT",
+      reason: "Die Grundstruktur der Profile unterscheidet sich klar.",
+    };
+  }
+
+  function getFitLabel(structureRelation, maxDiff) {
+    if (structureRelation.type === "HARD_CONFLICT") {
+      return "nicht geeignet";
+    }
+
+    if (structureRelation.type === "SOFT_CONFLICT") {
+      return maxDiff <= COND_TOL ? "bedingt geeignet" : "nicht geeignet";
+    }
+
+    // EXACT
+    if (maxDiff <= GOOD_TOL) return "geeignet";
+    if (maxDiff <= COND_TOL) return "bedingt geeignet";
+    return "nicht geeignet";
+  }
+
+  function getControlPoints(structureRelation, maxDiff, sollMeta) {
+    let points = 0;
+
+    if (structureRelation.type === "HARD_CONFLICT") points += 3;
+    if (structureRelation.type === "SOFT_CONFLICT") points += 2;
+
+    if (maxDiff > COND_TOL) points += 2;
+    else if (maxDiff > GOOD_TOL) points += 1;
+
+    // klare Einzeldominanz der Rolle
+    if (
+      (sollMeta.variantType === "ORDER" || sollMeta.variantType === "BOTTOM_PAIR") &&
+      sollMeta.d1 > 10
+    ) {
+      points += 1;
+    }
+
+    return points;
+  }
+
+  function getControlLevel(points) {
+    if (points <= 2) return "gering";
+    if (points <= 4) return "mittel";
+    return "hoch";
+  }
+
+  function getDevelopmentEffort(fitLabel, controlLevel) {
+    if (fitLabel === "nicht geeignet") {
+      return { label: "hoch", level: 3 };
+    }
+
+    if (fitLabel === "bedingt geeignet") {
+      return { label: "mittel", level: 2 };
+    }
+
+    // geeignet
+    if (controlLevel === "gering") {
+      return { label: "niedrig", level: 1 };
+    }
+
+    return { label: "mittel", level: 2 };
+  }
+
+  const sollMeta = getProfileMeta(soll);
+  const istMeta = getProfileMeta(ist);
+  const diffs = getValueDiffs(soll, ist);
+  const maxDiff = getMaxDiff(diffs);
+
+  const structureRelation = getStructureRelation(sollMeta, istMeta);
+  const fitLabel = getFitLabel(structureRelation, maxDiff);
+
+  const controlPoints = getControlPoints(structureRelation, maxDiff, sollMeta);
+  const controlLevel = getControlLevel(controlPoints);
+  const developmentEffort = getDevelopmentEffort(fitLabel, controlLevel);
+
+  return {
+    fitLabel,
+    structureRelation,
+    sollVariant: sollMeta.variantCode,
+    istVariant: istMeta.variantCode,
+    diffs,
+    maxDiff,
+    controlIntensity: {
+      points: controlPoints,
+      level: controlLevel,
+    },
+    developmentEffort,
+    debug: {
+      thresholds: {
+        eqTolerance: EQ_TOL,
+        goodTolerance: GOOD_TOL,
+        condTolerance: COND_TOL,
+      },
+      sollMeta,
+      istMeta,
+    },
+  };
+}
+Beispiele
+1. Exakt passend
+console.log(
+  evaluateMatch(
+    { I: 42, N: 35, A: 23 },
+    { I: 44, N: 34, A: 22 }
+  )
+);
+
+Erwartung:
+
+gleiche ORDER-Struktur
+maxDiff = 2
+geeignet
+2. Bedingt geeignet wegen Abweichung
+console.log(
+  evaluateMatch(
+    { I: 45, N: 32, A: 23 },
+    { I: 38, N: 35, A: 27 }
+  )
+);
+
+Erwartung:
+
+gleiche ORDER-Struktur
+maxDiff = 7
+bedingt geeignet
+3. Nicht geeignet wegen hartem Strukturkonflikt
+console.log(
+  evaluateMatch(
+    { I: 50, N: 30, A: 20 },
+    { I: 50, N: 20, A: 30 }
+  )
+);
+
+Erwartung:
+
+ORDER_INA vs ORDER_IAN
+harter Konflikt
+nicht geeignet
+4. Weicher Grenzfall
+console.log(
+  evaluateMatch(
+    { I: 40, N: 35, A: 25 }, // TOP_PAIR oben
+    { I: 40, N: 34, A: 26 }  // ORDER, aber fast gleich
+  )
+);
+
+Erwartung:
+
+kein harter Bruch
+bedingt geeignet
+Kurzfassung der finalen Regel
+Nicht geeignet
+bei hartem Strukturkonflikt
+oder bei maxDiff > 10
+Bedingt geeignet
+bei weichem Strukturkonflikt und maxDiff <= 10
+oder bei exakter Struktur mit maxDiff 6–10
+Geeignet
+nur bei exakter Struktur
+und maxDiff <= 5

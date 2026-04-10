@@ -1089,6 +1089,8 @@ type FitReason = {
   effect: "KO" | "OVERRIDE" | "CAP" | "BASE";
 };
 
+export type StructureRelationType = "EXACT" | "SOFT_CONFLICT" | "HARD_CONFLICT";
+
 export type CoreFitResult = {
   overallFit: FitStatus;
   controlIntensity: ControlIntensity;
@@ -1105,12 +1107,24 @@ export type CoreFitResult = {
     dualConflict: boolean;
     roleKeyInDual: boolean;
     secondaryFlipped: boolean;
+    softConflict: boolean;
+    structureRelation: StructureRelationType;
     maxGapVal: number;
     candSpread: number;
   };
 };
 
-function getVariant(profile: Triad, eqTol = 5): string {
+type VariantMeta = {
+  variantType: "ALL_EQUAL" | "TOP_PAIR" | "BOTTOM_PAIR" | "ORDER";
+  variantCode: string;
+  top: ComponentKey;
+  second: ComponentKey;
+  third: ComponentKey;
+  d1: number;
+  d2: number;
+};
+
+function getVariantMeta(profile: Triad, eqTol = 5): VariantMeta {
   const sorted = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[])
     .map(k => ({ k, v: profile[k] }))
     .sort((a, b) => b.v - a.v);
@@ -1118,10 +1132,44 @@ function getVariant(profile: Triad, eqTol = 5): string {
   const d1 = a.v - b.v;
   const d2 = b.v - c.v;
 
-  if (d1 <= eqTol && d2 <= eqTol) return "ALL_EQUAL";
-  if (d1 <= eqTol) return `TOP_PAIR_${[a.k, b.k].sort().join("")}_${c.k}`;
-  if (d2 <= eqTol) return `BOTTOM_PAIR_${a.k}_${[b.k, c.k].sort().join("")}`;
-  return `ORDER_${a.k}${b.k}${c.k}`;
+  if (d1 <= eqTol && d2 <= eqTol) return { variantType: "ALL_EQUAL", variantCode: "ALL_EQUAL", top: a.k, second: b.k, third: c.k, d1, d2 };
+  if (d1 <= eqTol) return { variantType: "TOP_PAIR", variantCode: `TOP_PAIR_${[a.k, b.k].sort().join("")}_${c.k}`, top: a.k, second: b.k, third: c.k, d1, d2 };
+  if (d2 <= eqTol) return { variantType: "BOTTOM_PAIR", variantCode: `BOTTOM_PAIR_${a.k}_${[b.k, c.k].sort().join("")}`, top: a.k, second: b.k, third: c.k, d1, d2 };
+  return { variantType: "ORDER", variantCode: `ORDER_${a.k}${b.k}${c.k}`, top: a.k, second: b.k, third: c.k, d1, d2 };
+}
+
+function isSoftConflict(sollMeta: VariantMeta, istMeta: VariantMeta): boolean {
+  if (sollMeta.variantCode === istMeta.variantCode) return false;
+
+  if (
+    (sollMeta.variantType === "TOP_PAIR" && istMeta.variantType === "ORDER") ||
+    (sollMeta.variantType === "ORDER" && istMeta.variantType === "TOP_PAIR")
+  ) {
+    return sollMeta.top === istMeta.top && sollMeta.second === istMeta.second;
+  }
+
+  if (
+    (sollMeta.variantType === "BOTTOM_PAIR" && istMeta.variantType === "ORDER") ||
+    (sollMeta.variantType === "ORDER" && istMeta.variantType === "BOTTOM_PAIR")
+  ) {
+    return sollMeta.top === istMeta.top && sollMeta.second === istMeta.second && sollMeta.third === istMeta.third;
+  }
+
+  if (
+    (sollMeta.variantType === "ALL_EQUAL" && istMeta.variantType === "TOP_PAIR") ||
+    (sollMeta.variantType === "TOP_PAIR" && istMeta.variantType === "ALL_EQUAL")
+  ) {
+    return true;
+  }
+
+  if (
+    (sollMeta.variantType === "ALL_EQUAL" && istMeta.variantType === "BOTTOM_PAIR") ||
+    (sollMeta.variantType === "BOTTOM_PAIR" && istMeta.variantType === "ALL_EQUAL")
+  ) {
+    return true;
+  }
+
+  return false;
 }
 
 export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: boolean): CoreFitResult {
@@ -1143,19 +1191,32 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
   const mismatch = weightedMismatch(roleTriad, candTriad);
   const maxGapVal = Math.max(Math.abs(rN.impulsiv - cN.impulsiv), Math.abs(rN.intuitiv - cN.intuitiv), Math.abs(rN.analytisch - cN.analytisch));
 
-  const sollVar = getVariant(rN, EQ_TOL);
-  const istVar = getVariant(cN, EQ_TOL);
-  const structureMatches = sollVar === istVar;
+  const sollMeta = getVariantMeta(rN, EQ_TOL);
+  const istMeta = getVariantMeta(cN, EQ_TOL);
+  const structureMatches = sollMeta.variantCode === istMeta.variantCode;
+  const soft = !structureMatches && isSoftConflict(sollMeta, istMeta);
+  const hard = !structureMatches && !soft;
 
-  reasons.push({ rule: `Soll-Variante: ${sollVar}`, effect: "BASE" });
-  reasons.push({ rule: `Ist-Variante: ${istVar}`, effect: "BASE" });
+  const structureRelation: StructureRelationType = structureMatches ? "EXACT" : soft ? "SOFT_CONFLICT" : "HARD_CONFLICT";
+
+  reasons.push({ rule: `Soll-Variante: ${sollMeta.variantCode}`, effect: "BASE" });
+  reasons.push({ rule: `Ist-Variante: ${istMeta.variantCode}`, effect: "BASE" });
+  reasons.push({ rule: `Strukturbeziehung: ${structureRelation}`, effect: "BASE" });
 
   let overallFit: FitStatus;
   if (ko) {
     overallFit = "NOT_SUITABLE";
-  } else if (!structureMatches) {
+  } else if (hard) {
     overallFit = "NOT_SUITABLE";
-    reasons.push({ rule: `Struktur passt nicht: Soll=${sollVar} vs Ist=${istVar}`, effect: "OVERRIDE" });
+    reasons.push({ rule: `Harter Strukturkonflikt: Soll=${sollMeta.variantCode} vs Ist=${istMeta.variantCode}`, effect: "OVERRIDE" });
+  } else if (soft) {
+    if (maxGapVal <= COND_TOL) {
+      overallFit = "CONDITIONAL";
+      reasons.push({ rule: `Weicher Strukturkonflikt, max. Abweichung ${maxGapVal.toFixed(0)} ≤ ${COND_TOL} → bedingt geeignet`, effect: "BASE" });
+    } else {
+      overallFit = "NOT_SUITABLE";
+      reasons.push({ rule: `Weicher Strukturkonflikt, max. Abweichung ${maxGapVal.toFixed(0)} > ${COND_TOL} → nicht geeignet`, effect: "OVERRIDE" });
+    }
   } else if (maxGapVal <= GOOD_TOL) {
     overallFit = "SUITABLE";
     reasons.push({ rule: `Struktur identisch, max. Abweichung ${maxGapVal.toFixed(0)} ≤ ${GOOD_TOL} → geeignet`, effect: "BASE" });
@@ -1170,32 +1231,29 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
   const sameDom = roleDom.top1.key === candDom.top1.key;
   const candIsBalFull = candDom.gap1 <= 5 && candDom.gap2 <= 5;
   const roleIsBalFull = roleDom.gap1 <= 5 && roleDom.gap2 <= 5;
-  const roleIsDual = !roleIsBalFull && roleDom.gap1 <= 4 && roleDom.gap2 >= 6;
-  const candIsDual = !candIsBalFull && candDom.gap1 <= 4 && candDom.gap2 >= 6;
-  const candDualPairKeys = candIsDual ? new Set([candDom.top1.key, candDom.top2.key]) : null;
-  const candDualMatchesRoleDom = candDualPairKeys !== null && candDualPairKeys.has(roleDom.top1.key);
-  const effectiveSameDom = structureMatches;
+  const effectiveSameDom = structureMatches || soft;
   const candEqualDist = candDom.mode === "BAL_FULL";
   const candDualDominance = !candEqualDist && candDom.gap1 <= 5;
   const roleClearDominance = roleDom.gap1 >= 15;
-  const dualConflict = candDualDominance && roleClearDominance && !structureMatches;
-  const equalDistConflict = candEqualDist && roleClearDominance && !structureMatches;
+  const dualConflict = candDualDominance && roleClearDominance && hard;
+  const equalDistConflict = candEqualDist && roleClearDominance && hard;
   const roleKeyInDual = dualConflict && (candDom.top1.key === roleDom.top1.key || candDom.top2.key === roleDom.top1.key);
   const candSpread = candDom.top1.value - candDom.top3.value;
   const secondaryFlipped = structureMatches && roleDom.top2.key !== candDom.top2.key;
 
   let points = 0;
-  if (!structureMatches) points += 3;
+  if (hard) points += 3;
+  else if (soft) points += 2;
   if (maxGapVal > COND_TOL) points += 2;
   else if (maxGapVal > GOOD_TOL) points += 1;
-  if (roleDom.gap1 >= 12) points += 1;
+  if (sollMeta.d1 > 10) points += 1;
   let level: ControlIntensity = "LOW";
-  if (points >= 6) level = "HIGH";
+  if (points >= 5) level = "HIGH";
   else if (points >= 3) level = "MEDIUM";
 
   return {
     overallFit, controlIntensity: level, controlPoints: points, mismatchScore: mismatch, koTriggered: ko, reasons,
-    flags: { sameDom, effectiveSameDom, roleIsBalFull, candIsBalFull, equalDistConflict, dualConflict, roleKeyInDual, secondaryFlipped, maxGapVal, candSpread },
+    flags: { sameDom, effectiveSameDom, roleIsBalFull, candIsBalFull, equalDistConflict, dualConflict, roleKeyInDual, secondaryFlipped, softConflict: soft, structureRelation, maxGapVal, candSpread },
   };
 }
 
@@ -1317,12 +1375,10 @@ export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResul
   if (secondaryTension) {
     risks.midTerm.push(secondaryTension.stressText);
   }
-  const baseControl = coreFit.controlIntensity;
-  const secondaryFlipHard = coreFit.flags.secondaryFlipped && roleDom.gap2 >= 8;
   const devControl: ControlIntensity = overallFit === "NOT_SUITABLE" ? "HIGH"
-    : secondaryFlipHard ? "HIGH"
-    : overallFit === "CONDITIONAL" && baseControl === "LOW" ? "MEDIUM"
-    : baseControl;
+    : overallFit === "CONDITIONAL" ? "MEDIUM"
+    : coreFit.controlIntensity === "LOW" ? "LOW"
+    : "MEDIUM";
   const dev = developmentFromControl(devControl, coreFit.controlPoints, critical.label, t, roleDom, candDom);
   const plan = integrationPlan(role, critical.id, ctrl.level, t);
 
