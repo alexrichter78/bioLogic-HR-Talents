@@ -169,6 +169,30 @@ export default function SollIstBericht() {
   const [candidateName, setCandidateName] = useState("");
   const [candTriad, setCandTriad] = useState<{impulsiv: number; intuitiv: number; analytisch: number}>({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
 
+  const rebalanceTriad = useCallback((prev: {impulsiv: number; intuitiv: number; analytisch: number}, key: ComponentKey, newVal: number) => {
+    const clamped = Math.max(5, Math.min(67, Math.round(newVal)));
+    const others = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== key);
+    const remaining = 100 - clamped;
+    const otherSum = prev[others[0]] + prev[others[1]];
+    let o1: number, o2: number;
+    if (otherSum === 0) {
+      o1 = Math.round(remaining / 2);
+      o2 = remaining - o1;
+    } else {
+      o1 = Math.round((prev[others[0]] / otherSum) * remaining);
+      o2 = remaining - o1;
+    }
+    o1 = Math.max(5, Math.min(67, o1));
+    o2 = Math.max(5, Math.min(67, o2));
+    const total = clamped + o1 + o2;
+    if (total !== 100) {
+      const diff = 100 - total;
+      if (o1 + diff >= 5 && o1 + diff <= 67) o1 += diff;
+      else o2 += diff;
+    }
+    return { ...prev, [key]: clamped, [others[0]]: o1, [others[1]]: o2 };
+  }, []);
+
   const updateCandTriad = useCallback((key: ComponentKey, newVal: number) => {
     setCandTriad(prev => {
       const clamped = Math.max(5, Math.min(67, Math.round(newVal)));
@@ -205,6 +229,12 @@ export default function SollIstBericht() {
   const [profilvergleichOpen, setProfilvergleichOpen] = useState(true);
   const [systemwirkungOpen, setSystemwirkungOpen] = useState(true);
   const [fuehrungsArt, setFuehrungsArt] = useState<FuehrungsArt>("keine");
+  const updateRoleTriad = useCallback((key: ComponentKey, newVal: number) => {
+    setRoleTriad(prev => {
+      if (!prev) return prev;
+      return rebalanceTriad(prev, key, newVal) as Triad;
+    });
+  }, [rebalanceTriad]);
   useEffect(() => {
     const raw = localStorage.getItem("rollenDnaState");
     if (raw) {
@@ -434,13 +464,6 @@ export default function SollIstBericht() {
     );
   }
 
-  const roleProfile = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => ({
-    label: labelComponent(k),
-    value: roleTriad[k],
-    hex: BAR_HEX[k],
-    key: k,
-  }));
-
   return (
     <div className="page-gradient-bg">
       <GlobalNav />
@@ -488,14 +511,16 @@ export default function SollIstBericht() {
               <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="card-soll-profil">
                 <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Stelle)</span></p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                  {roleProfile.map(item => {
-                    const hex = item.hex;
-                    const widthPct = (item.value / 67) * 100;
+                  {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
+                    const val = roleTriad[k];
+                    const hex = BAR_HEX[k];
+                    const pct = val;
+                    const widthPct = (val / 67) * 100;
                     const isSmall = widthPct < 18;
                     return (
-                      <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12, height: 26 }}>
+                      <div key={k} style={{ display: "flex", alignItems: "center", gap: 12, height: 26 }} data-testid={`slider-row-role-${k}`}>
                         <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0, lineHeight: "26px" }}>
-                          {item.label}
+                          {labelComponent(k)}
                         </span>
                         <div style={{ flex: 1, position: "relative", height: 26 }}>
                           <div style={{
@@ -506,19 +531,71 @@ export default function SollIstBericht() {
                             position: "absolute", left: 0, top: 0, bottom: 0,
                             width: `${Math.min(Math.max(widthPct, 4), 100)}%`,
                             borderRadius: 13, background: hex,
-                            transition: "width 600ms ease",
+                            transition: "width 150ms ease",
                             display: "flex", alignItems: "center", paddingLeft: 10,
                             minWidth: isSmall ? 8 : 50,
                           }}>
-                            {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap", lineHeight: "26px" }}>{Math.round(item.value)} %</span>}
+                            {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap", lineHeight: "26px" }}>{pct} %</span>}
                           </div>
+                          <div
+                            data-testid={`slider-role-${k}`}
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              const track = e.currentTarget.parentElement!;
+                              const rect = track.getBoundingClientRect();
+                              const move = (ev: MouseEvent) => {
+                                const ratio = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
+                                const raw = Math.round(ratio * 67);
+                                updateRoleTriad(k, raw);
+                              };
+                              const up = () => {
+                                window.removeEventListener("mousemove", move);
+                                window.removeEventListener("mouseup", up);
+                              };
+                              window.addEventListener("mousemove", move);
+                              window.addEventListener("mouseup", up);
+                            }}
+                            onTouchStart={(e) => {
+                              const track = e.currentTarget.parentElement!;
+                              const rect = track.getBoundingClientRect();
+                              const move = (ev: TouchEvent) => {
+                                ev.preventDefault();
+                                const touch = ev.touches[0];
+                                const ratio = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
+                                const raw = Math.round(ratio * 67);
+                                updateRoleTriad(k, raw);
+                              };
+                              const up = () => {
+                                window.removeEventListener("touchmove", move);
+                                window.removeEventListener("touchend", up);
+                                window.removeEventListener("touchcancel", up);
+                              };
+                              window.addEventListener("touchmove", move, { passive: false });
+                              window.addEventListener("touchend", up);
+                              window.addEventListener("touchcancel", up);
+                            }}
+                            style={{
+                              position: "absolute",
+                              left: `${Math.min(Math.max(widthPct, 4), 100)}%`,
+                              top: "50%",
+                              transform: "translate(-50%, -50%)",
+                              width: 28, height: 28, borderRadius: "50%",
+                              background: hex,
+                              border: "3px solid #F0F0F2",
+                              transition: "left 80ms ease",
+                              zIndex: 3,
+                              cursor: "grab",
+                              touchAction: "none",
+                            }}
+                          />
                           {isSmall && (
                             <span style={{
                               position: "absolute", top: "50%", transform: "translateY(-50%)",
-                              left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 8px)`,
+                              left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 20px)`,
                               fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
-                              transition: "left 600ms ease", lineHeight: "26px",
-                            }}>{Math.round(item.value)} %</span>
+                              transition: "left 150ms ease",
+                              zIndex: 4,
+                            }}>{pct} %</span>
                           )}
                         </div>
                       </div>
