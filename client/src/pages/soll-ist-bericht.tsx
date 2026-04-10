@@ -821,50 +821,14 @@ export default function SollIstBericht() {
               kritischBullets.push("Tempo und Struktur kompatibel");
             } else if (fitLabel === "Bedingt geeignet") {
               kritischLabel = "Auffällig";
-              if (isEqualDist) {
-                kritischBullets.push("Kein klarer Arbeitsschwerpunkt erkennbar");
-                kritischBullets.push("Prioritäten nicht vorhersagbar");
-                kritischBullets.push("Fehlende Eindeutigkeit in der Arbeitsweise");
-              } else if (isDualDom) {
-                kritischBullets.push("Doppelschwerpunkt erzeugt Unschärfe");
-                kritischBullets.push(samePrimary ? "Entscheidungslogik grundsätzlich kompatibel" : "Entscheidungslogik unterschiedlich");
-                kritischBullets.push("Prioritäten wechseln situativ");
-              } else if (!samePrimary) {
-                kritischBullets.push("Arbeitsweise weicht teilweise ab");
-                kritischBullets.push("Entscheidungslogik unterschiedlich");
-                kritischBullets.push("Tempo / Struktur nicht deckungsgleich");
-              } else if (!sameSecondary) {
-                kritischBullets.push("Ausprägung der Arbeitsweise weicht ab");
-                kritischBullets.push("Entscheidungslogik grundsätzlich kompatibel");
-                kritischBullets.push("Zweitstärke weicht von Stellenanforderung ab");
-              } else {
-                kritischBullets.push("Ausprägung der Arbeitsweise weicht ab");
-                kritischBullets.push("Entscheidungslogik grundsätzlich kompatibel");
-                kritischBullets.push("Intensität der Hauptprägung nicht deckungsgleich");
-              }
+              kritischBullets.push("Ausprägung der Arbeitsweise weicht ab");
+              kritischBullets.push("Entscheidungslogik grundsätzlich kompatibel");
+              kritischBullets.push("Intensität der Hauptprägung nicht deckungsgleich");
             } else {
               kritischLabel = "Kritisch";
-              if (isEqualDist) {
-                kritischBullets.push("Kein Arbeitsschwerpunkt erkennbar");
-                kritischBullets.push("Prioritäten nicht steuerbar");
-                kritischBullets.push("Fehlende Grundlage für die Stelle");
-              } else if (isDualDom) {
-                kritischBullets.push("Doppelschwerpunkt unvereinbar mit Stellenprofil");
-                kritischBullets.push(samePrimary ? "Entscheidungslogik ähnlich, aber Umsetzung kritisch" : "Entscheidungslogik passt nicht");
-                kritischBullets.push("Prioritäten instabil und widersprüchlich");
-              } else if (!samePrimary) {
-                kritischBullets.push("Arbeitsweise weicht deutlich ab");
-                kritischBullets.push("Entscheidungslogik passt nicht");
-                kritischBullets.push("Tempo / Struktur nicht kompatibel");
-              } else if (!sameSecondary) {
-                kritischBullets.push("Ausprägung der Arbeitsweise passt nicht");
-                kritischBullets.push("Entscheidungslogik ähnlich, aber Umsetzung kritisch");
-                kritischBullets.push("Zweitstärke fehlt für diese Stelle");
-              } else {
-                kritischBullets.push("Ausprägung der Arbeitsweise passt nicht");
-                kritischBullets.push("Entscheidungslogik ähnlich, aber Umsetzung kritisch");
-                kritischBullets.push("Intensität weicht zu stark ab");
-              }
+              kritischBullets.push("Ausprägung der Arbeitsweise passt nicht");
+              kritischBullets.push("Entscheidungslogik weicht deutlich ab");
+              kritischBullets.push("Intensität weicht zu stark ab");
             }
 
             const auswirkungBullets: string[] = [];
@@ -874,25 +838,11 @@ export default function SollIstBericht() {
               auswirkungBullets.push("Geringer Führungsaufwand");
             } else if (fitLabel === "Bedingt geeignet") {
               auswirkungBullets.push("Mehr Abstimmung nötig");
-              if (isEqualDist) {
-                auswirkungBullets.push("Verhalten schwer vorhersagbar");
-              } else if (isDualDom) {
-                auswirkungBullets.push("Wechselnde Prioritäten im Alltag");
-              } else if (!sameSecondary && samePrimary) {
-                auswirkungBullets.push("Unter Druck anderes Ausweichverhalten");
-              } else {
-                auswirkungBullets.push("Leichtes Spannungspotenzial");
-              }
+              auswirkungBullets.push("Leichtes Spannungspotenzial");
               auswirkungBullets.push("Erhöhter Führungsaufwand");
             } else {
               auswirkungBullets.push("Deutlich mehr Abstimmung nötig");
-              if (isEqualDist) {
-                auswirkungBullets.push("Keine verlässliche Arbeitsprognose möglich");
-              } else if (isDualDom) {
-                auswirkungBullets.push("Instabile Prioritäten erzeugen Konflikte");
-              } else {
-                auswirkungBullets.push("Konfliktpotenzial im Team");
-              }
+              auswirkungBullets.push("Konfliktpotenzial im Team");
               auswirkungBullets.push("Hoher Führungsaufwand");
             }
 

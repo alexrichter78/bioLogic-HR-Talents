@@ -201,14 +201,13 @@ maxDiff = grösster Wert davon
 
 ## Entwicklungsaufwand
 
-| Fit-Ergebnis | Kontrolle | Entwicklungsaufwand | Level |
-|-------------|-----------|---------------------|-------|
-| Nicht geeignet | (egal) | Hoch | 3 |
-| Bedingt geeignet | (egal) | Mittel | 2 |
-| Geeignet | gering | Niedrig | 1 |
-| Geeignet | mittel/hoch | Mittel | 2 |
+| Fit-Ergebnis | Entwicklungsaufwand |
+|-------------|---------------------|
+| Geeignet | Niedrig |
+| Bedingt geeignet | Mittel |
+| Nicht geeignet | Hoch |
 
-Keine Sonderfälle.
+Direkte 1:1-Zuordnung, keine Sonderfälle.
 
 ---
 
