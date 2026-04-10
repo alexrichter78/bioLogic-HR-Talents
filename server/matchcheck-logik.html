@@ -462,16 +462,31 @@ ck2 = cSorted[1].key   (zweitstärkste Komponente)</div>
 <p>Jede Impact Area berechnet ihre eigene Severity basierend auf den Komponentenlücken:</p>
 
 <div class="code">function severity(gap: number):
-  gap ≥ 15  →  "critical"
-  gap ≥ 8   →  "warning"
-  gap &lt; 8   →  "ok"</div>
+  gap &gt; 10  →  "critical"
+  gap &gt; 5   →  "warning"
+  gap ≤ 5   →  "ok"</div>
+
+<div class="highlight-blue">
+  <strong>Angleichung an Part A:</strong> Die Severity-Schwellen sind jetzt konsistent mit der Fit-Engine:
+  0–5 = ok, 6–10 = warning, &gt;10 = critical. Das verhindert, dass Impact Areas positiver klingen als das Gesamturteil.
+</div>
 
 <table>
   <tr><th>Severity</th><th>Label im Bericht</th><th>Farbe</th><th>Bedeutung</th></tr>
-  <tr><td><code>ok</code></td><td>Passend</td><td style="color: #34C759;">●</td><td>Bereich liegt nah an der Stellenanforderung</td></tr>
-  <tr><td><code>warning</code></td><td>Bedingt</td><td style="color: #E5A832;">●</td><td>Erkennbare Abweichung, steuerbar mit Führung</td></tr>
+  <tr><td><code>ok</code></td><td>Weitgehend passend</td><td style="color: #34C759;">●</td><td>Bereich liegt nah an der Stellenanforderung</td></tr>
+  <tr><td><code>warning</code></td><td>Mit Abweichung</td><td style="color: #E5A832;">●</td><td>Erkennbare Abweichung, steuerbar mit Führung</td></tr>
   <tr><td><code>critical</code></td><td>Kritisch</td><td style="color: #D64045;">●</td><td>Deutliche Abweichung, hoher Aufwand nötig</td></tr>
 </table>
+
+<h3>Master-Regel</h3>
+<div class="highlight">
+  <strong>Kein Teilbereich darf positiver klingen als das Gesamturteil.</strong><br>
+  <ul style="margin: 8px 0 0 20px;">
+    <li><strong>Nicht geeignet:</strong> Alle verbleibenden <code>ok</code>-Bereiche werden auf <code>warning</code> angehoben.</li>
+    <li><strong>Bedingt geeignet:</strong> Maximal 2 Bereiche dürfen <code>ok</code> bleiben. Überschüssige werden auf <code>warning</code> angehoben.</li>
+    <li><strong>Geeignet:</strong> Keine Einschränkung.</li>
+  </ul>
+</div>
 
 <h3>Severity-Formeln je Impact Area</h3>
 <table>
@@ -751,16 +766,17 @@ ck2 = cSorted[1].key   (zweitstärkste Komponente)</div>
 <h2 id="entwicklung">Entwicklungspotenzial (buildDevelopment)</h2>
 <p>Basiert auf dem Gesamt-Fit und differenziert nach Profiltyp:</p>
 
-<div class="code">devGap = NICHT_GEEIGNET → "hoch"
+<div class="code">fitGap = NICHT_GEEIGNET → "hoch"
          BEDINGT       → "mittel"
          GEEIGNET      → "gering"</div>
 
 <h3>Ergebnis-Mapping</h3>
+<p>Semantik: Geringer Fit-Gap = hohe Entwicklungsfähigkeit. Hoher Fit-Gap = niedrige Entwicklungsfähigkeit.</p>
 <table>
-  <tr><th>devGap</th><th>Level</th><th>Label</th></tr>
-  <tr><td>gering</td><td>4</td><td>hoch</td></tr>
-  <tr><td>mittel</td><td>3</td><td>mittel</td></tr>
-  <tr><td>hoch</td><td>1</td><td>niedrig</td></tr>
+  <tr><th>fitGap</th><th>Level</th><th>Entwicklungspotenzial</th></tr>
+  <tr><td>gering (Geeignet)</td><td>4</td><td>hoch</td></tr>
+  <tr><td>mittel (Bedingt)</td><td>3</td><td>mittel</td></tr>
+  <tr><td>hoch (Nicht geeignet)</td><td>1</td><td>niedrig</td></tr>
 </table>
 
 <h3>Text-Differenzierung nach Profiltyp</h3>

@@ -18,8 +18,8 @@ const COMP_SHORT: Record<ComponentKey, string> = {
 
 function severityLabel(s: Severity) {
   if (s === "critical") return "KRITISCH";
-  if (s === "warning") return "BEDINGT";
-  return "PASSEND";
+  if (s === "warning") return "MIT ABWEICHUNG";
+  return "WEITGEHEND PASSEND";
 }
 
 type RGB = [number, number, number];

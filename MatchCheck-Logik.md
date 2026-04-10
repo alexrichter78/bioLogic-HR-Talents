@@ -211,15 +211,17 @@ Direkte 1:1-Zuordnung, keine Sonderfälle.
 
 ### Individuelle Bereichsbewertung (Impact Areas)
 
-Die 5 Bereiche im Bericht (Entscheidungsverhalten, Arbeitsweise, Führungswirkung, Kommunikation, Teamkultur) werden **unabhängig** vom Gesamtergebnis bewertet. Jeder Bereich berechnet seine eigene Severity basierend auf den relevanten Komponentenlücken:
+Die 4–5 Bereiche im Bericht (Entscheidungsverhalten, Arbeitsweise, Führungswirkung*, Kommunikation, Teamkultur) berechnen eigene Severity-Werte. Die Schwellen sind an die Fit-Engine angeglichen: 0–5 = ok, 6–10 = warning, >10 = critical.
+
+*Führungswirkung nur bei fuehrungsArt ≠ "keine".
 
 | Severity | Label | Bedeutung |
 |----------|-------|-----------|
-| ok | Passend | Bereich liegt nah an der Stellenanforderung |
-| warning | Bedingt | Erkennbare Abweichung, steuerbar mit Führung |
+| ok | Weitgehend passend | Bereich liegt nah an der Stellenanforderung |
+| warning | Mit Abweichung | Erkennbare Abweichung, steuerbar mit Führung |
 | critical | Kritisch | Deutliche Abweichung, hoher Aufwand nötig |
 
-Beispiel: Gesamtergebnis "Nicht geeignet", aber Arbeitsweise kann "Passend" sein wenn der analytische Gap klein ist.
+**Master-Regel:** Kein Teilbereich darf positiver klingen als das Gesamturteil. Bei "Nicht geeignet" werden alle ok-Bereiche auf warning angehoben. Bei "Bedingt geeignet" dürfen maximal 2 Bereiche ok bleiben.
 
 ---
 
