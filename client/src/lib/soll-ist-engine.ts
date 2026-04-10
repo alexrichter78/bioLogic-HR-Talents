@@ -147,6 +147,33 @@ function severity(gap: number): Severity {
   return "ok";
 }
 
+type DualPair = "impulsiv_intuitiv" | "impulsiv_analytisch" | "intuitiv_analytisch";
+const DUAL_PAIR_ORDER: ComponentKey[] = ["impulsiv", "intuitiv", "analytisch"];
+function dualPairKey(k1: ComponentKey, k2: ComponentKey): DualPair {
+  return [k1, k2].sort((a, b) => DUAL_PAIR_ORDER.indexOf(a) - DUAL_PAIR_ORDER.indexOf(b)).join("_") as DualPair;
+}
+
+const dualCandDecision: Record<DualPair, string> = {
+  impulsiv_intuitiv: "entscheidet sowohl schnell und handlungsorientiert als auch kontextbezogen und abstimmungsorientiert. Je nach Situation überwiegt Tempo oder Einbindung.",
+  impulsiv_analytisch: "entscheidet sowohl schnell und handlungsorientiert als auch analytisch und prüforientiert. Je nach Situation überwiegt Tempo oder Sorgfalt.",
+  intuitiv_analytisch: "entscheidet sowohl kontextbezogen und abstimmungsorientiert als auch analytisch und prüforientiert. Je nach Situation überwiegt Einbindung oder Sorgfalt.",
+};
+const dualCandLeadership: Record<DualPair, string> = {
+  impulsiv_intuitiv: "führt sowohl über Tempo und direkte Ansprache als auch über Dialog und Einbindung. Der Führungsstil wechselt situativ.",
+  impulsiv_analytisch: "führt sowohl über Tempo und Entscheidungskraft als auch über Systematik und klare Vorgaben. Der Führungsstil wechselt situativ.",
+  intuitiv_analytisch: "führt sowohl über Dialog und Vertrauen als auch über Systematik und Struktur. Der Führungsstil wechselt situativ.",
+};
+const dualCandCommunication: Record<DualPair, string> = {
+  impulsiv_intuitiv: "kommuniziert sowohl direkt und ergebnisorientiert als auch dialogorientiert und empathisch. Der Kommunikationsstil wechselt situativ.",
+  impulsiv_analytisch: "kommuniziert sowohl direkt und knapp als auch sachlich und faktenbasiert. Der Kommunikationsstil wechselt situativ.",
+  intuitiv_analytisch: "kommuniziert sowohl dialogorientiert und empathisch als auch sachlich und faktenbasiert. Der Kommunikationsstil wechselt situativ.",
+};
+const dualCandCulture: Record<DualPair, string> = {
+  impulsiv_intuitiv: "prägt die Kultur über Dynamik und Tempo einerseits, Zusammenhalt und Beziehungsarbeit andererseits. Beide Seiten wechseln sich ab.",
+  impulsiv_analytisch: "prägt die Kultur über Dynamik und Tempo einerseits, Strukturklarheit und Verlässlichkeit andererseits. Beide Seiten stehen nebeneinander.",
+  intuitiv_analytisch: "prägt die Kultur über Zusammenhalt und Beziehungsarbeit einerseits, Ordnung und Verlässlichkeit andererseits. Beide Seiten stehen nebeneinander.",
+};
+
 export function detectConstellation(t: Triad): ConstellationType {
   const sorted = ([
     { key: "impulsiv" as ComponentKey, val: t.impulsiv },
@@ -278,8 +305,12 @@ export function computeSollIst(
   const rk = rDom.top1.key;
   const rk2 = rDom.top2.key;
   const ck = cDom.top1.key;
+  const ck2Main = cDom.top2.key;
   const cn = candidateName || "Die Person";
   const isDualDomRole = rDom.gap1 <= 5 && rDom.gap2 > 5;
+  const candSpreadMain = Math.max(ct.impulsiv, ct.intuitiv, ct.analytisch) - Math.min(ct.impulsiv, ct.intuitiv, ct.analytisch);
+  const candIsBalFullMain = candSpreadMain <= 5;
+  const candIsDualDomMain = !candIsBalFullMain && cDom.gap1 <= 5 && cDom.gap2 > 5;
 
   const rConst = detectConstellation(rt);
   const cConst = detectConstellation(ct);
@@ -295,7 +326,7 @@ export function computeSollIst(
   const devGap: "gering" | "mittel" | "hoch" = fitRating === "NICHT_GEEIGNET" ? "hoch"
     : fitRating === "BEDINGT" ? "mittel"
     : "gering";
-  const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildDevelopment(devGap, rk, ck, controlIntensity, cn, isDualDomRole, rk2, roleIsBalFull, ct);
+  const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildDevelopment(devGap, rk, ck, controlIntensity, cn, isDualDomRole, rk2, roleIsBalFull, ct, candIsDualDomMain, ck2Main);
   const actions = buildActions(rk, ck, gapLevel, controlIntensity, roleIsBalFull, ct);
   const integrationsplan = buildIntegrationsplan(roleName, cn, fitLabel, rk, ck, gapLevel, controlIntensity, fuehrungsArt, rt, ct, roleIsBalFull);
   const finalText = buildFinal(roleName, cn, fitLabel, controlIntensity, rk, ck, fuehrungsArt, isDualDomRole, rk2, roleIsBalFull, ct);
@@ -560,19 +591,30 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
   const candSpread = Math.max(ct.impulsiv, ct.intuitiv, ct.analytisch) - Math.min(ct.impulsiv, ct.intuitiv, ct.analytisch);
   const candIsBalFull = candSpread <= 5;
 
+  const cSorted = ([
+    { key: "impulsiv" as ComponentKey, val: ct.impulsiv },
+    { key: "intuitiv" as ComponentKey, val: ct.intuitiv },
+    { key: "analytisch" as ComponentKey, val: ct.analytisch },
+  ] as { key: ComponentKey; val: number }[]).sort((a, b) => b.val - a.val);
+  const candGap1 = cSorted[0].val - cSorted[1].val;
+  const candGap2 = cSorted[1].val - cSorted[2].val;
+  const candIsDualDom = !candIsBalFull && candGap1 <= 5 && candGap2 > 5;
+  const ck2: ComponentKey = cSorted[1].key;
+  const candDualMatchesRole = candIsDualDom && (rk === ck || rk === ck2);
+
   const areas: ImpactArea[] = [
-    buildDecisionImpact(rk, ck, gapI, gapA, gapN, cand, roleIsBalFull, ct, candIsBalFull),
-    buildWorkStructureImpact(rk, ck, rt, ct, gapA, cand, candIsBalFull),
+    buildDecisionImpact(rk, ck, gapI, gapA, gapN, cand, roleIsBalFull, ct, candIsBalFull, candIsDualDom, ck2),
+    buildWorkStructureImpact(rk, ck, rt, ct, gapA, cand, candIsBalFull, candIsDualDom, ck2),
   ];
 
   if (fuehrungsArt !== "keine") {
-    areas.push(buildLeadershipImpact(rk, ck, gapI, gapN, gapA, cand, fuehrungsArt, roleIsBalFull, ct, candIsBalFull));
+    areas.push(buildLeadershipImpact(rk, ck, gapI, gapN, gapA, cand, fuehrungsArt, roleIsBalFull, ct, candIsBalFull, candIsDualDom, ck2));
   }
 
-  areas.push(buildCommunicationImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct, candIsBalFull));
-  areas.push(buildCultureImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct, candIsBalFull));
+  areas.push(buildCommunicationImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct, candIsBalFull, candIsDualDom, ck2));
+  areas.push(buildCultureImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct, candIsBalFull, candIsDualDom, ck2));
 
-  if (rk !== ck && !roleIsBalFull && !candIsBalFull) {
+  if (rk !== ck && !roleIsBalFull && !candIsBalFull && !candDualMatchesRole) {
     for (const area of areas) {
       if (area.severity === "ok") {
         area.severity = "warning";
@@ -583,13 +625,35 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
   return areas;
 }
 
-function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapA: number, gapN: number, cand: string, roleIsBalFull = false, ct?: Triad, candIsBalFull = false): ImpactArea {
+function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapA: number, gapN: number, cand: string, roleIsBalFull = false, ct?: Triad, candIsBalFull = false, candIsDualDom = false, ck2?: ComponentKey): ImpactArea {
   const maxGap = Math.max(gapI, gapA, gapN);
   const s = Subj(cand);
 
   let roleNeed: string;
   let candidatePattern: string;
   let risk: string;
+
+  if (candIsDualDom && ck2 && !roleIsBalFull) {
+    const pair = dualPairKey(ck, ck2);
+    const dualMatchesRole = rk === ck || rk === ck2;
+    const sev = severity(dualMatchesRole ? maxGap * 0.45 : maxGap * 0.75);
+    roleNeed = rk === "impulsiv"
+      ? "Schnelle, ergebnisorientierte Entscheidungen. Klare Richtung und direkte Umsetzung vor langer Prüfung."
+      : rk === "intuitiv"
+        ? "Entscheidungen, die Kontext, Zusammenarbeit und zwischenmenschliche Wirkung berücksichtigen. Abstimmung im Team vor Geschwindigkeit."
+        : "Sorgfältige, prüforientierte Entscheidungen. Optionen abwägen, Risiken prüfen, erst dann handeln.";
+    candidatePattern = `${s} ${dualCandDecision[pair]}`;
+    const third = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).find(k => k !== ck && k !== ck2)!;
+    const thirdLabel = third === "impulsiv" ? "Handlungstempo" : third === "intuitiv" ? "Einbindung und Abstimmung" : "analytische Tiefe";
+    if (dualMatchesRole) {
+      risk = maxGap >= 10
+        ? `Die Entscheidungslogik passt in einer der beiden Ausprägungen. Da ${subj(cand)} zwischen zwei Stilen wechselt, kann die geforderte Konsequenz schwanken. ${thirdLabel} bleibt untervertreten. Klare Entscheidungsrahmen helfen.`
+        : `Die Entscheidungslogik passt grundsätzlich. ${s} deckt die Stellenanforderung über eine der beiden Stärken ab. Der Wechsel zwischen zwei Stilen erfordert bewusste Steuerung.`;
+    } else {
+      risk = `Die Stelle erfordert eine Entscheidungslogik, die weder der ersten noch der zweiten Ausprägung der Person entspricht. ${thirdLabel} bleibt untervertreten. Der Führungsaufwand ist erhöht.`;
+    }
+    return { id: "decision", label: "Entscheidungsverhalten", severity: sev, roleNeed, candidatePattern, risk };
+  }
 
   if (candIsBalFull && !roleIsBalFull) {
     const totalGap = gapI + gapN + gapA;
@@ -710,10 +774,11 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
   return { id: "decision", label: "Entscheidungsverhalten", severity: sev, roleNeed, candidatePattern, risk };
 }
 
-function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, gapA: number, cand: string, candIsBalFull = false): ImpactArea {
+function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, gapA: number, cand: string, candIsBalFull = false, candIsDualDom = false, ck2?: ComponentKey): ImpactArea {
   const maxGapAll = Math.max(Math.abs(rt.impulsiv - ct.impulsiv), Math.abs(rt.intuitiv - ct.intuitiv), gapA);
-  const structureBoost = (rk !== ck && !candIsBalFull) ? Math.min(maxGapAll * 0.65, gapA + 10) : 0;
-  const sev = severity((rk !== ck && !candIsBalFull) ? Math.max(gapA, structureBoost) : gapA);
+  const candDualMatchesRole = candIsDualDom && ck2 && (rk === ck || rk === ck2);
+  const structureBoost = (rk !== ck && !candIsBalFull && !candDualMatchesRole) ? Math.min(maxGapAll * 0.65, gapA + 10) : 0;
+  const sev = severity((rk !== ck && !candIsBalFull && !candDualMatchesRole) ? Math.max(gapA, structureBoost) : gapA);
 
   let roleNeed: string;
   let candidatePattern: string;
@@ -745,7 +810,21 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
   const sec3 = ck === "impulsiv" ? Math.min(secN, secA) : ck === "intuitiv" ? Math.min(secI, secA) : Math.min(secI, secN);
   const competing23 = Math.abs(sec2 - sec3) <= 5 && sec2 > 15;
 
-  if (candIsBalFull) {
+  if (candIsDualDom && ck2) {
+    const pair = dualPairKey(ck, ck2);
+    const hasAnalytisch = ck === "analytisch" || ck2 === "analytisch";
+    if (gapA >= 10 && ct.analytisch < rt.analytisch) {
+      risk = hasAnalytisch
+        ? `${s} bringt analytische Fähigkeiten als eine von zwei Stärken mit. Die Stelle erfordert aber eine konsequentere Strukturtiefe. Da ${subj(cand)} zwischen zwei Arbeitsstilen wechselt, wird die analytische Linie nicht durchgehend gehalten. Klare Prozessvorgaben nötig.`
+        : `${s} priorisiert weder Struktur noch Analyse konsequent. Prüfschritte werden verkürzt oder übersprungen. Die Führungskraft muss Prozessklarheit aktiv einfordern.`;
+    } else if (gapA >= 10 && ct.analytisch > rt.analytisch) {
+      risk = `${s} bringt mehr Strukturorientierung mit als die Stelle erfordert. Der Wechsel zwischen zwei Arbeitsstilen kann das Tempo zusätzlich bremsen. Klare Priorisierung durch Führung empfohlen.`;
+    } else {
+      risk = candDualMatchesRole
+        ? `Die Arbeitsweise passt über eine der beiden Ausprägungen. Der Wechsel zwischen zwei Stilen kann situativ zu unterschiedlichem Arbeitstempo führen. Feinabstimmung durch Führung empfohlen.`
+        : `Die strukturelle Arbeitsweise weicht nicht stark ab, aber die Doppelausprägung beeinflusst, wie Aufgaben priorisiert und umgesetzt werden. Feinabstimmung durch Führung nötig.`;
+    }
+  } else if (candIsBalFull) {
     if (gapA >= 10 && ct.analytisch < rt.analytisch) {
       risk = `Die Stelle erfordert ein klares Mass an Struktur. ${s} arbeitet vielseitig und kann sich anpassen, liefert aber nicht die konsequente Strukturtiefe, die erwartet wird. Die Führungskraft sollte Prozessstandards vorgeben.`;
     } else if (gapA >= 10 && ct.analytisch > rt.analytisch) {
@@ -798,9 +877,41 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
   return { id: "work_structure", label: "Arbeitsweise", severity: sev, roleNeed, candidatePattern, risk };
 }
 
-function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, fuehrungsArt: FuehrungsArt, roleIsBalFull = false, ct?: Triad, candIsBalFull = false): ImpactArea {
+function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, fuehrungsArt: FuehrungsArt, roleIsBalFull = false, ct?: Triad, candIsBalFull = false, candIsDualDom = false, ck2?: ComponentKey): ImpactArea {
   const maxGap = Math.max(gapI, gapN, gapA);
   const s = Subj(cand);
+
+  if (candIsDualDom && ck2 && !roleIsBalFull && ct) {
+    const pair = dualPairKey(ck, ck2);
+    const dualMatchesRole = rk === ck || rk === ck2;
+    const sev = severity(dualMatchesRole ? maxGap * 0.45 : maxGap * 0.7);
+    const roleNeed = fuehrungsArt === "disziplinarisch"
+      ? (rk === "analytisch"
+        ? "Führung über klare Standards, verlässliche Struktur und nachvollziehbare Entscheidungen."
+        : rk === "impulsiv"
+          ? "Führung über Entscheidungskraft, klare Richtung und operative Geschwindigkeit."
+          : "Führung über persönliche Ansprache, offene Kommunikation und Teamdynamik.")
+      : fuehrungsArt === "fachlich"
+        ? (rk === "analytisch"
+          ? "Fachliche Führung mit klarer Einschätzung und verlässlicher Priorisierung."
+          : rk === "impulsiv"
+            ? "Fachliche Führung mit schneller Orientierung und klarer Richtung."
+            : "Fachliche Führung über Dialog und gemeinsame Lösungsfindung.")
+        : (rk === "analytisch"
+          ? "Orientierung über Struktur, Standards und klare Vorgaben."
+          : rk === "impulsiv"
+            ? "Wirkung über schnelle Entscheidungen und hohe Ergebnisdynamik."
+            : "Wirkung über Kommunikation, Zusammenarbeit und situatives Gespür.");
+    const candidatePattern = `${s} ${dualCandLeadership[pair]}`;
+    const third = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).find(k => k !== ck && k !== ck2)!;
+    const thirdLabel = third === "impulsiv" ? "operative Geschwindigkeit" : third === "intuitiv" ? "persönliche Nähe" : "strukturierte Verlässlichkeit";
+    const risk = dualMatchesRole
+      ? (maxGap >= 10
+        ? `Die Führungsrichtung passt über eine der beiden Stärken. Da ${subj(cand)} zwischen zwei Führungsstilen wechselt, kann die Wirkung inkonsistent wirken. ${thirdLabel} bleibt untervertreten. Regelmässiges Feedback zur Führungswirkung empfohlen.`
+        : `Der Führungsstil passt grundsätzlich über eine der beiden Ausprägungen. Der situative Wechsel erfordert bewusste Steuerung.`)
+      : `Die Stelle erfordert einen Führungsstil, der weder der ersten noch der zweiten Stärke entspricht. ${thirdLabel} bleibt untervertreten. Der Führungsaufwand ist erhöht.`;
+    return { id: "leadership", label: "Führungswirkung", severity: sev, roleNeed, candidatePattern, risk };
+  }
 
   if (candIsBalFull && !roleIsBalFull && ct) {
     const totalGap = gapI + gapN + gapA;
@@ -947,9 +1058,29 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
   return { id: "leadership", label: "Führungswirkung", severity: sev, roleNeed, candidatePattern, risk };
 }
 
-function buildCommunicationImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, roleIsBalFull = false, ct?: Triad, candIsBalFull = false): ImpactArea {
+function buildCommunicationImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, roleIsBalFull = false, ct?: Triad, candIsBalFull = false, candIsDualDom = false, ck2?: ComponentKey): ImpactArea {
   const s = Subj(cand);
   const maxGap = Math.max(gapI, gapN, gapA);
+
+  if (candIsDualDom && ck2 && !roleIsBalFull) {
+    const pair = dualPairKey(ck, ck2);
+    const dualMatchesRole = rk === ck || rk === ck2;
+    const sev = severity(dualMatchesRole ? maxGap * 0.45 : maxGap * 0.7);
+    const roleNeed = rk === "impulsiv"
+      ? "Klare, direkte Kommunikation. Kurze Wege, schnelle Abstimmung, ergebnisorientierter Austausch."
+      : rk === "intuitiv"
+        ? "Empathische, dialogorientierte Kommunikation. Aktives Zuhören, Einbindung und persönliche Ansprache."
+        : "Sachliche, faktenbasierte Kommunikation. Klare Argumentation, strukturierte Informationsweitergabe.";
+    const candidatePattern = `${s} ${dualCandCommunication[pair]}`;
+    const third = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).find(k => k !== ck && k !== ck2)!;
+    const thirdComm = third === "impulsiv" ? "Direktheit und Knappheit" : third === "intuitiv" ? "Empathie und persönlicher Dialog" : "sachliche Präzision und Faktenorientierung";
+    const risk = dualMatchesRole
+      ? (maxGap >= 10
+        ? `Der Kommunikationsstil passt über eine der beiden Ausprägungen. Der Wechsel zwischen zwei Stilen kann bei Gesprächspartnern unterschiedlich ankommen. ${thirdComm} bleibt untervertreten. Klare Kommunikationserwartungen setzen.`
+        : `Der Kommunikationsstil passt grundsätzlich. Der situative Wechsel erfordert bewusste Steuerung, deckt aber die Stellenanforderung ab.`)
+      : `Die Stelle erfordert einen Kommunikationsstil, der weder der ersten noch der zweiten Ausprägung entspricht. ${thirdComm} bleibt untervertreten. Klare Kommunikationserwartungen setzen.`;
+    return { id: "communication", label: "Kommunikationsverhalten", severity: sev, roleNeed, candidatePattern, risk };
+  }
 
   if (candIsBalFull && !roleIsBalFull) {
     const totalGap = gapI + gapN + gapA;
@@ -1050,8 +1181,28 @@ function buildCommunicationImpact(rk: ComponentKey, ck: ComponentKey, gapI: numb
   return { id: "communication", label: "Kommunikationsverhalten", severity: sev, roleNeed, candidatePattern, risk };
 }
 
-function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, roleIsBalFull = false, ct?: Triad, candIsBalFull = false): ImpactArea {
+function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, roleIsBalFull = false, ct?: Triad, candIsBalFull = false, candIsDualDom = false, ck2?: ComponentKey): ImpactArea {
   const s = Subj(cand);
+
+  if (candIsDualDom && ck2 && !roleIsBalFull) {
+    const pair = dualPairKey(ck, ck2);
+    const dualMatchesRole = rk === ck || rk === ck2;
+    const sev = severity(dualMatchesRole ? Math.max(gapI, gapN, gapA) * 0.45 : Math.max(gapI, gapN, gapA) * 0.65);
+    const roleNeed = rk === "impulsiv"
+      ? "Leistungs- und ergebnisorientierte Kultur. Tempo und Wirkung im Vordergrund."
+      : rk === "intuitiv"
+        ? "Kooperative, beziehungsorientierte Kultur. Zusammenhalt und gegenseitige Unterstützung."
+        : "Verlässlichkeit, Ruhe und nachvollziehbare Qualität. Stabile Abläufe und planbare Ergebnisse.";
+    const candidatePattern = `${s} ${dualCandCulture[pair]}`;
+    const third = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).find(k => k !== ck && k !== ck2)!;
+    const thirdCult = third === "impulsiv" ? "Leistungsdynamik" : third === "intuitiv" ? "persönlicher Zusammenhalt" : "Regelklarheit und Verlässlichkeit";
+    const risk = dualMatchesRole
+      ? (Math.max(gapI, gapN, gapA) >= 10
+        ? `Die kulturelle Grundrichtung passt über eine der beiden Stärken. Der Wechsel kann das Arbeitsumfeld unberechenbar wirken lassen. ${thirdCult} bleibt untervertreten.`
+        : `Die Kulturwirkung passt grundsätzlich über eine der beiden Ausprägungen. Der situative Wechsel kann das Arbeitsumfeld leicht verändern.`)
+      : `Die Kulturwirkung der Person entspricht in keiner der beiden Ausprägungen der Stellenanforderung. ${thirdCult} bleibt untervertreten. Die Führungskraft muss aktiv gegensteuern.`;
+    return { id: "culture", label: "Wirkung auf Zusammenarbeit und Teamkultur", severity: sev, roleNeed, candidatePattern, risk };
+  }
 
   if (candIsBalFull && !roleIsBalFull) {
     const totalGap = gapI + gapN + gapA;
@@ -1278,7 +1429,7 @@ function buildRiskTimeline(role: string, cand: string, rk: ComponentKey, ck: Com
   ];
 }
 
-function buildDevelopment(gap: string, rk: ComponentKey, ck: ComponentKey, control: string, cand: string, isDualDomRole = false, rk2?: ComponentKey, roleIsBalFull = false, ct?: Triad): { level: number; label: string; text: string } {
+function buildDevelopment(gap: string, rk: ComponentKey, ck: ComponentKey, control: string, cand: string, isDualDomRole = false, rk2?: ComponentKey, roleIsBalFull = false, ct?: Triad, candIsDualDom = false, candCk2?: ComponentKey): { level: number; label: string; text: string } {
   const s = Subj(cand);
 
   if (roleIsBalFull && ct) {
@@ -1323,6 +1474,37 @@ function buildDevelopment(gap: string, rk: ComponentKey, ck: ComponentKey, contr
 
   const candIsBalanced = ct ? Math.max(ct.impulsiv, ct.intuitiv, ct.analytisch) - Math.min(ct.impulsiv, ct.intuitiv, ct.analytisch) <= 5 : false;
   const roleDesc = isDualDomRole && rk2 ? dualRoleDesc(rk, rk2) : compDesc(rk);
+  const candDualMatchesRole = candIsDualDom && candCk2 && (rk === ck || rk === candCk2);
+
+  if (candIsDualDom && candCk2 && !roleIsBalFull) {
+    const candDesc = `${compDesc(ck)} und ${compDesc(candCk2)}`;
+    if (gap === "gering") {
+      return {
+        level: 4,
+        label: "hoch",
+        text: candDualMatchesRole
+          ? `Die Stelle verlangt ${roleDesc}. ${s} deckt diese Anforderung über eine von zwei Stärken ab (${candDesc}). Der situative Wechsel erfordert bewusste Steuerung, aber die Grundlage stimmt.`
+          : `Die Stelle verlangt ${roleDesc}. ${s} arbeitet über ${candDesc}. Die Abweichung ist gering. Mit klaren Erwartungen und guter Einarbeitung ist eine stabile Entwicklung realistisch.`,
+      };
+    }
+    if (gap === "mittel") {
+      return {
+        level: candDualMatchesRole ? 3 : 2,
+        label: candDualMatchesRole ? "mittel" : "niedrig",
+        text: candDualMatchesRole
+          ? `Die Stelle verlangt ${roleDesc}. ${s} bringt dies als eine von zwei Stärken mit (${candDesc}). Der Wechsel zwischen beiden Ausprägungen kann die Konsequenz im geforderten Bereich schwächen. Klare Führung und konkrete Ziele empfohlen.`
+          : `Die Stelle verlangt ${roleDesc}. ${s} arbeitet über ${candDesc} – keiner dieser Schwerpunkte deckt die Anforderung direkt ab. Die Anpassung ist möglich, braucht aber klare Führung und konkrete Ziele über mehrere Monate.`,
+      };
+    }
+    return {
+      level: 1,
+      label: "niedrig",
+      text: candDualMatchesRole
+        ? `Die Stelle verlangt ${roleDesc} – deutlich stärker, als ${subj(cand)} es mitbringt. Eine der beiden Stärken (${candDesc}) geht in die richtige Richtung, reicht aber nicht aus. Intensive Begleitung wäre nötig.`
+        : `Die Stelle verlangt ${roleDesc}. ${s} setzt auf ${candDesc}. Das sind andere Arbeitsweisen. Die Anpassung wäre aufwendig und im Ergebnis unsicher.`,
+    };
+  }
+
   if (gap === "gering") {
     return {
       level: 4,
