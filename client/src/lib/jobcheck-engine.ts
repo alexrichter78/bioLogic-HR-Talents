@@ -1110,63 +1110,18 @@ export type CoreFitResult = {
   };
 };
 
-type VariantType = "ALL_EQUAL" | "TOP_PAIR" | "TOP_SINGLE_BOTTOM_PAIR" | "ALL_DISTINCT";
-type ProfileVariant = {
-  type: VariantType;
-  code: string;
-  order: ComponentKey[];
-  topPair?: ComponentKey[];
-  low?: ComponentKey;
-  top?: ComponentKey;
-  bottomPair?: ComponentKey[];
-};
+function getVariant(profile: Triad, eqTol = 5): string {
+  const sorted = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[])
+    .map(k => ({ k, v: profile[k] }))
+    .sort((a, b) => b.v - a.v);
+  const [a, b, c] = sorted;
+  const d1 = a.v - b.v;
+  const d2 = b.v - c.v;
 
-function classifyVariant(profile: Triad, eqTol = 5): ProfileVariant {
-  const keys: ComponentKey[] = ["impulsiv", "intuitiv", "analytisch"];
-  const sorted = keys
-    .map(k => ({ key: k, value: profile[k] }))
-    .sort((a, b) => b.value !== a.value ? b.value - a.value : a.key.localeCompare(b.key));
-  const [p1, p2, p3] = sorted;
-  const gap12 = p1.value - p2.value;
-  const gap23 = p2.value - p3.value;
-  const order = sorted.map(p => p.key) as ComponentKey[];
-
-  if (gap12 <= eqTol && gap23 <= eqTol) {
-    return { type: "ALL_EQUAL", code: "I=N=A", order };
-  }
-  if (gap12 <= eqTol && gap23 > eqTol) {
-    const topPair = [p1.key, p2.key] as ComponentKey[];
-    return { type: "TOP_PAIR", code: `${[...topPair].sort().join("=")}>${p3.key}`, topPair, low: p3.key, order };
-  }
-  if (gap12 > eqTol && gap23 <= eqTol) {
-    const bottomPair = [p2.key, p3.key] as ComponentKey[];
-    return { type: "TOP_SINGLE_BOTTOM_PAIR", code: `${p1.key}>${[...bottomPair].sort().join("=")}`, top: p1.key, bottomPair, order };
-  }
-  return { type: "ALL_DISTINCT", code: `${p1.key}>${p2.key}>${p3.key}`, order };
-}
-
-function sameVariant(a: ProfileVariant, b: ProfileVariant): boolean {
-  if (a.type !== b.type) return false;
-  switch (a.type) {
-    case "ALL_EQUAL":
-      return true;
-    case "TOP_PAIR":
-      return (
-        a.topPair !== undefined && b.topPair !== undefined &&
-        [...a.topPair].sort().join("|") === [...b.topPair].sort().join("|") &&
-        a.low === b.low
-      );
-    case "TOP_SINGLE_BOTTOM_PAIR":
-      return (
-        a.top === b.top &&
-        a.bottomPair !== undefined && b.bottomPair !== undefined &&
-        [...a.bottomPair].sort().join("|") === [...b.bottomPair].sort().join("|")
-      );
-    case "ALL_DISTINCT":
-      return a.order.join("|") === b.order.join("|");
-    default:
-      return false;
-  }
+  if (d1 <= eqTol && d2 <= eqTol) return "ALL_EQUAL";
+  if (d1 <= eqTol) return `TOP_PAIR_${[a.k, b.k].sort().join("")}_${c.k}`;
+  if (d2 <= eqTol) return `BOTTOM_PAIR_${a.k}_${[b.k, c.k].sort().join("")}`;
+  return `ORDER_${a.k}${b.k}${c.k}`;
 }
 
 export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: boolean): CoreFitResult {
@@ -1188,19 +1143,19 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
   const mismatch = weightedMismatch(roleTriad, candTriad);
   const maxGapVal = Math.max(Math.abs(rN.impulsiv - cN.impulsiv), Math.abs(rN.intuitiv - cN.intuitiv), Math.abs(rN.analytisch - cN.analytisch));
 
-  const roleVariant = classifyVariant(rN, EQ_TOL);
-  const candVariant = classifyVariant(cN, EQ_TOL);
-  const structureMatches = sameVariant(roleVariant, candVariant);
+  const sollVar = getVariant(rN, EQ_TOL);
+  const istVar = getVariant(cN, EQ_TOL);
+  const structureMatches = sollVar === istVar;
 
-  reasons.push({ rule: `Soll-Variante: ${roleVariant.code} (${roleVariant.type})`, effect: "BASE" });
-  reasons.push({ rule: `Ist-Variante: ${candVariant.code} (${candVariant.type})`, effect: "BASE" });
+  reasons.push({ rule: `Soll-Variante: ${sollVar}`, effect: "BASE" });
+  reasons.push({ rule: `Ist-Variante: ${istVar}`, effect: "BASE" });
 
   let overallFit: FitStatus;
   if (ko) {
     overallFit = "NOT_SUITABLE";
   } else if (!structureMatches) {
     overallFit = "NOT_SUITABLE";
-    reasons.push({ rule: `Struktur passt nicht: Soll=${roleVariant.code} vs Ist=${candVariant.code}`, effect: "OVERRIDE" });
+    reasons.push({ rule: `Struktur passt nicht: Soll=${sollVar} vs Ist=${istVar}`, effect: "OVERRIDE" });
   } else if (maxGapVal <= GOOD_TOL) {
     overallFit = "SUITABLE";
     reasons.push({ rule: `Struktur identisch, max. Abweichung ${maxGapVal.toFixed(0)} ≤ ${GOOD_TOL} → geeignet`, effect: "BASE" });
@@ -1216,7 +1171,6 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
   const candIsBalFull = candDom.gap1 <= 5 && candDom.gap2 <= 5;
   const roleIsBalFull = roleDom.gap1 <= 5 && roleDom.gap2 <= 5;
   const roleIsDual = !roleIsBalFull && roleDom.gap1 <= 4 && roleDom.gap2 >= 6;
-  const candPrimaryInRoleDual = roleIsDual && (candDom.top1.key === roleDom.top1.key || candDom.top1.key === roleDom.top2.key);
   const candIsDual = !candIsBalFull && candDom.gap1 <= 4 && candDom.gap2 >= 6;
   const candDualPairKeys = candIsDual ? new Set([candDom.top1.key, candDom.top2.key]) : null;
   const candDualMatchesRoleDom = candDualPairKeys !== null && candDualPairKeys.has(roleDom.top1.key);
