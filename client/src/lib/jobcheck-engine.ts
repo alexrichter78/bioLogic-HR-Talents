@@ -1162,7 +1162,10 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
   const candPrimaryInRoleDual = roleIsDual && (candDom.top1.key === roleDom.top1.key || candDom.top1.key === roleDom.top2.key);
   const dualPairKeys = roleIsDual ? new Set([roleDom.top1.key, roleDom.top2.key]) : null;
   const candMatchesDualPair = dualPairKeys !== null && dualPairKeys.has(candDom.top1.key) && dualPairKeys.has(candDom.top2.key);
-  const effectiveSameDom = sameDom || roleIsBalFull || candPrimaryInRoleDual;
+  const candIsDual = !candIsBalFull && candDom.gap1 <= 4 && candDom.gap2 >= 6;
+  const candDualPairKeys = candIsDual ? new Set([candDom.top1.key, candDom.top2.key]) : null;
+  const candDualMatchesRoleDom = candDualPairKeys !== null && candDualPairKeys.has(roleDom.top1.key);
+  const effectiveSameDom = sameDom || roleIsBalFull || candPrimaryInRoleDual || candDualMatchesRoleDom;
   const candEqualDist = candDom.mode === "BAL_FULL";
   const candDualDominance = !candEqualDist && candDom.gap1 <= 5;
   const roleClearDominance = roleDom.gap1 >= 15;
@@ -1171,9 +1174,6 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
   const roleKeyInDual = dualConflict && (candDom.top1.key === roleDom.top1.key || candDom.top2.key === roleDom.top1.key);
   const maxGapVal = Math.max(Math.abs(rN.impulsiv - cN.impulsiv), Math.abs(rN.intuitiv - cN.intuitiv), Math.abs(rN.analytisch - cN.analytisch));
   const candSpread = candDom.top1.value - candDom.top3.value;
-  const candIsDual = !candIsBalFull && candDom.gap1 <= 4 && candDom.gap2 >= 6;
-  const candDualPairKeys = candIsDual ? new Set([candDom.top1.key, candDom.top2.key]) : null;
-  const candDualMatchesRoleDom = candDualPairKeys !== null && candDualPairKeys.has(roleDom.top1.key);
   const secondaryFlipped = effectiveSameDom && !candMatchesDualPair && !candDualMatchesRoleDom && roleDom.top2.key !== candDom.top2.key;
 
   // ── C. Grundrating aus Mismatch ───────────────────────
