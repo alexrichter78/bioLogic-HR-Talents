@@ -1,0 +1,261 @@
+Die 13 Varianten sauber aufgeteilt
+
+Das sind genau diese 13 Muster:
+
+1 Variante: alle drei gleich
+I = N = A
+3 Varianten: zwei oben gleich
+I = N > A
+I = A > N
+N = A > I
+3 Varianten: eine oben, zwei unten gleich
+I > N = A
+N > I = A
+A > I = N
+6 Varianten: alle drei klar verschieden
+I > N > A
+I > A > N
+N > I > A
+N > A > I
+A > I > N
+A > N > I
+
+Damit ist das System vollständig.
+
+Zweiter Denkfehler: Deine Schwellen sind noch uneinheitlich
+
+Du hast teilweise gesagt:
+
+bis 5 passend
+über 12 bedingt geeignet
+über 18 nicht geeignet
+
+und an anderer Stelle:
+
+bis 5 passend
+über 5 bis 10 bedingt
+über 10 nicht geeignet
+
+Das macht die Logik unnötig schwer.
+
+Empfehlung
+
+Wenn du es so einfach wie möglich willst, nimm eine einzige Schwellenlogik für alle 13 Varianten:
+
+max. Abweichung bis 5 → geeignet
+über 5 bis 10 → bedingt geeignet
+über 10 → nicht geeignet
+
+Und davor immer:
+
+Struktur identisch?
+nein → nicht geeignet
+ja → Abweichung prüfen
+
+Das ist am einfachsten, saubersten und am besten erklärbar.
+
+Vereinfachte Endlogik
+Schritt 1: Variante des SOLL erkennen
+
+Eines der 13 Muster bestimmen.
+
+Schritt 2: Variante des IST erkennen
+
+Auch eines der 13 Muster bestimmen.
+
+Schritt 3: Varianten vergleichen
+
+Wenn das IST-Muster nicht zum SOLL-Muster passt:
+
+→ nicht geeignet
+
+Schritt 4: Abweichung der Werte prüfen
+
+Wenn die Struktur passt:
+
+größte Einzelabweichung <= 5 → geeignet
+größte Einzelabweichung > 5 und <= 10 → bedingt geeignet
+größte Einzelabweichung > 10 → nicht geeignet
+Warum das besser ist
+
+So vermeidest du alle typischen Fehler:
+
+gleiche Hauptkomponente, aber falsche Reststruktur
+Gleichstand wird falsch behandelt
+Balanced-Fälle kippen unbemerkt
+und 3. Platz werden ignoriert
+Widersprüche bei 5 / 10 / 12 / 18
+JavaScript-Code
+
+Hier ist der Code so gebaut, dass er:
+
+die 13 Varianten automatisch erkennt
+SOLL und IST vergleicht
+am Ende geeignet / bedingt geeignet / nicht geeignet ausgibt
+zusätzlich Debug-Infos liefert
+function evaluateProfileFit(soll, ist, options = {}) {
+  const EQ_TOL = options.eqTolerance ?? 5;      // wann Werte als "gleich" gelten
+  const GOOD_TOL = options.goodTolerance ?? 5;  // bis hier: geeignet
+  const COND_TOL = options.condTolerance ?? 10; // bis hier: bedingt geeignet
+
+  const keys = ["I", "N", "A"];
+
+  function absDiff(a, b) {
+    return Math.abs(a - b);
+  }
+
+  function sortProfile(profile) {
+    return keys
+      .map((k) => ({ key: k, value: profile[k] }))
+      .sort((a, b) => {
+        if (b.value !== a.value) return b.value - a.value;
+        return a.key.localeCompare(b.key);
+      });
+  }
+
+  function sameSet(arr1, arr2) {
+    if (arr1.length !== arr2.length) return false;
+    const a = [...arr1].sort().join("|");
+    const b = [...arr2].sort().join("|");
+    return a === b;
+  }
+
+  function classifyVariant(profile) {
+    const sorted = sortProfile(profile);
+    const [p1, p2, p3] = sorted;
+
+    const gap12 = p1.value - p2.value;
+    const gap23 = p2.value - p3.value;
+
+    // 1) Alle drei gleich
+    if (gap12 <= EQ_TOL && gap23 <= EQ_TOL) {
+      return {
+        type: "ALL_EQUAL",
+        code: "I=N=A",
+        order: sorted.map((p) => p.key),
+        description: "Alle drei Komponenten sind gleich stark."
+      };
+    }
+
+    // 2) Zwei oben gleich
+    if (gap12 <= EQ_TOL && gap23 > EQ_TOL) {
+      const topPair = [p1.key, p2.key];
+      const low = p3.key;
+
+      return {
+        type: "TOP_PAIR",
+        code: `${[...topPair].sort().join("=")}>${low}`,
+        topPair,
+        low,
+        order: sorted.map((p) => p.key),
+        description: "Zwei Komponenten sind oben gleich stark."
+      };
+    }
+
+    // 3) Eine oben, zwei unten gleich
+    if (gap12 > EQ_TOL && gap23 <= EQ_TOL) {
+      const top = p1.key;
+      const bottomPair = [p2.key, p3.key];
+
+      return {
+        type: "TOP_SINGLE_BOTTOM_PAIR",
+        code: `${top}>${[...bottomPair].sort().join("=")}`,
+        top,
+        bottomPair,
+        order: sorted.map((p) => p.key),
+        description: "Eine Komponente ist oben, zwei unten sind gleich stark."
+      };
+    }
+
+    // 4) Alle drei verschieden
+    return {
+      type: "ALL_DISTINCT",
+      code: `${p1.key}>${p2.key}>${p3.key}`,
+      order: sorted.map((p) => p.key),
+      description: "Alle drei Komponenten haben eine klare Reihenfolge."
+    };
+  }
+
+  function sameVariant(sollVar, istVar) {
+    if (sollVar.type !== istVar.type) return false;
+
+    switch (sollVar.type) {
+      case "ALL_EQUAL":
+        return true;
+
+      case "TOP_PAIR":
+        return (
+          sameSet(sollVar.topPair, istVar.topPair) &&
+          sollVar.low === istVar.low
+        );
+
+      case "TOP_SINGLE_BOTTOM_PAIR":
+        return (
+          sollVar.top === istVar.top &&
+          sameSet(sollVar.bottomPair, istVar.bottomPair)
+        );
+
+      case "ALL_DISTINCT":
+        return sollVar.order.join("|") === istVar.order.join("|");
+
+      default:
+        return false;
+    }
+  }
+
+  const sollVariant = classifyVariant(soll);
+  const istVariant = classifyVariant(ist);
+
+  const diffs = {
+    I: absDiff(soll.I, ist.I),
+    N: absDiff(soll.N, ist.N),
+    A: absDiff(soll.A, ist.A)
+  };
+
+  const maxDiff = Math.max(diffs.I, diffs.N, diffs.A);
+  const structureMatches = sameVariant(sollVariant, istVariant);
+
+  let fitLabel;
+  let reason;
+
+  if (!structureMatches) {
+    fitLabel = "nicht geeignet";
+    reason = "Die Grundstruktur des IST-Profils entspricht nicht der SOLL-Variante.";
+  } else if (maxDiff <= GOOD_TOL) {
+    fitLabel = "geeignet";
+    reason = `Die Struktur passt und die größte Abweichung liegt bei maximal ${GOOD_TOL}.`;
+  } else if (maxDiff <= COND_TOL) {
+    fitLabel = "bedingt geeignet";
+    reason = `Die Struktur passt, aber die größte Abweichung liegt über ${GOOD_TOL} und maximal bei ${COND_TOL}.`;
+  } else {
+    fitLabel = "nicht geeignet";
+    reason = `Die Struktur passt zwar, aber die größte Abweichung liegt über ${COND_TOL}.`;
+  }
+
+  return {
+    fitLabel,
+    reason,
+    sollVariant,
+    istVariant,
+    structureMatches,
+    diffs,
+    maxDiff,
+    thresholds: {
+      eqTolerance: EQ_TOL,
+      goodTolerance: GOOD_TOL,
+      condTolerance: COND_TOL
+    }
+  };
+}
+Beispiel
+const soll = { I: 60, N: 42, A: 40 };
+const ist  = { I: 58, N: 44, A: 39 };
+
+const result = evaluateProfileFit(soll, ist);
+console.log(result);
+Beispiel 2: falsche Struktur
+const soll = { I: 60, N: 50, A: 30 }; // I>N>A
+const ist  = { I: 60, N: 30, A: 50 }; // I>A>N
+
+const result = evaluateProfileFit(soll, ist);
+console.log(result.fitLabel); // nicht geeignet
