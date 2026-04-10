@@ -12,3 +12,9 @@ id = "ZH4OBwxY7B0XXKMRPST73"
 uri = "file://MatchCheck_Berechnungslogik.md"
 type = "text"
 title = "MatchCheck – Berechnungslogik (Tabellen)"
+
+[[outputs]]
+id = "2D6fCrrCJ9loYbUBPzVpn"
+uri = "file://MatchCheck-Logik.md"
+type = "text"
+title = "MatchCheck – Vollständige Soll-Ist-Logik"
