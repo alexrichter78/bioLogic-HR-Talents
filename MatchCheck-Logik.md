@@ -298,6 +298,52 @@ maxDiff = MAX(0, 2, 2) = 2 ≤ 10 → BEDINGT GEEIGNET
 
 ---
 
+## Externes KO (koRuleTriggered)
+
+Vor dem Paarrelationen-Vergleich prüft das System, ob ein **sofortiges KO** aus der erweiterten Rollenanalyse vorliegt. Diese Prüfung verwendet das `roleAnalysis`-Objekt (aus dem JobCheck) und überschreibt jedes andere Ergebnis mit "Nicht geeignet".
+
+### KO-Regeln
+
+| # | Bedingung | Erklärung |
+|---|-----------|-----------|
+| 1 | Rolle EXTREME_I (I ≥ 65) und Kandidat I ≤ 35 | Extreme Tempo-Stelle, Kandidat zu langsam |
+| 2 | Rolle EXTREME_N (N ≥ 55) und Kandidat N ≤ 30 | Extreme Beziehungs-Stelle, Kandidat zu sachorientiert |
+| 3 | Rolle EXTREME_A (A ≥ 65) und Kandidat A ≤ 35 | Extreme Analyse-Stelle, Kandidat zu unstrukturiert |
+| 4 | Rolle und Kandidat haben verschiedene Hauptprägung UND Hauptdifferenz ≥ 18 | Fundamentaler Richtungswechsel |
+| 5 | Rolle hat klare Dominanz (gap1 ≥ 20) UND verschiedene Hauptprägung UND Hauptdifferenz ≥ 15 | Starke Einzeldominanz wird nicht abgebildet |
+| 6 | Rolle ist DUAL (Doppelschwerpunkt) UND Kandidat erreicht bei einem der beiden Dual-Werte weniger als 75% des Soll-Wertes | Doppelschwerpunkt wird nicht getragen |
+| 7 | Führung erforderlich UND Führungsprofil I ≥ 60 UND Kandidat I ≤ 35 | Impulsive Führung verlangt, Kandidat kann nicht liefern |
+
+### Wichtig: Slider-Synchronisation
+
+Wenn der User den Soll-Profil-Slider bewegt, wird `roleAnalysis.role_profile` automatisch mit den neuen Slider-Werten synchronisiert. Dadurch arbeiten die KO-Regeln immer mit den angezeigten Werten, nicht mit den originalen JobCheck-Werten.
+
+Die übrigen Profile im `roleAnalysis`-Objekt (frame_profile, leadership.profile, tasks_profile, human_profile) bleiben unverändert – diese kommen direkt aus dem JobCheck und sind nicht per Slider editierbar.
+
+---
+
+## Erweiterte Kontrollintensität (calcControlIntensity)
+
+Wenn ein `roleAnalysis`-Objekt vorhanden ist, wird die Kontrollintensität zusätzlich durch diese Faktoren beeinflusst:
+
+| Bedingung | Punkte |
+|-----------|--------|
+| Verschiedene Hauptprägung ODER Dual/Nicht-Dual-Mismatch | +2 |
+| Rolle ist EXTREME | +1 |
+| Rolle hat gap1 ≥ 12 | +1 |
+| Hauptdifferenz ≥ 25 | +3 |
+| Hauptdifferenz ≥ 15 | +2 |
+| Führung erforderlich, Führungsprofil-Differenz ≥ 15 | +2 |
+| Rahmen-Profil dominant (≥ 75%) und Kandidat hat andere Hauptprägung | +2 |
+| Rahmen-Profil stark (≥ 65%) und Kandidat hat andere Hauptprägung | +1 |
+| Marktdruck hoch und Rolle-I minus Kandidat-I ≥ 15 | +1 |
+| Regulierung hoch und Rolle-A minus Kandidat-A ≥ 15 | +1 |
+| Change-Rate hoch und Kandidat-A minus Rolle-A ≥ 15 | +1 |
+
+Stufen: 0–2 = LOW, 3–5 = MEDIUM, ≥ 6 = HIGH
+
+---
+
 ## Schwellenwerte im Überblick
 
 | Parameter | Wert | Verwendung |
@@ -308,10 +354,57 @@ maxDiff = MAX(0, 2, 2) = 2 ≤ 10 → BEDINGT GEEIGNET
 
 ---
 
+## Datenfluss im Detail
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ localStorage: "rollenDnaState"                           │
+│ (Enthält bioGramGesamt, fuehrung, Tätigkeiten etc.)     │
+└───────────┬──────────────────────────────────────────────┘
+            │
+  ┌─────────▼──────────┐    ┌─────────────────────────────┐
+  │ bgToTriad(gesamt)  │    │ buildRoleAnalysisFromState() │
+  │ → roleTriad        │    │ → roleAnalysisObj            │
+  │ (angezeigt/Slider) │    │ (role_profile, leadership,   │
+  └─────────┬──────────┘    │  frame_profile, tasks etc.)  │
+            │               └───────────┬─────────────────┘
+            │                           │
+            │   ┌───────────────────────┘
+            │   │
+            │   │  useEffect: Wenn roleTriad sich ändert,
+            │   │  wird roleAnalysisObj.role_profile
+            │   │  automatisch synchronisiert
+            │   │
+  ┌─────────▼───▼──────────────────────────────────────┐
+  │ computeSollIst(roleName, candName,                 │
+  │   roleTriad, candProfile, fuehrungsArt,            │
+  │   roleAnalysisObj)                                 │
+  │                                                    │
+  │   1. koRuleTriggered(roleAnalysisObj, candInput)   │
+  │      → externalKo (true/false)                     │
+  │   2. calcControlIntensity(roleAnalysisObj, cand)   │
+  │      → effectiveControlLevel                       │
+  │   3. computeCoreFit(roleTriad, candProfile,        │
+  │      externalKo)                                   │
+  │      → Paarrelationen → Strukturvergleich → Fit    │
+  └────────────────────────┬───────────────────────────┘
+                           │
+                    ┌──────▼──────┐
+                    │ SollIstResult│
+                    │ (fitLabel,   │
+                    │  control,    │
+                    │  devLevel,   │
+                    │  Texte...)   │
+                    └─────────────┘
+```
+
+---
+
 ## Dateien
 
 | Datei | Inhalt |
 |-------|--------|
-| `client/src/lib/jobcheck-engine.ts` | `getVariantMeta()`, `getPairRelations()`, `getStructureFromPairs()`, `computeCoreFit()` |
-| `client/src/lib/soll-ist-engine.ts` | `computeSollIst()` — Berichtsaufbau, Texte, Entwicklungsaufwand |
-| `client/src/pages/soll-ist-bericht.tsx` | UI-Komponente mit Slidern und Berichtsdarstellung |
+| `client/src/lib/jobcheck-engine.ts` | `getVariantMeta()`, `getPairRelations()`, `getStructureFromPairs()`, `computeCoreFit()`, `koRuleTriggered()`, `calcControlIntensity()`, `buildRoleAnalysisFromState()` |
+| `client/src/lib/soll-ist-engine.ts` | `computeSollIst()` — orchestriert KO + Engine + Berichtsaufbau |
+| `client/src/pages/soll-ist-bericht.tsx` | UI-Komponente mit Slidern, Slider-Sync, Berichtsdarstellung |
+| `tests/matchcheck-runner.ts` | Test-Runner für alle 13 Varianten + Grenzfälle |
