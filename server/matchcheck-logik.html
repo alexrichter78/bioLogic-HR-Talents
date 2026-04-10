@@ -3,19 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MatchCheck – Vollständige Soll-Ist-Logik</title>
+<title>MatchCheck – Vollständige Kalkulation, Berechnung und Texte</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; color: #1d1d1f; line-height: 1.7; padding: 0; }
-  .container { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
   h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; color: #1d1d1f; }
   h2 { font-size: 22px; font-weight: 600; margin-top: 48px; margin-bottom: 16px; color: #1d1d1f; padding-bottom: 8px; border-bottom: 2px solid #e5e5ea; }
   h3 { font-size: 17px; font-weight: 600; margin-top: 24px; margin-bottom: 8px; color: #48484a; }
+  h4 { font-size: 15px; font-weight: 600; margin-top: 16px; margin-bottom: 6px; color: #636366; }
   p { margin-bottom: 12px; font-size: 15px; }
   .subtitle { color: #636366; font-size: 15px; margin-bottom: 32px; }
   table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 14px; }
   th { background: #1d1d1f; color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; }
-  td { padding: 10px 14px; border-bottom: 1px solid #e5e5ea; }
+  td { padding: 10px 14px; border-bottom: 1px solid #e5e5ea; vertical-align: top; }
   tr:nth-child(even) td { background: #f2f2f7; }
   .code { background: #1d1d1f; color: #e5e5ea; padding: 16px 20px; border-radius: 10px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; line-height: 1.6; overflow-x: auto; margin: 12px 0 24px; white-space: pre; }
   .card { background: #fff; border-radius: 12px; padding: 24px; margin: 16px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
@@ -24,7 +25,9 @@
   .tag-yellow { background: #fff3cd; color: #856404; }
   .tag-red { background: #f8d7da; color: #721c24; }
   .tag-blue { background: #d1ecf1; color: #0c5460; }
+  .tag-purple { background: #e8d5f5; color: #5b2d8e; }
   .highlight { background: #fffde7; border-left: 4px solid #e5a832; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 14px; }
+  .highlight-blue { background: #e8f4fd; border-left: 4px solid #007aff; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 14px; }
   .flow-box { background: #fff; border: 2px solid #e5e5ea; border-radius: 10px; padding: 16px; margin: 8px 0; text-align: center; font-weight: 600; font-size: 14px; }
   .flow-arrow { text-align: center; font-size: 20px; color: #636366; margin: 4px 0; }
   .flow-row { display: flex; gap: 12px; margin: 8px 0; }
@@ -35,6 +38,10 @@
   .toc { background: #fff; border-radius: 12px; padding: 20px 24px; margin: 24px 0 40px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
   .toc a { color: #007aff; text-decoration: none; display: block; padding: 4px 0; font-size: 14px; }
   .toc a:hover { text-decoration: underline; }
+  .toc .toc-sub { padding-left: 20px; font-size: 13px; }
+  .text-block { background: #f2f2f7; border-radius: 8px; padding: 14px 16px; margin: 8px 0 16px; font-size: 13px; line-height: 1.6; font-style: italic; color: #48484a; }
+  ul { margin: 8px 0 16px 20px; font-size: 14px; }
+  ul li { margin-bottom: 4px; }
   @media (max-width: 600px) {
     .container { padding: 20px 16px 60px; }
     h1 { font-size: 22px; }
@@ -48,25 +55,48 @@
 <body>
 <div class="container">
 
-<h1>MatchCheck – Vollständige Soll-Ist-Logik</h1>
-<p class="subtitle">Deterministische Bewertung der Passung zwischen Stelle (Soll) und Person (Ist)</p>
+<h1>MatchCheck – Vollständige Kalkulation, Berechnung und Texte</h1>
+<p class="subtitle">Deterministische Bewertung der Passung zwischen Stelle (Soll) und Person (Ist) – mit allen Berechnungsschritten, Schwellenwerten und generierten Berichtstexten</p>
 
 <div class="toc">
   <strong>Inhalt</strong>
-  <a href="#ueberblick">Überblick</a>
-  <a href="#schritt1">Schritt 1: Variante erkennen (13 Muster)</a>
-  <a href="#schritt2">Schritt 2: Paarrelationen bilden</a>
-  <a href="#schritt3">Schritt 3: Strukturvergleich</a>
-  <a href="#schritt4">Schritt 4: Abweichungsprüfung</a>
-  <a href="#entscheidungsbaum">Entscheidungsbaum</a>
-  <a href="#ko">Externes KO (koRuleTriggered)</a>
-  <a href="#kontrolle">Kontrollintensität / Führungsaufwand</a>
-  <a href="#kontrolle-erweitert">Erweiterte Kontrollintensität</a>
-  <a href="#entwicklung">Entwicklungsaufwand</a>
-  <a href="#beispiele">Rechenbeispiele</a>
-  <a href="#schwellenwerte">Schwellenwerte</a>
-  <a href="#datenfluss">Datenfluss</a>
+  <a href="#teil-a">Teil A: Fit-Berechnung (Engine)</a>
+  <a href="#ueberblick" class="toc-sub">Überblick & Profilstruktur</a>
+  <a href="#schritt1" class="toc-sub">Schritt 1: Variante erkennen (13 Muster)</a>
+  <a href="#schritt2" class="toc-sub">Schritt 2: Paarrelationen bilden</a>
+  <a href="#schritt3" class="toc-sub">Schritt 3: Strukturvergleich</a>
+  <a href="#schritt4" class="toc-sub">Schritt 4: Abweichungsprüfung</a>
+  <a href="#entscheidungsbaum" class="toc-sub">Entscheidungsbaum</a>
+  <a href="#ko" class="toc-sub">Externes KO (koRuleTriggered)</a>
+  <a href="#kontrolle" class="toc-sub">Kontrollintensität Basis</a>
+  <a href="#kontrolle-erweitert" class="toc-sub">Kontrollintensität Erweitert</a>
+  <a href="#beispiele" class="toc-sub">Rechenbeispiele</a>
+  <a href="#schwellenwerte" class="toc-sub">Schwellenwerte</a>
+
+  <a href="#teil-b">Teil B: Soll-Ist-Bericht (Textgenerierung)</a>
+  <a href="#bericht-ueberblick" class="toc-sub">Berichtsaufbau</a>
+  <a href="#profil-erkennung" class="toc-sub">Profiltyp-Erkennung (Konstellationen)</a>
+  <a href="#profil-sonderfaelle" class="toc-sub">Sonderfälle: BalFull, DualDom</a>
+  <a href="#severity-berechnung" class="toc-sub">Severity-Berechnung</a>
+  <a href="#impact-areas" class="toc-sub">Impact Areas (5 Bereiche)</a>
+  <a href="#impact-decision" class="toc-sub">– Entscheidungsverhalten</a>
+  <a href="#impact-work" class="toc-sub">– Arbeitsweise</a>
+  <a href="#impact-leadership" class="toc-sub">– Führungswirkung</a>
+  <a href="#impact-communication" class="toc-sub">– Kommunikationsverhalten</a>
+  <a href="#impact-culture" class="toc-sub">– Teamkultur</a>
+  <a href="#rk-ck-floor" class="toc-sub">rk≠ck Floor-Regel</a>
+  <a href="#dual-dom-lookup" class="toc-sub">Dual-Dom Lookup-Tabellen</a>
+  <a href="#stressverhalten" class="toc-sub">Stressverhalten</a>
+  <a href="#entwicklung" class="toc-sub">Entwicklungspotenzial</a>
+  <a href="#integrationsplan" class="toc-sub">Integrationsplan</a>
+  <a href="#textvarianten" class="toc-sub">Textvarianten-System</a>
+
+  <a href="#teil-c">Teil C: Dateien & Datenfluss</a>
 </div>
+
+<!-- ==================== TEIL A: ENGINE ==================== -->
+
+<h2 id="teil-a">Teil A: Fit-Berechnung (Engine)</h2>
 
 <h2 id="ueberblick">Überblick</h2>
 <p>Der MatchCheck vergleicht ein <strong>Soll-Profil</strong> (Stelle) mit einem <strong>Ist-Profil</strong> (Person). Beide Profile bestehen aus drei Komponenten, die zusammen immer 100 ergeben:</p>
@@ -145,7 +175,7 @@ I > N > A  (I=50, N=30, A=20)
   <h3>B. Weicher Strukturkonflikt (SOFT_CONFLICT) <span class="tag tag-yellow">1 Abweichung</span></h3>
   <p><strong>Genau 1</strong> der 3 Relationen ist unterschiedlich <strong>und</strong> es ist kein direkter Flip (1 ↔ −1).</p>
   <p>Erlaubte Übergänge:</p>
-  <ul style="margin: 8px 0 8px 20px; font-size: 14px;">
+  <ul>
     <li>0 ↔ 1 (Gleichheit kippt leicht nach oben)</li>
     <li>0 ↔ −1 (Gleichheit kippt leicht nach unten)</li>
   </ul>
@@ -155,21 +185,12 @@ I > N > A  (I=50, N=30, A=20)
 <div class="card">
   <h3>C. Harter Strukturkonflikt (HARD_CONFLICT) <span class="tag tag-red">Sofort KO</span></h3>
   <p>Sobald:</p>
-  <ul style="margin: 8px 0 8px 20px; font-size: 14px;">
+  <ul>
     <li><strong>Mehr als 1</strong> Relation abweicht, oder</li>
     <li>Irgendwo ein <strong>direkter Flip</strong> 1 ↔ −1 vorkommt</li>
   </ul>
   <p>→ <strong>Sofort "nicht geeignet".</strong></p>
 </div>
-
-<h3>Warum Paarrelationen besser sind als Variantentyp-Vergleiche</h3>
-<table>
-  <tr><th>Fall</th><th>Alt (Variantentypen)</th><th>Neu (Paarrelationen)</th><th>Korrekt?</th></tr>
-  <tr><td>ALL_EQUAL ↔ BOTTOM_PAIR</td><td>Fälschlich weich</td><td>Hart (2 Relationen kippen)</td><td>Neu ✓</td></tr>
-  <tr><td>ALL_EQUAL ↔ TOP_PAIR</td><td>Fälschlich weich</td><td>Hart (2 Relationen kippen)</td><td>Neu ✓</td></tr>
-  <tr><td>TOP_PAIR (I=N>A) ↔ ORDER (N>I>A)</td><td>Fälschlich hart</td><td>Weich (nur I:N kippt 0→−1)</td><td>Neu ✓</td></tr>
-  <tr><td>Sekundärflip (I>N>A ↔ I>A>N)</td><td>Korrekt hart</td><td>Hart (N:A flippt 1→−1)</td><td>Beide ✓</td></tr>
-</table>
 
 <div class="separator"></div>
 
@@ -241,7 +262,7 @@ maxDiff = grösster Wert davon</div>
 <div class="separator"></div>
 
 <h2 id="ko">Externes KO (koRuleTriggered)</h2>
-<p>Vor dem Paarrelationen-Vergleich prüft das System, ob ein <strong>sofortiges KO</strong> aus der erweiterten Rollenanalyse vorliegt. Diese Prüfung überschreibt jedes andere Ergebnis mit "Nicht geeignet".</p>
+<p>Vor dem Paarrelationen-Vergleich prüft das System, ob ein <strong>sofortiges KO</strong> aus der erweiterten Rollenanalyse vorliegt.</p>
 
 <table>
   <tr><th>#</th><th>Bedingung</th><th>Erklärung</th></tr>
@@ -253,10 +274,6 @@ maxDiff = grösster Wert davon</div>
   <tr><td>6</td><td>Rolle ist DUAL UND Kandidat erreicht bei einem Dual-Wert &lt; 75% des Soll</td><td>Doppelschwerpunkt wird nicht getragen</td></tr>
   <tr><td>7</td><td>Führung erforderlich UND Führungsprofil I ≥ 60 UND Kandidat I ≤ 35</td><td>Impulsive Führung verlangt, Kandidat kann nicht liefern</td></tr>
 </table>
-
-<div class="highlight">
-  <strong>Slider-Synchronisation:</strong> Wenn der User den Soll-Profil-Slider bewegt, wird <code>roleAnalysis.role_profile</code> automatisch mit den neuen Slider-Werten synchronisiert. Dadurch arbeiten die KO-Regeln immer mit den angezeigten Werten. Die übrigen Profile (frame_profile, leadership.profile, tasks_profile) bleiben unverändert.
-</div>
 
 <div class="separator"></div>
 
@@ -282,7 +299,7 @@ maxDiff = grösster Wert davon</div>
 <div class="separator"></div>
 
 <h2 id="kontrolle-erweitert">Erweiterte Kontrollintensität (calcControlIntensity)</h2>
-<p>Wenn ein <code>roleAnalysis</code>-Objekt vorhanden ist, wird die Kontrollintensität zusätzlich durch diese Faktoren beeinflusst:</p>
+<p>Wenn ein <code>roleAnalysis</code>-Objekt vorhanden ist:</p>
 
 <table>
   <tr><th>Bedingung</th><th>Punkte</th></tr>
@@ -303,17 +320,6 @@ maxDiff = grösster Wert davon</div>
 
 <div class="separator"></div>
 
-<h2 id="entwicklung">Entwicklungsaufwand</h2>
-<p>Direkte 1:1-Zuordnung, keine Sonderfälle:</p>
-<table>
-  <tr><th>Fit-Ergebnis</th><th>Entwicklungsaufwand</th></tr>
-  <tr><td><span class="tag tag-green">Geeignet</span></td><td><strong>Niedrig</strong></td></tr>
-  <tr><td><span class="tag tag-yellow">Bedingt geeignet</span></td><td><strong>Mittel</strong></td></tr>
-  <tr><td><span class="tag tag-red">Nicht geeignet</span></td><td><strong>Hoch</strong></td></tr>
-</table>
-
-<div class="separator"></div>
-
 <h2 id="beispiele">Rechenbeispiele</h2>
 
 <div class="card">
@@ -329,31 +335,7 @@ maxDiff = MAX(2, 1, 1) = 2 ≤ 5 → GEEIGNET</div>
 </div>
 
 <div class="card">
-  <h3>Beispiel 2: <span class="tag tag-green">Geeignet</span> (EXACT – Doppelschwerpunkt)</h3>
-  <div class="code">Soll: I=24  N=38  A=38
-Ist:  I=22  N=39  A=39
-
-Soll-Relationen: I:N=−1, I:A=−1, N:A=0
-Ist-Relationen:  I:N=−1, I:A=−1, N:A=0
-→ EXACT (0 Abweichungen)
-
-maxDiff = MAX(2, 1, 1) = 2 ≤ 5 → GEEIGNET</div>
-</div>
-
-<div class="card">
-  <h3>Beispiel 3: <span class="tag tag-green">Geeignet</span> (EXACT – BOTTOM_PAIR)</h3>
-  <div class="code">Soll: I=27  N=26  A=47
-Ist:  I=29  N=28  A=43
-
-Soll-Relationen: I:N=0,  I:A=−1, N:A=−1
-Ist-Relationen:  I:N=0,  I:A=−1, N:A=−1
-→ EXACT (0 Abweichungen)
-
-maxDiff = MAX(2, 2, 4) = 4 ≤ 5 → GEEIGNET</div>
-</div>
-
-<div class="card">
-  <h3>Beispiel 4: <span class="tag tag-yellow">Bedingt geeignet</span> (SOFT_CONFLICT)</h3>
+  <h3>Beispiel 2: <span class="tag tag-yellow">Bedingt geeignet</span> (SOFT_CONFLICT)</h3>
   <div class="code">Soll: I=40  N=40  A=20  (I ≈ N > A)
 Ist:  I=34  N=40  A=26  (N > I > A)
 
@@ -365,7 +347,7 @@ maxDiff = MAX(6, 0, 6) = 6 ≤ 10 → BEDINGT GEEIGNET</div>
 </div>
 
 <div class="card">
-  <h3>Beispiel 5: <span class="tag tag-red">Nicht geeignet</span> (HARD_CONFLICT – Sekundärflip)</h3>
+  <h3>Beispiel 3: <span class="tag tag-red">Nicht geeignet</span> (HARD_CONFLICT – Sekundärflip)</h3>
   <div class="code">Soll: I=50  N=30  A=20  (I > N > A)
 Ist:  I=50  N=20  A=30  (I > A > N)
 
@@ -374,30 +356,6 @@ Ist-Relationen:  I:N=1,  I:A=1,  N:A=−1
 → HARD_CONFLICT (N:A flippt direkt 1→−1)
 
 → NICHT GEEIGNET</div>
-</div>
-
-<div class="card">
-  <h3>Beispiel 6: <span class="tag tag-red">Nicht geeignet</span> (HARD_CONFLICT – ALL_EQUAL vs BOTTOM_PAIR)</h3>
-  <div class="code">Soll: I=35  N=33  A=32  (ALL_EQUAL)
-Ist:  I=41  N=30  A=29  (BOTTOM_PAIR)
-
-Soll-Relationen: I:N=0,  I:A=0,  N:A=0
-Ist-Relationen:  I:N=1,  I:A=1,  N:A=0
-→ HARD_CONFLICT (2 Relationen kippen – nicht nur 1)
-
-→ NICHT GEEIGNET</div>
-</div>
-
-<div class="card">
-  <h3>Beispiel 7: <span class="tag tag-yellow">Bedingt geeignet</span> (SOFT_CONFLICT – BOTTOM_PAIR vs ORDER)</h3>
-  <div class="code">Soll: I=46  N=28  A=26  (BOTTOM_PAIR)
-Ist:  I=46  N=30  A=24  (ORDER)
-
-Soll-Relationen: I:N=1,  I:A=1,  N:A=0
-Ist-Relationen:  I:N=1,  I:A=1,  N:A=1
-→ SOFT_CONFLICT (1 Abweichung: N:A kippt 0→1, kein Flip)
-
-maxDiff = MAX(0, 2, 2) = 2 ≤ 10 → BEDINGT GEEIGNET</div>
 </div>
 
 <div class="separator"></div>
@@ -410,9 +368,548 @@ maxDiff = MAX(0, 2, 2) = 2 ≤ 10 → BEDINGT GEEIGNET</div>
   <tr><td>COND_TOL</td><td>10</td><td>Max. Abweichung für "bedingt geeignet"</td></tr>
 </table>
 
+<!-- ==================== TEIL B: BERICHT ==================== -->
+
+<div class="separator"></div>
+<h2 id="teil-b" style="font-size: 26px; border-bottom: 3px solid #007aff;">Teil B: Soll-Ist-Bericht (Textgenerierung)</h2>
+
+<h2 id="bericht-ueberblick">Berichtsaufbau</h2>
+<p>Nach der Engine-Berechnung generiert <code>computeSollIst()</code> einen vollständigen Bericht mit folgenden Teilen:</p>
+
+<table>
+  <tr><th>#</th><th>Berichtsteil</th><th>Funktion</th><th>Beschreibung</th></tr>
+  <tr><td>1</td><td>Fit-Ergebnis</td><td><code>computeCoreFit()</code></td><td>Geeignet / Bedingt / Nicht geeignet + Farbe</td></tr>
+  <tr><td>2</td><td>Zusammenfassung</td><td><code>buildSummary()</code></td><td>Vergleichender Fliesstext Rolle vs. Person</td></tr>
+  <tr><td>3</td><td>Executive-Bullets</td><td><code>buildExecutiveBullets()</code></td><td>Kernpunkte zur Passung (Stichpunkte)</td></tr>
+  <tr><td>4</td><td>Konstellations-Risiken</td><td><code>buildConstellationRisks()</code></td><td>Operative Risiken aus Dominanz-Mismatch</td></tr>
+  <tr><td>5</td><td>Dominanz-Verschiebung</td><td><code>buildDominanceShift()</code></td><td>Wie die Person den Teamfokus verändert</td></tr>
+  <tr><td>6</td><td>Stressverhalten</td><td><code>buildStressBehavior()</code></td><td>Reaktion unter Druck / Belastung</td></tr>
+  <tr><td>7</td><td>Impact Areas</td><td><code>buildImpactAreas()</code></td><td>5 Wirkungsbereiche mit Severity</td></tr>
+  <tr><td>8</td><td>Risiko-Timeline</td><td><code>buildRiskTimeline()</code></td><td>3-Phasen-Risikoprognose</td></tr>
+  <tr><td>9</td><td>Entwicklungspotenzial</td><td><code>buildDevelopment()</code></td><td>Level + Begründungstext</td></tr>
+  <tr><td>10</td><td>Handlungsempfehlungen</td><td><code>buildActions()</code></td><td>Konkrete Führungsmassnahmen</td></tr>
+  <tr><td>11</td><td>Integrationsplan</td><td><code>buildIntegrationsplan()</code></td><td>4-Phasen-Plan (1 Jahr)</td></tr>
+  <tr><td>12</td><td>Fazit</td><td><code>buildFinal()</code></td><td>Abschliessendes Statement</td></tr>
+</table>
+
 <div class="separator"></div>
 
-<h2 id="datenfluss">Kurzfassung der finalen Regel</h2>
+<h2 id="profil-erkennung">Profiltyp-Erkennung (Konstellationen)</h2>
+<p>Jedes Profil wird zusätzlich in eine von <strong>13 Konstellationen</strong> eingeordnet, die für die Textgenerierung verwendet werden:</p>
+
+<div class="code">sorted = [höchster, mittlerer, niedrigster] (absteigend)
+d12 = sorted[0] − sorted[1]
+d23 = sorted[1] − sorted[2]
+range = sorted[0] − sorted[2]</div>
+
+<table>
+  <tr><th>Bedingung</th><th>Typ</th><th>Label</th></tr>
+  <tr><td>range ≤ 8</td><td><code>BALANCED</code></td><td>Ausgeglichenes Profil</td></tr>
+  <tr><td>d12 ≥ 15</td><td><code>H_DOM / B_DOM / S_DOM</code></td><td>Klarer Fokus (Handlung / Beziehung / Struktur)</td></tr>
+  <tr><td>d12 ≤ 5</td><td><code>H_NEAR_B / H_NEAR_S / B_NEAR_S</code></td><td>Doppelfokus (zwei fast gleich starke Bereiche)</td></tr>
+  <tr><td>d12 &gt; 5 und &lt; 15</td><td><code>H_GT_B / H_GT_S / ...</code></td><td>Fokus mit Sekundäranteil</td></tr>
+</table>
+
+<div class="highlight-blue">
+  <strong>Verwendung:</strong> Die Konstellation bestimmt die Formulierung in Zusammenfassung, Stressverhalten, Dominanz-Verschiebung und Risikobeschreibungen. Jede Konstellation hat eigene Textbausteine.
+</div>
+
+<div class="separator"></div>
+
+<h2 id="profil-sonderfaelle">Sonderfälle: BalFull und DualDom</h2>
+
+<p>Für die Impact-Area-Texte und Severity werden <strong>zwei Sonderfälle</strong> erkannt:</p>
+
+<div class="card">
+  <h3>1. Balanced-Full (candIsBalFull) <span class="tag tag-blue">Spread ≤ 5</span></h3>
+  <div class="code">spread = MAX(I, N, A) − MIN(I, N, A)
+candIsBalFull = spread ≤ 5</div>
+  <p>Die Person hat ein nahezu ausgeglichenes Profil. Alle drei Komponenten liegen innerhalb von 5 Punkten.</p>
+  <p><strong>Auswirkung:</strong> Alle Impact Areas verwenden spezielle "situativ und vielseitig"-Texte. Die Severity wird über <code>totalGap * 0.35</code> berechnet (gedämpft). Die rk≠ck Floor-Regel wird übersprungen.</p>
+  <div class="text-block">Beispieltext: "Die Person arbeitet situativ und vielseitig. Es gibt keinen klaren Schwerpunkt – je nach Anforderung wird flexibel reagiert."</div>
+</div>
+
+<div class="card">
+  <h3>2. Dual-Dominant (candIsDualDom) <span class="tag tag-purple">Gap1 ≤ 5 und Gap2 &gt; 5</span></h3>
+  <div class="code">cSorted = [höchster, mittlerer, niedrigster] (absteigend)
+candGap1 = cSorted[0] − cSorted[1]
+candGap2 = cSorted[1] − cSorted[2]
+
+candIsDualDom = NICHT candIsBalFull
+                UND candGap1 ≤ 5
+                UND candGap2 > 5
+
+ck  = cSorted[0].key   (stärkste Komponente)
+ck2 = cSorted[1].key   (zweitstärkste Komponente)</div>
+  <p>Die Person hat <strong>zwei fast gleich starke</strong> Dominanzbereiche mit klarem Abstand zum dritten.</p>
+  <p><strong>Auswirkung auf Severity:</strong></p>
+  <ul>
+    <li>Wenn die Rolle zu einer der beiden Stärken passt (<code>rk === ck || rk === ck2</code>): Multiplikator <strong>× 0.45</strong> (geringeres Risiko)</li>
+    <li>Wenn die Rolle zu keiner der beiden passt: Multiplikator <strong>× 0.65 bis 0.75</strong> (höheres Risiko)</li>
+  </ul>
+  <p>Die rk≠ck Floor-Regel wird übersprungen wenn <code>candDualMatchesRole</code> zutrifft.</p>
+</div>
+
+<div class="card">
+  <h3>3. Balanced-Full Rolle (roleIsBalFull)</h3>
+  <div class="code">roleIsBalFull = rDom.gap1 ≤ 5 UND rDom.gap2 ≤ 5</div>
+  <p>Die <strong>Rolle</strong> selbst verlangt ein ausgeglichenes Profil. Dann greifen eigene Textblöcke und die rk≠ck Floor-Regel wird übersprungen.</p>
+</div>
+
+<div class="separator"></div>
+
+<h2 id="severity-berechnung">Severity-Berechnung</h2>
+<p>Jede Impact Area berechnet ihre eigene Severity basierend auf den Komponentenlücken:</p>
+
+<div class="code">function severity(gap: number):
+  gap ≥ 15  →  "critical"
+  gap ≥ 8   →  "warning"
+  gap &lt; 8   →  "ok"</div>
+
+<table>
+  <tr><th>Severity</th><th>Label im Bericht</th><th>Farbe</th><th>Bedeutung</th></tr>
+  <tr><td><code>ok</code></td><td>Passend</td><td style="color: #34C759;">●</td><td>Bereich liegt nah an der Stellenanforderung</td></tr>
+  <tr><td><code>warning</code></td><td>Bedingt</td><td style="color: #E5A832;">●</td><td>Erkennbare Abweichung, steuerbar mit Führung</td></tr>
+  <tr><td><code>critical</code></td><td>Kritisch</td><td style="color: #D64045;">●</td><td>Deutliche Abweichung, hoher Aufwand nötig</td></tr>
+</table>
+
+<h3>Severity-Formeln je Impact Area</h3>
+<table>
+  <tr><th>Impact Area</th><th>rk = ck</th><th>rk ≠ ck</th><th>candIsBalFull</th><th>candIsDualDom + passt</th><th>candIsDualDom + passt nicht</th></tr>
+  <tr><td>Entscheidung</td><td><code>severity(maxGap × 0.4)</code></td><td><code>severity(maxGap)</code>*</td><td><code>severity(totalGap × 0.35)</code></td><td><code>severity(maxGap × 0.45)</code></td><td><code>severity(maxGap × 0.75)</code></td></tr>
+  <tr><td>Arbeitsweise</td><td><code>severity(gapA)</code></td><td><code>severity(max(gapA, boost))</code></td><td><code>severity(gapA)</code></td><td><code>severity(gapA)</code></td><td><code>severity(max(gapA, boost))</code></td></tr>
+  <tr><td>Führung</td><td><code>severity(maxGap × 0.4)</code></td><td><code>severity(maxGap × 0.7)</code></td><td><code>severity(totalGap × 0.35)</code></td><td><code>severity(maxGap × 0.45)</code></td><td><code>severity(maxGap × 0.70)</code></td></tr>
+  <tr><td>Kommunikation</td><td><code>severity(maxGap × 0.35)</code></td><td><code>severity(maxGap × 0.7)</code></td><td><code>severity(totalGap × 0.35)</code></td><td><code>severity(maxGap × 0.45)</code></td><td><code>severity(maxGap × 0.70)</code></td></tr>
+  <tr><td>Teamkultur</td><td><code>severity(maxGap × 0.4)</code></td><td><code>severity(maxGap × 0.65)</code></td><td><code>severity(totalGap × 0.35)</code></td><td><code>severity(maxGap × 0.45)</code></td><td><code>severity(maxGap × 0.65)</code></td></tr>
+</table>
+
+<div class="highlight">
+  <strong>* Entscheidung (rk ≠ ck Sonderregel):</strong> Wenn <code>rk = analytisch</code>, dann <code>severity(max(maxGap, gapA + 5))</code>, sonst <code>severity(maxGap)</code>.
+</div>
+
+<div class="highlight">
+  <strong>Arbeitsweise-Boost:</strong> Wenn rk ≠ ck und weder candIsBalFull noch candDualMatchesRole:<br>
+  <code>structureBoost = min(maxGapAll × 0.65, gapA + 10)</code><br>
+  <code>→ severity(max(gapA, structureBoost))</code>
+</div>
+
+<div class="highlight-blue">
+  <strong>roleIsBalFull-Variante:</strong> Wenn die Rolle balanced ist, verwenden Führung, Kommunikation und Kultur:
+  <code>severity(maxSingleGap × 0.65)</code> statt der normalen Formel (weder rk=ck noch rk≠ck Logik).
+</div>
+
+<div class="separator"></div>
+
+<h2 id="impact-areas">Impact Areas (4–5 Bereiche)</h2>
+<p>Es werden <strong>4 oder 5</strong> Impact Areas generiert. Führungswirkung wird nur hinzugefügt, wenn <code>fuehrungsArt ≠ "keine"</code>. Jede Impact Area generiert drei Textfelder:</p>
+
+<table>
+  <tr><th>Feld</th><th>Beschreibung</th></tr>
+  <tr><td><strong>roleNeed</strong></td><td>Was die Stelle in diesem Bereich verlangt</td></tr>
+  <tr><td><strong>candidatePattern</strong></td><td>Wie die Person in diesem Bereich arbeitet</td></tr>
+  <tr><td><strong>risk</strong></td><td>Welches Risiko bei Abweichung entsteht</td></tr>
+</table>
+
+<p>Die Texte werden anhand folgender Kriterien differenziert:</p>
+<ul>
+  <li><strong>rk</strong> (Rollen-Hauptkomponente): impulsiv / intuitiv / analytisch</li>
+  <li><strong>ck</strong> (Kandidaten-Hauptkomponente): impulsiv / intuitiv / analytisch</li>
+  <li><strong>Profiltyp</strong>: Normal / BalFull / DualDom / RoleIsBalFull</li>
+  <li><strong>Grösse der Gaps</strong>: gapI, gapN, gapA, maxGap</li>
+</ul>
+
+<div class="separator"></div>
+
+<h2 id="impact-decision">Entscheidungsverhalten (buildDecisionImpact)</h2>
+
+<h3>roleNeed – je nach rk</h3>
+<table>
+  <tr><th>rk</th><th>Text</th></tr>
+  <tr><td>impulsiv</td><td>"Schnelle, ergebnisorientierte Entscheidungen. Klare Richtung und direkte Umsetzung vor langer Prüfung."</td></tr>
+  <tr><td>intuitiv</td><td>"Entscheidungen, die Kontext, Zusammenarbeit und zwischenmenschliche Wirkung berücksichtigen."</td></tr>
+  <tr><td>analytisch</td><td>"Sorgfältige, prüforientierte Entscheidungen. Optionen abwägen, Risiken prüfen, erst dann handeln."</td></tr>
+</table>
+
+<h3>candidatePattern – je nach ck</h3>
+<table>
+  <tr><th>ck</th><th>Kurzform</th></tr>
+  <tr><td>impulsiv</td><td>"... entscheidet schnell, handelt direkt und sucht wenig Abstimmung."</td></tr>
+  <tr><td>intuitiv</td><td>"... entscheidet kontextbezogen, sucht Austausch und bezieht das Umfeld ein."</td></tr>
+  <tr><td>analytisch</td><td>"... entscheidet analytisch, wägt ab und prüft Optionen sorgfältig."</td></tr>
+  <tr><td><em>candIsBalFull</em></td><td>"... entscheidet situativ und vielseitig. Je nach Anforderung wird flexibel reagiert."</td></tr>
+  <tr><td><em>candIsDualDom</em></td><td>Aus Lookup-Tabelle <code>dualCandDecision</code> (siehe unten)</td></tr>
+</table>
+
+<h3>risk – Differenzierung</h3>
+<ul>
+  <li><strong>rk = ck:</strong> Risiko aus Nebenkomponenten ("unter Druck kann sich der Entscheidungsstil verschieben")</li>
+  <li><strong>rk ≠ ck:</strong> Grundlegender Mismatch ("eine andere Entscheidungslogik als die Stelle erfordert")</li>
+  <li><strong>candIsBalFull:</strong> Keine klare Richtung, braucht Führung</li>
+  <li><strong>candIsDualDom + Match:</strong> "Passt in einer der beiden Ausprägungen, Konsequenz kann schwanken"</li>
+  <li><strong>candIsDualDom + kein Match:</strong> "Weder die erste noch die zweite Ausprägung entspricht der Anforderung"</li>
+</ul>
+
+<div class="separator"></div>
+
+<h2 id="impact-work">Arbeitsweise (buildWorkStructureImpact)</h2>
+<p>Fokus auf die <strong>analytische Komponente (A)</strong> und Strukturtiefe.</p>
+
+<h3>roleNeed (basiert auf rt.analytisch = Soll-Profil)</h3>
+<table>
+  <tr><th>rt.analytisch</th><th>Text</th></tr>
+  <tr><td>≥ 35</td><td>"Klare Struktur, Priorisierung und verlässliche Abläufe. Arbeitsschritte nachvollziehbar planen und kontrollieren."</td></tr>
+  <tr><td>≥ 25</td><td>"Grundlegende Ordnung in Abläufen und Prozessen. Aufgaben strukturiert abarbeiten."</td></tr>
+  <tr><td>&lt; 25</td><td>"Flexible, ergebnisorientierte Arbeitsweise. Schnelle Anpassung vor formaler Planung."</td></tr>
+</table>
+
+<h3>candidatePattern (basiert auf ct.analytisch = Ist-Profil)</h3>
+<table>
+  <tr><th>ct.analytisch</th><th>Text</th></tr>
+  <tr><td>≥ 35</td><td>"... arbeitet strukturiert mit klaren Abläufen und festen Arbeitsschritten."</td></tr>
+  <tr><td>≥ 25</td><td>"... arbeitet grundlegend strukturiert, lässt aber Raum für situative Anpassungen."</td></tr>
+  <tr><td>&lt; 25</td><td>"... arbeitet situativ und tempoorientiert. Strukturierte Planung hat geringe Priorität."</td></tr>
+  <tr><td><em>candIsBalFull</em></td><td>"... arbeitet situativ und vielseitig. Kein einzelner Arbeitsstil dominiert."</td></tr>
+</table>
+
+<h3>risk – Differenzierung</h3>
+<ul>
+  <li><strong>gapA ≥ 10 und ct.A &lt; rt.A:</strong> Person bringt zu wenig Struktur → "Prüfschritte werden verkürzt oder übersprungen"</li>
+  <li><strong>gapA ≥ 10 und ct.A &gt; rt.A:</strong> Person ist überstrukturiert → "Das kann das Tempo bremsen"</li>
+  <li><strong>candIsDualDom:</strong> Wechsel zwischen zwei Arbeitsstilen, Führungskraft muss Priorisierung steuern</li>
+  <li><strong>candIsBalFull:</strong> Vielseitig, aber keine konsequente Strukturtiefe</li>
+</ul>
+
+<div class="separator"></div>
+
+<h2 id="impact-leadership">Führungswirkung (buildLeadershipImpact)</h2>
+<p>Wird nur generiert wenn <code>fuehrungsArt ≠ "keine"</code>.</p>
+
+<h3>fuehrungsArt-Differenzierung</h3>
+<table>
+  <tr><th>fuehrungsArt</th><th>Fokus</th></tr>
+  <tr><td><code>disziplinarisch</code></td><td>Führung über Entscheidungskraft, Standards, Teamdynamik</td></tr>
+  <tr><td><code>fachlich</code></td><td>Fachliche Führung mit Priorisierung und Orientierung</td></tr>
+  <tr><td><code>keine</code></td><td>Keine Führung → Impact Area wird nicht erstellt</td></tr>
+</table>
+
+<h3>roleNeed – Kombination rk × fuehrungsArt</h3>
+<p>9 Kombinationen (3 rk × 3 fuehrungsArt inkl. "keine") erzeugen unterschiedliche Texte, z.B.:</p>
+<div class="text-block">"Führung über klare Standards, verlässliche Struktur und nachvollziehbare Entscheidungen." (rk=analytisch, disziplinarisch)</div>
+<div class="text-block">"Fachliche Führung mit schneller Orientierung und klarer Richtung." (rk=impulsiv, fachlich)</div>
+
+<h3>risk</h3>
+<ul>
+  <li><strong>rk = ck:</strong> Risiko aus übersteigertem Führungsstil unter Druck</li>
+  <li><strong>rk ≠ ck:</strong> "Anderer Führungsansatz als erwartet" → Teamverwirrung</li>
+  <li><strong>candIsDualDom + Match:</strong> "Führungsrichtung passt über eine der beiden Stärken, Wirkung kann inkonsistent wirken"</li>
+  <li><strong>candIsDualDom + kein Match:</strong> "Stelle erfordert Führungsstil, der keiner der Stärken entspricht"</li>
+</ul>
+
+<div class="separator"></div>
+
+<h2 id="impact-communication">Kommunikationsverhalten (buildCommunicationImpact)</h2>
+
+<h3>roleNeed – je nach rk</h3>
+<table>
+  <tr><th>rk</th><th>Text</th></tr>
+  <tr><td>impulsiv</td><td>"Klare, direkte Kommunikation. Kurze Wege, schnelle Abstimmung, ergebnisorientierter Austausch."</td></tr>
+  <tr><td>intuitiv</td><td>"Empathische, dialogorientierte Kommunikation. Aktives Zuhören, Einbindung und persönliche Ansprache."</td></tr>
+  <tr><td>analytisch</td><td>"Sachliche, faktenbasierte Kommunikation. Klare Argumentation, strukturierte Informationsweitergabe."</td></tr>
+</table>
+
+<h3>candidatePattern – je nach ck</h3>
+<table>
+  <tr><th>ck</th><th>Kurzform</th></tr>
+  <tr><td>impulsiv</td><td>"... kommuniziert direkt, knapp und ergebnisorientiert."</td></tr>
+  <tr><td>intuitiv</td><td>"... kommuniziert offen, persönlich und situativ."</td></tr>
+  <tr><td>analytisch</td><td>"... kommuniziert sachlich, präzise und faktenbasiert."</td></tr>
+  <tr><td><em>candIsDualDom</em></td><td>Aus Lookup-Tabelle <code>dualCandCommunication</code> (siehe unten)</td></tr>
+</table>
+
+<div class="separator"></div>
+
+<h2 id="impact-culture">Wirkung auf Teamkultur (buildCultureImpact)</h2>
+
+<h3>roleNeed – je nach rk</h3>
+<table>
+  <tr><th>rk</th><th>Text</th></tr>
+  <tr><td>impulsiv</td><td>"Leistungs- und ergebnisorientierte Kultur. Tempo und Wirkung im Vordergrund."</td></tr>
+  <tr><td>intuitiv</td><td>"Kooperative, beziehungsorientierte Kultur. Zusammenhalt und gegenseitige Unterstützung."</td></tr>
+  <tr><td>analytisch</td><td>"Verlässlichkeit, Ruhe und nachvollziehbare Qualität. Stabile Abläufe und planbare Ergebnisse."</td></tr>
+</table>
+
+<h3>risk – Differenzierung</h3>
+<ul>
+  <li><strong>rk = ck:</strong> Risiko aus Übertreibung ("kann die Kultur einseitig in Richtung X verschieben")</li>
+  <li><strong>rk ≠ ck:</strong> Kulturelle Reibung, Team bemerkt Unterschied</li>
+  <li><strong>candIsDualDom + Match:</strong> "Kulturelle Grundrichtung passt über eine der beiden Stärken, Wechsel kann unberechenbar wirken"</li>
+  <li><strong>candIsDualDom + kein Match:</strong> "Kulturwirkung entspricht in keiner Ausprägung der Anforderung"</li>
+</ul>
+
+<div class="separator"></div>
+
+<h2 id="rk-ck-floor">rk≠ck Floor-Regel</h2>
+
+<div class="card">
+  <p>Wenn die Hauptprägung der Rolle (rk) und der Person (ck) <strong>nicht übereinstimmen</strong>, werden alle Impact Areas mit Severity "ok" auf <strong>"warning"</strong> angehoben.</p>
+
+  <div class="code">if (rk ≠ ck
+    UND NICHT roleIsBalFull
+    UND NICHT candIsBalFull
+    UND NICHT candDualMatchesRole):
+  
+    für jede Impact Area:
+      wenn severity = "ok" → severity = "warning"</div>
+
+  <p><strong>Ausnahmen</strong> (Floor wird NICHT angewendet):</p>
+  <ul>
+    <li>roleIsBalFull: Rolle verlangt Vielseitigkeit, kein klarer rk</li>
+    <li>candIsBalFull: Person ist vielseitig, kein klarer ck</li>
+    <li>candDualMatchesRole: Eine der beiden Stärken der Person passt zur Rolle</li>
+  </ul>
+</div>
+
+<div class="separator"></div>
+
+<h2 id="dual-dom-lookup">Dual-Dom Lookup-Tabellen</h2>
+<p>Wenn die Person ein Dual-Dominant-Profil hat, werden die <code>candidatePattern</code>-Texte aus Lookup-Tabellen geladen. Die Tabellen sind nach <strong>Paar-Schlüssel</strong> organisiert:</p>
+
+<div class="code">dualPairKey(ck, ck2):
+  Sortierung nach fester Reihenfolge: impulsiv → intuitiv → analytisch
+  Ergebnis: "impulsiv_intuitiv" | "impulsiv_analytisch" | "intuitiv_analytisch"</div>
+
+<h3>Entscheidungsverhalten (dualCandDecision)</h3>
+<table>
+  <tr><th>Paar</th><th>Text</th></tr>
+  <tr><td>impulsiv + intuitiv</td><td>"... entscheidet sowohl schnell und handlungsorientiert als auch kontextbezogen und abstimmungsorientiert. Je nach Situation überwiegt Tempo oder Einbindung."</td></tr>
+  <tr><td>impulsiv + analytisch</td><td>"... entscheidet sowohl schnell und handlungsorientiert als auch analytisch und prüforientiert. Je nach Situation überwiegt Tempo oder Sorgfalt."</td></tr>
+  <tr><td>intuitiv + analytisch</td><td>"... entscheidet sowohl kontextbezogen und abstimmungsorientiert als auch analytisch und prüforientiert. Je nach Situation überwiegt Einbindung oder Sorgfalt."</td></tr>
+</table>
+
+<h3>Führungswirkung (dualCandLeadership)</h3>
+<table>
+  <tr><th>Paar</th><th>Text</th></tr>
+  <tr><td>impulsiv + intuitiv</td><td>"... führt sowohl über Tempo und direkte Ansprache als auch über Dialog und Einbindung. Der Führungsstil wechselt situativ."</td></tr>
+  <tr><td>impulsiv + analytisch</td><td>"... führt sowohl über Tempo und Entscheidungskraft als auch über Systematik und klare Vorgaben. Der Führungsstil wechselt situativ."</td></tr>
+  <tr><td>intuitiv + analytisch</td><td>"... führt sowohl über Dialog und Vertrauen als auch über Systematik und Struktur. Der Führungsstil wechselt situativ."</td></tr>
+</table>
+
+<h3>Kommunikationsverhalten (dualCandCommunication)</h3>
+<table>
+  <tr><th>Paar</th><th>Text</th></tr>
+  <tr><td>impulsiv + intuitiv</td><td>"... kommuniziert sowohl direkt und ergebnisorientiert als auch dialogorientiert und empathisch. Der Kommunikationsstil wechselt situativ."</td></tr>
+  <tr><td>impulsiv + analytisch</td><td>"... kommuniziert sowohl direkt und knapp als auch sachlich und faktenbasiert. Der Kommunikationsstil wechselt situativ."</td></tr>
+  <tr><td>intuitiv + analytisch</td><td>"... kommuniziert sowohl dialogorientiert und empathisch als auch sachlich und faktenbasiert. Der Kommunikationsstil wechselt situativ."</td></tr>
+</table>
+
+<h3>Teamkultur (dualCandCulture)</h3>
+<table>
+  <tr><th>Paar</th><th>Text</th></tr>
+  <tr><td>impulsiv + intuitiv</td><td>"... prägt die Kultur über Dynamik und Tempo einerseits, Zusammenhalt und Beziehungsarbeit andererseits. Beide Seiten wechseln sich ab."</td></tr>
+  <tr><td>impulsiv + analytisch</td><td>"... prägt die Kultur über Dynamik und Tempo einerseits, Strukturklarheit und Verlässlichkeit andererseits. Beide Seiten stehen nebeneinander."</td></tr>
+  <tr><td>intuitiv + analytisch</td><td>"... prägt die Kultur über Zusammenhalt und Beziehungsarbeit einerseits, Ordnung und Verlässlichkeit andererseits. Beide Seiten stehen nebeneinander."</td></tr>
+</table>
+
+<div class="separator"></div>
+
+<h2 id="stressverhalten">Stressverhalten (buildStressBehavior)</h2>
+<p>Beschreibt das Verhalten unter Druck in zwei Stufen:</p>
+
+<table>
+  <tr><th>Stufe</th><th>Feld</th><th>Beschreibung</th></tr>
+  <tr><td>1</td><td><code>controlledPressure</code></td><td>Leicht erhöhter Druck: Person greift auf Hauptstärke zurück</td></tr>
+  <tr><td>2</td><td><code>uncontrolledStress</code></td><td>Hohe Belastung: Verhalten kippt, Nebenbereich tritt hervor</td></tr>
+</table>
+
+<h3>Text-Logik (controlledPressure)</h3>
+<table>
+  <tr><th>Konstellation</th><th>Beschreibung</th></tr>
+  <tr><td>BALANCED</td><td>"Kein klarer Automatismus, Reaktion hängt vom Kontext ab"</td></tr>
+  <tr><td>NEAR-Paare (Doppelfokus)</td><td>"Reaktion fällt situationsabhängig aus, mal X, mal Y"</td></tr>
+  <tr><td>Konkurrierende Sekundäranteile</td><td>"Nebenbereiche konkurrieren unter Druck"</td></tr>
+  <tr><td>Standard (klarer Fokus)</td><td>"Tendenz verstärkt sich, Hauptstärke tritt hervor"</td></tr>
+</table>
+
+<h3>Text-Logik (uncontrolledStress)</h3>
+<table>
+  <tr><th>Konstellation</th><th>Beschreibung</th></tr>
+  <tr><td>BALANCED</td><td>"Verhalten kann kippen, wenig vorhersagbar"</td></tr>
+  <tr><td>Konkurrierende Sekundäranteile</td><td>"Wechselt zwischen Nebenbereichen, weniger berechenbar"</td></tr>
+  <tr><td>Doppelfokus (d12 ≤ 5)</td><td>"Schwerpunkt verschiebt sich leicht, Grundrichtung bleibt"</td></tr>
+  <tr><td>Standard</td><td>"Sekundärbereich tritt in den Vordergrund, Entscheidungen werden [Adj.]"</td></tr>
+</table>
+
+<div class="highlight">
+  <strong>Entscheidungsverschiebung unter Stress:</strong><br>
+  impulsiv → "schneller, aber weniger abgesichert"<br>
+  intuitiv → "kontextbezogener, aber weniger faktenbasiert"<br>
+  analytisch → "gründlicher, aber langsamer"
+</div>
+
+<div class="separator"></div>
+
+<h2 id="entwicklung">Entwicklungspotenzial (buildDevelopment)</h2>
+<p>Basiert auf dem Gesamt-Fit und differenziert nach Profiltyp:</p>
+
+<div class="code">devGap = NICHT_GEEIGNET → "hoch"
+         BEDINGT       → "mittel"
+         GEEIGNET      → "gering"</div>
+
+<h3>Ergebnis-Mapping</h3>
+<table>
+  <tr><th>devGap</th><th>Level</th><th>Label</th></tr>
+  <tr><td>gering</td><td>4</td><td>hoch</td></tr>
+  <tr><td>mittel</td><td>3</td><td>mittel</td></tr>
+  <tr><td>hoch</td><td>1</td><td>niedrig</td></tr>
+</table>
+
+<h3>Text-Differenzierung nach Profiltyp</h3>
+<table>
+  <tr><th>Profiltyp</th><th>gering</th><th>mittel</th><th>hoch</th></tr>
+  <tr>
+    <td><strong>roleIsBalFull + candBalanced</strong></td>
+    <td>"Grundlage stimmt, Feinabstimmung nötig" (Level 4)</td>
+    <td>"Leichte Abweichung, gezielte Führung nötig" (Level 3)</td>
+    <td>"Wesentliche Abweichung, Anpassung aufwendig" (Level 1)</td>
+  </tr>
+  <tr>
+    <td><strong>roleIsBalFull + Spezialist</strong></td>
+    <td colspan="2">"Bevorzugt [Bereich], Anpassung möglich mit Führung" (Level 3)</td>
+    <td>"Stark spezialisiert, Anpassung unsicher" (Level 1)</td>
+  </tr>
+  <tr>
+    <td><strong>candIsDualDom + Match</strong></td>
+    <td>"Deckt Anforderung über eine von zwei Stärken" (Level 4)</td>
+    <td>"Wechsel schwächt Konsequenz" (Level 3)</td>
+    <td>"Geht in richtige Richtung, reicht aber nicht" (Level 1)</td>
+  </tr>
+  <tr>
+    <td><strong>candIsDualDom + kein Match</strong></td>
+    <td>"Abweichung gering, Entwicklung realistisch" (Level 4)</td>
+    <td>"Keiner der Schwerpunkte passt" (Level 2)</td>
+    <td>"Andere Arbeitsweisen, Anpassung unsicher" (Level 1)</td>
+  </tr>
+  <tr>
+    <td><strong>candIsBalFull</strong></td>
+    <td>"Vielseitig, Grundlage stimmt" (Level 4)</td>
+    <td>"Vielseitig ohne Schwerpunkt, braucht Ziele" (Level 3)</td>
+    <td>"Vielseitig, aber Arbeitslogik weicht ab" (Level 1)</td>
+  </tr>
+  <tr>
+    <td><strong>Standard (rk = ck)</strong></td>
+    <td>"Passt, Feinabstimmung nötig" (Level 4)</td>
+    <td>"Gleiche Richtung, muss dazulernen" (Level 3)</td>
+    <td>"Richtung passt, reicht aber nicht" (Level 1)</td>
+  </tr>
+  <tr>
+    <td><strong>Standard (rk ≠ ck)</strong></td>
+    <td>"Passt, Feinabstimmung nötig" (Level 4)</td>
+    <td>"Andere Richtung, braucht Führung" (Level 3)</td>
+    <td>"Zwei unterschiedliche Arbeitsweisen" (Level 1)</td>
+  </tr>
+</table>
+
+<div class="separator"></div>
+
+<h2 id="integrationsplan">Integrationsplan (buildIntegrationsplan)</h2>
+<p>3-Phasen-Plan für die ersten 6 Monate. Wird <strong>nur generiert</strong> wenn <code>fitLabel ≠ "Nicht geeignet"</code>. Bei "Nicht geeignet" wird <code>null</code> zurückgegeben.</p>
+
+<table>
+  <tr><th>Phase</th><th>Zeitraum</th><th>Fokus</th></tr>
+  <tr><td>1</td><td>Woche 1–4</td><td>Orientierung & Erwartungsabgleich: Arbeitslogik klären, Erwartungen abstimmen</td></tr>
+  <tr><td>2</td><td>Monat 2–3</td><td>Wirkung & Anpassung: Erste Ergebnisse, Feedback einholen, Komfortzone erweitern</td></tr>
+  <tr><td>3</td><td>Monat 4–6</td><td>Stabilisierung & Entscheid: Langfristige Passung bewerten, Routinen festigen</td></tr>
+</table>
+
+<h3>Differenzierung nach Profiltyp</h3>
+<table>
+  <tr><th>Profiltyp</th><th>Phase-1-Fokus</th><th>Phase-2/3-Fokus</th></tr>
+  <tr><td><strong>roleIsBalFull + candBalanced</strong></td><td>Wie drei Bereiche gewichtet werden</td><td>Vielseitigkeit unter Beweis stellen, Routinen aufbauen</td></tr>
+  <tr><td><strong>roleIsBalFull + Spezialist</strong></td><td>Vielseitigkeit nötig – nicht nur Spezialisierung</td><td>Untervertretene Bereiche gezielt aufbauen</td></tr>
+  <tr><td><strong>Standard (rk = ck)</strong></td><td>Grundrichtung passt, Feinabstimmung klären</td><td>Nebenbereiche stärken, Stabilität sichern</td></tr>
+  <tr><td><strong>Standard (rk ≠ ck)</strong></td><td>Rollenlogik verstehen, Abweichung benennen</td><td>Gezielte Anpassung der Arbeitsweise</td></tr>
+</table>
+
+<div class="highlight-blue">
+  <strong>Phasen-Items:</strong> Jede Phase enthält dynamisch generierte <code>items</code> (Massnahmen) und einen <code>fokus</code>-Block (Einleitung + Stichpunkte). Die Inhalte werden basierend auf rk, ck, gapLevel, controlIntensity, fuehrungsArt, roleIsBalFull und Führungsrolle (disziplinarisch/fachlich/keine) zusammengestellt.
+</div>
+
+<div class="separator"></div>
+
+<h2 id="textvarianten">Textvarianten-System</h2>
+<p>Um Textwiederholungen zu vermeiden, verwendet die Engine ein Varianten-System für Komponentenbeschreibungen:</p>
+
+<table>
+  <tr><th>Komponente</th><th>Varianten (rotierend)</th></tr>
+  <tr><td>impulsiv</td><td>
+    1. "Entscheidungsstärke und Umsetzung"<br>
+    2. "Tempo und direkte Ergebnisorientierung"<br>
+    3. "schnelle Entscheidungen und operative Durchsetzung"<br>
+    4. "Handlungsorientierung und Umsetzungskraft"
+  </td></tr>
+  <tr><td>intuitiv</td><td>
+    1. "Beziehungsgestaltung und Kommunikation"<br>
+    2. "Austausch und persönliche Ansprache"<br>
+    3. "Zusammenarbeit und situatives Gespür"<br>
+    4. "Abstimmung und zwischenmenschliche Wirkung"
+  </td></tr>
+  <tr><td>analytisch</td><td>
+    1. "Struktur und Analyse"<br>
+    2. "Sorgfalt und systematische Prüfung"<br>
+    3. "Ordnung und verlässliche Prozesse"<br>
+    4. "analytische Tiefe und Qualitätssicherung"
+  </td></tr>
+</table>
+
+<p>Die Varianten werden pro Berichtsgeneration zurückgesetzt (<code>resetVariants()</code>) und bei jedem Aufruf von <code>compDesc(key)</code> um 1 weitergedreht.</p>
+
+<!-- ==================== TEIL C: DATEIEN ==================== -->
+
+<div class="separator"></div>
+<h2 id="teil-c" style="font-size: 26px; border-bottom: 3px solid #007aff;">Teil C: Dateien & Datenfluss</h2>
+
+<h3>Dateien</h3>
+<table>
+  <tr><th>Datei</th><th>Inhalt</th></tr>
+  <tr><td><code>client/src/lib/jobcheck-engine.ts</code></td><td>Core-Engine: <code>computeCoreFit()</code>, <code>koRuleTriggered()</code>, <code>calcControlIntensity()</code>, <code>dominanceModeOf()</code>, <code>normalizeTriad()</code></td></tr>
+  <tr><td><code>client/src/lib/soll-ist-engine.ts</code></td><td>Berichtslogik: <code>computeSollIst()</code> orchestriert alle build*-Funktionen, Lookup-Tabellen, Textvarianten</td></tr>
+  <tr><td><code>client/src/pages/soll-ist-bericht.tsx</code></td><td>UI-Komponente: Slider, Slider-Sync, Berichtsdarstellung</td></tr>
+  <tr><td><code>tests/matchcheck-runner.ts</code></td><td>Test-Runner für Varianten und Grenzfälle</td></tr>
+</table>
+
+<h3>Datenfluss</h3>
+<div class="code">localStorage: "rollenDnaState"
+    │
+    ├─ bgToTriad(gesamt) → roleTriad (Slider-editierbar)
+    │
+    ├─ buildRoleAnalysisFromState() → roleAnalysisObj
+    │     (role_profile, leadership, frame_profile, tasks etc.)
+    │
+    │  useEffect: Slider-Änderung → roleAnalysisObj.role_profile sync
+    │
+    └─→ computeSollIst(roleName, candName, roleTriad, candProfile,
+           fuehrungsArt, roleAnalysisObj)
+        │
+        ├─ 1. koRuleTriggered() → externalKo (true/false)
+        ├─ 2. calcControlIntensity() → effectiveControlLevel
+        ├─ 3. computeCoreFit() → Fit-Ergebnis
+        ├─ 4. detectConstellation() → Konstellationstyp
+        ├─ 5. Profil-Sonderfälle erkennen:
+        │     - roleIsBalFull (gap1 ≤ 5 UND gap2 ≤ 5)
+        │     - candIsBalFull (spread ≤ 5)
+        │     - candIsDualDom (gap1 ≤ 5 UND gap2 > 5)
+        │     - isDualDomRole (Rolle mit Doppelschwerpunkt)
+        ├─ 6. build*-Funktionen → Berichtstexte
+        │     (Summary, Bullets, Risks, Impact Areas,
+        │      Development, Actions, Integrationsplan, Final)
+        │
+        └─→ SollIstResult
+              (fitLabel, fitColor, control, impact areas,
+               development, stress, timeline, integrationsplan, ...)</div>
+
+<div class="separator"></div>
+
+<h3>Kurzfassung der finalen Regel</h3>
 <table>
   <tr><th>Ergebnis</th><th>Bedingung</th></tr>
   <tr><td><span class="tag tag-red">Nicht geeignet</span></td><td>Externes KO, Harter Strukturkonflikt, oder maxDiff &gt; 10</td></tr>
@@ -421,7 +918,7 @@ maxDiff = MAX(0, 2, 2) = 2 ≤ 10 → BEDINGT GEEIGNET</div>
 </table>
 
 <div style="text-align: center; margin-top: 48px; color: #8e8e93; font-size: 13px;">
-  bioLogic RoleDynamics – MatchCheck Logik-Dokumentation
+  bioLogic RoleDynamics – MatchCheck Kalkulation, Berechnung und Texte
 </div>
 
 </div>
