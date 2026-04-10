@@ -1,0 +1,147 @@
+🔍 Analyse deines konkreten Falls
+SOLL
+I = 27
+N = 26
+A = 47
+
+👉 Struktur:
+
+A klar dominant
+I ≈ N (Differenz 1)
+
+➡️ BOTTOM_PAIR (A > I = N)
+
+IST
+I = 29
+N = 28
+A = 43
+
+👉 Struktur:
+
+A klar dominant
+I ≈ N (Differenz 1)
+
+➡️ BOTTOM_PAIR (A > I = N)
+
+✅ Ergebnis der Strukturprüfung
+gleiche dominante Komponente (A)
+gleiche untere Gleichstruktur (I ≈ N)
+
+👉 Struktur ist IDENTISCH
+
+📊 Abweichung
+I: |27–29| = 2
+N: |26–28| = 2
+A: |47–43| = 4
+
+👉 maxDiff = 4
+
+🧠 Korrektes Ergebnis
+
+Nach deiner eigenen Logik:
+
+Struktur = gleich ✅
+maxDiff ≤ 5 ✅
+
+➡️ ERGEBNIS: GEEIGNET
+
+❌ Warum dein System „Nicht geeignet“ sagt
+
+Es gibt nur eine realistische Fehlerquelle:
+
+👉 Dein Code erkennt die Struktur falsch
+
+Sehr wahrscheinlich passiert intern:
+
+Fehlerbild
+SOLL → BOTTOM_PAIR
+IST → wird fälschlich als ORDER erkannt
+
+Warum?
+
+Weil dein System wahrscheinlich:
+
+👉 Gleichheit (±5) nicht korrekt prüft
+oder
+👉 Sortierung / Vergleich nicht sauber macht
+
+🔥 Typischer Bug (sehr wahrscheinlich bei dir)
+Problem: Gleichheit wird nicht sauber erkannt
+if (d2 <= EQ_TOL)
+
+Das ist korrekt.
+
+ABER:
+
+Wenn irgendwo im Code:
+
+Math.round
+falsche Sortierung
+falsche Reihenfolge
+oder >= / > falsch verwendet wird
+
+👉 kippt I ≈ N plötzlich zu:
+
+I > N
+
+➡️ dann wird aus:
+
+A > I = N   (BOTTOM_PAIR)
+
+fälschlich:
+
+A > I > N   (ORDER)
+⚠️ Folge
+
+Dann passiert:
+
+BOTTOM_PAIR ≠ ORDER
+→ harter Strukturkonflikt
+→ NICHT GEEIGNET
+💣 Das ist exakt dein Fehler
+
+Nicht die Logik ist falsch.
+👉 Die Varianten-Erkennung ist fehlerhaft.
+
+✅ Was du sofort prüfen musst
+1. Differenz unten
+d2 = second - third
+
+Bei dir:
+
+29 - 28 = 1
+
+👉 MUSS als „gleich“ erkannt werden
+
+2. Vergleich
+if (d2 <= 5)
+
+👉 MUSS true sein
+
+3. Sortierung
+
+Stelle sicher:
+
+.sort((a, b) => b.value - a.value)
+
+Keine Nebeneffekte, kein String-Sort.
+
+4. Keine Rundung vorher!
+
+NICHT:
+
+Math.round(...)
+🧠 Kurz gesagt
+
+👉 Dein System macht hier:
+
+„Das sind unterschiedliche Strukturen“
+
+👉 In Wahrheit ist es:
+
+„Exakt gleiche Struktur + minimale Abweichung“
+
+🎯 Fazit
+Das Ergebnis MUSS sein:
+
+👉 GEEIGNET
