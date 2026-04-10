@@ -1086,10 +1086,6 @@ export default function SollIstBericht() {
                       <p data-pdf-block style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 22px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-gesamt-intro">
                         {gesamtIntroText}
                       </p>
-                      <div style={{ fontSize: 28, fontWeight: 800, color: fitCol, margin: "20px 0 0", letterSpacing: "-0.02em" }} data-testid="si-gesamt-label">
-                        {result.fitLabel}
-                      </div>
-
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-systemstatus">
                         <div style={{ display: "flex", gap: 16, marginTop: 20, paddingTop: 18, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
                           <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${fitCol}08`, border: `1px solid ${fitCol}25` }}>
