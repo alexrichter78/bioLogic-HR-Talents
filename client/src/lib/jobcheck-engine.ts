@@ -1138,38 +1138,41 @@ function getVariantMeta(profile: Triad, eqTol = 5): VariantMeta {
   return { variantType: "ORDER", variantCode: `ORDER_${a.k}${b.k}${c.k}`, top: a.k, second: b.k, third: c.k, d1, d2 };
 }
 
-function isSoftConflict(sollMeta: VariantMeta, istMeta: VariantMeta): boolean {
-  if (sollMeta.variantCode === istMeta.variantCode) return false;
+type PairRelation = -1 | 0 | 1;
+type PairRelations = { I_N: PairRelation; I_A: PairRelation; N_A: PairRelation };
 
-  if (
-    (sollMeta.variantType === "TOP_PAIR" && istMeta.variantType === "ORDER") ||
-    (sollMeta.variantType === "ORDER" && istMeta.variantType === "TOP_PAIR")
-  ) {
-    return sollMeta.top === istMeta.top && sollMeta.second === istMeta.second;
+function getPairRelations(profile: Triad, eqTol: number): PairRelations {
+  function rel(a: number, b: number): PairRelation {
+    const diff = a - b;
+    if (Math.abs(diff) <= eqTol) return 0;
+    return diff > 0 ? 1 : -1;
+  }
+  return {
+    I_N: rel(profile.impulsiv, profile.intuitiv),
+    I_A: rel(profile.impulsiv, profile.analytisch),
+    N_A: rel(profile.intuitiv, profile.analytisch),
+  };
+}
+
+function getStructureFromPairs(sollRel: PairRelations, istRel: PairRelations): StructureRelationType {
+  const keys: (keyof PairRelations)[] = ["I_N", "I_A", "N_A"];
+  let mismatchCount = 0;
+  let hasHardFlip = false;
+
+  for (const k of keys) {
+    const s = sollRel[k];
+    const i = istRel[k];
+    if (s !== i) {
+      mismatchCount++;
+      if ((s === 1 && i === -1) || (s === -1 && i === 1)) {
+        hasHardFlip = true;
+      }
+    }
   }
 
-  if (
-    (sollMeta.variantType === "BOTTOM_PAIR" && istMeta.variantType === "ORDER") ||
-    (sollMeta.variantType === "ORDER" && istMeta.variantType === "BOTTOM_PAIR")
-  ) {
-    return sollMeta.top === istMeta.top && sollMeta.second === istMeta.second && sollMeta.third === istMeta.third;
-  }
-
-  if (
-    (sollMeta.variantType === "ALL_EQUAL" && istMeta.variantType === "TOP_PAIR") ||
-    (sollMeta.variantType === "TOP_PAIR" && istMeta.variantType === "ALL_EQUAL")
-  ) {
-    return true;
-  }
-
-  if (
-    (sollMeta.variantType === "ALL_EQUAL" && istMeta.variantType === "BOTTOM_PAIR") ||
-    (sollMeta.variantType === "BOTTOM_PAIR" && istMeta.variantType === "ALL_EQUAL")
-  ) {
-    return true;
-  }
-
-  return false;
+  if (mismatchCount === 0) return "EXACT";
+  if (mismatchCount === 1 && !hasHardFlip) return "SOFT_CONFLICT";
+  return "HARD_CONFLICT";
 }
 
 export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: boolean): CoreFitResult {
@@ -1193,11 +1196,14 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
 
   const sollMeta = getVariantMeta(rN, EQ_TOL);
   const istMeta = getVariantMeta(cN, EQ_TOL);
-  const structureMatches = sollMeta.variantCode === istMeta.variantCode;
-  const soft = !structureMatches && isSoftConflict(sollMeta, istMeta);
-  const hard = !structureMatches && !soft;
 
-  const structureRelation: StructureRelationType = structureMatches ? "EXACT" : soft ? "SOFT_CONFLICT" : "HARD_CONFLICT";
+  const sollRel = getPairRelations(rN, EQ_TOL);
+  const istRel = getPairRelations(cN, EQ_TOL);
+  const structureRelation = getStructureFromPairs(sollRel, istRel);
+
+  const structureMatches = structureRelation === "EXACT";
+  const soft = structureRelation === "SOFT_CONFLICT";
+  const hard = structureRelation === "HARD_CONFLICT";
 
   reasons.push({ rule: `Soll-Variante: ${sollMeta.variantCode}`, effect: "BASE" });
   reasons.push({ rule: `Ist-Variante: ${istMeta.variantCode}`, effect: "BASE" });
@@ -1246,7 +1252,7 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
   else if (soft) points += 2;
   if (maxGapVal > COND_TOL) points += 2;
   else if (maxGapVal > GOOD_TOL) points += 1;
-  if (sollMeta.d1 > 10) points += 1;
+  if ((sollMeta.variantType === "ORDER" || sollMeta.variantType === "BOTTOM_PAIR") && sollMeta.d1 > 10) points += 1;
   let level: ControlIntensity = "LOW";
   if (points >= 5) level = "HIGH";
   else if (points >= 3) level = "MEDIUM";

@@ -1,0 +1,181 @@
+Ich teste die Logik jetzt nicht nur stichprobenartig, sondern als Matrix über alle 13 SOLL-Varianten gegen alle 13 IST-Varianten plus Grenzfälle an der 5er-Schwelle. Gerade dort entstehen die meisten versteckten Fehler.
+
+Ich habe schon den ersten echten Fehler gefunden: Meine vorige Soft-Conflict-Regel war bei Balanced-Fällen zu großzügig. ALL_EQUAL ↔ BOTTOM_PAIR darf nicht pauschal als weicher Grenzfall gelten.
+
+Nachgedacht für 4m 52s
+
+Ja. Ich habe die Logik jetzt wirklich tief geprüft und dabei die vorige Version an den kritischen Stellen zerlegt.
+
+Ergebnis der Prüfung
+
+Die alte Fassung hatte 3 echte Probleme:
+
+1. Soft-Conflict war teilweise falsch
+
+Die frühere Regel war zu grob:
+
+zu weich bei ALL_EQUAL ↔ TOP/BOTTOM_PAIR
+zu hart bei TOP_PAIR ↔ ORDER, wenn nur innerhalb des gleichen Paars die Führung leicht kippt
+2. Die Prüfung auf Soft-Conflict war nicht sauber strukturell
+
+Sie hat auf Variantentypen geschaut, aber nicht auf die eigentlichen Paarbeziehungen zwischen I, N und A.
+
+3. Genau an den 5er-Grenzen entstehen die Fehler
+
+Und genau dort muss die Logik mathematisch sauber sein.
+
+Die saubere Lösung
+
+Die Struktur darf nicht nur über Variantennamen geprüft werden.
+Sie muss über die 3 Paarvergleiche geprüft werden:
+
+I vs N
+I vs A
+N vs A
+
+Für jeden Vergleich gilt:
+
+0 = gleich stark, wenn Differenz <= 5
+1 = erste Komponente klar stärker
+-1 = zweite Komponente klar stärker
+
+Dadurch bekommt jedes Profil intern eine Struktur aus genau 3 Relationen.
+
+Beispiel
+I = N > A
+
+wird zu:
+
+I vs N = 0
+I vs A = 1
+N vs A = 1
+I > N > A
+
+wird zu:
+
+I vs N = 1
+I vs A = 1
+N vs A = 1
+
+Der Unterschied ist also nur eine einzige Relation:
+I vs N wechselt von 0 auf 1
+
+Das ist ein echter weicher Grenzfall.
+
+Finales Regelwerk
+Schritt 1: Externes KO
+
+Wenn externe KO-Regeln greifen:
+
+nicht geeignet
+Schritt 2: Variante bestimmen
+
+Das bleibt wie bisher mit den 13 Varianten.
+
+Schritt 3: Strukturvergleich über Paarrelationen
+
+Für SOLL und IST werden diese 3 Relationen gebildet:
+
+(I,N)
+(I,A)
+(N,A)
+
+Werte jeweils:
+
+0 = gleich (<= 5)
+1 = erste klar stärker
+-1 = zweite klar stärker
+Schritt 4: Strukturbeziehung bestimmen
+Exakt
+
+Alle 3 Relationen sind identisch.
+
+→ exakte Struktur
+
+Weicher Strukturkonflikt
+
+Genau 1 der 3 Relationen ist unterschiedlich
+und es ist kein direkter Flip von 1 zu -1 oder umgekehrt.
+
+Also nur:
+
+0 ↔ 1
+oder 0 ↔ -1
+
+→ weicher Strukturkonflikt
+
+Harter Strukturkonflikt
+
+Sobald:
+
+mehr als 1 Relation abweicht
+oder irgendwo ein direkter Flip 1 ↔ -1 vorkommt
+
+→ harter Strukturkonflikt
+
+Warum das korrekt ist
+
+Damit sind alle 13 Varianten sauber abgedeckt.
+
+Exakt passend
+gleiche Struktur
+Weich
+
+nur ein einziger Gleichheitsrand kippt
+
+Das passiert genau bei:
+
+TOP_PAIR ↔ ORDER
+BOTTOM_PAIR ↔ ORDER
+
+und zwar nur dann, wenn genau eine Paarrelation kippt.
+
+Hart
+
+alles andere
+
+Damit werden die früheren Fehler vermieden:
+
+Früher fälschlich zu weich
+ALL_EQUAL ↔ BOTTOM_PAIR
+ALL_EQUAL ↔ TOP_PAIR
+
+Das ist nicht weich, weil hier 2 Relationen kippen, nicht nur 1.
+
+Früher fälschlich zu hart
+I = N > A gegen N > I > A
+
+Das ist nur ein Wechsel von I:N = 0 zu I:N = -1
+also weich, nicht hart.
+
+Endbewertung
+Wenn harter Strukturkonflikt
+
+→ nicht geeignet
+
+Wenn weicher Strukturkonflikt
+maxDiff <= 10 → bedingt geeignet
+maxDiff > 10 → nicht geeignet
+Wenn exakte Struktur
+maxDiff <= 5 → geeignet
+maxDiff <= 10 → bedingt geeignet
+maxDiff > 10 → nicht geeignet
+Tiefenprüfung: Was ich kontrolliert habe
+
+Ich habe die Logik auf diese Punkte geprüft:
+
+1. Vollständigkeit der Varianten
+
+Es gibt bei Summe 100 und EQ_TOL = 5 tatsächlich genau 13 Strukturcodes.
+
+2. Matrix über alle Variantentypen
+
+Alle 13 SOLL-Varianten gegen 13 IST-Varianten wurden logisch gegeneinander geprüft.
+
+3. Grenzfälle an der 5er-Schwelle
+
+Genau dort lagen die Fehler in der alten Version.
+
+4. Soft vs Hard
+
+Die neue Definition ist deutlich robuster, weil sie nicht auf Variantennamen, sondern auf Paarlogik basiert.

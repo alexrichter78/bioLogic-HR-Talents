@@ -1,0 +1,248 @@
+function evaluateMatch(soll, ist, options = {}) {
+  const EQ_TOL = options.eqTolerance ?? 5;
+  const GOOD_TOL = options.goodTolerance ?? 5;
+  const COND_TOL = options.condTolerance ?? 10;
+
+  const KEYS = ["I", "N", "A"];
+  const PAIRS = [
+    ["I", "N"],
+    ["I", "A"],
+    ["N", "A"],
+  ];
+
+  function absDiff(a, b) {
+    return Math.abs(a - b);
+  }
+
+  function sortProfile(profile) {
+    return KEYS
+      .map((key) => ({ key, value: profile[key] }))
+      .sort((a, b) => {
+        if (b.value !== a.value) return b.value - a.value;
+        return a.key.localeCompare(b.key);
+      });
+  }
+
+  function getVariant(profile) {
+    const sorted = sortProfile(profile);
+    const [p1, p2, p3] = sorted;
+
+    const d1 = p1.value - p2.value;
+    const d2 = p2.value - p3.value;
+
+    if (d1 <= EQ_TOL && d2 <= EQ_TOL) {
+      return {
+        type: "ALL_EQUAL",
+        code: "ALL_EQUAL",
+        order: [p1.key, p2.key, p3.key],
+        d1,
+        d2,
+      };
+    }
+
+    if (d1 <= EQ_TOL && d2 > EQ_TOL) {
+      const topPair = [p1.key, p2.key].sort().join("");
+      return {
+        type: "TOP_PAIR",
+        code: `TOP_PAIR_${topPair}_${p3.key}`,
+        order: [p1.key, p2.key, p3.key],
+        d1,
+        d2,
+      };
+    }
+
+    if (d1 > EQ_TOL && d2 <= EQ_TOL) {
+      const bottomPair = [p2.key, p3.key].sort().join("");
+      return {
+        type: "BOTTOM_PAIR",
+        code: `BOTTOM_PAIR_${p1.key}_${bottomPair}`,
+        order: [p1.key, p2.key, p3.key],
+        d1,
+        d2,
+      };
+    }
+
+    return {
+      type: "ORDER",
+      code: `ORDER_${p1.key}${p2.key}${p3.key}`,
+      order: [p1.key, p2.key, p3.key],
+      d1,
+      d2,
+    };
+  }
+
+  function getPairRelations(profile) {
+    const relations = {};
+
+    for (const [a, b] of PAIRS) {
+      const diff = profile[a] - profile[b];
+
+      if (Math.abs(diff) <= EQ_TOL) {
+        relations[`${a}_${b}`] = 0;
+      } else if (diff > 0) {
+        relations[`${a}_${b}`] = 1;
+      } else {
+        relations[`${a}_${b}`] = -1;
+      }
+    }
+
+    return relations;
+  }
+
+  function getStructureRelation(sollRelations, istRelations) {
+    let mismatchCount = 0;
+    let hasHardFlip = false;
+    const mismatches = [];
+
+    for (const key of Object.keys(sollRelations)) {
+      const s = sollRelations[key];
+      const i = istRelations[key];
+
+      if (s !== i) {
+        mismatchCount += 1;
+        mismatches.push({ pair: key, soll: s, ist: i });
+
+        // harter Flip: direkt von +1 auf -1 oder umgekehrt
+        if ((s === 1 && i === -1) || (s === -1 && i === 1)) {
+          hasHardFlip = true;
+        }
+      }
+    }
+
+    if (mismatchCount === 0) {
+      return {
+        type: "EXACT",
+        reason: "Die Paarrelationen sind identisch.",
+        mismatches,
+      };
+    }
+
+    if (mismatchCount === 1 && !hasHardFlip) {
+      return {
+        type: "SOFT_CONFLICT",
+        reason: "Genau eine Paarrelation kippt an der Gleichheitsgrenze.",
+        mismatches,
+      };
+    }
+
+    return {
+      type: "HARD_CONFLICT",
+      reason: "Mehrere Paarrelationen unterscheiden sich oder es liegt ein direkter Strukturflip vor.",
+      mismatches,
+    };
+  }
+
+  function getDiffs(soll, ist) {
+    return {
+      I: absDiff(soll.I, ist.I),
+      N: absDiff(soll.N, ist.N),
+      A: absDiff(soll.A, ist.A),
+    };
+  }
+
+  function getFitLabel(structureRelation, maxDiff) {
+    if (structureRelation.type === "HARD_CONFLICT") {
+      return "nicht geeignet";
+    }
+
+    if (structureRelation.type === "SOFT_CONFLICT") {
+      return maxDiff <= COND_TOL ? "bedingt geeignet" : "nicht geeignet";
+    }
+
+    // EXACT
+    if (maxDiff <= GOOD_TOL) return "geeignet";
+    if (maxDiff <= COND_TOL) return "bedingt geeignet";
+    return "nicht geeignet";
+  }
+
+  function getControlPoints(structureRelation, maxDiff, sollVariant) {
+    let points = 0;
+
+    if (structureRelation.type === "HARD_CONFLICT") {
+      points += 3;
+    } else if (structureRelation.type === "SOFT_CONFLICT") {
+      points += 2;
+    }
+
+    if (maxDiff > COND_TOL) {
+      points += 2;
+    } else if (maxDiff > GOOD_TOL) {
+      points += 1;
+    }
+
+    // Rolle hat klare Einzeldominanz
+    if (
+      (sollVariant.type === "ORDER" || sollVariant.type === "BOTTOM_PAIR") &&
+      sollVariant.d1 > 10
+    ) {
+      points += 1;
+    }
+
+    return points;
+  }
+
+  function getControlLevel(points) {
+    if (points <= 2) return "gering";
+    if (points <= 4) return "mittel";
+    return "hoch";
+  }
+
+  function getDevelopmentEffort(fitLabel, controlLevel) {
+    if (fitLabel === "nicht geeignet") {
+      return { label: "hoch", level: 3 };
+    }
+
+    if (fitLabel === "bedingt geeignet") {
+      return { label: "mittel", level: 2 };
+    }
+
+    if (controlLevel === "gering") {
+      return { label: "niedrig", level: 1 };
+    }
+
+    return { label: "mittel", level: 2 };
+  }
+
+  const sollVariant = getVariant(soll);
+  const istVariant = getVariant(ist);
+
+  const sollRelations = getPairRelations(soll);
+  const istRelations = getPairRelations(ist);
+
+  const structureRelation = getStructureRelation(sollRelations, istRelations);
+
+  const diffs = getDiffs(soll, ist);
+  const maxDiff = Math.max(diffs.I, diffs.N, diffs.A);
+
+  const fitLabel = getFitLabel(structureRelation, maxDiff);
+
+  const controlPoints = getControlPoints(structureRelation, maxDiff, sollVariant);
+  const controlLevel = getControlLevel(controlPoints);
+  const developmentEffort = getDevelopmentEffort(fitLabel, controlLevel);
+
+  return {
+    fitLabel,
+    reason: structureRelation.reason,
+    sollVariant: sollVariant.code,
+    istVariant: istVariant.code,
+    structureRelation,
+    diffs,
+    maxDiff,
+    controlIntensity: {
+      points: controlPoints,
+      level: controlLevel,
+    },
+    developmentEffort,
+    debug: {
+      thresholds: {
+        eqTolerance: EQ_TOL,
+        goodTolerance: GOOD_TOL,
+        condTolerance: COND_TOL,
+      },
+      sollRelations,
+      istRelations,
+      sollVariant,
+      istVariant,
+    },
+  };
+}
