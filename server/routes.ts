@@ -591,6 +591,11 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
 
+  app.get("/matchcheck-logik.html", async (_req, res) => {
+    const path = await import("path");
+    res.sendFile(path.resolve(process.cwd(), "server", "matchcheck-logik.html"));
+  });
+
   app.get("/api/health-check", async (_req, res) => {
     try {
       const docs = await storage.listKnowledgeDocuments();
