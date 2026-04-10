@@ -1307,6 +1307,20 @@ function buildDevelopment(gap: string, rk: ComponentKey, ck: ComponentKey, contr
     const spread = Math.max(ct.impulsiv, ct.intuitiv, ct.analytisch) - Math.min(ct.impulsiv, ct.intuitiv, ct.analytisch);
     const candBalanced = spread <= 10;
     if (candBalanced) {
+      if (gap === "mittel") {
+        return {
+          level: 3,
+          label: "mittel",
+          text: `Die Stelle verlangt Vielseitigkeit über alle drei Bereiche. ${s} bringt ein ausgeglichenes Profil mit, doch in einzelnen Bereichen zeigt sich eine leichte Abweichung. Mit gezielter Führung und klaren Erwartungen ist eine gute Entwicklung realistisch.`,
+        };
+      }
+      if (gap === "hoch") {
+        return {
+          level: 1,
+          label: "niedrig",
+          text: `Die Stelle verlangt Vielseitigkeit über alle drei Bereiche. ${s} bringt zwar ein ausgeglichenes Profil mit, doch die Arbeitslogik weicht in wesentlichen Bereichen ab. Die nötige Anpassung wäre aufwendig.`,
+        };
+      }
       return {
         level: 4,
         label: "hoch",
