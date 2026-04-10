@@ -1274,6 +1274,14 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
       overallFit = "CONDITIONAL";
       reasons.push({ rule: "Person Dual + Rolle klar dominant (Rollenschwerpunkt in Dual-Paar, aber Person nicht fokussiert) → max CONDITIONAL", effect: "CAP" });
     }
+
+    if (overallFit === "SUITABLE" && roleIsDual) {
+      const candGapOnDualPair = Math.abs(cN[roleDom.top1.key] - cN[roleDom.top2.key]);
+      if (candGapOnDualPair > 8) {
+        overallFit = "CONDITIONAL";
+        reasons.push({ rule: `Rolle Dual, Person deckt Doppelschwerpunkt nicht ab (Paar-Gap=${candGapOnDualPair.toFixed(0)}>8) → max CONDITIONAL`, effect: "CAP" });
+      }
+    }
   }
 
   // ── G. Basis-Kontrollintensität ───────────────────────
