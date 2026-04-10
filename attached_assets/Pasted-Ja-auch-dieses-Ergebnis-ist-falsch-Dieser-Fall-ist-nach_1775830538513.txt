@@ -1,0 +1,165 @@
+Ja — auch dieses Ergebnis ist falsch.
+
+Dieser Fall ist nach der Logik ganz klar geeignet.
+
+Warum?
+Soll
+I = 24
+N = 38
+A = 38
+
+Das ist:
+
+N und A gleich stark oben
+I deutlich darunter
+
+→ Variante: TOP_PAIR_NA_I
+
+Ist
+I = 22
+N = 39
+A = 39
+
+Das ist:
+
+N und A gleich stark oben
+I deutlich darunter
+
+→ Variante: TOP_PAIR_NA_I
+
+Abweichungen
+I: |24 - 22| = 2
+N: |38 - 39| = 1
+A: |38 - 39| = 1
+
+maxDiff = 2
+
+Korrektes Ergebnis
+Struktur identisch
+maxDiff ≤ 5
+
+→ geeignet
+
+Was bei dir sehr wahrscheinlich schiefläuft
+
+Wenn jetzt trotzdem „Nicht geeignet“ kommt, dann ist fast sicher einer dieser Punkte falsch implementiert:
+
+1. Variantencode für TOP_PAIR wird falsch gebaut
+
+Bei N=38 und A=38 muss oben das Paar A/N erkannt werden und unten I.
+
+Der Code muss also intern etwas wie das hier liefern:
+
+TOP_PAIR_AN_I
+
+oder konsistent:
+
+TOP_PAIR_NA_I
+
+Wichtig: immer dieselbe Normalisierung.
+
+Wenn im Soll z. B. TOP_PAIR_AN_I und im Ist TOP_PAIR_NA_I gebaut wird, obwohl es dieselbe Struktur ist, knallt dein Vergleich.
+
+2. Du sortierst die Paar-Komponenten nicht konsistent
+
+Gerade bei Gleichständen oben musst du das obere Paar immer alphabetisch oder fest normalisiert kodieren.
+
+Also nicht einmal:
+
+TOP_PAIR_NA_I
+
+und an anderer Stelle:
+
+TOP_PAIR_AN_I
+
+sondern immer exakt eine Form.
+
+Zum Beispiel:
+
+const pair = [p1.key, p2.key].sort().join("");
+variantCode = `TOP_PAIR_${pair}_${p3.key}`;
+
+Dann wird aus N+A immer AN.
+
+3. Du vergleichst nicht die normalisierten Variantencodes, sondern rohe Reihenfolgen
+
+Bei Gleichstand kann die Sortierung intern durch Tiebreaker kippen.
+
+Beispiel bei 39 / 39 / 22:
+
+Je nach Sortierung kann oben intern einmal stehen:
+
+N, A
+oder
+A, N
+
+Das ist inhaltlich gleich, aber technisch verschieden, wenn du nicht normalisierst.
+
+4. Deine Structure-Relation kippt fälschlich auf HARD_CONFLICT
+
+Bei diesem Fall müssen die Paarrelationen identisch sein:
+
+Soll
+I vs N = -1
+I vs A = -1
+N vs A = 0
+Ist
+I vs N = -1
+I vs A = -1
+N vs A = 0
+
+Das ist 1:1 identisch.
+
+Wenn dein System hier HARD_CONFLICT meldet, dann ist die Relationserkennung falsch.
+
+Dieser Fall ist ein perfekter Debug-Test
+
+Nutze genau diesen Test:
+
+const soll = { I: 24, N: 38, A: 38 };
+const ist  = { I: 22, N: 39, A: 39 };
+
+const result = evaluateMatch(soll, ist);
+console.log(JSON.stringify(result, null, 2));
+Das erwartete Ergebnis muss sein:
+{
+  fitLabel: "geeignet",
+  maxDiff: 2,
+  structureRelation: { type: "EXACT", ... }
+}
+
+Und zusätzlich ungefähr:
+
+sollVariant: "TOP_PAIR_AN_I"
+istVariant: "TOP_PAIR_AN_I"
+Was du jetzt direkt prüfen solltest
+
+Lass dir in der Konsole genau das ausgeben:
+
+console.log("SOLL VAR:", sollVariant);
+console.log("IST VAR :", istVariant);
+console.log("SOLL REL:", sollRelations);
+console.log("IST REL :", istRelations);
+console.log("STRUCT  :", structureRelation);
+console.log("DIFFS   :", diffs, "maxDiff=", maxDiff);
+console.log("FIT     :", fitLabel);
+Wenn alles korrekt wäre, müsstest du sehen:
+SOLL VAR: TOP_PAIR_AN_I
+IST VAR : TOP_PAIR_AN_I
+
+SOLL REL: { I_N: -1, I_A: -1, N_A: 0 }
+IST REL : { I_N: -1, I_A: -1, N_A: 0 }
+
+STRUCT  : { type: "EXACT" }
+
+DIFFS   : { I: 2, N: 1, A: 1 } maxDiff=2
+
+FIT     : geeignet
+Mein klares Urteil
+
+Dieser Fall ist nicht bedingt, nicht ungeeignet, sondern eindeutig:
+
+geeignet
+Wahrscheinlichste Fehlerursache in einem Satz
+
+Dein Code behandelt den Doppelschwerpunkt oben nicht konsistent normalisiert und erzeugt dadurch künstlich unterschiedliche Strukturen.

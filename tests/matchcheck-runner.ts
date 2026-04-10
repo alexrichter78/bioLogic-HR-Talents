@@ -178,6 +178,14 @@ function runBoundaryTests(): number {
       expectedIst: 'BOTTOM_PAIR_analytisch_impulsivintuitiv',
     },
     {
+      name: 'TOP_PAIR NA (Doppelschwerpunkt): maxDiff=2 → geeignet',
+      soll: { I: 24, N: 38, A: 38 },
+      ist:  { I: 22, N: 39, A: 39 },
+      expectedFit: 'geeignet',
+      expectedSoll: 'TOP_PAIR_analytischintuitiv_impulsiv',
+      expectedIst: 'TOP_PAIR_analytischintuitiv_impulsiv',
+    },
+    {
       name: 'TOP_PAIR IN: A weicht 7 ab → bedingt geeignet',
       soll: { I: 38, N: 41, A: 22 },
       ist:  { I: 35, N: 36, A: 29 },
