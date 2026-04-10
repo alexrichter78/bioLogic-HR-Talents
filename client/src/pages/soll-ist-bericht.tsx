@@ -235,6 +235,17 @@ export default function SollIstBericht() {
       return rebalanceTriad(prev, key, newVal) as Triad;
     });
   }, [rebalanceTriad]);
+
+  useEffect(() => {
+    if (!roleTriad) return;
+    setRoleAnalysisObj(prev => {
+      if (!prev) return prev;
+      if (prev.role_profile.impulsiv === roleTriad.impulsiv &&
+          prev.role_profile.intuitiv === roleTriad.intuitiv &&
+          prev.role_profile.analytisch === roleTriad.analytisch) return prev;
+      return { ...prev, role_profile: roleTriad };
+    });
+  }, [roleTriad]);
   useEffect(() => {
     const raw = localStorage.getItem("rollenDnaState");
     if (raw) {
