@@ -78,7 +78,7 @@ function bgToTriad(bg: BG | undefined): Triad {
 function severityLabel(s: Severity) {
   if (s === "critical") return "kritisch";
   if (s === "warning") return "mit Abweichung";
-  return "weitgehend passend";
+  return "stimmig";
 }
 
 function biggestGapText(rt: Triad, ct: Triad): string {
@@ -1387,7 +1387,7 @@ export default function SollIstBericht() {
                 const rGapLevel = result.gapLevel;
                 let rFazit: string;
                 if (rFitLabel === "Geeignet") {
-                  rFazit = "Die Arbeitsweise der Person passt gut zu den Anforderungen der Stelle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein.";
+                  rFazit = "Die Arbeitsweise der Person ist deckungsgleich mit den Anforderungen der Stelle. Aufgaben, Entscheidungen und Arbeitsstil sind stimmig.";
                 } else if (rFitLabel === "Bedingt geeignet" && rGapLevel === "gering") {
                   rFazit = "Die Grundausrichtung ist ähnlich, jedoch unterscheidet sich die Gewichtung einzelner Arbeitsbereiche. Im Alltag kann das zu erhöhtem Abstimmungsbedarf und höherem Führungsaufwand führen.";
                 } else if (rFitLabel === "Bedingt geeignet") {

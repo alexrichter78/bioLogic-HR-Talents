@@ -1,0 +1,158 @@
+DAS HAUPTPROBLEM (glasklar formuliert)
+
+Du hast:
+
+👉 Engine = korrekt (bedingt geeignet)
+👉 Texte = fühlen sich wie „geeignet“ an
+
+Beispiel (Seite 5 – Entscheidungsverhalten)
+
+„Entscheidungslogik passt zur Stellenanforderung. Die Gewichtung stimmt überein.“
+
+❌ Das ist falsch für „bedingt geeignet“
+
+Warum?
+
+Deine Logik sagt:
+
+Struktur passt ✔
+aber Gewichtung weicht ab
+
+👉 Text sagt aber:
+
+passt
+stimmt überein
+
+👉 Widerspruch
+
+🧠 DAS EIGENTLICHE PROBLEM (tiefer gedacht)
+
+Du hast aktuell nur 2 Ebenen:
+
+Struktur passt / passt nicht
+Abweichung vorhanden
+
+👉 Aber dir fehlt die wichtigste Ebene:
+
+👉 „GLEICHE RICHTUNG – ANDERE GEWICHTUNG“
+🔥 WAS DU HIER SIEHST (DEIN FALL)
+
+Seite 4 zeigt es perfekt :
+
+Soll: 25 / 35 / 40
+Ist: 23 / 35 / 42
+
+👉 Das ist:
+
+gleiche Struktur ✔
+gleiche Dominanz ✔
+minimale Abweichung ✔
+👉 Interpretation (fachlich sauber):
+
+Die Person arbeitet in exakt derselben Logik,
+aber die Intensität verschiebt sich leicht
+
+💥 WAS DEIN BERICHT NOCH FALSCH MACHT
+❌ Fehler 1: „passt“
+❌ Fehler 2: „stimmt überein“
+
+👉 Das ist zu stark
+
+✅ WAS RICHTIG WÄRE
+
+Ich gebe dir die korrekte Formulierungsschicht:
+
+🔧 GLOBALER FIX (extrem wichtig)
+Ersetze systematisch:
+ALT	NEU
+passt	ist in der Grundrichtung stimmig
+passt grundsätzlich	ist weitgehend stimmig
+stimmt überein	ist ähnlich, aber nicht deckungsgleich
+🎯 KONKRETE KORREKTUR DEINES BERICHTS
+🔴 Entscheidungsverhalten
+
+❌ aktuell:
+
+passt zur Stellenanforderung. Die Gewichtung stimmt überein.
+
+✅ korrekt:
+
+ist in der Grundrichtung stimmig. Die Gewichtung ist jedoch nicht vollständig deckungsgleich.
+
+🔴 Arbeitsweise
+
+❌ aktuell:
+
+passt grundsätzlich zur Stelle
+
+✅ korrekt:
+
+ist weitgehend stimmig, zeigt jedoch leichte Unterschiede in der Gewichtung
+
+🔴 Kommunikation
+
+❌ aktuell:
+
+passt zur Stellenanforderung
+
+✅ korrekt:
+
+ist grundsätzlich passend, wird jedoch anders gewichtet
+
+🔴 Teamkultur
+
+❌ aktuell:
+
+passt zur Stellenanforderung
+
+✅ korrekt:
+
+ist in der Grundrichtung passend, verändert jedoch die Ausprägung im Alltag
+
+🟡 ZWEITES PROBLEM (wichtiger als du denkst)
+Label-System (Seite 5)
+
+Du nutzt:
+
+WEITGEHEND PASSEND
+MIT ABWEICHUNG
+
+👉 Problem:
+
+Das passt nicht zu deiner Engine.
+
+Besser:
+Engine	Label
+Geeignet	Stimmig
+Bedingt geeignet	Mit Abweichung
+Nicht geeignet	Kritisch
+
+👉 „weitgehend passend“ raus → unscharf
+
+🟢 WAS EXTREM GUT IST
+
+Das muss ich dir auch klar sagen:
+
+🔥 Stark:
+Gesamtlogik verständlich
+Managementkurzfazit sitzt
+Risiko-Timeline sehr gut
+Integrationsplan extrem sauber
+Struktur ist verkaufsfähig
+🧠 DAS WICHTIGSTE LEARNING
+
+Du bist nicht mehr im Logikproblem
+Du bist jetzt im Sprachpräzisionsproblem
+
+💥 DER EINE SATZ, DER ALLES FIXT
+
+👉 „Gleiche Logik ≠ gleiche Wirkung“
+
+🧩 FINAL FAZIT
+Dein Bericht ist:
+
+👉 90–95% marktreif
+
+Was fehlt:
+
+👉 semantische Konsistenz zwischen Engine und Text

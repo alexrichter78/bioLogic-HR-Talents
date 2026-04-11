@@ -694,16 +694,16 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
   const candDualMatchesRole = candIsDualDom && (rk === ck || rk === ck2);
 
   const areas: ImpactArea[] = [
-    buildDecisionImpact(rk, ck, gapI, gapA, gapN, cand, roleIsBalFull, ct, candIsBalFull, candIsDualDom, ck2),
-    buildWorkStructureImpact(rk, ck, rt, ct, gapA, cand, candIsBalFull, candIsDualDom, ck2),
+    buildDecisionImpact(rk, ck, gapI, gapA, gapN, cand, roleIsBalFull, ct, candIsBalFull, candIsDualDom, ck2, fitSubtype),
+    buildWorkStructureImpact(rk, ck, rt, ct, gapA, cand, candIsBalFull, candIsDualDom, ck2, fitSubtype),
   ];
 
   if (fuehrungsArt !== "keine") {
-    areas.push(buildLeadershipImpact(rk, ck, gapI, gapN, gapA, cand, fuehrungsArt, roleIsBalFull, ct, candIsBalFull, candIsDualDom, ck2));
+    areas.push(buildLeadershipImpact(rk, ck, gapI, gapN, gapA, cand, fuehrungsArt, roleIsBalFull, ct, candIsBalFull, candIsDualDom, ck2, fitSubtype));
   }
 
-  areas.push(buildCommunicationImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct, candIsBalFull, candIsDualDom, ck2));
-  areas.push(buildCultureImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct, candIsBalFull, candIsDualDom, ck2));
+  areas.push(buildCommunicationImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct, candIsBalFull, candIsDualDom, ck2, fitSubtype));
+  areas.push(buildCultureImpact(rk, ck, gapI, gapN, gapA, cand, roleIsBalFull, ct, candIsBalFull, candIsDualDom, ck2, fitSubtype));
 
   if (rk !== ck && !roleIsBalFull && !candIsBalFull && !candDualMatchesRole) {
     for (const area of areas) {
@@ -735,7 +735,7 @@ function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Tri
   return areas;
 }
 
-function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapA: number, gapN: number, cand: string, roleIsBalFull = false, ct?: Triad, candIsBalFull = false, candIsDualDom = false, ck2?: ComponentKey): ImpactArea {
+function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapA: number, gapN: number, cand: string, roleIsBalFull = false, ct?: Triad, candIsBalFull = false, candIsDualDom = false, ck2?: ComponentKey, fitSubtype: FitSubtype = "MISMATCH"): ImpactArea {
   const maxGap = Math.max(gapI, gapA, gapN);
   const s = Subj(cand);
 
@@ -809,41 +809,42 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
   const decCompeting23 = ct ? Math.abs(ct[decRest[0]] - ct[decRest[1]]) <= 5 && Math.min(ct[decRest[0]], ct[decRest[1]]) > 15 : false;
 
   if (rk === ck) {
+    const isPerfect = fitSubtype === "PERFECT";
     if (rk === "analytisch") {
       roleNeed = "Sorgfältige, prüforientierte Entscheidungen. Optionen abwägen, Risiken prüfen, erst dann handeln.";
-      candidatePattern = maxGap >= 8
-        ? `${s} arbeitet ebenfalls analytisch und prüft Entscheidungen gründlich. Die Grundrichtung stimmt, die Gewichtung der Nebenbereiche weicht jedoch ab.`
-        : `${s} arbeitet ebenfalls analytisch und prüft Entscheidungen gründlich. Der Grundansatz stimmt überein.`;
+      candidatePattern = isPerfect
+        ? `${s} arbeitet ebenfalls analytisch und prüft Entscheidungen gründlich. Der Grundansatz ist deckungsgleich.`
+        : `${s} arbeitet ebenfalls analytisch und prüft Entscheidungen gründlich. Die Grundrichtung ist stimmig, die Gewichtung der Nebenbereiche weicht jedoch ab.`;
       if (decCompeting23) {
-        risk = "Die Entscheidungslogik passt in der Grundrichtung. Da die beiden Nebenbereiche fast gleich stark sind, kann unter Druck die Ausweichreaktion wechselnd ausfallen – mal handlungsorientierter, mal abstimmungsorientierter.";
+        risk = "Die Entscheidungslogik ist in der Grundrichtung stimmig. Da die beiden Nebenbereiche fast gleich stark sind, kann unter Druck die Ausweichreaktion wechselnd ausfallen – mal handlungsorientierter, mal abstimmungsorientierter.";
       } else {
-        risk = maxGap >= 8
-          ? "Die Entscheidungslogik passt in der Grundrichtung. Die Gewichtung der Nebenbereiche weicht ab – Tempo oder Kommunikation werden unterschiedlich priorisiert. Klare Erwartungen setzen."
-          : "Entscheidungslogik passt zur Stellenanforderung. Die Gewichtung stimmt überein.";
+        risk = isPerfect
+          ? "Entscheidungslogik ist deckungsgleich mit der Stellenanforderung."
+          : "Die Entscheidungslogik ist in der Grundrichtung stimmig. Die Gewichtung der Nebenbereiche ist jedoch nicht deckungsgleich – Tempo oder Kommunikation werden unterschiedlich priorisiert.";
       }
     } else if (rk === "impulsiv") {
       roleNeed = "Schnelle, ergebnisorientierte Entscheidungen. Klare Richtung und direkte Umsetzung vor langer Prüfung.";
-      candidatePattern = maxGap >= 8
-        ? `${s} entscheidet ebenfalls schnell und handlungsorientiert. Die Grunddynamik stimmt, die Gewichtung der Nebenbereiche weicht jedoch ab.`
-        : `${s} entscheidet ebenfalls schnell und handlungsorientiert. Die Grunddynamik stimmt.`;
+      candidatePattern = isPerfect
+        ? `${s} entscheidet ebenfalls schnell und handlungsorientiert. Grunddynamik und Gewichtung sind deckungsgleich.`
+        : `${s} entscheidet ebenfalls schnell und handlungsorientiert. Die Grunddynamik ist stimmig, die Gewichtung der Nebenbereiche weicht jedoch ab.`;
       if (decCompeting23) {
-        risk = "Die Entscheidungsgeschwindigkeit passt. Da die Nebenbereiche konkurrieren, schwankt die Absicherungsstrategie: Mal wird eher abgestimmt, mal eher geprüft. Das erzeugt wechselndes Verhalten im Detail.";
+        risk = "Die Entscheidungsgeschwindigkeit ist in der Grundrichtung stimmig. Da die Nebenbereiche konkurrieren, schwankt die Absicherungsstrategie: Mal wird eher abgestimmt, mal eher geprüft. Das erzeugt wechselndes Verhalten im Detail.";
       } else {
-        risk = maxGap >= 8
-          ? "Die Entscheidungsgeschwindigkeit passt. Die Gewichtung der Nebenbereiche weicht ab – Absicherung oder Abstimmung werden unterschiedlich priorisiert."
-          : "Entscheidungslogik passt zur Stellenanforderung. Die Gewichtung stimmt überein.";
+        risk = isPerfect
+          ? "Entscheidungslogik ist deckungsgleich mit der Stellenanforderung."
+          : "Die Entscheidungsgeschwindigkeit ist in der Grundrichtung stimmig. Die Gewichtung der Nebenbereiche ist jedoch nicht deckungsgleich – Absicherung oder Abstimmung werden unterschiedlich priorisiert.";
       }
     } else {
       roleNeed = "Entscheidungen, die Kontext, Zusammenarbeit und zwischenmenschliche Wirkung berücksichtigen. Abstimmung im Team vor Geschwindigkeit.";
-      candidatePattern = maxGap >= 8
-        ? `${s} entscheidet ebenfalls kontextbezogen und bezieht das Umfeld aktiv ein. Die Grundhaltung stimmt, die Gewichtung der Nebenbereiche weicht jedoch ab.`
-        : `${s} entscheidet ebenfalls kontextbezogen und bezieht das Umfeld aktiv ein. Die Grundhaltung stimmt.`;
+      candidatePattern = isPerfect
+        ? `${s} entscheidet ebenfalls kontextbezogen und bezieht das Umfeld aktiv ein. Grundhaltung und Gewichtung sind deckungsgleich.`
+        : `${s} entscheidet ebenfalls kontextbezogen und bezieht das Umfeld aktiv ein. Die Grundhaltung ist stimmig, die Gewichtung der Nebenbereiche weicht jedoch ab.`;
       if (decCompeting23) {
-        risk = "Die Kommunikationsorientierung passt. Da die Nebenbereiche konkurrieren, kann die Abstützung der Entscheidung wechseln – mal faktenbasierter, mal handlungsorientierter.";
+        risk = "Die Kommunikationsorientierung ist in der Grundrichtung stimmig. Da die Nebenbereiche konkurrieren, kann die Abstützung der Entscheidung wechseln – mal faktenbasierter, mal handlungsorientierter.";
       } else {
-        risk = maxGap >= 8
-          ? "Die Kommunikationsorientierung passt. Die Gewichtung der Nebenbereiche weicht ab – Strukturklarheit oder Umsetzungstempo werden unterschiedlich priorisiert."
-          : "Entscheidungslogik passt zur Stellenanforderung. Die Gewichtung stimmt überein.";
+        risk = isPerfect
+          ? "Entscheidungslogik ist deckungsgleich mit der Stellenanforderung."
+          : "Die Kommunikationsorientierung ist in der Grundrichtung stimmig. Die Gewichtung der Nebenbereiche ist jedoch nicht deckungsgleich – Strukturklarheit oder Umsetzungstempo werden unterschiedlich priorisiert.";
       }
     }
   } else if (rk === "analytisch") {
@@ -890,7 +891,7 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
   return { id: "decision", label: "Entscheidungsverhalten", severity: sev, roleNeed, candidatePattern, risk };
 }
 
-function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, gapA: number, cand: string, candIsBalFull = false, candIsDualDom = false, ck2?: ComponentKey): ImpactArea {
+function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, gapA: number, cand: string, candIsBalFull = false, candIsDualDom = false, ck2?: ComponentKey, fitSubtype: FitSubtype = "MISMATCH"): ImpactArea {
   const maxGapAll = Math.max(Math.abs(rt.impulsiv - ct.impulsiv), Math.abs(rt.intuitiv - ct.intuitiv), gapA);
   const candDualMatchesRole = candIsDualDom && ck2 && (rk === ck || rk === ck2);
   const structureBoost = (rk !== ck && !candIsBalFull && !candDualMatchesRole) ? Math.min(maxGapAll * 0.65, gapA + 10) : 0;
@@ -982,10 +983,15 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
         risk = "Die strukturelle Arbeitsweise weicht nicht stark ab, aber die unterschiedliche Grunddynamik beeinflusst, wie Aufgaben priorisiert und umgesetzt werden. Feinabstimmung durch Führung nötig.";
       }
     } else {
+      const isPerfectWork = fitSubtype === "PERFECT";
       if (competing23) {
-        risk = "Arbeitsweise passt grundsätzlich zur Stelle. Die konkurrierenden Nebenbereiche können situativ zu wechselndem Arbeitsstil führen. Feinabstimmung durch Führung empfohlen.";
+        risk = isPerfectWork
+          ? "Arbeitsweise ist deckungsgleich mit der Stellenanforderung. Die konkurrierenden Nebenbereiche können situativ zu leicht wechselndem Arbeitsstil führen."
+          : "Arbeitsweise ist in der Grundrichtung stimmig. Die konkurrierenden Nebenbereiche können situativ zu wechselndem Arbeitsstil führen. Feinabstimmung durch Führung empfohlen.";
       } else {
-        risk = "Arbeitsweise passt grundsätzlich zur Stelle. Feinabstimmung nötig, aber der Grundansatz stimmt.";
+        risk = isPerfectWork
+          ? "Arbeitsweise ist deckungsgleich mit der Stellenanforderung."
+          : "Arbeitsweise ist in der Grundrichtung stimmig, die Gewichtung ist jedoch nicht vollständig deckungsgleich. Feinabstimmung durch Führung empfohlen.";
       }
     }
   }
@@ -993,7 +999,7 @@ function buildWorkStructureImpact(rk: ComponentKey, ck: ComponentKey, rt: Triad,
   return { id: "work_structure", label: "Arbeitsweise", severity: sev, roleNeed, candidatePattern, risk };
 }
 
-function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, fuehrungsArt: FuehrungsArt, roleIsBalFull = false, ct?: Triad, candIsBalFull = false, candIsDualDom = false, ck2?: ComponentKey): ImpactArea {
+function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, fuehrungsArt: FuehrungsArt, roleIsBalFull = false, ct?: Triad, candIsBalFull = false, candIsDualDom = false, ck2?: ComponentKey, fitSubtype: FitSubtype = "MISMATCH"): ImpactArea {
   const maxGap = Math.max(gapI, gapN, gapA);
   const s = Subj(cand);
 
@@ -1162,19 +1168,20 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
   } else {
     const leadRest = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== ck);
     const leadCompeting23 = ct ? Math.abs(ct[leadRest[0]] - ct[leadRest[1]]) <= 5 && Math.min(ct[leadRest[0]], ct[leadRest[1]]) > 15 : false;
+    const isPerfectLead = fitSubtype === "PERFECT";
     if (leadCompeting23) {
-      risk = "Die Führungsrichtung stimmt. Da die beiden Nebenbereiche fast gleich stark sind, kann der Führungsstil unter Druck wechselnd wirken – situativ direkter oder empathischer. Das Team erlebt die Führung als weniger berechenbar. Regelmässiges Feedback ist besonders wichtig.";
+      risk = "Die Führungsrichtung ist in der Grundausrichtung stimmig. Da die beiden Nebenbereiche fast gleich stark sind, kann der Führungsstil unter Druck wechselnd wirken – situativ direkter oder empathischer. Das Team erlebt die Führung als weniger berechenbar. Regelmässiges Feedback ist besonders wichtig.";
     } else {
-      risk = maxGap >= 8
-        ? "Die Führungsrichtung stimmt in der Grundausrichtung. Die Gewichtung der Nebenbereiche weicht jedoch ab – dadurch unterscheidet sich, wie Orientierung gegeben wird. Regelmässiges Feedback zur Führungswirkung ist ratsam."
-        : "Führungsstil passt zur Stellenanforderung. Die Gewichtung stimmt überein.";
+      risk = isPerfectLead
+        ? "Führungsstil ist deckungsgleich mit der Stellenanforderung."
+        : "Die Führungsrichtung ist in der Grundausrichtung stimmig. Die Gewichtung der Nebenbereiche ist jedoch nicht deckungsgleich – dadurch unterscheidet sich, wie Orientierung gegeben wird. Regelmässiges Feedback zur Führungswirkung ist ratsam.";
     }
   }
 
   return { id: "leadership", label: "Führungswirkung", severity: sev, roleNeed, candidatePattern, risk };
 }
 
-function buildCommunicationImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, roleIsBalFull = false, ct?: Triad, candIsBalFull = false, candIsDualDom = false, ck2?: ComponentKey): ImpactArea {
+function buildCommunicationImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, roleIsBalFull = false, ct?: Triad, candIsBalFull = false, candIsDualDom = false, ck2?: ComponentKey, fitSubtype: FitSubtype = "MISMATCH"): ImpactArea {
   const s = Subj(cand);
   const maxGap = Math.max(gapI, gapN, gapA);
 
@@ -1261,12 +1268,13 @@ function buildCommunicationImpact(rk: ComponentKey, ck: ComponentKey, gapI: numb
 
   let risk: string;
   if (rk === ck) {
+    const isPerfectComm = fitSubtype === "PERFECT";
     if (commCompeting23) {
-      risk = "Der Kommunikationsstil passt in der Grundrichtung. Da die beiden Nebenbereiche fast gleich stark sind, wechselt die Kommunikation situativ – mal direkter, mal empathischer, mal sachlicher. Das kann bei Gesprächspartnern unterschiedlich ankommen.";
+      risk = "Der Kommunikationsstil ist in der Grundrichtung stimmig. Da die beiden Nebenbereiche fast gleich stark sind, wechselt die Kommunikation situativ – mal direkter, mal empathischer, mal sachlicher. Das kann bei Gesprächspartnern unterschiedlich ankommen.";
     } else {
-      risk = maxGap >= 8
-        ? "Der Kommunikationsstil passt in der Grundrichtung. Die Gewichtung der Nebenbereiche weicht ab – dadurch unterscheidet sich, wie intensiv und in welchem Stil kommuniziert wird. Gezielte Abstimmung empfohlen."
-        : "Kommunikationsverhalten passt zur Stellenanforderung. Die Gewichtung stimmt überein.";
+      risk = isPerfectComm
+        ? "Kommunikationsverhalten ist deckungsgleich mit der Stellenanforderung."
+        : "Der Kommunikationsstil ist in der Grundrichtung stimmig. Die Gewichtung der Nebenbereiche ist jedoch nicht deckungsgleich – dadurch unterscheidet sich, wie intensiv und in welchem Stil kommuniziert wird.";
     }
   } else if (rk === "impulsiv" && ck === "intuitiv") {
     risk = commCompeting23
@@ -1297,7 +1305,7 @@ function buildCommunicationImpact(rk: ComponentKey, ck: ComponentKey, gapI: numb
   return { id: "communication", label: "Kommunikationsverhalten", severity: sev, roleNeed, candidatePattern, risk };
 }
 
-function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, roleIsBalFull = false, ct?: Triad, candIsBalFull = false, candIsDualDom = false, ck2?: ComponentKey): ImpactArea {
+function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, gapN: number, gapA: number, cand: string, roleIsBalFull = false, ct?: Triad, candIsBalFull = false, candIsDualDom = false, ck2?: ComponentKey, fitSubtype: FitSubtype = "MISMATCH"): ImpactArea {
   const s = Subj(cand);
 
   if (candIsDualDom && ck2 && !roleIsBalFull) {
@@ -1421,12 +1429,13 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
     const cMaxGap = Math.max(gapI, gapN, gapA);
     const culRest = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== ck);
     const culCompeting23 = ct ? Math.abs(ct[culRest[0]] - ct[culRest[1]]) <= 5 && Math.min(ct[culRest[0]], ct[culRest[1]]) > 15 : false;
+    const isPerfectCul = fitSubtype === "PERFECT";
     if (culCompeting23) {
-      risk = "Die kulturelle Grundrichtung stimmt. Da die beiden Nebenbereiche fast gleich stark sind, kann die gelebte Kultur situativ schwanken – mal dynamischer, mal empathischer, mal strukturierter. Das erzeugt ein wechselhaftes Arbeitsumfeld.";
+      risk = "Die kulturelle Grundrichtung ist stimmig. Da die beiden Nebenbereiche fast gleich stark sind, kann die gelebte Kultur situativ schwanken – mal dynamischer, mal empathischer, mal strukturierter. Das erzeugt ein wechselhaftes Arbeitsumfeld.";
     } else {
-      risk = cMaxGap >= 8
-        ? "Die kulturelle Grundrichtung stimmt. Die Gewichtung der Nebenbereiche weicht jedoch ab – dadurch kann sich die gelebte Kultur in einzelnen Aspekten von der Stellenerwartung unterscheiden."
-        : "Kulturwirkung passt zur Stellenanforderung. Die Gewichtung stimmt überein.";
+      risk = isPerfectCul
+        ? "Kulturwirkung ist deckungsgleich mit der Stellenanforderung."
+        : "Die kulturelle Grundrichtung ist stimmig. Die Gewichtung der Nebenbereiche ist jedoch nicht deckungsgleich – dadurch kann sich die gelebte Kultur in einzelnen Aspekten von der Stellenerwartung unterscheiden.";
     }
   }
 

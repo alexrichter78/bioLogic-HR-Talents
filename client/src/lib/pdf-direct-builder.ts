@@ -19,7 +19,7 @@ const COMP_SHORT: Record<ComponentKey, string> = {
 function severityLabel(s: Severity) {
   if (s === "critical") return "KRITISCH";
   if (s === "warning") return "MIT ABWEICHUNG";
-  return "WEITGEHEND PASSEND";
+  return "STIMMIG";
 }
 
 type RGB = [number, number, number];
@@ -634,7 +634,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   const rGapLevel = result.gapLevel;
   let rFazit: string;
   if (rFitLabel === "Geeignet") {
-    rFazit = "Die Arbeitsweise der Person passt gut zu den Anforderungen der Rolle. Aufgaben, Entscheidungen und Arbeitsstil stimmen weitgehend überein.";
+    rFazit = "Die Arbeitsweise der Person ist deckungsgleich mit den Anforderungen der Rolle. Aufgaben, Entscheidungen und Arbeitsstil sind stimmig.";
   } else if (rFitLabel === "Bedingt geeignet" && rGapLevel === "gering") {
     rFazit = "Die Grundausrichtung ist ähnlich, jedoch unterscheidet sich die Gewichtung einzelner Arbeitsbereiche. Im Alltag kann das zu erhöhtem Abstimmungsbedarf und höherem Führungsaufwand führen.";
   } else if (rFitLabel === "Bedingt geeignet") {

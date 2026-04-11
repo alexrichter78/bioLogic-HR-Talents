@@ -144,18 +144,33 @@ Nach der Fit-Ermittlung wird ein **FitSubtype** abgeleitet, der die Textgenerier
 
 | FitSubtype | Bedingung | Textliche Wirkung |
 |---|---|---|
-| **PERFECT** | rk === ck + EXACT + maxGap < 8 | "Grundrichtung und Gewichtung passen" |
-| **STRUCTURE_MATCH_INTENSITY_OFF** | rk === ck, aber nicht PERFECT | "Grundlogik stimmt, Gewichtung innerhalb dieser Struktur weicht ab" |
+| **PERFECT** | rk === ck + EXACT + maxGap < 8 | "deckungsgleich mit der Stellenanforderung" |
+| **STRUCTURE_MATCH_INTENSITY_OFF** | rk === ck, aber nicht PERFECT | "in der Grundrichtung stimmig, Gewichtung nicht deckungsgleich" |
 | **PARTIAL_MATCH** | Dual-Dom-Match, balFull, oder SOFT_CONFLICT | Teilweise passend, Abweichungen in einzelnen Bereichen |
 | **MISMATCH** | HARD_CONFLICT mit unterschiedlichen Dominanten | Grundpassung nicht gegeben |
 
-### Auswirkung auf Impact-Areas (rk === ck)
+### Sprachpräzision: PERFECT vs. STRUCTURE_MATCH_INTENSITY_OFF
 
-Wenn **rk === ck** (gleiche Dominante), unterscheiden die Impact-Area-Texte zwischen:
-- **maxGap < 8**: Gewichtung stimmt überein → kurze, bestätigende Texte
-- **maxGap ≥ 8**: Gewichtung weicht ab → differenziertere Texte mit Hinweis auf Feinsteuerung
+Die Texte differenzieren **semantisch**, nicht nur quantitativ:
 
-Dies betrifft: Entscheidungsmuster, Kommunikation, Führungswirkung und Teamkultur.
+| Situation | PERFECT | STRUCTURE_MATCH_INTENSITY_OFF |
+|---|---|---|
+| **Entscheidung** | "ist deckungsgleich mit der Stellenanforderung" | "ist in der Grundrichtung stimmig, Gewichtung nicht deckungsgleich" |
+| **Führung** | "ist deckungsgleich mit der Stellenanforderung" | "ist in der Grundausrichtung stimmig, Gewichtung nicht deckungsgleich" |
+| **Kommunikation** | "ist deckungsgleich mit der Stellenanforderung" | "ist in der Grundrichtung stimmig, Gewichtung nicht deckungsgleich" |
+| **Kultur** | "ist deckungsgleich mit der Stellenanforderung" | "ist stimmig, Gewichtung nicht deckungsgleich" |
+| **Arbeitsweise** | "ist deckungsgleich mit der Stellenanforderung" | "ist in der Grundrichtung stimmig, Gewichtung nicht deckungsgleich" |
+
+### Severity-Labels (Impact-Areas)
+
+| Severity | Label |
+|---|---|
+| ok | **Stimmig** |
+| warning | **Mit Abweichung** |
+| critical | **Kritisch** |
+
+**Verboten** in Texten bei `STRUCTURE_MATCH_INTENSITY_OFF`: "passt", "stimmt überein", "passt grundsätzlich".
+Diese Formulierungen sind ausschliesslich für `PERFECT` reserviert.
 
 ---
 
