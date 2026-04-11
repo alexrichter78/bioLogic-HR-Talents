@@ -1,0 +1,156 @@
+Matchcheck Text Logic Replit
+· typescript
+/*
+  matchcheck_text_logic_replit.ts
+  --------------------------------
+  Textlogik für MatchCheck-Berichte
+
+
+  Ziel:
+  - 13 Strukturvarianten vollständig abbilden
+  - gleiche Berichtsstruktur beibehalten
+  - Texte sauber an die Fit-Engine koppeln
+  - Widersprüche zwischen Gesamturteil und Detailtexten vermeiden
+
+
+  Erwartung:
+  - Deine Core-Engine berechnet fitLabel, fitSubtype, Varianten, Diffs usw.
+  - Dieses Modul erzeugt darauf basierend die Berichtstexte.
+
+
+  Wichtige Regel:
+  - Teiltexte dürfen nie positiver klingen als das Gesamtfit.
+*/
+
+
+export type TriadKey = 'I' | 'N' | 'A';
+export type FitLabel = 'Geeignet' | 'Bedingt geeignet' | 'Nicht geeignet';
+export type FitSubtype =
+  | 'PERFECT'
+  | 'STRUCTURE_MATCH_INTENSITY_OFF'
+  | 'PARTIAL_MATCH'
+  | 'MISMATCH';
+export type StructureRelationType = 'EXACT' | 'SOFT_CONFLICT' | 'HARD_CONFLICT';
+export type VariantType = 'ALL_EQUAL' | 'TOP_PAIR' | 'BOTTOM_PAIR' | 'ORDER';
+export type Severity = 'ok' | 'warning' | 'critical';
+
+
+export interface TriadProfile {
+  I: number;
+  N: number;
+  A: number;
+}
+
+
+export interface DominanceMeta {
+  sorted: Array<{ key: TriadKey; value: number }>;
+  top: TriadKey;
+  second: TriadKey;
+  third: TriadKey;
+  gap1: number;
+  gap2: number;
+  spread: number;
+}
+
+
+export interface VariantInfo {
+  type: VariantType;
+  code: string;
+  dominance: DominanceMeta;
+}
+
+
+export interface PairRelations {
+  I_N: -1 | 0 | 1;
+  I_A: -1 | 0 | 1;
+  N_A: -1 | 0 | 1;
+}
+
+
+export interface StructureRelation {
+  type: StructureRelationType;
+  mismatchCount: number;
+  directFlip: boolean;
+  mismatches: Array<{ pair: keyof PairRelations; soll: -1 | 0 | 1; ist: -1 | 0 | 1 }>;
+  reason: string;
+}
+
+
+export interface ImpactAreaText {
+  key: 'decision' | 'workstyle' | 'leadership' | 'communication' | 'culture';
+
+Ja — das Script ist jetzt erstellt.
+
+Es ist so aufgebaut, dass:
+
+alle 13 Varianten abgebildet bleiben
+ALL_EQUAL
+TOP_PAIR
+BOTTOM_PAIR
+ORDER
+die Texte sauber nach 4 Fit-Subtypen unterscheiden:
+PERFECT
+STRUCTURE_MATCH_INTENSITY_OFF
+PARTIAL_MATCH
+MISMATCH
+die Berichtsstruktur gleich bleiben kann:
+Summary
+Management Summary
+Warum dieses Ergebnis
+Risiken
+Impact Areas
+Stress
+Entwicklung
+Integrationsplan
+Finaltext
+und vor allem:
+Teiltexte nicht positiver klingen als das Gesamtfit
+Doppeldominanz-Fälle mit schwächerer 3. Komponente sauber erklärt werden
+
+Die Datei liegt jetzt im Canvas als:
+
+matchcheck_text_logic_replit.ts
+
+Was dieses Script konkret löst
+
+Gerade dein kritischer Fall wird jetzt richtig beschrieben:
+
+Nicht mehr:
+
+„passt grundsätzlich“
+
+sondern:
+
+„Die Grundlogik stimmt, die Gewichtung innerhalb dieser Struktur weicht jedoch ab.“
+
+Und bei Doppeldominanz mit schwächerer 3. Komponente:
+
+„Die gleiche Doppeldominanz ist vorhanden. Der dritte Bereich ist im Istprofil jedoch schwächer ausgeprägt. Dadurch wirken die beiden dominanten Schwerpunkte im Alltag intensiver und weniger ausbalanciert.“
+
+Genau das hattest du ja gesucht.
+
+Wichtig für Replit
+
+Dieses Script ist die Text-Engine, nicht die komplette Fit-Berechnung.
+Es erwartet, dass deine Core-Engine schon liefert:
+
+fitLabel
+fitSubtype
+structureRelation
+sollVariant
+istVariant
+diffs
+maxDiff
+usw.
+
+Dann erzeugt dieses Modul die sauberen Berichtstexte.
+
+Mein nächster sinnvoller Schritt
+
+Jetzt solltest du als Nächstes die Anbindung an deine bestehende computeSollIst() machen, damit:
+
+deine Engine rechnet
+dieses Modul textet
+und dein Bericht überall konsistent bleibt
+
+Wenn du willst, schreibe ich dir jetzt direkt die Verkabelung zwischen Core-Engine und diesem Textmodul für Replit.

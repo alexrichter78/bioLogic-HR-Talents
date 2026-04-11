@@ -5,6 +5,20 @@ export type FitRating = "GEEIGNET" | "BEDINGT" | "NICHT_GEEIGNET";
 export type Severity = "ok" | "warning" | "critical";
 export type FuehrungsArt = "keine" | "fachlich" | "disziplinarisch";
 
+export type FitSubtype =
+  | "PERFECT"
+  | "STRUCTURE_MATCH_INTENSITY_OFF"
+  | "PARTIAL_MATCH"
+  | "MISMATCH";
+
+export type StructureRelationType = "EXACT" | "SOFT_CONFLICT" | "HARD_CONFLICT";
+
+export interface StructureRelation {
+  type: StructureRelationType;
+  mismatchCount: number;
+  directFlip: boolean;
+}
+
 export type ConstellationType =
   | "H_DOM" | "B_DOM" | "S_DOM"
   | "H_GT_B" | "H_GT_S" | "B_GT_H" | "B_GT_S" | "S_GT_H" | "S_GT_B"
@@ -68,6 +82,8 @@ export type SollIstResult = {
   gapLevel: "gering" | "mittel" | "hoch";
   fitRating: FitRating;
   fitLabel: string;
+  fitSubtype: FitSubtype;
+  structureRelation: StructureRelation;
   fitColor: string;
   controlIntensity: "gering" | "mittel" | "hoch";
   summaryText: string;
@@ -151,6 +167,54 @@ type DualPair = "impulsiv_intuitiv" | "impulsiv_analytisch" | "intuitiv_analytis
 const DUAL_PAIR_ORDER: ComponentKey[] = ["impulsiv", "intuitiv", "analytisch"];
 function dualPairKey(k1: ComponentKey, k2: ComponentKey): DualPair {
   return [k1, k2].sort((a, b) => DUAL_PAIR_ORDER.indexOf(a) - DUAL_PAIR_ORDER.indexOf(b)).join("_") as DualPair;
+}
+
+function pairSign(a: number, b: number): -1 | 0 | 1 {
+  const d = a - b;
+  if (Math.abs(d) <= 5) return 0;
+  return d > 0 ? 1 : -1;
+}
+
+export function computeStructureRelation(rt: Triad, ct: Triad): StructureRelation {
+  const pairs = [
+    { soll: pairSign(rt.impulsiv, rt.intuitiv), ist: pairSign(ct.impulsiv, ct.intuitiv) },
+    { soll: pairSign(rt.impulsiv, rt.analytisch), ist: pairSign(ct.impulsiv, ct.analytisch) },
+    { soll: pairSign(rt.intuitiv, rt.analytisch), ist: pairSign(ct.intuitiv, ct.analytisch) },
+  ];
+
+  let mismatchCount = 0;
+  let directFlip = false;
+  for (const p of pairs) {
+    if (p.soll !== p.ist) {
+      mismatchCount++;
+      if (p.soll !== 0 && p.ist !== 0 && p.soll === -p.ist) directFlip = true;
+    }
+  }
+
+  const type: StructureRelationType =
+    mismatchCount === 0 ? "EXACT"
+    : (mismatchCount === 1 && !directFlip) ? "SOFT_CONFLICT"
+    : "HARD_CONFLICT";
+
+  return { type, mismatchCount, directFlip };
+}
+
+export function deriveFitSubtype(
+  rk: ComponentKey, ck: ComponentKey,
+  structRel: StructureRelation,
+  maxGap: number,
+  candDualMatchesRole: boolean,
+  candIsBalFull: boolean,
+  roleIsBalFull: boolean,
+): FitSubtype {
+  if (rk === ck) {
+    if (structRel.type === "EXACT" && maxGap < 8) return "PERFECT";
+    return "STRUCTURE_MATCH_INTENSITY_OFF";
+  }
+  if (candDualMatchesRole || candIsBalFull || roleIsBalFull || structRel.type === "SOFT_CONFLICT") {
+    return "PARTIAL_MATCH";
+  }
+  return "MISMATCH";
 }
 
 const dualCandDecision: Record<DualPair, string> = {
@@ -314,14 +378,19 @@ export function computeSollIst(
 
   const rConst = detectConstellation(rt);
   const cConst = detectConstellation(ct);
-
-  const summaryText = buildSummary(roleName, cn, fitLabel, rk, ck, gapLevel, rt, ct, rConst, cConst);
-  const executiveBullets = buildExecutiveBullets(rk, ck, gapLevel, fitLabel, cn, rt, ct, isDualDomRole, rk2);
-  const constellationRisks = buildConstellationRisks(rk, ck, gapLevel, rt, ct);
-  const dominanceShiftText = buildDominanceShift(roleName, cn, rk, ck, rt, ct, rConst, cConst);
-  const stressBehavior = buildStressBehavior(cConst, ct, cn, gapLevel);
   const roleIsBalFull = rDom.gap1 <= 5 && rDom.gap2 <= 5;
-  const impactAreas = buildImpactAreas(rk, ck, rt, ct, cn, fuehrungsArt, roleIsBalFull, fitLabel);
+
+  const structureRelation = computeStructureRelation(rt, ct);
+  const maxGapVal = Math.max(Math.abs(rt.impulsiv - ct.impulsiv), Math.abs(rt.intuitiv - ct.intuitiv), Math.abs(rt.analytisch - ct.analytisch));
+  const candDualMatchesRoleMain = candIsDualDomMain && (rk === ck || rk === ck2Main);
+  const fitSubtype = deriveFitSubtype(rk, ck, structureRelation, maxGapVal, candDualMatchesRoleMain, candIsBalFullMain, roleIsBalFull);
+
+  const summaryText = buildSummary(roleName, cn, fitLabel, rk, ck, gapLevel, rt, ct, rConst, cConst, fitSubtype);
+  const executiveBullets = buildExecutiveBullets(rk, ck, gapLevel, fitLabel, cn, rt, ct, isDualDomRole, rk2, fitSubtype);
+  const constellationRisks = buildConstellationRisks(rk, ck, gapLevel, rt, ct, fitSubtype);
+  const dominanceShiftText = buildDominanceShift(roleName, cn, rk, ck, rt, ct, rConst, cConst, fitSubtype);
+  const stressBehavior = buildStressBehavior(cConst, ct, cn, gapLevel);
+  const impactAreas = buildImpactAreas(rk, ck, rt, ct, cn, fuehrungsArt, roleIsBalFull, fitLabel, fitSubtype);
   const riskTimeline = buildRiskTimeline(roleName, cn, rk, ck, gapLevel, roleIsBalFull, rt, ct);
   const fitGap: "gering" | "mittel" | "hoch" = fitRating === "NICHT_GEEIGNET" ? "hoch"
     : fitRating === "BEDINGT" ? "mittel"
@@ -329,7 +398,7 @@ export function computeSollIst(
   const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildDevelopment(fitGap, rk, ck, controlIntensity, cn, isDualDomRole, rk2, roleIsBalFull, ct, candIsDualDomMain, ck2Main);
   const actions = buildActions(rk, ck, gapLevel, controlIntensity, roleIsBalFull, ct);
   const integrationsplan = buildIntegrationsplan(roleName, cn, fitLabel, rk, ck, gapLevel, controlIntensity, fuehrungsArt, rt, ct, roleIsBalFull);
-  const finalText = buildFinal(roleName, cn, fitLabel, controlIntensity, rk, ck, fuehrungsArt, isDualDomRole, rk2, roleIsBalFull, ct);
+  const finalText = buildFinal(roleName, cn, fitLabel, controlIntensity, rk, ck, fuehrungsArt, isDualDomRole, rk2, roleIsBalFull, ct, fitSubtype);
 
   return {
     roleName,
@@ -344,7 +413,7 @@ export function computeSollIst(
     candIsEqualDist: cDom.mode === "BAL_FULL",
     candIsDualDom: cDom.mode !== "BAL_FULL" && cDom.gap1 <= 5,
     roleDom2Key: rDom.top2.key,
-    roleIsBalFull: rDom.gap1 <= 5 && rDom.gap2 <= 5,
+    roleIsBalFull,
     roleIsDualDom: isDualDomRole,
     roleConstellation: rConst,
     candConstellation: cConst,
@@ -354,6 +423,8 @@ export function computeSollIst(
     gapLevel,
     fitRating,
     fitLabel,
+    fitSubtype,
+    structureRelation,
     fitColor,
     controlIntensity,
     summaryText,
@@ -415,12 +486,14 @@ function dualRoleDesc(rk: ComponentKey, rk2: ComponentKey): string {
   return `${compShort(rk)} und ${compShort(rk2)} gleichermassen`;
 }
 
-function buildExecutiveBullets(rk: ComponentKey, ck: ComponentKey, gapLevel: string, fitLabel: string, cand: string, rt: Triad, ct: Triad, isDualDomRole = false, rk2?: ComponentKey): string[] {
+function buildExecutiveBullets(rk: ComponentKey, ck: ComponentKey, gapLevel: string, fitLabel: string, cand: string, rt: Triad, ct: Triad, isDualDomRole = false, rk2?: ComponentKey, fitSubtype: FitSubtype = "MISMATCH"): string[] {
   const bullets: string[] = [];
   const roleDesc = isDualDomRole && rk2 ? dualRoleDesc(rk, rk2) : compDesc(rk);
 
-  if (rk === ck) {
-    bullets.push(`Die Stelle erfordert ${roleDesc}. ${Subj(cand)} bringt dieselbe Arbeitsweise mit.`);
+  if (fitSubtype === "PERFECT") {
+    bullets.push(`Die Stelle erfordert ${roleDesc}. ${Subj(cand)} bringt dieselbe Arbeitsweise mit. Die Gewichtung passt.`);
+  } else if (fitSubtype === "STRUCTURE_MATCH_INTENSITY_OFF") {
+    bullets.push(`Die Stelle erfordert ${roleDesc}. ${Subj(cand)} arbeitet in dieselbe Richtung, die Gewichtung der Nebenbereiche weicht jedoch ab.`);
   } else if (isDualDomRole && rk2 && (ck === rk || ck === rk2)) {
     bullets.push(`Die Stelle erfordert ${roleDesc}. ${Subj(cand)} bringt ${compDesc(ck)} als Schwerpunkt mit – deckt damit einen der beiden Kernbereiche ab.`);
   } else {
@@ -450,13 +523,25 @@ function buildExecutiveBullets(rk: ComponentKey, ck: ComponentKey, gapLevel: str
   return bullets;
 }
 
-function buildConstellationRisks(rk: ComponentKey, ck: ComponentKey, gapLevel: string, rt: Triad, ct: Triad): string[] {
-  if (rk === ck && gapLevel === "gering") return [];
+function buildConstellationRisks(rk: ComponentKey, ck: ComponentKey, gapLevel: string, rt: Triad, ct: Triad, fitSubtype: FitSubtype = "MISMATCH"): string[] {
+  if (fitSubtype === "PERFECT") return [];
 
   const gapI = Math.abs(rt.impulsiv - ct.impulsiv);
   const gapN = Math.abs(rt.intuitiv - ct.intuitiv);
   const gapA = Math.abs(rt.analytisch - ct.analytisch);
   const risks: string[] = [];
+
+  if (fitSubtype === "STRUCTURE_MATCH_INTENSITY_OFF") {
+    risks.push("Grundrichtung stimmt, aber die Gewichtung innerhalb dieser Struktur weicht ab");
+    if (gapA >= 8) risks.push("Unterschiedliches Mass an Strukturorientierung erfordert Abstimmung");
+    if (gapI >= 8) risks.push("Unterschiedliches Umsetzungstempo erfordert klare Erwartungen");
+    if (gapN >= 8) risks.push("Unterschiedlicher Kommunikationsstil erfordert gezielte Führung");
+    if (gapA < 8 && gapI < 8 && gapN < 8) {
+      risks.push("Feinabstimmung in den Nebenbereichen nötig");
+      risks.push("Regelmässiges Feedback sichert die Passung langfristig");
+    }
+    return risks;
+  }
 
   if (rk === "analytisch" && ck === "impulsiv") {
     risks.push("Entscheidungen werden schneller getroffen als Prozesse geprüft werden");
@@ -482,54 +567,60 @@ function buildConstellationRisks(rk: ComponentKey, ck: ComponentKey, gapLevel: s
     risks.push("Zwischenmenschliche Wirkung tritt hinter formale Prozesse zurück");
     risks.push("Teamdynamik leidet unter zu sachlicher Kommunikation");
     risks.push("Persönliche Ansprache muss aktiv eingefordert werden");
-  } else if (rk === ck) {
-    if (gapI >= 10 || gapN >= 10 || gapA >= 10) {
-      risks.push("Grundrichtung stimmt, aber die Gewichtung der Nebenbereiche weicht ab");
-      if (gapA >= 10) risks.push("Unterschiedliches Mass an Strukturorientierung erfordert Abstimmung");
-      if (gapI >= 10) risks.push("Unterschiedliches Umsetzungstempo erfordert klare Erwartungen");
-      if (gapN >= 10) risks.push("Unterschiedlicher Kommunikationsstil erfordert gezielte Führung");
-    } else {
-      risks.push("Feinabstimmung in den Nebenbereichen nötig");
-      risks.push("Regelmässiges Feedback sichert die Passung langfristig");
-    }
   }
 
   return risks;
 }
 
-function buildSummary(role: string, cand: string, fit: string, rk: ComponentKey, ck: ComponentKey, gap: string, rt: Triad, ct: Triad, rConst: ConstellationType, cConst: ConstellationType): string {
+function buildSummary(role: string, cand: string, fit: string, rk: ComponentKey, ck: ComponentKey, gap: string, rt: Triad, ct: Triad, rConst: ConstellationType, cConst: ConstellationType, fitSubtype: FitSubtype = "MISMATCH"): string {
   const s = Subj(cand);
-  if (rk === ck && gap === "gering") {
+
+  if (fitSubtype === "PERFECT") {
     return `${constellationRoleText(rConst)} ${s} arbeitet nach demselben Grundprinzip. Arbeitsweise und Prioritäten passen zur Stelle ${role}. Kleinere Unterschiede in der Gewichtung der Nebenbereiche sind im Alltag gut handhabbar.`;
   }
 
-  if (rk === ck && gap === "hoch") {
-    return `${constellationRoleText(rConst)} ${s} arbeitet in dieselbe Richtung, aber die Gewichtung der Nebenbereiche weicht erheblich ab. Im Alltag führt das zu Reibung bei Tempo, Kommunikation und Arbeitsstruktur. Der Führungsaufwand ist hoch.`;
+  if (fitSubtype === "STRUCTURE_MATCH_INTENSITY_OFF") {
+    if (gap === "hoch") {
+      return `${constellationRoleText(rConst)} ${s} arbeitet in dieselbe Richtung, aber die Gewichtung der Nebenbereiche weicht erheblich ab. Im Alltag führt das zu Reibung bei Tempo, Kommunikation und Arbeitsstruktur. Der Führungsaufwand ist hoch.`;
+    }
+    return `${constellationRoleText(rConst)} ${s} arbeitet in dieselbe Grundrichtung. Die Gewichtung innerhalb dieser Struktur weicht jedoch ab. ${constellationCandText(cConst, cand)} Im Alltag zeigen sich die Unterschiede bei Tempo, Kommunikation oder Arbeitsstruktur. Gezielte Führung gleicht das aus.`;
   }
 
-  if (gap === "hoch") {
-    return `${constellationRoleText(rConst)} ${constellationCandText(cConst, cand)} Stelle und ${subj(cand)} arbeiten nach unterschiedlichen Prinzipien. Im Alltag führt das zu Reibung bei Entscheidungen, Arbeitsweise und Zusammenarbeit.`;
+  if (fitSubtype === "MISMATCH") {
+    if (gap === "hoch") {
+      return `${constellationRoleText(rConst)} ${constellationCandText(cConst, cand)} Stelle und ${subj(cand)} arbeiten nach unterschiedlichen Prinzipien. Im Alltag führt das zu Reibung bei Entscheidungen, Arbeitsweise und Zusammenarbeit.`;
+    }
+    return `${constellationRoleText(rConst)} ${s} bringt eine andere Arbeitslogik mit als die Stelle ${role} erfordert. ${constellationCandText(cConst, cand)} Die Unterschiede sind deutlich und erfordern gezielte Führung und klare Erwartungen.`;
   }
 
-  return `${constellationRoleText(rConst)} ${s} bringt eine andere Arbeitslogik mit als die Stelle ${role} erfordert. ${constellationCandText(cConst, cand)} Die Unterschiede sind erkennbar, lassen sich aber bei gezielter Führung und klaren Erwartungen ausgleichen.`;
+  return `${constellationRoleText(rConst)} ${s} bringt eine teilweise passende Arbeitslogik mit. ${constellationCandText(cConst, cand)} Die Unterschiede sind erkennbar, lassen sich aber bei gezielter Führung und klaren Erwartungen ausgleichen.`;
 }
 
-function buildDominanceShift(role: string, cand: string, rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, rConst: ConstellationType, cConst: ConstellationType): string {
+function buildDominanceShift(role: string, cand: string, rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, rConst: ConstellationType, cConst: ConstellationType, fitSubtype: FitSubtype = "MISMATCH"): string {
   const s = Subj(cand);
-  if (rk === ck) {
-    if (rConst === cConst) {
-      return `${constellationRoleText(rConst)} ${s} setzt auf dieselbe Arbeitslogik. Die Grundrichtung passt. Einzelne Situationen werden aber unterschiedlich angegangen.`;
+
+  if (fitSubtype === "PERFECT") {
+    return `${constellationRoleText(rConst)} ${s} setzt auf dieselbe Arbeitslogik. Die Grundrichtung und Gewichtung passen. Einzelne Situationen werden ähnlich angegangen.`;
+  }
+
+  if (fitSubtype === "STRUCTURE_MATCH_INTENSITY_OFF") {
+    const gapI = Math.abs(rt.impulsiv - ct.impulsiv);
+    const gapN = Math.abs(rt.intuitiv - ct.intuitiv);
+    const gapA = Math.abs(rt.analytisch - ct.analytisch);
+    const maxGapKey = gapI >= gapN && gapI >= gapA ? "impulsiv" : gapN >= gapA ? "intuitiv" : "analytisch";
+    const abweichung = maxGapKey === "impulsiv" ? "Umsetzungstempo" : maxGapKey === "intuitiv" ? "Kommunikation und Abstimmung" : "analytische Tiefe und Struktur";
+    return `${constellationRoleText(rConst)} ${s} arbeitet in dieselbe Grundrichtung, gewichtet aber die Nebenbereiche anders: ${constellationCandText(cConst, cand)} Die grösste Abweichung zeigt sich bei ${abweichung}. Das kann im Arbeitsalltag zu unterschiedlichem Verhalten führen.`;
+  }
+
+  if (rk !== ck) {
+    const isDoubleDom = cConst.includes("NEAR") || cConst === "BALANCED";
+    if (isDoubleDom) {
+      return `${constellationRoleText(rConst)} ${s} bringt jedoch eine andere Arbeitsweise mit: ${constellationCandText(cConst, cand)} Da ${subj(cand)} zwischen zwei Ausrichtungen wechselt, ist das Verhalten weniger vorhersehbar. Klare Rahmenvorgaben und regelmässiges Feedback sind besonders wichtig.`;
     }
-    return `${constellationRoleText(rConst)} ${s} arbeitet in dieselbe Richtung, gewichtet aber anders: ${constellationCandText(cConst, cand)} Das kann in bestimmten Situationen zu unterschiedlichem Verhalten führen.`;
+    return `${constellationRoleText(rConst)} ${s} arbeitet aber anders: ${constellationCandText(cConst, cand)} Dadurch verschiebt sich im Alltag der Schwerpunkt weg von ${compShort(rk)} hin zu ${compShort(ck)}.`;
   }
 
-  const isDoubleDom = cConst.includes("NEAR") || cConst === "BALANCED";
-
-  if (isDoubleDom) {
-    return `${constellationRoleText(rConst)} ${s} bringt jedoch eine andere Arbeitsweise mit: ${constellationCandText(cConst, cand)} Da ${subj(cand)} zwischen zwei Ausrichtungen wechselt, ist das Verhalten weniger vorhersehbar. Klare Rahmenvorgaben und regelmässiges Feedback sind besonders wichtig.`;
-  }
-
-  return `${constellationRoleText(rConst)} ${s} arbeitet aber anders: ${constellationCandText(cConst, cand)} Dadurch verschiebt sich im Alltag der Schwerpunkt weg von ${compShort(rk)} hin zu ${compShort(ck)}.`;
+  return `${constellationRoleText(rConst)} ${s} arbeitet in dieselbe Richtung, gewichtet aber anders: ${constellationCandText(cConst, cand)} Das kann in bestimmten Situationen zu unterschiedlichem Verhalten führen.`;
 }
 
 function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string, gapLevel: string): StressBehavior {
@@ -584,7 +675,7 @@ function buildStressBehavior(cConst: ConstellationType, ct: Triad, cand: string,
   return { controlledPressure, uncontrolledStress };
 }
 
-function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, cand: string, fuehrungsArt: FuehrungsArt, roleIsBalFull = false, fitLabel = ""): ImpactArea[] {
+function buildImpactAreas(rk: ComponentKey, ck: ComponentKey, rt: Triad, ct: Triad, cand: string, fuehrungsArt: FuehrungsArt, roleIsBalFull = false, fitLabel = "", fitSubtype: FitSubtype = "MISMATCH"): ImpactArea[] {
   const gapI = Math.abs(rt.impulsiv - ct.impulsiv);
   const gapN = Math.abs(rt.intuitiv - ct.intuitiv);
   const gapA = Math.abs(rt.analytisch - ct.analytisch);
@@ -720,33 +811,39 @@ function buildDecisionImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, g
   if (rk === ck) {
     if (rk === "analytisch") {
       roleNeed = "Sorgfältige, prüforientierte Entscheidungen. Optionen abwägen, Risiken prüfen, erst dann handeln.";
-      candidatePattern = `${s} arbeitet ebenfalls analytisch und prüft Entscheidungen gründlich. Der Grundansatz stimmt überein.`;
+      candidatePattern = maxGap >= 8
+        ? `${s} arbeitet ebenfalls analytisch und prüft Entscheidungen gründlich. Die Grundrichtung stimmt, die Gewichtung der Nebenbereiche weicht jedoch ab.`
+        : `${s} arbeitet ebenfalls analytisch und prüft Entscheidungen gründlich. Der Grundansatz stimmt überein.`;
       if (decCompeting23) {
         risk = "Die Entscheidungslogik passt in der Grundrichtung. Da die beiden Nebenbereiche fast gleich stark sind, kann unter Druck die Ausweichreaktion wechselnd ausfallen – mal handlungsorientierter, mal abstimmungsorientierter.";
       } else {
         risk = maxGap >= 8
-          ? "Die Entscheidungslogik passt in der Grundrichtung. Unterschiede in der Gewichtung der Nebenbereiche können aber dazu führen, dass Tempo oder Kommunikation unterschiedlich priorisiert werden."
-          : "Entscheidungslogik passt zur Stellenanforderung. Die Art, wie Entscheidungen getroffen werden, stimmt mit den Erwartungen überein.";
+          ? "Die Entscheidungslogik passt in der Grundrichtung. Die Gewichtung der Nebenbereiche weicht ab – Tempo oder Kommunikation werden unterschiedlich priorisiert. Klare Erwartungen setzen."
+          : "Entscheidungslogik passt zur Stellenanforderung. Die Gewichtung stimmt überein.";
       }
     } else if (rk === "impulsiv") {
       roleNeed = "Schnelle, ergebnisorientierte Entscheidungen. Klare Richtung und direkte Umsetzung vor langer Prüfung.";
-      candidatePattern = `${s} entscheidet ebenfalls schnell und handlungsorientiert. Die Grunddynamik stimmt.`;
+      candidatePattern = maxGap >= 8
+        ? `${s} entscheidet ebenfalls schnell und handlungsorientiert. Die Grunddynamik stimmt, die Gewichtung der Nebenbereiche weicht jedoch ab.`
+        : `${s} entscheidet ebenfalls schnell und handlungsorientiert. Die Grunddynamik stimmt.`;
       if (decCompeting23) {
         risk = "Die Entscheidungsgeschwindigkeit passt. Da die Nebenbereiche konkurrieren, schwankt die Absicherungsstrategie: Mal wird eher abgestimmt, mal eher geprüft. Das erzeugt wechselndes Verhalten im Detail.";
       } else {
         risk = maxGap >= 8
-          ? "Die Entscheidungsgeschwindigkeit passt. In Nebenbereichen wie Absicherung oder Abstimmung können sich aber unterschiedliche Gewichtungen zeigen."
-          : "Entscheidungslogik passt zur Stellenanforderung. Die Art, wie Entscheidungen getroffen werden, stimmt mit den Erwartungen überein.";
+          ? "Die Entscheidungsgeschwindigkeit passt. Die Gewichtung der Nebenbereiche weicht ab – Absicherung oder Abstimmung werden unterschiedlich priorisiert."
+          : "Entscheidungslogik passt zur Stellenanforderung. Die Gewichtung stimmt überein.";
       }
     } else {
       roleNeed = "Entscheidungen, die Kontext, Zusammenarbeit und zwischenmenschliche Wirkung berücksichtigen. Abstimmung im Team vor Geschwindigkeit.";
-      candidatePattern = `${s} entscheidet ebenfalls kontextbezogen und bezieht das Umfeld aktiv ein. Die Grundhaltung stimmt.`;
+      candidatePattern = maxGap >= 8
+        ? `${s} entscheidet ebenfalls kontextbezogen und bezieht das Umfeld aktiv ein. Die Grundhaltung stimmt, die Gewichtung der Nebenbereiche weicht jedoch ab.`
+        : `${s} entscheidet ebenfalls kontextbezogen und bezieht das Umfeld aktiv ein. Die Grundhaltung stimmt.`;
       if (decCompeting23) {
         risk = "Die Kommunikationsorientierung passt. Da die Nebenbereiche konkurrieren, kann die Abstützung der Entscheidung wechseln – mal faktenbasierter, mal handlungsorientierter.";
       } else {
         risk = maxGap >= 8
-          ? "Die Kommunikationsorientierung passt. In Nebenbereichen wie Strukturklarheit oder Umsetzungstempo können aber Unterschiede auftreten."
-          : "Entscheidungslogik passt zur Stellenanforderung. Die Art, wie Entscheidungen getroffen werden, stimmt mit den Erwartungen überein.";
+          ? "Die Kommunikationsorientierung passt. Die Gewichtung der Nebenbereiche weicht ab – Strukturklarheit oder Umsetzungstempo werden unterschiedlich priorisiert."
+          : "Entscheidungslogik passt zur Stellenanforderung. Die Gewichtung stimmt überein.";
       }
     }
   } else if (rk === "analytisch") {
@@ -1069,8 +1166,8 @@ function buildLeadershipImpact(rk: ComponentKey, ck: ComponentKey, gapI: number,
       risk = "Die Führungsrichtung stimmt. Da die beiden Nebenbereiche fast gleich stark sind, kann der Führungsstil unter Druck wechselnd wirken – situativ direkter oder empathischer. Das Team erlebt die Führung als weniger berechenbar. Regelmässiges Feedback ist besonders wichtig.";
     } else {
       risk = maxGap >= 8
-        ? "Die Führungsrichtung stimmt, aber unterschiedliche Gewichtungen in den Nebenbereichen beeinflussen, wie Orientierung gegeben wird. Regelmässiges Feedback zur Führungswirkung ist ratsam."
-        : "Führungsstil passt zur Stellenanforderung. Die Art, wie Orientierung gegeben wird, stimmt mit den Erwartungen des Teams überein.";
+        ? "Die Führungsrichtung stimmt in der Grundausrichtung. Die Gewichtung der Nebenbereiche weicht jedoch ab – dadurch unterscheidet sich, wie Orientierung gegeben wird. Regelmässiges Feedback zur Führungswirkung ist ratsam."
+        : "Führungsstil passt zur Stellenanforderung. Die Gewichtung stimmt überein.";
     }
   }
 
@@ -1168,8 +1265,8 @@ function buildCommunicationImpact(rk: ComponentKey, ck: ComponentKey, gapI: numb
       risk = "Der Kommunikationsstil passt in der Grundrichtung. Da die beiden Nebenbereiche fast gleich stark sind, wechselt die Kommunikation situativ – mal direkter, mal empathischer, mal sachlicher. Das kann bei Gesprächspartnern unterschiedlich ankommen.";
     } else {
       risk = maxGap >= 8
-        ? "Der Kommunikationsstil passt grundsätzlich. In den Feinheiten gibt es Abweichungen, die im Alltag auffallen können. Gezielte Abstimmung empfohlen."
-        : "Kommunikationsverhalten passt zur Stellenanforderung. Die Art der Kommunikation entspricht dem, was erwartet wird.";
+        ? "Der Kommunikationsstil passt in der Grundrichtung. Die Gewichtung der Nebenbereiche weicht ab – dadurch unterscheidet sich, wie intensiv und in welchem Stil kommuniziert wird. Gezielte Abstimmung empfohlen."
+        : "Kommunikationsverhalten passt zur Stellenanforderung. Die Gewichtung stimmt überein.";
     }
   } else if (rk === "impulsiv" && ck === "intuitiv") {
     risk = commCompeting23
@@ -1328,8 +1425,8 @@ function buildCultureImpact(rk: ComponentKey, ck: ComponentKey, gapI: number, ga
       risk = "Die kulturelle Grundrichtung stimmt. Da die beiden Nebenbereiche fast gleich stark sind, kann die gelebte Kultur situativ schwanken – mal dynamischer, mal empathischer, mal strukturierter. Das erzeugt ein wechselhaftes Arbeitsumfeld.";
     } else {
       risk = cMaxGap >= 8
-        ? "Die kulturelle Grundrichtung stimmt. Da die Nebenbereiche unterschiedlich gewichtet werden, kann sich die gelebte Kultur in einzelnen Aspekten von der Stellenerwartung unterscheiden."
-        : "Kulturwirkung stimmt mit der Stellenanforderung überein. Die Art, wie das Arbeitsumfeld gestaltet wird, passt zu den Erwartungen.";
+        ? "Die kulturelle Grundrichtung stimmt. Die Gewichtung der Nebenbereiche weicht jedoch ab – dadurch kann sich die gelebte Kultur in einzelnen Aspekten von der Stellenerwartung unterscheiden."
+        : "Kulturwirkung passt zur Stellenanforderung. Die Gewichtung stimmt überein.";
     }
   }
 
@@ -1991,7 +2088,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
   ];
 }
 
-function buildFinal(role: string, cand: string, fit: string, control: string, rk: ComponentKey, ck: ComponentKey, fuehrungsArt: FuehrungsArt, isDualDomRole = false, rk2?: ComponentKey, roleIsBalFull = false, ct?: Triad): string {
+function buildFinal(role: string, cand: string, fit: string, control: string, rk: ComponentKey, ck: ComponentKey, fuehrungsArt: FuehrungsArt, isDualDomRole = false, rk2?: ComponentKey, roleIsBalFull = false, ct?: Triad, fitSubtype: FitSubtype = "MISMATCH"): string {
   const leadSuffix = fuehrungsArt === "disziplinarisch"
     ? ` Da die Stelle Führungsverantwortung beinhaltet, wirkt sich die Abweichung auch auf Führungskultur und Teamstabilität aus.`
     : fuehrungsArt === "fachlich"
@@ -2018,10 +2115,22 @@ function buildFinal(role: string, cand: string, fit: string, control: string, rk
 
   const roleDesc = isDualDomRole && rk2 ? dualRoleDesc(rk, rk2) : compDesc(rk);
   if (fit === "Geeignet") {
-    return `Die Stelle ${role} erfordert ${roleDesc}. ${s} bringt diese Arbeitsweise mit. Der Führungsaufwand ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich.`;
+    if (fitSubtype === "PERFECT") {
+      return `Die Stelle ${role} erfordert ${roleDesc}. ${s} bringt diese Arbeitsweise mit. Grundrichtung und Gewichtung passen. Der Führungsaufwand ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich.`;
+    }
+    if (fitSubtype === "STRUCTURE_MATCH_INTENSITY_OFF") {
+      return `Die Stelle ${role} erfordert ${roleDesc}. ${s} arbeitet in dieselbe Richtung, die Gewichtung der Nebenbereiche weicht jedoch ab. Der Führungsaufwand ist ${control}. Mit gezielter Feinsteuerung ist eine stabile Besetzung wahrscheinlich.`;
+    }
+    return `Die Stelle ${role} erfordert ${roleDesc}. ${s} bringt eine teilweise passende Arbeitsweise mit. Der Führungsaufwand ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich.`;
   }
   if (fit === "Bedingt geeignet") {
+    if (fitSubtype === "STRUCTURE_MATCH_INTENSITY_OFF") {
+      return `Die Stelle ${role} erfordert ${roleDesc}. ${s} arbeitet in dieselbe Richtung, doch die Gewichtung der Nebenbereiche weicht deutlich ab. Mit gezielter Führung und klarer Struktur lässt sich die Zusammenarbeit stabilisieren. Der Führungsaufwand ist ${control}.${leadSuffix}`;
+    }
     return `Die Stelle ${role} erfordert ${roleDesc}. ${s} weicht in einzelnen Bereichen von der Stellenanforderung ab. Mit gezielter Führung und klarer Struktur lässt sich die Zusammenarbeit stabilisieren. Der Führungsaufwand ist ${control}.${leadSuffix}`;
+  }
+  if (fitSubtype === "STRUCTURE_MATCH_INTENSITY_OFF") {
+    return `Die Stelle ${role} erfordert ${roleDesc}. ${s} arbeitet zwar in dieselbe Richtung, die Gewichtung weicht jedoch so stark ab, dass eine stabile Besetzung nur mit dauerhaft erhöhtem Führungsaufwand möglich wäre.${leadSuffix}`;
   }
   return `Die Stelle ${role} erfordert einen Schwerpunkt auf ${roleDesc}. ${s} ist stark auf ${compDesc(ck)} ausgerichtet. Die Grundpassung ist damit nicht gegeben. Eine stabile Besetzung wäre nur mit dauerhaft erhöhtem Führungsaufwand möglich.${leadSuffix}`;
 }

@@ -1,0 +1,197 @@
+Matchcheck Integration Replit
+· typescript
+/*
+    title: result.texts.development.headline,
+    label: result.texts.development.label,
+    level: result.texts.development.level,
+    text: result.texts.development.text,
+  };
+}
+
+
+export function getImpactCards(result: UnifiedMatchcheckResult) {
+  return result.texts.impactAreas.map((area) => ({
+    key: area.key,
+    title: area.title,
+    status: area.label,
+    severity: area.severity,
+    roleNeed: area.roleNeed,
+    candidatePattern: area.candidatePattern,
+    interpretation: area.interpretation,
+  }));
+}
+
+
+/*
+  -------------------------------------------------
+  DEBUG-HILFE FÜR REPLIT
+  -------------------------------------------------
+*/
+
+
+export function printMatchcheckDebug(result: UnifiedMatchcheckResult): void {
+  console.log('=== MATCHCHECK DEBUG START ===');
+  console.log('fitLabel:', result.fitLabel);
+  console.log('fitSubtype:', result.fitSubtype);
+  console.log('fitColor:', result.fitColor);
+  console.log('structureRelation:', result.structureRelation);
+  console.log('sollVariant:', result.sollVariant.code);
+  console.log('istVariant:', result.istVariant.code);
+  console.log('diffs:', result.diffs);
+  console.log('maxDiff:', result.maxDiff);
+  console.log('totalGap:', result.totalGap);
+  console.log('externalKo:', result.externalKo);
+  console.log('baseControl:', result.baseControl);
+  console.log('effectiveControl:', result.effectiveControl);
+  console.log('summary:', result.texts.summaryTexts.summary);
+  console.log('managementSummary:', result.texts.summaryTexts.managementSummary);
+  console.log('whyResult:', result.texts.summaryTexts.whyResult);
+  console.log('impactAreas:', result.texts.impactAreas);
+  console.log('stress:', result.texts.stress);
+  console.log('development:', result.texts.development);
+  console.log('integrationPlan:', result.texts.integrationPlan);
+  console.log('=== MATCHCHECK DEBUG END ===');
+}
+
+
+/*
+  -------------------------------------------------
+  BEISPIEL FÜR REPLIT / NODE
+  -------------------------------------------------
+*/
+if (require.main === module) {
+  const result = computeUnifiedMatchcheck({
+    roleName: 'Trader',
+    candName: 'Max Mustermann',
+    roleProfile: { I: 37, N: 38, A: 25 },
+    candProfile: { I: 41, N: 40, A: 19 },
+    fuehrungsArt: 'disziplinarisch',
+  });
+
+
+  printMatchcheckDebug(result);
+
+
+  console.log('\n=== UI BADGE ===');
+  console.log(getUiBadge(result));
+
+
+  console.log('\n=== IMPACT CARDS ===');
+  console.log(JSON.stringify(getImpactCards(result), null, 2));
+}
+
+
+
+Perfekt — die Verkabelung ist jetzt auch erstellt.
+
+Es gibt jetzt drei Bausteine:
+
+1. Core-Engine
+
+matchcheck_engine_replit.ts
+
+2. Text-Engine
+
+matchcheck_text_logic_replit.ts
+
+3. Integration / zentraler Einstieg
+
+matchcheck_integration_replit.ts
+
+Was die neue Integrationsdatei macht
+
+Sie sorgt dafür, dass du in Replit nur noch eine zentrale Funktion aufrufst:
+
+computeUnifiedMatchcheck(...)
+
+Diese Funktion:
+
+ruft zuerst die Fit-Berechnung auf
+leitet daraus automatisch den FitSubtype ab
+gibt die Daten an die Text-Engine
+liefert dir ein einheitliches Ergebnisobjekt für die UI
+Der wichtigste Vorteil
+
+Damit hast du jetzt endlich:
+
+ein Fit-Ergebnis
+eine Textlogik
+eine UI-Quelle
+
+Und genau dadurch verschwinden die Widersprüche wie:
+
+oben gelb
+innen fast alles grün
+Leser versteht das Ergebnis nicht
+Was jetzt im Ergebnis steckt
+
+Das Ergebnisobjekt enthält jetzt:
+
+fitLabel
+fitSubtype
+structureRelation
+sollVariant
+istVariant
+diffs
+maxDiff
+texts.summaryTexts
+texts.impactAreas
+texts.stress
+texts.development
+texts.integrationPlan
+Zusätzliche Helfer für die UI
+
+Ich habe dir auch direkt Helfer eingebaut:
+
+Badge für die Oberfläche
+getUiBadge(result)
+Entwicklungsausgabe
+getDevelopmentDisplay(result)
+Karten für die Impact Areas
+getImpactCards(result)
+Debug-Ausgabe
+printMatchcheckDebug(result)
+So solltest du es in Replit verwenden
+Zentraler Aufruf
+const result = computeUnifiedMatchcheck({
+  roleName: 'Trader',
+  candName: 'Max Mustermann',
+  roleProfile: { I: 37, N: 38, A: 25 },
+  candProfile: { I: 41, N: 40, A: 19 },
+  fuehrungsArt: 'disziplinarisch',
+});
+Für den Header / Badge
+const badge = getUiBadge(result);
+Für die Bereichskarten
+const impactCards = getImpactCards(result);
+Für Debugging
+printMatchcheckDebug(result);
+Wichtig für deine UI
+
+Ab jetzt sollte deine Seite nicht mehr selbst interpretieren:
+
+nicht aus development
+nicht aus control
+nicht aus alten Variantencodes
+
+sondern nur noch aus:
+
+result.fitLabel
+result.fitSubtype
+result.texts
+
+Das ist entscheidend.
+
+Mein klarer nächster Schritt
+
+Jetzt wäre am sinnvollsten, dir noch die React-/TSX-Anbindung für deine Berichtseite zu schreiben, also konkret:
+
+Header
+Gesamtbewertung
+Warum dieses Ergebnis
+Impact Areas
+Stress
+Entwicklung
+Integrationsplan
+
+direkt mit den neuen Funktionen verdrahtet.

@@ -138,6 +138,27 @@ maxDiff = grösster Wert davon
 
 ---
 
+## Schritt 5: FitSubtype (für Soll-Ist-Bericht Texte)
+
+Nach der Fit-Ermittlung wird ein **FitSubtype** abgeleitet, der die Textgenerierung im Soll-Ist-Bericht steuert:
+
+| FitSubtype | Bedingung | Textliche Wirkung |
+|---|---|---|
+| **PERFECT** | rk === ck + EXACT + maxGap < 8 | "Grundrichtung und Gewichtung passen" |
+| **STRUCTURE_MATCH_INTENSITY_OFF** | rk === ck, aber nicht PERFECT | "Grundlogik stimmt, Gewichtung innerhalb dieser Struktur weicht ab" |
+| **PARTIAL_MATCH** | Dual-Dom-Match, balFull, oder SOFT_CONFLICT | Teilweise passend, Abweichungen in einzelnen Bereichen |
+| **MISMATCH** | HARD_CONFLICT mit unterschiedlichen Dominanten | Grundpassung nicht gegeben |
+
+### Auswirkung auf Impact-Areas (rk === ck)
+
+Wenn **rk === ck** (gleiche Dominante), unterscheiden die Impact-Area-Texte zwischen:
+- **maxGap < 8**: Gewichtung stimmt überein → kurze, bestätigende Texte
+- **maxGap ≥ 8**: Gewichtung weicht ab → differenziertere Texte mit Hinweis auf Feinsteuerung
+
+Dies betrifft: Entscheidungsmuster, Kommunikation, Führungswirkung und Teamkultur.
+
+---
+
 ## Zusammenfassung: Entscheidungsbaum
 
 ```
