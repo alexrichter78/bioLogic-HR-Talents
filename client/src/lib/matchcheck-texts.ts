@@ -400,23 +400,93 @@ function buildSummary(input: MatchTextInput): SummaryBlock {
   return { summary, managementSummary, whyResult, risks, profileCompareIntro, finalText };
 }
 
-function roleNeedDecision(top: TriadKey): string {
-  if (top === 'I') return 'Schnelle, ergebnisorientierte Entscheidungen. Optionen kurz prüfen, dann konsequent handeln.';
-  if (top === 'N') return 'Entscheidungen, die Kontext, Zusammenarbeit und zwischenmenschliche Wirkung berücksichtigen.';
-  return 'Sorgfältige, prüforientierte Entscheidungen. Optionen abwägen, Risiken prüfen, erst dann handeln.';
+function dualPairLabel(top: TriadKey, second: TriadKey): string {
+  const pair = [top, second].sort().join('|');
+  if (pair === 'A|I') return 'Tempo und Umsetzung einerseits, sorgfältige Prüfung und Struktur andererseits';
+  if (pair === 'A|N') return 'Beziehungsgestaltung und Einbindung einerseits, analytische Prüfung und Ordnung andererseits';
+  return 'Tempo und Umsetzung einerseits, Beziehungsgestaltung und Einbindung andererseits';
 }
 
-function personDecision(input: MatchTextInput): string {
-  const sp = getSpecialCases(input.roleProfile, input.candProfile);
-  if (sp.candIsDualDom) {
-    const pair = [sp.cDom.top, sp.cDom.second].sort().join('|');
-    if (pair === 'A|N') return 'Die Person entscheidet sowohl kontextbezogen und abstimmungsorientiert als auch analytisch und prüforientiert. Je nach Situation überwiegt Einbindung oder Sorgfalt.';
-    if (pair === 'A|I') return 'Die Person entscheidet sowohl analytisch und prüforientiert als auch handlungsorientiert. Je nach Situation überwiegt Tempo oder Sorgfalt.';
-    return 'Die Person entscheidet sowohl handlungsorientiert als auch kontextbezogen und abstimmungsorientiert. Je nach Situation überwiegt Tempo oder Einbindung.';
+function roleNeedForArea(area: ImpactArea['key'], rDom: ReturnType<typeof dominanceModeOf>, isDual: boolean, isBal: boolean): string {
+  const top = rDom.top;
+  const second = rDom.second;
+  if (area === 'decision') {
+    if (isBal) return 'Breite, ausgewogene Entscheidungslogik. Alle drei Bereiche sollen gleich stark einfließen.';
+    if (isDual) return `Entscheidungen, die ${dualPairLabel(top, second)} gleichermaßen berücksichtigen. Beide Logiken sollen parallel wirksam sein.`;
+    if (top === 'I') return 'Schnelle, ergebnisorientierte Entscheidungen. Optionen kurz prüfen, dann konsequent handeln.';
+    if (top === 'N') return 'Entscheidungen, die Kontext, Zusammenarbeit und zwischenmenschliche Wirkung berücksichtigen.';
+    return 'Sorgfältige, prüforientierte Entscheidungen. Optionen abwägen, Risiken prüfen, erst dann handeln.';
   }
-  if (sp.cDom.top === 'I') return 'Die Person entscheidet schnell, direkt und umsetzungsorientiert.';
-  if (sp.cDom.top === 'N') return 'Die Person entscheidet kontextbezogen, bezieht das Umfeld ein und sucht Abstimmung.';
-  return 'Die Person entscheidet analytisch und prüft Entscheidungen gründlich.';
+  if (area === 'workstyle') {
+    if (isBal) return 'Breites, ausgewogenes Arbeitsprofil. Umsetzung, Abstimmung und Struktur sollen gleich stark vertreten sein.';
+    if (isDual) return `Arbeitsweise, die ${COMP_NOUN[top]} und ${COMP_NOUN[second]} parallel und stabil verbindet.`;
+    if (top === 'I') return 'Hohes Tempo, direkte Umsetzung und pragmatische Priorisierung. Aufgaben schnell abschließen.';
+    if (top === 'N') return 'Zusammenarbeit, Abstimmung und Einbindung. Arbeit im Miteinander, nicht im Alleingang.';
+    return 'Klare Struktur, Priorisierung und verlässliche Abläufe. Arbeitsschritte nachvollziehbar planen und kontrollieren.';
+  }
+  if (area === 'communication') {
+    if (isBal) return 'Breite Kommunikation, die sowohl sachlich, einbindend als auch handlungsorientiert sein soll.';
+    if (isDual) return `Kommunikation, die sowohl ${COMP_ADJ[top]} als auch ${COMP_ADJ[second]} geprägt ist. Beide Stile sollen parallel erkennbar sein.`;
+    if (top === 'I') return 'Direkte, ergebnisorientierte Kommunikation. Kurze Wege, klare Ansagen.';
+    if (top === 'N') return 'Einbindende, kontextbezogene Kommunikation. Zuhören, vermitteln, Abstimmung schaffen.';
+    return 'Sachliche, faktenbasierte Kommunikation. Klare Argumentation, strukturierte Informationsweitergabe.';
+  }
+  if (area === 'culture') {
+    if (isBal) return 'Vielseitige Teamkultur, die Tempo, Zusammenarbeit und Qualität gleich stark verankert.';
+    if (isDual) return `Teamkultur, die sowohl ${COMP_NOUN[top]} als auch ${COMP_NOUN[second]} stabil verankert.`;
+    if (top === 'I') return 'Dynamik, Eigenverantwortung und schnelle Ergebnisse. Wettbewerb und Tempo prägen das Team.';
+    if (top === 'N') return 'Zusammenhalt, Vertrauen und wertschätzende Zusammenarbeit. Beziehungsqualität steht im Zentrum.';
+    return 'Verlässlichkeit, Ruhe und nachvollziehbare Qualität. Stabile Abläufe und planbare Ergebnisse.';
+  }
+  if (isBal) return 'Führung über eine breite, ausgewogene Wirkung. Alle drei Bereiche sollen gleich stark vertreten sein.';
+  if (isDual) return `Führung, die ${COMP_NOUN[top]} und ${COMP_NOUN[second]} gleichermaßen vermittelt.`;
+  if (top === 'I') return 'Führung über Tempo, Entscheidungsstärke und klare Richtung.';
+  if (top === 'N') return 'Führung über Beziehung, Einbindung und Vertrauen.';
+  return 'Führung über Orientierung, Priorisierung und verlässliche Standards.';
+}
+
+function personTextForArea(area: ImpactArea['key'], input: MatchTextInput): string {
+  const sp = getSpecialCases(input.roleProfile, input.candProfile);
+  const cTop = sp.cDom.top;
+  const cSecond = sp.cDom.second;
+  if (area === 'decision') {
+    if (sp.candIsBalFull) return 'Die Person entscheidet breit abgestützt und wägt verschiedene Perspektiven gleichmäßig ab.';
+    if (sp.candIsDualDom) {
+      const pair = [cTop, cSecond].sort().join('|');
+      if (pair === 'A|N') return 'Die Person entscheidet sowohl kontextbezogen und abstimmungsorientiert als auch analytisch und prüforientiert. Je nach Situation überwiegt Einbindung oder Sorgfalt.';
+      if (pair === 'A|I') return 'Die Person entscheidet sowohl analytisch und prüforientiert als auch handlungsorientiert. Je nach Situation überwiegt Tempo oder Sorgfalt.';
+      return 'Die Person entscheidet sowohl handlungsorientiert als auch kontextbezogen und abstimmungsorientiert. Je nach Situation überwiegt Tempo oder Einbindung.';
+    }
+    if (cTop === 'I') return 'Die Person entscheidet schnell, direkt und umsetzungsorientiert.';
+    if (cTop === 'N') return 'Die Person entscheidet kontextbezogen, bezieht das Umfeld ein und sucht Abstimmung.';
+    return 'Die Person entscheidet analytisch und prüft Entscheidungen gründlich.';
+  }
+  if (area === 'workstyle') {
+    if (sp.candIsBalFull) return 'Die Person arbeitet breit aufgestellt und wechselt situativ zwischen Tempo, Abstimmung und Sorgfalt.';
+    if (sp.candIsDualDom) return `Die Person arbeitet parallel über ${COMP_NOUN[cTop]} und ${COMP_NOUN[cSecond]}. Beide Bereiche prägen den Arbeitsstil.`;
+    if (cTop === 'I') return 'Die Person arbeitet mit hohem Tempo, handelt pragmatisch und setzt schnell um.';
+    if (cTop === 'N') return 'Die Person arbeitet kooperativ, bezieht andere ein und sucht gemeinsame Lösungen.';
+    return 'Die Person arbeitet strukturiert mit klaren Abläufen und festen Arbeitsschritten. Planung hat hohe Priorität.';
+  }
+  if (area === 'communication') {
+    if (sp.candIsBalFull) return 'Die Person kommuniziert vielseitig und passt ihren Stil situativ an.';
+    if (sp.candIsDualDom) return `Die Person kommuniziert sowohl ${COMP_ADJ[cTop]} als auch ${COMP_ADJ[cSecond]}. Der Stil wechselt situativ.`;
+    if (cTop === 'I') return 'Die Person kommuniziert direkt, kurz und ergebnisorientiert.';
+    if (cTop === 'N') return 'Die Person kommuniziert einbindend, empathisch und sucht Verständigung.';
+    return 'Die Person kommuniziert sachlich, strukturiert und mit erkennbarem Blick für Abstimmung und Umfeld.';
+  }
+  if (area === 'culture') {
+    if (sp.candIsBalFull) return 'Die Person bringt eine breite kulturelle Wirkung mit, ohne einzelne Bereiche stark zu dominieren.';
+    if (sp.candIsDualDom) return `Die Person prägt die Kultur durch ${COMP_NOUN[cTop]} und ${COMP_NOUN[cSecond]} gleichermaßen.`;
+    if (cTop === 'I') return 'Die Person stärkt Dynamik, Eigenverantwortung und Ergebnisorientierung im Team.';
+    if (cTop === 'N') return 'Die Person stärkt Zusammenhalt, Vertrauen und Beziehungsqualität im Team.';
+    return 'Die Person stärkt Qualitätsbewusstsein, Regelklarheit und Ordnung. Die Kultur wird sachlicher und strukturierter.';
+  }
+  if (sp.candIsBalFull) return 'Die Person führt breit aufgestellt und vermittelt ausgewogen zwischen allen drei Bereichen.';
+  if (sp.candIsDualDom) return `Die Person führt parallel über ${COMP_NOUN[cTop]} und ${COMP_NOUN[cSecond]}.`;
+  if (cTop === 'I') return 'Die Person führt über Tempo, direkte Vorgaben und schnelle Entscheidungen.';
+  if (cTop === 'N') return 'Die Person führt über Beziehung, Einbindung und Vertrauen.';
+  return 'Die Person führt eher über Klarheit, Struktur und nachvollziehbare Vorgaben.';
 }
 
 function areaInterpretation(key: ImpactArea['key'], input: MatchTextInput): string {
@@ -498,6 +568,11 @@ function areaInterpretation(key: ImpactArea['key'], input: MatchTextInput): stri
 }
 
 function buildImpactAreas(input: MatchTextInput): ImpactArea[] {
+  const sp = getSpecialCases(input.roleProfile, input.candProfile);
+  const rDom = dominanceModeOf(input.roleProfile);
+  const isDual = sp.roleIsDualDom;
+  const isBal = sp.roleIsBalFull;
+
   const decisionSev = capSeverity(severityFromGap(input.maxDiff), input.fitSubtype);
   const workSev = capSeverity(severityFromGap(Math.abs(input.roleProfile.A - input.candProfile.A)), input.fitSubtype);
   const commSev = capSeverity(severityFromGap(Math.abs(input.roleProfile.N - input.candProfile.N)), input.fitSubtype);
@@ -509,8 +584,8 @@ function buildImpactAreas(input: MatchTextInput): ImpactArea[] {
       title: 'Entscheidungsverhalten',
       label: sevLabel(decisionSev),
       severity: decisionSev,
-      roleNeed: roleNeedDecision(dominanceModeOf(input.roleProfile).top),
-      personText: personDecision(input),
+      roleNeed: roleNeedForArea('decision', rDom, isDual, isBal),
+      personText: personTextForArea('decision', input),
       interpretation: areaInterpretation('decision', input),
     },
     {
@@ -518,10 +593,8 @@ function buildImpactAreas(input: MatchTextInput): ImpactArea[] {
       title: 'Arbeitsweise',
       label: sevLabel(workSev),
       severity: workSev,
-      roleNeed: 'Klare Struktur, Priorisierung und verlässliche Abläufe. Arbeitsschritte nachvollziehbar planen und kontrollieren.',
-      personText: input.candProfile.A >= 40
-        ? 'Die Person arbeitet strukturiert mit klaren Abläufen und festen Arbeitsschritten. Planung hat hohe Priorität.'
-        : 'Die Person arbeitet eher pragmatisch und weniger stabil über Struktur und Planung.',
+      roleNeed: roleNeedForArea('workstyle', rDom, isDual, isBal),
+      personText: personTextForArea('workstyle', input),
       interpretation: areaInterpretation('workstyle', input),
     },
     {
@@ -529,10 +602,8 @@ function buildImpactAreas(input: MatchTextInput): ImpactArea[] {
       title: 'Kommunikationsverhalten',
       label: sevLabel(commSev),
       severity: commSev,
-      roleNeed: 'Sachliche, faktenbasierte Kommunikation. Klare Argumentation, strukturierte Informationsweitergabe.',
-      personText: input.candProfile.N >= 30 && input.candProfile.A >= 30
-        ? 'Die Person kommuniziert sachlich, strukturiert und mit erkennbarem Blick für Abstimmung und Umfeld.'
-        : 'Die Person kommuniziert eher sachlich und fokussiert, mit weniger Einbindung des Umfelds.',
+      roleNeed: roleNeedForArea('communication', rDom, isDual, isBal),
+      personText: personTextForArea('communication', input),
       interpretation: areaInterpretation('communication', input),
     },
     {
@@ -540,10 +611,8 @@ function buildImpactAreas(input: MatchTextInput): ImpactArea[] {
       title: 'Wirkung auf Zusammenarbeit und Teamkultur',
       label: sevLabel(cultSev),
       severity: cultSev,
-      roleNeed: 'Verlässlichkeit, Ruhe und nachvollziehbare Qualität. Stabile Abläufe und planbare Ergebnisse.',
-      personText: input.candProfile.A >= 35
-        ? 'Die Person stärkt Qualitätsbewusstsein, Regelklarheit und Ordnung. Die Kultur wird sachlicher und strukturierter.'
-        : 'Die Person bringt weniger Stabilität und Struktur in die Kultur ein als die Rolle verlangt.',
+      roleNeed: roleNeedForArea('culture', rDom, isDual, isBal),
+      personText: personTextForArea('culture', input),
       interpretation: areaInterpretation('culture', input),
     },
   ];
@@ -554,8 +623,8 @@ function buildImpactAreas(input: MatchTextInput): ImpactArea[] {
       title: 'Führungswirkung',
       label: sevLabel(decisionSev),
       severity: decisionSev,
-      roleNeed: 'Führung über Orientierung, Priorisierung und verlässliche Standards.',
-      personText: 'Die Person führt eher über Klarheit, Struktur und nachvollziehbare Vorgaben.',
+      roleNeed: roleNeedForArea('leadership', rDom, isDual, isBal),
+      personText: personTextForArea('leadership', input),
       interpretation: areaInterpretation('leadership', input),
     });
   }
