@@ -733,80 +733,130 @@ function buildDevelopment(input: MatchTextInput): DevelopmentBlock {
 }
 
 function buildIntegrationPlan(input: MatchTextInput): IntegrationPhase[] {
-  const sp = getSpecialCases(input.roleProfile, input.candProfile);
+    const sp = getSpecialCases(input.roleProfile, input.candProfile);
+    const isNichtGeeignet = input.fitLabel === 'Nicht geeignet';
+    const isPerfect = input.fitSubtype === 'PERFECT';
+    const candBal = sp.candIsBalFull;
+    const candDual = sp.candIsDualDom;
 
-  if (input.fitSubtype === 'PERFECT') {
+    const personBeschreibung = candBal
+      ? 'Die Person zeigt keine klare Schwerpunktsetzung und arbeitet breit aufgestellt.'
+      : candDual
+        ? 'Die Person hat zwei fast gleich starke Arbeitsschwerpunkte und wechselt situativ zwischen ihnen.'
+        : 'Die Person hat einen klar erkennbaren Arbeitsschwerpunkt.';
+
+    if (isPerfect) {
+      return [
+        {
+          phase: 1,
+          title: 'Orientierung',
+          timeframe: 'Tag 1–10',
+          goal: `Stellenanforderungen der Position ${input.roleName} verstehen und Erwartungen abstimmen.`,
+          items: [
+            `Klärung der Entscheidungswege und Verantwortungsbereiche in der Stelle ${input.roleName}.`,
+            'Abstimmung der wichtigsten Arbeitsprioritäten mit dem direkten Umfeld.',
+            'Transparenz über bestehende Abläufe, Prozesse und Qualitätsstandards.',
+          ],
+          focusTitle: 'Worauf es ankommt',
+          focusText: 'Die Arbeitsweise passt zur Stelle. Wichtig ist, schnell Klarheit zu schaffen über:',
+          focusBullets: ['bestehende Abläufe und Schnittstellen', 'Entscheidungswege und Verantwortungsbereiche', 'Qualitätsstandards und Erwartungshaltung'],
+        },
+        {
+          phase: 2,
+          title: 'Wirkung',
+          timeframe: 'Tag 11–20',
+          goal: `Erste operative Verantwortung als ${input.roleName} übernehmen und Wirkung zeigen.`,
+          items: ['Eigenständige Übernahme erster Arbeitspakete mit Ergebnisprüfung.', 'Feedback zur Wirkung auf Tempo, Qualität und Zusammenarbeit aktiv einholen.', 'Schnittstellenarbeit mit angrenzenden Bereichen etablieren.'],
+          focusTitle: 'Worauf es ankommt',
+          focusText: 'Die Person arbeitet bereits nach dem passenden Grundansatz. Jetzt geht es darum:',
+          focusBullets: [`Wirksamkeit in ${input.roleName} sichtbar zu machen`, 'erste Arbeitsergebnisse eigenständig zu liefern', 'belastbare Routinen zu entwickeln'],
+        },
+        {
+          phase: 3,
+          title: 'Stabilisierung',
+          timeframe: 'Tag 21–30',
+          goal: `Arbeitsweise und Arbeitsrhythmus als ${input.roleName} stabilisieren.`,
+          items: ['Evaluation der bisherigen Wirkung auf Entscheidungsrhythmus und Belastung.', 'Feinabstimmung der Zusammenarbeit mit dem direkten Umfeld.', 'Prioritäten konsolidieren und Standards stabilisieren.'],
+          focusTitle: 'Worauf es ankommt',
+          focusText: 'Die Arbeitsweise ist stabil. Jetzt gilt es:',
+          focusBullets: ['Stärken beibehalten und Routinen festigen', `langfristige Stabilität in ${input.roleName} sichern`],
+        },
+      ];
+    }
+
+    if (isNichtGeeignet) {
+      return [
+        {
+          phase: 1,
+          title: 'Orientierung',
+          timeframe: 'Tag 1–10',
+          goal: `Erwartungen der Stelle ${input.roleName} klären und Abweichungen frühzeitig identifizieren.`,
+          items: [
+            `Klärung der zentralen Erwartungen und Erfolgskriterien in der Stelle ${input.roleName}.`,
+            'Transparenz über bestehende Arbeitsabläufe, Entscheidungswege und Qualitätsstandards.',
+            'Offenes Gespräch über die erkennbaren Unterschiede zwischen Stellenanforderung und Arbeitsweise.',
+            'Festlegung konkreter Beobachtungskriterien für die ersten Wochen.',
+          ],
+          focusTitle: 'Worauf es ankommt',
+          focusText: `${personBeschreibung} Die Stelle verlangt eine andere Gewichtung. In den ersten Tagen muss klar werden:`,
+          focusBullets: ['wo genau die Arbeitsweise von der Stellenerwartung abweicht', 'welche Erwartungen nicht verhandelbar sind', 'welche Begleitung und Steuerung notwendig ist'],
+        },
+        {
+          phase: 2,
+          title: 'Wirkung',
+          timeframe: 'Tag 11–20',
+          goal: `Erste Arbeitsergebnisse als ${input.roleName} liefern und Abweichungen gezielt steuern.`,
+          items: ['Gezielte Aufgabenstellung mit klaren Ergebniskriterien vergeben.', 'Regelmäßiges Feedback zur Wirkung auf Qualität, Tempo und Zusammenarbeit einholen.', 'Abweichungen zwischen Arbeitsweise und Stellenerwartung offen besprechen.', 'Konkrete Entwicklungsmaßnahmen vereinbaren und dokumentieren.'],
+          focusTitle: 'Worauf es ankommt',
+          focusText: 'Die Unterschiede zwischen Arbeitsweise und Stellenanforderung werden jetzt im Alltag sichtbar. Die Führungskraft sollte:',
+          focusBullets: ['engmaschig begleiten und steuern', 'klare Prioritäten setzen und regelmäßig spiegeln', 'ehrlich prüfen, ob die Anpassung realistisch ist'],
+        },
+        {
+          phase: 3,
+          title: 'Stabilisierung',
+          timeframe: 'Tag 21–30',
+          goal: `Tragfähigkeit der Besetzung als ${input.roleName} ehrlich bewerten.`,
+          items: ['Evaluation: Haben sich die erkannten Abweichungen verringert oder verfestigt?', 'Rückmeldung aus dem direkten Umfeld zur Wirkung im Alltag einholen.', 'Entscheidung treffen: Fortführung mit intensiver Begleitung oder Alternativen prüfen.', 'Langfristige Entwicklungsziele nur festlegen, wenn die Grundrichtung stimmt.'],
+          focusTitle: 'Worauf es ankommt',
+          focusText: 'Die zentrale Frage nach 30 Tagen lautet: Ist die Lücke zwischen Arbeitsweise und Stellenanforderung überbrückbar? Die Führungskraft prüft:',
+          focusBullets: ['ob sich die Arbeitsweise erkennbar in Richtung Stellenanforderung entwickelt', 'ob der Führungsaufwand auf Dauer tragbar ist', 'ob die Besetzung langfristig stabil gehalten werden kann'],
+        },
+      ];
+    }
+
     return [
       {
         phase: 1,
         title: 'Orientierung',
         timeframe: 'Tag 1–10',
-        goal: `Stellenanforderungen der Position ${input.roleName} verstehen und Erwartungen abstimmen.`,
-        items: [
-          `Klärung der Entscheidungswege und Verantwortungsbereiche in der Stelle ${input.roleName}.`,
-          'Abstimmung der wichtigsten Arbeitsprioritäten mit dem direkten Umfeld.',
-          'Transparenz über bestehende Abläufe, Prozesse und Qualitätsstandards.',
-        ],
+        goal: `Erwartungen und Arbeitslogik der Stelle ${input.roleName} verstehen und Unterschiede erkennen.`,
+        items: [`Klärung von Stelle, Erwartungshaltung und Erfolgskriterien in ${input.roleName}.`, 'Transparenz über bestehende Abläufe, Entscheidungswege und Qualitätsstandards.', 'Frühe Abstimmung von Prioritäten und gegenseitigen Erwartungen.', 'Klärung operativer Prozesse und Schnittstellen.'],
         focusTitle: 'Worauf es ankommt',
-        focusText: 'Stelle und Person teilen denselben Grundansatz. Wichtig ist daher, schnell Klarheit zu schaffen über:',
-        focusBullets: ['bestehende Abläufe und Schnittstellen', 'Entscheidungswege und Verantwortungsbereiche', 'Qualitätsstandards und Erwartungshaltung'],
+        focusText: `${personBeschreibung} Die Stelle setzt andere Schwerpunkte. Zu klären ist:`,
+        focusBullets: ['welche Arbeitsweise die Stelle konkret verlangt', 'wo sich die Gewohnheiten der Person davon unterscheiden', 'welche Anpassungen realistisch erwartet werden können'],
       },
       {
         phase: 2,
         title: 'Wirkung',
         timeframe: 'Tag 11–20',
-        goal: `Erste operative Verantwortung als ${input.roleName} übernehmen und Wirkung zeigen.`,
-        items: ['Eigenständige Übernahme erster Arbeitspakete mit Ergebnisprüfung.', 'Feedback zur Wirkung auf Tempo, Qualität und Zusammenarbeit aktiv einholen.', 'Schnittstellenarbeit mit angrenzenden Bereichen etablieren.'],
+        goal: `Erste Arbeitsergebnisse als ${input.roleName} liefern und Anpassungsbedarf gezielt steuern.`,
+        items: ['Ein konkretes Thema eigenverantwortlich bearbeiten und Ergebnis prüfen.', 'Feedback zur Wirkung auf Qualität, Zusammenarbeit und Ergebnistreue einholen.', 'Klare Erwartungen an Prioritäten und Arbeitsweise formulieren.', 'Unterstützung und Begleitung aktiv anbieten.'],
         focusTitle: 'Worauf es ankommt',
-        focusText: 'Die Person arbeitet bereits nach dem richtigen Grundansatz. Es geht jetzt darum:',
-        focusBullets: [`Wirksamkeit in ${input.roleName} sichtbar zu machen`, 'erste Arbeitsergebnisse eigenständig zu liefern', 'belastbare Routinen zu entwickeln'],
+        focusText: 'Die Unterschiede zwischen Arbeitsweise und Stellenanforderung werden jetzt im Alltag sichtbar. Wichtig ist:',
+        focusBullets: ['gezielt Feedback geben und Erwartungen klar benennen', 'Fortschritte und Anpassungsbereitschaft beobachten', 'regelmäßige Abstimmung mit der Führungskraft sicherstellen'],
       },
       {
         phase: 3,
         title: 'Stabilisierung',
         timeframe: 'Tag 21–30',
-        goal: `Arbeitsweise und Arbeitsrhythmus als ${input.roleName} stabilisieren.`,
-        items: ['Evaluation der bisherigen Wirkung auf Entscheidungsrhythmus und Belastung.', 'Feinabstimmung der Zusammenarbeit mit dem direkten Umfeld.', 'Prioritäten konsolidieren und Standards stabilisieren.'],
+        goal: `Arbeitsweise und Erwartungen als ${input.roleName} dauerhaft abstimmen.`,
+        items: ['Evaluation der Wirkung auf Entscheidungsrhythmus, Priorisierung und Zusammenarbeit.', 'Anpassung von Erwartungen, Schnittstellen und Arbeitsstandards.', 'Langfristige Entwicklungsziele und Feedbackrhythmus festlegen.'],
         focusTitle: 'Worauf es ankommt',
-        focusText: 'Die Arbeitsweise ist stabil. Jetzt gilt es:',
-        focusBullets: ['Stärken beibehalten und Routinen festigen', `langfristige Stabilität in ${input.roleName} sichern`],
+        focusText: 'Die Arbeitsweise entwickelt sich in die richtige Richtung. Die Führungskraft prüft:',
+        focusBullets: ['ob der Führungsaufwand langfristig tragbar bleibt', 'ob die Anpassung nachhaltig ist', 'ob die Stelle dauerhaft stabil besetzt werden kann'],
       },
     ];
   }
-
-  return [
-    {
-      phase: 1,
-      title: 'Orientierung',
-      timeframe: 'Tag 1–10',
-      goal: `Qualitätsstandards und Entscheidungslogik der Stelle ${input.roleName} verstehen.`,
-      items: [`Klärung von Stelle, Erwartungshaltung und Qualitätsstandard in ${input.roleName}.`, 'Transparenz über bestehende Entscheidungs- und Dokumentationsstrukturen.', "Frühe Abstimmung von Prioritäten, Qualitätskriterien und Definition von 'Done'.", 'Klärung operativer Prozesse und Schnittstellen.'],
-      focusTitle: 'Worauf es ankommt',
-      focusText: `Die Stelle ${input.roleName} stellt ${COMP_SHORT[sp.rDom.top]} in den Vordergrund. Die Person bringt ${COMP_SHORT[sp.cDom.top]} als Stärke mit. Zu klären ist:`,
-      focusBullets: ['welche Arbeitstiefe erwartet wird', 'welche Standards und Prozesse gelten', 'wie Qualität gemessen wird'],
-    },
-    {
-      phase: 2,
-      title: 'Wirkung',
-      timeframe: 'Tag 11–20',
-      goal: `Erste strukturierte Arbeitsergebnisse als ${input.roleName} liefern und Standards etablieren.`,
-      items: ['Ein priorisiertes Thema strukturiert analysieren und verbessern.', 'Feedback zur Wirkung auf Qualität, Nachvollziehbarkeit und Zusammenarbeit einholen.', 'Einen klaren Standard (Checkliste, Playbook oder Dokumentation) einführen oder schärfen.', 'Fehlerquellen identifizieren und systematisch beheben.'],
-      focusTitle: 'Worauf es ankommt',
-      focusText: 'Die Person sollte verstärkt auf analytische Tiefe achten. Konkret bedeutet das:',
-      focusBullets: ['Ergebnisse sauber dokumentieren', 'analytische Prüfung nicht umgehen', 'Führungsbegleitung aktiv nutzen'],
-    },
-    {
-      phase: 3,
-      title: 'Stabilisierung',
-      timeframe: 'Tag 21–30',
-      goal: `Qualitätsstandards und Prozesssteuerung als ${input.roleName} dauerhaft verankern.`,
-      items: ['Evaluation der Wirkung auf Entscheidungsrhythmus, Priorisierung und Belastung.', 'Anpassung von Regeln, Schnittstellen und Qualitätsstandards.', 'Prozessstabilität und Durchlaufzeiten prüfen.', 'Langfristige Qualitätsziele und Dokumentationsstandards festlegen.'],
-      focusTitle: 'Worauf es ankommt',
-      focusText: 'Struktur und Analyse bleiben erhalten, während die Arbeitsweise Richtung Sorgfalt und systematische Prüfung weiterentwickelt wird. Die Führungskraft prüft:',
-      focusBullets: ['ob der Führungsaufwand langfristig tragbar ist', 'ob die Entwicklungsrichtung stimmt', 'ob die Stelle dauerhaft stabil besetzt werden kann'],
-    },
-  ];
-}
 
 export function buildMatchTexts(input: MatchTextInput): MatchTextResult {
   return {
