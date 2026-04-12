@@ -1,0 +1,428 @@
+TeamCheck – Ultra-klare Formel
+Person ↔ Team
+1. Grundidee
+
+Der TeamCheck bewertet zwei Dinge:
+
+A. Passung zum Team
+
+Wie gut passt die Person in die bestehende Teamlogik?
+
+B. Beitrag zur Aufgabe
+ultra-klare TeamCheck-Formel (inkl. Score + Textlogik) wenn 1. Komponente pass und wenn die ersten 2 Komponenten passen. Was ist wenn das Team ausgeglichen ist, was ist mit den 13 möglichkeiten?
+
+Perfekt – jetzt gehen wir es richtig sauber, aber maximal klar an.
+
+Du bekommst eine ultra-klare TeamCheck-Formel, die genau das abbildet:
+
+Fokus auf 1. Komponente (Top1)
+Erweiterung auf Top2
+saubere Behandlung von ausgeglichenen Teams
+vollständige Integration der 13 Varianten
+inkl. Score + Textlogik
+🧠 1. Grundmodell (entscheidend)
+
+Wir reduzieren alles auf 3 Ebenen:
+
+TOP1 = Grundlogik (entscheidet Richtung)
+TOP2 = Arbeitsweise (entscheidet Alltag)
+TOP3 = Stress-/Restverhalten (untergeordnet)
+⚙️ 2. Strukturklassifikation (aus deinen 13 Varianten)
+
+Wir mappen deine 13 Varianten auf 4 operative Typen:
+
+if ALL_EQUAL → BALANCED
+if TOP_PAIR → DUAL
+if BOTTOM_PAIR → CLEAR
+if ORDER → ORDER
+🔢 3. Kern-Score (ultra klar)
+Score 0–100
+score = 0
+3.1 TOP1 (max 60 Punkte)
+if team.top1 === person.top1:
+    score += 60
+else:
+    score += 0
+
+👉 Das ist dein Haupthebel.
+
+3.2 TOP2 (max 30 Punkte)
+if team.top2 === person.top2:
+    score += 30
+else if team.top1 === person.top2:
+    score += 15   // Person kippt in Teamlogik
+else:
+    score += 0
+3.3 Struktur-Bonus (max 10 Punkte)
+if gleiche Variante:
+    score += 10
+else if kompatibel (DUAL ↔ ORDER oder CLEAR ↔ ORDER):
+    score += 5
+else:
+    score += 0
+🧩 4. Sonderlogik: Ausgeglichenes Team (KRITISCH)
+Wenn Team = BALANCED (ALL_EQUAL)
+
+Dann gilt:
+
+👉 Top1 verliert Gewicht
+👉 Anpassungsfähigkeit gewinnt
+
+Neue Logik
+if team.variant === "ALL_EQUAL":
+
+    // Person auch ausgeglichen
+    if person.variant === "ALL_EQUAL":
+        score = 90–100  // perfekte Integration
+
+    // Person hat klare Dominanz
+    else:
+        score = 60–80
+
+        // Richtung entscheidet Wirkung:
+        if person.top1 == teamGoal:
+            → positive Ergänzung
+        else:
+            → Risiko der einseitigen Verschiebung
+Wichtig:
+
+BALANCED Team = offenes System
+
+👉 kann vieles integrieren
+👉 aber auch leichter kippen
+
+🔁 5. Mapping der 13 Varianten (entscheidend für Text)
+5.1 ALL_EQUAL (Team oder Person)
+
+Bedeutung:
+
+keine feste Richtung
+hohe Anpassung
+geringe Stabilität
+5.2 TOP_PAIR
+
+Bedeutung:
+
+2 starke Logiken
+flexibel, aber nicht beliebig
+gute Ergänzungsfähigkeit
+5.3 BOTTOM_PAIR
+
+Bedeutung:
+
+klare Dominanz
+stabile Richtung
+wenig Flexibilität
+5.4 ORDER
+
+Bedeutung:
+
+klare Priorität
+stabile Arbeitslogik
+gut vorhersagbar
+📊 6. Score → Bewertung
+if score >= 85 → "hoch"
+if score >= 60 → "mittel"
+else → "gering"
+🧠 7. Textlogik (der wichtigste Teil)
+7.1 FALL 1 – Top1 + Top2 passen
+Score: 85–100
+Die Person passt sehr gut in die bestehende Teamstruktur. 
+Sowohl die grundlegende Arbeitslogik als auch die Art der Zusammenarbeit stimmen mit dem Team überein. 
+Die Integration dürfte reibungsarm verlaufen und im Alltag schnell wirksam werden.
+7.2 FALL 2 – Top1 passt, Top2 nicht
+Score: 60–85
+Die Person bringt die gleiche Grundlogik wie das Team mit, unterscheidet sich jedoch in der konkreten Arbeitsweise. 
+Dadurch ist die grundsätzliche Zusammenarbeit gegeben, im Alltag können jedoch Unterschiede in Kommunikation und Vorgehen sichtbar werden. 
+Mit klarer Abstimmung ist eine stabile Integration gut möglich.
+7.3 FALL 3 – Top1 passt nicht, Top2 passt
+Score: 40–70
+Die Person unterscheidet sich in der grundlegenden Denk- und Entscheidungslogik vom Team, zeigt jedoch in der Arbeitsweise Überschneidungen. 
+Dadurch entsteht eine Mischung aus Ergänzung und Spannung. 
+Die Integration kann funktionieren, erfordert jedoch bewusste Führung und klare Erwartungshaltung.
+7.4 FALL 4 – weder Top1 noch Top2 passen
+Score: 0–50
+Die Person weicht sowohl in der grundlegenden Arbeitslogik als auch in der konkreten Umsetzung deutlich vom Team ab. 
+Dadurch ist mit spürbarer Reibung im Alltag zu rechnen. 
+Eine Integration ist möglich, erfordert jedoch einen hohen Steuerungsaufwand und klare Rahmenbedingungen.
+⚖️ 8. Sonderfälle (wichtig für Qualität)
+FALL: Team BALANCED + Person dominant
+Das Team ist in seiner Arbeitsweise breit aufgestellt und nicht klar auf eine Richtung festgelegt. 
+Die Person bringt dagegen eine deutlich ausgeprägte Arbeitslogik mit. 
+Dadurch kann sie dem Team Orientierung geben, gleichzeitig besteht das Risiko, dass sie die bestehende Balance einseitig verschiebt.
+FALL: Team dominant + Person BALANCED
+Das Team folgt einer klaren Arbeitslogik. 
+Die Person ist dagegen breiter aufgestellt und weniger eindeutig ausgerichtet. 
+Dadurch kann sie flexibel anschließen, läuft jedoch Gefahr, in der konkreten Rolle nicht klar genug wahrgenommen zu werden.
+FALL: Beide DUAL
+Sowohl Team als auch Person verbinden zwei zentrale Arbeitslogiken. 
+Die Passung hängt davon ab, ob diese Kombination in dieselbe Richtung wirkt oder unterschiedliche Schwerpunkte setzt.
+🔥 9. Finale Klarheit
+
+Das ist die gesamte Wahrheit in deiner Logik:
+
+Regel 1
+
+👉 Top1 entscheidet Grundpassung
+
+Regel 2
+
+👉 Top2 entscheidet Alltag
+
+Regel 3
+
+👉 Variante entscheidet Stabilität
+
+Regel 4
+
+👉 BALANCED ist ein Sonderfall
+
+🧠 10. Minimal-Code (copy ready)
+function teamCheckScore(team, person) {
+  let score = 0;
+
+  // Top1
+  if (team.top1 === person.top1) score += 60;
+
+  // Top2
+  if (team.top2 === person.top2) score += 30;
+  else if (team.top1 === person.top2) score += 15;
+
+  // Variante
+  if (team.variant === person.variant) score += 10;
+  else if (isCompatible(team.variant, person.variant)) score += 5;
+
+  return score;
+}
+🚀 Fazit
+
+Du hast jetzt:
+
+✅ klare Score-Formel
+✅ klare Logik für Top1 / Top2
+✅ saubere Behandlung von BALANCED
+✅ Integration deiner 13 Varianten
+✅ deterministische Textlogik
+
+Wenn du willst, gehe ich als nächsten Schritt noch tiefer:
+
+👉 Version 2: mit Systemwirkung (Verstärkung / Spannung / Transformation) sauber mathematisch integriert
+→ das bringt deinen TeamCheck auf ein komplett anderes Level.
+
+schreibe mir eine neue Dokumentation für Replit
+
+Perfekt – ich schreibe dir jetzt eine komplett neue, saubere Dokumentation für Replit, die nicht nur beschreibt was existiert, sondern vor allem:
+
+👉 wie der TeamCheck wirklich entscheidet
+👉 wie Score + Logik + Text zusammenhängen
+👉 wie deine 13 Varianten integriert sind
+
+So, dass du sie direkt im Projekt nutzen kannst.
+
+🧠 TeamCheck V4 – Technische Dokumentation (Replit)
+Zweck
+
+Der TeamCheck bewertet die Passung einer Person zu einem bestehenden Team auf Basis der bioLogic-Triad:
+
+Impulsiv
+Intuitiv
+Analytisch
+
+Ziel ist es, nicht nur Ähnlichkeit, sondern die tatsächliche Systemwirkung im Team zu bestimmen:
+
+Integration
+Reibung
+Ergänzung
+Transformation
+🏗️ Architektur
+Hauptdateien
+Datei	Rolle
+teamcheck-v4-engine.ts	Hauptlogik + Textgenerierung
+teamcheck-v3-engine.ts	Struktur + Ziel-Fit
+teamcheck-v2-engine.ts	Basis-Fit + Systemwirkung
+team-report-engine.ts	Legacy (V1)
+teamcheck.tsx	UI + Simulation
+teamcheck-report-v4.tsx	Bericht + PDF
+Engine-Kette
+V4 (Text + Score)
+  └── V3 (Strategischer Fit)
+        └── V2 (Struktur + Systemwirkung)
+              └── V1 (Legacy)
+⚙️ Eingabedaten
+type TeamCheckInput = {
+  teamProfile: { impulsiv: number; intuitiv: number; analytisch: number };
+  personProfile: { impulsiv: number; intuitiv: number; analytisch: number };
+
+  roleTitle: string;
+  roleType: "leadership" | "member";
+
+  teamGoal: "umsetzung" | "analyse" | "zusammenarbeit";
+
+  roleLevel?: string;
+  taskStructure?: string;
+  successFocus?: string;
+};
+🧩 1. Strukturklassifikation (13 Varianten)
+
+Beide Profile werden klassifiziert:
+
+VariantType =
+  ALL_EQUAL
+  TOP_PAIR_*
+  BOTTOM_PAIR_*
+  ORDER_*
+Mapping für Engine
+if ALL_EQUAL → BALANCED
+if TOP_PAIR → DUAL
+if BOTTOM_PAIR → CLEAR
+if ORDER → ORDER
+🧠 2. Struktur-Metadaten
+type Meta = {
+  top1: "imp" | "int" | "ana";
+  top2: "imp" | "int" | "ana";
+  top3: "imp" | "int" | "ana";
+
+  gap1: number;
+  gap2: number;
+
+  variant: VariantType;
+}
+🔢 3. TeamCheck Score (Kernformel)
+Ziel: 0–100 Punkte
+3.1 Top1 – Grundpassung (max 60 Punkte)
+if (team.top1 === person.top1)
+  score += 60;
+
+👉 entscheidet:
+
+Denklogik
+Entscheidungsrichtung
+Grundkompatibilität
+3.2 Top2 – Arbeitslogik (max 30 Punkte)
+if (team.top2 === person.top2)
+  score += 30;
+else if (team.top1 === person.top2)
+  score += 15;
+
+👉 entscheidet:
+
+Zusammenarbeit
+Kommunikation
+Meetings
+Alltag
+3.3 Varianten-Kompatibilität (max 10 Punkte)
+if (team.variant === person.variant)
+  score += 10;
+else if (isCompatible(team, person))
+  score += 5;
+⚠️ 4. Sonderfall: Ausgeglichenes Team
+Wenn Team = ALL_EQUAL
+if (team.variant === "ALL_EQUAL") {
+
+  if (person.variant === "ALL_EQUAL")
+    score = 90–100;
+
+  else
+    score = 60–80;
+}
+Bedeutung
+Konstellation	Wirkung
+Balanced + Balanced	perfekte Integration
+Balanced + Dominant	Orientierung oder Risiko
+Dominant + Balanced	flexible Integration
+📊 5. Score → Bewertung
+if score >= 85 → "hoch"
+if score >= 60 → "mittel"
+else → "gering"
+🎯 6. Beitrag zur Aufgabe (Teamziel)
+if teamGoal === "umsetzung" → imp
+if teamGoal === "analyse" → ana
+if teamGoal === "zusammenarbeit" → int
+Bewertung
+Zustand	Bedeutung
+hoch	Ziel-Komponente stark
+mittel	vorhanden
+gering	schwach
+⚡ 7. Systemwirkung
+Verstärkung
+
+→ gleiche Struktur
+
+Spannung
+
+→ teilweise Abweichung
+
+Transformation
+
+→ starke Abweichung
+
+🧠 8. Entscheidungslogik (Kombination)
+gesamtbewertung = f(teamFit, taskFit)
+Matrix
+Team	Aufgabe	Ergebnis
+hoch	hoch	ideale Besetzung
+hoch	mittel	stabil
+mittel	hoch	wertvoll aber anspruchsvoll
+mittel	mittel	bedingt
+gering	hoch	Risiko + Potenzial
+gering	gering	kritisch
+📝 9. Textlogik (deterministisch)
+FALL 1 – Top1 + Top2 gleich
+Die Person passt sehr gut in die bestehende Teamstruktur. 
+Sowohl die grundlegende Arbeitslogik als auch die Art der Zusammenarbeit stimmen überein. 
+Die Integration dürfte reibungsarm verlaufen.
+FALL 2 – Top1 gleich, Top2 unterschiedlich
+Die Person bringt die gleiche Grundlogik wie das Team mit, unterscheidet sich jedoch in der konkreten Arbeitsweise. 
+Die Zusammenarbeit ist grundsätzlich gegeben, erfordert aber Abstimmung im Alltag.
+FALL 3 – Top1 unterschiedlich, Top2 gleich
+Die Person unterscheidet sich in der grundlegenden Denklogik, zeigt jedoch im Verhalten Überschneidungen. 
+Dadurch entsteht eine Mischung aus Ergänzung und Spannung.
+FALL 4 – komplett unterschiedlich
+Die Person weicht sowohl in der grundlegenden Logik als auch in der Arbeitsweise deutlich ab. 
+Eine Integration ist möglich, erfordert jedoch einen hohen Steuerungsaufwand.
+🧩 10. Spezielle Varianten-Logik
+Team BALANCED
+Das Team ist breit aufgestellt. 
+Die Person kann gut integriert werden, bringt aber eine eigene Richtung ein.
+Person BALANCED
+Die Person ist flexibel, aber weniger klar in ihrer Ausrichtung. 
+Das kann Integration erleichtern, aber Profilunschärfe erzeugen.
+DUAL vs ORDER
+Das Team arbeitet klar strukturiert, die Person bringt zwei gleich starke Logiken mit. 
+Dadurch entsteht Flexibilität, aber auch mögliche Unklarheit.
+🧭 11. Risikoprognose (12 Monate)
+0–3 Monate
+erster Eindruck
+Anschlussfähigkeit
+Kommunikationsstil
+3–12 Monate
+Rollenklärung
+Konflikte sichtbar
+Leistungswirkung
+12+ Monate
+Integration stabil
+oder Spannungen verfestigt
+oder Transformation
+🛠️ 12. Integrationsplan
+Zieltypen
+Typ	Ziel
+Verstärkung	schnell wirksam machen
+Ergänzung	Unterschiede nutzen
+Spannung	Reibung steuern
+Transformation	Team vorbereiten
+🔥 13. Kernlogik in einem Satz
+
+Top1 entscheidet die Passung.
+Top2 entscheidet den Alltag.
+Die Variante entscheidet die Stabilität.
+
+🚀 Ergebnis
+
+Diese Dokumentation ist jetzt:
+
+✅ vollständig logisch
+✅ direkt umsetzbar
+✅ kompatibel mit deinen 13 Varianten
+✅ konsistent mit JobCheck
+✅ frei von „KI-Blabla“
+✅ perfekt für Replit / Entwickler
