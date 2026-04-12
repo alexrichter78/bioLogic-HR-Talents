@@ -451,9 +451,9 @@ export default function TeamCheckReportV4() {
                       <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>Bedeutung der Komponenten</p>
                       <div style={{ display: "flex", gap: 12 }}>
                         {([
-                          { key: "impulsiv" as ComponentKey, label: "Impulsiv", color: COMP_HEX.impulsiv, text: "Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung.", warning: "Fehlt dieser Anteil, werden Entscheidungen verzögert und Chancen nicht genutzt." },
-                          { key: "analytisch" as ComponentKey, label: "Analytisch", color: COMP_HEX.analytisch, text: "Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe.", warning: "Fehlt dieser Anteil, entstehen Fehler in Planung, Kalkulation und Dokumentation." },
-                          { key: "intuitiv" as ComponentKey, label: "Intuitiv", color: COMP_HEX.intuitiv, text: "Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team.", warning: "Fehlt dieser Anteil, leidet die Zusammenarbeit und Vertrauen sinkt." },
+                          { key: "impulsiv" as ComponentKey, label: "Impulsiv", color: COMP_HEX.impulsiv, text: "Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung." },
+                          { key: "analytisch" as ComponentKey, label: "Analytisch", color: COMP_HEX.analytisch, text: "Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe." },
+                          { key: "intuitiv" as ComponentKey, label: "Intuitiv", color: COMP_HEX.intuitiv, text: "Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team." },
                         ]).map(kb => (
                           <div key={kb.key} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
                             <div style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: `linear-gradient(135deg, ${kb.color}12, ${kb.color}06)`, border: `1px solid ${kb.color}20`, display: "flex", flexDirection: "column" }}>
@@ -461,8 +461,6 @@ export default function TeamCheckReportV4() {
                                 <span style={{ fontSize: 12, fontWeight: 700, color: kb.color, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8, display: "block" }}>{kb.label}</span>
                                 <p style={{ fontSize: 12.5, lineHeight: 1.65, margin: 0, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{kb.text}</p>
                               </div>
-                              <div style={{ width: "100%", height: 2, background: kb.color, margin: "10px 0", borderRadius: 1, flexShrink: 0 }} />
-                              <p style={{ fontSize: 12, lineHeight: 1.6, margin: 0, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{kb.warning}</p>
                             </div>
                           </div>
                         ))}
