@@ -801,7 +801,7 @@ export default function SollIstBericht() {
             }
 
             const devLevel = effective.developmentLevel;
-            const devScore = devLevel >= 4 ? 3 : devLevel >= 3 ? 2 : 1;
+            const devScore = devLevel === 1 ? 3 : devLevel === 2 ? 2 : 1;
             const devGaugeColor = devScore === 3 ? BIO_COLORS.geeignet : devScore === 2 ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
             const devShort = devScore === 3 ? "Gute Aussichten · Wenig Aufwand" : devScore === 2 ? "Machbar · Gezielte Führung nötig" : "Hoher Aufwand · Ergebnis unsicher";
 
@@ -1040,7 +1040,7 @@ export default function SollIstBericht() {
                   const cCol = bioControlColor(result.controlIntensity);
                   const cLabel = result.controlIntensity === "hoch" ? "Hoch" : result.controlIntensity === "mittel" ? "Mittel" : "Gering";
                   const devLevel = result.developmentLevel;
-                  const devScore = devLevel >= 4 ? 3 : devLevel >= 3 ? 2 : 1;
+                  const devScore = devLevel === 1 ? 3 : devLevel === 2 ? 2 : 1;
                   const devLabel = devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch";
                   const devCol = devScore === 3 ? BIO_COLORS.geeignet : devScore === 2 ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
                   const gapCol = result.totalGap > 40 ? BIO_COLORS.nichtGeeignet : result.totalGap > 20 ? BIO_COLORS.bedingt : BIO_COLORS.geeignet;

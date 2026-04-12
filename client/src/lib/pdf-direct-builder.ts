@@ -235,7 +235,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   const badgeBgBlend: RGB = [82, 87, 99];
 
   const devLevel = result.developmentLevel;
-  const devScore = devLevel >= 4 ? 3 : devLevel >= 3 ? 2 : 1;
+  const devScore = devLevel === 1 ? 3 : devLevel === 2 ? 2 : 1;
   const devLabel = devScore === 3 ? "gering" : devScore === 2 ? "mittel" : "hoch";
   const devCol: RGB = devScore === 3 ? C.green : devScore === 2 ? C.amber : C.red;
   const gapCol: RGB = result.totalGap > 40 ? C.red : result.totalGap > 20 ? C.amber : C.green;

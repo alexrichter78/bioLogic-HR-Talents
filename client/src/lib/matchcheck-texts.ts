@@ -231,9 +231,15 @@ function severityFromGap(gap: number): Severity {
   return 'ok';
 }
 
-function capSeverity(severity: Severity, fitSubtype: FitSubtype): Severity {
+function capSeverity(severity: Severity, fitSubtype: FitSubtype, fitLabel?: string): Severity {
   if (fitSubtype === 'PERFECT') return severity;
-  if (fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF' || fitSubtype === 'PARTIAL_MATCH') {
+  if (fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') {
+    return severity === 'ok' ? 'warning' : severity;
+  }
+  if (fitSubtype === 'PARTIAL_MATCH') {
+    if (fitLabel === 'Nicht geeignet') {
+      return severity === 'ok' ? 'warning' : 'critical';
+    }
     return severity === 'ok' ? 'warning' : severity;
   }
   return 'critical';
@@ -588,9 +594,9 @@ function buildImpactAreas(input: MatchTextInput): ImpactArea[] {
   const isDual = sp.roleIsDualDom;
   const isBal = sp.roleIsBalFull;
 
-  const decisionSev = capSeverity(severityFromGap(input.maxDiff), input.fitSubtype);
-  const workSev = capSeverity(severityFromGap(Math.abs(input.roleProfile.A - input.candProfile.A)), input.fitSubtype);
-  const commSev = capSeverity(severityFromGap(Math.abs(input.roleProfile.N - input.candProfile.N)), input.fitSubtype);
+  const decisionSev = capSeverity(severityFromGap(input.maxDiff), input.fitSubtype, input.fitLabel);
+  const workSev = capSeverity(severityFromGap(Math.abs(input.roleProfile.A - input.candProfile.A)), input.fitSubtype, input.fitLabel);
+  const commSev = capSeverity(severityFromGap(Math.abs(input.roleProfile.N - input.candProfile.N)), input.fitSubtype, input.fitLabel);
   const cultSev = commSev;
 
   const areas: ImpactArea[] = [

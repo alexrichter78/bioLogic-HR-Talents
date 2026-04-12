@@ -381,6 +381,8 @@ export function computeSollIst(
   else { fitRating = "NICHT_GEEIGNET"; fitLabel = "Nicht geeignet"; fitColor = "#D64045"; gapLevel = "hoch"; }
 
   controlIntensity = effectiveControlLevel === "HIGH" ? "hoch" : effectiveControlLevel === "MEDIUM" ? "mittel" : "gering";
+  if (fitRating === "NICHT_GEEIGNET" && controlIntensity !== "hoch") controlIntensity = "hoch";
+  else if (fitRating === "BEDINGT" && controlIntensity === "gering") controlIntensity = "mittel";
   const baseControlStr: "gering" | "mittel" | "hoch" = baseControlLevel === "HIGH" ? "hoch" : baseControlLevel === "MEDIUM" ? "mittel" : "gering";
 
   const rk = rDom.top1.key;
