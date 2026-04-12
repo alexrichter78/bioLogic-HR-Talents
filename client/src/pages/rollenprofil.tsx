@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation } from "wouter";
-import { Download, AlertTriangle, BarChart3, Briefcase, Users, Sun, Gauge, Flame, Printer } from "lucide-react";
+import { AlertTriangle, Sun, Gauge, Flame, Printer } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRegion, useLocalizedText } from "@/lib/region";
 import { BERUFE } from "@/data/berufe";
 import logoSrc from "@assets/LOGO_bio_1773853681939.png";
+import { generateJobCheckRoleReport, type SuccessFocusKey, type ComponentKey } from "@/lib/entscheidungsbericht-engine";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 
@@ -138,33 +139,6 @@ function dominant(bg: BG) { return sortedTriad(bg)[0]; }
 function secondary(bg: BG) { return sortedTriad(bg)[1]; }
 function weakest(bg: BG) { return sortedTriad(bg)[2]; }
 
-function kompShort(k: string): string {
-  if (k === "imp" || k === "Impulsiv") return "Entscheidungskraft und Umsetzung";
-  if (k === "int" || k === "Intuitiv") return "Vertrauen und Beziehungsgestaltung";
-  return "Strukturierte Arbeitsweise";
-}
-
-function kompLabel(k: string): string {
-  if (k === "imp" || k === "Impulsiv" || k === "impulsiv") return "Handlungs- und Umsetzungskompetenz";
-  if (k === "int" || k === "Intuitiv" || k === "intuitiv") return "Sozial- und Beziehungskompetenz";
-  return "Fach- und Methodenkompetenz";
-}
-
-function kompAdj(k: string): string {
-  if (k === "imp" || k === "Impulsiv") return "handlungsorientiert";
-  if (k === "int" || k === "Intuitiv") return "beziehungsorientiert";
-  return "strukturiert";
-}
-
-const ERFOLGSFOKUS_LABELS = [
-  "Ergebnis-/ Umsatzwirkung",
-  "Beziehungs- und Netzwerkstabilität",
-  "Innovations- & Transformationsleistung",
-  "Prozess- und Effizienzqualität",
-  "Fachliche Exzellenz / Expertise",
-  "Strategische Wirkung / Positionierung",
-];
-
 type ReportData = {
   beruf: string;
   bereich: string;
@@ -186,342 +160,6 @@ type ReportData = {
   erfolgsfokusIndices: number[];
 };
 
-function behaviorDesc(k: string): string {
-  if (k === "imp") return "schnelles Handeln und klare Entscheidungen";
-  if (k === "int") return "persönlichen Kontakt und Beziehungsarbeit";
-  return "sorgfältige Analyse und strukturiertes Arbeiten";
-}
-
-function buildStressTexts(bg: BG, isLeadership: boolean, fuehrungstyp: string) {
-  const vals = [
-    { key: "imp", value: bg.imp },
-    { key: "int", value: bg.int },
-    { key: "ana", value: bg.ana },
-  ].sort((a, b) => b.value - a.value || SORT_PRIORITY[a.key] - SORT_PRIORITY[b.key]);
-  const [top, mid] = vals;
-  const gap12 = top.value - mid.value;
-  const gap23 = mid.value - vals[2].value;
-  const hasDualDominance = gap12 <= 4 && gap23 >= 6;
-  const hasFullSymmetry = gap12 <= 5 && gap23 <= 5;
-
-  const fk = isLeadership ? "Die Führungskraft" : "Die Person";
-  const fkLower = isLeadership ? "die Führungskraft" : "die Person";
-  const isFachlich = fuehrungstyp === "Fachliche Führung";
-  const isDisziplinarisch = fuehrungstyp.startsWith("Disziplinarische");
-  const isKoordination = fuehrungstyp.startsWith("Projekt");
-
-  let controlled = "";
-  if (hasFullSymmetry) {
-    controlled = isLeadership
-      ? `Unter zunehmendem Arbeitsdruck neigt ${fkLower} eher dazu, zwischen verschiedenen Herangehensweisen zu wechseln. Mal wird eher schnell entschieden, mal eher abgestimmt, mal eher analysiert. ${isDisziplinarisch ? "Das Team verliert dadurch tendenziell die Orientierung, weil die Führungslinie schwer einzuschätzen ist." : isFachlich ? "Im fachlichen Bereich kann dadurch eher Unsicherheit entstehen, weil klare Vorgaben fehlen." : "Im Projekt kann das eher zu Verzögerungen führen, weil die Koordinationslinie unklar wird."}`
-      : "Unter zunehmendem Arbeitsdruck neigt die Person eher dazu, zwischen verschiedenen Herangehensweisen zu wechseln. Mal handelt sie eher schnell, mal sucht sie eher den Austausch, mal vertieft sie sich vermehrt in Details. Das kann im Team zu Verunsicherung führen, weil das Verhalten schwer einzuschätzen ist.";
-  } else if (hasDualDominance) {
-    controlled = isLeadership
-      ? `Unter zunehmendem Arbeitsdruck neigt ${fkLower} eher dazu, sich auf eine der beiden starken Seiten zu konzentrieren – auf ${behaviorDesc(top.key)} oder auf ${behaviorDesc(mid.key)}. ${isDisziplinarisch ? "Das schafft kurzfristig Klarheit für das Team. Die andere Führungsqualität kann dabei eher zu kurz kommen." : isFachlich ? "Das stabilisiert kurzfristig die fachliche Steuerung. Die andere Qualität tritt tendenziell in den Hintergrund." : "Das gibt dem Projekt kurzfristig Richtung. Die andere Seite kann dabei eher vernachlässigt werden."}`
-      : `Unter zunehmendem Arbeitsdruck neigt die Person eher dazu, sich auf eine der beiden starken Seiten zu konzentrieren – auf ${behaviorDesc(top.key)} oder auf ${behaviorDesc(mid.key)}. Das schafft kurzfristig Klarheit und stabilisiert die Situation. Gleichzeitig kann die andere Seite eher zu kurz kommen.`;
-  } else {
-    controlled = isLeadership
-      ? `Unter zunehmendem Arbeitsdruck neigt ${fkLower} eher dazu, verstärkt auf ${behaviorDesc(top.key)} zu setzen. ${isDisziplinarisch ? "Das gibt dem Team Sicherheit und klare Orientierung." : isFachlich ? "Das sichert die fachliche Qualität und gibt dem Bereich Stabilität." : "Das gibt dem Projekt Richtung und Verlässlichkeit."} Andere Anforderungen treten tendenziell in den Hintergrund.`
-      : `Unter zunehmendem Arbeitsdruck neigt die Person eher dazu, verstärkt auf ${behaviorDesc(top.key)} zu setzen. Das gibt dem Umfeld Sicherheit und Orientierung. Andere Anforderungen treten tendenziell in den Hintergrund.`;
-  }
-
-  let uncontrolled = "";
-  const midSecClose = gap23 <= 5;
-  const fSuffix = isDisziplinarisch
-    ? " Das kann die Führungswirkung im Team beeinträchtigen."
-    : isFachlich
-    ? " Das kann die fachliche Steuerung beeinträchtigen."
-    : isKoordination
-    ? " Das kann die Koordination im Projekt beeinträchtigen."
-    : "";
-
-  if (hasFullSymmetry) {
-    uncontrolled = isLeadership
-      ? `In nicht mehr kontrollierbaren Situationen versucht ${fkLower} eher, mehrere Perspektiven gleichzeitig zu berücksichtigen: Tempo, Fakten und Beziehungen. Der Entscheidungsprozess dauert dadurch tendenziell länger, weil verschiedene Aspekte parallel abgewogen werden.${fSuffix}`
-      : "In nicht mehr kontrollierbaren Situationen versucht die Person eher, mehrere Perspektiven gleichzeitig zu berücksichtigen: Tempo, Fakten und Beziehungen. Der Entscheidungsprozess dauert dadurch tendenziell länger, weil verschiedene Aspekte parallel abgewogen werden.";
-  } else if (hasDualDominance) {
-    if ((top.key === "imp" && mid.key === "ana") || (top.key === "ana" && mid.key === "imp")) {
-      uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen neigt ${fkLower} eher dazu, zwischen schnellem Handeln und gründlicher Prüfung zu wechseln. Sie entscheidet zunächst zügig, beginnt danach jedoch vermehrt, die Entscheidung erneut zu analysieren und zu überprüfen.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen neigt die Person eher dazu, zwischen schnellem Handeln und gründlicher Prüfung zu wechseln. Sie entscheidet zunächst zügig, beginnt danach jedoch vermehrt, die Entscheidung erneut zu analysieren und zu überprüfen.";
-    } else if ((top.key === "imp" && mid.key === "int") || (top.key === "int" && mid.key === "imp")) {
-      uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen neigt ${fkLower} eher dazu, zwischen direkter Handlung und dem Wunsch, Beziehungen zu stabilisieren, zu schwanken. Entscheidungen werden zunächst klar getroffen, tendenziell aber später noch einmal angepasst.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen neigt die Person eher dazu, zwischen direkter Handlung und dem Wunsch, Beziehungen zu stabilisieren, zu schwanken. Entscheidungen werden zunächst klar getroffen, tendenziell aber später noch einmal angepasst.";
-    } else {
-      uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen versucht ${fkLower} eher, gleichzeitig sachliche Richtigkeit und zwischenmenschliche Wirkung zu berücksichtigen. Es dauert dadurch tendenziell länger, bis eine Entscheidung endgültig getroffen wird.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen versucht die Person eher, gleichzeitig sachliche Richtigkeit und zwischenmenschliche Wirkung zu berücksichtigen. Es dauert dadurch tendenziell länger, bis eine Entscheidung endgültig getroffen wird.";
-    }
-  } else if (top.key === "imp") {
-    if (midSecClose) {
-      uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen verliert ${fkLower} eher ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt tendenziell ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch deutlich länger dauern oder mehrfach angepasst werden.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen verliert die Person eher ihre klare Handlungsrichtung. Statt sofort zu entscheiden, beginnt tendenziell ein innerer Wechsel zwischen Analyse und Beziehungsorientierung. Entscheidungen können dadurch deutlich länger dauern oder mehrfach angepasst werden, weil zwei unterschiedliche Denkweisen gleichzeitig Einfluss nehmen.";
-    } else if (mid.key === "ana") {
-      uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen verliert ${fkLower} eher einen Teil ihrer schnellen Entscheidungsstärke. Sie beginnt tendenziell stärker zu hinterfragen und sucht vermehrt nach zusätzlichen Informationen. Entscheidungen werden zunächst schnell angestossen, anschliessend jedoch wieder überprüft oder angepasst.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen verliert die Person eher einen Teil ihrer schnellen Entscheidungsstärke. Sie beginnt tendenziell stärker zu hinterfragen und sucht vermehrt nach zusätzlichen Informationen. Dadurch kann es passieren, dass Entscheidungen zunächst schnell angestossen, anschliessend jedoch wieder überprüft oder angepasst werden.";
-    } else {
-      uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen neigt ${fkLower} eher dazu, zwischen schnellem Handeln und dem Wunsch, auf das Team Rücksicht zu nehmen, zu schwanken. Entscheidungen werden zunächst direkt getroffen, später aber teilweise wieder relativiert, um Spannungen zu vermeiden.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen neigt die Person eher dazu, zwischen schnellem Handeln und dem Wunsch, auf Menschen und Beziehungen Rücksicht zu nehmen, zu schwanken. Entscheidungen werden zunächst direkt getroffen, später aber teilweise wieder relativiert, um Spannungen oder Konflikte zu vermeiden.";
-    }
-  } else if (top.key === "ana") {
-    if (midSecClose) {
-      uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen verliert ${fkLower} eher ihre klare Struktur. Sie neigt tendenziell dazu, zwischen dem Wunsch, schnell zu handeln, und dem Bedürfnis, Beziehungen zu stabilisieren, zu schwanken. Entscheidungen werden dadurch vermehrt überdacht oder angepasst.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen verliert die Person eher ihre klare Struktur. Sie neigt tendenziell dazu, zwischen dem Wunsch, schnell zu handeln, und dem Bedürfnis, Beziehungen zu stabilisieren, zu schwanken. Dadurch kann es passieren, dass Entscheidungen vermehrt überdacht oder angepasst werden.";
-    } else if (mid.key === "imp") {
-      uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen neigt ${fkLower} eher dazu, Entscheidungen schneller treffen zu wollen. Sie verlässt dann tendenziell ihre sonst gründliche Vorgehensweise. Entscheidungen werden dann schneller getroffen, ohne alle Details vollständig zu prüfen.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen neigt die Person eher dazu, Entscheidungen schneller treffen zu wollen. Sie verlässt dann tendenziell ihre sonst gründliche Vorgehensweise. Entscheidungen werden dann schneller getroffen, ohne alle Details vollständig zu prüfen.";
-    } else {
-      uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen versucht ${fkLower} eher, neben Fakten auch die Wirkung auf das Team zu berücksichtigen. Entscheidungen können dadurch tendenziell länger dauern, weil sowohl sachliche Aspekte als auch zwischenmenschliche Auswirkungen bedacht werden.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen versucht die Person eher, neben Fakten auch die Wirkung auf Menschen zu berücksichtigen. Entscheidungen können dadurch tendenziell länger dauern, weil sowohl sachliche Aspekte als auch zwischenmenschliche Auswirkungen bedacht werden.";
-    }
-  } else {
-    // top.key === "int"
-    if (midSecClose) {
-      uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen gerät ${fkLower} eher zwischen zwei unterschiedliche Entscheidungswege: schnelle Handlung und gründliche Analyse. Entscheidungen können dadurch tendenziell länger dauern oder vermehrt angepasst werden.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen gerät die Person eher zwischen zwei unterschiedliche Entscheidungswege: schnelle Handlung und gründliche Analyse. Entscheidungen können dadurch tendenziell länger dauern oder vermehrt angepasst werden.";
-    } else if (mid.key === "imp") {
-      uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen neigt ${fkLower} eher dazu, schneller handeln zu wollen. Sie verlässt dann tendenziell ihre sonst stark beziehungsorientierte Vorgehensweise und entscheidet vermehrt direkter und spontaner. Für das Team kann dies ungewohnt entschlossen wirken.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen neigt die Person eher dazu, schneller handeln zu wollen. Sie verlässt dann tendenziell ihre sonst stark beziehungsorientierte Vorgehensweise und entscheidet vermehrt direkter und spontaner. Für andere kann dies ungewohnt entschlossen wirken.";
-    } else {
-      uncontrolled = isLeadership
-        ? `In nicht mehr kontrollierbaren Situationen versucht ${fkLower} eher, Entscheidungen auch sachlich abzusichern. Sie neigt dann tendenziell dazu, länger über Optionen nachzudenken oder zusätzliche Informationen einzuholen, bevor eine Entscheidung endgültig getroffen wird.${fSuffix}`
-        : "In nicht mehr kontrollierbaren Situationen versucht die Person eher, Entscheidungen auch sachlich abzusichern. Sie neigt dann tendenziell dazu, länger über Optionen nachzudenken oder zusätzliche Informationen einzuholen, bevor eine Entscheidung endgültig getroffen wird.";
-    }
-  }
-
-  return { controlled, uncontrolled };
-}
-
-function lowerFirst(s: string): string {
-  return s.charAt(0).toLowerCase() + s.slice(1);
-}
-
-function buildTeamwirkung(data: ReportData) {
-  const { isLeadership, dom, sec, fuehrungstyp, profileType } = data;
-
-  if (isLeadership) {
-    const ft = lowerFirst(fuehrungstyp);
-    if (profileType === "balanced_all") {
-      return `Die Stelle umfasst ${ft} mit Ergebnisverantwortung im Team. Die Führungskraft wechselt situativ zwischen verschiedenen Herangehensweisen – mal entschlossen und tempoorientiert, mal beziehungsorientiert, mal analytisch-strukturiert. Teammitglieder erleben eine flexible Führung, die sich an unterschiedliche Anforderungen anpassen kann. Die Herausforderung liegt darin, dabei eine klare und verlässliche Linie zu halten.`;
-    }
-    if (profileType === "hybrid_imp_ana") {
-      return `Die Stelle umfasst ${ft} mit Ergebnisverantwortung im Team. Die Führungskraft verbindet Tempo und Struktur – Entscheidungen werden zügig getroffen und gleichzeitig sorgfältig abgesichert. Teammitglieder orientieren sich an der klaren Richtung und der nachvollziehbaren Vorgehensweise. Die Herausforderung liegt darin, die zwischenmenschliche Ebene dabei nicht zu vernachlässigen.`;
-    }
-    if (profileType === "hybrid_imp_int") {
-      return `Die Stelle umfasst ${ft} mit Ergebnisverantwortung im Team. Die Führungskraft verbindet Durchsetzungskraft mit persönlicher Zugewandtheit – Ergebnisse werden konsequent vorangetrieben, gleichzeitig wird auf den Zusammenhalt im Team geachtet. Teammitglieder erleben Dynamik und Aufmerksamkeit. Die Herausforderung liegt darin, Entscheidungen auch analytisch ausreichend abzusichern.`;
-    }
-    if (profileType === "hybrid_ana_int") {
-      return `Die Stelle umfasst ${ft} mit Ergebnisverantwortung im Team. Die Führungskraft verbindet fachliche Tiefe mit kommunikativer Kompetenz – Entscheidungen werden fundiert vorbereitet und verständlich kommuniziert. Teammitglieder vertrauen auf die sachliche Herangehensweise und fühlen sich gleichzeitig eingebunden. Die Herausforderung liegt darin, Entscheidungen auch bei Unsicherheit zeitnah zu treffen.`;
-    }
-    if (dom.key === "imp") {
-      return `Die Stelle umfasst ${ft} mit Ergebnisverantwortung im Team. Die Führungskraft gibt das Tempo vor, setzt klare Prioritäten und trifft Entscheidungen verbindlich. Teammitglieder wissen, woran sie sind. ${sec.key === "int" ? "Dabei achtet die Führungskraft auch auf den persönlichen Kontakt und die Stimmung im Team." : "Dabei sorgt die Führungskraft auch für die nötige Struktur und Qualitätssicherung."} In Situationen mit hohem Handlungsdruck zeigt diese Führung ihre grösste Stärke.`;
-    }
-    if (dom.key === "int") {
-      return `Die Stelle umfasst ${ft} mit Ergebnisverantwortung im Team. Die Führungskraft baut Vertrauen auf, bringt unterschiedliche Perspektiven zusammen und sorgt dafür, dass Entscheidungen vom Team getragen werden. ${sec.key === "ana" ? "Dabei sichert sie Ergebnisse auch über klare Strukturen und nachvollziehbare Prozesse ab." : "Dabei treibt sie Ergebnisse auch aktiv voran und setzt klare Prioritäten."} Teammitglieder orientieren sich an dieser Person besonders bei schwierigen zwischenmenschlichen Situationen.`;
-    }
-    return `Die Stelle umfasst ${ft} mit Ergebnisverantwortung im Team. Die Führungskraft steuert über fachliche Expertise, klare Standards und nachvollziehbare Prozesse. ${sec.key === "int" ? "Dabei achtet sie auch auf Kommunikation und ein konstruktives Miteinander im Team." : "Dabei sorgt sie auch für Umsetzungstempo und klare Entscheidungen."} Teammitglieder vertrauen auf die methodische Sicherheit und die sachliche Herangehensweise.`;
-  }
-
-  if (profileType === "balanced_all") {
-    return "Die Stelle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung über Vielseitigkeit und Anpassungsfähigkeit. Kolleginnen und Kollegen erleben eine Person, die je nach Situation unterschiedlich reagiert – mal pragmatisch und schnell, mal einfühlsam und gesprächsbereit, mal gründlich und strukturiert. Die Herausforderung liegt darin, dabei als verlässlich und berechenbar wahrgenommen zu werden.";
-  }
-  if (profileType === "hybrid_imp_ana") {
-    return "Die Stelle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung über die Verbindung von Tempo und Gründlichkeit. Kolleginnen und Kollegen orientieren sich an dieser Arbeitsweise, besonders wenn Aufgaben schnell und gleichzeitig sorgfältig erledigt werden müssen.";
-  }
-  if (profileType === "hybrid_imp_int") {
-    return "Die Stelle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung über die Verbindung von Handlungsorientierung und persönlichem Kontakt. Kolleginnen und Kollegen erleben eine Person, die Ergebnisse vorantreibt und gleichzeitig den Zusammenhalt fördert.";
-  }
-  if (profileType === "hybrid_ana_int") {
-    return "Die Stelle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung über die Verbindung von fachlicher Tiefe und kommunikativer Kompetenz. Kolleginnen und Kollegen orientieren sich an der sachlichen Herangehensweise und schätzen die verständliche Kommunikation.";
-  }
-  if (dom.key === "imp") {
-    return `Die Stelle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung vor allem über schnelle Ergebnisse und klare Priorisierung. ${sec.key === "int" ? "Dabei pflegt die Person auch den persönlichen Kontakt und nimmt Rücksicht auf die Dynamik im Team." : "Dabei achtet die Person auch auf Genauigkeit und eine fundierte Grundlage für Entscheidungen."} Kolleginnen und Kollegen orientieren sich an dieser Arbeitsweise, besonders bei Umsetzungsfragen und operativen Entscheidungen.`;
-  }
-  if (dom.key === "int") {
-    return `Die Stelle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung vor allem über Vertrauen und persönlichen Kontakt. ${sec.key === "ana" ? "Dabei sorgt die Person auch für Ordnung und eine verlässliche Arbeitsweise." : "Dabei bringt die Person auch Umsetzungsstärke und Eigeninitiative ein."} Kolleginnen und Kollegen orientieren sich an dieser Person, besonders bei zwischenmenschlichen Situationen und Teamabstimmungen.`;
-  }
-  return `Die Stelle hat keine direkte Führungsverantwortung. Im Team entsteht Wirkung vor allem über fachliche Tiefe und verlässliche Arbeitsergebnisse. ${sec.key === "int" ? "Dabei pflegt die Person auch den Austausch im Team und kommuniziert Ergebnisse verständlich." : "Dabei bringt die Person auch Umsetzungsstärke und Eigeninitiative ein, damit Analysen in konkretes Handeln überführt werden."} Kolleginnen und Kollegen orientieren sich an dieser Arbeitsweise, besonders bei fachlichen Fragen und Prozessthemen.`;
-}
-
-function buildSpannungsfelder(data: ReportData): { fields: string[]; fazit: string } {
-  const { dom, sec, wk, isLeadership, profileType } = data;
-  const fields: string[] = [];
-  let fazit = "";
-
-  if (profileType === "balanced_all") {
-    fields.push("Vielseitigkeit vs. klare Positionierung und Verlässlichkeit");
-    fields.push("Situatives Reagieren vs. konsistente Linie und Berechenbarkeit");
-    if (isLeadership) {
-      fields.push("Flexibilität in der Führung vs. eindeutige Richtungsvorgabe");
-      fields.push("Breite Anschlussfähigkeit vs. erkennbares Führungsprofil");
-    } else {
-      fields.push("Anpassungsfähigkeit vs. klare Arbeitsweise und Wiedererkennbarkeit");
-      fields.push("Offenheit für unterschiedliche Aufgaben vs. fachliche Tiefe");
-    }
-    fazit = "Die Stelle verlangt, situativ den richtigen Schwerpunkt zu setzen, ohne dabei an Verlässlichkeit und Orientierung zu verlieren.";
-  } else if (profileType === "hybrid_imp_ana") {
-    fields.push("Tempo und Entscheidungsstärke vs. Gründlichkeit und Absicherung");
-    fields.push("Schnelles Handeln vs. sorgfältige Analyse und Prüfung");
-    if (isLeadership) {
-      fields.push("Ergebnisorientierte Führung vs. methodische Steuerung");
-      fields.push("Direkte Entscheidung vs. fundierte Vorbereitung");
-    } else {
-      fields.push("Pragmatische Umsetzung vs. detaillierte Qualitätskontrolle");
-      fields.push("Eigeninitiative vs. prozesstreue Arbeitsweise");
-    }
-    fields.push("Zwei gleichstarke Anforderungen stehen im Wettbewerb um Aufmerksamkeit");
-    fazit = "Die Stelle verlangt, Tempo und Gründlichkeit gleichzeitig aufrechtzuerhalten, ohne dabei die zwischenmenschliche Ebene zu vernachlässigen.";
-  } else if (profileType === "hybrid_imp_int") {
-    fields.push("Durchsetzungskraft vs. Einfühlungsvermögen und Rücksichtnahme");
-    fields.push("Schnelle Entscheidungen vs. Einbindung und Konsens");
-    if (isLeadership) {
-      fields.push("Ergebnisorientierte Führung vs. beziehungsorientierte Teamsteuerung");
-      fields.push("Klare Vorgaben vs. partizipative Entscheidungsfindung");
-    } else {
-      fields.push("Eigenständiges Vorantreiben vs. Abstimmung und Teamorientierung");
-      fields.push("Direkte Kommunikation vs. Rücksicht auf Befindlichkeiten");
-    }
-    fields.push("Zwei gleichstarke Anforderungen stehen im Wettbewerb um Aufmerksamkeit");
-    fazit = "Die Stelle verlangt, Handlungsstärke und Beziehungsfähigkeit zu verbinden, ohne dabei die analytische Absicherung aus dem Blick zu verlieren.";
-  } else if (profileType === "hybrid_ana_int") {
-    fields.push("Sachliche Tiefe vs. kommunikative Vermittlung");
-    fields.push("Gründliche Analyse vs. zeitnahe Entscheidung und Umsetzung");
-    if (isLeadership) {
-      fields.push("Fachliche Steuerung vs. persönliche Führung und Motivation");
-      fields.push("Qualitätsanspruch vs. Teamdynamik und Akzeptanz");
-    } else {
-      fields.push("Detaillierte Prüfung vs. verständliche Kommunikation der Ergebnisse");
-      fields.push("Prozesstreue vs. flexible Reaktion auf Teambedürfnisse");
-    }
-    fields.push("Zwei gleichstarke Anforderungen stehen im Wettbewerb um Aufmerksamkeit");
-    fazit = "Die Stelle verlangt, fachliche Tiefe und kommunikative Kompetenz zu verbinden, ohne dabei die Umsetzungsgeschwindigkeit zu gefährden.";
-  } else if (dom.key === "imp") {
-    fields.push("Tempo und Ergebnisorientierung vs. Sorgfalt und Absicherung");
-    if (isLeadership) fields.push("Durchsetzungskraft vs. Mitarbeiterbindung und Teamakzeptanz");
-    else fields.push("Eigeninitiative und schnelles Handeln vs. Abstimmung im Team");
-    if (sec.key === "int") {
-      fields.push("Direktes Handeln vs. Rücksicht auf Beziehungen und Stimmungen");
-    } else {
-      fields.push("Pragmatische Entscheidungen vs. analytische Vollständigkeit");
-    }
-    if (wk.key === "ana") fields.push("Handlungstempo vs. Reflexion und Gründlichkeit");
-    else fields.push("Sachliche Korrektheit vs. Beziehungspflege");
-    fazit = "Die Stelle verlangt, diese Gegensätze situativ auszubalancieren, ohne dabei das Tempo und die Umsetzungsstärke zu verlieren.";
-  } else if (dom.key === "int") {
-    fields.push("Persönliche Beziehungspflege vs. wirtschaftliche Kalkulation");
-    fields.push("Individuelle Beratung und Empathie vs. Zeitdruck und Effizienz");
-    if (isLeadership) fields.push("Konsensorientierung vs. klare Entscheidungen unter Zeitdruck");
-    else fields.push("Teamorientierung vs. eigenverantwortliches Handeln");
-    if (sec.key === "ana") {
-      fields.push("Beziehungsorientierung vs. strukturelle Anforderungen und Standards");
-    } else {
-      fields.push("Harmoniestreben vs. Notwendigkeit schneller Entscheidungen");
-    }
-    if (wk.key === "imp") fields.push("Reflexion und Gründlichkeit vs. Handlungsdruck");
-    else fields.push("Gespür und Erfahrung vs. Strukturbedarf");
-    fazit = "Die Stelle verlangt, diese Gegensätze situativ auszubalancieren, ohne dabei den persönlichen Kontakt und das Vertrauen zu verlieren.";
-  } else {
-    fields.push("Gründlichkeit und Qualitätsanspruch vs. Pragmatismus und Geschwindigkeit");
-    fields.push("Kontrolle und Standards vs. Flexibilität und Anpassung");
-    if (isLeadership) fields.push("Detailsteuerung vs. strategischer Überblick und Delegation");
-    else fields.push("Systematische Arbeitsweise vs. kreative Lösungsansätze");
-    if (sec.key === "int") {
-      fields.push("Sachliche Exaktheit vs. zwischenmenschliche Wirkung und Kommunikation");
-    } else {
-      fields.push("Gründliche Vorbereitung vs. Entscheidungstempo und Umsetzungsdruck");
-    }
-    if (wk.key === "imp") fields.push("Reflexion und Gründlichkeit vs. Handlungsdruck");
-    else fields.push("Sachliche Korrektheit vs. Beziehungspflege");
-    fazit = "Die Stelle verlangt, diese Gegensätze situativ auszubalancieren, ohne dabei die fachliche Qualität und Ergebnissicherheit zu gefährden.";
-  }
-
-  return { fields, fazit };
-}
-
-function isNeutralProfile(bg: BG): boolean {
-  const vals = [bg.imp, bg.int, bg.ana];
-  const max = Math.max(...vals);
-  const min = Math.min(...vals);
-  return (max - min) < 2;
-}
-
-function buildProfilherkunft(data: ReportData): { label: string; dom: string; pct: number }[] {
-  const parts: { label: string; dom: string; pct: number }[] = [];
-  const addPart = (label: string, bg: BG) => {
-    if (isNeutralProfile(bg)) {
-      parts.push({ label, dom: "Ausgeglichen", pct: 33 });
-    } else {
-      const d = dominant(bg);
-      parts.push({ label, dom: d.label, pct: Math.round(d.value) });
-    }
-  };
-  addPart("Kerntätigkeiten", data.haupt);
-  addPart("Humankompetenzen", data.neben);
-  if (data.isLeadership) {
-    addPart("Führungskompetenz", data.fuehrung);
-  }
-  addPart("Rahmenbedingungen", data.rahmen);
-  return parts;
-}
-
-function buildRahmenText(data: ReportData): string {
-  const parts: string[] = [];
-  if (data.aufgabencharakter) {
-    const charMap: Record<string, string> = {
-      "überwiegend operativ": "Der Aufgabencharakter ist überwiegend operativ. Die Stelle wirkt primär über direkte Umsetzung und konkretes Handeln.",
-      "überwiegend systemisch": "Der Aufgabencharakter ist überwiegend systemisch. Die Stelle wirkt über Vernetzung, Koordination und das Zusammenführen verschiedener Perspektiven.",
-      "überwiegend strategisch": "Der Aufgabencharakter ist überwiegend strategisch. Die Stelle wirkt über langfristige Planung, Richtungsentscheidungen und Steuerung.",
-      "Gemischt": "Der Aufgabencharakter ist gemischt. Die Stelle wechselt situativ zwischen operativer Umsetzung, Koordination und strategischer Steuerung.",
-    };
-    parts.push(charMap[data.aufgabencharakter] || `Der Aufgabencharakter ist ${data.aufgabencharakter.toLowerCase()}.`);
-  }
-  if (data.arbeitslogik) {
-    const logikMap: Record<string, string> = {
-      "Umsetzungsorientiert": "Die Arbeitslogik ist umsetzungsorientiert. Wirkung entsteht durch schnelles Handeln und konkrete Ergebnisse.",
-      "Menschenorientiert": "Die Arbeitslogik ist menschenorientiert. Wirkung entsteht durch Kommunikation, Beziehungsgestaltung und Abstimmung.",
-      "Daten-/prozessorientiert": "Die Arbeitslogik ist daten- und prozessorientiert. Wirkung entsteht durch systematische Analyse und strukturierte Abläufe.",
-    };
-    parts.push(logikMap[data.arbeitslogik] || `Die Arbeitslogik ist ${data.arbeitslogik.toLowerCase()}.`);
-  }
-  if (data.isLeadership && data.fuehrungstyp) {
-    parts.push(`Die Stelle umfasst ${lowerFirst(data.fuehrungstyp)}.`);
-  }
-  return parts.join(" ");
-}
-
-function buildErfolgsfokusText(data: ReportData, labels: string[]): string {
-  if (labels.length === 0) return "";
-  const FOKUS_DOMIN: Record<string, string> = {
-    "Ergebnis-/ Umsatzwirkung": "imp",
-    "Beziehungs- und Netzwerkstabilität": "int",
-    "Innovations- & Transformationsleistung": "imp",
-    "Prozess- und Effizienzqualität": "ana",
-    "Fachliche Exzellenz / Expertise": "ana",
-    "Strategische Wirkung / Positionierung": "int",
-  };
-  const needed = labels.map(l => FOKUS_DOMIN[l] || "ana");
-  const unique = [...new Set(needed)];
-
-  if (unique.length === 1 && unique[0] === data.dom.key) {
-    return "Der Erfolgsfokus passt zur zentralen Anforderung der Stelle. Erfolg wird im stärksten Bereich gemessen. Das erhöht die Wahrscheinlichkeit, dass die Stelle ihre Wirkung entfaltet.";
-  }
-  if (unique.every(u => u === data.dom.key || u === data.sec.key)) {
-    return "Der Erfolgsfokus wird durch die beiden stärksten Anforderungen der Stelle abgedeckt. Die natürlichen Stärken der Stelle greifen hier direkt. Das erleichtert die Zielerreichung.";
-  }
-  const missingKey = unique.find(u => u !== data.dom.key && u !== data.sec.key);
-  const missingDesc = missingKey === "imp" ? "schnelle Umsetzung und Ergebnisorientierung" : missingKey === "int" ? "Beziehungsarbeit und persönlichen Kontakt" : "systematische Analyse und Prozessqualität";
-  return `Der Erfolgsfokus verlangt unter anderem ${missingDesc}. Diese Anforderung ist im Profil der Stelle nachrangig. Hier muss bewusst gesteuert werden, um den Erfolg abzusichern.`;
-}
-
 function buildProfilkonflikt(data: ReportData): string | null {
   const hauptDom = dominant(data.haupt);
   const { dom } = data;
@@ -531,355 +169,6 @@ function buildProfilkonflikt(data: ReportData): string | null {
   return `Hinweis: Die Kerntätigkeiten der Stelle verlangen vor allem ${hauptBehavior}. Das Gesamtprofil verschiebt sich jedoch in Richtung ${gesamtBehavior}. Rahmenbedingungen und ergänzende Anforderungen verändern das Anforderungsprofil. Im Besetzungsprozess sollte geprüft werden, ob die Person primär die Kerntätigkeiten oder das Gesamtpaket abbilden kann.`;
 }
 
-function buildKomponentenBedeutung(data: ReportData): { key: string; label: string; color: string; text: string; warning: string }[] {
-  const KOMP_TEXTE: Record<string, { label: string; color: string; text: string; warning: string }> = {
-    ana: {
-      label: "Analytisch",
-      color: COLORS.ana,
-      text: "Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe.",
-      warning: "Fehlt dieser Anteil, entstehen Fehler in Planung, Kalkulation und Dokumentation.",
-    },
-    imp: {
-      label: "Impulsiv",
-      color: COLORS.imp,
-      text: "Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung.",
-      warning: "Fehlt dieser Anteil, werden Entscheidungen verzögert und Chancen nicht genutzt.",
-    },
-    int: {
-      label: "Intuitiv",
-      color: COLORS.int,
-      text: "Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team.",
-      warning: "Fehlt dieser Anteil, leidet die Zusammenarbeit und Vertrauen sinkt.",
-    },
-  };
-  const sorted = (["imp", "int", "ana"] as const)
-    .map(k => ({ key: k, value: data.gesamt[k] }))
-    .sort((a, b) => b.value - a.value || (a.key === "imp" ? -1 : a.key === "int" ? 0 : 1));
-  return sorted.map(s => ({ key: s.key, ...KOMP_TEXTE[s.key] }));
-}
-
-function buildFehlbesetzung(data: ReportData): { label: string; bullets: string[] }[] {
-  const { dom, sec, wk, isLeadership, profileType } = data;
-  const risks: { label: string; bullets: string[] }[] = [];
-
-  const gap23 = Math.abs(sec.value - wk.value);
-  const secWkClose = gap23 <= 5;
-
-  const riskImp = {
-    label: "Wenn Tempo wichtiger wird als Absicherung",
-    bullets: [
-      "Entscheidungen werden zu schnell und ohne ausreichende Grundlage getroffen",
-      isLeadership ? "Das Team kann das Tempo nicht mithalten, Frustration und Überforderung entstehen" : "Abstimmung mit Kolleginnen und Kollegen leidet unter dem Handlungsdruck",
-      "Qualität und Sorgfalt gehen zugunsten von Geschwindigkeit verloren",
-    ],
-  };
-
-  const riskInt = {
-    label: "Wenn Beziehungspflege auf Kosten der Ergebnisse geht",
-    bullets: [
-      "Harmonie und Konsens werden über notwendige Entscheidungen gestellt",
-      isLeadership ? "Standards und Verbindlichkeit werden zugunsten von Teamstimmung aufgeweicht" : "Ergebnisse werden verzögert, weil zu viel abgestimmt und zu wenig entschieden wird",
-      "Wirtschaftliche und sachliche Anforderungen treten in den Hintergrund",
-    ],
-  };
-
-  const riskAna = {
-    label: "Wenn Gründlichkeit die Handlungsfähigkeit bremst",
-    bullets: [
-      "Entscheidungen werden aufgeschoben oder zu lange abgewogen",
-      isLeadership ? "Das Team wartet auf klare Richtungsvorgaben, die ausbleiben" : "Chancen werden verpasst, weil die Reaktionsgeschwindigkeit fehlt",
-      "Überanalyse verdrängt pragmatisches Handeln und zwischenmenschliches Gespür",
-    ],
-  };
-
-  const riskHybridImpAna = {
-    label: "Wenn Tempo und Analyse sich gegenseitig blockieren",
-    bullets: [
-      "Schnelle Entscheidungen werden durch nachträgliche Überprüfung ausgebremst",
-      isLeadership ? "Das Team erlebt widersprüchliche Signale – mal Tempo, mal Kontrolle" : "Andere erleben ein Schwanken zwischen Aktionismus und Perfektionismus",
-      "Die zwischenmenschliche Ebene gerät in den Hintergrund, weil beide Seiten sachlich ausgerichtet sind",
-    ],
-  };
-
-  const riskHybridImpInt = {
-    label: "Wenn Handeln und Harmonie in Konflikt geraten",
-    bullets: [
-      "Schnelle Entscheidungen kollidieren mit dem Wunsch, alle einzubinden",
-      isLeadership ? "Das Team erlebt wechselnde Führungsstile – mal durchsetzungsstark, mal konsensorientiert" : "Andere erleben ein Schwanken zwischen Direktheit und Rücksichtnahme",
-      "Analytische Absicherung und Qualitätskontrolle kommen zu kurz",
-    ],
-  };
-
-  const riskHybridAnaInt = {
-    label: "Wenn Gründlichkeit und Abstimmung die Umsetzung verzögern",
-    bullets: [
-      "Fundierte Analyse und persönliche Abstimmung beanspruchen zu viel Zeit",
-      isLeadership ? "Das Team wartet auf Entscheidungen, die wiederholt geprüft und besprochen werden" : "Andere warten auf Ergebnisse, die immer weiter verfeinert werden",
-      "Umsetzungstempo und Entscheidungsstärke fehlen, wenn schnelles Handeln gefragt ist",
-    ],
-  };
-
-  if (profileType === "balanced_all") {
-    risks.push(riskImp, riskInt, riskAna);
-  } else if (profileType === "hybrid_imp_ana") {
-    risks.push(riskHybridImpAna, riskInt);
-  } else if (profileType === "hybrid_imp_int") {
-    risks.push(riskHybridImpInt, riskAna);
-  } else if (profileType === "hybrid_ana_int") {
-    risks.push(riskHybridAnaInt, riskImp);
-  } else if (dom.key === "imp") {
-    const riskForSec = sec.key === "int" ? riskInt : riskAna;
-    const riskForWk = wk.key === "int" ? riskInt : riskAna;
-    if (secWkClose) {
-      risks.push(riskInt, riskAna);
-    } else {
-      risks.push(riskForWk, riskForSec);
-    }
-  } else if (dom.key === "int") {
-    const riskForSec = sec.key === "imp" ? riskImp : riskAna;
-    const riskForWk = wk.key === "imp" ? riskImp : riskAna;
-    if (secWkClose) {
-      risks.push(riskImp, riskAna);
-    } else {
-      risks.push(riskForWk, riskForSec);
-    }
-  } else {
-    const riskForSec = sec.key === "imp" ? riskImp : riskInt;
-    const riskForWk = wk.key === "imp" ? riskImp : riskInt;
-    if (secWkClose) {
-      risks.push(riskImp, riskInt);
-    } else {
-      risks.push(riskForWk, riskForSec);
-    }
-  }
-
-  return risks.slice(0, 3);
-}
-
-function getFazitVariant(bg: BG): number {
-  const vals = [
-    { key: "imp", value: bg.imp },
-    { key: "int", value: bg.int },
-    { key: "ana", value: bg.ana },
-  ].sort((a, b) => b.value - a.value || SORT_PRIORITY[a.key] - SORT_PRIORITY[b.key]);
-  const [top, mid, bot] = vals;
-  const gap1 = top.value - mid.value;
-  const gap2 = mid.value - bot.value;
-
-  if (gap1 <= 5 && gap2 <= 5) return 13;
-  if (gap1 <= 4 && gap2 >= 6) {
-    if (gap2 > 10) {
-      if ((top.key === "imp" && mid.key === "ana") || (top.key === "ana" && mid.key === "imp")) return 10;
-      if ((top.key === "imp" && mid.key === "int") || (top.key === "int" && mid.key === "imp")) return 11;
-      return 12;
-    }
-    if ((top.key === "imp" && mid.key === "ana") || (top.key === "ana" && mid.key === "imp")) return 4;
-    if ((top.key === "imp" && mid.key === "int") || (top.key === "int" && mid.key === "imp")) return 5;
-    return 6;
-  }
-  if (gap2 <= 4 && gap1 >= 6) {
-    if (top.key === "imp") return 7;
-    if (top.key === "ana") return 8;
-    return 9;
-  }
-  if (top.key === "imp") return 1;
-  if (top.key === "ana") return 2;
-  return 3;
-}
-
-function buildFazit(data: ReportData): { titel: string; absaetze: string[] } {
-  const variant = getFazitVariant(data.gesamt);
-  const isL = data.isLeadership;
-
-  const texte: Record<number, { titel: string; ohne: string[]; mit: string[] }> = {
-    1: {
-      titel: "Direkte Umsetzung und schnelles Handeln",
-      ohne: [
-        "In dieser Stelle werden Themen häufig direkt aufgegriffen und zügig in Handlung überführt. Aufgaben bleiben selten lange liegen, sondern werden aktiv vorangetrieben.",
-        "Die Stärke dieser Ausrichtung liegt darin, Bewegung zu schaffen und Entscheidungen schnell in konkrete Schritte umzusetzen.",
-        "Die Herausforderung besteht darin, dass Entscheidungen manchmal schneller getroffen werden, als alle Hintergründe vollständig geprüft sind.",
-      ],
-      mit: [
-        "In dieser Stelle entsteht Führung häufig durch schnelles Handeln und klare Entscheidungen. Themen werden aktiv aufgegriffen und zügig vorangetrieben.",
-        "Für das Team bedeutet das meist eine klare Richtung und spürbare Dynamik. Aufgaben kommen schnell in Bewegung und Entscheidungen werden nicht lange hinausgeschoben.",
-        "Die Stärke dieser Ausrichtung liegt darin, Veränderungen anzustossen und Themen konsequent voranzubringen.",
-        "Die Herausforderung besteht darin, dass Entscheidungen gelegentlich schneller getroffen werden, als alle Hintergründe vollständig geprüft sind. Für das Team kann dadurch gelegentlich Nachsteuerung notwendig werden.",
-      ],
-    },
-    2: {
-      titel: "Sorgfältige Prüfung vor wichtigen Schritten",
-      ohne: [
-        "In dieser Stelle werden Situationen zunächst genau betrachtet. Informationen und Zusammenhänge werden geprüft, bevor eine Entscheidung getroffen wird.",
-        "Die Stärke liegt in durchdachten Entscheidungen und einer hohen Verlässlichkeit bei wichtigen Aufgaben.",
-        "Die Herausforderung besteht darin, dass Entscheidungen länger vorbereitet werden können, wenn noch offene Fragen geklärt werden sollen.",
-      ],
-      mit: [
-        "In dieser Stelle entsteht Führung häufig über eine gründliche Betrachtung von Situationen. Entscheidungen werden vorbereitet, bevor sie umgesetzt werden.",
-        "Für das Team bedeutet das meist klare Orientierung und nachvollziehbare Entscheidungen. Aufgaben werden eingeordnet, Hintergründe werden berücksichtigt.",
-        "Die Stärke liegt darin, verlässliche und gut begründete Entscheidungen zu treffen.",
-        "Die Herausforderung besteht darin, dass Entscheidungen länger dauern können, wenn zunächst alle Informationen geklärt werden sollen.",
-      ],
-    },
-    3: {
-      titel: "Starkes Gespür für Menschen und Situationen",
-      ohne: [
-        "In dieser Stelle spielen zwischenmenschliche Signale und situative Eindrücke eine wichtige Rolle. Entscheidungen entstehen häufig aus dem Verständnis für Menschen und die aktuelle Situation.",
-        "Die Stärke liegt darin, Zusammenarbeit und Wirkung auf andere gut einschätzen zu können.",
-        "Die Herausforderung besteht darin, Entscheidungen ausreichend sachlich abzusichern.",
-      ],
-      mit: [
-        "In dieser Stelle entsteht Führung häufig über das Verständnis für Menschen und die Situation im Team. Entscheidungen berücksichtigen stark die Wirkung auf Zusammenarbeit und Stimmung.",
-        "Für das Team bedeutet das oft ein hohes Mass an Aufmerksamkeit für Beziehungen, Kommunikation und gegenseitige Unterstützung.",
-        "Die Stärke liegt darin, ein gutes Miteinander zu fördern und Spannungen früh wahrzunehmen.",
-        "Die Herausforderung besteht darin, Entscheidungen ausreichend sachlich abzusichern und nicht zu stark aus der aktuellen Situation heraus zu treffen.",
-      ],
-    },
-    4: {
-      titel: "Tempo verbunden mit sachlicher Überprüfung",
-      ohne: [
-        "In dieser Stelle verbinden sich Tempo und gedankliche Prüfung. Themen werden aktiv angegangen, gleichzeitig werden Hintergründe und Folgen berücksichtigt.",
-        "Die Stärke liegt darin, Entscheidungen voranzubringen und dennoch nachvollziehbar zu begründen.",
-        "Die Herausforderung besteht darin, das richtige Gleichgewicht zwischen schneller Umsetzung und gründlicher Prüfung zu halten.",
-      ],
-      mit: [
-        "In dieser Stelle verbinden sich zügige Entscheidungen mit einer gedanklichen Prüfung der Situation. Themen werden aktiv angegangen, gleichzeitig werden Hintergründe berücksichtigt.",
-        "Für das Team entsteht dadurch häufig eine gute Mischung aus Dynamik und Orientierung. Aufgaben werden vorangebracht und gleichzeitig nachvollziehbar eingeordnet.",
-        "Die Stärke liegt darin, Entscheidungen voranzutreiben und dennoch eine klare Grundlage zu behalten.",
-        "Die Herausforderung besteht darin, das richtige Gleichgewicht zwischen Tempo und gründlicher Prüfung zu halten.",
-      ],
-    },
-    5: {
-      titel: "Aktives Vorgehen mit Blick auf Menschen",
-      ohne: [
-        "In dieser Stelle werden Themen aktiv aufgegriffen, gleichzeitig wird darauf geachtet, wie Entscheidungen auf andere wirken.",
-        "Die Stärke liegt darin, Bewegung zu schaffen und dabei das Miteinander im Blick zu behalten.",
-        "Die Herausforderung besteht darin, Entscheidungen nicht zu stark von der aktuellen Situation oder Stimmung beeinflussen zu lassen.",
-      ],
-      mit: [
-        "In dieser Stelle verbinden sich Aktivität und ein gutes Gespür für Menschen. Entscheidungen führen schnell zu Handlung, gleichzeitig wird auf die Wirkung im Team geachtet.",
-        "Für das Team bedeutet das oft eine lebendige Zusammenarbeit und klare Bewegung in Aufgaben.",
-        "Die Stärke liegt darin, Veränderungen anzustossen und gleichzeitig das Miteinander im Blick zu behalten.",
-        "Die Herausforderung besteht darin, Entscheidungen nicht zu stark von der aktuellen Situation oder Stimmung beeinflussen zu lassen.",
-      ],
-    },
-    6: {
-      titel: "Sachliche Überlegung mit Gespür für Zusammenarbeit",
-      ohne: [
-        "In dieser Stelle werden Entscheidungen sowohl über Fakten als auch über ihre Wirkung auf Menschen betrachtet.",
-        "Die Stärke liegt darin, Lösungen zu finden, die logisch nachvollziehbar sind und gleichzeitig für andere akzeptabel bleiben.",
-        "Die Herausforderung besteht darin, Entscheidungen nicht zu lange abzuwägen.",
-      ],
-      mit: [
-        "In dieser Stelle werden Entscheidungen sowohl über Fakten als auch über ihre Wirkung auf Menschen betrachtet.",
-        "Für das Team bedeutet das häufig eine ruhige und nachvollziehbare Entscheidungsweise, bei der sowohl Sachfragen als auch Zusammenarbeit berücksichtigt werden.",
-        "Die Stärke liegt darin, Lösungen zu finden, die fachlich sinnvoll sind und gleichzeitig für das Team akzeptabel bleiben.",
-        "Die Herausforderung besteht darin, Entscheidungen nicht zu lange abzuwägen.",
-      ],
-    },
-    7: {
-      titel: "Klare Umsetzung mit Blick für Zusammenhänge und Menschen",
-      ohne: [
-        "In dieser Stelle steht die Umsetzung im Vordergrund. Themen werden aktiv angegangen und Entscheidungen führen schnell zu Handlung.",
-        "Gleichzeitig werden sowohl sachliche Hintergründe als auch Auswirkungen auf Menschen berücksichtigt.",
-        "Die Stärke liegt darin, Entscheidungen voranzubringen und dabei mehrere Aspekte einzubeziehen.",
-        "Die Herausforderung besteht darin, bei vielen Blickwinkeln eine klare Linie zu halten.",
-      ],
-      mit: [
-        "In dieser Stelle werden Entscheidungen aktiv getroffen und zügig umgesetzt. Gleichzeitig werden sowohl Hintergründe als auch Auswirkungen auf das Team berücksichtigt.",
-        "Für das Team bedeutet das häufig eine klare Richtung bei gleichzeitiger Aufmerksamkeit für Zusammenhänge und Zusammenarbeit.",
-        "Die Stärke liegt darin, Entscheidungen voranzubringen und dabei mehrere Aspekte einzubeziehen.",
-        "Die Herausforderung besteht darin, bei verschiedenen Blickwinkeln eine klare Linie beizubehalten.",
-      ],
-    },
-    8: {
-      titel: "Guter Überblick mit praktischer Umsetzung",
-      ohne: [
-        "In dieser Stelle entsteht zunächst ein klares Verständnis der Situation. Anschliessend werden Entscheidungen umgesetzt und ihre Wirkung auf das Umfeld berücksichtigt.",
-        "Die Stärke liegt darin, Entscheidungen auf einer guten Grundlage zu treffen und anschliessend umzusetzen.",
-        "Die Herausforderung besteht darin, Entscheidungen nicht zu lange vorzubereiten.",
-      ],
-      mit: [
-        "In dieser Stelle entsteht zunächst ein klares Verständnis der Situation. Anschliessend werden Entscheidungen umgesetzt und ihre Wirkung auf das Team berücksichtigt.",
-        "Für das Team bedeutet das meist eine ruhige Orientierung und nachvollziehbare Entscheidungen.",
-        "Die Stärke liegt darin, Entscheidungen auf einer guten Grundlage zu treffen und gleichzeitig praktisch umzusetzen.",
-        "Die Herausforderung besteht darin, Entscheidungen nicht zu lange vorzubereiten.",
-      ],
-    },
-    9: {
-      titel: "Gespür für Menschen mit Handlung und Überblick",
-      ohne: [
-        "In dieser Stelle steht das Verständnis für Menschen und Situationen im Mittelpunkt. Gleichzeitig stehen Umsetzung und sachliche Betrachtung zur Verfügung.",
-        "Die Stärke liegt darin, Entscheidungen zu treffen, die sowohl menschliche als auch praktische Aspekte berücksichtigen.",
-        "Die Herausforderung besteht darin, Entscheidungen nicht zu stark an der aktuellen Situation auszurichten.",
-      ],
-      mit: [
-        "In dieser Stelle steht das Verständnis für Menschen und Teamdynamik im Mittelpunkt. Gleichzeitig stehen Umsetzung und sachliche Betrachtung zur Verfügung.",
-        "Für das Team bedeutet das häufig eine Führung, die sowohl auf Zusammenarbeit als auch auf praktische Lösungen achtet.",
-        "Die Stärke liegt darin, menschliche Dynamiken zu erkennen und daraus tragfähige Entscheidungen abzuleiten.",
-        "Die Herausforderung besteht darin, Entscheidungen nicht zu stark an der aktuellen Situation auszurichten.",
-      ],
-    },
-    10: {
-      titel: "Klares Vorgehen mit Tempo und Überblick",
-      ohne: [
-        "In dieser Stelle verbinden sich Aktivität und sachliche Betrachtung. Entscheidungen werden zügig getroffen und gleichzeitig gedanklich geprüft.",
-        "Die Stärke liegt darin, Themen voranzubringen und dabei den Überblick zu behalten.",
-        "Die Herausforderung besteht darin, die Wirkung von Entscheidungen auf Menschen ausreichend zu berücksichtigen.",
-      ],
-      mit: [
-        "In dieser Stelle verbinden sich Aktivität und sachliche Betrachtung. Entscheidungen werden zügig getroffen und gleichzeitig gedanklich geprüft.",
-        "Für das Team bedeutet das meist klare Orientierung und eine schnelle Umsetzung von Aufgaben.",
-        "Die Stärke liegt darin, Entscheidungen voranzubringen und gleichzeitig den Überblick über Zusammenhänge zu behalten.",
-        "Die Herausforderung besteht darin, auch die Wirkung von Entscheidungen auf Menschen ausreichend zu berücksichtigen.",
-      ],
-    },
-    11: {
-      titel: "Dynamisches Vorgehen mit Blick für Menschen",
-      ohne: [
-        "In dieser Stelle werden Themen aktiv vorangetrieben und gleichzeitig auf ihre Wirkung auf andere Menschen geachtet.",
-        "Die Stärke liegt darin, Bewegung zu schaffen und dabei Beziehungen zu stabilisieren.",
-        "Die Herausforderung besteht darin, Entscheidungen ausreichend sachlich zu prüfen.",
-      ],
-      mit: [
-        "In dieser Stelle werden Themen aktiv vorangetrieben und gleichzeitig auf ihre Wirkung auf das Team geachtet.",
-        "Für das Team bedeutet das häufig Bewegung, Motivation und eine hohe Aufmerksamkeit für Zusammenarbeit.",
-        "Die Stärke liegt darin, Veränderungen anzustossen und dabei Beziehungen im Team zu stabilisieren.",
-        "Die Herausforderung besteht darin, Entscheidungen ausreichend sachlich zu prüfen.",
-      ],
-    },
-    12: {
-      titel: "Überlegtes Vorgehen mit Verständnis für Menschen",
-      ohne: [
-        "In dieser Stelle werden Entscheidungen sowohl über Fakten als auch über ihre Wirkung auf Menschen betrachtet.",
-        "Die Stärke liegt darin, Lösungen zu entwickeln, die logisch nachvollziehbar und gleichzeitig für andere stimmig sind.",
-        "Die Herausforderung besteht darin, Entscheidungen nicht zu lange vorzubereiten.",
-      ],
-      mit: [
-        "In dieser Stelle werden Entscheidungen sowohl über Fakten als auch über ihre Wirkung auf Menschen betrachtet.",
-        "Für das Team bedeutet das meist eine ruhige und überlegte Führung mit Blick auf Zusammenarbeit und Verständnis für unterschiedliche Perspektiven.",
-        "Die Stärke liegt darin, Lösungen zu entwickeln, die fachlich nachvollziehbar und gleichzeitig für das Team stimmig sind.",
-        "Die Herausforderung besteht darin, Entscheidungen nicht zu lange vorzubereiten.",
-      ],
-    },
-    13: {
-      titel: "Ausgewogene Betrachtung aus mehreren Blickwinkeln",
-      ohne: [
-        "In dieser Stelle stehen Handlung, sachliche Betrachtung und das Verständnis für Menschen gleichermassen zur Verfügung.",
-        "Die Stärke liegt darin, Situationen aus verschiedenen Blickwinkeln zu betrachten und flexibel auf unterschiedliche Anforderungen zu reagieren.",
-        "Die Herausforderung besteht darin, bei mehreren möglichen Perspektiven eine klare Priorität zu setzen und Entscheidungen konsequent umzusetzen.",
-      ],
-      mit: [
-        "In dieser Stelle stehen Handlung, sachliche Betrachtung und das Verständnis für Menschen gleichermassen zur Verfügung.",
-        "Für das Team bedeutet das meist eine flexible Führung, die unterschiedliche Anforderungen berücksichtigen kann.",
-        "Die Stärke liegt darin, Situationen aus mehreren Blickwinkeln zu betrachten und auf Veränderungen reagieren zu können.",
-        "Die Herausforderung besteht darin, bei mehreren möglichen Perspektiven eine klare Priorität zu setzen und Entscheidungen konsequent umzusetzen.",
-      ],
-    },
-  };
-
-  const t = texte[variant];
-  return { titel: t.titel, absaetze: isL ? t.mit : t.ohne };
-}
 
 function makeCircleDataUrl(
   text: string,
@@ -1203,148 +492,60 @@ export default function Rollenprofil() {
     );
   }
 
-  const stressRaw = buildStressTexts(data.gesamt, data.isLeadership, data.fuehrungstyp);
-  const stress = { controlled: t(stressRaw.controlled), uncontrolled: t(stressRaw.uncontrolled) };
-  const teamwirkung = t(buildTeamwirkung(data));
-  const spannungsfelderResult = buildSpannungsfelder(data);
-  const spannungsfelder = spannungsfelderResult.fields.map(f => t(f));
-  const spannungsfazit = t(spannungsfelderResult.fazit);
-  const fehlbesetzung = buildFehlbesetzung(data).map(f => ({ ...f, label: t(f.label), bullets: f.bullets.map(b => t(b)) }));
-  const fazitRaw = buildFazit(data);
-  const fazit = { titel: t(fazitRaw.titel), absaetze: fazitRaw.absaetze.map(a => t(a)) };
-
   const hauptTaetigkeiten = (data.taetigkeiten || []).filter((t: any) => t.kategorie === "haupt");
-  const hochItems = hauptTaetigkeiten.filter((t: any) => t.niveau === "Hoch");
-  const erfolgsfokusLabels = data.erfolgsfokusIndices.map(i => ERFOLGSFOKUS_LABELS[i]).filter(Boolean);
-  const profilherkunft = buildProfilherkunft(data);
-  const rahmenText = t(buildRahmenText(data));
-  const erfolgsfokusText = t(buildErfolgsfokusText(data, erfolgsfokusLabels));
+  const topTaetigkeiten = hauptTaetigkeiten.slice(0, 3).map((t: any) => cleanTaskName(t.name));
   const profilkonfliktRaw = buildProfilkonflikt(data);
   const profilkonflikt = profilkonfliktRaw ? t(profilkonfliktRaw) : null;
 
-  const komponentenBedeutung = buildKomponentenBedeutung(data).map(k => ({ ...k, text: t(k.text), warning: t(k.warning) }));
+  const FOKUS_TO_KEY: Record<number, ComponentKey> = {
+    0: "imp", 1: "int", 2: "imp", 3: "ana", 4: "ana", 5: "int",
+  };
+  const erfolgsfokusIndices: number[] = data.erfolgsfokusIndices || [];
+  const successFocusKey: SuccessFocusKey = erfolgsfokusIndices.length > 0
+    ? (FOKUS_TO_KEY[erfolgsfokusIndices[0]] ?? null)
+    : null;
 
-  const topTaetigkeiten = hauptTaetigkeiten.slice(0, 3).map((t: any) => cleanTaskName(t.name));
+  const engineInput = {
+    jobTitle: data.beruf,
+    tasks: topTaetigkeiten,
+    triad: { imp: Math.round(data.gesamt.imp), int: Math.round(data.gesamt.int), ana: Math.round(data.gesamt.ana) },
+    successFocus: successFocusKey,
+    environment: {
+      taskCharacter: data.aufgabencharakter || null,
+      workLogic: data.arbeitslogik || null,
+      leadershipType: data.isLeadership ? data.fuehrungstyp : null,
+    },
+  };
+  const report = generateJobCheckRoleReport(engineInput);
 
-  const rollenBeschreibungIntro = t((() => {
-    const fk = data.isLeadership;
-    const pt = data.profileType;
-    if (pt === "balanced_all") {
-      return `Diese Anforderungen verlangen eine vielseitige Persönlichkeit, die situativ zwischen zügigem Handeln, persönlichem Kontakt und sorgfältigem Arbeiten wechseln kann. Entscheidend ist die Fähigkeit, flexibel auf unterschiedliche Situationen zu reagieren, ohne dabei an Verbindlichkeit und Verlässlichkeit zu verlieren.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team flexibel zu führen und je nach Situation unterschiedliche Schwerpunkte zu setzen." : ""}`;
-    }
-    if (pt === "hybrid_imp_ana") {
-      return `Diese Anforderungen verlangen eine Persönlichkeit, die entschlossen handelt und gleichzeitig methodisch vorgeht. Entscheidend sind Umsetzungsstärke und analytische Sorgfalt – beides muss auf hohem Niveau zusammenwirken.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team sowohl mit klarer Richtung als auch mit strukturierter Steuerung zu führen." : ""}`;
-    }
-    if (pt === "hybrid_imp_int") {
-      return `Diese Anforderungen verlangen eine Persönlichkeit, die zügig entscheidet und gleichzeitig ein Gespür für Menschen und Teamdynamiken mitbringt. Entscheidend sind Handlungsorientierung und Beziehungsfähigkeit – beides muss auf hohem Niveau zusammenwirken.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team mit Energie und Empathie zu führen und dabei sowohl Ergebnisse als auch den Zusammenhalt im Blick zu behalten." : ""}`;
-    }
-    if (pt === "hybrid_ana_int") {
-      return `Diese Anforderungen verlangen eine Persönlichkeit, die sorgfältig analysiert und gleichzeitig im persönlichen Kontakt überzeugt. Entscheidend sind methodische Gründlichkeit und kommunikative Kompetenz – beides muss auf hohem Niveau zusammenwirken.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team fachlich fundiert und zugleich menschlich überzeugend zu führen." : ""}`;
-    }
-    if (data.dom.key === "int") {
-      return `Diese Anforderungen verlangen eine Persönlichkeit, die rasch Vertrauen aufbaut, Bedürfnisse frühzeitig erkennt und im persönlichen Kontakt überzeugt. Entscheidend sind ein ausgeprägtes Gespür für zwischenmenschliche Dynamiken, die Fähigkeit, tragfähige Beziehungen aufzubauen, und ein sicheres Auftreten im direkten Austausch.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team einfühlsam zu führen und dabei sowohl fachliche als auch zwischenmenschliche Anforderungen im Blick zu behalten." : ""}`;
-    }
-    if (data.dom.key === "imp") {
-      return `Diese Anforderungen erfordern eine Persönlichkeit, die zügig entscheidet, klar priorisiert und Ergebnisse konsequent vorantreibt. Entscheidend sind Entschlusskraft, Handlungsorientierung und die Fähigkeit, auch bei unvollständiger Informationslage wirksam zu agieren.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team entschlossen zu führen und Verantwortung für dessen Ergebnisse zu übernehmen." : ""}`;
-    }
-    return `Diese Anforderungen verlangen eine Persönlichkeit, die strukturiert, sorgfältig und verlässlich arbeitet, klare Standards einhält und auch bei wiederkehrenden Abläufen mit hoher Präzision vorgeht. Entscheidend sind ein ausgeprägtes Qualitätsbewusstsein, ein methodisches Vorgehen und die Fähigkeit, Aufgaben konsequent und gewissenhaft umzusetzen.${fk ? " Zusätzlich erfordert die Stelle die Fähigkeit, ein Team methodisch zu führen und für nachvollziehbare Abläufe und einheitliche Standards zu sorgen." : ""}`;
-  })());
+  const rollenBeschreibungIntro = t(report.shortDescription);
 
-  const rollenBeschreibungErgaenzung = t((() => {
-    const pt = data.profileType;
-    if (pt === "balanced_all") {
-      return "Da alle drei Anforderungsbereiche nahezu gleich gewichtet sind, gibt es keine eindeutige Ergänzungsanforderung. Die Person muss in allen Dimensionen – Handlung, Kommunikation und Analyse – ein solides Grundniveau mitbringen und situativ den richtigen Schwerpunkt setzen.";
-    }
-    if (pt === "hybrid_imp_ana") {
-      return "Ergänzend erfordert die Stelle ein Mindestmass an Kommunikationsfähigkeit und Beziehungsarbeit, um Ergebnisse im Team zu verankern und die Zusammenarbeit auch bei hohem Tempo und hoher Anforderung an Genauigkeit nicht zu vernachlässigen.";
-    }
-    if (pt === "hybrid_imp_int") {
-      return "Ergänzend erfordert die Stelle ein Mindestmass an analytischer Sorgfalt und Strukturbewusstsein, um Entscheidungen auf einer fundierten Grundlage zu treffen und Qualitätsstandards auch bei hoher Dynamik einzuhalten.";
-    }
-    if (pt === "hybrid_ana_int") {
-      return "Ergänzend erfordert die Stelle ein Mindestmass an Umsetzungsstärke und Entscheidungstempo, um Erkenntnisse und Abstimmungen zeitnah in konkretes Handeln zu überführen und den Fortschritt nicht zu bremsen.";
-    }
-    if (data.dom.key === "int") {
-      return data.sec.key === "ana"
-        ? "Darüber hinaus erfordert die Stelle ein ausreichendes Mass an Struktur und Organisationsfähigkeit, um Abläufe verlässlich zu gestalten, Dokumentationen sorgfältig zu führen und einheitliche Standards einzuhalten."
-        : "Darüber hinaus erfordert die Stelle ein ausreichendes Mass an Durchsetzungsfähigkeit, um Entscheidungen klar zu treffen, Prioritäten verbindlich zu setzen und auch bei Widerständen handlungsfähig zu bleiben.";
-    }
-    if (data.dom.key === "imp") {
-      return data.sec.key === "int"
-        ? "Darüber hinaus erfordert die Stelle ein ausreichendes Mass an Beziehungsfähigkeit, um das Team mitzunehmen, Akzeptanz zu schaffen und die Zusammenarbeit auf eine tragfähige Grundlage zu stellen."
-        : "Darüber hinaus erfordert die Stelle ein ausreichendes Mass an Sorgfalt und Genauigkeit, um Qualitätsstandards einzuhalten, Prozesse nachvollziehbar zu dokumentieren und fundierte Entscheidungsgrundlagen zu liefern.";
-    }
-    return data.sec.key === "int"
-      ? "Darüber hinaus erfordert die Stelle ein ausreichendes Mass an Abstimmung und Kommunikationsfähigkeit, um Abläufe im Team verlässlich zu unterstützen, Rückmeldungen verständlich weiterzugeben und eine reibungslose Zusammenarbeit sicherzustellen."
-      : "Darüber hinaus erfordert die Stelle ein ausreichendes Mass an Handlungsfähigkeit und Umsetzungsstärke, um Analyseergebnisse in konkrete Massnahmen zu überführen, Entscheidungen zeitnah zu treffen und den Fortschritt aktiv voranzutreiben.";
-  })());
+  const strukturprofilText = t(report.structureProfile);
+  const arbeitslogikText = t(report.workLogic);
+  const rahmenText = t(report.framework);
+  const erfolgsfokusText = t(report.successFocus);
+  const alltagsverhalten = t(report.behaviourDaily);
+  const stress = { controlled: t(report.behaviourPressure), uncontrolled: t(report.behaviourStress) };
+  const teamwirkung = t(report.teamImpact);
+  const spannungsfelder = report.tensionFields.map(f => t(f));
+  const fehlbesetzung = report.miscastRisks.map(f => ({ label: t(f.label), bullets: f.bullets.map(b => t(b)) }));
+  const fazit = { titel: "Entscheidungsfazit", absaetze: [t(report.finalDecision)] };
 
-  const arbeitslogikText = t((() => {
-    const fk = data.isLeadership;
-    const pt = data.profileType;
-    if (pt === "balanced_all") {
-      return `Die Wirksamkeit dieser Stelle entsteht nicht über eine einzelne Stärke, sondern über die Fähigkeit, situativ den richtigen Schwerpunkt zu setzen. ${fk ? "Als Führungskraft muss sie je nach Anforderung zwischen zügiger Entscheidung, persönlicher Abstimmung und gründlicher Analyse wechseln können." : "Die Person muss je nach Situation zwischen zügigem Handeln, persönlichem Austausch und gründlicher Analyse wechseln können."} Das erfordert ein hohes Mass an Selbstreflexion und Anpassungsfähigkeit.`;
-    }
-    if (pt === "hybrid_imp_ana") {
-      return `Die Wirksamkeit dieser Stelle entsteht durch die Verbindung von Tempo und Gründlichkeit. ${fk ? "Als Führungskraft treibt sie Ergebnisse voran und sichert gleichzeitig Qualität und Nachvollziehbarkeit." : "Aufgaben werden zügig angegangen und gleichzeitig sorgfältig geprüft."} Dabei darf die zwischenmenschliche Ebene nicht vernachlässigt werden – Ergebnisse müssen im Team verankert und verständlich kommuniziert werden.`;
-    }
-    if (pt === "hybrid_imp_int") {
-      return `Die Wirksamkeit dieser Stelle entsteht durch die Verbindung von Handlungsorientierung und Beziehungsfähigkeit. ${fk ? "Als Führungskraft treibt sie Ergebnisse voran und achtet gleichzeitig auf den Zusammenhalt und die Motivation im Team." : "Aufgaben werden zügig vorangetrieben und gleichzeitig wird auf die Wirkung auf andere geachtet."} Dabei darf die analytische Absicherung nicht zu kurz kommen – auch dynamische Entscheidungen brauchen eine fundierte Grundlage.`;
-    }
-    if (pt === "hybrid_ana_int") {
-      return `Die Wirksamkeit dieser Stelle entsteht durch die Verbindung von analytischer Tiefe und kommunikativer Kompetenz. ${fk ? "Als Führungskraft setzt sie auf fundierte Entscheidungen und verankert diese gleichzeitig über persönliche Kommunikation im Team." : "Sachverhalte werden gründlich geprüft und gleichzeitig verständlich und überzeugend kommuniziert."} Dabei muss die Umsetzungsstärke gewährleistet bleiben – Erkenntnis und Abstimmung allein erzeugen noch keine Wirkung.`;
-    }
-    if (data.dom.key === "int") {
-      return `Die Wirksamkeit dieser Stelle entsteht vor allem im direkten persönlichen Austausch – ${fk ? "mit dem Team, relevanten Stakeholdern und Entscheidungsträgern" : "mit Kolleginnen und Kollegen, Kundinnen und Kunden oder weiteren Gesprächspartnern"}. Entscheidungen werden häufig situativ und dialogorientiert getroffen. ${data.sec.key === "ana" ? "Zugleich verlangt die Stelle die Fähigkeit, Abläufe strukturiert zu organisieren, Prioritäten klar zu setzen und Verbindlichkeit in der Umsetzung sicherzustellen." : "Zugleich verlangt die Stelle die Fähigkeit, zügig zu handeln und Ergebnisse konsequent zu liefern – auch dann, wenn nicht alle Beteiligten einverstanden sind."}`;
-    }
-    if (data.dom.key === "imp") {
-      return `Die Wirksamkeit dieser Stelle entsteht vor allem durch entschlossenes Handeln und klare Priorisierung. ${fk ? "Als Führungskraft gibt sie das Tempo vor und treibt Ergebnisse aktiv und verbindlich voran." : "Aufgaben und Themen werden eigenständig vorangetrieben, ohne auf detaillierte Anweisungen zu warten."} ${data.sec.key === "int" ? "Dabei darf der Blick für das Team und die zwischenmenschliche Ebene nicht verloren gehen. Nachhaltige Ergebnisse entstehen nur, wenn auch die Beziehungsebene gepflegt wird." : "Dabei erfordert die Stelle zugleich analytische Sorgfalt, damit Qualität, Nachhaltigkeit und fundierte Entscheidungsgrundlagen gewährleistet bleiben."}`;
-    }
-    return `Die Wirksamkeit dieser Stelle entsteht durch systematische Analyse, klar definierte Prozesse und fundierte Entscheidungsgrundlagen. ${fk ? "Als Führungskraft setzt sie auf nachvollziehbare Qualitätsstandards und eine transparente, methodische Steuerung." : "Fachliche Tiefe und eine sorgfältige Arbeitsweise schaffen Vertrauen, Verlässlichkeit und Orientierung."} ${data.sec.key === "int" ? "Zugleich verlangt die Stelle, Erkenntnisse verständlich zu kommunizieren, im Team zu verankern und eine konstruktive Zusammenarbeit aktiv zu fördern." : "Zugleich müssen Analyseergebnisse in konkretes Handeln überführt werden. Fundierte Erkenntnis allein erzeugt noch keine Wirkung."}`;
-  })());
-
-  const alltagsverhalten = t((() => {
-    const hochNamen = hochItems.slice(0, 3).map((t: any) => cleanTaskName(t.name));
-    const hochRef = hochNamen.length > 0 ? `Besonders kritisch sind dabei ${hochNamen.join(", ")}. ` : "";
-    const fk = data.isLeadership;
-    const person = fk ? "Die Führungskraft" : "Die Person";
-    const pt = data.profileType;
-    if (pt === "balanced_all") {
-      return `Im regulären Arbeitsalltag zeigt sich bei dieser Stelle keine eindeutige Handlungsrichtung. ${person} wechselt vorwiegend situativ zwischen zügigem Handeln, persönlichem Kontakt und gründlicher Analyse. ${hochRef}Die Stärke liegt in der Vielseitigkeit. Die Herausforderung besteht eher darin, bei wechselnden Anforderungen eine konsistente Linie zu halten.`;
-    }
-    if (pt === "hybrid_imp_ana") {
-      return `Im regulären Arbeitsalltag verbindet diese Stelle vorwiegend zügiges Handeln mit gründlicher Prüfung. ${person} treibt Ergebnisse eher aktiv voran und achtet gleichzeitig auf Qualität und Nachvollziehbarkeit. ${hochRef}Dabei darf die Kommunikation im Team nicht vernachlässigt werden – Ergebnisse wirken nur, wenn sie verstanden und mitgetragen werden.`;
-    }
-    if (pt === "hybrid_imp_int") {
-      return `Im regulären Arbeitsalltag verbindet diese Stelle vorwiegend Umsetzungsstärke mit einem guten Gespür für Menschen. ${person} treibt eher Ergebnisse voran und achtet gleichzeitig auf den Zusammenhalt im Team. ${hochRef}Dabei darf die analytische Absicherung nicht zu kurz kommen – auch bei hoher Dynamik brauchen Entscheidungen eine fundierte Grundlage.`;
-    }
-    if (pt === "hybrid_ana_int") {
-      return `Im regulären Arbeitsalltag verbindet diese Stelle vorwiegend analytische Gründlichkeit mit kommunikativer Kompetenz. ${person} prüft Sachverhalte eher sorgfältig und kommuniziert Ergebnisse verständlich im Team. ${hochRef}Dabei muss das Umsetzungstempo gewährleistet bleiben – gründliche Analyse und Abstimmung dürfen die Handlungsfähigkeit nicht bremsen.`;
-    }
-    if (data.dom.key === "int") {
-      return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vorwiegend im persönlichen Kontakt. ${person} schafft eher Vertrauen, nimmt Bedürfnisse frühzeitig wahr und gestaltet ein Umfeld, in dem sich Beteiligte eingebunden und wertgeschätzt fühlen. ${hochRef}${data.sec.key === "ana" ? "Damit dies gelingt, erfordert die Stelle zugleich ein hohes Mass an Organisation und Verlässlichkeit. Abläufe, Dokumentation und einheitliche Standards müssen konsequent eingehalten werden." : "Damit dies gelingt, erfordert die Stelle zugleich Entscheidungsstärke und Umsetzungstempo. Nicht jede Situation lässt sich im Konsens lösen."}`;
-    }
-    if (data.dom.key === "imp") {
-      return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vorwiegend durch klare Priorisierung und konsequente Umsetzung. ${person} treibt Ergebnisse eher zielgerichtet voran und bleibt auch bei Widerständen handlungsfähig. ${hochRef}${data.sec.key === "int" ? "Damit dies gelingt, erfordert die Stelle zugleich Sensibilität für zwischenmenschliche Dynamiken. Wer ausschliesslich auf Tempo setzt, riskiert den Rückhalt im Team." : "Damit dies gelingt, erfordert die Stelle zugleich analytische Sorgfalt und Qualitätsbewusstsein. Auch zügig getroffene Entscheidungen müssen auf einer fundierten Grundlage beruhen."}`;
-    }
-    return `Im regulären Arbeitsalltag entfaltet diese Stelle ihre Wirkung vorwiegend durch methodisches Arbeiten, präzise Dokumentation und eine konsequente Qualitätsorientierung. ${person} überzeugt eher durch fachliche Tiefe und nachvollziehbare Ergebnisse. ${hochRef}${data.sec.key === "int" ? "Damit dies gelingt, erfordert die Stelle zugleich kommunikatives Geschick. Fachlich fundierte Ergebnisse müssen verständlich aufbereitet und im Team verankert werden." : "Damit dies gelingt, erfordert die Stelle zugleich Handlungsbereitschaft und Umsetzungsstärke. Wer ausschliesslich analysiert, ohne Entscheidungen herbeizuführen, hemmt den Fortschritt."}`;
-  })());
-
-  const strukturprofilText = t((() => {
-    if (data.profileType === "balanced_all") {
-      return "Diese Stelle erfordert keine eindeutige Spezialisierung. Sie verlangt eine Persönlichkeit, die situativ zwischen zügigem Handeln, persönlichem Kontakt und sorgfältigem Arbeiten wechseln kann. Das macht die Besetzung besonders anspruchsvoll – die Person muss vielseitig agieren, ohne dabei an Verlässlichkeit und Verbindlichkeit zu verlieren.";
-    }
-    if (data.profileType.startsWith("hybrid_")) {
-      const domBehav = data.dom.key === "imp" ? "entschlossenes Handeln und Umsetzungsstärke" : data.dom.key === "int" ? "ein sicheres Auftreten im persönlichen Kontakt und ein gutes Gespür für andere" : "Gründlichkeit, Sorgfalt und eine konsequente Einhaltung von Standards";
-      const secBehav = data.sec.key === "imp" ? "entschlossenes Handeln und Umsetzungsstärke" : data.sec.key === "int" ? "ein sicheres Auftreten im persönlichen Kontakt und ein gutes Gespür für andere" : "Gründlichkeit, Sorgfalt und eine konsequente Einhaltung von Standards";
-      return `Diese Stelle verlangt gleichzeitig ${domBehav} und ${secBehav}. Beide Anforderungsbereiche sind nahezu gleichwertig ausgeprägt. Die Person muss in beiden Dimensionen ein hohes Wirkungsniveau mitbringen.`;
-    }
-    const domBehav = data.dom.key === "imp" ? "entschlossenes Handeln und klare Prioritätensetzung" : data.dom.key === "int" ? "persönlichen Kontakt und die Fähigkeit, Vertrauen und Nähe herzustellen" : "Gründlichkeit, Verlässlichkeit und ein konsequent sorgfältiges Vorgehen";
-    return `Das Profil dieser Stelle wird massgeblich geprägt durch ${domBehav}. Dies bildet die zentrale Anforderung an die Person. ${data.sec.key === "ana" ? "Ergänzend dazu braucht es eine ordentliche und gewissenhafte Arbeitsweise, damit Abläufe stabil bleiben und Ergebnisse den geforderten Qualitätsstandards entsprechen." : data.sec.key === "int" ? "Ergänzend dazu braucht es die Fähigkeit, sich im Team abzustimmen, verständlich zu kommunizieren und ein konstruktives Miteinander zu fördern." : "Ergänzend dazu braucht es Umsetzungsstärke und Eigeninitiative, damit Aufgaben nicht nur geplant, sondern auch zuverlässig erledigt werden."}`;
-  })());
+  const COMP_COLORS: Record<string, string> = { imp: COLORS.imp, int: COLORS.int, ana: COLORS.ana };
+  const COMP_WARNINGS: Record<string, string> = {
+    imp: "Fehlt dieser Anteil, werden Entscheidungen verzögert und Chancen nicht genutzt.",
+    int: "Fehlt dieser Anteil, leidet die Zusammenarbeit und Vertrauen sinkt.",
+    ana: "Fehlt dieser Anteil, entstehen Fehler in Planung, Kalkulation und Dokumentation.",
+  };
+  const komponentenBedeutung = report.componentMeaning.map(k => ({
+    key: k.component,
+    label: k.title,
+    color: COMP_COLORS[k.component] || COLORS.ana,
+    text: t(k.text),
+    warning: t(COMP_WARNINGS[k.component] || ""),
+  }));
 
 
-  const domColor = COLORS[data.dom.key as keyof typeof COLORS] || "#1A5DAB";
 
   const SectionHead = ({ num, title }: { num: number; title: string; color?: string }) => (
     <div className="bio-section-head" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, marginLeft: -44, marginRight: -44, padding: "0 18px", height: 38, background: "linear-gradient(135deg, #343A48 0%, #3d4455 50%, #464f62 100%)", boxShadow: "0 2px 6px rgba(52,58,72,0.3)" }}>
@@ -1429,12 +630,14 @@ export default function Rollenprofil() {
 
           {/* ── EINLEITUNG ── */}
           <div style={{ marginBottom: 32 }} data-testid="bericht-section-intro" data-pdf-block>
-            <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 16px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-einleitung">
-              Dieser Bericht zeigt, welche Persönlichkeitsstruktur für die Stelle {data.beruf} besonders passend und wirksam ist. Neben den fachlichen Anforderungen beeinflusst vor allem die Art, wie eine Person Situationen einschätzt, Entscheidungen trifft und unter Druck handelt, die Wirksamkeit in dieser Position.<br /><br />Die folgenden Abschnitte verdeutlichen, welche Persönlichkeitsanforderungen die Stelle mit sich bringt, wie sich diese im Arbeitsalltag zeigen und welche Spannungsfelder daraus entstehen können.
-            </p>
+            {t(report.intro).split("\n\n").slice(0, 2).map((para, i) => (
+              <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 16px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid={i === 0 ? "text-einleitung" : undefined}>
+                {para}
+              </p>
+            ))}
             <div style={{ background: "linear-gradient(135deg, rgba(255,59,48,0.06) 0%, rgba(255,59,48,0.03) 100%)", borderRadius: 10, padding: "16px 20px", border: "1px solid rgba(255,59,48,0.2)" }}>
               <p style={{ fontSize: 13, fontWeight: 700, color: "#FF3B30", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                Die Aussagen beschreiben dabei keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse ist wertfrei zu verstehen und dient als Orientierung für die Einschätzung von Passung und Wirksamkeit. Da jede Person individuell ist, ersetzt sie keine Einzelfallbetrachtung, sondern ergänzt diese um eine strukturierte und fundierte Entscheidungsgrundlage.
+                {t(report.intro).split("\n\n")[2] || "Die Aussagen beschreiben keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse dient als strukturierte Orientierung für die Einschätzung von Passung und Wirksamkeit in der Rolle."}
               </p>
             </div>
           </div>
@@ -1462,11 +665,8 @@ export default function Rollenprofil() {
                 </>
               )}
 
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 8px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                {rollenBeschreibungIntro}
-              </p>
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                {rollenBeschreibungErgaenzung}
+                {rollenBeschreibungIntro}
               </p>
             </div>
 
@@ -1627,9 +827,6 @@ export default function Rollenprofil() {
                   </div>
                 ))}
               </div>
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "12px 0 0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                {spannungsfazit}
-              </p>
             </div>
 
             {/* Fehlbesetzungsrisiken */}
