@@ -533,9 +533,9 @@ export default function Rollenprofil() {
 
   const COMP_COLORS: Record<string, string> = { imp: COLORS.imp, int: COLORS.int, ana: COLORS.ana };
   const COMP_WARNINGS: Record<string, string> = {
-    imp: "Fehlt dieser Anteil, werden Entscheidungen verzögert und Chancen nicht genutzt.",
-    int: "Fehlt dieser Anteil, leidet die Zusammenarbeit und Vertrauen sinkt.",
-    ana: "Fehlt dieser Anteil, entstehen Fehler in Planung, Kalkulation und Dokumentation.",
+    imp: "Dieser Anteil sichert schnelle Entscheidungen und die Nutzung von Chancen.",
+    int: "Dieser Anteil stärkt Zusammenarbeit, Abstimmung und gegenseitiges Vertrauen.",
+    ana: "Dieser Anteil sichert Qualität in Planung, Kalkulation und Dokumentation.",
   };
   const komponentenBedeutung = report.componentMeaning.map(k => ({
     key: k.component,
