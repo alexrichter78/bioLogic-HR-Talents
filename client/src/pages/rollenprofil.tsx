@@ -532,17 +532,11 @@ export default function Rollenprofil() {
   const fazit = { titel: "Entscheidungsfazit", absaetze: [t(report.finalDecision)] };
 
   const COMP_COLORS: Record<string, string> = { imp: COLORS.imp, int: COLORS.int, ana: COLORS.ana };
-  const COMP_WARNINGS: Record<string, string> = {
-    imp: "Dieser Anteil sichert schnelle Entscheidungen und die Nutzung von Chancen.",
-    int: "Dieser Anteil stärkt Zusammenarbeit, Abstimmung und gegenseitiges Vertrauen.",
-    ana: "Dieser Anteil sichert Qualität in Planung, Kalkulation und Dokumentation.",
-  };
   const komponentenBedeutung = report.componentMeaning.map(k => ({
     key: k.component,
     label: k.title,
     color: COMP_COLORS[k.component] || COLORS.ana,
     text: t(k.text),
-    warning: t(COMP_WARNINGS[k.component] || ""),
   }));
 
 
@@ -707,10 +701,6 @@ export default function Rollenprofil() {
                               {kb.text}
                             </p>
                           </div>
-                          <div style={{ width: "100%", height: 2, background: kb.color, margin: "10px 0", borderRadius: 1, flexShrink: 0 }} />
-                          <p style={{ fontSize: 12, lineHeight: 1.6, margin: 0, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                            {kb.warning}
-                          </p>
                         </div>
                       </div>
                     ))}
