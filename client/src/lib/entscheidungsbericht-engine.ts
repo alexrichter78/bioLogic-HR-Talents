@@ -487,7 +487,11 @@ function buildBehaviourDaily(input: JobCheckTextInput): string {
 
 function buildBehaviourPressure(input: JobCheckTextInput): string {
   const meta = getVariantMeta(input.triad);
-  const { top1 } = meta;
+  const { profileClass, top1 } = meta;
+
+  if (profileClass === "BAL_FULL") {
+    return `Unter zunehmendem Arbeitsdruck zeigt sich bei dieser ausgeglichenen Rolle keine eindeutige Verschiebung. Stattdessen kann sich je nach Situation eine der drei Komponenten stärker in den Vordergrund schieben – ob Handlungsdruck, Absicherungsbedürfnis oder verstärkte Abstimmung. Welche Reaktion dominiert, hängt von der Person und der konkreten Belastung ab.`;
+  }
 
   if (top1 === "ana") {
     return `Unter zunehmendem Arbeitsdruck verstärkt sich die Tendenz zu genauer Prüfung, stärkerer Absicherung und kontrolliertem Vorgehen. Das erhöht die Nachvollziehbarkeit, kann Entscheidungen aber verlangsamen.`;
@@ -502,7 +506,11 @@ function buildBehaviourPressure(input: JobCheckTextInput): string {
 
 function buildBehaviourStress(input: JobCheckTextInput): string {
   const meta = getVariantMeta(input.triad);
-  const { top1, top2 } = meta;
+  const { profileClass, top1, top2 } = meta;
+
+  if (profileClass === "BAL_FULL") {
+    return `In nicht mehr kontrollierbaren Situationen fehlt bei dieser ausgeglichenen Rolle ein klarer Automatismus. Die Reaktion ist weniger vorhersagbar als bei spezialisierten Profilen. Es kann zu einem wechselnden Verhalten kommen – zwischen verstärkter Kontrolle, direkterem Handeln und intensiverer Abstimmung. Gerade dieses Schwanken macht die Stressreaktion schwerer einschätzbar.`;
+  }
 
   if (top1 === "ana" && top2 === "int") {
     return `In nicht mehr kontrollierbaren Situationen rückt zusätzlich die Wirkung auf andere stärker in den Vordergrund. Dann werden neben Fakten auch Abstimmung und zwischenmenschliche Folgen intensiver berücksichtigt.`;
