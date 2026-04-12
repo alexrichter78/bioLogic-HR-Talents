@@ -61,7 +61,8 @@ function expectedSubtype(soll: P, ist: P): FitSubtype {
   const candIsDualDom = !candIsBalFull && cDom.gap1 <= 5 && cDom.gap2 > 5;
   const candDualMatchesRole = candIsDualDom && (rk === ck || rk === cDom.top2.key);
   const roleIsBalFull = rDom.gap1 <= 5 && rDom.gap2 <= 5;
-  return deriveFitSubtype(rk, ck, sr, maxGap, candDualMatchesRole, candIsBalFull, roleIsBalFull);
+  const roleIsDualDom = !roleIsBalFull && rDom.gap1 <= 5 && rDom.gap2 > 5;
+  return deriveFitSubtype(rk, ck, sr, maxGap, candDualMatchesRole, candIsBalFull, roleIsBalFull, roleIsDualDom);
 }
 
 function isNegatedDeckungs(text: string): boolean {

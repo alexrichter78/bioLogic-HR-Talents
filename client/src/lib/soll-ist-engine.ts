@@ -208,8 +208,17 @@ export function deriveFitSubtype(
   candDualMatchesRole: boolean,
   candIsBalFull: boolean,
   roleIsBalFull: boolean,
+  roleIsDualDom: boolean = false,
 ): FitSubtype {
   if (rk === ck) {
+    if (structRel.type === "EXACT" && maxGap < 8) return "PERFECT";
+    return "STRUCTURE_MATCH_INTENSITY_OFF";
+  }
+  if (candDualMatchesRole && roleIsDualDom) {
+    if (structRel.type === "EXACT" && maxGap < 8) return "PERFECT";
+    return "STRUCTURE_MATCH_INTENSITY_OFF";
+  }
+  if (roleIsBalFull && candIsBalFull) {
     if (structRel.type === "EXACT" && maxGap < 8) return "PERFECT";
     return "STRUCTURE_MATCH_INTENSITY_OFF";
   }
@@ -385,7 +394,7 @@ export function computeSollIst(
   const structureRelation = computeStructureRelation(rt, ct);
   const maxGapVal = Math.max(Math.abs(rt.impulsiv - ct.impulsiv), Math.abs(rt.intuitiv - ct.intuitiv), Math.abs(rt.analytisch - ct.analytisch));
   const candDualMatchesRoleMain = candIsDualDomMain && (rk === ck || rk === ck2Main);
-  const fitSubtype = deriveFitSubtype(rk, ck, structureRelation, maxGapVal, candDualMatchesRoleMain, candIsBalFullMain, roleIsBalFull);
+  const fitSubtype = deriveFitSubtype(rk, ck, structureRelation, maxGapVal, candDualMatchesRoleMain, candIsBalFullMain, roleIsBalFull, isDualDomRole);
 
   const toTriadKey = (k: ComponentKey): TriadKey => k === "impulsiv" ? "I" : k === "intuitiv" ? "N" : "A";
   const roleP = { I: rt.impulsiv, N: rt.intuitiv, A: rt.analytisch };
