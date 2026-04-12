@@ -78,7 +78,7 @@ function bgToTriad(bg: BG | undefined): Triad {
 function severityLabel(s: Severity) {
   if (s === "critical") return "kritisch";
   if (s === "warning") return "mit Abweichung";
-  return "stimmig";
+  return "weitgehend stimmig";
 }
 
 function biggestGapText(rt: Triad, ct: Triad): string {
@@ -1066,10 +1066,13 @@ export default function SollIstBericht() {
                       if (ci === "hoch" || dl === "hoch") {
                         return t("Die Gesamtbewertung spricht für eine eingeschränkte Passung. Die strukturelle Abweichung ist spürbar, der Steuerungs- und Entwicklungsaufwand erhöht. Eine erfolgreiche Besetzung erfordert gezielte Führung und regelmässige Abstimmung.");
                       }
+                      if (result.fitSubtype === "STRUCTURE_MATCH_INTENSITY_OFF") {
+                        return "Die Gesamtbewertung spricht für eine bedingte Passung. Die Arbeitslogik ist in ihrer Grundstruktur stimmig. In der Gewichtung zeigen sich jedoch leichte Abweichungen. Eine erfolgreiche Besetzung ist mit gezielter Führung realistisch.";
+                      }
                       if (gl === "gering") {
                         return "Die Gesamtbewertung spricht für eine bedingte Passung. Die Profilabweichung ist gering, doch die Arbeitslogik unterscheidet sich in einzelnen Bereichen. Mit gezielter Führung ist eine erfolgreiche Besetzung realistisch.";
                       }
-                      return "Die Gesamtbewertung spricht für eine bedingte Passung. Die Arbeitslogik stimmt teilweise überein, in einzelnen Bereichen bestehen jedoch relevante Abweichungen. Eine erfolgreiche Besetzung ist mit bewusster Führung und klarer Erwartungshaltung möglich.";
+                      return "Die Gesamtbewertung spricht für eine bedingte Passung. Die Arbeitslogik weicht in einzelnen Bereichen ab. Eine erfolgreiche Besetzung ist mit bewusster Führung und klarer Erwartungshaltung möglich.";
                     }
 
                     if (ci === "hoch" && (gl === "hoch" || dl === "hoch")) {

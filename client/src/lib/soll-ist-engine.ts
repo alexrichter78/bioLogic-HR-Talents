@@ -2074,7 +2074,7 @@ function buildIntegrationsplan(role: string, cand: string, fit: string, rk: Comp
 
     p3Fokus = isBedingt
       ? {
-          intro: `${candStrength} bleibt erhalten, während die Arbeitsweise Richtung ${rkDesc} weiterentwickelt wird. Die Führungskraft prüft:`,
+          intro: `${candStrength} bleiben erhalten, während die Arbeitsweise Richtung ${rkDesc} weiterentwickelt wird. Die Führungskraft prüft:`,
           bullets: [
             `ob der Führungsaufwand langfristig tragbar ist`,
             `ob die Entwicklungsrichtung stimmt`,
@@ -2128,13 +2128,13 @@ function buildFinal(role: string, cand: string, fit: string, control: string, rk
       return `Die Stelle ${role} erfordert ${roleDesc}. ${s} bringt diese Arbeitsweise mit. Grundrichtung und Gewichtung passen. Der Führungsaufwand ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich.`;
     }
     if (fitSubtype === "STRUCTURE_MATCH_INTENSITY_OFF") {
-      return `Die Stelle ${role} erfordert ${roleDesc}. ${s} arbeitet in dieselbe Richtung, die Gewichtung der Nebenbereiche weicht jedoch ab. Der Führungsaufwand ist ${control}. Mit gezielter Feinsteuerung ist eine stabile Besetzung wahrscheinlich.`;
+      return `Die Stelle ${role} erfordert ${roleDesc}. ${s} arbeitet in dieselbe Richtung, die Gewichtung der Nebenbereiche ist jedoch nicht vollständig deckungsgleich. Der Führungsaufwand ist ${control}. Mit gezielter Feinsteuerung ist eine stabile Besetzung wahrscheinlich.`;
     }
-    return `Die Stelle ${role} erfordert ${roleDesc}. ${s} bringt eine teilweise passende Arbeitsweise mit. Der Führungsaufwand ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich.`;
+    return `Die Stelle ${role} erfordert ${roleDesc}. ${s} bringt eine weitgehend passende Arbeitsweise mit. Der Führungsaufwand ist ${control}. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich.`;
   }
   if (fit === "Bedingt geeignet") {
     if (fitSubtype === "STRUCTURE_MATCH_INTENSITY_OFF") {
-      return `Die Stelle ${role} erfordert ${roleDesc}. ${s} arbeitet in dieselbe Richtung, doch die Gewichtung der Nebenbereiche weicht deutlich ab. Mit gezielter Führung und klarer Struktur lässt sich die Zusammenarbeit stabilisieren. Der Führungsaufwand ist ${control}.${leadSuffix}`;
+      return `Die Stelle ${role} erfordert ${roleDesc}. ${s} arbeitet in dieselbe Richtung, die Gewichtung der Nebenbereiche ist jedoch nicht vollständig deckungsgleich. Mit gezielter Führung und klarer Struktur lässt sich die Zusammenarbeit stabilisieren. Der Führungsaufwand ist ${control}.${leadSuffix}`;
     }
     return `Die Stelle ${role} erfordert ${roleDesc}. ${s} weicht in einzelnen Bereichen von der Stellenanforderung ab. Mit gezielter Führung und klarer Struktur lässt sich die Zusammenarbeit stabilisieren. Der Führungsaufwand ist ${control}.${leadSuffix}`;
   }

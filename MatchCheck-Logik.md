@@ -165,12 +165,21 @@ Die Texte differenzieren **semantisch**, nicht nur quantitativ:
 
 | Severity | Label |
 |---|---|
-| ok | **Stimmig** |
+| ok | **Weitgehend stimmig** |
 | warning | **Mit Abweichung** |
 | critical | **Kritisch** |
 
-**Verboten** in Texten bei `STRUCTURE_MATCH_INTENSITY_OFF`: "passt", "stimmt überein", "passt grundsätzlich".
-Diese Formulierungen sind ausschliesslich für `PERFECT` reserviert.
+### Sprachintensitäts-Regeln
+
+| Formulierung | Erlaubt für |
+|---|---|
+| "deckungsgleich", "passen" | Nur PERFECT |
+| "in der Grundrichtung stimmig", "nicht vollständig deckungsgleich" | STRUCTURE_MATCH_INTENSITY_OFF |
+| "weicht ab", "unterscheidet sich" | PARTIAL_MATCH, MISMATCH |
+| "deutlich" | Nur bei maxGap ≥ 15 oder HARD_CONFLICT |
+
+**Verboten** bei `STRUCTURE_MATCH_INTENSITY_OFF`: "passt", "stimmt überein", "deutlich ab".
+**Verboten** bei `PERFECT`: "weicht ab", "nicht deckungsgleich".
 
 ---
 
