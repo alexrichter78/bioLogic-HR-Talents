@@ -1,5 +1,7 @@
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent, computeCoreFit, calcControlIntensity, koRuleTriggered } from "./jobcheck-engine";
 import type { Triad, ComponentKey, RoleAnalysis, CandidateInput } from "./jobcheck-engine";
+import { buildMatchTexts, getVariant as getTextVariant } from "./matchcheck-texts";
+import type { TriadKey, MatchTextInput, FitLabel as TextFitLabel, PairRelations as TextPairRelations } from "./matchcheck-texts";
 
 export type FitRating = "GEEIGNET" | "BEDINGT" | "NICHT_GEEIGNET";
 export type Severity = "ok" | "warning" | "critical";
@@ -385,20 +387,85 @@ export function computeSollIst(
   const candDualMatchesRoleMain = candIsDualDomMain && (rk === ck || rk === ck2Main);
   const fitSubtype = deriveFitSubtype(rk, ck, structureRelation, maxGapVal, candDualMatchesRoleMain, candIsBalFullMain, roleIsBalFull);
 
-  const summaryText = buildSummary(roleName, cn, fitLabel, rk, ck, gapLevel, rt, ct, rConst, cConst, fitSubtype);
-  const executiveBullets = buildExecutiveBullets(rk, ck, gapLevel, fitLabel, cn, rt, ct, isDualDomRole, rk2, fitSubtype);
-  const constellationRisks = buildConstellationRisks(rk, ck, gapLevel, rt, ct, fitSubtype);
-  const dominanceShiftText = buildDominanceShift(roleName, cn, rk, ck, rt, ct, rConst, cConst, fitSubtype);
-  const stressBehavior = buildStressBehavior(cConst, ct, cn, gapLevel);
-  const impactAreas = buildImpactAreas(rk, ck, rt, ct, cn, fuehrungsArt, roleIsBalFull, fitLabel, fitSubtype);
-  const riskTimeline = buildRiskTimeline(roleName, cn, rk, ck, gapLevel, roleIsBalFull, rt, ct);
-  const fitGap: "gering" | "mittel" | "hoch" = fitRating === "NICHT_GEEIGNET" ? "hoch"
-    : fitRating === "BEDINGT" ? "mittel"
-    : "gering";
-  const { level: developmentLevel, label: developmentLabel, text: developmentText } = buildDevelopment(fitGap, rk, ck, controlIntensity, cn, isDualDomRole, rk2, roleIsBalFull, ct, candIsDualDomMain, ck2Main);
+  const toTriadKey = (k: ComponentKey): TriadKey => k === "impulsiv" ? "I" : k === "intuitiv" ? "N" : "A";
+  const roleP = { I: rt.impulsiv, N: rt.intuitiv, A: rt.analytisch };
+  const candP = { I: ct.impulsiv, N: ct.intuitiv, A: ct.analytisch };
+  const diffs = { I: Math.abs(rt.impulsiv - ct.impulsiv), N: Math.abs(rt.intuitiv - ct.intuitiv), A: Math.abs(rt.analytisch - ct.analytisch) };
+
+  function pairSignLocal(a: number, b: number): -1 | 0 | 1 {
+    const d = a - b;
+    if (Math.abs(d) <= 5) return 0;
+    return d > 0 ? 1 : -1;
+  }
+  const sollRelations: TextPairRelations = {
+    I_N: pairSignLocal(rt.impulsiv, rt.intuitiv),
+    I_A: pairSignLocal(rt.impulsiv, rt.analytisch),
+    N_A: pairSignLocal(rt.intuitiv, rt.analytisch),
+  };
+  const istRelations: TextPairRelations = {
+    I_N: pairSignLocal(ct.impulsiv, ct.intuitiv),
+    I_A: pairSignLocal(ct.impulsiv, ct.analytisch),
+    N_A: pairSignLocal(ct.intuitiv, ct.analytisch),
+  };
+
+  const textFitLabel: TextFitLabel = fitLabel as TextFitLabel;
+  const textInput: MatchTextInput = {
+    roleName,
+    candName: cn,
+    roleProfile: roleP,
+    candProfile: candP,
+    fitLabel: textFitLabel,
+    fitSubtype,
+    controlLevel: effectiveControlLevel,
+    maxDiff: maxGapVal,
+    totalGap,
+    diffs,
+    sollVariant: getTextVariant(roleP),
+    istVariant: getTextVariant(candP),
+    sollRelations,
+    istRelations,
+    structureRelation: { ...structureRelation, reason: '' },
+    fuehrungsArt,
+  };
+  const texts = buildMatchTexts(textInput);
+
+  const summaryText = texts.summary.summary + "\n\n" + texts.summary.managementSummary;
+  const executiveBullets = texts.summary.whyResult;
+  const constellationRisks = texts.summary.risks;
+  const dominanceShiftText = texts.summary.profileCompareIntro;
+  const stressBehavior: StressBehavior = {
+    controlledPressure: texts.stress.controlledPressure,
+    uncontrolledStress: texts.stress.uncontrolledStress,
+  };
+  const impactAreas: ImpactArea[] = texts.impactAreas.map(a => ({
+    id: a.key,
+    label: a.title,
+    severity: a.severity,
+    roleNeed: a.roleNeed,
+    candidatePattern: a.personText,
+    risk: a.interpretation,
+  }));
+  const riskTimeline: RiskPhase[] = texts.timeline.map((text, i) => ({
+    label: i === 0 ? "Kurzfristig" : i === 1 ? "Mittelfristig" : "Langfristig",
+    period: i === 0 ? "0 - 3 Monate" : i === 1 ? "3 - 12 Monate" : "12+ Monate",
+    text,
+  }));
+  const developmentLevel = texts.development.scoreText === "niedrig" ? 1 : texts.development.scoreText === "mittel" ? 2 : 3;
+  const developmentLabel = texts.development.subtitle;
+  const developmentText = texts.development.text1 + "\n\n" + texts.development.text2;
   const actions = buildActions(rk, ck, gapLevel, controlIntensity, roleIsBalFull, ct);
-  const integrationsplan = buildIntegrationsplan(roleName, cn, fitLabel, rk, ck, gapLevel, controlIntensity, fuehrungsArt, rt, ct, roleIsBalFull);
-  const finalText = buildFinal(roleName, cn, fitLabel, controlIntensity, rk, ck, fuehrungsArt, isDualDomRole, rk2, roleIsBalFull, ct, fitSubtype);
+  const integrationsplan: IntegrationPhase[] | null = texts.integrationPlan.map(p => ({
+    num: p.phase,
+    title: p.title,
+    period: p.timeframe,
+    ziel: p.goal,
+    items: p.items,
+    fokus: {
+      intro: p.focusText,
+      bullets: p.focusBullets,
+    },
+  }));
+  const finalText = texts.summary.finalText;
 
   return {
     roleName,
