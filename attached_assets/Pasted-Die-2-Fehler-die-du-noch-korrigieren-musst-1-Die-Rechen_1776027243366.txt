@@ -1,0 +1,122 @@
+Die 2 Fehler, die du noch korrigieren musst
+1. Die Rechenbeispiele 3 und 4 widersprechen deiner neuen Regel
+
+Du schreibst oben korrekt:
+
+MISMATCH = fitLabel === "Nicht geeignet" (immer)
+
+Aber unten in den Beispielen steht:
+
+Beispiel 3
+
+Nicht geeignet
+FitSubtype: PARTIAL_MATCH
+
+Beispiel 4
+
+Nicht geeignet
+FitSubtype: PARTIAL_MATCH
+
+❌ Das ist nach deiner neuen Regel falsch.
+
+Richtig wäre:
+
+Bei Nicht geeignet immer:
+
+fitSubtype = "MISMATCH"
+
+Also müssen Beispiel 3 und 4 geändert werden.
+
+2. Die Testabdeckung ist in sich widersprüchlich beschrieben
+
+Du schreibst:
+
+Symmetrischer Selbstvergleich → Jede Variante gegen sich selbst = PERFECT
+
+Das ist okay.
+
+Aber dann:
+
+Subtype-Verteilung (13×13)
+PERFECT=13, INTENSITY_OFF=0, PARTIAL=24, MISMATCH=132
+
+Das kann mathematisch plausibel sein, wenn du nur die 13 Referenzprofile gegeneinander testest.
+
+Dann schreibst du aber zusätzlich:
+
+INTENSITY_OFF separat | EXACT + maxGap 6–10 wird in Einzeltests geprüft (in 13×13 mathematisch nicht erreichbar)
+
+👉 Das ist wichtig und richtig, aber es gehört direkt in die Logikbeschreibung oder in die Testsektion als Klarstellung, sonst denkt man:
+„Warum gibt es INTENSITY_OFF in der Logik, aber nie in der Matrix?“
+
+Besser formulieren:
+
+In der 13×13-Referenzmatrix treten nur Strukturkonstellationen auf. Fälle mit exakter Struktur und Abweichung 6–10 (STRUCTURE_MATCH_INTENSITY_OFF) entstehen deshalb nicht in der Grundmatrix, sondern werden in separaten Intensitätstests geprüft.
+
+Dann ist es sauber.
+
+Kleinere Punkte, die ich noch schärfen würde
+A. capSeverity-Tabelle und Text darunter leicht angleichen
+
+Oben schreibst du:
+
+MISMATCH → ok -> critical, warning -> critical
+
+Das ist gut.
+
+Aber weiter unten steht noch:
+
+Bei "Nicht geeignet" werden alle ok-Bereiche auf warning angehoben und alle warnings auf critical.
+
+Das ist ein unnötiger Zwischenschritt in der Sprache.
+Sauberer wäre einfach:
+
+Bei MISMATCH werden alle Bereiche mindestens kritisch dargestellt.
+
+B. Label-Sprachregel minimal vereinheitlichen
+
+Oben:
+
+Severity ok = Weitgehend stimmig
+
+Weiter unten:
+
+Severity ok = Weitgehend passend
+
+Das ist nicht dramatisch, aber du solltest eine Form wählen.
+
+Ich würde nehmen:
+
+ok = Weitgehend stimmig
+warning = Mit Abweichung
+critical = Kritisch
+
+Das ist präziser.
+
+Mein Urteil
+Ja:
+
+Die MatchCheck-Logik selbst ist jetzt gut.
+
+Noch nicht ganz:
+
+Die Dokumentation ist noch nicht vollständig widerspruchsfrei.
+
+Was du konkret ändern solltest
+Ändere diese beiden Punkte:
+1. Beispiele 3 und 4
+
+Von:
+
+FitSubtype: PARTIAL_MATCH
+
+Zu:
+
+FitSubtype: MISMATCH
+2. Testsektion
+
+Klarer schreiben:
+
+STRUCTURE_MATCH_INTENSITY_OFF tritt in der 13×13-Referenzmatrix nicht auf,
+weil dort nur Strukturmuster gegeneinander getestet werden.
+Diese Fälle werden in separaten Intensitätstests geprüft.

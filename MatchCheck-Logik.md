@@ -317,11 +317,11 @@ Die 4–5 Bereiche im Bericht (Entscheidungsverhalten, Arbeitsweise, Führungswi
 
 | Severity | Label | Bedeutung |
 |----------|-------|-----------|
-| ok | Weitgehend passend | Bereich liegt nah an der Stellenanforderung |
+| ok | Weitgehend stimmig | Bereich liegt nah an der Stellenanforderung |
 | warning | Mit Abweichung | Erkennbare Abweichung, steuerbar mit Führung |
 | critical | Kritisch | Deutliche Abweichung, hoher Aufwand nötig |
 
-**Master-Regel:** Kein Teilbereich darf positiver klingen als das Gesamturteil. Bei "Nicht geeignet" werden alle ok-Bereiche auf warning angehoben und alle warnings auf critical. Bei "Bedingt geeignet" dürfen maximal 2 Bereiche ok bleiben.
+**Master-Regel:** Kein Teilbereich darf positiver klingen als das Gesamturteil. Bei MISMATCH werden alle Bereiche mindestens kritisch dargestellt. Bei PARTIAL_MATCH und STRUCTURE_MATCH_INTENSITY_OFF dürfen maximal 2 Bereiche auf "ok" stehen.
 
 ---
 
@@ -431,7 +431,7 @@ Ist-Relationen:  I:N=1, I:A=1, N:A=-1
 → HARD_CONFLICT (N:A flippt direkt 1→-1)
 
 → NICHT GEEIGNET
-FitSubtype: PARTIAL_MATCH (gleiche Top-Komponente I)
+FitSubtype: MISMATCH
 ```
 
 ### Beispiel 4: Nicht geeignet (HARD_CONFLICT – ALL_EQUAL vs BOTTOM_PAIR)
@@ -444,7 +444,7 @@ Ist-Relationen:  I:N=1, I:A=1, N:A=0
 → HARD_CONFLICT (2 Relationen kippen – nicht nur 1)
 
 → NICHT GEEIGNET
-FitSubtype: PARTIAL_MATCH (candIsBalFull oder roleIsBalFull)
+FitSubtype: MISMATCH
 ```
 
 ### Beispiel 5: Bedingt geeignet (SOFT_CONFLICT – Grenzfall TOP_PAIR vs ORDER)
@@ -596,7 +596,8 @@ Die Test-Suite prüft alle **169 Kombinationen** (13 Soll-Varianten × 13 Ist-Va
 | Test-Kategorie | Prüfungen |
 |---|---|
 | Symmetrischer Selbstvergleich | Jede Variante gegen sich selbst → PERFECT |
-| Subtype-Verteilung (13×13) | PERFECT=13, INTENSITY_OFF=0*, PARTIAL=24, MISMATCH=132 |
-| INTENSITY_OFF separat | EXACT + maxGap 6–10 wird in Einzeltests geprüft (in 13×13 mathematisch nicht erreichbar) |
+| Subtype-Verteilung (13×13) | PERFECT=13, PARTIAL=24, MISMATCH=132 |
 | Text-Konsistenz | fitLabel, Führungsaufwand, Entwicklungsaufwand, severity, Integrationsplan müssen zusammenpassen |
 | Grenzwert-Tests | maxGap=5 vs 6 vs 7, EXACT vs SOFT_CONFLICT an den Schwellen |
+
+In der 13×13-Referenzmatrix treten nur Strukturkonstellationen auf. Fälle mit exakter Struktur und Abweichung 6–10 (STRUCTURE_MATCH_INTENSITY_OFF) entstehen deshalb nicht in der Grundmatrix, sondern werden in separaten Intensitätstests geprüft.
