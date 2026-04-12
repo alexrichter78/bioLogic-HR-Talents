@@ -635,6 +635,13 @@ function buildImpactAreas(input: MatchTextInput): ImpactArea[] {
 function buildStress(input: MatchTextInput): StressBlock {
   const sp = getSpecialCases(input.roleProfile, input.candProfile);
 
+  if (sp.candIsBalFull) {
+    return {
+      controlledPressure: 'Unter moderatem Druck zeigt sich bei dieser Person kein klarer Schwerpunkt. Da alle drei Bereiche fast gleich stark ausgeprägt sind, wechselt die Reaktion situativ: Mal wird stärker über Tempo gesteuert, mal über Abstimmung, mal über Struktur. Das Verhalten wirkt dadurch wenig vorhersehbar.',
+      uncontrolledStress: 'Unter hoher Belastung fehlt ein stabiler Anker. Die Person kann zwischen den drei Logiken springen – mal impulsiver, mal beziehungsorientierter, mal kontrollierter. Im Alltag wird dieses Wechseln deutlich spürbar und kann das Umfeld verunsichern.',
+    };
+  }
+
   if (sp.candIsDualDom) {
     return {
       controlledPressure: `Steigt der Arbeitsdruck, greift die Person auf die gerade führende Logik zurück. Da beide Hauptanteile fast gleich stark sind, fällt die Reaktion situationsabhängig aus: Mal wird stärker über ${COMP_NOUN[sp.cDom.top]} gesteuert, mal über ${COMP_NOUN[sp.cDom.second]}.`,
