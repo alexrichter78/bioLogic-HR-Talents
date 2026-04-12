@@ -1397,10 +1397,6 @@ export default function SollIstBericht() {
                   rFazit = "Die Anforderungen der Stelle und die Arbeitsweise der Person unterscheiden sich deutlich. Im Alltag kann das zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
                 }
 
-                const rDevLevel = result.developmentLevel;
-                const rDev = rDevLevel === 1 ? 3 : rDevLevel === 2 ? 2 : 1;
-                const rDevLabel = result.developmentLabel === "hoch" ? "Gute Aussichten, wenig Aufwand" : result.developmentLabel === "mittel" ? "Machbar, braucht gezielte Führung" : "Hoher Aufwand, Ergebnis unsicher";
-                const rGaugeCol = rDev === 3 ? "#34C759" : rDev === 2 ? "#E5A832" : "#D64045";
 
                 return (
                   <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-development">
@@ -1418,20 +1414,7 @@ export default function SollIstBericht() {
                       <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{rFazit}</p>
                     </div>
 
-                    <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 12px" }}>
-                      Entwicklungsprognose
-                    </p>
-                    <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>
-                      {rDev} von 3 <span style={{ fontWeight: 400, fontSize: 14, color: "#48484A" }}>{rDevLabel}</span>
-                    </p>
-                    <div style={{ display: "flex", gap: 5, marginBottom: 16 }} data-testid="gauge-development">
-                      {Array.from({ length: 3 }).map((_, i) => (
-                        <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < rDev ? rGaugeCol : "rgba(0,0,0,0.08)" }} />
-                      ))}
-                    </div>
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, wordBreak: "break-word", overflowWrap: "break-word", hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{result.developmentText}</p>
-
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "20px 0 0", textAlign: "justify", textAlignLast: "left" as any, wordBreak: "break-word", overflowWrap: "break-word", hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{result.finalText}</p>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, wordBreak: "break-word", overflowWrap: "break-word", hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{result.finalText}</p>
                   </div>
                 );
               })()}
