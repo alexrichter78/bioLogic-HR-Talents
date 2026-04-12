@@ -1,0 +1,47 @@
+07
+30-Tage-Integrationsplan
+1
+OrientierungTag 1–10
+Ziel: Qualitätsstandards und Entscheidungslogik der Stelle Fachinformatiker Systemintegration verstehen.
+
+Klärung von Stelle, Erwartungshaltung und Qualitätsstandard in Fachinformatiker Systemintegration.
+Transparenz über bestehende Entscheidungs- und Dokumentationsstrukturen.
+Frühe Abstimmung von Prioritäten, Qualitätskriterien und Definition von 'Done'.
+Klärung operativer Prozesse und Schnittstellen.
+Worauf es ankommt
+
+Die Stelle Fachinformatiker Systemintegration stellt Struktur / Analyse in den Vordergrund. Die Person bringt Struktur / Analyse als Stärke mit. Zu klären ist:
+
+welche Arbeitstiefe erwartet wird
+welche Standards und Prozesse gelten
+wie Qualität gemessen wird
+2
+WirkungTag 11–20
+Ziel: Erste strukturierte Arbeitsergebnisse als Fachinformatiker Systemintegration liefern und Standards etablieren.
+
+Ein priorisiertes Thema strukturiert analysieren und verbessern.
+Feedback zur Wirkung auf Qualität, Nachvollziehbarkeit und Zusammenarbeit einholen.
+Einen klaren Standard (Checkliste, Playbook oder Dokumentation) einführen oder schärfen.
+Fehlerquellen identifizieren und systematisch beheben.
+Worauf es ankommt
+
+Die Person sollte verstärkt auf analytische Tiefe achten. Konkret bedeutet das:
+
+Ergebnisse sauber dokumentieren
+analytische Prüfung nicht umgehen
+Führungsbegleitung aktiv nutzen
+3
+StabilisierungTag 21–30
+Ziel: Qualitätsstandards und Prozesssteuerung als Fachinformatiker Systemintegration dauerhaft verankern.
+
+Evaluation der Wirkung auf Entscheidungsrhythmus, Priorisierung und Belastung.
+Anpassung von Regeln, Schnittstellen und Qualitätsstandards.
+Prozessstabilität und Durchlaufzeiten prüfen.
+Langfristige Qualitätsziele und Dokumentationsstandards festlegen.
+Worauf es ankommt
+
+Struktur und Analyse bleiben erhalten, während die Arbeitsweise Richtung Sorgfalt und systematische Prüfung weiterentwickelt wird. Die Führungskraft prüft:
+
+ob der Führungsaufwand langfristig tragbar ist
+ob die Entwicklungsrichtung stimmt
+ob die Stelle dauerhaft stabil besetzt werden kann

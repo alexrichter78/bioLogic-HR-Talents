@@ -1402,7 +1402,7 @@ export default function SollIstBericht() {
                 }
 
                 const rDevLevel = result.developmentLevel;
-                const rDev = rDevLevel >= 4 ? 3 : rDevLevel >= 3 ? 2 : 1;
+                const rDev = rDevLevel === 1 ? 3 : rDevLevel === 2 ? 2 : 1;
                 const rDevLabel = result.developmentLabel === "hoch" ? "Gute Aussichten, wenig Aufwand" : result.developmentLabel === "mittel" ? "Machbar, braucht gezielte Führung" : "Hoher Aufwand, Ergebnis unsicher";
                 const rGaugeCol = rDev === 3 ? "#34C759" : rDev === 2 ? "#E5A832" : "#D64045";
 

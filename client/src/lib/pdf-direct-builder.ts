@@ -646,7 +646,7 @@ export async function buildAndSavePdf(result: SollIstResult, roleTriad: Triad, c
   }
 
   const rDevLevel = result.developmentLevel;
-  const rDev = rDevLevel >= 4 ? 3 : rDevLevel >= 3 ? 2 : 1;
+  const rDev = rDevLevel === 1 ? 3 : rDevLevel === 2 ? 2 : 1;
   const rDevLabel = result.developmentLabel === "hoch" ? "Geringer Entwicklungsaufwand" : result.developmentLabel === "mittel" ? "Entwicklung mit gezielter Führung möglich" : "Hoher Entwicklungsaufwand, Ergebnis unsicher";
   const rGaugeCol = rDev === 3 ? C.green : rDev === 2 ? C.amber : C.red;
   const rFitColorRgb = hexToRgb(rFitColor);
