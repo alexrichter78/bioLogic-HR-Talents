@@ -1,0 +1,270 @@
+Der Bericht darf nie positiver oder negativer klingen als das Ergebnis.
+
+Deshalb würde ich den Feinschliff in 4 Ebenen aufbauen.
+
+1. Sprachregeln je Ergebnis
+Geeignet
+
+Der Text darf klar und ruhig positiv sein.
+
+Gute Wörter:
+
+deckungsgleich
+stimmig
+passend
+tragfähig
+gut anschlussfähig
+
+Vermeiden:
+
+teilweise
+mit Abweichung
+Anpassungsbedarf
+bewusste Steuerung nötig
+Beispiel
+
+Statt:
+
+Die Person deckt die Stellenanforderung weitgehend ab.
+
+besser:
+
+Die Person bildet die Stellenanforderung stimmig und tragfähig ab.
+
+Bedingt geeignet – EXACT
+
+Das ist dein Fall STRUCTURE_MATCH_INTENSITY_OFF.
+
+Gute Wörter:
+
+in der Grundrichtung stimmig
+nicht vollständig deckungsgleich
+Gewichtung weicht ab
+Balance verschoben
+grundsätzlich passend, aber anders dosiert
+
+Vermeiden:
+
+passt
+stimmt überein
+deckungsgleich
+deutlich abweichend
+Beispiel
+
+Statt:
+
+Die Arbeitsweise passt grundsätzlich zur Stelle.
+
+besser:
+
+Die Arbeitsweise ist in der Grundrichtung stimmig, aber nicht vollständig deckungsgleich.
+
+Bedingt geeignet – SOFT
+
+Das ist dein PARTIAL_MATCH.
+
+Gute Wörter:
+
+teilweise anschlussfähig
+mit Abweichung
+nicht durchgehend deckungsgleich
+braucht bewusste Führung
+
+Vermeiden:
+
+passt
+deckungsgleich
+stimmig ohne Einschränkung
+Beispiel
+
+Statt:
+
+Die Entscheidungslogik ist passend.
+
+besser:
+
+Die Entscheidungslogik ist teilweise anschlussfähig, weicht aber in einem relevanten Punkt von der Rolle ab.
+
+Nicht geeignet
+
+Der Text muss klar sein, aber nicht unnötig hart.
+
+Gute Wörter:
+
+nicht passend
+deutlich abweichend
+andere Arbeitslogik
+nicht tragfähig ohne hohen Steuerungsaufwand
+
+Vermeiden:
+
+grundsätzlich passend
+stimmig
+anschlussfähig ohne Einschränkung
+2. Feinschliff pro Berichtsbaustein
+A. Gesamtbewertung
+
+Hier muss der Ton absolut sauber sitzen, weil der Leser von dort alles ableitet.
+
+Geeignet
+
+Die Gesamtbewertung spricht für eine gute Passung. Die Arbeitslogik der Person entspricht der Stellenanforderung in Struktur und Gewichtung. Die Rolle kann voraussichtlich ohne erhöhten Steuerungsaufwand ausgefüllt werden.
+
+Bedingt geeignet – EXACT
+
+Die Gesamtbewertung spricht für eine bedingte Passung. Die Grundlogik der Person entspricht der Rolle, die Gewichtung innerhalb dieser Struktur weicht jedoch spürbar ab. Die Richtung stimmt, die Wirkung im Alltag ist aber nicht vollständig deckungsgleich.
+
+Bedingt geeignet – SOFT
+
+Die Gesamtbewertung spricht für eine bedingte Passung. Die Person ist grundsätzlich anschlussfähig, bildet die Stellenlogik jedoch nicht vollständig und nicht durchgehend stabil ab.
+
+Nicht geeignet
+
+Die Gesamtbewertung spricht gegen eine Passung. Die Arbeitslogik der Person weicht strukturell oder in ihrer Ausprägung deutlich von der Rolle ab.
+
+B. Managementkurzfazit
+
+Hier nicht wiederholen, sondern übersetzen:
+Was bedeutet das für Führung?
+
+Geeignet
+
+Die Person bringt die geforderte Arbeitslogik in tragfähiger Form mit. Führung dient hier vor allem der Priorisierung und Feinabstimmung, nicht dem Ausgleich struktureller Unterschiede.
+
+Bedingt geeignet – EXACT
+
+Die Person arbeitet in der richtigen Grundrichtung, setzt aber andere Akzente als die Rolle verlangt. Führung sollte deshalb vor allem auf Gewichtung, Priorisierung und Rollenkonsequenz achten.
+
+Bedingt geeignet – SOFT
+
+Die Person ist in wesentlichen Teilen anschlussfähig, braucht jedoch klare Führung, damit die Rolle nicht schrittweise in eine andere Richtung ausgeübt wird.
+
+Nicht geeignet
+
+Die Rolle würde im Alltag voraussichtlich anders gelebt als vorgesehen. Führung müsste dauerhaft kompensieren statt nur steuern.
+
+C. Warum dieses Ergebnis
+
+Hier nur Mechanik, keine weichen Floskeln.
+
+Gute Struktur
+Struktur stimmt / kippt
+größte Abweichung liegt hier
+daraus folgt dieser Führungsaufwand
+Beispiel EXACT gelb
+
+Die strukturelle Arbeitslogik stimmt mit der Rolle überein.
+Die größte Einzelabweichung liegt im Bereich Kommunikation.
+Dadurch verschiebt sich die Gewichtung im Alltag, obwohl die Grundrichtung gleich bleibt.
+
+D. Risiken dieser Konstellation
+
+Nicht zu allgemein. Lieber 3 konkrete Risiken.
+
+Schlecht
+
+Regelmäßiges Feedback sichert die Passung langfristig.
+
+Das ist eher Maßnahme als Risiko.
+
+Besser
+
+Im Alltag können sich Prioritäten leicht verschieben.
+Die Rolle kann dadurch anders gewichtet werden als vorgesehen.
+Ohne klares Gegensteuern verfestigt sich diese Verschiebung mit der Zeit.
+
+3. Feinschliff für die Impact Areas
+
+Hier ist die größte Gefahr von Widersprüchen.
+
+Entscheidungsverhalten
+Geeignet
+
+Die Entscheidungslogik ist deckungsgleich mit der Stellenanforderung.
+
+Bedingt geeignet – EXACT
+
+Die Entscheidungslogik ist in der Grundrichtung stimmig. Die Gewichtung ist jedoch nicht vollständig deckungsgleich.
+
+Bedingt geeignet – SOFT
+
+Die Entscheidungslogik ist teilweise anschlussfähig, trifft die Stellenanforderung aber nicht durchgehend in derselben Form.
+
+Nicht geeignet
+
+Die Entscheidungslogik weicht deutlich von der Stellenanforderung ab.
+
+Arbeitsweise
+Geeignet
+
+Die Arbeitsweise ist deckungsgleich mit der Stellenanforderung.
+
+Bedingt geeignet – EXACT
+
+Die Arbeitsweise ist in der Grundrichtung stimmig, wird im Alltag jedoch etwas anders gewichtet.
+
+Bedingt geeignet – SOFT
+
+Die Arbeitsweise ist grundsätzlich anschlussfähig, entspricht aber nicht vollständig der geforderten Rollenlogik.
+
+Nicht geeignet
+
+Die Arbeitsweise liegt spürbar neben der Rollenanforderung.
+
+Kommunikationsverhalten
+Geeignet
+
+Das Kommunikationsverhalten ist stimmig und gut anschlussfähig.
+
+Bedingt geeignet – EXACT
+
+Das Kommunikationsverhalten ist in der Grundrichtung passend, aber nicht vollständig deckungsgleich.
+
+Bedingt geeignet – SOFT
+
+Die Kommunikation ist teilweise passend, trifft die erwartete Form jedoch nicht durchgehend.
+
+Nicht geeignet
+
+Die Kommunikationslogik unterscheidet sich deutlich von der Rolle.
+
+Teamkultur
+Geeignet
+
+Die kulturelle Wirkung unterstützt die gewünschte Richtung der Rolle.
+
+Bedingt geeignet – EXACT
+
+Die kulturelle Grundrichtung ist stimmig, wird im Alltag jedoch anders dosiert.
+
+Bedingt geeignet – SOFT
+
+Die Wirkung auf Zusammenarbeit und Teamkultur ist grundsätzlich tragfähig, bleibt aber nicht deckungsgleich.
+
+Nicht geeignet
+
+Die kulturelle Wirkung würde die gewünschte Teamrichtung spürbar verschieben.
+
+4. Die wichtigsten Formulierungen zum Ersetzen
+
+Hier sind die Wörter, die ich systematisch austauschen würde.
+
+Ersetzen
+„passt grundsätzlich“ → „ist in der Grundrichtung stimmig“
+„stimmt überein“ → „ist nicht vollständig deckungsgleich“ oder „ist weitgehend stimmig“
+„deckt die Stellenanforderung ab“ → „bildet die Stellenanforderung ab“
+„deutlich“ → nur bei wirklich kritischen Fällen
+„weitgehend passend“ → besser „weitgehend stimmig“
+Nicht mehr mischen
+
+In einem gelben Bericht nicht gleichzeitig:
+
+„Geeignet“
+„passt“
+„deckungsgleich“
+
+In einem grünen Bericht nicht gleichzeitig:
+
+„mit Abweichung“
+„teilweise“
+„Anpassungsbedarf“

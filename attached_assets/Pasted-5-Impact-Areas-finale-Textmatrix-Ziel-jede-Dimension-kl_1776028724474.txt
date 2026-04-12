@@ -1,0 +1,111 @@
+5. Impact Areas (finale Textmatrix)
+
+Ziel:
+
+jede Dimension klar bewerten
+niemals positiver als Gesamtbewertung
+kurze, klare Sätze
+gleiche Logik pro Bereich
+
+Ich gebe dir die vier Kernbereiche:
+
+Entscheidungsverhalten
+Arbeitsweise
+Kommunikation
+Teamkultur
+🧠 5.1 Entscheidungsverhalten
+🟢 Geeignet
+
+Das Entscheidungsverhalten ist deckungsgleich mit der Stellenanforderung.
+Entscheidungen werden in der Form getroffen, wie sie für die Rolle erforderlich sind.
+
+🟡 EXACT
+
+Das Entscheidungsverhalten ist in der Grundrichtung stimmig, jedoch nicht vollständig deckungsgleich.
+Die Gewichtung innerhalb von Entscheidungen weicht spürbar von der Rolle ab.
+
+🟡 SOFT
+
+Das Entscheidungsverhalten ist teilweise anschlussfähig, entspricht jedoch nicht durchgehend der Logik der Rolle.
+In einzelnen Situationen entstehen andere Prioritäten.
+
+🔴 Nicht geeignet
+
+Das Entscheidungsverhalten weicht deutlich von der Stellenanforderung ab.
+Entscheidungen folgen einer anderen Logik als in der Rolle vorgesehen.
+
+⚙️ 5.2 Arbeitsweise
+🟢 Geeignet
+
+Die Arbeitsweise ist deckungsgleich mit der Stellenanforderung.
+Aufgaben werden in der Form umgesetzt, wie es die Rolle verlangt.
+
+🟡 EXACT
+
+Die Arbeitsweise ist in der Grundrichtung stimmig, wird im Alltag jedoch anders gewichtet.
+Dadurch entstehen leichte Verschiebungen in der Umsetzung.
+
+🟡 SOFT
+
+Die Arbeitsweise ist grundsätzlich anschlussfähig, entspricht jedoch nicht durchgehend der geforderten Rollenlogik.
+Vorgehensweisen unterscheiden sich in relevanten Punkten.
+
+🔴 Nicht geeignet
+
+Die Arbeitsweise liegt spürbar neben der Stellenanforderung.
+Aufgaben werden anders umgesetzt, als es die Rolle erfordert.
+
+💬 5.3 Kommunikation
+🟢 Geeignet
+
+Das Kommunikationsverhalten ist stimmig und gut anschlussfähig.
+Austausch und Abstimmung erfolgen in der für die Rolle passenden Form.
+
+🟡 EXACT
+
+Das Kommunikationsverhalten ist in der Grundrichtung passend, jedoch nicht vollständig deckungsgleich.
+Die Art der Abstimmung weicht in Nuancen von der Rolle ab.
+
+🟡 SOFT
+
+Die Kommunikation ist teilweise passend, trifft die erwartete Form jedoch nicht durchgehend.
+Dadurch entstehen im Alltag unterschiedliche Erwartungen im Austausch.
+
+🔴 Nicht geeignet
+
+Die Kommunikationslogik unterscheidet sich deutlich von der Rolle.
+Abstimmung und Austausch verlaufen anders als erforderlich.
+
+👥 5.4 Teamkultur
+🟢 Geeignet
+
+Die Wirkung auf die Teamkultur unterstützt die gewünschte Ausrichtung der Rolle.
+Zusammenarbeit und Dynamik entwickeln sich in die richtige Richtung.
+
+🟡 EXACT
+
+Die kulturelle Grundrichtung ist stimmig, wird im Alltag jedoch anders dosiert.
+Die Wirkung auf das Team verschiebt sich dadurch leicht.
+
+🟡 SOFT
+
+Die Wirkung auf Zusammenarbeit und Teamkultur ist grundsätzlich tragfähig, bleibt aber nicht deckungsgleich.
+Im Alltag entstehen unterschiedliche Dynamiken.
+
+🔴 Nicht geeignet
+
+Die kulturelle Wirkung würde die gewünschte Teamrichtung spürbar verändern.
+Zusammenarbeit entwickelt sich anders als für die Rolle vorgesehen.
+
+🔒 Wichtigste Regel (unbedingt so umsetzen)
+
+Du hast sie schon gut drin – ich formuliere sie final:
+
+Kein Teilbereich darf sprachlich positiver sein als das Gesamturteil.
+
+Und operativ:
+
+🟢 = alles darf „deckungsgleich / stimmig“
+🟡 EXACT = max. „stimmig, aber nicht deckungsgleich“
+🟡 SOFT = immer „teilweise / nicht durchgehend“
+🔴 = immer „abweichend / anders“

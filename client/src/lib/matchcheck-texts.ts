@@ -342,83 +342,83 @@ function buildSummary(input: MatchTextInput): SummaryBlock {
   let finalText = '';
 
   if (input.fitSubtype === 'PERFECT') {
-    summary = 'Die Gesamtbewertung spricht für eine sehr gute Passung. Die strukturelle Übereinstimmung ist hoch, der Steuerungs- und Entwicklungsaufwand gering. Die Besetzung kann ohne besondere Maßnahmen erfolgen.';
-    managementSummary = `${familyText} Arbeitsweise und Prioritäten passen zur Rolle ${input.roleName}. Kleinere Unterschiede in den Nebenbereichen sind im Alltag gut handhabbar.`;
+    summary = 'Die Gesamtbewertung spricht für eine gute Passung. Die Arbeitslogik der Person ist mit der Stellenanforderung deckungsgleich und in ihrer Gewichtung stimmig. Die Rolle kann voraussichtlich ohne erhöhten Steuerungsaufwand ausgefüllt werden.';
+    managementSummary = `${familyText} Die Person bringt die geforderte Arbeitslogik in tragfähiger Form mit. Führung dient hier vor allem der Priorisierung und Feinabstimmung, nicht dem Ausgleich struktureller Unterschiede.`;
     whyResult = [
-      'Die Person bringt dieselbe Arbeitsweise mit. Die Gewichtung passt.',
-      'Alle drei Arbeitsbereiche liegen nah beieinander. Geringe Abweichung.',
-      'Geringer Führungsaufwand. Natürliche Passung vorhanden.',
+      'Die Arbeitslogik der Person entspricht in ihrer Struktur und Gewichtung der Stellenanforderung.',
+      'Die Unterschiede in den einzelnen Bereichen sind gering und liegen innerhalb eines stabilen Rahmens.',
+      'Dadurch entsteht im Alltag ein konsistentes Arbeitsverhalten, das gut zur Rolle passt.',
     ];
     risks = [
-      'Die Arbeitslogik passt. In der Einarbeitung ist nur punktuelle Nachjustierung nötig.',
-      'Kleinere Unterschiede in Nebenbereichen sollten früh gespiegelt werden, ohne die Gesamtpassung infrage zu stellen.',
-      'Langfristig ist bei gleichbleibendem Kontext eine stabile Besetzung wahrscheinlich.',
+      'Im Alltag entstehen nur geringe Reibungsverluste, da Arbeitsweise und Rolle gut zusammenpassen.',
+      'Risiken liegen vor allem in der operativen Umsetzung, nicht in der grundsätzlichen Passung.',
+      'Ohne klare Priorisierung kann es punktuell zu Überlastung oder unnötiger Streuung kommen.',
     ];
     profileCompareIntro = 'Die Profile weichen in keinem der drei Bereiche wesentlich voneinander ab. Die Grundstruktur passt.';
-    finalText = `Die Arbeitsweise der Person ist weitgehend deckungsgleich mit den Anforderungen der Stelle. Aufgaben, Entscheidungen und Arbeitsstil sind stimmig.`;
+    finalText = 'Die Arbeitslogik der Person ist deckungsgleich mit der Stellenanforderung. Aufgaben, Entscheidungen und Arbeitsstil sind stimmig.';
   } else if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') {
-    summary = 'Die Gesamtbewertung spricht für eine bedingte Passung. Die Arbeitslogik ist in ihrer Grundstruktur stimmig. In der Gewichtung zeigen sich jedoch leichte Abweichungen. Eine erfolgreiche Besetzung ist mit gezielter Führung realistisch.';
-    managementSummary = `${familyText} Im Alltag zeigen sich die Unterschiede vor allem dort, wo die Rolle beide Hauptschwerpunkte gleichzeitig und konstant verlangt.`;
+    summary = 'Die Gesamtbewertung spricht für eine bedingte Passung. Die Grundlogik der Person entspricht der Stellenanforderung, die Gewichtung innerhalb dieser Struktur ist jedoch nicht vollständig deckungsgleich. Die Richtung stimmt, die Wirkung im Alltag kann sich dadurch jedoch spürbar verschieben.';
+    managementSummary = `${familyText} Die Person arbeitet in der richtigen Grundrichtung, setzt jedoch andere Schwerpunkte als die Rolle verlangt. Führung sollte deshalb vor allem auf Gewichtung, Priorisierung und konsequente Ausrichtung an der Rolle achten.`;
     whyResult = [
-      'Die Person arbeitet in dieselbe Richtung, die Gewichtung der Nebenbereiche weicht jedoch ab.',
-      'Alle drei Arbeitsbereiche liegen nah beieinander. Geringe Abweichung.',
-      'Moderater Führungsaufwand. Gezielte Führung und klare Erwartungen gleichen Differenzen aus.',
+      'Die grundlegende Arbeitslogik der Person entspricht der Struktur der Stelle.',
+      `Die größten Abweichungen liegen in der Gewichtung einzelner Bereiche.`,
+      'Dadurch bleibt die Richtung zwar gleich, die Umsetzung im Alltag kann sich jedoch spürbar verschieben.',
     ];
     risks = [
-      'Grundrichtung stimmt, aber die Gewichtung innerhalb dieser Struktur weicht ab.',
-      'Feinabstimmung in den Nebenbereichen nötig.',
-      'Regelmäßiges Feedback sichert die Passung langfristig.',
+      'Die Person setzt im Alltag andere Schwerpunkte, als die Rolle vorgibt.',
+      'Dadurch kann sich die Gewichtung der Aufgaben schrittweise verschieben.',
+      'Ohne klare Ausrichtung verfestigt sich diese Verschiebung mit der Zeit.',
     ];
     profileCompareIntro = 'Die Profile weichen in keinem der drei Bereiche wesentlich voneinander ab. Die Grundstruktur passt.';
-    finalText = `Die Stelle ${input.roleName} erfordert ${COMP_NOUN[sp.rDom.top]} und ${COMP_NOUN[sp.rDom.second]} gleichermaßen. Die Person arbeitet in dieselbe Richtung, die Gewichtung der Nebenbereiche ist jedoch nicht vollständig deckungsgleich. Mit gezielter Führung und klarer Struktur lässt sich die Zusammenarbeit stabilisieren. Der Führungsaufwand ist gering.`;
+    finalText = `Die Stelle ${input.roleName} erfordert ${COMP_NOUN[sp.rDom.top]} und ${COMP_NOUN[sp.rDom.second]} gleichermaßen. Die Person arbeitet in dieselbe Richtung, die Gewichtung der Nebenbereiche ist jedoch nicht vollständig deckungsgleich. Mit gezielter Führung und klarer Struktur lässt sich die Zusammenarbeit stabilisieren.`;
   } else if (input.fitSubtype === 'PARTIAL_MATCH' && input.fitLabel === 'Nicht geeignet') {
-    summary = 'Die Gesamtbewertung spricht für eine kritische Passung. Obwohl Teilbereiche anschlussfähig sind, weicht die Gesamtstruktur deutlich von der Stellenlogik ab. Eine Besetzung ist mit erheblichem Steuerungsaufwand verbunden.';
-    managementSummary = `${familyText} Obwohl die Person in einzelnen Bereichen anschlussfähig ist, weicht die innere Rangordnung der Arbeitslogik deutlich von der Stelle ab.`;
+    summary = 'Die Gesamtbewertung spricht gegen eine Passung. Die Arbeitslogik der Person weicht strukturell oder in ihrer Ausprägung deutlich von der Stellenanforderung ab. Die Rolle würde im Alltag voraussichtlich anders ausgeübt als vorgesehen.';
+    managementSummary = `${familyText} Die Rolle würde im Alltag voraussichtlich anders gelebt als vorgesehen. Führung müsste dauerhaft kompensieren statt gezielt zu steuern, was langfristig nicht tragfähig ist.`;
     whyResult = [
-      'Die Person deckt Teilaspekte der Rolle ab, die Rangordnung der Arbeitsschwerpunkte unterscheidet sich jedoch deutlich.',
+      'Die Arbeitslogik der Person unterscheidet sich in zentralen Punkten von der Stellenanforderung.',
       `Die größte Einzelabweichung liegt im Bereich ${COMP_SHORT[leadKey]}.`,
-      'Ohne intensive Steuerung wird die Rolle im Alltag nicht in der geforderten Form gelebt.',
+      'Sowohl Struktur als auch Gewichtung weichen deutlich voneinander ab.',
     ];
     risks = [
-      'Die innere Rangfolge der Arbeitsschwerpunkte weicht ab – die Rolle wird anders gewichtet als vorgesehen.',
-      'Im Alltag verschieben sich Prioritäten und Arbeitsweise spürbar.',
-      'Hoher Führungsaufwand nötig, um die Passung aufrechtzuerhalten.',
+      'Die Rolle wird im Alltag voraussichtlich anders ausgefüllt als vorgesehen.',
+      'Erwartungen und tatsächliches Verhalten laufen dauerhaft auseinander.',
+      'Daraus entstehen wiederkehrende Konflikte, Korrekturschleifen und erhöhter Führungsaufwand.',
     ];
     profileCompareIntro = 'Obwohl einzelne Bereiche nah beieinander liegen, unterscheidet sich die Rangordnung der Schwerpunkte deutlich.';
     finalText = `Die Stelle ${input.roleName} verlangt eine andere Gewichtung der Arbeitsschwerpunkte als die Person mitbringt. Trotz teilweiser Übereinstimmung reicht die strukturelle Passung nicht für eine stabile Besetzung.`;
   } else if (input.fitSubtype === 'PARTIAL_MATCH') {
-    summary = 'Die Gesamtbewertung spricht für eine bedingte Passung. Die Person ist grundsätzlich anschlussfähig, bildet die Stellenlogik aber nicht durchgehend deckungsgleich ab. Eine erfolgreiche Besetzung verlangt bewusste Steuerung.';
-    managementSummary = `${familyText} Im Alltag braucht es klare Prioritäten, weil die Rolle nicht in allen Punkten konstant so gelebt wird wie vorgesehen.`;
+    summary = 'Die Gesamtbewertung spricht für eine bedingte Passung. Die Person ist grundsätzlich anschlussfähig, bildet die Stellenlogik jedoch nicht vollständig und nicht durchgehend stabil ab. In einzelnen Bereichen entstehen Abweichungen, die im Alltag aktiv gesteuert werden müssen.';
+    managementSummary = `${familyText} Die Person ist in wesentlichen Teilen anschlussfähig, benötigt jedoch klare Führung, damit die Rolle nicht schrittweise in eine andere Richtung ausgeübt wird. Ohne Steuerung entstehen im Alltag spürbare Abweichungen.`;
     whyResult = [
-      'Die Person deckt wichtige Teile der Rolle ab, trifft die geforderte Logik aber nicht vollständig.',
+      'Die Arbeitslogik der Person stimmt in Teilen mit der Stellenanforderung überein, weicht jedoch in einem zentralen Strukturpunkt ab.',
       `Die größte Einzelabweichung liegt im Bereich ${COMP_SHORT[leadKey]}.`,
-      'Gezielte Führung und klare Erwartungen sind notwendig, damit die Passung stabil bleibt.',
+      'Dadurch entstehen im Alltag unterschiedliche Prioritäten und Entscheidungslogiken.',
     ];
     risks = [
-      'Die Arbeitslogik ist anschlussfähig, aber nicht vollständig deckungsgleich.',
-      'Im Alltag entstehen dadurch leichter Prioritätsverschiebungen.',
-      'Ohne Steuerung kann sich die Rollenausübung schrittweise in eine andere Richtung entwickeln.',
+      'In einzelnen Situationen entstehen unterschiedliche Prioritäten zwischen Person und Rolle.',
+      'Entscheidungen und Vorgehensweisen können dadurch uneinheitlich werden.',
+      'Diese Abweichungen führen im Alltag zu Reibung und Abstimmungsaufwand.',
     ];
     profileCompareIntro = 'Die Grundstruktur ist grundsätzlich anschlussfähig. In einzelnen Bereichen zeigen sich jedoch erkennbare Abweichungen.';
     finalText = `Die Stelle ${input.roleName} wird von der Person in wesentlichen Teilen abgebildet. Gleichzeitig bestehen strukturelle Unterschiede, die im Alltag bewusst geführt werden müssen.`;
   } else {
-    summary = 'Die Gesamtbewertung spricht gegen eine Passung. Die Arbeitslogik weicht strukturell oder in ihrer Ausprägung deutlich von der Rolle ab. Ohne intensiven Steuerungsaufwand ist die Besetzung nicht tragfähig.';
-    managementSummary = `${familyText} Die geforderte Logik wird nicht in stabiler Form erreicht.`;
+    summary = 'Die Gesamtbewertung spricht gegen eine Passung. Die Arbeitslogik der Person weicht strukturell oder in ihrer Ausprägung deutlich von der Stellenanforderung ab. Die Rolle würde im Alltag voraussichtlich anders ausgeübt als vorgesehen.';
+    managementSummary = `${familyText} Die Rolle würde im Alltag voraussichtlich anders gelebt als vorgesehen. Führung müsste dauerhaft kompensieren statt gezielt zu steuern, was langfristig nicht tragfähig ist.`;
     whyResult = [
-      'Die Struktur der Arbeitslogik weicht klar von der Rolle ab.',
+      'Die Arbeitslogik der Person unterscheidet sich in zentralen Punkten von der Stellenanforderung.',
       `Die größte Einzelabweichung liegt bei ${input.maxDiff.toFixed(1)} Punkten und damit außerhalb eines tragfähigen Bereichs.`,
-      'Die Unterschiede betreffen nicht nur Nuancen, sondern die Grundrichtung der Rollenwirkung.',
+      'Dadurch entsteht im Alltag ein anderes Arbeits- und Entscheidungsverhalten als für die Rolle vorgesehen ist.',
     ];
     risks = [
-      'Die Person würde die Rolle im Alltag spürbar in eine andere Richtung verschieben.',
-      'Zusammenarbeit, Führung und Ergebnislogik geraten dadurch leichter in Konflikt.',
-      'Ohne sehr hohe Steuerung ist keine stabile Passung zu erwarten.',
+      'Die Rolle wird im Alltag voraussichtlich anders ausgefüllt als vorgesehen.',
+      'Erwartungen und tatsächliches Verhalten laufen dauerhaft auseinander.',
+      'Daraus entstehen wiederkehrende Konflikte, Korrekturschleifen und erhöhter Führungsaufwand.',
     ];
     profileCompareIntro = 'Die Profile unterscheiden sich in ihrer Struktur oder Ausprägung zu deutlich für eine stabile Besetzung.';
     finalText = `Die Stelle ${input.roleName} und die Person arbeiten nicht in derselben Rollendynamik. Eine stabile Besetzung ist unter den gegebenen Bedingungen nicht wahrscheinlich.`;
   }
 
-  return { summary, managementSummary, whyResult, risks, profileCompareIntro, finalText };
+    return { summary, managementSummary, whyResult, risks, profileCompareIntro, finalText };
 }
 
 function dualPairLabel(top: TriadKey, second: TriadKey): string {
@@ -522,69 +522,70 @@ function areaInterpretation(key: ImpactArea['key'], input: MatchTextInput): stri
     });
 
     if (key === 'decision') {
-      if (input.fitSubtype === 'PERFECT') return 'Die Entscheidungslogik ist weitgehend stimmig. Beide geforderten Schwerpunkte werden parallel getragen.';
+      if (input.fitSubtype === 'PERFECT') return 'Das Entscheidungsverhalten ist deckungsgleich mit der Stellenanforderung. Beide geforderten Schwerpunkte werden parallel getragen.';
       if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return `${dualText} Dadurch wird nicht jede Situation mit derselben konstanten Balance entschieden.`;
-      if (input.fitSubtype === 'PARTIAL_MATCH') return `${dualText} Die geforderte Gleichzeitigkeit beider Logiken wird jedoch nicht stabil genug getroffen.`;
+      if (input.fitSubtype === 'PARTIAL_MATCH' && input.fitLabel !== 'Nicht geeignet') return `${dualText} Die geforderte Gleichzeitigkeit beider Logiken wird jedoch nicht stabil genug getroffen.`;
       return `${dualText} Die geforderte Doppellogik der Stelle wird dadurch nicht stabil erreicht.`;
     }
 
     if (key === 'workstyle') {
-      if (input.fitSubtype === 'PERFECT') return 'Die Arbeitsweise bildet beide geforderten Schwerpunkte parallel und stabil ab.';
+      if (input.fitSubtype === 'PERFECT') return 'Die Arbeitsweise ist deckungsgleich mit der Stellenanforderung. Beide geforderten Schwerpunkte werden parallel und stabil abgebildet.';
       if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return `${dualText} Im Alltag wechseln die Akzente dadurch stärker, anstatt konstant parallel zu wirken.`;
-      if (input.fitSubtype === 'PARTIAL_MATCH') return 'Die Arbeitsweise ist grundsätzlich anschlussfähig, erreicht aber nicht durchgehend die geforderte Balance beider Hauptlogiken.';
+      if (input.fitSubtype === 'PARTIAL_MATCH' && input.fitLabel !== 'Nicht geeignet') return 'Die Arbeitsweise ist grundsätzlich anschlussfähig, erreicht aber nicht durchgehend die geforderte Balance beider Hauptlogiken.';
       return 'Die Arbeitsweise bildet die geforderte Doppellogik nicht ausreichend ab.';
     }
 
     if (key === 'communication') {
-      if (input.fitSubtype === 'PERFECT') return 'Die Kommunikation ist in ihrer Grundlogik stimmig und deckt beide Anforderungen gut ab.';
+      if (input.fitSubtype === 'PERFECT') return 'Das Kommunikationsverhalten ist stimmig und gut anschlussfähig. Beide Anforderungen werden gut abgedeckt.';
       if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return `${dualText} Dadurch unterscheidet sich, wie konstant zwischen Einbindung und sachlicher Struktur vermittelt wird.`;
-      if (input.fitSubtype === 'PARTIAL_MATCH') return 'Die Kommunikation deckt die Stelle teilweise ab, bleibt aber nicht durchgehend in der geforderten Balance.';
-      return 'Die Kommunikationslogik entspricht nicht der stabilen Doppellogik, die die Stelle verlangt.';
+      if (input.fitSubtype === 'PARTIAL_MATCH' && input.fitLabel !== 'Nicht geeignet') return 'Die Kommunikation deckt die Stelle teilweise ab, bleibt aber nicht durchgehend in der geforderten Balance.';
+      return 'Die Kommunikationslogik unterscheidet sich deutlich von der Rolle. Abstimmung und Austausch verlaufen anders als erforderlich.';
     }
 
     if (key === 'culture') {
-      if (input.fitSubtype === 'PERFECT') return 'Die kulturelle Grundrichtung ist stimmig. Beide Seiten der Rolle werden parallel getragen.';
+      if (input.fitSubtype === 'PERFECT') return 'Die Wirkung auf die Teamkultur unterstützt die gewünschte Ausrichtung der Rolle. Beide Seiten werden parallel getragen.';
       if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return `${dualText} Dadurch kann sich die gelebte Kultur in einzelnen Aspekten von der Stellenerwartung unterscheiden.`;
-      if (input.fitSubtype === 'PARTIAL_MATCH') return 'Die Kulturwirkung ist grundsätzlich anschlussfähig, bleibt aber nicht konstant in der geforderten Balance.';
-      return 'Die Kulturwirkung trifft die geforderte Verbindung beider Hauptbereiche nicht stabil.';
+      if (input.fitSubtype === 'PARTIAL_MATCH' && input.fitLabel !== 'Nicht geeignet') return 'Die Wirkung auf Zusammenarbeit und Teamkultur ist grundsätzlich tragfähig, bleibt aber nicht deckungsgleich.';
+      return 'Die kulturelle Wirkung würde die gewünschte Teamrichtung spürbar verändern. Zusammenarbeit entwickelt sich anders als für die Rolle vorgesehen.';
     }
 
     if (key === 'leadership') {
-      if (input.fitSubtype === 'PERFECT') return 'Die Führungswirkung ist stimmig. Beide geforderten Schwerpunkte werden in der Führung parallel und stabil getragen.';
+      if (input.fitSubtype === 'PERFECT') return 'Die Führungswirkung ist stimmig und gut anschlussfähig. Beide geforderten Schwerpunkte werden parallel und stabil getragen.';
       if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return `${dualText} Dadurch kann sich die Führungswirkung im Alltag leicht anders gewichten als die Rolle es verlangt.`;
-      if (input.fitSubtype === 'PARTIAL_MATCH') return 'Die Führungswirkung ist grundsätzlich anschlussfähig, erreicht aber nicht durchgehend die geforderte Balance beider Hauptlogiken.';
+      if (input.fitSubtype === 'PARTIAL_MATCH' && input.fitLabel !== 'Nicht geeignet') return 'Die Führungswirkung ist grundsätzlich anschlussfähig, erreicht aber nicht durchgehend die geforderte Balance beider Hauptlogiken.';
       return 'Die Führungswirkung bildet die geforderte Doppellogik nicht ausreichend ab.';
     }
   }
 
+
   if (input.fitSubtype === 'PERFECT') {
-    if (key === 'decision') return 'Die Entscheidungslogik ist stimmig und deckt die Stellenanforderung gut ab.';
-    if (key === 'workstyle') return 'Die Arbeitsweise ist stimmig und entspricht der Rolle in ihrem Grundansatz.';
-    if (key === 'communication') return 'Der Kommunikationsstil ist stimmig und passt zur Rolle.';
-    if (key === 'culture') return 'Die kulturelle Wirkung ist stimmig und verändert die gewünschte Teamrichtung nicht.';
-    return 'Die Führungswirkung ist im Kern stimmig und gut anschlussfähig.';
+    if (key === 'decision') return 'Das Entscheidungsverhalten ist deckungsgleich mit der Stellenanforderung. Entscheidungen werden in der Form getroffen, wie sie für die Rolle erforderlich sind.';
+    if (key === 'workstyle') return 'Die Arbeitsweise ist deckungsgleich mit der Stellenanforderung. Aufgaben werden in der Form umgesetzt, wie es die Rolle verlangt.';
+    if (key === 'communication') return 'Das Kommunikationsverhalten ist stimmig und gut anschlussfähig. Austausch und Abstimmung erfolgen in der für die Rolle passenden Form.';
+    if (key === 'culture') return 'Die Wirkung auf die Teamkultur unterstützt die gewünschte Ausrichtung der Rolle. Zusammenarbeit und Dynamik entwickeln sich in die richtige Richtung.';
+    return 'Die Führungswirkung ist stimmig und gut anschlussfähig.';
   }
 
   if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') {
-    if (key === 'decision') return 'Die Entscheidungslogik ist in der Grundrichtung stimmig. Die Gewichtung ist jedoch nicht vollständig deckungsgleich.';
-    if (key === 'workstyle') return 'Die Arbeitsweise ist in der Grundrichtung stimmig, die Gewichtung ist jedoch nicht vollständig deckungsgleich.';
-    if (key === 'communication') return 'Der Kommunikationsstil ist in der Grundrichtung stimmig. Die Gewichtung der Nebenbereiche ist jedoch nicht deckungsgleich.';
-    if (key === 'culture') return 'Die kulturelle Grundrichtung ist stimmig. Die Gewichtung der Nebenbereiche ist jedoch nicht deckungsgleich.';
+    if (key === 'decision') return 'Das Entscheidungsverhalten ist in der Grundrichtung stimmig, jedoch nicht vollständig deckungsgleich. Die Gewichtung innerhalb von Entscheidungen weicht spürbar von der Rolle ab.';
+    if (key === 'workstyle') return 'Die Arbeitsweise ist in der Grundrichtung stimmig, wird im Alltag jedoch anders gewichtet. Dadurch entstehen leichte Verschiebungen in der Umsetzung.';
+    if (key === 'communication') return 'Das Kommunikationsverhalten ist in der Grundrichtung passend, jedoch nicht vollständig deckungsgleich. Die Art der Abstimmung weicht in Nuancen von der Rolle ab.';
+    if (key === 'culture') return 'Die kulturelle Grundrichtung ist stimmig, wird im Alltag jedoch anders dosiert. Die Wirkung auf das Team verschiebt sich dadurch leicht.';
     return 'Die Führungswirkung ist grundsätzlich stimmig, wird im Alltag aber anders gewichtet.';
   }
 
-  if (input.fitSubtype === 'PARTIAL_MATCH') {
-    if (key === 'decision') return 'Die Entscheidungslogik ist teilweise anschlussfähig, aber nicht deckungsgleich.';
-    if (key === 'workstyle') return 'Die Arbeitsweise ist grundsätzlich anschlussfähig, weicht aber in zentralen Anteilen von der Rolle ab.';
-    if (key === 'communication') return 'Die Kommunikation ist grundsätzlich anschlussfähig, trifft die erwartete Logik aber nicht vollständig.';
-    if (key === 'culture') return 'Die Kulturwirkung ist teilweise tragfähig, bleibt aber nicht deckungsgleich zur Stellenerwartung.';
-    return 'Die Führungswirkung ist grundsätzlich anschlussfähig, aber nicht konsequent genug.';
+  if (input.fitSubtype === 'PARTIAL_MATCH' && input.fitLabel !== 'Nicht geeignet') {
+    if (key === 'decision') return 'Das Entscheidungsverhalten ist teilweise anschlussfähig, entspricht jedoch nicht durchgehend der Logik der Rolle. In einzelnen Situationen entstehen andere Prioritäten.';
+    if (key === 'workstyle') return 'Die Arbeitsweise ist grundsätzlich anschlussfähig, entspricht jedoch nicht durchgehend der geforderten Rollenlogik. Vorgehensweisen unterscheiden sich in relevanten Punkten.';
+    if (key === 'communication') return 'Die Kommunikation ist teilweise passend, trifft die erwartete Form jedoch nicht durchgehend. Dadurch entstehen im Alltag unterschiedliche Erwartungen im Austausch.';
+    if (key === 'culture') return 'Die Wirkung auf Zusammenarbeit und Teamkultur ist grundsätzlich tragfähig, bleibt aber nicht deckungsgleich. Im Alltag entstehen unterschiedliche Dynamiken.';
+    return 'Die Führungswirkung ist grundsätzlich anschlussfähig, aber nicht durchgehend in der geforderten Form.';
   }
 
-  if (key === 'decision') return 'Die Entscheidungslogik weicht deutlich von der Stellenanforderung ab.';
-  if (key === 'workstyle') return 'Die Arbeitsweise liegt spürbar neben der Rollenanforderung.';
-  if (key === 'communication') return 'Der Kommunikationsstil unterscheidet sich deutlich von der Rolle.';
-  if (key === 'culture') return 'Die kulturelle Wirkung weicht spürbar von der Stellenerwartung ab.';
+  if (key === 'decision') return 'Das Entscheidungsverhalten weicht deutlich von der Stellenanforderung ab. Entscheidungen folgen einer anderen Logik als in der Rolle vorgesehen.';
+  if (key === 'workstyle') return 'Die Arbeitsweise liegt spürbar neben der Stellenanforderung. Aufgaben werden anders umgesetzt, als es die Rolle erfordert.';
+  if (key === 'communication') return 'Die Kommunikationslogik unterscheidet sich deutlich von der Rolle. Abstimmung und Austausch verlaufen anders als erforderlich.';
+  if (key === 'culture') return 'Die kulturelle Wirkung würde die gewünschte Teamrichtung spürbar verändern. Zusammenarbeit entwickelt sich anders als für die Rolle vorgesehen.';
   return 'Die Führungswirkung entspricht nicht der Logik, die die Stelle verlangt.';
 }
 
