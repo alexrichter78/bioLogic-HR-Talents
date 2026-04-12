@@ -365,6 +365,21 @@ function buildSummary(input: MatchTextInput): SummaryBlock {
     ];
     profileCompareIntro = 'Die Profile weichen in keinem der drei Bereiche wesentlich voneinander ab. Die Grundstruktur passt.';
     finalText = `Die Stelle ${input.roleName} erfordert ${COMP_NOUN[sp.rDom.top]} und ${COMP_NOUN[sp.rDom.second]} gleichermaßen. Die Person arbeitet in dieselbe Richtung, die Gewichtung der Nebenbereiche ist jedoch nicht vollständig deckungsgleich. Mit gezielter Führung und klarer Struktur lässt sich die Zusammenarbeit stabilisieren. Der Führungsaufwand ist gering.`;
+  } else if (input.fitSubtype === 'PARTIAL_MATCH' && input.fitLabel === 'Nicht geeignet') {
+    summary = 'Die Gesamtbewertung spricht für eine kritische Passung. Obwohl Teilbereiche anschlussfähig sind, weicht die Gesamtstruktur deutlich von der Stellenlogik ab. Eine Besetzung ist mit erheblichem Steuerungsaufwand verbunden.';
+    managementSummary = `${familyText} Obwohl die Person in einzelnen Bereichen anschlussfähig ist, weicht die innere Rangordnung der Arbeitslogik deutlich von der Stelle ab.`;
+    whyResult = [
+      'Die Person deckt Teilaspekte der Rolle ab, die Rangordnung der Arbeitsschwerpunkte unterscheidet sich jedoch deutlich.',
+      `Die größte Einzelabweichung liegt im Bereich ${COMP_SHORT[leadKey]}.`,
+      'Ohne intensive Steuerung wird die Rolle im Alltag nicht in der geforderten Form gelebt.',
+    ];
+    risks = [
+      'Die innere Rangfolge der Arbeitsschwerpunkte weicht ab – die Rolle wird anders gewichtet als vorgesehen.',
+      'Im Alltag verschieben sich Prioritäten und Arbeitsweise spürbar.',
+      'Hoher Führungsaufwand nötig, um die Passung aufrechtzuerhalten.',
+    ];
+    profileCompareIntro = 'Obwohl einzelne Bereiche nah beieinander liegen, unterscheidet sich die Rangordnung der Schwerpunkte deutlich.';
+    finalText = `Die Stelle ${input.roleName} verlangt eine andere Gewichtung der Arbeitsschwerpunkte als die Person mitbringt. Trotz teilweiser Übereinstimmung reicht die strukturelle Passung nicht für eine stabile Besetzung.`;
   } else if (input.fitSubtype === 'PARTIAL_MATCH') {
     summary = 'Die Gesamtbewertung spricht für eine bedingte Passung. Die Person ist grundsätzlich anschlussfähig, bildet die Stellenlogik aber nicht durchgehend deckungsgleich ab. Eine erfolgreiche Besetzung verlangt bewusste Steuerung.';
     managementSummary = `${familyText} Im Alltag braucht es klare Prioritäten, weil die Rolle nicht in allen Punkten konstant so gelebt wird wie vorgesehen.`;
@@ -667,6 +682,13 @@ function buildTimeline(input: MatchTextInput): string[] {
       'Die Stellenanforderungen werden langfristig stabil erfüllt. Der Führungsaufwand bleibt gering. Halbjährliche Überprüfungen genügen.',
     ];
   }
+  if (input.fitLabel === 'Nicht geeignet') {
+    return [
+      `Die Stelle ${input.roleName} verlangt ${COMP_SHORT[dominanceModeOf(input.roleProfile).top]}. Die Person gewichtet die Arbeitsschwerpunkte deutlich anders. Bereits in der Einarbeitung werden die Unterschiede sichtbar und erfordern intensive Begleitung.`,
+      'Die Abweichungen werden im Alltag zunehmend spürbar. Ohne sehr enge Führung verschieben sich Prioritäten und Arbeitsweise weiter von der Stellenlogik weg. Der Steuerungsaufwand ist hoch.',
+      'Langfristig ist eine stabile Passung nur mit dauerhaft hohem Führungsaufwand erreichbar. Die Frage, ob die Besetzung tragfähig bleibt, sollte regelmäßig und kritisch überprüft werden.',
+    ];
+  }
   return [
     `Die Stelle ${input.roleName} verlangt ${COMP_SHORT[dominanceModeOf(input.roleProfile).top]}. Die Person arbeitet in dieselbe Richtung, gewichtet aber die Nebenbereiche anders. Bereits in der Einarbeitung sollte gezielt auf diese Unterschiede geachtet werden.`,
     'Die Grundrichtung stimmt, aber die Abweichungen in den Nebenbereichen werden im Alltag bemerkbar. Ohne gezielte Steuerung können sich diese Unterschiede verfestigen. Regelmäßige Zielgespräche und klare Erwartungen sind notwendig.',
@@ -682,6 +704,16 @@ function buildDevelopment(input: MatchTextInput): DevelopmentBlock {
       scoreText: 'niedrig',
       text1: `Die Stelle verlangt ${COMP_NOUN[dominanceModeOf(input.roleProfile).top]} und ${COMP_NOUN[dominanceModeOf(input.roleProfile).second]} gleichermaßen. Die Person deckt diese Anforderung in stimmiger Form ab.`,
       text2: `Die Stelle ${input.roleName} erfordert ${COMP_NOUN[dominanceModeOf(input.roleProfile).top]} und ${COMP_NOUN[dominanceModeOf(input.roleProfile).second]} gleichermaßen. Die Person bringt diese Arbeitsweise mit. Grundrichtung und Gewichtung passen. Der Führungsaufwand ist gering. Eine stabile Besetzung ist unter diesen Bedingungen wahrscheinlich.`,
+    };
+  }
+
+  if (input.fitLabel === 'Nicht geeignet') {
+    return {
+      title: 'Entwicklungsprognose',
+      subtitle: '1 von 3 Hoher Aufwand, Ergebnis unsicher',
+      scoreText: 'hoch',
+      text1: `Die Stelle verlangt ${COMP_NOUN[dominanceModeOf(input.roleProfile).top]} und ${COMP_NOUN[dominanceModeOf(input.roleProfile).second]} gleichermaßen. Die Person gewichtet ihre Arbeitsschwerpunkte deutlich anders. Eine Anpassung ist nur mit hohem und dauerhaftem Führungsaufwand möglich.`,
+      text2: `Die Stelle ${input.roleName} erfordert eine Gewichtung, die sich von der Arbeitsweise der Person grundlegend unterscheidet. Ohne intensive Steuerung ist eine stabile Besetzung nicht wahrscheinlich.`,
     };
   }
 

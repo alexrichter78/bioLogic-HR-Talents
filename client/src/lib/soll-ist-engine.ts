@@ -210,6 +210,12 @@ export function deriveFitSubtype(
   roleIsBalFull: boolean,
   roleIsDualDom: boolean = false,
 ): FitSubtype {
+  if (structRel.type === "HARD_CONFLICT") {
+    if (rk === ck || candDualMatchesRole || candIsBalFull || roleIsBalFull) {
+      return "PARTIAL_MATCH";
+    }
+    return "MISMATCH";
+  }
   if (rk === ck) {
     if (structRel.type === "EXACT" && maxGap < 8) return "PERFECT";
     return "STRUCTURE_MATCH_INTENSITY_OFF";

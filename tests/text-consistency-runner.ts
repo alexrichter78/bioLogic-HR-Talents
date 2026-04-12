@@ -124,7 +124,7 @@ function runConsistencyTests(): number {
     { label: "ORDER_AIN leicht", soll: { I: 30, N: 20, A: 50 }, ist: { I: 25, N: 30, A: 45 }, expectedSub: "STRUCTURE_MATCH_INTENSITY_OFF" },
     { label: "ORDER_NIA leicht", soll: { I: 30, N: 50, A: 20 }, ist: { I: 25, N: 45, A: 30 }, expectedSub: "STRUCTURE_MATCH_INTENSITY_OFF" },
     { label: "BOTTOM_PAIR_I gering", soll: { I: 50, N: 25, A: 25 }, ist: { I: 45, N: 30, A: 25 }, expectedSub: "PERFECT" },
-    { label: "ORDER_INA gross", soll: { I: 50, N: 30, A: 20 }, ist: { I: 42, N: 20, A: 38 }, expectedSub: "STRUCTURE_MATCH_INTENSITY_OFF" },
+    { label: "ORDER_INA gross", soll: { I: 50, N: 30, A: 20 }, ist: { I: 42, N: 20, A: 38 }, expectedSub: "PARTIAL_MATCH" },
   ];
 
   for (const tc of intensityOffCases) {
@@ -205,7 +205,7 @@ function runConsistencyTests(): number {
   let partialFailures = 0;
   const partialCases: { label: string; soll: P; ist: P; expectedSub: FitSubtype }[] = [
     { label: "TOP_PAIR vs ORDER soft", soll: { I: 40, N: 40, A: 20 }, ist: { I: 34, N: 40, A: 26 }, expectedSub: "PARTIAL_MATCH" },
-    { label: "BalFull-Cand same dom", soll: { I: 50, N: 30, A: 20 }, ist: { I: 34, N: 33, A: 33 }, expectedSub: "STRUCTURE_MATCH_INTENSITY_OFF" },
+    { label: "BalFull-Cand same dom", soll: { I: 50, N: 30, A: 20 }, ist: { I: 34, N: 33, A: 33 }, expectedSub: "PARTIAL_MATCH" },
     { label: "BalFull-Cand diff dom", soll: { I: 20, N: 50, A: 30 }, ist: { I: 34, N: 33, A: 33 }, expectedSub: "PARTIAL_MATCH" },
     { label: "DualDom-Cand matching", soll: { I: 50, N: 30, A: 20 }, ist: { I: 40, N: 40, A: 20 }, expectedSub: "STRUCTURE_MATCH_INTENSITY_OFF" },
   ];
@@ -242,7 +242,7 @@ function runConsistencyTests(): number {
   const boundaryCases: { label: string; soll: P; ist: P; expectedSub: FitSubtype }[] = [
     { label: "maxGap=7 EXACT → PERF", soll: { I: 50, N: 30, A: 20 }, ist: { I: 43, N: 33, A: 24 }, expectedSub: "PERFECT" },
     { label: "maxGap=7 !EXACT → OFF", soll: { I: 50, N: 30, A: 20 }, ist: { I: 50, N: 23, A: 27 }, expectedSub: "STRUCTURE_MATCH_INTENSITY_OFF" },
-    { label: "maxGap=8 → INTENS_OFF", soll: { I: 50, N: 30, A: 20 }, ist: { I: 50, N: 22, A: 28 }, expectedSub: "STRUCTURE_MATCH_INTENSITY_OFF" },
+    { label: "maxGap=8 → PARTIAL (HARD_CONFLICT)", soll: { I: 50, N: 30, A: 20 }, ist: { I: 50, N: 22, A: 28 }, expectedSub: "PARTIAL_MATCH" },
     { label: "gap=5 → ok Severity", soll: { I: 50, N: 25, A: 25 }, ist: { I: 45, N: 30, A: 25 }, expectedSub: "PERFECT" },
     { label: "gap=6 → warning Sev", soll: { I: 50, N: 25, A: 25 }, ist: { I: 44, N: 31, A: 25 }, expectedSub: "STRUCTURE_MATCH_INTENSITY_OFF" },
   ];

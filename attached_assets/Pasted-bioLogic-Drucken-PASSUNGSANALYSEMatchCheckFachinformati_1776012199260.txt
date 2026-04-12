@@ -1,0 +1,234 @@
+bioLogic
+Drucken
+PASSUNGSANALYSEMatchCheckFachinformatiker Systemintegration
+Diese Passungsanalyse zeigt, wie gut Person und Position in ihrer Arbeitslogik zusammenpassen. Sie macht sichtbar, wo Übereinstimmungen bestehen, wo Abweichungen entstehen und welcher Führungs- oder Entwicklungsaufwand daraus im Alltag zu erwarten ist.
+
+Die Aussagen beschreiben dabei keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse ist wertfrei zu verstehen und dient als Orientierung für die Einschätzung von Passung und Wirksamkeit. Da jede Person individuell ist, ersetzt sie keine Einzelfallbetrachtung, sondern ergänzt diese um eine strukturierte und fundierte Entscheidungsgrundlage.
+
+01
+Gesamtbewertung
+Die Gesamtbewertung spricht für eine kritische Passung. Die strukturelle Abweichung ist erheblich und der erforderliche Führungs- und Entwicklungsaufwand sehr hoch. Eine Besetzung ist unter diesen Voraussetzungen mit hohem Risiko verbunden.
+
+Grundpassung
+Nicht geeignet
+Führungsaufwand
+Gering
+Profilabweichung
+hoch
+Entwicklungsaufwand: hoch
+Kurzübersicht
+
+Stelle
+
+Struktur / Analyse
+Zusammenarbeit / Kommunikation
+⚡
+Person
+
+Umsetzung / Tempo
+Zusammenarbeit / Kommunikation
+Struktur / Analyse
+1
+Auswirkung im Arbeitsalltag
+
+Die Profile weichen in keinem der drei Bereiche wesentlich voneinander ab. Die Grundstruktur passt.
+
+2
+Managementkurzfazit
+
+Die Gesamtbewertung spricht für eine bedingte Passung. Die Arbeitslogik ist in ihrer Grundstruktur stimmig. In der Gewichtung zeigen sich jedoch leichte Abweichungen. Eine erfolgreiche Besetzung ist mit gezielter Führung realistisch.
+
+3
+Warum dieses Ergebnis
+
+Die Person arbeitet in dieselbe Richtung, die Gewichtung der Nebenbereiche weicht jedoch ab.
+Alle drei Arbeitsbereiche liegen nah beieinander. Geringe Abweichung.
+Moderater Führungsaufwand. Gezielte Führung und klare Erwartungen gleichen Differenzen aus.
+4
+Risiken dieser Konstellation
+
+Grundrichtung stimmt, aber die Gewichtung innerhalb dieser Struktur weicht ab.
+Feinabstimmung in den Nebenbereichen nötig.
+Regelmäßiges Feedback sichert die Passung langfristig.
+02
+Vergleich der Profile
+Die deutlichste Abweichung liegt im Bereich Umsetzung / Tempo. Der Kernbereich der Stelle (Struktur / Analyse) ist davon weniger betroffen.
+
+Soll-Profil (Stelle)
+
+Impulsiv
+25 %
+Intuitiv
+35 %
+Analytisch
+40 %
+Ist-Profil (Person)
+
+Impulsiv
+34 %
+Intuitiv
+31 %
+Analytisch
+35 %
+Bedeutung der Komponenten
+
+Impulsiv
+Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung.
+
+Fehlt dieser Anteil, werden Entscheidungen verzögert und Chancen nicht genutzt.
+
+Analytisch
+Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe.
+
+Fehlt dieser Anteil, entstehen Fehler in Planung, Kalkulation und Dokumentation.
+
+Intuitiv
+Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team.
+
+Fehlt dieser Anteil, leidet die Zusammenarbeit und Vertrauen sinkt.
+
+03
+Wirkung der Besetzung im Arbeitsalltag
+1
+Entscheidungsverhalten
+
+mit Abweichung
+Stellenanforderung
+
+Entscheidungen, die Beziehungsgestaltung und Einbindung einerseits, analytische Prüfung und Ordnung andererseits gleichermaßen berücksichtigen. Beide Logiken sollen parallel wirksam sein.
+
+Person
+
+Die Person entscheidet breit abgestützt und wägt verschiedene Perspektiven gleichmäßig ab.
+
+Die Entscheidungslogik ist in der Grundrichtung stimmig. Die Gewichtung ist jedoch nicht vollständig deckungsgleich.
+
+2
+Arbeitsweise
+
+mit Abweichung
+Stellenanforderung
+
+Arbeitsweise, die Ordnung und Verlässlichkeit und Beziehungsgestaltung und Kommunikation parallel und stabil verbindet.
+
+Person
+
+Die Person arbeitet breit aufgestellt und wechselt situativ zwischen Tempo, Abstimmung und Sorgfalt.
+
+Die Arbeitsweise ist in der Grundrichtung stimmig, die Gewichtung ist jedoch nicht vollständig deckungsgleich.
+
+3
+Kommunikationsverhalten
+
+mit Abweichung
+Stellenanforderung
+
+Kommunikation, die sowohl analytisch als auch beziehungsorientiert geprägt ist. Beide Stile sollen parallel erkennbar sein.
+
+Person
+
+Die Person kommuniziert vielseitig und passt ihren Stil situativ an.
+
+Der Kommunikationsstil ist in der Grundrichtung stimmig. Die Gewichtung der Nebenbereiche ist jedoch nicht deckungsgleich.
+
+4
+Wirkung auf Zusammenarbeit und Teamkultur
+
+mit Abweichung
+Stellenanforderung
+
+Teamkultur, die sowohl Ordnung und Verlässlichkeit als auch Beziehungsgestaltung und Kommunikation stabil verankert.
+
+Person
+
+Die Person bringt eine breite kulturelle Wirkung mit, ohne einzelne Bereiche stark zu dominieren.
+
+Die kulturelle Grundrichtung ist stimmig. Die Gewichtung der Nebenbereiche ist jedoch nicht deckungsgleich.
+
+04
+Verhalten unter Druck
+Kontrollierter Druck
+
+Unter moderatem Druck zeigt sich bei dieser Person kein klarer Schwerpunkt. Da alle drei Bereiche fast gleich stark ausgeprägt sind, wechselt die Reaktion situativ: Mal wird stärker über Tempo gesteuert, mal über Abstimmung, mal über Struktur. Das Verhalten wirkt dadurch wenig vorhersehbar.
+
+Unkontrollierter Stress
+
+Unter hoher Belastung fehlt ein stabiler Anker. Die Person kann zwischen den drei Logiken springen – mal impulsiver, mal beziehungsorientierter, mal kontrollierter. Im Alltag wird dieses Wechseln deutlich spürbar und kann das Umfeld verunsichern.
+
+Unter zunehmendem Arbeitsdruck können sich diese Verhaltensmuster verstärken. Dadurch entstehen im Arbeitsalltag Risiken für Abstimmung, Führung und Zusammenarbeit.
+
+05
+Risikoprognose
+Kurzfristig 0 - 3 Monate
+
+Die Stelle Fachinformatiker Systemintegration verlangt Struktur / Analyse. Die Person arbeitet in dieselbe Richtung, gewichtet aber die Nebenbereiche anders. Bereits in der Einarbeitung sollte gezielt auf diese Unterschiede geachtet werden.
+
+Mittelfristig 3 - 12 Monate
+
+Die Grundrichtung stimmt, aber die Abweichungen in den Nebenbereichen werden im Alltag bemerkbar. Ohne gezielte Steuerung können sich diese Unterschiede verfestigen. Regelmäßige Zielgespräche und klare Erwartungen sind notwendig.
+
+Langfristig 12+ Monate
+
+Mit gezielter Führung lassen sich die Unterschiede in den Nebenbereichen dauerhaft ausgleichen. Halbjährliche Überprüfung empfohlen, um sicherzustellen, dass die Passung stabil bleibt.
+
+06
+Gesamtbewertung
+Fachinformatiker Systemintegration
+Nicht geeignet
+Die Anforderungen der Stelle und die Arbeitsweise der Person unterscheiden sich deutlich. Im Alltag kann das zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.
+
+Entwicklungsprognose
+
+1 von 3 Hoher Aufwand, Ergebnis unsicher
+
+Die Stelle verlangt Ordnung und Verlässlichkeit und Beziehungsgestaltung und Kommunikation gleichermaßen. Die Person arbeitet in dieselbe Richtung, muss aber in einzelnen Bereichen noch gezielt dazulernen. Mit klaren Zielen und regelmäßigem Feedback ist das gut machbar. Die Stelle Fachinformatiker Systemintegration erfordert Ordnung und Verlässlichkeit und Beziehungsgestaltung und Kommunikation gleichermaßen. Die Person arbeitet in dieselbe Richtung, die Gewichtung der Nebenbereiche ist jedoch nicht vollständig deckungsgleich. Mit gezielter Führung und klarer Struktur lässt sich die Zusammenarbeit stabilisieren. Der Führungsaufwand ist gering.
+
+Die Stelle Fachinformatiker Systemintegration erfordert Ordnung und Verlässlichkeit und Beziehungsgestaltung und Kommunikation gleichermaßen. Die Person arbeitet in dieselbe Richtung, die Gewichtung der Nebenbereiche ist jedoch nicht vollständig deckungsgleich. Mit gezielter Führung und klarer Struktur lässt sich die Zusammenarbeit stabilisieren. Der Führungsaufwand ist gering.
+
+07
+30-Tage-Integrationsplan
+1
+OrientierungTag 1–10
+Ziel: Qualitätsstandards und Entscheidungslogik der Stelle Fachinformatiker Systemintegration verstehen.
+
+Klärung von Stelle, Erwartungshaltung und Qualitätsstandard in Fachinformatiker Systemintegration.
+Transparenz über bestehende Entscheidungs- und Dokumentationsstrukturen.
+Frühe Abstimmung von Prioritäten, Qualitätskriterien und Definition von 'Done'.
+Klärung operativer Prozesse und Schnittstellen.
+Worauf es ankommt
+
+Die Stelle Fachinformatiker Systemintegration stellt Struktur / Analyse in den Vordergrund. Die Person bringt Struktur / Analyse als Stärke mit. Zu klären ist:
+
+welche Arbeitstiefe erwartet wird
+welche Standards und Prozesse gelten
+wie Qualität gemessen wird
+2
+WirkungTag 11–20
+Ziel: Erste strukturierte Arbeitsergebnisse als Fachinformatiker Systemintegration liefern und Standards etablieren.
+
+Ein priorisiertes Thema strukturiert analysieren und verbessern.
+Feedback zur Wirkung auf Qualität, Nachvollziehbarkeit und Zusammenarbeit einholen.
+Einen klaren Standard (Checkliste, Playbook oder Dokumentation) einführen oder schärfen.
+Fehlerquellen identifizieren und systematisch beheben.
+Worauf es ankommt
+
+Die Person sollte verstärkt auf analytische Tiefe achten. Konkret bedeutet das:
+
+Ergebnisse sauber dokumentieren
+analytische Prüfung nicht umgehen
+Führungsbegleitung aktiv nutzen
+3
+StabilisierungTag 21–30
+Ziel: Qualitätsstandards und Prozesssteuerung als Fachinformatiker Systemintegration dauerhaft verankern.
+
+Evaluation der Wirkung auf Entscheidungsrhythmus, Priorisierung und Belastung.
+Anpassung von Regeln, Schnittstellen und Qualitätsstandards.
+Prozessstabilität und Durchlaufzeiten prüfen.
+Langfristige Qualitätsziele und Dokumentationsstandards festlegen.
+Worauf es ankommt
+
+Struktur und Analyse bleiben erhalten, während die Arbeitsweise Richtung Sorgfalt und systematische Prüfung weiterentwickelt wird. Die Führungskraft prüft:
+
+ob der Führungsaufwand langfristig tragbar ist
+ob die Entwicklungsrichtung stimmt
+ob die Stelle dauerhaft stabil besetzt werden kann
