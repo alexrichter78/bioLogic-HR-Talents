@@ -632,7 +632,7 @@ function buildManagementSummaryV2(
   v4: import("./teamcheck-v4-engine").TeamCheckV4Result | null,
   la: LeadershipAssessmentResult | undefined,
   isFK: boolean,
-  teamGoal: import("./teamcheck-v3-engine").TeamGoal
+  teamGoal: import("./teamcheck-v4-engine").TeamGoal
 ): string {
   const lines: string[] = [];
   lines.push(`Rolle: ${role}`);
@@ -687,7 +687,7 @@ function buildSystemfazitV2(
   v4: import("./teamcheck-v4-engine").TeamCheckV4Result | null,
   la: LeadershipAssessmentResult | undefined,
   isFK: boolean,
-  teamGoal: import("./teamcheck-v3-engine").TeamGoal
+  teamGoal: import("./teamcheck-v4-engine").TeamGoal
 ): string {
   const lines: string[] = [];
   const s = Subj(cand);
@@ -768,7 +768,7 @@ export function computeTeamReport(
   const tk = teamDom.top1.key;
 
   const isFK = options?.roleType === "fuehrung" || options?.roleType === "Führungskraft" || options?.roleType === "leadership";
-  const teamGoalRaw = (options?.teamGoal || null) as import("./teamcheck-v3-engine").TeamGoal;
+  const teamGoalRaw = (options?.teamGoal || null) as import("./teamcheck-v4-engine").TeamGoal;
 
   let v4Result: import("./teamcheck-v4-engine").TeamCheckV4Result | null = null;
   let laResult: LeadershipAssessmentResult | undefined;

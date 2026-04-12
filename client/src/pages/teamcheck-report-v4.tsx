@@ -3,8 +3,7 @@ import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
 import { useRegion, localizeDeep } from "@/lib/region";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { computeTeamCheckV4, type TeamCheckV4Result, type V4Block } from "@/lib/teamcheck-v4-engine";
-import type { TeamCheckV3Input } from "@/lib/teamcheck-v3-engine";
+import { computeTeamCheckV4, type TeamCheckV4Result, type TeamCheckV4Input, type V4Block } from "@/lib/teamcheck-v4-engine";
 import { ArrowLeft, Download, Loader2, Printer, AlertTriangle } from "lucide-react";
 import { BIO_COLORS, COMP_HEX } from "@/lib/bio-design";
 import type { ComponentKey } from "@/lib/bio-types";
@@ -70,7 +69,7 @@ export default function TeamCheckReportV4() {
     const raw = sessionStorage.getItem("teamcheckV4Input");
     if (!raw) { navigate("/team-report"); return; }
     try {
-      const parsed = JSON.parse(raw) as TeamCheckV3Input;
+      const parsed = JSON.parse(raw) as TeamCheckV4Input;
       setResult(localizeDeep(computeTeamCheckV4(parsed), region));
     } catch { navigate("/team-report"); }
   }, [navigate, region]);

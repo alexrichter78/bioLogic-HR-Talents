@@ -11,9 +11,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { hyphenateText } from "@/lib/hyphenate";
 import {
   computeTeamCheckV4,
-  type TeamCheckV4Result, type V4Block,
+  type TeamCheckV4Result, type TeamCheckV4Input, type V4Block, type TeamGoal,
 } from "@/lib/teamcheck-v4-engine";
-import type { TeamCheckV3Input, TeamGoal } from "@/lib/teamcheck-v3-engine";
 import {
   computeTeamDynamics, getDefaultLevers,
   type TrafficLight, type TeamDynamikInput, type TeamSize,
@@ -336,7 +335,7 @@ export default function TeamCheck() {
         if (dna.arbeitslogik) workStyle = dna.arbeitslogik;
       }
     } catch {}
-    const input: TeamCheckV3Input & { roleType?: "fuehrung" | "teammitglied" } = {
+    const input: TeamCheckV4Input = {
       roleTitle: beruf || "Neue Stelle",
       roleLevel,
       taskStructure,
