@@ -264,7 +264,7 @@ export function buildVariantFamilyText(args: {
   if (roleVariantType === 'TOP_PAIR') {
     if (fitSubtype === 'PERFECT') return 'Die Stelle verlangt zwei gleich starke Schwerpunkte, die parallel wirksam sein sollen. Die Person bringt diese Doppellogik ebenfalls mit.';
     if (fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') {
-      if (sameDualPair && roleThirdDiff >= 6) {
+      if (sameDualPair && roleThirdDiff >= 4) {
         return candThirdLower
           ? 'Die gleiche Doppeldominanz ist vorhanden. Der dritte Bereich ist im Ist-Profil schwächer ausgeprägt. Dadurch treten die beiden Hauptbereiche im Alltag stärker und weniger parallel ausbalanciert auf.'
           : 'Die gleiche Doppeldominanz ist vorhanden. Der dritte Bereich ist im Ist-Profil stärker ausgeprägt. Dadurch werden die beiden Hauptbereiche stärker stabilisiert und etwas weniger konsequent parallel gelebt.';
@@ -300,7 +300,7 @@ export function buildDualDominanceText(args: {
     return 'Die Stelle verlangt zwei gleich starke Schwerpunkte. Die Person bringt diese Doppellogik ebenfalls mit. Beide Bereiche wirken im Alltag parallel und stabil.';
   }
   if (fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') {
-    if (sameDualPair && thirdDiff >= 6) {
+    if (sameDualPair && thirdDiff >= 4) {
       return candThirdLower
         ? 'Die gleiche Doppeldominanz ist vorhanden. Der dritte Bereich ist schwächer ausgeprägt. Dadurch treten die beiden Hauptbereiche im Alltag stärker und weniger parallel ausbalanciert auf.'
         : 'Die gleiche Doppeldominanz ist vorhanden. Der dritte Bereich ist stärker ausgeprägt. Dadurch werden die beiden Hauptbereiche im Alltag stärker stabilisiert.';
@@ -456,6 +456,13 @@ function areaInterpretation(key: ImpactArea['key'], input: MatchTextInput): stri
       if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return `${dualText} Dadurch kann sich die gelebte Kultur in einzelnen Aspekten von der Stellenerwartung unterscheiden.`;
       if (input.fitSubtype === 'PARTIAL_MATCH') return 'Die Kulturwirkung ist grundsätzlich anschlussfähig, bleibt aber nicht konstant in der geforderten Balance.';
       return 'Die Kulturwirkung trifft die geforderte Verbindung beider Hauptbereiche nicht stabil.';
+    }
+
+    if (key === 'leadership') {
+      if (input.fitSubtype === 'PERFECT') return 'Die Führungswirkung ist stimmig. Beide geforderten Schwerpunkte werden in der Führung parallel und stabil getragen.';
+      if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return `${dualText} Dadurch kann sich die Führungswirkung im Alltag leicht anders gewichten als die Rolle es verlangt.`;
+      if (input.fitSubtype === 'PARTIAL_MATCH') return 'Die Führungswirkung ist grundsätzlich anschlussfähig, erreicht aber nicht durchgehend die geforderte Balance beider Hauptlogiken.';
+      return 'Die Führungswirkung bildet die geforderte Doppellogik nicht ausreichend ab.';
     }
   }
 

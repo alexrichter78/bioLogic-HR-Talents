@@ -1,0 +1,162 @@
+Ja — dann ist die neue Logik noch nicht an der richtigen Stelle verdrahtet.
+
+Denn das, was du im Screenshot siehst, ist ganz klar ein Fallback-Text:
+
+„Die Entscheidungslogik ist in der Grundrichtung stimmig. Die Gewichtung ist jedoch nicht vollständig deckungsgleich.“
+
+und
+
+„Die Arbeitsweise ist in der Grundrichtung stimmig, die Gewichtung ist jedoch nicht vollständig deckungsgleich.“
+
+Das ist nicht der spezielle Text für Doppeldominanz, sondern der allgemeine Standardtext.
+
+Was das heißt
+
+Replit verwendet sehr wahrscheinlich noch diese allgemeine Regel:
+
+fitSubtype === STRUCTURE_MATCH_INTENSITY_OFF
+dann generischer Text
+
+statt vorher zu prüfen:
+
+Rolle ist TOP_PAIR
+Person ist TOP_PAIR
+gleiches Dual-Paar
+dritte Komponente weicht ab
+Der eigentliche Fehler
+
+Die Sonderlogik wird entweder:
+
+gar nicht aufgerufen
+oder von einem allgemeineren Block vorher überschrieben
+Wo du schauen musst
+
+Sehr wahrscheinlich in so einer Funktion wie:
+
+areaInterpretation(...)
+
+oder
+
+buildImpactAreas(...)
+
+oder
+
+buildDecisionImpact(...)
+buildWorkStructureImpact(...)
+
+Dort ist vermutlich diese Reihenfolge drin:
+
+if (fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') {
+  return 'Die Grundrichtung ist stimmig ...'
+}
+
+if (roleIsDualDom && candIsDualDom) {
+  ...
+}
+
+Dann kommt der Code nie in den Dual-Fall rein.
+
+Die Reihenfolge muss genau andersrum sein
+Richtig:
+if (roleIsDualDom && candIsDualDom && sameDualPair) {
+  // spezieller Dual-Text
+}
+
+if (fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') {
+  // generischer Text
+}
+Ganz wichtig
+
+Die Dual-Sonderlogik muss vor der generischen Textlogik kommen.
+
+Sonst wird immer der Standardtext gezogen.
+
+Was du konkret prüfen solltest
+1. Wird sameDualPair überhaupt korrekt erkannt?
+
+Lass dir das direkt ausgeben:
+
+console.log('roleVariant:', sollVariant);
+console.log('candVariant:', istVariant);
+console.log('roleIsDualDom:', roleIsDualDom);
+console.log('candIsDualDom:', candIsDualDom);
+console.log('sameDualPair:', sameDualPair);
+console.log('thirdDiff:', thirdDiff);
+console.log('fitSubtype:', fitSubtype);
+
+Wenn da schon steht:
+
+roleIsDualDom: false
+oder sameDualPair: false
+
+dann ist die Erkennung falsch.
+
+2. Ist thirdDiff groß genug für deinen Trigger?
+
+Wenn du in deinem Code so etwas drin hast:
+
+if (sameDualPair && thirdDiff >= 6)
+
+dann springt er nur an, wenn die 3. Komponente mindestens 6 Punkte abweicht.
+
+Falls dein Fall nur 4 oder 5 Punkte Unterschied hat, bekommst du wieder den generischen Text.
+
+Dann musst du entscheiden:
+
+soll der Spezialtext schon ab >= 4 greifen?
+oder nur ab >= 6?
+
+Gerade bei deinen Berichten würde ich eher sagen:
+
+thirdDiff >= 4
+3. Der Spezialtext muss in jede Impact Area rein
+
+Nicht nur in die Summary.
+
+Wenn du nur in buildSummary() die Dual-Logik eingebaut hast, aber die Impact-Areas noch mit Standardtext laufen, passiert genau das, was du gerade siehst.
+
+Du musst die Sonderlogik mindestens in diesen Bereichen vorziehen:
+
+Entscheidungsverhalten
+Arbeitsweise
+Kommunikationsverhalten
+Teamkultur
+Konkrete Reparatur
+
+So sollte der Kern in areaInterpretation() aussehen:
+
+const sp = getSpecialCases(input.roleProfile, input.candProfile);
+
+if (sp.roleIsDualDom && sp.candIsDualDom && sp.sameDualPair) {
+  if (input.fitSubtype === 'PERFECT') {
+    return 'Die Stelle verlangt zwei gleich starke Schwerpunkte. Die Person bringt diese Doppellogik ebenfalls mit. Beide Bereiche wirken im Alltag parallel und stabil.';
+  }
+
+  if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') {
+    if (sp.thirdDiff >= 4) {
+      if (sp.candThirdLower) {
+        return 'Die gleiche Doppeldominanz ist vorhanden. Der dritte Bereich ist jedoch schwächer ausgeprägt. Dadurch wirken die beiden Hauptschwerpunkte im Alltag stärker und weniger parallel ausbalanciert.';
+      }
+
+      return 'Die gleiche Doppeldominanz ist vorhanden. Der dritte Bereich ist jedoch stärker ausgeprägt. Dadurch werden die beiden Hauptschwerpunkte im Alltag stärker stabilisiert.';
+    }
+
+    return 'Die gleiche Doppeldominanz ist vorhanden. Die Balance innerhalb dieser Struktur ist jedoch leicht verschoben.';
+  }
+
+  if (input.fitSubtype === 'PARTIAL_MATCH') {
+    return 'Die Rolle verlangt zwei gleich starke Bereiche. Die Person ist grundsätzlich anschlussfähig, bildet diese Balance jedoch nicht stabil genug ab.';
+  }
+
+  return 'Die Stelle verlangt eine stabile Doppeldominanz. Die Person bringt diese Struktur nicht in der geforderten Form mit.';
+}
+
+// ERST DANACH generische Logik
+if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') {
+  return 'Die Grundrichtung ist stimmig, die Gewichtung ist jedoch nicht vollständig deckungsgleich.';
+}
+Meine klare Einschätzung
+
+Dein Problem ist jetzt nicht mehr die Fachlogik, sondern ganz konkret:
+
+👉 die Sonderlogik wird nicht vor dem Standardtext ausgeführt
