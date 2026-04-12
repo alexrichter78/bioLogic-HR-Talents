@@ -321,7 +321,9 @@ Die 4–5 Bereiche im Bericht (Entscheidungsverhalten, Arbeitsweise, Führungswi
 | warning | Mit Abweichung | Erkennbare Abweichung, steuerbar mit Führung |
 | critical | Kritisch | Deutliche Abweichung, hoher Aufwand nötig |
 
-**Master-Regel:** Kein Teilbereich darf positiver klingen als das Gesamturteil. Bei MISMATCH werden alle Bereiche mindestens kritisch dargestellt. Bei PARTIAL_MATCH und STRUCTURE_MATCH_INTENSITY_OFF dürfen maximal 2 Bereiche auf "ok" stehen.
+**Master-Regel:** Kein Teilbereich darf positiver klingen als das Gesamturteil. Bei MISMATCH werden alle Bereiche mindestens kritisch dargestellt.
+
+**Berichtsdarstellung:** Für die Berichtsdarstellung wird bei PARTIAL_MATCH und STRUCTURE_MATCH_INTENSITY_OFF die Zahl der als „ok" dargestellten Teilbereiche begrenzt, damit die Detailansicht nicht positiver wirkt als das Gesamturteil.
 
 ---
 
@@ -381,7 +383,7 @@ Das Stressverhalten wird profilabhängig generiert. Es gibt vier Profiltypen mit
 | Profiltyp | controlledPressure | uncontrolledStress |
 |---|---|---|
 | ALL_EQUAL | Kein klarer Schwerpunkt, Reaktion situativ wechselnd | Diffuses Springen zwischen allen drei Logiken |
-| TOP_PAIR (Doppeldominanz) | Wechsel zwischen den beiden Hauptbereichen | Schwerpunkt verschiebt sich zur dritten (schwächsten) Komponente |
+| TOP_PAIR (Doppeldominanz) | Wechsel zwischen den beiden Hauptbereichen | Die dritte Komponente kann stärker sichtbar werden und die Balance der beiden Hauptbereiche stören |
 | BOTTOM_PAIR | Hauptlogik verstärkt sich zunächst | Beide fast gleich starken Nebenlogiken konkurrieren situativ – Verhalten wird wechselhafter |
 | ORDER (klare Rangfolge) | Hauptlogik verstärkt sich | Verhalten kippt in Richtung der zweitstärksten Komponente |
 
