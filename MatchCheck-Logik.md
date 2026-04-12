@@ -604,4 +604,4 @@ Die Test-Suite prüft alle **169 Kombinationen** (13 Soll-Varianten × 13 Ist-Va
 | Text-Konsistenz | fitLabel, Führungsaufwand, Entwicklungsaufwand, severity, Integrationsplan müssen zusammenpassen |
 | Grenzwert-Tests | maxGap=5 vs 6 vs 7, EXACT vs SOFT_CONFLICT an den Schwellen |
 
-In der 13×13-Referenzmatrix treten nur Strukturkonstellationen auf. Fälle mit exakter Struktur und Abweichung 6–10 (STRUCTURE_MATCH_INTENSITY_OFF) entstehen deshalb nicht in der Grundmatrix, sondern werden in separaten Intensitätstests geprüft.
+In der 13×13-Referenzmatrix werden nur Strukturvarianten gegeneinander getestet. Deshalb entstehen dort keine Fälle mit STRUCTURE_MATCH_INTENSITY_OFF, weil diese exakte Strukturgleichheit bei gleichzeitig erhöhter Intensitätsabweichung voraussetzen. Diese Fälle werden in separaten Intensitätstests geprüft.
