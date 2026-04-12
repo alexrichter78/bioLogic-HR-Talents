@@ -146,8 +146,21 @@ Nach der Fit-Ermittlung wird ein **FitSubtype** abgeleitet, der die Textgenerier
 |---|---|---|
 | **PERFECT** | rk === ck + EXACT + maxGap < 8 | "deckungsgleich mit der Stellenanforderung" |
 | **STRUCTURE_MATCH_INTENSITY_OFF** | rk === ck, aber nicht PERFECT | "in der Grundrichtung stimmig, Gewichtung nicht deckungsgleich" |
-| **PARTIAL_MATCH** | Dual-Dom-Match, balFull, oder SOFT_CONFLICT | Teilweise passend, Abweichungen in einzelnen Bereichen |
+| **PARTIAL_MATCH** | Dual-Dom-Match, balFull, SOFT_CONFLICT, oder HARD_CONFLICT mit gleicher Top-Komponente | Teilweise passend, Abweichungen in einzelnen Bereichen |
 | **MISMATCH** | HARD_CONFLICT mit unterschiedlichen Dominanten | Grundpassung nicht gegeben |
+
+### HARD_CONFLICT Guard-Regel
+
+**Wichtig:** Die HARD_CONFLICT-Prüfung kommt **vor** der rk===ck-Prüfung in `deriveFitSubtype()`. Wenn `structRel.type === 'HARD_CONFLICT'`, wird **nie** INTENSITY_OFF vergeben, auch wenn die Top-Komponenten gleich sind. Stattdessen:
+
+| Bedingung bei HARD_CONFLICT | FitSubtype |
+|---|---|
+| candDualMatchesRole ODER candIsBalFull ODER roleIsBalFull | PARTIAL_MATCH |
+| Sonst (unterschiedliche Dominante) | MISMATCH |
+
+Dadurch wurde die Verteilung der FitSubtypes korrigiert:
+- INTENSITY_OFF: 49 → 18 (nur noch bei tatsächlich gleicher Grundrichtung)
+- PARTIAL_MATCH: 26 → 57 (korrekt für HARD_CONFLICT-Fälle mit gleicher Top-Komponente)
 
 ### Sprachpräzision: PERFECT vs. STRUCTURE_MATCH_INTENSITY_OFF
 
@@ -168,6 +181,18 @@ Die Texte differenzieren **semantisch**, nicht nur quantitativ:
 | ok | **Weitgehend stimmig** |
 | warning | **Mit Abweichung** |
 | critical | **Kritisch** |
+
+### capSeverity-Funktion
+
+Die `capSeverity(severity, fitSubtype, fitLabel?)` Funktion stellt sicher, dass Severity-Labels konsistent zum Gesamturteil sind:
+
+| FitSubtype | Regel |
+|---|---|
+| PERFECT | ok bleibt ok |
+| STRUCTURE_MATCH_INTENSITY_OFF | ok → warning (mindestens "Mit Abweichung") |
+| PARTIAL_MATCH + "Nicht geeignet" | warning → critical (alle Warnungen werden kritisch) |
+| PARTIAL_MATCH | ok → warning |
+| MISMATCH | ok → critical |
 
 ### Sprachintensitäts-Regeln
 
@@ -242,17 +267,41 @@ Die Texte differenzieren **semantisch**, nicht nur quantitativ:
 | 3–4 | Mittel |
 | ≥ 5 | Hoch |
 
+### Führungsaufwand-Floor (Mindest-Stufen)
+
+Um sicherzustellen, dass der angezeigte Führungsaufwand zum Gesamturteil passt, gelten Mindest-Stufen:
+
+| fitLabel | Mindest-Stufe |
+|---|---|
+| **Nicht geeignet** | Hoch (wird immer auf "hoch" angehoben) |
+| **Bedingt geeignet** | Mittel (wird mindestens auf "mittel" angehoben) |
+| **Geeignet** | Keine Untergrenze |
+
 ---
 
 ## Entwicklungsaufwand
 
-| Fit-Ergebnis | Entwicklungsaufwand |
-|-------------|---------------------|
-| Geeignet | Niedrig |
-| Bedingt geeignet | Mittel |
-| Nicht geeignet | Hoch |
+| Fit-Ergebnis | Entwicklungsaufwand | devLevel | devScore (UI-Balken) |
+|-------------|---------------------|----------|---------------------|
+| Geeignet | Niedrig | 1 | 3 (grün, 3 Balken) |
+| Bedingt geeignet | Mittel | 2 | 2 (gelb, 2 Balken) |
+| Nicht geeignet | Hoch | 3 | 1 (rot, 1 Balken) |
 
 Direkte 1:1-Zuordnung, keine Sonderfälle.
+
+**devScore-Formel:** `devScore = 4 - devLevel`
+
+Diese Formel wird konsistent in zwei Dateien verwendet:
+- `soll-ist-bericht.tsx` (3 Stellen: Anfangswert, Slider-Reset, Profile-Wechsel)
+- `pdf-direct-builder.ts` (2 Stellen: PDF-Report, Balken-Rendering)
+
+### Entwicklungsprognose-Texte
+
+| devLevel | Untertitel | scoreText |
+|---|---|---|
+| 1 (niedrig) | "3 von 3 Gute Aussichten" | "niedrig" |
+| 2 (mittel) | "2 von 3 Machbar, braucht gezielte Führung" | "mittel" |
+| 3 (hoch) | "1 von 3 Hoher Aufwand" | "hoch" |
 
 ### Individuelle Bereichsbewertung (Impact Areas)
 
@@ -266,7 +315,67 @@ Die 4–5 Bereiche im Bericht (Entscheidungsverhalten, Arbeitsweise, Führungswi
 | warning | Mit Abweichung | Erkennbare Abweichung, steuerbar mit Führung |
 | critical | Kritisch | Deutliche Abweichung, hoher Aufwand nötig |
 
-**Master-Regel:** Kein Teilbereich darf positiver klingen als das Gesamturteil. Bei "Nicht geeignet" werden alle ok-Bereiche auf warning angehoben. Bei "Bedingt geeignet" dürfen maximal 2 Bereiche ok bleiben.
+**Master-Regel:** Kein Teilbereich darf positiver klingen als das Gesamturteil. Bei "Nicht geeignet" werden alle ok-Bereiche auf warning angehoben und alle warnings auf critical. Bei "Bedingt geeignet" dürfen maximal 2 Bereiche ok bleiben.
+
+---
+
+## 30-Tage-Integrationsplan
+
+Der Integrationsplan ist profilabhängig und wird in drei Varianten generiert – **ohne Nennung von Komponentennamen** (kein "analytisch", "impulsiv", "intuitiv", "Struktur / Analyse").
+
+### Drei Plan-Varianten
+
+| fitLabel / fitSubtype | Variante | Tonalität |
+|---|---|---|
+| **Geeignet** (PERFECT) | Positiv | Schnelle Einarbeitung, "Arbeitsweise passt zur Stelle" |
+| **Nicht geeignet** | Kritisch | Ehrliche Bewertung, "Tragfähigkeit ehrlich bewerten", "Ist die Lücke überbrückbar?" |
+| **Bedingt geeignet** (Fallback) | Anpassungsorientiert | "Unterschiede erkennen", "Anpassungsbedarf gezielt steuern" |
+
+### Personenbeschreibung (profilabhängig)
+
+Die Person wird je nach Profiltyp beschrieben:
+
+| Profiltyp | Beschreibung |
+|---|---|
+| **Gleichverteilung** (candIsBalFull) | "Die Person zeigt keine klare Schwerpunktsetzung und arbeitet breit aufgestellt." |
+| **Doppeldominanz** (candIsDualDom) | "Die Person hat zwei fast gleich starke Arbeitsschwerpunkte und wechselt situativ zwischen ihnen." |
+| **Einzeldominanz** (default) | "Die Person hat einen klar erkennbaren Arbeitsschwerpunkt." |
+
+### Phasen-Struktur (alle drei Varianten)
+
+| Phase | Titel | Zeitraum | Fokus |
+|---|---|---|---|
+| 1 | Orientierung | Tag 1–10 | Erwartungen klären, Unterschiede erkennen |
+| 2 | Wirkung | Tag 11–20 | Erste Ergebnisse, Feedback, Steuerung |
+| 3 | Stabilisierung | Tag 21–30 | Bewertung, langfristige Tragfähigkeit |
+
+### Unterschiede zwischen den Varianten
+
+**PERFECT (Geeignet):**
+- Phase 1: "Arbeitsweise passt zur Stelle"
+- Phase 2: "Person arbeitet bereits nach dem passenden Grundansatz"
+- Phase 3: "Stärken beibehalten und Routinen festigen"
+
+**Nicht geeignet:**
+- Phase 1: "Abweichungen frühzeitig identifizieren", personalisierte Beschreibung + "Die Stelle verlangt eine andere Gewichtung"
+- Phase 2: "engmaschig begleiten und steuern", "ehrlich prüfen, ob die Anpassung realistisch ist"
+- Phase 3: "Tragfähigkeit der Besetzung ehrlich bewerten", "Ist die Lücke überbrückbar?"
+
+**Bedingt geeignet:**
+- Phase 1: "Unterschiede erkennen", personalisierte Beschreibung + "Die Stelle setzt andere Schwerpunkte"
+- Phase 2: "Anpassungsbedarf gezielt steuern", "Fortschritte und Anpassungsbereitschaft beobachten"
+- Phase 3: "Arbeitsweise entwickelt sich in die richtige Richtung"
+
+---
+
+## Stressverhalten (buildStress)
+
+Das Stressverhalten wird profilabhängig generiert. Für **ALL_EQUAL**-Profile (Gleichverteilung) gibt es einen eigenen Textblock:
+
+| Profiltyp | controlledPressure | uncontrolledStress |
+|---|---|---|
+| ALL_EQUAL | "reagiert bei Druck zunächst flexibel und abwägend..." | "zeigt diffuse Stressreaktionen ohne klare Richtung..." |
+| Andere | Basierend auf dominanter Komponente | Basierend auf dominanter Komponente |
 
 ---
 
@@ -316,6 +425,7 @@ Ist-Relationen:  I:N=1, I:A=1, N:A=-1
 → HARD_CONFLICT (N:A flippt direkt 1→-1)
 
 → NICHT GEEIGNET
+FitSubtype: PARTIAL_MATCH (gleiche Top-Komponente I)
 ```
 
 ### Beispiel 4: Nicht geeignet (HARD_CONFLICT – ALL_EQUAL vs BOTTOM_PAIR)
@@ -328,6 +438,7 @@ Ist-Relationen:  I:N=1, I:A=1, N:A=0
 → HARD_CONFLICT (2 Relationen kippen – nicht nur 1)
 
 → NICHT GEEIGNET
+FitSubtype: PARTIAL_MATCH (candIsBalFull oder roleIsBalFull)
 ```
 
 ### Beispiel 5: Bedingt geeignet (SOFT_CONFLICT – Grenzfall TOP_PAIR vs ORDER)
@@ -464,5 +575,22 @@ Stufen: 0–2 = LOW, 3–5 = MEDIUM, ≥ 6 = HIGH
 |-------|--------|
 | `client/src/lib/jobcheck-engine.ts` | `getVariantMeta()`, `getPairRelations()`, `getStructureFromPairs()`, `computeCoreFit()`, `koRuleTriggered()`, `calcControlIntensity()`, `buildRoleAnalysisFromState()` |
 | `client/src/lib/soll-ist-engine.ts` | `computeSollIst()` — orchestriert KO + Engine + Berichtsaufbau |
+| `client/src/lib/matchcheck-texts.ts` | `buildMatchTexts()` — Textgenerierung für alle Berichtssektionen inkl. Integrationsplan |
 | `client/src/pages/soll-ist-bericht.tsx` | UI-Komponente mit Slidern, Slider-Sync, Berichtsdarstellung |
+| `client/src/lib/pdf-direct-builder.ts` | PDF-Export des Soll-Ist-Berichts |
 | `tests/matchcheck-runner.ts` | Test-Runner für alle 13 Varianten + Grenzfälle |
+| `tests/text-consistency-runner.ts` | 169 Cross-Variant-Tests (13×13 Matrix) + Konsistenz-Checks |
+
+---
+
+## Testabdeckung
+
+Die Test-Suite prüft alle **169 Kombinationen** (13 Soll-Varianten × 13 Ist-Varianten):
+
+| Test-Kategorie | Prüfungen |
+|---|---|
+| Symmetrischer Selbstvergleich | Jede Variante gegen sich selbst → PERFECT |
+| Subtype-Verteilung | PERFECT=13, INTENSITY_OFF=18, PARTIAL=57, MISMATCH=81 |
+| Text-Konsistenz | fitLabel, Führungsaufwand, Entwicklungsaufwand, severity, Integrationsplan müssen zusammenpassen |
+| Grenzwert-Tests | maxGap=7 vs 8, EXACT vs !EXACT an den Schwellen |
+| PARTIAL_MATCH + "Nicht geeignet" | Härtere Sprache, "1 von 3 Hoher Aufwand", Führungsaufwand = hoch |
