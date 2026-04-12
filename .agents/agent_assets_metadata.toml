@@ -24,3 +24,9 @@ id = "X2RYu4ZSWUjZvZhalUoe_"
 uri = "file://Entscheidungsbericht-Logik.md"
 type = "text"
 title = "Entscheidungsbericht – Vollständige Logik-Dokumentation"
+
+[[outputs]]
+id = "F6CxI8awbIaemdFEMjXG_"
+uri = "file://docs/teamcheck-bericht.md"
+type = "text"
+title = "TeamCheck-Bericht - Technische Dokumentation"
