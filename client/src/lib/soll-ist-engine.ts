@@ -209,28 +209,23 @@ export function deriveFitSubtype(
   candIsBalFull: boolean,
   roleIsBalFull: boolean,
   roleIsDualDom: boolean = false,
+  fitLabel: string = "",
 ): FitSubtype {
-  if (structRel.type === "HARD_CONFLICT") {
-    if (rk === ck || candDualMatchesRole || candIsBalFull || roleIsBalFull) {
-      return "PARTIAL_MATCH";
-    }
+  if (fitLabel === "Geeignet") {
+    return "PERFECT";
+  }
+
+  if (fitLabel === "Nicht geeignet") {
     return "MISMATCH";
   }
-  if (rk === ck) {
-    if (structRel.type === "EXACT" && maxGap < 8) return "PERFECT";
-    return "STRUCTURE_MATCH_INTENSITY_OFF";
-  }
-  if (candDualMatchesRole && roleIsDualDom) {
-    if (structRel.type === "EXACT" && maxGap < 8) return "PERFECT";
-    return "STRUCTURE_MATCH_INTENSITY_OFF";
-  }
-  if (roleIsBalFull && candIsBalFull) {
-    if (structRel.type === "EXACT" && maxGap < 8) return "PERFECT";
-    return "STRUCTURE_MATCH_INTENSITY_OFF";
-  }
-  if (candDualMatchesRole || candIsBalFull || roleIsBalFull || structRel.type === "SOFT_CONFLICT") {
+
+  if (fitLabel === "Bedingt geeignet") {
+    if (structRel.type === "EXACT") {
+      return "STRUCTURE_MATCH_INTENSITY_OFF";
+    }
     return "PARTIAL_MATCH";
   }
+
   return "MISMATCH";
 }
 
@@ -402,7 +397,7 @@ export function computeSollIst(
   const structureRelation = computeStructureRelation(rt, ct);
   const maxGapVal = Math.max(Math.abs(rt.impulsiv - ct.impulsiv), Math.abs(rt.intuitiv - ct.intuitiv), Math.abs(rt.analytisch - ct.analytisch));
   const candDualMatchesRoleMain = candIsDualDomMain && (rk === ck || rk === ck2Main);
-  const fitSubtype = deriveFitSubtype(rk, ck, structureRelation, maxGapVal, candDualMatchesRoleMain, candIsBalFullMain, roleIsBalFull, isDualDomRole);
+  const fitSubtype = deriveFitSubtype(rk, ck, structureRelation, maxGapVal, candDualMatchesRoleMain, candIsBalFullMain, roleIsBalFull, isDualDomRole, fitLabel);
 
   const toTriadKey = (k: ComponentKey): TriadKey => k === "impulsiv" ? "I" : k === "intuitiv" ? "N" : "A";
   const roleP = { I: rt.impulsiv, N: rt.intuitiv, A: rt.analytisch };

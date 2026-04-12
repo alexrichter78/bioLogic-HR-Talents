@@ -1,0 +1,307 @@
+Schritt 1: Strukturvariante erkennen (13 Muster)
+Gleichheits-Toleranz
+EQ_TOL = 5
+Sortierung
+
+Die drei Werte werden absteigend sortiert:
+
+[höchster, mittlerer, niedrigster]
+Abstände
+d1 = höchster - mittlerer
+d2 = mittlerer - niedrigster
+Varianten
+d1 <= 5 und d2 <= 5 → ALL_EQUAL
+d1 <= 5 und d2 > 5 → TOP_PAIR
+d1 > 5 und d2 <= 5 → BOTTOM_PAIR
+d1 > 5 und d2 > 5 → ORDER
+13 Konstellationen
+1 × ALL_EQUAL
+3 × TOP_PAIR
+3 × BOTTOM_PAIR
+6 × ORDER
+Schritt 2: Paarrelationen bilden
+
+Für jedes Profil:
+
+I_N = relation(I - N)
+I_A = relation(I - A)
+N_A = relation(N - A)
+Relationsregel
+|diff| <= 5 → 0
+diff > 5 → 1
+diff < -5 → -1
+Schritt 3: Strukturvergleich
+
+Verglichen werden die drei Paarrelationen von Soll und Ist.
+
+EXACT
+
+Alle drei Relationen sind identisch.
+
+SOFT_CONFLICT
+
+Genau eine Relation ist unterschiedlich, aber kein direkter Flip 1 ↔ -1.
+
+Erlaubt:
+
+0 ↔ 1
+0 ↔ -1
+HARD_CONFLICT
+
+Sobald:
+
+mehr als eine Relation abweicht
+oder irgendwo ein direkter Flip 1 ↔ -1 vorkommt
+Schritt 4: FitLabel berechnen
+Abweichungen
+diffI = |Soll_I - Ist_I|
+diffN = |Soll_N - Ist_N|
+diffA = |Soll_A - Ist_A|
+maxDiff = max(diffI, diffN, diffA)
+Entscheidungsregel
+Bei EXACT
+maxDiff <= 5 → Geeignet
+maxDiff 6–10 → Bedingt geeignet
+maxDiff > 10 → Nicht geeignet
+Bei SOFT_CONFLICT
+maxDiff <= 10 → Bedingt geeignet
+maxDiff > 10 → Nicht geeignet
+Bei HARD_CONFLICT
+immer Nicht geeignet
+Schritt 5: FitSubtype für die Textlogik
+
+Der FitSubtype steuert nur die Textgenerierung, nicht die Kernbewertung.
+
+Regeln
+PERFECT
+
+Nur wenn:
+
+fitLabel === "Geeignet"
+&& structureRelation === "EXACT"
+&& maxDiff <= 5
+STRUCTURE_MATCH_INTENSITY_OFF
+
+Nur wenn:
+
+fitLabel === "Bedingt geeignet"
+&& structureRelation === "EXACT"
+&& maxDiff >= 6
+&& maxDiff <= 10
+
+Bedeutung:
+
+gleiche Struktur
+gleiche Grundlogik
+aber anders gewichtet
+PARTIAL_MATCH
+
+Nur wenn:
+
+fitLabel === "Bedingt geeignet"
+&& structureRelation === "SOFT_CONFLICT"
+
+Optional können klar definierte Sonderfälle hier ebenfalls landen:
+
+candIsBalFull
+roleIsBalFull
+candDualMatchesRole
+
+Aber nur dann, wenn kein echter Mismatch vorliegt.
+
+MISMATCH
+
+Immer wenn:
+
+fitLabel === "Nicht geeignet"
+
+Also insbesondere bei:
+
+HARD_CONFLICT
+oder maxDiff > 10
+Wichtige Korrektur
+Nicht mehr verwenden:
+PERFECT = rk === ck + EXACT + maxGap < 8
+
+Das ist zu weit und fachlich falsch.
+
+Richtig ist:
+PERFECT = EXACT && maxDiff <= 5
+HARD_CONFLICT-Regel
+Standard
+
+HARD_CONFLICT bedeutet grundsätzlich:
+
+fitLabel = "Nicht geeignet"
+fitSubtype = "MISMATCH"
+Ausnahmefälle
+
+Nur wenn du bewusst abfedern willst, dürfen Sonderfälle in PARTIAL_MATCH landen, z. B.:
+
+roleIsBalFull
+candIsBalFull
+candDualMatchesRole
+
+Aber:
+
+Nicht pauschal:
+
+„gleiche Top-Komponente = PARTIAL_MATCH“
+
+Das ist zu weich und führt zu falschen Texten.
+
+Kontrollintensität (Führungsaufwand)
+Basispunkte
+HARD_CONFLICT → +3
+SOFT_CONFLICT → +2
+EXACT → +0
+maxDiff > 10 → +2
+maxDiff 6–10 → +1
+Rolle mit klarer Einzeldominanz (ORDER/BOTTOM_PAIR, d1 > 10) → +1
+Stufen
+0–2 → Gering
+3–4 → Mittel
+>=5 → Hoch
+Führungsaufwand-Floor
+Geeignet → keine Untergrenze
+Bedingt geeignet → mindestens Mittel
+Nicht geeignet → immer Hoch
+
+Wichtig:
+Alle Texte müssen die finale Führungsstufe verwenden, nicht die Rohpunkte.
+
+Entwicklungsaufwand
+
+Direkte 1:1-Zuordnung:
+
+Geeignet → Niedrig
+Bedingt geeignet → Mittel
+Nicht geeignet → Hoch
+devLevel
+niedrig = 1
+mittel = 2
+hoch = 3
+devScore
+devScore = 4 - devLevel
+
+Ergebnis:
+
+niedrig → 3
+mittel → 2
+hoch → 1
+Impact Areas
+
+Bereiche:
+
+Entscheidungsverhalten
+Arbeitsweise
+Führungswirkung (nur wenn Führung)
+Kommunikationsverhalten
+Teamkultur
+Severity-Schwellen
+0–5 → ok
+6–10 → warning
+>10 → critical
+Labels
+ok → Weitgehend stimmig
+warning → Mit Abweichung
+critical → Kritisch
+Master-Regel
+
+Kein Teilbereich darf positiver klingen als das Gesamturteil.
+
+capSeverity
+PERFECT → ok bleibt ok
+STRUCTURE_MATCH_INTENSITY_OFF → ok -> warning
+PARTIAL_MATCH → ok -> warning
+MISMATCH → ok -> critical, warning -> critical
+Sprachregeln
+PERFECT
+
+Erlaubt:
+
+deckungsgleich
+passt
+stimmig
+
+Nicht erlaubt:
+
+weicht ab
+nicht deckungsgleich
+STRUCTURE_MATCH_INTENSITY_OFF
+
+Erlaubt:
+
+in der Grundrichtung stimmig
+nicht vollständig deckungsgleich
+Gewichtung weicht ab
+Balance verschoben
+
+Nicht erlaubt:
+
+passt
+stimmt überein
+deutlich abweichend
+PARTIAL_MATCH
+
+Erlaubt:
+
+teilweise anschlussfähig
+mit Abweichung
+nicht deckungsgleich
+MISMATCH
+
+Erlaubt:
+
+deutlich abweichend
+nicht passend
+andere Arbeitslogik
+Doppeldominanz-Sonderregel
+
+Wenn:
+
+Rolle = TOP_PAIR
+Person = TOP_PAIR
+gleiches Dual-Paar
+aber die 3. Komponente weicht erkennbar ab
+
+dann ist das:
+
+kein Strukturbruch
+sondern ein Balanceproblem innerhalb derselben Logik
+Textbedeutung
+
+Die Rolle verlangt zwei gleich starke Hauptbereiche, die parallel stabil wirksam sein sollen.
+Die Person bringt diese Doppellogik ebenfalls mit, aber die 3. Komponente stabilisiert anders oder schwächer. Dadurch wechseln die Hauptbereiche im Alltag leichter, anstatt konstant parallel zu wirken.
+
+Kurzfassung der finalen Regel
+Geeignet
+
+Nur wenn:
+
+EXACT && maxDiff <= 5
+Bedingt geeignet
+
+Nur wenn:
+
+(SOFT_CONFLICT && maxDiff <= 10)
+oder
+(EXACT && maxDiff >= 6 && maxDiff <= 10)
+Nicht geeignet
+
+Immer wenn:
+
+HARD_CONFLICT
+oder
+maxDiff > 10
+oder
+externes KO
+Endurteil
+
+👉 Ja, diese Fassung ist jetzt gut.
+Sie ist klarer, strenger und vor allem widerspruchsfreier als die vorige.
+
+Die eine wichtigste Korrektur ist umgesetzt:
+
+PERFECT nur noch bei EXACT + maxDiff <= 5
+kein verwässertes < 8 mehr

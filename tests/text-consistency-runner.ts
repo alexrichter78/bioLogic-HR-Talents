@@ -43,6 +43,14 @@ function runSollIstForPair(soll: P, ist: P) {
   return computeSollIst("Teststelle", "Testperson", rt, ct, "disziplinarisch");
 }
 
+function fitLabelFromStructure(sr: { type: string }, maxGap: number): string {
+  if (sr.type === "HARD_CONFLICT") return "Nicht geeignet";
+  if (sr.type === "SOFT_CONFLICT") return maxGap <= 10 ? "Bedingt geeignet" : "Nicht geeignet";
+  if (maxGap <= 5) return "Geeignet";
+  if (maxGap <= 10) return "Bedingt geeignet";
+  return "Nicht geeignet";
+}
+
 function expectedSubtype(soll: P, ist: P): FitSubtype {
   const rt = normalizeTriad(toTriad(soll));
   const ct = normalizeTriad(toTriad(ist));
@@ -62,7 +70,8 @@ function expectedSubtype(soll: P, ist: P): FitSubtype {
   const candDualMatchesRole = candIsDualDom && (rk === ck || rk === cDom.top2.key);
   const roleIsBalFull = rDom.gap1 <= 5 && rDom.gap2 <= 5;
   const roleIsDualDom = !roleIsBalFull && rDom.gap1 <= 5 && rDom.gap2 > 5;
-  return deriveFitSubtype(rk, ck, sr, maxGap, candDualMatchesRole, candIsBalFull, roleIsBalFull, roleIsDualDom);
+  const label = fitLabelFromStructure(sr, maxGap);
+  return deriveFitSubtype(rk, ck, sr, maxGap, candDualMatchesRole, candIsBalFull, roleIsBalFull, roleIsDualDom, label);
 }
 
 function isNegatedDeckungs(text: string): boolean {
@@ -120,11 +129,12 @@ function runConsistencyTests(): number {
   console.log(`\n${BOLD}${CYAN}=== 2) STRUCTURE_MATCH_INTENSITY_OFF: Gleiche Dominanz, andere Gewichtung ===${RESET}`);
   let intOffFailures = 0;
   const intensityOffCases: { label: string; soll: P; ist: P; expectedSub: FitSubtype }[] = [
-    { label: "ORDER_INA leicht", soll: { I: 50, N: 30, A: 20 }, ist: { I: 45, N: 25, A: 30 }, expectedSub: "STRUCTURE_MATCH_INTENSITY_OFF" },
-    { label: "ORDER_AIN leicht", soll: { I: 30, N: 20, A: 50 }, ist: { I: 25, N: 30, A: 45 }, expectedSub: "STRUCTURE_MATCH_INTENSITY_OFF" },
-    { label: "ORDER_NIA leicht", soll: { I: 30, N: 50, A: 20 }, ist: { I: 25, N: 45, A: 30 }, expectedSub: "STRUCTURE_MATCH_INTENSITY_OFF" },
+    { label: "ORDER_INA leicht", soll: { I: 50, N: 30, A: 20 }, ist: { I: 45, N: 25, A: 30 }, expectedSub: "PARTIAL_MATCH" },
+    { label: "ORDER_AIN leicht", soll: { I: 30, N: 20, A: 50 }, ist: { I: 25, N: 30, A: 45 }, expectedSub: "PARTIAL_MATCH" },
+    { label: "ORDER_NIA leicht", soll: { I: 30, N: 50, A: 20 }, ist: { I: 25, N: 45, A: 30 }, expectedSub: "PARTIAL_MATCH" },
     { label: "BOTTOM_PAIR_I gering", soll: { I: 50, N: 25, A: 25 }, ist: { I: 45, N: 30, A: 25 }, expectedSub: "PERFECT" },
-    { label: "ORDER_INA gross", soll: { I: 50, N: 30, A: 20 }, ist: { I: 42, N: 20, A: 38 }, expectedSub: "PARTIAL_MATCH" },
+    { label: "ORDER_INA gross", soll: { I: 50, N: 30, A: 20 }, ist: { I: 42, N: 20, A: 38 }, expectedSub: "MISMATCH" },
+    { label: "EXACT maxGap=7", soll: { I: 50, N: 30, A: 20 }, ist: { I: 43, N: 33, A: 24 }, expectedSub: "STRUCTURE_MATCH_INTENSITY_OFF" },
   ];
 
   for (const tc of intensityOffCases) {
@@ -205,9 +215,9 @@ function runConsistencyTests(): number {
   let partialFailures = 0;
   const partialCases: { label: string; soll: P; ist: P; expectedSub: FitSubtype }[] = [
     { label: "TOP_PAIR vs ORDER soft", soll: { I: 40, N: 40, A: 20 }, ist: { I: 34, N: 40, A: 26 }, expectedSub: "PARTIAL_MATCH" },
-    { label: "BalFull-Cand same dom", soll: { I: 50, N: 30, A: 20 }, ist: { I: 34, N: 33, A: 33 }, expectedSub: "PARTIAL_MATCH" },
-    { label: "BalFull-Cand diff dom", soll: { I: 20, N: 50, A: 30 }, ist: { I: 34, N: 33, A: 33 }, expectedSub: "PARTIAL_MATCH" },
-    { label: "DualDom-Cand matching", soll: { I: 50, N: 30, A: 20 }, ist: { I: 40, N: 40, A: 20 }, expectedSub: "STRUCTURE_MATCH_INTENSITY_OFF" },
+    { label: "BalFull-Cand same dom", soll: { I: 50, N: 30, A: 20 }, ist: { I: 34, N: 33, A: 33 }, expectedSub: "MISMATCH" },
+    { label: "BalFull-Cand diff dom", soll: { I: 20, N: 50, A: 30 }, ist: { I: 34, N: 33, A: 33 }, expectedSub: "MISMATCH" },
+    { label: "DualDom-Cand matching", soll: { I: 50, N: 30, A: 20 }, ist: { I: 40, N: 40, A: 20 }, expectedSub: "PARTIAL_MATCH" },
   ];
 
   for (const tc of partialCases) {
@@ -240,11 +250,11 @@ function runConsistencyTests(): number {
   console.log(`\n${BOLD}${CYAN}=== 5) GRENZWERT-TESTS: PERFECT-Schwelle (maxGap<8, EXACT) ===${RESET}`);
   let boundaryFailures = 0;
   const boundaryCases: { label: string; soll: P; ist: P; expectedSub: FitSubtype }[] = [
-    { label: "maxGap=7 EXACT → PERF", soll: { I: 50, N: 30, A: 20 }, ist: { I: 43, N: 33, A: 24 }, expectedSub: "PERFECT" },
-    { label: "maxGap=7 !EXACT → OFF", soll: { I: 50, N: 30, A: 20 }, ist: { I: 50, N: 23, A: 27 }, expectedSub: "STRUCTURE_MATCH_INTENSITY_OFF" },
-    { label: "maxGap=8 → PARTIAL (HARD_CONFLICT)", soll: { I: 50, N: 30, A: 20 }, ist: { I: 50, N: 22, A: 28 }, expectedSub: "PARTIAL_MATCH" },
+    { label: "maxGap=7 EXACT → OFF", soll: { I: 50, N: 30, A: 20 }, ist: { I: 43, N: 33, A: 24 }, expectedSub: "STRUCTURE_MATCH_INTENSITY_OFF" },
+    { label: "maxGap=7 !EXACT → PARTIAL", soll: { I: 50, N: 30, A: 20 }, ist: { I: 50, N: 23, A: 27 }, expectedSub: "PARTIAL_MATCH" },
+    { label: "maxGap=8 HARD → MISMATCH", soll: { I: 50, N: 30, A: 20 }, ist: { I: 50, N: 22, A: 28 }, expectedSub: "MISMATCH" },
     { label: "gap=5 → ok Severity", soll: { I: 50, N: 25, A: 25 }, ist: { I: 45, N: 30, A: 25 }, expectedSub: "PERFECT" },
-    { label: "gap=6 → warning Sev", soll: { I: 50, N: 25, A: 25 }, ist: { I: 44, N: 31, A: 25 }, expectedSub: "STRUCTURE_MATCH_INTENSITY_OFF" },
+    { label: "gap=6 SOFT → PARTIAL", soll: { I: 50, N: 25, A: 25 }, ist: { I: 44, N: 31, A: 25 }, expectedSub: "PARTIAL_MATCH" },
   ];
 
   for (const tc of boundaryCases) {
@@ -353,8 +363,10 @@ function runConsistencyTests(): number {
   console.log(`\n  ${DIM}Subtype-Verteilung: PERFECT=${subtypeCoverage.PERFECT}, INTENSITY_OFF=${subtypeCoverage.STRUCTURE_MATCH_INTENSITY_OFF}, PARTIAL=${subtypeCoverage.PARTIAL_MATCH}, MISMATCH=${subtypeCoverage.MISMATCH}${RESET}`);
 
   for (const [sub, count] of Object.entries(subtypeCoverage)) {
-    if (count === 0) {
-      console.log(`  ${YELLOW}⚠${RESET}  ${sub} hat 0 Treffer in 13x13 Matrix (mathematisch nicht erreichbar)`);
+    if (count === 0 && sub !== "STRUCTURE_MATCH_INTENSITY_OFF") {
+      console.log(`  ${YELLOW}⚠${RESET}  ${sub} hat 0 Treffer in 13x13 Matrix`);
+    } else if (count === 0 && sub === "STRUCTURE_MATCH_INTENSITY_OFF") {
+      console.log(`  ${DIM}ℹ  ${sub} hat 0 Treffer in 13x13 Matrix (erfordert EXACT + maxGap 6–10, separat getestet)${RESET}`);
     }
   }
 

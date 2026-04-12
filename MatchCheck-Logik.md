@@ -140,27 +140,20 @@ maxDiff = grösster Wert davon
 
 ## Schritt 5: FitSubtype (für Soll-Ist-Bericht Texte)
 
-Nach der Fit-Ermittlung wird ein **FitSubtype** abgeleitet, der die Textgenerierung im Soll-Ist-Bericht steuert:
+Der FitSubtype steuert **nur die Textgenerierung**, nicht die Kernbewertung. Er wird strikt aus `fitLabel` und `structureRelation` abgeleitet:
 
 | FitSubtype | Bedingung | Textliche Wirkung |
 |---|---|---|
-| **PERFECT** | rk === ck + EXACT + maxGap < 8 | "deckungsgleich mit der Stellenanforderung" |
-| **STRUCTURE_MATCH_INTENSITY_OFF** | rk === ck, aber nicht PERFECT | "in der Grundrichtung stimmig, Gewichtung nicht deckungsgleich" |
-| **PARTIAL_MATCH** | Dual-Dom-Match, balFull, SOFT_CONFLICT, oder HARD_CONFLICT mit gleicher Top-Komponente | Teilweise passend, Abweichungen in einzelnen Bereichen |
-| **MISMATCH** | HARD_CONFLICT mit unterschiedlichen Dominanten | Grundpassung nicht gegeben |
+| **PERFECT** | fitLabel === "Geeignet" | "deckungsgleich mit der Stellenanforderung" |
+| **STRUCTURE_MATCH_INTENSITY_OFF** | fitLabel === "Bedingt geeignet" UND EXACT | "in der Grundrichtung stimmig, Gewichtung nicht deckungsgleich" |
+| **PARTIAL_MATCH** | fitLabel === "Bedingt geeignet" UND SOFT_CONFLICT | Teilweise anschlussfähig, mit Abweichung |
+| **MISMATCH** | fitLabel === "Nicht geeignet" (immer) | Grundpassung nicht gegeben |
 
-### HARD_CONFLICT Guard-Regel
+### Wichtige Designentscheidungen
 
-**Wichtig:** Die HARD_CONFLICT-Prüfung kommt **vor** der rk===ck-Prüfung in `deriveFitSubtype()`. Wenn `structRel.type === 'HARD_CONFLICT'`, wird **nie** INTENSITY_OFF vergeben, auch wenn die Top-Komponenten gleich sind. Stattdessen:
-
-| Bedingung bei HARD_CONFLICT | FitSubtype |
-|---|---|
-| candDualMatchesRole ODER candIsBalFull ODER roleIsBalFull | PARTIAL_MATCH |
-| Sonst (unterschiedliche Dominante) | MISMATCH |
-
-Dadurch wurde die Verteilung der FitSubtypes korrigiert:
-- INTENSITY_OFF: 49 → 18 (nur noch bei tatsächlich gleicher Grundrichtung)
-- PARTIAL_MATCH: 26 → 57 (korrekt für HARD_CONFLICT-Fälle mit gleicher Top-Komponente)
+1. **PERFECT = Geeignet** (d.h. EXACT + maxDiff ≤ 5). Nicht mehr `rk === ck + maxGap < 8` — das war zu weit und fachlich falsch.
+2. **HARD_CONFLICT = immer MISMATCH.** Keine Sonderbehandlung für "gleiche Top-Komponente" — das war zu weich und führte zu falschen Texten.
+3. **FitSubtype ist 1:1 an fitLabel gebunden:** Geeignet → PERFECT, Bedingt → INTENSITY_OFF oder PARTIAL, Nicht geeignet → MISMATCH. Keine Kreuzfälle möglich.
 
 ### Sprachpräzision: PERFECT vs. STRUCTURE_MATCH_INTENSITY_OFF
 
@@ -184,27 +177,40 @@ Die Texte differenzieren **semantisch**, nicht nur quantitativ:
 
 ### capSeverity-Funktion
 
-Die `capSeverity(severity, fitSubtype, fitLabel?)` Funktion stellt sicher, dass Severity-Labels konsistent zum Gesamturteil sind:
+Die `capSeverity(severity, fitSubtype)` Funktion stellt sicher, dass Severity-Labels konsistent zum Gesamturteil sind:
 
 | FitSubtype | Regel |
 |---|---|
 | PERFECT | ok bleibt ok |
-| STRUCTURE_MATCH_INTENSITY_OFF | ok → warning (mindestens "Mit Abweichung") |
-| PARTIAL_MATCH + "Nicht geeignet" | warning → critical (alle Warnungen werden kritisch) |
+| STRUCTURE_MATCH_INTENSITY_OFF | ok → warning |
 | PARTIAL_MATCH | ok → warning |
-| MISMATCH | ok → critical |
+| MISMATCH | ok → critical, warning → critical |
 
-### Sprachintensitäts-Regeln
+### Sprachregeln je FitSubtype
 
-| Formulierung | Erlaubt für |
-|---|---|
-| "deckungsgleich", "passen" | Nur PERFECT |
-| "in der Grundrichtung stimmig", "nicht vollständig deckungsgleich" | STRUCTURE_MATCH_INTENSITY_OFF |
-| "weicht ab", "unterscheidet sich" | PARTIAL_MATCH, MISMATCH |
-| "deutlich" | Nur bei maxGap ≥ 15 oder HARD_CONFLICT |
+**PERFECT:**
+- Erlaubt: "deckungsgleich", "passt", "stimmig"
+- Verboten: "weicht ab", "nicht deckungsgleich"
 
-**Verboten** bei `STRUCTURE_MATCH_INTENSITY_OFF`: "passt", "stimmt überein", "deutlich ab".
-**Verboten** bei `PERFECT`: "weicht ab", "nicht deckungsgleich".
+**STRUCTURE_MATCH_INTENSITY_OFF:**
+- Erlaubt: "in der Grundrichtung stimmig", "nicht vollständig deckungsgleich", "Gewichtung weicht ab", "Balance verschoben"
+- Verboten: "passt", "stimmt überein", "deutlich abweichend"
+
+**PARTIAL_MATCH:**
+- Erlaubt: "teilweise anschlussfähig", "mit Abweichung", "nicht deckungsgleich"
+- Verboten: "passt", "deckungsgleich" (ohne Negation)
+
+**MISMATCH:**
+- Erlaubt: "deutlich abweichend", "nicht passend", "andere Arbeitslogik"
+- Verboten: "stimmig", "anschlussfähig" (ohne Einschränkung)
+
+### Doppeldominanz-Sonderregel
+
+Wenn Rolle = TOP_PAIR, Person = TOP_PAIR, gleiches Dual-Paar, aber die 3. Komponente weicht erkennbar ab:
+
+- Das ist **kein Strukturbruch**, sondern ein **Balanceproblem innerhalb derselben Logik**.
+- Die Rolle verlangt zwei gleich starke Hauptbereiche, die parallel stabil wirksam sein sollen.
+- Die Person bringt diese Doppellogik ebenfalls mit, aber die 3. Komponente stabilisiert anders oder schwächer. Dadurch wechseln die Hauptbereiche im Alltag leichter, anstatt konstant parallel zu wirken.
 
 ---
 
@@ -590,7 +596,7 @@ Die Test-Suite prüft alle **169 Kombinationen** (13 Soll-Varianten × 13 Ist-Va
 | Test-Kategorie | Prüfungen |
 |---|---|
 | Symmetrischer Selbstvergleich | Jede Variante gegen sich selbst → PERFECT |
-| Subtype-Verteilung | PERFECT=13, INTENSITY_OFF=18, PARTIAL=57, MISMATCH=81 |
+| Subtype-Verteilung (13×13) | PERFECT=13, INTENSITY_OFF=0*, PARTIAL=24, MISMATCH=132 |
+| INTENSITY_OFF separat | EXACT + maxGap 6–10 wird in Einzeltests geprüft (in 13×13 mathematisch nicht erreichbar) |
 | Text-Konsistenz | fitLabel, Führungsaufwand, Entwicklungsaufwand, severity, Integrationsplan müssen zusammenpassen |
-| Grenzwert-Tests | maxGap=7 vs 8, EXACT vs !EXACT an den Schwellen |
-| PARTIAL_MATCH + "Nicht geeignet" | Härtere Sprache, "1 von 3 Hoher Aufwand", Führungsaufwand = hoch |
+| Grenzwert-Tests | maxGap=5 vs 6 vs 7, EXACT vs SOFT_CONFLICT an den Schwellen |
