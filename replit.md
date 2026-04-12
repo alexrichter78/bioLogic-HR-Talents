@@ -95,6 +95,12 @@ Preferred communication style: Simple, everyday language.
 -   **Run**: `npx tsx tests/matchcheck-runner.ts`
 -   **Coverage**: 5 test groups – variant recognition (13 profiles), self-match (diagonal), cross-variant structural conflicts (HARD/SOFT), boundary cases (incl. 27/26/47 case), robustness (small variations). Colored console output with specific error diagnostics. Exit code 0 on success, 1 on failure.
 
+### MatchCheck Text-Varianten-System
+-   **Varianten-Datei**: `client/src/lib/text-variants.ts` – Alle Textvarianten für Gesamtbewertung, Managementkurzfazit, Warum-dieses-Ergebnis, Risiken und Impact Areas.
+-   **Rotationslogik**: Stabiler Hash aus roleName + candName + sectionKey wählt Variante – gleicher Bericht = gleicher Text, verschiedene Berichte = verschiedene Formulierung.
+-   **4 Level**: PERFECT, EXACT_YELLOW, SOFT_YELLOW, MISMATCH – je 3-4 gleichwertige Formulierungen.
+-   **Engine**: `client/src/lib/matchcheck-texts.ts` nutzt `pickVariant()` / `pickVariantSet()` für alle Sektionen.
+
 ## External Dependencies
 
 ### Database

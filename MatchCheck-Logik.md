@@ -188,21 +188,29 @@ Die `capSeverity(severity, fitSubtype)` Funktion stellt sicher, dass Severity-La
 
 ### Sprachregeln je FitSubtype
 
+Die Text-Engine nutzt kontrollierte Variantenrotation (`text-variants.ts`). Pro Berichtssektion und FitSubtype-Level existieren 3–4 gleichwertige Formulierungen. Welche Variante gewählt wird, bestimmt ein stabiler Hash aus Rollen- und Personenname – derselbe Bericht klingt immer gleich, verschiedene Berichte klingen unterschiedlich.
+
 **PERFECT:**
-- Erlaubt: "deckungsgleich", "passt", "stimmig"
-- Verboten: "weicht ab", "nicht deckungsgleich"
+- Erlaubt: "deckungsgleich", "passt", "stimmig", "tragfähig"
+- Verboten: "teilweise", "mit Abweichung", "Anpassungsbedarf"
 
-**STRUCTURE_MATCH_INTENSITY_OFF:**
-- Erlaubt: "in der Grundrichtung stimmig", "nicht vollständig deckungsgleich", "Gewichtung weicht ab", "Balance verschoben"
-- Verboten: "passt", "stimmt überein", "deutlich abweichend"
+**STRUCTURE_MATCH_INTENSITY_OFF (EXACT_YELLOW):**
+- Erlaubt: "in der Grundrichtung stimmig", "andere Akzente", "Gewichtung weicht ab", "nicht ganz sauber"
+- Verboten: "passt" (ohne Einschränkung), "deckungsgleich", "deutlich abweichend"
 
-**PARTIAL_MATCH:**
-- Erlaubt: "teilweise anschlussfähig", "mit Abweichung", "nicht deckungsgleich"
-- Verboten: "passt", "deckungsgleich" (ohne Negation)
+**PARTIAL_MATCH (SOFT_YELLOW):**
+- Erlaubt: "teilweise anschlussfähig", "nicht durchgehend", "in Teilen passend", "bewusste Führung"
+- Verboten: "passt", "deckungsgleich", "stimmig" (ohne Einschränkung)
 
 **MISMATCH:**
-- Erlaubt: "deutlich abweichend", "nicht passend", "andere Arbeitslogik"
-- Verboten: "stimmig", "anschlussfähig" (ohne Einschränkung)
+- Erlaubt: "andere Logik", "deutlich abweichend", "nicht tragfähig", "anders als vorgesehen"
+- Verboten: "stimmig", "anschlussfähig", "grundsätzlich passend"
+
+**Sicherheitsregeln:**
+1. Variation darf nie die fachliche Bedeutung ändern
+2. Managementkurzfazit darf nie identisch mit Gesamtbewertung sein
+3. Risiken dürfen keine Maßnahmen enthalten
+4. Impact-Area-Interpretationen dürfen nie positiver klingen als das Gesamturteil
 
 ### Doppeldominanz-Sonderregel
 

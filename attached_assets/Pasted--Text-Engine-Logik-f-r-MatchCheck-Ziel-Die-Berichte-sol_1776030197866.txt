@@ -1,0 +1,433 @@
+# Text-Engine-Logik für MatchCheck
+
+Ziel: Die Berichte sollen fachlich konsistent bleiben, aber sprachlich nicht mehr nach Vorlage oder KI klingen. Deshalb bekommt jede Berichtssektion klare Regeln, feste Bedeutungen und mehrere Formulierungsvarianten.
+
+---
+
+## 1. Grundprinzip
+
+Die Text-Engine darf niemals frei formulieren, sondern arbeitet immer in 3 Ebenen:
+
+1. **Logik-Ebene**
+
+   * fitLabel
+   * fitSubtype
+   * Variantentyp
+   * Dominanzbeziehung
+   * stärkste Abweichung
+   * Führungsaufwand
+
+2. **Bedeutungs-Ebene**
+
+   * Was heißt das praktisch?
+   * z. B. „gleiche Richtung, aber anders gewichtet“
+   * oder „teilweise passend, aber nicht stabil“
+
+3. **Sprach-Ebene**
+
+   * Auswahl aus mehreren gleichwertigen Satzvarianten
+   * gleiche Aussage, aber unterschiedliche Formulierungen
+
+Wichtig: Variationen dürfen nur die Sprache verändern, nie die fachliche Aussage.
+
+---
+
+## 2. Regeln gegen KI-Sprache
+
+### Vermeiden
+
+* "Diese Analyse zeigt"
+* "macht sichtbar"
+* "beschreibt"
+* "ist wertfrei zu verstehen"
+* "nicht vollständig deckungsgleich" in jedem zweiten Satz
+* zu viele "dadurch", "grundsätzlich", "in einzelnen Bereichen"
+* immer gleiche Satzlänge
+
+### Stattdessen bevorzugen
+
+* Beobachtungssprache
+* Alltagssprache im Business-Kontext
+* aktive Formulierungen
+* kurze Sätze gemischt mit mittleren Sätzen
+* konkrete Wirkung statt Meta-Erklärung
+
+### Beispiel
+
+Nicht:
+
+> Diese Analyse zeigt, dass die Arbeitslogik in Teilen anschlussfähig ist.
+
+Besser:
+
+> Die Person arbeitet in vielen Punkten in die richtige Richtung. An einer zentralen Stelle setzt sie jedoch andere Schwerpunkte als die Rolle verlangt.
+
+---
+
+## 3. Baustein-Struktur je Berichtssektion
+
+Jede Sektion bekommt:
+
+* **Bedeutungscode**
+* **Pflichtinhalt**
+* **verbotene Sprache**
+* **3–5 Varianten**
+
+So kann die Engine rotieren, ohne fachlich unklar zu werden.
+
+---
+
+## 4. Gesamtbewertung
+
+### Bedeutungscodes
+
+* PERFECT
+* EXACT_YELLOW
+* SOFT_YELLOW
+* MISMATCH
+
+### Pflichtinhalt
+
+* Gesamturteil
+* Grundrichtung oder Abweichung
+* Führbarkeit / Tragfähigkeit
+
+### PERFECT – Varianten
+
+1. Die Person passt gut zur Rolle. Arbeitsweise und Anforderung greifen stimmig ineinander.
+2. Für die Rolle ergibt sich eine klare Passung. Die Person bringt die geforderte Arbeitslogik in tragfähiger Form mit.
+3. Die Besetzung wirkt insgesamt stimmig. Die Person arbeitet in der Logik, die die Stelle verlangt.
+4. Die Passung ist hoch. Die Rolle kann voraussichtlich ohne erhöhten Steuerungsaufwand ausgefüllt werden.
+
+### EXACT_YELLOW – Varianten
+
+1. Die Person passt grundsätzlich zur Rolle. In der Gewichtung einzelner Bereiche arbeitet sie jedoch anders, als die Stelle es verlangt.
+2. Die Grundrichtung stimmt. Im Alltag setzt die Person jedoch andere Akzente als die Rolle vorgibt.
+3. Die Passung ist vorhanden, aber nicht ganz sauber. Die Arbeitslogik stimmt im Kern, die Gewichtung weicht jedoch ab.
+4. Die Person bringt die richtige Richtung mit. Gleichzeitig zeigt sich, dass einzelne Schwerpunkte anders gesetzt werden als in der Rolle vorgesehen.
+
+### SOFT_YELLOW – Varianten
+
+1. Die Person ist in wesentlichen Teilen anschlussfähig, bildet die Rolle aber nicht durchgehend stabil ab.
+2. Es gibt eine erkennbare Grundlage für die Rolle. Gleichzeitig entstehen in einem wichtigen Punkt Abweichungen.
+3. Die Person passt in Teilen zur Stelle, arbeitet jedoch nicht durchgehend in der geforderten Logik.
+4. Die Passung ist möglich, aber nicht stabil von selbst. Im Alltag braucht es bewusste Führung.
+
+### MISMATCH – Varianten
+
+1. Die Person passt in ihrer Arbeitslogik nicht zur Rolle.
+2. Die Stelle verlangt eine andere Art zu arbeiten, als die Person sie mitbringt.
+3. Die Unterschiede sind zu groß, um von einer tragfähigen Passung zu sprechen.
+4. Im Alltag würde die Rolle voraussichtlich anders gelebt als vorgesehen.
+
+---
+
+## 5. Managementkurzfazit
+
+### Pflichtinhalt
+
+* Führungsimplikation
+* Risiko der Rollendrift
+* Steuerungsbedarf
+
+### PERFECT – Varianten
+
+1. Führung dient hier vor allem der Priorisierung, nicht dem Ausgleich struktureller Unterschiede.
+2. Die Person braucht vor allem Orientierung und Feinabstimmung, nicht dauerhafte Korrektur.
+3. Im Führungsalltag geht es eher um Steuerung im Detail als um Kompensation von Abweichungen.
+
+### EXACT_YELLOW – Varianten
+
+1. Führung sollte hier vor allem auf Gewichtung und Priorisierung achten.
+2. Die Person arbeitet in die richtige Richtung, setzt aber andere Schwerpunkte. Genau dort sollte Führung ansetzen.
+3. Entscheidend ist hier nicht die Grundausrichtung, sondern die konsequente Ausrichtung an der Rolle.
+
+### SOFT_YELLOW – Varianten
+
+1. Ohne klare Führung droht die Rolle schrittweise anders ausgeübt zu werden.
+2. Die Person braucht einen klaren Rahmen, damit sich die Abweichung nicht im Alltag verfestigt.
+3. Führung muss hier nicht nur steuern, sondern auch Richtung halten.
+
+### MISMATCH – Varianten
+
+1. Führung müsste dauerhaft ausgleichen statt gezielt steuern.
+2. Der Führungsaufwand würde hier vor allem aus Korrektur bestehen.
+3. Die Rolle müsste im Alltag ständig nachgeschärft werden, damit sie nicht in eine andere Richtung kippt.
+
+---
+
+## 6. Warum dieses Ergebnis
+
+### Pflichtinhalt
+
+* Strukturvergleich
+* größte Abweichung
+* praktische Folge
+
+### PERFECT – Varianten
+
+1. Struktur und Gewichtung stimmen überein. Unterschiede liegen nur im normalen Toleranzbereich.
+2. Die Person bringt die geforderte Logik in stabiler Form mit. Größere Verschiebungen sind nicht erkennbar.
+3. Die Arbeitsweise passt sowohl in der Reihenfolge als auch in der Gewichtung zur Stelle.
+
+### EXACT_YELLOW – Varianten
+
+1. Die Struktur stimmt, die Gewichtung einzelner Bereiche weicht jedoch ab.
+2. Die Person arbeitet in derselben Grundlogik, setzt aber andere Akzente.
+3. Richtung und Aufbau passen, die Intensität einzelner Schwerpunkte liegt jedoch nicht ganz auf dem Niveau der Rolle.
+
+### SOFT_YELLOW – Varianten
+
+1. Ein zentraler Strukturpunkt kippt gegenüber der Rolle.
+2. Die Person trifft die Logik der Stelle in einem wichtigen Vergleichspunkt nicht vollständig.
+3. Die Abweichung liegt nicht nur in der Stärke, sondern in der Anordnung der Schwerpunkte.
+
+### MISMATCH – Varianten
+
+1. Struktur und Prioritätslogik weichen deutlich von der Rolle ab.
+2. Die Person setzt andere Schwerpunkte und folgt einer anderen Arbeitsreihenfolge.
+3. Die Unterschiede betreffen nicht nur Nuancen, sondern die Grundrichtung der Rollenausübung.
+
+---
+
+## 7. Risiken dieser Konstellation
+
+### Pflichtinhalt
+
+* keine Maßnahmen
+* nur praktische Risiken
+* max. 3 Sätze/Bullets
+
+### PERFECT – Varianten
+
+1. Risiken liegen eher in Überlastung oder operativer Streuung als in der Grundpassung.
+2. Die Zusammenarbeit ist voraussichtlich stabil. Risiken entstehen eher durch Rahmenbedingungen als durch die Person-Rolle-Passung.
+3. Mögliche Spannungen betreffen eher Tempo und Ressourcen als die Passung selbst.
+
+### EXACT_YELLOW – Varianten
+
+1. Im Alltag können sich Prioritäten leicht verschieben.
+2. Aufgaben werden tendenziell anders gewichtet, als die Rolle es vorsieht.
+3. Ohne klare Ausrichtung verfestigt sich diese Verschiebung mit der Zeit.
+
+### SOFT_YELLOW – Varianten
+
+1. Entscheidungen können je nach Situation uneinheitlich ausfallen.
+2. Die Rolle wirkt im Alltag nicht immer in derselben Richtung.
+3. Daraus entstehen Abstimmungsaufwand und Reibung im Team.
+
+### MISMATCH – Varianten
+
+1. Erwartungen und tatsächliches Verhalten laufen dauerhaft auseinander.
+2. Entscheidungen, Kommunikation und Arbeitsweise würden sich spürbar von der Rolle entfernen.
+3. Daraus entstehen wiederkehrende Konflikte und Korrekturschleifen.
+
+---
+
+## 8. Impact Areas
+
+Jeder Bereich bekommt 4 Ebenen:
+
+* Stellenanforderung
+* Person
+* Interpretation
+* Label
+
+Wichtig: Die Variation betrifft vor allem die **Interpretation**.
+
+### 8.1 Entscheidungsverhalten
+
+#### PERFECT
+
+1. Das Entscheidungsverhalten ist stimmig und entspricht der Rolle.
+2. Entscheidungen werden in der Form getroffen, die die Stelle verlangt.
+3. Die Entscheidungslogik passt zur Rolle und wirkt im Alltag tragfähig.
+
+#### EXACT_YELLOW
+
+1. Das Entscheidungsverhalten ist in der Grundrichtung stimmig, wird aber anders gewichtet.
+2. Die Person entscheidet grundsätzlich passend, setzt dabei jedoch andere Akzente als die Rolle.
+3. Die Logik der Entscheidungen stimmt im Kern, ist aber nicht vollständig deckungsgleich.
+
+#### SOFT_YELLOW
+
+1. Das Entscheidungsverhalten ist teilweise anschlussfähig, aber nicht durchgehend rollengerecht.
+2. In Entscheidungen zeigen sich relevante Unterschiede zur Rollenlogik.
+3. Die Person trifft Entscheidungen in Teilen passend, aber nicht stabil in derselben Logik wie die Rolle.
+
+#### MISMATCH
+
+1. Das Entscheidungsverhalten folgt einer anderen Logik als die Rolle.
+2. Entscheidungen würden im Alltag anders getroffen, als die Stelle es verlangt.
+3. Die Art zu entscheiden passt nicht zur Aufgabenlogik der Rolle.
+
+### 8.2 Arbeitsweise
+
+#### PERFECT
+
+1. Die Arbeitsweise ist stimmig und gut anschlussfähig.
+2. Aufgaben werden in der Form bearbeitet, die die Rolle verlangt.
+3. Das Vorgehen passt zur Struktur und zum Rhythmus der Stelle.
+
+#### EXACT_YELLOW
+
+1. Die Arbeitsweise ist im Kern passend, aber anders gewichtet.
+2. Die Person arbeitet in die richtige Richtung, setzt jedoch andere Schwerpunkte in der Umsetzung.
+3. Das Vorgehen stimmt grundsätzlich, wirkt im Alltag aber nicht ganz so, wie es die Rolle vorsieht.
+
+#### SOFT_YELLOW
+
+1. Die Arbeitsweise ist grundsätzlich anschlussfähig, aber nicht durchgehend deckungsgleich.
+2. In der Umsetzung zeigen sich Unterschiede, die für die Rolle relevant sind.
+3. Das Vorgehen passt in Teilen, bleibt aber nicht stabil in der geforderten Form.
+
+#### MISMATCH
+
+1. Die Arbeitsweise liegt spürbar neben der Stellenanforderung.
+2. Aufgaben werden anders angegangen, als die Rolle es verlangt.
+3. Die Umsetzungslogik der Person passt nicht zur Rolle.
+
+### 8.3 Kommunikation
+
+#### PERFECT
+
+1. Die Kommunikation ist stimmig und gut anschlussfähig.
+2. Austausch und Abstimmung erfolgen in der Form, die die Rolle verlangt.
+3. Der Kommunikationsstil unterstützt die Anforderungen der Stelle.
+
+#### EXACT_YELLOW
+
+1. Die Kommunikation ist in der Grundrichtung passend, aber anders dosiert.
+2. Der Stil der Abstimmung stimmt im Kern, weicht jedoch in der Gewichtung ab.
+3. Die Person kommuniziert grundsätzlich passend, setzt dabei aber andere Akzente.
+
+#### SOFT_YELLOW
+
+1. Die Kommunikation ist teilweise passend, trifft die erwartete Form jedoch nicht durchgehend.
+2. Im Austausch zeigen sich Unterschiede, die im Alltag spürbar werden.
+3. Die Kommunikation ist anschlussfähig, aber nicht stabil in der Logik der Rolle.
+
+#### MISMATCH
+
+1. Die Kommunikationslogik unterscheidet sich deutlich von der Rolle.
+2. Austausch und Abstimmung verlaufen anders, als die Stelle es verlangt.
+3. Der Kommunikationsstil passt nicht zur erwarteten Form der Rolle.
+
+### 8.4 Teamkultur
+
+#### PERFECT
+
+1. Die kulturelle Wirkung unterstützt die gewünschte Richtung der Rolle.
+2. Zusammenarbeit und Dynamik entwickeln sich in die passende Richtung.
+3. Die Person stärkt die Teamlogik, die für die Rolle vorgesehen ist.
+
+#### EXACT_YELLOW
+
+1. Die kulturelle Grundrichtung ist stimmig, wird im Alltag jedoch anders dosiert.
+2. Die Wirkung auf das Team passt im Kern, setzt aber andere Akzente.
+3. Die Person unterstützt die Grundrichtung, verschiebt jedoch die Gewichtung im Alltag leicht.
+
+#### SOFT_YELLOW
+
+1. Die Wirkung auf Zusammenarbeit und Teamkultur ist grundsätzlich tragfähig, bleibt aber nicht deckungsgleich.
+2. Im Alltag entstehen andere Dynamiken, als die Rolle eigentlich verlangt.
+3. Die Teamwirkung passt in Teilen, bleibt aber nicht stabil in derselben Richtung.
+
+#### MISMATCH
+
+1. Die kulturelle Wirkung würde die gewünschte Teamrichtung spürbar verändern.
+2. Zusammenarbeit entwickelt sich anders, als die Rolle es vorsieht.
+3. Die Person setzt im Team eine andere Richtung als die Stelle verlangt.
+
+---
+
+## 9. Rotationslogik
+
+Die Engine soll nicht zufällig würfeln, sondern kontrolliert rotieren.
+
+### Regel
+
+Für jede Sektion wird ein Variant-Index berechnet:
+
+```ts
+variantIndex = hash(roleName + candName + sectionKey + fitSubtype) % anzahlVarianten
+```
+
+Dadurch:
+
+* bleibt derselbe Bericht stabil
+* verschiedene Berichte klingen unterschiedlich
+* keine chaotische Zufälligkeit
+
+---
+
+## 10. Sicherheitsregeln
+
+1. Variation darf nie die fachliche Bedeutung ändern.
+2. Begriffe wie „deckungsgleich“ nur bei PERFECT.
+3. Begriffe wie „teilweise“ nie bei PERFECT.
+4. Begriffe wie „deutlich“ nur bei MISMATCH oder wirklich hohen Gaps.
+5. Managementkurzfazit darf nie identisch mit Gesamtbewertung sein.
+6. „Risiken“ dürfen keine Maßnahmen enthalten.
+7. Impact-Area-Interpretationen dürfen nie positiver klingen als das Gesamturteil.
+
+---
+
+## 11. Technische Struktur in Replit
+
+Empfehlung für Datei `client/src/lib/text-variants.ts`
+
+```ts
+export const textVariants = {
+  overall: {
+    PERFECT: [...],
+    EXACT_YELLOW: [...],
+    SOFT_YELLOW: [...],
+    MISMATCH: [...],
+  },
+  management: {
+    PERFECT: [...],
+    EXACT_YELLOW: [...],
+    SOFT_YELLOW: [...],
+    MISMATCH: [...],
+  },
+  why: {
+    PERFECT: [...],
+    EXACT_YELLOW: [...],
+    SOFT_YELLOW: [...],
+    MISMATCH: [...],
+  },
+  risks: {
+    PERFECT: [...],
+    EXACT_YELLOW: [...],
+    SOFT_YELLOW: [...],
+    MISMATCH: [...],
+  },
+  impact: {
+    decision: {...},
+    workstyle: {...},
+    communication: {...},
+    culture: {...},
+  }
+}
+```
+
+Zusätzlich eine Hilfsfunktion:
+
+```ts
+export function pickVariant(
+  variants: string[],
+  seed: string,
+): string {
+  const index = stableHash(seed) % variants.length;
+  return variants[index];
+}
+```
+
+---
+
+## 12. Wichtigster Merksatz
+
+**Nicht frei schreiben lassen. Immer erst Bedeutung festlegen, dann aus sprachlich gleichwertigen Varianten auswählen.**
+
+Nur so klingt der Bericht natürlicher, ohne fachlich unsauber zu werden.
