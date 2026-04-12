@@ -1,0 +1,100 @@
+Bei diesem Profil
+
+A = 41
+I = 30
+N = 29
+
+sind 2. und 3. Komponente innerhalb der Toleranz gleich stark.
+Also ist das kein normales ORDER-Profil, sondern:
+
+👉 BOTTOM_PAIR: A > I = N
+
+Das bedeutet:
+
+Hauptlogik = Analytisch
+die beiden Nebenlogiken Impulsiv und Intuitiv konkurrieren
+unter Stress kippt das Verhalten nicht nur in eine Richtung
+sondern situativ abwechselnd in Richtung
+Tempo / Umsetzung
+oder Zusammenarbeit / Einbindung
+Deine bisherige Stresslogik ist hier zu grob
+
+Wenn der Text aktuell sagt:
+
+Unter hoher Belastung kann sich das Verhalten in Richtung Tempo und Umsetzung verschieben.
+
+dann ist das für diesen Fall zu einseitig.
+
+Denn korrekt wäre:
+
+Unter hoher Belastung kann sich das Verhalten situativ verschieben. Da die beiden Nebenbereiche fast gleich stark sind, konkurrieren Tempo / Umsetzung und Zusammenarbeit / Kommunikation miteinander. Je nach Situation wird dann entweder direkter und schneller gehandelt oder stärker moderiert und abgestimmt.
+
+Die fachlich richtige Regel
+
+Du brauchst beim Stressverhalten nicht nur:
+
+dominante Komponente
+
+sondern auch:
+
+ob die zwei Nebenkomponenten gleich stark sind
+
+Also zusätzlich:
+
+if (variant.type === 'BOTTOM_PAIR') {
+  // Hauptkomponente klar
+  // Nebenbereiche konkurrieren
+}
+Neue Stresslogik
+1. ALL_EQUAL
+kein klarer Automatismus
+Reaktion diffus / flexibel / wenig vorhersagbar
+2. TOP_PAIR
+zwei Hauptbereiche fast gleich
+unter kontrolliertem Druck: Wechsel zwischen beiden Hauptbereichen
+unter unkontrolliertem Stress: Balance kippt, aber Grundrichtung bleibt in diesem Doppelschwerpunkt
+3. BOTTOM_PAIR
+eine Hauptlogik ist klar
+die beiden Nebenlogiken sind fast gleich
+unter kontrolliertem Druck: Hauptlogik verstärkt sich
+unter unkontrolliertem Stress: die beiden Nebenlogiken konkurrieren miteinander
+4. ORDER
+klare Rangfolge
+unter Druck erst Hauptlogik stärker
+unter unkontrolliertem Stress kippt es typischerweise in Richtung der 2. Komponente
+Für dein Beispiel konkret
+Kontrollierter Druck
+
+Steigt der Arbeitsdruck, verstärkt sich zunächst die Tendenz, strukturiert vorzugehen, Abläufe zu sichern und Fehlerquellen zu kontrollieren. Die Person versucht, Ordnung und Übersicht zu behalten.
+
+Unkontrollierter Stress
+
+Wird die Belastung sehr hoch, kann sich das Verhalten situativ verschieben. Da Tempo / Umsetzung und Zusammenarbeit / Kommunikation fast gleich stark ausgeprägt sind, konkurrieren diese beiden Nebenbereiche miteinander. Je nach Situation wird dann entweder direkter und schneller gehandelt oder stärker abgestimmt und moderiert. Das Verhalten wirkt dadurch wechselhafter und weniger berechenbar.
+
+Das solltest du in deine Logik aufnehmen
+Neue Regel für Stress
+if (variant.type === 'BOTTOM_PAIR') {
+  controlledPressure =
+    'Die Hauptlogik verstärkt sich zunächst.';
+
+  uncontrolledStress =
+    'Die beiden Nebenbereiche sind fast gleich stark und konkurrieren unter hoher Belastung situativ miteinander.';
+}
+Noch sauberer als Regeltext für deine Doku
+
+Du könntest den Abschnitt Stressverhalten so ergänzen:
+
+Für BOTTOM_PAIR-Profile
+
+Wenn eine Komponente klar führt und die beiden anderen innerhalb der Gleichheitstoleranz liegen, dann verstärkt sich unter kontrolliertem Druck zunächst die führende Komponente. Unter unkontrolliertem Stress konkurrieren jedoch die beiden fast gleich starken Nebenkomponenten miteinander. Das Verhalten kann dann je nach Situation in unterschiedliche Richtungen kippen und wirkt weniger berechenbar.
+
+Kurz gesagt
+
+👉 Ja, du hast recht.
+Bei A > I = N darf der Stresstext nicht nur eine Nebenrichtung nennen.
+Er muss sagen:
+
+Hauptlogik bleibt zuerst dominant
+bei hohem Stress konkurrieren die beiden gleich starken Nebenlogiken
+
+Das ist ein echter Logik-Fix, nicht nur Sprachstil.

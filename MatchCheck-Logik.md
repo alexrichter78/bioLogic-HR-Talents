@@ -376,12 +376,16 @@ Die Person wird je nach Profiltyp beschrieben:
 
 ## Stressverhalten (buildStress)
 
-Das Stressverhalten wird profilabhängig generiert. Für **ALL_EQUAL**-Profile (Gleichverteilung) gibt es einen eigenen Textblock:
+Das Stressverhalten wird profilabhängig generiert. Es gibt vier Profiltypen mit unterschiedlicher Stresslogik:
 
 | Profiltyp | controlledPressure | uncontrolledStress |
 |---|---|---|
-| ALL_EQUAL | "reagiert bei Druck zunächst flexibel und abwägend..." | "zeigt diffuse Stressreaktionen ohne klare Richtung..." |
-| Andere | Basierend auf dominanter Komponente | Basierend auf dominanter Komponente |
+| ALL_EQUAL | Kein klarer Schwerpunkt, Reaktion situativ wechselnd | Diffuses Springen zwischen allen drei Logiken |
+| TOP_PAIR (Doppeldominanz) | Wechsel zwischen den beiden Hauptbereichen | Schwerpunkt verschiebt sich zur dritten (schwächsten) Komponente |
+| BOTTOM_PAIR | Hauptlogik verstärkt sich zunächst | Beide fast gleich starken Nebenlogiken konkurrieren situativ – Verhalten wird wechselhafter |
+| ORDER (klare Rangfolge) | Hauptlogik verstärkt sich | Verhalten kippt in Richtung der zweitstärksten Komponente |
+
+**BOTTOM_PAIR-Sonderregel:** Wenn eine Komponente klar führt und die beiden anderen innerhalb der Gleichheitstoleranz (≤ 5 Punkte Differenz) liegen, verstärkt sich unter kontrolliertem Druck zunächst die führende Komponente. Unter unkontrolliertem Stress konkurrieren die beiden fast gleich starken Nebenkomponenten situativ miteinander. Das Verhalten kann dann je nach Situation in unterschiedliche Richtungen kippen und wirkt weniger berechenbar.
 
 ---
 

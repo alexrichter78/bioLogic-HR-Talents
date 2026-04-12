@@ -194,7 +194,7 @@ function getSpecialCases(roleProfile: TriadProfile, candProfile: TriadProfile) {
   const rDom = dominanceModeOf(roleProfile);
   const cDom = dominanceModeOf(candProfile);
   const roleIsBalFull = rDom.gap1 <= EQ_TOL && rDom.gap2 <= EQ_TOL;
-  const candIsBalFull = cDom.spread <= EQ_TOL;
+  const candIsBalFull = cDom.gap1 <= EQ_TOL && cDom.gap2 <= EQ_TOL;
   const roleIsDualDom = !roleIsBalFull && rDom.gap1 <= EQ_TOL && rDom.gap2 > EQ_TOL;
   const candIsDualDom = !candIsBalFull && cDom.gap1 <= EQ_TOL && cDom.gap2 > EQ_TOL;
   const sameDualPair = roleIsDualDom && candIsDualDom && [rDom.top, rDom.second].sort().join('|') === [cDom.top, cDom.second].sort().join('|');
@@ -674,9 +674,17 @@ function buildStress(input: MatchTextInput): StressBlock {
     };
   }
 
+  const candIsBottomPair = sp.cDom.gap1 > EQ_TOL && sp.cDom.gap2 <= EQ_TOL;
+  if (candIsBottomPair) {
+    return {
+      controlledPressure: `Steigt der Arbeitsdruck, verstärkt sich zunächst die Tendenz zu ${COMP_NOUN[sp.cDom.top]}. Die Person versucht, über ihre Hauptlogik Kontrolle und Übersicht zu behalten.`,
+      uncontrolledStress: `Wird die Belastung sehr hoch, kann sich das Verhalten situativ verschieben. Da ${COMP_NOUN[sp.cDom.second]} und ${COMP_NOUN[sp.cDom.third]} fast gleich stark ausgeprägt sind, konkurrieren diese beiden Nebenbereiche miteinander. Je nach Situation wird dann entweder stärker über ${COMP_NOUN[sp.cDom.second]} oder über ${COMP_NOUN[sp.cDom.third]} reagiert. Das Verhalten wirkt dadurch wechselhafter und weniger berechenbar.`
+    };
+  }
+
   return {
     controlledPressure: `Unter moderatem Druck verstärkt sich zunächst die Tendenz zu ${COMP_NOUN[sp.cDom.top]}.`,
-    uncontrolledStress: `Unter hoher Belastung kann sich das Verhalten in Richtung ${COMP_NOUN[sp.cDom.second]} verschieben.`
+    uncontrolledStress: `Unter hoher Belastung kann sich das Verhalten in Richtung ${COMP_NOUN[sp.cDom.second]} verschieben. Die klare Rangfolge der Arbeitsschwerpunkte kippt dann zugunsten der zweitstärksten Logik.`
   };
 }
 
