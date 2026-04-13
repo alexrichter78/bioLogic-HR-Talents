@@ -512,7 +512,7 @@ export default function SollIstBericht() {
                 <div style={{ width: 30, height: 30, borderRadius: 15, background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <SlidersHorizontal style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} />
                 </div>
-                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }}>
+                <span style={{ fontSize: 18, fontWeight: 700, color: "#34C759" }}>
                   Profilvergleich
                 </span>
               </div>
@@ -870,7 +870,7 @@ export default function SollIstBericht() {
                         <Zap style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} />
                       </div>
                       <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }}>
-                        MatchCheck: {roleName || "Stelle"}
+                        <span style={{ color: "#34C759" }}>MatchCheck:</span> {roleName || "Stelle"}
                       </span>
                     </div>
                     <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${systemwirkungOpen ? "rotate-180" : ""}`} />
