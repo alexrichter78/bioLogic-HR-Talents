@@ -1057,6 +1057,20 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/webhook/kurs-freischaltung", requireSubadmin, async (req, res) => {
+    try {
+      await fetch("https://hooks.zapier.com/hooks/catch/19864960/u7fw2jw/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(req.body),
+      });
+      res.json({ ok: true });
+    } catch (error) {
+      console.error("Webhook error:", error);
+      res.status(500).json({ error: "Webhook fehlgeschlagen" });
+    }
+  });
+
   app.get("/api/admin/organizations", requireAuth, requireAdmin, async (_req, res) => {
     try {
       const orgs = await storage.listOrganizations();

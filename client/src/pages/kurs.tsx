@@ -247,9 +247,10 @@ export default function Kurs() {
           ? user.companyName
           : "Keine Organisation hinterlegt. Schreiben Sie uns eine E-Mail.";
 
-        fetch("https://hooks.zapier.com/hooks/catch/19864960/u7fw2jw/", {
+        fetch("/api/webhook/kurs-freischaltung", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({
             organisation: orgName,
             ausgeloest_von: `${user?.firstName || ""} ${user?.lastName || ""}`.trim() || user?.username || "",
