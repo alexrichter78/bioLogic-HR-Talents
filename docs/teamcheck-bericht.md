@@ -165,7 +165,7 @@ NONE       → Transformation
 | `matchCase` | `MatchCase` | TOP1_TOP2 / TOP1_ONLY / TOP2_ONLY / NONE |
 | `passungZumTeam` | `"hoch" / "mittel" / "gering"` | Qualitative Team-Passung |
 | `beitragZurAufgabe` | `string` | Qualitative Aufgaben-Passung |
-| `gesamteinschaetzung` | `string` | Gesamt-Label (z.B. "Sehr passend", "Gut passend") |
+| `gesamteinschaetzung` | `string` | Gesamt-Label aus 9-Cell-Matrix + MatchCase (siehe unten) |
 | `begleitungsbedarf` | `string` | Steuerungsaufwand |
 | `systemwirkung` | `string` | Verstärkung / Stabile Ergänzung / Ergänzung mit Spannung / Transformation |
 | `gesamtbewertungText` | `string` | Narrative Gesamtbewertung |
@@ -190,6 +190,25 @@ NONE       → Transformation
 | `sameDominance` | `boolean` | Gleiche Hauptdominanz |
 | `teamPrimary / personPrimary` | `ComponentKey` | Dominante Komponenten |
 | `teamTriad / personTriad` | `Triad` | Kopie der Input-Profile |
+
+### Gesamteinschätzung (Labels)
+
+Die Gesamteinschätzung wird aus teamFit × taskFit abgeleitet, mit MatchCase-Korrektur:
+
+| teamFit | taskFit | Label |
+|---|---|---|
+| hoch | hoch | Sehr passend |
+| hoch | mittel | Gut passend |
+| hoch | gering | Kulturell passend, fachlich begrenzt |
+| hoch | nicht bewertet | Gut passend |
+| mittel | hoch | Fachlich wertvoll, integrativ anspruchsvoller |
+| mittel | mittel | Bedingt passend |
+| mittel | gering | Integrierbar, aber ohne klaren Aufgabenhebel |
+| mittel | nicht bewertet | Bedingt passend |
+| gering | hoch | Inhaltlich interessant, kulturell riskant |
+| gering | mittel | Spannungsreich bei begrenztem Zusatznutzen |
+| gering | gering/n.b. | **Spannungsreich mit Alltagsbrücke** (wenn matchCase = TOP2_ONLY) |
+| gering | gering/n.b. | Kritisch (sonst) |
 
 ### Hilfstypen
 
@@ -318,13 +337,13 @@ Jede Builder-Funktion erzeugt ausführliche, kontextspezifische deutsche Texte. 
 | `buildWirkungAlltagText` | 2 | 7 Fälle, FK/Mitglied | Konkrete Alltagswirkung in Meetings, Kommunikation, Entscheidungen |
 | `buildChancenRisiken` | Blöcke | 4 MatchCases + BALANCED | Chancen/Risiken-Paare mit Titeln, Einordnung nach Score-Bereich |
 | `buildDruckText` | 2 | 5 Fälle | Verhalten unter Stress, Verstärkungsmuster, Eskalationshinweise |
-| `buildFuehrungshinweis` | Blöcke | 3 FK-Fälle | Vertrauensaufbau, Feedback, Schutzraum (nur bei Leadership, sonst null) |
+| `buildFuehrungshinweis` | Blöcke | 4 FK-Fälle | Vertrauensaufbau, Feedback, Schutzraum (nur bei Leadership, sonst null) |
 | `buildRisikoprognose` | 3 Phasen | 4 Fälle | 0–3/3–12/12+ Monate Prognose mit Risikobewertung |
 | `buildIntegrationsplan` | 3 Phasen | Score/MatchCase | 30-Tage-Onboarding: Ziel, Beschreibung, Praxis, Signale, Führungstipp, Fokus |
 | `buildIntegrationZusatz` | Listen | Score-abhängig | Warnsignale (6–10), Leitfragen (7), Verantwortungshinweis FK/Mitglied |
 | `buildEmpfehlungen` | Blöcke | 4 Fälle + Teamziel | Konkrete Handlungsempfehlungen mit Titeln und ausführlichen Erläuterungen |
 | `buildTeamOhnePerson` | 2 | 3 Fälle | Auswirkung auf Team bei Weggang, strategische Reflexion |
-| `buildSchlussfazit` | 2 | 3 Score-Bereiche × FK/Mitglied | Abschliessende Empfehlung, Reflexionshinweis nach 90 Tagen |
+| `buildSchlussfazit` | 2 | 3 Score-Bereiche × FK/Mitglied × MatchCase | Abschliessende Empfehlung, Reflexionshinweis nach 90 Tagen |
 
 ### Branching-Logik der Texte
 

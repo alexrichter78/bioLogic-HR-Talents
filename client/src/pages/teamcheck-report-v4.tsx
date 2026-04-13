@@ -12,6 +12,7 @@ import logoPath from "@assets/LOGO_bio_1773853681939.png";
 const bewColor = (b: string) => {
   if (b === "Sehr passend" || b === "Gut passend") return BIO_COLORS.geeignet;
   if (b === "Kritisch") return BIO_COLORS.nichtGeeignet;
+  if (b === "Spannungsreich mit Alltagsbrücke") return BIO_COLORS.bedingt;
   return BIO_COLORS.bedingt;
 };
 const axisColor = (v: string) => v === "hoch" ? BIO_COLORS.geeignet : v === "mittel" ? BIO_COLORS.bedingt : v === "gering" ? BIO_COLORS.nichtGeeignet : "#94a3b8";

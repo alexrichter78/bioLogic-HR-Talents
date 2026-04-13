@@ -37,6 +37,7 @@ const BEW_COLOR: Record<string, string> = {
   "Integrierbar, aber ohne klaren Aufgabenhebel": "#FF9500",
   "Inhaltlich interessant, kulturell riskant": "#FF3B30",
   "Spannungsreich bei begrenztem Zusatznutzen": "#FF3B30",
+  "Spannungsreich mit Alltagsbrücke": "#FF9500",
   "Kritisch": "#FF3B30",
 };
 const bewCol = (b: string) => BEW_COLOR[b] || "#FF9500";
