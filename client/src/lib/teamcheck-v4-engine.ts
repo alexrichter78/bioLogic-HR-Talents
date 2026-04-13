@@ -86,6 +86,8 @@ export interface TeamCheckV4Result {
   teamTriad: Triad;
   personTriad: Triad;
 
+  systemwirkung: string;
+
   score: number;
   scoreBreakdown: { top1: number; top2: number; variant: number };
   matchCase: MatchCase;
@@ -282,34 +284,39 @@ function fitToBegleitung(fit: string): string {
   return "hoch";
 }
 
-function computeTaskFit(personProfile: Triad, goal: TeamGoal): string {
-  if (!goal) return "nicht bewertbar";
+function computeTaskFit(teamProfile: Triad, personProfile: Triad, goal: TeamGoal): string {
+  if (!goal) return "nicht bewertet";
   const goalComp = GOAL_KEY[goal];
-  if (!goalComp) return "nicht bewertbar";
+  if (!goalComp) return "nicht bewertet";
 
-  const goalValue = round(personProfile[goalComp]);
-  const sorted = sortTriad(personProfile);
-  const topValue = sorted[0].value;
-  const isTopTied = goalValue >= topValue - EQ_TOL;
+  const personValue = round(personProfile[goalComp]);
+  const teamValue = round(teamProfile[goalComp]);
 
-  if (isTopTied && goalValue >= 30) return "hoch";
-  if (goalValue >= 25) return "mittel";
+  if (personValue >= teamValue - 5) return "hoch";
+  if (personValue >= teamValue - 15) return "mittel";
   return "gering";
 }
 
+function computeSystemwirkung(matchCase: MatchCase): string {
+  if (matchCase === "TOP1_TOP2") return "Verstärkung";
+  if (matchCase === "TOP1_ONLY") return "Stabile Ergänzung";
+  if (matchCase === "TOP2_ONLY") return "Ergänzung mit Spannung";
+  return "Transformation";
+}
 
 function gesamtLabel(teamFit: string, taskFit: string): string {
-  if (teamFit === "hoch" && taskFit === "hoch") return "Gut passend";
+  if (teamFit === "hoch" && taskFit === "hoch") return "Sehr passend";
   if (teamFit === "hoch" && taskFit === "mittel") return "Gut passend";
-  if (teamFit === "hoch" && taskFit === "gering") return "Im Team passend, für die Aufgabe weniger geeignet";
-  if (teamFit === "hoch" && taskFit === "nicht bewertbar") return "Gut passend";
+  if (teamFit === "hoch" && taskFit === "gering") return "Kulturell passend, fachlich begrenzt";
+  if (teamFit === "hoch" && taskFit === "nicht bewertet") return "Gut passend";
 
-  if (teamFit === "mittel" && taskFit === "hoch") return "Für die Aufgabe passend, im Team herausfordernd";
-  if (teamFit === "mittel" && taskFit === "mittel") return "Teilweise passend";
-  if (teamFit === "mittel" && taskFit === "gering") return "Eingeschränkt passend";
-  if (teamFit === "mittel" && taskFit === "nicht bewertbar") return "Teilweise passend";
+  if (teamFit === "mittel" && taskFit === "hoch") return "Fachlich wertvoll, integrativ anspruchsvoller";
+  if (teamFit === "mittel" && taskFit === "mittel") return "Bedingt passend";
+  if (teamFit === "mittel" && taskFit === "gering") return "Integrierbar, aber ohne klaren Aufgabenhebel";
+  if (teamFit === "mittel" && taskFit === "nicht bewertet") return "Bedingt passend";
 
-  if (teamFit === "gering" && (taskFit === "hoch" || taskFit === "mittel")) return "Strategisch sinnvoll, aber anspruchsvoll";
+  if (teamFit === "gering" && taskFit === "hoch") return "Inhaltlich interessant, kulturell riskant";
+  if (teamFit === "gering" && taskFit === "mittel") return "Spannungsreich bei begrenztem Zusatznutzen";
   return "Kritisch";
 }
 
@@ -869,7 +876,7 @@ export function computeTeamCheckV4(input: TeamCheckV4Input): TeamCheckV4Result {
   const hasGoal = !!safeGoal;
 
   const teamFit = scoreToFit(score);
-  const taskFit = computeTaskFit(input.personProfile, safeGoal);
+  const taskFit = computeTaskFit(input.teamProfile, input.personProfile, safeGoal);
   const begleitungsbedarf = fitToBegleitung(teamFit);
   const gesamteinschaetzung = gesamtLabel(teamFit, taskFit);
 
@@ -937,6 +944,8 @@ export function computeTeamCheckV4(input: TeamCheckV4Input): TeamCheckV4Result {
     sameDominance,
     teamTriad: { ...input.teamProfile },
     personTriad: { ...input.personProfile },
+
+    systemwirkung: computeSystemwirkung(matchCase),
 
     score,
     scoreBreakdown: { top1, top2, variant },

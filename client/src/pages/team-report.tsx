@@ -1069,7 +1069,7 @@ export default function TeamReport() {
                 const teamFit = p.passungZumTeam;
                 const funcFit = p.beitragZurAufgabe;
                 const tColors = badgeColors[teamFit] || badgeColors.gering;
-                const fColors = funcFit !== "nicht bewertbar" ? (badgeColors[funcFit] || badgeColors.gering) : null;
+                const fColors = (funcFit !== "nicht bewertbar" && funcFit !== "nicht bewertet") ? (badgeColors[funcFit] || badgeColors.gering) : null;
 
                 const activeGoal = teamGoal || p.teamGoal;
                 const funcText = (() => {
@@ -1101,7 +1101,7 @@ export default function TeamReport() {
 
                 const isLeaderRole = roleTypeForCard === "fuehrung";
                 const empfBullets: string[] = [];
-                if (p.gesamteinschaetzung === "Gut passend") {
+                if (p.gesamteinschaetzung === "Sehr passend" || p.gesamteinschaetzung === "Gut passend") {
                   empfBullets.push(isLeaderRole
                     ? "Die Person kann die Führungsrolle direkt wirksam übernehmen."
                     : "Die Person kann direkt produktiv eingesetzt werden.");
@@ -1148,7 +1148,7 @@ export default function TeamReport() {
                     : t("Regelmässige Check-ins in den ersten Wochen einplanen."));
                 }
 
-                const empfText = p.gesamteinschaetzung === "Gut passend"
+                const empfText = (p.gesamteinschaetzung === "Sehr passend" || p.gesamteinschaetzung === "Gut passend")
                   ? (p.begleitungsbedarf === "gering"
                     ? "Gute Voraussetzungen für eine erfolgreiche Integration."
                     : isLeaderRole
@@ -1162,7 +1162,7 @@ export default function TeamReport() {
                     ? t("Teilweise passend — Führungsintegration gezielt begleiten.")
                     : t("Teilweise passend — gezielte Massnahmen empfohlen.");
 
-                const empfColor = p.gesamteinschaetzung === "Gut passend" ? { bg: "#E8F5E9", border: "#A5D6A7", text: "#1B7A3D" }
+                const empfColor = (p.gesamteinschaetzung === "Sehr passend" || p.gesamteinschaetzung === "Gut passend") ? { bg: "#E8F5E9", border: "#A5D6A7", text: "#1B7A3D" }
                   : p.gesamteinschaetzung === "Kritisch" ? { bg: "#FFEBEE", border: "#EF9A9A", text: "#C41E3A" }
                   : { bg: "#FFF3E0", border: "#FFCC80", text: "#CC7700" };
 

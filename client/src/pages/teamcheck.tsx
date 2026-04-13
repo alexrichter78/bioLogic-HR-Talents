@@ -29,12 +29,14 @@ const TL_COLORS: Record<TrafficLight, { bg: string; fill: string; label: string 
 };
 
 const BEW_COLOR: Record<string, string> = {
+  "Sehr passend": "#34C759",
   "Gut passend": "#34C759",
-  "Teilweise passend": "#FF9500",
-  "Im Team passend, für die Aufgabe weniger geeignet": "#FF9500",
-  "Für die Aufgabe passend, im Team herausfordernd": "#FF9500",
-  "Strategisch sinnvoll, aber anspruchsvoll": "#FF9500",
-  "Eingeschränkt passend": "#FF3B30",
+  "Kulturell passend, fachlich begrenzt": "#FF9500",
+  "Fachlich wertvoll, integrativ anspruchsvoller": "#FF9500",
+  "Bedingt passend": "#FF9500",
+  "Integrierbar, aber ohne klaren Aufgabenhebel": "#FF9500",
+  "Inhaltlich interessant, kulturell riskant": "#FF3B30",
+  "Spannungsreich bei begrenztem Zusatznutzen": "#FF3B30",
   "Kritisch": "#FF3B30",
 };
 const bewCol = (b: string) => BEW_COLOR[b] || "#FF9500";

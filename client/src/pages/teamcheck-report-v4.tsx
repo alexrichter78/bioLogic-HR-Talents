@@ -10,7 +10,7 @@ import type { ComponentKey } from "@/lib/bio-types";
 import logoPath from "@assets/LOGO_bio_1773853681939.png";
 
 const bewColor = (b: string) => {
-  if (b === "Gut passend") return BIO_COLORS.geeignet;
+  if (b === "Sehr passend" || b === "Gut passend") return BIO_COLORS.geeignet;
   if (b === "Kritisch") return BIO_COLORS.nichtGeeignet;
   return BIO_COLORS.bedingt;
 };

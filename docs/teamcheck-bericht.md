@@ -118,8 +118,9 @@ Wenn ein oder beide Profile BALANCED sind, greift eine separate Scoring-Logik:
 | `matchCase` | `MatchCase` | TOP1_TOP2 / TOP1_ONLY / TOP2_ONLY / NONE |
 | `passungZumTeam` | `"hoch" / "mittel" / "gering"` | Qualitative Team-Passung |
 | `beitragZurAufgabe` | `string` | Qualitative Aufgaben-Passung |
-| `gesamteinschaetzung` | `string` | Gesamt-Label (z.B. "Gut passend") |
+| `gesamteinschaetzung` | `string` | Gesamt-Label (z.B. "Sehr passend", "Gut passend") |
 | `begleitungsbedarf` | `string` | Steuerungsaufwand |
+| `systemwirkung` | `string` | Verstärkung / Stabile Ergänzung / Ergänzung mit Spannung / Transformation |
 | `gesamtbewertungText` | `string` | Narrative Gesamtbewertung |
 | `hauptstaerke` | `string` | Größte Stärke der Kombination |
 | `hauptabweichung` | `string` | Größte Abweichung |
@@ -179,7 +180,8 @@ Berechnet den Score, klassifiziert Profile, leitet qualitative Fits ab und gener
 |---|---|---|
 | `computeScore` | Score + MatchCase | Top1/Top2/Variant-Punkte mit BALANCED-Sonderfall |
 | `getProfileClass` | Profilklasse | BALANCED/DUAL/CLEAR/ORDER |
-| `computeTaskFit` | Aufgabenfit | Basiert auf Goalkomponenten-Wert (tie-aware) |
+| `computeTaskFit` | Aufgabenfit | Vergleicht Person- vs. Team-Wert auf der Zielkomponente |
+| `computeSystemwirkung` | Systemwirkung | Verstärkung/Stabile Ergänzung/Ergänzung mit Spannung/Transformation aus MatchCase |
 | `buildIntroText` | Einleitungstext | FK vs. Teammitglied Variante |
 | `buildGesamtbewertungText` | Narrative Gesamtbewertung | 4 MatchCases + 3 BALANCED-Fälle + Teamziel |
 | `buildHauptstaerke` | Stärke-Satz | Pro MatchCase |
