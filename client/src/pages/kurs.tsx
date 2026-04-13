@@ -242,6 +242,26 @@ export default function Kurs() {
       if (res.ok) {
         setResults(data.results || []);
         setSubmitted(true);
+
+        const orgName = user?.companyName?.trim()
+          ? user.companyName
+          : "Keine Organisation hinterlegt. Schreiben Sie uns eine E-Mail.";
+
+        fetch("https://hooks.zapier.com/hooks/catch/19864960/u7fw2jw/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            organisation: orgName,
+            ausgeloest_von: `${user?.firstName || ""} ${user?.lastName || ""}`.trim() || user?.username || "",
+            email_absender: user?.email || "",
+            teilnehmer: valid.map(p => ({
+              vorname: p.firstName,
+              nachname: p.lastName,
+              email: p.email,
+            })),
+            anzahl_teilnehmer: valid.length,
+          }),
+        }).catch(() => {});
       } else {
         setError(data.error || "Freischaltung fehlgeschlagen");
       }
