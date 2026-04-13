@@ -1,10 +1,9 @@
 import { useState } from "react";
 import GlobalNav from "@/components/global-nav";
-import { Building2, Lock, Plus, Trash2, Send, CheckCircle2, AlertCircle, BookOpen, PlayCircle, ChevronDown } from "lucide-react";
+import { Building2, Lock, Plus, Trash2, Send, CheckCircle2, AlertCircle, ChevronDown } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import { useIsMobile } from "@/hooks/use-mobile";
-import imgKompaktkurs from "@assets/image_1775513714925.png";
 
 interface Participant {
   id: number;
@@ -19,76 +18,6 @@ function createEmptyParticipant(): Participant {
   return { id: nextId++, firstName: "", lastName: "", email: "" };
 }
 
-function BioChecksWidgetInner({ isMobile }: { isMobile: boolean }) {
-  const modules = [
-    { img: imgKompaktkurs, title: "bioLogic Kompaktkurs" },
-  ];
-
-  return (
-    <div data-testid="widget-biochecks-module">
-      <div style={{ textAlign: "center", marginBottom: 20 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px", letterSpacing: "-0.02em" }}>
-          Einführung in die bioLogic
-        </h2>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center" }}>
-          <div style={{
-            display: "flex", alignItems: "center", gap: 8,
-            padding: "7px 16px", borderRadius: 10,
-            background: "rgba(0,113,227,0.06)",
-          }}>
-            <BookOpen style={{ width: 15, height: 15, color: "#0071E3" }} />
-            <span style={{ fontSize: 13, fontWeight: 600, color: "#0071E3" }}>3 Module mit 15 Lektionen</span>
-          </div>
-          <div style={{
-            display: "flex", alignItems: "center", gap: 8,
-            padding: "7px 16px", borderRadius: 10,
-            background: "rgba(0,113,227,0.06)",
-          }}>
-            <PlayCircle style={{ width: 15, height: 15, color: "#0071E3" }} />
-            <span style={{ fontSize: 13, fontWeight: 600, color: "#0071E3" }}>3 Stunden Video-Material</span>
-          </div>
-        </div>
-      </div>
-
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr",
-        gap: 16,
-      }}>
-        {modules.map((m, i) => (
-          <div key={i} style={{
-            borderRadius: 14, overflow: "hidden",
-            border: "1px solid rgba(0,0,0,0.06)",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
-            transition: "transform 200ms ease, box-shadow 200ms ease",
-            cursor: "default",
-          }} data-testid={`card-biochecks-module-${i}`}>
-            <img
-              src={m.img}
-              alt={m.title}
-              style={{ width: "100%", height: "auto", display: "block" }}
-            />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function BioChecksWidget({ isMobile }: { isMobile: boolean }) {
-  return (
-    <div style={{ marginBottom: 24 }} data-testid="widget-biochecks-wrapper">
-      <div style={{
-        background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
-        borderRadius: 20, padding: isMobile ? "20px 16px" : "28px 32px",
-        boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
-        border: "1px solid rgba(0,0,0,0.04)",
-      }}>
-        <BioChecksWidgetInner isMobile={isMobile} />
-      </div>
-    </div>
-  );
-}
 
 export default function BioChecks() {
   const { user } = useAuth();
@@ -170,8 +99,6 @@ export default function BioChecks() {
           </div>
         </div>
         <div className="mx-auto" style={{ maxWidth: 1100, paddingTop: isMobile ? 110 : 135, paddingBottom: isMobile ? 100 : 40, paddingLeft: isMobile ? 8 : 24, paddingRight: isMobile ? 8 : 24 }}>
-
-          <BioChecksWidget isMobile={isMobile} />
 
           <div style={{
             background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
@@ -302,12 +229,6 @@ export default function BioChecks() {
           </button>
 
           {cardOpen && (<>
-          <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }} />
-
-          <div style={{ padding: isMobile ? "20px 16px" : "28px 32px" }}>
-            <BioChecksWidgetInner isMobile={isMobile} />
-          </div>
-
           <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }} />
 
           {submitted ? (
