@@ -453,7 +453,7 @@ function buildWarumText(c: Ctx): string {
       paras.push(`Andererseits stimmt die ergänzende Arbeitsweise (Top 2) überein: Beide Seiten nutzen ${COMP_SHORT[teamSecondary]}. Dieser gemeinsame Nenner fängt im Alltag einen Teil der Reibung ab und erklärt, warum die Zusammenarbeit trotz des niedrigen Scores oft besser funktioniert, als die reine Zahl vermuten lässt. Der Score bildet die strukturelle Spannung korrekt ab, überschätzt aber tendenziell die praktische Distanz.`);
     } else {
       paras.push(`Team und Person unterscheiden sich in Grundlogik und Arbeitsweise. Das Team setzt auf ${COMP_DOMAIN[teamPrimary]} mit ${COMP_SHORT[teamSecondary]}, die Person auf ${COMP_DOMAIN[personPrimary]} mit ${COMP_SHORT[personSecondary]}. Diese Spannung betrifft Kommunikation, Entscheidungen und das tägliche Miteinander.`);
-      paras.push("Das muss nicht schlecht sein — wenn das Team eine andere Perspektive braucht, kann genau diese Besetzung richtig sein. Aber es braucht viel Führungsarbeit und die klare Entscheidung, dass die Unterschiede gewollt sind. Sonst dominiert die Reibung den Alltag.");
+      paras.push("Das muss kein Problem sein — manchmal braucht ein Team genau diese andere Perspektive. Aber es braucht aktive Führung und Klarheit darüber, warum diese Besetzung Sinn ergibt. Ohne das dominiert die Reibung den Alltag.");
     }
   }
 
@@ -725,8 +725,8 @@ function buildIntegrationsplan(c: Ctx): V4IntegrationPhase[] {
       period: "Tag 21–30",
       ziel: "Die Person ist im Team angekommen und arbeitet eigenständig und wirksam. Die grundlegende Integration ist abgeschlossen und die Weichen für die langfristige Zusammenarbeit sind gestellt.",
       beschreibung: c.score >= 60
-        ? "Die Integration sollte jetzt weitgehend abgeschlossen sein. Die Person hat ihren Platz im Team gefunden und arbeitet produktiv. Der Fokus liegt jetzt auf nachhaltiger Wirksamkeit, der Klärung offener Punkte und der Definition von Zielen für die nächsten Monate. Nutzen Sie diese Phase für ein umfassendes Feedback-Gespräch, das sowohl die fachliche als auch die zwischenmenschliche Ebene adressiert."
-        : "Die Integration ist noch im Aufbau und erfordert weiterhin aktive Aufmerksamkeit. Klären Sie in dieser Phase offen, ob die Zusammenarbeit langfristig tragfähig ist. Offene Gespräche über Unterschiede, Erwartungen und gegenseitige Wahrnehmung sind jetzt besonders wichtig. Wenn grundlegende Probleme bestehen, sollten sie jetzt benannt werden, nicht erst nach Monaten.",
+        ? "Die Integration sollte jetzt weitgehend stehen. Die Person hat ihren Platz im Team gefunden und arbeitet produktiv. Jetzt geht es um offene Punkte, Ziele für die nächsten Monate und ein ehrliches Feedback-Gespräch auf beiden Seiten."
+        : "Die Integration braucht noch Aufmerksamkeit. Klären Sie offen, ob die Zusammenarbeit langfristig funktioniert. Wenn es Probleme gibt, sollten sie jetzt benannt werden — nicht erst in sechs Monaten.",
       praxis: [
         "Zusammenfassendes Feedback-Gespräch über die gesamte Einarbeitungsphase",
         "Klärung der weiteren Entwicklung, nächsten Schritte und konkreten Ziele für die kommenden 3 Monate",
@@ -860,10 +860,10 @@ function buildSchlussfazit(c: Ctx): string {
 
     if (matchCase === "TOP2_ONLY") {
       paras.push(`Die Besetzung ist anspruchsvoll. Die Denklogik unterscheidet sich deutlich, aber im Arbeitsalltag gibt es über ${COMP_SHORT[c.teamSecondary]} eine verbindende Ebene.${goalPart}`);
-      paras.push("Diese Alltagsbrücke macht die Integration realistischer als ohne jede Überschneidung. Der Führungsaufwand bleibt aber hoch. Die Führung muss klar machen, wann welche Arbeitslogik Vorrang hat und warum die andere Herangehensweise gewollt ist.");
+      paras.push("Diese Alltagsbrücke macht die Integration realistischer als ohne jede Überschneidung. Die Führung muss aber klar machen, wann welche Arbeitslogik Vorrang hat — und offen kommunizieren, warum diese Besetzung trotzdem Sinn ergibt.");
     } else {
       paras.push(`Die Besetzung ist anspruchsvoll. Person und Team unterscheiden sich in Denkweise und Arbeitsweise deutlich.${goalPart}`);
-      paras.push("Eine Integration ist möglich, braucht aber viel Führungsarbeit und die klare Entscheidung, dass die Unterschiede gewollt sind. Wenn ja, kann die Besetzung das Team langfristig stärken. Wenn nicht, sollte die Entscheidung nochmals geprüft werden, bevor beide Seiten unnötig Energie verlieren.");
+      paras.push("Eine Integration ist möglich — aber nur, wenn klar ist, warum diese Besetzung trotz der Unterschiede Sinn ergibt. Wenn das begründet ist, kann sie das Team stärken. Wenn nicht, sollte die Entscheidung nochmals geprüft werden.");
     }
   }
 
