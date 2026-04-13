@@ -300,8 +300,13 @@ function computeTaskFit(teamProfile: Triad, personProfile: Triad, goal: TeamGoal
   const dominantValue = sorted[0].value;
   const lowestValue = sorted[2].value;
   if (personValue <= lowestValue && (dominantValue - personValue) > 8) {
-    if (fit === "hoch") fit = "mittel";
-    else if (fit === "mittel") fit = "gering";
+    const gap = dominantValue - personValue;
+    if (gap > 20) {
+      fit = "gering";
+    } else {
+      if (fit === "hoch") fit = "mittel";
+      else if (fit === "mittel") fit = "gering";
+    }
   }
 
   return fit;

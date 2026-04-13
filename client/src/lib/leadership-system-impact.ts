@@ -221,8 +221,13 @@ export function calculateLeadershipAssessment(
     const dominantValue = sorted[0].value;
     const lowestValue = sorted[2].value;
     if (personValue <= lowestValue && (dominantValue - personValue) > 8) {
-      if (goalLabel === "Passend") goalLabel = "Teilweise passend";
-      else if (goalLabel === "Teilweise passend") goalLabel = "Kritisch";
+      const gap = dominantValue - personValue;
+      if (gap > 20) {
+        goalLabel = "Kritisch";
+      } else {
+        if (goalLabel === "Passend") goalLabel = "Teilweise passend";
+        else if (goalLabel === "Teilweise passend") goalLabel = "Kritisch";
+      }
     }
 
     const GOAL_NAMES: Record<string, string> = { umsetzung: "Umsetzung und Ergebnisse", analyse: "Analyse und Struktur", zusammenarbeit: "Zusammenarbeit und Kommunikation" };
