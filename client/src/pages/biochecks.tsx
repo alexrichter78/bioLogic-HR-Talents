@@ -1,6 +1,6 @@
 import { useState } from "react";
 import GlobalNav from "@/components/global-nav";
-import { Building2, Lock, Plus, Trash2, Send, CheckCircle2, AlertCircle, ChevronDown } from "lucide-react";
+import { Building2, Lock, Plus, Trash2, Send, CheckCircle2, AlertCircle, ChevronDown, Users, UserCheck } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -12,23 +12,328 @@ interface Participant {
   email: string;
 }
 
-let nextId = 1;
+let nextIdA = 1;
+let nextIdB = 1000;
 
-function createEmptyParticipant(): Participant {
-  return { id: nextId++, firstName: "", lastName: "", email: "" };
+function createParticipantA(): Participant {
+  return { id: nextIdA++, firstName: "", lastName: "", email: "" };
+}
+function createParticipantB(): Participant {
+  return { id: nextIdB++, firstName: "", lastName: "", email: "" };
 }
 
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  padding: "10px 14px",
+  borderRadius: 10,
+  border: "1px solid rgba(0,0,0,0.1)",
+  fontSize: 14,
+  outline: "none",
+  boxSizing: "border-box",
+  background: "#FAFBFC",
+};
 
-export default function BioChecks() {
-  const { user } = useAuth();
-  const [, setLocation] = useLocation();
-  const isMobile = useIsMobile();
-  const [participants, setParticipants] = useState<Participant[]>([createEmptyParticipant()]);
+const labelStyle: React.CSSProperties = {
+  fontSize: 12,
+  fontWeight: 600,
+  color: "#48484A",
+  display: "block",
+  marginBottom: 4,
+};
+
+function EnrollmentCard({
+  title,
+  icon: Icon,
+  testPrefix,
+  createParticipant,
+  isMobile,
+}: {
+  title: string;
+  icon: React.ElementType;
+  testPrefix: string;
+  createParticipant: () => Participant;
+  isMobile: boolean;
+}) {
+  const [participants, setParticipants] = useState<Participant[]>([createParticipant()]);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [results, setResults] = useState<{ email: string; status: string }[]>([]);
   const [cardOpen, setCardOpen] = useState(true);
+
+  function addParticipant() {
+    setParticipants(prev => [...prev, createParticipant()]);
+  }
+
+  function removeParticipant(id: number) {
+    setParticipants(prev => prev.filter(p => p.id !== id));
+  }
+
+  function updateParticipant(id: number, field: keyof Omit<Participant, "id">, value: string) {
+    setParticipants(prev => prev.map(p => p.id === id ? { ...p, [field]: value } : p));
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    const valid = participants.filter(p => p.firstName.trim() && p.lastName.trim() && p.email.trim());
+    if (valid.length === 0) return;
+
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/admin/enroll-course", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ participants: valid.map(({ firstName, lastName, email }) => ({ firstName, lastName, email })) }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setResults(data.results || []);
+        setSubmitted(true);
+      } else {
+        setError(data.error || "Freischaltung fehlgeschlagen");
+      }
+    } catch {
+      setError("Verbindungsfehler – bitte erneut versuchen");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  function handleReset() {
+    setParticipants([createParticipant()]);
+    setSubmitted(false);
+    setResults([]);
+    setError("");
+  }
+
+  return (
+    <div style={{
+      background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
+      borderRadius: 20,
+      boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+      border: "1px solid rgba(0,0,0,0.04)",
+      overflow: "hidden",
+      marginBottom: 20,
+    }} data-testid={`card-${testPrefix}-main`}>
+
+      <button
+        onClick={() => setCardOpen(!cardOpen)}
+        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMobile ? "14px 16px" : "20px 32px", border: "none", outline: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.02)"; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+        data-testid={`button-toggle-${testPrefix}-card`}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <Icon style={{ width: 22, height: 22, color: "#0071E3", flexShrink: 0 }} />
+          <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
+            {title}
+          </span>
+        </div>
+        <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${cardOpen ? "rotate-180" : ""}`} />
+      </button>
+
+      {cardOpen && (<>
+      <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }} />
+
+      {submitted ? (
+        <div style={{ padding: isMobile ? "32px 20px" : "40px 32px", textAlign: "center" }} data-testid={`card-${testPrefix}-success`}>
+          <div style={{
+            width: 56, height: 56, borderRadius: 16,
+            background: "linear-gradient(135deg, #34C759, #30B350)",
+            display: "inline-flex", alignItems: "center", justifyContent: "center", marginBottom: 16,
+            boxShadow: "0 4px 12px rgba(52,199,89,0.25)",
+          }}>
+            <CheckCircle2 style={{ width: 28, height: 28, color: "#FFF" }} />
+          </div>
+          <p style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>Zugänge freigeschaltet</p>
+          <p style={{ fontSize: 14, color: "#6E6E73", margin: "0 0 24px", maxWidth: 400, marginLeft: "auto", marginRight: "auto" }}>
+            Die Teilnehmer wurden erfolgreich verarbeitet.
+          </p>
+
+          {results.length > 0 && (
+            <div style={{ textAlign: "left", maxWidth: 500, margin: "0 auto 24px" }}>
+              {results.map((r, i) => (
+                <div key={i} style={{
+                  display: "flex", justifyContent: "space-between", alignItems: "center",
+                  padding: "10px 14px", borderRadius: 10,
+                  background: i % 2 === 0 ? "rgba(0,0,0,0.02)" : "transparent",
+                  fontSize: 13,
+                }} data-testid={`${testPrefix}-result-row-${i}`}>
+                  <span style={{ color: "#1D1D1F" }}>{r.email}</span>
+                  <span style={{
+                    fontSize: 12, fontWeight: 600, padding: "3px 12px", borderRadius: 10,
+                    background: r.status === "Erstellt" ? "rgba(52,199,89,0.12)" : r.status === "Aktualisiert" ? "rgba(0,113,227,0.1)" : "rgba(255,59,48,0.1)",
+                    color: r.status === "Erstellt" ? "#34C759" : r.status === "Aktualisiert" ? "#0071E3" : "#FF3B30",
+                  }}>
+                    {r.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <button
+            onClick={handleReset}
+            data-testid={`button-${testPrefix}-new-enrollment`}
+            style={{
+              padding: "10px 24px", borderRadius: 12,
+              background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFF",
+              border: "none", fontSize: 14, fontWeight: 600, cursor: "pointer",
+              boxShadow: "0 2px 8px rgba(0,113,227,0.25)",
+            }}
+          >
+            Weitere Teilnehmer freischalten
+          </button>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit}>
+          {error && (
+            <div style={{
+              display: "flex", alignItems: "center", gap: 8,
+              padding: "10px 16px", borderRadius: 12, margin: isMobile ? "16px 16px 0" : "16px 32px 0",
+              background: "rgba(255,59,48,0.06)", border: "1px solid rgba(255,59,48,0.15)",
+              fontSize: 13, color: "#FF3B30",
+            }} data-testid={`text-${testPrefix}-error`}>
+              <AlertCircle style={{ width: 16, height: 16, flexShrink: 0 }} />
+              {error}
+            </div>
+          )}
+
+          <div>
+            {!isMobile && (
+              <div style={{
+                display: "grid", gridTemplateColumns: "40px 1fr 1fr 1.3fr 40px",
+                gap: 12, padding: "14px 20px",
+                borderBottom: "1px solid rgba(0,0,0,0.06)", background: "rgba(0,0,0,0.02)",
+              }}>
+                <span />
+                <span style={{ ...labelStyle, paddingLeft: 14 }}>Vorname</span>
+                <span style={{ ...labelStyle, paddingLeft: 14 }}>Nachname</span>
+                <span style={{ ...labelStyle, paddingLeft: 14 }}>E-Mail-Adresse</span>
+                <span />
+              </div>
+            )}
+
+            {participants.map((p, idx) => (
+              <div
+                key={p.id}
+                data-testid={`${testPrefix}-row-participant-${p.id}`}
+                style={{
+                  display: isMobile ? "flex" : "grid",
+                  flexDirection: isMobile ? "column" : undefined,
+                  gridTemplateColumns: isMobile ? undefined : "40px 1fr 1fr 1.3fr 40px",
+                  gap: isMobile ? 10 : 12,
+                  padding: isMobile ? 16 : "14px 20px",
+                  alignItems: isMobile ? "stretch" : "center",
+                  borderBottom: idx < participants.length - 1 ? "1px solid rgba(0,0,0,0.04)" : "none",
+                }}
+              >
+                {isMobile && (
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{
+                        width: 26, height: 26, borderRadius: 8,
+                        background: "linear-gradient(135deg, #0071E3, #0071E3CC)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 12, fontWeight: 700, color: "#FFF",
+                      }}>
+                        {idx + 1}
+                      </div>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F" }}>Teilnehmer {idx + 1}</span>
+                    </div>
+                    {participants.length > 1 && (
+                      <button type="button" onClick={() => removeParticipant(p.id)} data-testid={`button-${testPrefix}-remove-${p.id}`}
+                        style={{ background: "none", border: "none", cursor: "pointer", color: "#FF3B30", padding: 4, display: "flex", alignItems: "center" }}>
+                        <Trash2 style={{ width: 15, height: 15 }} />
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {!isMobile && (
+                  <div style={{
+                    width: 26, height: 26, borderRadius: 8,
+                    background: "linear-gradient(135deg, #0071E3, #0071E3CC)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 12, fontWeight: 700, color: "#FFF",
+                  }}>
+                    {idx + 1}
+                  </div>
+                )}
+
+                {isMobile && <label style={labelStyle}>Vorname</label>}
+                <input type="text" value={p.firstName} onChange={e => updateParticipant(p.id, "firstName", e.target.value)}
+                  placeholder="Vorname" style={inputStyle} required data-testid={`input-${testPrefix}-firstname-${p.id}`} />
+
+                {isMobile && <label style={labelStyle}>Nachname</label>}
+                <input type="text" value={p.lastName} onChange={e => updateParticipant(p.id, "lastName", e.target.value)}
+                  placeholder="Nachname" style={inputStyle} required data-testid={`input-${testPrefix}-lastname-${p.id}`} />
+
+                {isMobile && <label style={labelStyle}>E-Mail-Adresse</label>}
+                <input type="email" value={p.email} onChange={e => updateParticipant(p.id, "email", e.target.value)}
+                  placeholder="E-Mail-Adresse" style={inputStyle} required data-testid={`input-${testPrefix}-email-${p.id}`} />
+
+                {!isMobile && (
+                  participants.length > 1 ? (
+                    <button type="button" onClick={() => removeParticipant(p.id)} data-testid={`button-${testPrefix}-remove-${p.id}`}
+                      style={{ background: "none", border: "none", cursor: "pointer", color: "#FF3B30", padding: 4, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Trash2 style={{ width: 15, height: 15 }} />
+                    </button>
+                  ) : <span />
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, padding: isMobile ? "20px 16px" : "24px 32px", justifyContent: "center", alignItems: "center" }}>
+            <button
+              type="button"
+              onClick={addParticipant}
+              data-testid={`button-${testPrefix}-add-participant`}
+              style={{
+                display: "flex", alignItems: "center", gap: 8,
+                padding: "10px 20px", borderRadius: 12,
+                background: "rgba(255,255,255,0.78)", border: "1px solid rgba(0,0,0,0.08)",
+                fontSize: 14, fontWeight: 600, color: "#1D1D1F", cursor: "pointer",
+                width: isMobile ? "100%" : "auto", justifyContent: "center",
+                backdropFilter: "blur(20px)",
+              }}
+            >
+              <Plus style={{ width: 16, height: 16 }} />
+              Teilnehmer hinzufügen
+            </button>
+
+            <button
+              type="submit"
+              disabled={submitting}
+              data-testid={`button-${testPrefix}-submit`}
+              style={{
+                display: "flex", alignItems: "center", gap: 8,
+                padding: "12px 28px", borderRadius: 12,
+                background: submitting ? "rgba(0,113,227,0.5)" : "linear-gradient(135deg, #0071E3, #34AADC)",
+                color: "#FFF", border: "none",
+                fontSize: 14, fontWeight: 600, cursor: submitting ? "default" : "pointer",
+                boxShadow: submitting ? "none" : "0 2px 8px rgba(0,113,227,0.25)",
+                width: isMobile ? "100%" : "auto", justifyContent: "center",
+              }}
+            >
+              <Send style={{ width: 16, height: 16 }} />
+              {submitting ? "Wird verarbeitet…" : "Zugänge freischalten"}
+            </button>
+          </div>
+        </form>
+      )}
+      </>)}
+    </div>
+  );
+}
+
+export default function BioChecks() {
+  const { user } = useAuth();
+  const [, setLocation] = useLocation();
+  const isMobile = useIsMobile();
 
   if (!user?.courseAccess && user?.role !== "subadmin") {
     return (
@@ -92,14 +397,13 @@ export default function BioChecks() {
                   bioChecks
                 </h1>
                 <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0 }}>
-                  Willkommen. Hier finden Sie Analysen für Unternehmen & externe Anforderungen.
+                  Unternehmen & extern
                 </p>
               </div>
             </div>
           </div>
         </div>
         <div className="mx-auto" style={{ maxWidth: 1100, paddingTop: isMobile ? 110 : 135, paddingBottom: isMobile ? 100 : 40, paddingLeft: isMobile ? 8 : 24, paddingRight: isMobile ? 8 : 24 }}>
-
           <div style={{
             background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
             borderRadius: 20, padding: isMobile ? "32px 20px" : "40px 32px",
@@ -116,73 +420,6 @@ export default function BioChecks() {
     );
   }
 
-  const inputStyle: React.CSSProperties = {
-    width: "100%",
-    padding: "10px 14px",
-    borderRadius: 10,
-    border: "1px solid rgba(0,0,0,0.1)",
-    fontSize: 14,
-    outline: "none",
-    boxSizing: "border-box",
-    background: "#FAFBFC",
-  };
-
-  const labelStyle: React.CSSProperties = {
-    fontSize: 12,
-    fontWeight: 600,
-    color: "#48484A",
-    display: "block",
-    marginBottom: 4,
-  };
-
-  function addParticipant() {
-    setParticipants(prev => [...prev, createEmptyParticipant()]);
-  }
-
-  function removeParticipant(id: number) {
-    setParticipants(prev => prev.filter(p => p.id !== id));
-  }
-
-  function updateParticipant(id: number, field: keyof Omit<Participant, "id">, value: string) {
-    setParticipants(prev => prev.map(p => p.id === id ? { ...p, [field]: value } : p));
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    const valid = participants.filter(p => p.firstName.trim() && p.lastName.trim() && p.email.trim());
-    if (valid.length === 0) return;
-
-    setSubmitting(true);
-    try {
-      const res = await fetch("/api/admin/enroll-course", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ participants: valid.map(({ firstName, lastName, email }) => ({ firstName, lastName, email })) }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setResults(data.results || []);
-        setSubmitted(true);
-      } else {
-        setError(data.error || "Freischaltung fehlgeschlagen");
-      }
-    } catch (err) {
-      setError("Verbindungsfehler – bitte erneut versuchen");
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  function handleReset() {
-    nextId = 1;
-    setParticipants([createEmptyParticipant()]);
-    setSubmitted(false);
-    setResults([]);
-    setError("");
-  }
-
   return (
     <div className="page-gradient-bg">
       <GlobalNav />
@@ -195,7 +432,7 @@ export default function BioChecks() {
                 bioChecks
               </h1>
               <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0 }}>
-                Zugänge freischalten für Unternehmen & externe Nutzer.
+                Zugänge freischalten — Mitarbeitende & Bewerbende
               </p>
             </div>
           </div>
@@ -203,224 +440,20 @@ export default function BioChecks() {
       </div>
 
       <div className="mx-auto" style={{ maxWidth: 1100, paddingTop: isMobile ? 110 : 135, paddingBottom: isMobile ? 100 : 40, paddingLeft: isMobile ? 8 : 24, paddingRight: isMobile ? 8 : 24 }}>
-
-        <div style={{
-          background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
-          borderRadius: 20,
-          boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
-          border: "1px solid rgba(0,0,0,0.04)",
-          overflow: "hidden",
-        }} data-testid="card-biochecks-main">
-
-          <button
-            onClick={() => setCardOpen(!cardOpen)}
-            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMobile ? "14px 16px" : "20px 32px", border: "none", outline: "none", background: "transparent", cursor: "pointer", transition: "background 150ms" }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,0,0,0.02)"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
-            data-testid="button-toggle-biochecks-card"
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <Building2 style={{ width: 22, height: 22, color: "#0071E3", flexShrink: 0 }} />
-              <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
-                Zugänge freischalten
-              </span>
-            </div>
-            <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${cardOpen ? "rotate-180" : ""}`} />
-          </button>
-
-          {cardOpen && (<>
-          <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }} />
-
-          {submitted ? (
-            <div style={{ padding: isMobile ? "32px 20px" : "40px 32px", textAlign: "center" }} data-testid="card-biochecks-success">
-              <div style={{
-                width: 56, height: 56, borderRadius: 16,
-                background: "linear-gradient(135deg, #34C759, #30B350)",
-                display: "inline-flex", alignItems: "center", justifyContent: "center", marginBottom: 16,
-                boxShadow: "0 4px 12px rgba(52,199,89,0.25)",
-              }}>
-                <CheckCircle2 style={{ width: 28, height: 28, color: "#FFF" }} />
-              </div>
-              <p style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>Zugänge freigeschaltet</p>
-              <p style={{ fontSize: 14, color: "#6E6E73", margin: "0 0 24px", maxWidth: 400, marginLeft: "auto", marginRight: "auto" }}>
-                Die Teilnehmer wurden erfolgreich verarbeitet.
-              </p>
-
-              {results.length > 0 && (
-                <div style={{ textAlign: "left", maxWidth: 500, margin: "0 auto 24px" }}>
-                  {results.map((r, i) => (
-                    <div key={i} style={{
-                      display: "flex", justifyContent: "space-between", alignItems: "center",
-                      padding: "10px 14px", borderRadius: 10,
-                      background: i % 2 === 0 ? "rgba(0,0,0,0.02)" : "transparent",
-                      fontSize: 13,
-                    }} data-testid={`biochecks-result-row-${i}`}>
-                      <span style={{ color: "#1D1D1F" }}>{r.email}</span>
-                      <span style={{
-                        fontSize: 12, fontWeight: 600, padding: "3px 12px", borderRadius: 10,
-                        background: r.status === "Erstellt" ? "rgba(52,199,89,0.12)" : r.status === "Aktualisiert" ? "rgba(0,113,227,0.1)" : "rgba(255,59,48,0.1)",
-                        color: r.status === "Erstellt" ? "#34C759" : r.status === "Aktualisiert" ? "#0071E3" : "#FF3B30",
-                      }}>
-                        {r.status}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <button
-                onClick={handleReset}
-                data-testid="button-biochecks-new-enrollment"
-                style={{
-                  padding: "10px 24px", borderRadius: 12,
-                  background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFF",
-                  border: "none", fontSize: 14, fontWeight: 600, cursor: "pointer",
-                  boxShadow: "0 2px 8px rgba(0,113,227,0.25)",
-                }}
-              >
-                Weitere Teilnehmer freischalten
-              </button>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit}>
-              {error && (
-                <div style={{
-                  display: "flex", alignItems: "center", gap: 8,
-                  padding: "10px 16px", borderRadius: 12, margin: isMobile ? "16px 16px 0" : "16px 32px 0",
-                  background: "rgba(255,59,48,0.06)", border: "1px solid rgba(255,59,48,0.15)",
-                  fontSize: 13, color: "#FF3B30",
-                }} data-testid="text-biochecks-error">
-                  <AlertCircle style={{ width: 16, height: 16, flexShrink: 0 }} />
-                  {error}
-                </div>
-              )}
-
-              <div>
-                {!isMobile && (
-                  <div style={{
-                    display: "grid", gridTemplateColumns: "40px 1fr 1fr 1.3fr 40px",
-                    gap: 12, padding: "14px 20px",
-                    borderBottom: "1px solid rgba(0,0,0,0.06)", background: "rgba(0,0,0,0.02)",
-                  }}>
-                    <span />
-                    <span style={{ ...labelStyle, paddingLeft: 14 }}>Vorname</span>
-                    <span style={{ ...labelStyle, paddingLeft: 14 }}>Nachname</span>
-                    <span style={{ ...labelStyle, paddingLeft: 14 }}>E-Mail-Adresse</span>
-                    <span />
-                  </div>
-                )}
-
-                {participants.map((p, idx) => (
-                  <div
-                    key={p.id}
-                    data-testid={`biochecks-row-participant-${p.id}`}
-                    style={{
-                      display: isMobile ? "flex" : "grid",
-                      flexDirection: isMobile ? "column" : undefined,
-                      gridTemplateColumns: isMobile ? undefined : "40px 1fr 1fr 1.3fr 40px",
-                      gap: isMobile ? 10 : 12,
-                      padding: isMobile ? 16 : "14px 20px",
-                      alignItems: isMobile ? "stretch" : "center",
-                      borderBottom: idx < participants.length - 1 ? "1px solid rgba(0,0,0,0.04)" : "none",
-                    }}
-                  >
-                    {isMobile && (
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <div style={{
-                            width: 26, height: 26, borderRadius: 8,
-                            background: "linear-gradient(135deg, #0071E3, #0071E3CC)",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            fontSize: 12, fontWeight: 700, color: "#FFF",
-                          }}>
-                            {idx + 1}
-                          </div>
-                          <span style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F" }}>Teilnehmer {idx + 1}</span>
-                        </div>
-                        {participants.length > 1 && (
-                          <button type="button" onClick={() => removeParticipant(p.id)} data-testid={`button-biochecks-remove-${p.id}`}
-                            style={{ background: "none", border: "none", cursor: "pointer", color: "#FF3B30", padding: 4, display: "flex", alignItems: "center" }}>
-                            <Trash2 style={{ width: 15, height: 15 }} />
-                          </button>
-                        )}
-                      </div>
-                    )}
-
-                    {!isMobile && (
-                      <div style={{
-                        width: 26, height: 26, borderRadius: 8,
-                        background: "linear-gradient(135deg, #0071E3, #0071E3CC)",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: 12, fontWeight: 700, color: "#FFF",
-                      }}>
-                        {idx + 1}
-                      </div>
-                    )}
-
-                    {isMobile && <label style={labelStyle}>Vorname</label>}
-                    <input type="text" value={p.firstName} onChange={e => updateParticipant(p.id, "firstName", e.target.value)}
-                      placeholder="Vorname" style={inputStyle} required data-testid={`input-biochecks-firstname-${p.id}`} />
-
-                    {isMobile && <label style={labelStyle}>Nachname</label>}
-                    <input type="text" value={p.lastName} onChange={e => updateParticipant(p.id, "lastName", e.target.value)}
-                      placeholder="Nachname" style={inputStyle} required data-testid={`input-biochecks-lastname-${p.id}`} />
-
-                    {isMobile && <label style={labelStyle}>E-Mail-Adresse</label>}
-                    <input type="email" value={p.email} onChange={e => updateParticipant(p.id, "email", e.target.value)}
-                      placeholder="E-Mail-Adresse" style={inputStyle} required data-testid={`input-biochecks-email-${p.id}`} />
-
-                    {!isMobile && (
-                      participants.length > 1 ? (
-                        <button type="button" onClick={() => removeParticipant(p.id)} data-testid={`button-biochecks-remove-${p.id}`}
-                          style={{ background: "none", border: "none", cursor: "pointer", color: "#FF3B30", padding: 4, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          <Trash2 style={{ width: 15, height: 15 }} />
-                        </button>
-                      ) : <span />
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, padding: isMobile ? "20px 16px" : "24px 32px", justifyContent: "center", alignItems: "center" }}>
-                <button
-                  type="button"
-                  onClick={addParticipant}
-                  data-testid="button-biochecks-add-participant"
-                  style={{
-                    display: "flex", alignItems: "center", gap: 8,
-                    padding: "10px 20px", borderRadius: 12,
-                    background: "rgba(255,255,255,0.78)", border: "1px solid rgba(0,0,0,0.08)",
-                    fontSize: 14, fontWeight: 600, color: "#1D1D1F", cursor: "pointer",
-                    width: isMobile ? "100%" : "auto", justifyContent: "center",
-                    backdropFilter: "blur(20px)",
-                  }}
-                >
-                  <Plus style={{ width: 16, height: 16 }} />
-                  Teilnehmer hinzufügen
-                </button>
-
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  data-testid="button-biochecks-submit"
-                  style={{
-                    display: "flex", alignItems: "center", gap: 8,
-                    padding: "12px 28px", borderRadius: 12,
-                    background: submitting ? "rgba(0,113,227,0.5)" : "linear-gradient(135deg, #0071E3, #34AADC)",
-                    color: "#FFF", border: "none",
-                    fontSize: 14, fontWeight: 600, cursor: submitting ? "default" : "pointer",
-                    boxShadow: submitting ? "none" : "0 2px 8px rgba(0,113,227,0.25)",
-                    width: isMobile ? "100%" : "auto", justifyContent: "center",
-                  }}
-                >
-                  <Send style={{ width: 16, height: 16 }} />
-                  {submitting ? "Wird verarbeitet…" : "Zugänge freischalten"}
-                </button>
-              </div>
-            </form>
-          )}
-          </>)}
-        </div>
+        <EnrollmentCard
+          title="bioChecks für Mitarbeitende"
+          icon={Users}
+          testPrefix="mitarbeitende"
+          createParticipant={createParticipantA}
+          isMobile={isMobile}
+        />
+        <EnrollmentCard
+          title="bioChecks für Bewerbende"
+          icon={UserCheck}
+          testPrefix="bewerbende"
+          createParticipant={createParticipantB}
+          isMobile={isMobile}
+        />
       </div>
     </div>
   );
