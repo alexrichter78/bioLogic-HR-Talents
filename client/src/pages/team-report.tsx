@@ -856,7 +856,7 @@ export default function TeamReport() {
                         style={{
                           width: "100%", height: 34, padding: "0 12px", borderRadius: 8,
                           border: "1px solid rgba(0,0,0,0.1)", fontSize: 13, color: "#1D1D1F",
-                          background: "#fff", outline: "none",
+                          background: "#FEFDF5", outline: "none",
                         }}
                         onFocus={e => { e.target.style.borderColor = "#007AFF"; }}
                         onBlur={e => { e.target.style.borderColor = "rgba(0,0,0,0.1)"; }}
