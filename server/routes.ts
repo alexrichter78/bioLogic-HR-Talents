@@ -1059,10 +1059,21 @@ export async function registerRoutes(
 
   app.post("/api/webhook/kurs-freischaltung", requireSubadmin, async (req, res) => {
     try {
+      const currentUser = await storage.getUserById(req.session.userId!);
+      let orgName = "Keine Organisation hinterlegt. Schreiben Sie uns eine E-Mail.";
+      if (currentUser?.organizationId) {
+        const org = await storage.getOrganizationById(currentUser.organizationId);
+        if (org?.name) orgName = org.name;
+      } else if (currentUser?.companyName?.trim()) {
+        orgName = currentUser.companyName;
+      }
+
+      const payload = { ...req.body, organisation: orgName };
+
       await fetch("https://hooks.zapier.com/hooks/catch/19864960/u7fw2jw/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(req.body),
+        body: JSON.stringify(payload),
       });
       res.json({ ok: true });
     } catch (error) {
