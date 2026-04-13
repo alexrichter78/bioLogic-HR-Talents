@@ -984,7 +984,7 @@ export default function KICoach() {
               <Bot style={{ width: 20, height: 20, color: "#0071E3" }} />
             </div>
             <div style={{ flex: 1 }}>
-              <h1 style={{ fontSize: 20, fontWeight: 700, color: "#34C759", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">Louis</h1>
+              <h1 style={{ fontSize: 24, fontWeight: 700, color: "#34C759", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">Louis</h1>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
                 <p style={{ fontSize: 13, color: "#48484A", margin: 0 }}>Ihr KI-Coach für Entscheidungen im richtigen Moment</p>
                 {hasAnalysisData() && (

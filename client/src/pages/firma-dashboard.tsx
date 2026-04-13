@@ -137,8 +137,8 @@ export default function FirmaDashboard() {
       <div style={{ maxWidth: 900, margin: "0 auto", padding: isMobile ? "64px 12px 80px" : "80px 20px 48px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px", display: "flex", alignItems: "center", gap: 10 }} data-testid="text-firma-title">
-              <Building2 style={{ width: 22, height: 22, color: "#1A5DAB" }} />
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px", display: "flex", alignItems: "center", gap: 10 }} data-testid="text-firma-title">
+              <Building2 style={{ width: 24, height: 24, color: "#1A5DAB" }} />
               Firmen-Dashboard
             </h1>
             {organization && (

@@ -683,8 +683,8 @@ export default function Admin() {
         <>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px", display: "flex", alignItems: "center", gap: 10 }} data-testid="text-admin-title">
-              <Shield style={{ width: 22, height: 22, color: "#1A5DAB" }} />
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px", display: "flex", alignItems: "center", gap: 10 }} data-testid="text-admin-title">
+              <Shield style={{ width: 24, height: 24, color: "#1A5DAB" }} />
               Benutzerverwaltung
             </h1>
             <p style={{ fontSize: 14, color: "#6E6E73", margin: 0 }}>{users.length} Benutzer registriert{search && filteredUsers.length !== users.length ? ` · ${filteredUsers.length} angezeigt` : ""}</p>

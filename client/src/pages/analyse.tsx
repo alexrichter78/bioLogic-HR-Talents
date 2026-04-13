@@ -158,7 +158,7 @@ export default function Analyse() {
         <main className="flex-1 w-full mx-auto pb-20" style={{ maxWidth: 1100, paddingLeft: isMobile ? 8 : 24, paddingRight: isMobile ? 8 : 24, paddingBottom: isMobile ? 100 : 80 }}>
           <div className="text-center mt-8 mb-10">
             <h1
-              className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground/90 mb-2"
+              style={{ fontSize: 24, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: "0 0 8px" }}
               data-testid="text-analyse-title"
             >
               Stammdaten (Analysehilfe)
