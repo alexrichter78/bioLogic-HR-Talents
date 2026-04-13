@@ -27,7 +27,7 @@ V4 ist eigenständig und hat keine Abhängigkeit mehr zu V2/V3. Die Score-Berech
 V4 (teamcheck-v4-engine.ts) — eigenständig
   ├── Score-Berechnung (Top1/Top2/Variant)
   ├── Profil-Klassifikation (BALANCED/DUAL/CLEAR/ORDER)
-  ├── 13 Text-Builder-Funktionen
+  ├── 15 Text-Builder-Funktionen
   └── Kein V2/V3-Import
 ```
 
@@ -243,6 +243,73 @@ Die Seite nutzt `useMemo` um `computeTeamCheckV4` bei jeder Input-Änderung neu 
 - Nutzt `html2canvas` und `jspdf`
 - Mehrseitig mit automatischen Seitenumbrüchen (`data-pdf-block`)
 - Print-optimiertes CSS
+
+---
+
+## Text-Builder: Inhaltsdokumentation
+
+Jede Builder-Funktion erzeugt ausführliche, kontextspezifische deutsche Texte. Die Texte unterscheiden sich nach **MatchCase** (TOP1_TOP2, TOP1_ONLY, TOP2_ONLY, NONE), **BALANCED-Sonderfällen** (both-balanced, team-balanced, person-balanced) und **Rollentyp** (Führungskraft vs. Teammitglied).
+
+### Textlänge und -stil
+
+- Jeder Builder erzeugt **2–3 substantielle Absätze** pro Fall (getrennt durch `\n\n`)
+- Texte sind in **sachlich-beratendem Ton** verfasst, nicht wertend, aber klar in der Einschätzung
+- Alle Texte verwenden **"ss"** als neutrale Basis (wird per `localizeDeep()` zu ß konvertiert)
+- **Dynamische Einfügungen**: Komponenten-Labels (`COMP_DOMAIN`, `COMP_SHORT`, `COMP_ADJ`), Score-Werte, Teamziel-Labels
+
+### Builder-Übersicht
+
+| Builder | Absätze | Branching | Inhaltsschwerpunkt |
+|---|---|---|---|
+| `buildIntroText` | 3 | FK/Mitglied | Zweck des Berichts, Hinweis auf Ergänzungspotential, Gliederungsübersicht |
+| `buildGesamtbewertungText` | 2–3 | 7 Fälle + Teamziel | Strukturelle Passung, Übereinstimmung/Abweichung, Aufgabenbezug |
+| `buildHauptstaerke` | 1 (Satz) | 5 Fälle | Kernstärke der Kombination |
+| `buildHauptabweichung` | 1 (Satz) | 4 Fälle | Kernabweichung der Kombination |
+| `buildWarumText` | 2–3 | 7 Fälle | Begründung der Bewertung, Score-Erläuterung |
+| `buildWirkungAlltagText` | 2 | 7 Fälle, FK/Mitglied | Konkrete Alltagswirkung in Meetings, Kommunikation, Entscheidungen |
+| `buildChancenRisiken` | Blöcke | 4 MatchCases + BALANCED | Chancen/Risiken-Paare mit Titeln, Einordnung nach Score-Bereich |
+| `buildDruckText` | 2 | 5 Fälle | Verhalten unter Stress, Verstärkungsmuster, Eskalationshinweise |
+| `buildFuehrungshinweis` | Blöcke | 3 FK-Fälle | Vertrauensaufbau, Feedback, Schutzraum (nur bei Leadership, sonst null) |
+| `buildRisikoprognose` | 3 Phasen | 4 Fälle | 0–3/3–12/12+ Monate Prognose mit Risikobewertung |
+| `buildIntegrationsplan` | 3 Phasen | Score/MatchCase | 30-Tage-Onboarding: Ziel, Beschreibung, Praxis, Signale, Führungstipp, Fokus |
+| `buildIntegrationZusatz` | Listen | Score-abhängig | Warnsignale (6–10), Leitfragen (7), Verantwortungshinweis FK/Mitglied |
+| `buildEmpfehlungen` | Blöcke | 4 Fälle + Teamziel | Konkrete Handlungsempfehlungen mit Titeln und ausführlichen Erläuterungen |
+| `buildTeamOhnePerson` | 2 | 3 Fälle | Auswirkung auf Team bei Weggang, strategische Reflexion |
+| `buildSchlussfazit` | 2 | 3 Score-Bereiche × FK/Mitglied | Abschliessende Empfehlung, Reflexionshinweis nach 90 Tagen |
+
+### Branching-Logik der Texte
+
+```
+                    ┌── BALANCED × BALANCED (Sonderfall)
+                    ├── Team BALANCED (3 Unterfälle nach Person-Spread)
+Profil-Klasse ──────┤── Person BALANCED (2 Unterfälle nach Team-Distanz)
+                    └── Normal ──┬── TOP1_TOP2 (hohe Passung)
+                                ├── TOP1_ONLY (Grundlogik passt)
+                                ├── TOP2_ONLY (Alltag passt)
+                                └── NONE (deutliche Abweichung)
+
+Zusätzliches Branching:
+  - isLeader: ja/nein (Führungskraft vs. Teammitglied)
+  - hasGoal × taskFit: hoch/mittel/gering (Funktionsziel-Bezug)
+  - score-Bereiche: ≥85, 60–84, <60 (für Einordnungen und Fazit)
+```
+
+### Dynamische Labels (Konstanten)
+
+| Konstante | Inhalt |
+|---|---|
+| `COMP_DOMAIN["impulsiv"]` | "Handlung und Umsetzung" |
+| `COMP_DOMAIN["intuitiv"]` | "Kommunikation und Abstimmung" |
+| `COMP_DOMAIN["analytisch"]` | "Struktur und Analyse" |
+| `COMP_SHORT["impulsiv"]` | "Tempo und direkte Umsetzung" |
+| `COMP_SHORT["intuitiv"]` | "Austausch und Miteinander" |
+| `COMP_SHORT["analytisch"]` | "Struktur und Genauigkeit" |
+| `COMP_ADJ["impulsiv"]` | "direkter und schneller" |
+| `COMP_ADJ["intuitiv"]` | "stärker über Austausch und Abstimmung" |
+| `COMP_ADJ["analytisch"]` | "genauer und strukturierter" |
+| `GOAL_LABELS["umsetzung"]` | "Umsetzung und Ergebnisse" |
+| `GOAL_LABELS["analyse"]` | "Analyse und Struktur" |
+| `GOAL_LABELS["zusammenarbeit"]` | "Zusammenarbeit und Kommunikation" |
 
 ---
 
