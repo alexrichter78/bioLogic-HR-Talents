@@ -508,9 +508,11 @@ export default function SollIstBericht() {
               onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
               data-testid="button-toggle-profilvergleich"
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <SlidersHorizontal style={{ width: 22, height: 22, color: "#34C759", flexShrink: 0 }} />
-                <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ width: 30, height: 30, borderRadius: 15, background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <SlidersHorizontal style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} />
+                </div>
+                <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }}>
                   Profilvergleich
                 </span>
               </div>
@@ -863,9 +865,11 @@ export default function SollIstBericht() {
                     onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
                     data-testid="button-toggle-systemwirkung"
                   >
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <Zap style={{ width: 22, height: 22, color: "#34C759", flexShrink: 0 }} />
-                      <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <div style={{ width: 30, height: 30, borderRadius: 15, background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <Zap style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} />
+                      </div>
+                      <span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }}>
                         MatchCheck: {roleName || "Stelle"}
                       </span>
                     </div>
