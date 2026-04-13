@@ -105,7 +105,7 @@ export default function Kurs() {
   const [results, setResults] = useState<{ email: string; status: string }[]>([]);
   const [cardOpen, setCardOpen] = useState(true);
 
-  if (!user?.courseAccess && user?.role !== "subadmin") {
+  if (!user?.courseAccess && user?.role !== "subadmin" && user?.role !== "admin") {
     return (
       <div className="page-gradient-bg">
         <GlobalNav />
