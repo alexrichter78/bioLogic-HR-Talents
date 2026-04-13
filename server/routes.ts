@@ -888,7 +888,7 @@ export async function registerRoutes(
   app.patch("/api/admin/users/:id", requireAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, accessUntil, plan, notes, subscriptionStatus, organizationId, aiRequestLimit } = req.body;
+      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, accessUntil, plan, notes, subscriptionStatus, organizationId, aiRequestLimit, bioCheckSecret, bioCheckEingeloest } = req.body;
       const updateData: any = {};
       if (username !== undefined) updateData.username = username;
       if (email !== undefined) updateData.email = email;
@@ -898,6 +898,8 @@ export async function registerRoutes(
       if (role !== undefined) updateData.role = role;
       if (isActive !== undefined) updateData.isActive = isActive;
       if (courseAccess !== undefined) updateData.courseAccess = courseAccess;
+      if (bioCheckSecret !== undefined) updateData.bioCheckSecret = bioCheckSecret || null;
+      if (bioCheckEingeloest !== undefined) updateData.bioCheckEingeloest = bioCheckEingeloest || null;
       if (organizationId !== undefined) updateData.organizationId = organizationId;
       if (aiRequestLimit !== undefined) updateData.aiRequestLimit = aiRequestLimit === null || aiRequestLimit === "" ? 1000 : parseInt(aiRequestLimit);
       if (password) updateData.passwordHash = await bcrypt.hash(password, 10);

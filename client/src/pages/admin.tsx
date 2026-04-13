@@ -15,6 +15,8 @@ interface UserWithSub {
   role: string;
   isActive: boolean;
   courseAccess: boolean;
+  bioCheckSecret: string | null;
+  bioCheckEingeloest: string | null;
   createdAt: string;
   lastLoginAt: string | null;
   organizationId: number | null;
@@ -399,8 +401,8 @@ export default function Admin() {
       accessUntil: u.subscription?.accessUntil ? new Date(u.subscription.accessUntil).toISOString().split("T")[0] : "",
       plan: u.subscription?.plan || "premium",
       notes: u.subscription?.notes || "",
-      bioCheckSecret: (u as any).bioCheckSecret || "",
-      bioCheckEingeloest: (u as any).bioCheckEingeloest || "",
+      bioCheckSecret: u.bioCheckSecret || "",
+      bioCheckEingeloest: u.bioCheckEingeloest || "",
       subscriptionStatus: u.subscription?.status || "active",
       organizationId: u.organizationId ?? null,
       aiRequestLimit: String(u.aiRequestLimit ?? 1000),
