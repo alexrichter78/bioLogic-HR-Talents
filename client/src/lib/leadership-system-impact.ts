@@ -206,56 +206,26 @@ export function calculateLeadershipAssessment(
     goalReasons.push("Es wurde kein aktuelles Teamziel ausgewählt.");
   } else {
     const targetComponent = getGoalComponent(teamGoal)!;
-    const dominant = getTopComponent(person);
-    const dominantValue = person[dominant];
-    const targetValue = person[targetComponent];
-    const targetGapToTop = dominantValue - targetValue;
-    const targetIsDominant = dominant === targetComponent;
+    const personValue = Math.round(person[targetComponent]);
+    const teamValue = Math.round(team[targetComponent]);
 
-    let score = 0;
-    score += Math.min(60, Math.round((targetValue / 100) * 60));
-    if (targetIsDominant) score += 25;
-    if (!targetIsDominant && targetGapToTop <= 5) score += 10;
-    if (targetGapToTop > 5) score -= Math.min(20, Math.round((targetGapToTop - 5) * 2));
-
-    if (teamGoal === "umsetzung" && person.analytisch >= 45 && person.impulsiv < 35) score -= 12;
-    if (teamGoal === "analyse" && person.impulsiv >= 40 && person.analytisch < 40) score -= 12;
-    if (teamGoal === "zusammenarbeit" && dominant !== "intuitiv" && dominantValue >= 45 && person.intuitiv < 35) score -= 12;
-
-    score = Math.max(0, Math.min(100, score));
-
-    if (teamGoal === "umsetzung") {
-      if (person.impulsiv < 28 && dominant !== "impulsiv") goalLabel = "Kritisch";
-      else if (targetIsDominant && person.impulsiv >= 36) goalLabel = "Passend";
-      else if (score >= 62) goalLabel = "Passend";
-      else if (score >= 42) goalLabel = "Teilweise passend";
-      else goalLabel = "Kritisch";
-    } else if (teamGoal === "analyse") {
-      if (person.analytisch < 30 && dominant !== "analytisch") goalLabel = "Kritisch";
-      else if (targetIsDominant && person.analytisch >= 40) goalLabel = "Passend";
-      else if (score >= 62) goalLabel = "Passend";
-      else if (score >= 42) goalLabel = "Teilweise passend";
-      else goalLabel = "Kritisch";
+    if (personValue >= teamValue - 5) {
+      goalLabel = "Passend";
+    } else if (personValue >= teamValue - 15) {
+      goalLabel = "Teilweise passend";
     } else {
-      if (person.intuitiv < 28 && dominant !== "intuitiv") goalLabel = "Kritisch";
-      else if (targetIsDominant && person.intuitiv >= 36) goalLabel = "Passend";
-      else if (score >= 62) goalLabel = "Passend";
-      else if (score >= 42) goalLabel = "Teilweise passend";
-      else goalLabel = "Kritisch";
+      goalLabel = "Kritisch";
     }
 
-    if (teamGoal === "umsetzung") {
-      if (goalLabel === "Passend") goalReasons.push("Die Führungskraft bringt eine zum aktuellen Teamziel passende Umsetzungsorientierung mit.");
-      else if (goalLabel === "Teilweise passend") goalReasons.push("Die Führungskraft unterstützt das Teamziel nur teilweise, da ihre Arbeitsweise nicht konsequent auf Tempo und direkte Umsetzung ausgerichtet ist.");
-      else goalReasons.push("Die Führungskraft arbeitet deutlich anders als das aktuelle Teamziel des Teams.");
-    } else if (teamGoal === "analyse") {
-      if (goalLabel === "Passend") goalReasons.push("Die Führungskraft passt gut zum aktuellen Teamziel des Teams.");
-      else if (goalLabel === "Teilweise passend") goalReasons.push("Die Führungskraft unterstützt das Teamziel grundsätzlich, arbeitet aber nicht durchgehend in derselben Logik.");
-      else goalReasons.push("Die Führungskraft arbeitet deutlich anders als das aktuelle Teamziel des Teams.");
-    } else if (teamGoal === "zusammenarbeit") {
-      if (goalLabel === "Passend") goalReasons.push("Die Führungskraft passt gut zum aktuellen Teamziel des Teams.");
-      else if (goalLabel === "Teilweise passend") goalReasons.push("Die Führungskraft unterstützt das Teamziel nur teilweise, da ihre Arbeitsweise stärker von einer anderen Logik geprägt ist.");
-      else goalReasons.push("Die Führungskraft arbeitet deutlich anders als das aktuelle Teamziel des Teams.");
+    const GOAL_NAMES: Record<string, string> = { umsetzung: "Umsetzung und Ergebnisse", analyse: "Analyse und Struktur", zusammenarbeit: "Zusammenarbeit und Kommunikation" };
+    const goalName = GOAL_NAMES[teamGoal] || teamGoal;
+
+    if (goalLabel === "Passend") {
+      goalReasons.push(`Die Führungskraft bringt für das Teamziel ${goalName} die passende Stärke mit.`);
+    } else if (goalLabel === "Teilweise passend") {
+      goalReasons.push(`Die Führungskraft unterstützt das Teamziel ${goalName} teilweise, liegt aber etwas unter dem Teamniveau in diesem Bereich.`);
+    } else {
+      goalReasons.push(`Die Führungskraft arbeitet deutlich anders als das Teamziel ${goalName} es erfordert.`);
     }
   }
 
