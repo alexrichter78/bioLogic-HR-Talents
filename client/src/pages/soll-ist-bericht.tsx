@@ -748,24 +748,8 @@ export default function SollIstBericht() {
                 },
               ];
 
-              const activeItems = items.filter(i => i.active);
-              if (activeItems.length === 0) return null;
-
-              return (
-                <div style={{
-                  flex: 1, minWidth: 0, padding: "10px 14px",
-                  background: "#F5F5F7", borderRadius: 12,
-                  fontSize: 12, color: "#636366", lineHeight: 1.45,
-                }} data-testid="profile-legend">
-                  <p style={{ fontWeight: 600, color: "#48484A", marginBottom: 4, fontSize: 12 }}>Profil-Hinweis</p>
-                  {activeItems.map((item, idx) => (
-                    <div key={idx} style={{ display: "flex", gap: 6, marginBottom: idx < activeItems.length - 1 ? 3 : 0 }}>
-                      <span style={{ fontSize: 13, lineHeight: "17px", flexShrink: 0 }}>{item.icon}</span>
-                      <span>{item.text}</span>
-                    </div>
-                  ))}
-                </div>
-              );
+              void items;
+              return null;
             })()}
               <button
                 onClick={() => setReportGenerated(true)}
