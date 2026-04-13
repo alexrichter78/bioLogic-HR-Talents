@@ -42,6 +42,8 @@ interface UserForm {
   accessUntil: string;
   plan: string;
   notes: string;
+  bioCheckSecret: string;
+  bioCheckEingeloest: string;
   subscriptionStatus: string;
   organizationId: number | null;
   aiRequestLimit: string;
@@ -60,6 +62,8 @@ const emptyForm: UserForm = {
   accessUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
   plan: "trial",
   notes: "",
+  bioCheckSecret: "",
+  bioCheckEingeloest: "",
   subscriptionStatus: "active",
   organizationId: null,
   aiRequestLimit: "1000",
@@ -395,6 +399,8 @@ export default function Admin() {
       accessUntil: u.subscription?.accessUntil ? new Date(u.subscription.accessUntil).toISOString().split("T")[0] : "",
       plan: u.subscription?.plan || "premium",
       notes: u.subscription?.notes || "",
+      bioCheckSecret: (u as any).bioCheckSecret || "",
+      bioCheckEingeloest: (u as any).bioCheckEingeloest || "",
       subscriptionStatus: u.subscription?.status || "active",
       organizationId: u.organizationId ?? null,
       aiRequestLimit: String(u.aiRequestLimit ?? 1000),
@@ -599,6 +605,14 @@ export default function Admin() {
           <div style={{ gridColumn: "1 / -1" }}>
             <label style={labelStyle}>Notizen</label>
             <input type="text" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} style={inputStyle} placeholder="Optional" data-testid="input-admin-notes" />
+          </div>
+          <div>
+            <label style={labelStyle}>bioCheck_Secret</label>
+            <input type="text" value={form.bioCheckSecret} onChange={e => setForm({ ...form, bioCheckSecret: e.target.value })} style={inputStyle} placeholder="Optional" data-testid="input-admin-biocheck-secret" />
+          </div>
+          <div>
+            <label style={labelStyle}>bioCheck_Eingelöst</label>
+            <input type="text" value={form.bioCheckEingeloest} onChange={e => setForm({ ...form, bioCheckEingeloest: e.target.value })} style={inputStyle} placeholder="Optional" data-testid="input-admin-biocheck-eingeloest" />
           </div>
         </div>
 
