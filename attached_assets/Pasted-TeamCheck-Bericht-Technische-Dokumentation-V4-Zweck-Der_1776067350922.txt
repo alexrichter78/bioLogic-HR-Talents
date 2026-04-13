@@ -1,0 +1,506 @@
+TeamCheck-Bericht – Technische Dokumentation V4
+Zweck
+
+Der TeamCheck bewertet die Passung einer Person zu einem bestehenden Team auf Basis der bioLogic-Triad:
+
+Impulsiv
+Intuitiv
+Analytisch
+
+Ziel ist es, nicht nur Ähnlichkeit festzustellen, sondern die tatsächliche Integrationsdynamik im Team zu bestimmen:
+
+strukturelle Passung
+erwartbare Zusammenarbeit im Alltag
+Beitrag zum funktionalen Teamziel
+Systemwirkung auf das bestehende Team
+voraussichtlicher Begleitungsbedarf
+
+Der TeamCheck beantwortet damit drei Kernfragen:
+
+Passt die Person strukturell zum Team?
+Unterstützt die Person das aktuelle Teamziel?
+Welche Wirkung ist in Integration, Alltag und Entwicklung zu erwarten?
+Architektur
+Hauptdateien
+Datei	Rolle
+client/src/lib/teamcheck-v4-engine.ts	Hauptengine. Enthält Score-Berechnung, Profilklassifikation, Systemwirkung, Aufgabenfit und Textgenerierung
+client/src/pages/teamcheck.tsx	Interaktive Simulations-Seite
+client/src/pages/teamcheck-report-v4.tsx	Bericht-Ansicht und PDF-Export
+client/src/lib/team-report-engine.ts	Team-Report-Engine, nutzt V4 für gesamteinschaetzung und begleitungsbedarf
+client/src/lib/teamcheck-v3-engine.ts	Legacy. Nur noch für V3-Reports
+client/src/lib/teamcheck-v2-engine.ts	Legacy. Nur noch für V2/V3-Reports
+Engine-Architektur V4
+
+V4 ist eigenständig und hat keine operative Abhängigkeit mehr zu V2 oder V3.
+
+V4 (teamcheck-v4-engine.ts) – eigenständig
+  ├── Profil-Normalisierung
+  ├── Varianten-Klassifikation (13 Varianten)
+  ├── Profil-Klassifikation (BALANCED / DUAL / CLEAR / ORDER)
+  ├── Score-Berechnung (Top1 / Top2 / Variant)
+  ├── MatchCase-Ermittlung
+  ├── Systemwirkung
+  ├── Aufgabenfit
+  ├── qualitative Einordnung
+  └── Text-Builder
+
+V2 und V3 bleiben ausschließlich für ältere Reports bestehen.
+
+Eingabedaten
+TeamCheckV4Input
+Feld	Typ	Beschreibung
+teamProfile	Triad	Triad-Werte des Teams
+personProfile	Triad	Triad-Werte der Person
+roleTitle	string	Stellenbezeichnung
+roleType	RoleType | undefined	"fuehrung" oder "teammitglied"
+teamGoal	TeamGoal | null	"umsetzung", "analyse", "zusammenarbeit" oder null
+roleLevel	string | undefined	Hierarchie-Ebene
+taskStructure	string | undefined	Aufgabenstruktur
+workStyle	string | undefined	Arbeitslogik
+successFocus	string[] | undefined	Erfolgsfokus-Labels
+candidateName	string | undefined	Name der Person
+Basistypen
+type Triad = {
+  impulsiv: number;
+  intuitiv: number;
+  analytisch: number;
+};
+
+type TeamGoal = "umsetzung" | "analyse" | "zusammenarbeit";
+type RoleType = "fuehrung" | "teammitglied";
+Grundlogik des TeamChecks
+
+Der TeamCheck besteht aus vier Entscheidungsebenen:
+
+Profilstruktur erkennen
+Passung Team ↔ Person bewerten
+Beitrag zum Teamziel bewerten
+Systemwirkung und Textausgabe ableiten
+
+Die Kernidee lautet:
+
+Top1 entscheidet die Grundpassung
+Top2 entscheidet die Arbeitslogik im Alltag
+die Variante entscheidet die Stabilität
+BALANCED ist ein Sonderfall
+Profilklassifikation
+Sortierung
+
+Für Team und Person werden die drei Komponenten absteigend sortiert:
+
+top1 = stärkste Komponente
+top2 = zweitstärkste Komponente
+top3 = schwächste Komponente
+gap1 = top1 - top2
+gap2 = top2 - top3
+spread = top1 - top3
+13 Varianten
+
+Jedes Profil wird genau einer von 13 Varianten zugeordnet.
+
+1. Gleichverteilung
+ALL_EQUAL
+2. Top-Pair
+TOP_PAIR_imp_int
+TOP_PAIR_imp_ana
+TOP_PAIR_int_ana
+3. Bottom-Pair
+BOTTOM_PAIR_imp_int
+BOTTOM_PAIR_imp_ana
+BOTTOM_PAIR_int_ana
+4. Klare Reihenfolge
+ORDER_imp_int_ana
+ORDER_imp_ana_int
+ORDER_int_imp_ana
+ORDER_int_ana_imp
+ORDER_ana_imp_int
+ORDER_ana_int_imp
+Operative Profilklassen
+
+Zusätzlich wird jede Variante in eine operative Klasse überführt.
+
+Klasse	Bedingung	Bedeutung
+BALANCED	gap1 <= 5 && gap2 <= 5	alle drei ähnlich
+DUAL	gap1 <= 5 && gap2 > 5	zwei oben ähnlich, einer unten
+CLEAR	gap1 > 5 && gap2 <= 5	einer klar oben, zwei unten ähnlich
+ORDER	gap1 > 5 && gap2 > 5	klare Reihenfolge aller drei
+
+Diese Klasse ist für Scoring und Textlogik maßgeblich.
+
+Struktur-Metadaten
+
+Für Team und Person werden dieselben Metadaten erzeugt:
+
+type ProfileMeta = {
+  variant: VariantType;
+  profileClass: "BALANCED" | "DUAL" | "CLEAR" | "ORDER";
+  top1: "impulsiv" | "intuitiv" | "analytisch";
+  top2: "impulsiv" | "intuitiv" | "analytisch";
+  top3: "impulsiv" | "intuitiv" | "analytisch";
+  gap1: number;
+  gap2: number;
+  spread: number;
+};
+Score-Formel
+Grundprinzip
+
+Der Team-Passungsscore reicht von 0 bis 100 Punkten.
+
+Er setzt sich aus drei Bereichen zusammen:
+
+Komponente	Max. Punkte	Bedeutung
+Top1-Match	60	gleiche Grundlogik
+Top2-Match	30	ähnliche Arbeitsweise
+Varianten-Kompatibilität	10	ähnliche strukturelle Stabilität
+1. Top1-Match
+if (team.top1 === person.top1) top1Score = 60;
+else top1Score = 0;
+
+Bedeutung:
+
+gleiche Hauptdominanz = hohe Grundanschlussfähigkeit
+verschiedene Hauptdominanz = strukturelle Grundspannung
+2. Top2-Match
+if (team.top2 === person.top2) top2Score = 30;
+else if (team.top1 === person.top2) top2Score = 15;
+else top2Score = 0;
+
+Bedeutung:
+
+gleicher Top2 = ähnliche Alltags- und Kommunikationslogik
+Person kippt sekundär in die Team-Hauptlogik = teilweise Anschlussfähigkeit
+sonst keine Zusatzpunkte
+3. Varianten-Kompatibilität
+if (team.variant === person.variant) variantScore = 10;
+else if (isCompatible(team.profileClass, person.profileClass)) variantScore = 5;
+else variantScore = 0;
+Kompatibilitätsregel
+function isCompatible(a, b) {
+  if (a === b) return true;
+
+  if (a === "DUAL" && b === "ORDER") return true;
+  if (a === "ORDER" && b === "DUAL") return true;
+
+  if (a === "CLEAR" && b === "ORDER") return true;
+  if (a === "ORDER" && b === "CLEAR") return true;
+
+  return false;
+}
+
+Bedeutung:
+
+identische Struktur = volle Stabilität
+ähnliche Strukturarchitektur = teilweise Stabilität
+sonst keine Zusatzpunkte
+BALANCED-Sonderfall
+
+Wenn mindestens eines der beiden Profile BALANCED ist, greift eine separate Logik.
+
+Der Grund: Bei ausgeglichenen Profilen verliert Top1 an Trennschärfe. Hier zählt stärker, wie breit oder fokussiert das Gegenprofil ist.
+
+Zusätzliche Kennzahl
+spread = max(profile) - min(profile)
+Spread-Klassen
+Klasse	Bedingung
+BALANCED	spread <= 5
+eng	spread <= 12
+nah	spread <= 20
+fern	spread > 20
+Sonderlogik
+Konstellation	Score	MatchCase
+beide BALANCED	95	TOP1_TOP2
+Team BALANCED + Person eng	80	TOP1_TOP2
+Team BALANCED + Person nah	70	TOP1_ONLY
+Team BALANCED + Person fern	60	TOP2_ONLY
+Person BALANCED + Team nah	75	TOP1_ONLY
+Person BALANCED + Team fern	60	TOP2_ONLY
+
+Bedeutung:
+
+ein ausgeglichenes Team kann unterschiedliche Personen eher integrieren
+eine ausgeglichene Person kann sich leichter an ein Team anpassen
+gleichzeitig entsteht mit wachsendem Spread das Risiko einer einseitigen Verschiebung
+MatchCase
+
+Der MatchCase beschreibt die strukturelle Kernkonstellation und ist die wichtigste Grundlage für die Textlogik.
+
+Definition
+if (team.top1 === person.top1 && team.top2 === person.top2)
+  matchCase = "TOP1_TOP2";
+else if (team.top1 === person.top1)
+  matchCase = "TOP1_ONLY";
+else if (team.top2 === person.top2)
+  matchCase = "TOP2_ONLY";
+else
+  matchCase = "NONE";
+Bedeutung
+MatchCase	Bedeutung
+TOP1_TOP2	gleiche Grundlogik und gleiche Arbeitsweise
+TOP1_ONLY	Grundlogik passt, Alltag unterscheidet sich
+TOP2_ONLY	Alltag zeigt Überschneidungen, Grundlogik weicht ab
+NONE	deutliche strukturelle Abweichung
+Gesamtscore
+Normale Berechnung
+score = top1Score + top2Score + variantScore
+Bei BALANCED-Konstellationen
+
+Der Score wird direkt aus der Sonderlogik gesetzt und überschreibt die Standardformel.
+
+Score → Qualitative Team-Passung
+Score	Passung zum Team	Begleitungsbedarf
+>= 85	hoch	gering
+60–84	mittel	mittel
+< 60	gering	hoch
+Aufgabenfit
+
+Der Aufgabenfit misst nicht die kulturelle Nähe zum Team, sondern den Beitrag der Person zum funktionalen Teamziel.
+
+Teamziel → Zielkomponente
+Teamziel	Zielkomponente
+umsetzung	impulsiv
+analyse	analytisch
+zusammenarbeit	intuitiv
+Berechnung
+goalKey = mapGoalToComponent(teamGoal)
+goalDiff = team[goalKey] - person[goalKey]
+Bewertung
+Bedingung	Beitrag zur Aufgabe
+person[goalKey] >= team[goalKey] - 5	hoch
+person[goalKey] >= team[goalKey] - 15	mittel
+sonst	gering
+
+Bedeutung:
+
+hoch = Person bringt für das Teamziel mindestens ein ähnliches Niveau mit
+mittel = Zielkomponente vorhanden, aber schwächer
+gering = Zielkomponente deutlich unter dem benötigten Niveau
+
+Wenn kein Teamziel gesetzt ist, wird beitragZurAufgabe = "nicht bewertet" verwendet.
+
+Systemwirkung
+
+Die Systemwirkung beschreibt, was die Person mit dem Team macht.
+
+Sie ist keine zweite Passungsstufe, sondern eine qualitative Interpretation der Konstellation.
+
+Ableitung
+if (matchCase === "TOP1_TOP2")
+  systemwirkung = "Verstärkung";
+else if (matchCase === "TOP1_ONLY")
+  systemwirkung = "Stabile Ergänzung";
+else if (matchCase === "TOP2_ONLY")
+  systemwirkung = "Ergänzung mit Spannung";
+else
+  systemwirkung = "Transformation";
+Bedeutung
+Systemwirkung	Beschreibung
+Verstärkung	Person stabilisiert die bestehende Teamlogik
+Stabile Ergänzung	Grundlogik passt, Alltag bringt Differenz
+Ergänzung mit Spannung	Person ergänzt, erzeugt aber spürbare Reibung
+Transformation	Person verändert die bestehende Teamlogik deutlich
+Gesamteinschätzung
+
+Die narrative Gesamtbewertung basiert auf der Kreuzung aus:
+
+passungZumTeam
+beitragZurAufgabe
+Bewertungsmatrix
+Passung zum Team	Beitrag zur Aufgabe	Gesamteinschätzung
+hoch	hoch	sehr passend
+hoch	mittel	gut passend
+hoch	gering	kulturell passend, fachlich begrenzt
+mittel	hoch	fachlich wertvoll, integrativ anspruchsvoller
+mittel	mittel	bedingt passend
+mittel	gering	integrierbar, aber ohne klaren Aufgabenhebel
+gering	hoch	inhaltlich interessant, kulturell riskant
+gering	mittel	spannungsreich bei begrenztem Zusatznutzen
+gering	gering	kritisch
+Ausgabedaten
+TeamCheckV4Result
+Feld	Typ	Beschreibung
+score	number	Gesamtscore 0–100
+scoreBreakdown	{ top1, top2, variant }	Punkteverteilung
+matchCase	MatchCase	TOP1_TOP2, TOP1_ONLY, TOP2_ONLY, NONE
+passungZumTeam	"hoch" | "mittel" | "gering"	qualitative Team-Passung
+beitragZurAufgabe	string	Aufgabenfit
+gesamteinschaetzung	string	Gesamt-Label
+begleitungsbedarf	string	erwarteter Steuerungsbedarf
+systemwirkung	string	Verstärkung, stabile Ergänzung, Ergänzung mit Spannung, Transformation
+gesamtbewertungText	string	narrative Gesamtbewertung
+hauptstaerke	string	größte Stärke
+hauptabweichung	string	größte Abweichung
+warumText	string	Begründung
+wirkungAlltagText	string	Wirkung im Alltag
+druckText	string	Verhalten unter Druck
+chancen	V4Block[]	Chancen
+risiken	V4Block[]	Risiken
+chancenRisikenEinordnung	string	Einordnung
+fuehrungshinweis	V4Block[] | null	Hinweise bei Führung
+risikoprognose	V4RiskPhase[]	12-Monats-Prognose
+integrationsplan	V4IntegrationPhase[]	Integrationsplan
+intWarnsignale	string[]	Warnsignale
+intLeitfragen	string[]	Leitfragen
+intVerantwortung	string	Verantwortungshinweis
+empfehlungen	V4Block[]	Handlungsempfehlungen
+teamOhnePersonText	string	Wirkung ohne die Person
+schlussfazit	string	Abschluss
+teamKontext	string	Kurzkontext Team ↔ Person
+sameDominance	boolean	gleiche Hauptdominanz
+teamPrimary	ComponentKey	dominante Teamkomponente
+personPrimary	ComponentKey	dominante Personenkomponente
+teamTriad	Triad	Teamprofil
+personTriad	Triad	Personenprofil
+Hilfstypen
+type V4Block = { title: string; text: string };
+
+type V4RiskPhase = {
+  label: string;
+  period: string;
+  text: string;
+};
+
+type V4IntegrationPhase = {
+  num: number;
+  title: string;
+  period: string;
+  ziel: string;
+  beschreibung: string;
+  praxis: string[];
+  signale: string[];
+  fuehrungstipp: string;
+  fokus: {
+    intro: string;
+    bullets: string[];
+  };
+};
+Hauptfunktion
+computeTeamCheckV4(input: TeamCheckV4Input): TeamCheckV4Result
+Ablauf
+Profile normalisieren
+Team- und Personenprofil klassifizieren
+Score berechnen
+MatchCase bestimmen
+Team-Passung ableiten
+Aufgabenfit bestimmen
+Systemwirkung ableiten
+Gesamteinschätzung bestimmen
+Textbausteine generieren
+Ergebnisobjekt zurückgeben
+Interne Funktionen
+Funktion	Aufgabe
+getProfileMeta	sortiert Profil, ermittelt top1/top2/top3, gaps, spread, Variante und Profilklasse
+computeScore	berechnet Top1-, Top2- und Variantenpunkte, inkl. BALANCED-Sonderlogik
+computeTaskFit	bestimmt den Beitrag zur Aufgabe über Zielkomponente
+computeSystemwirkung	leitet die qualitative Systemwirkung aus dem MatchCase ab
+buildIntroText	Einleitung
+buildGesamtbewertungText	narrative Gesamtbewertung
+buildHauptstaerke	Kernstärke
+buildHauptabweichung	Kernabweichung
+buildWarumText	Begründung
+buildWirkungAlltagText	Alltagswirkung
+buildChancenRisiken	Chancen und Risiken
+buildDruckText	Verhalten unter Druck
+buildFuehrungshinweis	Hinweise bei Führung
+buildRisikoprognose	12-Monats-Prognose
+buildIntegrationsplan	Integrationsplan
+buildIntegrationZusatz	Warnsignale, Leitfragen, Verantwortung
+buildEmpfehlungen	Handlungsempfehlungen
+buildTeamOhnePerson	Ohne-Person-Betrachtung
+buildSchlussfazit	Abschlussbewertung
+Textlogik
+
+Jede Textfunktion verzweigt deterministisch über:
+
+matchCase
+profileClass von Team und Person
+BALANCED-Sonderfall
+roleType
+teamGoal
+Score-Bereich
+Hauptzweige
+BALANCED × BALANCED
+Team BALANCED
+Person BALANCED
+Normalfall:
+  ├── TOP1_TOP2
+  ├── TOP1_ONLY
+  ├── TOP2_ONLY
+  └── NONE
+
+Zusätzlich:
+
+Führungskraft vs. Teammitglied
+mit Teamziel vs. ohne Teamziel
+hoher / mittlerer / geringer Score
+Bericht-Ansicht
+teamcheck-report-v4.tsx
+Detail-Bericht
+Einleitung
+Gesamtbewertung
+Kurzübersicht
+Profilvergleich
+Bedeutung der Komponenten
+Warum diese Bewertung
+Wirkung im Alltag
+Chancen und Risiken
+Risikoprognose
+Integrationsplan
+Fazit
+PDF-Export
+html2canvas
+jspdf
+automatische Seitenumbrüche über data-pdf-block
+print-optimiertes CSS
+Interaktive Seite
+teamcheck.tsx
+Bedienelemente
+Profil-Slider für Team und Person
+Kontext-Einstellungen
+Teamziel-Selector
+Tabs
+Bewertung
+Alltag
+Chancen
+Prognose
+Empfehlung
+Integration
+
+Die Seite nutzt useMemo, um computeTeamCheckV4() bei jeder Input-Änderung neu auszuführen.
+
+Dynamische Labels
+Konstante	Inhalt
+COMP_DOMAIN["impulsiv"]	Handlung und Umsetzung
+COMP_DOMAIN["intuitiv"]	Kommunikation und Abstimmung
+COMP_DOMAIN["analytisch"]	Struktur und Analyse
+COMP_SHORT["impulsiv"]	Tempo und direkte Umsetzung
+COMP_SHORT["intuitiv"]	Austausch und Miteinander
+COMP_SHORT["analytisch"]	Struktur und Genauigkeit
+COMP_ADJ["impulsiv"]	direkter und schneller
+COMP_ADJ["intuitiv"]	stärker über Austausch und Abstimmung
+COMP_ADJ["analytisch"]	genauer und strukturierter
+GOAL_LABELS["umsetzung"]	Umsetzung und Ergebnisse
+GOAL_LABELS["analyse"]	Analyse und Struktur
+GOAL_LABELS["zusammenarbeit"]	Zusammenarbeit und Kommunikation
+Regionale Lokalisierung
+
+Alle Texte werden intern mit ss geschrieben.
+
+Die Lokalisierung erfolgt anschließend über localizeDeep() aus region.tsx.
+
+Region	Verhalten
+DE / AT	ss wird zu ß
+CH	ss bleibt ss
+Versionsgeschichte
+Version	Status	Beschreibung
+V1	Legacy	grundlegende Systemwirkung und Impact Areas
+V2	Legacy	Fit-Metriken, Profilkategorisierung, Integrationsaufwand
+V3	Legacy	Orchestrierung V1 und V2, strategischer Fit
+V4	Aktiv	eigenständige Score-Engine mit Top1-, Top2- und Variantenlogik, BALANCED-Sonderfall, Systemwirkung und Text-Engine
+Kernaussage der Engine
+
+Die Entscheidungslogik des TeamCheck V4 lautet:
+
+Top1 entscheidet die Grundpassung.
+Top2 entscheidet die Arbeitslogik im Alltag.
+Die Variante entscheidet die Stabilität.
+BALANCED ist ein Sonderfall.
