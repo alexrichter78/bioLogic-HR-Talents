@@ -232,39 +232,26 @@ export default function Kurs() {
 
     setSubmitting(true);
     try {
-      const res = await fetch("/api/admin/enroll-course", {
+      const res = await fetch("/api/webhook/kurs-freischaltung", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ participants: valid.map(({ firstName, lastName, email }) => ({ firstName, lastName, email })) }),
+        body: JSON.stringify({
+          ausgeloest_von: `${user?.firstName || ""} ${user?.lastName || ""}`.trim() || user?.username || "",
+          email_absender: user?.email || "",
+          teilnehmer: valid.map(p => ({
+            vorname: p.firstName,
+            nachname: p.lastName,
+            email: p.email,
+          })),
+          anzahl_teilnehmer: valid.length,
+        }),
       });
-      const data = await res.json();
       if (res.ok) {
-        setResults(data.results || []);
+        setResults([]);
         setSubmitted(true);
-
-        const orgName = user?.companyName?.trim()
-          ? user.companyName
-          : "Keine Organisation hinterlegt. Schreiben Sie uns eine E-Mail.";
-
-        fetch("/api/webhook/kurs-freischaltung", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            organisation: orgName,
-            ausgeloest_von: `${user?.firstName || ""} ${user?.lastName || ""}`.trim() || user?.username || "",
-            email_absender: user?.email || "",
-            teilnehmer: valid.map(p => ({
-              vorname: p.firstName,
-              nachname: p.lastName,
-              email: p.email,
-            })),
-            anzahl_teilnehmer: valid.length,
-          }),
-        }).catch(() => {});
       } else {
-        setError(data.error || "Freischaltung fehlgeschlagen");
+        setError("Webhook fehlgeschlagen – bitte erneut versuchen");
       }
     } catch (err) {
       setError("Verbindungsfehler – bitte erneut versuchen");
