@@ -89,6 +89,18 @@ const componentDomain: Record<ComponentKey, string> = {
   ana: "Struktur und Analyse",
 };
 
+const componentFocus: Record<ComponentKey, string> = {
+  imp: "Umsetzungsstärke und Tempo",
+  int: "Abstimmung und Einbindung",
+  ana: "Sorgfalt und Verlässlichkeit",
+};
+
+const componentShort: Record<ComponentKey, string> = {
+  imp: "Handlungsorientierung",
+  int: "Kommunikationsfähigkeit",
+  ana: "Strukturklarheit",
+};
+
 const componentEveryday: Record<ComponentKey, string> = {
   imp: "zügiges Handeln, klare Priorisierung und direkte Umsetzung",
   int: "Abstimmung, Beziehungsgestaltung und Gespür für Dynamiken",
@@ -114,15 +126,15 @@ const componentLowRiskSentence: Record<ComponentKey, string> = {
 };
 
 const componentTopMeaning: Record<ComponentKey, string> = {
-  imp: "prägt diese Rolle am stärksten. Sie sorgt dafür, dass Themen zügig aufgegriffen, priorisiert und umgesetzt werden.",
-  int: "prägt diese Rolle am stärksten. Sie sorgt dafür, dass Zusammenarbeit, Kommunikation und die Wirkung auf andere mitgedacht werden.",
-  ana: "prägt diese Rolle am stärksten. Sie sorgt für fachliche Absicherung, saubere Abläufe und verlässliche Entscheidungen.",
+  imp: "gibt dieser Rolle ihre Richtung. Themen werden zügig aufgegriffen, klar priorisiert und in die Umsetzung gebracht.",
+  int: "steht im Mittelpunkt dieser Rolle. Zusammenarbeit, Kommunikation und die Wirkung auf andere Menschen sind hier zentral.",
+  ana: "trägt diese Rolle wesentlich. Fachliche Absicherung, saubere Abläufe und nachvollziehbare Entscheidungen stehen im Vordergrund.",
 };
 
 const componentMidMeaning: Record<ComponentKey, string> = {
-  imp: "ergänzt die Hauptlogik der Rolle. Sie hilft dabei, Entscheidungen nicht zu lange aufzuschieben und in die Umsetzung zu kommen.",
-  int: "ergänzt die Hauptlogik der Rolle. Sie unterstützt die Anschlussfähigkeit im Miteinander und erleichtert tragfähige Abstimmung.",
-  ana: "ergänzt die Hauptlogik der Rolle. Sie unterstützt Struktur, Übersicht und fachliche Nachvollziehbarkeit.",
+  imp: "kommt unterstützend dazu. Sie sorgt dafür, dass Entscheidungen nicht zu lange offen bleiben und Themen in die Umsetzung kommen.",
+  int: "kommt unterstützend dazu. Sie sorgt für Anschlussfähigkeit im Miteinander und hilft, Abstimmung verlässlich zu halten.",
+  ana: "kommt unterstützend dazu. Sie bringt Struktur, Übersicht und fachliche Nachvollziehbarkeit in die Arbeit.",
 };
 
 const componentLowMeaning: Record<ComponentKey, string> = {
@@ -265,7 +277,7 @@ function buildIntro(input: JobCheckTextInput): string {
   if (profileClass === "DUAL_TOP") {
     return [
       `Dieser Bericht zeigt, welche Persönlichkeitsstruktur für die Stelle ${input.jobTitle} besonders passend und wirksam ist.`,
-      `Die Rolle wird vor allem durch zwei gleich starke Anforderungen geprägt: ${componentDomain[top1]} und ${componentDomain[top2]}. Beide bestimmen die Arbeitsweise in hohem Maße. ${componentDomain[top3]} ist ebenfalls wichtig, wirkt aber nicht prägend.`,
+      `Die Rolle wird vor allem durch zwei gleich starke Anforderungen bestimmt: ${componentDomain[top1]} und ${componentDomain[top2]}. Beide stehen im Mittelpunkt der Arbeitsweise. ${componentShort[top3]} ist ebenfalls wichtig, steht aber klar im Hintergrund.`,
       `Die Aussagen beschreiben keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse dient als strukturierte Orientierung für die Einschätzung von Passung und Wirksamkeit in der Rolle.`,
     ].join("\n\n");
   }
@@ -280,7 +292,7 @@ function buildIntro(input: JobCheckTextInput): string {
 
   return [
     `Dieser Bericht zeigt, welche Persönlichkeitsstruktur für die Stelle ${input.jobTitle} besonders passend und wirksam ist.`,
-    `Die Rolle ist im Kern durch ${componentDomain[top1]} geprägt. ${componentDomain[top2]} ergänzt diese Hauptlogik und wird in vielen Situationen zusätzlich benötigt. ${componentDomain[top3]} spielt eine unterstützende Rolle und ist vor allem in spezifischen Situationen relevant.`,
+    `Die Rolle ist im Kern durch ${componentDomain[top1]} geprägt. ${componentFocus[top2]} kommt in vielen Situationen dazu und ist nicht zu unterschätzen. ${componentShort[top3]} spielt eine ergänzende Rolle und tritt vor allem in bestimmten Situationen in den Vordergrund.`,
     `Die Aussagen beschreiben keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse dient als strukturierte Orientierung für die Einschätzung von Passung und Wirksamkeit in der Rolle.`,
   ].join("\n\n");
 }
@@ -314,7 +326,7 @@ function buildShortDescription(input: JobCheckTextInput): string {
     return [
       taskIntro,
       `Diese Anforderungen verlangen vor allem eine Person, die ${componentMainSentence[top1]}.`,
-      `${componentDomain[top2]} und ${componentDomain[top3]} unterstützen die Hauptanforderung, prägen die Rolle aber nicht im Kern.`,
+      `${componentFocus[top2]} und ${componentShort[top3]} unterstützen die Hauptanforderung, geben aber nicht die Richtung vor.`,
     ].join(" ");
   }
 
@@ -354,10 +366,10 @@ function buildStructureProfile(input: JobCheckTextInput): string {
   }
 
   return [
-    `Diese Stelle folgt einer klaren Prioritätsstruktur.`,
+    `Diese Stelle hat eine klare Gewichtung.`,
     `Im Vordergrund steht ${componentDomain[top1]}.`,
-    `${componentDomain[top2]} ergänzt diese Hauptlogik und wird in vielen Situationen zusätzlich benötigt.`,
-    `${componentDomain[top3]} bleibt relevant, wirkt aber vor allem unterstützend.`,
+    `${componentFocus[top2]} kommt in vielen Situationen dazu und ist nicht zu unterschätzen.`,
+    `${componentShort[top3]} bleibt relevant, wirkt aber vor allem unterstützend.`,
   ].join(" ");
 }
 
@@ -397,14 +409,14 @@ function buildWorkLogic(input: JobCheckTextInput): string {
   }
 
   if (profileClass === "DUAL_TOP") {
-    return `Die Wirksamkeit dieser Stelle entsteht aus dem Zusammenspiel von ${componentDomain[top1]} und ${componentDomain[top2]}. ${componentDomain[top3]} wird situativ mitgeführt, steht aber nicht im Zentrum der Rolle.`;
+    return `Die Wirksamkeit dieser Stelle entsteht aus dem Zusammenspiel von ${componentDomain[top1]} und ${componentDomain[top2]}. ${componentShort[top3]} ist vorhanden, steht aber nicht im Zentrum der Rolle.`;
   }
 
   if (profileClass === "CLEAR_TOP") {
-    return `Die Wirksamkeit dieser Stelle entsteht vor allem über ${componentDomain[top1]}. ${componentDomain[top2]} und ${componentDomain[top3]} stützen die Hauptlogik, ohne sie zu ersetzen.`;
+    return `Die Wirksamkeit dieser Stelle entsteht vor allem über ${componentDomain[top1]}. ${componentFocus[top2]} und ${componentShort[top3]} stützen die Hauptrichtung, ohne sie zu ersetzen.`;
   }
 
-  return `Die Wirksamkeit dieser Stelle entsteht primär über ${componentDomain[top1]}. ${componentDomain[top2]} unterstützt die Umsetzung. ${componentDomain[top3]} wird vor allem in spezifischen Situationen aktiviert.`;
+  return `Die Wirksamkeit dieser Stelle entsteht primär über ${componentDomain[top1]}. ${componentFocus[top2]} unterstützt die Umsetzung im Alltag. ${componentShort[top3]} wird vor allem in spezifischen Situationen wichtig.`;
 }
 
 function buildFramework(input: JobCheckTextInput): string {
@@ -435,7 +447,7 @@ function buildFramework(input: JobCheckTextInput): string {
     );
   } else {
     parts.push(
-      `Die Rahmenbedingungen sollten die Hauptlogik in ${componentDomain[top1]} stützen. ${componentDomain[top2]} wirkt sinnvoll ergänzend. ${componentDomain[top3]} bleibt relevant, sollte aber nicht versehentlich zur Führungslogik der Rolle werden.`
+      `Die Rahmenbedingungen sollten die Hauptlogik in ${componentDomain[top1]} stützen. ${componentFocus[top2]} wirkt sinnvoll ergänzend. ${componentShort[top3]} bleibt relevant, sollte aber nicht versehentlich zur Führungslogik der Rolle werden.`
     );
   }
 
@@ -460,7 +472,7 @@ function buildSuccessFocus(input: JobCheckTextInput): string {
   }
 
   if (focus === top2) {
-    return `Der Erfolgsfokus liegt auf ${componentDomain[focus]}. Dieser Bereich ist im Profil unterstützend angelegt und muss im Alltag bewusst mitgetragen werden, damit er ausreichend Wirkung entfaltet.`;
+    return `Der Erfolgsfokus liegt auf ${componentDomain[focus]}. Dieser Bereich ist im Profil unterstützend angelegt. Im Alltag braucht er etwas mehr Aufmerksamkeit, damit er nicht zu kurz kommt.`;
   }
 
   if (focus === top3) {
@@ -479,10 +491,10 @@ function buildBehaviourDaily(input: JobCheckTextInput): string {
   }
 
   if (profileClass === "DUAL_TOP") {
-    return `Im regulären Arbeitsalltag zeigt sich die Stelle vor allem über ${componentEveryday[top1]} und ${componentEveryday[top2]}. ${componentDomain[top3]} ist ebenfalls vorhanden, tritt aber im Vergleich weniger stark in den Vordergrund.`;
+    return `Im regulären Arbeitsalltag zeigt sich die Stelle vor allem über ${componentEveryday[top1]} und ${componentEveryday[top2]}. ${componentShort[top3]} ist ebenfalls vorhanden, tritt aber im Vergleich deutlich seltener in den Vordergrund.`;
   }
 
-  return `Im regulären Arbeitsalltag zeigt sich die Stelle vor allem über ${componentEveryday[top1]}. ${componentDomain[top2]} ergänzt diese Grundrichtung. ${componentDomain[top3]} bleibt eher nachgeordnet.`;
+  return `Im regulären Arbeitsalltag zeigt sich die Stelle vor allem über ${componentEveryday[top1]}. ${componentFocus[top2]} kommt ergänzend dazu. ${componentShort[top3]} bleibt eher nachgeordnet.`;
 }
 
 function buildBehaviourPressure(input: JobCheckTextInput): string {
@@ -547,7 +559,7 @@ function buildTeamImpact(input: JobCheckTextInput): string {
     return `Im Team entsteht Wirkung vor allem über Vielseitigkeit und Anpassungsfähigkeit. Die Rolle kann je nach Situation unterschiedlich auftreten. Die Herausforderung besteht darin, dabei dennoch berechenbar und verlässlich zu bleiben.`;
   }
 
-  return `Im Team entsteht Wirkung vor allem über ${componentDomain[top1]}. ${componentDomain[top2]} modifiziert diese Wirkung und macht sie anschlussfähiger für das Umfeld.`;
+  return `Im Team entsteht Wirkung vor allem über ${componentDomain[top1]}. Das merkt man vor allem daran, dass ${componentFocus[top1]} im Alltag deutlich spürbar ist. ${componentFocus[top2]} kommt ergänzend dazu und macht die Rolle für das Umfeld zugänglich.`;
 }
 
 function buildTensionFields(input: JobCheckTextInput): string[] {
@@ -673,7 +685,7 @@ function buildMiscastRisks(input: JobCheckTextInput): Array<{
       label: `Wenn ${componentLabel[top2]} die Führung übernimmt`,
       bullets: [
         `Die unterstützende Komponente verdrängt die eigentliche Hauptlogik der Rolle.`,
-        `Die Stelle wirkt dann weniger klar und verliert ihre natürliche Prioritätsstruktur.`,
+        `Die Stelle wirkt dann weniger klar und verliert ihre natürliche Gewichtung.`,
         `Entscheidungen und Verhalten verschieben sich spürbar von der Kernanforderung weg.`,
         `Dadurch wird die Rolle anschlussfähig, aber nicht mehr konsequent in ihrer eigentlichen Wirkung.`,
       ],
