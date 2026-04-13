@@ -1068,7 +1068,11 @@ export async function registerRoutes(
         orgName = currentUser.companyName;
       }
 
-      const payload = { ...req.body, organisation: orgName };
+      const payload = {
+        ...req.body,
+        organisation: orgName,
+        bioCheck_Secret: currentUser?.bioCheckSecret || "",
+      };
 
       await fetch("https://hooks.zapier.com/hooks/catch/19864960/u7fw2jw/", {
         method: "POST",
