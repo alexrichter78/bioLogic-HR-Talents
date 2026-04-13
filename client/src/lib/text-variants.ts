@@ -41,11 +41,11 @@ export const textVariants = {
     SOFT_YELLOW: [
       'Die Person ist in wesentlichen Teilen anschlussfähig, bildet die Rolle aber nicht durchgehend stabil ab.',
       'Es gibt eine erkennbare Grundlage für die Rolle. Gleichzeitig entstehen in einem wichtigen Punkt Abweichungen.',
-      'Die Person passt in Teilen zur Stelle, arbeitet jedoch nicht durchgehend in der geforderten Logik.',
+      'Die Person passt in Teilen zur Stelle, arbeitet jedoch nicht durchgehend in der geforderten Form.',
       'Die Passung ist möglich, aber nicht stabil von selbst. Im Alltag braucht es bewusste Führung.',
     ],
     MISMATCH: [
-      'Die Person passt in ihrer Arbeitslogik nicht zur Rolle.',
+      'Die Person arbeitet anders, als die Rolle es verlangt.',
       'Die Stelle verlangt eine andere Art zu arbeiten, als die Person sie mitbringt.',
       'Die Unterschiede sind zu groß, um von einer tragfähigen Passung zu sprechen.',
       'Im Alltag würde die Rolle voraussichtlich anders gelebt als vorgesehen.',
@@ -200,10 +200,10 @@ export const textVariants = {
       SOFT_YELLOW: [
         'Das Entscheidungsverhalten ist teilweise anschlussfähig, aber nicht durchgehend rollengerecht.',
         'In Entscheidungen zeigen sich relevante Unterschiede zur Rollenlogik.',
-        'Die Person trifft Entscheidungen in Teilen passend, aber nicht stabil in derselben Logik wie die Rolle.',
+        'Die Person trifft Entscheidungen in Teilen passend, aber in der Umsetzung aber nicht stabil in der geforderten Form.',
       ],
       MISMATCH: [
-        'Das Entscheidungsverhalten folgt einer anderen Logik als die Rolle.',
+        'Die Person trifft Entscheidungen anders, als die Stelle es verlangt.',
         'Entscheidungen würden im Alltag anders getroffen, als die Stelle es verlangt.',
         'Die Art zu entscheiden passt nicht zur Aufgabenlogik der Rolle.',
       ],
@@ -244,10 +244,10 @@ export const textVariants = {
       SOFT_YELLOW: [
         'Die Kommunikation ist teilweise passend, trifft die erwartete Form jedoch nicht durchgehend.',
         'Im Austausch zeigen sich Unterschiede, die im Alltag spürbar werden.',
-        'Die Kommunikation ist anschlussfähig, aber nicht stabil in der Logik der Rolle.',
+        'Die Kommunikation ist anschlussfähig, aber nicht stabil in der erwarteten Form.',
       ],
       MISMATCH: [
-        'Die Kommunikationslogik unterscheidet sich deutlich von der Rolle.',
+        'Die Person kommuniziert anders, als die Stelle es erwartet.',
         'Austausch und Abstimmung verlaufen anders, als die Stelle es verlangt.',
         'Der Kommunikationsstil passt nicht zur erwarteten Form der Rolle.',
       ],
@@ -269,7 +269,7 @@ export const textVariants = {
         'Die Teamwirkung passt in Teilen, bleibt aber nicht stabil in derselben Richtung.',
       ],
       MISMATCH: [
-        'Die kulturelle Wirkung würde die gewünschte Teamrichtung spürbar verändern.',
+        'Die Person würde das Team in eine andere Richtung entwickeln als die Stelle es vorsieht.',
         'Zusammenarbeit entwickelt sich anders, als die Rolle es vorsieht.',
         'Die Person setzt im Team eine andere Richtung als die Stelle verlangt.',
       ],
@@ -285,11 +285,11 @@ export const textVariants = {
       ],
       SOFT_YELLOW: [
         'Die Führungswirkung ist grundsätzlich anschlussfähig, aber nicht durchgehend in der geforderten Form.',
-        'Die Führung passt in Teilen zur Rolle, bleibt aber nicht stabil in derselben Logik.',
+        'Die Führung passt in Teilen zur Rolle, passt in Teilen, bleibt aber nicht stabil in der erwarteten Form.',
       ],
       MISMATCH: [
-        'Die Führungswirkung bildet die geforderte Logik nicht ausreichend ab.',
-        'Die Art zu führen passt nicht zur Logik, die die Stelle verlangt.',
+        'Die Führungswirkung entspricht nicht dem, was die Stelle braucht.',
+        'Die Art zu führen passt nicht zu den Anforderungen der Stelle.',
       ],
     } satisfies Record<VariantLevel, string[]>,
   },

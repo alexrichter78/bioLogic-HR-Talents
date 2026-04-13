@@ -1,0 +1,252 @@
+Sprachlich ist der MatchCheck solide, aber noch schwächer als dein letzter TeamCheck.
+
+Mein klares Urteil:
+
+Insgesamt
+verständlich: ja
+professionell: ja
+zu technisch / mechanisch: stellenweise ja
+leicht KI-/Template-haft: ja
+kundenfähig: grundsätzlich ja, aber noch nicht optimal
+
+Er wirkt im Moment mehr wie ein sauber gebauter Diagnosebericht als wie ein wirklich natürlicher Management-Report.
+
+Was gut ist
+1. Die Grundsprache ist klar
+
+Man versteht schnell:
+
+Passung ist kritisch
+Rolle und Person weichen deutlich ab
+Führungsaufwand ist hoch
+stabile Besetzung ist fraglich
+
+Das ist eindeutig und nicht verschwurbelt.
+
+2. Die Struktur ist sauber
+
+Die Gliederung funktioniert:
+
+Gesamtbewertung
+Profilvergleich
+Alltag
+Druck
+Risikoprognose
+Integrationsplan
+
+Das liest sich logisch.
+
+3. Der Ton ist ernst und professionell
+
+Der Bericht klingt nicht werblich und nicht beliebig.
+Er wirkt wie ein echtes Arbeitsdokument.
+
+Wo die Sprache noch nicht gut genug ist
+1. Er klingt stärker nach Maschine als der TeamCheck
+
+Vor allem diese Formulierungen machen ihn härter und künstlicher:
+
+„Die Profile unterscheiden sich in ihrer Struktur oder Ausprägung zu deutlich“
+„Das Entscheidungsverhalten folgt einer anderen Logik als die Rolle“
+„Die Art zu führen passt nicht zur Logik, die die Stelle verlangt“
+„Die kulturelle Wirkung würde die gewünschte Teamrichtung spürbar verändern“
+
+Das ist nicht falsch, aber sehr gebaut.
+
+👉 Das klingt mehr nach Auswertungsengine als nach natürlicher Geschäftssprache.
+
+2. Zu viele Wiederholungen der gleichen Aussage
+
+Immer wieder kommt in anderer Form:
+
+passt nicht
+weicht ab
+andere Logik
+kritisch
+hoher Führungsaufwand
+
+Das ist inhaltlich korrekt, aber sprachlich monoton.
+
+Besonders in:
+
+Managementkurzfazit
+Warum dieses Ergebnis
+Wirkung im Arbeitsalltag
+Risikoprognose
+Schlussbewertung
+
+Der Bericht sagt oft mehrfach dasselbe mit leicht anderen Worten.
+
+3. Einige Sätze sind zu abstrakt
+
+Zum Beispiel:
+
+„Die Stelle Fachinformatiker Systemintegration und die Person arbeiten nicht in derselben Rollendynamik.“
+
+Das versteht man irgendwie, aber es klingt nicht natürlich.
+Ein echter Leser würde eher sagen:
+
+„Die Person arbeitet deutlich anders, als es die Rolle verlangt.“
+
+Oder:
+
+„Die Arbeitsweise der Person passt nicht stabil zu den Anforderungen der Rolle.“
+
+Das ist klarer und menschlicher.
+
+4. Die Personenbeschreibung klingt teilweise unnatürlich
+
+Zum Beispiel:
+
+„Die Person entscheidet sowohl kontextbezogen und abstimmungsorientiert als auch analytisch und prüforientiert.“
+
+oder
+
+„Die Person führt parallel über Ordnung und Verlässlichkeit und Beziehungsgestaltung und Kommunikation.“
+
+Das klingt sprachlich holprig.
+„sowohl ... als auch ...“ plus diese langen Nomenketten wirken stark gebaut.
+
+Natürlicher wäre eher:
+
+Die Person entscheidet je nach Situation entweder stärker über Abstimmung und Einbindung oder über Analyse und Sorgfalt.
+
+Und:
+
+Die Person führt nicht nur über Struktur und Verlässlichkeit, sondern auch stark über Beziehung und Abstimmung.
+
+Ist er verständlich?
+Ja, aber:
+
+nicht überall gleich gut.
+
+Gut verständlich:
+Gesamtbewertung
+Risikoprognose
+30-Tage-Plan
+Weniger gut:
+Wirkung im Arbeitsalltag
+einzelne Soll-/Ist-Beschreibungen
+Managementkurzfazit
+
+Da ist er teilweise zu technisch und etwas sperrig.
+
+Klingt er nach KI?
+Mein ehrliches Urteil:
+
+leicht ja
+
+Nicht schlimm. Nicht peinlich. Aber leicht.
+
+Warum?
+
+Weil er oft so klingt, als würde eine Engine pro Abschnitt exakt dieselbe Logik in Text übersetzen.
+
+Typische Marker:
+
+sehr gleiche Satzmuster
+viele abstrakte Begriffe
+immer wieder „passt nicht zur Logik“
+hohe sprachliche Gleichförmigkeit
+
+Der Bericht klingt dadurch nicht fake, aber etwas mechanisch.
+
+Was im Vergleich zum TeamCheck auffällt
+
+Der TeamCheck war zuletzt:
+
+weicher
+natürlicher
+näher an echter Business-Sprache
+
+Der MatchCheck ist aktuell:
+
+technischer
+härter
+diagnostischer
+stärker templatehaft
+
+Das kann teilweise gewollt sein.
+Aber wenn du dieselbe Qualitätslinie willst wie beim TeamCheck, braucht der MatchCheck noch Feinschliff.
+
+Die 4 größten Sprachprobleme
+1. Zu oft „Logik“
+
+Das Wort taucht sehr oft auf:
+
+Arbeitslogik
+Prioritätslogik
+Rollendynamik
+Logik der Stelle
+
+👉 Das ist fachlich okay, aber sprachlich zu viel.
+
+Besser auch mal:
+
+Arbeitsweise
+Herangehensweise
+Schwerpunkt
+Entscheidungsstil
+Anforderungen der Rolle
+2. Zu viele Nominalformulierungen
+
+Beispiele:
+
+Struktur / Analyse
+Führungswirkung
+Kommunikationsverhalten
+Wirkung auf Zusammenarbeit und Teamkultur
+
+Das passt als Überschrift.
+Aber im Fließtext sollte es öfter natürlicher klingen.
+
+3. Zu viele harte Urteile hintereinander
+
+„kritisch“, „nicht geeignet“, „hoch“, „deutlich“, „nicht wahrscheinlich“
+
+Das ist okay, wenn das Ergebnis klar negativ ist.
+Aber dadurch wirkt der Text schnell hart und etwas schematisch.
+
+4. Zu wenig echte Alltagssprache
+
+Es fehlt stellenweise dieses:
+
+woran merkt man das konkret?
+wie zeigt sich das im täglichen Arbeiten?
+was würde man beobachten?
+
+Da, wo du konkret wirst, wird der Text besser.
+
+Mein Gesamturteil
+Sprachlich:
+
+brauchbar, aber noch nicht rund
+
+Bewertung:
+Verständlichkeit: 7,5/10
+Natürlichkeit: 6,5/10
+Professionalität: 8/10
+KI-Freiheit: 6,5/10
+Was ich konkret verbessern würde
+Sofort verbessern
+die Soll-/Ist-Texte in Abschnitt 03
+Managementkurzfazit
+Schlussbewertung in Abschnitt 06
+Etwas entschärfen
+weniger „Logik“
+weniger „passt nicht zur Logik der Rolle“
+weniger abstrakte Nomenketten
+Beibehalten
+Grundton
+Klarheit
+Ernsthaftigkeit
+30-Tage-Plan
+Kurzfazit
+
+Der MatchCheck ist nicht schlecht.
+Aber sprachlich ist er noch mechanischer und etwas künstlicher als dein aktueller TeamCheck.
+
+Der Hauptunterschied ist:
+
+TeamCheck klingt inzwischen eher nach Bericht.
+MatchCheck klingt noch eher nach Engine-Ausgabe.

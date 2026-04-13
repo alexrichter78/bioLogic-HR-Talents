@@ -322,7 +322,7 @@ export function buildDualDominanceText(args: {
 }
 
 function buildHeaderIntro(): string {
-  return 'Diese Passungsanalyse zeigt, wie gut Person und Position in ihrer Arbeitslogik zusammenpassen. Sie macht sichtbar, wo Übereinstimmungen bestehen, wo Abweichungen entstehen und welcher Führungs- oder Entwicklungsaufwand daraus im Alltag zu erwarten ist.';
+  return 'Diese Analyse zeigt, wie gut Person und Position zusammenpassen. Sie macht sichtbar, wo Arbeitsweise und Anforderung übereinstimmen, wo Abweichungen entstehen und was das für den Führungs- und Integrationsaufwand im Alltag bedeutet.';
 }
 
 function buildSummary(input: MatchTextInput): SummaryBlock {
@@ -356,18 +356,18 @@ function buildSummary(input: MatchTextInput): SummaryBlock {
   } else if (level === 'SOFT_YELLOW') {
     profileCompareIntro = 'Die Grundstruktur ist grundsätzlich anschlussfähig. In einzelnen Bereichen zeigen sich jedoch erkennbare Abweichungen.';
   } else {
-    profileCompareIntro = 'Die Profile unterscheiden sich in ihrer Struktur oder Ausprägung zu deutlich für eine stabile Besetzung.';
+    profileCompareIntro = 'Die Arbeitsweise der Person unterscheidet sich zu deutlich von dem, was die Stelle verlangt.';
   }
 
   let finalText = '';
   if (level === 'PERFECT') {
-    finalText = 'Die Arbeitslogik der Person ist deckungsgleich mit der Stellenanforderung. Aufgaben, Entscheidungen und Arbeitsstil sind stimmig.';
+    finalText = 'Die Person passt zur Stelle. Arbeitsweise, Entscheidungen und Arbeitsstil stimmen überein.';
   } else if (level === 'EXACT_YELLOW') {
     finalText = `Die Stelle ${input.roleName} erfordert ${COMP_NOUN[sp.rDom.top]} und ${COMP_NOUN[sp.rDom.second]} gleichermaßen. Die Person arbeitet in dieselbe Richtung, die Gewichtung der Nebenbereiche ist jedoch nicht vollständig deckungsgleich. Mit gezielter Führung und klarer Struktur lässt sich die Zusammenarbeit stabilisieren.`;
   } else if (level === 'SOFT_YELLOW') {
-    finalText = `Die Stelle ${input.roleName} wird von der Person in wesentlichen Teilen abgebildet. Gleichzeitig bestehen strukturelle Unterschiede, die im Alltag bewusst geführt werden müssen.`;
+    finalText = `Die Stelle ${input.roleName} wird von der Person in wesentlichen Teilen abgebildet. Gleichzeitig bestehen strukturelle Unterschiede, die im Alltag Reibung erzeugen können und die Führung im Blick behalten muss.`;
   } else {
-    finalText = `Die Stelle ${input.roleName} und die Person arbeiten nicht in derselben Rollendynamik. Eine stabile Besetzung ist unter den gegebenen Bedingungen nicht wahrscheinlich.`;
+    finalText = `Die Person arbeitet deutlich anders, als es die Stelle ${input.roleName} verlangt. Eine stabile Besetzung ist unter diesen Bedingungen nicht wahrscheinlich.`;
   }
 
   return { summary, managementSummary, whyResult, risks, profileCompareIntro, finalText };
@@ -426,9 +426,9 @@ function personTextForArea(area: ImpactArea['key'], input: MatchTextInput): stri
     if (sp.candIsBalFull) return 'Die Person entscheidet breit abgestützt und wägt verschiedene Perspektiven gleichmäßig ab.';
     if (sp.candIsDualDom) {
       const pair = [cTop, cSecond].sort().join('|');
-      if (pair === 'A|N') return 'Die Person entscheidet sowohl kontextbezogen und abstimmungsorientiert als auch analytisch und prüforientiert. Je nach Situation überwiegt Einbindung oder Sorgfalt.';
-      if (pair === 'A|I') return 'Die Person entscheidet sowohl analytisch und prüforientiert als auch handlungsorientiert. Je nach Situation überwiegt Tempo oder Sorgfalt.';
-      return 'Die Person entscheidet sowohl handlungsorientiert als auch kontextbezogen und abstimmungsorientiert. Je nach Situation überwiegt Tempo oder Einbindung.';
+      if (pair === 'A|N') return 'Die Person entscheidet je nach Situation entweder stärker über Abstimmung und Einbindung oder über Analyse und Sorgfalt.';
+      if (pair === 'A|I') return 'Die Person entscheidet je nach Situation entweder über gründliche Prüfung oder über schnelles Handeln.';
+      return 'Die Person entscheidet je nach Situation entweder über Tempo und direkte Umsetzung oder über Abstimmung und Einbindung.';
     }
     if (cTop === 'I') return 'Die Person entscheidet schnell, direkt und umsetzungsorientiert.';
     if (cTop === 'N') return 'Die Person entscheidet kontextbezogen, bezieht das Umfeld ein und sucht Abstimmung.';
@@ -623,7 +623,7 @@ function buildStress(input: MatchTextInput): StressBlock {
 function buildTimeline(input: MatchTextInput): string[] {
   if (input.fitSubtype === 'PERFECT') {
     return [
-      `Die Stelle ${input.roleName} verlangt ${COMP_SHORT[dominanceModeOf(input.roleProfile).top]}. Die Arbeitslogik passt. Die Einarbeitung verläuft voraussichtlich reibungslos. Nur in Einzelfällen ist Nachjustierung nötig.`,
+      `Die Stelle ${input.roleName} verlangt ${COMP_SHORT[dominanceModeOf(input.roleProfile).top]}. Die Arbeitsweise passt. Die Einarbeitung verläuft voraussichtlich reibungslos. Nur in Einzelfällen ist Nachjustierung nötig.`,
       'Die Stellenanforderungen werden stabil abgedeckt. In den Nebenbereichen treten kleinere Abweichungen auf. Regelmäßige Zielgespräche helfen, diese frühzeitig zu erkennen.',
       'Die Stellenanforderungen werden langfristig stabil erfüllt. Der Führungsaufwand bleibt gering. Halbjährliche Überprüfungen genügen.',
     ];
@@ -631,7 +631,7 @@ function buildTimeline(input: MatchTextInput): string[] {
   if (input.fitLabel === 'Nicht geeignet') {
     return [
       `Die Stelle ${input.roleName} verlangt ${COMP_SHORT[dominanceModeOf(input.roleProfile).top]}. Die Person gewichtet die Arbeitsschwerpunkte deutlich anders. Bereits in der Einarbeitung werden die Unterschiede sichtbar und erfordern intensive Begleitung.`,
-      'Die Abweichungen werden im Alltag zunehmend spürbar. Ohne sehr enge Führung verschieben sich Prioritäten und Arbeitsweise weiter von der Stellenlogik weg. Der Steuerungsaufwand ist hoch.',
+      'Die Abweichungen werden im Alltag zunehmend spürbar. Ohne sehr enge Führung verschieben sich Prioritäten und Arbeitsweise weiter von der Stellenanforderung weg. Das kostet Führungszeit und erzeugt im Team Reibung.',
       'Langfristig ist eine stabile Passung nur mit dauerhaft hohem Führungsaufwand erreichbar. Die Frage, ob die Besetzung tragfähig bleibt, sollte regelmäßig und kritisch überprüft werden.',
     ];
   }
@@ -659,7 +659,7 @@ function buildDevelopment(input: MatchTextInput): DevelopmentBlock {
       subtitle: '1 von 3 Hoher Aufwand, Ergebnis unsicher',
       scoreText: 'hoch',
       text1: `Die Stelle verlangt ${COMP_NOUN[dominanceModeOf(input.roleProfile).top]} und ${COMP_NOUN[dominanceModeOf(input.roleProfile).second]} gleichermaßen. Die Person gewichtet ihre Arbeitsschwerpunkte deutlich anders. Eine Anpassung ist nur mit hohem und dauerhaftem Führungsaufwand möglich.`,
-      text2: `Die Stelle ${input.roleName} erfordert eine Gewichtung, die sich von der Arbeitsweise der Person grundlegend unterscheidet. Ohne intensive Steuerung ist eine stabile Besetzung nicht wahrscheinlich.`,
+      text2: `Die Anforderungen der Stelle ${input.roleName} und die Arbeitsweise der Person passen nicht zusammen. Ohne enge Führung ist eine stabile Besetzung nicht wahrscheinlich.`,
     };
   }
 
@@ -769,7 +769,7 @@ function buildIntegrationPlan(input: MatchTextInput): IntegrationPhase[] {
         phase: 1,
         title: 'Orientierung',
         timeframe: 'Tag 1–10',
-        goal: `Erwartungen und Arbeitslogik der Stelle ${input.roleName} verstehen und Unterschiede erkennen.`,
+        goal: `Erwartungen und Anforderungen der Stelle ${input.roleName} verstehen und Unterschiede erkennen.`,
         items: [`Klärung von Stelle, Erwartungshaltung und Erfolgskriterien in ${input.roleName}.`, 'Transparenz über bestehende Abläufe, Entscheidungswege und Qualitätsstandards.', 'Frühe Abstimmung von Prioritäten und gegenseitigen Erwartungen.', 'Klärung operativer Prozesse und Schnittstellen.'],
         focusTitle: 'Worauf es ankommt',
         focusText: `${personBeschreibung} Die Stelle setzt andere Schwerpunkte. Zu klären ist:`,
