@@ -190,6 +190,27 @@ function isCompatibleVariant(a: string, b: string): boolean {
 }
 
 
+function getSpreadClass(profile: Triad): "balanced" | "eng" | "nah" | "fern" {
+  const sorted = sortTriad(profile);
+  const spread = sorted[0].value - sorted[2].value;
+  if (spread <= 5) return "balanced";
+  if (spread <= 12) return "eng";
+  if (spread <= 20) return "nah";
+  return "fern";
+}
+
+function deriveMatchCase(teamProfile: Triad, personProfile: Triad): MatchCase {
+  const tTop1 = getTop1(teamProfile);
+  const tTop2 = getTop2(teamProfile);
+  const pTop1 = getTop1(personProfile);
+  const pTop2 = getTop2(personProfile);
+
+  if (tTop1 === pTop1 && tTop2 === pTop2) return "TOP1_TOP2";
+  if (tTop1 === pTop1) return "TOP1_ONLY";
+  if (tTop2 === pTop2) return "TOP2_ONLY";
+  return "NONE";
+}
+
 function computeScore(
   teamProfile: Triad,
   personProfile: Triad
@@ -202,24 +223,19 @@ function computeScore(
   }
 
   if (tClass === "BALANCED") {
-    const pTop1 = getTop1(personProfile);
-    const tSorted = sortTriad(teamProfile);
-    const personSpread = sortTriad(personProfile)[0].value - sortTriad(personProfile)[2].value;
-    if (personSpread <= 12) {
+    const pSpread = getSpreadClass(personProfile);
+    if (pSpread === "balanced" || pSpread === "eng") {
       return { score: 80, top1: 45, top2: 25, variant: 10, matchCase: "TOP1_TOP2" };
     }
-    const closestDist = Math.abs(round(teamProfile[pTop1]) - round(personProfile[pTop1]));
-    if (closestDist <= 8) {
+    if (pSpread === "nah") {
       return { score: 70, top1: 40, top2: 20, variant: 10, matchCase: "TOP1_ONLY" };
     }
     return { score: 60, top1: 30, top2: 20, variant: 10, matchCase: "TOP2_ONLY" };
   }
 
   if (pClass === "BALANCED") {
-    const tTop1 = getTop1(teamProfile);
-    const personVal = round(personProfile[tTop1]);
-    const teamVal = round(teamProfile[tTop1]);
-    if (Math.abs(personVal - teamVal) <= 8) {
+    const tSpread = getSpreadClass(teamProfile);
+    if (tSpread === "balanced" || tSpread === "eng" || tSpread === "nah") {
       return { score: 75, top1: 45, top2: 20, variant: 10, matchCase: "TOP1_ONLY" };
     }
     return { score: 60, top1: 30, top2: 20, variant: 10, matchCase: "TOP2_ONLY" };
@@ -230,30 +246,18 @@ function computeScore(
   const pTop1 = getTop1(personProfile);
   const pTop2 = getTop2(personProfile);
 
-  let top1Score = 0;
+  let top1Score = tTop1 === pTop1 ? 60 : 0;
+
   let top2Score = 0;
-  let variantScore = 0;
-
-  if (tTop1 === pTop1) {
-    top1Score = 60;
-  } else {
-    const pSorted = sortTriad(personProfile);
-    const pTop2Gap = pSorted[0].value - pSorted[1].value;
-    if (pTop2Gap < 3 && pTop2 === tTop1) {
-      top1Score = 45;
-    }
-  }
-
   if (tTop2 === pTop2) {
     top2Score = 30;
   } else if (tTop1 === pTop2) {
     top2Score = 15;
-  } else if (tTop2 === pTop1 && top1Score === 0) {
-    top2Score = 10;
   }
 
   const tVar = getVariantKey(teamProfile);
   const pVar = getVariantKey(personProfile);
+  let variantScore = 0;
   if (tVar === pVar) {
     variantScore = 10;
   } else if (isCompatibleVariant(tVar, pVar)) {
@@ -261,12 +265,7 @@ function computeScore(
   }
 
   const score = top1Score + top2Score + variantScore;
-
-  let matchCase: MatchCase;
-  if (top1Score >= 45 && top2Score >= 15) matchCase = "TOP1_TOP2";
-  else if (top1Score >= 45) matchCase = "TOP1_ONLY";
-  else if (top2Score >= 15) matchCase = "TOP2_ONLY";
-  else matchCase = "NONE";
+  const matchCase = deriveMatchCase(teamProfile, personProfile);
 
   return { score, top1: top1Score, top2: top2Score, variant: variantScore, matchCase };
 }

@@ -75,27 +75,74 @@ Der Passungsscore setzt sich aus drei Komponenten zusammen (max. 100 Punkte):
 | `CLEAR` | gap1 > 5 UND gap2 ≤ 5 | Einer klar oben, zwei ähnlich unten |
 | `ORDER` | gap1 > 5 UND gap2 > 5 | Klare Reihenfolge aller drei |
 
+### Spread-Klassen (für BALANCED-Sonderfall)
+
+```
+spread = max(profile) - min(profile)
+
+balanced  spread ≤ 5
+eng       spread ≤ 12
+nah       spread ≤ 20
+fern      spread > 20
+```
+
 ### BALANCED-Sonderfall
 
-Wenn ein oder beide Profile BALANCED sind, greift eine separate Scoring-Logik:
+Wenn ein oder beide Profile BALANCED sind, greift eine separate Scoring-Logik. Die Klassifikation des Gegenprofils erfolgt über dessen Spread:
 
 | Konstellation | Score | Match-Case |
 |---|---|---|
 | Beide BALANCED | 95 | TOP1_TOP2 |
-| Team BAL + Person eng | 80 | TOP1_TOP2 |
+| Team BAL + Person balanced/eng | 80 | TOP1_TOP2 |
 | Team BAL + Person nah | 70 | TOP1_ONLY |
 | Team BAL + Person fern | 60 | TOP2_ONLY |
-| Person BAL + Team nah | 75 | TOP1_ONLY |
+| Person BAL + Team balanced/eng/nah | 75 | TOP1_ONLY |
 | Person BAL + Team fern | 60 | TOP2_ONLY |
 
 ### 4 Text-Fälle (MatchCase)
 
+MatchCase wird durch **direkten Vergleich** der Komponenten bestimmt:
+
+```
+if (team.top1 === person.top1 && team.top2 === person.top2) → TOP1_TOP2
+else if (team.top1 === person.top1) → TOP1_ONLY
+else if (team.top2 === person.top2) → TOP2_ONLY
+else → NONE
+```
+
 | Case | Bedingung | Bedeutung |
 |---|---|---|
-| `TOP1_TOP2` | top1 ≥ 45 UND top2 ≥ 15 | Sehr hohe Passung |
-| `TOP1_ONLY` | top1 ≥ 45 | Grundlogik passt, Arbeitsweise verschieden |
-| `TOP2_ONLY` | top2 ≥ 15 | Alltagsverhalten ähnlich, Grundlogik verschieden |
-| `NONE` | sonst | Deutliche Abweichung |
+| `TOP1_TOP2` | team.top1 = person.top1 UND team.top2 = person.top2 | Gleiche Grundlogik und Arbeitsweise |
+| `TOP1_ONLY` | team.top1 = person.top1 | Grundlogik passt, Arbeitsweise verschieden |
+| `TOP2_ONLY` | team.top2 = person.top2 | Alltagsverhalten ähnlich, Grundlogik verschieden |
+| `NONE` | keine Übereinstimmung | Deutliche Abweichung |
+
+### Variant-Kompatibilität
+
+```
+if gleiche Variante → 10 Punkte
+else if DUAL ↔ ORDER → 5 Punkte
+else if CLEAR ↔ ORDER → 5 Punkte
+else → 0 Punkte
+```
+
+### Aufgabenfit (computeTaskFit)
+
+```
+goalKey = Zielkomponente des Teamziels
+if person[goalKey] >= team[goalKey] - 5  → hoch
+else if person[goalKey] >= team[goalKey] - 15  → mittel
+else → gering
+```
+
+### Systemwirkung
+
+```
+TOP1_TOP2  → Verstärkung
+TOP1_ONLY  → Stabile Ergänzung
+TOP2_ONLY  → Ergänzung mit Spannung
+NONE       → Transformation
+```
 
 ### Score → Qualitative Bewertung
 

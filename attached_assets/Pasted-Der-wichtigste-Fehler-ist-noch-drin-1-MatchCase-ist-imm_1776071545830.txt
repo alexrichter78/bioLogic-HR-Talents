@@ -1,0 +1,108 @@
+Der wichtigste Fehler ist noch drin
+1. MatchCase ist immer noch falsch definiert
+
+Du schreibst:
+
+TOP1_TOP2 = top1 ≥ 45 UND top2 ≥ 15
+TOP1_ONLY = top1 ≥ 45
+TOP2_ONLY = top2 ≥ 15
+
+Das ist nicht korrekt, weil das keine Vergleichslogik zwischen Team und Person ist, sondern eine absolute Wertelogik.
+
+So darf MatchCase nicht definiert werden.
+
+Richtig wäre:
+if (team.top1 === person.top1 && team.top2 === person.top2)
+  matchCase = "TOP1_TOP2";
+else if (team.top1 === person.top1)
+  matchCase = "TOP1_ONLY";
+else if (team.top2 === person.top2)
+  matchCase = "TOP2_ONLY";
+else
+  matchCase = "NONE";
+Warum das wichtig ist
+
+Sonst kann eine Person hohe Werte haben und trotzdem strukturell nicht zum Team passen, aber dein MatchCase würde trotzdem „hoch“ signalisieren.
+
+👉 Das musst du unbedingt ändern.
+
+Zweiter echter Fehler
+2. BALANCED-Sonderfall ist noch nicht deterministisch genug
+
+Du schreibst:
+
+Person eng
+Person nah
+Person fern
+Team fern
+
+Aber diese Begriffe sind in der Doku nicht definiert.
+
+Ohne Definition ist das später nicht sauber programmierbar.
+
+Das muss rein:
+spread = max(profile) - min(profile)
+
+if spread <= 5   -> balanced
+if spread <= 12  -> eng
+if spread <= 20  -> nah
+else             -> fern
+
+Erst dann ist die Tabelle mit:
+
+Team BAL + Person eng = 80
+Team BAL + Person nah = 70
+Team BAL + Person fern = 60
+
+wirklich belastbar.
+
+👉 Aktuell ist das noch zu weich.
+
+Zwei kleinere Unschärfen
+3. Variant-Kompatibilität fehlt als konkrete Regel
+
+Du schreibst zwar „Variant-Kompatibilität“, aber nicht, wann sie gilt.
+
+Da braucht es eine explizite Logik wie:
+
+if gleiche Variante -> 10
+else if DUAL ↔ ORDER -> 5
+else if CLEAR ↔ ORDER -> 5
+else -> 0
+
+Sonst bleibt die Doku an dieser Stelle interpretierbar.
+
+4. computeTaskFit ist noch etwas zu offen
+
+„Vergleicht Person- vs. Team-Wert auf der Zielkomponente“ ist schon besser, aber noch nicht vollständig.
+
+Sauber wäre:
+
+goalKey = mapGoal(teamGoal)
+
+if person[goalKey] >= team[goalKey] - 5
+  -> hoch
+else if person[goalKey] >= team[goalKey] - 15
+  -> mittel
+else
+  -> gering
+
+Dann ist es eindeutig.
+
+Mein ehrliches Urteil
+Stand jetzt:
+
+sehr gut, aber noch nicht final.
+
+Qualitätsniveau:
+Architektur: sehr gut
+Score-Modell: gut
+Textlogik: sehr gut
+Determinismus: noch nicht ganz sauber
+Was du konkret ändern solltest
+Unbedingt korrigieren
+MatchCase neu definieren über Vergleich von Team.top1 / Team.top2 mit Person.top1 / Person.top2
+eng / nah / fern definieren über spread
+Sinnvoll ergänzen
+Variant-Kompatibilität explizit definieren
+TaskFit-Schwellen explizit definieren
