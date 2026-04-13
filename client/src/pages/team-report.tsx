@@ -843,7 +843,7 @@ export default function TeamReport() {
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 12, alignItems: "center", marginBottom: 18 }}>
                   <div>
-                    <label style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
                       Stelle / Bezeichnung
                     </label>
                     <div style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 6 }}>
@@ -872,7 +872,7 @@ export default function TeamReport() {
                     </div>
                   </div>
                   <div>
-                    <label style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
                       Rolle
                     </label>
                     <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
@@ -909,10 +909,10 @@ export default function TeamReport() {
                 </div>
 
                 <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 14 }}>
-                  <label style={{ fontSize: 12, fontWeight: 600, color: "#8E8E93", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
                     Teamziel <span style={{ fontWeight: 400, textTransform: "none" as const, letterSpacing: 0 }}>(optional)</span>
                   </label>
-                  <p style={{ fontSize: 12, color: "#8E8E93", margin: "4px 0 0", lineHeight: 1.5 }}>
+                  <p style={{ fontSize: 12, color: "#3A3A3C", margin: "4px 0 0", lineHeight: 1.5 }}>
                     {"Was braucht das Team aktuell am meisten?"}
                   </p>
                   <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
