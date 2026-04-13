@@ -15,6 +15,7 @@ const BASE_NAV_ITEMS = [
 ];
 
 const COURSE_NAV_ITEM = { label: "Kursbereich", subtitle: "Lernmodule", path: "/kurs", icon: GraduationCap, disabled: false };
+const BIOCHECKS_NAV_ITEM = { label: "bioChecks", subtitle: "Unternehmen & extern", path: "/biochecks", icon: Building2, disabled: false };
 
 const RESET_KEYS = [
   "rollenDnaState",
@@ -44,6 +45,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
     const items = [...BASE_NAV_ITEMS];
     if ((user?.courseAccess || user?.role === "subadmin") && user?.role !== "admin") {
       items.push(COURSE_NAV_ITEM);
+      items.push(BIOCHECKS_NAV_ITEM);
     }
     return items;
   }, [user?.courseAccess, user?.role]);
