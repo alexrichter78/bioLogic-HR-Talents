@@ -291,9 +291,20 @@ function computeTaskFit(teamProfile: Triad, personProfile: Triad, goal: TeamGoal
   const personValue = round(personProfile[goalComp]);
   const teamValue = round(teamProfile[goalComp]);
 
-  if (personValue >= teamValue - 5) return "hoch";
-  if (personValue >= teamValue - 15) return "mittel";
-  return "gering";
+  let fit: string;
+  if (personValue >= teamValue - 5) fit = "hoch";
+  else if (personValue >= teamValue - 15) fit = "mittel";
+  else fit = "gering";
+
+  const sorted = sortTriad(personProfile);
+  const dominantValue = sorted[0].value;
+  const lowestValue = sorted[2].value;
+  if (personValue <= lowestValue && (dominantValue - personValue) > 8) {
+    if (fit === "hoch") fit = "mittel";
+    else if (fit === "mittel") fit = "gering";
+  }
+
+  return fit;
 }
 
 function computeSystemwirkung(matchCase: MatchCase): string {
