@@ -958,7 +958,7 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/admin/enroll-course", requireAdmin, async (req, res) => {
+  app.post("/api/admin/enroll-course", requireSubadmin, async (req, res) => {
     try {
       const { participants } = req.body;
       if (!Array.isArray(participants) || participants.length === 0) {
