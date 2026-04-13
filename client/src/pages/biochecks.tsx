@@ -5,8 +5,6 @@ import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import { useIsMobile } from "@/hooks/use-mobile";
 import imgKompaktkurs from "@assets/image_1775513714925.png";
-import imgLeadership from "@assets/image_1775513748106.png";
-import imgRecruiting from "@assets/image_1775513775908.png";
 
 interface Participant {
   id: number;
@@ -24,8 +22,6 @@ function createEmptyParticipant(): Participant {
 function BioChecksWidgetInner({ isMobile }: { isMobile: boolean }) {
   const modules = [
     { img: imgKompaktkurs, title: "bioLogic Kompaktkurs" },
-    { img: imgLeadership, title: "bioLogic Leadership" },
-    { img: imgRecruiting, title: "bioLogic Recruiting" },
   ];
 
   return (
