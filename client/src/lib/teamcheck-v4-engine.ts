@@ -457,8 +457,6 @@ function buildWarumText(c: Ctx): string {
     }
   }
 
-  paras.push(`Der strukturelle Passungsscore liegt bei ${score} von 100 Punkten. Dieser Score basiert auf dem Vergleich der dominanten Arbeitslogik (Top 1), der ergänzenden Arbeitsweise (Top 2) und der strukturellen Profilkompatibilität (Variante) zwischen Person und Team.`);
-
   return paras.join("\n\n");
 }
 
