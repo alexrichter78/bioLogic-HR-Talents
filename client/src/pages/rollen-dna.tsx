@@ -2949,7 +2949,7 @@ export default function RollenDNA() {
                 style={{
                   background: "#FFFFFF",
                   borderRadius: 20,
-                  padding: "28px 32px",
+                  padding: "20px 32px",
                   boxShadow: "0 8px 30px rgba(0,0,0,0.04)",
                   border: "1px solid rgba(0,0,0,0.04)",
                 }}
@@ -3174,7 +3174,7 @@ export default function RollenDNA() {
                 style={{
                   background: "#FFFFFF",
                   borderRadius: 20,
-                  padding: "28px 32px",
+                  padding: "20px 32px",
                   boxShadow: "0 8px 30px rgba(0,0,0,0.04)",
                   border: "1px solid rgba(0,0,0,0.04)",
                   marginTop: 24,
