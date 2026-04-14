@@ -668,6 +668,14 @@ export async function registerRoutes(
       req.session.userId = user.id;
       req.session.userRole = user.role;
 
+      let accessUntil: string | null = null;
+      if (user.role !== "admin" && sub && sub.status === "active") {
+        const expiry = new Date(sub.accessUntil);
+        if (expiry.getFullYear() < 2099) {
+          accessUntil = expiry.toISOString().split("T")[0];
+        }
+      }
+
       res.json({
         id: user.id,
         username: user.username,
@@ -678,6 +686,7 @@ export async function registerRoutes(
         role: user.role,
         courseAccess: user.courseAccess,
         organizationId: user.organizationId,
+        accessUntil,
         aiRequestLimit: user.aiRequestLimit,
         aiRequestsUsed: user.aiRequestsUsed,
       });
@@ -709,21 +718,16 @@ export async function registerRoutes(
       req.session.destroy(() => {});
       return res.status(403).json({ error: "Konto deaktiviert" });
     }
-    if (user.role !== "admin") {
-      const sub = await storage.getSubscriptionByUserId(user.id);
-      if (sub && sub.status === "active" && new Date(sub.accessUntil) < new Date()) {
-        req.session.destroy(() => {});
-        return res.status(403).json({ error: "Zugang abgelaufen" });
-      }
+    const sub = user.role !== "admin" ? await storage.getSubscriptionByUserId(user.id) : undefined;
+    if (sub && sub.status === "active" && new Date(sub.accessUntil) < new Date()) {
+      req.session.destroy(() => {});
+      return res.status(403).json({ error: "Zugang abgelaufen" });
     }
     let accessUntil: string | null = null;
-    if (user.role !== "admin") {
-      const sub = await storage.getSubscriptionByUserId(user.id);
-      if (sub && sub.status === "active") {
-        const expiry = new Date(sub.accessUntil);
-        if (expiry.getFullYear() < 2099) {
-          accessUntil = expiry.toISOString().split("T")[0];
-        }
+    if (sub && sub.status === "active") {
+      const expiry = new Date(sub.accessUntil);
+      if (expiry.getFullYear() < 2099) {
+        accessUntil = expiry.toISOString().split("T")[0];
       }
     }
     let currentUser = user;
@@ -1251,7 +1255,7 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/generate-kompetenzen", async (req, res) => {
+  app.post("/api/generate-kompetenzen", requireAuth, async (req, res) => {
     try {
       const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik, zusatzInfo, analyseTexte, region } = req.body;
       if (!beruf) {
@@ -1404,7 +1408,7 @@ Antworte ausschließlich als JSON:
     }
   });
 
-  app.post("/api/reclassify-kompetenzen", async (req, res) => {
+  app.post("/api/reclassify-kompetenzen", requireAuth, async (req, res) => {
     try {
       const { beruf, fuehrung, aufgabencharakter, arbeitslogik, items, region } = req.body;
       if (!items || items.length === 0) {
@@ -1484,7 +1488,7 @@ Beispiel für 3 Einträge:
     }
   });
 
-  app.post("/api/generate-bericht", async (req, res) => {
+  app.post("/api/generate-bericht", requireAuth, async (req, res) => {
     try {
       const {
         beruf, bereich, fuehrungstyp, aufgabencharakter, arbeitslogik,
@@ -1743,7 +1747,7 @@ Antworte ausschließlich als JSON mit exakt dieser Struktur:
     }
   });
 
-  app.post("/api/generate-analyse", async (req, res) => {
+  app.post("/api/generate-analyse", requireAuth, async (req, res) => {
     try {
       const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik, taetigkeiten, region } = req.body;
       if (!beruf || !taetigkeiten || taetigkeiten.length === 0) {
@@ -1830,7 +1834,7 @@ Antworte als JSON:
     }
   });
 
-  app.post("/api/generate-team-report", async (req, res) => {
+  app.post("/api/generate-team-report", requireAuth, async (req, res) => {
     try {
       const { context, profiles, computed, levers, region } = req.body;
       if (!profiles?.team || !profiles?.person) {
@@ -1940,7 +1944,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
     }
   });
 
-  app.post("/api/parse-document", async (req, res) => {
+  app.post("/api/parse-document", requireAuth, async (req, res) => {
     try {
       const { base64, mimeType } = req.body;
       if (!base64 || !mimeType) return res.status(400).json({ error: "Fehlende Daten" });
@@ -1958,7 +1962,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
     }
   });
 
-  app.post("/api/ki-coach", async (req, res) => {
+  app.post("/api/ki-coach", requireAuth, async (req, res) => {
     try {
       const { messages, stammdaten, region, mode, uploadedImage, uploadedImageMime, uploadedDocumentText, uploadedDocumentName } = req.body;
       if (!Array.isArray(messages) || messages.length === 0) {
@@ -2603,7 +2607,7 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
     }
   });
 
-  app.post("/api/generate-kandidatenprofil", async (req, res) => {
+  app.post("/api/generate-kandidatenprofil", requireAuth, async (req, res) => {
     try {
       const { beruf, bereich, taetigkeiten, fuehrungstyp, aufgabencharakter, arbeitslogik, region } = req.body;
       if (!beruf || typeof beruf !== "string") {
