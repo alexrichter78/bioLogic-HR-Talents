@@ -2490,29 +2490,30 @@ export default function RollenDNA() {
                                 </button>
                               </div>
 
-                              <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 10 }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", minWidth: 52, textTransform: "uppercase", letterSpacing: "0.5px" }}>Gewichtung</span>
-                                  <div style={{ display: "flex", gap: 6 }}>
+                              <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 0, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: "10px 12px" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 10, paddingBottom: 8, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                                  <span style={{ fontSize: 11, fontWeight: 500, color: "#8E8E93", minWidth: 82, letterSpacing: "0.1px" }}>Gewichtung</span>
+                                  <div style={{ display: "flex", gap: 5 }}>
                                     {NIVEAU_OPTIONS.map(n => (
                                       <button
                                         key={n}
                                         onClick={() => handleNiveauChange(t.id, n)}
                                         style={{
-                                          height: 28,
+                                          height: 26,
                                           paddingLeft: 10,
                                           paddingRight: 10,
                                           fontSize: 12,
                                           fontWeight: 500,
                                           borderRadius: 999,
-                                          border: t.niveau === n ? "1.5px solid transparent" : "1px solid rgba(0,0,0,0.15)",
+                                          border: t.niveau === n ? "none" : "1px solid rgba(0,0,0,0.12)",
                                           cursor: "pointer",
                                           transition: "all 150ms ease",
-                                          background: t.niveau === n ? "linear-gradient(135deg, #6B7280, #9CA3AF)" : "rgba(0,0,0,0.03)",
-                                          color: t.niveau === n ? "#FFFFFF" : "#3A3A3C",
+                                          background: t.niveau === n ? "linear-gradient(135deg, #6B7280, #9CA3AF)" : "#FFFFFF",
+                                          color: t.niveau === n ? "#FFFFFF" : "#6B7280",
                                           display: "flex",
                                           alignItems: "center",
                                           gap: 4,
+                                          boxShadow: t.niveau === n ? "0 1px 4px rgba(0,0,0,0.15)" : "none",
                                         }}
                                         className={t.niveau !== n ? "hover:bg-muted/40" : ""}
                                         data-testid={`niveau-${t.id}-${n.toLowerCase()}`}
@@ -2524,28 +2525,29 @@ export default function RollenDNA() {
                                   </div>
                                 </div>
 
-                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", minWidth: 52, textTransform: "uppercase", letterSpacing: "0.5px" }}>Schwerpunkt</span>
-                                  <div style={{ display: "flex", gap: 6 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 10, paddingTop: 8 }}>
+                                  <span style={{ fontSize: 11, fontWeight: 500, color: "#8E8E93", minWidth: 82, letterSpacing: "0.1px" }}>Schwerpunkt</span>
+                                  <div style={{ display: "flex", gap: 5 }}>
                                     {KOMPETENZ_OPTIONS.map(k => (
                                       <button
                                         key={k}
                                         onClick={() => handleKompetenzChange(t.id, k)}
                                         style={{
-                                          height: 28,
+                                          height: 26,
                                           paddingLeft: 10,
                                           paddingRight: 10,
                                           fontSize: 12,
                                           fontWeight: 600,
                                           borderRadius: 999,
-                                          border: t.kompetenz === k ? "1.5px solid transparent" : "1px solid rgba(0,0,0,0.1)",
+                                          border: t.kompetenz === k ? "none" : "1px solid rgba(0,0,0,0.1)",
                                           cursor: "pointer",
                                           transition: "all 150ms ease",
-                                          background: t.kompetenz === k ? KOMPETENZ_COLORS[k] : "transparent",
+                                          background: t.kompetenz === k ? KOMPETENZ_COLORS[k] : "#FFFFFF",
                                           color: t.kompetenz === k ? "#FFFFFF" : KOMPETENZ_COLORS[k],
                                           display: "flex",
                                           alignItems: "center",
                                           gap: 4,
+                                          boxShadow: t.kompetenz === k ? "0 1px 4px rgba(0,0,0,0.15)" : "none",
                                         }}
                                         data-testid={`kompetenz-${t.id}-${k.toLowerCase()}`}
                                       >
