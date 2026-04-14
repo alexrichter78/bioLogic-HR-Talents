@@ -1301,11 +1301,11 @@ export default function SollIstBericht() {
                             <span style={{ fontSize: 12, fontWeight: 700, color: sevCol, textTransform: "uppercase", letterSpacing: "0.05em", marginTop: 4 }}>{severityLabel(area.severity)}</span>
                           </div>
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
-                            <div data-text-left style={{ background: "#F5F5F7", borderRadius: 10, padding: "12px 14px" }}>
+                            <div data-text-left style={{ background: "#FAFAFA", borderRadius: 10, padding: "12px 14px", border: "1px solid rgba(0,0,0,0.07)" }}>
                               <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>Stellenanforderung</p>
                               <p style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang="de">{area.roleNeed}</p>
                             </div>
-                            <div data-text-left style={{ background: "#F5F5F7", borderRadius: 10, padding: "12px 14px" }}>
+                            <div data-text-left style={{ background: "#FAFAFA", borderRadius: 10, padding: "12px 14px", border: "1px solid rgba(0,0,0,0.07)" }}>
                               <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>Person</p>
                               <p style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang="de">{area.candidatePattern}</p>
                             </div>
