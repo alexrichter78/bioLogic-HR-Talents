@@ -2490,62 +2490,69 @@ export default function RollenDNA() {
                                 </button>
                               </div>
 
-                              <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                  {NIVEAU_OPTIONS.map(n => (
-                                    <button
-                                      key={n}
-                                      onClick={() => handleNiveauChange(t.id, n)}
-                                      style={{
-                                        height: 26,
-                                        paddingLeft: 11,
-                                        paddingRight: 11,
-                                        fontSize: 12,
-                                        fontWeight: t.niveau === n ? 600 : 400,
-                                        borderRadius: 999,
-                                        border: "none",
-                                        cursor: "pointer",
-                                        transition: "all 150ms ease",
-                                        background: t.niveau === n ? "linear-gradient(135deg, #6B7280, #9CA3AF)" : "rgba(0,0,0,0.05)",
-                                        color: t.niveau === n ? "#FFFFFF" : "#AEAEB2",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: 4,
-                                      }}
-                                      data-testid={`niveau-${t.id}-${n.toLowerCase()}`}
-                                    >
-                                      {t.niveau === n && <Check style={{ width: 9, height: 9 }} />}
-                                      {n}
-                                    </button>
-                                  ))}
+                              <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", minWidth: 52, textTransform: "uppercase", letterSpacing: "0.5px" }}>Gewichtung</span>
+                                  <div style={{ display: "flex", gap: 6 }}>
+                                    {NIVEAU_OPTIONS.map(n => (
+                                      <button
+                                        key={n}
+                                        onClick={() => handleNiveauChange(t.id, n)}
+                                        style={{
+                                          height: 28,
+                                          paddingLeft: 10,
+                                          paddingRight: 10,
+                                          fontSize: 12,
+                                          fontWeight: 500,
+                                          borderRadius: 999,
+                                          border: t.niveau === n ? "1.5px solid transparent" : "1px solid rgba(0,0,0,0.15)",
+                                          cursor: "pointer",
+                                          transition: "all 150ms ease",
+                                          background: t.niveau === n ? "linear-gradient(135deg, #6B7280, #9CA3AF)" : "rgba(0,0,0,0.03)",
+                                          color: t.niveau === n ? "#FFFFFF" : "#3A3A3C",
+                                          display: "flex",
+                                          alignItems: "center",
+                                          gap: 4,
+                                        }}
+                                        className={t.niveau !== n ? "hover:bg-muted/40" : ""}
+                                        data-testid={`niveau-${t.id}-${n.toLowerCase()}`}
+                                      >
+                                        {t.niveau === n && <Check style={{ width: 10, height: 10 }} />}
+                                        {n}
+                                      </button>
+                                    ))}
+                                  </div>
                                 </div>
-                                <div style={{ width: 1, height: 18, background: "rgba(0,0,0,0.1)", flexShrink: 0 }} />
-                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                  {KOMPETENZ_OPTIONS.map(k => (
-                                    <button
-                                      key={k}
-                                      onClick={() => handleKompetenzChange(t.id, k)}
-                                      style={{
-                                        height: 26,
-                                        paddingLeft: 11,
-                                        paddingRight: 11,
-                                        fontSize: 12,
-                                        fontWeight: t.kompetenz === k ? 600 : 400,
-                                        borderRadius: 999,
-                                        border: "none",
-                                        cursor: "pointer",
-                                        transition: "all 150ms ease",
-                                        background: t.kompetenz === k ? KOMPETENZ_COLORS[k] : "rgba(0,0,0,0.05)",
-                                        color: t.kompetenz === k ? "#FFFFFF" : "#AEAEB2",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: 4,
-                                      }}
-                                      data-testid={`kompetenz-${t.id}-${k.toLowerCase()}`}
-                                    >
-                                      {k}
-                                    </button>
-                                  ))}
+
+                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", minWidth: 52, textTransform: "uppercase", letterSpacing: "0.5px" }}>Schwerpunkt</span>
+                                  <div style={{ display: "flex", gap: 6 }}>
+                                    {KOMPETENZ_OPTIONS.map(k => (
+                                      <button
+                                        key={k}
+                                        onClick={() => handleKompetenzChange(t.id, k)}
+                                        style={{
+                                          height: 28,
+                                          paddingLeft: 10,
+                                          paddingRight: 10,
+                                          fontSize: 12,
+                                          fontWeight: 600,
+                                          borderRadius: 999,
+                                          border: t.kompetenz === k ? "1.5px solid transparent" : "1px solid rgba(0,0,0,0.1)",
+                                          cursor: "pointer",
+                                          transition: "all 150ms ease",
+                                          background: t.kompetenz === k ? KOMPETENZ_COLORS[k] : "transparent",
+                                          color: t.kompetenz === k ? "#FFFFFF" : KOMPETENZ_COLORS[k],
+                                          display: "flex",
+                                          alignItems: "center",
+                                          gap: 4,
+                                        }}
+                                        data-testid={`kompetenz-${t.id}-${k.toLowerCase()}`}
+                                      >
+                                        {k}
+                                      </button>
+                                    ))}
+                                  </div>
                                 </div>
                               </div>
                             </div>
