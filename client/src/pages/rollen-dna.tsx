@@ -2492,7 +2492,7 @@ export default function RollenDNA() {
 
                               <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 10 }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", minWidth: 88, textTransform: "uppercase", letterSpacing: "0.5px" }}>Gewichtung</span>
+                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", width: 96, flexShrink: 0, textTransform: "uppercase", letterSpacing: "0.5px" }}>Gewichtung</span>
                                   <div style={{ display: "flex", gap: 6 }}>
                                     {NIVEAU_OPTIONS.map(n => (
                                       <button
@@ -2525,7 +2525,7 @@ export default function RollenDNA() {
                                 </div>
 
                                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", minWidth: 88, textTransform: "uppercase", letterSpacing: "0.5px" }}>Schwerpunkt</span>
+                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", width: 96, flexShrink: 0, textTransform: "uppercase", letterSpacing: "0.5px" }}>Schwerpunkt</span>
                                   <div style={{ display: "flex", gap: 6 }}>
                                     {KOMPETENZ_OPTIONS.map(k => (
                                       <button
