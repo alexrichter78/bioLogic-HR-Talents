@@ -8,6 +8,7 @@ type Message = {
   role: "user" | "assistant";
   content: string;
   image?: string;
+  documentName?: string;
   overlayTitle?: string;
   overlaySubtitle?: string;
   feedback?: "up" | "down";
@@ -440,9 +441,15 @@ export default function KICoach() {
     }
   }, [promptSearch]);
 
+  const [pendingImage, setPendingImage] = useState<{ dataUrl: string; base64: string; mimeType: string } | null>(null);
+  const [pendingDoc, setPendingDoc] = useState<{ name: string; text: string } | null>(null);
+  const [docLoading, setDocLoading] = useState(false);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<any>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const docInputRef = useRef<HTMLInputElement>(null);
 
   const speechSupported = typeof window !== "undefined" && ("SpeechRecognition" in window || "webkitSpeechRecognition" in window);
 
@@ -536,23 +543,78 @@ export default function KICoach() {
     } catch { return false; }
   }, []);
 
+  const handleImageSelect = useCallback((file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      const base64 = dataUrl.split(",")[1];
+      setPendingImage({ dataUrl, base64, mimeType: file.type });
+      setPendingDoc(null);
+    };
+    reader.readAsDataURL(file);
+  }, []);
+
+  const handleDocumentSelect = useCallback(async (file: File) => {
+    setPendingImage(null);
+    setDocLoading(true);
+    try {
+      if (file.type === "text/plain" || file.name.endsWith(".txt") || file.name.endsWith(".md")) {
+        const text = await file.text();
+        setPendingDoc({ name: file.name, text: text.slice(0, 12000) });
+      } else {
+        const reader = new FileReader();
+        const base64 = await new Promise<string>((resolve) => {
+          reader.onload = (e) => {
+            const dataUrl = e.target?.result as string;
+            resolve(dataUrl.split(",")[1]);
+          };
+          reader.readAsDataURL(file);
+        });
+        const res = await fetch("/api/parse-document", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ base64, mimeType: file.type }),
+        });
+        if (!res.ok) throw new Error("Parse failed");
+        const data = await res.json();
+        setPendingDoc({ name: file.name, text: data.text });
+      }
+    } catch {
+      setPendingDoc({ name: file.name, text: "[Fehler beim Lesen des Dokuments]" });
+    } finally {
+      setDocLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const sendMessage = useCallback(async () => {
-    const text = input.trim();
-    if (!text || loading) return;
+    const rawText = input.trim();
+    const hasAttachment = !!(pendingImage || pendingDoc);
+    if (!rawText && !hasAttachment) return;
+    if (loading) return;
+    const text = rawText || (pendingImage ? "Bitte analysiere dieses Bild." : "Bitte analysiere das Dokument.");
 
     if (isListening) {
       recognitionRef.current?.stop();
       setIsListening(false);
     }
 
-    const userMsg: Message = { role: "user", content: text };
+    const capturedImage = pendingImage;
+    const capturedDoc = pendingDoc;
+    const userMsg: Message = {
+      role: "user",
+      content: text,
+      ...(capturedImage ? { image: capturedImage.dataUrl } : {}),
+      ...(capturedDoc ? { documentName: capturedDoc.name } : {}),
+    };
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     setInput("");
+    setPendingImage(null);
+    setPendingDoc(null);
     setLoading(true);
 
     if (inputRef.current) {
@@ -603,7 +665,14 @@ export default function KICoach() {
       } catch {}
 
       const hasStammdaten = Object.keys(stammdaten).length > 0;
-      const body = JSON.stringify({ messages: chatHistory, ...(hasStammdaten ? { stammdaten } : {}), region, ...(coachMode ? { mode: coachMode } : {}) });
+      const body = JSON.stringify({
+        messages: chatHistory,
+        ...(hasStammdaten ? { stammdaten } : {}),
+        region,
+        ...(coachMode ? { mode: coachMode } : {}),
+        ...(capturedImage ? { uploadedImage: capturedImage.base64, uploadedImageMime: capturedImage.mimeType } : {}),
+        ...(capturedDoc ? { uploadedDocumentText: capturedDoc.text, uploadedDocumentName: capturedDoc.name } : {}),
+      });
 
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 120000);
@@ -1291,6 +1360,12 @@ export default function KICoach() {
                   fontSize: 14, lineHeight: 1.6,
                 }}>
                   {formatMessage(parseButtonsFromContent(msg.content).cleanContent)}
+                  {msg.documentName && (
+                    <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 5, background: "rgba(255,255,255,0.2)", borderRadius: 8, padding: "4px 8px", fontSize: 11, color: msg.role === "user" ? "rgba(255,255,255,0.9)" : "#0071E3", maxWidth: "fit-content" }}>
+                      <FileText style={{ width: 11, height: 11, flexShrink: 0 }} />
+                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 160 }}>{msg.documentName}</span>
+                    </div>
+                  )}
                   {msg.image && (
                     <div style={{ marginTop: 12 }}>
                       <div style={{ position: "relative", display: "inline-block", maxWidth: 520, width: "100%" }}>
@@ -1557,6 +1632,51 @@ export default function KICoach() {
             borderTop: "1px solid rgba(0,0,0,0.06)",
             background: "rgba(255,255,255,0.5)",
           }}>
+            <input
+              ref={imageInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/gif,image/webp"
+              style={{ display: "none" }}
+              onChange={e => { const f = e.target.files?.[0]; if (f) handleImageSelect(f); e.target.value = ""; }}
+              data-testid="input-image-upload"
+            />
+            <input
+              ref={docInputRef}
+              type="file"
+              accept=".pdf,.txt,.md,application/pdf,text/plain"
+              style={{ display: "none" }}
+              onChange={e => { const f = e.target.files?.[0]; if (f) handleDocumentSelect(f); e.target.value = ""; }}
+              data-testid="input-doc-upload"
+            />
+
+            {(pendingImage || pendingDoc || docLoading) && (
+              <div style={{ marginBottom: 8, display: "flex", alignItems: "center", gap: 8 }}>
+                {pendingImage && (
+                  <div style={{ position: "relative", display: "inline-block" }}>
+                    <img src={pendingImage.dataUrl} alt="Anhang" style={{ height: 64, maxWidth: 120, borderRadius: 10, objectFit: "cover", border: "1px solid rgba(0,0,0,0.1)" }} />
+                    <button onClick={() => setPendingImage(null)} style={{ position: "absolute", top: -6, right: -6, width: 18, height: 18, borderRadius: "50%", background: "#FF3B30", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <X style={{ width: 10, height: 10, color: "#fff" }} />
+                    </button>
+                  </div>
+                )}
+                {docLoading && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(0,113,227,0.08)", borderRadius: 8, padding: "6px 10px", fontSize: 12, color: "#0071E3" }}>
+                    <Loader2 style={{ width: 12, height: 12, animation: "spin 1s linear infinite" }} />
+                    Dokument wird gelesen...
+                  </div>
+                )}
+                {pendingDoc && !docLoading && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(0,113,227,0.08)", borderRadius: 8, padding: "6px 10px", fontSize: 12, color: "#0071E3", maxWidth: 220 }}>
+                    <FileText style={{ width: 12, height: 12, flexShrink: 0 }} />
+                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pendingDoc.name}</span>
+                    <button onClick={() => setPendingDoc(null)} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", flexShrink: 0 }}>
+                      <X style={{ width: 10, height: 10, color: "#0071E3" }} />
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div style={{
               display: "flex", gap: 10, alignItems: "flex-end",
               background: "rgba(255, 248, 225, 0.5)",
@@ -1583,6 +1703,34 @@ export default function KICoach() {
                   t.style.height = Math.min(t.scrollHeight, 120) + "px";
                 }}
               />
+              <button
+                onClick={() => imageInputRef.current?.click()}
+                disabled={loading}
+                title="Bild hochladen"
+                data-testid="button-upload-image"
+                style={{
+                  width: 36, height: 36, borderRadius: 12, border: "none",
+                  background: pendingImage ? "rgba(52,199,89,0.12)" : "rgba(0,0,0,0.06)",
+                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                  flexShrink: 0, transition: "all 200ms ease",
+                }}
+              >
+                <ImageIcon style={{ width: 16, height: 16, color: pendingImage ? "#34C759" : "#8E8E93" }} />
+              </button>
+              <button
+                onClick={() => docInputRef.current?.click()}
+                disabled={loading || docLoading}
+                title="PDF / Textdokument hochladen"
+                data-testid="button-upload-doc"
+                style={{
+                  width: 36, height: 36, borderRadius: 12, border: "none",
+                  background: pendingDoc ? "rgba(0,113,227,0.12)" : "rgba(0,0,0,0.06)",
+                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                  flexShrink: 0, transition: "all 200ms ease",
+                }}
+              >
+                <FileText style={{ width: 16, height: 16, color: pendingDoc ? "#0071E3" : "#8E8E93" }} />
+              </button>
               {speechSupported && (
                 <button
                   onClick={toggleListening}
@@ -1606,21 +1754,21 @@ export default function KICoach() {
               )}
               <button
                 onClick={sendMessage}
-                disabled={loading || !input.trim()}
+                disabled={loading || (!input.trim() && !pendingImage && !pendingDoc)}
                 data-testid="button-send"
                 style={{
                   width: 36, height: 36, borderRadius: 12, border: "none",
-                  background: input.trim() && !loading
+                  background: (input.trim() || pendingImage || pendingDoc) && !loading
                     ? "linear-gradient(135deg, #0071E3, #34AADC)"
                     : "rgba(0,0,0,0.06)",
-                  cursor: input.trim() && !loading ? "pointer" : "default",
+                  cursor: (input.trim() || pendingImage || pendingDoc) && !loading ? "pointer" : "default",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   flexShrink: 0, transition: "all 200ms ease",
                 }}
               >
                 <Send style={{
                   width: 16, height: 16,
-                  color: input.trim() && !loading ? "#FFFFFF" : "#C7C7CC",
+                  color: (input.trim() || pendingImage || pendingDoc) && !loading ? "#FFFFFF" : "#C7C7CC",
                 }} />
               </button>
             </div>

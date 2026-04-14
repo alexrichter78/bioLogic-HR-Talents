@@ -1901,9 +1901,27 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
     }
   });
 
+  app.post("/api/parse-document", async (req, res) => {
+    try {
+      const { base64, mimeType } = req.body;
+      if (!base64 || !mimeType) return res.status(400).json({ error: "Fehlende Daten" });
+      const buffer = Buffer.from(base64, "base64");
+      if (mimeType === "application/pdf") {
+        const pdfParse = (await import("pdf-parse")).default;
+        const data = await pdfParse(buffer);
+        return res.json({ text: data.text.slice(0, 12000), pages: data.numpages });
+      } else {
+        return res.json({ text: buffer.toString("utf-8").slice(0, 12000) });
+      }
+    } catch (e: any) {
+      console.error("parse-document error:", e);
+      res.status(500).json({ error: "Fehler beim Lesen des Dokuments" });
+    }
+  });
+
   app.post("/api/ki-coach", async (req, res) => {
     try {
-      const { messages, stammdaten, region, mode } = req.body;
+      const { messages, stammdaten, region, mode, uploadedImage, uploadedImageMime, uploadedDocumentText, uploadedDocumentName } = req.body;
       if (!Array.isArray(messages) || messages.length === 0) {
         return res.status(400).json({ error: "Keine Nachrichten" });
       }
@@ -1945,7 +1963,8 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
       const isShortMessage = lastMsg.length < 15;
       const isOngoingConversation = messages.length >= 3;
 
-      const isAllowed = hasTopicKeyword || isFirstMessage || isShortMessage || isOngoingConversation;
+      const hasUpload = !!(uploadedImage || uploadedDocumentText);
+      const isAllowed = hasUpload || hasTopicKeyword || isFirstMessage || isShortMessage || isOngoingConversation;
 
       if (!isAllowed) {
         return res.json({
@@ -2136,9 +2155,29 @@ ${customPrompt}${promptEndsWithDeutsch ? "" : "\n\n- Deutsch."}`;
         }
       }
 
-      const apiMessages: { role: "system" | "user" | "assistant" | "tool"; content: string; tool_call_id?: string }[] = [
-        { role: "system" as const, content: fullSystemPrompt },
-        ...conversationMessages.slice(-20),
+      let systemPromptFinal = fullSystemPrompt;
+      if (uploadedDocumentText) {
+        systemPromptFinal += `\n\nHOCHGELADENES DOKUMENT${uploadedDocumentName ? ` ("${uploadedDocumentName}")` : ""}:\n${uploadedDocumentText}\n\nDer Nutzer hat dieses Dokument hochgeladen. Beziehe dich bei deiner Antwort konkret auf den Inhalt des Dokuments und beantworte die Frage des Nutzers dazu.`;
+      }
+
+      const recentSliced = conversationMessages.slice(-20) as any[];
+      if (uploadedImage && recentSliced.length > 0) {
+        const lastIdx = recentSliced.length - 1;
+        const lastMsg = recentSliced[lastIdx];
+        if (lastMsg?.role === "user" && typeof lastMsg.content === "string") {
+          recentSliced[lastIdx] = {
+            role: "user",
+            content: [
+              { type: "text", text: lastMsg.content },
+              { type: "image_url", image_url: { url: `data:${uploadedImageMime || "image/jpeg"};base64,${uploadedImage}`, detail: "high" } },
+            ],
+          };
+        }
+      }
+
+      const apiMessages: { role: "system" | "user" | "assistant" | "tool"; content: any; tool_call_id?: string }[] = [
+        { role: "system" as const, content: systemPromptFinal },
+        ...recentSliced,
       ];
 
       const webSearchTool = {
