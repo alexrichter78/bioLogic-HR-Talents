@@ -1310,9 +1310,9 @@ export default function SollIstBericht() {
                               <p style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang="de">{area.candidatePattern}</p>
                             </div>
                           </div>
-                          <div style={{ display: "flex", borderRadius: 8, overflow: "hidden" }}>
-                            <div style={{ width: 3, flexShrink: 0, background: sevCol }} />
-                            <div style={{ padding: "10px 14px", flex: 1, background: `${sevCol}08` }}>
+                          <div style={{ display: "flex", borderRadius: 8, background: `${sevCol}08`, alignItems: "stretch" }}>
+                            <div style={{ width: 4, flexShrink: 0, background: sevCol, borderRadius: 999, margin: "8px 0 8px 8px" }} />
+                            <div style={{ padding: "10px 14px", flex: 1 }}>
                             <p style={{ fontSize: 14, lineHeight: 1.85, margin: 0, color: "#48484A", wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{area.risk}</p>
                             </div>
                           </div>
