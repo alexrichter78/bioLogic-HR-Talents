@@ -963,38 +963,38 @@ export default function KICoach() {
     <div className="page-gradient-bg" style={{ display: "flex", flexDirection: "column" }} lang="de">
       <GlobalNav />
 
-      <main style={{ flex: 1, maxWidth: 1100, width: "100%", margin: "0 auto", padding: isMobile ? "8px 6px 80px" : "24px 16px 24px", display: "flex", flexDirection: "column" }}>
+      <div style={{ position: "fixed", top: isMobile ? 48 : 56, left: 0, right: 0, zIndex: 8999 }}>
+        <div className="dark:!bg-background" style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: isMobile ? "4px 0 6px" : "5px 0 10px", minHeight: isMobile ? 48 : 62 }}>
+          <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
+            <div className="text-center">
+              <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#34C759" }} data-testid="text-page-title">Louis</h1>
+              <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Ihr KI-Coach für Entscheidungen im richtigen Moment</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <main style={{ flex: 1, maxWidth: 1100, width: "100%", margin: "0 auto", paddingTop: isMobile ? 110 : 135, paddingLeft: isMobile ? 6 : 16, paddingRight: isMobile ? 6 : 16, paddingBottom: isMobile ? 80 : 24, display: "flex", flexDirection: "column" }}>
         <div style={{
           background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
           borderRadius: 20, flex: 1, display: "flex", flexDirection: "column",
           boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
           border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden",
-          minHeight: "calc(100vh - 140px)",
+          minHeight: "calc(100vh - 220px)",
         }}>
           <div style={{
-            padding: isMobile ? "12px 14px 10px" : "20px 28px 16px",
+            padding: isMobile ? "10px 14px" : "12px 28px",
             borderBottom: "1px solid rgba(0,0,0,0.06)",
-            display: "flex", alignItems: "center", gap: isMobile ? 10 : 14,
+            display: "flex", alignItems: "center", justifyContent: "space-between",
           }}>
-            <div style={{
-              width: 40, height: 40, borderRadius: 12,
-              background: "rgba(0,113,227,0.08)",
-              display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-            }}>
-              <Bot style={{ width: 20, height: 20, color: "#0071E3" }} />
-            </div>
-            <div style={{ flex: 1 }}>
-              <h1 style={{ fontSize: 24, fontWeight: 700, color: "#34C759", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">Louis</h1>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
-                <p style={{ fontSize: 13, color: "#48484A", margin: 0 }}>Ihr KI-Coach für Entscheidungen im richtigen Moment</p>
-                {hasAnalysisData() && (
-                  <span data-testid="badge-context-active" style={{
-                    fontSize: 10, fontWeight: 600, color: "#34C759",
-                    background: "rgba(52,199,89,0.1)", border: "1px solid rgba(52,199,89,0.25)",
-                    borderRadius: 6, padding: "1px 7px", whiteSpace: "nowrap",
-                  }}>Profil aktiv</span>
-                )}
-              </div>
+            <div>
+              {hasAnalysisData() && (
+                <span data-testid="badge-context-active" style={{
+                  fontSize: 10, fontWeight: 600, color: "#34C759",
+                  background: "rgba(52,199,89,0.1)", border: "1px solid rgba(52,199,89,0.25)",
+                  borderRadius: 6, padding: "2px 8px", whiteSpace: "nowrap",
+                }}>Profil aktiv</span>
+              )}
             </div>
             <button
               onClick={exportChat}
