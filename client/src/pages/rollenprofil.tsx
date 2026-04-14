@@ -571,7 +571,6 @@ export default function Rollenprofil() {
         )}
         <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, lineHeight: 1 }}>{title}</p>
       </div>
-      <div data-subhead-line style={{ width: 36, height: 2.5, borderRadius: 2, background: color, marginTop: 4, marginLeft: num != null ? 34 : 0, opacity: 0.7 }} />
     </div>
   );
 
