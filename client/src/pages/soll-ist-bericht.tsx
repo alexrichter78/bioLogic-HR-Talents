@@ -218,7 +218,13 @@ export default function SollIstBericht() {
       return { [key]: clamped, [others[0]]: o1, [others[1]]: o2 } as typeof prev;
     });
   }, []);
-  const [roleName, setRoleName] = useState("");
+  const [roleName, setRoleName] = useState<string>(() => {
+    try {
+      const raw = localStorage.getItem("rollenDnaState");
+      if (raw) { const dna = JSON.parse(raw); return dna.beruf || ""; }
+    } catch {}
+    return "";
+  });
   const [roleTriad, setRoleTriad] = useState<Triad | null>(null);
   const [roleAnalysisObj, setRoleAnalysisObj] = useState<RoleAnalysis | undefined>(undefined);
   const [hasRollenDna, setHasRollenDna] = useState(false);
