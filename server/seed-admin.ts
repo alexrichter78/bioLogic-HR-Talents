@@ -168,12 +168,11 @@ export async function seedAdmin() {
 
     console.log(`[seed] ADMIN_PASSWORD env set: ${!!process.env.ADMIN_PASSWORD}, using password length: ${adminPassword.length}`);
     const existing = await storage.getUserByUsername(adminUsername);
-    const passwordHash = await bcrypt.hash(adminPassword, 10);
 
     if (existing) {
-      await storage.updateUser(existing.id, { passwordHash });
-      console.log(`[seed] Admin password updated for: ${adminUsername} (id=${existing.id}, role=${existing.role}, isActive=${existing.isActive})`);
+      console.log(`[seed] Admin account already exists: ${adminUsername} (id=${existing.id}, role=${existing.role}) — no changes made`);
     } else {
+      const passwordHash = await bcrypt.hash(adminPassword, 10);
       await storage.createUser({
         username: adminUsername,
         email: process.env.ADMIN_EMAIL || "admin@biologic.app",
@@ -186,12 +185,6 @@ export async function seedAdmin() {
         emailVerified: true,
       });
       console.log(`[seed] Admin account created: ${adminUsername}`);
-    }
-
-    const verify = await storage.getUserByUsername(adminUsername);
-    if (verify) {
-      const testMatch = await bcrypt.compare(adminPassword, verify.passwordHash);
-      console.log(`[seed] Password verify after seed: ${testMatch ? "OK" : "FAILED"}`);
     }
   } catch (error) {
     console.error("[seed] Failed to seed admin:", error);
