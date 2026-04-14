@@ -2490,9 +2490,8 @@ export default function RollenDNA() {
                                 </button>
                               </div>
 
-                              <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 10 }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", flex: "0 0 96px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Gewichtung</span>
+                              <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "max-content auto", rowGap: 10, columnGap: 8, alignItems: "center" }}>
+                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>Gewichtung</span>
                                   <div style={{ display: "flex", gap: 6 }}>
                                     {NIVEAU_OPTIONS.map(n => (
                                       <button
@@ -2522,10 +2521,8 @@ export default function RollenDNA() {
                                       </button>
                                     ))}
                                   </div>
-                                </div>
 
-                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", flex: "0 0 96px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Schwerpunkt</span>
+                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>Schwerpunkt</span>
                                   <div style={{ display: "flex", gap: 6 }}>
                                     {KOMPETENZ_OPTIONS.map(k => (
                                       <button
@@ -2553,7 +2550,6 @@ export default function RollenDNA() {
                                       </button>
                                     ))}
                                   </div>
-                                </div>
                               </div>
                             </div>
                           </div>
