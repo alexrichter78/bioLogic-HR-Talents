@@ -54,9 +54,13 @@ async function ensureSchema() {
         name TEXT NOT NULL,
         ai_request_limit INTEGER,
         ai_requests_used INTEGER NOT NULL DEFAULT 0,
-        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+        current_period_start TIMESTAMP NOT NULL DEFAULT NOW(),
+        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMP NOT NULL DEFAULT NOW()
       );
     `);
+    await client.query(`ALTER TABLE organizations ADD COLUMN IF NOT EXISTS current_period_start TIMESTAMP NOT NULL DEFAULT NOW();`);
+    await client.query(`ALTER TABLE organizations ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP NOT NULL DEFAULT NOW();`);
     await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS organization_id INTEGER REFERENCES organizations(id);`);
     await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS ai_request_limit INTEGER NOT NULL DEFAULT 1000;`);
     await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS ai_requests_used INTEGER NOT NULL DEFAULT 0;`);
