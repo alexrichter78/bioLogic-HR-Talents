@@ -225,9 +225,27 @@ export default function SollIstBericht() {
     } catch {}
     return "";
   });
-  const [roleTriad, setRoleTriad] = useState<Triad | null>(null);
-  const [roleAnalysisObj, setRoleAnalysisObj] = useState<RoleAnalysis | undefined>(undefined);
-  const [hasRollenDna, setHasRollenDna] = useState(false);
+  const [roleTriad, setRoleTriad] = useState<Triad | null>(() => {
+    try {
+      const raw = localStorage.getItem("rollenDnaState");
+      if (raw) { const dna = JSON.parse(raw); if (dna.beruf && dna.bioGramGesamt) return bgToTriad(dna.bioGramGesamt); }
+    } catch {}
+    return null;
+  });
+  const [roleAnalysisObj, setRoleAnalysisObj] = useState<RoleAnalysis | undefined>(() => {
+    try {
+      const raw = localStorage.getItem("rollenDnaState");
+      if (raw) { const dna = JSON.parse(raw); if (dna.beruf && dna.bioGramGesamt) return buildRoleAnalysisFromState(dna) || undefined; }
+    } catch {}
+    return undefined;
+  });
+  const [hasRollenDna, setHasRollenDna] = useState<boolean>(() => {
+    try {
+      const raw = localStorage.getItem("rollenDnaState");
+      if (raw) { const dna = JSON.parse(raw); return !!(dna.beruf && dna.bioGramGesamt); }
+    } catch {}
+    return false;
+  });
   const [reportGenerated, setReportGenerated] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
