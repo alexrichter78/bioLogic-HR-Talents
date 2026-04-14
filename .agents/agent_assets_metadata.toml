@@ -30,3 +30,9 @@ id = "F6CxI8awbIaemdFEMjXG_"
 uri = "file://docs/teamcheck-bericht.md"
 type = "text"
 title = "TeamCheck-Bericht - Technische Dokumentation"
+
+[[outputs]]
+id = "i7jEdlzlRg_s4qieclwno"
+uri = "file://docs/louis-dokumentation.md"
+type = "text"
+title = "Louis – KI-Coach Dokumentation"
