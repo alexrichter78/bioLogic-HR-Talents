@@ -1362,10 +1362,12 @@ export default function RollenDNA() {
     if (aufgabencharakter === "überwiegend operativ") sImp += 1.0;
     else if (aufgabencharakter === "überwiegend systemisch") sInt += 1.0;
     else if (aufgabencharakter === "überwiegend strategisch") sAna += 1.0;
+    else if (aufgabencharakter === "Gemischt") { sImp += 1.0; sInt += 1.0; sAna += 1.0; }
 
     if (arbeitslogik === "Umsetzungsorientiert") sImp += 1.0;
     else if (arbeitslogik === "Menschenorientiert") sInt += 1.0;
     else if (arbeitslogik === "Daten-/prozessorientiert") sAna += 1.0;
+    else if (arbeitslogik === "Ausgewogen") { sImp += 1.0; sInt += 1.0; sAna += 1.0; }
 
     const total = sImp + sInt + sAna;
     if (total <= 0) return { imp: 33.3, int: 33.3, ana: 33.4 } as BioGram;
