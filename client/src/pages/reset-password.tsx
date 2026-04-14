@@ -94,7 +94,7 @@ export default function ResetPassword() {
             <>
               <div style={{ textAlign: "center", marginBottom: 24 }}>
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1F2937", margin: "0 0 6px" }}>Neues Passwort setzen</h2>
-                <p style={{ fontSize: 13, color: "#6B7280", margin: 0 }}>Geben Sie Ihr neues Passwort ein</p>
+                <p style={{ fontSize: 13, color: "#6B7280", margin: 0 }}>Gib dein neues Passwort ein</p>
               </div>
 
               {error && (
@@ -167,7 +167,7 @@ export default function ResetPassword() {
               <CheckCircle style={{ width: 40, height: 40, color: "#34C759", margin: "0 auto 16px" }} />
               <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1F2937", margin: "0 0 8px" }}>Passwort geändert</h2>
               <p style={{ fontSize: 14, color: "#6B7280", margin: "0 0 24px" }}>
-                Ihr Passwort wurde erfolgreich zurückgesetzt.
+                Dein Passwort wurde erfolgreich zurückgesetzt.
               </p>
               <button
                 onClick={() => setLocation("/")}

@@ -1705,7 +1705,7 @@ export default function RollenDNA() {
             </button>
           </div>
           <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, marginBottom: 16 }}>
-            Bitte ordnen Sie die Stelle nach der tatsächlichen Weisungs- und Personalverantwortung ein – nicht nach dem Jobtitel. Entscheidend ist, welche formale Entscheidungsmacht und Ergebnisverantwortung mit der Stelle verbunden sind.
+            Bitte ordne die Stelle nach der tatsächlichen Weisungs- und Personalverantwortung ein – nicht nach dem Jobtitel. Entscheidend ist, welche formale Entscheidungsmacht und Ergebnisverantwortung mit der Stelle verbunden sind.
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {[
@@ -1722,7 +1722,7 @@ export default function RollenDNA() {
           </div>
           <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
             <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", lineHeight: 1.6 }}>
-              Im Zweifel orientieren Sie sich bitte an folgender Leitfrage:<br />
+              Im Zweifel orientiere dich bitte an folgender Leitfrage:<br />
               Hat die Stelle formale Zielvereinbarungs- und Beurteilungsverantwortung für Mitarbeitende?<br />
               Wenn ja, liegt in der Regel Führung mit Personalverantwortung vor.
             </p>
@@ -1757,7 +1757,7 @@ export default function RollenDNA() {
                   Stellenprofil definieren
                 </h1>
                 <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-rollen-dna-subtitle">
-                  Erfassen Sie die Anforderungen und Arbeitslogik der Stelle als Grundlage für den Entscheidungsbericht, die Passungsanalyse sowie den TeamCheck.
+                  Erfasse die Anforderungen und Arbeitslogik der Stelle als Grundlage für den Entscheidungsbericht, die Passungsanalyse sowie den TeamCheck.
                 </p>
               </div>
 
@@ -1777,10 +1777,10 @@ export default function RollenDNA() {
                     <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>3</div>
                   </div>
                   <h2 style={{ fontSize: 28, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em", margin: "0 0 8px" }} data-testid="text-step-1-title">
-                    Welche Stelle möchten Sie analysieren?
+                    Welche Stelle möchtest du analysieren?
                   </h2>
                   <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, margin: "0 0 28px" }}>
-                    Geben Sie die Berufsbezeichnung oder Stellenbezeichnung ein, z.B. „Vertriebsleiter", „HR Business Partner" oder „Projektmanager IT".
+                    Gib die Berufsbezeichnung oder Stellenbezeichnung ein, z.B. „Vertriebsleiter", „HR Business Partner" oder „Projektmanager IT".
                     <br />
                     Kein passender Vorschlag? Einfach ausschreiben – wir erkennen die Stelle automatisch.
                   </p>
@@ -1912,7 +1912,7 @@ export default function RollenDNA() {
                     <div style={{ marginTop: 28 }}>
                       <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 6px" }}>Optionale Ergänzungen</p>
                       <p style={{ fontSize: 13, color: "#6E6E73", margin: "0 0 12px" }}>
-                        Was macht diese Stelle in Ihrem Unternehmen besonders? Je konkreter, desto genauer die Analyse.
+                        Was macht diese Stelle in deinem Unternehmen besonders? Je konkreter, desto genauer die Analyse.
                       </p>
                       <textarea
                         value={zusatzInfo}
@@ -2009,7 +2009,7 @@ export default function RollenDNA() {
                     Rahmenbedingungen der Stelle
                   </h2>
                   <p style={{ fontSize: 14, color: "#48484A", marginTop: 6 }}>
-                    Definieren Sie die grundlegenden Merkmale dieser Stelle. Die Angaben helfen dabei, die strukturelle Stellenlogik zu bestimmen.
+                    Definiere die grundlegenden Merkmale dieser Stelle. Die Angaben helfen dabei, die strukturelle Stellenlogik zu bestimmen.
                   </p>
                 </div>
 
@@ -2238,7 +2238,7 @@ export default function RollenDNA() {
                       Tätigkeiten & Kompetenzen
                     </h2>
                     <p style={{ fontSize: 14, color: "#48484A", marginTop: 4 }}>
-                      Formen Sie die konkrete Struktur dieser Stelle.
+                      Forme die konkrete Struktur dieser Stelle.
                     </p>
                   </div>
                   <div style={{ textAlign: "right", fontSize: 14, color: "#48484A", lineHeight: 1.8 }}>

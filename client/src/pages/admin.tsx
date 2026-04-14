@@ -1117,7 +1117,7 @@ export default function Admin() {
               <div style={{ textAlign: "center", padding: 60, color: "#8E8E93" }}>
                 <BookOpen style={{ width: 32, height: 32, marginBottom: 12, opacity: 0.4 }} />
                 <p>Noch keine Dokumente vorhanden</p>
-                <p style={{ fontSize: 13 }}>Fügen Sie Wissensartikel hinzu, die der KI-Coach für bessere Antworten nutzen kann.</p>
+                <p style={{ fontSize: 13 }}>Füge Wissensartikel hinzu, die der KI-Coach für bessere Antworten nutzen kann.</p>
               </div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>

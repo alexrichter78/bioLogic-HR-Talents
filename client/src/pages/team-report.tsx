@@ -815,7 +815,7 @@ export default function TeamReport() {
                 Teamstruktur analysieren
               </h1>
               <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0 }} data-testid="text-teamreport-subtitle">
-                Analysieren Sie die Zusammensetzung des Teams und erkennen Sie systemische Wirkungen, Entscheidungslogiken und mögliche Spannungsfelder.
+                Analysiere die Zusammensetzung des Teams und erkenne systemische Wirkungen, Entscheidungslogiken und mögliche Spannungsfelder.
               </p>
             </div>
           </div>

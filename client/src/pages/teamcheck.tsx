@@ -818,7 +818,7 @@ export default function TeamCheck() {
                 Teamstruktur analysieren
               </h1>
               <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-teamcheck-subtitle">
-                Analysieren Sie die strukturelle Passung zwischen Kandidat und bestehendem Team.
+                Analysiere die strukturelle Passung zwischen Kandidat und bestehendem Team.
               </p>
             </div>
           </div>

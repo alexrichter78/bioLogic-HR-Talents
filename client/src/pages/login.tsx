@@ -66,7 +66,7 @@ export default function Login() {
                 <CheckCircle style={{ width: 40, height: 40, color: "#34C759", margin: "0 auto 16px" }} />
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1F2937", margin: "0 0 8px" }}>Anfrage gesendet</h2>
                 <p style={{ fontSize: 14, color: "#6B7280", margin: "0 0 24px", lineHeight: 1.5 }}>
-                  Falls ein Konto mit dieser E-Mail existiert, erhalten Sie einen Link zum Zurücksetzen des Passworts.
+                  Falls ein Konto mit dieser E-Mail existiert, erhältst du einen Link zum Zurücksetzen des Passworts.
                 </p>
                 <button
                   onClick={() => { setShowReset(false); setResetSent(false); setResetEmail(""); }}
@@ -81,7 +81,7 @@ export default function Login() {
               <>
                 <div style={{ textAlign: "center", marginBottom: 24 }}>
                   <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1F2937", margin: "0 0 6px" }}>Passwort vergessen</h2>
-                  <p style={{ fontSize: 13, color: "#6B7280", margin: 0 }}>Geben Sie Ihre E-Mail-Adresse ein</p>
+                  <p style={{ fontSize: 13, color: "#6B7280", margin: 0 }}>Gib deine E-Mail-Adresse ein</p>
                 </div>
 
                 {resetError && (

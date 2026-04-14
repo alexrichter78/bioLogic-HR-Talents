@@ -467,7 +467,7 @@ export default function SollIstBericht() {
       doc.save(`MatchCheck_${safeName}.pdf`);
     } catch (e) {
       console.error("PDF error:", e);
-      alert("PDF-Export fehlgeschlagen. Bitte versuchen Sie es erneut.");
+      alert("PDF-Export fehlgeschlagen. Bitte versuche es erneut.");
     } finally {
       if (clone && clone.parentNode) clone.parentNode.removeChild(clone);
       if (pdfBtn) pdfBtn.style.display = "";
@@ -485,7 +485,7 @@ export default function SollIstBericht() {
           <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-amber-500" />
           <h2 className="text-xl font-semibold text-slate-950 mb-3">Keine Rollen-DNA vorhanden</h2>
           <p className="text-sm text-slate-600 mb-6 leading-6">
-            Bitte erstellen Sie zuerst eine Stellenanalyse, um den Soll-Ist-Bericht generieren zu können.
+            Bitte erstelle zuerst eine Stellenanalyse, um den Soll-Ist-Bericht generieren zu können.
           </p>
           <button
             onClick={() => setLocation("/rollen-dna")}
@@ -512,7 +512,7 @@ export default function SollIstBericht() {
                   Passungsanalyse konfigurieren
                 </h1>
                 <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-matchcheck-subtitle">
-                  Vergleichen Sie das Stellenprofil mit dem Personenprofil, um die strukturelle Passung für diese Stelle zu analysieren.
+                  Vergleiche das Stellenprofil mit dem Personenprofil, um die strukturelle Passung für diese Stelle zu analysieren.
                 </p>
               </div>
             </div>

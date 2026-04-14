@@ -135,7 +135,7 @@ export default function Kurs() {
             <Lock style={{ width: 40, height: 40, color: "#8E8E93", marginBottom: 16 }} />
             <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }} data-testid="text-no-access">Kein Zugang</h2>
             <p style={{ fontSize: 14, color: "#48484A", maxWidth: 400, margin: "0 auto 24px" }}>
-              Der Kursbereich ist für Ihr Konto nicht freigeschaltet. Bitte wenden Sie sich an Ihren Administrator.
+              Der Kursbereich ist für dein Konto nicht freigeschaltet. Bitte wende dich an deinen Administrator.
             </p>
             <button
               onClick={() => setLocation("/")}
@@ -169,7 +169,7 @@ export default function Kurs() {
                   Kursbereich
                 </h1>
                 <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0 }}>
-                  Willkommen im Lernbereich. Hier finden Sie Kursmodule zu Führung, Teamdynamik und bioLogic-Kompetenzanalyse.
+                  Willkommen im Lernbereich. Hier findest du Kursmodule zu Führung, Teamdynamik und bioLogic-Kompetenzanalyse.
                 </p>
               </div>
             </div>
@@ -187,7 +187,7 @@ export default function Kurs() {
           }} data-testid="card-coming-soon">
             <p style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>Inhalte in Vorbereitung</p>
             <p style={{ fontSize: 14, color: "#6E6E73", margin: 0, maxWidth: 500, marginLeft: "auto", marginRight: "auto" }}>
-              Die Kursmodule werden in Kürze freigeschaltet. Sie werden hier automatisch angezeigt, sobald sie verfügbar sind.
+              Die Kursmodule werden in Kürze freigeschaltet und erscheinen hier automatisch, sobald sie verfügbar sind.
             </p>
           </div>
         </div>
@@ -282,7 +282,7 @@ export default function Kurs() {
                 Kurszugänge freischalten
               </h1>
               <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0 }}>
-                Hier können Sie mehrere Personen für den bioLogic-Kursbereich freischalten. Fügen Sie alle Teilnehmer hinzu und starten Sie die Freischaltung gesammelt.
+                Hier kannst du mehrere Personen für den bioLogic-Kursbereich freischalten. Füge alle Teilnehmer hinzu und starte die Freischaltung gesammelt.
               </p>
             </div>
           </div>

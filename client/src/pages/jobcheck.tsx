@@ -567,7 +567,7 @@ export default function JobCheck() {
                   bioLogic JobCheck
                 </h1>
                 <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-jobcheck-subtitle">
-                  Bewerten Sie die strukturelle Passung zwischen Stellenprofil und Personenprofil.
+                  Bewerte die strukturelle Passung zwischen Stellenprofil und Personenprofil.
                 </p>
               </div>
             </div>
@@ -675,7 +675,7 @@ export default function JobCheck() {
 
                 <div>
                   <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 6 }}>Istprofil (Person)</p>
-                  <p style={{ fontSize: 14, color: "#48484A", marginBottom: 16 }}>Verschieben Sie die Regler, um das Personenprofil einzugeben. Die Werte werden automatisch normalisiert.</p>
+                  <p style={{ fontSize: 14, color: "#48484A", marginBottom: 16 }}>Verschiebe die Regler, um das Personenprofil einzugeben. Die Werte werden automatisch normalisiert.</p>
 
                   <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
                     <BarSlider label="Impulsiv" value={candImp} color={COLORS.imp} onChange={setCandImp} />

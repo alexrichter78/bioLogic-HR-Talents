@@ -50,7 +50,7 @@ function ConfirmResetModal({ onConfirm, onCancel }: { onConfirm: () => void; onC
         data-testid="modal-confirm-reset"
       >
         <h3 style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", marginBottom: 12 }}>
-          Sind Sie sich sicher?
+          Bist du sicher?
         </h3>
         <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, marginBottom: 24 }}>
           Alle eingegebenen Daten werden gelöscht.
@@ -191,7 +191,7 @@ export default function Home() {
                   </div>
 
                   <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: "0 0 28px", fontWeight: 600 }} data-testid="text-profile-desc">
-                    Definieren Sie eine Stelle und analysieren Sie die strukturelle Passung. Die Analyse liefert klare Handlungsempfehlungen für Besetzung, Führung und Zusammenarbeit.
+                    Definiere eine Stelle und analysiere die strukturelle Passung. Die Analyse liefert klare Handlungsempfehlungen für Besetzung, Führung und Zusammenarbeit.
                   </p>
 
                   <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
@@ -273,7 +273,7 @@ export default function Home() {
                   </div>
 
                   <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: "0 0 24px", fontWeight: 600 }}>
-                    Nutzen Sie Louis für Recruiting, Teamfragen, Gesprächsvorbereitung und konkrete Handlungsempfehlungen – jederzeit, auch ohne Analyse.
+                    Nutze Louis für Recruiting, Teamfragen, Gesprächsvorbereitung und konkrete Handlungsempfehlungen – jederzeit, auch ohne Analyse.
                   </p>
 
                   <div>

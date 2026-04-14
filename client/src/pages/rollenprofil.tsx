@@ -447,7 +447,7 @@ export default function Rollenprofil() {
       doc.save(`Stellenprofil_${safeName}.pdf`);
     } catch (e) {
       console.error("PDF error:", e);
-      alert("PDF-Export fehlgeschlagen. Bitte versuchen Sie es erneut.");
+      alert("PDF-Export fehlgeschlagen. Bitte versuche es erneut.");
     } finally {
       if (clone && clone.parentNode) clone.parentNode.removeChild(clone);
       if (pdfBtn) pdfBtn.style.display = "";
@@ -473,7 +473,7 @@ export default function Rollenprofil() {
             <AlertTriangle style={{ width: 40, height: 40, color: "#FF9500", margin: "0 auto 16px" }} />
             <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>Kein Stellenprofil vorhanden</h2>
             <p style={{ fontSize: 14, color: "#48484A", margin: "0 0 24px", lineHeight: 1.6 }}>
-              Bitte erstellen Sie zuerst ein Stellenprofil, um den Bericht generieren zu können.
+              Bitte erstelle zuerst ein Stellenprofil, um den Bericht generieren zu können.
             </p>
             <button
               onClick={() => setLocation("/rollen-dna")}

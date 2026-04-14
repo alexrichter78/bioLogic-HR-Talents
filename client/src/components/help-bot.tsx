@@ -5,7 +5,7 @@ import { apiRequest } from "@/lib/queryClient";
 
 type Message = { role: "assistant" | "user"; content: string };
 
-const WELCOME = "Hallo! Ich bin der bioLogic Hilfe-Assistent. Wie kann ich Ihnen weiterhelfen?\n\nIch kann Ihnen bei Fragen zur Plattform helfen – z.B. zu JobCheck, MatchCheck, TeamCheck oder Louis (KI-Coach).";
+const WELCOME = "Hallo! Ich bin der bioLogic Hilfe-Assistent. Wie kann ich dir weiterhelfen?\n\nIch kann dir bei Fragen zur Plattform helfen – z.B. zu JobCheck, MatchCheck, TeamCheck oder Louis (KI-Coach).";
 
 export default function HelpBot() {
   const { user } = useAuth();
@@ -56,7 +56,7 @@ export default function HelpBot() {
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut." },
+        { role: "assistant", content: "Es ist ein Fehler aufgetreten. Bitte versuche es erneut." },
       ]);
     } finally {
       setLoading(false);
@@ -92,13 +92,13 @@ export default function HelpBot() {
         ...prev,
         {
           role: "assistant",
-          content: "Ihre Anfrage wurde erfolgreich weitergeleitet. Unser Team wird sich so schnell wie möglich bei Ihnen melden.",
+          content: "Deine Anfrage wurde erfolgreich weitergeleitet. Unser Team wird sich so schnell wie möglich bei dir melden.",
         },
       ]);
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Die E-Mail konnte leider nicht gesendet werden. Bitte versuchen Sie es später erneut." },
+        { role: "assistant", content: "Die E-Mail konnte leider nicht gesendet werden. Bitte versuche es später erneut." },
       ]);
     } finally {
       setEscalateLoading(false);
@@ -155,7 +155,7 @@ export default function HelpBot() {
           }}>
             <div>
               <p style={{ fontSize: 16, fontWeight: 700, color: "#FFF", margin: 0 }}>Hilfe & Support</p>
-              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", margin: "2px 0 0" }}>Wie können wir Ihnen helfen?</p>
+              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", margin: "2px 0 0" }}>Wie können wir dir helfen?</p>
             </div>
             <button
               onClick={() => setOpen(false)}
