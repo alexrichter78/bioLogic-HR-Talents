@@ -27,15 +27,15 @@ type RollenDnaSummary = {
 const ERFOLGSFOKUS_DISPLAY_LABELS = [
   "Ergebnisse und Zielerreichung",
   "Zusammenarbeit und Netzwerk",
-  "Innovation und Weiterentwicklung",
+  "Innovation und Veränderung",
   "Prozesse und Effizienz",
   "Fachliche Qualität und Expertise",
-  "Strategische Wirkung",
+  "Kommunikation und Einfluss",
 ];
 
 const AUFGABENCHARAKTER_LABELS: Record<string, string> = {
   "überwiegend operativ": "Praktische Umsetzung im Tagesgeschäft",
-  "überwiegend systemisch": "Umsetzung mit strukturiertem Vorgehen",
+  "überwiegend systemisch": "Abstimmung und Umsetzung im Arbeitsablauf",
   "überwiegend strategisch": "Analyse, Planung und strategische Steuerung",
   "Gemischt": "Ausgewogene Mischung",
 };

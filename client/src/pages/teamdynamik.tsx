@@ -368,12 +368,12 @@ export default function Teamdynamik() {
       if (!state.beruf) return;
       const taetigkeiten = (state.taetigkeiten || []).map((t: any) => t.name || t.label || "").filter((n: string) => n);
       const ERFOLGSFOKUS_LABELS = [
-        "Ergebnis-/ Umsatzwirkung",
-        "Beziehungs- und Netzwerkstabilität",
-        "Innovations- & Transformationsleistung",
-        "Prozess- und Effizienzqualität",
-        "Fachliche Exzellenz / Expertise",
-        "Strategische Wirkung / Positionierung",
+        "Ergebnisse und Zielerreichung",
+        "Zusammenarbeit und Netzwerk",
+        "Innovation und Veränderung",
+        "Prozesse und Effizienz",
+        "Fachliche Qualität und Expertise",
+        "Kommunikation und Einfluss",
       ];
       const erfolgsfokus = (state.erfolgsfokusIndices || []).map((i: number) => ERFOLGSFOKUS_LABELS[i]).filter(Boolean);
       setRollenDna({

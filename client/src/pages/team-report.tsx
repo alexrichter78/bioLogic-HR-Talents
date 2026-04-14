@@ -671,14 +671,14 @@ export default function TeamReport() {
       const ERFOLGSFOKUS_DISPLAY_LABELS_R = [
         "Ergebnisse und Zielerreichung",
         "Zusammenarbeit und Netzwerk",
-        "Innovation und Weiterentwicklung",
+        "Innovation und Veränderung",
         "Prozesse und Effizienz",
-        "Fachliche Qualit\u00E4t und Expertise",
-        "Strategische Wirkung",
+        "Fachliche Qualität und Expertise",
+        "Kommunikation und Einfluss",
       ];
       const AUFGABENCHARAKTER_LABELS_R: Record<string, string> = {
         "\u00FCberwiegend operativ": "Praktische Umsetzung im Tagesgesch\u00E4ft",
-        "\u00FCberwiegend systemisch": "Umsetzung mit strukturiertem Vorgehen",
+        "\u00FCberwiegend systemisch": "Abstimmung und Umsetzung im Arbeitsablauf",
         "\u00FCberwiegend strategisch": "Analyse, Planung und strategische Steuerung",
         "Gemischt": "Ausgewogene Mischung",
       };
@@ -718,14 +718,14 @@ export default function TeamReport() {
       const ERFOLGSFOKUS_DISPLAY_LABELS = [
         "Ergebnisse und Zielerreichung",
         "Zusammenarbeit und Netzwerk",
-        "Innovation und Weiterentwicklung",
+        "Innovation und Veränderung",
         "Prozesse und Effizienz",
-        "Fachliche Qualit\u00E4t und Expertise",
-        "Strategische Wirkung",
+        "Fachliche Qualität und Expertise",
+        "Kommunikation und Einfluss",
       ];
       const AUFGABENCHARAKTER_LABELS: Record<string, string> = {
         "\u00FCberwiegend operativ": "Praktische Umsetzung im Tagesgesch\u00E4ft",
-        "\u00FCberwiegend systemisch": "Umsetzung mit strukturiertem Vorgehen",
+        "\u00FCberwiegend systemisch": "Abstimmung und Umsetzung im Arbeitsablauf",
         "\u00FCberwiegend strategisch": "Analyse, Planung und strategische Steuerung",
         "Gemischt": "Ausgewogene Mischung",
       };
@@ -986,14 +986,14 @@ export default function TeamReport() {
                     const ERFOLGSFOKUS_DISPLAY_LABELS = [
                       "Ergebnisse und Zielerreichung",
                       "Zusammenarbeit und Netzwerk",
-                      "Innovation und Weiterentwicklung",
+                      "Innovation und Veränderung",
                       "Prozesse und Effizienz",
-                      "Fachliche Qualit\u00E4t und Expertise",
-                      "Strategische Wirkung",
+                      "Fachliche Qualität und Expertise",
+                      "Kommunikation und Einfluss",
                     ];
                     const AUFGABENCHARAKTER_LABELS: Record<string, string> = {
                       "\u00FCberwiegend operativ": "Praktische Umsetzung im Tagesgesch\u00E4ft",
-                      "\u00FCberwiegend systemisch": "Umsetzung mit strukturiertem Vorgehen",
+                      "\u00FCberwiegend systemisch": "Abstimmung und Umsetzung im Arbeitsablauf",
                       "\u00FCberwiegend strategisch": "Analyse, Planung und strategische Steuerung",
                       "Gemischt": "Ausgewogene Mischung",
                     };

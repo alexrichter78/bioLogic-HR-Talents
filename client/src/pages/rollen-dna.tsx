@@ -350,44 +350,44 @@ function generateBioCheckText(bg: BioGram, isLeadership: boolean, _fuehrungsBg?:
 }
 
 const ERFOLGSFOKUS_LABELS = [
-  "Ergebnis-/\nUmsatzwirkung",
-  "Beziehungs- und\nNetzwerkstabilität",
-  "Innovations- &\nTransformationsleistung",
-  "Prozess- und\nEffizienzqualität",
-  "Fachliche Exzellenz /\nExpertise",
-  "Strategische Wirkung /\nPositionierung",
+  "Ergebnisse und\nZielerreichung",
+  "Zusammenarbeit\nund Netzwerk",
+  "Innovation und\nVeränderung",
+  "Prozesse und\nEffizienz",
+  "Fachliche Qualität\nund Expertise",
+  "Kommunikation\nund Einfluss",
 ];
 
 const ERFOLGSFOKUS_DISPLAY = [
-  { label: "Ergebnisse und Zielerreichung", desc: "Erfolg zeigt sich vor allem in Ergebnissen, Umsätzen oder messbaren Leistungen." },
-  { label: "Zusammenarbeit und Netzwerk", desc: "Erfolg entsteht durch stabile Beziehungen, gute Kommunikation und verlässliche Zusammenarbeit." },
-  { label: "Innovation und Weiterentwicklung", desc: "Erfolg zeigt sich in neuen Ideen, Veränderungen und Weiterentwicklung." },
-  { label: "Prozesse und Effizienz", desc: "Erfolg wird über stabile Abläufe, Qualität und effiziente Prozesse erreicht." },
-  { label: "Fachliche Qualität und Expertise", desc: "Erfolg basiert auf hoher fachlicher Kompetenz und präziser Arbeit." },
-  { label: "Strategische Wirkung", desc: "Erfolg zeigt sich in langfristiger Ausrichtung und strategischer Wirkung." },
+  { label: "Ergebnisse und Zielerreichung", desc: "Erfolg zeigt sich in konkreten Ergebnissen, Zielerreichung und messbarer Leistung." },
+  { label: "Zusammenarbeit und Netzwerk", desc: "Erfolg entsteht durch stabile Beziehungen, gute Abstimmung und ein funktionierendes Miteinander." },
+  { label: "Innovation und Veränderung", desc: "Erfolg entsteht durch neue Ideen, mutige Ansätze und die aktive Umsetzung von Veränderungen." },
+  { label: "Prozesse und Effizienz", desc: "Erfolg wird über klare Abläufe, Struktur und ein systematisches Vorgehen erreicht." },
+  { label: "Fachliche Qualität und Expertise", desc: "Erfolg basiert auf präziser Arbeit, fachlicher Tiefe und hoher Genauigkeit." },
+  { label: "Kommunikation und Einfluss", desc: "Erfolg zeigt sich darin, Menschen zu erreichen, zu überzeugen und gemeinsame Lösungen voranzubringen." },
 ];
 
 type DescOption = { value: string; label: string; desc: string };
 
 const AUFGABENCHARAKTER_OPTIONS: DescOption[] = [
-  { value: "überwiegend operativ", label: "Praktische Umsetzung im Tagesgeschäft", desc: "Der Schwerpunkt liegt auf operativer Arbeit und direkter Umsetzung von Aufgaben." },
-  { value: "überwiegend systemisch", label: "Umsetzung mit strukturiertem Vorgehen", desc: "Praxis und Planung greifen ineinander. Aufgaben werden umgesetzt und gleichzeitig strukturiert gesteuert." },
-  { value: "überwiegend strategisch", label: "Analyse, Planung und strategische Steuerung", desc: "Entscheidungen entstehen vor allem durch Analyse, Planung und Bewertung." },
+  { value: "überwiegend operativ", label: "Praktische Umsetzung im Tagesgeschäft", desc: "Der Schwerpunkt liegt auf direkter Umsetzung und schneller Bearbeitung von Aufgaben im operativen Alltag. Ergebnisse entstehen vor allem durch aktives Handeln." },
+  { value: "überwiegend systemisch", label: "Abstimmung und Umsetzung im Arbeitsablauf", desc: "Der Fokus liegt auf Abstimmung, Koordination und einem funktionierenden Zusammenspiel im Alltag. Aufgaben werden im Austausch geplant und gemeinsam vorangebracht." },
+  { value: "überwiegend strategisch", label: "Analyse, Planung und strategische Steuerung", desc: "Der Schwerpunkt liegt auf strukturierter Planung, fundierter Analyse und klarer Bewertung. Entscheidungen werden vorbereitet und systematisch gesteuert." },
   { value: "Gemischt", label: "Ausgewogene Mischung", desc: "Die Stelle verbindet operative Umsetzung, Analyse und Abstimmung." },
 ];
 
 const ARBEITSLOGIK_OPTIONS: DescOption[] = [
-  { value: "Umsetzungsorientiert", label: "Umsetzung und Ergebnisse", desc: "Die Arbeit ist stark handlungsorientiert und auf konkrete Ergebnisse ausgerichtet." },
-  { value: "Daten-/prozessorientiert", label: "Analyse und Struktur", desc: "Die Arbeit basiert auf Daten, Planung und einem systematischen Vorgehen." },
-  { value: "Menschenorientiert", label: "Zusammenarbeit und Kommunikation", desc: "Abstimmung, Beziehungen und Kommunikation stehen im Mittelpunkt der Arbeit." },
+  { value: "Umsetzungsorientiert", label: "Umsetzung und Ergebnisse", desc: "Der Fokus liegt auf direkter Umsetzung und sichtbaren Ergebnissen. Aufgaben werden zügig angegangen und konsequent zu Ende gebracht." },
+  { value: "Daten-/prozessorientiert", label: "Analyse und Struktur", desc: "Der Schwerpunkt liegt auf durchdachter Planung, klarer Struktur und einem systematischen Vorgehen. Entscheidungen entstehen auf Basis von Daten und Bewertung." },
+  { value: "Menschenorientiert", label: "Zusammenarbeit und Kommunikation", desc: "Im Mittelpunkt stehen Abstimmung, Austausch und ein funktionierendes Miteinander. Ergebnisse entstehen durch gute Zusammenarbeit und klare Kommunikation." },
   { value: "Ausgewogen", label: "Ausgewogene Mischung", desc: "Keine Arbeitsweise steht klar im Vordergrund." },
 ];
 
 const FUEHRUNG_OPTIONS: DescOption[] = [
-  { value: "Keine", label: "Keine Führungsverantwortung", desc: "Die Stelle arbeitet ohne direkte Führung von Mitarbeitenden." },
-  { value: "Projekt-/Teamkoordination", label: "Projekt- oder Teamkoordination", desc: "Die Stelle koordiniert Aufgaben oder Projekte, ohne Personalverantwortung." },
-  { value: "Fachliche Führung", label: "Fachliche Führung", desc: "Die Stelle steuert die fachliche Arbeit und sichert die Qualität im Team." },
-  { value: "Disziplinarische Führung mit Ergebnisverantwortung", label: "Führung mit Personalverantwortung", desc: "Die Stelle trägt Verantwortung für Mitarbeitende, Ergebnisse und Entwicklung." },
+  { value: "Keine", label: "Keine Führungsverantwortung", desc: "Die Stelle arbeitet ohne Verantwortung für andere Personen und ist auf die eigene Aufgabenbearbeitung fokussiert." },
+  { value: "Projekt-/Teamkoordination", label: "Projekt- oder Teamkoordination", desc: "Die Stelle koordiniert Aufgaben, Abläufe oder Projekte und sorgt für Abstimmung im Team – ohne direkte Personalverantwortung." },
+  { value: "Fachliche Führung", label: "Fachliche Führung", desc: "Die Stelle steuert Inhalte, gibt fachliche Orientierung vor und stellt die Qualität der Arbeit im Team sicher." },
+  { value: "Disziplinarische Führung mit Ergebnisverantwortung", label: "Führung mit Personalverantwortung", desc: "Die Stelle führt Mitarbeitende, trägt Verantwortung für Ergebnisse und entwickelt das Team gezielt weiter." },
 ];
 
 const SECTION_SUBTITLES: Record<string, string> = {
@@ -915,10 +915,10 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
   const fokusKurz: Record<string, string> = {
     "Ergebnisse und Zielerreichung": "konkreten Resultaten und messbarer Leistung",
     "Zusammenarbeit und Netzwerk": "stabiler Zusammenarbeit und verlässlichen Beziehungen",
-    "Innovation und Weiterentwicklung": "neuen Ideen und kontinuierlicher Weiterentwicklung",
+    "Innovation und Veränderung": "neuen Ideen und der aktiven Umsetzung von Veränderungen",
     "Prozesse und Effizienz": "verlässlichen Abläufen und effizienter Arbeitsweise",
     "Fachliche Qualität und Expertise": "hoher fachlicher Qualität und Expertise",
-    "Strategische Wirkung": "langfristiger Wirkung und strategischer Positionierung",
+    "Kommunikation und Einfluss": "überzeugender Kommunikation und dem Erreichen von Menschen",
   };
 
   const aufgText = aufgabenSatz[aufgabencharakter] || "verbindet verschiedene Aufgabenbereiche";
