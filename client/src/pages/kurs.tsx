@@ -4,9 +4,10 @@ import { GraduationCap, Lock, Plus, Trash2, Send, CheckCircle2, AlertCircle, Boo
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import { useIsMobile } from "@/hooks/use-mobile";
-import imgKompaktkurs from "@assets/image_1775513714925.png";
-import imgLeadership from "@assets/image_1775513748106.png";
-import imgRecruiting from "@assets/image_1775513775908.png";
+import imgKompaktkurs from "@assets/Kompaktkurs_main_1776155971409.png";
+import imgLeadership from "@assets/68_1776155971408.png";
+import imgRecruiting from "@assets/69_1776155971408.png";
+import imgSales from "@assets/Kompaktkurs_Sales_1776155971409.png";
 
 interface Participant {
   id: number;
@@ -26,6 +27,7 @@ function KursWidgetInner({ isMobile }: { isMobile: boolean }) {
     { img: imgKompaktkurs, title: "bioLogic Kompaktkurs" },
     { img: imgLeadership, title: "bioLogic Leadership" },
     { img: imgRecruiting, title: "bioLogic Recruiting" },
+    { img: imgSales, title: "bioLogic Sales" },
   ];
 
   return (
@@ -56,7 +58,7 @@ function KursWidgetInner({ isMobile }: { isMobile: boolean }) {
 
       <div style={{
         display: "grid",
-        gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr",
+        gridTemplateColumns: isMobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr",
         gap: 16,
       }}>
         {modules.map((m, i) => (
