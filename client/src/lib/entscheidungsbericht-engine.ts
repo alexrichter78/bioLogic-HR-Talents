@@ -270,7 +270,7 @@ function buildIntro(input: JobCheckTextInput): string {
     return [
       `Dieser Bericht zeigt, welche Persönlichkeitsstruktur für die Stelle ${input.jobTitle} besonders passend und wirksam ist.`,
       `Die Rolle ist durch eine gleichgewichtige Kombination aus ${componentDomain.imp}, ${componentDomain.int} und ${componentDomain.ana} geprägt. Es gibt keine eindeutige Schwerpunktsetzung. Die Wirksamkeit entsteht daraus, situativ den passenden Fokus zu setzen und auch bei wechselnden Anforderungen eine konsistente Linie zu halten.`,
-      `Die Aussagen beschreiben keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse dient als strukturierte Orientierung für die Einschätzung von Passung und Wirksamkeit in der Rolle.`,
+      `Die Aussagen beschreiben dabei keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse ist wertfrei zu verstehen und dient als Orientierung für die Einschätzung von Passung und Wirksamkeit. Da jede Person individuell ist, ersetzt sie keine Einzelfallbetrachtung, sondern ergänzt diese um eine strukturierte und fundierte Entscheidungsgrundlage.`,
     ].join("\n\n");
   }
 
@@ -278,7 +278,7 @@ function buildIntro(input: JobCheckTextInput): string {
     return [
       `Dieser Bericht zeigt, welche Persönlichkeitsstruktur für die Stelle ${input.jobTitle} besonders passend und wirksam ist.`,
       `Die Rolle wird vor allem durch zwei gleich starke Anforderungen bestimmt: ${componentDomain[top1]} und ${componentDomain[top2]}. Beide stehen im Mittelpunkt der Arbeitsweise. ${componentShort[top3]} ist ebenfalls wichtig, steht aber klar im Hintergrund.`,
-      `Die Aussagen beschreiben keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse dient als strukturierte Orientierung für die Einschätzung von Passung und Wirksamkeit in der Rolle.`,
+      `Die Aussagen beschreiben dabei keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse ist wertfrei zu verstehen und dient als Orientierung für die Einschätzung von Passung und Wirksamkeit. Da jede Person individuell ist, ersetzt sie keine Einzelfallbetrachtung, sondern ergänzt diese um eine strukturierte und fundierte Entscheidungsgrundlage.`,
     ].join("\n\n");
   }
 
@@ -286,14 +286,14 @@ function buildIntro(input: JobCheckTextInput): string {
     return [
       `Dieser Bericht zeigt, welche Persönlichkeitsstruktur für die Stelle ${input.jobTitle} besonders passend und wirksam ist.`,
       `Die Rolle ist klar durch ${componentDomain[top1]} geprägt. ${componentDomain[top2]} und ${componentDomain[top3]} sind ebenfalls relevant, unterstützen die Hauptlogik jedoch nur ergänzend. Die Wirksamkeit entsteht aus einer deutlich priorisierten Arbeitsweise.`,
-      `Die Aussagen beschreiben keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse dient als strukturierte Orientierung für die Einschätzung von Passung und Wirksamkeit in der Rolle.`,
+      `Die Aussagen beschreiben dabei keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse ist wertfrei zu verstehen und dient als Orientierung für die Einschätzung von Passung und Wirksamkeit. Da jede Person individuell ist, ersetzt sie keine Einzelfallbetrachtung, sondern ergänzt diese um eine strukturierte und fundierte Entscheidungsgrundlage.`,
     ].join("\n\n");
   }
 
   return [
     `Dieser Bericht zeigt, welche Persönlichkeitsstruktur für die Stelle ${input.jobTitle} besonders passend und wirksam ist.`,
     `Die Rolle ist im Kern durch ${componentDomain[top1]} geprägt. ${componentFocus[top2]} kommt in vielen Situationen dazu und ist nicht zu unterschätzen. ${componentShort[top3]} spielt eine ergänzende Rolle und tritt vor allem in bestimmten Situationen in den Vordergrund.`,
-    `Die Aussagen beschreiben keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse dient als strukturierte Orientierung für die Einschätzung von Passung und Wirksamkeit in der Rolle.`,
+    `Die Aussagen beschreiben dabei keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse ist wertfrei zu verstehen und dient als Orientierung für die Einschätzung von Passung und Wirksamkeit. Da jede Person individuell ist, ersetzt sie keine Einzelfallbetrachtung, sondern ergänzt diese um eine strukturierte und fundierte Entscheidungsgrundlage.`,
   ].join("\n\n");
 }
 
