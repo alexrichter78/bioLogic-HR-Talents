@@ -1,0 +1,298 @@
+{
+  "version": 2,
+  "exportedAt": "2026-04-14T19:43:06.238Z",
+  "beruf": "Franchisenehmer - Einzelhandel",
+  "fuehrung": "Disziplinarische Führung mit Ergebnisverantwortung",
+  "erfolgsfokus": [
+    "Beziehungs- und Netzwerkstabilität",
+    "Ergebnis-/ Umsatzwirkung"
+  ],
+  "erfolgsfokusIndices": [
+    1,
+    0
+  ],
+  "aufgabencharakter": "Gemischt",
+  "arbeitslogik": "Menschenorientiert",
+  "zusatzInfo": "😊 Freude am Umgang mit Menschen\n\n🍇 Begeisterung für Genuss & hochwertige Produkte\n\n💬 Kommunikationsstärke & Beratungskompetenz\n\n📈 Unternehmerisches Mindset\n\n🔄 Lösungsorientiertes Denken & Netzwerkfähigkeit\n\nWenn Sie Menschen gern begeistern und Verantwortung lieben, sind Sie bei vomFASS genau richtig.\n\nvomFASS steht seit 1994 für ein Einkaufserlebnis, das Menschen begeistert: Sehen, Probieren, Genießen. Mit hochwertigen Ölen, Essigen, Spirituosen, Weinen und Feinkostprodukten schaffen Sie in Ihrem eigenen Geschäft eine Atmosphäre, die mehr ist als Handel – es ist persönlicher Genuss. Das Konzept steht auf einem starken Fundament: über 235 Partner:innen weltweit, nachhaltige Produktion, wiederverwendbare Glasbehälter, Zero-Plastic-Ansatz und ein preisgekröntes Sortiment. Sie profitieren von zentraler Produktion, Logistik, Marketingmaterialien und einem modernen Onboarding.",
+  "taetigkeiten": [
+    {
+      "id": 1,
+      "name": "Persönliche Beratung und Begeisterung der Kunden für hochwertige Genussprodukte im Ladengeschäft, sowie im Verkauf dieser Produkte. Langfristige Bindung der Kunden und Veranstaltung von Genussabenden",
+      "kategorie": "haupt",
+      "kompetenz": "Intuitiv",
+      "niveau": "Hoch",
+      "confidence": 92
+    },
+    {
+      "id": 2,
+      "name": "Verantwortung für Bestellung, Annahme und Kontrolle des Warenbestands zur Sicherstellung der Sortimentsvielfalt.",
+      "kategorie": "haupt",
+      "kompetenz": "Analytisch",
+      "niveau": "Hoch",
+      "confidence": 90
+    },
+    {
+      "id": 3,
+      "name": "Umsetzung und Kontrolle von Hygiene-, Qualitäts- und Nachhaltigkeitsstandards im Geschäftsbetrieb.",
+      "kategorie": "haupt",
+      "kompetenz": "Analytisch",
+      "niveau": "Mittel",
+      "confidence": 85
+    },
+    {
+      "id": 4,
+      "name": "Rekrutierung, Einarbeitung und Weiterentwicklung von Teammitgliedern mit Fokus auf Servicequalität.",
+      "kategorie": "haupt",
+      "kompetenz": "Intuitiv",
+      "niveau": "Hoch",
+      "confidence": 90
+    },
+    {
+      "id": 5,
+      "name": "Eigenständige Steuerung und Optimierung von Verkaufsprozessen zur Erreichung der Umsatzziele.",
+      "kategorie": "haupt",
+      "kompetenz": "Impulsiv",
+      "niveau": "Hoch",
+      "confidence": 85
+    },
+    {
+      "id": 6,
+      "name": "Gestaltung eines einladenden Ladenambientes durch kreative Warenpräsentation und Dekoration.",
+      "kategorie": "haupt",
+      "kompetenz": "Intuitiv",
+      "niveau": "Mittel",
+      "confidence": 80
+    },
+    {
+      "id": 7,
+      "name": "Bearbeitung von Reklamationen und individuellen Kundenanliegen mit lösungsorientierter Haltung.",
+      "kategorie": "haupt",
+      "kompetenz": "Intuitiv",
+      "niveau": "Hoch",
+      "confidence": 85
+    },
+    {
+      "id": 8,
+      "name": "Planung und Durchführung von lokalen Marketingaktionen sowie Verkostungsveranstaltungen.",
+      "kategorie": "haupt",
+      "kompetenz": "Analytisch",
+      "niveau": "Mittel",
+      "confidence": 80
+    },
+    {
+      "id": 9,
+      "name": "Analyse von Verkaufszahlen und Ableitung gezielter Maßnahmen zur Sortiments- und Umsatzoptimierung.",
+      "kategorie": "haupt",
+      "kompetenz": "Analytisch",
+      "niveau": "Hoch",
+      "confidence": 95
+    },
+    {
+      "id": 10,
+      "name": "Pflege und Ausbau regionaler Netzwerke zu Lieferanten, Geschäftspartnern und lokalen Akteuren.",
+      "kategorie": "haupt",
+      "kompetenz": "Intuitiv",
+      "niveau": "Mittel",
+      "confidence": 85
+    },
+    {
+      "id": 11,
+      "name": "Selbstständige Organisation und Priorisierung aller administrativen Aufgaben im Tagesgeschäft.",
+      "kategorie": "haupt",
+      "kompetenz": "Analytisch",
+      "niveau": "Mittel",
+      "confidence": 90
+    },
+    {
+      "id": 12,
+      "name": "Sicherstellung korrekter Kassenabrechnung und Einhaltung rechtlicher Vorgaben im Zahlungsverkehr.",
+      "kategorie": "haupt",
+      "kompetenz": "Analytisch",
+      "niveau": "Mittel",
+      "confidence": 90
+    },
+    {
+      "id": 13,
+      "name": "Aktives Einholen und Umsetzen von Kundenfeedback zur kontinuierlichen Serviceverbesserung.",
+      "kategorie": "haupt",
+      "kompetenz": "Intuitiv",
+      "niveau": "Mittel",
+      "confidence": 80
+    },
+    {
+      "id": 14,
+      "name": "Schnelle, eigenverantwortliche Entscheidungen bei Engpässen oder unvorhergesehenen Herausforderungen.",
+      "kategorie": "haupt",
+      "kompetenz": "Impulsiv",
+      "niveau": "Hoch",
+      "confidence": 90
+    },
+    {
+      "id": 15,
+      "name": "Enge Zusammenarbeit mit der Franchise-Zentrale zur Nutzung zentraler Marketing- und Schulungsangebote. ",
+      "kategorie": "haupt",
+      "kompetenz": "Analytisch",
+      "niveau": "Mittel",
+      "confidence": 80
+    },
+    {
+      "id": 16,
+      "name": "Empathie im Umgang mit unterschiedlichen Kunden und Mitarbeitenden.",
+      "kategorie": "neben",
+      "kompetenz": "Intuitiv",
+      "niveau": "Hoch",
+      "confidence": 95
+    },
+    {
+      "id": 17,
+      "name": "Kommunikationsstärke in Beratung, Verkaufsgespräch und Teamführung.",
+      "kategorie": "neben",
+      "kompetenz": "Intuitiv",
+      "niveau": "Hoch",
+      "confidence": 90
+    },
+    {
+      "id": 18,
+      "name": "Verlässlichkeit und sorgfältige Arbeitsweise im Alltagsgeschäft.",
+      "kategorie": "neben",
+      "kompetenz": "Analytisch",
+      "niveau": "Mittel",
+      "confidence": 80
+    },
+    {
+      "id": 19,
+      "name": "Kundenorientierung mit dem Ziel, ein begeisterndes Einkaufserlebnis zu schaffen.",
+      "kategorie": "neben",
+      "kompetenz": "Intuitiv",
+      "niveau": "Hoch",
+      "confidence": 90
+    },
+    {
+      "id": 20,
+      "name": "Flexibilität im Umgang mit wechselnden Anforderungen und spontanen Situationen.",
+      "kategorie": "neben",
+      "kompetenz": "Impulsiv",
+      "niveau": "Mittel",
+      "confidence": 80
+    },
+    {
+      "id": 21,
+      "name": "Eigenmotivation und Bereitschaft, Verantwortung zu übernehmen.",
+      "kategorie": "neben",
+      "kompetenz": "Impulsiv",
+      "niveau": "Mittel",
+      "confidence": 85
+    },
+    {
+      "id": 22,
+      "name": "Lösungsorientiertes Denken bei Problemen und Kundenanliegen.",
+      "kategorie": "neben",
+      "kompetenz": "Impulsiv",
+      "niveau": "Mittel",
+      "confidence": 80
+    },
+    {
+      "id": 23,
+      "name": "Teamfähigkeit und wertschätzende Zusammenarbeit im kleinen Team.",
+      "kategorie": "neben",
+      "kompetenz": "Intuitiv",
+      "niveau": "Mittel",
+      "confidence": 90
+    },
+    {
+      "id": 24,
+      "name": "Ausgeprägtes Qualitätsbewusstsein für Produkte und Service.",
+      "kategorie": "neben",
+      "kompetenz": "Analytisch",
+      "niveau": "Mittel",
+      "confidence": 85
+    },
+    {
+      "id": 25,
+      "name": "Freude an Genuss und Begeisterungsfähigkeit für hochwertige Produkte.",
+      "kategorie": "neben",
+      "kompetenz": "Intuitiv",
+      "niveau": "Hoch",
+      "confidence": 85
+    },
+    {
+      "id": 26,
+      "name": "Vorleben einer service- und genussorientierten Unternehmenskultur. ",
+      "kategorie": "fuehrung",
+      "kompetenz": "Intuitiv",
+      "niveau": "Hoch",
+      "confidence": 90
+    },
+    {
+      "id": 27,
+      "name": "Motivation und Entwicklung der Mitarbeitenden im Sinne der Unternehmensziele.",
+      "kategorie": "fuehrung",
+      "kompetenz": "Intuitiv",
+      "niveau": "Hoch",
+      "confidence": 90
+    },
+    {
+      "id": 28,
+      "name": "Klares Setzen von Zielen und konsequente Ergebnisverfolgung.",
+      "kategorie": "fuehrung",
+      "kompetenz": "Impulsiv",
+      "niveau": "Hoch",
+      "confidence": 85
+    },
+    {
+      "id": 29,
+      "name": "Konstruktives Feedback und lösungsorientierte Konfliktklärung im Team.",
+      "kategorie": "fuehrung",
+      "kompetenz": "Intuitiv",
+      "niveau": "Mittel",
+      "confidence": 90
+    },
+    {
+      "id": 31,
+      "name": "Verantwortungsvolle Steuerung des Geschäfts unternehmerisch und vorausschauend.",
+      "kategorie": "fuehrung",
+      "kompetenz": "Impulsiv",
+      "niveau": "Mittel",
+      "confidence": 85
+    },
+    {
+      "id": 32,
+      "name": "Förderung von Eigenverantwortung und Mitdenken im Team.",
+      "kategorie": "fuehrung",
+      "kompetenz": "Intuitiv",
+      "niveau": "Mittel",
+      "confidence": 85
+    },
+    {
+      "id": 33,
+      "name": "Transparente Kommunikation von Entscheidungen und Unternehmenszielen.",
+      "kategorie": "fuehrung",
+      "kompetenz": "Intuitiv",
+      "niveau": "Mittel",
+      "confidence": 90
+    },
+    {
+      "id": 34,
+      "name": "Schnelle Entscheidungsfähigkeit bei kritischen Situationen.",
+      "kategorie": "fuehrung",
+      "kompetenz": "Impulsiv",
+      "niveau": "Mittel",
+      "confidence": 90
+    },
+    {
+      "id": 35,
+      "name": "Verantwortung für Einhaltung gesetzlicher Vorgaben und interner Standards.",
+      "kategorie": "fuehrung",
+      "kompetenz": "Analytisch",
+      "niveau": "Mittel",
+      "confidence": 90
+    }
+  ],
+  "nextId": 36,
+  "matchCheck": {
+    "impulsiv": 19,
+    "intuitiv": 39,
+    "analytisch": 42
+  },
+  "teamCheck": null
+}

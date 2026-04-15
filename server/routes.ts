@@ -1950,9 +1950,27 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
       if (!base64 || !mimeType) return res.status(400).json({ error: "Fehlende Daten" });
       const buffer = Buffer.from(base64, "base64");
       if (mimeType === "application/pdf") {
-        const pdfParse = (await import("pdf-parse")).default;
-        const data = await pdfParse(buffer);
-        return res.json({ text: data.text.slice(0, 12000), pages: data.numpages });
+        const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
+        const maxTextLen = 12000;
+        const maxPages = 50;
+        const doc = await pdfjsLib.getDocument({ data: new Uint8Array(buffer) }).promise;
+        try {
+          let text = "";
+          const pagesToParse = Math.min(doc.numPages, maxPages);
+          for (let i = 1; i <= pagesToParse; i++) {
+            const page = await doc.getPage(i);
+            try {
+              const content = await page.getTextContent();
+              text += (content.items as any[]).map((item: any) => item.str).join(" ") + "\n";
+            } finally {
+              page.cleanup();
+            }
+            if (text.length >= maxTextLen) break;
+          }
+          return res.json({ text: text.slice(0, maxTextLen), pages: doc.numPages });
+        } finally {
+          await doc.destroy();
+        }
       } else {
         return res.json({ text: buffer.toString("utf-8").slice(0, 12000) });
       }
