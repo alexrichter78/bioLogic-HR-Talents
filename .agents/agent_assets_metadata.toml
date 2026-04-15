@@ -36,3 +36,9 @@ id = "i7jEdlzlRg_s4qieclwno"
 uri = "file://docs/louis-dokumentation.md"
 type = "text"
 title = "Louis – KI-Coach Dokumentation"
+
+[[outputs]]
+id = "25Qy9AZ0ehtFZnbzFo_BP"
+uri = "file://bioLogic-Software-Uebersicht.md"
+type = "text"
+title = "bioLogic HR Talents -- Software-Übersicht"
