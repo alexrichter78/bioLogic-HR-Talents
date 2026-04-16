@@ -641,6 +641,7 @@ export default function KICoach() {
       inputRef.current.style.height = "48px";
     }
 
+    let timeout: ReturnType<typeof setTimeout> | undefined;
     try {
       const chatHistory = newMessages.filter(m => m !== WELCOME_MSG).map(m => ({
         ...m,
@@ -694,7 +695,7 @@ export default function KICoach() {
       });
 
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 120000);
+      timeout = setTimeout(() => controller.abort(), 120000);
 
       const res = await fetch("/api/ki-coach?stream=1", {
         method: "POST",
@@ -837,6 +838,7 @@ export default function KICoach() {
       .map(m => ({ role: m.role, content: stripButtonMarker(m.content) }));
 
     (async () => {
+      let timeout: ReturnType<typeof setTimeout> | undefined;
       try {
         const stammdaten: Record<string, string> = {};
         try {
@@ -879,7 +881,7 @@ export default function KICoach() {
         const body = JSON.stringify({ messages: chatHistory, ...(hasStammdaten ? { stammdaten } : {}), region });
 
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 120000);
+        timeout = setTimeout(() => controller.abort(), 120000);
 
         const res = await fetch("/api/ki-coach?stream=1", {
           method: "POST",
