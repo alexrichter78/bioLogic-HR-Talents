@@ -2043,6 +2043,25 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
     }
   });
 
+  function getCoachMaxTokens(messages: any[], mode?: string): number {
+    const lastUserMsg = String(
+      messages.filter((m: any) => m?.role === "user").slice(-1)[0]?.content || ""
+    ).toLowerCase();
+    if (mode === "stellenanzeige" || mode === "gespraechsleitfaden") return 6000;
+    const longOutputKeywords = [
+      "leitfaden", "stellenanzeige", "stellen-anzeige", "ausführlich", "ausfuehrlich",
+      "kompletter", "komplette analyse", "vollständige", "vollstaendige",
+      "schreibe mir eine", "schreib mir eine", "formuliere eine",
+      "erstelle eine", "erstelle einen", "erstelle mir",
+      "interviewleitfaden", "interview-leitfaden", "gesprächsleitfaden", "gespraechsleitfaden",
+      "onboarding-plan", "onboarding plan",
+      "teamanalyse", "team-analyse", "konstellation analysieren", "teamdynamik analysieren",
+      "ganzen prompt", "kompletten prompt", "in voller länge",
+    ];
+    if (longOutputKeywords.some(k => lastUserMsg.includes(k))) return 6000;
+    return 3000;
+  }
+
   app.post("/api/ki-coach", requireAuth, async (req, res) => {
     try {
       const { messages, stammdaten, region, mode, uploadedImage, uploadedImageMime, uploadedDocumentText, uploadedDocumentName } = req.body;
@@ -2411,7 +2430,7 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
 
         const claudeStream = anthropic.messages.stream({
           model: "claude-sonnet-4-5-20250929",
-          max_tokens: 2000,
+          max_tokens: getCoachMaxTokens(messages, mode),
           system: claudeSystem,
           messages: claudeMessages as any,
           tools: claudeTools as any,
@@ -2512,7 +2531,7 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
 
           const followUpStream = anthropic.messages.stream({
             model: "claude-sonnet-4-5-20250929",
-            max_tokens: 2000,
+            max_tokens: getCoachMaxTokens(messages, mode),
             system: claudeSystem,
             messages: claudeMessages as any,
             temperature: coachTemperature,
@@ -2537,7 +2556,7 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
 
       let nsResponse = await anthropic.messages.create({
         model: "claude-sonnet-4-5-20250929",
-        max_tokens: 2000,
+        max_tokens: getCoachMaxTokens(messages, mode),
         system: nsSystem,
         messages: nsMessages as any,
         tools: nsTools as any,
@@ -2616,7 +2635,7 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
 
         nsResponse = await anthropic.messages.create({
           model: "claude-sonnet-4-5-20250929",
-          max_tokens: 2000,
+          max_tokens: getCoachMaxTokens(messages, mode),
           system: nsSystem,
           messages: nsMessages as any,
           temperature: coachTemperature,
@@ -2901,6 +2920,83 @@ WICHTIGE REGELN:
     } catch (error) {
       console.error("Coach feedback list error:", error);
       res.status(500).json({ error: "Feedback konnte nicht geladen werden" });
+    }
+  });
+
+  app.get("/api/coach-conversations", requireAuth, async (req: Request, res: Response) => {
+    try {
+      if (!req.session.userId) return res.status(401).json({ error: "Nicht eingeloggt" });
+      const list = await storage.listCoachConversations(req.session.userId);
+      res.json(list);
+    } catch (error) {
+      console.error("List coach conversations error:", error);
+      res.status(500).json({ error: "Konversationen konnten nicht geladen werden" });
+    }
+  });
+
+  app.get("/api/coach-conversations/:id", requireAuth, async (req: Request, res: Response) => {
+    try {
+      if (!req.session.userId) return res.status(401).json({ error: "Nicht eingeloggt" });
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ error: "Ungültige ID" });
+      const conv = await storage.getCoachConversation(id, req.session.userId);
+      if (!conv) return res.status(404).json({ error: "Nicht gefunden" });
+      res.json(conv);
+    } catch (error) {
+      console.error("Get coach conversation error:", error);
+      res.status(500).json({ error: "Konversation konnte nicht geladen werden" });
+    }
+  });
+
+  app.post("/api/coach-conversations", requireAuth, async (req: Request, res: Response) => {
+    try {
+      if (!req.session.userId) return res.status(401).json({ error: "Nicht eingeloggt" });
+      const { title, messages } = req.body;
+      if (!title || typeof title !== "string") return res.status(400).json({ error: "Titel erforderlich" });
+      if (!Array.isArray(messages)) return res.status(400).json({ error: "messages muss ein Array sein" });
+      const conv = await storage.createCoachConversation(
+        req.session.userId,
+        String(title).slice(0, 200),
+        messages
+      );
+      res.json(conv);
+    } catch (error) {
+      console.error("Create coach conversation error:", error);
+      res.status(500).json({ error: "Konversation konnte nicht gespeichert werden" });
+    }
+  });
+
+  app.patch("/api/coach-conversations/:id", requireAuth, async (req: Request, res: Response) => {
+    try {
+      if (!req.session.userId) return res.status(401).json({ error: "Nicht eingeloggt" });
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ error: "Ungültige ID" });
+      const { title, messages } = req.body;
+      const data: { title?: string; messages?: unknown } = {};
+      if (typeof title === "string") data.title = title.slice(0, 200);
+      if (Array.isArray(messages)) data.messages = messages;
+      if (data.title === undefined && data.messages === undefined) {
+        return res.status(400).json({ error: "Keine Daten zum Aktualisieren" });
+      }
+      const conv = await storage.updateCoachConversation(id, req.session.userId, data);
+      if (!conv) return res.status(404).json({ error: "Nicht gefunden" });
+      res.json(conv);
+    } catch (error) {
+      console.error("Update coach conversation error:", error);
+      res.status(500).json({ error: "Konversation konnte nicht aktualisiert werden" });
+    }
+  });
+
+  app.delete("/api/coach-conversations/:id", requireAuth, async (req: Request, res: Response) => {
+    try {
+      if (!req.session.userId) return res.status(401).json({ error: "Nicht eingeloggt" });
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ error: "Ungültige ID" });
+      await storage.deleteCoachConversation(id, req.session.userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Delete coach conversation error:", error);
+      res.status(500).json({ error: "Konversation konnte nicht gelöscht werden" });
     }
   });
 

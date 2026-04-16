@@ -2,7 +2,8 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { eq, and, gte, sql } from "drizzle-orm";
 import pkg from "pg";
 const { Pool } = pkg;
-import { users, subscriptions, passwordResetTokens, coachFeedback, knowledgeDocuments, goldenAnswers, coachTopics, organizations, usageEvents, type User, type InsertUser, type Subscription, type InsertSubscription, type PasswordResetToken, type CoachFeedback, type InsertCoachFeedback, type KnowledgeDocument, type InsertKnowledgeDocument, type GoldenAnswer, type CoachTopic, type Organization, type InsertOrganization, type UsageEvent, type InsertUsageEvent } from "@shared/schema";
+import { users, subscriptions, passwordResetTokens, coachFeedback, knowledgeDocuments, goldenAnswers, coachTopics, organizations, usageEvents, coachConversations, type User, type InsertUser, type Subscription, type InsertSubscription, type PasswordResetToken, type CoachFeedback, type InsertCoachFeedback, type KnowledgeDocument, type InsertKnowledgeDocument, type GoldenAnswer, type CoachTopic, type Organization, type InsertOrganization, type UsageEvent, type InsertUsageEvent, type CoachConversation } from "@shared/schema";
+import { desc } from "drizzle-orm";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -66,6 +67,12 @@ export interface IStorage {
   getUsageStatsByOrg(orgId: number, since: Date): Promise<{ eventType: string; count: number }[]>;
   getUsageStatsByUser(userId: number, since: Date): Promise<{ eventType: string; count: number }[]>;
   getUsageBreakdownByOrg(orgId: number, since: Date): Promise<{ userId: number; eventType: string; count: number }[]>;
+
+  listCoachConversations(userId: number): Promise<{ id: number; title: string; updatedAt: Date }[]>;
+  getCoachConversation(id: number, userId: number): Promise<CoachConversation | undefined>;
+  createCoachConversation(userId: number, title: string, messages: unknown): Promise<CoachConversation>;
+  updateCoachConversation(id: number, userId: number, data: { title?: string; messages?: unknown }): Promise<CoachConversation | undefined>;
+  deleteCoachConversation(id: number, userId: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -493,6 +500,49 @@ export class DatabaseStorage implements IStorage {
       }
     }
     return result;
+  }
+
+  async listCoachConversations(userId: number): Promise<{ id: number; title: string; updatedAt: Date }[]> {
+    const rows = await db
+      .select({ id: coachConversations.id, title: coachConversations.title, updatedAt: coachConversations.updatedAt })
+      .from(coachConversations)
+      .where(eq(coachConversations.userId, userId))
+      .orderBy(desc(coachConversations.updatedAt));
+    return rows;
+  }
+
+  async getCoachConversation(id: number, userId: number): Promise<CoachConversation | undefined> {
+    const [row] = await db
+      .select()
+      .from(coachConversations)
+      .where(and(eq(coachConversations.id, id), eq(coachConversations.userId, userId)));
+    return row;
+  }
+
+  async createCoachConversation(userId: number, title: string, messages: unknown): Promise<CoachConversation> {
+    const [row] = await db
+      .insert(coachConversations)
+      .values({ userId, title, messages: messages as any })
+      .returning();
+    return row;
+  }
+
+  async updateCoachConversation(id: number, userId: number, data: { title?: string; messages?: unknown }): Promise<CoachConversation | undefined> {
+    const updateData: any = { updatedAt: new Date() };
+    if (data.title !== undefined) updateData.title = data.title;
+    if (data.messages !== undefined) updateData.messages = data.messages;
+    const [row] = await db
+      .update(coachConversations)
+      .set(updateData)
+      .where(and(eq(coachConversations.id, id), eq(coachConversations.userId, userId)))
+      .returning();
+    return row;
+  }
+
+  async deleteCoachConversation(id: number, userId: number): Promise<void> {
+    await db
+      .delete(coachConversations)
+      .where(and(eq(coachConversations.id, id), eq(coachConversations.userId, userId)));
   }
 }
 
