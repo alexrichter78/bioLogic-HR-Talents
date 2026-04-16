@@ -94,21 +94,28 @@ export default function Datenschutz() {
 
             <h2 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>{t("8. Einsatz von Künstlicher Intelligenz")}</h2>
             <p style={{ margin: "0 0 8px" }}>
-              {t("Zur Generierung von Auswertungen und Empfehlungen wird künstliche Intelligenz eingesetzt, insbesondere Dienste von OpenAI (OpenAI, L.L.C., San Francisco, USA). Dabei gilt:")}
+              {t("Zur Generierung von Auswertungen, Empfehlungen und KI-gestützten Coaching-Antworten werden Dienste externer KI-Anbieter eingesetzt. Die Anwendung nutzt dabei zwei Anbieter mit klar getrennten Aufgabenbereichen:")}
             </p>
             <ul style={{ margin: "0 0 8px", paddingLeft: 20 }}>
-              <li>{t("Es erfolgt keine eigenständige Profilbildung durch den Anbieter")}</li>
-              <li>{t("Die Verarbeitung dient ausschliesslich der Erstellung von Textvorschlägen und Analysen")}</li>
+              <li><strong>OpenAI (OpenAI, L.L.C., San Francisco, USA)</strong>{t(" – für die Generierung von Rollenanalysen (Rollen-DNA), Vergleichsberichten (MatchCheck), Teamdynamik-Auswertungen, Kompetenzanalysen, Kandidatenprofilen sowie KI-generierten Bildern.")}</li>
+              <li><strong>Anthropic (Anthropic, PBC, San Francisco, USA)</strong>{t(" – für den KI-Coach «Louis», der Coaching-Gespräche zu Führung, Recruiting, Teamdynamik und Kommunikation führt.")}</li>
+            </ul>
+            <p style={{ margin: "0 0 8px" }}>
+              {t("Für beide Anbieter gilt:")}
+            </p>
+            <ul style={{ margin: "0 0 8px", paddingLeft: 20 }}>
+              <li>{t("Es erfolgt keine eigenständige Profilbildung durch den jeweiligen Anbieter")}</li>
+              <li>{t("Die Verarbeitung dient ausschliesslich der Erstellung von Textvorschlägen, Analysen und Coaching-Antworten")}</li>
               <li>{t("Es werden keine automatisierten Entscheidungen im Sinne von Art. 22 DSGVO getroffen")}</li>
-              <li>{t("Die an OpenAI übermittelten Daten werden gemäss der OpenAI-Nutzungsbedingungen nicht zum Training von KI-Modellen verwendet (API-Nutzung)")}</li>
+              <li>{t("Die übermittelten Daten werden gemäss den jeweiligen Nutzungsbedingungen der Anbieter nicht zum Training von KI-Modellen verwendet (API-Nutzung)")}</li>
             </ul>
             <p style={{ margin: "0 0 20px" }}>
-              {t("Durch die Nutzung der OpenAI-API kann eine Datenübermittlung in die USA erfolgen (siehe Abschnitt «Datenübermittlung in Drittländer»).")}
+              {t("Durch die Nutzung beider APIs kann eine Datenübermittlung in die USA erfolgen (siehe Abschnitt «Datenübermittlung in Drittländer»).")}
             </p>
 
             <h2 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>{t("9. Datenübermittlung in Drittländer")}</h2>
             <p style={{ margin: "0 0 20px" }}>
-              {t("Durch den Einsatz von OpenAI und ggf. des Hosting-Anbieters kann eine Übermittlung personenbezogener Daten in die USA oder andere Drittländer erfolgen. Die Übermittlung erfolgt auf Grundlage von Art. 49 Abs. 1 lit. a DSGVO (Einwilligung durch Nutzung) bzw. Art. 49 Abs. 1 lit. b DSGVO (Vertragserfüllung) sowie, soweit vorhanden, auf Grundlage des EU-US Data Privacy Framework oder vergleichbarer Garantien (z.\u00A0B. Standardvertragsklauseln gemäss Art. 46 Abs. 2 lit. c DSGVO).")}
+              {t("Durch den Einsatz von OpenAI, Anthropic und ggf. des Hosting-Anbieters kann eine Übermittlung personenbezogener Daten in die USA oder andere Drittländer erfolgen. Die Übermittlung erfolgt auf Grundlage von Art. 49 Abs. 1 lit. a DSGVO (Einwilligung durch Nutzung) bzw. Art. 49 Abs. 1 lit. b DSGVO (Vertragserfüllung) sowie, soweit vorhanden, auf Grundlage des EU-US Data Privacy Framework oder vergleichbarer Garantien (z.\u00A0B. Standardvertragsklauseln gemäss Art. 46 Abs. 2 lit. c DSGVO).")}
             </p>
 
             <h2 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>10. Hosting</h2>
