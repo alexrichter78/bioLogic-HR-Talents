@@ -117,4 +117,5 @@ Preferred communication style: Simple, everyday language.
 -   **html2canvas** / **jsPDF**: For HTML-to-PDF conversion and PDF generation.
 
 ### AI Services
--   **OpenAI**: For AI-generated reports and the KI-Coach, including image generation via `/api/generate-image`.
+-   **OpenAI (GPT-4.1)**: For all AI-generated reports (Rollen-DNA, MatchCheck, TeamCheck, Analyse, Kompetenzen, Kandidatenprofil) and image generation via `/api/generate-image`. Also used as fallback research assistant in Louis when web search fails.
+-   **Anthropic (Claude 3.5 Sonnet)**: Powers the KI-Coach "Louis" (`/api/ki-coach`). Both streaming and non-streaming paths use Claude. Tool use (web search, image generation) is handled via Claude's tool_use API; results are passed back in Claude's `tool_result` format. Message conversion between OpenAI format and Claude format is handled by `toClaudeMessages()` and `toClaudeTools()` helpers in `server/routes.ts`.

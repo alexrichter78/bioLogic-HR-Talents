@@ -4,11 +4,60 @@ import { storage } from "./storage";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 import { Resend } from "resend";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+});
+
+function toClaudeMessages(openAiMessages: any[]): { system: string; messages: any[] } {
+  const system = openAiMessages[0]?.role === "system" ? String(openAiMessages[0].content) : "";
+  const rest = openAiMessages[0]?.role === "system" ? openAiMessages.slice(1) : openAiMessages;
+  const messages = rest.map((msg: any) => {
+    if (msg.role === "user" || msg.role === "assistant") {
+      if (Array.isArray(msg.content)) {
+        const content = msg.content.map((c: any) => {
+          if (c.type === "text") return { type: "text", text: c.text };
+          if (c.type === "image_url") {
+            const url = c.image_url?.url || "";
+            if (url.startsWith("data:")) {
+              const [header, data] = url.split(",");
+              const mediaType = (header.match(/data:([^;]+)/) || [])[1] || "image/jpeg";
+              return { type: "image", source: { type: "base64", media_type: mediaType, data } };
+            }
+          }
+          return c;
+        });
+        return { role: msg.role, content };
+      }
+      if (msg.tool_calls && msg.tool_calls.length > 0) {
+        const tc = msg.tool_calls[0];
+        let input: Record<string, unknown> = {};
+        try { input = JSON.parse(tc.function.arguments); } catch {}
+        return { role: "assistant", content: [{ type: "tool_use", id: tc.id, name: tc.function.name, input }] };
+      }
+      return { role: msg.role, content: msg.content ?? "" };
+    }
+    if (msg.role === "tool") {
+      return { role: "user", content: [{ type: "tool_result", tool_use_id: msg.tool_call_id, content: msg.content }] };
+    }
+    return msg;
+  });
+  return { system, messages };
+}
+
+function toClaudeTools(openAiTools: any[]): any[] {
+  return openAiTools.map((t: any) => ({
+    name: t.function.name,
+    description: t.function.description,
+    input_schema: t.function.parameters,
+  }));
+}
 
 function getRegionInstruction(region?: string, options?: { skipAddress?: boolean }): string {
   const addressLine = options?.skipAddress ? "" : `\n- Verwende die formelle Anrede "Sie".`;
@@ -2343,14 +2392,17 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
           if (typeof (res as any).flush === "function") (res as any).flush();
         };
 
-        const stream = await openai.chat.completions.create({
-          model: "gpt-4.1",
-          messages: apiMessages as any,
-          tools: [webSearchTool, generateImageTool],
-          tool_choice: "auto",
-          temperature: coachTemperature,
+        const { system: claudeSystem, messages: claudeMessages } = toClaudeMessages(apiMessages);
+        const claudeTools = toClaudeTools([webSearchTool, generateImageTool]);
+
+        const claudeStream = anthropic.messages.stream({
+          model: "claude-3-5-sonnet-20241022",
           max_tokens: 2000,
-          stream: true,
+          system: claudeSystem,
+          messages: claudeMessages as any,
+          tools: claudeTools as any,
+          tool_choice: { type: "auto" } as any,
+          temperature: coachTemperature,
         });
 
         let collectedContent = "";
@@ -2359,18 +2411,21 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
         let toolCallArgs = "";
         let hasToolCall = false;
 
-        for await (const chunk of stream) {
-          const delta = chunk.choices[0]?.delta;
-          if (delta?.tool_calls && delta.tool_calls.length > 0) {
+        for await (const event of claudeStream) {
+          if (event.type === "content_block_start" && (event.content_block as any).type === "tool_use") {
             hasToolCall = true;
-            const tc = delta.tool_calls[0];
-            if (tc.id) toolCallId = tc.id;
-            if (tc.function?.name) toolCallName = tc.function.name;
-            if (tc.function?.arguments) toolCallArgs += tc.function.arguments;
+            toolCallId = (event.content_block as any).id;
+            toolCallName = (event.content_block as any).name;
           }
-          if (delta?.content) {
-            flushWrite(`data: ${JSON.stringify({ type: "text", text: delta.content })}\n\n`);
-            collectedContent += delta.content;
+          if (event.type === "content_block_delta") {
+            if ((event.delta as any).type === "text_delta") {
+              const text = (event.delta as any).text;
+              flushWrite(`data: ${JSON.stringify({ type: "text", text })}\n\n`);
+              collectedContent += text;
+            }
+            if ((event.delta as any).type === "input_json_delta") {
+              toolCallArgs += (event.delta as any).partial_json;
+            }
           }
         }
 
@@ -2430,9 +2485,10 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
             }
           }
 
-          const toolCalls = [{ id: toolCallId, type: "function" as const, function: { name: toolCallName, arguments: toolCallArgs } }];
-          (apiMessages as any[]).push({ role: "assistant", content: collectedContent || null, tool_calls: toolCalls });
-          (apiMessages as any[]).push({ role: "tool", content: toolResult, tool_call_id: toolCallId });
+          let toolInput: Record<string, unknown> = {};
+          try { toolInput = JSON.parse(toolCallArgs || "{}"); } catch {}
+          claudeMessages.push({ role: "assistant", content: [{ type: "tool_use", id: toolCallId, name: toolCallName, input: toolInput }] } as any);
+          claudeMessages.push({ role: "user", content: [{ type: "tool_result", tool_use_id: toolCallId, content: toolResult }] } as any);
 
           if (localImageBase64) {
             flushWrite(`data: ${JSON.stringify({ type: "image", image: localImageBase64, overlayTitle: localOverlayTitle, overlaySubtitle: localOverlaySubtitle })}\n\n`);
@@ -2440,18 +2496,17 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
 
           flushWrite(`data: ${JSON.stringify({ type: "status", message: "Formuliert Antwort..." })}\n\n`);
 
-          const followUpStream = await openai.chat.completions.create({
-            model: "gpt-4.1",
-            messages: apiMessages as any,
-            temperature: coachTemperature,
+          const followUpStream = anthropic.messages.stream({
+            model: "claude-3-5-sonnet-20241022",
             max_tokens: 2000,
-            stream: true,
+            system: claudeSystem,
+            messages: claudeMessages as any,
+            temperature: coachTemperature,
           });
 
-          for await (const chunk of followUpStream) {
-            const delta = chunk.choices[0]?.delta?.content;
-            if (delta) {
-              flushWrite(`data: ${JSON.stringify({ type: "text", text: delta })}\n\n`);
+          for await (const event of followUpStream) {
+            if (event.type === "content_block_delta" && (event.delta as any).type === "text_delta") {
+              flushWrite(`data: ${JSON.stringify({ type: "text", text: (event.delta as any).text })}\n\n`);
             }
           }
         }
@@ -2462,31 +2517,34 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
         return;
       }
 
-      let response = await openai.chat.completions.create({
-        model: "gpt-4.1",
-        messages: apiMessages as any,
-        tools: [webSearchTool, generateImageTool],
-        tool_choice: "auto",
-        temperature: coachTemperature,
+      const { system: nsSystem, messages: nsInitMessages } = toClaudeMessages(apiMessages);
+      const nsTools = toClaudeTools([webSearchTool, generateImageTool]);
+      let nsMessages: any[] = nsInitMessages;
+
+      let nsResponse = await anthropic.messages.create({
+        model: "claude-3-5-sonnet-20241022",
         max_tokens: 2000,
+        system: nsSystem,
+        messages: nsMessages as any,
+        tools: nsTools as any,
+        tool_choice: { type: "auto" } as any,
+        temperature: coachTemperature,
       });
 
-      let assistantMessage = response.choices[0]?.message;
+      while (nsResponse.stop_reason === "tool_use") {
+        const toolUseBlock = nsResponse.content.find((b: any) => b.type === "tool_use") as any;
+        if (!toolUseBlock) break;
+        const toolName = toolUseBlock.name as string;
+        const toolId = toolUseBlock.id as string;
+        const toolInput = toolUseBlock.input as Record<string, any>;
+        let toolResult = "";
 
-      while (assistantMessage?.tool_calls && assistantMessage.tool_calls.length > 0) {
-        const toolCall = assistantMessage.tool_calls[0];
-        if (toolCall.function.name === "web_search") {
-          let searchQuery = "";
-          try {
-            const args = JSON.parse(toolCall.function.arguments);
-            searchQuery = args.query || "";
-          } catch { searchQuery = ""; }
-
+        if (toolName === "web_search") {
+          const searchQuery = (toolInput?.query as string) || "";
           let searchResult = "Keine Ergebnisse gefunden.";
           if (searchQuery) {
             try {
               const searchResponse = await fetch(`https://search.replit.com/search?q=${encodeURIComponent(searchQuery)}`).catch(() => null);
-              
               if (searchResponse && searchResponse.ok) {
                 const data = await searchResponse.json();
                 const results = Array.isArray(data?.results) ? data.results : (Array.isArray(data) ? data : []);
@@ -2499,110 +2557,59 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
                   searchResult = JSON.stringify(data).slice(0, 3000);
                 }
               } else {
-                const fallbackResponse = await openai.chat.completions.create({
-                  model: "gpt-4.1",
-                  messages: [
-                    { role: "system", content: "Du bist ein Recherche-Assistent. Gib konkrete Fakten, Studien, Statistiken und Quellen an (mit Quellenname und Jahr). Formatiere Quellen als: 'Laut [Quellenname] ([Jahr])...' oder 'Eine Studie von [Organisation] zeigt...'. Antworte sachlich und kompakt." },
-                    { role: "user", content: `Recherche: ${searchQuery}` },
-                  ],
-                  temperature: 0.3,
-                  max_tokens: 1000,
-                });
-                searchResult = fallbackResponse.choices[0]?.message?.content || "Keine Ergebnisse.";
+                const fb = await openai.chat.completions.create({ model: "gpt-4.1", messages: [{ role: "system", content: "Du bist ein Recherche-Assistent. Gib konkrete Fakten, Studien, Statistiken und Quellen an." }, { role: "user", content: `Recherche: ${searchQuery}` }], temperature: 0.3, max_tokens: 1000 });
+                searchResult = fb.choices[0]?.message?.content || "Keine Ergebnisse.";
               }
             } catch {
-              const fallbackResponse = await openai.chat.completions.create({
-                model: "gpt-4.1",
-                messages: [
-                  { role: "system", content: "Du bist ein Recherche-Assistent. Gib konkrete Fakten, Studien, Statistiken und Quellen an (mit Quellenname und Jahr). Formatiere Quellen als: 'Laut [Quellenname] ([Jahr])...' oder 'Eine Studie von [Organisation] zeigt...'. Antworte sachlich und kompakt." },
-                  { role: "user", content: `Recherche: ${searchQuery}` },
-                ],
-                temperature: 0.3,
-                max_tokens: 1000,
-              });
-              searchResult = fallbackResponse.choices[0]?.message?.content || "Keine Ergebnisse.";
+              const fb = await openai.chat.completions.create({ model: "gpt-4.1", messages: [{ role: "system", content: "Du bist ein Recherche-Assistent. Gib konkrete Fakten, Studien, Statistiken und Quellen an." }, { role: "user", content: `Recherche: ${searchQuery}` }], temperature: 0.3, max_tokens: 1000 });
+              searchResult = fb.choices[0]?.message?.content || "Keine Ergebnisse.";
             }
           }
-
-          (apiMessages as any[]).push({
-            role: "assistant",
-            content: null,
-            tool_calls: assistantMessage.tool_calls,
-          });
-          (apiMessages as any[]).push({
-            role: "tool",
-            content: searchResult,
-            tool_call_id: toolCall.id,
-          });
-
-          response = await openai.chat.completions.create({
-            model: "gpt-4.1",
-            messages: apiMessages as any,
-            temperature: coachTemperature,
-            max_tokens: 2000,
-          });
-          assistantMessage = response.choices[0]?.message;
-        } else if (toolCall.function.name === "generate_image") {
-          let imagePrompt = "";
+          toolResult = searchResult;
+        } else if (toolName === "generate_image") {
+          let imagePrompt = (toolInput?.prompt as string) || "";
           let imageFormat: "1536x1024" | "1024x1536" = "1536x1024";
-          try {
-            const args = JSON.parse(toolCall.function.arguments);
-            imagePrompt = args.prompt || "";
-            if (args.overlayTitle) imageOverlayTitle = args.overlayTitle;
-            if (args.overlaySubtitle) imageOverlaySubtitle = args.overlaySubtitle;
-            if (args.format === "portrait") imageFormat = "1024x1536";
-          } catch { imagePrompt = ""; }
-
-          if (imagePrompt && !imagePrompt.toLowerCase().includes("no text")) {
-            imagePrompt += " Absolutely no text, no letters, no words, no watermarks, no labels in the image.";
-          }
-          if (imagePrompt && !imagePrompt.toLowerCase().includes("photorealistic")) {
-            imagePrompt = "Professional stock photography, photorealistic, high resolution, 8K quality, sharp focus. " + imagePrompt;
-          }
-
-          let imageToolResult = "Bild wurde erfolgreich generiert und wird dem Nutzer angezeigt." + (imageOverlayTitle ? ` Der Stellentitel "${imageOverlayTitle}" wird als scharfes Text-Overlay über dem Bild angezeigt.` : "") + " WICHTIG: Liefere in deiner Antwort zusätzlich zum Bild eine marketing-fertige Beschreibung mit bioLogic-optimierten Bullet-Points, die ein Marketingteam direkt verwenden kann. Formatiere die Beschreibung als 'Stellenprofil nach bioLogic-Methode:' mit den Aufgaben, Anforderungen und dem Wir-bieten-Bereich. Verwende Bullet-Points und bioLogic-Sprache angepasst an den Zieltyp der Stelle.";
+          if (toolInput?.overlayTitle) imageOverlayTitle = toolInput.overlayTitle as string;
+          if (toolInput?.overlaySubtitle) imageOverlaySubtitle = toolInput.overlaySubtitle as string;
+          if (toolInput?.format === "portrait") imageFormat = "1024x1536";
+          if (imagePrompt && !imagePrompt.toLowerCase().includes("no text")) imagePrompt += " Absolutely no text, no letters, no words, no watermarks, no labels in the image.";
+          if (imagePrompt && !imagePrompt.toLowerCase().includes("photorealistic")) imagePrompt = "Professional stock photography, photorealistic, high resolution, 8K quality, sharp focus. " + imagePrompt;
+          let imageToolResult = "Bild wurde erfolgreich generiert und wird dem Nutzer angezeigt." + (imageOverlayTitle ? ` Der Stellentitel "${imageOverlayTitle}" wird als scharfes Text-Overlay über dem Bild angezeigt.` : "") + " WICHTIG: Liefere in deiner Antwort zusätzlich zum Bild eine marketing-fertige Beschreibung mit bioLogic-optimierten Bullet-Points.";
           if (imagePrompt) {
             try {
               const { generateImageBuffer } = await import("./replit_integrations/image/client");
               const buffer = await generateImageBuffer(imagePrompt, imageFormat);
               const b64 = buffer.toString("base64");
-              if (b64 && b64.length > 100) {
-                generatedImageBase64 = b64;
-              } else {
-                imageToolResult = "Bildgenerierung fehlgeschlagen – leere Antwort vom Bildservice. Bitte beschreibe dem Nutzer, was das Bild zeigen sollte, und entschuldige dich für den technischen Fehler.";
-              }
+              if (b64 && b64.length > 100) generatedImageBase64 = b64;
+              else imageToolResult = "Bildgenerierung fehlgeschlagen.";
             } catch (imgError) {
               console.error("Error generating image:", imgError);
-              imageToolResult = "Fehler bei der Bildgenerierung. Bitte beschreibe dem Nutzer, was das Bild zeigen sollte, und entschuldige dich für den technischen Fehler.";
+              imageToolResult = "Fehler bei der Bildgenerierung.";
             }
           } else {
-            imageToolResult = "Kein Prompt angegeben. Bitte beschreibe dem Nutzer, was das Bild zeigen sollte.";
+            imageToolResult = "Kein Prompt angegeben.";
           }
-
-          (apiMessages as any[]).push({
-            role: "assistant",
-            content: null,
-            tool_calls: assistantMessage.tool_calls,
-          });
-          (apiMessages as any[]).push({
-            role: "tool",
-            content: imageToolResult,
-            tool_call_id: toolCall.id,
-          });
-
-          response = await openai.chat.completions.create({
-            model: "gpt-4.1",
-            messages: apiMessages as any,
-            temperature: coachTemperature,
-            max_tokens: 2000,
-          });
-          assistantMessage = response.choices[0]?.message;
+          toolResult = imageToolResult;
         } else {
           break;
         }
+
+        nsMessages = [
+          ...nsMessages,
+          { role: "assistant", content: nsResponse.content } as any,
+          { role: "user", content: [{ type: "tool_result", tool_use_id: toolId, content: toolResult }] } as any,
+        ];
+
+        nsResponse = await anthropic.messages.create({
+          model: "claude-3-5-sonnet-20241022",
+          max_tokens: 2000,
+          system: nsSystem,
+          messages: nsMessages as any,
+          temperature: coachTemperature,
+        });
       }
 
-      const reply = assistantMessage?.content || "Entschuldigung, ich konnte keine Antwort generieren.";
+      const reply = nsResponse.content.filter((b: any) => b.type === "text").map((b: any) => b.text).join("") || "Entschuldigung, ich konnte keine Antwort generieren.";
       const responseData: { reply: string; filtered: boolean; image?: string; overlayTitle?: string; overlaySubtitle?: string } = { reply, filtered: false };
       if (generatedImageBase64) {
         responseData.image = generatedImageBase64;
