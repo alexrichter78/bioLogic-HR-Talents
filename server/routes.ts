@@ -2044,7 +2044,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
   });
 
   function getCoachMaxTokens(_messages: any[], _mode?: string): number {
-    return 8000;
+    return 16000;
   }
 
   app.post("/api/ki-coach", requireAuth, async (req, res) => {

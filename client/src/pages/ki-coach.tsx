@@ -695,7 +695,7 @@ export default function KICoach() {
       });
 
       const controller = new AbortController();
-      timeout = setTimeout(() => controller.abort(), 120000);
+      timeout = setTimeout(() => controller.abort(), 300000);
 
       const res = await fetch("/api/ki-coach?stream=1", {
         method: "POST",
@@ -881,7 +881,7 @@ export default function KICoach() {
         const body = JSON.stringify({ messages: chatHistory, ...(hasStammdaten ? { stammdaten } : {}), region });
 
         const controller = new AbortController();
-        timeout = setTimeout(() => controller.abort(), 120000);
+        timeout = setTimeout(() => controller.abort(), 300000);
 
         const res = await fetch("/api/ki-coach?stream=1", {
           method: "POST",
