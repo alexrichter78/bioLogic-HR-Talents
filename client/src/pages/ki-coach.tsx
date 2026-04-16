@@ -407,7 +407,36 @@ function formatMessage(text: string) {
 export default function KICoach() {
   const { region } = useRegion();
   const t = useLocalizedText();
-  const [messages, setMessages] = useState<Message[]>([WELCOME_MSG]);
+  const LOUIS_STORAGE_KEY = "louis_chat_v1";
+  const LOUIS_TTL_MS = 24 * 60 * 60 * 1000;
+  const [messages, setMessages] = useState<Message[]>(() => {
+    try {
+      const raw = localStorage.getItem(LOUIS_STORAGE_KEY);
+      if (!raw) return [WELCOME_MSG];
+      const parsed = JSON.parse(raw) as { savedAt: number; messages: Message[] };
+      if (!parsed.savedAt || Date.now() - parsed.savedAt > LOUIS_TTL_MS) {
+        localStorage.removeItem(LOUIS_STORAGE_KEY);
+        return [WELCOME_MSG];
+      }
+      if (!Array.isArray(parsed.messages) || parsed.messages.length === 0) return [WELCOME_MSG];
+      return parsed.messages;
+    } catch {
+      return [WELCOME_MSG];
+    }
+  });
+
+  useEffect(() => {
+    try {
+      const toSave = messages.filter(m => m !== WELCOME_MSG);
+      if (toSave.length === 0) {
+        localStorage.removeItem(LOUIS_STORAGE_KEY);
+        return;
+      }
+      localStorage.setItem(LOUIS_STORAGE_KEY, JSON.stringify({ savedAt: Date.now(), messages: toSave }));
+    } catch {
+      // localStorage full or disabled — ignore
+    }
+  }, [messages]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState("");
