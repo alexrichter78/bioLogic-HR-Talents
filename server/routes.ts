@@ -2410,7 +2410,7 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
         const claudeTools = toClaudeTools([webSearchTool, generateImageTool]);
 
         const claudeStream = anthropic.messages.stream({
-          model: "claude-3-5-sonnet-20241022",
+          model: "claude-sonnet-4-5-20250929",
           max_tokens: 2000,
           system: claudeSystem,
           messages: claudeMessages as any,
@@ -2511,7 +2511,7 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
           flushWrite(`data: ${JSON.stringify({ type: "status", message: "Formuliert Antwort..." })}\n\n`);
 
           const followUpStream = anthropic.messages.stream({
-            model: "claude-3-5-sonnet-20241022",
+            model: "claude-sonnet-4-5-20250929",
             max_tokens: 2000,
             system: claudeSystem,
             messages: claudeMessages as any,
@@ -2536,7 +2536,7 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
       let nsMessages: any[] = nsInitMessages;
 
       let nsResponse = await anthropic.messages.create({
-        model: "claude-3-5-sonnet-20241022",
+        model: "claude-sonnet-4-5-20250929",
         max_tokens: 2000,
         system: nsSystem,
         messages: nsMessages as any,
@@ -2615,7 +2615,7 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
         ];
 
         nsResponse = await anthropic.messages.create({
-          model: "claude-3-5-sonnet-20241022",
+          model: "claude-sonnet-4-5-20250929",
           max_tokens: 2000,
           system: nsSystem,
           messages: nsMessages as any,
