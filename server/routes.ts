@@ -2043,23 +2043,8 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
     }
   });
 
-  function getCoachMaxTokens(messages: any[], mode?: string): number {
-    const lastUserMsg = String(
-      messages.filter((m: any) => m?.role === "user").slice(-1)[0]?.content || ""
-    ).toLowerCase();
-    if (mode === "stellenanzeige" || mode === "gespraechsleitfaden") return 6000;
-    const longOutputKeywords = [
-      "leitfaden", "stellenanzeige", "stellen-anzeige", "ausführlich", "ausfuehrlich",
-      "kompletter", "komplette analyse", "vollständige", "vollstaendige",
-      "schreibe mir eine", "schreib mir eine", "formuliere eine",
-      "erstelle eine", "erstelle einen", "erstelle mir",
-      "interviewleitfaden", "interview-leitfaden", "gesprächsleitfaden", "gespraechsleitfaden",
-      "onboarding-plan", "onboarding plan",
-      "teamanalyse", "team-analyse", "konstellation analysieren", "teamdynamik analysieren",
-      "ganzen prompt", "kompletten prompt", "in voller länge",
-    ];
-    if (longOutputKeywords.some(k => lastUserMsg.includes(k))) return 6000;
-    return 3000;
+  function getCoachMaxTokens(_messages: any[], _mode?: string): number {
+    return 8000;
   }
 
   app.post("/api/ki-coach", requireAuth, async (req, res) => {
