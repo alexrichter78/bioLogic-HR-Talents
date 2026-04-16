@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImageIcon, Mic, MicOff, ThumbsUp, ThumbsDown, Copy, Check, Search, X, MessageCircle, Swords, FileText, BookOpen, Sparkles, Clock, Plus, Trash2 } from "lucide-react";
+import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImageIcon, Mic, MicOff, ThumbsUp, ThumbsDown, Copy, Check, Search, X, MessageCircle, Swords, FileText, BookOpen, Sparkles, Trash2 } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { useRegion, useLocalizedText } from "@/lib/region";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -418,134 +418,6 @@ export default function KICoach() {
   const [promptSearch, setPromptSearch] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [coachMode, setCoachMode] = useState<string>("");
-  const [currentConversationId, setCurrentConversationId] = useState<number | null>(null);
-  const [conversations, setConversations] = useState<{ id: number; title: string; updatedAt: string }[]>([]);
-  const [showHistory, setShowHistory] = useState(false);
-  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isSavingRef = useRef(false);
-  const isCreatingRef = useRef(false);
-  const currentConversationIdRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    currentConversationIdRef.current = currentConversationId;
-  }, [currentConversationId]);
-
-  const loadConversations = useCallback(async () => {
-    try {
-      const res = await fetch("/api/coach-conversations", { credentials: "include" });
-      if (res.ok) {
-        const data = await res.json();
-        setConversations(Array.isArray(data) ? data : []);
-      }
-    } catch (e) {
-      console.error("Load conversations failed:", e);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadConversations();
-  }, [loadConversations]);
-
-  const startNewConversation = useCallback(() => {
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    setCurrentConversationId(null);
-    setMessages([WELCOME_MSG]);
-    setShowHistory(false);
-  }, []);
-
-  const loadConversation = useCallback(async (id: number) => {
-    try {
-      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-      const res = await fetch(`/api/coach-conversations/${id}`, { credentials: "include" });
-      if (!res.ok) return;
-      const conv = await res.json();
-      const loaded = Array.isArray(conv.messages) ? conv.messages : [];
-      setMessages(loaded.length > 0 ? loaded : [WELCOME_MSG]);
-      setCurrentConversationId(conv.id);
-      setShowHistory(false);
-    } catch (e) {
-      console.error("Load conversation failed:", e);
-    }
-  }, []);
-
-  const deleteConversation = useCallback(async (id: number) => {
-    try {
-      const res = await fetch(`/api/coach-conversations/${id}`, { method: "DELETE", credentials: "include" });
-      if (res.ok) {
-        setConversations(prev => prev.filter(c => c.id !== id));
-        if (currentConversationId === id) {
-          setCurrentConversationId(null);
-          setMessages([WELCOME_MSG]);
-        }
-      }
-    } catch (e) {
-      console.error("Delete conversation failed:", e);
-    }
-  }, [currentConversationId]);
-
-  useEffect(() => {
-    const userMessages = messages.filter(m => m !== WELCOME_MSG && m.role === "user");
-    if (userMessages.length === 0) return;
-    if (loading) return;
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    saveTimerRef.current = setTimeout(async () => {
-      if (isSavingRef.current) return;
-      const messagesToSave = messages.filter(m => m !== WELCOME_MSG);
-      const firstUserMsg = userMessages[0]?.content || "Gespräch";
-      const title = firstUserMsg.slice(0, 80).replace(/\s+/g, " ").trim() || "Gespräch";
-
-      if (currentConversationIdRef.current) {
-        isSavingRef.current = true;
-        try {
-          await fetch(`/api/coach-conversations/${currentConversationIdRef.current}`, {
-            method: "PATCH",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ messages: messagesToSave }),
-          });
-          loadConversations();
-        } catch (e) {
-          console.error("Auto-save (update) failed:", e);
-        } finally {
-          isSavingRef.current = false;
-        }
-        return;
-      }
-
-      if (isCreatingRef.current) {
-        saveTimerRef.current = setTimeout(() => {
-          setMessages(m => [...m]);
-        }, 1000);
-        return;
-      }
-
-      isCreatingRef.current = true;
-      isSavingRef.current = true;
-      try {
-        const res = await fetch("/api/coach-conversations", {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title, messages: messagesToSave }),
-        });
-        if (res.ok) {
-          const conv = await res.json();
-          currentConversationIdRef.current = conv.id;
-          setCurrentConversationId(conv.id);
-        }
-        loadConversations();
-      } catch (e) {
-        console.error("Auto-save (create) failed:", e);
-      } finally {
-        isCreatingRef.current = false;
-        isSavingRef.current = false;
-      }
-    }, 2500);
-    return () => {
-      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    };
-  }, [messages, loading, loadConversations]);
-
   const COACH_MODES = [
     { id: "", label: "Allgemeines Coaching", icon: MessageCircle, desc: "Freies Gespräch zu allen Themen" },
     { id: "interview", label: "Interview-Vorbereitung", icon: BookOpen, desc: "Bewerbungsgespräche vorbereiten" },
@@ -1192,146 +1064,25 @@ export default function KICoach() {
                 }}>Profil aktiv</span>
               )}
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <button
-                onClick={startNewConversation}
-                disabled={messages.filter(m => m !== WELCOME_MSG).length === 0}
-                data-testid="button-new-conversation"
-                title="Neues Gespräch starten"
-                style={{
-                  width: 36, height: 36, borderRadius: 10, border: "none",
-                  background: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "rgba(52,199,89,0.08)" : "rgba(0,0,0,0.03)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  cursor: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "pointer" : "default",
-                  transition: "all 200ms ease", flexShrink: 0,
-                }}
-              >
-                <Plus style={{
-                  width: 16, height: 16,
-                  color: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "#34C759" : "#C7C7CC",
-                }} />
-              </button>
-              <button
-                onClick={() => { setShowHistory(true); loadConversations(); }}
-                data-testid="button-show-history"
-                title="Gesprächsverlauf anzeigen"
-                style={{
-                  height: 36, borderRadius: 10, border: "none",
-                  background: "rgba(0,113,227,0.08)",
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                  padding: "0 12px",
-                  cursor: "pointer", transition: "all 200ms ease", flexShrink: 0,
-                  color: "#0071E3", fontSize: 13, fontWeight: 600,
-                }}
-              >
-                <Clock style={{ width: 16, height: 16 }} />
-                {!isMobile && <span>Verlauf{conversations.length > 0 ? ` (${conversations.length})` : ""}</span>}
-              </button>
-              <button
-                onClick={exportChat}
-                disabled={messages.filter(m => m !== WELCOME_MSG).length === 0}
-                data-testid="button-export-chat"
-                title="Gespräch als TXT exportieren"
-                style={{
-                  width: 36, height: 36, borderRadius: 10, border: "none",
-                  background: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "rgba(0,113,227,0.08)" : "rgba(0,0,0,0.03)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  cursor: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "pointer" : "default",
-                  transition: "all 200ms ease", flexShrink: 0,
-                }}
-              >
-                <Download style={{
-                  width: 16, height: 16,
-                  color: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "#0071E3" : "#C7C7CC",
-                }} />
-              </button>
-            </div>
-          </div>
-
-          {showHistory && (
-            <div
-              onClick={() => setShowHistory(false)}
+            <button
+              onClick={exportChat}
+              disabled={messages.filter(m => m !== WELCOME_MSG).length === 0}
+              data-testid="button-export-chat"
+              title="Gespräch als TXT exportieren"
               style={{
-                position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)",
-                zIndex: 10000, display: "flex", justifyContent: "flex-end",
+                width: 36, height: 36, borderRadius: 10, border: "none",
+                background: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "rgba(0,113,227,0.08)" : "rgba(0,0,0,0.03)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "pointer" : "default",
+                transition: "all 200ms ease", flexShrink: 0,
               }}
-              data-testid="overlay-history"
             >
-              <div
-                onClick={(e) => e.stopPropagation()}
-                style={{
-                  width: isMobile ? "100%" : 420, maxWidth: "100%", height: "100%",
-                  background: "#fff", padding: "20px 20px 20px",
-                  display: "flex", flexDirection: "column", gap: 12,
-                  boxShadow: "-8px 0 30px rgba(0,0,0,0.15)",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                  <div>
-                    <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: "#1D1D1F" }}>Gesprächsverlauf</h2>
-                    <p style={{ fontSize: 12, color: "#8E8E93", margin: "2px 0 0" }}>{conversations.length} gespeicherte Gespräche</p>
-                  </div>
-                  <button
-                    onClick={() => setShowHistory(false)}
-                    data-testid="button-close-history"
-                    style={{ width: 32, height: 32, borderRadius: 8, border: "none", background: "rgba(0,0,0,0.05)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
-                  >
-                    <X style={{ width: 16, height: 16, color: "#48484A" }} />
-                  </button>
-                </div>
-                <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 6 }}>
-                  {conversations.length === 0 && (
-                    <p style={{ fontSize: 13, color: "#8E8E93", textAlign: "center", padding: "24px 12px" }}>
-                      Noch keine gespeicherten Gespräche. Sobald du eine Nachricht schreibst, wird das Gespräch automatisch gespeichert.
-                    </p>
-                  )}
-                  {conversations.map(conv => (
-                    <div
-                      key={conv.id}
-                      data-testid={`item-conversation-${conv.id}`}
-                      style={{
-                        display: "flex", alignItems: "center", gap: 8,
-                        padding: "10px 12px", borderRadius: 10,
-                        background: conv.id === currentConversationId ? "rgba(52,199,89,0.10)" : "rgba(0,0,0,0.03)",
-                        border: conv.id === currentConversationId ? "1px solid rgba(52,199,89,0.3)" : "1px solid transparent",
-                        cursor: "pointer", transition: "all 150ms ease",
-                      }}
-                      onClick={() => loadConversation(conv.id)}
-                    >
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                          {conv.title}
-                        </div>
-                        <div style={{ fontSize: 11, color: "#8E8E93", marginTop: 2 }}>
-                          {new Date(conv.updatedAt).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
-                          {" · "}
-                          {new Date(conv.updatedAt).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
-                        </div>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (window.confirm(`Gespräch "${conv.title}" wirklich löschen?`)) {
-                            deleteConversation(conv.id);
-                          }
-                        }}
-                        data-testid={`button-delete-conversation-${conv.id}`}
-                        title="Löschen"
-                        style={{
-                          width: 28, height: 28, borderRadius: 8, border: "none",
-                          background: "rgba(255,59,48,0.08)",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          cursor: "pointer", flexShrink: 0,
-                        }}
-                      >
-                        <Trash2 style={{ width: 14, height: 14, color: "#FF3B30" }} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
+              <Download style={{
+                width: 16, height: 16,
+                color: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "#0071E3" : "#C7C7CC",
+              }} />
+            </button>
+          </div>
 
           {(() => {
             const searchTerm = promptSearch.trim().toLowerCase();
