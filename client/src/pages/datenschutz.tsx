@@ -139,9 +139,17 @@ export default function Datenschutz() {
             </p>
 
             <h2 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>13. Cookies und lokaler Speicher</h2>
-            <p style={{ margin: "0 0 20px" }}>
-              {t("Die Anwendung verwendet ausschliesslich technisch notwendige Cookies und lokalen Speicher (localStorage), um Sitzungen zu verwalten, Benutzereinstellungen (z.\u00A0B. Regionauswahl) zu speichern und die Nutzung der Anwendung zu ermöglichen. Es werden keine Cookies zu Tracking-, Analyse- oder Marketingzwecken eingesetzt. Eine Einwilligung ist für technisch notwendige Cookies gemäss § 25 Abs. 2 TDDDG nicht erforderlich.")}
+            <p style={{ margin: "0 0 8px" }}>
+              {t("Die Anwendung verwendet ausschliesslich technisch notwendige Cookies und lokalen Speicher (localStorage), um Sitzungen zu verwalten und die Nutzung der Anwendung zu ermöglichen. Es werden keine Cookies zu Tracking-, Analyse- oder Marketingzwecken eingesetzt. Eine Einwilligung ist für technisch notwendige Cookies gemäss § 25 Abs. 2 TDDDG nicht erforderlich.")}
             </p>
+            <p style={{ margin: "0 0 8px" }}>
+              {t("Im lokalen Speicher werden folgende Daten abgelegt:")}
+            </p>
+            <ul style={{ margin: "0 0 20px", paddingLeft: 20 }}>
+              <li>{t("Benutzereinstellungen (z.\u00A0B. Regionauswahl) – dauerhaft bis zur manuellen Änderung")}</li>
+              <li>{t("Zwischenstände laufender Arbeitsabläufe (z.\u00A0B. Rollenanalyse, JobCheck, TeamCheck) – temporär, werden beim Zurücksetzen oder Abschluss des jeweiligen Vorgangs gelöscht")}</li>
+              <li>{t("Zwischengespeicherte KI-Ergebnisse (z.\u00A0B. generierte Texte) – temporär, nur für die aktuelle Sitzung")}</li>
+            </ul>
 
             <h2 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>14. Aufbewahrungsfristen</h2>
             <p style={{ margin: "0 0 20px" }}>
@@ -185,7 +193,7 @@ export default function Datenschutz() {
             </p>
 
             <p style={{ margin: "0 0 0", fontSize: 13, color: "#8E8E93" }}>
-              {t("Stand: März 2026 · © ")} {new Date().getFullYear()} foresMind® GmbH. Alle Rechte vorbehalten.
+              {t("Stand: April 2026 · © ")} {new Date().getFullYear()} foresMind® GmbH. Alle Rechte vorbehalten.
             </p>
           </div>
         </div>
