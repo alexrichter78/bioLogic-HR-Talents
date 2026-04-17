@@ -360,6 +360,16 @@ input[type="range"].bio-slider::-moz-range-track {
   50% { box-shadow: 0 0 0 8px rgba(255,59,48,0); }
 }
 
+.louis-user-bubble a {
+  color: #ffffff !important;
+  text-decoration: underline;
+  text-decoration-color: rgba(255,255,255,0.7);
+  word-break: break-word;
+}
+.louis-user-bubble a:hover {
+  text-decoration-color: #ffffff;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

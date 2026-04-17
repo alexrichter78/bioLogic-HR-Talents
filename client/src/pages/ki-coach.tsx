@@ -1912,7 +1912,7 @@ export default function KICoach() {
                   }
                 </div>
                 <div style={{ maxWidth: isMobile ? "88%" : "75%", display: "flex", flexDirection: "column" }}>
-                <div style={{
+                <div className={msg.role === "user" ? "louis-user-bubble" : undefined} style={{
                   padding: "12px 16px",
                   borderRadius: msg.role === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
                   background: msg.role === "user"
