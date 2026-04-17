@@ -1586,6 +1586,10 @@ export default function KICoach() {
             padding: isMobile ? "10px 14px" : "12px 28px",
             borderBottom: "1px solid rgba(0,0,0,0.06)",
             display: "flex", alignItems: "center", justifyContent: "space-between",
+            position: "sticky", top: isMobile ? 95 : 115, zIndex: 20,
+            background: "rgba(255,255,255,0.92)",
+            backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+            borderTopLeftRadius: 20, borderTopRightRadius: 20,
           }}>
             <div>
               {hasAnalysisData() && (
