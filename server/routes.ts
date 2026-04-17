@@ -15,6 +15,134 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
+type AnthropicErrorInfo = {
+  transient: boolean;
+  status?: number;
+  retryAfterMs?: number;
+};
+
+function classifyAnthropicError(err: any): AnthropicErrorInfo {
+  const status: number | undefined = err?.status ?? err?.response?.status;
+  const code = err?.code;
+  const name = err?.name;
+  if (status === 429 || status === 529 || status === 503) {
+    let retryAfterMs: number | undefined;
+    const headers = err?.headers ?? err?.response?.headers;
+    let ra: any;
+    if (headers) {
+      if (typeof headers.get === "function") ra = headers.get("retry-after");
+      else ra = headers["retry-after"] ?? headers["Retry-After"];
+    }
+    if (ra) {
+      const n = Number(ra);
+      if (!Number.isNaN(n) && n > 0) retryAfterMs = Math.min(n * 1000, 5000);
+    }
+    return { transient: true, status, retryAfterMs };
+  }
+  if (code === "ECONNRESET" || code === "ETIMEDOUT" || code === "ECONNREFUSED" || code === "ENOTFOUND" || code === "EAI_AGAIN" || code === "EPIPE" || code === "UND_ERR_SOCKET") {
+    return { transient: true, status };
+  }
+  if (name === "AbortError") return { transient: false, status };
+  const msg = String(err?.message || "");
+  if (/fetch failed|socket hang up|network|other side closed|premature close/i.test(msg)) {
+    return { transient: true, status };
+  }
+  return { transient: false, status };
+}
+
+const ANTHROPIC_RETRY_DEFAULT = { maxAttempts: 3, totalTimeoutMs: 7000 };
+
+async function callAnthropicWithRetry<T>(
+  label: string,
+  fn: () => Promise<T>,
+  opts: { maxAttempts?: number; totalTimeoutMs?: number } = {},
+): Promise<T> {
+  const maxAttempts = opts.maxAttempts ?? ANTHROPIC_RETRY_DEFAULT.maxAttempts;
+  const cap = opts.totalTimeoutMs ?? ANTHROPIC_RETRY_DEFAULT.totalTimeoutMs;
+  const start = Date.now();
+  let attempt = 0;
+  let lastErr: any;
+  while (attempt < maxAttempts) {
+    attempt++;
+    try {
+      const result = await fn();
+      if (attempt > 1) {
+        console.log(`[anthropic-retry] ${label} succeeded on attempt ${attempt}`);
+      }
+      (result as any).__anthropicRetries = attempt - 1;
+      return result;
+    } catch (err: any) {
+      lastErr = err;
+      const info = classifyAnthropicError(err);
+      const elapsed = Date.now() - start;
+      const remaining = cap - elapsed;
+      if (!info.transient || attempt >= maxAttempts || remaining <= 0) {
+        err.__anthropicRetries = attempt - 1;
+        err.__anthropicStatus = info.status;
+        err.__anthropicTransient = info.transient;
+        console.warn(`[anthropic-retry] ${label} giving up after ${attempt} attempt(s) (status=${info.status ?? "?"}, transient=${info.transient})`);
+        throw err;
+      }
+      const base = 400 * Math.pow(2, attempt - 1);
+      const jitter = Math.floor(Math.random() * 250);
+      const delay = Math.min(info.retryAfterMs ?? (base + jitter), remaining);
+      console.warn(`[anthropic-retry] ${label} attempt ${attempt} failed (status=${info.status ?? "?"}), retry in ${delay}ms`);
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+  throw lastErr;
+}
+
+async function streamAnthropicWithRetry(
+  label: string,
+  makeStream: () => any,
+  onEvent: (event: any) => void | Promise<void>,
+  opts: { maxAttempts?: number; totalTimeoutMs?: number } = {},
+): Promise<{ retries: number }> {
+  const maxAttempts = opts.maxAttempts ?? ANTHROPIC_RETRY_DEFAULT.maxAttempts;
+  const cap = opts.totalTimeoutMs ?? ANTHROPIC_RETRY_DEFAULT.totalTimeoutMs;
+  const start = Date.now();
+  let attempt = 0;
+  let lastErr: any;
+  while (attempt < maxAttempts) {
+    attempt++;
+    let firstEventSeen = false;
+    try {
+      const stream = makeStream();
+      for await (const event of stream) {
+        firstEventSeen = true;
+        await onEvent(event);
+      }
+      if (attempt > 1) {
+        console.log(`[anthropic-retry] ${label} stream succeeded on attempt ${attempt}`);
+      }
+      return { retries: attempt - 1 };
+    } catch (err: any) {
+      lastErr = err;
+      const info = classifyAnthropicError(err);
+      const elapsed = Date.now() - start;
+      const remaining = cap - elapsed;
+      if (firstEventSeen || !info.transient || attempt >= maxAttempts || remaining <= 0) {
+        err.__anthropicRetries = attempt - 1;
+        err.__anthropicStatus = info.status;
+        err.__anthropicTransient = info.transient && !firstEventSeen;
+        err.__anthropicMidStream = firstEventSeen;
+        console.warn(`[anthropic-retry] ${label} stream giving up after ${attempt} attempt(s) (status=${info.status ?? "?"}, transient=${info.transient}, midStream=${firstEventSeen})`);
+        throw err;
+      }
+      const base = 400 * Math.pow(2, attempt - 1);
+      const jitter = Math.floor(Math.random() * 250);
+      const delay = Math.min(info.retryAfterMs ?? (base + jitter), remaining);
+      console.warn(`[anthropic-retry] ${label} stream attempt ${attempt} failed (status=${info.status ?? "?"}), retry in ${delay}ms`);
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+  throw lastErr;
+}
+
+const COACH_OVERLOAD_MESSAGE = "Der Coach ist gerade kurz überlastet – bitte in ein paar Sekunden nochmal probieren.";
+const COACH_TECH_ERROR_MESSAGE = "Entschuldigung, es ist ein technisches Problem aufgetreten. Bitte versuche es erneut.";
+
 function toClaudeMessages(openAiMessages: any[]): { system: string; messages: any[] } {
   const system = openAiMessages[0]?.role === "system" ? String(openAiMessages[0].content) : "";
   const rest = openAiMessages[0]?.role === "system" ? openAiMessages.slice(1) : openAiMessages;
@@ -2433,39 +2561,41 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
         const { system: claudeSystem, messages: claudeMessages } = toClaudeMessages(apiMessages);
         const claudeTools = toClaudeTools([webSearchTool, generateImageTool]);
 
-        const claudeStream = anthropic.messages.stream({
-          model: "claude-sonnet-4-5-20250929",
-          max_tokens: getCoachMaxTokens(messages, mode),
-          system: claudeSystem,
-          messages: claudeMessages as any,
-          tools: claudeTools as any,
-          tool_choice: { type: "auto" } as any,
-          temperature: coachTemperature,
-        });
-
         let collectedContent = "";
         let toolCallId = "";
         let toolCallName = "";
         let toolCallArgs = "";
         let hasToolCall = false;
 
-        for await (const event of claudeStream) {
-          if (event.type === "content_block_start" && (event.content_block as any).type === "tool_use") {
-            hasToolCall = true;
-            toolCallId = (event.content_block as any).id;
-            toolCallName = (event.content_block as any).name;
-          }
-          if (event.type === "content_block_delta") {
-            if ((event.delta as any).type === "text_delta") {
-              const text = (event.delta as any).text;
-              flushWrite(`data: ${JSON.stringify({ type: "text", text })}\n\n`);
-              collectedContent += text;
+        await streamAnthropicWithRetry(
+          "coach-stream-initial",
+          () => anthropic.messages.stream({
+            model: "claude-sonnet-4-5-20250929",
+            max_tokens: getCoachMaxTokens(messages, mode),
+            system: claudeSystem,
+            messages: claudeMessages as any,
+            tools: claudeTools as any,
+            tool_choice: { type: "auto" } as any,
+            temperature: coachTemperature,
+          }),
+          (event: any) => {
+            if (event.type === "content_block_start" && (event.content_block as any).type === "tool_use") {
+              hasToolCall = true;
+              toolCallId = (event.content_block as any).id;
+              toolCallName = (event.content_block as any).name;
             }
-            if ((event.delta as any).type === "input_json_delta") {
-              toolCallArgs += (event.delta as any).partial_json;
+            if (event.type === "content_block_delta") {
+              if ((event.delta as any).type === "text_delta") {
+                const text = (event.delta as any).text;
+                flushWrite(`data: ${JSON.stringify({ type: "text", text })}\n\n`);
+                collectedContent += text;
+              }
+              if ((event.delta as any).type === "input_json_delta") {
+                toolCallArgs += (event.delta as any).partial_json;
+              }
             }
-          }
-        }
+          },
+        );
 
         if (hasToolCall) {
           let toolResult = "";
@@ -2534,19 +2664,21 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
 
           flushWrite(`data: ${JSON.stringify({ type: "status", message: "Formuliert Antwort..." })}\n\n`);
 
-          const followUpStream = anthropic.messages.stream({
-            model: "claude-sonnet-4-5-20250929",
-            max_tokens: getCoachMaxTokens(messages, mode),
-            system: claudeSystem,
-            messages: claudeMessages as any,
-            temperature: coachTemperature,
-          });
-
-          for await (const event of followUpStream) {
-            if (event.type === "content_block_delta" && (event.delta as any).type === "text_delta") {
-              flushWrite(`data: ${JSON.stringify({ type: "text", text: (event.delta as any).text })}\n\n`);
-            }
-          }
+          await streamAnthropicWithRetry(
+            "coach-stream-followup",
+            () => anthropic.messages.stream({
+              model: "claude-sonnet-4-5-20250929",
+              max_tokens: getCoachMaxTokens(messages, mode),
+              system: claudeSystem,
+              messages: claudeMessages as any,
+              temperature: coachTemperature,
+            }),
+            (event: any) => {
+              if (event.type === "content_block_delta" && (event.delta as any).type === "text_delta") {
+                flushWrite(`data: ${JSON.stringify({ type: "text", text: (event.delta as any).text })}\n\n`);
+              }
+            },
+          );
         }
 
         flushWrite(`data: ${JSON.stringify({ type: "done" })}\n\n`);
@@ -2559,15 +2691,18 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
       const nsTools = toClaudeTools([webSearchTool, generateImageTool]);
       let nsMessages: any[] = nsInitMessages;
 
-      let nsResponse = await anthropic.messages.create({
-        model: "claude-sonnet-4-5-20250929",
-        max_tokens: getCoachMaxTokens(messages, mode),
-        system: nsSystem,
-        messages: nsMessages as any,
-        tools: nsTools as any,
-        tool_choice: { type: "auto" } as any,
-        temperature: coachTemperature,
-      });
+      let nsResponse = await callAnthropicWithRetry(
+        "coach-nostream-initial",
+        () => anthropic.messages.create({
+          model: "claude-sonnet-4-5-20250929",
+          max_tokens: getCoachMaxTokens(messages, mode),
+          system: nsSystem,
+          messages: nsMessages as any,
+          tools: nsTools as any,
+          tool_choice: { type: "auto" } as any,
+          temperature: coachTemperature,
+        }),
+      );
 
       while (nsResponse.stop_reason === "tool_use") {
         const toolUseBlock = nsResponse.content.find((b: any) => b.type === "tool_use") as any;
@@ -2638,13 +2773,16 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
           { role: "user", content: [{ type: "tool_result", tool_use_id: toolId, content: toolResult }] } as any,
         ];
 
-        nsResponse = await anthropic.messages.create({
-          model: "claude-sonnet-4-5-20250929",
-          max_tokens: getCoachMaxTokens(messages, mode),
-          system: nsSystem,
-          messages: nsMessages as any,
-          temperature: coachTemperature,
-        });
+        nsResponse = await callAnthropicWithRetry(
+          "coach-nostream-followup",
+          () => anthropic.messages.create({
+            model: "claude-sonnet-4-5-20250929",
+            max_tokens: getCoachMaxTokens(messages, mode),
+            system: nsSystem,
+            messages: nsMessages as any,
+            temperature: coachTemperature,
+          }),
+        );
       }
 
       const reply = nsResponse.content.filter((b: any) => b.type === "text").map((b: any) => b.text).join("") || "Entschuldigung, ich konnte keine Antwort generieren.";
@@ -2656,16 +2794,24 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
       if (imageOverlaySubtitle) responseData.overlaySubtitle = imageOverlaySubtitle;
       res.json(responseData);
       if (req.session.userId) trackUsageEvent(req.session.userId, "ki_coach");
-    } catch (error) {
-      console.error("Error in KI-Coach:", error);
+    } catch (error: any) {
+      const status: number | undefined = error?.__anthropicStatus;
+      const transient: boolean = !!error?.__anthropicTransient;
+      const midStream: boolean = !!error?.__anthropicMidStream;
+      const retries: number = error?.__anthropicRetries ?? 0;
+      const isOverload = transient || status === 429 || status === 529 || status === 503;
+      const reason: "overloaded" | "tech" = isOverload ? "overloaded" : "tech";
+      const friendly = isOverload ? COACH_OVERLOAD_MESSAGE : COACH_TECH_ERROR_MESSAGE;
+      console.error(`[ki-coach] error reason=${reason} status=${status ?? "?"} retries=${retries} midStream=${midStream} msg=${error?.message || error}`);
       if (res.headersSent) {
         try {
-          res.write(`data: ${JSON.stringify({ type: "text", text: "\n\nEntschuldigung, es ist ein Fehler aufgetreten. Bitte versuche es erneut." })}\n\n`);
+          res.write(`data: ${JSON.stringify({ type: "error", reason, message: friendly })}\n\n`);
           res.write(`data: ${JSON.stringify({ type: "done" })}\n\n`);
           res.end();
         } catch {}
       } else {
-        res.status(500).json({ error: "Fehler bei der Verarbeitung" });
+        const httpStatus = isOverload ? 503 : 500;
+        res.status(httpStatus).json({ error: friendly, reason });
       }
     }
   });

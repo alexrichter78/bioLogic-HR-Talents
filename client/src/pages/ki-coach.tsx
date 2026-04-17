@@ -12,6 +12,8 @@ type Message = {
   overlayTitle?: string;
   overlaySubtitle?: string;
   feedback?: "up" | "down";
+  errorReason?: "overloaded" | "tech";
+  retryQuestion?: string;
 };
 
 const WELCOME_MSG: Message = {
@@ -711,6 +713,12 @@ export default function KICoach() {
           try { const errData = await res.json(); detail = errData.error || ""; } catch {}
           throw new Error("LIMIT_REACHED:" + detail);
         }
+        if (res.status === 503) {
+          try { const errData = await res.json(); if (errData?.reason === "overloaded") throw new Error("OVERLOADED"); } catch (e: any) {
+            if (e?.message === "OVERLOADED") throw e;
+          }
+          throw new Error("OVERLOADED");
+        }
         throw new Error("Fehler");
       }
 
@@ -766,6 +774,28 @@ export default function KICoach() {
                   updated[updated.length - 1] = { ...updated[updated.length - 1], image: streamedImage, overlayTitle: streamedOverlayTitle, overlaySubtitle: streamedOverlaySubtitle };
                   return updated;
                 });
+              } else if (event.type === "error") {
+                const reason: "overloaded" | "tech" = event.reason === "overloaded" ? "overloaded" : "tech";
+                const errMsg: string = event.message || (reason === "overloaded"
+                  ? "Der Coach ist gerade kurz überlastet – bitte in ein paar Sekunden nochmal probieren."
+                  : "Entschuldigung, es ist ein technisches Problem aufgetreten. Bitte versuche es erneut.");
+                setMessages(prev => {
+                  const updated = [...prev];
+                  if (streamingStarted && updated[updated.length - 1]?.role === "assistant") {
+                    updated[updated.length - 1] = {
+                      ...updated[updated.length - 1],
+                      content: errMsg,
+                      errorReason: reason,
+                      retryQuestion: text,
+                    };
+                  } else {
+                    updated.push({ role: "assistant", content: errMsg, errorReason: reason, retryQuestion: text });
+                  }
+                  return updated;
+                });
+                streamingStarted = true;
+                setLoading(false);
+                setLoadingStatus("");
               } else if (event.type === "done") {
                 break;
               }
@@ -785,17 +815,25 @@ export default function KICoach() {
       clearTimeout(timeout);
       const isTimeout = err?.name === "AbortError";
       const isLimit = err?.message?.startsWith("LIMIT_REACHED:");
+      const isOverloaded = err?.message === "OVERLOADED";
       let errorContent: string;
+      let errorReason: "overloaded" | "tech" | undefined;
       if (isLimit) {
         errorContent = "Das KI-Kontingent eurer Organisation ist leider aufgebraucht. Bitte wende dich an euren Administrator, um das Limit zu erhöhen oder den Zähler zurückzusetzen.";
       } else if (isTimeout) {
         errorContent = "Die Anfrage hat zu lange gedauert. Bitte versuche es erneut – bei komplexen Fragen kann es helfen, die Frage kürzer zu formulieren.";
+        errorReason = "tech";
+      } else if (isOverloaded) {
+        errorContent = "Der Coach ist gerade kurz überlastet – bitte in ein paar Sekunden nochmal probieren.";
+        errorReason = "overloaded";
       } else {
-        errorContent = "Entschuldigung, es ist ein Fehler aufgetreten. Bitte versuche es erneut.";
+        errorContent = "Entschuldigung, es ist ein technisches Problem aufgetreten. Bitte versuche es erneut.";
+        errorReason = "tech";
       }
       setMessages(prev => [...prev, {
         role: "assistant",
         content: errorContent,
+        ...(errorReason ? { errorReason, retryQuestion: text } : {}),
       }]);
     } finally {
       setLoading(false);
@@ -897,6 +935,12 @@ export default function KICoach() {
           try { const errData = await res.json(); detail = errData.error || ""; } catch {}
           throw new Error("LIMIT_REACHED:" + detail);
         }
+        if (res.status === 503) {
+          try { const errData = await res.json(); if (errData?.reason === "overloaded") throw new Error("OVERLOADED"); } catch (e: any) {
+            if (e?.message === "OVERLOADED") throw e;
+          }
+          throw new Error("OVERLOADED");
+        }
         throw new Error("Fehler");
       }
 
@@ -950,6 +994,28 @@ export default function KICoach() {
                     };
                     return updated;
                   });
+                } else if (event.type === "error") {
+                  const reason: "overloaded" | "tech" = event.reason === "overloaded" ? "overloaded" : "tech";
+                  const errMsg: string = event.message || (reason === "overloaded"
+                    ? "Der Coach ist gerade kurz überlastet – bitte in ein paar Sekunden nochmal probieren."
+                    : "Entschuldigung, es ist ein technisches Problem aufgetreten. Bitte versuche es erneut.");
+                  setMessages(prev => {
+                    const updated = [...prev];
+                    if (streamingStarted && updated[updated.length - 1]?.role === "assistant") {
+                      updated[updated.length - 1] = {
+                        ...updated[updated.length - 1],
+                        content: errMsg,
+                        errorReason: reason,
+                        retryQuestion: text,
+                      };
+                    } else {
+                      updated.push({ role: "assistant", content: errMsg, errorReason: reason, retryQuestion: text });
+                    }
+                    return updated;
+                  });
+                  streamingStarted = true;
+                  setLoading(false);
+                  setLoadingStatus("");
                 } else if (event.type === "done") {
                   break;
                 }
@@ -969,17 +1035,25 @@ export default function KICoach() {
         clearTimeout(timeout);
         const isTimeout = err?.name === "AbortError";
         const isLimit = err?.message?.startsWith("LIMIT_REACHED:");
+        const isOverloaded = err?.message === "OVERLOADED";
         let errorContent: string;
+        let errorReason: "overloaded" | "tech" | undefined;
         if (isLimit) {
           errorContent = "Das KI-Kontingent eurer Organisation ist leider aufgebraucht. Bitte wende dich an euren Administrator, um das Limit zu erhöhen oder den Zähler zurückzusetzen.";
         } else if (isTimeout) {
           errorContent = "Die Anfrage hat zu lange gedauert. Bitte versuche es erneut.";
+          errorReason = "tech";
+        } else if (isOverloaded) {
+          errorContent = "Der Coach ist gerade kurz überlastet – bitte in ein paar Sekunden nochmal probieren.";
+          errorReason = "overloaded";
         } else {
-          errorContent = "Entschuldigung, es ist ein Fehler aufgetreten. Bitte versuche es erneut.";
+          errorContent = "Entschuldigung, es ist ein technisches Problem aufgetreten. Bitte versuche es erneut.";
+          errorReason = "tech";
         }
         setMessages(prev => [...prev, {
           role: "assistant",
           content: errorContent,
+          ...(errorReason ? { errorReason, retryQuestion: text } : {}),
         }]);
       } finally {
         setLoading(false);
@@ -1553,7 +1627,27 @@ export default function KICoach() {
                         <ThumbsDown style={{ width: 13, height: 13, color: msg.feedback === "down" ? "#FF3B30" : "#AEAEB2" }} />
                       </button>
                     </div>
-                    {!loading && (() => {
+                    {!loading && msg.errorReason === "overloaded" && msg.retryQuestion && (
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }} data-testid={`retry-container-${i}`}>
+                        <button
+                          onClick={() => sendQuickReply(msg.retryQuestion!)}
+                          data-testid={`button-retry-${i}`}
+                          style={{
+                            padding: "8px 16px",
+                            borderRadius: 18,
+                            border: "1.5px solid rgba(0,113,227,0.25)",
+                            background: "rgba(0,113,227,0.04)",
+                            color: "#0071E3",
+                            fontSize: 13,
+                            fontWeight: 600,
+                            cursor: "pointer",
+                          }}
+                        >
+                          Nochmal versuchen
+                        </button>
+                      </div>
+                    )}
+                    {!loading && !msg.errorReason && (() => {
                       const replies = extractQuickReplies(msg.content, i, messages.length, !!msg.image);
                       if (replies.length === 0) return null;
                       return (
