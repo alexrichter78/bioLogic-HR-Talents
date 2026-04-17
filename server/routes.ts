@@ -144,8 +144,16 @@ const COACH_OVERLOAD_MESSAGE = "Der Coach ist gerade kurz überlastet – bitte 
 const COACH_TECH_ERROR_MESSAGE = "Entschuldigung, es ist ein technisches Problem aufgetreten. Bitte versuche es erneut.";
 
 function toClaudeMessages(openAiMessages: any[]): { system: string; messages: any[] } {
-  const system = openAiMessages[0]?.role === "system" ? String(openAiMessages[0].content) : "";
-  const rest = openAiMessages[0]?.role === "system" ? openAiMessages.slice(1) : openAiMessages;
+  const systemParts: string[] = [];
+  const rest: any[] = [];
+  for (const msg of openAiMessages) {
+    if (msg?.role === "system") {
+      if (msg.content) systemParts.push(String(msg.content));
+    } else {
+      rest.push(msg);
+    }
+  }
+  const system = systemParts.join("\n\n");
   const messages = rest.map((msg: any) => {
     if (msg.role === "user" || msg.role === "assistant") {
       if (Array.isArray(msg.content)) {
