@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
 import { Lock, User, Eye, EyeOff, AlertCircle, ArrowLeft, Mail, CheckCircle } from "lucide-react";
 import logoPath from "@assets/Logo_bioLogic_1774652440525.gif";
 
 export default function Login() {
   const { login } = useAuth();
+  const [, setLocation] = useLocation();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -24,6 +26,8 @@ export default function Login() {
     setLoading(false);
     if (!result.ok) {
       setError(result.error || "Anmeldung fehlgeschlagen");
+    } else {
+      setLocation("/");
     }
   };
 
