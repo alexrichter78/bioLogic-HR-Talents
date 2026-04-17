@@ -1160,24 +1160,50 @@ export default function KICoach() {
                 }}>Profil aktiv</span>
               )}
             </div>
-            <button
-              onClick={exportChat}
-              disabled={messages.filter(m => m !== WELCOME_MSG).length === 0}
-              data-testid="button-export-chat"
-              title="Gespräch als TXT exportieren"
-              style={{
-                width: 36, height: 36, borderRadius: 10, border: "none",
-                background: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "rgba(0,113,227,0.08)" : "rgba(0,0,0,0.03)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                cursor: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "pointer" : "default",
-                transition: "all 200ms ease", flexShrink: 0,
-              }}
-            >
-              <Download style={{
-                width: 16, height: 16,
-                color: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "#0071E3" : "#C7C7CC",
-              }} />
-            </button>
+            <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+              <button
+                onClick={exportChat}
+                disabled={messages.filter(m => m !== WELCOME_MSG).length === 0}
+                data-testid="button-export-chat"
+                title="Gespräch als TXT exportieren"
+                style={{
+                  width: 36, height: 36, borderRadius: 10, border: "none",
+                  background: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "rgba(0,113,227,0.08)" : "rgba(0,0,0,0.03)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  cursor: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "pointer" : "default",
+                  transition: "all 200ms ease",
+                }}
+              >
+                <Download style={{
+                  width: 16, height: 16,
+                  color: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "#0071E3" : "#C7C7CC",
+                }} />
+              </button>
+              <button
+                onClick={() => {
+                  const hasChat = messages.filter(m => m !== WELCOME_MSG).length > 0;
+                  if (!hasChat) return;
+                  if (!window.confirm("Möchtest du das aktuelle Gespräch wirklich löschen?")) return;
+                  setMessages([WELCOME_MSG]);
+                  try { localStorage.removeItem(LOUIS_STORAGE_KEY); } catch {}
+                }}
+                disabled={messages.filter(m => m !== WELCOME_MSG).length === 0}
+                data-testid="button-clear-chat"
+                title="Gespräch löschen"
+                style={{
+                  width: 36, height: 36, borderRadius: 10, border: "none",
+                  background: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "rgba(255,59,48,0.08)" : "rgba(0,0,0,0.03)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  cursor: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "pointer" : "default",
+                  transition: "all 200ms ease",
+                }}
+              >
+                <Trash2 style={{
+                  width: 16, height: 16,
+                  color: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "#FF3B30" : "#C7C7CC",
+                }} />
+              </button>
+            </div>
           </div>
 
           {(() => {
