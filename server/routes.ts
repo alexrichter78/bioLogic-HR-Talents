@@ -143,6 +143,76 @@ async function streamAnthropicWithRetry(
 const COACH_OVERLOAD_MESSAGE = "Der Coach ist gerade kurz überlastet – bitte in ein paar Sekunden nochmal probieren.";
 const COACH_TECH_ERROR_MESSAGE = "Entschuldigung, es ist ein technisches Problem aufgetreten. Bitte versuche es erneut.";
 
+function extractUrls(text: string): string[] {
+  if (!text) return [];
+  const regex = /(?:https?:\/\/|www\.)[^\s<>"')\]]+/gi;
+  const matches = text.match(regex) || [];
+  const normalized = matches.map(u => {
+    let url = u.replace(/[.,;:!?)\]]+$/, "");
+    if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+    return url;
+  });
+  return Array.from(new Set(normalized)).slice(0, 2);
+}
+
+function stripHtmlToText(html: string): string {
+  let text = html
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<noscript[\s\S]*?<\/noscript>/gi, " ")
+    .replace(/<!--[\s\S]*?-->/g, " ");
+  const titleMatch = text.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  const title = titleMatch ? titleMatch[1].replace(/\s+/g, " ").trim() : "";
+  const metaDescMatch = text.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i)
+    || text.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']description["']/i);
+  const metaDesc = metaDescMatch ? metaDescMatch[1].trim() : "";
+  const ogDescMatch = text.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i);
+  const ogDesc = ogDescMatch ? ogDescMatch[1].trim() : "";
+  text = text.replace(/<[^>]+>/g, " ");
+  text = text
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&[a-z]+;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const parts: string[] = [];
+  if (title) parts.push(`TITEL: ${title}`);
+  if (metaDesc) parts.push(`META-BESCHREIBUNG: ${metaDesc}`);
+  if (ogDesc && ogDesc !== metaDesc) parts.push(`OG-BESCHREIBUNG: ${ogDesc}`);
+  parts.push(`SEITENTEXT: ${text.slice(0, 4000)}`);
+  return parts.join("\n");
+}
+
+async function fetchUrlAsText(url: string, timeoutMs = 7000): Promise<{ url: string; text: string } | null> {
+  try {
+    const controller = new AbortController();
+    const t = setTimeout(() => controller.abort(), timeoutMs);
+    const resp = await fetch(url, {
+      signal: controller.signal,
+      redirect: "follow",
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; bioLogicBot/1.0)",
+        "Accept": "text/html,application/xhtml+xml",
+        "Accept-Language": "de,en;q=0.8",
+      },
+    });
+    clearTimeout(t);
+    if (!resp.ok) return null;
+    const ctype = resp.headers.get("content-type") || "";
+    if (!/text\/html|application\/xhtml/i.test(ctype)) return null;
+    const html = await resp.text();
+    const text = stripHtmlToText(html);
+    if (!text || text.length < 20) return null;
+    return { url, text };
+  } catch {
+    return null;
+  }
+}
+
 function toClaudeMessages(openAiMessages: any[]): { system: string; messages: any[] } {
   const systemParts: string[] = [];
   const rest: any[] = [];
@@ -2251,6 +2321,24 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
         });
       }
 
+      let fetchedUrlContext = "";
+      try {
+        const lastUserRaw = messages[messages.length - 1]?.content || "";
+        const urls = extractUrls(typeof lastUserRaw === "string" ? lastUserRaw : "");
+        if (urls.length > 0) {
+          const results = await Promise.all(urls.map(u => fetchUrlAsText(u)));
+          const successful = results.filter((r): r is { url: string; text: string } => !!r);
+          if (successful.length > 0) {
+            fetchedUrlContext = "\n\nABGERUFENER WEBSEITEN-INHALT (automatisch vom Server geladen, damit du die Seite nach bioLogic bewerten kannst – sage NICHT 'ich kann keine URLs öffnen'. Analysiere stattdessen diesen Inhalt direkt nach bioLogic-Wirkung: welche der drei Anteile (impulsiv/intuitiv/analytisch) wird angesprochen, welche Zielgruppe wird getroffen oder verfehlt, wie könnte man optimieren):\n" +
+              successful.map(r => `URL: ${r.url}\n${r.text}`).join("\n\n---\n\n");
+          } else {
+            fetchedUrlContext = `\n\nHINWEIS: Der Nutzer hat URLs geschickt (${urls.join(", ")}), aber der Abruf ist technisch fehlgeschlagen (Timeout, Blockade oder kein HTML). Bitte den Nutzer kurz, den Text oder Screenshot einzufügen, damit du es nach bioLogic bewerten kannst.`;
+          }
+        }
+      } catch (e) {
+        console.error("URL fetch error:", e);
+      }
+
       let knowledgeContext = "";
       try {
         const userMessages = messages.filter((m: any) => m.role === "user");
@@ -2446,6 +2534,9 @@ ${customPrompt}${promptEndsWithDeutsch ? "" : "\n\n- Deutsch."}`;
       }
 
       let systemPromptFinal = fullSystemPrompt;
+      if (fetchedUrlContext) {
+        systemPromptFinal += fetchedUrlContext;
+      }
       if (uploadedDocumentText) {
         systemPromptFinal += `\n\nHOCHGELADENES DOKUMENT${uploadedDocumentName ? ` ("${uploadedDocumentName}")` : ""}:\n${uploadedDocumentText}\n\nDer Nutzer hat dieses Dokument hochgeladen. Beziehe dich bei deiner Antwort konkret auf den Inhalt des Dokuments und beantworte die Frage des Nutzers dazu.`;
       }
