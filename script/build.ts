@@ -1,6 +1,7 @@
 import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
 import { rm, readFile } from "fs/promises";
+import { spawn } from "child_process";
 
 // server deps to bundle to reduce openat(2) syscalls
 // which helps cold start times
@@ -59,6 +60,24 @@ async function buildAll() {
     external: externals,
     logLevel: "info",
   });
+
+  if (process.env.DATABASE_URL && process.env.SKIP_DB_PUSH !== "1") {
+    console.log("syncing database schema (drizzle-kit push)...");
+    await new Promise<void>((resolve, reject) => {
+      const child = spawn(
+        "npx",
+        ["drizzle-kit", "push", "--force"],
+        { stdio: "inherit", shell: true },
+      );
+      child.on("exit", (code) => {
+        if (code === 0) resolve();
+        else reject(new Error(`drizzle-kit push exited with code ${code}`));
+      });
+      child.on("error", reject);
+    });
+  } else {
+    console.log("skipping db:push (no DATABASE_URL or SKIP_DB_PUSH=1)");
+  }
 }
 
 buildAll().catch((err) => {
