@@ -502,12 +502,12 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async listCoachConversations(userId: number): Promise<{ id: number; title: string; updatedAt: Date }[]> {
+  async listCoachConversations(userId: number): Promise<{ id: number; title: string; pinned: boolean; updatedAt: Date }[]> {
     const rows = await db
-      .select({ id: coachConversations.id, title: coachConversations.title, updatedAt: coachConversations.updatedAt })
+      .select({ id: coachConversations.id, title: coachConversations.title, pinned: coachConversations.pinned, updatedAt: coachConversations.updatedAt })
       .from(coachConversations)
       .where(eq(coachConversations.userId, userId))
-      .orderBy(desc(coachConversations.updatedAt));
+      .orderBy(desc(coachConversations.pinned), desc(coachConversations.updatedAt));
     return rows;
   }
 
@@ -527,10 +527,11 @@ export class DatabaseStorage implements IStorage {
     return row;
   }
 
-  async updateCoachConversation(id: number, userId: number, data: { title?: string; messages?: unknown }): Promise<CoachConversation | undefined> {
+  async updateCoachConversation(id: number, userId: number, data: { title?: string; messages?: unknown; pinned?: boolean }): Promise<CoachConversation | undefined> {
     const updateData: any = { updatedAt: new Date() };
     if (data.title !== undefined) updateData.title = data.title;
     if (data.messages !== undefined) updateData.messages = data.messages;
+    if (data.pinned !== undefined) updateData.pinned = data.pinned;
     const [row] = await db
       .update(coachConversations)
       .set(updateData)

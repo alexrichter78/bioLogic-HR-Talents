@@ -108,6 +108,7 @@ export const coachConversations = pgTable("coach_conversations", {
   userId: integer("user_id").notNull().references(() => users.id),
   title: text("title").notNull(),
   messages: jsonb("messages").notNull(),
+  pinned: boolean("pinned").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

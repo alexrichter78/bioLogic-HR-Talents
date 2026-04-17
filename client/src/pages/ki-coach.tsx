@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImageIcon, Mic, MicOff, ThumbsUp, ThumbsDown, Copy, Check, Search, X, FileText, Trash2, Bookmark, BookmarkCheck } from "lucide-react";
+import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImageIcon, Mic, MicOff, ThumbsUp, ThumbsDown, Copy, Check, Search, X, FileText, Trash2, Bookmark, BookmarkCheck, History, Pin, PinOff, Pencil, Plus } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { useRegion, useLocalizedText } from "@/lib/region";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -477,6 +477,169 @@ export default function KICoach() {
       setSavingGoldenIndex(null);
     }
   }, [messages]);
+
+  type ConvSummary = { id: number; title: string; pinned: boolean; updatedAt: string };
+  const currentConvKey = user?.id ? `louis_current_conv_v1_u${user.id}` : null;
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historySearch, setHistorySearch] = useState("");
+  const [conversations, setConversations] = useState<ConvSummary[]>([]);
+  const [currentConversationId, setCurrentConversationId] = useState<number | null>(null);
+  const [renamingId, setRenamingId] = useState<number | null>(null);
+  const [renamingValue, setRenamingValue] = useState("");
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const skipNextPersistRef = useRef(false);
+
+  useEffect(() => {
+    if (!currentConvKey) { setCurrentConversationId(null); return; }
+    try {
+      const raw = localStorage.getItem(currentConvKey);
+      const id = raw ? parseInt(raw, 10) : null;
+      setCurrentConversationId(id && !isNaN(id) ? id : null);
+    } catch { setCurrentConversationId(null); }
+  }, [currentConvKey]);
+
+  useEffect(() => {
+    if (!currentConvKey) return;
+    try {
+      if (currentConversationId) localStorage.setItem(currentConvKey, String(currentConversationId));
+      else localStorage.removeItem(currentConvKey);
+    } catch {}
+  }, [currentConversationId, currentConvKey]);
+
+  const loadConversations = useCallback(async () => {
+    try {
+      const r = await fetch("/api/coach-conversations", { credentials: "include" });
+      if (r.ok) setConversations(await r.json());
+    } catch {}
+  }, []);
+
+  useEffect(() => { loadConversations(); }, [loadConversations]);
+
+  const persistConversation = useCallback(async (msgsToSave: Message[], convId: number | null) => {
+    const real = msgsToSave.filter(m => m !== WELCOME_MSG);
+    if (real.length === 0) return;
+    const firstUser = real.find(m => m.role === "user");
+    const autoTitle = (firstUser?.content || "Unterhaltung").replace(/\s+/g, " ").trim().slice(0, 60);
+    try {
+      if (convId) {
+        await fetch(`/api/coach-conversations/${convId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ messages: real }),
+        });
+      } else {
+        const r = await fetch("/api/coach-conversations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ title: autoTitle, messages: real }),
+        });
+        if (r.ok) {
+          const created = await r.json();
+          setCurrentConversationId(created.id);
+        }
+      }
+      loadConversations();
+    } catch {}
+  }, [loadConversations]);
+
+  useEffect(() => {
+    if (loading) return;
+    if (skipNextPersistRef.current) {
+      skipNextPersistRef.current = false;
+      return;
+    }
+    const real = messages.filter(m => m !== WELCOME_MSG);
+    if (real.length === 0) return;
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    const idAtSchedule = currentConversationId;
+    const msgsAtSchedule = messages;
+    saveTimerRef.current = setTimeout(() => {
+      persistConversation(msgsAtSchedule, idAtSchedule);
+    }, 800);
+    return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
+  }, [messages, loading, currentConversationId, persistConversation]);
+
+  const startNewConversation = useCallback(() => {
+    if (saveTimerRef.current) { clearTimeout(saveTimerRef.current); saveTimerRef.current = null; }
+    skipNextPersistRef.current = true;
+    setMessages([WELCOME_MSG]);
+    setCurrentConversationId(null);
+    setInput("");
+    setPendingImage(null);
+    setPendingDoc(null);
+    try { localStorage.removeItem(LOUIS_STORAGE_KEY); } catch {}
+    setHistoryOpen(false);
+  }, []);
+
+  const loadConversation = useCallback(async (id: number) => {
+    try {
+      const r = await fetch(`/api/coach-conversations/${id}`, { credentials: "include" });
+      if (!r.ok) return;
+      const conv = await r.json();
+      const msgs = Array.isArray(conv.messages) && conv.messages.length > 0 ? conv.messages : [WELCOME_MSG];
+      if (saveTimerRef.current) { clearTimeout(saveTimerRef.current); saveTimerRef.current = null; }
+      skipNextPersistRef.current = true;
+      setMessages(msgs);
+      setCurrentConversationId(conv.id);
+      setHistoryOpen(false);
+      setSavedGoldenIndex(new Set());
+    } catch {}
+  }, []);
+
+  const deleteConversation = useCallback(async (id: number) => {
+    if (!window.confirm("Diese Unterhaltung wirklich löschen?")) return;
+    try {
+      await fetch(`/api/coach-conversations/${id}`, { method: "DELETE", credentials: "include" });
+      if (currentConversationId === id) {
+        setMessages([WELCOME_MSG]);
+        setCurrentConversationId(null);
+      }
+      loadConversations();
+    } catch {}
+  }, [currentConversationId, loadConversations]);
+
+  const togglePinConversation = useCallback(async (id: number, currentlyPinned: boolean) => {
+    try {
+      await fetch(`/api/coach-conversations/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ pinned: !currentlyPinned }),
+      });
+      loadConversations();
+    } catch {}
+  }, [loadConversations]);
+
+  const renameConversation = useCallback(async (id: number, newTitle: string) => {
+    const t = newTitle.trim().slice(0, 200);
+    if (!t) { setRenamingId(null); return; }
+    try {
+      await fetch(`/api/coach-conversations/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ title: t }),
+      });
+      loadConversations();
+    } catch {}
+    setRenamingId(null);
+  }, [loadConversations]);
+
+  const formatRelativeTime = useCallback((iso: string) => {
+    const d = new Date(iso).getTime();
+    const diff = Date.now() - d;
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return "gerade eben";
+    if (mins < 60) return `vor ${mins} Min`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `vor ${hours} Std`;
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `vor ${days} T`;
+    return new Date(iso).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "2-digit" });
+  }, []);
+
   const [showPrompts, setShowPrompts] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [promptSearch, setPromptSearch] = useState("");
@@ -507,64 +670,86 @@ export default function KICoach() {
   const docInputRef = useRef<HTMLInputElement>(null);
 
   const speechSupported = typeof window !== "undefined" && ("SpeechRecognition" in window || "webkitSpeechRecognition" in window);
+  const userStoppedRef = useRef(false);
+  const baseTextRef = useRef("");
+  const accumulatedFinalRef = useRef("");
 
-  const toggleListening = useCallback(() => {
-    if (!speechSupported) return;
+  const cleanDictation = useCallback((raw: string): string => {
+    return raw
+      .replace(/\s*[Pp]unkt\s*/g, ". ")
+      .replace(/\s*[Kk]omma\s*/g, ", ")
+      .replace(/\s*[Aa]usrufezeichen\s*/g, "! ")
+      .replace(/\s*[Ff]ragezeichen\s*/g, "? ")
+      .replace(/\s*[Dd]oppelpunkt\s*/g, ": ")
+      .replace(/\s*[Ss]emikolon\s*/g, "; ")
+      .replace(/\s*[Nn]eue [Zz]eile\s*/g, "\n")
+      .replace(/\s*[Aa]bsatz\s*/g, "\n\n")
+      .replace(/([.!?])\s+(\w)/g, (_, p, c) => p + " " + c.toUpperCase())
+      .replace(/\s+([.,!?;:])/g, "$1")
+      .replace(/\s{2,}/g, " ")
+      .trim();
+  }, []);
 
-    if (isListening) {
-      recognitionRef.current?.stop();
-      setIsListening(false);
-      return;
-    }
-
+  const startRecognition = useCallback(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
     const recognition = new SpeechRecognition();
     recognition.lang = "de-DE";
     recognition.continuous = true;
     recognition.interimResults = true;
 
-    let baseText = "";
-    setInput(prev => { baseText = prev; return prev; });
-    let finalTranscript = "";
-
     recognition.onresult = (event: any) => {
       let interim = "";
-      finalTranscript = "";
-      for (let i = 0; i < event.results.length; i++) {
+      let newFinal = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript;
         if (event.results[i].isFinal) {
-          finalTranscript += transcript;
+          newFinal += transcript;
         } else {
           interim += transcript;
         }
       }
-      const raw = finalTranscript + interim;
-      const cleaned = raw
-        .replace(/\s*[Pp]unkt\s*/g, ". ")
-        .replace(/\s*[Kk]omma\s*/g, ", ")
-        .replace(/\s*[Aa]usrufezeichen\s*/g, "! ")
-        .replace(/\s*[Ff]ragezeichen\s*/g, "? ")
-        .replace(/\s*[Dd]oppelpunkt\s*/g, ": ")
-        .replace(/\s*[Ss]emikolon\s*/g, "; ")
-        .replace(/\s*[Nn]eue [Zz]eile\s*/g, "\n")
-        .replace(/([.!?])\s+(\w)/g, (_, p, c) => p + " " + c.toUpperCase())
-        .replace(/\s{2,}/g, " ")
-        .trim();
-      const prefix = baseText ? baseText + " " : "";
+      if (newFinal) {
+        accumulatedFinalRef.current += (accumulatedFinalRef.current && !accumulatedFinalRef.current.endsWith(" ") ? " " : "") + newFinal;
+      }
+      const composed = accumulatedFinalRef.current + (interim ? " " + interim : "");
+      const cleaned = cleanDictation(composed);
+      const prefix = baseTextRef.current ? baseTextRef.current + (baseTextRef.current.endsWith(" ") || baseTextRef.current.endsWith("\n") ? "" : " ") : "";
       setInput(prefix + cleaned);
     };
 
     recognition.onend = () => {
-      setIsListening(false);
-      recognitionRef.current = null;
-      if (inputRef.current) {
-        inputRef.current.style.height = "48px";
-        inputRef.current.style.height = Math.min(inputRef.current.scrollHeight, 120) + "px";
+      if (userStoppedRef.current) {
+        recognitionRef.current = null;
+        setIsListening(false);
+        if (inputRef.current) {
+          inputRef.current.style.height = "48px";
+          inputRef.current.style.height = Math.min(inputRef.current.scrollHeight, 120) + "px";
+        }
+        return;
+      }
+      try {
+        const next = new ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)();
+        next.lang = "de-DE";
+        next.continuous = true;
+        next.interimResults = true;
+        next.onresult = recognition.onresult;
+        next.onend = recognition.onend;
+        next.onerror = recognition.onerror;
+        baseTextRef.current = baseTextRef.current + (accumulatedFinalRef.current ? (baseTextRef.current.endsWith(" ") ? "" : " ") + cleanDictation(accumulatedFinalRef.current) : "");
+        accumulatedFinalRef.current = "";
+        recognitionRef.current = next;
+        next.start();
+      } catch {
+        recognitionRef.current = null;
+        setIsListening(false);
       }
     };
 
     recognition.onerror = (event: any) => {
+      if (event.error === "no-speech" || event.error === "audio-capture") return;
       if (event.error !== "aborted") {
+        userStoppedRef.current = true;
         setIsListening(false);
         recognitionRef.current = null;
       }
@@ -572,8 +757,22 @@ export default function KICoach() {
 
     recognitionRef.current = recognition;
     recognition.start();
+  }, [cleanDictation]);
+
+  const toggleListening = useCallback(() => {
+    if (!speechSupported) return;
+    if (isListening) {
+      userStoppedRef.current = true;
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      return;
+    }
+    userStoppedRef.current = false;
+    setInput(prev => { baseTextRef.current = prev; return prev; });
+    accumulatedFinalRef.current = "";
     setIsListening(true);
-  }, [isListening, speechSupported]);
+    startRecognition();
+  }, [isListening, speechSupported, startRecognition]);
 
   useEffect(() => {
     return () => {
@@ -1191,6 +1390,179 @@ export default function KICoach() {
     <div className="page-gradient-bg" style={{ display: "flex", flexDirection: "column" }} lang="de">
       <GlobalNav />
 
+      {historyOpen && (
+        <>
+          <div
+            onClick={() => setHistoryOpen(false)}
+            data-testid="history-backdrop"
+            style={{
+              position: "fixed", inset: 0, background: "rgba(0,0,0,0.35)",
+              zIndex: 9998, animation: "fadeIn 200ms ease",
+            }}
+          />
+          <div
+            data-testid="history-drawer"
+            style={{
+              position: "fixed", top: 0, left: 0, bottom: 0,
+              width: isMobile ? "85vw" : 360,
+              maxWidth: "100vw",
+              background: "#fff", zIndex: 9999,
+              boxShadow: "4px 0 30px rgba(0,0,0,0.15)",
+              display: "flex", flexDirection: "column",
+              animation: "slideInLeft 250ms cubic-bezier(0.32, 0.72, 0, 1)",
+            }}
+          >
+            <div style={{
+              padding: "16px 18px 12px", borderBottom: "1px solid rgba(0,0,0,0.08)",
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+            }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>Verlauf</div>
+              <button
+                onClick={() => setHistoryOpen(false)}
+                data-testid="button-close-history"
+                style={{
+                  width: 30, height: 30, borderRadius: 8, border: "none",
+                  background: "rgba(0,0,0,0.04)", display: "flex",
+                  alignItems: "center", justifyContent: "center", cursor: "pointer",
+                }}
+              >
+                <X style={{ width: 16, height: 16, color: "#86868B" }} />
+              </button>
+            </div>
+            <div style={{ padding: "10px 14px", display: "flex", flexDirection: "column", gap: 8 }}>
+              <button
+                onClick={startNewConversation}
+                data-testid="button-new-conv-drawer"
+                style={{
+                  display: "flex", alignItems: "center", gap: 8,
+                  padding: "10px 14px", borderRadius: 10, border: "none",
+                  background: "linear-gradient(135deg, #34C759 0%, #30B350 100%)",
+                  color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer",
+                  boxShadow: "0 2px 8px rgba(52,199,89,0.25)",
+                  transition: "all 200ms ease",
+                }}
+              >
+                <Plus style={{ width: 16, height: 16 }} /> Neue Unterhaltung
+              </button>
+              <div style={{ position: "relative" }}>
+                <Search style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", width: 14, height: 14, color: "#AEAEB2" }} />
+                <input
+                  type="text"
+                  placeholder="Verlauf durchsuchen..."
+                  value={historySearch}
+                  onChange={e => setHistorySearch(e.target.value)}
+                  data-testid="input-history-search"
+                  style={{
+                    width: "100%", padding: "8px 10px 8px 32px",
+                    borderRadius: 10, border: "1px solid rgba(0,0,0,0.10)",
+                    fontSize: 13, background: "rgba(0,0,0,0.02)", outline: "none",
+                  }}
+                />
+              </div>
+            </div>
+            <div style={{ flex: 1, overflowY: "auto", padding: "4px 8px 16px" }}>
+              {(() => {
+                const term = historySearch.trim().toLowerCase();
+                const filtered = term
+                  ? conversations.filter(c => c.title.toLowerCase().includes(term))
+                  : conversations;
+                if (filtered.length === 0) {
+                  return (
+                    <div style={{ padding: "30px 18px", textAlign: "center", color: "#AEAEB2", fontSize: 13 }}>
+                      {term ? "Keine Treffer." : "Noch keine gespeicherten Gespräche."}
+                    </div>
+                  );
+                }
+                return filtered.map(conv => {
+                  const isActive = conv.id === currentConversationId;
+                  const isRenaming = renamingId === conv.id;
+                  return (
+                    <div
+                      key={conv.id}
+                      data-testid={`conv-item-${conv.id}`}
+                      style={{
+                        padding: "10px 12px", borderRadius: 10, marginBottom: 4,
+                        background: isActive ? "rgba(0,113,227,0.08)" : "transparent",
+                        border: isActive ? "1px solid rgba(0,113,227,0.20)" : "1px solid transparent",
+                        cursor: isRenaming ? "default" : "pointer",
+                        transition: "all 150ms ease",
+                        display: "flex", alignItems: "flex-start", gap: 8,
+                      }}
+                      onMouseEnter={e => { if (!isActive && !isRenaming) e.currentTarget.style.background = "rgba(0,0,0,0.03)"; }}
+                      onMouseLeave={e => { if (!isActive && !isRenaming) e.currentTarget.style.background = "transparent"; }}
+                      onClick={() => { if (!isRenaming) loadConversation(conv.id); }}
+                    >
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        {isRenaming ? (
+                          <input
+                            autoFocus
+                            value={renamingValue}
+                            onChange={e => setRenamingValue(e.target.value)}
+                            onClick={e => e.stopPropagation()}
+                            onBlur={() => renameConversation(conv.id, renamingValue)}
+                            onKeyDown={e => {
+                              if (e.key === "Enter") renameConversation(conv.id, renamingValue);
+                              if (e.key === "Escape") setRenamingId(null);
+                            }}
+                            data-testid={`input-rename-${conv.id}`}
+                            style={{
+                              width: "100%", padding: "4px 6px", borderRadius: 6,
+                              border: "1px solid rgba(0,113,227,0.4)", fontSize: 13,
+                              outline: "none", background: "#fff",
+                            }}
+                          />
+                        ) : (
+                          <div style={{
+                            fontSize: 13, fontWeight: isActive ? 600 : 500,
+                            color: isActive ? "#0071E3" : "#1D1D1F",
+                            display: "flex", alignItems: "center", gap: 6,
+                            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                          }}>
+                            {conv.pinned && <Pin style={{ width: 11, height: 11, color: "#FF9500", flexShrink: 0, transform: "rotate(45deg)" }} />}
+                            <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{conv.title}</span>
+                          </div>
+                        )}
+                        <div style={{ fontSize: 11, color: "#AEAEB2", marginTop: 2 }}>
+                          {formatRelativeTime(conv.updatedAt)}
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", gap: 2, flexShrink: 0, opacity: 0.7 }}>
+                        <button
+                          onClick={e => { e.stopPropagation(); setRenamingId(conv.id); setRenamingValue(conv.title); }}
+                          data-testid={`button-rename-${conv.id}`}
+                          title="Umbenennen"
+                          style={{ width: 26, height: 26, borderRadius: 6, border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                        >
+                          <Pencil style={{ width: 12, height: 12, color: "#86868B" }} />
+                        </button>
+                        <button
+                          onClick={e => { e.stopPropagation(); togglePinConversation(conv.id, conv.pinned); }}
+                          data-testid={`button-pin-${conv.id}`}
+                          title={conv.pinned ? "Lösen" : "Anpinnen"}
+                          style={{ width: 26, height: 26, borderRadius: 6, border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                        >
+                          {conv.pinned
+                            ? <PinOff style={{ width: 12, height: 12, color: "#FF9500" }} />
+                            : <Pin style={{ width: 12, height: 12, color: "#86868B" }} />}
+                        </button>
+                        <button
+                          onClick={e => { e.stopPropagation(); deleteConversation(conv.id); }}
+                          data-testid={`button-delete-${conv.id}`}
+                          title="Löschen"
+                          style={{ width: 26, height: 26, borderRadius: 6, border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                        >
+                          <Trash2 style={{ width: 12, height: 12, color: "#FF3B30" }} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                });
+              })()}
+            </div>
+          </div>
+        </>
+      )}
+
       <div style={{ position: "fixed", top: isMobile ? 48 : 56, left: 0, right: 0, zIndex: 8999 }}>
         <div className="dark:!bg-background" style={{ background: "#fff", borderBottom: "1px solid rgba(0,0,0,0.08)", padding: isMobile ? "4px 0 6px" : "5px 0 10px", minHeight: isMobile ? 48 : 62 }}>
           <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
@@ -1225,6 +1597,40 @@ export default function KICoach() {
               )}
             </div>
             <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+              <button
+                onClick={() => { loadConversations(); setHistoryOpen(true); }}
+                data-testid="button-open-history"
+                title="Gesprächsverlauf"
+                style={{
+                  width: 36, height: 36, borderRadius: 10, border: "none",
+                  background: "rgba(0,113,227,0.08)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  cursor: "pointer", transition: "all 200ms ease",
+                  position: "relative",
+                }}
+              >
+                <History style={{ width: 16, height: 16, color: "#0071E3" }} />
+                {conversations.length > 0 && (
+                  <span style={{
+                    position: "absolute", top: -3, right: -3, minWidth: 16, height: 16, padding: "0 4px",
+                    borderRadius: 8, background: "#0071E3", color: "#fff", fontSize: 10, fontWeight: 700,
+                    display: "flex", alignItems: "center", justifyContent: "center", border: "1.5px solid #fff",
+                  }}>{conversations.length > 99 ? "99+" : conversations.length}</span>
+                )}
+              </button>
+              <button
+                onClick={startNewConversation}
+                data-testid="button-new-conversation"
+                title="Neue Unterhaltung"
+                style={{
+                  width: 36, height: 36, borderRadius: 10, border: "none",
+                  background: "rgba(52,199,89,0.10)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  cursor: "pointer", transition: "all 200ms ease",
+                }}
+              >
+                <Plus style={{ width: 16, height: 16, color: "#34C759" }} />
+              </button>
               <button
                 onClick={exportChat}
                 disabled={messages.filter(m => m !== WELCOME_MSG).length === 0}
@@ -1873,7 +2279,7 @@ export default function KICoach() {
             <input
               ref={docInputRef}
               type="file"
-              accept=".pdf,.txt,.md,application/pdf,text/plain"
+              accept=".pdf,.txt,.md,.docx,.xlsx,.csv,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
               style={{ display: "none" }}
               onChange={e => { const f = e.target.files?.[0]; if (f) handleDocumentSelect(f); e.target.value = ""; }}
               data-testid="input-doc-upload"

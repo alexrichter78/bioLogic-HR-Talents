@@ -2347,7 +2347,15 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
     try {
       const { base64, mimeType } = req.body;
       if (!base64 || !mimeType) return res.status(400).json({ error: "Fehlende Daten" });
+      if (typeof base64 !== "string") return res.status(400).json({ error: "Ungültige Daten" });
+      const MAX_INPUT_BYTES = 8 * 1024 * 1024;
+      if (base64.length > Math.ceil(MAX_INPUT_BYTES * 4 / 3) + 16) {
+        return res.status(413).json({ error: "Datei zu groß (max 8 MB)" });
+      }
       const buffer = Buffer.from(base64, "base64");
+      if (buffer.length > MAX_INPUT_BYTES) {
+        return res.status(413).json({ error: "Datei zu groß (max 8 MB)" });
+      }
       if (mimeType === "application/pdf") {
         const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
         const maxTextLen = 12000;
@@ -2370,6 +2378,31 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
         } finally {
           await doc.destroy();
         }
+      } else if (
+        mimeType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+        mimeType === "application/msword"
+      ) {
+        const mammoth = await import("mammoth");
+        const result = await mammoth.extractRawText({ buffer });
+        const text = (result?.value || "").replace(/\n{3,}/g, "\n\n").slice(0, 12000);
+        return res.json({ text });
+      } else if (
+        mimeType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+        mimeType === "application/vnd.ms-excel" ||
+        mimeType === "text/csv"
+      ) {
+        const XLSX = await import("xlsx");
+        const wb = XLSX.read(buffer, { type: "buffer" });
+        const parts: string[] = [];
+        const maxLen = 12000;
+        for (const name of wb.SheetNames) {
+          if (parts.join("\n").length >= maxLen) break;
+          const sheet = wb.Sheets[name];
+          const csv = XLSX.utils.sheet_to_csv(sheet, { blankrows: false }).trim();
+          if (!csv) continue;
+          parts.push(`--- Tabelle: ${name} ---\n${csv}`);
+        }
+        return res.json({ text: parts.join("\n\n").slice(0, maxLen) });
       } else {
         return res.json({ text: buffer.toString("utf-8").slice(0, 12000) });
       }
@@ -3357,11 +3390,12 @@ WICHTIGE REGELN:
       if (!req.session.userId) return res.status(401).json({ error: "Nicht eingeloggt" });
       const id = parseInt(req.params.id);
       if (isNaN(id)) return res.status(400).json({ error: "Ungültige ID" });
-      const { title, messages } = req.body;
-      const data: { title?: string; messages?: unknown } = {};
+      const { title, messages, pinned } = req.body;
+      const data: { title?: string; messages?: unknown; pinned?: boolean } = {};
       if (typeof title === "string") data.title = title.slice(0, 200);
       if (Array.isArray(messages)) data.messages = messages;
-      if (data.title === undefined && data.messages === undefined) {
+      if (typeof pinned === "boolean") data.pinned = pinned;
+      if (data.title === undefined && data.messages === undefined && data.pinned === undefined) {
         return res.status(400).json({ error: "Keine Daten zum Aktualisieren" });
       }
       const conv = await storage.updateCoachConversation(id, req.session.userId, data);
