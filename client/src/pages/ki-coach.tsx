@@ -524,6 +524,12 @@ export default function KICoach() {
     loadConversations();
   }, [user?.id, loadConversations]);
 
+  useEffect(() => {
+    if (historyOpen && user?.id) {
+      loadConversations();
+    }
+  }, [historyOpen, user?.id, loadConversations]);
+
   const persistConversation = useCallback(async (msgsToSave: Message[], convId: number | null) => {
     const real = msgsToSave.filter(m => m !== WELCOME_MSG);
     if (real.length === 0) return;
