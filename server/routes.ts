@@ -155,7 +155,59 @@ function extractUrls(text: string): string[] {
   return Array.from(new Set(normalized)).slice(0, 2);
 }
 
-function stripHtmlToText(html: string): string {
+function resolveUrl(base: string, src: string): string {
+  try { return new URL(src, base).toString(); } catch { return src; }
+}
+
+function isPrivateOrInvalidHost(urlStr: string): boolean {
+  try {
+    const u = new URL(urlStr);
+    if (u.protocol !== "http:" && u.protocol !== "https:") return true;
+    const host = u.hostname.toLowerCase();
+    if (!host) return true;
+    if (host === "localhost" || host === "ip6-localhost" || host.endsWith(".localhost") || host.endsWith(".local") || host.endsWith(".internal")) return true;
+    const ipv4 = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+    if (ipv4) {
+      const [a, b] = [parseInt(ipv4[1], 10), parseInt(ipv4[2], 10)];
+      if (a === 10) return true;
+      if (a === 127) return true;
+      if (a === 0) return true;
+      if (a === 169 && b === 254) return true;
+      if (a === 172 && b >= 16 && b <= 31) return true;
+      if (a === 192 && b === 168) return true;
+      if (a === 100 && b >= 64 && b <= 127) return true;
+      if (a >= 224) return true;
+    }
+    if (host === "::1" || host.startsWith("fc") || host.startsWith("fd") || host.startsWith("fe80")) return true;
+    if (host.startsWith("[") && (host.includes("::1") || host.includes("fc") || host.includes("fd") || host.includes("fe80"))) return true;
+    return false;
+  } catch {
+    return true;
+  }
+}
+
+function extractImageUrls(html: string, baseUrl: string): string[] {
+  const urls: string[] = [];
+  const ogMatch = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
+    || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
+  if (ogMatch) urls.push(resolveUrl(baseUrl, ogMatch[1]));
+  const twitterMatch = html.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i);
+  if (twitterMatch) urls.push(resolveUrl(baseUrl, twitterMatch[1]));
+  const imgRegex = /<img[^>]+src=["']([^"']+)["'][^>]*>/gi;
+  let m: RegExpExecArray | null;
+  let i = 0;
+  while ((m = imgRegex.exec(html)) !== null && i < 5) {
+    const src = m[1];
+    if (!src || src.startsWith("data:")) continue;
+    if (/(logo|icon|sprite|pixel|tracking|spacer|1x1)/i.test(src)) continue;
+    urls.push(resolveUrl(baseUrl, src));
+    i++;
+  }
+  return Array.from(new Set(urls)).slice(0, 3);
+}
+
+function stripHtmlToText(html: string, baseUrl: string): { text: string; imageUrls: string[] } {
+  const imageUrls = extractImageUrls(html, baseUrl);
   let text = html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
@@ -184,10 +236,11 @@ function stripHtmlToText(html: string): string {
   if (metaDesc) parts.push(`META-BESCHREIBUNG: ${metaDesc}`);
   if (ogDesc && ogDesc !== metaDesc) parts.push(`OG-BESCHREIBUNG: ${ogDesc}`);
   parts.push(`SEITENTEXT: ${text.slice(0, 4000)}`);
-  return parts.join("\n");
+  return { text: parts.join("\n"), imageUrls };
 }
 
-async function fetchUrlAsText(url: string, timeoutMs = 7000): Promise<{ url: string; text: string } | null> {
+async function fetchUrlDirect(url: string, timeoutMs = 7000): Promise<{ html: string } | null> {
+  if (isPrivateOrInvalidHost(url)) return null;
   try {
     const controller = new AbortController();
     const t = setTimeout(() => controller.abort(), timeoutMs);
@@ -195,9 +248,9 @@ async function fetchUrlAsText(url: string, timeoutMs = 7000): Promise<{ url: str
       signal: controller.signal,
       redirect: "follow",
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; bioLogicBot/1.0)",
-        "Accept": "text/html,application/xhtml+xml",
-        "Accept-Language": "de,en;q=0.8",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "de-DE,de;q=0.9,en;q=0.8",
       },
     });
     clearTimeout(t);
@@ -205,12 +258,66 @@ async function fetchUrlAsText(url: string, timeoutMs = 7000): Promise<{ url: str
     const ctype = resp.headers.get("content-type") || "";
     if (!/text\/html|application\/xhtml/i.test(ctype)) return null;
     const html = await resp.text();
-    const text = stripHtmlToText(html);
-    if (!text || text.length < 20) return null;
-    return { url, text };
+    if (!html || html.length < 100) return null;
+    return { html };
   } catch {
     return null;
   }
+}
+
+async function fetchUrlViaJina(url: string, timeoutMs = 10000): Promise<string | null> {
+  if (isPrivateOrInvalidHost(url)) return null;
+  try {
+    const cleanUrl = url.replace(/^https?:\/\//i, "");
+    const jinaUrl = `https://r.jina.ai/https://${cleanUrl}`;
+    const controller = new AbortController();
+    const t = setTimeout(() => controller.abort(), timeoutMs);
+    const resp = await fetch(jinaUrl, {
+      signal: controller.signal,
+      headers: { "Accept": "text/plain", "X-Return-Format": "markdown" },
+    });
+    clearTimeout(t);
+    if (!resp.ok) return null;
+    const text = await resp.text();
+    if (!text || text.length < 50) return null;
+    return text.slice(0, 6000);
+  } catch {
+    return null;
+  }
+}
+
+async function fetchImageAsBase64(url: string, timeoutMs = 6000, maxBytes = 4_000_000): Promise<{ data: string; mediaType: string } | null> {
+  if (isPrivateOrInvalidHost(url)) return null;
+  try {
+    const controller = new AbortController();
+    const t = setTimeout(() => controller.abort(), timeoutMs);
+    const resp = await fetch(url, {
+      signal: controller.signal,
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; bioLogicBot/1.0)" },
+    });
+    clearTimeout(t);
+    if (!resp.ok) return null;
+    const ctype = (resp.headers.get("content-type") || "").toLowerCase();
+    if (!/^image\/(jpeg|jpg|png|gif|webp)/.test(ctype)) return null;
+    const buf = Buffer.from(await resp.arrayBuffer());
+    if (buf.length > maxBytes) return null;
+    return { data: buf.toString("base64"), mediaType: ctype.split(";")[0].trim() };
+  } catch {
+    return null;
+  }
+}
+
+async function fetchUrlAsText(url: string): Promise<{ url: string; text: string; imageUrls: string[] } | null> {
+  const direct = await fetchUrlDirect(url);
+  if (direct) {
+    const { text, imageUrls } = stripHtmlToText(direct.html, url);
+    if (text && text.length > 50) return { url, text, imageUrls };
+  }
+  const jinaText = await fetchUrlViaJina(url);
+  if (jinaText) {
+    return { url, text: `READER-EXTRACT (via r.jina.ai):\n${jinaText}`, imageUrls: [] };
+  }
+  return null;
 }
 
 function toClaudeMessages(openAiMessages: any[]): { system: string; messages: any[] } {
@@ -813,7 +920,18 @@ ANTWORT-OPTIONEN (BUTTONS):
   - Du fragst "Wie lange geht das schon so?" → KEINE Buttons (offene Frage, braucht individuelle Antwort)
   - Du erklärst nur etwas ohne Frage → KEINE Buttons
 
-- Deutsch.`;
+- Deutsch.
+
+NACHFASS-VORSCHLÄGE (FOLLOWUPS):
+- Am Ende SUBSTANZIELLER Antworten (echte Analysen, Beratungen, Empfehlungen) – NUR wenn du KEINE BUTTONS-Zeile gesetzt hast – darfst du 2-3 inhaltlich passende Folgevorschläge anbieten.
+- Format: Eine separate Zeile am ALLERLETZTEN Ende: <<FOLLOWUPS: "Vorschlag 1" | "Vorschlag 2" | "Vorschlag 3">>
+- Die Vorschläge müssen am tatsächlichen Inhalt deiner Antwort hängen – KEINE generischen Platzhalter wie "Mehr erfahren" oder "Weiter".
+- Beispiele:
+  - Nach Stellenanzeigen-Analyse: <<FOLLOWUPS: "Schreib mir die Anzeige um, damit sie analytisch geprägte Menschen anspricht" | "Welche Bildsprache würde besser passen?" | "Worauf muss ich beim Bewerbergespräch achten?">>
+  - Nach Konfliktberatung: <<FOLLOWUPS: "Lass uns das Gespräch durchspielen" | "Was sage ich, wenn er abblockt?" | "Wie bereite ich mich konkret vor?">>
+  - Nach Stammdaten/Profilfrage: <<FOLLOWUPS: "Wie wirke ich auf rot-dominante Menschen?" | "Welche Rollen passen zu meinem Profil?">>
+- KEINE FOLLOWUPS bei: kurzen Antworten, Smalltalk, Begrüssungen, Rückfragen wo du auf Details wartest, Fehlern.
+- KEINE FOLLOWUPS wenn du bereits BUTTONS gesetzt hast (BUTTONS und FOLLOWUPS schliessen sich gegenseitig aus).`;
 }
 
 function requireAuth(req: Request, res: Response, next: NextFunction) {
@@ -2322,15 +2440,24 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
       }
 
       let fetchedUrlContext = "";
+      const fetchedImages: { data: string; mediaType: string }[] = [];
       try {
         const lastUserRaw = messages[messages.length - 1]?.content || "";
         const urls = extractUrls(typeof lastUserRaw === "string" ? lastUserRaw : "");
         if (urls.length > 0) {
           const results = await Promise.all(urls.map(u => fetchUrlAsText(u)));
-          const successful = results.filter((r): r is { url: string; text: string } => !!r);
+          const successful = results.filter((r): r is { url: string; text: string; imageUrls: string[] } => !!r);
           if (successful.length > 0) {
-            fetchedUrlContext = "\n\nABGERUFENER WEBSEITEN-INHALT (automatisch vom Server geladen, damit du die Seite nach bioLogic bewerten kannst – sage NICHT 'ich kann keine URLs öffnen'. Analysiere stattdessen diesen Inhalt direkt nach bioLogic-Wirkung: welche der drei Anteile (impulsiv/intuitiv/analytisch) wird angesprochen, welche Zielgruppe wird getroffen oder verfehlt, wie könnte man optimieren):\n" +
+            fetchedUrlContext = "\n\nABGERUFENER WEBSEITEN-INHALT (automatisch vom Server geladen, damit du die Seite nach bioLogic bewerten kannst – sage NICHT 'ich kann keine URLs öffnen'. Analysiere stattdessen diesen Inhalt direkt nach bioLogic-Wirkung: welche der drei Anteile (impulsiv/intuitiv/analytisch) wird angesprochen, welche Zielgruppe wird getroffen oder verfehlt, wie könnte man optimieren. Falls dazu auch Bilder mitgeschickt wurden – analysiere die BILDSPRACHE separat: Farbwelt, Inszenierung, ob Personen oder Produkte im Mittelpunkt stehen, welche Stimmung erzeugt wird):\n" +
               successful.map(r => `URL: ${r.url}\n${r.text}`).join("\n\n---\n\n");
+
+            const imgUrls = successful.flatMap(r => r.imageUrls).slice(0, 2);
+            if (imgUrls.length > 0) {
+              const imgResults = await Promise.all(imgUrls.map(u => fetchImageAsBase64(u)));
+              for (const img of imgResults) {
+                if (img) fetchedImages.push(img);
+              }
+            }
           } else {
             fetchedUrlContext = `\n\nHINWEIS: Der Nutzer hat URLs geschickt (${urls.join(", ")}), aber der Abruf ist technisch fehlgeschlagen (Timeout, Blockade oder kein HTML). Bitte den Nutzer kurz, den Text oder Screenshot einzufügen, damit du es nach bioLogic bewerten kannst.`;
           }
@@ -2464,9 +2591,9 @@ ${customPrompt}${promptEndsWithDeutsch ? "" : "\n\n- Deutsch."}`;
         content: m.content,
       }));
 
-      if (conversationMessages.length > 10) {
-        const olderMessages = conversationMessages.slice(0, -6);
-        const recentMessages = conversationMessages.slice(-6);
+      if (conversationMessages.length > 14) {
+        const olderMessages = conversationMessages.slice(0, -8);
+        const recentMessages = conversationMessages.slice(-8);
 
         const topicKeywords: Record<string, string[]> = {
           "führung": ["führung", "chef", "leadership", "leitung", "vorgesetzter", "management"],
@@ -2542,17 +2669,20 @@ ${customPrompt}${promptEndsWithDeutsch ? "" : "\n\n- Deutsch."}`;
       }
 
       const recentSliced = conversationMessages.slice(-20) as any[];
-      if (uploadedImage && recentSliced.length > 0) {
+      if ((uploadedImage || fetchedImages.length > 0) && recentSliced.length > 0) {
         const lastIdx = recentSliced.length - 1;
         const lastMsg = recentSliced[lastIdx];
-        if (lastMsg?.role === "user" && typeof lastMsg.content === "string") {
-          recentSliced[lastIdx] = {
-            role: "user",
-            content: [
-              { type: "text", text: lastMsg.content },
-              { type: "image_url", image_url: { url: `data:${uploadedImageMime || "image/jpeg"};base64,${uploadedImage}`, detail: "high" } },
-            ],
-          };
+        if (lastMsg?.role === "user") {
+          const contentBlocks: any[] = Array.isArray(lastMsg.content)
+            ? [...lastMsg.content]
+            : [{ type: "text", text: typeof lastMsg.content === "string" ? lastMsg.content : String(lastMsg.content ?? "") }];
+          if (uploadedImage) {
+            contentBlocks.push({ type: "image_url", image_url: { url: `data:${uploadedImageMime || "image/jpeg"};base64,${uploadedImage}`, detail: "high" } });
+          }
+          for (const img of fetchedImages) {
+            contentBlocks.push({ type: "image_url", image_url: { url: `data:${img.mediaType};base64,${img.data}`, detail: "high" } });
+          }
+          recentSliced[lastIdx] = { role: "user", content: contentBlocks };
         }
       }
 
@@ -3313,6 +3443,31 @@ WICHTIGE REGELN:
       res.json(answers);
     } catch (error) {
       res.status(500).json({ error: "Goldene Antworten konnten nicht geladen werden" });
+    }
+  });
+
+  app.post("/api/golden-answers", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const { userMessage, assistantMessage, category } = req.body;
+      if (typeof userMessage !== "string" || typeof assistantMessage !== "string") {
+        return res.status(400).json({ error: "userMessage und assistantMessage sind erforderlich" });
+      }
+      if (userMessage.trim().length < 2 || assistantMessage.trim().length < 2) {
+        return res.status(400).json({ error: "Inhalt ist zu kurz" });
+      }
+      const cleanAssistant = assistantMessage
+        .replace(/\s*<<BUTTONS:[\s\S]*?>>\s*$/g, "")
+        .replace(/\s*<<FOLLOWUPS:[\s\S]*?>>\s*$/g, "")
+        .trim();
+      const answer = await storage.createGoldenAnswer({
+        userMessage: userMessage.slice(0, 4000),
+        assistantMessage: cleanAssistant.slice(0, 8000),
+        category: typeof category === "string" && category.trim().length > 0 ? category.slice(0, 60) : "allgemein",
+      });
+      res.json(answer);
+    } catch (error) {
+      console.error("Create golden answer error:", error);
+      res.status(500).json({ error: "Konnte nicht gespeichert werden" });
     }
   });
 

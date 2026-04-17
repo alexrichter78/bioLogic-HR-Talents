@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImageIcon, Mic, MicOff, ThumbsUp, ThumbsDown, Copy, Check, Search, X, FileText, Trash2 } from "lucide-react";
+import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImageIcon, Mic, MicOff, ThumbsUp, ThumbsDown, Copy, Check, Search, X, FileText, Trash2, Bookmark, BookmarkCheck } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { useRegion, useLocalizedText } from "@/lib/region";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/lib/auth";
 
 type Message = {
   role: "user" | "assistant";
@@ -443,7 +444,39 @@ export default function KICoach() {
   const [loading, setLoading] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState("");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [savedGoldenIndex, setSavedGoldenIndex] = useState<Set<number>>(new Set());
+  const [savingGoldenIndex, setSavingGoldenIndex] = useState<number | null>(null);
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
   const isMobile = useIsMobile();
+
+  const saveAsGolden = useCallback(async (index: number) => {
+    const assistantMsg = messages[index];
+    if (!assistantMsg || assistantMsg.role !== "assistant") return;
+    let userMsg: Message | undefined;
+    for (let j = index - 1; j >= 0; j--) {
+      if (messages[j]?.role === "user") { userMsg = messages[j]; break; }
+    }
+    if (!userMsg) return;
+    setSavingGoldenIndex(index);
+    try {
+      const resp = await fetch("/api/golden-answers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          userMessage: userMsg.content,
+          assistantMessage: assistantMsg.content,
+          category: "louis-rated",
+        }),
+      });
+      if (resp.ok) {
+        setSavedGoldenIndex(prev => { const next = new Set(prev); next.add(index); return next; });
+      }
+    } catch {} finally {
+      setSavingGoldenIndex(null);
+    }
+  }, [messages]);
   const [showPrompts, setShowPrompts] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [promptSearch, setPromptSearch] = useState("");
@@ -1063,32 +1096,63 @@ export default function KICoach() {
   }, [loading, messages, region]);
 
   const stripButtonMarker = useCallback((content: string): string => {
-    return content.replace(/\s*<<BUTTONS:[\s\S]*?>>\s*$/, "").replace(/\s*<<BUTTONS:[\s\S]*$/, "").trim();
+    return content
+      .replace(/\s*<<BUTTONS:[\s\S]*?>>\s*$/, "")
+      .replace(/\s*<<BUTTONS:[\s\S]*$/, "")
+      .replace(/\s*<<FOLLOWUPS:[\s\S]*?>>\s*$/, "")
+      .replace(/\s*<<FOLLOWUPS:[\s\S]*$/, "")
+      .trim();
+  }, []);
+
+  const parseMarkersFromContent = useCallback((content: string): { cleanContent: string; buttons: string[]; followups: string[] } => {
+    const parseList = (raw: string): string[] => raw
+      .replace(/\n/g, " ")
+      .split("|")
+      .map(b => b.trim().replace(/^[\u201E\u201C\u201D""„]/g, "").replace(/[\u201E\u201C\u201D""„]$/g, "").trim())
+      .filter(b => b.length > 0);
+
+    let clean = content;
+    let buttons: string[] = [];
+    let followups: string[] = [];
+
+    const buttonMatch = clean.match(/<<BUTTONS:\s*([\s\S]+?)>>\s*/);
+    if (buttonMatch) {
+      buttons = parseList(buttonMatch[1]).filter(b => b.length <= 50).slice(0, 4);
+      clean = clean.replace(/\s*<<BUTTONS:[\s\S]+?>>\s*/g, " ").trim();
+    } else if (/<<BUTTONS:/.test(clean)) {
+      clean = clean.replace(/\s*<<BUTTONS:[\s\S]*$/, "").trim();
+    }
+
+    const followupMatch = clean.match(/<<FOLLOWUPS:\s*([\s\S]+?)>>\s*/);
+    if (followupMatch) {
+      followups = parseList(followupMatch[1]).filter(b => b.length <= 90).slice(0, 3);
+      clean = clean.replace(/\s*<<FOLLOWUPS:[\s\S]+?>>\s*/g, " ").trim();
+    } else if (/<<FOLLOWUPS:/.test(clean)) {
+      clean = clean.replace(/\s*<<FOLLOWUPS:[\s\S]*$/, "").trim();
+    }
+
+    return { cleanContent: clean, buttons, followups };
   }, []);
 
   const parseButtonsFromContent = useCallback((content: string): { cleanContent: string; buttons: string[] } => {
-    const buttonMatch = content.match(/<<BUTTONS:\s*([\s\S]+?)>>\s*$/);
-    if (buttonMatch) {
-      const cleanContent = content.replace(/\s*<<BUTTONS:[\s\S]+?>>\s*$/, "").trim();
-      const raw = buttonMatch[1].replace(/\n/g, " ");
-      const buttons = raw
-        .split("|")
-        .map(b => b.trim().replace(/^[\u201E\u201C\u201D""„]/g, "").replace(/[\u201E\u201C\u201D""„]$/g, "").trim())
-        .filter(b => b.length > 0 && b.length <= 50);
-      return { cleanContent, buttons: buttons.slice(0, 4) };
-    }
-    if (/<<BUTTONS:/.test(content)) {
-      return { cleanContent: content.replace(/\s*<<BUTTONS:[\s\S]*$/, "").trim(), buttons: [] };
-    }
-    return { cleanContent: content, buttons: [] };
-  }, []);
+    const { cleanContent, buttons } = parseMarkersFromContent(content);
+    return { cleanContent, buttons };
+  }, [parseMarkersFromContent]);
 
   const extractQuickReplies = useCallback((content: string, msgIndex: number, totalMessages: number, _hasImage?: boolean): string[] => {
     const isLastAssistant = msgIndex === totalMessages - 1;
     if (!isLastAssistant || loading) return [];
-    const { buttons } = parseButtonsFromContent(content);
+    const { buttons } = parseMarkersFromContent(content);
     return buttons;
-  }, [parseButtonsFromContent, loading]);
+  }, [parseMarkersFromContent, loading]);
+
+  const extractFollowups = useCallback((content: string, msgIndex: number, totalMessages: number): string[] => {
+    const isLastAssistant = msgIndex === totalMessages - 1;
+    if (!isLastAssistant || loading) return [];
+    const { buttons, followups } = parseMarkersFromContent(content);
+    if (buttons.length > 0) return [];
+    return followups;
+  }, [parseMarkersFromContent, loading]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -1652,6 +1716,27 @@ export default function KICoach() {
                       >
                         <ThumbsDown style={{ width: 13, height: 13, color: msg.feedback === "down" ? "#FF3B30" : "#AEAEB2" }} />
                       </button>
+                      {isAdmin && !msg.errorReason && (
+                        <button
+                          onClick={() => saveAsGolden(i)}
+                          disabled={savingGoldenIndex === i || savedGoldenIndex.has(i)}
+                          data-testid={`button-save-golden-${i}`}
+                          title={savedGoldenIndex.has(i) ? "Als Golden Answer gespeichert" : "Als Golden Answer speichern (Admin)"}
+                          style={{
+                            width: 28, height: 28, borderRadius: 8, border: "none",
+                            background: savedGoldenIndex.has(i) ? "rgba(255,179,0,0.18)" : "rgba(0,0,0,0.03)",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            cursor: savedGoldenIndex.has(i) ? "default" : "pointer",
+                            transition: "all 200ms ease",
+                            opacity: savingGoldenIndex === i ? 0.5 : 1,
+                          }}
+                        >
+                          {savedGoldenIndex.has(i)
+                            ? <BookmarkCheck style={{ width: 13, height: 13, color: "#FFB300" }} />
+                            : <Bookmark style={{ width: 13, height: 13, color: "#AEAEB2" }} />
+                          }
+                        </button>
+                      )}
                     </div>
                     {!loading && msg.errorReason && msg.retryQuestion && (
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }} data-testid={`retry-container-${i}`}>
@@ -1703,6 +1788,44 @@ export default function KICoach() {
                               {reply}
                             </button>
                           ))}
+                        </div>
+                      );
+                    })()}
+                    {!loading && !msg.errorReason && (() => {
+                      const followups = extractFollowups(msg.content, i, messages.length);
+                      if (followups.length === 0) return null;
+                      return (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 4 }}>
+                          <div style={{ fontSize: 11, color: "#86868B", fontWeight: 600, letterSpacing: 0.3, textTransform: "uppercase", paddingLeft: 2 }}>
+                            Vorschläge
+                          </div>
+                          <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-start" }}>
+                            {followups.map((sug, si) => (
+                              <button
+                                key={si}
+                                onClick={() => sendQuickReply(sug)}
+                                data-testid={`followup-${si}`}
+                                style={{
+                                  padding: "7px 14px",
+                                  borderRadius: 14,
+                                  border: "1px dashed rgba(0,113,227,0.35)",
+                                  background: "rgba(0,113,227,0.02)",
+                                  color: "#0071E3",
+                                  fontSize: 12.5,
+                                  fontWeight: 500,
+                                  cursor: "pointer",
+                                  transition: "all 200ms ease",
+                                  textAlign: "left",
+                                  lineHeight: 1.4,
+                                  maxWidth: "100%",
+                                }}
+                                onMouseEnter={e => { e.currentTarget.style.background = "rgba(0,113,227,0.08)"; e.currentTarget.style.borderStyle = "solid"; }}
+                                onMouseLeave={e => { e.currentTarget.style.background = "rgba(0,113,227,0.02)"; e.currentTarget.style.borderStyle = "dashed"; }}
+                              >
+                                → {sug}
+                              </button>
+                            ))}
+                          </div>
                         </div>
                       );
                     })()}
