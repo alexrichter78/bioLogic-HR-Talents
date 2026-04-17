@@ -1627,7 +1627,7 @@ export default function KICoach() {
                         <ThumbsDown style={{ width: 13, height: 13, color: msg.feedback === "down" ? "#FF3B30" : "#AEAEB2" }} />
                       </button>
                     </div>
-                    {!loading && msg.errorReason === "overloaded" && msg.retryQuestion && (
+                    {!loading && msg.errorReason && msg.retryQuestion && (
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }} data-testid={`retry-container-${i}`}>
                         <button
                           onClick={() => sendQuickReply(msg.retryQuestion!)}
