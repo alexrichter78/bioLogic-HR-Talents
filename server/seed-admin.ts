@@ -155,6 +155,21 @@ async function ensureSchema() {
         created_at TIMESTAMP NOT NULL DEFAULT NOW()
       );
     `);
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS coach_conversations (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        title TEXT NOT NULL,
+        messages JSONB NOT NULL DEFAULT '[]'::jsonb,
+        pinned BOOLEAN NOT NULL DEFAULT false,
+        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+    `);
+    await client.query(`
+      ALTER TABLE coach_conversations
+        ADD COLUMN IF NOT EXISTS pinned BOOLEAN NOT NULL DEFAULT false;
+    `);
     console.log("Schema migration completed successfully");
   } catch (err) {
     console.error("Schema migration error:", err);
