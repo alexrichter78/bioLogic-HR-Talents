@@ -519,7 +519,10 @@ export default function KICoach() {
     } catch {}
   }, []);
 
-  useEffect(() => { loadConversations(); }, [loadConversations]);
+  useEffect(() => {
+    if (!user?.id) { setConversations([]); return; }
+    loadConversations();
+  }, [user?.id, loadConversations]);
 
   const persistConversation = useCallback(async (msgsToSave: Message[], convId: number | null) => {
     const real = msgsToSave.filter(m => m !== WELCOME_MSG);
