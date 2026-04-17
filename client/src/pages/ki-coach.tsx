@@ -410,23 +410,32 @@ function formatMessage(text: string) {
 export default function KICoach() {
   const { region } = useRegion();
   const t = useLocalizedText();
-  const LOUIS_STORAGE_KEY = "louis_chat_v1";
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
+  const isMobile = useIsMobile();
+  const LOUIS_STORAGE_KEY = user?.id ? `louis_chat_v1_u${user.id}` : "louis_chat_v1_anon";
   const LOUIS_TTL_MS = 24 * 60 * 60 * 1000;
-  const [messages, setMessages] = useState<Message[]>(() => {
+  const [messages, setMessages] = useState<Message[]>([WELCOME_MSG]);
+
+  useEffect(() => {
     try {
       const raw = localStorage.getItem(LOUIS_STORAGE_KEY);
-      if (!raw) return [WELCOME_MSG];
+      if (!raw) { setMessages([WELCOME_MSG]); return; }
       const parsed = JSON.parse(raw) as { savedAt: number; messages: Message[] };
       if (!parsed.savedAt || Date.now() - parsed.savedAt > LOUIS_TTL_MS) {
         localStorage.removeItem(LOUIS_STORAGE_KEY);
-        return [WELCOME_MSG];
+        setMessages([WELCOME_MSG]);
+        return;
       }
-      if (!Array.isArray(parsed.messages) || parsed.messages.length === 0) return [WELCOME_MSG];
-      return parsed.messages;
+      if (!Array.isArray(parsed.messages) || parsed.messages.length === 0) {
+        setMessages([WELCOME_MSG]);
+        return;
+      }
+      setMessages(parsed.messages);
     } catch {
-      return [WELCOME_MSG];
+      setMessages([WELCOME_MSG]);
     }
-  });
+  }, [LOUIS_STORAGE_KEY]);
 
   useEffect(() => {
     try {
@@ -439,16 +448,13 @@ export default function KICoach() {
     } catch {
       // localStorage full or disabled — ignore
     }
-  }, [messages]);
+  }, [messages, LOUIS_STORAGE_KEY]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState("");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [savedGoldenIndex, setSavedGoldenIndex] = useState<Set<number>>(new Set());
   const [savingGoldenIndex, setSavingGoldenIndex] = useState<number | null>(null);
-  const { user } = useAuth();
-  const isAdmin = user?.role === "admin";
-  const isMobile = useIsMobile();
 
   const saveAsGolden = useCallback(async (index: number) => {
     const assistantMsg = messages[index];
@@ -776,8 +782,13 @@ export default function KICoach() {
 
   useEffect(() => {
     return () => {
+      userStoppedRef.current = true;
       if (recognitionRef.current) {
-        recognitionRef.current.stop();
+        try { recognitionRef.current.onend = null as any; } catch {}
+        try { recognitionRef.current.onresult = null as any; } catch {}
+        try { recognitionRef.current.onerror = null as any; } catch {}
+        try { recognitionRef.current.stop(); } catch {}
+        try { recognitionRef.current.abort?.(); } catch {}
         recognitionRef.current = null;
       }
     };
@@ -840,8 +851,12 @@ export default function KICoach() {
     }
   }, []);
 
+  const prevMessageCountRef = useRef(messages.length);
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messages.length !== prevMessageCountRef.current) {
+      prevMessageCountRef.current = messages.length;
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages]);
 
   const sendMessage = useCallback(async () => {
