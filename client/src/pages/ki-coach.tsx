@@ -1572,24 +1572,15 @@ export default function KICoach() {
             </div>
           </div>
         </div>
-      </div>
-
-      <main style={{ flex: 1, maxWidth: 1100, width: "100%", margin: "0 auto", paddingTop: isMobile ? 110 : 135, paddingLeft: isMobile ? 6 : 16, paddingRight: isMobile ? 6 : 16, paddingBottom: isMobile ? 80 : 24, display: "flex", flexDirection: "column" }}>
         <div style={{
-          background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
-          borderRadius: 20, flex: 1, display: "flex", flexDirection: "column",
-          boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
-          border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden",
-          minHeight: "calc(100vh - 220px)",
+          background: "rgba(255,255,255,0.92)",
+          backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+          borderBottom: "1px solid rgba(0,0,0,0.06)",
+          padding: isMobile ? "8px 12px" : "10px 24px",
         }}>
-          <div style={{
-            padding: isMobile ? "10px 14px" : "12px 28px",
-            borderBottom: "1px solid rgba(0,0,0,0.06)",
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-            position: "sticky", top: isMobile ? 95 : 115, zIndex: 20,
-            background: "rgba(255,255,255,0.92)",
-            backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-            borderTopLeftRadius: 20, borderTopRightRadius: 20,
+          <div className="w-full mx-auto" style={{
+            maxWidth: 1100,
+            display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
           }}>
             <div>
               {hasAnalysisData() && (
@@ -1679,7 +1670,17 @@ export default function KICoach() {
               </button>
             </div>
           </div>
+        </div>
+      </div>
 
+      <main style={{ flex: 1, maxWidth: 1100, width: "100%", margin: "0 auto", paddingTop: isMobile ? 165 : 195, paddingLeft: isMobile ? 6 : 16, paddingRight: isMobile ? 6 : 16, paddingBottom: isMobile ? 80 : 24, display: "flex", flexDirection: "column" }}>
+        <div style={{
+          background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)",
+          borderRadius: 20, flex: 1, display: "flex", flexDirection: "column",
+          boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
+          border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden",
+          minHeight: "calc(100vh - 280px)",
+        }}>
           {(() => {
             const searchTerm = promptSearch.trim().toLowerCase();
             const isSearching = searchTerm.length > 0;
