@@ -58,13 +58,16 @@ V2/V3 bestehen weiterhin für Legacy-Reports (`teamcheck-report-v2.tsx`, `teamch
 
 ### Grundprinzip
 
-Der Passungsscore setzt sich aus drei Komponenten zusammen (max. 100 Punkte):
+Der Passungsscore setzt sich aus drei Komponenten zusammen (max. 100 Punkte). Die Gewichtung von Top1 und Top2 ist **profil-klassen-abhängig** und richtet sich nach der Profilklasse des **Teams**:
 
-| Komponente | Max. Punkte | Logik |
-|---|---|---|
-| **Top1-Match** | 60 | Stimmt die dominante Komponente von Team und Person überein? |
-| **Top2-Match** | 30 | Stimmt die zweitstärkste Komponente überein? |
-| **Variant-Kompatibilität** | 10 | Stimmt die Profilstruktur (Ausprägungsmuster) überein? |
+| Team-Profilklasse | Top1-Match (max) | Top2-Match (max) | Variant (max) | Begründung |
+|---|---:|---:|---:|---|
+| **ORDER** (klare Reihenfolge) | 75 | 15 | 10 | Top1 dominiert, Top2 ist Nuance |
+| **CLEAR** (eine klar oben, zwei nah unten) | 80 | 10 | 10 | Top2 oft durch Tie-Breaker bestimmt → wenig gewichten |
+| **DUAL** (Doppeldominanz) | 50 | 40 | 10 | Top1 und Top2 sind strukturell gleichrangig |
+| **BALANCED** | — | — | — | Eigene Sonderfall-Logik (siehe unten) |
+
+**Top2-Teilpunkte:** Wenn Person-Top2 = Team-Top1 (also „Spiegel-Match"), gibt es die halbe Top2-Punktzahl (`Math.round(top2Max / 2)`).
 
 ### Profil-Klassifikation
 
@@ -74,6 +77,13 @@ Der Passungsscore setzt sich aus drei Komponenten zusammen (max. 100 Punkte):
 | `DUAL` | gap1 ≤ 5 UND gap2 > 5 | Zwei Werte oben, einer klar unten |
 | `CLEAR` | gap1 > 5 UND gap2 ≤ 5 | Einer klar oben, zwei ähnlich unten |
 | `ORDER` | gap1 > 5 UND gap2 > 5 | Klare Reihenfolge aller drei |
+
+### Tie-Breaker beim Sortieren
+
+Bei wertgleichen Komponenten (z. B. Intuitiv = Analytisch = 24 %) wird die Reihenfolge **alphabetisch nach Komponenten-Schlüssel** entschieden:
+`analytisch < impulsiv < intuitiv`
+
+Das bedeutet: Bei einem Team-Profil 52 / 24 / 24 (Impulsiv / Intuitiv / Analytisch) wird **Analytisch** zur Team-Top2, nicht Intuitiv. Diese Regel ist deterministisch und reproduzierbar, kann aber zu „überraschenden" Top2-Ergebnissen führen, wenn zwei Komponenten exakt gleich sind. Die CLEAR-Gewichtung (Top2 = max. 10 Punkte) berücksichtigt diesen Effekt bewusst, indem sie Top2 in solchen Fällen niedrig hält.
 
 ### Spread-Klassen (für BALANCED-Sonderfall)
 
@@ -396,4 +406,5 @@ Alle Engine-Texte verwenden "ss" als neutrale Basis. Die Lokalisierung erfolgt �
 | V1 | Legacy | Grundlegende Systemwirkung und Impact Areas |
 | V2 | Legacy | Fit-Metriken, Profilkategorisierung, Integrations-Aufwand |
 | V3 | Legacy | Orchestrierung V1+V2, strategischer Fit nach Teamziel |
-| V4 | **Aktiv** | Score-basiert (Top1+Top2+Variant), eigenständig, BALANCED-aware |
+| V4 | Aktiv | Score-basiert (Top1+Top2+Variant), eigenständig, BALANCED-aware |
+| V4.1 | **Aktiv** | Profil-klassen-abhängige Gewichtung der Top1/Top2-Punkte (DUAL 50/40, CLEAR 80/10, ORDER 75/15); Tie-Breaker-Regel dokumentiert |
