@@ -128,9 +128,9 @@ export function calculateLeadershipAssessment(
   role: string,
   teamGoal: TeamGoal = null
 ): LeadershipAssessmentResult {
-  if (role !== "fuehrung" && role !== "Führungskraft" && role !== "leadership") {
-    return emptyResult;
-  }
+  const isLeadership = role === "fuehrung" || role === "Führungskraft" || role === "leadership";
+  const actorNom = isLeadership ? "Die Führungskraft" : "Das Teammitglied";
+  const actorGen = isLeadership ? "der Führungskraft" : "des Teammitglieds";
 
   const person = normalizeProfile(personProfile);
   const team = normalizeProfile(teamProfile);
@@ -160,9 +160,9 @@ export function calculateLeadershipAssessment(
     (bothClearSameTop && gaps.totalGap <= 24 && gaps.maxGap <= 12)
   ) {
     systemImpactLabel = "Verstärkung";
-    systemReasons.push("Die Führungskraft liegt strukturell nah an der bestehenden Teamlogik.");
+    systemReasons.push(`${actorNom} liegt strukturell nah an der bestehenden Teamlogik.`);
     if (sameTop) {
-      systemReasons.push("Die Hauptprägung der Führungskraft entspricht der Hauptprägung des Teams.");
+      systemReasons.push(`Die Hauptprägung ${actorGen} entspricht der Hauptprägung des Teams.`);
     }
   } else if (
     bothClearDifferentTop ||
@@ -171,13 +171,13 @@ export function calculateLeadershipAssessment(
     (!sameTop && gaps.totalGap >= 24)
   ) {
     systemImpactLabel = "Transformation";
-    systemReasons.push("Die Führungskraft bringt eine deutlich andere Arbeits- und Führungslogik in das Team.");
+    systemReasons.push(`${actorNom} bringt eine deutlich andere Arbeits- und Führungslogik in das Team.`);
     if (bothClearDifferentTop) {
-      systemReasons.push("Sowohl Team als auch Führungskraft haben eine klare, aber unterschiedliche Hauptprägung.");
+      systemReasons.push(`Sowohl Team als auch ${isLeadership ? "Führungskraft" : "Teammitglied"} haben eine klare, aber unterschiedliche Hauptprägung.`);
     }
   } else {
     systemImpactLabel = "Spannung";
-    systemReasons.push("Die Führungskraft setzt spürbar andere Akzente, ohne die Teamlogik vollständig zu drehen.");
+    systemReasons.push(`${actorNom} setzt spürbar andere Akzente, ohne die Teamlogik vollständig zu drehen.`);
   }
 
   let effortLabel: EffortLabel;
@@ -185,14 +185,14 @@ export function calculateLeadershipAssessment(
 
   if (systemImpactLabel === "Verstärkung" && gaps.totalGap <= 18 && gaps.maxGap <= 8) {
     effortLabel = "Niedrig";
-    effortReasons.push("Die Führungskraft liegt nah an der bestehenden Teamlogik.");
+    effortReasons.push(`${actorNom} liegt nah an der bestehenden Teamlogik.`);
   } else if (
     systemImpactLabel === "Transformation" ||
     gaps.totalGap >= 34 ||
     gaps.maxGap >= 16
   ) {
     effortLabel = "Hoch";
-    effortReasons.push("Die Integration der Führungskraft wird voraussichtlich intensiven Abstimmungs- und Begleitungsbedarf erzeugen.");
+    effortReasons.push(`Die Integration ${actorGen} wird voraussichtlich intensiven Abstimmungs- und Begleitungsbedarf erzeugen.`);
   } else {
     effortLabel = "Mittel";
     effortReasons.push("Die Integration ist möglich, sollte aber aktiv begleitet werden.");
@@ -230,36 +230,37 @@ export function calculateLeadershipAssessment(
     const goalName = GOAL_NAMES[teamGoal] || teamGoal;
 
     if (goalLabel === "Passend") {
-      goalReasons.push(`Die Führungskraft bringt für das Teamziel ${goalName} die passende Stärke mit.`);
+      goalReasons.push(`${actorNom} bringt für das Teamziel ${goalName} die passende Stärke mit.`);
     } else if (goalLabel === "Teilweise passend") {
-      goalReasons.push(`Die Führungskraft unterstützt das Teamziel ${goalName} teilweise, liegt aber etwas unter dem Teamniveau in diesem Bereich.`);
+      goalReasons.push(`${actorNom} unterstützt das Teamziel ${goalName} teilweise, liegt aber etwas unter dem Teamniveau in diesem Bereich.`);
     } else {
-      goalReasons.push(`Die Führungskraft arbeitet deutlich anders als das Teamziel ${goalName} es erfordert.`);
+      goalReasons.push(`${actorNom} arbeitet deutlich anders als das Teamziel ${goalName} es erfordert.`);
     }
   }
 
   const systemText =
     systemImpactLabel === "Verstärkung"
-      ? "Die Führungskraft wird die bestehende Teamlogik voraussichtlich eher stabilisieren und verstärken."
+      ? `${actorNom} wird die bestehende Teamlogik voraussichtlich eher stabilisieren und verstärken.`
       : systemImpactLabel === "Spannung"
-      ? "Die Führungskraft wird voraussichtlich andere Akzente setzen und damit spürbare Reibung, aber auch Entwicklung auslösen."
-      : "Die Führungskraft wird das Team voraussichtlich deutlich verändern und eine neue Arbeitslogik hineinbringen.";
+      ? `${actorNom} wird voraussichtlich andere Akzente setzen und damit spürbare Reibung, aber auch Entwicklung auslösen.`
+      : `${actorNom} wird das Team voraussichtlich deutlich verändern und eine neue Arbeitslogik hineinbringen.`;
 
+  const steuerung = isLeadership ? "Führungssteuerung" : "Teamführung";
   const effortText =
     effortLabel === "Niedrig"
-      ? "Die Integration verläuft voraussichtlich reibungsarm. Geringer Begleitungsbedarf, normale Führungssteuerung ist ausreichend."
+      ? `Die Integration verläuft voraussichtlich reibungsarm. Geringer Begleitungsbedarf, normale ${steuerung} ist ausreichend.`
       : effortLabel === "Mittel"
       ? "Die Integration ist machbar, sollte aber gezielt begleitet werden. Regelmässige Abstimmung und klare Erwartungen beschleunigen den Prozess."
-      : "Die Integration erfordert intensive Begleitung. Strukturierte Onboarding-Massnahmen, enge Abstimmung und aktive Führungssteuerung sind notwendig.";
+      : `Die Integration erfordert intensive Begleitung. Strukturierte Onboarding-Massnahmen, enge Abstimmung und aktive ${steuerung} sind notwendig.`;
 
   const goalText =
     goalLabel === "Kein Ziel gewählt"
       ? "Für das Team wurde aktuell kein Funktionsziel ausgewählt."
       : goalLabel === "Passend"
-      ? "Die Führungskraft passt gut zum aktuellen Teamziel."
+      ? `${actorNom} passt gut zum aktuellen Teamziel.`
       : goalLabel === "Teilweise passend"
-      ? "Die Führungskraft unterstützt das aktuelle Teamziel nur teilweise."
-      : "Die Führungskraft arbeitet deutlich anders als das aktuelle Teamziel es erfordert.";
+      ? `${actorNom} unterstützt das aktuelle Teamziel nur teilweise.`
+      : `${actorNom} arbeitet deutlich anders als das aktuelle Teamziel es erfordert.`;
 
   return {
     show: true,
