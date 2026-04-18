@@ -322,8 +322,14 @@ function computeTaskFit(teamProfile: Triad, personProfile: Triad, goal: TeamGoal
   else fit = "gering";
 
   const sorted = sortTriad(personProfile);
+  const dominantKey = sorted[0].key;
   const dominantValue = sorted[0].value;
   const lowestValue = sorted[2].value;
+
+  if (goalComp === dominantKey) {
+    return "hoch";
+  }
+
   if (personValue <= lowestValue && (dominantValue - personValue) > 8) {
     const gap = dominantValue - personValue;
     if (gap > 20) {
