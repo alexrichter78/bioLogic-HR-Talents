@@ -206,28 +206,24 @@ export function calculateLeadershipAssessment(
     goalReasons.push("Es wurde kein aktuelles Teamziel ausgewählt.");
   } else {
     const targetComponent = getGoalComponent(teamGoal)!;
-    const personValue = Math.round(person[targetComponent]);
-    const teamValue = Math.round(team[targetComponent]);
+    const sorted = getSortedComponents(person);
+    const top1Key = sorted[0].key;
+    const top2Key = sorted[1].key;
+    const gap1 = sorted[0].value - sorted[1].value;
+    const gap2 = sorted[1].value - sorted[2].value;
+    const EQ_TOL = 5;
 
-    if (personValue >= teamValue - 5) {
+    const personIsBalanced = gap1 <= EQ_TOL && gap2 <= EQ_TOL;
+    const personIsDual = gap1 <= EQ_TOL && gap2 > EQ_TOL;
+
+    if (personIsBalanced) {
+      goalLabel = "Teilweise passend";
+    } else if (top1Key === targetComponent && gap1 > EQ_TOL) {
       goalLabel = "Passend";
-    } else if (personValue >= teamValue - 15) {
+    } else if (personIsDual && (top1Key === targetComponent || top2Key === targetComponent)) {
       goalLabel = "Teilweise passend";
     } else {
       goalLabel = "Kritisch";
-    }
-
-    const sorted = getSortedComponents(person);
-    const dominantValue = sorted[0].value;
-    const lowestValue = sorted[2].value;
-    if (personValue <= lowestValue && (dominantValue - personValue) > 8) {
-      const gap = dominantValue - personValue;
-      if (gap > 20) {
-        goalLabel = "Kritisch";
-      } else {
-        if (goalLabel === "Passend") goalLabel = "Teilweise passend";
-        else if (goalLabel === "Teilweise passend") goalLabel = "Kritisch";
-      }
     }
 
     const GOAL_NAMES: Record<string, string> = { umsetzung: "Umsetzung und Ergebnisse", analyse: "Analyse und Struktur", zusammenarbeit: "Zusammenarbeit und Kommunikation" };
