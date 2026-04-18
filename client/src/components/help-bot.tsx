@@ -112,6 +112,8 @@ export default function HelpBot() {
     }
   };
 
+  if (user?.coachOnly) return null;
+
   return (
     <>
       {!open && (

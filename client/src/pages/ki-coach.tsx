@@ -664,7 +664,7 @@ export default function KICoach() {
     if (!promptSearch.trim()) return;
     const term = promptSearch.trim().toLowerCase();
     const hasMatch = EXAMPLE_PROMPTS.some(cat => {
-      if (cat.requiresAnalysis && !hasAnalysisData()) return false;
+      if (cat.requiresAnalysis && (user?.coachOnly || !hasAnalysisData())) return false;
       if (cat.category.toLowerCase().includes(term)) return true;
       return cat.prompts.some(p => p.toLowerCase().includes(term));
     });
@@ -943,7 +943,7 @@ export default function KICoach() {
         }
       } catch {}
 
-      const hasStammdaten = Object.keys(stammdaten).length > 0;
+      const hasStammdaten = !user?.coachOnly && Object.keys(stammdaten).length > 0;
       const body = JSON.stringify({
         messages: chatHistory,
         ...(hasStammdaten ? { stammdaten } : {}),
@@ -1171,7 +1171,7 @@ export default function KICoach() {
           }
         } catch {}
 
-        const hasStammdaten = Object.keys(stammdaten).length > 0;
+        const hasStammdaten = !user?.coachOnly && Object.keys(stammdaten).length > 0;
         const body = JSON.stringify({ messages: chatHistory, ...(hasStammdaten ? { stammdaten } : {}), region });
 
         const controller = new AbortController();
@@ -1607,7 +1607,7 @@ export default function KICoach() {
             display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
           }}>
             <div>
-              {hasAnalysisData() && (
+              {!user?.coachOnly && hasAnalysisData() && (
                 <span data-testid="badge-context-active" style={{
                   fontSize: 10, fontWeight: 600, color: "#34C759",
                   background: "rgba(52,199,89,0.1)", border: "1px solid rgba(52,199,89,0.25)",
@@ -1722,7 +1722,7 @@ export default function KICoach() {
               return t(text).toLowerCase().includes(searchTerm) || text.toLowerCase().includes(searchTerm);
             };
 
-            const allPrompts = isSearching ? EXAMPLE_PROMPTS.filter(cat => !(cat.requiresAnalysis && !hasAnalysisData())).flatMap(cat => {
+            const allPrompts = isSearching ? EXAMPLE_PROMPTS.filter(cat => !(cat.requiresAnalysis && (user?.coachOnly || !hasAnalysisData()))).flatMap(cat => {
               const catMatch = cat.category.toLowerCase().includes(searchTerm);
               const matching = cat.prompts.filter(p => matchesSearch(p));
               if (catMatch) return cat.prompts.map(p => ({ prompt: p, category: cat.category }));
@@ -1839,7 +1839,7 @@ export default function KICoach() {
                   padding: 6,
                 }} data-testid="panel-example-prompts">
                   {EXAMPLE_PROMPTS.map((cat) => {
-                    const isDisabled = cat.requiresAnalysis && !hasAnalysisData();
+                    const isDisabled = cat.requiresAnalysis && (user?.coachOnly || !hasAnalysisData());
                     return (
                     <div key={cat.category} style={{ marginBottom: 4 }}>
                       <button

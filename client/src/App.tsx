@@ -61,6 +61,18 @@ function AppRoutes() {
     return <Login />;
   }
 
+  if (user.coachOnly) {
+    return (
+      <Switch>
+        <Route path="/ki-coach" component={KICoach} />
+        <Route path="/impressum" component={Impressum} />
+        <Route path="/datenschutz" component={Datenschutz} />
+        <Route path="/disclaimer" component={Disclaimer} />
+        <Route component={KICoach} />
+      </Switch>
+    );
+  }
+
   return (
     <Switch>
         <Route path="/" component={Home} />

@@ -45,6 +45,11 @@ Preferred communication style: Simple, everyday language.
 3.  **Express 5**: Utilizes latest Express features including native async error handling.
 4.  **Vite as dev middleware**: Single port for both API and frontend during development.
 
+### Coach-only Role (Mitarbeiter-Account)
+-   **Schema**: `users.coachOnly` boolean (default false). Set per user via Admin-UI ("Nur KI-Coach (Mitarbeiter)" checkbox).
+-   **Backend**: `requireFullAccess` middleware in `server/routes.ts` blocks coach-only users from `/api/generate-kompetenzen`, `/api/reclassify-kompetenzen`, `/api/generate-bericht`, `/api/generate-analyse`, `/api/generate-team-report`, `/api/generate-kandidatenprofil`. `/api/ki-coach` and `/api/parse-document` remain accessible. `coachOnly` is returned in `/api/auth/login` and `/api/auth/me`.
+-   **Frontend**: `App.tsx` restricts routing to `/ki-coach` only. `global-nav.tsx` shows only the Louis nav item and hides admin/firma buttons. `ki-coach.tsx` skips Stammdaten injection (no JobCheck/MatchCheck/TeamCheck/Rollen-DNA context), hides the "Profil aktiv" badge, and filters out prompt categories with `requiresAnalysis: true`.
+
 ### Region Switcher
 -   **Context**: `client/src/lib/region.tsx` provides `RegionProvider` and `useRegion()` hook. Supports DE (Germany), CH (Switzerland), AT (Austria). Persisted in localStorage.
 -   **Frontend**: Flag emoji dropdown (🇩🇪/🇨🇭/🇦🇹) in `global-nav.tsx`. All pages with AI calls pass `region` in their API request body.

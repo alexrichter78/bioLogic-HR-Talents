@@ -40,12 +40,15 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
   const isMobile = useIsMobile();
 
   const NAV_ITEMS = useMemo(() => {
+    if (user?.coachOnly) {
+      return [BASE_NAV_ITEMS.find(i => i.path === "/ki-coach")!];
+    }
     const items = [...BASE_NAV_ITEMS];
     if (user?.courseAccess || user?.role === "subadmin" || user?.role === "admin") {
       items.push(COURSE_NAV_ITEM);
     }
     return items;
-  }, [user?.courseAccess, user?.role]);
+  }, [user?.courseAccess, user?.role, user?.coachOnly]);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -137,7 +140,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                   </div>
                 )}
               </div>
-              {(user?.role === "admin" || user?.role === "subadmin") && (
+              {!user?.coachOnly && (user?.role === "admin" || user?.role === "subadmin") && (
                 <button
                   onClick={() => setLocation("/firma-dashboard")}
                   data-testid="nav-firma-dashboard-mobile"
@@ -152,7 +155,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                   <Building2 style={{ width: 15, height: 15, color: location === "/firma-dashboard" ? "#0071E3" : "#86868B", strokeWidth: 1.8 }} />
                 </button>
               )}
-              {user?.role === "admin" && (
+              {!user?.coachOnly && user?.role === "admin" && (
                 <button
                   onClick={() => setLocation("/admin")}
                   data-testid="nav-admin"
@@ -366,7 +369,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                 </div>
               )}
             </div>
-            {(user?.role === "admin" || user?.role === "subadmin") && (
+            {!user?.coachOnly && (user?.role === "admin" || user?.role === "subadmin") && (
               <button
                 onClick={() => setLocation("/firma-dashboard")}
                 data-testid="nav-firma-dashboard"
@@ -384,7 +387,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                 <Building2 style={{ width: 15, height: 15, color: location === "/firma-dashboard" ? "#0071E3" : "#86868B", strokeWidth: 1.8 }} />
               </button>
             )}
-            {user?.role === "admin" && (
+            {!user?.coachOnly && user?.role === "admin" && (
               <button
                 onClick={() => setLocation("/admin")}
                 data-testid="nav-admin"

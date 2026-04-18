@@ -959,6 +959,20 @@ function requireSubadmin(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
+async function requireFullAccess(req: Request, res: Response, next: NextFunction) {
+  if (!req.session.userId) {
+    return res.status(401).json({ error: "Nicht angemeldet" });
+  }
+  try {
+    const u = await storage.getUserById(req.session.userId);
+    if (u?.coachOnly) {
+      console.log(`[auth] Blocked ${req.method} ${req.path} - coach-only user`);
+      return res.status(403).json({ error: "Diese Funktion ist für Ihren Account nicht freigeschaltet." });
+    }
+  } catch {}
+  next();
+}
+
 async function trackUsageEvent(userId: number, eventType: string): Promise<void> {
   try {
     const user = await storage.getUserById(userId);
@@ -1084,6 +1098,7 @@ export async function registerRoutes(
         companyName: user.companyName,
         role: user.role,
         courseAccess: user.courseAccess,
+        coachOnly: user.coachOnly,
         organizationId: user.organizationId,
         accessUntil,
         aiRequestLimit: user.aiRequestLimit,
@@ -1143,6 +1158,7 @@ export async function registerRoutes(
       companyName: currentUser.companyName,
       role: currentUser.role,
       courseAccess: currentUser.courseAccess,
+      coachOnly: currentUser.coachOnly,
       organizationId: currentUser.organizationId,
       accessUntil,
       aiRequestLimit: currentUser.aiRequestLimit,
@@ -1163,7 +1179,7 @@ export async function registerRoutes(
 
   app.post("/api/admin/users", requireAdmin, async (req, res) => {
     try {
-      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, accessUntil, plan, notes, organizationId, aiRequestLimit } = req.body;
+      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, coachOnly, accessUntil, plan, notes, organizationId, aiRequestLimit } = req.body;
       if (!username || !password) {
         return res.status(400).json({ error: "Benutzername und Passwort erforderlich" });
       }
@@ -1182,6 +1198,7 @@ export async function registerRoutes(
         role: role || "user",
         isActive: isActive !== false,
         courseAccess: courseAccess === true,
+        coachOnly: coachOnly === true,
         emailVerified: false,
         organizationId: organizationId ?? null,
         aiRequestLimit: aiRequestLimit !== undefined && aiRequestLimit !== null && aiRequestLimit !== "" ? parseInt(aiRequestLimit) : 1000,
@@ -1318,7 +1335,7 @@ export async function registerRoutes(
   app.patch("/api/admin/users/:id", requireAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, accessUntil, plan, notes, subscriptionStatus, organizationId, aiRequestLimit, bioCheckSecret, bioCheckEingeloest } = req.body;
+      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, coachOnly, accessUntil, plan, notes, subscriptionStatus, organizationId, aiRequestLimit, bioCheckSecret, bioCheckEingeloest } = req.body;
       const updateData: any = {};
       if (username !== undefined) updateData.username = username;
       if (email !== undefined) updateData.email = email;
@@ -1328,6 +1345,7 @@ export async function registerRoutes(
       if (role !== undefined) updateData.role = role;
       if (isActive !== undefined) updateData.isActive = isActive;
       if (courseAccess !== undefined) updateData.courseAccess = courseAccess;
+      if (coachOnly !== undefined) updateData.coachOnly = coachOnly;
       if (bioCheckSecret !== undefined) updateData.bioCheckSecret = bioCheckSecret || null;
       if (bioCheckEingeloest !== undefined) updateData.bioCheckEingeloest = bioCheckEingeloest || null;
       if (organizationId !== undefined) updateData.organizationId = organizationId;
@@ -1654,7 +1672,7 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/generate-kompetenzen", requireAuth, async (req, res) => {
+  app.post("/api/generate-kompetenzen", requireAuth, requireFullAccess, async (req, res) => {
     try {
       const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik, zusatzInfo, analyseTexte, region } = req.body;
       if (!beruf) {
@@ -1807,7 +1825,7 @@ Antworte ausschließlich als JSON:
     }
   });
 
-  app.post("/api/reclassify-kompetenzen", requireAuth, async (req, res) => {
+  app.post("/api/reclassify-kompetenzen", requireAuth, requireFullAccess, async (req, res) => {
     try {
       const { beruf, fuehrung, aufgabencharakter, arbeitslogik, items, region } = req.body;
       if (!items || items.length === 0) {
@@ -1887,7 +1905,7 @@ Beispiel für 3 Einträge:
     }
   });
 
-  app.post("/api/generate-bericht", requireAuth, async (req, res) => {
+  app.post("/api/generate-bericht", requireAuth, requireFullAccess, async (req, res) => {
     try {
       const {
         beruf, bereich, fuehrungstyp, aufgabencharakter, arbeitslogik,
@@ -2146,7 +2164,7 @@ Antworte ausschließlich als JSON mit exakt dieser Struktur:
     }
   });
 
-  app.post("/api/generate-analyse", requireAuth, async (req, res) => {
+  app.post("/api/generate-analyse", requireAuth, requireFullAccess, async (req, res) => {
     try {
       const { beruf, fuehrung, erfolgsfokus, aufgabencharakter, arbeitslogik, taetigkeiten, region } = req.body;
       if (!beruf || !taetigkeiten || taetigkeiten.length === 0) {
@@ -2233,7 +2251,7 @@ Antworte als JSON:
     }
   });
 
-  app.post("/api/generate-team-report", requireAuth, async (req, res) => {
+  app.post("/api/generate-team-report", requireAuth, requireFullAccess, async (req, res) => {
     try {
       const { context, profiles, computed, levers, region } = req.body;
       if (!profiles?.team || !profiles?.person) {
@@ -3096,7 +3114,7 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
     }
   });
 
-  app.post("/api/generate-kandidatenprofil", requireAuth, async (req, res) => {
+  app.post("/api/generate-kandidatenprofil", requireAuth, requireFullAccess, async (req, res) => {
     try {
       const { beruf, bereich, taetigkeiten, fuehrungstyp, aufgabencharakter, arbeitslogik, region } = req.body;
       if (!beruf || typeof beruf !== "string") {

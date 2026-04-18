@@ -10,6 +10,7 @@ interface AuthUser {
   companyName: string;
   role: string;
   courseAccess: boolean;
+  coachOnly: boolean;
   accessUntil: string | null;
   organizationId: number | null;
   aiRequestLimit: number;

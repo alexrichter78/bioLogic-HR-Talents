@@ -36,6 +36,7 @@ export const users = pgTable("users", {
   aiPeriodStart: timestamp("ai_period_start").notNull().defaultNow(),
   isActive: boolean("is_active").notNull().default(true),
   courseAccess: boolean("course_access").notNull().default(false),
+  coachOnly: boolean("coach_only").notNull().default(false),
   bioCheckSecret: text("bio_check_secret"),
   bioCheckEingeloest: text("bio_check_eingeloest"),
   emailVerified: boolean("email_verified").notNull().default(false),

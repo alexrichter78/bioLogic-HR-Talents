@@ -15,6 +15,7 @@ interface UserWithSub {
   role: string;
   isActive: boolean;
   courseAccess: boolean;
+  coachOnly: boolean;
   bioCheckSecret: string | null;
   bioCheckEingeloest: string | null;
   createdAt: string;
@@ -41,6 +42,7 @@ interface UserForm {
   role: string;
   isActive: boolean;
   courseAccess: boolean;
+  coachOnly: boolean;
   accessUntil: string;
   plan: string;
   notes: string;
@@ -61,6 +63,7 @@ const emptyForm: UserForm = {
   role: "user",
   isActive: true,
   courseAccess: false,
+  coachOnly: false,
   accessUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
   plan: "trial",
   notes: "",
@@ -398,6 +401,7 @@ export default function Admin() {
       role: u.role,
       isActive: u.isActive,
       courseAccess: u.courseAccess,
+      coachOnly: (u as any).coachOnly ?? false,
       accessUntil: u.subscription?.accessUntil ? new Date(u.subscription.accessUntil).toISOString().split("T")[0] : "",
       plan: u.subscription?.plan || "premium",
       notes: u.subscription?.notes || "",
@@ -602,6 +606,10 @@ export default function Admin() {
             <label style={{ ...labelStyle, display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
               <input type="checkbox" checked={form.courseAccess} onChange={e => setForm({ ...form, courseAccess: e.target.checked })} data-testid="input-admin-course-access" />
               Kursfreischaltung
+            </label>
+            <label style={{ ...labelStyle, display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }} title="Mitarbeiter-Account: nur Louis (KI-Coach), keine JobCheck/MatchCheck/TeamCheck/Kurs">
+              <input type="checkbox" checked={form.coachOnly} onChange={e => setForm({ ...form, coachOnly: e.target.checked })} data-testid="input-admin-coach-only" />
+              Nur KI-Coach (Mitarbeiter)
             </label>
           </div>
           <div style={{ gridColumn: "1 / -1" }}>
