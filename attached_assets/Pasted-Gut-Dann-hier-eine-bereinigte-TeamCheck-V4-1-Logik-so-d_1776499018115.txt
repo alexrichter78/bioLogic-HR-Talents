@@ -1,0 +1,518 @@
+Gut. Dann hier eine bereinigte TeamCheck V4.1-Logik, so dass die Engine konsistent wird und die Berichte später nicht gegeneinander laufen.
+
+Ziel von V4.1
+
+V4.1 trennt sauber:
+
+Struktur
+Integrationsscore
+Aufgabenbeitrag
+Systemwirkung
+Gesamteinschätzung
+Textlogik
+
+Der wichtigste Punkt ist:
+Strukturfakten dürfen nie durch Sonderlogik überschrieben werden.
+
+1. Struktur bleibt immer objektiv
+1.1 MatchCase nur aus realer Struktur ableiten
+
+matchCase darf nie aus dem BALANCED-Fall „vergeben“ werden.
+
+type MatchCase = "TOP1_TOP2" | "TOP1_ONLY" | "TOP2_ONLY" | "NONE";
+
+function getMatchCase(team: ProfileMeta, person: ProfileMeta): MatchCase {
+  if (team.top1 === person.top1 && team.top2 === person.top2) return "TOP1_TOP2";
+  if (team.top1 === person.top1) return "TOP1_ONLY";
+  if (team.top2 === person.top2) return "TOP2_ONLY";
+  return "NONE";
+}
+
+Das ist dann ein reiner Struktur-Fakt.
+
+1.2 Neuer Sonderfall: integrationCase
+
+Für BALANCED und andere Sonderkonstellationen führst du zusätzlich ein zweites Feld ein:
+
+type IntegrationCase =
+  | "STRUCTURE_STRONG"
+  | "STRUCTURE_MEDIUM"
+  | "STRUCTURE_WEAK"
+  | "BALANCED_BALANCED"
+  | "TEAM_BALANCED_OPEN"
+  | "TEAM_BALANCED_SELECTIVE"
+  | "TEAM_BALANCED_TENSE"
+  | "PERSON_BALANCED_ADAPTIVE"
+  | "PERSON_BALANCED_LIMITED";
+
+Damit wird nicht mehr der MatchCase verbogen.
+
+2. Profilklassifikation bleibt, aber BALANCED wird sauber integriert
+
+Deine Klassifikation ist grundsätzlich gut:
+
+BALANCED: gap1 <= 5 && gap2 <= 5
+DUAL:     gap1 <= 5 && gap2 > 5
+CLEAR:    gap1 > 5  && gap2 <= 5
+ORDER:    gap1 > 5  && gap2 > 5
+
+Die würde ich so lassen.
+
+3. Scorelogik sauber neu aufbauen
+3.1 Normalfall ohne BALANCED
+
+Die normale Formel kann fast bleiben:
+
+top1Score = team.top1 === person.top1 ? 60 : 0;
+
+if (team.top2 === person.top2) top2Score = 30;
+else if (team.top1 === person.top2) top2Score = 15;
+else top2Score = 0;
+
+if (team.variant === person.variant) variantScore = 10;
+else if (isCompatible(team.profileClass, person.profileClass)) variantScore = 5;
+else variantScore = 0;
+
+score = top1Score + top2Score + variantScore;
+
+Das ist für Normalfälle okay.
+
+3.2 BALANCED nicht mehr als MatchCase-Override, sondern als Score-Override mit eigenem Feld
+
+Neue Regel:
+
+matchCase bleibt strukturell
+score darf im BALANCED-Fall überschrieben werden
+zusätzlich: scoreMode = "standard" | "balanced_override"
+type ScoreMode = "standard" | "balanced_override";
+3.3 Spread-Klassen sauber definieren
+function getSpreadClass(spread: number): "balanced" | "eng" | "nah" | "fern" {
+  if (spread <= 5) return "balanced";
+  if (spread <= 12) return "eng";
+  if (spread <= 20) return "nah";
+  return "fern";
+}
+3.4 Vollständige BALANCED-Matrix
+
+Hier die saubere, vollständige Version:
+
+Konstellation	Score	integrationCase
+beide BALANCED	95	BALANCED_BALANCED
+Team BALANCED + Person eng	82	TEAM_BALANCED_OPEN
+Team BALANCED + Person nah	72	TEAM_BALANCED_SELECTIVE
+Team BALANCED + Person fern	60	TEAM_BALANCED_TENSE
+Person BALANCED + Team eng	80	PERSON_BALANCED_ADAPTIVE
+Person BALANCED + Team nah	72	PERSON_BALANCED_ADAPTIVE
+Person BALANCED + Team fern	60	PERSON_BALANCED_LIMITED
+
+Warum so?
+
+beide BALANCED = höchste Integrationswahrscheinlichkeit
+Team BALANCED = Team ist aufnahmefähiger
+Person BALANCED = Person ist anpassungsfähiger
+aber Team-BALANCED ist meist etwas stärker integrationsfördernd als nur Person-BALANCED
+
+Das ist wesentlich sauberer als die alte Matrix.
+
+3.5 Implementation
+function computeBalancedScore(team: ProfileMeta, person: ProfileMeta) {
+  const teamBalanced = team.profileClass === "BALANCED";
+  const personBalanced = person.profileClass === "BALANCED";
+
+  if (!teamBalanced && !personBalanced) return null;
+
+  const teamSpreadClass = getSpreadClass(team.spread);
+  const personSpreadClass = getSpreadClass(person.spread);
+
+  if (teamBalanced && personBalanced) {
+    return { score: 95, integrationCase: "BALANCED_BALANCED", scoreMode: "balanced_override" as const };
+  }
+
+  if (teamBalanced) {
+    if (personSpreadClass === "eng") {
+      return { score: 82, integrationCase: "TEAM_BALANCED_OPEN", scoreMode: "balanced_override" as const };
+    }
+    if (personSpreadClass === "nah") {
+      return { score: 72, integrationCase: "TEAM_BALANCED_SELECTIVE", scoreMode: "balanced_override" as const };
+    }
+    return { score: 60, integrationCase: "TEAM_BALANCED_TENSE", scoreMode: "balanced_override" as const };
+  }
+
+  if (personBalanced) {
+    if (teamSpreadClass === "eng") {
+      return { score: 80, integrationCase: "PERSON_BALANCED_ADAPTIVE", scoreMode: "balanced_override" as const };
+    }
+    if (teamSpreadClass === "nah") {
+      return { score: 72, integrationCase: "PERSON_BALANCED_ADAPTIVE", scoreMode: "balanced_override" as const };
+    }
+    return { score: 60, integrationCase: "PERSON_BALANCED_LIMITED", scoreMode: "balanced_override" as const };
+  }
+
+  return null;
+}
+4. Scoreband weiterverwenden
+
+Das kannst du im Kern beibehalten:
+
+Score	Passung zum Team	Begleitungsbedarf
+>= 85	hoch	gering
+60–84	mittel	mittel
+< 60	gering	hoch
+
+Das ist verständlich und robust.
+
+5. Aufgabenfit sauber machen
+5.1 Die Logik ist okay, aber der Name muss sauber bleiben
+
+Dein beitragZurAufgabe ist nicht „fachlich“ im klassischen Sinn, sondern eher:
+
+funktionaler Beitrag zum Teamziel
+Zielbeitrag
+Beitrag zum aktuellen Fokus des Teams
+
+Ich würde es intern vielleicht sogar so nennen:
+
+goalContribution
+
+und nur im Bericht sprachlich übersetzen.
+
+5.2 Teamziel-null sauber lösen
+
+Hier war ein echter Fehler. Lösung:
+
+type GoalContribution = "hoch" | "mittel" | "gering" | "nicht_bewertet";
+
+Dann:
+
+function computeTaskFit(team: Triad, person: Triad, teamGoal: TeamGoal | null): GoalContribution {
+  if (!teamGoal) return "nicht_bewertet";
+
+  const goalKey = mapGoalToComponent(teamGoal);
+
+  if (person[goalKey] >= team[goalKey] - 5) return "hoch";
+  if (person[goalKey] >= team[goalKey] - 15) return "mittel";
+  return "gering";
+}
+6. Gesamteinschätzung jetzt vollständig
+6.1 Mit Teamziel
+
+Deine Matrix ist gut genug. Ich würde sie fast so lassen.
+
+Passung	Zielbeitrag	Gesamteinschätzung
+hoch	hoch	sehr passend
+hoch	mittel	gut passend
+hoch	gering	strukturell passend, Zielbeitrag begrenzt
+mittel	hoch	fachlich wertvoll, integrativ anspruchsvoller
+mittel	mittel	bedingt passend
+mittel	gering	integrierbar, aber mit begrenztem Zielhebel
+gering	hoch	inhaltlich interessant, kulturell riskant
+gering	mittel	spannungsreich bei begrenztem Zusatznutzen
+gering	gering	kritisch
+6.2 Ohne Teamziel
+
+Jetzt die fehlende Matrix:
+
+Passung zum Team	Zielbeitrag
+hoch + nicht_bewertet	strukturell sehr passend
+mittel + nicht_bewertet	strukturell bedingt passend
+gering + nicht_bewertet	strukturell kritisch
+
+Implementation:
+
+function deriveGesamteinschaetzung(
+  passungZumTeam: "hoch" | "mittel" | "gering",
+  goalContribution: GoalContribution
+): string {
+  if (goalContribution === "nicht_bewertet") {
+    if (passungZumTeam === "hoch") return "strukturell sehr passend";
+    if (passungZumTeam === "mittel") return "strukturell bedingt passend";
+    return "strukturell kritisch";
+  }
+
+  const matrix: Record<string, string> = {
+    "hoch_hoch": "sehr passend",
+    "hoch_mittel": "gut passend",
+    "hoch_gering": "strukturell passend, Zielbeitrag begrenzt",
+    "mittel_hoch": "fachlich wertvoll, integrativ anspruchsvoller",
+    "mittel_mittel": "bedingt passend",
+    "mittel_gering": "integrierbar, aber mit begrenztem Zielhebel",
+    "gering_hoch": "inhaltlich interessant, kulturell riskant",
+    "gering_mittel": "spannungsreich bei begrenztem Zusatznutzen",
+    "gering_gering": "kritisch"
+  };
+
+  return matrix[`${passungZumTeam}_${goalContribution}`];
+}
+7. Systemwirkung neu ableiten
+
+Das war in V4 zu grob. In V4.1 sollte systemwirkung nicht nur an matchCase hängen.
+
+7.1 Neue Logik
+type Systemwirkung =
+  | "Verstärkung"
+  | "Stabile Ergänzung"
+  | "Ergänzung mit Spannung"
+  | "Selektive Ergänzung"
+  | "Anpassungsfähige Ergänzung"
+  | "Transformation";
+7.2 Ableitung
+function computeSystemwirkung(params: {
+  matchCase: MatchCase;
+  integrationCase?: IntegrationCase;
+  passungZumTeam: "hoch" | "mittel" | "gering";
+  team: ProfileMeta;
+  person: ProfileMeta;
+}): Systemwirkung {
+  const { matchCase, integrationCase, passungZumTeam, team, person } = params;
+
+  if (integrationCase === "BALANCED_BALANCED") return "Stabile Ergänzung";
+  if (integrationCase === "TEAM_BALANCED_OPEN") return "Stabile Ergänzung";
+  if (integrationCase === "TEAM_BALANCED_SELECTIVE") return "Selektive Ergänzung";
+  if (integrationCase === "TEAM_BALANCED_TENSE") return "Ergänzung mit Spannung";
+  if (integrationCase === "PERSON_BALANCED_ADAPTIVE") return "Anpassungsfähige Ergänzung";
+  if (integrationCase === "PERSON_BALANCED_LIMITED") return "Ergänzung mit Spannung";
+
+  if (matchCase === "TOP1_TOP2") return "Verstärkung";
+  if (matchCase === "TOP1_ONLY") return "Stabile Ergänzung";
+  if (matchCase === "TOP2_ONLY") return "Ergänzung mit Spannung";
+
+  if (matchCase === "NONE" && passungZumTeam === "mittel") return "Selektive Ergänzung";
+  return "Transformation";
+}
+
+Warum ist das besser?
+
+NONE ist nicht mehr automatisch immer Transformation
+BALANCED bekommt eine eigene Wirkung
+Text und Score laufen weniger auseinander
+8. Varianten-Kompatibilität leicht schärfen
+
+Deine bisherige Kompatibilität ist okay, aber etwas grob.
+
+Bisher:
+
+DUAL ↔ ORDER = kompatibel
+CLEAR ↔ ORDER = kompatibel
+
+Mir fehlt:
+
+DUAL ↔ CLEAR ist je nach Struktur teils auch näher als gar nichts
+
+Ich würde das so machen:
+
+function getVariantCompatibility(a: ProfileMeta, b: ProfileMeta): number {
+  if (a.variant === b.variant) return 10;
+  if (a.profileClass === b.profileClass) return 7;
+
+  const pair = `${a.profileClass}_${b.profileClass}`;
+
+  if (
+    pair === "DUAL_ORDER" || pair === "ORDER_DUAL" ||
+    pair === "CLEAR_ORDER" || pair === "ORDER_CLEAR" ||
+    pair === "DUAL_CLEAR" || pair === "CLEAR_DUAL"
+  ) {
+    return 5;
+  }
+
+  return 0;
+}
+
+Das ist etwas runder.
+
+9. Ergebnisobjekt erweitern
+
+Ich würde TeamCheckV4Result aufbohren, damit du Debugging und Bericht besser steuern kannst:
+
+type GoalContribution = "hoch" | "mittel" | "gering" | "nicht_bewertet";
+type ScoreMode = "standard" | "balanced_override";
+
+type TeamCheckV41Result = {
+  score: number;
+  scoreMode: ScoreMode;
+  scoreBreakdown: {
+    top1: number;
+    top2: number;
+    variant: number;
+    balancedOverride?: number;
+  };
+
+  matchCase: MatchCase;
+  integrationCase: IntegrationCase | null;
+
+  passungZumTeam: "hoch" | "mittel" | "gering";
+  beitragZurAufgabe: GoalContribution;
+  gesamteinschaetzung: string;
+  begleitungsbedarf: "gering" | "mittel" | "hoch";
+  systemwirkung: Systemwirkung;
+
+  sameDominance: boolean;
+  teamPrimary: ComponentKey;
+  personPrimary: ComponentKey;
+
+  teamMeta: ProfileMeta;
+  personMeta: ProfileMeta;
+
+  teamTriad: Triad;
+  personTriad: Triad;
+
+  // Texte wie bisher
+  gesamtbewertungText: string;
+  warumText: string;
+  wirkungAlltagText: string;
+  druckText: string;
+  // usw.
+};
+10. ScoreBreakdown im BALANCED-Fall korrekt machen
+
+Im BALANCED-Fall darf der Breakdown nicht so aussehen, als käme er aus Standardpunkten.
+
+Darum:
+
+if (balancedResult) {
+  return {
+    score: balancedResult.score,
+    scoreMode: "balanced_override",
+    scoreBreakdown: {
+      top1: 0,
+      top2: 0,
+      variant: 0,
+      balancedOverride: balancedResult.score
+    },
+    integrationCase: balancedResult.integrationCase
+  };
+}
+
+Oder eleganter:
+
+scoreBreakdown: {
+  top1: rawTop1,
+  top2: rawTop2,
+  variant: rawVariant,
+  balancedOverride: balancedResult.score
+}
+
+Dann siehst du intern beides:
+
+Rohstruktur
+finaler Override
+
+Für den Bericht würde ich im BALANCED-Fall aber nicht die Standardpunktlogik anzeigen.
+
+11. Textlogik neu ordnen
+
+Die Texte sollten nicht mehr nur auf matchCase verzweigen.
+
+Neue Reihenfolge für Textbuilder
+integrationCase prüfen
+sonst matchCase
+dann passungZumTeam
+dann goalContribution
+dann roleType
+
+Also z. B. für buildWarumText:
+
+if (integrationCase === "BALANCED_BALANCED") { ... }
+else if (integrationCase === "TEAM_BALANCED_OPEN") { ... }
+else if (integrationCase === "PERSON_BALANCED_ADAPTIVE") { ... }
+else {
+  switch (matchCase) {
+    case "TOP1_TOP2": ...
+    case "TOP1_ONLY": ...
+    case "TOP2_ONLY": ...
+    case "NONE": ...
+  }
+}
+
+Das verhindert, dass BALANCED-Texte wie normale Top1/Top2-Fälle klingen.
+
+12. Meine klare Empfehlung für die Semantik im Bericht
+
+Ein paar Begriffe würde ich leicht schärfen:
+
+Statt
+Beitrag zur Aufgabe
+lieber
+Beitrag zum Teamziel
+oder
+Beitrag zum aktuellen Teamfokus
+
+Weil „Aufgabe“ schnell wie Fachkompetenz klingt.
+
+Statt
+Transformation
+vorsichtiger
+Deutliche Veränderung
+oder
+Strukturverändernde Ergänzung
+
+„Transformation“ klingt stark und oft zu hart.
+
+Statt
+kulturell riskant
+besser
+im Teamalltag konfliktanfälliger
+oder
+integrativ anspruchsvoll
+
+„kulturell“ ist oft zu diffus.
+
+13. Minimaländerung, wenn du nicht alles umbauen willst
+
+Wenn du V4 nicht komplett umbauen willst, dann musst du mindestens diese 4 Dinge sofort korrigieren:
+
+Pflicht-Fixes
+A. nicht bewertet in der Gesamteinschätzung ergänzen
+
+Sonst bleibt eine echte Lücke.
+
+B. Person BALANCED + Team eng ergänzen
+
+Sonst ist die Matrix unvollständig.
+
+C. matchCase nie im BALANCED-Fall überschreiben
+
+Sonst bleiben Struktur und Text logisch schief.
+
+D. systemwirkung nicht nur aus matchCase ableiten
+
+Mindestens BALANCED separat behandeln.
+
+14. Meine fachliche Gesamtbewertung
+
+Die Grundidee von V4 ist gut.
+Vor allem diese Achsen sind stark:
+
+Top1 = Grundpassung
+Top2 = Alltagslogik
+Variante = Stabilität
+BALANCED als Sonderfall
+
+Der Schwachpunkt ist nicht die Idee, sondern die Vermischung der Ebenen.
+
+Sobald du
+
+matchCase
+integrationCase
+scoreMode
+goalContribution
+
+sauber trennst, wird die Engine deutlich robuster.
+
+15. Mein Vorschlag als Endmodell
+Kernformel
+Struktur: matchCase
+Integration: score
+Sonderkonstellation: integrationCase
+Funktionsbeitrag: goalContribution
+Wirkung: systemwirkung
+Narrativ: gesamteinschaetzung
+
+Das ist logisch sauber und auch später gut wartbar.
+
+Wenn du willst, schreibe ich dir daraus jetzt direkt die fertige TypeScript-Version für teamcheck-v4-engine.ts, also mit:
+
+neuen Types
+computeScore()
+computeSystemwirkung()
+deriveGesamteinschaetzung()
+kompletter BALANCED-Matrix.
