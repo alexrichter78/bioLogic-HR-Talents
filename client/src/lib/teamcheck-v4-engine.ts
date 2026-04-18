@@ -246,13 +246,26 @@ function computeScore(
   const pTop1 = getTop1(personProfile);
   const pTop2 = getTop2(personProfile);
 
-  let top1Score = tTop1 === pTop1 ? 60 : 0;
+  let top1Max: number;
+  let top2Max: number;
+  if (tClass === "DUAL") {
+    top1Max = 50;
+    top2Max = 40;
+  } else if (tClass === "CLEAR") {
+    top1Max = 80;
+    top2Max = 10;
+  } else {
+    top1Max = 75;
+    top2Max = 15;
+  }
+
+  let top1Score = tTop1 === pTop1 ? top1Max : 0;
 
   let top2Score = 0;
   if (tTop2 === pTop2) {
-    top2Score = 30;
+    top2Score = top2Max;
   } else if (tTop1 === pTop2) {
-    top2Score = 15;
+    top2Score = Math.round(top2Max / 2);
   }
 
   const tVar = getVariantKey(teamProfile);
