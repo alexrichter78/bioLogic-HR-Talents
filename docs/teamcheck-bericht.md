@@ -407,4 +407,5 @@ Alle Engine-Texte verwenden "ss" als neutrale Basis. Die Lokalisierung erfolgt �
 | V2 | Legacy | Fit-Metriken, Profilkategorisierung, Integrations-Aufwand |
 | V3 | Legacy | Orchestrierung V1+V2, strategischer Fit nach Teamziel |
 | V4 | Aktiv | Score-basiert (Top1+Top2+Variant), eigenständig, BALANCED-aware |
-| V4.1 | **Aktiv** | Profil-klassen-abhängige Gewichtung der Top1/Top2-Punkte (DUAL 50/40, CLEAR 80/10, ORDER 75/15); Tie-Breaker-Regel dokumentiert |
+| V4.1 | Aktiv | Profil-klassen-abhängige Gewichtung der Top1/Top2-Punkte (DUAL 50/40, CLEAR 80/10, ORDER 75/15); Tie-Breaker-Regel dokumentiert |
+| V4.2 | **Aktiv** | `matchCase` immer strukturell (nicht mehr durch BALANCED überschrieben); neues Feld `integrationCase` für BALANCED-Sonderfälle; DUAL ↔ CLEAR als kompatible Variant (5 Pkt); `systemwirkung` integrationCase-aware; `GoalContribution`-Typ exportiert |

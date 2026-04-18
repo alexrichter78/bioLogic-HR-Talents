@@ -91,11 +91,21 @@ export interface TeamCheckV4Result {
   score: number;
   scoreBreakdown: { top1: number; top2: number; variant: number };
   matchCase: MatchCase;
+  integrationCase: IntegrationCase;
 }
 
 
 type MatchCase = "TOP1_TOP2" | "TOP1_ONLY" | "TOP2_ONLY" | "NONE";
 type ProfileClass = "BALANCED" | "DUAL" | "CLEAR" | "ORDER";
+export type IntegrationCase =
+  | "STANDARD"
+  | "BALANCED_BALANCED"
+  | "TEAM_BALANCED_OPEN"
+  | "TEAM_BALANCED_SELECTIVE"
+  | "TEAM_BALANCED_TENSE"
+  | "PERSON_BALANCED_ADAPTIVE"
+  | "PERSON_BALANCED_LIMITED";
+export type GoalContribution = "hoch" | "mittel" | "gering" | "nicht bewertet";
 
 const EQ_TOL = 5;
 
@@ -186,6 +196,7 @@ function isCompatibleVariant(a: string, b: string): boolean {
   if (pcA === pcB) return true;
   if ((pcA === "DUAL" && pcB === "ORDER") || (pcA === "ORDER" && pcB === "DUAL")) return true;
   if ((pcA === "CLEAR" && pcB === "ORDER") || (pcA === "ORDER" && pcB === "CLEAR")) return true;
+  if ((pcA === "DUAL" && pcB === "CLEAR") || (pcA === "CLEAR" && pcB === "DUAL")) return true;
   return false;
 }
 
@@ -214,31 +225,32 @@ function deriveMatchCase(teamProfile: Triad, personProfile: Triad): MatchCase {
 function computeScore(
   teamProfile: Triad,
   personProfile: Triad
-): { score: number; top1: number; top2: number; variant: number; matchCase: MatchCase } {
+): { score: number; top1: number; top2: number; variant: number; matchCase: MatchCase; integrationCase: IntegrationCase } {
   const tClass = getProfileClass(teamProfile);
   const pClass = getProfileClass(personProfile);
+  const realMatchCase = deriveMatchCase(teamProfile, personProfile);
 
   if (tClass === "BALANCED" && pClass === "BALANCED") {
-    return { score: 95, top1: 60, top2: 30, variant: 5, matchCase: "TOP1_TOP2" };
+    return { score: 95, top1: 60, top2: 30, variant: 5, matchCase: realMatchCase, integrationCase: "BALANCED_BALANCED" };
   }
 
   if (tClass === "BALANCED") {
     const pSpread = getSpreadClass(personProfile);
     if (pSpread === "balanced" || pSpread === "eng") {
-      return { score: 80, top1: 45, top2: 25, variant: 10, matchCase: "TOP1_TOP2" };
+      return { score: 80, top1: 45, top2: 25, variant: 10, matchCase: realMatchCase, integrationCase: "TEAM_BALANCED_OPEN" };
     }
     if (pSpread === "nah") {
-      return { score: 70, top1: 40, top2: 20, variant: 10, matchCase: "TOP1_ONLY" };
+      return { score: 70, top1: 40, top2: 20, variant: 10, matchCase: realMatchCase, integrationCase: "TEAM_BALANCED_SELECTIVE" };
     }
-    return { score: 60, top1: 30, top2: 20, variant: 10, matchCase: "TOP2_ONLY" };
+    return { score: 60, top1: 30, top2: 20, variant: 10, matchCase: realMatchCase, integrationCase: "TEAM_BALANCED_TENSE" };
   }
 
   if (pClass === "BALANCED") {
     const tSpread = getSpreadClass(teamProfile);
     if (tSpread === "balanced" || tSpread === "eng" || tSpread === "nah") {
-      return { score: 75, top1: 45, top2: 20, variant: 10, matchCase: "TOP1_ONLY" };
+      return { score: 75, top1: 45, top2: 20, variant: 10, matchCase: realMatchCase, integrationCase: "PERSON_BALANCED_ADAPTIVE" };
     }
-    return { score: 60, top1: 30, top2: 20, variant: 10, matchCase: "TOP2_ONLY" };
+    return { score: 60, top1: 30, top2: 20, variant: 10, matchCase: realMatchCase, integrationCase: "PERSON_BALANCED_LIMITED" };
   }
 
   const tTop1 = getTop1(teamProfile);
@@ -280,7 +292,7 @@ function computeScore(
   const score = top1Score + top2Score + variantScore;
   const matchCase = deriveMatchCase(teamProfile, personProfile);
 
-  return { score, top1: top1Score, top2: top2Score, variant: variantScore, matchCase };
+  return { score, top1: top1Score, top2: top2Score, variant: variantScore, matchCase, integrationCase: "STANDARD" };
 }
 
 
@@ -325,7 +337,14 @@ function computeTaskFit(teamProfile: Triad, personProfile: Triad, goal: TeamGoal
   return fit;
 }
 
-function computeSystemwirkung(matchCase: MatchCase): string {
+function computeSystemwirkung(matchCase: MatchCase, integrationCase: IntegrationCase = "STANDARD"): string {
+  if (integrationCase === "BALANCED_BALANCED") return "Verstärkung";
+  if (integrationCase === "TEAM_BALANCED_OPEN") return "Stabile Ergänzung";
+  if (integrationCase === "TEAM_BALANCED_SELECTIVE") return "Stabile Ergänzung";
+  if (integrationCase === "TEAM_BALANCED_TENSE") return "Ergänzung mit Spannung";
+  if (integrationCase === "PERSON_BALANCED_ADAPTIVE") return "Stabile Ergänzung";
+  if (integrationCase === "PERSON_BALANCED_LIMITED") return "Ergänzung mit Spannung";
+
   if (matchCase === "TOP1_TOP2") return "Verstärkung";
   if (matchCase === "TOP1_ONLY") return "Stabile Ergänzung";
   if (matchCase === "TOP2_ONLY") return "Ergänzung mit Spannung";
@@ -894,7 +913,7 @@ export function computeTeamCheckV4(input: TeamCheckV4Input): TeamCheckV4Result {
   const teamClass = getProfileClass(input.teamProfile);
   const personClass = getProfileClass(input.personProfile);
 
-  const { score, top1, top2, variant, matchCase } = computeScore(input.teamProfile, input.personProfile);
+  const { score, top1, top2, variant, matchCase, integrationCase } = computeScore(input.teamProfile, input.personProfile);
 
   const pSorted = sortTriad(input.personProfile);
   const pTop2Gap = pSorted[0].value - pSorted[1].value;
@@ -977,10 +996,11 @@ export function computeTeamCheckV4(input: TeamCheckV4Input): TeamCheckV4Result {
     teamTriad: { ...input.teamProfile },
     personTriad: { ...input.personProfile },
 
-    systemwirkung: computeSystemwirkung(matchCase),
+    systemwirkung: computeSystemwirkung(matchCase, integrationCase),
 
     score,
     scoreBreakdown: { top1, top2, variant },
     matchCase,
+    integrationCase,
   };
 }
