@@ -313,28 +313,19 @@ function computeTaskFit(teamProfile: Triad, personProfile: Triad, goal: TeamGoal
   const goalComp = GOAL_KEY[goal];
   if (!goalComp) return "nicht bewertet";
 
-  const personValue = round(personProfile[goalComp]);
-  const teamValue = round(teamProfile[goalComp]);
-
-  let fit: string;
-  if (personValue >= teamValue - 5) fit = "hoch";
-  else if (personValue >= teamValue - 15) fit = "mittel";
-  else fit = "gering";
-
+  const personClass = getProfileClass(personProfile);
   const sorted = sortTriad(personProfile);
-  const dominantValue = sorted[0].value;
-  const lowestValue = sorted[2].value;
-  if (personValue <= lowestValue && (dominantValue - personValue) > 8) {
-    const gap = dominantValue - personValue;
-    if (gap > 20) {
-      fit = "gering";
-    } else {
-      if (fit === "hoch") fit = "mittel";
-      else if (fit === "mittel") fit = "gering";
-    }
-  }
+  const top1Key = sorted[0].key;
+  const top2Key = sorted[1].key;
+  const gap1 = sorted[0].value - sorted[1].value;
 
-  return fit;
+  if (personClass === "BALANCED") return "mittel";
+
+  if (top1Key === goalComp && gap1 > EQ_TOL) return "hoch";
+
+  if (personClass === "DUAL" && (top1Key === goalComp || top2Key === goalComp)) return "mittel";
+
+  return "gering";
 }
 
 function computeSystemwirkung(matchCase: MatchCase, integrationCase: IntegrationCase = "STANDARD"): string {

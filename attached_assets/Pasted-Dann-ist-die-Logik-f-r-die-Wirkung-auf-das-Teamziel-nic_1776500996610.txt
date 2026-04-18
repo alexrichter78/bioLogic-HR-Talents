@@ -1,0 +1,107 @@
+Dann ist die Logik für die Wirkung auf das Teamziel nicht mehr:
+
+Doppeldominanz = passend
+
+sondern:
+
+klare Dominanz der Zielkomponente = passend
+Doppeldominanz mit Zielkomponente enthalten = bedingt passend
+Balanced / nahe Verteilung = bedingt passend
+Zielkomponente nicht tragend = nicht passend
+
+Das passt auch besser zu deiner Aussage:
+Wenn zwei Komponenten nah beieinander liegen, ist die Zielwirkung vorhanden, aber eben nicht klar führend.
+
+Saubere Regel
+1. Passend
+
+Die Zielkomponente ist klar dominant.
+
+Bedingung:
+
+top1 = Zielkomponente
+gap1 > 5
+2. Bedingt passend
+
+Die Zielkomponente ist mittragend, aber nicht klar führend.
+
+Das gilt in zwei Fällen:
+
+a) Doppeldominanz
+gap1 <= 5
+Zielkomponente liegt in Top 1 oder Top 2
+b) Balanced / sehr nahe Verteilung
+gap1 <= 5
+gap2 <= 5
+
+Dann ist keine Zielkomponente klar dominant, aber sie ist auch nicht schwach.
+
+3. Nicht passend
+
+Die Zielkomponente ist nicht klar tragend.
+
+Zum Beispiel:
+
+klare Dominanz einer anderen Komponente
+oder Doppeldominanz ohne Zielkomponente
+Tabelle: Wirkung auf das Teamziel
+A. Klare Einzeldominanz
+Profilstruktur Person	Umsetzung	Analyse	Zusammenarbeit
+Impulsiv klar dominant	Passend	Nicht passend	Nicht passend
+Analytisch klar dominant	Nicht passend	Passend	Nicht passend
+Intuitiv klar dominant	Nicht passend	Nicht passend	Passend
+B. Doppeldominanzen
+Doppeldominanz Person	Umsetzung	Analyse	Zusammenarbeit
+Impulsiv + Intuitiv	Bedingt passend	Nicht passend	Bedingt passend
+Impulsiv + Analytisch	Bedingt passend	Bedingt passend	Nicht passend
+Intuitiv + Analytisch	Nicht passend	Bedingt passend	Bedingt passend
+C. Balanced / nahe Verteilung
+Profilstruktur Person	Umsetzung	Analyse	Zusammenarbeit
+Balanced / alle drei nah beieinander	Bedingt passend	Bedingt passend	Bedingt passend
+Deine Beispielregel
+
+Beispiel Person:
+
+Intuitiv 41
+Analytisch 39
+Impulsiv 20
+
+Dann ist das eine Doppeldominanz Intuitiv + Analytisch.
+
+Ergebnis:
+
+Teamziel Analyse → bedingt passend
+Teamziel Zusammenarbeit → bedingt passend
+Teamziel Umsetzung → nicht passend
+
+Genau so würde ich es bauen.
+
+Kompakte Entscheidungslogik
+Bedingung	Wirkung auf Teamziel
+Zielkomponente ist klare Top1 mit Abstand > 5	Passend
+Zielkomponente ist Teil einer Doppeldominanz	Bedingt passend
+Profil ist Balanced	Bedingt passend
+Zielkomponente ist nicht tragend	Nicht passend
+Pseudologik
+function computeGoalImpact(personMeta: ProfileMeta, teamGoal: TeamGoal | null) {
+  if (!teamGoal) return "nicht bewertet";
+
+  const goalKey = mapGoalToComponent(teamGoal);
+
+  if (personMeta.profileClass === "BALANCED") {
+    return "bedingt passend";
+  }
+
+  if (personMeta.top1 === goalKey && personMeta.gap1 > 5) {
+    return "passend";
+  }
+
+  if (
+    personMeta.profileClass === "DUAL" &&
+    (personMeta.top1 === goalKey || personMeta.top2 === goalKey)
+  ) {
+    return "bedingt passend";
+  }
+
+  return "nicht passend";
+}
