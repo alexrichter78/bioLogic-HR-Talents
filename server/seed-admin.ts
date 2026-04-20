@@ -49,6 +49,9 @@ async function ensureSchema() {
       ALTER TABLE users ADD COLUMN IF NOT EXISTS course_access BOOLEAN NOT NULL DEFAULT false;
     `);
     await client.query(`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS coach_only BOOLEAN NOT NULL DEFAULT false;
+    `);
+    await client.query(`
       CREATE TABLE IF NOT EXISTS organizations (
         id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
