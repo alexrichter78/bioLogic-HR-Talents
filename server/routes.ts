@@ -143,6 +143,63 @@ async function streamAnthropicWithRetry(
 const COACH_OVERLOAD_MESSAGE = "Der Coach ist gerade kurz überlastet – bitte in ein paar Sekunden nochmal probieren.";
 const COACH_TECH_ERROR_MESSAGE = "Entschuldigung, es ist ein technisches Problem aufgetreten. Bitte versuche es erneut.";
 
+const REPORT_MODEL = "claude-sonnet-4-5-20250929";
+
+function extractTextFromAnthropic(resp: any): string {
+  const blocks = resp?.content;
+  if (!Array.isArray(blocks)) return "";
+  return blocks
+    .filter((b: any) => b && b.type === "text" && typeof b.text === "string")
+    .map((b: any) => b.text)
+    .join("");
+}
+
+function stripJsonFences(text: string): string {
+  let t = (text || "").trim();
+  if (t.startsWith("```")) {
+    t = t.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
+  }
+  const first = t.indexOf("{");
+  const last = t.lastIndexOf("}");
+  if (first !== -1 && last !== -1 && last > first) {
+    t = t.slice(first, last + 1);
+  }
+  return t;
+}
+
+async function callClaudeForJson(label: string, prompt: string, opts: { temperature?: number; maxTokens?: number } = {}): Promise<any> {
+  const resp = await callAnthropicWithRetry(label, () =>
+    anthropic.messages.create({
+      model: REPORT_MODEL,
+      max_tokens: opts.maxTokens ?? 4096,
+      temperature: opts.temperature ?? 0.7,
+      system: "Du antwortest AUSSCHLIESSLICH mit gültigem JSON. Keine Erklärungen, keine Markdown-Codeblöcke, kein Text vor oder nach dem JSON. Nur das reine JSON-Objekt.",
+      messages: [{ role: "user", content: prompt }],
+    }),
+  );
+  const text = extractTextFromAnthropic(resp);
+  const cleaned = stripJsonFences(text);
+  try {
+    return JSON.parse(cleaned);
+  } catch (err) {
+    console.error(`[${label}] JSON parse failed. Raw text:`, text.slice(0, 500));
+    throw new Error("KI-Antwort konnte nicht als JSON gelesen werden");
+  }
+}
+
+async function callClaudeForText(label: string, systemPrompt: string | undefined, userPrompt: string, opts: { temperature?: number; maxTokens?: number } = {}): Promise<string> {
+  const resp = await callAnthropicWithRetry(label, () =>
+    anthropic.messages.create({
+      model: REPORT_MODEL,
+      max_tokens: opts.maxTokens ?? 4096,
+      temperature: opts.temperature ?? 0.6,
+      ...(systemPrompt ? { system: systemPrompt } : {}),
+      messages: [{ role: "user", content: userPrompt }],
+    }),
+  );
+  return extractTextFromAnthropic(resp);
+}
+
 function extractUrls(text: string): string[] {
   if (!text) return [];
   const regex = /(?:https?:\/\/|www\.)[^\s<>"')\]]+/gi;
@@ -1804,15 +1861,7 @@ Antworte ausschließlich als JSON:
   "fuehrung": [{"name": "...", "kompetenz": "Impulsiv|Intuitiv|Analytisch", "niveau": "Niedrig|Mittel|Hoch", "confidence": 0-100}]` : ""}
 }`;
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4.1",
-        messages: [{ role: "user", content: prompt }],
-        response_format: { type: "json_object" },
-        temperature: 0.7,
-      });
-
-      const content = response.choices[0]?.message?.content || "{}";
-      const data = JSON.parse(content);
+      const data = await callClaudeForJson("generate-kompetenzen", prompt, { temperature: 0.7, maxTokens: 4096 });
       const allItems = [...(data.haupt || []), ...(data.neben || []), ...(data.fuehrung || [])];
       allItems.forEach((item: any, i: number) => {
         console.log(`[CONFIDENCE] ${i + 1}. "${item.name}" → ${item.kompetenz} (${item.confidence}%)`);
@@ -1883,15 +1932,7 @@ Jeder Eintrag hat GENAU EINEN Wert für "kompetenz" - entweder "Impulsiv" ODER "
 Beispiel für 3 Einträge:
 {"results": [{"kompetenz": "Analytisch", "confidence": 85}, {"kompetenz": "Impulsiv", "confidence": 45}, {"kompetenz": "Intuitiv", "confidence": 72}]}`;
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4.1",
-        messages: [{ role: "user", content: prompt }],
-        response_format: { type: "json_object" },
-        temperature: 0.3,
-      });
-
-      const content = response.choices[0]?.message?.content || "{}";
-      const data = JSON.parse(content);
+      const data = await callClaudeForJson("reclassify-kompetenzen", prompt, { temperature: 0.3, maxTokens: 4096 });
       let results = data.results || data.items || data.classifications || [];
       if (!Array.isArray(results)) {
         const firstArray = Object.values(data).find(v => Array.isArray(v));
@@ -2147,15 +2188,7 @@ Antworte ausschließlich als JSON mit exakt dieser Struktur:
   }
 }`;
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4.1",
-        messages: [{ role: "user", content: prompt }],
-        response_format: { type: "json_object" },
-        temperature: 0.7,
-      });
-
-      const content = response.choices[0]?.message?.content || "{}";
-      const data = JSON.parse(content);
+      const data = await callClaudeForJson("generate-bericht", prompt, { temperature: 0.7, maxTokens: 8192 });
       res.json(data);
       if (req.session.userId) trackUsageEvent(req.session.userId, "rollendna");
     } catch (error) {
@@ -2234,15 +2267,7 @@ Antworte als JSON:
   "bereich3": "...(ausführlicher Fließtext, 4-6 Sätze)..."
 }`;
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4.1",
-        messages: [{ role: "user", content: prompt }],
-        response_format: { type: "json_object" },
-        temperature: 0.7,
-      });
-
-      const content = response.choices[0]?.message?.content || "{}";
-      const data = JSON.parse(content);
+      const data = await callClaudeForJson("generate-analyse", prompt, { temperature: 0.7, maxTokens: 4096 });
       res.json(data);
       if (req.session.userId) trackUsageEvent(req.session.userId, "rollendna");
     } catch (error) {
@@ -2342,17 +2367,7 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
 
       const userContent = `Erstelle den Team-Systemreport basierend auf folgenden Daten:\n\n${JSON.stringify({ context, profiles, computed, levers }, null, 2)}`;
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4.1",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userContent },
-        ],
-        temperature: 0.6,
-        max_tokens: 4000,
-      });
-
-      const report = response.choices[0]?.message?.content || "";
+      const report = await callClaudeForText("generate-team-report", systemPrompt, userContent, { temperature: 0.6, maxTokens: 4096 });
       res.json({ report });
       if (req.session.userId) trackUsageEvent(req.session.userId, "teamdynamik");
     } catch (error) {
@@ -3164,14 +3179,8 @@ Wichtig:
 - Keine Gedankenstriche (–), keine Aufzählungen
 - Kurz, konkret, maximal 3 Sätze`;
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4.1",
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.5,
-        max_tokens: 300,
-      });
-
-      const text = response.choices[0]?.message?.content?.trim() || "";
+      const raw = await callClaudeForText("generate-kandidatenprofil", undefined, prompt, { temperature: 0.5, maxTokens: 600 });
+      const text = (raw || "").trim();
       res.json({ text });
       if (req.session.userId) trackUsageEvent(req.session.userId, "matchcheck");
     } catch (error) {
