@@ -50,7 +50,7 @@ function classifyAnthropicError(err: any): AnthropicErrorInfo {
   return { transient: false, status };
 }
 
-const ANTHROPIC_RETRY_DEFAULT = { maxAttempts: 3, totalTimeoutMs: 7000 };
+const ANTHROPIC_RETRY_DEFAULT = { maxAttempts: 6, totalTimeoutMs: 25000 };
 
 async function callAnthropicWithRetry<T>(
   label: string,
