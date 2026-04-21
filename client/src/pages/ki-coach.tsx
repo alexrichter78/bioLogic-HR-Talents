@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Bot, User, Loader2, Download, Lightbulb, ChevronDown, ChevronUp, ImageIcon, Mic, MicOff, ThumbsUp, ThumbsDown, Copy, Check, Search, X, FileText, Trash2, Bookmark, BookmarkCheck, History, Pin, PinOff, Pencil, Plus } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { useRegion, useLocalizedText } from "@/lib/region";
+import { useUI } from "@/lib/ui-texts";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/lib/auth";
 
@@ -410,6 +411,7 @@ function formatMessage(text: string) {
 export default function KICoach() {
   const { region } = useRegion();
   const t = useLocalizedText();
+  const ui = useUI();
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const isMobile = useIsMobile();
@@ -604,7 +606,7 @@ export default function KICoach() {
   }, []);
 
   const deleteConversation = useCallback(async (id: number) => {
-    if (!window.confirm("Diese Unterhaltung wirklich löschen?")) return;
+    if (!window.confirm(ui.coach.deleteConvConfirm)) return;
     try {
       await fetch(`/api/coach-conversations/${id}`, { method: "DELETE", credentials: "include" });
       if (currentConversationId === id) {
@@ -1033,8 +1035,8 @@ export default function KICoach() {
               } else if (event.type === "error") {
                 const reason: "overloaded" | "tech" = event.reason === "overloaded" ? "overloaded" : "tech";
                 const errMsg: string = event.message || (reason === "overloaded"
-                  ? "Der Coach ist gerade kurz überlastet – bitte in ein paar Sekunden nochmal probieren."
-                  : "Entschuldigung, es ist ein technisches Problem aufgetreten. Bitte versuche es erneut.");
+                  ? ui.coach.errorOverloaded
+                  : ui.coach.errorTech);
                 setMessages(prev => {
                   const updated = [...prev];
                   if (streamingStarted && updated[updated.length - 1]?.role === "assistant") {
@@ -1075,15 +1077,15 @@ export default function KICoach() {
       let errorContent: string;
       let errorReason: "overloaded" | "tech" | undefined;
       if (isLimit) {
-        errorContent = "Das KI-Kontingent eurer Organisation ist leider aufgebraucht. Bitte wende dich an euren Administrator, um das Limit zu erhöhen oder den Zähler zurückzusetzen.";
+        errorContent = ui.coach.errorQuota;
       } else if (isTimeout) {
-        errorContent = "Die Anfrage hat zu lange gedauert. Bitte versuche es erneut – bei komplexen Fragen kann es helfen, die Frage kürzer zu formulieren.";
+        errorContent = ui.coach.errorTimeout;
         errorReason = "tech";
       } else if (isOverloaded) {
-        errorContent = "Der Coach ist gerade kurz überlastet – bitte in ein paar Sekunden nochmal probieren.";
+        errorContent = ui.coach.errorOverloaded;
         errorReason = "overloaded";
       } else {
-        errorContent = "Entschuldigung, es ist ein technisches Problem aufgetreten. Bitte versuche es erneut.";
+        errorContent = ui.coach.errorTech;
         errorReason = "tech";
       }
       setMessages(prev => [...prev, {
@@ -1253,8 +1255,8 @@ export default function KICoach() {
                 } else if (event.type === "error") {
                   const reason: "overloaded" | "tech" = event.reason === "overloaded" ? "overloaded" : "tech";
                   const errMsg: string = event.message || (reason === "overloaded"
-                    ? "Der Coach ist gerade kurz überlastet – bitte in ein paar Sekunden nochmal probieren."
-                    : "Entschuldigung, es ist ein technisches Problem aufgetreten. Bitte versuche es erneut.");
+                    ? ui.coach.errorOverloaded
+                    : ui.coach.errorTech);
                   setMessages(prev => {
                     const updated = [...prev];
                     if (streamingStarted && updated[updated.length - 1]?.role === "assistant") {
@@ -1295,15 +1297,15 @@ export default function KICoach() {
         let errorContent: string;
         let errorReason: "overloaded" | "tech" | undefined;
         if (isLimit) {
-          errorContent = "Das KI-Kontingent eurer Organisation ist leider aufgebraucht. Bitte wende dich an euren Administrator, um das Limit zu erhöhen oder den Zähler zurückzusetzen.";
+          errorContent = ui.coach.errorQuota;
         } else if (isTimeout) {
-          errorContent = "Die Anfrage hat zu lange gedauert. Bitte versuche es erneut.";
+          errorContent = ui.coach.errorTimeoutShort;
           errorReason = "tech";
         } else if (isOverloaded) {
-          errorContent = "Der Coach ist gerade kurz überlastet – bitte in ein paar Sekunden nochmal probieren.";
+          errorContent = ui.coach.errorOverloaded;
           errorReason = "overloaded";
         } else {
-          errorContent = "Entschuldigung, es ist ein technisches Problem aufgetreten. Bitte versuche es erneut.";
+          errorContent = ui.coach.errorTech;
           errorReason = "tech";
         }
         setMessages(prev => [...prev, {
@@ -1388,16 +1390,17 @@ export default function KICoach() {
     const chatMessages = messages.filter(m => m !== WELCOME_MSG);
     if (chatMessages.length === 0) return;
     const now = new Date();
-    const dateStr = now.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
-    const timeStr = now.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
-    let text = `Louis – Gesprächsprotokoll\n`;
-    text += `Exportiert am ${dateStr} um ${timeStr}\n`;
+    const locale = region === "EN" ? "en-GB" : "de-DE";
+    const dateStr = now.toLocaleDateString(locale, { day: "2-digit", month: "2-digit", year: "numeric" });
+    const timeStr = now.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" });
+    let text = `${ui.coach.exportHeader}\n`;
+    text += `${ui.coach.exportedAt(dateStr, timeStr)}\n`;
     text += `${"─".repeat(50)}\n\n`;
     for (const msg of chatMessages) {
-      const label = msg.role === "user" ? "Frage" : "Coach";
+      const label = msg.role === "user" ? ui.coach.exportLabelQuestion : ui.coach.exportLabelCoach;
       text += `${label}:\n${parseButtonsFromContent(msg.content).cleanContent}\n`;
       if (msg.image) {
-        text += `[KI-generiertes Bild wurde in diesem Schritt erstellt]\n`;
+        text += `${ui.coach.aiImageNote}\n`;
       }
       text += `\n`;
     }
@@ -1440,7 +1443,7 @@ export default function KICoach() {
               padding: "16px 18px 12px", borderBottom: "1px solid rgba(0,0,0,0.08)",
               display: "flex", alignItems: "center", justifyContent: "space-between",
             }}>
-              <div style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>Verlauf</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>{ui.coach.historyTitle}</div>
               <button
                 onClick={() => setHistoryOpen(false)}
                 data-testid="button-close-history"
@@ -1466,13 +1469,13 @@ export default function KICoach() {
                   transition: "all 200ms ease",
                 }}
               >
-                <Plus style={{ width: 16, height: 16 }} /> Neue Unterhaltung
+                <Plus style={{ width: 16, height: 16 }} /> {ui.coach.newConvButton}
               </button>
               <div style={{ position: "relative" }}>
                 <Search style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", width: 14, height: 14, color: "#AEAEB2" }} />
                 <input
                   type="text"
-                  placeholder="Verlauf durchsuchen..."
+                  placeholder={ui.coach.historySearchPlaceholder}
                   value={historySearch}
                   onChange={e => setHistorySearch(e.target.value)}
                   data-testid="input-history-search"
@@ -1493,7 +1496,7 @@ export default function KICoach() {
                 if (filtered.length === 0) {
                   return (
                     <div style={{ padding: "30px 18px", textAlign: "center", color: "#AEAEB2", fontSize: 13 }}>
-                      {term ? "Keine Treffer." : "Noch keine gespeicherten Gespräche."}
+                      {term ? ui.coach.noHits : ui.coach.noConversations}
                     </div>
                   );
                 }
@@ -1554,7 +1557,7 @@ export default function KICoach() {
                         <button
                           onClick={e => { e.stopPropagation(); setRenamingId(conv.id); setRenamingValue(conv.title); }}
                           data-testid={`button-rename-${conv.id}`}
-                          title="Umbenennen"
+                          title={ui.coach.renameTitle}
                           style={{ width: 26, height: 26, borderRadius: 6, border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
                         >
                           <Pencil style={{ width: 12, height: 12, color: "#86868B" }} />
@@ -1562,7 +1565,7 @@ export default function KICoach() {
                         <button
                           onClick={e => { e.stopPropagation(); togglePinConversation(conv.id, conv.pinned); }}
                           data-testid={`button-pin-${conv.id}`}
-                          title={conv.pinned ? "Lösen" : "Anpinnen"}
+                          title={conv.pinned ? ui.coach.unpinTitle : ui.coach.pinTitle}
                           style={{ width: 26, height: 26, borderRadius: 6, border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
                         >
                           {conv.pinned
@@ -1572,7 +1575,7 @@ export default function KICoach() {
                         <button
                           onClick={e => { e.stopPropagation(); deleteConversation(conv.id); }}
                           data-testid={`button-delete-${conv.id}`}
-                          title="Löschen"
+                          title={ui.coach.deleteTitle}
                           style={{ width: 26, height: 26, borderRadius: 6, border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
                         >
                           <Trash2 style={{ width: 12, height: 12, color: "#FF3B30" }} />
@@ -1591,8 +1594,8 @@ export default function KICoach() {
         <div className="dark:!bg-background" style={{ background: "#fff", borderBottom: "1px solid rgba(0,0,0,0.08)", padding: isMobile ? "4px 0 6px" : "5px 0 10px", minHeight: isMobile ? 48 : 62 }}>
           <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
             <div className="text-center">
-              <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#34C759" }} data-testid="text-page-title">Louis</h1>
-              <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Dein KI-Coach für Führung, HR und Teamfragen</p>
+              <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#34C759" }} data-testid="text-page-title">{ui.coach.pageTitle}</h1>
+              <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ui.coach.pageSubtitle}</p>
             </div>
           </div>
         </div>
@@ -1612,14 +1615,14 @@ export default function KICoach() {
                   fontSize: 10, fontWeight: 600, color: "#34C759",
                   background: "rgba(52,199,89,0.1)", border: "1px solid rgba(52,199,89,0.25)",
                   borderRadius: 6, padding: "2px 8px", whiteSpace: "nowrap",
-                }}>Profil aktiv</span>
+                }}>{ui.coach.profileActive}</span>
               )}
             </div>
             <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
               <button
                 onClick={() => { loadConversations(); setHistoryOpen(true); }}
                 data-testid="button-open-history"
-                title="Gesprächsverlauf"
+                title={ui.coach.historyButtonTitle}
                 style={{
                   width: 36, height: 36, borderRadius: 10, border: "none",
                   background: "rgba(0,113,227,0.08)",
@@ -1640,7 +1643,7 @@ export default function KICoach() {
               <button
                 onClick={startNewConversation}
                 data-testid="button-new-conversation"
-                title="Neue Unterhaltung"
+                title={ui.coach.newConvTitle}
                 style={{
                   width: 36, height: 36, borderRadius: 10, border: "none",
                   background: "rgba(52,199,89,0.10)",
@@ -1654,7 +1657,7 @@ export default function KICoach() {
                 onClick={exportChat}
                 disabled={messages.filter(m => m !== WELCOME_MSG).length === 0}
                 data-testid="button-export-chat"
-                title="Gespräch als TXT exportieren"
+                title={ui.coach.exportTitle}
                 style={{
                   width: 36, height: 36, borderRadius: 10, border: "none",
                   background: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "rgba(0,113,227,0.08)" : "rgba(0,0,0,0.03)",
@@ -1672,13 +1675,13 @@ export default function KICoach() {
                 onClick={() => {
                   const hasChat = messages.filter(m => m !== WELCOME_MSG).length > 0;
                   if (!hasChat) return;
-                  if (!window.confirm("Möchtest du das aktuelle Gespräch wirklich löschen?")) return;
+                  if (!window.confirm(ui.coach.clearChatConfirm)) return;
                   setMessages([WELCOME_MSG]);
                   try { localStorage.removeItem(LOUIS_STORAGE_KEY); } catch {}
                 }}
                 disabled={messages.filter(m => m !== WELCOME_MSG).length === 0}
                 data-testid="button-clear-chat"
-                title="Gespräch löschen"
+                title={ui.coach.clearChatTitle}
                 style={{
                   width: 36, height: 36, borderRadius: 10, border: "none",
                   background: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "rgba(255,59,48,0.08)" : "rgba(0,0,0,0.03)",
@@ -1734,7 +1737,7 @@ export default function KICoach() {
               padding: isMobile ? "10px 10px 0" : "14px 28px 0",
               textAlign: "center",
             }}>
-              <p style={{ fontSize: 14, color: "#48484A", margin: 0, fontWeight: 600, lineHeight: 1.65 }} data-testid="text-input-desc">Stell eine Frage zu Führung, Teamdynamik, Kommunikation oder nutze einen Musterprompt.</p>
+              <p style={{ fontSize: 14, color: "#48484A", margin: 0, fontWeight: 600, lineHeight: 1.65 }} data-testid="text-input-desc">{ui.coach.inputDesc}</p>
             </div>
             <div style={{
               padding: isMobile ? "12px 10px 0" : "12px 28px 0",
@@ -1748,7 +1751,7 @@ export default function KICoach() {
                     type="text"
                     value={promptSearch}
                     onChange={e => setPromptSearch(e.target.value)}
-                    placeholder="Musterprompt suchen…"
+                    placeholder={ui.coach.promptSearchPlaceholder}
                     data-testid="input-prompt-search"
                     style={{
                       width: "100%", padding: "10px 36px 10px 36px",
@@ -1785,7 +1788,7 @@ export default function KICoach() {
                   }}
                 >
                   <Lightbulb style={{ width: 15, height: 15 }} />
-                  Musterprompts
+                  {ui.coach.examplePromptsBtn}
                   {showPrompts
                     ? <ChevronUp style={{ width: 12, height: 12 }} />
                     : <ChevronDown style={{ width: 12, height: 12 }} />
@@ -1801,7 +1804,7 @@ export default function KICoach() {
                   padding: allPrompts.length > 0 ? 6 : 0,
                 }}>
                   {allPrompts.length === 0 && (
-                    <p style={{ fontSize: 13, color: "#8E8E93", textAlign: "center", padding: "12px 0" }} data-testid="text-no-prompt-results">Keine Prompts gefunden für „{promptSearch}"</p>
+                    <p style={{ fontSize: 13, color: "#8E8E93", textAlign: "center", padding: "12px 0" }} data-testid="text-no-prompt-results">{ui.coach.noPromptResults(promptSearch)}</p>
                   )}
                   {allPrompts.map((item, idx) => (
                     <button
@@ -1855,11 +1858,11 @@ export default function KICoach() {
                           color: expandedCategory === cat.category ? "#0071E3" : "#1D1D1F",
                           transition: "all 150ms ease",
                         }}
-                        title={isDisabled ? "Bitte zuerst eine Stelle analysieren" : undefined}
+                        title={isDisabled ? ui.coach.requireAnalysisTitle : undefined}
                       >
                         <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
                           {cat.category}
-                          {isDisabled && <span style={{ fontSize: 11, fontWeight: 400, color: "#8E8E93" }}>(Stelle erforderlich)</span>}
+                          {isDisabled && <span style={{ fontSize: 11, fontWeight: 400, color: "#8E8E93" }}>{ui.coach.roleRequired}</span>}
                         </span>
                         {expandedCategory === cat.category
                           ? <ChevronUp style={{ width: 14, height: 14, color: "#8E8E93" }} />
@@ -1945,7 +1948,7 @@ export default function KICoach() {
                   color: msg.role === "user" ? "#FFFFFF" : "#1D1D1F",
                   fontSize: 14, lineHeight: 1.6,
                 }}>
-                  {formatMessage(parseButtonsFromContent(msg.content).cleanContent)}
+                  {formatMessage(parseButtonsFromContent(msg === WELCOME_MSG ? ui.coach.welcome : msg.content).cleanContent)}
                   {msg.documentName && (
                     <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 5, background: "rgba(255,255,255,0.2)", borderRadius: 8, padding: "4px 8px", fontSize: 11, color: msg.role === "user" ? "rgba(255,255,255,0.9)" : "#0071E3", maxWidth: "fit-content" }}>
                       <FileText style={{ width: 11, height: 11, flexShrink: 0 }} />
@@ -2070,7 +2073,7 @@ export default function KICoach() {
                           }}
                         >
                           <Download style={{ width: 13, height: 13 }} />
-                          {msg.overlayTitle ? "Bild mit Text" : "Bild herunterladen"}
+                          {msg.overlayTitle ? ui.coach.imageWithText : ui.coach.imageDownload}
                         </button>
                         {msg.overlayTitle && (
                           <button
@@ -2097,7 +2100,7 @@ export default function KICoach() {
                             }}
                           >
                             <ImageIcon style={{ width: 13, height: 13 }} />
-                            Nur Bild (ohne Text)
+                            {ui.coach.imageOnly}
                           </button>
                         )}
                       </div>
@@ -2114,7 +2117,7 @@ export default function KICoach() {
                           setTimeout(() => setCopiedIndex(null), 2000);
                         }}
                         data-testid={`copy-${i}`}
-                        title="Antwort kopieren"
+                        title={ui.coach.copyAnswer}
                         style={{
                           width: 28, height: 28, borderRadius: 8, border: "none",
                           background: copiedIndex === i ? "rgba(52,199,89,0.12)" : "rgba(0,0,0,0.03)",
@@ -2156,7 +2159,7 @@ export default function KICoach() {
                           onClick={() => saveAsGolden(i)}
                           disabled={savingGoldenIndex === i || savedGoldenIndex.has(i)}
                           data-testid={`button-save-golden-${i}`}
-                          title={savedGoldenIndex.has(i) ? "Als Golden Answer gespeichert" : "Als Golden Answer speichern (Admin)"}
+                          title={savedGoldenIndex.has(i) ? ui.coach.goldenSaved : ui.coach.goldenSave}
                           style={{
                             width: 28, height: 28, borderRadius: 8, border: "none",
                             background: savedGoldenIndex.has(i) ? "rgba(255,179,0,0.18)" : "rgba(0,0,0,0.03)",
@@ -2232,7 +2235,7 @@ export default function KICoach() {
                       return (
                         <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 4 }}>
                           <div style={{ fontSize: 11, color: "#86868B", fontWeight: 600, letterSpacing: 0.3, textTransform: "uppercase", paddingLeft: 2 }}>
-                            Vorschläge
+                            {ui.coach.suggestionsLabel}
                           </div>
                           <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-start" }}>
                             {followups.map((sug, si) => (
@@ -2284,7 +2287,7 @@ export default function KICoach() {
                   background: "rgba(0,0,0,0.04)", display: "flex", alignItems: "center", gap: 8,
                 }}>
                   <Loader2 style={{ width: 16, height: 16, color: "#8E8E93", animation: "spin 1s linear infinite" }} />
-                  <span style={{ fontSize: 13, color: "#6E6E73" }} data-testid="text-loading">{loadingStatus || "Antwort wird erstellt..."}</span>
+                  <span style={{ fontSize: 13, color: "#6E6E73" }} data-testid="text-loading">{loadingStatus || ui.coach.loadingDefault}</span>
                 </div>
               </div>
             )}
@@ -2318,7 +2321,7 @@ export default function KICoach() {
               <div style={{ marginBottom: 8, display: "flex", alignItems: "center", gap: 8 }}>
                 {pendingImage && (
                   <div style={{ position: "relative", display: "inline-block" }}>
-                    <img src={pendingImage.dataUrl} alt="Anhang" style={{ height: 64, maxWidth: 120, borderRadius: 10, objectFit: "cover", border: "1px solid rgba(0,0,0,0.1)" }} />
+                    <img src={pendingImage.dataUrl} alt={ui.coach.attachmentAlt} style={{ height: 64, maxWidth: 120, borderRadius: 10, objectFit: "cover", border: "1px solid rgba(0,0,0,0.1)" }} />
                     <button onClick={() => setPendingImage(null)} style={{ position: "absolute", top: -6, right: -6, width: 18, height: 18, borderRadius: "50%", background: "#FF3B30", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <X style={{ width: 10, height: 10, color: "#fff" }} />
                     </button>
@@ -2327,7 +2330,7 @@ export default function KICoach() {
                 {docLoading && (
                   <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(0,113,227,0.08)", borderRadius: 8, padding: "6px 10px", fontSize: 12, color: "#0071E3" }}>
                     <Loader2 style={{ width: 12, height: 12, animation: "spin 1s linear infinite" }} />
-                    Dokument wird gelesen...
+                    {ui.coach.docReading}
                   </div>
                 )}
                 {pendingDoc && !docLoading && (
@@ -2353,7 +2356,7 @@ export default function KICoach() {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Frage stellen..."
+                placeholder={ui.coach.inputPlaceholder}
                 data-testid="input-chat"
                 rows={1}
                 style={{
@@ -2371,7 +2374,7 @@ export default function KICoach() {
               <button
                 onClick={() => imageInputRef.current?.click()}
                 disabled={loading}
-                title="Bild hochladen"
+                title={ui.coach.uploadImage}
                 data-testid="button-upload-image"
                 style={{
                   width: 36, height: 36, borderRadius: 12, border: "none",
@@ -2385,7 +2388,7 @@ export default function KICoach() {
               <button
                 onClick={() => docInputRef.current?.click()}
                 disabled={loading || docLoading}
-                title="PDF / Textdokument hochladen"
+                title={ui.coach.uploadDoc}
                 data-testid="button-upload-doc"
                 style={{
                   width: 36, height: 36, borderRadius: 12, border: "none",
