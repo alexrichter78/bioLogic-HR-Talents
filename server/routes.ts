@@ -167,10 +167,10 @@ function stripJsonFences(text: string): string {
   return t;
 }
 
-async function callClaudeForJson(label: string, prompt: string, opts: { temperature?: number; maxTokens?: number } = {}): Promise<any> {
+async function callClaudeForJson(label: string, prompt: string, opts: { temperature?: number; maxTokens?: number; model?: string } = {}): Promise<any> {
   const resp = await callAnthropicWithRetry(label, () =>
     anthropic.messages.create({
-      model: REPORT_MODEL,
+      model: opts.model ?? REPORT_MODEL,
       max_tokens: opts.maxTokens ?? 4096,
       temperature: opts.temperature ?? 0.7,
       system: "Du antwortest AUSSCHLIESSLICH mit gültigem JSON. Keine Erklärungen, keine Markdown-Codeblöcke, kein Text vor oder nach dem JSON. Nur das reine JSON-Objekt.",
@@ -2401,7 +2401,11 @@ Erzeuge das folgende JSON. Halte die Stilregeln ein. Beziehe dich auf die konkre
 WICHTIG: tensionFields ist ein Array aus exakt 4 Strings. miscastRisks.bullets ist jeweils ein Array aus 3-4 Strings. Komponenten in componentMeaning müssen exakt die Reihenfolge und Keys (${t1}, ${t2}, ${t3}) einhalten.`;
 
       const fullPrompt = `${systemPrompt}\n\n${userPrompt}`;
-      const data = await callClaudeForJson("generate-stellenanalyse-text", fullPrompt, { temperature: 0.6, maxTokens: 6144 });
+      const data = await callClaudeForJson("generate-stellenanalyse-text", fullPrompt, {
+        temperature: 0.6,
+        maxTokens: 6144,
+        model: "claude-haiku-4-5",
+      });
       res.json(data);
       if (req.session.userId) trackUsageEvent(req.session.userId, "rollendna");
     } catch (error) {
