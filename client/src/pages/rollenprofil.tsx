@@ -251,6 +251,9 @@ export default function Rollenprofil() {
   const [kandidatenError, setKandidatenError] = useState(false);
 
   useEffect(() => {
+    setKandidatenText(null);
+    setKandidatenError(false);
+    setKandidatenLoading(false);
     const completed = localStorage.getItem("rollenDnaCompleted");
     if (completed !== "true") return;
     const raw = localStorage.getItem("rollenDnaState");
@@ -326,7 +329,7 @@ export default function Rollenprofil() {
           .finally(() => setKandidatenLoading(false));
       }
     } catch {}
-  }, []);
+  }, [region]);
 
   const handlePDF = async () => {
     if (!data || !reportRef.current) return;
