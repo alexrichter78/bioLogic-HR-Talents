@@ -132,9 +132,9 @@ const SORT_PRIORITY: Record<string, number> = { imp: 0, int: 1, ana: 2 };
 
 function sortedTriad(bg: BG) {
   return [
-    { key: "imp" as const, label: "Impulsiv", value: bg.imp },
-    { key: "int" as const, label: "Intuitiv", value: bg.int },
-    { key: "ana" as const, label: "Analytisch", value: bg.ana },
+    { key: "imp" as const, label: region === "EN" ? "Impulsive" : "Impulsiv", value: bg.imp },
+    { key: "int" as const, label: region === "EN" ? "Intuitive" : "Intuitiv", value: bg.int },
+    { key: "ana" as const, label: region === "EN" ? "Analytical" : "Analytisch", value: bg.ana },
   ].sort((a, b) => b.value - a.value || SORT_PRIORITY[a.key] - SORT_PRIORITY[b.key]);
 }
 

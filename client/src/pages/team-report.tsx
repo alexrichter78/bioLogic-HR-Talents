@@ -782,14 +782,14 @@ export default function TeamReport() {
   const tone = result ? passungTone(result.gesamtpassung) : passungTone("geeignet");
 
   const istProfileArr = [
-    { label: "Impulsiv", short: "Umsetzung", value: istProfile.impulsiv, color: BAR_CSS.impulsiv },
-    { label: "Intuitiv", short: "Zusammenarbeit", value: istProfile.intuitiv, color: BAR_CSS.intuitiv },
-    { label: "Analytisch", short: "Struktur", value: istProfile.analytisch, color: BAR_CSS.analytisch },
+    { label: region === "EN" ? "Impulsive" : "Impulsiv", short: "Umsetzung", value: istProfile.impulsiv, color: BAR_CSS.impulsiv },
+    { label: region === "EN" ? "Intuitive" : "Intuitiv", short: "Zusammenarbeit", value: istProfile.intuitiv, color: BAR_CSS.intuitiv },
+    { label: region === "EN" ? "Analytical" : "Analytisch", short: "Struktur", value: istProfile.analytisch, color: BAR_CSS.analytisch },
   ];
   const teamProfileArr = [
-    { label: "Impulsiv", short: "Umsetzung", value: teamProfileN.impulsiv, color: BAR_CSS.impulsiv },
-    { label: "Intuitiv", short: "Zusammenarbeit", value: teamProfileN.intuitiv, color: BAR_CSS.intuitiv },
-    { label: "Analytisch", short: "Struktur", value: teamProfileN.analytisch, color: BAR_CSS.analytisch },
+    { label: region === "EN" ? "Impulsive" : "Impulsiv", short: "Umsetzung", value: teamProfileN.impulsiv, color: BAR_CSS.impulsiv },
+    { label: region === "EN" ? "Intuitive" : "Intuitiv", short: "Zusammenarbeit", value: teamProfileN.intuitiv, color: BAR_CSS.intuitiv },
+    { label: region === "EN" ? "Analytical" : "Analytisch", short: "Struktur", value: teamProfileN.analytisch, color: BAR_CSS.analytisch },
   ];
 
   const deltas: { label: string; team: number; ist: number; delta: string; deltaTone: string }[] = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {

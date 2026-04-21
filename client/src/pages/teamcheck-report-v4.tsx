@@ -451,9 +451,9 @@ export default function TeamCheckReportV4() {
                       <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>Bedeutung der Komponenten</p>
                       <div style={{ display: "flex", gap: 12 }}>
                         {([
-                          { key: "impulsiv" as ComponentKey, label: "Impulsiv", color: COMP_HEX.impulsiv, text: "Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung." },
-                          { key: "analytisch" as ComponentKey, label: "Analytisch", color: COMP_HEX.analytisch, text: "Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe." },
-                          { key: "intuitiv" as ComponentKey, label: "Intuitiv", color: COMP_HEX.intuitiv, text: "Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team." },
+                          { key: "impulsiv" as ComponentKey, label: region === "EN" ? "Impulsive" : "Impulsiv", color: COMP_HEX.impulsiv, text: "Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung." },
+                          { key: "analytisch" as ComponentKey, label: region === "EN" ? "Analytical" : "Analytisch", color: COMP_HEX.analytisch, text: "Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe." },
+                          { key: "intuitiv" as ComponentKey, label: region === "EN" ? "Intuitive" : "Intuitiv", color: COMP_HEX.intuitiv, text: "Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team." },
                         ]).map(kb => (
                           <div key={kb.key} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
                             <div style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: `linear-gradient(135deg, ${kb.color}12, ${kb.color}06)`, border: `1px solid ${kb.color}20`, display: "flex", flexDirection: "column" }}>

@@ -280,9 +280,9 @@ function ReportChapter({ section, chapterIndex }: { section: ParsedSection; chap
 
 function ReadOnlyBars({ triad }: { triad: Triad }) {
   const bars: { label: string; value: number; color: string }[] = [
-    { label: "Impulsiv", value: triad.impulsiv, color: COLORS.imp },
-    { label: "Intuitiv", value: triad.intuitiv, color: COLORS.int },
-    { label: "Analytisch", value: triad.analytisch, color: COLORS.ana },
+    { label: region === "EN" ? "Impulsive" : "Impulsiv", value: triad.impulsiv, color: COLORS.imp },
+    { label: region === "EN" ? "Intuitive" : "Intuitiv", value: triad.intuitiv, color: COLORS.int },
+    { label: region === "EN" ? "Analytical" : "Analytisch", value: triad.analytisch, color: COLORS.ana },
   ];
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -779,9 +779,9 @@ export default function Teamdynamik() {
           const vc = getViewContent(viewMode, result, result.activeMatrixCell);
           if (!vc.showMatrix && viewMode === "CEO") return null;
           const domLabels: { key: DominanceType; label: string; short: string; color: string }[] = [
-            { key: "IMPULSIV", label: "Impulsiv", short: "IMP", color: COLORS.imp },
-            { key: "INTUITIV", label: "Intuitiv", short: "INT", color: COLORS.int },
-            { key: "ANALYTISCH", label: "Analytisch", short: "ANA", color: COLORS.ana },
+            { key: "IMPULSIV", label: region === "EN" ? "Impulsive" : "Impulsiv", short: "IMP", color: COLORS.imp },
+            { key: "INTUITIV", label: region === "EN" ? "Intuitive" : "Intuitiv", short: "INT", color: COLORS.int },
+            { key: "ANALYTISCH", label: region === "EN" ? "Analytical" : "Analytisch", short: "ANA", color: COLORS.ana },
           ];
           const personDom = result.dominancePerson;
           const teamDom = result.dominanceTeam;

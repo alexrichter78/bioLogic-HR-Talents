@@ -107,6 +107,8 @@ function biggestGapText(rt: Triad, ct: Triad): string {
 
 
 function TriangleChart({ role, candidate }: { role: Triad; candidate: Triad }) {
+  const { region: _r } = useRegion();
+  const _L = (de: string, en: string) => _r === "EN" ? en : de;
   const w = 360, h = 330;
   const cx = w / 2, cy = 178;
   const R = 110;
@@ -154,9 +156,9 @@ function TriangleChart({ role, candidate }: { role: Triad; candidate: Triad }) {
         {rp.map((p, i) => <circle key={`r${i}`} cx={p.x} cy={p.y} r="3.5" fill="#3b82f6" stroke="#fff" strokeWidth="1.5" />)}
         {cp.map((p, i) => <circle key={`c${i}`} cx={p.x} cy={p.y} r="3.5" fill="#f59e0b" stroke="#fff" strokeWidth="1.5" />)}
 
-        <text x={labelPts[0].x} y={labelPts[0].y - 4} textAnchor="middle" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>Analytisch</text>
-        <text x={labelPts[1].x - 4} y={labelPts[1].y + 14} textAnchor="start" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>Intuitiv</text>
-        <text x={labelPts[2].x + 4} y={labelPts[2].y + 14} textAnchor="end" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>Impulsiv</text>
+        <text x={labelPts[0].x} y={labelPts[0].y - 4} textAnchor="middle" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>{_L("Analytisch", "Analytical")}</text>
+        <text x={labelPts[1].x - 4} y={labelPts[1].y + 14} textAnchor="start" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>{_L("Intuitiv", "Intuitive")}</text>
+        <text x={labelPts[2].x + 4} y={labelPts[2].y + 14} textAnchor="end" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>{_L("Impulsiv", "Impulsive")}</text>
       </svg>
     </div>
   );
@@ -1294,9 +1296,9 @@ export default function SollIstBericht() {
                   <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>Bedeutung der Komponenten</p>
                   <div style={{ display: "flex", gap: 12 }}>
                     {([
-                      { key: "impulsiv", label: "Impulsiv", color: BAR_HEX.impulsiv, text: "Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung." },
-                      { key: "analytisch", label: "Analytisch", color: BAR_HEX.analytisch, text: "Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe." },
-                      { key: "intuitiv", label: "Intuitiv", color: BAR_HEX.intuitiv, text: "Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team." },
+                      { key: "impulsiv", label: region === "EN" ? "Impulsive" : "Impulsiv", color: BAR_HEX.impulsiv, text: "Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung." },
+                      { key: "analytisch", label: region === "EN" ? "Analytical" : "Analytisch", color: BAR_HEX.analytisch, text: "Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe." },
+                      { key: "intuitiv", label: region === "EN" ? "Intuitive" : "Intuitiv", color: BAR_HEX.intuitiv, text: "Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team." },
                     ] as const).map(kb => (
                       <div key={kb.key} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
                         <div style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: `linear-gradient(135deg, ${kb.color}12, ${kb.color}06)`, border: `1px solid ${kb.color}20`, display: "flex", flexDirection: "column" }}>

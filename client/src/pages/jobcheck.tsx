@@ -808,18 +808,18 @@ export default function JobCheck() {
                     </div>
                     <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, marginBottom: 16, hyphens: "auto", textAlign: "justify" } as React.CSSProperties} lang="de">
                       Diese Auswertung beschreibt die Wirklogik einer Stelle. Die Anforderungen werden den drei Arbeitsbereichen{" "}
-                      <span style={{ fontWeight: 700, color: COLORS.imp }}>Impulsiv</span>,{" "}
-                      <span style={{ fontWeight: 700, color: COLORS.int }}>Intuitiv</span> und{" "}
-                      <span style={{ fontWeight: 700, color: COLORS.ana }}>Analytisch</span> zugeordnet.
+                      <span style={{ fontWeight: 700, color: COLORS.imp }}>{region === "EN" ? "Impulsive" : "Impulsiv"}</span>,{" "}
+                      <span style={{ fontWeight: 700, color: COLORS.int }}>{region === "EN" ? "Intuitive" : "Intuitiv"}</span>{region === "EN" ? " and " : " und "}
+                      <span style={{ fontWeight: 700, color: COLORS.ana }}>{region === "EN" ? "Analytical" : "Analytisch"}</span>{region === "EN" ? "." : " zugeordnet."}
                       So wird erkennbar, welche Form von Wirksamkeit die Stelle bestimmt.
                     </p>
                     {roleProfile && (() => {
                       const r = roleProfile;
                       const c = snapshotCand;
                       const dims: { key: ComponentKey; label: string; color: string }[] = [
-                        { key: "impulsiv", label: "Impulsiv", color: COLORS.imp },
-                        { key: "intuitiv", label: "Intuitiv", color: COLORS.int },
-                        { key: "analytisch", label: "Analytisch", color: COLORS.ana },
+                        { key: "impulsiv", label: region === "EN" ? "Impulsive" : "Impulsiv", color: COLORS.imp },
+                        { key: "intuitiv", label: region === "EN" ? "Intuitive" : "Intuitiv", color: COLORS.int },
+                        { key: "analytisch", label: region === "EN" ? "Analytical" : "Analytisch", color: COLORS.ana },
                       ];
                       return (
                         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -868,9 +868,9 @@ export default function JobCheck() {
                     <div style={{ marginTop: 20 }}>
                       <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 14px", letterSpacing: "0.02em" }}>Bedeutung der Komponenten</p>
                       {[
-                        { label: "Intuitiv", color: COLORS.int, desc: "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen." },
-                        { label: "Impulsiv", color: COLORS.imp, desc: "Aufgaben schnell vorantreiben, Prioritäten setzen und Ergebnisse liefern." },
-                        { label: "Analytisch", color: COLORS.ana, desc: "Strukturen schaffen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten." },
+                        { label: region === "EN" ? "Intuitive" : "Intuitiv", color: COLORS.int, desc: "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen." },
+                        { label: region === "EN" ? "Impulsive" : "Impulsiv", color: COLORS.imp, desc: "Aufgaben schnell vorantreiben, Prioritäten setzen und Ergebnisse liefern." },
+                        { label: region === "EN" ? "Analytical" : "Analytisch", color: COLORS.ana, desc: "Strukturen schaffen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten." },
                       ].map((d, i) => (
                         <div key={d.label} style={{ marginBottom: i < 2 ? 14 : 0 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>

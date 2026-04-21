@@ -2824,9 +2824,9 @@ export default function RollenDNA() {
 
                         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                           {[
-                            { label: "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
-                            { label: "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
-                            { label: "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
+                            { label: region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
+                            { label: region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
+                            { label: region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
                           ].map(d => (
                             <div key={d.label} style={{
                               background: d.bg,
@@ -2886,9 +2886,9 @@ export default function RollenDNA() {
                             </p>
                           </div>
                           {[
-                            { label: "Impulsiv", color: "#C41E3A", value: section.data.imp },
-                            { label: "Intuitiv", color: "#F39200", value: section.data.int },
-                            { label: "Analytisch", color: "#1A5DAB", value: section.data.ana },
+                            { label: region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
+                            { label: region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: section.data.int },
+                            { label: region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: section.data.ana },
                           ].map((bar) => (
                             <div
                               key={bar.label}
@@ -2972,9 +2972,9 @@ export default function RollenDNA() {
                       </div>
                       {(() => {
                         const bars = [
-                          { label: "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
-                          { label: "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
-                          { label: "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
+                          { label: region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
+                          { label: region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
+                          { label: region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
                         ];
                         return (
                           <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
@@ -3322,9 +3322,9 @@ export default function RollenDNA() {
 
                       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                         {[
-                          { label: "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
-                          { label: "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
-                          { label: "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
+                          { label: region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
+                          { label: region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
+                          { label: region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
                         ].map(d => (
                           <div key={d.label} style={{
                             background: d.bg,
@@ -3386,9 +3386,9 @@ export default function RollenDNA() {
                             </p>
                           </div>
                           {[
-                            { label: "Impulsiv", color: "#C41E3A", value: section.data.imp },
-                            { label: "Intuitiv", color: "#F39200", value: section.data.int },
-                            { label: "Analytisch", color: "#1A5DAB", value: section.data.ana },
+                            { label: region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
+                            { label: region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: section.data.int },
+                            { label: region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: section.data.ana },
                           ].map((bar) => (
                             <div
                               key={bar.label}
@@ -3472,9 +3472,9 @@ export default function RollenDNA() {
                       </div>
                       {(() => {
                         const bars = [
-                          { label: "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
-                          { label: "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
-                          { label: "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
+                          { label: region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
+                          { label: region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
+                          { label: region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
                         ];
                         return (
                           <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
