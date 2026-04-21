@@ -2301,11 +2301,35 @@ Antworte als JSON:
         }
       }
 
-      const componentLabel: Record<string, string> = { imp: "Impulsiv", int: "Intuitiv", ana: "Analytisch" };
-      const componentDomain: Record<string, string> = {
-        imp: "Handlung und Umsetzung",
-        int: "Kommunikation und Abstimmung",
-        ana: "Struktur und Analyse",
+      // Klartext-Labels: keine Fachbegriffe wie "impulsiv/intuitiv/analytisch" im Bericht
+      const componentLabel: Record<string, string> = {
+        imp: "Tempo und Entscheidung",
+        int: "Kommunikation und Beziehung",
+        ana: "Struktur und Sorgfalt",
+      };
+      const componentLong: Record<string, string> = {
+        imp: "anpacken, schnell entscheiden, Tempo machen, Dinge umsetzen",
+        int: "auf Menschen zugehen, abstimmen, vermitteln, Beziehungen aufbauen",
+        ana: "ordnen, prüfen, analysieren, Sorgfalt und Genauigkeit sicherstellen",
+      };
+
+      // Prozentwerte in qualitative Bänder übersetzen, damit Claude in Worten arbeitet
+      const toBand = (v: number): string => {
+        if (v >= 45) return "deutlich der Schwerpunkt";
+        if (v >= 38) return "klar mitprägend";
+        if (v >= 30) return "spürbar vorhanden";
+        if (v >= 22) return "eher unterstützend";
+        return "klar im Hintergrund";
+      };
+      const bandImp = toBand(triad.imp);
+      const bandInt = toBand(triad.int);
+      const bandAna = toBand(triad.ana);
+
+      const gapWord = (g: number): string => {
+        if (g <= 3) return "praktisch gleichauf";
+        if (g <= 7) return "knapp davor";
+        if (g <= 14) return "deutlich davor";
+        return "sehr deutlich davor";
       };
 
       const languageMap: Record<string, string> = {
@@ -2317,88 +2341,91 @@ Antworte als JSON:
       };
       const languageName = languageMap[locale] || "Deutsch";
 
-      const focusLabel = successFocus ? componentDomain[successFocus] : null;
+      const focusLabel = successFocus ? componentLabel[successFocus] : null;
 
       const profileClassExplanation: Record<string, string> = {
-        BAL_FULL: "Alle drei Komponenten sind annähernd gleich stark – kein Schwerpunkt.",
-        DUAL_TOP: "Zwei Komponenten sind gleich stark dominant, die dritte deutlich schwächer.",
-        CLEAR_TOP: "Eine Komponente klar dominant, die zwei anderen vergleichbar im Hintergrund.",
-        ORDER: "Klare Rangfolge: top1 > top2 > top3 mit jeweils relevantem Abstand.",
+        BAL_FULL: "Alle drei Schwerpunkte sind etwa gleich stark – kein klarer Hauptfokus.",
+        DUAL_TOP: "Zwei Schwerpunkte tragen die Stelle gemeinsam, der dritte begleitet eher.",
+        CLEAR_TOP: "Ein Schwerpunkt trägt die Stelle, die anderen beiden begleiten.",
+        ORDER: "Klare Reihenfolge: ein erster Schwerpunkt vor einem zweiten vor einem dritten.",
       };
 
-      const systemPrompt = `Du bist ein erfahrener Management-Berater, der Stellenanalyse-Berichte für eine gemischte Führungsebene (C-Level, mittleres Management, HR) verfasst.
+      const systemPrompt = `Du bist ein erfahrener Berater, der Stellenanalyse-Berichte schreibt. Die Leser kennen weder das bioLogic-Modell noch Begriffe wie "impulsiv", "intuitiv" oder "analytisch". Schreibe so, dass eine fremde Person ohne Vorwissen den Bericht versteht.
 
 STIL-REGELN (verbindlich):
-- Pragmatisch-operativ. Sachlich. Direkt. Aktiv. Kein Passiv, keine Konjunktive ohne Grund.
-- Keine Floskeln, kein Lehrbuch-Sound, keine Coaching-Sprache, keine Verstärker ("wirklich", "extrem", "wahnsinnig", "sehr", "absolut").
-- Jeder Abschnitt: Kernaussage zuerst → kurze Begründung anhand der konkreten Daten → eine konkrete Handlungsempfehlung am Ende.
-- Zahlen IMMER kontextualisieren ("mit 52 % der dominante Bereich", nicht nur "52 %"). Bei knappen Abständen ("Abstand nur 3 Punkte") explizit benennen.
-- Konkrete Bezüge auf Rollentitel, genannte Aufgaben, Erfolgsfokus und Rahmenbedingungen herstellen – nicht generisch. Wenn Daten fehlen, sag das.
-- Keine Wiederholungen zwischen Abschnitten. Jeder Abschnitt trägt eine eigene Aussage.
+- Klare, leicht verständliche Alltagssprache. Kurze Sätze. Aktiv. Kein Passiv.
+- KEINE Zahlen, keine Prozentwerte, keine Punktzahlen, keine Werte wie "52 %", "Abstand 3 Punkte" oder "knapp 40". Stattdessen Worte: "deutlich im Vordergrund", "klar mitprägend", "spürbar vorhanden", "im Hintergrund", "praktisch gleichauf", "knapp davor", "deutlich davor".
+- KEINE Fachbegriffe aus dem bioLogic-Modell: niemals "impulsiv", "intuitiv", "analytisch", "Komponente", "Triade", "Profilklasse", "BAL_FULL", "DUAL_TOP", "CLEAR_TOP", "ORDER", "top1/top2/top3", "Gap". Stattdessen Klartext: "Tempo und Entscheidung", "Kommunikation und Beziehung", "Struktur und Sorgfalt", "Schwerpunkt", "Hauptfokus", "begleitet die Stelle".
+- Keine Floskeln, kein Lehrbuch-Sound, keine Coaching-Sprache, keine Verstärker ("wirklich", "extrem", "absolut").
+- Jeder Abschnitt: Kernaussage zuerst → kurze Begründung anhand der konkreten Aufgaben/Rahmen → eine konkrete Handlungsempfehlung am Ende.
+- Konkrete Bezüge auf Rollentitel, genannte Aufgaben, Erfolgsfokus und Rahmenbedingungen herstellen – nicht generisch.
+- Keine Wiederholungen zwischen Abschnitten.
 - Antworten auf ${languageName}.
 
-KOMPONENTEN-DEUTUNG:
-- impulsiv (imp) = Handlung, Umsetzung, Tempo, Entscheidungsfreude
-- intuitiv (int) = Kommunikation, Abstimmung, Beziehung, Empathie
-- analytisch (ana) = Struktur, Sorgfalt, Fachlichkeit, Prüfung
+WIE DIE DREI SCHWERPUNKTE ZU BENENNEN SIND (immer Klartext):
+- "Tempo und Entscheidung" = anpacken, schnell entscheiden, Tempo machen, Dinge umsetzen
+- "Kommunikation und Beziehung" = auf Menschen zugehen, abstimmen, vermitteln, Beziehungen aufbauen
+- "Struktur und Sorgfalt" = ordnen, prüfen, analysieren, Sorgfalt und Genauigkeit sicherstellen
 
 Antworte ausschließlich mit gültigem JSON gemäß dem geforderten Schema. Kein Fließtext um das JSON herum.`;
 
-      const taskLine = Array.isArray(tasks) && tasks.length > 0 ? tasks.join(", ") : "(keine Hauptaufgaben angegeben)";
+      const taskLine = Array.isArray(tasks) && tasks.length > 0 ? tasks.join("; ") : "(keine Hauptaufgaben angegeben)";
       const t1 = meta.top1, t2 = meta.top2, t3 = meta.top3;
 
       const userPrompt = `STELLE: ${jobTitle}
 HAUPTAUFGABEN: ${taskLine}
 
-PROFILVERTEILUNG (in Prozent, summiert auf 100):
-- Impulsiv: ${triad.imp} %
-- Intuitiv: ${triad.int} %
-- Analytisch: ${triad.ana} %
+SCHWERPUNKTE FÜR DIESE STELLE (qualitativ – KEINE Zahlen im Bericht verwenden):
+- "${componentLabel.imp}" (${componentLong.imp}): ${bandImp}
+- "${componentLabel.int}" (${componentLong.int}): ${bandInt}
+- "${componentLabel.ana}" (${componentLong.ana}): ${bandAna}
 
-KLASSIFIKATION: ${meta.profileClass} – ${profileClassExplanation[meta.profileClass] || ""}
-- Reihenfolge: ${componentLabel[t1]} (top1) → ${componentLabel[t2]} (top2) → ${componentLabel[t3]} (top3)
-- Abstand top1→top2: ${meta.gap1} Punkte
-- Abstand top2→top3: ${meta.gap2} Punkte
+PROFILBILD: ${profileClassExplanation[meta.profileClass] || ""}
+- Hauptfokus: "${componentLabel[t1]}"
+- Zweiter Schwerpunkt: "${componentLabel[t2]}" (${gapWord(meta.gap1)} hinter dem Hauptfokus)
+- Dritter Schwerpunkt: "${componentLabel[t3]}" (${gapWord(meta.gap2)} hinter dem zweiten)
 
-ERFOLGSFOKUS: ${focusLabel ? `${focusLabel} (${successFocus})` : "nicht hinterlegt"}
+ERFOLGSFOKUS DER STELLE: ${focusLabel ? `"${focusLabel}"` : "nicht hinterlegt"}
 
 RAHMENBEDINGUNGEN:
 - Aufgabencharakter: ${environment.taskCharacter || "nicht angegeben"}
 - Arbeitslogik: ${environment.workLogic || "nicht angegeben"}
 - Führungstyp: ${environment.leadershipType || "nicht angegeben"}
 
-${forbiddenPhrases.length > 0 ? `VERBOTENE FORMULIERUNGEN (nicht verwenden – passen nicht zur Klassifikation):\n- ${forbiddenPhrases.join("\n- ")}\n` : ""}
-
 AUFGABE:
-Erzeuge das folgende JSON. Halte die Stilregeln ein. Beziehe dich auf die konkreten Daten oben.
+Erzeuge das folgende JSON. Halte die Stilregeln strikt ein – besonders: KEINE Zahlen oder Prozentwerte im Text. KEINE Begriffe wie "impulsiv", "intuitiv", "analytisch". Verwende immer die Klartext-Bezeichnungen oben.
 
 {
-  "intro": "Einstieg in den Bericht. 2 Absätze, mit \\n\\n getrennt. Erster Absatz: Was zeigt der Bericht für genau diese Stelle. Zweiter Absatz: kurze Einordnung der Profilverteilung mit Zahlen und einer Handlungsorientierung für die Leser.",
-  "shortDescription": "2-3 Sätze. Welche Person diese Stelle braucht. Bezug auf die Aufgaben.",
-  "structureProfile": "2-3 Sätze. Was die Profilverteilung strukturell bedeutet. Mit Zahlen.",
+  "intro": "2 Absätze (mit \\n\\n getrennt). Erster Absatz: Was diese Stelle ausmacht und was der Bericht zeigt – in Alltagssprache, ohne Modellbegriffe. Zweiter Absatz: kurze Einordnung des Schwerpunkt-Bildes (welcher Schwerpunkt trägt, welche begleiten) und wofür der Leser den Bericht nutzen kann.",
+  "shortDescription": "2-3 Sätze. Welche Person diese Stelle braucht – in Alltagssprache, mit Bezug auf die Aufgaben.",
+  "structureProfile": "2-3 Sätze. Was das Schwerpunkt-Bild für die Stelle bedeutet. Verwende Worte wie 'Hauptfokus', 'begleitet', 'im Hintergrund'. Keine Zahlen.",
   "componentMeaning": [
-    { "component": "${t1}", "title": "${componentLabel[t1]}", "text": "1-2 Sätze: Was bedeutet ${componentLabel[t1]} (${triad[t1]} %) konkret für diese Rolle?" },
-    { "component": "${t2}", "title": "${componentLabel[t2]}", "text": "1-2 Sätze: Welche Funktion hat ${componentLabel[t2]} (${triad[t2]} %)?" },
-    { "component": "${t3}", "title": "${componentLabel[t3]}", "text": "1-2 Sätze: Welche Rolle spielt ${componentLabel[t3]} (${triad[t3]} %)?" }
+    { "component": "${t1}", "title": "${componentLabel[t1]}", "text": "1-2 Sätze: Wofür dieser Schwerpunkt in der Stelle '${jobTitle}' steht – konkret an einer der Aufgaben festmachen." },
+    { "component": "${t2}", "title": "${componentLabel[t2]}", "text": "1-2 Sätze: Welche Rolle dieser Schwerpunkt zusätzlich spielt." },
+    { "component": "${t3}", "title": "${componentLabel[t3]}", "text": "1-2 Sätze: Welche Rolle dieser Schwerpunkt im Hintergrund spielt." }
   ],
-  "workLogic": "1-2 Sätze. Aus welchem Zusammenspiel die Wirksamkeit der Stelle entsteht.",
-  "framework": "2-3 Sätze. Wie passen Aufgabencharakter / Arbeitslogik / Führungstyp zur berechneten Profilstruktur. Auf das Konkrete eingehen oder fehlende Angaben benennen.",
-  "successFocus": "1-2 Sätze. Was der angegebene Erfolgsfokus für die Steuerung der Stelle bedeutet, im Verhältnis zur Hauptlogik.",
-  "behaviourDaily": "2 Sätze. Wie sich die Stelle im Alltag zeigt.",
-  "behaviourPressure": "2 Sätze. Verhalten unter normalem Arbeitsdruck.",
-  "behaviourStress": "2 Sätze. Verhalten in nicht mehr kontrollierbaren Situationen.",
-  "teamImpact": "2 Sätze. Welche Wirkung die Stelle auf das Team entfaltet.",
-  "tensionFields": ["4 prägnante Spannungsfelder im Format 'X vs. Y', die sich aus der konkreten Profilverteilung ergeben. Keine Wiederholungen."],
+  "workLogic": "1-2 Sätze. Wie die Schwerpunkte zusammenwirken müssen, damit die Stelle funktioniert.",
+  "framework": "2-3 Sätze. Wie Aufgabencharakter, Arbeitslogik und Führungstyp zum Schwerpunkt-Bild passen. Wenn etwas nicht angegeben ist, kurz benennen.",
+  "successFocus": "1-2 Sätze. Was der Erfolgsfokus für die tägliche Steuerung dieser Stelle bedeutet.",
+  "behaviourDaily": "2 Sätze. Wie sich die Stelle im normalen Alltag zeigt – in Alltagssprache.",
+  "behaviourPressure": "2 Sätze. Wie die Stelle unter normalem Arbeitsdruck reagiert.",
+  "behaviourStress": "2 Sätze. Wie die Stelle reagiert, wenn der Druck zu groß wird.",
+  "teamImpact": "2 Sätze. Welche Wirkung die Stelle auf das Team hat.",
+  "tensionFields": ["4 prägnante Spannungsfelder im Format 'X vs. Y' aus dem konkreten Stellenkontext (z. B. 'Tempo vs. Sorgfalt', 'Nähe zum Team vs. klare Ansage'). Alltagssprache, keine Modellbegriffe."],
   "miscastRisks": [
-    { "label": "Wenn ${componentLabel[t1]} zu stark wird", "bullets": ["3-4 konkrete Risiken als kurze Sätze, jeder mit eigener Aussage."] },
-    { "label": "Wenn ${componentLabel[t2]} die Führung übernimmt", "bullets": ["3-4 konkrete Risiken als kurze Sätze."] },
-    { "label": "Wenn ${componentLabel[t3]} zu stark wird", "bullets": ["3-4 konkrete Risiken als kurze Sätze."] }
+    { "label": "Wenn ${componentLabel[t1]} zu stark wird", "bullets": ["3-4 konkrete Risiken als kurze Alltagssätze. Was passiert dann im Team, mit den Aufgaben, mit Kollegen?"] },
+    { "label": "Wenn ${componentLabel[t2]} die Stelle übernimmt", "bullets": ["3-4 konkrete Risiken als kurze Alltagssätze."] },
+    { "label": "Wenn ${componentLabel[t3]} zu stark wird", "bullets": ["3-4 konkrete Risiken als kurze Alltagssätze."] }
   ],
-  "typicalPerson": "2-3 Sätze. Aus welchen Rollen / Hintergründen typischerweise passende Kandidatinnen und Kandidaten kommen.",
-  "finalDecision": "2-3 Sätze. Klare Besetzungsempfehlung mit Bezug auf das konkrete Profil. Endet mit einer prüfbaren Empfehlung."
+  "typicalPerson": "2-3 Sätze. Aus welchen Rollen oder Berufswegen passende Kandidatinnen und Kandidaten typischerweise kommen – konkret und in Alltagssprache.",
+  "finalDecision": "2-3 Sätze. Klare Besetzungsempfehlung in Alltagssprache, mit Bezug auf den Hauptfokus dieser Stelle. Ende mit einer prüfbaren Empfehlung."
 }
 
-WICHTIG: tensionFields ist ein Array aus exakt 4 Strings. miscastRisks.bullets ist jeweils ein Array aus 3-4 Strings. Komponenten in componentMeaning müssen exakt die Reihenfolge und Keys (${t1}, ${t2}, ${t3}) einhalten.`;
+WICHTIG:
+- KEINE Zahlen, KEINE Prozentwerte, KEINE Punkte irgendwo im Output. Auch nicht in tensionFields oder miscastRisks.
+- KEINE Begriffe "impulsiv", "intuitiv", "analytisch", "Komponente", "Triade", "Profilklasse", "Gap", "top1", "top2", "top3", "bioLogic".
+- tensionFields = exakt 4 Strings. miscastRisks.bullets jeweils 3-4 Strings.
+- componentMeaning in genau dieser Reihenfolge mit den keys ${t1}, ${t2}, ${t3}.`;
 
       const fullPrompt = `${systemPrompt}\n\n${userPrompt}`;
       const data = await callClaudeForJson("generate-stellenanalyse-text", fullPrompt, {
