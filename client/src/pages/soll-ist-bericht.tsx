@@ -484,16 +484,16 @@ export default function SollIstBericht() {
         <GlobalNav />
         <div className="mx-auto max-w-3xl px-6 py-20 text-center">
           <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-amber-500" />
-          <h2 className="text-xl font-semibold text-slate-950 mb-3">Keine Rollen-DNA vorhanden</h2>
+          <h2 className="text-xl font-semibold text-slate-950 mb-3">{region === "EN" ? "No role DNA available" : "Keine Rollen-DNA vorhanden"}</h2>
           <p className="text-sm text-slate-600 mb-6 leading-6">
-            Bitte erstelle zuerst eine Stellenanalyse, um den Soll-Ist-Bericht generieren zu können.
+            {region === "EN" ? "Please first create a role analysis to generate the target/actual report." : "Bitte erstelle zuerst eine Stellenanalyse, um den Soll-Ist-Bericht generieren zu können."}
           </p>
           <button
             onClick={() => setLocation("/rollen-dna")}
             className="inline-flex h-11 items-center gap-2 rounded-xl bg-blue-600 px-6 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors"
             data-testid="button-go-to-rolle"
           >
-            Zur Stellenanalyse
+            {region === "EN" ? "Go to role analysis" : "Zur Stellenanalyse"}
           </button>
         </div>
       </div>
@@ -510,10 +510,10 @@ export default function SollIstBericht() {
             <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
               <div className="text-center">
                 <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#34C759" }} data-testid="text-matchcheck-title">
-                  Passungsanalyse konfigurieren
+                  {region === "EN" ? "Configure fit analysis" : "Passungsanalyse konfigurieren"}
                 </h1>
                 <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-matchcheck-subtitle">
-                  Vergleiche das Stellenprofil mit dem Personenprofil, um die strukturelle Passung für diese Stelle zu analysieren.
+                  {region === "EN" ? "Compare the role profile with the person profile to analyse structural fit for this position." : "Vergleiche das Stellenprofil mit dem Personenprofil, um die strukturelle Passung für diese Stelle zu analysieren."}
                 </p>
               </div>
             </div>
@@ -538,7 +538,7 @@ export default function SollIstBericht() {
                   <SlidersHorizontal style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} />
                 </div>
                 <span style={{ fontSize: 18, fontWeight: 700, color: "#34C759" }}>
-                  Profilvergleich: <span style={{ fontWeight: 700, color: "#1D1D1F" }}>{roleName}</span>
+                  {region === "EN" ? "Profile comparison: " : "Profilvergleich: "}<span style={{ fontWeight: 700, color: "#1D1D1F" }}>{roleName}</span>
                 </span>
               </div>
               <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${profilvergleichOpen ? "rotate-180" : ""}`} />
@@ -547,7 +547,7 @@ export default function SollIstBericht() {
             {profilvergleichOpen && (<div style={{ padding: isMobile ? "0 14px 14px" : "0 32px 32px" }}>
             <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
               <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="card-soll-profil">
-                <p className="text-base font-semibold text-slate-900 mb-6">Soll-Profil <span className="font-normal text-slate-500">(Stelle)</span></p>
+                <p className="text-base font-semibold text-slate-900 mb-6">{region === "EN" ? "Target profile" : "Soll-Profil"} <span className="font-normal text-slate-500">({region === "EN" ? "role" : "Stelle"})</span></p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                     const val = roleTriad[k];
@@ -643,7 +643,7 @@ export default function SollIstBericht() {
               </div>
 
               <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="card-ist-profil">
-                <p className="text-base font-semibold text-slate-900 mb-6">Ist-Profil <span className="font-normal text-slate-500">(Person)</span></p>
+                <p className="text-base font-semibold text-slate-900 mb-6">{region === "EN" ? "Actual profile" : "Ist-Profil"} <span className="font-normal text-slate-500">({region === "EN" ? "person" : "Person"})</span></p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                     const val = candTriad[k];

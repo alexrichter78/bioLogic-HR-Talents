@@ -1754,10 +1754,10 @@ export default function RollenDNA() {
             <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
               <div className="text-center">
                 <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#34C759" }} data-testid="text-rollen-dna-title">
-                  Stellenprofil definieren
+                  {region === "EN" ? "Define role profile" : "Stellenprofil definieren"}
                 </h1>
                 <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-rollen-dna-subtitle">
-                  Erfasse die Anforderungen und Arbeitslogik der Stelle als Grundlage für den Entscheidungsbericht, die Passungsanalyse sowie den TeamCheck.
+                  {region === "EN" ? "Capture the requirements and working logic of the position as a basis for the decision report, fit analysis and TeamCheck." : "Erfasse die Anforderungen und Arbeitslogik der Stelle als Grundlage für den Entscheidungsbericht, die Passungsanalyse sowie den TeamCheck."}
                 </p>
               </div>
 
@@ -2979,8 +2979,8 @@ export default function RollenDNA() {
                       <Briefcase style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                     </div>
                     <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
-                      <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>Stellendefinition:</span>
-                      <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? " mit Führungsverantwortung" : ""}</span>
+                      <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>{region === "EN" ? "Role definition:" : "Stellendefinition:"}</span>
+                      <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? (region === "EN" ? " with leadership responsibility" : " mit Führungsverantwortung") : ""}</span>
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
@@ -3000,7 +3000,7 @@ export default function RollenDNA() {
                       data-testid="button-summary-edit"
                     >
                       <Pencil style={{ width: 14, height: 14 }} />
-                      Bearbeiten
+                      {region === "EN" ? "Edit" : "Bearbeiten"}
                     </span>
                     <ChevronDown style={{
                       width: 18,
@@ -3017,11 +3017,11 @@ export default function RollenDNA() {
                 
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }} data-testid="dna-summary-grid">
                   {[
-                    { icon: Briefcase, label: "Stelle / Bezeichnung", value: beruf },
-                    { icon: LayoutGrid, label: "Aufgabenstruktur", value: AUFGABENCHARAKTER_OPTIONS.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter },
-                    { icon: Wrench, label: "Arbeitsweise", value: ARBEITSLOGIK_OPTIONS.find(o => o.value === arbeitslogik)?.label || arbeitslogik },
-                    { icon: Target, label: "Erfolgsfokus", value: erfolgsfokusIndices.map(i => ERFOLGSFOKUS_DISPLAY[i]?.label).filter(Boolean).join(", ") },
-                    { icon: UserCheck, label: "Führung", value: FUEHRUNG_OPTIONS.find(o => o.value === fuehrung)?.label || fuehrung },
+                    { icon: Briefcase, label: region === "EN" ? "Role / title" : "Stelle / Bezeichnung", value: beruf },
+                    { icon: LayoutGrid, label: region === "EN" ? "Task structure" : "Aufgabenstruktur", value: AUFGABENCHARAKTER_OPTIONS.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter },
+                    { icon: Wrench, label: region === "EN" ? "Working style" : "Arbeitsweise", value: ARBEITSLOGIK_OPTIONS.find(o => o.value === arbeitslogik)?.label || arbeitslogik },
+                    { icon: Target, label: region === "EN" ? "Success focus" : "Erfolgsfokus", value: erfolgsfokusIndices.map(i => ERFOLGSFOKUS_DISPLAY[i]?.label).filter(Boolean).join(", ") },
+                    { icon: UserCheck, label: region === "EN" ? "Leadership" : "Führung", value: FUEHRUNG_OPTIONS.find(o => o.value === fuehrung)?.label || fuehrung },
                   ].map(card => (
                     <div
                       key={card.label}
@@ -3051,12 +3051,12 @@ export default function RollenDNA() {
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 3 }}>
                       <Hash style={{ width: 14, height: 14, color: "#8E8E93", flexShrink: 0 }} />
-                      <span style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F" }}>Tätigkeits-/Kompetenzanzahl</span>
+                      <span style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F" }}>{region === "EN" ? "Tasks / competency count" : "Tätigkeits-/Kompetenzanzahl"}</span>
                     </div>
                     <div style={{ display: "flex", gap: 12, paddingLeft: 21, flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{hauptCount}</strong> Tätigkeiten</span>
-                      <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{nebenCount}</strong> Humankompetenzen</span>
-                      {fuehrung !== "Keine" && <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{fuehrungCount}</strong> Führung</span>}
+                      <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{hauptCount}</strong> {region === "EN" ? "tasks" : "Tätigkeiten"}</span>
+                      <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{nebenCount}</strong> {region === "EN" ? "human skills" : "Humankompetenzen"}</span>
+                      {fuehrung !== "Keine" && <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{fuehrungCount}</strong> {region === "EN" ? "leadership" : "Führung"}</span>}
                     </div>
                   </div>
                 </div>
@@ -3096,7 +3096,7 @@ export default function RollenDNA() {
                     data-testid="button-rolle-bearbeiten"
                   >
                     <RefreshCw className="w-4 h-4" />
-                    Stellenprofil ändern
+                    {region === "EN" ? "Edit role profile" : "Stellenprofil ändern"}
                   </button>
                   <button
                     onClick={handleSave}
@@ -3128,7 +3128,7 @@ export default function RollenDNA() {
                     data-testid="button-profil-speichern"
                   >
                     <Save className="w-4 h-4" />
-                    Stellenprofil speichern
+                    {region === "EN" ? "Save role profile" : "Stellenprofil speichern"}
                   </button>
                   <button
                     onClick={() => setLocation("/bericht")}
@@ -3163,7 +3163,7 @@ export default function RollenDNA() {
                     data-testid="button-entscheidungsbericht"
                   >
                     <FileText className="w-4 h-4" />
-                    Entscheidungsbericht erstellen
+                    {region === "EN" ? "Generate decision report" : "Entscheidungsbericht erstellen"}
                   </button>
                 </div>
                   </>

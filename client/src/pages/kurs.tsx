@@ -4,6 +4,7 @@ import { GraduationCap, Lock, Plus, Trash2, Send, CheckCircle2, AlertCircle, Boo
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useRegion } from "@/lib/region";
 import imgKompaktkurs from "@assets/Kompaktkurs_main_1776155971409.png";
 import imgLeadership from "@assets/68_1776155971408.png";
 import imgRecruiting from "@assets/69_1776155971408.png";
@@ -23,6 +24,8 @@ function createEmptyParticipant(): Participant {
 }
 
 function KursWidgetInner({ isMobile }: { isMobile: boolean }) {
+  const { region } = useRegion();
+  const en = region === "EN";
   const modules = [
     { img: imgKompaktkurs, title: "bioLogic Kompaktkurs" },
     { img: imgLeadership, title: "bioLogic Leadership" },
@@ -34,7 +37,7 @@ function KursWidgetInner({ isMobile }: { isMobile: boolean }) {
     <div data-testid="widget-kursmodule">
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px", letterSpacing: "-0.02em" }}>
-          Einführung in die bioLogic
+          {en ? "Introduction to bioLogic" : "Einführung in die bioLogic"}
         </h2>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center" }}>
           <div style={{
@@ -43,7 +46,7 @@ function KursWidgetInner({ isMobile }: { isMobile: boolean }) {
             background: "rgba(0,113,227,0.06)",
           }}>
             <BookOpen style={{ width: 15, height: 15, color: "#0071E3" }} />
-            <span style={{ fontSize: 13, fontWeight: 600, color: "#0071E3" }}>3 Module mit 15 Lektionen</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "#0071E3" }}>{en ? "3 modules with 15 lessons" : "3 Module mit 15 Lektionen"}</span>
           </div>
           <div style={{
             display: "flex", alignItems: "center", gap: 8,
@@ -51,7 +54,7 @@ function KursWidgetInner({ isMobile }: { isMobile: boolean }) {
             background: "rgba(0,113,227,0.06)",
           }}>
             <PlayCircle style={{ width: 15, height: 15, color: "#0071E3" }} />
-            <span style={{ fontSize: 13, fontWeight: 600, color: "#0071E3" }}>3 Stunden Video-Material</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "#0071E3" }}>{en ? "3 hours of video material" : "3 Stunden Video-Material"}</span>
           </div>
         </div>
       </div>
@@ -100,6 +103,8 @@ export default function Kurs() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const isMobile = useIsMobile();
+  const { region } = useRegion();
+  const en = region === "EN";
   const [participants, setParticipants] = useState<Participant[]>([createEmptyParticipant()]);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -116,10 +121,10 @@ export default function Kurs() {
             <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
               <div className="text-center">
                 <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }}>
-                  Kursbereich
+                  {en ? "Courses" : "Kursbereich"}
                 </h1>
                 <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0 }}>
-                  Lernmodule zu Führung, Teamdynamik und bioLogic-Kompetenzanalyse.
+                  {en ? "Learning modules on leadership, team dynamics and bioLogic competence analysis." : "Lernmodule zu Führung, Teamdynamik und bioLogic-Kompetenzanalyse."}
                 </p>
               </div>
             </div>
@@ -133,9 +138,9 @@ export default function Kurs() {
             border: "1px solid rgba(0,0,0,0.04)",
           }}>
             <Lock style={{ width: 40, height: 40, color: "#8E8E93", marginBottom: 16 }} />
-            <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }} data-testid="text-no-access">Kein Zugang</h2>
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }} data-testid="text-no-access">{en ? "No access" : "Kein Zugang"}</h2>
             <p style={{ fontSize: 14, color: "#48484A", maxWidth: 400, margin: "0 auto 24px" }}>
-              Der Kursbereich ist für dein Konto nicht freigeschaltet. Bitte wende dich an deinen Administrator.
+              {en ? "The course area is not unlocked for your account. Please contact your administrator." : "Der Kursbereich ist für dein Konto nicht freigeschaltet. Bitte wende dich an deinen Administrator."}
             </p>
             <button
               onClick={() => setLocation("/")}
@@ -147,7 +152,7 @@ export default function Kurs() {
                 boxShadow: "0 2px 8px rgba(0,113,227,0.25)",
               }}
             >
-              Zurück zur Startseite
+              {en ? "Back to home" : "Zurück zur Startseite"}
             </button>
           </div>
         </div>
@@ -166,10 +171,10 @@ export default function Kurs() {
             <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
               <div className="text-center">
                 <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-kurs-title">
-                  Kursbereich
+                  {en ? "Courses" : "Kursbereich"}
                 </h1>
                 <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0 }}>
-                  Willkommen im Lernbereich. Hier findest du Kursmodule zu Führung, Teamdynamik und bioLogic-Kompetenzanalyse.
+                  {en ? "Welcome to the learning area. Find course modules on leadership, team dynamics and bioLogic competence analysis here." : "Willkommen im Lernbereich. Hier findest du Kursmodule zu Führung, Teamdynamik und bioLogic-Kompetenzanalyse."}
                 </p>
               </div>
             </div>
@@ -185,9 +190,9 @@ export default function Kurs() {
             boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
             border: "1px solid rgba(0,0,0,0.04)", textAlign: "center",
           }} data-testid="card-coming-soon">
-            <p style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>Inhalte in Vorbereitung</p>
+            <p style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>{en ? "Content in preparation" : "Inhalte in Vorbereitung"}</p>
             <p style={{ fontSize: 14, color: "#6E6E73", margin: 0, maxWidth: 500, marginLeft: "auto", marginRight: "auto" }}>
-              Die Kursmodule werden in Kürze freigeschaltet und erscheinen hier automatisch, sobald sie verfügbar sind.
+              {en ? "The course modules will be unlocked shortly and appear here automatically as soon as they are available." : "Die Kursmodule werden in Kürze freigeschaltet und erscheinen hier automatisch, sobald sie verfügbar sind."}
             </p>
           </div>
         </div>
@@ -279,10 +284,10 @@ export default function Kurs() {
           <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
             <div className="text-center">
               <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-kurs-title">
-                Kurszugänge freischalten
+                {en ? "Unlock course access" : "Kurszugänge freischalten"}
               </h1>
               <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0 }}>
-                Hier kannst du mehrere Personen für den bioLogic-Kursbereich freischalten. Füge alle Teilnehmer hinzu und starte die Freischaltung gesammelt.
+                {en ? "Unlock the bioLogic course area for multiple people. Add all participants and start the unlock in one go." : "Hier kannst du mehrere Personen für den bioLogic-Kursbereich freischalten. Füge alle Teilnehmer hinzu und starte die Freischaltung gesammelt."}
               </p>
             </div>
           </div>
@@ -309,7 +314,7 @@ export default function Kurs() {
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <GraduationCap style={{ width: 22, height: 22, color: "#0071E3", flexShrink: 0 }} />
               <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
-                Kurszugänge freischalten
+                {en ? "Unlock course access" : "Kurszugänge freischalten"}
               </span>
             </div>
             <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${cardOpen ? "rotate-180" : ""}`} />
@@ -334,9 +339,9 @@ export default function Kurs() {
               }}>
                 <CheckCircle2 style={{ width: 28, height: 28, color: "#FFF" }} />
               </div>
-              <p style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>Zugänge freigeschaltet</p>
+              <p style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>{en ? "Access unlocked" : "Zugänge freigeschaltet"}</p>
               <p style={{ fontSize: 14, color: "#6E6E73", margin: "0 0 24px", maxWidth: 400, marginLeft: "auto", marginRight: "auto" }}>
-                Die Teilnehmer wurden erfolgreich für den Kursbereich verarbeitet.
+                {en ? "The participants have been successfully processed for the course area." : "Die Teilnehmer wurden erfolgreich für den Kursbereich verarbeitet."}
               </p>
 
               {results.length > 0 && (
@@ -371,7 +376,7 @@ export default function Kurs() {
                   boxShadow: "0 2px 8px rgba(0,113,227,0.25)",
                 }}
               >
-                Weitere Teilnehmer freischalten
+                {en ? "Unlock more participants" : "Weitere Teilnehmer freischalten"}
               </button>
             </div>
           ) : (
@@ -396,9 +401,9 @@ export default function Kurs() {
                     borderBottom: "1px solid rgba(0,0,0,0.06)", background: "rgba(0,0,0,0.02)",
                   }}>
                     <span />
-                    <span style={{ ...labelStyle, paddingLeft: 14 }}>Vorname</span>
-                    <span style={{ ...labelStyle, paddingLeft: 14 }}>Nachname</span>
-                    <span style={{ ...labelStyle, paddingLeft: 14 }}>E-Mail-Adresse</span>
+                    <span style={{ ...labelStyle, paddingLeft: 14 }}>{en ? "First name" : "Vorname"}</span>
+                    <span style={{ ...labelStyle, paddingLeft: 14 }}>{en ? "Last name" : "Nachname"}</span>
+                    <span style={{ ...labelStyle, paddingLeft: 14 }}>{en ? "Email address" : "E-Mail-Adresse"}</span>
                     <span />
                   </div>
                 )}
@@ -428,7 +433,7 @@ export default function Kurs() {
                           }}>
                             {idx + 1}
                           </div>
-                          <span style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F" }}>Teilnehmer {idx + 1}</span>
+                          <span style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F" }}>{en ? `Participant ${idx + 1}` : `Teilnehmer ${idx + 1}`}</span>
                         </div>
                         {participants.length > 1 && (
                           <button type="button" onClick={() => removeParticipant(p.id)} data-testid={`button-remove-participant-${p.id}`}
@@ -450,17 +455,17 @@ export default function Kurs() {
                       </div>
                     )}
 
-                    {isMobile && <label style={labelStyle}>Vorname</label>}
+                    {isMobile && <label style={labelStyle}>{en ? "First name" : "Vorname"}</label>}
                     <input type="text" value={p.firstName} onChange={e => updateParticipant(p.id, "firstName", e.target.value)}
-                      placeholder="Vorname" style={inputStyle} required data-testid={`input-firstname-${p.id}`} />
+                      placeholder={en ? "First name" : "Vorname"} style={inputStyle} required data-testid={`input-firstname-${p.id}`} />
 
-                    {isMobile && <label style={labelStyle}>Nachname</label>}
+                    {isMobile && <label style={labelStyle}>{en ? "Last name" : "Nachname"}</label>}
                     <input type="text" value={p.lastName} onChange={e => updateParticipant(p.id, "lastName", e.target.value)}
-                      placeholder="Nachname" style={inputStyle} required data-testid={`input-lastname-${p.id}`} />
+                      placeholder={en ? "Last name" : "Nachname"} style={inputStyle} required data-testid={`input-lastname-${p.id}`} />
 
-                    {isMobile && <label style={labelStyle}>E-Mail-Adresse</label>}
+                    {isMobile && <label style={labelStyle}>{en ? "Email address" : "E-Mail-Adresse"}</label>}
                     <input type="email" value={p.email} onChange={e => updateParticipant(p.id, "email", e.target.value)}
-                      placeholder="E-Mail-Adresse" style={inputStyle} required data-testid={`input-email-${p.id}`} />
+                      placeholder={en ? "Email address" : "E-Mail-Adresse"} style={inputStyle} required data-testid={`input-email-${p.id}`} />
 
                     {!isMobile && (
                       participants.length > 1 ? (
@@ -489,7 +494,7 @@ export default function Kurs() {
                   }}
                 >
                   <Plus style={{ width: 16, height: 16 }} />
-                  Teilnehmer hinzufügen
+                  {en ? "Add participant" : "Teilnehmer hinzufügen"}
                 </button>
 
                 <button
@@ -507,7 +512,7 @@ export default function Kurs() {
                   }}
                 >
                   <Send style={{ width: 16, height: 16 }} />
-                  {submitting ? "Wird freigeschaltet…" : "Zugänge freischalten"}
+                  {submitting ? (en ? "Unlocking…" : "Wird freigeschaltet…") : (en ? "Unlock access" : "Zugänge freischalten")}
                 </button>
               </div>
             </form>
