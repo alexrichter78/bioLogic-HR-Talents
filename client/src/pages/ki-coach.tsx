@@ -23,7 +23,9 @@ const WELCOME_MSG: Message = {
   content: "Willkommen bei Louis – deinem bioLogic Coach für Entscheidungen im richtigen Moment.\n\nIch unterstütze dich bei Fragen rund um Führung, Personalentscheidungen, Assessment, Bewerbungsgespräche und Kommunikation.\n\nWie kann ich dir helfen?",
 };
 
-const EXAMPLE_PROMPTS: { category: string; prompts: string[]; requiresAnalysis?: boolean }[] = [
+type PromptCategory = { category: string; prompts: string[]; requiresAnalysis?: boolean };
+
+const EXAMPLE_PROMPTS_DE: PromptCategory[] = [
   {
     category: "bioLogic-basierte Beratung",
     prompts: [
@@ -140,6 +142,127 @@ const EXAMPLE_PROMPTS: { category: string; prompts: string[]; requiresAnalysis?:
     category: "Zusammenfassungen",
     prompts: [
       "Fasse mir die wichtigsten Punkte aus unserem bisherigen Gespräch zusammen.",
+    ],
+  },
+];
+
+const EXAMPLE_PROMPTS_EN: PromptCategory[] = [
+  {
+    category: "bioLogic-based advice",
+    prompts: [
+      "My team member has a strong impulsive share and constantly interrupts others in meetings. How do I deal with this?",
+      "I have a strong intuitive share and need to give critical feedback to an analytically dominant colleague. What do I need to keep in mind?",
+      "How can I tell whether someone is more impulsive, intuitive or analytical, without running a test?",
+      "My boss is analytically dominant and never gives me personal feedback. How can I change that?",
+      "What does it mean for collaboration when two impulsive-dominant people work on the same project?",
+    ],
+  },
+  {
+    category: "Ready-made phrasings",
+    prompts: [
+      "Give me 3 phrasings I can use to set boundaries with an impulsive-dominant employee without provoking them.",
+      "How do I tell an intuitive-dominant team member that the quality isn't right, without damaging the relationship?",
+      "I need a phrasing to politely interrupt an analytically dominant colleague in a meeting.",
+      "How do I phrase a rejection to an internal applicant with a strong impulsive share who handles rejection badly?",
+      "Give me an opener for an annual review with an introverted, analytically dominant employee.",
+    ],
+  },
+  {
+    category: "Role-play & practice conversations",
+    prompts: [
+      "Run a salary negotiation with me. My counterpart has a strong impulsive share and is very demanding. Take their role and give me feedback after each round.",
+      "My intuitive-dominant employee is constantly late. I'm impulsive-dominant. Run the conversation with me – you play the employee.",
+      "Simulate a job interview with me. I'm the interviewer, the candidate has a strong intuitive share. React like a real applicant.",
+      "Practise a feedback conversation with me. I have to tell a long-serving analytically dominant employee that they need to change. You play them.",
+      "I want to ask my impulsive-dominant boss for a raise. Let's role-play it – you're my boss.",
+    ],
+  },
+  {
+    category: "Check & improve phrasings",
+    prompts: [
+      "I would say to my intuitive-dominant employee: 'You've been late for weeks, it's annoying the whole team.' – What's wrong with that and how would it be better?",
+      "Check my sentence for a critical conversation with an analytically dominant person: 'I have the feeling that you're not contributing enough.' – How does that come across?",
+      "How would an impulsive-dominant person react to this sentence: 'Could we maybe talk about whether the deadline is realistic?'",
+      "I want to tell my team: 'From now on, anyone who's late has to explain themselves.' – How does that land with the different types?",
+      "Draft three different openers for a critical conversation with an intuitive-dominant person – I'll pick the best one.",
+    ],
+  },
+  {
+    category: "Team constellation advice",
+    prompts: [
+      "My team consists of 3 analytically dominant, 1 impulsive-dominant and 2 intuitive-dominant people. What are the typical dynamics?",
+      "I have a team with a strong intuitive share. What are the risks and what are we missing?",
+      "We're 5 people: 2 impulsive-analytical hybrids, 2 intuitive-dominant people and 1 balanced. How do I best lead this team?",
+      "My team only has impulsive and analytical shares, no intuitive counterweight. What happens long-term?",
+      "I'm building a new project team. Which type constellation would be ideal for an innovation project?",
+    ],
+  },
+  {
+    category: "Conversation preparation",
+    prompts: [
+      "Tomorrow I have a termination conversation with an intuitive-dominant employee. Help me prepare.",
+      "I have a conflict conversation with an impulsive-dominant colleague who undermines my authority. How do I prepare?",
+      "Prepare a negotiation with me. My counterpart is analytically dominant and wants everything in writing.",
+      "I have to announce an unpopular decision to my team. The team is strongly impulsive-intuitive. How do I approach it?",
+      "Help me prepare a return-to-work conversation after a long illness. The employee has a strong analytical share.",
+    ],
+  },
+  {
+    category: "Onboarding support",
+    prompts: [
+      "An impulsive-dominant new employee is joining my mostly analytical team. What do I need to keep in mind in the first 90 days?",
+      "We've hired a new intuitive-dominant manager. The team is predominantly impulsive. How do we make the integration work?",
+      "An analytically dominant expert is moving into a creative team with an intuitive-impulsive profile. What pitfalls are there?",
+      "I'm starting as a new manager in a team I don't know yet. How do I quickly recognise the bioLogic types?",
+      "Three new employees are joining at the same time. How do I design onboarding when they're all different types?",
+    ],
+  },
+  {
+    category: "Spotting conflict patterns",
+    prompts: [
+      "Two colleagues constantly clash: one wants quick decisions, the other needs more data. What's behind this?",
+      "In my team there's one person who always takes everything personally and one who only argues factually. Why does this regularly escalate?",
+      "My deputy and I keep blocking each other. I have a strong intuitive share, he has a strong impulsive one. How do I break the pattern?",
+      "There's an ongoing conflict between sales (mostly impulsive) and quality assurance (mostly analytical). How do I resolve this structurally?",
+      "Whenever we're under time pressure, my team splits into camps. What's the bioLogic pattern behind this?",
+    ],
+  },
+  {
+    category: "Job ads & recruiting marketing",
+    prompts: [
+      "I'm looking for a sales lead with a strong impulsive share. Which wording and imagery should my job ad use to attract exactly this type?",
+      "Our job ad for an HR business partner only attracts analytically shaped applicants. How do I rephrase it so intuitive-dominant people also feel addressed?",
+      "We're looking for a quality manager with a strong analytical share. Give me 5 concrete phrasings for the job ad that attract this type.",
+      "I want to write a job ad for a project lead role that needs an impulsive-intuitive profile. How do I combine both audiences?",
+      "What typical mistakes do companies make in job ads that lead to the wrong bioLogic types applying?",
+    ],
+  },
+  {
+    category: "Master data context",
+    requiresAnalysis: true,
+    prompts: [
+      "Look at the analysed role and tell me: which bioLogic types fit this role best?",
+      "Based on the role DNA: what kind of candidate best complements the requirements profile?",
+      "Analyse the role profile: what strengths does the role holder need and where are the typical risks?",
+      "How would a red-dominant candidate fit this role? What should be considered when filling it?",
+      "What typical hiring mistakes happen with this role profile without anyone noticing?",
+    ],
+  },
+  {
+    category: "Generate interview guides",
+    requiresAnalysis: true,
+    prompts: [
+      "Create a complete interview guide for the analysed role. With opener, core questions, bioLogic-specific observation points and evaluation criteria.",
+      "Generate a structured guide for a first conversation with a candidate for this role. Take the role DNA into account.",
+      "Create an onboarding conversation guide for the first 90 days based on the role profile.",
+      "Create a feedback conversation guide tailored to the bioLogic profile of the role.",
+      "Generate a guide for a probation-period review based on the role DNA and requirements.",
+    ],
+  },
+  {
+    category: "Summaries",
+    prompts: [
+      "Summarise the most important points from our conversation so far.",
     ],
   },
 ];
@@ -412,6 +535,7 @@ export default function KICoach() {
   const { region } = useRegion();
   const t = useLocalizedText();
   const ui = useUI();
+  const EXAMPLE_PROMPTS = region === "EN" ? EXAMPLE_PROMPTS_EN : EXAMPLE_PROMPTS_DE;
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const isMobile = useIsMobile();
