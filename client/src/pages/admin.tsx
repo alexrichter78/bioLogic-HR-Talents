@@ -924,65 +924,114 @@ export default function Admin() {
                       </div>
 
                       {showUsage && (
-                        <div style={{ padding: "0 20px 16px", borderTop: "1px solid rgba(0,0,0,0.04)" }}>
+                        <div style={{ padding: "0 20px 18px", borderTop: "1px solid rgba(0,0,0,0.04)" }}>
                           {orgUsageLoading ? (
                             <p style={{ textAlign: "center", color: "#8E8E93", padding: 16, fontSize: 13 }}>Laden...</p>
-                          ) : (
-                            <>
-                              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", padding: "12px 0" }}>
-                                {(() => {
-                                  const labelMap: Record<string, string> = { ki_coach: "KI-Coach", rollendna: "JobCheck", teamdynamik: "TeamCheck", matchcheck: "MatchCheck" };
-                                  const merged = new Map<string, number>();
-                                  for (const t of (orgUsage?.totals || [])) {
-                                    const key = t.eventType === "teamcheck" ? "teamdynamik" : t.eventType;
-                                    merged.set(key, (merged.get(key) || 0) + Number(t.count));
-                                  }
-                                  return Array.from(merged.entries()).map(([key, count]) => (
-                                    <div key={key} style={{ padding: "6px 12px", borderRadius: 8, background: "rgba(0,113,227,0.06)", fontSize: 12, fontWeight: 600, color: "#0071E3" }}>
-                                      {labelMap[key] || key}: {count}
+                          ) : (() => {
+                            const labelMap: Record<string, string> = { ki_coach: "KI-Coach", rollendna: "JobCheck", teamdynamik: "TeamCheck", matchcheck: "MatchCheck" };
+                            const productColors: Record<string, { bg: string; fg: string }> = {
+                              ki_coach: { bg: "rgba(0,113,227,0.08)", fg: "#0071E3" },
+                              rollendna: { bg: "rgba(88,86,214,0.08)", fg: "#5856D6" },
+                              teamdynamik: { bg: "rgba(52,199,89,0.10)", fg: "#1F8A3F" },
+                              matchcheck: { bg: "rgba(255,149,0,0.10)", fg: "#C2410C" },
+                            };
+                            const merged = new Map<string, number>();
+                            for (const t of (orgUsage?.totals || [])) {
+                              const key = t.eventType === "teamcheck" ? "teamdynamik" : t.eventType;
+                              merged.set(key, (merged.get(key) || 0) + Number(t.count));
+                            }
+                            const totalEntries = Array.from(merged.entries());
+
+                            const uMap = new Map<number, { name: string; events: Record<string, number>; limit: number; used: number }>();
+                            for (const m of orgMembers) {
+                              uMap.set(m.id, { name: `${m.firstName || ""} ${m.lastName || ""}`.trim() || m.username, events: {}, limit: m.aiRequestLimit || 0, used: m.aiRequestsUsed || 0 });
+                            }
+                            for (const pu of (orgUsage?.perUser || [])) {
+                              const evtKey = pu.eventType === "teamcheck" ? "teamdynamik" : pu.eventType;
+                              const entry = uMap.get(pu.userId);
+                              if (entry) {
+                                entry.events[evtKey] = (entry.events[evtKey] || 0) + Number(pu.count);
+                              }
+                            }
+                            const userRows = Array.from(uMap.entries());
+
+                            return (
+                              <div style={{ display: "flex", flexDirection: "column", gap: 16, paddingTop: 14 }}>
+                                {/* Gesamt-Übersicht */}
+                                <div>
+                                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", color: "#8E8E93", textTransform: "uppercase", marginBottom: 8 }}>
+                                    Gesamt-Nutzung
+                                  </div>
+                                  {totalEntries.length === 0 ? (
+                                    <div style={{ fontSize: 12, color: "#8E8E93", fontStyle: "italic" }}>Keine Nutzung im Zeitraum</div>
+                                  ) : (
+                                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                                      {totalEntries.map(([key, count]) => {
+                                        const c = productColors[key] || { bg: "rgba(0,0,0,0.05)", fg: "#636366" };
+                                        return (
+                                          <div key={key} style={{ display: "flex", alignItems: "baseline", gap: 6, padding: "8px 12px", borderRadius: 10, background: c.bg }}>
+                                            <span style={{ fontSize: 11, fontWeight: 600, color: c.fg, opacity: 0.85 }}>{labelMap[key] || key}</span>
+                                            <span style={{ fontSize: 14, fontWeight: 700, color: c.fg }}>{count}</span>
+                                          </div>
+                                        );
+                                      })}
                                     </div>
-                                  ));
-                                })()}
-                                {(!orgUsage?.totals || orgUsage.totals.length === 0) && (
-                                  <span style={{ fontSize: 12, color: "#8E8E93" }}>Keine Nutzung im Zeitraum</span>
+                                  )}
+                                </div>
+
+                                {/* Pro Benutzer */}
+                                {userRows.length > 0 && (
+                                  <div>
+                                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", color: "#8E8E93", textTransform: "uppercase", marginBottom: 8 }}>
+                                      Pro Benutzer
+                                    </div>
+                                    <div style={{ border: "1px solid rgba(0,0,0,0.06)", borderRadius: 12, overflow: "hidden", background: "#fff" }}>
+                                      {/* Tabellenkopf */}
+                                      <div style={{ display: "grid", gridTemplateColumns: "minmax(160px, 1.4fr) minmax(160px, 1fr) minmax(0, 2fr)", gap: 16, padding: "10px 16px", background: "#FAFAFA", borderBottom: "1px solid rgba(0,0,0,0.05)", fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", color: "#8E8E93", textTransform: "uppercase" }}>
+                                        <div>Name</div>
+                                        <div>Kontingent</div>
+                                        <div>Nutzung pro Tool</div>
+                                      </div>
+                                      {userRows.map(([uid, u], idx) => {
+                                        const pct = u.limit > 0 ? Math.min(100, Math.round((u.used / u.limit) * 100)) : 0;
+                                        const barColor = pct >= 90 ? "#FF3B30" : pct >= 70 ? "#FF9500" : "#34C759";
+                                        const eventEntries = Object.entries(u.events);
+                                        return (
+                                          <div key={uid} style={{ display: "grid", gridTemplateColumns: "minmax(160px, 1.4fr) minmax(160px, 1fr) minmax(0, 2fr)", gap: 16, padding: "12px 16px", alignItems: "center", borderBottom: idx === userRows.length - 1 ? "none" : "1px solid rgba(0,0,0,0.04)", background: idx % 2 === 1 ? "rgba(0,0,0,0.015)" : "#fff" }} data-testid={`row-user-${uid}`}>
+                                            <div style={{ fontSize: 13, fontWeight: 500, color: "#1D1D1F", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{u.name}</div>
+                                            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                                              <div style={{ fontSize: 12, color: "#636366", fontVariantNumeric: "tabular-nums" }}>
+                                                <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{u.used}</span>
+                                                <span style={{ color: "#8E8E93" }}> / {u.limit || "∞"}</span>
+                                              </div>
+                                              {u.limit > 0 && (
+                                                <div style={{ height: 4, borderRadius: 2, background: "rgba(0,0,0,0.06)", overflow: "hidden" }}>
+                                                  <div style={{ height: "100%", width: `${pct}%`, background: barColor, borderRadius: 2 }} />
+                                                </div>
+                                              )}
+                                            </div>
+                                            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                                              {eventEntries.length > 0 ? eventEntries.map(([evt, cnt]) => {
+                                                const c = productColors[evt] || { bg: "rgba(0,0,0,0.05)", fg: "#636366" };
+                                                return (
+                                                  <span key={evt} style={{ display: "inline-flex", alignItems: "baseline", gap: 4, padding: "3px 9px", borderRadius: 999, background: c.bg, fontSize: 11, color: c.fg }}>
+                                                    <span style={{ fontWeight: 500, opacity: 0.85 }}>{labelMap[evt] || evt}</span>
+                                                    <span style={{ fontWeight: 700 }}>{cnt}</span>
+                                                  </span>
+                                                );
+                                              }) : (
+                                                <span style={{ fontSize: 11, color: "#C7C7CC", fontStyle: "italic" }}>—</span>
+                                              )}
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
                                 )}
                               </div>
-                              {orgMembers.length > 0 && (
-                                <div style={{ fontSize: 12 }}>
-                                  <div style={{ fontWeight: 600, color: "#636366", marginBottom: 6 }}>Pro Benutzer:</div>
-                                  {(() => {
-                                    const uMap = new Map<number, { name: string; events: Record<string, number>; limit: number; used: number }>();
-                                    const evtLabelMap: Record<string, string> = { ki_coach: "KI-Coach", rollendna: "JobCheck", teamdynamik: "TeamCheck", matchcheck: "MatchCheck" };
-                                    for (const m of orgMembers) {
-                                      uMap.set(m.id, { name: `${m.firstName || ""} ${m.lastName || ""}`.trim() || m.username, events: {}, limit: m.aiRequestLimit || 0, used: m.aiRequestsUsed || 0 });
-                                    }
-                                    for (const pu of (orgUsage?.perUser || [])) {
-                                      const evtKey = pu.eventType === "teamcheck" ? "teamdynamik" : pu.eventType;
-                                      const entry = uMap.get(pu.userId);
-                                      if (entry) {
-                                        entry.events[evtKey] = (entry.events[evtKey] || 0) + Number(pu.count);
-                                      }
-                                    }
-                                    return Array.from(uMap.entries()).map(([uid, u]) => (
-                                      <div key={uid} style={{ display: "flex", gap: 8, alignItems: "center", padding: "4px 0", flexWrap: "wrap" }}>
-                                        <span style={{ fontWeight: 500, color: "#1D1D1F", minWidth: 120 }}>{u.name}</span>
-                                        <span style={{ padding: "2px 8px", borderRadius: 6, background: "rgba(0,113,227,0.06)", fontSize: 11, color: "#0071E3", fontWeight: 500 }}>
-                                          {u.used} / {u.limit}
-                                        </span>
-                                        {Object.keys(u.events).length > 0 ? Object.entries(u.events).map(([evt, cnt]) => (
-                                          <span key={evt} style={{ padding: "2px 8px", borderRadius: 6, background: "rgba(0,0,0,0.04)", fontSize: 11, color: "#636366" }}>
-                                            {evtLabelMap[evt] || evt}: {cnt}
-                                          </span>
-                                        )) : (
-                                          <span style={{ fontSize: 11, color: "#8E8E93" }}>Keine Nutzung</span>
-                                        )}
-                                      </div>
-                                    ));
-                                  })()}
-                                </div>
-                              )}
-                            </>
-                          )}
+                            );
+                          })()}
                         </div>
                       )}
                     </div>
